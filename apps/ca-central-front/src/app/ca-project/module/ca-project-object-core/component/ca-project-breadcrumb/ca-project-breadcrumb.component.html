@@ -1,0 +1,9 @@
+<div fxLayout="row wrap" class="g-text-light">
+  <ng-container *ngFor="let link of links$ | async; let last = last">
+    <a [routerLink]="link.url" class="g-text-link">
+      {{link.title}}
+    </a>
+
+    <span class="separator" *ngIf="!last">></span>
+  </ng-container>
+</div>

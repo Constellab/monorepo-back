@@ -1,7 +1,6 @@
 import {Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
 import {CnLabInstancesService} from '../cn-lab-instances/cn-lab-instances.service';
 import {ClLabGuard} from '../cn-core/decorators/cn-lab-guard.decorator';
-import {CnReport} from '../cn-projects-aggregate/cn-reports/cn-report.entity';
 import {BlParsePipe} from '@monorepo/back-core-lib';
 import {CnCreateLabExperimentDto} from '../cn-projects-aggregate/cn-experiments/cn-experiment.dto';
 import {CnCreateReportWithConfigDto} from '../cn-projects-aggregate/cn-reports/cn-report.dto';
@@ -54,7 +53,7 @@ export class CnExternalLabsController {
   @Put('project/:projectId/report')
   saveReport(
     @Param('projectId', new ParseUUIDPipe()) projectId: string,
-    @Body(new BlParsePipe(CnCreateReportWithConfigDto)) createReportDto: CnCreateReportWithConfigDto): Promise<CnReport> {
+    @Body(new BlParsePipe(CnCreateReportWithConfigDto)) createReportDto: CnCreateReportWithConfigDto): Promise<void> {
     return this.projectAggregator.createLabReport(createReportDto, projectId);
   }
 

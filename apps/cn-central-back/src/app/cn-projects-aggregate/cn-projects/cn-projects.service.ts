@@ -1,6 +1,6 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, In, Repository, TreeRepository} from 'typeorm';
+import {DataSource, EntityManager, In, Repository, TreeRepository} from 'typeorm';
 import {CnProject} from './cn-project.entity';
 import {CnAbstractWithStatusService} from '../../cn-core/class/cn-abstract-with-status.service';
 import {CnProjectStatus} from './cn-project-status.enum';
@@ -14,6 +14,7 @@ import {CnGroup} from '../../cn-groups/cn-group.entity';
 import {CnUsersService} from '../../cn-users/cn-users.service';
 import {DateTime} from 'luxon';
 import {CnProjectLevel} from './cn-project-level.enum';
+import {CnProjectAncestorTreeDTO} from './cn-project.dto';
 
 @Injectable()
 export class CnProjectsService extends CnAbstractWithStatusService<CnProject, CnProjectStatus> {
@@ -25,36 +26,40 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
     super(repository, CnProject, statusHistoRepo, CnProjectStatusHistory, datasource);
   }
 
-  async create(entity: CnProject): Promise<CnProject> {
+  async create(entity: CnProject, entityManager?: EntityManager): Promise<CnProject> {
     const userGroup = await this.groupService.getCurrentUserSingleGroup();
     entity.sharedGroups = [userGroup];
-    return super.createWithStatus(entity, CnProjectStatus.ACTIVE);
-  }
-
-  async createProject(project: CnProject): Promise<CnProject> {
-    project.parent = null;
-    project.level = CnProjectLevel.PROJECT;
-    return this.create(project);
-  }
-
-  async createWorkPackage(workPackage: CnProject, project: CnProject): Promise<CnProject> {
-    workPackage.parent = project;
-    workPackage.leafLevel = project.leafLevel;
-    workPackage.level = CnProjectLevel.WORK_PACKAGE;
-    workPackage.rootParentId = project.id;
-    return this.create(workPackage);
-  }
-
-  async createTask(task: CnProject, workPackage: CnProject): Promise<CnProject> {
-    task.parent = workPackage;
-    task.leafLevel = workPackage.leafLevel;
-    task.level = CnProjectLevel.TASK;
-    task.rootParentId = workPackage.rootParentId;
-    return this.create(task);
+    if (entityManager) {
+      return super.createWithStatusTransaction(entity, CnProjectStatus.ACTIVE, entityManager);
+    } else {
+      return super.createWithStatus(entity, CnProjectStatus.ACTIVE);
+    }
   }
 
   public async getProjectTree(project: CnProject): Promise<CnProject> {
     return this.repository.findDescendantsTree(project);
+  }
+
+  public getChildren(project: CnProject): Promise<CnProject[]> {
+    return this.repository.find({where: {parent: {id: project.id}}});
+  }
+
+  /**
+   * Return a simplified list from this project to the root project
+   */
+  public async getAncestors(project: CnProject): Promise<CnProjectAncestorTreeDTO[]> {
+    const parent = await this.repository.findAncestorsTree(project);
+    const projects: CnProjectAncestorTreeDTO[] = [];
+    let currentProject = parent;
+    while (currentProject != null) {
+      projects.push({
+        id: currentProject.id,
+        title: currentProject.title,
+        type: 'project'
+      });
+      currentProject = currentProject.parent;
+    }
+    return projects;
   }
 
   public async getCurrentProjects(page: number, size: number): Promise<ClPageI<CnProject>> {
@@ -77,7 +82,7 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
   public async getProjectsOfGroup(groupId: string, page: number, size: number): Promise<ClPageI<CnProject>> {
     return await this.findPaginated(page, size, {
       where: {
-        level: CnProjectLevel.PROJECT,
+        currentLevel: CnProjectLevel.PROJECT,
         sharedGroups: {
           id: groupId
         }
@@ -126,7 +131,7 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
 
     return await this.findPaginated(page, size, {
       where: {
-        level: CnProjectLevel.PROJECT,
+        currentLevel: CnProjectLevel.PROJECT,
         sharedGroups: {
           id: In(groupIds)
         }

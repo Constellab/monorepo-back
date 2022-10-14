@@ -7,6 +7,7 @@ import {CaCoreModule} from '../../ca-core.module';
 import {CaProjectInfoComponent} from './component/ca-project-info/ca-project-info.component';
 import {CaProjectsListComponent} from './component/ca-projects-list/ca-projects-list.component';
 import {RouterModule} from '@angular/router';
+import {CaProjectTableComponent} from './component/ca-project-table/ca-project-table.component';
 
 /**
  * Importable module to get project components and pipe
@@ -18,6 +19,7 @@ import {RouterModule} from '@angular/router';
     CaProjectFormDialogComponent,
     CaProjectsListComponent,
     CaProjectInfoComponent,
+    CaProjectTableComponent,
   ],
   exports: [
     // Component
@@ -25,6 +27,7 @@ import {RouterModule} from '@angular/router';
     CaProjectFormDialogComponent,
     CaProjectsListComponent,
     CaProjectInfoComponent,
+    CaProjectTableComponent,
   ],
   imports: [
     CommonModule,

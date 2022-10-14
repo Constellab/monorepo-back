@@ -1,0 +1,13 @@
+<fl-card>
+  <fl-card-header>
+    <fl-text-icon>
+      <mat-icon flIcon="projects"></mat-icon>
+      <h2>Chlidren to translate</h2>
+    </fl-text-icon>
+  </fl-card-header>
+
+  <fl-card-body>
+    <ca-project-table [datasource]="children$" [columns]="columns"></ca-project-table>
+  </fl-card-body>
+
+</fl-card>

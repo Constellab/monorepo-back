@@ -1,0 +1,66 @@
+<div>
+  <div fxLayout="row" fxLayoutAlign="space-between center" class="header">
+    <fl-text-icon>
+      <mat-icon class="g-icon-big" flIcon="project"></mat-icon>
+      <h1>{{project.code}}</h1>
+    </fl-text-icon>
+
+    <div fxLayout="row" fxLayoutAlign="start center">
+      <button *ngIf="project.canHaveChildren()" mat-icon-button type="button"
+              (click)="openChildCreation()"
+              [matTooltip]="createChildrenText | translate">
+        <mat-icon>add</mat-icon>
+      </button>
+
+      <button mat-icon-button type="button" (click)="openStatusHistory()"
+              [matTooltip]="'status_history' | translate">
+        <mat-icon>history</mat-icon>
+      </button>
+      <fl-status-chip class="status" [status]="project.currentStatus.status"></fl-status-chip>
+    </div>
+  </div>
+
+  <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="2em" fxLayout.xs="column">
+
+    <fl-card fxFlex="70%">
+      <fl-card-header>
+        <h2>{{project.title}}</h2>
+      </fl-card-header>
+
+      <fl-card-body>
+        <fl-text-icon class="dates">
+          <mat-icon>date_range</mat-icon>
+          <fl-date-range [startingDate]="project.startingDate" [endingDate]="project.endingDate">
+          </fl-date-range>
+        </fl-text-icon>
+
+        <div class="description">
+          <div *ngIf="project.description; else noDesc" [innerHTML]="project.description"></div>
+          <ng-template #noDesc>
+            <fl-error-text [errorMessage]="'no_description' | translate"></fl-error-text>
+          </ng-template>
+        </div>
+
+      </fl-card-body>
+
+      <fl-card-footer layoutGap="0.5em">
+        <button mat-stroked-button type="button" color="primary" (click)="openUpdateStatusDialog()"
+                class="button">
+          {{'update_status' | translate}}
+        </button>
+        <button mat-stroked-button type="button" color="primary" (click)="openUpdateProjectDialog()"
+                class="button">
+          <mat-icon>edit</mat-icon>
+          <span>{{'edit' | translate}}</span>
+        </button>
+      </fl-card-footer>
+    </fl-card>
+
+
+    <!--  List the shared groups  -->
+    <ca-project-shared-groups-list fxFlex="30%" [projectId]="project.id"></ca-project-shared-groups-list>
+
+  </div>
+
+
+</div>

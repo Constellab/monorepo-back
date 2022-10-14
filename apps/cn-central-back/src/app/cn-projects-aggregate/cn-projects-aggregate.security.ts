@@ -29,7 +29,7 @@ export class CnProjectsAggregateSecurity {
   }
 
   private async getRootProject(project: CnProject): Promise<CnProject> {
-    if (project.level === CnProjectLevel.PROJECT) {
+    if (project.currentLevel === CnProjectLevel.PROJECT) {
       return project;
     }
     return this.projectsService.findWithSharedGroups(project.rootParentId);

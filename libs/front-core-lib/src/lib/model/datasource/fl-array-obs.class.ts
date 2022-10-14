@@ -56,10 +56,10 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
       if (data instanceof Array) {
         this.array = data;
       } else if (data instanceof Observable) {
-        data.subscribe(
-          array => this.array = array,
-          error => this.error(error, true)
-        );
+        data.subscribe({
+          next: array => this.array = array,
+          error: error => this.error(error, true)
+        });
       }
     }
   }
@@ -218,7 +218,7 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
   public error(error: any, throwErrorInArray: boolean = false): void {
     this.status = {status: 'error', error: error};
 
-    if(throwErrorInArray){
+    if (throwErrorInArray) {
       this.array$.error(error);
     }
   }

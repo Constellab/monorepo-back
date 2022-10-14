@@ -5,8 +5,11 @@ import {
   caConstAdminRoute,
   caConstBaseRoute,
   caConstDashboardRoute,
+  caConstExperimentRoute,
   caConstLabInstancesRoute,
-  caConstProjectsRoute,
+  caConstMyProjectsRoute,
+  caConstProjectRoute,
+  caConstReportRoute,
   caConstSettingsRoute,
   caConstSmartDbRoute,
   caConstStructureRoute
@@ -36,10 +39,31 @@ const routes: Route[] = [
         loadChildren: () => import('../ca-lab-instance/ca-lab-instance.module').then(m => m.CaLabInstanceModule)
       },
 
-      //////////////////////// PROJECTS /////////////////////////
+      //////////////////////// MY PROJECT /////////////////////////
       {
-        path: caConstProjectsRoute,
-        loadChildren: () => import('../ca-project/ca-project.module').then(m => m.CaProjectModule)
+        path: caConstMyProjectsRoute,
+        loadChildren: () => import('../ca-project/module/ca-my-projects/ca-my-project.module').then(m => m.CaMyProjectModule)
+      },
+
+      //////////////////////// PROJECT DETAIL /////////////////////////
+      {
+        path: caConstProjectRoute,
+        loadChildren: () => import('../ca-project/module/ca-project-detail-page/ca-project-detail-page.module')
+          .then(m => m.CaProjectDetailPageModule)
+      },
+
+      //////////////////////// EXPERIMENT DETAIL /////////////////////////
+      {
+        path: caConstExperimentRoute,
+        loadChildren: () => import('../ca-project/module/ca-experiment-detail-page/ca-experiment-detail-page.module')
+          .then(m => m.CaExperimentDetailPageModule)
+      },
+
+      //////////////////////// REPORT DETAIL /////////////////////////
+      {
+        path: caConstReportRoute,
+        loadChildren: () => import('../ca-project/module/ca-report-detail-page/ca-report-detail-page.module')
+          .then(m => m.CaReportDetailPageModule)
       },
 
       //////////////////////// SMART DB /////////////////////////

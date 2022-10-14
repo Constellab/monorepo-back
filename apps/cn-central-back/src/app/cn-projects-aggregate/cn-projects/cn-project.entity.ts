@@ -18,7 +18,7 @@ import {BlLuxonDateColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnGroup} from '../../cn-groups/cn-group.entity';
 import {BadRequestException} from '@nestjs/common';
 import {ClHelpService} from '@monorepo/core-lib';
-import {CnProjectLevel} from './cn-project-level.enum';
+import {CnProjectLevel, CnProjectLevelStatus} from './cn-project-level.enum';
 
 /**
  * A project is an ensemble of experiments
@@ -58,18 +58,15 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
     type: 'enum', enum: CnProjectLevel,
     name: 'currentLevel', update: false
   })
-  level: CnProjectLevel;
+  currentLevel: CnProjectLevel;
 
-  // store the leaf level (lowest level) for the PROJECT
-  // the leaf level is the same for all sur work packages and tasks
   @Column({
-    nullable: false, default: CnProjectLevel.PROJECT,
-    type: 'enum', enum: CnProjectLevel, update: false
+    nullable: false, default: CnProjectLevelStatus.UNDEFINED,
+    type: 'enum', enum: CnProjectLevelStatus,
   })
-  leafLevel: CnProjectLevel;
+  levelStatus: CnProjectLevelStatus;
 
   // parent project of this project, can be null if this project is a project
-  @Exclude()
   @TreeParent()
   @BlNotUpdatable()
   parent?: CnProject;
@@ -102,8 +99,5 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
     }
   }
 
-  public isLeafLevel(): boolean {
-    return this.level === this.leafLevel;
-  }
 }
 

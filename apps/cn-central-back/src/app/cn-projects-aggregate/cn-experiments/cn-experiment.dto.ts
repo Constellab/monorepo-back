@@ -12,28 +12,43 @@ import {CnUser} from '../../cn-users/cn-user.entity';
 /**
  * Experiment object from the Lab
  */
-export class CnLabExperimentDto extends CnEntityDTO {
+export class CnSaveExperimentDto {
+  id: string;
   title: string;
   description: CmRichTextI;
   status: CnExperimentStatus;
 
   is_validated: boolean;
 
-  validated_by?: { id: string };
+  @Type(() => CnUser)
+  validated_by?: CnUser;
 
   @ClLuxonDateTimeTransform()
   validated_at?: DateTime;
 
-  last_sync_by?: { id: string };
+  @Type(() => CnUser)
+  last_sync_by?: CnUser;
 
   @ClLuxonDateTimeTransform()
   last_sync_at?: DateTime;
+
+  @ClLuxonDateTimeTransform()
+  created_at: DateTime;
+
+  @Type(() => CnUser)
+  created_by: CnUser;
+
+  @ClLuxonDateTimeTransform()
+  last_modified_at: DateTime;
+
+  @Type(() => CnUser)
+  last_modified_by: CnUser;
 }
 
 export class CnCreateLabExperimentDto {
 
-  @Type(() => CnLabExperimentDto)
-  experiment: CnLabExperimentDto;
+  @Type(() => CnSaveExperimentDto)
+  experiment: CnSaveExperimentDto;
   protocol: CnExperimentProtocol;
   lab_config: CnLabConfigDto;
 }

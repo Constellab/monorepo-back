@@ -70,14 +70,12 @@
           <mat-icon>edit</mat-icon>
           <span>{{'edit' | translate}}</span>
         </button>
-        <button mat-menu-item type="button" (click)="openStatusDialog(labInstance)"
-                [matTooltip]="'lab_check_status' | translate">
+        <button mat-menu-item type="button" (click)="openStatusDialog(labInstance)">
           <mat-icon>info</mat-icon>
           <span>{{'lab_check_status' | translate}}</span>
         </button>
 
-        <button mat-menu-item type="button" (click)="openDeleteDialog(labInstance)"
-                [matTooltip]="'lab_check_status' | translate">
+        <button mat-menu-item type="button" (click)="openDeleteDialog(labInstance)">
           <mat-icon color="warn">delete</mat-icon>
           <span class="g-warn-text">{{'delete' | translate}}</span>
         </button>

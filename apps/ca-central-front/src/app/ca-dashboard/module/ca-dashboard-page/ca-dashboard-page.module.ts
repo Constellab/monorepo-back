@@ -14,13 +14,17 @@ import {CaDashboardSmartDbsComponent} from './component/ca-dashboard-smart-dbs/c
 import {CaSmartDbCoreModule} from '../../../ca-core/entity-module/ca-smart-db-core/ca-smart-db-core.module';
 import {CaDashboardGroupsComponent} from './component/ca-dashboard-groups/ca-dashboard-groups.component';
 import {CaGroupCoreModule} from '../../../ca-core/entity-module/ca-group-core/ca-group-core.module';
-import { CaDashboardMyActivityComponent } from './component/ca-dashboard-my-activity/ca-dashboard-my-activity.component';
-import { CaDashboardTaskOfTheDayComponent } from './component/ca-dashboard-task-of-the-day/ca-dashboard-task-of-the-day.component';
-import { CaDashboardActivityCardComponent } from './component/ca-dashboard-activity-card/ca-dashboard-activity-card.component';
-import { CaDashboardLastExperimentsComponent } from './component/ca-dashboard-last-experiments/ca-dashboard-last-experiments.component';
+import {CaDashboardMyActivityComponent} from './component/ca-dashboard-my-activity/ca-dashboard-my-activity.component';
 import {
-  CaLabInstanceCityComponent
-} from '../../../ca-core/entity-module/ca-lab-core/component/ca-lab-instance-city/ca-lab-instance-city.component';
+  CaDashboardTaskOfTheDayComponent
+} from './component/ca-dashboard-task-of-the-day/ca-dashboard-task-of-the-day.component';
+import {
+  CaDashboardActivityCardComponent
+} from './component/ca-dashboard-activity-card/ca-dashboard-activity-card.component';
+import {
+  CaDashboardLastExperimentsComponent
+} from './component/ca-dashboard-last-experiments/ca-dashboard-last-experiments.component';
+import {CaDashboardBreadcrumbComponent} from './component/ca-dashboard-breadcrumb/ca-dashboard-breadcrumb.component';
 
 /**
  * Module for the dashboard page
@@ -36,7 +40,8 @@ import {
     CaDashboardMyActivityComponent,
     CaDashboardTaskOfTheDayComponent,
     CaDashboardActivityCardComponent,
-    CaDashboardLastExperimentsComponent
+    CaDashboardLastExperimentsComponent,
+    CaDashboardBreadcrumbComponent
   ],
   imports: [
     CommonModule,

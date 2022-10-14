@@ -3,6 +3,7 @@ import {CnUser} from '../../../cn-users/cn-user.entity';
 import {Type} from 'class-transformer';
 import {DateTime} from 'luxon';
 import {BlEntityWithId, BlEntityWithIdDTO, BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
+import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 
 /**
  * Basic entity with same info as CnBaseEntity
@@ -27,13 +28,13 @@ export abstract class CnEntity extends BlEntityWithId {
 }
 
 export class CnEntityDTO extends BlEntityWithIdDTO {
-  @BlLuxonDateTimeColumn({nullable: false, update: false})
+  @ClLuxonDateTimeTransform()
   createdAt: DateTime;
 
   @Type(() => CnUser)
   createdBy: CnUser;
 
-  @BlLuxonDateTimeColumn()
+  @ClLuxonDateTimeTransform()
   lastModifiedAt: DateTime;
 
   @Type(() => CnUser)

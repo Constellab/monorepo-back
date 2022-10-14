@@ -228,9 +228,11 @@
 }
 
 // to be place on mat-row to make the line selectable
+.g-table-row-selectable {
+  cursor: pointer;
+}
 .g-table-row-selectable:hover {
   background: var(--grey-low-contrast);
-  cursor: pointer;
 }
 
 .g-column-width-fit {

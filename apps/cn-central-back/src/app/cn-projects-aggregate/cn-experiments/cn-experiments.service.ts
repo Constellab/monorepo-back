@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {CnExperiment} from './cn-experiment.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import {EntityManager, Repository} from 'typeorm';
 import {CnCreateLabExperimentDto} from './cn-experiment.dto';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 import {CnProject} from '../cn-projects/cn-project.entity';
@@ -39,7 +39,8 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     });
   }
 
-  public async saveLabExperiment(project: CnProject, createLabExperimentDto: CnCreateLabExperimentDto): Promise<CnExperiment> {
+  public async saveLabExperiment(project: CnProject, createLabExperimentDto: CnCreateLabExperimentDto,
+                                 entityManager: EntityManager): Promise<CnExperiment> {
     const experimentDB: CnExperiment = await this.findById(createLabExperimentDto.experiment.id);
 
     if (experimentDB && experimentDB.projectId !== project.id) {
@@ -58,34 +59,26 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     experiment.labConfig = labConfig;
     experiment.protocol = createLabExperimentDto.protocol;
 
-    experiment.createdBy = labExperimentDto.createdBy;
-    experiment.createdAt = labExperimentDto.createdAt;
+    experiment.createdBy = labExperimentDto.created_by;
+    experiment.createdAt = labExperimentDto.created_at;
 
-    experiment.lastModifiedBy = labExperimentDto.lastModifiedBy;
-    experiment.lastModifiedAt = labExperimentDto.lastModifiedAt;
+    experiment.lastModifiedBy = labExperimentDto.last_modified_by;
+    experiment.lastModifiedAt = labExperimentDto.last_modified_at;
 
     // handle validated
     experiment.isValidated = labExperimentDto.is_validated;
     experiment.validatedAt = labExperimentDto.validated_at;
-    if (labExperimentDto.validated_by) {
-      const validatedBy = new CnUser();
-      validatedBy.id = labExperimentDto.validated_by.id;
-      experiment.validatedBy = validatedBy;
-    }
+    experiment.validatedBy = labExperimentDto.validated_by;
 
     // handle last_sync
     experiment.lastSyncAt = labExperimentDto.last_sync_at;
-    if (labExperimentDto.last_sync_by) {
-      const lastSyncBy = new CnUser();
-      lastSyncBy.id = labExperimentDto.last_sync_by.id;
-      experiment.lastSyncBy = lastSyncBy;
-    }
+    experiment.lastSyncBy = labExperimentDto.last_sync_by;
 
     if (experimentDB) {
-      return await this.updateWithCompare(experiment, experimentDB);
+      return await this.updateWithCompare(experiment, experimentDB, entityManager);
     } else {
       experiment.labInstance = CnCurrentUserHelper.getLabInstance();
-      return this.create(experiment);
+      return this.create(experiment, entityManager);
     }
   }
 

@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
 import {
   CaProject,
+  CaProjectAncestorTreeDTO,
+  CaProjectAncestorType,
   CaProjectDatasource,
   CaProjectStatus,
   CaProjectStatusHistory
@@ -23,27 +25,20 @@ export class CaProjectService {
   constructor(private apiService: FlApiService) {
   }
 
-  /**
-   * Call http create
-   * @param object json object
-   */
-  public create(object: Partial<CaProject>): Observable<CaProject> {
-    return this.apiService.post(this.route, object, CaProject, {serialization: CaProject});
+  public createProject(project: Partial<CaProject>): Observable<CaProject> {
+    return this.apiService.post(this.route, project, CaProject, {serialization: CaProject});
+  }
+
+  public createSubProject(subProject: Partial<CaProject>, parentProjectId: string): Observable<CaProject> {
+    return this.apiService.post(`${this.route}/${parentProjectId}/sub-project`, subProject, CaProject,
+      {serialization: CaProject});
   }
 
 
-  /**
-   * Call http update
-   * @param object json object
-   */
   public update(object: Partial<CaProject>): Observable<CaProject> {
     return this.apiService.put(this.route, object, CaProject, {serialization: CaProject});
   }
 
-  /**
-   * Call a http get one by id
-   * @param id id of the entity
-   */
   public getById(id: string): Observable<CaProject> {
     return this.apiService.getById(this.route, id, CaProject);
   }
@@ -104,5 +99,13 @@ export class CaProjectService {
 
   public getOnGoingProjectsNumber(): Observable<number> {
     return this.apiService.get(`${this.route}/on-going-projects-number`);
+  }
+
+  public getChildren(id: string): Observable<CaProject[]> {
+    return this.apiService.get(`${this.route}/${id}/children`, CaProject);
+  }
+
+  public getObjectProjectAncestors(objectType: CaProjectAncestorType, objectId: string): Observable<CaProjectAncestorTreeDTO[]> {
+    return this.apiService.get(`${this.route}/ancestors/${objectType}/${objectId}`);
   }
 }

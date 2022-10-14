@@ -3,7 +3,7 @@ import {CaLabInstance} from '../../../ca-core/model/entities/ca-lab-instance.cla
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {
   CaStatusHistoryListDialogComponent,
-  StatusHistoryListDialogInput
+  CaStatusHistoryListDialogInput
 } from '../../../ca-core/module/ca-status/ca-status-history-list-dialog/ca-status-history-list-dialog.component';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {
@@ -29,7 +29,7 @@ export class CaLabInstanceDetailComponent implements OnInit {
   }
 
   openStatusHistoryDialog(): void {
-    const dialogInput: StatusHistoryListDialogInput = {
+    const dialogInput: CaStatusHistoryListDialogInput = {
       statusHistoriesObs: this.labInstanceService.getStatusHistories(this.labInstance.id),
     };
     this.dialogService.openSmallDialog(CaStatusHistoryListDialogComponent, {data: dialogInput});

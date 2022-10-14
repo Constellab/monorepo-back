@@ -1,12 +1,15 @@
 import {
-  caConstAdminFullRoute,
+  caConstAdminRoute,
   caConstBaseRoute,
-  caConstDashboardFullRoute,
-  caConstLabInstancesFullRoute,
-  caConstProjectsFullRoute,
-  caConstSettingsFullRoute,
-  caConstSmartDbFullRoute,
-  caConstStructureFullRoute
+  caConstDashboardRoute,
+  caConstExperimentRoute,
+  caConstLabInstancesRoute,
+  caConstMyProjectsRoute,
+  caConstProjectRoute,
+  caConstReportRoute,
+  caConstSettingsRoute,
+  caConstSmartDbRoute,
+  caConstStructureRoute
 } from '../utils/ca-base-route';
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
@@ -27,64 +30,61 @@ export class CaRouterService {
   }
 
   public static getDashboardRoute(): string {
-    return `${caConstDashboardFullRoute}`;
+    return CaRouterService.getFullRoute(caConstDashboardRoute);
   }
 
   public static getLabInstanceDetailRoute(labInstanceId: string): string {
-    return `${caConstLabInstancesFullRoute}/${labInstanceId}`;
+    return CaRouterService.getFullRoute(`${caConstLabInstancesRoute}/${labInstanceId}`);
   }
 
   public static getProjectDetailRoute(projectId: string): string {
-    return `${caConstDashboardFullRoute}/project/${projectId}`;
+    return CaRouterService.getFullRoute(`${caConstProjectRoute}/${projectId}`);
   }
 
   public static getMyProjectsRoute(): string {
-    return `${caConstProjectsFullRoute}`;
+    return CaRouterService.getFullRoute(caConstMyProjectsRoute);
   }
 
-  public static getExperimentDetailRoute(projectId: string, experimentId: string): string {
-    return `${CaRouterService.getProjectDetailRoute(projectId)}/experiment/${experimentId}`;
+  public static getExperimentDetailRoute(experimentId: string): string {
+    return CaRouterService.getFullRoute(`${caConstExperimentRoute}/${experimentId}`);
   }
 
-  public static getReportDetailRoute(projectId: string, reportId: string): string {
-    return `${CaRouterService.getProjectDetailRoute(projectId)}/report/${reportId}`;
+  public static getReportDetailRoute(reportId: string): string {
+    return CaRouterService.getFullRoute(`${caConstReportRoute}/${reportId}`);
   }
 
   public static getMyLabInstancesRoute(): string {
-    return `${caConstLabInstancesFullRoute}`;
+    return CaRouterService.getFullRoute(caConstLabInstancesRoute);
   }
 
   public static getMySmartDbsRoute(): string {
-    return `${caConstSmartDbFullRoute}`;
+    return CaRouterService.getFullRoute(caConstSmartDbRoute);
   }
 
-
-
   public static getSmartDbDetailRoute(id: string): string {
-    return `${caConstSmartDbFullRoute}/${id}`;
+    return `${CaRouterService.getMySmartDbsRoute()}/${id}`;
   }
 
   public static getSmartDbDocDetailRoute(smartDbId: string, id: string): string {
-    return `${caConstSmartDbFullRoute}/${smartDbId}/doc/${id}`;
+    return `${CaRouterService.getSmartDbDetailRoute(smartDbId)}/doc/${id}`;
   }
 
   public static getSmartDbAdminRoute(smartDbId: string): string {
-    return `${caConstSmartDbFullRoute}/${smartDbId}/admin`;
+    return `${CaRouterService.getSmartDbDetailRoute(smartDbId)}/admin`;
   }
-
 
 
   ////////////////////////// STRUCTURE MODULE ///////////////////////
   public static getOrganizationRoute(organizationId: string): string {
-    return `${caConstStructureFullRoute}/organization/${organizationId}`;
+    return CaRouterService.getFullRoute(`${caConstStructureRoute}/organization/${organizationId}`);
   }
 
   public static getTeamRoute(groupId: string): string {
-    return `${caConstStructureFullRoute}/team/${groupId}`;
+    return CaRouterService.getFullRoute(`${caConstStructureRoute}/team/${groupId}`);
   }
 
   public static getMyTeamsRoute(): string {
-    return `${caConstStructureFullRoute}/my-teams`;
+    return CaRouterService.getFullRoute(`${caConstStructureRoute}/my-teams`);
   }
 
   public navigateToMyTeams(): void {
@@ -98,7 +98,7 @@ export class CaRouterService {
   ////////////////////////// ADMIN ///////////////////////
 
   public static getAdminRoute(): string {
-    return `${caConstAdminFullRoute}`;
+    return CaRouterService.getFullRoute(caConstAdminRoute);
   }
 
   public navigateToAdmin(): void {
@@ -108,7 +108,11 @@ export class CaRouterService {
 
   ////////////////////////// SETTINGS ///////////////////////
   public static getSettingsRoute(): string {
-    return `${caConstSettingsFullRoute}`;
+    return CaRouterService.getFullRoute(caConstSettingsRoute);
+  }
+
+  private static getFullRoute(route: string): string {
+    return `/${caConstBaseRoute}/${route}`;
   }
 
 }

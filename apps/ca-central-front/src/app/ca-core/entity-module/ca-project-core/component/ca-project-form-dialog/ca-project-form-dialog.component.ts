@@ -13,6 +13,11 @@ import {
   FlTextEditorConfig
 } from '@monorepo/front-core-lib';
 
+export interface CaProjectFormDialogInput extends FlFormDialogInput<CaProject> {
+  level: CaProjectLevel;
+  parentId: string;
+}
+
 /**
  * Dialog to create or update a project
  */
@@ -29,7 +34,7 @@ export class CaProjectFormDialogComponent extends FlFormDialogAbstractDirective<
 
   textEditorConfig: FlTextEditorConfig = new FlTextEditorBasicConfig();
 
-  constructor(@Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<CaProject>,
+  constructor(@Inject(MAT_DIALOG_DATA) protected dialogInput: CaProjectFormDialogInput,
               private projectService: CaProjectService,
               snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<CaProjectFormDialogComponent>) {
@@ -48,12 +53,15 @@ export class CaProjectFormDialogComponent extends FlFormDialogAbstractDirective<
       description: [null],
       startingDate: [null, Validators.required],
       endingDate: [null],
-      leafLevel: [{value: CaProjectLevel.PROJECT, disabled: this.isUpdateMode()}]
     });
   }
 
   create(formValue: Partial<CaProject>): Observable<CaProject> {
-    return this.projectService.create(formValue);
+    if (this.dialogInput.level === CaProjectLevel.PROJECT) {
+      return this.projectService.createProject(formValue);
+    } else {
+      return this.projectService.createSubProject(formValue, this.dialogInput.parentId);
+    }
   }
 
   update(formValue: Partial<CaProject>): Observable<CaProject> {
@@ -62,16 +70,26 @@ export class CaProjectFormDialogComponent extends FlFormDialogAbstractDirective<
 
 
   get title(): string {
-    return this.isCreateMode() ? 'new_project' : 'update_project';
+    if (this.dialogInput.level === CaProjectLevel.PROJECT) {
+      return this.isCreateMode() ? 'new_project' : 'update_project';
+    } else {
+      return this.isCreateMode() ? 'new_sub_project' : 'update_sub_project';
+    }
   }
 
   getCreateSuccessMessage(): string {
-    return 'project_created';
+    if (this.dialogInput.level === CaProjectLevel.PROJECT) {
+      return 'project_created';
+    } else {
+      return 'sub_project_created';
+    }
   }
 
   getUpdateSuccessMessage(): string {
-    return 'project_updated';
+    if (this.dialogInput.level === CaProjectLevel.PROJECT) {
+      return 'project_updated';
+    } else {
+      return 'sub_project_updated';
+    }
   }
-
-
 }

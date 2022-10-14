@@ -3,7 +3,7 @@ import {CaStatusHistory} from '../../../model/entities/ca-status-history.class';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {FlArrayObs} from '@monorepo/front-core-lib';
 
-export interface StatusHistoryListDialogInput {
+export interface CaStatusHistoryListDialogInput {
   statusHistoriesObs: FlArrayObs<CaStatusHistory<any>>;
 }
 
@@ -19,7 +19,7 @@ export class CaStatusHistoryListDialogComponent implements OnInit {
 
   statusHistories: FlArrayObs<CaStatusHistory<any>>;
 
-  constructor(@Inject(MAT_DIALOG_DATA) private dialogInput: StatusHistoryListDialogInput) {
+  constructor(@Inject(MAT_DIALOG_DATA) private dialogInput: CaStatusHistoryListDialogInput) {
   }
 
   ngOnInit(): void {

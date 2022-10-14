@@ -14,7 +14,13 @@ const routes: Routes = [
     RouterModule.forRoot(
       routes,
       // load all lazy module on start
-      {preloadingStrategy: PreloadAllModules, scrollPositionRestoration: 'enabled', relativeLinkResolution: 'legacy'}
+      {
+        preloadingStrategy: PreloadAllModules,
+        scrollPositionRestoration: 'enabled',
+        relativeLinkResolution: 'corrected',
+        paramsInheritanceStrategy: 'always',
+
+      }
     )],
   exports: [RouterModule]
 })

@@ -25,7 +25,8 @@ import {
   FlTextEditorFigureComponent,
   FlTextEditorModule,
   FlThemeService,
-  FlTranslateModule, FlUserModule
+  FlTranslateModule,
+  FlUserModule
 } from '@monorepo/front-core-lib';
 import {caSvgIcons} from './ca-core/model/config/ca-svg-icon-config';
 import {CaApiServiceConfig} from './ca-core/model/config/ca-api-module.config';
@@ -34,10 +35,10 @@ import {CaAuthenticationService} from './ca-login/service/ca-authentication.serv
 import {CaUserAccountsService} from './ca-core/service-api/ca-user-accounts.service';
 import {CaApiErrorService} from './ca-core/service/ca-api-error.service';
 import {rvDefaultViewTypeInfos, RvResourceViewModule} from '@monorepo/resource-view';
-import {CaReportContentViewBlot} from './ca-dashboard/module/ca-report-core/model/ca-report-content-view.class';
+import {CaReportContentViewBlot} from './ca-project/module/ca-report-core/model/ca-report-content-view.class';
 import {
   CaReportContentViewComponent
-} from './ca-dashboard/module/ca-report-core/component/ca-report-content-view/ca-report-content-view.component';
+} from './ca-project/module/ca-report-core/component/ca-report-content-view/ca-report-content-view.component';
 import {TdTechnicalDocModule} from '@monorepo/technical-doc';
 import {CaTdServiceConfig} from './ca-core/model/config/ca-td-service.config';
 import {PrProtocolModule} from '@monorepo/protocol';

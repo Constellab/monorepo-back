@@ -190,6 +190,10 @@ export class ClStringHelper {
     return str.substring(0, length - 3) + '...';
   }
 
+  /**
+   * Convert Test hello --> test-hello
+   * @param str
+   */
   public static toKebabCase(str: string): string {
     if (str == null) return null;
     return str.trim().replace(/\s+/g, '-').toLowerCase();

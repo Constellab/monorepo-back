@@ -6,8 +6,10 @@ import {CaLabInstance} from '../../../model/entities/ca-lab-instance.class';
 import {CaRouterService} from '../../../service/ca-router.service';
 import {CaOrganization} from '../../../model/entities/ca-organization.class';
 import {CaGroup, CaGroupType} from '../../../model/entities/ca-group.entity';
+import {CaExperiment} from '../../../model/entities/ca-experiment.class';
+import {CaReport} from '../../../model/entities/ca-report.class';
 
-type CaObjectType = 'project' | 'smartDb' | 'labInstance' | 'organization' | 'group';
+type CaObjectType = 'project' | 'experiment' | 'report' | 'smartDb' | 'labInstance' | 'organization' | 'group';
 
 
 /**
@@ -38,6 +40,10 @@ export class CaDetailRoutePipe implements PipeTransform {
     switch (objectType) {
       case 'project':
         return CaRouterService.getProjectDetailRoute(id);
+      case 'experiment':
+        return CaRouterService.getExperimentDetailRoute(id);
+      case 'report':
+        return CaRouterService.getReportDetailRoute(id);
       case 'smartDb':
         return CaRouterService.getSmartDbDetailRoute(id);
       case 'labInstance':
@@ -56,6 +62,10 @@ export class CaDetailRoutePipe implements PipeTransform {
   private getObjectType(obj: any): [CaObjectType, string] {
     if (obj instanceof CaProject) {
       return ['project', obj.id];
+    } else if (obj instanceof CaExperiment) {
+      return ['experiment', obj.id];
+    } else if (obj instanceof CaReport) {
+      return ['report', obj.id];
     } else if (obj instanceof CaSmartDb) {
       return ['smartDb', obj.id];
     } else if (obj instanceof CaLabInstance) {

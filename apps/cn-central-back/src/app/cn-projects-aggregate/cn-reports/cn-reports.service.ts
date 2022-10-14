@@ -1,13 +1,13 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {CnReport} from './cn-report.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import {EntityManager, Repository} from 'typeorm';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
 import {BlAbstractService, BlObjectStorageService} from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
 import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-config.service';
-import {CnCreateReportDto, CnCreateReportWithConfigDto} from './cn-report.dto';
+import {CnCreateReportWithConfigDto, CnSaveReportDto} from './cn-report.dto';
 import {CnExternalLabApiService} from '../../cn-external-lab-api/cn-external-lab-api.service';
 import {AxiosResponse} from 'axios';
 import {CnReportContent, CnReportViewConfig} from './cn-report-content.class';
@@ -38,12 +38,12 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   }
 
   async createReport(createReportDto: CnCreateReportWithConfigDto, experiments: CnExperiment[],
-                     project: CnProject): Promise<CnReport> {
+                     project: CnProject, entityManager: EntityManager): Promise<CnReport> {
 
     // retrieve the lab config
     const labConfig = await this.labConfigService.getOrCreateLabConfig(createReportDto.lab_config);
 
-    const reportDto: CnCreateReportDto = createReportDto.report;
+    const reportDto: CnSaveReportDto = createReportDto.report;
     const richText = new CnReportContent(reportDto.content);
 
     await this.loadReportImages(richText);
@@ -52,10 +52,10 @@ export class CnReportsService extends BlAbstractService<CnReport> {
 
     const report = new CnReport();
     report.id = reportDto.id;
-    report.createdAt = reportDto.createdAt;
-    report.createdBy = reportDto.createdBy;
-    report.lastModifiedAt = reportDto.lastModifiedAt;
-    report.lastModifiedBy = reportDto.lastModifiedBy;
+    report.createdAt = reportDto.created_at;
+    report.createdBy = reportDto.created_by;
+    report.lastModifiedAt = reportDto.last_modified_at;
+    report.lastModifiedBy = reportDto.last_modified_by;
     report.title = reportDto.title;
     report.content = richText.getContent();
     report.project = project;
@@ -65,21 +65,13 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     // handle validated
     report.isValidated = reportDto.is_validated;
     report.validatedAt = reportDto.validated_at;
-    if (reportDto.validated_by) {
-      const validatedBy = new CnUser();
-      validatedBy.id = reportDto.validated_by.id;
-      report.validatedBy = validatedBy;
-    }
+    report.validatedBy = reportDto.validated_by;
 
     // handle last_sync
     report.lastSyncAt = reportDto.last_sync_at;
-    if (reportDto.last_sync_by) {
-      const lastSyncBy = new CnUser();
-      lastSyncBy.id = reportDto.last_sync_by.id;
-      report.lastSyncBy = lastSyncBy;
-    }
+    report.lastSyncBy = reportDto.last_sync_by;
 
-    return await this.repository.save(report);
+    return await entityManager.save(report);
   }
 
   public async deleteReport(id: string): Promise<void> {

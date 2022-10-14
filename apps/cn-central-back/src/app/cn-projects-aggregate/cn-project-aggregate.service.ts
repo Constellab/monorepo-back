@@ -18,7 +18,9 @@ import {CnGroupsService} from '../cn-groups/cn-groups.service';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {CnReportContent} from './cn-reports/cn-report-content.class';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
-import {CnProjectLevel} from './cn-projects/cn-project-level.enum';
+import {CnProjectLevel, CnProjectLevelStatus} from './cn-projects/cn-project-level.enum';
+import {CnProjectAncestorTreeDTO, CnProjectAncestorType} from './cn-projects/cn-project.dto';
+import {DataSource} from 'typeorm';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -28,41 +30,50 @@ export class CnProjectAggregateService {
               private projectSecurity: CnProjectsAggregateSecurity,
               private experimentService: CnExperimentsService,
               private reportService: CnReportsService,
-              private groupService: CnGroupsService) {
+              private groupService: CnGroupsService,
+              private datasource: DataSource) {
   }
 
   /////////////////////////////////////// PROJECT //////////////////////////////////
 
   async createProject(entity: CnProject): Promise<CnProject> {
-    return this.projectService.createProject(entity);
+    entity.parent = null;
+    entity.currentLevel = CnProjectLevel.PROJECT;
+    entity.levelStatus = CnProjectLevelStatus.UNDEFINED;
+    return this.projectService.create(entity);
   }
 
-  async createWorkPackage(entity: CnProject, projectId: string): Promise<CnProject> {
-    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+  async createSubProject(entity: CnProject, projectId: string): Promise<CnProject> {
+    const parentProject = await this.getAndCheckAuthorizationForUpdate(projectId);
 
-    if (project.level !== CnProjectLevel.PROJECT) {
-      throw new BadRequestException('The work package must be create inside a project');
+    // check if parent can have children
+    if (parentProject.levelStatus === CnProjectLevelStatus.LEAF) {
+      throw new BadRequestException('Cannot create a sub project to a leaf project');
     }
 
-    if (project.leafLevel < CnProjectLevel.WORK_PACKAGE) {
-      throw new BadRequestException('This project does not support work packages');
+    if (parentProject.currentLevel >= CnProjectLevel.TASK) {
+      throw new BadRequestException('Cannot create project with a hierarchy level more than 3');
     }
 
-    return this.projectService.createWorkPackage(entity, project);
-  }
+    // set hierarchy info
+    entity.parent = parentProject;
+    entity.currentLevel = parentProject.currentLevel + 1;
+    // if the project is level 3 set the status to leaf, otherwise set to undefined
+    entity.levelStatus = entity.currentLevel === CnProjectLevel.TASK ?
+      CnProjectLevelStatus.LEAF : CnProjectLevelStatus.UNDEFINED;
+    entity.rootParentId = parentProject.currentLevel === CnProjectLevel.PROJECT ? parentProject.id : parentProject.rootParentId;
 
-  async createTask(entity: CnProject, workPackageId: string): Promise<CnProject> {
-    const workPackage = await this.getAndCheckAuthorizationForUpdate(workPackageId);
+    return await this.datasource.transaction(async entityManager => {
+      const newProject = await this.projectService.create(entity, entityManager);
 
-    if (workPackage.level !== CnProjectLevel.WORK_PACKAGE) {
-      throw new BadRequestException('The task must be create inside a work package');
-    }
+      // update the status of the parent to PARENT if undefined
+      if (parentProject.levelStatus === CnProjectLevelStatus.UNDEFINED) {
+        parentProject.levelStatus = CnProjectLevelStatus.PARENT;
+        await this.projectService.update(parentProject, entityManager);
+      }
 
-    if (workPackage.leafLevel < CnProjectLevel.TASK) {
-      throw new BadRequestException('This project does not support tasks');
-    }
-
-    return this.projectService.createTask(entity, workPackage);
+      return newProject;
+    });
   }
 
   async updateProject(entity: CnProject): Promise<CnProject> {
@@ -88,7 +99,7 @@ export class CnProjectAggregateService {
   public async shareProject(projectId: string, groupId: string): Promise<CnGroup> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
-    if (project.level !== CnProjectLevel.PROJECT) {
+    if (project.currentLevel !== CnProjectLevel.PROJECT) {
       throw new BadRequestException('Only projects can be shared');
     }
 
@@ -128,6 +139,43 @@ export class CnProjectAggregateService {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
     return await this.projectService.getProjectTree(project);
+  }
+
+  public async getChildren(projectId: string): Promise<CnProject[]> {
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    return this.projectService.getChildren(project);
+  }
+
+  public async getObjectProjectAncestors(objectType: CnProjectAncestorType, objectId: string): Promise<CnProjectAncestorTreeDTO[]> {
+
+    let ancestor: CnProjectAncestorTreeDTO;
+    let projectId: string;
+    switch (objectType) {
+      case 'project':
+        projectId = objectId;
+        break;
+      case 'experiment':
+        const experiment = await this.experimentService.findByIdAndCheck(objectId);
+        projectId = experiment.projectId;
+        ancestor = {type: 'experiment', id: experiment.id, title: experiment.title};
+        break;
+      case 'report':
+        const report = await this.reportService.findByIdAndCheck(objectId);
+        projectId = report.projectId;
+        ancestor = {type: 'report', id: report.id, title: report.title};
+        break;
+    }
+
+    // retrieve the project ancestors
+    const project = await this.findProject(projectId);
+    const projectAncestors = await this.projectService.getAncestors(project);
+
+    // if the object is an experiment or a report, add the ancestor
+    if (ancestor) {
+      projectAncestors.unshift(ancestor);
+    }
+    return projectAncestors;
   }
 
   /////////////////////////////////////// PROJECT STATUS //////////////////////////////////
@@ -172,11 +220,19 @@ export class CnProjectAggregateService {
     // check that the user can update the project
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
-    if (!project.isLeafLevel()) {
+    if (project.levelStatus === CnProjectLevelStatus.PARENT) {
       throw new BadRequestException(CnErrorText.EXP_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT);
     }
 
-    await this.experimentService.saveLabExperiment(project, createLabExperimentDto);
+    return await this.datasource.transaction(async entityManager => {
+      await this.experimentService.saveLabExperiment(project, createLabExperimentDto, entityManager);
+
+      // if the project status was undefined, set it to LEAF
+      if (project.levelStatus === CnProjectLevelStatus.UNDEFINED) {
+        project.levelStatus = CnProjectLevelStatus.LEAF;
+        await this.projectService.update(project, entityManager);
+      }
+    });
   }
 
   async deleteLabExperiment(projectId: string, experimentId: string): Promise<void> {
@@ -207,10 +263,10 @@ export class CnProjectAggregateService {
     return report;
   }
 
-  async createLabReport(createReportDto: CnCreateReportWithConfigDto, projectId: string): Promise<CnReport> {
+  async createLabReport(createReportDto: CnCreateReportWithConfigDto, projectId: string): Promise<void> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
-    if (!project.isLeafLevel()) {
+    if (project.levelStatus === CnProjectLevelStatus.PARENT) {
       throw new BadRequestException(CnErrorText.REPORT_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT);
     }
 
@@ -228,7 +284,16 @@ export class CnProjectAggregateService {
       }
       experiments.push(experiment);
     }
-    return this.reportService.createReport(createReportDto, experiments, project);
+
+    return await this.datasource.transaction(async entityManager => {
+      await this.reportService.createReport(createReportDto, experiments, project, entityManager);
+
+      // if the project status was undefined, set it to LEAF
+      if (project.levelStatus === CnProjectLevelStatus.UNDEFINED) {
+        project.levelStatus = CnProjectLevelStatus.LEAF;
+        await this.projectService.update(project, entityManager);
+      }
+    });
   }
 
   async deleteLabReport(projectId: string, reportId: string): Promise<void> {

@@ -6,6 +6,7 @@ import {BlParseEnumPipe, BlParsePipe} from '@monorepo/back-core-lib';
 import {ClPageI} from '@monorepo/core-lib';
 import {CnGroup} from '../cn-groups/cn-group.entity';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
+import {CnProjectAncestorTreeDTO, CnProjectAncestorType} from './cn-projects/cn-project.dto';
 
 @Controller('projects')
 export class CnProjectsController {
@@ -18,16 +19,10 @@ export class CnProjectsController {
     return this.projectAggregate.createProject(project);
   }
 
-  @Post(':id/work-package')
-  createWorkPackage(@Param('id', ParseUUIDPipe) id: string,
-                    @Body(new BlParsePipe(CnProject)) project: CnProject): Promise<CnProject> {
-    return this.projectAggregate.createWorkPackage(project, id);
-  }
-
-  @Post(':id/task')
-  createTask(@Param('id', ParseUUIDPipe) id: string,
-             @Body(new BlParsePipe(CnProject)) project: CnProject): Promise<CnProject> {
-    return this.projectAggregate.createTask(project, id);
+  @Post(':id/sub-project')
+  createSubProject(@Param('id', ParseUUIDPipe) id: string,
+                   @Body(new BlParsePipe(CnProject)) workPackage: CnProject): Promise<CnProject> {
+    return this.projectAggregate.createSubProject(workPackage, id);
   }
 
   @Put()
@@ -36,7 +31,7 @@ export class CnProjectsController {
   }
 
   /**
-   * return the list of project created by the current user with pagination²
+   * return the list of project created by the current user with pagination
    */
   @Get('current')
   public getCurrentProjects(@Query('page', ParseIntPipe) page: number,
@@ -88,6 +83,22 @@ export class CnProjectsController {
   @Get(':id/tree')
   getProjectTree(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnProject> {
     return this.projectAggregate.getProjectTree(id);
+  }
+
+  @Get(':id/children')
+  getChildren(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnProject[]> {
+    return this.projectAggregate.getChildren(id);
+  }
+
+  /**
+   * Return a simplified list of ancestor for an object (project, experiment, report) to the main project
+   * @param objectType
+   * @param id
+   */
+  @Get('ancestors/:objectType/:id')
+  getObjectProjectAncestors(@Param('objectType') objectType: CnProjectAncestorType,
+                            @Param('id', new ParseUUIDPipe()) id: string): Promise<CnProjectAncestorTreeDTO[]> {
+    return this.projectAggregate.getObjectProjectAncestors(objectType, id);
   }
 
   @Get(':id')
