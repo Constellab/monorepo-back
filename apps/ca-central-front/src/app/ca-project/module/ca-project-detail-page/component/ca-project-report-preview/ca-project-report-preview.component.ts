@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {CaProjectDetailState} from '../../state/ca-project-detail.state';
-import {filter, Observable} from 'rxjs';
+import {filter, Observable, switchMap} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
 
 /**
  * Component in the project page right panel to show the preview of the report
@@ -14,6 +15,7 @@ import {map} from 'rxjs/operators';
 export class CaProjectReportPreviewComponent implements OnInit {
 
   reportId$: Observable<string>;
+  report$: Observable<CaReport>;
 
   constructor(private state: CaProjectDetailState) {
   }
@@ -22,6 +24,10 @@ export class CaProjectReportPreviewComponent implements OnInit {
     this.reportId$ = this.state.getRightPanelState$().pipe(
       filter(state => state.type === 'report'),
       map(state => state.objectId)
+    );
+
+    this.report$ = this.reportId$.pipe(
+      switchMap(id => this.state.getReport$(id))
     );
   }
 

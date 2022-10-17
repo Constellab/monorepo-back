@@ -5,9 +5,8 @@
       <span> {{'title' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let experiment">
-      <fl-text-icon>
-        <mat-icon *ngIf="experiment.isValidated"
-                  [matTooltip]="'experiment_validated' | translate"
+      <fl-text-icon [showIcon]="experiment.isValidated">
+        <mat-icon [matTooltip]="'experiment_validated' | translate"
                   flIcon="validated">
         </mat-icon>
         <div>{{experiment.title}}</div>
@@ -62,7 +61,15 @@
 
   <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
 
-  <mat-row *matRowDef="let row; columns: _columns;" class="g-table-row-selectable"
-           [routerLink]="row | caDetailRoute">
-  </mat-row>
+  <!-- Mode selectable -->
+  <ng-container *ngIf="rowSelectable; else notSelectable">
+    <mat-row *matRowDef="let row; columns: _columns;" class="g-table-row-selectable"
+             (click)="rowClicked(row)"></mat-row>
+  </ng-container>
+
+  <!-- Mode link -->
+  <ng-template #notSelectable>
+    <mat-row *matRowDef="let row; columns: _columns;" class="g-table-row-selectable"
+             [routerLink]="row | caDetailRoute"></mat-row>
+  </ng-template>
 </mat-table>

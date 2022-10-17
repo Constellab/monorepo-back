@@ -26,6 +26,11 @@ export class FlTextIconComponent implements OnInit {
    */
   @Input() iconPosition: 'start' | 'end' = 'start';
 
+  /**
+   * If false the icon is not shown
+   */
+  @Input() showIcon: boolean = true;
+
   constructor() {
   }
 

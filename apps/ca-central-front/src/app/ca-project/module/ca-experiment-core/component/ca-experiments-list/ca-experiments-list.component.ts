@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
 import {Observable} from 'rxjs';
 import {FlTableColumn} from '@monorepo/front-core-lib';
@@ -13,6 +13,11 @@ import {FlTableColumn} from '@monorepo/front-core-lib';
 })
 export class CaExperimentsListComponent implements OnInit {
 
+  // when true, the row become clickable and resourceSelected event is trigger
+  @Input() rowSelectable: boolean = false;
+
+  @Output() experimentSelected: EventEmitter<CaExperiment> = new EventEmitter();
+
   @Input() experiments$: Observable<CaExperiment[]>;
 
   @Input() mode: 'small' | 'large' = 'large';
@@ -25,5 +30,11 @@ export class CaExperimentsListComponent implements OnInit {
 
   ngOnInit(): void {
     this.columns = this.mode === 'small' ? ['title', 'status'] : ['title', 'createdBy', 'status', 'lastSync'];
+  }
+
+  selectExperiment(experiment: CaExperiment): void {
+    if(this.rowSelectable){
+      this.experimentSelected.next(experiment);
+    }
   }
 }

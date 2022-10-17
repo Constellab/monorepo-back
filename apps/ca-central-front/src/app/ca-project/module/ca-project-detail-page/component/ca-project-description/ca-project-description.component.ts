@@ -3,6 +3,7 @@ import {CaProjectDetailState} from '../../state/ca-project-detail.state';
 import {debounceTime, Observable, Subscription} from 'rxjs';
 import {FlDebouncer, FlQuillJson, FlTextEditorBasicConfig, FlTextEditorConfig} from '@monorepo/front-core-lib';
 import {FormControl} from '@angular/forms';
+import {CaProject} from '../../../../../ca-core/model/entities/ca-project.class';
 
 @Component({
   selector: 'ca-project-description',
@@ -11,6 +12,7 @@ import {FormControl} from '@angular/forms';
 })
 export class CaProjectDescriptionComponent implements OnInit, OnDestroy {
 
+  project$: Observable<CaProject>;
   canEdit$: Observable<boolean>;
 
   edit: boolean = false;
@@ -24,6 +26,7 @@ export class CaProjectDescriptionComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.project$ = this.state.getProject$();
     this.formControl = new FormControl({disabled: true, value: null});
 
     this.subscription = this.state.getProject$().subscribe(

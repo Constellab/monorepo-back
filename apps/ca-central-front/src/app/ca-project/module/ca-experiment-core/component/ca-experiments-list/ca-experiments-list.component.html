@@ -9,7 +9,9 @@
   <fl-card-body>
     <fl-async-section [object]="experiments$" emptyText="no_experiment">
       <ng-container *flSectionBody="let experiments">
-        <ca-experiment-table [datasource]="experiments" [columns]="columns"></ca-experiment-table>
+        <ca-experiment-table [datasource]="experiments" [columns]="columns"
+                             [rowSelectable]="rowSelectable"
+                             (experimentSelected)="selectExperiment($event)"></ca-experiment-table>
       </ng-container>
     </fl-async-section>
 

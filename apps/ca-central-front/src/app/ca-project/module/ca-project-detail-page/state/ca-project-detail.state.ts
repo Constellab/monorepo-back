@@ -153,9 +153,21 @@ export class CaProjectDetailState implements OnDestroy {
     );
   }
 
+  public getReport$(id: string): Observable<CaReport> {
+    return this.getReports$().pipe(
+      map(reports => reports.find(report => report.id === id))
+    );
+  }
+
   public getExperiments$(): Observable<CaExperiment[]> {
     return this.experiments$.asObservable().pipe(
       filter(experiments => experiments != null)
+    );
+  }
+
+  public getExperiment(id: string): Observable<CaExperiment> {
+    return this.getExperiments$().pipe(
+      map(experiments => experiments.find(experiment => experiment.id === id))
     );
   }
 

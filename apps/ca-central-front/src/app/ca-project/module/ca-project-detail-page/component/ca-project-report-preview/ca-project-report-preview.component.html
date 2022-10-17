@@ -1,8 +1,17 @@
-<div fxLayout="row" fxLayoutAlign="end" class="header">
-  <a mat-stroked-button class="g-button-small"
-     [routerLink]="(reportId$ | async) | caDetailRoute:'report'">
+<div fxLayout="row" fxLayoutAlign="space-between" class="header"
+     *ngIf="report$ | async as report">
+
+  <fl-text-icon>
     <mat-icon flIcon="report"></mat-icon>
-    {{'open_details' | translate}}
-  </a>
+    <h2>{{report.title}}</h2>
+  </fl-text-icon>
+
+  <div>
+    <a mat-stroked-button class="g-button-small"
+       [routerLink]="report | caDetailRoute">
+      {{'open_details' | translate}}
+    </a>
+  </div>
 </div>
+
 <ca-report-content [reportId]="reportId$ | async"></ca-report-content>

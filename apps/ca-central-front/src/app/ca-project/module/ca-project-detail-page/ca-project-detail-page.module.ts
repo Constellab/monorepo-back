@@ -23,6 +23,10 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
   CaProjectReportPreviewComponent
 } from './component/ca-project-report-preview/ca-project-report-preview.component';
+import {
+  CaProjectExperimentPreviewComponent
+} from './component/ca-project-experiment-preview/ca-project-experiment-preview.component';
+import {CaLabCoreModule} from '../../../ca-core/entity-module/ca-lab-core/ca-lab-core.module';
 
 /**
  * Module for the project detail page
@@ -37,6 +41,7 @@ import {
     CaProjectDetailRightPanelComponent,
     CaProjectDescriptionComponent,
     CaProjectReportPreviewComponent,
+    CaProjectExperimentPreviewComponent,
   ],
   imports: [
     CommonModule,
@@ -50,6 +55,7 @@ import {
     CaExperimentCoreModule,
     CaReportCoreModule,
     CaGroupCoreModule,
+    CaLabCoreModule,
 
     CaProjectDetailPageRoutingModule,
   ]

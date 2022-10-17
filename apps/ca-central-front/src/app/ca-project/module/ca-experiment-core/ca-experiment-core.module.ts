@@ -41,6 +41,9 @@ import {
 import {FlColorModule, FlDragModule} from '@monorepo/front-core-lib';
 import {CaExperimentTableComponent} from './component/ca-experiment-table/ca-experiment-table.component';
 import {CaProjectObjectCoreModule} from '../ca-project-object-core/ca-project-object-core.module';
+import {
+  CaExperimentCardDetailComponent
+} from './component/ca-experiment-card-detail/ca-experiment-card-detail.component';
 
 
 @NgModule({
@@ -57,12 +60,14 @@ import {CaProjectObjectCoreModule} from '../ca-project-object-core/ca-project-ob
     CaExperimentTechnicalReportWorkflowDrawerComponent,
     CaExperimentTechnicalReportResourceDialogComponent,
     CaExperimentTechnicalReportResourceInfoComponent,
-    CaExperimentTableComponent
+    CaExperimentTableComponent,
+    CaExperimentCardDetailComponent,
   ],
   exports: [
     CaExperimentInfoComponent,
     CaExperimentsListComponent,
     CaExperimentTechnicalReportComponent,
+    CaExperimentCardDetailComponent,
   ],
   imports: [
     CommonModule,

@@ -5,9 +5,8 @@
       <span> {{'title' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let report">
-      <fl-text-icon>
-        <mat-icon *ngIf="report.isValidated"
-                  [matTooltip]="'report_validated' | translate"
+      <fl-text-icon [showIcon]="report.isValidated">
+        <mat-icon [matTooltip]="'report_validated' | translate"
                   flIcon="validated">
         </mat-icon>
         <div>{{report.title}}</div>
