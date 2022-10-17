@@ -15,7 +15,7 @@ export class CaProjectChildrenComponent implements OnInit, OnDestroy {
 
   children$: FlArrayObs<CaProject>;
 
-  columns: FlTableColumn<CaProject>[] = ['title', 'status', 'createdBy'];
+  columns: FlTableColumn<CaProject>[] = ['title', 'status', 'leader'];
 
   constructor(private projectService: CaProjectService) {
   }

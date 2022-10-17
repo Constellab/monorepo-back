@@ -10,7 +10,7 @@ import {CaProject} from '../../../../model/entities/ca-project.class';
 export class CaProjectTableComponent extends FlTableAbstractDirective<CaProject> implements OnInit {
 
   constructor() {
-    super(['title', 'createdBy', 'status'])
+    super(['title', 'createdBy', 'status', 'leader'])
   }
 
   ngOnInit(): void {

@@ -19,6 +19,16 @@
     </mat-cell>
   </ng-container>
 
+  <!-- Leader -->
+  <ng-container matColumnDef="leader">
+    <mat-header-cell *matHeaderCellDef>
+      <span> {{'project_leader' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let project">
+      <ca-user-inline [user]="project.leader"></ca-user-inline>
+    </mat-cell>
+  </ng-container>
+
   <!-- Status -->
   <ng-container matColumnDef="status">
     <mat-header-cell *matHeaderCellDef>

@@ -63,7 +63,9 @@ export class CaProjectDetailState implements OnDestroy {
       error: error => this.users$.error(error)
     });
 
-    this.queryParamHandler.getFirstQueryParams().subscribe(
+    this.id$.pipe(
+      switchMap(() => this.queryParamHandler.getFirstQueryParams())
+    ).subscribe(
       params => {
         if (params && params.type) {
           this.updateRightPanelState(params);
