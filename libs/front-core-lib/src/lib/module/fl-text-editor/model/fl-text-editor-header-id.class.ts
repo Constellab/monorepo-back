@@ -19,7 +19,6 @@ export class FlTextEditorHeaderId extends FlQuillHeader {
       } else {
         node.setAttribute('id', ClStringHelper.generateUUID());
       }
-      console.log(value.id)
       return node;
     }
   }

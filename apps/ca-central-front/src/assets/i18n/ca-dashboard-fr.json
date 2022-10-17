@@ -65,5 +65,6 @@
   "project_level_nb": "Nom de niveaux du projet (no modifiable une fois le projet créé)",
   "project_leader": "Chef de projet",
   "project_description_placeholder": "Décrivez votre projet ici",
-  "show_project_description": "Afficher la description du projet"
+  "show_project_description": "Afficher la description du projet",
+  "open_details": "Ouvrir le détail"
 }

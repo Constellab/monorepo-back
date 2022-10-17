@@ -1,6 +1,6 @@
 import {Column, Entity, JoinTable, ManyToMany, ManyToOne} from 'typeorm';
 import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
-import {Type} from 'class-transformer';
+import {Exclude, Type} from 'class-transformer';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CmRichTextI} from '@monorepo/common-model';
 import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
@@ -15,6 +15,7 @@ export class CnReport extends CnEntity {
   @Column()
   title: string;
 
+  @Exclude()
   @Column({type: 'simple-json', nullable: true})
   content: CmRichTextI;
 

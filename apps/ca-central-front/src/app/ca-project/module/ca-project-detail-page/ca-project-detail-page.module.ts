@@ -20,6 +20,9 @@ import {
 } from './component/ca-project-detail-right-panel/ca-project-detail-right-panel.component';
 import {CaProjectDescriptionComponent} from './component/ca-project-description/ca-project-description.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {
+  CaProjectReportPreviewComponent
+} from './component/ca-project-report-preview/ca-project-report-preview.component';
 
 /**
  * Module for the project detail page
@@ -33,6 +36,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
     CaProjectUsersComponent,
     CaProjectDetailRightPanelComponent,
     CaProjectDescriptionComponent,
+    CaProjectReportPreviewComponent,
   ],
   imports: [
     CommonModule,

@@ -7,9 +7,12 @@
     <div fxFlex="50%" fxLayout="column">
       <ca-project-detail></ca-project-detail>
 
-      <ca-experiments-list [experiments$]="experiment$" class="g-section"></ca-experiments-list>
+      <ng-container *ngIf="showObjects$ | async">
+        <ca-reports-list [reports$]="reports$" class="g-section" [rowSelectable]="true"
+                         (reportSelected)="selectReport($event)"></ca-reports-list>
 
-      <ca-reports-list [reports$]="reports$" class="g-section"></ca-reports-list>
+        <ca-experiments-list [experiments$]="experiment$" class="g-section"></ca-experiments-list>
+      </ng-container>
 
       <ca-project-children class="g-section" [projectId$]="projectId$"
                            *ngIf="showChildren$ | async"></ca-project-children>

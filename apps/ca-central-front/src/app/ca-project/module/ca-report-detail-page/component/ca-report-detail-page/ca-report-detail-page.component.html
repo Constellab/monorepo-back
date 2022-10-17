@@ -1,8 +1,8 @@
-<div class="g-page">
+<div class="g-page" fxLayout="column">
 
   <ca-project-breadcrumb objectType="report" [objectId$]="reportId$"></ca-project-breadcrumb>
 
-  <fl-async-section [object]="report$">
+  <fl-async-section [object]="report$" fxFlex="auto">
 
     <ng-container *flSectionBody="let report">
       <ca-report-detail [report]="report" class="detail"></ca-report-detail>

@@ -1,7 +1,7 @@
-<div class="g-page">
+<div fxLayout="column" class="g-full-height">
   <h1>{{report.title}}</h1>
 
-  <fl-article-container>
+  <fl-article-container fxFlex="auto">
 
     <fl-article-left-side>
 
@@ -24,9 +24,7 @@
     </fl-article-left-side>
 
     <fl-article>
-      <fl-text-editor [ngModel]="report.content" mode="JSON" [disabled]="true" class="g-full-height" flPrint
-                      [config]="textEditorConfig"></fl-text-editor>
-
+      <ca-report-content [reportId]="report.id"></ca-report-content>
     </fl-article>
 
     <fl-article-right-side>

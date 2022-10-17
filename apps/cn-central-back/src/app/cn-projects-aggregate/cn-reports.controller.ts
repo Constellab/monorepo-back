@@ -1,8 +1,8 @@
 import {Controller, Get, Param, ParseUUIDPipe, Res} from '@nestjs/common';
-import {CnReportDTO} from './cn-reports/cn-report.dto';
 import {CnReport} from './cn-reports/cn-report.entity';
 import {Response} from 'express';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
+import {CmRichTextI} from '@monorepo/common-model';
 
 @Controller('reports')
 export class CnReportsController {
@@ -10,24 +10,29 @@ export class CnReportsController {
   constructor(private projectAggregator: CnProjectAggregateService) {
   }
 
+  @Get(':id/content')
+  async getReportContent(@Param('id', new ParseUUIDPipe()) id: string): Promise<CmRichTextI> {
+    const report = await this.findById(id);
+    return report.content;
+  }
+
   @Get(':id')
   async findById(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnReport> {
     return await this.projectAggregator.findReport(id);
   }
 
+
   @Get('experiment/:experimentId')
-  async getReportsByExperiment(@Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<CnReportDTO[]> {
-    const reports = await this.projectAggregator.getReportAssociatedToExperiment(experimentId);
-    return reports.map(report => new CnReportDTO().copyEntity(report));
+  async getReportsByExperiment(@Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<CnReport[]> {
+    return await this.projectAggregator.getReportAssociatedToExperiment(experimentId);
   }
 
   /**
    * Return the list of reports of a project
    */
   @Get('project/:projectId')
-  public async getReportByProject(@Param('projectId', ParseUUIDPipe) projectId: string): Promise<CnReportDTO[]> {
-    const reports = await this.projectAggregator.getReportsByProject(projectId);
-    return reports.map(report => new CnReportDTO().copyEntity(report));
+  public async getReportByProject(@Param('projectId', ParseUUIDPipe) projectId: string): Promise<CnReport[]> {
+    return await this.projectAggregator.getReportsByProject(projectId);
   }
 
   /**

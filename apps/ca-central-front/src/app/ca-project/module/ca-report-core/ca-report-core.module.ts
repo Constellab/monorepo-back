@@ -8,6 +8,8 @@ import {CaReportContentViewComponent} from './component/ca-report-content-view/c
 import {CaReportTableComponent} from './component/ca-report-table/ca-report-table.component';
 import {FlColorModule} from '@monorepo/front-core-lib';
 import {CaProjectObjectCoreModule} from '../ca-project-object-core/ca-project-object-core.module';
+import {CaReportContentComponent} from './component/ca-report-content/ca-report-content.component';
+import {FormsModule} from '@angular/forms';
 
 /**
  * Core module for Report entity
@@ -18,15 +20,19 @@ import {CaProjectObjectCoreModule} from '../ca-project-object-core/ca-project-ob
     CaReportsListComponent,
     CaReportContentViewComponent,
     CaReportTableComponent,
+    CaReportContentComponent,
   ],
   exports: [
     CaReportCardComponent,
     CaReportsListComponent,
     CaReportContentViewComponent,
+    CaReportTableComponent,
+    CaReportContentComponent,
   ],
   imports: [
     CommonModule,
     RouterModule,
+    FormsModule,
 
     CaCoreModule,
     CaProjectObjectCoreModule,

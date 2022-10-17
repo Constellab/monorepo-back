@@ -23,6 +23,7 @@ import {CnProjectAncestorTreeDTO, CnProjectAncestorType} from './cn-projects/cn-
 import {DataSource} from 'typeorm';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnUsersService} from '../cn-users/cn-users.service';
+import {CmRichTextI} from '@monorepo/common-model';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -181,7 +182,7 @@ export class CnProjectAggregateService {
     return this.projectService.update(project);
   }
 
-  public async updateDescription(projectId: string, description: Record<string, any>): Promise<CnProject> {
+  public async updateDescription(projectId: string, description: CmRichTextI): Promise<CnProject> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
     project.description = description;
     return this.projectService.update(project);

@@ -1,6 +1,7 @@
 import {Component, ComponentRef, OnDestroy, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {CaProjectDetailRightPanel, CaProjectDetailState} from '../../state/ca-project-detail.state';
 import {CaProjectDescriptionComponent} from '../ca-project-description/ca-project-description.component';
+import {CaProjectReportPreviewComponent} from '../ca-project-report-preview/ca-project-report-preview.component';
 
 /**
  * Right panel of the project detail page
@@ -31,6 +32,9 @@ export class CaProjectDetailRightPanelComponent implements OnInit, OnDestroy {
     switch (rightPanelState.type) {
       case 'description':
         this.viewComponentRef = this.container.createComponent(CaProjectDescriptionComponent);
+        break;
+      case 'report':
+        this.viewComponentRef = this.container.createComponent(CaProjectReportPreviewComponent);
         break;
       default:
         console.log('Unknown right panel type', rightPanelState.type);

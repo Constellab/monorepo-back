@@ -9,7 +9,9 @@
   <fl-card-body>
     <fl-async-section [object]="reports$" emptyText="no_report">
       <ng-container *flSectionBody="let reports">
-        <ca-report-table [datasource]="reports" [columns]="columns"></ca-report-table>
+        <ca-report-table [datasource]="reports" [columns]="columns"
+                         [rowSelectable]="rowSelectable"
+                         (reportSelected)="selectReport($event)"></ca-report-table>
       </ng-container>
     </fl-async-section>
 

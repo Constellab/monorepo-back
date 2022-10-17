@@ -8,6 +8,7 @@ import {CnGroup} from '../cn-groups/cn-group.entity';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
 import {CnProjectAncestorTreeDTO, CnProjectAncestorType} from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
+import {CmRichTextI} from '@monorepo/common-model';
 
 @Controller('projects')
 export class CnProjectsController {
@@ -120,7 +121,7 @@ export class CnProjectsController {
 
   @Put(':id/description')
   updateDescription(@Param('id', new ParseUUIDPipe()) id: string,
-                    @Body() description: Record<string, any>): Promise<CnProject> {
+                    @Body() description: CmRichTextI): Promise<CnProject> {
     return this.projectAggregate.updateDescription(id, description);
   }
 }

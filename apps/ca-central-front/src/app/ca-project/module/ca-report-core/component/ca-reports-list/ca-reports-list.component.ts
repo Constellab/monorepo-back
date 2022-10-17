@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Observable} from 'rxjs';
 import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
 import {FlTableColumn} from '@monorepo/front-core-lib';
@@ -12,6 +12,12 @@ import {FlTableColumn} from '@monorepo/front-core-lib';
 export class CaReportsListComponent implements OnInit {
 
   @Input() reports$: Observable<CaReport[]>;
+
+  // when true, the row become clickable and resourceSelected event is trigger
+  @Input() rowSelectable: boolean = false;
+
+  @Output() reportSelected: EventEmitter<CaReport> = new EventEmitter();
+
   columns: FlTableColumn<CaReport>[] = ['title', 'createdBy', 'lastSync'];
 
   constructor() {
@@ -20,4 +26,9 @@ export class CaReportsListComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  selectReport(report: CaReport): void {
+    if (this.rowSelectable) {
+      this.reportSelected.next(report);
+    }
+  }
 }

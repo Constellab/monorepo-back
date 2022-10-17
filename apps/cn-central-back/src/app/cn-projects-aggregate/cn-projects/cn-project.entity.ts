@@ -21,6 +21,7 @@ import {BadRequestException} from '@nestjs/common';
 import {ClHelpService} from '@monorepo/core-lib';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-project-level.enum';
 import {CnUser} from '../../cn-users/cn-user.entity';
+import {CmRichTextI} from '@monorepo/common-model';
 
 /**
  * A project is an ensemble of experiments
@@ -36,7 +37,7 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
   title: string;
 
   @Column({type: 'simple-json', nullable: true})
-  description: Record<string, any>;
+  description: CmRichTextI;
 
   @BlLuxonDateColumn({nullable: false})
   startingDate: DateTime;

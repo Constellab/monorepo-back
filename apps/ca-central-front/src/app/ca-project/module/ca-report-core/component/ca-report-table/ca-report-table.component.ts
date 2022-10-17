@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FlTableAbstractDirective} from '@monorepo/front-core-lib';
 import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
 
@@ -10,11 +10,22 @@ import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
 export class CaReportTableComponent extends FlTableAbstractDirective<CaReport>
   implements OnInit {
 
+  // when true, the row become clickable and resourceSelected event is trigger
+  @Input() rowSelectable: boolean = false;
+
+  @Output() reportSelected: EventEmitter<CaReport> = new EventEmitter();
+
   constructor() {
-    super(['title', 'createdBy', 'lastSync',]);
+    super(['title', 'createdBy', 'lastSync']);
   }
 
   ngOnInit(): void {
+  }
+
+  rowClicked(report: CaReport): void {
+    if (this.rowSelectable) {
+      this.reportSelected.next(report);
+    }
   }
 
 }

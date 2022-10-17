@@ -1,5 +1,5 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {BehaviorSubject, filter, Observable} from 'rxjs';
+import {BehaviorSubject, filter, Observable, switchMap} from 'rxjs';
 import {CaProject} from '../../../../ca-core/model/entities/ca-project.class';
 import {CaProjectService} from '../../../../ca-core/service-api/ca-project.service';
 import {CaUser} from '../../../../ca-core/model/entities/ca-user.class';
@@ -7,6 +7,10 @@ import {map} from 'rxjs/operators';
 import {CaAuthenticatedUserService} from '../../../../ca-core/service-api/ca-authenticated-user.service';
 import {FlQueryParamHandler, FlQuillJson} from '@monorepo/front-core-lib';
 import {ActivatedRoute, Router} from '@angular/router';
+import {CaReport} from '../../../../ca-core/model/entities/ca-report.class';
+import {CaExperiment} from '../../../../ca-core/model/entities/ca-experiment.class';
+import {CaReportService} from '../../../../ca-core/service-api/ca-report.service';
+import {CaExperimentService} from '../../../../ca-core/service-api/ca-experiment.service';
 
 export type CaProjectDetailRightPanel = {
   type: 'description' | 'report' | 'experiment'
@@ -21,6 +25,8 @@ export class CaProjectDetailState implements OnDestroy {
 
   private project$: BehaviorSubject<CaProject>;
   private users$: BehaviorSubject<CaUser[]>;
+  private reports$: BehaviorSubject<CaReport[]>;
+  private experiments$: BehaviorSubject<CaExperiment[]>;
   private rightPanelState$: BehaviorSubject<CaProjectDetailRightPanel>;
 
   private queryParamHandler: FlQueryParamHandler<CaProjectDetailRightPanel>;
@@ -29,7 +35,9 @@ export class CaProjectDetailState implements OnDestroy {
   constructor(private projectService: CaProjectService,
               private authenticatedUserService: CaAuthenticatedUserService,
               private route: ActivatedRoute,
-              private router: Router) {
+              private router: Router,
+              private experimentService: CaExperimentService,
+              private reportService: CaReportService) {
     this.queryParamHandler = new FlQueryParamHandler(router, route);
   }
 
@@ -37,12 +45,23 @@ export class CaProjectDetailState implements OnDestroy {
     this.id$ = id$;
     this.project$ = new BehaviorSubject<CaProject>(null);
     this.users$ = new BehaviorSubject<CaUser[]>(null);
+    this.reports$ = new BehaviorSubject<CaReport[]>(null);
+    this.experiments$ = new BehaviorSubject<CaExperiment[]>(null);
     this.rightPanelState$ = new BehaviorSubject<CaProjectDetailRightPanel>(null);
 
+    this.id$.pipe(
+      switchMap(id => this.projectService.getById(id))
+    ).subscribe({
+      next: project => this.initProject(project),
+      error: error => this.project$.error(error)
+    });
 
-    this.id$.subscribe(
-      id => this.initProject(id)
-    );
+    this.id$.pipe(
+      switchMap(id => this.projectService.getUsersOfProject(id))
+    ).subscribe({
+      next: users => this.users$.next(users),
+      error: error => this.users$.error(error)
+    });
 
     this.queryParamHandler.getFirstQueryParams().subscribe(
       params => {
@@ -56,16 +75,20 @@ export class CaProjectDetailState implements OnDestroy {
     );
   }
 
-  private initProject(id: string): void {
-    this.projectService.getById(id).subscribe({
-      next: project => this.project$.next(project),
-      error: error => this.project$.error(error)
-    });
+  private initProject(project: CaProject): void {
+    this.project$.next(project);
 
-    this.projectService.getUsersOfProject(id).subscribe({
-      next: users => this.users$.next(users),
-      error: error => this.users$.error(error)
-    });
+    // if the project is a leaf, load the reports and experiments
+    if (project.isLeaf()) {
+      this.reportService.getReportsByProject(project.id).subscribe({
+        next: reports => this.reports$.next(reports),
+        error: error => this.reports$.error(error)
+      });
+      this.experimentService.getExperimentsByProject(project.id).subscribe({
+        next: experiments => this.experiments$.next(experiments),
+        error: error => this.experiments$.error(error)
+      });
+    }
   }
 
   public getProjectId$(): Observable<string> {
@@ -124,9 +147,23 @@ export class CaProjectDetailState implements OnDestroy {
     this.projectService.updateDescription(project.id, description as any).subscribe();
   }
 
+  public getReports$(): Observable<CaReport[]> {
+    return this.reports$.asObservable().pipe(
+      filter(reports => reports != null)
+    );
+  }
+
+  public getExperiments$(): Observable<CaExperiment[]> {
+    return this.experiments$.asObservable().pipe(
+      filter(experiments => experiments != null)
+    );
+  }
+
   ngOnDestroy(): void {
     this.project$?.complete();
     this.users$?.complete();
+    this.reports$?.complete();
+    this.experiments$?.complete();
     this.rightPanelState$?.complete();
   }
 

@@ -1,0 +1,8 @@
+<div fxLayout="row" fxLayoutAlign="end" class="header">
+  <a mat-stroked-button class="g-button-small"
+     [routerLink]="(reportId$ | async) | caDetailRoute:'report'">
+    <mat-icon flIcon="report"></mat-icon>
+    {{'open_details' | translate}}
+  </a>
+</div>
+<ca-report-content [reportId]="reportId$ | async"></ca-report-content>

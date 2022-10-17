@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {CaProjectService} from '../../../../../ca-core/service-api/ca-project.service';
 import {ActivatedRoute} from '@angular/router';
-import {Observable, switchMap} from 'rxjs';
+import {Observable} from 'rxjs';
 import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
 import {CaReportService} from '../../../../../ca-core/service-api/ca-report.service';
 import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
@@ -26,6 +26,7 @@ export class CaProjectDetailPageComponent implements OnInit {
   reports$: Observable<CaReport[]>;
 
   showChildren$: Observable<boolean>;
+  showObjects$: Observable<boolean>;
 
   constructor(private projectService: CaProjectService,
               private reportService: CaReportService,
@@ -39,17 +40,24 @@ export class CaProjectDetailPageComponent implements OnInit {
       map(params => params.id)
     ));
     this.projectId$ = this.state.getProjectId$();
-    this.experiment$ = this.state.getProjectId$().pipe(
-      switchMap(id => this.experimentService.getExperimentsByProject(id))
-    );
-    this.reports$ = this.state.getProjectId$().pipe(
-      switchMap(id => this.reportService.getReportsByProject(id))
-    );
+    this.experiment$ = this.state.getExperiments$();
+    this.reports$ = this.state.getReports$();
 
     this.showChildren$ = this.state.getProject$(false).pipe(
       map(project => project?.hasChildren() ?? false)
     );
+
+    this.showObjects$ = this.state.getProject$(false).pipe(
+      map(project => project?.isLeaf() ?? false)
+    );
   }
 
+  selectReport(report: CaReport): void {
+    this.state.updateRightPanelState({type: 'report', objectId: report.id});
+  }
+
+  selectExperiment(experiment: CaExperiment): void {
+    this.state.updateRightPanelState({type: 'experiment', objectId: experiment.id});
+  }
 
 }

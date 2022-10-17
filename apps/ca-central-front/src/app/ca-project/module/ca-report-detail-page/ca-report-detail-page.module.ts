@@ -8,6 +8,7 @@ import {RouterModule} from '@angular/router';
 import {CaExperimentCoreModule} from '../ca-experiment-core/ca-experiment-core.module';
 import {CaReportDetailPageRoutingModule} from './ca-report-detail-page-routing.module';
 import {CaProjectObjectCoreModule} from '../ca-project-object-core/ca-project-object-core.module';
+import {CaReportCoreModule} from '../ca-report-core/ca-report-core.module';
 
 
 @NgModule({
@@ -23,6 +24,7 @@ import {CaProjectObjectCoreModule} from '../ca-project-object-core/ca-project-ob
     CaCoreModule,
     CaProjectObjectCoreModule,
     CaExperimentCoreModule,
+    CaReportCoreModule,
 
     CaReportDetailPageRoutingModule,
   ]

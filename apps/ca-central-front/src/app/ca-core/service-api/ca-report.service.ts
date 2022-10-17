@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {CaReport} from '../model/entities/ca-report.class';
-import {FlApiService} from '@monorepo/front-core-lib';
+import {FlApiService, FlQuillJson} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {RvResourceView} from '@monorepo/resource-view';
 
@@ -26,6 +26,9 @@ export class CaReportService {
     return this.apiService.getById(this.route, id, CaReport);
   }
 
+  getContent(reportId: string): Observable<FlQuillJson> {
+    return this.apiService.get(`${this.route}/${reportId}/content`);
+  }
 
   ////////////////////////////// METHOD FOR TEXT EDITOR //////////////////////////
 
