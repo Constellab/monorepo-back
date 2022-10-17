@@ -30,8 +30,26 @@ export class CnProjectsAggregateSecurity {
   }
 
   public async checkUpdate(project: CnProject, user: CnUser): Promise<void> {
-    return this.checkFindOne(project, user);
+    if (project.leader.id !== user.id) {
+      throw new UnauthorizedException();
+    }
   }
+
+  /**
+   * Only the leader or leader of a parent project can update the leader of children project
+   * @param project
+   * @param user
+   */
+  public async checkUpdateProjectLeader(project: CnProject, user: CnUser): Promise<void> {
+    const ancestors = await this.projectsService.getAncestors(project);
+    for (const ancestor of ancestors) {
+      if (ancestor.leader.id === user.id) {
+        return;
+      }
+    }
+    throw new UnauthorizedException();
+  }
+
 
   private async getRootProject(project: CnProject): Promise<CnProject> {
     if (project.currentLevel === CnProjectLevel.PROJECT) {

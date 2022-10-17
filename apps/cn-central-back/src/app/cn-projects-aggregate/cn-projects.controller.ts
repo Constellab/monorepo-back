@@ -111,4 +111,10 @@ export class CnProjectsController {
   findOne(@Param('id', ParseUUIDPipe) id: string): Promise<CnProject> {
     return this.projectAggregate.findProject(id);
   }
+
+  @Put(':id/leader/:leaderId')
+  updateLeader(@Param('id', new ParseUUIDPipe()) id: string,
+               @Param('leaderId', new ParseUUIDPipe()) leaderId: string): Promise<CnProject> {
+    return this.projectAggregate.updateProjectLeader(id, leaderId);
+  }
 }

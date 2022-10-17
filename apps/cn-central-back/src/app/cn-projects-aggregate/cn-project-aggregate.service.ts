@@ -22,6 +22,7 @@ import {CnProjectLevel, CnProjectLevelStatus} from './cn-projects/cn-project-lev
 import {CnProjectAncestorTreeDTO, CnProjectAncestorType} from './cn-projects/cn-project.dto';
 import {DataSource} from 'typeorm';
 import {CnUser} from '../cn-users/cn-user.entity';
+import {CnUsersService} from '../cn-users/cn-users.service';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -32,6 +33,7 @@ export class CnProjectAggregateService {
               private experimentService: CnExperimentsService,
               private reportService: CnReportsService,
               private groupService: CnGroupsService,
+              private userService: CnUsersService,
               private datasource: DataSource) {
   }
 
@@ -41,10 +43,13 @@ export class CnProjectAggregateService {
     entity.parent = null;
     entity.currentLevel = CnProjectLevel.PROJECT;
     entity.levelStatus = CnProjectLevelStatus.UNDEFINED;
+    entity.leader = CnCurrentUserHelper.getCurrentUser();
     return this.projectService.create(entity);
   }
 
   async createSubProject(entity: CnProject, projectId: string): Promise<CnProject> {
+    entity.leader = CnCurrentUserHelper.getCurrentUser();
+
     const parentProject = await this.getAndCheckAuthorizationForUpdate(projectId);
 
     // check if parent can have children
@@ -119,7 +124,7 @@ export class CnProjectAggregateService {
 
   public async getObjectProjectAncestors(objectType: CnProjectAncestorType, objectId: string): Promise<CnProjectAncestorTreeDTO[]> {
 
-    let ancestor: CnProjectAncestorTreeDTO;
+    const ancestors: CnProjectAncestorTreeDTO[] = [];
     let projectId: string;
     switch (objectType) {
       case 'project':
@@ -128,12 +133,12 @@ export class CnProjectAggregateService {
       case 'experiment':
         const experiment = await this.experimentService.findByIdAndCheck(objectId);
         projectId = experiment.projectId;
-        ancestor = {type: 'experiment', id: experiment.id, title: experiment.title};
+        ancestors.push({type: 'experiment', id: experiment.id, title: experiment.title});
         break;
       case 'report':
         const report = await this.reportService.findByIdAndCheck(objectId);
         projectId = report.projectId;
-        ancestor = {type: 'report', id: report.id, title: report.title};
+        ancestors.push({type: 'report', id: report.id, title: report.title});
         break;
     }
 
@@ -141,11 +146,39 @@ export class CnProjectAggregateService {
     const project = await this.findProject(projectId);
     const projectAncestors = await this.projectService.getAncestors(project);
 
-    // if the object is an experiment or a report, add the ancestor
-    if (ancestor) {
-      projectAncestors.unshift(ancestor);
+    // Convert and add the project ancestors
+    const projectDto: CnProjectAncestorTreeDTO[] = projectAncestors.map(p => ({
+      type: 'project',
+      id: p.id,
+      title: p.title
+    }));
+    ancestors.push(...projectDto);
+    return ancestors;
+  }
+
+  public async updateProjectLeader(projectId: string, userId: string): Promise<CnProject> {
+    const project = await this.projectService.findByIdAndCheck(projectId);
+
+    const user = await this.userService.findByIdAndCheck(userId);
+
+    // check if the current user has the authorization to update the leader
+    await this.projectSecurity.checkUpdateProjectLeader(project, CnCurrentUserHelper.getAndCheckCurrentUser());
+
+    // check if the new leader can view the project
+    try {
+      await this.projectSecurity.checkFindOne(project, user);
+    } catch (e) {
+      if (e instanceof UnauthorizedException) {
+        throw new BadRequestException('The new leader does not have access to the project.');
+      } else {
+        throw e;
+      }
+
     }
-    return projectAncestors;
+
+    // update the leader
+    project.leader = user;
+    return this.projectService.update(project);
   }
 
   /////////////////////////////////////// PROJECT STATUS //////////////////////////////////

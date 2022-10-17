@@ -62,5 +62,6 @@
   "report_validated": "Rapport validé",
   "last_sync": "Dernière synchronisation",
   "validation_info": "Validé",
-  "project_level_nb": "Nom de niveaux du projet (no modifiable une fois le projet créé)"
+  "project_level_nb": "Nom de niveaux du projet (no modifiable une fois le projet créé)",
+  "project_leader": "Chef de projet"
 }

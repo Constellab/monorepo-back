@@ -14,7 +14,6 @@ import {CnGroup} from '../../cn-groups/cn-group.entity';
 import {CnUsersService} from '../../cn-users/cn-users.service';
 import {DateTime} from 'luxon';
 import {CnProjectLevel} from './cn-project-level.enum';
-import {CnProjectAncestorTreeDTO} from './cn-project.dto';
 
 @Injectable()
 export class CnProjectsService extends CnAbstractWithStatusService<CnProject, CnProjectStatus> {
@@ -53,16 +52,12 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
   /**
    * Return a simplified list from this project to the root project
    */
-  public async getAncestors(project: CnProject): Promise<CnProjectAncestorTreeDTO[]> {
+  public async getAncestors(project: CnProject): Promise<CnProject[]> {
     const parent = await this.repository.findAncestorsTree(project);
-    const projects: CnProjectAncestorTreeDTO[] = [];
+    const projects: CnProject[] = [];
     let currentProject = parent;
     while (currentProject != null) {
-      projects.push({
-        id: currentProject.id,
-        title: currentProject.title,
-        type: 'project'
-      });
+      projects.push(currentProject);
       currentProject = currentProject.parent;
     }
     return projects;

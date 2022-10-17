@@ -55,6 +55,10 @@
         </fl-date-range>
       </fl-text-icon>
 
+      <div>
+        {{'project_leader' | translate}} : <ca-user-inline [user]="project.leader" class="inline-block"></ca-user-inline>
+      </div>
+
       <div class="description">
         <div *ngIf="project.description; else noDesc" [innerHTML]="project.description"></div>
         <ng-template #noDesc>

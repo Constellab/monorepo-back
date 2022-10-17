@@ -6,6 +6,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToOne,
+  Relation,
   Tree,
   TreeChildren,
   TreeParent
@@ -19,6 +20,7 @@ import {CnGroup} from '../../cn-groups/cn-group.entity';
 import {BadRequestException} from '@nestjs/common';
 import {ClHelpService} from '@monorepo/core-lib';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-project-level.enum';
+import {CnUser} from '../../cn-users/cn-user.entity';
 
 /**
  * A project is an ensemble of experiments
@@ -41,6 +43,10 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
 
   @BlLuxonDateColumn({nullable: true})
   endingDate: DateTime;
+
+  @Type(() => CnUser)
+  @ManyToOne(() => CnUser, {eager: true, nullable: false})
+  leader: Relation<CnUser>;
 
   @Type(() => CnProjectStatusHistory)
   @OneToOne(() => CnProjectStatusHistory, {nullable: true, eager: true})

@@ -81,6 +81,9 @@ export class CaProject extends CaBaseEntity {
 
   levelStatus: CaProjectLevelStatus;
 
+  @Type(() => CaUser)
+  leader: CaUser;
+
   isLeaf(): boolean {
     return this.levelStatus === CaProjectLevelStatus.LEAF;
   }
