@@ -59,5 +59,7 @@
   "last_sync": "Last synchronisation",
   "validation_info": "Validated",
   "project_level_nb": "Number of level for this project (this is not updatable once the project is created)",
-  "project_leader": "Project leader"
+  "project_leader": "Project leader",
+  "project_description_placeholder": "Describe your project here",
+  "show_project_description": "Show project description"
 }

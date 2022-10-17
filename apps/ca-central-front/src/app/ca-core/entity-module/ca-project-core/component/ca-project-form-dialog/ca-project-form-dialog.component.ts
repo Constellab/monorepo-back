@@ -50,7 +50,6 @@ export class CaProjectFormDialogComponent extends FlFormDialogAbstractDirective<
       id: [null],
       code: [null, Validators.required],
       title: [null, Validators.required],
-      description: [null],
       startingDate: [null, Validators.required],
       endingDate: [null],
     });

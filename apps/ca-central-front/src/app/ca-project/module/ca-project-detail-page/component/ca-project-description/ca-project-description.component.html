@@ -1,0 +1,10 @@
+<div fxLayout="row" fxLayoutAlign="end">
+  <button mat-icon-button type="button" (click)="toggleEdit()"
+          *ngIf="canEdit$ | async">
+    <mat-icon>{{edit ? 'visibility' : 'edit'}}</mat-icon>
+  </button>
+</div>
+<fl-text-editor [config]="textEditorConfig"
+                [formControl]="formControl" mode="JSON"
+                [placeholder]="'project_description_placeholder' | translate"></fl-text-editor>
+

@@ -177,5 +177,10 @@ export abstract class FlFormFieldDirective<INNER, OUTER = INNER> implements Cont
     return innerValue as any;
   }
 
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
+
+
 
 }

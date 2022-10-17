@@ -13,7 +13,6 @@ export class TestData {
     const project: CnProject = new CnProject();
     project.code = 'CODE';
     project.title = 'Title';
-    project.description = 'New description';
     project.startingDate = ClDateHelper.getDate();
 
     return project;

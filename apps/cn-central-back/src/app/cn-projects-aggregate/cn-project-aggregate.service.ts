@@ -181,6 +181,12 @@ export class CnProjectAggregateService {
     return this.projectService.update(project);
   }
 
+  public async updateDescription(projectId: string, description: Record<string, any>): Promise<CnProject> {
+    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+    project.description = description;
+    return this.projectService.update(project);
+  }
+
   /////////////////////////////////////// PROJECT STATUS //////////////////////////////////
 
 

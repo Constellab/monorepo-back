@@ -20,7 +20,6 @@ describe('ProjectAggregatorE2E', () => {
     const project: Partial<CnProject> = {
       code: 'TEST',
       title: 'Test project',
-      description: 'Test project description',
       startingDate: ClDateHelper.getDate(),
     };
     const request = helper.post('', project);
@@ -30,7 +29,6 @@ describe('ProjectAggregatorE2E', () => {
     expect(newProject.id).toBeDefined();
     expect(newProject.code).toEqual(project.code);
     expect(newProject.title).toEqual(project.title);
-    expect(newProject.description).toEqual(project.description);
     expect(newProject.currentLevel).toEqual(CnProjectLevel.PROJECT);
     expect(newProject.currentStatus.status).toEqual(CnProjectStatus.ACTIVE);
     expect(newProject.levelStatus).toEqual(CnProjectLevelStatus.UNDEFINED);
@@ -40,7 +38,6 @@ describe('ProjectAggregatorE2E', () => {
     const workPackage: Partial<CnProject> = {
       code: 'TEST-WP',
       title: 'Test work package',
-      description: 'Test work package description',
       startingDate: ClDateHelper.getDate(),
     };
 
@@ -62,7 +59,6 @@ describe('ProjectAggregatorE2E', () => {
     const task: Partial<CnProject> = {
       code: 'TEST-TASK',
       title: 'Test task',
-      description: 'Test task description',
       startingDate: ClDateHelper.getDate(),
     };
 

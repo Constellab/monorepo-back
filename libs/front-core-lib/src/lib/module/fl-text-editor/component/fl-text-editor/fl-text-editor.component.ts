@@ -122,8 +122,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
               caption: ''
             }
           }
-        }
-        console.log(delta.ops)
+        };
       } else if (imageData.startsWith('data')) {
         const blob: Blob = FlFileHelper.convertBase64ToBlob(insertImage.image.split(',')[1], 'image/png');
         this.config.getAndSaveImage(blob, this.state);
@@ -144,13 +143,11 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
       this.quill.focus();
     }
 
-    // use setTimeout prevent text-change on init value
-    setTimeout(() => {
-      this.quill.on('text-change', () => this.setAndEmitValue(this.getQuillValue()));
-    }, 0);
 
+    this.quill.on('text-change', () => this.setAndEmitValue(this.getQuillValue()));
     this.quill.on('editor-change', (changeEvent: any, obj: any) => this.onEditorChange(changeEvent, obj));
   }
+
 
   callChangeEvent(value: string): void {
     this.textChange.next(value);
@@ -172,10 +169,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
         this.quill.enable();
       }
     }
-  }
-
-  setDisabledState(isDisabled: boolean): void {
-    this.state.setDisabled(isDisabled);
+    this.state.setDisabled(disable);
   }
 
   outsideClick(event: MouseEvent): void {
@@ -191,19 +185,21 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     this.managerState.unregisterTextEditor(this.editorElement.nativeElement);
   }
 
-  private setQuillValue(value: any): void {
-    if (this.mode === 'HTML') {
-      this.setHTML(value);
-    } else {
-      this.setJsonDelta(value);
-    }
-  }
 
   private getQuillValue(): any {
     if (this.mode === 'HTML') {
       return this.quill.root.innerHTML;
     } else {
       return this.quill.getContents();
+    }
+  }
+
+  // manually set the quill value with silent mode so no event are triggered
+  private setQuillValue(value: any): void {
+    if (this.mode === 'HTML') {
+      this.setHTML(value);
+    } else {
+      this.setJsonDelta(value);
     }
   }
 
@@ -214,7 +210,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
 
   private setJsonDelta(json: FlQuillJson): void {
     const delta = json?.ops != null ? new FlQuillDelta(json.ops) : [];
-    this.quill.setContents(delta);
+    this.quill.setContents(delta, 'silent');
   }
 
   private onEditorChange(changeEvent: 'text-change' | 'selection-change', obj: any): void {

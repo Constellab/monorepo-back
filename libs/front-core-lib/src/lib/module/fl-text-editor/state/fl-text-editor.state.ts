@@ -14,8 +14,8 @@ export class FlTextEditorState implements OnDestroy {
 
   private quill: Quill;
 
-  private disabled$: BehaviorSubject<boolean>;
-  private outsideClick$: Subject<MouseEvent>;
+  private disabled$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  private outsideClick$: Subject<MouseEvent>= new Subject();
 
   public config: FlTextEditorConfig;
 
@@ -27,8 +27,7 @@ export class FlTextEditorState implements OnDestroy {
     this.quill = quill;
     this.config = config;
     this.textEditorContainer = textEditorContainer;
-    this.disabled$ = new BehaviorSubject(disabled);
-    this.outsideClick$ = new Subject();
+    this.disabled$.next(disabled);
   }
 
 

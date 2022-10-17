@@ -1,8 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Observable, switchMap} from 'rxjs';
-import {CaProjectService} from '../../../../../ca-core/service-api/ca-project.service';
+import {Observable} from 'rxjs';
 import {CaUser} from '../../../../../ca-core/model/entities/ca-user.class';
 import {map} from 'rxjs/operators';
+import {CaProjectDetailState} from '../../state/ca-project-detail.state';
 
 /**
  * Component to list the users that have access to a project
@@ -18,13 +18,11 @@ export class CaProjectUsersComponent implements OnInit {
 
   users$: Observable<CaUser[]>;
 
-  constructor(private projectService: CaProjectService) {
+  constructor(private state: CaProjectDetailState) {
   }
 
   ngOnInit(): void {
-    this.users$ = this.projectId$.pipe(
-      switchMap(id => this.projectService.getUsersOfProject(id)),
-    ).pipe(
+    this.users$ = this.state.getUsers$().pipe(
       map(users => [...users, ...users, ...users, ...users])
     );
   }

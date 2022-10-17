@@ -5,14 +5,13 @@ import {ClLuxonDateTransform} from '@monorepo/core-lib';
 import {
   FlEntity,
   FlEntityPaginatedDatasource,
-  FlSanitizeTransform,
+  FlQuillJson,
   FlStatus,
   FlStatusDict,
   FlStatusHelper,
   FlStatusTransform
 } from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
-import {SecurityContext} from '@angular/core';
 import {CaUser} from './ca-user.class';
 
 export type CaProjectStatus = 'ACTIVE' | 'IN_PROGRESS' | 'ARCHIVED';
@@ -64,8 +63,7 @@ export class CaProject extends CaBaseEntity {
 
   title: string;
 
-  @FlSanitizeTransform(SecurityContext.HTML)
-  description: string;
+  description: FlQuillJson;
 
   @ClLuxonDateTransform()
   startingDate: DateTime;

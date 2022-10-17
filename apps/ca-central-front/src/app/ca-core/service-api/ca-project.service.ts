@@ -113,4 +113,12 @@ export class CaProjectService {
   public getUsersOfProject(projectId: string): Observable<CaUser[]>{
     return this.apiService.get(`${this.route}/${projectId}/users`, CaUser);
   }
+
+  public updateDescription(id: string, description: string): Observable<CaProject> {
+    return this.apiService.put(`${this.route}/${id}/description`, description, CaProject);
+  }
+
+  public updateProjectLeader(id: string, userId: string): Observable<CaProject> {
+    return this.apiService.put(`${this.route}/${id}/leader/${userId}`, null, CaProject);
+  }
 }

@@ -1,28 +1,70 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, filter, Observable, switchMap} from 'rxjs';
+import {Injectable, OnDestroy} from '@angular/core';
+import {BehaviorSubject, filter, Observable} from 'rxjs';
 import {CaProject} from '../../../../ca-core/model/entities/ca-project.class';
 import {CaProjectService} from '../../../../ca-core/service-api/ca-project.service';
+import {CaUser} from '../../../../ca-core/model/entities/ca-user.class';
+import {map} from 'rxjs/operators';
+import {CaAuthenticatedUserService} from '../../../../ca-core/service-api/ca-authenticated-user.service';
+import {FlQueryParamHandler, FlQuillJson} from '@monorepo/front-core-lib';
+import {ActivatedRoute, Router} from '@angular/router';
+
+export type CaProjectDetailRightPanel = {
+  type: 'description' | 'report' | 'experiment'
+  objectId?: string;
+}
+
 
 @Injectable()
-export class CaProjectDetailState {
+export class CaProjectDetailState implements OnDestroy {
 
   private id$: Observable<string>;
 
   private project$: BehaviorSubject<CaProject>;
+  private users$: BehaviorSubject<CaUser[]>;
+  private rightPanelState$: BehaviorSubject<CaProjectDetailRightPanel>;
 
-  constructor(private projectService: CaProjectService) {
+  private queryParamHandler: FlQueryParamHandler<CaProjectDetailRightPanel>;
+
+
+  constructor(private projectService: CaProjectService,
+              private authenticatedUserService: CaAuthenticatedUserService,
+              private route: ActivatedRoute,
+              private router: Router) {
+    this.queryParamHandler = new FlQueryParamHandler(router, route);
   }
 
   public init(id$: Observable<string>): void {
     this.id$ = id$;
     this.project$ = new BehaviorSubject<CaProject>(null);
+    this.users$ = new BehaviorSubject<CaUser[]>(null);
+    this.rightPanelState$ = new BehaviorSubject<CaProjectDetailRightPanel>(null);
 
 
-    this.id$.pipe(
-      switchMap(id => this.projectService.getById(id))
-    ).subscribe({
+    this.id$.subscribe(
+      id => this.initProject(id)
+    );
+
+    this.queryParamHandler.getFirstQueryParams().subscribe(
+      params => {
+        if (params && params.type) {
+          this.updateRightPanelState(params);
+        } else {
+          // for the default mode, don't update the url
+          this.rightPanelState$.next({type: 'description'});
+        }
+      }
+    );
+  }
+
+  private initProject(id: string): void {
+    this.projectService.getById(id).subscribe({
       next: project => this.project$.next(project),
       error: error => this.project$.error(error)
+    });
+
+    this.projectService.getUsersOfProject(id).subscribe({
+      next: users => this.users$.next(users),
+      error: error => this.users$.error(error)
     });
   }
 
@@ -44,4 +86,49 @@ export class CaProjectDetailState {
       filter(project => !skipNull || project != null)
     );
   }
+
+  public getUsers$(): Observable<CaUser[]> {
+    return this.users$.asObservable().pipe(
+      filter(users => users != null)
+    );
+  }
+
+  public updateRightPanelState(state: CaProjectDetailRightPanel): void {
+    // update the url
+    this.queryParamHandler.mergeQueryParams(state);
+
+    // check if the state has changed
+    const currentState = this.rightPanelState$.value;
+    if (currentState && currentState.type === state.type &&
+      currentState.objectId === state.objectId) {
+      return;
+    }
+
+    this.rightPanelState$.next(state);
+  }
+
+  public getRightPanelState$(): Observable<CaProjectDetailRightPanel> {
+    return this.rightPanelState$.asObservable().pipe(filter(state => state != null));
+  }
+
+  public canEditProject$(): Observable<boolean> {
+    const user = this.authenticatedUserService.getUser();
+    return this.getProject$(false).pipe(
+      map(project => project != null && project.leader.id === user.id)
+    );
+  }
+
+  public updateDescription(description: FlQuillJson): void {
+    const project = this.getCurrentProject();
+    project.description = description as any;
+    this.projectService.updateDescription(project.id, description as any).subscribe();
+  }
+
+  ngOnDestroy(): void {
+    this.project$?.complete();
+    this.users$?.complete();
+    this.rightPanelState$?.complete();
+  }
+
+
 }

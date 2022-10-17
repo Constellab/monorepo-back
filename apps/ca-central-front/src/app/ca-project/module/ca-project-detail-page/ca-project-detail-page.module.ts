@@ -15,6 +15,11 @@ import {CaProjectChildrenComponent} from './component/ca-project-children/ca-pro
 import {CaProjectDetailPageRoutingModule} from './ca-project-detail-page-routing.module';
 import {CaProjectObjectCoreModule} from '../ca-project-object-core/ca-project-object-core.module';
 import {CaProjectUsersComponent} from './component/ca-project-users/ca-project-users.component';
+import {
+  CaProjectDetailRightPanelComponent
+} from './component/ca-project-detail-right-panel/ca-project-detail-right-panel.component';
+import {CaProjectDescriptionComponent} from './component/ca-project-description/ca-project-description.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 /**
  * Module for the project detail page
@@ -26,10 +31,14 @@ import {CaProjectUsersComponent} from './component/ca-project-users/ca-project-u
     CaProjectSharedGroupsListComponent,
     CaProjectChildrenComponent,
     CaProjectUsersComponent,
+    CaProjectDetailRightPanelComponent,
+    CaProjectDescriptionComponent,
   ],
   imports: [
     CommonModule,
     RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
 
     CaCoreModule,
     CaProjectObjectCoreModule,

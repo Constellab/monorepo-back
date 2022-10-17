@@ -7,6 +7,11 @@
 
     <div fxLayout="row" fxLayoutAlign="start center">
 
+      <button mat-icon-button type="button" (click)="showDescription()"
+              [matTooltip]="'show_project_description' | translate">
+        <mat-icon>description</mat-icon>
+      </button>
+
       <ca-project-users [projectId$]="projectId$"></ca-project-users>
 
       <fl-status-chip class="status" [status]="project.currentStatus.status"></fl-status-chip>
@@ -56,17 +61,19 @@
       </fl-text-icon>
 
       <div>
-        {{'project_leader' | translate}} : <ca-user-inline [user]="project.leader" class="inline-block"></ca-user-inline>
+        {{'project_leader' | translate}} :
+        <ca-user-inline [user]="project.leader" class="inline-block"></ca-user-inline>
       </div>
 
-      <div class="description">
-        <div *ngIf="project.description; else noDesc" [innerHTML]="project.description"></div>
-        <ng-template #noDesc>
-          <fl-error-text [errorMessage]="'no_description' | translate"></fl-error-text>
-        </ng-template>
-      </div>
+      <!--      <div class="description">-->
+      <!--        <div *ngIf="project.description; else noDesc" [innerHTML]="project.description"></div>-->
+      <!--        <ng-template #noDesc>-->
+      <!--          <fl-error-text [errorMessage]="'no_description' | translate"></fl-error-text>-->
+      <!--        </ng-template>-->
+      <!--      </div>-->
 
-      <ca-project-shared-groups-list [projectId]="project.id" [canEdit]="project.isRoot()"></ca-project-shared-groups-list>
+      <ca-project-shared-groups-list [projectId]="project.id"
+                                     [canEdit]="project.isRoot()"></ca-project-shared-groups-list>
 
     </fl-card-body>
   </fl-card>

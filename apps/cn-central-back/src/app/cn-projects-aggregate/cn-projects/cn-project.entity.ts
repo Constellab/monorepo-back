@@ -35,8 +35,8 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
   @Column({nullable: false, length: 50})
   title: string;
 
-  @Column({type: 'text', nullable: true})
-  description: string;
+  @Column({type: 'simple-json', nullable: true})
+  description: Record<string, any>;
 
   @BlLuxonDateColumn({nullable: false})
   startingDate: DateTime;

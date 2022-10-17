@@ -92,4 +92,7 @@ export class CaProjectDetailComponent implements OnInit {
     this.dialogService.openSmallDialog(CaStatusHistoryListDialogComponent, {data: dialogInput});
   }
 
+  showDescription(): void {
+    this.state.updateRightPanelState({type: 'description'});
+  }
 }
