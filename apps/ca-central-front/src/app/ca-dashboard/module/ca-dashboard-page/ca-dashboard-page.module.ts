@@ -24,7 +24,6 @@ import {
 import {
   CaDashboardLastExperimentsComponent
 } from './component/ca-dashboard-last-experiments/ca-dashboard-last-experiments.component';
-import {CaDashboardBreadcrumbComponent} from './component/ca-dashboard-breadcrumb/ca-dashboard-breadcrumb.component';
 
 /**
  * Module for the dashboard page
@@ -41,7 +40,6 @@ import {CaDashboardBreadcrumbComponent} from './component/ca-dashboard-breadcrum
     CaDashboardTaskOfTheDayComponent,
     CaDashboardActivityCardComponent,
     CaDashboardLastExperimentsComponent,
-    CaDashboardBreadcrumbComponent
   ],
   imports: [
     CommonModule,

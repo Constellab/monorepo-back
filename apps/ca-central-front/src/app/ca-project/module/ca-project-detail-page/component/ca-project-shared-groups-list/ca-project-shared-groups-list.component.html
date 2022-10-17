@@ -7,7 +7,8 @@
         <h2>{{'project_shared_groups' | translate}}</h2>
 
         <fl-card-actions>
-          <button mat-stroked-button type="button" (click)="openShareDialog()">
+          <button mat-stroked-button type="button" (click)="openShareDialog()"
+                  *ngIf="canEdit">
             <mat-icon flIcon="share_arrow"></mat-icon>
             <span>{{'share' | translate}}</span>
           </button>
@@ -19,7 +20,7 @@
           <ca-group-inline [group]="group"></ca-group-inline>
 
           <button mat-icon-button type="button" (click)="openUnshareDialog(group)"
-                  [matTooltip]="'unshare' | translate">
+                  [matTooltip]="'unshare' | translate" *ngIf="canEdit">
             <mat-icon>clear</mat-icon>
           </button>
         </div>

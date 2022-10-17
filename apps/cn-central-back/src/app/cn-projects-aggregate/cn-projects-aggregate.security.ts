@@ -13,8 +13,7 @@ export class CnProjectsAggregateSecurity {
               private projectsService: CnProjectsService) {
   }
 
-
-  public async checkFindOne(project: CnProject, user: CnUser): Promise<void> {
+  public async checkFindOneAndGetRootProject(project: CnProject, user: CnUser): Promise<CnProject> {
     // the authorization are handle at the projet level
     const rootProject = await this.getRootProject(project);
     const groupIds = await this.groupsService.getGroupIdsFromUser(user);
@@ -22,6 +21,12 @@ export class CnProjectsAggregateSecurity {
     if (!rootProject.isSharedToGroup(groupIds)) {
       throw new UnauthorizedException();
     }
+    return rootProject;
+  }
+
+
+  public async checkFindOne(project: CnProject, user: CnUser): Promise<void> {
+    await this.checkFindOneAndGetRootProject(project, user);
   }
 
   public async checkUpdate(project: CnProject, user: CnUser): Promise<void> {

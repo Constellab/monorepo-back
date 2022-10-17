@@ -21,6 +21,7 @@ import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-projects/cn-project-level.enum';
 import {CnProjectAncestorTreeDTO, CnProjectAncestorType} from './cn-projects/cn-project.dto';
 import {DataSource} from 'typeorm';
+import {CnUser} from '../cn-users/cn-user.entity';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -94,37 +95,6 @@ export class CnProjectAggregateService {
     await this.groupService.getAndCheckTeamById(groupId);
 
     return this.projectService.getProjectsOfGroup(groupId, page, size);
-  }
-
-  public async shareProject(projectId: string, groupId: string): Promise<CnGroup> {
-    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
-
-    if (project.currentLevel !== CnProjectLevel.PROJECT) {
-      throw new BadRequestException('Only projects can be shared');
-    }
-
-    // the user must be an admin or be in the group he shared the project
-    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
-    if (!user.isAdmin() && !(await this.groupService.currentUserIsInGroup(groupId))) {
-      throw new UnauthorizedException();
-    }
-
-    return this.projectService.shareProject(project, groupId);
-  }
-
-  public async unshareProject(projectId: string, groupId: string): Promise<void> {
-    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
-
-    if (project.sharedGroups.length <= 1) {
-      throw new BadRequestException(CnErrorText.PROJECT_MUST_HAVE_A_GROUP);
-    }
-
-    return this.projectService.unshareProject(project, groupId);
-  }
-
-  public async getProjectSharedGroups(projectId: string): Promise<CnGroup[]> {
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
-    return project.sharedGroups;
   }
 
   public async getProjectsOfUserId(userId: string): Promise<CnProject[]> {
@@ -337,6 +307,57 @@ export class CnProjectAggregateService {
       throw new UnauthorizedException();
     }
     return this.reportService.getView(filename);
+  }
+
+  /////////////////////////////////////// GROUPS //////////////////////////////////
+
+  public async shareProject(projectId: string, groupId: string): Promise<CnGroup> {
+    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+
+    if (project.currentLevel !== CnProjectLevel.PROJECT) {
+      throw new BadRequestException('Only projects can be shared');
+    }
+
+    // the user must be an admin or be in the group he shared the project
+    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
+    if (!user.isAdmin() && !(await this.groupService.currentUserIsInGroup(groupId))) {
+      throw new UnauthorizedException();
+    }
+
+    return this.projectService.shareProject(project, groupId);
+  }
+
+  public async unshareProject(projectId: string, groupId: string): Promise<void> {
+    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+
+    if (project.sharedGroups.length <= 1) {
+      throw new BadRequestException(CnErrorText.PROJECT_MUST_HAVE_A_GROUP);
+    }
+
+    return this.projectService.unshareProject(project, groupId);
+  }
+
+  /**
+   * Return the list of shared group for tha root project
+   * @param projectId
+   */
+  public async getProjectSharedGroups(projectId: string): Promise<CnGroup[]> {
+    const project = await this.projectService.findWithSharedGroups(projectId);
+
+    const rootProject = await this.projectSecurity.checkFindOneAndGetRootProject(project, CnCurrentUserHelper.getAndCheckCurrentUser());
+    return rootProject.sharedGroups;
+  }
+
+  /**
+   * Return the complete list of user that have access to the project
+   * @param id
+   */
+  public async getUserOfProject(id: string): Promise<CnUser[]> {
+    const groups = await this.getProjectSharedGroups(id);
+
+    // get the group of the root project then the user
+    const groupIds = groups.map(group => group.id);
+    return this.groupService.getUserOfGroupes(groupIds);
   }
 
 

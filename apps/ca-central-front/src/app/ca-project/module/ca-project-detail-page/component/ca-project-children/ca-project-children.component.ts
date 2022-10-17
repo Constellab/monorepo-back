@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Observable, switchMap} from 'rxjs';
 import {CaProjectService} from '../../../../../ca-core/service-api/ca-project.service';
 import {CaProject} from '../../../../../ca-core/model/entities/ca-project.class';
@@ -9,7 +9,7 @@ import {FlArrayObs, FlEntityArrayObs, FlTableColumn} from '@monorepo/front-core-
   templateUrl: './ca-project-children.component.html',
   styleUrls: ['./ca-project-children.component.scss']
 })
-export class CaProjectChildrenComponent implements OnInit {
+export class CaProjectChildrenComponent implements OnInit, OnDestroy {
 
   @Input() projectId$: Observable<string>;
 
@@ -27,5 +27,11 @@ export class CaProjectChildrenComponent implements OnInit {
       )
     );
   }
+
+  ngOnDestroy(): void {
+    this.children$?.disconnect();
+  }
+
+
 
 }

@@ -27,8 +27,14 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
   }
 
   async create(entity: CnProject, entityManager?: EntityManager): Promise<CnProject> {
-    const userGroup = await this.groupService.getCurrentUserSingleGroup();
-    entity.sharedGroups = [userGroup];
+    // init the shared group for PROJECT
+    if (entity.currentLevel === CnProjectLevel.PROJECT) {
+      const userGroup = await this.groupService.getCurrentUserSingleGroup();
+      entity.sharedGroups = [userGroup];
+    } else {
+      // clear shared groups for children project
+      entity.sharedGroups = null;
+    }
     if (entityManager) {
       return super.createWithStatusTransaction(entity, CnProjectStatus.ACTIVE, entityManager);
     } else {

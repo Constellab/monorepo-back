@@ -1,10 +1,5 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {
-  CaProject,
-  CaProjectLevel,
-  CaProjectStatus,
-  caProjectStatusDict
-} from '../../../../../ca-core/model/entities/ca-project.class';
+import {Component, OnInit} from '@angular/core';
+import {CaProject, CaProjectStatus, caProjectStatusDict} from '../../../../../ca-core/model/entities/ca-project.class';
 import {
   CaProjectFormDialogComponent,
   CaProjectFormDialogInput
@@ -19,6 +14,8 @@ import {
   CaStatusHistoryListDialogInput
 } from '../../../../../ca-core/module/ca-status/ca-status-history-list-dialog/ca-status-history-list-dialog.component';
 import {FlDialogService} from '@monorepo/front-core-lib';
+import {CaProjectDetailState} from '../../state/ca-project-detail.state';
+import {Observable} from 'rxjs';
 
 /**
  * Show detailed information for a project , used in ProjectDetailPage
@@ -30,33 +27,24 @@ import {FlDialogService} from '@monorepo/front-core-lib';
 })
 export class CaProjectDetailComponent implements OnInit {
 
-  @Input() project: CaProject;
-
-  @Output() projectUpdated: EventEmitter<CaProject> = new EventEmitter<CaProject>();
+  projectId$: Observable<string>;
+  project$: Observable<CaProject>;
 
   constructor(private dialogService: FlDialogService,
-              private projectService: CaProjectService) {
+              private projectService: CaProjectService,
+              private state: CaProjectDetailState) {
   }
 
   ngOnInit(): void {
+    this.projectId$ = this.state.getProjectId$();
+    this.project$ = this.state.getProject$();
   }
 
-  get createChildrenText(): string {
-    switch (this.project.currentLevel) {
-      case CaProjectLevel.PROJECT:
-        return 'new_work_package';
-      case CaProjectLevel.WORK_PACKAGE:
-        return 'new_task';
-      default:
-        return '';
-    }
-  }
-
-  openUpdateProjectDialog(): void {
+  openUpdateProjectDialog(project: CaProject): void {
     const dialogInput: CaProjectFormDialogInput = {
       mode: 'update',
-      object: this.project,
-      level: this.project.currentLevel,
+      object: project,
+      level: project.currentLevel,
       parentId: null,
     };
 
@@ -67,11 +55,11 @@ export class CaProjectDetailComponent implements OnInit {
     );
   }
 
-  openUpdateStatusDialog(): void {
+  openUpdateStatusDialog(project: CaProject): void {
     const dialogInput: UpdateStatusFormDialogInput<CaProjectStatus> = {
       statusDict: caProjectStatusDict,
-      currentStatus: this.project.currentStatus.status,
-      updateStatus: this.projectService.getUpdateStatusMethod(this.project.id),
+      currentStatus: project.currentStatus.status,
+      updateStatus: this.projectService.getUpdateStatusMethod(project.id),
       title: 'update_project_status'
     };
     this.dialogService.openSmallDialog(CaUpdateStatusFormDialogComponent, {data: dialogInput}).afterClosed().subscribe(
@@ -81,15 +69,15 @@ export class CaProjectDetailComponent implements OnInit {
 
   private updateDialogClosed(project?: CaProject): void {
     if (project) {
-      this.projectUpdated.next(project);
+      this.state.updateCurrentProject(project);
     }
   }
 
-  openChildCreation(): void {
+  openChildCreation(project: CaProject): void {
     const dialogInput: CaProjectFormDialogInput = {
       mode: 'create',
-      level: this.project.getChildLevel(),
-      parentId: this.project.id
+      level: project.getChildLevel(),
+      parentId: project.id
     };
 
     this.dialogService.openSmallDialog(CaProjectFormDialogComponent, {
@@ -97,9 +85,9 @@ export class CaProjectDetailComponent implements OnInit {
     }).afterClosed().subscribe();
   }
 
-  openStatusHistory(): void {
+  openStatusHistory(project: CaProject): void {
     const dialogInput: CaStatusHistoryListDialogInput = {
-      statusHistoriesObs: this.projectService.getStatusHistories(this.project.id),
+      statusHistoriesObs: this.projectService.getStatusHistories(project.id),
     };
     this.dialogService.openSmallDialog(CaStatusHistoryListDialogComponent, {data: dialogInput});
   }

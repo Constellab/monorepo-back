@@ -2,23 +2,37 @@
 
   <ca-project-breadcrumb objectType="project" [objectId$]="projectId$"></ca-project-breadcrumb>
 
-  <fl-section [isLoading]="isLoading" [object]="project">
+  <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="1em" class="main-container">
 
-    <ng-template flSectionBody>
+    <div fxFlex="50%" fxLayout="column">
+      <ca-project-detail></ca-project-detail>
 
-      <ca-project-detail [project]="project"
-                         (projectUpdated)="onProjectUpdate($event)">
-      </ca-project-detail>
+      <ca-experiments-list [experiments$]="experiment$" class="g-section"></ca-experiments-list>
 
-      <div class="list" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="2em">
-        <ca-experiments-list [experiments$]="experiment$" fxFlex="auto"></ca-experiments-list>
-
-        <ca-reports-list [reports$]="reports$" fxFlex="auto"></ca-reports-list>
-      </div>
+      <ca-reports-list [reports$]="reports$" class="g-section"></ca-reports-list>
 
       <ca-project-children class="g-section" [projectId$]="projectId$"
-                           *ngIf="project.hasChildren()"></ca-project-children>
+                           *ngIf="showChildren$ | async"></ca-project-children>
+    </div>
 
-    </ng-template>
-  </fl-section>
+    <div fxFlex="50%">
+      <fl-card class="g-full g-full-height"></fl-card>
+    </div>
+
+  </div>
+
+  <!--  <fl-section [isLoading]="isLoading" [object]="project">-->
+
+  <!--    <ng-template flSectionBody>-->
+
+
+  <!--      <div class="list" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="2em">-->
+  <!--        -->
+  <!--      </div>-->
+
+  <!--      <ca-project-children class="g-section" [projectId$]="projectId$"-->
+  <!--                           *ngIf="project.hasChildren()"></ca-project-children>-->
+
+  <!--    </ng-template>-->
+  <!--  </fl-section>&lt;!&ndash;&ndash;&gt;-->
 </div>

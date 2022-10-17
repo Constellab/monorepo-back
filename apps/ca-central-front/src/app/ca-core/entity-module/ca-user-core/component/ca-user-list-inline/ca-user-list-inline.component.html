@@ -1,0 +1,28 @@
+<!-- user reverse so the first displayed element is on top of others-->
+<ng-container *ngIf="userList$ | async; let userList">
+  <div fxLayout="row-reverse" class="user-list">
+    <div class="additional-user-count element" *ngIf="userList.additionalUsers.length > 0"
+         (click)="openAdditionalUsersPortal($event)">
+      +{{userList.additionalUsers.length}}
+    </div>
+
+    <div class="element-container" *ngFor="let user of userList.previewUsers"
+         [matTooltip]="user.fullname" matTooltipPosition="below" matTooltipShowDelay="0">
+      <div class="element">
+        <fl-user-profile-picture [user]="user" size="small"></fl-user-profile-picture>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #additionalUsers>
+    <fl-portal>
+      <fl-portal-content>
+        <div class="portal-user-list">
+          <div *ngFor="let user of userList.additionalUsers" class="portal-user">
+            <ca-user-inline [user]="user"></ca-user-inline>
+          </div>
+        </div>
+      </fl-portal-content>
+    </fl-portal>
+  </ng-template>
+</ng-container>

@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup} from './cn-group.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {DeleteResult, EntityManager, Repository} from 'typeorm';
+import {DeleteResult, EntityManager, In, Repository} from 'typeorm';
 import {BlAbstractService} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnGroupType} from './cn-group-type.enum';
@@ -12,6 +12,7 @@ import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {SelectQueryBuilder} from 'typeorm/query-builder/SelectQueryBuilder';
 import {CnUserGroupService} from './cn-user-group.service';
 import {FindOptionsWhere} from 'typeorm/find-options/FindOptionsWhere';
+import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
 
 @Injectable()
 export class CnGroupsService extends BlAbstractService<CnGroup> {
@@ -222,8 +223,44 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
   public async getUsersOfTeam(groupId: string, page: number, size: number): Promise<ClPageI<CnUser>> {
     await this.checkAuthorizationToGetTeam(groupId);
 
-    return this.userGroupService.getGetUsersOfGroup(groupId, page, size);
+    return this.userGroupService.getUsersOfGroup(groupId, page, size);
   }
 
+  /**
+   * return all the users of a list og group (only TEAM and SINGLE_USER groupes)
+   * @param groupIds
+   */
+  public async getUserOfGroupes(groupIds: string[]): Promise<CnUser[]> {
+    const groups: CnGroup[] = await this.repo.find({
+      where: {
+        id: In(groupIds)
+      },
+      relations: {
+        user: true,
+        users: {
+          user: true
+        }
+      } as FindOptionsRelations<CnGroupTeam | CnGroupSingleUser>
+    });
+
+    // return all the user of all groupes without duplicate
+    const users: Record<string, CnUser> = {};
+    for (const group of groups) {
+
+      if (group instanceof CnGroupTeam) {
+        // add user to the map and avoid duplicate
+        for (const user of group.users) {
+          users[user.user.id] = user.user;
+        }
+      } else if (group instanceof CnGroupSingleUser) {
+        const user = await group.user;
+        users[user.id] = user;
+      }
+    }
+
+    // set the current user in first pos
+    const currentUser = CnCurrentUserHelper.getCurrentUser();
+    return Object.values(users).sort((a) => a.id === currentUser.id ? -1 : 1);
+  }
 
 }

@@ -7,6 +7,7 @@ import {ClPageI} from '@monorepo/core-lib';
 import {CnGroup} from '../cn-groups/cn-group.entity';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
 import {CnProjectAncestorTreeDTO, CnProjectAncestorType} from './cn-projects/cn-project.dto';
+import {CnUser} from '../cn-users/cn-user.entity';
 
 @Controller('projects')
 export class CnProjectsController {
@@ -99,6 +100,11 @@ export class CnProjectsController {
   getObjectProjectAncestors(@Param('objectType') objectType: CnProjectAncestorType,
                             @Param('id', new ParseUUIDPipe()) id: string): Promise<CnProjectAncestorTreeDTO[]> {
     return this.projectAggregate.getObjectProjectAncestors(objectType, id);
+  }
+
+  @Get(':id/users')
+  getUsersOfProject(@Param('id', ParseUUIDPipe) id: string): Promise<CnUser[]> {
+    return this.projectAggregate.getUserOfProject(id);
   }
 
   @Get(':id')

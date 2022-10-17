@@ -8,6 +8,7 @@ import {
 } from './component/ca-authenticated-user-inline/ca-authenticated-user-inline.component';
 import {CaUserTableComponent} from './component/ca-user-table/ca-user-table.component';
 import {CaCustomLibraryModule} from '../../custom-library/ca-custom-library.module';
+import {CaUserListInlineComponent} from './component/ca-user-list-inline/ca-user-list-inline.component';
 
 /**
  * Module containing users component
@@ -18,12 +19,14 @@ import {CaCustomLibraryModule} from '../../custom-library/ca-custom-library.modu
     CaSelectUserOptionsComponent,
     CaAuthenticatedUserInlineComponent,
     CaUserTableComponent,
+    CaUserListInlineComponent,
   ],
   exports: [
     CaUserInlineComponent,
     CaSelectUserOptionsComponent,
     CaAuthenticatedUserInlineComponent,
     CaUserTableComponent,
+    CaUserListInlineComponent,
   ],
   imports: [
     CommonModule,

@@ -58,7 +58,7 @@ export class CnUserGroupService extends BlAbstractPaginatedService<CnUserGroup> 
   }
 
 
-  public async getGetUsersOfGroup(groupId: string, page: number, size: number): Promise<ClPageI<CnUser>> {
+  public async getUsersOfGroup(groupId: string, page: number, size: number): Promise<ClPageI<CnUser>> {
     const result = await this.findPaginated(page, size, {
       where: {
         groupId: groupId
@@ -68,5 +68,4 @@ export class CnUserGroupService extends BlAbstractPaginatedService<CnUserGroup> 
 
     return result.map((userGroup) => userGroup.user);
   }
-
 }

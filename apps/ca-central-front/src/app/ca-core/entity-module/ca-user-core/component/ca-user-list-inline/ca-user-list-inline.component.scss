@@ -1,0 +1,47 @@
+
+.user-list div:not(:last-child){
+  margin-left: -5px;
+}
+
+.element-container:hover{
+  cursor: pointer;
+  .element{
+    z-index: 999;
+    // animation to slightly move the user box upward
+    top: -5px;
+  }
+}
+
+.element{
+  position: relative;
+  top: 0;
+  transition: top ease 0.2s;
+}
+
+
+
+.additional-user-count{
+  width: 2.5em;
+  height: 2.5em;
+  line-height: 2.5em;
+  font-size: 0.625em; // TODO to fix and fix in fl-user-profile-picture
+  text-align: center;
+  border-radius: 50%;
+  overflow: hidden;
+  border: solid 1px white;
+  background-color: var(--grey-contrast);
+  cursor: pointer;
+}
+
+.additional-user-count:hover{
+  border-color: var(--primary-color);
+}
+
+.portal-user-list div:not(:first-child){
+  margin-top: 0.5em;
+
+}
+
+.portal-user{
+  //margin-top: 0.5em;
+}

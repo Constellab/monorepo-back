@@ -11,6 +11,7 @@ import {Observable} from 'rxjs';
 import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource,} from '@monorepo/front-core-lib';
 import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
 import {CaGroup} from '../model/entities/ca-group.entity';
+import {CaUser} from '../model/entities/ca-user.class';
 
 /**
  * Service to manage project entity
@@ -107,5 +108,9 @@ export class CaProjectService {
 
   public getObjectProjectAncestors(objectType: CaProjectAncestorType, objectId: string): Observable<CaProjectAncestorTreeDTO[]> {
     return this.apiService.get(`${this.route}/ancestors/${objectType}/${objectId}`);
+  }
+
+  public getUsersOfProject(projectId: string): Observable<CaUser[]>{
+    return this.apiService.get(`${this.route}/${projectId}/users`, CaUser);
   }
 }

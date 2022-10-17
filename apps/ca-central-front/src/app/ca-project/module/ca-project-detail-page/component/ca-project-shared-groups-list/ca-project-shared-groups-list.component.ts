@@ -25,6 +25,8 @@ export class CaProjectSharedGroupsListComponent implements OnInit {
 
   @Input() projectId: string;
 
+  @Input() canEdit: boolean;
+
   groupsArray: FlArrayObs<CaGroup>;
 
   constructor(private projectService: CaProjectService,

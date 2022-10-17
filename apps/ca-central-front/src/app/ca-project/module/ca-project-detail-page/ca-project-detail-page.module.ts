@@ -14,6 +14,7 @@ import {
 import {CaProjectChildrenComponent} from './component/ca-project-children/ca-project-children.component';
 import {CaProjectDetailPageRoutingModule} from './ca-project-detail-page-routing.module';
 import {CaProjectObjectCoreModule} from '../ca-project-object-core/ca-project-object-core.module';
+import {CaProjectUsersComponent} from './component/ca-project-users/ca-project-users.component';
 
 /**
  * Module for the project detail page
@@ -24,6 +25,7 @@ import {CaProjectObjectCoreModule} from '../ca-project-object-core/ca-project-ob
     CaProjectDetailComponent,
     CaProjectSharedGroupsListComponent,
     CaProjectChildrenComponent,
+    CaProjectUsersComponent,
   ],
   imports: [
     CommonModule,

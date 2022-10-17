@@ -1,12 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {CaProjectService} from '../../../../../ca-core/service-api/ca-project.service';
 import {ActivatedRoute} from '@angular/router';
-import {CaProject} from '../../../../../ca-core/model/entities/ca-project.class';
-import {Observable} from 'rxjs';
+import {Observable, switchMap} from 'rxjs';
 import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
 import {CaReportService} from '../../../../../ca-core/service-api/ca-report.service';
 import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
 import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experiment.service';
+import {CaProjectDetailState} from '../../state/ca-project-detail.state';
 import {map} from 'rxjs/operators';
 
 /**
@@ -15,54 +15,41 @@ import {map} from 'rxjs/operators';
 @Component({
   selector: 'ca-project-detail-page',
   templateUrl: './ca-project-detail-page.component.html',
-  styleUrls: ['./ca-project-detail-page.component.scss']
+  styleUrls: ['./ca-project-detail-page.component.scss'],
+  providers: [CaProjectDetailState]
 })
 export class CaProjectDetailPageComponent implements OnInit {
 
   projectId$: Observable<string>;
-  project: CaProject;
 
   experiment$: Observable<CaExperiment[]>;
   reports$: Observable<CaReport[]>;
 
-  isLoading: boolean = false;
+  showChildren$: Observable<boolean>;
 
   constructor(private projectService: CaProjectService,
               private reportService: CaReportService,
               private experimentService: CaExperimentService,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private state: CaProjectDetailState) {
   }
 
   ngOnInit(): void {
-    this.projectId$ = this.route.params.pipe(
+    this.state.init(this.route.params.pipe(
       map(params => params.id)
+    ));
+    this.projectId$ = this.state.getProjectId$();
+    this.experiment$ = this.state.getProjectId$().pipe(
+      switchMap(id => this.experimentService.getExperimentsByProject(id))
     );
-    this.route.params.subscribe(
-      params => this.init(params.id)
+    this.reports$ = this.state.getProjectId$().pipe(
+      switchMap(id => this.reportService.getReportsByProject(id))
     );
-  }
 
-  private init(id: string): void {
-    this.getProject(id);
-    this.experiment$ = this.experimentService.getExperimentsByProject(id);
-    this.reports$ = this.reportService.getReportsByProject(id);
-  }
-
-  private getProject(id: string): void {
-    this.isLoading = true;
-    this.projectService.getById(id).subscribe(
-      project => this.getProjectSuccess(project),
-      () => this.isLoading = false
+    this.showChildren$ = this.state.getProject$(false).pipe(
+      map(project => project?.hasChildren() ?? false)
     );
   }
 
-  private getProjectSuccess(project: CaProject): void {
-    this.project = project;
-    this.isLoading = false;
-  }
-
-  onProjectUpdate(project: CaProject): void {
-    this.project = project;
-  }
 
 }

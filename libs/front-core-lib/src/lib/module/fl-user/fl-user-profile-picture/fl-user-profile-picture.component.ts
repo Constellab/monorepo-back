@@ -2,18 +2,14 @@ import {Component, Input, OnInit} from '@angular/core';
 import {FlUserConfig} from '../service/fl-user-config.config';
 import {Subject} from 'rxjs';
 
-export interface FlUserProfilePicture{
+export interface FlUserProfilePicture {
   firstname: string;
   lastname: string;
   photo: string;
   id: string;
 }
 
-export enum FlUserProfilePictureSize {
-  SMALL = 'small',
-  MEDIUM = 'medium',
-  BIG = 'big'
-}
+export type FlUserProfilePictureSize = 'small' | 'medium' | 'big';
 
 @Component({
   selector: 'fl-user-profile-picture',
@@ -26,7 +22,7 @@ export class FlUserProfilePictureComponent implements OnInit {
   user: FlUserProfilePicture;
 
   @Input()
-  size: FlUserProfilePictureSize | string = FlUserProfilePictureSize.MEDIUM;
+  size: FlUserProfilePictureSize | string = 'medium';
 
   sizeNumber: number = 3;
 
@@ -44,13 +40,13 @@ export class FlUserProfilePictureComponent implements OnInit {
   ngOnInit(): void {
     this.initials = (this.user.firstname?.charAt(0) ?? '') + (this.user.lastname?.charAt(0) ?? '');
     switch (this.size) {
-      case FlUserProfilePictureSize.SMALL:
+      case 'small':
         this.sizeNumber = 2.5;
         break;
-      case FlUserProfilePictureSize.MEDIUM:
+      case 'medium':
         this.sizeNumber = 3;
         break;
-      case FlUserProfilePictureSize.BIG:
+      case 'big':
         this.sizeNumber = 6;
         break;
       default:
@@ -72,11 +68,11 @@ export class FlUserProfilePictureComponent implements OnInit {
     img.onload = () => {
       this.imgSrc = link;
       this.hasPhoto$.next(true);
-    }
+    };
 
     img.onerror = () => {
       this.hasPhoto$.next(false);
-    }
+    };
   }
 
 }
