@@ -1,7 +1,8 @@
 <div fxLayout="row" fxLayoutAlign="start center"
-     fxLayoutGap="0.4em">
+     fxLayoutGap="0.4em" (mouseover)="openUserInfoPortal()"
+     caMouseUserHoverPortal [data]="user" [flMouseEnterDelay]="750">
   <fl-user-profile-picture [user]="user"
-                           class="person-picture" [size]="'small'"></fl-user-profile-picture>
+                           class="person-picture" size="small"></fl-user-profile-picture>
 
   <div class="g-text-small user-name" *ngIf="showName">
     {{user.fullname}}

@@ -69,6 +69,9 @@ export class CnUser extends BlEntityWithId implements BlUser {
   @Column({nullable: true})
   photo: string;
 
+  @Column({nullable: true})
+  company: string;
+
   //////////////////// TRANSIENT METHODS //////////////////
 
   @BeforeInsert()
@@ -112,5 +115,6 @@ export class CnUserEditDTO {
   id: string;
   firstname: string;
   lastname: string;
-  email: string;
+  job: string;
+  company: string;
 }

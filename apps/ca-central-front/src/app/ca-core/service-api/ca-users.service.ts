@@ -27,12 +27,17 @@ export class CaUsersService {
 
   public editUser(newUserInfo: Partial<CaUser>, newUserPhoto: File): Observable<CaUser>{
 
-    const formData = new FormData();
-    formData.append('photo', newUserPhoto);
-    return this.apiService.put(this.route + '/edit-photo/' + newUserInfo.id, formData).pipe(
-      mergeMap(() => this.apiService.put(this.route + '/edit', newUserInfo, CaUser)),
-      map((res) => res)
-    );
+    if(newUserPhoto){
+      const formData = new FormData();
+      formData.append('photo', newUserPhoto);
+      return this.apiService.put(this.route + '/edit-photo/' + newUserInfo.id, formData).pipe(
+        mergeMap(() => this.apiService.put(this.route + '/edit', newUserInfo, CaUser)),
+        map((res) => res)
+      );
+    } else {
+      return this.apiService.put(this.route + '/edit', newUserInfo, CaUser);
+    }
+
   }
 
 

@@ -123,7 +123,8 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     const user: CnUser = await this.repository.findOneBy({id: userEdit.id});
     user.firstname = userEdit.firstname;
     user.lastname = userEdit.lastname;
-    user.email = userEdit.email;
+    user.job = userEdit.job;
+    user.company = userEdit.company;
     return this.repository.save(user);
   }
 }

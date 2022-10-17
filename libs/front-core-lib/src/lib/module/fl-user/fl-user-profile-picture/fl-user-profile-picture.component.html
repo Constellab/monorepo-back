@@ -1,6 +1,6 @@
 <div class="user-icon" [style.height]="sizeNumber+'em'" [style.width]="sizeNumber+'em'"
      [style.line-height]="sizeNumber+'em'" [style.font-size]="fontSize+'em'">
-  <img [src]="imgSrc" class="user-icon-image" *ngIf="hasPhoto$ | async"/>
+  <img [src]="imgSrc" class="user-icon-image" [style.display]="!(hasPhoto$ | async) ? 'none' : 'block'"/>
   <span>{{ initials }}</span>
 </div>
 

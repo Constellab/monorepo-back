@@ -24,6 +24,7 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
   errorFileText: string;
   editPhotoImgElement: HTMLImageElement;
   currentImgLink: string;
+  photoDiv: HTMLDivElement;
 
   constructor(
     snackBarService: FlSnackBarService,
@@ -37,6 +38,7 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
 
   ngOnInit(): void {
     this.init();
+    console.log(this.formGp.value)
   }
 
   buildForm(): FormGroup<Partial<CaUser>> {
@@ -44,7 +46,8 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
       id: [null],
       lastname: [{value: null}, Validators.required],
       firstname: [{value: null}, Validators.required],
-      email: [{value: null}, [Validators.required]],
+      job: [null],
+      company: [null],
       photo: [null],
     });
   }
@@ -104,10 +107,10 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
   }
 
   activeInput(event: Event): void {
-    const photoDiv: HTMLDivElement = event.currentTarget as HTMLDivElement;
-    const inputPhoto: HTMLInputElement = photoDiv.querySelector('input');
+    this.photoDiv = event.currentTarget as HTMLDivElement;
+    const inputPhoto: HTMLInputElement = this.photoDiv.querySelector('input');
     if(this.user.photo){
-      this.editPhotoImgElement = photoDiv.querySelector('img');
+      this.editPhotoImgElement = this.photoDiv.querySelector('img');
       this.currentImgLink = this.editPhotoImgElement.src;
     }
     inputPhoto.click();
@@ -146,6 +149,10 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
       ctx.drawImage(img, -xBegin, -yBegin, newWidth, newHeight);
       canvas.toBlob((b: Blob) => {
         if(this.editPhotoImgElement){
+          this.editPhotoImgElement.src = URL.createObjectURL(b);
+        } else {
+          this.editPhotoImgElement = this.photoDiv.querySelector('img');
+          this.editPhotoImgElement.style.display = 'block';
           this.editPhotoImgElement.src = URL.createObjectURL(b);
         }
         this.addFile(new File([b], 'i.png'));

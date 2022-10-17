@@ -1,0 +1,22 @@
+<div class="user-info-portal">
+
+  <div class="top-side">
+    <div class="user-top-info">
+      <div class="fullname">{{user.fullname}}</div>
+    </div>
+  </div>
+  <div class="bot-side">
+    <div class="user-bot-info">
+      <fl-text-icon iconPosition="start" *ngIf="user.company">
+        <mat-icon flIcon="organization"></mat-icon>
+        {{user.company}}
+      </fl-text-icon>
+      <fl-text-icon iconPosition="start" *ngIf="user.job">
+        <mat-icon flIcon="badge"></mat-icon>
+        {{user.job}}
+      </fl-text-icon>
+      <button class="button-view-profile" mat-stroked-button color="primary" type="button">{{'view_profile' | translate}}</button>
+    </div>
+  </div>
+  <fl-user-profile-picture [size]="'5.5'" [user]="user" class="profil-picture"></fl-user-profile-picture>
+</div>

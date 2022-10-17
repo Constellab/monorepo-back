@@ -8,6 +8,8 @@ import {
 } from './component/ca-authenticated-user-inline/ca-authenticated-user-inline.component';
 import {CaUserTableComponent} from './component/ca-user-table/ca-user-table.component';
 import {CaCustomLibraryModule} from '../../custom-library/ca-custom-library.module';
+import { CaUserInfoPortalComponent } from './component/ca-user-info-portal/ca-user-info-portal.component';
+import { CaMouseHoverUserPortalDirective } from './directive/ca-mouse-hover-portal.directive';
 import {CaUserListInlineComponent} from './component/ca-user-list-inline/ca-user-list-inline.component';
 import {FormsModule} from '@angular/forms';
 
@@ -20,6 +22,8 @@ import {FormsModule} from '@angular/forms';
     CaSelectUserOptionsComponent,
     CaAuthenticatedUserInlineComponent,
     CaUserTableComponent,
+    CaUserInfoPortalComponent,
+    CaMouseHoverUserPortalDirective,
     CaUserListInlineComponent,
   ],
   exports: [

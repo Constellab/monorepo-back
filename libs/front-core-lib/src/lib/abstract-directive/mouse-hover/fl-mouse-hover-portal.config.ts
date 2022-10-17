@@ -12,6 +12,7 @@ export interface FlMouseHoverPortalConfig {
 
   /**
    * Name for the portal HTML Tag name (to handle portal closing)
+   * Warning: must be in uppercase
    */
   portalTagName: string;
 

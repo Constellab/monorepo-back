@@ -1,0 +1,56 @@
+.user-info-portal{
+  width: 22.5em;
+  height: 12.5em;
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.top-side{
+  background-color: var(--primary-color);
+  height: 37.5%;
+  width: 100%;
+  position: relative;
+}
+
+.top-side .user-top-info{
+  position: absolute;
+  color: white;
+  left: 42%;
+  bottom: 5%;
+  width: 60%;
+}
+
+.top-side .user-top-info .fullname{
+  font-size: 1.2em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 95%;
+  white-space: nowrap;
+}
+
+.bot-side{
+  background-color: var(--grey-low-contrast);
+  height: 62.5%;
+  width: 100%;
+  position: relative;
+}
+
+.profil-picture{
+  position: absolute;
+  top: 12.5%;
+  left: 4%;
+}
+
+.user-bot-info{
+  position: absolute;
+  left: 42%;
+  width: 60%;
+  top: 5%;
+  height: 95%;
+}
+
+.button-view-profile{
+  position: absolute;
+  bottom: 10%;
+}
