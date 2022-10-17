@@ -11,7 +11,11 @@
   </button>
 </div>
 
-<fl-text-editor [config]="textEditorConfig"
-                [formControl]="formControl" mode="JSON"
-                [placeholder]="'project_description_placeholder' | translate"></fl-text-editor>
+<fl-section [isLoading]="isLoading" [object]="formControl">
+  <ng-container *flSectionBody>
+    <fl-text-editor [config]="textEditorConfig"
+                    [formControl]="formControl" mode="JSON"
+                    [placeholder]="'project_description_placeholder' | translate"></fl-text-editor>
+  </ng-container>
+</fl-section>
 

@@ -143,7 +143,6 @@ export class CaProjectDetailState implements OnDestroy {
 
   public updateDescription(description: FlQuillJson): void {
     const project = this.getCurrentProject();
-    project.description = description as any;
     this.projectService.updateDescription(project.id, description as any).subscribe();
   }
 

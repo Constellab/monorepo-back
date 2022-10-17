@@ -8,7 +8,13 @@ import {
   CaProjectStatusHistory
 } from '../model/entities/ca-project.class';
 import {Observable} from 'rxjs';
-import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource,} from '@monorepo/front-core-lib';
+import {
+  FlApiService,
+  FlArrayObs,
+  FlEntityArrayObs,
+  FlEntityPaginatedDatasource,
+  FlQuillJson,
+} from '@monorepo/front-core-lib';
 import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
 import {CaGroup} from '../model/entities/ca-group.entity';
 import {CaUser} from '../model/entities/ca-user.class';
@@ -120,5 +126,9 @@ export class CaProjectService {
 
   public updateProjectLeader(id: string, userId: string): Observable<CaProject> {
     return this.apiService.put(`${this.route}/${id}/leader/${userId}`, null, CaProject);
+  }
+
+  public getProjectDescription(id: string): Observable<FlQuillJson> {
+    return this.apiService.get(`${this.route}/${id}/description`);
   }
 }

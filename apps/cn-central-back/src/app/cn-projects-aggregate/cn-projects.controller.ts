@@ -108,6 +108,12 @@ export class CnProjectsController {
     return this.projectAggregate.getUserOfProject(id);
   }
 
+  @Get(':id/description')
+  async findDescription(@Param('id', ParseUUIDPipe) id: string): Promise<CmRichTextI> {
+    const project = await this.projectAggregate.findProject(id);
+    return project.description;
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string): Promise<CnProject> {
     return this.projectAggregate.findProject(id);

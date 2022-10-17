@@ -5,7 +5,6 @@ import {ClLuxonDateTransform} from '@monorepo/core-lib';
 import {
   FlEntity,
   FlEntityPaginatedDatasource,
-  FlQuillJson,
   FlStatus,
   FlStatusDict,
   FlStatusHelper,
@@ -62,8 +61,6 @@ export class CaProject extends CaBaseEntity {
   code: string;
 
   title: string;
-
-  description: FlQuillJson;
 
   @ClLuxonDateTransform()
   startingDate: DateTime;
