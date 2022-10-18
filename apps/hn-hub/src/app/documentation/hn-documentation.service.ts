@@ -72,19 +72,19 @@ export class HnDocumentationService {
 
   async findCurrentDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<HnDocumentation> {
 
-    const documentation: HnDocumentation = (await this.documentationsRepository.find(
-      {
-        where: {completePath: path},
-        relations: ['folder']
-      })).find(d => d.folder.brickMajorVersion.id == brickMajorVersion.id);
+    const documentation: HnDocumentation = await this.documentationsRepository.findOneBy({
+      completePath: path,
+      folder: {brickMajorVersion: {id: brickMajorVersion.id}}
+    });
+
 
     if (documentation && documentation.content && documentation.content.ops) {
       const links: CmRichTextLink[] = CmRichText.getLinks(documentation.content as CmRichTextI);
 
       for (const l of links) {
         if (l.attributes.id) {
-          const linkDoc: HnDocumentation = await this.documentationsRepository.findOne(
-            {where: {id: l.attributes.id}, relations: {folder: true}});
+          const linkDoc: HnDocumentation = await this.documentationsRepository.findOneBy({id: l.attributes.id});
+
           if (linkDoc) {
             const insert: string[] = l.insert.split('> ');
             let path: string = linkDoc.completePath.slice(0, -1);

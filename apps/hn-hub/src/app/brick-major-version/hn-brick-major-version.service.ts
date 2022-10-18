@@ -54,12 +54,14 @@ export class HnBrickMajorVersionService {
     if (version != 'latest') {
       version = version.slice(1);
       major = +(version.split('.')[0]);
-      return await this.brickMajorVersionsRepository.findOne({where: {brick: Equal(brick), major: major}});
+      return await this.brickMajorVersionsRepository.findOne({where: {brick: {id: brick.id}, major: major}});
     }
 
-    return await this.brickMajorVersionsRepository.findOne({
+    return this.brickMajorVersionsRepository.findOne({
       where: {
-        brick: Equal(brick),
+        brick: {
+          id: brick.id
+        },
         versionState: HnVersionState.LATEST
       }
     });

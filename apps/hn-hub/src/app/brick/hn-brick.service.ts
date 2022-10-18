@@ -110,9 +110,9 @@ export class HnBrickService {
 
   }
 
-  async findById(id: string): Promise<HnBrick> {
-    return this.isCurrentAdmin() ? this.bricksRepository.findOneBy({id: id}) :
-      this.bricksRepository.findOneBy({id: id, visibility: HnBrickVisibility.PUBLIC});
+  async findById(i: string): Promise<HnBrick> {
+    return this.isCurrentAdmin() ? this.bricksRepository.findOneBy({id: i}) :
+      this.bricksRepository.findOneBy({id: i, visibility: HnBrickVisibility.PUBLIC});
   }
 
   async findDocsByBrickAndVersion(brick: HnBrick, version: string): Promise<HnNode> {

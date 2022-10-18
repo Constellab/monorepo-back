@@ -100,7 +100,7 @@ export class HnFolderService {
 
   async findFolderByBrickMajorVersion(brickMajorVersion: HnBrickMajorVersion): Promise<HnFolder> {
     return this.foldersRepository.findOne({
-      where: {brickMajorVersion: Equal(brickMajorVersion), completePath: IsNull()},
+      where: {brickMajorVersion: {id: brickMajorVersion.id}, completePath: IsNull()},
       relations: {documentations: true}
     });
   }
