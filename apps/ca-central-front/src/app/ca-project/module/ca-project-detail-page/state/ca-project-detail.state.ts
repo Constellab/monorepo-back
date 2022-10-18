@@ -5,12 +5,13 @@ import {CaProjectService} from '../../../../ca-core/service-api/ca-project.servi
 import {CaUser} from '../../../../ca-core/model/entities/ca-user.class';
 import {map} from 'rxjs/operators';
 import {CaAuthenticatedUserService} from '../../../../ca-core/service-api/ca-authenticated-user.service';
-import {FlQueryParamHandler, FlQuillJson} from '@monorepo/front-core-lib';
+import {FlArrayObs, FlEntityArrayObs, FlQueryParamHandler, FlQuillJson} from '@monorepo/front-core-lib';
 import {ActivatedRoute, Router} from '@angular/router';
 import {CaReport} from '../../../../ca-core/model/entities/ca-report.class';
 import {CaExperiment} from '../../../../ca-core/model/entities/ca-experiment.class';
 import {CaReportService} from '../../../../ca-core/service-api/ca-report.service';
 import {CaExperimentService} from '../../../../ca-core/service-api/ca-experiment.service';
+import {CaBaseEntity} from '../../../../ca-core/model/entities/ca-base-entity.class';
 
 export type CaProjectDetailRightPanel = {
   type: 'description' | 'report' | 'experiment'
@@ -25,8 +26,8 @@ export class CaProjectDetailState implements OnDestroy {
 
   private project$: BehaviorSubject<CaProject>;
   private users$: BehaviorSubject<CaUser[]>;
-  private reports$: BehaviorSubject<CaReport[]>;
-  private experiments$: BehaviorSubject<CaExperiment[]>;
+  private reports$: FlArrayObs<CaReport>;
+  private experiments$: FlArrayObs<CaExperiment>;
   private rightPanelState$: BehaviorSubject<CaProjectDetailRightPanel>;
 
   private queryParamHandler: FlQueryParamHandler<CaProjectDetailRightPanel>;
@@ -45,8 +46,8 @@ export class CaProjectDetailState implements OnDestroy {
     this.id$ = id$;
     this.project$ = new BehaviorSubject<CaProject>(null);
     this.users$ = new BehaviorSubject<CaUser[]>(null);
-    this.reports$ = new BehaviorSubject<CaReport[]>(null);
-    this.experiments$ = new BehaviorSubject<CaExperiment[]>(null);
+    this.reports$ = new FlEntityArrayObs(null, true);
+    this.experiments$ = new FlEntityArrayObs(null, true);
     this.rightPanelState$ = new BehaviorSubject<CaProjectDetailRightPanel>(null);
 
     this.id$.pipe(
@@ -83,11 +84,11 @@ export class CaProjectDetailState implements OnDestroy {
     // if the project is a leaf, load the reports and experiments
     if (project.isLeaf()) {
       this.reportService.getReportsByProject(project.id).subscribe({
-        next: reports => this.reports$.next(reports),
+        next: reports => this.reports$.array = reports,
         error: error => this.reports$.error(error)
       });
       this.experimentService.getExperimentsByProject(project.id).subscribe({
-        next: experiments => this.experiments$.next(experiments),
+        next: experiments => this.experiments$.array = experiments,
         error: error => this.experiments$.error(error)
       });
     }
@@ -148,35 +149,40 @@ export class CaProjectDetailState implements OnDestroy {
     this.projectService.updateDescription(project.id, description as any).subscribe();
   }
 
-  public getReports$(): Observable<CaReport[]> {
-    return this.reports$.asObservable().pipe(
-      filter(reports => reports != null)
-    );
+  public getReports$(): FlArrayObs<CaReport> {
+    return this.reports$;
   }
 
   public getReport$(id: string): Observable<CaReport> {
-    return this.getReports$().pipe(
+    return this.getReports$().connect().pipe(
       map(reports => reports.find(report => report.id === id))
     );
   }
 
-  public getExperiments$(): Observable<CaExperiment[]> {
-    return this.experiments$.asObservable().pipe(
-      filter(experiments => experiments != null)
-    );
+  public getExperiments$(): FlArrayObs<CaExperiment> {
+    return this.experiments$;
   }
 
-  public getExperiment(id: string): Observable<CaExperiment> {
-    return this.getExperiments$().pipe(
-      map(experiments => experiments.find(experiment => experiment.id === id))
-    );
+  public filterByUsers(users: CaUser[]): void {
+    const filterName: string = 'users';
+
+    if (users?.length > 0) {
+      const userFilter: (entity: CaBaseEntity) => boolean = (entity: CaBaseEntity) => {
+        return users.some(user => user.id === entity.createdBy.id);
+      };
+      this.reports$.addFilter(filterName, userFilter);
+      this.experiments$.addFilter(filterName, userFilter);
+    } else {
+      this.reports$.removeFilter(filterName);
+      this.experiments$.removeFilter(filterName);
+    }
   }
 
   ngOnDestroy(): void {
     this.project$?.complete();
     this.users$?.complete();
-    this.reports$?.complete();
-    this.experiments$?.complete();
+    this.reports$?.manualDisconnect();
+    this.experiments$?.manualDisconnect();
     this.rightPanelState$?.complete();
   }
 

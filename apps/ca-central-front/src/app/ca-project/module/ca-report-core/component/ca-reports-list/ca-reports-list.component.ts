@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Observable} from 'rxjs';
 import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
-import {FlTableColumn} from '@monorepo/front-core-lib';
+import {FlArrayObs, FlTableColumn} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'ca-reports-list',
@@ -11,7 +10,7 @@ import {FlTableColumn} from '@monorepo/front-core-lib';
 })
 export class CaReportsListComponent implements OnInit {
 
-  @Input() reports$: Observable<CaReport[]>;
+  @Input() reports: FlArrayObs<CaReport>;
 
   // when true, the row become clickable and resourceSelected event is trigger
   @Input() rowSelectable: boolean = false;

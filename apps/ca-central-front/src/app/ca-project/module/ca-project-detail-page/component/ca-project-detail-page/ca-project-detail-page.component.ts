@@ -8,6 +8,7 @@ import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.
 import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experiment.service';
 import {CaProjectDetailState} from '../../state/ca-project-detail.state';
 import {map} from 'rxjs/operators';
+import {FlArrayObs} from '@monorepo/front-core-lib';
 
 /**
  * Page for a project detail
@@ -22,8 +23,8 @@ export class CaProjectDetailPageComponent implements OnInit {
 
   projectId$: Observable<string>;
 
-  experiment$: Observable<CaExperiment[]>;
-  reports$: Observable<CaReport[]>;
+  experiments: FlArrayObs<CaExperiment>;
+  reports: FlArrayObs<CaReport>;
 
   showChildren$: Observable<boolean>;
   showObjects$: Observable<boolean>;
@@ -40,8 +41,8 @@ export class CaProjectDetailPageComponent implements OnInit {
       map(params => params.projectId)
     ));
     this.projectId$ = this.state.getProjectId$();
-    this.experiment$ = this.state.getExperiments$();
-    this.reports$ = this.state.getReports$();
+    this.experiments = this.state.getExperiments$();
+    this.reports = this.state.getReports$();
 
     this.showChildren$ = this.state.getProject$(false).pipe(
       map(project => project?.hasChildren() ?? false)

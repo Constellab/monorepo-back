@@ -143,7 +143,7 @@ export abstract class FlFormFieldDirective<INNER, OUTER = INNER> implements Cont
     this.emitCurrentValue();
   }
 
-  protected emitCurrentValue(): void {
+  emitCurrentValue(): void {
     const outerValue = this.convertInnerToOuter(this.value);
     this.onChange(outerValue);
     this.callChangeEvent(outerValue);

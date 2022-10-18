@@ -7,7 +7,7 @@
   </fl-card-header>
 
   <fl-card-body>
-    <fl-async-section [object]="reports$" emptyText="no_report">
+    <fl-async-section [arrayObs]="reports" emptyText="no_report">
       <ng-container *flSectionBody="let reports">
         <ca-report-table [datasource]="reports" [columns]="columns"
                          [rowSelectable]="rowSelectable"

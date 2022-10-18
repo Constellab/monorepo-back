@@ -1,26 +1,37 @@
 
-.user-list div:not(:last-child){
-  margin-left: -5px;
+.user-list div:not(:last-child) {
+  margin-left: -8px;
 }
 
-.element-container:hover{
+.user-preview-container:hover {
   cursor: pointer;
-  .element{
+
+  .user-preview {
     z-index: 999;
     // animation to slightly move the user box upward
     top: -5px;
   }
 }
 
-.element{
+.user-preview {
   position: relative;
   top: 0;
   transition: top ease 0.2s;
+  border: 2px solid transparent;
+  border-radius: 50%;
+}
+
+.additional-user-count-externe {
+  border: 2px solid transparent;
+  border-radius: 50%;
+}
+
+.selected, .additional-user-count-externe:hover {
+  border-color: var(--accent-color);
 }
 
 
-
-.additional-user-count{
+.additional-user-count-interne {
   width: 2.5em;
   height: 2.5em;
   line-height: 2.5em;
@@ -33,15 +44,26 @@
   cursor: pointer;
 }
 
-.additional-user-count:hover{
-  border-color: var(--primary-color);
+.portal {
+  padding: 0;
 }
 
-.portal-user-list div:not(:first-child){
+.portal-user-list{
+  padding: 1em;
+  max-width: 20em;
+}
+
+.portal-user-list div:not(:first-child) {
   margin-top: 0.5em;
-
 }
 
-.portal-user{
-  //margin-top: 0.5em;
+.portal-user {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: center;
+}
+
+.additional-user{
+  cursor: pointer;
+  user-select: none;
 }

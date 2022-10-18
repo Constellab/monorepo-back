@@ -7,6 +7,7 @@ import {Observable} from 'rxjs';
 import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
 import {CaReportService} from '../../../../../ca-core/service-api/ca-report.service';
 import {map} from 'rxjs/operators';
+import {FlArrayObs, FlEntityArrayObs} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'ca-experiment-detail-page',
@@ -20,7 +21,7 @@ export class CaExperimentDetailPageComponent implements OnInit {
 
   isLoading: boolean = true;
 
-  reports$: Observable<CaReport[]>;
+  reports: FlArrayObs<CaReport>;
 
   constructor(private route: ActivatedRoute,
               private experimentService: CaExperimentService,
@@ -38,7 +39,7 @@ export class CaExperimentDetailPageComponent implements OnInit {
 
   private init(id: string): void {
     this.getExperiment(id);
-    this.reports$ = this.reportService.getReportsByExperiment(id);
+    this.reports = new FlEntityArrayObs(this.reportService.getReportsByExperiment(id));
   }
 
   private getExperiment(id: string): void {

@@ -4,10 +4,10 @@
     <ca-project-detail></ca-project-detail>
 
     <ng-container *ngIf="showObjects$ | async">
-      <ca-reports-list [reports$]="reports$" class="g-section" [rowSelectable]="true"
+      <ca-reports-list [reports]="reports" class="g-section" [rowSelectable]="true"
                        (reportSelected)="selectReport($event)"></ca-reports-list>
 
-      <ca-experiments-list [experiments$]="experiment$" class="g-section"
+      <ca-experiments-list [experiments]="experiments" class="g-section"
                            [rowSelectable]="true"
                            (experimentSelected)="selectExperiment($event)"></ca-experiments-list>
     </ng-container>

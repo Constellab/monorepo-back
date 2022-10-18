@@ -9,6 +9,7 @@ import {
 import {CaUserTableComponent} from './component/ca-user-table/ca-user-table.component';
 import {CaCustomLibraryModule} from '../../custom-library/ca-custom-library.module';
 import {CaUserListInlineComponent} from './component/ca-user-list-inline/ca-user-list-inline.component';
+import {FormsModule} from '@angular/forms';
 
 /**
  * Module containing users component
@@ -30,6 +31,7 @@ import {CaUserListInlineComponent} from './component/ca-user-list-inline/ca-user
   ],
   imports: [
     CommonModule,
+    FormsModule,
 
     CaCustomMaterialModule,
     CaCustomLibraryModule,

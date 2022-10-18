@@ -46,8 +46,15 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
   // last status of the array obs
   private status$: BehaviorSubject<FlArrayObsStatus> = new BehaviorSubject({status: 'waiting'});
 
+  private filters: Record<string, (item: T) => boolean> = {};
 
-  protected constructor(data?: T[] | Observable<T[]>) {
+  /**
+   * @param data initial data
+   * @param disableAutoDisconnect, if true the auto disconnect is disabled. mat-table and fl-async-section will
+   * not automatically disconnect the array obs. It needs to be done manually (call manualDisconnect method)
+   * @protected
+   */
+  protected constructor(data?: T[] | Observable<T[]>, private disableAutoDisconnect: boolean = false) {
     this.initData(data);
   }
 
@@ -227,6 +234,18 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
     return this.status$.asObservable();
   }
 
+  /////////////////////// FILTERS ////////////////////////
+
+  public addFilter(name: string, filter: (item: T) => boolean): void {
+    this.filters[name] = filter;
+    this.array$.next(this.array);
+  }
+
+  public removeFilter(name: string): void {
+    delete this.filters[name];
+    this.array$.next(this.array);
+  }
+
   /////////////////////// OTHER ////////////////////////
   private convertObjectOrArrayToArray(object: T | T[]): T[] {
     return ClHelpService.convertObjectOrArrayToArray(object);
@@ -240,7 +259,14 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
     return this.array$.asObservable().pipe(
       filter(array => array != null),
       // return a copy of the array
-      map(array => array.slice())
+      map(array => {
+        let newArray = array.slice();
+        // apply filters
+        for (const filter of Object.values(this.filters)) {
+          newArray = newArray.filter(filter);
+        }
+        return newArray;
+      })
     );
   }
 
@@ -248,10 +274,16 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
    * Clear observable
    */
   public disconnect(): void {
+    if (this.disableAutoDisconnect) return;
+    this.manualDisconnect();
+  }
+
+  public manualDisconnect(): void {
     this.array$.complete();
     this.status = {status: 'complete'};
     this.status$.complete();
   }
+
 
   public isEmpty(): boolean {
     return this.array == null || this.array.length === 0;

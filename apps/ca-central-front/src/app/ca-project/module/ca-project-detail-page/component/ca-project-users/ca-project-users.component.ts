@@ -27,4 +27,8 @@ export class CaProjectUsersComponent implements OnInit {
     );
   }
 
+  selectedUserChange(users: CaUser[]): void {
+    this.state.filterByUsers(users);
+  }
+
 }

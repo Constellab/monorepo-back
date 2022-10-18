@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
-import {Observable} from 'rxjs';
-import {FlTableColumn} from '@monorepo/front-core-lib';
+import {FlArrayObs, FlTableColumn} from '@monorepo/front-core-lib';
 
 /**
  * In the project detail page, show the list of experiments
@@ -18,11 +17,10 @@ export class CaExperimentsListComponent implements OnInit {
 
   @Output() experimentSelected: EventEmitter<CaExperiment> = new EventEmitter();
 
-  @Input() experiments$: Observable<CaExperiment[]>;
+  @Input() experiments: FlArrayObs<CaExperiment>;
 
   @Input() mode: 'small' | 'large' = 'large';
 
-  experiment: CaExperiment;
   columns: FlTableColumn<CaExperiment>[] = ['title', 'createdBy', 'status'];
 
   constructor() {
@@ -33,7 +31,7 @@ export class CaExperimentsListComponent implements OnInit {
   }
 
   selectExperiment(experiment: CaExperiment): void {
-    if(this.rowSelectable){
+    if (this.rowSelectable) {
       this.experimentSelected.next(experiment);
     }
   }

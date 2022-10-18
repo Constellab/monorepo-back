@@ -1,25 +1,32 @@
 <!-- user reverse so the first displayed element is on top of others-->
-<ng-container *ngIf="userList$ | async; let userList">
+<ng-container *ngIf="value">
   <div fxLayout="row-reverse" class="user-list">
-    <div class="additional-user-count element" *ngIf="userList.additionalUsers.length > 0"
-         (click)="openAdditionalUsersPortal($event)">
-      +{{userList.additionalUsers.length}}
+    <div class="additional-user-count-externe" *ngIf="value.additionalUsers.length > 0"
+         (click)="openAdditionalUsersPortal($event)" [ngClass]="{'selected': selectionAdditionalUser()}">
+      <div class="additional-user-count-interne">
+        +{{value.additionalUsers.length}}
+      </div>
     </div>
 
-    <div class="element-container" *ngFor="let user of userList.previewUsers"
-         [matTooltip]="user.fullname" matTooltipPosition="below" matTooltipShowDelay="0">
-      <div class="element">
-        <fl-user-profile-picture [user]="user" size="small"></fl-user-profile-picture>
+    <div class="user-preview-container" *ngFor="let userSelection of value.previewUsers"
+         [matTooltip]="userSelection.user.fullname" matTooltipPosition="below" matTooltipShowDelay="0"
+         (click)="selectUser(userSelection)">
+      <div class="user-preview" [ngClass]="{'selected': userSelection.selected}">
+        <fl-user-profile-picture [user]="userSelection.user" size="small"></fl-user-profile-picture>
       </div>
     </div>
   </div>
 
   <ng-template #additionalUsers>
-    <fl-portal>
+    <fl-portal class="portal">
       <fl-portal-content>
-        <div class="portal-user-list">
-          <div *ngFor="let user of userList.additionalUsers" class="portal-user">
-            <ca-user-inline [user]="user"></ca-user-inline>
+        <div class="portal-user-list g-mat-checkbox-include-bottom">
+          <div *ngFor="let userSelection of value.additionalUsers" class="portal-user">
+            <mat-checkbox [(ngModel)]="userSelection.selected" (change)="emitCurrentValue()"
+                          [disabled]="disabled">
+            </mat-checkbox>
+            <ca-user-inline [user]="userSelection.user"
+                            class="additional-user" (click)="selectUser(userSelection)"></ca-user-inline>
           </div>
         </div>
       </fl-portal-content>

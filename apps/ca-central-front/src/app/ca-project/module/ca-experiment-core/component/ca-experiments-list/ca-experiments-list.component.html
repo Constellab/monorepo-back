@@ -7,8 +7,8 @@
   </fl-card-header>
 
   <fl-card-body>
-    <fl-async-section [object]="experiments$" emptyText="no_experiment">
-      <ng-container *flSectionBody="let experiments">
+    <fl-async-section [arrayObs]="experiments" emptyText="no_experiment">
+      <ng-container *flSectionBody>
         <ca-experiment-table [datasource]="experiments" [columns]="columns"
                              [rowSelectable]="rowSelectable"
                              (experimentSelected)="selectExperiment($event)"></ca-experiment-table>

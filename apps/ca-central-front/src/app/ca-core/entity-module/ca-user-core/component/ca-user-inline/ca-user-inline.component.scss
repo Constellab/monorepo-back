@@ -5,3 +5,9 @@
 .person-picture{
   font-size: 1.3rem;
 }
+
+.user-name{
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
