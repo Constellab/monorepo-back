@@ -29,10 +29,14 @@ export class CaUserProfileSectionComponent implements OnInit {
       object: this.user
     };
     this.dialogService.openMediumDialog(CaUserProfileEditDialogComponent, {data: input}).afterClosed().subscribe(
-      (res) => {
+      (res: CaUser) => {
         if(res){
-          window.location.reload();
+          if(res.photo != this.user.photo){
+            window.location.reload();
+          }
+          this.user = res;
         }
+
 
       }
     );

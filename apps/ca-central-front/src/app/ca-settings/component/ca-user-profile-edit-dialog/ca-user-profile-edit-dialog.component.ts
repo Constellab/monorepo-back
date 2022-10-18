@@ -38,7 +38,6 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
 
   ngOnInit(): void {
     this.init();
-    console.log(this.formGp.value)
   }
 
   buildForm(): FormGroup<Partial<CaUser>> {
@@ -77,7 +76,10 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
   submit(): void {
     if (!this.isLoadingImport && !this.errorFile) {
       this.update(this.formGp.value).subscribe({
-        next: newEntity => this.onSaveSuccess(newEntity, this.getUpdateSuccessMessage()),
+        next: newEntity => {
+          console.log(newEntity)
+          this.onSaveSuccess(newEntity, this.getUpdateSuccessMessage())
+        },
         error: () => this.isLoading = false
       });
     }

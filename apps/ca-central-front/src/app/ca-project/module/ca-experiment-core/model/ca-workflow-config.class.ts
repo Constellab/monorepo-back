@@ -2,12 +2,12 @@ import {PrConfigView, PrWorkflowMode, PrWorkflowNodeProcess, PrWorkflowPort} fro
 import {FlMenuDynamicButton} from '@monorepo/front-core-lib';
 import {ClHelpService} from '@monorepo/core-lib';
 import {CaLabInstanceService} from '../../../../ca-core/service-api/ca-lab-instance.service';
+import {CaLabInstance} from '../../../../ca-core/model/entities/ca-lab-instance.class';
 
 export class CaWorkflowConfig extends PrConfigView {
 
   constructor(
-    private labInstanceId: string,
-    private labInstanceService: CaLabInstanceService
+    private labInstance: CaLabInstance
   ) {
     super();
   }
@@ -33,24 +33,20 @@ export class CaWorkflowConfig extends PrConfigView {
   }
 
   private getResourceDetailContextButton(resourceId: string | null): FlMenuDynamicButton {
+    console.log(this.labInstance.isRunning())
     return {
       type: 'button',
       text: {text: 'resource', translateText: true},
       icon: 'resource',
       onClick: () => this.openResourceDetail(resourceId),
-      disabled: ClHelpService.isNullOrEmpty(resourceId)
+      disabled: ClHelpService.isNullOrEmpty(resourceId) || !this.labInstance.isRunning()
     };
   }
 
   private openResourceDetail(resourceId: string): void {
-    this.labInstanceService.logUserToLab(this.labInstanceId).subscribe(
-      result => this.loginSuccess(result.url, resourceId)
-    );
-  }
-
-  private loginSuccess(url: string, resourceId: string): void{
-    // redirect to the lab resource page url
-    window.location.href = url + '/app/databox/resource/' + resourceId;
+    if(this.labInstance.isRunning()){
+      window.location.href = `${this.labInstance.frontUrl}/app/databox/resource/${resourceId}`;
+    }
   }
 
 }
