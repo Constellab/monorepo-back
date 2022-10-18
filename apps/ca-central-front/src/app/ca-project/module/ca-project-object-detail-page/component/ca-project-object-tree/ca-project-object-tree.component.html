@@ -1,0 +1,35 @@
+<fl-section [isLoading]="isLoading" [object]="rootProject">
+
+  <ng-container *flSectionBody>
+
+    <h4>{{rootProject.title}}</h4>
+
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl"
+              *ngIf="dataSource && treeControl" class="tree">
+      <!-- This is the tree node template for leaf nodes -->
+      <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding
+                     class="g-text-small tree-node">
+        <a [routerLink]="node.id | caDetailRoute:'project'"
+           [queryParams]="{'showTree': true}"
+           class="leaf-title g-text-link">
+          {{node.title}}
+        </a>
+      </mat-tree-node>
+      <!-- This is the tree node template for expandable nodes -->
+      <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
+                     class="g-text-small tree-node">
+        <button mat-icon-button matTreeNodeToggle class="g-button-icon-small"
+                [attr.aria-label]="'Toggle ' + node.title">
+          <mat-icon>
+            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+          </mat-icon>
+        </button>
+        <a [routerLink]="node.id | caDetailRoute:'project'"
+           [queryParams]="{'showTree': true}"
+           class="g-text-link">
+          {{node.title}}
+        </a>
+      </mat-tree-node>
+    </mat-tree>
+  </ng-container>
+</fl-section>

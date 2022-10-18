@@ -21,10 +21,10 @@ export class CaReportDetailPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(
-      params => this.init(params.id)
+      params => this.init(params.routerId)
     );
     this.reportId$ = this.route.params.pipe(
-      map(params => params.id)
+      map(params => params.routerId)
     );
   }
 

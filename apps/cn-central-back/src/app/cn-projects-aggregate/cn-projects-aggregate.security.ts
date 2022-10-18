@@ -3,7 +3,6 @@ import {CnUser} from '../cn-users/cn-user.entity';
 import {CnProject} from './cn-projects/cn-project.entity';
 import {CnGroupsService} from '../cn-groups/cn-groups.service';
 import {CnProjectsService} from './cn-projects/cn-projects.service';
-import {CnProjectLevel} from './cn-projects/cn-project-level.enum';
 
 
 @Injectable()
@@ -15,7 +14,7 @@ export class CnProjectsAggregateSecurity {
 
   public async checkFindOneAndGetRootProject(project: CnProject, user: CnUser): Promise<CnProject> {
     // the authorization are handle at the projet level
-    const rootProject = await this.getRootProject(project);
+    const rootProject = await this.projectsService.getRootProjectWithSharedGroup(project);
     const groupIds = await this.groupsService.getGroupIdsFromUser(user);
 
     if (!rootProject.isSharedToGroup(groupIds)) {
@@ -48,13 +47,5 @@ export class CnProjectsAggregateSecurity {
       }
     }
     throw new UnauthorizedException();
-  }
-
-
-  private async getRootProject(project: CnProject): Promise<CnProject> {
-    if (project.currentLevel === CnProjectLevel.PROJECT) {
-      return project;
-    }
-    return this.projectsService.findWithSharedGroups(project.rootParentId);
   }
 }

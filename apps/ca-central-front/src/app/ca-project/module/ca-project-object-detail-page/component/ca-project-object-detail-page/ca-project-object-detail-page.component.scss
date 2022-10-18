@@ -1,0 +1,16 @@
+:host{
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.content{
+  padding: 2em 2em 0 2em;
+}
+
+.drawer{
+  width: 13em;
+  border-left: 1px solid var(--grey-low-contrast);
+  padding: 1em 0.5em;
+}
+

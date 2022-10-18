@@ -108,6 +108,7 @@ export class CaProject extends CaBaseEntity {
   }
 }
 
+
 export type CaProjectDatasource = FlEntityPaginatedDatasource<CaProject>;
 
 
@@ -125,7 +126,12 @@ export interface CaProjectObject extends FlEntity {
 }
 
 
-export type CaProjectAncestorType = 'project' | 'experiment' | 'report'
+export type CaProjectAncestorType = 'project' | 'experiment' | 'report';
+
+export interface CaProjectObjectRef {
+  id: string;
+  type: CaProjectAncestorType;
+}
 
 /**
  * Object returned when retrieving the hierarchy of an object
@@ -134,4 +140,10 @@ export interface CaProjectAncestorTreeDTO {
   id: string;
   title: string;
   type: CaProjectAncestorType;
+}
+
+export interface CaProjectTreeDto {
+  id: string;
+  title: string;
+  children: CaProjectTreeDto[];
 }

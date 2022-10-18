@@ -9,7 +9,6 @@ import {CaReportCoreModule} from '../ca-report-core/ca-report-core.module';
 import {RouterModule} from '@angular/router';
 import {CaLabCoreModule} from '../../../ca-core/entity-module/ca-lab-core/ca-lab-core.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {CaExperimentDetailPageRoutingModule} from './ca-experiment-detail-page-routing.module';
 import {CaProjectObjectCoreModule} from '../ca-project-object-core/ca-project-object-core.module';
 
 
@@ -28,8 +27,6 @@ import {CaProjectObjectCoreModule} from '../ca-project-object-core/ca-project-ob
     CaExperimentCoreModule,
     CaLabCoreModule,
     CaReportCoreModule,
-
-    CaExperimentDetailPageRoutingModule,
   ]
 })
 export class CaExperimentDetailPageModule {

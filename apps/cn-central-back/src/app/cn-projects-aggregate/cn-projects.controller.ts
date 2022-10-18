@@ -6,7 +6,7 @@ import {BlParseEnumPipe, BlParsePipe} from '@monorepo/back-core-lib';
 import {ClPageI} from '@monorepo/core-lib';
 import {CnGroup} from '../cn-groups/cn-group.entity';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
-import {CnProjectAncestorTreeDTO, CnProjectAncestorType} from './cn-projects/cn-project.dto';
+import {CnProjectAncestorTreeDTO, CnProjectAncestorType, CnProjectTreeDto} from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CmRichTextI} from '@monorepo/common-model';
 
@@ -82,9 +82,13 @@ export class CnProjectsController {
     return this.projectAggregate.getProjectStatusHistory(id);
   }
 
-  @Get(':id/tree')
-  getProjectTree(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnProject> {
-    return this.projectAggregate.getProjectTree(id);
+  /**
+   * Return a simplified project tree for an object (project, experiment, report)
+   */
+  @Get('tree/:objectType/:id')
+  getProjectTree(@Param('objectType') objectType: CnProjectAncestorType,
+                 @Param('id', new ParseUUIDPipe()) id: string): Promise<CnProjectTreeDto> {
+    return this.projectAggregate.getProjectTree(objectType, id);
   }
 
   @Get(':id/children')

@@ -37,7 +37,7 @@ export class CaProjectDetailPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.state.init(this.route.params.pipe(
-      map(params => params.id)
+      map(params => params.projectId)
     ));
     this.projectId$ = this.state.getProjectId$();
     this.experiment$ = this.state.getExperiments$();

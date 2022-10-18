@@ -2,11 +2,9 @@ import {
   caConstAdminRoute,
   caConstBaseRoute,
   caConstDashboardRoute,
-  caConstExperimentRoute,
   caConstLabInstancesRoute,
   caConstMyProjectsRoute,
   caConstProjectRoute,
-  caConstReportRoute,
   caConstSettingsRoute,
   caConstSmartDbRoute,
   caConstStructureRoute
@@ -46,11 +44,11 @@ export class CaRouterService {
   }
 
   public static getExperimentDetailRoute(experimentId: string): string {
-    return CaRouterService.getFullRoute(`${caConstExperimentRoute}/${experimentId}`);
+    return CaRouterService.getFullRoute(`${caConstProjectRoute}/experiment/${experimentId}`);
   }
 
   public static getReportDetailRoute(reportId: string): string {
-    return CaRouterService.getFullRoute(`${caConstReportRoute}/${reportId}`);
+    return CaRouterService.getFullRoute(`${caConstProjectRoute}/report/${reportId}`);
   }
 
   public static getMyLabInstancesRoute(): string {

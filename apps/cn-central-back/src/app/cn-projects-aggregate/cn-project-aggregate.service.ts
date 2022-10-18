@@ -19,7 +19,12 @@ import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {CnReportContent} from './cn-reports/cn-report-content.class';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-projects/cn-project-level.enum';
-import {CnProjectAncestorTreeDTO, CnProjectAncestorType} from './cn-projects/cn-project.dto';
+import {
+  CnProjectAncestorTreeDTO,
+  CnProjectAncestorType,
+  CnProjectDtoHelper,
+  CnProjectTreeDto
+} from './cn-projects/cn-project.dto';
 import {DataSource} from 'typeorm';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnUsersService} from '../cn-users/cn-users.service';
@@ -111,10 +116,30 @@ export class CnProjectAggregateService {
     return this.projectService.getOnGoingProjectsNumber();
   }
 
-  public async getProjectTree(projectId: string): Promise<CnProject> {
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+  public async getProjectTree(objectType: CnProjectAncestorType, objectId: string): Promise<CnProjectTreeDto> {
+    let projectId: string;
+    // retrieve the project id of the object
+    switch (objectType) {
+      case 'project':
+        projectId = objectId;
+        break;
+      case 'experiment':
+        const experiment = await this.experimentService.findByIdAndCheck(objectId);
+        projectId = experiment.projectId;
+        break;
+      case 'report':
+        const report = await this.reportService.findByIdAndCheck(objectId);
+        projectId = report.projectId;
+        break;
+    }
 
-    return await this.projectService.getProjectTree(project);
+
+    const project = await this.projectService.findWithSharedGroups(projectId);
+    const rootProject = await this.projectSecurity.checkFindOneAndGetRootProject(project,
+      CnCurrentUserHelper.getAndCheckCurrentUser());
+
+    const rootProjectTree = await this.projectService.getProjectTree(rootProject);
+    return CnProjectDtoHelper.convertToProjectTreeDto(rootProjectTree);
   }
 
   public async getChildren(projectId: string): Promise<CnProject[]> {
@@ -148,11 +173,7 @@ export class CnProjectAggregateService {
     const projectAncestors = await this.projectService.getAncestors(project);
 
     // Convert and add the project ancestors
-    const projectDto: CnProjectAncestorTreeDTO[] = projectAncestors.map(p => ({
-      type: 'project',
-      id: p.id,
-      title: p.title
-    }));
+    const projectDto: CnProjectAncestorTreeDTO[] = CnProjectDtoHelper.convertProjectAncestorTreeDtos(projectAncestors);
     ancestors.push(...projectDto);
     return ancestors;
   }

@@ -21,6 +21,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
+import {MatTreeModule} from '@angular/material/tree';
 
 
 /**
@@ -50,6 +51,7 @@ import {MatRadioModule} from '@angular/material/radio';
     MatSnackBarModule,
     MatSidenavModule,
     MatTooltipModule,
+    MatTreeModule,
 
     FlexLayoutModule,
   ],

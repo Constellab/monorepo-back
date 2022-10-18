@@ -5,7 +5,8 @@ import {
   CaProjectAncestorType,
   CaProjectDatasource,
   CaProjectStatus,
-  CaProjectStatusHistory
+  CaProjectStatusHistory,
+  CaProjectTreeDto
 } from '../model/entities/ca-project.class';
 import {Observable} from 'rxjs';
 import {
@@ -116,7 +117,7 @@ export class CaProjectService {
     return this.apiService.get(`${this.route}/ancestors/${objectType}/${objectId}`);
   }
 
-  public getUsersOfProject(projectId: string): Observable<CaUser[]>{
+  public getUsersOfProject(projectId: string): Observable<CaUser[]> {
     return this.apiService.get(`${this.route}/${projectId}/users`, CaUser);
   }
 
@@ -130,5 +131,9 @@ export class CaProjectService {
 
   public getProjectDescription(id: string): Observable<FlQuillJson> {
     return this.apiService.get(`${this.route}/${id}/description`);
+  }
+
+  public getProjectTree(objectType: CaProjectAncestorType, objectId: string): Observable<CaProjectTreeDto> {
+    return this.apiService.get(`${this.route}/tree/${objectType}/${objectId}`);
   }
 }

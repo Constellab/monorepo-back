@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaProjectAncestorTreeDTO, CaProjectAncestorType} from '../../../../../ca-core/model/entities/ca-project.class';
+import {CaProjectAncestorTreeDTO, CaProjectObjectRef} from '../../../../../ca-core/model/entities/ca-project.class';
 import {CaProjectService} from '../../../../../ca-core/service-api/ca-project.service';
 import {Observable, switchMap} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -10,6 +10,7 @@ interface BreadcrumbLink {
   title: string;
   url: string;
 }
+
 
 /**
  * Breadcrumb for project, report and experiments
@@ -22,9 +23,8 @@ interface BreadcrumbLink {
 })
 export class CaProjectBreadcrumbComponent implements OnInit {
 
-  @Input() objectType: CaProjectAncestorType;
+  @Input() projectObject$: Observable<CaProjectObjectRef>;
 
-  @Input() objectId$: Observable<string>;
 
   links$: Observable<BreadcrumbLink[]>;
 
@@ -33,8 +33,9 @@ export class CaProjectBreadcrumbComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.links$ = this.objectId$.pipe(
-      switchMap(objectId => this.projectService.getObjectProjectAncestors(this.objectType, objectId)),
+    // read children route params
+    this.links$ = this.projectObject$.pipe(
+      switchMap(projectObject => this.projectService.getObjectProjectAncestors(projectObject.type, projectObject.id)),
       map(ancestors => this.ancestorsToLinks(ancestors))
     );
   }

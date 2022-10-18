@@ -1,6 +1,5 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CaProjectBreadcrumbComponent} from './component/ca-project-breadcrumb/ca-project-breadcrumb.component';
 import {RouterModule} from '@angular/router';
 import {CaCoreModule} from '../../../ca-core/ca-core.module';
 import {CaSyncObjectInfoComponent} from './component/ca-sync-object-info/ca-sync-object-info.component';
@@ -11,12 +10,10 @@ import {CaValidatedObjectInfoComponent} from './component/ca-validated-object-in
  */
 @NgModule({
   declarations: [
-    CaProjectBreadcrumbComponent,
     CaSyncObjectInfoComponent,
     CaValidatedObjectInfoComponent,
   ],
   exports: [
-    CaProjectBreadcrumbComponent,
     CaSyncObjectInfoComponent,
     CaValidatedObjectInfoComponent,
   ],

@@ -116,6 +116,13 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
     return this.findByIdAndCheck(projectId, {sharedGroups: true});
   }
 
+  public async getRootProjectWithSharedGroup(project: CnProject): Promise<CnProject> {
+    if (project.currentLevel === CnProjectLevel.PROJECT) {
+      return project;
+    }
+    return this.findWithSharedGroups(project.rootParentId);
+  }
+
   public async getOnGoingProjectsNumber(): Promise<number> {
     const user: CnUser = this.userService.getCurrent();
     const projects: CnProject[] = await this.getProjectsOfUserId(user.id);

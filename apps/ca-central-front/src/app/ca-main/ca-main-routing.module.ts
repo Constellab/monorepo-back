@@ -5,11 +5,9 @@ import {
   caConstAdminRoute,
   caConstBaseRoute,
   caConstDashboardRoute,
-  caConstExperimentRoute,
   caConstLabInstancesRoute,
   caConstMyProjectsRoute,
   caConstProjectRoute,
-  caConstReportRoute,
   caConstSettingsRoute,
   caConstSmartDbRoute,
   caConstStructureRoute
@@ -48,22 +46,8 @@ const routes: Route[] = [
       //////////////////////// PROJECT DETAIL /////////////////////////
       {
         path: caConstProjectRoute,
-        loadChildren: () => import('../ca-project/module/ca-project-detail-page/ca-project-detail-page.module')
-          .then(m => m.CaProjectDetailPageModule)
-      },
-
-      //////////////////////// EXPERIMENT DETAIL /////////////////////////
-      {
-        path: caConstExperimentRoute,
-        loadChildren: () => import('../ca-project/module/ca-experiment-detail-page/ca-experiment-detail-page.module')
-          .then(m => m.CaExperimentDetailPageModule)
-      },
-
-      //////////////////////// REPORT DETAIL /////////////////////////
-      {
-        path: caConstReportRoute,
-        loadChildren: () => import('../ca-project/module/ca-report-detail-page/ca-report-detail-page.module')
-          .then(m => m.CaReportDetailPageModule)
+        loadChildren: () => import('../ca-project/module/ca-project-object-detail-page/ca-project-object-detail-page.module')
+          .then(m => m.CaProjectObjectDetailPageModule)
       },
 
       //////////////////////// SMART DB /////////////////////////

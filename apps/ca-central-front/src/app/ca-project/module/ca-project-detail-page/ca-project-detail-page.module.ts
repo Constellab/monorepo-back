@@ -12,7 +12,6 @@ import {
   CaProjectSharedGroupsListComponent
 } from './component/ca-project-shared-groups-list/ca-project-shared-groups-list.component';
 import {CaProjectChildrenComponent} from './component/ca-project-children/ca-project-children.component';
-import {CaProjectDetailPageRoutingModule} from './ca-project-detail-page-routing.module';
 import {CaProjectObjectCoreModule} from '../ca-project-object-core/ca-project-object-core.module';
 import {CaProjectUsersComponent} from './component/ca-project-users/ca-project-users.component';
 import {
@@ -56,8 +55,6 @@ import {CaLabCoreModule} from '../../../ca-core/entity-module/ca-lab-core/ca-lab
     CaReportCoreModule,
     CaGroupCoreModule,
     CaLabCoreModule,
-
-    CaProjectDetailPageRoutingModule,
   ]
 })
 export class CaProjectDetailPageModule {

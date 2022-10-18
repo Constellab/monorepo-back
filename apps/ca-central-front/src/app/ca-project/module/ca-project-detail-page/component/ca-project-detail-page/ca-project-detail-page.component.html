@@ -1,47 +1,28 @@
-<div class="g-page">
+<div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="1em" class="main-container">
 
-  <ca-project-breadcrumb objectType="project" [objectId$]="projectId$"></ca-project-breadcrumb>
+  <div fxFlex="50%" fxLayout="column">
+    <ca-project-detail></ca-project-detail>
 
-  <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="1em" class="main-container">
+    <ng-container *ngIf="showObjects$ | async">
+      <ca-reports-list [reports$]="reports$" class="g-section" [rowSelectable]="true"
+                       (reportSelected)="selectReport($event)"></ca-reports-list>
 
-    <div fxFlex="50%" fxLayout="column">
-      <ca-project-detail></ca-project-detail>
+      <ca-experiments-list [experiments$]="experiment$" class="g-section"
+                           [rowSelectable]="true"
+                           (experimentSelected)="selectExperiment($event)"></ca-experiments-list>
+    </ng-container>
 
-      <ng-container *ngIf="showObjects$ | async">
-        <ca-reports-list [reports$]="reports$" class="g-section" [rowSelectable]="true"
-                         (reportSelected)="selectReport($event)"></ca-reports-list>
-
-        <ca-experiments-list [experiments$]="experiment$" class="g-section"
-                             [rowSelectable]="true"
-                             (experimentSelected)="selectExperiment($event)"></ca-experiments-list>
-      </ng-container>
-
-      <ca-project-children class="g-section" [projectId$]="projectId$"
-                           *ngIf="showChildren$ | async"></ca-project-children>
-    </div>
-
-    <div fxFlex="50%">
-      <fl-card class="g-full g-full-height">
-        <fl-card-body>
-          <ca-project-detail-right-panel></ca-project-detail-right-panel>
-        </fl-card-body>
-      </fl-card>
-    </div>
-
+    <ca-project-children class="g-section" [projectId$]="projectId$"
+                         *ngIf="showChildren$ | async"></ca-project-children>
   </div>
 
-  <!--  <fl-section [isLoading]="isLoading" [object]="project">-->
+  <div fxFlex="50%">
+    <fl-card class="g-full g-full-height">
+      <fl-card-body>
+        <ca-project-detail-right-panel></ca-project-detail-right-panel>
+      </fl-card-body>
+    </fl-card>
+  </div>
 
-  <!--    <ng-template flSectionBody>-->
-
-
-  <!--      <div class="list" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="2em">-->
-  <!--        -->
-  <!--      </div>-->
-
-  <!--      <ca-project-children class="g-section" [projectId$]="projectId$"-->
-  <!--                           *ngIf="project.hasChildren()"></ca-project-children>-->
-
-  <!--    </ng-template>-->
-  <!--  </fl-section>&lt;!&ndash;&ndash;&gt;-->
 </div>
+
