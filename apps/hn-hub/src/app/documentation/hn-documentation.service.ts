@@ -13,6 +13,7 @@ import {HnNodeDTO} from '../folder/hn-folder.dto';
 import {CmRichText, CmRichTextHeader, CmRichTextI, CmRichTextImageCP, CmRichTextLink} from '@monorepo/common-model';
 import {HnFolder} from '../folder/hn-folder.entity';
 import {ISizeCalculationResult} from 'image-size/dist/types/interface';
+import {ClStringHelper} from '@monorepo/core-lib';
 
 class HnDocImage {
   filename: string;
@@ -140,7 +141,7 @@ export class HnDocumentationService {
     const listId: string[] = [];
     for (const h of headers) {
       if (h.attributes.header.id) {
-        h.attributes.header.id = h.attributes.header.id.replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '');
+        h.attributes.header.id = ClStringHelper.toIdForUrl(h.attributes.header.id);
         if (h.attributes.header.id.length > 0) {
           const sameTitleNumber: number = listId.filter(value => value == h.attributes.header.id).length;
           if (sameTitleNumber > 0) {

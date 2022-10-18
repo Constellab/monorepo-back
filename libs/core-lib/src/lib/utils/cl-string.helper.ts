@@ -198,4 +198,19 @@ export class ClStringHelper {
     if (str == null) return null;
     return str.trim().replace(/\s+/g, '-').toLowerCase();
   }
+
+
+  public static toIdForUrl(str: string): string{
+    str = str.replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '');
+    str.replace('--', '-');
+    while(str[0] == '-'){
+      str = str.slice();
+    }
+
+    while (str[str.length-1] == '-'){
+      str = str.slice(0, -1);
+    }
+
+    return str;
+  }
 }
