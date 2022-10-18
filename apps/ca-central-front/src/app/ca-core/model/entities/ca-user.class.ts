@@ -3,6 +3,7 @@ import {ClLuxonTransform, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib
 import {CaEntity} from './ca-entity.entity';
 import {CmUserCategory} from '@monorepo/common-model';
 import {FlDatasourcePaginated} from '@monorepo/front-core-lib';
+import {CaOrganization} from './ca-organization.class';
 
 export interface CaNewUser {
   firstname: string;
@@ -35,6 +36,8 @@ export class CaUser extends CaEntity {
   biography?: string;
 
   company?: string;
+
+  organization?: CaOrganization;
 
   @ClLuxonTransform()
   createdAt: DateTime;

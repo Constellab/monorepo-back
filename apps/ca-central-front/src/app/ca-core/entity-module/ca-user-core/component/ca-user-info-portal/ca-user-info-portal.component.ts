@@ -18,6 +18,7 @@ export class CaUserInfoPortalComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     //TODO: Only show redirection button if users are in the same organisation
   }
 

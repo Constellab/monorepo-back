@@ -53,7 +53,9 @@ export class FlUserProfilePictureComponent implements OnInit {
         this.sizeNumber = +this.size;
     }
     this.fontSize = this.sizeNumber / 4;
-    this.getPhotoLink();
+    if(this.user.photo){
+      this.getPhotoLink();
+    }
   }
 
   getPhotoLink(): string {
