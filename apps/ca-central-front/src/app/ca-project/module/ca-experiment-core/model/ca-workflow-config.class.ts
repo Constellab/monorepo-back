@@ -33,7 +33,6 @@ export class CaWorkflowConfig extends PrConfigView {
   }
 
   private getResourceDetailContextButton(resourceId: string | null): FlMenuDynamicButton {
-    console.log(this.labInstance.isRunning())
     return {
       type: 'button',
       text: {text: 'resource', translateText: true},

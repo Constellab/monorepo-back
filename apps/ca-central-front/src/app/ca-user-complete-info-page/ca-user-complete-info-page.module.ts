@@ -5,6 +5,7 @@ import {
   CaUserCompleteInfoPageComponent
 } from './component/ca-user-complete-info-page/ca-user-complete-info-page.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {CaUserCompleteInfoPageRoutingModule} from './ca-user-complete-info-page-routing.module';
 
 /**
  * Page used when the user logged for the first time
@@ -21,6 +22,8 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
     ReactiveFormsModule,
 
     CaCoreModule,
+
+    CaUserCompleteInfoPageRoutingModule
   ]
 })
 export class CaUserCompleteInfoPageModule {

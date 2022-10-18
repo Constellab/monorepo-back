@@ -25,7 +25,7 @@ export class CaUser extends CaEntity {
 
   phone: string;
 
-  job?: string;
+  function?: string;
 
   lang: ClSupportedLanguage;
 

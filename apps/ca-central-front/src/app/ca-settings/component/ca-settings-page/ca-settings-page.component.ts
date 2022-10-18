@@ -1,8 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {CaAuthenticationService} from '../../../ca-login/service/ca-authentication.service';
 import {Router} from '@angular/router';
-import {CaUsersService} from '../../../ca-core/service-api/ca-users.service';
-import {CaAuthenticatedUserService} from '../../../ca-core/service-api/ca-authenticated-user.service';
 
 /**
  * Settings page

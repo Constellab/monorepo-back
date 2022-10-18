@@ -17,6 +17,10 @@ export class CaUsersService {
   constructor(private apiService: FlApiService) {
   }
 
+  public getById(id: string): Observable<CaUser>{
+    return this.apiService.getById(`${this.route}`, id);
+  }
+
   public getUserPhoto(userId: string): string{
     return this.apiService.getBaseRouteUrl(`${this.route}/photo/${userId}`);
   }

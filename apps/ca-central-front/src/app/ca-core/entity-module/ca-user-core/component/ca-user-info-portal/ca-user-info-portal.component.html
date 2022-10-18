@@ -11,11 +11,18 @@
         <mat-icon flIcon="organization"></mat-icon>
         {{user.company}}
       </fl-text-icon>
-      <fl-text-icon iconPosition="start" *ngIf="user.job">
+      <fl-text-icon iconPosition="start" *ngIf="user.function">
         <mat-icon flIcon="badge"></mat-icon>
-        {{user.job}}
+        {{user.function}}
       </fl-text-icon>
-      <button class="button-view-profile" mat-stroked-button color="primary" type="button">{{'view_profile' | translate}}</button>
+      <a [href]="'app/user/' + user.id">
+        <button class="button-view-profile g-button-small"  mat-stroked-button color="primary" type="button">
+          <fl-text-icon iconPosition="start">
+            <mat-icon flIcon="person" class="g-button-icon-small"></mat-icon>
+            {{'view_profile' | translate}}
+          </fl-text-icon>
+        </button>
+      </a>
     </div>
   </div>
   <fl-user-profile-picture [size]="'5.5'" [user]="user" class="profil-picture"></fl-user-profile-picture>

@@ -45,8 +45,9 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
       id: [null],
       lastname: [{value: null}, Validators.required],
       firstname: [{value: null}, Validators.required],
-      job: [null],
+      function: [null],
       company: [null],
+      biography: [null, Validators.max(500)],
       photo: [null],
     });
   }

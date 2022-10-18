@@ -1,1 +1,5 @@
-<ca-user-inline [user]="authenticatedUser" [showName]="showName"></ca-user-inline>
+
+<a [href]="'app/user/' + authenticatedUser.id">
+  <fl-user-profile-picture [user]="authenticatedUser" size="medium"></fl-user-profile-picture>
+</a>
+

@@ -10,6 +10,18 @@
       <fl-key class="k">{{'email' | translate}}</fl-key>
       {{user.email}}
     </fl-key-value>
+    <fl-key-value *ngIf="user.company">
+      <fl-key class="k">{{'company' | translate}}</fl-key>
+      {{user.company}}
+    </fl-key-value>
+    <fl-key-value *ngIf="user.function">
+      <fl-key class="k">{{'function' | translate}}</fl-key>
+      {{user.function}}
+    </fl-key-value>
+    <fl-key-value *ngIf="user.biography">
+      <fl-key class="k">{{'biography' | translate}}</fl-key>
+      {{user.biography}}
+    </fl-key-value>
   </div>
   <div class="edit-profile">
     <button mat-stroked-button type="button" (click)="openEditProfileDialog()">{{'edit' | translate}}</button>

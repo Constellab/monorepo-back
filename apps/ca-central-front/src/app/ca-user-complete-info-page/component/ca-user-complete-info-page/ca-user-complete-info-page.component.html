@@ -1,1 +1,26 @@
-<p>user-complete-info-page works!</p>
+<fl-async-section [object]="user$">
+  <ng-container *flSectionBody="let user">
+
+    <div class="header-div">
+      <h2>{{user.firstname}} {{user.lastname}}</h2>
+    </div>
+    <fl-user-profile-picture [user]="user" size="7" class="user-pp"></fl-user-profile-picture>
+    <div class="profile">
+      <div class="base-info">
+        <fl-text-icon iconPosition="start" *ngIf="user.company">
+          <mat-icon flIcon="organization"></mat-icon>
+          {{user.company}}
+        </fl-text-icon>
+        <fl-text-icon iconPosition="start" *ngIf="user.function">
+          <mat-icon flIcon="badge"></mat-icon>
+          {{user.function}}
+        </fl-text-icon>
+      </div>
+
+      <div class="biography">
+        <p>{{user.biography}}</p>
+      </div>
+    </div>
+
+  </ng-container>
+</fl-async-section>

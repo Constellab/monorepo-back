@@ -35,8 +35,13 @@
     </mat-form-field>
 
     <mat-form-field class="g-form-input" appearance="fill">
-      <mat-label>{{'job' | translate}}</mat-label>
-      <input matInput type="text" formControlName="job">
+      <mat-label>{{'function' | translate}}</mat-label>
+      <input matInput type="text" formControlName="function">
+    </mat-form-field>
+
+    <mat-form-field class="g-form-input" appearance="fill">
+      <mat-label>{{'biography' | translate}}</mat-label>
+      <textarea matInput formControlName="biography" class="biography-input" maxlength="500"></textarea>
     </mat-form-field>
   </form>
 </mat-dialog-content>

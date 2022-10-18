@@ -10,7 +10,8 @@ import {
   caConstProjectRoute,
   caConstSettingsRoute,
   caConstSmartDbRoute,
-  caConstStructureRoute
+  caConstStructureRoute,
+  caConstUserPageRoute
 } from '../ca-core/utils/ca-base-route';
 import {CaLoadUserGuard} from './guard/ca-load-user.guard';
 import {CaAdminGuard} from '../ca-core/guard/ca-admin-guard.service';
@@ -65,6 +66,13 @@ const routes: Route[] = [
       {
         path: caConstStructureRoute,
         loadChildren: () => import('../ca-structure/ca-structure.module').then(m => m.CaStructureModule),
+      },
+
+      //////////////////////// USER PAGE /////////////////////////
+      {
+        path: caConstUserPageRoute,
+        loadChildren: () => import('../ca-user-complete-info-page/ca-user-complete-info-page.module')
+          .then(m => m.CaUserCompleteInfoPageModule)
       },
 
       //////////////////////// SETTINGS /////////////////////////

@@ -66,5 +66,8 @@
   "change_project_leader": "Change project leader",
   "project_leader_changed": "Project leader changed",
   "sub_projects": "Sub projects",
-  "view_profile": "View profile"
+  "view_profile": "View profile",
+  "function": "Function",
+  "company": "Company",
+  "biography": "Biography"
 }

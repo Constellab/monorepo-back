@@ -19,6 +19,11 @@ export class CnUsersController {
     return this.usersService.getCurrent();
   }
 
+  @Get('/:id')
+  async getById(@Param('id') id: string): Promise<CnUser> {
+    return this.usersService.findOne(id);
+  }
+
   @Put('/language/:lang')
   updateLanguage(@Param('lang', new BlParseEnumPipe(ClSupportedLanguage)) lang: ClSupportedLanguage): Promise<void> {
     return this.usersService.updateLanguage(lang);
