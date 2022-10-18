@@ -53,7 +53,9 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
    * Return a simplified list from this project to the root project
    */
   public async getAncestors(project: CnProject): Promise<CnProject[]> {
-    const parent = await this.repository.findAncestorsTree(project);
+    const parent = await this.repository.findAncestorsTree(project, {
+      relations: ['createdBy', 'lastModifiedBy', 'leader'],
+    });
     const projects: CnProject[] = [];
     let currentProject = parent;
     while (currentProject != null) {

@@ -16,6 +16,10 @@ import {
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {CaProjectDetailState} from '../../state/ca-project-detail.state';
 import {Observable} from 'rxjs';
+import {
+  CaUpdateProjectLeaderDialogComponent,
+  CaUpdateProjectLeaderDialogInput
+} from '../../../../../ca-core/entity-module/ca-project-core/component/ca-update-project-leader-dialog/ca-update-project-leader-dialog.component';
 
 /**
  * Show detailed information for a project , used in ProjectDetailPage
@@ -94,5 +98,19 @@ export class CaProjectDetailComponent implements OnInit {
 
   showDescription(): void {
     this.state.updateRightPanelState({type: 'description'});
+  }
+
+  openUpdateProjectLeaderDialog(project: CaProject): void {
+    const dialogInput: CaUpdateProjectLeaderDialogInput = {
+      projectId: project.id,
+      currentLeader: project.leader,
+      users$: this.state.getUsers$()
+    };
+
+    this.dialogService.openSmallDialog(CaUpdateProjectLeaderDialogComponent, {
+      data: dialogInput
+    }).afterClosed().subscribe(
+      leader => project.leader = leader
+    );
   }
 }

@@ -62,5 +62,7 @@
   "project_leader": "Project leader",
   "project_description_placeholder": "Describe your project here",
   "show_project_description": "Show project description",
-  "open_details": "Open details"
+  "open_details": "Open details",
+  "change_project_leader": "Change project leader",
+  "project_leader_changed": "Project leader changed"
 }

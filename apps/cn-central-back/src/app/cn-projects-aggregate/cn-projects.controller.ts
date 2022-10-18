@@ -109,7 +109,7 @@ export class CnProjectsController {
 
   @Get(':id/users')
   getUsersOfProject(@Param('id', ParseUUIDPipe) id: string): Promise<CnUser[]> {
-    return this.projectAggregate.getUserOfProject(id);
+    return this.projectAggregate.getUsersOfProject(id);
   }
 
   @Get(':id/description')

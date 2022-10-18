@@ -43,6 +43,11 @@
           <span>{{'edit' | translate}}</span>
         </button>
 
+        <button mat-menu-item type="button" (click)="openUpdateProjectLeaderDialog(project)">
+          <mat-icon>person</mat-icon>
+          <span>{{'change_project_leader' | translate}}</span>
+        </button>
+
       </mat-menu>
     </div>
   </div>

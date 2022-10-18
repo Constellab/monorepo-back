@@ -413,7 +413,7 @@ export class CnProjectAggregateService {
    * Return the complete list of user that have access to the project
    * @param id
    */
-  public async getUserOfProject(id: string): Promise<CnUser[]> {
+  public async getUsersOfProject(id: string): Promise<CnUser[]> {
     const groups = await this.getProjectSharedGroups(id);
 
     // get the group of the root project then the user

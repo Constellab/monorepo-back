@@ -8,6 +8,9 @@ import {CaProjectInfoComponent} from './component/ca-project-info/ca-project-inf
 import {CaProjectsListComponent} from './component/ca-projects-list/ca-projects-list.component';
 import {RouterModule} from '@angular/router';
 import {CaProjectTableComponent} from './component/ca-project-table/ca-project-table.component';
+import {
+  CaUpdateProjectLeaderDialogComponent
+} from './component/ca-update-project-leader-dialog/ca-update-project-leader-dialog.component';
 
 /**
  * Importable module to get project components and pipe
@@ -20,6 +23,7 @@ import {CaProjectTableComponent} from './component/ca-project-table/ca-project-t
     CaProjectsListComponent,
     CaProjectInfoComponent,
     CaProjectTableComponent,
+    CaUpdateProjectLeaderDialogComponent,
   ],
   exports: [
     // Component
@@ -28,6 +32,7 @@ import {CaProjectTableComponent} from './component/ca-project-table/ca-project-t
     CaProjectsListComponent,
     CaProjectInfoComponent,
     CaProjectTableComponent,
+    CaUpdateProjectLeaderDialogComponent,
   ],
   imports: [
     CommonModule,

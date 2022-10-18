@@ -1,5 +1,5 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {BehaviorSubject, filter, Observable, switchMap} from 'rxjs';
+import {BehaviorSubject, filter, first, Observable, switchMap} from 'rxjs';
 import {CaProject} from '../../../../ca-core/model/entities/ca-project.class';
 import {CaProjectService} from '../../../../ca-core/service-api/ca-project.service';
 import {CaUser} from '../../../../ca-core/model/entities/ca-user.class';
@@ -58,6 +58,7 @@ export class CaProjectDetailState implements OnDestroy {
     });
 
     this.id$.pipe(
+      first(), // as the share is handle at the root project level, not need to refresh it every time
       switchMap(id => this.projectService.getUsersOfProject(id))
     ).subscribe({
       next: users => this.users$.next(users),
