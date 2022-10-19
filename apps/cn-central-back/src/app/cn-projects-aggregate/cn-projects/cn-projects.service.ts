@@ -45,6 +45,13 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
     return this.repository.findDescendantsTree(project);
   }
 
+  public async getProjectTreesByOrganization(organizationId: string): Promise<CnProject[]> {
+    return this.repository.find({
+      where: {organization: {id: organizationId}, currentLevel: CnProjectLevel.PROJECT},
+      relations: {children: {children: true}},
+    });
+  }
+
   public getChildren(project: CnProject): Promise<CnProject[]> {
     return this.repository.find({where: {parent: {id: project.id}}});
   }

@@ -210,6 +210,9 @@
     "viewer_selected_configuration": "Configuration",
     "viewer_not_configured": "Le viewer n'est pas encore configuré",
     "running_experiment_list": "Expériences en cours",
-    "no_running_experiment": "Aucune expérience en cours"
+    "no_running_experiment": "Aucune expérience en cours",
+    "select_project": "Sélectionner un projet",
+    "select_project_help": "Vous pouvez sélectionner un projet maintenant pour organiser vos object et les synchroniser avec Central. Si vous ne sélectionnez pas de project, vous pourrez toujours le faire plus tard pas la page de l'objet."
+
   }
 }

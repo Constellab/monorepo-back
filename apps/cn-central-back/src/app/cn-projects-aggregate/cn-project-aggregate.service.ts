@@ -112,6 +112,12 @@ export class CnProjectAggregateService {
     return this.projectService.getProjectsOfUserId(userId);
   }
 
+  // no protection, it is called by a lab
+  public async getProjectTreesByOrganization(): Promise<CnProject[]> {
+    const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
+    return this.projectService.getProjectTreesByOrganization(labInstance.organizationId);
+  }
+
   public async getOnGoingProjectsNumber(): Promise<number> {
     return this.projectService.getOnGoingProjectsNumber();
   }

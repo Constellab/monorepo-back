@@ -1,4 +1,4 @@
-<mat-menu [overlapTrigger]="true" [hasBackdrop]="hasBackdrop">
+<mat-menu [overlapTrigger]="true" [hasBackdrop]="hasBackdrop" [xPosition]="xPosition" [yPosition]="yPosition">
   <div [ngClass]="containerClass">
     <ng-container *ngFor="let item of menuItems">
       <mat-divider *ngIf="item.divider"></mat-divider>

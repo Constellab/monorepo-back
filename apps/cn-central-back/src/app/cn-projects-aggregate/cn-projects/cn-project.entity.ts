@@ -22,6 +22,7 @@ import {ClHelpService} from '@monorepo/core-lib';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-project-level.enum';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {CmRichTextI} from '@monorepo/common-model';
+import {CnOrganization} from '../../cn-organizations/cn-organization.entity';
 
 /**
  * A project is an ensemble of experiments
@@ -88,6 +89,10 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
 
   @Column({nullable: true, update: false})
   rootParentId?: string;
+
+  @Exclude()
+  @ManyToOne(() => CnOrganization, {nullable: false})
+  organization?: CnOrganization;
 
   public isSharedToGroup(groupId: string | string[]): boolean {
     if (this.sharedGroups == null) {

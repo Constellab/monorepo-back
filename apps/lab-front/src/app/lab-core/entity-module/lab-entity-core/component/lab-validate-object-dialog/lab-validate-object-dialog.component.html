@@ -8,15 +8,14 @@
     <p *ngIf="helpText" class="g-text-light help-text">{{helpText| translate}}</p>
 
     <!--    Project      -->
-    <mat-form-field class="g-form-input">
-      <mat-label>{{'biox.project' | translate}}</mat-label>
-      <mat-select [formControl]="formControl">
-        <lab-project-select-options></lab-project-select-options>
-      </mat-select>
-      <mat-error *ngIf="formControl.hasError('required')">
-        {{'biox.project' | flErrorRequired}}
-      </mat-error>
-    </mat-form-field>
+    <div class="g-text-centered">
+      <fl-form-field>
+        <lab-project-select-button [formControl]="formControl"></lab-project-select-button>
+        <mat-error *ngIf="formControl.hasError('required')">
+          {{'biox.project' | flErrorRequired}}
+        </mat-error>
+      </fl-form-field>
+    </div>
 
   </form>
 </mat-dialog-content>

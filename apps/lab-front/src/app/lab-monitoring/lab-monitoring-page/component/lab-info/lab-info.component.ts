@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {LabSystemService} from '../../../../lab-core/service/lab-system.service';
 import {LabSystemInfo} from '../../../../lab-core/model/global/lab-system.class';
-import {FlDialogService} from '@monorepo/front-core-lib';
+import {FlDialogService, FlSnackBarService} from '@monorepo/front-core-lib';
 import {LabTypeService} from '../../../../lab-core/entity-service/lab-type.service';
+import {LabProjectService} from '../../../../lab-core/entity-service/lab-project.service';
 
 @Component({
   selector: 'lab-info',
@@ -14,9 +15,13 @@ export class LabInfoComponent implements OnInit {
   labInfo: LabSystemInfo;
   isLoading: boolean = true;
 
+  synchronizeLoading: boolean = false;
+
   constructor(private systemService: LabSystemService,
               private typeService: LabTypeService,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private projectService: LabProjectService,
+              private snackBarService: FlSnackBarService) {
   }
 
   ngOnInit(): void {
@@ -48,4 +53,20 @@ export class LabInfoComponent implements OnInit {
       translateMessage: true
     });
   }
+
+  synchronizeProjects(): void {
+    if (this.synchronizeLoading) return;
+
+    this.synchronizeLoading = true;
+    this.projectService.synchronizeProjects().subscribe({
+      next: () => this.synchronizeSuccess(),
+      error: () => this.synchronizeLoading = false
+    });
+  }
+
+  private synchronizeSuccess(): void {
+    this.synchronizeLoading = false;
+    this.snackBarService.openSuccessMessage({text: 'monitoring.projects_synchronized', translateText: true});
+  }
 }
+

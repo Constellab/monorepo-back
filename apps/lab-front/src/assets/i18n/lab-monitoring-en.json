@@ -20,6 +20,8 @@
     "delete_all_unavailable_typings": "Delete all unavailable typings",
     "delete_unavailable_typings": "Delete unavailable typings",
     "delete_unavailable_typings_confirmation": "Are you sure you want to remove the unavailable typings from the database ?",
-    "delete_unavailable_typings_success": "Unavailable typings have been deleted"
+    "delete_unavailable_typings_success": "Unavailable typings have been deleted",
+    "synchronize_projects": "Synchronize projects",
+    "projects_synchronized": "Projects synchronized"
   }
 }

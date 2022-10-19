@@ -17,7 +17,7 @@ export class TestConfigService extends CnCoreConfigService {
   public getDatabaseConfig(): CnDatabaseConfig {
     return {
       host: 'localhost',
-      port: 3307,
+      port: 3311,
       username: 'gencoveryUserTest',
       password: 'gencovery2020$',
       database: 'gencoveryDbTest'

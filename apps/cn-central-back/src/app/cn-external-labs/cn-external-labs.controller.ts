@@ -35,6 +35,11 @@ export class CnExternalLabsController {
     return this.projectAggregator.getProjectsOfUserId(userId);
   }
 
+  @Get('project-trees')
+  getProjectTreesByOrganization(): Promise<CnProject[]> {
+    return this.projectAggregator.getProjectTreesByOrganization();
+  }
+
   @Put('project/:projectId/experiment')
   createOrUpdateExperiment(
     @Param('projectId', new ParseUUIDPipe()) projectId: string,

@@ -16,12 +16,11 @@
     </mat-form-field>
 
     <!--    Project      -->
-    <mat-form-field class="g-form-input">
-      <mat-label>{{'biox.project' | translate}}</mat-label>
-      <mat-select formControlName="project">
-        <lab-project-select-options></lab-project-select-options>
-      </mat-select>
-    </mat-form-field>
+    <p class="g-text-light helper-text">{{'biox.select_project_help' | translate}}</p>
+    <div class="g-text-centered">
+      <lab-project-select-button formControlName="project"></lab-project-select-button>
+    </div>
+
   </form>
 </mat-dialog-content>
 

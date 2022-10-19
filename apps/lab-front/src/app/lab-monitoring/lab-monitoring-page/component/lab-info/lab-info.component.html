@@ -27,6 +27,13 @@
               (click)="deleteUnavailableTypings()">
         {{'monitoring.delete_unavailable_typings' | translate}}
       </button>
+
+      <button mat-stroked-button type="button" class="g-button-small synchronize-button"
+              (click)="synchronizeProjects()">
+        {{'monitoring.synchronize_projects' | translate}}
+        <fl-button-loader *ngIf="synchronizeLoading" size="small"></fl-button-loader>
+      </button>
+
     </div>
   </div>
 

@@ -2,12 +2,16 @@ import {LabEntity} from '../global/lab-entity.entity';
 import {LabUser} from './lab-user.entity';
 import {DateTime} from 'luxon';
 import {FlEntity} from '@monorepo/front-core-lib';
+import {Type} from 'class-transformer';
 
 export class LabProject extends LabEntity {
-
+  code: string;
   title: string;
+}
 
-  description: string;
+export class LabProjectWithChildren extends LabProject {
+  @Type(() => LabProjectWithChildren)
+  children?: LabProject[];
 }
 
 /**

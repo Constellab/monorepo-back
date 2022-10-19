@@ -1,0 +1,9 @@
+<button mat-stroked-button type="button" [disabled]="disabled"
+        [matMenuTriggerFor]="menuComponent.menu">
+  <mat-icon flIcon="project" *ngIf="value"></mat-icon>
+  {{buttonText}}
+</button>
+
+<fl-menu-dynamic #menuComponent [menuItems]="menuDynamics"
+                 xPosition="after" yPosition="below"></fl-menu-dynamic>
+

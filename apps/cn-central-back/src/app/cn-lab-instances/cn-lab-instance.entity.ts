@@ -10,6 +10,7 @@ import {CnEntityWithOwner} from '../cn-core/model/entities/cn-entity-with-owner.
 import {randomBytes} from 'crypto';
 import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
 import {CnCity} from '../cn-city/cn-city.entity';
+import {CnOrganization} from '../cn-organizations/cn-organization.entity';
 
 
 /**
@@ -56,6 +57,13 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Column({nullable: false, length: 255})
   codelabToken: string;
 
+  @Exclude()
+  @ManyToOne(() => CnOrganization, {nullable: false})
+  organization?: CnOrganization;
+
+  @Column({nullable: false, update: false})
+  organizationId?: string;
+
   // url of the api server
   @Expose()
   get glabUrl(): string {
@@ -78,7 +86,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     {nullable: false, eager: true})
   serverInfo: CnServerInfo;
 
-  @ManyToOne(()=> CnCity, {onDelete: 'RESTRICT', eager: true})
+  @ManyToOne(() => CnCity, {onDelete: 'RESTRICT', eager: true})
   city: CnCity;
 
   // generate the apiKey
