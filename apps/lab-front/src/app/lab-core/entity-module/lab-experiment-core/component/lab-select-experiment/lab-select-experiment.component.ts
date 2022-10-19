@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Optional, Self} from '@angular/core';
+import {Component, EventEmitter, OnInit, Optional, Output, Self} from '@angular/core';
 import {FlDialogService, FlFormFieldDirective} from '@monorepo/front-core-lib';
 import {LabExperiment} from '../../../../model/entities/lab-experiment.entity';
 import {NgControl} from '@angular/forms';
@@ -17,7 +17,7 @@ import {
 export class LabSelectExperimentComponent extends FlFormFieldDirective<LabExperiment, Partial<LabExperiment>>
   implements OnInit {
 
-  @Input() experimentChange: EventEmitter<LabExperiment> = new EventEmitter();
+  @Output() experimentChange: EventEmitter<LabExperiment> = new EventEmitter();
 
   isLoading: boolean = false;
 

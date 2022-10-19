@@ -70,6 +70,7 @@
     "add_viewer": "Ajouter un viewer",
     "suggested_processes": "Processus suggérés",
     "project": "Projet",
+    "projects": "Projets",
     "no_project": "Aucun projet",
     "validate_experiment": "Valider l'expérience",
     "validate_experiment_help_text": "Vous êtes sur le point de valider l'expérience. Lors de la validation, l'expérience est envoyé dans l'espace collaboratif. Une fois validée, elle ne peut plus être modifiée ni supprimée. L'expérience doit être rattachée à un projet",

@@ -7,21 +7,22 @@
       <mat-label>{{'biox.experiment_text' | translate }}</mat-label>
       <input matInput formControlName="text" [placeholder]="'biox.experiment_text' | translate" autocomplete="off">
     </mat-form-field>
-
-    <!--  Project  -->
-    <mat-form-field class="g-full">
-      <mat-label>
-        {{'biox.project' | translate }}
-      </mat-label>
-      <mat-select formControlName="project" multiple [placeholder]="'biox.project' | translate">
-        <lab-project-select-options></lab-project-select-options>
-      </mat-select>
-      <mat-icon matPrefix flIcon="project" class="g-text-light project-icon"></mat-icon>
-    </mat-form-field>
   </div>
 
+  <!--  Projects -->
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{'biox.projects' | translate }}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <lab-project-select formControlName="project" (selectionChange)="callSearch()"></lab-project-select>
+  </mat-expansion-panel>
+
   <!--   Tags    -->
-  <lab-tag-dashboard formControlName="tags" (selectionChange)="onTagSelectionChange()"></lab-tag-dashboard>
+  <lab-tag-dashboard formControlName="tags" (selectionChange)="callSearch()"></lab-tag-dashboard>
+
 
   <!--   Advanced search    -->
   <mat-expansion-panel>

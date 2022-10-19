@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Optional, Output, Self} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Optional, Output, Self} from '@angular/core';
 import {LabTagService} from '../../../../entity-service/lab-tag.service';
 import {
   FlConfirmDialogInput,
@@ -32,6 +32,7 @@ interface LabTagEntityWithSelection {
 })
 export class LabTagDashboardComponent extends FlFormFieldDirective<FlTag[]> implements OnInit {
 
+  @Input() expandPanel: boolean = true;
 
   @Output() selectionChange: EventEmitter<FlTag[]> = new EventEmitter();
 

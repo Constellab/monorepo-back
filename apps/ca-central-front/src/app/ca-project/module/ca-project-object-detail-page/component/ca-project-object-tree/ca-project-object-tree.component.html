@@ -19,7 +19,7 @@
       <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
                      class="g-text-small tree-node">
         <button mat-icon-button matTreeNodeToggle class="g-button-icon-small"
-                [attr.aria-label]="'Toggle ' + node.title">
+                [attr.aria-label]="'Toggle ' + node.title"  type="button">
           <mat-icon>
             {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
           </mat-icon>

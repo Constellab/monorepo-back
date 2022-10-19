@@ -4,6 +4,9 @@ import {LabProject, LabProjectWithChildren} from '../../../../model/entities/lab
 import {NgControl} from '@angular/forms';
 import {LabProjectService} from '../../../../entity-service/lab-project.service';
 
+/**
+ * Button to be used in a form to select a project
+ */
 @Component({
   selector: 'lab-project-select-button',
   templateUrl: './lab-project-select-button.component.html',
@@ -17,6 +20,8 @@ export class LabProjectSelectButtonComponent extends FlFormFieldDirective<LabPro
 
   menuDynamics: FlMenuDynamic[];
 
+  isLoading: boolean = false;
+
   constructor(@Optional() @Self() ngControl: NgControl,
               private translateService: FlTranslateService,
               private projectService: LabProjectService) {
@@ -24,13 +29,16 @@ export class LabProjectSelectButtonComponent extends FlFormFieldDirective<LabPro
   }
 
   ngOnInit(): void {
-    this.projectService.getProjectTrees().subscribe(
-      projects => this.onProjectTreeSuccess(projects)
-    );
+    this.isLoading = true;
+    this.projectService.getProjectTrees().subscribe({
+      next: projects => this.onProjectTreeSuccess(projects),
+      error: () => this.isLoading = false
+    });
   }
 
   private onProjectTreeSuccess(projects: LabProjectWithChildren[]): void {
     this.menuDynamics = projects.map(project => this.projectTreeToFlMenuDynamic(project));
+    this.isLoading = false;
   }
 
   private projectTreeToFlMenuDynamic(project: LabProjectWithChildren): FlMenuDynamic {

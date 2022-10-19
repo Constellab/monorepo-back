@@ -31,7 +31,7 @@
          fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em"
          cdkDrag cdkDragPreviewClass="g-drag-elevate">
 
-      <div class="color" [style.background-color]="getFlTag(value) | flTagColor"></div>
+      <div class="color" [style.background-color]="getFlTag(value) | flTagColor | async"></div>
       <div fxFlex="auto">
         {{value}}
       </div>

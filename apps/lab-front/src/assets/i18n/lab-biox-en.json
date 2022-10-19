@@ -71,6 +71,7 @@
     "add_viewer": "Add a viewer",
     "suggested_processes": "Suggested processes",
     "project": "Project",
+    "projects": "Projects",
     "validate_experiment": "Validate the experiment",
     "validate_experiment_help_text": "You're about to validate the experiment. During the validation, the experiment is sent to the collaborative space. Once it is validated, it can't be updated nor deleted. The experiment must be linked to a project",
     "experiment_validated": "Experiment validated",

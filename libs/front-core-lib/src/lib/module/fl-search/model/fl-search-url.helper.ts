@@ -40,22 +40,27 @@ export class FlSearchPageUrlHelper {
     for (const key of Object.keys(filters)) {
       if (filters[key] == null) continue;
 
-
-      if (typeof filters[key] === 'object') {
-        // skip object where all values are null
-        if (!ClHelpService.objectHasNonNullProperties(filters[key])) continue;
-
-        if (filters[key].id !== undefined) {
-          simpleFilters[key] = {id: filters[key].id};
-          continue;
-        }
+      if (Array.isArray(filters[key])) {
+        simpleFilters[key] = filters[key].map((item: any) => this.advancedSearchObjectToString(item));
+      } else if (typeof filters[key] === 'object') {
+        simpleFilters[key] = this.advancedSearchObjectToString(filters[key]);
+      } else {
+        simpleFilters[key] = filters[key];
       }
-
-      simpleFilters[key] = filters[key];
-
     }
 
     return JSON.stringify({filtersCriteria: simpleFilters});
+  }
+
+  private static advancedSearchObjectToString(obj: Record<any, any>): Record<any, any> {
+    // skip object where all values are null
+    if (!ClHelpService.objectHasNonNullProperties(obj)) return obj;
+
+    if (obj.id !== undefined) {
+      return {id: obj.id};
+    }
+
+    return obj;
   }
 
   // parse and check if the search string from URL is a list of SearchCriteria for advanced search

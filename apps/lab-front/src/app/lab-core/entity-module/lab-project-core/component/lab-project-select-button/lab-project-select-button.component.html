@@ -2,6 +2,7 @@
         [matMenuTriggerFor]="menuComponent.menu">
   <mat-icon flIcon="project" *ngIf="value"></mat-icon>
   {{buttonText}}
+  <fl-button-loader *ngIf="isLoading"></fl-button-loader>
 </button>
 
 <fl-menu-dynamic #menuComponent [menuItems]="menuDynamics"

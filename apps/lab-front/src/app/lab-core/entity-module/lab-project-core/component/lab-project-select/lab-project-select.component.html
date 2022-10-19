@@ -1,0 +1,34 @@
+<fl-section [isLoading]="isLoading" [object]="value">
+
+  <ng-container *flSectionBody>
+
+    <mat-tree [dataSource]="dataSource" [treeControl]="value"
+              *ngIf="dataSource && value">
+      <!-- This is the tree node template for leaf nodes -->
+      <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding
+                     class="g-text-small tree-node" (click)="toggleProjectSelection(node)"
+                     [ngClass]="{'selected' : node.selected}">
+        <div class="node-content leaf" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+          <div class="circle-color" [style.background-color]="node.project.id | flStringToRgb"></div>
+
+          <div>{{node.project.title}}</div>
+        </div>
+      </mat-tree-node>
+      <!-- This is the tree node template for expandable nodes -->
+      <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
+                     class="g-text-small tree-node" matTreeNodeToggle>
+        <div class="node-content" fxLayout="row" fxLayoutAlign="start center">
+          <button mat-icon-button class="g-button-icon-small"
+                  [attr.aria-label]="'Toggle ' + node.title" type="button">
+            <mat-icon>
+              {{value.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+          </button>
+          <div>
+            {{node.project.title}}
+          </div>
+        </div>
+      </mat-tree-node>
+    </mat-tree>
+  </ng-container>
+</fl-section>

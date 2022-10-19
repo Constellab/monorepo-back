@@ -1,0 +1,31 @@
+.tree-node {
+  min-height: 32px;
+  border-radius: 20px;
+  cursor: pointer;
+  user-select: none;
+  border: 2px solid transparent;
+}
+
+.node-content {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+.tree-node:hover {
+  background-color: var(--grey-low-contrast);
+}
+
+.leaf {
+  margin-left: 0.5em;
+}
+
+.selected {
+  border-color: var(--color-foreground);
+}
+
+.circle-color{
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
