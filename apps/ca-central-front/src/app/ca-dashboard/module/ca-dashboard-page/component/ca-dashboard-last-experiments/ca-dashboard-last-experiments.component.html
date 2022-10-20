@@ -11,8 +11,8 @@
     <fl-card-body *ngIf="lastExperiments.length > 0; else noExperiences">
       <mat-nav-list>
         <mat-list-item *ngFor="let experiment of lastExperiments"
-                       [routerLink]="experiment | caDetailRoute" class="experiment">
-          <div class="experiment-div">
+                       class="experiment">
+          <a class="experiment-div" [href]="experiment | caDetailRoute">
             <fl-status-chip mat-list-avatar [status]="experiment.status" [mode]="'iconOnly'" class="icon"></fl-status-chip>
             <div class="experiment-title-project">
               <div class="experiment-title">
@@ -28,7 +28,7 @@
             <div class="experiment-date">
               <fl-from-now [date]="experiment.lastModifiedAt"></fl-from-now>
             </div>
-          </div>
+          </a>
         </mat-list-item>
       </mat-nav-list>
     </fl-card-body>
