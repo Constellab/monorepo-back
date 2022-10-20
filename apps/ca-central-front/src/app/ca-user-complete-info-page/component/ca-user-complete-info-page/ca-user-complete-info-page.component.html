@@ -1,22 +1,33 @@
 <fl-async-section [object]="user$">
   <ng-container *flSectionBody="let user">
 
-    <div class="header-div">
-      <h2>{{user.firstname}} {{user.lastname}}</h2>
-    </div>
-    <fl-user-profile-picture [user]="user" size="7" class="user-pp"></fl-user-profile-picture>
-    <div class="profile">
-      <div class="base-info">
-        <fl-text-icon iconPosition="start" *ngIf="user.company">
-          <mat-icon flIcon="organization"></mat-icon>
-          {{user.company}}
-        </fl-text-icon>
-        <fl-text-icon iconPosition="start" *ngIf="user.function">
-          <mat-icon flIcon="badge"></mat-icon>
-          {{user.function}}
-        </fl-text-icon>
+    <div class="header">
+      <div class="header-div">
+        <fl-user-profile-picture fxHide.lt-md [user]="user" size="7" class="user-pp"></fl-user-profile-picture>
+        <fl-user-profile-picture fxHide fxShow.sm [user]="user" size="6.5" class="user-pp"></fl-user-profile-picture>
+        <fl-user-profile-picture fxHide.gt-xs [user]="user" size="big" class="user-pp"></fl-user-profile-picture>
+        <div class="base-info">
+          <h2>{{user.firstname}} {{user.lastname}}</h2>
+          <fl-text-icon iconPosition="start" *ngIf="user.company">
+            <mat-icon flIcon="organization"></mat-icon>
+            {{user.company}}
+          </fl-text-icon>
+          <fl-text-icon iconPosition="start" *ngIf="user.function">
+            <mat-icon flIcon="badge"></mat-icon>
+            {{user.function}}
+          </fl-text-icon>
+        </div>
+        <button class="button-settings"  mat-stroked-button color="white" type="button"
+                *ngIf="currentUser.id === user.id" (click)="openSettings()" ngClass.lt-sm="g-button-small">
+          <fl-text-icon iconPosition="start" >
+            <mat-icon flIcon="settings" ngClass.lt-sm="g-button-icon-small"></mat-icon>
+            {{'Settings' | translate}}
+          </fl-text-icon>
+        </button>
       </div>
+    </div>
 
+    <div class="profile">
       <div class="biography">
         <p>{{user.biography}}</p>
       </div>

@@ -4,6 +4,8 @@ import {CaAuthenticatedUserService} from '../../../ca-core/service-api/ca-authen
 import {ActivatedRoute} from '@angular/router';
 import {CaUsersService} from '../../../ca-core/service-api/ca-users.service';
 import {Observable} from 'rxjs';
+import {FlDialogService} from '@monorepo/front-core-lib';
+import {CaSettingsPageComponent} from '../../../ca-settings/component/ca-settings-page/ca-settings-page.component';
 
 /**
  * Component that show a form on first user login to complete his information
@@ -16,22 +18,33 @@ import {Observable} from 'rxjs';
 export class CaUserCompleteInfoPageComponent implements OnInit {
 
   user$: Observable<CaUser>;
-  isCurrent: boolean;
+  currentUser: CaUser;
+  id: string;
 
 
   constructor(private authenticatedUserService: CaAuthenticatedUserService,
               private route: ActivatedRoute,
-              private userService: CaUsersService) {
+              private userService: CaUsersService,
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.user$ = this.userService.getById(params.id);
 
-      this.user$.subscribe((u) => {
-        console.log(u)
-      })
+    this.currentUser = this.authenticatedUserService.getUser();
+    this.route.params.subscribe(params => {
+      this.id = params.id;
+      this.getUser();
+
     })
   }
 
+  openSettings(): void{
+    this.dialogService.openSmallDialog(CaSettingsPageComponent).afterClosed().subscribe(() => {
+      this.getUser();
+    });
+  }
+
+  getUser(): void{
+    this.user$ = this.userService.getById(this.id);
+  }
 }

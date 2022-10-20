@@ -1,33 +1,111 @@
 .user-pp{
-  position: absolute;
-  left: 25%;
-  top: 5em;
+  position: relative;
+  bottom: -4.5em;
 }
 
-.header-div{
+.header{
   width: 100%;
   height: 12.5em;
   background-color: var(--primary-color);
+  display: flex;
+  align-items: flex-end;
 }
 
-.header-div h2{
-  margin-top: 4.5em;
-  margin-left: 37.5%;
-  font-size: 2em;
-}
-
-.profile{
-  width: 100%;
+.header-div{
+  width: 50%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
 }
 
 .base-info{
-  margin-left: 37.5%;
-  margin-top: 0.5em;
+  margin-left: 0.5em;
+  position: relative;
+  bottom: -3.5em;
+}
+
+.header-div h2{
+  margin-bottom: 0.1em;
+
+  font-size: 2em;
+}
+
+.header-div .button-settings{
+  margin-left: auto;
+  margin-bottom: 0.5em;
+  height: 3em;
+}
+
+.profile{
+  width: 50%;
+  margin: 5em auto 0 auto;
+}
+
+.biography{
+}
+
+@media (max-width: 1500px) {
+  .header-div{
+    width: 60%;
+    margin-left: 20%;
+  }
+
+  .profile{
+    width: 60%;
+    margin-left: 20%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .header-div{
+    width: 80%;
+    margin-left: 10%;
+  }
+
+  .profile{
+    width: 80%;
+    margin-left: 10%;
+  }
 }
 
 
-.biography{
-  margin-left: 25%;
-  margin-top: 2em;
-  width: 50%;
+@media (max-width: 900px) {
+  .header-div{
+    width: 90%;
+    margin-left: 5%;
+  }
+
+  .header-div h2{
+    font-size: 1.75em;
+  }
+
+  .profile{
+    width: 90%;
+    margin-left: 5%;
+  }
+}
+
+@media (max-width: 600px) {
+  .header{
+    height: 7.5em;
+  }
+
+  .header-div{
+    width: 98%;
+    margin-left: 1%;
+  }
+
+  .user-pp{
+    bottom: -3.5em;
+  }
+
+  .header-div h2{
+    font-size: 1.5em;
+  }
+
+  .profile{
+    width: 98%;
+    margin-left: 1%;
+  }
 }

@@ -3,7 +3,7 @@ import {
   FlApiModule,
   FlArticleModule,
   FlAuthModule,
-  FlCardModule,
+  FlCardModule, FlColorModule,
   FlCoreComponentModule,
   FlCoreDirectiveModule,
   FlCorePipeModule,
@@ -72,6 +72,7 @@ import {PrProtocolModule} from '@monorepo/protocol';
     FlUserModule,
     FlMenuDynamicModule,
     FlDrawerModule,
+    FlColorModule,
 
 
     RvResourceViewModule,

@@ -44,9 +44,9 @@ export const caMainMenuLinks: CaMainMenuLink[] = [
     route: CaRouterService.getAdminRoute(),
     authorizedCategories: [CmUserCategory.ADMIN]
   },
-  {
-    label: 'settings',
-    icon: 'settings',
-    route: CaRouterService.getSettingsRoute()
-  }
+  // {
+  //   label: 'settings',
+  //   icon: 'settings',
+  //   route: CaRouterService.getSettingsRoute()
+  // }
 ];

@@ -6,7 +6,6 @@ import {CaReportsListComponent} from './component/ca-reports-list/ca-reports-lis
 import {RouterModule} from '@angular/router';
 import {CaReportContentViewComponent} from './component/ca-report-content-view/ca-report-content-view.component';
 import {CaReportTableComponent} from './component/ca-report-table/ca-report-table.component';
-import {FlColorModule} from '@monorepo/front-core-lib';
 import {CaProjectObjectCoreModule} from '../ca-project-object-core/ca-project-object-core.module';
 import {CaReportContentComponent} from './component/ca-report-content/ca-report-content.component';
 import {FormsModule} from '@angular/forms';
@@ -35,9 +34,7 @@ import {FormsModule} from '@angular/forms';
     FormsModule,
 
     CaCoreModule,
-    CaProjectObjectCoreModule,
-
-    FlColorModule,
+    CaProjectObjectCoreModule
   ]
 })
 export class CaReportCoreModule {
