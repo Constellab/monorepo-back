@@ -64,6 +64,8 @@ export class LabReportFormDialogComponent extends FlFormDialogAbstractDirective<
     return this.reportService.update(this.dialogInput.reportId, formValue);
   }
 
+
+
   getCreateSuccessMessage(): string {
     return 'biox.report_created';
   }

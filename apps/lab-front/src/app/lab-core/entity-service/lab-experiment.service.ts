@@ -11,7 +11,6 @@ import {
 import {Observable} from 'rxjs';
 import {LabExperiment, LabExperimentDatasource, LabExperimentSimpleForm} from '../model/entities/lab-experiment.entity';
 import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
-import {LabProject} from '../model/entities/lab-project.class';
 import {LabTag} from '../model/entities/lab-tag.entity';
 import {
   LabExperimentSearch,
@@ -48,12 +47,19 @@ export class LabExperimentService {
   }
 
   public create(experiment: LabExperimentSimpleForm): Observable<LabExperiment> {
-    return this.apiService.post(this.route, experiment, LabExperiment);
+    return this.apiService.post(this.route, this.experimentFormToBody(experiment), LabExperiment);
   }
 
   // update the experiment and the protocol inside if provided
   public update(experimentId: string, experiment: LabExperimentSimpleForm): Observable<LabExperiment> {
-    return this.apiService.put(`${this.route}/${experimentId}`, experiment, LabExperiment);
+    return this.apiService.put(`${this.route}/${experimentId}`, this.experimentFormToBody(experiment), LabExperiment);
+  }
+
+  private experimentFormToBody(experiment: LabExperimentSimpleForm): { title: string, project_id: string } {
+    return {
+      title: experiment.title,
+      project_id: experiment.project.id
+    };
   }
 
   public updateDescription(experimentId: string, description: FlQuillJson): Observable<LabExperiment> {
@@ -79,8 +85,8 @@ export class LabExperimentService {
     return this.apiService.put(`${this.route}/${experimentId}/reset`, null, LabExperiment);
   }
 
-  public validateExperiment(experimentId: string, project: LabProject): Observable<LabExperiment> {
-    return this.apiService.put(`${this.route}/${experimentId}/validate`, project, LabExperiment);
+  public validateExperiment(experimentId: string, projectId: string): Observable<LabExperiment> {
+    return this.apiService.put(`${this.route}/${experimentId}/validate/${projectId}`, null, LabExperiment);
   }
 
   public saveTags(id: string, tags: FlTag[]): Observable<LabTag[]> {

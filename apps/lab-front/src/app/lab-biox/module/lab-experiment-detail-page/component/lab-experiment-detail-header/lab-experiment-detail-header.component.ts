@@ -57,7 +57,7 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.experiment$ = this.experimentState.getExperiment$();
-    this.syncObjectFunc = (id: string) => this.experimentService.syncWithCentral(id)
+    this.syncObjectFunc = (id: string) => this.experimentService.syncWithCentral(id);
   }
 
   openUpdateDialog(): void {
@@ -85,7 +85,8 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
 
     const input: LabValidateObjectDialogInput = {
       title: 'biox.validate_experiment',
-      validate: (project: LabProject): Observable<any> => this.experimentService.validateExperiment(experiment.id, project),
+      validate: (project: LabProject): Observable<any> =>
+        this.experimentService.validateExperiment(experiment.id, project.id),
       project: experiment.project,
       helpText: 'biox.validate_experiment_help_text',
       successMessage: 'biox.experiment_validated'
@@ -214,11 +215,11 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
   }
 
   deleteExperiment(): void {
-    const experiment = this.experimentState.currentExperiment
+    const experiment = this.experimentState.currentExperiment;
 
     let content = `</p>${this.translateService.translate('biox.delete_experiment_confirmation')}</p>`;
 
-    if(experiment.isSynced) {
+    if (experiment.isSynced) {
       content += `<p>${this.translateService.translate('biox.delete_experiment_sync_confirmation')}</p>`;
     }
 

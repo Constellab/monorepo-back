@@ -16,7 +16,7 @@ export class FlMenuDynamicComponent implements OnInit {
 
   @Input() hasBackdrop: boolean = true;
 
-  @Input() xPosition: MenuPositionX = 'before';
+  @Input() xPosition: MenuPositionX = 'after';
 
   @Input() yPosition: MenuPositionY = 'below';
 

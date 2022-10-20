@@ -113,7 +113,7 @@ export class LabReportDetailPageComponent implements OnInit, OnDestroy {
 
     const input: LabValidateObjectDialogInput = {
       title: 'biox.validate_report',
-      validate: (project: LabProject): Observable<any> => this.reportService.validate(report.id, project),
+      validate: (project: LabProject): Observable<any> => this.reportService.validate(report.id, project.id),
       project: report.project,
       helpText: 'biox.validate_report_help_text',
       successMessage: 'biox.report_validated'

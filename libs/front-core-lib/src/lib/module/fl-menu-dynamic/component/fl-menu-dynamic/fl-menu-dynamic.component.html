@@ -1,4 +1,4 @@
-<mat-menu [overlapTrigger]="true" [hasBackdrop]="hasBackdrop" [xPosition]="xPosition" [yPosition]="yPosition">
+<mat-menu [hasBackdrop]="hasBackdrop" [xPosition]="xPosition" [yPosition]="yPosition">
   <div [ngClass]="containerClass">
     <ng-container *ngFor="let item of menuItems">
       <mat-divider *ngIf="item.divider"></mat-divider>
@@ -10,7 +10,7 @@
         <mat-icon *ngIf="item.icon" [flIcon]="item.icon"></mat-icon>
         {{item.text | flTranslatableText}}
       </button>
-      <fl-menu-dynamic #subMenu [menuItems]="item.children" [hasBackdrop]="hasBackdrop"></fl-menu-dynamic>
+      <fl-menu-dynamic #subMenu [menuItems]="item.children" [hasBackdrop]="false"></fl-menu-dynamic>
     </span>
 
       <!-- Handle leaf node menu items -->

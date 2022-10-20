@@ -17,7 +17,6 @@ import {
   LabReportSearch,
   LabReportSearchFields
 } from '../entity-module/lab-report-core/model/lab-report-advanced-search.class';
-import {LabProject} from '../model/entities/lab-project.class';
 import {map} from 'rxjs/operators';
 
 @Injectable({providedIn: 'root'})
@@ -29,16 +28,23 @@ export class LabReportService {
               private dialogService: FlDialogService) {
   }
 
-  public create(reportForm: LabReportForm): Observable<LabReport> {
-    return this.apiService.post(this.route, reportForm, LabReport);
+  public create(report: LabReportForm): Observable<LabReport> {
+    return this.apiService.post(this.route, this.reportFormToBody(report), LabReport);
   }
 
-  public createForExperiment(reportForm: LabReportForm, experimentId: string): Observable<LabReport> {
-    return this.apiService.post(`${this.route}/experiment/${experimentId}`, reportForm, LabReport);
+  public createForExperiment(report: LabReportForm, experimentId: string): Observable<LabReport> {
+    return this.apiService.post(`${this.route}/experiment/${experimentId}`, this.reportFormToBody(report), LabReport);
   }
 
-  public update(id: string, reportForm: LabReportForm): Observable<LabReport> {
-    return this.apiService.put(`${this.route}/${id}`, reportForm, LabReport);
+  public update(id: string, report: LabReportForm): Observable<LabReport> {
+    return this.apiService.put(`${this.route}/${id}`, this.reportFormToBody(report), LabReport);
+  }
+
+  private reportFormToBody(report: LabReportForm): { title: string, project_id: string } {
+    return {
+      title: report.title,
+      project_id: report.project.id
+    };
   }
 
   public updateContent(id: string, content: LabReportContent): Observable<LabReport> {
@@ -81,8 +87,8 @@ export class LabReportService {
     return this.dialogService.openConfirmDialog(input).afterClosed();
   }
 
-  public validate(reportId: string, project: LabProject): Observable<LabReport> {
-    return this.apiService.put(`${this.route}/${reportId}/validate`, project, LabReport);
+  public validate(reportId: string, projectId: string): Observable<LabReport> {
+    return this.apiService.put(`${this.route}/${reportId}/validate/${projectId}`, null, LabReport);
   }
 
   ///////////////////////////////////////////// GET /////////////////////////////////////////////
