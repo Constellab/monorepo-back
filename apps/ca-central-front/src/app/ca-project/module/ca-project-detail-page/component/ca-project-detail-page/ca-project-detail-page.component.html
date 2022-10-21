@@ -12,8 +12,7 @@
                            (experimentSelected)="selectExperiment($event)"></ca-experiments-list>
     </ng-container>
 
-    <ca-project-children class="g-section" [projectId$]="projectId$"
-                         *ngIf="showChildren$ | async"></ca-project-children>
+    <ca-project-children class="g-section" *ngIf="showChildren$ | async"></ca-project-children>
   </div>
 
   <div fxFlex="50%">

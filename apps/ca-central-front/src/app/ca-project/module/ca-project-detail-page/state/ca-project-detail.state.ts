@@ -28,6 +28,7 @@ export class CaProjectDetailState implements OnDestroy {
   private users$: BehaviorSubject<CaUser[]>;
   private reports$: FlArrayObs<CaReport>;
   private experiments$: FlArrayObs<CaExperiment>;
+  private children$: FlEntityArrayObs<CaProject>;
   private rightPanelState$: BehaviorSubject<CaProjectDetailRightPanel>;
 
   private queryParamHandler: FlQueryParamHandler<CaProjectDetailRightPanel>;
@@ -48,6 +49,7 @@ export class CaProjectDetailState implements OnDestroy {
     this.users$ = new BehaviorSubject<CaUser[]>(null);
     this.reports$ = new FlEntityArrayObs(null, true);
     this.experiments$ = new FlEntityArrayObs(null, true);
+    this.children$ = new FlEntityArrayObs(null, true);
     this.rightPanelState$ = new BehaviorSubject<CaProjectDetailRightPanel>(null);
 
     this.id$.pipe(
@@ -91,6 +93,11 @@ export class CaProjectDetailState implements OnDestroy {
       this.experimentService.getExperimentsByProject(project.id).subscribe({
         next: experiments => this.experiments$.array = experiments,
         error: error => this.experiments$.error(error)
+      });
+    } else {
+      this.projectService.getChildren(project.id).subscribe({
+        next: children => this.children$.array = children,
+        error: error => this.children$.error(error)
       });
     }
   }
@@ -179,11 +186,20 @@ export class CaProjectDetailState implements OnDestroy {
     }
   }
 
+  public getChildren$(): FlEntityArrayObs<CaProject> {
+    return this.children$;
+  }
+
+  public addChild(project: CaProject): void {
+    this.children$.addItem(project, () => true);
+  }
+
   ngOnDestroy(): void {
     this.project$?.complete();
     this.users$?.complete();
     this.reports$?.manualDisconnect();
     this.experiments$?.manualDisconnect();
+    this.children$?.manualDisconnect();
     this.rightPanelState$?.complete();
   }
 

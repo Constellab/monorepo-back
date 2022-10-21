@@ -1,13 +1,7 @@
-<fl-card>
-  <fl-card-header>
-    <fl-text-icon>
-      <mat-icon flIcon="projects"></mat-icon>
-      <h2>Chlidren to translate</h2>
-    </fl-text-icon>
-  </fl-card-header>
+<fl-text-icon>
+  <mat-icon flIcon="project" class="g-icon-big"></mat-icon>
+  <h2>{{'sub_projects' | translate}}</h2>
+</fl-text-icon>
 
-  <fl-card-body>
-    <ca-project-table [datasource]="children$" [columns]="columns"></ca-project-table>
-  </fl-card-body>
+<ca-projects-list [projects]="children$ | async"></ca-projects-list>
 
-</fl-card>

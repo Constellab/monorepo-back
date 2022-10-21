@@ -13,10 +13,10 @@
   "update_project": "Update project",
   "project_created": "Project created",
   "project_updated": "Project updated",
-  "new_sub_project": "New sub-project",
-  "update_sub_project": "Update sub-project",
-  "sub_project_created": "Sub-project created",
-  "sub_project_updated": "Sub-project updated",
+  "new_sub_project": "New subproject",
+  "update_sub_project": "Update sub project",
+  "sub_project_created": "Sub project created",
+  "sub_project_updated": "Sub project updated",
   "experiments": "Experiments",
   "experiment": "Experiment",
   "no_experiment": "No experiment",
@@ -64,5 +64,6 @@
   "show_project_description": "Show project description",
   "open_details": "Open details",
   "change_project_leader": "Change project leader",
-  "project_leader_changed": "Project leader changed"
+  "project_leader_changed": "Project leader changed",
+  "sub_projects": "Sub projects"
 }

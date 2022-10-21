@@ -13,10 +13,10 @@
   "update_project": "Modifier le projet",
   "project_created": "Projet créé",
   "project_updated": "Projet modifié",
-  "new_sub_project": "Nouveau sous-projet",
-  "sub_project_created": "Modifier le sous-projet",
-  "update_sub_project": "Sous-projet créé",
-  "sub_project_updated": "Sous-projet modifié",
+  "new_sub_project": "Nouveau sous projet",
+  "sub_project_created": "Modifier le sous projet",
+  "update_sub_project": "Sous projet créé",
+  "sub_project_updated": "Sous projet modifié",
   "new_task": "Nouvelle tâche",
   "update_task": "Modifier la tâche",
   "task_created": "Tâche créée",
@@ -68,5 +68,6 @@
   "show_project_description": "Afficher la description du projet",
   "open_details": "Ouvrir le détail",
   "change_project_leader": "Changer le chef de projet",
-  "project_leader_changed": "Chef de projet changé"
+  "project_leader_changed": "Chef de projet changé",
+  "sub_projects": "Sous projets"
 }

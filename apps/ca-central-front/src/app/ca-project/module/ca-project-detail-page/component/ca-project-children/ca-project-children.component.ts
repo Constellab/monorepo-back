@@ -1,8 +1,7 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Observable, switchMap} from 'rxjs';
-import {CaProjectService} from '../../../../../ca-core/service-api/ca-project.service';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Observable} from 'rxjs';
 import {CaProject} from '../../../../../ca-core/model/entities/ca-project.class';
-import {FlArrayObs, FlEntityArrayObs, FlTableColumn} from '@monorepo/front-core-lib';
+import {CaProjectDetailState} from '../../state/ca-project-detail.state';
 
 @Component({
   selector: 'ca-project-children',
@@ -11,27 +10,19 @@ import {FlArrayObs, FlEntityArrayObs, FlTableColumn} from '@monorepo/front-core-
 })
 export class CaProjectChildrenComponent implements OnInit, OnDestroy {
 
-  @Input() projectId$: Observable<string>;
 
-  children$: FlArrayObs<CaProject>;
+  children$: Observable<CaProject[]>;
 
-  columns: FlTableColumn<CaProject>[] = ['title', 'status', 'leader'];
 
-  constructor(private projectService: CaProjectService) {
+  constructor(private state: CaProjectDetailState) {
   }
 
   ngOnInit(): void {
-    this.children$ = new FlEntityArrayObs(
-      this.projectId$.pipe(
-        switchMap(id => this.projectService.getChildren(id))
-      )
-    );
+    this.children$ = this.state.getChildren$().connect();
   }
 
   ngOnDestroy(): void {
-    this.children$?.disconnect();
   }
-
 
 
 }

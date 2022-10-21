@@ -86,7 +86,13 @@ export class CaProjectDetailComponent implements OnInit {
 
     this.dialogService.openSmallDialog(CaProjectFormDialogComponent, {
       data: dialogInput
-    }).afterClosed().subscribe();
+    }).afterClosed().subscribe(
+      project => this.createChildSuccess(project)
+    );
+  }
+
+  private createChildSuccess(project: CaProject): void {
+    this.state.addChild(project);
   }
 
   openStatusHistory(project: CaProject): void {
