@@ -29,9 +29,11 @@
   "user_already_in_group": "The user already is in the group",
   "user_not_in_group": "The user is not in the group",
   "user_already_in_organization": "The user already is in the organization",
-  "user_in_other_organization": "The user is not in the same organization as you",
+  "user_not_in_organization": "The user is not in the organization",
   "remove_group_last_user": "You can't remove the last user of the group",
   "project_must_have_a_group": "The project must be shared with at least one group",
   "exp_must_be_associated_with_leaf_project": "The experiment must be associated with a leaf project (the lowest in the hierarchy)",
-  "report_must_be_associated_with_leaf_project": "The report must be associated with a leaf project (the lowest in the hierarchy)"
+  "report_must_be_associated_with_leaf_project": "The report must be associated with a leaf project (the lowest in the hierarchy)",
+  "cannot_deactivate_last_admin": "You can't deactivate the last admin of the organization",
+  "cannot_remove_last_admin": "You can't remove the last admin of the organization"
 }

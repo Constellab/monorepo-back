@@ -1,19 +1,19 @@
-import {ContinuationLocalStorage} from 'asyncctx';
 import {Request, Response} from 'express';
+import {AsyncLocalStorage} from 'async_hooks';
 
 /**
  * Store the request context using asyncctx this class return the
  * correct context base on node thread
  */
 export class BlRequestContext {
-  static cls = new ContinuationLocalStorage<BlRequestContext>();
+  static cls = new AsyncLocalStorage<BlRequestContext>();
 
   static get currentContext(): any {
-    return this.cls.getContext();
+    return this.cls.getStore();
   }
 
   static setContext(requestContext: BlRequestContext): void {
-    this.cls.setContext(requestContext);
+    this.cls.enterWith(requestContext);
   }
 
 

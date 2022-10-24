@@ -9,6 +9,9 @@ import {
 } from './component/ca-organization-users-list/ca-organization-users-list.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CaGroupCoreModule} from '../../ca-core/entity-module/ca-group-core/ca-group-core.module';
+import {
+  CaOrganisationUserRoleDialogComponent
+} from './component/ca-organisation-user-role-dialog/ca-organisation-user-role-dialog.component';
 
 
 @NgModule({
@@ -16,6 +19,7 @@ import {CaGroupCoreModule} from '../../ca-core/entity-module/ca-group-core/ca-gr
     CaOrganizationPageComponent,
     CaOrganizationDetailComponent,
     CaOrganizationUsersListComponent,
+    CaOrganisationUserRoleDialogComponent,
   ],
   imports: [
     CommonModule,

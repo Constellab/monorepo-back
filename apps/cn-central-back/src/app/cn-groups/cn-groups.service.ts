@@ -13,13 +13,15 @@ import {SelectQueryBuilder} from 'typeorm/query-builder/SelectQueryBuilder';
 import {CnUserGroupService} from './cn-user-group.service';
 import {FindOptionsWhere} from 'typeorm/find-options/FindOptionsWhere';
 import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
+import {CnOrganizationUserService} from '../cn-organizations/cn-organization-user.service';
 
 @Injectable()
 export class CnGroupsService extends BlAbstractService<CnGroup> {
 
   constructor(@InjectRepository(CnGroup) private repository: Repository<CnGroup>,
               private userGroupService: CnUserGroupService,
-              private usersService: CnUsersService) {
+              private usersService: CnUsersService,
+              private organizationUserService: CnOrganizationUserService) {
     super(repository, CnGroup);
   }
 
@@ -59,12 +61,10 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
   public async addUserToTeam(userId: string, groupId: string): Promise<CnUser> {
     await this.checkAuthorizationToGetTeam(groupId);
 
-    if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) {
-      // check that the added user is in the same organization as the current user
-      const user = await this.usersService.findByIdAndCheck(userId);
-      if (!user.hasOrganization() || user.organizationId !== CnCurrentUserHelper.getCurrentUser().organizationId) {
-        throw new UnauthorizedException(CnErrorText.USER_IN_OTHER_ORGANIZATION);
-      }
+    // check that the added user is in the current organization
+    const organization = CnCurrentUserHelper.getAndCheckCurrentOrganization();
+    if (!(await this.organizationUserService.userIsOrganizationMember(userId, organization.id))) {
+      throw new UnauthorizedException(CnErrorText.USER_NOT_IN_ORGANIZATION);
     }
 
     await this.userGroupService.addUserToGroup(groupId, userId);
@@ -178,13 +178,6 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
       queryBuilder.orWhere('group.type = :typeSingle and group.userId = :userId', {
         typeSingle: CnGroupType.SINGLE_USER,
         userId: user.id
-      });
-    }
-
-    if (user.hasOrganization()) {
-      queryBuilder.orWhere('group.type = :typeOrga and group.organizationId = :organizationId', {
-        typeOrga: CnGroupType.ORGANIZATION,
-        organizationId: user.organizationId
       });
     }
     return queryBuilder;

@@ -12,6 +12,7 @@ import {
   cnExternalLabApiKeySchema,
   cnExternalLabUserHeader
 } from '../model/config/cn-config.class';
+import {CnRequestAuthInfo} from '../utils/cn-current-user.helper';
 
 /**
  * Guard to authenticate route called by the lab servers.
@@ -49,7 +50,9 @@ export class CnLabAuthGuard implements CanActivate {
     }
 
     // store the labInstance in the authInfo
-    request.authInfo = labInstance;
+    // noinspection UnnecessaryLocalVariableJS
+    const authInfo: CnRequestAuthInfo = {labInstance: labInstance, organization: labInstance.organization};
+    request.authInfo = authInfo;
 
     // set the robot user in the context as the connected user
     await this.setContext(request);
@@ -82,7 +85,6 @@ export class CnLabAuthGuard implements CanActivate {
     }
 
     request.user = user;
-
   }
 
   // set the robot user in request user

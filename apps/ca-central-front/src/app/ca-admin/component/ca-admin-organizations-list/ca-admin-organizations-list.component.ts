@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {CaOrganization, CaOrganizationDatasourcePaginated} from '../../../ca-core/model/entities/ca-organization.class';
+import {CaOrganization, CaOrganizationDatasource} from '../../../ca-core/model/entities/ca-organization.class';
 import {CaOrganizationService} from '../../../ca-core/service-api/ca-organization.service';
 import {FlDialogService, FlFormDialogInput, FlTableColumn} from '@monorepo/front-core-lib';
 import {
@@ -13,7 +13,7 @@ import {
 })
 export class CaAdminOrganizationsListComponent implements OnInit {
 
-  organizations: CaOrganizationDatasourcePaginated;
+  organizations: CaOrganizationDatasource;
 
   columns: FlTableColumn<CaOrganization>[] = ['label', 'created', 'lastModified'];
 

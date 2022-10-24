@@ -51,6 +51,7 @@ import {CnStatsModule} from './app/cn-stats/cn-stats.module';
 import {CnCountryModule} from './app/cn-country/cn-country.module';
 import {CnCityModule} from './app/cn-city/cn-city.module';
 import {AppService} from './app.service';
+import {CnOrganizationMiddleware} from './app/cn-core/middleware/cn-organization-middleware.service';
 import {CnNotificationModule} from './app/cn-notification/cn-notification.module';
 import {CnProjectCommentModule} from './app/cn-project-comment/cn-project-comment.module';
 
@@ -225,10 +226,11 @@ function configureTransportModule(
   ],
 })
 export class CnAppModule implements NestModule {
+
   configure(consumer: MiddlewareConsumer): any {
     consumer
       // register the RequestContextMiddleware to be able to access the request anywhere
-      .apply(BlRequestContextMiddleware)
+      .apply(BlRequestContextMiddleware, CnOrganizationMiddleware)
       .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }

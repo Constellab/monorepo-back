@@ -4,19 +4,22 @@ import {Reflector} from '@nestjs/core';
 import {CnErrorText} from '../model/config/cn-error-text.class';
 import {cnIsDecoratedWithLabAuth} from '../decorators/cn-lab-guard.decorator';
 import {blIsDecoratedWithPublic} from '@monorepo/back-core-lib';
+import {CnCurrentUserHelper} from '../utils/cn-current-user.helper';
+import {CnOrganizationUserService} from '../../cn-organizations/cn-organization-user.service';
 
 /**
  * Guard to check if the user has a authentication token
  * Methods and classes annotated with @Public decorator
  * don't need to check if authentication token exists
  *
- * Methods and classes annotated with @LabAuth are manager by the {@link LabAuthGuard}
+ * Methods and classes annotated with @LabAuth are manager by the {@link CnLabAuthGuard}
  *
- * Others uses JWT authentication with {@link BlJwtStrategy}
+ * Others use JWT authentication with {@link BlJwtStrategy}
  */
 @Injectable()
 export class CnJwtAuthGuard extends AuthGuard('jwt') {
-  constructor(private reflector: Reflector) {
+  constructor(private reflector: Reflector,
+              private organizationUserService: CnOrganizationUserService) {
     super();
   }
 
@@ -35,10 +38,22 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
 
     // jwt authentication
     try {
-      return await (super.canActivate(context) as Promise<boolean>);
+      const result = await (super.canActivate(context) as Promise<boolean>);
+      if (!result) return false;
     } catch (error) {
       throw new UnauthorizedException(CnErrorText.WRONG_TOKEN);
     }
+
+    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
+    const organization = CnCurrentUserHelper.getCurrentOrganization();
+
+    // if an organization is in the context, check if the user is in the organization
+    // noinspection RedundantIfStatementJS
+    if (organization && !(await this.organizationUserService.userIsOrganizationMember(user.id, organization.id))) {
+      return false;
+
+    }
+    return true;
   }
 
   /**

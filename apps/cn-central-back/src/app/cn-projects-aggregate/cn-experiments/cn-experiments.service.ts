@@ -77,7 +77,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     if (experimentDB) {
       return await this.updateWithCompare(experiment, experimentDB, entityManager);
     } else {
-      experiment.labInstance = CnCurrentUserHelper.getLabInstance();
+      experiment.labInstance = CnCurrentUserHelper.getCurrentLabInstance();
       return this.create(experiment, entityManager);
     }
   }

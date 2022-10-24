@@ -9,7 +9,7 @@ import {Validators} from '@angular/forms';
 
 export interface CaGroupAddUserDialogInput {
   // method to add the user to the group
-  addUserToGroup: (userId: string) => Observable<CaUser>;
+  addUserToGroup: (userId: string) => Observable<any>;
   title: string;
   successMessage: string;
 }
@@ -55,7 +55,7 @@ export class CaGroupAddUserDialogComponent implements OnInit {
     });
   }
 
-  private addUserSuccess(user: CaUser): void {
+  private addUserSuccess(user: any): void {
     this.snackBarService.openSuccessMessage({text: this.input.successMessage, translateText: true});
     this.isLoading = false;
     this.dialogRef.close(user);

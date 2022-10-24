@@ -14,7 +14,6 @@ import {CnGroup} from '../../cn-groups/cn-group.entity';
 import {CnUsersService} from '../../cn-users/cn-users.service';
 import {DateTime} from 'luxon';
 import {CnProjectLevel} from './cn-project-level.enum';
-import {CnOrganization} from '../../cn-organizations/cn-organization.entity';
 
 @Injectable()
 export class CnProjectsService extends CnAbstractWithStatusService<CnProject, CnProjectStatus> {
@@ -27,10 +26,7 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
   }
 
   async create(entity: CnProject, entityManager?: EntityManager): Promise<CnProject> {
-    // TODO TO REMOVE
-    const organization = new CnOrganization();
-    organization.id = '8d872383-3c4d-4c1f-bd02-c284618d0358';
-    entity.organization = organization;
+    entity.organization = CnCurrentUserHelper.getAndCheckCurrentOrganization();
 
     // init the shared group for PROJECT
     if (entity.currentLevel === CnProjectLevel.PROJECT) {

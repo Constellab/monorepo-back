@@ -59,7 +59,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
 
   @Exclude()
   @ManyToOne(() => CnOrganization, {nullable: false})
-  organization?: CnOrganization;
+  organization: CnOrganization;
 
   @Column({nullable: false, update: false})
   organizationId?: string;

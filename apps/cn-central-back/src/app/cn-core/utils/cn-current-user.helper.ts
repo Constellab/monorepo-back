@@ -2,6 +2,12 @@ import {BlCurrentUserHelper} from '@monorepo/back-core-lib';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
 import {UnauthorizedException} from '@nestjs/common';
+import {CnOrganization} from '../../cn-organizations/cn-organization.entity';
+
+export interface CnRequestAuthInfo {
+  labInstance?: CnLabInstance;
+  organization?: CnOrganization;
+}
 
 export class CnCurrentUserHelper extends BlCurrentUserHelper {
 
@@ -24,7 +30,7 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
    * returns the current authenticated labInstance for routes annotated with @LabAuth
    */
   static getAndCheckCurrentLabInstance(): CnLabInstance {
-    const labInstance: CnLabInstance = this.getLabInstance();
+    const labInstance: CnLabInstance = this.getCurrentLabInstance();
 
     if (labInstance == null) {
       throw new UnauthorizedException();
@@ -37,8 +43,32 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
    * returns the current authenticated labInstance for routes annotated with @LabAuth
    * or null if not authenticated
    */
-  static getLabInstance(): CnLabInstance | null {
+  static getCurrentLabInstance(): CnLabInstance | null {
     const request = this.getCurrentRequest();
-    return (request && request.authInfo as CnLabInstance) || null;
+    const authInfo: CnRequestAuthInfo = request.authInfo as CnRequestAuthInfo;
+    return authInfo?.labInstance ?? null;
+  }
+
+  /**
+   * return the current organization or throw an Unauthorized exception
+   * if there is no organization in the context
+   */
+  static getAndCheckCurrentOrganization(): CnOrganization {
+    const organization: CnOrganization = this.getCurrentOrganization();
+
+    if (organization == null) {
+      throw new UnauthorizedException();
+    }
+
+    return organization;
+  }
+
+  /**
+   * return the current organization or null if there is no organization in the context
+   */
+  static getCurrentOrganization(): CnOrganization | null {
+    const request = this.getCurrentRequest();
+    const authInfo: CnRequestAuthInfo = request.authInfo as CnRequestAuthInfo;
+    return authInfo?.organization ?? null;
   }
 }

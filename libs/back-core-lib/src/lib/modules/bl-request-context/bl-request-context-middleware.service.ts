@@ -1,6 +1,6 @@
 import {Injectable, NestMiddleware} from '@nestjs/common';
 import {BlRequestContext} from './bl-request-context';
-import {Request, Response} from 'express';
+import {NextFunction, Request, Response} from 'express';
 
 /**
  * This is needed to side-step Nest.js, which doesn't support getting the current execution context (i.e. Request) that's
@@ -13,7 +13,7 @@ import {Request, Response} from 'express';
  */
 @Injectable()
 export class BlRequestContextMiddleware implements NestMiddleware<Request, Response> {
-  use(req: Request, res: Response, next: () => void): void {
+  use(req: Request, res: Response, next: NextFunction): void {
     // skip the options request
     if (req.method !== 'OPTIONS') {
       const requestContext = new BlRequestContext(req, res);

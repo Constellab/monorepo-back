@@ -37,7 +37,9 @@ export class CaOrganizationDetailComponent implements OnInit {
       mode: 'update',
       object: {
         id: this.organization.id,
-        label: this.organization.label
+        label: this.organization.label,
+        domain: this.organization.domain,
+        nbLicenses: this.organization.nbLicenses
       }
     };
 
@@ -49,6 +51,8 @@ export class CaOrganizationDetailComponent implements OnInit {
   private onUpdateClosed(organization?: CaOrganization): void {
     if (organization) {
       this.organization.label = organization.label;
+      this.organization.domain = organization.domain;
+      this.organization.nbLicenses = organization.nbLicenses;
     }
   }
 

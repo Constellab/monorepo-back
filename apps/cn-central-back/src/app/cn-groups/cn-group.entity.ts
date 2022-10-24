@@ -11,7 +11,6 @@ import {
 } from 'typeorm';
 import {CnBaseEntity} from '../cn-core/model/entities/cn-base.entity';
 import {CnGroupType} from './cn-group-type.enum';
-import {CnOrganization} from '../cn-organizations/cn-organization.entity';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {Exclude} from 'class-transformer';
 
@@ -24,20 +23,6 @@ export class CnGroup extends CnBaseEntity {
 
   @Column({type: 'enum', enum: CnGroupType, nullable: false, default: CnGroupType.SINGLE_USER})
   type: CnGroupType;
-}
-
-
-@ChildEntity(CnGroupType.ORGANIZATION)
-export class CnGroupOrganization extends CnGroup {
-
-  @OneToOne(() => CnOrganization, {onDelete: 'CASCADE'})
-  @JoinColumn()
-  organization: CnOrganization;
-
-  @Column({nullable: true})
-  organizationId: string;
-
-  type: CnGroupType.ORGANIZATION;
 }
 
 @ChildEntity(CnGroupType.SINGLE_USER)

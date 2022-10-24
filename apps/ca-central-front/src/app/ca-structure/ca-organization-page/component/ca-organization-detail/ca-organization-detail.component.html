@@ -16,6 +16,18 @@
       </ng-container>
     </fl-card-actions>
   </fl-card-header>
+
+  <fl-card-body>
+    <fl-key-value>
+      <fl-key>{{'organization_domain' | translate}}</fl-key>
+      {{organization.domain}}
+    </fl-key-value>
+
+    <fl-key-value>
+      <fl-key>{{'nb_of_licenses' | translate}}</fl-key>
+      {{organization.nbLicenses}}
+    </fl-key-value>
+  </fl-card-body>
 </fl-card>
 
 <ca-organization-users-list [organizationId]="organization.id" class="g-section">

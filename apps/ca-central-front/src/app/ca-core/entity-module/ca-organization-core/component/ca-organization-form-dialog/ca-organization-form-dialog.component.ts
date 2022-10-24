@@ -35,6 +35,8 @@ export class CaOrganizationFormDialogComponent extends FlFormDialogAbstractDirec
     return new FormBuilder().group({
       id: [null],
       label: [null, [Validators.required]],
+      domain: [null, [Validators.required, Validators.pattern('^[a-zA-Z0-9-]*')]],
+      nbLicenses: [null, [Validators.required]]
     });
   }
 

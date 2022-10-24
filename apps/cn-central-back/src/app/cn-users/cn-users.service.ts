@@ -3,7 +3,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {CnUser, CnUserEditDTO} from './cn-user.entity';
 import {Repository} from 'typeorm';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import {clLangIsSupported, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {BlAbstractService, BlFile, BlObjectStorageService, BlUserService} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {IncomingMessage} from 'http';
@@ -21,22 +21,13 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
   findAll(): Promise<CnUser[]> {
     const currentUser = CnCurrentUserHelper.getCurrentUser();
-
-    if(currentUser.isAdmin()){
-      return this.repository.find({
-        order: {lastname: 'ASC', firstname: 'ASC'}
-      });
-    }else{
-      if(!currentUser.hasOrganization()){
-        throw new UnauthorizedException("You must be in an organization")
-      }
-
-      return this.repository.find({
-        where: {organizationId: currentUser.organizationId},
-        order: {lastname: 'ASC', firstname: 'ASC'}
-      });
+    if (!currentUser.isAdmin()) {
+      throw new UnauthorizedException();
     }
 
+    return this.repository.find({
+      order: {lastname: 'ASC', firstname: 'ASC'}
+    });
   }
 
   findOne(id: string): Promise<CnUser> {
@@ -75,25 +66,11 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     await this.update(user);
   }
 
-  getUsersByOrganization(organizationId: string, page: number, size: number): Promise<ClPage<CnUser>> {
-    return this.findPaginated(page, size,
-      {
-        where: {
-          organizationId: organizationId
-        },
-        order: {
-          lastname: 'ASC',
-          firstname: 'ASC'
-        }
-      }
-    );
-  }
-
   async saveNewPhoto(file: BlFile, userId: string): Promise<CnUser> {
     const user: CnUser = await this.repository.findOneBy({id: userId});
     const newPhoto: string =
       await this.objectStorageService.uploadObject(file, this.getUserProfilePictureBucket(), true);
-    if(user.photo && newPhoto) {
+    if (user.photo && newPhoto) {
       const lastPhoto: string = user.photo;
       await this.objectStorageService.deleteObject(lastPhoto, this.getUserProfilePictureBucket());
     }
@@ -101,9 +78,9 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     return await this.repository.save(user);
   }
 
-  async deleteCurrentPhoto(userId: string): Promise<void>{
+  async deleteCurrentPhoto(userId: string): Promise<void> {
     const user: CnUser = await this.repository.findOneBy({id: userId});
-    if(user.photo){
+    if (user.photo) {
       await this.objectStorageService.deleteObject(user.photo, this.getUserProfilePictureBucket());
       user.photo = null;
       await this.repository.save(user);

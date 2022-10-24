@@ -108,10 +108,6 @@ export class CnUser extends BlEntityWithId implements BlUser {
   isAdmin(): boolean {
     return this.category === CmUserCategory.ADMIN;
   }
-
-  hasOrganization(): boolean {
-    return this.organizationId != null;
-  }
 }
 
 export class CnUserEditDTO {

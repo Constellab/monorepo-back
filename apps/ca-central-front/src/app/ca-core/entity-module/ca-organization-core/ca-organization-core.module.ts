@@ -7,16 +7,21 @@ import {
 } from './component/ca-organization-form-dialog/ca-organization-form-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
+import {
+  CaOrganizationUserTableComponent
+} from './component/ca-organization-user-table/ca-organization-user-table.component';
 
 
 @NgModule({
   declarations: [
     CaOrganizationTableComponent,
-    CaOrganizationFormDialogComponent
+    CaOrganizationFormDialogComponent,
+    CaOrganizationUserTableComponent
   ],
   exports: [
     CaOrganizationTableComponent,
-    CaOrganizationFormDialogComponent
+    CaOrganizationFormDialogComponent,
+    CaOrganizationUserTableComponent
   ],
   imports: [
     CommonModule,

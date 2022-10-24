@@ -20,15 +20,12 @@
     <fl-card>
       <fl-card-body class="limit-height" (flInfiniteScroll)="loadMoreResults()"
                     [flInfiniteDisabled]="users.isLoading || users.page?.last">
-        <ca-user-table [datasource]="users" [columns]="displayedColumns">
-
-          <ng-template let-user>
-            <button mat-icon-button type="button" color="warn" (click)="openRemoveUserDialog(user)"
-                    [matTooltip]="'organization_remove_user' | translate">
-              <mat-icon>clear</mat-icon>
-            </button>
-          </ng-template>
-        </ca-user-table>
+        <ca-organization-user-table [datasource]="users" [columns]="displayedColumns"
+                                    (removeUser)="openRemoveUserDialog($event)"
+                                    (deactivateUser)="openDeactivateUserDialog($event)"
+                                    (activateUser)="openActivateUser($event)"
+                                    (updateRole)="openUpdateRoleDialog($event)">
+        </ca-organization-user-table>
       </fl-card-body>
     </fl-card>
   </ng-container>
