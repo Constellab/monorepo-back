@@ -4,6 +4,12 @@
 
     <fl-card-actions>
       <ng-container *caIsAdmin>
+
+        <button mat-icon-button type="button" (click)="openUploadPhotoDialog()"
+                [matTooltip]="'organization_upload_photo' | translate">
+          <mat-icon>photo_camera</mat-icon>
+        </button>
+
         <button mat-icon-button type="button" (click)="openUpdateDialog()"
                 [matTooltip]="'update_organization' | translate">
           <mat-icon>edit</mat-icon>
@@ -18,6 +24,9 @@
   </fl-card-header>
 
   <fl-card-body>
+    <img *ngIf="photo" class="photo"
+         [src]="photo" alt="Organization photo" />
+
     <fl-key-value>
       <fl-key>{{'organization_domain' | translate}}</fl-key>
       {{organization.domain}}

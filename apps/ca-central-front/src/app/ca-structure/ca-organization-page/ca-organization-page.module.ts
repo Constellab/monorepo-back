@@ -12,6 +12,9 @@ import {CaGroupCoreModule} from '../../ca-core/entity-module/ca-group-core/ca-gr
 import {
   CaOrganisationUserRoleDialogComponent
 } from './component/ca-organisation-user-role-dialog/ca-organisation-user-role-dialog.component';
+import {
+  CaOrganizationUploadPhotoDialogComponent
+} from './component/ca-organization-upload-photo-dialog/ca-organization-upload-photo-dialog.component';
 
 
 @NgModule({
@@ -20,6 +23,7 @@ import {
     CaOrganizationDetailComponent,
     CaOrganizationUsersListComponent,
     CaOrganisationUserRoleDialogComponent,
+    CaOrganizationUploadPhotoDialogComponent,
   ],
   imports: [
     CommonModule,

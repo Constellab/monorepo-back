@@ -128,6 +128,8 @@
   "organization_license_deactivated": "Licence désactivée",
   "organization_update_role": "Modifier le rôle",
   "organization_role_updated": "Rôle modifié",
+  "organization_upload_photo": "Charger une photo",
+  "organization_photo_uploaded": "Photo chargée",
   "group": "Groupe",
   "team": "Équipe",
   "no_team": "Aucune équipe",

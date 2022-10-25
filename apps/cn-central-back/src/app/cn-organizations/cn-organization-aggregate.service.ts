@@ -8,6 +8,8 @@ import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnOrganizationUserService} from './cn-organization-user.service';
 import {CnOrganizationUser, CnOrganizationUserRole} from './cn-organization-user.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
+import {BlFile} from '@monorepo/back-core-lib';
+import {IncomingMessage} from 'http';
 
 @Injectable()
 export class CnOrganizationAggregateService {
@@ -70,6 +72,22 @@ export class CnOrganizationAggregateService {
     this.checkAdmin();
 
     return this.organizationService.getAll(page, size);
+  }
+
+  public async uploadCurrentOrganizationPhoto(file: BlFile): Promise<CnOrganization> {
+    return this.uploadOrganizationPhoto(CnCurrentUserHelper.getAndCheckCurrentOrganization().id, file);
+  }
+
+  public async uploadOrganizationPhoto(organizationId: string, file: BlFile): Promise<CnOrganization>{
+    await this.checkOrganizationAdmin(organizationId);
+
+    const organization = await this.organizationService.findByIdAndCheck(organizationId);
+
+    return this.organizationService.uploadPhoto(organization, file);
+  }
+
+  public async getPhoto(filename: string): Promise<IncomingMessage> {
+    return  await this.organizationService.getPhoto(filename);
   }
 
 

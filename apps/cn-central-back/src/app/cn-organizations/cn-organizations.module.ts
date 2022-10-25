@@ -8,6 +8,7 @@ import {CnOrganizationAggregateService} from './cn-organization-aggregate.servic
 import {CnOrganizationAggregateSecurity} from './cn-organization-aggregate.security';
 import {CnOrganizationUserService} from './cn-organization-user.service';
 import {CnOrganizationUser} from './cn-organization-user.entity';
+import {CnCoreConfigModule} from '../cn-core/modules/cn-core-config/cn-core-config.module';
 
 /**
  * Module to manage organization
@@ -17,6 +18,7 @@ import {CnOrganizationUser} from './cn-organization-user.entity';
     TypeOrmModule.forFeature([CnOrganization]),
     TypeOrmModule.forFeature([CnOrganizationUser]),
     CnUsersModule,
+    CnCoreConfigModule,
   ],
   controllers: [CnOrganizationsController],
   providers: [

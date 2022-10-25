@@ -149,5 +149,9 @@ export class CnCoreConfigService {
   public getUserProfilePictureObjectStorageBucket(): string {
     return this.isProduction() ? 'constellab-user-profile-picture' : 'constellab-user-profile-picture';
   }
+
+  public getOrganizationBucket(): string {
+    return this.isProduction() ? 'constellab-organization-prod' : 'constellab-organization-pre-prod';
+  }
 }
 

@@ -26,7 +26,6 @@ export class CaOrganizationService extends FlApiCrudService<CaOrganization, CaSa
   //////////////////////////////// G ADMIN ROUTES ////////////////////////////////
 
 
-
   public getAll(page: number, size: number): Observable<ClPage<CaOrganization>> {
     return this.apiService.get(`${this.route}`, CaOrganization,
       {page: page, pageSize: size, resultIsPaginated: true});
@@ -66,4 +65,15 @@ export class CaOrganizationService extends FlApiCrudService<CaOrganization, CaSa
   public updateUserRole(organizationId: string, userId: string, role: CaOrganizationRole): Observable<void> {
     return this.apiService.put(`${this.route}/${organizationId}/user/${userId}/role/${role}`, null);
   }
+
+  public uploadOrganizationPhoto(organizationId: string, photo: File): Observable<CaOrganization> {
+    const formData = new FormData();
+    formData.append('photo', photo);
+    return this.apiService.put(`${this.route}/${organizationId}/photo`, formData, CaOrganization);
+  }
+
+  public getOrganizationPhoto(filename: string): string{
+    return this.apiService.getBaseRouteUrl(`${this.route}/photo/${filename}`);
+  }
 }
+

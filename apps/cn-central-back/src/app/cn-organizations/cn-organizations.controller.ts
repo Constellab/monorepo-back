@@ -9,13 +9,18 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-  Query
+  Query,
+  Res,
+  UploadedFile,
+  UseInterceptors
 } from '@nestjs/common';
 import {CnOrganization} from './cn-organization.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {CnOrganizationAggregateService} from './cn-organization-aggregate.service';
-import {BlParsePipe} from '@monorepo/back-core-lib';
+import {BlFile, BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {CnOrganizationUser, CnOrganizationUserRole} from './cn-organization-user.entity';
+import {FileInterceptor, FilesInterceptor} from '@nestjs/platform-express';
+import {Response} from 'express';
 
 @Controller('organizations')
 export class CnOrganizationsController {
@@ -68,6 +73,13 @@ export class CnOrganizationsController {
                                             @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnOrganizationUser>> {
     return this.organizationAggregate.getUserOfCurrentOrganization(page, size);
   }
+
+  @UseInterceptors(FilesInterceptor('photo'))
+  @Put('current/photo')
+  async uploadCurrentOrganizationPhoto(@UploadedFile() file: BlFile): Promise<CnOrganization> {
+    return this.organizationAggregate.uploadCurrentOrganizationPhoto(file);
+  }
+
 
   //////////////////////////////// G ADMIN ROUTES ////////////////////////////////
 
@@ -136,5 +148,22 @@ export class CnOrganizationsController {
     return this.organizationAggregate.getUsersOfOrganization(id, page, size);
   }
 
+  @UseInterceptors(FileInterceptor('photo'))
+  @Put(':id/photo')
+  async uploadOrganizationPhoto(@Param('id', new ParseUUIDPipe()) id: string,
+                                @UploadedFile() file: BlFile): Promise<CnOrganization> {
+    return this.organizationAggregate.uploadOrganizationPhoto(id, file);
+  }
+
+  /**
+   * Return an image of an organization
+   */
+  @BlPublic()
+  @Get('photo/:filename')
+  public async getImage(@Param('filename') filename: string,
+                        @Res() response: Response): Promise<any> {
+    const file = await this.organizationAggregate.getPhoto(filename);
+    file.pipe(response);
+  }
 
 }
