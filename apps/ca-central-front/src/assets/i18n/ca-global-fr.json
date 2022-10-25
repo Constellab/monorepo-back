@@ -142,5 +142,8 @@
   "node_process_name": "Processus",
   "config": "Configuration",
   "detail": "Détail",
-  "edit_user_success": "Utilisateur modifié"
+  "edit_user_success": "Utilisateur modifié",
+  "view_read_notifications": "Afficher les notifications lues",
+  "most_recent": "Les plus récentes",
+  "all_marked_as_read": "Tout marquer comme lu"
 }

@@ -1,4 +1,4 @@
-import {FlOutsideClickDirective} from './fl-outside-click.directive';
+import {FlOutsideClickDirective} from '@monorepo/front-core-lib';
 
 describe('FlOutsideClickDirective', () => {
   it('should create an instance', () => {

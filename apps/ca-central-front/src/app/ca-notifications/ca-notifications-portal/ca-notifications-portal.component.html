@@ -1,0 +1,39 @@
+<fl-portal class="portal-notifications mat-elevation-z5">
+  <fl-portal-content class="portal-notifications-content">
+    <fl-infinite-scroll [datasource]="notifications" class="infinite-scroll">
+      <div fxLayout="row">
+        <h2>Notifications</h2>
+        <div fxLayout="row" class="head-notif-portal">
+          <p>{{'view_read_notifications' | translate}}</p>
+          <mat-slide-toggle class="slide" color="primary" [checked]="true" (change)="onSlideChange($event)"></mat-slide-toggle>
+        </div>
+      </div>
+      <mat-divider class="divider"></mat-divider>
+      <div fxLayout="row">
+        <span>{{'most_recent' | translate}}</span>
+        <span class="g-text-link read-all-text" (click)="readAllNotifications()">{{'all_marked_as_read' | translate}}</span>
+      </div>
+
+      <div *ngFor="let notif of notifications.connect() | async" class="notification">
+        <div class="created-by-pp">
+          <fl-user-profile-picture [user]="notif.createdBy" size="4"></fl-user-profile-picture>
+        </div>
+        <div class="notification-content">
+          <div class="notification-text">{{notif.text}}</div>
+
+          <fl-text-icon iconPosition="start" [gap]="'3px'" >
+            <mat-icon class="g-icon-tiny">science</mat-icon>
+            <span class="notification-text2">{{notif.text2}}</span>
+          </fl-text-icon>
+
+          <div class="notification-date">
+            <fl-from-now [date]="notif.createdAt"></fl-from-now>
+          </div>
+        </div>
+        <div class="notification-read-div">
+          <div class="not-read-dot" *ngIf="!notif.isRead"></div>
+        </div>
+      </div>
+    </fl-infinite-scroll>
+  </fl-portal-content>
+</fl-portal>

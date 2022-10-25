@@ -22,6 +22,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatTreeModule} from '@angular/material/tree';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 
 /**
@@ -46,6 +47,7 @@ import {MatTreeModule} from '@angular/material/tree';
     MatExpansionModule,
     MatCheckboxModule,
     MatRadioModule,
+    MatSlideToggleModule,
 
     MatDialogModule,
     MatSnackBarModule,

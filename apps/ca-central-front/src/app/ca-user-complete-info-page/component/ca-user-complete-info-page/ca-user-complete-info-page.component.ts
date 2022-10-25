@@ -39,7 +39,7 @@ export class CaUserCompleteInfoPageComponent implements OnInit {
   }
 
   openSettings(): void{
-    this.dialogService.openSmallDialog(CaSettingsPageComponent).afterClosed().subscribe(() => {
+    this.dialogService.openMediumDialog(CaSettingsPageComponent).afterClosed().subscribe(() => {
       this.getUser();
     });
   }

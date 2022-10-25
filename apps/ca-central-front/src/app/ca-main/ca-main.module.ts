@@ -3,6 +3,7 @@ import {CommonModule} from '@angular/common';
 import {CaMainAppComponent} from './component/ca-main-app/ca-main-app.component';
 import {CaMainRoutingModule} from './ca-main-routing.module';
 import {CaCoreModule} from '../ca-core/ca-core.module';
+import {CaNotificationsModule} from '../ca-notifications/ca-notifications.module';
 
 /**
  * Main modules tha manage the pages once the user is connected
@@ -17,6 +18,7 @@ import {CaCoreModule} from '../ca-core/ca-core.module';
     // routing
     CaMainRoutingModule,
     CaCoreModule,
+    CaNotificationsModule
   ]
 })
 export class CaMainModule {

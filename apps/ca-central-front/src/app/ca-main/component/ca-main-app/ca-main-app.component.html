@@ -24,8 +24,13 @@
       </div>
 
       <!--  Authenticated user info  -->
+
       <div class="user-container"
-           fxLayout="row" fxLayoutAlign="center">
+           fxLayout="column" fxLayoutAlign="center">
+
+        <button mat-icon-button type="button" class="notif-button" (click)="openNotificationDiv()">
+          <mat-icon>notifications</mat-icon>
+        </button>
         <ca-authenticated-user-inline [showName]="false"></ca-authenticated-user-inline>
       </div>
     </div>

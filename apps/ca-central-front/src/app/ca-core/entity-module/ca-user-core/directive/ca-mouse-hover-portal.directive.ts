@@ -16,7 +16,11 @@ export class CaMouseHoverUserPortalDirective extends FlMouseHoverPortalAbstractD
       data : this.data,
       position : ['left', 'bottom', 'top', 'right'],
       component: CaUserInfoPortalComponent,
-      portalTagName: 'CA-USER-INFO-PORTAL'
+      portalTagName: 'CA-USER-INFO-PORTAL',
+      overlayConfig: {
+        elevation: false,
+        disposeOnNavigation: true
+      }
     };
   }
 

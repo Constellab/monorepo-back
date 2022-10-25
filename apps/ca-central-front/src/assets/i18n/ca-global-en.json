@@ -142,5 +142,8 @@
   "node_process_name": "Process",
   "config": "Config",
   "detail": "Detail",
-  "edit_user_success": "User edited"
+  "edit_user_success": "User edited",
+  "view_read_notifications": "View read notifications",
+  "most_recent": "Most recent",
+  "all_marked_as_read": "All marked as read"
 }
