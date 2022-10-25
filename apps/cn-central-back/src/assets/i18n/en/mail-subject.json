@@ -1,6 +1,8 @@
 {
   "cn-account-locked": "Account locked",
-  "cn-signup": "Confirm your email: Sign up for Gencovery Web Services",
+  "cn-experiment-finished": "Constellab - Experiment done",
+  "cn-organization-invit-new-user": "Constellab - Invitation to join an organization",
+  "cn-organization-invit-existing-user": "Constellab - Invitation to join an organization",
   "cn-password-forgotten": "Reset your password",
-  "cn-experiment-finished": "Constellab - Experiment done"
+  "cn-signup": "Confirm your email: Sign up for Gencovery Web Services"
 }

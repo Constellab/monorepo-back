@@ -9,7 +9,8 @@ import {
   CaSaveOrganizationDTO
 } from '../model/entities/ca-organization.class';
 import {Observable} from 'rxjs';
-import {ClPage} from '@monorepo/core-lib';
+import {ClPage, ClPageI} from '@monorepo/core-lib';
+import {CaOrganizationInvit, CaOrganizationInvitDatasource} from '../model/entities/ca-organization-invit.class';
 
 @Injectable({
   providedIn: 'root'
@@ -72,8 +73,19 @@ export class CaOrganizationService extends FlApiCrudService<CaOrganization, CaSa
     return this.apiService.put(`${this.route}/${organizationId}/photo`, formData, CaOrganization);
   }
 
-  public getOrganizationPhoto(filename: string): string{
+  public getOrganizationPhoto(filename: string): string {
     return this.apiService.getBaseRouteUrl(`${this.route}/photo/${filename}`);
+  }
+
+  public getInvitationsDatasource(organizationId: string): CaOrganizationInvitDatasource {
+    return new FlEntityPaginatedDatasource(
+      (page, size) =>
+        this.getInvitations(organizationId, page, size), 20);
+  }
+
+  public getInvitations(organizationId: string, page: number, pageSize: number): Observable<ClPageI<CaOrganizationInvit>> {
+    return this.apiService.get(`${this.route}/${organizationId}/invitations`, CaOrganizationInvit,
+      {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 }
 

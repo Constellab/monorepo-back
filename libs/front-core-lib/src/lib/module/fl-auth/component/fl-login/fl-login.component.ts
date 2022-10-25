@@ -1,13 +1,13 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
+import {FormGroup} from '@ngneat/reactive-forms';
 import {FlDialogService} from '../../../fl-dialog/fl-dialog.service';
 import {Router} from '@angular/router';
-import {Validators} from '@angular/forms';
 import {FlLoginSavedRoute} from '../../../../utils/fl-login-saved-route';
 import {CmCredentials} from '@monorepo/common-model';
 import {FlAuthService} from '../../service/fl-auth.service';
 import {FlSignupDialogComponent} from '../fl-signup-dialog/fl-signup-dialog.component';
 import {FlPasswordForgottenComponent} from '../fl-password-forgotten/fl-password-forgotten.component';
+import {FlLoginFormComponent} from '../fl-login-form/fl-login-form.component';
 
 /**
  * Form to call a login request using FlAuthService
@@ -45,10 +45,7 @@ export class FlLoginComponent implements OnInit {
 
   // Init the html form
   private initForm(): void {
-    this.formGp = new FormBuilder().group({
-      email: [null, [Validators.required, Validators.email]],
-      password: [null, Validators.required]
-    });
+    this.formGp = FlLoginFormComponent.buildFormGroup();
   }
 
   login(): void {
@@ -58,6 +55,8 @@ export class FlLoginComponent implements OnInit {
         response => this.onLoginSuccess(response),
         () => this.error()
       );
+    }else{
+      this.formGp.markAllAsTouched();
     }
   }
 

@@ -34,10 +34,10 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     return this.repository.findOneBy({id: id});
   }
 
-  findByEmail(username: string): Promise<CnUser> {
+  findByEmail(email: string): Promise<CnUser> {
     return this.repository.findOne({
       where: {
-        email: username,
+        email: email,
       }
     });
   }

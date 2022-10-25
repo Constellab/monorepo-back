@@ -4,6 +4,9 @@
 
     <ng-container *flSectionBody="let organization">
       <ca-organization-detail [organization]="organization"></ca-organization-detail>
+
+      <!--   TODO only show if the user is an admin of the organization   -->
+      <ca-organization-invit-list [organizationId]="organization.id" class="g-section"></ca-organization-invit-list>
     </ng-container>
   </fl-async-section>
 </div>

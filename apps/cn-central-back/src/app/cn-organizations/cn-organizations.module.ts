@@ -9,23 +9,26 @@ import {CnOrganizationAggregateSecurity} from './cn-organization-aggregate.secur
 import {CnOrganizationUserService} from './cn-organization-user.service';
 import {CnOrganizationUser} from './cn-organization-user.entity';
 import {CnCoreConfigModule} from '../cn-core/modules/cn-core-config/cn-core-config.module';
+import {CnOrganizationInvit} from './cn-organization-invit.entity';
+import {CnOrganizationInvitController} from './cn-organization-invit.controller';
+import {CnOrganizationInvitService} from './cn-organization-invit.service';
 
 /**
  * Module to manage organization
  */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([CnOrganization]),
-    TypeOrmModule.forFeature([CnOrganizationUser]),
+    TypeOrmModule.forFeature([CnOrganization, CnOrganizationUser, CnOrganizationInvit]),
     CnUsersModule,
     CnCoreConfigModule,
   ],
-  controllers: [CnOrganizationsController],
+  controllers: [CnOrganizationsController, CnOrganizationInvitController],
   providers: [
     CnOrganizationsService,
     CnOrganizationAggregateService,
     CnOrganizationAggregateSecurity,
     CnOrganizationUserService,
+    CnOrganizationInvitService,
   ],
   exports: [
     CnOrganizationsService,

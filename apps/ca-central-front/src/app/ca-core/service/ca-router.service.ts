@@ -27,6 +27,14 @@ export class CaRouterService {
     return `/${caConstBaseRoute}`;
   }
 
+  public static getLoginRoute(): string {
+    return `/login`;
+  }
+
+  public navigatorToLoginRoute(): void {
+    this.router.navigate([CaRouterService.getLoginRoute()]);
+  }
+
   public static getDashboardRoute(): string {
     return CaRouterService.getFullRoute(caConstDashboardRoute);
   }

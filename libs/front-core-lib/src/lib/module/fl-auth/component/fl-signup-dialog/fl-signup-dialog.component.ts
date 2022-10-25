@@ -1,11 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {Validators} from '@angular/forms';
+import {FormGroup} from '@ngneat/reactive-forms';
 import {MatDialogRef} from '@angular/material/dialog';
 import {FlSignUpUser} from '../../model/fl-sign-up-user.class';
 import {FlUserAccountService} from '../../service/fl-user-account.service';
 import {FlSnackBarService} from '../../../fl-snack-bar/fl-snack-bar.service';
-import {FlGlobalValidators} from '../../../../utils/fl-global.validators';
+import {FlSignupFormComponent} from '../fl-signup-form/fl-signup-form.component';
 
 /**
  * Signup dialog to create a new user
@@ -31,24 +30,14 @@ export class FlSignupDialogComponent implements OnInit {
   }
 
   private initForm(): void {
-    const fb = new FormBuilder();
-    this.formGp = fb.group({
-      firstname: [null, Validators.required],
-      lastname: [null, Validators.required],
-      email: [null, [Validators.required, Validators.email]],
-      password: [null, [Validators.required, FlGlobalValidators.passwordValidator()]],
-      repeatPassword: [null, [Validators.required,
-        FlGlobalValidators.repeatPasswordValidator('password')]],
-      category: [null, Validators.required],
-      validateCGU: [false, FlGlobalValidators.isValue(true)]
-    });
+    this.formGp = FlSignupFormComponent.buildFormGroup();
   }
 
   submit(): void {
     if (this.formGp.valid && !this.isLoading) {
       this.signupUser(this.formGp.getRawValue());
     } else {
-      this.formGp.get('validateCGU').markAsTouched();
+      this.formGp.markAllAsTouched();
     }
   }
 
@@ -61,14 +50,9 @@ export class FlSignupDialogComponent implements OnInit {
   }
 
   private onSignupSuccess(): void {
-    this.snackBarService.openSuccessMessage({text:'flAuth.account_created',  translateText: true}, 10000);
+    this.snackBarService.openSuccessMessage({text: 'flAuth.account_created', translateText: true}, 10000);
 
     this.dialogRef.close();
     this.isLoading = false;
-  }
-
-  // update the repeat password validity on password change
-  updateRepeatPasswordValidity(): void {
-    this.formGp.get('repeatPassword').updateValueAndValidity();
   }
 }

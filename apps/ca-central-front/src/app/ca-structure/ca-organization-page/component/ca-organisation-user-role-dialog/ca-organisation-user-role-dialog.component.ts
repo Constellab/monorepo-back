@@ -4,11 +4,11 @@ import {CaOrganizationRole} from '../../../../ca-core/model/entities/ca-organiza
 import {CaOrganizationService} from '../../../../ca-core/service-api/ca-organization.service';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {FormControl, Validators} from '@angular/forms';
+import {Observable} from 'rxjs';
 
 export interface CaOrganisationUserRoleDialogInput {
-  userId: string;
-  organizationId: string;
   currentRole: CaOrganizationRole;
+  updateRole: (role: CaOrganizationRole) => Observable<any>;
 }
 
 
@@ -46,7 +46,7 @@ export class CaOrganisationUserRoleDialogComponent implements OnInit {
 
   private updateRole(role: CaOrganizationRole): void {
     this.isLoading = true;
-    this.organizationService.updateUserRole(this.input.organizationId, this.input.userId, role).subscribe({
+    this.input.updateRole(role).subscribe({
       next: () => this.updateRoleSuccess(role),
       error: () => this.isLoading = false
     });

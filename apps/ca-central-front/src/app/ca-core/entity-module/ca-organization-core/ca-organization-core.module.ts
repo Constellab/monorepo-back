@@ -16,12 +16,12 @@ import {
   declarations: [
     CaOrganizationTableComponent,
     CaOrganizationFormDialogComponent,
-    CaOrganizationUserTableComponent
+    CaOrganizationUserTableComponent,
   ],
   exports: [
     CaOrganizationTableComponent,
     CaOrganizationFormDialogComponent,
-    CaOrganizationUserTableComponent
+    CaOrganizationUserTableComponent,
   ],
   imports: [
     CommonModule,

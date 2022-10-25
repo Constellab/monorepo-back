@@ -10,6 +10,13 @@ import {CnOrganizationUser, CnOrganizationUserRole} from './cn-organization-user
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {BlFile} from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
+import {CnOrganizationInvit} from './cn-organization-invit.entity';
+import {CnOrganizationInvitService} from './cn-organization-invit.service';
+import {CnOrganizationInvitDto} from './cn-organization.dto';
+import {CnUserAccountsService} from '../cn-users/cn-users-account/cn-user-accounts.service';
+import {CnUser} from '../cn-users/cn-user.entity';
+import {DataSource, EntityManager} from 'typeorm';
+import {CmUserStatus} from '@monorepo/common-model';
 
 @Injectable()
 export class CnOrganizationAggregateService {
@@ -17,7 +24,10 @@ export class CnOrganizationAggregateService {
   constructor(private organizationService: CnOrganizationsService,
               private organizationUserService: CnOrganizationUserService,
               private organizationSecurity: CnOrganizationAggregateSecurity,
-              private userService: CnUsersService) {
+              private invitationService: CnOrganizationInvitService,
+              private userService: CnUsersService,
+              private userAccountService: CnUserAccountsService,
+              private datasource: DataSource) {
   }
 
   public create(entity: CnOrganization): Promise<CnOrganization> {
@@ -54,16 +64,14 @@ export class CnOrganizationAggregateService {
   }
 
   public async findOne(id: string): Promise<CnOrganization> {
+    id = this.getOrganizationId(id);
     await this.checkOrganizationMember(id);
     return this.organizationService.findByIdAndCheck(id);
   }
 
-  public async getUserOfCurrentOrganization(page: number, size: number): Promise<ClPage<CnOrganizationUser>> {
-    return this.getUsersOfOrganization(CnCurrentUserHelper.getAndCheckCurrentOrganization().id,
-      page, size);
-  }
 
   public async getUsersOfOrganization(id: string, page: number, size: number): Promise<ClPage<CnOrganizationUser>> {
+    id = this.getOrganizationId(id);
     await this.checkOrganizationMember(id);
     return this.organizationUserService.getUsersOfOrganization(id, page, size);
   }
@@ -74,11 +82,8 @@ export class CnOrganizationAggregateService {
     return this.organizationService.getAll(page, size);
   }
 
-  public async uploadCurrentOrganizationPhoto(file: BlFile): Promise<CnOrganization> {
-    return this.uploadOrganizationPhoto(CnCurrentUserHelper.getAndCheckCurrentOrganization().id, file);
-  }
-
-  public async uploadOrganizationPhoto(organizationId: string, file: BlFile): Promise<CnOrganization>{
+  public async uploadOrganizationPhoto(organizationId: string, file: BlFile): Promise<CnOrganization> {
+    organizationId = this.getOrganizationId(organizationId);
     await this.checkOrganizationAdmin(organizationId);
 
     const organization = await this.organizationService.findByIdAndCheck(organizationId);
@@ -87,29 +92,27 @@ export class CnOrganizationAggregateService {
   }
 
   public async getPhoto(filename: string): Promise<IncomingMessage> {
-    return  await this.organizationService.getPhoto(filename);
+    return await this.organizationService.getPhoto(filename);
   }
 
 
   /////////////////////////////////////// USERS //////////////////////////////////
 
-  public async addUserToCurentOrganization(userId: string): Promise<CnOrganizationUser> {
-    return this.addUserToOrganization(CnCurrentUserHelper.getAndCheckCurrentOrganization().id, userId);
-  }
+  /**
+   * Directly add a user to an organization. Only accessible by G admins.
+   */
+  public async addUserToOrganization(organizationId: string, userId: string, role: CnOrganizationUserRole): Promise<CnOrganizationUser> {
+    await this.checkAdmin();
 
-  public async addUserToOrganization(organizationId: string, userId: string): Promise<CnOrganizationUser> {
-    await this.checkOrganizationAdmin(organizationId);
+    organizationId = this.getOrganizationId(organizationId);
     const user = await this.userService.findByIdAndCheck(userId);
     const organization = await this.organizationService.findByIdAndCheck(organizationId);
 
-    return await this.organizationUserService.addUserToOrganization(organization, user);
-  }
-
-  public async removeUserFromCurrentOrganization(userId: string): Promise<void> {
-    await this.removeUserFromOrganization(CnCurrentUserHelper.getAndCheckCurrentOrganization().id, userId);
+    return await this.organizationUserService.addUserToOrganization(organization, user, role);
   }
 
   public async removeUserFromOrganization(organizationId: string, userId: string): Promise<void> {
+    organizationId = this.getOrganizationId(organizationId);
     // if a normal user tries to remove the last admin of the organization, an error is thrown
     if (await this.organizationUserService.isOnlyAdmin(organizationId, userId)
       && !CnCurrentUserHelper.getCurrentUser().isAdmin()) {
@@ -122,21 +125,15 @@ export class CnOrganizationAggregateService {
     await this.organizationUserService.removeUserFromOrganization(organizationId, user.id);
   }
 
-  public async activateUserInCurrentOrganization(userId: string): Promise<void> {
-    return this.activateUserInOrganization(CnCurrentUserHelper.getAndCheckCurrentOrganization().id, userId);
-  }
-
   public async activateUserInOrganization(organizationId: string, userId: string): Promise<void> {
+    organizationId = this.getOrganizationId(organizationId);
     await this.checkOrganizationAdmin(organizationId);
 
     await this.organizationUserService.activateUser(organizationId, userId);
   }
 
-  public async deactivateUserInCurrentOrganization(userId: string): Promise<void> {
-    return this.deactivateUserInOrganization(CnCurrentUserHelper.getAndCheckCurrentOrganization().id, userId);
-  }
-
   public async deactivateUserInOrganization(organizationId: string, userId: string): Promise<void> {
+    organizationId = this.getOrganizationId(organizationId);
     await this.checkOrganizationAdmin(organizationId);
 
     // if a normal user tries to deactivate the last admin of the organization, an error is thrown
@@ -148,11 +145,9 @@ export class CnOrganizationAggregateService {
     await this.organizationUserService.deactivateUser(organizationId, userId);
   }
 
-  public async updateUserRoleInCurrentOrganization(userId: string, role: CnOrganizationUserRole): Promise<void> {
-    return this.updateUserRoleInOrganization(CnCurrentUserHelper.getAndCheckCurrentOrganization().id, userId, role);
-  }
 
   public async updateUserRoleInOrganization(organizationId: string, userId: string, role: CnOrganizationUserRole): Promise<void> {
+    organizationId = this.getOrganizationId(organizationId);
     if (role === CnOrganizationUserRole.USER &&
       await this.organizationUserService.isOnlyAdmin(organizationId, userId) &&
       !CnCurrentUserHelper.getCurrentUser().isAdmin()) {
@@ -164,6 +159,97 @@ export class CnOrganizationAggregateService {
     await this.organizationUserService.updateUserRole(organizationId, userId, role);
   }
 
+  /////////////////////////////////////// INVITATION //////////////////////////////////
+
+  public async getInvitation(invitationId: string): Promise<CnOrganizationInvit> {
+    return this.invitationService.findByIdAndCheck(invitationId, {organization: true});
+  }
+
+  public async inviteUserToOrganization(organizationId: string, invitDto: CnOrganizationInvitDto): Promise<CnOrganizationInvit> {
+    organizationId = this.getOrganizationId(organizationId);
+    await this.checkOrganizationAdmin(organizationId);
+
+    const organization = await this.organizationService.findByIdAndCheck(organizationId);
+
+    return this.invitationService.createInvitation(organization, invitDto);
+  }
+
+  public async resendInvitation(invitationId: string): Promise<void> {
+    const invitation = await this.invitationService.findByIdAndCheck(invitationId, {organization: true});
+    await this.checkOrganizationAdmin(invitation.organizationId);
+
+    return this.invitationService.resendInvitation(invitation);
+  }
+
+  public async refreshInvitationValidUntil(invitationId: string): Promise<CnOrganizationInvit> {
+    const invitation = await this.invitationService.findByIdAndCheck(invitationId, {organization: true});
+    await this.checkOrganizationAdmin(invitation.organizationId);
+
+    return this.invitationService.refreshValidUntil(invitation);
+  }
+
+  public async updateInvitationRole(invitationId: string, role: CnOrganizationUserRole): Promise<CnOrganizationInvit> {
+    const invitation = await this.invitationService.findByIdAndCheck(invitationId);
+    await this.checkOrganizationAdmin(invitation.organizationId);
+
+    return this.invitationService.updateInvitationRole(invitation, role);
+  }
+
+  public async deleteInvitation(invitationId: string): Promise<void> {
+    const invitation = await this.invitationService.findByIdAndCheck(invitationId);
+    await this.checkOrganizationAdmin(invitation.organizationId);
+
+    await this.invitationService.deleteById(invitationId);
+  }
+
+  /**
+   * Method called when a user accepted an invitation and created an account
+   */
+  public async newUserAcceptsInvitation(invitationId: string, user: CnUser): Promise<CnUser> {
+
+    return await this.datasource.transaction(async (transaction) => {
+      // create the user with a active but incomplete profile
+      const userDb = await this.userAccountService.createAccount(user, CmUserStatus.INCOMPLETE, transaction);
+
+      return await this.acceptInvitation(invitationId, userDb, transaction);
+    });
+  }
+
+  /**
+   * Method called when a user accepted an invitation and already has an account
+   */
+  public async existingUserAcceptsInvitation(invitationId: string): Promise<CnUser> {
+    return await this.datasource.transaction(async (transaction) => {
+      return await this.acceptInvitation(invitationId, CnCurrentUserHelper.getAndCheckCurrentUser(), transaction);
+    });
+
+  }
+
+  private async acceptInvitation(invitationId: string, user: CnUser, entityManager: EntityManager): Promise<CnUser> {
+    const invitation = await this.invitationService.findByIdAndCheck(invitationId, {organization: true});
+
+    if (!invitation.isValid()) {
+      throw new BadRequestException(CnErrorText.ORGANIZATION_INVITATION_EXPIRED);
+    }
+
+    if (invitation.userMail !== user.email) {
+      throw new BadRequestException('The invitation email does not match the user email');
+    }
+
+    await this.organizationUserService.addUserToOrganization(invitation.organization, user, invitation.role, entityManager);
+
+    await this.invitationService.deleteById(invitation.id, entityManager);
+
+    return user;
+  }
+
+  public async getNotificationsByOrganization(organizationId: string, page: number,
+                                              pageSize: number): Promise<ClPage<CnOrganizationInvit>> {
+    organizationId = this.getOrganizationId(organizationId);
+    await this.checkOrganizationAdmin(organizationId);
+
+    return this.invitationService.findNotificationsByOrganization(organizationId, page, pageSize);
+  }
 
   /////////////////////////////////////// SECURITY //////////////////////////////////
 
@@ -178,5 +264,15 @@ export class CnOrganizationAggregateService {
 
   private checkAdmin(): void {
     this.organizationSecurity.checkIsAdmin(CnCurrentUserHelper.getAndCheckCurrentUser());
+  }
+
+  /**
+   * If the id is 'current', the id of the current organization is returned.
+   * @param organizationId
+   * @private
+   */
+  private getOrganizationId(organizationId: string): string {
+    if (organizationId === 'current') return CnCurrentUserHelper.getAndCheckCurrentOrganization().id;
+    return organizationId;
   }
 }

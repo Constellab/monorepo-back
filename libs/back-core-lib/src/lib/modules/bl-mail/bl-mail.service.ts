@@ -49,7 +49,7 @@ export class BlMailService {
     return result;
   }
 
-  private async sendMail(template: string, recipients: string, lang: ClSupportedLanguage, data?: Record<string, any>): Promise<boolean> {
+  public async sendMail(template: string, recipients: string, lang: ClSupportedLanguage, data?: Record<string, any>): Promise<boolean> {
     const transporter = nodemailer.createTransport(this.getTransportConfig());
 
     // use https://nicholaspretorius.github.io/til0025/ example for configuration

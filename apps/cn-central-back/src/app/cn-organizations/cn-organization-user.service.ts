@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnOrganizationUser, CnOrganizationUserRole} from './cn-organization-user.entity';
-import {Repository} from 'typeorm';
+import {EntityManager, Repository} from 'typeorm';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnOrganization} from './cn-organization.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
@@ -24,15 +24,19 @@ export class CnOrganizationUserService extends BlAbstractPaginatedService<CnOrga
   }
 
 
-  public async addUserToOrganization(organization: CnOrganization, user: CnUser): Promise<CnOrganizationUser> {
-    if (await this.userIsOrganizationMember( organization.id, user.id)) {
+  public async addUserToOrganization(organization: CnOrganization, user: CnUser,
+                                     role: CnOrganizationUserRole,
+                                     entityManager?: EntityManager): Promise<CnOrganizationUser> {
+    if (await this.userIsOrganizationMember(organization.id, user.id)) {
       throw new BadRequestException(CnErrorText.USER_ALREADY_IN_ORGANIZATION);
     }
 
     const organizationUser = new CnOrganizationUser();
     organizationUser.user = user;
     organizationUser.organization = organization;
-    return this.repository.save(organizationUser);
+    organizationUser.role = role;
+    organizationUser.active = true;
+    return await this.getEntityManager(entityManager).save(organizationUser);
   }
 
   public async removeUserFromOrganization(organizationId: string, userId: string): Promise<void> {

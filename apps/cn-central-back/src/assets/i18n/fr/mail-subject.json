@@ -1,6 +1,8 @@
 {
   "cn-account-locked": "Compte bloqué",
-  "cn-signup": "Confirmez votre email : Inscription à la platform Gencovery",
+  "cn-experiment-finished": "Constellab - Expérience terminée",
+  "cn-organization-invit-new-user": "Constellab - Invitation à rejoindre une organisation",
+  "cn-organization-invit-existing-user": "Constellab - Invitation à rejoindre une organisation",
   "cn-password-forgotten": "Réinitialiser votre mot de passe",
-  "cn-experiment-finished": "Constellab - Expérience terminée"
+  "cn-signup": "Confirmez votre email : Inscription à la platform Gencovery"
 }

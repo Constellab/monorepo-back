@@ -2,7 +2,7 @@ import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/co
 import {CnUser} from '../cn-user.entity';
 import {CnMailTemplate} from '../../cn-core/model/config/cn-mail-template.class';
 import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, Repository} from 'typeorm';
+import {DataSource, EntityManager, Repository} from 'typeorm';
 import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CnUsersService} from '../cn-users.service';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
@@ -33,34 +33,38 @@ export class CnUserAccountsService {
 
   async signup(user: CnUser): Promise<CnUser> {
     return await this.datasource.transaction(async entityManager => {
-
-      if (user.category === CmUserCategory.ADMIN) {
-        throw new UnauthorizedException();
-      }
-
-      const sameEmailUser: CnUser = await this.usersService.findByEmail(user.email);
-      if (sameEmailUser != null) {
-        throw new BadRequestException(CnErrorText.EMAIL_ALREADY_EXIST);
-      }
-
-      // add the single group user to the user
-      const group: CnGroupSingleUser = new CnGroupSingleUser();
-      group.label = user.fullname;
-      group.type = CnGroupType.SINGLE_USER;
-      group.user = user;
-      group.createdBy = user;
-      group.lastModifiedBy = user;
-      user.ownGroup = group;
-
-      // hash the user password
-      user.password = await this.hashPassword(user.password);
-
-      const newUser: CnUser = await entityManager.save(user);
+      const newUser: CnUser = await this.createAccount(user, CmUserStatus.WAITING_FOR_EMAIL, entityManager);
 
       // await mail send to include it in transaction
       await this.sendSignupEmail(newUser);
       return newUser;
     });
+  }
+
+  public async createAccount(user: CnUser, status: CmUserStatus, entityManager: EntityManager): Promise<CnUser> {
+    if (user.category === CmUserCategory.ADMIN) {
+      throw new UnauthorizedException();
+    }
+
+    const sameEmailUser: CnUser = await this.usersService.findByEmail(user.email);
+    if (sameEmailUser != null) {
+      throw new BadRequestException(CnErrorText.EMAIL_ALREADY_EXIST);
+    }
+
+    // add the single group user to the user
+    const group: CnGroupSingleUser = new CnGroupSingleUser();
+    group.label = user.fullname;
+    group.type = CnGroupType.SINGLE_USER;
+    group.user = user;
+    group.createdBy = user;
+    group.lastModifiedBy = user;
+    user.ownGroup = group;
+
+    // hash the user password
+    user.password = await this.hashPassword(user.password);
+    user.status = status;
+
+    return await entityManager.save(user);
   }
 
   private sendSignupEmail(user: CnUser): Promise<boolean> {

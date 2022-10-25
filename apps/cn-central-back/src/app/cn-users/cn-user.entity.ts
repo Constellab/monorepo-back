@@ -81,7 +81,6 @@ export class CnUser extends BlEntityWithId implements BlUser {
   initValues(): void {
     this.failedLoginCount = 0;
     this.lastLoginAttempt = null;
-    this.status = CmUserStatus.WAITING_FOR_EMAIL;
     this.createdAt = ClDateHelper.getDate();
 
     // force the lang to en

@@ -15,6 +15,15 @@ import {
 import {
   CaOrganizationUploadPhotoDialogComponent
 } from './component/ca-organization-upload-photo-dialog/ca-organization-upload-photo-dialog.component';
+import {
+  CaOrganizationInvitTableComponent
+} from './component/ca-organization-invit-table/ca-organization-invit-table.component';
+import {
+  CaOrganizationInvitFormDialogComponent
+} from './component/ca-organization-invit-form-dialog/ca-organization-invit-form-dialog.component';
+import {
+  CaOrganizationInvitListComponent
+} from './component/ca-organization-invit-list/ca-organization-invit-list.component';
 
 
 @NgModule({
@@ -24,6 +33,9 @@ import {
     CaOrganizationUsersListComponent,
     CaOrganisationUserRoleDialogComponent,
     CaOrganizationUploadPhotoDialogComponent,
+    CaOrganizationInvitTableComponent,
+    CaOrganizationInvitFormDialogComponent,
+    CaOrganizationInvitListComponent,
   ],
   imports: [
     CommonModule,
@@ -33,6 +45,10 @@ import {
     CaCoreModule,
     CaOrganizationCoreModule,
     CaGroupCoreModule,
+  ],
+  exports: [
+    CaOrganizationInvitFormDialogComponent,
+    CaOrganizationInvitListComponent
   ]
 })
 export class CaOrganizationPageModule {

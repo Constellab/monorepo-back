@@ -4,9 +4,11 @@ export * from './fl-auth.module';
 // Components
 export * from './component/fl-login/fl-login.component';
 export * from './component/fl-login-dialog/fl-login-dialog.component';
+export * from './component/fl-login-form/fl-login-form.component';
 export * from './component/fl-password-forgotten/fl-password-forgotten.component';
 export * from './component/fl-reset-password-page/fl-reset-password-page.component';
 export * from './component/fl-signup-dialog/fl-signup-dialog.component';
+export * from './component/fl-signup-form/fl-signup-form.component';
 
 // Service
 export * from './service/fl-auth.service';

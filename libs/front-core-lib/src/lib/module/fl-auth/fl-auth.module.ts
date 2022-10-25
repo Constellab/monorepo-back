@@ -26,6 +26,8 @@ import {MatSelectModule} from '@angular/material/select';
 import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.module';
 import {FlLoginDialogComponent} from './component/fl-login-dialog/fl-login-dialog.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {FlSignupFormComponent} from './component/fl-signup-form/fl-signup-form.component';
+import {FlLoginFormComponent} from './component/fl-login-form/fl-login-form.component';
 
 /**
  * Module containing component for authentication, sign up, password reset
@@ -37,6 +39,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     FlResetPasswordPageComponent,
     FlSignupDialogComponent,
     FlLoginDialogComponent,
+    FlSignupFormComponent,
+    FlLoginFormComponent,
   ],
   exports: [
     FlLoginComponent,
@@ -44,6 +48,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     FlResetPasswordPageComponent,
     FlSignupDialogComponent,
     FlLoginDialogComponent,
+    FlSignupFormComponent,
+    FlLoginFormComponent,
   ],
   imports: [
     CommonModule,

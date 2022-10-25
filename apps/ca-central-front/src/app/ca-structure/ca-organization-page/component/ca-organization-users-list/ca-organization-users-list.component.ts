@@ -66,9 +66,8 @@ export class CaOrganizationUsersListComponent implements OnInit {
 
   openUpdateRoleDialog(user: CaOrganizationUser): void {
     const data: CaOrganisationUserRoleDialogInput = {
-      organizationId: this.organizationId,
-      userId: user.user.id,
-      currentRole: user.role
+      currentRole: user.role,
+      updateRole: (role) => this.organizationService.updateUserRole(this.organizationId, user.user.id, role)
     };
 
     this.dialogService.openSmallDialog(CaOrganisationUserRoleDialogComponent, {data}).afterClosed().subscribe(
