@@ -7,7 +7,7 @@ import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {marked} from 'marked';
 import {CaUsersService} from '../../../ca-core/service-api/ca-users.service';
-import Image = marked.Tokens.Image;
+import {FlImageHelper} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'ca-user-profile-edit-dialog',
@@ -94,10 +94,10 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
     if (typeof (FileReader) !== 'undefined') {
       const reader = new FileReader();
 
-      reader.onload = (e: any) => {
+      reader.onload = async (e: any) => {
         const srcResult = e.target.result;
         if (srcResult) {
-          this.compressBlob(new Blob([srcResult]));
+          await this.compressBlob(new Blob([srcResult]));
         } else {
           this.isLoadingImport = false;
           this.errorFile = true;
@@ -119,76 +119,23 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
     inputPhoto.click();
   }
 
-  private compressBlob(blob: Blob): void {
-    const blobUrl: string = URL.createObjectURL(blob);
-    const img: HTMLImageElement = new Image();
-    img.src = blobUrl;
-    img.onerror = function () {
-      URL.revokeObjectURL(this.src);
-      // Handle the failure properly
-      console.log("Cannot load image");
-    };
-    img.onload = () => {
-      const finalHeight: number = 180;
-      const finalWidth: number = 180;
-      let [newWidth, newHeight] = this.calculateSize(img);
-      const canvas: HTMLCanvasElement = document.createElement('canvas');
-      canvas.width = finalWidth;
-      canvas.height = finalHeight;
-      let xBegin: number = 0;
-      let yBegin: number = 0;
-      if (newWidth > finalWidth) {
-        xBegin = Math.round((newWidth - finalWidth) / 2);
-      } else {
-        newWidth = finalWidth;
-      }
-      if (newHeight > finalHeight) {
-        yBegin = Math.round((newHeight - finalHeight) / 2);
-      } else {
-        newHeight = finalHeight;
-      }
+  private async compressBlob(blob: Blob): Promise<void> {
+    const b: Blob = await FlImageHelper.compressBlob(blob, 360, 360, 180, 180);
 
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, -xBegin, -yBegin, newWidth, newHeight);
-      canvas.toBlob((b: Blob) => {
-        if(this.editPhotoImgElement){
-          this.editPhotoImgElement.src = URL.createObjectURL(b);
-        } else {
-          this.editPhotoImgElement = this.photoDiv.querySelector('img');
-          this.editPhotoImgElement.style.display = 'block';
-          this.editPhotoImgElement.src = URL.createObjectURL(b);
-        }
-        this.addFile(new File([b], 'i.png'));
-      });
+    if(this.editPhotoImgElement){
+      this.editPhotoImgElement.src = URL.createObjectURL(b);
+    } else {
+      this.editPhotoImgElement = this.photoDiv.querySelector('img');
+      this.editPhotoImgElement.style.display = 'block';
+      this.editPhotoImgElement.src = URL.createObjectURL(b);
     }
+    this.addFile(new File([b], 'i.png'));
   }
 
   private addFile(file: File): void {
     this.newImageFile = file;
     this.isLoadingImport = false;
     this.formGp.updateValueAndValidity()
-  }
-
-  private calculateSize(img: HTMLImageElement): [number, number] {
-
-    let width: number = img.width;
-    let height: number = img.height;
-    const maxHeight: number = 360;
-    const maxWidth: number = 360;
-
-
-    if (width > height) {
-      if (width > maxWidth) {
-        height = Math.round((height * maxWidth) / width);
-        width = maxWidth;
-      }
-    } else {
-      if (height > maxHeight) {
-        width = Math.round((width * maxHeight) / height);
-        height = maxHeight;
-      }
-    }
-    return [width, height];
   }
 
 }
