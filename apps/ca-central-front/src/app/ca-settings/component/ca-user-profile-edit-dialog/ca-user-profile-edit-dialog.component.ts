@@ -120,7 +120,7 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
   }
 
   private async compressBlob(blob: Blob): Promise<void> {
-    const b: Blob = await FlImageHelper.compressBlob(blob, 360, 360, 180, 180);
+    const b: Blob = await FlImageHelper.compressBlob(blob, 360, 360, 240, 240);
 
     if(this.editPhotoImgElement){
       this.editPhotoImgElement.src = URL.createObjectURL(b);
