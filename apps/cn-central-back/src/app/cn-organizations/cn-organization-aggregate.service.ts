@@ -161,8 +161,8 @@ export class CnOrganizationAggregateService {
 
   /////////////////////////////////////// INVITATION //////////////////////////////////
 
-  public async getInvitation(invitationId: string): Promise<CnOrganizationInvit> {
-    return this.invitationService.findByIdAndCheck(invitationId, {organization: true});
+  public async getInvitationByCode(code: string): Promise<CnOrganizationInvit> {
+    return await this.invitationService.findByCodeAndCheckValidity(code);
   }
 
   public async inviteUserToOrganization(organizationId: string, invitDto: CnOrganizationInvitDto): Promise<CnOrganizationInvit> {
@@ -170,6 +170,13 @@ export class CnOrganizationAggregateService {
     await this.checkOrganizationAdmin(organizationId);
 
     const organization = await this.organizationService.findByIdAndCheck(organizationId);
+
+    const member = await this.organizationUserService.findOneByOrganizationIdAndUserEmail(
+      organizationId, invitDto.userMail);
+
+    if (member) {
+      throw new BadRequestException(CnErrorText.USER_ALREADY_IN_ORGANIZATION);
+    }
 
     return this.invitationService.createInvitation(organization, invitDto);
   }
@@ -205,33 +212,31 @@ export class CnOrganizationAggregateService {
   /**
    * Method called when a user accepted an invitation and created an account
    */
-  public async newUserAcceptsInvitation(invitationId: string, user: CnUser): Promise<CnUser> {
+  public async newUserAcceptsInvitation(code: string, user: CnUser): Promise<CnUser> {
+    const invitation = await this.invitationService.findByCodeAndCheckValidity(code);
 
     return await this.datasource.transaction(async (transaction) => {
       // create the user with a active but incomplete profile
       const userDb = await this.userAccountService.createAccount(user, CmUserStatus.INCOMPLETE, transaction);
 
-      return await this.acceptInvitation(invitationId, userDb, transaction);
+      return await this.acceptInvitation(invitation, userDb, transaction);
     });
   }
 
   /**
    * Method called when a user accepted an invitation and already has an account
    */
-  public async existingUserAcceptsInvitation(invitationId: string): Promise<CnUser> {
+  public async existingUserAcceptsInvitation(code: string): Promise<CnUser> {
+    const invitation = await this.invitationService.findByCodeAndCheckValidity(code);
+
     return await this.datasource.transaction(async (transaction) => {
-      return await this.acceptInvitation(invitationId, CnCurrentUserHelper.getAndCheckCurrentUser(), transaction);
+      return await this.acceptInvitation(invitation, CnCurrentUserHelper.getAndCheckCurrentUser(), transaction);
     });
 
   }
 
-  private async acceptInvitation(invitationId: string, user: CnUser, entityManager: EntityManager): Promise<CnUser> {
-    const invitation = await this.invitationService.findByIdAndCheck(invitationId, {organization: true});
-
-    if (!invitation.isValid()) {
-      throw new BadRequestException(CnErrorText.ORGANIZATION_INVITATION_EXPIRED);
-    }
-
+  private async acceptInvitation(invitation: CnOrganizationInvit, user: CnUser,
+                                 entityManager: EntityManager): Promise<CnUser> {
     if (invitation.userMail !== user.email) {
       throw new BadRequestException('The invitation email does not match the user email');
     }

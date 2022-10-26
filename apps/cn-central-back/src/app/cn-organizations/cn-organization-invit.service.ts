@@ -12,6 +12,7 @@ import {DateTime} from 'luxon';
 import {ClDateHelper, ClPage, ClSupportedLanguage} from '@monorepo/core-lib';
 import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnUser} from '../cn-users/cn-user.entity';
+import {CnFrontService} from '../cn-core/services/cn-front.service';
 
 
 @Injectable()
@@ -22,7 +23,8 @@ export class CnOrganizationInvitService extends BlAbstractService<CnOrganization
   constructor(@InjectRepository(CnOrganizationInvit) private repository: Repository<CnOrganizationInvit>,
               protected datasource: DataSource,
               private mailService: BlMailService,
-              private userService: CnUsersService) {
+              private userService: CnUsersService,
+              private frontService: CnFrontService) {
     super(repository, CnOrganizationInvit);
   }
 
@@ -91,7 +93,7 @@ export class CnOrganizationInvitService extends BlAbstractService<CnOrganization
     const data = {
       admin: invit.createdBy,
       validityInDays: this.VALIDITY_DURATION_IN_DAYS,
-      activationUrl: '',
+      url: this.frontService.getSignupOrganizationUrl(invit.code),
       user: null as CnUser,
       organizationName: invit.organization.label,
     };
@@ -118,6 +120,21 @@ export class CnOrganizationInvitService extends BlAbstractService<CnOrganization
       where: {organizationId: organizationId},
       order: {createdAt: 'DESC' as any},
     });
+  }
+
+  public async findByCodeAndCheckValidity(code: string): Promise<CnOrganizationInvit> {
+    const invit = await this.repository.findOne(
+      {
+        where: {code: code},
+        relations: {organization: true}
+      });
+    if (!invit) {
+      throw new BadRequestException(CnErrorText.ORGANIZATION_INVITATION_INVALID);
+    }
+    if (!invit.isValid()) {
+      throw new BadRequestException(CnErrorText.ORGANIZATION_INVITATION_EXPIRED);
+    }
+    return invit;
   }
 
 }

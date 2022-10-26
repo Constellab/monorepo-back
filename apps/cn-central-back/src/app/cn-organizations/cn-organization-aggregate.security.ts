@@ -36,7 +36,7 @@ export class CnOrganizationAggregateSecurity {
 
 
   private async getAndCheckOrganizationUser(organizationId: string, userId: string): Promise<CnOrganizationUser> {
-    const organizationUser = await this.organizationUserService.findOneByUserIdAndOrganizationId(userId, organizationId);
+    const organizationUser = await this.organizationUserService.findOneByOrganizationIdAndUserId(userId, organizationId);
     if (!organizationUser) {
       throw new UnauthorizedException();
     }

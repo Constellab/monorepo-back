@@ -4,6 +4,7 @@ import {CaOrganizationPageModule} from './ca-organization-page/ca-organization-p
 import {CaStructureRoutingModule} from './ca-structure-routing.module';
 import {CaMyGroupsPageModule} from './ca-my-groups-page/ca-my-groups-page.module';
 import {CaTeamPageModule} from './ca-team-page/ca-team-page.module';
+import {CaJoinOrganizationPageModule} from './ca-join-organization-page/ca-join-organization-page.module';
 
 /**
  * Module that group the organization, group and user management
@@ -16,6 +17,7 @@ import {CaTeamPageModule} from './ca-team-page/ca-team-page.module';
     CaOrganizationPageModule,
     CaMyGroupsPageModule,
     CaTeamPageModule,
+    CaJoinOrganizationPageModule,
 
     CaStructureRoutingModule,
   ]

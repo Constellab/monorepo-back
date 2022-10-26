@@ -1,5 +1,9 @@
-.container {
-  height: 100vh;
+.section {
+  flex: 1
+}
+
+.container{
+  height: 100%;
 }
 
 .help-card{
@@ -16,7 +20,7 @@
 }
 
 .feat{
-  font-size: 10em;
+  font-size: 8em;
 }
 
 .help-text{

@@ -33,5 +33,6 @@
   "cannot_remove_last_admin": "You can't remove the last admin of the organization",
   "mail_not_sent": "The mail was not sent, please try later",
   "organization_invitation_already_exists": "An invitation for this mail already exists",
-  "organization_invitation_expired": "The invitation is expired. Please contact your organization administrator"
+  "organization_invitation_expired": "The invitation is expired. Please contact your organization administrator.",
+  "organization_invitation_invalid": "The invitation is invalid. Please contact your organization administrator."
 }

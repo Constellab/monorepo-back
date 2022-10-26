@@ -1,0 +1,33 @@
+<div class="g-page">
+
+  <fl-async-section [object]="invitation$" [showServerErrorText]="true" class="section">
+
+    <ng-container *flSectionBody="let invitation">
+
+      <div class="container" fxLayoutAlign="center center">
+
+        <fl-card class="card">
+          <fl-card-body>
+            <img *ngIf="invitation.organization.photo" [src]="invitation.organization | caOrganizationPhoto"
+                 alt="Organization logo"
+                 class="logo"/>
+
+
+            <div class="g-text-centered">
+              <p class="help-text" [innerHTML]="'join_organization_simple' | translate: {
+                  fullname: invitation.createdBy.fullname,
+                  organization: invitation.organization.label
+                }">
+              </p>
+              <button mat-flat-button color="primary" type="button" (click)="acceptInvitation()">
+                {{ 'join_organization' | translate: {organization: invitation.organization.label} }}
+                <fl-button-loader *ngIf="acceptIsLoading"></fl-button-loader>
+              </button>
+            </div>
+          </fl-card-body>
+        </fl-card>
+      </div>
+    </ng-container>
+  </fl-async-section>
+</div>
+

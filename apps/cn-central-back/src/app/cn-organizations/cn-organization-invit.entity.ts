@@ -1,14 +1,15 @@
 import {CnBaseEntity} from '../cn-core/model/entities/cn-base.entity';
-import {Column, Entity, ManyToOne, Unique} from 'typeorm';
+import {BeforeInsert, Column, Entity, ManyToOne, Unique} from 'typeorm';
 import {CnOrganization} from './cn-organization.entity';
 import {CnOrganizationUserRole} from './cn-organization-user.entity';
 import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
 import {DateTime} from 'luxon';
-import {ClDateHelper} from '@monorepo/core-lib';
+import {ClDateHelper, ClStringHelper} from '@monorepo/core-lib';
+import {Exclude} from 'class-transformer';
 
 @Unique(['organizationId', 'userMail'])
 @Entity('organisation_invit')
-export class CnOrganizationInvit extends CnBaseEntity{
+export class CnOrganizationInvit extends CnBaseEntity {
 
   @Column({type: 'varchar', length: 36})
   organizationId: string;
@@ -29,7 +30,17 @@ export class CnOrganizationInvit extends CnBaseEntity{
   @BlLuxonDateTimeColumn({nullable: false})
   validUntil: DateTime;
 
+  @Exclude()
+  @Column({type: 'varchar', length: 60, nullable: false, update: false})
+  code: string;
+
   isValid(): boolean {
     return this.validUntil > ClDateHelper.getDate();
   }
+
+  @BeforeInsert()
+  private generateCode(): void {
+    this.code = ClStringHelper.generateUUID() + '_' + new Date().getTime();
+  }
+
 }

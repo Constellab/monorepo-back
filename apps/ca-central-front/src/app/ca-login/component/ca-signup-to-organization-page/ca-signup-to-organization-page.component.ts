@@ -1,33 +1,26 @@
 import {Component, OnInit} from '@angular/core';
 import {FormGroup} from '@ngneat/reactive-forms';
-import {
-  FlLoginFormComponent,
-  FlServerError,
-  FlSignupFormComponent,
-  FlSignUpUser,
-  FlSnackBarService
-} from '@monorepo/front-core-lib';
+import {FlLoginFormComponent, FlSignupFormComponent, FlSignUpUser, FlSnackBarService} from '@monorepo/front-core-lib';
 import {CmCredentials} from '@monorepo/common-model';
 import {CaOrganizationInvitService} from '../../../ca-core/service-api/ca-organization-invit.service';
 import {ActivatedRoute} from '@angular/router';
 import {CaRouterService} from '../../../ca-core/service/ca-router.service';
 import {CaAuthenticationService} from '../../service/ca-authentication.service';
 import {CaOrganizationInvitFull} from '../../../ca-core/model/entities/ca-organization-invit.class';
-import {CaOrganizationService} from '../../../ca-core/service-api/ca-organization.service';
+import {Observable, tap} from 'rxjs';
 
 /**
  * Page on which the user can join an organization. He can create an account or use an existing one.
  */
 @Component({
-  selector: 'ca-join-organization-page',
-  templateUrl: './ca-join-organization-page.component.html',
-  styleUrls: ['./ca-join-organization-page.component.scss']
+  selector: 'ca-signup-to-organization-page',
+  templateUrl: './ca-signup-to-organization-page.component.html',
+  styleUrls: ['./ca-signup-to-organization-page.component.scss']
 })
-export class CaJoinOrganizationPageComponent implements OnInit {
+export class CaSignupToOrganizationPageComponent implements OnInit {
 
-  invitation: CaOrganizationInvitFull;
-  invitationIsLoading: boolean = false;
-  invitationError: string;
+  invitation$: Observable<CaOrganizationInvitFull>;
+  invitationCode: string;
 
   signupFormGp: FormGroup<FlSignUpUser>;
   signInFormGp: FormGroup<CmCredentials>;
@@ -35,32 +28,27 @@ export class CaJoinOrganizationPageComponent implements OnInit {
   signupIsLoading: boolean = false;
   signInIsLoading: boolean = false;
 
-  organizationPhoto: string;
-
   constructor(private route: ActivatedRoute,
               private organizationInvitService: CaOrganizationInvitService,
               private snackBarService: FlSnackBarService,
               private routerService: CaRouterService,
-              private authenticationService: CaAuthenticationService,
-              private organizationService: CaOrganizationService) {
+              private authenticationService: CaAuthenticationService) {
   }
 
   ngOnInit(): void {
     this.route.params.subscribe(
-      params => this.getInvitation(params.invitId)
+      params => this.getInvitation(params.code)
     );
   }
 
-  private getInvitation(id: string): void {
-    this.invitationIsLoading = true;
-    this.organizationInvitService.getInvitation(id).subscribe({
-      next: (invitation) => this.getInvitationSuccess(invitation),
-      error: (error) => this.getInvitationError(error)
-    });
+  private getInvitation(code: string): void {
+    this.invitationCode = code;
+    this.invitation$ = this.organizationInvitService.getInvitationByCode(code).pipe(
+      tap(invitation => this.getInvitationSuccess(invitation))
+    );
   }
 
   private getInvitationSuccess(invitation: CaOrganizationInvitFull): void {
-    this.invitation = invitation;
 
     this.signupFormGp = FlSignupFormComponent.buildFormGroup();
     this.signupFormGp.get('email').setValue(invitation.userMail);
@@ -69,18 +57,8 @@ export class CaJoinOrganizationPageComponent implements OnInit {
     this.signInFormGp = FlLoginFormComponent.buildFormGroup();
     this.signInFormGp.get('email').setValue(invitation.userMail);
     this.signInFormGp.get('email').disable();
-
-    if (invitation.organization.photo) {
-      this.organizationPhoto = this.organizationService.getOrganizationPhoto(
-        invitation.organization.photo);
-    }
-    this.invitationIsLoading = false;
   }
 
-  private getInvitationError(error: FlServerError): void {
-    this.invitationError = error.logDetail.message;
-    this.invitationIsLoading = false;
-  }
 
   signupSubmit(): void {
     if (this.signupFormGp.valid && !this.signupIsLoading && !this.signInIsLoading) {
@@ -92,7 +70,7 @@ export class CaJoinOrganizationPageComponent implements OnInit {
 
   private signup(user: FlSignUpUser): void {
     this.signupIsLoading = true;
-    this.organizationInvitService.acceptInvitationNewUser(this.invitation.id, user).subscribe({
+    this.organizationInvitService.acceptInvitationNewUser(this.invitationCode, user).subscribe({
       next: () => this.signupSuccess(),
       error: () => this.signupIsLoading = false
     });
@@ -106,10 +84,10 @@ export class CaJoinOrganizationPageComponent implements OnInit {
   }
 
   signInSubmit(): void {
-    if (this.signupFormGp.valid && !this.signInIsLoading && !this.signupIsLoading) {
+    if (this.signInFormGp.valid && !this.signInIsLoading && !this.signupIsLoading) {
       this.signIn(this.signInFormGp.getRawValue());
     } else {
-      this.signupFormGp.markAllAsTouched();
+      this.signInFormGp.markAllAsTouched();
     }
   }
 
@@ -122,8 +100,7 @@ export class CaJoinOrganizationPageComponent implements OnInit {
   }
 
   private signInSuccess(): void {
-    // this.routerService.na
-    // TODO navigate to join organization route
+    this.routerService.navigateToJoinOrganization(this.invitationCode);
     this.signInIsLoading = false;
   }
 }

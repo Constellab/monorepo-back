@@ -14,7 +14,12 @@ export class CnFrontService {
     return this.getWebsiteURL() + 'login';
   }
 
+  public getSignupOrganizationUrl(invitationCode: string): string{
+    return this.getWebsiteURL() + 'signup-organization/' + invitationCode;
+  }
+
   private getWebsiteURL(): string {
     return this.configService.getWebsiteURL();
   }
+
 }

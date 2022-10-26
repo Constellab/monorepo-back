@@ -1,0 +1,90 @@
+<div class="g-page">
+
+  <fl-async-section [object]="invitation$" [showServerErrorText]="true" class="section">
+
+
+    <ng-container *flSectionBody="let invitation">
+      <div class="container">
+
+        <div>
+          <fl-card class="help-card">
+            <fl-card-body>
+
+              <div fxLayout="row" fxLayoutAlign="space-evenly center">
+
+                <img src="assets/logo/logo.png" alt="Gencovery logo"
+                     class="logo"/>
+
+                <ng-container *ngIf="invitation.organization.photo">
+                  <div class="feat">x</div>
+                  <img [src]="invitation.organization | caOrganizationPhoto" alt="Organization logo"
+                       class="logo"/>
+                </ng-container>
+              </div>
+
+              <p class="help-text" [innerHTML]="'join_organization_help' | translate: {
+            fullname: invitation.createdBy.fullname,
+            organization: invitation.organization.label
+          }">
+
+              <p class="help-text">{{'join_organization_help_2' | translate}}</p>
+            </fl-card-body>
+          </fl-card>
+        </div>
+
+        <div fxLayout="row" fxLayoutAlign="space-evenly center" class="form-cards">
+
+          <!-- Sign up option   -->
+          <fl-card fxFlex="50em">
+            <fl-card-header>
+              <h2 class="g-text-centered">{{'flAuth.signup' | translate}}</h2>
+            </fl-card-header>
+
+            <fl-card-body>
+
+              <form [formGroup]="signupFormGp" (ngSubmit)="signupSubmit()" id="invit-signup">
+
+                <fl-signup-form [formGp]="signupFormGp"></fl-signup-form>
+
+                <div class="g-text-centered">
+                  <button mat-flat-button color="accent" type="submit" form="invit-signup"
+                          class="g-button-big">
+                    {{'flAuth.signup' | translate}}
+                    <fl-button-loader *ngIf="signupIsLoading"></fl-button-loader>
+                  </button>
+                </div>
+
+              </form>
+            </fl-card-body>
+          </fl-card>
+
+          <!--  Login option    -->
+          <fl-card fxFlex="30em">
+            <fl-card-header>
+              <h2 class="g-text-centered">{{'flAuth.sign_in' | translate}}</h2>
+            </fl-card-header>
+            <fl-card-body>
+
+              <form [formGroup]="signInFormGp" (ngSubmit)="signInSubmit()" id="invit-sign-in">
+
+                <fl-login-form [formGp]="signInFormGp"></fl-login-form>
+
+                <div class="g-text-centered">
+                  <button mat-flat-button color="accent" type="submit" form="invit-sign-in"
+                          class="g-button-big">
+                    {{'flAuth.sign_in' | translate}}
+                    <fl-button-loader *ngIf="signInIsLoading"></fl-button-loader>
+                  </button>
+                </div>
+
+              </form>
+            </fl-card-body>
+          </fl-card>
+        </div>
+      </div>
+    </ng-container>
+  </fl-async-section>
+
+</div>
+
+

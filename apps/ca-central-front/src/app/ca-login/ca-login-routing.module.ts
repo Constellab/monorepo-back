@@ -4,12 +4,17 @@ import {NgModule} from '@angular/core';
 import {CaLoginGuard} from './guard/ca-login.guard';
 import {FlResetPasswordPageComponent} from '@monorepo/front-core-lib';
 import {
-  CaJoinOrganizationPageComponent
-} from './component/ca-join-organization-page/ca-join-organization-page.component';
+  CaSignupToOrganizationPageComponent
+} from './component/ca-signup-to-organization-page/ca-signup-to-organization-page.component';
+import {CaSignupToOrganizationGuard} from './guard/ca-signup-to-organization.guard';
 
 const loginRoutes: Routes = [
   {path: 'login', component: CaLoginPageComponent, canActivate: [CaLoginGuard]},
-  {path: 'join-organization/:invitId', component: CaJoinOrganizationPageComponent},
+  {
+    path: 'signup-organization/:code',
+    component: CaSignupToOrganizationPageComponent,
+    canActivate: [CaSignupToOrganizationGuard]
+  },
   {path: 'reset-password/:token', component: FlResetPasswordPageComponent},
 ];
 

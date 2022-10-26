@@ -39,6 +39,10 @@ export class CaRouterService {
     return CaRouterService.getFullRoute(caConstDashboardRoute);
   }
 
+  public navigateToDashboard(): void {
+    this.router.navigate([CaRouterService.getDashboardRoute()]);
+  }
+
   public static getLabInstanceDetailRoute(labInstanceId: string): string {
     return CaRouterService.getFullRoute(`${caConstLabInstancesRoute}/${labInstanceId}`);
   }
@@ -93,12 +97,20 @@ export class CaRouterService {
     return CaRouterService.getFullRoute(`${caConstStructureRoute}/my-teams`);
   }
 
+  public static getJoinOrganizationRoute(code: string): string {
+    return CaRouterService.getFullRoute(`${caConstStructureRoute}/join-organization/${code}`);
+  }
+
   public navigateToMyTeams(): void {
     this.router.navigate([CaRouterService.getMyTeamsRoute()]);
   }
 
   public navigateToTeam(groupId: string): void {
     this.router.navigate([CaRouterService.getTeamRoute(groupId)]);
+  }
+
+  public navigateToJoinOrganization(code: string): void {
+    this.router.navigate([CaRouterService.getJoinOrganizationRoute(code)]);
   }
 
   ////////////////////////// ADMIN ///////////////////////

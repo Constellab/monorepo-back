@@ -4,9 +4,10 @@ import {CaLoginPageComponent} from './component/ca-login-page/ca-login-page.comp
 import {CaLoginRoutingModule} from './ca-login-routing.module';
 import {CaCoreModule} from '../ca-core/ca-core.module';
 import {
-  CaJoinOrganizationPageComponent
-} from './component/ca-join-organization-page/ca-join-organization-page.component';
+  CaSignupToOrganizationPageComponent
+} from './component/ca-signup-to-organization-page/ca-signup-to-organization-page.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {CaOrganizationCoreModule} from '../ca-core/entity-module/ca-organization-core/ca-organization-core.module';
 
 /**
  * Module containing page when the user in not logged
@@ -14,7 +15,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 @NgModule({
   declarations: [
     CaLoginPageComponent,
-    CaJoinOrganizationPageComponent,
+    CaSignupToOrganizationPageComponent,
 
   ],
   imports: [
@@ -23,6 +24,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
     FormsModule,
 
     CaCoreModule,
+    CaOrganizationCoreModule,
 
     // routing
     CaLoginRoutingModule,

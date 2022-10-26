@@ -36,7 +36,9 @@ export class CaOrganizationDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.photo = this.organizationService.getOrganizationPhoto(this.organization.photo);
+    if (this.organization.photo) {
+      this.photo = this.organizationService.getOrganizationPhoto(this.organization.photo);
+    }
   }
 
   openUploadPhotoDialog(): void {

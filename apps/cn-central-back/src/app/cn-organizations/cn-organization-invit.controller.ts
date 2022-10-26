@@ -15,21 +15,21 @@ export class CnOrganizationInvitController {
   //////////////////////////////// INVITATION ROUTES ////////////////////////////////
 
   @BlPublic()
-  @Post(':id/accept-new-user')
-  public async acceptInvitationNewUser(@Param('id', new ParseUUIDPipe()) invitId: string,
+  @Post('code/:code/accept-new-user')
+  public async acceptInvitationNewUser(@Param('code') code: string,
                                 @Body(new BlParsePipe(CnUser)) entity: CnUser): Promise<CnUser> {
-    return this.organizationAggregate.newUserAcceptsInvitation(invitId, entity);
+    return this.organizationAggregate.newUserAcceptsInvitation(code, entity);
   }
 
   @BlPublic()
-  @Get(':id')
-  public async getInvitations(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnOrganizationInvit> {
-    return this.organizationAggregate.getInvitation(id);
+  @Get('code/:code')
+  public async getInvitationByCode(@Param('code') code: string): Promise<CnOrganizationInvit> {
+    return this.organizationAggregate.getInvitationByCode(code);
   }
 
-  @Post(':id/accept-existing-user')
-  public async acceptInvitationExistingUser(@Param('id', new ParseUUIDPipe()) invitId: string): Promise<CnUser> {
-    return this.organizationAggregate.existingUserAcceptsInvitation(invitId);
+  @Post('code/:code/accept-existing-user')
+  public async acceptInvitationExistingUser(@Param('code') code: string): Promise<CnUser> {
+    return this.organizationAggregate.existingUserAcceptsInvitation(code);
   }
 
   @Post(':organizationId')

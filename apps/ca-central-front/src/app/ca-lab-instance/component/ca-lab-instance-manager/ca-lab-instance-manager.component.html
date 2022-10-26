@@ -20,7 +20,7 @@
   <fl-card-body>
 
     <!--  Global status  -->
-    <fl-async-section [object]="labStatus$" [showErrorText]="true">
+    <fl-async-section [object]="labStatus$" [showServerErrorText]="true">
       <ng-container *flSectionBody="let labStatus">
         <ca-lab-instance-manager-status [labStatus]="labStatus" [adminerUrl]="labInstance.adminerUrl"></ca-lab-instance-manager-status>
       </ng-container>

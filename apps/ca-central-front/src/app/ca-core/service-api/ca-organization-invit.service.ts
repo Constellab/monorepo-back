@@ -20,20 +20,20 @@ export class CaOrganizationInvitService {
 
   /**
    * Public route to accept an invitation when a new user is registered
-   * @param invitId
+   * @param code
    * @param user
    */
-  public acceptInvitationNewUser(invitId: string, user: CaNewUser): Observable<CaUser> {
+  public acceptInvitationNewUser(code: string, user: CaNewUser): Observable<CaUser> {
     delete user.repeatPassword;
-    return this.apiService.post(`${this.route}/${invitId}/accept-new-user`, user, CaUser);
+    return this.apiService.post(`${this.route}/code/${code}/accept-new-user`, user, CaUser);
   }
 
-  public getInvitation(id: string): Observable<CaOrganizationInvitFull> {
-    return this.apiService.get(`${this.route}/${id}`, CaOrganizationInvitFull);
+  public getInvitationByCode(code: string): Observable<CaOrganizationInvitFull> {
+    return this.apiService.get(`${this.route}/code/${code}`, CaOrganizationInvitFull);
   }
 
-  public acceptInvitationExistingUser(invitId: string): Observable<CaUser> {
-    return this.apiService.post(`${this.route}/${invitId}/accept-existing-user`, null, CaUser);
+  public acceptInvitationExistingUser(code: string): Observable<CaUser> {
+    return this.apiService.post(`${this.route}/code/${code}/accept-existing-user`, null, CaUser);
   }
 
   public createInvitation(organizationId: string, invitDto: CaOrganizationInvitDTO): Observable<CaOrganizationInvit> {

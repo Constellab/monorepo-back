@@ -15,12 +15,24 @@ export class CnOrganizationUserService extends BlAbstractPaginatedService<CnOrga
     super(repository, CnOrganizationUser);
   }
 
-  public async findOneByUserIdAndOrganizationId(organizationId: string, userId: string): Promise<CnOrganizationUser | null> {
+  public async findOneByOrganizationIdAndUserId(organizationId: string, userId: string): Promise<CnOrganizationUser | null> {
     return this.repository.findOne({where: {userId, organizationId}});
   }
 
+  public async findOneByOrganizationIdAndUserEmail(organizationId: string, email: string): Promise<CnOrganizationUser | null> {
+    return this.repository.findOne(
+      {
+        where: {
+          organizationId: organizationId,
+          user: {email: email}
+        },
+        relations: {user: true}
+      }
+    );
+  }
+
   public async userIsOrganizationMember(organizationId: string, userId: string): Promise<boolean> {
-    return await this.findOneByUserIdAndOrganizationId(organizationId, userId) != null;
+    return await this.findOneByOrganizationIdAndUserId(organizationId, userId) != null;
   }
 
 
@@ -47,7 +59,7 @@ export class CnOrganizationUserService extends BlAbstractPaginatedService<CnOrga
   }
 
   public async activateUser(organizationId: string, userId: string): Promise<CnOrganizationUser> {
-    const organizationUser = await this.findOneByUserIdAndOrganizationId(organizationId, userId);
+    const organizationUser = await this.findOneByOrganizationIdAndUserId(organizationId, userId);
 
     if (organizationUser.active) {
       throw new BadRequestException('The user is already active');
@@ -57,7 +69,7 @@ export class CnOrganizationUserService extends BlAbstractPaginatedService<CnOrga
   }
 
   public async deactivateUser(organizationId: string, userId: string): Promise<CnOrganizationUser> {
-    const organizationUser = await this.findOneByUserIdAndOrganizationId(organizationId, userId);
+    const organizationUser = await this.findOneByOrganizationIdAndUserId(organizationId, userId);
 
     if (!organizationUser.active) {
       throw new BadRequestException('The user is already inactive');
@@ -67,7 +79,7 @@ export class CnOrganizationUserService extends BlAbstractPaginatedService<CnOrga
   }
 
   public async updateUserRole(organizationId: string, userId: string, role: CnOrganizationUserRole): Promise<CnOrganizationUser> {
-    const organizationUser = await this.findOneByUserIdAndOrganizationId(organizationId, userId);
+    const organizationUser = await this.findOneByOrganizationIdAndUserId(organizationId, userId);
 
     if (organizationUser.role === role) {
       throw new BadRequestException('The user already has the role ' + role);

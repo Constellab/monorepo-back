@@ -81,7 +81,7 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
   /**
    * If true and an error happens, the error is show in the html
    */
-  @Input() showErrorText: boolean = false;
+  @Input() showServerErrorText: boolean = false;
 
   /** Content that will be rendered lazily. */
   @ContentChild(FlSectionBodyDirective, {read: TemplateRef, static: true}) lazyContent: TemplateRef<any>;
@@ -135,7 +135,7 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
     this.showBody = false;
 
     // show error text if input is set and the error is a FlServerError
-    if (this.showErrorText && error?.logDetail?.message) {
+    if (this.showServerErrorText && error?.logDetail?.message) {
       this.infoText = error.logDetail.message;
     } else {
       // otherwise, show the empty text

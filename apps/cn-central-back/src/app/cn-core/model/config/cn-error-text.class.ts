@@ -37,4 +37,5 @@ export enum CnErrorText {
   MAIL_NOT_SENT = 'error.mail_not_sent',
   ORGANIZATION_INVITATION_ALREADY_EXISTS = 'error.organization_invitation_already_exists',
   ORGANIZATION_INVITATION_EXPIRED = 'error.organization_invitation_expired',
+  ORGANIZATION_INVITATION_INVALID = 'error.organization_invitation_invalid',
 }
