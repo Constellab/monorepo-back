@@ -1,0 +1,18 @@
+.portal {
+  padding: 0;
+}
+
+.title {
+  padding: 1.5em 1.5em 1em 1.5em;
+}
+
+
+.organization {
+  cursor: pointer;
+  display: block;
+  padding: 1em;
+}
+
+.organization:hover {
+  background-color: var(--grey-low-contrast);
+}

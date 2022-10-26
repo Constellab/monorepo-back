@@ -1,12 +1,14 @@
 import {CorsOptions} from '@nestjs/common/interfaces/external/cors-options.interface';
 
-export function blGetCorsConfig(domain: string, isLocal: boolean): CorsOptions {
+export function blGetCorsConfig(domains: string[], isLocal: boolean, additionalAllowedHeader: string[] = []): CorsOptions {
 
   let origin: (RegExp | string)[];
   if (isLocal) {
     origin = [/^(.*)/];
   } else {
-    origin = [new RegExp(`https:\\/\\/.*\\.${domain.replace('.', '\\.')}`), 'http://localhost:4200'];
+    // convert the domains to regex
+    const originRegex = domains.map(domain => new RegExp(`https:\\/\\/.*\\.${domain.replace('.', '\\.')}`));
+    origin = [...originRegex, 'http://localhost:4200'];
   }
   return {
     origin: origin, // use regex instead of simple '*'
@@ -16,7 +18,8 @@ export function blGetCorsConfig(domain: string, isLocal: boolean): CorsOptions {
     credentials: true,
     // header If-None-Match useful for Safari with service workers
     allowedHeaders:
-      'Origin,X-Requested-With,Content-Type,Accept,Authorization,authorization,X-Forwarded-for,lang,If-None-Match',
+      'Origin,X-Requested-With,Content-Type,Accept,Authorization,authorization,X-Forwarded-for,lang,If-None-Match' +
+      (additionalAllowedHeader.length > 0 ? ',' + additionalAllowedHeader.join(',') : ''),
   };
 }
 

@@ -43,6 +43,7 @@ import {TdTechnicalDocModule} from '@monorepo/technical-doc';
 import {CaTdServiceConfig} from './ca-core/model/config/ca-td-service.config';
 import {PrProtocolModule} from '@monorepo/protocol';
 import {CaUserConfig} from './ca-core/model/config/ca-user-config.service';
+import {CaOrganizationInterceptor} from './ca-core/interceptor/ca-organization.interceptor';
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
   return (): void => themeService.init();
@@ -115,6 +116,11 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: FlHttpInterceptorService,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: CaOrganizationInterceptor,
       multi: true
     },
     {provide: APP_INITIALIZER, useFactory: loadThemeOnInit, deps: [FlThemeService], multi: true},

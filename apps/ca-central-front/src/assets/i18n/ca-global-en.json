@@ -153,6 +153,7 @@
   "join_organization_simple": "<strong>{{fullname}}</strong> invited you to join the organization <strong>{{organization}}</strong>.",
   "join_organization": "Join {{organization}}",
   "join_organization_existing_user_success": "You've joined the organization",
+  "my_organizations": "My organizations",
   "group": "Group",
   "team": "Team",
   "no_team": "No team",

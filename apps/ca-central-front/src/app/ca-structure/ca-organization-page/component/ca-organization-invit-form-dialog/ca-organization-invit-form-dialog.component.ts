@@ -50,7 +50,7 @@ export class CaOrganizationInvitFormDialogComponent implements OnInit {
   }
 
   private createInvitation(invitationDto: CaOrganizationInvitDTO): void {
-    this.isLoading = false;
+    this.isLoading = true;
     this.organizationInvitService.createInvitation(this.input.organizationId, invitationDto).subscribe({
       next: invitation => this.createSuccess(invitation),
       error: () => this.isLoading = false

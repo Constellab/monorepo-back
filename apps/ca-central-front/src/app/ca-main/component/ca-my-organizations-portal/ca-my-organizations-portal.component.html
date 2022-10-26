@@ -1,0 +1,26 @@
+<fl-portal class="portal">
+  <fl-portal-content>
+
+    <fl-async-section [object]="myOrganizations$">
+      <fl-section-header>
+        <div class="title"><h2>{{'my_organizations' | translate}}</h2></div>
+      </fl-section-header>
+      <ng-container *flSectionBody="let organizations">
+        <ng-container *ngIf="isProduction; else localEnv">
+          <a *ngFor="let organization of organizations" [href]="getOrganizationFrontUrl(organization)">
+            <ca-organization-inline [organization]="organization" class="organization">
+            </ca-organization-inline>
+          </a>
+        </ng-container>
+
+        <ng-template #localEnv>
+          <div *ngFor="let organization of organizations" (click)="switchOrganizationLocal(organization)">
+            <ca-organization-inline [organization]="organization" class="organization">
+            </ca-organization-inline>
+          </div>
+        </ng-template>
+
+      </ng-container>
+    </fl-async-section>
+  </fl-portal-content>
+</fl-portal>

@@ -12,3 +12,7 @@ e2e
 # Ignore the current node modules
 node_modules
 
+# Ignore dist folder
+dist
+
+.angular

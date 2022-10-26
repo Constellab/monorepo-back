@@ -2,14 +2,15 @@
 
   <mat-sidenav [fixedInViewport]="true"
                [mode]="sidenavMode"
-               [(opened)]="isOpen"
+               [opened]="true"
+               [disableClose]="true"
                position="start"
                class="sidenav g-card-background">
 
     <div fxLayout="column" class="column-container">
 
       <img src="assets/logo/logo.png" alt="Gencovery logo"
-           class="logo"/>
+           class="logo"  (click)="openMyOrganizationsPortal()"/>
       <!-- List of main menu links   -->
       <div fxFlex="auto" class="menu" fxLayout="column">
         <div class="buttons">

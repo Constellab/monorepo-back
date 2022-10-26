@@ -22,10 +22,10 @@ export class CaOrganizationService extends FlApiCrudService<CaOrganization, CaSa
     super('organizations', CaOrganization, apiService);
   }
 
-  //////////////////////////////// CURRENT ORGA ROUTES ////////////////////////////////
 
-  //////////////////////////////// G ADMIN ROUTES ////////////////////////////////
-
+  public getMyOrganizations(): Observable<CaOrganization[]> {
+    return this.apiService.get(`${this.route}/my-organizations`, CaOrganization);
+  }
 
   public getAll(page: number, size: number): Observable<ClPage<CaOrganization>> {
     return this.apiService.get(`${this.route}`, CaOrganization,
@@ -86,6 +86,14 @@ export class CaOrganizationService extends FlApiCrudService<CaOrganization, CaSa
   public getInvitations(organizationId: string, page: number, pageSize: number): Observable<ClPageI<CaOrganizationInvit>> {
     return this.apiService.get(`${this.route}/${organizationId}/invitations`, CaOrganizationInvit,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
+  }
+
+  public getCurrentOrganization(): Observable<CaOrganization> {
+    return this.apiService.get(`${this.route}/current`, CaOrganization);
+  }
+
+  public getDefaultOrganization(): Observable<CaOrganization> {
+    return this.apiService.get(`${this.route}/default`, CaOrganization);
   }
 }
 

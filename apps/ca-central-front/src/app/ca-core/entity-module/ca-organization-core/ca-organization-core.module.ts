@@ -11,6 +11,8 @@ import {
   CaOrganizationUserTableComponent
 } from './component/ca-organization-user-table/ca-organization-user-table.component';
 import {CaOrganizationPhotoPipe} from './pipe/ca-organization-photo.pipe';
+import {CaOrganizationPhotoComponent} from './component/ca-organization-photo/ca-organization-photo.component';
+import {CaOrganizationInlineComponent} from './component/ca-organization-inline/ca-organization-inline.component';
 
 
 @NgModule({
@@ -19,12 +21,16 @@ import {CaOrganizationPhotoPipe} from './pipe/ca-organization-photo.pipe';
     CaOrganizationFormDialogComponent,
     CaOrganizationUserTableComponent,
     CaOrganizationPhotoPipe,
+    CaOrganizationPhotoComponent,
+    CaOrganizationInlineComponent,
   ],
   exports: [
     CaOrganizationTableComponent,
     CaOrganizationFormDialogComponent,
     CaOrganizationUserTableComponent,
     CaOrganizationPhotoPipe,
+    CaOrganizationPhotoComponent,
+    CaOrganizationInlineComponent,
   ],
   imports: [
     CommonModule,

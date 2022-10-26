@@ -42,6 +42,11 @@ export class CnOrganizationsController {
     return this.organizationAggregate.findCurrentOrganization();
   }
 
+  @Get('my-organizations')
+  findCurrentUserOrganizations(): Promise<CnOrganization[]> {
+    return this.organizationAggregate.findCurrentUserOrganizations();
+  }
+
 
   @Post()
   create(@Body(new BlParsePipe(CnOrganization)) entity: CnOrganization): Promise<CnOrganization> {

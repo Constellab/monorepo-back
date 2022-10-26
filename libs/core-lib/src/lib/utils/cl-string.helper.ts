@@ -199,6 +199,21 @@ export class ClStringHelper {
     return str.trim().replace(/\s+/g, '-').toLowerCase();
   }
 
+  /**
+   * Return the lowest domain of an url
+   * Example : https://google.com --> google
+   * Example : https://test.constellab.com --> test
+   * @param url
+   */
+  public static getLowestDomainFromUrl(url: string): string {
+    if(url == null) return null;
+    url = url.replace('https://', '')
+      .replace('http://', '');
+    const domains = url.split('.');
+    if(domains.length < 2) return null;
+    return domains[0];
+  }
+
 
   public static toIdForUrl(str: string): string{
     str = str.replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '');

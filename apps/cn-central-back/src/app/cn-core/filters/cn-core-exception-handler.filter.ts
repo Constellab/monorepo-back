@@ -76,7 +76,9 @@ export class CnCoreExceptionHandlerFilter implements ExceptionFilter {
   private logError(error: Error, instanceId: string): void {
     const request: Request = CnCurrentUserHelper.getCurrentRequest();
     const userString = CnCurrentUserHelper.getCurrentUser()?.getUserInfo() ?? 'No user';
-    this.logger.error(`Error during request ${request.url} | Method ${request.method} | User : ${userString} | InstanceId ${instanceId}`);
+    const organizationString = CnCurrentUserHelper.getCurrentOrganization()?.id ?? 'No organization';
+    // eslint-disable-next-line max-len
+    this.logger.error(`Error during request ${request.url} | Method ${request.method} | User : ${userString} | Organization : ${organizationString} | InstanceId ${instanceId}`);
     this.logger.error(error.stack);
   }
 

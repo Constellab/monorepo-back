@@ -63,6 +63,10 @@ export class CnOrganizationAggregateService {
     return CnCurrentUserHelper.getAndCheckCurrentOrganization();
   }
 
+  public async findCurrentUserOrganizations(): Promise<CnOrganization[]> {
+    return await this.organizationUserService.getOrganizationsOfUser(CnCurrentUserHelper.getCurrentUser().id)
+  }
+
   public async findOne(id: string): Promise<CnOrganization> {
     id = this.getOrganizationId(id);
     await this.checkOrganizationMember(id);

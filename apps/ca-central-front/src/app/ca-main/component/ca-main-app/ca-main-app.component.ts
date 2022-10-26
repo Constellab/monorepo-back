@@ -1,10 +1,12 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {CaMainMenuLink, caMainMenuLinks} from '../../model/ca-main-menu-link.class';
 import {CaAuthenticatedUserService} from '../../../ca-core/service-api/ca-authenticated-user.service';
 import {FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {
   CaNotificationsPortalComponent
 } from '../../../ca-notifications/ca-notifications-portal/ca-notifications-portal.component';
+import {CaMyOrganizationsPortalComponent} from '../ca-my-organizations-portal/ca-my-organizations-portal.component';
+import {MatSidenav} from '@angular/material/sidenav';
 
 /**
  * Main app component. Menu on the left and page on the right
@@ -16,11 +18,12 @@ import {
 })
 export class CaMainAppComponent implements OnInit {
 
+  @ViewChild(MatSidenav, {static: true, read: ElementRef}) sidenav: ElementRef<HTMLElement>;
+
   accessibleLinks: CaMainMenuLink[];
 
   // set always side mode
   sidenavMode: 'over' | 'side' = 'side';
-  isOpen: boolean = true;
 
 
   constructor(private authenticatedUserService: CaAuthenticatedUserService,
@@ -44,6 +47,20 @@ export class CaMainAppComponent implements OnInit {
     this.accessibleLinks = accessibleLinks;
   }
 
+  openMyOrganizationsPortal(): void {
+    const config = this.portalService.configureRelativePortal(this.sidenav.nativeElement, [{
+      originX: 'end',
+      overlayX: 'start',
+      originY: 'top',
+      overlayY: 'top',
+    }], {
+      disposeOnOutsideClick: true,
+      disposeOnNavigation: true,
+      elevation: true
+    });
+
+    this.portalService.createPortal(CaMyOrganizationsPortalComponent, config);
+  }
   openNotificationDiv(): void {
     const config: FlPortalConfig = this.portalService.configureAbsolutePortal({
       bottom: '4.5em',
