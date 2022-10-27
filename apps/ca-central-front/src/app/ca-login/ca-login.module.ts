@@ -8,6 +8,7 @@ import {
 } from './component/ca-signup-to-organization-page/ca-signup-to-organization-page.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CaOrganizationCoreModule} from '../ca-core/entity-module/ca-organization-core/ca-organization-core.module';
+import {CaNoOrganizationPageComponent} from './component/ca-no-organization-page/ca-no-organization-page.component';
 
 /**
  * Module containing page when the user in not logged
@@ -16,7 +17,7 @@ import {CaOrganizationCoreModule} from '../ca-core/entity-module/ca-organization
   declarations: [
     CaLoginPageComponent,
     CaSignupToOrganizationPageComponent,
-
+    CaNoOrganizationPageComponent,
   ],
   imports: [
     CommonModule,

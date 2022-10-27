@@ -13,6 +13,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {caConstLoginRoute} from '../utils/ca-base-route';
 import {CmNestApiError} from '@monorepo/common-model';
+import {environment} from '../../../environments/ca-environment';
 
 
 /**
@@ -44,32 +45,35 @@ export class CaApiErrorService extends FlApiErrorService {
                            snackBarDuration?: number, defaultError: string = 'Server error'): Observable<never> {
     const serverError: FlServerError = {
       response: errorResponse,
-      logDetail: {
-        message: '',
-        timestamp: new Date()
-      },
+      message: null,
     };
+
+    // check if the error is formatted from nest api
+    const nestError: CmNestApiError = errorResponse.error;
+    if (nestError && nestError.code != null && nestError.instanceId != null
+      && nestError.detail != null && nestError.status != null) {
+      serverError.nestedError = nestError;
+    }
 
     // specific handling or connection error because it is not thrown by the API
     if (errorResponse.status === 0 || errorResponse.status === 504) {
       // connection lost error
-      serverError.logDetail.message = this.translateService.translate('connection_lost');
+      serverError.message = this.translateService.translate('connection_lost');
     } else {
 
-      const nestError: CmNestApiError = errorResponse.error;
 
       // handle session expired specifically
-      if (nestError.code === 'error.wrong_token') {
+      if (serverError.nestedError?.code === 'error.wrong_token') {
         return this.sessionExpired(serverError, snackBarDuration);
       }
 
       // get the error message
-      serverError.logDetail.message = this.getErrorMessage(nestError, defaultError);
+      serverError.message = this.getErrorMessage(serverError.nestedError, defaultError);
     }
 
     if (!hideError) {
       // open the error dialog
-      this.showError(serverError.logDetail.message, snackBarDuration);
+      this.showError(serverError.message, snackBarDuration);
     }
 
     // throw the error to propagate it
@@ -92,16 +96,19 @@ export class CaApiErrorService extends FlApiErrorService {
     }
 
     // for security clear the authentication expiration cookie
-    // to assure the user is disconnect
-    this.cookieService.removeCookie(flAuthExpiredCookie);
+    // to assure the user is disconnected
+    this.cookieService.removeCookie(flAuthExpiredCookie, {
+      sameSite: 'Strict', path: '/', secure: false,
+      domain: environment.frontDomain
+    });
 
-    // redirect the user to the login page
-    this.router.navigate([caConstLoginRoute]);
+    // redirect the user to the login page, with autoRedirect param to avoid infinite loop
+    this.router.navigate([caConstLoginRoute], {queryParams: {autoRedirect: false}});
 
-    serverError.logDetail.message = this.translateService.translate('session_expired');
+    serverError.message = this.translateService.translate('session_expired');
 
     // show error to the user
-    this.showError(serverError.logDetail.message, snackBarDuration);
+    this.showError(serverError.message, snackBarDuration);
 
     // throw the error to propagate it
     return throwError(serverError);
@@ -111,7 +118,7 @@ export class CaApiErrorService extends FlApiErrorService {
    * Handle the error message for the not specific errors
    */
   private getErrorMessage(error: CmNestApiError, defaultError: string): string {
-    return error.detail || defaultError;
+    return error?.detail ?? defaultError;
   }
 }
 

@@ -135,8 +135,8 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
     this.showBody = false;
 
     // show error text if input is set and the error is a FlServerError
-    if (this.showServerErrorText && error?.logDetail?.message) {
-      this.infoText = error.logDetail.message;
+    if (this.showServerErrorText && error?.message) {
+      this.infoText = error.message;
     } else {
       // otherwise, show the empty text
       this.setInfoText(true);

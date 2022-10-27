@@ -16,7 +16,7 @@ export class BlRequestContextMiddleware implements NestMiddleware<Request, Respo
   use(req: Request, res: Response, next: NextFunction): void {
     // skip the options request
     if (req.method !== 'OPTIONS') {
-      const requestContext = new BlRequestContext(req, res);
+      const requestContext = new BlRequestContext(req, res, {});
       BlRequestContext.setContext(requestContext);
     }
 

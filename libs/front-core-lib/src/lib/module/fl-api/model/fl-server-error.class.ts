@@ -1,11 +1,8 @@
 import {HttpErrorResponse} from '@angular/common/http';
+import {CmNestApiError} from '@monorepo/common-model';
 
 export interface FlServerError {
   response?: HttpErrorResponse;
-  logDetail: FlLogDetail;
-}
-
-export interface FlLogDetail {
-  timestamp: Date;
   message: string;
+  nestedError?: CmNestApiError;
 }

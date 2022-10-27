@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {CaUser} from '../model/entities/ca-user.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
@@ -9,8 +9,13 @@ import {
   FlThemeService,
   FlTranslateService
 } from '@monorepo/front-core-lib';
-import {ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import {ClStringHelper, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {CmUserCategory} from '@monorepo/common-model';
+import {CaCurrentOrganizationService} from './ca-current-organization.service';
+import {CaOrganizationInfoDto} from '../model/entities/ca-organization.class';
+import {CaOrganizationService} from './ca-organization.service';
+import {DOCUMENT} from '@angular/common';
+import {environment} from '../../../environments/ca-environment';
 
 /**
  * Service to handle the current authenticated user
@@ -29,8 +34,21 @@ export class CaAuthenticatedUserService implements FlCleanableService {
 
   constructor(private apiService: FlApiService,
               private translateService: FlTranslateService,
-              private themeService: FlThemeService) {
+              private themeService: FlThemeService,
+              private organizationService: CaOrganizationService,
+              private currentOrganizationService: CaCurrentOrganizationService,
+              @Inject(DOCUMENT) private document: Document) {
     FlCleanerService.getInstance().registerService(this);
+  }
+
+  /**
+   * Call the get user information route and store the user in the service
+   */
+  public loadCurrentInfo(): Observable<CaOrganizationInfoDto> {
+    this.currentOrganizationService.init();
+    return this.organizationService.getCurrentInfo().pipe(
+      map(organizationInfo => this.storeCurrentAuthenticatedInfo(organizationInfo))
+    );
   }
 
   /**
@@ -48,6 +66,36 @@ export class CaAuthenticatedUserService implements FlCleanableService {
       return null;
     }
     return this.userAuthenticated;
+  }
+
+  /**
+   * For dev environment
+   * @param domain
+   */
+  public setCurrentOrganizationDomainDev(domain: string): void {
+    this.currentOrganizationService.setCurrentOrganizationDomainDev(domain);
+    this.organizationService.getCurrentInfo().subscribe(
+      organizationInfo => this.storeCurrentAuthenticatedInfo(organizationInfo)
+    );
+  }
+
+  private storeCurrentAuthenticatedInfo(organizationInfo: CaOrganizationInfoDto): CaOrganizationInfoDto {
+
+    if (environment.production) {
+      // if the website organization domain does not correspond to the user organization domain
+      // redirect to the website organization domain
+      const url = this.document.defaultView.location.href;
+      const domain = ClStringHelper.getLowestDomainFromUrl(url);
+      if (domain !== organizationInfo.organization.domain) {
+        this.document.defaultView.location.href = `https://${organizationInfo.organization.domain}.${environment.frontDomain}`;
+        // throw an error so the guard does not navigate to the page
+        throw new Error('Redirect to the organization domain');
+      }
+    }
+
+    this.currentOrganizationService.setCurrentOrganization(organizationInfo.organization, organizationInfo.roleInOrga);
+    this.storeUserAuthenticated(organizationInfo.user);
+    return organizationInfo;
   }
 
   private storeUserAuthenticated(user: CaUser): CaUser {

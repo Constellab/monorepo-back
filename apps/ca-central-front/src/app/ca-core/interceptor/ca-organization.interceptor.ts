@@ -16,9 +16,9 @@ export class CaOrganizationInterceptor implements HttpInterceptor {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (!environment.production && this.currentOrganizationService.getCurrentOrganizationDomain() != null) {
+    if (!environment.production && this.currentOrganizationService.getCurrentOrganizationDomainDev() != null) {
       req = req.clone({
-        headers: req.headers.set(this.organizationHeader, this.currentOrganizationService.getCurrentOrganizationDomain())
+        headers: req.headers.set(this.organizationHeader, this.currentOrganizationService.getCurrentOrganizationDomainDev())
       });
     }
     return next.handle(req);

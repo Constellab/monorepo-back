@@ -58,13 +58,12 @@
       },
       "configurations": {
         "development": {
-          "serviceWorker": false,
-          "outputHashing": "all",
-          "optimization": {
-            "styles": {
-              "inlineCritical": false
-            }
-          },
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true,
           "budgets": [
             {
               "type": "initial",

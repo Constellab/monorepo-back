@@ -9,6 +9,7 @@ import {
   FlCookieService
 } from '@monorepo/front-core-lib';
 import {CmCredentials} from '@monorepo/common-model';
+import {environment} from '../../../environments/ca-environment';
 
 /**
  * Service to handle login and logout and store cookie to check if user is connected
@@ -53,12 +54,15 @@ export class CaAuthenticationService extends FlAuthService {
     // clear the millisecond to get closer to real expiration
     date.setMilliseconds(0);
     this.cookieService.setCookie(flAuthExpiredCookie, date.getTime(),
-      {expires: date, sameSite: 'Strict', path: '/', secure: false});
+      {
+        expires: date, sameSite: 'Strict', path: '/', secure: false,
+        domain: environment.frontDomain
+      });
   }
 
   private clearAuthExpirationCookie(): void {
     this.cookieService.removeCookie(flAuthExpiredCookie,
-      {sameSite: 'Strict', path: '/', secure: false});
+      {sameSite: 'Strict', path: '/', secure: false, domain: environment.frontDomain});
   }
 
   /**

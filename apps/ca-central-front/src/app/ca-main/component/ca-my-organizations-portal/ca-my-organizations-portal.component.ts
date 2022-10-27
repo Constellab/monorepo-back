@@ -4,7 +4,7 @@ import {Observable} from 'rxjs';
 import {CaOrganization} from '../../../ca-core/model/entities/ca-organization.class';
 import {environment} from '../../../../environments/ca-environment';
 import {FlOverlayRef} from '@monorepo/front-core-lib';
-import {CaCurrentOrganizationService} from '../../../ca-core/service-api/ca-current-organization.service';
+import {CaAuthenticatedUserService} from '../../../ca-core/service-api/ca-authenticated-user.service';
 
 
 /**
@@ -22,7 +22,7 @@ export class CaMyOrganizationsPortalComponent implements OnInit {
   isProduction = environment.production;
 
   constructor(private organizationService: CaOrganizationService,
-              private currentOrganizationService: CaCurrentOrganizationService,
+              private authenticatedUserService: CaAuthenticatedUserService,
               private overlayRef: FlOverlayRef) {
   }
 
@@ -35,7 +35,7 @@ export class CaMyOrganizationsPortalComponent implements OnInit {
   }
 
   switchOrganizationLocal(organization: CaOrganization): void {
-    this.currentOrganizationService.setCurrentOrganizationDomain(organization.domain);
+    this.authenticatedUserService.setCurrentOrganizationDomainDev(organization.domain);
     this.overlayRef.dispose();
   }
 }

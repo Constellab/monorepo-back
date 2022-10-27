@@ -7,9 +7,7 @@ import {CaCoreModule} from './ca-core/ca-core.module';
 import {CaLoginModule} from './ca-login/ca-login.module';
 import {CaMainModule} from './ca-main/ca-main.module';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
-import {environment} from '../environments/ca-environment';
 import {CookieService} from 'ngx-cookie-service';
-import {ServiceWorkerModule} from '@angular/service-worker';
 import {
   FlApiModule,
   FlAuthModule,
@@ -102,9 +100,6 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     RvResourceViewModule.forRoot({availableViews: rvDefaultViewTypeInfos}),
 
     TdTechnicalDocModule.forRoot(CaTdServiceConfig),
-
-
-    ServiceWorkerModule.register('ngsw-worker.js', {enabled: environment.production}),
   ],
   providers: [
     {

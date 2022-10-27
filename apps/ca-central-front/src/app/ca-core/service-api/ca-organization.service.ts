@@ -3,6 +3,7 @@ import {FlApiCrudService, FlApiService, FlEntityPaginatedDatasource} from '@mono
 import {
   CaOrganization,
   CaOrganizationDatasource,
+  CaOrganizationInfoDto,
   CaOrganizationRole,
   CaOrganizationUser,
   CaOrganizationUserDatasource,
@@ -22,6 +23,9 @@ export class CaOrganizationService extends FlApiCrudService<CaOrganization, CaSa
     super('organizations', CaOrganization, apiService);
   }
 
+  public getCurrentInfo(): Observable<CaOrganizationInfoDto> {
+    return this.apiService.get(`${this.route}/current-info`, CaOrganizationInfoDto);
+  }
 
   public getMyOrganizations(): Observable<CaOrganization[]> {
     return this.apiService.get(`${this.route}/my-organizations`, CaOrganization);

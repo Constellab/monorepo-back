@@ -24,11 +24,17 @@ import {Response} from 'express';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
 import {CmUserCategory} from '@monorepo/common-model';
 import {CnOrganizationInvit} from './cn-organization-invit.entity';
+import {CnOrganizationInfoDto} from './cn-organization.dto';
 
 @Controller('organizations')
 export class CnOrganizationsController {
 
   constructor(private organizationAggregate: CnOrganizationAggregateService) {
+  }
+
+  @Get('current-info')
+  async getCurrentInfo(): Promise<CnOrganizationInfoDto> {
+    return this.organizationAggregate.getCurrentInfo();
   }
 
 

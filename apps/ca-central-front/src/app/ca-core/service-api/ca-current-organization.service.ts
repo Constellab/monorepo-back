@@ -1,13 +1,9 @@
-import {Inject, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {CaOrganizationService} from './ca-organization.service';
-import {ClCachedObservable, ClStringHelper} from '@monorepo/core-lib';
-import {CaOrganization} from '../model/entities/ca-organization.class';
-import {FlLocalStorageService} from '@monorepo/front-core-lib';
+import {CaOrganization, CaOrganizationRole} from '../model/entities/ca-organization.class';
+import {FlCleanableService, FlCleanerService, FlLocalStorageService} from '@monorepo/front-core-lib';
 import {environment} from '../../../environments/ca-environment';
-import {Observable, of, tap} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {Router} from '@angular/router';
-import {DOCUMENT} from '@angular/common';
+import {BehaviorSubject, filter, Observable} from 'rxjs';
 
 /**
  * Service to manage the current organization
@@ -15,71 +11,64 @@ import {DOCUMENT} from '@angular/common';
 @Injectable({
   providedIn: 'root'
 })
-export class CaCurrentOrganizationService {
+export class CaCurrentOrganizationService implements FlCleanableService{
 
-  private currentOrganizationDomain: string;
+  private currentOrganizationDomainDev: string;
 
-  private currentOrganization$: ClCachedObservable<CaOrganization>;
+  private currentOrganization$: BehaviorSubject<CaOrganization> = new BehaviorSubject(null);
+  private currentUserRoleInOrganization: CaOrganizationRole;
 
   // key use to store the current organization in the local storage only for dev env
   private devOrganizationStorageKey: string = 'local-organization';
 
   constructor(private organizationService: CaOrganizationService,
-              private localStorageService: FlLocalStorageService,
-              private router: Router,
-              @Inject(DOCUMENT) private document: Document) {
+              private localStorageService: FlLocalStorageService) {
+    FlCleanerService.getInstance().registerService(this);
   }
 
-  public init(): Observable<boolean> {
-    // if we are in dev mode we try to get the current organization from the local storage
+  public init(): void {
+    // in dev, load the domain from the local storage
     if (!environment.production) {
-      return this.initProduction();
-    } else {
-      return this.initDev();
+      this.currentOrganizationDomainDev = this.localStorageService.getItem(this.devOrganizationStorageKey);
     }
   }
 
-  private initProduction(): Observable<boolean> {
-    const url = this.document.defaultView.location.href;
-    const domain = ClStringHelper.getLowestDomainFromUrl(url);
-    console.log('Domain ', domain);
-    this.setCurrentOrganizationDomain(domain, false);
-    return of(true);
-
+  public getCurrentOrganizationDomainDev(): string {
+    return this.currentOrganizationDomainDev;
   }
 
   /**
-   * In dev we don't use sub domain, we store the current organization in the local storage
-   * and add it to the header of each request
-   * @private
+   * For dev environment
+   * @param domain
    */
-  private initDev(): Observable<boolean> {
-    const domain = this.localStorageService.getItem(this.devOrganizationStorageKey);
-    if (domain) {
-      this.setCurrentOrganizationDomain(domain, false);
-      return of(true);
-    } else {
-      this.currentOrganization$ = new ClCachedObservable<CaOrganization>(this.organizationService.getDefaultOrganization());
-      return this.currentOrganization$.getObs().pipe(
-        tap(organization => {
-          this.currentOrganizationDomain = organization.domain;
-          this.localStorageService.setItem(this.devOrganizationStorageKey, organization.domain);
-        }),
-        map(() => true)
-      );
+  public setCurrentOrganizationDomainDev(domain: string): void {
+    this.currentOrganizationDomainDev = domain;
+  }
+
+  public setCurrentOrganization(organization: CaOrganization, role: CaOrganizationRole): void {
+    this.currentOrganization$.next(organization);
+    this.currentUserRoleInOrganization = role;
+    this.currentOrganizationDomainDev = organization.domain;
+
+    if (!environment.production) {
+      this.localStorageService.setItem(this.devOrganizationStorageKey, organization.domain);
     }
   }
 
-  public getCurrentOrganizationDomain(): string {
-    return this.currentOrganizationDomain;
+
+  public getCurrentOrganization$(): Observable<CaOrganization> {
+    return this.currentOrganization$.asObservable().pipe(
+      filter(organization => organization != null)
+    );
   }
 
-  public setCurrentOrganizationDomain(domain: string, saveInLocalStorage: boolean = true): void {
-    this.currentOrganizationDomain = domain;
-    this.currentOrganization$ = new ClCachedObservable<CaOrganization>(this.organizationService.getCurrentOrganization());
-
-    if (saveInLocalStorage) {
-      this.localStorageService.setItem(this.devOrganizationStorageKey, domain);
-    }
+  clean(): void {
+    this.currentOrganization$.next(null);
+    this.currentUserRoleInOrganization = null;
+    this.currentOrganizationDomainDev = null;
   }
+
+
+
+
 }

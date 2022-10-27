@@ -12,7 +12,7 @@ import {
   cnExternalLabApiKeySchema,
   cnExternalLabUserHeader
 } from '../model/config/cn-config.class';
-import {CnRequestAuthInfo} from '../utils/cn-current-user.helper';
+import {CnCurrentUserHelper} from '../utils/cn-current-user.helper';
 
 /**
  * Guard to authenticate route called by the lab servers.
@@ -49,10 +49,8 @@ export class CnLabAuthGuard implements CanActivate {
       throw new UnauthorizedException(CnErrorText.WRONG_API_KEY);
     }
 
-    // store the labInstance in the authInfo
-    // noinspection UnnecessaryLocalVariableJS
-    const authInfo: CnRequestAuthInfo = {labInstance: labInstance, organization: labInstance.organization};
-    request.authInfo = authInfo;
+    // store the labInstance in the current context
+    CnCurrentUserHelper.setCurrentLabInstance(labInstance);
 
     // set the robot user in the context as the connected user
     await this.setContext(request);

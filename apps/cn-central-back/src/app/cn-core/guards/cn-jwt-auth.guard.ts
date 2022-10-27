@@ -49,8 +49,16 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
 
     // if an organization is in the context, check if the user is in the organization
     // noinspection RedundantIfStatementJS
-    if (organization && !(await this.organizationUserService.userIsOrganizationMember(user.id, organization.id))) {
-      return false;
+    if (organization) {
+      const orgaUser = await this.organizationUserService.findOneByOrganizationIdAndUserId(organization.id, user.id);
+
+      // if the user is not part of the organization of his account is not active for this organization
+      // don't allow the user to access the route
+      if (orgaUser == null || !orgaUser.active) {
+        return false;
+      }
+
+      CnCurrentUserHelper.setCurrentRoleInOrga(orgaUser.role);
 
     }
     return true;

@@ -3,13 +3,17 @@ import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
 import {UnauthorizedException} from '@nestjs/common';
 import {CnOrganization} from '../../cn-organizations/cn-organization.entity';
+import {CnOrganizationUserRole} from '../../cn-organizations/cn-organization-user.entity';
 
 export interface CnRequestAuthInfo {
   labInstance?: CnLabInstance;
   organization?: CnOrganization;
+  // role for the current user in this organization
+  roleInOrga: CnOrganizationUserRole;
 }
 
 export class CnCurrentUserHelper extends BlCurrentUserHelper {
+
 
   /**
    * returns the current authenticated user or null if not authenticated
@@ -44,9 +48,11 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
    * or null if not authenticated
    */
   static getCurrentLabInstance(): CnLabInstance | null {
-    const request = this.getCurrentRequest();
-    const authInfo: CnRequestAuthInfo = request.authInfo as CnRequestAuthInfo;
-    return authInfo?.labInstance ?? null;
+    return this.getAdditionalInfo()?.labInstance ?? null;
+  }
+
+  static setCurrentLabInstance(labInstance: CnLabInstance): void {
+    this.setAdditionalData('labInstance', labInstance);
   }
 
   /**
@@ -67,8 +73,40 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
    * return the current organization or null if there is no organization in the context
    */
   static getCurrentOrganization(): CnOrganization | null {
-    const request = this.getCurrentRequest();
-    const authInfo: CnRequestAuthInfo = request.authInfo as CnRequestAuthInfo;
-    return authInfo?.organization ?? null;
+    return this.getAdditionalInfo()?.organization ?? null;
+  }
+
+  static setCurrentOrganization(organization: CnOrganization): void {
+    this.setAdditionalData('organization', organization);
+  }
+
+  /**
+   * return the role of the current user for the current organization
+   */
+  static getAndCheckCurrentRoleInOrga(): CnOrganizationUserRole {
+    const role: CnOrganizationUserRole = this.getCurrentRoleInOrga();
+
+    if (role == null) {
+      throw new UnauthorizedException();
+    }
+
+    return role;
+  }
+
+  /**
+   * return the role of the current user for the current organization
+   * or null if there is no organization in the context
+   */
+  static getCurrentRoleInOrga(): CnOrganizationUserRole | null {
+    return this.getAdditionalInfo()?.roleInOrga ?? null;
+  }
+
+  static setCurrentRoleInOrga(role: CnOrganizationUserRole): void {
+    this.setAdditionalData('roleInOrga', role);
+  }
+
+
+  static getAdditionalInfo(): CnRequestAuthInfo | null {
+    return this.getCurrentAdditionalData();
   }
 }

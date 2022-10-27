@@ -56,10 +56,7 @@ export abstract class FlApiErrorService {
     // noinspection UnnecessaryLocalVariableJS
     const returnError: FlServerError = {
       response: null,
-      logDetail: {
-        message: errorMessage,
-        timestamp: new Date()
-      }
+      message: errorMessage
     };
     throw returnError;
   }

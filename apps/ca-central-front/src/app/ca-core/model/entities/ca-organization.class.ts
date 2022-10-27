@@ -30,7 +30,7 @@ export class CaOrganizationUser {
   active: boolean;
 }
 
-export class CaOrganizationUserDatasource extends FlDatasourcePaginated<CaOrganizationUser>{
+export class CaOrganizationUserDatasource extends FlDatasourcePaginated<CaOrganizationUser> {
 
   protected equals(a: CaOrganizationUser, b: CaOrganizationUser): boolean {
     return a.user.id === b.user.id;
@@ -43,4 +43,14 @@ export interface CaSaveOrganizationDTO {
   label: string;
   domain: string;
   nbLicenses: number;
+}
+
+export class CaOrganizationInfoDto {
+  @Type(() => CaUser)
+  user: CaUser;
+
+  @Type(() => CaOrganization)
+  organization: CaOrganization;
+
+  roleInOrga: CaOrganizationRole;
 }

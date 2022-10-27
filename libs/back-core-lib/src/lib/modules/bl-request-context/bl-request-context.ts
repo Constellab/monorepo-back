@@ -8,7 +8,7 @@ import {AsyncLocalStorage} from 'async_hooks';
 export class BlRequestContext {
   static cls = new AsyncLocalStorage<BlRequestContext>();
 
-  static get currentContext(): any {
+  static get currentContext(): BlRequestContext {
     return this.cls.getStore();
   }
 
@@ -17,6 +17,7 @@ export class BlRequestContext {
   }
 
 
-  constructor(public readonly req: Request, public readonly res: Response) {
+  constructor(public readonly req: Request, public readonly res: Response,
+              public additionalData: Record<string, any> = {}) {
   }
 }

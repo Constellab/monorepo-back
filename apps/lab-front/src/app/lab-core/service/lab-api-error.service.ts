@@ -39,20 +39,17 @@ export class LabApiErrorService extends FlApiErrorService {
     console.log(errorResponse);
     const serverError: FlServerError = {
       response: errorResponse,
-      logDetail: {
-        message: '',
-        timestamp: new Date()
-      },
+      message: null,
     };
 
     const apiError: LabApiError = errorResponse.error;
     // specific handling or connection error because it is not thrown by the API
     if (errorResponse.status === 0 || errorResponse.status === 504) {
       // connection lost error
-      serverError.logDetail.message = this.translateService.translate('connection_lost');
+      serverError.message = this.translateService.translate('connection_lost');
     } else {
       // get the error message
-      serverError.logDetail.message = this.getErrorMessage(apiError, defaultError);
+      serverError.message = this.getErrorMessage(apiError, defaultError);
     }
 
     // specific management for the INVALID_TOKEN
@@ -64,10 +61,10 @@ export class LabApiErrorService extends FlApiErrorService {
       const detailButton = (): any => this.dialogService.openSmallDialog(LabErrorDetailComponent, {data: apiError});
       if (apiError.show_as === 'info') {
         // open the warning snack bar if the message type is warning
-        this.showInfo(serverError.logDetail.message, snackBarDuration, detailButton);
+        this.showInfo(serverError.message, snackBarDuration, detailButton);
       } else {
         // open the error snack bar
-        this.showError(serverError.logDetail.message, snackBarDuration, detailButton);
+        this.showError(serverError.message, snackBarDuration, detailButton);
       }
     }
 
@@ -106,8 +103,8 @@ export class LabApiErrorService extends FlApiErrorService {
     if (currentRoute !== labConstLoginRoute) {
       FlLoginSavedRoute.route = currentRoute;
     }
-    // redirect the user to the login page
-    this.router.navigate([labConstLoginRoute]);
+    // redirect the user to the login page, with autoRedirect param to avoid infinite loop
+    this.router.navigate([labConstLoginRoute],{queryParams: {autoRedirect: false}});
 
   }
 }

@@ -11,6 +11,13 @@ export class BlResponseHelper {
    */
   public static setMessageAndCache(response: Response, incomingMessage: IncomingMessage): void {
     this.setCacheHeaderFor1Week(response);
+    this.setMessage(response, incomingMessage);
+  }
+
+  /**
+   * Set an incoming message (like and image) in an HTTP response and cache it for a week
+   */
+  public static setMessage(response: Response, incomingMessage: IncomingMessage): void {
     incomingMessage.pipe(response);
   }
 

@@ -11,7 +11,6 @@ import {CnCoreModule} from '../cn-core/cn-core.module';
     CnCoreModule,
   ],
   providers: [CnAuthService],
-  exports: [CnAuthService],
   controllers: [CnAuthController]
 })
 export class CnAuthModule {

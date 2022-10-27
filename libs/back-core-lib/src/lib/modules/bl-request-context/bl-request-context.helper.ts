@@ -8,12 +8,23 @@ import {BlCookieHelper} from '../../utils/bl-cookie.helper';
 export class BlRequestContextHelper {
 
   static getCurrentRequest(): Request {
-    return this.getCurrentContext()?.req || null;
+    return this.getCurrentContext()?.req ?? null;
   }
 
   private static getCurrentContext(): BlRequestContext {
     const requestContext = BlRequestContext.currentContext;
     return requestContext || null;
+  }
+
+  protected static getCurrentAdditionalData(): any {
+    return this.getCurrentContext()?.additionalData ?? null;
+  }
+
+  protected static setAdditionalData(key: string, value: any): void {
+    const requestContext = this.getCurrentContext();
+    if (requestContext == null) return;
+    requestContext.additionalData = Object.assign(requestContext.additionalData, {[key]: value});
+
   }
 
   protected static getHeaderFromContext(headerName: string): string {

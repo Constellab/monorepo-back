@@ -57,7 +57,7 @@ export class CnUsersController {
   public async getUserPhoto(@Param('userId') userId: string,
                             @Res() response: Response): Promise<any> {
     const file = await this.usersService.getUserPhoto(userId);
-    BlResponseHelper.setMessageAndCache(response, file);
+    BlResponseHelper.setMessage(response, file);
   }
 
 }

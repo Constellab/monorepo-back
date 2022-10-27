@@ -12,7 +12,7 @@ import {BlFile} from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
 import {CnOrganizationInvit} from './cn-organization-invit.entity';
 import {CnOrganizationInvitService} from './cn-organization-invit.service';
-import {CnOrganizationInvitDto} from './cn-organization.dto';
+import {CnOrganizationInfoDto, CnOrganizationInvitDto} from './cn-organization.dto';
 import {CnUserAccountsService} from '../cn-users/cn-users-account/cn-user-accounts.service';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {DataSource, EntityManager} from 'typeorm';
@@ -28,6 +28,27 @@ export class CnOrganizationAggregateService {
               private userService: CnUsersService,
               private userAccountService: CnUserAccountsService,
               private datasource: DataSource) {
+  }
+
+  public async getCurrentInfo(): Promise<CnOrganizationInfoDto> {
+    const user = await this.userService.getCurrent();
+    let organization: CnOrganization = CnCurrentUserHelper.getCurrentOrganization();
+    let role: CnOrganizationUserRole = CnCurrentUserHelper.getCurrentRoleInOrga();
+    if (!organization) {
+      organization = await this.organizationUserService.getUserDefaultOrganization(user.id);
+    }
+
+    if (!role) {
+      const userOrga = await this.organizationUserService.findOneByOrganizationIdAndUserId(organization.id, user.id);
+      role = userOrga.role;
+    }
+
+    return {
+      user: user,
+      organization: organization,
+      roleInOrga: role
+    };
+
   }
 
   public create(entity: CnOrganization): Promise<CnOrganization> {
@@ -52,11 +73,7 @@ export class CnOrganizationAggregateService {
   }
 
   public async getDefaultOrganization(): Promise<CnOrganization> {
-    const organization = await this.organizationUserService.getOrganizationsOfUser(CnCurrentUserHelper.getCurrentUser().id);
-    if (organization.length === 0) {
-      throw new BadRequestException('No organization found');
-    }
-    return organization[0];
+    return this.organizationUserService.getUserDefaultOrganization(CnCurrentUserHelper.getCurrentUser().id);
   }
 
   public async findCurrentOrganization(): Promise<CnOrganization> {
@@ -64,7 +81,7 @@ export class CnOrganizationAggregateService {
   }
 
   public async findCurrentUserOrganizations(): Promise<CnOrganization[]> {
-    return await this.organizationUserService.getOrganizationsOfUser(CnCurrentUserHelper.getCurrentUser().id)
+    return await this.organizationUserService.getOrganizationsOfUser(CnCurrentUserHelper.getCurrentUser().id);
   }
 
   public async findOne(id: string): Promise<CnOrganization> {

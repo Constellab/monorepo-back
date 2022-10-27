@@ -22,10 +22,8 @@ export class CaRouterService {
   constructor(private router: Router) {
   }
 
-  ////// Static function to get routes  //////
-  public static getAppRoute(): string {
-    return `/${caConstBaseRoute}`;
-  }
+
+  //////////////////////////////////// ROUTES OUTSIDE /APP ///////////////////////////////////////
 
   public static getLoginRoute(): string {
     return `/login`;
@@ -33,6 +31,15 @@ export class CaRouterService {
 
   public navigatorToLoginRoute(): void {
     this.router.navigate([CaRouterService.getLoginRoute()]);
+  }
+
+  public static getNoOrganizationRoute(): string {
+    return `/no-organization`;
+  }
+
+  //////////////////////////////////// ROUTES IN /APP ///////////////////////////////////////
+  public static getAppRoute(): string {
+    return `/${caConstBaseRoute}`;
   }
 
   public static getDashboardRoute(): string {

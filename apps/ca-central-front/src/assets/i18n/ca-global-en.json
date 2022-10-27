@@ -154,6 +154,8 @@
   "join_organization": "Join {{organization}}",
   "join_organization_existing_user_success": "You've joined the organization",
   "my_organizations": "My organizations",
+  "no_organization": "No organization",
+  "user_without_organization": "You are not a member of any organization. To use constellab you must be a member of at least one organization. Please contact your administrator to ask him to invite you to the organization.",
   "group": "Group",
   "team": "Team",
   "no_team": "No team",

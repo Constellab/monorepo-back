@@ -38,4 +38,5 @@ export enum CnErrorText {
   ORGANIZATION_INVITATION_ALREADY_EXISTS = 'error.organization_invitation_already_exists',
   ORGANIZATION_INVITATION_EXPIRED = 'error.organization_invitation_expired',
   ORGANIZATION_INVITATION_INVALID = 'error.organization_invitation_invalid',
+  USER_WITHOUT_ORGANIZATION = 'error.user_without_organization',
 }

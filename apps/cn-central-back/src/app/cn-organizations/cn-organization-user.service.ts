@@ -112,4 +112,13 @@ export class CnOrganizationUserService extends BlAbstractPaginatedService<CnOrga
     const organizationUsers = await this.repository.find({where: {userId}, relations: {organization: true}});
     return organizationUsers.map((organizationUser) => organizationUser.organization);
   }
+
+  public async getUserDefaultOrganization(userId: string): Promise<CnOrganization | null> {
+    const organizationUser = await this.repository.findOne({where: {userId}, relations: {organization: true}});
+    if(organizationUser == null) {
+      throw new BadRequestException(CnErrorText.USER_WITHOUT_ORGANIZATION);
+    }
+
+    return organizationUser.organization;
+  }
 }

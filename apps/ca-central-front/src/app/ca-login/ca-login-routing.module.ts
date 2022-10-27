@@ -7,6 +7,7 @@ import {
   CaSignupToOrganizationPageComponent
 } from './component/ca-signup-to-organization-page/ca-signup-to-organization-page.component';
 import {CaSignupToOrganizationGuard} from './guard/ca-signup-to-organization.guard';
+import {CaNoOrganizationPageComponent} from './component/ca-no-organization-page/ca-no-organization-page.component';
 
 const loginRoutes: Routes = [
   {path: 'login', component: CaLoginPageComponent, canActivate: [CaLoginGuard]},
@@ -16,6 +17,7 @@ const loginRoutes: Routes = [
     canActivate: [CaSignupToOrganizationGuard]
   },
   {path: 'reset-password/:token', component: FlResetPasswordPageComponent},
+  {path: 'no-organization', component: CaNoOrganizationPageComponent},
 ];
 
 @NgModule({
