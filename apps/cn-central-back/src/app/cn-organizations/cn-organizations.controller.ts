@@ -17,7 +17,7 @@ import {
 import {CnOrganization} from './cn-organization.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {CnOrganizationAggregateService} from './cn-organization-aggregate.service';
-import {BlFile, BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
+import {BlFile, BlParsePipe, BlPublic, BlResponseHelper} from '@monorepo/back-core-lib';
 import {CnOrganizationUser, CnOrganizationUserRole} from './cn-organization-user.entity';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
@@ -137,7 +137,7 @@ export class CnOrganizationsController {
   public async getImage(@Param('filename') filename: string,
                         @Res() response: Response): Promise<any> {
     const file = await this.organizationAggregate.getPhoto(filename);
-    file.pipe(response);
+    BlResponseHelper.setMessageAndCache(response, file);
   }
 
 

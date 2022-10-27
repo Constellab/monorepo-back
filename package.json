@@ -29,7 +29,7 @@
     "ca-central-front:serve": "nx serve ca-central-front",
     "ca-central-front:build-prod": "nx build ca-central-front --prod",
     "ca-central-front:build-pre-prod": "nx build ca-central-front --configuration=preprod",
-    "ca-central-front:build-dev": "nx build ca-central-front --configuration=devevelopment",
+    "ca-central-front:build-dev": "nx build ca-central-front --configuration=development",
     "ca-central-front:caprover-deploy-preprod": "caprover deploy --host https://captain.constellab-pre-prod.gencovery.com --appName central-front-pre-prod --branch develop",
     "ca-central-front:caprover-deploy-prod": "caprover deploy --host https://captain.constellab.gencovery.com --appName central-front --branch master",
     "ca-central-front:build-stats": "nx build ca-central-front --prod --stats-json && npm run ca-central-front:view-stats",

@@ -3,6 +3,7 @@ import {CnReport} from './cn-reports/cn-report.entity';
 import {Response} from 'express';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
 import {CmRichTextI} from '@monorepo/common-model';
+import {BlResponseHelper} from '@monorepo/back-core-lib';
 
 @Controller('reports')
 export class CnReportsController {
@@ -43,7 +44,7 @@ export class CnReportsController {
                         @Param('filename') filename: string,
                         @Res() response: Response): Promise<any> {
     const file = await this.projectAggregator.getReportImage(id, filename);
-    file.pipe(response);
+    BlResponseHelper.setMessageAndCache(response, file);
   }
 
   /**
@@ -54,7 +55,7 @@ export class CnReportsController {
                        @Param('filename') filename: string,
                        @Res() response: Response): Promise<any> {
     const file = await this.projectAggregator.getReportView(id, filename);
-    file.pipe(response);
+    BlResponseHelper.setMessageAndCache(response, file);
   }
 
 

@@ -4,7 +4,7 @@ import {CnUser, CnUserEditDTO} from './cn-user.entity';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
 import {ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {CmUserCategory} from '@monorepo/common-model';
-import {BlFile, BlParseEnumPipe, BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
+import {BlFile, BlParseEnumPipe, BlParsePipe, BlPublic, BlResponseHelper} from '@monorepo/back-core-lib';
 import {FilesInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 
@@ -42,22 +42,22 @@ export class CnUsersController {
   }
 
   @Put('edit')
-  editUser(@Body( new BlParsePipe(CnUserEditDTO)) userEdit: CnUserEditDTO): Promise<CnUser>{
+  editUser(@Body(new BlParsePipe(CnUserEditDTO)) userEdit: CnUserEditDTO): Promise<CnUser> {
     return this.usersService.editUser(userEdit);
   }
 
   @UseInterceptors(FilesInterceptor('photo'))
   @Put('edit-photo/:userId')
-  saveNewPhoto(@Param('userId') userId: string, @UploadedFiles() files: BlFile[]): Promise<CnUser>{
+  saveNewPhoto(@Param('userId') userId: string, @UploadedFiles() files: BlFile[]): Promise<CnUser> {
     return files[0] ? this.usersService.saveNewPhoto(files[0], userId) : null;
   }
 
   @BlPublic()
   @Get('photo/:userId')
   public async getUserPhoto(@Param('userId') userId: string,
-                   @Res() response: Response): Promise<any> {
+                            @Res() response: Response): Promise<any> {
     const file = await this.usersService.getUserPhoto(userId);
-    file.pipe(response);
+    BlResponseHelper.setMessageAndCache(response, file);
   }
 
 }

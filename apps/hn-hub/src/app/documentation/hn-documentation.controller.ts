@@ -1,17 +1,7 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Put,
-  Res,
-  UploadedFiles,
-  UseInterceptors
-} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Put, Res, UploadedFiles, UseInterceptors} from '@nestjs/common';
 import {HnDocumentation, HnDocumentationDTO} from './hn-documentation.entity';
 import {HnDocumentationService} from './hn-documentation.service';
-import {BlFile, BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
+import {BlFile, BlParsePipe, BlPublic, BlResponseHelper} from '@monorepo/back-core-lib';
 import {FilesInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {HnNodeDTO} from '../folder/hn-folder.dto';
@@ -71,6 +61,6 @@ export class HnDocumentationController {
   public async get(@Param('filename') filename: string,
                    @Res() response: Response): Promise<any> {
     const file = await this.documentationService.getImage(filename);
-    file.pipe(response);
+    BlResponseHelper.setMessageAndCache(response, file);
   }
 }

@@ -112,7 +112,7 @@ export class CnUserAccountsService {
     const token: string = this.encodeUserToken(user.id, this.oneDay);
 
     // get activation API url with the token
-    const passwordForgottenLink: string = this.configService.getWebsiteURL() + 'reset-password/' + token;
+    const passwordForgottenLink: string = this.configService.getWebsiteURL() + '/reset-password/' + token;
 
     // send mail asynchronously
     this.mailService.sendMailToUser(CnMailTemplate.password_forgotten, user,

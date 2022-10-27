@@ -26,5 +26,4 @@ export class CaDashboardPageComponent implements OnInit {
   ngOnInit(): void {
     this.hubLink = environment.hubUrl;
   }
-
 }

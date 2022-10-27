@@ -58,13 +58,13 @@
       },
       "configurations": {
         "development": {
-          "buildOptimizer": false,
-          "optimization": false,
-          "vendorChunk": true,
-          "extractLicenses": false,
-          "sourceMap": true,
-          "namedChunks": true,
-          "ngswConfigPath": "apps/ca-central-front/ngsw-config.json",
+          "serviceWorker": false,
+          "outputHashing": "all",
+          "optimization": {
+            "styles": {
+              "inlineCritical": false
+            }
+          },
           "budgets": [
             {
               "type": "initial",
@@ -79,20 +79,19 @@
           ]
         },
         "production": {
+          "serviceWorker": false,
+          "outputHashing": "all",
+          "optimization": {
+            "styles": {
+              "inlineCritical": false
+            }
+          },
           "fileReplacements": [
             {
               "replace": "apps/ca-central-front/src/environments/ca-environment.ts",
               "with": "apps/ca-central-front/src/environments/ca-environment.prod.ts"
             }
           ],
-          "serviceWorker": true,
-          "optimization": {
-            "styles": {
-              "inlineCritical": false
-            }
-          },
-          "outputHashing": "all",
-          "ngswConfigPath": "apps/ca-central-front/ngsw-config.json",
           "budgets": [
             {
               "type": "initial",
@@ -107,19 +106,19 @@
           ]
         },
         "preprod": {
+          "serviceWorker": false,
+          "outputHashing": "all",
+          "optimization": {
+            "styles": {
+              "inlineCritical": false
+            }
+          },
           "fileReplacements": [
             {
               "replace": "apps/ca-central-front/src/environments/ca-environment.ts",
               "with": "apps/ca-central-front/src/environments/ca-environment.preprod.ts"
             }
           ],
-          "optimization": {
-            "styles": {
-              "inlineCritical": false
-            }
-          },
-          "serviceWorker": true,
-          "ngswConfigPath": "apps/ca-central-front/ngsw-config.json",
           "budgets": [
             {
               "type": "initial",

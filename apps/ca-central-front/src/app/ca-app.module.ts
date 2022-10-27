@@ -18,7 +18,6 @@ import {
   FlIconModule,
   FlPortalActionsModule,
   FlPortalModule,
-  FlServiceWorkerService,
   flSetRootInjector,
   FlSnackBarModule,
   FlTextEditorFigureBlot,
@@ -47,11 +46,6 @@ import {CaOrganizationInterceptor} from './ca-core/interceptor/ca-organization.i
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
   return (): void => themeService.init();
-}
-
-
-function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
-  return (): void => swService.checkForNewVersion();
 }
 
 @NgModule({
@@ -124,7 +118,6 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
       multi: true
     },
     {provide: APP_INITIALIZER, useFactory: loadThemeOnInit, deps: [FlThemeService], multi: true},
-    {provide: APP_INITIALIZER, useFactory: checkSWWebsiteVersion, deps: [FlServiceWorkerService], multi: true},
     CookieService,
   ],
   bootstrap: [CaAppComponent]
