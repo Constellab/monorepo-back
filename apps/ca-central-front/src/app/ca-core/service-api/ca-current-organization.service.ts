@@ -4,6 +4,7 @@ import {CaOrganization, CaOrganizationRole} from '../model/entities/ca-organizat
 import {FlCleanableService, FlCleanerService, FlLocalStorageService} from '@monorepo/front-core-lib';
 import {environment} from '../../../environments/ca-environment';
 import {BehaviorSubject, filter, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 /**
  * Service to manage the current organization
@@ -11,7 +12,7 @@ import {BehaviorSubject, filter, Observable} from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class CaCurrentOrganizationService implements FlCleanableService{
+export class CaCurrentOrganizationService implements FlCleanableService {
 
   private currentOrganizationDomainDev: string;
 
@@ -62,13 +63,18 @@ export class CaCurrentOrganizationService implements FlCleanableService{
     );
   }
 
+  public getCurrentOrganizationPhoto$(): Observable<string> {
+    return this.getCurrentOrganization$().pipe(
+      map(organization => organization.photo ?
+        this.organizationService.getOrganizationPhoto(organization.photo) : null)
+    );
+  }
+
   clean(): void {
     this.currentOrganization$.next(null);
     this.currentUserRoleInOrganization = null;
     this.currentOrganizationDomainDev = null;
   }
-
-
 
 
 }

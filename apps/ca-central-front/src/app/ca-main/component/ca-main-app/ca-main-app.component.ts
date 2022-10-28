@@ -7,6 +7,9 @@ import {
 } from '../../../ca-notifications/ca-notifications-portal/ca-notifications-portal.component';
 import {CaMyOrganizationsPortalComponent} from '../ca-my-organizations-portal/ca-my-organizations-portal.component';
 import {MatSidenav} from '@angular/material/sidenav';
+import {Observable} from 'rxjs';
+import {CaCurrentOrganizationService} from '../../../ca-core/service-api/ca-current-organization.service';
+import {map} from 'rxjs/operators';
 
 /**
  * Main app component. Menu on the left and page on the right
@@ -20,6 +23,8 @@ export class CaMainAppComponent implements OnInit {
 
   @ViewChild(MatSidenav, {static: true, read: ElementRef}) sidenav: ElementRef<HTMLElement>;
 
+  logo$: Observable<string>;
+
   accessibleLinks: CaMainMenuLink[];
 
   // set always side mode
@@ -27,11 +32,17 @@ export class CaMainAppComponent implements OnInit {
 
 
   constructor(private authenticatedUserService: CaAuthenticatedUserService,
+              private currentOrganizationService: CaCurrentOrganizationService,
               private portalService: FlPortalService) {
   }
 
   ngOnInit(): void {
     this.initAccessibleLinks();
+
+    // if the current orga has a photo, use it, otherwise, use the default logo of gencovery
+    this.logo$ = this.currentOrganizationService.getCurrentOrganizationPhoto$().pipe(
+      map(photo => photo ?? 'assets/logo/logo.png')
+    );
   }
 
   private initAccessibleLinks(): void {

@@ -21,7 +21,7 @@ async function bootstrap(): Promise<void> {
   const isLocal = process.env[CN_ENVIRONMENT_PROFILE_KEY] !== CN_ENVIRONMENT_PROFILE_PROD_VALUE;
   // allow the local-organization header only for local env
   const additionalHeader = isLocal ? [CN_LOCAL_ORGANIZATION_HEADER] : [];
-  app.enableCors(blGetCorsConfig(['gencovery.com', 'constelab.co'], isLocal, additionalHeader));
+  app.enableCors(blGetCorsConfig(['gencovery.com', 'preconstellab.com'], isLocal, additionalHeader));
 
   // enable custom logger using winston
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
