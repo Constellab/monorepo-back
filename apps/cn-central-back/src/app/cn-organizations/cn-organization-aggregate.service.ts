@@ -122,14 +122,14 @@ export class CnOrganizationAggregateService {
   /**
    * Directly add a user to an organization. Only accessible by G admins.
    */
-  public async addUserToOrganization(organizationId: string, userId: string, role: CnOrganizationUserRole): Promise<CnOrganizationUser> {
+  public async addUserToOrganization(organizationId: string, userId: string): Promise<CnOrganizationUser> {
     await this.checkAdmin();
 
     organizationId = this.getOrganizationId(organizationId);
     const user = await this.userService.findByIdAndCheck(userId);
     const organization = await this.organizationService.findByIdAndCheck(organizationId);
 
-    return await this.organizationUserService.addUserToOrganization(organization, user, role);
+    return await this.organizationUserService.addUserToOrganization(organization, user, CnOrganizationUserRole.USER);
   }
 
   public async removeUserFromOrganization(organizationId: string, userId: string): Promise<void> {

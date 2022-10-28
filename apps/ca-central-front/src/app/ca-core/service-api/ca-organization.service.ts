@@ -52,7 +52,7 @@ export class CaOrganizationService extends FlApiCrudService<CaOrganization, CaSa
   }
 
   public addUserToOrganization(organizationId: string, userId: string): Observable<CaOrganizationUser> {
-    return this.apiService.put(`${this.route}/${organizationId}/user/${userId}`, null, CaOrganizationUser);
+    return this.apiService.post(`${this.route}/${organizationId}/user/${userId}`, null, CaOrganizationUser);
   }
 
   public removeUserFromOrganization(organizationId: string, userId: string): Observable<void> {

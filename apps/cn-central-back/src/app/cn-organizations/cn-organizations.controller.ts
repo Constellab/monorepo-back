@@ -81,12 +81,11 @@ export class CnOrganizationsController {
   }
 
   @CnUserCategories(CmUserCategory.ADMIN)
-  @Put(':id/user/:userId/role/:role')
+  @Post(':id/user/:userId')
   public async addUserToOrganization(@Param('id') id: string,
-                                     @Param('userId', new ParseUUIDPipe()) userId: string,
-                                     @Param('role', new ParseEnumPipe(CnOrganizationUserRole)) role: CnOrganizationUserRole)
+                                     @Param('userId', new ParseUUIDPipe()) userId: string)
     : Promise<CnOrganizationUser> {
-    return this.organizationAggregate.addUserToOrganization(id, userId, role);
+    return this.organizationAggregate.addUserToOrganization(id, userId);
   }
 
   @Delete(':id/user/:userId')
