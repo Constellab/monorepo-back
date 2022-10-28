@@ -93,7 +93,7 @@ export class CnOrganizationInvitService extends BlAbstractService<CnOrganization
     const data = {
       admin: invit.createdBy,
       validityInDays: this.VALIDITY_DURATION_IN_DAYS,
-      url: this.frontService.getSignupOrganizationUrl(invit.code),
+      url: this.frontService.getSignupOrganizationUrl(invit.organization.domain, invit.code),
       user: null as CnUser,
       organizationName: invit.organization.label,
     };

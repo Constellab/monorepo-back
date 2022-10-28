@@ -11,15 +11,24 @@ export class CnFrontService {
   }
 
   public getLoginUrl(): string {
-    return this.getWebsiteURL() + 'login';
+    return this.getBaseWebsiteURL() + '/login';
   }
 
-  public getSignupOrganizationUrl(invitationCode: string): string{
-    return this.getWebsiteURL() + 'signup-organization/' + invitationCode;
+  public getSignupOrganizationUrl(organizationDomain: string, invitationCode: string): string {
+    return this.getOrganizationWebsiteURL(organizationDomain) + '/signup-organization/' + invitationCode;
   }
 
-  private getWebsiteURL(): string {
-    return this.configService.getWebsiteURL();
+  /**
+   * Get the base url of the website (without the url of the organization)
+   */
+  public getBaseWebsiteURL(): string {
+    return 'https://' + this.configService.getFrontDomain();
   }
 
+  /**
+   * Get the base url of the website (without the url of the organization)
+   */
+  public getOrganizationWebsiteURL(organizationDomain: string): string {
+    return `https://${organizationDomain}.${this.configService.getFrontDomain()}`;
+  }
 }

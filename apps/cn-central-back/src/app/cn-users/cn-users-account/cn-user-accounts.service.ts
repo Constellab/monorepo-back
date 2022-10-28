@@ -13,6 +13,7 @@ import {hash} from 'argon2';
 import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
 import {BlMailService, BlTokenHelper} from '@monorepo/back-core-lib';
 import {CnUserTokenPayload} from '../../cn-core/model/config/cn-config.class';
+import {CnFrontService} from '../../cn-core/services/cn-front.service';
 
 /**
  * Service to handle users' account (signup, mail validation, password forgotten, reset password...)
@@ -28,7 +29,8 @@ export class CnUserAccountsService {
     private configService: CnCoreConfigService,
     private mailService: BlMailService,
     private usersService: CnUsersService,
-    private datasource: DataSource) {
+    private datasource: DataSource,
+    private frontService: CnFrontService) {
   }
 
   async signup(user: CnUser): Promise<CnUser> {
@@ -112,7 +114,7 @@ export class CnUserAccountsService {
     const token: string = this.encodeUserToken(user.id, this.oneDay);
 
     // get activation API url with the token
-    const passwordForgottenLink: string = this.configService.getWebsiteURL() + '/reset-password/' + token;
+    const passwordForgottenLink: string = this.frontService.getBaseWebsiteURL() + '/reset-password/' + token;
 
     // send mail asynchronously
     this.mailService.sendMailToUser(CnMailTemplate.password_forgotten, user,
