@@ -13,6 +13,8 @@ import {CnBaseEntity} from '../cn-core/model/entities/cn-base.entity';
 import {CnGroupType} from './cn-group-type.enum';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {Exclude} from 'class-transformer';
+import {BlNotUpdatable} from '@monorepo/back-core-lib';
+import {CnOrganization} from '../cn-organizations/cn-organization.entity';
 
 @TableInheritance({column: {type: 'enum', enum: CnGroupType, name: 'type'}})
 @Entity('group')
@@ -33,6 +35,9 @@ export class CnGroupSingleUser extends CnGroup {
   @JoinColumn()
   user: CnUser;
 
+  @Column({update: false})
+  userId: string;
+
   type: CnGroupType.SINGLE_USER;
 
   // don't set the createdBy and lastModifiedBy automatically
@@ -51,6 +56,14 @@ export class CnGroupTeam extends CnGroup {
   users: CnUserGroup[];
 
   type: CnGroupType.TEAM;
+
+  @Exclude()
+  @BlNotUpdatable()
+  @ManyToOne(() => CnOrganization, {nullable: true})
+  organization?: CnOrganization;
+
+  @Column({nullable: true, update: false})
+  organizationId: string;
 }
 
 @Entity('user_group')

@@ -3,7 +3,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {CnUser, CnUserEditDTO} from './cn-user.entity';
 import {Repository} from 'typeorm';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {clLangIsSupported, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import {clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {BlAbstractService, BlFile, BlObjectStorageService, BlUserService} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {IncomingMessage} from 'http';
@@ -19,16 +19,17 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     super(repository, CnUser);
   }
 
-  findAll(): Promise<CnUser[]> {
+  findAll(page: number, size: number): Promise<ClPage<CnUser>> {
     const currentUser = CnCurrentUserHelper.getCurrentUser();
     if (!currentUser.isAdmin()) {
       throw new UnauthorizedException();
     }
 
-    return this.repository.find({
+    return this.findPaginated(page, size, {
       order: {lastname: 'ASC', firstname: 'ASC'}
     });
   }
+
 
   findOne(id: string): Promise<CnUser> {
     return this.repository.findOneBy({id: id});

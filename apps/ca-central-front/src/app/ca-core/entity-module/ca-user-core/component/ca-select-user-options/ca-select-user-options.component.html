@@ -1,20 +1,5 @@
-<ng-container *ngIf="isLoading; else notLoading">
-  <mat-option disabled>
-    {{'loading' | translate}}
-  </mat-option>
-</ng-container>
-
-<ng-template #notLoading>
-  <ng-container *ngIf="users?.length > 0 ; else empty">
-    <mat-option *ngFor="let user of users" [value]="user">
+<fl-infinite-scroll [datasource]="datasource">
+    <mat-option *ngFor="let user of users$ | async" [value]="user">
       <ca-user-inline [user]="user"></ca-user-inline>
     </mat-option>
-  </ng-container>
-
-
-  <ng-template #empty>
-    <mat-option disabled>
-      {{'no_user' | translate}}
-    </mat-option>
-  </ng-template>
-</ng-template>
+</fl-infinite-scroll>

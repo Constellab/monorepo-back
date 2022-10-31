@@ -9,7 +9,7 @@
     <mat-form-field class="g-form-input">
       <mat-label>{{'user' | translate}}</mat-label>
       <mat-select placeholder="{{'user' | translate}}" formControlName="user">
-        <ca-select-user-options></ca-select-user-options>
+        <ca-select-user-options mode="organization"></ca-select-user-options>
       </mat-select>
       <mat-error *ngIf="formGp.get('user').hasError('required')">
         {{'user' | flErrorRequired}}

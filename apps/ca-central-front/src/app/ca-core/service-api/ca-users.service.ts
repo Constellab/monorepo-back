@@ -3,6 +3,7 @@ import {mergeMap, Observable} from 'rxjs';
 import {CaUser} from '../model/entities/ca-user.class';
 import {FlApiService} from '@monorepo/front-core-lib';
 import {map} from 'rxjs/operators';
+import {ClPageI} from '@monorepo/core-lib';
 
 /**
  * Service for the User entities
@@ -21,15 +22,16 @@ export class CaUsersService {
     return this.apiService.getById(`${this.route}`, id);
   }
 
-  public getUserPhoto(userId: string): string{
+  public getUserPhoto(userId: string): string {
     return this.apiService.getBaseRouteUrl(`${this.route}/photo/${userId}`);
   }
 
-  public findAll(): Observable<CaUser[]> {
-    return this.apiService.get(this.route, CaUser);
+  public findAll(page: number, pageSize: number): Observable<ClPageI<CaUser>> {
+    return this.apiService.get(`${this.route}`, CaUser,
+      {page: page, pageSize: pageSize, resultIsPaginated: true});
   }
 
-  public editUser(newUserInfo: Partial<CaUser>, newUserPhoto: File): Observable<CaUser>{
+  public editUser(newUserInfo: Partial<CaUser>, newUserPhoto: File): Observable<CaUser> {
 
     if(newUserPhoto){
       const formData = new FormData();
@@ -43,7 +45,6 @@ export class CaUsersService {
     }
 
   }
-
 
 
 }

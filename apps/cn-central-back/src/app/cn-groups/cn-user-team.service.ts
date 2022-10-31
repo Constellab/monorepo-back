@@ -1,6 +1,6 @@
 import {CnUserGroup} from './cn-group.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import {In, Repository} from 'typeorm';
 import {ClPageI} from '@monorepo/core-lib';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {BadRequestException, Injectable} from '@nestjs/common';
@@ -11,14 +11,14 @@ import {BlAbstractPaginatedService} from '@monorepo/back-core-lib';
  * Service to manage user groups of teams
  */
 @Injectable()
-export class CnUserGroupService extends BlAbstractPaginatedService<CnUserGroup> {
+export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
 
   constructor(@InjectRepository(CnUserGroup) repository: Repository<CnUserGroup>) {
     super(repository, CnUserGroup);
   }
 
-  public async addUserToGroup(groupId: string, userId: string): Promise<CnUserGroup> {
-    if (await this.userIsInGroup(groupId, userId)) {
+  public async addUserToTeam(groupId: string, userId: string): Promise<CnUserGroup> {
+    if (await this.userIsInTeam(groupId, userId)) {
       throw new BadRequestException(CnErrorText.USER_ALREADY_IN_GROUP);
     }
 
@@ -29,8 +29,8 @@ export class CnUserGroupService extends BlAbstractPaginatedService<CnUserGroup> 
     return await this.repo.save(userGroup);
   }
 
-  public async removeUserFromGroup(groupId: string, userId: string): Promise<void> {
-    if (!(await this.userIsInGroup(groupId, userId))) {
+  public async removeUserFromTeam(groupId: string, userId: string): Promise<void> {
+    if (!(await this.userIsInTeam(groupId, userId))) {
       throw new BadRequestException(CnErrorText.USER_NOT_IN_GROUP);
     }
 
@@ -46,7 +46,7 @@ export class CnUserGroupService extends BlAbstractPaginatedService<CnUserGroup> 
     });
   }
 
-  public async userIsInGroup(groupId: string, userId: string): Promise<boolean> {
+  public async userIsInTeam(groupId: string, userId: string): Promise<boolean> {
     const userGroup = await this.repo.findOne({
       where: {
         groupId: groupId,
@@ -57,8 +57,19 @@ export class CnUserGroupService extends BlAbstractPaginatedService<CnUserGroup> 
     return userGroup != null;
   }
 
+  public async userIsInAnyTeams(groupIds: string[], userId: string): Promise<boolean> {
+    const userGroup = await this.repo.findOne({
+      where: {
+        groupId: In(groupIds),
+        userId: userId
+      },
+    });
 
-  public async getUsersOfGroup(groupId: string, page: number, size: number): Promise<ClPageI<CnUser>> {
+    return userGroup != null;
+  }
+
+
+  public async getUsersOfTeam(groupId: string, page: number, size: number): Promise<ClPageI<CnUser>> {
     const result = await this.findPaginated(page, size, {
       where: {
         groupId: groupId

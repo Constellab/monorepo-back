@@ -24,7 +24,7 @@ export class SnSmartDbEntity extends CnBaseEntity {
   type: SnSmartDbType;
 
 
-  @ManyToOne(() => CnGroup, {eager: true})
+  @ManyToOne(() => CnGroup)
   group: CnGroup;
 
   @Column()

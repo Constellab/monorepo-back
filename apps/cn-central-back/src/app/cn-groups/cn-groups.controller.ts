@@ -1,64 +1,64 @@
 import {Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
-import {CnGroupsService} from './cn-groups.service';
 import {CnGroup} from './cn-group.entity';
 import {ClPageI} from '@monorepo/core-lib';
 import {CnUser} from '../cn-users/cn-user.entity';
+import {CnGroupsAggregateService} from './cn-groups-aggregate.service';
 
 @Controller('groups')
 export class CnGroupsController {
 
-  constructor(private service: CnGroupsService) {
+  constructor(private aggregateService: CnGroupsAggregateService) {
   }
 
-  @Get('all-current')
-  public getAllCurrentGroups(): Promise<CnGroup[]> {
-    return this.service.getCurrentUserAllGroups();
+  @Get('all-my-teams')
+  public getAllCurrentTeams(): Promise<CnGroup[]> {
+    return this.aggregateService.getCurrentUserAllTeams();
   }
 
-  @Get('current')
-  public getCurrentGroups(@Query('page', ParseIntPipe) page: number,
-                          @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnGroup>> {
-    return this.service.getCurrentUserGroups(page, size);
+  @Get('my-teams')
+  public getCurrentTeams(@Query('page', ParseIntPipe) page: number,
+                         @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnGroup>> {
+    return this.aggregateService.getCurrentUserTeams(page, size);
   }
 
   @Get(':id')
   public getTeamById(@Param('id', ParseUUIDPipe) id: string): Promise<CnGroup> {
-    return this.service.getAndCheckTeamById(id);
+    return this.aggregateService.getAndCheckTeamById(id);
   }
 
   @Get(':id/users')
   public getTeamUsers(@Param('id', ParseUUIDPipe) id: string,
                       @Query('page', ParseIntPipe) page: number,
                       @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnUser>> {
-    return this.service.getUsersOfTeam(id, page, size);
+    return this.aggregateService.getUsersOfTeam(id, page, size);
   }
 
   @Post(':label')
   public createTeam(@Param('label') label: string): Promise<CnGroup> {
-    return this.service.createTeam(label);
+    return this.aggregateService.createTeam(label);
   }
 
   @Put(':id/label/:label')
   public updateTeamLabel(@Param('id', new ParseUUIDPipe()) id: string,
                          @Param('label') label: string): Promise<CnGroup> {
-    return this.service.updateTeamLabel(id, label);
+    return this.aggregateService.updateTeamLabel(id, label);
   }
 
   @Post(':id/add-user/:userId')
   public addUserToTeam(@Param('id', new ParseUUIDPipe()) id: string,
                        @Param('userId', new ParseUUIDPipe()) userId: string): Promise<CnUser> {
-    return this.service.addUserToTeam(userId, id);
+    return this.aggregateService.addUserToTeam(userId, id);
   }
 
   @Delete(':id/remove-user/:userId')
   public removeUserFromTeam(@Param('id', new ParseUUIDPipe()) id: string,
                             @Param('userId', new ParseUUIDPipe()) userId: string): Promise<void> {
-    return this.service.removeUserFromTeam(userId, id);
+    return this.aggregateService.removeUserFromTeam(userId, id);
   }
 
   @Delete(':id')
   public async deleteTeam(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    await this.service.deleteTeamById(id);
+    await this.aggregateService.deleteTeamById(id);
   }
 
 }

@@ -3,18 +3,19 @@ import {BlAbstractService, BlFile} from '@monorepo/back-core-lib';
 import {SnSmartDbEntity, SnSmartDbType} from '../model/sn-smart-db.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {In, Repository} from 'typeorm';
-import {CnGroupsService} from '../../cn-groups/cn-groups.service';
 import {CnAdminAuthorization} from '../../cn-core/security/cn-admin.authorization';
 import {SnDocSearchResult, SnDocument, SnSmartDbExport} from '../model/sn-document.class';
 import {ClPageI} from '@monorepo/core-lib';
 import {SnDocService} from './sn-doc.service';
+import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
+import {CnGroupsAggregateService} from '../../cn-groups/cn-groups-aggregate.service';
 
 
 @Injectable()
 export class SnSmartDbService extends BlAbstractService<SnSmartDbEntity> {
 
   constructor(@InjectRepository(SnSmartDbEntity) private repository: Repository<SnSmartDbEntity>,
-              private groupService: CnGroupsService,
+              private groupAggregateService: CnGroupsAggregateService,
               private docService: SnDocService) {
     super(repository, SnSmartDbEntity);
   }
@@ -24,13 +25,14 @@ export class SnSmartDbService extends BlAbstractService<SnSmartDbEntity> {
    * @param id
    */
   async getAndCheckAuthorizationToFindOne(id: string): Promise<SnSmartDbEntity> {
-    const smartDb = await this.findByIdAndCheck(id);
+    const smartDb = await this.findByIdAndCheck(id, {group: true});
 
     if (smartDb.type === SnSmartDbType.PUBLIC) {
       return smartDb;
     }
 
-    if (!(new CnAdminAuthorization().isAuthorized()) && !await this.groupService.currentUserIsInGroup(smartDb.group.id)) {
+    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
+    if (!user.isAdmin() && !await this.groupAggregateService.userIsInAnyGroup(user.id, smartDb.group.id)) {
       throw new UnauthorizedException();
     }
 
@@ -52,13 +54,13 @@ export class SnSmartDbService extends BlAbstractService<SnSmartDbEntity> {
   }
 
   public async getCurrentSmartDb(page: number, size: number): Promise<ClPageI<SnSmartDbEntity>> {
-    const userGroups = await this.groupService.getCurrentUserGroupIds();
+    const userGroups = await this.groupAggregateService.getAllGroupIdsOfUser(CnCurrentUserHelper.getAndCheckCurrentUser().id,
+      CnCurrentUserHelper.getCurrentOrganization().id);
 
     return this.findPaginated(page, size, {
       where: {
         groupId: In(userGroups)
-      },
-      relations: ['group']
+      }
     });
   }
 

@@ -1,6 +1,4 @@
 import {CaBaseEntity} from './ca-base-entity.class';
-import {CaGroup} from './ca-group.entity';
-import {Type} from 'class-transformer';
 import {
   FlEntityPaginatedDatasource,
   FlStatus,
@@ -23,10 +21,6 @@ export class CaSmartDb extends CaBaseEntity {
 
   @FlStatusTransform(caSmartDbTypeDict)
   type: FlStatus<CaSmartDbType>;
-
-  @Type(() => CaGroup)
-  group: CaGroup;
-
 }
 
 

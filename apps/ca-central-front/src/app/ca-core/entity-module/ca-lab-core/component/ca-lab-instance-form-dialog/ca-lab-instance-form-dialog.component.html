@@ -46,7 +46,7 @@
     <mat-form-field class="g-form-input">
       <mat-label>{{'owner' | translate}}</mat-label>
       <mat-select placeholder="{{'owner' | translate}}" formControlName="owner" required>
-        <ca-select-user-options></ca-select-user-options>
+        <ca-select-user-options mode="all"></ca-select-user-options>
       </mat-select>
       <mat-error *ngIf="formGp.get('owner').hasError('required')">
         {{'owner' | flErrorRequired}}

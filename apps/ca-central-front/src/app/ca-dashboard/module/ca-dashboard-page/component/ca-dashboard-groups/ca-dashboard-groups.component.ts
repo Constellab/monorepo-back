@@ -21,7 +21,7 @@ export class CaDashboardGroupsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.groupDatasource = this.groupService.getDashboardMyGroupsDatasource();
+    this.groupDatasource = this.groupService.getMyTeamsDatasource(4);
   }
 
 }

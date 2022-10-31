@@ -34,8 +34,9 @@ export class CaMyOrganizationsPortalComponent implements OnInit {
     return `https://${organization.domain}.${environment.frontDomain}`;
   }
 
-  switchOrganizationLocal(organization: CaOrganization): void {
+  switchOrganizationDev(organization: CaOrganization): void {
     this.authenticatedUserService.setCurrentOrganizationDomainDev(organization.domain);
     this.overlayRef.dispose();
+    window.location.href = 'http://localhost:4200';
   }
 }

@@ -74,9 +74,6 @@ export class CaAuthenticatedUserService implements FlCleanableService {
    */
   public setCurrentOrganizationDomainDev(domain: string): void {
     this.currentOrganizationService.setCurrentOrganizationDomainDev(domain);
-    this.organizationService.getCurrentInfo().subscribe(
-      organizationInfo => this.storeCurrentAuthenticatedInfo(organizationInfo)
-    );
   }
 
   private storeCurrentAuthenticatedInfo(organizationInfo: CaOrganizationInfoDto): CaOrganizationInfoDto {

@@ -14,7 +14,7 @@
         </ng-container>
 
         <ng-template #localEnv>
-          <div *ngFor="let organization of organizations" (click)="switchOrganizationLocal(organization)">
+          <div *ngFor="let organization of organizations" (click)="switchOrganizationDev(organization)">
             <ca-organization-inline [organization]="organization" class="organization">
             </ca-organization-inline>
           </div>

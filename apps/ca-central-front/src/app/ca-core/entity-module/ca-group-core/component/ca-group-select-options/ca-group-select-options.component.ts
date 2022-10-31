@@ -25,7 +25,7 @@ export class CaGroupSelectOptionsComponent extends FlEmbeddedOptionsAbstractDire
 
   ngOnInit(): void {
     this.overrideCompareWithOnIds(this.select);
-    this.groups$ = this.groupService.getCurrentAllGroups();
+    this.groups$ = this.groupService.getCurrentAllTeams();
   }
 
   ngAfterViewInit(): void {

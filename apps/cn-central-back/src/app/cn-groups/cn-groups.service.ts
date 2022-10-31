@@ -1,27 +1,19 @@
-import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup} from './cn-group.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {DeleteResult, EntityManager, In, Repository} from 'typeorm';
+import {FindOneOptions, In, Repository} from 'typeorm';
 import {BlAbstractService} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnGroupType} from './cn-group-type.enum';
-import {ClHelpService, ClPage, ClPageI} from '@monorepo/core-lib';
-import {CnUsersService} from '../cn-users/cn-users.service';
+import {ClHelpService, ClPageI} from '@monorepo/core-lib';
 import {CnUser} from '../cn-users/cn-user.entity';
-import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {SelectQueryBuilder} from 'typeorm/query-builder/SelectQueryBuilder';
-import {CnUserGroupService} from './cn-user-group.service';
 import {FindOptionsWhere} from 'typeorm/find-options/FindOptionsWhere';
 import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
-import {CnOrganizationUserService} from '../cn-organizations/cn-organization-user.service';
 
 @Injectable()
 export class CnGroupsService extends BlAbstractService<CnGroup> {
 
-  constructor(@InjectRepository(CnGroup) private repository: Repository<CnGroup>,
-              private userGroupService: CnUserGroupService,
-              private usersService: CnUsersService,
-              private organizationUserService: CnOrganizationUserService) {
+  constructor(@InjectRepository(CnGroup) private repository: Repository<CnGroup>) {
     super(repository, CnGroup);
   }
 
@@ -31,6 +23,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     let group = new CnGroupTeam();
     group.type = CnGroupType.TEAM;
     group.label = label;
+    group.organization = CnCurrentUserHelper.getAndCheckCurrentOrganization();
 
     const entityManager = this.getEntityManager();
     group = await this.create(group, entityManager) as CnGroupTeam;
@@ -44,84 +37,35 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     return group;
   }
 
-  public async updateTeamLabel(id: string, label: string): Promise<CnGroup> {
-    const group = await this.getAndCheckTeamById(id);
-
-    group.label = label;
-    return this.update(group);
-  }
-
-
-  /**
-   * Add a user to a group. The current user need to be in the group and the added user need to be in the
-   * same organization.
-   * @param userId
-   * @param groupId
-   */
-  public async addUserToTeam(userId: string, groupId: string): Promise<CnUser> {
-    await this.checkAuthorizationToGetTeam(groupId);
-
-    // check that the added user is in the current organization
-    const organization = CnCurrentUserHelper.getAndCheckCurrentOrganization();
-    if (!(await this.organizationUserService.userIsOrganizationMember(userId, organization.id))) {
-      throw new UnauthorizedException(CnErrorText.USER_NOT_IN_ORGANIZATION);
-    }
-
-    await this.userGroupService.addUserToGroup(groupId, userId);
-    return this.usersService.findByIdAndCheck(userId);
-  }
-
-  public async removeUserFromTeam(userId: string, groupId: string): Promise<void> {
-    await this.checkAuthorizationToGetTeam(groupId);
-
-    await this.userGroupService.removeUserFromGroup(groupId, userId);
-  }
-
-  public async deleteTeamById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
-    await this.checkAuthorizationToGetTeam(id);
-
-    return super.deleteById(id, entityManager);
+  public async updateTeamLabel(team: CnGroupTeam, label: string): Promise<CnGroup> {
+    team.label = label;
+    return this.update(team);
   }
 
   ////////////////////////////////// GET /////////////////////////
 
-
   public async getCurrentUserAllGroups(): Promise<CnGroup[]> {
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
-    return this.getAllGroupsOfUser(user);
+    const orga = CnCurrentUserHelper.getAndCheckCurrentOrganization();
+    return this.getAllGroupsOfUser(user.id, orga.id);
   }
 
-  public async getCurrentUserGroups(page: number, size: number): Promise<ClPageI<CnGroup>> {
-    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
-    return await this.getGroupsOfUserPaginated(user, page, size);
+  public async getAllGroupIdsOfUser(userId: string, organizationId: string): Promise<string[]> {
+    return (await this.getAllGroupsOfUser(userId, organizationId)).map(group => group.id);
   }
 
-  public async getCurrentUserGroupIds(): Promise<string[]> {
-    return (await this.getCurrentUserAllGroups()).map(group => group.id);
-  }
-
-  public async getGroupsFromUserId(userId: string): Promise<CnGroup[]> {
-    const user = await this.usersService.findByIdAndCheck(userId);
-    return this.getAllGroupsOfUser(user);
-  }
-
-  public async getGroupIdsFromUser(user: CnUser): Promise<string[]> {
-    return (await this.getAllGroupsOfUser(user)).map(group => group.id);
-  }
 
   /**
-   * Get the group and check if the user can get or update it. He can only if he is an admin or is in group
-   * @param groupId
+   * Get all groups of a user
    */
-  private async checkAuthorizationToGetTeam(groupId: string): Promise<void> {
-    const currentUser = CnCurrentUserHelper.getAndCheckCurrentUser();
+  public async getAllGroupsOfUser(userId: string, organizationId: string): Promise<CnGroup[]> {
+    const groups = await this.getAllTeamsOfUser(userId, organizationId);
+    const singleGroup = await this.getUserSingleGroup(userId);
 
-    if (currentUser.isAdmin()) {
-      return;
-    }
-
-    if (!(await this.userGroupService.userIsInGroup(groupId, currentUser.id))) {
-      throw new UnauthorizedException();
+    if (singleGroup) {
+      return [...groups, singleGroup];
+    } else {
+      return groups;
     }
   }
 
@@ -130,8 +74,6 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
    * @param id
    */
   public async getAndCheckTeamById(id: string): Promise<CnGroupTeam> {
-    await this.checkAuthorizationToGetTeam(id);
-
     const group = await this.findById(id);
 
     if (group.type !== CnGroupType.TEAM) {
@@ -142,88 +84,10 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
 
 
   /**
-   * Get all groups of a user
-   * @param user
-   */
-  public async getAllGroupsOfUser(user: CnUser): Promise<CnGroup[]> {
-    const queryBuilder = this.getGroupFromUserBuilder(user);
-    return queryBuilder.getMany();
-  }
-
-  /**
-   * Get groups of user paginated
-   */
-  private async getGroupsOfUserPaginated(user: CnUser, page: number, size: number): Promise<ClPageI<CnGroup>> {
-    const queryBuilder = this.getGroupFromUserBuilder(user, false);
-
-    // handle pagination
-    if (page != null && size != null) {
-      const safePage: number = this.getSafePage(page);
-      const safeSize: number = this.getSafePageSize(size);
-      queryBuilder.skip(safePage * safeSize).take(safeSize);
-    }
-
-    const [result, totalElements] = await queryBuilder.getManyAndCount();
-    return ClPage.fromPagination(page, size, totalElements, result);
-  }
-
-  private getGroupFromUserBuilder(user: CnUser, includeSingleGroup: boolean = true): SelectQueryBuilder<CnGroup> {
-    const queryBuilder = this.repository.createQueryBuilder('group')
-      .leftJoinAndSelect('group.users', 'user_group')
-      .leftJoinAndSelect('group.createdBy', 'created_by')
-      .leftJoinAndSelect('group.lastModifiedBy', 'last_modified_by')
-      .where('group.type = :typeUser and user_group.userId = :userId', {typeUser: CnGroupType.TEAM, userId: user.id});
-
-    if (includeSingleGroup) {
-      queryBuilder.orWhere('group.type = :typeSingle and group.userId = :userId', {
-        typeSingle: CnGroupType.SINGLE_USER,
-        userId: user.id
-      });
-    }
-    return queryBuilder;
-  }
-
-  /**
-   * Check if a user is in a group (including all types of groups)
+   * return all the users as a list of group
    * @param groupIds
    */
-  public async currentUserIsInGroup(groupIds: string | string[]): Promise<boolean> {
-    const groups = await this.getCurrentUserAllGroups();
-
-    groupIds = ClHelpService.convertObjectOrArrayToArray(groupIds);
-
-    return groups.findIndex(group => groupIds.includes(group.id)) >= 0;
-  }
-
-  public async getCurrentUserSingleGroup(): Promise<CnGroup> {
-    return this.getUserSingleGroup(CnCurrentUserHelper.getAndCheckCurrentUser().id);
-  }
-
-  public async getUserSingleGroup(userId: string): Promise<CnGroup> {
-    const group = await this.repository.findOne({
-      where: {
-        user: {id: userId},
-        type: CnGroupType.SINGLE_USER
-      } as FindOptionsWhere<CnGroupSingleUser>
-    });
-
-    if (group == null) {
-      throw new BadRequestException(`User ${userId} has no single group`);
-    }
-    return group;
-  }
-
-  public async getUsersOfTeam(groupId: string, page: number, size: number): Promise<ClPageI<CnUser>> {
-    await this.checkAuthorizationToGetTeam(groupId);
-
-    return this.userGroupService.getUsersOfGroup(groupId, page, size);
-  }
-
-  /**
-   * return all the users of a list og group (only TEAM and SINGLE_USER groupes)
-   * @param groupIds
-   */
-  public async getUserOfGroupes(groupIds: string[]): Promise<CnUser[]> {
+  public async getUsersOfGroupes(groupIds: string[]): Promise<CnUser[]> {
     const groups: CnGroup[] = await this.repo.find({
       where: {
         id: In(groupIds)
@@ -257,6 +121,55 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
       if (a.id === currentUser.id) return -1;
       return ClHelpService.sortAlphabeticalFunction(a.fullname, b.fullname);
     });
+  }
+
+  ////////////////////////////////// TEAMS /////////////////////////
+
+  public async getAllTeamsOfUser(userId: string, organizationId: string): Promise<CnGroup[]> {
+    return this.repository.find(this.getTeamsOfUserOptions(userId, organizationId));
+  }
+
+  /**
+   * Get groups of user paginated
+   */
+  public async getTeamsOfUser(userId: string, organizationId: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
+    return this.findPaginated(page, size, this.getTeamsOfUserOptions(userId, organizationId));
+  };
+
+  private getTeamsOfUserOptions(userId: string, organizationId: string): FindOneOptions<CnGroup> {
+    const options: FindOneOptions<CnGroupTeam> = {
+      where: {
+        type: CnGroupType.TEAM,
+        organizationId: organizationId,
+        users: {
+          userId: userId
+        }
+      },
+      relations: {users: true}
+    };
+    return options as any;
+  }
+
+  ////////////////////////////////// SINGLE USER /////////////////////////
+
+
+  public async getCurrentUserSingleGroup(): Promise<CnGroup> {
+    return this.getUserSingleGroup(CnCurrentUserHelper.getAndCheckCurrentUser().id);
+  }
+
+
+  public async getUserSingleGroup(userId: string): Promise<CnGroup> {
+    const group = await this.repository.findOne({
+      where: {
+        userId: userId,
+        type: CnGroupType.SINGLE_USER
+      } as FindOptionsWhere<CnGroupSingleUser>
+    });
+
+    if (group == null) {
+      throw new BadRequestException(`User ${userId} has no single group`);
+    }
+    return group;
   }
 
 }

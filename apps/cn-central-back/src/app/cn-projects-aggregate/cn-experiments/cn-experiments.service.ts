@@ -112,7 +112,8 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
       order: {
         lastModifiedAt: 'DESC' as any
       },
-      relations: ['project']
+      relations: ['project'],
+
     });
   }
 

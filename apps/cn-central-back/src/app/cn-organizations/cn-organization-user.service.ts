@@ -101,11 +101,15 @@ export class CnOrganizationUserService extends BlAbstractPaginatedService<CnOrga
     return admins.length === 1 && admins[0].userId === userId;
   }
 
-  public async getUsersOfOrganization(organizationId: string, page: number, size: number): Promise<ClPage<CnOrganizationUser>> {
+  public async findByOrganization(organizationId: string, page: number, size: number): Promise<ClPage<CnOrganizationUser>> {
     return await this.findPaginated(page, size, {
       where: {organizationId},
       relations: {user: true}
     });
+  }
+
+  public async getOrganizationUsers(organizationId: string, page: number, size: number): Promise<ClPage<CnUser>> {
+    return (await this.findByOrganization(organizationId, page, size)).map((organizationUser) => organizationUser.user);
   }
 
   public async getOrganizationsOfUser(userId: string): Promise<CnOrganization[]> {

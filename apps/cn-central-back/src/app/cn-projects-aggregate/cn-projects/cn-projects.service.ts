@@ -14,6 +14,7 @@ import {CnGroup} from '../../cn-groups/cn-group.entity';
 import {CnUsersService} from '../../cn-users/cn-users.service';
 import {DateTime} from 'luxon';
 import {CnProjectLevel} from './cn-project-level.enum';
+import {CnOrganization} from '../../cn-organizations/cn-organization.entity';
 
 @Injectable()
 export class CnProjectsService extends CnAbstractWithStatusService<CnProject, CnProjectStatus> {
@@ -76,16 +77,18 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
 
   public async getCurrentProjects(page: number, size: number): Promise<ClPageI<CnProject>> {
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
+    const organization = CnCurrentUserHelper.getAndCheckCurrentOrganization();
+
 
     const safePage: number = this.getSafePage(page);
     const safeSize: number = this.getSafePageSize(size);
 
-    return this.getProjectOfUser(user, safePage, safeSize);
+    return this.getProjectOfUser(user.id, organization.id, safePage, safeSize);
   }
 
-  public async getProjectsOfUserId(userId: string): Promise<CnProject[]> {
+  public async getProjectsOfUserId(userId: string, organizationId: string): Promise<CnProject[]> {
     const user = await this.userService.findByIdAndCheck(userId);
-    return (await this.getProjectOfUser(user, 0, 1000)).objects;
+    return (await this.getProjectOfUser(user.id, organizationId, 0, 1000)).objects;
   }
 
   /**
@@ -135,8 +138,9 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
   }
 
   public async getOnGoingProjectsNumber(): Promise<number> {
-    const user: CnUser = this.userService.getCurrent();
-    const projects: CnProject[] = await this.getProjectsOfUserId(user.id);
+    const user: CnUser = CnCurrentUserHelper.getAndCheckCurrentUser();
+    const organization: CnOrganization = CnCurrentUserHelper.getAndCheckCurrentOrganization();
+    const projects: CnProject[] = await this.getProjectsOfUserId(user.id, organization.id);
     return (projects.filter(project =>
       project.startingDate < DateTime.fromJSDate(new Date()) &&
       project.endingDate > DateTime.fromJSDate(new Date()))).length;
@@ -145,12 +149,13 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
   /**
    * Get project by groups of user
    */
-  private async getProjectOfUser(user: CnUser, page: number, size: number): Promise<ClPageI<CnProject>> {
-    const groupIds = await this.groupService.getGroupIdsFromUser(user);
+  private async getProjectOfUser(userId: string, organizationId: string, page: number, size: number): Promise<ClPageI<CnProject>> {
+    const groupIds = await this.groupService.getAllGroupIdsOfUser(userId, organizationId);
 
     return await this.findPaginated(page, size, {
       where: {
         currentLevel: CnProjectLevel.PROJECT,
+        organizationId: organizationId,
         sharedGroups: {
           id: In(groupIds)
         }

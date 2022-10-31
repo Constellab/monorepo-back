@@ -10,7 +10,7 @@
       <mat-label>{{'user' | translate}}</mat-label>
       <mat-select [formControl]="formControl" [placeholder]="'user' | translate"
                   required>
-        <ca-select-user-options></ca-select-user-options>
+        <ca-select-user-options mode="organization"></ca-select-user-options>
       </mat-select>
       <mat-error *ngIf="formControl.hasError('required')">
         {{'user' | flErrorRequired}}

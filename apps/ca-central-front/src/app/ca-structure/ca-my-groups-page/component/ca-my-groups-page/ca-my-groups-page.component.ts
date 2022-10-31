@@ -22,7 +22,7 @@ export class CaMyGroupsPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.groupsDatasource = this.groupService.getMyGroupsDatasource();
+    this.groupsDatasource = this.groupService.getMyTeamsDatasource(20);
   }
 
 

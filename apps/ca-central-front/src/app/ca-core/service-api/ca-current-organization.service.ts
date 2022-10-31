@@ -44,6 +44,7 @@ export class CaCurrentOrganizationService implements FlCleanableService {
    */
   public setCurrentOrganizationDomainDev(domain: string): void {
     this.currentOrganizationDomainDev = domain;
+    this.localStorageService.setItem(this.devOrganizationStorageKey, domain);
   }
 
   public setCurrentOrganization(organization: CaOrganization, role: CaOrganizationRole): void {

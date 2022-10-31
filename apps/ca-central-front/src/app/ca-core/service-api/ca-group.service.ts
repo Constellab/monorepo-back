@@ -19,26 +19,20 @@ export class CaGroupService {
     return this.apiService.getById(this.route, id, CaGroup);
   }
 
-  public getCurrentAllGroups(): Observable<CaGroup[]> {
-    return this.apiService.get(`${this.route}/all-current`);
+  public getCurrentAllTeams(): Observable<CaGroup[]> {
+    return this.apiService.get(`${this.route}/all-my-teams`);
   }
 
   /**
-   * Return the list of the current user's groups
+   * Return the list of the current user's teams
    */
-  public getMyGroupsDatasource(): CaGroupDatasourcePaginated {
-    return new FlEntityPaginatedDatasource(this.getCurrentGroupsMethod(), 20);
+  public getMyTeamsDatasource(pageSize: number): CaGroupDatasourcePaginated {
+    return new FlEntityPaginatedDatasource(this.getCurrentTeamsMethod(), pageSize);
   }
 
-  /**
-   * Return the list of the 4 first groups for a user
-   */
-  public getDashboardMyGroupsDatasource(): CaGroupDatasourcePaginated {
-    return new FlEntityPaginatedDatasource(this.getCurrentGroupsMethod(), 4);
-  }
 
-  private getCurrentGroupsMethod(): ClGetPageFunction<CaGroup> {
-    return (page: number, pageSize: number) => this.apiService.get(`${this.route}/current`, CaGroup,
+  private getCurrentTeamsMethod(): ClGetPageFunction<CaGroup> {
+    return (page: number, pageSize: number) => this.apiService.get(`${this.route}/my-teams`, CaGroup,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 

@@ -1,8 +1,19 @@
-import {Body, Controller, Get, Param, Put, Res, UploadedFiles, UseInterceptors} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Put,
+  Query,
+  Res,
+  UploadedFiles,
+  UseInterceptors
+} from '@nestjs/common';
 import {CnUsersService} from './cn-users.service';
 import {CnUser, CnUserEditDTO} from './cn-user.entity';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
-import {ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import {ClPage, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {CmUserCategory} from '@monorepo/common-model';
 import {BlFile, BlParseEnumPipe, BlParsePipe, BlPublic, BlResponseHelper} from '@monorepo/back-core-lib';
 import {FilesInterceptor} from '@nestjs/platform-express';
@@ -36,9 +47,10 @@ export class CnUsersController {
 
 
   @CnUserCategories(CmUserCategory.ADMIN)
-  @Get('')
-  findAll(): Promise<CnUser[]> {
-    return this.usersService.findAll();
+  @Get()
+  findAll(@Query('page', new ParseIntPipe()) page: number,
+          @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnUser>> {
+    return this.usersService.findAll(page, size);
   }
 
   @Put('edit')

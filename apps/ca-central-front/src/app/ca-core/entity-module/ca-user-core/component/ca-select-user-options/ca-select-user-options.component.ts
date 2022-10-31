@@ -1,8 +1,15 @@
-import {AfterViewInit, Component, Host, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Host, Input, OnDestroy, OnInit} from '@angular/core';
 import {MatSelect} from '@angular/material/select';
 import {CaUser} from '../../../../model/entities/ca-user.class';
+import {
+  FlDatasourcePaginated,
+  FlEmbeddedOptionsAbstractDirective,
+  FlEntityPaginatedDatasource
+} from '@monorepo/front-core-lib';
+import {CaOrganizationService} from '../../../../service-api/ca-organization.service';
+import {Observable} from 'rxjs';
 import {CaUsersService} from '../../../../service-api/ca-users.service';
-import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'ca-select-user-options',
@@ -10,13 +17,16 @@ import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
   styleUrls: ['./ca-select-user-options.component.scss']
 })
 export class CaSelectUserOptionsComponent extends FlEmbeddedOptionsAbstractDirective
-  implements OnInit, AfterViewInit {
+  implements OnInit, AfterViewInit, OnDestroy {
 
-  users: CaUser[];
+  @Input() mode: 'all' | 'organization' = 'organization';
 
-  isLoading: boolean = false;
+  datasource: FlDatasourcePaginated<any>;
+  users$: Observable<CaUser[]>;
 
-  constructor(private userService: CaUsersService,
+
+  constructor(private organizationService: CaOrganizationService,
+              private userService: CaUsersService,
               @Host() private select: MatSelect) {
     super(select);
   }
@@ -27,20 +37,28 @@ export class CaSelectUserOptionsComponent extends FlEmbeddedOptionsAbstractDirec
   }
 
   private getUsers(): void {
-    this.isLoading = true;
-    this.userService.findAll().subscribe({
-      next: users => this.getSuccess(users),
-      error: () => this.isLoading = false
-    });
+    if (this.mode === 'all') {
+      this.datasource = new FlEntityPaginatedDatasource(
+        (page, size) => this.userService.findAll(page, size),
+        20);
+      this.users$ = this.datasource.connect();
+
+    } else {
+      this.datasource = this.organizationService.getUsersOfOrganizationDatasource('current');
+      this.users$ = this.datasource.connect().pipe(
+        map(orgaUsers => orgaUsers.map(orgaUser => orgaUser.user))
+      );
+    }
   }
 
-  private getSuccess(users: CaUser[]): void {
-    this.isLoading = false;
-    this.users = users;
-  }
 
   ngAfterViewInit(): void {
     this.initOptions();
   }
+
+  ngOnDestroy(): void {
+    this.datasource?.disconnect();
+  }
+
 
 }
