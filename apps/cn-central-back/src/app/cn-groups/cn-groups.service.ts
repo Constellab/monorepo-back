@@ -87,7 +87,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
    * return all the users as a list of group
    * @param groupIds
    */
-  public async getUsersOfGroupes(groupIds: string[]): Promise<CnUser[]> {
+  public async getUsersOfGroups(groupIds: string[]): Promise<CnUser[]> {
     const groups: CnGroup[] = await this.repo.find({
       where: {
         id: In(groupIds)

@@ -146,7 +146,7 @@ export class CnProjectAggregateService {
 
     const project = await this.projectService.findWithSharedGroups(projectId);
     const rootProject = await this.projectSecurity.checkFindOneAndGetRootProject(project,
-      CnCurrentUserHelper.getAndCheckCurrentUser(), CnCurrentUserHelper.getAndCheckCurrentOrganization());
+      CnCurrentUserHelper.getAndCheckUserOrgaInfo());
 
     const rootProjectTree = await this.projectService.getProjectTree(rootProject);
     return CnProjectDtoHelper.convertToProjectTreeDto(rootProjectTree);
@@ -190,27 +190,20 @@ export class CnProjectAggregateService {
 
   public async updateProjectLeader(projectId: string, userId: string): Promise<CnProject> {
     const project = await this.projectService.findByIdAndCheck(projectId);
+    const rootProject = await this.projectService.getRootProjectWithSharedGroup(project);
 
-    const user = await this.userService.findByIdAndCheck(userId);
+    const newLeader = await this.userService.findByIdAndCheck(userId);
 
     // check if the current user has the authorization to update the leader
-    await this.projectSecurity.checkUpdateProjectLeader(project, CnCurrentUserHelper.getAndCheckCurrentUser(),
-      CnCurrentUserHelper.getAndCheckCurrentOrganization());
+    await this.projectSecurity.checkUpdateProjectLeader(project, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
 
     // check if the new leader can view the project
-    try {
-      await this.projectSecurity.checkFindOne(project, user, CnCurrentUserHelper.getAndCheckCurrentOrganization());
-    } catch (e) {
-      if (e instanceof UnauthorizedException) {
-        throw new BadRequestException('The new leader does not have access to the project.');
-      } else {
-        throw e;
-      }
-
+    if (!await this.groupAggregateService.userIsInAnyGroup(newLeader.id, rootProject.getSharedGroupIds())) {
+      throw new BadRequestException('The new leader does not have access to the project.');
     }
 
     // update the leader
-    project.leader = user;
+    project.leader = newLeader;
     return this.projectService.update(project);
   }
 
@@ -416,8 +409,7 @@ export class CnProjectAggregateService {
   public async getProjectSharedGroups(projectId: string): Promise<CnGroup[]> {
     const project = await this.projectService.findWithSharedGroups(projectId);
 
-    const rootProject = await this.projectSecurity.checkFindOneAndGetRootProject(project, CnCurrentUserHelper.getAndCheckCurrentUser(),
-      CnCurrentUserHelper.getAndCheckCurrentOrganization());
+    const rootProject = await this.projectSecurity.checkFindOneAndGetRootProject(project, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
     return rootProject.sharedGroups;
   }
 
@@ -430,7 +422,7 @@ export class CnProjectAggregateService {
 
     // get the group of the root project then the user
     const groupIds = groups.map(group => group.id);
-    return this.groupAggregateService.getUsersOfGroupes(groupIds);
+    return this.groupAggregateService.getUsersOfGroups(groupIds);
   }
 
 
@@ -440,16 +432,14 @@ export class CnProjectAggregateService {
   private async getAndCheckAuthorizationForFindOne(projectId: string): Promise<CnProject> {
     const dbProject = await this.projectService.findWithSharedGroups(projectId);
 
-    await this.projectSecurity.checkFindOne(dbProject, CnCurrentUserHelper.getAndCheckCurrentUser(),
-      CnCurrentUserHelper.getAndCheckCurrentOrganization());
+    await this.projectSecurity.checkFindOne(dbProject, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
     return dbProject;
   }
 
   private async getAndCheckAuthorizationForUpdate(projectId: string): Promise<CnProject> {
     const dbProject = await this.projectService.findWithSharedGroups(projectId);
 
-    await this.projectSecurity.checkUpdate(dbProject, CnCurrentUserHelper.getAndCheckCurrentUser(),
-      CnCurrentUserHelper.getAndCheckCurrentOrganization());
+    await this.projectSecurity.checkUpdate(dbProject, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
     return dbProject;
   }
 

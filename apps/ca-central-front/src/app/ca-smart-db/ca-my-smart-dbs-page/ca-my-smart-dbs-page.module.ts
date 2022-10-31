@@ -6,7 +6,7 @@ import {CaSmartDbCoreModule} from '../../ca-core/entity-module/ca-smart-db-core/
 
 @NgModule({
   declarations: [
-    CaMySmartDbsPageComponent
+    CaMySmartDbsPageComponent,
   ],
   imports: [
     CommonModule,

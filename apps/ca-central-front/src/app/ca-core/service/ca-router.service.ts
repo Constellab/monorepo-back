@@ -74,6 +74,9 @@ export class CaRouterService {
     return CaRouterService.getFullRoute(caConstLabInstancesRoute);
   }
 
+
+  ////////////////////////// SMART DB ///////////////////////
+
   public static getMySmartDbsRoute(): string {
     return CaRouterService.getFullRoute(caConstSmartDbRoute);
   }
@@ -88,6 +91,14 @@ export class CaRouterService {
 
   public static getSmartDbAdminRoute(smartDbId: string): string {
     return `${CaRouterService.getSmartDbDetailRoute(smartDbId)}/admin`;
+  }
+
+  public navigateToSmartDbDetail(id: string): void {
+    this.router.navigate([CaRouterService.getSmartDbDetailRoute(id)]);
+  }
+
+  public navigateToMySmartDbs(): void {
+    this.router.navigate([CaRouterService.getMySmartDbsRoute()]);
   }
 
 

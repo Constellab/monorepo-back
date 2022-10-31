@@ -30,6 +30,13 @@
     "refresh": "Refresh",
     "delete": "Supprimer",
     "type_public": "Publique",
-    "type_private": "Privée"
+    "type_private": "Privée",
+    "create": "Créer une smart DB",
+    "created": "Smart DB créée",
+    "update": "Modifier la smart DB",
+    "updated": "Smart DB modifiée",
+    "delete_smart_db": "Supprimer la smart DB",
+    "delete_smart_db_confirm_fr": "Êtes-vous sûr de vouloir supprimer cette Smart DB ? Les données de la smart db seront supprimées et ne pourront pas être récupérées. Veuillez télécharger les données avant de supprimer la smart db.",
+    "smart_db_deleted": "Smart DB supprimée"
   }
 }

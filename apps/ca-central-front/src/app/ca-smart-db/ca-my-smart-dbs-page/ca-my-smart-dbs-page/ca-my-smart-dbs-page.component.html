@@ -7,6 +7,13 @@
         <mat-icon class="g-icon-big" flIcon="smart_db"></mat-icon>
         <h1>{{'my_smart_db' | translate}}</h1>
       </fl-text-icon>
+
+      <fl-section-actions>
+        <button mat-flat-button type="button" color="accent" [matTooltip]="'smart_db.create' | translate"
+                (click)="openCreateSmartDbDialog()" class="g-button-small">
+          <mat-icon>add</mat-icon>
+        </button>
+      </fl-section-actions>
     </fl-section-header>
 
     <ng-container *flSectionBody="let smartDbs">

@@ -114,20 +114,18 @@ export class CnGroupsAggregateService {
   }
 
   // method not secured
-  public async getUsersOfGroupes(groupIds: string[]): Promise<CnUser[]> {
-    return await this.groupsService.getUsersOfGroupes(groupIds);
+  public async getUsersOfGroups(groupIds: string[]): Promise<CnUser[]> {
+    return await this.groupsService.getUsersOfGroups(groupIds);
   }
 
 
   /////////////////////////////// AUTHORIZATION ///////////////////////////////
 
   private async getAndCheckCurrentAuthorizationToGetTeam(groupId: string): Promise<CnGroupTeam> {
-    return await this.groupSecurity.getAndCheckAuthorizationToGetTeam(CnCurrentUserHelper.getAndCheckCurrentUser(),
-      CnCurrentUserHelper.getCurrentOrganization().id, groupId);
+    return await this.groupSecurity.getAndCheckAuthorizationToGetTeam(CnCurrentUserHelper.getAndCheckUserOrgaInfo(), groupId);
   }
 
   private async getAndCheckCurrentAuthorizationToUpdateTeam(groupId: string): Promise<CnGroupTeam> {
-    return await this.groupSecurity.getAndCheckAuthorizationToUpdateTeam(CnCurrentUserHelper.getAndCheckCurrentUser(),
-      CnCurrentUserHelper.getCurrentOrganization().id, groupId);
+    return await this.groupSecurity.getAndCheckAuthorizationToUpdateTeam(CnCurrentUserHelper.getAndCheckUserOrgaInfo(), groupId);
   }
 }

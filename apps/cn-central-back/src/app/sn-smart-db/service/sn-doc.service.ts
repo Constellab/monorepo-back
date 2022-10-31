@@ -59,6 +59,18 @@ export class SnDocService {
   }
 
   public async importDataFromFile(index: string, file: BlFile): Promise<SnDocument[]> {
+    await this.createIndexIfNotExist(index);
+
+    return await this.importDataToIndex(index, file);
+  }
+
+  public async init(index: string, file: any): Promise<any> {
+    await this.deleteIndexIfExist(index);
+    await this.docElasticsearchService.createIndex(index);
+    return await this.importDataToIndex(index, file);
+  }
+
+  private async importDataToIndex(index: string, file: BlFile): Promise<SnDocument[]> {
     const documents: SnDocument[] = this.dataImporter.importDataFromFile(file);
 
     for (const document of documents) {
@@ -68,12 +80,16 @@ export class SnDocService {
     return documents;
   }
 
-  public async init(index: string, file: any): Promise<any> {
+  public async deleteIndexIfExist(index: string): Promise<any> {
     if (await this.docElasticsearchService.indexExists(index)) {
       await this.docElasticsearchService.deleteIndex(index);
     }
-    await this.docElasticsearchService.createIndex(index);
-    return await this.importDataFromFile(index, file);
+  }
+
+  public async createIndexIfNotExist(index: string): Promise<any> {
+    if (!await this.docElasticsearchService.indexExists(index)) {
+      await this.docElasticsearchService.createIndex(index);
+    }
   }
 
   public async exportData(index: string): Promise<SnSmartDbExport> {

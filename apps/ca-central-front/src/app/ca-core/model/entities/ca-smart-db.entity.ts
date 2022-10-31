@@ -6,6 +6,8 @@ import {
   FlStatusHelper,
   FlStatusTransform
 } from '@monorepo/front-core-lib';
+import {CaGroup} from './ca-group.entity';
+import {Type} from 'class-transformer';
 
 export type CaSmartDbType = 'PUBLIC' | 'PRIVATE'
 
@@ -21,7 +23,18 @@ export class CaSmartDb extends CaBaseEntity {
 
   @FlStatusTransform(caSmartDbTypeDict)
   type: FlStatus<CaSmartDbType>;
+
+  @Type(() => CaGroup)
+  group: CaGroup;
+
 }
 
 
 export type CaSmartDbDatasource = FlEntityPaginatedDatasource<CaSmartDb>;
+
+export interface CaSmartDbForm {
+  id: string;
+  name: string;
+  type: CaSmartDbType;
+  group: CaGroup;
+}

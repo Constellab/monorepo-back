@@ -13,6 +13,7 @@ import {SnSmartDbEntity} from './model/sn-smart-db.entity';
 import {CnGroupsModule} from '../cn-groups/cn-groups.module';
 import {SnSmartDbService} from './service/sn-smart-db.service';
 import {SnSmartDbController} from './sn-smart-db.controller';
+import {SnSmartDbSecurity} from './service/sn-smart-db.security';
 
 function elasticSearchConfig(configService: SnCoreConfigService): ElasticsearchModuleOptions {
   const dbConfig: SnDatabaseConfig = configService.getDatabaseConfig();
@@ -44,6 +45,7 @@ function elasticSearchConfig(configService: SnCoreConfigService): ElasticsearchM
     SnDataImporterService,
     SnDocElasticsearchService,
     SnSmartDbService,
+    SnSmartDbSecurity
   ],
 })
 export class SnSmartDbModule {

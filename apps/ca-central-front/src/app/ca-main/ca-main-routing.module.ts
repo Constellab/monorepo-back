@@ -15,14 +15,13 @@ import {
 } from '../ca-core/utils/ca-base-route';
 import {CaLoadUserGuard} from './guard/ca-load-user.guard';
 import {CaAdminGuard} from '../ca-core/guard/ca-admin-guard.service';
-import {CaCurrentOrganizationGuard} from './guard/ca-current-organization.guard';
 
 const routes: Route[] = [
   {
     path: '', redirectTo: caConstBaseRoute, pathMatch: 'full'
   },
   {
-    path: caConstBaseRoute, component: CaMainAppComponent, canActivate: [CaLoadUserGuard, CaCurrentOrganizationGuard],
+    path: caConstBaseRoute, component: CaMainAppComponent, canActivate: [CaLoadUserGuard],
     children: [
       {
         path: '', redirectTo: caConstDashboardRoute, pathMatch: 'full'

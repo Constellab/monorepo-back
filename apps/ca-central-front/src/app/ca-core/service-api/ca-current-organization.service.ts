@@ -71,6 +71,11 @@ export class CaCurrentOrganizationService implements FlCleanableService {
     );
   }
 
+  // return true if the current user if an admin of the current organization
+  public isOrganizationAdmin(): boolean {
+    return this.currentUserRoleInOrganization === CaOrganizationRole.ADMIN;
+  }
+
   clean(): void {
     this.currentOrganization$.next(null);
     this.currentUserRoleInOrganization = null;

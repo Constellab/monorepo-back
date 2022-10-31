@@ -109,6 +109,10 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
     return this.sharedGroups.find(group => groupIds.includes(group.id)) != null;
   }
 
+  public getSharedGroupIds(): string[] {
+    return this.sharedGroups.map(group => group.id);
+  }
+
   public removeSharedGroup(groupId: string): void {
     const index = this.sharedGroups.findIndex(group => group.id === groupId);
 

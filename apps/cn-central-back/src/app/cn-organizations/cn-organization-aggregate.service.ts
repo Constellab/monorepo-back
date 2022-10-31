@@ -12,11 +12,12 @@ import {BlFile} from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
 import {CnOrganizationInvit} from './cn-organization-invit.entity';
 import {CnOrganizationInvitService} from './cn-organization-invit.service';
-import {CnOrganizationInfoDto, CnOrganizationInvitDto} from './cn-organization.dto';
+import {CnOrganizationInvitDto} from './cn-organization.dto';
 import {CnUserAccountsService} from '../cn-users/cn-users-account/cn-user-accounts.service';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {DataSource, EntityManager} from 'typeorm';
 import {CmUserStatus} from '@monorepo/common-model';
+import {CnUserOrgaInfo} from '../cn-users/cn-user.dto';
 
 @Injectable()
 export class CnOrganizationAggregateService {
@@ -30,7 +31,7 @@ export class CnOrganizationAggregateService {
               private datasource: DataSource) {
   }
 
-  public async getCurrentInfo(): Promise<CnOrganizationInfoDto> {
+  public async getCurrentInfo(): Promise<CnUserOrgaInfo> {
     const user = await this.userService.getCurrent();
     let organization: CnOrganization = CnCurrentUserHelper.getCurrentOrganization();
     let role: CnOrganizationUserRole = CnCurrentUserHelper.getCurrentRoleInOrga();
@@ -43,12 +44,7 @@ export class CnOrganizationAggregateService {
       role = userOrga.role;
     }
 
-    return {
-      user: user,
-      organization: organization,
-      roleInOrga: role
-    };
-
+    return new CnUserOrgaInfo(user, organization, role);
   }
 
   public create(entity: CnOrganization): Promise<CnOrganization> {

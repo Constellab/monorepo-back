@@ -30,6 +30,13 @@
     "refresh": "Refresh",
     "delete": "Delete",
     "type_public": "Public",
-    "type_private": "Private"
+    "type_private": "Private",
+    "create": "Create a Smart DB",
+    "created": "Smart DB created",
+    "update": "Modify Smart DB",
+    "updated": "Smart DB updated",
+    "delete_smart_db": "Delete Smart DB",
+    "delete_smart_db_confirm": "Are you sure you want to delete this Smart DB ? The data of the smart db will be deleted and can't be retrieved. Please export the data before deleting the smart db.",
+    "smart_db_deleted": "Smart DB deleted"
   }
 }

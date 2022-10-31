@@ -2,11 +2,12 @@
 
   <fl-async-section [object]="smartDb$">
 
+
     <ng-container *flSectionBody="let smartDb">
       <h1>{{'smart_db.smart_db' | translate}} : {{smartDb.name}}</h1>
 
 
-      <ca-smart-db-management [smartDbId]="smartDb.id" class="g-section"></ca-smart-db-management>
+      <ca-smart-db-management [smartDb]="smartDb" class="g-section"></ca-smart-db-management>
 
       <ca-smart-db-verification [smartDbId]="smartDb.id" class="g-section"></ca-smart-db-verification>
     </ng-container>

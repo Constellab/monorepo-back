@@ -4,6 +4,7 @@ import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
 import {UnauthorizedException} from '@nestjs/common';
 import {CnOrganization} from '../../cn-organizations/cn-organization.entity';
 import {CnOrganizationUserRole} from '../../cn-organizations/cn-organization-user.entity';
+import {CnUserOrgaInfo} from '../../cn-users/cn-user.dto';
 
 export interface CnRequestAuthInfo {
   labInstance?: CnLabInstance;
@@ -101,8 +102,18 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
     return this.getAdditionalInfo()?.roleInOrga ?? null;
   }
 
+  static isAdminOfCurrentOrganization(): boolean {
+    return this.getAndCheckCurrentRoleInOrga() === CnOrganizationUserRole.ADMIN;
+  }
+
   static setCurrentRoleInOrga(role: CnOrganizationUserRole): void {
     this.setAdditionalData('roleInOrga', role);
+  }
+
+  static getAndCheckUserOrgaInfo(): CnUserOrgaInfo {
+    return new CnUserOrgaInfo(this.getAndCheckCurrentUser(),
+      this.getAndCheckCurrentOrganization(),
+      this.getAndCheckCurrentRoleInOrga());
   }
 
 

@@ -1,14 +1,14 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {BlAbstractService, BlFile} from '@monorepo/back-core-lib';
-import {SnSmartDbEntity, SnSmartDbType} from '../model/sn-smart-db.entity';
+import {SnSmartDbEntity} from '../model/sn-smart-db.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {In, Repository} from 'typeorm';
-import {CnAdminAuthorization} from '../../cn-core/security/cn-admin.authorization';
+import {DeleteResult, EntityManager, In, Repository} from 'typeorm';
 import {SnDocSearchResult, SnDocument, SnSmartDbExport} from '../model/sn-document.class';
-import {ClPageI} from '@monorepo/core-lib';
+import {ClPageI, ClStringHelper} from '@monorepo/core-lib';
 import {SnDocService} from './sn-doc.service';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 import {CnGroupsAggregateService} from '../../cn-groups/cn-groups-aggregate.service';
+import {SnSmartDbSecurity} from './sn-smart-db.security';
 
 
 @Injectable()
@@ -16,8 +16,35 @@ export class SnSmartDbService extends BlAbstractService<SnSmartDbEntity> {
 
   constructor(@InjectRepository(SnSmartDbEntity) private repository: Repository<SnSmartDbEntity>,
               private groupAggregateService: CnGroupsAggregateService,
-              private docService: SnDocService) {
+              private docService: SnDocService,
+              private smartDbSecurity: SnSmartDbSecurity) {
     super(repository, SnSmartDbEntity);
+  }
+
+
+  async create(entity: SnSmartDbEntity, entityManager?: EntityManager): Promise<SnSmartDbEntity> {
+    await this.smartDbSecurity.checkAuthorizationToCreate(CnCurrentUserHelper.getAndCheckUserOrgaInfo());
+
+    entity.dbIndex = ClStringHelper.generateUUID();
+    entity.organization = CnCurrentUserHelper.getCurrentOrganization();
+    return super.create(entity, entityManager);
+  }
+
+
+  protected async updateWithCompare(newEntity: SnSmartDbEntity, dbEntity: SnSmartDbEntity,
+                                    entityManager?: EntityManager): Promise<SnSmartDbEntity> {
+    await this.smartDbSecurity.checkAuthorizationToUpdate(dbEntity, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
+    return super.updateWithCompare(newEntity, dbEntity, entityManager);
+  }
+
+
+  async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
+    const smartDb = await this.findByIdAndCheck(id);
+    await this.smartDbSecurity.checkAuthorizationToUpdate(smartDb, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
+
+    await this.docService.deleteIndexIfExist(smartDb.dbIndex);
+
+    return super.deleteById(id, entityManager);
   }
 
   /**
@@ -25,16 +52,9 @@ export class SnSmartDbService extends BlAbstractService<SnSmartDbEntity> {
    * @param id
    */
   async getAndCheckAuthorizationToFindOne(id: string): Promise<SnSmartDbEntity> {
-    const smartDb = await this.findByIdAndCheck(id, {group: true});
+    const smartDb = await this.findByIdAndCheck(id);
 
-    if (smartDb.type === SnSmartDbType.PUBLIC) {
-      return smartDb;
-    }
-
-    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
-    if (!user.isAdmin() && !await this.groupAggregateService.userIsInAnyGroup(user.id, smartDb.group.id)) {
-      throw new UnauthorizedException();
-    }
+    await this.smartDbSecurity.checkAuthorizationToFindOne(smartDb, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
 
     return smartDb;
   }
@@ -46,9 +66,7 @@ export class SnSmartDbService extends BlAbstractService<SnSmartDbEntity> {
   async getAndCheckAuthorizationToUpdate(id: string): Promise<SnSmartDbEntity> {
     const smartDb = await this.findByIdAndCheck(id);
 
-    if (!(new CnAdminAuthorization().isAuthorized())) {
-      throw new UnauthorizedException();
-    }
+    await this.smartDbSecurity.checkAuthorizationToUpdate(smartDb, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
 
     return smartDb;
   }

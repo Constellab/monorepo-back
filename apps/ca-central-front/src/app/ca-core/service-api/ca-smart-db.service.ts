@@ -3,7 +3,7 @@ import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-li
 import {Observable} from 'rxjs';
 import {CaSmartDbDoc, CaSmartDbDocSearchResult} from '../../ca-smart-db/model/ca-smart-db-doc.class';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
-import {CaSmartDb, CaSmartDbDatasource} from '../model/entities/ca-smart-db.entity';
+import {CaSmartDb, CaSmartDbDatasource, CaSmartDbForm} from '../model/entities/ca-smart-db.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +14,19 @@ export class CaSmartDbService {
 
   constructor(private apiService: FlApiService) {
   }
+
+  public create(smartDb: CaSmartDbForm): Observable<CaSmartDb> {
+    return this.apiService.post(this.route, smartDb, CaSmartDb);
+  }
+
+  public update(smartDb: CaSmartDbForm): Observable<CaSmartDb> {
+    return this.apiService.put(this.route, smartDb, CaSmartDb);
+  }
+
+  public delete(smartDbId: string): Observable<any> {
+    return this.apiService.deleteById(this.route, smartDbId);
+  }
+
 
   public getCurrentSmartDbs(page: number, pageSize: number): Observable<ClPageI<CaSmartDb>> {
     return this.apiService.get(`${this.route}/current`, CaSmartDb,
