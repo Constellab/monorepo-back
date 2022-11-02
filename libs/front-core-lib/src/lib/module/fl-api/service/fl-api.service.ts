@@ -339,9 +339,9 @@ export class FlApiService {
     try {
       // if a class was provided for the serialization
       if (typeof serializationOption === 'function') {
-        return ClCoreJsonConvert.classToPlain(object, serializationOption);
+        return ClCoreJsonConvert.instanceToPlain(object, serializationOption);
       } else if (serializationOption === 'classToPlain') {
-        return ClCoreJsonConvert.classToPlain(object);
+        return ClCoreJsonConvert.instanceToPlain(object);
       } else {
         return JSON.stringify(object);
       }

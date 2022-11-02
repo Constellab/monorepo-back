@@ -23,7 +23,7 @@ export function ClRecordWrapperTransform<WRAPPER extends ClRecordWrapper<ITEM>, 
   recordItemReference?: new() => ITEM): PropertyDecorator {
   // convert date to time
   const transformToPlain = Transform(
-    (params: ClTransformFnParams<WRAPPER>) => clSerializeRecordWrapper(params.value, ClCoreJsonConvert.classToPlain),
+    (params: ClTransformFnParams<WRAPPER>) => clSerializeRecordWrapper(params.value, ClCoreJsonConvert.instanceToPlain),
     {toPlainOnly: true});
 
   // create date from string
@@ -84,7 +84,7 @@ export function clDeserializeRecordWrapper<T extends ClRecordWrapper<any>>(recor
  */
 export function ClRecordTransform<T>(recordItemReference: ClDeserializationRef<T>): PropertyDecorator {
   return ClRecordTransformOverride((value: any) => ClCoreJsonConvert.deserializeObject(value, recordItemReference),
-    ClCoreJsonConvert.classToPlain);
+    ClCoreJsonConvert.instanceToPlain);
 }
 
 /**
@@ -97,7 +97,7 @@ export function ClRecordTransform<T>(recordItemReference: ClDeserializationRef<T
  * @constructor
  */
 export function ClRecordTransformOverride<T>(deserializeItem: ClDeserializeItem<T>,
-                                             classToPlainItem: ClSerializeItem<T> = ClCoreJsonConvert.classToPlain): PropertyDecorator {
+                                             classToPlainItem: ClSerializeItem<T> = ClCoreJsonConvert.instanceToPlain): PropertyDecorator {
   // convert date to time
   const transformToPlain = Transform(
     (params: ClTransformFnParams<Record<string, T>>) => clClassToPlainRecord(params.value, classToPlainItem),

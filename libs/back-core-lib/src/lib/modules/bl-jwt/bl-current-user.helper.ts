@@ -23,7 +23,7 @@ export class BlCurrentUserHelper extends BlRequestContextHelper {
     const user: BlUser = this.getCurrentUser();
 
     if (user == null) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("No user in the context");
     }
 
     return user;

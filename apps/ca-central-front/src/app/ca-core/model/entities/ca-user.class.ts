@@ -1,9 +1,8 @@
 import {DateTime} from 'luxon';
-import {ClLuxonTransform, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import {ClLuxonDateTimeTransform, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {CaEntity} from './ca-entity.entity';
 import {CmUserCategory} from '@monorepo/common-model';
 import {FlDatasourcePaginated} from '@monorepo/front-core-lib';
-import {CaOrganization} from './ca-organization.class';
 
 export interface CaNewUser {
   firstname: string;
@@ -12,6 +11,14 @@ export interface CaNewUser {
   category: CmUserCategory;
   password: string;
   repeatPassword: string;
+}
+
+export class CaEditUserDTO {
+  id: string;
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  photo?: string;
 }
 
 export class CaUser extends CaEntity {
@@ -37,9 +44,8 @@ export class CaUser extends CaEntity {
 
   company?: string;
 
-  organization?: CaOrganization;
 
-  @ClLuxonTransform()
+  @ClLuxonDateTimeTransform()
   createdAt: DateTime;
 
   get fullname(): string {

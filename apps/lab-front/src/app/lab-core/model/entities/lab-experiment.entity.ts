@@ -10,7 +10,7 @@ import {
 import {Expose, Type} from 'class-transformer';
 import {LabEntityWithTag} from './lab-entity-with-tag.entity';
 import {LabUser} from './lab-user.entity';
-import {ClLuxonTransform} from '@monorepo/core-lib';
+import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {LabProjectObject} from './lab-project.class';
 
@@ -64,11 +64,11 @@ export class LabExperiment extends LabEntityWithTag implements LabProjectObject 
   validatedBy?: LabUser;
 
   @Expose({name: 'validated_at'})
-  @ClLuxonTransform()
+  @ClLuxonDateTimeTransform()
   validatedAt?: DateTime;
 
   @Expose({name: 'last_sync_at'})
-  @ClLuxonTransform()
+  @ClLuxonDateTimeTransform()
   lastSyncAt?: DateTime;
 
   @Expose({name: 'last_sync_by'})

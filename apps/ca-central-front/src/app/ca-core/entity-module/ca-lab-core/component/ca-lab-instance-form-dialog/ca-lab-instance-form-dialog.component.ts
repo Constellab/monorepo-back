@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {CaLabInstance} from '../../../../model/entities/ca-lab-instance.class';
+import {CaLabInstanceForm, CaLabInstanceWithOrga} from '../../../../model/entities/ca-lab-instance.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
@@ -10,19 +10,21 @@ import {CaCountryService} from '../../../../service-api/ca-country.service';
 import {CaCountry} from '../../../../model/entities/ca-country.entity';
 import {CaCity} from '../../../../model/entities/ca-city.entity';
 
+export type CaLabInstanceFormDialogInput = FlFormDialogInput<CaLabInstanceForm>;
+
 @Component({
   selector: 'ca-lab-instance-form-dialog',
   templateUrl: './ca-lab-instance-form-dialog.component.html',
   styleUrls: ['./ca-lab-instance-form-dialog.component.scss']
 })
-export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirective<Partial<CaLabInstance>, CaLabInstance>
+export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirective<CaLabInstanceForm, CaLabInstanceWithOrga>
   implements OnInit {
 
   countries: CaCountry[];
 
   constructor(snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<CaLabInstanceFormDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<CaLabInstance>,
+              @Inject(MAT_DIALOG_DATA) dialogInput: CaLabInstanceFormDialogInput,
               private labInstanceService: CaLabInstanceService,
               private countryService: CaCountryService) {
     super(dialogInput, snackBarService, dialogRef);
@@ -40,25 +42,26 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
     this.init();
   }
 
-  buildForm(): FormGroup<Partial<CaLabInstance>> {
+  buildForm(): FormGroup<CaLabInstanceForm> {
     return new FormBuilder().group({
       id: [null],
       name: [null, [Validators.required]],
       virtualHost: [null, [Validators.required]],
       serverInfo: [null, [Validators.required]],
-      owner: [null, Validators.required],
+      owner: [null, this.isCreateMode() ? Validators.required : null],
       glabApiKey: [null],
       labManagerApiKey: [null],
       codelabToken: [null],
-      city: [null, Validators.required]
+      city: [null, Validators.required],
+      organization: [{value: null, disabled: this.isUpdateMode()}, Validators.required],
     });
   }
 
-  create(formValue: Partial<CaLabInstance>): Observable<CaLabInstance> {
+  create(formValue: CaLabInstanceForm): Observable<CaLabInstanceWithOrga> {
     return this.labInstanceService.create(formValue);
   }
 
-  update(formValue: Partial<CaLabInstance>): Observable<CaLabInstance> {
+  update(formValue: CaLabInstanceForm): Observable<CaLabInstanceWithOrga> {
     return this.labInstanceService.update(formValue);
   }
 
@@ -70,7 +73,7 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
     return 'lab_instance_updated';
   }
 
-  compareSelectCity(x: CaCity, y: CaCity): boolean{
+  compareSelectCity(x: CaCity, y: CaCity): boolean {
     return x && y ? x.id === y.id : x === y;
   }
 

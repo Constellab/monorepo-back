@@ -4,8 +4,9 @@ import {CnOrganizationsService} from '../../cn-organizations/cn-organizations.se
 import {CnCoreConfigService} from '../modules/cn-core-config/cn-core-config.service';
 import {CnCurrentUserHelper} from '../utils/cn-current-user.helper';
 import {ClStringHelper} from '@monorepo/core-lib';
+import {BlCookieHelper} from '@monorepo/back-core-lib';
 
-export const CN_LOCAL_ORGANIZATION_HEADER = 'local-organization';
+export const CN_LOCAL_ORGANIZATION_COOKIE = 'local-organization';
 
 /**
  * Middleware to retrieve the organization from the request and add it to the request
@@ -22,7 +23,7 @@ export class CnOrganizationMiddleware implements NestMiddleware<Request, Respons
   use(req: Request, res: Response, next: NextFunction): void {
     let organizationDomain: string;
     if (this.configService.isLocal()) {
-      organizationDomain = req.header(CN_LOCAL_ORGANIZATION_HEADER);
+      organizationDomain = BlCookieHelper.getCookieFromHeader(req.headers.cookie, CN_LOCAL_ORGANIZATION_COOKIE)
     } else {
       const origin = req.header('origin');
       organizationDomain = ClStringHelper.getLowestDomainFromUrl(origin);

@@ -13,6 +13,9 @@ import {
 import {CaOrganizationPhotoPipe} from './pipe/ca-organization-photo.pipe';
 import {CaOrganizationPhotoComponent} from './component/ca-organization-photo/ca-organization-photo.component';
 import {CaOrganizationInlineComponent} from './component/ca-organization-inline/ca-organization-inline.component';
+import {
+  CaSelectOrganizationOptionsComponent
+} from './component/ca-select-organization-options/ca-select-organization-options.component';
 
 
 @NgModule({
@@ -23,6 +26,7 @@ import {CaOrganizationInlineComponent} from './component/ca-organization-inline/
     CaOrganizationPhotoPipe,
     CaOrganizationPhotoComponent,
     CaOrganizationInlineComponent,
+    CaSelectOrganizationOptionsComponent,
   ],
   exports: [
     CaOrganizationTableComponent,
@@ -31,6 +35,7 @@ import {CaOrganizationInlineComponent} from './component/ca-organization-inline/
     CaOrganizationPhotoPipe,
     CaOrganizationPhotoComponent,
     CaOrganizationInlineComponent,
+    CaSelectOrganizationOptionsComponent,
   ],
   imports: [
     CommonModule,

@@ -3,9 +3,12 @@ import {Observable} from 'rxjs';
 import {
   CaLabInstance,
   CaLabInstanceDatasource,
+  CaLabInstanceFindOneDto,
+  CaLabInstanceForm,
   CaLabInstanceStatusHistory,
   CaLabInstanceUser,
-  CaLabInstanceUserForm
+  CaLabInstanceUserForm,
+  CaLabInstanceWithOrga
 } from '../model/entities/ca-lab-instance.class';
 import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
@@ -27,20 +30,16 @@ export class CaLabInstanceService {
   constructor(private apiService: FlApiService) {
   }
 
-  public create(entity: Partial<CaLabInstance>): Observable<CaLabInstance> {
-    return this.apiService.post(this.route, entity, CaLabInstance);
+  public create(entity: CaLabInstanceForm): Observable<CaLabInstanceWithOrga> {
+    return this.apiService.post(this.route, entity, CaLabInstanceWithOrga, {serialization: CaLabInstanceForm});
   }
 
-  public update(entity: Partial<CaLabInstance>): Observable<CaLabInstance> {
-    return this.apiService.put(this.route, entity, CaLabInstance);
+  public update(entity: CaLabInstanceForm): Observable<CaLabInstanceWithOrga> {
+    return this.apiService.put(this.route, entity, CaLabInstanceWithOrga, {serialization: CaLabInstanceForm});
   }
 
   public delete(id: string): Observable<CaLabInstance> {
     return this.apiService.deleteById(this.route, id, CaLabInstance);
-  }
-
-  public getCurrentLabInstance(): Observable<CaLabInstance[]> {
-    return this.apiService.get(this.route + '/current', CaLabInstance);
   }
 
   /**
@@ -67,6 +66,16 @@ export class CaLabInstanceService {
     return this.apiService.get(this.route + '/current-running', CaLabInstance);
   }
 
+  public getByCurrentOrganization(page: number, size: number): Observable<ClPageI<CaLabInstance>> {
+    return this.apiService.get(`${this.route}/organization`, CaLabInstanceConfig,
+      {resultIsPaginated: true, page: page, pageSize: size});
+  }
+
+  public getByCurrentOrganizationDatasource(): CaLabInstanceDatasource {
+    return new FlEntityPaginatedDatasource(
+      (page, size) => this.getByCurrentOrganization(page, size), 20);
+  }
+
   public startLabInstance(id: string): Observable<CaLabInstance> {
     return this.apiService.put(`${this.route}/${id}/start`, null, CaLabInstance);
   }
@@ -75,8 +84,8 @@ export class CaLabInstanceService {
     return this.apiService.put(`${this.route}/${id}/stop`, null, CaLabInstance);
   }
 
-  public findById(id: string): Observable<CaLabInstance> {
-    return this.apiService.get(`${this.route}/${id}`, CaLabInstance);
+  public findById(id: string): Observable<CaLabInstanceFindOneDto> {
+    return this.apiService.get(`${this.route}/${id}`, CaLabInstanceFindOneDto);
   }
 
   public getStatusHistories(id: string): FlArrayObs<CaLabInstanceStatusHistory> {
@@ -90,8 +99,8 @@ export class CaLabInstanceService {
     return this.apiService.get(`${this.route}/${id}/login`);
   }
 
-  public getAll(): FlArrayObs<CaLabInstance> {
-    return new FlEntityArrayObs(this.apiService.get(this.route, CaLabInstance));
+  public getAll(): FlArrayObs<CaLabInstanceWithOrga> {
+    return new FlEntityArrayObs(this.apiService.get(this.route, CaLabInstanceWithOrga));
   }
 
   public getLabInstanceUsers(id: string): Observable<CaLabInstanceUser[]> {

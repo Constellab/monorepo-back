@@ -35,6 +35,8 @@
   "organization_invitation_already_exists": "Une invitation pour ce mail existe déjà",
   "organization_invitation_expired": "L'invitation est expirée. Veuillez contact l'administrateur de votre organisation.",
   "organization_invitation_invalid": "L'invitation est invalide. Veuillez contact l'administrateur de votre organisation.",
-  "user_without_organization": "Vous n'êtes membre d'aucune organisation"
-
+  "user_without_organization": "Vous n'êtes membre d'aucune organisation",
+  "lab_already_shared_with_group": "Le lab est déjà partagé avec ce groupe",
+  "lab_not_shared_with_group": "Le lab n'est pas partagé avec ce groupe",
+  "lab_cannot_remove_last_admin": "Vous ne pouvez pas supprimer le dernier administrateur du lab"
 }

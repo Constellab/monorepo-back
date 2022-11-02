@@ -38,7 +38,7 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
     const labInstance: CnLabInstance = this.getCurrentLabInstance();
 
     if (labInstance == null) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("No labInstance in the context");
     }
 
     return labInstance;
@@ -64,7 +64,7 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
     const organization: CnOrganization = this.getCurrentOrganization();
 
     if (organization == null) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("No organization in the context");
     }
 
     return organization;
@@ -88,7 +88,7 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
     const role: CnOrganizationUserRole = this.getCurrentRoleInOrga();
 
     if (role == null) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("No role in the context");
     }
 
     return role;

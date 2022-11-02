@@ -24,6 +24,7 @@ import {
   CaSelectLabInstanceCityComponent
 } from './component/ca-select-lab-instance-city/ca-select-lab-instance-city.component';
 import {CaLabInstanceCityComponent} from './component/ca-lab-instance-city/ca-lab-instance-city.component';
+import {CaOrganizationCoreModule} from '../ca-organization-core/ca-organization-core.module';
 
 /**
  * Core module for Lab and LabInstance
@@ -58,6 +59,7 @@ import {CaLabInstanceCityComponent} from './component/ca-lab-instance-city/ca-la
     ReactiveFormsModule,
 
     CaServerInfoCoreModule,
+    CaOrganizationCoreModule,
 
     CaCoreModule,
   ]

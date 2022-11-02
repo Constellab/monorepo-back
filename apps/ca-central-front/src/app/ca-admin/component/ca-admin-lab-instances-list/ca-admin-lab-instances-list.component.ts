@@ -1,10 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {CaLabInstance} from '../../../ca-core/model/entities/ca-lab-instance.class';
+import {CaLabInstance, CaLabInstanceWithOrga} from '../../../ca-core/model/entities/ca-lab-instance.class';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {
-  CaLabInstanceFormDialogComponent
+  CaLabInstanceFormDialogComponent,
+  CaLabInstanceFormDialogInput
 } from '../../../ca-core/entity-module/ca-lab-core/component/ca-lab-instance-form-dialog/ca-lab-instance-form-dialog.component';
-import {FlArrayObs, FlDialogService, FlFormDialogInput, FlTableColumn} from '@monorepo/front-core-lib';
+import {FlArrayObs, FlDialogService, FlTableColumn} from '@monorepo/front-core-lib';
 
 /**
  * List of lab instance in lab admin page, possibility to create and update the labs
@@ -16,9 +17,9 @@ import {FlArrayObs, FlDialogService, FlFormDialogInput, FlTableColumn} from '@mo
 })
 export class CaAdminLabInstancesListComponent implements OnInit {
 
-  labInstances: FlArrayObs<CaLabInstance>;
+  labInstances: FlArrayObs<CaLabInstanceWithOrga>;
 
-  displayedColumns: FlTableColumn<CaLabInstance>[] = ['name', 'owner', 'currentStatus',
+  displayedColumns: FlTableColumn<CaLabInstance>[] = ['organization', 'name', 'currentStatus',
     {accessor: 'virtualHost', columnName: 'virtual_host'}, 'serverInfo', 'actions'];
 
   constructor(private labInstanceService: CaLabInstanceService,
@@ -34,7 +35,7 @@ export class CaAdminLabInstancesListComponent implements OnInit {
   }
 
   openCreateLabInstanceForm(): void {
-    const dialogInput: FlFormDialogInput = {
+    const dialogInput: CaLabInstanceFormDialogInput = {
       mode: 'create'
     };
 
@@ -44,7 +45,7 @@ export class CaAdminLabInstancesListComponent implements OnInit {
       );
   }
 
-  private onCreateLabInstanceClosed(labInstance?: CaLabInstance): void {
+  private onCreateLabInstanceClosed(labInstance?: CaLabInstanceWithOrga): void {
     if (labInstance) {
       this.labInstances.unshiftItem(labInstance);
     }

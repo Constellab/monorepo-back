@@ -26,10 +26,10 @@ export class CaLabInstanceDetailPageComponent implements OnInit {
 
   private getLabInstance(id: string): void {
     this.isLoading = true;
-    this.labInstanceService.findById(id).subscribe(
-      labInstance => this.getLabInstanceSuccess(labInstance),
-      () => this.isLoading = false
-    );
+    this.labInstanceService.findById(id).subscribe({
+      next: labInstance => this.getLabInstanceSuccess(labInstance.labInstance),
+      error: () => this.isLoading = false
+    });
   }
 
   private getLabInstanceSuccess(labInstance: CaLabInstance): void {

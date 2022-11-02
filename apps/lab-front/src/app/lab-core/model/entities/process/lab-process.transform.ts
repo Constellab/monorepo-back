@@ -19,7 +19,7 @@ export function labInstantiateProcess(json: any): LabProcess {
 
 export function LabProcessTransform(): PropertyDecorator {
   const transformToPlain = Transform(
-    (params: ClTransformFnParams) => ClCoreJsonConvert.classToPlain(params.value),
+    (params: ClTransformFnParams) => ClCoreJsonConvert.instanceToPlain(params.value),
     {toPlainOnly: true});
 
   const transformToClass = Transform(

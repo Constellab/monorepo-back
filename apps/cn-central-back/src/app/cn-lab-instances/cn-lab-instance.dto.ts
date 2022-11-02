@@ -2,12 +2,19 @@ import {CnUser} from '../cn-users/cn-user.entity';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
 import {CnServerInfo} from '../cn-servers-info/cn-server-info.entity';
-import {BlBaseEntityDto} from '@monorepo/back-core-lib';
+import {BlBaseEntityDto, BlDtoHelper} from '@monorepo/back-core-lib';
 import {CnBrickVersionDTO} from '../cn-bricks/cn-brick.dto';
 import {CnLabConfigDto} from '../cn-lab-configs/cn-lab-config.dto';
 import {CnCity} from '../cn-city/cn-city.entity';
+import {CnOrganization} from '../cn-organizations/cn-organization.entity';
+import {Type} from 'class-transformer';
+import {CnLabInstanceGroupRole} from './cn-lab-instance-group.entity';
+import {CnLabInstance} from './cn-lab-instance.entity';
 
 
+/**
+ * DTO for the users that have access to a lab instance
+ */
 export class CnLabInstanceDto extends BlBaseEntityDto {
   name: string = undefined;
   lab: CnLabConfig = undefined;
@@ -15,12 +22,33 @@ export class CnLabInstanceDto extends BlBaseEntityDto {
   currentStatus: CnLabInstanceStatusHistory = undefined;
   virtualHost: string = undefined;
   apiUrl: string = undefined;
-  glabApiKey: string = undefined;
-  labManagerApiKey: string = undefined;
   codelabToken: string = undefined;
   frontUrl: string = undefined;
   serverInfo: CnServerInfo = undefined;
   city: CnCity = undefined;
+  organization: CnOrganization = undefined;
+}
+
+/**
+ * DTO for the lab instance only for G admin
+ */
+export class CnLabInstanceAdminDto extends CnLabInstanceDto {
+  glabApiKey: string = undefined;
+  labManagerApiKey: string = undefined;
+}
+
+export class CnLabFindOneDto extends CnLabInstanceDto {
+  @Type(() => CnLabInstanceDto)
+  labInstance: CnLabInstanceDto = undefined;
+
+  userRole: CnLabInstanceGroupRole;
+
+  static create(labInstance: CnLabInstance, userRole: CnLabInstanceGroupRole): CnLabFindOneDto {
+    const dto = new CnLabFindOneDto();
+    dto.labInstance = BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
+    dto.userRole = userRole;
+    return dto;
+  }
 }
 
 
@@ -33,4 +61,26 @@ export interface CnLabInstanceStartDTO {
   lab_config: CnLabConfigDto;
 }
 
+export class CnLabInstanceCreateDTO {
+  id: string;
+  name: string;
+  virtualHost: string;
+
+  @Type(() => CnServerInfo)
+  serverInfo: CnServerInfo;
+
+  // mandatory in create, empty in update
+  @Type(() => CnUser)
+  owner?: CnUser;
+
+  glabApiKey: string;
+  labManagerApiKey: string;
+  codelabToken: string;
+
+  @Type(() => CnCity)
+  city: CnCity;
+
+  @Type(() => CnOrganization)
+  organization: CnOrganization;
+}
 

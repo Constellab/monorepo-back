@@ -1,39 +1,28 @@
-import {BadRequestException, Injectable, Logger, UnauthorizedException} from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnLabInstance} from './cn-lab-instance.entity';
-import {DataSource, DeleteResult, EntityManager, Repository} from 'typeorm';
-import {CnUser} from '../cn-users/cn-user.entity';
+import {DataSource, DeleteResult, EntityManager, In, Repository} from 'typeorm';
 import {CnLabInstanceStatus} from './cn-lab-instance-status.enum';
 import {CnAbstractWithStatusService} from '../cn-core/class/cn-abstract-with-status.service';
 import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
-import {CnExternalLabUserService} from '../cn-external-lab-api/cn-external-lab-user.service';
-import {CnExternalLabUser, CnExternalNewLabUser} from '../cn-external-lab-api/model/cn-external-lab-api.class';
-import {CnLabInstanceToken} from './cn-lab-instance-token.class';
-import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {CnUsersService} from '../cn-users/cn-users.service';
-import {CnExternalLabError} from '../cn-external-lab-api/model/cn-external-lab-error.class';
-import {AxiosResponse} from 'axios';
-import {ClPageI} from '@monorepo/core-lib';
+import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {CnExternalLabApiService} from '../cn-external-lab-api/cn-external-lab-api.service';
 import {CnExperiment} from '../cn-projects-aggregate/cn-experiments/cn-experiment.entity';
 import {CnExperimentsService} from '../cn-projects-aggregate/cn-experiments/cn-experiments.service';
 import {CnLabInstanceStartDTO} from './cn-lab-instance.dto';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
+import {CnGroupsService} from '../cn-groups/cn-groups.service';
+import {CnUserOrgaInfo} from '../cn-users/cn-user.dto';
 
 @Injectable()
 export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInstance, CnLabInstanceStatus> {
 
-  private readonly logger = new Logger(CnLabInstancesService.name);
-
   constructor(@InjectRepository(CnLabInstance) private repository: Repository<CnLabInstance>,
               @InjectRepository(CnLabInstanceStatusHistory) statusHistoRepo: Repository<CnLabInstanceStatusHistory>,
-              private externalLabUserService: CnExternalLabUserService,
-              private externalLabApiService: CnExternalLabApiService,
-              private userService: CnUsersService,
               private experimentService: CnExperimentsService,
               private labConfigService: CnLabConfigsService,
+              private groupService: CnGroupsService,
               datasource: DataSource) {
     super(repository, CnLabInstance, statusHistoRepo, CnLabInstanceStatusHistory, datasource);
   }
@@ -53,22 +42,29 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return super.deleteById(id, entityManager);
   }
 
-  public getCurrentLabInstances(page: number, size: number): Promise<ClPageI<CnLabInstance>> {
-    const user: CnUser = CnCurrentUserHelper.getAndCheckCurrentUser();
+  public async getCurrentLabInstances(page: number, size: number): Promise<ClPageI<CnLabInstance>> {
+    const userInfo: CnUserOrgaInfo = CnCurrentUserHelper.getAndCheckUserOrgaInfo();
+    const groupIds = await this.groupService.getAllGroupIdsOfUser(userInfo.userId, userInfo.organizationId);
 
     return this.findPaginated(page, size, {
-      where: {owner: {id: user.id}},
+      where: {
+        sharedGroups: {
+          groupId: In(groupIds)
+        },
+        organizationId: userInfo.organizationId
+      },
       order: {lastModifiedAt: 'DESC' as any}
     });
   }
 
-  public getCurrentRunningLabInstances(): Promise<CnLabInstance[]> {
-    const user: CnUser = CnCurrentUserHelper.getAndCheckCurrentUser();
+  public async getCurrentRunningLabInstances(): Promise<CnLabInstance[]> {
+    const userInfo: CnUserOrgaInfo = CnCurrentUserHelper.getAndCheckUserOrgaInfo();
+    const groupIds = await this.groupService.getAllGroupIdsOfUser(userInfo.userId, userInfo.organizationId);
 
     return this.repository.find({
       where: {
-        owner: {
-          id: user.id
+        sharedGroups: {
+          groupId: In(groupIds)
         },
         currentStatus: {
           status: CnLabInstanceStatus.RUNNING
@@ -89,26 +85,6 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return this.updateCurrentStatus(CnLabInstanceStatus.STOPPED, id);
   }
 
-  public async login(labInstance: CnLabInstance): Promise<CnLabInstanceToken> {
-    try {
-      const token =
-        await this.externalLabUserService.generateTempAccess(labInstance.getGlabApiInfo(), CnCurrentUserHelper.getAndCheckCurrentUser());
-
-      return new CnLabInstanceToken(labInstance, token.temp_token);
-    } catch (e: any) {
-      const error: CnExternalLabError = (e.response as AxiosResponse)?.data ?? '';
-
-      switch (error.code) {
-        case 'gws_core.WRONG_CREDENTIALS_USER_NOT_ACTIVATED' :
-          throw new UnauthorizedException(CnErrorText.LAB_USER_NOT_ACTIVATED);
-        case 'gws_core.WRONG_CREDENTIALS_USER_NOT_FOUND' :
-          throw new UnauthorizedException(CnErrorText.LAB_USER_NOT_FOUND);
-        default:
-          this.logger.error(e);
-          throw new BadRequestException(CnErrorText.LAB_AUTH_ERROR);
-      }
-    }
-  }
 
   public findLabByApiKey(apiKey: string): Promise<CnLabInstance> {
     return this.repository.findOne({
@@ -119,26 +95,15 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   }
 
 
-  public findAll(): Promise<CnLabInstance[]> {
-    return this.repository.find(
+  public async findAll(): Promise<CnLabInstance[]> {
+    return await this.repository.find(
       {
+        relations: {organization: true},
         order: {lastModifiedAt: 'DESC' as any},
       },
     );
   }
 
-  public async getLabUsers(labInstanceId: string): Promise<CnExternalLabUser[]> {
-    const lab: CnLabInstance = await this.findByIdAndCheck(labInstanceId);
-
-    return this.externalLabUserService.getUsers(lab.getGlabApiInfo());
-  }
-
-  public async addUserToLab(labInstanceId: string, newUser: CnExternalNewLabUser): Promise<CnExternalLabUser> {
-    const lab: CnLabInstance = await this.findByIdAndCheck(labInstanceId);
-    const user: CnUser = await this.userService.findByIdAndCheck(newUser.userId);
-
-    return this.externalLabUserService.addUser(lab.getGlabApiInfo(), user, newUser.group);
-  }
 
   public async updateName(labInstanceId: string, name: string): Promise<CnLabInstance> {
     const lab: CnLabInstance = await this.findByIdAndCheck(labInstanceId);
@@ -146,21 +111,6 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return this.repository.save(lab);
   }
 
-  public async checkStatus(labInstanceId: string): Promise<any> {
-    const lab: CnLabInstance = await this.findByIdAndCheck(labInstanceId);
-
-    try {
-      await this.externalLabApiService.healthCheck(lab.getGlabApiInfo());
-    } catch {
-      throw new BadRequestException('The lab is not running');
-    }
-
-    try {
-      return await this.externalLabApiService.getSettings(lab.getGlabApiInfo());
-    } catch {
-      throw new BadRequestException('Can\'t retrieve the settings');
-    }
-  }
 
   /**
    * Called by the lab to tell central it has started
@@ -180,5 +130,13 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       labConfig: {brickVersions: {brick: true}}
     });
     return labInstance.labConfig;
+  }
+
+  public async findByOrganization(organizationId: string, page: number, size: number): Promise<ClPage<CnLabInstance>> {
+    return this.findPaginated(page, size, {
+      where: {
+        organizationId: organizationId
+      }
+    });
   }
 }

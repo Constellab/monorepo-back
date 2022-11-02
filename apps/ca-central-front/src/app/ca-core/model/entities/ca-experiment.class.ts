@@ -3,7 +3,7 @@ import {CaLabInstance} from './ca-lab-instance.class';
 import {CaStatusHistory} from './ca-status-history.class';
 import {FlQuillJson, FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
-import {ClLuxonTransform} from '@monorepo/core-lib';
+import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {CaUser} from './ca-user.class';
 import {CaProject, CaProjectObject} from './ca-project.class';
@@ -22,7 +22,7 @@ export class CaExperimentStatusHistory extends CaStatusHistory<CaExperimentStatu
   status: FlStatus<CaExperimentStatus>;
 }
 
-export class CaExperiment extends CaBaseEntity implements CaProjectObject{
+export class CaExperiment extends CaBaseEntity implements CaProjectObject {
 
   title: string;
 
@@ -43,10 +43,10 @@ export class CaExperiment extends CaBaseEntity implements CaProjectObject{
   @Type(() => CaUser)
   validatedBy?: CaUser;
 
-  @ClLuxonTransform()
+  @ClLuxonDateTimeTransform()
   validatedAt?: DateTime;
 
-  @ClLuxonTransform()
+  @ClLuxonDateTimeTransform()
   lastSyncAt?: DateTime;
 
   @Type(() => CaUser)

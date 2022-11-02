@@ -9,22 +9,25 @@ import {ClTransformFnParams} from './cl-json.converter';
  * Deserialization --> create date from string
  * Serialization --> return date time
  */
-export function ClLuxonTransform(): PropertyDecorator {
-  // convert date to time
-  const transformToPlain = Transform(
-    (params: ClTransformFnParams<DateTime>) => params.value?.valueOf() ?? null,
-    {toPlainOnly: true});
-
-  // create date from string
-  const transformToClass = Transform(
-    (params: ClTransformFnParams<string | null>) => params.value == null ? null : ClDateHelper.getDate(params.value),
-    {toClassOnly: true});
-
-  return (target: any, key: string): void => {
-    transformToPlain(target, key);
-    transformToClass(target, key);
-  };
-}
+// export function ClLuxonTransform(): PropertyDecorator {
+//   // convert date to time
+//   const transformToPlain = Transform(
+//     (params: ClTransformFnParams<DateTime>) => {
+//       console.log('To plain')
+//       return params.value?.valueOf() ?? null;
+//     },
+//     {toPlainOnly: true});
+//
+//   // create date from string
+//   const transformToClass = Transform(
+//     (params: ClTransformFnParams<string | null>) => params.value == null ? null : ClDateHelper.getDate(params.value),
+//     {toClassOnly: true});
+//
+//   return (target: any, key: string): void => {
+//     transformToPlain(target, key);
+//     transformToClass(target, key);
+//   };
+// }
 
 /**
  * Transform decorator for luxon date

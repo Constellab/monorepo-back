@@ -11,6 +11,7 @@ import {
 } from '../utils/ca-base-route';
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
+import {environment} from '../../../environments/ca-environment';
 
 /* eslint-disable @typescript-eslint/member-ordering */
 /**
@@ -42,6 +43,14 @@ export class CaRouterService {
     return `/${caConstBaseRoute}`;
   }
 
+  public static getOrganizationDomainUrl(organizationDomain: string): string {
+    if (environment.production) {
+      return `https://${organizationDomain}/${environment.frontDomain}`;
+    }else{
+      return `http://${environment.frontDomain}`;
+    }
+  }
+
   public static getDashboardRoute(): string {
     return CaRouterService.getFullRoute(caConstDashboardRoute);
   }
@@ -53,6 +62,16 @@ export class CaRouterService {
   public static getLabInstanceDetailRoute(labInstanceId: string): string {
     return CaRouterService.getFullRoute(`${caConstLabInstancesRoute}/${labInstanceId}`);
   }
+
+  /**
+   * Get the complete url for a last instance page from another organization
+   * @param organizationDomain
+   * @param labInstanceId
+   */
+  public static getOrganizationLabInstanceDetailUrl(organizationDomain: string, labInstanceId: string): string {
+    return `${this.getOrganizationDomainUrl(organizationDomain)}${this.getLabInstanceDetailRoute(labInstanceId)}`;
+  }
+
 
   public static getProjectDetailRoute(projectId: string): string {
     return CaRouterService.getFullRoute(`${caConstProjectRoute}/${projectId}`);

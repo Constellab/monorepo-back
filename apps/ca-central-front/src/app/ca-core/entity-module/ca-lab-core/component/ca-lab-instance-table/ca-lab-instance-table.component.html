@@ -12,18 +12,17 @@
     </mat-cell>
   </ng-container>
 
-  <!-- Owner -->
-  <ng-container matColumnDef="owner">
+  <!-- Organization -->
+  <ng-container matColumnDef="organization">
     <mat-header-cell *matHeaderCellDef>
-      <span>{{'owner' | translate}}</span>
+      <span>{{'organization' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let labInstance">
-      <ca-user-inline [user]="labInstance.owner"></ca-user-inline>
+      <ca-organization-inline [organization]="labInstance.organization"></ca-organization-inline>
     </mat-cell>
   </ng-container>
 
 
-  <!--  Todo voir si peut être géré en dynamic  -->
   <!-- Current status -->
   <ng-container matColumnDef="currentStatus">
     <mat-header-cell *matHeaderCellDef>
@@ -66,6 +65,11 @@
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #menu="matMenu" xPosition="before">
+        <a mat-menu-item type="button" [href]="getOrganizationLabInstanceUrl(labInstance)">
+          <mat-icon>visibility</mat-icon>
+          <span>{{'detail' | translate}}</span>
+        </a>
+
         <button mat-menu-item type="button" (click)="openUpdateDialog(labInstance)">
           <mat-icon>edit</mat-icon>
           <span>{{'edit' | translate}}</span>

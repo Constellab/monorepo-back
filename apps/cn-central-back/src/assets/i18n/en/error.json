@@ -35,5 +35,8 @@
   "organization_invitation_already_exists": "An invitation for this mail already exists",
   "organization_invitation_expired": "The invitation is expired. Please contact your organization administrator.",
   "organization_invitation_invalid": "The invitation is invalid. Please contact your organization administrator.",
-  "user_without_organization": "You are not a member of any organization"
+  "user_without_organization": "You are not a member of any organization",
+  "lab_already_shared_with_group": "The lab is already shared with this group",
+  "lab_not_shared_with_group": "The lab is not shared with this group",
+  "lab_cannot_remove_last_admin": "You can't remove the last admin of the lab"
 }

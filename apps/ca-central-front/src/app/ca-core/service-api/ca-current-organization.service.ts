@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {CaOrganizationService} from './ca-organization.service';
 import {CaOrganization, CaOrganizationRole} from '../model/entities/ca-organization.class';
-import {FlCleanableService, FlCleanerService, FlLocalStorageService} from '@monorepo/front-core-lib';
+import {FlCleanableService, FlCleanerService, FlCookieService} from '@monorepo/front-core-lib';
 import {environment} from '../../../environments/ca-environment';
 import {BehaviorSubject, filter, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -23,14 +23,14 @@ export class CaCurrentOrganizationService implements FlCleanableService {
   private devOrganizationStorageKey: string = 'local-organization';
 
   constructor(private organizationService: CaOrganizationService,
-              private localStorageService: FlLocalStorageService) {
+              private cookieService: FlCookieService) {
     FlCleanerService.getInstance().registerService(this);
   }
 
   public init(): void {
     // in dev, load the domain from the local storage
     if (!environment.production) {
-      this.currentOrganizationDomainDev = this.localStorageService.getItem(this.devOrganizationStorageKey);
+      this.currentOrganizationDomainDev = this.cookieService.getStringCookie(this.devOrganizationStorageKey);
     }
   }
 
@@ -44,7 +44,7 @@ export class CaCurrentOrganizationService implements FlCleanableService {
    */
   public setCurrentOrganizationDomainDev(domain: string): void {
     this.currentOrganizationDomainDev = domain;
-    this.localStorageService.setItem(this.devOrganizationStorageKey, domain);
+    this.cookieService.setCookie(this.devOrganizationStorageKey, domain);
   }
 
   public setCurrentOrganization(organization: CaOrganization, role: CaOrganizationRole): void {
@@ -53,7 +53,7 @@ export class CaCurrentOrganizationService implements FlCleanableService {
     this.currentOrganizationDomainDev = organization.domain;
 
     if (!environment.production) {
-      this.localStorageService.setItem(this.devOrganizationStorageKey, organization.domain);
+      this.cookieService.setCookie(this.devOrganizationStorageKey, organization.domain);
     }
   }
 

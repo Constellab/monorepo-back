@@ -216,7 +216,7 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
   // save the advanced search in URL
   private saveAdvancedSearchInUrl(advancedSearch: FlAdvancedSearchObject, timestamp: string): void {
     // convert object to class and to plain json again to trigger transforms
-    const convertedFilters = ClCoreJsonConvert.classToPlain(advancedSearch.filtersCriteria, this.config.advancedFormClass);
+    const convertedFilters = ClCoreJsonConvert.instanceToPlain(advancedSearch.filtersCriteria, this.config.advancedFormClass);
     const searchString: string = FlSearchPageUrlHelper.advancedSearchToString({filtersCriteria: convertedFilters});
 
     // limit length to avoid URL problem

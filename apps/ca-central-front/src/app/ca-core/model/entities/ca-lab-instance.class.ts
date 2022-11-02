@@ -12,7 +12,8 @@ import {
 } from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {CaCity} from './ca-city.entity';
-import {CaCountry} from './ca-country.entity';
+import {CaOrganization} from './ca-organization.class';
+import {CaLabInstanceGroupRole} from './ca-lab-instance-group.class';
 
 export type CaLabInstanceStatus = 'RUNNING' | 'STOPPED';
 
@@ -34,9 +35,6 @@ export class CaLabInstance extends CaBaseEntity {
 
   name: string;
 
-  @Type(() => CaUser)
-  owner: CaUser = null;
-
   @Type(() => CaLabInstanceStatusHistory)
   currentStatus: CaLabInstanceStatusHistory = null;
 
@@ -54,11 +52,11 @@ export class CaLabInstance extends CaBaseEntity {
   @Type(() => CaServerInfo)
   serverInfo: CaServerInfo;
 
+
   // only provided when getting lab as admin
   glabApiKey?: string;
   labManagerApiKey?: string;
   codelabToken?: string;
-
 
 
   public isRunning(): boolean {
@@ -70,20 +68,45 @@ export class CaLabInstance extends CaBaseEntity {
   }
 }
 
+export class CaLabInstanceWithOrga extends CaLabInstance {
+  @Type(() => CaOrganization)
+  organization: CaOrganization;
+}
+
+
 export type CaLabInstanceDatasource = FlEntityPaginatedDatasource<CaLabInstance>;
 
-/**
- * Return by the lab instance login
- * Lab instance object with single use token to logon lab
- */
-export class CaLabInstanceToken {
+export class CaLabInstanceForm {
+  id: string;
+  name: string;
+  virtualHost: string;
 
+  @Type(() => CaServerInfo)
+  serverInfo: CaServerInfo;
+
+  @Type(() => CaUser)
+  owner?: CaUser;
+  glabApiKey: string;
+  labManagerApiKey: string;
+  codelabToken: string;
+
+  @Type(() => CaCity)
+  city: CaCity;
+
+  @Type(() => CaOrganization)
+  organization: CaOrganization;
+}
+
+export class CaLabInstanceFindOneDto {
   @Type(() => CaLabInstance)
   labInstance: CaLabInstance;
 
-  token: string = null;
+  userRole: CaLabInstanceGroupRole;
 }
 
+/**
+ * Object representing a user in the lab
+ */
 export class CaLabInstanceUser implements FlEntity {
   id: string;
 
@@ -100,7 +123,7 @@ export class CaLabInstanceUser implements FlEntity {
   lastname: string;
 }
 
-export class CaLabInstanceUserForm {
+export interface CaLabInstanceUserForm {
   user: CaUser;
   group: 'ADMIN' | 'USER';
 }

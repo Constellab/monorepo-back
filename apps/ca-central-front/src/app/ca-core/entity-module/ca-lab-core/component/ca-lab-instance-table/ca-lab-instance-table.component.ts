@@ -1,18 +1,21 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaLabInstance} from '../../../../model/entities/ca-lab-instance.class';
-import {CaLabInstanceFormDialogComponent} from '../ca-lab-instance-form-dialog/ca-lab-instance-form-dialog.component';
+import {CaLabInstance, CaLabInstanceWithOrga} from '../../../../model/entities/ca-lab-instance.class';
+import {
+  CaLabInstanceFormDialogComponent,
+  CaLabInstanceFormDialogInput
+} from '../ca-lab-instance-form-dialog/ca-lab-instance-form-dialog.component';
 import {
   FlArrayObs,
   FlConfirmDialogInput,
   FlConfirmDialogResult,
   FlDialogService,
-  FlFormDialogInput,
   FlTableAbstractDirective
 } from '@monorepo/front-core-lib';
 import {
   CaLabInstanceStatusDialogComponent
 } from '../ca-lab-instance-status-dialog/ca-lab-instance-status-dialog.component';
 import {CaLabInstanceService} from '../../../../service-api/ca-lab-instance.service';
+import {CaRouterService} from '../../../../service/ca-router.service';
 
 
 @Component({
@@ -22,19 +25,33 @@ import {CaLabInstanceService} from '../../../../service-api/ca-lab-instance.serv
 })
 export class CaLabInstanceTableComponent extends FlTableAbstractDirective<CaLabInstance> implements OnInit {
 
-  @Input() datasource: FlArrayObs<CaLabInstance>;
+  @Input() datasource: FlArrayObs<CaLabInstance | CaLabInstanceWithOrga>;
 
   constructor(private dialogService: FlDialogService,
               private labInstanceService: CaLabInstanceService) {
-    super(['name', 'owner', 'createdBy', 'currentStatus', 'serverInfo', 'createdBy', 'actions']);
+    super(['organization', 'name', 'createdBy', 'currentStatus', 'serverInfo', 'createdBy', 'actions']);
   }
 
   ngOnInit(): void {
   }
 
-  openUpdateDialog(labInstance: CaLabInstance): void {
-    const dialogInput: FlFormDialogInput<CaLabInstance> = {
-      mode: 'update', object: labInstance
+  getOrganizationLabInstanceUrl(labInstance: CaLabInstanceWithOrga): string {
+    return CaRouterService.getOrganizationLabInstanceDetailUrl(labInstance.organization.domain, labInstance.id);
+  }
+
+  openUpdateDialog(labInstance: CaLabInstanceWithOrga): void {
+    const dialogInput: CaLabInstanceFormDialogInput = {
+      mode: 'update', object: {
+        id: labInstance.id,
+        name: labInstance.name,
+        virtualHost: labInstance.virtualHost,
+        serverInfo: labInstance.serverInfo,
+        city: labInstance.city,
+        codelabToken: labInstance.codelabToken,
+        glabApiKey: labInstance.glabApiKey,
+        labManagerApiKey: labInstance.labManagerApiKey,
+        organization: labInstance.organization,
+      }
     };
 
     this.dialogService.openSmallDialog(CaLabInstanceFormDialogComponent, {data: dialogInput}).afterClosed().subscribe(

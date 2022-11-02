@@ -1,23 +1,23 @@
-import {BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToOne} from 'typeorm';
+import {BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne} from 'typeorm';
 import {Exclude, Expose, Type} from 'class-transformer';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnEntityWithStatus} from '../cn-core/model/entities/cn-entity-with-status.entity';
 import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
 import {CnServerInfo} from '../cn-servers-info/cn-server-info.entity';
 import {CnLabInstanceStatus} from './cn-lab-instance-status.enum';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnEntityWithOwner} from '../cn-core/model/entities/cn-entity-with-owner.entity';
 import {randomBytes} from 'crypto';
 import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
 import {CnCity} from '../cn-city/cn-city.entity';
 import {CnOrganization} from '../cn-organizations/cn-organization.entity';
+import {CnLabInstanceGroup, CnLabInstanceGroupRole} from './cn-lab-instance-group.entity';
+import {BlNotUpdatable} from '@monorepo/back-core-lib';
 
 
 /**
  * A lab instance is a running lab
  */
 @Entity('lab_instance')
-export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory> implements CnEntityWithOwner {
+export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory> {
 
   @Column({nullable: false, length: 50})
   name: string;
@@ -25,11 +25,6 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Type(() => CnLabConfig)
   @ManyToOne(() => CnLabConfig, {nullable: true})
   labConfig: CnLabConfig;
-
-  // owner of the lab, can be different from create by
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, {eager: true, nullable: false})
-  owner: CnUser;
 
   @Type(() => CnLabInstanceStatusHistory)
   @OneToOne(() => CnLabInstanceStatusHistory, {
@@ -57,12 +52,17 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Column({nullable: false, length: 255})
   codelabToken: string;
 
-  @Exclude()
+  @BlNotUpdatable()
   @ManyToOne(() => CnOrganization, {nullable: false})
   organization: CnOrganization;
 
   @Column({nullable: false, update: false})
   organizationId?: string;
+
+  @OneToMany(() => CnLabInstanceGroup,
+    (instanceGroup) => instanceGroup.labInstance,
+    {cascade: ['insert']})
+  sharedGroups: CnLabInstanceGroup[];
 
   // url of the api server
   @Expose()
@@ -108,10 +108,6 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     return this.currentStatus?.status === CnLabInstanceStatus.RUNNING ?? false;
   }
 
-  getOwner(): CnUser {
-    return this.owner;
-  }
-
   getGlabApiInfo(): CnExternalApiInfo {
     return {
       apiKey: this.glabApiKey,
@@ -126,4 +122,12 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     };
   }
 
+  public getSharedGroupIds(): string[] {
+    return this.sharedGroups.map(group => group.groupId);
+  }
+
+  public getAdminSharedGroupIds(): string[] {
+    return this.sharedGroups.filter(sharedGroup => sharedGroup.role === CnLabInstanceGroupRole.OWNER)
+      .map(sharedGroup => sharedGroup.groupId);
+  }
 }

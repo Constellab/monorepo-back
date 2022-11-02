@@ -3,7 +3,7 @@ import {Expose, Type} from 'class-transformer';
 import {FlDatasourcePaginated, FlQuillJson} from '@monorepo/front-core-lib';
 import {LabProjectObject} from './lab-project.class';
 import {LabEntity} from '../global/lab-entity.entity';
-import {ClLuxonTransform} from '@monorepo/core-lib';
+import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 
 export type LabReportContent = FlQuillJson;
@@ -27,11 +27,11 @@ export class LabReport extends LabBaseEntityWithUser implements LabProjectObject
   validatedBy?: LabUser;
 
   @Expose({name: 'validated_at'})
-  @ClLuxonTransform()
+  @ClLuxonDateTimeTransform()
   validatedAt?: DateTime;
 
   @Expose({name: 'last_sync_at'})
-  @ClLuxonTransform()
+  @ClLuxonDateTimeTransform()
   lastSyncAt?: DateTime;
 
   @Expose({name: 'last_sync_by'})

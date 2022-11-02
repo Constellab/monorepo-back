@@ -161,6 +161,6 @@ export class BlExternalApiService {
    * @private
    */
   private convertObjectToPlain(object: any): any {
-    return ClCoreJsonConvert.classToPlain(object);
+    return ClCoreJsonConvert.instanceToPlain(object);
   }
 }

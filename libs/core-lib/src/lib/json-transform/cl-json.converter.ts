@@ -1,5 +1,5 @@
 import {ClHelpService} from '../utils/cl-help.service';
-import {classToPlain, ClassTransformOptions, plainToClass, serialize, TransformationType} from 'class-transformer';
+import {ClassTransformOptions, instanceToPlain, plainToInstance, TransformationType} from 'class-transformer';
 import {ClClassReference} from '../model/cl-class-reference.class';
 
 /**
@@ -51,9 +51,9 @@ export class ClCoreJsonConvert {
   public static deserialize<T>(json: any, classReference: ClDeserializationRef<T>): T | T[] {
     // if this is a class reference
     if (classReference.prototype != null) {
-      return plainToClass(classReference as ClClassReference, json);
+      return plainToInstance(classReference as ClClassReference, json);
     }
-    // if this a a constructor function
+    // if this a constructor function
     else {
       return (classReference as ClConstructorFunction)(json);
     }
@@ -76,7 +76,7 @@ export class ClCoreJsonConvert {
    * @param useClass if a class is provided, the class object is created and data assign to it before serialization
    */
   public static serialize<T>(data: T | T[], useClass?: ClClassReference): string {
-    return serialize(ClCoreJsonConvert.getObject(data, useClass));
+    return JSON.stringify(this.instanceToPlain(ClCoreJsonConvert.getObject(data, useClass)));
   }
 
   /**
@@ -85,12 +85,12 @@ export class ClCoreJsonConvert {
    * @param data object or array of objects
    * @param useClass if a class is provided, the class object is created and data assign to it before class to plain
    */
-  public static classToPlain<T>(data: T | T[], useClass?: ClClassReference): any | any[] {
-    return classToPlain(ClCoreJsonConvert.getObject(data, useClass));
+  public static instanceToPlain<T>(data: T | T[], useClass?: ClClassReference): any | any[] {
+    return instanceToPlain(ClCoreJsonConvert.getObject(data, useClass));
   }
 
   // for serialization and classToPlain, it creates the class and assign property to if if a class reference is provided
-  private static getObject(data: any, useClass?: ClClassReference): any {
+  public static getObject(data: any, useClass?: ClClassReference): any {
     // if we need to use a class for serialization
     if (useClass) {
       // create the class and assign object property to it
