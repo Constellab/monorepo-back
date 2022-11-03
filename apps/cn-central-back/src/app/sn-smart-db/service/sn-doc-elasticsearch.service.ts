@@ -77,9 +77,10 @@ export class SnDocElasticsearchService {
       index: index,
       body: {
         query: {
-          match_all: {}
-        }
-      }
+          match_all: {},
+        },
+      },
+      size: 10000 // max value
     });
 
     const hits: SnElasticsearchHit<SnDocument>[] = body.hits.hits;
