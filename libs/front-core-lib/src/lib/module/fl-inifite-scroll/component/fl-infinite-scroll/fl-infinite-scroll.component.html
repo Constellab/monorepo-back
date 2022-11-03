@@ -1,8 +1,9 @@
 <div (flInfiniteScroll)="getNextPage()" [flInfiniteDisabled]="isInfiniteDisabled"
      [flInfiniteMode]="infiniteMode" [flInfiniteAfterDebounce]="infiniteAfterDebounce"
      [flInfiniteCheckOnInit]="infiniteCheckOnInit" [flInfiniteTriggerDistance]="infiniteTriggerDistance"
+     [flReverseMode]="reverseMode"
      [ngClass]="{'g-scrollable-element': infiniteMode === 'container'}"
-     class="container" fxLayout="column">
+     class="container" fxLayout="{{reverseMode ? 'column-reverse' : 'column'}}">
   <ng-content></ng-content>
 
   <fl-infinite-load-more-result [datasource]="datasource"></fl-infinite-load-more-result>

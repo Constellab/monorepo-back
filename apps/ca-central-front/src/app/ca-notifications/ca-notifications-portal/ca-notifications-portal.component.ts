@@ -1,8 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {CaAuthenticatedUserService} from '../../ca-core/service-api/ca-authenticated-user.service';
 import {CaNotificationsService} from '../../ca-core/service-api/ca-notifications.service';
-import {CaNotificationDatasourcePaginated} from '../../ca-core/model/entities/ca-notification.class';
+import {
+  CaNotification,
+  CaNotificationDatasourcePaginated,
+  CaNotificationType
+} from '../../ca-core/model/entities/ca-notification.class';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
+import {ClStringHelper} from '@monorepo/core-lib';
 
 
 @Component({
@@ -40,4 +45,26 @@ export class CaNotificationsPortalComponent implements OnInit {
     });
   }
 
+
+  getNotificationLink(link: string): string{
+    return ClStringHelper.isHttpLink(link) ? link : 'app' + link;
+  }
+
+  readNotif(notifId: string): void{
+    this.notificationsService.read(notifId).subscribe();
+  }
+
+  getNotificationObjectIcon(objectType: CaNotificationType): string{
+    console.log(objectType)
+    switch (objectType){
+      case CaNotificationType.EXPERIMENT_COMMENT:
+        return 'science';
+      case CaNotificationType.PROJECT_COMMENT:
+        return 'project';
+      case CaNotificationType.REPORT_COMMENT:
+        return 'report';
+      default:
+        return '';
+    }
+  }
 }

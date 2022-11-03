@@ -3,7 +3,7 @@ import {CnProjectsService} from './cn-projects/cn-projects.service';
 import {CnProjectsAggregateSecurity} from './cn-projects-aggregate.security';
 import {CnProject} from './cn-projects/cn-project.entity';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {ClPageI} from '@monorepo/core-lib';
+import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnGroup} from '../cn-groups/cn-group.entity';
 import {CnProjectStatusHistory} from './cn-projects/cn-project-status-history.entity';
 import {CnProjectStatus} from './cn-projects/cn-project-status.enum';
@@ -29,6 +29,9 @@ import {DataSource} from 'typeorm';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnUsersService} from '../cn-users/cn-users.service';
 import {CmRichTextI} from '@monorepo/common-model';
+import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
+import {CnProjectCommentService} from '../cn-project-comment/cn-project-comment.service';
+import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -39,6 +42,7 @@ export class CnProjectAggregateService {
               private experimentService: CnExperimentsService,
               private reportService: CnReportsService,
               private groupService: CnGroupsService,
+              private projectCommentService: CnProjectCommentService,
               private userService: CnUsersService,
               private datasource: DataSource) {
   }
@@ -443,5 +447,17 @@ export class CnProjectAggregateService {
 
     await this.projectSecurity.checkUpdate(dbProject, CnCurrentUserHelper.getAndCheckCurrentUser());
     return dbProject;
+  }
+
+
+  /////////////////////////////////////// PROJECT COMMENT //////////////////////////////////
+
+  public async createProjectComment(newComment: CnNewComment, projectId: string): Promise<CnProjectComment> {
+    const project = await this.projectService.findById(projectId);
+    return this.projectCommentService.create(newComment, project);
+  }
+
+  public async getProjectComments(projectId: string, page: number, size: number) : Promise<ClPage<CnProjectComment>>{
+    return this.projectCommentService.getProjectComments(projectId, page, size);
   }
 }

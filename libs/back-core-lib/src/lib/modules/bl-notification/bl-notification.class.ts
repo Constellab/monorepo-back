@@ -1,3 +1,5 @@
+import {DateTime} from 'luxon';
+
 export interface BlNotification{
   id: string;
 
@@ -15,5 +17,5 @@ export interface BlNotification{
 
   createdBy: any;
 
-  createdAt: string;
+  createdAt: DateTime;
 }

@@ -35,6 +35,7 @@ export class FlQuillConfig {
     [{color: ['#000', '#e60000', '#ff9900', '#008a00', '#0066cc', '#9933ff']}, 'link', 'clean'],
   ];
 
+  
 }
 
 export interface FlQuillJson {

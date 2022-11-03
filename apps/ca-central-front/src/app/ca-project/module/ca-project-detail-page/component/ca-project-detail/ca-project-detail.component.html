@@ -7,6 +7,11 @@
 
     <div fxLayout="row" fxLayoutAlign="start center">
 
+      <button mat-icon-button type="button" (click)="showComments()"
+              [matTooltip]="'show_project_comments' | translate">
+        <mat-icon>comment</mat-icon>
+      </button>
+
       <button mat-icon-button type="button" (click)="showDescription()"
               [matTooltip]="'show_project_description' | translate">
         <mat-icon>description</mat-icon>

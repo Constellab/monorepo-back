@@ -1,0 +1,21 @@
+.comment{
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.profile-pic{
+  margin-top: 0.2em;
+  width: 5em;
+}
+
+.main-part{
+  width: calc(100% - 5.75em);
+  margin-left: 0.75em;
+}
+
+.user-info{
+  font-size: 0.8em;
+  color: var(--grey-high-contrast);
+}

@@ -55,6 +55,13 @@ export class FlInfiniteScrollDirective implements AfterViewInit {
   @Input() flInfiniteAfterDebounce: number = 500;
 
   /**
+   * Boolean of the column direction
+   *
+   * If set to 1, the flex direction is column-reverse
+   */
+  @Input() flReverseMode: boolean = false;
+
+  /**
    * Output event which emit event when the user has scrolled at the
    * trigger distance form bottom
    *
@@ -98,18 +105,28 @@ export class FlInfiniteScrollDirective implements AfterViewInit {
 
     // distance from top within the scrollable container
     const distanceFromTop = this.getDistanceFromTop();
-
     // total height of the container with scroll
     const totalHeight = this.getTotalHeight();
 
     // limited height of the container
     const height = this.getHeight();
 
-    const distanceFromBottom = totalHeight - (distanceFromTop + height);
+    //Check if the event is trigger for the reverse mode
+    if(this.flReverseMode){
+      const distanceFromBottom = -distanceFromTop;
+      const distance = totalHeight - (distanceFromBottom + height);
+      if (distance <= this.flInfiniteTriggerDistance) {
+        this.emitEvent(event);
+      }
 
-    // check if the distance from bottom is lower than the defined limit
-    if (distanceFromBottom <= this.flInfiniteTriggerDistance) {
-      this.emitEvent(event);
+    } else {
+
+      const distanceFromBottom = totalHeight - (distanceFromTop + height);
+      // check if the distance from bottom is lower than the defined limit
+      if (distanceFromBottom <= this.flInfiniteTriggerDistance) {
+        this.emitEvent(event);
+      }
+
     }
   }
 

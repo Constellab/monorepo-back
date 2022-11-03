@@ -10,6 +10,9 @@ export * from './component/fl-text-editor-link-dialog/fl-text-editor-link-dialog
 export * from './component/fl-text-editor-title-caption/fl-text-editor-title-caption.component';
 export * from './component/fl-text-editor-video/fl-text-editor-video.component';
 
+// Directive
+export * from './directive/fl-text-editor.directive';
+
 // States
 export * from './state/fl-text-editor.state';
 export * from './state/fl-text-editors-manager.state';
@@ -27,3 +30,4 @@ export * from './model/fl-text-editor-image.class';
 export * from './model/fl-text-editor-link-without-target.class';
 export * from './model/fl-text-editor-module-config.class';
 export * from './model/fl-text-editor-video-blot.class';
+export * from './model/fl-quill-setup.class';

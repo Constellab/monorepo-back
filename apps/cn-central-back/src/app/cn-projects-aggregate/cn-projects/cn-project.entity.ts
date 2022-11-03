@@ -91,7 +91,7 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
   rootParentId?: string;
 
   @Exclude()
-  @ManyToOne(() => CnOrganization, {nullable: false})
+  @ManyToOne(() => CnOrganization, {eager: true, nullable: false})
   organization?: CnOrganization;
 
   public isSharedToGroup(groupId: string | string[]): boolean {

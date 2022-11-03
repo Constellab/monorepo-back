@@ -22,14 +22,6 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
     super(notificationRepository, CnNotification);
   }
 
-  // async createExperimentCommentNotification(experimentComment: CnNotificationCreateDTO): Promise<CnNotification> {
-  //   const notification: CnNotification = new CnNotification();
-  //   const experiment: CnExperiment = await this.experimentService.findById(experimentComment.objectId);
-  //   const createdBy: CnUser = await this.userService.findOne(experimentComment.createdById);
-  //   const text: string = `${createdBy.firstname}`
-  //   notification.setupNotif(experimentComment, CnNotificationType.EXPERIMENT_COMMENT, '');
-  //   return this.notificationRepository.save(notification);
-  // }
 
   async createNotification(newNotification: CnNotificationCreateDTO): Promise<CnNotification> {
     const notif: CnNotification = new CnNotification();
@@ -54,7 +46,7 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
           }
         },
       order: {
-        createdAt: 'DESC'
+        createdAt: 'DESC' as any
       }
     });
   }
@@ -73,6 +65,10 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
     for (const notif of notifications) {
       await this.readNotification(notif);
     }
+  }
+
+  async read(notifId: string): Promise<void>{
+    await this.readNotification(await this.notificationRepository.findOneBy({id: notifId}));
   }
 
   async readNotification(notification: CnNotification): Promise<void> {

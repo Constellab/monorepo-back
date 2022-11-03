@@ -1,4 +1,4 @@
-//@import "~quill/dist/quill.snow.css";
+@import "~quill/dist/quill.snow.css";
 @import "~quill/dist/quill.bubble.css";
 
 //////////////////////////// QUILL ////////////////////////////////////
@@ -12,9 +12,43 @@
 .ql-editor {
   overflow: auto;
   max-height: inherit;
-  padding: 12px 35px;
+  padding: 12px 16px;
   font-family: "Poppins", "Helvetica Neue", sans-serif;
 }
+
+.ql-bubble .ql-editor {
+  max-height: inherit;
+  padding: 12px 35px;
+}
+
+
+//Primary color for snow theme tool bar
+.ql-snow button:hover, .ql-snow .ql-active{
+  color: var(--primary-color) !important;
+}
+
+.ql-snow .ql-stroke {
+  stroke: var(--grey-high-contrast);
+}
+
+.ql-snow .ql-fill{
+  fill: var(--grey-high-contrast);
+}
+
+.ql-snow .ql-blank{
+  color: var(--grey-high-contrast);
+}
+
+.ql-snow .ql-active .ql-stroke, .ql-snow button:hover .ql-stroke{
+  stroke: var(--primary-color) !important;
+}
+
+.ql-snow .ql-active .ql-fill, .ql-snow button:hover .ql-fill{
+  fill: var(--primary-color) !important;
+}
+
+
+
 
 .ql-bubble .ql-editor, .g-doc-format {
   p {
@@ -151,3 +185,15 @@
   color: #9933ff;
 }
 
+
+.ql-directive .ql-editor{
+  padding: 0;
+}
+
+.ql-directive .ql-editor *:first-child{
+  margin-top: 0 !important;
+}
+
+.ql-directive .ql-editor *:last-child{
+  margin-bottom: 0 !important;
+}

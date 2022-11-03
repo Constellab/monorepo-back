@@ -10,6 +10,7 @@ import {CnExperimentsController} from './cn-experiments.controller';
 import {CnReportsController} from './cn-reports.controller';
 import {CnProjectsModule} from './cn-projects/cn-projects.module';
 import {CnUsersModule} from '../cn-users/cn-users.module';
+import {CnProjectCommentModule} from '../cn-project-comment/cn-project-comment.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import {CnUsersModule} from '../cn-users/cn-users.module';
     CnExperimentsModule,
     CnReportsModule,
     CnUsersModule,
+    CnProjectCommentModule
   ],
   controllers: [
     CnProjectsController,

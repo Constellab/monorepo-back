@@ -26,6 +26,8 @@ import {
   CaProjectExperimentPreviewComponent
 } from './component/ca-project-experiment-preview/ca-project-experiment-preview.component';
 import {CaLabCoreModule} from '../../../ca-core/entity-module/ca-lab-core/ca-lab-core.module';
+import {CaProjectCommentsComponent} from './component/ca-project-comments/ca-project-comments.component';
+import {CaCommentModule} from "../../../ca-comment/ca-comment.module";
 
 /**
  * Module for the project detail page
@@ -41,6 +43,7 @@ import {CaLabCoreModule} from '../../../ca-core/entity-module/ca-lab-core/ca-lab
     CaProjectDescriptionComponent,
     CaProjectReportPreviewComponent,
     CaProjectExperimentPreviewComponent,
+    CaProjectCommentsComponent,
   ],
   imports: [
     CommonModule,
@@ -55,6 +58,7 @@ import {CaLabCoreModule} from '../../../ca-core/entity-module/ca-lab-core/ca-lab
     CaReportCoreModule,
     CaGroupCoreModule,
     CaLabCoreModule,
+    CaCommentModule,
   ]
 })
 export class CaProjectDetailPageModule {

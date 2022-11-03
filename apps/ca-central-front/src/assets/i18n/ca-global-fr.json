@@ -145,5 +145,6 @@
   "edit_user_success": "Utilisateur modifié",
   "view_read_notifications": "Afficher les notifications lues",
   "most_recent": "Les plus récentes",
-  "all_marked_as_read": "Tout marquer comme lu"
+  "all_marked_as_read": "Tout marquer comme lu",
+  "write_a_comment": "Ecrivez votre commentaire ici"
 }

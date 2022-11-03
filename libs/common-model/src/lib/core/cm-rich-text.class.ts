@@ -1,3 +1,5 @@
+import {ClHelpService} from '@monorepo/core-lib';
+
 export interface CmRichTextI {
   ops: CmRichTextOp[];
 }
@@ -123,6 +125,18 @@ export class CmRichText {
       })
     }
     return imgs;
+  }
+
+  public static isEmpty(content: CmRichTextI): boolean{
+    let isEmpty = true;
+    if (!ClHelpService.isNullOrEmpty(content) && content.ops) {
+      for(const op of content.ops){
+        if(op.insert && op.insert.length > 0 && !(/^\s*$/.test(op.insert))){
+          isEmpty = false;
+        }
+      }
+    }
+    return isEmpty;
   }
 
 

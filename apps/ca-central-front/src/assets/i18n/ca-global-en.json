@@ -145,5 +145,6 @@
   "edit_user_success": "User edited",
   "view_read_notifications": "View read notifications",
   "most_recent": "Most recent",
-  "all_marked_as_read": "All marked as read"
+  "all_marked_as_read": "All marked as read",
+  "write_a_comment": "Write a comment here"
 }

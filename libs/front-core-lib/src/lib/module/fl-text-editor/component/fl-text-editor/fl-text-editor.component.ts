@@ -32,7 +32,7 @@ import {FlTextEditorsManagerState} from '../../state/fl-text-editors-manager.sta
 import {FlTextEditorConfig} from '../../model/fl-text-editor-config.class';
 import {FlQuillBlock, FlQuillDelta} from '../../model/fl-quill-export.class';
 import {FlHtmlHelper} from '../../../../utils/fl-html.helper';
-import {FlFileHelper} from '../../../../service/fl-file.helper';
+import {FlQuillSetup} from '../../model/fl-quill-setup.class';
 
 hljs.registerLanguage('python', python);
 
@@ -65,6 +65,10 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   // if true the text editor is focused on creation
   @Input() autoFocus: boolean = false;
 
+  @Input() theme: 'VISIBLE_BUTTON' | 'OVERRIDE_BUTTON' = 'OVERRIDE_BUTTON';
+
+  @Input() leftButtons: boolean = true;
+
   /**
    * If auto it finds the parent scrollable element (use cdkScrollable),
    * otherwise it uses the child .ql-editor as scrollable
@@ -95,7 +99,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     // create and configure quill
     this.quill = new Quill(this.editorElement.nativeElement,
       {
-        theme: 'bubble',
+        theme: this.config.getTheme(this.theme),
         modules: {
           syntax: {
             highlight: (text: string) => hljs.highlight(text, {language: 'python'}).value
@@ -103,33 +107,11 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
           toolbar: this.config.getToolbarConfig(),
         },
         placeholder: this.placeholder,
-        scrollingContainer: this.getScrollingContainer()
+        scrollingContainer: FlQuillSetup.getScrollingContainer(this.scrollContainer, this.scrollDispatcher,
+          this.document.documentElement, this.elementRef)
       }
     );
-    this.quill.clipboard.addMatcher('IMG', (node, delta) => {
-      const insertImage: any = delta.ops[0].insert;
-      const imageData: string = insertImage.image;
-      if (imageData.startsWith('http')) {
-        delta.ops[0] = {
-          insert: {
-            figure: {
-              filename: imageData,
-              width: null,
-              height: null,
-              naturalWidth: null,
-              naturalHeight: null,
-              title: '',
-              caption: ''
-            }
-          }
-        };
-      } else if (imageData.startsWith('data')) {
-        const blob: Blob = FlFileHelper.convertBase64ToBlob(insertImage.image.split(',')[1], 'image/png');
-        this.config.getAndSaveImage(blob, this.state);
-        delta.ops = [];
-      }
-      return delta;
-    });
+    this.quill.clipboard.addMatcher('IMG', (node, delta) => FlQuillSetup.addMatcher(node, delta, this.state, this.config));
 
     this.state.init(this.quill, this.config, this.editorElement.nativeElement, this.disabled);
 
@@ -141,6 +123,12 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
 
     if (this.autoFocus && !this.disabled) {
       this.quill.focus();
+    }
+
+    if(this.theme === 'VISIBLE_BUTTON'){
+      const keyboard = this.quill.getModule('keyboard');
+      //Delete the linebreak event on enter key pressed
+      delete keyboard.bindings[13];
     }
 
 
@@ -214,7 +202,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   }
 
   private onEditorChange(changeEvent: 'text-change' | 'selection-change', obj: any): void {
-    if (changeEvent === 'selection-change') {
+    if (changeEvent === 'selection-change' && this.leftButtons) {
       this.showAddButton(obj);
     }
   }
@@ -248,22 +236,5 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
 
   private closeBlockAddButtonOverlay(): void {
     this.blockAddButtonOverlay?.dispose();
-  }
-
-  // retrieve the first parent that is scrollable
-  private getScrollingContainer(): HTMLElement | string {
-    if (this.scrollContainer === 'child') {
-      return '.ql-editor';
-    }
-
-    // retrieve scrollable parents
-    const scrollableElements = this.scrollDispatcher.getAncestorScrollContainers(this.elementRef);
-    // if there are some scrollable parent, use the first one
-    if (scrollableElements.length > 0) {
-      return scrollableElements[scrollableElements.length - 1].getElementRef().nativeElement;
-    }
-
-    // otherwise, use document as scrolling container
-    return this.document.documentElement;
   }
 }

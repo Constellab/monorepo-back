@@ -27,4 +27,8 @@ export class CaNotificationsService {
   public readAllNotifications(userId: string): Observable<void>{
     return this.apiService.get(`${this.route}/readAll/${userId}`);
   }
+
+  public read(notifId: string): Observable<void>{
+    return this.apiService.get(`${this.route}/read/${notifId}`);
+  }
 }

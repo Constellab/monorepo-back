@@ -16,9 +16,11 @@ import {
   FlEntityPaginatedDatasource,
   FlQuillJson,
 } from '@monorepo/front-core-lib';
-import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
+import {ClGetPageFunction, ClPage, ClPageI} from '@monorepo/core-lib';
 import {CaGroup} from '../model/entities/ca-group.entity';
 import {CaUser} from '../model/entities/ca-user.class';
+import {CaProjectComment, CaProjectCommentDatasourcePaginated} from '../model/entities/ca-comment.class';
+import {CmRichTextI} from '@monorepo/common-model';
 
 /**
  * Service to manage project entity
@@ -135,5 +137,21 @@ export class CaProjectService {
 
   public getProjectTree(objectType: CaProjectAncestorType, objectId: string): Observable<CaProjectTreeDto> {
     return this.apiService.get(`${this.route}/tree/${objectType}/${objectId}`);
+  }
+
+  /////////////////////////////// COMMENTS //////////////////////////////////
+  public getProjectComments(userId: string): CaProjectCommentDatasourcePaginated {
+    return new FlEntityPaginatedDatasource(
+      (page, size) => this.getAll(userId, page, size), 20);
+  }
+
+  public getAll(projectId: string, page: number, size: number): Observable<ClPage<CaProjectComment>> {
+    return this.apiService.get(`${this.route}/comments/${projectId}`, CaProjectComment,
+      {page: page, pageSize: size, resultIsPaginated: true});
+  }
+
+  public newProjectComment(projectId: string, content: CmRichTextI, parentCommentId?: string): Observable<CaProjectComment>{
+    return this.apiService.post(`${this.route}/new-comment/${projectId}`,
+      {content: content, parentCommentId: parentCommentId}, CaProjectComment);
   }
 }

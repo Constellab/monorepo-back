@@ -1,14 +1,28 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseBoolPipe,
+  ParseIntPipe,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Query
+} from '@nestjs/common';
 import {CnProject} from './cn-projects/cn-project.entity';
 import {CnProjectStatus} from './cn-projects/cn-project-status.enum';
 import {CnProjectStatusHistory} from './cn-projects/cn-project-status-history.entity';
 import {BlParseEnumPipe, BlParsePipe} from '@monorepo/back-core-lib';
-import {ClPageI} from '@monorepo/core-lib';
+import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnGroup} from '../cn-groups/cn-group.entity';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
 import {CnProjectAncestorTreeDTO, CnProjectAncestorType, CnProjectTreeDto} from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CmRichTextI} from '@monorepo/common-model';
+import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
+import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 
 @Controller('projects')
 export class CnProjectsController {
@@ -133,5 +147,19 @@ export class CnProjectsController {
   updateDescription(@Param('id', new ParseUUIDPipe()) id: string,
                     @Body() description: CmRichTextI): Promise<CnProject> {
     return this.projectAggregate.updateDescription(id, description);
+  }
+
+  @Post('new-comment/:id')
+  createProjectComment(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body(new BlParsePipe(CnNewComment)) newComment: CnNewComment): Promise<CnProjectComment> {
+    return this.projectAggregate.createProjectComment(newComment, id);
+  }
+
+  @Get('comments/:projectId')
+  getProjectComments(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+                       @Query('page', new ParseIntPipe()) page: number,
+                       @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnProjectComment>> {
+    return this.projectAggregate.getProjectComments(projectId, page, size);
   }
 }

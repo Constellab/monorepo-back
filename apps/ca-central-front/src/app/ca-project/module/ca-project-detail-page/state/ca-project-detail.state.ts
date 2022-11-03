@@ -14,7 +14,7 @@ import {CaExperimentService} from '../../../../ca-core/service-api/ca-experiment
 import {CaBaseEntity} from '../../../../ca-core/model/entities/ca-base-entity.class';
 
 export type CaProjectDetailRightPanel = {
-  type: 'description' | 'report' | 'experiment'
+  type: 'description' | 'report' | 'experiment' | 'comments'
   objectId?: string;
 }
 

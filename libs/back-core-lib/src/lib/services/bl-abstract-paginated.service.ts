@@ -13,6 +13,17 @@ export abstract class BlAbstractPaginatedService<T> {
 
   }
 
+  static async findPaginatedStatic<T>(safePage: number = 0, safeSize: number = 10, options: FindOneOptions<T> = {},
+                                      entityManager: EntityManager, entityClass: new() => T): Promise<ClPage<T>> {
+    // build the options with the paginated filters
+    const pageOptions: FindManyOptions<T> = {...options, skip: safePage * safeSize, take: safeSize};
+
+    // get and count the total number of result
+    const [result, totalElements] = await entityManager.findAndCount(entityClass, pageOptions);
+
+    return ClPage.fromPagination(safePage, safeSize, totalElements, result);
+  }
+
   async findPaginated(page: number = 0, size: number = 10, options: FindOneOptions<T> = {},
                       entityManager?: EntityManager): Promise<ClPage<T>> {
     const manager: EntityManager = this.getEntityManager(entityManager);
@@ -20,13 +31,7 @@ export abstract class BlAbstractPaginatedService<T> {
     const safePage: number = this.getSafePage(page);
     const safeSize: number = this.getSafePageSize(size);
 
-    // build the options with the paginated filters
-    const pageOptions: FindManyOptions<T> = {...options, skip: safePage * safeSize, take: safeSize};
-
-    // get and count the total number of result
-    const [result, totalElements] = await manager.findAndCount(this.entityClass, pageOptions);
-
-    return ClPage.fromPagination(safePage, safeSize, totalElements, result);
+    return BlAbstractPaginatedService.findPaginatedStatic(safePage, safeSize, options, manager, this.entityClass);
   }
 
   protected getSafePage(page: number): number {

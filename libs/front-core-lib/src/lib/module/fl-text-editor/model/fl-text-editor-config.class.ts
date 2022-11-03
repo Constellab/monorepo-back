@@ -25,6 +25,10 @@ export abstract class FlTextEditorConfig {
     };
   }
 
+  public getTheme(themeMode: 'VISIBLE_BUTTON' | 'OVERRIDE_BUTTON'): 'snow' | 'bubble'{
+    return themeMode === 'VISIBLE_BUTTON' ? 'snow' : 'bubble';
+  }
+
   protected getHintBlockAddButton(state: FlTextEditorState): FlTextEditorBlockAddButton {
     return {
       icon: 'info',

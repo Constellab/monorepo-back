@@ -5,6 +5,7 @@ import {CaProjectReportPreviewComponent} from '../ca-project-report-preview/ca-p
 import {
   CaProjectExperimentPreviewComponent
 } from '../ca-project-experiment-preview/ca-project-experiment-preview.component';
+import {CaProjectCommentsComponent} from '../ca-project-comments/ca-project-comments.component';
 
 /**
  * Right panel of the project detail page
@@ -41,6 +42,9 @@ export class CaProjectDetailRightPanelComponent implements OnInit, OnDestroy {
         break;
       case 'experiment':
         this.viewComponentRef = this.container.createComponent(CaProjectExperimentPreviewComponent);
+        break;
+      case 'comments':
+        this.viewComponentRef = this.container.createComponent(CaProjectCommentsComponent);
         break;
       default:
         console.log('Unknown right panel type', rightPanelState.type);

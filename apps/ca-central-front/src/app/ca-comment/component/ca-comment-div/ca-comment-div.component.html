@@ -1,0 +1,15 @@
+<div class="comment" fxLayout="row">
+  <div class="profile-pic">
+    <fl-user-profile-picture [user]="comment.createdBy" size="3.75"></fl-user-profile-picture>
+  </div>
+
+  <div class="main-part">
+    <div class="user-info">
+      {{comment.createdBy.firstname}} - <fl-from-now [date]="comment.createdAt"></fl-from-now>
+    </div>
+
+    <div flTextEditor mode="JSON" [config]="textEditorConfig" [value]="comment.content" class="message"></div>
+
+  </div>
+
+</div>

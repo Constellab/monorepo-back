@@ -10,6 +10,7 @@ import {CnNotification} from './cn-notification.entity';
   ],
   controllers: [CnNotificationController],
   providers: [CnNotificationService],
+  exports: [CnNotificationService]
 })
 export class CnNotificationModule {
 }

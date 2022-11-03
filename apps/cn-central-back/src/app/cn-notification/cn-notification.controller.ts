@@ -20,4 +20,9 @@ export class CnNotificationController {
   readAllNotifications(@Param('userId', new ParseUUIDPipe()) userId: string): Promise<void> {
     return this.notificationService.readAllNotification(userId);
   }
+
+  @Get('read/:notifId')
+  read(@Param('notifId', new ParseUUIDPipe()) notifId: string): Promise<void> {
+    return this.notificationService.read(notifId);
+  }
 }

@@ -159,14 +159,15 @@ figure {
 .g-scrollable-element::-webkit-scrollbar-thumb,
 .g-styled-scrollbar::-webkit-scrollbar-thumb,
 .g-styled-scrollbar *::-webkit-scrollbar-thumb {
-  background: #E9EAEF;
+  background: var(--grey-contrast);
 }
 
 /* Handle on hover */
 .g-scrollable-element::-webkit-scrollbar-thumb:hover,
 .g-styled-scrollbar::-webkit-scrollbar-thumb:hover,
 .g-styled-scrollbar *::-webkit-scrollbar-thumb:hover {
-  background: #c4c4c4;
+  background: var(--grey-high-contrast);
+
 }
 
 // use to prevent use selection for text or div

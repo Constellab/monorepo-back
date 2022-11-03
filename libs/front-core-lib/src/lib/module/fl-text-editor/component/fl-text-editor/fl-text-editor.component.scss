@@ -14,6 +14,13 @@
   height: inherit;
 }
 
+.editor-snow{
+  width: 100%;
+  max-width: 100%;
+  max-height: inherit;
+  height: calc(100% - 42px);
+}
+
 .drag-indicator{
   cursor: grab;
 }

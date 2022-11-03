@@ -1,4 +1,4 @@
-<div class="editor g-styled-scrollbar" #editor (flOutsideClick)="outsideClick($event)"></div>
+<div class="{{theme === 'OVERRIDE_BUTTON' ? 'editor' : 'editor-snow'}} g-styled-scrollbar" #editor (flOutsideClick)="outsideClick($event)"></div>
 
-<fl-text-editor-drag-buttons></fl-text-editor-drag-buttons>
+<fl-text-editor-drag-buttons *ngIf="leftButtons"></fl-text-editor-drag-buttons>
 
