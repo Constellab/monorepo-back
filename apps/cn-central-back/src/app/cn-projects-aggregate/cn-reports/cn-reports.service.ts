@@ -37,8 +37,23 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     });
   }
 
+  getReportsByLabInstance(labInstanceId: string): Promise<CnReport[]> {
+    return this.repository.find({
+      where: {
+        labInstance: {
+          id: labInstanceId
+        }
+      }
+    });
+  }
+
   async createReport(createReportDto: CnCreateReportWithConfigDto, experiments: CnExperiment[],
                      project: CnProject, entityManager: EntityManager): Promise<CnReport> {
+
+    const reportDb: CnReport = await this.findById(createReportDto.report.id);
+    if (reportDb && reportDb.projectId !== project.id) {
+      throw new BadRequestException('Can\'t change the project of a synced report');
+    }
 
     // retrieve the lab config
     const labConfig = await this.labConfigService.getOrCreateLabConfig(createReportDto.lab_config);
@@ -71,7 +86,12 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     report.lastSyncAt = reportDto.last_sync_at;
     report.lastSyncBy = reportDto.last_sync_by;
 
-    return await entityManager.save(report);
+    if (reportDb) {
+      return await this.updateWithCompare(report, reportDb, entityManager);
+    } else {
+      report.labInstance = CnCurrentUserHelper.getCurrentLabInstance();
+      return await entityManager.save(report);
+    }
   }
 
   public async deleteReport(id: string): Promise<void> {

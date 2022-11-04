@@ -2,7 +2,6 @@ import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post,
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstanceAggregateService} from './cn-lab-instance-aggregate.service';
 import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
-import {CnExternalLabUser, CnExternalNewLabUser} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {BlDtoHelper, BlParseEnumPipe, BlParsePipe} from '@monorepo/back-core-lib';
 import {ClPageI} from '@monorepo/core-lib';
 import {
@@ -17,8 +16,8 @@ import {
   CnLabManagerStatus
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
-import {CnLabInstanceGroup, CnLabInstanceGroupRole} from './cn-lab-instance-group.entity';
-import {CnUser} from '../cn-users/cn-user.entity';
+import {CnLabInstanceUser, CnLabInstanceUserRole} from './cn-lab-instance-user.entity';
+import {CnLabInstanceProject} from './cn-lab-instance-project.entity';
 
 @Controller('lab-instances')
 export class CnLabInstancesController {
@@ -121,23 +120,6 @@ export class CnLabInstancesController {
   }
 
   /**
-   * Get the users in the lab
-   */
-  @Get(':id/users')
-  public getUsers(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnExternalLabUser[]> {
-    return this.aggregateService.getLabUsers(id);
-  }
-
-  /**
-   * Add a user to the lab
-   */
-  @Post(':id/add-user')
-  public addUser(@Param('id', new ParseUUIDPipe()) id: string,
-                 @Body() newUser: CnExternalNewLabUser): Promise<CnExternalLabUser> {
-    return this.aggregateService.addUser(id, newUser);
-  }
-
-  /**
    * Update the lab name
    */
   @Put(':id/name/:name')
@@ -161,37 +143,52 @@ export class CnLabInstancesController {
     return this.aggregateService.getLabInstanceConfig(id);
   }
 
-  //////////////////////////// GROUPS ////////////////////////////////
+  //////////////////////////// USERS ////////////////////////////////
 
-  @Post(':id/share/:groupId/:role')
-  public share(@Param('id', new ParseUUIDPipe()) id: string,
-               @Param('groupId', new ParseUUIDPipe()) groupId: string,
-               @Param('role', new BlParseEnumPipe(CnLabInstanceGroupRole)) role: CnLabInstanceGroupRole): Promise<CnLabInstanceGroup> {
-    return this.aggregateService.shareLabInstance(id, groupId, role);
+  @Post(':id/user/:userId/:role')
+  public addUserToLab(@Param('id', new ParseUUIDPipe()) id: string,
+                      @Param('userId', new ParseUUIDPipe()) userId: string,
+                      @Param('role', new BlParseEnumPipe(CnLabInstanceUserRole)) role: CnLabInstanceUserRole): Promise<CnLabInstanceUser> {
+    return this.aggregateService.addUserToLab(id, userId, role);
   }
 
-  @Put(':id/share/:groupId/:role')
-  public updateShareRole(@Param('id', new ParseUUIDPipe()) id: string,
-                         @Param('groupId', new ParseUUIDPipe()) groupId: string,
-                         @Param('role', new BlParseEnumPipe(CnLabInstanceGroupRole)) role: CnLabInstanceGroupRole)
-    : Promise<CnLabInstanceGroup> {
-    return this.aggregateService.updateShareRole(id, groupId, role);
+  @Put(':id/user/:userId/:role')
+  public updateUserLabRole(@Param('id', new ParseUUIDPipe()) id: string,
+                           @Param('userId', new ParseUUIDPipe()) userId: string,
+                           @Param('role', new BlParseEnumPipe(CnLabInstanceUserRole)) role: CnLabInstanceUserRole)
+    : Promise<CnLabInstanceUser> {
+    return this.aggregateService.updateUserLabRole(id, userId, role);
   }
 
-  @Delete(':id/share/:groupId')
-  public unshare(@Param('id', new ParseUUIDPipe()) id: string,
-                 @Param('groupId', new ParseUUIDPipe()) groupId: string): Promise<void> {
-    return this.aggregateService.unshareLabInstance(id, groupId);
+  @Delete(':id/user/:userId')
+  public removeUserFromLab(@Param('id', new ParseUUIDPipe()) id: string,
+                           @Param('userId', new ParseUUIDPipe()) userId: string): Promise<void> {
+    return this.aggregateService.removeUserFromLab(id, userId);
   }
 
-  @Get(':id/share')
-  public getSharedGroups(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceGroup[]> {
-    return this.aggregateService.getLabInstanceSharedGroups(id);
-  }
 
-  @Get(':id/share/users')
-  public getSharedUsers(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnUser[]> {
+  @Get(':id/user')
+  public getLabInstanceSharedUsers(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceUser[]> {
     return this.aggregateService.getLabInstanceSharedUsers(id);
+  }
+
+  //////////////////////////// PROJECT ////////////////////////////////
+
+  @Post(':id/project/:projectId')
+  public addProject(@Param('id', new ParseUUIDPipe()) id: string,
+                    @Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnLabInstanceProject> {
+    return this.aggregateService.addProjectInLab(id, projectId);
+  }
+
+  @Delete(':id/project/:projectId')
+  public removeProject(@Param('id', new ParseUUIDPipe()) id: string,
+                       @Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<void> {
+    return this.aggregateService.removeProjectInLab(id, projectId);
+  }
+
+  @Get(':id/project')
+  public getProjects(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceProject[]> {
+    return this.aggregateService.getLabInstanceProjects(id);
   }
 
   //////////////////////////// LAB MANAGER ////////////////////////////////

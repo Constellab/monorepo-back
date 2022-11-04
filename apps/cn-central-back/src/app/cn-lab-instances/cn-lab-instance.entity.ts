@@ -9,7 +9,7 @@ import {randomBytes} from 'crypto';
 import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
 import {CnCity} from '../cn-city/cn-city.entity';
 import {CnOrganization} from '../cn-organizations/cn-organization.entity';
-import {CnLabInstanceGroup, CnLabInstanceGroupRole} from './cn-lab-instance-group.entity';
+import {CnLabInstanceUser} from './cn-lab-instance-user.entity';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
 
 
@@ -59,10 +59,10 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Column({nullable: false, update: false})
   organizationId?: string;
 
-  @OneToMany(() => CnLabInstanceGroup,
+  @OneToMany(() => CnLabInstanceUser,
     (instanceGroup) => instanceGroup.labInstance,
     {cascade: ['insert']})
-  sharedGroups: CnLabInstanceGroup[];
+  sharedGroups: CnLabInstanceUser[];
 
   // url of the api server
   @Expose()
@@ -109,9 +109,14 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   }
 
   getGlabApiInfo(): CnExternalApiInfo {
+    // return {
+    //   apiKey: this.glabApiKey,
+    //   apiUrl: this.glabUrl
+    // };
+    // TODO Uncomment
     return {
-      apiKey: this.glabApiKey,
-      apiUrl: this.glabUrl
+      apiKey: '123456',
+      apiUrl: 'http://localhost:3000'
     };
   }
 
@@ -120,14 +125,5 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
       apiKey: this.labManagerApiKey,
       apiUrl: this.labManagerUrl
     };
-  }
-
-  public getSharedGroupIds(): string[] {
-    return this.sharedGroups.map(group => group.groupId);
-  }
-
-  public getAdminSharedGroupIds(): string[] {
-    return this.sharedGroups.filter(sharedGroup => sharedGroup.role === CnLabInstanceGroupRole.OWNER)
-      .map(sharedGroup => sharedGroup.groupId);
   }
 }

@@ -146,6 +146,14 @@ export class CaAuthenticatedUserService implements FlCleanableService {
     return this.userAuthenticated?.isAdmin() ?? false;
   }
 
+  /**
+   * return true is the authenticated user is an admin of the current orga or
+   * a G admin
+   */
+  public isCurrentOrganizationAdmin(): boolean {
+    return this.isAdmin() || this.currentOrganizationService.isOrganizationAdmin();
+  }
+
   public isCategory(...categories: CmUserCategory[]): boolean {
     return this.userAuthenticated?.isCategory(...categories) ?? false;
   }

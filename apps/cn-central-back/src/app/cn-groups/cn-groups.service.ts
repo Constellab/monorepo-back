@@ -158,7 +158,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
   }
 
 
-  public async getUserSingleGroup(userId: string): Promise<CnGroup> {
+  public async getUserSingleGroup(userId: string): Promise<CnGroupSingleUser> {
     const group = await this.repository.findOne({
       where: {
         userId: userId,
@@ -169,7 +169,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     if (group == null) {
       throw new BadRequestException(`User ${userId} has no single group`);
     }
-    return group;
+    return group as CnGroupSingleUser;
   }
 
 }

@@ -1,0 +1,25 @@
+<fl-card>
+
+  <fl-card-header>
+    <h2>{{'lab_projects' | translate}}</h2>
+
+    <fl-card-actions *caIsAdmin>
+      <button mat-icon-button type="button" (click)="openAddProjectDialog()"
+              [matTooltip]="'lab_add_project' | translate">
+        <mat-icon>add</mat-icon>
+      </button>
+    </fl-card-actions>
+  </fl-card-header>
+
+  <fl-card-body>
+    <fl-async-section [arrayObs]="datasource" emptyText="no_lab_project">
+
+      <ng-container *flSectionBody>
+        <ca-lab-instance-projects-table [datasource]="datasource" [columns]="column"
+                                        [labInstanceId]="labInstanceId">
+        </ca-lab-instance-projects-table>
+      </ng-container>
+
+    </fl-async-section>
+  </fl-card-body>
+</fl-card>

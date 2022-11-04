@@ -54,7 +54,7 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
    * not automatically disconnect the array obs. It needs to be done manually (call manualDisconnect method)
    * @protected
    */
-  protected constructor(data?: T[] | Observable<T[]>, private disableAutoDisconnect: boolean = false) {
+  constructor(data?: T[] | Observable<T[]>, private disableAutoDisconnect: boolean = false) {
     this.initData(data);
   }
 

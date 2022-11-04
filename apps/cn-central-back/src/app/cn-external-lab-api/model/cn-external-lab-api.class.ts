@@ -6,12 +6,12 @@ export interface CnExternalLabLoginResponse {
   temp_token: string;
 }
 
-export type CnExternalLabUserGroup = 'ADMIN' | 'USER';
+export type CnExternalLabUserRole = 'ADMIN' | 'USER';
 
 export interface CnExternalLabUser {
   id: string;
   email: string;
-  group: CnExternalLabUserGroup;
+  group: CnExternalLabUserRole;
   is_active: boolean;
   is_admin: boolean;
   first_name: string;
@@ -20,7 +20,7 @@ export interface CnExternalLabUser {
 
 export interface CnExternalNewLabUser {
   userId: string;
-  group: CnExternalLabUserGroup;
+  group: CnExternalLabUserRole;
 }
 
 export interface CnExternalLabCallView {

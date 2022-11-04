@@ -18,12 +18,7 @@ import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {CnReportContent} from './cn-reports/cn-report-content.class';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-projects/cn-project-level.enum';
-import {
-  CnProjectAncestorTreeDTO,
-  CnProjectAncestorType,
-  CnProjectDtoHelper,
-  CnProjectTreeDto
-} from './cn-projects/cn-project.dto';
+import {CnProjectAncestorTreeDTO, CnProjectAncestorType, CnProjectDtoHelper} from './cn-projects/cn-project.dto';
 import {DataSource} from 'typeorm';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnUsersService} from '../cn-users/cn-users.service';
@@ -112,21 +107,11 @@ export class CnProjectAggregateService {
     return this.projectService.getProjectsOfGroup(teamId, page, size);
   }
 
-  public async getProjectsOfUserId(userId: string): Promise<CnProject[]> {
-    return this.projectService.getProjectsOfUserId(userId, CnCurrentUserHelper.getAndCheckCurrentOrganization().id);
+  public async getProjectTree(projectId: string): Promise<CnProject> {
+    return this.getProjectObjectTree('project', projectId);
   }
 
-  // no protection, it is called by a lab
-  public async getProjectTreesByOrganization(): Promise<CnProject[]> {
-    const organization = CnCurrentUserHelper.getCurrentOrganization();
-    return this.projectService.getProjectTreesByOrganization(organization.id);
-  }
-
-  public async getOnGoingProjectsNumber(): Promise<number> {
-    return this.projectService.getOnGoingProjectsNumber();
-  }
-
-  public async getProjectTree(objectType: CnProjectAncestorType, objectId: string): Promise<CnProjectTreeDto> {
+  public async getProjectObjectTree(objectType: CnProjectAncestorType, objectId: string): Promise<CnProject> {
     let projectId: string;
     // retrieve the project id of the object
     switch (objectType) {
@@ -148,8 +133,7 @@ export class CnProjectAggregateService {
     const rootProject = await this.projectSecurity.checkFindOneAndGetRootProject(project,
       CnCurrentUserHelper.getAndCheckUserOrgaInfo());
 
-    const rootProjectTree = await this.projectService.getProjectTree(rootProject);
-    return CnProjectDtoHelper.convertToProjectTreeDto(rootProjectTree);
+    return await this.projectService.getProjectTree(rootProject);
   }
 
   public async getChildren(projectId: string): Promise<CnProject[]> {

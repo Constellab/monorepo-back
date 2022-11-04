@@ -2,19 +2,24 @@ import {Component, OnInit} from '@angular/core';
 import {CaLabInstance} from '../../../ca-core/model/entities/ca-lab-instance.class';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {ActivatedRoute} from '@angular/router';
+import {CaLabInstanceDetailPageState} from '../../state/ca-lab-instance-detail-page.state';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'ca-lab-instance-detail-page',
   templateUrl: './ca-lab-instance-detail-page.component.html',
-  styleUrls: ['./ca-lab-instance-detail-page.component.scss']
+  styleUrls: ['./ca-lab-instance-detail-page.component.scss'],
+  providers: [CaLabInstanceDetailPageState]
 })
 export class CaLabInstanceDetailPageComponent implements OnInit {
 
-  labInstance: CaLabInstance;
+  labInstance$: Observable<CaLabInstance>;
+  isOwner$: Observable<boolean>;
 
   isLoading: boolean = false;
 
-  constructor(private labInstanceService: CaLabInstanceService,
+  constructor(private state: CaLabInstanceDetailPageState,
+              private labInstanceService: CaLabInstanceService,
               private route: ActivatedRoute) {
   }
 
@@ -26,19 +31,12 @@ export class CaLabInstanceDetailPageComponent implements OnInit {
 
   private getLabInstance(id: string): void {
     this.isLoading = true;
-    this.labInstanceService.findById(id).subscribe({
-      next: labInstance => this.getLabInstanceSuccess(labInstance.labInstance),
-      error: () => this.isLoading = false
-    });
-  }
-
-  private getLabInstanceSuccess(labInstance: CaLabInstance): void {
-    this.labInstance = labInstance;
-    this.isLoading = false;
+    this.state.init(id);
+    this.labInstance$ = this.state.getLabInstance$();
+    this.isOwner$ = this.state.isLabOwner$();
   }
 
   onLabUpdate(lanInstance: CaLabInstance): void {
-    this.labInstance = lanInstance;
+    this.state.updateLab(lanInstance);
   }
-
 }

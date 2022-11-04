@@ -17,15 +17,15 @@
     </mat-form-field>
 
 
-      <!--    Group      -->
+    <!--    Role      -->
     <mat-form-field class="g-form-input">
-      <mat-label>{{'lab_user_group' | translate}}</mat-label>
-      <mat-select placeholder="{{'lab_user_group' | translate}}" formControlName="group">
-        <mat-option [value]="'USER'">User</mat-option>
-        <mat-option [value]="'ADMIN'">Admin</mat-option>
+      <mat-label>{{'lab_user_role' | translate}}</mat-label>
+      <mat-select [placeholder]="'lab_user_role' | translate" formControlName="role">
+        <mat-option [value]="'USER'">{{'lab_user_role_USER' | translate}}</mat-option>
+        <mat-option [value]="'OWNER'">{{'lab_user_role_OWNER' | translate}}</mat-option>
       </mat-select>
-      <mat-error *ngIf="formGp.get('group').hasError('required')">
-        {{'lab_user_group' | flErrorRequired}}
+      <mat-error *ngIf="formGp.get('role').hasError('required')">
+        {{'lab_user_role' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 

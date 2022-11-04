@@ -5,9 +5,11 @@ import {BlExternalApiHttpOption, BlExternalApiService} from '@monorepo/back-core
 import {
   CnExternalApiInfo,
   cnExternalLabApiKeyHeader,
-  cnExternalLabApiKeySchema
+  cnExternalLabApiKeySchema,
+  cnExternalLabUserHeader
 } from '../cn-core/model/config/cn-config.class';
 import {CnExternalLabCallView} from './model/cn-external-lab-api.class';
+import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 
 /**
  * Service to call the api of a lab
@@ -40,7 +42,7 @@ export class CnExternalLabApiService {
 
 
   /**
-   * Make an http post with the ip of the lab and the API key of the lab in header
+   * Make a http post with the ip of the lab and the API key of the lab in header
    */
   public post(labInfo: CnExternalApiInfo, route: string, body: any, classReference?: ClDeserializationRef,
               options: BlExternalApiHttpOption = {}): Observable<any> {
@@ -49,7 +51,7 @@ export class CnExternalLabApiService {
   }
 
   /**
-   * Make an http put with the ip of the lab and the API key of the lab in header
+   * Make a http put with the ip of the lab and the API key of the lab in header
    */
   public put(labInfo: CnExternalApiInfo, route: string, body: any, classReference?: ClDeserializationRef,
              options: BlExternalApiHttpOption = {}): Observable<any> {
@@ -58,7 +60,16 @@ export class CnExternalLabApiService {
   }
 
   /**
-   * Make an http GET with the ip of the lab and the API key of the lab in header
+   * Make a http put with the ip of the lab and the API key of the lab in header
+   */
+  public delete(labInfo: CnExternalApiInfo, route: string, classReference?: ClDeserializationRef,
+                options: BlExternalApiHttpOption = {}): Observable<any> {
+    return this.apiService.delete(this.constructRoute(labInfo.apiUrl, route),
+      classReference, this.getRequestOptions(labInfo.apiKey, options));
+  }
+
+  /**
+   * Make a http GET with the ip of the lab and the API key of the lab in header
    */
   public get(labInfo: CnExternalApiInfo, route: string, classReference?: ClDeserializationRef,
              options: BlExternalApiHttpOption = {}): Observable<any> {
@@ -80,6 +91,12 @@ export class CnExternalLabApiService {
   private getHeader(apiKey: string): any {
     const header: any = {};
     header[cnExternalLabApiKeyHeader] = `${cnExternalLabApiKeySchema} ${apiKey}`;
+
+    // add the user id if this is a connected route
+    const user = CnCurrentUserHelper.getCurrentUser();
+    if (user) {
+      header[cnExternalLabUserHeader] = user.id;
+    }
     return header;
   }
 }

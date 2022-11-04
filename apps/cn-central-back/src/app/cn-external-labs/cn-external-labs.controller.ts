@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
+import {Body, Controller, Delete, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
 import {CnLabInstancesService} from '../cn-lab-instances/cn-lab-instances.service';
 import {ClLabGuard} from '../cn-core/decorators/cn-lab-guard.decorator';
 import {BlParsePipe} from '@monorepo/back-core-lib';
@@ -9,7 +9,6 @@ import {CnProjectAggregateService} from '../cn-projects-aggregate/cn-project-agg
 import {CnLabInstanceSendMailDto} from '../cn-lab-instances/cn-lab-instance-mail.dto';
 import {CnLabInstanceMailService} from '../cn-lab-instances/cn-lab-instance-mail.service';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -27,17 +26,6 @@ export class CnExternalLabsController {
   @Put('start')
   onLabStart(@Body() labStart: CnLabInstanceStartDTO): Promise<void> {
     return this.labInstanceService.onStart(labStart);
-  }
-
-  @Get('/user/:userId/projects')
-  getProjectsOfUser(
-    @Param('userId', new ParseUUIDPipe()) userId: string): Promise<CnProject[]> {
-    return this.projectAggregator.getProjectsOfUserId(userId);
-  }
-
-  @Get('project-trees')
-  getProjectTreesByOrganization(): Promise<CnProject[]> {
-    return this.projectAggregator.getProjectTreesByOrganization();
   }
 
   @Put('project/:projectId/experiment')

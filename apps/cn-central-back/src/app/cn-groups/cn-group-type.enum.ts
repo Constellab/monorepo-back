@@ -4,5 +4,4 @@
 export enum CnGroupType {
   SINGLE_USER = 'SINGLE_USER',
   TEAM = 'TEAM',
-  ORGANIZATION = 'ORGANIZATION'
 }

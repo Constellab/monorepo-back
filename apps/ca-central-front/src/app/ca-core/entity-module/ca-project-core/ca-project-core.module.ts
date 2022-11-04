@@ -11,6 +11,8 @@ import {CaProjectTableComponent} from './component/ca-project-table/ca-project-t
 import {
   CaUpdateProjectLeaderDialogComponent
 } from './component/ca-update-project-leader-dialog/ca-update-project-leader-dialog.component';
+import {CaProjectInlineComponent} from './component/ca-project-inline/ca-project-inline.component';
+import {CaSelectProjectComponent} from './component/ca-select-project/ca-select-project.component';
 
 /**
  * Importable module to get project components and pipe
@@ -24,6 +26,8 @@ import {
     CaProjectInfoComponent,
     CaProjectTableComponent,
     CaUpdateProjectLeaderDialogComponent,
+    CaProjectInlineComponent,
+    CaSelectProjectComponent,
   ],
   exports: [
     // Component
@@ -33,6 +37,8 @@ import {
     CaProjectInfoComponent,
     CaProjectTableComponent,
     CaUpdateProjectLeaderDialogComponent,
+    CaProjectInlineComponent,
+    CaSelectProjectComponent,
   ],
   imports: [
     CommonModule,

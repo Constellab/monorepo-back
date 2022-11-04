@@ -21,7 +21,6 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
   }
 
   getExperimentsByProject(projectId: string): Promise<CnExperiment[]> {
-    this.repository.findOne({where: {id: ''}});
     return this.repository.find({
       where: {
         projectId: projectId
@@ -41,10 +40,10 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
 
   public async saveLabExperiment(project: CnProject, createLabExperimentDto: CnCreateLabExperimentDto,
                                  entityManager: EntityManager): Promise<CnExperiment> {
-    const experimentDB: CnExperiment = await this.findById(createLabExperimentDto.experiment.id);
 
+    const experimentDB: CnExperiment = await this.findById(createLabExperimentDto.experiment.id);
     if (experimentDB && experimentDB.projectId !== project.id) {
-      throw new UnauthorizedException('Can\'t change the project of a validated experiment');
+      throw new UnauthorizedException('Can\'t change the project of a synced experiment');
     }
 
     const labConfig = await this.labConfigService.getOrCreateLabConfig(createLabExperimentDto.lab_config);

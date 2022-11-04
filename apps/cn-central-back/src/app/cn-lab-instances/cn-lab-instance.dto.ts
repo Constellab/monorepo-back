@@ -8,7 +8,7 @@ import {CnLabConfigDto} from '../cn-lab-configs/cn-lab-config.dto';
 import {CnCity} from '../cn-city/cn-city.entity';
 import {CnOrganization} from '../cn-organizations/cn-organization.entity';
 import {Type} from 'class-transformer';
-import {CnLabInstanceGroupRole} from './cn-lab-instance-group.entity';
+import {CnLabInstanceUserRole} from './cn-lab-instance-user.entity';
 import {CnLabInstance} from './cn-lab-instance.entity';
 
 
@@ -37,13 +37,13 @@ export class CnLabInstanceAdminDto extends CnLabInstanceDto {
   labManagerApiKey: string = undefined;
 }
 
-export class CnLabFindOneDto extends CnLabInstanceDto {
+export class CnLabFindOneDto {
   @Type(() => CnLabInstanceDto)
   labInstance: CnLabInstanceDto = undefined;
 
-  userRole: CnLabInstanceGroupRole;
+  userRole: CnLabInstanceUserRole;
 
-  static create(labInstance: CnLabInstance, userRole: CnLabInstanceGroupRole): CnLabFindOneDto {
+  static create(labInstance: CnLabInstance, userRole: CnLabInstanceUserRole): CnLabFindOneDto {
     const dto = new CnLabFindOneDto();
     dto.labInstance = BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
     dto.userRole = userRole;

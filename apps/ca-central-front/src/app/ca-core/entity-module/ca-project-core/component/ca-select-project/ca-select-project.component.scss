@@ -1,0 +1,10 @@
+.card{
+  margin-bottom: 1em;
+  min-height: 13em;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.selected-card{
+  border-color: var(--primary-color);
+}

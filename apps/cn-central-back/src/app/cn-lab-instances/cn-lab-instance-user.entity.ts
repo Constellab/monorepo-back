@@ -1,6 +1,5 @@
 import {BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, Relation} from 'typeorm';
 import {CnLabInstance} from './cn-lab-instance.entity';
-import {CnGroup} from '../cn-groups/cn-group.entity';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {Type} from 'class-transformer';
@@ -9,7 +8,7 @@ import {BlLuxonDateTimeColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnUser} from '../cn-users/cn-user.entity';
 
 
-export enum CnLabInstanceGroupRole {
+export enum CnLabInstanceUserRole {
   OWNER = 'OWNER',
   USER = 'USER'
 }
@@ -17,11 +16,11 @@ export enum CnLabInstanceGroupRole {
 /**
  * Entity for N to N relation between lab instance and group
  */
-@Entity('lab_instance_group')
-export class CnLabInstanceGroup {
+@Entity('lab_instance_user')
+export class CnLabInstanceUser {
 
   @PrimaryColumn()
-  labInstanceId?: string;
+  labInstanceId: string;
 
   @JoinColumn({name: 'labInstanceId'})
   @ManyToOne(() => CnLabInstance,
@@ -29,17 +28,17 @@ export class CnLabInstanceGroup {
   labInstance: CnLabInstance;
 
   @PrimaryColumn()
-  groupId?: string;
+  userId: string;
 
-  @JoinColumn({name: 'groupId'})
-  @ManyToOne(() => CnGroup)
-  group: CnGroup;
+  @JoinColumn({name: 'userId'})
+  @ManyToOne(() => CnUser)
+  user: CnUser;
 
   @Column({
-    type: 'enum', enum: CnLabInstanceGroupRole, nullable: false,
-    default: CnLabInstanceGroupRole.USER
+    type: 'enum', enum: CnLabInstanceUserRole, nullable: false,
+    default: CnLabInstanceUserRole.USER
   })
-  role: CnLabInstanceGroupRole;
+  role: CnLabInstanceUserRole;
 
   @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;

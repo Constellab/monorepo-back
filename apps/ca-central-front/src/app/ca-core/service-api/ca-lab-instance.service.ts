@@ -6,8 +6,6 @@ import {
   CaLabInstanceFindOneDto,
   CaLabInstanceForm,
   CaLabInstanceStatusHistory,
-  CaLabInstanceUser,
-  CaLabInstanceUserForm,
   CaLabInstanceWithOrga
 } from '../model/entities/ca-lab-instance.class';
 import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
@@ -19,6 +17,8 @@ import {
   CaLabManagerStatus,
   CaLabTaskStatusInfo
 } from '../model/entities/ca-lab-manager.class';
+import {CaLabInstanceUser, CaLabInstanceUserRole} from '../model/entities/ca-lab-instance-user.class';
+import {CaLabInstanceProject} from '../model/entities/ca-lab-instance-project.class';
 
 @Injectable({
   providedIn: 'root'
@@ -103,17 +103,6 @@ export class CaLabInstanceService {
     return new FlEntityArrayObs(this.apiService.get(this.route, CaLabInstanceWithOrga));
   }
 
-  public getLabInstanceUsers(id: string): Observable<CaLabInstanceUser[]> {
-    return this.apiService.get(`${this.route}/${id}/users`, CaLabInstanceUser);
-  }
-
-  public addUserToLab(labId: string, labInstanceUserForm: CaLabInstanceUserForm): Observable<CaLabInstanceUser> {
-    const object = {
-      userId: labInstanceUserForm.user.id,
-      group: labInstanceUserForm.group
-    };
-    return this.apiService.post(`${this.route}/${labId}/add-user`, object, CaLabInstanceUser);
-  }
 
   public updateName(id: string, name: string): Observable<CaLabInstance> {
     return this.apiService.put(`${this.route}/${id}/name/${name}`, null);
@@ -121,6 +110,40 @@ export class CaLabInstanceService {
 
   public checkStatus(id: string): Observable<any> {
     return this.apiService.get(`${this.route}/${id}/check-status`);
+  }
+
+  //////////////////////////// USERS ////////////////////////////////
+  public addUserToLab(labId: string, userId: string, role: CaLabInstanceUserRole): Observable<CaLabInstanceUser> {
+    return this.apiService.post(`${this.route}/${labId}/user/${userId}/${role}`, null,
+      CaLabInstanceUser);
+  }
+
+  public updateUserLabRole(labId: string, userId: string, role: CaLabInstanceUserRole): Observable<CaLabInstanceUser> {
+    return this.apiService.put(`${this.route}/${labId}/user/${userId}/${role}`, null,
+      CaLabInstanceUser);
+  }
+
+  public removeUserFromLab(labId: string, userId: string): Observable<CaLabInstanceUser> {
+    return this.apiService.delete(`${this.route}/${labId}/user/${userId}`, CaLabInstanceUser);
+  }
+
+  public getLabInstanceUsers(labId: string): Observable<CaLabInstanceUser[]> {
+    return this.apiService.get(`${this.route}/${labId}/user`, CaLabInstanceUser);
+  }
+
+  //////////////////////////// PROJECT ////////////////////////////////
+
+  public addProjectToLab(labId: string, projectId: string): Observable<CaLabInstanceProject> {
+    return this.apiService.post(`${this.route}/${labId}/project/${projectId}`, null,
+      CaLabInstanceProject);
+  }
+
+  public removeProjectFromLab(labId: string, projectId: string): Observable<CaLabInstanceProject> {
+    return this.apiService.delete(`${this.route}/${labId}/project/${projectId}`, CaLabInstanceProject);
+  }
+
+  public getLabInstanceProjects(labId: string): Observable<CaLabInstanceProject[]> {
+    return this.apiService.get(`${this.route}/${labId}/project`, CaLabInstanceProject);
   }
 
   //////////////////////////// LAB MANAGER ////////////////////////////////

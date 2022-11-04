@@ -3,7 +3,6 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import {CnExperiment} from './cn-experiment.entity';
 import {CnExperimentsService} from './cn-experiments.service';
 import {CnCoreModule} from '../../cn-core/cn-core.module';
-import {CnLabInstancesModule} from '../../cn-lab-instances/cn-lab-instances.module';
 import {CnLabConfigsModule} from '../../cn-lab-configs/cn-lab-configs.module';
 import {CnUsersModule} from '../../cn-users/cn-users.module';
 
@@ -14,7 +13,6 @@ import {CnUsersModule} from '../../cn-users/cn-users.module';
     CnCoreModule,
 
     // Other modules
-    CnLabInstancesModule,
     CnLabConfigsModule,
     CnUsersModule
   ],

@@ -5,9 +5,10 @@ import {CnProject} from '../cn-projects/cn-project.entity';
 import {CmRichTextI} from '@monorepo/common-model';
 import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
 import {CnUser} from '../../cn-users/cn-user.entity';
-import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
+import {BlLuxonDateTimeColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {DateTime} from 'luxon';
 import {CnEntity} from '../../cn-core/model/entities/cn.entity';
+import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
 
 @Entity('report')
 export class CnReport extends CnEntity {
@@ -29,6 +30,11 @@ export class CnReport extends CnEntity {
   @ManyToMany(() => CnExperiment, experiment => experiment.reports)
   @JoinTable({name: 'report_experiment'})
   experiments: CnExperiment[];
+
+  @BlNotUpdatable()
+  @Type(() => CnLabInstance)
+  @ManyToOne(() => CnLabInstance, {nullable: false})
+  labInstance: CnLabInstance;
 
   @Type(() => CnLabConfig)
   @ManyToOne(() => CnLabConfig, {nullable: false})

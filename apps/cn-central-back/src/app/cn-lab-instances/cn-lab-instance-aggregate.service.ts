@@ -3,7 +3,7 @@ import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstancesService} from './cn-lab-instances.service';
 import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {CnExternalLabUser, CnExternalNewLabUser} from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import {CnExternalLabUser, CnExternalLabUserRole} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {ClPageI} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {
@@ -17,16 +17,18 @@ import {CnLabFindOneDto, CnLabInstanceConfigDTO, CnLabInstanceCreateDTO} from '.
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstancesSecurity} from './cn-lab-instances.security';
 import {BlDtoHelper} from '@monorepo/back-core-lib';
-import {CnLabInstanceGroup, CnLabInstanceGroupRole} from './cn-lab-instance-group.entity';
-import {CnGroupsService} from '../cn-groups/cn-groups.service';
+import {CnLabInstanceUser, CnLabInstanceUserRole} from './cn-lab-instance-user.entity';
 import {CnExternalLabUserService} from '../cn-external-lab-api/cn-external-lab-user.service';
 import {CnExternalLabApiService} from '../cn-external-lab-api/cn-external-lab-api.service';
-import {CnUser} from '../cn-users/cn-user.entity';
 import {CnExternalLabError} from '../cn-external-lab-api/model/cn-external-lab-error.class';
 import {AxiosResponse} from 'axios';
+import {CnLabInstanceUserService} from './cn-lab-instance-user.service';
+import {DataSource} from 'typeorm';
+import {CnLabInstanceProject} from './cn-lab-instance-project.entity';
+import {CnLabInstanceProjectService} from './cn-lab-instance-project.service';
+import {CnProjectAggregateService} from '../cn-projects-aggregate/cn-project-aggregate.service';
+import {CnExternalLabProjectService} from '../cn-external-lab-api/cn-external-lab-project.service';
 import {CnUsersService} from '../cn-users/cn-users.service';
-import {CnGroupTeam} from '../cn-groups/cn-group.entity';
-import {CnLabInstanceGroupService} from './cn-lab-instance-group.service';
 
 
 @Injectable()
@@ -36,13 +38,16 @@ export class CnLabInstanceAggregateService {
 
 
   constructor(private labInstancesService: CnLabInstancesService,
-              private labInstanceGroupService: CnLabInstanceGroupService,
+              private labInstanceGroupService: CnLabInstanceUserService,
+              private labInstanceProjectService: CnLabInstanceProjectService,
               private labManagerService: CnLabManagerService,
               private security: CnLabInstancesSecurity,
-              private groupService: CnGroupsService,
+              private usersService: CnUsersService,
+              private projectAggregateService: CnProjectAggregateService,
               private externalLabUserService: CnExternalLabUserService,
+              private externalLabProjectService: CnExternalLabProjectService,
               private externalLabApiService: CnExternalLabApiService,
-              private userService: CnUsersService) {
+              private dataSource: DataSource) {
   }
 
   async create(createLabInstance: CnLabInstanceCreateDTO): Promise<CnLabInstance> {
@@ -51,11 +56,10 @@ export class CnLabInstanceAggregateService {
     const labInstance = BlDtoHelper.fromDto(CnLabInstance, createLabInstance);
 
     // create the shared group for the owner
-    const labInstanceGroup = new CnLabInstanceGroup();
+    const labInstanceGroup = new CnLabInstanceUser();
     labInstanceGroup.labInstanceId = labInstance.id;
-    const group = await this.groupService.getUserSingleGroup(createLabInstance.owner.id);
-    labInstanceGroup.groupId = group.id;
-    labInstanceGroup.role = CnLabInstanceGroupRole.OWNER;
+    labInstanceGroup.user = await this.usersService.findByIdAndCheck(createLabInstance.owner.id);
+    labInstanceGroup.role = CnLabInstanceUserRole.OWNER;
 
     labInstance.sharedGroups = [labInstanceGroup];
 
@@ -108,33 +112,6 @@ export class CnLabInstanceAggregateService {
     return this.labInstancesService.stopInstance(id);
   }
 
-  async login(id: string): Promise<CnLabInstanceToken> {
-    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToFindById(id);
-
-    // check that the lab is running
-    if (!labInstance.isRunning()) {
-      throw new BadRequestException(CnErrorText.LAB_STOPPED);
-    }
-
-    try {
-      const token =
-        await this.externalLabUserService.generateTempAccess(labInstance.getGlabApiInfo(), CnCurrentUserHelper.getAndCheckCurrentUser());
-
-      return new CnLabInstanceToken(labInstance, token.temp_token);
-    } catch (e: any) {
-      const error: CnExternalLabError = (e.response as AxiosResponse)?.data ?? '';
-
-      switch (error.code) {
-        case 'gws_core.WRONG_CREDENTIALS_USER_NOT_ACTIVATED' :
-          throw new UnauthorizedException(CnErrorText.LAB_USER_NOT_ACTIVATED);
-        case 'gws_core.WRONG_CREDENTIALS_USER_NOT_FOUND' :
-          throw new UnauthorizedException(CnErrorText.LAB_USER_NOT_FOUND);
-        default:
-          this.logger.error(e);
-          throw new BadRequestException(CnErrorText.LAB_AUTH_ERROR);
-      }
-    }
-  }
 
   async getStatusHistory(id: string): Promise<CnLabInstanceStatusHistory[]> {
     // check that the user can get experiment
@@ -163,20 +140,32 @@ export class CnLabInstanceAggregateService {
 
   /////////////////////////////////////// EXTERNAL LAB SERVICE //////////////////////////////////
 
-  async getLabUsers(labInstanceId: string): Promise<CnExternalLabUser[]> {
-    // check that the user can get the lab
-    const lab: CnLabInstance = await this.getAndCheckAuthorizationToFindById(labInstanceId);
+  async login(id: string): Promise<CnLabInstanceToken> {
+    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToFindById(id);
 
-    return this.externalLabUserService.getUsers(lab.getGlabApiInfo());
-  }
+    // check that the lab is running
+    if (!labInstance.isRunning()) {
+      throw new BadRequestException(CnErrorText.LAB_STOPPED);
+    }
 
-  async addUser(labInstanceId: string, newUser: CnExternalNewLabUser): Promise<CnExternalLabUser> {
-    // check that the user can get the lab
-    const lab: CnLabInstance = await this.getAndCheckAuthorizationToFindById(labInstanceId);
+    try {
+      const token =
+        await this.externalLabUserService.generateTempAccess(labInstance.getGlabApiInfo(), CnCurrentUserHelper.getAndCheckCurrentUser());
 
-    const user: CnUser = await this.userService.findByIdAndCheck(newUser.userId);
+      return new CnLabInstanceToken(labInstance, token.temp_token);
+    } catch (e: any) {
+      const error: CnExternalLabError = (e.response as AxiosResponse)?.data ?? '';
 
-    return this.externalLabUserService.addUser(lab.getGlabApiInfo(), user, newUser.group);
+      switch (error.code) {
+        case 'gws_core.WRONG_CREDENTIALS_USER_NOT_ACTIVATED' :
+          throw new UnauthorizedException(CnErrorText.LAB_USER_NOT_ACTIVATED);
+        case 'gws_core.WRONG_CREDENTIALS_USER_NOT_FOUND' :
+          throw new UnauthorizedException(CnErrorText.LAB_USER_NOT_FOUND);
+        default:
+          this.logger.error(e);
+          throw new BadRequestException(CnErrorText.LAB_AUTH_ERROR);
+      }
+    }
   }
 
 
@@ -198,50 +187,88 @@ export class CnLabInstanceAggregateService {
 
   /////////////////////////////////////// GROUPS //////////////////////////////////
 
-  public async shareLabInstance(labInstanceId: string, groupId: string, role: CnLabInstanceGroupRole): Promise<CnLabInstanceGroup> {
+  public async addUserToLab(labInstanceId: string, userId: string, role: CnLabInstanceUserRole): Promise<CnLabInstanceUser> {
     const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId);
-    const group = await this.groupService.findByIdAndCheck(groupId);
+    const user = await this.usersService.findByIdAndCheck(userId);
 
-    if (group instanceof CnGroupTeam && group.organization.id !== labInstance.organization.id) {
-      throw new BadRequestException('The group is not in the same organization');
-    }
 
-    return this.labInstanceGroupService.createLabInstanceGroup(labInstance, group, role);
+    return await this.dataSource.transaction(async entityManager => {
+      // create the relation between the group and the lab
+      // use group if we share team latter
+      const labInstanceGroup = await this.labInstanceGroupService.createLabInstanceGroup(labInstance, user, role, entityManager);
+
+      // add the user to the lab
+      const externalRole: CnExternalLabUserRole = role === CnLabInstanceUserRole.OWNER ? 'ADMIN' : 'USER';
+      await this.externalLabUserService.addUser(labInstance.getGlabApiInfo(), user, externalRole);
+
+      return labInstanceGroup;
+    });
   }
 
-  public async updateShareRole(labInstanceId: string, groupId: string, role: CnLabInstanceGroupRole): Promise<CnLabInstanceGroup> {
+  public async updateUserLabRole(labInstanceId: string, groupId: string, role: CnLabInstanceUserRole): Promise<CnLabInstanceUser> {
     await this.getAndCheckAuthorizationToManageLab(labInstanceId);
 
     return this.labInstanceGroupService.updateLabInstanceGroupRole(labInstanceId, groupId, role);
   }
 
-  public async unshareLabInstance(labInstanceId: string, groupId: string): Promise<void> {
-    await this.getAndCheckAuthorizationToManageLab(labInstanceId);
+  public async removeUserFromLab(labInstanceId: string, userId: string): Promise<void> {
+    const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId);
 
-    return this.labInstanceGroupService.deleteLabInstanceGroup(labInstanceId, groupId);
+    return await this.dataSource.transaction(async entityManager => {
+      await this.labInstanceGroupService.deleteLabInstanceGroup(labInstanceId, userId, entityManager);
+
+      // deactivate the user in the lab
+      await this.externalLabUserService.deactivateUser(labInstance.getGlabApiInfo(), userId);
+    });
   }
 
   /**
    * Return the list of shared group for tha root project
    */
-  public async getLabInstanceSharedGroups(labInstanceId: string): Promise<CnLabInstanceGroup[]> {
+  public async getLabInstanceSharedUsers(labInstanceId: string): Promise<CnLabInstanceUser[]> {
     const labInstance = await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
     return this.labInstanceGroupService.findByLabInstanceId(labInstance.id);
   }
 
-  /**
-   * Return the complete list of user that have access to the project
-   * @param id
-   */
-  public async getLabInstanceSharedUsers(id: string): Promise<CnUser[]> {
-    const groups = await this.getLabInstanceSharedGroups(id);
 
-    // get the group of the root project then the user
-    const groupIds = groups.map(sharedGroup => sharedGroup.groupId);
-    return this.groupService.getUsersOfGroups(groupIds);
+  //////////////////////////// PROJECT ////////////////////////////////
+
+  public async addProjectInLab(labInstanceId: string, projectId: string): Promise<CnLabInstanceProject> {
+    // get and check if the user can manage the lab
+    const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId);
+    // get and check if the user can see the project
+    const projectTree = await this.projectAggregateService.getProjectTree(projectId);
+
+    return await this.dataSource.transaction(async entityManager => {
+
+      const labProject = await this.labInstanceProjectService.createLabInstanceProject(labInstance, projectTree, entityManager);
+
+      // add the project to the lab
+      await this.externalLabProjectService.addProjectInLab(labInstance.getGlabApiInfo(), projectTree);
+
+      return labProject;
+    });
   }
 
+  public async removeProjectInLab(labInstanceId: string, projectId: string): Promise<void> {
+    // get and check if the user can manage the lab
+    const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId);
+
+    return await this.dataSource.transaction(async entityManager => {
+      await this.labInstanceProjectService.deleteLabInstanceProject(labInstanceId, projectId, entityManager);
+
+      // remove the project from the lab
+      await this.externalLabProjectService.deleteProjectInLab(labInstance.getGlabApiInfo(), projectId);
+    });
+  }
+
+  public async getLabInstanceProjects(labInstanceId: string): Promise<CnLabInstanceProject[]> {
+    // get and check if the user can manage the lab
+    await this.getAndCheckAuthorizationToFindById(labInstanceId);
+
+    return this.labInstanceProjectService.findByLabInstanceId(labInstanceId);
+  }
 
   //////////////////////////// LAB MANAGER ////////////////////////////////
 

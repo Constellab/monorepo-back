@@ -39,7 +39,9 @@ export enum CnErrorText {
   ORGANIZATION_INVITATION_EXPIRED = 'error.organization_invitation_expired',
   ORGANIZATION_INVITATION_INVALID = 'error.organization_invitation_invalid',
   USER_WITHOUT_ORGANIZATION = 'error.user_without_organization',
-  LAB_ALREADY_SHARED_WITH_GROUP = 'error.lab_already_shared_with_group',
-  LAB_NOT_SHARED_WITH_GROUP = 'error.lab_not_shared_with_group',
+  LAB_ALREADY_SHARED_WITH_USER = 'error.lab_already_shared_with_user',
+  LAB_NOT_SHARED_WITH_USER = 'error.lab_not_shared_with_user',
   LAB_CANNOT_REMOVE_LAST_ADMIN = 'error.lab_cannot_remove_last_admin',
+  PROJECT_ALREADY_SHARED_WITH_LAB = 'error.project_already_shared_with_lab',
+  PROJECT_NOT_SHARED_WITH_LAB = 'error.project_not_shared_with_user',
 }

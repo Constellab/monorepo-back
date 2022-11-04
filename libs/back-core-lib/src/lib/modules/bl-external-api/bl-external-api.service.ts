@@ -141,8 +141,14 @@ export class BlExternalApiService {
 
     const errorData: any = error.response?.data ?? {};
     // If the error is formatted like : CmNestApiError
-    if (errorData && errorData.status && errorData.code && errorData.detail && errorData.instanceId) {
-      apiError.knownError = errorData;
+    if (errorData && errorData.status != null && errorData.code != null
+      && errorData.detail != null && (errorData.instanceId != null || errorData.instance_id != null)) {
+      apiError.knownError = {
+        status: errorData.status,
+        code: errorData.code,
+        detail: errorData.detail,
+        instanceId: errorData.instanceId ?? errorData.instance_id,
+      };
       apiError.message = errorData.detail;
     }
 

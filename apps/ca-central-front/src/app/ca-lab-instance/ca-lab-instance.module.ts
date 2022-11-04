@@ -44,6 +44,16 @@ import {
 } from './component/ca-lab-instance-config-brick/ca-lab-instance-config-brick.component';
 import {CaBrickCoreModule} from '../ca-core/entity-module/ca-brick-core/ca-brick-core.module';
 import {CaLabDockerContainersComponent} from './component/ca-lab-docker-containers/ca-lab-docker-containers.component';
+import {
+  CaLabInstanceProjectsListComponent
+} from './component/ca-lab-instance-projects-list/ca-lab-instance-projects-list.component';
+import {
+  CaLabInstanceProjectsTableComponent
+} from './component/ca-lab-instance-projects-table/ca-lab-instance-projects-table.component';
+import {CaProjectCoreModule} from '../ca-core/entity-module/ca-project-core/ca-project-core.module';
+import {
+  CaLabInstanceAddProjectDialogComponent
+} from './component/ca-lab-instance-add-project-dialog/ca-lab-instance-add-project-dialog.component';
 
 /**
  * Module the lab instance detail page with iframe for the lab
@@ -65,7 +75,10 @@ import {CaLabDockerContainersComponent} from './component/ca-lab-docker-containe
     CaLabInstanceConfigComponent,
     CaLabInstanceConfigFormComponent,
     CaLabInstanceConfigBrickComponent,
-    CaLabDockerContainersComponent
+    CaLabDockerContainersComponent,
+    CaLabInstanceProjectsListComponent,
+    CaLabInstanceProjectsTableComponent,
+    CaLabInstanceAddProjectDialogComponent
   ],
   imports: [
     CommonModule,
@@ -76,6 +89,7 @@ import {CaLabDockerContainersComponent} from './component/ca-lab-docker-containe
     CaLabCoreModule,
     CaServerInfoCoreModule,
     CaBrickCoreModule,
+    CaProjectCoreModule,
 
     CaLabInstanceRoutingModule,
   ]

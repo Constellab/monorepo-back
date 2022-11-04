@@ -36,7 +36,9 @@
   "organization_invitation_expired": "L'invitation est expirée. Veuillez contact l'administrateur de votre organisation.",
   "organization_invitation_invalid": "L'invitation est invalide. Veuillez contact l'administrateur de votre organisation.",
   "user_without_organization": "Vous n'êtes membre d'aucune organisation",
-  "lab_already_shared_with_group": "Le lab est déjà partagé avec ce groupe",
-  "lab_not_shared_with_group": "Le lab n'est pas partagé avec ce groupe",
-  "lab_cannot_remove_last_admin": "Vous ne pouvez pas supprimer le dernier administrateur du lab"
+  "lab_already_shared_with_user": "Le lab est déjà partagé avec cet utilisateur",
+  "lab_not_shared_with_user": "Le lab n'est pas partagé avec cet utilisateur",
+  "lab_cannot_remove_last_admin": "Vous ne pouvez pas supprimer le dernier administrateur du lab",
+  "project_already_shared_with_lab": "Le projet est déjà partagé avec ce lab",
+  "project_not_shared_with_lab_fr": "Le projet n'est pas partagé avec ce lab"
 }

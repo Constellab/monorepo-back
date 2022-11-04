@@ -15,7 +15,8 @@
     <fl-async-section [arrayObs]="datasource">
 
       <ng-container *flSectionBody>
-        <ca-lab-instance-users-table [datasource]="datasource" [columns]="column">
+        <ca-lab-instance-users-table [datasource]="datasource" [columns]="column"
+                                     [labInstanceId]="labInstanceId">
         </ca-lab-instance-users-table>
       </ng-container>
 

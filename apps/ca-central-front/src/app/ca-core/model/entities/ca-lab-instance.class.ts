@@ -3,17 +3,16 @@ import {CaStatusHistory} from './ca-status-history.class';
 import {CaServerInfo} from './ca-server-info.class';
 import {CaUser} from './ca-user.class';
 import {
-  FlEntity,
   FlEntityPaginatedDatasource,
   FlStatus,
   FlStatusDict,
   FlStatusHelper,
   FlStatusTransform
 } from '@monorepo/front-core-lib';
-import {Expose, Type} from 'class-transformer';
+import {Type} from 'class-transformer';
 import {CaCity} from './ca-city.entity';
 import {CaOrganization} from './ca-organization.class';
-import {CaLabInstanceGroupRole} from './ca-lab-instance-group.class';
+import {CaLabInstanceUserRole} from './ca-lab-instance-user.class';
 
 export type CaLabInstanceStatus = 'RUNNING' | 'STOPPED';
 
@@ -101,29 +100,6 @@ export class CaLabInstanceFindOneDto {
   @Type(() => CaLabInstance)
   labInstance: CaLabInstance;
 
-  userRole: CaLabInstanceGroupRole;
+  userRole: CaLabInstanceUserRole;
 }
 
-/**
- * Object representing a user in the lab
- */
-export class CaLabInstanceUser implements FlEntity {
-  id: string;
-
-  email: string;
-  group: 'ADMIN' | 'USER';
-
-  @Expose({name: 'is_active'})
-  isActive: boolean;
-
-  @Expose({name: 'first_name'})
-  firstname: string;
-
-  @Expose({name: 'last_name'})
-  lastname: string;
-}
-
-export interface CaLabInstanceUserForm {
-  user: CaUser;
-  group: 'ADMIN' | 'USER';
-}

@@ -18,7 +18,12 @@ import {BlParseEnumPipe, BlParsePipe} from '@monorepo/back-core-lib';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnGroup} from '../cn-groups/cn-group.entity';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
-import {CnProjectAncestorTreeDTO, CnProjectAncestorType, CnProjectTreeDto} from './cn-projects/cn-project.dto';
+import {
+  CnProjectAncestorTreeDTO,
+  CnProjectAncestorType,
+  CnProjectDtoHelper,
+  CnProjectTreeDto
+} from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CmRichTextI} from '@monorepo/common-model';
 import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
@@ -100,9 +105,10 @@ export class CnProjectsController {
    * Return a simplified project tree for an object (project, experiment, report)
    */
   @Get('tree/:objectType/:id')
-  getProjectTree(@Param('objectType') objectType: CnProjectAncestorType,
-                 @Param('id', new ParseUUIDPipe()) id: string): Promise<CnProjectTreeDto> {
-    return this.projectAggregate.getProjectTree(objectType, id);
+  async getProjectTree(@Param('objectType') objectType: CnProjectAncestorType,
+                       @Param('id', new ParseUUIDPipe()) id: string): Promise<CnProjectTreeDto> {
+    const project = await this.projectAggregate.getProjectObjectTree(objectType, id);
+    return CnProjectDtoHelper.convertToProjectTreeDto(project);
   }
 
   @Get(':id/children')

@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnLabInstance} from './cn-lab-instance.entity';
-import {DataSource, DeleteResult, EntityManager, In, Repository} from 'typeorm';
+import {DataSource, DeleteResult, EntityManager, Repository} from 'typeorm';
 import {CnLabInstanceStatus} from './cn-lab-instance-status.enum';
 import {CnAbstractWithStatusService} from '../cn-core/class/cn-abstract-with-status.service';
 import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
@@ -12,8 +12,8 @@ import {CnExperimentsService} from '../cn-projects-aggregate/cn-experiments/cn-e
 import {CnLabInstanceStartDTO} from './cn-lab-instance.dto';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
-import {CnGroupsService} from '../cn-groups/cn-groups.service';
 import {CnUserOrgaInfo} from '../cn-users/cn-user.dto';
+import {CnReportsService} from '../cn-projects-aggregate/cn-reports/cn-reports.service';
 
 @Injectable()
 export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInstance, CnLabInstanceStatus> {
@@ -21,8 +21,8 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   constructor(@InjectRepository(CnLabInstance) private repository: Repository<CnLabInstance>,
               @InjectRepository(CnLabInstanceStatusHistory) statusHistoRepo: Repository<CnLabInstanceStatusHistory>,
               private experimentService: CnExperimentsService,
+              private reportService: CnReportsService,
               private labConfigService: CnLabConfigsService,
-              private groupService: CnGroupsService,
               datasource: DataSource) {
     super(repository, CnLabInstance, statusHistoRepo, CnLabInstanceStatusHistory, datasource);
   }
@@ -34,9 +34,13 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
 
   async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
     const experiments: CnExperiment[] = await this.experimentService.getExperimentsByLabInstance(id);
-
     if (experiments?.length > 0) {
       throw new BadRequestException('Can\'t delete the lab instance because some experiment are linked to it');
+    }
+
+    const reports = await this.reportService.getReportsByLabInstance(id);
+    if (reports?.length > 0) {
+      throw new BadRequestException('Can\'t delete the lab instance because some reports are linked to it');
     }
 
     return super.deleteById(id, entityManager);
@@ -44,12 +48,11 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
 
   public async getCurrentLabInstances(page: number, size: number): Promise<ClPageI<CnLabInstance>> {
     const userInfo: CnUserOrgaInfo = CnCurrentUserHelper.getAndCheckUserOrgaInfo();
-    const groupIds = await this.groupService.getAllGroupIdsOfUser(userInfo.userId, userInfo.organizationId);
 
     return this.findPaginated(page, size, {
       where: {
         sharedGroups: {
-          groupId: In(groupIds)
+          userId: userInfo.userId
         },
         organizationId: userInfo.organizationId
       },
@@ -59,12 +62,11 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
 
   public async getCurrentRunningLabInstances(): Promise<CnLabInstance[]> {
     const userInfo: CnUserOrgaInfo = CnCurrentUserHelper.getAndCheckUserOrgaInfo();
-    const groupIds = await this.groupService.getAllGroupIdsOfUser(userInfo.userId, userInfo.organizationId);
 
     return this.repository.find({
       where: {
         sharedGroups: {
-          groupId: In(groupIds)
+          userId: userInfo.userId
         },
         currentStatus: {
           status: CnLabInstanceStatus.RUNNING

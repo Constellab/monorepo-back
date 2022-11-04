@@ -1,4 +1,4 @@
-import {forwardRef, Module} from '@nestjs/common';
+import {Module} from '@nestjs/common';
 import {CnLabInstancesService} from './cn-lab-instances.service';
 import {CnLabInstancesController} from './cn-lab-instances.controller';
 import {TypeOrmModule} from '@nestjs/typeorm';
@@ -14,25 +14,34 @@ import {CnBricksModule} from '../cn-bricks/cn-bricks.module';
 import {CnLabConfigsModule} from '../cn-lab-configs/cn-lab-configs.module';
 import {CnLabInstanceMailService} from './cn-lab-instance-mail.service';
 import {CnLabInstancesSecurity} from './cn-lab-instances.security';
-import {CnLabInstanceGroup} from './cn-lab-instance-group.entity';
+import {CnLabInstanceUser} from './cn-lab-instance-user.entity';
 import {CnGroupsModule} from '../cn-groups/cn-groups.module';
-import {CnLabInstanceGroupService} from './cn-lab-instance-group.service';
+import {CnLabInstanceUserService} from './cn-lab-instance-user.service';
+import {CnLabInstanceProject} from './cn-lab-instance-project.entity';
+import {CnLabInstanceProjectService} from './cn-lab-instance-project.service';
+import {CnProjectsAggregateModule} from '../cn-projects-aggregate/cn-project-aggregate.module';
+import {CnReportsModule} from '../cn-projects-aggregate/cn-reports/cn-reports.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       CnLabInstance,
       CnLabInstanceStatusHistory,
-      CnLabInstanceGroup,
+      CnLabInstanceUser,
+      CnLabInstanceProject
     ]),
 
     CnCoreModule,
     CnExternalLabApiModule,
+
     CnUsersModule,
-    forwardRef(() => CnExperimentsModule),
     CnBricksModule,
     CnLabConfigsModule,
     CnGroupsModule,
+
+    CnProjectsAggregateModule,
+    CnExperimentsModule,
+    CnReportsModule,
   ],
   providers: [
     CnLabInstancesService,
@@ -40,7 +49,8 @@ import {CnLabInstanceGroupService} from './cn-lab-instance-group.service';
     CnLabManagerService,
     CnLabInstanceMailService,
     CnLabInstancesSecurity,
-    CnLabInstanceGroupService,
+    CnLabInstanceUserService,
+    CnLabInstanceProjectService,
   ],
   exports: [
     CnLabInstancesService,

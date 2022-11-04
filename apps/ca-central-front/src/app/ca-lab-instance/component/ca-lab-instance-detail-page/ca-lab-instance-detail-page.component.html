@@ -1,7 +1,7 @@
 <div class="g-page" fxLayout="column">
 
-  <fl-section [isLoading]="isLoading" [object]="labInstance" fxFlex="grow">
-    <ng-template flSectionBody>
+  <fl-async-section [object]="labInstance$" fxFlex="grow">
+    <ng-container *flSectionBody="let labInstance">
       <div fxLayout="column" fxFlex="grow">
         <ca-lab-instance-detail [labInstance]="labInstance"
                                 (update)="onLabUpdate($event)"></ca-lab-instance-detail>
@@ -11,13 +11,13 @@
 
         <ca-lab-instance-users-list class="g-section" [labInstanceId]="labInstance.id"></ca-lab-instance-users-list>
 
+        <ca-lab-instance-projects-list class="g-section" [labInstanceId]="labInstance.id"></ca-lab-instance-projects-list>
+
         <!--   Manager, only for admins     -->
-        <ca-lab-instance-manager *caIsAdmin [labInstance]="labInstance"
+        <ca-lab-instance-manager *ngIf="isOwner$ | async" [labInstance]="labInstance"
                                  class="g-section"></ca-lab-instance-manager>
 
-        <!--        <ca-lab-instance-iframe [labUrl]="labInstance.url" fxFlex="grow"-->
-        <!--                                 class="section"></ca-lab-instance-iframe>-->
       </div>
-    </ng-template>
-  </fl-section>
+    </ng-container>
+  </fl-async-section>
 </div>
