@@ -43,14 +43,6 @@ export class CaRouterService {
     return `/${caConstBaseRoute}`;
   }
 
-  public static getOrganizationDomainUrl(organizationDomain: string): string {
-    if (environment.production) {
-      return `https://${organizationDomain}/${environment.frontDomain}`;
-    }else{
-      return `http://${environment.frontDomain}`;
-    }
-  }
-
   public static getDashboardRoute(): string {
     return CaRouterService.getFullRoute(caConstDashboardRoute);
   }
@@ -61,15 +53,6 @@ export class CaRouterService {
 
   public static getLabInstanceDetailRoute(labInstanceId: string): string {
     return CaRouterService.getFullRoute(`${caConstLabInstancesRoute}/${labInstanceId}`);
-  }
-
-  /**
-   * Get the complete url for a last instance page from another organization
-   * @param organizationDomain
-   * @param labInstanceId
-   */
-  public static getOrganizationLabInstanceDetailUrl(organizationDomain: string, labInstanceId: string): string {
-    return `${this.getOrganizationDomainUrl(organizationDomain)}${this.getLabInstanceDetailRoute(labInstanceId)}`;
   }
 
 
@@ -122,9 +105,10 @@ export class CaRouterService {
 
 
   ////////////////////////// STRUCTURE MODULE ///////////////////////
-  public static getOrganizationRoute(organizationId: string): string {
-    return CaRouterService.getFullRoute(`${caConstStructureRoute}/organization/${organizationId}`);
+  public static getCurrentOrganizationRoute(): string {
+    return CaRouterService.getFullRoute(`${caConstStructureRoute}/current-organization`);
   }
+
 
   public static getTeamRoute(groupId: string): string {
     return CaRouterService.getFullRoute(`${caConstStructureRoute}/team/${groupId}`);
@@ -137,6 +121,7 @@ export class CaRouterService {
   public static getJoinOrganizationRoute(code: string): string {
     return CaRouterService.getFullRoute(`${caConstStructureRoute}/join-organization/${code}`);
   }
+
 
   public navigateToMyTeams(): void {
     this.router.navigate([CaRouterService.getMyTeamsRoute()]);
@@ -170,4 +155,18 @@ export class CaRouterService {
     return `/${caConstBaseRoute}/${route}`;
   }
 
+  ////////////////////////// OTHER ORGANIZATION URLS ///////////////////////
+
+
+  public static getOrganizationDomainBaseUrl(organizationDomain: string): string {
+    if (environment.production) {
+      return `https://${organizationDomain}/${environment.frontDomain}`;
+    } else {
+      return `http://${environment.frontDomain}:4200`;
+    }
+  }
+
+  public static getOrganizationDomainUrl(organizationDomain: string, fullRoute: string): string {
+    return `${CaRouterService.getOrganizationDomainBaseUrl(organizationDomain)}${fullRoute}`;
+  }
 }

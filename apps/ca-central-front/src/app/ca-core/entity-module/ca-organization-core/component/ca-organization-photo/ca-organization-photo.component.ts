@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {CaOrganization} from '../../../../model/entities/ca-organization.class';
 import {CaOrganizationService} from '../../../../service-api/ca-organization.service';
 import {ClHelpService} from '@monorepo/core-lib';
+import {Observable} from 'rxjs';
 
 export type CaOrganizationPhotoSize = 'small' | 'medium' | 'big';
 
@@ -16,11 +17,11 @@ export type CaOrganizationPhotoSize = 'small' | 'medium' | 'big';
 })
 export class CaOrganizationPhotoComponent implements OnInit {
 
-  @Input() organization: CaOrganization;
+  @Input() organization: CaOrganization | Observable<CaOrganization>;
 
-  @Input()
-  size: CaOrganizationPhotoSize | string = 'medium';
+  @Input() size: CaOrganizationPhotoSize | string = 'medium';
 
+  label: string;
 
   sizeNumber: number = 3;
   fontSize: number;
@@ -32,10 +33,19 @@ export class CaOrganizationPhotoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (!ClHelpService.isNullOrEmpty(this.organization.photo)) {
-      this.photo = this.organizationService.getOrganizationPhoto(this.organization.photo);
+    if (this.organization instanceof Observable) {
+      this.organization.subscribe(organization => this.initOrganization(organization));
+    } else {
+      this.initOrganization(this.organization);
     }
-    this.initial = this.organization.label.charAt(0).toUpperCase();
+  }
+
+  private initOrganization(organization: CaOrganization): void {
+    if (!ClHelpService.isNullOrEmpty(organization.photo)) {
+      this.photo = this.organizationService.getOrganizationPhoto(organization.photo);
+    }
+    this.initial = organization.label.charAt(0).toUpperCase();
+    this.label = organization.label;
 
     switch (this.size) {
       case 'small':
@@ -52,5 +62,4 @@ export class CaOrganizationPhotoComponent implements OnInit {
     }
     this.fontSize = this.sizeNumber / 4;
   }
-
 }

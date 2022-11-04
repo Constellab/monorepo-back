@@ -1,8 +1,23 @@
 .portal {
   padding: 0;
+  width: 20em;
 }
 
-.title {
+.current-organization{
+  padding: 1em 1em 0 1em;
+}
+
+.current-orga-photo{
+  cursor: pointer;
+}
+
+.current-orga-label{
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+}
+
+
+.my-other-organization {
   padding: 1.5em 1.5em 1em 1.5em;
 }
 

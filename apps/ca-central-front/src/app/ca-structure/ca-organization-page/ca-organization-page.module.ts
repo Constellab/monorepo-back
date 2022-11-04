@@ -1,9 +1,13 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CaOrganizationPageComponent} from './component/ca-organization-page/ca-organization-page.component';
+import {
+  CaCurrentOrganizationPageComponent
+} from './component/ca-current-organization-page/ca-current-organization-page.component';
 import {CaCoreModule} from '../../ca-core/ca-core.module';
 import {CaOrganizationCoreModule} from '../../ca-core/entity-module/ca-organization-core/ca-organization-core.module';
-import {CaOrganizationDetailComponent} from './component/ca-organization-detail/ca-organization-detail.component';
+import {
+  CaCurrentOrganizationDetailComponent
+} from './component/ca-current--organization-detail/ca-current-organization-detail.component';
 import {
   CaOrganizationUsersListComponent
 } from './component/ca-organization-users-list/ca-organization-users-list.component';
@@ -28,8 +32,8 @@ import {
 
 @NgModule({
   declarations: [
-    CaOrganizationPageComponent,
-    CaOrganizationDetailComponent,
+    CaCurrentOrganizationPageComponent,
+    CaCurrentOrganizationDetailComponent,
     CaOrganizationUsersListComponent,
     CaOrganisationUserRoleDialogComponent,
     CaOrganizationUploadPhotoDialogComponent,

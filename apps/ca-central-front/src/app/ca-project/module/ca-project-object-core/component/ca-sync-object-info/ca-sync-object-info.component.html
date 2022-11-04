@@ -3,6 +3,5 @@
     <mat-icon>sync</mat-icon>
     <div>{{'last_sync' | translate}} :</div>
   </ng-container>
-  <ca-user-inline [user]="object.lastSyncBy" [showName]="false"></ca-user-inline>
-  <fl-from-now [date]="object.lastSyncAt"></fl-from-now>
+  <ca-user-with-date [user]="object.lastSyncBy" [date]="object.lastSyncAt"></ca-user-with-date>
 </div>

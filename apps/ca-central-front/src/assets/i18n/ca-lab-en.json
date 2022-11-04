@@ -81,7 +81,7 @@
   "lab_user_added_at": "Added the",
   "update_lab_user_role": "Update user role",
   "lab_user_role_updated": "User role updated",
-  "delete_lab_user": "Delete user",
+  "delete_lab_user": "Delete user from lab",
   "delete_lab_user_confirmation": "Are you sure you want to delete the user from the lab? His account in the lab will be disabled and he will no longer be able to connect to the lab",
   "lab_user_deleted": "User deleted",
   "lab_projects": "Lab's projects",

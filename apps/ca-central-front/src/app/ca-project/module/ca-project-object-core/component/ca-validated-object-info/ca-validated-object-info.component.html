@@ -2,6 +2,5 @@
      fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
   <mat-icon flIcon="validated"></mat-icon>
   <div>{{'validation_info' | translate}} :</div>
-  <ca-user-inline [user]="object.validatedBy" [showName]="false"></ca-user-inline>
-  <fl-from-now [date]="object.validatedAt"></fl-from-now>
+  <ca-user-with-date [user]="object.validatedBy" [date]="object.validatedAt"></ca-user-with-date>
 </div>

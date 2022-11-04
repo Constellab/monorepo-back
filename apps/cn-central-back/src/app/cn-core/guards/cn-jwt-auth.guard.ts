@@ -6,6 +6,7 @@ import {cnIsDecoratedWithLabAuth} from '../decorators/cn-lab-guard.decorator';
 import {blIsDecoratedWithPublic} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../utils/cn-current-user.helper';
 import {CnOrganizationUserService} from '../../cn-organizations/cn-organization-user.service';
+import {CnOrganizationUserRole} from '../../cn-organizations/cn-organization-user.entity';
 
 /**
  * Guard to check if the user has a authentication token
@@ -50,15 +51,20 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
     // if an organization is in the context, check if the user is in the organization
     // noinspection RedundantIfStatementJS
     if (organization) {
-      const orgaUser = await this.organizationUserService.findOneByOrganizationIdAndUserId(organization.id, user.id);
+      // consider a G admin as an admin of all organizations
+      if (user.isAdmin()) {
+        CnCurrentUserHelper.setCurrentRoleInOrga(CnOrganizationUserRole.ADMIN);
+      } else {
+        const orgaUser = await this.organizationUserService.findOneByOrganizationIdAndUserId(organization.id, user.id);
 
-      // if the user is not part of the organization of his account is not active for this organization
-      // don't allow the user to access the route
-      if (orgaUser == null || !orgaUser.active) {
-        return false;
+        // if the user is not part of the organization of his account is not active for this organization
+        // don't allow the user to access the route
+        if (orgaUser == null || !orgaUser.active) {
+          return false;
+        }
+
+        CnCurrentUserHelper.setCurrentRoleInOrga(orgaUser.role);
       }
-
-      CnCurrentUserHelper.setCurrentRoleInOrga(orgaUser.role);
 
     }
     return true;

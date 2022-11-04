@@ -90,7 +90,8 @@ export class CaAuthenticatedUserService implements FlCleanableService {
       }
     }
 
-    this.currentOrganizationService.setCurrentOrganization(organizationInfo.organization, organizationInfo.roleInOrga);
+    this.currentOrganizationService.setCurrentOrganization(organizationInfo.organization);
+    this.currentOrganizationService.setCurrentOrganizationUserRole(organizationInfo.roleInOrga);
     this.storeUserAuthenticated(organizationInfo.user);
     return organizationInfo;
   }

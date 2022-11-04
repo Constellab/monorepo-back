@@ -148,7 +148,11 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
     if (error && this.errorText != null) {
       this.infoText = this.translateService.translate(this.errorText);
     } else {
-      this.infoText = this.translateService.translate(this.emptyText);
+      if (ClHelpService.isNullOrEmpty(this.emptyText)) {
+        this.infoText = '';
+      } else {
+        this.infoText = this.translateService.translate(this.emptyText);
+      }
     }
   }
 

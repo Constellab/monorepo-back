@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CaOrganization, CaSaveOrganizationDTO} from '../../../../ca-core/model/entities/ca-organization.class';
 import {
   FlConfirmDialogInput,
@@ -15,35 +15,34 @@ import {
   CaOrganizationUploadPhotoDialogComponent,
   CaOrganizationUploadPhotoDialogInput
 } from '../ca-organization-upload-photo-dialog/ca-organization-upload-photo-dialog.component';
+import {CaCurrentOrganizationService} from '../../../../ca-core/service-api/ca-current-organization.service';
+import {Observable} from 'rxjs';
 
 /**
  * Show all the information about an organization
  */
 @Component({
-  selector: 'ca-organization-detail',
-  templateUrl: './ca-organization-detail.component.html',
-  styleUrls: ['./ca-organization-detail.component.scss']
+  selector: 'ca-current-organization-detail',
+  templateUrl: './ca-current-organization-detail.component.html',
+  styleUrls: ['./ca-current-organization-detail.component.scss']
 })
-export class CaOrganizationDetailComponent implements OnInit {
+export class CaCurrentOrganizationDetailComponent implements OnInit {
 
-  @Input() organization: CaOrganization;
-
-  photo: string;
+  organization$: Observable<CaOrganization>;
 
   constructor(private dialogService: FlDialogService,
               private organizationService: CaOrganizationService,
+              private currentOrganizationService: CaCurrentOrganizationService,
               private routerService: CaRouterService) {
   }
 
   ngOnInit(): void {
-    if (this.organization.photo) {
-      this.photo = this.organizationService.getOrganizationPhoto(this.organization.photo);
-    }
+    this.organization$ = this.currentOrganizationService.getCurrentOrganization$();
   }
 
-  openUploadPhotoDialog(): void {
+  openUploadPhotoDialog(organization: CaOrganization): void {
     const data: CaOrganizationUploadPhotoDialogInput = {
-      organizationId: this.organization.id
+      organizationId: organization.id
     };
 
     this.dialogService.openSmallDialog(CaOrganizationUploadPhotoDialogComponent,
@@ -53,18 +52,18 @@ export class CaOrganizationDetailComponent implements OnInit {
 
   private onUploadPhotoClosed(organization?: CaOrganization): void {
     if (organization) {
-      this.organization.photo = organization.photo;
+      this.currentOrganizationService.setCurrentOrganization(organization);
     }
   }
 
-  openUpdateDialog(): void {
+  openUpdateDialog(organization: CaOrganization): void {
     const data: FlFormDialogInput<CaSaveOrganizationDTO> = {
       mode: 'update',
       object: {
-        id: this.organization.id,
-        label: this.organization.label,
-        domain: this.organization.domain,
-        nbLicenses: this.organization.nbLicenses
+        id: organization.id,
+        label: organization.label,
+        domain: organization.domain,
+        nbLicenses: organization.nbLicenses
       }
     };
 
@@ -75,18 +74,16 @@ export class CaOrganizationDetailComponent implements OnInit {
 
   private onUpdateClosed(organization?: CaOrganization): void {
     if (organization) {
-      this.organization.label = organization.label;
-      this.organization.domain = organization.domain;
-      this.organization.nbLicenses = organization.nbLicenses;
+      this.currentOrganizationService.setCurrentOrganization(organization);
     }
   }
 
-  openDeleteOrganization(): void {
+  openDeleteOrganization(organization: CaOrganization): void {
     const data: FlConfirmDialogInput = {
       title: 'delete_organization',
       content: 'delete_organization_confirmation',
       translateTitleAndContent: true,
-      observable: this.organizationService.deleteById(this.organization.id),
+      observable: this.organizationService.deleteById(organization.id),
       successMessage: 'organization_deleted',
       translateMessage: true
     };

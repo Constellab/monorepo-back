@@ -1,0 +1,16 @@
+<div class="g-page">
+
+  <fl-async-section [object]="organization$">
+
+    <ng-container *flSectionBody="let organization">
+      <ca-current-organization-detail></ca-current-organization-detail>
+
+      <ca-organization-users-list [organizationId]="organization.id" class="g-section">
+
+      </ca-organization-users-list>
+
+      <ca-organization-invit-list *caIsOrganizationAdmin
+                                  [organizationId]="organization.id" class="g-section"></ca-organization-invit-list>
+    </ng-container>
+  </fl-async-section>
+</div>

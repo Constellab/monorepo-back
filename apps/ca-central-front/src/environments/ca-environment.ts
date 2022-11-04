@@ -9,7 +9,7 @@ export const environment = {
   // apiUrl: 'https://pre-prod-back.gws.gencovery.com/',
   hubApiUrl: 'http://localhost:3333/',
   hubUrl: 'http://localhost:4200/',
-  frontDomain: 'localhost:4200',
+  frontDomain: 'localhost',
 };
 
 /*

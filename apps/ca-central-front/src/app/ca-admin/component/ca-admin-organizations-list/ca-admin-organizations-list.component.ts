@@ -15,7 +15,7 @@ export class CaAdminOrganizationsListComponent implements OnInit {
 
   organizations: CaOrganizationDatasource;
 
-  columns: FlTableColumn<CaOrganization>[] = ['label', 'created', 'lastModified'];
+  columns: FlTableColumn<CaOrganization>[] = ['label', 'created', 'lastModified', 'detail'];
 
   constructor(private organizationService: CaOrganizationService,
               private dialogService: FlDialogService) {

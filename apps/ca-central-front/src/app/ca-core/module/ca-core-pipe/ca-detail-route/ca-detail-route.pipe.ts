@@ -4,12 +4,11 @@ import {CaProject} from '../../../model/entities/ca-project.class';
 import {CaSmartDb} from '../../../model/entities/ca-smart-db.entity';
 import {CaLabInstance} from '../../../model/entities/ca-lab-instance.class';
 import {CaRouterService} from '../../../service/ca-router.service';
-import {CaOrganization} from '../../../model/entities/ca-organization.class';
 import {CaGroup, CaGroupType} from '../../../model/entities/ca-group.entity';
 import {CaExperiment} from '../../../model/entities/ca-experiment.class';
 import {CaReport} from '../../../model/entities/ca-report.class';
 
-type CaObjectType = 'project' | 'experiment' | 'report' | 'smartDb' | 'labInstance' | 'organization' | 'group';
+type CaObjectType = 'project' | 'experiment' | 'report' | 'smartDb' | 'labInstance' | 'group';
 
 
 /**
@@ -48,8 +47,6 @@ export class CaDetailRoutePipe implements PipeTransform {
         return CaRouterService.getSmartDbDetailRoute(id);
       case 'labInstance':
         return CaRouterService.getLabInstanceDetailRoute(id);
-      case 'organization':
-        return CaRouterService.getOrganizationRoute(id);
       case 'group':
         return CaRouterService.getTeamRoute(id);
       default:
@@ -70,13 +67,8 @@ export class CaDetailRoutePipe implements PipeTransform {
       return ['smartDb', obj.id];
     } else if (obj instanceof CaLabInstance) {
       return ['labInstance', obj.id];
-    } else if (obj instanceof CaOrganization) {
-      return ['organization', obj.id];
     } else if (obj instanceof CaGroup) {
       switch (obj.type) {
-        // specific case for organization group, we return the page of the organization not the group
-        case CaGroupType.ORGANIZATION:
-          return ['organization', obj.organizationId];
         case CaGroupType.TEAM:
           return ['group', obj.id];
         case CaGroupType.SINGLE_USER:

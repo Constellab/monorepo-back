@@ -47,14 +47,17 @@ export class CaCurrentOrganizationService implements FlCleanableService {
     this.cookieService.setCookie(this.devOrganizationStorageKey, domain);
   }
 
-  public setCurrentOrganization(organization: CaOrganization, role: CaOrganizationRole): void {
+  public setCurrentOrganization(organization: CaOrganization): void {
     this.currentOrganization$.next(organization);
-    this.currentUserRoleInOrganization = role;
     this.currentOrganizationDomainDev = organization.domain;
 
     if (!environment.production) {
       this.cookieService.setCookie(this.devOrganizationStorageKey, organization.domain);
     }
+  }
+
+  public setCurrentOrganizationUserRole(role: CaOrganizationRole): void {
+    this.currentUserRoleInOrganization = role;
   }
 
 

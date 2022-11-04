@@ -35,8 +35,8 @@ export class CaLabInstanceTableComponent extends FlTableAbstractDirective<CaLabI
   ngOnInit(): void {
   }
 
-  getOrganizationLabInstanceUrl(labInstance: CaLabInstanceWithOrga): string {
-    return CaRouterService.getOrganizationLabInstanceDetailUrl(labInstance.organization.domain, labInstance.id);
+  getLabInstanceRoute(labInstance: CaLabInstanceWithOrga): string {
+    return CaRouterService.getLabInstanceDetailRoute(labInstance.id);
   }
 
   openUpdateDialog(labInstance: CaLabInstanceWithOrga): void {

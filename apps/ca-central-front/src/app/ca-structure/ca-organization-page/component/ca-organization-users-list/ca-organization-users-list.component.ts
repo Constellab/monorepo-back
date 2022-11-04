@@ -50,7 +50,8 @@ export class CaOrganizationUsersListComponent implements OnInit {
     const input: CaGroupAddUserDialogInput = {
       addUserToGroup: (userId: string) => this.organizationService.addUserToOrganization(this.organizationId, userId),
       title: 'organization_add_user',
-      successMessage: 'organization_user_added'
+      successMessage: 'organization_user_added',
+      selectUserMode: 'all' // add the add bouton is only for admin, set the select to all user
     };
 
     this.dialogService.openSmallDialog(CaGroupAddUserDialogComponent, {data: input}).afterClosed().subscribe(

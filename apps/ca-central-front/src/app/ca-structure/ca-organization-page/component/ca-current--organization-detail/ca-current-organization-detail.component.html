@@ -1,21 +1,20 @@
-<fl-card>
+<fl-card *ngIf="organization$ | async as organization">
   <fl-card-header>
-    <h1>{{organization.label}}</h1>
 
     <fl-card-actions>
       <ng-container *caIsAdmin>
 
-        <button mat-icon-button type="button" (click)="openUploadPhotoDialog()"
+        <button mat-icon-button type="button" (click)="openUploadPhotoDialog(organization)"
                 [matTooltip]="'organization_upload_photo' | translate">
           <mat-icon>photo_camera</mat-icon>
         </button>
 
-        <button mat-icon-button type="button" (click)="openUpdateDialog()"
+        <button mat-icon-button type="button" (click)="openUpdateDialog(organization)"
                 [matTooltip]="'update_organization' | translate">
           <mat-icon>edit</mat-icon>
         </button>
 
-        <button mat-icon-button type="button" color="warn" (click)="openDeleteOrganization()"
+        <button mat-icon-button type="button" color="warn" (click)="openDeleteOrganization(organization)"
                 [matTooltip]="'delete_organization' | translate">
           <mat-icon>delete</mat-icon>
         </button>
@@ -24,8 +23,10 @@
   </fl-card-header>
 
   <fl-card-body>
-    <img *ngIf="photo" class="photo"
-         [src]="photo" alt="Organization photo" />
+    <div fxLayout="column" fxLayoutAlign="start center">
+      <ca-organization-photo size="big" [organization]="organization$"></ca-organization-photo>
+      <h1 class="title">{{organization.label}}</h1>
+    </div>
 
     <fl-key-value>
       <fl-key>{{'organization_domain' | translate}}</fl-key>
@@ -38,7 +39,3 @@
     </fl-key-value>
   </fl-card-body>
 </fl-card>
-
-<ca-organization-users-list [organizationId]="organization.id" class="g-section">
-
-</ca-organization-users-list>

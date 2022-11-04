@@ -1,25 +1,26 @@
 <fl-portal class="portal">
   <fl-portal-content>
+    <div class="current-organization" *ngIf="currentOrganization$ | async as currentOrganization"
+         fxLayout="column" fxLayoutAlign="start center">
+      <a [routerLink]="currentOrganizationRoute" class="current-orga-photo">
+        <ca-organization-photo [organization]="currentOrganization" size="big"></ca-organization-photo>
+      </a>
 
-    <fl-async-section [object]="myOrganizations$">
-      <fl-section-header>
-        <div class="title"><h2>{{'my_organizations' | translate}}</h2></div>
-      </fl-section-header>
+      <div class="g-text-big current-orga-label g-text-link">
+        <a [routerLink]="currentOrganizationRoute">{{currentOrganization.label}}</a>
+      </div>
+    </div>
+
+
+    <fl-async-section [object]="myOrganizations$" emptyText="">
       <ng-container *flSectionBody="let organizations">
-        <ng-container *ngIf="isProduction; else localEnv">
-          <a *ngFor="let organization of organizations" [href]="getOrganizationFrontUrl(organization)">
-            <ca-organization-inline [organization]="organization" class="organization">
-            </ca-organization-inline>
-          </a>
-        </ng-container>
 
-        <ng-template #localEnv>
-          <div *ngFor="let organization of organizations" (click)="switchOrganizationDev(organization)">
-            <ca-organization-inline [organization]="organization" class="organization">
-            </ca-organization-inline>
-          </div>
-        </ng-template>
-
+        <mat-divider class="g-full"></mat-divider>
+        <a *ngFor="let organization of organizations" [caExternalOrganizationLink]="appRoute"
+           [caExternalOrganizationDomain]="organization.domain">
+          <ca-organization-inline [organization]="organization" class="organization">
+          </ca-organization-inline>
+        </a>
       </ng-container>
     </fl-async-section>
   </fl-portal-content>

@@ -5,6 +5,9 @@ import {FormControl} from '@ngneat/reactive-forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {Validators} from '@angular/forms';
+import {
+  CaSelectUserMode
+} from '../../../ca-user-core/component/ca-select-user-options/ca-select-user-options.component';
 
 
 export interface CaGroupAddUserDialogInput {
@@ -12,6 +15,7 @@ export interface CaGroupAddUserDialogInput {
   addUserToGroup: (userId: string) => Observable<any>;
   title: string;
   successMessage: string;
+  selectUserMode?: CaSelectUserMode;
 }
 
 /**
@@ -28,9 +32,12 @@ export class CaGroupAddUserDialogComponent implements OnInit {
 
   isLoading: boolean = false;
 
+  selectUserMode: CaSelectUserMode;
+
   constructor(@Inject(MAT_DIALOG_DATA) private input: CaGroupAddUserDialogInput,
               private dialogRef: MatDialogRef<CaGroupAddUserDialogComponent>,
               private snackBarService: FlSnackBarService) {
+    this.selectUserMode = input.selectUserMode;
   }
 
   ngOnInit(): void {

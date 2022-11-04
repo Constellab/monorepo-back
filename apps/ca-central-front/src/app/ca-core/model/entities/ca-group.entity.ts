@@ -4,13 +4,11 @@ import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 export enum CaGroupType {
   SINGLE_USER = 'SINGLE_USER',
   TEAM = 'TEAM',
-  ORGANIZATION = 'ORGANIZATION'
 }
 
 
 export const caGroupTypeIcons: { [K in CaGroupType]: string } = {
   [CaGroupType.SINGLE_USER]: 'person',
-  [CaGroupType.ORGANIZATION]: 'organization',
   [CaGroupType.TEAM]: 'group'
 };
 

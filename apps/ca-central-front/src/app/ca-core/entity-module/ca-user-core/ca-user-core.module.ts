@@ -12,6 +12,7 @@ import { CaUserInfoPortalComponent } from './component/ca-user-info-portal/ca-us
 import { CaMouseHoverUserPortalDirective } from './directive/ca-mouse-hover-portal.directive';
 import {CaUserListInlineComponent} from './component/ca-user-list-inline/ca-user-list-inline.component';
 import {FormsModule} from '@angular/forms';
+import {CaUserWithDateComponent} from './component/ca-user-with-date/ca-user-with-date.component';
 
 /**
  * Module containing users component
@@ -25,6 +26,7 @@ import {FormsModule} from '@angular/forms';
     CaUserInfoPortalComponent,
     CaMouseHoverUserPortalDirective,
     CaUserListInlineComponent,
+    CaUserWithDateComponent,
   ],
   exports: [
     CaUserInlineComponent,
@@ -32,6 +34,7 @@ import {FormsModule} from '@angular/forms';
     CaAuthenticatedUserInlineComponent,
     CaUserTableComponent,
     CaUserListInlineComponent,
+    CaUserWithDateComponent,
   ],
   imports: [
     CommonModule,

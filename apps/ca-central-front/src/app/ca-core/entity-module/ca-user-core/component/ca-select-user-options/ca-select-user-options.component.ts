@@ -11,6 +11,8 @@ import {Observable} from 'rxjs';
 import {CaUsersService} from '../../../../service-api/ca-users.service';
 import {map} from 'rxjs/operators';
 
+export type CaSelectUserMode = 'all' | 'organization';
+
 @Component({
   selector: 'ca-select-user-options',
   templateUrl: './ca-select-user-options.component.html',
@@ -19,7 +21,7 @@ import {map} from 'rxjs/operators';
 export class CaSelectUserOptionsComponent extends FlEmbeddedOptionsAbstractDirective
   implements OnInit, AfterViewInit, OnDestroy {
 
-  @Input() mode: 'all' | 'organization' = 'organization';
+  @Input() mode: CaSelectUserMode = 'organization';
 
   datasource: FlDatasourcePaginated<any>;
   users$: Observable<CaUser[]>;
