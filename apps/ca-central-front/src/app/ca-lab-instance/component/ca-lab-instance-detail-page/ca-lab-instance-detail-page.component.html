@@ -3,15 +3,19 @@
   <fl-async-section [object]="labInstance$" fxFlex="grow">
     <ng-container *flSectionBody="let labInstance">
       <div fxLayout="column" fxFlex="grow">
-        <ca-lab-instance-detail [labInstance]="labInstance"
-                                (update)="onLabUpdate($event)"></ca-lab-instance-detail>
 
-        <ca-server-info-card [serverInfo]="labInstance.serverInfo"
-                             class="section"></ca-server-info-card>
+        <ca-lab-instance-header></ca-lab-instance-header>
 
+        <div fxLayout="row" fxLayoutAlign="space-between stretch" class="g-section">
+          <ca-lab-instance-detail fxFlex="49%"></ca-lab-instance-detail>
+
+          <ca-server-info-card [serverInfo]="labInstance.serverInfo" fxFlex="49%"></ca-server-info-card>
+
+        </div>
         <ca-lab-instance-users-list class="g-section" [labInstanceId]="labInstance.id"></ca-lab-instance-users-list>
 
-        <ca-lab-instance-projects-list class="g-section" [labInstanceId]="labInstance.id"></ca-lab-instance-projects-list>
+        <ca-lab-instance-projects-list class="g-section"
+                                       [labInstanceId]="labInstance.id"></ca-lab-instance-projects-list>
 
         <!--   Manager, only for admins     -->
         <ca-lab-instance-manager *ngIf="isOwner$ | async" [labInstance]="labInstance"

@@ -91,5 +91,13 @@
   "lab_remove_project": "Remove project from lab",
   "lab_remove_project_confirmation_en": "Are you sure you want to remove the project from the lab? The project will still exist but will no longer be accessible in the lab. If an experience or a report in the lab is attached to this project, the project cannot be deleted.",
   "lab_project_removed": "Project removed from lab",
-  "no_lab_project": "No project in the lab"
+  "no_lab_project": "No project in the lab",
+  "codelab_info": "Codelab information",
+  "codelab_description": "The codelab is the integrated development environment in the lab. It allows you to develop bricks containing tasks, protocols and resources.",
+  "codelab_user": "Codelab user",
+  "codelab_user_token": "Token to login to codelab",
+  "codelab_more_info": "More information about codelab",
+  "codelab_link": "Codelab link",
+  "codelab_copy_token": "Copy token to clipboard",
+  "codelab_token_copied": "Token copied to clipboard"
 }

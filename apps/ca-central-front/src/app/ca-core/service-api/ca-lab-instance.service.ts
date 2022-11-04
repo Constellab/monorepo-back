@@ -105,7 +105,7 @@ export class CaLabInstanceService {
 
 
   public updateName(id: string, name: string): Observable<CaLabInstance> {
-    return this.apiService.put(`${this.route}/${id}/name/${name}`, null);
+    return this.apiService.put(`${this.route}/${id}/name/${name}`, null, CaLabInstance);
   }
 
   public checkStatus(id: string): Observable<any> {

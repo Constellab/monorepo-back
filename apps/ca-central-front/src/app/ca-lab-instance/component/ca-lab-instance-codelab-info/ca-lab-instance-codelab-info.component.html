@@ -1,0 +1,37 @@
+<fl-dialog-header>
+  {{'codelab_info' | translate}}
+</fl-dialog-header>
+
+<mat-dialog-content class="content">
+  <p>{{'codelab_description' | translate}}</p>
+
+  <fl-key-value>
+    <fl-key>{{'codelab_link' | translate}}</fl-key>
+    <span class="g-text-link"><a [href]="hubHelpUrl" target="_blank">{{hubHelpUrl}}</a></span>
+  </fl-key-value>
+
+  <fl-key-value>
+    <fl-key>{{'codelab_user' | translate}}</fl-key>
+    codelab
+  </fl-key-value>
+
+  <fl-key-value>
+    <fl-key>{{'codelab_user_token' | translate}}</fl-key>
+    <span class="g-text-link" (click)="copyToTokenToClipboard()" [matTooltip]="'codelab_copy_token' | translate">{{labInstance.codelabToken}}</span>
+  </fl-key-value>
+
+  <fl-key-value>
+    <fl-key>{{'codelab_link' | translate}}</fl-key>
+    <span class="g-text-link">
+      <a [href]="codelabUrl" target="_blank">{{codelabUrl}}</a>
+    </span>
+  </fl-key-value>
+
+</mat-dialog-content>
+
+<div mat-dialog-actions>
+  <button mat-flat-button [matDialogClose]="null" color="primary" type="button"
+          class="g-centered-forced">
+    {{'ok' | translate}}
+  </button>
+</div>

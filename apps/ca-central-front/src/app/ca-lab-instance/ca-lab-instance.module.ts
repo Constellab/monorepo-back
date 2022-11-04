@@ -54,6 +54,10 @@ import {CaProjectCoreModule} from '../ca-core/entity-module/ca-project-core/ca-p
 import {
   CaLabInstanceAddProjectDialogComponent
 } from './component/ca-lab-instance-add-project-dialog/ca-lab-instance-add-project-dialog.component';
+import {
+  CaLabInstanceCodelabInfoComponent
+} from './component/ca-lab-instance-codelab-info/ca-lab-instance-codelab-info.component';
+import {CaLabInstanceHeaderComponent} from './component/ca-lab-instance-header/ca-lab-instance-header.component';
 
 /**
  * Module the lab instance detail page with iframe for the lab
@@ -78,7 +82,9 @@ import {
     CaLabDockerContainersComponent,
     CaLabInstanceProjectsListComponent,
     CaLabInstanceProjectsTableComponent,
-    CaLabInstanceAddProjectDialogComponent
+    CaLabInstanceAddProjectDialogComponent,
+    CaLabInstanceCodelabInfoComponent,
+    CaLabInstanceHeaderComponent
   ],
   imports: [
     CommonModule,

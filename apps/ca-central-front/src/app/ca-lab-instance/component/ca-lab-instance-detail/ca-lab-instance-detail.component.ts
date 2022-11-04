@@ -1,15 +1,11 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CaLabInstance} from '../../../ca-core/model/entities/ca-lab-instance.class';
-import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
-import {
-  CaStatusHistoryListDialogComponent,
-  CaStatusHistoryListDialogInput
-} from '../../../ca-core/module/ca-status/ca-status-history-list-dialog/ca-status-history-list-dialog.component';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {
-  CaLabInstanceUpdateNameDialogComponent,
-  LabInstanceUpdateNameDialogInput
-} from '../ca-lab-instance-update-name-dialog/ca-lab-instance-update-name-dialog.component';
+  CaLabInstanceCodelabInfoComponent
+} from '../ca-lab-instance-codelab-info/ca-lab-instance-codelab-info.component';
+import {CaLabInstanceDetailPageState} from '../../state/ca-lab-instance-detail-page.state';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'ca-lab-instance-detail',
@@ -18,40 +14,24 @@ import {
 })
 export class CaLabInstanceDetailComponent implements OnInit {
 
-  @Input() labInstance: CaLabInstance;
-  @Output() update: EventEmitter<CaLabInstance> = new EventEmitter<CaLabInstance>();
+  labInstance$: Observable<CaLabInstance>;
 
-  constructor(private dialogService: FlDialogService,
-              private labInstanceService: CaLabInstanceService) {
+  constructor(private state: CaLabInstanceDetailPageState,
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
+    this.labInstance$ = this.state.getLabInstance$();
   }
 
-  openStatusHistoryDialog(): void {
-    const dialogInput: CaStatusHistoryListDialogInput = {
-      statusHistoriesObs: this.labInstanceService.getStatusHistories(this.labInstance.id),
-    };
-    this.dialogService.openSmallDialog(CaStatusHistoryListDialogComponent, {data: dialogInput});
+  openCodelabInfo(labInstance: CaLabInstance): void {
+    this.dialogService.openMediumDialog(CaLabInstanceCodelabInfoComponent, {data: labInstance});
   }
+
 
   onLabUpdate(labInstance: CaLabInstance): void {
-    this.update.emit(labInstance);
+    this.state.updateLab(labInstance);
   }
 
-  openLabNameUpdate(): void {
-    const input: LabInstanceUpdateNameDialogInput = {
-      labInstanceId: this.labInstance.id,
-      name: this.labInstance.name
-    };
-    this.dialogService.openSmallDialog(CaLabInstanceUpdateNameDialogComponent, {data: input}).afterClosed().subscribe(
-      labInstance => this.onUpdateNameClosed(labInstance)
-    );
-  }
 
-  private onUpdateNameClosed(labInstance?: CaLabInstance): void {
-    if (labInstance) {
-      this.onLabUpdate(labInstance);
-    }
-  }
 }

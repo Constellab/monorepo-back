@@ -1,70 +1,45 @@
-<div>
+<fl-card class="g-full-height" *ngIf="labInstance$ | async as labInstance">
 
-  <div fxLayout="row" fxLayoutAlign="space-between center" class="header">
-    <fl-text-icon>
-      <mat-icon class="g-icon-big" flIcon="lab"></mat-icon>
-      <h1>{{labInstance.name}}</h1>
+  <fl-card-body>
+
+    <!--   Lab url   -->
+    <fl-text-icon iconPosition="start">
+      <mat-icon>link</mat-icon>
+      <fl-key-value>
+        <fl-key>{{'url' | translate}}</fl-key>
+        <a [href]="labInstance.frontUrl" target="_blank" class="g-text-link"
+           [matTooltip]="'open_lab_in_new_tab' | translate">
+          {{labInstance.frontUrl}}
+        </a>
+      </fl-key-value>
     </fl-text-icon>
 
-    <div fxLayout="row" fxLayoutAlign="start center">
-      <button mat-icon-button type="button" (click)="openLabNameUpdate()"
-              [matTooltip]="'update_lab_name' | translate" class="g-button-action">
-        <mat-icon>edit</mat-icon>
-      </button>
 
-      <button mat-icon-button type="button" (click)="openStatusHistoryDialog()"
-              [matTooltip]="'status_history' | translate" class="g-button-action">
-        <mat-icon>history</mat-icon>
-      </button>
+    <fl-text-icon iconPosition="start">
+      <mat-icon>location_on</mat-icon>
+      <fl-key-value class="key-val-inline">
+        <fl-key class="key">{{'region' | translate}}</fl-key>
+        <ca-lab-instance-city [city]="labInstance.city" class="city"></ca-lab-instance-city>
+      </fl-key-value>
+    </fl-text-icon>
 
-      <fl-status-chip [status]="labInstance.currentStatus.status"
-                      class="g-text-big">
-      </fl-status-chip>
-    </div>
-  </div>
+  </fl-card-body>
 
-  <fl-card>
+  <fl-card-footer layoutGap="0.5em">
+    <ca-lab-login-button *ngIf="labInstance.isRunning()"
+                         [labInstanceId]="labInstance.id">
+    </ca-lab-login-button>
 
-    <fl-card-body>
+    <ca-lab-instance-start-stop [labInstance]="labInstance" (update)="onLabUpdate($event)"
+                                class="g-button-action">
+    </ca-lab-instance-start-stop>
 
-      <!--   Lab url   -->
-      <fl-text-icon iconPosition="start">
-        <mat-icon>link</mat-icon>
-        <fl-key-value>
-          <fl-key>{{'url' | translate}}</fl-key>
-          <a [href]="labInstance.frontUrl" target="_blank" class="g-text-link"
-             [matTooltip]="'open_lab_in_new_tab' | translate">
-            {{labInstance.frontUrl}}
-          </a>
-        </fl-key-value>
-      </fl-text-icon>
+    <button mat-stroked-button type="button" (click)="openCodelabInfo(labInstance)"
+            class="g-button-small">
+      <mat-icon flIcon="code"></mat-icon>
+      {{'codelab_info' | translate}}
+    </button>
 
 
-      <fl-text-icon iconPosition="start">
-        <mat-icon>location_on</mat-icon>
-        <fl-key-value class="key-val-inline">
-          <fl-key class="key">{{'region' | translate}}</fl-key>
-          <ca-lab-instance-city [city]="labInstance.city" class="city"></ca-lab-instance-city>
-        </fl-key-value>
-      </fl-text-icon>
-
-    </fl-card-body>
-
-    <fl-card-footer layoutGap="0.5em">
-      <ca-lab-login-button *ngIf="labInstance.isRunning()"
-                           [labInstanceId]="labInstance.id">
-      </ca-lab-login-button>
-
-      <ca-lab-instance-start-stop [labInstance]="labInstance" (update)="onLabUpdate($event)"
-                                  class="g-button-action">
-      </ca-lab-instance-start-stop>
-
-      <button mat-stroked-button type="button" color="primary" disabled
-              class="g-button-small">
-        <mat-icon flIcon="share_arrow"></mat-icon>
-        <span>{{'share' | translate}}</span>
-      </button>
-
-    </fl-card-footer>
-  </fl-card>
-</div>
+  </fl-card-footer>
+</fl-card>
