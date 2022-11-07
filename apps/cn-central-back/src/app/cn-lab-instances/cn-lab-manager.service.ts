@@ -12,6 +12,8 @@ import {CnLabInstanceConfigDTO} from './cn-lab-instance.dto';
 import {CnBricksService} from '../cn-bricks/cn-bricks.service';
 import {CmVersion} from '@monorepo/common-model';
 import {CnBrickGWS, CnBrickVersionTechnicalKey} from '../cn-bricks/cn-brick.dto';
+import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
+import {CnOrganization} from '../cn-organizations/cn-organization.entity';
 
 /**
  * Service to call the api of the lab manager
@@ -21,7 +23,8 @@ export class CnLabManagerService {
 
 
   constructor(private labManagerApiService: CnExternalLabManagerApiService,
-              private brickService: CnBricksService) {
+              private brickService: CnBricksService,
+              private configService: CnCoreConfigService) {
   }
 
   public async healthCheck(labManagerUrl: string): Promise<boolean> {
@@ -46,11 +49,14 @@ export class CnLabManagerService {
     return this.labManagerApiService.getLogs(labInstance.getLabManagerApiInfo(), containerName);
   }
 
-  public async initAll(labInstance: CnLabInstance): Promise<void> {
+  public async initAll(labInstance: CnLabInstance, organization: CnOrganization): Promise<void> {
     // send the keys to configure the lab manager
     const initConfig: CnLabManagerInitConfig = {
       centralApiKey: labInstance.glabApiKey,
-      codelabToken: labInstance.codelabToken
+      codelabToken: labInstance.codelabToken,
+      centralApiUrl: this.configService.getApiUrl(),
+      centralFrontUrl: `https://${organization.domain}.${this.configService.getCentralFrontDomain()}`,
+      hubFrontUrl: this.configService.getHubFrontUrl(),
     };
     return this.labManagerApiService.initAll(labInstance.getLabManagerApiInfo(), initConfig);
   }

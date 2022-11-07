@@ -113,10 +113,13 @@ export class CnCoreConfigService {
     return this.getConfigNumber('FAILED_LOGIN_LOCK');
   }
 
-  public getFrontDomain(): string {
+  public getCentralFrontDomain(): string {
     return this.configService.get('FRONT_DOMAIN');
   }
 
+  public getHubFrontUrl(): string {
+    return this.configService.get('HUB_FRONT_URL');
+  }
 
   protected getConfigNumber(configName: string): number {
     try {

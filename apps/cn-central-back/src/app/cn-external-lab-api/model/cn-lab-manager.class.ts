@@ -47,6 +47,9 @@ export interface CnLabManagerStatus {
 export interface CnLabManagerInitConfig {
   centralApiKey: string;
   codelabToken: string;
+  centralFrontUrl: string;
+  centralApiUrl: string;
+  hubFrontUrl: string;
 }
 
 /**

@@ -150,7 +150,8 @@ export class CnLabInstanceAggregateService {
 
     try {
       const token =
-        await this.externalLabUserService.generateTempAccess(labInstance.getGlabApiInfo(), CnCurrentUserHelper.getAndCheckCurrentUser());
+        await this.externalLabUserService.generateTempAccess(labInstance.getGlabApiInfo(),
+          CnCurrentUserHelper.getAndCheckCurrentUser(), labInstance.organization);
 
       return new CnLabInstanceToken(labInstance, token.temp_token);
     } catch (e: any) {
@@ -289,7 +290,7 @@ export class CnLabInstanceAggregateService {
 
   public async initAll(labId: string): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
-    return this.labManagerService.initAll(labInstance);
+    return this.labManagerService.initAll(labInstance, labInstance.organization);
   }
 
   public async upContainers(labId: string, options?: CnLabComposeUpOptions): Promise<void> {
@@ -354,20 +355,20 @@ export class CnLabInstanceAggregateService {
 
   //////////////////////////// AUTHORIZATION ////////////////////////////////
   private async getAndCheckAuthorizationToFindById(id: string): Promise<CnLabInstance> {
-    const labInstance = await this.labInstancesService.findByIdAndCheck(id);
+    const labInstance = await this.labInstancesService.findByIdAndCheck(id, {organization: true});
     await this.security.checkAuthorizationToFindById(labInstance, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
     return labInstance;
   }
 
 
   private async getAndCheckAuthorizationToUpdate(id: string): Promise<CnLabInstance> {
-    const labInstance = await this.labInstancesService.findByIdAndCheck(id, {sharedGroups: true});
+    const labInstance = await this.labInstancesService.findByIdAndCheck(id, {sharedGroups: true, organization: true});
     this.security.checkAuthorizationToUpdate(labInstance, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
     return labInstance;
   }
 
   private async getAndCheckAuthorizationToManageLab(id: string): Promise<CnLabInstance> {
-    const labInstance = await this.labInstancesService.findByIdAndCheck(id, {sharedGroups: true});
+    const labInstance = await this.labInstancesService.findByIdAndCheck(id, {sharedGroups: true, organization: true});
     await this.security.checkAuthorizationToManageLab(labInstance, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
     return labInstance;
   }

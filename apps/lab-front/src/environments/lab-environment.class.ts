@@ -28,6 +28,9 @@ export interface LabEnvironmentSettings {
   // url of the central front
   centralFrontUrl: string;
 
+  // url of the central api
+  centralApiUrl: string;
+
   // url of the hub front
   hubFrontUrl: string;
 }

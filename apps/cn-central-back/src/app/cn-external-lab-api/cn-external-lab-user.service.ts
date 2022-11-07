@@ -4,6 +4,7 @@ import {CnExternalLabLoginResponse, CnExternalLabUser, CnExternalLabUserRole} fr
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
 import {lastValueFrom} from 'rxjs';
+import {CnOrganization} from '../cn-organizations/cn-organization.entity';
 
 
 /**
@@ -21,14 +22,23 @@ export class CnExternalLabUserService {
    * Log the user to the lab, it returns a one time token for the user
    * to open the lab. Then in the lab it will generate a JWT for the user
    */
-  public generateTempAccess(labInfo: CnExternalApiInfo, user: CnUser): Promise<CnExternalLabLoginResponse> {
+  public generateTempAccess(labInfo: CnExternalApiInfo, user: CnUser,
+                            labOrganization: CnOrganization): Promise<CnExternalLabLoginResponse> {
     const body: any = {
-      id: user.id,
-      firstname: user.firstname,
-      lastname: user.lastname,
-      email: user.email,
-      theme: user.theme,
-      lang: user.lang
+      user: {
+        id: user.id,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+        theme: user.theme,
+        lang: user.lang
+      },
+      organization: {
+        id: labOrganization.id,
+        label: labOrganization.label,
+        domain: labOrganization.domain,
+        photo: labOrganization.photo
+      }
     };
 
     return lastValueFrom(this.externalLabApiService.post(labInfo, `${this.route}/generate-temp-access`, body));

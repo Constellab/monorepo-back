@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {MainMenuLink, mainMenuLinks} from '../../utils/lab-main-menu-link.class';
-import {Observable, startWith} from 'rxjs';
+import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {LabEnvStore} from '../../../lab-core/service/lab-env.store';
 import {LabEnvironmentHelper} from '../../../lab-core/utils/lab-environment.helper';
@@ -8,6 +8,7 @@ import {LabAuthenticatedUserService} from '../../../lab-core/service/lab-authent
 import {LabRouterService} from '../../../lab-core/service/lab-router.service';
 import {LabSystemService} from '../../../lab-core/service/lab-system.service';
 import {Title} from '@angular/platform-browser';
+import {LabSystemInfo} from '../../../lab-core/model/global/lab-system.class';
 
 @Component({
   selector: 'lab-main-app',
@@ -26,6 +27,8 @@ export class LabMainAppComponent implements OnInit {
 
   labName: string;
 
+  logo = 'assets/logo/logo.png';
+
   constructor(private labEnvManager: LabEnvStore,
               private authenticatedUserService: LabAuthenticatedUserService,
               private systemService: LabSystemService,
@@ -35,8 +38,9 @@ export class LabMainAppComponent implements OnInit {
   ngOnInit(): void {
     this.centralAppUrl = LabEnvironmentHelper.getCentralFrontAppUrl();
     this.authenticatedUserService.loadAuthenticatedUser();
+    // init lab name
+    this.setLabName('Lab');
     this.getLabInfo();
-
   }
 
   get toolbarColorClass(): Observable<string> {
@@ -45,21 +49,19 @@ export class LabMainAppComponent implements OnInit {
     );
   }
 
-  get navButtonClass(): string {
-    return this.menuExpanded ? 'nav-button-large' : 'nav-button-small';
-  }
-
-  toggleMenu(): void {
-    this.menuExpanded = !this.menuExpanded;
-  }
-
   private getLabInfo(): void {
-    this.systemService.getSystemInfo().pipe(
-      map(systemInfo => systemInfo.labName),
-      startWith('Lab')).subscribe(
-      labName => {
-        this.labName = labName;
-        this.titleService.setTitle(labName);
-      });
+    this.systemService.getSystemInfo().subscribe(
+      systemInfo => this.getSystemInfoSuccess(systemInfo)
+    );
+  }
+
+  private getSystemInfoSuccess(systemInfo: LabSystemInfo): void {
+    this.setLabName(systemInfo.labName);
+    this.logo = systemInfo.organization.photo;
+  }
+
+  private setLabName(labName: string): void {
+    this.labName = labName;
+    this.titleService.setTitle(labName);
   }
 }

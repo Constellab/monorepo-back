@@ -22,13 +22,13 @@ export class CnFrontService {
    * Get the base url of the website (without the url of the organization)
    */
   public getBaseWebsiteURL(): string {
-    return 'https://' + this.configService.getFrontDomain();
+    return 'https://' + this.configService.getCentralFrontDomain();
   }
 
   /**
    * Get the base url of the website (without the url of the organization)
    */
   public getOrganizationWebsiteURL(organizationDomain: string): string {
-    return `https://${organizationDomain}.${this.configService.getFrontDomain()}`;
+    return `https://${organizationDomain}.${this.configService.getCentralFrontDomain()}`;
   }
 }
