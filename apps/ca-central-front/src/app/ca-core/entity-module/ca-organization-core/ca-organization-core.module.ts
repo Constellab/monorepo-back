@@ -16,9 +16,6 @@ import {CaOrganizationInlineComponent} from './component/ca-organization-inline/
 import {
   CaSelectOrganizationOptionsComponent
 } from './component/ca-select-organization-options/ca-select-organization-options.component';
-import {
-  CaExternalOrganizationLinkButtonComponent
-} from './component/ca-external-organization-link-button/ca-external-organization-link-button.component';
 import {CaExternalOrganizationLinkDirective} from './pipe/ca-external-organization-link.directive';
 
 
@@ -31,7 +28,6 @@ import {CaExternalOrganizationLinkDirective} from './pipe/ca-external-organizati
     CaOrganizationPhotoComponent,
     CaOrganizationInlineComponent,
     CaSelectOrganizationOptionsComponent,
-    CaExternalOrganizationLinkButtonComponent,
     CaExternalOrganizationLinkDirective,
   ],
   exports: [
@@ -42,7 +38,6 @@ import {CaExternalOrganizationLinkDirective} from './pipe/ca-external-organizati
     CaOrganizationPhotoComponent,
     CaOrganizationInlineComponent,
     CaSelectOrganizationOptionsComponent,
-    CaExternalOrganizationLinkButtonComponent,
     CaExternalOrganizationLinkDirective,
   ],
   imports: [

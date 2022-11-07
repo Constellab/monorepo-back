@@ -100,6 +100,12 @@ export class CnProjectAggregateService {
     return this.projectService.getCurrentProjects(page, size);
   }
 
+  public async getByCurrentOrganization(page: number, size: number): Promise<ClPageI<CnProject>> {
+    const info = CnCurrentUserHelper.getAndCheckUserOrgaInfo()
+    await this.projectSecurity.checkFindAllByOrganization(info);
+    return this.projectService.getByOrganization(info.organizationId, page, size);
+  }
+
   public async getProjectOfTeam(teamId: string, page: number, size: number): Promise<ClPageI<CnProject>> {
     // check if the user can view the group
     await this.groupAggregateService.getAndCheckTeamById(teamId);

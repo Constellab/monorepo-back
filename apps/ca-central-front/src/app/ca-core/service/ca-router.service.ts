@@ -55,9 +55,15 @@ export class CaRouterService {
     return CaRouterService.getFullRoute(`${caConstLabInstancesRoute}/${labInstanceId}`);
   }
 
+  //////////////////////////// PROJECT //////////////////////////////
+
 
   public static getProjectDetailRoute(projectId: string): string {
     return CaRouterService.getFullRoute(`${caConstProjectRoute}/${projectId}`);
+  }
+
+  public navigateToProjectDetail(projectId: string): void {
+    this.router.navigate([CaRouterService.getProjectDetailRoute(projectId)]);
   }
 
   public static getMyProjectsRoute(): string {
@@ -160,7 +166,7 @@ export class CaRouterService {
 
   public static getOrganizationDomainBaseUrl(organizationDomain: string): string {
     if (environment.production) {
-      return `https://${organizationDomain}/${environment.frontDomain}`;
+      return `https://${organizationDomain}.${environment.frontDomain}`;
     } else {
       return `http://${environment.frontDomain}:4200`;
     }

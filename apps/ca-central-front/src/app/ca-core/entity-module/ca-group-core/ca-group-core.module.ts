@@ -11,6 +11,8 @@ import {CaGroupsListComponent} from './component/ca-groups-list/ca-groups-list.c
 import {RouterModule} from '@angular/router';
 import {CaGroupAddUserDialogComponent} from './component/ca-group-add-user-dialog/ca-group-add-user-dialog.component';
 import {CaTeamFormDialogComponent} from './component/ca-team-form-dialog/ca-team-form-dialog.component';
+import {CaTeamTableComponent} from './component/ca-team-table/ca-team-table.component';
+import {CaTeamActionMenuComponent} from './component/ca-team-action-menu/ca-team-action-menu.component';
 
 
 @NgModule({
@@ -22,7 +24,9 @@ import {CaTeamFormDialogComponent} from './component/ca-team-form-dialog/ca-team
     CaGroupCardComponent,
     CaGroupsListComponent,
     CaGroupAddUserDialogComponent,
-    CaTeamFormDialogComponent
+    CaTeamFormDialogComponent,
+    CaTeamTableComponent,
+    CaTeamActionMenuComponent
   ],
   exports: [
     CaGroupSelectOptionsComponent,
@@ -32,7 +36,9 @@ import {CaTeamFormDialogComponent} from './component/ca-team-form-dialog/ca-team
     CaGroupCardComponent,
     CaGroupsListComponent,
     CaGroupAddUserDialogComponent,
-    CaTeamFormDialogComponent
+    CaTeamFormDialogComponent,
+    CaTeamTableComponent,
+    CaTeamActionMenuComponent
   ],
   imports: [
     CommonModule,

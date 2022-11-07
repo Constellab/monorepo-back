@@ -40,4 +40,9 @@ export class CnGroupsSecurity {
     return await this.getAndCheckAuthorizationToGetTeam(userInfo, team);
   }
 
+  public checkAuthorizationToFindALlTeamByOrganization(userInfo: CnUserOrgaInfo): void {
+    if (!userInfo.isOrganizationAdmin()) {
+      throw new UnauthorizedException();
+    }
+  }
 }

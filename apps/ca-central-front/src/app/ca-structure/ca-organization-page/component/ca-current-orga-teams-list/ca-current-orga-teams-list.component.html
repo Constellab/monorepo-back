@@ -1,0 +1,22 @@
+<fl-card>
+  <fl-card-header>
+    <fl-text-icon>
+      <mat-icon class="g-icon-big" flIcon="group"></mat-icon>
+      <h2>{{'teams' | translate}}</h2>
+    </fl-text-icon>
+
+    <fl-card-actions>
+      <button mat-icon-button type="button"
+              (click)="createTeam()" [matTooltip]="'create_team' | translate">
+        <mat-icon>add</mat-icon>
+      </button>
+    </fl-card-actions>
+  </fl-card-header>
+
+  <fl-card-body>
+    <fl-infinite-scroll [datasource]="teams" class="g-infinite-table">
+      <ca-team-table [datasource]="teams" [columns]="columns">
+      </ca-team-table>
+    </fl-infinite-scroll>
+  </fl-card-body>
+</fl-card>

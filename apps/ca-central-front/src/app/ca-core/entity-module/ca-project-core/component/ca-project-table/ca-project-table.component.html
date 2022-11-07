@@ -9,13 +9,13 @@
     </mat-cell>
   </ng-container>
 
-  <!-- CreatedBy -->
-  <ng-container matColumnDef="createdBy">
+  <!-- Creation info -->
+  <ng-container matColumnDef="creation">
     <mat-header-cell *matHeaderCellDef>
-      <span> {{'created_by' | translate}}</span>
+      <span> {{'creation_info' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let project">
-      <ca-user-inline [user]="project.createdBy"></ca-user-inline>
+      <ca-user-with-date [user]="project.createdBy" [date]="project.createdAt"></ca-user-with-date>
     </mat-cell>
   </ng-container>
 
@@ -37,6 +37,17 @@
     <mat-cell *matCellDef="let project">
       <fl-status-chip [status]="project.currentStatus.status" mode="iconText">
       </fl-status-chip>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Actions -->
+  <ng-container matColumnDef="actions">
+    <mat-header-cell *matHeaderCellDef class="g-table-icon-button-cell">
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row" class="g-table-icon-button-cell">
+      <ca-project-actions-menu [project]="row" (projectUpdated)="onProjectUpdated($event)"
+                               (childProjectCreated)="onChildCreated($event)"
+                               [stopClickEvent]="true"></ca-project-actions-menu>
     </mat-cell>
   </ng-container>
 

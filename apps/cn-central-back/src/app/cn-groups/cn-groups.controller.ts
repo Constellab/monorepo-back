@@ -10,15 +10,21 @@ export class CnGroupsController {
   constructor(private aggregateService: CnGroupsAggregateService) {
   }
 
-  @Get('all-my-teams')
+  @Get('all-current')
   public getAllCurrentTeams(): Promise<CnGroup[]> {
-    return this.aggregateService.getCurrentUserAllTeams();
+    return this.aggregateService.getAllByCurrentUserAndOrganization();
   }
 
-  @Get('my-teams')
+  @Get('current')
   public getCurrentTeams(@Query('page', ParseIntPipe) page: number,
                          @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnGroup>> {
-    return this.aggregateService.getCurrentUserTeams(page, size);
+    return this.aggregateService.getByCurrentUserAndOrganization(page, size);
+  }
+
+  @Get('current-organization')
+  public async getCurrentOrganization(@Query('page', ParseIntPipe) page: number,
+                                      @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnGroup>> {
+    return this.aggregateService.getByCurrentOrganization(page, size);
   }
 
   @Get(':id')

@@ -65,4 +65,9 @@ export class CnProjectsAggregateSecurity {
     }
     throw new UnauthorizedException();
   }
+
+  public async checkFindAllByOrganization(userInfo: CnUserOrgaInfo): Promise<void> {
+    // check the organization context
+    if (!userInfo.isOrganizationAdmin()) throw new UnauthorizedException();
+  }
 }

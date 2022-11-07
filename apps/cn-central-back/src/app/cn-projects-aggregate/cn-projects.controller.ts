@@ -1,16 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseBoolPipe,
-  ParseIntPipe,
-  ParseUUIDPipe,
-  Post,
-  Put,
-  Query
-} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
 import {CnProject} from './cn-projects/cn-project.entity';
 import {CnProjectStatus} from './cn-projects/cn-project-status.enum';
 import {CnProjectStatusHistory} from './cn-projects/cn-project-status-history.entity';
@@ -58,6 +46,12 @@ export class CnProjectsController {
   public getCurrentProjects(@Query('page', ParseIntPipe) page: number,
                             @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProject>> {
     return this.projectAggregate.getCurrentProjects(page, size);
+  }
+
+  @Get('current-organization')
+  async getByCurrentOrganization(@Query('page', ParseIntPipe) page: number,
+                                 @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProject>> {
+    return await this.projectAggregate.getByCurrentOrganization(page, size);
   }
 
   @Get('group/:groupId')
@@ -164,8 +158,8 @@ export class CnProjectsController {
 
   @Get('comments/:projectId')
   getProjectComments(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                       @Query('page', new ParseIntPipe()) page: number,
-                       @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnProjectComment>> {
+                     @Query('page', new ParseIntPipe()) page: number,
+                     @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnProjectComment>> {
     return this.projectAggregate.getProjectComments(projectId, page, size);
   }
 }

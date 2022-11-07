@@ -7,7 +7,9 @@
 
   <fl-key-value>
     <fl-key>{{'codelab_link' | translate}}</fl-key>
-    <span class="g-text-link"><a [href]="hubHelpUrl" target="_blank">{{hubHelpUrl}}</a></span>
+    <span class="g-text-link">
+      <a [href]="codelabUrl" target="_blank">{{codelabUrl}}</a>
+    </span>
   </fl-key-value>
 
   <fl-key-value>
@@ -21,10 +23,8 @@
   </fl-key-value>
 
   <fl-key-value>
-    <fl-key>{{'codelab_link' | translate}}</fl-key>
-    <span class="g-text-link">
-      <a [href]="codelabUrl" target="_blank">{{codelabUrl}}</a>
-    </span>
+    <fl-key>{{'codelab_more_info' | translate}}</fl-key>
+    <span class="g-text-link"><a [href]="hubHelpUrl" target="_blank">{{hubHelpUrl}}</a></span>
   </fl-key-value>
 
 </mat-dialog-content>

@@ -1,34 +1,27 @@
-<fl-async-section [arrayObs]="users">
-
-  <fl-section-header class="g-page-title">
+<fl-card>
+  <fl-card-header>
     <fl-text-icon>
       <mat-icon class="g-icon-big">people</mat-icon>
       <h2>{{'organization_users' | translate}}</h2>
     </fl-text-icon>
 
-    <fl-section-actions>
-      <button mat-flat-button type="button" color="accent" *caIsAdmin
-              class="g-button-small" [matTooltip]="'organization_add_user' | translate"
+    <fl-card-actions>
+      <button mat-icon-button type="button" *caIsAdmin
+              [matTooltip]="'organization_add_user' | translate"
               (click)="openAddUserDialog()">
         <mat-icon>add</mat-icon>
       </button>
-    </fl-section-actions>
+    </fl-card-actions>
+  </fl-card-header>
 
-  </fl-section-header>
-
-  <ng-container *flSectionBody>
-    <fl-card>
-      <fl-card-body class="limit-height" (flInfiniteScroll)="loadMoreResults()"
-                    [flInfiniteDisabled]="users.isLoading || users.page?.last">
-        <ca-organization-user-table [datasource]="users" [columns]="displayedColumns"
-                                    (removeUser)="openRemoveUserDialog($event)"
-                                    (deactivateUser)="openDeactivateUserDialog($event)"
-                                    (activateUser)="openActivateUser($event)"
-                                    (updateRole)="openUpdateRoleDialog($event)">
-        </ca-organization-user-table>
-      </fl-card-body>
-    </fl-card>
-  </ng-container>
-
-
-</fl-async-section>
+  <fl-card-body>
+    <fl-infinite-scroll [datasource]="users" class="g-infinite-table">
+      <ca-organization-user-table [datasource]="users" [columns]="displayedColumns"
+                                  (removeUser)="openRemoveUserDialog($event)"
+                                  (deactivateUser)="openDeactivateUserDialog($event)"
+                                  (activateUser)="openActivateUser($event)"
+                                  (updateRole)="openUpdateRoleDialog($event)">
+      </ca-organization-user-table>
+    </fl-infinite-scroll>
+  </fl-card-body>
+</fl-card>

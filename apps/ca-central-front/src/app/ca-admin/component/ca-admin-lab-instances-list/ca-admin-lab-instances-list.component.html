@@ -18,7 +18,8 @@
   <ng-container *flSectionBody="let servers">
     <fl-card>
       <fl-card-body class="limit-height">
-        <ca-lab-instance-table [datasource]="labInstances" [columns]="displayedColumns"></ca-lab-instance-table>
+        <ca-lab-instance-table [datasource]="labInstances" [columns]="displayedColumns"
+                               [disableLink]="true"></ca-lab-instance-table>
       </fl-card-body>
     </fl-card>
   </ng-container>

@@ -92,7 +92,8 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return this.repository.findOne({
       where: {
         glabApiKey: apiKey
-      }
+      },
+      relations: {organization: true}
     });
   }
 

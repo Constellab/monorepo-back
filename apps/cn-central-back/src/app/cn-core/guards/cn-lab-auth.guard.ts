@@ -52,6 +52,9 @@ export class CnLabAuthGuard implements CanActivate {
     // store the labInstance in the current context
     CnCurrentUserHelper.setCurrentLabInstance(labInstance);
 
+    // store the lab instance organization in the current context
+    CnCurrentUserHelper.setCurrentOrganization(labInstance.organization);
+
     // set the robot user in the context as the connected user
     await this.setContext(request);
 

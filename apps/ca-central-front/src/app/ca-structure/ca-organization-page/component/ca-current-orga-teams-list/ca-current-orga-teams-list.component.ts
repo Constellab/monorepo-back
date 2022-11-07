@@ -1,30 +1,32 @@
 import {Component, OnInit} from '@angular/core';
 import {CaGroup, CaGroupDatasource} from '../../../../ca-core/model/entities/ca-group.entity';
+import {FlDialogService, FlFormDialogInput, FlTableColumn} from '@monorepo/front-core-lib';
 import {CaGroupService} from '../../../../ca-core/service-api/ca-group.service';
-import {FlDialogService, FlFormDialogInput} from '@monorepo/front-core-lib';
-import {CaRouterService} from '../../../../ca-core/service/ca-router.service';
 import {
   CaTeamFormDialogComponent
 } from '../../../../ca-core/entity-module/ca-group-core/component/ca-team-form-dialog/ca-team-form-dialog.component';
 
+/**
+ * Component for organization admin to list all the teams of the organization
+ */
 @Component({
-  selector: 'ca-my-groups-page',
-  templateUrl: './ca-my-groups-page.component.html',
-  styleUrls: ['./ca-my-groups-page.component.scss']
+  selector: 'ca-current-orga-teams-list',
+  templateUrl: './ca-current-orga-teams-list.component.html',
+  styleUrls: ['./ca-current-orga-teams-list.component.scss']
 })
-export class CaMyGroupsPageComponent implements OnInit {
+export class CaCurrentOrgaTeamsListComponent implements OnInit {
 
-  groupsDatasource: CaGroupDatasource;
+  teams: CaGroupDatasource;
+
+  columns: FlTableColumn<CaGroup>[] = ['label', 'creation', 'actions'];
 
   constructor(private groupService: CaGroupService,
-              private routerService: CaRouterService,
               private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
-    this.groupsDatasource = this.groupService.getMyTeamsDatasource(20);
+    this.teams = this.groupService.getByCurrentOrganizationDatasource();
   }
-
 
   createTeam(): void {
     const input: FlFormDialogInput = {
@@ -38,7 +40,8 @@ export class CaMyGroupsPageComponent implements OnInit {
 
   private onCreateClosed(group?: CaGroup): void {
     if (group) {
-      this.routerService.navigateToTeam(group.id);
+      this.teams.addItem(group);
     }
   }
+
 }

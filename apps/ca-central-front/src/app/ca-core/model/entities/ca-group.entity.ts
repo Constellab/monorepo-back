@@ -20,7 +20,7 @@ export class CaGroup extends CaBaseEntity {
   organizationId: string;
 }
 
-export type CaGroupDatasourcePaginated = FlEntityPaginatedDatasource<CaGroup>;
+export type CaGroupDatasource = FlEntityPaginatedDatasource<CaGroup>;
 
 export interface CaSaveTeamDTO {
   id: string;

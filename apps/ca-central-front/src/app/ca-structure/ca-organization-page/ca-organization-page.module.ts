@@ -7,7 +7,7 @@ import {CaCoreModule} from '../../ca-core/ca-core.module';
 import {CaOrganizationCoreModule} from '../../ca-core/entity-module/ca-organization-core/ca-organization-core.module';
 import {
   CaCurrentOrganizationDetailComponent
-} from './component/ca-current--organization-detail/ca-current-organization-detail.component';
+} from './component/ca-current-organization-detail/ca-current-organization-detail.component';
 import {
   CaOrganizationUsersListComponent
 } from './component/ca-organization-users-list/ca-organization-users-list.component';
@@ -28,6 +28,17 @@ import {
 import {
   CaOrganizationInvitListComponent
 } from './component/ca-organization-invit-list/ca-organization-invit-list.component';
+import {
+  CaCurrentOrgaLabInstancesListComponent
+} from './component/ca-current-orga-lab-instances-list/ca-current-orga-lab-instances-list.component';
+import {CaLabCoreModule} from '../../ca-core/entity-module/ca-lab-core/ca-lab-core.module';
+import {
+  CaCurrentOrgaProjectsListComponent
+} from './component/ca-current-orga-projects-list/ca-current-orga-projects-list.component';
+import {CaProjectCoreModule} from '../../ca-core/entity-module/ca-project-core/ca-project-core.module';
+import {
+  CaCurrentOrgaTeamsListComponent
+} from './component/ca-current-orga-teams-list/ca-current-orga-teams-list.component';
 
 
 @NgModule({
@@ -40,6 +51,9 @@ import {
     CaOrganizationInvitTableComponent,
     CaOrganizationInvitFormDialogComponent,
     CaOrganizationInvitListComponent,
+    CaCurrentOrgaLabInstancesListComponent,
+    CaCurrentOrgaProjectsListComponent,
+    CaCurrentOrgaTeamsListComponent,
   ],
   imports: [
     CommonModule,
@@ -49,10 +63,13 @@ import {
     CaCoreModule,
     CaOrganizationCoreModule,
     CaGroupCoreModule,
+    CaLabCoreModule,
+    CaProjectCoreModule,
   ],
   exports: [
     CaOrganizationInvitFormDialogComponent,
-    CaOrganizationInvitListComponent
+    CaOrganizationInvitListComponent,
+    CaCurrentOrgaTeamsListComponent
   ]
 })
 export class CaOrganizationPageModule {

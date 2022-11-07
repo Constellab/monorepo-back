@@ -6,6 +6,7 @@ import {CaTeamDetailComponent} from './component/ca-team-detail/ca-team-detail.c
 import {CaTeamUsersListComponent} from './component/ca-team-users-list/ca-team-users-list.component';
 import {CaProjectCoreModule} from '../../ca-core/entity-module/ca-project-core/ca-project-core.module';
 import {CaTeamProjectsListComponent} from './component/ca-team-projects-list/ca-team-projects-list.component';
+import {CaGroupCoreModule} from '../../ca-core/entity-module/ca-group-core/ca-group-core.module';
 
 /**
  * Module for the page of group of type USERS
@@ -22,6 +23,7 @@ import {CaTeamProjectsListComponent} from './component/ca-team-projects-list/ca-
 
     CaCoreModule,
     CaProjectCoreModule,
+    CaGroupCoreModule,
   ]
 })
 export class CaTeamPageModule { }

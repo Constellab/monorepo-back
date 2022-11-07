@@ -8,15 +8,7 @@
     </h1>
 
     <fl-card-actions>
-      <button mat-icon-button type="button" (click)="openUpdateDialog()"
-              [matTooltip]="'update_team' | translate">
-        <mat-icon>edit</mat-icon>
-      </button>
-
-      <button mat-icon-button type="button" color="warn" (click)="openDeleteDialog()"
-              [matTooltip]="'delete_team' | translate">
-        <mat-icon>delete</mat-icon>
-      </button>
+      <ca-team-action-menu [team]="team" (teamDeleted)="onTeamDeleted()"></ca-team-action-menu>
     </fl-card-actions>
   </fl-card-header>
 </fl-card>

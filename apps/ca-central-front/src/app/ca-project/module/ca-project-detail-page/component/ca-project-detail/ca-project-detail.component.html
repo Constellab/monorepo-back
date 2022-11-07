@@ -22,38 +22,9 @@
       <fl-status-chip class="status" [status]="project.currentStatus.status"></fl-status-chip>
 
       <!--   Settings menu   -->
-      <button mat-icon-button [matMenuTriggerFor]="menu">
-        <mat-icon>more_vert</mat-icon>
-      </button>
-      <mat-menu #menu="matMenu" xPosition="before">
-        <button mat-menu-item type="button"
-                *ngIf="project.canHaveChildren()"
-                (click)="openChildCreation(project)">
-          <mat-icon>add</mat-icon>
-          <span>{{'new_sub_project' | translate}}</span>
-        </button>
-
-        <button mat-menu-item type="button" (click)="openStatusHistory(project)">
-          <mat-icon>history</mat-icon>
-          <span>{{'status_history' | translate}}</span>
-        </button>
-
-        <button mat-menu-item type="button" (click)="openUpdateStatusDialog(project)">
-          <mat-icon>edit</mat-icon>
-          <span>{{'update_status' | translate}}</span>
-        </button>
-
-        <button mat-menu-item type="button" (click)="openUpdateProjectDialog(project)">
-          <mat-icon>edit</mat-icon>
-          <span>{{'edit' | translate}}</span>
-        </button>
-
-        <button mat-menu-item type="button" (click)="openUpdateProjectLeaderDialog(project)">
-          <mat-icon>person</mat-icon>
-          <span>{{'change_project_leader' | translate}}</span>
-        </button>
-
-      </mat-menu>
+      <ca-project-actions-menu [project]="project" [projectUsers$]="projectUsers$"
+                               (projectUpdated)="onProjectUpdated($event)"
+                               (childProjectCreated)="onChildCreated($event)"></ca-project-actions-menu>
     </div>
   </div>
 

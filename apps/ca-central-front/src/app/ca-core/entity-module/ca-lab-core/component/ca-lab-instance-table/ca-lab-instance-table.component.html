@@ -6,9 +6,7 @@
       <span>{{'name' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let labInstance">
-      <a [routerLink]="labInstance | caDetailRoute" class="g-text-link">
-        <span>{{labInstance.name}}</span>
-      </a>
+      <span>{{labInstance.name}}</span>
     </mat-cell>
   </ng-container>
 
@@ -21,7 +19,6 @@
       <ca-organization-inline [organization]="labInstance.organization"></ca-organization-inline>
     </mat-cell>
   </ng-container>
-
 
   <!-- Current status -->
   <ng-container matColumnDef="currentStatus">
@@ -104,6 +101,13 @@
 
 
   <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
-  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+
+  <ng-container *ngIf="!disableLink; else noLink">
+    <mat-row *matRowDef="let row; columns: _columns;" class="g-table-row-selectable"
+             [routerLink]="row | caDetailRoute"></mat-row>
+  </ng-container>
+  <ng-template #noLink>
+    <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+  </ng-template>
 </mat-table>
 

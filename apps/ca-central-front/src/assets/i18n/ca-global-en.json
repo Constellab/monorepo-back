@@ -109,7 +109,7 @@
   "delete_organization": "Delete organization",
   "delete_organization_confirmation": "Are you sure you want to delete the organization ? It is not possible if there is a user in the organization or an object (like project) linked to it",
   "organization_deleted": "Organization deleted",
-  "organization_users": "Organization's members",
+  "organization_users": "Members",
   "organization_add_user": "Add user to organization",
   "organization_user_added": "User added",
   "organization_remove_user": "Remove user from organization",

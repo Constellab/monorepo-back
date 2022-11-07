@@ -72,6 +72,17 @@ export class CaProjectService {
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 
+  public getProjectByCurrentOrganizationDatasource(): CaProjectDatasource {
+    return new FlEntityPaginatedDatasource(
+      (page, pageSize) => this.getProjectByCurrentOrganization(page, pageSize),
+      20);
+  }
+
+  public getProjectByCurrentOrganization(page: number, size: number): Observable<ClPageI<CaProject>> {
+    return this.apiService.get(`${this.route}/current-organization`, CaProject,
+      {resultIsPaginated: true, page: page, pageSize: size});
+  }
+
   // use to pass the updateStatus method to UpdateStatusFormDialog
   public getUpdateStatusMethod(id: string): (status: CaProjectStatus) => Observable<CaProject> {
     return (status => this.updateStatus(id, status));
@@ -150,7 +161,7 @@ export class CaProjectService {
       {page: page, pageSize: size, resultIsPaginated: true});
   }
 
-  public newProjectComment(projectId: string, content: CmRichTextI, parentCommentId?: string): Observable<CaProjectComment>{
+  public newProjectComment(projectId: string, content: CmRichTextI, parentCommentId?: string): Observable<CaProjectComment> {
     return this.apiService.post(`${this.route}/new-comment/${projectId}`,
       {content: content, parentCommentId: parentCommentId}, CaProjectComment);
   }

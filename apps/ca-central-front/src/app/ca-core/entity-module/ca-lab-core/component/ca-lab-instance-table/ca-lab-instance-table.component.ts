@@ -27,6 +27,8 @@ export class CaLabInstanceTableComponent extends FlTableAbstractDirective<CaLabI
 
   @Input() datasource: FlArrayObs<CaLabInstance | CaLabInstanceWithOrga>;
 
+  @Input() disableLink: boolean = false;
+
   constructor(private dialogService: FlDialogService,
               private labInstanceService: CaLabInstanceService) {
     super(['organization', 'name', 'createdBy', 'currentStatus', 'serverInfo', 'createdBy', 'actions']);

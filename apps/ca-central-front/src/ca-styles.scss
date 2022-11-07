@@ -17,7 +17,6 @@
 @import 'highlight.js/styles/monokai-sublime.css';
 
 
-
 html, body {
   height: 100%;
 }
@@ -44,4 +43,11 @@ body {
   .g-page, .g-page-fixed {
     padding: 1em 1em 0 1em;
   }
+}
+
+/**
+ * Default max size to use when a table uses an infinite scroll
+ */
+.g-infinite-table {
+  max-height: 20em;
 }

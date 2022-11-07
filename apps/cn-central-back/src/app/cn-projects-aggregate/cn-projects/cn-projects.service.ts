@@ -69,14 +69,19 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
   }
 
   public async getCurrentProjects(page: number, size: number): Promise<ClPageI<CnProject>> {
-    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
-    const organization = CnCurrentUserHelper.getAndCheckCurrentOrganization();
+    const userOrga = CnCurrentUserHelper.getAndCheckUserOrgaInfo();
 
+    return this.getProjectOfUser(userOrga.userId, userOrga.organizationId, page, size);
+  }
 
-    const safePage: number = this.getSafePage(page);
-    const safeSize: number = this.getSafePageSize(size);
-
-    return this.getProjectOfUser(user.id, organization.id, safePage, safeSize);
+  public async getByOrganization(organizationId: string, page: number, size: number): Promise<ClPageI<CnProject>> {
+    return this.findPaginated(page, size, {
+      where: {
+        organizationId: organizationId,
+        currentLevel: CnProjectLevel.PROJECT,
+      },
+      order: {lastModifiedAt: 'DESC' as any}
+    });
   }
 
   public async getProjectsOfUserId(userId: string, organizationId: string): Promise<CnProject[]> {

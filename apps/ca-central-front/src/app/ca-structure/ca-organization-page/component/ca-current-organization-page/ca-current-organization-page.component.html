@@ -9,8 +9,21 @@
 
       </ca-organization-users-list>
 
-      <ca-organization-invit-list *caIsOrganizationAdmin
-                                  [organizationId]="organization.id" class="g-section"></ca-organization-invit-list>
+      <!--  Admin section    -->
+      <ng-container *caIsOrganizationAdmin>
+        <ca-organization-invit-list
+          [organizationId]="organization.id" class="g-section">
+        </ca-organization-invit-list>
+
+        <ca-current-orga-lab-instances-list class="g-section">
+        </ca-current-orga-lab-instances-list>
+
+        <ca-current-orga-projects-list class="g-section">
+        </ca-current-orga-projects-list>
+
+        <ca-current-orga-teams-list class="g-section">
+        </ca-current-orga-teams-list>
+      </ng-container>
     </ng-container>
   </fl-async-section>
 </div>

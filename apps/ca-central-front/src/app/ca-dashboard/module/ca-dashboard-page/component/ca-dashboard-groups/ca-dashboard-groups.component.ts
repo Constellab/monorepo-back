@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {CaGroupDatasourcePaginated} from '../../../../../ca-core/model/entities/ca-group.entity';
+import {CaGroupDatasource} from '../../../../../ca-core/model/entities/ca-group.entity';
 import {CaRouterService} from '../../../../../ca-core/service/ca-router.service';
 import {CaGroupService} from '../../../../../ca-core/service-api/ca-group.service';
 
@@ -13,7 +13,7 @@ import {CaGroupService} from '../../../../../ca-core/service-api/ca-group.servic
 })
 export class CaDashboardGroupsComponent implements OnInit {
 
-  groupDatasource: CaGroupDatasourcePaginated;
+  groupDatasource: CaGroupDatasource;
 
   myGroupsRoute: string = CaRouterService.getMyTeamsRoute();
 

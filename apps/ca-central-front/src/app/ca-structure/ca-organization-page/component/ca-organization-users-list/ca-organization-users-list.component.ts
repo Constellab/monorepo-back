@@ -145,9 +145,4 @@ export class CaOrganizationUsersListComponent implements OnInit {
       this.users.removeItem(user);
     }
   }
-
-  loadMoreResults(): void {
-    this.users.getNextPage();
-  }
-
 }

@@ -59,7 +59,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
    * Get all groups of a user
    */
   public async getAllGroupsOfUser(userId: string, organizationId: string): Promise<CnGroup[]> {
-    const groups = await this.getAllTeamsOfUser(userId, organizationId);
+    const groups = await this.getAllByUserAndOrganization(userId, organizationId);
     const singleGroup = await this.getUserSingleGroup(userId);
 
     if (singleGroup) {
@@ -125,18 +125,18 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
 
   ////////////////////////////////// TEAMS /////////////////////////
 
-  public async getAllTeamsOfUser(userId: string, organizationId: string): Promise<CnGroup[]> {
-    return this.repository.find(this.getTeamsOfUserOptions(userId, organizationId));
+  public async getAllByUserAndOrganization(userId: string, organizationId: string): Promise<CnGroup[]> {
+    return this.repository.find(this.getByUserAndOrganizationOptions(userId, organizationId));
   }
 
   /**
    * Get groups of user paginated
    */
-  public async getTeamsOfUser(userId: string, organizationId: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
-    return this.findPaginated(page, size, this.getTeamsOfUserOptions(userId, organizationId));
+  public async getByUserAndOrganization(userId: string, organizationId: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
+    return this.findPaginated(page, size, this.getByUserAndOrganizationOptions(userId, organizationId));
   };
 
-  private getTeamsOfUserOptions(userId: string, organizationId: string): FindOneOptions<CnGroup> {
+  private getByUserAndOrganizationOptions(userId: string, organizationId: string): FindOneOptions<CnGroup> {
     const options: FindOneOptions<CnGroupTeam> = {
       where: {
         type: CnGroupType.TEAM,
@@ -149,6 +149,17 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     };
     return options as any;
   }
+
+  public async getByOrganization(organizationId: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
+    const options: FindOneOptions<CnGroupTeam> = {
+      where: {
+        type: CnGroupType.TEAM,
+        organizationId: organizationId,
+      },
+    };
+    return this.findPaginated(page, size, options as any);
+  };
+
 
   ////////////////////////////////// SINGLE USER /////////////////////////
 

@@ -27,7 +27,6 @@ export class CnOrganizationMiddleware implements NestMiddleware<Request, Respons
     } else {
       const origin = req.header('origin');
       organizationDomain = ClStringHelper.getLowestDomainFromUrl(origin);
-      console.log('origin', origin, 'organizationDomain', organizationDomain);
     }
 
     if (organizationDomain == null) {

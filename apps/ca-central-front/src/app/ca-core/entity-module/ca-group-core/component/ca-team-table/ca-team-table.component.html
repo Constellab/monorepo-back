@@ -1,0 +1,44 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource">
+
+
+  <!-- Creation info -->
+  <ng-container matColumnDef="creation">
+    <mat-header-cell *matHeaderCellDef>
+      <span> {{'creation_info' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <ca-user-with-date [user]="row.createdBy" [date]="row.createdAt"></ca-user-with-date>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Actions -->
+  <ng-container matColumnDef="actions">
+    <mat-header-cell *matHeaderCellDef class="g-table-icon-button-cell">
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row" class="g-table-icon-button-cell">
+      <ca-team-action-menu [team]="row" (teamDeleted)="onTeamDeleted($event)"
+                           [stopClickEvent]="true"></ca-team-action-menu>
+    </mat-cell>
+  </ng-container>
+
+
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
+    <mat-header-cell *matHeaderCellDef>
+      {{column.columnName | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labInstance">
+      <div>
+        <span>{{labInstance[column.accessor]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+
+  <mat-row *matRowDef="let row; columns: _columns;" class="g-table-row-selectable"
+           [routerLink]="row | caDetailRoute">
+  </mat-row>
+</mat-table>
+

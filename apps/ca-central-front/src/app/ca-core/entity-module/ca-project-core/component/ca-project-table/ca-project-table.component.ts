@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FlTableAbstractDirective} from '@monorepo/front-core-lib';
-import {CaProject} from '../../../../model/entities/ca-project.class';
+import {CaProject, CaProjectDatasource} from '../../../../model/entities/ca-project.class';
+import {CaRouterService} from '../../../../service/ca-router.service';
 
 @Component({
   selector: 'ca-project-table',
@@ -9,11 +10,21 @@ import {CaProject} from '../../../../model/entities/ca-project.class';
 })
 export class CaProjectTableComponent extends FlTableAbstractDirective<CaProject> implements OnInit {
 
-  constructor() {
-    super(['title', 'createdBy', 'status', 'leader'])
+  @Input() datasource: CaProjectDatasource;
+
+  constructor(private routerService: CaRouterService) {
+    super(['title', 'creation', 'status', 'leader', 'actions']);
   }
 
   ngOnInit(): void {
+  }
+
+  onProjectUpdated(project: CaProject): void {
+    this.datasource.updateItem(project);
+  }
+
+  onChildCreated(project: CaProject): void {
+    this.routerService.navigateToProjectDetail(project.id);
   }
 
 }

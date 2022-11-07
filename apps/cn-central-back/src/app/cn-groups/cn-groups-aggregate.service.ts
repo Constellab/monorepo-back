@@ -41,21 +41,26 @@ export class CnGroupsAggregateService {
   }
 
 
-  public async getCurrentUserAllTeams(): Promise<CnGroup[]> {
-    return this.groupsService.getAllTeamsOfUser(CnCurrentUserHelper.getAndCheckCurrentUser().id,
+  public async getAllByCurrentUserAndOrganization(): Promise<CnGroup[]> {
+    return this.groupsService.getAllByUserAndOrganization(CnCurrentUserHelper.getAndCheckCurrentUser().id,
       CnCurrentUserHelper.getCurrentOrganization().id);
   }
 
-  public async getCurrentUserTeams(page: number, size: number): Promise<ClPageI<CnGroup>> {
-    return this.groupsService.getTeamsOfUser(CnCurrentUserHelper.getAndCheckCurrentUser().id,
+  public async getByCurrentUserAndOrganization(page: number, size: number): Promise<ClPageI<CnGroup>> {
+    return this.groupsService.getByUserAndOrganization(CnCurrentUserHelper.getAndCheckCurrentUser().id,
       CnCurrentUserHelper.getCurrentOrganization().id, page, size);
   }
 
   // method not secured
-  public async getAllGroupIdsOfUser(userId: string, organizationId: string): Promise<string[]> {
+  public async getAllGroupIdsByUserAndOrganization(userId: string, organizationId: string): Promise<string[]> {
     return await this.groupsService.getAllGroupIdsOfUser(userId, organizationId);
   }
 
+  public async getByCurrentOrganization(page: number, size: number): Promise<ClPageI<CnGroup>> {
+    const userInfo = CnCurrentUserHelper.getAndCheckUserOrgaInfo();
+    await this.groupSecurity.checkAuthorizationToFindALlTeamByOrganization(userInfo);
+    return this.groupsService.getByOrganization(userInfo.organizationId, page, size);
+  }
 
   /**
    * Return the group if the user can view it
