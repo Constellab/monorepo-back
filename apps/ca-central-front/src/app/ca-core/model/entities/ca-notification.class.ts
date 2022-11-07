@@ -1,13 +1,13 @@
 import {CaEntity} from './ca-entity.entity';
-import {ClLuxonTransform} from '@monorepo/core-lib';
+import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {Type} from 'class-transformer';
 import {CaUser} from './ca-user.class';
 import {CaOrganization} from './ca-organization.class';
 import {FlDatasourcePaginated} from '@monorepo/front-core-lib';
 
-export class CaNotification extends CaEntity{
-  @ClLuxonTransform()
+export class CaNotification extends CaEntity {
+  @ClLuxonDateTimeTransform()
   createdAt: DateTime;
 
   @Type(() => CaUser)
@@ -34,7 +34,7 @@ export class CaNotification extends CaEntity{
 
 export type CaNotificationDatasourcePaginated = FlDatasourcePaginated<CaNotification>;
 
-export enum CaNotificationType{
+export enum CaNotificationType {
   EXPERIMENT_COMMENT = 'EXPERIMENT_COMMENT',
   PROJECT_COMMENT = 'PROJECT_COMMENT',
   REPORT_COMMENT = 'REPORT_COMMENT',
