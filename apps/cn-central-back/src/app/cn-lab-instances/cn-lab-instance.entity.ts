@@ -109,15 +109,15 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   }
 
   getGlabApiInfo(): CnExternalApiInfo {
-    // return {
-    //   apiKey: this.glabApiKey,
-    //   apiUrl: this.glabUrl
-    // };
-    // TODO Uncomment
     return {
-      apiKey: '123456',
-      apiUrl: 'http://localhost:3000'
+      apiKey: this.glabApiKey,
+      apiUrl: this.glabUrl
     };
+    // only for local dev
+    // return {
+    //   apiKey: '123456',
+    //   apiUrl: 'http://localhost:3000'
+    // };
   }
 
   getLabManagerApiInfo(): CnExternalApiInfo {
