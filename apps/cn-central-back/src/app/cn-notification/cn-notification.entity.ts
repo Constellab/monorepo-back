@@ -40,6 +40,9 @@ export class CnNotification extends BlEntityWithId implements BlNotification{
   @ManyToOne(() => CnOrganization, {eager: true, nullable: false})
   organization: CnOrganization;
 
+  @Column({nullable: false, update: false})
+  organizationId: string;
+
   @Type(() => CnUser)
   @ManyToOne(() => CnUser, {eager: true, nullable: false})
   user: CnUser;
@@ -52,7 +55,7 @@ export class CnNotification extends BlEntityWithId implements BlNotification{
 
   setupNotif(notificationData: CnNotificationCreateDTO): void {
     this.user = notificationData.user;
-    this.organization = notificationData.organization;
+    this.organizationId = notificationData.organizationId;
     this.objectId = notificationData.objectId;
     this.objectType = notificationData.objectType;
     this.link = notificationData.link;
@@ -68,6 +71,6 @@ export interface CnNotificationCreateDTO{
   user: CnUser;
   text: string;
   text2: string;
-  organization: CnOrganization;
+  organizationId: string;
   link: string;
 }
