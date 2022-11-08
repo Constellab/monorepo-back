@@ -6,3 +6,8 @@ export interface CnOrganizationInvitDto {
   role: CnOrganizationUserRole;
 }
 
+
+export interface CnRequestNewLicensesDto {
+  nbLicenses: number;
+  text?: string;
+}

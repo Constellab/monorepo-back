@@ -38,4 +38,12 @@
       {{organization.nbLicenses}}
     </fl-key-value>
   </fl-card-body>
+
+  <fl-card-footer>
+    <button mat-stroked-button type="button" color="primary"
+            *caIsOrganizationAdmin
+            (click)="openRequestNewLicense(organization)">
+      {{'request_new_licenses' | translate}}
+    </button>
+  </fl-card-footer>
 </fl-card>

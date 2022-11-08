@@ -1,0 +1,16 @@
+<p>Hello,</p>
+
+<p>{{user.firstname}} {{user.lastname}} ({{user.email}}) requested <strong>{{nbLicenses}}</strong> new licenses
+  for the <strong>{{organizationLabel}}</strong> organization.
+</p>
+
+{{#if text}}
+
+  <p>Additional information:</p>
+  <p>{{text}}</p>
+
+{{else}}
+
+  <p>No additional information was provided.</p>
+
+{{/if}}

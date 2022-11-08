@@ -12,6 +12,7 @@ import {CnOrganizationInvit} from './cn-organization-invit.entity';
 import {CnOrganizationInvitController} from './cn-organization-invit.controller';
 import {CnOrganizationInvitService} from './cn-organization-invit.service';
 import {CnCoreModule} from '../cn-core/cn-core.module';
+import {CnOrganizationsMailService} from './cn-organizations-mail.service';
 
 /**
  * Module to manage organization
@@ -29,6 +30,7 @@ import {CnCoreModule} from '../cn-core/cn-core.module';
     CnOrganizationAggregateSecurity,
     CnOrganizationUserService,
     CnOrganizationInvitService,
+    CnOrganizationsMailService,
   ],
   exports: [
     CnOrganizationsService,

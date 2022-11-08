@@ -25,6 +25,7 @@ import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator
 import {CmUserCategory} from '@monorepo/common-model';
 import {CnOrganizationInvit} from './cn-organization-invit.entity';
 import {CnUserOrgaInfo} from '../cn-users/cn-user.dto';
+import {CnRequestNewLicensesDto} from './cn-organization.dto';
 
 @Controller('organizations')
 export class CnOrganizationsController {
@@ -145,5 +146,10 @@ export class CnOrganizationsController {
     BlResponseHelper.setMessageAndCache(response, file);
   }
 
-
+  ////////////////////////////////////// OTHERS //////////////////////////////////////
+  @Post(':id/request-new-licenses')
+  public async requestNewLicences(@Param('id') id: string,
+                                  @Body() request: CnRequestNewLicensesDto): Promise<void> {
+    return this.organizationAggregate.requestNewLicenses(id, request);
+  }
 }

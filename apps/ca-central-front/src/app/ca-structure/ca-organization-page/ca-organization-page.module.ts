@@ -39,6 +39,7 @@ import {CaProjectCoreModule} from '../../ca-core/entity-module/ca-project-core/c
 import {
   CaCurrentOrgaTeamsListComponent
 } from './component/ca-current-orga-teams-list/ca-current-orga-teams-list.component';
+import {CaRequestNewLicensesComponent} from './component/ca-request-new-licenses/ca-request-new-licenses.component';
 
 
 @NgModule({
@@ -54,6 +55,7 @@ import {
     CaCurrentOrgaLabInstancesListComponent,
     CaCurrentOrgaProjectsListComponent,
     CaCurrentOrgaTeamsListComponent,
+    CaRequestNewLicensesComponent,
   ],
   imports: [
     CommonModule,
@@ -69,7 +71,8 @@ import {
   exports: [
     CaOrganizationInvitFormDialogComponent,
     CaOrganizationInvitListComponent,
-    CaCurrentOrgaTeamsListComponent
+    CaCurrentOrgaTeamsListComponent,
+    CaRequestNewLicensesComponent
   ]
 })
 export class CaOrganizationPageModule {

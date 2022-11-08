@@ -62,6 +62,10 @@ export class CnCoreConfigService {
     return this.configService.get('ROBOT_USER_MAIL');
   }
 
+  public getGencoveryContactMail(): string {
+    return this.configService.get('GENCOVERY_CONTACT_MAIL');
+  }
+
   public getDatabaseConfig(): CnDatabaseConfig {
     return {
       host: this.configService.get('DATABASE_HOST'),

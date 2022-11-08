@@ -17,6 +17,7 @@ import {
 } from '../ca-organization-upload-photo-dialog/ca-organization-upload-photo-dialog.component';
 import {CaCurrentOrganizationService} from '../../../../ca-core/service-api/ca-current-organization.service';
 import {Observable} from 'rxjs';
+import {CaRequestNewLicensesComponent} from '../ca-request-new-licenses/ca-request-new-licenses.component';
 
 /**
  * Show all the information about an organization
@@ -97,6 +98,10 @@ export class CaCurrentOrganizationDetailComponent implements OnInit {
     if (result.choice) {
       this.routerService.navigateToAdmin();
     }
+  }
+
+  openRequestNewLicense(organization: CaOrganization): void {
+    this.dialogService.openMediumDialog(CaRequestNewLicensesComponent, {data: organization.id});
   }
 
 }

@@ -12,6 +12,7 @@ import {
 import {Observable} from 'rxjs';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CaOrganizationInvit, CaOrganizationInvitDatasource} from '../model/entities/ca-organization-invit.class';
+import {CaRequestNewLicensesDto} from '../model/dto/ca-organization.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -98,6 +99,11 @@ export class CaOrganizationService extends FlApiCrudService<CaOrganization, CaSa
 
   public getDefaultOrganization(): Observable<CaOrganization> {
     return this.apiService.get(`${this.route}/default`, CaOrganization);
+  }
+
+  ////////////////////////////////// OTHERS //////////////////////////////////
+  public requestNewLicenses(organizationId: string, request: CaRequestNewLicensesDto): Observable<void> {
+    return this.apiService.post(`${this.route}/${organizationId}/request-new-licenses`, request);
   }
 }
 

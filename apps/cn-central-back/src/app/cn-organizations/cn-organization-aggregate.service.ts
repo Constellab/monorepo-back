@@ -12,12 +12,13 @@ import {BlFile} from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
 import {CnOrganizationInvit} from './cn-organization-invit.entity';
 import {CnOrganizationInvitService} from './cn-organization-invit.service';
-import {CnOrganizationInvitDto} from './cn-organization.dto';
+import {CnOrganizationInvitDto, CnRequestNewLicensesDto} from './cn-organization.dto';
 import {CnUserAccountsService} from '../cn-users/cn-users-account/cn-user-accounts.service';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {DataSource, EntityManager} from 'typeorm';
 import {CmUserStatus} from '@monorepo/common-model';
 import {CnUserOrgaInfo} from '../cn-users/cn-user.dto';
+import {CnOrganizationsMailService} from './cn-organizations-mail.service';
 
 @Injectable()
 export class CnOrganizationAggregateService {
@@ -28,7 +29,8 @@ export class CnOrganizationAggregateService {
               private invitationService: CnOrganizationInvitService,
               private userService: CnUsersService,
               private userAccountService: CnUserAccountsService,
-              private datasource: DataSource) {
+              private datasource: DataSource,
+              private organizationMailService: CnOrganizationsMailService) {
   }
 
   public async getCurrentInfo(): Promise<CnUserOrgaInfo> {
@@ -271,6 +273,15 @@ export class CnOrganizationAggregateService {
     await this.checkOrganizationAdmin(organizationId);
 
     return this.invitationService.findNotificationsByOrganization(organizationId, page, pageSize);
+  }
+
+  /////////////////////////////////////// OTHERS //////////////////////////////////
+
+  public async requestNewLicenses(organizationId: string, request: CnRequestNewLicensesDto): Promise<void> {
+    const userInfo = CnCurrentUserHelper.getAndCheckUserOrgaInfo();
+    await this.checkOrganizationAdmin(userInfo.organizationId);
+
+    await this.organizationMailService.requestNewLicenses(request, userInfo);
   }
 
   /////////////////////////////////////// SECURITY //////////////////////////////////
