@@ -9,7 +9,8 @@ import {FlDisableAnimationInitDirective} from './fl-disable-animation-init/fl-di
 import {FlAutofocusDirective} from './fl-autofocus/fl-autofocus.directive';
 import {FlPrintDirective} from './fl-print/fl-print.directive';
 import {FlElasticSearchDirective} from './fl-elastic-search/fl-elastic-search.directive';
-import { FlAutoScrollToAnchorDirective } from './fl-auto-scroll-to-anchor/fl-auto-scroll-to-anchor.directive';
+import {FlAutoScrollToAnchorDirective} from './fl-auto-scroll-to-anchor/fl-auto-scroll-to-anchor.directive';
+import {FlBackupImageDirective} from './fl-backup-image/fl-backup-image.directive';
 
 
 /**
@@ -26,6 +27,7 @@ import { FlAutoScrollToAnchorDirective } from './fl-auto-scroll-to-anchor/fl-aut
     FlPrintDirective,
     FlElasticSearchDirective,
     FlAutoScrollToAnchorDirective,
+    FlBackupImageDirective,
   ],
   exports: [
     FlInputMaxLengthDirective,
@@ -37,6 +39,7 @@ import { FlAutoScrollToAnchorDirective } from './fl-auto-scroll-to-anchor/fl-aut
     FlPrintDirective,
     FlElasticSearchDirective,
     FlAutoScrollToAnchorDirective,
+    FlBackupImageDirective,
   ],
   imports: [
     CommonModule,
