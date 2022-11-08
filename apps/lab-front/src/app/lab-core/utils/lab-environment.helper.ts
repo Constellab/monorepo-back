@@ -41,6 +41,10 @@ export class LabEnvironmentHelper {
     return LabEnvironmentHelper.getEnv().settings.centralFrontUrl;
   }
 
+  public static getCentralApiUrl(): string {
+    return LabEnvironmentHelper.getEnv().settings.centralApiUrl;
+  }
+
   public static getHubFrontUrl(): string {
     return LabEnvironmentHelper.getEnv().settings.hubFrontUrl;
   }

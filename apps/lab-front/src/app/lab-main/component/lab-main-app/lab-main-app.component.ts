@@ -57,7 +57,7 @@ export class LabMainAppComponent implements OnInit {
 
   private getSystemInfoSuccess(systemInfo: LabSystemInfo): void {
     this.setLabName(systemInfo.labName);
-    this.logo = systemInfo.organization.photo;
+    this.logo = this.systemService.getOrganizationPhotoUrl(systemInfo.organization.photo);
   }
 
   private setLabName(labName: string): void {

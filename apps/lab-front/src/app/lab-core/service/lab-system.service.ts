@@ -4,6 +4,7 @@ import {Observable, of, throwError} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {LabEnvStore} from './lab-env.store';
 import {LabSystemInfo} from '../model/global/lab-system.class';
+import {LabEnvironmentHelper} from '../utils/lab-environment.helper';
 
 @Injectable({
   providedIn: 'root'
@@ -43,4 +44,9 @@ export class LabSystemService {
         tap(() => this.labEnvStore.setLabEnvironment('prod'))
       );
   }
+
+  public getOrganizationPhotoUrl(filename: string): string {
+    return LabEnvironmentHelper.getCentralApiUrl() + '/organizations/photo/' + filename;
+  }
+
 }
