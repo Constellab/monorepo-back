@@ -2,12 +2,30 @@
   margin-top: 1em;
 }
 
+
+
 .tree-node {
   min-height: 32px;
+  background-color: var(--grey-low-contrast);
+  margin-top: 1em;
+  border-radius: 10px;
+}
+
+.selected-tree-node {
+  background-color: var(--grey-contrast);
+}
+
+.leaf-node-margin{
+  margin-left: 2em;
 }
 
 
-.leaf-title {
+.node-icon{
   margin-left: 0.5em;
+  margin-right: 0.5em;
+  flex-shrink: 0;
 }
 
+.toggle-parent-button{
+  flex-shrink: 0;
+}

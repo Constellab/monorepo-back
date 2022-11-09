@@ -7,7 +7,8 @@ import {delay} from 'rxjs/operators';
  * It subscribes to the internalObservable on first getObs call. Then it returned the cached value
  * on the next getObs calls.
  *
- * It emits all values (if exists) and next values until error or complete
+ * If multiple values are emitted by the internalObservable, consider using the share operator.
+ * It emits all values (if exists) and next values until error or complete.
  *
  * It completes when the internalObservable completes
  */

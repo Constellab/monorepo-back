@@ -1,11 +1,11 @@
 import {APP_INITIALIZER, ModuleWithProviders, NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FlIconDirective} from './fl-icon/fl-icon.directive';
-import {FlSvgIconRegistryService} from './fl-icon-registry.service';
+import {FlIconRegistryService} from './fl-icon-registry.service';
 import {FL_ICON_MODULE, FlIconConfig} from './fl-icon-config.class';
 
-function registerCustomIcon(flSvgIconRegistryService: FlSvgIconRegistryService): () => void {
-  return (): void => flSvgIconRegistryService.registerCustomIcons();
+function initIcons(iconRegistryService: FlIconRegistryService): () => void {
+  return (): void => iconRegistryService.initIcons();
 }
 
 /**
@@ -31,9 +31,9 @@ export class FlIconModule {
     return {
       ngModule: FlIconModule,
       providers: [
-        FlSvgIconRegistryService,
+        FlIconRegistryService,
         {provide: FL_ICON_MODULE, useValue: config},
-        {provide: APP_INITIALIZER, useFactory: registerCustomIcon, deps: [FlSvgIconRegistryService], multi: true},
+        {provide: APP_INITIALIZER, useFactory: initIcons, deps: [FlIconRegistryService], multi: true},
       ],
     };
   }

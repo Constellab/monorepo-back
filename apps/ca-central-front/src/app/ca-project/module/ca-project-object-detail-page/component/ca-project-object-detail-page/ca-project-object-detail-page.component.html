@@ -1,16 +1,17 @@
 <mat-drawer-container class="g-full">
 
   <mat-drawer mode="side" [opened]="treeOpened" class="drawer">
-    <ca-project-object-tree [projectObject$]="projectObjectRef$"></ca-project-object-tree>
+    <ca-project-object-tree></ca-project-object-tree>
   </mat-drawer>
 
 
-  <mat-drawer-content>
-    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em">
-      <button mat-icon-button type="button" (click)="toggleTree()">
+  <mat-drawer-content class="page">
+    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em" class="breadcrumb">
+      <button mat-icon-button type="button" *ngIf="showTree$ | async"
+              (click)="toggleTree()">
         <mat-icon>account_tree</mat-icon>
       </button>
-      <ca-project-breadcrumb [projectObject$]="projectObjectRef$"></ca-project-breadcrumb>
+      <ca-project-breadcrumb></ca-project-breadcrumb>
     </div>
     <div class="content">
       <router-outlet></router-outlet>

@@ -11,3 +11,8 @@ export interface CnRequestNewLicensesDto {
   nbLicenses: number;
   text?: string;
 }
+
+export interface CnRequestNewLabDto{
+
+  text?: string;
+}

@@ -7,11 +7,19 @@ import {FL_ICON_MODULE, FlIconConfig, FlSvgIcon} from './fl-icon-config.class';
  * Service to register custom svg icon to use them with <mat-icon> in html
  */
 @Injectable()
-export class FlSvgIconRegistryService {
+export class FlIconRegistryService {
 
   constructor(private matIconRegistry: MatIconRegistry, private domSanitizer: DomSanitizer,
               @Inject(FL_ICON_MODULE) private config: FlIconConfig) {
   }
+
+  public initIcons(): void {
+    // set the default icon to outlined
+    this.matIconRegistry.setDefaultFontSetClass('material-icons-outlined')
+
+    this.registerCustomIcons();
+  }
+
 
   /**
    * Call this method only on app start up only to register custom icons
@@ -28,5 +36,6 @@ export class FlSvgIconRegistryService {
     this.matIconRegistry.addSvgIcon(name,
       this.domSanitizer.bypassSecurityTrustResourceUrl(this.config.iconFolder + filename)
     );
+
   }
 }

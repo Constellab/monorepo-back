@@ -45,7 +45,6 @@ export class FlIconDirective implements OnInit {
       // if the mat icon is register use the mat icon name
       const matIcon = (registerIcon as FlMatIcon)?.matIconName ?? icon;
       this.setSvgIcon(null);
-      this.matIcon.fontSet = 'material-icons';
       this.setMatIcon(matIcon);
     }
   }
