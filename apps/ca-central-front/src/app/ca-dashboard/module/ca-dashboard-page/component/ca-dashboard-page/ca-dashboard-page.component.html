@@ -31,24 +31,21 @@
 
   <div class="dashboard-right" fxFlex>
 
-    <div class="bt">
-      <div class="bt-div-text">
-        <a href="mailto:clientsuccess@gencovery.com">
-          <div class="link-bt g-primary-background">
-            <mat-icon class="g-icon-huge icon" fontSet="material-icons-outlined">help</mat-icon>
-          </div>
-        </a>
-        <a class="link">{{'support' | translate}}</a>
-      </div>
+    <div class="bt" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="1em">
+      <a class="bt-div-text" href="mailto:clientsuccess@gencovery.com">
+        <div class="link-bt g-primary-background">
+          <mat-icon class="g-icon-huge icon" fontSet="material-icons-outlined">help</mat-icon>
+        </div>
+        <div class="link">{{'support' | translate}}</div>
+      </a>
 
-      <div class="bt-div-text">
-        <a [href]="hubLink">
-          <div class="link-bt g-primary-background">
-            <mat-icon class="g-icon-big icon" fontSet="material-icons-outlined">hub</mat-icon>
-          </div>
-        </a>
-        <a [href]="hubLink" class="link">{{'hub' | translate}}</a>
-      </div>
+      <a [href]="hubLink" class="bt-div-text">
+        <div class="link-bt g-primary-background">
+          <mat-icon class="g-icon-big icon" fontSet="material-icons-outlined">hub</mat-icon>
+        </div>
+
+        <div class="link">{{'hub' | translate}}</div>
+      </a>
     </div>
 
     <!-- My Activity  -->
