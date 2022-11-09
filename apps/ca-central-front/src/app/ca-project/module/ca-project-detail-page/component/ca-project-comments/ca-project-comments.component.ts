@@ -7,7 +7,6 @@ import {CaProjectService} from '../../../../../ca-core/service-api/ca-project.se
 import {CaAuthenticatedUserService} from '../../../../../ca-core/service-api/ca-authenticated-user.service';
 import {CaCommentTextEditorConfig} from '../../../../../ca-core/model/config/ca-comment-text-editor.config';
 import {FormControl, Validators} from '@angular/forms';
-import {ClHelpService} from '@monorepo/core-lib';
 import {CmRichText} from '@monorepo/common-model';
 
 @Component({
@@ -45,14 +44,14 @@ export class CaProjectCommentsComponent implements OnInit {
   }
 
   enterEvent(event: Event): void {
-    event.preventDefault()
-    if (!CmRichText.isEmpty(this.formControl.value)){
+    event.preventDefault();
+    if (!CmRichText.isEmpty(this.formControl.value)) {
       this.projectService.newProjectComment(this.projectId, this.formControl.value).subscribe((newComment) => {
-        if(newComment){
+        if (newComment) {
           this.comments.addItem(newComment, () => true);
         }
       });
-      this.formControl.setValue(null)
+      this.formControl.setValue(null);
     }
   }
 

@@ -1,18 +1,18 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {CaProjectBreadcrumbComponent} from './ca-project-breadcrumb.component';
+import {CaProjectObjectBreadcrumbComponent} from './ca-project-object-breadcrumb.component';
 
 describe('CaProjectBreadcrumbComponent', () => {
-  let component: CaProjectBreadcrumbComponent;
-  let fixture: ComponentFixture<CaProjectBreadcrumbComponent>;
+  let component: CaProjectObjectBreadcrumbComponent;
+  let fixture: ComponentFixture<CaProjectObjectBreadcrumbComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CaProjectBreadcrumbComponent ]
+      declarations: [ CaProjectObjectBreadcrumbComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CaProjectBreadcrumbComponent);
+    fixture = TestBed.createComponent(CaProjectObjectBreadcrumbComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

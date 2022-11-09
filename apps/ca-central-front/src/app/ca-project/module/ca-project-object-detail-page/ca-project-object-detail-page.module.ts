@@ -11,14 +11,12 @@ import {CaCoreModule} from '../../../ca-core/ca-core.module';
 import {CaProjectObjectCoreModule} from '../ca-project-object-core/ca-project-object-core.module';
 import {RouterModule} from '@angular/router';
 import {CaProjectObjectTreeComponent} from './component/ca-project-object-tree/ca-project-object-tree.component';
-import {CaProjectBreadcrumbComponent} from './component/ca-project-breadcrumb/ca-project-breadcrumb.component';
 import {CaProjectCoreModule} from '../../../ca-core/entity-module/ca-project-core/ca-project-core.module';
 
 @NgModule({
   declarations: [
     CaProjectObjectDetailPageComponent,
     CaProjectObjectTreeComponent,
-    CaProjectBreadcrumbComponent,
   ],
   imports: [
     CommonModule,

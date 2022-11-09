@@ -1,8 +1,13 @@
-.header{
+// override default page padding
+.page {
+  padding: 0 1em 0 1em;
+}
+
+.header {
   margin-bottom: 1em;
 }
 
 
-.flex{
+.flex {
   flex: 1;
 }

@@ -1,3 +1,18 @@
+.container{
+  padding-top: 1em;
+  height: 100%;
+  display: grid;
+  grid-auto-flow: row;
+  grid-template-rows: auto 1fr;
+  box-sizing: border-box;
+}
+
 .header{
   margin-bottom: 1em;
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+.report-content{
+  min-height: 0;
 }

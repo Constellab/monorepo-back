@@ -29,6 +29,7 @@ export class CaProjectDetailPageComponent implements OnInit {
   showChildren$: Observable<boolean>;
   showObjects$: Observable<boolean>;
 
+
   constructor(private projectService: CaProjectService,
               private reportService: CaReportService,
               private experimentService: CaExperimentService,
@@ -51,6 +52,7 @@ export class CaProjectDetailPageComponent implements OnInit {
     this.showObjects$ = this.state.getProject$(false).pipe(
       map(project => project?.isLeaf() ?? false)
     );
+
   }
 
   selectReport(report: CaReport): void {

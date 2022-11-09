@@ -1,0 +1,21 @@
+<div fxLayout="row wrap" fxLayoutAlign="start center" class="g-text-light">
+
+  <!-- Button to toggle project tree  -->
+  <button mat-icon-button type="button" *ngIf="showTreeButton$ | async; else noButton"
+          (click)="toggleTree()">
+    <mat-icon>account_tree</mat-icon>
+  </button>
+
+  <ng-template #noButton>
+    <div class="fake-button-height"></div>
+  </ng-template>
+
+  <ng-container *ngFor="let link of links$ | async; let last = last">
+    <a [routerLink]="link.url" class="g-text-link text">
+      {{link.title}}
+    </a>
+
+    <span class="separator" *ngIf="!last">></span>
+  </ng-container>
+</div>
+

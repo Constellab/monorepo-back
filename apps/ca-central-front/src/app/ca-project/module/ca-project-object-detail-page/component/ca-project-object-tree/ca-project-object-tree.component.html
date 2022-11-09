@@ -13,7 +13,7 @@
         <ca-project-icon class="node-icon" type="leaf" iconClass="g-icon-small"></ca-project-icon>
         <a [routerLink]="node.id | caDetailRoute:'project'"
            [queryParams]="{'showTree': true}"
-           class="leaf-title g-text-link">
+           class="project-title g-text-link">
           {{node.title}}
         </a>
       </mat-tree-node>
@@ -24,7 +24,7 @@
 
         <a [routerLink]="node.id | caDetailRoute:'project'"
            [queryParams]="{'showTree': true}"
-           class="g-text-link">
+           class="project-title g-text-link">
           {{node.title}}
         </a>
         <button mat-icon-button matTreeNodeToggle class="g-button-icon-small toggle-parent-button"

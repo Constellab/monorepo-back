@@ -3,7 +3,7 @@ import {CaProjectAncestorTreeDTO, CaProjectTreeDto} from '../../../../../ca-core
 import {Subscription} from 'rxjs';
 import {FlFlatTreeControl} from '@monorepo/front-core-lib';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
-import {CaProjectObjectDetailState} from '../../state/ca-project-object-detail.state';
+import {CaProjectObjectDetailState} from '../../../ca-project-object-core/state/ca-project-object-detail.state';
 
 interface CaProjectFlatNode {
   id: string;

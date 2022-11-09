@@ -1,23 +1,23 @@
-<form class="form">
-  <div class="comment-zone" *ngIf="comments">
-    <fl-infinite-scroll [datasource]="comments" class="comment-div" [reverseMode]="true" >
+<div class="comment-zone" *ngIf="comments">
+  <fl-infinite-scroll [datasource]="comments" class="comment-div" [reverseMode]="true">
+    <div class="comments-container">
       <div *ngFor="let comment of comments?.connect() | async" class="comment
       {{comment.createdBy.id === currentUserId ? 'our-comment' : 'other-comment'}}">
         <ca-comment-div [comment]="comment"></ca-comment-div>
       </div>
-    </fl-infinite-scroll>
-
-    <div class="write-comment-div">
-      <fl-section [isLoading]="isLoading" [object]="formControl">
-        <ng-container *flSectionBody>
-          <fl-text-editor [formControl]="formControl" [config]="textEditorConfig" mode="JSON" [leftButtons]="false"
-                          placeholder="{{'write_a_comment' | translate}}"
-                          theme="VISIBLE_BUTTON" class="input-message" scrollContainer="child"
-                          (keydown.enter)="enterEvent($event)"></fl-text-editor>
-        </ng-container>
-      </fl-section>
     </div>
+  </fl-infinite-scroll>
 
+  <div class="write-comment-div">
+    <fl-section [isLoading]="isLoading" [object]="formControl" class="section">
+      <ng-container *flSectionBody>
+        <fl-text-editor [formControl]="formControl" [config]="textEditorConfig" mode="JSON" [leftButtons]="false"
+                        placeholder="{{'write_a_comment' | translate}}"
+                        theme="VISIBLE_BUTTON" class="input-message" scrollContainer="child"
+                        (keydown.enter)="enterEvent($event)"></fl-text-editor>
+      </ng-container>
+    </fl-section>
   </div>
-</form>
+
+</div>
 

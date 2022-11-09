@@ -18,13 +18,16 @@ interface BreadcrumbLink {
  * It gets the hierarchy from the api
  */
 @Component({
-  selector: 'ca-project-breadcrumb',
-  templateUrl: './ca-project-breadcrumb.component.html',
-  styleUrls: ['./ca-project-breadcrumb.component.scss']
+  selector: 'ca-project-object-breadcrumb',
+  templateUrl: './ca-project-object-breadcrumb.component.html',
+  styleUrls: ['./ca-project-object-breadcrumb.component.scss']
 })
-export class CaProjectBreadcrumbComponent implements OnInit {
+export class CaProjectObjectBreadcrumbComponent implements OnInit {
 
   links$: Observable<BreadcrumbLink[]>;
+
+  showTreeButton$: Observable<boolean>;
+
 
   constructor(private state: CaProjectObjectDetailState,
               private projectService: CaProjectService,
@@ -36,6 +39,8 @@ export class CaProjectBreadcrumbComponent implements OnInit {
     this.links$ = this.state.getProjectAncestors$().pipe(
       map(ancestors => this.ancestorsToLinks(ancestors))
     );
+
+    this.showTreeButton$ = this.state.rootProjectHasChildren$();
   }
 
   private ancestorsToLinks(ancestors: CaProjectAncestorTreeDTO[]): BreadcrumbLink[] {
@@ -67,6 +72,10 @@ export class CaProjectBreadcrumbComponent implements OnInit {
       case 'report':
         return CaRouterService.getReportDetailRoute(ancestor.id);
     }
+  }
+
+  toggleTree(): void {
+    this.state.toggleTree();
   }
 
 }

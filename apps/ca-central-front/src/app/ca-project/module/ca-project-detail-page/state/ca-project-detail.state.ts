@@ -147,8 +147,10 @@ export class CaProjectDetailState implements OnDestroy {
 
   public canEditProject$(): Observable<boolean> {
     const user = this.authenticatedUserService.getUser();
+
     return this.getProject$(false).pipe(
-      map(project => project != null && project.leader.id === user.id)
+      map(project => this.authenticatedUserService.isCurrentOrganizationAdmin() ||
+        (project != null && project.leader.id === user.id))
     );
   }
 
@@ -180,9 +182,15 @@ export class CaProjectDetailState implements OnDestroy {
       };
       this.reports$.addFilter(filterName, userFilter);
       this.experiments$.addFilter(filterName, userFilter);
+
+      const projectLeaderFileter: (project: CaProject) => boolean = (entity: CaProject) => {
+        return users.some(user => user.id === entity.leader.id);
+      };
+      this.children$.addFilter(filterName, projectLeaderFileter);
     } else {
       this.reports$.removeFilter(filterName);
       this.experiments$.removeFilter(filterName);
+      this.children$.removeFilter(filterName);
     }
   }
 

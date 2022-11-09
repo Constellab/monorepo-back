@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {CaProject} from '../../../../../ca-core/model/entities/ca-project.class';
 import {CaProjectService} from '../../../../../ca-core/service-api/ca-project.service';
 import {FlDialogService} from '@monorepo/front-core-lib';
-import {CaProjectDetailState} from '../../state/ca-project-detail.state';
+import {CaProjectDetailRightPanel, CaProjectDetailState} from '../../state/ca-project-detail.state';
 import {Observable} from 'rxjs';
 import {CaUser} from '../../../../../ca-core/model/entities/ca-user.class';
 
@@ -19,6 +19,7 @@ export class CaProjectDetailComponent implements OnInit {
   projectId$: Observable<string>;
   project$: Observable<CaProject>;
   projectUsers$: Observable<CaUser[]>;
+  rightPanelState$: Observable<CaProjectDetailRightPanel>;
 
   constructor(private dialogService: FlDialogService,
               private projectService: CaProjectService,
@@ -29,6 +30,7 @@ export class CaProjectDetailComponent implements OnInit {
     this.projectId$ = this.state.getProjectId$();
     this.project$ = this.state.getProject$();
     this.projectUsers$ = this.state.getUsers$();
+    this.rightPanelState$ = this.state.getRightPanelState$();
   }
 
   onProjectUpdated(project: CaProject): void {

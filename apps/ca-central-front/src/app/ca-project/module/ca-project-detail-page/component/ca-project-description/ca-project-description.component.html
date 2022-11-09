@@ -1,19 +1,20 @@
-<div fxLayout="row" fxLayoutAlign="space-between" class="header">
+<fl-section [isLoading]="isLoading" [object]="formControl" class="section">
 
-  <fl-text-icon *ngIf="project$ | async let project">
-    <mat-icon flIcon="project"></mat-icon>
-    <h2>{{project.title | translate}}</h2>
-  </fl-text-icon>
+  <fl-section-header class="header">
+    <fl-text-icon *ngIf="project$ | async let project">
+      <mat-icon flIcon="project"></mat-icon>
+      <h2>{{project.title | translate}}</h2>
+    </fl-text-icon>
+    <fl-section-actions>
+      <button mat-icon-button type="button" (click)="toggleEdit()"
+              *ngIf="canEdit$ | async">
+        <mat-icon>{{edit ? 'visibility' : 'edit'}}</mat-icon>
+      </button>
+    </fl-section-actions>
+  </fl-section-header>
 
-  <button mat-icon-button type="button" (click)="toggleEdit()"
-          *ngIf="canEdit$ | async">
-    <mat-icon>{{edit ? 'visibility' : 'edit'}}</mat-icon>
-  </button>
-</div>
-
-<fl-section [isLoading]="isLoading" [object]="formControl">
   <ng-container *flSectionBody>
-    <fl-text-editor [config]="textEditorConfig"
+    <fl-text-editor [config]="textEditorConfig" [ngClass]="{'hide-border': !edit}"
                     [formControl]="formControl" mode="JSON"
                     [placeholder]="'project_description_placeholder' | translate"></fl-text-editor>
   </ng-container>

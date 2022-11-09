@@ -1,6 +1,9 @@
 <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="1em" class="main-container">
 
-  <div fxFlex="50%" fxLayout="column">
+  <div fxFlex="60%" fxLayout="column" class="g-scrollable-element left-section">
+
+    <ca-project-object-breadcrumb></ca-project-object-breadcrumb>
+
     <ca-project-detail></ca-project-detail>
 
     <ng-container *ngIf="showObjects$ | async">
@@ -15,12 +18,8 @@
     <ca-project-children class="g-section" *ngIf="showChildren$ | async"></ca-project-children>
   </div>
 
-  <div fxFlex="50%">
-    <fl-card class="g-full g-full-height">
-      <fl-card-body>
-        <ca-project-detail-right-panel></ca-project-detail-right-panel>
-      </fl-card-body>
-    </fl-card>
+  <div fxFlex="40%" class="right-section">
+    <ca-project-detail-right-panel></ca-project-detail-right-panel>
   </div>
 
 </div>
