@@ -17,12 +17,12 @@
   position: relative;
   top: 0;
   transition: top ease 0.2s;
-  border: 2px solid transparent;
+  border: 2px solid var(--main-background);
   border-radius: 50%;
 }
 
 .additional-user-count-externe {
-  border: 2px solid transparent;
+  border: 2px solid var(--main-background);
   border-radius: 50%;
 }
 
@@ -32,17 +32,18 @@
 
 
 .additional-user-count-interne {
-  width: 2.5em;
-  height: 2.5em;
-  line-height: 2.5em;
-  font-size: 0.625em; // TODO to fix and fix in fl-user-profile-picture
+  height: 3em;
+  width: 3em;
+  line-height: 3em;
+  font-size: 0.75em; // TODO to fix and fix in fl-user-profile-picture
   text-align: center;
   border-radius: 50%;
   overflow: hidden;
-  border: solid 1px white;
+  border: solid 1px var(--main-background);
   background-color: var(--grey-contrast);
   cursor: pointer;
 }
+
 
 .portal {
   padding: 0;

@@ -1,12 +1,9 @@
 <fl-card class="card">
   <fl-card-header>
-    <h2>{{project.code}}</h2>
-    <fl-card-actions>
-      <fl-status-chip [status]="project.currentStatus.status"
-                       mode="iconOnly"
-                       class="g-text-normal">
-      </fl-status-chip>
-    </fl-card-actions>
+    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em">
+      <ca-project-icon [project]="project"></ca-project-icon>
+      <h2>{{project.code}}</h2>
+    </div>
   </fl-card-header>
 
 
@@ -15,12 +12,18 @@
       <p>{{project.title}}</p>
     </div>
 
-    <fl-text-icon class="dates">
-      <mat-icon>date_range</mat-icon>
-      <fl-date-range [startingDate]="project.startingDate" [endingDate]="project.endingDate"
-                      class="g-text-light g-text-small">
-      </fl-date-range>
-    </fl-text-icon>
+    <fl-date-range [startingDate]="project.startingDate" [endingDate]="project.endingDate"
+                   class="g-text-light g-text-small dates">
+    </fl-date-range>
 
   </fl-card-body>
+
+  <fl-card-footer class="footer">
+    <div fxLayout="row" fxLayoutAlign="end" class="g-text-light g-text-small g-full">
+      <fl-text-icon iconPosition="end" gap="0">
+        <mat-icon>chevron_right</mat-icon>
+        {{'go_to_project' | translate}}
+      </fl-text-icon>
+    </div>
+  </fl-card-footer>
 </fl-card>

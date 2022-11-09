@@ -1,66 +1,57 @@
 <div *ngIf="project$ | async; let project">
-  <div fxLayout="row" fxLayoutAlign="space-between center" class="header">
-    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+
+    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em">
       <ca-project-icon [project]="project"></ca-project-icon>
       <h1>{{project.code}}</h1>
     </div>
 
-    <div fxLayout="row" fxLayoutAlign="start center">
+    <!--   Settings menu   -->
+    <ca-project-actions-menu [project]="project" [projectUsers$]="projectUsers$"
+                             (projectUpdated)="onProjectUpdated($event)"
+                             (childProjectCreated)="onChildCreated($event)"
+                             class="actions-button"></ca-project-actions-menu>
+  </div>
 
-      <button mat-icon-button type="button" (click)="showComments()"
-              [matTooltip]="'show_project_comments' | translate">
-        <mat-icon>comment</mat-icon>
-      </button>
+  <h2 class="project-title">{{project.title}}</h2>
 
-      <button mat-icon-button type="button" (click)="showDescription()"
-              [matTooltip]="'show_project_description' | translate">
-        <mat-icon>description</mat-icon>
-      </button>
+  <div class="project-info">
+    <fl-text-icon>
+      <mat-icon class="g-text-light">person</mat-icon>
+      <div>
+        <span class="g-text-light">{{'project_leader' | translate}}</span> :
+        <ca-user-inline [user]="project.leader" class="inline-block"></ca-user-inline>
+      </div>
+    </fl-text-icon>
 
-      <ca-project-users [projectId$]="projectId$"></ca-project-users>
-
-      <fl-status-chip class="status" [status]="project.currentStatus.status"></fl-status-chip>
-
-      <!--   Settings menu   -->
-      <ca-project-actions-menu [project]="project" [projectUsers$]="projectUsers$"
-                               (projectUpdated)="onProjectUpdated($event)"
-                               (childProjectCreated)="onChildCreated($event)"></ca-project-actions-menu>
-    </div>
+    <fl-text-icon class="g-text-light">
+      <mat-icon>date_range</mat-icon>
+      <fl-date-range [startingDate]="project.startingDate" [endingDate]="project.endingDate">
+      </fl-date-range>
+    </fl-text-icon>
   </div>
 
 
-  <fl-card>
-    <fl-card-header>
-      <h2>{{project.title}}</h2>
-    </fl-card-header>
+  <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em" class="g-section">
 
-    <fl-card-body>
-      <fl-text-icon class="dates">
-        <mat-icon>date_range</mat-icon>
-        <fl-date-range [startingDate]="project.startingDate" [endingDate]="project.endingDate">
-        </fl-date-range>
-      </fl-text-icon>
+    <ca-project-users [projectId$]="projectId$"></ca-project-users>
 
-      <div>
-        {{'project_leader' | translate}} :
-        <ca-user-inline [user]="project.leader" class="inline-block"></ca-user-inline>
-      </div>
+    <button mat-icon-button type="button" (click)="showComments()"
+            [matTooltip]="'show_project_comments' | translate"
+            class="g-primary-button-icon-border">
+      <mat-icon>comment</mat-icon>
+    </button>
 
-      <!--      <div class="description">-->
-      <!--        <div *ngIf="project.description; else noDesc" [innerHTML]="project.description"></div>-->
-      <!--        <ng-template #noDesc>-->
-      <!--          <fl-error-text [errorMessage]="'no_description' | translate"></fl-error-text>-->
-      <!--        </ng-template>-->
-      <!--      </div>-->
+    <button mat-icon-button type="button" (click)="showDescription()"
+            [matTooltip]="'show_project_description' | translate"
+            class="g-primary-button-icon-border">
+      <mat-icon>description</mat-icon>
+    </button>
 
-      <ca-project-shared-groups-list [projectId]="project.id"
-                                     [canEdit]="project.isRoot()"></ca-project-shared-groups-list>
+  </div>
 
-    </fl-card-body>
-  </fl-card>
-
-
-  <!--    &lt;!&ndash;  List the shared groups  &ndash;&gt;-->
-  <!--    <ca-project-shared-groups-list fxFlex="30%" [projectId]="project.id"></ca-project-shared-groups-list>-->
+  <ca-project-shared-groups-list [projectId]="project.id" class="g-section"
+                                 [canEdit]="project.isRoot()"></ca-project-shared-groups-list>
 
 </div>

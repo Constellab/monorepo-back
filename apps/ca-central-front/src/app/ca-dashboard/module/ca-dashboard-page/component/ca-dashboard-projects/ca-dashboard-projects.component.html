@@ -10,7 +10,13 @@
   </fl-section-header>
 
   <ng-container *flSectionBody="let projects">
-    <ca-projects-list [projects]="projects"></ca-projects-list>
+    <div class="grid-container">
+      <a *ngFor="let project of projects" [routerLink]="project | caDetailRoute">
+        <ca-project-card [project]="project"></ca-project-card>
+      </a>
+    </div>
+
+
   </ng-container>
 
 </fl-async-section>

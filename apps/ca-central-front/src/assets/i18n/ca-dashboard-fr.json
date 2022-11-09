@@ -74,5 +74,7 @@
   "view_profile": "Voir le profil",
   "function": "Fonction",
   "company": "Entreprise",
-  "biography": "Biographie"
+  "biography": "Biographie",
+  "go_to_project": "Aller au projet",
+  "add_new_sub_project": "Ajouter un projet"
 }

@@ -1,6 +1,8 @@
 .user-pp{
   position: relative;
   bottom: -4.5em;
+  border: 1px solid var(--main-background);
+  border-radius: 50%;
 }
 
 .header{
@@ -86,7 +88,7 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 599px) {
   .header{
     height: 7.5em;
   }

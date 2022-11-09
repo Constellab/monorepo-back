@@ -1,5 +1,10 @@
-.header {
-  margin-bottom: 1em;
+
+.project-title {
+  margin-top: 0.5em;
+}
+
+.project-info {
+  margin-top: 0.5em;
 }
 
 .status {
@@ -14,6 +19,11 @@
   margin-left: 0.3em;
 }
 
-.inline-block{
+.inline-block {
   display: inline-block;
+}
+
+.actions-button {
+  border: 1px solid var(--primary-color);
+  border-radius: 50%;
 }

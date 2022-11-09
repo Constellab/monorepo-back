@@ -12,7 +12,7 @@
          [matTooltip]="userSelection.user.fullname" matTooltipPosition="below" matTooltipShowDelay="0"
          (click)="selectUser(userSelection)">
       <div class="user-preview" [ngClass]="{'selected': userSelection.selected}">
-        <fl-user-profile-picture [user]="userSelection.user" size="small"></fl-user-profile-picture>
+        <fl-user-profile-picture [user]="userSelection.user" size="medium"></fl-user-profile-picture>
       </div>
     </div>
   </div>

@@ -1,6 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CaUser} from '../../../../model/entities/ca-user.class';
-import {FlPortalService} from '@monorepo/front-core-lib';
 
 /**
  * Component to display a user photo with the user name and job on the right of the photo
@@ -16,13 +15,13 @@ export class CaUserInlineComponent implements OnInit {
 
   @Input() showName: boolean = true;
 
-  constructor(private portalService: FlPortalService) {
+  constructor() {
   }
 
   ngOnInit(): void {
   }
 
-  openUserInfoPortal(): void{
+  openUserInfoPortal(): void {
 
   }
 

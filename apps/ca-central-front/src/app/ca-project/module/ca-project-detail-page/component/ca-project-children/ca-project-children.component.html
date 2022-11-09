@@ -1,7 +1,15 @@
-<fl-text-icon>
-  <mat-icon flIcon="project" class="g-icon-big"></mat-icon>
-  <h2>{{'sub_projects' | translate}}</h2>
-</fl-text-icon>
+<div class="grid-container">
+  <a *ngFor="let project of children$ | async" [routerLink]="project | caDetailRoute">
+    <ca-project-card [project]="project"></ca-project-card>
+  </a>
 
-<ca-projects-list [projects]="children$ | async"></ca-projects-list>
+  <fl-card class="add-card" (click)="openChildCreation()">
+    <fl-card-header>
+      <div class="g-text-big">{{'add_new_sub_project' | translate}}</div>
+    </fl-card-header>
+    <fl-card-body>
+      <div class="add-text">+</div>
+    </fl-card-body>
+  </fl-card>
+</div>
 

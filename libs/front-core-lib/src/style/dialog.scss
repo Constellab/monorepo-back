@@ -43,7 +43,7 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 599px) {
   .g-small-dialog {
     max-width: 100% !important;
     width: 100%;
@@ -64,7 +64,7 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 599px) {
   .g-medium-dialog {
     max-width: 100% !important;
     width: 100%;
@@ -79,7 +79,7 @@
   height: 95vh;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 599px) {
   .g-big-dialog {
     max-width: none !important;
     width: 100%;
@@ -94,7 +94,7 @@
   height: 95vh;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 599px) {
   .g-huge-dialog {
     width: 100%;
     height: 100vh;
@@ -117,7 +117,7 @@
 
 
 /* CSS for the Portal Arrow (Make it disappear on small screen) */
-@media (max-width: 600px) {
+@media (max-width: 599px) {
   .g-arrow-overlay {
     display: none !important;
   }

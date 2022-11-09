@@ -226,4 +226,9 @@
     background-color: $color-error;
     color: white;
   }
+
+  .g-primary-button-icon-border {
+    border: 1px solid mat.get-color-from-palette($primary) !important;
+    box-sizing: content-box !important;
+  }
 }

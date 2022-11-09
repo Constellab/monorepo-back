@@ -1,7 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {CaUser} from '../../../../../ca-core/model/entities/ca-user.class';
-import {map} from 'rxjs/operators';
 import {CaProjectDetailState} from '../../state/ca-project-detail.state';
 
 /**
@@ -22,9 +21,7 @@ export class CaProjectUsersComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.users$ = this.state.getUsers$().pipe(
-      map(users => [...users, ...users, ...users, ...users])
-    );
+    this.users$ = this.state.getUsers$();
   }
 
   selectedUserChange(users: CaUser[]): void {

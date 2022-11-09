@@ -13,7 +13,7 @@ export class HaUserConfig extends FlUserConfig {
     super();
   }
 
-  getUserPhoto(userId: string): string {
+  getUserPhotoUrl(userId: string): string {
     return environment.constellabApiUrl + 'users/photo/' + userId;
   }
 

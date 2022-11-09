@@ -70,5 +70,7 @@
   "view_profile": "View profile",
   "function": "Function",
   "company": "Company",
-  "biography": "Biography"
+  "biography": "Biography",
+  "go_to_project": "Go to project",
+  "add_new_sub_project": "Add new project"
 }

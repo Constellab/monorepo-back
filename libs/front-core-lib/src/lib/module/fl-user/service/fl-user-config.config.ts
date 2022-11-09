@@ -1,3 +1,3 @@
 export abstract class FlUserConfig{
-  public abstract getUserPhoto(userId: string): string;
+  public abstract getUserPhotoUrl(userId: string): string;
 }

@@ -107,7 +107,9 @@ export class CaProjectActionsMenuComponent implements OnInit {
   }
 
   private createChildSuccess(project: CaProject): void {
-    this.childProjectCreated.emit(project);
+    if (project) {
+      this.childProjectCreated.emit(project);
+    }
   }
 
   openStatusHistory(project: CaProject): void {
