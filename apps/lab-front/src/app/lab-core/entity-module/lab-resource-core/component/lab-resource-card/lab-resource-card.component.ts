@@ -22,7 +22,8 @@ export class LabResourceCardComponent implements OnInit {
   openResourceDetail(): void {
     this.dialogService.openBigDialog(LabResourceDetailDialogComponent, {
       data: this.resource.id,
-      panelClass: 'g-dialog-main-background'
+      panelClass: 'g-dialog-main-background',
+      closeOnNavigation: true
     });
   }
 

@@ -148,7 +148,9 @@ export class LabWorkflowViewConfig extends PrConfigView {
 
   private openResourceDetail(resourceId: string): void {
     this.dialogService.openBigDialog(LabResourceDetailDialogComponent,
-      {data: resourceId, panelClass: 'g-dialog-main-background'});
+      {
+        data: resourceId, panelClass: 'g-dialog-main-background', closeOnNavigation: true
+      });
   }
 
   private openProcessSuggestion(port: PrWorkflowPort, node: PrWorkflowNode,

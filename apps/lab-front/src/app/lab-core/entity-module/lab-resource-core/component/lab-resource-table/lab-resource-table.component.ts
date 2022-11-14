@@ -120,7 +120,8 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
     ClHelpService.stopEventPropagation(event);
     this.dialogService.openBigDialog(LabResourceDetailDialogComponent, {
       data: resource.id,
-      panelClass: 'g-dialog-main-background'
+      panelClass: 'g-dialog-main-background',
+      closeOnNavigation: true
     });
   }
 
