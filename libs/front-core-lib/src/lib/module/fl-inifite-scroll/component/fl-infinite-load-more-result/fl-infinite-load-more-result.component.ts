@@ -14,6 +14,10 @@ export class FlInfiniteLoadMoreResultComponent implements OnInit {
 
   @Input() datasource: FlDatasourcePaginated<any>;
 
+  @Input() textNoResult: string = 'no_result';
+
+  @Input() textNoMoreResult: string = 'no_more_result';
+
   constructor() {
   }
 

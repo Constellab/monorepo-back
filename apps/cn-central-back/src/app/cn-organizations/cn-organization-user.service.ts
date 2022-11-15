@@ -125,4 +125,15 @@ export class CnOrganizationUserService extends BlAbstractPaginatedService<CnOrga
 
     return organizationUser.organization;
   }
+
+  public async findUserByOrganizationAndId(organizationId: string, userId: string): Promise<CnUser>{
+    const orgUser: CnOrganizationUser = await this.repository.findOne({
+      where:{
+        userId: userId,
+        organizationId: organizationId
+      },
+      relations: {user: true}
+    });
+    return orgUser.user;
+  }
 }

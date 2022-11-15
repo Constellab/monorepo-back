@@ -13,35 +13,36 @@
         <mat-icon class="photo-icon">add_a_photo</mat-icon>
       </div>
       <input flInputFile type="file" accept="image/jpg,image/jpeg,image/png" (fileChange)="onFileSelected($event)"
-             [strictMode]="true" [autoClearHtmlInput]="true" [hidden]="true" id="input-photo">
+             [strictMode]="true" [autoClearHtmlInput]="true" [hidden]="true" id="input-photo" #input>
       <fl-user-profile-picture [user]="user" [size]="'7'">
 
       </fl-user-profile-picture>
     </div>
 
     <mat-form-field class="g-form-input" appearance="fill">
-      <mat-label>{{'lastname' | translate}}</mat-label>
-      <input matInput type="text" formControlName="lastname">
+      <mat-label>{{'firstname' | translate}}</mat-label>
+      <input matInput type="text" formControlName="firstname" required flInputMaxLength="50" placeholder="{{'firstname' | translate}}">
     </mat-form-field>
 
     <mat-form-field class="g-form-input" appearance="fill">
-      <mat-label>{{'firstname' | translate}}</mat-label>
-      <input matInput type="text" formControlName="firstname">
+      <mat-label>{{'lastname' | translate}}</mat-label>
+      <input matInput type="text" formControlName="lastname" required flInputMaxLength="50"
+             placeholder="{{'lastname' | translate}}">
     </mat-form-field>
 
     <mat-form-field class="g-form-input" appearance="fill">
       <mat-label>{{'company' | translate}}</mat-label>
-      <input matInput type="text" formControlName="company">
+      <input matInput type="text" formControlName="company" flInputMaxLength="100">
     </mat-form-field>
 
     <mat-form-field class="g-form-input" appearance="fill">
-      <mat-label>{{'function' | translate}}</mat-label>
-      <input matInput type="text" formControlName="function">
+      <mat-label>{{'activity' | translate}}</mat-label>
+      <input matInput type="text" formControlName="activity" flInputMaxLength="100">
     </mat-form-field>
 
     <mat-form-field class="g-form-input" appearance="fill">
       <mat-label>{{'biography' | translate}}</mat-label>
-      <textarea matInput formControlName="biography" class="biography-input" maxlength="500"></textarea>
+      <textarea matInput formControlName="biography" class="biography-input" flInputMaxLength="500"></textarea>
     </mat-form-field>
   </form>
 </mat-dialog-content>

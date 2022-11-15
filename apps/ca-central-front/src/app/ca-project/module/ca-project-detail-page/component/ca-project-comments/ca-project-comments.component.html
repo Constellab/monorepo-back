@@ -1,6 +1,6 @@
 <div class="comment-zone" *ngIf="comments">
-  <fl-infinite-scroll [datasource]="comments" class="comment-div" [reverseMode]="true">
-    <div class="comments-container">
+  <fl-infinite-scroll [datasource]="comments" class="comment-div" [reverseMode]="true" [textNoResult]="'no_comments'" [textNoMoreResult]="''">
+    <div class="comments-container" [fxLayout]="'column-reverse'">
       <div *ngFor="let comment of comments?.connect() | async" class="comment
       {{comment.createdBy.id === currentUserId ? 'our-comment' : 'other-comment'}}">
         <ca-comment-div [comment]="comment"></ca-comment-div>

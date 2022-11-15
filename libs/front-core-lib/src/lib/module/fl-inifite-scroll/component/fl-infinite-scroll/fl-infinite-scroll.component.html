@@ -2,11 +2,11 @@
      [flInfiniteMode]="infiniteMode" [flInfiniteAfterDebounce]="infiniteAfterDebounce"
      [flInfiniteCheckOnInit]="infiniteCheckOnInit" [flInfiniteTriggerDistance]="infiniteTriggerDistance"
      [flReverseMode]="reverseMode"
-     [ngClass]="{'g-scrollable-element': infiniteMode === 'container'}"
-     class="container" fxLayout="{{reverseMode ? 'column-reverse' : 'column'}}">
+     [ngClass]="{'g-scrollable-element': infiniteMode === 'container'}" fxLayout="{{reverseMode ? 'column-reverse' : 'column'}}"
+     class="container" >
   <ng-content></ng-content>
 
-  <fl-infinite-load-more-result [datasource]="datasource"></fl-infinite-load-more-result>
+  <fl-infinite-load-more-result [datasource]="datasource" [textNoResult]="textNoResult" [textNoMoreResult]="textNoMoreResult"></fl-infinite-load-more-result>
 
   <div class="g-centered-forced loader">
     <fl-loader *ngIf="datasource.firstPageIsLoading"></fl-loader>

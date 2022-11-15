@@ -1,13 +1,16 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaUser} from '../../../ca-core/model/entities/ca-user.class';
-import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
+import {
+  FlFormDialogAbstractDirective,
+  FlFormDialogInput,
+  FlImageHelper,
+  FlSnackBarService
+} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
-import {marked} from 'marked';
 import {CaUsersService} from '../../../ca-core/service-api/ca-users.service';
-import {FlImageHelper} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'ca-user-profile-edit-dialog',
@@ -17,12 +20,13 @@ import {FlImageHelper} from '@monorepo/front-core-lib';
 export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirective<Partial<CaUser>, CaUser>
   implements OnInit {
 
+  @ViewChild('input') inputPhoto: HTMLInputElement;
+  editPhotoImgElement: HTMLImageElement;
   user: CaUser;
   isLoadingImport: boolean;
   newImageFile: File;
   errorFile: boolean;
   errorFileText: string;
-  editPhotoImgElement: HTMLImageElement;
   currentImgLink: string;
   photoDiv: HTMLDivElement;
 
@@ -45,7 +49,7 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
       id: [null],
       lastname: [{value: null}, Validators.required],
       firstname: [{value: null}, Validators.required],
-      function: [null],
+      activity: [null],
       company: [null],
       biography: [null, Validators.max(500)],
       photo: [null],
@@ -111,12 +115,11 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
 
   activeInput(event: Event): void {
     this.photoDiv = event.currentTarget as HTMLDivElement;
-    const inputPhoto: HTMLInputElement = this.photoDiv.querySelector('input');
     if(this.user.photo){
       this.editPhotoImgElement = this.photoDiv.querySelector('img');
       this.currentImgLink = this.editPhotoImgElement.src;
     }
-    inputPhoto.click();
+    this.inputPhoto.click();
   }
 
   private async compressBlob(blob: Blob): Promise<void> {

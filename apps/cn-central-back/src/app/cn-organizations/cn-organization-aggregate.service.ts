@@ -95,6 +95,12 @@ export class CnOrganizationAggregateService {
     return this.organizationUserService.findByOrganization(id, page, size);
   }
 
+  public async getUserOfOrganization(id: string, userId: string): Promise<CnUser>{
+    id = this.getOrganizationId(id);
+    await this.checkOrganizationMember(id);
+    return this.organizationUserService.findUserByOrganizationAndId(id, userId);
+  }
+
   public async getAll(page: number, size: number): Promise<ClPage<CnOrganization>> {
     this.checkAdmin();
 

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {FlUserConfig} from '../service/fl-user-config.config';
 import {Subject} from 'rxjs';
 
@@ -16,7 +16,7 @@ export type FlUserProfilePictureSize = 'small' | 'medium' | 'big';
   templateUrl: './fl-user-profile-picture.component.html',
   styleUrls: ['./fl-user-profile-picture.component.scss']
 })
-export class FlUserProfilePictureComponent implements OnInit {
+export class FlUserProfilePictureComponent implements OnInit, OnDestroy {
 
   @Input()
   user: FlUserProfilePicture;
@@ -24,7 +24,7 @@ export class FlUserProfilePictureComponent implements OnInit {
   @Input()
   size: FlUserProfilePictureSize | string = 'medium';
 
-  sizeNumber: number = 3;
+  sizeNumber: number = 3.5;
 
   fontSize: number;
 
@@ -38,24 +38,27 @@ export class FlUserProfilePictureComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initials = (this.user.firstname?.charAt(0) ?? '') + (this.user.lastname?.charAt(0) ?? '');
+    if (this.user) {
+      this.initials = (this.user.firstname?.charAt(0) ?? '') + (this.user.lastname?.charAt(0) ?? '');
+      if (this.user.photo) {
+        this.getPhotoLink();
+      }
+    }
     switch (this.size) {
       case 'small':
         this.sizeNumber = 2.5;
         break;
       case 'medium':
-        this.sizeNumber = 3;
+        this.sizeNumber = 3.5;
         break;
       case 'big':
-        this.sizeNumber = 6;
+        this.sizeNumber = 5.5;
         break;
       default:
         this.sizeNumber = +this.size;
     }
     this.fontSize = this.sizeNumber / 4;
-    if(this.user.photo){
-      this.getPhotoLink();
-    }
+
   }
 
   getPhotoLink(): string {
@@ -77,4 +80,7 @@ export class FlUserProfilePictureComponent implements OnInit {
     };
   }
 
+  ngOnDestroy(): void {
+    this.hasPhoto$.complete();
+  }
 }

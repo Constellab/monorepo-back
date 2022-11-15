@@ -28,7 +28,7 @@ export class CnUser extends BlEntityWithId implements BlUser {
   category: CmUserCategory;
 
   @Column({nullable: true})
-  function: string;
+  activity: string;
 
   @Column({nullable: true})
   biography: string;
@@ -106,7 +106,7 @@ export class CnUserEditDTO {
   id: string;
   firstname: string;
   lastname: string;
-  function: string;
+  activity: string;
   company: string;
   biography: string;
 }

@@ -157,12 +157,12 @@ export class CaProjectService {
   }
 
   public getAll(projectId: string, page: number, size: number): Observable<ClPage<CaProjectComment>> {
-    return this.apiService.get(`${this.route}/comments/${projectId}`, CaProjectComment,
+    return this.apiService.get(`${this.route}/${projectId}/comments`, CaProjectComment,
       {page: page, pageSize: size, resultIsPaginated: true});
   }
 
   public newProjectComment(projectId: string, content: CmRichTextI, parentCommentId?: string): Observable<CaProjectComment> {
-    return this.apiService.post(`${this.route}/new-comment/${projectId}`,
+    return this.apiService.post(`${this.route}/${projectId}/comment`,
       {content: content, parentCommentId: parentCommentId}, CaProjectComment);
   }
 }

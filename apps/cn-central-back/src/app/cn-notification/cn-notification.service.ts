@@ -68,7 +68,11 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
   }
 
   async read(notifId: string): Promise<void>{
-    await this.readNotification(await this.notificationRepository.findOneBy({id: notifId}));
+    const notification: CnNotification = await this.notificationRepository.findOneBy({id: notifId});
+    if(notification.isRead){
+      return ;
+    }
+    await this.readNotification(notification);
   }
 
   async readNotification(notification: CnNotification): Promise<void> {

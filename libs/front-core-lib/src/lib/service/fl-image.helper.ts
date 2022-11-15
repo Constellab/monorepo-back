@@ -2,13 +2,14 @@ export class FlImageHelper{
   constructor() {
   }
 
-  /*
-    Use this method to compress a blob:
-    - blob is the blob to resize
-    - resizeWidthMax is the maximum width of the compressed image
-    - resizeHeightMax is the maximum height of the compressed image
-    - cropWidth is the width of the image after the crop (default is resizeWidthMax)
-    - cropHeight is the height of the image after the crop (default is resizeHeightMax)
+  /***
+   * Use this method to compress and resize a blob
+   *
+   * @param blob is the blob to resize
+   * @param resizeWidthMax is the maximum width of the compressed image
+   * @param resizeHeightMax is the maximum height of the compressed image
+   * @param cropWidth is the width of the image after the crop (default is resizeWidthMax)
+   * @param cropHeight is the height of the image after the crop (default is resizeHeightMax)
    */
   public static async compressBlob(blob: Blob, resizeWidthMax: number, resizeHeightMax: number,
                                    cropWidth: number = resizeWidthMax, cropHeight: number = resizeHeightMax): Promise<Blob>{
@@ -42,7 +43,12 @@ export class FlImageHelper{
     return new Promise(resolve => canvas.toBlob(resolve));
   }
 
-  // Calculate the size of the compressed image
+  /***
+   * Calcul the new size of the image
+   * @param img
+   * @param maxH
+   * @param maxW
+   */
   public static calculateSize(img: HTMLImageElement, maxH: number, maxW: number): [number, number] {
     let width: number = img.width;
     let height: number = img.height;

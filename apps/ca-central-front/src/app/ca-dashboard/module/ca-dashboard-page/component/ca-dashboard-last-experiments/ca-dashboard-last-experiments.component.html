@@ -12,7 +12,7 @@
       <mat-nav-list>
         <mat-list-item *ngFor="let experiment of lastExperiments"
                        class="experiment">
-          <a class="experiment-div" [href]="experiment | caDetailRoute">
+          <a class="experiment-div" [routerLink]="experiment | caDetailRoute">
             <fl-status-chip mat-list-avatar [status]="experiment.status" [mode]="'iconOnly'" class="icon"></fl-status-chip>
             <div class="experiment-title-project">
               <div class="experiment-title">

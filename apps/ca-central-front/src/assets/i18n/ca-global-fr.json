@@ -193,5 +193,8 @@
   "request_new_licenses_help_fr": "Vous pouvez demander de nouvelles licences pour votre organisation pour accéder à Constellab. Nous vous contactera rapidement à propos de votre demande.",
   "new_licenses_requested": "Demande envoyée, nous vous contacterons rapidement",
   "nb_licenses": "Nombre de licences",
-  "request_licenses_comment": "Commentaire"
+  "request_licenses_comment": "Commentaire",
+  "no_comments": "Aucun commentaire, écrivez le premier pour collaborer",
+  "no_notifications": "Aucune notification dans les 30 derniers jours",
+  "no_more_notifications": "Pas plus de notifications au cours 30 derniers jours"
 }

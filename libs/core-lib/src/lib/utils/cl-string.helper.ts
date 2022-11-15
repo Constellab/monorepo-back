@@ -215,6 +215,10 @@ export class ClStringHelper {
   }
 
 
+  /**
+   * Return a valid id/string for url parameters
+   * @param str
+   */
   public static toIdForUrl(str: string): string{
     str = str.replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '');
     str.replace('--', '-');

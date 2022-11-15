@@ -53,7 +53,11 @@ export class FlInfiniteScrollComponent implements OnInit {
    */
   @Input() infiniteMode: 'container' | 'body' = 'container';
 
-  @Input() reverseMode: boolean = false
+  @Input() reverseMode: boolean = false;
+
+  @Input() textNoResult: string;
+
+  @Input() textNoMoreResult: string;
 
   constructor() {
   }

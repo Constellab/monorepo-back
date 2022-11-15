@@ -1,6 +1,6 @@
 <fl-portal class="portal-notifications mat-elevation-z5">
   <fl-portal-content class="portal-notifications-content">
-    <fl-infinite-scroll [datasource]="notifications" class="infinite-scroll">
+    <fl-infinite-scroll [datasource]="notifications" class="infinite-scroll" [textNoResult]="'no_notifications'" [textNoMoreResult]="'no_more_notifications'">
       <div fxLayout="row">
         <h2>Notifications</h2>
         <div fxLayout="row" class="head-notif-portal">
@@ -14,7 +14,8 @@
         <span class="g-text-link read-all-text" (click)="readAllNotifications()">{{'all_marked_as_read' | translate}}</span>
       </div>
 
-      <a *ngFor="let notif of notifications.connect() | async" class="notification" (click)="readNotif(notif.id)" [href]="getNotificationLink(notif.link)">
+      <a *ngFor="let notif of notifications.connect() | async" class="notification" (click)="readNotif(notif.id)"
+         [routerLink]="getNotificationLink(notif.link)" [queryParams]="getNotificationQueryParams(notif.link)">
         <div class="created-by-pp">
           <fl-user-profile-picture [user]="notif.createdBy" size="4"></fl-user-profile-picture>
         </div>

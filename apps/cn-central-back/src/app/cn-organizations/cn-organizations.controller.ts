@@ -26,6 +26,7 @@ import {CmUserCategory} from '@monorepo/common-model';
 import {CnOrganizationInvit} from './cn-organization-invit.entity';
 import {CnUserOrgaInfo} from '../cn-users/cn-user.dto';
 import {CnRequestNewLicensesDto} from './cn-organization.dto';
+import {CnUser} from '../cn-users/cn-user.entity';
 
 @Controller('organizations')
 export class CnOrganizationsController {
@@ -115,7 +116,7 @@ export class CnOrganizationsController {
   }
 
   @Get(':id/user')
-  public async getUserOfOrganization(@Param('id') id: string,
+  public async getUsersOfOrganization(@Param('id') id: string,
                                      @Query('page', new ParseIntPipe()) page: number,
                                      @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnOrganizationUser>> {
     return this.organizationAggregate.getUsersOfOrganization(id, page, size);
@@ -144,6 +145,12 @@ export class CnOrganizationsController {
                         @Res() response: Response): Promise<any> {
     const file = await this.organizationAggregate.getPhoto(filename);
     BlResponseHelper.setMessageAndCache(response, file);
+  }
+
+  @Get(':id/user/:userId')
+  public async getUserOfOrganization(@Param('id') id: string,
+                                     @Param('userId', new ParseUUIDPipe()) userId: string): Promise<CnUser>{
+    return this.organizationAggregate.getUserOfOrganization(id, userId);
   }
 
   ////////////////////////////////////// OTHERS //////////////////////////////////////

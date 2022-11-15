@@ -11,11 +11,11 @@
         <mat-icon flIcon="organization"></mat-icon>
         {{user.company}}
       </fl-text-icon>
-      <fl-text-icon iconPosition="start" *ngIf="user.function">
+      <fl-text-icon iconPosition="start" *ngIf="user.activity">
         <mat-icon flIcon="badge"></mat-icon>
-        {{user.function}}
+        {{user.activity}}
       </fl-text-icon>
-      <a [href]="'app/user/' + user.id">
+      <a [routerLink]="'app/user/' + user.id">
         <button class="button-view-profile g-button-small"  mat-stroked-button color="primary" type="button">
           <fl-text-icon iconPosition="start">
             <mat-icon flIcon="person" class="g-button-icon-small"></mat-icon>

@@ -149,14 +149,14 @@ export class CnProjectsController {
     return this.projectAggregate.updateDescription(id, description);
   }
 
-  @Post('new-comment/:id')
+  @Post(':projectId/comment/')
   createProjectComment(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('projectId', new ParseUUIDPipe()) projectId: string,
     @Body(new BlParsePipe(CnNewComment)) newComment: CnNewComment): Promise<CnProjectComment> {
-    return this.projectAggregate.createProjectComment(newComment, id);
+    return this.projectAggregate.createProjectComment(newComment, projectId);
   }
 
-  @Get('comments/:projectId')
+  @Get(':projectId/comments')
   getProjectComments(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                      @Query('page', new ParseIntPipe()) page: number,
                      @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnProjectComment>> {

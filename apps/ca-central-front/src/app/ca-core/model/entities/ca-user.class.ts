@@ -32,7 +32,7 @@ export class CaUser extends CaEntity {
 
   phone: string;
 
-  function?: string;
+  activity?: string;
 
   lang: ClSupportedLanguage;
 
