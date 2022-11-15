@@ -20,11 +20,11 @@ export class BlObjectStorageService {
   }
 
   public async uploadObject(obj: BlFile, bucket: string,
-                            generatedRandomObjectName: boolean = false): Promise<string> {
+                            generateRandomObjectName: boolean = false): Promise<string> {
     const s3Client = this.getClient();
 
     let filename: string;
-    if (generatedRandomObjectName) {
+    if (generateRandomObjectName) {
       const extension = BlFileHelper.getFileExtension(obj.originalname);
       filename = this.generateRandomFileName(extension);
     } else {

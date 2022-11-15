@@ -126,7 +126,7 @@ export class CnExternalLabManagerApiService {
   private constructRoute(labUrl: string, route: string): string {
     return `${labUrl}/${route}`;
     // uncomment for local host tests
-    // return `http://localhost:3010/${route}`;
+    // return `http://localhost:3080/${route}`;
   }
 
 
