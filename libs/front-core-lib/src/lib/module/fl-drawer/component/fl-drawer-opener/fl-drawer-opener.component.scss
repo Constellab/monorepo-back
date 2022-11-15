@@ -1,8 +1,7 @@
 :host {
   height: 100%;
   width: 13px;
-  background-color: var(--grey-high-contrast);
-  color: var(--grey-high-contrast-text);
+  background-color: var(--hover-color);
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
   cursor: pointer;
@@ -18,7 +17,7 @@
   height: 40px;
   border-bottom-left-radius: 100px;
   border-top-left-radius: 100px;
-  background-color: var(--grey-high-contrast);
+  background-color: var(--hover-color);
   margin-left: -18px;
   overflow: hidden;
   cursor: pointer;

@@ -65,7 +65,7 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  background-color: var(--grey-high-contrast);
+  background-color: var(--hover-color);
   width: 16px;
   height: 16px;
   border-radius: 4px;
@@ -92,7 +92,7 @@
 
 .link {
   width: 50%;
-  border-top-color: var(--grey-contrast);
+  border-top-color: var(--hover-color);
   border-top-width: 3px;
 }
 

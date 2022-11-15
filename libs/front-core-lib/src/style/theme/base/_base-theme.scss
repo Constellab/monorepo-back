@@ -50,6 +50,7 @@
 
   :root {
     --primary-color: #{mat.get-color-from-palette($primary)};
+    --primary-color-contrast: #{mat.get-color-from-palette($primary, default-contrast)};
     --accent-color: #{mat.get-color-from-palette($accent)};
     --warn-color: #{mat.get-color-from-palette($warn)};
     --success-color: #{$color-success};
@@ -192,12 +193,12 @@
 
   // grey color working for both theme
   .g-grey-background {
-    background-color: var(--grey-high-contrast);
+    background-color: var(--hover-color);
     color: white;
   }
 
   .g-grey-text {
-    background-color: var(--grey-high-contrast);
+    background-color: var(--hover-color);
   }
 
   .g-success-text {

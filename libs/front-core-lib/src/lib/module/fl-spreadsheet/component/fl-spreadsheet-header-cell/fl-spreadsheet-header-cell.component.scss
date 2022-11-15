@@ -5,17 +5,17 @@ $cell-selected-border-color: #058989;
   // make the host as td element
   display: table-cell;
   vertical-align: inherit;
-  background-color: var(--grey-low-contrast);
+  background-color: var(--card-background);
 
 
   &.column-selected {
     border-bottom-color: $cell-selected-border-color !important;
-    background-color: var(--grey-contrast);
+    background-color: var(--hover-color);
   }
 
   &.row-selected {
     border-right-color: $cell-selected-border-color !important;
-    background-color: var(--grey-contrast);
+    background-color: var(--hover-color);
   }
 }
 

@@ -19,13 +19,13 @@
 
 .add-card {
   position: relative;
-  background-color: var(--grey-low-contrast);
+  background-color: var(--card-background);
   cursor: pointer;
   min-height: 10em;
 }
 
 .add-card:hover {
-  background-color: var(--grey-contrast);
+  background-color: var(--hover-color);
 }
 
 .add-text{

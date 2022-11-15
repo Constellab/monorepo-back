@@ -29,7 +29,7 @@
 }
 
 .side h3:hover, .side h4:hover{
-  background-color: var(--grey-low-contrast);
+  background-color: var(--card-background);
 }
 
 .side h3{
@@ -48,7 +48,7 @@
 
 .title-side-line{
   width: 98%;
-  border-bottom: 2px solid var(--grey-low-contrast);
+  border-bottom: 2px solid var(--card-background);
   margin-bottom: 1em;
 }
 
@@ -84,7 +84,7 @@
   width: calc(65rem - 105px);
   display: flex;
   flex-direction: row;
-  border-bottom: 3px solid var(--grey-low-contrast);
+  border-bottom: 3px solid var(--card-background);
   padding: 1em 30px 0.2em;
 }
 

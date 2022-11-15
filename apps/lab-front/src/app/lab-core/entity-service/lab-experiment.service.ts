@@ -58,7 +58,7 @@ export class LabExperimentService {
   private experimentFormToBody(experiment: LabExperimentSimpleForm): { title: string, project_id: string } {
     return {
       title: experiment.title,
-      project_id: experiment.project.id
+      project_id: experiment.project?.id ?? null
     };
   }
 

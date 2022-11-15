@@ -1,7 +1,7 @@
 .markdown{
 
   table, td, th{
-    border: 1px solid var(--grey-high-contrast);
+    border: 1px solid var(--hover-color);
     border-collapse: collapse;
   }
 
@@ -12,7 +12,7 @@
     border-spacing: 0 !important;
 
     tbody > tr:nth-child(odd){
-      background-color: var(--grey-low-contrast);
+      background-color: var(--card-background);
     }
 
 

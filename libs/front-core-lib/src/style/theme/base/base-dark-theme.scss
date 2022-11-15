@@ -11,8 +11,8 @@ $custom-primary: (
   100: #AFF2F3,
   500: #49A8A9,
   contrast: (
-    100: #010202,
-    500: #010202,
+    100: #222222,
+    500: #222222,
   )
 );
 $primary: mat.define-palette($custom-primary, 500, 500, 500, 500);
@@ -22,8 +22,8 @@ $custom-accent: (
   100: #C7BDF9,
   500: #6C4EF6,
   contrast: (
-    100: #010202,
-    500: #E5E5E5,
+    100: #222222,
+    500: #FFFFFF,
   )
 );
 
@@ -34,8 +34,8 @@ $custom-warn: (
   100: #EEC0D6,
   500: #F991C3,
   contrast: (
-    100: #010202,
-    500: #010202,
+    100: #222222,
+    500: #222222,
   )
 );
 $warn: mat.define-palette($custom-warn, 500, 500, 500, 500);
@@ -46,7 +46,7 @@ $theme: mat.define-dark-theme((color: (primary: $primary, accent: $accent, warn:
 // define the background theme
 $background: map_merge(mat.$dark-theme-background-palette, (background: #222222, card: #2B2D2E, dialog:#2B2D2E));
 // define the foreground
-$foreground: map_merge(mat.$dark-theme-foreground-palette, (base: #EDFAFB, icon: #EDFAFB, icons: #EDFAFB, text: #EDFAFB));
+$foreground: map_merge(mat.$dark-theme-foreground-palette, (base: #FFFFFF, icon: #FFFFFF, icons: #FFFFFF, text: #FFFFFF));
 
 // Load all global classes to theme
 @include _base-theme($theme, $background, $foreground);
@@ -56,15 +56,10 @@ $foreground-color: mat.get-color-from-palette($foreground, text);
 $background-color: mat.get-color-from-palette($background, background);
 
 :root {
-  --light-color: #B6B8B8;
-
-  // different contrast of grey base on theme color (here black)
-  --grey-low-contrast: #404444;
-  --grey-low-contrast-text: #ffffff;
-  --grey-contrast: #6c6c6c;
-  --grey-contrast-text: #ffffff;
-  --grey-high-contrast: #808080;
-  --grey-high-contrast-text: #ffffff;
+  // color for light text
+  --light-color: #D9D9D9;
+  // color to use for hover element or more contrast grey
+  --hover-color: #3A3D3D;
 }
 
 
@@ -75,15 +70,14 @@ $background-color: mat.get-color-from-palette($background, background);
   color: var(--light-color);
 }
 
+.g-hover:hover {
+  background-color: var(--hover-color);
+}
+
 // quill specific override
 .ql-editor.ql-blank::before {
   color: rgba(255, 255, 255, 0.7) !important;
 }
-
-.g-placeholder {
-  color: rgba(255, 255, 255, 0.7);
-}
-
 
 /* Used to have a fade in effect at the end of the div*/
 .g-fade-in {

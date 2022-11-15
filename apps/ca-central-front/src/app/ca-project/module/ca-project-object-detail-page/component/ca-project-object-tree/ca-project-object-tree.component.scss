@@ -4,7 +4,7 @@
 
 .tree-node {
   min-height: 32px;
-  background-color: var(--grey-low-contrast);
+  background-color: var(--card-background);
   margin-top: 1em;
   border-radius: 10px;
   padding-right: 0;
@@ -16,7 +16,7 @@
 }
 
 .selected-tree-node {
-  background-color: var(--grey-contrast);
+  background-color: var(--hover-color);
 }
 
 .leaf-node-margin {

@@ -167,14 +167,14 @@ figure {
 .g-scrollable-element::-webkit-scrollbar-thumb,
 .g-styled-scrollbar::-webkit-scrollbar-thumb,
 .g-styled-scrollbar *::-webkit-scrollbar-thumb {
-  background: var(--grey-contrast);
+  background: var(--hover-color);
 }
 
 /* Handle on hover */
 .g-scrollable-element::-webkit-scrollbar-thumb:hover,
 .g-styled-scrollbar::-webkit-scrollbar-thumb:hover,
 .g-styled-scrollbar *::-webkit-scrollbar-thumb:hover {
-  background: var(--grey-high-contrast);
+  background: var(--hover-color);
 
 }
 

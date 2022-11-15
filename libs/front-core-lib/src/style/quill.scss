@@ -28,15 +28,15 @@
 }
 
 .ql-snow .ql-stroke {
-  stroke: var(--grey-high-contrast);
+  stroke: var(--light-color);
 }
 
 .ql-snow .ql-fill{
-  fill: var(--grey-high-contrast);
+  fill: var(--light-color);
 }
 
 .ql-snow .ql-blank{
-  color: var(--grey-high-contrast);
+  color: var(--light-color);
 }
 
 .ql-snow .ql-active .ql-stroke, .ql-snow button:hover .ql-stroke{
@@ -69,7 +69,7 @@
     font-weight: bold;
     margin-top: 1.5em;
     margin-bottom: 0.5em;
-    border-top: 1px solid var(--grey-low-contrast);
+    border-top: 1px solid var(--card-background);
     padding-top: 1.5em;
   }
 
@@ -111,7 +111,7 @@
   a {
     position: relative;
     white-space: initial !important;
-    color: var(--primary-color);
+    color: var(--light-color);
     font-weight: bold;
     text-decoration: none;
   }
@@ -129,11 +129,11 @@
   blockquote {
     margin-top: 2em;
     margin-bottom: 2em;
-    border-left-color: var(--grey-low-contrast);
+    border-left-color: var(--card-background);
   }
 
   code, pre{
-    background-color: var(--grey-low-contrast);
+    background-color: var(--card-background);
     color: var(--color-foreground);
     padding: 6px 7px;
     font-weight: bold;

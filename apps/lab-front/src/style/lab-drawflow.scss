@@ -9,13 +9,13 @@
 
   .drawflow {
     // set a border to the main drawflow element so the user knows the limits
-    border: 1px solid var(--grey-low-contrast);
+    border: 1px solid var(--card-background);
   }
 
   // style drawflow
   .drawflow .drawflow-node {
     width: initial;
-    border: 1px solid var(--grey-low-contrast) !important;
+    border: 1px solid var(--card-background) !important;
     // Padding of the nodes
     padding: 5px 15px;
     border-radius: 30px;

@@ -10,7 +10,7 @@ $cell-selected-border-color: #058989;
   &.cell-selected {
     // make the cell border higher than neighbour border
     border-style: double !important;
-    background-color: var(--grey-contrast);
+    background-color: var(--hover-color);
   }
 
   &.selected-border-top {

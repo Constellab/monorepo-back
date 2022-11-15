@@ -12,8 +12,8 @@ $custom-primary: (
   100: #AFF2F3,
   500: #49A8A9,
   contrast: (
-    100: #010202,
-    500: #010202,
+    100: #222222,
+    500: #222222,
   )
 );
 $primary: mat.define-palette($custom-primary, 500, 500, 500, 500);
@@ -23,8 +23,8 @@ $custom-accent: (
   100: #C7BDF9,
   500: #6C4EF6,
   contrast: (
-    100: #010202,
-    500: #E5E5E5,
+    100: #222222,
+    500: #FFFFFF,
   )
 );
 
@@ -36,8 +36,8 @@ $custom-warn: (
   100: #EEC0D6,
   500: #F991C3,
   contrast: (
-    100: #010202,
-    500: #010202,
+    100: #222222,
+    500: #222222,
   )
 );
 $warn: mat.define-palette($custom-warn, 500, 500, 500, 500);
@@ -47,25 +47,20 @@ $warn: mat.define-palette($custom-warn, 500, 500, 500, 500);
 $theme: mat.define-light-theme((color: (primary: $primary, accent: $accent, warn: $warn)));
 
 // define the background theme
-$background: map_merge(mat.$light-theme-background-palette, (background: #F9F8F8, card: #E9E9E9, dialog:#E9E9E9));
+$background: map_merge(mat.$light-theme-background-palette, (background: #FFFFFF, card: #EAEAEA, dialog:#EAEAEA));
 
 // define the foreground
-$foreground: map_merge(mat.$light-theme-foreground-palette, (base: #010202, icon: #010202, icons: #010202, text: #010202));
+$foreground: map_merge(mat.$light-theme-foreground-palette, (base: #222222, icon: #222222, icons: #222222, text: #222222));
 
 // Load all global classes link to theme
 @include _base-theme($theme, $background, $foreground);
 
 //////////////////// GLOBAL CSS VARIABLES ///////////////////////
 :root {
-  --light-color: #3F3F3F;
-
-  // different contrast of grey base on theme color (here white)
-  --grey-low-contrast: #ddd;
-  --grey-low-contrast-text: #000000;
-  --grey-contrast: #bbbbbb;
-  --grey-contrast-text: #000000;
-  --grey-high-contrast: #808080;
-  --grey-high-contrast-text: #ffffff;
+  // color for light text
+  --light-color: #434546;
+  // color to use for hover element or more contrast grey
+  --hover-color: #DCDCDC;
 }
 
 /**
@@ -75,8 +70,8 @@ $foreground: map_merge(mat.$light-theme-foreground-palette, (base: #010202, icon
   color: var(--light-color);
 }
 
-.g-placeholder {
-  color: var(--light-color);
+.g-hover:hover {
+  background-color: var(--hover-color);
 }
 
 /* Used to have a fade in effect at the end of the div*/

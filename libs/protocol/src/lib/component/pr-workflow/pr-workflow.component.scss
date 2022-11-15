@@ -7,7 +7,7 @@
   box-sizing: border-box;
   padding-left: 1em;
   padding-right: 1em;
-  border-bottom: 1px solid var(--grey-low-contrast);
+  border-bottom: 1px solid var(--card-background);
   background-color: var(--card-background);
   min-height: 40px;
 }
@@ -19,6 +19,6 @@
 
 .divider{
   width: 1px;
-  background-color: var(--grey-low-contrast);
+  background-color: var(--card-background);
   height: 70%;
 }
