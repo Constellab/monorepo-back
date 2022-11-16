@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CaSettingsPageComponent} from './component/ca-settings-page/ca-settings-page.component';
+import {CaUserSettingsDialogComponent} from './component/ca-user-settings-dialog/ca-user-settings-dialog.component';
 import {CaCoreModule} from '../ca-core/ca-core.module';
 import {CaSettingsRoutingModule} from './ca-settings-routing.module';
 import {CaThemeSelectionComponent} from './component/ca-theme-selection/ca-theme-selection.component';
@@ -10,17 +10,19 @@ import {CaUserProfileSectionComponent} from './component/ca-user-profile-section
 import {
   CaUserProfileEditDialogComponent
 } from './component/ca-user-profile-edit-dialog/ca-user-profile-edit-dialog.component';
+import {CaUserTwoFaToggleComponent} from './component/ca-user-two-fa-toggle/ca-user-two-fa-toggle.component';
 
 /**
  * Module for the settings page
  */
 @NgModule({
   declarations: [
-    CaSettingsPageComponent,
+    CaUserSettingsDialogComponent,
     CaThemeSelectionComponent,
     CaLanguageSelectionComponent,
     CaUserProfileSectionComponent,
-    CaUserProfileEditDialogComponent
+    CaUserProfileEditDialogComponent,
+    CaUserTwoFaToggleComponent
   ],
   imports: [
     CommonModule,

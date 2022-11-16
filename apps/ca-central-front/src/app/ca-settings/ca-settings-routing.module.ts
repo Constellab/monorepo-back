@@ -1,10 +1,10 @@
 import {Route, RouterModule} from '@angular/router';
 import {NgModule} from '@angular/core';
-import {CaSettingsPageComponent} from './component/ca-settings-page/ca-settings-page.component';
+import {CaUserSettingsDialogComponent} from './component/ca-user-settings-dialog/ca-user-settings-dialog.component';
 
 const routes: Route[] = [
   {
-    path: '', component: CaSettingsPageComponent
+    path: '', component: CaUserSettingsDialogComponent
   }
 ];
 

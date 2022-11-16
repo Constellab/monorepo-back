@@ -106,4 +106,11 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     user.biography = userEdit.biography;
     return this.repository.save(user);
   }
+
+  async set2FA(enable: boolean): Promise<boolean> {
+    const user: CnUser = this.getCurrent();
+    user.has2FA = enable;
+    await this.repository.save(user);
+    return enable;
+  }
 }

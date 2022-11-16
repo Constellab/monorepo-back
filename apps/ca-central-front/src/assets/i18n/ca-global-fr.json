@@ -196,5 +196,14 @@
   "request_licenses_comment": "Commentaire",
   "no_comments": "Aucun commentaire, écrivez le premier et collaborez avec votre équipe!",
   "no_notifications": "Aucune notification dans les 30 derniers jours",
-  "no_more_notifications": "Pas plus de notifications au cours 30 derniers jours"
+  "no_more_notifications": "Pas plus de notifications au cours 30 derniers jours",
+  "two_fa":  "Two factor authentication",
+  "activate_two_fa": "Activer l'authentification à deux facteurs",
+  "activate_two_fa_confirmation": "Activer l'authentification à deux facteurs. A chaque connexion vous recevrez un code par mail à entrer pour compléter votre connexion.",
+  "two_fa_enabled": "Authentification à deux facteurs activée",
+  "two_fa_is_enabled": "L'authentification à deux facteurs est activée",
+  "deactivate_two_fa": "Désactiver l'authentification à deux facteurs",
+  "deactivate_two_fa_confirmation": "Êtes-vous sûr de vouloir désactiver l'authentification à deux facteurs ? Vous ne recevrez plus de code pour vous connecter.",
+  "two_fa_disabled": "Authentification à deux facteurs désactivée",
+  "two_fa_is_disabled": "L'authentification à deux facteurs est désactivée"
 }

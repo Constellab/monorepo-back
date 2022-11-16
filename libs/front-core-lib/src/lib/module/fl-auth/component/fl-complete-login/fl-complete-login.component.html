@@ -1,0 +1,10 @@
+<div>
+
+  <img src="assets/logo/logo_with_name.png" alt="Gencovery logo" class="logo"/>
+
+  <fl-login *ngIf="(currentView$ | async) === 'login'; else twoFA" class="login"
+            [diableFooter]="disableLoginFooter" (loginSuccess)="onLoginSuccess($event)"></fl-login>
+  <ng-template #twoFA>
+    <fl-login-two-f-a (login2FASuccess)="onLogin2FASuccess($event)"></fl-login-two-f-a>
+  </ng-template>
+</div>

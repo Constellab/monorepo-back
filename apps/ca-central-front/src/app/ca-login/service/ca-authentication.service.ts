@@ -4,11 +4,13 @@ import {tap} from 'rxjs/operators';
 import {
   FlApiService,
   flAuthExpiredCookie,
+  FlAuthLogin2FaResponse,
+  FlAuthLoginResponse,
   FlAuthService,
   FlCleanerService,
   FlCookieService
 } from '@monorepo/front-core-lib';
-import {CmCredentials} from '@monorepo/common-model';
+import {CmCredentials, CmCredentials2Fa} from '@monorepo/common-model';
 import {environment} from '../../../environments/ca-environment';
 
 /**
@@ -30,12 +32,13 @@ export class CaAuthenticationService extends FlAuthService {
    * The JWT is returned in a HTTPOnly cookie and is not accessible from JS
    * @param credentials username and password
    */
-  public login(credentials: CmCredentials): Observable<{ expiresIn: number }> {
-    return this.apiService.post(this.route + '/login', credentials).pipe(
-      tap(expiresIn => this.setAuthExpirationCookie(expiresIn))
-    );
+  public login(credentials: CmCredentials): Observable<FlAuthLoginResponse> {
+    return this.apiService.post(this.route + '/login', credentials);
   }
 
+  checkTwoFA(credentials: CmCredentials2Fa): Observable<FlAuthLogin2FaResponse> {
+    return this.apiService.post(this.route + '/login-2fa', credentials);
+  }
 
   /**
    * Call the API to disconnect the user and remove his
@@ -48,9 +51,9 @@ export class CaAuthenticationService extends FlAuthService {
     );
   }
 
-  private setAuthExpirationCookie(expiresIn: { expiresIn: number }): void {
+  public afterLogin(expiresIn: number): void {
     // get the date in expiresIn milliseconds
-    const date = new Date(new Date().getTime() + expiresIn.expiresIn);
+    const date = new Date(new Date().getTime() + expiresIn);
     // clear the millisecond to get closer to real expiration
     date.setMilliseconds(0);
     this.cookieService.setCookie(flAuthExpiredCookie, date.getTime(),

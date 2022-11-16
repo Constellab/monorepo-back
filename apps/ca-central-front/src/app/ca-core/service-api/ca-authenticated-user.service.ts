@@ -1,6 +1,6 @@
 import {Inject, Injectable} from '@angular/core';
 import {CaUser} from '../model/entities/ca-user.class';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, mergeMap, Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {
   FlApiService,
@@ -25,7 +25,7 @@ import {environment} from '../../../environments/ca-environment';
 })
 export class CaAuthenticatedUserService implements FlCleanableService {
 
-  private readonly usersRoute: string = 'users';
+  private readonly currentUserRoute: string = 'users/current';
 
   private userAuthenticated: CaUser;
   // subject to subscribe to user changes
@@ -55,7 +55,7 @@ export class CaAuthenticatedUserService implements FlCleanableService {
    * Call the get user information route and store the user in the service
    */
   public loadAuthenticatedUser(): Observable<CaUser> {
-    return this.apiService.get(this.usersRoute + '/current', CaUser).pipe(
+    return this.apiService.get(this.currentUserRoute, CaUser).pipe(
       map(user => this.storeUserAuthenticated(user))
     );
   }
@@ -118,7 +118,7 @@ export class CaAuthenticatedUserService implements FlCleanableService {
   /////////////////////////////// METHOD ON AUTHENTICATED USER //////////////////////////
 
   public changeLanguage(lang: ClSupportedLanguage): Observable<void> {
-    return this.apiService.put(`${this.usersRoute}/language/${lang}`, null).pipe(
+    return this.apiService.put(`${this.currentUserRoute}/language/${lang}`, null).pipe(
       tap(() => this.changeLanguageSuccess(lang))
     );
   }
@@ -132,7 +132,7 @@ export class CaAuthenticatedUserService implements FlCleanableService {
   }
 
   public changeTheme(theme: ClTheme): Observable<void> {
-    return this.apiService.put(`${this.usersRoute}/theme/${theme}`, null).pipe(
+    return this.apiService.put(`${this.currentUserRoute}/theme/${theme}`, null).pipe(
       tap(() => this.changeThemeSuccess(theme))
     );
   }
@@ -142,7 +142,33 @@ export class CaAuthenticatedUserService implements FlCleanableService {
     this.notifyUserChange();
   }
 
+  public editUser(newUserInfo: Partial<CaUser>, newUserPhoto: File): Observable<CaUser> {
 
+    if(newUserPhoto){
+      const formData = new FormData();
+      formData.append('photo', newUserPhoto);
+      return this.apiService.put(this.currentUserRoute + '/photo/' + newUserInfo.id, formData).pipe(
+        mergeMap(() => this.apiService.put(this.currentUserRoute + '/edit', newUserInfo, CaUser)),
+        map((res) => res)
+      );
+    } else {
+      return this.apiService.put(this.currentUserRoute , newUserInfo, CaUser);
+    }
+  }
+
+  public has2FA(): Observable<boolean> {
+    return this.apiService.get(`${this.currentUserRoute}/2-fa`).pipe(
+      map(response => response.enabled)
+    );
+  }
+
+  public set2FA(enabled: boolean): Observable<boolean> {
+    return this.apiService.put(`${this.currentUserRoute}/2-fa`, {enabled}).pipe(
+      map(response => response.enabled)
+    );
+  }
+
+  /////////////////////////////// OTHER //////////////////////////
   public isAdmin(): boolean {
     return this.userAuthenticated?.isAdmin() ?? false;
   }
@@ -159,7 +185,6 @@ export class CaAuthenticatedUserService implements FlCleanableService {
     return this.userAuthenticated?.isCategory(...categories) ?? false;
   }
 
-  /////////////////////////////// OTHER //////////////////////////
   clean(): void {
     this.userAuthenticated = null;
     this.userSubject.next(null);

@@ -1,10 +1,10 @@
 import {Body, Controller, Param, Post, Res} from '@nestjs/common';
-import {CnAuthService} from './cn-auth.service';
+import {CnAuthResponse, CnAuthService} from './cn-auth.service';
 import {Response} from 'express';
 import {cnJwtConfig} from './cn-jwt.config';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import {BlParseEnumPipe, BlPublic} from '@monorepo/back-core-lib';
-import {CmCredentials, CmUserCategory} from '@monorepo/common-model';
+import {CmCredentials, CmCredentials2Fa, CmUserCategory} from '@monorepo/common-model';
 import {CnUser} from '../cn-users/cn-user.entity';
 
 @Controller('auth')
@@ -17,16 +17,36 @@ export class CnAuthController {
 
   /**
    * Login with credentials
-   * It stores automatically in a secure cookie
+   *
+   * IF 2FA activated, return 2FA_REQUIRED
+   * Else  It stores automatically in a secure cookie
    */
   @BlPublic()
   @Post('login')
   async login(@Body() credentials: CmCredentials, @Res() response: Response): Promise<void> {
-    const token: string = await this.authService.login(credentials);
+    const result: CnAuthResponse = await this.authService.login(credentials);
 
-    this.setTokenInResponseCookies(token, cnJwtConfig.tokenDurationInMilliseconds, response);
-    response.send({expiresIn: cnJwtConfig.tokenDurationInMilliseconds});
+    if (result.status === 'LOGGED_IN') {
+      this.setTokenInCookie(result.token, response);
+      response.send({status: 'LOGGED_IN', expiresIn: cnJwtConfig.tokenDurationInMilliseconds});
+    } else {
+      response.send({status: '2FA_REQUIRED', twoFAUrlCode: result.twoFAUrlCode});
+    }
   }
+
+  /**
+   * Login with 2Fa code after the basic login
+   * It stores automatically in a secure cookie
+   */
+  @BlPublic()
+  @Post('login-2fa')
+  async login2Fa(@Body() credentials: CmCredentials2Fa, @Res() response: Response): Promise<void> {
+    const token = await this.authService.loginWith2FA(credentials);
+
+    this.setTokenInCookie(token, response);
+    response.send({status: 'LOGGED_IN', expiresIn: cnJwtConfig.tokenDurationInMilliseconds});
+  }
+
 
   /**
    * Check if a user can login with the credential and check that the user have the right role
@@ -45,15 +65,23 @@ export class CnAuthController {
   @Post('logout')
   async logout(@Body() credentials: CmCredentials, @Res() response: Response): Promise<void> {
 
-    this.setTokenInResponseCookies('', 0, response);
+    this.clearTokenCookie(response);
     response.send();
+  }
+
+  private setTokenInCookie(token: string, response: Response): void {
+    this.configureTokenCookie(token, cnJwtConfig.tokenDurationInMilliseconds, response);
+  }
+
+  private clearTokenCookie(response: Response): void {
+    this.configureTokenCookie('', 0, response);
   }
 
   /**
    * Set the token in the Authorization cookie with httpOnly option
    * to prevent js from accessing it
    */
-  private setTokenInResponseCookies(token: string, expiresInMilliseconds: number, response: Response): void {
+  private configureTokenCookie(token: string, expiresInMilliseconds: number, response: Response): void {
     response.cookie(cnJwtConfig.authorizationCookie, token,
       {
         path: '/', maxAge: expiresInMilliseconds, sameSite: 'strict',

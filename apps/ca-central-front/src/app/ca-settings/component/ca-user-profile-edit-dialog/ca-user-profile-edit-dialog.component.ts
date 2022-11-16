@@ -10,7 +10,7 @@ import {
 import {Observable} from 'rxjs';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
-import {CaUsersService} from '../../../ca-core/service-api/ca-users.service';
+import {CaAuthenticatedUserService} from '../../../ca-core/service-api/ca-authenticated-user.service';
 
 @Component({
   selector: 'ca-user-profile-edit-dialog',
@@ -34,7 +34,7 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
     snackBarService: FlSnackBarService,
     dialogRef: MatDialogRef<CaUserProfileEditDialogComponent>,
     @Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<Partial<CaUser>>,
-    private userService: CaUsersService
+    private authenticatedUserService: CaAuthenticatedUserService
   ) {
     super(dialogInput, snackBarService, dialogRef);
     this.user = dialogInput.object as CaUser;
@@ -71,7 +71,7 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
   update(formValue: Partial<CaUser>): Observable<CaUser> {
 
     if (!this.isLoadingImport && !this.errorFile) {
-      return this.userService.editUser(formValue, this.newImageFile);
+      return this.authenticatedUserService.editUser(formValue, this.newImageFile);
     } else {
       return null;
     }
@@ -81,9 +81,7 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
   submit(): void {
     if (!this.isLoadingImport && !this.errorFile) {
       this.update(this.formGp.value).subscribe({
-        next: newEntity => {
-          this.onSaveSuccess(newEntity, this.getUpdateSuccessMessage())
-        },
+        next: newEntity => this.onSaveSuccess(newEntity, this.getUpdateSuccessMessage()),
         error: () => this.isLoading = false
       });
     }
@@ -114,7 +112,7 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
 
   activeInput(event: Event): void {
     this.photoDiv = event.currentTarget as HTMLDivElement;
-    if(this.user.photo){
+    if (this.user.photo) {
       this.editPhotoImgElement = this.photoDiv.querySelector('img');
       this.currentImgLink = this.editPhotoImgElement.src;
     }
@@ -124,7 +122,7 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
   private async compressBlob(blob: Blob): Promise<void> {
     const b: Blob = await FlImageHelper.compressBlob(blob, 360, 360, 240, 240);
 
-    if(this.editPhotoImgElement){
+    if (this.editPhotoImgElement) {
       this.editPhotoImgElement.src = URL.createObjectURL(b);
     } else {
       this.editPhotoImgElement = this.photoDiv.querySelector('img');
@@ -137,7 +135,7 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
   private addFile(file: File): void {
     this.newImageFile = file;
     this.isLoadingImport = false;
-    this.formGp.updateValueAndValidity()
+    this.formGp.updateValueAndValidity();
   }
 
 }

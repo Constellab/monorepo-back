@@ -8,6 +8,14 @@ export interface CmCredentials {
 }
 
 /**
+ * Object to send to log in
+ */
+export interface CmCredentials2Fa {
+  twoFAUrlCode: string;
+  twoFACode: string;
+}
+
+/**
  * Object containing the expiration of a token
  */
 export interface CmTokenExpiration{

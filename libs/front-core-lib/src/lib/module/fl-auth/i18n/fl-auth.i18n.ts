@@ -24,7 +24,12 @@ const flAuthI18nFr: FlLangTranslation = {
     signup_link: 'Vous n\'avez pas de compte? Inscrivez-vous',
     account_created: 'Compte créé, nous vous avons envoyé un mail pour l\'activer',
     accept_cgu_cgv_text: `J'accepte les <a href="https://gencovery.com/legal/terms-of-use" target="_blank">Conditions générales d'utilisation</a> et la <a href="https://gencovery.com/legal/privacy-policy" target="_blank">politique de confidentialité</a>`,
-    accept_cgu_cgv_error: 'Vous devez accepter les conditions pour créer un compte'
+    accept_cgu_cgv_error: 'Vous devez accepter les conditions pour créer un compte',
+    two_fa_code: 'Code de sécurité',
+    two_fa: 'Authentification à deux facteurs',
+    two_fa_help: 'Entrez le code de sécurité envoyé par email',
+    two_fa_cancel: 'Annuler',
+    two_fa_invalid_code: 'Code invalide',
   }
 };
 
@@ -46,7 +51,12 @@ const flAuthI18nEn: FlLangTranslation = {
     signup_link: 'Doesn\'t have an account? Sign up',
     account_created: 'Account created, we sent you an email to activate your account',
     accept_cgu_cgv_text: `I agree to the website <a href="https://gencovery.com/legal/terms-of-use" target="_blank">Terms of Use</a> and <a href="https://gencovery.com/legal/privacy-policy" target="_blank">Privacy Policy</a>`,
-    accept_cgu_cgv_error: 'You must agree to the conditions to create an account'
+    accept_cgu_cgv_error: 'You must agree to the conditions to create an account',
+    two_fa_code: 'Security code',
+    two_fa: 'Two factor authentication',
+    two_fa_help: 'Enter the security code sent by email',
+    two_fa_cancel: 'Cancel',
+    two_fa_invalid_code: 'Invalid code',
   }
 };
 

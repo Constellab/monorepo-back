@@ -68,6 +68,10 @@ export class CnUser extends BlEntityWithId implements BlUser {
   @Column({nullable: true})
   company: string;
 
+  @Exclude()
+  @Column({default: false})
+  has2FA: boolean;
+
   //////////////////// TRANSIENT METHODS //////////////////
 
   @BeforeInsert()

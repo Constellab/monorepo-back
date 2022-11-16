@@ -6,15 +6,15 @@ import {Router} from '@angular/router';
  * Settings page
  */
 @Component({
-  selector: 'ca-settings-page',
-  templateUrl: './ca-settings-page.component.html',
-  styleUrls: ['./ca-settings-page.component.scss']
+  selector: 'ca-user-settings-dialog',
+  templateUrl: './ca-user-settings-dialog.component.html',
+  styleUrls: ['./ca-user-settings-dialog.component.scss']
 })
-export class CaSettingsPageComponent implements OnInit {
+export class CaUserSettingsDialogComponent implements OnInit {
 
   logoutIsLoading: boolean = false;
 
-  constructor(private loginService: CaAuthenticationService,
+  constructor(private authService: CaAuthenticationService,
               private router: Router) {
   }
 
@@ -24,10 +24,10 @@ export class CaSettingsPageComponent implements OnInit {
 
   logout(): void {
     this.logoutIsLoading = true;
-    this.loginService.logout().subscribe(
-      () => this.logoutSuccess(),
-      () => this.logoutIsLoading = false
-    );
+    this.authService.logout().subscribe({
+      next: () => this.logoutSuccess(),
+      error: () => this.logoutIsLoading = false
+    });
   }
 
   private logoutSuccess(): void {

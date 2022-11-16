@@ -14,6 +14,7 @@ import {
 import {caConstLoginRoute} from '../utils/ca-base-route';
 import {CmNestApiError} from '@monorepo/common-model';
 import {environment} from '../../../environments/ca-environment';
+import {PlatformLocation} from '@angular/common';
 
 
 /**
@@ -25,7 +26,8 @@ export class CaApiErrorService extends FlApiErrorService {
   constructor(snackBarService: FlSnackBarService,
               translateService: FlTranslateService,
               private router: Router,
-              private cookieService: FlCookieService) {
+              private cookieService: FlCookieService,
+              private platformLocation: PlatformLocation) {
     super(snackBarService, translateService);
   }
 
@@ -88,10 +90,10 @@ export class CaApiErrorService extends FlApiErrorService {
    */
   private sessionExpired(serverError: FlServerError, snackBarDuration: number): Observable<never> {
     // save the current url for rerouting after login
-    const currentRoute = this.router.url;
+    const currentRoute = this.platformLocation.pathname;
 
     // save the url if it's different
-    if (currentRoute !== caConstLoginRoute) {
+    if (currentRoute !== caConstLoginRoute && currentRoute !== '/') {
       FlLoginSavedRoute.route = currentRoute;
     }
 

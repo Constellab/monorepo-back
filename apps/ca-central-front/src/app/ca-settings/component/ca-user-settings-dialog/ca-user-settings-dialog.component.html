@@ -6,12 +6,15 @@
 
   <h1 class="g-page-title g-section">{{'settings' | translate}}</h1>
 
-  <ca-theme-selection></ca-theme-selection>
+  <ca-user-two-fa-toggle></ca-user-two-fa-toggle>
+
+  <ca-theme-selection class="g-section"></ca-theme-selection>
 
   <ca-language-selection class="g-section"></ca-language-selection>
 
   <div class="g-section">
     <button mat-flat-button type="button" color="warn" (click)="logout()">
+      <mat-icon>logout</mat-icon>
       {{'flAuth.logout' | translate}}
       <fl-button-loader *ngIf="logoutIsLoading"></fl-button-loader>
     </button>

@@ -17,6 +17,7 @@ import {Router} from '@angular/router';
 import {labConstLoginRoute} from '../utils/lab-base-route';
 import {LabEnvStore} from './lab-env.store';
 import {LabEnvironment} from '../model/global/lab-environment.class';
+import {PlatformLocation} from '@angular/common';
 
 @Injectable()
 export class LabApiErrorService extends FlApiErrorService {
@@ -26,7 +27,8 @@ export class LabApiErrorService extends FlApiErrorService {
               private dialogService: FlDialogService,
               private labEnvManager: LabEnvStore,
               private router: Router,
-              private cookieService: FlCookieService) {
+              private cookieService: FlCookieService,
+              private platformLocation: PlatformLocation) {
     super(snackBarService, translateService);
   }
 
@@ -97,10 +99,10 @@ export class LabApiErrorService extends FlApiErrorService {
     }
 
     // save the current url for rerouting after login
-    const currentRoute = this.router.url;
+    const currentRoute = this.platformLocation.pathname;
 
     // save the url if it's different
-    if (currentRoute !== labConstLoginRoute) {
+    if (currentRoute !== labConstLoginRoute && currentRoute !== '/') {
       FlLoginSavedRoute.route = currentRoute;
     }
     // redirect the user to the login page, with autoRedirect param to avoid infinite loop

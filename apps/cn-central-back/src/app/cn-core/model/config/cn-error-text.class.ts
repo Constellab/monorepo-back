@@ -44,4 +44,6 @@ export enum CnErrorText {
   LAB_CANNOT_REMOVE_LAST_ADMIN = 'error.lab_cannot_remove_last_admin',
   PROJECT_ALREADY_SHARED_WITH_LAB = 'error.project_already_shared_with_lab',
   PROJECT_NOT_SHARED_WITH_LAB = 'error.project_not_shared_with_user',
+  TWO_FA_WRONG_CODE = 'error.two_fa_wrong_code',
+  TWO_FA_CODE_EXPIRED = 'error.two_fa_code_expired',
 }

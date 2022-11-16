@@ -9,6 +9,7 @@ export enum CnMailTemplate {
   organization_invit_new_user = 'cn-organization-invit-new-user',
   organization_invit_existing_user = 'cn-organization-invit-existing-user',
   request_new_licenses = 'cn-request-new-licenses',
+  two_factor_authentication = 'cn-two-factor-authentication',
 
   // Mail send by the lab
   experiment_finished = 'cn-experiment-finished'

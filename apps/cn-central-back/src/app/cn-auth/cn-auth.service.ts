@@ -5,8 +5,15 @@ import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-con
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {CnUserAccountsService} from '../cn-users/cn-users-account/cn-user-accounts.service';
 import {ClDateHelper} from '@monorepo/core-lib';
-import {CmCredentials, CmUserCategory, CmUserStatus} from '@monorepo/common-model';
+import {CmCredentials, CmCredentials2Fa, CmUserCategory, CmUserStatus} from '@monorepo/common-model';
 import {BlJwtService} from '@monorepo/back-core-lib';
+import {CnUser2FAService} from './cn-user-2-f-a/cn-user-2-f-a.service';
+
+export interface CnAuthResponse {
+  status: 'LOGGED_IN' | '2FA_REQUIRED';
+  token?: string;
+  twoFAUrlCode?: string;
+}
 
 @Injectable()
 export class CnAuthService {
@@ -19,12 +26,30 @@ export class CnAuthService {
   constructor(private usersService: CnUsersService,
               private jwtService: BlJwtService,
               private configService: CnCoreConfigService,
-              private userAccountsService: CnUserAccountsService) {
+              private userAccountsService: CnUserAccountsService,
+              private user2FaService: CnUser2FAService) {
     this.failedLoginLock = configService.getFailedLoginLock();
   }
 
-  async login(credentials: CmCredentials): Promise<string> {
+  async login(credentials: CmCredentials): Promise<CnAuthResponse> {
     const user = await this.checkCredentialsAndUser(credentials);
+
+    if (user.has2FA) {
+      const user2FA = await this.user2FaService.generateCode(user);
+      return {
+        status: '2FA_REQUIRED',
+        twoFAUrlCode: user2FA.urlCode
+      };
+    } else {
+      return {
+        status: 'LOGGED_IN',
+        token: this.jwtService.generateToken(user.id, user.email)
+      };
+    }
+  }
+
+  async loginWith2FA(credentials: CmCredentials2Fa): Promise<string> {
+    const user = await this.user2FaService.checkIsValidCode(credentials.twoFACode, credentials.twoFAUrlCode);
 
     return this.jwtService.generateToken(user.id, user.email);
   }

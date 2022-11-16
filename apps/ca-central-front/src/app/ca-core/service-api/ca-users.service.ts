@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {mergeMap, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {CaUser} from '../model/entities/ca-user.class';
 import {FlApiService} from '@monorepo/front-core-lib';
-import {map} from 'rxjs/operators';
 import {ClPageI} from '@monorepo/core-lib';
 
 /**
@@ -25,21 +24,6 @@ export class CaUsersService {
   public findAll(page: number, pageSize: number): Observable<ClPageI<CaUser>> {
     return this.apiService.get(`${this.route}`, CaUser,
       {page: page, pageSize: pageSize, resultIsPaginated: true});
-  }
-
-  public editUser(newUserInfo: Partial<CaUser>, newUserPhoto: File): Observable<CaUser> {
-
-    if(newUserPhoto){
-      const formData = new FormData();
-      formData.append('photo', newUserPhoto);
-      return this.apiService.put(this.route + '/edit-photo/' + newUserInfo.id, formData).pipe(
-        mergeMap(() => this.apiService.put(this.route + '/edit', newUserInfo, CaUser)),
-        map((res) => res)
-      );
-    } else {
-      return this.apiService.put(this.route + '/edit', newUserInfo, CaUser);
-    }
-
   }
 
 

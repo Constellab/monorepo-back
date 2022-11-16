@@ -5,7 +5,9 @@ import {ActivatedRoute} from '@angular/router';
 import {CaUsersService} from '../../../ca-core/service-api/ca-users.service';
 import {Observable} from 'rxjs';
 import {FlDialogService} from '@monorepo/front-core-lib';
-import {CaSettingsPageComponent} from '../../../ca-settings/component/ca-settings-page/ca-settings-page.component';
+import {
+  CaUserSettingsDialogComponent
+} from '../../../ca-settings/component/ca-user-settings-dialog/ca-user-settings-dialog.component';
 import {CaOrganizationService} from '../../../ca-core/service-api/ca-organization.service';
 
 /**
@@ -41,7 +43,7 @@ export class CaUserCompleteInfoPageComponent implements OnInit {
   }
 
   openSettings(): void{
-    this.dialogService.openMediumDialog(CaSettingsPageComponent).afterClosed().subscribe(() => {
+    this.dialogService.openMediumDialog(CaUserSettingsDialogComponent).afterClosed().subscribe(() => {
       this.getUser();
     });
   }

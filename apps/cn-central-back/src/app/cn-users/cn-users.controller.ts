@@ -25,17 +25,17 @@ export class CnUsersController {
   constructor(private usersService: CnUsersService) {
   }
 
-  @Get('/current')
+  @Get('current')
   async current(): Promise<CnUser> {
     return this.usersService.getCurrent();
   }
 
-  @Put('/language/:lang')
+  @Put('current/language/:lang')
   updateLanguage(@Param('lang', new BlParseEnumPipe(ClSupportedLanguage)) lang: ClSupportedLanguage): Promise<void> {
     return this.usersService.updateLanguage(lang);
   }
 
-  @Put('/theme/:theme')
+  @Put('current/theme/:theme')
   updateTheme(@Param('theme', new BlParseEnumPipe(ClTheme)) theme: ClTheme): Promise<void> {
     return this.usersService.updateTheme(theme);
   }
@@ -48,13 +48,13 @@ export class CnUsersController {
     return this.usersService.findAll(page, size);
   }
 
-  @Put('edit')
+  @Put('current')
   editUser(@Body(new BlParsePipe(CnUserEditDTO)) userEdit: CnUserEditDTO): Promise<CnUser> {
     return this.usersService.editUser(userEdit);
   }
 
   @UseInterceptors(FilesInterceptor('photo'))
-  @Put('edit-photo/:userId')
+  @Put('current/photo/:userId')
   saveNewPhoto(@Param('userId') userId: string, @UploadedFiles() files: BlFile[]): Promise<CnUser> {
     return files[0] ? this.usersService.saveNewPhoto(files[0], userId) : null;
   }
@@ -67,4 +67,14 @@ export class CnUsersController {
     BlResponseHelper.setMessage(response, file);
   }
 
+  @Get('current/2-fa')
+  public async get2FA(): Promise<{ enabled: boolean }> {
+    return {enabled: this.usersService.getCurrent().has2FA};
+  }
+
+  @Put('current/2-fa')
+  public async set2FA(@Body('enabled') enabled: boolean): Promise<{ enabled: boolean }> {
+    const enable = await this.usersService.set2FA(enabled);
+    return {enabled: enable};
+  }
 }

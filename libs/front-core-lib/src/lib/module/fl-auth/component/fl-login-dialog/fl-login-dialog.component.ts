@@ -9,8 +9,6 @@ export interface FlLoginDialogInput {
 
 export interface FlLoginDialogResult {
   success?: boolean;
-
-  response: any;
 }
 
 /**
@@ -36,8 +34,8 @@ export class FlLoginDialogComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onLoginSuccess(response: any): void {
-    const result: FlLoginDialogResult = {success: true, response: response};
+  onLoginSuccess(): void {
+    const result: FlLoginDialogResult = {success: true};
     this.dialogRef.close(result);
   }
 

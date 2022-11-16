@@ -1,0 +1,15 @@
+<fl-section [object]="twoFaEnabled" [isLoading]="isLoading">
+
+  <ng-container *flSectionBody>
+    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="1em">
+      <div>
+        <strong>{{text | translate}}</strong>
+      </div>
+
+      <button mat-flat-button type="button" [color]="buttonColor"
+              (click)="toggleTwoFa()">
+        {{buttonText | translate}}
+      </button>
+    </div>
+  </ng-container>
+</fl-section>
