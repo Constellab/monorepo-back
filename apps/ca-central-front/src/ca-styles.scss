@@ -16,6 +16,10 @@
 // Style to highlight code in text editor
 @import 'highlight.js/styles/monokai-sublime.css';
 
+:root{
+  // margin on top and bottom of the main menu
+  --main-menu-margin: 1em;
+}
 
 html, body {
   height: 100%;

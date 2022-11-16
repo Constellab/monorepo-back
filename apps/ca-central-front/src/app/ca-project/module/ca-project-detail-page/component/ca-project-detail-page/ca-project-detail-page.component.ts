@@ -46,11 +46,11 @@ export class CaProjectDetailPageComponent implements OnInit {
     this.reports = this.state.getReports$();
 
     this.showChildren$ = this.state.getProject$(false).pipe(
-      map(project => project?.hasChildren() ?? false)
+      map(project => project?.hasChildren() ?? false),
     );
 
     this.showObjects$ = this.state.getProject$(false).pipe(
-      map(project => project?.isLeaf() ?? false)
+      map(project => project?.isLeaf() ?? false),
     );
 
   }

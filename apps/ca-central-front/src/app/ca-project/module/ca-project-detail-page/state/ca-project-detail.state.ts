@@ -12,10 +12,11 @@ import {CaExperiment} from '../../../../ca-core/model/entities/ca-experiment.cla
 import {CaReportService} from '../../../../ca-core/service-api/ca-report.service';
 import {CaExperimentService} from '../../../../ca-core/service-api/ca-experiment.service';
 import {CaBaseEntity} from '../../../../ca-core/model/entities/ca-base-entity.class';
+import {ClSubscriptionHandler} from '@monorepo/core-lib';
 
 export type CaProjectDetailRightPanel = {
   type: 'description' | 'report' | 'experiment' | 'comments'
-  objectId?: string;
+  objectId: string;
 }
 
 
@@ -33,6 +34,7 @@ export class CaProjectDetailState implements OnDestroy {
 
   private queryParamHandler: FlQueryParamHandler<CaProjectDetailRightPanel>;
 
+  private subscription: ClSubscriptionHandler = new ClSubscriptionHandler();
 
   constructor(private projectService: CaProjectService,
               private authenticatedUserService: CaAuthenticatedUserService,
@@ -41,6 +43,13 @@ export class CaProjectDetailState implements OnDestroy {
               private experimentService: CaExperimentService,
               private reportService: CaReportService) {
     this.queryParamHandler = new FlQueryParamHandler(router, route);
+  }
+
+  public static emptyQueryParams(): CaProjectDetailRightPanel {
+    return {
+      type: null,
+      objectId: null
+    };
   }
 
   public init(id$: Observable<string>): void {
@@ -52,33 +61,26 @@ export class CaProjectDetailState implements OnDestroy {
     this.children$ = new FlEntityArrayObs(null, true);
     this.rightPanelState$ = new BehaviorSubject<CaProjectDetailRightPanel>(null);
 
-    this.id$.pipe(
+    this.subscription.add(this.id$.pipe(
       switchMap(id => this.projectService.getById(id))
     ).subscribe({
       next: project => this.initProject(project),
       error: error => this.project$.error(error)
-    });
+    }));
 
-    this.id$.pipe(
+    this.subscription.add(this.id$.pipe(
       first(), // as the share is handle at the root project level, not need to refresh it every time
       switchMap(id => this.projectService.getUsersOfProject(id))
     ).subscribe({
       next: users => this.users$.next(users),
       error: error => this.users$.error(error)
-    });
+    }));
 
-    this.id$.pipe(
-      switchMap(() => this.queryParamHandler.getFirstQueryParams())
+    this.subscription.add(this.id$.pipe(
+      switchMap(() => this.queryParamHandler.getQueryParams())
     ).subscribe(
-      params => {
-        if (params && params.type) {
-          this.updateRightPanelState(params);
-        } else {
-          // for the default mode, don't update the url
-          this.rightPanelState$.next({type: 'description'});
-        }
-      }
-    );
+      params => this.onRightPanelStateUpdate(params)
+    ));
   }
 
   private initProject(project: CaProject): void {
@@ -127,9 +129,14 @@ export class CaProjectDetailState implements OnDestroy {
     );
   }
 
-  public updateRightPanelState(state: CaProjectDetailRightPanel): void {
-    // update the url
-    this.queryParamHandler.mergeQueryParams(state);
+  /**
+   * Call when a query param change event is triggered
+   */
+  private onRightPanelStateUpdate(state: CaProjectDetailRightPanel): void {
+    // default value for the state
+    if (state.type == null) {
+      state = {type: 'description', objectId: null};
+    }
 
     // check if the state has changed
     const currentState = this.rightPanelState$.value;
@@ -139,6 +146,10 @@ export class CaProjectDetailState implements OnDestroy {
     }
 
     this.rightPanelState$.next(state);
+  }
+
+  public updateRightPanelState(state: CaProjectDetailRightPanel): void {
+    this.queryParamHandler.mergeQueryParams(state);
   }
 
   public getRightPanelState$(): Observable<CaProjectDetailRightPanel> {
@@ -209,6 +220,7 @@ export class CaProjectDetailState implements OnDestroy {
     this.experiments$?.manualDisconnect();
     this.children$?.manualDisconnect();
     this.rightPanelState$?.complete();
+    this.subscription?.unsubscribe();
   }
 
 

@@ -370,7 +370,7 @@ export class CnProjectAggregateService {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
     if (project.currentLevel !== CnProjectLevel.PROJECT) {
-      throw new BadRequestException('Only projects can be shared');
+      throw new BadRequestException('Only root projects can be shared');
     }
 
     // the user must be an admin or be in the group he shared the project

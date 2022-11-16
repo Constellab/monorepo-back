@@ -21,6 +21,7 @@
       )
   );
 }
+
 /**
  * It apply the theme in parameter and define global css variable for theme
   This mixin must be call only once
@@ -55,9 +56,11 @@
     --warn-color: #{mat.get-color-from-palette($warn)};
     --success-color: #{$color-success};
     --warning-color: #{$color-warning};
-    --card-background: #{mat.get-color-from-palette($background, card)};
     --color-foreground: #{$foreground-color};
-    --main-background: #{$background-color}
+    --main-background: #{$background-color};
+
+    --card-background: #{mat.get-color-from-palette($background, card)};
+    --card-radius: 20px
   }
 
   body {
@@ -183,6 +186,14 @@
 
 
   //////////////// OTHER /////////////////////
+  /**
+    Basic style of card
+  */
+  .g-card {
+    background-color: var(--card-background);
+    border-radius: var(--card-radius);
+  }
+
   .g-card-background {
     background-color: mat.get-color-from-palette($background, card);
   }

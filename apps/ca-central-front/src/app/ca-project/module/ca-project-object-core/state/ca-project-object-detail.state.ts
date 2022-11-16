@@ -50,8 +50,8 @@ export class CaProjectObjectDetailState implements OnDestroy {
 
     // if there is no hierarchy, force the tree to be closed
     this.rootProjectHasChildren$().subscribe(
-      projectTree => {
-        if (projectTree) {
+      hasChildren => {
+        if (!hasChildren) {
           this.setTreeOpened(false);
         }
       });

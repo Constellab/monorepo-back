@@ -18,13 +18,14 @@ export type FlUserProfilePictureSize = 'small' | 'medium' | 'big';
 })
 export class FlUserProfilePictureComponent implements OnInit, OnDestroy {
 
-  @Input()
-  user: FlUserProfilePicture;
+  @Input() user: FlUserProfilePicture;
 
-  @Input()
-  size: FlUserProfilePictureSize | string = 'medium';
+  /**
+   * Default size of size in em
+   */
+  @Input() size: FlUserProfilePictureSize | string | number = 'medium';
 
-  sizeNumber: number = 3.5;
+  circleSize: string;
 
   fontSize: number;
 
@@ -46,18 +47,22 @@ export class FlUserProfilePictureComponent implements OnInit, OnDestroy {
     }
     switch (this.size) {
       case 'small':
-        this.sizeNumber = 2.5;
+        this.circleSize = '2.5em';
+        this.fontSize = 2.5 / 4;
         break;
       case 'medium':
-        this.sizeNumber = 3.5;
+        // same size as the icon button
+        this.circleSize = '40px';
+        this.fontSize = 0.875;
         break;
       case 'big':
-        this.sizeNumber = 5.5;
+        this.circleSize = '5.5em';
+        this.fontSize = 5.5 / 4;
         break;
       default:
-        this.sizeNumber = +this.size;
+        this.circleSize = this.size + 'em';
+        this.fontSize = (+this.circleSize) / 4;
     }
-    this.fontSize = this.sizeNumber / 4;
 
   }
 

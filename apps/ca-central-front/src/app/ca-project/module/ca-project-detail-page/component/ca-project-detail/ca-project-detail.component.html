@@ -8,10 +8,16 @@
     </div>
 
     <!--   Settings menu   -->
-    <ca-project-actions-menu [project]="project" [projectUsers$]="projectUsers$"
-                             (projectUpdated)="onProjectUpdated($event)"
-                             (childProjectCreated)="onChildCreated($event)"
-                             class="actions-button"></ca-project-actions-menu>
+    <div fxLayout="row" fxLayoutGap="1em">
+      <button mat-icon-button (click)="openShareDialog(project)" class="g-primary-background"
+              *ngIf="isRootProject$ | async" [matTooltip]="'project_shared_groups' | translate">
+        <mat-icon>share</mat-icon>
+      </button>
+      <ca-project-actions-menu [project]="project" [projectUsers$]="projectUsers$"
+                               (projectUpdated)="onProjectUpdated($event)"
+                               (childProjectCreated)="onChildCreated($event)"
+                               class="actions-button"></ca-project-actions-menu>
+    </div>
   </div>
 
   <h2 class="project-title">{{project.title}}</h2>
@@ -38,23 +44,25 @@
     <ca-project-users [projectId$]="projectId$"></ca-project-users>
 
     <ng-container *ngIf="rightPanelState$ | async as rightPanel">
-      <button mat-icon-button type="button" (click)="showDescription()"
-              [matTooltip]="'show_project_description' | translate"
-              class="g-primary-button-icon-border"
-              [ngClass]="{'panel-button-selected': rightPanel.type === 'description'}">
+      <a mat-icon-button type="button" (click)="showDescription()"
+         [routerLink]="'.'" queryParamsHandling="merge"
+         [queryParams]="descriptionQueryParams"
+         [matTooltip]="'show_project_description' | translate"
+         class="g-primary-button-icon-border"
+         [ngClass]="{'panel-button-selected': rightPanel.type === 'description'}">
         <mat-icon>description</mat-icon>
-      </button>
-      <button mat-icon-button type="button" (click)="showComments()"
-              [matTooltip]="'show_project_comments' | translate"
-              class="g-primary-button-icon-border"
-              [ngClass]="{'panel-button-selected': rightPanel.type === 'comments'}">
+      </a>
+
+      <a mat-icon-button type="button"
+         [routerLink]="'.'" queryParamsHandling="merge"
+         [queryParams]="commentQueryParams"
+         [matTooltip]="'show_project_comments' | translate"
+         class="g-primary-button-icon-border"
+         [ngClass]="{'panel-button-selected': rightPanel.type === 'comments'}">
         <mat-icon>comment</mat-icon>
-      </button>
+      </a>
     </ng-container>
 
   </div>
-
-  <ca-project-shared-groups-list [projectId]="project.id" class="g-section"
-                                 [canEdit]="project.isRoot()"></ca-project-shared-groups-list>
 
 </div>

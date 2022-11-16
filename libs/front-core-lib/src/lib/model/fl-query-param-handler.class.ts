@@ -21,7 +21,7 @@ export class FlQueryParamHandler<T extends Params = Params> {
    * Subscribe to query params
    */
   public getQueryParams(): Observable<T> {
-    return this.route.queryParams.pipe(first()) as Observable<T>;
+    return this.route.queryParams as Observable<T>;
   }
 
   /**

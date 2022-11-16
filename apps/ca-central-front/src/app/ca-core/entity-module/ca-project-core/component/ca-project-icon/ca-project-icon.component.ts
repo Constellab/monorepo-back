@@ -31,4 +31,8 @@ export class CaProjectIconComponent implements OnInit {
     return this.projectType === 'leaf' ? 'project' : 'folder';
   }
 
+  get backgroundClass(): string{
+    return this.projectType === 'leaf' ? 'g-warn-background' : 'g-accent-background';
+  }
+
 }

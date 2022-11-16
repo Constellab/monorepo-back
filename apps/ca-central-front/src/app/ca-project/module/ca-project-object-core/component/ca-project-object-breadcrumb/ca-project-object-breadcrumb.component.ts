@@ -28,7 +28,6 @@ export class CaProjectObjectBreadcrumbComponent implements OnInit {
 
   showTreeButton$: Observable<boolean>;
 
-
   constructor(private state: CaProjectObjectDetailState,
               private projectService: CaProjectService,
               private translateService: FlTranslateService) {

@@ -1,8 +1,6 @@
-<fl-section [isLoading]="isLoading" [object]="rootProject">
+<fl-section [isLoading]="isLoading" [object]="rootProject" class="g-card container">
 
   <ng-container *flSectionBody>
-
-    <h4>{{rootProject.title}}</h4>
 
     <mat-tree [dataSource]="dataSource" [treeControl]="treeControl"
               *ngIf="dataSource && treeControl" class="tree">
@@ -12,7 +10,7 @@
                      [ngClass]="{'leaf-node-margin': node.level === 1, 'selected-tree-node': node.isSelected}">
         <ca-project-icon class="node-icon" type="leaf" iconClass="g-icon-small"></ca-project-icon>
         <a [routerLink]="node.id | caDetailRoute:'project'"
-           [queryParams]="{'showTree': true}"
+           [queryParams]="{} | caProjectObjectQueryParams | async"
            class="project-title g-text-link">
           {{node.title}}
         </a>
@@ -23,7 +21,7 @@
         <ca-project-icon class="node-icon" type="parent" iconClass="g-icon-small"></ca-project-icon>
 
         <a [routerLink]="node.id | caDetailRoute:'project'"
-           [queryParams]="{'showTree': true}"
+           [queryParams]="{} | caProjectObjectQueryParams | async"
            class="project-title g-text-link">
           {{node.title}}
         </a>

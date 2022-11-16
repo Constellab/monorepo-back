@@ -5,14 +5,14 @@
                [opened]="true"
                [disableClose]="true"
                position="start"
-               class="sidenav g-card-background">
+               class="sidenav">
 
     <div fxLayout="column" class="column-container">
 
       <img [src]="logo$ | async" alt="Organization logo"
            class="logo" (click)="openMyOrganizationsPortal()"/>
       <!-- List of main menu links   -->
-      <div fxFlex="auto" class="menu" fxLayout="column">
+      <div fxFlex="auto" class="menu" fxLayout="column" fxLayoutAlign="start center">
         <div class="buttons">
           <div *ngFor="let link of accessibleLinks">
             <a mat-icon-button [routerLink]="link.route"
@@ -27,7 +27,7 @@
       <!--  Authenticated user info  -->
 
       <div class="user-container"
-           fxLayout="column" fxLayoutAlign="center">
+           fxLayout="column" fxLayoutAlign="start center">
 
         <button mat-icon-button type="button" class="notif-button" (click)="openNotificationDiv()">
           <mat-icon>notifications</mat-icon>

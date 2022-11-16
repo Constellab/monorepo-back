@@ -100,6 +100,11 @@
   border-radius: 30px !important;
   //text-overflow: ellipsis;
   //white-space: nowrap;
+
+  // margin to separate the text from the icon
+  .material-icons, .material-icons-outlined {
+    margin-right: 5px;
+  }
 }
 
 // set the border color of the stroked = to color (not grey)

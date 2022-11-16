@@ -11,7 +11,9 @@
   </ng-template>
 
   <ng-container *ngFor="let link of links$ | async; let last = last">
-    <a [routerLink]="link.url" class="g-text-link text">
+    <a [routerLink]="link.url"
+       [queryParams]="{} | caProjectObjectQueryParams | async"
+       class="g-text-link text">
       {{link.title}}
     </a>
 

@@ -1,11 +1,15 @@
-.tree {
-  margin-top: 1em;
+
+.container{
+  padding: 8px;
+}
+
+.tree .tree-node:not(:last-child) {
+  margin-bottom: 1em;
 }
 
 .tree-node {
   min-height: 32px;
-  background-color: var(--card-background);
-  margin-top: 1em;
+  background-color: var(--main-background);
   border-radius: 10px;
   padding-right: 0;
 }

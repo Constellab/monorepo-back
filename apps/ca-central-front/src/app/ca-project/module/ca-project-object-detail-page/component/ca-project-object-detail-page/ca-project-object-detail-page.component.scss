@@ -5,8 +5,9 @@
 }
 
 .drawer {
-  width: 15em;
+  width: 17em;
   border-right: none;
-  padding: 1em 0.5em;
+  // align the drawer content with main menu margin
+  padding: var(--main-menu-margin) 0.5em var(--main-menu-margin) 0.5em;
   background-color: var(--main-background);
 }

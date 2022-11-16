@@ -1,5 +1,6 @@
 <div class="grid-container">
-  <a *ngFor="let project of children$ | async" [routerLink]="project | caDetailRoute">
+  <a *ngFor="let project of children$ | async" [routerLink]="project | caDetailRoute"
+     queryParamsHandling="preserve">
     <ca-project-card [project]="project"></ca-project-card>
   </a>
 

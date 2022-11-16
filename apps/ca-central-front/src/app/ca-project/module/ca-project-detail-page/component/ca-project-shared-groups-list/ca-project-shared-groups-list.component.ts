@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {
   FlArrayObs,
   FlConfirmDialogInput,
@@ -12,6 +12,13 @@ import {
   CaGroupShareDialogComponent,
   CaGroupShareDialogInput
 } from '../../../../../ca-core/entity-module/ca-group-core/component/ca-group-share-dialog/ca-group-share-dialog.component';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {Observable} from 'rxjs';
+
+export interface CaProjectSharedGroupsListInput {
+  projectId: string;
+  canEdit$: Observable<boolean>;
+}
 
 /**
  * Component to list the groups where the project is shared with. with button to share or unshare with group
@@ -23,23 +30,23 @@ import {
 })
 export class CaProjectSharedGroupsListComponent implements OnInit {
 
-  @Input() projectId: string;
-
-  @Input() canEdit: boolean;
+  canEdit$: Observable<boolean>;
 
   groupsArray: FlArrayObs<CaGroup>;
 
-  constructor(private projectService: CaProjectService,
+  constructor(@Inject(MAT_DIALOG_DATA) private input: CaProjectSharedGroupsListInput,
+              private projectService: CaProjectService,
               private dialogService: FlDialogService) {
+    this.canEdit$ = input.canEdit$;
   }
 
   ngOnInit(): void {
-    this.groupsArray = new FlEntityArrayObs(this.projectService.getProjectSharedGroups(this.projectId));
+    this.groupsArray = new FlEntityArrayObs(this.projectService.getProjectSharedGroups(this.input.projectId));
   }
 
   openShareDialog(): void {
     const input: CaGroupShareDialogInput = {
-      share: group => this.projectService.shareProject(this.projectId, group.id)
+      share: group => this.projectService.shareProject(this.input.projectId, group.id)
     };
 
     this.dialogService.openSmallDialog(CaGroupShareDialogComponent, {data: input}).afterClosed().subscribe(
@@ -58,7 +65,7 @@ export class CaProjectSharedGroupsListComponent implements OnInit {
       title: 'unshare',
       content: 'unshare_confirmation',
       translateTitleAndContent: true,
-      observable: this.projectService.unshareProject(this.projectId, group.id),
+      observable: this.projectService.unshareProject(this.input.projectId, group.id),
       successMessage: 'unshared',
       translateMessage: true
     };

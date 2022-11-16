@@ -2,9 +2,15 @@
   min-height: 100vh;
 }
 
+
 .sidenav {
-  width: 4rem;
+  width: 5rem;
   border-right: none;
+  top: var(--main-menu-margin) !important;
+  bottom: var(--main-menu-margin) !important;
+  background-color: var(--card-background);
+  border-radius: 0 var(--card-radius) var(--card-radius) 0;
+
 }
 
 .column-container {
@@ -85,7 +91,7 @@
   box-sizing: border-box;
 }
 
-.notif-button{
+.notif-button {
   margin-bottom: 1em;
   margin-left: 2px; //align the button with the profile picture
 }

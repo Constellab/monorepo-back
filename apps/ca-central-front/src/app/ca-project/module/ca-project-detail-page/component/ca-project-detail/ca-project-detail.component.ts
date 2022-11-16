@@ -5,6 +5,11 @@ import {FlDialogService} from '@monorepo/front-core-lib';
 import {CaProjectDetailRightPanel, CaProjectDetailState} from '../../state/ca-project-detail.state';
 import {Observable} from 'rxjs';
 import {CaUser} from '../../../../../ca-core/model/entities/ca-user.class';
+import {
+  CaProjectSharedGroupsListComponent,
+  CaProjectSharedGroupsListInput
+} from '../ca-project-shared-groups-list/ca-project-shared-groups-list.component';
+import {map} from 'rxjs/operators';
 
 /**
  * Show detailed information for a project , used in ProjectDetailPage
@@ -21,6 +26,11 @@ export class CaProjectDetailComponent implements OnInit {
   projectUsers$: Observable<CaUser[]>;
   rightPanelState$: Observable<CaProjectDetailRightPanel>;
 
+  isRootProject$: Observable<boolean>;
+
+  commentQueryParams: CaProjectDetailRightPanel = {type: 'comments', objectId: null};
+  descriptionQueryParams: CaProjectDetailRightPanel = {type: 'description', objectId: null};
+
   constructor(private dialogService: FlDialogService,
               private projectService: CaProjectService,
               private state: CaProjectDetailState) {
@@ -31,6 +41,9 @@ export class CaProjectDetailComponent implements OnInit {
     this.project$ = this.state.getProject$();
     this.projectUsers$ = this.state.getUsers$();
     this.rightPanelState$ = this.state.getRightPanelState$();
+    this.isRootProject$ = this.state.getProject$().pipe(
+      map(project => project.isRoot())
+    );
   }
 
   onProjectUpdated(project: CaProject): void {
@@ -43,10 +56,19 @@ export class CaProjectDetailComponent implements OnInit {
 
 
   showComments(): void {
-    this.state.updateRightPanelState({type: 'comments'});
+    this.state.updateRightPanelState({type: 'comments', objectId: null});
   }
 
   showDescription(): void {
-    this.state.updateRightPanelState({type: 'description'});
+    this.state.updateRightPanelState({type: 'description', objectId: null});
+  }
+
+  openShareDialog(project: CaProject): void {
+    const input: CaProjectSharedGroupsListInput = {
+      projectId: project.id,
+      canEdit$: this.state.canEditProject$()
+    };
+
+    this.dialogService.openSmallDialog(CaProjectSharedGroupsListComponent, {data: input});
   }
 }

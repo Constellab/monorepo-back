@@ -1,7 +1,7 @@
 <!-- user reverse so the first displayed element is on top of others-->
 <ng-container *ngIf="value">
   <div fxLayout="row-reverse" class="user-list">
-    <div class="additional-user-count-externe"
+    <div class="additional-user-count-externe" *ngIf="value.additionalUsers.length > 0"
          (click)="openAdditionalUsersPortal($event)" [ngClass]="{'selected': selectionAdditionalUser()}">
       <div class="additional-user-count-interne">
         +{{value.additionalUsers.length}}

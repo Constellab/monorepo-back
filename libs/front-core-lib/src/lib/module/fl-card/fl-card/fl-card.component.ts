@@ -16,7 +16,7 @@ import {Component, OnInit} from '@angular/core';
 @Component({
   selector: 'fl-card',
   templateUrl: './fl-card.component.html',
-  styleUrls: ['./fl-card.component.scss']
+  styleUrls: ['./fl-card.component.scss'],
 })
 export class FlCardComponent implements OnInit {
 

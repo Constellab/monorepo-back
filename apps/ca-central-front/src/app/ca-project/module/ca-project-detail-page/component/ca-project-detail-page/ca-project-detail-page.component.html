@@ -2,20 +2,21 @@
 
   <div fxFlex="60%" fxLayout="column" class="g-scrollable-element left-section">
 
-    <ca-project-object-breadcrumb></ca-project-object-breadcrumb>
+    <ca-project-object-breadcrumb class="breadcrumbs"></ca-project-object-breadcrumb>
 
-    <ca-project-detail></ca-project-detail>
+
+    <ca-project-detail class="page-content"></ca-project-detail>
 
     <ng-container *ngIf="showObjects$ | async">
-      <ca-reports-list [reports]="reports" class="g-section" [rowSelectable]="true"
+      <ca-reports-list [reports]="reports" class="g-section page-content" [rowSelectable]="true"
                        (reportSelected)="selectReport($event)"></ca-reports-list>
 
-      <ca-experiments-list [experiments]="experiments" class="g-section"
+      <ca-experiments-list [experiments]="experiments" class="g-section page-content"
                            [rowSelectable]="true"
                            (experimentSelected)="selectExperiment($event)"></ca-experiments-list>
     </ng-container>
 
-    <ca-project-children class="g-section" *ngIf="showChildren$ | async"></ca-project-children>
+    <ca-project-children class="g-section page-content" *ngIf="showChildren$ | async"></ca-project-children>
   </div>
 
   <div fxFlex="40%" class="right-section">

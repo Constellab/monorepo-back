@@ -1,21 +1,32 @@
-:host{
+:host {
   height: 100vh;
   display: block;
   box-sizing: border-box;
 }
 
-.main-container{
+.main-container {
   height: 100%;
 }
 
-.left-section{
-  padding-left: 1em;
+.left-section {
   padding-bottom: 1em;
-  padding-right: 1em;
   height: 100%;
 }
 
-.right-section{
+.breadcrumbs {
+  // use to align breadcrumbs button with project icon
+  padding-left: 0.4em;
+  padding-right: 1em;
+}
+
+.page-content {
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-bottom: 1em;
+}
+
+.right-section {
   background-color: var(--card-background);
+  border-radius: var(--card-radius) 0 0 var(--card-radius);
   height: 100%;
 }
