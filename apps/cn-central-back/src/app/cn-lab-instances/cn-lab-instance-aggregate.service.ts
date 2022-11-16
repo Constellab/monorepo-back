@@ -13,7 +13,12 @@ import {
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnLabManagerService} from './cn-lab-manager.service';
 import {CnLabInstanceToken} from './cn-lab-instance-token.class';
-import {CnLabFindOneDto, CnLabInstanceConfigDTO, CnLabInstanceCreateDTO} from './cn-lab-instance.dto';
+import {
+  CnLabFindOneDto,
+  CnLabInstanceConfigDTO,
+  CnLabInstanceCreateDTO,
+  CnLabInstanceStartDTO
+} from './cn-lab-instance.dto';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstancesSecurity} from './cn-lab-instances.security';
 import {BlDtoHelper} from '@monorepo/back-core-lib';
@@ -29,6 +34,7 @@ import {CnLabInstanceProjectService} from './cn-lab-instance-project.service';
 import {CnProjectAggregateService} from '../cn-projects-aggregate/cn-project-aggregate.service';
 import {CnExternalLabProjectService} from '../cn-external-lab-api/cn-external-lab-project.service';
 import {CnUsersService} from '../cn-users/cn-users.service';
+import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 
 
 @Injectable()
@@ -351,6 +357,16 @@ export class CnLabInstanceAggregateService {
   public async stopAdminer(labId: string): Promise<boolean> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.stopAdminer(labInstance);
+  }
+
+  /////////////////////////// EXTERNAL LAB //////////////////////////////
+  public async markLabAsStarted(labStart: CnLabInstanceStartDTO): Promise<void> {
+    await this.labInstancesService.markLabAsStarted(labStart);
+  }
+
+  public async getCurrentLabInstanceProjects(): Promise<CnProject[]> {
+    const labProjects = await this.labInstanceProjectService.findByLabInstanceId(CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
+    return labProjects.map(labProject => labProject.project);
   }
 
   //////////////////////////// AUTHORIZATION ////////////////////////////////

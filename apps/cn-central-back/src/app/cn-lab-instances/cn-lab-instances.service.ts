@@ -118,7 +118,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   /**
    * Called by the lab to tell central it has started
    */
-  public async onStart(labStart: CnLabInstanceStartDTO): Promise<void> {
+  public async markLabAsStarted(labStart: CnLabInstanceStartDTO): Promise<void> {
     const labConfig = await this.labConfigService.getOrCreateLabConfig(labStart.lab_config);
 
     const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
