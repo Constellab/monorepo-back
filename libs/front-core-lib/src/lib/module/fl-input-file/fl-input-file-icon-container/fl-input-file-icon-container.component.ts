@@ -28,6 +28,8 @@ export class FlInputFileIconContainerComponent implements OnInit {
 
   @Input() border: boolean = false;
 
+  @Input() disabled: boolean = false;
+
   @Input() size: 'normal' | 'small' = 'normal';
 
   // retrieve the injected directive in the ng content

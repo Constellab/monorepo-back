@@ -54,6 +54,7 @@ export class CaCommentTextEditorConfig extends FlTextEditorConfig implements FlT
       {
         icon: 'sentiment_satisfied',
         type: 'button',
+        disabled: true,
         onAction: (e, state: FlTextEditorState) => this.openEmojiPanel(e, state)
       },
       {

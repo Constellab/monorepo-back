@@ -4,7 +4,7 @@
 
   <!-- Label and clear button -->
   <label class="input-file-trigger" tabindex="0">
-    <button mat-icon-button type="button" [color]="color" (click)="openFileExplorer()"
+    <button mat-icon-button type="button" [color]="color" (click)="openFileExplorer()" [disabled]="disabled"
             [ngClass]="{'g-button-icon-border': border, 'g-button-icon-small': size === 'small'}">
       <mat-icon class="g-text-not-selectable" [color]="color" [flIcon]="icon"></mat-icon>
     </button>

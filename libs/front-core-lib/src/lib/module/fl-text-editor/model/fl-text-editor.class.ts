@@ -14,6 +14,7 @@ export interface FlTextEditorBlockAddButton {
 export interface FlTextEditorSnowButton{
   icon: string;
   tooltip?: string;
+  disabled?: boolean;
   type: 'button' | 'fileExplorer';
   onAction?: (event: any, state: FlTextEditorState) => void;
 }
