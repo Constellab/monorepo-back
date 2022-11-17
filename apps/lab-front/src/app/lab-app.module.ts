@@ -26,7 +26,7 @@ import {
 import {labSvgIcons} from './lab-core/utils/lab-svg-icon-config';
 import {ClSupportedLanguage} from '@monorepo/core-lib';
 import {LabLoginModule} from './lab-login/lab-login.module';
-import {LabAuthenticationService} from './lab-core/service/lab-authentication.service';
+import {LabAuthService} from './lab-core/service/lab-auth.service';
 import {LabApiErrorService} from './lab-core/service/lab-api-error.service';
 import {LabApiServiceConfig} from './lab-core/service/lab-api-module.config';
 import {LabAppRoutingModule} from './lab-app-routing.module';
@@ -81,7 +81,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     FlSnackBarModule.forRoot(),
     FlPortalModule.forRoot(),
     FlPortalActionsModule.forRoot(),
-    FlAuthModule.forRoot(LabAuthenticationService),
+    FlAuthModule.forRoot(LabAuthService),
     FlTagModule.forRoot(LabTagService),
     FlTextEditorModule.forRoot({
       blots: [{blot: FlTextEditorFigureBlot, componentType: FlTextEditorFigureComponent},

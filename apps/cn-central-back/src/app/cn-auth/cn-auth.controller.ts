@@ -1,10 +1,10 @@
-import {Body, Controller, Param, Post, Res} from '@nestjs/common';
+import {Body, Controller, Param, ParseBoolPipe, Post, Res} from '@nestjs/common';
 import {CnAuthResponse, CnAuthService, CnExternalCheckCredentialResponse} from './cn-auth.service';
 import {Response} from 'express';
 import {cnJwtConfig} from './cn-jwt.config';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import {BlParseEnumPipe, BlPublic} from '@monorepo/back-core-lib';
-import {CmCredentials, CmCredentials2Fa, CmUserCategory} from '@monorepo/common-model';
+import {BlPublic} from '@monorepo/back-core-lib';
+import {CmCredentials, CmCredentials2Fa} from '@monorepo/common-model';
 import {CnUser} from '../cn-users/cn-user.entity';
 
 @Controller('auth')
@@ -52,10 +52,10 @@ export class CnAuthController {
    * Check if a user can login with the credential and check that the user have the right role
    */
   @BlPublic()
-  @Post('external/check-credentials/:role')
-  checkCredentialsWithRole(@Param('role', new BlParseEnumPipe(CmUserCategory)) category: CmUserCategory,
+  @Post('external/check-credentials/:requiresAdmin')
+  checkCredentialsWithRole(@Param('requiresAdmin', new ParseBoolPipe) requiresAdmin: boolean,
                            @Body() credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
-    return this.authService.externalCheckCredentials(category, credentials);
+    return this.authService.externalCheckCredentials(credentials, requiresAdmin);
   }
 
   /**

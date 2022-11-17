@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, UrlTree} from '@angular/router';
 import {Observable} from 'rxjs';
 import {LabRouterService} from '../../lab-core/service/lab-router.service';
-import {LabAuthenticationService} from '../../lab-core/service/lab-authentication.service';
+import {LabAuthService} from '../../lab-core/service/lab-auth.service';
 
 /**
  * Login page guard to redirect to app pages if a token exists
@@ -11,7 +11,7 @@ import {LabAuthenticationService} from '../../lab-core/service/lab-authenticatio
   providedIn: 'root'
 })
 export class LabLoginGuard implements CanActivate {
-  constructor(private authenticationService: LabAuthenticationService, private router: Router) {
+  constructor(private authenticationService: LabAuthService, private router: Router) {
   }
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {

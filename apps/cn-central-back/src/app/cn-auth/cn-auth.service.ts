@@ -5,7 +5,7 @@ import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-con
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {CnUserAccountsService} from '../cn-users/cn-users-account/cn-user-accounts.service';
 import {ClDateHelper} from '@monorepo/core-lib';
-import {CmCredentials, CmCredentials2Fa, CmUserCategory, CmUserStatus} from '@monorepo/common-model';
+import {CmCredentials, CmCredentials2Fa, CmUserStatus} from '@monorepo/common-model';
 import {BlJwtService} from '@monorepo/back-core-lib';
 import {CnUser2FAService} from './cn-user-2-f-a/cn-user-2-f-a.service';
 
@@ -62,11 +62,13 @@ export class CnAuthService {
 
   /**
    * Called by external services to check credentials of a user
+   * @param credentials
+   * @param requiresAdmin if true the user needs to be an admin
    */
-  async externalCheckCredentials(category: CmUserCategory, credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
+  async externalCheckCredentials(credentials: CmCredentials, requiresAdmin: boolean): Promise<CnExternalCheckCredentialResponse> {
     const user = await this.checkCredentialsAndUser(credentials);
 
-    if (category === 'ADMIN' && user.category !== 'ADMIN') {
+    if (requiresAdmin && user.category !== 'ADMIN') {
       throw new UnauthorizedException(CnErrorText.WRONG_CREDENTIALS);
     }
 

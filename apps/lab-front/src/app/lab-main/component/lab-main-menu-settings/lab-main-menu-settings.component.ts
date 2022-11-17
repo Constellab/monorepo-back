@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {labConstLoginRoute} from '../../../lab-core/utils/lab-base-route';
 import {FlConfirmDialogInput, FlDialogService} from '@monorepo/front-core-lib';
-import {LabAuthenticationService} from '../../../lab-core/service/lab-authentication.service';
+import {LabAuthService} from '../../../lab-core/service/lab-auth.service';
 import {Router} from '@angular/router';
 import {LabSystemService} from '../../../lab-core/service/lab-system.service';
 import {LabEnvironmentHelper} from '../../../lab-core/utils/lab-environment.helper';
@@ -23,7 +23,7 @@ export class LabMainMenuSettingsComponent implements OnInit {
 
   monitoringRoute = LabRouterService.getMonitoringRoute();
 
-  constructor(private authenticationService: LabAuthenticationService,
+  constructor(private authenticationService: LabAuthService,
               private router: Router,
               private dialogService: FlDialogService,
               private systemService: LabSystemService) {

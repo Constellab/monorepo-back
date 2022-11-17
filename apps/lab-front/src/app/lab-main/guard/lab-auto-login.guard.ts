@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, UrlTree} from '@angular/router';
 import {Observable} from 'rxjs';
-import {LabAuthenticationService} from '../../lab-core/service/lab-authentication.service';
+import {LabAuthService} from '../../lab-core/service/lab-auth.service';
 import {LabRouterService} from '../../lab-core/service/lab-router.service';
 
 /**
@@ -14,7 +14,7 @@ import {LabRouterService} from '../../lab-core/service/lab-router.service';
 })
 export class LabAutoLoginGuard implements CanActivate {
 
-  constructor(private router: Router, private authenticateService: LabAuthenticationService) {
+  constructor(private router: Router, private authenticateService: LabAuthService) {
   }
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
@@ -28,7 +28,7 @@ export class LabAutoLoginGuard implements CanActivate {
 
     if (expiresIn) {
       // store the token in the
-      this.authenticateService.setAuthExpirationCookie(expiresIn);
+      this.authenticateService.afterLogin(expiresIn);
       return this.router.parseUrl(LabRouterService.getLoginRoute());
     } else {
       return this.router.parseUrl(LabRouterService.getLoginRoute());
