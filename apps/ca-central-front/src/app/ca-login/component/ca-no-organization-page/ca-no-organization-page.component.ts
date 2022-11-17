@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {CaRouterService} from '../../../ca-core/service/ca-router.service';
 
 /**
  * Page used when a user is not part of an organization
@@ -10,6 +11,7 @@ import {Component, OnInit} from '@angular/core';
 })
 export class CaNoOrganizationPageComponent implements OnInit {
 
+  loginRoute = CaRouterService.getLoginRoute();
   constructor() { }
 
   ngOnInit(): void {

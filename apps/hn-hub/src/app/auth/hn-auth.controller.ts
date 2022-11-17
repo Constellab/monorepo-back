@@ -1,35 +1,63 @@
 import {Body, Controller, Post, Res} from '@nestjs/common';
-import {HnAuthService} from './hn-auth.service';
+import {HnAuthResponse, HnAuthService} from './hn-auth.service';
 import {Response} from 'express';
-import {jwtConfig} from './jwt.config';
+import {hnJwtConfig} from './hn-jwt.config';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
-import {CmCredentials} from '@monorepo/common-model';
+import {CmCredentials, CmCredentials2Fa} from '@monorepo/common-model';
 import {BlPublic} from '@monorepo/back-core-lib';
 
 @Controller('auth')
 export class HnAuthController {
 
-  constructor(
-    private authService: HnAuthService,
-    private configService: HnCoreConfigService
-  ) {
-
+  constructor(private authService: HnAuthService,
+              private configService: HnCoreConfigService) {
   }
 
+  /**
+   * Login with credentials
+   *
+   * IF 2FA activated, return 2FA_REQUIRED
+   * Else  It stores automatically in a secure cookie
+   */
   @BlPublic()
   @Post('login')
   async login(@Body() credentials: CmCredentials, @Res() response: Response): Promise<void> {
-    const token: string = await this.authService.login(credentials);
+    const result: HnAuthResponse = await this.authService.login(credentials);
 
-    this.setTokenInResponseCookies(token, jwtConfig.tokenDurationInMilliseconds, response);
-    response.send({expiresIn: jwtConfig.tokenDurationInMilliseconds});
+    if (result.status === 'LOGGED_IN') {
+      this.setTokenInCookie(result.token, response);
+      response.send({status: 'LOGGED_IN', expiresIn: hnJwtConfig.tokenDurationInMilliseconds});
+    } else {
+      response.send({status: '2FA_REQUIRED', twoFAUrlCode: result.twoFAUrlCode});
+    }
+  }
+
+  /**
+   * Login with 2Fa code after the basic login
+   * It stores automatically in a secure cookie
+   */
+  @BlPublic()
+  @Post('login-2fa')
+  async login2Fa(@Body() credentials: CmCredentials2Fa, @Res() response: Response): Promise<void> {
+    const token = await this.authService.loginWith2FA(credentials);
+
+    this.setTokenInCookie(token, response);
+    response.send({status: 'LOGGED_IN', expiresIn: hnJwtConfig.tokenDurationInMilliseconds});
   }
 
   @BlPublic()
   @Post('logout')
   async logout(@Body() body: any, @Res() response: Response): Promise<void> {
-    this.setTokenInResponseCookies('', 0, response);
+    this.clearTokenCookie(response);
     response.send();
+  }
+
+  private setTokenInCookie(token: string, response: Response): void {
+    this.configureTokenCookie(token, hnJwtConfig.tokenDurationInMilliseconds, response);
+  }
+
+  private clearTokenCookie(response: Response): void {
+    this.configureTokenCookie('', 0, response);
   }
 
 
@@ -37,8 +65,8 @@ export class HnAuthController {
    * Set the token in the Authorization cookie with httpOnly option
    * to prevent js from accessing it
    */
-  private setTokenInResponseCookies(token: string, expiresInMilliseconds: number, response: Response): void {
-    response.cookie(jwtConfig.authorizationCookie, token,
+  private configureTokenCookie(token: string, expiresInMilliseconds: number, response: Response): void {
+    response.cookie(hnJwtConfig.authorizationCookie, token,
       {
         path: '/', maxAge: expiresInMilliseconds, sameSite: 'strict',
         httpOnly: true, secure: !this.configService.isLocal(),

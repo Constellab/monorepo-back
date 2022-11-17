@@ -74,5 +74,7 @@
   "object_not_found": "Object not found",
   "error_required": "The field '{{field}}' is mandatory",
   "close": "Close",
-  "ok": "ok"
+  "ok": "ok",
+  "created_by": "Created by",
+  "email": "Email"
 }

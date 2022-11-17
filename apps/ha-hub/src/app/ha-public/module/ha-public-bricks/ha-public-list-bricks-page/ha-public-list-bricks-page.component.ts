@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {HaBrick} from '../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 import {CmVersion} from '@monorepo/common-model';
+import {HaRouterService} from '../../../../ha-core/ha-service/ha-router.service';
 
 @Component({
   selector: 'ha-public-list-bricks-page',
@@ -12,9 +13,7 @@ export class HaPublicListBricksPageComponent implements OnInit {
 
   bricks: HaBrick[];
 
-  constructor(
-    private haBrickService: HaBrickService
-  ) {
+  constructor(private haBrickService: HaBrickService) {
   }
 
   ngOnInit(): void {
@@ -23,7 +22,11 @@ export class HaPublicListBricksPageComponent implements OnInit {
         b.lastVersion = new CmVersion(b.lastVersion.major, b.lastVersion.minor, b.lastVersion.patch, b.lastVersion.subPatch);
       }
       this.bricks = bricks;
-    })
+    });
+  }
+
+  getBrickRoute(brick: HaBrick): string {
+    return HaRouterService.getBrickPageRoute(brick.name);
   }
 
 }

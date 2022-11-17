@@ -1,38 +1,25 @@
-/**
- * Login page guard to redirect to app pages if a token exists
- */
 import {Injectable} from '@angular/core';
 import {CanActivate, Router, UrlTree} from '@angular/router';
 import {HaAuthService} from '../ha-service/ha-auth.service';
 import {Observable} from 'rxjs';
-import {FlDialogService} from '@monorepo/front-core-lib';
-import {HaMainLoginComponent} from '../../ha-main/ha-main-login/ha-main-login.component';
+import {CaRouterService} from '../../../../../ca-central-front/src/app/ca-core/service/ca-router.service';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class HaAdminGuard implements CanActivate {
 
-  currentUrl: string;
 
-  constructor(
-    private loginService: HaAuthService,
-    private dialogService: FlDialogService,
-    private router: Router) {
+  constructor(private loginService: HaAuthService,
+              private router: Router) {
   }
 
   canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-
-    if (this.loginService.hasAuthorizationCookie()) {
-      return true;
+    if (!this.loginService.hasAuthorizationCookie()) {
+      return this.router.createUrlTree([CaRouterService.getLoginRoute()]);
     }
-    this.currentUrl = this.router.url;
-
-    this.dialogService.openSmallDialog(HaMainLoginComponent).afterClosed().subscribe(() => {
-      this.router.navigateByUrl(this.router.createUrlTree([this.currentUrl])).then();
-    });
-
-    return false;
+    return true;
   }
 
 }

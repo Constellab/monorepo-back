@@ -4,11 +4,11 @@ import {HaMainComponent} from './ha-main/ha-main.component';
 import {HaMainRoutingModule} from './ha-main-routing-module';
 import {TranslateModule} from '@ngx-translate/core';
 import {HaCoreModule} from '../ha-core/ha-core.module';
-import {HaMainLoginComponent} from './ha-main-login/ha-main-login.component';
+import {HaLoginPageComponent} from './ha-login-page/ha-login-page.component';
 
 
 @NgModule({
-  declarations: [HaMainComponent, HaMainLoginComponent],
+  declarations: [HaMainComponent, HaLoginPageComponent],
   imports: [
     CommonModule,
     HaMainRoutingModule,

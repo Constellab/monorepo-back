@@ -64,20 +64,7 @@
               <h2 class="g-text-centered">{{'flAuth.sign_in' | translate}}</h2>
             </fl-card-header>
             <fl-card-body>
-
-              <form [formGroup]="signInFormGp" (ngSubmit)="signInSubmit()" id="invit-sign-in">
-
-                <fl-login-form [formGp]="signInFormGp"></fl-login-form>
-
-                <div class="g-text-centered">
-                  <button mat-flat-button color="accent" type="submit" form="invit-sign-in"
-                          class="g-button-big">
-                    {{'flAuth.sign_in' | translate}}
-                    <fl-button-loader *ngIf="signInIsLoading"></fl-button-loader>
-                  </button>
-                </div>
-
-              </form>
+              <fl-complete-login (loginSuccess)="loginSuccess()" [hideLoginFooter]="true"></fl-complete-login>
             </fl-card-body>
           </fl-card>
         </div>

@@ -22,12 +22,12 @@ export class FlCompleteLoginComponent implements OnInit {
   /**
    * Redirection route after the login is successful, do nothing if not provided
    */
-  @Input() appRoute?: string;
+  @Input() redirectionRoute?: string;
 
   /**
    * If true the password reset link and signup link are hidden
    */
-  @Input() disableLoginFooter: boolean = false;
+  @Input() hideLoginFooter: boolean = false;
 
   @Output() loginSuccess: EventEmitter<void> = new EventEmitter<void>();
 
@@ -66,17 +66,18 @@ export class FlCompleteLoginComponent implements OnInit {
   private loginCompleted(expiresIn: number): void {
     this.authService.afterLogin(expiresIn);
 
-    if (this.appRoute) {
+    if (this.redirectionRoute) {
       // redirect to the app
       // if a route has been saved, redirect to this route
       if (FlLoginSavedRoute.hasRoute()) {
-        console.log(FlLoginSavedRoute.getRoutePath());
         this.router.navigate([FlLoginSavedRoute.getRoutePath()], {queryParams: FlLoginSavedRoute.getRouteQueryParams()});
         FlLoginSavedRoute.clearRoute();
       } else {
-        this.router.navigate([this.appRoute]);
+        this.router.navigate([this.redirectionRoute]);
       }
     }
+
+    this.loginSuccess.next();
   }
 
 }

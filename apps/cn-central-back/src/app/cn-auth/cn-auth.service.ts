@@ -15,6 +15,12 @@ export interface CnAuthResponse {
   twoFAUrlCode?: string;
 }
 
+export interface CnExternalCheckCredentialResponse {
+  status: 'OK' | '2FA_REQUIRED';
+  user?: CnUser;
+  twoFAUrlCode?: string;
+}
+
 @Injectable()
 export class CnAuthService {
 
@@ -54,14 +60,36 @@ export class CnAuthService {
     return this.jwtService.generateToken(user.id, user.email);
   }
 
-  async checkCredentialsWithRole(category: CmUserCategory, credentials: CmCredentials): Promise<CnUser | null> {
+  /**
+   * Called by external services to check credentials of a user
+   */
+  async externalCheckCredentials(category: CmUserCategory, credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
     const user = await this.checkCredentialsAndUser(credentials);
 
-    if (user.category === category) {
-      return user;
+    if (category === 'ADMIN' && user.category !== 'ADMIN') {
+      throw new UnauthorizedException(CnErrorText.WRONG_CREDENTIALS);
     }
 
-    return null;
+    if (user.has2FA) {
+      const user2FA = await this.user2FaService.generateCode(user);
+      return {
+        status: '2FA_REQUIRED',
+        twoFAUrlCode: user2FA.urlCode
+      };
+    } else {
+      return {
+        status: 'OK',
+        user
+      };
+    }
+  }
+
+  /**
+   * 2FA login call by external services
+   * @param credentials
+   */
+  async externalCheck2FA(credentials: CmCredentials2Fa): Promise<CnUser> {
+    return await this.user2FaService.checkIsValidCode(credentials.twoFACode, credentials.twoFAUrlCode);
   }
 
   private async checkCredentialsAndUser(credentials: CmCredentials): Promise<CnUser> {

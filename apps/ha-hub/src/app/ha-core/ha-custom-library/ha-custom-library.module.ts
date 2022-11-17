@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {
   FlArticleModule,
   FlAuthModule,
+  FlCardModule,
   FlCoreComponentModule,
   FlCoreDirectiveModule,
   FlCorePipeModule,
@@ -39,6 +40,7 @@ import {TdTechnicalDocModule} from '@monorepo/technical-doc';
     FlUserModule,
     FlTextIconModule,
     FlCoreComponentModule,
+    FlCardModule,
 
     //-------------------
 

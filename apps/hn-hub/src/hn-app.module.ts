@@ -24,7 +24,7 @@ import {
 import {HnCoreModule} from './app/core/hn-core.module';
 import {HnUserService} from './app/users/hn-user.service';
 import {Request} from 'express';
-import {jwtConfig} from './app/auth/jwt.config';
+import {hnJwtConfig} from './app/auth/hn-jwt.config';
 import {HnJwtAuthGuard} from './app/core/guards/hn-jwt-auth.guard';
 import {HnFolderModule} from './app/folder/hn-folder.module';
 import {WinstonModule, WinstonModuleOptions} from 'nest-winston';
@@ -77,10 +77,10 @@ function configureJwtModule(
     jwtFromRequest: (request: Request) =>
       BlCookieHelper.getCookieFromHeader(
         request.headers.cookie,
-        jwtConfig.authorizationCookie
+        hnJwtConfig.authorizationCookie
       ),
     usersService: userService,
-    tokenDurationInSeconds: jwtConfig.tokenDurationInSeconds,
+    tokenDurationInSeconds: hnJwtConfig.tokenDurationInSeconds,
   };
 }
 

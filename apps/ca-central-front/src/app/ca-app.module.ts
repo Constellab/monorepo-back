@@ -28,7 +28,7 @@ import {
 import {caSvgIcons} from './ca-core/model/config/ca-svg-icon-config';
 import {CaApiServiceConfig} from './ca-core/model/config/ca-api-module.config';
 import {ClSupportedLanguage} from '@monorepo/core-lib';
-import {CaAuthenticationService} from './ca-login/service/ca-authentication.service';
+import {CaAuthService} from './ca-login/service/ca-auth.service';
 import {CaUserAccountsService} from './ca-core/service-api/ca-user-accounts.service';
 import {CaApiErrorService} from './ca-core/service/ca-api-error.service';
 import {rvDefaultViewTypeInfos, RvResourceViewModule} from '@monorepo/resource-view';
@@ -83,7 +83,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     FlDialogModule.forRoot(),
     FlSnackBarModule.forRoot(),
     FlPortalModule.forRoot(),
-    FlAuthModule.forRoot(CaAuthenticationService, CaUserAccountsService),
+    FlAuthModule.forRoot(CaAuthService, CaUserAccountsService),
     FlPortalActionsModule.forRoot(),
     FlTextEditorModule.forRoot({
       blots: [

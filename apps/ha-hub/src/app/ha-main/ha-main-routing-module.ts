@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {HaMainComponent} from './ha-main/ha-main.component';
 import {Ha404Component} from '../ha-public/module/ha404/ha404.component';
+import {HaLoginPageComponent} from './ha-login-page/ha-login-page.component';
 
 const routes: Routes = [
   {
@@ -13,6 +14,10 @@ const routes: Routes = [
     path: 'bricks',
     component: HaMainComponent,
     loadChildren: () => import('../ha-public/ha-public.module').then(m => m.HaPublicModule)
+  },
+  {
+    path: 'login',
+    component: HaLoginPageComponent,
   },
   {
     path: '',

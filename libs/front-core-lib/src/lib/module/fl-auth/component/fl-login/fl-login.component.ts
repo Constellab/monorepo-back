@@ -18,14 +18,9 @@ import {FlLoginFormComponent} from '../fl-login-form/fl-login-form.component';
 export class FlLoginComponent implements OnInit {
 
   /**
-   * Redirection route after the login is successful, do nothing if not provided
-   */
-  @Input() appRoute?: string;
-
-  /**
    * If true the password reset link and signup link are hidden
    */
-  @Input() diableFooter: boolean = false;
+  @Input() hideFooter: boolean = false;
 
   @Output() loginSuccess: EventEmitter<FlAuthLoginResponse> = new EventEmitter<FlAuthLoginResponse>();
 

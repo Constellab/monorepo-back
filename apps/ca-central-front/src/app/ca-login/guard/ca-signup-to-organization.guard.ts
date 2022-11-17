@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, UrlTree} from '@angular/router';
-import {CaAuthenticationService} from '../service/ca-authentication.service';
+import {CaAuthService} from '../service/ca-auth.service';
 import {Observable} from 'rxjs';
 import {CaRouterService} from '../../ca-core/service/ca-router.service';
 
@@ -11,7 +11,7 @@ import {CaRouterService} from '../../ca-core/service/ca-router.service';
   providedIn: 'root'
 })
 export class CaSignupToOrganizationGuard implements CanActivate {
-  constructor(private loginService: CaAuthenticationService, private router: Router) {
+  constructor(private loginService: CaAuthService, private router: Router) {
   }
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {

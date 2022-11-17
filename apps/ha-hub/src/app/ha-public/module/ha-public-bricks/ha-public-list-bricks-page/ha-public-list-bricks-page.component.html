@@ -12,7 +12,7 @@
   <div class="brick-list">
     <ng-container *ngFor="let brick of bricks">
 
-      <a [href]="'bricks/' + brick.name">
+      <a [routerLink]="getBrickRoute(brick)">
         <div class="brick">
           <div class="brick-logo" [style.background-image]="
       brick.imageLink ? 'url(\''+ brick.imageLink +'\')' :

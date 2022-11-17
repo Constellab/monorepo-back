@@ -1,5 +1,5 @@
 import {Body, Controller, Param, Post, Res} from '@nestjs/common';
-import {CnAuthResponse, CnAuthService} from './cn-auth.service';
+import {CnAuthResponse, CnAuthService, CnExternalCheckCredentialResponse} from './cn-auth.service';
 import {Response} from 'express';
 import {cnJwtConfig} from './cn-jwt.config';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
@@ -52,10 +52,19 @@ export class CnAuthController {
    * Check if a user can login with the credential and check that the user have the right role
    */
   @BlPublic()
-  @Post('check-credentials/:role')
+  @Post('external/check-credentials/:role')
   checkCredentialsWithRole(@Param('role', new BlParseEnumPipe(CmUserCategory)) category: CmUserCategory,
-                           @Body() credentials: CmCredentials): Promise<CnUser | null> {
-    return this.authService.checkCredentialsWithRole(category, credentials);
+                           @Body() credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
+    return this.authService.externalCheckCredentials(category, credentials);
+  }
+
+  /**
+   * Called by external service to check the 2fa code and return user if ok
+   */
+  @BlPublic()
+  @Post('external/check-2fa')
+  externalCheck2Fa(@Body() credentials: CmCredentials2Fa): Promise<CnUser> {
+    return this.authService.externalCheck2FA(credentials);
   }
 
   /**

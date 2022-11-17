@@ -2,6 +2,12 @@
   <fl-card class="card">
     <fl-card-header>
       <h1>{{'no_organization' | translate}}</h1>
+
+      <fl-card-actions>
+        <a mat-icon-button [routerLink]="loginRoute" [queryParams]="{autoRedirect: false}">
+          <mat-icon>home</mat-icon>
+        </a>
+      </fl-card-actions>
     </fl-card-header>
 
     <fl-card-body>

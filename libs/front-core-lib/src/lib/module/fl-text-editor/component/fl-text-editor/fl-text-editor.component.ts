@@ -107,6 +107,9 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
             highlight: (text: string) => hljs.highlight(text, {language: 'python'}).value
           }, // Include syntax module
           toolbar: this.config.getToolbarConfig(),
+          clipboard: {
+            matchVisual: false
+          }
         },
         placeholder: this.placeholder,
         scrollingContainer: FlQuillSetup.getScrollingContainer(this.scrollContainer, this.scrollDispatcher,
@@ -136,6 +139,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
 
     this.quill.on('text-change', () => this.setAndEmitValue(this.getQuillValue()));
     this.quill.on('editor-change', (changeEvent: any, obj: any) => this.onEditorChange(changeEvent, obj));
+
   }
 
   getState(): FlTextEditorState{

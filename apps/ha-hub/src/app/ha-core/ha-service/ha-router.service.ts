@@ -17,8 +17,13 @@ export class HaRouterService {
     return '/bricks/';
   }
 
-  public static getBrickPageRoute(brickName: string, brickMajor: string): string {
-    return `${this.getBrickListRoute()}${brickName}/${brickMajor === 'latest' ? 'latest' : `v${brickMajor}`}/`;
+  public static getLoginRoute(): string {
+    return '/login';
+  }
+
+  public static getBrickPageRoute(brickName: string, brickMajor?: string): string {
+    const brickMajorUrl = brickMajor == null || brickMajor === 'latest' ? 'latest' : `v${brickMajor}`;
+    return `${this.getBrickListRoute()}${brickName}/${brickMajorUrl}/`;
   }
 
   public static getBrickDocsPageRoute(brickName: string, brickMajor: string): string {

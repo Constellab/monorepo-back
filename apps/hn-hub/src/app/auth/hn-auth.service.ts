@@ -1,10 +1,15 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {HnUserService} from '../users/hn-user.service';
-import {CmCredentials} from '@monorepo/common-model';
-import {BlExternalApiService, BlJwtService} from '@monorepo/back-core-lib';
-import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
+import {CmCredentials, CmCredentials2Fa} from '@monorepo/common-model';
+import {BlJwtService} from '@monorepo/back-core-lib';
 import {HnUser} from '../users/hn-user.entity';
-import {lastValueFrom} from 'rxjs';
+import {HnCentralAuthService} from './hn-central-auth.service';
+
+export interface HnAuthResponse {
+  status: 'LOGGED_IN' | '2FA_REQUIRED';
+  token?: string;
+  twoFAUrlCode?: string;
+}
 
 @Injectable()
 export class HnAuthService {
@@ -12,35 +17,38 @@ export class HnAuthService {
   constructor(
     private userService: HnUserService,
     private jwtService: BlJwtService,
-    private blExternalApiService: BlExternalApiService,
-    private coreConfigService: HnCoreConfigService
-  ) {
+    private centralAuthService: HnCentralAuthService) {
   }
 
-  async login(credentials: CmCredentials): Promise<string> {
-    const userCentral = await this.checkCredentialsAndUser(credentials);
-    const user: HnUser = await this.createOrUpdateUser(userCentral);
+  async login(credentials: CmCredentials): Promise<HnAuthResponse> {
+    const checkCredential = await this.centralAuthService.checkUserCredentialAndAdmin(credentials);
 
-    return this.jwtService.generateToken(user.id, user.email);
-  }
+    // if there is no 2FA, the user can be logged in
+    if (checkCredential.status === 'OK') {
+      const user: HnUser = await this.createOrUpdateUser(checkCredential.user);
 
-  async checkCredentialsAndUser(credentials: CmCredentials): Promise<any> {
-    try {
-      const userCentral = await lastValueFrom(this.blExternalApiService
-        .post(this.coreConfigService.getCentralApiUrl() + 'auth/check-credentials/ADMIN', credentials));
-      if (!userCentral) {
-        throw new UnauthorizedException('Wrong mail or passord');
+      const token = this.jwtService.generateToken(user.id, user.email);
+      return {
+        status: 'LOGGED_IN',
+        token: token,
       }
-      return userCentral;
-    } catch (e: any) {
-      if (e.status >= 500 && e.status < 600) {
-        throw new UnauthorizedException('Central disconnected');
+    }else{
+      return {
+        status: '2FA_REQUIRED',
+        twoFAUrlCode: checkCredential.twoFAUrlCode,
       }
-      throw e;
     }
   }
 
-  async createOrUpdateUser(userFromCentral: any): Promise<HnUser> {
+  async loginWith2FA(credentials: CmCredentials2Fa): Promise<string> {
+    const user: HnUser = await this.centralAuthService.check2FA(credentials);
+    const dbUser = await this.createOrUpdateUser(user);
+
+    return this.jwtService.generateToken(dbUser.id, dbUser.email);
+  }
+
+
+  async createOrUpdateUser(userFromCentral: HnUser): Promise<HnUser> {
     const user: HnUser = new HnUser();
     user.id = userFromCentral.id;
     user.firstname = userFromCentral.firstname;

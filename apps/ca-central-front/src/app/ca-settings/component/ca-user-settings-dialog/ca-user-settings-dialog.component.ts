@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {CaAuthenticationService} from '../../../ca-login/service/ca-authentication.service';
+import {CaAuthService} from '../../../ca-login/service/ca-auth.service';
 import {Router} from '@angular/router';
 
 /**
@@ -14,7 +14,7 @@ export class CaUserSettingsDialogComponent implements OnInit {
 
   logoutIsLoading: boolean = false;
 
-  constructor(private authService: CaAuthenticationService,
+  constructor(private authService: CaAuthService,
               private router: Router) {
   }
 

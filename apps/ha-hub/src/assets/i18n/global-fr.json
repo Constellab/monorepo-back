@@ -74,5 +74,7 @@
   "object_not_found": "Objet non trouvé",
   "error_required": "Le champ '{{field}}' est obligatoire",
   "close": "Fermer",
-  "ok": "ok"
+  "ok": "ok",
+  "created_by": "Créé par",
+  "email": "Email"
 }

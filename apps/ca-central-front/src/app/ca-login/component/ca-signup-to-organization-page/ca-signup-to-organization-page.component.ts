@@ -5,7 +5,6 @@ import {CmCredentials} from '@monorepo/common-model';
 import {CaOrganizationInvitService} from '../../../ca-core/service-api/ca-organization-invit.service';
 import {ActivatedRoute} from '@angular/router';
 import {CaRouterService} from '../../../ca-core/service/ca-router.service';
-import {CaAuthenticationService} from '../../service/ca-authentication.service';
 import {CaOrganizationInvitFull} from '../../../ca-core/model/entities/ca-organization-invit.class';
 import {Observable, tap} from 'rxjs';
 
@@ -26,13 +25,11 @@ export class CaSignupToOrganizationPageComponent implements OnInit {
   signInFormGp: FormGroup<CmCredentials>;
 
   signupIsLoading: boolean = false;
-  signInIsLoading: boolean = false;
 
   constructor(private route: ActivatedRoute,
               private organizationInvitService: CaOrganizationInvitService,
               private snackBarService: FlSnackBarService,
-              private routerService: CaRouterService,
-              private authenticationService: CaAuthenticationService) {
+              private routerService: CaRouterService) {
   }
 
   ngOnInit(): void {
@@ -61,7 +58,7 @@ export class CaSignupToOrganizationPageComponent implements OnInit {
 
 
   signupSubmit(): void {
-    if (this.signupFormGp.valid && !this.signupIsLoading && !this.signInIsLoading) {
+    if (this.signupFormGp.valid && !this.signupIsLoading) {
       this.signup(this.signupFormGp.getRawValue());
     } else {
       this.signupFormGp.markAllAsTouched();
@@ -83,24 +80,7 @@ export class CaSignupToOrganizationPageComponent implements OnInit {
     this.signupIsLoading = false;
   }
 
-  signInSubmit(): void {
-    if (this.signInFormGp.valid && !this.signInIsLoading && !this.signupIsLoading) {
-      this.signIn(this.signInFormGp.getRawValue());
-    } else {
-      this.signInFormGp.markAllAsTouched();
-    }
-  }
-
-  private signIn(credentials: CmCredentials): void {
-    this.signInIsLoading = true;
-    this.authenticationService.login(credentials).subscribe({
-      next: () => this.signInSuccess(),
-      error: () => this.signInIsLoading = false
-    });
-  }
-
-  private signInSuccess(): void {
+  loginSuccess(): void {
     this.routerService.navigateToJoinOrganization(this.invitationCode);
-    this.signInIsLoading = false;
   }
 }

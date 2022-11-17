@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {FlApiService} from '@monorepo/front-core-lib';
+import {FlApiService, FlCleanableService, FlCleanerService} from '@monorepo/front-core-lib';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {HaUser, HaUserCategory} from '../ha-model/ha-entities/ha-user';
 import {HaAuthService} from './ha-auth.service';
@@ -8,14 +8,14 @@ import {map} from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
-export class HaAuthenticatedUserService {
+export class HaAuthenticatedUserService implements FlCleanableService{
 
   private readonly userRoute: string = 'user';
   public userSubject: BehaviorSubject<HaUser> = new BehaviorSubject<HaUser>(null);
-  constructor(
-    private apiService: FlApiService,
-    private authService: HaAuthService
-  ) {
+
+  constructor(private apiService: FlApiService,
+              private authService: HaAuthService) {
+    FlCleanerService.getInstance().registerService(this);
   }
 
   public init(): void {
@@ -28,10 +28,6 @@ export class HaAuthenticatedUserService {
     }
   }
 
-  public setCurrentUser(): void {
-    this.init();
-  }
-
   public getUser(): Observable<HaUser> {
     return this.userSubject.pipe();
   }
@@ -41,4 +37,10 @@ export class HaAuthenticatedUserService {
       map(user => user != null && user.category === HaUserCategory.ADMIN)
     );
   }
+
+  clean(): void {
+    this.userSubject.next(null);
+  }
+
+
 }

@@ -30,6 +30,7 @@ import {FlSignupFormComponent} from './component/fl-signup-form/fl-signup-form.c
 import {FlLoginFormComponent} from './component/fl-login-form/fl-login-form.component';
 import {FlCompleteLoginComponent} from './component/fl-complete-login/fl-complete-login.component';
 import {FlLoginTwoFAComponent} from './component/fl-login-two-f-a/fl-login-two-f-a.component';
+import {FlLoginPageComponent} from './component/fl-login-page/fl-login-page.component';
 
 /**
  * Module containing component for authentication, sign up, password reset
@@ -45,6 +46,7 @@ import {FlLoginTwoFAComponent} from './component/fl-login-two-f-a/fl-login-two-f
     FlLoginFormComponent,
     FlCompleteLoginComponent,
     FlLoginTwoFAComponent,
+    FlLoginPageComponent,
   ],
   exports: [
     FlLoginComponent,
@@ -56,6 +58,7 @@ import {FlLoginTwoFAComponent} from './component/fl-login-two-f-a/fl-login-two-f
     FlLoginFormComponent,
     FlCompleteLoginComponent,
     FlLoginTwoFAComponent,
+    FlLoginPageComponent,
   ],
   imports: [
     CommonModule,
