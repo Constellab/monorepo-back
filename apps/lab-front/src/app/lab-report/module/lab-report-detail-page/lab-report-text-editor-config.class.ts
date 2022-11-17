@@ -4,6 +4,7 @@ import {
   FlTextEditorBlockAddButton,
   FlTextEditorConfig,
   FlTextEditorImageLoader,
+  FlTextEditorSnowButton,
   FlTextEditorState
 } from '@monorepo/front-core-lib';
 import {LabReportService} from '../../../lab-core/entity-service/lab-report.service';
@@ -17,7 +18,6 @@ import {LabReportContentView, LabReportContentViewBlot} from './lab-report-conte
  * Config for the text editor in the report
  */
 export class LabReportTextEditorConfig extends FlTextEditorConfig implements FlTextEditorImageLoader {
-
   constructor(private reportId: string,
               private reportService: LabReportService,
               private dialogService: FlDialogService) {
@@ -43,12 +43,16 @@ export class LabReportTextEditorConfig extends FlTextEditorConfig implements FlT
     ];
   }
 
+  getSnowButtons(): FlTextEditorSnowButton[] {
+    return [];
+  }
+
   public getImageUrl(filename: string): string {
     return this.reportService.getImageUrl(filename);
   }
 
-  getAndSaveImage(imgBlob: Blob, state: FlTextEditorState): any {
-    return null;
+  onPasteImage(imgFile: File, state: FlTextEditorState): any {
+    return this.insertImageFromFile(imgFile, state);
   }
 
   private insertImageFromFile(file: File, textEditorState: FlTextEditorState): void {

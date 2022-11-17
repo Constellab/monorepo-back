@@ -1,7 +1,7 @@
 import {
   Component,
   ElementRef,
-  EventEmitter,
+  EventEmitter, HostBinding,
   Inject,
   Input,
   NgZone,
@@ -77,6 +77,8 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
 
   @Output() textChange: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('editor', {static: true}) editorElement: ElementRef<HTMLElement>;
+  @HostBinding('class')
+  elementClass = 'text-editor';
 
   private quill: Quill;
 
@@ -136,6 +138,9 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     this.quill.on('editor-change', (changeEvent: any, obj: any) => this.onEditorChange(changeEvent, obj));
   }
 
+  getState(): FlTextEditorState{
+    return this.state;
+  }
 
   callChangeEvent(value: string): void {
     this.textChange.next(value);

@@ -14,13 +14,14 @@ import {
   FlArrayObs,
   FlEntityArrayObs,
   FlEntityPaginatedDatasource,
-  FlQuillJson,
+  FlQuillJson, FlTextEditorUploadedImage,
 } from '@monorepo/front-core-lib';
 import {ClGetPageFunction, ClPage, ClPageI} from '@monorepo/core-lib';
 import {CaGroup} from '../model/entities/ca-group.entity';
 import {CaUser} from '../model/entities/ca-user.class';
 import {CaProjectComment, CaProjectCommentDatasourcePaginated} from '../model/entities/ca-comment.class';
 import {CmRichTextI} from '@monorepo/common-model';
+import {map} from 'rxjs/operators';
 
 /**
  * Service to manage project entity
@@ -164,5 +165,29 @@ export class CaProjectService {
   public newProjectComment(projectId: string, content: CmRichTextI, parentCommentId?: string): Observable<CaProjectComment> {
     return this.apiService.post(`${this.route}/${projectId}/comment`,
       {content: content, parentCommentId: parentCommentId}, CaProjectComment);
+  }
+
+  uploadCommentImage(file: File): Observable<FlTextEditorUploadedImage> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.apiService.put(`${this.route}/comment/image`, formData).pipe(
+      map(
+        (uploadedFile: any) => {
+          return {
+            filename: uploadedFile.filename,
+            width: uploadedFile.width,
+            height: uploadedFile.height,
+          };
+        }
+      )
+    );
+  }
+
+  public getFilePath(filename: string): string {
+    return this.apiService.getBaseRouteUrl(`${this.route}/comment/image/${filename}`);
+  }
+
+  getCommentImageUrl(filename: string): string {
+    return this.getFilePath(filename);
   }
 }

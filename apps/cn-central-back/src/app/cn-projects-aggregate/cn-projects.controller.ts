@@ -1,8 +1,20 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Query, Res, UploadedFiles,
+  UseInterceptors
+} from '@nestjs/common';
 import {CnProject} from './cn-projects/cn-project.entity';
 import {CnProjectStatus} from './cn-projects/cn-project-status.enum';
 import {CnProjectStatusHistory} from './cn-projects/cn-project-status-history.entity';
-import {BlParseEnumPipe, BlParsePipe} from '@monorepo/back-core-lib';
+import {BlFile, BlParseEnumPipe, BlParsePipe, BlPublic, BlResponseHelper} from '@monorepo/back-core-lib';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnGroup} from '../cn-groups/cn-group.entity';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
@@ -16,6 +28,8 @@ import {CnUser} from '../cn-users/cn-user.entity';
 import {CmRichTextI} from '@monorepo/common-model';
 import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
 import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
+import {FilesInterceptor} from '@nestjs/platform-express';
+import {Response} from 'express';
 
 @Controller('projects')
 export class CnProjectsController {
@@ -147,6 +161,25 @@ export class CnProjectsController {
   updateDescription(@Param('id', new ParseUUIDPipe()) id: string,
                     @Body() description: CmRichTextI): Promise<CnProject> {
     return this.projectAggregate.updateDescription(id, description);
+  }
+
+  /////////////////////////////// COMMENTS ///////////////////////////////////////////
+
+  @UseInterceptors(FilesInterceptor('file'))
+  @Put('/comment/image')
+  saveCommentImage(@UploadedFiles() files: BlFile[]): Promise<any> {
+    return this.projectAggregate.saveCommentImage(files);
+  }
+
+  /**
+   * Return an image of the report
+   */
+  @BlPublic()
+  @Get('comment/image/:filename')
+  public async get(@Param('filename') filename: string,
+                   @Res() response: Response): Promise<any> {
+    const file = await this.projectAggregate.getCommentImage(filename);
+    BlResponseHelper.setMessageAndCache(response, file);
   }
 
   @Post(':projectId/comment/')

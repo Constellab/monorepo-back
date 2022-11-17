@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {CaProject} from '../../../../../ca-core/model/entities/ca-project.class';
 import {CaProjectDetailState} from '../../state/ca-project-detail.state';
@@ -14,12 +14,12 @@ import {CmRichText} from '@monorepo/common-model';
   templateUrl: './ca-project-comments.component.html',
   styleUrls: ['./ca-project-comments.component.scss']
 })
-export class CaProjectCommentsComponent implements OnInit {
+export class CaProjectCommentsComponent implements OnInit, OnDestroy {
 
   project$: Observable<CaProject>;
   comments: CaProjectCommentDatasourcePaginated;
   currentUserId: string;
-  textEditorConfig: CaCommentTextEditorConfig = new CaCommentTextEditorConfig();
+  textEditorConfig: CaCommentTextEditorConfig = new CaCommentTextEditorConfig(this.projectService);
   formControl: FormControl;
   isLoading: boolean = false;
   projectId: string;
@@ -41,10 +41,20 @@ export class CaProjectCommentsComponent implements OnInit {
 
 
     this.currentUserId = this.userService.getUser().id;
+
+    this.textEditorConfig.sendButtonEvent$.subscribe(btEvent => {
+      if(btEvent){
+        this.createNewComment();
+      }
+    })
   }
 
   enterEvent(event: Event): void {
     event.preventDefault();
+    this.createNewComment();
+  }
+
+  private createNewComment(): void{
     if (!CmRichText.isEmpty(this.formControl.value)) {
       this.projectService.newProjectComment(this.projectId, this.formControl.value).subscribe((newComment) => {
         if (newComment) {
@@ -53,6 +63,10 @@ export class CaProjectCommentsComponent implements OnInit {
       });
       this.formControl.setValue(null);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.textEditorConfig.sendButtonEvent$.complete();
   }
 
 }

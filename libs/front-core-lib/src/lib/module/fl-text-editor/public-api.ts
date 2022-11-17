@@ -9,6 +9,7 @@ export * from './component/fl-text-editor-figure/fl-text-editor-figure.component
 export * from './component/fl-text-editor-link-dialog/fl-text-editor-link-dialog.component';
 export * from './component/fl-text-editor-title-caption/fl-text-editor-title-caption.component';
 export * from './component/fl-text-editor-video/fl-text-editor-video.component';
+export * from './component/fl-text-editor-snow-button/fl-text-editor-snow-button.component';
 
 // Directive
 export * from './directive/fl-text-editor.directive';

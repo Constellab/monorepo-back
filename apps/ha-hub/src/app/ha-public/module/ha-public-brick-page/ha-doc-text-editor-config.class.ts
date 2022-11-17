@@ -5,14 +5,13 @@ import {
   FlTextEditorBlockAddButton,
   FlTextEditorConfig,
   FlTextEditorImageLoader,
+  FlTextEditorSnowButton,
   FlTextEditorState
 } from '@monorepo/front-core-lib';
 import {HaDocumentationService} from '../../../ha-core/ha-service/ha-documentation.service';
 import {HaPublicFindDocComponent} from './ha-public-find-doc/ha-public-find-doc.component';
 import {HaDocumentationSearchDTO} from '../../../ha-core/ha-model/ha-entities/ha-documentation.class';
 import {environment} from '../../../../environments/ha-environment';
-import {Observable} from 'rxjs';
-import {ClStringHelper} from '@monorepo/core-lib';
 
 /**
  * Config for the text editor in the report
@@ -30,6 +29,10 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
 
   getToolbarConfig(): any {
     return FlQuillConfig.completeToolbarConfig;
+  }
+
+  getSnowButtons(): FlTextEditorSnowButton[] {
+    return []
   }
 
   getBlockAddButtons(state: FlTextEditorState): FlTextEditorBlockAddButton[] {
@@ -90,7 +93,7 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
   }
 
 
-  getAndSaveImage(imgBlob: Blob, state: FlTextEditorState): any{
-    return this.insertImageFromFile(new File([imgBlob], ClStringHelper.generateUUID()), state);
+  onPasteImage(file: File, state: FlTextEditorState): any {
+    return this.insertImageFromFile(file, state);
   }
 }

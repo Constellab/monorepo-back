@@ -23,6 +23,27 @@
 
 
 //Primary color for snow theme tool bar
+
+.ql-container{
+  overflow: hidden;
+}
+.ql-container.ql-snow{
+  border: none;
+  background-color: var(--main-background);
+  border-radius: 0.75em;
+  margin-right: 1em;
+}
+
+.ql-container.ql-snow .ql-editor{
+  padding-right: 17.5%;
+  max-width: inherit;
+  overflow-x: hidden;
+}
+
+.ql-toolbar.ql-snow{
+  border: none;
+}
+
 .ql-snow button:hover, .ql-snow .ql-active{
   color: var(--primary-color) !important;
 }
@@ -45,6 +66,17 @@
 
 .ql-snow .ql-active .ql-fill, .ql-snow button:hover .ql-fill{
   fill: var(--primary-color) !important;
+}
+
+.ql-toolbar.ql-snow .ql-formats{
+  margin: 0;
+  padding: 0 7.5px;
+  border-left: solid 1px var(--grey-high-contrast);
+}
+
+.ql-toolbar.ql-snow .ql-formats:first-child{
+  padding-left: 0;
+  border-left: none;
 }
 
 
@@ -191,9 +223,18 @@
 }
 
 .ql-directive .ql-editor *:first-child{
-  margin-top: 0 !important;
+  margin-top: 0;
 }
 
 .ql-directive .ql-editor *:last-child{
-  margin-bottom: 0 !important;
+  margin-bottom: 0;
 }
+
+//
+//.ql-directive .ql-editor p:last-child{
+//  margin-top: 0;
+//}
+//
+//.ql-directive .ql-editor *:last-child br{
+//  display: none;
+//}

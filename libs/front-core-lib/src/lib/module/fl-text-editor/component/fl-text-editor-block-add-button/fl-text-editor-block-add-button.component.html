@@ -21,7 +21,7 @@
         <fl-input-file-icon-container [icon]="button.icon" class="menu-button" [border]="true"
                                       size="small" [matTooltip]="button.tooltip | translate">
           <input flInputFile [strictMode]="true" accept="image/*" type="file"
-                 (fileChange)="onAction(button, $event)">
+                 (fileChange)="onAction(button, $event)" [autoClearHtmlInput]="true">
         </fl-input-file-icon-container>
 
       </ng-template>

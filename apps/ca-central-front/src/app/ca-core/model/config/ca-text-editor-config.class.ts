@@ -2,7 +2,7 @@ import {
   FlQuillConfig,
   FlTextEditorBlockAddButton,
   FlTextEditorConfig,
-  FlTextEditorImageLoader,
+  FlTextEditorImageLoader, FlTextEditorSnowButton,
   FlTextEditorState
 } from '@monorepo/front-core-lib';
 import {CaReportService} from '../../service-api/ca-report.service';
@@ -35,7 +35,11 @@ export class CaTextEditorConfig extends FlTextEditorConfig implements FlTextEdit
     return this.reportService.getView(this.reportId, filename);
   }
 
-  getAndSaveImage(imgBlob: Blob, state: FlTextEditorState): any {
+  onPasteImage(imgFile: File, state: FlTextEditorState): any {
     return null;
+  }
+
+  getSnowButtons(): FlTextEditorSnowButton[] {
+    return [];
   }
 }

@@ -1,6 +1,8 @@
 /**
  * Config to show a button in the add block menu
  */
+import {FlTextEditorState} from '../state/fl-text-editor.state';
+
 export interface FlTextEditorBlockAddButton {
   icon: string;
   tooltip?: string;
@@ -9,6 +11,12 @@ export interface FlTextEditorBlockAddButton {
   onAction?: (event: any) => void;
 }
 
+export interface FlTextEditorSnowButton{
+  icon: string;
+  tooltip?: string;
+  type: 'button' | 'fileExplorer';
+  onAction?: (event: any, state: FlTextEditorState) => void;
+}
 
 /**
  * Static class containing config for Quill
@@ -35,7 +43,7 @@ export class FlQuillConfig {
     [{color: ['#000', '#e60000', '#ff9900', '#008a00', '#0066cc', '#9933ff']}, 'link', 'clean'],
   ];
 
-  
+
 }
 
 export interface FlQuillJson {

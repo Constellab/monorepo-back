@@ -1,5 +1,5 @@
 <figure contenteditable="false" #figure>
-  <div flResize="bothKeepRatio" class="image-container" (flResizeChanged)="onImageResize($event)"
+  <div flResize="bothKeepRatio" class="image-container" (flResizeChanged)="onImageResize($event)" [disabled$]="disabled$"
        [style.width]="imageWidth + 'px'" [style.height]="imageHeight + 'px'">
     <img [src]="sanitizedUrl" draggable="false"
          [alt]="imageTitle" class="image">

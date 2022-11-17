@@ -1,0 +1,20 @@
+<div class="snow-menu">
+  <ng-container *ngFor="let button of buttons">
+    <button *ngIf="button.type === 'button'; else fileExplorer" mat-icon-button
+            class="menu-button g-button-icon-border g-button-icon-small"
+            (click)="onAction(button, $event)" [matTooltip]="button.tooltip | translate">
+      <mat-icon>{{button.icon}}</mat-icon>
+    </button>
+
+
+    <ng-template #fileExplorer>
+<!--         Upload files-->
+      <fl-input-file-icon-container [icon]="buttons[0].icon" class="menu-button" [border]="true"
+                                    size="small" [matTooltip]="buttons[0].tooltip | translate" >
+        <input flInputFile [strictMode]="true" accept="image/*" type="file"
+               [autoClearHtmlInput]="true" (fileChange)="onAction(buttons[0], $event)">
+      </fl-input-file-icon-container>
+
+    </ng-template>
+  </ng-container>
+</div>
