@@ -25,6 +25,11 @@ export class FlQuillSetup {
     return documentElement;
   }
 
+  public static addMatcherLink(link: string, delta: any, state: FlTextEditorState): any{
+    const index: number = state.getCurrentSelectionIndex();
+    state.insertLink(index, link, link);
+  }
+
   public static addMatcher(node: any, delta: any, state: FlTextEditorState, config: FlTextEditorConfig): any{
     const insertImage: any = delta.ops[0].insert;
     const imageData: string = insertImage.image;

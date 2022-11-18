@@ -1,7 +1,8 @@
 import {
   Component,
   ElementRef,
-  EventEmitter, HostBinding,
+  EventEmitter,
+  HostBinding,
   Inject,
   Input,
   NgZone,
@@ -33,6 +34,7 @@ import {FlTextEditorConfig} from '../../model/fl-text-editor-config.class';
 import {FlQuillBlock, FlQuillDelta} from '../../model/fl-quill-export.class';
 import {FlHtmlHelper} from '../../../../utils/fl-html.helper';
 import {FlQuillSetup} from '../../model/fl-quill-setup.class';
+import {ClStringHelper} from '@monorepo/core-lib';
 
 hljs.registerLanguage('python', python);
 
@@ -117,6 +119,13 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
       }
     );
     this.quill.clipboard.addMatcher('IMG', (node, delta) => FlQuillSetup.addMatcher(node, delta, this.state, this.config));
+
+    this.quill.clipboard.addMatcher(Node.TEXT_NODE, (node, delta): any => {
+      if (ClStringHelper.isHttpLink(node.nodeValue)) {
+        FlQuillSetup.addMatcherLink(node.nodeValue, delta, this.state);
+      }
+      return;
+    });
 
     this.state.init(this.quill, this.config, this.editorElement.nativeElement, this.disabled);
 

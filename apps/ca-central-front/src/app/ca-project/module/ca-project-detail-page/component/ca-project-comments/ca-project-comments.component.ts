@@ -46,6 +46,12 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
       if(btEvent){
         this.createNewComment();
       }
+    });
+
+    this.textEditorConfig.sendEmojiButtonEvent$.subscribe(btEmojiEvent => {
+      if(btEmojiEvent){
+        this.openEmojiPannel();
+      }
     })
   }
 
@@ -53,6 +59,7 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
     event.preventDefault();
     this.createNewComment();
   }
+
 
   private createNewComment(): void{
     if (!CmRichText.isEmpty(this.formControl.value)) {
@@ -65,8 +72,13 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
     }
   }
 
+  private openEmojiPannel(): void{
+
+  }
+
   ngOnDestroy(): void {
     this.textEditorConfig.sendButtonEvent$.complete();
+    this.textEditorConfig.sendEmojiButtonEvent$.complete();
   }
 
 }

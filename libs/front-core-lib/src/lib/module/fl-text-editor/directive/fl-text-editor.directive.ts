@@ -81,8 +81,11 @@ export class FlTextEditorDirective implements OnInit, OnDestroy {
    */
   private removeLastUselessElement(): void{
     const elements: any[] = this.quill.getContents().ops;
-    const lastElement: any = elements[elements.length-1];
-    if(lastElement.insert && lastElement.insert == '\n'){
+    const lastElement: any = elements[elements.length-1]??null;
+    const preLastElement: any = elements[elements.length-2]??null;
+
+    if(lastElement && lastElement.insert && lastElement.insert == '\n' &&
+      preLastElement && preLastElement.insert && preLastElement.insert.figure){
       elements.pop();
       const editorElement: HTMLDivElement = this.elementRef.nativeElement.querySelector('.ql-editor');
       editorElement.removeChild(editorElement.childNodes[editorElement.childElementCount-1]);
