@@ -6,9 +6,10 @@ import {CnCommentService} from '../cn-core/services/cn-comment.service';
 import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {ClPage} from '@monorepo/core-lib';
-import {BlAbstractPaginatedService} from '@monorepo/back-core-lib';
+import {BlAbstractPaginatedService, BlObjectStorageService} from '@monorepo/back-core-lib';
 import {CnNotificationService, CnNotificationType} from '../cn-notification/cn-notification.service';
 import {CnNotificationCreateDTO} from '../cn-notification/cn-notification.entity';
+import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 
 @Injectable()
 export class CnProjectCommentService extends CnCommentService<CnProjectComment> {
@@ -17,9 +18,11 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
     @InjectRepository(CnProjectComment)
     private projectCommentRepository: Repository<CnProjectComment>,
     private notificationService: CnNotificationService,
-    dataSource: DataSource
+    objectStorageService: BlObjectStorageService,
+    configService: CnCoreConfigService,
+    dataSource: DataSource,
   ) {
-    super(dataSource);
+    super(dataSource, objectStorageService, configService);
   }
 
   async create(newComment: CnNewComment, project: CnProject): Promise<CnProjectComment> {
@@ -52,7 +55,7 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
   }
 
   async getProjectComments(projectId: string, page: number, size: number): Promise<ClPage<CnProjectComment>> {
-    return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+    const a: any = await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
       where: {
         project: {
           id: projectId
@@ -63,5 +66,6 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
         createdAt: 'DESC' as any
       }
     }, this.projectCommentRepository.manager, CnProjectComment);
+    return a;
   }
 }

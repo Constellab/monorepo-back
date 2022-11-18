@@ -38,6 +38,9 @@ import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
 import {FlTextEditorHeaderId} from './model/fl-text-editor-header-id.class';
 import {FlTextEditorLink} from './model/fl-text-editor-link-without-target.class';
 import { FlTextEditorDirective } from './directive/fl-text-editor.directive';
+import {
+  FlTextEditorSnowButtonComponent
+} from './component/fl-text-editor-snow-button/fl-text-editor-snow-button.component';
 
 
 @NgModule({
@@ -49,6 +52,7 @@ import { FlTextEditorDirective } from './directive/fl-text-editor.directive';
     FlTextEditorDragButtonsComponent,
     FlTextEditorVideoComponent,
     FlTextEditorLinkDialogComponent,
+    FlTextEditorSnowButtonComponent,
     FlTextEditorDirective,
   ],
   exports: [

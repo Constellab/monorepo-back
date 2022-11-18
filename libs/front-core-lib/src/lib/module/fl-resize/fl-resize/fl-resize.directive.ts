@@ -1,6 +1,7 @@
 import {Directive, ElementRef, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output, Renderer2} from '@angular/core';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
+import {Observable} from 'rxjs';
 
 export type FlResizeMode = 'width' | 'height' | 'both' | 'bothKeepRatio';
 
@@ -29,6 +30,11 @@ export class FlResizeDirective implements OnInit, OnDestroy {
   @Input() flResize: FlResizeMode = 'width';
 
   /**
+   * Observable on the disabled value of the text-editor
+   */
+  @Input() disabled$: Observable<boolean>;
+
+  /**
    * Size of the resizer element in px
    */
   @Input() flResizeSize: number = 6;
@@ -46,6 +52,8 @@ export class FlResizeDirective implements OnInit, OnDestroy {
   // size of the host on mouse down event  relative to current mode
   private baseHostSize: FlCoord;
 
+  private resizerDivs: HTMLElement[];
+
 
   constructor(private renderer: Renderer2,
               private elementRef: ElementRef<HTMLElement>,
@@ -56,13 +64,29 @@ export class FlResizeDirective implements OnInit, OnDestroy {
     // set the parent to relative
     this.renderer.setStyle(this.elementRef.nativeElement, 'position', 'relative');
 
-    // create the resizer
-    this.createResizer(this.flResize);
+    this.disabled$.subscribe(disable => this.onDisableChange(disable))
+  }
 
-    // when both mode, also activate width and height resizer
-    if (this.flResize === 'both' || this.flResize === 'bothKeepRatio') {
-      this.createResizer('width');
-      this.createResizer('height');
+  /**
+   * Delete currents resizers if it's disable or create new ones
+   * @param disable
+   * @private
+   */
+  private onDisableChange(disable: boolean): void{
+    if(disable){
+      if(!this.resizerDivs || this.resizerDivs.length == 0) return;
+      for(const rDiv of this.resizerDivs){
+        this.renderer.removeChild(this.elementRef.nativeElement, rDiv);
+      }
+    } else {
+      // create the resizer
+      this.createResizer(this.flResize);
+
+      // when both mode, also activate width and height resizer
+      if (this.flResize === 'both' || this.flResize === 'bothKeepRatio') {
+        this.createResizer('width');
+        this.createResizer('height');
+      }
     }
   }
 
@@ -86,6 +110,8 @@ export class FlResizeDirective implements OnInit, OnDestroy {
       this.mouseDownListeners.push(this.renderer.listen(div, 'mousedown',
         (event) => this.onMouseDown(event, resizeMode)));
     });
+
+    this.resizerDivs.push(div);
   }
 
   // generate the resize HTML element

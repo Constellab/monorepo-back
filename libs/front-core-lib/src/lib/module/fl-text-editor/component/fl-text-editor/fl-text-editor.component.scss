@@ -16,9 +16,9 @@
 
 .editor-snow{
   width: 100%;
+  text-align: justify;
   max-width: 100%;
   max-height: inherit;
-  height: calc(100% - 42px);
 }
 
 .drag-indicator{
@@ -29,4 +29,16 @@
   width: 500px;
   height: 2px;
   background-color: var(--card-background);
+}
+
+.snow-menu-div{
+  max-width: 20%;
+  width: auto;
+  height: 40px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  right: 2.5em;
+  top: 40px;
 }

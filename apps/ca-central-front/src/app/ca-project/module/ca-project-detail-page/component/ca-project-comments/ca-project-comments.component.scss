@@ -42,9 +42,8 @@
 }
 
 .input-message {
-  margin-top: auto;
-  flex-basis: auto;
-  height: auto;
+  min-height: 0 !important;
+  width: 97%;
   max-height: 30em;
   display: flex;
   flex-direction: column;
@@ -52,7 +51,14 @@
 }
 
 .write-comment-div {
-  margin-top: auto;
+  position: relative;
+  bottom: 0;
+}
+
+.idkDiv{
+  width: 50px;
+  height: 20px;
+  background-color: red;
 }
 
 .section {

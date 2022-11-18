@@ -11,6 +11,7 @@ import {CnReportsController} from './cn-reports.controller';
 import {CnProjectsModule} from './cn-projects/cn-projects.module';
 import {CnUsersModule} from '../cn-users/cn-users.module';
 import {CnProjectCommentModule} from '../cn-project-comment/cn-project-comment.module';
+import {CnCommentService} from '../cn-core/services/cn-comment.service';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import {CnProjectCommentModule} from '../cn-project-comment/cn-project-comment.m
     CnExperimentsModule,
     CnReportsModule,
     CnUsersModule,
-    CnProjectCommentModule
+    CnProjectCommentModule,
   ],
   controllers: [
     CnProjectsController,

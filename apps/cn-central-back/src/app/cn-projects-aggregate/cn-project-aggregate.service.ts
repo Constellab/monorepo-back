@@ -25,8 +25,10 @@ import {CnUsersService} from '../cn-users/cn-users.service';
 import {CmRichTextI} from '@monorepo/common-model';
 import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
 import {CnProjectCommentService} from '../cn-project-comment/cn-project-comment.service';
-import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
+import {CnCommentImage, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
+import {BlFile} from '@monorepo/back-core-lib';
+import {CnCommentService} from '../cn-core/services/cn-comment.service';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -441,7 +443,15 @@ export class CnProjectAggregateService {
     return this.projectCommentService.create(newComment, project);
   }
 
-  public async getProjectComments(projectId: string, page: number, size: number) : Promise<ClPage<CnProjectComment>>{
+  public async getProjectComments(projectId: string, page: number, size: number): Promise<ClPage<CnProjectComment>> {
     return this.projectCommentService.getProjectComments(projectId, page, size);
+  }
+
+  public async saveCommentImage(files: BlFile[]): Promise<CnCommentImage> {
+    return this.projectCommentService.saveImage(files);
+  }
+
+  public async getCommentImage(filename: string): Promise<IncomingMessage> {
+    return await this.projectCommentService.getImage(filename);
   }
 }

@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CaComment} from '../../../ca-core/model/entities/ca-comment.class';
-import {FlTextEditorBasicConfig, FlTextEditorConfig} from '@monorepo/front-core-lib';
+import {CaCommentTextEditorConfig} from '../../../ca-core/model/config/ca-comment-text-editor.config';
+import {CaProjectService} from '../../../ca-core/service-api/ca-project.service';
 
 @Component({
   selector: 'ca-comment-div',
@@ -12,9 +13,10 @@ export class CaCommentDivComponent implements OnInit {
   @Input()
   comment: CaComment;
 
-  textEditorConfig: FlTextEditorConfig = new FlTextEditorBasicConfig();
+  textEditorConfig: CaCommentTextEditorConfig = new CaCommentTextEditorConfig(this.projectService);
 
-  constructor() { }
+  constructor(private projectService: CaProjectService) {
+  }
 
   ngOnInit(): void {
   }

@@ -1,5 +1,5 @@
 import {FlTextEditorConfig} from './fl-text-editor-config.class';
-import {FlQuillConfig, FlTextEditorBlockAddButton} from './fl-text-editor.class';
+import {FlQuillConfig, FlTextEditorBlockAddButton, FlTextEditorSnowButton} from './fl-text-editor.class';
 import {FlTextEditorState} from '../state/fl-text-editor.state';
 
 /**
@@ -14,8 +14,12 @@ export class FlTextEditorBasicConfig extends FlTextEditorConfig {
     return FlQuillConfig.simpleToolbarConfig;
   }
 
-  getAndSaveImage(imgBlob: Blob, state: FlTextEditorState): any {
+  onPasteImage(imgFile: File, state: FlTextEditorState): any {
     return null;
+  }
+
+  getSnowButtons(): FlTextEditorSnowButton[] {
+    return [];
   }
 
 }

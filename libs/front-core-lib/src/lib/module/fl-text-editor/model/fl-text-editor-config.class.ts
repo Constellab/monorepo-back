@@ -1,5 +1,5 @@
 import {FlTextEditorState} from '../state/fl-text-editor.state';
-import {FlTextEditorBlockAddButton} from './fl-text-editor.class';
+import {FlTextEditorBlockAddButton, FlTextEditorSnowButton} from './fl-text-editor.class';
 import {FlDialogService} from '../../fl-dialog/fl-dialog.service';
 import {
   FlTextEditorLinkDialogComponent,
@@ -15,7 +15,9 @@ export abstract class FlTextEditorConfig {
 
   public abstract getBlockAddButtons(state: FlTextEditorState): FlTextEditorBlockAddButton[];
 
-  public abstract getAndSaveImage(imgBlob: Blob, state: FlTextEditorState): any;
+  public abstract getSnowButtons(): FlTextEditorSnowButton[];
+
+  public abstract onPasteImage(imgFile: File, state: FlTextEditorState): any;
 
   protected getCodeBlockAddButton(state: FlTextEditorState): FlTextEditorBlockAddButton {
     return {

@@ -82,7 +82,6 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
     if (!this.isLoadingImport && !this.errorFile) {
       this.update(this.formGp.value).subscribe({
         next: newEntity => {
-          console.log(newEntity)
           this.onSaveSuccess(newEntity, this.getUpdateSuccessMessage())
         },
         error: () => this.isLoading = false

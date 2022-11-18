@@ -3,6 +3,7 @@ import {ElementRef} from '@angular/core';
 import {FlFileHelper} from '../../../service/fl-file.helper';
 import {FlTextEditorState} from '../state/fl-text-editor.state';
 import {FlTextEditorConfig} from './fl-text-editor-config.class';
+import {ClStringHelper} from '@monorepo/core-lib';
 
 export class FlQuillSetup {
 
@@ -43,7 +44,7 @@ export class FlQuillSetup {
       };
     } else if (imageData.startsWith('data')) {
       const blob: Blob = FlFileHelper.convertBase64ToBlob(insertImage.image.split(',')[1], 'image/png');
-      config.getAndSaveImage(blob, state);
+      config.onPasteImage(new File([blob], ClStringHelper.generateUUID()), state);
       delta.ops = [];
     }
     return delta;

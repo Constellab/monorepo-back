@@ -68,10 +68,8 @@ export class FlTextEditorFigureComponent extends FlTextEditorElementDirective im
   ngOnInit(): void {
     if(ClStringHelper.isHttpLink(this.filename)){
       this.sanitizedUrl = this.filename;
-      console.log('A', this.sanitizedUrl);
     } else {
       this.sanitizedUrl = this.sanitizer.sanitize(SecurityContext.URL, this.config.getImageUrl(this.filename));
-      console.log('B', this.sanitizedUrl);
     }
     this.disabled$ = this.getDisabled$();
     this.initSize();
@@ -89,6 +87,9 @@ export class FlTextEditorFigureComponent extends FlTextEditorElementDirective im
       if (parentWidth > 0 && width > parentWidth) {
         this.imageWidth = parentWidth;
         this.imageHeight = ((parentWidth / width) * parseFloat(this.height));
+      } else {
+        this.imageWidth = width;
+        this.imageHeight = height;
       }
     } else {
       this.imageWidth = width;

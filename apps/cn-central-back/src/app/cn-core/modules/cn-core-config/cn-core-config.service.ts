@@ -161,5 +161,9 @@ export class CnCoreConfigService {
   public getOrganizationBucket(): string {
     return this.isProduction() ? 'constellab-organization-prod' : 'constellab-organization-pre-prod';
   }
+
+  public getCommentObjectStorageBucket(): string {
+    return this.isProduction() ? 'constellab-comment-image-prod' : 'constellab-comment-image-pre-prod';
+  }
 }
 

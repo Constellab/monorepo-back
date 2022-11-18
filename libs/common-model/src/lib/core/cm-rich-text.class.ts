@@ -85,6 +85,21 @@ export class CmRichText {
 
   }
 
+  public static getOptimisedContent(content: CmRichTextI): CmRichTextI{
+
+    if(content.ops[0] && content.ops[0].insert && (typeof content.ops[0].insert === 'string' || content.ops[0].insert instanceof String)){
+      content.ops[0].insert = content.ops[0].insert.replace(/^\s+|/g, '');
+    }
+
+    const lengthOps = content.ops.length;
+
+    if(content.ops[lengthOps-1] && content.ops[lengthOps-1].insert &&
+      (typeof content.ops[lengthOps-1].insert === 'string' || content.ops[lengthOps-1].insert instanceof String)){
+      content.ops[lengthOps-1].insert = content.ops[lengthOps-1].insert.replace(/\s+$/g, '');
+    }
+    return content;
+  }
+
   public static getLinks(content: CmRichTextI): CmRichTextLink[] {
     const titles: CmRichTextLink[] = [];
     const contentData: any[] = content.ops;
@@ -131,7 +146,7 @@ export class CmRichText {
     let isEmpty = true;
     if (!ClHelpService.isNullOrEmpty(content) && content.ops) {
       for(const op of content.ops){
-        if(op.insert && op.insert.length > 0 && !(/^\s*$/.test(op.insert))){
+        if(op.insert && (op.insert.length > 0 && !(/^\s*$/.test(op.insert)) || op.insert.figure)){
           isEmpty = false;
         }
       }
