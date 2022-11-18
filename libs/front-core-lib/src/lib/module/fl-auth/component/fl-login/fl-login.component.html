@@ -1,7 +1,27 @@
 <form [formGroup]="formGp" (ngSubmit)="login()" class="form">
 
+  <!--  Email  -->
+  <mat-form-field class="g-form-input">
+    <mat-label>{{'email' | translate}}</mat-label>
+    <input matInput type="email" formControlName="email" required
+           placeholder="{{'email' | translate}}" autocomplete="username">
+    <mat-error *ngIf="formGp.get('email').hasError('required')">
+      {{'error_required' | translate: {field: 'email' | translate} }}
+    </mat-error>
+    <mat-error *ngIf="formGp.get('email').hasError('email')">
+      {{'email_invalid' | translate}}
+    </mat-error>
+  </mat-form-field>
 
-  <fl-login-form [formGp]="formGp"></fl-login-form>
+  <!--  Password -->
+  <mat-form-field class="g-form-input">
+    <mat-label>{{'flAuth.password' | translate}}</mat-label>
+    <input matInput type="password" formControlName="password" required
+           placeholder="{{'flAuth.password' | translate}}" autocomplete="current-password">
+    <mat-error *ngIf="formGp.get('password').hasError('required')">
+      {{'error_required' | translate: {field: 'flAuth.password' | translate} }}
+    </mat-error>
+  </mat-form-field>
 
   <button mat-flat-button color="accent" type="submit"
           [disabled]="isLoading" class="connection-button g-button-big">

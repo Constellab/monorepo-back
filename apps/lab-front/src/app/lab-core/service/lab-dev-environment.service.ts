@@ -1,11 +1,4 @@
 import {Injectable} from '@angular/core';
-import {
-  FlDialogService,
-  FlLocalStorageService,
-  FlLoginDialogComponent,
-  FlLoginDialogInput,
-  FlLoginDialogResult
-} from '@monorepo/front-core-lib';
 import {HttpClient} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
 import {LabEnvironmentHelper} from '../utils/lab-environment.helper';
@@ -18,10 +11,8 @@ import {LabEnvStore} from './lab-env.store';
 @Injectable({providedIn: 'root'})
 export class LabDevEnvironmentService {
 
-  constructor(private localStorageService: FlLocalStorageService,
-              private httpClient: HttpClient,
-              private labEnvManager: LabEnvStore,
-              private dialogService: FlDialogService) {
+  constructor(private httpClient: HttpClient,
+              private labEnvManager: LabEnvStore) {
   }
 
   /**
@@ -93,31 +84,7 @@ export class LabDevEnvironmentService {
     return this.httpClient.post(LabEnvironmentHelper.getDevCoreApiUrl() + 'dev-login', null).pipe(
       tap(() => this.devLoginSuccess()),
       map(() => true),
-      catchError(() => this.openDevLoginDialog()),
-    );
-  }
-
-  /**
-   * Open the login in a dialog and switch to DEV mode if login is successful,
-   * otherwise switch to prod mode
-   * @private
-   */
-  private openDevLoginDialog(): Observable<boolean> {
-    // switch to dev mode so the login uses dev api
-    this.labEnvManager.setLabEnvironment('dev');
-    const input: FlLoginDialogInput = {disabledFooter: true};
-    return this.dialogService.openSmallDialog(FlLoginDialogComponent, {data: input}).afterClosed().pipe(
-      map((result: FlLoginDialogResult) => {
-        // if the login was successful, save the token
-        if (result?.success) {
-          this.devLoginSuccess();
-          return true;
-          // if the login wasn't successful, reset to prod mode
-        } else {
-          this.labEnvManager.setLabEnvironment('prod');
-          return false;
-        }
-      })
+      catchError(() => of(false)),
     );
   }
 

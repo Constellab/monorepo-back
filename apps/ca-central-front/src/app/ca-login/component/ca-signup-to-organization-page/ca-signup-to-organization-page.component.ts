@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormGroup} from '@ngneat/reactive-forms';
-import {FlLoginFormComponent, FlSignupFormComponent, FlSignUpUser, FlSnackBarService} from '@monorepo/front-core-lib';
-import {CmCredentials} from '@monorepo/common-model';
+import {FlSignupFormComponent, FlSignUpUser, FlSnackBarService} from '@monorepo/front-core-lib';
 import {CaOrganizationInvitService} from '../../../ca-core/service-api/ca-organization-invit.service';
 import {ActivatedRoute} from '@angular/router';
 import {CaRouterService} from '../../../ca-core/service/ca-router.service';
@@ -22,7 +21,6 @@ export class CaSignupToOrganizationPageComponent implements OnInit {
   invitationCode: string;
 
   signupFormGp: FormGroup<FlSignUpUser>;
-  signInFormGp: FormGroup<CmCredentials>;
 
   signupIsLoading: boolean = false;
 
@@ -51,9 +49,6 @@ export class CaSignupToOrganizationPageComponent implements OnInit {
     this.signupFormGp.get('email').setValue(invitation.userMail);
     this.signupFormGp.get('email').disable();
 
-    this.signInFormGp = FlLoginFormComponent.buildFormGroup();
-    this.signInFormGp.get('email').setValue(invitation.userMail);
-    this.signInFormGp.get('email').disable();
   }
 
 

@@ -24,10 +24,8 @@ import {MatIconModule} from '@angular/material/icon';
 import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
 import {MatSelectModule} from '@angular/material/select';
 import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.module';
-import {FlLoginDialogComponent} from './component/fl-login-dialog/fl-login-dialog.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {FlSignupFormComponent} from './component/fl-signup-form/fl-signup-form.component';
-import {FlLoginFormComponent} from './component/fl-login-form/fl-login-form.component';
 import {FlCompleteLoginComponent} from './component/fl-complete-login/fl-complete-login.component';
 import {FlLoginTwoFAComponent} from './component/fl-login-two-f-a/fl-login-two-f-a.component';
 import {FlLoginPageComponent} from './component/fl-login-page/fl-login-page.component';
@@ -41,23 +39,17 @@ import {FlLoginPageComponent} from './component/fl-login-page/fl-login-page.comp
     FlPasswordForgottenComponent,
     FlResetPasswordPageComponent,
     FlSignupDialogComponent,
-    FlLoginDialogComponent,
     FlSignupFormComponent,
-    FlLoginFormComponent,
     FlCompleteLoginComponent,
     FlLoginTwoFAComponent,
     FlLoginPageComponent,
   ],
   exports: [
-    FlLoginComponent,
     FlPasswordForgottenComponent,
     FlResetPasswordPageComponent,
     FlSignupDialogComponent,
-    FlLoginDialogComponent,
     FlSignupFormComponent,
-    FlLoginFormComponent,
     FlCompleteLoginComponent,
-    FlLoginTwoFAComponent,
     FlLoginPageComponent,
   ],
   imports: [
@@ -94,7 +86,7 @@ export class FlAuthModule {
    * Configure the auth module
    * @param authService provide a service with login and logout routes
    * @param userAccountService (optional) provide a service for signup and user password routes
-   *                            (if not provided, the footer of the FlLoginComponent muse be disabled)
+   *                            (if not provided, the footer of the FlLoginComponent must be disabled)
    */
   public static forRoot(authService: Type<FlAuthService>,
                         userAccountService?: Type<FlUserAccountService>): ModuleWithProviders<FlAuthModule> {
