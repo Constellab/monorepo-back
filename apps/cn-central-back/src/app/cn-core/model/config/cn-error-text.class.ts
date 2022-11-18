@@ -46,4 +46,5 @@ export enum CnErrorText {
   PROJECT_NOT_SHARED_WITH_LAB = 'error.project_not_shared_with_user',
   TWO_FA_WRONG_CODE = 'error.two_fa_wrong_code',
   TWO_FA_CODE_EXPIRED = 'error.two_fa_code_expired',
+  LAB_REQ_NO_USER_IN_CONTEXT = 'error.lab_req_no_user_in_context',
 }

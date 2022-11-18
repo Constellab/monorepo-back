@@ -42,5 +42,6 @@
   "project_already_shared_with_lab": "The project is already shared with this lab",
   "project_not_shared_with_lab": "The project is not shared with this lab",
   "two_fa_wrong_code": "The code is incorrect",
-  "two_fa_code_expired": "Code expired, please generate a new one"
+  "two_fa_code_expired": "Code expired, please generate a new one",
+  "lab_req_no_user_in_context": "No user in the context"
 }

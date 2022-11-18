@@ -13,6 +13,10 @@ import {
   cnExternalLabUserHeader
 } from '../model/config/cn-config.class';
 import {CnCurrentUserHelper} from '../utils/cn-current-user.helper';
+import {CnOrganizationUserService} from '../../cn-organizations/cn-organization-user.service';
+import {CnOrganizationUserRole} from '../../cn-organizations/cn-organization-user.entity';
+import {cnIsLabRobotAuth} from '../decorators/cn-lab-guard.decorator';
+import {CnOrganization} from '../../cn-organizations/cn-organization.entity';
 
 /**
  * Guard to authenticate route called by the lab servers.
@@ -28,7 +32,8 @@ export class CnLabAuthGuard implements CanActivate {
   constructor(private reflector: Reflector,
               private labInstancesService: CnLabInstancesService,
               private usersService: CnUsersService,
-              private configService: CnCoreConfigService) {
+              private configService: CnCoreConfigService,
+              private organizationUserService: CnOrganizationUserService) {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -56,36 +61,60 @@ export class CnLabAuthGuard implements CanActivate {
     CnCurrentUserHelper.setCurrentOrganization(labInstance.organization);
 
     // set the user in the context as the connected user
-    await this.setContext(request);
+    await this.setUserInContext(request, labInstance.organization, context);
 
     return true;
   }
 
   /**
-   * Set the context user in the request context. If there is a user id in the request,
-   * set the user in the context, otherwise set the robot user
-   * @param request
+   * Set the context user in the request context.
+   * If the route is annotated with ClLabRobotAuthentication, the robot user is set in the request context
+   * Otherwise the user from the request is set in the request context
    * @private
    */
-  private async setContext(request: Request): Promise<void> {
-    const userId: string = this.getLabUserIdFromRequest(request);
+  private async setUserInContext(request: Request, organization: CnOrganization, context: ExecutionContext): Promise<void> {
 
-    if (userId == null) {
+    // if the route is annotated with ClLabRobotAuthentication, set the robot user in the context
+    if (cnIsLabRobotAuth(this.reflector, context)) {
       await this.setRobotUserInContext(request);
+
     } else {
-      await this.setUserInContext(request, userId);
+
+      const userId: string = this.getLabUserIdFromRequest(request);
+
+      if (userId == null) {
+        throw new UnauthorizedException(CnErrorText.LAB_REQ_NO_USER_IN_CONTEXT);
+      } else {
+        await this.setRealUserInContext(request, organization, userId);
+      }
     }
+
   }
 
-  private async setUserInContext(request: Request, userId: string): Promise<void> {
+  private async setRealUserInContext(request: Request, organization: CnOrganization, userId: string): Promise<void> {
     const user: CnUser = await this.usersService.findById(userId);
 
     if (user == null) {
       this.logger.error(`Can't find the user with id ${userId}`);
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(`Can't find the user with id ${userId}`);
     }
 
     request.user = user;
+
+    if (user.isAdmin()) {
+      CnCurrentUserHelper.setCurrentRoleInOrga(CnOrganizationUserRole.ADMIN);
+    } else {
+      const orgaUser = await this.organizationUserService.findOneByOrganizationIdAndUserId(organization.id, user.id);
+
+      // if the user is not part of the organization of his account is not active for this organization
+      // don't allow the user to access the route
+      if (orgaUser == null || !orgaUser.active) {
+        throw new UnauthorizedException(CnErrorText.USER_NOT_IN_ORGANIZATION);
+      }
+
+      CnCurrentUserHelper.setCurrentRoleInOrga(orgaUser.role);
+    }
+
   }
 
   // set the robot user in request user
@@ -100,6 +129,8 @@ export class CnLabAuthGuard implements CanActivate {
     }
 
     request.user = user;
+    // consider the robot as an admin
+    CnCurrentUserHelper.setCurrentRoleInOrga(CnOrganizationUserRole.ADMIN);
   }
 
   private getLabApiKeyFromRequest(request: Request): string {
