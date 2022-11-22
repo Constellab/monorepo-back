@@ -28,3 +28,38 @@ export interface CnExternalLabCallView {
   transformers: any[];
   save_view_config: boolean;
 }
+
+
+
+////////////////////////// BACKUP //////////////////////////
+export interface CnExternalLabCreateBackupDto {
+  credentials: {
+    accessKeyId: string;
+    secretAccessKey: string;
+  };
+  bucket: string;
+  endpoint: string;
+  region: string;
+}
+
+
+export interface CnExternalLabBackup {
+  status: 'IN_PROGRESS'| 'DONE' | 'ERROR';
+  storages: CnExternalLabBackupStorage[];
+  message?: string;
+}
+
+export interface CnExternalLabBackupStorage{
+  region: string;
+  bucket: string;
+  endpoint: string;
+  startUploadAt: Date;
+  endUploadAt?: Date;
+  status: 'IN_PROGRESS'| 'DONE' | 'ERROR';
+  message?: string;
+}
+
+export interface CnExternalLabBackupHistory{
+  version: number;
+  backups: CnExternalLabBackup[];
+}

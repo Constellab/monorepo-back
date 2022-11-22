@@ -11,6 +11,8 @@ import {
 import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
 import {
+  CaExternalLabBackup,
+  CaExternalLabBackupHistory,
   CaLabComposeUpOptions,
   CaLabDockerPs,
   CaLabInstanceConfig,
@@ -215,5 +217,23 @@ export class CaLabInstanceService {
 
   public stopAdminer(id: string): Observable<boolean> {
     return this.apiService.put(`${this.route}/${id}/adminer/stop`, null);
+  }
+
+  //////////////////////////// BACKUP ////////////////////////////////
+
+  public backupProd(id: string): Observable<CaExternalLabBackup> {
+    return this.apiService.post(`${this.route}/${id}/backup/prod`, CaExternalLabBackup);
+  }
+
+  public stopCurrentBackup(id: string): Observable<void> {
+    return this.apiService.post(`${this.route}/${id}/backup/stop-current`, null);
+  }
+
+  public getBackupCurrentStatus(id: string): Observable<CaExternalLabBackup> {
+    return this.apiService.get(`${this.route}/${id}/backup/current-status`, CaExternalLabBackup);
+  }
+
+  public getBackupHistory(id: string): Observable<CaExternalLabBackupHistory> {
+    return this.apiService.get(`${this.route}/${id}/backup/history`, CaExternalLabBackupHistory);
   }
 }

@@ -14,6 +14,8 @@ import {CmVersion} from '@monorepo/common-model';
 import {CnBrickGWS, CnBrickVersionTechnicalKey} from '../cn-bricks/cn-brick.dto';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CnOrganization} from '../cn-organizations/cn-organization.entity';
+import {CnExternalLabBackup, CnExternalLabBackupHistory} from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import {BlBucketConfig} from '@monorepo/back-core-lib';
 
 /**
  * Service to call the api of the lab manager
@@ -171,5 +173,23 @@ export class CnLabManagerService {
     }
 
     return labInstanceConfig;
+  }
+
+  /////////////////////////////////////////////// BACKUP /////////////////////////////////////////////////////
+
+  public async createProdBackup(labInstance: CnLabInstance, bucketConfig: BlBucketConfig): Promise<CnExternalLabBackup> {
+    return this.labManagerApiService.createProdBackup(labInstance.getLabManagerApiInfo(), bucketConfig);
+  }
+
+  public async stopCurrentBackup(labInstance: CnLabInstance): Promise<boolean> {
+    return this.labManagerApiService.stopCurrentBackup(labInstance.getLabManagerApiInfo());
+  }
+
+  public async getBackupCurrentStatus(labInstance: CnLabInstance): Promise<CnExternalLabBackup> {
+    return this.labManagerApiService.getBackupCurrentStatus(labInstance.getLabManagerApiInfo());
+  }
+
+  public async getBackupHistory(labInstance: CnLabInstance): Promise<CnExternalLabBackupHistory> {
+    return this.labManagerApiService.getBackupHistory(labInstance.getLabManagerApiInfo());
   }
 }

@@ -17,10 +17,14 @@
         <ca-lab-instance-projects-list class="g-section"
                                        [labInstanceId]="labInstance.id"></ca-lab-instance-projects-list>
 
-        <!--   Manager, only for admins     -->
-        <ca-lab-instance-manager *ngIf="isOwner$ | async" [labInstance]="labInstance"
-                                 class="g-section"></ca-lab-instance-manager>
+        <!--   Owner section      -->
+        <ng-container *ngIf="isOwner$ | async">
+          <ca-lab-instance-manager [labInstance]="labInstance"
+                                   class="g-section"></ca-lab-instance-manager>
 
+          <ca-lab-instance-manage-backup class="g-section"
+                                         [labInstanceId]="labInstance.id"></ca-lab-instance-manage-backup>
+        </ng-container>
       </div>
     </ng-container>
   </fl-async-section>

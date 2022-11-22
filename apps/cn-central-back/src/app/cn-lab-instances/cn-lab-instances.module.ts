@@ -21,6 +21,7 @@ import {CnLabInstanceProject} from './cn-lab-instance-project.entity';
 import {CnLabInstanceProjectService} from './cn-lab-instance-project.service';
 import {CnProjectsAggregateModule} from '../cn-projects-aggregate/cn-project-aggregate.module';
 import {CnReportsModule} from '../cn-projects-aggregate/cn-reports/cn-reports.module';
+import {CnObjectStoragesModule} from '../cn-object-storages/cn-object-storages.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import {CnReportsModule} from '../cn-projects-aggregate/cn-reports/cn-reports.mo
     CnProjectsAggregateModule,
     CnExperimentsModule,
     CnReportsModule,
+    CnObjectStoragesModule,
   ],
   providers: [
     CnLabInstancesService,

@@ -9,7 +9,7 @@ import {
   HN_RABBITMQ_USER_KEY,
   HnEnvironmentProfile
 } from '../../model/config/hn-config.class';
-import {BlObjectStorageModuleConfig, BlTransportModuleConfig, blTransportQueueHub} from '@monorepo/back-core-lib';
+import {BlObjectStorageCredentials, BlTransportModuleConfig, blTransportQueueHub} from '@monorepo/back-core-lib';
 import {HnDatabaseConfig} from '../../model/config/hn-database-config.class';
 
 @Injectable()
@@ -59,28 +59,36 @@ export class HnCoreConfigService {
     };
   }
 
-  public getObjectStorageConfig(): BlObjectStorageModuleConfig {
+  public getDefaultObjectStorageEndPoint(): string {
+    return this.configService.get('OBJECT_STORAGE_DEFAULT_ENDPOINT');
+  }
+
+  public getDefaultObjectStorageRegion(): string {
+    return this.configService.get('OBJECT_STORAGE_DEFAULT_REGION');
+  }
+
+  public getDefaultObjectStorageCredentials(): BlObjectStorageCredentials {
     return {
-      endpoint: this.configService.get('OBJECT_STORAGE_ENDPOINT'),
-      region: this.configService.get('OBJECT_STORAGE_REGION'),
+      accessKeyId: this.configService.get('OBJECT_STORAGE_DEFAULT_ACCESS_KEY_ID'),
+      secretAccessKey: this.configService.get('OBJECT_STORAGE_DEFAULT_SECRET_KEY'),
     };
   }
 
-  public getReportObjectStorageBucket(): string {
+  public getDocImageObjectStorageBucket(): string {
     return this.isProduction() ? 'hub-documentation-prod' : 'hub-documentation-pre-prod';
   }
 
   public getFrontRootUrl(): string {
     let res: string;
     switch (this.getEnvironmentProfile()) {
-      case "prod":
+      case 'prod':
         res = 'https://hub.gencovery.com/';
         break;
-      case "preprod":
+      case 'preprod':
         res = 'https://hub-pre-prod.gencovery.com/';
         break;
-      case "dev":
-        res = 'http://localhost:4200/'
+      case 'dev':
+        res = 'http://localhost:4200/';
     }
     return res;
   }

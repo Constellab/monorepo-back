@@ -4,7 +4,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, Repository} from 'typeorm';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
-import {BlAbstractService, BlObjectStorageService} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlBucketConfig, BlObjectStorageService} from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
 import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CnCreateReportWithConfigDto, CnSaveReportDto} from './cn-report.dto';
@@ -113,11 +113,11 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   }
 
   async getImage(filename: string): Promise<IncomingMessage> {
-    return await this.objectStorageService.getObject(filename, this.getReportImageBucket());
+    return await this.objectStorageService.getObject(this.getBucketConfig('image'), filename);
   }
 
   async getView(filename: string): Promise<IncomingMessage> {
-    return await this.objectStorageService.getObject(filename, this.getReportViewBucket());
+    return await this.objectStorageService.getObject(this.getBucketConfig('view'),filename);
   }
 
   public async getCurrentUserValidatedReport(): Promise<CnReport[]> {
@@ -145,7 +145,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
 
       // Upload the image to the object storage and update the figure filename
       figureOp.insert.figure.filename = await this.objectStorageService.uploadIncomingMessage(
-        result.data, this.configService.getReportImageObjectStorageBucket(),
+        this.getBucketConfig('image'), result.data,
         figure.filename, result.headers['content-type']);
     }
   }
@@ -167,15 +167,18 @@ export class CnReportsService extends BlAbstractService<CnReport> {
         {values: viewConfig.view_config, transformers: viewConfig.transformers, save_view_config: false});
 
       // save the filename in the content
-      specialOp.insert.resource_view.filename = await this.objectStorageService.uploadJson(view, this.getReportViewBucket());
+      specialOp.insert.resource_view.filename = await this.objectStorageService.uploadJson(
+        this.getBucketConfig('view'), view);
     }
   }
 
-  private getReportImageBucket(): string {
-    return this.configService.getReportImageObjectStorageBucket();
-  }
-
-  private getReportViewBucket(): string {
-    return this.configService.getReportViewObjectStorageBucket();
+  private getBucketConfig(bucketType: 'image' | 'view'): BlBucketConfig {
+    return {
+      endpoint: this.configService.getDefaultObjectStorageEndPoint(),
+      region: this.configService.getDefaultObjectStorageRegion(),
+      bucket: bucketType === 'image' ? this.configService.getReportImageObjectStorageBucket() :
+        this.configService.getReportViewObjectStorageBucket(),
+      credentials: this.configService.getDefaultObjectStorageCredentials()
+    };
   }
 }

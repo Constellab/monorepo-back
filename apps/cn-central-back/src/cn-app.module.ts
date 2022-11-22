@@ -35,7 +35,6 @@ import {
   BlMailModule,
   BlMailModuleConfig,
   BlObjectStorageModule,
-  BlObjectStorageModuleConfig,
   BlPersistenceLogger,
   BlRequestContextMiddleware,
   BlTransportModule,
@@ -54,6 +53,7 @@ import {AppService} from './app.service';
 import {CnOrganizationMiddleware} from './app/cn-core/middleware/cn-organization-middleware.service';
 import {CnNotificationModule} from './app/cn-notification/cn-notification.module';
 import {CnProjectCommentModule} from './app/cn-project-comment/cn-project-comment.module';
+import {CnCloudProvidersModule} from './app/cn-cloud-providers/cn-cloud-providers.module';
 
 function typeOrmConfig(
   configService: CnCoreConfigService
@@ -109,12 +109,6 @@ function configureMailModule(
   };
 }
 
-function configureObjectStorageModule(
-  configService: CnCoreConfigService
-): BlObjectStorageModuleConfig {
-  return configService.getObjectStorageModuleConfig();
-}
-
 function configureTransportModule(
   configService: CnCoreConfigService
 ): BlTransportModuleConfig {
@@ -146,6 +140,7 @@ function configureTransportModule(
 
     // Custom module
     CnCoreModule,
+    BlObjectStorageModule,
 
     // setup the logging module
     WinstonModule.forRootAsync({
@@ -166,11 +161,6 @@ function configureTransportModule(
       inject: [CnCoreConfigService],
     }),
 
-    BlObjectStorageModule.forRootAsync({
-      imports: [CnCoreModule],
-      useFactory: configureObjectStorageModule,
-      inject: [CnCoreConfigService],
-    }),
 
     BlTransportModule.forRootAsync({
       useFactory: configureTransportModule,
@@ -199,6 +189,7 @@ function configureTransportModule(
     CnCityModule,
     CnNotificationModule,
     CnProjectCommentModule,
+    CnCloudProvidersModule,
   ],
   controllers: [],
   providers: [
@@ -231,6 +222,6 @@ export class CnAppModule implements NestModule {
     consumer
       // register the RequestContextMiddleware to be able to access the request anywhere
       .apply(BlRequestContextMiddleware, CnOrganizationMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
+      .forRoutes({path: '*', method: RequestMethod.ALL});
   }
 }

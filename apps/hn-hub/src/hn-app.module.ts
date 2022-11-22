@@ -16,7 +16,6 @@ import {
   BlJwtModule,
   BlLoggerConfig,
   BlObjectStorageModule,
-  BlObjectStorageModuleConfig,
   BlRequestContextMiddleware,
   BlTransportModule,
   BlTransportModuleConfig,
@@ -90,12 +89,6 @@ function configureTransportModule(
   return configService.getTransportModuleConfig();
 }
 
-function configureObjectStorageModule(
-  configService: HnCoreConfigService
-): BlObjectStorageModuleConfig {
-  return configService.getObjectStorageConfig();
-}
-
 @Module({
   imports: [
     // let the config module on top of the imports
@@ -139,12 +132,8 @@ function configureObjectStorageModule(
     }),
 
     HnCoreModule,
+    BlObjectStorageModule,
 
-    BlObjectStorageModule.forRootAsync({
-      imports: [HnCoreModule],
-      useFactory: configureObjectStorageModule,
-      inject: [HnCoreConfigService],
-    }),
 
     BlExternalApiModule,
 

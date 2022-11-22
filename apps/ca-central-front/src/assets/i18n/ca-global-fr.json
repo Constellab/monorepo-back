@@ -205,5 +205,8 @@
   "deactivate_two_fa": "Désactiver l'authentification à deux facteurs",
   "deactivate_two_fa_confirmation": "Êtes-vous sûr de vouloir désactiver l'authentification à deux facteurs ? Vous ne recevrez plus de code pour vous connecter.",
   "two_fa_disabled": "Authentification à deux facteurs désactivée",
-  "two_fa_is_disabled": "L'authentification à deux facteurs est désactivée"
+  "two_fa_is_disabled": "L'authentification à deux facteurs est désactivée",
+  "bucket_name": "Nom du bucket",
+  "bucket_region": "Région du bucket",
+  "bucket_endpoint": "Endpoint du bucket"
 }

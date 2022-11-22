@@ -1,10 +1,28 @@
-import {Inject, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {ClStringHelper} from '@monorepo/core-lib';
 import {BlFileHelper} from '../../utils/bl-file-helper';
-import {DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client} from '@aws-sdk/client-s3';
-import {BL_OBJECT_STORAGE_CONFIG_PROVIDER, BlObjectStorageModuleConfig} from './bl-object-storage.class';
+import {
+  CreateBucketCommand,
+  DeleteBucketCommand,
+  DeleteObjectCommand,
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client
+} from '@aws-sdk/client-s3';
 import {BlFile} from '../../models/bl-file.class';
 import {IncomingMessage} from 'http';
+
+export interface BlBucketConfig {
+  endpoint: string;
+  region: string;
+  bucket: string;
+  credentials: BlObjectStorageCredentials;
+}
+
+export interface BlObjectStorageCredentials {
+  accessKeyId: string;
+  secretAccessKey: string;
+}
 
 /**
  * Service to communicate with an object storage s3 to store files.
@@ -12,16 +30,16 @@ import {IncomingMessage} from 'http';
 @Injectable()
 export class BlObjectStorageService {
 
-  constructor(@Inject(BL_OBJECT_STORAGE_CONFIG_PROVIDER) private moduleConfig: BlObjectStorageModuleConfig) {
+  constructor() {
   }
 
   public generateRandomFileName(extension: string): string {
     return ClStringHelper.generateUUID() + '_' + new Date().getTime() + '.' + extension;
   }
 
-  public async uploadObject(obj: BlFile, bucket: string,
+  public async uploadObject(config: BlBucketConfig, obj: BlFile,
                             generateRandomObjectName: boolean = false): Promise<string> {
-    const s3Client = this.getClient();
+    const s3Client = this.getClient(config);
 
     let filename: string;
     if (generateRandomObjectName) {
@@ -32,49 +50,66 @@ export class BlObjectStorageService {
     }
 
     await s3Client.send(new PutObjectCommand({
-      Bucket: bucket, Key: filename, Body: obj.buffer, ContentType: obj.mimetype
+      Bucket: config.bucket, Key: filename, Body: obj.buffer, ContentType: obj.mimetype
     }));
 
     return filename;
   }
 
-  public async uploadIncomingMessage(message: IncomingMessage, bucket: string,
+  public async uploadIncomingMessage(config: BlBucketConfig, message: IncomingMessage,
                                      filename: string, contentType: string): Promise<string> {
-    const s3Client = this.getClient();
+    const s3Client = this.getClient(config);
 
     await s3Client.send(new PutObjectCommand({
-      Bucket: bucket, Key: filename, Body: message, ContentType: contentType
+      Bucket: config.bucket, Key: filename, Body: message, ContentType: contentType
     }));
 
     return filename;
   }
 
-  public async uploadJson(json: any, bucket: string): Promise<string> {
-    const s3Client = this.getClient();
+  public async uploadJson(config: BlBucketConfig, json: any): Promise<string> {
+    const s3Client = this.getClient(config);
 
     const filename: string = this.generateRandomFileName('json');
 
     await s3Client.send(new PutObjectCommand({
-      Bucket: bucket, Key: filename, Body: JSON.stringify(json), ContentType: 'application/json'
+      Bucket: config.bucket, Key: filename, Body: JSON.stringify(json), ContentType: 'application/json'
     }));
 
     return filename;
   }
 
-  public async getObject(objectName: string, bucket: string): Promise<IncomingMessage> {
-    const s3Client = this.getClient();
+  public async getObject(config: BlBucketConfig, objectName: string): Promise<IncomingMessage> {
+    const s3Client = this.getClient(config);
 
-    const result = await s3Client.send(new GetObjectCommand({Bucket: bucket, Key: objectName}));
+    const result = await s3Client.send(new GetObjectCommand({Bucket: config.bucket, Key: objectName}));
     return result.Body as IncomingMessage;
   }
 
-  public async deleteObject(objectName: string, bucket: string): Promise<void> {
-    const s3Client = this.getClient();
+  public async deleteObject(config: BlBucketConfig, objectName: string): Promise<void> {
+    const s3Client = this.getClient(config);
 
-    await s3Client.send(new DeleteObjectCommand({Bucket: bucket, Key: objectName}));
+    await s3Client.send(new DeleteObjectCommand({Bucket: config.bucket, Key: objectName}));
   }
 
-  private getClient(): S3Client {
-    return new S3Client({endpoint: this.moduleConfig.endpoint, region: this.moduleConfig.region});
+  public async createBucket(config: BlBucketConfig): Promise<void> {
+    const s3Client = this.getClient(config);
+
+    await s3Client.send(new CreateBucketCommand({Bucket: config.bucket}));
+  }
+
+  public async deleteBucket(config: BlBucketConfig): Promise<void> {
+    const s3Client = this.getClient(config);
+
+    await s3Client.send(new DeleteBucketCommand({Bucket: config.bucket}));
+  }
+
+
+  private getClient(config: BlBucketConfig): S3Client {
+    return new S3Client({
+      endpoint: config.endpoint,
+      region: config.region,
+      credentials: config.credentials
+    });
   }
 }

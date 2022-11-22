@@ -5,7 +5,7 @@ import {HnDocumentation, HnDocumentationSearchDTO} from './hn-documentation.enti
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnUser} from '../users/hn-user.entity';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
-import {BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
+import {BlBucketConfig, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {IncomingMessage} from 'http';
 import imageSize from 'image-size';
@@ -167,7 +167,8 @@ export class HnDocumentationService {
           originalname: 'any.png'
         };
         const imgSize: ISizeCalculationResult = imageSize(imgBuffer);
-        const imgName: string = await this.objectStorageService.uploadObject(imgBlFile, this.getReportBucket(), true);
+        const imgName: string = await this.objectStorageService.uploadObject(
+          this.getBucketConfig(), imgBlFile, true);
         im.insert = {
           figure: {
             filename: imgName,
@@ -217,7 +218,8 @@ export class HnDocumentationService {
     const docImage: HnDocImage = new HnDocImage();
     for (const file of files) {
       const imSize = imageSize(file.buffer);
-      docImage.filename = await this.objectStorageService.uploadObject(file, this.getReportBucket(), true);
+      docImage.filename = await this.objectStorageService.uploadObject(
+        this.getBucketConfig(), file, true);
       docImage.width = imSize.width;
       docImage.height = imSize.height;
     }
@@ -225,12 +227,9 @@ export class HnDocumentationService {
   }
 
   async getImage(filename: string): Promise<IncomingMessage> {
-    return await this.objectStorageService.getObject(filename, this.getReportBucket());
+    return await this.objectStorageService.getObject(this.getBucketConfig(), filename);
   }
 
-  private getReportBucket(): string {
-    return this.configService.getReportObjectStorageBucket();
-  }
 
   async updateCompletePath(doc: HnDocumentation, folder: HnFolder): Promise<void> {
     doc.completePath = folder.completePath ? folder.completePath + doc.path + '/' : doc.path + '/';
@@ -259,5 +258,14 @@ export class HnDocumentationService {
       major: brickMajorVersion.major.toString(),
       brickName: brickMajorVersion.brick.name
     } : null;
+  }
+
+  private getBucketConfig(): BlBucketConfig {
+    return {
+      endpoint: this.configService.getDefaultObjectStorageEndPoint(),
+      region: this.configService.getDefaultObjectStorageRegion(),
+      bucket: this.configService.getDocImageObjectStorageBucket(),
+      credentials: this.configService.getDefaultObjectStorageCredentials()
+    };
   }
 }

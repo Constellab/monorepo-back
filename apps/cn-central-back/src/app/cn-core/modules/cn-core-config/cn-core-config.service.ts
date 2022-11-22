@@ -12,7 +12,7 @@ import {
 } from '../../model/config/cn-config.class';
 import {
   BlMailConfig,
-  BlObjectStorageModuleConfig,
+  BlObjectStorageCredentials,
   BlTransportModuleConfig,
   blTransportQueueHub
 } from '@monorepo/back-core-lib';
@@ -87,10 +87,19 @@ export class CnCoreConfigService {
     };
   }
 
-  public getObjectStorageModuleConfig(): BlObjectStorageModuleConfig {
+  public getDefaultObjectStorageEndPoint(): string {
+    return this.configService.get('OBJECT_STORAGE_DEFAULT_ENDPOINT');
+  }
+
+  public getDefaultObjectStorageRegion(): string {
+    return this.configService.get('OBJECT_STORAGE_DEFAULT_REGION');
+  }
+
+
+  public getDefaultObjectStorageCredentials(): BlObjectStorageCredentials {
     return {
-      endpoint: this.configService.get('OBJECT_STORAGE_ENDPOINT'),
-      region: this.configService.get('OBJECT_STORAGE_REGION'),
+      accessKeyId: this.configService.get('OBJECT_STORAGE_DEFAULT_ACCESS_KEY_ID'),
+      secretAccessKey: this.configService.get('OBJECT_STORAGE_DEFAULT_SECRET_KEY'),
     };
   }
 

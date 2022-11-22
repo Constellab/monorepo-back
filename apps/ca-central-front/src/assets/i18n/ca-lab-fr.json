@@ -99,5 +99,21 @@
   "codelab_more_info": "Plus d'informations à propos du codelab",
   "codelab_link": "Lien vers le codelab",
   "codelab_copy_token": "Copier dans le presse-papier",
-  "codelab_token_copied": "Token copié dans le presse-papier"
+  "codelab_token_copied": "Token copié dans le presse-papier",
+  "lab_backup": "Backup",
+  "backup_lab_production": "Backup du lab de production",
+  "backup_lab_production_confirmation": "Êtes-vous sûr de vouloir faire un backup du lab de production ? Cela peut prendre plusieurs minutes.",
+  "backup_lab_production_started": "Backup du lab de production démarré",
+  "stop_lab_current_backup": "Arrêter le backup en cours",
+  "stop_lab_current_backup_confirmation": "Êtes-vous sûr de vouloir arrêter le backup en cours ?",
+  "lab_current_backup_stopped": "Backup en cours arrêté",
+  "lab_current_backup_status": "Statut",
+  "lab_current_backup_progress": "Progression",
+  "lab_current_backup_started_at": "Démarré le",
+  "lab_current_backup_finished_at": "Terminé le",
+  "lab_current_backup_duration": "Durée",
+  "lab_backup_location": "Emplacement du backup",
+  "lab_backup_history": "Historique des backups",
+  "lab_no_current_backup": "Aucun backup en cours",
+  "lab_backup_file_version": "Version du fichier"
 }

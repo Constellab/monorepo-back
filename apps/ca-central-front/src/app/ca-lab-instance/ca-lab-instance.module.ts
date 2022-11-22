@@ -58,6 +58,13 @@ import {
   CaLabInstanceCodelabInfoComponent
 } from './component/ca-lab-instance-codelab-info/ca-lab-instance-codelab-info.component';
 import {CaLabInstanceHeaderComponent} from './component/ca-lab-instance-header/ca-lab-instance-header.component';
+import {
+  CaLabInstanceManageBackupComponent
+} from './component/ca-lab-instance-manage-backup/ca-lab-instance-manage-backup.component';
+import {CaLabInstanceBackupComponent} from './component/ca-lab-instance-backup/ca-lab-instance-backup.component';
+import {
+  CaLabBackupHistoryDialogComponent
+} from './component/ca-lab-backup-history-dialog/ca-lab-backup-history-dialog.component';
 
 /**
  * Module the lab instance detail page with iframe for the lab
@@ -84,7 +91,10 @@ import {CaLabInstanceHeaderComponent} from './component/ca-lab-instance-header/c
     CaLabInstanceProjectsTableComponent,
     CaLabInstanceAddProjectDialogComponent,
     CaLabInstanceCodelabInfoComponent,
-    CaLabInstanceHeaderComponent
+    CaLabInstanceHeaderComponent,
+    CaLabInstanceManageBackupComponent,
+    CaLabInstanceBackupComponent,
+    CaLabBackupHistoryDialogComponent
   ],
   imports: [
     CommonModule,
@@ -98,6 +108,9 @@ import {CaLabInstanceHeaderComponent} from './component/ca-lab-instance-header/c
     CaProjectCoreModule,
 
     CaLabInstanceRoutingModule,
+  ],
+  exports: [
+    CaLabInstanceBackupComponent
   ]
 })
 export class CaLabInstanceModule {

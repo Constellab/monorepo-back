@@ -15,6 +15,11 @@ import {
   CnLabManagerStatus,
   CnLabManagerUpdateConfigDTO
 } from './model/cn-lab-manager.class';
+import {
+  CnExternalLabBackup,
+  CnExternalLabBackupHistory,
+  CnExternalLabCreateBackupDto
+} from './model/cn-external-lab-api.class';
 
 /**
  * Service to call the api of the lab manager
@@ -23,6 +28,7 @@ import {
 export class CnExternalLabManagerApiService {
 
   private baseLabRoute: string = 'lab';
+  private baseBackupRoute: string = 'backup';
 
   constructor(private apiService: BlExternalApiService) {
   }
@@ -94,6 +100,28 @@ export class CnExternalLabManagerApiService {
   public async stopAdminer(apiInfo: CnExternalApiInfo): Promise<boolean> {
     return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/adminer/stop`, null));
   }
+
+
+  ///////////////////////////////////// BACKUP /////////////////////////////////////
+
+  createProdBackup(apiInfo: CnExternalApiInfo, createBackup: CnExternalLabCreateBackupDto): Promise<CnExternalLabBackup> {
+    return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/prod`, createBackup));
+  }
+
+  stopCurrentBackup(apiInfo: CnExternalApiInfo): Promise<boolean> {
+    return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/stop-current`, null));
+  }
+
+  getBackupCurrentStatus(apiInfo: CnExternalApiInfo): Promise<CnExternalLabBackup> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/current-status`));
+  }
+
+  getBackupHistory(apiInfo: CnExternalApiInfo): Promise<CnExternalLabBackupHistory> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/history`));
+  }
+
+
+  ///////////////////////////////////// GENERIC METHODS /////////////////////////////////////
 
 
   /**

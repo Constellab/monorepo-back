@@ -3,7 +3,12 @@ import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstancesService} from './cn-lab-instances.service';
 import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {CnExternalLabUser, CnExternalLabUserRole} from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import {
+  CnExternalLabBackup,
+  CnExternalLabBackupHistory,
+  CnExternalLabUser,
+  CnExternalLabUserRole
+} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {ClPageI} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {
@@ -35,6 +40,7 @@ import {CnProjectAggregateService} from '../cn-projects-aggregate/cn-project-agg
 import {CnExternalLabProjectService} from '../cn-external-lab-api/cn-external-lab-project.service';
 import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
+import {CnObjectStoragesAggregateService} from '../cn-object-storages/cn-object-storages-aggregate.service';
 
 
 @Injectable()
@@ -53,7 +59,8 @@ export class CnLabInstanceAggregateService {
               private externalLabUserService: CnExternalLabUserService,
               private externalLabProjectService: CnExternalLabProjectService,
               private externalLabApiService: CnExternalLabApiService,
-              private dataSource: DataSource) {
+              private dataSource: DataSource,
+              private objectStorageService: CnObjectStoragesAggregateService) {
   }
 
   async create(createLabInstance: CnLabInstanceCreateDTO): Promise<CnLabInstance> {
@@ -357,6 +364,33 @@ export class CnLabInstanceAggregateService {
   public async stopAdminer(labId: string): Promise<boolean> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.stopAdminer(labInstance);
+  }
+
+  /////////////////////////// BACKUP ////////////////////////////////
+
+  public async createProdBackup(labId: string): Promise<CnExternalLabBackup> {
+    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
+
+    // get or create the bucket associated with this lab instance
+    const bucket = await this.objectStorageService.getOrCreateLabBackupBucket(labInstance);
+
+    return this.labManagerService.createProdBackup(labInstance, bucket.getBucketConfig());
+  }
+
+  public async stopCurrentBackup(labId: string): Promise<boolean> {
+    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.stopCurrentBackup(labInstance);
+  }
+
+
+  public async getBackupCurrentStatus(labId: string): Promise<CnExternalLabBackup> {
+    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.getBackupCurrentStatus(labInstance);
+  }
+
+  public async getBackupHistory(labId: string): Promise<CnExternalLabBackupHistory> {
+    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.getBackupHistory(labInstance);
   }
 
   /////////////////////////// EXTERNAL LAB //////////////////////////////

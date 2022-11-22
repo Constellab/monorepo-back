@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {CnOrganization} from './cn-organization.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DeleteResult, EntityManager, Repository} from 'typeorm';
-import {BlAbstractService, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlBucketConfig, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import {IncomingMessage} from 'http';
@@ -37,7 +37,7 @@ export class CnOrganizationsService extends BlAbstractService<CnOrganization> {
 
     await this.deleteOrganizationPhoto(organization);
 
-    organization.photo = await this.objectStorageService.uploadObject(file, this.getReportImageBucket(),
+    organization.photo = await this.objectStorageService.uploadObject(this.getBucketConfig(), file,
       true);
     return this.update(organization);
   }
@@ -45,15 +45,21 @@ export class CnOrganizationsService extends BlAbstractService<CnOrganization> {
   private async deleteOrganizationPhoto(organization: CnOrganization): Promise<void> {
     if (organization.photo) {
       // use the same filename to overwrite the previous file
-      await this.objectStorageService.deleteObject(organization.photo, this.getReportImageBucket());
+      await this.objectStorageService.deleteObject(this.getBucketConfig(), organization.photo);
     }
   }
 
   async getPhoto(filename: string): Promise<IncomingMessage> {
-    return await this.objectStorageService.getObject(filename, this.getReportImageBucket());
+    return await this.objectStorageService.getObject(this.getBucketConfig(), filename);
   }
 
-  private getReportImageBucket(): string {
-    return this.configService.getOrganizationBucket();
+
+  private getBucketConfig(): BlBucketConfig {
+    return {
+      endpoint: this.configService.getDefaultObjectStorageEndPoint(),
+      region: this.configService.getDefaultObjectStorageRegion(),
+      bucket: this.configService.getOrganizationBucket(),
+      credentials: this.configService.getDefaultObjectStorageCredentials()
+    };
   }
 }

@@ -1,0 +1,36 @@
+<fl-card>
+
+  <fl-card-header>
+    <fl-text-icon>
+      <mat-icon>cloud_done</mat-icon>
+      <h2>{{'lab_backup' | translate}}</h2>
+    </fl-text-icon>
+
+    <fl-card-actions>
+      <button mat-stroked-button type="button" color="primary"
+              class="g-button-small" (click)="backupProd()">{{'backup_lab_production' | translate}}
+      </button>
+      <button mat-stroked-button type="button" color="warn"
+              class="g-button-small" (click)="stopCurrentBackup()">{{'stop_lab_current_backup' | translate}}
+      </button>
+
+      <button mat-stroked-button type="button" class="g-button-small" (click)="showBackupHistory()">
+        <mat-icon>history</mat-icon>
+        <span>{{'lab_backup_history' | translate}}</span>
+      </button>
+
+      <button mat-stroked-button type="button" class="g-button-small button" (click)="refreshCurrentStatus()">
+        <mat-icon>refresh</mat-icon>
+        <span>{{'lab_manager_refresh' | translate}}</span>
+      </button>
+    </fl-card-actions>
+  </fl-card-header>
+
+  <fl-card-body>
+    <fl-async-section [object]="currentStatus$" emptyText="lab_no_current_backup">
+      <ng-container *flSectionBody="let currentStatus">
+        <ca-lab-instance-backup [backup]="currentStatus"></ca-lab-instance-backup>
+      </ng-container>
+    </fl-async-section>
+  </fl-card-body>
+</fl-card>

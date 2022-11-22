@@ -4,7 +4,13 @@ import {CnUser, CnUserEditDTO} from './cn-user.entity';
 import {Repository} from 'typeorm';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
-import {BlAbstractService, BlFile, BlObjectStorageService, BlUserService} from '@monorepo/back-core-lib';
+import {
+  BlAbstractService,
+  BlBucketConfig,
+  BlFile,
+  BlObjectStorageService,
+  BlUserService
+} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {IncomingMessage} from 'http';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
@@ -69,20 +75,21 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
   async saveNewPhoto(file: BlFile, userId: string): Promise<CnUser> {
     const user: CnUser = await this.repository.findOneBy({id: userId});
-    const newPhoto: string =
-      await this.objectStorageService.uploadObject(file, this.getUserProfilePictureBucket(), true);
-    if (user.photo && newPhoto) {
+
+    if (user.photo) {
       const lastPhoto: string = user.photo;
-      await this.objectStorageService.deleteObject(lastPhoto, this.getUserProfilePictureBucket());
+      await this.objectStorageService.deleteObject(this.getUserProfilePhotoBucketConfig(), lastPhoto);
     }
-    user.photo = newPhoto;
+
+    user.photo = await this.objectStorageService.uploadObject(
+      this.getUserProfilePhotoBucketConfig(), file, true);
     return await this.repository.save(user);
   }
 
   async deleteCurrentPhoto(userId: string): Promise<void> {
     const user: CnUser = await this.repository.findOneBy({id: userId});
     if (user.photo) {
-      await this.objectStorageService.deleteObject(user.photo, this.getUserProfilePictureBucket());
+      await this.objectStorageService.deleteObject(this.getUserProfilePhotoBucketConfig(), user.photo);
       user.photo = null;
       await this.repository.save(user);
     }
@@ -90,11 +97,16 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
   async getUserPhoto(userId: string): Promise<IncomingMessage> {
     const user: CnUser = await this.repository.findOneBy({id: userId});
-    return this.objectStorageService.getObject(user.photo, this.getUserProfilePictureBucket());
+    return this.objectStorageService.getObject(this.getUserProfilePhotoBucketConfig(), user.photo);
   }
 
-  private getUserProfilePictureBucket(): string {
-    return this.configService.getUserProfilePictureObjectStorageBucket();
+  private getUserProfilePhotoBucketConfig(): BlBucketConfig {
+    return {
+      endpoint: this.configService.getDefaultObjectStorageEndPoint(),
+      region: this.configService.getDefaultObjectStorageRegion(),
+      bucket: this.configService.getUserProfilePictureObjectStorageBucket(),
+      credentials: this.configService.getDefaultObjectStorageCredentials()
+    };
   }
 
   async editUser(userEdit: CnUserEditDTO): Promise<CnUser> {

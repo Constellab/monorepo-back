@@ -1,0 +1,30 @@
+<fl-dialog-header>
+  {{'lab_backup_history' | translate}}
+</fl-dialog-header>
+
+<mat-dialog-content>
+  <fl-async-section [object]="backupHistory$">
+
+    <ng-container *flSectionBody="let backupHistory">
+      <fl-key-value class="version">
+        <fl-key>{{'lab_backup_file_version' | translate}}</fl-key>
+        {{backupHistory.version}}
+      </fl-key-value>
+
+      <div *ngFor="let backup of backupHistory.backups; let last=last">
+        <ca-lab-instance-backup [backup]="backup">
+        </ca-lab-instance-backup>
+
+        <mat-divider *ngIf="!last" class="divider"></mat-divider>
+      </div>
+    </ng-container>
+  </fl-async-section>
+</mat-dialog-content>
+
+
+<div mat-dialog-actions>
+  <button mat-flat-button color="primary" type="button" [mat-dialog-close]="null"
+          class="g-centered-forced">
+    {{'ok' | translate}}
+  </button>
+</div>

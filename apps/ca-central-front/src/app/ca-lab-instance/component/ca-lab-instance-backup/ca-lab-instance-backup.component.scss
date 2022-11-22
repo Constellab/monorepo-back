@@ -1,0 +1,14 @@
+.container{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-flow: column;
+}
+
+.message-section{
+  margin-top: 0.5em;
+}
+
+.message{
+  white-space: pre-line;
+}
+

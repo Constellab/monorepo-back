@@ -99,5 +99,21 @@
   "codelab_more_info": "More information about codelab",
   "codelab_link": "Codelab link",
   "codelab_copy_token": "Copy token to clipboard",
-  "codelab_token_copied": "Token copied to clipboard"
+  "codelab_token_copied": "Token copied to clipboard",
+  "lab_backup": "Backup",
+  "backup_lab_production": "Backup lab production",
+  "backup_lab_production_confirmation": "Are you sure you want to backup the lab production ? This can take few minutes.",
+  "backup_lab_production_started": "Backup lab production started",
+  "stop_lab_current_backup": "Stop current backup",
+  "stop_lab_current_backup_confirmation": "Are you sure you want to stop the current backup ?",
+  "lab_current_backup_stopped": "Current backup stopped",
+  "lab_current_backup_status": "Status",
+  "lab_current_backup_progress": "Progress",
+  "lab_current_backup_started_at": "Started at",
+  "lab_current_backup_finished_at": "Finished at",
+  "lab_current_backup_duration": "Duration",
+  "lab_backup_location": "Backup location",
+  "lab_backup_history": "Backup history",
+  "lab_no_current_backup": "No running backup",
+  "lab_backup_file_version": "File version"
 }

@@ -1,5 +1,7 @@
 import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
+import {DateTime} from 'luxon';
+import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 
 export type CaLabContainersStatus = 'STOP' | 'DOWN' | 'UP' | 'PARTIALLY_UP';
 
@@ -82,4 +84,35 @@ export class CaBrickVersionDTO {
 
 export class CaLabInstanceConfig {
   brickVersions: CaBrickVersionDTO[];
+}
+
+
+////////////////////////////// BACKUP //////////////////////////
+export class CaExternalLabBackup {
+  status: 'IN_PROGRESS' | 'DONE' | 'ERROR';
+
+  @Type(() => CaExternalLabBackupStorage)
+  storages: CaExternalLabBackupStorage[];
+  message?: string;
+}
+
+export class CaExternalLabBackupStorage {
+  region: string;
+  bucket: string;
+  endpoint: string;
+
+  @ClLuxonDateTimeTransform()
+  startUploadAt: DateTime;
+
+  @ClLuxonDateTimeTransform()
+  endUploadAt?: DateTime;
+  status: 'IN_PROGRESS' | 'DONE' | 'ERROR';
+  message?: string;
+}
+
+export class CaExternalLabBackupHistory {
+  version: number;
+
+  @Type(() => CaExternalLabBackup)
+  backups: CaExternalLabBackup[];
 }
