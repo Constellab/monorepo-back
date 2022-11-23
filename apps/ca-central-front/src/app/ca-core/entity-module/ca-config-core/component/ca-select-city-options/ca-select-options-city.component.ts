@@ -5,11 +5,11 @@ import {CaCountryService} from '../../../../service-api/ca-country.service';
 import {MatSelect} from '@angular/material/select';
 
 @Component({
-  selector: 'ca-select-lab-instance-city',
-  templateUrl: './ca-select-lab-instance-city.component.html',
-  styleUrls: ['./ca-select-lab-instance-city.component.scss']
+  selector: 'ca-select-city-options',
+  templateUrl: './ca-select-options-city.component.html',
+  styleUrls: ['./ca-select-options-city.component.scss']
 })
-export class CaSelectLabInstanceCityComponent extends FlEmbeddedOptionsAbstractDirective implements OnInit, AfterViewInit {
+export class CaSelectOptionsCityComponent extends FlEmbeddedOptionsAbstractDirective implements OnInit, AfterViewInit {
 
   countries: CaCountry[];
 

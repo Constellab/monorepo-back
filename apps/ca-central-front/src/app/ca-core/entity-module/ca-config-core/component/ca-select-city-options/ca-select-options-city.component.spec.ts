@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {CaSelectLabInstanceCityComponent} from './ca-select-lab-instance-city.component';
+import {CaSelectOptionsCityComponent} from './ca-select-options-city.component';
 
 describe('CaSelectLabInstanceCityComponent', () => {
-  let component: CaSelectLabInstanceCityComponent;
-  let fixture: ComponentFixture<CaSelectLabInstanceCityComponent>;
+  let component: CaSelectOptionsCityComponent;
+  let fixture: ComponentFixture<CaSelectOptionsCityComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CaSelectLabInstanceCityComponent]
+      declarations: [CaSelectOptionsCityComponent]
     })
       .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CaSelectLabInstanceCityComponent);
+    fixture = TestBed.createComponent(CaSelectOptionsCityComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

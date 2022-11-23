@@ -65,6 +65,7 @@ import {CaLabInstanceBackupComponent} from './component/ca-lab-instance-backup/c
 import {
   CaLabBackupHistoryDialogComponent
 } from './component/ca-lab-backup-history-dialog/ca-lab-backup-history-dialog.component';
+import {CaConfigCoreModule} from '../ca-core/entity-module/ca-config-core/ca-config-core.module';
 
 /**
  * Module the lab instance detail page with iframe for the lab
@@ -106,11 +107,9 @@ import {
     CaServerInfoCoreModule,
     CaBrickCoreModule,
     CaProjectCoreModule,
+    CaConfigCoreModule,
 
     CaLabInstanceRoutingModule,
-  ],
-  exports: [
-    CaLabInstanceBackupComponent
   ]
 })
 export class CaLabInstanceModule {

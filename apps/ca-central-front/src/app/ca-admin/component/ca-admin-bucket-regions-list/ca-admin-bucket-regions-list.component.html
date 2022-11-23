@@ -1,0 +1,25 @@
+<fl-card>
+
+  <fl-card-header>
+    <fl-text-icon>
+      <mat-icon class="g-icon-big">location_on</mat-icon>
+      <h2>{{'bucket_regions_list' | translate}}</h2>
+    </fl-text-icon>
+
+    <fl-card-actions>
+      <button mat-icon-button type="button" (click)="openCreateDialog()"
+              [matTooltip]="'create_bucket_region' | translate">
+        <mat-icon>add</mat-icon>
+      </button>
+    </fl-card-actions>
+  </fl-card-header>
+
+  <fl-card-body>
+    <fl-infinite-scroll [datasource]="regions" class="g-infinite-table">
+      <ca-bucket-region-table [datasource]="regions" [columns]="displayedColumns">
+      </ca-bucket-region-table>
+    </fl-infinite-scroll>
+  </fl-card-body>
+
+
+</fl-card>

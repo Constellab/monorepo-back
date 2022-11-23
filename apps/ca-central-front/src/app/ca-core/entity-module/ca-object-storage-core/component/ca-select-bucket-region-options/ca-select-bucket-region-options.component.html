@@ -1,0 +1,5 @@
+<fl-infinite-scroll [datasource]="datasource">
+  <mat-option *flForById="let region of regions$ | async" [value]="region">
+    {{region.cloudProvider.name}} - {{region.technicalName}}
+  </mat-option>
+</fl-infinite-scroll>

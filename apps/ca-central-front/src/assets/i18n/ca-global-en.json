@@ -208,7 +208,5 @@
   "deactivate_two_fa_confirmation": "Are you sure you want to deactivate two factor authentication? You will no longer receive a code to login.",
   "two_fa_disabled": "Two factor authentication deactivated",
   "two_fa_is_disabled": "Two factor authentication is deactivated",
-  "bucket_name": "Bucket name",
-  "bucket_region": "Bucket region",
-  "bucket_endpoint": "Bucket endpoint"
+  "city": "City"
 }

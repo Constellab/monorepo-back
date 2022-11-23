@@ -26,14 +26,10 @@ export class CnObjectStoragesController {
   }
 
   @Delete('buckets/:id')
-  public async deleteBucket(@Param(ParseUUIDPipe) id: string): Promise<void> {
+  public async deleteBucket(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.service.deleteBucket(id);
   }
 
-  @Get('buckets/:id')
-  public async getBucket(@Param(ParseUUIDPipe) id: string): Promise<CnBucket> {
-    return this.service.getBucket(id);
-  }
 
   @Get('buckets')
   public async getBuckets(@Query('page', ParseIntPipe) page: number,
@@ -54,14 +50,10 @@ export class CnObjectStoragesController {
   }
 
   @Delete('regions/:id')
-  public async deleteBucketRegion(@Param(ParseUUIDPipe) id: string): Promise<void> {
+  public async deleteBucketRegion(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.service.deleteBucketRegion(id);
   }
 
-  @Get('regions/:id')
-  public async getBucketRegion(@Param(ParseUUIDPipe) id: string): Promise<CnBucketRegion> {
-    return this.service.getBucketRegion(id);
-  }
 
   @Get('regions')
   public async getBucketRegions(@Query('page', ParseIntPipe) page: number,

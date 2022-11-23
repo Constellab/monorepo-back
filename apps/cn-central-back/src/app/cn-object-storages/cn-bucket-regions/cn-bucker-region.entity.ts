@@ -16,7 +16,7 @@ export class CnBucketRegion extends CnBaseEntity {
   @ManyToOne(() => CnCity, {nullable: false, eager: true})
   city: CnCity;
 
-  @Column({nullable: false, length: 10})
+  @Column({nullable: false, length: 20})
   technicalName: string;
 
   @Column({nullable: false, length: 255})

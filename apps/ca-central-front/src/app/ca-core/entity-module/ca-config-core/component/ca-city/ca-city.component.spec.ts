@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {CaLabInstanceCityComponent} from './ca-lab-instance-city.component';
+import {CaCityComponent} from './ca-city.component';
 
 describe('CaLabInstanceCityComponent', () => {
-  let component: CaLabInstanceCityComponent;
-  let fixture: ComponentFixture<CaLabInstanceCityComponent>;
+  let component: CaCityComponent;
+  let fixture: ComponentFixture<CaCityComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CaLabInstanceCityComponent]
+      declarations: [CaCityComponent]
     })
       .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CaLabInstanceCityComponent);
+    fixture = TestBed.createComponent(CaCityComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

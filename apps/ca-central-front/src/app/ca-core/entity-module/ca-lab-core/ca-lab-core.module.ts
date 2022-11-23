@@ -20,11 +20,8 @@ import {
   CaLabInstanceStatusDialogComponent
 } from './component/ca-lab-instance-status-dialog/ca-lab-instance-status-dialog.component';
 import {CaLabLoginButtonComponent} from './component/ca-lab-login-button/ca-lab-login-button.component';
-import {
-  CaSelectLabInstanceCityComponent
-} from './component/ca-select-lab-instance-city/ca-select-lab-instance-city.component';
-import {CaLabInstanceCityComponent} from './component/ca-lab-instance-city/ca-lab-instance-city.component';
 import {CaOrganizationCoreModule} from '../ca-organization-core/ca-organization-core.module';
+import {CaConfigCoreModule} from '../ca-config-core/ca-config-core.module';
 
 /**
  * Core module for Lab and LabInstance
@@ -39,8 +36,6 @@ import {CaOrganizationCoreModule} from '../ca-organization-core/ca-organization-
     CaLabInstanceFormDialogComponent,
     CaLabInstanceStatusDialogComponent,
     CaLabLoginButtonComponent,
-    CaSelectLabInstanceCityComponent,
-    CaLabInstanceCityComponent,
   ],
   exports: [
     CaLabInstanceCardComponent,
@@ -50,7 +45,6 @@ import {CaOrganizationCoreModule} from '../ca-organization-core/ca-organization-
     CaLabInstanceTableComponent,
     CaLabInstanceFormDialogComponent,
     CaLabLoginButtonComponent,
-    CaLabInstanceCityComponent
   ],
   imports: [
     CommonModule,
@@ -60,6 +54,7 @@ import {CaOrganizationCoreModule} from '../ca-organization-core/ca-organization-
 
     CaServerInfoCoreModule,
     CaOrganizationCoreModule,
+    CaConfigCoreModule,
 
     CaCoreModule,
   ]

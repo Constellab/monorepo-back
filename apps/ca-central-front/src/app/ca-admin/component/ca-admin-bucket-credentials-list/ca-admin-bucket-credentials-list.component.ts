@@ -22,7 +22,8 @@ export class CaAdminBucketCredentialsListComponent implements OnInit {
 
   bucketCredentials: CaBucketCredentialsFullDatasource = this.objectStorageService.getAllCredentialsDatasource();
 
-  displayedColumns: FlTableColumn<CaBucketCredentialsFull>[] = ['name', 'cloudProvider', 'organization', 'created', 'lastModified', 'actions'];
+  displayedColumns: FlTableColumn<CaBucketCredentialsFull>[] =
+    ['name', 'cloudProvider', 'organization', 'created', 'lastModified', 'actions'];
 
   constructor(private objectStorageService: CaObjectStorageService,
               private dialogService: FlDialogService) {

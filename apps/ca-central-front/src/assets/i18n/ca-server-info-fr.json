@@ -34,5 +34,19 @@
   "bucket_credentials_updated": "Bucket credentials modifié",
   "delete_bucket_credentials": "Supprimer le bucket credentials",
   "delete_bucket_credentials_confirm": "Êtes-vous sûr de vouloir supprimer ce bucket credentials ?",
-  "bucket_credentials_deleted": "Bucket credentials supprimé"
+  "bucket_credentials_deleted": "Bucket credentials supprimé",
+  "bucket_credentials_access_key_id": "Access key ID",
+  "bucket_credentials_secret_access_key": "Secret access key",
+  "bucket_regions_list": "Régions des buckets",
+  "create_bucket_region": "Créer une région de bucket",
+  "bucket_region_created": "Région de bucket créé",
+  "update_bucket_region": "Modifier la région de bucket",
+  "bucket_region_updated": "Région de bucket modifié",
+  "delete_bucket_region": "Supprimer la région de bucket",
+  "delete_bucket_region_confirm": "Êtes-vous sûr de vouloir supprimer cette région de bucket ?",
+  "bucket_region_deleted": "Région de bucket supprimé",
+  "bucket_region_endpoint": "Endpoint",
+  "bucket_name": "Nom du bucket",
+  "bucket_region": "Région du bucket",
+  "bucket_endpoint": "Endpoint du bucket"
 }

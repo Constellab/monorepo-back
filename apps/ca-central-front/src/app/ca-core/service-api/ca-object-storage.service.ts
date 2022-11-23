@@ -1,6 +1,11 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
-import {CaBucketCredentialsFull, CaBucketCredentialsFullDatasource} from '../model/entities/ca-object-storage.class';
+import {
+  CaBucketCredentialsFull,
+  CaBucketCredentialsFullDatasource,
+  CaBucketRegion,
+  CaBucketRegionDatasource
+} from '../model/entities/ca-object-storage.class';
 import {Observable} from 'rxjs';
 import {ClPageI} from '@monorepo/core-lib';
 
@@ -19,6 +24,31 @@ export class CaObjectStorageService {
   constructor(private apiService: FlApiService) {
   }
 
+
+  ////////////////// REGIONS //////////////////
+  public createRegion(bucketRegion: Partial<CaBucketRegion>): Observable<CaBucketRegion> {
+    return this.apiService.post(this.regionsRoute, bucketRegion, CaBucketRegion);
+  }
+
+  public updateRegion(bucketRegion: Partial<CaBucketRegion>): Observable<CaBucketRegion> {
+    return this.apiService.put(this.regionsRoute, bucketRegion, CaBucketRegion);
+  }
+
+  public deleteRegion(id: string): Observable<void> {
+    return this.apiService.deleteById(this.regionsRoute, id);
+  }
+
+  public getAllRegions(page: number, size: number): Observable<ClPageI<CaBucketRegion>> {
+    return this.apiService.get(this.regionsRoute, CaBucketRegion, {
+      page: page, pageSize: size, resultIsPaginated: true
+    });
+  }
+
+  public getAllRegionsDatasource(): CaBucketRegionDatasource {
+    return new FlEntityPaginatedDatasource(
+      (page: number, pageSize: number) => this.getAllRegions(page, pageSize), 20
+    );
+  }
 
   //////////////// CREDENTIALS ////////////////
   public createCredentials(credentials: Partial<CaBucketCredentialsFull>): Observable<CaBucketCredentialsFull> {

@@ -16,8 +16,10 @@ export class CaBucketRegion extends CaBaseEntity {
 
   @Type(() => CaCity)
   city: CaCity;
-
 }
+
+export type CaBucketRegionDatasource = FlEntityPaginatedDatasource<CaBucketRegion>;
+
 
 export class CaBucketCredentials extends CaBaseEntity {
 
