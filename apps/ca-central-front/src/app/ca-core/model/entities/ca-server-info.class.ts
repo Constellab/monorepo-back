@@ -1,11 +1,6 @@
 import {CaEntity} from './ca-entity.entity';
-
-/**
- * Host for the server like OVH, AWS, GCP...
- */
-export enum CaServerHost {
-  OVH = 'OVH'
-}
+import {Type} from 'class-transformer';
+import {CaCloudProvider} from './ca-cloud-provider.class';
 
 /**
  * Disk type for the servers
@@ -17,9 +12,8 @@ export enum CaDiskType {
 
 
 export class CaServerInfo extends CaEntity {
-
-  // host like OVH, AWS...
-  host: CaServerHost;
+  @Type(() => CaCloudProvider)
+  cloudProvider: CaCloudProvider;
 
   // the ram of the server in MB
   name: string;

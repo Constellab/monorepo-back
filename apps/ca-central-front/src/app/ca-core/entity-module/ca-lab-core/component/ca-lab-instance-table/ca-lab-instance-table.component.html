@@ -46,7 +46,7 @@
       <span>{{'server_info' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let labInstance">
-      <span>{{labInstance.serverInfo.host}} - {{labInstance.serverInfo.name}}</span>
+      <ca-server-info-inline [serverInfo]="labInstance.serverInfo"></ca-server-info-inline>
     </mat-cell>
   </ng-container>
 

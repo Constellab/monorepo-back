@@ -17,14 +17,10 @@ import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} fro
 })
 export class CaServerInfoFormDialogComponent extends FlFormDialogAbstractDirective<CaServerInfo> implements OnInit {
 
-  formGp: FormGroup<CaServerInfo>;
-
-  isLoading: boolean = false;
-
   constructor(@Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<CaServerInfo>,
               private serverInfoService: CaServerInfoService,
-              snackBarService: FlSnackBarService,
-              dialogRef: MatDialogRef<CaServerInfoFormDialogComponent>) {
+              protected snackBarService: FlSnackBarService,
+              protected dialogRef: MatDialogRef<CaServerInfoFormDialogComponent>) {
     super(dialogInput, snackBarService, dialogRef);
   }
 
@@ -35,7 +31,7 @@ export class CaServerInfoFormDialogComponent extends FlFormDialogAbstractDirecti
   buildForm(): FormGroup<CaServerInfo> {
     return new FormBuilder().group({
       id: [null],
-      host: [null, Validators.required],
+      cloudProvider: [null, Validators.required],
       name: [null, Validators.required],
       ram: [null, [Validators.required, Validators.min(0)]],
       diskSpace: [null, [Validators.required, Validators.min(0)]],

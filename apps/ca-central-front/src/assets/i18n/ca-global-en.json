@@ -80,6 +80,8 @@
   "unshare_confirmation": "Are you sure you want to remove the sharing ?",
   "unshared": "Sharing removed",
   "admin_dashboard": "Admin dashboard",
+  "admin_dashboard_page": "Dashboard",
+  "admin_servers_page": "Servers",
   "admin_account_activation": "Accounts activation",
   "activate_account": "Activate account",
   "admin_account_activated": "Account activated",

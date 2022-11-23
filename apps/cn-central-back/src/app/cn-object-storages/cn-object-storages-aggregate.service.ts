@@ -9,13 +9,12 @@ import {ClPage} from '@monorepo/core-lib';
 import {CnBucketRegion} from './cn-bucket-regions/cn-bucker-region.entity';
 import {CnBucket, CnBucketContentType} from './cn-buckets/cn-bucket.entity';
 import {CnLabInstance} from '../cn-lab-instances/cn-lab-instance.entity';
-import {CnCloudProviderName} from '../cn-cloud-providers/cn-cloud-provider.entity';
 
 
 @Injectable()
 export class CnObjectStoragesAggregateService {
 
-  private static LabBackupDefaultCloudProvider = CnCloudProviderName.OVH;
+  private static LabBackupDefaultCloudProvider = 'OVH';
   private static LabBackupDefaultRegion = 'gra';
 
 

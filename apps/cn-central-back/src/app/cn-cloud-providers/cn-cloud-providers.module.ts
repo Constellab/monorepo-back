@@ -4,6 +4,7 @@ import {CnCloudProvider} from './cn-cloud-provider.entity';
 import {CnCoreModule} from '../cn-core/cn-core.module';
 import {CnCloudProvidersService} from './cn-cloud-providers.service';
 import {CnCloudProvidersController} from './cn-cloud-providers.controller';
+import {CnCloudProvidersSecurity} from './cn-cloud-providers.security';
 
 
 @Module({
@@ -13,7 +14,8 @@ import {CnCloudProvidersController} from './cn-cloud-providers.controller';
     CnCoreModule,
   ],
   providers: [
-    CnCloudProvidersService
+    CnCloudProvidersService,
+    CnCloudProvidersSecurity,
   ],
   controllers: [
     CnCloudProvidersController

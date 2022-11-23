@@ -22,6 +22,12 @@ import {
   CaAdminOrganizationsListComponent
 } from './component/ca-admin-organizations-list/ca-admin-organizations-list.component';
 import {CaOrganizationCoreModule} from '../ca-core/entity-module/ca-organization-core/ca-organization-core.module';
+import {CaAdminServersPageComponent} from './component/ca-admin-servers-page/ca-admin-servers-page.component';
+import {CaAdminPageComponent} from './component/ca-admin-page/ca-admin-page.component';
+import {
+  CaAdminCloudProvidersListComponent
+} from './component/ca-admin-cloud-providers-list/ca-admin-cloud-providers-list.component';
+import {CaCloudProviderCoreModule} from '../ca-core/entity-module/ca-cloud-provider-core/ca-cloud-provider-core.module';
 
 /**
  * Module only accessible by the admins
@@ -34,6 +40,9 @@ import {CaOrganizationCoreModule} from '../ca-core/entity-module/ca-organization
     CaAdminServerInfoListComponent,
     CaAdminLabInstancesListComponent,
     CaAdminOrganizationsListComponent,
+    CaAdminServersPageComponent,
+    CaAdminPageComponent,
+    CaAdminCloudProvidersListComponent,
   ],
   imports: [
     CommonModule,
@@ -42,6 +51,7 @@ import {CaOrganizationCoreModule} from '../ca-core/entity-module/ca-organization
     CaServerInfoCoreModule,
     CaLabCoreModule,
     CaOrganizationCoreModule,
+    CaCloudProviderCoreModule,
 
     CaAdminRoutingModule,
   ]

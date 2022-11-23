@@ -14,8 +14,16 @@ export class FlInfiniteLoadMoreResultComponent implements OnInit {
 
   @Input() datasource: FlDatasourcePaginated<any>;
 
+  /**
+   * Text translated show if the datasource is empty.
+   * Set empty string to hide the text
+   */
   @Input() textNoResult: string = 'no_result';
 
+  /**
+   * Text translated showed if the last page is loaded and there is no more result
+   * Set empty string to hide the text
+   */
   @Input() textNoMoreResult: string = 'no_more_result';
 
   constructor() {
@@ -25,8 +33,15 @@ export class FlInfiniteLoadMoreResultComponent implements OnInit {
 
   }
 
-
   loadMoreResults(): void {
     this.datasource.getNextPage();
+  }
+
+  get emptyText(): string {
+    if(this.datasource.page.totalElements > 0){
+      return this.textNoMoreResult;
+    }else{
+      return this.textNoResult;
+    }
   }
 }

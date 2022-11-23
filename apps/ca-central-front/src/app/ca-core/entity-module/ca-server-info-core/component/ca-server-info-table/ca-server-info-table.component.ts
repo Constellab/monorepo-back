@@ -13,7 +13,7 @@ export class CaServerInfoTableComponent extends FlTableAbstractDirective<CaServe
   @Input() datasource: FlArrayObs<CaServerInfo>;
 
   constructor(private dialogService: FlDialogService) {
-    super(['actions']);
+    super(['cloudProvider', 'actions']);
   }
 
   ngOnInit(): void {
@@ -24,10 +24,10 @@ export class CaServerInfoTableComponent extends FlTableAbstractDirective<CaServe
       mode: 'update',
       object: serverInfo
     };
-    this.dialogService.openSmallDialog(CaServerInfoFormDialogComponent, {data: dialogInput})
-      .afterClosed().subscribe(
-      result => this.onOpenEditServerInfo(result)
-    );
+    this.dialogService.openSmallDialog(CaServerInfoFormDialogComponent, {data: dialogInput}).afterClosed()
+      .subscribe(
+        result => this.onOpenEditServerInfo(result)
+      );
   }
 
   private onOpenEditServerInfo(serverInfo?: CaServerInfo): void {

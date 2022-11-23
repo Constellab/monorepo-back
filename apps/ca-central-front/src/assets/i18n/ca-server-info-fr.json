@@ -13,5 +13,14 @@
   "server_info_created": "Information de serveur créée",
   "update_server_info": "Modifier les infos du serveur",
   "server_info_updated": "Informations du serveur modifié",
-  "no_server_info": "Aucun serveur"
+  "no_server_info": "Aucun serveur",
+  "cloud_provider": "Cloud provider",
+  "cloud_provider_list": "Cloud providers disponibles",
+  "create_cloud_provider": "Créer un cloud provider",
+  "cloud_provider_created": "Cloud provider créé",
+  "update_cloud_provider": "Modifier le cloud provider",
+  "cloud_provider_updated": "Cloud provider modifié",
+  "delete_cloud_provider": "Supprimer le cloud provider",
+  "delete_cloud_provider_confirm": "Êtes-vous sûr de vouloir supprimer ce cloud provider ?",
+  "cloud_provider_deleted": "Cloud provider supprimé"
 }

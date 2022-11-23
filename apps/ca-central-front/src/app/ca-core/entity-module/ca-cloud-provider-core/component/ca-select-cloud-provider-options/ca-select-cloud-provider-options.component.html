@@ -1,0 +1,5 @@
+<fl-infinite-scroll [datasource]="datasource">
+  <mat-option *flForById="let cloudProvider of cloudProviders$ | async" [value]="cloudProvider">
+    {{cloudProvider.name}}
+  </mat-option>
+</fl-infinite-scroll>

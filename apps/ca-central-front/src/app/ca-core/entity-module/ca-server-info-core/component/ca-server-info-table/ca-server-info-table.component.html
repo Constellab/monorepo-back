@@ -1,5 +1,15 @@
 <mat-table fxFlex="100" mat-table [dataSource]="datasource">
 
+  <!-- Cloud provider -->
+  <ng-container matColumnDef="cloudProvider">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'cloud_provider' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <span>{{row.cloudProvider.name}}</span>
+    </mat-cell>
+  </ng-container>
+
   <!-- Dynamic columns -->
   <ng-container matColumnDef="actions">
     <mat-header-cell class="g-table-icon-button-cell" *matHeaderCellDef>

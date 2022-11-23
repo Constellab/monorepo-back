@@ -18,7 +18,7 @@ export class CaAdminServerInfoListComponent implements OnInit {
 
   serversInfo: FlArrayObs<CaServerInfo>;
 
-  displayedColumns: FlTableColumn<CaServerInfo>[] = ['host', 'name', 'ram', 'diskSpace', 'diskType',
+  displayedColumns: FlTableColumn<CaServerInfo>[] = ['cloudProvider', 'name', 'ram', 'diskSpace', 'diskType',
     'cpuCount', 'cpuType', 'gpuCount', 'gpuType', 'actions'];
 
   constructor(private serverInfoService: CaServerInfoService,

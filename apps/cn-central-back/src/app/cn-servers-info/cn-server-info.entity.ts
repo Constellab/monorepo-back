@@ -1,17 +1,16 @@
-import {Column, Entity, OneToMany, Unique} from 'typeorm';
+import {Column, Entity, ManyToOne, OneToMany, Unique} from 'typeorm';
 import {CnDiskType} from './cn-disk-type.enum';
-import {CnServerHost} from './cn-server-host.enum';
 import {CnLabInstance} from '../cn-lab-instances/cn-lab-instance.entity';
 import {BlEntityWithId} from '@monorepo/back-core-lib';
+import {CnCloudProvider} from '../cn-cloud-providers/cn-cloud-provider.entity';
 
 // unique key on Name/Host
-@Unique('UQ_NAME', ['name', 'host'])
+@Unique('UQ_NAME', ['name', 'cloudProvider'])
 @Entity('server_info')
 export class CnServerInfo extends BlEntityWithId {
 
-  // host like OVH, AWS...
-  @Column({nullable: false, type: 'enum', enum: CnServerHost})
-  host: CnServerHost;
+  @ManyToOne(() => CnCloudProvider, {nullable: false, eager: true})
+  cloudProvider: CnCloudProvider;
 
   // the ram of the server in MB
   @Column({nullable: false, length: 30})

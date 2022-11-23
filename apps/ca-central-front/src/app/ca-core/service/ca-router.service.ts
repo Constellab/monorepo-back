@@ -147,6 +147,10 @@ export class CaRouterService {
     return CaRouterService.getFullRoute(caConstAdminRoute);
   }
 
+  public static getAdminServersRoute(): string {
+    return `${CaRouterService.getAdminRoute()}/servers`;
+  }
+
   public navigateToAdmin(): void {
     this.router.navigate([CaRouterService.getAdminRoute()]);
   }

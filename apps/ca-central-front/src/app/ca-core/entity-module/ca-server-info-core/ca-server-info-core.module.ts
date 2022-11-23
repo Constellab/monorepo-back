@@ -8,14 +8,13 @@ import {
 } from './component/ca-server-info-form-dialog/ca-server-info-form-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
-  CaSelectServerInfoHostOptionsComponent
-} from './component/ca-select-server-info-host-options/ca-select-server-info-host-options.component';
-import {
   CaSelectDiskTypeOptionsComponent
 } from './component/ca-select-disk-type-options/ca-select-disk-type-options.component';
 import {
   CaSelectServerInfoOptionsComponent
 } from './component/ca-select-server-info-options/ca-select-server-info-options.component';
+import {CaServerInfoInlineComponent} from './component/ca-server-info-inline/ca-server-info-inline.component';
+import {CaCloudProviderCoreModule} from '../ca-cloud-provider-core/ca-cloud-provider-core.module';
 
 
 @NgModule({
@@ -23,17 +22,17 @@ import {
     CaServerInfoCardComponent,
     CaServerInfoTableComponent,
     CaServerInfoFormDialogComponent,
-    CaSelectServerInfoHostOptionsComponent,
     CaSelectDiskTypeOptionsComponent,
     CaSelectServerInfoOptionsComponent,
+    CaServerInfoInlineComponent,
   ],
   exports: [
     CaServerInfoCardComponent,
     CaServerInfoTableComponent,
     CaServerInfoFormDialogComponent,
-    CaSelectServerInfoHostOptionsComponent,
     CaSelectDiskTypeOptionsComponent,
-    CaSelectServerInfoOptionsComponent
+    CaSelectServerInfoOptionsComponent,
+    CaServerInfoInlineComponent
   ],
   imports: [
     CommonModule,
@@ -41,6 +40,7 @@ import {
     FormsModule,
 
     CaCoreModule,
+    CaCloudProviderCoreModule,
   ]
 })
 export class CaServerInfoCoreModule {
