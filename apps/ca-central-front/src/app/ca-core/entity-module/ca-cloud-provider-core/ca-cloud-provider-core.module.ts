@@ -9,6 +9,7 @@ import {
 import {
   CaSelectCloudProviderOptionsComponent
 } from './component/ca-select-cloud-provider-options/ca-select-cloud-provider-options.component';
+import {CaCloudProviderInlineComponent} from './component/ca-cloud-provider-inline/ca-cloud-provider-inline.component';
 
 
 @NgModule({
@@ -16,11 +17,13 @@ import {
     CaCloudProviderTableComponent,
     CaCloudProviderFormDialogComponent,
     CaSelectCloudProviderOptionsComponent,
+    CaCloudProviderInlineComponent,
   ],
   exports: [
     CaCloudProviderTableComponent,
     CaCloudProviderFormDialogComponent,
     CaSelectCloudProviderOptionsComponent,
+    CaCloudProviderInlineComponent,
   ],
   imports: [
     CommonModule,

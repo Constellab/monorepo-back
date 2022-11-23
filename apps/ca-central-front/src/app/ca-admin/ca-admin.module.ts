@@ -28,6 +28,10 @@ import {
   CaAdminCloudProvidersListComponent
 } from './component/ca-admin-cloud-providers-list/ca-admin-cloud-providers-list.component';
 import {CaCloudProviderCoreModule} from '../ca-core/entity-module/ca-cloud-provider-core/ca-cloud-provider-core.module';
+import {
+  CaAdminBucketCredentialsListComponent
+} from './component/ca-admin-bucket-credentials-list/ca-admin-bucket-credentials-list.component';
+import {CaObjectStorageCoreModule} from '../ca-core/entity-module/ca-object-storage-core/ca-object-storage-core.module';
 
 /**
  * Module only accessible by the admins
@@ -43,6 +47,7 @@ import {CaCloudProviderCoreModule} from '../ca-core/entity-module/ca-cloud-provi
     CaAdminServersPageComponent,
     CaAdminPageComponent,
     CaAdminCloudProvidersListComponent,
+    CaAdminBucketCredentialsListComponent,
   ],
   imports: [
     CommonModule,
@@ -52,6 +57,7 @@ import {CaCloudProviderCoreModule} from '../ca-core/entity-module/ca-cloud-provi
     CaLabCoreModule,
     CaOrganizationCoreModule,
     CaCloudProviderCoreModule,
+    CaObjectStorageCoreModule,
 
     CaAdminRoutingModule,
   ]

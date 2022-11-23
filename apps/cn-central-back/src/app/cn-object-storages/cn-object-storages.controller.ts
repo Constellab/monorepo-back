@@ -4,6 +4,8 @@ import {CnBucket} from './cn-buckets/cn-bucket.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {CnBucketRegion} from './cn-bucket-regions/cn-bucker-region.entity';
 import {CnBucketCredentials} from './cn-bucket-credential/cn-bucket-credential.entity';
+import {CnBucketCredentialsFull} from './cn-object-storage.dto';
+import {BlDtoHelper, BlParsePipe} from '@monorepo/back-core-lib';
 
 
 @Controller('object-storages')
@@ -14,12 +16,12 @@ export class CnObjectStoragesController {
 
   ////////////////////////////// BUCKETS //////////////////////////////
   @Post('buckets')
-  public async createBucket(@Body() bucket: CnBucket): Promise<CnBucket> {
+  public async createBucket(@Body(new BlParsePipe(CnBucket)) bucket: CnBucket): Promise<CnBucket> {
     return this.service.createBucket(bucket);
   }
 
   @Put('buckets')
-  public async updateBucket(@Body() bucket: CnBucket): Promise<CnBucket> {
+  public async updateBucket(@Body(new BlParsePipe(CnBucket)) bucket: CnBucket): Promise<CnBucket> {
     return this.service.updateBucket(bucket);
   }
 
@@ -42,12 +44,12 @@ export class CnObjectStoragesController {
   ////////////////////////////// REGION //////////////////////////////
 
   @Post('regions')
-  public async createBucketRegion(@Body() region: CnBucketRegion): Promise<CnBucketRegion> {
+  public async createBucketRegion(@Body(new BlParsePipe(CnBucketRegion)) region: CnBucketRegion): Promise<CnBucketRegion> {
     return this.service.createBucketRegion(region);
   }
 
   @Put('regions')
-  public async updateBucketRegion(@Body() region: CnBucketRegion): Promise<CnBucketRegion> {
+  public async updateBucketRegion(@Body(new BlParsePipe(CnBucketRegion)) region: CnBucketRegion): Promise<CnBucketRegion> {
     return this.service.updateBucketRegion(region);
   }
 
@@ -70,29 +72,29 @@ export class CnObjectStoragesController {
   ////////////////////////////// CREDENTIALS //////////////////////////////
 
   @Post('credentials')
-  public async createBucketCredentials(@Body() credentials: CnBucketCredentials): Promise<CnBucketCredentials> {
-    return this.service.createBucketCredentials(credentials);
+  public async createBucketCredentials(@Body(new BlParsePipe(CnBucketCredentials)) credentials: CnBucketCredentials)
+    : Promise<CnBucketCredentialsFull> {
+    const result = await this.service.createBucketCredentials(credentials);
+    return BlDtoHelper.toDto(CnBucketCredentialsFull, result);
   }
 
   @Put('credentials')
-  public async updateBucketCredentials(@Body() credentials: CnBucketCredentials): Promise<CnBucketCredentials> {
-    return this.service.updateBucketCredentials(credentials);
+  public async updateBucketCredentials(@Body(new BlParsePipe(CnBucketCredentials)) credentials: CnBucketCredentials)
+    : Promise<CnBucketCredentialsFull> {
+    const result = await this.service.updateBucketCredentials(credentials);
+    return BlDtoHelper.toDto(CnBucketCredentialsFull, result);
   }
 
   @Delete('credentials/:id')
-  public async deleteBucketCredentials(@Param(ParseUUIDPipe) id: string): Promise<void> {
+  public async deleteBucketCredentials(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.service.deleteBucketCredentials(id);
-  }
-
-  @Get('credentials/:id')
-  public async getBucketCredentials(@Param(ParseUUIDPipe) id: string): Promise<CnBucketCredentials> {
-    return this.service.getBucketCredentials(id);
   }
 
   @Get('credentials')
   public async getBucketCredentialsList(@Query('page', ParseIntPipe) page: number,
-                                        @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnBucketCredentials>> {
-    return this.service.getAllBucketCredentials(page, size);
+                                        @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnBucketCredentialsFull>> {
+    const credentials = await this.service.getAllBucketCredentials(page, size);
+    return BlDtoHelper.pageToDto(CnBucketCredentialsFull, credentials);
   }
 
 }

@@ -25,5 +25,14 @@
   "cloud_provider_updated": "Cloud provider modifié",
   "delete_cloud_provider": "Supprimer le cloud provider",
   "delete_cloud_provider_confirm": "Êtes-vous sûr de vouloir supprimer ce cloud provider ?",
-  "cloud_provider_deleted": "Cloud provider supprimé"
+  "cloud_provider_deleted": "Cloud provider supprimé",
+  "bucket_credentials_list": "Buckets credentials",
+  "bucket_credentials": "Bucket credentials",
+  "create_bucket_credentials": "Créer un bucket credentials",
+  "bucket_credentials_created": "Bucket credentials créé",
+  "update_bucket_credentials": "Modifier le bucket credentials",
+  "bucket_credentials_updated": "Bucket credentials modifié",
+  "delete_bucket_credentials": "Supprimer le bucket credentials",
+  "delete_bucket_credentials_confirm": "Êtes-vous sûr de vouloir supprimer ce bucket credentials ?",
+  "bucket_credentials_deleted": "Bucket credentials supprimé"
 }

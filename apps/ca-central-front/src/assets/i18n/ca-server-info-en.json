@@ -25,5 +25,16 @@
   "cloud_provider_updated": "Cloud provider updated",
   "delete_cloud_provider": "Delete cloud provider",
   "delete_cloud_provider_confirm": "Are you sure you want to delete this cloud provider ?",
-  "cloud_provider_deleted": "Cloud provider deleted"
+  "cloud_provider_deleted": "Cloud provider deleted",
+  "bucket_credentials_list": "Bucket credentials",
+  "bucket_credentials": "Bucket credentials",
+  "create_bucket_credentials": "Create bucket credentials",
+  "bucket_credentials_created": "Bucket credentials created",
+  "update_bucket_credentials": "Update bucket credentials",
+  "bucket_credentials_updated": "Bucket credentials updated",
+  "delete_bucket_credentials": "Delete bucket credentials",
+  "delete_bucket_credentials_confirm": "Are you sure you want to delete this bucket credentials ?",
+  "bucket_credentials_deleted": "Bucket credentials deleted",
+  "bucket_credentials_access_key_id": "Access key ID",
+  "bucket_credentials_secret_access_key": "Secret access key"
 }

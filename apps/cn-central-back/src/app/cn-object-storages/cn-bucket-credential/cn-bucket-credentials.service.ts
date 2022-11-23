@@ -39,6 +39,11 @@ export class CnBucketCredentialsService extends BlAbstractService<CnBucketCreden
   }
 
   public findAll(page: number, size: number): Promise<ClPage<CnBucketCredentials>> {
-    return this.findPaginated(page, size);
+    return this.findPaginated(page, size, {
+      relations: {
+        organization: true,
+        cloudProvider: true
+      }
+    });
   }
 }

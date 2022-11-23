@@ -10,10 +10,10 @@ import {CnCity} from '../../cn-city/cn-city.entity';
 @Entity('bucket_region')
 export class CnBucketRegion extends CnBaseEntity {
 
-  @ManyToOne(() => CnCloudProvider, {nullable: false})
+  @ManyToOne(() => CnCloudProvider, {nullable: false, eager: true})
   cloudProvider: CnCloudProvider;
 
-  @ManyToOne(() => CnCity, {nullable: false})
+  @ManyToOne(() => CnCity, {nullable: false, eager: true})
   city: CnCity;
 
   @Column({nullable: false, length: 10})
