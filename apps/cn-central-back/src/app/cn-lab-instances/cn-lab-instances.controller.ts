@@ -69,10 +69,11 @@ export class CnLabInstancesController {
 
 
   @Get()
-  async findAll(): Promise<CnLabInstanceAdminDto[]> {
+  async findAll(@Query('page', ParseIntPipe) page: number,
+                @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnLabInstanceAdminDto>> {
     // use a DTO to return all the field including the apiKey
-    const labInstances = await this.aggregateService.findAll();
-    return BlDtoHelper.listToDto(CnLabInstanceAdminDto, labInstances);
+    const labInstances = await this.aggregateService.findAll(page, size);
+    return BlDtoHelper.pageToDto(CnLabInstanceAdminDto, labInstances);
   }
 
   /**

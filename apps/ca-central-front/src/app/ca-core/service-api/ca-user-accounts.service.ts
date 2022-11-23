@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
-import {CaNewUser, CaUser} from '../model/entities/ca-user.class';
+import {CaNewUser, CaUser, CaUserDatasourcePaginated} from '../model/entities/ca-user.class';
 import {Observable} from 'rxjs';
-import {FlApiService, FlArrayObs, FlEntityArrayObs, FlUserAccountService} from '@monorepo/front-core-lib';
+import {FlApiService, FlEntityPaginatedDatasource, FlUserAccountService} from '@monorepo/front-core-lib';
+import {ClPageI} from '@monorepo/core-lib';
 
 /**
  * Service to manage users' accounts
@@ -9,7 +10,7 @@ import {FlApiService, FlArrayObs, FlEntityArrayObs, FlUserAccountService} from '
 @Injectable({
   providedIn: 'root'
 })
-export class CaUserAccountsService extends FlUserAccountService{
+export class CaUserAccountsService extends FlUserAccountService {
 
   private readonly route: string = 'accounts';
 
@@ -46,7 +47,14 @@ export class CaUserAccountsService extends FlUserAccountService{
     return this.apiService.post(`${this.route}/adminActivation/${userId}`, CaUser);
   }
 
-  public findUsersToAdminActivate(): FlArrayObs<CaUser> {
-    return new FlEntityArrayObs(this.apiService.get(`${this.route}/usersToAdminActivate`, CaUser));
+  public findUsersToAdminActivate(page: number, size: number): Observable<ClPageI<CaUser>> {
+    return this.apiService.get(`${this.route}/usersToAdminActivate`, CaUser,
+      {page: page, pageSize: size, resultIsPaginated: true});
+  }
+
+  public findUsersToAdminActivateDatasource(): CaUserDatasourcePaginated {
+    return new FlEntityPaginatedDatasource(
+      (page, size) => this.findUsersToAdminActivate(page, size), 20
+    );
   }
 }

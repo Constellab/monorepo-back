@@ -1,4 +1,15 @@
-import {Body, Controller, Get, HttpException, Param, ParseUUIDPipe, Post, Res} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  Param,
+  ParseIntPipe,
+  ParseUUIDPipe,
+  Post,
+  Query,
+  Res
+} from '@nestjs/common';
 import {Response} from 'express';
 import {CnUser} from '../cn-user.entity';
 import {CnUserAccountsService} from './cn-user-accounts.service';
@@ -6,6 +17,7 @@ import {CnFrontService} from '../../cn-core/services/cn-front.service';
 import {CnUserCategories} from '../../cn-core/decorators/cn-user-category.decorator';
 import {CmUserCategory} from '@monorepo/common-model';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
+import {ClPage} from '@monorepo/core-lib';
 
 /**
  * Open routes to manage users' accounts
@@ -101,8 +113,9 @@ export class CnUserAccountsController {
    */
   @CnUserCategories(CmUserCategory.ADMIN)
   @Get('usersToAdminActivate')
-  findUsersToAdminActivate(): Promise<CnUser[]> {
-    return this.userAccountsService.findUsersToAdminActivate();
+  findUsersToAdminActivate(@Query('page', ParseIntPipe) page: number,
+                           @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnUser>> {
+    return this.userAccountsService.findUsersToAdminActivate(page, size);
   }
 
 

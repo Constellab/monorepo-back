@@ -6,7 +6,8 @@ import {
   CaLabInstanceFindOneDto,
   CaLabInstanceForm,
   CaLabInstanceStatusHistory,
-  CaLabInstanceWithOrga
+  CaLabInstanceWithOrga,
+  CaLabInstanceWithOrgaDatasource
 } from '../model/entities/ca-lab-instance.class';
 import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
@@ -101,8 +102,15 @@ export class CaLabInstanceService {
     return this.apiService.get(`${this.route}/${id}/login`);
   }
 
-  public getAll(): FlArrayObs<CaLabInstanceWithOrga> {
-    return new FlEntityArrayObs(this.apiService.get(this.route, CaLabInstanceWithOrga));
+  public getAll(page: number, size: number): Observable<ClPageI<CaLabInstanceWithOrga>> {
+    return this.apiService.get(this.route, CaLabInstanceWithOrga,
+      {page: page, pageSize: size, resultIsPaginated: true});
+  }
+
+  public getAllDatasource(): CaLabInstanceWithOrgaDatasource {
+    return new FlEntityPaginatedDatasource(
+      (page, size) => this.getAll(page, size), 20
+    );
   }
 
 

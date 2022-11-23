@@ -98,8 +98,8 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   }
 
 
-  public async findAll(): Promise<CnLabInstance[]> {
-    return await this.repository.find(
+  public async findAll(page: number, size: number): Promise<ClPage<CnLabInstance>> {
+    return await this.findPaginated(page, size,
       {
         relations: {organization: true},
         order: {lastModifiedAt: 'DESC' as any},

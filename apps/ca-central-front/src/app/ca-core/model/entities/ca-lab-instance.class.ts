@@ -74,6 +74,7 @@ export class CaLabInstanceWithOrga extends CaLabInstance {
 
 
 export type CaLabInstanceDatasource = FlEntityPaginatedDatasource<CaLabInstance>;
+export type CaLabInstanceWithOrgaDatasource = FlEntityPaginatedDatasource<CaLabInstanceWithOrga>;
 
 export class CaLabInstanceForm {
   id: string;

@@ -133,10 +133,10 @@ export class CnLabInstanceAggregateService {
     return await this.labInstancesService.getStatusHistory(id) as CnLabInstanceStatusHistory[];
   }
 
-  async findAll(): Promise<CnLabInstance[]> {
+  async findAll(page: number, size: number): Promise<ClPageI<CnLabInstance>> {
     await this.security.checkAuthorizationToFindAll(CnCurrentUserHelper.getAndCheckUserOrgaInfo());
 
-    return this.labInstancesService.findAll();
+    return this.labInstancesService.findAll(page, size);
   }
 
   public async updateName(labInstanceId: string, name: string): Promise<CnLabInstance> {

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {CaUser} from '../../../ca-core/model/entities/ca-user.class';
+import {CaUser, CaUserDatasourcePaginated} from '../../../ca-core/model/entities/ca-user.class';
 import {CaUserAccountsService} from '../../../ca-core/service-api/ca-user-accounts.service';
-import {FlArrayObs, FlTableColumn} from '@monorepo/front-core-lib';
+import {FlTableColumn} from '@monorepo/front-core-lib';
 
 /**
  * admin component to activate user accounts
@@ -13,7 +13,7 @@ import {FlArrayObs, FlTableColumn} from '@monorepo/front-core-lib';
 })
 export class CaAdminAccountsActivationComponent implements OnInit {
 
-  accounts: FlArrayObs<CaUser>;
+  users: CaUserDatasourcePaginated = this.accountService.findUsersToAdminActivateDatasource();
 
   displayedColumns: FlTableColumn<CaUser>[] = ['photo', 'fullname', 'email', 'phone', 'createdAt', 'customTemplate'];
 
@@ -21,15 +21,10 @@ export class CaAdminAccountsActivationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.findUsersToAdminActivate();
-  }
-
-  private findUsersToAdminActivate(): void {
-    this.accounts = this.accountService.findUsersToAdminActivate();
   }
 
   onAccountActivated(user: CaUser): void {
-    this.accounts.removeItem(user);
+    this.users.removeItem(user);
   }
 
 }

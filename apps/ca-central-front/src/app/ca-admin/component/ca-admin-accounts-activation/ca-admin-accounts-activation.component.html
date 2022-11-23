@@ -1,28 +1,26 @@
-<fl-async-section [arrayObs]="accounts">
+<fl-card>
 
-  <fl-section-header class="g-page-title">
+  <fl-card-header>
     <fl-text-icon>
       <mat-icon class="g-icon-big">group</mat-icon>
       <h2>{{'admin_account_activation' | translate}}</h2>
     </fl-text-icon>
-  </fl-section-header>
-
-  <ng-container *flSectionBody>
-    <fl-card>
-
-      <fl-card-body class="limit-height">
-
-        <ca-user-table [datasource]="accounts" [columns]="displayedColumns">
-
-          <ng-template let-user>
-            <ca-admin-account-activation-button [user]="user" class="activated-button"
-                                                 (accountActivated)="onAccountActivated(user)">
-            </ca-admin-account-activation-button>
-          </ng-template>
-        </ca-user-table>
-      </fl-card-body>
-    </fl-card>
-  </ng-container>
+  </fl-card-header>
 
 
-</fl-async-section>
+  <fl-card-body>
+    <fl-infinite-scroll [datasource]="users" class="g-infinite-table">
+
+      <ca-user-table [datasource]="users" [columns]="displayedColumns">
+
+        <ng-template let-user>
+          <ca-admin-account-activation-button [user]="user" class="activated-button"
+                                              (accountActivated)="onAccountActivated(user)">
+          </ca-admin-account-activation-button>
+        </ng-template>
+      </ca-user-table>
+    </fl-infinite-scroll>
+  </fl-card-body>
+
+
+</fl-card>

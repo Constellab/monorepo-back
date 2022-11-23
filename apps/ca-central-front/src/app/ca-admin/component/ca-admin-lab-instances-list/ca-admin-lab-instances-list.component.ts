@@ -1,11 +1,15 @@
 import {Component, OnInit} from '@angular/core';
-import {CaLabInstance, CaLabInstanceWithOrga} from '../../../ca-core/model/entities/ca-lab-instance.class';
+import {
+  CaLabInstance,
+  CaLabInstanceWithOrga,
+  CaLabInstanceWithOrgaDatasource
+} from '../../../ca-core/model/entities/ca-lab-instance.class';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {
   CaLabInstanceFormDialogComponent,
   CaLabInstanceFormDialogInput
 } from '../../../ca-core/entity-module/ca-lab-core/component/ca-lab-instance-form-dialog/ca-lab-instance-form-dialog.component';
-import {FlArrayObs, FlDialogService, FlTableColumn} from '@monorepo/front-core-lib';
+import {FlDialogService, FlTableColumn} from '@monorepo/front-core-lib';
 
 /**
  * List of lab instance in lab admin page, possibility to create and update the labs
@@ -17,7 +21,7 @@ import {FlArrayObs, FlDialogService, FlTableColumn} from '@monorepo/front-core-l
 })
 export class CaAdminLabInstancesListComponent implements OnInit {
 
-  labInstances: FlArrayObs<CaLabInstanceWithOrga>;
+  labInstances: CaLabInstanceWithOrgaDatasource = this.labInstanceService.getAllDatasource();
 
   displayedColumns: FlTableColumn<CaLabInstance>[] = ['organization', 'name', 'currentStatus',
     {accessor: 'virtualHost', columnName: 'virtual_host'}, 'serverInfo', 'actions'];
@@ -27,11 +31,6 @@ export class CaAdminLabInstancesListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getAllLabInstances();
-  }
-
-  private getAllLabInstances(): void {
-    this.labInstances = this.labInstanceService.getAll();
   }
 
   openCreateLabInstanceForm(): void {

@@ -11,26 +11,27 @@ import {CnGroupType} from '../../cn-groups/cn-group-type.enum';
 import {TokenExpiredError} from 'jsonwebtoken';
 import {hash} from 'argon2';
 import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
-import {BlMailService, BlTokenHelper} from '@monorepo/back-core-lib';
+import {BlAbstractPaginatedService, BlMailService, BlTokenHelper} from '@monorepo/back-core-lib';
 import {CnUserTokenPayload} from '../../cn-core/model/config/cn-config.class';
 import {CnFrontService} from '../../cn-core/services/cn-front.service';
+import {ClPage} from '@monorepo/core-lib';
 
 /**
  * Service to handle users' account (signup, mail validation, password forgotten, reset password...)
  */
 @Injectable()
-export class CnUserAccountsService {
+export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
   private readonly oneDay: number = 86400;
   private readonly controllerRoute: string = '/accounts';
 
-  constructor(
-    @InjectRepository(CnUser) private repository: Repository<CnUser>,
-    private configService: CnCoreConfigService,
-    private mailService: BlMailService,
-    private usersService: CnUsersService,
-    private datasource: DataSource,
-    private frontService: CnFrontService) {
+  constructor(@InjectRepository(CnUser) private repository: Repository<CnUser>,
+              private configService: CnCoreConfigService,
+              private mailService: BlMailService,
+              private usersService: CnUsersService,
+              private datasource: DataSource,
+              private frontService: CnFrontService) {
+    super(repository, CnUser);
   }
 
   async signup(user: CnUser): Promise<CnUser> {
@@ -194,8 +195,8 @@ export class CnUserAccountsService {
     return this.usersService.update(user);
   }
 
-  findUsersToAdminActivate(): Promise<CnUser[]> {
-    return this.repository.find({
+  findUsersToAdminActivate(page: number, size: number): Promise<ClPage<CnUser>> {
+    return this.findPaginated(page, size, {
       where: {status: CmUserStatus.WAITING_FOR_ADMIN},
       order: {createdAt: 'DESC' as any}
     });

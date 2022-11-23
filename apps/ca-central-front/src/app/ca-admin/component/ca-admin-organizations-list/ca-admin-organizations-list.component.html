@@ -1,29 +1,27 @@
-<fl-async-section [arrayObs]="organizations">
+<fl-card>
 
-  <fl-section-header class="g-page-title">
+  <fl-card-header>
     <fl-text-icon>
       <mat-icon class="g-icon-big" flIcon="organization"></mat-icon>
       <h2>{{'organization_list' | translate}}</h2>
     </fl-text-icon>
 
-    <fl-section-actions>
-      <button mat-flat-button type="button" color="accent"
-              class="g-button-small" [matTooltip]="'create_organization' | translate"
+    <fl-card-actions>
+      <button mat-icon-button type="button"
+              [matTooltip]="'create_organization' | translate"
               (click)="createOrganization()">
         <mat-icon>add</mat-icon>
       </button>
-    </fl-section-actions>
-  </fl-section-header>
-
-  <ng-container *flSectionBody>
-    <fl-card>
-      <fl-card-body class="limit-height" (flInfiniteScroll)="loadMoreResults()"
-                    [flInfiniteDisabled]="organizations.isLoading || organizations.page?.last">
-        <ca-organization-table [datasource]="organizations" [columns]="columns">
-        </ca-organization-table>
-      </fl-card-body>
-    </fl-card>
-  </ng-container>
+    </fl-card-actions>
+  </fl-card-header>
 
 
-</fl-async-section>
+  <fl-card-body>
+    <fl-infinite-scroll [datasource]="organizations" class="g-infinite-table">
+      <ca-organization-table [datasource]="organizations" [columns]="columns">
+      </ca-organization-table>
+    </fl-infinite-scroll>
+  </fl-card-body>
+
+
+</fl-card>
