@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
-import {CaServerInfo} from '../model/entities/ca-server-info.class';
+import {CaServerInfo, CaServerInfoDatasource} from '../model/entities/ca-server-info.class';
 import {Observable} from 'rxjs';
-import {FlApiService, FlArrayObs, FlEntityArrayObs} from '@monorepo/front-core-lib';
+import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
+import {ClPageI} from '@monorepo/core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +14,17 @@ export class CaServerInfoService {
   constructor(private apiService: FlApiService) {
   }
 
-  public findAllArrayObs(): FlArrayObs<CaServerInfo> {
-    return new FlEntityArrayObs(this.findAll());
+
+  public findAll(page: number, size: number): Observable<ClPageI<CaServerInfo>> {
+    return this.apiService.get(this.route, CaServerInfo, {
+      page: page, pageSize: size, resultIsPaginated: true
+    });
   }
 
-  public findAll(): Observable<CaServerInfo[]> {
-    return this.apiService.get(this.route, CaServerInfo);
+  public findAllDatasource(): CaServerInfoDatasource {
+    return new FlEntityPaginatedDatasource(
+      (page: number, pageSize: number) => this.findAll(page, pageSize), 20
+    );
   }
 
   public create(serverInfo: CaServerInfo): Observable<CaServerInfo> {
@@ -27,5 +33,9 @@ export class CaServerInfoService {
 
   public update(serverInfo: CaServerInfo): Observable<CaServerInfo> {
     return this.apiService.put(this.route, serverInfo, CaServerInfo);
+  }
+
+  public delete(id: string): Observable<void> {
+    return this.apiService.deleteById(this.route, id);
   }
 }

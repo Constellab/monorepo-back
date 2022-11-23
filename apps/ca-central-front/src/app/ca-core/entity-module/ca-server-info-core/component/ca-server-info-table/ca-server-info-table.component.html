@@ -10,16 +10,31 @@
     </mat-cell>
   </ng-container>
 
-  <!-- Dynamic columns -->
+  <!-- Actions -->
   <ng-container matColumnDef="actions">
     <mat-header-cell class="g-table-icon-button-cell" *matHeaderCellDef>
     </mat-header-cell>
-    <mat-cell class="g-table-icon-button-cell" *matCellDef="let serverInfo">
-      <div class="action-buttons">
-        <button mat-icon-button type="button" (click)="openEditServerInfo(serverInfo)">
+    <mat-cell class="g-table-icon-button-cell" *matCellDef="let row">
+
+      <!--   Mat menu containing action buttons   -->
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" xPosition="before">
+
+        <button mat-menu-item type="button"
+                (click)="openEditServerInfo(row)">
           <mat-icon>edit</mat-icon>
+          <span>{{'update_server_info' | translate}}</span>
         </button>
-      </div>
+
+
+        <button mat-menu-item type="button"
+                class="g-warn-text" (click)="deleteServerInfo(row)">
+          <mat-icon color="warn">clear</mat-icon>
+          <span>{{'delete_server_info' | translate}}</span>
+        </button>
+      </mat-menu>
     </mat-cell>
   </ng-container>
 

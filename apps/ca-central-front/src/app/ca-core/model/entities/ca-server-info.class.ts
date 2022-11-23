@@ -1,6 +1,7 @@
 import {CaEntity} from './ca-entity.entity';
 import {Type} from 'class-transformer';
 import {CaCloudProvider} from './ca-cloud-provider.class';
+import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 
 /**
  * Disk type for the servers
@@ -38,5 +39,6 @@ export class CaServerInfo extends CaEntity {
 
   // info about the GPU
   gpuType: string;
-
 }
+
+export type CaServerInfoDatasource = FlEntityPaginatedDatasource<CaServerInfo>;

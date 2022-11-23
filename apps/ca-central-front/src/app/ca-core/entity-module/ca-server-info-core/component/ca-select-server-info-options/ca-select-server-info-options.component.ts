@@ -1,8 +1,9 @@
-import {AfterViewInit, Component, Host, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Host, OnDestroy, OnInit} from '@angular/core';
 import {CaServerInfoService} from '../../../../service-api/ca-server-info.service';
-import {CaServerInfo} from '../../../../model/entities/ca-server-info.class';
+import {CaServerInfo, CaServerInfoDatasource} from '../../../../model/entities/ca-server-info.class';
 import {MatSelect} from '@angular/material/select';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'ca-select-server-info-options',
@@ -10,11 +11,11 @@ import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
   styleUrls: ['./ca-select-server-info-options.component.scss']
 })
 export class CaSelectServerInfoOptionsComponent extends FlEmbeddedOptionsAbstractDirective
-  implements OnInit, AfterViewInit {
+  implements OnInit, AfterViewInit, OnDestroy {
 
-  serversInfo: CaServerInfo[];
+  datasource: CaServerInfoDatasource;
+  serverInfo$: Observable<CaServerInfo[]>;
 
-  isLoading: boolean = false;
 
   constructor(private serverInfoService: CaServerInfoService,
               @Host() private select: MatSelect) {
@@ -23,24 +24,17 @@ export class CaSelectServerInfoOptionsComponent extends FlEmbeddedOptionsAbstrac
 
   ngOnInit(): void {
     this.overrideCompareWithOnIds(this.select);
-    this.getServersInfo();
+    this.datasource = this.serverInfoService.findAllDatasource();
+    this.serverInfo$ = this.datasource.connect();
   }
 
-  private getServersInfo(): void {
-    this.isLoading = true;
-    this.serverInfoService.findAll().subscribe(
-      serversInfo => this.getServersInfoSuccess(serversInfo),
-      () => this.isLoading = false
-    );
-  }
-
-  private getServersInfoSuccess(serversInfo: CaServerInfo[]): void {
-    this.isLoading = false;
-    this.serversInfo = serversInfo;
-  }
 
   ngAfterViewInit(): void {
     this.initOptions();
+  }
+
+  ngOnDestroy(): void {
+    this.datasource.disconnect();
   }
 
 

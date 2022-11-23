@@ -1,20 +1,5 @@
-<ng-container *ngIf="isLoading; else notLoading">
-  <mat-option disabled>
-    {{'loading' | translate}}
+<fl-infinite-scroll [datasource]="datasource">
+  <mat-option *flForById="let serverInfo of serverInfo$ | async" [value]="serverInfo">
+    {{serverInfo.cloudProvider.name}} - {{serverInfo.name}}
   </mat-option>
-</ng-container>
-
-<ng-template #notLoading>
-  <ng-container *ngIf="serversInfo?.length > 0 ; else empty">
-    <mat-option *ngFor="let serverInfo of serversInfo" [value]="serverInfo">
-      {{serverInfo.cloudProvider.name}} - {{serverInfo.name}}
-    </mat-option>
-  </ng-container>
-
-
-  <ng-template #empty>
-    <mat-option disabled>
-      {{'no_server_info' | translate}}
-    </mat-option>
-  </ng-template>
-</ng-template>
+</fl-infinite-scroll>

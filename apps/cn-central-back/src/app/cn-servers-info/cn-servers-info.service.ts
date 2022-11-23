@@ -3,18 +3,49 @@ import {Repository} from 'typeorm';
 import {CnServerInfo} from './cn-server-info.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {BlAbstractService} from '@monorepo/back-core-lib';
+import {ClPage} from '@monorepo/core-lib';
+import {CnConfigEntitySecurity} from '../cn-core/security/cn-config-entity.security';
+import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 
 @Injectable()
 export class CnServersInfoService extends BlAbstractService<CnServerInfo> {
 
-  constructor(@InjectRepository(CnServerInfo) private repository: Repository<CnServerInfo>) {
+  constructor(@InjectRepository(CnServerInfo) private repository: Repository<CnServerInfo>,
+              private securityService: CnConfigEntitySecurity) {
     super(repository, CnServerInfo);
   }
 
-  findAll(): Promise<CnServerInfo[]> {
-    return this.repository.find({
+  public async createSecure(serverInfo: CnServerInfo): Promise<CnServerInfo> {
+    await this.checkAuthorizationToModifyEntity();
+    return this.create(serverInfo);
+  }
+
+  public async updateSecure(serverInfo: CnServerInfo): Promise<CnServerInfo> {
+    await this.checkAuthorizationToModifyEntity();
+    return this.update(serverInfo);
+  }
+
+  public async deleteSecure(id: string): Promise<void> {
+    await this.checkAuthorizationToModifyEntity();
+    await this.deleteById(id);
+  }
+
+  public async findAllSecure(page: number, size: number): Promise<ClPage<CnServerInfo>> {
+    await this.checkAuthorizationToReadEntity();
+    return this.findPaginated(page, size, {
       order: {name: 'ASC'}
     });
   }
+
+  ////////////////////////////// AUTHORIZATION //////////////////////////////
+
+  public async checkAuthorizationToModifyEntity(): Promise<void> {
+    return this.securityService.checkAuthorizationToModifyEntity(CnCurrentUserHelper.getAndCheckCurrentUser());
+  }
+
+  public async checkAuthorizationToReadEntity(): Promise<void> {
+    return this.securityService.checkAuthorizationToReadEntity();
+  }
+
 
 }

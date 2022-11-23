@@ -1,7 +1,15 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CaServerInfo} from '../../../../model/entities/ca-server-info.class';
 import {CaServerInfoFormDialogComponent} from '../ca-server-info-form-dialog/ca-server-info-form-dialog.component';
-import {FlArrayObs, FlDialogService, FlFormDialogInput, FlTableAbstractDirective} from '@monorepo/front-core-lib';
+import {
+  FlArrayObs,
+  FlConfirmDialogInput,
+  FlConfirmDialogResult,
+  FlDialogService,
+  FlFormDialogInput,
+  FlTableAbstractDirective
+} from '@monorepo/front-core-lib';
+import {CaServerInfoService} from '../../../../service-api/ca-server-info.service';
 
 @Component({
   selector: 'ca-server-info-table',
@@ -12,7 +20,8 @@ export class CaServerInfoTableComponent extends FlTableAbstractDirective<CaServe
 
   @Input() datasource: FlArrayObs<CaServerInfo>;
 
-  constructor(private dialogService: FlDialogService) {
+  constructor(private dialogService: FlDialogService,
+              private serverInfoService: CaServerInfoService) {
     super(['cloudProvider', 'actions']);
   }
 
@@ -36,4 +45,24 @@ export class CaServerInfoTableComponent extends FlTableAbstractDirective<CaServe
     }
   }
 
+  deleteServerInfo(serverInfo: CaServerInfo): void {
+    const input: FlConfirmDialogInput = {
+      title: 'delete_server_info',
+      content: 'delete_server_info_confirm',
+      translateTitleAndContent: true,
+      observable: this.serverInfoService.delete(serverInfo.id),
+      successMessage: 'server_info_deleted',
+      translateMessage: true
+    };
+
+    this.dialogService.openConfirmDialog(input).afterClosed().subscribe(
+      result => this.onDeleteClosed(result, serverInfo)
+    );
+  }
+
+  private onDeleteClosed(result: FlConfirmDialogResult, serverInfo: CaServerInfo): void {
+    if (result.choice) {
+      this.datasource.removeItem(serverInfo);
+    }
+  }
 }

@@ -1,27 +1,27 @@
-<fl-async-section [arrayObs]="serversInfo" emptyText="no_server_info">
+<fl-card>
 
-  <fl-section-header class="g-page-title">
+  <fl-card-header>
     <fl-text-icon>
       <mat-icon class="g-icon-big">dns</mat-icon>
       <h2>{{'server_info_list' | translate}}</h2>
     </fl-text-icon>
 
-    <fl-section-actions>
-      <button mat-flat-button type="button" color="accent"
-              class="g-button-small" (click)="openCreateServerInfo()"
+    <fl-card-actions>
+      <button mat-icon-button type="button"
+              (click)="openCreateServerInfo()"
               [matTooltip]="'create_server_info' | translate">
         <mat-icon>add</mat-icon>
       </button>
-    </fl-section-actions>
-  </fl-section-header>
-
-  <ng-container *flSectionBody="let servers">
-    <fl-card>
-      <fl-card-body class="limit-height">
-        <ca-server-info-table [datasource]="serversInfo" [columns]="displayedColumns"></ca-server-info-table>
-      </fl-card-body>
-    </fl-card>
-  </ng-container>
+    </fl-card-actions>
+  </fl-card-header>
 
 
-</fl-async-section>
+  <fl-card-body class="limit-height">
+    <fl-infinite-scroll [datasource]="serversInfo" class="g-infinite-table"
+                        textNoResult="no_server_info">
+      <ca-server-info-table [datasource]="serversInfo" [columns]="displayedColumns"></ca-server-info-table>
+    </fl-infinite-scroll>
+  </fl-card-body>
+
+
+</fl-card>

@@ -17,12 +17,13 @@ export class CaSelectCloudProviderOptionsComponent extends FlEmbeddedOptionsAbst
   cloudProviders$: Observable<CaCloudProvider[]>;
 
 
-  constructor(@Host() select: MatSelect,
+  constructor(@Host() private select: MatSelect,
               private cloudProviderService: CaCloudProviderService) {
     super(select);
   }
 
   ngOnInit(): void {
+    this.overrideCompareWithOnIds(this.select)
     this.datasource = this.cloudProviderService.findAllDatasource();
     this.cloudProviders$ = this.datasource.connect();
   }

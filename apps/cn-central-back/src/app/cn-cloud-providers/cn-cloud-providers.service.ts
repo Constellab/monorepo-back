@@ -3,7 +3,7 @@ import {BlAbstractService} from '@monorepo/back-core-lib';
 import {CnCloudProvider} from './cn-cloud-provider.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
-import {CnCloudProvidersSecurity} from './cn-cloud-providers.security';
+import {CnConfigEntitySecurity} from '../cn-core/security/cn-config-entity.security';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {ClPage} from '@monorepo/core-lib';
 
@@ -13,7 +13,7 @@ export class CnCloudProvidersService extends BlAbstractService<CnCloudProvider> 
 
 
   constructor(@InjectRepository(CnCloudProvider) private repository: Repository<CnCloudProvider>,
-              private securityService: CnCloudProvidersSecurity) {
+              private securityService: CnConfigEntitySecurity) {
     super(repository, CnCloudProvider);
   }
 
