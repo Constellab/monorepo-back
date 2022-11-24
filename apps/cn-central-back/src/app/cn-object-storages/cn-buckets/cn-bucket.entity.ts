@@ -4,7 +4,7 @@ import {CnBucketRegion} from '../cn-bucket-regions/cn-bucker-region.entity';
 import {CnBucketCredentials} from '../cn-bucket-credential/cn-bucket-credential.entity';
 import {CnOrganization} from '../../cn-organizations/cn-organization.entity';
 import {BlBucketConfig, BlNotUpdatable} from '@monorepo/back-core-lib';
-import {Exclude} from 'class-transformer';
+import {Type} from 'class-transformer';
 
 export enum CnBucketContentType {
   LAB_BACKUP = 'LAB_BACKUP',
@@ -21,10 +21,11 @@ export enum CnBucketContentType {
 @Entity('bucket')
 export class CnBucket extends CnBaseEntity {
 
+  @Type(() => CnBucketRegion)
   @ManyToOne(() => CnBucketRegion, {nullable: false})
   region: CnBucketRegion;
 
-  @Exclude()
+  @Type(() => CnBucketCredentials)
   @ManyToOne(() => CnBucketCredentials, {nullable: false})
   credentials: CnBucketCredentials;
 
@@ -32,12 +33,10 @@ export class CnBucket extends CnBaseEntity {
   name: string;
 
   // might be associated to an organization
+  @Type(() => CnOrganization)
   @ManyToOne(() => CnOrganization, {nullable: true})
   @BlNotUpdatable()
   organization: CnOrganization;
-
-  @Column({nullable: false, update: false})
-  organizationId: string;
 
   @Column({nullable: false, length: 50})
   contentType: CnBucketContentType;

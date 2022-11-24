@@ -17,7 +17,8 @@ import {
   templateUrl: './ca-bucket-region-table.component.html',
   styleUrls: ['./ca-bucket-region-table.component.scss']
 })
-export class CaBucketRegionTableComponent extends FlTableAbstractDirective<CaBucketRegion> implements OnInit {
+export class CaBucketRegionTableComponent extends FlTableAbstractDirective<CaBucketRegion>
+  implements OnInit {
 
   @Input() datasource: CaBucketRegionDatasource;
 

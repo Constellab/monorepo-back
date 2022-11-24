@@ -65,13 +65,6 @@ export class CnObjectStoragesAggregateService {
     await this.bucketService.deleteById(id);
   }
 
-  public async getBucket(id: string): Promise<CnBucket> {
-    const bucket = await this.bucketService.findByIdAndCheck(id);
-
-    await this.securityService.checkAuthorizationToGetBucket(bucket.organizationId,
-      CnCurrentUserHelper.getAndCheckUserOrgaInfo());
-    return bucket;
-  }
 
   public async getBuckets(page: number, size: number): Promise<ClPage<CnBucket>> {
     await this.securityService.checkAuthorizationToGetAllBuckets(CnCurrentUserHelper.getAndCheckCurrentUser());

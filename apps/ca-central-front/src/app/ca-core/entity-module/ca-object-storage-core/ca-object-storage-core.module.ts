@@ -21,6 +21,12 @@ import {
   CaSelectBucketCredentialsOptionsComponent
 } from './component/ca-select-bucket-credentials-options/ca-select-bucket-credentials-options.component';
 import {CaConfigCoreModule} from '../ca-config-core/ca-config-core.module';
+import {CaBucketFormDialogComponent} from './component/ca-bucket-form-dialog/ca-bucket-form-dialog.component';
+import {CaBucketTableComponent} from './component/ca-bucket-table/ca-bucket-table.component';
+import {CaBucketRegionInlineComponent} from './component/ca-bucket-region-inline/ca-bucket-region-inline.component';
+import {
+  CaBucketCredentialsInlineComponent
+} from './component/ca-bucket-credentials-inline/ca-bucket-credentials-inline.component';
 
 
 @NgModule({
@@ -30,7 +36,11 @@ import {CaConfigCoreModule} from '../ca-config-core/ca-config-core.module';
     CaBucketRegionFormDialogComponent,
     CaBucketRegionTableComponent,
     CaSelectBucketRegionOptionsComponent,
-    CaSelectBucketCredentialsOptionsComponent
+    CaSelectBucketCredentialsOptionsComponent,
+    CaBucketFormDialogComponent,
+    CaBucketTableComponent,
+    CaBucketRegionInlineComponent,
+    CaBucketCredentialsInlineComponent
   ],
   exports: [
     CaBucketCredentialsTableComponent,
@@ -38,7 +48,11 @@ import {CaConfigCoreModule} from '../ca-config-core/ca-config-core.module';
     CaBucketRegionFormDialogComponent,
     CaBucketRegionTableComponent,
     CaSelectBucketRegionOptionsComponent,
-    CaSelectBucketCredentialsOptionsComponent
+    CaSelectBucketCredentialsOptionsComponent,
+    CaBucketFormDialogComponent,
+    CaBucketTableComponent,
+    CaBucketRegionInlineComponent,
+    CaBucketCredentialsInlineComponent
   ],
   imports: [
     CommonModule,

@@ -3,6 +3,8 @@ import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-li
 import {
   CaBucketCredentialsFull,
   CaBucketCredentialsFullDatasource,
+  CaBucketFull,
+  CaBucketFullDatasource,
   CaBucketRegion,
   CaBucketRegionDatasource
 } from '../model/entities/ca-object-storage.class';
@@ -24,6 +26,30 @@ export class CaObjectStorageService {
   constructor(private apiService: FlApiService) {
   }
 
+  ////////////////// BUCKETS //////////////////
+  public createBucket(bucket: Partial<CaBucketFull>): Observable<CaBucketFull> {
+    return this.apiService.post(this.bucketRoute, bucket, CaBucketFull);
+  }
+
+  public updateBucket(bucket: Partial<CaBucketFull>): Observable<CaBucketFull> {
+    return this.apiService.put(this.bucketRoute, bucket, CaBucketFull);
+  }
+
+  public deleteBucket(id: string): Observable<void> {
+    return this.apiService.deleteById(this.bucketRoute, id);
+  }
+
+  public getAllBuckets(page: number, size: number): Observable<ClPageI<CaBucketFull>> {
+    return this.apiService.get(this.bucketRoute, CaBucketFull, {
+      page: page, pageSize: size, resultIsPaginated: true
+    });
+  }
+
+  public getAllBucketsDatasource(): CaBucketFullDatasource {
+    return new FlEntityPaginatedDatasource(
+      (page: number, pageSize: number) => this.getAllBuckets(page, pageSize), 20
+    );
+  }
 
   ////////////////// REGIONS //////////////////
   public createRegion(bucketRegion: Partial<CaBucketRegion>): Observable<CaBucketRegion> {

@@ -48,5 +48,15 @@
   "bucket_region_endpoint": "Endpoint",
   "bucket_name": "Nom du bucket",
   "bucket_region": "Région du bucket",
-  "bucket_endpoint": "Endpoint du bucket"
+  "bucket_endpoint": "Endpoint du bucket",
+  "bucket_content_type": "Type de contenu",
+  "bucket_object_id": "ID de l'objet",
+  "bucket_list": "Buckets",
+  "create_bucket": "Créer un bucket",
+  "bucket_created": "Bucket créé",
+  "update_bucket": "Modifier le bucket",
+  "bucket_updated": "Bucket modifié",
+  "delete_bucket": "Supprimer le bucket",
+  "delete_bucket_confirm": "Êtes-vous sûr de vouloir supprimer ce bucket ?",
+  "bucket_deleted": "Bucket supprimé"
 }

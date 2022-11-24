@@ -1,0 +1,108 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource">
+
+  <!-- Content type -->
+  <ng-container matColumnDef="contentType">
+    <mat-header-cell *matHeaderCellDef>
+      <p>{{'bucket_content_type' | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      {{row.contentType}}
+    </mat-cell>
+  </ng-container>
+
+  <!-- Region -->
+  <ng-container matColumnDef="region">
+    <mat-header-cell *matHeaderCellDef>
+      <p>{{'bucket_region' | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <ca-bucket-region-inline [region]="row.region"></ca-bucket-region-inline>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Credentials -->
+  <ng-container matColumnDef="credentials">
+    <mat-header-cell *matHeaderCellDef>
+      <p>{{'bucket_credentials' | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <ca-bucket-credentials-inline [credentials]="row.credentials"></ca-bucket-credentials-inline>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Organization -->
+  <ng-container matColumnDef="organization">
+    <mat-header-cell *matHeaderCellDef>
+      <p>{{'organization' | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <ca-organization-inline *ngIf="row.organization" [organization]="row.organization"></ca-organization-inline>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Created -->
+  <ng-container matColumnDef="created">
+    <mat-header-cell *matHeaderCellDef>
+      <p>{{'creation_info' | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <ca-user-with-date [user]="row.createdBy" [date]="row.createdAt"></ca-user-with-date>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Last modified -->
+  <ng-container matColumnDef="lastModified">
+    <mat-header-cell *matHeaderCellDef>
+      <p>{{'last_modification_info' | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <ca-user-with-date [user]="row.lastModifiedBy" [date]="row.lastModifiedAt"></ca-user-with-date>
+
+    </mat-cell>
+  </ng-container>
+
+  <!-- Actions -->
+  <ng-container matColumnDef="actions">
+    <mat-header-cell class="g-table-icon-button-cell" *matHeaderCellDef>
+    </mat-header-cell>
+    <mat-cell class="g-table-icon-button-cell" *matCellDef="let row">
+
+      <!--   Mat menu containing action buttons   -->
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" xPosition="before">
+
+        <button mat-menu-item type="button"
+                (click)="updateBucket(row)">
+          <mat-icon>edit</mat-icon>
+          <span>{{'update_bucket' | translate}}</span>
+        </button>
+
+        <button mat-menu-item type="button"
+                class="g-warn-text" (click)="deleteBucket(row)">
+          <mat-icon color="warn">clear</mat-icon>
+          <span>{{'delete_bucket' | translate}}</span>
+        </button>
+      </mat-menu>
+    </mat-cell>
+  </ng-container>
+
+
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
+    <mat-header-cell *matHeaderCellDef>
+      {{column.columnName | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let user">
+      <div>
+        <span>{{user[column.accessor]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+</mat-table>
+

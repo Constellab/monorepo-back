@@ -25,6 +25,11 @@ export class CaBucketCredentials extends CaBaseEntity {
 
   name: string;
 
+  @Type(() => CaCloudProvider)
+  cloudProvider: CaCloudProvider;
+
+  @Type(() => CaOrganization)
+  organization: CaOrganization;
 }
 
 /**
@@ -36,11 +41,6 @@ export class CaBucketCredentialsFull extends CaBucketCredentials {
 
   secretAccessKey: string;
 
-  @Type(() => CaCloudProvider)
-  cloudProvider: CaCloudProvider;
-
-  @Type(() => CaOrganization)
-  organization: CaOrganization;
 }
 
 export type CaBucketCredentialsFullDatasource = FlEntityPaginatedDatasource<CaBucketCredentialsFull>;
@@ -76,3 +76,5 @@ export class CaBucketFull extends CaBucket {
   @Type(() => CaOrganization)
   organization: CaOrganization;
 }
+
+export type CaBucketFullDatasource = FlEntityPaginatedDatasource<CaBucketFull>;

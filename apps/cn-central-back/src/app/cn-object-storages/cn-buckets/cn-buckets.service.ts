@@ -107,7 +107,13 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
   }
 
   public findAll(page: number, size: number): Promise<ClPage<CnBucket>> {
-    return this.findPaginated(page, size);
+    return this.findPaginated(page, size, {
+      relations: {
+        region: true,
+        organization: true,
+        credentials: {cloudProvider: true, organization: true}
+      }
+    });
   }
 
   public async findLabBackupBucket(labInstanceId: string, organizationId: string): Promise<CnBucket> {
@@ -115,7 +121,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       where: {
         contentType: CnBucketContentType.LAB_BACKUP,
         objectId: labInstanceId,
-        organizationId: organizationId
+        organization: {id: organizationId}
       },
       relations: {
         credentials: true,

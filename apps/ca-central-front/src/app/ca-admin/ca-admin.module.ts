@@ -35,6 +35,7 @@ import {CaObjectStorageCoreModule} from '../ca-core/entity-module/ca-object-stor
 import {
   CaAdminBucketRegionsListComponent
 } from './component/ca-admin-bucket-regions-list/ca-admin-bucket-regions-list.component';
+import {CaAdminBucketListComponent} from './component/ca-admin-bucket-list/ca-admin-bucket-list.component';
 
 /**
  * Module only accessible by the admins
@@ -52,6 +53,7 @@ import {
     CaAdminCloudProvidersListComponent,
     CaAdminBucketCredentialsListComponent,
     CaAdminBucketRegionsListComponent,
+    CaAdminBucketListComponent,
   ],
   imports: [
     CommonModule,
