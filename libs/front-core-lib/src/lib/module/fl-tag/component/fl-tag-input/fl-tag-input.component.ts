@@ -11,13 +11,12 @@ import {
   Self,
   ViewChild
 } from '@angular/core';
-import {MatChipInputEvent} from '@angular/material/chips';
 import {NgControl, UntypedFormControl} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {map, mergeMap, startWith, tap} from 'rxjs/operators';
 import {MatAutocompleteSelectedEvent, MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {TAB} from '@angular/cdk/keycodes';
-import {clRxjsElasticSearch} from '@monorepo/core-lib';
+import {ClHelpService, clRxjsElasticSearch} from '@monorepo/core-lib';
 import {FlFormFieldDirective} from '../../../../abstract-directive/form/fl-form-field.directive';
 import {FlTag, FlTagEntity, FlTagHelper, FlTagService} from '../../fl-tag.class';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
@@ -157,9 +156,22 @@ export class FlTagInputComponent extends FlFormFieldDirective<FlTag[], FlTagInpu
     this.switchMode('key');
   }
 
+  /**
+   * Method to add the tag with enter, only if there is no autocomplete
+   * Because if there is an autocomplete, this method is called after the add
+   * @param event
+   */
+  onEnterDown(event: Event): void {
+    ClHelpService.stopEventPropagation(event);
+    setTimeout(() => {
+      if (ClHelpService.isNullOrEmpty(this.input.nativeElement.value)) return;
+      this.addUnknownValue();
+    }, 0);
+  }
+
   // call when adding a tag without selecting an option
-  addUnknownValue(event: MatChipInputEvent): void {
-    const value = (event.value || '').trim();
+  addUnknownValue(): void {
+    const value = (this.input.nativeElement.value || '').trim();
     this.addChip(value);
   }
 

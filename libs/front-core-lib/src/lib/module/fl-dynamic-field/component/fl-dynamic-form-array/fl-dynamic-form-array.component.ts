@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {UntypedFormArray} from '@angular/forms';
-import {FlDynamicFormArrayConfig} from '../fl-dynamic-field-config.class';
-import {FlDynamicFormHelper} from '../fl-dynamic-form-helper.class';
-import {FlDynamicAbstractFormDirective} from '../fl-dynamic-abstract-form.directive';
-import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
+import {FlDynamicFormArrayConfig} from '../../model/fl-dynamic-field-config.class';
+import {FlDynamicFormHelper} from '../../model/fl-dynamic-form-helper.class';
+import {FlDynamicAbstractFormDirective} from '../../model/fl-dynamic-abstract-form.directive';
+import {FlTranslateService} from '../../../fl-translate/service/fl-translate.service';
 import {ClHelpService} from '@monorepo/core-lib';
 
 @Component({

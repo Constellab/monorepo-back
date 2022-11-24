@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { FlDynamicFieldComponent } from './fl-dynamic-field.component';
+import {FlDynamicFieldComponent} from './fl-dynamic-field.component';
 
 describe('FlDynamicInputComponent', () => {
   let component: FlDynamicFieldComponent;

@@ -6,12 +6,14 @@ import {
   LabConfigureSpecsFormDialogComponent
 } from './component/lab-configure-specs-form-dialog/lab-configure-specs-form-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {LabTagDynamicFieldComponent} from './component/lab-tag-dynamic-field/lab-tag-dynamic-field.component';
 
 
 @NgModule({
   declarations: [
     LabConfigureSpecsFormComponent,
     LabConfigureSpecsFormDialogComponent,
+    LabTagDynamicFieldComponent,
   ],
   exports: [
     LabConfigureSpecsFormComponent,

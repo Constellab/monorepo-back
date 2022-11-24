@@ -10,7 +10,7 @@ import {
   Self
 } from '@angular/core';
 import {NgControl} from '@angular/forms';
-import {FlFormFieldDirective} from '../../../abstract-directive/form/fl-form-field.directive';
+import {FlFormFieldDirective} from '../../../../abstract-directive/form/fl-form-field.directive';
 
 /**
  * Input to handle multiple string values

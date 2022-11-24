@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {UntypedFormGroup} from '@angular/forms';
-import {FlDynamicFormAbstractControl, FlDynamicFormGroupConfig} from '../fl-dynamic-field-config.class';
-import {FlDynamicAbstractFormDirective} from '../fl-dynamic-abstract-form.directive';
+import {FlDynamicFormAbstractControl, FlDynamicFormGroupConfig} from '../../model/fl-dynamic-field-config.class';
+import {FlDynamicAbstractFormDirective} from '../../model/fl-dynamic-abstract-form.directive';
 
 /**
  * Component to create dynamic form group

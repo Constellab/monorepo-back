@@ -8,11 +8,12 @@ import {
 } from '@angular/forms';
 import {
   FlDynamicFieldConfig,
+  FlDynamicFieldConfigInput,
   FlDynamicFormAbstractControl,
   FlDynamicFormArrayConfig,
   FlDynamicFormGroupConfig
 } from './fl-dynamic-field-config.class';
-import {FlGlobalValidators} from '../../utils/fl-global.validators';
+import {FlGlobalValidators} from '../../../utils/fl-global.validators';
 import {ClHelpService} from '@monorepo/core-lib';
 
 /**
@@ -83,13 +84,14 @@ export class FlDynamicFormHelper {
     }
 
     if (config.type === 'input') {
-      if (config.min != null) {
-        validators.push(Validators.min(config.min));
+      const inputConfig: FlDynamicFieldConfigInput = config as FlDynamicFieldConfigInput;
+      if (inputConfig.min != null) {
+        validators.push(Validators.min(inputConfig.min));
       }
-      if (config.max != null) {
-        validators.push(Validators.max(config.max));
+      if (inputConfig.max != null) {
+        validators.push(Validators.max(inputConfig.max));
       }
-      if (config.integer) {
+      if (inputConfig.integer) {
         validators.push(FlGlobalValidators.isInteger());
       }
     }

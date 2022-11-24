@@ -37,13 +37,13 @@ export interface FlDynamicFormArrayConfig extends FlDynamicFormConfigBase {
  * Configuration for a FormControl
  */
 export type FlDynamicFieldConfig = FlDynamicFieldConfigInput | FlDynamicFieldConfigSelect | FlDynamicFieldConfigList
-  | FlDynamicFieldConfigBoolean | FlDynamicFieldConfigTags;
+  | FlDynamicFieldConfigBoolean | FlDynamicFieldConfigUnknown;
 
 
 export interface FlDynamicFieldConfigBase extends FlDynamicFormConfigBase {
   controlType: 'formControl';
 
-  type: 'input' | 'select' | 'list' | 'boolean' | 'tags';
+  type: 'input' | 'select' | 'list' | 'boolean' | string;
 
   disabled?: boolean;
   required?: boolean;
@@ -82,8 +82,9 @@ export interface FlDynamicFieldConfigBoolean extends FlDynamicFieldConfigBase {
   type: 'boolean';
 }
 
-export interface FlDynamicFieldConfigTags extends FlDynamicFieldConfigBase {
-  type: 'tags';
+// use for additional type configured outside of the library
+export interface FlDynamicFieldConfigUnknown extends FlDynamicFieldConfigBase {
+  type: string;
 }
 
 

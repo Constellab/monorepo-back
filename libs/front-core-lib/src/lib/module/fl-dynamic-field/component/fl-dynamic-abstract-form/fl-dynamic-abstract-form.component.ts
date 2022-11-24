@@ -9,12 +9,12 @@ import {
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
-import {FlDynamicFormAbstractControl} from '../fl-dynamic-field-config.class';
+import {FlDynamicFormAbstractControl} from '../../model/fl-dynamic-field-config.class';
 import {AbstractControl} from '@angular/forms';
 import {FlDynamicFieldComponent} from '../fl-dynamic-field/fl-dynamic-field.component';
 import {FlDynamicFormGroupComponent} from '../fl-dynamic-form-group/fl-dynamic-form-group.component';
 import {FlDynamicFormArrayComponent} from '../fl-dynamic-form-array/fl-dynamic-form-array.component';
-import {FlDynamicAbstractFormDirective} from '../fl-dynamic-abstract-form.directive';
+import {FlDynamicAbstractFormDirective} from '../../model/fl-dynamic-abstract-form.directive';
 
 /**
  * Component to generate a FormGroup, FormArray or FormControl form base on config

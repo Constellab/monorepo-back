@@ -6,7 +6,6 @@ import {
   FlDynamicFieldConfigInput,
   FlDynamicFieldConfigList,
   FlDynamicFieldConfigSelect,
-  FlDynamicFieldConfigTags,
   FlDynamicFormAbstractControl,
   FlDynamicFormGroupConfig,
 } from '@monorepo/front-core-lib';
@@ -88,7 +87,7 @@ export class PrConfigSpecs extends ClRecordWrapper<TdConfigSpec> {
       config.type = 'boolean';
       return config;
     } else if (spec.type === 'tags_param') {
-      const config: FlDynamicFieldConfigTags = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
+      const config: FlDynamicFieldConfig = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
       config.type = 'tags';
       return config;
     } else {

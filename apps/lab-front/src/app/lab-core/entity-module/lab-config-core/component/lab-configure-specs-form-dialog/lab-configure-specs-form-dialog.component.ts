@@ -3,6 +3,8 @@ import {UntypedFormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {LabConfig, LabConfigureSpecsForm} from '../../../../model/entities/lab-config.entity';
 import {LabConfigureSpecsFormComponent} from '../lab-configure-specs-form/lab-configure-specs-form.component';
+import {FlDynamicFieldConfigService, FlFormHelper} from '@monorepo/front-core-lib';
+import {LabConfigureProcessConfig} from '../lab-configure-process.config';
 
 export interface LabConfigureSpecsFormDialogInput {
   configData: LabConfig;
@@ -16,7 +18,11 @@ export interface LabConfigureSpecsFormDialogInput {
 @Component({
   selector: 'lab-configure-specs-form-dialog',
   templateUrl: './lab-configure-specs-form-dialog.component.html',
-  styleUrls: ['./lab-configure-specs-form-dialog.component.scss']
+  styleUrls: ['./lab-configure-specs-form-dialog.component.scss'],
+  providers: [
+    // configure the dynamic field to support tags and other custom fields
+    {provide: FlDynamicFieldConfigService, useClass: LabConfigureProcessConfig}
+  ]
 })
 export class LabConfigureSpecsFormDialogComponent implements OnInit {
 
@@ -44,6 +50,8 @@ export class LabConfigureSpecsFormDialogComponent implements OnInit {
     if (this.formGp.valid) {
       const value: LabConfigureSpecsForm = this.formGp.getRawValue();
       this.dialogRef.close({...value.public, ...value.protected});
+    } else {
+      FlFormHelper.markAllAsTouched(this.formGp);
     }
   }
 
