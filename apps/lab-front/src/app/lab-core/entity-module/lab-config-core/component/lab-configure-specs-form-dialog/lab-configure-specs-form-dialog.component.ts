@@ -4,7 +4,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {LabConfig, LabConfigureSpecsForm} from '../../../../model/entities/lab-config.entity';
 import {LabConfigureSpecsFormComponent} from '../lab-configure-specs-form/lab-configure-specs-form.component';
 import {FlDynamicFieldConfigService, FlFormHelper} from '@monorepo/front-core-lib';
-import {LabConfigureProcessConfig} from '../lab-configure-process.config';
+import {LabConfigureProcessDynamicField} from '../../lab-configure-process-dynamic-field.service';
 
 export interface LabConfigureSpecsFormDialogInput {
   configData: LabConfig;
@@ -21,7 +21,7 @@ export interface LabConfigureSpecsFormDialogInput {
   styleUrls: ['./lab-configure-specs-form-dialog.component.scss'],
   providers: [
     // configure the dynamic field to support tags and other custom fields
-    {provide: FlDynamicFieldConfigService, useClass: LabConfigureProcessConfig}
+    {provide: FlDynamicFieldConfigService, useClass: LabConfigureProcessDynamicField}
   ]
 })
 export class LabConfigureSpecsFormDialogComponent implements OnInit {

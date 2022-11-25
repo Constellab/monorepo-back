@@ -7,6 +7,10 @@ import {
 } from './component/lab-configure-specs-form-dialog/lab-configure-specs-form-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {LabTagDynamicFieldComponent} from './component/lab-tag-dynamic-field/lab-tag-dynamic-field.component';
+import {
+  LabPythonCodeDynamicFieldComponent
+} from './component/lab-python-code-dynamic-field/lab-python-code-dynamic-field.component';
+import {LabPythonEditorComponent} from '../../standalone-component/lab-python-editor/lab-python-editor.component';
 
 
 @NgModule({
@@ -14,17 +18,20 @@ import {LabTagDynamicFieldComponent} from './component/lab-tag-dynamic-field/lab
     LabConfigureSpecsFormComponent,
     LabConfigureSpecsFormDialogComponent,
     LabTagDynamicFieldComponent,
+    LabPythonCodeDynamicFieldComponent,
   ],
   exports: [
     LabConfigureSpecsFormComponent,
+    LabPythonCodeDynamicFieldComponent,
   ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
 
-    LabCoreModule,
-  ],
+        LabCoreModule,
+        LabPythonEditorComponent,
+    ],
 })
 export class LabConfigCoreModule {
 }

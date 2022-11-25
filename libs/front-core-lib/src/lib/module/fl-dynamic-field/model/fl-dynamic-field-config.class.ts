@@ -1,7 +1,7 @@
 /**
  * Generic config for a FormGroup, FormArray or FormControl
  */
-export type FlDynamicFormAbstractControl =
+export type                                                              FlDynamicFormAbstractControl =
   FlDynamicFormGroupConfig | FlDynamicFormArrayConfig | FlDynamicFieldConfig
 
 /**
@@ -47,6 +47,9 @@ export interface FlDynamicFieldConfigBase extends FlDynamicFormConfigBase {
 
   disabled?: boolean;
   required?: boolean;
+
+  // when true force the field to take full width on the page if included in group
+  fullWidth?: boolean;
 }
 
 export interface FlDynamicFieldConfigMaterialInput extends FlDynamicFieldConfigBase {

@@ -33,7 +33,13 @@ export class FlDynamicFormGroupComponent implements OnInit, FlDynamicAbstractFor
     // different classe based on type
     // if FormGroup or FormArray --> width 100%
     // else width flex 1
-    return config.controlType !== 'formControl' ? 'group-container': 'field-container';
+    if (config.controlType === 'formControl') {
+      if (config.fullWidth) {
+        return 'group-container';
+      }
+      return 'field-container';
+    }
+    return 'group-container';
   }
 
 

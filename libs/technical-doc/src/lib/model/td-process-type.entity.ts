@@ -44,7 +44,8 @@ export type TdConfigSpecSimple =
   | TdConfigSpecFloat
   | TdConfigSpecList
   | TdConfigSpecBoolean
-  | TdConfigSpecTags;
+  | TdConfigSpecTags
+  | TdConfigPythonCode;
 
 export interface TdConfigSpecString extends TdConfigSpecBase {
 
@@ -74,6 +75,9 @@ export interface TdConfigSpecTags extends TdConfigSpecBase {
   type: 'tags_param';
 }
 
+export interface TdConfigPythonCode extends TdConfigSpecBase {
+  type: 'python_code_param';
+}
 
 export interface TdConfigSpecBase {
   /**
@@ -115,7 +119,15 @@ export interface TdConfigSpecBase {
 }
 
 // If the config property is a string or a float
-export type TdConfigSpecType = 'str' | 'int' | 'float' | 'list' | 'bool' | 'param_set' | 'tags_param';
+export type TdConfigSpecType =
+  'str'
+  | 'int'
+  | 'float'
+  | 'list'
+  | 'bool'
+  | 'param_set'
+  | 'tags_param'
+  | 'python_code_param';
 export type TdConfigSpecVisibility = 'protected' | 'public';
 
 

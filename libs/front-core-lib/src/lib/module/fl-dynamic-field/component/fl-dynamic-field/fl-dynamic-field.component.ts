@@ -39,7 +39,6 @@ export class FlDynamicFieldComponent implements OnInit, OnDestroy, FlDynamicAbst
   ngOnInit(): void {
     this.viewComponentRef = this.fieldConfig.generateComponent(this.config,
       this.viewContainer, this.control);
-
   }
 
   ngOnDestroy(): void {

@@ -90,6 +90,11 @@ export class PrConfigSpecs extends ClRecordWrapper<TdConfigSpec> {
       const config: FlDynamicFieldConfig = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
       config.type = 'tags';
       return config;
+    } else if (spec.type === 'python_code_param') {
+      const config: FlDynamicFieldConfig = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
+      config.type = 'pythonCode';
+      config.fullWidth = true;
+      return config;
     } else {
       const config: FlDynamicFieldConfigInput = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
       config.type = 'input';
