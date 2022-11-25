@@ -2,6 +2,7 @@ import {FlBioNetworkNodeMetabolite} from '../model/fl-bio-network-node-metabolit
 import {flBioNetworkCompartmentBiomassId} from '../model/fl-bio-network-compartment.class';
 import {FlBioNetworkCanvasHelper} from '../utils/fl-bio-network-canvas.helper';
 import {FlBioNetworkObjectColorFunction} from './fl-bio-network-object.renderer';
+import {FlThemeDetail} from '../../fl-theme/model/fl-theme-detail.class';
 
 /**
  * Draw metabolite node using canvas
@@ -18,7 +19,7 @@ export class FlBioNetworkMetaboliteRenderer {
   public static minorMetaboliteFontSize: string = '0.4em';
 
   public static draw(ctx: CanvasRenderingContext2D, metabolite: FlBioNetworkNodeMetabolite,
-                     colorFunc: FlBioNetworkObjectColorFunction, showText: boolean): void {
+                     colorFunc: FlBioNetworkObjectColorFunction, showText: boolean, themeDetail: FlThemeDetail): void {
 
     if (!metabolite.selected) {
       ctx.globalAlpha = 0.1;
@@ -30,8 +31,8 @@ export class FlBioNetworkMetaboliteRenderer {
     const strokeWidth = FlBioNetworkMetaboliteRenderer.getStrokeWidth(metabolite);
     const globalRadius = centerRadius + strokeWidth;
 
-    // add white ring
-    ctx.fillStyle = '#ffffff';
+    // add text color ring
+    ctx.fillStyle = themeDetail.foreground;
     FlBioNetworkCanvasHelper.circle(ctx, metabolite.x, metabolite.y, globalRadius);
 
     // draw the circle
@@ -40,7 +41,7 @@ export class FlBioNetworkMetaboliteRenderer {
 
     // draw the text
     if (showText) {
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = themeDetail.foreground;
       FlBioNetworkCanvasHelper.text(ctx, metabolite.x, metabolite.y + (globalRadius * 1.5), metabolite.data.name.slice(0, 20),
         {
           fontSize: FlBioNetworkMetaboliteRenderer.getFontTextSize(metabolite),
@@ -48,14 +49,14 @@ export class FlBioNetworkMetaboliteRenderer {
           textAlign: 'center',
           shadow: {
             blur: 7,
-            color: '#000000', // todo to fix
+            color: themeDetail.background,
           }
         });
     }
 
     // if this is a duplicated metabolites, draw a small circle inside it
-    if(metabolite.existsInMultipleCluster){
-      ctx.fillStyle = '#ffffff';
+    if (metabolite.existsInMultipleCluster) {
+      ctx.fillStyle = themeDetail.foreground;
       FlBioNetworkCanvasHelper.circle(ctx, metabolite.x, metabolite.y, FlBioNetworkMetaboliteRenderer.existsInMultipleClusterRadius);
     }
 

@@ -12,12 +12,8 @@ export interface FlThemeDetail {
   accentContrast: string;
   warnContrast: string;
 
-  greyLowContrast: string;
-  greyLowContrastText: string;
-  greyContrast: string;
-  greyContrastText: string;
-  greyHighContrast: string;
-  greyHighContrastText: string;
+  cardBackground: string;
+  hover: string;
 }
 
 /**
@@ -34,12 +30,8 @@ export const flThemeDetailLight: FlThemeDetail = {
   accentContrast: '#E5E5E5',
   warnContrast: '#E5E5E5',
 
-  greyLowContrast: '#ddd',
-  greyLowContrastText: '#000000',
-  greyContrast: '#bbbbbb',
-  greyContrastText: '#000000',
-  greyHighContrast: '#808080',
-  greyHighContrastText: '#ffffff',
+  cardBackground: '#EAEAEA',
+  hover: '#D2D2D2'
 };
 
 /**
@@ -56,12 +48,8 @@ export const flThemeDetailDark: FlThemeDetail = {
   accentContrast: '#E8E8E8',
   warnContrast: '#010202',
 
-  greyLowContrast: '#404444',
-  greyLowContrastText: '#ffffff',
-  greyContrast: '#6c6c6c',
-  greyContrastText: '#ffffff',
-  greyHighContrast: '#808080',
-  greyHighContrastText: '#ffffff',
+  cardBackground: '#2B2D2E',
+  hover: '#3A3D3D'
 };
 
 /**

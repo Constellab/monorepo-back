@@ -78,7 +78,7 @@ export class FlChartVulcanoPlot extends FlChartLinear2d {
       } else if (d.data.getX() > xThreshold && d.data.getY() > this.yThreshold) {
         return colors[1];
       } else {
-        return this.getTheme().greyLowContrast;
+        return this.getTheme().cardBackground;
       }
     };
   }

@@ -86,18 +86,18 @@ export class FlBioNetworkNodeReaction extends FlBioNetworkNode {
    * Return the next connected metabolite or cofactor
    */
   public getNextMetabolites(): (FlBioNetworkNodeMetabolite | FlBioNetworkNodeCofactor)[] {
-    return this.getConnectedNodes()
+    return this.getNextNodes()
       .filter(node => node instanceof FlBioNetworkNodeMetabolite || node instanceof FlBioNetworkNodeCofactor)
-      .map(node => node as FlBioNetworkNodeMetabolite);
+      .map(node => node as FlBioNetworkNodeMetabolite | FlBioNetworkNodeCofactor);
   }
 
   /**
    * Return the previous connected metabolite or cofactor
    */
   public getPreviousMetabolites(): (FlBioNetworkNodeMetabolite | FlBioNetworkNodeCofactor)[] {
-    return this.getConnectedNodes()
+    return this.getPreviousNodes()
       .filter(node => node instanceof FlBioNetworkNodeMetabolite || node instanceof FlBioNetworkNodeCofactor)
-      .map(node => node as FlBioNetworkNodeMetabolite);
+      .map(node => node as FlBioNetworkNodeMetabolite | FlBioNetworkNodeCofactor);
   }
 
   /**

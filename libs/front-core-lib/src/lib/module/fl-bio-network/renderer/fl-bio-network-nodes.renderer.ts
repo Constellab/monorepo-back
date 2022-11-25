@@ -14,6 +14,7 @@ import {FlBioNetworkGraphRenderer} from './fl-bio-network-main.renderer';
 import {FlBioNetworkGraphObject} from '../model/fl-bio-network-graph.class';
 import {FlBioNetworkMetaboliteLevel} from '../model/fl-bio-network.class';
 import {FlBioNetworkSelectionEvent, FlBioNetworkSelectionMode} from '../model/fl-bio-network-selection.class';
+import {FlThemeDetail} from '../../fl-theme/model/fl-theme-detail.class';
 
 /**
  * Class to render nodes of the network (metabolites, reactions and cofactors)
@@ -30,9 +31,10 @@ export class FlBioNetworkNodesRenderer extends FlBioNetworkObjectRenderer {
   constructor(graphRenderer: FlBioNetworkGraphRenderer,
               options$: Observable<FlBioNetworkOptions>,
               selection$: Observable<FlBioNetworkSelectionEvent>,
-              greyColor: string,
               private selectionState: FlBioNetworkSelectionState,
-              private gridState: FlBioNetworkGridState) {
+              private gridState: FlBioNetworkGridState,
+              greyColor: string,
+              private themeDetail: FlThemeDetail) {
     super(graphRenderer, options$, selection$, greyColor);
   }
 
@@ -104,11 +106,11 @@ export class FlBioNetworkNodesRenderer extends FlBioNetworkObjectRenderer {
     }
 
     if (node instanceof FlBioNetworkNodeMetabolite) {
-      FlBioNetworkMetaboliteRenderer.draw(ctx, node, colorFunc, showText);
+      FlBioNetworkMetaboliteRenderer.draw(ctx, node, colorFunc, showText, this.themeDetail);
     } else if (node instanceof FlBioNetworkNodeReaction) {
-      FlBioNetworkReactionRenderer.draw(ctx, node, colorFunc);
+      FlBioNetworkReactionRenderer.draw(ctx, node, colorFunc, this.themeDetail);
     } else if (node instanceof FlBioNetworkNodeCofactor) {
-      FlBioNetworkCofactorRenderer.draw(ctx, node, colorFunc, showText);
+      FlBioNetworkCofactorRenderer.draw(ctx, node, colorFunc, showText, this.themeDetail);
     } else {
       console.log('node type not supported');
     }

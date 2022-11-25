@@ -133,12 +133,12 @@ export class FlBioNetworkMainRenderer implements OnDestroy {
     };
 
     const themeDetail: FlThemeDetail = this.themeService.getCurrentThemeDetail();
-    const grey = themeDetail.greyLowContrast;
+    const grey = themeDetail.cardBackground;
 
     this.gridRenderer = new FlBioNetworkGridRenderer(graphRenderer, grey, this.optionState.getOptions$());
     this.nodesRenderer = new FlBioNetworkNodesRenderer(graphRenderer, this.optionState.getOptions$(),
-      this.selectionState.getSelectionMode$(), grey,
-      this.selectionState, this.gridState);
+      this.selectionState.getSelectionMode$(), this.selectionState, this.gridState,
+      grey, themeDetail);
     this.nodesRenderer.render();
 
     this.linksRenderer = new FlBioNetworkLinksRenderer(graphRenderer, this.optionState.getOptions$(),

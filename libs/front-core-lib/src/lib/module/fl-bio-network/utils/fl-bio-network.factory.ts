@@ -79,7 +79,7 @@ export class FlBioNetworkFactory {
         const reactionNode = new FlBioNetworkNodeReaction(
           reaction.name ? reaction.name : reaction.id,
           reactionCluster,
-          this.themeDetail.greyHighContrast, this.themeDetail.foreground, reaction,
+          this.themeDetail.hover, this.themeDetail.foreground, reaction,
           reactionPathways, existsInMultipleCluster
         );
         reactionNodes.push(reactionNode);
@@ -96,7 +96,7 @@ export class FlBioNetworkFactory {
         // for each combinaison, create a cross cluster link between the two reaction
         for (const combinaison of combinaisons) {
           const link = new FlBioNetworkLink(combinaison.from, combinaison.to, 0,
-            this.themeDetail.greyContrast, 'cross-cluster-link');
+            this.themeDetail.hover, 'cross-cluster-link');
           this.interClusterLinks.push(link);
         }
       }
@@ -189,12 +189,12 @@ export class FlBioNetworkFactory {
         // is the metabolite is consumed, the link goes from the metabolite to the reaction
         if (FlBioNetworkHelper.metaboliteIsConsumed(metaboliteNode.data.id, reactionNode.data)) {
           this.links.push(new FlBioNetworkLink(metaboliteNode, reactionNode,
-            fluxValue, this.themeDetail.greyContrast, 'link'));
+            fluxValue, this.themeDetail.hover, 'link'));
         }
         // left side of the link
         else {
           this.links.push(new FlBioNetworkLink(reactionNode, metaboliteNode,
-            fluxValue, this.themeDetail.greyContrast, 'link'));
+            fluxValue, this.themeDetail.hover, 'link'));
         }
       }
     }

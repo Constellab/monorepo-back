@@ -1,6 +1,7 @@
 import {FlBioNetworkCanvasHelper} from '../utils/fl-bio-network-canvas.helper';
 import {FlBioNetworkNodeCofactor} from '../model/fl-bio-network-node-cofactor.class';
 import {FlBioNetworkObjectColorFunction} from './fl-bio-network-object.renderer';
+import {FlThemeDetail} from '../../fl-theme/model/fl-theme-detail.class';
 
 /**
  * Draw cofactor node using canvas
@@ -11,7 +12,7 @@ export class FlBioNetworkCofactorRenderer {
   public static strokeWidth: number = 1;
 
   public static draw(ctx: CanvasRenderingContext2D, cofactor: FlBioNetworkNodeCofactor,
-                     colorFunc: FlBioNetworkObjectColorFunction, showText: boolean): void {
+                     colorFunc: FlBioNetworkObjectColorFunction, showText: boolean, themeDetail: FlThemeDetail): void {
 
     if (!cofactor.selected) {
       ctx.globalAlpha = 0.1;
@@ -22,7 +23,7 @@ export class FlBioNetworkCofactorRenderer {
     const globalRadius = FlBioNetworkCofactorRenderer.size + FlBioNetworkCofactorRenderer.strokeWidth;
 
     // add white ring
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = themeDetail.foreground;
     FlBioNetworkCanvasHelper.diamond(ctx, cofactor.x, cofactor.y, globalRadius);
 
     // draw the circle
@@ -35,7 +36,7 @@ export class FlBioNetworkCofactorRenderer {
 
     // draw the text
     if (showText) {
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = themeDetail.foreground;
       FlBioNetworkCanvasHelper.text(ctx, cofactor.x, cofactor.y + (globalRadius * 1.7), cofactor.data.name,
         {
           fontSize: '0.3em',
@@ -43,7 +44,7 @@ export class FlBioNetworkCofactorRenderer {
           textAlign: 'center',
           shadow: {
             blur: 7,
-            color: '#000000', // todo to fix
+            color: themeDetail.background,
           }
         });
     }

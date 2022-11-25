@@ -39,7 +39,7 @@ export class FlChartRendererStraightLines extends FlChart2AxisRenderer<any> {
       .attr('y1', d => d.orientation === 'horizontal' ? this.data.yScale.scale(d.position) : 0)
       .attr('x2', d => d.orientation === 'vertical' ? this.data.xScale.scale(d.position) : this.data.chartWidth)
       .attr('y2', d => d.orientation === 'horizontal' ? this.data.yScale.scale(d.position) : this.data.chartHeight)
-      .attr('stroke', theme.greyLowContrast);
+      .attr('stroke', theme.cardBackground);
 
   }
 
