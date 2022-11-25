@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {CaProject, CaProjectLevel} from '../../../../model/entities/ca-project.class';
+import {CaProject, CaProjectLevel, CaProjectLevelStatus} from '../../../../model/entities/ca-project.class';
 import {CaProjectService} from '../../../../service-api/ca-project.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
@@ -16,6 +16,7 @@ import {
 export interface CaProjectFormDialogInput extends FlFormDialogInput<CaProject> {
   level: CaProjectLevel;
   parentId: string;
+  parentLevel: CaProjectLevel;
 }
 
 /**
@@ -34,6 +35,8 @@ export class CaProjectFormDialogComponent extends FlFormDialogAbstractDirective<
 
   textEditorConfig: FlTextEditorConfig = new FlTextEditorBasicConfig();
 
+  levelStatus = CaProjectLevelStatus;
+
   constructor(@Inject(MAT_DIALOG_DATA) protected dialogInput: CaProjectFormDialogInput,
               private projectService: CaProjectService,
               snackBarService: FlSnackBarService,
@@ -48,6 +51,12 @@ export class CaProjectFormDialogComponent extends FlFormDialogAbstractDirective<
   buildForm(): FormGroup<Partial<CaProject>> {
     return new FormBuilder().group({
       id: [null],
+      levelStatus: [
+        {
+          value: CaProjectLevelStatus.LEAF,
+          // when work package we force the children to be leaf to limit hierarchy depth
+          disabled: this.dialogInput.parentLevel === CaProjectLevel.WORK_PACKAGE}
+        , Validators.required],
       code: [null, Validators.required],
       title: [null, Validators.required],
       startingDate: [null, Validators.required],

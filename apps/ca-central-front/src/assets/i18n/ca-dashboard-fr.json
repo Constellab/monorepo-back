@@ -17,10 +17,6 @@
   "sub_project_created": "Modifier le sous projet",
   "update_sub_project": "Sous projet créé",
   "sub_project_updated": "Sous projet modifié",
-  "new_task": "Nouvelle tâche",
-  "update_task": "Modifier la tâche",
-  "task_created": "Tâche créée",
-  "task_updated": "Tâche modifiée",
   "experiments": "Expériences",
   "experiment": "Expérience",
   "no_experiment": "Aucune experience",
@@ -76,5 +72,9 @@
   "company": "Entreprise",
   "biography": "Biographie",
   "go_to_project": "Aller au projet",
-  "add_new_sub_project": "Ajouter un projet"
+  "add_new_sub_project": "Ajouter un projet",
+  "modern_project": "Projet moderne",
+  "modern_project_description": "Projet qui contiendra des rapports et des expériences.",
+  "classic_project": "Projet classique",
+  "classic_project_description": "Projet qui contiendra des sous projets."
 }

@@ -72,5 +72,9 @@
   "company": "Company",
   "biography": "Biography",
   "go_to_project": "Go to project",
-  "add_new_sub_project": "Add new project"
+  "add_new_sub_project": "Add new project",
+  "modern_project": "Modern project",
+  "modern_project_description": "Project that will contain reports and experiments.",
+  "classic_project": "Classic project",
+  "classic_project_description": "Project that will contain sub projects."
 }

@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {CnExperiment} from './cn-experiment.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, Repository} from 'typeorm';
+import {Repository} from 'typeorm';
 import {CnCreateLabExperimentDto} from './cn-experiment.dto';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 import {CnProject} from '../cn-projects/cn-project.entity';
@@ -38,8 +38,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     });
   }
 
-  public async saveLabExperiment(project: CnProject, createLabExperimentDto: CnCreateLabExperimentDto,
-                                 entityManager: EntityManager): Promise<CnExperiment> {
+  public async saveLabExperiment(project: CnProject, createLabExperimentDto: CnCreateLabExperimentDto): Promise<CnExperiment> {
 
     const experimentDB: CnExperiment = await this.findById(createLabExperimentDto.experiment.id);
     if (experimentDB && experimentDB.projectId !== project.id) {
@@ -74,10 +73,10 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     experiment.lastSyncBy = labExperimentDto.last_sync_by;
 
     if (experimentDB) {
-      return await this.updateWithCompare(experiment, experimentDB, entityManager);
+      return await this.updateWithCompare(experiment, experimentDB);
     } else {
       experiment.labInstance = CnCurrentUserHelper.getCurrentLabInstance();
-      return this.create(experiment, entityManager);
+      return this.create(experiment);
     }
   }
 

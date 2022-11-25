@@ -65,6 +65,7 @@ export class CaProjectActionsMenuComponent implements OnInit {
       object: this.project,
       level: this.project.currentLevel,
       parentId: null,
+      parentLevel: null,
     };
 
     this.dialogService.openSmallDialog(CaProjectFormDialogComponent, {
@@ -96,7 +97,8 @@ export class CaProjectActionsMenuComponent implements OnInit {
     const dialogInput: CaProjectFormDialogInput = {
       mode: 'create',
       level: this.project.getChildLevel(),
-      parentId: this.project.id
+      parentId: this.project.id,
+      parentLevel: this.project.currentLevel,
     };
 
     this.dialogService.openSmallDialog(CaProjectFormDialogComponent, {

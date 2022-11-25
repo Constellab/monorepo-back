@@ -36,7 +36,8 @@ export class CaProjectChildrenComponent implements OnInit, OnDestroy {
     const dialogInput: CaProjectFormDialogInput = {
       mode: 'create',
       level: project.getChildLevel(),
-      parentId: project.id
+      parentId: project.id,
+      parentLevel: project.currentLevel,
     };
 
     this.dialogService.openSmallDialog(CaProjectFormDialogComponent, {

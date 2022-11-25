@@ -5,8 +5,41 @@
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="project-form" [formGroup]="formGp">
 
+    <!--  Level status  -->
+    <mat-radio-group aria-label="Select an option" formControlName="levelStatus"
+                     fxLayout="row" fxLayoutAlign="space-between stretch">
+      <mat-radio-button [value]="levelStatus.LEAF" fxFlex="49%"
+                        color="primary" class="radio-button">
+        <div class="radio-content">
+          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em"
+               class="radio-text">
+            <ca-project-icon type="leaf"></ca-project-icon>
+            <div>{{'modern_project' | translate}}</div>
+          </div>
+
+          <div class="g-text-small radio-description">
+            {{'modern_project_description' | translate}}
+          </div>
+        </div>
+      </mat-radio-button>
+      <mat-radio-button [value]="levelStatus.PARENT" fxFlex="49%"
+                        color="primary" class="radio-button">
+        <div class="radio-content">
+          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em"
+               class="radio-text">
+            <ca-project-icon type="parent"></ca-project-icon>
+            <div>{{'classic_project' | translate}}</div>
+          </div>
+
+          <div class="g-text-small radio-description">
+            {{'classic_project_description' | translate}}
+          </div>
+        </div>
+      </mat-radio-button>
+    </mat-radio-group>
+
     <!--  Code  -->
-    <mat-form-field class="g-form-input" appearance="outline">
+    <mat-form-field class="g-form-input code" appearance="outline">
       <mat-label>{{'code' | translate}}</mat-label>
       <input matInput formControlName="code" required flInputMaxLength="20"
              placeholder="{{'code' | translate}}">

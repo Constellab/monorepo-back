@@ -21,17 +21,18 @@ describe('ProjectAggregatorE2E', () => {
       code: 'TEST',
       title: 'Test project',
       startingDate: ClDateHelper.getDate(),
+      levelStatus: CnProjectLevelStatus.PARENT,
     };
     const request = helper.post('', project);
     request.expect(201);
-    let newProject: CnProject = await request.getResponseBody();
+    const newProject: CnProject = await request.getResponseBody();
 
     expect(newProject.id).toBeDefined();
     expect(newProject.code).toEqual(project.code);
     expect(newProject.title).toEqual(project.title);
     expect(newProject.currentLevel).toEqual(CnProjectLevel.PROJECT);
     expect(newProject.currentStatus.status).toEqual(CnProjectStatus.ACTIVE);
-    expect(newProject.levelStatus).toEqual(CnProjectLevelStatus.UNDEFINED);
+    expect(newProject.levelStatus).toEqual(CnProjectLevelStatus.PARENT);
     expect(newProject.children).toBeUndefined();
 
     // create work package
@@ -39,6 +40,7 @@ describe('ProjectAggregatorE2E', () => {
       code: 'TEST-WP',
       title: 'Test work package',
       startingDate: ClDateHelper.getDate(),
+      levelStatus: CnProjectLevelStatus.PARENT,
     };
 
     const workPackageRequest = helper.post(`${newProject.id}/sub-project`, workPackage);
@@ -46,14 +48,7 @@ describe('ProjectAggregatorE2E', () => {
     const newWorkPackage: CnProject = await workPackageRequest.getResponseBody();
     expect(newWorkPackage.currentLevel).toEqual(CnProjectLevel.WORK_PACKAGE);
     expect(newWorkPackage.rootParentId).toEqual(newProject.id);
-    expect(newWorkPackage.levelStatus).toEqual(CnProjectLevelStatus.UNDEFINED);
-
-    // refresh the new project to check the level status
-    const newProjectRequest = helper.get(newProject.id);
-    workPackageRequest.expect(201);
-    newProject = await newProjectRequest.getResponseBody();
-    expect(newProject.levelStatus).toEqual(CnProjectLevelStatus.PARENT);
-
+    expect(newWorkPackage.levelStatus).toEqual(CnProjectLevelStatus.PARENT);
 
     // create task
     const task: Partial<CnProject> = {

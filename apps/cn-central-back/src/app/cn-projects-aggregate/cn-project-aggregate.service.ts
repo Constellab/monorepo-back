@@ -19,7 +19,6 @@ import {CnReportContent} from './cn-reports/cn-report-content.class';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-projects/cn-project-level.enum';
 import {CnProjectAncestorTreeDTO, CnProjectAncestorType, CnProjectDtoHelper} from './cn-projects/cn-project.dto';
-import {DataSource} from 'typeorm';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnUsersService} from '../cn-users/cn-users.service';
 import {CmRichTextI} from '@monorepo/common-model';
@@ -28,7 +27,6 @@ import {CnProjectCommentService} from '../cn-project-comment/cn-project-comment.
 import {CnCommentImage, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
 import {BlFile} from '@monorepo/back-core-lib';
-import {CnCommentService} from '../cn-core/services/cn-comment.service';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -40,8 +38,7 @@ export class CnProjectAggregateService {
               private reportService: CnReportsService,
               private groupAggregateService: CnGroupsAggregateService,
               private projectCommentService: CnProjectCommentService,
-              private userService: CnUsersService,
-              private datasource: DataSource) {
+              private userService: CnUsersService) {
   }
 
   /////////////////////////////////////// PROJECT //////////////////////////////////
@@ -49,7 +46,6 @@ export class CnProjectAggregateService {
   async createProject(entity: CnProject): Promise<CnProject> {
     entity.parent = null;
     entity.currentLevel = CnProjectLevel.PROJECT;
-    entity.levelStatus = CnProjectLevelStatus.UNDEFINED;
     entity.leader = CnCurrentUserHelper.getCurrentUser();
     return this.projectService.create(entity);
   }
@@ -71,22 +67,13 @@ export class CnProjectAggregateService {
     // set hierarchy info
     entity.parent = parentProject;
     entity.currentLevel = parentProject.currentLevel + 1;
-    // if the project is level 3 set the status to leaf, otherwise set to undefined
-    entity.levelStatus = entity.currentLevel === CnProjectLevel.TASK ?
-      CnProjectLevelStatus.LEAF : CnProjectLevelStatus.UNDEFINED;
+    // if the project is level 3 force the status to leaf, otherwise set to undefined
+    if (entity.currentLevel === CnProjectLevel.TASK) {
+      entity.levelStatus = CnProjectLevelStatus.LEAF;
+    }
     entity.rootParentId = parentProject.currentLevel === CnProjectLevel.PROJECT ? parentProject.id : parentProject.rootParentId;
 
-    return await this.datasource.transaction(async entityManager => {
-      const newProject = await this.projectService.create(entity, entityManager);
-
-      // update the status of the parent to PARENT if undefined
-      if (parentProject.levelStatus === CnProjectLevelStatus.UNDEFINED) {
-        parentProject.levelStatus = CnProjectLevelStatus.PARENT;
-        await this.projectService.update(parentProject, entityManager);
-      }
-
-      return newProject;
-    });
+    return await this.projectService.create(entity);
   }
 
   async updateProject(entity: CnProject): Promise<CnProject> {
@@ -103,7 +90,7 @@ export class CnProjectAggregateService {
   }
 
   public async getByCurrentOrganization(page: number, size: number): Promise<ClPageI<CnProject>> {
-    const info = CnCurrentUserHelper.getAndCheckUserOrgaInfo()
+    const info = CnCurrentUserHelper.getAndCheckUserOrgaInfo();
     await this.projectSecurity.checkFindAllByOrganization(info);
     return this.projectService.getByOrganization(info.organizationId, page, size);
   }
@@ -251,15 +238,7 @@ export class CnProjectAggregateService {
       throw new BadRequestException(CnErrorText.EXP_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT);
     }
 
-    return await this.datasource.transaction(async entityManager => {
-      await this.experimentService.saveLabExperiment(project, createLabExperimentDto, entityManager);
-
-      // if the project status was undefined, set it to LEAF
-      if (project.levelStatus === CnProjectLevelStatus.UNDEFINED) {
-        project.levelStatus = CnProjectLevelStatus.LEAF;
-        await this.projectService.update(project, entityManager);
-      }
-    });
+    await this.experimentService.saveLabExperiment(project, createLabExperimentDto);
   }
 
   async deleteLabExperiment(projectId: string, experimentId: string): Promise<void> {
@@ -312,15 +291,7 @@ export class CnProjectAggregateService {
       experiments.push(experiment);
     }
 
-    return await this.datasource.transaction(async entityManager => {
-      await this.reportService.createReport(createReportDto, experiments, project, entityManager);
-
-      // if the project status was undefined, set it to LEAF
-      if (project.levelStatus === CnProjectLevelStatus.UNDEFINED) {
-        project.levelStatus = CnProjectLevelStatus.LEAF;
-        await this.projectService.update(project, entityManager);
-      }
-    });
+    await this.reportService.createReport(createReportDto, experiments, project);
   }
 
   async deleteLabReport(projectId: string, reportId: string): Promise<void> {

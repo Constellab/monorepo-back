@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {CnReport} from './cn-report.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, Repository} from 'typeorm';
+import {Repository} from 'typeorm';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
 import {BlAbstractService, BlBucketConfig, BlObjectStorageService} from '@monorepo/back-core-lib';
@@ -48,7 +48,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   }
 
   async createReport(createReportDto: CnCreateReportWithConfigDto, experiments: CnExperiment[],
-                     project: CnProject, entityManager: EntityManager): Promise<CnReport> {
+                     project: CnProject): Promise<CnReport> {
 
     const reportDb: CnReport = await this.findById(createReportDto.report.id);
     if (reportDb && reportDb.projectId !== project.id) {
@@ -87,10 +87,10 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     report.lastSyncBy = reportDto.last_sync_by;
 
     if (reportDb) {
-      return await this.updateWithCompare(report, reportDb, entityManager);
+      return await this.updateWithCompare(report, reportDb);
     } else {
       report.labInstance = CnCurrentUserHelper.getCurrentLabInstance();
-      return await entityManager.save(report);
+      return this.create(report);
     }
   }
 

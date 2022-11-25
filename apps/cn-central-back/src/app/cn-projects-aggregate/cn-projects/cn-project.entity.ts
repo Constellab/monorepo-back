@@ -70,7 +70,7 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
   currentLevel: CnProjectLevel;
 
   @Column({
-    nullable: false, default: CnProjectLevelStatus.UNDEFINED,
+    nullable: false,
     type: 'enum', enum: CnProjectLevelStatus,
   })
   levelStatus: CnProjectLevelStatus;
