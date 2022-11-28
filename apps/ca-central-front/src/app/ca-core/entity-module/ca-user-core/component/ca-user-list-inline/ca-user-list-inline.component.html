@@ -1,10 +1,10 @@
 <!-- user reverse so the first displayed element is on top of others-->
 <ng-container *ngIf="value">
   <div fxLayout="row-reverse" class="user-list">
-    <div class="additional-user-count-externe" *ngIf="value.additionalUsers.length > 0"
+    <div class="additional-user-count-externe" *ngIf="additionalUserLength > 0"
          (click)="openAdditionalUsersPortal($event)" [ngClass]="{'selected': selectionAdditionalUser()}">
-      <div class="additional-user-count-interne">
-        +{{value.additionalUsers.length}}
+      <div class="additional-user-count-interne g-text-not-selectable">
+        +{{additionalUserLength}}
       </div>
     </div>
 
@@ -20,7 +20,7 @@
   <ng-template #additionalUsers>
     <fl-portal class="portal">
       <fl-portal-content>
-        <div class="portal-user-list g-mat-checkbox-include-bottom">
+        <div class="portal-user-list g-mat-checkbox-include-bottom g-scrollable-element">
           <div *ngFor="let userSelection of value.additionalUsers" class="portal-user">
             <mat-checkbox [(ngModel)]="userSelection.selected" (change)="emitCurrentValue()"
                           [disabled]="disabled">
@@ -28,6 +28,9 @@
             <ca-user-inline [user]="userSelection.user"
                             class="additional-user" (click)="selectUser(userSelection)"></ca-user-inline>
           </div>
+
+          <fl-infinite-load-more-result *ngIf="userDatasource" [datasource]="userDatasource"
+                                        [textNoMoreResult]="null" class="load-more"></fl-infinite-load-more-result>
         </div>
       </fl-portal-content>
     </fl-portal>

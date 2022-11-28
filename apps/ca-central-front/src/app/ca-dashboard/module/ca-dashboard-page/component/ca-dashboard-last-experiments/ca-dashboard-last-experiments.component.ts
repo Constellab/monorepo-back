@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experiment.service';
 import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
+import {clRxjsDebug} from '@monorepo/core-lib';
 
 @Component({
   selector: 'ca-dashboard-last-experiments',
@@ -11,12 +12,11 @@ export class CaDashboardLastExperimentsComponent implements OnInit {
 
   lastExperiments: CaExperiment[];
 
-  constructor(
-    private experimentService: CaExperimentService) {
+  constructor(private experimentService: CaExperimentService) {
   }
 
   ngOnInit(): void {
-    this.experimentService.findCurrentUserLastExperiments().subscribe(
+    this.experimentService.findCurrentUserLastExperiments().pipe(clRxjsDebug()).subscribe(
       (res: CaExperiment[]) => this.lastExperiments = res
     );
   }

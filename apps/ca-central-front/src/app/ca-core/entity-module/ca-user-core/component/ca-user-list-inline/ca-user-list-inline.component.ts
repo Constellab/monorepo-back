@@ -11,8 +11,8 @@ import {
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
-import {Observable} from 'rxjs';
-import {CaUser} from '../../../../model/entities/ca-user.class';
+import {Observable, Subscription} from 'rxjs';
+import {CaUser, CaUserDatasourcePaginated} from '../../../../model/entities/ca-user.class';
 import {FlFormFieldDirective, FlOverlayRef, FlPortalConnectedPosition, FlPortalService} from '@monorepo/front-core-lib';
 import {NgControl} from '@angular/forms';
 
@@ -29,6 +29,7 @@ interface CaUserSelection {
 /**
  * Show a condensed list of user in one line.
  * This component supports form and return the list of selected users.
+ * It supports datasource or list of user
  */
 @Component({
   selector: 'ca-user-list-inline',
@@ -40,15 +41,22 @@ export class CaUserListInlineComponent extends FlFormFieldDirective<UserList, Ca
 
   @Input() users$: Observable<CaUser[]>;
 
+  @Input() userDatasource: CaUserDatasourcePaginated;
+
   @Input() previewListSize: number = 6;
 
   @Output() selectionChange: EventEmitter<CaUser[]> = new EventEmitter();
 
   @ViewChild('additionalUsers', {static: false}) additionalUsers: TemplateRef<unknown>;
 
+
+  additionalUserLength: number;
+
   // use to store the selected user before the user list is loaded
   private tempSelectedUser: CaUser[] = [];
   private additionalOverlay: FlOverlayRef;
+
+  private subscription: Subscription;
 
   constructor(@Optional() @Self() ngControl: NgControl,
               private portalService: FlPortalService,
@@ -57,9 +65,15 @@ export class CaUserListInlineComponent extends FlFormFieldDirective<UserList, Ca
   }
 
   ngOnInit(): void {
-    this.users$.subscribe(
-      users => this.onUserLoaded(users)
-    );
+    if (this.userDatasource) {
+      this.subscription = this.userDatasource.connect().subscribe(
+        users => this.onUserLoaded(users)
+      );
+    } else {
+      this.subscription = this.users$.subscribe(
+        users => this.onUserLoaded(users)
+      );
+    }
   }
 
   private onUserLoaded(users: CaUser[]): void {
@@ -68,6 +82,13 @@ export class CaUserListInlineComponent extends FlFormFieldDirective<UserList, Ca
       previewUsers: this.usersToUserSelection(users.slice(0, this.previewListSize).reverse()),
       additionalUsers: this.usersToUserSelection(users.slice(this.previewListSize))
     };
+
+    // calculate the number of additional user
+    if (this.userDatasource) {
+      this.additionalUserLength = this.userDatasource.page.totalElements - this.previewListSize;
+    } else {
+      this.additionalUserLength = this.value.additionalUsers.length - this.previewListSize;
+    }
 
     if (this.tempSelectedUser.length > 0) {
       this.selectUsers(this.tempSelectedUser);
@@ -143,6 +164,7 @@ export class CaUserListInlineComponent extends FlFormFieldDirective<UserList, Ca
 
   ngOnDestroy(): void {
     this.additionalOverlay?.dispose();
+    this.subscription?.unsubscribe();
   }
 
 

@@ -11,7 +11,7 @@ import {CaProject, CaProjectObject} from './ca-project.class';
 export type CaExperimentStatus = 'DRAFT' | 'SUCCESS' | 'ERROR' | 'ARCHIVED';
 
 export const caExperimentStatusDict: FlStatusDict<CaExperimentStatus> = {
-  DRAFT: FlStatusHelper.getInfoStatus('DRAFT'),
+  DRAFT: FlStatusHelper.getDraftStatus('DRAFT'),
   ARCHIVED: FlStatusHelper.getInfoStatus('ARCHIVED'),
   SUCCESS: FlStatusHelper.getSuccessStatus('SUCCESS'),
   ERROR: FlStatusHelper.getErrorStatus('ERROR')

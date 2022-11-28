@@ -6,7 +6,7 @@
   <img [src]="imgSrc" class="user-icon-image"
        *ngIf="hasPhoto$ | async; else noPhoto" [alt]="initials"/>
   <ng-template #noPhoto>
-    <span>{{ initials }}</span>
+    <span class="g-text-not-selectable">{{ initials }}</span>
   </ng-template>
 </div>
 

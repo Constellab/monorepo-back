@@ -5,6 +5,7 @@ import {FlCleanableService, FlCleanerService, FlCookieService} from '@monorepo/f
 import {environment} from '../../../environments/ca-environment';
 import {BehaviorSubject, filter, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {CaUserDatasourcePaginated} from '../model/entities/ca-user.class';
 
 /**
  * Service to manage the current organization
@@ -78,6 +79,11 @@ export class CaCurrentOrganizationService implements FlCleanableService {
   public isOrganizationAdmin(): boolean {
     return this.currentUserRoleInOrganization === CaOrganizationRole.ADMIN;
   }
+
+  public getCurrentOrganizationUsersDatasource(): CaUserDatasourcePaginated {
+    return this.organizationService.getOrganizationSimpleUsersDatasource('current');
+  }
+
 
   clean(): void {
     this.currentOrganization$.next(null);

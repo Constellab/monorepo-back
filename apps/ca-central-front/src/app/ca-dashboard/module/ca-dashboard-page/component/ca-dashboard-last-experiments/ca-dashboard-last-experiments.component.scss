@@ -9,7 +9,6 @@
 .icon{
   display: flex;
   align-items: center;
-  margin-left: -1em;
   margin-right: 1em;
 }
 
@@ -19,24 +18,20 @@
 }
 
 .experiment-title{
-  font-size: 1em;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
 }
 
-.experiment-project{
-  font-size: 0.85em;
-}
 
 .experiment-date{
   padding-left: 1em;
   width: 25%;
-  font-size: 0.7em;
-  color: var(--grey-high-contr);
 }
 
 .experiment{
-  border-bottom: solid 2px var(--card-background);
-  margin-bottom: 0.5em;
+  background-color: var(--main-background);
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  margin-top: 0.5em;
 }

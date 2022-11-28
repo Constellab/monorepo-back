@@ -7,14 +7,9 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class CaDashboardActivityCardComponent implements OnInit {
 
-  @Input()
-  activityLogo: string;
+  @Input() activityNumber: number;
 
-  @Input()
-  activityNumber: number;
-
-  @Input()
-  activityText: string;
+  @Input() activityText: string;
 
   constructor() { }
 

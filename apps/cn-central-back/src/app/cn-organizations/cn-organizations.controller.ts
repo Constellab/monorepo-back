@@ -117,9 +117,17 @@ export class CnOrganizationsController {
 
   @Get(':id/user')
   public async getUsersOfOrganization(@Param('id') id: string,
-                                     @Query('page', new ParseIntPipe()) page: number,
-                                     @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnOrganizationUser>> {
+                                      @Query('page', new ParseIntPipe()) page: number,
+                                      @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnOrganizationUser>> {
     return this.organizationAggregate.getUsersOfOrganization(id, page, size);
+  }
+
+  @Get(':id/user-simple')
+  public async getUsersOfOrganizationSimple(@Param('id') id: string,
+                                            @Query('page', new ParseIntPipe()) page: number,
+                                            @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnUser>> {
+    const orgaUsers = await this.organizationAggregate.getUsersOfOrganization(id, page, size);
+    return orgaUsers.map(orgaUser => orgaUser.user);
   }
 
   @Get(':id/invitations')
@@ -149,7 +157,7 @@ export class CnOrganizationsController {
 
   @Get(':id/user/:userId')
   public async getUserOfOrganization(@Param('id') id: string,
-                                     @Param('userId', new ParseUUIDPipe()) userId: string): Promise<CnUser>{
+                                     @Param('userId', new ParseUUIDPipe()) userId: string): Promise<CnUser> {
     return this.organizationAggregate.getUserOfOrganization(id, userId);
   }
 

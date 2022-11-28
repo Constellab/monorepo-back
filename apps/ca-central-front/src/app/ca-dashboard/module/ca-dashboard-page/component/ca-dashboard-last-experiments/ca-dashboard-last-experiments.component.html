@@ -1,41 +1,32 @@
-<div *ngIf="lastExperiments">
-  <fl-section-header class="g-headline">
-    <div>
-      <fl-text-icon iconPosition="start">
-        <mat-icon class="g-icon-big" flIcon="experiment"></mat-icon>
-        <h2>{{'last_experiments' | translate}}</h2>
-      </fl-text-icon>
-    </div>
-  </fl-section-header>
-  <fl-card class="card">
-    <fl-card-body *ngIf="lastExperiments.length > 0; else noExperiences">
-      <mat-nav-list>
-        <mat-list-item *ngFor="let experiment of lastExperiments"
-                       class="experiment">
-          <a class="experiment-div" [routerLink]="experiment | caDetailRoute">
-            <fl-status-chip mat-list-avatar [status]="experiment.status" [mode]="'iconOnly'" class="icon"></fl-status-chip>
-            <div class="experiment-title-project">
-              <div class="experiment-title">
-                {{experiment.title}}
-              </div>
-              <div class="experiment-project">
-                <fl-text-icon>
-                  <mat-icon [flIcon]="'project'"></mat-icon>
-                  <p>{{experiment.project.title}}</p>
-                </fl-text-icon>
-              </div>
+<fl-card *ngIf="lastExperiments">
+  <fl-card-header>
+    <h2>{{'last_experiments' | translate}}</h2>
+  </fl-card-header>
+  <fl-card-body>
+    <mat-nav-list *ngIf="lastExperiments.length > 0; else noExperiences">
+      <mat-list-item *ngFor="let experiment of lastExperiments"
+                     class="experiment">
+        <a class="experiment-div" [routerLink]="experiment | caDetailRoute">
+          <fl-status-chip mat-list-avatar [status]="experiment.status" [mode]="'iconOnly'"
+                          class="icon"></fl-status-chip>
+          <div class="experiment-title-project">
+            <div class="experiment-title">
+              {{experiment.title}}
             </div>
-            <div class="experiment-date">
-              <fl-from-now [date]="experiment.lastModifiedAt"></fl-from-now>
-            </div>
-          </a>
-        </mat-list-item>
-      </mat-nav-list>
-    </fl-card-body>
+            <fl-text-icon class="g-text-light" gap="5px">
+              <mat-icon [flIcon]="'project'" class="g-icon-small"></mat-icon>
+              <p class="g-text-small">{{experiment.project.title}}</p>
+            </fl-text-icon>
+          </div>
+          <div class="experiment-date g-text-small">
+            <fl-from-now [date]="experiment.lastModifiedAt"></fl-from-now>
+          </div>
+        </a>
+      </mat-list-item>
+    </mat-nav-list>
+
     <ng-template #noExperiences>
-      <fl-card-body>
-        <p>{{'no_experiences' | translate}}</p>
-      </fl-card-body>
+      <p>{{'no_experiences' | translate}}</p>
     </ng-template>
-  </fl-card>
-</div>
+  </fl-card-body>
+</fl-card>

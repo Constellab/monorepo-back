@@ -13,7 +13,7 @@ import {Observable} from 'rxjs';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CaOrganizationInvit, CaOrganizationInvitDatasource} from '../model/entities/ca-organization-invit.class';
 import {CaRequestNewLicensesDto} from '../model/dto/ca-organization.dto';
-import {CaUser} from '../model/entities/ca-user.class';
+import {CaUser, CaUserDatasourcePaginated} from '../model/entities/ca-user.class';
 
 @Injectable({
   providedIn: 'root'
@@ -102,8 +102,21 @@ export class CaOrganizationService extends FlApiCrudService<CaOrganization, CaSa
     return this.apiService.get(`${this.route}/default`, CaOrganization);
   }
 
-  public getOrganizationUser(currentOrganizationId: string, userId: string): Observable<CaUser>{
-    return this.apiService.get(`${this.route}/${currentOrganizationId}/user/${userId}`, CaUser);
+  public getOrganizationUser(organizationId: string, userId: string): Observable<CaUser> {
+    return this.apiService.get(`${this.route}/${organizationId}/user/${userId}`, CaUser);
+  }
+
+  /**
+   * Return the list of user for an organization (not OrganizationUser)
+   */
+  public getOrganizationSimpleUsers(organizationId: string, page: number, size: number): Observable<ClPage<CaUser>> {
+    return this.apiService.get(`${this.route}/${organizationId}/user-simple`, CaUser,
+      {page: page, pageSize: size, resultIsPaginated: true});
+  }
+
+  public getOrganizationSimpleUsersDatasource(organizationId: string): CaUserDatasourcePaginated {
+    return new FlEntityPaginatedDatasource(
+      (page, size) => this.getOrganizationSimpleUsers(organizationId, page, size), 20);
   }
 
   ////////////////////////////////// OTHERS //////////////////////////////////

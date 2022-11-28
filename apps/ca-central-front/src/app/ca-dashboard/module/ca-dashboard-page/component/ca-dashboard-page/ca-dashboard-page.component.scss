@@ -3,54 +3,34 @@
   line-height: 2em;
 }
 
-.dashboard-left{
+.dashboard-left {
   padding: 1em 0.5em 1em 1em
 }
 
-.dashboard-right{
+.dashboard-right {
   min-width: 25%;
   padding: 1em 1em 1em 0.5em
 
 }
 
-.section{
+.section {
   margin-bottom: 2em;
   width: auto;
 }
 
-.r-section{
-  margin-bottom: 3em;
+.r-section {
+  margin-top: 1em;
+  margin-bottom: 1em;
   width: auto;
 }
 
-.bt{
-  width: 100%;
-}
-
-.link-bt{
-  height: 4em;
-  width: 4em;
-  border-radius: 1em;
-}
-
-.bt-div-text{
+.link-button {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: var(--card-background);
+  border-radius: var(--card-radius);
+  padding: 1em;
 }
 
-.link{
-  color: var(--primary-color);
-  text-align: center;
-}
 
-.icon{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  width: 70%;
-  height: 70%;
-  margin-left: 15%;
-  padding-top: 15%;
-}

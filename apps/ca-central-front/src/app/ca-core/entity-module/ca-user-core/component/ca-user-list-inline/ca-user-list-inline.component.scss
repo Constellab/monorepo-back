@@ -52,6 +52,7 @@
 .portal-user-list{
   padding: 1em;
   max-width: 20em;
+  max-height: 30em;
 }
 
 .portal-user-list div:not(:first-child) {
@@ -67,4 +68,9 @@
 .additional-user{
   cursor: pointer;
   user-select: none;
+}
+
+.load-more{
+  margin-top: 1em;
+  display: block;
 }

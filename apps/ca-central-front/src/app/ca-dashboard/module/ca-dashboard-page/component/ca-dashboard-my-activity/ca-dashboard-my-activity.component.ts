@@ -11,9 +11,7 @@ export class CaDashboardMyActivityComponent implements OnInit {
 
   stats: CaStats;
 
-  constructor(
-    private statsService: CaStatsService
-  ) {
+  constructor(private statsService: CaStatsService) {
   }
 
   ngOnInit(): void {

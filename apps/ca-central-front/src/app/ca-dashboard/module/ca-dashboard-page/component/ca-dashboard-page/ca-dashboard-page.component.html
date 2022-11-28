@@ -1,12 +1,24 @@
 <div fxLayout="column" fxLayout.gt-sm="row">
 
   <div class="dashboard-left" fxFill fxFlex="nogrow">
-    <div fxLayout="row" fxLayoutAlign="start end" class="g-page-title">
-      <h1>{{'welcome_message' | translate:{firstname: authenticatedUser.firstname} }}</h1>
-      <div class="date g-text-small g-text-light">
-        {{currentDate | date:'EEEE MMMM d, y'}}
+    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em"
+         class="g-page-title">
+
+      <div fxLayout="row" fxLayoutAlign="start end">
+        <h1 *ngIf="currentSpace$ | async as currentSpace">
+          {{'welcome_message' | translate:{name: currentSpace.label} }}
+        </h1>
+        <div class="date g-text-small g-text-light"
+             fxHide.lt-md>
+          {{currentDate | date:'EEEE MMMM d, y'}}
+        </div>
+
+      </div>
+      <div fxFlex="auto">
+        <ca-user-list-inline [userDatasource]="spaceUsers" [disabled]="true"></ca-user-list-inline>
       </div>
     </div>
+
 
     <!-- My project list -->
     <div class="section">
@@ -29,22 +41,23 @@
     </div>
   </div>
 
+
   <div class="dashboard-right" fxFlex>
 
-    <div class="bt" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="1em">
-      <a class="bt-div-text" href="mailto:clientsuccess@gencovery.com">
-        <div class="link-bt g-primary-background">
-          <mat-icon class="g-icon-huge icon" fontSet="material-icons-outlined">help</mat-icon>
-        </div>
-        <div class="link">{{'support' | translate}}</div>
+    <div class="g-full" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em">
+
+      <a class="link-button" href="mailto:clientsuccess@gencovery.com" matRipple>
+        <fl-text-icon>
+          <mat-icon>help</mat-icon>
+          <div>{{'support' | translate}}</div>
+        </fl-text-icon>
       </a>
 
-      <a [href]="hubLink" class="bt-div-text">
-        <div class="link-bt g-primary-background">
-          <mat-icon class="g-icon-big icon" fontSet="material-icons-outlined">hub</mat-icon>
-        </div>
-
-        <div class="link">{{'hub' | translate}}</div>
+      <a [href]="hubLink" target="_blank" class="link-button" matRipple>
+        <fl-text-icon>
+          <mat-icon>hub</mat-icon>
+          <div>{{'hub' | translate}}</div>
+        </fl-text-icon>
       </a>
     </div>
 
