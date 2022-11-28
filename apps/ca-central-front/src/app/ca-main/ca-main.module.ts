@@ -5,9 +5,9 @@ import {CaMainRoutingModule} from './ca-main-routing.module';
 import {CaCoreModule} from '../ca-core/ca-core.module';
 import {CaNotificationsModule} from '../ca-notifications/ca-notifications.module';
 import {
-  CaMyOrganizationsPortalComponent
-} from './component/ca-my-organizations-portal/ca-my-organizations-portal.component';
-import {CaOrganizationCoreModule} from '../ca-core/entity-module/ca-organization-core/ca-organization-core.module';
+  CaMySpacesPortalComponent
+} from './component/ca-my-spaces-portal/ca-my-spaces-portal.component';
+import {CaSpaceCoreModule} from '../ca-core/entity-module/ca-space-core/ca-space-core.module';
 
 /**
  * Main modules tha manage the pages once the user is connected
@@ -15,13 +15,13 @@ import {CaOrganizationCoreModule} from '../ca-core/entity-module/ca-organization
 @NgModule({
   declarations: [
     CaMainAppComponent,
-    CaMyOrganizationsPortalComponent
+    CaMySpacesPortalComponent
   ],
   imports: [
     CommonModule,
 
     CaCoreModule,
-    CaOrganizationCoreModule,
+    CaSpaceCoreModule,
 
     // routing
     CaMainRoutingModule,

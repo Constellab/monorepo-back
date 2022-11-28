@@ -1,0 +1,53 @@
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {CaSpaceTableComponent} from './component/ca-space-table/ca-space-table.component';
+import {CaCoreModule} from '../../ca-core.module';
+import {
+  CaSpaceFormDialogComponent
+} from './component/ca-space-form-dialog/ca-space-form-dialog.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {RouterModule} from '@angular/router';
+import {
+  CaSpaceUserTableComponent
+} from './component/ca-space-user-table/ca-space-user-table.component';
+import {CaSpacePhotoPipe} from './pipe/ca-space-photo.pipe';
+import {CaSpacePhotoComponent} from './component/ca-space-photo/ca-space-photo.component';
+import {CaSpaceInlineComponent} from './component/ca-space-inline/ca-space-inline.component';
+import {
+  CaSelectSpaceOptionsComponent
+} from './component/ca-select-space-options/ca-select-space-options.component';
+import {CaExternalSpaceLinkDirective} from './pipe/ca-external-space-link.directive';
+
+
+@NgModule({
+  declarations: [
+    CaSpaceTableComponent,
+    CaSpaceFormDialogComponent,
+    CaSpaceUserTableComponent,
+    CaSpacePhotoPipe,
+    CaSpacePhotoComponent,
+    CaSpaceInlineComponent,
+    CaSelectSpaceOptionsComponent,
+    CaExternalSpaceLinkDirective,
+  ],
+  exports: [
+    CaSpaceTableComponent,
+    CaSpaceFormDialogComponent,
+    CaSpaceUserTableComponent,
+    CaSpacePhotoPipe,
+    CaSpacePhotoComponent,
+    CaSpaceInlineComponent,
+    CaSelectSpaceOptionsComponent,
+    CaExternalSpaceLinkDirective,
+  ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+
+    CaCoreModule,
+  ],
+})
+export class CaSpaceCoreModule {
+}

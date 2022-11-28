@@ -27,7 +27,7 @@ export class CaBucketCredentialsTableComponent extends FlTableAbstractDirective<
 
   constructor(private dialogService: FlDialogService,
               private objectStorageService: CaObjectStorageService) {
-    super(['organization', 'cloudProvider', 'created', 'lastModified', 'actions']);
+    super(['space', 'cloudProvider', 'created', 'lastModified', 'actions']);
   }
 
   ngOnInit(): void {

@@ -23,24 +23,24 @@ export class SnSmartDbService extends BlAbstractService<SnSmartDbEntity> {
 
 
   async create(entity: SnSmartDbEntity, entityManager?: EntityManager): Promise<SnSmartDbEntity> {
-    await this.smartDbSecurity.checkAuthorizationToCreate(CnCurrentUserHelper.getAndCheckUserOrgaInfo());
+    await this.smartDbSecurity.checkAuthorizationToCreate(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
 
     entity.dbIndex = ClStringHelper.generateUUID();
-    entity.organization = CnCurrentUserHelper.getCurrentOrganization();
+    entity.space = CnCurrentUserHelper.getCurrentSpace();
     return super.create(entity, entityManager);
   }
 
 
   protected async updateWithCompare(newEntity: SnSmartDbEntity, dbEntity: SnSmartDbEntity,
                                     entityManager?: EntityManager): Promise<SnSmartDbEntity> {
-    await this.smartDbSecurity.checkAuthorizationToUpdate(dbEntity, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
+    await this.smartDbSecurity.checkAuthorizationToUpdate(dbEntity, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return super.updateWithCompare(newEntity, dbEntity, entityManager);
   }
 
 
   async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
     const smartDb = await this.findByIdAndCheck(id);
-    await this.smartDbSecurity.checkAuthorizationToUpdate(smartDb, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
+    await this.smartDbSecurity.checkAuthorizationToUpdate(smartDb, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
 
     await this.docService.deleteIndexIfExist(smartDb.dbIndex);
 
@@ -54,7 +54,7 @@ export class SnSmartDbService extends BlAbstractService<SnSmartDbEntity> {
   async getAndCheckAuthorizationToFindOne(id: string): Promise<SnSmartDbEntity> {
     const smartDb = await this.findByIdAndCheck(id);
 
-    await this.smartDbSecurity.checkAuthorizationToFindOne(smartDb, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
+    await this.smartDbSecurity.checkAuthorizationToFindOne(smartDb, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
 
     return smartDb;
   }
@@ -66,14 +66,14 @@ export class SnSmartDbService extends BlAbstractService<SnSmartDbEntity> {
   async getAndCheckAuthorizationToUpdate(id: string): Promise<SnSmartDbEntity> {
     const smartDb = await this.findByIdAndCheck(id);
 
-    await this.smartDbSecurity.checkAuthorizationToUpdate(smartDb, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
+    await this.smartDbSecurity.checkAuthorizationToUpdate(smartDb, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
 
     return smartDb;
   }
 
   public async getCurrentSmartDb(page: number, size: number): Promise<ClPageI<SnSmartDbEntity>> {
-    const userGroups = await this.groupAggregateService.getAllGroupIdsByUserAndOrganization(CnCurrentUserHelper.getAndCheckCurrentUser().id,
-      CnCurrentUserHelper.getCurrentOrganization().id);
+    const userGroups = await this.groupAggregateService.getAllGroupIdsByUserAndSpace(CnCurrentUserHelper.getAndCheckCurrentUser().id,
+      CnCurrentUserHelper.getCurrentSpace().id);
 
     return this.findPaginated(page, size, {
       where: {

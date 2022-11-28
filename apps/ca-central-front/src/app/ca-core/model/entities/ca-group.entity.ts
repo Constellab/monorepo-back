@@ -17,7 +17,7 @@ export class CaGroup extends CaBaseEntity {
 
   type: CaGroupType;
 
-  organizationId: string;
+  spaceId: string;
 }
 
 export type CaGroupDatasource = FlEntityPaginatedDatasource<CaGroup>;

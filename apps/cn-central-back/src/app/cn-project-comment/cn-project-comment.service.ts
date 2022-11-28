@@ -45,7 +45,7 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
         text2: comment.project.title,
         objectId: comment.id,
         objectType: CnNotificationType.PROJECT_COMMENT,
-        organizationId: project.organizationId
+        spaceId: project.spaceId
       }
       await this.notificationService.createNotification(newNotification);
     }

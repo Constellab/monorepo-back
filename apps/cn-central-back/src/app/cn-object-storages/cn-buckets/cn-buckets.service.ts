@@ -37,35 +37,35 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
   /**
    * Get the bucket before create or update.
    * Check if a similar bucket already exists.
-   * Check if the bucket type requires an organization and the organization is the same as the credentials
+   * Check if the bucket type requires an space and the space is the same as the credentials
    * @param bucket
    * @private
    */
   private async checkBucketBeforeSave(bucket: CnBucket): Promise<CnBucket> {
-    // There can be only on bucket of type ORGANIZATION_IMAGE or USER_IMAGE
-    if ([CnBucketContentType.ORGANIZATION_IMAGE, CnBucketContentType.USER_IMAGE].includes(bucket.contentType)) {
+    // There can be only on bucket of type SPACE_IMAGE or USER_IMAGE
+    if ([CnBucketContentType.SPACE_IMAGE, CnBucketContentType.USER_IMAGE].includes(bucket.contentType)) {
       const existingBucket = await this.findByContentType(bucket.contentType);
       if (existingBucket.length > 0) {
         throw new BadRequestException(`There is already a bucket of type ${bucket.contentType}`);
       }
-      bucket.organization = null;
+      bucket.space = null;
     } else {
-      // all the other type must be associated to an organization
-      if (!bucket.organization) {
-        throw new BadRequestException(`The bucket must be associated to an organization`);
+      // all the other type must be associated to an space
+      if (!bucket.space) {
+        throw new BadRequestException(`The bucket must be associated to an space`);
       }
 
       if (bucket.contentType === CnBucketContentType.LAB_BACKUP && bucket.objectId == null) {
         throw new BadRequestException(`The bucket must be associated to a lab`);
       }
 
-      // There can be only one bucket of type REPORT_IMAGE,REPORT_VIEW,COMMENT_IMAGE per organization
+      // There can be only one bucket of type REPORT_IMAGE,REPORT_VIEW,COMMENT_IMAGE per space
       if ([CnBucketContentType.REPORT_IMAGE, CnBucketContentType.REPORT_VIEW, CnBucketContentType.COMMENT_IMAGE]
         .includes(bucket.contentType)) {
-        const existingBucket = await this.findByOrganizationAndContentType(bucket.organization.id, bucket.contentType);
+        const existingBucket = await this.findBySpaceAndContentType(bucket.space.id, bucket.contentType);
         if (existingBucket.length > 0) {
           // eslint-disable-next-line max-len
-          throw new BadRequestException(`There is already a bucket of type ${bucket.contentType} for the organization ${bucket.organization.label}`);
+          throw new BadRequestException(`There is already a bucket of type ${bucket.contentType} for the space ${bucket.space.name}`);
         }
       }
     }
@@ -89,10 +89,10 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     });
   }
 
-  public async findByOrganizationAndContentType(organizationId: string, contentType: CnBucketContentType): Promise<CnBucket[]> {
+  public async findBySpaceAndContentType(spaceId: string, contentType: CnBucketContentType): Promise<CnBucket[]> {
     return await this.repository.find({
       where: {
-        organization: {id: organizationId},
+        space: {id: spaceId},
         contentType: contentType
       }
     });
@@ -110,18 +110,18 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     return this.findPaginated(page, size, {
       relations: {
         region: true,
-        organization: true,
-        credentials: {cloudProvider: true, organization: true}
+        space: true,
+        credentials: {cloudProvider: true, space: true}
       }
     });
   }
 
-  public async findLabBackupBucket(labInstanceId: string, organizationId: string): Promise<CnBucket> {
+  public async findLabBackupBucket(labInstanceId: string, spaceId: string): Promise<CnBucket> {
     return await this.repository.findOne({
       where: {
         contentType: CnBucketContentType.LAB_BACKUP,
         objectId: labInstanceId,
-        organization: {id: organizationId}
+        space: {id: spaceId}
       },
       relations: {
         credentials: true,

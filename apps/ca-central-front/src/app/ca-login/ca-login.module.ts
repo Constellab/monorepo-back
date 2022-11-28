@@ -4,11 +4,11 @@ import {CaLoginPageComponent} from './component/ca-login-page/ca-login-page.comp
 import {CaLoginRoutingModule} from './ca-login-routing.module';
 import {CaCoreModule} from '../ca-core/ca-core.module';
 import {
-  CaSignupToOrganizationPageComponent
-} from './component/ca-signup-to-organization-page/ca-signup-to-organization-page.component';
+  CaSignupToSpacePageComponent
+} from './component/ca-signup-to-space-page/ca-signup-to-space-page.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {CaOrganizationCoreModule} from '../ca-core/entity-module/ca-organization-core/ca-organization-core.module';
-import {CaNoOrganizationPageComponent} from './component/ca-no-organization-page/ca-no-organization-page.component';
+import {CaSpaceCoreModule} from '../ca-core/entity-module/ca-space-core/ca-space-core.module';
+import {CaNoSpacePageComponent} from './component/ca-no-space-page/ca-no-space-page.component';
 
 /**
  * Module containing page when the user in not logged
@@ -16,8 +16,8 @@ import {CaNoOrganizationPageComponent} from './component/ca-no-organization-page
 @NgModule({
   declarations: [
     CaLoginPageComponent,
-    CaSignupToOrganizationPageComponent,
-    CaNoOrganizationPageComponent,
+    CaSignupToSpacePageComponent,
+    CaNoSpacePageComponent,
   ],
   imports: [
     CommonModule,
@@ -25,7 +25,7 @@ import {CaNoOrganizationPageComponent} from './component/ca-no-organization-page
     FormsModule,
 
     CaCoreModule,
-    CaOrganizationCoreModule,
+    CaSpaceCoreModule,
 
     // routing
     CaLoginRoutingModule,

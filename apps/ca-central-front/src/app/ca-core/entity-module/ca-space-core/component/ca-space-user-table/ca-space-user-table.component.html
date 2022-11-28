@@ -1,0 +1,91 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource">
+
+  <!-- Photo -->
+  <ng-container matColumnDef="user">
+    <mat-header-cell *matHeaderCellDef>
+      {{'user' | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <ca-user-inline [user]="row.user"></ca-user-inline>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Role -->
+  <ng-container matColumnDef="role">
+    <mat-header-cell *matHeaderCellDef>
+      {{'role' | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <div>{{row.role}}</div>
+    </mat-cell>
+  </ng-container>
+
+  <!-- active -->
+  <ng-container matColumnDef="active">
+    <mat-header-cell *matHeaderCellDef>
+      {{'active_license' | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <div>{{row.active | flYesNo}}</div>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Actions -->
+  <ng-container matColumnDef="actions">
+    <mat-header-cell class="g-table-icon-button-cell" *matHeaderCellDef>
+    </mat-header-cell>
+    <mat-cell class="g-table-icon-button-cell" *matCellDef="let row">
+
+      <!--   Mat menu containing action buttons   -->
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" xPosition="before">
+
+        <button mat-menu-item type="button"
+                (click)="onUpdateRole(row)">
+          <mat-icon>edit</mat-icon>
+          <span>{{'space_update_role' | translate}}</span>
+        </button>
+
+        <button mat-menu-item type="button" *ngIf="row.active; else inactive"
+                class="g-warn-text" (click)="onDeactivateUser(row)">
+          <mat-icon color="warn">clear</mat-icon>
+          <span>{{'space_deactivate_license' | translate}}</span>
+        </button>
+
+        <ng-template #inactive>
+          <button mat-menu-item type="button"
+                  (click)="onActivateUser(row)">
+            <mat-icon>check</mat-icon>
+            <span>{{'space_activate_license' | translate}}</span>
+          </button>
+        </ng-template>
+
+        <button mat-menu-item type="button"
+                class="g-warn-text" (click)="onRemoveUser(row)">
+          <mat-icon color="warn">clear</mat-icon>
+          <span>{{'space_remove_user' | translate}}</span>
+        </button>
+      </mat-menu>
+    </mat-cell>
+  </ng-container>
+
+
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
+    <mat-header-cell *matHeaderCellDef>
+      {{column.columnName | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let user">
+      <div>
+        <span>{{user[column.accessor]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+</mat-table>
+

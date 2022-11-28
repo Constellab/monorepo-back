@@ -45,8 +45,8 @@ export class LabSystemService {
       );
   }
 
-  public getOrganizationPhotoUrl(filename: string): string {
-    return LabEnvironmentHelper.getCentralApiUrl() + '/organizations/photo/' + filename;
+  public getSpacePhotoUrl(filename: string): string {
+    return LabEnvironmentHelper.getCentralApiUrl() + '/spaces/photo/' + filename;
   }
 
 }

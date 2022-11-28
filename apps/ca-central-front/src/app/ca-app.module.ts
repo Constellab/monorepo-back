@@ -40,7 +40,7 @@ import {TdTechnicalDocModule} from '@monorepo/technical-doc';
 import {CaTdServiceConfig} from './ca-core/model/config/ca-td-service.config';
 import {PrProtocolModule} from '@monorepo/protocol';
 import {CaUserConfig} from './ca-core/model/config/ca-user-config.service';
-import {CaOrganizationInterceptor} from './ca-core/interceptor/ca-organization.interceptor';
+import {CaSpaceInterceptor} from './ca-core/interceptor/ca-space-interceptor.service';
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
   return (): void => themeService.init();
@@ -109,7 +109,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: CaOrganizationInterceptor,
+      useClass: CaSpaceInterceptor,
       multi: true
     },
     {provide: APP_INITIALIZER, useFactory: loadThemeOnInit, deps: [FlThemeService], multi: true},

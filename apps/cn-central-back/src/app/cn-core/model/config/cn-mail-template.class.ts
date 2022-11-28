@@ -6,8 +6,8 @@ export enum CnMailTemplate {
   account_locked = 'cn-account-locked',
   signup = 'cn-signup',
   password_forgotten = 'cn-password-forgotten',
-  organization_invit_new_user = 'cn-organization-invit-new-user',
-  organization_invit_existing_user = 'cn-organization-invit-existing-user',
+  space_invit_new_user = 'cn-space-invit-new-user',
+  space_invit_existing_user = 'cn-space-invit-existing-user',
   request_new_licenses = 'cn-request-new-licenses',
   two_factor_authentication = 'cn-two-factor-authentication',
 

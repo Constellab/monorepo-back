@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaLabInstance, CaLabInstanceWithOrga} from '../../../../model/entities/ca-lab-instance.class';
+import {CaLabInstance, CaLabInstanceWithSpace} from '../../../../model/entities/ca-lab-instance.class';
 import {
   CaLabInstanceFormDialogComponent,
   CaLabInstanceFormDialogInput
@@ -25,23 +25,23 @@ import {CaRouterService} from '../../../../service/ca-router.service';
 })
 export class CaLabInstanceTableComponent extends FlTableAbstractDirective<CaLabInstance> implements OnInit {
 
-  @Input() datasource: FlArrayObs<CaLabInstance | CaLabInstanceWithOrga>;
+  @Input() datasource: FlArrayObs<CaLabInstance | CaLabInstanceWithSpace>;
 
   @Input() disableLink: boolean = false;
 
   constructor(private dialogService: FlDialogService,
               private labInstanceService: CaLabInstanceService) {
-    super(['organization', 'name', 'createdBy', 'currentStatus', 'serverInfo', 'createdBy', 'actions']);
+    super(['space', 'name', 'createdBy', 'currentStatus', 'serverInfo', 'createdBy', 'actions']);
   }
 
   ngOnInit(): void {
   }
 
-  getLabInstanceRoute(labInstance: CaLabInstanceWithOrga): string {
+  getLabInstanceRoute(labInstance: CaLabInstanceWithSpace): string {
     return CaRouterService.getLabInstanceDetailRoute(labInstance.id);
   }
 
-  openUpdateDialog(labInstance: CaLabInstanceWithOrga): void {
+  openUpdateDialog(labInstance: CaLabInstanceWithSpace): void {
     const dialogInput: CaLabInstanceFormDialogInput = {
       mode: 'update', object: {
         id: labInstance.id,
@@ -52,7 +52,7 @@ export class CaLabInstanceTableComponent extends FlTableAbstractDirective<CaLabI
         codelabToken: labInstance.codelabToken,
         glabApiKey: labInstance.glabApiKey,
         labManagerApiKey: labInstance.labManagerApiKey,
-        organization: labInstance.organization,
+        space: labInstance.space,
       }
     };
 

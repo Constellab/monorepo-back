@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {CaLabInstanceForm, CaLabInstanceWithOrga} from '../../../../model/entities/ca-lab-instance.class';
+import {CaLabInstanceForm, CaLabInstanceWithSpace} from '../../../../model/entities/ca-lab-instance.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
@@ -17,7 +17,7 @@ export type CaLabInstanceFormDialogInput = FlFormDialogInput<CaLabInstanceForm>;
   templateUrl: './ca-lab-instance-form-dialog.component.html',
   styleUrls: ['./ca-lab-instance-form-dialog.component.scss']
 })
-export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirective<CaLabInstanceForm, CaLabInstanceWithOrga>
+export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirective<CaLabInstanceForm, CaLabInstanceWithSpace>
   implements OnInit {
 
   countries: CaCountry[];
@@ -53,15 +53,15 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
       labManagerApiKey: [null],
       codelabToken: [null],
       city: [null, Validators.required],
-      organization: [{value: null, disabled: this.isUpdateMode()}, Validators.required],
+      space: [{value: null, disabled: this.isUpdateMode()}, Validators.required],
     });
   }
 
-  create(formValue: CaLabInstanceForm): Observable<CaLabInstanceWithOrga> {
+  create(formValue: CaLabInstanceForm): Observable<CaLabInstanceWithSpace> {
     return this.labInstanceService.create(formValue);
   }
 
-  update(formValue: CaLabInstanceForm): Observable<CaLabInstanceWithOrga> {
+  update(formValue: CaLabInstanceForm): Observable<CaLabInstanceWithSpace> {
     return this.labInstanceService.update(formValue);
   }
 

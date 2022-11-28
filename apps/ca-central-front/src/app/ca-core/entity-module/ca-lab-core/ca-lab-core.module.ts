@@ -19,7 +19,7 @@ import {
   CaLabInstanceStatusDialogComponent
 } from './component/ca-lab-instance-status-dialog/ca-lab-instance-status-dialog.component';
 import {CaLabLoginButtonComponent} from './component/ca-lab-login-button/ca-lab-login-button.component';
-import {CaOrganizationCoreModule} from '../ca-organization-core/ca-organization-core.module';
+import {CaSpaceCoreModule} from '../ca-space-core/ca-space-core.module';
 import {CaConfigCoreModule} from '../ca-config-core/ca-config-core.module';
 
 /**
@@ -50,7 +50,7 @@ import {CaConfigCoreModule} from '../ca-config-core/ca-config-core.module';
     ReactiveFormsModule,
 
     CaServerInfoCoreModule,
-    CaOrganizationCoreModule,
+    CaSpaceCoreModule,
     CaConfigCoreModule,
 
     CaCoreModule,

@@ -5,10 +5,10 @@ import {FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {
   CaNotificationsPortalComponent
 } from '../../../ca-notifications/ca-notifications-portal/ca-notifications-portal.component';
-import {CaMyOrganizationsPortalComponent} from '../ca-my-organizations-portal/ca-my-organizations-portal.component';
+import {CaMySpacesPortalComponent} from '../ca-my-spaces-portal/ca-my-spaces-portal.component';
 import {MatSidenav} from '@angular/material/sidenav';
 import {Observable} from 'rxjs';
-import {CaCurrentOrganizationService} from '../../../ca-core/service-api/ca-current-organization.service';
+import {CaCurrentSpaceService} from '../../../ca-core/service-api/ca-current-space.service';
 import {map} from 'rxjs/operators';
 
 /**
@@ -32,15 +32,15 @@ export class CaMainAppComponent implements OnInit {
 
 
   constructor(private authenticatedUserService: CaAuthenticatedUserService,
-              private currentOrganizationService: CaCurrentOrganizationService,
+              private currentSpaceService: CaCurrentSpaceService,
               private portalService: FlPortalService) {
   }
 
   ngOnInit(): void {
     this.initAccessibleLinks();
 
-    // if the current orga has a photo, use it, otherwise, use the default logo of gencovery
-    this.logo$ = this.currentOrganizationService.getCurrentOrganizationPhoto$().pipe(
+    // if the current space has a photo, use it, otherwise, use the default logo of gencovery
+    this.logo$ = this.currentSpaceService.getCurrentSpacePhoto$().pipe(
       map(photo => photo ?? 'assets/logo/logo.png')
     );
   }
@@ -58,7 +58,7 @@ export class CaMainAppComponent implements OnInit {
     this.accessibleLinks = accessibleLinks;
   }
 
-  openMyOrganizationsPortal(): void {
+  openMySpacesPortal(): void {
     const config = this.portalService.configureRelativePortal(this.sidenav.nativeElement, [{
       originX: 'end',
       overlayX: 'start',
@@ -70,7 +70,7 @@ export class CaMainAppComponent implements OnInit {
       elevation: true
     });
 
-    this.portalService.createPortal(CaMyOrganizationsPortalComponent, config);
+    this.portalService.createPortal(CaMySpacesPortalComponent, config);
   }
   openNotificationDiv(): void {
     const config: FlPortalConfig = this.portalService.configureAbsolutePortal({

@@ -17,7 +17,7 @@ export class CaAdminBucketListComponent implements OnInit {
   buckets: CaBucketFullDatasource = this.objectStorageService.getAllBucketsDatasource();
 
   displayedColumns: FlTableColumn<CaBucketFull>[] =
-    ['name', 'contentType', 'region', 'organization', 'credentials', 'lastModified', 'actions'];
+    ['name', 'contentType', 'region', 'space', 'credentials', 'lastModified', 'actions'];
 
   constructor(private objectStorageService: CaObjectStorageService,
               private dialogService: FlDialogService) {

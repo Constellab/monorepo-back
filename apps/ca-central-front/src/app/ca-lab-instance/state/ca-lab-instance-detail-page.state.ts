@@ -52,7 +52,7 @@ export class CaLabInstanceDetailPageState implements OnDestroy {
    */
   public isLabOwner$(): Observable<boolean> {
     return this.getCurrentUserRole$().pipe(
-      map(role => role === 'OWNER' || this.authenticatedUserService.isCurrentOrganizationAdmin())
+      map(role => role === 'OWNER' || this.authenticatedUserService.isCurrentSpaceAdmin())
     );
   }
 

@@ -26,19 +26,19 @@ export class CnObjectStoragesAggregateService {
 
 
   public async getOrCreateLabBackupBucket(labInstance: CnLabInstance): Promise<CnBucket> {
-    const labBackupBucket = await this.bucketService.findLabBackupBucket(labInstance.id, labInstance.organizationId);
+    const labBackupBucket = await this.bucketService.findLabBackupBucket(labInstance.id, labInstance.spaceId);
 
     if (labBackupBucket) {
       return labBackupBucket;
     }
 
-    const credentials = await this.bucketCredentialsService.findByOrganizationIdAndCheck(labInstance.organizationId);
+    const credentials = await this.bucketCredentialsService.findBySpaceIdAndCheck(labInstance.spaceId);
     const region = await this.bucketRegionService.findByCloudProviderNameAndTechnicalNameAndCheck(
       CnObjectStoragesAggregateService.LabBackupDefaultCloudProvider, CnObjectStoragesAggregateService.LabBackupDefaultRegion);
 
     const bucket = new CnBucket();
     bucket.name = labInstance.id; // use id as bucket name
-    bucket.organization = labInstance.organization;
+    bucket.space = labInstance.space;
     bucket.region = region;
     bucket.credentials = credentials;
     bucket.contentType = CnBucketContentType.LAB_BACKUP;

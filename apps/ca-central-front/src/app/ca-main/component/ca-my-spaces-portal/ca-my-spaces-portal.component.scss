@@ -1,0 +1,33 @@
+.portal {
+  padding: 0;
+  width: 20em;
+}
+
+.current-space{
+  padding: 1em 1em 0 1em;
+}
+
+.current-space-photo{
+  cursor: pointer;
+}
+
+.current-space-label{
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+}
+
+
+.my-other-space {
+  padding: 1.5em 1.5em 1em 1.5em;
+}
+
+
+.space {
+  cursor: pointer;
+  display: block;
+  padding: 1em;
+}
+
+.space:hover {
+  background-color: var(--card-background);
+}

@@ -15,7 +15,7 @@ import {CnLabConfigsModule} from './app/cn-lab-configs/cn-lab-configs.module';
 import {CnExperimentsModule} from './app/cn-projects-aggregate/cn-experiments/cn-experiments.module';
 import {CnBricksModule} from './app/cn-bricks/cn-bricks.module';
 import {CnGroupsModule} from './app/cn-groups/cn-groups.module';
-import {CnOrganizationsModule} from './app/cn-organizations/cn-organizations.module';
+import {CnSpacesModule} from './app/cn-spaces/cn-spaces.module';
 import {CnLabInstancesModule} from './app/cn-lab-instances/cn-lab-instances.module';
 import {CnJwtAuthGuard} from './app/cn-core/guards/cn-jwt-auth.guard';
 import {CnUserCategoryGuard} from './app/cn-core/guards/cn-user-category-guard.service';
@@ -50,7 +50,7 @@ import {CnStatsModule} from './app/cn-stats/cn-stats.module';
 import {CnCountryModule} from './app/cn-country/cn-country.module';
 import {CnCityModule} from './app/cn-city/cn-city.module';
 import {AppService} from './app.service';
-import {CnOrganizationMiddleware} from './app/cn-core/middleware/cn-organization-middleware.service';
+import {CnSpaceMiddleware} from './app/cn-core/middleware/cn-space-middleware.service';
 import {CnNotificationModule} from './app/cn-notification/cn-notification.module';
 import {CnProjectCommentModule} from './app/cn-project-comment/cn-project-comment.module';
 import {CnCloudProvidersModule} from './app/cn-cloud-providers/cn-cloud-providers.module';
@@ -178,7 +178,7 @@ function configureTransportModule(
     CnReportsModule,
     CnBricksModule,
     CnGroupsModule,
-    CnOrganizationsModule,
+    CnSpacesModule,
     CnLabInstancesModule,
     CnExternalLabsModule,
     CnServersInfoModule,
@@ -221,7 +221,7 @@ export class CnAppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
     consumer
       // register the RequestContextMiddleware to be able to access the request anywhere
-      .apply(BlRequestContextMiddleware, CnOrganizationMiddleware)
+      .apply(BlRequestContextMiddleware, CnSpaceMiddleware)
       .forRoutes({path: '*', method: RequestMethod.ALL});
   }
 }

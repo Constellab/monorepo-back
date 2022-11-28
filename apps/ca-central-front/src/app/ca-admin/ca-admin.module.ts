@@ -18,10 +18,8 @@ import {
 } from './component/ca-admin-lab-instances-list/ca-admin-lab-instances-list.component';
 import {CaLabCoreModule} from '../ca-core/entity-module/ca-lab-core/ca-lab-core.module';
 
-import {
-  CaAdminOrganizationsListComponent
-} from './component/ca-admin-organizations-list/ca-admin-organizations-list.component';
-import {CaOrganizationCoreModule} from '../ca-core/entity-module/ca-organization-core/ca-organization-core.module';
+import {CaAdminSpacesListComponent} from './component/ca-admin-spaces-list/ca-admin-spaces-list.component';
+import {CaSpaceCoreModule} from '../ca-core/entity-module/ca-space-core/ca-space-core.module';
 import {CaAdminServersPageComponent} from './component/ca-admin-servers-page/ca-admin-servers-page.component';
 import {CaAdminPageComponent} from './component/ca-admin-page/ca-admin-page.component';
 import {
@@ -47,7 +45,7 @@ import {CaAdminBucketListComponent} from './component/ca-admin-bucket-list/ca-ad
     CaAdminAccountActivationButtonComponent,
     CaAdminServerInfoListComponent,
     CaAdminLabInstancesListComponent,
-    CaAdminOrganizationsListComponent,
+    CaAdminSpacesListComponent,
     CaAdminServersPageComponent,
     CaAdminPageComponent,
     CaAdminCloudProvidersListComponent,
@@ -61,7 +59,7 @@ import {CaAdminBucketListComponent} from './component/ca-admin-bucket-list/ca-ad
     CaCoreModule,
     CaServerInfoCoreModule,
     CaLabCoreModule,
-    CaOrganizationCoreModule,
+    CaSpaceCoreModule,
     CaCloudProviderCoreModule,
     CaObjectStorageCoreModule,
 

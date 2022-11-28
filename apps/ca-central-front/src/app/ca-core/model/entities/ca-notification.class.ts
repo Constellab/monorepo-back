@@ -3,7 +3,7 @@ import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {Type} from 'class-transformer';
 import {CaUser} from './ca-user.class';
-import {CaOrganization} from './ca-organization.class';
+import {CaSpace} from './ca-space.class';
 import {FlDatasourcePaginated} from '@monorepo/front-core-lib';
 
 export class CaNotification extends CaEntity {
@@ -28,8 +28,8 @@ export class CaNotification extends CaEntity {
 
   text2: string;
 
-  @Type(() => CaOrganization)
-  organization: CaOrganization;
+  @Type(() => CaSpace)
+  space: CaSpace;
 }
 
 export type CaNotificationDatasourcePaginated = FlDatasourcePaginated<CaNotification>;

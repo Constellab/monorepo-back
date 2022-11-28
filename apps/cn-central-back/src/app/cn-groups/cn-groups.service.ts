@@ -23,7 +23,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     let group = new CnGroupTeam();
     group.type = CnGroupType.TEAM;
     group.label = label;
-    group.organization = CnCurrentUserHelper.getAndCheckCurrentOrganization();
+    group.space = CnCurrentUserHelper.getAndCheckCurrentSpace();
 
     const entityManager = this.getEntityManager();
     group = await this.create(group, entityManager) as CnGroupTeam;
@@ -46,20 +46,20 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
 
   public async getCurrentUserAllGroups(): Promise<CnGroup[]> {
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
-    const orga = CnCurrentUserHelper.getAndCheckCurrentOrganization();
-    return this.getAllGroupsOfUser(user.id, orga.id);
+    const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
+    return this.getAllGroupsOfUser(user.id, space.id);
   }
 
-  public async getAllGroupIdsOfUser(userId: string, organizationId: string): Promise<string[]> {
-    return (await this.getAllGroupsOfUser(userId, organizationId)).map(group => group.id);
+  public async getAllGroupIdsOfUser(userId: string, spaceId: string): Promise<string[]> {
+    return (await this.getAllGroupsOfUser(userId, spaceId)).map(group => group.id);
   }
 
 
   /**
    * Get all groups of a user
    */
-  public async getAllGroupsOfUser(userId: string, organizationId: string): Promise<CnGroup[]> {
-    const groups = await this.getAllByUserAndOrganization(userId, organizationId);
+  public async getAllGroupsOfUser(userId: string, spaceId: string): Promise<CnGroup[]> {
+    const groups = await this.getAllByUserAndSpace(userId, spaceId);
     const singleGroup = await this.getUserSingleGroup(userId);
 
     if (singleGroup) {
@@ -125,22 +125,22 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
 
   ////////////////////////////////// TEAMS /////////////////////////
 
-  public async getAllByUserAndOrganization(userId: string, organizationId: string): Promise<CnGroup[]> {
-    return this.repository.find(this.getByUserAndOrganizationOptions(userId, organizationId));
+  public async getAllByUserAndSpace(userId: string, spaceId: string): Promise<CnGroup[]> {
+    return this.repository.find(this.getByUserAndSpaceOptions(userId, spaceId));
   }
 
   /**
    * Get groups of user paginated
    */
-  public async getByUserAndOrganization(userId: string, organizationId: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
-    return this.findPaginated(page, size, this.getByUserAndOrganizationOptions(userId, organizationId));
+  public async getByUserAndSpace(userId: string, spaceId: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
+    return this.findPaginated(page, size, this.getByUserAndSpaceOptions(userId, spaceId));
   };
 
-  private getByUserAndOrganizationOptions(userId: string, organizationId: string): FindOneOptions<CnGroup> {
+  private getByUserAndSpaceOptions(userId: string, spaceId: string): FindOneOptions<CnGroup> {
     const options: FindOneOptions<CnGroupTeam> = {
       where: {
         type: CnGroupType.TEAM,
-        organizationId: organizationId,
+        spaceId: spaceId,
         users: {
           userId: userId
         }
@@ -150,11 +150,11 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     return options as any;
   }
 
-  public async getByOrganization(organizationId: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
+  public async getBySpace(spaceId: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
     const options: FindOneOptions<CnGroupTeam> = {
       where: {
         type: CnGroupType.TEAM,
-        organizationId: organizationId,
+        spaceId: spaceId,
       },
     };
     return this.findPaginated(page, size, options as any);

@@ -5,8 +5,8 @@ import {CnCreateLabExperimentDto} from '../cn-projects-aggregate/cn-experiments/
 import {CnCreateReportWithConfigDto} from '../cn-projects-aggregate/cn-reports/cn-report.dto';
 import {CnLabInstanceStartDTO} from '../cn-lab-instances/cn-lab-instance.dto';
 import {CnProjectAggregateService} from '../cn-projects-aggregate/cn-project-aggregate.service';
-import {CnLabInstanceSendMailDto} from '../cn-lab-instances/cn-lab-instance-mail.dto';
-import {CnLabInstanceMailService} from '../cn-lab-instances/cn-lab-instance-mail.service';
+import {CnLabInstanceSendMailDto} from '../cn-lab-instances/mail/cn-lab-instance-mail.dto';
+import {CnLabInstanceMailService} from '../cn-lab-instances/mail/cn-lab-instance-mail.service';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 import {CnLabInstanceAggregateService} from '../cn-lab-instances/cn-lab-instance-aggregate.service';

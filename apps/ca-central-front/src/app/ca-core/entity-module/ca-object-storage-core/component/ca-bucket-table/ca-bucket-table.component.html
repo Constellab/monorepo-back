@@ -30,13 +30,13 @@
     </mat-cell>
   </ng-container>
 
-  <!-- Organization -->
-  <ng-container matColumnDef="organization">
+  <!-- Space -->
+  <ng-container matColumnDef="space">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'organization' | translate}}</p>
+      <p>{{'space' | translate}}</p>
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
-      <ca-organization-inline *ngIf="row.organization" [organization]="row.organization"></ca-organization-inline>
+      <ca-space-inline *ngIf="row.space" [space]="row.space"></ca-space-inline>
     </mat-cell>
   </ng-container>
 

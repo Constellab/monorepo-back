@@ -6,7 +6,7 @@
 
       <div fxLayout="row" fxLayoutAlign="start end">
         <h1 *ngIf="currentSpace$ | async as currentSpace">
-          {{'welcome_message' | translate:{name: currentSpace.label} }}
+          {{'welcome_message' | translate:{name: currentSpace.name} }}
         </h1>
         <div class="date g-text-small g-text-light"
              fxHide.lt-md>

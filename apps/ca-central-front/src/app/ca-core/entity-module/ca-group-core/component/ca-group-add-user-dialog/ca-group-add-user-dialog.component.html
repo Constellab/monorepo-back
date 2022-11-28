@@ -3,7 +3,7 @@
 </fl-dialog-header>
 
 <mat-dialog-content>
-  <form (ngSubmit)="submit()" id="add-user-to-orga-form">
+  <form (ngSubmit)="submit()" id="add-user-to-space-form">
 
     <!--  User  -->
     <mat-form-field class="g-form-input">
@@ -21,7 +21,7 @@
 </mat-dialog-content>
 
 <div mat-dialog-actions>
-  <button mat-flat-button color="primary" type="submit" form="add-user-to-orga-form"
+  <button mat-flat-button color="primary" type="submit" form="add-user-to-space-form"
           class="g-centered-forced">
     {{'save' | translate}}
     <fl-button-loader *ngIf="isLoading"></fl-button-loader>

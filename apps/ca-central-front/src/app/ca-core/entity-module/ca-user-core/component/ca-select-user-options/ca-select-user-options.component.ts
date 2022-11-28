@@ -6,12 +6,12 @@ import {
   FlEmbeddedOptionsAbstractDirective,
   FlEntityPaginatedDatasource
 } from '@monorepo/front-core-lib';
-import {CaOrganizationService} from '../../../../service-api/ca-organization.service';
+import {CaSpaceService} from '../../../../service-api/ca-space.service';
 import {Observable} from 'rxjs';
 import {CaUsersService} from '../../../../service-api/ca-users.service';
 import {map} from 'rxjs/operators';
 
-export type CaSelectUserMode = 'all' | 'organization';
+export type CaSelectUserMode = 'all' | 'space';
 
 @Component({
   selector: 'ca-select-user-options',
@@ -21,13 +21,13 @@ export type CaSelectUserMode = 'all' | 'organization';
 export class CaSelectUserOptionsComponent extends FlEmbeddedOptionsAbstractDirective
   implements OnInit, AfterViewInit, OnDestroy {
 
-  @Input() mode: CaSelectUserMode = 'organization';
+  @Input() mode: CaSelectUserMode = 'space';
 
   datasource: FlDatasourcePaginated<any>;
   users$: Observable<CaUser[]>;
 
 
-  constructor(private organizationService: CaOrganizationService,
+  constructor(private spaceService: CaSpaceService,
               private userService: CaUsersService,
               @Host() private select: MatSelect) {
     super(select);
@@ -46,9 +46,9 @@ export class CaSelectUserOptionsComponent extends FlEmbeddedOptionsAbstractDirec
       this.users$ = this.datasource.connect();
 
     } else {
-      this.datasource = this.organizationService.getUsersOfOrganizationDatasource('current');
+      this.datasource = this.spaceService.getUsersOfSpaceDatasource('current');
       this.users$ = this.datasource.connect().pipe(
-        map(orgaUsers => orgaUsers.map(orgaUser => orgaUser.user))
+        map(spaceUsers => spaceUsers.map(spaceUser => spaceUser.user))
       );
     }
   }

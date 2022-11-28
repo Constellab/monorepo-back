@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable, Logger, UnauthorizedException} from '@nestjs/common';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstancesService} from './cn-lab-instances.service';
-import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
+import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {
   CnExternalLabBackup,
@@ -17,7 +17,7 @@ import {
   CnLabManagerStatus
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnLabManagerService} from './cn-lab-manager.service';
-import {CnLabInstanceToken} from './cn-lab-instance-token.class';
+import {CnLabInstanceToken} from './user/cn-lab-instance-token.class';
 import {
   CnLabFindOneDto,
   CnLabInstanceConfigDTO,
@@ -27,15 +27,15 @@ import {
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstancesSecurity} from './cn-lab-instances.security';
 import {BlDtoHelper} from '@monorepo/back-core-lib';
-import {CnLabInstanceUser, CnLabInstanceUserRole} from './cn-lab-instance-user.entity';
+import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
 import {CnExternalLabUserService} from '../cn-external-lab-api/cn-external-lab-user.service';
 import {CnExternalLabApiService} from '../cn-external-lab-api/cn-external-lab-api.service';
 import {CnExternalLabError} from '../cn-external-lab-api/model/cn-external-lab-error.class';
 import {AxiosResponse} from 'axios';
-import {CnLabInstanceUserService} from './cn-lab-instance-user.service';
+import {CnLabInstanceUserService} from './user/cn-lab-instance-user.service';
 import {DataSource} from 'typeorm';
-import {CnLabInstanceProject} from './cn-lab-instance-project.entity';
-import {CnLabInstanceProjectService} from './cn-lab-instance-project.service';
+import {CnLabInstanceProject} from './project/cn-lab-instance-project.entity';
+import {CnLabInstanceProjectService} from './project/cn-lab-instance-project.service';
 import {CnProjectAggregateService} from '../cn-projects-aggregate/cn-project-aggregate.service';
 import {CnExternalLabProjectService} from '../cn-external-lab-api/cn-external-lab-project.service';
 import {CnUsersService} from '../cn-users/cn-users.service';
@@ -64,7 +64,7 @@ export class CnLabInstanceAggregateService {
   }
 
   async create(createLabInstance: CnLabInstanceCreateDTO): Promise<CnLabInstance> {
-    await this.security.checkAuthorizationToCreate(CnCurrentUserHelper.getAndCheckUserOrgaInfo());
+    await this.security.checkAuthorizationToCreate(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
 
     const labInstance = BlDtoHelper.fromDto(CnLabInstance, createLabInstance);
 
@@ -93,13 +93,13 @@ export class CnLabInstanceAggregateService {
 
   async findByIdAndCheck(id: string): Promise<CnLabFindOneDto> {
     const labInstance = await this.labInstancesService.findByIdAndCheck(id);
-    const userRole = await this.security.checkAuthorizationToFindById(labInstance, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
+    const userRole = await this.security.checkAuthorizationToFindById(labInstance, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return CnLabFindOneDto.create(labInstance, userRole);
   }
 
-  async getByCurrentOrganization(page: number, size: number): Promise<ClPageI<CnLabInstance>> {
-    await this.security.checkAuthorizationToFindAllByOrganization(CnCurrentUserHelper.getAndCheckUserOrgaInfo());
-    return this.labInstancesService.findByOrganization(CnCurrentUserHelper.getCurrentOrganization().id, page, size);
+  async getByCurrentSpace(page: number, size: number): Promise<ClPageI<CnLabInstance>> {
+    await this.security.checkAuthorizationToFindAllBySpace(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    return this.labInstancesService.findBySpace(CnCurrentUserHelper.getCurrentSpace().id, page, size);
   }
 
 
@@ -134,7 +134,7 @@ export class CnLabInstanceAggregateService {
   }
 
   async findAll(page: number, size: number): Promise<ClPageI<CnLabInstance>> {
-    await this.security.checkAuthorizationToFindAll(CnCurrentUserHelper.getAndCheckUserOrgaInfo());
+    await this.security.checkAuthorizationToFindAll(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
 
     return this.labInstancesService.findAll(page, size);
   }
@@ -164,7 +164,7 @@ export class CnLabInstanceAggregateService {
     try {
       const token =
         await this.externalLabUserService.generateTempAccess(labInstance.getGlabApiInfo(),
-          CnCurrentUserHelper.getAndCheckCurrentUser(), labInstance.organization);
+          CnCurrentUserHelper.getAndCheckCurrentUser(), labInstance.space);
 
       return new CnLabInstanceToken(labInstance, token.temp_token);
     } catch (e: any) {
@@ -303,7 +303,7 @@ export class CnLabInstanceAggregateService {
 
   public async initAll(labId: string): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
-    return this.labManagerService.initAll(labInstance, labInstance.organization);
+    return this.labManagerService.initAll(labInstance, labInstance.space);
   }
 
   public async upContainers(labId: string, options?: CnLabComposeUpOptions): Promise<void> {
@@ -405,21 +405,21 @@ export class CnLabInstanceAggregateService {
 
   //////////////////////////// AUTHORIZATION ////////////////////////////////
   private async getAndCheckAuthorizationToFindById(id: string): Promise<CnLabInstance> {
-    const labInstance = await this.labInstancesService.findByIdAndCheck(id, {organization: true});
-    await this.security.checkAuthorizationToFindById(labInstance, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
+    const labInstance = await this.labInstancesService.findByIdAndCheck(id, {space: true});
+    await this.security.checkAuthorizationToFindById(labInstance, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return labInstance;
   }
 
 
   private async getAndCheckAuthorizationToUpdate(id: string): Promise<CnLabInstance> {
-    const labInstance = await this.labInstancesService.findByIdAndCheck(id, {sharedGroups: true, organization: true});
-    this.security.checkAuthorizationToUpdate(labInstance, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
+    const labInstance = await this.labInstancesService.findByIdAndCheck(id, {sharedGroups: true, space: true});
+    this.security.checkAuthorizationToUpdate(labInstance, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return labInstance;
   }
 
   private async getAndCheckAuthorizationToManageLab(id: string): Promise<CnLabInstance> {
-    const labInstance = await this.labInstancesService.findByIdAndCheck(id, {sharedGroups: true, organization: true});
-    await this.security.checkAuthorizationToManageLab(labInstance, CnCurrentUserHelper.getAndCheckUserOrgaInfo());
+    const labInstance = await this.labInstancesService.findByIdAndCheck(id, {sharedGroups: true, space: true});
+    await this.security.checkAuthorizationToManageLab(labInstance, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return labInstance;
   }
 

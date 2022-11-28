@@ -13,10 +13,10 @@ import {
   cnExternalLabUserHeader
 } from '../model/config/cn-config.class';
 import {CnCurrentUserHelper} from '../utils/cn-current-user.helper';
-import {CnOrganizationUserService} from '../../cn-organizations/cn-organization-user.service';
-import {CnOrganizationUserRole} from '../../cn-organizations/cn-organization-user.entity';
+import {CnSpaceUserService} from '../../cn-spaces/cn-space-user.service';
+import {CnSpaceUserRole} from '../../cn-spaces/cn-space-user.entity';
 import {cnIsLabRobotAuth} from '../decorators/cn-lab-guard.decorator';
-import {CnOrganization} from '../../cn-organizations/cn-organization.entity';
+import {CnSpace} from '../../cn-spaces/cn-space.entity';
 
 /**
  * Guard to authenticate route called by the lab servers.
@@ -33,7 +33,7 @@ export class CnLabAuthGuard implements CanActivate {
               private labInstancesService: CnLabInstancesService,
               private usersService: CnUsersService,
               private configService: CnCoreConfigService,
-              private organizationUserService: CnOrganizationUserService) {
+              private spaceUserService: CnSpaceUserService) {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -57,11 +57,11 @@ export class CnLabAuthGuard implements CanActivate {
     // store the labInstance in the current context
     CnCurrentUserHelper.setCurrentLabInstance(labInstance);
 
-    // store the lab instance organization in the current context
-    CnCurrentUserHelper.setCurrentOrganization(labInstance.organization);
+    // store the lab instance space in the current context
+    CnCurrentUserHelper.setCurrentSpace(labInstance.space);
 
     // set the user in the context as the connected user
-    await this.setUserInContext(request, labInstance.organization, context);
+    await this.setUserInContext(request, labInstance.space, context);
 
     return true;
   }
@@ -72,7 +72,7 @@ export class CnLabAuthGuard implements CanActivate {
    * Otherwise the user from the request is set in the request context
    * @private
    */
-  private async setUserInContext(request: Request, organization: CnOrganization, context: ExecutionContext): Promise<void> {
+  private async setUserInContext(request: Request, space: CnSpace, context: ExecutionContext): Promise<void> {
 
     // if the route is annotated with ClLabRobotAuthentication, set the robot user in the context
     if (cnIsLabRobotAuth(this.reflector, context)) {
@@ -85,13 +85,13 @@ export class CnLabAuthGuard implements CanActivate {
       if (userId == null) {
         throw new UnauthorizedException(CnErrorText.LAB_REQ_NO_USER_IN_CONTEXT);
       } else {
-        await this.setRealUserInContext(request, organization, userId);
+        await this.setRealUserInContext(request, space, userId);
       }
     }
 
   }
 
-  private async setRealUserInContext(request: Request, organization: CnOrganization, userId: string): Promise<void> {
+  private async setRealUserInContext(request: Request, space: CnSpace, userId: string): Promise<void> {
     const user: CnUser = await this.usersService.findById(userId);
 
     if (user == null) {
@@ -102,17 +102,17 @@ export class CnLabAuthGuard implements CanActivate {
     request.user = user;
 
     if (user.isAdmin()) {
-      CnCurrentUserHelper.setCurrentRoleInOrga(CnOrganizationUserRole.ADMIN);
+      CnCurrentUserHelper.setCurrentRoleInSpace(CnSpaceUserRole.ADMIN);
     } else {
-      const orgaUser = await this.organizationUserService.findOneByOrganizationIdAndUserId(organization.id, user.id);
+      const spaceUser = await this.spaceUserService.findOneBySpaceIdAndUserId(space.id, user.id);
 
-      // if the user is not part of the organization of his account is not active for this organization
+      // if the user is not part of the space of his account is not active for this space
       // don't allow the user to access the route
-      if (orgaUser == null || !orgaUser.active) {
-        throw new UnauthorizedException(CnErrorText.USER_NOT_IN_ORGANIZATION);
+      if (spaceUser == null || !spaceUser.active) {
+        throw new UnauthorizedException(CnErrorText.USER_NOT_IN_SPACE);
       }
 
-      CnCurrentUserHelper.setCurrentRoleInOrga(orgaUser.role);
+      CnCurrentUserHelper.setCurrentRoleInSpace(spaceUser.role);
     }
 
   }
@@ -130,7 +130,7 @@ export class CnLabAuthGuard implements CanActivate {
 
     request.user = user;
     // consider the robot as an admin
-    CnCurrentUserHelper.setCurrentRoleInOrga(CnOrganizationUserRole.ADMIN);
+    CnCurrentUserHelper.setCurrentRoleInSpace(CnSpaceUserRole.ADMIN);
   }
 
   private getLabApiKeyFromRequest(request: Request): string {

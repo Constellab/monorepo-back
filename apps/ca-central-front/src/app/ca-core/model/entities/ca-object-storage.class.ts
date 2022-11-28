@@ -2,7 +2,7 @@ import {CaBaseEntity} from './ca-base-entity.class';
 import {CaCloudProvider} from './ca-cloud-provider.class';
 import {CaCity} from './ca-city.entity';
 import {Type} from 'class-transformer';
-import {CaOrganization} from './ca-organization.class';
+import {CaSpace} from './ca-space.class';
 import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 
 export class CaBucketRegion extends CaBaseEntity {
@@ -28,8 +28,8 @@ export class CaBucketCredentials extends CaBaseEntity {
   @Type(() => CaCloudProvider)
   cloudProvider: CaCloudProvider;
 
-  @Type(() => CaOrganization)
-  organization: CaOrganization;
+  @Type(() => CaSpace)
+  space: CaSpace;
 }
 
 /**
@@ -47,7 +47,7 @@ export type CaBucketCredentialsFullDatasource = FlEntityPaginatedDatasource<CaBu
 
 export enum CaBucketContentType {
   LAB_BACKUP = 'LAB_BACKUP',
-  ORGANIZATION_IMAGE = 'ORGANIZATION_IMAGE',
+  SPACE_IMAGE = 'SPACE_IMAGE',
   USER_IMAGE = 'USER_IMAGE',
   REPORT_IMAGE = 'REPORT_IMAGE',
   REPORT_VIEW = 'REPORT_VIEW',
@@ -73,8 +73,8 @@ export class CaBucketFull extends CaBucket {
   @Type(() => CaBucketCredentials)
   credentials: CaBucketCredentials;
 
-  @Type(() => CaOrganization)
-  organization: CaOrganization;
+  @Type(() => CaSpace)
+  space: CaSpace;
 }
 
 export type CaBucketFullDatasource = FlEntityPaginatedDatasource<CaBucketFull>;

@@ -38,13 +38,13 @@ export class CaGroupService {
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 
-  public getByCurrentOrganizationDatasource(): CaGroupDatasource {
+  public getByCurrentSpaceDatasource(): CaGroupDatasource {
     return new FlEntityPaginatedDatasource(
-      (page, size) => this.getByCurrentOrganization(page, size), 20);
+      (page, size) => this.getByCurrentSpace(page, size), 20);
   }
 
-  public getByCurrentOrganization(page: number, pageSize: number): Observable<ClPageI<CaGroup>>{
-    return this.apiService.get(`${this.route}/current-organization`, CaGroup,
+  public getByCurrentSpace(page: number, pageSize: number): Observable<ClPageI<CaGroup>>{
+    return this.apiService.get(`${this.route}/current-space`, CaGroup,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 

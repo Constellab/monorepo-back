@@ -1,6 +1,6 @@
 import {BlBaseEntityDto} from '@monorepo/back-core-lib';
 import {CnCloudProvider} from '../cn-cloud-providers/cn-cloud-provider.entity';
-import {CnOrganization} from '../cn-organizations/cn-organization.entity';
+import {CnSpace} from '../cn-spaces/cn-space.entity';
 
 
 export class CnBucketCredentialsFull extends BlBaseEntityDto {
@@ -8,5 +8,5 @@ export class CnBucketCredentialsFull extends BlBaseEntityDto {
   accessKeyId: string = undefined;
   secretAccessKey: string = undefined;
   cloudProvider: CnCloudProvider = undefined;
-  organization: CnOrganization = undefined;
+  space: CnSpace = undefined;
 }

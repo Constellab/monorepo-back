@@ -34,8 +34,8 @@ export class CaRouterService {
     this.router.navigate([CaRouterService.getLoginRoute()]);
   }
 
-  public static getNoOrganizationRoute(): string {
-    return `/no-organization`;
+  public static getNoSpaceRoute(): string {
+    return `/no-space`;
   }
 
   //////////////////////////////////// ROUTES IN /APP ///////////////////////////////////////
@@ -111,8 +111,8 @@ export class CaRouterService {
 
 
   ////////////////////////// STRUCTURE MODULE ///////////////////////
-  public static getCurrentOrganizationRoute(): string {
-    return CaRouterService.getFullRoute(`${caConstStructureRoute}/current-organization`);
+  public static getCurrentSpaceRoute(): string {
+    return CaRouterService.getFullRoute(`${caConstStructureRoute}/current-space`);
   }
 
 
@@ -124,8 +124,8 @@ export class CaRouterService {
     return CaRouterService.getFullRoute(`${caConstStructureRoute}/my-teams`);
   }
 
-  public static getJoinOrganizationRoute(code: string): string {
-    return CaRouterService.getFullRoute(`${caConstStructureRoute}/join-organization/${code}`);
+  public static getJoinSpaceRoute(code: string): string {
+    return CaRouterService.getFullRoute(`${caConstStructureRoute}/join-space/${code}`);
   }
 
 
@@ -137,8 +137,8 @@ export class CaRouterService {
     this.router.navigate([CaRouterService.getTeamRoute(teamId)]);
   }
 
-  public navigateToJoinOrganization(code: string): void {
-    this.router.navigate([CaRouterService.getJoinOrganizationRoute(code)]);
+  public navigateToJoinSpace(code: string): void {
+    this.router.navigate([CaRouterService.getJoinSpaceRoute(code)]);
   }
 
   ////////////////////////// ADMIN ///////////////////////
@@ -165,18 +165,18 @@ export class CaRouterService {
     return `/${caConstBaseRoute}/${route}`;
   }
 
-  ////////////////////////// OTHER ORGANIZATION URLS ///////////////////////
+  ////////////////////////// OTHER SPACE URLS ///////////////////////
 
 
-  public static getOrganizationDomainBaseUrl(organizationDomain: string): string {
+  public static getSpaceDomainBaseUrl(spaceDomain: string): string {
     if (environment.production) {
-      return `https://${organizationDomain}.${environment.frontDomain}`;
+      return `https://${spaceDomain}.${environment.frontDomain}`;
     } else {
       return `http://${environment.frontDomain}:4200`;
     }
   }
 
-  public static getOrganizationDomainUrl(organizationDomain: string, fullRoute: string): string {
-    return `${CaRouterService.getOrganizationDomainBaseUrl(organizationDomain)}${fullRoute}`;
+  public static getSpaceDomainUrl(spaceDomain: string, fullRoute: string): string {
+    return `${CaRouterService.getSpaceDomainBaseUrl(spaceDomain)}${fullRoute}`;
   }
 }

@@ -1,0 +1,27 @@
+<fl-portal class="portal">
+  <fl-portal-content>
+    <div class="current-space" *ngIf="currentSpace$ | async as currentSpace"
+         fxLayout="column" fxLayoutAlign="start center">
+      <a [routerLink]="currentSpaceRoute" class="current-space-photo">
+        <ca-space-photo [space]="currentSpace" size="big"></ca-space-photo>
+      </a>
+
+      <div class="g-text-big current-space-label g-text-link">
+        <a [routerLink]="currentSpaceRoute">{{currentSpace.name}}</a>
+      </div>
+    </div>
+
+
+    <fl-async-section [object]="mySpaces$" emptyText="">
+      <ng-container *flSectionBody="let spaces">
+
+        <mat-divider class="g-full"></mat-divider>
+        <a *ngFor="let space of spaces" [caExternalSpaceLink]="appRoute"
+           [caExternalSpaceDomain]="space.domain">
+          <ca-space-inline [space]="space" class="space">
+          </ca-space-inline>
+        </a>
+      </ng-container>
+    </fl-async-section>
+  </fl-portal-content>
+</fl-portal>

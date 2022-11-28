@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {
   CaLabInstance,
-  CaLabInstanceWithOrga,
-  CaLabInstanceWithOrgaDatasource
+  CaLabInstanceWithSpace,
+  CaLabInstanceWithSpaceDatasource
 } from '../../../ca-core/model/entities/ca-lab-instance.class';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {
@@ -21,9 +21,9 @@ import {FlDialogService, FlTableColumn} from '@monorepo/front-core-lib';
 })
 export class CaAdminLabInstancesListComponent implements OnInit {
 
-  labInstances: CaLabInstanceWithOrgaDatasource = this.labInstanceService.getAllDatasource();
+  labInstances: CaLabInstanceWithSpaceDatasource = this.labInstanceService.getAllDatasource();
 
-  displayedColumns: FlTableColumn<CaLabInstance>[] = ['organization', 'name', 'currentStatus',
+  displayedColumns: FlTableColumn<CaLabInstance>[] = ['space', 'name', 'currentStatus',
     {accessor: 'virtualHost', columnName: 'virtual_host'}, 'serverInfo', 'actions'];
 
   constructor(private labInstanceService: CaLabInstanceService,
@@ -44,7 +44,7 @@ export class CaAdminLabInstancesListComponent implements OnInit {
       );
   }
 
-  private onCreateLabInstanceClosed(labInstance?: CaLabInstanceWithOrga): void {
+  private onCreateLabInstanceClosed(labInstance?: CaLabInstanceWithSpace): void {
     if (labInstance) {
       this.labInstances.unshiftItem(labInstance);
     }

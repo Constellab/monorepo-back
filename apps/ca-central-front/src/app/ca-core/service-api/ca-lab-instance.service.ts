@@ -6,8 +6,8 @@ import {
   CaLabInstanceFindOneDto,
   CaLabInstanceForm,
   CaLabInstanceStatusHistory,
-  CaLabInstanceWithOrga,
-  CaLabInstanceWithOrgaDatasource
+  CaLabInstanceWithSpace,
+  CaLabInstanceWithSpaceDatasource
 } from '../model/entities/ca-lab-instance.class';
 import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {ClPageI} from '@monorepo/core-lib';
@@ -33,12 +33,12 @@ export class CaLabInstanceService {
   constructor(private apiService: FlApiService) {
   }
 
-  public create(entity: CaLabInstanceForm): Observable<CaLabInstanceWithOrga> {
-    return this.apiService.post(this.route, entity, CaLabInstanceWithOrga, {serialization: CaLabInstanceForm});
+  public create(entity: CaLabInstanceForm): Observable<CaLabInstanceWithSpace> {
+    return this.apiService.post(this.route, entity, CaLabInstanceWithSpace, {serialization: CaLabInstanceForm});
   }
 
-  public update(entity: CaLabInstanceForm): Observable<CaLabInstanceWithOrga> {
-    return this.apiService.put(this.route, entity, CaLabInstanceWithOrga, {serialization: CaLabInstanceForm});
+  public update(entity: CaLabInstanceForm): Observable<CaLabInstanceWithSpace> {
+    return this.apiService.put(this.route, entity, CaLabInstanceWithSpace, {serialization: CaLabInstanceForm});
   }
 
   public delete(id: string): Observable<CaLabInstance> {
@@ -82,12 +82,12 @@ export class CaLabInstanceService {
     return this.apiService.get(`${this.route}/${id}/login`);
   }
 
-  public getAll(page: number, size: number): Observable<ClPageI<CaLabInstanceWithOrga>> {
-    return this.apiService.get(this.route, CaLabInstanceWithOrga,
+  public getAll(page: number, size: number): Observable<ClPageI<CaLabInstanceWithSpace>> {
+    return this.apiService.get(this.route, CaLabInstanceWithSpace,
       {page: page, pageSize: size, resultIsPaginated: true});
   }
 
-  public getAllDatasource(): CaLabInstanceWithOrgaDatasource {
+  public getAllDatasource(): CaLabInstanceWithSpaceDatasource {
     return new FlEntityPaginatedDatasource(
       (page, size) => this.getAll(page, size), 20
     );

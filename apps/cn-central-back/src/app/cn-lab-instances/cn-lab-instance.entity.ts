@@ -2,14 +2,14 @@ import {BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneTo
 import {Exclude, Expose, Type} from 'class-transformer';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnEntityWithStatus} from '../cn-core/model/entities/cn-entity-with-status.entity';
-import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
+import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
 import {CnServerInfo} from '../cn-servers-info/cn-server-info.entity';
-import {CnLabInstanceStatus} from './cn-lab-instance-status.enum';
+import {CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 import {randomBytes} from 'crypto';
 import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
 import {CnCity} from '../cn-city/cn-city.entity';
-import {CnOrganization} from '../cn-organizations/cn-organization.entity';
-import {CnLabInstanceUser} from './cn-lab-instance-user.entity';
+import {CnSpace} from '../cn-spaces/cn-space.entity';
+import {CnLabInstanceUser} from './user/cn-lab-instance-user.entity';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
 
 
@@ -53,11 +53,11 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   codelabToken: string;
 
   @BlNotUpdatable()
-  @ManyToOne(() => CnOrganization, {nullable: false})
-  organization: CnOrganization;
+  @ManyToOne(() => CnSpace, {nullable: false})
+  space: CnSpace;
 
   @Column({nullable: false, update: false})
-  organizationId?: string;
+  spaceId?: string;
 
   @OneToMany(() => CnLabInstanceUser,
     (instanceGroup) => instanceGroup.labInstance,

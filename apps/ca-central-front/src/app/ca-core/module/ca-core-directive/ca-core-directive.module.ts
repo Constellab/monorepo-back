@@ -1,17 +1,17 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {CaIsAdminDirective} from './ca-is-admin/ca-is-admin.directive';
-import {CaIsOrganizationAdminDirective} from './ca-is-organization-admlin/ca-is-organization-admin.directive';
+import {CaIsSpaceAdminDirective} from './ca-is-space-admlin/ca-is-space-admin.directive';
 
 
 @NgModule({
   declarations: [
     CaIsAdminDirective,
-    CaIsOrganizationAdminDirective
+    CaIsSpaceAdminDirective
   ],
   exports: [
     CaIsAdminDirective,
-    CaIsOrganizationAdminDirective
+    CaIsSpaceAdminDirective
   ],
   imports: [
     CommonModule

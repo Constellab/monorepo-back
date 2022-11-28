@@ -160,7 +160,7 @@ export class CaProjectDetailState implements OnDestroy {
     const user = this.authenticatedUserService.getUser();
 
     return this.getProject$(false).pipe(
-      map(project => this.authenticatedUserService.isCurrentOrganizationAdmin() ||
+      map(project => this.authenticatedUserService.isCurrentSpaceAdmin() ||
         (project != null && project.leader.id === user.id))
     );
   }

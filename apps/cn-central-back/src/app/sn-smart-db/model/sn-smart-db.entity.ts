@@ -3,7 +3,7 @@ import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
 import {CnGroup} from '../../cn-groups/cn-group.entity';
 import {Exclude} from 'class-transformer';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
-import {CnOrganization} from '../../cn-organizations/cn-organization.entity';
+import {CnSpace} from '../../cn-spaces/cn-space.entity';
 
 export enum SnSmartDbType {
   PUBLIC = 'PUBLIC',
@@ -35,10 +35,10 @@ export class SnSmartDbEntity extends CnBaseEntity {
 
   @Exclude()
   @BlNotUpdatable()
-  @ManyToOne(() => CnOrganization, {nullable: false})
-  organization?: CnOrganization;
+  @ManyToOne(() => CnSpace, {nullable: false})
+  space?: CnSpace;
 
   @Column({nullable: false, update: false})
-  organizationId: string;
+  spaceId: string;
 
 }

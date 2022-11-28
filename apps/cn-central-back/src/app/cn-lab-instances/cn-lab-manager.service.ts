@@ -13,7 +13,7 @@ import {CnBricksService} from '../cn-bricks/cn-bricks.service';
 import {CmVersion} from '@monorepo/common-model';
 import {CnBrickGWS, CnBrickVersionTechnicalKey} from '../cn-bricks/cn-brick.dto';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import {CnOrganization} from '../cn-organizations/cn-organization.entity';
+import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {CnExternalLabBackup, CnExternalLabBackupHistory} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {BlBucketConfig} from '@monorepo/back-core-lib';
 
@@ -51,13 +51,13 @@ export class CnLabManagerService {
     return this.labManagerApiService.getLogs(labInstance.getLabManagerApiInfo(), containerName);
   }
 
-  public async initAll(labInstance: CnLabInstance, organization: CnOrganization): Promise<void> {
+  public async initAll(labInstance: CnLabInstance, space: CnSpace): Promise<void> {
     // send the keys to configure the lab manager
     const initConfig: CnLabManagerInitConfig = {
       centralApiKey: labInstance.glabApiKey,
       codelabToken: labInstance.codelabToken,
       centralApiUrl: this.configService.getApiUrl(),
-      centralFrontUrl: `https://${organization.domain}.${this.configService.getCentralFrontDomain()}`,
+      centralFrontUrl: `https://${space.domain}.${this.configService.getCentralFrontDomain()}`,
       hubFrontUrl: this.configService.getHubFrontUrl(),
     };
     return this.labManagerApiService.initAll(labInstance.getLabManagerApiInfo(), initConfig);

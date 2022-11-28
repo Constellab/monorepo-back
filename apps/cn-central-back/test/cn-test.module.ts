@@ -21,7 +21,7 @@ export class CnTestDbInitializerService {
                                          'user.admin@gencovery.com',
                                          '$argon2i$v=19$m=4096,t=3,p=1$pjLJw/wUR/EGbGzlXC/yVA$0xADB8wxZpvuBDo6fUKZusd/9Fe51kjNPEOVYWCQ/xw',
                                          'ADMIN', 'Admin', 0, null, 'en', 'READY', '2020-11-26 10:21:26.757944')`);
-    await this.datasource.query(`INSERT INTO \`group\` (id, createdAt, lastModifiedAt, label, type, organizationId,
+    await this.datasource.query(`INSERT INTO \`group\` (id, createdAt, lastModifiedAt, label, type, spaceId,
                                                         createdById, lastModifiedById, userId)
                                  VALUES ('7a56ee46-3fff-490a-97db-58247138bdb7', '2020-11-26 10:21:26.757944',
                                          '2020-11-26 10:21:26.757944', 'Admin', 'SINGLE_USER', null,

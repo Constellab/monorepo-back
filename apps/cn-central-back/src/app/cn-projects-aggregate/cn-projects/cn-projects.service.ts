@@ -14,7 +14,7 @@ import {CnGroup} from '../../cn-groups/cn-group.entity';
 import {CnUsersService} from '../../cn-users/cn-users.service';
 import {DateTime} from 'luxon';
 import {CnProjectLevel} from './cn-project-level.enum';
-import {CnOrganization} from '../../cn-organizations/cn-organization.entity';
+import {CnSpace} from '../../cn-spaces/cn-space.entity';
 
 @Injectable()
 export class CnProjectsService extends CnAbstractWithStatusService<CnProject, CnProjectStatus> {
@@ -27,7 +27,7 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
   }
 
   async create(entity: CnProject, entityManager?: EntityManager): Promise<CnProject> {
-    entity.organization = CnCurrentUserHelper.getAndCheckCurrentOrganization();
+    entity.space = CnCurrentUserHelper.getAndCheckCurrentSpace();
 
     // init the shared group for PROJECT
     if (entity.currentLevel === CnProjectLevel.PROJECT) {
@@ -69,24 +69,24 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
   }
 
   public async getCurrentProjects(page: number, size: number): Promise<ClPageI<CnProject>> {
-    const userOrga = CnCurrentUserHelper.getAndCheckUserOrgaInfo();
+    const spaceUser = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
 
-    return this.getProjectOfUser(userOrga.userId, userOrga.organizationId, page, size);
+    return this.getProjectOfUser(spaceUser.userId, spaceUser.spaceId, page, size);
   }
 
-  public async getByOrganization(organizationId: string, page: number, size: number): Promise<ClPageI<CnProject>> {
+  public async getBySpace(spaceId: string, page: number, size: number): Promise<ClPageI<CnProject>> {
     return this.findPaginated(page, size, {
       where: {
-        organizationId: organizationId,
+        spaceId: spaceId,
         currentLevel: CnProjectLevel.PROJECT,
       },
       order: {lastModifiedAt: 'DESC' as any}
     });
   }
 
-  public async getProjectsOfUserId(userId: string, organizationId: string): Promise<CnProject[]> {
+  public async getProjectsOfUserId(userId: string, spaceId: string): Promise<CnProject[]> {
     const user = await this.userService.findByIdAndCheck(userId);
-    return (await this.getProjectOfUser(user.id, organizationId, 0, 1000)).objects;
+    return (await this.getProjectOfUser(user.id, spaceId, 0, 1000)).objects;
   }
 
   /**
@@ -137,8 +137,8 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
 
   public async getOnGoingProjectsNumber(): Promise<number> {
     const user: CnUser = CnCurrentUserHelper.getAndCheckCurrentUser();
-    const organization: CnOrganization = CnCurrentUserHelper.getAndCheckCurrentOrganization();
-    const projects: CnProject[] = await this.getProjectsOfUserId(user.id, organization.id);
+    const space: CnSpace = CnCurrentUserHelper.getAndCheckCurrentSpace();
+    const projects: CnProject[] = await this.getProjectsOfUserId(user.id, space.id);
     return (projects.filter(project =>
       project.startingDate < DateTime.fromJSDate(new Date()) &&
       project.endingDate > DateTime.fromJSDate(new Date()))).length;
@@ -147,13 +147,13 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
   /**
    * Get project by groups of user
    */
-  private async getProjectOfUser(userId: string, organizationId: string, page: number, size: number): Promise<ClPageI<CnProject>> {
-    const groupIds = await this.groupService.getAllGroupIdsOfUser(userId, organizationId);
+  private async getProjectOfUser(userId: string, spaceId: string, page: number, size: number): Promise<ClPageI<CnProject>> {
+    const groupIds = await this.groupService.getAllGroupIdsOfUser(userId, spaceId);
 
     return await this.findPaginated(page, size, {
       where: {
         currentLevel: CnProjectLevel.PROJECT,
-        organizationId: organizationId,
+        spaceId: spaceId,
         sharedGroups: {
           id: In(groupIds)
         }

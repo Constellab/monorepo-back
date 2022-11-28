@@ -10,7 +10,7 @@ import {CaUserCompleteInfoPageRoutingModule} from './ca-user-complete-info-page-
 /**
  * Page used when the user logged for the first time
  *
- * It will ask him to provided information (such as organization).
+ * It will ask him to provided information (such as space).
  */
 @NgModule({
   declarations: [

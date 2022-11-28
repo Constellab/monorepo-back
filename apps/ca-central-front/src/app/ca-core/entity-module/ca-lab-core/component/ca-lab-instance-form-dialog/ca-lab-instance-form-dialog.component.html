@@ -42,14 +42,14 @@
       </mat-select>
     </mat-form-field>
 
-    <!--  Organization  -->
+    <!--  Space  -->
     <mat-form-field class="g-form-input">
-      <mat-label>{{'organization' | translate}}</mat-label>
-      <mat-select placeholder="{{'organization' | translate}}" formControlName="organization" required>
-        <ca-select-organization-options></ca-select-organization-options>
+      <mat-label>{{'space' | translate}}</mat-label>
+      <mat-select placeholder="{{'space' | translate}}" formControlName="space" required>
+        <ca-select-space-options></ca-select-space-options>
       </mat-select>
-      <mat-error *ngIf="formGp.get('organization').hasError('required')">
-        {{'organization' | flErrorRequired}}
+      <mat-error *ngIf="formGp.get('space').hasError('required')">
+        {{'space' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 

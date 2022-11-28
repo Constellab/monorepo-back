@@ -19,7 +19,7 @@ export interface CaGroupAddUserDialogInput {
 }
 
 /**
- * Dialog to add a user to a group or an organization
+ * Dialog to add a user to a group or an space
  */
 @Component({
   selector: 'ca-group-add-user-dialog',
@@ -50,11 +50,11 @@ export class CaGroupAddUserDialogComponent implements OnInit {
 
   submit(): void {
     if (this.formControl.valid && !this.isLoading) {
-      this.addUserToOrganization(this.formControl.value.id);
+      this.addUserToSpace(this.formControl.value.id);
     }
   }
 
-  private addUserToOrganization(userId: string): void {
+  private addUserToSpace(userId: string): void {
     this.isLoading = true;
     this.input.addUserToGroup(userId).subscribe({
       next: user => this.addUserSuccess(user),

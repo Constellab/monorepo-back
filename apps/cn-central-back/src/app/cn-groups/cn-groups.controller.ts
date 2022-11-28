@@ -12,19 +12,19 @@ export class CnGroupsController {
 
   @Get('all-current')
   public getAllCurrentTeams(): Promise<CnGroup[]> {
-    return this.aggregateService.getAllByCurrentUserAndOrganization();
+    return this.aggregateService.getAllByCurrentUserAndSpace();
   }
 
   @Get('current')
   public getCurrentTeams(@Query('page', ParseIntPipe) page: number,
                          @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnGroup>> {
-    return this.aggregateService.getByCurrentUserAndOrganization(page, size);
+    return this.aggregateService.getByCurrentUserAndSpace(page, size);
   }
 
-  @Get('current-organization')
-  public async getCurrentOrganization(@Query('page', ParseIntPipe) page: number,
+  @Get('current-space')
+  public async getCurrentSpace(@Query('page', ParseIntPipe) page: number,
                                       @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnGroup>> {
-    return this.aggregateService.getByCurrentOrganization(page, size);
+    return this.aggregateService.getByCurrentSpace(page, size);
   }
 
   @Get(':id')

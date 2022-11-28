@@ -10,13 +10,13 @@
     </mat-cell>
   </ng-container>
 
-  <!-- Organization -->
-  <ng-container matColumnDef="organization">
+  <!-- Space -->
+  <ng-container matColumnDef="space">
     <mat-header-cell *matHeaderCellDef>
-      <span>{{'organization' | translate}}</span>
+      <span>{{'space' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let labInstance">
-      <ca-organization-inline [organization]="labInstance.organization"></ca-organization-inline>
+      <ca-space-inline [space]="labInstance.space"></ca-space-inline>
     </mat-cell>
   </ng-container>
 
@@ -62,8 +62,8 @@
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #menu="matMenu" xPosition="before">
-        <a mat-menu-item type="button" [caExternalOrganizationLink]="getLabInstanceRoute(labInstance)"
-           [caExternalOrganizationDomain]="labInstance.organization.domain">
+        <a mat-menu-item type="button" [caExternalSpaceLink]="getLabInstanceRoute(labInstance)"
+           [caExternalSpaceDomain]="labInstance.space.domain">
           <mat-icon>visibility</mat-icon>
           <span>{{'detail' | translate}}</span>
         </a>

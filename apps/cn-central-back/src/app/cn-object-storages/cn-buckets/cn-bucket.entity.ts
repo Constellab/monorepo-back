@@ -2,13 +2,13 @@ import {Column, Entity, ManyToOne} from 'typeorm';
 import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
 import {CnBucketRegion} from '../cn-bucket-regions/cn-bucker-region.entity';
 import {CnBucketCredentials} from '../cn-bucket-credential/cn-bucket-credential.entity';
-import {CnOrganization} from '../../cn-organizations/cn-organization.entity';
+import {CnSpace} from '../../cn-spaces/cn-space.entity';
 import {BlBucketConfig, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {Type} from 'class-transformer';
 
 export enum CnBucketContentType {
   LAB_BACKUP = 'LAB_BACKUP',
-  ORGANIZATION_IMAGE = 'ORGANIZATION_IMAGE',
+  SPACE_IMAGE = 'SPACE_IMAGE',
   USER_IMAGE = 'USER_IMAGE',
   REPORT_IMAGE = 'REPORT_IMAGE',
   REPORT_VIEW = 'REPORT_VIEW',
@@ -32,11 +32,11 @@ export class CnBucket extends CnBaseEntity {
   @Column({nullable: false, length: 100, update: false})
   name: string;
 
-  // might be associated to an organization
-  @Type(() => CnOrganization)
-  @ManyToOne(() => CnOrganization, {nullable: true})
+  // might be associated to a space
+  @Type(() => CnSpace)
+  @ManyToOne(() => CnSpace, {nullable: true})
   @BlNotUpdatable()
-  organization: CnOrganization;
+  space: CnSpace;
 
   @Column({nullable: false, length: 50})
   contentType: CnBucketContentType;

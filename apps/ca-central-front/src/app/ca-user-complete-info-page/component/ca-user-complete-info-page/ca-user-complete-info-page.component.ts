@@ -8,7 +8,7 @@ import {FlDialogService} from '@monorepo/front-core-lib';
 import {
   CaUserSettingsDialogComponent
 } from '../../../ca-settings/component/ca-user-settings-dialog/ca-user-settings-dialog.component';
-import {CaOrganizationService} from '../../../ca-core/service-api/ca-organization.service';
+import {CaSpaceService} from '../../../ca-core/service-api/ca-space.service';
 
 /**
  * Component that show a form on first user login to complete his information
@@ -28,7 +28,7 @@ export class CaUserCompleteInfoPageComponent implements OnInit {
   constructor(private authenticatedUserService: CaAuthenticatedUserService,
               private route: ActivatedRoute,
               private userService: CaUsersService,
-              private organizationService: CaOrganizationService,
+              private spaceService: CaSpaceService,
               private dialogService: FlDialogService) {
   }
 
@@ -49,6 +49,6 @@ export class CaUserCompleteInfoPageComponent implements OnInit {
   }
 
   getUser(): void{
-    this.user$ = this.organizationService.getOrganizationUser('current', this.id);
+    this.user$ = this.spaceService.getSpaceUser('current', this.id);
   }
 }

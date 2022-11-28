@@ -2,15 +2,15 @@ import {BlCurrentUserHelper} from '@monorepo/back-core-lib';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
 import {UnauthorizedException} from '@nestjs/common';
-import {CnOrganization} from '../../cn-organizations/cn-organization.entity';
-import {CnOrganizationUserRole} from '../../cn-organizations/cn-organization-user.entity';
-import {CnUserOrgaInfo} from '../../cn-users/cn-user.dto';
+import {CnSpace} from '../../cn-spaces/cn-space.entity';
+import {CnSpaceUserRole} from '../../cn-spaces/cn-space-user.entity';
+import {CnUserSpaceInfo} from '../../cn-users/cn-user-space-info.dto';
 
 export interface CnRequestAuthInfo {
   labInstance?: CnLabInstance;
-  organization?: CnOrganization;
-  // role for the current user in this organization
-  roleInOrga: CnOrganizationUserRole;
+  space?: CnSpace;
+  // role for the current user in this space
+  roleInSpace: CnSpaceUserRole;
 }
 
 export class CnCurrentUserHelper extends BlCurrentUserHelper {
@@ -57,35 +57,35 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
   }
 
   /**
-   * return the current organization or throw an Unauthorized exception
-   * if there is no organization in the context
+   * return the current space or throw an Unauthorized exception
+   * if there is no space in the context
    */
-  static getAndCheckCurrentOrganization(): CnOrganization {
-    const organization: CnOrganization = this.getCurrentOrganization();
+  static getAndCheckCurrentSpace(): CnSpace {
+    const space: CnSpace = this.getCurrentSpace();
 
-    if (organization == null) {
-      throw new UnauthorizedException("No organization in the context");
+    if (space == null) {
+      throw new UnauthorizedException("No space in the context");
     }
 
-    return organization;
+    return space;
   }
 
   /**
-   * return the current organization or null if there is no organization in the context
+   * return the current space or null if there is no space in the context
    */
-  static getCurrentOrganization(): CnOrganization | null {
-    return this.getAdditionalInfo()?.organization ?? null;
+  static getCurrentSpace(): CnSpace | null {
+    return this.getAdditionalInfo()?.space ?? null;
   }
 
-  static setCurrentOrganization(organization: CnOrganization): void {
-    this.setAdditionalData('organization', organization);
+  static setCurrentSpace(space: CnSpace): void {
+    this.setAdditionalData('space', space);
   }
 
   /**
-   * return the role of the current user for the current organization
+   * return the role of the current user for the current space
    */
-  static getAndCheckCurrentRoleInOrga(): CnOrganizationUserRole {
-    const role: CnOrganizationUserRole = this.getCurrentRoleInOrga();
+  static getAndCheckCurrentRoleInSpace(): CnSpaceUserRole {
+    const role: CnSpaceUserRole = this.getCurrentRoleInSpace();
 
     if (role == null) {
       throw new UnauthorizedException("No role in the context");
@@ -95,25 +95,25 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
   }
 
   /**
-   * return the role of the current user for the current organization
-   * or null if there is no organization in the context
+   * return the role of the current user for the current space
+   * or null if there is no space in the context
    */
-  static getCurrentRoleInOrga(): CnOrganizationUserRole | null {
-    return this.getAdditionalInfo()?.roleInOrga ?? null;
+  static getCurrentRoleInSpace(): CnSpaceUserRole | null {
+    return this.getAdditionalInfo()?.roleInSpace ?? null;
   }
 
-  static isAdminOfCurrentOrganization(): boolean {
-    return this.getAndCheckCurrentRoleInOrga() === CnOrganizationUserRole.ADMIN;
+  static isAdminOfCurrentSpace(): boolean {
+    return this.getAndCheckCurrentRoleInSpace() === CnSpaceUserRole.ADMIN;
   }
 
-  static setCurrentRoleInOrga(role: CnOrganizationUserRole): void {
-    this.setAdditionalData('roleInOrga', role);
+  static setCurrentRoleInSpace(role: CnSpaceUserRole): void {
+    this.setAdditionalData('roleInSpace', role);
   }
 
-  static getAndCheckUserOrgaInfo(): CnUserOrgaInfo {
-    return new CnUserOrgaInfo(this.getAndCheckCurrentUser(),
-      this.getAndCheckCurrentOrganization(),
-      this.getAndCheckCurrentRoleInOrga());
+  static getAndCheckUserSpaceInfo(): CnUserSpaceInfo {
+    return new CnUserSpaceInfo(this.getAndCheckCurrentUser(),
+      this.getAndCheckCurrentSpace(),
+      this.getAndCheckCurrentRoleInSpace());
   }
 
 

@@ -11,7 +11,7 @@ import {
   CN_RABBITMQ_USER_KEY
 } from './app/cn-core/model/config/cn-config.class';
 import {Transport} from '@nestjs/microservices';
-import {CN_LOCAL_ORGANIZATION_COOKIE} from './app/cn-core/middleware/cn-organization-middleware.service';
+import {CN_LOCAL_SPACE_COOKIE} from './app/cn-core/middleware/cn-space-middleware.service';
 
 async function bootstrap(): Promise<void> {
 
@@ -19,8 +19,8 @@ async function bootstrap(): Promise<void> {
 
   // enable cors
   const isLocal = process.env[CN_ENVIRONMENT_PROFILE_KEY] !== CN_ENVIRONMENT_PROFILE_PROD_VALUE;
-  // allow the local-organization header only for local env
-  const additionalHeader = isLocal ? [CN_LOCAL_ORGANIZATION_COOKIE] : [];
+  // allow the local-space header only for local env
+  const additionalHeader = isLocal ? [CN_LOCAL_SPACE_COOKIE] : [];
   app.enableCors(blGetCorsConfig(['gencovery.com', 'preconstellab.com'], isLocal, additionalHeader));
 
   // enable custom logger using winston

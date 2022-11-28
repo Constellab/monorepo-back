@@ -40,7 +40,7 @@ export class CaBucketCredentialsFormDialogComponent
       accessKeyId: [null, Validators.required],
       secretAccessKey: [null, Validators.required],
       cloudProvider: [null, Validators.required],
-      organization: [null],
+      space: [null],
     });
   }
 

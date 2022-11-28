@@ -25,9 +25,9 @@ export class CaLoadUserGuard implements CanActivate {
       map(() => true),
       catchError((error: FlServerError) => {
 
-        // if the user is not in any organization, redirect to the no-organization page
-        if (error.nestedError?.code === 'error.user_without_organization') {
-          return of(this.router.parseUrl(CaRouterService.getNoOrganizationRoute()));
+        // if the user is not in any space, redirect to the no-space page
+        if (error.nestedError?.code === 'error.user_without_space') {
+          return of(this.router.parseUrl(CaRouterService.getNoSpaceRoute()));
         }
 
         return of(false);

@@ -2,9 +2,9 @@ import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {DataSource, DeleteResult, EntityManager, Repository} from 'typeorm';
-import {CnLabInstanceStatus} from './cn-lab-instance-status.enum';
+import {CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 import {CnAbstractWithStatusService} from '../cn-core/class/cn-abstract-with-status.service';
-import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
+import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnExperiment} from '../cn-projects-aggregate/cn-experiments/cn-experiment.entity';
@@ -12,7 +12,7 @@ import {CnExperimentsService} from '../cn-projects-aggregate/cn-experiments/cn-e
 import {CnLabInstanceStartDTO} from './cn-lab-instance.dto';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
-import {CnUserOrgaInfo} from '../cn-users/cn-user.dto';
+import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
 import {CnReportsService} from '../cn-projects-aggregate/cn-reports/cn-reports.service';
 
 @Injectable()
@@ -47,21 +47,21 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   }
 
   public async getCurrentLabInstances(page: number, size: number): Promise<ClPageI<CnLabInstance>> {
-    const userInfo: CnUserOrgaInfo = CnCurrentUserHelper.getAndCheckUserOrgaInfo();
+    const userInfo: CnUserSpaceInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
 
     return this.findPaginated(page, size, {
       where: {
         sharedGroups: {
           userId: userInfo.userId
         },
-        organizationId: userInfo.organizationId
+        spaceId: userInfo.spaceId
       },
       order: {lastModifiedAt: 'DESC' as any}
     });
   }
 
   public async getCurrentRunningLabInstances(): Promise<CnLabInstance[]> {
-    const userInfo: CnUserOrgaInfo = CnCurrentUserHelper.getAndCheckUserOrgaInfo();
+    const userInfo: CnUserSpaceInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
 
     return this.repository.find({
       where: {
@@ -93,7 +93,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       where: {
         glabApiKey: apiKey
       },
-      relations: {organization: true}
+      relations: {space: true}
     });
   }
 
@@ -101,7 +101,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   public async findAll(page: number, size: number): Promise<ClPage<CnLabInstance>> {
     return await this.findPaginated(page, size,
       {
-        relations: {organization: true},
+        relations: {space: true},
         order: {lastModifiedAt: 'DESC' as any},
       },
     );
@@ -135,10 +135,10 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return labInstance.labConfig;
   }
 
-  public async findByOrganization(organizationId: string, page: number, size: number): Promise<ClPage<CnLabInstance>> {
+  public async findBySpace(spaceId: string, page: number, size: number): Promise<ClPage<CnLabInstance>> {
     return this.findPaginated(page, size, {
       where: {
-        organizationId: organizationId
+        spaceId: spaceId
       }
     });
   }

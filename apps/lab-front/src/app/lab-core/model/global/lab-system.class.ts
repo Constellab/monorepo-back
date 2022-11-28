@@ -1,8 +1,8 @@
 import {Expose, Type} from 'class-transformer';
 
-export class LabOrganization {
+export class LabSpace {
   id: string;
-  label: string;
+  name: string;
   domain: string;
   photo?: string;
 }
@@ -15,7 +15,7 @@ export class LabSystemInfo {
   @Expose({name: 'front_version'})
   frontVersion: string;
 
-  @Type(() => LabOrganization)
-  organization: LabOrganization;
+  @Type(() => LabSpace)
+  space: LabSpace;
 
 }

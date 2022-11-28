@@ -2,7 +2,7 @@ import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {CnUserTeamService} from './cn-user-team.service';
 import {CnGroupTeam} from './cn-group.entity';
 import {CnGroupsService} from './cn-groups.service';
-import {CnUserOrgaInfo} from '../cn-users/cn-user.dto';
+import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
 
 /**
  * Class to check the user authorization on groups
@@ -18,13 +18,13 @@ export class CnGroupsSecurity {
   /**
    * Get the group and check if the user can get it. He can only if he is an admin or is in group
    */
-  public async getAndCheckAuthorizationToGetTeam(userInfo: CnUserOrgaInfo, teamId: string): Promise<CnGroupTeam> {
+  public async getAndCheckAuthorizationToGetTeam(userInfo: CnUserSpaceInfo, teamId: string): Promise<CnGroupTeam> {
     const team = await this.groupService.getAndCheckTeamById(teamId);
 
-    // check the organization context
-    if (team.organizationId !== userInfo.organizationId) throw new UnauthorizedException();
+    // check the space context
+    if (team.spaceId !== userInfo.spaceId) throw new UnauthorizedException();
 
-    if (userInfo.isOrganizationAdmin()) return team;
+    if (userInfo.isSpaceAdmin()) return team;
 
     if (!(await this.userGroupService.userIsInTeam(teamId, userInfo.userId))) {
       throw new UnauthorizedException();
@@ -36,12 +36,12 @@ export class CnGroupsSecurity {
   /**
    * Get the group and check if the user can update it. He can only if he is an admin or is in group
    */
-  public async getAndCheckAuthorizationToUpdateTeam(userInfo: CnUserOrgaInfo, team: string): Promise<CnGroupTeam> {
+  public async getAndCheckAuthorizationToUpdateTeam(userInfo: CnUserSpaceInfo, team: string): Promise<CnGroupTeam> {
     return await this.getAndCheckAuthorizationToGetTeam(userInfo, team);
   }
 
-  public checkAuthorizationToFindALlTeamByOrganization(userInfo: CnUserOrgaInfo): void {
-    if (!userInfo.isOrganizationAdmin()) {
+  public checkAuthorizationToFindAllTeamBySpace(userInfo: CnUserSpaceInfo): void {
+    if (!userInfo.isSpaceAdmin()) {
       throw new UnauthorizedException();
     }
   }

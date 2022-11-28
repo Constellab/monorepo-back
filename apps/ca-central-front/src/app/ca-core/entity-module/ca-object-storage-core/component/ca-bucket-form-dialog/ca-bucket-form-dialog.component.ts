@@ -38,7 +38,7 @@ export class CaBucketFormDialogComponent
       contentType: [null, Validators.required],
       region: [null, Validators.required],
       credentials: [null, Validators.required],
-      organization: [null],
+      space: [null],
       objectId: [null],
     });
   }

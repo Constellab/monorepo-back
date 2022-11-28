@@ -1,8 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {environment} from '../../../../../../environments/ca-environment';
-import {CaCurrentOrganizationService} from '../../../../../ca-core/service-api/ca-current-organization.service';
+import {CaCurrentSpaceService} from '../../../../../ca-core/service-api/ca-current-space.service';
 import {Observable} from 'rxjs';
-import {CaOrganization} from '../../../../../ca-core/model/entities/ca-organization.class';
+import {CaSpace} from '../../../../../ca-core/model/entities/ca-space.class';
 import {CaUserDatasourcePaginated} from '../../../../../ca-core/model/entities/ca-user.class';
 
 /**
@@ -17,12 +17,12 @@ export class CaDashboardPageComponent implements OnInit, OnDestroy {
 
   hubLink: string = environment.hubUrl;
 
-  currentSpace$: Observable<CaOrganization> = this.currentOrganizationService.getCurrentOrganization$();
-  spaceUsers: CaUserDatasourcePaginated = this.currentOrganizationService.getCurrentOrganizationUsersDatasource();
+  currentSpace$: Observable<CaSpace> = this.currentSpaceService.getCurrentSpace$();
+  spaceUsers: CaUserDatasourcePaginated = this.currentSpaceService.getCurrentSpaceUsersDatasource();
 
   currentDate: Date = new Date();
 
-  constructor(private currentOrganizationService: CaCurrentOrganizationService) {
+  constructor(private currentSpaceService: CaCurrentSpaceService) {
 
   }
 

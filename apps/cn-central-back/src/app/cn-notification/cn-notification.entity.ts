@@ -2,7 +2,7 @@ import {BeforeInsert, Column, Entity, ManyToOne} from 'typeorm';
 import {BlEntityWithId, BlLuxonDateTimeColumn, BlNotification} from '@monorepo/back-core-lib';
 import {Type} from 'class-transformer';
 import {CnUser} from '../cn-users/cn-user.entity';
-import {CnOrganization} from '../cn-organizations/cn-organization.entity';
+import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {CnNotificationType} from './cn-notification.service';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {ClDateHelper} from '@monorepo/core-lib';
@@ -36,12 +36,12 @@ export class CnNotification extends BlEntityWithId implements BlNotification{
   @Column()
   text2: string;
 
-  @Type(() => CnOrganization)
-  @ManyToOne(() => CnOrganization, {eager: true, nullable: false})
-  organization: CnOrganization;
+  @Type(() => CnSpace)
+  @ManyToOne(() => CnSpace, {eager: true, nullable: false})
+  space: CnSpace;
 
   @Column({nullable: false, update: false})
-  organizationId: string;
+  spaceId: string;
 
   @Type(() => CnUser)
   @ManyToOne(() => CnUser, {eager: true, nullable: false})
@@ -55,7 +55,7 @@ export class CnNotification extends BlEntityWithId implements BlNotification{
 
   setupNotif(notificationData: CnNotificationCreateDTO): void {
     this.user = notificationData.user;
-    this.organizationId = notificationData.organizationId;
+    this.spaceId = notificationData.spaceId;
     this.objectId = notificationData.objectId;
     this.objectType = notificationData.objectType;
     this.link = notificationData.link;
@@ -71,6 +71,6 @@ export interface CnNotificationCreateDTO{
   user: CnUser;
   text: string;
   text2: string;
-  organizationId: string;
+  spaceId: string;
   link: string;
 }

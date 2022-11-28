@@ -13,7 +13,7 @@ export interface BlNotification{
 
   objectType: string;
 
-  organization: any;
+  space: any;
 
   createdBy: any;
 

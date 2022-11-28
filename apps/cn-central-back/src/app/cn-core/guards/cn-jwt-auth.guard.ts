@@ -5,8 +5,8 @@ import {CnErrorText} from '../model/config/cn-error-text.class';
 import {cnIsDecoratedWithLabAuth} from '../decorators/cn-lab-guard.decorator';
 import {blIsDecoratedWithPublic} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../utils/cn-current-user.helper';
-import {CnOrganizationUserService} from '../../cn-organizations/cn-organization-user.service';
-import {CnOrganizationUserRole} from '../../cn-organizations/cn-organization-user.entity';
+import {CnSpaceUserService} from '../../cn-spaces/cn-space-user.service';
+import {CnSpaceUserRole} from '../../cn-spaces/cn-space-user.entity';
 
 /**
  * Guard to check if the user has a authentication token
@@ -20,7 +20,7 @@ import {CnOrganizationUserRole} from '../../cn-organizations/cn-organization-use
 @Injectable()
 export class CnJwtAuthGuard extends AuthGuard('jwt') {
   constructor(private reflector: Reflector,
-              private organizationUserService: CnOrganizationUserService) {
+              private spaceUserService: CnSpaceUserService) {
     super();
   }
 
@@ -46,24 +46,24 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
     }
 
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
-    const organization = CnCurrentUserHelper.getCurrentOrganization();
+    const space = CnCurrentUserHelper.getCurrentSpace();
 
-    // if an organization is in the context, check if the user is in the organization
+    // if a space is in the context, check if the user is in the space
     // noinspection RedundantIfStatementJS
-    if (organization) {
-      // consider a G admin as an admin of all organizations
+    if (space) {
+      // consider a G admin as an admin of all spaces
       if (user.isAdmin()) {
-        CnCurrentUserHelper.setCurrentRoleInOrga(CnOrganizationUserRole.ADMIN);
+        CnCurrentUserHelper.setCurrentRoleInSpace(CnSpaceUserRole.ADMIN);
       } else {
-        const orgaUser = await this.organizationUserService.findOneByOrganizationIdAndUserId(organization.id, user.id);
+        const spaceUser = await this.spaceUserService.findOneBySpaceIdAndUserId(space.id, user.id);
 
-        // if the user is not part of the organization of his account is not active for this organization
+        // if the user is not part of the space of his account is not active for this space
         // don't allow the user to access the route
-        if (orgaUser == null || !orgaUser.active) {
+        if (spaceUser == null || !spaceUser.active) {
           return false;
         }
 
-        CnCurrentUserHelper.setCurrentRoleInOrga(orgaUser.role);
+        CnCurrentUserHelper.setCurrentRoleInSpace(spaceUser.role);
       }
 
     }

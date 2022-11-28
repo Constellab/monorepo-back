@@ -1,7 +1,7 @@
 import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstanceAggregateService} from './cn-lab-instance-aggregate.service';
-import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
+import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
 import {BlDtoHelper, BlParseEnumPipe, BlParsePipe} from '@monorepo/back-core-lib';
 import {ClPageI} from '@monorepo/core-lib';
 import {
@@ -16,8 +16,8 @@ import {
   CnLabManagerStatus
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
-import {CnLabInstanceUser, CnLabInstanceUserRole} from './cn-lab-instance-user.entity';
-import {CnLabInstanceProject} from './cn-lab-instance-project.entity';
+import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
+import {CnLabInstanceProject} from './project/cn-lab-instance-project.entity';
 import {CnExternalLabBackup, CnExternalLabBackupHistory} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 
 @Controller('lab-instances')
@@ -61,10 +61,10 @@ export class CnLabInstancesController {
     return this.aggregateService.getCurrentRunningLabInstances();
   }
 
-  @Get('current-organization')
-  async getByCurrentOrganization(@Query('page', ParseIntPipe) page: number,
-                                 @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnLabInstance>> {
-    return await this.aggregateService.getByCurrentOrganization(page, size);
+  @Get('current-space')
+  async getByCurrentSpace(@Query('page', ParseIntPipe) page: number,
+                          @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnLabInstance>> {
+    return await this.aggregateService.getByCurrentSpace(page, size);
   }
 
 

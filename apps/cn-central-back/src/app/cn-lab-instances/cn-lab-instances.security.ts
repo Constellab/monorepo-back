@@ -1,9 +1,9 @@
 import {Injectable, UnauthorizedException} from '@nestjs/common';
-import {CnUserOrgaInfo} from '../cn-users/cn-user.dto';
+import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
-import {CnLabInstanceUserService} from './cn-lab-instance-user.service';
-import {CnLabInstanceUserRole} from './cn-lab-instance-user.entity';
+import {CnLabInstanceUserService} from './user/cn-lab-instance-user.service';
+import {CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
 
 
 @Injectable()
@@ -13,7 +13,7 @@ export class CnLabInstancesSecurity {
               private labInstanceGroupService: CnLabInstanceUserService) {
   }
 
-  public checkAuthorizationToCreate(userInfo: CnUserOrgaInfo): void {
+  public checkAuthorizationToCreate(userInfo: CnUserSpaceInfo): void {
     if (!userInfo.isAdmin()) throw new UnauthorizedException();
   }
 
@@ -22,7 +22,7 @@ export class CnLabInstancesSecurity {
    * @param labInstance
    * @param userInfo
    */
-  public checkAuthorizationToUpdate(labInstance: CnLabInstance, userInfo: CnUserOrgaInfo): void {
+  public checkAuthorizationToUpdate(labInstance: CnLabInstance, userInfo: CnUserSpaceInfo): void {
     if (!userInfo.isAdmin()) throw new UnauthorizedException();
   }
 
@@ -30,12 +30,12 @@ export class CnLabInstancesSecurity {
    * Authorization to start/stop, update and manage lab users.
    * The user needs to be an owner of the lab instance
    */
-  public async checkAuthorizationToManageLab(labInstance: CnLabInstance, userInfo: CnUserOrgaInfo): Promise<CnLabInstanceUserRole> {
-    // check the organization context
-    if (labInstance.organizationId !== userInfo.organizationId) throw new UnauthorizedException();
+  public async checkAuthorizationToManageLab(labInstance: CnLabInstance, userInfo: CnUserSpaceInfo): Promise<CnLabInstanceUserRole> {
+    // check the spac context
+    if (labInstance.spaceId !== userInfo.spaceId) throw new UnauthorizedException();
 
-    // organization admin is considered as owner
-    if (userInfo.isOrganizationAdmin()) return CnLabInstanceUserRole.OWNER;
+    // spac admin is considered as owner
+    if (userInfo.isSpaceAdmin()) return CnLabInstanceUserRole.OWNER;
 
     const group = await this.labInstanceGroupService.findByLabInstanceIdAndUserId(labInstance.id, userInfo.userId);
     // check if the user is the owner of the lab instance
@@ -47,12 +47,12 @@ export class CnLabInstancesSecurity {
   }
 
 
-  public async checkAuthorizationToFindById(labInstance: CnLabInstance, userInfo: CnUserOrgaInfo): Promise<CnLabInstanceUserRole> {
-    // check the organization context
-    if (labInstance.organizationId !== userInfo.organizationId) throw new UnauthorizedException();
+  public async checkAuthorizationToFindById(labInstance: CnLabInstance, userInfo: CnUserSpaceInfo): Promise<CnLabInstanceUserRole> {
+    // check the spac context
+    if (labInstance.spaceId !== userInfo.spaceId) throw new UnauthorizedException();
 
-    // organization admin is considered as owner
-    if (userInfo.isOrganizationAdmin()) return CnLabInstanceUserRole.OWNER;
+    // spac admin is considered as owner
+    if (userInfo.isSpaceAdmin()) return CnLabInstanceUserRole.OWNER;
 
     const group = await this.labInstanceGroupService.findByLabInstanceIdAndUserId(labInstance.id, userInfo.userId);
 
@@ -64,12 +64,12 @@ export class CnLabInstancesSecurity {
     return group.role;
   }
 
-  public checkAuthorizationToFindAll(userInfo: CnUserOrgaInfo): void {
+  public checkAuthorizationToFindAll(userInfo: CnUserSpaceInfo): void {
     if (!userInfo.isAdmin()) throw new UnauthorizedException();
   }
 
-  public checkAuthorizationToFindAllByOrganization(userInfo: CnUserOrgaInfo): void {
-    if (!userInfo.isOrganizationAdmin()) throw new UnauthorizedException();
+  public checkAuthorizationToFindAllBySpace(userInfo: CnUserSpaceInfo): void {
+    if (!userInfo.isSpaceAdmin()) throw new UnauthorizedException();
   }
 
 }

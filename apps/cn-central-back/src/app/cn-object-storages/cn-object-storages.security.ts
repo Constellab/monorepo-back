@@ -1,6 +1,6 @@
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {CnUser} from '../cn-users/cn-user.entity';
-import {CnUserOrgaInfo} from '../cn-users/cn-user.dto';
+import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
 
 
 @Injectable()
@@ -33,11 +33,11 @@ export class CnObjectStoragesSecurity {
     return;
   }
 
-  public checkAuthorizationToGetBucket(organizationId: string, userInfo: CnUserOrgaInfo): void {
-    // check the organization context
-    if (organizationId !== userInfo.organizationId) throw new UnauthorizedException();
+  public checkAuthorizationToGetBucket(spaceId: string, userInfo: CnUserSpaceInfo): void {
+    // check the space context
+    if (spaceId !== userInfo.spaceId) throw new UnauthorizedException();
 
-    if (!userInfo.isOrganizationAdmin()) throw new UnauthorizedException();
+    if (!userInfo.isSpaceAdmin()) throw new UnauthorizedException();
   }
 
   public checkAuthorizationToGetAllBuckets(user: CnUser): void {

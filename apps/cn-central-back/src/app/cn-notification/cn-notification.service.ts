@@ -31,7 +31,7 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
 
 
   async getUserNotifications(userId: string, onlyNotRead: boolean, page: number, size: number): Promise<ClPage<CnNotification>> {
-    //TODO: Add organization filter
+    //TODO: Add space filter
     return this.findPaginated(page, size, {
       where: onlyNotRead ? {
         isRead: false,
@@ -80,8 +80,8 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
     await this.notificationRepository.save(notification);
   }
 
-  async checkIfOrganizationAsNotification(organizationId: string): Promise<boolean>{
-    return (await this.notificationRepository.findBy({organization: {id: organizationId}})).length > 0;
+  async checkIfSpaceAsNotification(spaceId: string): Promise<boolean>{
+    return (await this.notificationRepository.findBy({space: {id: spaceId}})).length > 0;
   }
 
 }

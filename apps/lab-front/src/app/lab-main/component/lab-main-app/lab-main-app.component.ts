@@ -57,10 +57,10 @@ export class LabMainAppComponent implements OnInit {
 
   private getSystemInfoSuccess(systemInfo: LabSystemInfo): void {
     this.setLabName(systemInfo.labName);
-    if (systemInfo.organization) {
-      this.logo = this.systemService.getOrganizationPhotoUrl(systemInfo.organization.photo);
+    if (systemInfo.space) {
+      this.logo = this.systemService.getSpacePhotoUrl(systemInfo.space.photo);
     } else {
-      console.error('No organization found');
+      console.error('No space found');
     }
   }
 

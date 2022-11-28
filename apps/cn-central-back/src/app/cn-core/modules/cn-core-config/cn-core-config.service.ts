@@ -167,8 +167,8 @@ export class CnCoreConfigService {
     return this.isProduction() ? 'constellab-user-profile-picture' : 'constellab-user-profile-picture';
   }
 
-  public getOrganizationBucket(): string {
-    return this.isProduction() ? 'constellab-organization-prod' : 'constellab-organization-pre-prod';
+  public getSpaceImageBucket(): string {
+    return this.isProduction() ? 'constellab-space-image-prod' : 'constellab-space-image-pre-prod';
   }
 
   public getCommentObjectStorageBucket(): string {

@@ -1,0 +1,27 @@
+<fl-dialog-header>
+  {{'space_upload_photo' | translate}}
+</fl-dialog-header>
+
+<mat-dialog-content>
+  <form (ngSubmit)="submit()" id="space-photo-form">
+
+    <fl-form-field>
+      <fl-input-file-container color="primary" [placeholder]="'space_upload_photo' | translate">
+        <input flInputFile type="file" [required]="true" [strictMode]="true"
+               [formControl]="formControl" accept="image/*">
+      </fl-input-file-container>
+      <mat-error *ngIf="formControl.hasError('required')">
+        {{'space_upload_photo' | translate}}
+      </mat-error>
+    </fl-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" type="submit" form="space-photo-form"
+          class="g-centered-forced">
+    {{'save' | translate}}
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
+  </button>
+</div>

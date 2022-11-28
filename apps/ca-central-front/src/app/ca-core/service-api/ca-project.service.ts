@@ -65,14 +65,14 @@ export class CaProjectService {
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 
-  public getProjectByCurrentOrganizationDatasource(): CaProjectDatasource {
+  public getProjectByCurrentSpaceDatasource(): CaProjectDatasource {
     return new FlEntityPaginatedDatasource(
-      (page, pageSize) => this.getProjectByCurrentOrganization(page, pageSize),
+      (page, pageSize) => this.getProjectByCurrentSpace(page, pageSize),
       20);
   }
 
-  public getProjectByCurrentOrganization(page: number, size: number): Observable<ClPageI<CaProject>> {
-    return this.apiService.get(`${this.route}/current-organization`, CaProject,
+  public getProjectByCurrentSpace(page: number, size: number): Observable<ClPageI<CaProject>> {
+    return this.apiService.get(`${this.route}/current-space`, CaProject,
       {resultIsPaginated: true, page: page, pageSize: size});
   }
 

@@ -8,7 +8,7 @@ import {
 import {
   CaBucketCredentialsFormDialogComponent
 } from './component/ca-bucket-credentials-form-dialog/ca-bucket-credentials-form-dialog.component';
-import {CaOrganizationCoreModule} from '../ca-organization-core/ca-organization-core.module';
+import {CaSpaceCoreModule} from '../ca-space-core/ca-space-core.module';
 import {CaCloudProviderCoreModule} from '../ca-cloud-provider-core/ca-cloud-provider-core.module';
 import {
   CaBucketRegionFormDialogComponent
@@ -60,7 +60,7 @@ import {
     ReactiveFormsModule,
 
     CaCoreModule,
-    CaOrganizationCoreModule,
+    CaSpaceCoreModule,
     CaCloudProviderCoreModule,
     CaConfigCoreModule,
   ],

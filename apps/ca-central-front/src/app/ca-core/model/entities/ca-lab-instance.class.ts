@@ -11,7 +11,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
 import {CaCity} from './ca-city.entity';
-import {CaOrganization} from './ca-organization.class';
+import {CaSpace} from './ca-space.class';
 import {CaLabInstanceUserRole} from './ca-lab-instance-user.class';
 
 export type CaLabInstanceStatus = 'RUNNING' | 'STOPPED';
@@ -67,14 +67,14 @@ export class CaLabInstance extends CaBaseEntity {
   }
 }
 
-export class CaLabInstanceWithOrga extends CaLabInstance {
-  @Type(() => CaOrganization)
-  organization: CaOrganization;
+export class CaLabInstanceWithSpace extends CaLabInstance {
+  @Type(() => CaSpace)
+  space: CaSpace;
 }
 
 
 export type CaLabInstanceDatasource = FlEntityPaginatedDatasource<CaLabInstance>;
-export type CaLabInstanceWithOrgaDatasource = FlEntityPaginatedDatasource<CaLabInstanceWithOrga>;
+export type CaLabInstanceWithSpaceDatasource = FlEntityPaginatedDatasource<CaLabInstanceWithSpace>;
 
 export class CaLabInstanceForm {
   id: string;
@@ -93,8 +93,8 @@ export class CaLabInstanceForm {
   @Type(() => CaCity)
   city: CaCity;
 
-  @Type(() => CaOrganization)
-  organization: CaOrganization;
+  @Type(() => CaSpace)
+  space: CaSpace;
 }
 
 export class CaLabInstanceFindOneDto {

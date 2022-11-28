@@ -11,9 +11,9 @@ import {
 } from '@monorepo/front-core-lib';
 import {ClStringHelper, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {CmUserCategory} from '@monorepo/common-model';
-import {CaCurrentOrganizationService} from './ca-current-organization.service';
-import {CaOrganizationInfoDto} from '../model/entities/ca-organization.class';
-import {CaOrganizationService} from './ca-organization.service';
+import {CaCurrentSpaceService} from './ca-current-space.service';
+import {CaSpaceInfoDto} from '../model/entities/ca-space.class';
+import {CaSpaceService} from './ca-space.service';
 import {DOCUMENT} from '@angular/common';
 import {environment} from '../../../environments/ca-environment';
 
@@ -35,8 +35,8 @@ export class CaAuthenticatedUserService implements FlCleanableService {
   constructor(private apiService: FlApiService,
               private translateService: FlTranslateService,
               private themeService: FlThemeService,
-              private organizationService: CaOrganizationService,
-              private currentOrganizationService: CaCurrentOrganizationService,
+              private spaceService: CaSpaceService,
+              private currentSpaceService: CaCurrentSpaceService,
               @Inject(DOCUMENT) private document: Document) {
     FlCleanerService.getInstance().registerService(this);
   }
@@ -44,10 +44,10 @@ export class CaAuthenticatedUserService implements FlCleanableService {
   /**
    * Call the get user information route and store the user in the service
    */
-  public loadCurrentInfo(): Observable<CaOrganizationInfoDto> {
-    this.currentOrganizationService.init();
-    return this.organizationService.getCurrentInfo().pipe(
-      map(organizationInfo => this.storeCurrentAuthenticatedInfo(organizationInfo))
+  public loadCurrentInfo(): Observable<CaSpaceInfoDto> {
+    this.currentSpaceService.init();
+    return this.spaceService.getCurrentInfo().pipe(
+      map(spaceInfo => this.storeCurrentAuthenticatedInfo(spaceInfo))
     );
   }
 
@@ -72,28 +72,28 @@ export class CaAuthenticatedUserService implements FlCleanableService {
    * For dev environment
    * @param domain
    */
-  public setCurrentOrganizationDomainDev(domain: string): void {
-    this.currentOrganizationService.setCurrentOrganizationDomainDev(domain);
+  public setCurrentSpaceDomainDev(domain: string): void {
+    this.currentSpaceService.setCurrentSpaceDomainDev(domain);
   }
 
-  private storeCurrentAuthenticatedInfo(organizationInfo: CaOrganizationInfoDto): CaOrganizationInfoDto {
+  private storeCurrentAuthenticatedInfo(spaceInfo: CaSpaceInfoDto): CaSpaceInfoDto {
 
     if (environment.production) {
-      // if the website organization domain does not correspond to the user organization domain
-      // redirect to the website organization domain
+      // if the website space domain does not correspond to the user space domain
+      // redirect to the website space domain
       const url = this.document.defaultView.location.href;
       const domain = ClStringHelper.getLowestDomainFromUrl(url);
-      if (domain !== organizationInfo.organization.domain) {
-        this.document.defaultView.location.href = `https://${organizationInfo.organization.domain}.${environment.frontDomain}`;
+      if (domain !== spaceInfo.space.domain) {
+        this.document.defaultView.location.href = `https://${spaceInfo.space.domain}.${environment.frontDomain}`;
         // throw an error so the guard does not navigate to the page
-        throw new Error('Redirect to the organization domain');
+        throw new Error('Redirect to the space domain');
       }
     }
 
-    this.currentOrganizationService.setCurrentOrganization(organizationInfo.organization);
-    this.currentOrganizationService.setCurrentOrganizationUserRole(organizationInfo.roleInOrga);
-    this.storeUserAuthenticated(organizationInfo.user);
-    return organizationInfo;
+    this.currentSpaceService.setCurrentSpace(spaceInfo.space);
+    this.currentSpaceService.setCurrentSpaceUserRole(spaceInfo.roleInSpace);
+    this.storeUserAuthenticated(spaceInfo.user);
+    return spaceInfo;
   }
 
   private storeUserAuthenticated(user: CaUser): CaUser {
@@ -174,11 +174,11 @@ export class CaAuthenticatedUserService implements FlCleanableService {
   }
 
   /**
-   * return true is the authenticated user is an admin of the current orga or
+   * return true is the authenticated user is an admin of the current space or
    * a G admin
    */
-  public isCurrentOrganizationAdmin(): boolean {
-    return this.isAdmin() || this.currentOrganizationService.isOrganizationAdmin();
+  public isCurrentSpaceAdmin(): boolean {
+    return this.isAdmin() || this.currentSpaceService.isSpaceAdmin();
   }
 
   public isCategory(...categories: CmUserCategory[]): boolean {

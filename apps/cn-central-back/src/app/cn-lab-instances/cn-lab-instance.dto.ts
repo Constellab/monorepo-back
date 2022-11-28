@@ -1,14 +1,14 @@
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
-import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
+import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
 import {CnServerInfo} from '../cn-servers-info/cn-server-info.entity';
 import {BlBaseEntityDto, BlDtoHelper} from '@monorepo/back-core-lib';
 import {CnBrickVersionDTO} from '../cn-bricks/cn-brick.dto';
 import {CnLabConfigDto} from '../cn-lab-configs/cn-lab-config.dto';
 import {CnCity} from '../cn-city/cn-city.entity';
-import {CnOrganization} from '../cn-organizations/cn-organization.entity';
+import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {Type} from 'class-transformer';
-import {CnLabInstanceUserRole} from './cn-lab-instance-user.entity';
+import {CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
 import {CnLabInstance} from './cn-lab-instance.entity';
 
 
@@ -26,7 +26,7 @@ export class CnLabInstanceDto extends BlBaseEntityDto {
   frontUrl: string = undefined;
   serverInfo: CnServerInfo = undefined;
   city: CnCity = undefined;
-  organization: CnOrganization = undefined;
+  space: CnSpace = undefined;
 }
 
 /**
@@ -80,7 +80,7 @@ export class CnLabInstanceCreateDTO {
   @Type(() => CnCity)
   city: CnCity;
 
-  @Type(() => CnOrganization)
-  organization: CnOrganization;
+  @Type(() => CnSpace)
+  space: CnSpace;
 }
 

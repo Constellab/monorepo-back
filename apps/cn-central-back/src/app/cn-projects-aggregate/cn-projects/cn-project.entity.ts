@@ -22,7 +22,7 @@ import {ClHelpService} from '@monorepo/core-lib';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-project-level.enum';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {CmRichTextI} from '@monorepo/common-model';
-import {CnOrganization} from '../../cn-organizations/cn-organization.entity';
+import {CnSpace} from '../../cn-spaces/cn-space.entity';
 
 /**
  * A project is an ensemble of experiments
@@ -92,11 +92,11 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
 
   @Exclude()
   @BlNotUpdatable()
-  @ManyToOne(() => CnOrganization, {nullable: false})
-  organization?: CnOrganization;
+  @ManyToOne(() => CnSpace, {nullable: false})
+  space?: CnSpace;
 
   @Column({nullable: false, update: false})
-  organizationId: string;
+  spaceId: string;
 
 
   public isSharedToGroup(groupId: string | string[]): boolean {

@@ -24,7 +24,7 @@ export class CaBucketTableComponent extends FlTableAbstractDirective<CaBucketFul
 
   constructor(private dialogService: FlDialogService,
               private objectStorageService: CaObjectStorageService) {
-    super(['contentType', 'region', 'credentials', 'organization', 'created', 'lastModified', 'actions']);
+    super(['contentType', 'region', 'credentials', 'space', 'created', 'lastModified', 'actions']);
   }
 
   ngOnInit(): void {

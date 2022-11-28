@@ -14,21 +14,21 @@ export class CnFrontService {
     return this.getBaseWebsiteURL() + '/login';
   }
 
-  public getSignupOrganizationUrl(organizationDomain: string, invitationCode: string): string {
-    return this.getOrganizationWebsiteURL(organizationDomain) + '/signup-organization/' + invitationCode;
+  public getSignupSpaceUrl(spaceDomain: string, invitationCode: string): string {
+    return this.getSpaceWebsiteURL(spaceDomain) + '/signup-space/' + invitationCode;
   }
 
   /**
-   * Get the base url of the website (without the url of the organization)
+   * Get the base url of the website (without the url of the space)
    */
   public getBaseWebsiteURL(): string {
     return 'https://' + this.configService.getCentralFrontDomain();
   }
 
   /**
-   * Get the base url of the website (without the url of the organization)
+   * Get the base url of the website (without the url of the space)
    */
-  public getOrganizationWebsiteURL(organizationDomain: string): string {
-    return `https://${organizationDomain}.${this.configService.getCentralFrontDomain()}`;
+  public getSpaceWebsiteURL(spaceDomain: string): string {
+    return `https://${spaceDomain}.${this.configService.getCentralFrontDomain()}`;
   }
 }

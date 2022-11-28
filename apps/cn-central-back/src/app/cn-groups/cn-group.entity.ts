@@ -14,7 +14,7 @@ import {CnGroupType} from './cn-group-type.enum';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {Exclude} from 'class-transformer';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
-import {CnOrganization} from '../cn-organizations/cn-organization.entity';
+import {CnSpace} from '../cn-spaces/cn-space.entity';
 
 @TableInheritance({column: {type: 'enum', enum: CnGroupType, name: 'type'}})
 @Entity('group')
@@ -59,11 +59,11 @@ export class CnGroupTeam extends CnGroup {
 
   @Exclude()
   @BlNotUpdatable()
-  @ManyToOne(() => CnOrganization, {nullable: true})
-  organization?: CnOrganization;
+  @ManyToOne(() => CnSpace, {nullable: true})
+  space?: CnSpace;
 
   @Column({nullable: true, update: false})
-  organizationId: string;
+  spaceId: string;
 }
 
 @Entity('user_group')

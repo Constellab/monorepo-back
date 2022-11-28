@@ -5,7 +5,7 @@ import {CnGroupsService} from './cn-groups.service';
 import {CnGroupsController} from './cn-groups.controller';
 import {CnUsersModule} from '../cn-users/cn-users.module';
 import {CnUserTeamService} from './cn-user-team.service';
-import {CnOrganizationsModule} from '../cn-organizations/cn-organizations.module';
+import {CnSpacesModule} from '../cn-spaces/cn-spaces.module';
 import {CnGroupsSecurity} from './cn-groups.security';
 import {CnGroupsAggregateService} from './cn-groups-aggregate.service';
 
@@ -19,7 +19,7 @@ import {CnGroupsAggregateService} from './cn-groups-aggregate.service';
     ]),
 
     CnUsersModule,
-    CnOrganizationsModule,
+    CnSpacesModule,
   ],
   providers: [
     CnGroupsService,

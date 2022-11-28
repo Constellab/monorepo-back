@@ -62,10 +62,10 @@ export class CnProjectsController {
     return this.projectAggregate.getCurrentProjects(page, size);
   }
 
-  @Get('current-organization')
-  async getByCurrentOrganization(@Query('page', ParseIntPipe) page: number,
-                                 @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProject>> {
-    return await this.projectAggregate.getByCurrentOrganization(page, size);
+  @Get('current-space')
+  async getByCurrentSpace(@Query('page', ParseIntPipe) page: number,
+                          @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProject>> {
+    return await this.projectAggregate.getByCurrentSpace(page, size);
   }
 
   @Get('group/:groupId')

@@ -1,0 +1,21 @@
+<div class="g-page" fxLayoutAlign="center center">
+  <fl-card class="card">
+    <fl-card-header>
+      <h1>{{'no_space' | translate}}</h1>
+
+      <fl-card-actions>
+        <a mat-icon-button [routerLink]="loginRoute" [queryParams]="{autoRedirect: false}">
+          <mat-icon>home</mat-icon>
+        </a>
+      </fl-card-actions>
+    </fl-card-header>
+
+    <fl-card-body>
+      <div>{{'user_without_space' | translate}}</div>
+
+      <div class="g-text-centered icon">
+        <mat-icon class="g-text-light g-icon-big">block</mat-icon>
+      </div>
+    </fl-card-body>
+  </fl-card>
+</div>

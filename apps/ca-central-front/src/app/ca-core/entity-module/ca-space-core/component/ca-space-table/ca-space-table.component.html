@@ -1,0 +1,56 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource">
+
+
+  <!-- Created -->
+  <ng-container matColumnDef="created">
+    <mat-header-cell *matHeaderCellDef>
+      <p>{{'creation_info' | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let space">
+      <ca-user-with-date [user]="space.createdBy" [date]="space.createdAt"></ca-user-with-date>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Last modified -->
+  <ng-container matColumnDef="lastModified">
+    <mat-header-cell *matHeaderCellDef>
+      <p>{{'last_modification_info' | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let space">
+      <ca-user-with-date [user]="space.lastModifiedBy" [date]="space.lastModifiedAt"></ca-user-with-date>
+
+    </mat-cell>
+  </ng-container>
+
+  <!-- Detail url  -->
+  <ng-container matColumnDef="detail">
+    <mat-header-cell *matHeaderCellDef>
+      <p>{{'detail' | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let space">
+      <a mat-stroked-button class="g-button-small" [caExternalSpaceLink]="currentSpaceRoute"
+         [caExternalSpaceDomain]="space.domain">
+        <mat-icon>visibility</mat-icon>
+        <span>{{'detail' | translate}}</span>
+      </a>
+    </mat-cell>
+  </ng-container>
+
+
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
+    <mat-header-cell *matHeaderCellDef>
+      {{column.columnName | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let item">
+      <div>
+        <span>{{item[column.accessor]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+</mat-table>
+

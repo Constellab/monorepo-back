@@ -1,7 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FL_PORTAL_DATA} from '@monorepo/front-core-lib';
 import {CaUser} from '../../../../model/entities/ca-user.class';
-import {CaAuthenticatedUserService} from '../../../../service-api/ca-authenticated-user.service';
 
 @Component({
   selector: 'ca-user-info-portal',
@@ -11,15 +10,14 @@ import {CaAuthenticatedUserService} from '../../../../service-api/ca-authenticat
 export class CaUserInfoPortalComponent implements OnInit {
 
   user: CaUser;
-  inTheSameOrganisation: boolean;
 
-  constructor(@Inject(FL_PORTAL_DATA) private data: CaUser, private authenticatedUserService: CaAuthenticatedUserService) {
+  constructor(@Inject(FL_PORTAL_DATA) private data: CaUser) {
     this.user = data;
   }
 
   ngOnInit(): void {
 
-    //TODO: Only show redirection button if users are in the same organisation
+    //TODO: Only show redirection button if users are in the same space
   }
 
 }
