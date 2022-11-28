@@ -45,3 +45,10 @@ mat-icon.g-icon-big svg {
 .mat-icon.g-icon-align{
   vertical-align: middle;
 }
+
+
+/// Icon with a background color
+.mat-icon.g-icon-background {
+  border-radius: 4px;
+  padding: 1px;
+}

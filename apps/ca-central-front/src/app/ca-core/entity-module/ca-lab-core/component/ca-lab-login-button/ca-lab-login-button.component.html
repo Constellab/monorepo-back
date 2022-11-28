@@ -1,5 +1,5 @@
 <button mat-stroked-button color="primary" (click)="loginToLab($event)"
-        [ngClass]="buttonClass">
+        [ngClass]="buttonClass" (mousedown)="stopEventPropagation($event)">
   {{'go_to_lab' | translate}}
   <mat-icon *ngIf="!isLoading">arrow_forward_ios</mat-icon>
   <fl-button-loader *ngIf="isLoading" [size]="size"></fl-button-loader>

@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {CaDashboardGroupsComponent} from './ca-dashboard-groups.component';
+import {CaDashboardTeamsComponent} from './ca-dashboard-teams.component';
 
 describe('CaDashboardGroupComponent', () => {
-  let component: CaDashboardGroupsComponent;
-  let fixture: ComponentFixture<CaDashboardGroupsComponent>;
+  let component: CaDashboardTeamsComponent;
+  let fixture: ComponentFixture<CaDashboardTeamsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CaDashboardGroupsComponent ]
+      declarations: [ CaDashboardTeamsComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CaDashboardGroupsComponent);
+    fixture = TestBed.createComponent(CaDashboardTeamsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

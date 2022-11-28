@@ -1,12 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CaGroup, CaSaveTeamDTO} from '../../../../model/entities/ca-group.entity';
-import {
-  FlConfirmDialogInput,
-  FlConfirmDialogResult,
-  FlDialogService,
-  FlFormDialogInput
-} from '@monorepo/front-core-lib';
-import {CaTeamFormDialogComponent} from '../ca-team-form-dialog/ca-team-form-dialog.component';
+import {CaGroup} from '../../../../model/entities/ca-group.entity';
+import {FlConfirmDialogInput, FlConfirmDialogResult, FlDialogService} from '@monorepo/front-core-lib';
+import {CaTeamFormDialogComponent, CaTeamFormDialogInput} from '../ca-team-form-dialog/ca-team-form-dialog.component';
 import {CaGroupService} from '../../../../service-api/ca-group.service';
 import {ClHelpService} from '@monorepo/core-lib';
 
@@ -33,12 +28,12 @@ export class CaTeamActionMenuComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  stopEvent(event: MouseEvent): void{
+  stopEvent(event: MouseEvent): void {
     if (this.stopClickEvent) ClHelpService.stopEventPropagation(event);
   }
 
   openUpdateDialog(): void {
-    const data: FlFormDialogInput<CaSaveTeamDTO> = {
+    const data: CaTeamFormDialogInput = {
       mode: 'update',
       object: {
         id: this.team.id,

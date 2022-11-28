@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {CaGroupsListComponent} from './ca-groups-list.component';
+import {CaTeamCardComponent} from './ca-team-card.component';
 
-describe('CaGroupsListComponent', () => {
-  let component: CaGroupsListComponent;
-  let fixture: ComponentFixture<CaGroupsListComponent>;
+describe('CaGroupCardComponent', () => {
+  let component: CaTeamCardComponent;
+  let fixture: ComponentFixture<CaTeamCardComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CaGroupsListComponent ]
+      declarations: [ CaTeamCardComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CaGroupsListComponent);
+    fixture = TestBed.createComponent(CaTeamCardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,4 +1,4 @@
-<fl-card class="card">
+<fl-card class="card" matRipple>
   <fl-card-header>
     <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em">
       <ca-project-icon [project]="project"></ca-project-icon>
@@ -12,13 +12,18 @@
       <p>{{project.title}}</p>
     </div>
 
+    <div fxLayout="row" fxLayoutAlign="start center" class="project-leader">
+      <span class="g-text-light project-leader-title">{{'project_leader' | translate}} : &nbsp;</span>
+      <ca-user-inline [user]="project.leader" class="project-leader-user"></ca-user-inline>
+    </div>
+
     <fl-date-range [startingDate]="project.startingDate" [endingDate]="project.endingDate"
-                   class="g-text-light g-text-small dates">
+                   class="g-text-light dates">
     </fl-date-range>
 
   </fl-card-body>
 
-  <fl-card-footer class="footer">
+  <fl-card-footer *ngIf="!hideGoToProjectButton">
     <div fxLayout="row" fxLayoutAlign="end" class="g-text-light g-text-small g-full">
       <fl-text-icon iconPosition="end" gap="0">
         <mat-icon>chevron_right</mat-icon>

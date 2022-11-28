@@ -4,7 +4,6 @@ import {CaProjectCardComponent} from './component/ca-project-card/ca-project-car
 import {CaProjectFormDialogComponent} from './component/ca-project-form-dialog/ca-project-form-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CaCoreModule} from '../../ca-core.module';
-import {CaProjectInfoComponent} from './component/ca-project-info/ca-project-info.component';
 import {RouterModule} from '@angular/router';
 import {CaProjectTableComponent} from './component/ca-project-table/ca-project-table.component';
 import {
@@ -23,7 +22,6 @@ import {CaProjectIconComponent} from './component/ca-project-icon/ca-project-ico
     // Component
     CaProjectCardComponent,
     CaProjectFormDialogComponent,
-    CaProjectInfoComponent,
     CaProjectTableComponent,
     CaUpdateProjectLeaderDialogComponent,
     CaProjectInlineComponent,
@@ -35,7 +33,6 @@ import {CaProjectIconComponent} from './component/ca-project-icon/ca-project-ico
     // Component
     CaProjectCardComponent,
     CaProjectFormDialogComponent,
-    CaProjectInfoComponent,
     CaProjectTableComponent,
     CaUpdateProjectLeaderDialogComponent,
     CaProjectInlineComponent,
@@ -49,7 +46,7 @@ import {CaProjectIconComponent} from './component/ca-project-icon/ca-project-ico
     FormsModule,
     RouterModule,
 
-    CaCoreModule
+    CaCoreModule,
   ]
 })
 export class CaProjectCoreModule {

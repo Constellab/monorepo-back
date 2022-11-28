@@ -1,0 +1,39 @@
+<fl-async-section [arrayObs]="datasource" [emptyText]="emptyText"
+                  [nullOrEmptyIsValid]="true">
+
+  <fl-section-header class="g-headline">
+    <a [routerLink]="completeListRoute" class="title-link">
+      <fl-text-icon iconPosition="start">
+        <mat-icon class="g-icon-background g-primary-background"
+                  [flIcon]="titleIcon"></mat-icon>
+        <h2>{{sectionTitle | translate}}</h2>
+      </fl-text-icon>
+    </a>
+  </fl-section-header>
+
+  <ng-container *flSectionBody="let items">
+    <div class="g-grid-4-rows">
+      <a *ngFor="let item of items" [routerLink]="item | caDetailRoute">
+        <ng-template [ngTemplateOutlet]="templateRef"
+                     [ngTemplateOutletContext]="{$implicit: item}"></ng-template>
+      </a>
+
+      <ca-add-card *ngIf="datasource.page?.totalElements < maxItems"
+                   (click)="addClicked($event)"
+                   [cardTitle]="addText | translate">
+      </ca-add-card>
+    </div>
+
+    <div *ngIf="datasource.page?.totalElements > maxItems" class="all-button">
+      <fl-text-icon iconPosition="end" gap="0">
+        <a class="g-text-link" [routerLink]="completeListRoute">
+          {{completeListText | translate}}
+        </a>
+        <mat-icon>chevron_right</mat-icon>
+      </fl-text-icon>
+    </div>
+
+  </ng-container>
+
+</fl-async-section>
+

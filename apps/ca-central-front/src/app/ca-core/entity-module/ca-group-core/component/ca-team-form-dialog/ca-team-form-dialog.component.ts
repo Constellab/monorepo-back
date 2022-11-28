@@ -7,6 +7,8 @@ import {Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {CaGroupService} from '../../../../service-api/ca-group.service';
 
+export type CaTeamFormDialogInput = FlFormDialogInput<CaSaveTeamDTO>;
+
 @Component({
   selector: 'ca-team-form-dialog',
   templateUrl: './ca-team-form-dialog.component.html',
@@ -17,7 +19,7 @@ export class CaTeamFormDialogComponent extends FlFormDialogAbstractDirective<CaS
 
   constructor(snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<CaTeamFormDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<CaSaveTeamDTO>,
+              @Inject(MAT_DIALOG_DATA) dialogInput: CaTeamFormDialogInput,
               private groupService: CaGroupService) {
     super(dialogInput, snackBarService, dialogRef);
   }

@@ -52,4 +52,9 @@ export class CaLabInstanceStartStopComponent implements OnInit {
     this.isLoading = false;
   }
 
+  // prevent ripple effect when used on card
+  stopEventPropagation(event: Event): void {
+    event.stopPropagation();
+  }
+
 }

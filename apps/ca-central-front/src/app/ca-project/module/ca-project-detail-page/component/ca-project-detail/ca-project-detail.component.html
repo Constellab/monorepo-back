@@ -23,19 +23,14 @@
   <h2 class="project-title">{{project.title}}</h2>
 
   <div class="project-info">
-    <fl-text-icon>
-      <mat-icon class="g-text-light">person</mat-icon>
-      <div>
-        <span class="g-text-light">{{'project_leader' | translate}}</span> :
-        <ca-user-inline [user]="project.leader" class="inline-block"></ca-user-inline>
-      </div>
-    </fl-text-icon>
+    <div fxLayout="row" fxLayoutAlign="start center" class="project-leader">
+      <span class="g-text-light project-leader-title">{{'project_leader' | translate}} : &nbsp;</span>
+      <ca-user-inline [user]="project.leader" class="project-leader-user"></ca-user-inline>
+    </div>
 
-    <fl-text-icon class="g-text-light">
-      <mat-icon>date_range</mat-icon>
-      <fl-date-range [startingDate]="project.startingDate" [endingDate]="project.endingDate">
-      </fl-date-range>
-    </fl-text-icon>
+    <fl-date-range [startingDate]="project.startingDate" [endingDate]="project.endingDate"
+                   class="g-text-light dates">
+    </fl-date-range>
   </div>
 
 

@@ -16,3 +16,16 @@
 .dates{
   margin-top: 1em;
 }
+
+.project-leader{
+  margin-top: 0.5em;
+}
+
+.project-leader-title{
+  flex-shrink: 0;
+}
+
+.project-leader-user{
+  // prevent name overflow
+  min-width: 0;
+}

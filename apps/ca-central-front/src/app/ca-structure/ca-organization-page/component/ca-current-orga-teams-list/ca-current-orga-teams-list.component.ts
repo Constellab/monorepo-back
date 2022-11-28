@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {CaGroup, CaGroupDatasource} from '../../../../ca-core/model/entities/ca-group.entity';
-import {FlDialogService, FlFormDialogInput, FlTableColumn} from '@monorepo/front-core-lib';
+import {FlDialogService, FlTableColumn} from '@monorepo/front-core-lib';
 import {CaGroupService} from '../../../../ca-core/service-api/ca-group.service';
 import {
-  CaTeamFormDialogComponent
+  CaTeamFormDialogComponent,
+  CaTeamFormDialogInput
 } from '../../../../ca-core/entity-module/ca-group-core/component/ca-team-form-dialog/ca-team-form-dialog.component';
 
 /**
@@ -29,7 +30,7 @@ export class CaCurrentOrgaTeamsListComponent implements OnInit {
   }
 
   createTeam(): void {
-    const input: FlFormDialogInput = {
+    const input: CaTeamFormDialogInput = {
       mode: 'create'
     };
 

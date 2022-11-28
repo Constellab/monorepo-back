@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {CaProject} from '../../../../model/entities/ca-project.class';
 
 /**
@@ -7,11 +7,14 @@ import {CaProject} from '../../../../model/entities/ca-project.class';
 @Component({
   selector: 'ca-project-card',
   templateUrl: './ca-project-card.component.html',
-  styleUrls: ['./ca-project-card.component.scss']
+  styleUrls: ['./ca-project-card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CaProjectCardComponent implements OnInit {
 
   @Input() project: CaProject;
+
+  @Input() hideGoToProjectButton: boolean = false;
 
   constructor() {
   }

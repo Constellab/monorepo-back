@@ -40,4 +40,9 @@ export class CaLabLoginButtonComponent implements OnInit {
     return this.size === 'small' ? 'g-button-small' : '';
   }
 
+  // prevent ripple effect when used on card
+  stopEventPropagation(event: Event): void {
+    event.stopPropagation();
+  }
+
 }

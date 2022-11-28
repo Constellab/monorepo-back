@@ -10,7 +10,7 @@ import {
   CaLabInstanceWithOrgaDatasource
 } from '../model/entities/ca-lab-instance.class';
 import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
-import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
+import {ClPageI} from '@monorepo/core-lib';
 import {
   CaExternalLabBackup,
   CaExternalLabBackupHistory,
@@ -45,38 +45,18 @@ export class CaLabInstanceService {
     return this.apiService.deleteById(this.route, id, CaLabInstance);
   }
 
-  /**
-   * Return the list of the current user's projects
-   */
-  public getCurrentLabInstancesDatasource(): CaLabInstanceDatasource {
-    return new FlEntityPaginatedDatasource(this.getCurrentLabInstanceMethod(), 20);
+  public getCurrentLabInstancesDatasource(pageSize: number = 20): CaLabInstanceDatasource {
+    return new FlEntityPaginatedDatasource(
+      (page, size) => this.getCurrentLabInstance(page, size), pageSize);
   }
 
-  /**
-   * Return the list of the 4 first lab instance for a user
-   */
-  public getDashboardCurrentLabInstancesDatasource(): CaLabInstanceDatasource {
-    return new FlEntityPaginatedDatasource(this.getCurrentLabInstanceMethod(), 4);
-  }
-
-  private getCurrentLabInstanceMethod(): ClGetPageFunction<CaLabInstance> {
-    return (page: number, pageSize: number): Observable<ClPageI<CaLabInstance>> =>
-      this.apiService.get(`${this.route}/current`, CaLabInstance,
-        {resultIsPaginated: true, page: page, pageSize: pageSize});
+  private getCurrentLabInstance(page: number, pageSize: number): Observable<ClPageI<CaLabInstance>> {
+    return this.apiService.get(`${this.route}/current`, CaLabInstance,
+      {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 
   public getCurrentRunningLabInstance(): Observable<CaLabInstance[]> {
     return this.apiService.get(this.route + '/current-running', CaLabInstance);
-  }
-
-  public getByCurrentOrganization(page: number, size: number): Observable<ClPageI<CaLabInstance>> {
-    return this.apiService.get(`${this.route}/organization`, CaLabInstanceConfig,
-      {resultIsPaginated: true, page: page, pageSize: size});
-  }
-
-  public getByCurrentOrganizationDatasource(): CaLabInstanceDatasource {
-    return new FlEntityPaginatedDatasource(
-      (page, size) => this.getByCurrentOrganization(page, size), 20);
   }
 
   public startLabInstance(id: string): Observable<CaLabInstance> {

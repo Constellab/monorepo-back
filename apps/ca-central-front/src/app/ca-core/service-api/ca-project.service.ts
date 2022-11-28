@@ -14,9 +14,10 @@ import {
   FlArrayObs,
   FlEntityArrayObs,
   FlEntityPaginatedDatasource,
-  FlQuillJson, FlTextEditorUploadedImage,
+  FlQuillJson,
+  FlTextEditorUploadedImage,
 } from '@monorepo/front-core-lib';
-import {ClGetPageFunction, ClPage, ClPageI} from '@monorepo/core-lib';
+import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CaGroup} from '../model/entities/ca-group.entity';
 import {CaUser} from '../model/entities/ca-user.class';
 import {CaProjectComment, CaProjectCommentDatasourcePaginated} from '../model/entities/ca-comment.class';
@@ -54,22 +55,13 @@ export class CaProjectService {
     return this.apiService.getById(this.route, id, CaProject);
   }
 
-  /**
-   * Return the list of the current user's projects
-   */
-  public getMyProjectsDatasource(): CaProjectDatasource {
-    return new FlEntityPaginatedDatasource(this.getMyProjectsMethod(), 20);
+  public getMyProjectsDatasource(pageSize: number = 20): CaProjectDatasource {
+    return new FlEntityPaginatedDatasource(
+      (page, size) => this.getMyProjects(page, size), pageSize);
   }
 
-  /**
-   * Return the list of the 4 first project for a user
-   */
-  public getDashboardMyProjectsDatasource(): CaProjectDatasource {
-    return new FlEntityPaginatedDatasource(this.getMyProjectsMethod(), 4);
-  }
-
-  private getMyProjectsMethod(): ClGetPageFunction<CaProject> {
-    return (page: number, pageSize: number) => this.apiService.get(`${this.route}/current`, CaProject,
+  private getMyProjects(page: number, pageSize: number): Observable<ClPageI<CaProject>> {
+    return this.apiService.get(`${this.route}/current`, CaProject,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 

@@ -9,7 +9,6 @@ import {
   CaLabInstanceStartStopComponent
 } from './component/ca-lab-instance-start-stop/ca-lab-instance-start-stop.component';
 import {RouterModule} from '@angular/router';
-import {CaLabInstancesListComponent} from './component/ca-lab-instances-list/ca-lab-instances-list.component';
 import {CaLabInstanceTableComponent} from './component/ca-lab-instance-table/ca-lab-instance-table.component';
 import {
   CaLabInstanceFormDialogComponent
@@ -31,7 +30,6 @@ import {CaConfigCoreModule} from '../ca-config-core/ca-config-core.module';
     CaLabInstanceCardComponent,
     CaSelectAccessibleLabInstanceOptionsComponent,
     CaLabInstanceStartStopComponent,
-    CaLabInstancesListComponent,
     CaLabInstanceTableComponent,
     CaLabInstanceFormDialogComponent,
     CaLabInstanceStatusDialogComponent,
@@ -41,7 +39,6 @@ import {CaConfigCoreModule} from '../ca-config-core/ca-config-core.module';
     CaLabInstanceCardComponent,
     CaSelectAccessibleLabInstanceOptionsComponent,
     CaLabInstanceStartStopComponent,
-    CaLabInstancesListComponent,
     CaLabInstanceTableComponent,
     CaLabInstanceFormDialogComponent,
     CaLabLoginButtonComponent,

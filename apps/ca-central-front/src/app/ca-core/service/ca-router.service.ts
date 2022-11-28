@@ -116,8 +116,8 @@ export class CaRouterService {
   }
 
 
-  public static getTeamRoute(groupId: string): string {
-    return CaRouterService.getFullRoute(`${caConstStructureRoute}/team/${groupId}`);
+  public static getTeamRoute(teamId: string): string {
+    return CaRouterService.getFullRoute(`${caConstStructureRoute}/team/${teamId}`);
   }
 
   public static getMyTeamsRoute(): string {
@@ -133,8 +133,8 @@ export class CaRouterService {
     this.router.navigate([CaRouterService.getMyTeamsRoute()]);
   }
 
-  public navigateToTeam(groupId: string): void {
-    this.router.navigate([CaRouterService.getTeamRoute(groupId)]);
+  public navigateToTeam(teamId: string): void {
+    this.router.navigate([CaRouterService.getTeamRoute(teamId)]);
   }
 
   public navigateToJoinOrganization(code: string): void {

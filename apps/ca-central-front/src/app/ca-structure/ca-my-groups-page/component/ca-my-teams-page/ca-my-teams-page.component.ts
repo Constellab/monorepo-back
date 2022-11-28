@@ -8,13 +8,13 @@ import {
 } from '../../../../ca-core/entity-module/ca-group-core/component/ca-team-form-dialog/ca-team-form-dialog.component';
 
 @Component({
-  selector: 'ca-my-groups-page',
-  templateUrl: './ca-my-groups-page.component.html',
-  styleUrls: ['./ca-my-groups-page.component.scss']
+  selector: 'ca-my-teams-page',
+  templateUrl: './ca-my-teams-page.component.html',
+  styleUrls: ['./ca-my-teams-page.component.scss']
 })
-export class CaMyGroupsPageComponent implements OnInit {
+export class CaMyTeamsPageComponent implements OnInit {
 
-  groupsDatasource: CaGroupDatasource;
+  teamsDatasource: CaGroupDatasource;
 
   constructor(private groupService: CaGroupService,
               private routerService: CaRouterService,
@@ -22,7 +22,7 @@ export class CaMyGroupsPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.groupsDatasource = this.groupService.getMyTeamsDatasource(20);
+    this.teamsDatasource = this.groupService.getMyTeamsDatasource();
   }
 
 

@@ -11,7 +11,7 @@ import {
 } from './component/ca-dashboard-lab-instances/ca-dashboard-lab-instances.component';
 import {CaDashboardSmartDbsComponent} from './component/ca-dashboard-smart-dbs/ca-dashboard-smart-dbs.component';
 import {CaSmartDbCoreModule} from '../../../ca-core/entity-module/ca-smart-db-core/ca-smart-db-core.module';
-import {CaDashboardGroupsComponent} from './component/ca-dashboard-groups/ca-dashboard-groups.component';
+import {CaDashboardTeamsComponent} from './component/ca-dashboard-teams/ca-dashboard-teams.component';
 import {CaGroupCoreModule} from '../../../ca-core/entity-module/ca-group-core/ca-group-core.module';
 import {CaDashboardMyActivityComponent} from './component/ca-dashboard-my-activity/ca-dashboard-my-activity.component';
 import {
@@ -23,6 +23,7 @@ import {
 import {
   CaDashboardLastExperimentsComponent
 } from './component/ca-dashboard-last-experiments/ca-dashboard-last-experiments.component';
+import {CaDashboardListLayoutComponent} from './component/ca-dashboard-list-layout/ca-dashboard-list-layout.component';
 
 /**
  * Module for the dashboard page
@@ -33,11 +34,12 @@ import {
     CaDashboardProjectsComponent,
     CaDashboardLabInstancesComponent,
     CaDashboardSmartDbsComponent,
-    CaDashboardGroupsComponent,
+    CaDashboardTeamsComponent,
     CaDashboardMyActivityComponent,
     CaDashboardTaskOfTheDayComponent,
     CaDashboardActivityCardComponent,
     CaDashboardLastExperimentsComponent,
+    CaDashboardListLayoutComponent,
   ],
   imports: [
     CommonModule,

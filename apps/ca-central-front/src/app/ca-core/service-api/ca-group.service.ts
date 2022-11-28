@@ -26,7 +26,7 @@ export class CaGroupService {
   /**
    * Return the list of the current user's teams
    */
-  public getMyTeamsDatasource(pageSize: number): CaGroupDatasource {
+  public getMyTeamsDatasource(pageSize: number = 20): CaGroupDatasource {
     return new FlEntityPaginatedDatasource(
       (page: number, pageSize: number) => this.getCurrentTeams(page, pageSize),
       pageSize);

@@ -1,16 +1,10 @@
-<div class="grid-container">
+<div class="g-grid-3-rows">
   <a *ngFor="let project of children$ | async" [routerLink]="project | caDetailRoute"
      queryParamsHandling="preserve">
     <ca-project-card [project]="project"></ca-project-card>
   </a>
 
-  <fl-card class="add-card" (click)="openChildCreation()">
-    <fl-card-header>
-      <div class="g-text-big">{{'add_new_sub_project' | translate}}</div>
-    </fl-card-header>
-    <fl-card-body>
-      <div class="add-text">+</div>
-    </fl-card-body>
-  </fl-card>
+  <ca-add-card [cardTitle]="'add_new_sub_project' | translate"
+               (click)="openChildCreation()"></ca-add-card>
 </div>
 

@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {CaLabInstanceService} from '../../../../../ca-core/service-api/ca-lab-instance.service';
 import {CaLabInstanceDatasource} from '../../../../../ca-core/model/entities/ca-lab-instance.class';
 import {CaRouterService} from '../../../../../ca-core/service/ca-router.service';
+import {CaDashboardListLayoutComponent} from '../ca-dashboard-list-layout/ca-dashboard-list-layout.component';
 
 /**
  * Small list of lab instances in the dashboard
@@ -25,7 +26,7 @@ export class CaDashboardLabInstancesComponent implements OnInit {
   }
 
   private getMyLabInstances(): void {
-    this.labInstancesDatasource = this.labInstanceService.getDashboardCurrentLabInstancesDatasource();
+    this.labInstancesDatasource = this.labInstanceService.getCurrentLabInstancesDatasource(CaDashboardListLayoutComponent.maxItems);
   }
 
 }
