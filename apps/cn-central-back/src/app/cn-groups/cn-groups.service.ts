@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup} from './cn-group.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {FindOneOptions, In, Repository} from 'typeorm';
+import {EntityManager, FindOneOptions, In, Repository} from 'typeorm';
 import {BlAbstractService} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnGroupType} from './cn-group-type.enum';
@@ -40,6 +40,16 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
   public async updateTeamLabel(team: CnGroupTeam, label: string): Promise<CnGroup> {
     team.label = label;
     return this.update(team);
+  }
+
+  public createOwnGroup(user: CnUser, entityManager: EntityManager): Promise<CnGroup> {
+    const group: CnGroupSingleUser = new CnGroupSingleUser();
+    group.label = user.fullname;
+    group.type = CnGroupType.SINGLE_USER;
+    group.user = user;
+    group.createdBy = user;
+    group.lastModifiedBy = user;
+    return entityManager.save(group);
   }
 
   ////////////////////////////////// GET /////////////////////////

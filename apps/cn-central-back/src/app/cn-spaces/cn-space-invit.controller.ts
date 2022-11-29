@@ -3,7 +3,7 @@ import {CnSpaceAggregateService} from './cn-space-aggregate.service';
 import {CnSpaceInvitDto} from './cn-space.dto';
 import {CnSpaceInvit} from './cn-space-invit.entity';
 import {CnSpaceUserRole} from './cn-space-user.entity';
-import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
+import {BlPublic} from '@monorepo/back-core-lib';
 import {CnUser} from '../cn-users/cn-user.entity';
 
 @Controller('space-invit')
@@ -14,12 +14,6 @@ export class CnSpaceInvitController {
 
   //////////////////////////////// INVITATION ROUTES ////////////////////////////////
 
-  @BlPublic()
-  @Post('code/:code/accept-new-user')
-  public async acceptInvitationNewUser(@Param('code') code: string,
-                                @Body(new BlParsePipe(CnUser)) entity: CnUser): Promise<CnUser> {
-    return this.spaceAggregateService.newUserAcceptsInvitation(code, entity);
-  }
 
   @BlPublic()
   @Get('code/:code')
@@ -27,7 +21,8 @@ export class CnSpaceInvitController {
     return this.spaceAggregateService.getInvitationByCode(code);
   }
 
-  @Post('code/:code/accept-existing-user')
+
+  @Post('code/:code/accept')
   public async acceptInvitationExistingUser(@Param('code') code: string): Promise<CnUser> {
     return this.spaceAggregateService.existingUserAcceptsInvitation(code);
   }

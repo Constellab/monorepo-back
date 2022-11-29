@@ -6,6 +6,7 @@ import {ActivatedRoute} from '@angular/router';
 import {CaRouterService} from '../../../ca-core/service/ca-router.service';
 import {CaSpaceInvitFull} from '../../../ca-core/model/entities/ca-space-invit.class';
 import {Observable, tap} from 'rxjs';
+import {CaUserAccountsService} from '../../../ca-core/service-api/ca-user-accounts.service';
 
 /**
  * Page on which the user can join an space. He can create an account or use an existing one.
@@ -27,7 +28,8 @@ export class CaSignupToSpacePageComponent implements OnInit {
   constructor(private route: ActivatedRoute,
               private spaceInvitService: CaSpaceInvitService,
               private snackBarService: FlSnackBarService,
-              private routerService: CaRouterService) {
+              private routerService: CaRouterService,
+              private userAccountService: CaUserAccountsService) {
   }
 
   ngOnInit(): void {
@@ -62,7 +64,7 @@ export class CaSignupToSpacePageComponent implements OnInit {
 
   private signup(user: FlSignUpUser): void {
     this.signupIsLoading = true;
-    this.spaceInvitService.acceptInvitationNewUser(this.invitationCode, user).subscribe({
+    this.userAccountService.createUserAndJoinSpace(this.invitationCode, user).subscribe({
       next: () => this.signupSuccess(),
       error: () => this.signupIsLoading = false
     });

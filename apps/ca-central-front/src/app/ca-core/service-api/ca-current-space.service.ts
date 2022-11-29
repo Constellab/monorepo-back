@@ -89,6 +89,9 @@ export class CaCurrentSpaceService implements FlCleanableService {
     this.currentSpace$.next(null);
     this.currentUserRoleInSpace = null;
     this.currentSpaceDomainDev = null;
+    if (!environment.production) {
+      this.cookieService.removeCookie(this.devSpaceStorageKey);
+    }
   }
 
 

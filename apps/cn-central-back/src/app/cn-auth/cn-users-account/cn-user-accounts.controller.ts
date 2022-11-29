@@ -11,7 +11,7 @@ import {
   Res
 } from '@nestjs/common';
 import {Response} from 'express';
-import {CnUser} from '../cn-user.entity';
+import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnUserAccountsService} from './cn-user-accounts.service';
 import {CnFrontService} from '../../cn-core/services/cn-front.service';
 import {CnUserCategories} from '../../cn-core/decorators/cn-user-category.decorator';
@@ -116,6 +116,20 @@ export class CnUserAccountsController {
   findUsersToAdminActivate(@Query('page', ParseIntPipe) page: number,
                            @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnUser>> {
     return this.userAccountsService.findUsersToAdminActivate(page, size);
+  }
+
+
+  ///////////////////////// SPACE INVITATION /////////////////////////
+  /**
+   * Method called when the user create his account by joining a space
+   * @param invitCode
+   * @param entity
+   */
+  @BlPublic()
+  @Post('sign-up-in-space/:invitCode')
+  public async createUserAndJoinSpace(@Param('invitCode') invitCode: string,
+                                       @Body(new BlParsePipe(CnUser)) entity: CnUser): Promise<CnUser> {
+    return this.userAccountsService.createUserAndJoinSpace(invitCode, entity);
   }
 
 

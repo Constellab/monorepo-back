@@ -3,7 +3,7 @@ import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {CnUserAccountsService} from '../cn-users/cn-users-account/cn-user-accounts.service';
+import {CnUserAccountsService} from './cn-users-account/cn-user-accounts.service';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {CmCredentials, CmCredentials2Fa, CmUserStatus} from '@monorepo/common-model';
 import {BlJwtService} from '@monorepo/back-core-lib';

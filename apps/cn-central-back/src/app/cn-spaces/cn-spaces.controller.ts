@@ -58,7 +58,7 @@ export class CnSpacesController {
 
   @Post()
   create(@Body(new BlParsePipe(CnSpace)) entity: CnSpace): Promise<CnSpace> {
-    return this.spaceAggregateService.create(entity);
+    return this.spaceAggregateService.createBasicSpace(entity);
   }
 
   @Put()

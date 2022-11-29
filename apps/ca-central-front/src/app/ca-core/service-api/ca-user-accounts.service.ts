@@ -57,4 +57,15 @@ export class CaUserAccountsService extends FlUserAccountService {
       (page, size) => this.findUsersToAdminActivate(page, size), 20
     );
   }
+
+  /**
+   * Public route to accept an invitation when a new user is registered
+   * @param code
+   * @param user
+   */
+  public createUserAndJoinSpace(code: string, user: CaNewUser): Observable<CaUser> {
+    delete user.repeatPassword;
+    return this.apiService.post(`${this.route}/sign-up-in-space/${code}`, user, CaUser);
+  }
+
 }

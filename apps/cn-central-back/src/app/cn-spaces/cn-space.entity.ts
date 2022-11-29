@@ -1,5 +1,14 @@
-import {Column, Entity} from 'typeorm';
+import {BeforeInsert, BeforeUpdate, Column, Entity} from 'typeorm';
 import {CnBaseEntity} from '../cn-core/model/entities/cn-base.entity';
+import {ClDateHelper} from '@monorepo/core-lib';
+
+export enum CnSpaceType {
+  // personal space create on the user creation (he cas invite other users in his space)
+  PERSONAL = 'PERSONAL',
+  // basic space created by a user
+  BASIC = 'BASIC',
+}
+
 
 @Entity('space')
 export class CnSpace extends CnBaseEntity {
@@ -16,4 +25,20 @@ export class CnSpace extends CnBaseEntity {
 
   @Column({default: 0})
   nbLicenses: number;
+
+  @Column({type: 'enum', enum: CnSpaceType, nullable: false, update: false})
+  type: CnSpaceType;
+
+  // don't set the createdBy and lastModifiedBy automatically
+  // because this group it can be created on user signup (so no current user)
+  @BeforeInsert()
+  setCreatedInfo(): void {
+    this.createdAt = ClDateHelper.getDate();
+  }
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  setLastModifiedInfo(): void {
+    this.lastModifiedAt = ClDateHelper.getDate();
+  }
 }

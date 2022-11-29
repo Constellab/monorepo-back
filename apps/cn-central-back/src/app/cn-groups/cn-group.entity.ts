@@ -1,4 +1,6 @@
 import {
+  BeforeInsert,
+  BeforeUpdate,
   ChildEntity,
   Column,
   Entity,
@@ -15,6 +17,7 @@ import {CnUser} from '../cn-users/cn-user.entity';
 import {Exclude} from 'class-transformer';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
+import {ClDateHelper} from '@monorepo/core-lib';
 
 @TableInheritance({column: {type: 'enum', enum: CnGroupType, name: 'type'}})
 @Entity('group')
@@ -42,10 +45,15 @@ export class CnGroupSingleUser extends CnGroup {
 
   // don't set the createdBy and lastModifiedBy automatically
   // because this group is created on user signup (so no current user)
+  @BeforeInsert()
   setCreatedInfo(): void {
+    this.createdAt = ClDateHelper.getDate();
   }
 
+  @BeforeInsert()
+  @BeforeUpdate()
   setLastModifiedInfo(): void {
+    this.lastModifiedAt = ClDateHelper.getDate();
   }
 }
 

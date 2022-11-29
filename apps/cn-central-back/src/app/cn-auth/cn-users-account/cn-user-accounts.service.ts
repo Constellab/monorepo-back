@@ -1,13 +1,11 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
-import {CnUser} from '../cn-user.entity';
+import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnMailTemplate} from '../../cn-core/model/config/cn-mail-template.class';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DataSource, EntityManager, Repository} from 'typeorm';
 import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-config.service';
-import {CnUsersService} from '../cn-users.service';
+import {CnUsersService} from '../../cn-users/cn-users.service';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
-import {CnGroupSingleUser} from '../../cn-groups/cn-group.entity';
-import {CnGroupType} from '../../cn-groups/cn-group-type.enum';
 import {TokenExpiredError} from 'jsonwebtoken';
 import {hash} from 'argon2';
 import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
@@ -15,6 +13,8 @@ import {BlAbstractPaginatedService, BlMailService, BlTokenHelper} from '@monorep
 import {CnUserTokenPayload} from '../../cn-core/model/config/cn-config.class';
 import {CnFrontService} from '../../cn-core/services/cn-front.service';
 import {ClPage} from '@monorepo/core-lib';
+import {CnSpaceAggregateService} from '../../cn-spaces/cn-space-aggregate.service';
+import {CnGroupsService} from '../../cn-groups/cn-groups.service';
 
 /**
  * Service to handle users' account (signup, mail validation, password forgotten, reset password...)
@@ -30,7 +30,9 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
               private mailService: BlMailService,
               private usersService: CnUsersService,
               private datasource: DataSource,
-              private frontService: CnFrontService) {
+              private frontService: CnFrontService,
+              private spaceAggregateService: CnSpaceAggregateService,
+              private groupService: CnGroupsService) {
     super(repository, CnUser);
   }
 
@@ -54,20 +56,20 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
       throw new BadRequestException(CnErrorText.EMAIL_ALREADY_EXIST);
     }
 
-    // add the single group user to the user
-    const group: CnGroupSingleUser = new CnGroupSingleUser();
-    group.label = user.fullname;
-    group.type = CnGroupType.SINGLE_USER;
-    group.user = user;
-    group.createdBy = user;
-    group.lastModifiedBy = user;
-    user.ownGroup = group;
-
     // hash the user password
     user.password = await this.hashPassword(user.password);
     user.status = status;
 
-    return await entityManager.save(user);
+    // create the user and his group
+    const dbUser = await entityManager.save(user);
+
+    // create the user own group
+    await this.groupService.createOwnGroup(user, entityManager);
+
+    // create the user personal space
+    await this.spaceAggregateService.createPersonalSpace(dbUser, entityManager);
+
+    return dbUser;
   }
 
   private sendSignupEmail(user: CnUser): Promise<boolean> {
@@ -199,6 +201,20 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     return this.findPaginated(page, size, {
       where: {status: CmUserStatus.WAITING_FOR_ADMIN},
       order: {createdAt: 'DESC' as any}
+    });
+  }
+
+  /**
+   * Method called when a user accepted an invitation and created an account
+   */
+  public async createUserAndJoinSpace(invitCode: string, user: CnUser): Promise<CnUser> {
+    const invitation = await this.spaceAggregateService.findInvitationByCodeAndCheckValidity(invitCode);
+
+    return await this.datasource.transaction(async (transaction) => {
+      // create the user with an active but incomplete profile
+      const userDb = await this.createAccount(user, CmUserStatus.INCOMPLETE, transaction);
+
+      return await this.spaceAggregateService.acceptInvitation(invitation, userDb, transaction);
     });
   }
 

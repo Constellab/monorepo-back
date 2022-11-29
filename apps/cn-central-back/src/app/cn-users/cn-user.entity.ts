@@ -52,8 +52,8 @@ export class CnUser extends BlEntityWithId implements BlUser {
   groups: CnGroupTeam[];
 
   @Exclude()
-  @OneToOne('CnGroupSingleUser', (group: CnGroupSingleUser) => group.user,
-    {cascade: ['insert']})
+  @OneToOne('CnGroupSingleUser',
+    (group: CnGroupSingleUser) => group.user)
   ownGroup: CnGroupSingleUser;
 
   @Column({nullable: false, type: 'enum', enum: CmUserStatus, default: CmUserStatus.WAITING_FOR_EMAIL})
@@ -83,10 +83,6 @@ export class CnUser extends BlEntityWithId implements BlUser {
     // force the lang to en
     this.lang = clDefaultLang;
     this.theme = clDefaultTheme;
-
-    // init the date of own group because the cascade insert doesn't trigger the BeforeInsert
-    this.ownGroup.createdAt = ClDateHelper.getDate();
-    this.ownGroup.lastModifiedAt = ClDateHelper.getDate();
   }
 
   async comparePassword(attempt: string): Promise<boolean> {

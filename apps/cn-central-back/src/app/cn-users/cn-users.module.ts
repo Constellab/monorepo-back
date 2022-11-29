@@ -4,8 +4,6 @@ import {CnUsersController} from './cn-users.controller';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {CnUser} from './cn-user.entity';
 import {CnCoreModule} from '../cn-core/cn-core.module';
-import {CnUserAccountsService} from './cn-users-account/cn-user-accounts.service';
-import {CnUserAccountsController} from './cn-users-account/cn-user-accounts.controller';
 
 @Module({
   imports: [
@@ -13,9 +11,9 @@ import {CnUserAccountsController} from './cn-users-account/cn-user-accounts.cont
 
     CnCoreModule,
   ],
-  providers: [CnUsersService, CnUserAccountsService],
-  controllers: [CnUsersController, CnUserAccountsController],
-  exports: [CnUsersService, CnUserAccountsService]
+  providers: [CnUsersService],
+  controllers: [CnUsersController],
+  exports: [CnUsersService]
 })
 export class CnUsersModule {
 }

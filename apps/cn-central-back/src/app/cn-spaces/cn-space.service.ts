@@ -1,11 +1,13 @@
 import {Injectable} from '@nestjs/common';
-import {CnSpace} from './cn-space.entity';
+import {CnSpace, CnSpaceType} from './cn-space.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DeleteResult, EntityManager, Repository} from 'typeorm';
 import {BlAbstractService, BlBucketConfig, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import {IncomingMessage} from 'http';
+import {CnUser} from '../cn-users/cn-user.entity';
+import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 
 @Injectable()
 export class CnSpaceService extends BlAbstractService<CnSpace> {
@@ -14,6 +16,29 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
               private objectStorageService: BlObjectStorageService,
               private configService: CnCoreConfigService) {
     super(repository, CnSpace);
+  }
+
+  public async createBasicSpace(space: CnSpace): Promise<CnSpace> {
+    space.type = CnSpaceType.BASIC;
+    space.createdBy = CnCurrentUserHelper.getAndCheckCurrentUser();
+    space.lastModifiedBy = CnCurrentUserHelper.getAndCheckCurrentUser();
+    return this.create(space);
+  }
+
+  public async createPersonalSpace(user: CnUser, entityManager: EntityManager): Promise<CnSpace>{
+    const space = new CnSpace();
+    space.name = user.fullname;
+    space.domain = user.lastname;
+    space.nbLicenses = 0;
+    space.type= CnSpaceType.PERSONAL;
+    space.createdBy = user;
+    space.lastModifiedBy = user;
+    return entityManager.save(space);
+  }
+
+  public async update(entity: CnSpace, entityManager?: EntityManager): Promise<CnSpace> {
+    entity.lastModifiedBy = CnCurrentUserHelper.getAndCheckCurrentUser();
+    return super.update(entity, entityManager);
   }
 
 

@@ -23,7 +23,10 @@ import {CnSpacesMailService} from './cn-spaces-mail.service';
     CnUsersModule,
     CnCoreModule,
   ],
-  controllers: [CnSpacesController, CnSpaceInvitController],
+  controllers: [
+    CnSpacesController,
+    CnSpaceInvitController
+  ],
   providers: [
     CnSpaceService,
     CnSpaceAggregateService,
@@ -33,6 +36,7 @@ import {CnSpacesMailService} from './cn-spaces-mail.service';
     CnSpacesMailService,
   ],
   exports: [
+    CnSpaceAggregateService,
     CnSpaceService,
     CnSpaceUserService,
   ]

@@ -97,5 +97,4 @@ export class CnAuthController {
         httpOnly: true, secure: !this.configService.isLocal(),
       });
   }
-
 }

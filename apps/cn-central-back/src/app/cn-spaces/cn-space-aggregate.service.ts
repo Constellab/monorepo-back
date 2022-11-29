@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {CnSpaceService} from './cn-space.service';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {CnSpace} from './cn-space.entity';
+import {CnSpace, CnSpaceType} from './cn-space.entity';
 import {CnSpaceAggregateSecurity} from './cn-space-aggregate-security.service';
 import {ClPage} from '@monorepo/core-lib';
 import {CnUsersService} from '../cn-users/cn-users.service';
@@ -12,11 +12,9 @@ import {BlFile} from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
 import {CnSpaceInvit} from './cn-space-invit.entity';
 import {CnSpaceInvitService} from './cn-space-invit.service';
-import {CnSpaceInvitDto, CnRequestNewLicensesDto} from './cn-space.dto';
-import {CnUserAccountsService} from '../cn-users/cn-users-account/cn-user-accounts.service';
+import {CnRequestNewLicensesDto, CnSpaceInvitDto} from './cn-space.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {DataSource, EntityManager} from 'typeorm';
-import {CmUserStatus} from '@monorepo/common-model';
 import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
 import {CnSpacesMailService} from './cn-spaces-mail.service';
 
@@ -28,7 +26,6 @@ export class CnSpaceAggregateService {
               private spaceAggregateSecurity: CnSpaceAggregateSecurity,
               private invitationService: CnSpaceInvitService,
               private userService: CnUsersService,
-              private userAccountService: CnUserAccountsService,
               private datasource: DataSource,
               private spacesMailService: CnSpacesMailService) {
   }
@@ -49,9 +46,9 @@ export class CnSpaceAggregateService {
     return new CnUserSpaceInfo(user, space, role);
   }
 
-  public create(entity: CnSpace): Promise<CnSpace> {
+  public createBasicSpace(entity: CnSpace): Promise<CnSpace> {
     this.checkAdmin();
-    return this.spaceService.create(entity);
+    return this.spaceService.createBasicSpace(entity);
   }
 
   public async update(entity: CnSpace): Promise<CnSpace> {
@@ -61,6 +58,12 @@ export class CnSpaceAggregateService {
 
   public async delete(id: string): Promise<void> {
     this.checkAdmin();
+
+    const space = await this.spaceService.findByIdAndCheck(id);
+
+    if (space.type === CnSpaceType.PERSONAL) {
+      throw new BadRequestException('Can\'t delete personal space');
+    }
 
     const users = await this.getUsersOfSpace(id, 0, 1);
 
@@ -95,7 +98,7 @@ export class CnSpaceAggregateService {
     return this.spaceUserService.findBySpace(id, page, size);
   }
 
-  public async getUserOfSpace(id: string, userId: string): Promise<CnUser>{
+  public async getUserOfSpace(id: string, userId: string): Promise<CnUser> {
     id = this.getSpaceId(id);
     await this.checkSpaceMember(id);
     return this.spaceUserService.findUserBySpaceIdAndId(id, userId);
@@ -235,33 +238,23 @@ export class CnSpaceAggregateService {
   }
 
   /**
-   * Method called when a user accepted an invitation and created an account
-   */
-  public async newUserAcceptsInvitation(code: string, user: CnUser): Promise<CnUser> {
-    const invitation = await this.invitationService.findByCodeAndCheckValidity(code);
-
-    return await this.datasource.transaction(async (transaction) => {
-      // create the user with a active but incomplete profile
-      const userDb = await this.userAccountService.createAccount(user, CmUserStatus.INCOMPLETE, transaction);
-
-      return await this.acceptInvitation(invitation, userDb, transaction);
-    });
-  }
-
-  /**
    * Method called when a user accepted an invitation and already has an account
    */
   public async existingUserAcceptsInvitation(code: string): Promise<CnUser> {
-    const invitation = await this.invitationService.findByCodeAndCheckValidity(code);
+    const invitation = await this.findInvitationByCodeAndCheckValidity(code);
 
     return await this.datasource.transaction(async (transaction) => {
       return await this.acceptInvitation(invitation, CnCurrentUserHelper.getAndCheckCurrentUser(), transaction);
     });
-
   }
 
-  private async acceptInvitation(invitation: CnSpaceInvit, user: CnUser,
-                                 entityManager: EntityManager): Promise<CnUser> {
+  public async findInvitationByCodeAndCheckValidity(code: string): Promise<CnSpaceInvit> {
+    return await this.invitationService.findByCodeAndCheckValidity(code);
+  }
+
+
+  public async acceptInvitation(invitation: CnSpaceInvit, user: CnUser,
+                                entityManager: EntityManager): Promise<CnUser> {
     if (invitation.userMail !== user.email) {
       throw new BadRequestException('The invitation email does not match the user email');
     }
@@ -279,6 +272,14 @@ export class CnSpaceAggregateService {
     await this.checkSpaceAdmin(spaceId);
 
     return this.invitationService.findNotificationsBySpaceId(spaceId, page, pageSize);
+  }
+
+  public async createPersonalSpace(user: CnUser, entityManager: EntityManager): Promise<CnSpace> {
+    const personalSpace = await this.spaceService.createPersonalSpace(user, entityManager);
+
+    await this.spaceUserService.addUserToSpace(personalSpace, user, CnSpaceUserRole.ADMIN, entityManager);
+
+    return personalSpace;
   }
 
   /////////////////////////////////////// OTHERS //////////////////////////////////
