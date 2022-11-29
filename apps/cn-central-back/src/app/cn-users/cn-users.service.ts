@@ -25,7 +25,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     super(repository, CnUser);
   }
 
-  findAll(page: number, size: number): Promise<ClPage<CnUser>> {
+  findAllPaginated(page: number, size: number): Promise<ClPage<CnUser>> {
     const currentUser = CnCurrentUserHelper.getCurrentUser();
     if (!currentUser.isAdmin()) {
       throw new UnauthorizedException();
@@ -34,6 +34,10 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     return this.findPaginated(page, size, {
       order: {lastname: 'ASC', firstname: 'ASC'}
     });
+  }
+
+  findAll(): Promise<CnUser[]> {
+    return this.repository.find();
   }
 
 

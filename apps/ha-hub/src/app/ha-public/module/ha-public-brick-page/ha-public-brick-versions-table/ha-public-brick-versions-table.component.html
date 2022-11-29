@@ -3,7 +3,7 @@
   <!-- Version -->
   <ng-container matColumnDef="version">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'version' | translate}}</p>
+      {{'version' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let version">
       <div>
@@ -15,7 +15,7 @@
   <!-- Repo type -->
   <ng-container matColumnDef="repoType">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'repo_type' | translate}}</p>
+      {{'repo_type' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let version">
       <div>
@@ -27,7 +27,7 @@
   <!-- Last modified -->
   <ng-container matColumnDef="lastModified">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'last_modification_info' | translate}}</p>
+      {{'last_modification_info' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let version">
       <fl-last-modification-info [lastModifiedBy]="version.lastModifiedBy?.fullname"

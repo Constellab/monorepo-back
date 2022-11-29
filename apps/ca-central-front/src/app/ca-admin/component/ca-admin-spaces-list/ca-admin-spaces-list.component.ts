@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {CaSpace, CaSpaceDatasource} from '../../../ca-core/model/entities/ca-space.class';
 import {CaSpaceService} from '../../../ca-core/service-api/ca-space.service';
-import {FlDialogService, FlFormDialogInput, FlTableColumn} from '@monorepo/front-core-lib';
+import {FlConfirmDialogInput, FlDialogService, FlFormDialogInput, FlTableColumn} from '@monorepo/front-core-lib';
 import {
   CaSpaceFormDialogComponent
 } from '../../../ca-core/entity-module/ca-space-core/component/ca-space-form-dialog/ca-space-form-dialog.component';
@@ -15,7 +15,7 @@ export class CaAdminSpacesListComponent implements OnInit {
 
   spaces: CaSpaceDatasource;
 
-  columns: FlTableColumn<CaSpace>[] = ['name', 'created', 'lastModified', 'detail'];
+  columns: FlTableColumn<CaSpace>[] = ['name', 'created', 'lastModified', 'type', 'detail'];
 
   constructor(private spaceService: CaSpaceService,
               private dialogService: FlDialogService) {
@@ -41,8 +41,17 @@ export class CaAdminSpacesListComponent implements OnInit {
     }
   }
 
-  loadMoreResults(): void {
-    this.spaces.getNextPage();
+  generateAllUserPersonalSpaces(): void {
+    const data: FlConfirmDialogInput = {
+      title: 'generate_all_user_space',
+      content: 'generate_all_user_space_confirmation',
+      translateTitleAndContent: true,
+      observable: this.spaceService.generateAllUserPersonalSpace(),
+      successMessage: 'all_user_space_generated',
+      translateMessage: true
+    };
+
+    this.dialogService.openConfirmDialog(data);
   }
 
 }

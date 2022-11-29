@@ -3,7 +3,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {CnSpaceUser, CnSpaceUserRole} from './cn-space-user.entity';
 import {EntityManager, Repository} from 'typeorm';
 import {CnUser} from '../cn-users/cn-user.entity';
-import {CnSpace} from './cn-space.entity';
+import {CnSpace, CnSpaceType} from './cn-space.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {ClPage} from '@monorepo/core-lib';
 import {BlAbstractPaginatedService} from '@monorepo/back-core-lib';
@@ -120,12 +120,25 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     return spaceUsers.map((spaceUser) => spaceUser.space);
   }
 
-  public async getUserDefaultSpace(userId: string): Promise<CnSpace | null> {
-    const spaceUser = await this.repository.findOne({where: {userId}, relations: {space: true}});
-    if (spaceUser == null) {
+  public async getUserDefaultSpaceAndCheck(userId: string): Promise<CnSpace> {
+    const space = await this.getUserDefaultSpace(userId);
+    if (space == null) {
       throw new BadRequestException(CnErrorText.USER_WITHOUT_SPACE);
     }
 
+    return space;
+  }
+
+  public async getUserDefaultSpace(userId: string): Promise<CnSpace | null> {
+    const spaceUser = await this.repository.findOne({
+      where: {
+        userId: userId,
+        space: {type: CnSpaceType.PERSONAL}
+      },
+      relations: {space: true}
+    });
+
+    if (spaceUser == null) return null;
     return spaceUser.space;
   }
 

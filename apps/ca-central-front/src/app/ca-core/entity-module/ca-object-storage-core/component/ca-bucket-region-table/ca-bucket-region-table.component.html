@@ -3,7 +3,7 @@
   <!-- Technical name -->
   <ng-container matColumnDef="technicalName">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'name' | translate}}</p>
+      {{'name' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
       {{row.technicalName}}
@@ -13,7 +13,7 @@
   <!-- Cloud provider -->
   <ng-container matColumnDef="cloudProvider">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'cloud_provider' | translate}}</p>
+      {{'cloud_provider' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
       <ca-cloud-provider-inline [cloudProvider]="row.cloudProvider"></ca-cloud-provider-inline>
@@ -23,7 +23,7 @@
   <!-- City -->
   <ng-container matColumnDef="city">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'city' | translate}}</p>
+      {{'city' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
       <ca-city [city]="row.city"></ca-city>
@@ -33,7 +33,7 @@
   <!-- Created -->
   <ng-container matColumnDef="created">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'creation_info' | translate}}</p>
+      {{'creation_info' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
       <ca-user-with-date [user]="row.createdBy" [date]="row.createdAt"></ca-user-with-date>
@@ -43,7 +43,7 @@
   <!-- Last modified -->
   <ng-container matColumnDef="lastModified">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'last_modification_info' | translate}}</p>
+      {{'last_modification_info' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
       <ca-user-with-date [user]="row.lastModifiedBy" [date]="row.lastModifiedAt"></ca-user-with-date>

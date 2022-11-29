@@ -35,7 +35,7 @@ export class CnSpaceAggregateService {
     let space: CnSpace = CnCurrentUserHelper.getCurrentSpace();
     let role: CnSpaceUserRole = CnCurrentUserHelper.getCurrentRoleInSpace();
     if (!space) {
-      space = await this.spaceUserService.getUserDefaultSpace(user.id);
+      space = await this.spaceUserService.getUserDefaultSpaceAndCheck(user.id);
     }
 
     if (!role) {
@@ -74,7 +74,7 @@ export class CnSpaceAggregateService {
   }
 
   public async getDefaultSpace(): Promise<CnSpace> {
-    return this.spaceUserService.getUserDefaultSpace(CnCurrentUserHelper.getCurrentUser().id);
+    return this.spaceUserService.getUserDefaultSpaceAndCheck(CnCurrentUserHelper.getCurrentUser().id);
   }
 
   public async findCurrentSpace(): Promise<CnSpace> {
@@ -315,4 +315,21 @@ export class CnSpaceAggregateService {
     if (spaceId === 'current') return CnCurrentUserHelper.getAndCheckCurrentSpace().id;
     return spaceId;
   }
+
+  /////////////////////////////////////// ADMIN MANAGEMENT ROUTES //////////////////////////////////
+
+  public async generateAllUserPersonalSpace(): Promise<void> {
+    this.checkAdmin();
+
+    const users = await this.userService.findAll();
+    for (const user of users) {
+      // create the user personal space if it does not exist
+      const space = await this.spaceUserService.getUserDefaultSpace(user.id);
+      if (space == null) {
+        await this.createPersonalSpace(user, this.datasource.manager);
+      }
+    }
+
+  }
+
 }

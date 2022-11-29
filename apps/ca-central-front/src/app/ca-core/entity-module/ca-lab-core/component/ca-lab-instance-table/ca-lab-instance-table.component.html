@@ -3,7 +3,7 @@
   <!-- Name -->
   <ng-container matColumnDef="name">
     <mat-header-cell *matHeaderCellDef>
-      <span>{{'name' | translate}}</span>
+      {{'name' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let labInstance">
       <span>{{labInstance.name}}</span>
@@ -13,7 +13,7 @@
   <!-- Space -->
   <ng-container matColumnDef="space">
     <mat-header-cell *matHeaderCellDef>
-      <span>{{'space' | translate}}</span>
+      {{'space' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let labInstance">
       <ca-space-inline [space]="labInstance.space"></ca-space-inline>
@@ -23,7 +23,7 @@
   <!-- Current status -->
   <ng-container matColumnDef="currentStatus">
     <mat-header-cell *matHeaderCellDef>
-      <span>{{'status' | translate}}</span>
+      {{'status' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let labInstance">
       <fl-status-chip [status]="labInstance.currentStatus.status"></fl-status-chip>
@@ -33,7 +33,7 @@
   <!-- Created By -->
   <ng-container matColumnDef="createdBy">
     <mat-header-cell *matHeaderCellDef>
-      <span>{{'created_by' | translate}}</span>
+      {{'created_by' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let labInstance">
       <ca-user-inline [user]="labInstance.createdBy"></ca-user-inline>
@@ -43,7 +43,7 @@
   <!-- Server info -->
   <ng-container matColumnDef="serverInfo">
     <mat-header-cell *matHeaderCellDef>
-      <span>{{'server_info' | translate}}</span>
+      {{'server_info' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let labInstance">
       <ca-server-info-inline [serverInfo]="labInstance.serverInfo"></ca-server-info-inline>

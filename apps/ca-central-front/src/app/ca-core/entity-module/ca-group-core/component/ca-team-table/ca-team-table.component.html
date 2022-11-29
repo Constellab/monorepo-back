@@ -4,7 +4,7 @@
   <!-- Creation info -->
   <ng-container matColumnDef="creation">
     <mat-header-cell *matHeaderCellDef>
-      <span> {{'creation_info' | translate}}</span>
+      {{'creation_info' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
       <ca-user-with-date [user]="row.createdBy" [date]="row.createdAt"></ca-user-with-date>

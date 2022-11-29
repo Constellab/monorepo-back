@@ -45,7 +45,7 @@ export class CnUsersController {
   @Get()
   findAll(@Query('page', new ParseIntPipe()) page: number,
           @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnUser>> {
-    return this.usersService.findAll(page, size);
+    return this.usersService.findAllPaginated(page, size);
   }
 
   @Put('current')

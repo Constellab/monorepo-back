@@ -4,7 +4,7 @@
   <!-- Created -->
   <ng-container matColumnDef="created">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'creation_info' | translate}}</p>
+      {{'creation_info' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let space">
       <ca-user-with-date [user]="space.createdBy" [date]="space.createdAt"></ca-user-with-date>
@@ -14,7 +14,7 @@
   <!-- Last modified -->
   <ng-container matColumnDef="lastModified">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'last_modification_info' | translate}}</p>
+      {{'last_modification_info' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let space">
       <ca-user-with-date [user]="space.lastModifiedBy" [date]="space.lastModifiedAt"></ca-user-with-date>
@@ -25,7 +25,7 @@
   <!-- Detail url  -->
   <ng-container matColumnDef="detail">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'detail' | translate}}</p>
+      {{'detail' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let space">
       <a mat-stroked-button class="g-button-small" [caExternalSpaceLink]="currentSpaceRoute"

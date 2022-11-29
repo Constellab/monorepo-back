@@ -3,6 +3,8 @@ import {FlDatasourcePaginated} from '@monorepo/front-core-lib';
 import {CaUser} from './ca-user.class';
 import {Type} from 'class-transformer';
 
+export type CaSpaceType = 'BASIC' | 'PERSONAL';
+
 export class CaSpace extends CaBaseEntity {
 
   name: string;
@@ -12,6 +14,8 @@ export class CaSpace extends CaBaseEntity {
   domain: string;
 
   nbLicenses: number;
+
+  type: CaSpaceType;
 }
 
 export type CaSpaceDatasource = FlDatasourcePaginated<CaSpace>;

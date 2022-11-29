@@ -3,7 +3,7 @@
   <!-- Content type -->
   <ng-container matColumnDef="contentType">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'bucket_content_type' | translate}}</p>
+      {{'bucket_content_type' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
       {{row.contentType}}
@@ -13,7 +13,7 @@
   <!-- Region -->
   <ng-container matColumnDef="region">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'bucket_region' | translate}}</p>
+      {{'bucket_region' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
       <ca-bucket-region-inline [region]="row.region"></ca-bucket-region-inline>
@@ -23,7 +23,7 @@
   <!-- Credentials -->
   <ng-container matColumnDef="credentials">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'bucket_credentials' | translate}}</p>
+      {{'bucket_credentials' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
       <ca-bucket-credentials-inline [credentials]="row.credentials"></ca-bucket-credentials-inline>
@@ -33,7 +33,7 @@
   <!-- Space -->
   <ng-container matColumnDef="space">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'space' | translate}}</p>
+      {{'space' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
       <ca-space-inline *ngIf="row.space" [space]="row.space"></ca-space-inline>
@@ -43,7 +43,7 @@
   <!-- Created -->
   <ng-container matColumnDef="created">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'creation_info' | translate}}</p>
+      {{'creation_info' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
       <ca-user-with-date [user]="row.createdBy" [date]="row.createdAt"></ca-user-with-date>
@@ -53,7 +53,7 @@
   <!-- Last modified -->
   <ng-container matColumnDef="lastModified">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'last_modification_info' | translate}}</p>
+      {{'last_modification_info' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
       <ca-user-with-date [user]="row.lastModifiedBy" [date]="row.lastModifiedAt"></ca-user-with-date>

@@ -85,14 +85,14 @@ export class CnSpacesController {
   @CnUserCategories(CmUserCategory.ADMIN)
   @Post(':id/user/:userId')
   public async addUserToSpace(@Param('id') id: string,
-                                     @Param('userId', new ParseUUIDPipe()) userId: string)
+                              @Param('userId', new ParseUUIDPipe()) userId: string)
     : Promise<CnSpaceUser> {
     return this.spaceAggregateService.addUserToSpace(id, userId);
   }
 
   @Delete(':id/user/:userId')
   public async removeUserFromSpace(@Param('id') id: string,
-                                          @Param('userId', new ParseUUIDPipe()) userId: string): Promise<void> {
+                                   @Param('userId', new ParseUUIDPipe()) userId: string): Promise<void> {
     return this.spaceAggregateService.removeUserFromSpace(id, userId);
   }
 
@@ -117,30 +117,30 @@ export class CnSpacesController {
 
   @Get(':id/user')
   public async getUsersOfSpace(@Param('id') id: string,
-                                      @Query('page', new ParseIntPipe()) page: number,
-                                      @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnSpaceUser>> {
+                               @Query('page', new ParseIntPipe()) page: number,
+                               @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnSpaceUser>> {
     return this.spaceAggregateService.getUsersOfSpace(id, page, size);
   }
 
   @Get(':id/user-simple')
   public async getUsersOfSpaceSimple(@Param('id') id: string,
-                                            @Query('page', new ParseIntPipe()) page: number,
-                                            @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnUser>> {
+                                     @Query('page', new ParseIntPipe()) page: number,
+                                     @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnUser>> {
     const spaceUsers = await this.spaceAggregateService.getUsersOfSpace(id, page, size);
     return spaceUsers.map(spaceUser => spaceUser.user);
   }
 
   @Get(':id/invitations')
   public async getInvitationsBySpace(@Param('id') id: string,
-                                            @Query('page', new ParseIntPipe()) page: number,
-                                            @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnSpaceInvit>> {
+                                     @Query('page', new ParseIntPipe()) page: number,
+                                     @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnSpaceInvit>> {
     return this.spaceAggregateService.getNotificationsBySpace(id, page, size);
   }
 
   @UseInterceptors(FileInterceptor('photo'))
   @Put(':id/photo')
   async uploadSpacePhoto(@Param('id') id: string,
-                                @UploadedFile() file: BlFile): Promise<CnSpace> {
+                         @UploadedFile() file: BlFile): Promise<CnSpace> {
     return this.spaceAggregateService.uploadSpacePhoto(id, file);
   }
 
@@ -157,7 +157,7 @@ export class CnSpacesController {
 
   @Get(':id/user/:userId')
   public async getUserOfSpace(@Param('id') id: string,
-                                     @Param('userId', new ParseUUIDPipe()) userId: string): Promise<CnUser> {
+                              @Param('userId', new ParseUUIDPipe()) userId: string): Promise<CnUser> {
     return this.spaceAggregateService.getUserOfSpace(id, userId);
   }
 
@@ -166,5 +166,10 @@ export class CnSpacesController {
   public async requestNewLicences(@Param('id') id: string,
                                   @Body() request: CnRequestNewLicensesDto): Promise<void> {
     return this.spaceAggregateService.requestNewLicenses(id, request);
+  }
+
+  @Post('generate-all-user-personal-space')
+  public async generateAllUserPersonalSpace(): Promise<void> {
+    return this.spaceAggregateService.generateAllUserPersonalSpace();
   }
 }

@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {FlApiCrudService, FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {
+  CaSaveSpaceDTO,
   CaSpace,
   CaSpaceDatasource,
   CaSpaceInfoDto,
   CaSpaceRole,
   CaSpaceUser,
-  CaSpaceUserDatasource,
-  CaSaveSpaceDTO
+  CaSpaceUserDatasource
 } from '../model/entities/ca-space.class';
 import {Observable} from 'rxjs';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
@@ -122,6 +122,10 @@ export class CaSpaceService extends FlApiCrudService<CaSpace, CaSaveSpaceDTO> {
   ////////////////////////////////// OTHERS //////////////////////////////////
   public requestNewLicenses(spaceId: string, request: CaRequestNewLicensesDto): Observable<void> {
     return this.apiService.post(`${this.route}/${spaceId}/request-new-licenses`, request);
+  }
+
+  public generateAllUserPersonalSpace(): Observable<void> {
+    return this.apiService.post(`${this.route}/generate-all-user-personal-space`, null);
   }
 
 }
