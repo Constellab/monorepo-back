@@ -69,7 +69,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
    * Get all groups of a user
    */
   public async getAllGroupsOfUser(userId: string, spaceId: string): Promise<CnGroup[]> {
-    const groups = await this.getAllByUserAndSpace(userId, spaceId);
+    const groups = await this.getAllTeamsByUserAndSpace(userId, spaceId);
     const singleGroup = await this.getUserSingleGroup(userId);
 
     if (singleGroup) {
@@ -79,22 +79,10 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     }
   }
 
-  /**
-   * Return the group if the user can view it
-   * @param id
-   */
-  public async getAndCheckTeamById(id: string): Promise<CnGroupTeam> {
-    const group = await this.findById(id);
-
-    if (group.type !== CnGroupType.TEAM) {
-      throw new BadRequestException('Can only work on teams');
-    }
-    return group as CnGroupTeam;
-  }
 
 
   /**
-   * return all the users as a list of group
+   * return all the users as a list of groups
    * @param groupIds
    */
   public async getUsersOfGroups(groupIds: string[]): Promise<CnUser[]> {
@@ -133,20 +121,58 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     });
   }
 
-  ////////////////////////////////// TEAMS /////////////////////////
+  /**
+   * Use to find all the group of a space.
+   * It needs the complete list of user of the space to return the user groups
+   * @param spaceId
+   * @param userIds
+   * @param page
+   * @param size
+   */
+  public async getGroupsBySpaceId(spaceId: string, userIds: string[],
+                                  page: number, size: number): Promise<ClPageI<CnGroup>> {
+    const teamWhere: FindOptionsWhere<CnGroupTeam> = {
+      spaceId: spaceId
+    };
 
-  public async getAllByUserAndSpace(userId: string, spaceId: string): Promise<CnGroup[]> {
-    return this.repository.find(this.getByUserAndSpaceOptions(userId, spaceId));
+    const userWhere: FindOptionsWhere<CnGroupSingleUser> = {
+      userId: In(userIds)
+    }
+    return this.findPaginated(page, size,{
+      where: [teamWhere, userWhere],
+      order: {
+        type: 'DESC', // have TEAM before SINGLE_USER
+        label: 'ASC',
+      }
+    });
+  }
+
+  ////////////////////////////////// TEAMS /////////////////////////
+  /**
+   * Return the group if the user can view it
+   * @param id
+   */
+  public async getAndCheckTeamById(id: string): Promise<CnGroupTeam> {
+    const group = await this.findById(id);
+
+    if (group.type !== CnGroupType.TEAM) {
+      throw new BadRequestException('Can only work on teams');
+    }
+    return group as CnGroupTeam;
+  }
+
+  public async getAllTeamsByUserAndSpace(userId: string, spaceId: string): Promise<CnGroup[]> {
+    return this.repository.find(this.getTeamsByUserAndSpaceOptions(userId, spaceId));
   }
 
   /**
    * Get groups of user paginated
    */
-  public async getByUserAndSpace(userId: string, spaceId: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
-    return this.findPaginated(page, size, this.getByUserAndSpaceOptions(userId, spaceId));
+  public async getTeamsByUserAndSpace(userId: string, spaceId: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
+    return this.findPaginated(page, size, this.getTeamsByUserAndSpaceOptions(userId, spaceId));
   };
 
-  private getByUserAndSpaceOptions(userId: string, spaceId: string): FindOneOptions<CnGroup> {
+  private getTeamsByUserAndSpaceOptions(userId: string, spaceId: string): FindOneOptions<CnGroup> {
     const options: FindOneOptions<CnGroupTeam> = {
       where: {
         type: CnGroupType.TEAM,
@@ -160,7 +186,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     return options as any;
   }
 
-  public async getBySpace(spaceId: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
+  public async getTeamBySpace(spaceId: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
     const options: FindOneOptions<CnGroupTeam> = {
       where: {
         type: CnGroupType.TEAM,

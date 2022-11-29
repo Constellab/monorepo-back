@@ -72,7 +72,7 @@ export class SnSmartDbService extends BlAbstractService<SnSmartDbEntity> {
   }
 
   public async getCurrentSmartDb(page: number, size: number): Promise<ClPageI<SnSmartDbEntity>> {
-    const userGroups = await this.groupAggregateService.getAllGroupIdsByUserAndSpace(CnCurrentUserHelper.getAndCheckCurrentUser().id,
+    const userGroups = await this.groupAggregateService.findAllGroupIdsByUserAndSpace(CnCurrentUserHelper.getAndCheckCurrentUser().id,
       CnCurrentUserHelper.getCurrentSpace().id);
 
     return this.findPaginated(page, size, {

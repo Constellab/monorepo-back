@@ -23,6 +23,15 @@ export class CnGroupsAggregateService {
 
 
   ////////////////////////////////////// GROUPS  ////////////////////////////////
+  public async findGroupsOfCurrentSpace(page: number, size: number): Promise<ClPageI<CnGroup>> {
+    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+    await this.groupSecurity.checkAuthorizationToFindAllTeamBySpace(userInfo);
+
+    const spaceUserIds = await this.spaceUserService.findAllSpaceUserIds(userInfo.spaceId);
+    return await this.groupsService.getGroupsBySpaceId(userInfo.spaceId, spaceUserIds, page, size);
+  }
+
+  ////////////////////////////////////// TEAMS  ////////////////////////////////
 
   public async createTeam(label: string): Promise<CnGroupTeam> {
     return await this.groupsService.createTeam(label);
@@ -41,25 +50,20 @@ export class CnGroupsAggregateService {
   }
 
 
-  public async getAllByCurrentUserAndSpace(): Promise<CnGroup[]> {
-    return this.groupsService.getAllByUserAndSpace(CnCurrentUserHelper.getAndCheckCurrentUser().id,
-      CnCurrentUserHelper.getCurrentSpace().id);
-  }
-
-  public async getByCurrentUserAndSpace(page: number, size: number): Promise<ClPageI<CnGroup>> {
-    return this.groupsService.getByUserAndSpace(CnCurrentUserHelper.getAndCheckCurrentUser().id,
+  public async findTeamsByCurrentUserAndSpace(page: number, size: number): Promise<ClPageI<CnGroup>> {
+    return this.groupsService.getTeamsByUserAndSpace(CnCurrentUserHelper.getAndCheckCurrentUser().id,
       CnCurrentUserHelper.getCurrentSpace().id, page, size);
   }
 
   // method not secured
-  public async getAllGroupIdsByUserAndSpace(userId: string, spaceId: string): Promise<string[]> {
+  public async findAllGroupIdsByUserAndSpace(userId: string, spaceId: string): Promise<string[]> {
     return await this.groupsService.getAllGroupIdsOfUser(userId, spaceId);
   }
 
-  public async getByCurrentSpace(page: number, size: number): Promise<ClPageI<CnGroup>> {
+  public async findTeamsByCurrentSpace(page: number, size: number): Promise<ClPageI<CnGroup>> {
     const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     await this.groupSecurity.checkAuthorizationToFindAllTeamBySpace(userInfo);
-    return this.groupsService.getBySpace(userInfo.spaceId, page, size);
+    return this.groupsService.getTeamBySpace(userInfo.spaceId, page, size);
   }
 
   /**
@@ -71,7 +75,6 @@ export class CnGroupsAggregateService {
 
     return this.groupsService.getAndCheckTeamById(id);
   }
-
 
   ////////////////////////////////////// GROUP USERS ////////////////////////////////
 

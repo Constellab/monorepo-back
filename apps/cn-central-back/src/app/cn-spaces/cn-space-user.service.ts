@@ -108,8 +108,11 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     });
   }
 
-  public async getSpaceUsers(spaceId: string, page: number, size: number): Promise<ClPage<CnUser>> {
-    return (await this.findBySpace(spaceId, page, size)).map((spaceUser) => spaceUser.user);
+  public async findAllSpaceUserIds(spaceId: string): Promise<string[]> {
+    const spaceUsers = await this.repository.find({
+      where: {spaceId: spaceId},
+    });
+    return spaceUsers.map((spaceUser) => spaceUser.userId);
   }
 
   public async getSpacesOfUser(userId: string): Promise<CnSpace[]> {
@@ -119,16 +122,16 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
 
   public async getUserDefaultSpace(userId: string): Promise<CnSpace | null> {
     const spaceUser = await this.repository.findOne({where: {userId}, relations: {space: true}});
-    if(spaceUser == null) {
+    if (spaceUser == null) {
       throw new BadRequestException(CnErrorText.USER_WITHOUT_SPACE);
     }
 
     return spaceUser.space;
   }
 
-  public async findUserBySpaceIdAndId(spaceId: string, userId: string): Promise<CnUser>{
+  public async findUserBySpaceIdAndId(spaceId: string, userId: string): Promise<CnUser> {
     const spaceUser: CnSpaceUser = await this.repository.findOne({
-      where:{
+      where: {
         userId: userId,
         spaceId: spaceId
       },

@@ -1,9 +1,9 @@
-import {AfterViewInit, Component, Host, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Host, OnDestroy, OnInit} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {MatSelect} from '@angular/material/select';
 import {CaGroupService} from '../../../../service-api/ca-group.service';
 import {Observable} from 'rxjs';
-import {CaGroup} from '../../../../model/entities/ca-group.entity';
+import {CaGroup, CaGroupDatasource} from '../../../../model/entities/ca-group.entity';
 
 /**
  * Component for mat-select or mat-autocomplete to list the current group of the user
@@ -14,8 +14,9 @@ import {CaGroup} from '../../../../model/entities/ca-group.entity';
   styleUrls: ['./ca-group-select-options.component.scss']
 })
 export class CaGroupSelectOptionsComponent extends FlEmbeddedOptionsAbstractDirective
-  implements OnInit, AfterViewInit {
+  implements OnInit, AfterViewInit, OnDestroy {
 
+  datasource: CaGroupDatasource;
   groups$: Observable<CaGroup[]>;
 
   constructor(@Host() private select: MatSelect,
@@ -25,12 +26,19 @@ export class CaGroupSelectOptionsComponent extends FlEmbeddedOptionsAbstractDire
 
   ngOnInit(): void {
     this.overrideCompareWithOnIds(this.select);
-    this.groups$ = this.groupService.getCurrentAllTeams();
+    this.datasource = this.groupService.getAllCurrentGroupsDatasource();
+    this.groups$ = this.datasource.connect();
   }
 
   ngAfterViewInit(): void {
     this.initOptions();
   }
+
+  ngOnDestroy(): void {
+    this.datasource.disconnect();
+  }
+
+
 
 
 }

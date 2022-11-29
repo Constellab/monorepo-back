@@ -1,3 +1,5 @@
-<mat-option *ngFor="let group of groups$ | async" [value]="group">
-  <ca-group-inline [group]="group" [disableLink]="true"></ca-group-inline>
-</mat-option>
+<fl-infinite-scroll [datasource]="datasource">
+  <mat-option *ngFor="let group of groups$ | async" [value]="group">
+    <ca-group-inline [group]="group" [disableLink]="true"></ca-group-inline>
+  </mat-option>
+</fl-infinite-scroll>

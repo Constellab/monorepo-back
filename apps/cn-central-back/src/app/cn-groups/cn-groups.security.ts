@@ -16,9 +16,22 @@ export class CnGroupsSecurity {
 
 
   /**
-   * Get the group and check if the user can get it. He can only if he is an admin or is in group
+   * Get the group and check if the user can get it.
+   * He can only if he is a member of the space
    */
   public async getAndCheckAuthorizationToGetTeam(userInfo: CnUserSpaceInfo, teamId: string): Promise<CnGroupTeam> {
+    const team = await this.groupService.getAndCheckTeamById(teamId);
+
+    // check the space context
+    if (team.spaceId !== userInfo.spaceId) throw new UnauthorizedException();
+
+    return team;
+  }
+
+  /**
+   * Get the group and check if the user can update it. He can only if he is an admin or is in group
+   */
+  public async getAndCheckAuthorizationToUpdateTeam(userInfo: CnUserSpaceInfo, teamId: string): Promise<CnGroupTeam> {
     const team = await this.groupService.getAndCheckTeamById(teamId);
 
     // check the space context
@@ -30,19 +43,13 @@ export class CnGroupsSecurity {
       throw new UnauthorizedException();
     }
 
-    return team;
-  }
+    return team;  }
 
   /**
-   * Get the group and check if the user can update it. He can only if he is an admin or is in group
+   * A space user can see all the groups of the space
    */
-  public async getAndCheckAuthorizationToUpdateTeam(userInfo: CnUserSpaceInfo, team: string): Promise<CnGroupTeam> {
-    return await this.getAndCheckAuthorizationToGetTeam(userInfo, team);
-  }
-
   public checkAuthorizationToFindAllTeamBySpace(userInfo: CnUserSpaceInfo): void {
-    if (!userInfo.isSpaceAdmin()) {
-      throw new UnauthorizedException();
-    }
+    if (userInfo.space == null) throw new UnauthorizedException();
+    return;
   }
 }
