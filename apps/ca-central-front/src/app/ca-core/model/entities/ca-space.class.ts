@@ -41,7 +41,6 @@ export class CaSpaceUserDatasource extends FlDatasourcePaginated<CaSpaceUser> {
 export interface CaSaveSpaceDTO {
   id: string;
   name: string;
-  domain: string;
   nbLicenses: number;
 }
 

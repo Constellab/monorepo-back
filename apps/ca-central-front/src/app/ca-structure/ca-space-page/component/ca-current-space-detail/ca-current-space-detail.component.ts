@@ -63,7 +63,6 @@ export class CaCurrentSpaceDetailComponent implements OnInit {
       object: {
         id: space.id,
         name: space.name,
-        domain: space.domain,
         nbLicenses: space.nbLicenses
       }
     };

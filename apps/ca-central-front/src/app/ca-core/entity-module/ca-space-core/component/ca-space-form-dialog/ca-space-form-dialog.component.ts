@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
-import {CaSpace, CaSaveSpaceDTO} from '../../../../model/entities/ca-space.class';
+import {CaSaveSpaceDTO, CaSpace} from '../../../../model/entities/ca-space.class';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
@@ -35,7 +35,6 @@ export class CaSpaceFormDialogComponent extends FlFormDialogAbstractDirective<Ca
     return new FormBuilder().group({
       id: [null],
       name: [null, [Validators.required]],
-      domain: [null, [Validators.required, Validators.pattern('^[a-zA-Z0-9-]*')]],
       nbLicenses: [null, [Validators.required]]
     });
   }

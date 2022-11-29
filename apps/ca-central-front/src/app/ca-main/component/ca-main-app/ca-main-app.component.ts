@@ -10,6 +10,7 @@ import {MatSidenav} from '@angular/material/sidenav';
 import {Observable} from 'rxjs';
 import {CaCurrentSpaceService} from '../../../ca-core/service-api/ca-current-space.service';
 import {map} from 'rxjs/operators';
+import {CaRouterService} from '../../../ca-core/service/ca-router.service';
 
 /**
  * Main app component. Menu on the left and page on the right
@@ -30,6 +31,7 @@ export class CaMainAppComponent implements OnInit {
   // set always side mode
   sidenavMode: 'over' | 'side' = 'side';
 
+  dashboardRoute = CaRouterService.getDashboardRoute();
 
   constructor(private authenticatedUserService: CaAuthenticatedUserService,
               private currentSpaceService: CaCurrentSpaceService,
@@ -72,6 +74,7 @@ export class CaMainAppComponent implements OnInit {
 
     this.portalService.createPortal(CaMySpacesPortalComponent, config);
   }
+
   openNotificationDiv(): void {
     const config: FlPortalConfig = this.portalService.configureAbsolutePortal({
       bottom: '4.5em',
@@ -81,7 +84,7 @@ export class CaMainAppComponent implements OnInit {
       disposeOnOutsideClick: true,
     });
 
-    this.portalService.createPortal(CaNotificationsPortalComponent, config).detachments().subscribe()
+    this.portalService.createPortal(CaNotificationsPortalComponent, config).detachments().subscribe();
   }
 
 }

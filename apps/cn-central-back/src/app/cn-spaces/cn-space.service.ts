@@ -28,7 +28,6 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
   public async createPersonalSpace(user: CnUser, entityManager: EntityManager): Promise<CnSpace>{
     const space = new CnSpace();
     space.name = user.fullname;
-    space.domain = user.lastname;
     space.nbLicenses = 0;
     space.type= CnSpaceType.PERSONAL;
     space.createdBy = user;

@@ -1,4 +1,7 @@
-<mat-sidenav-container class="container" [ngClass]="{'container-mobile': sidenavMode === 'over'}">
+<mat-sidenav-container class="container"
+                       [ngClass]="{'container-mobile': sidenavMode === 'over'}"
+                       [flActiveRoute]="dashboardRoute" flActiveRouteClasses="dashboard-background"
+                       [flActiveRouteExact]="true">
 
   <mat-sidenav [fixedInViewport]="true"
                [mode]="sidenavMode"

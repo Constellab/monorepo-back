@@ -1,6 +1,6 @@
 import {BeforeInsert, BeforeUpdate, Column, Entity} from 'typeorm';
 import {CnBaseEntity} from '../cn-core/model/entities/cn-base.entity';
-import {ClDateHelper} from '@monorepo/core-lib';
+import {ClDateHelper, ClStringHelper} from '@monorepo/core-lib';
 
 export enum CnSpaceType {
   // personal space create on the user creation (he cas invite other users in his space)
@@ -34,6 +34,7 @@ export class CnSpace extends CnBaseEntity {
   @BeforeInsert()
   setCreatedInfo(): void {
     this.createdAt = ClDateHelper.getDate();
+    this.domain = ClStringHelper.generateUUID();
   }
 
   @BeforeInsert()

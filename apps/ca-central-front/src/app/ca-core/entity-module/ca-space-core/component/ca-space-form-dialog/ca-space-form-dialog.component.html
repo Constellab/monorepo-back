@@ -15,19 +15,6 @@
       </mat-error>
     </mat-form-field>
 
-    <!--  Domain  -->
-    <mat-form-field class="g-form-input">
-      <mat-label>{{'space_domain' | translate}}</mat-label>
-      <input matInput formControlName="domain" required flInputMaxLength="50"
-             [placeholder]="'space_domain' | translate">
-      <mat-error *ngIf="formGp.get('domain').hasError('required')">
-        {{'space_domain' | flErrorRequired}}
-      </mat-error>
-      <mat-error *ngIf="formGp.get('domain').hasError('pattern')">
-        {{'invalid_domain_name' | translate}}
-      </mat-error>
-    </mat-form-field>
-
     <!--  Nb of licences  -->
     <mat-form-field class="g-form-input">
       <mat-label>{{'nb_of_licenses' | translate}}</mat-label>
