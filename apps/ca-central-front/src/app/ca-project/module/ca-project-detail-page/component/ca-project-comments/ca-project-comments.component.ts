@@ -8,6 +8,11 @@ import {CaAuthenticatedUserService} from '../../../../../ca-core/service-api/ca-
 import {CaCommentTextEditorConfig} from '../../../../../ca-core/model/config/ca-comment-text-editor.config';
 import {FormControl, Validators} from '@angular/forms';
 import {CmRichText} from '@monorepo/common-model';
+import {FlOverlayRef, FlPortalService} from '@monorepo/front-core-lib';
+import {
+  FlEmojiPickerPortalComponent
+} from '../../../../../../../../../libs/front-core-lib/src/lib/module/fl-emoji-picker/component/fl-emoji-picker-portal/fl-emoji-picker-portal.component';
+
 
 @Component({
   selector: 'ca-project-comments',
@@ -16,6 +21,8 @@ import {CmRichText} from '@monorepo/common-model';
 })
 export class CaProjectCommentsComponent implements OnInit, OnDestroy {
 
+  isEmojiPickerVisible: boolean;
+  openEmojiPicker: boolean = false;
   project$: Observable<CaProject>;
   comments: CaProjectCommentDatasourcePaginated;
   currentUserId: string;
@@ -26,7 +33,8 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
 
   constructor(private state: CaProjectDetailState,
               private projectService: CaProjectService,
-              private userService: CaAuthenticatedUserService
+              private userService: CaAuthenticatedUserService,
+              private portalService: FlPortalService
   ) {
   }
 
@@ -43,14 +51,14 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
     this.currentUserId = this.userService.getUser().id;
 
     this.textEditorConfig.sendButtonEvent$.subscribe(btEvent => {
-      if(btEvent){
+      if (btEvent) {
         this.createNewComment();
       }
     });
 
-    this.textEditorConfig.sendEmojiButtonEvent$.subscribe(btEmojiEvent => {
-      if(btEmojiEvent){
-        this.openEmojiPannel();
+    this.textEditorConfig.sendEmojiButtonEvent$.subscribe(btEmoji => {
+      if (btEmoji) {
+        this.openEmojiPannel(btEmoji);
       }
     })
   }
@@ -72,8 +80,34 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
     }
   }
 
-  private openEmojiPannel(): void{
+  closeEmojiPicker(event: Event): void {
+    const element: HTMLElement = event.target as HTMLElement;
+    if (element.classList.contains('mat-icon') && this.openEmojiPicker == false) {
+      this.openEmojiPicker = true;
+      return;
+    }
 
+    if (this.isEmojiPickerVisible) {
+      this.isEmojiPickerVisible = false;
+      this.openEmojiPicker = false;
+    }
+  }
+
+  addEmoji(event: string): void {
+    this.formControl.setValue(CmRichText.addEmoji(this.formControl.value, event));
+  }
+
+  private openEmojiPannel(btEmoji: HTMLElement): void {
+    const config = this.portalService.configureRelativePortal(btEmoji, ['top', 'bottom', 'left', 'right'],
+      {
+        hasBackdrop: true,
+        disposeOnNavigation: true,
+        disposeOnBackdropClick: true,
+        transparentBackdrop: true
+      });
+    this.portalService.createPortal(FlEmojiPickerPortalComponent, config).detachments().subscribe(
+      emoji => this.addEmoji(emoji)
+    );;
   }
 
   ngOnDestroy(): void {

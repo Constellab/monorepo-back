@@ -155,6 +155,23 @@ export class CmRichText {
     return isEmpty;
   }
 
+  public static addEmoji(content: CmRichTextI, emoji: string): CmRichTextI {
+    if(this.isEmpty(content)){
+      content.ops = [{insert: emoji}];
+    } else {
+      if(content.ops[content.ops.length-1].insert && (typeof content.ops[content.ops.length-1].insert === 'string' ||
+        content.ops[content.ops.length-1].insert instanceof String)){
+        let insert = content.ops[content.ops.length-1].insert;
+        if(insert.endsWith('\n')){
+          insert = insert.substring(0, insert.length-1);
+        }
+        content.ops[content.ops.length-1].insert = insert + emoji;
+      } else {
+        content.ops.push({insert: emoji});
+      }
+    }
+    return content;
+  }
 
   public getContent(): CmRichTextI {
     return this.richText;

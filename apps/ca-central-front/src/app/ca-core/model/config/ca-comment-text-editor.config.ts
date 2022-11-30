@@ -12,7 +12,7 @@ import {EventEmitter} from '@angular/core';
 export class CaCommentTextEditorConfig extends FlTextEditorConfig implements FlTextEditorImageLoader {
 
   sendButtonEvent$: EventEmitter<boolean> = new EventEmitter<boolean>();
-  sendEmojiButtonEvent$: EventEmitter<boolean> = new EventEmitter<boolean>();
+  sendEmojiButtonEvent$: EventEmitter<HTMLElement> = new EventEmitter<HTMLElement>();
 
   constructor(private projectService: CaProjectService) {
     super();
@@ -73,8 +73,8 @@ export class CaCommentTextEditorConfig extends FlTextEditorConfig implements FlT
     );
   }
 
-  private openEmojiPanel(event: any, state: FlTextEditorState): void {
-    this.sendEmojiButtonEvent$.emit(true);
+  private openEmojiPanel(event: Event, state: FlTextEditorState): void {
+    this.sendEmojiButtonEvent$.emit(event.target as HTMLElement);
   }
 
   private sendComment(): void {

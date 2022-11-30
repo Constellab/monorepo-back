@@ -9,7 +9,7 @@ import {CnCloudProvider} from '../cn-cloud-providers/cn-cloud-provider.entity';
 @Entity('server_info')
 export class CnServerInfo extends BlEntityWithId {
 
-  @ManyToOne(() => CnCloudProvider, {nullable: false, eager: true})
+  @ManyToOne(() => CnCloudProvider, {nullable: true, eager: true})
   cloudProvider: CnCloudProvider;
 
   // the ram of the server in MB

@@ -25,13 +25,13 @@ export class FlUserProfilePictureComponent implements OnInit, OnDestroy {
    */
   @Input() size: FlUserProfilePictureSize | string | number = 'medium';
 
+  @Input() hasPhoto$: Subject<boolean> = new Subject<boolean>();
+
   circleSize: string;
 
   fontSize: number;
 
   initials: string;
-
-  hasPhoto$: Subject<boolean> = new Subject<boolean>();
 
   imgSrc: string;
 

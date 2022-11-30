@@ -6,7 +6,7 @@ import {CnBaseEntity} from './cn-base.entity';
 
 export class CnComment extends CnBaseEntity {
 
-  @Column({type: 'simple-json', nullable: true})
+  @Column({type: 'simple-json', nullable: true, collation: 'utf8mb4_unicode_ci' })
   content: CmRichTextI;
 
   @Type(() => CnComment)

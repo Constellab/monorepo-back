@@ -28,6 +28,7 @@ import {
 import {CaLabCoreModule} from '../../../ca-core/entity-module/ca-lab-core/ca-lab-core.module';
 import {CaProjectCommentsComponent} from './component/ca-project-comments/ca-project-comments.component';
 import {CaCommentModule} from "../../../ca-comment/ca-comment.module";
+import {PickerModule} from '@ctrl/ngx-emoji-mart';
 
 /**
  * Module for the project detail page
@@ -50,6 +51,7 @@ import {CaCommentModule} from "../../../ca-comment/ca-comment.module";
     RouterModule,
     FormsModule,
     ReactiveFormsModule,
+    PickerModule,
 
     CaCoreModule,
     CaProjectObjectCoreModule,

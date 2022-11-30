@@ -152,7 +152,7 @@ export class CaAuthenticatedUserService implements FlCleanableService {
         map((res) => res)
       );
     } else {
-      return this.apiService.put(this.currentUserRoute , newUserInfo, CaUser);
+      return this.apiService.put(this.currentUserRoute + '/edit' , newUserInfo, CaUser);
     }
   }
 

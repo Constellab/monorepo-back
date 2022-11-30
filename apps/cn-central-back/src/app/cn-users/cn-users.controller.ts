@@ -48,7 +48,7 @@ export class CnUsersController {
     return this.usersService.findAllPaginated(page, size);
   }
 
-  @Put('current')
+  @Put('current/edit')
   editUser(@Body(new BlParsePipe(CnUserEditDTO)) userEdit: CnUserEditDTO): Promise<CnUser> {
     return this.usersService.editUser(userEdit);
   }
