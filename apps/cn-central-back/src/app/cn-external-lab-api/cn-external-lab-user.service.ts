@@ -35,7 +35,7 @@ export class CnExternalLabUserService {
       },
       space: {
         id: labSpace.id,
-        label: labSpace.name,
+        name: labSpace.name,
         domain: labSpace.domain,
         photo: labSpace.photo
       }

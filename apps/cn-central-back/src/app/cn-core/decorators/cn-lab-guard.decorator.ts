@@ -31,7 +31,7 @@ export function cnIsDecoratedWithLabAuth(reflector: Reflector, context: Executio
 }
 
 /**
- * To be placed on a method or class of a external lab route to force user authentication with robot
+ * To be placed on a method or class of an external lab route to force user authentication with robot
  * Useful for route that are called automatically by the lab
  * @constructor
  */

@@ -1,5 +1,5 @@
 import {Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
-import {ClLabGuard} from '../cn-core/decorators/cn-lab-guard.decorator';
+import {ClLabGuard, ClLabRobotAuthentication} from '../cn-core/decorators/cn-lab-guard.decorator';
 import {BlParsePipe} from '@monorepo/back-core-lib';
 import {CnCreateLabExperimentDto} from '../cn-projects-aggregate/cn-experiments/cn-experiment.dto';
 import {CnCreateReportWithConfigDto} from '../cn-projects-aggregate/cn-reports/cn-report.dto';
@@ -24,6 +24,7 @@ export class CnExternalLabsController {
   }
 
   // route called on the lab start
+  @ClLabRobotAuthentication()
   @Put('start')
   onLabStart(@Body() labStart: CnLabInstanceStartDTO): Promise<void> {
     return this.labInstanceAggregator.markLabAsStarted(labStart);
