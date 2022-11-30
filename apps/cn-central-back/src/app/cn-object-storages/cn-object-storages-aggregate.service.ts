@@ -16,6 +16,7 @@ export class CnObjectStoragesAggregateService {
 
   private static LabBackupDefaultCloudProvider = 'OVH';
   private static LabBackupDefaultRegion = 'gra';
+  private static LabBackupCredentialName = 'LAB_BACKUP';
 
 
   constructor(private securityService: CnObjectStoragesSecurity,
@@ -32,7 +33,11 @@ export class CnObjectStoragesAggregateService {
       return labBackupBucket;
     }
 
-    const credentials = await this.bucketCredentialsService.findFirst();
+    const credentials = await this.bucketCredentialsService.findByName(CnObjectStoragesAggregateService.LabBackupCredentialName);
+
+    if(credentials == null) {
+      throw new Error(`Credentials named ${CnObjectStoragesAggregateService.LabBackupCredentialName} not found`);
+    }
     const region = await this.bucketRegionService.findByCloudProviderNameAndTechnicalNameAndCheck(
       CnObjectStoragesAggregateService.LabBackupDefaultCloudProvider, CnObjectStoragesAggregateService.LabBackupDefaultRegion);
 
