@@ -69,7 +69,7 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
   private async deletePhoto(space: CnSpace): Promise<void> {
     if (space.photo) {
       // use the same filename to overwrite the previous file
-      await this.objectStorageService.deleteObject(this.getBucketConfig(), space.photo);
+      await this.objectStorageService.deleteObjectIfExist(this.getBucketConfig(), space.photo);
     }
   }
 

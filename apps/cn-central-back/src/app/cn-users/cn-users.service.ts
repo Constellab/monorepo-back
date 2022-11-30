@@ -82,7 +82,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
     if (user.photo) {
       const lastPhoto: string = user.photo;
-      await this.objectStorageService.deleteObject(this.getUserProfilePhotoBucketConfig(), lastPhoto);
+      await this.objectStorageService.deleteObjectIfExist(this.getUserProfilePhotoBucketConfig(), lastPhoto);
     }
 
     user.photo = await this.objectStorageService.uploadObject(
@@ -93,7 +93,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
   async deleteCurrentPhoto(userId: string): Promise<void> {
     const user: CnUser = await this.repository.findOneBy({id: userId});
     if (user.photo) {
-      await this.objectStorageService.deleteObject(this.getUserProfilePhotoBucketConfig(), user.photo);
+      await this.objectStorageService.deleteObjectIfExist(this.getUserProfilePhotoBucketConfig(), user.photo);
       user.photo = null;
       await this.repository.save(user);
     }

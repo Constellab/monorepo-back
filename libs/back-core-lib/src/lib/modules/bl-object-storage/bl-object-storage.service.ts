@@ -6,6 +6,7 @@ import {
   DeleteBucketCommand,
   DeleteObjectCommand,
   GetObjectCommand,
+  HeadObjectCommand,
   PutObjectCommand,
   S3Client
 } from '@aws-sdk/client-s3';
@@ -86,10 +87,25 @@ export class BlObjectStorageService {
     return result.Body as IncomingMessage;
   }
 
-  public async deleteObject(config: BlBucketConfig, objectName: string): Promise<void> {
+  /**
+   * Delete an object from the bucket.
+   * @param config
+   * @param objectName
+   * @returns true if object deleted, false if object not found
+   */
+  public async deleteObjectIfExist(config: BlBucketConfig, objectName: string): Promise<boolean> {
     const s3Client = this.getClient(config);
 
+    try {
+      // use to check if the object exist
+      // because if we call delete on a none existing object, the request never ends
+      await s3Client.send(new HeadObjectCommand({Bucket: config.bucket, Key: objectName}));
+    } catch (e) {
+      return false;
+    }
+
     await s3Client.send(new DeleteObjectCommand({Bucket: config.bucket, Key: objectName}));
+    return true;
   }
 
   public async createBucket(config: BlBucketConfig): Promise<void> {
