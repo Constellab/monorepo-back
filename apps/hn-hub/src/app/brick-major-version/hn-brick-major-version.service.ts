@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {HnBrickMajorVersion, HnVersionState} from './hn-brick-major-version.entity';
-import {EntityManager, Equal, Repository} from 'typeorm';
+import {EntityManager, Repository} from 'typeorm';
 import {HnFolderService} from '../folder/hn-folder.service';
 import {HnBrick, HnCreateBrickDTO} from '../brick/hn-brick.entity';
 import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
@@ -82,7 +82,7 @@ export class HnBrickMajorVersionService {
     const newMajor = parseInt(newVersion.version.split('.')[0]);
     const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionsRepository.findOne({
       where: {
-        brick: Equal(brick),
+        brick: {id: brick.id},
         major: newMajor
       }
     });
