@@ -31,7 +31,7 @@ export class CnBucketRegionService extends BlAbstractService<CnBucketRegion> {
   private async checkRegionBeforeSave(region: CnBucketRegion): Promise<CnBucketRegion> {
     const existingRegion = await this.findByCloudProviderAndTechnicalName(region.cloudProvider.id, region.technicalName);
 
-    if (existingRegion) {
+    if (existingRegion && existingRegion.id !== region.id) {
       // eslint-disable-next-line max-len
       throw new BadRequestException(`There is already a region ${region.technicalName} for the cloud provider ${region.cloudProvider.name}`);
     }
