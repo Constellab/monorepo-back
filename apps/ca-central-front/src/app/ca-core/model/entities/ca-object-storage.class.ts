@@ -30,6 +30,11 @@ export class CaBucketCredentials extends CaBaseEntity {
 
   @Type(() => CaSpace)
   space: CaSpace;
+
+  s3Username: string;
+
+  shortDescription: string;
+
 }
 
 /**

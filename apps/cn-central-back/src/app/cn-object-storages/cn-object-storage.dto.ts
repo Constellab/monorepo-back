@@ -9,4 +9,6 @@ export class CnBucketCredentialsFull extends BlBaseEntityDto {
   secretAccessKey: string = undefined;
   cloudProvider: CnCloudProvider = undefined;
   space: CnSpace = undefined;
+  s3Username: string = undefined;
+  shortDescription: string = undefined;
 }

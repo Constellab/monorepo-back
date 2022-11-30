@@ -24,4 +24,10 @@ export class CnBucketCredentials extends CnBaseEntity {
   // might be associated to a space
   @ManyToOne(() => CnSpace, {nullable: true})
   space: CnSpace;
+
+  @Column({nullable: true, length: 50})
+  s3Username: string;
+
+  @Column({nullable: true, length: 255})
+  shortDescription: string;
 }

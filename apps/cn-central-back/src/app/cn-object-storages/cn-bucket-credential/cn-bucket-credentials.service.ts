@@ -46,4 +46,9 @@ export class CnBucketCredentialsService extends BlAbstractService<CnBucketCreden
       }
     });
   }
+
+  // TODO temporary until we have a better way to handle the bucket credentials
+  public findFirst(): Promise<CnBucketCredentials> {
+    return this.repository.findOne({});
+  }
 }

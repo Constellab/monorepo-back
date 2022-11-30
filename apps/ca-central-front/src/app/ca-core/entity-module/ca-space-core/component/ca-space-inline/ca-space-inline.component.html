@@ -1,4 +1,4 @@
-<div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em">
+<div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em" *ngIf="space">
   <ca-space-photo [space]="space"></ca-space-photo>
   <div>
     {{space.name}}

@@ -37,6 +37,7 @@
   "bucket_credentials_deleted": "Bucket credentials supprimé",
   "bucket_credentials_access_key_id": "Access key ID",
   "bucket_credentials_secret_access_key": "Secret access key",
+  "s3_username": "S3 username",
   "bucket_regions_list": "Régions des buckets",
   "create_bucket_region": "Créer une région de bucket",
   "bucket_region_created": "Région de bucket créé",

@@ -32,7 +32,7 @@ export class CnObjectStoragesAggregateService {
       return labBackupBucket;
     }
 
-    const credentials = await this.bucketCredentialsService.findBySpaceIdAndCheck(labInstance.spaceId);
+    const credentials = await this.bucketCredentialsService.findFirst();
     const region = await this.bucketRegionService.findByCloudProviderNameAndTechnicalNameAndCheck(
       CnObjectStoragesAggregateService.LabBackupDefaultCloudProvider, CnObjectStoragesAggregateService.LabBackupDefaultRegion);
 
