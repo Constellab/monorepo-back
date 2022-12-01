@@ -19,7 +19,6 @@ export class FlEmojiPickerPortalComponent implements OnInit {
     divScroll.classList.add('g-scrollable-element');
     const emojiMart: HTMLElement = this.elementRef.nativeElement.querySelector('emoji-mart');
     emojiMart.style.border = 'none';
-    console.log(this.elementRef.nativeElement)
   }
 
   isDarkTheme(): boolean {

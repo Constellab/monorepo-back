@@ -8,7 +8,7 @@ import {CaAuthenticatedUserService} from '../../../../../ca-core/service-api/ca-
 import {CaCommentTextEditorConfig} from '../../../../../ca-core/model/config/ca-comment-text-editor.config';
 import {FormControl, Validators} from '@angular/forms';
 import {CmRichText} from '@monorepo/common-model';
-import {FlOverlayRef, FlPortalService} from '@monorepo/front-core-lib';
+import {FlPortalService} from '@monorepo/front-core-lib';
 import {
   FlEmojiPickerPortalComponent
 } from '../../../../../../../../../libs/front-core-lib/src/lib/module/fl-emoji-picker/component/fl-emoji-picker-portal/fl-emoji-picker-portal.component';
@@ -106,8 +106,11 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
         transparentBackdrop: true
       });
     this.portalService.createPortal(FlEmojiPickerPortalComponent, config).detachments().subscribe(
-      emoji => this.addEmoji(emoji)
-    );;
+      emoji =>{
+        if(emoji)
+          this.addEmoji(emoji)
+      }
+    );
   }
 
   ngOnDestroy(): void {
