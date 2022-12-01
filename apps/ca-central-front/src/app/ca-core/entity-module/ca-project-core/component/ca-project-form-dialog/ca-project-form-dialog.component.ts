@@ -55,7 +55,7 @@ export class CaProjectFormDialogComponent extends FlFormDialogAbstractDirective<
         {
           value: CaProjectLevelStatus.LEAF,
           // when work package we force the children to be leaf to limit hierarchy depth
-          disabled: this.dialogInput.parentLevel === CaProjectLevel.WORK_PACKAGE}
+          disabled: this.isUpdateMode() || this.parentIsWorkPackage}
         , Validators.required],
       code: [null, Validators.required],
       title: [null, Validators.required],
@@ -99,5 +99,9 @@ export class CaProjectFormDialogComponent extends FlFormDialogAbstractDirective<
     } else {
       return 'sub_project_updated';
     }
+  }
+
+  get parentIsWorkPackage(): boolean {
+    return this.dialogInput.parentLevel === CaProjectLevel.WORK_PACKAGE;
   }
 }

@@ -47,4 +47,9 @@ export enum CnErrorText {
   TWO_FA_WRONG_CODE = 'error.two_fa_wrong_code',
   TWO_FA_CODE_EXPIRED = 'error.two_fa_code_expired',
   LAB_REQ_NO_USER_IN_CONTEXT = 'error.lab_req_no_user_in_context',
+  CHILD_PROJECT_END_DATA_AFTER_PARENT = 'error.child_project_end_data_after_parent',
+  DELETE_PROJECT_WITH_CHILDREN = 'error.delete_project_with_children',
+  DELETE_PROJECT_WITH_EXPERIMENTS = 'error.delete_project_with_experiments',
+  DELETE_PROJECT_WITH_REPORTS = 'error.delete_project_with_reports',
+  DELETE_PROJECT_USED_IN_LAB = 'error.delete_project_used_in_lab',
 }

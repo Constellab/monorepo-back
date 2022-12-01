@@ -15,6 +15,7 @@
       </button>
       <ca-project-actions-menu [project]="project" [projectUsers$]="projectUsers$"
                                (projectUpdated)="onProjectUpdated($event)"
+                               (projectDeleted)="onProjectDeleted($event)"
                                (childProjectCreated)="onChildCreated($event)"
                                class="actions-button"></ca-project-actions-menu>
     </div>
@@ -39,7 +40,7 @@
     <ca-project-users [projectId$]="projectId$"></ca-project-users>
 
     <ng-container *ngIf="rightPanelState$ | async as rightPanel">
-      <a mat-icon-button type="button" (click)="showDescription()"
+      <a mat-icon-button type="button"
          [routerLink]="'.'" queryParamsHandling="merge"
          [queryParams]="descriptionQueryParams"
          [matTooltip]="'show_project_description' | translate"

@@ -23,6 +23,10 @@ export class CaProjectTableComponent extends FlTableAbstractDirective<CaProject>
     this.datasource.updateItem(project);
   }
 
+  onProjectDeleted(project: CaProject): void {
+    this.datasource.removeItem(project);
+  }
+
   onChildCreated(project: CaProject): void {
     this.routerService.navigateToProjectDetail(project.id);
   }

@@ -46,6 +46,7 @@
     </mat-header-cell>
     <mat-cell *matCellDef="let row" class="g-table-icon-button-cell">
       <ca-project-actions-menu [project]="row" (projectUpdated)="onProjectUpdated($event)"
+                               (projectDeleted)="onProjectDeleted($event)"
                                (childProjectCreated)="onChildCreated($event)"
                                [stopClickEvent]="true"></ca-project-actions-menu>
     </mat-cell>

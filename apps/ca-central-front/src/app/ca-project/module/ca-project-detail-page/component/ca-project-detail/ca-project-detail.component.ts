@@ -10,6 +10,7 @@ import {
   CaProjectSharedGroupsListInput
 } from '../ca-project-shared-groups-list/ca-project-shared-groups-list.component';
 import {map} from 'rxjs/operators';
+import {CaRouterService} from '../../../../../ca-core/service/ca-router.service';
 
 /**
  * Show detailed information for a project , used in ProjectDetailPage
@@ -33,7 +34,8 @@ export class CaProjectDetailComponent implements OnInit {
 
   constructor(private dialogService: FlDialogService,
               private projectService: CaProjectService,
-              private state: CaProjectDetailState) {
+              private state: CaProjectDetailState,
+              private routerService: CaRouterService) {
   }
 
   ngOnInit(): void {
@@ -50,18 +52,17 @@ export class CaProjectDetailComponent implements OnInit {
     this.state.updateCurrentProject(project);
   }
 
+  onProjectDeleted(project: CaProject): void {
+    if(project.parentId != null){
+      this.routerService.navigateToProjectDetail(project.parentId);
+    }else{
+      this.routerService.navigateToDashboard()
+    }
+  }
   onChildCreated(project: CaProject): void {
     this.state.addChild(project);
   }
 
-
-  showComments(): void {
-    this.state.updateRightPanelState({type: 'comments', objectId: null});
-  }
-
-  showDescription(): void {
-    this.state.updateRightPanelState({type: 'description', objectId: null});
-  }
 
   openShareDialog(project: CaProject): void {
     const input: CaProjectSharedGroupsListInput = {

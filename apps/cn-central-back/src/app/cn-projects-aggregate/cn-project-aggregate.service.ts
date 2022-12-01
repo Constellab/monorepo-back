@@ -64,8 +64,13 @@ export class CnProjectAggregateService {
       throw new BadRequestException('Cannot create project with a hierarchy level more than 3');
     }
 
+    if (entity.endingDate && parentProject.endingDate && entity.endingDate > parentProject.endingDate) {
+      throw new BadRequestException(CnErrorText.CHILD_PROJECT_END_DATA_AFTER_PARENT);
+    }
+
     // set hierarchy info
     entity.parent = parentProject;
+    entity.parentId = parentProject.id;
     entity.currentLevel = parentProject.currentLevel + 1;
     // if the project is level 3 force the status to leaf, otherwise set to undefined
     if (entity.currentLevel === CnProjectLevel.TASK) {
@@ -78,7 +83,42 @@ export class CnProjectAggregateService {
 
   async updateProject(entity: CnProject): Promise<CnProject> {
     const dbProject = await this.getAndCheckAuthorizationForUpdate(entity.id);
+
+    // check that the ending date is not after the parent ending date
+    if (entity.endingDate && dbProject.parentId) {
+      const parent = await this.projectService.findByIdAndCheck(dbProject.parentId);
+      if (parent.endingDate && entity.endingDate > parent.endingDate) {
+        throw new BadRequestException(CnErrorText.CHILD_PROJECT_END_DATA_AFTER_PARENT);
+      }
+    }
     return this.projectService.updateWithCompare(entity, dbProject);
+  }
+
+  async deleteProject(id: string): Promise<void> {
+    const project = await this.getAndCheckAuthorizationForUpdate(id);
+
+    const children = await this.projectService.getChildren(project.id);
+    if (children.length > 0) {
+      throw new BadRequestException(CnErrorText.DELETE_PROJECT_WITH_CHILDREN);
+    }
+
+    const experiments = await this.experimentService.getExperimentsByProject(project.id);
+    if (experiments.length > 0) {
+      throw new BadRequestException(CnErrorText.DELETE_PROJECT_WITH_EXPERIMENTS);
+    }
+
+    const reports = await this.reportService.getReportsByProject(project.id);
+    if (reports.length > 0) {
+      throw new BadRequestException(CnErrorText.DELETE_PROJECT_WITH_REPORTS);
+    }
+
+    const projectWithLab = await this.projectService.findByIdAndCheck(id, {labInstances: {labInstance: true}});
+    if (projectWithLab.labInstances.length > 0) {
+      const names = projectWithLab.labInstances.map(labProject => labProject.labInstance.name).join(', ');
+      throw new BadRequestException(CnErrorText.DELETE_PROJECT_USED_IN_LAB);
+    }
+
+    await this.projectService.deleteById(id);
   }
 
   async findProject(id: string): Promise<CnProject> {
@@ -134,7 +174,7 @@ export class CnProjectAggregateService {
   public async getChildren(projectId: string): Promise<CnProject[]> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    return this.projectService.getChildren(project);
+    return this.projectService.getChildren(project.id);
   }
 
   public async getObjectProjectAncestors(objectType: CnProjectAncestorType, objectId: string): Promise<CnProjectAncestorTreeDTO[]> {
@@ -344,12 +384,6 @@ export class CnProjectAggregateService {
 
     if (project.currentLevel !== CnProjectLevel.PROJECT) {
       throw new BadRequestException('Only root projects can be shared');
-    }
-
-    // the user must be an admin or be in the group he shared the project
-    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
-    if (!user.isAdmin() && !(await this.groupAggregateService.userIsInAnyGroup(user.id, groupId))) {
-      throw new UnauthorizedException();
     }
 
     return this.projectService.shareProject(project, groupId);

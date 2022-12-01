@@ -8,7 +8,9 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-  Query, Res, UploadedFiles,
+  Query,
+  Res,
+  UploadedFiles,
   UseInterceptors
 } from '@nestjs/common';
 import {CnProject} from './cn-projects/cn-project.entity';
@@ -51,6 +53,11 @@ export class CnProjectsController {
   @Put()
   update(@Body(new BlParsePipe(CnProject)) project: CnProject): Promise<CnProject> {
     return this.projectAggregate.updateProject(project);
+  }
+
+  @Delete(':id')
+  delete(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return this.projectAggregate.deleteProject(id);
   }
 
   /**

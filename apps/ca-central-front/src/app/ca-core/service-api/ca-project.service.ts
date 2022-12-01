@@ -51,6 +51,10 @@ export class CaProjectService {
     return this.apiService.put(this.route, object, CaProject, {serialization: CaProject});
   }
 
+  public delete(id: string): Observable<void> {
+    return this.apiService.deleteById(this.route, id);
+  }
+
   public getById(id: string): Observable<CaProject> {
     return this.apiService.getById(this.route, id, CaProject);
   }

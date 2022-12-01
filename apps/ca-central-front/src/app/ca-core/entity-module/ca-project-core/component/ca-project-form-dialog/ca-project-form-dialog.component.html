@@ -5,6 +5,10 @@
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="project-form" [formGroup]="formGp">
 
+    <p class="g-text-small g-text-light help-text" *ngIf="parentIsWorkPackage && isCreateMode()">
+      {{ 'modern_project_forced' | translate }}
+    </p>
+
     <!--  Level status  -->
     <mat-radio-group aria-label="Select an option" formControlName="levelStatus"
                      fxLayout="row" fxLayoutAlign="space-between stretch">

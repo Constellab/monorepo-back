@@ -43,5 +43,11 @@
   "project_not_shared_with_lab": "The project is not shared with this lab",
   "two_fa_wrong_code": "The code is incorrect",
   "two_fa_code_expired": "Code expired, please generate a new one",
-  "lab_req_no_user_in_context": "No user in the context"
+  "lab_req_no_user_in_context": "No user in the context",
+  "child_project_end_data_after_parent": "The end date of the child project must be the same or before the end date of the parent project",
+  "delete_project_with_children": "You can't delete a project with children",
+  "delete_project_with_experiments": "You can't delete a project with experiments",
+  "delete_project_with_reports": "You can't delete a project with reports",
+  "delete_project_used_in_lab": "This project is used in the following labs [{labNames}], you can't delete it"
+
 }

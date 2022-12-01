@@ -18,6 +18,6 @@ export class CnProjectStatusHistory extends CnStatusHistory<CnProjectStatus> {
   @Exclude()
   @BlNotUpdatable()
   @Type(() => CnProject)
-  @ManyToOne(() => CnProject, {nullable: false})
+  @ManyToOne(() => CnProject, {nullable: false, onDelete: 'CASCADE'})
   entity: CnProject;
 }

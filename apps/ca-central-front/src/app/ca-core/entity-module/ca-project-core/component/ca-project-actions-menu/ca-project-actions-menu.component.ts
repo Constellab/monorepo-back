@@ -16,7 +16,7 @@ import {
   CaUpdateProjectLeaderDialogComponent,
   CaUpdateProjectLeaderDialogInput
 } from '../ca-update-project-leader-dialog/ca-update-project-leader-dialog.component';
-import {FlDialogService} from '@monorepo/front-core-lib';
+import {FlConfirmDialogInput, FlConfirmDialogResult, FlDialogService} from '@monorepo/front-core-lib';
 import {CaProjectService} from '../../../../service-api/ca-project.service';
 import {Observable} from 'rxjs';
 import {CaUser} from '../../../../model/entities/ca-user.class';
@@ -42,6 +42,7 @@ export class CaProjectActionsMenuComponent implements OnInit {
   @Input() stopClickEvent: boolean = false;
 
   @Output() projectUpdated: EventEmitter<CaProject> = new EventEmitter();
+  @Output() projectDeleted: EventEmitter<CaProject> = new EventEmitter();
 
   @Output() childProjectCreated: EventEmitter<CaProject> = new EventEmitter();
 
@@ -114,9 +115,9 @@ export class CaProjectActionsMenuComponent implements OnInit {
     }
   }
 
-  openStatusHistory(project: CaProject): void {
+  openStatusHistory(): void {
     const dialogInput: CaStatusHistoryListDialogInput = {
-      statusHistoriesObs: this.projectService.getStatusHistories(project.id),
+      statusHistoriesObs: this.projectService.getStatusHistories(this.project.id),
     };
     this.dialogService.openSmallDialog(CaStatusHistoryListDialogComponent, {data: dialogInput});
   }
@@ -133,6 +134,27 @@ export class CaProjectActionsMenuComponent implements OnInit {
     }).afterClosed().subscribe(
       leader => this.project.leader = leader
     );
+  }
+
+  openDeleteProjectDialog(): void {
+    const input: FlConfirmDialogInput = {
+      title: 'delete_project',
+      content: 'delete_project_confirm',
+      translateTitleAndContent: true,
+      observable: this.projectService.delete(this.project.id),
+      successMessage: 'project_deleted',
+      translateMessage: true
+    };
+
+    this.dialogService.openConfirmDialog(input).afterClosed().subscribe(
+      result => this.onDeleteClosed(result)
+    );
+  }
+
+  private onDeleteClosed(result: FlConfirmDialogResult): void {
+    if (result.choice) {
+      this.projectDeleted.emit(this.project);
+    }
   }
 
 }

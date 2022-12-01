@@ -5,6 +5,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
   Relation,
   Tree,
@@ -23,6 +24,7 @@ import {CnProjectLevel, CnProjectLevelStatus} from './cn-project-level.enum';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {CmRichTextI} from '@monorepo/common-model';
 import {CnSpace} from '../../cn-spaces/cn-space.entity';
+import {CnLabInstanceProject} from '../../cn-lab-instances/project/cn-lab-instance-project.entity';
 
 /**
  * A project is an ensemble of experiments
@@ -52,7 +54,7 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
   leader: Relation<CnUser>;
 
   @Type(() => CnProjectStatusHistory)
-  @OneToOne(() => CnProjectStatusHistory, {nullable: true, eager: true})
+  @OneToOne(() => CnProjectStatusHistory, {nullable: true, eager: true, onDelete: 'CASCADE'})
   @JoinColumn()
   currentStatus: CnProjectStatusHistory;
 
@@ -70,7 +72,7 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
   currentLevel: CnProjectLevel;
 
   @Column({
-    nullable: false,
+    nullable: false, update: false,
     type: 'enum', enum: CnProjectLevelStatus,
   })
   levelStatus: CnProjectLevelStatus;
@@ -80,10 +82,14 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
   @BlNotUpdatable()
   parent?: CnProject;
 
+  @Column({nullable: true, update: false})
+  parentId?: string;
+
   @TreeChildren()
   children: CnProject[];
 
   @Exclude()
+  @BlNotUpdatable()
   @ManyToOne(() => CnProject, {nullable: true})
   rootParent?: CnProject
 
@@ -98,6 +104,10 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
   @Column({nullable: false, update: false})
   spaceId: string;
 
+  // N to N labs to uses this project
+  @OneToMany(() => CnLabInstanceProject,
+    (labInstanceProject: CnLabInstanceProject) => labInstanceProject.project)
+  labInstances: CnLabInstanceProject[];
 
   public isSharedToGroup(groupId: string | string[]): boolean {
     if (this.sharedGroups == null) {

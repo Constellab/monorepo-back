@@ -43,5 +43,10 @@
   "project_not_shared_with_lab_fr": "Le projet n'est pas partagé avec ce lab",
   "two_fa_wrong_code": "Le code est incorrect",
   "two_fa_code_expired": "Code expiré, veuillez en généré un nouveau",
-  "lab_req_no_user_in_context": "Aucun utilisateur dans le context"
+  "lab_req_no_user_in_context": "Aucun utilisateur dans le context",
+  "child_project_end_data_after_parent": "La date de fin du projet enfant doit être la même ou avant la date de fin du projet parent",
+  "delete_project_with_children": "Vous ne pouvez pas supprimer un projet qui a des sous projets",
+  "delete_project_with_exps": "Vous ne pouvez pas supprimer un projet qui a des expériences",
+  "delete_project_with_reports": "Vous ne pouvez pas supprimer un projet qui a des rapports",
+  "delete_project_used_in_lab": "Ce projet est utilisé dans les lab suivants : [{labNames}], vous ne pouvez pas le supprimer"
 }
