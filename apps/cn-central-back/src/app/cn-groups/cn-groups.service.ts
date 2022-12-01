@@ -1,8 +1,8 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup} from './cn-group.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, FindOneOptions, In, Repository} from 'typeorm';
-import {BlAbstractService} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnGroupType} from './cn-group-type.enum';
 import {ClHelpService, ClPageI} from '@monorepo/core-lib';
@@ -156,7 +156,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     const group = await this.findById(id);
 
     if (group.type !== CnGroupType.TEAM) {
-      throw new BadRequestException('Can only work on teams');
+      throw new BlBadRequestException('Can only work on teams');
     }
     return group as CnGroupTeam;
   }
@@ -214,7 +214,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     });
 
     if (group == null) {
-      throw new BadRequestException(`User ${userId} has no single group`);
+      throw new BlBadRequestException(`User ${userId} has no single group`);
     }
     return group as CnGroupSingleUser;
   }

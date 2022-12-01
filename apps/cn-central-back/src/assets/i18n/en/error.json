@@ -1,5 +1,6 @@
 {
   "server_error": "Server error",
+  "unauthorized": "Unauthorized",
   "wrong_credentials": "Wrong email or password",
   "user_locked": "User locked",
   "column_too_long": "Field '{field}' too long",

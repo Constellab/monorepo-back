@@ -1,5 +1,5 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
-import {BlAbstractService} from '@monorepo/back-core-lib';
+import {Injectable} from '@nestjs/common';
+import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnBucketRegion} from './cn-bucker-region.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, Repository} from 'typeorm';
@@ -33,7 +33,7 @@ export class CnBucketRegionService extends BlAbstractService<CnBucketRegion> {
 
     if (existingRegion && existingRegion.id !== region.id) {
       // eslint-disable-next-line max-len
-      throw new BadRequestException(`There is already a region ${region.technicalName} for the cloud provider ${region.cloudProvider.name}`);
+      throw new BlBadRequestException(`There is already a region ${region.technicalName} for the cloud provider ${region.cloudProvider.name}`);
     }
     return region;
   }
@@ -52,7 +52,7 @@ export class CnBucketRegionService extends BlAbstractService<CnBucketRegion> {
       technicalName: technicalName
     });
     if (!region) {
-      throw new BadRequestException(`The region ${technicalName} does not exist for the cloud provider ${cloudProviderName}`);
+      throw new BlBadRequestException(`The region ${technicalName} does not exist for the cloud provider ${cloudProviderName}`);
     }
 
     return region;

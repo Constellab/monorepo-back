@@ -1,10 +1,15 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnReport} from './cn-report.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
-import {BlAbstractService, BlBucketConfig, BlObjectStorageService} from '@monorepo/back-core-lib';
+import {
+  BlAbstractService,
+  BlBadRequestException,
+  BlBucketConfig,
+  BlObjectStorageService
+} from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
 import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CnCreateReportWithConfigDto, CnSaveReportDto} from './cn-report.dto';
@@ -52,7 +57,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
 
     const reportDb: CnReport = await this.findById(createReportDto.report.id);
     if (reportDb && reportDb.projectId !== project.id) {
-      throw new BadRequestException('Can\'t change the project of a synced report');
+      throw new BlBadRequestException('Can\'t change the project of a synced report');
     }
 
     // retrieve the lab config
@@ -103,7 +108,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     }
 
     if (report.isValidated) {
-      throw new BadRequestException('Can\'t delete a validated report');
+      throw new BlBadRequestException('Can\'t delete a validated report');
     }
     await this.deleteById(id);
   }

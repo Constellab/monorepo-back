@@ -1,7 +1,7 @@
-import {UnauthorizedException} from '@nestjs/common';
 import {BlRequestContextHelper} from '../bl-request-context/bl-request-context.helper';
 import {clDefaultLang, clLangCookie, clLangIsSupported, ClSupportedLanguage} from '@monorepo/core-lib';
 import {BlUser} from '../../models/bl-user.class';
+import {BlUnauthorizedException} from '../../exceptions/bl-unauthorized.exception';
 
 /**
  * User context helper to get the current user or current request
@@ -23,7 +23,7 @@ export class BlCurrentUserHelper extends BlRequestContextHelper {
     const user: BlUser = this.getCurrentUser();
 
     if (user == null) {
-      throw new UnauthorizedException("No user in the context");
+      throw new BlUnauthorizedException("No user in the context");
     }
 
     return user;

@@ -1,11 +1,11 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnBrick} from './cn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {CnBrickVersion} from './cn-brick-version.entity';
 import {CmVersion} from '@monorepo/common-model';
 import {CnBrickSaveDTO} from './cn-brick.dto';
-import {BlAbstractService} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnBricksService extends BlAbstractService<CnBrick> {
@@ -65,7 +65,7 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
 
     if (brickVersion == null) {
       // eslint-disable-next-line max-len
-      throw new BadRequestException(`The version '${version.toString()}' does not exist on brick '${name}'. Please register the version on the hub.`);
+      throw new BlBadRequestException(`The version '${version.toString()}' does not exist on brick '${name}'. Please register the version on the hub.`);
     }
 
     return brickVersion;

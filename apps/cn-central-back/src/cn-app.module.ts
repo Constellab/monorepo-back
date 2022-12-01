@@ -54,6 +54,7 @@ import {CnSpaceMiddleware} from './app/cn-core/middleware/cn-space-middleware.se
 import {CnNotificationModule} from './app/cn-notification/cn-notification.module';
 import {CnProjectCommentModule} from './app/cn-project-comment/cn-project-comment.module';
 import {CnCloudProvidersModule} from './app/cn-cloud-providers/cn-cloud-providers.module';
+import {I18nAbstractLoaderOptions} from 'nestjs-i18n/dist/loaders/i18n.abstract.loader';
 
 function typeOrmConfig(
   configService: CnCoreConfigService
@@ -135,14 +136,14 @@ function configureTransportModule(
       loaderOptions: {
         path: join(__dirname, 'assets/i18n/'),
         watch: true, //    // enable live translation
-      },
+      } as I18nAbstractLoaderOptions,
     }),
 
     // Custom module
     CnCoreModule,
     BlObjectStorageModule,
 
-    // setup the logging module
+    // set up the logging module
     WinstonModule.forRootAsync({
       imports: [CnCoreModule],
       useFactory: configureLogger,

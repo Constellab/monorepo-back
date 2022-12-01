@@ -4,6 +4,9 @@ export * from './lib/configs/public-api';
 // Decorators
 export * from './lib/decorators/public-api';
 
+// Exceptions
+export * from './lib/exceptions/public-api';
+
 // Model
 export * from './lib/models/public-api';
 

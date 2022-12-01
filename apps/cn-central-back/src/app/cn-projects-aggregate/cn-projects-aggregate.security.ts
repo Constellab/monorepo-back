@@ -1,8 +1,9 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnProject} from './cn-projects/cn-project.entity';
 import {CnProjectsService} from './cn-projects/cn-projects.service';
 import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
 import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
+import {BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 
 /**
@@ -17,7 +18,7 @@ export class CnProjectsAggregateSecurity {
 
   public async checkFindOneAndGetRootProject(project: CnProject, userInfo: CnUserSpaceInfo): Promise<CnProject> {
     // check the space context
-    if (project.spaceId !== userInfo.spaceId) throw new UnauthorizedException();
+    if (project.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException();
 
     // the authorization are handle at the projet level
     const rootProject = await this.projectsService.getRootProjectWithSharedGroup(project);
@@ -26,7 +27,7 @@ export class CnProjectsAggregateSecurity {
 
     // check if the user is a member of one of the groups that were shared with the project
     if (!await this.groupAggregateService.userIsInAnyGroup(userInfo.userId, rootProject.getSharedGroupIds())) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
 
     return rootProject;
@@ -39,12 +40,12 @@ export class CnProjectsAggregateSecurity {
 
   public async checkUpdate(project: CnProject, userInfo: CnUserSpaceInfo): Promise<void> {
     // check the space context
-    if (project.spaceId !== userInfo.spaceId) throw new UnauthorizedException();
+    if (project.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException();
 
     if (userInfo.isSpaceAdmin()) return;
 
     if (project.leader.id !== userInfo.userId) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
   }
 
@@ -53,7 +54,7 @@ export class CnProjectsAggregateSecurity {
    */
   public async checkUpdateProjectLeader(project: CnProject, userInfo: CnUserSpaceInfo): Promise<void> {
     // check the space context
-    if (project.spaceId !== userInfo.spaceId) throw new UnauthorizedException();
+    if (project.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException();
 
     if (userInfo.isSpaceAdmin()) return;
 
@@ -63,11 +64,11 @@ export class CnProjectsAggregateSecurity {
         return;
       }
     }
-    throw new UnauthorizedException();
+    throw new BlUnauthorizedException();
   }
 
   public async checkFindAllBySpace(userInfo: CnUserSpaceInfo): Promise<void> {
     // check the space context
-    if (!userInfo.isSpaceAdmin()) throw new UnauthorizedException();
+    if (!userInfo.isSpaceAdmin()) throw new BlUnauthorizedException();
   }
 }

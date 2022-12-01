@@ -1,4 +1,4 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnGroup, CnGroupTeam} from './cn-group.entity';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnUser} from '../cn-users/cn-user.entity';
@@ -10,6 +10,7 @@ import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnSpaceUserService} from '../cn-spaces/cn-space-user.service';
 import {CnGroupsSecurity} from './cn-groups.security';
 import {CnGroupsService} from './cn-groups.service';
+import {BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnGroupsAggregateService {
@@ -91,7 +92,7 @@ export class CnGroupsAggregateService {
     // check that the added user is in the current space
     const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
     if (!(await this.spaceUserService.userIsSpaceMember(space.id, userId))) {
-      throw new UnauthorizedException(CnErrorText.USER_NOT_IN_SPACE);
+      throw new BlUnauthorizedException(CnErrorText.USER_NOT_IN_SPACE);
     }
 
     await this.userGroupService.addUserToTeam(groupId, userId);

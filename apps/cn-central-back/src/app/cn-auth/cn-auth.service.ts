@@ -1,4 +1,4 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
@@ -6,7 +6,7 @@ import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {CnUserAccountsService} from './cn-users-account/cn-user-accounts.service';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {CmCredentials, CmCredentials2Fa, CmUserStatus} from '@monorepo/common-model';
-import {BlJwtService} from '@monorepo/back-core-lib';
+import {BlJwtService, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {CnUser2FAService} from './cn-user-2-f-a/cn-user-2-f-a.service';
 
 export interface CnAuthResponse {
@@ -69,7 +69,7 @@ export class CnAuthService {
     const user = await this.checkCredentialsAndUser(credentials);
 
     if (requiresAdmin && user.category !== 'ADMIN') {
-      throw new UnauthorizedException(CnErrorText.WRONG_CREDENTIALS);
+      throw new BlUnauthorizedException(CnErrorText.WRONG_CREDENTIALS);
     }
 
     if (user.has2FA) {
@@ -99,20 +99,20 @@ export class CnAuthService {
 
     // if the email is wrong
     if (user == null) {
-      throw new UnauthorizedException(CnErrorText.WRONG_CREDENTIALS);
+      throw new BlUnauthorizedException(CnErrorText.WRONG_CREDENTIALS);
     }
 
     if (user.status === CmUserStatus.WAITING_FOR_EMAIL) {
-      throw new UnauthorizedException(CnErrorText.ACCOUNT_NOT_ACTIVATED);
+      throw new BlUnauthorizedException(CnErrorText.ACCOUNT_NOT_ACTIVATED);
     }
 
     if (user.status === CmUserStatus.WAITING_FOR_ADMIN) {
-      throw new UnauthorizedException(CnErrorText.ACCOUNT_NOT_ADMIN_ACTIVATED);
+      throw new BlUnauthorizedException(CnErrorText.ACCOUNT_NOT_ADMIN_ACTIVATED);
     }
 
     // check if user is locked
     if (user.failedLoginCount >= this.failedLoginLock) {
-      throw new UnauthorizedException(CnErrorText.USER_LOCKED);
+      throw new BlUnauthorizedException(CnErrorText.USER_LOCKED);
     }
 
     if (!await user.comparePassword(credentials.password)) {
@@ -122,9 +122,9 @@ export class CnAuthService {
       // check if user is locked
       if (user.failedLoginCount >= this.failedLoginLock) {
         this.userAccountsService.sendAccountLockedMail(user, this.activationLinkValidity, this.failedLoginLock);
-        throw new UnauthorizedException(CnErrorText.USER_LOCKED);
+        throw new BlUnauthorizedException(CnErrorText.USER_LOCKED);
       } else {
-        throw new UnauthorizedException(CnErrorText.WRONG_CREDENTIALS);
+        throw new BlUnauthorizedException(CnErrorText.WRONG_CREDENTIALS);
       }
     }
 

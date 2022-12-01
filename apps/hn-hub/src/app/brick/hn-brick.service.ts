@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {HnBrick, HnBrickVisibility, HnCreateBrickDTO} from './hn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DataSource, Repository} from 'typeorm';
@@ -23,6 +23,7 @@ import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.se
 import {HnTechnicalFolderService} from '../technical-folder/hn-technical-folder.service';
 import {HnUserService} from '../users/hn-user.service';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
+import {BlBadRequestException, BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class HnBrickService {
@@ -46,7 +47,7 @@ export class HnBrickService {
 
     const brickExist: HnBrick = await this.bricksRepository.findOne({where: {name: createdBrick.name}});
     if (brickExist != null) {
-      throw new BadRequestException(HnErrorText.BRICK_ALREADY_EXIST);
+      throw new BlBadRequestException(HnErrorText.BRICK_ALREADY_EXIST);
     }
 
     if (createdBrick) {
@@ -197,7 +198,7 @@ export class HnBrickService {
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, content.inputBrickVersion);
 
     if (brickMajorVersion == null) {
-      throw new UnauthorizedException('Impossible to create a new major version');
+      throw new BlUnauthorizedException('Impossible to create a new major version');
     }
 
     return this.brickVersionService.checkIfVersionExist(brickMajorVersion, content.inputBrickVersion);

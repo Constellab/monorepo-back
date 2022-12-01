@@ -1,10 +1,9 @@
 import {CnStatusHistory} from '../model/entities/cn-status-history.entity';
 import {DataSource, EntityManager, Repository} from 'typeorm';
 import {CnEntityWithStatus} from '../model/entities/cn-entity-with-status.entity';
-import {BadRequestException} from '@nestjs/common';
 import {CnErrorText} from '../model/config/cn-error-text.class';
 import {ClDateHelper} from '@monorepo/core-lib';
-import {BlAbstractService} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
 
 /**
  * Service for {@link CnEntityWithStatus}
@@ -58,7 +57,7 @@ export abstract class CnAbstractWithStatusService<T extends CnEntityWithStatus<C
    */
   async updateCurrentStatusWithDbEntity(status: S, dbEntity: T): Promise<T> {
     if (dbEntity.currentStatus.status === status) {
-      throw new BadRequestException(CnErrorText.STATUS_NOT_CHANGED);
+      throw new BlBadRequestException(CnErrorText.STATUS_NOT_CHANGED);
     }
 
     return await this.datasource.transaction(async entityManager => {

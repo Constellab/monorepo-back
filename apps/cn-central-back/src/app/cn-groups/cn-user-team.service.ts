@@ -3,9 +3,9 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {In, Repository} from 'typeorm';
 import {ClPageI} from '@monorepo/core-lib';
 import {CnUser} from '../cn-users/cn-user.entity';
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {BlAbstractPaginatedService} from '@monorepo/back-core-lib';
+import {BlAbstractPaginatedService, BlBadRequestException} from '@monorepo/back-core-lib';
 
 /**
  * Service to manage user groups of teams
@@ -19,7 +19,7 @@ export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
 
   public async addUserToTeam(groupId: string, userId: string): Promise<CnUserGroup> {
     if (await this.userIsInTeam(groupId, userId)) {
-      throw new BadRequestException(CnErrorText.USER_ALREADY_IN_GROUP);
+      throw new BlBadRequestException(CnErrorText.USER_ALREADY_IN_GROUP);
     }
 
     // add the user to the group
@@ -31,13 +31,13 @@ export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
 
   public async removeUserFromTeam(groupId: string, userId: string): Promise<void> {
     if (!(await this.userIsInTeam(groupId, userId))) {
-      throw new BadRequestException(CnErrorText.USER_NOT_IN_GROUP);
+      throw new BlBadRequestException(CnErrorText.USER_NOT_IN_GROUP);
     }
 
     // check that there is at least 2 users in the group
     const count = await this.repo.count({where: {groupId: groupId}});
     if(count === 1) {
-      throw new BadRequestException(CnErrorText.REMOVE_GROUP_LAST_USER);
+      throw new BlBadRequestException(CnErrorText.REMOVE_GROUP_LAST_USER);
     }
 
     await this.repo.delete({

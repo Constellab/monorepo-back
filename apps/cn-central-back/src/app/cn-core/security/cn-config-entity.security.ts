@@ -1,5 +1,6 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnUser} from '../../cn-users/cn-user.entity';
+import {BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 
 /**
@@ -10,7 +11,7 @@ export class CnConfigEntitySecurity {
 
 
   public async checkAuthorizationToModifyEntity(user: CnUser): Promise<void> {
-    if (!user.isAdmin()) throw new UnauthorizedException();
+    if (!user.isAdmin()) throw new BlUnauthorizedException();
   }
 
   public async checkAuthorizationToReadEntity(): Promise<void> {

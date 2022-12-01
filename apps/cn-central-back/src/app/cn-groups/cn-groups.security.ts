@@ -1,8 +1,9 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnUserTeamService} from './cn-user-team.service';
 import {CnGroupTeam} from './cn-group.entity';
 import {CnGroupsService} from './cn-groups.service';
 import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
+import {BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 /**
  * Class to check the user authorization on groups
@@ -23,7 +24,7 @@ export class CnGroupsSecurity {
     const team = await this.groupService.getAndCheckTeamById(teamId);
 
     // check the space context
-    if (team.spaceId !== userInfo.spaceId) throw new UnauthorizedException();
+    if (team.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException();
 
     return team;
   }
@@ -35,12 +36,12 @@ export class CnGroupsSecurity {
     const team = await this.groupService.getAndCheckTeamById(teamId);
 
     // check the space context
-    if (team.spaceId !== userInfo.spaceId) throw new UnauthorizedException();
+    if (team.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException();
 
     if (userInfo.isSpaceAdmin()) return team;
 
     if (!(await this.userGroupService.userIsInTeam(teamId, userInfo.userId))) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
 
     return team;  }
@@ -49,7 +50,7 @@ export class CnGroupsSecurity {
    * A space user can see all the groups of the space
    */
   public checkAuthorizationToFindAllTeamBySpace(userInfo: CnUserSpaceInfo): void {
-    if (userInfo.space == null) throw new UnauthorizedException();
+    if (userInfo.space == null) throw new BlUnauthorizedException();
     return;
   }
 }

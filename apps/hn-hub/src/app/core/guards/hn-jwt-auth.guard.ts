@@ -1,8 +1,8 @@
-import {ExecutionContext, Injectable, UnauthorizedException} from '@nestjs/common';
+import {ExecutionContext, Injectable} from '@nestjs/common';
 import {AuthGuard} from '@nestjs/passport';
 import {Reflector} from '@nestjs/core';
 import {HnErrorText} from '../model/config/hn-error-text.class';
-import {blIsDecoratedWithPublic} from '@monorepo/back-core-lib';
+import {blIsDecoratedWithPublic, BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 /**
  * Guard to check if the user has a authentication token
@@ -37,7 +37,7 @@ export class HnJwtAuthGuard extends AuthGuard('jwt') {
       if (this.contextIsPublic(context)) {
         return true;
       }
-      throw new UnauthorizedException(HnErrorText.WRONG_TOKEN);
+      throw new BlUnauthorizedException(HnErrorText.WRONG_TOKEN);
     }
   }
 

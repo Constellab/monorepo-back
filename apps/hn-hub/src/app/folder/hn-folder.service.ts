@@ -1,6 +1,6 @@
-import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, Equal, IsNull, Repository, TreeRepository} from 'typeorm';
+import {EntityManager, IsNull, Repository, TreeRepository} from 'typeorm';
 import {HnFolder} from './hn-folder.entity';
 import {HnDocumentation, HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
 import {HnDocumentationService} from '../documentation/hn-documentation.service';
@@ -8,6 +8,7 @@ import {HnUser} from '../users/hn-user.entity';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 import {HnNode, HnNodeDTO} from './hn-folder.dto';
+import {BlBadRequestException, BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class HnFolderService {
@@ -222,7 +223,7 @@ export class HnFolderService {
   async updateTree(updatedTree: HnNode[]): Promise<HnNode[]> {
     const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
     if (!currentUser.category.includes('ADMIN')) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
     for (const node of updatedTree) {
       let isUpdated = false;
@@ -263,7 +264,7 @@ export class HnFolderService {
     if (folderToDelete.documentations.length <= 0 && folderToDelete.folders.length <= 0) {
       await this.foldersRepository.delete(id);
     } else {
-      throw new BadRequestException('Folders with children can\'t be deleted.');
+      throw new BlBadRequestException('Folders with children can\'t be deleted.');
     }
   }
 

@@ -1,5 +1,6 @@
 {
   "server_error": "Erreur serveur",
+  "unauthorized": "Non autorisé",
   "wrong_credentials": "Mauvais email ou mot de passe",
   "user_locked": "Utilisateur bloqué",
   "column_too_long": "Champ '{field}' trop long",

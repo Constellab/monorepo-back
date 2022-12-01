@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {
   CnLabComposeUpOptions,
   CnLabDockerPs,
@@ -15,7 +15,7 @@ import {CnBrickGWS, CnBrickVersionTechnicalKey} from '../cn-bricks/cn-brick.dto'
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {CnExternalLabBackup, CnExternalLabBackupHistory} from '../cn-external-lab-api/model/cn-external-lab-api.class';
-import {BlBucketConfig} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlBucketConfig} from '@monorepo/back-core-lib';
 
 /**
  * Service to call the api of the lab manager
@@ -37,7 +37,7 @@ export class CnLabManagerService {
     try {
       await this.healthCheck(labInstance.getLabManagerApiInfo().apiUrl);
     } catch (e) {
-      throw new BadRequestException('The lab manager is not running');
+      throw new BlBadRequestException('The lab manager is not running');
     }
 
     return this.labManagerApiService.getStatus(labInstance.getLabManagerApiInfo());
@@ -108,7 +108,7 @@ export class CnLabManagerService {
     const gwsCore = config.brickVersions.find(brickVersion => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_CORE.toLowerCase());
 
     if (gwsCore == null) {
-      throw new BadRequestException(`The brick '${CnBrickGWS.GWS_CORE}' must be set in the config`);
+      throw new BlBadRequestException(`The brick '${CnBrickGWS.GWS_CORE}' must be set in the config`);
     }
 
     // retrieve the lab front version
@@ -118,13 +118,13 @@ export class CnLabManagerService {
     // get the front version from the technical info
     const frontVersion = gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_FRONT_VERSION];
     if (frontVersion == null) {
-      throw new BadRequestException(`The front version does not exists for '${CnBrickGWS.GWS_CORE}' version '${gwsCore.version}'`);
+      throw new BlBadRequestException(`The front version does not exists for '${CnBrickGWS.GWS_CORE}' version '${gwsCore.version}'`);
     }
 
     // get the maria db url
     const gwsBiota = config.brickVersions.find(brickVersion => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_BIOTA.toLowerCase());
     if (gwsBiota == null) {
-      throw new BadRequestException(`The brick '${CnBrickGWS.GWS_BIOTA}' must be set in the config`);
+      throw new BlBadRequestException(`The brick '${CnBrickGWS.GWS_BIOTA}' must be set in the config`);
     }
     // get gws_core version
     const gwsBiotaBrickVersion = await this.brickService.getBrickVersion(CnBrickGWS.GWS_BIOTA,
@@ -132,7 +132,7 @@ export class CnLabManagerService {
 
     const biotaMariaDbUrl = gwsBiotaBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_BIOTA_MARIA_DB_URL];
     if (biotaMariaDbUrl == null) {
-      throw new BadRequestException(`The maria db url does not exists for '${CnBrickGWS.GWS_BIOTA}' version '${gwsBiota.version}'`);
+      throw new BlBadRequestException(`The maria db url does not exists for '${CnBrickGWS.GWS_BIOTA}' version '${gwsBiota.version}'`);
     }
 
     const labManagerConfig: CnLabManagerUpdateConfigDTO = {

@@ -1,4 +1,5 @@
-import {BadRequestException, Injectable, PipeTransform} from '@nestjs/common';
+import {Injectable, PipeTransform} from '@nestjs/common';
+import {BlBadRequestException} from '../exceptions/bl-bad-request.exception';
 
 /**
  * pipe to convert an input to a enum and throw an error
@@ -12,13 +13,13 @@ export class BlParseEnumPipe implements PipeTransform {
   }
 
   transform(value: any): any {
-    for(const property of Object.keys(this.enumeration)){
-      if(this.enumeration[property] === value){
+    for (const property of Object.keys(this.enumeration)) {
+      if (this.enumeration[property] === value) {
         return value;
       }
     }
 
     // if we couldn't find the enum value
-      throw new BadRequestException('error.incorrect_argument');
+    throw new BlBadRequestException('error.incorrect_argument');
   }
 }

@@ -1,5 +1,5 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
-import {BlAbstractService} from '@monorepo/back-core-lib';
+import {Injectable} from '@nestjs/common';
+import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnSpaceInvit} from './cn-space-invit.entity';
 import {DataSource, Repository} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
@@ -29,7 +29,7 @@ export class CnSpaceInvitService extends BlAbstractService<CnSpaceInvit> {
     const invit = await this.repository.findOneBy({spaceId: space.id, userMail: invitDto.userMail});
 
     if (invit) {
-      throw new BadRequestException(CnErrorText.SPACE_INVITATION_ALREADY_EXISTS);
+      throw new BlBadRequestException(CnErrorText.SPACE_INVITATION_ALREADY_EXISTS);
     }
 
     return await this.datasource.transaction(async entityManager => {
@@ -44,7 +44,7 @@ export class CnSpaceInvitService extends BlAbstractService<CnSpaceInvit> {
       // send mail
       const mailSent = await this.sendInvitationMail(invitDb);
       if (!mailSent) {
-        throw new BadRequestException(CnErrorText.MAIL_NOT_SENT);
+        throw new BlBadRequestException(CnErrorText.MAIL_NOT_SENT);
       }
 
       return invitDb;
@@ -54,7 +54,7 @@ export class CnSpaceInvitService extends BlAbstractService<CnSpaceInvit> {
   public async resendInvitation(invit: CnSpaceInvit): Promise<void> {
     const mailSent = await this.sendInvitationMail(invit);
     if (!mailSent) {
-      throw new BadRequestException(CnErrorText.MAIL_NOT_SENT);
+      throw new BlBadRequestException(CnErrorText.MAIL_NOT_SENT);
     }
   }
 
@@ -72,7 +72,7 @@ export class CnSpaceInvitService extends BlAbstractService<CnSpaceInvit> {
       // send mail
       const mailSent = await this.sendInvitationMail(invitDb);
       if (!mailSent) {
-        throw new BadRequestException(CnErrorText.MAIL_NOT_SENT);
+        throw new BlBadRequestException(CnErrorText.MAIL_NOT_SENT);
       }
 
       return invitDb;
@@ -103,10 +103,10 @@ export class CnSpaceInvitService extends BlAbstractService<CnSpaceInvit> {
         relations: {space: true}
       });
     if (!invit) {
-      throw new BadRequestException(CnErrorText.SPACE_INVITATION_INVALID);
+      throw new BlBadRequestException(CnErrorText.SPACE_INVITATION_INVALID);
     }
     if (!invit.isValid()) {
-      throw new BadRequestException(CnErrorText.SPACE_INVITATION_EXPIRED);
+      throw new BlBadRequestException(CnErrorText.SPACE_INVITATION_EXPIRED);
     }
     return invit;
   }

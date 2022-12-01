@@ -1,7 +1,6 @@
-import {BlCurrentUserHelper} from '@monorepo/back-core-lib';
+import {BlCurrentUserHelper, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
-import {UnauthorizedException} from '@nestjs/common';
 import {CnSpace} from '../../cn-spaces/cn-space.entity';
 import {CnSpaceUserRole} from '../../cn-spaces/cn-space-user.entity';
 import {CnUserSpaceInfo} from '../../cn-users/cn-user-space-info.dto';
@@ -38,7 +37,7 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
     const labInstance: CnLabInstance = this.getCurrentLabInstance();
 
     if (labInstance == null) {
-      throw new UnauthorizedException("No labInstance in the context");
+      throw new BlUnauthorizedException("No labInstance in the context");
     }
 
     return labInstance;
@@ -64,7 +63,7 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
     const space: CnSpace = this.getCurrentSpace();
 
     if (space == null) {
-      throw new UnauthorizedException("No space in the context");
+      throw new BlUnauthorizedException("No space in the context");
     }
 
     return space;
@@ -88,7 +87,7 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
     const role: CnSpaceUserRole = this.getCurrentRoleInSpace();
 
     if (role == null) {
-      throw new UnauthorizedException("No role in the context");
+      throw new BlUnauthorizedException("No role in the context");
     }
 
     return role;

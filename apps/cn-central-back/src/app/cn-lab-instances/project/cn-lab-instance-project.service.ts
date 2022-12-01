@@ -1,10 +1,11 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnLabInstanceProject} from './cn-lab-instance-project.entity';
 import {EntityManager, Repository} from 'typeorm';
 import {CnLabInstance} from '../cn-lab-instance.entity';
 import {CnProject} from '../../cn-projects-aggregate/cn-projects/cn-project.entity';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
+import {BlBadRequestException} from '@monorepo/back-core-lib';
 
 
 @Injectable()
@@ -19,7 +20,7 @@ export class CnLabInstanceProjectService {
     const labInstanceProjectDb = await this.findByLabInstanceIdAndProjectId(labInstance.id, project.id);
 
     if (labInstanceProjectDb) {
-      throw new BadRequestException(CnErrorText.PROJECT_ALREADY_SHARED_WITH_LAB);
+      throw new BlBadRequestException(CnErrorText.PROJECT_ALREADY_SHARED_WITH_LAB);
     }
 
     const labInstanceProject = new CnLabInstanceProject();
@@ -33,7 +34,7 @@ export class CnLabInstanceProjectService {
     const labInstanceProject = await this.findByLabInstanceIdAndProjectId(labInstanceId, projectId);
 
     if (labInstanceProject == null) {
-      throw new BadRequestException(CnErrorText.PROJECT_NOT_SHARED_WITH_LAB);
+      throw new BlBadRequestException(CnErrorText.PROJECT_NOT_SHARED_WITH_LAB);
     }
 
     await entityManager.remove(labInstanceProject);

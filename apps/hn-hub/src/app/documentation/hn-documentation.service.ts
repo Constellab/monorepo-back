@@ -1,11 +1,11 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, Repository} from 'typeorm';
 import {HnDocumentation, HnDocumentationSearchDTO} from './hn-documentation.entity';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnUser} from '../users/hn-user.entity';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
-import {BlBucketConfig, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
+import {BlBucketConfig, BlFile, BlObjectStorageService, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {IncomingMessage} from 'http';
 import imageSize from 'image-size';
@@ -115,7 +115,7 @@ export class HnDocumentationService {
       doc.content = await this.editContent(updateContentDoc);
       const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
       if (!currentUser.isAdmin()) {
-        throw new UnauthorizedException();
+        throw new BlUnauthorizedException();
       }
     }
     return this.documentationsRepository.save(doc);

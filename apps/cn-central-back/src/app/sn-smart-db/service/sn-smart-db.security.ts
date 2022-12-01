@@ -1,7 +1,8 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnGroupsAggregateService} from '../../cn-groups/cn-groups-aggregate.service';
 import {SnSmartDbEntity, SnSmartDbType} from '../model/sn-smart-db.entity';
 import {CnUserSpaceInfo} from '../../cn-users/cn-user-space-info.dto';
+import {BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 /**
  * Class to check the user authorization on smart db
@@ -21,10 +22,10 @@ export class SnSmartDbSecurity {
     }
 
     // check the space context
-    if (smartDb.spaceId !== userInfo.spaceId) throw new UnauthorizedException();
+    if (smartDb.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException();
 
     if (!userInfo.isSpaceAdmin() && !await this.groupAggregateService.userIsInAnyGroup(userInfo.userId, smartDb.group.id)) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
 
     return smartDb;
@@ -35,9 +36,9 @@ export class SnSmartDbSecurity {
    */
   async checkAuthorizationToUpdate(smartDb: SnSmartDbEntity, userInfo: CnUserSpaceInfo): Promise<SnSmartDbEntity> {
     // check the space context
-    if (smartDb.spaceId !== userInfo.spaceId) throw new UnauthorizedException();
+    if (smartDb.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException();
 
-    if (!userInfo.isAdmin()) throw new UnauthorizedException();
+    if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
 
     return smartDb;
   }
@@ -46,6 +47,6 @@ export class SnSmartDbSecurity {
    * Return the SnSmartDbEntity only if user is admin
    */
   async checkAuthorizationToCreate(userInfo: CnUserSpaceInfo): Promise<void> {
-    if (!userInfo.isAdmin()) throw new UnauthorizedException();
+    if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
   }
 }

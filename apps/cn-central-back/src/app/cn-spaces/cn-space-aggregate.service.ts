@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnSpaceService} from './cn-space.service';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnSpace, CnSpaceType} from './cn-space.entity';
@@ -8,7 +8,7 @@ import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnSpaceUserService} from './cn-space-user.service';
 import {CnSpaceUser, CnSpaceUserRole} from './cn-space-user.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {BlFile} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlFile} from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
 import {CnSpaceInvit} from './cn-space-invit.entity';
 import {CnSpaceInvitService} from './cn-space-invit.service';
@@ -62,13 +62,13 @@ export class CnSpaceAggregateService {
     const space = await this.spaceService.findByIdAndCheck(id);
 
     if (space.type === CnSpaceType.PERSONAL) {
-      throw new BadRequestException('Can\'t delete personal space');
+      throw new BlBadRequestException('Can\'t delete personal space');
     }
 
     const users = await this.getUsersOfSpace(id, 0, 1);
 
     if (users.totalElements > 0) {
-      throw new BadRequestException('Can\'t delete the space because there are users in the space');
+      throw new BlBadRequestException('Can\'t delete the space because there are users in the space');
     }
     await this.spaceService.deleteById(id);
   }
@@ -203,7 +203,7 @@ export class CnSpaceAggregateService {
       spaceId, invitDto.userMail);
 
     if (member) {
-      throw new BadRequestException(CnErrorText.USER_ALREADY_IN_SPACE);
+      throw new BlBadRequestException(CnErrorText.USER_ALREADY_IN_SPACE);
     }
 
     return this.invitationService.createInvitation(space, invitDto);
@@ -256,7 +256,7 @@ export class CnSpaceAggregateService {
   public async acceptInvitation(invitation: CnSpaceInvit, user: CnUser,
                                 entityManager: EntityManager): Promise<CnUser> {
     if (invitation.userMail !== user.email) {
-      throw new BadRequestException('The invitation email does not match the user email');
+      throw new BlBadRequestException('The invitation email does not match the user email');
     }
 
     await this.spaceUserService.addUserToSpace(invitation.space, user, invitation.role, entityManager);

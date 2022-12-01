@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnExperiment} from './cn-experiment.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
@@ -6,7 +6,7 @@ import {CnCreateLabExperimentDto} from './cn-experiment.dto';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
-import {BlAbstractService} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlBadRequestException, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnUsersService} from '../../cn-users/cn-users.service';
 import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
@@ -42,7 +42,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
 
     const experimentDB: CnExperiment = await this.findById(createLabExperimentDto.experiment.id);
     if (experimentDB && experimentDB.projectId !== project.id) {
-      throw new UnauthorizedException('Can\'t change the project of a synced experiment');
+      throw new BlUnauthorizedException('Can\'t change the project of a synced experiment');
     }
 
     const labConfig = await this.labConfigService.getOrCreateLabConfig(createLabExperimentDto.lab_config);
@@ -89,7 +89,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     }
 
     if (experiment.isValidated) {
-      throw new BadRequestException('Can\'t delete a validated experiment');
+      throw new BlBadRequestException('Can\'t delete a validated experiment');
     }
     await this.deleteById(id);
   }

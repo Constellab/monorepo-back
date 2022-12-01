@@ -1,11 +1,12 @@
 import {DeleteResult, EntityManager, Repository} from 'typeorm';
-import {BadRequestException, NotFoundException} from '@nestjs/common';
+import {NotFoundException} from '@nestjs/common';
 import {FindOneOptions} from 'typeorm/find-options/FindOneOptions';
 import {BlEntityWithId} from '../models/bl-entity-with-id.entity';
 import {BlPersistenceAction, BlPersistenceLogger} from './bl-persistence-logger';
 import {blPropertyIsNotUpdatable} from '../decorators/bl-not-updatable.decorator';
 import {BlAbstractPaginatedService} from './bl-abstract-paginated.service';
 import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
+import {BlBadRequestException} from '../exceptions/bl-bad-request.exception';
 
 export abstract class BlAbstractService<T extends BlEntityWithId>
   extends BlAbstractPaginatedService<T> {
@@ -76,7 +77,7 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
   findById(id: string, relations?: FindOptionsRelations<T>,
            entityManager?: EntityManager): Promise<T | null> {
     if (id == null) {
-      throw new BadRequestException('Id not provided');
+      throw new BlBadRequestException('Id not provided');
     }
 
     // const options: FindOneOptions<T> = {where

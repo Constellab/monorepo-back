@@ -1,6 +1,6 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CmCredentials, CmCredentials2Fa} from '@monorepo/common-model';
-import {BlExternalApiService} from '@monorepo/back-core-lib';
+import {BlExternalApiService, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {lastValueFrom} from 'rxjs';
 import {HnUser} from '../users/hn-user.entity';
@@ -29,7 +29,7 @@ export class HnCentralAuthService {
 
     } catch (e: any) {
       if (e.status >= 500 && e.status < 600) {
-        throw new UnauthorizedException('Central disconnected');
+        throw new BlUnauthorizedException('Central disconnected');
       }
       throw e;
     }
@@ -42,7 +42,7 @@ export class HnCentralAuthService {
 
     } catch (e: any) {
       if (e.status >= 500 && e.status < 600) {
-        throw new UnauthorizedException('Central disconnected');
+        throw new BlUnauthorizedException('Central disconnected');
       }
       throw e;
     }

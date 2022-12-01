@@ -1,9 +1,9 @@
-import {ExecutionContext, Injectable, UnauthorizedException} from '@nestjs/common';
+import {ExecutionContext, Injectable} from '@nestjs/common';
 import {AuthGuard} from '@nestjs/passport';
 import {Reflector} from '@nestjs/core';
 import {CnErrorText} from '../model/config/cn-error-text.class';
 import {cnIsDecoratedWithLabAuth} from '../decorators/cn-lab-guard.decorator';
-import {blIsDecoratedWithPublic} from '@monorepo/back-core-lib';
+import {blIsDecoratedWithPublic, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../utils/cn-current-user.helper';
 import {CnSpaceUserService} from '../../cn-spaces/cn-space-user.service';
 import {CnSpaceUserRole} from '../../cn-spaces/cn-space-user.entity';
@@ -42,7 +42,7 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
       const result = await (super.canActivate(context) as Promise<boolean>);
       if (!result) return false;
     } catch (error) {
-      throw new UnauthorizedException(CnErrorText.WRONG_TOKEN);
+      throw new BlUnauthorizedException(CnErrorText.WRONG_TOKEN);
     }
 
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();

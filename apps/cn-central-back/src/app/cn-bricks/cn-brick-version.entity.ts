@@ -1,9 +1,8 @@
 import {Column, Entity, ManyToOne, Unique} from 'typeorm';
-import {BlEntityWithId, BlNotUpdatable} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlEntityWithId, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnBrick} from './cn-brick.entity';
 import {CmVersion, CmVersionTransform} from '@monorepo/common-model';
 import {Exclude, Expose} from 'class-transformer';
-import {BadRequestException} from '@nestjs/common';
 
 export enum CnRepoType {
   PIP = 'PIP',
@@ -73,7 +72,7 @@ export class CnBrickVersion extends BlEntityWithId {
     const repo = this.repoType === CnRepoType.PIP ? this.brick.pipRepo : this.brick.gitRepo;
 
     if (!repo) {
-      throw new BadRequestException(`The ${this.repoType} repository url for brick ${this.brick.name} is not defined`);
+      throw new BlBadRequestException(`The ${this.repoType} repository url for brick ${this.brick.name} is not defined`);
     }
     return repo;
   }

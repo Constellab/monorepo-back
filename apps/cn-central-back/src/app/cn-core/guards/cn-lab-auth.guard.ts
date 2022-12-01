@@ -1,4 +1,4 @@
-import {CanActivate, ExecutionContext, Injectable, Logger, UnauthorizedException} from '@nestjs/common';
+import {CanActivate, ExecutionContext, Injectable, Logger} from '@nestjs/common';
 import {Reflector} from '@nestjs/core';
 import {CnLabInstancesService} from '../../cn-lab-instances/cn-lab-instances.service';
 import {Request} from 'express';
@@ -17,6 +17,7 @@ import {CnSpaceUserService} from '../../cn-spaces/cn-space-user.service';
 import {CnSpaceUserRole} from '../../cn-spaces/cn-space-user.entity';
 import {cnIsLabRobotAuth} from '../decorators/cn-lab-guard.decorator';
 import {CnSpace} from '../../cn-spaces/cn-space.entity';
+import {BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 /**
  * Guard to authenticate route called by the lab servers.
@@ -45,13 +46,13 @@ export class CnLabAuthGuard implements CanActivate {
     const labApiKey: string = this.getLabApiKeyFromRequest(request);
 
     if (labApiKey == null) {
-      throw new UnauthorizedException(CnErrorText.MISSING_API_KEY);
+      throw new BlUnauthorizedException(CnErrorText.MISSING_API_KEY);
     }
 
     const labInstance: CnLabInstance = await this.labInstancesService.findLabByApiKey(labApiKey);
 
     if (labInstance == null) {
-      throw new UnauthorizedException(CnErrorText.WRONG_API_KEY);
+      throw new BlUnauthorizedException(CnErrorText.WRONG_API_KEY);
     }
 
     // store the labInstance in the current context
@@ -83,7 +84,7 @@ export class CnLabAuthGuard implements CanActivate {
       const userId: string = this.getLabUserIdFromRequest(request);
 
       if (userId == null) {
-        throw new UnauthorizedException(CnErrorText.LAB_REQ_NO_USER_IN_CONTEXT);
+        throw new BlUnauthorizedException(CnErrorText.LAB_REQ_NO_USER_IN_CONTEXT);
       } else {
         await this.setRealUserInContext(request, space, userId);
       }
@@ -96,7 +97,7 @@ export class CnLabAuthGuard implements CanActivate {
 
     if (user == null) {
       this.logger.error(`Can't find the user with id ${userId}`);
-      throw new UnauthorizedException(`Can't find the user with id ${userId}`);
+      throw new BlUnauthorizedException(`Can't find the user with id ${userId}`);
     }
 
     request.user = user;
@@ -109,7 +110,7 @@ export class CnLabAuthGuard implements CanActivate {
       // if the user is not part of the space of his account is not active for this space
       // don't allow the user to access the route
       if (spaceUser == null || !spaceUser.active) {
-        throw new UnauthorizedException(CnErrorText.USER_NOT_IN_SPACE);
+        throw new BlUnauthorizedException(CnErrorText.USER_NOT_IN_SPACE);
       }
 
       CnCurrentUserHelper.setCurrentRoleInSpace(spaceUser.role);
@@ -125,7 +126,7 @@ export class CnLabAuthGuard implements CanActivate {
 
     if (user == null) {
       this.logger.error(`The robot user with mail ${robotMail} does not exist`);
-      throw  new UnauthorizedException();
+      throw  new BlUnauthorizedException();
     }
 
     request.user = user;

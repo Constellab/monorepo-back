@@ -16,9 +16,8 @@ import {Exclude, Type} from 'class-transformer';
 import {CnProjectStatusHistory} from './cn-project-status-history.entity';
 import {CnEntityWithStatus} from '../../cn-core/model/entities/cn-entity-with-status.entity';
 import {DateTime} from 'luxon';
-import {BlLuxonDateColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlLuxonDateColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnGroup} from '../../cn-groups/cn-group.entity';
-import {BadRequestException} from '@nestjs/common';
 import {ClHelpService} from '@monorepo/core-lib';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-project-level.enum';
 import {CnUser} from '../../cn-users/cn-user.entity';
@@ -111,7 +110,7 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
 
   public isSharedToGroup(groupId: string | string[]): boolean {
     if (this.sharedGroups == null) {
-      throw new BadRequestException('The sharedGroups are not loaded in the project entity');
+      throw new BlBadRequestException('The sharedGroups are not loaded in the project entity');
     }
 
     // check if one of the provided group is a shared group of the project

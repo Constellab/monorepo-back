@@ -1,9 +1,9 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {HnBrickVersion, HnNewVersionDTO, HnReferenceDTO} from './hn-brick-version.entity';
 import {DataSource, EntityManager, Repository} from 'typeorm';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
-import {BlAbstractService, BlTransportService} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlTransportService, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {HnBrickTransportDto} from '../brick/hn-brick.dto';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {ClPageI, ClStringHelper} from '@monorepo/core-lib';
@@ -69,7 +69,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
 
         for (const ref of newVersion.references) {
           if (refs.find(r => r.brickVersion.brickMajorVersion.brick.name == ref.name)) {
-            throw new UnauthorizedException(`There is more than one reference of the brick ${ref.name}`);
+            throw new BlUnauthorizedException(`There is more than one reference of the brick ${ref.name}`);
           }
           const cmV: CmVersion = CmVersion.fromString(ref.version);
           const brickVersion: HnBrickVersion = await this.brickVersionsRepository.findOne({
@@ -87,7 +87,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
             relations: ['brickMajorVersion', 'brickMajorVersion.brick']
           });
           if (!brickVersion) {
-            throw new UnauthorizedException(`The referenced brick ${ref.name} with the version ${ref.version} is not in the hub`);
+            throw new BlUnauthorizedException(`The referenced brick ${ref.name} with the version ${ref.version} is not in the hub`);
           }
           refs.push({
             brickVersion: res,
@@ -119,7 +119,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     const user = HnCurrentUserHelper.getAndCheckCurrentUser();
 
     if (!user.isAdmin()) {
-      throw new UnauthorizedException('You must be an admin to synchronize the versions');
+      throw new BlUnauthorizedException('You must be an admin to synchronize the versions');
     }
 
     // retrieve all the versions
@@ -209,7 +209,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
       }
     });
     if (bv && bv.version.major != v.major) {
-      throw new UnauthorizedException('Impossible to create a new major version');
+      throw new BlUnauthorizedException('Impossible to create a new major version');
     }
     return [true, bv != null];
   }

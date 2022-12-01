@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable, Logger, UnauthorizedException} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstancesService} from './cn-lab-instances.service';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
@@ -26,7 +26,7 @@ import {
 } from './cn-lab-instance.dto';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstancesSecurity} from './cn-lab-instances.security';
-import {BlDtoHelper} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlDtoHelper, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
 import {CnExternalLabUserService} from '../cn-external-lab-api/cn-external-lab-user.service';
 import {CnExternalLabApiService} from '../cn-external-lab-api/cn-external-lab-api.service';
@@ -158,7 +158,7 @@ export class CnLabInstanceAggregateService {
 
     // check that the lab is running
     if (!labInstance.isRunning()) {
-      throw new BadRequestException(CnErrorText.LAB_STOPPED);
+      throw new BlBadRequestException(CnErrorText.LAB_STOPPED);
     }
 
     try {
@@ -172,12 +172,12 @@ export class CnLabInstanceAggregateService {
 
       switch (error.code) {
         case 'gws_core.WRONG_CREDENTIALS_USER_NOT_ACTIVATED' :
-          throw new UnauthorizedException(CnErrorText.LAB_USER_NOT_ACTIVATED);
+          throw new BlUnauthorizedException(CnErrorText.LAB_USER_NOT_ACTIVATED);
         case 'gws_core.WRONG_CREDENTIALS_USER_NOT_FOUND' :
-          throw new UnauthorizedException(CnErrorText.LAB_USER_NOT_FOUND);
+          throw new BlUnauthorizedException(CnErrorText.LAB_USER_NOT_FOUND);
         default:
           this.logger.error(e);
-          throw new BadRequestException(CnErrorText.LAB_AUTH_ERROR);
+          throw new BlBadRequestException(CnErrorText.LAB_AUTH_ERROR);
       }
     }
   }
@@ -189,13 +189,13 @@ export class CnLabInstanceAggregateService {
     try {
       await this.externalLabApiService.healthCheck(lab.getGlabApiInfo());
     } catch {
-      throw new BadRequestException('The lab is not running');
+      throw new BlBadRequestException('The lab is not running');
     }
 
     try {
       return await this.externalLabApiService.getSettings(lab.getGlabApiInfo());
     } catch {
-      throw new BadRequestException('Can\'t retrieve the settings');
+      throw new BlBadRequestException('Can\'t retrieve the settings');
     }
   }
 

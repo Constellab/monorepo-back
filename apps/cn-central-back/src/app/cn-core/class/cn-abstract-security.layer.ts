@@ -1,6 +1,5 @@
 import {DeleteResult} from 'typeorm';
-import {UnauthorizedException} from '@nestjs/common';
-import {BlAbstractService, BlEntityWithId} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlEntityWithId, BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 /**
  * Security layer between the controller and the service to check if the user can CRUD the entity
@@ -93,26 +92,26 @@ export abstract class CnAbstractSecurityLayer<T extends BlEntityWithId> {
    */
   public async checkAuthorizationToCreate(newEntity: T): Promise<void> {
     if (!await this.isAuthorizedToCreate(newEntity)) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
   }
 
   public async checkAuthorizationToUpdate(dbEntity: T): Promise<void> {
     if (!await this.isAuthorizedToUpdate(dbEntity)) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
   }
 
 
   public async checkAuthorizationToDelete(dbEntity: T): Promise<void> {
     if (!await this.isAuthorizedToDelete(dbEntity)) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
   }
 
   public async checkAuthorizationToFindOne(dbEntity: T): Promise<void> {
     if (!await this.isAuthorizedToFindOne(dbEntity)) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
   }
 
@@ -124,7 +123,7 @@ export abstract class CnAbstractSecurityLayer<T extends BlEntityWithId> {
     const dbEntity: T = await this.getDbEntityForCheckUpdate(id);
 
     if (!await this.isAuthorizedToUpdate(dbEntity)) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
 
     return dbEntity;
@@ -135,7 +134,7 @@ export abstract class CnAbstractSecurityLayer<T extends BlEntityWithId> {
     const dbEntity: T = await this.getDbEntityForCheckDelete(id);
 
     if (!await this.isAuthorizedToDelete(dbEntity)) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
     return dbEntity;
   }
@@ -144,7 +143,7 @@ export abstract class CnAbstractSecurityLayer<T extends BlEntityWithId> {
     const dbEntity: T = await this.getDbEntityForCheckFindOne(id);
 
     if (!await this.isAuthorizedToFindById(id)) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
     return dbEntity;
   }

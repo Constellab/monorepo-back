@@ -1,9 +1,10 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
 import {CnLabInstanceUserService} from './user/cn-lab-instance-user.service';
 import {CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
+import {BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 
 @Injectable()
@@ -14,7 +15,7 @@ export class CnLabInstancesSecurity {
   }
 
   public checkAuthorizationToCreate(userInfo: CnUserSpaceInfo): void {
-    if (!userInfo.isAdmin()) throw new UnauthorizedException();
+    if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
   }
 
   /**
@@ -23,7 +24,7 @@ export class CnLabInstancesSecurity {
    * @param userInfo
    */
   public checkAuthorizationToUpdate(labInstance: CnLabInstance, userInfo: CnUserSpaceInfo): void {
-    if (!userInfo.isAdmin()) throw new UnauthorizedException();
+    if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
   }
 
   /**
@@ -32,7 +33,7 @@ export class CnLabInstancesSecurity {
    */
   public async checkAuthorizationToManageLab(labInstance: CnLabInstance, userInfo: CnUserSpaceInfo): Promise<CnLabInstanceUserRole> {
     // check the spac context
-    if (labInstance.spaceId !== userInfo.spaceId) throw new UnauthorizedException();
+    if (labInstance.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException();
 
     // spac admin is considered as owner
     if (userInfo.isSpaceAdmin()) return CnLabInstanceUserRole.OWNER;
@@ -40,7 +41,7 @@ export class CnLabInstancesSecurity {
     const group = await this.labInstanceGroupService.findByLabInstanceIdAndUserId(labInstance.id, userInfo.userId);
     // check if the user is the owner of the lab instance
     if (group == null || group.role !== CnLabInstanceUserRole.OWNER) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
 
     return group.role;
@@ -49,7 +50,7 @@ export class CnLabInstancesSecurity {
 
   public async checkAuthorizationToFindById(labInstance: CnLabInstance, userInfo: CnUserSpaceInfo): Promise<CnLabInstanceUserRole> {
     // check the spac context
-    if (labInstance.spaceId !== userInfo.spaceId) throw new UnauthorizedException();
+    if (labInstance.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException();
 
     // spac admin is considered as owner
     if (userInfo.isSpaceAdmin()) return CnLabInstanceUserRole.OWNER;
@@ -58,18 +59,18 @@ export class CnLabInstancesSecurity {
 
     // check if the user is a member of one of the groups that were shared with the project
     if (group == null) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
 
     return group.role;
   }
 
   public checkAuthorizationToFindAll(userInfo: CnUserSpaceInfo): void {
-    if (!userInfo.isAdmin()) throw new UnauthorizedException();
+    if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
   }
 
   public checkAuthorizationToFindAllBySpace(userInfo: CnUserSpaceInfo): void {
-    if (!userInfo.isSpaceAdmin()) throw new UnauthorizedException();
+    if (!userInfo.isSpaceAdmin()) throw new BlUnauthorizedException();
   }
 
 }

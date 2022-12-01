@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnUser, CnUserEditDTO} from './cn-user.entity';
 import {Repository} from 'typeorm';
@@ -6,9 +6,11 @@ import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {
   BlAbstractService,
+  BlBadRequestException,
   BlBucketConfig,
   BlFile,
   BlObjectStorageService,
+  BlUnauthorizedException,
   BlUserService
 } from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
@@ -28,7 +30,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
   findAllPaginated(page: number, size: number): Promise<ClPage<CnUser>> {
     const currentUser = CnCurrentUserHelper.getCurrentUser();
     if (!currentUser.isAdmin()) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
 
     return this.findPaginated(page, size, {
@@ -63,7 +65,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
   async updateLanguage(lang: ClSupportedLanguage): Promise<void> {
     if (!clLangIsSupported(lang)) {
-      throw new BadRequestException(CnErrorText.LANGUAGE_NOT_SUPPORTED);
+      throw new BlBadRequestException(CnErrorText.LANGUAGE_NOT_SUPPORTED);
     }
 
     const user: CnUser = this.getCurrent();

@@ -1,10 +1,11 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnLabInstanceUser, CnLabInstanceUserRole} from './cn-lab-instance-user.entity';
 import {EntityManager, Repository} from 'typeorm';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
 import {CnLabInstance} from '../cn-lab-instance.entity';
 import {CnUser} from '../../cn-users/cn-user.entity';
+import {BlBadRequestException} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnLabInstanceUserService {
@@ -18,7 +19,7 @@ export class CnLabInstanceUserService {
     const labInstanceGroupDb = await this.findByLabInstanceIdAndUserId(labInstance.id, user.id);
 
     if (labInstanceGroupDb != null) {
-      throw new BadRequestException(CnErrorText.LAB_ALREADY_SHARED_WITH_USER);
+      throw new BlBadRequestException(CnErrorText.LAB_ALREADY_SHARED_WITH_USER);
     }
 
 
@@ -36,7 +37,7 @@ export class CnLabInstanceUserService {
     const labInstanceGroup = await this.findByLabInstanceIdAndUserId(labInstanceId, userId);
 
     if (labInstanceGroup == null) {
-      throw new BadRequestException(CnErrorText.LAB_NOT_SHARED_WITH_USER);
+      throw new BlBadRequestException(CnErrorText.LAB_NOT_SHARED_WITH_USER);
     }
 
     // if the role was changed from admin to user, check that there is at least one admin
@@ -52,7 +53,7 @@ export class CnLabInstanceUserService {
     const labInstanceGroup = await this.findByLabInstanceIdAndUserId(labInstanceId, userId);
 
     if (labInstanceGroup == null) {
-      throw new BadRequestException(CnErrorText.LAB_NOT_SHARED_WITH_USER);
+      throw new BlBadRequestException(CnErrorText.LAB_NOT_SHARED_WITH_USER);
     }
 
     // check that there is at least one admin
@@ -66,7 +67,7 @@ export class CnLabInstanceUserService {
   private async checkLabAdminsCount(labInstanceId: string): Promise<void> {
     const labAdminsCount = await this.countLabAdmins(labInstanceId);
     if (labAdminsCount === 1) {
-      throw new BadRequestException(CnErrorText.LAB_CANNOT_REMOVE_LAST_ADMIN);
+      throw new BlBadRequestException(CnErrorText.LAB_CANNOT_REMOVE_LAST_ADMIN);
     }
   }
 
@@ -98,7 +99,7 @@ export class CnLabInstanceUserService {
     const group = this.findByLabInstanceIdAndUserId(labInstanceId, userId);
 
     if (group == null) {
-      throw new BadRequestException(CnErrorText.LAB_NOT_SHARED_WITH_USER);
+      throw new BlBadRequestException(CnErrorText.LAB_NOT_SHARED_WITH_USER);
     }
 
     return group;

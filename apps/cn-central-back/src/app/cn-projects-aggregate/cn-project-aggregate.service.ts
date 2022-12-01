@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnProjectsService} from './cn-projects/cn-projects.service';
 import {CnProjectsAggregateSecurity} from './cn-projects-aggregate.security';
 import {CnProject} from './cn-projects/cn-project.entity';
@@ -26,7 +26,7 @@ import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity'
 import {CnProjectCommentService} from '../cn-project-comment/cn-project-comment.service';
 import {CnCommentImage, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
-import {BlFile} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlFile, BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -57,15 +57,15 @@ export class CnProjectAggregateService {
 
     // check if parent can have children
     if (parentProject.levelStatus === CnProjectLevelStatus.LEAF) {
-      throw new BadRequestException('Cannot create a sub project to a leaf project');
+      throw new BlBadRequestException('Cannot create a sub project to a leaf project');
     }
 
     if (parentProject.currentLevel >= CnProjectLevel.TASK) {
-      throw new BadRequestException('Cannot create project with a hierarchy level more than 3');
+      throw new BlBadRequestException('Cannot create project with a hierarchy level more than 3');
     }
 
     if (entity.endingDate && parentProject.endingDate && entity.endingDate > parentProject.endingDate) {
-      throw new BadRequestException(CnErrorText.CHILD_PROJECT_END_DATA_AFTER_PARENT);
+      throw new BlBadRequestException(CnErrorText.CHILD_PROJECT_END_DATA_AFTER_PARENT);
     }
 
     // set hierarchy info
@@ -88,7 +88,7 @@ export class CnProjectAggregateService {
     if (entity.endingDate && dbProject.parentId) {
       const parent = await this.projectService.findByIdAndCheck(dbProject.parentId);
       if (parent.endingDate && entity.endingDate > parent.endingDate) {
-        throw new BadRequestException(CnErrorText.CHILD_PROJECT_END_DATA_AFTER_PARENT);
+        throw new BlBadRequestException(CnErrorText.CHILD_PROJECT_END_DATA_AFTER_PARENT);
       }
     }
     return this.projectService.updateWithCompare(entity, dbProject);
@@ -97,25 +97,27 @@ export class CnProjectAggregateService {
   async deleteProject(id: string): Promise<void> {
     const project = await this.getAndCheckAuthorizationForUpdate(id);
 
+
     const children = await this.projectService.getChildren(project.id);
     if (children.length > 0) {
-      throw new BadRequestException(CnErrorText.DELETE_PROJECT_WITH_CHILDREN);
+      throw new BlBadRequestException(CnErrorText.DELETE_PROJECT_WITH_CHILDREN);
     }
 
     const experiments = await this.experimentService.getExperimentsByProject(project.id);
     if (experiments.length > 0) {
-      throw new BadRequestException(CnErrorText.DELETE_PROJECT_WITH_EXPERIMENTS);
+      throw new BlBadRequestException(CnErrorText.DELETE_PROJECT_WITH_EXPERIMENTS);
     }
 
     const reports = await this.reportService.getReportsByProject(project.id);
     if (reports.length > 0) {
-      throw new BadRequestException(CnErrorText.DELETE_PROJECT_WITH_REPORTS);
+      throw new BlBadRequestException(CnErrorText.DELETE_PROJECT_WITH_REPORTS);
     }
 
     const projectWithLab = await this.projectService.findByIdAndCheck(id, {labInstances: {labInstance: true}});
     if (projectWithLab.labInstances.length > 0) {
       const names = projectWithLab.labInstances.map(labProject => labProject.labInstance.name).join(', ');
-      throw new BadRequestException(CnErrorText.DELETE_PROJECT_USED_IN_LAB);
+      throw new BlBadRequestException(CnErrorText.DELETE_PROJECT_USED_IN_LAB,
+        {detailArgs: {labNames: names}});
     }
 
     await this.projectService.deleteById(id);
@@ -218,7 +220,7 @@ export class CnProjectAggregateService {
 
     // check if the new leader can view the project
     if (!await this.groupAggregateService.userIsInAnyGroup(newLeader.id, rootProject.getSharedGroupIds())) {
-      throw new BadRequestException('The new leader does not have access to the project.');
+      throw new BlBadRequestException('The new leader does not have access to the project.');
     }
 
     // update the leader
@@ -275,7 +277,7 @@ export class CnProjectAggregateService {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
     if (project.levelStatus === CnProjectLevelStatus.PARENT) {
-      throw new BadRequestException(CnErrorText.EXP_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT);
+      throw new BlBadRequestException(CnErrorText.EXP_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT);
     }
 
     await this.experimentService.saveLabExperiment(project, createLabExperimentDto);
@@ -313,7 +315,7 @@ export class CnProjectAggregateService {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
     if (project.levelStatus === CnProjectLevelStatus.PARENT) {
-      throw new BadRequestException(CnErrorText.REPORT_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT);
+      throw new BlBadRequestException(CnErrorText.REPORT_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT);
     }
 
     // get and check all experiment
@@ -322,11 +324,11 @@ export class CnProjectAggregateService {
       const experiment: CnExperiment = await this.experimentService.findById(experimentId);
 
       if (experiment == null) {
-        throw new BadRequestException('Can\'t create the report because one of the linked experiment could not be found');
+        throw new BlBadRequestException('Can\'t create the report because one of the linked experiment could not be found');
       }
 
       if (experiment.projectId !== project.id) {
-        throw new BadRequestException('Can\'t create the report because it is linked to an experiment of another project');
+        throw new BlBadRequestException('Can\'t create the report because it is linked to an experiment of another project');
       }
       experiments.push(experiment);
     }
@@ -361,7 +363,7 @@ export class CnProjectAggregateService {
     // check that the filename is in the report
     const content = new CnReportContent(report.content);
     if (content.getFigureOp(filename) == null) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
     return this.reportService.getImage(filename);
   }
@@ -372,7 +374,7 @@ export class CnProjectAggregateService {
     // check that the filename is in the report
     const content = new CnReportContent(report.content);
     if (content.getViewsOp(filename) == null) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
     return this.reportService.getView(filename);
   }
@@ -383,7 +385,7 @@ export class CnProjectAggregateService {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
     if (project.currentLevel !== CnProjectLevel.PROJECT) {
-      throw new BadRequestException('Only root projects can be shared');
+      throw new BlBadRequestException('Only root projects can be shared');
     }
 
     return this.projectService.shareProject(project, groupId);
@@ -393,7 +395,7 @@ export class CnProjectAggregateService {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
     if (project.sharedGroups.length <= 1) {
-      throw new BadRequestException(CnErrorText.PROJECT_MUST_HAVE_A_GROUP);
+      throw new BlBadRequestException(CnErrorText.PROJECT_MUST_HAVE_A_GROUP);
     }
 
     return this.projectService.unshareProject(project, groupId);

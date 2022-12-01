@@ -1,5 +1,7 @@
 {
   "server_error": "Server error",
+  "unauthorized": "Unauthorized",
+  "column_too_long": "Field '{field}' too long",
   "wrong_credentials": "Wrong email or password",
   "brick_already_exist": "A brick with this name already exist"
 }

@@ -1,11 +1,11 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DataSource, EntityManager, Repository} from 'typeorm';
 import {CnUser2FA} from './cn-user-2-f-a.entity';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {ClDateHelper, ClStringHelper} from '@monorepo/core-lib';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
-import {BlMailService} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlMailService} from '@monorepo/back-core-lib';
 import {CnMailTemplate} from '../../cn-core/model/config/cn-mail-template.class';
 
 
@@ -52,11 +52,11 @@ export class CnUser2FAService {
     );
 
     if (user2FA == null || user2FA.twoFACode !== twoFACode) {
-      throw new BadRequestException(CnErrorText.TWO_FA_WRONG_CODE);
+      throw new BlBadRequestException(CnErrorText.TWO_FA_WRONG_CODE);
     }
 
     if (!user2FA.isValid()) {
-      throw new BadRequestException(CnErrorText.TWO_FA_CODE_EXPIRED);
+      throw new BlBadRequestException(CnErrorText.TWO_FA_CODE_EXPIRED);
     }
 
     await this.repository.delete(user2FA.id)

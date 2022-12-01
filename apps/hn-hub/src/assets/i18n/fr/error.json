@@ -1,4 +1,7 @@
 {
   "server_error": "Erreur serveur",
-  "wrong_credentials": "Mauvais email ou mot de passe"
+  "unauthorized": "Non autorisé",
+  "column_too_long": "Champ '{field}' trop long",
+  "wrong_credentials": "Mauvais email ou mot de passe",
+  "brick_already_exist": "Une brique avec ce nom existe déjà",
 }

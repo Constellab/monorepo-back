@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnSpaceUser, CnSpaceUserRole} from './cn-space-user.entity';
 import {EntityManager, Repository} from 'typeorm';
@@ -6,7 +6,7 @@ import {CnUser} from '../cn-users/cn-user.entity';
 import {CnSpace, CnSpaceType} from './cn-space.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {ClPage} from '@monorepo/core-lib';
-import {BlAbstractPaginatedService} from '@monorepo/back-core-lib';
+import {BlAbstractPaginatedService, BlBadRequestException} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> {
@@ -40,7 +40,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
                               role: CnSpaceUserRole,
                               entityManager?: EntityManager): Promise<CnSpaceUser> {
     if (await this.userIsSpaceMember(space.id, user.id)) {
-      throw new BadRequestException(CnErrorText.USER_ALREADY_IN_SPACE);
+      throw new BlBadRequestException(CnErrorText.USER_ALREADY_IN_SPACE);
     }
 
     const spaceUser = new CnSpaceUser();
@@ -53,7 +53,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
 
   public async removeUserFromSpace(spaceId: string, userId: string): Promise<void> {
     if (!(await this.userIsSpaceMember(spaceId, userId))) {
-      throw new BadRequestException(CnErrorText.USER_NOT_IN_SPACE);
+      throw new BlBadRequestException(CnErrorText.USER_NOT_IN_SPACE);
     }
     await this.repository.delete({userId: userId, spaceId: spaceId});
   }
@@ -62,7 +62,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     const spaceUSer = await this.findOneBySpaceIdAndUserId(spaceId, userId);
 
     if (spaceUSer.active) {
-      throw new BadRequestException('The user is already active');
+      throw new BlBadRequestException('The user is already active');
     }
     spaceUSer.active = true;
     return this.repository.save(spaceUSer);
@@ -72,7 +72,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     const spaceUser = await this.findOneBySpaceIdAndUserId(spaceId, userId);
 
     if (!spaceUser.active) {
-      throw new BadRequestException('The user is already inactive');
+      throw new BlBadRequestException('The user is already inactive');
     }
     spaceUser.active = false;
     return this.repository.save(spaceUser);
@@ -82,7 +82,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     const spaceUSer = await this.findOneBySpaceIdAndUserId(spaceId, userId);
 
     if (spaceUSer.role === role) {
-      throw new BadRequestException('The user already has the role ' + role);
+      throw new BlBadRequestException('The user already has the role ' + role);
     }
 
     spaceUSer.role = role;
@@ -123,7 +123,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
   public async getUserDefaultSpaceAndCheck(userId: string): Promise<CnSpace> {
     const space = await this.getUserDefaultSpace(userId);
     if (space == null) {
-      throw new BadRequestException(CnErrorText.USER_WITHOUT_SPACE);
+      throw new BlBadRequestException(CnErrorText.USER_WITHOUT_SPACE);
     }
 
     return space;

@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DataSource, EntityManager, In, Repository, TreeRepository} from 'typeorm';
 import {CnProject} from './cn-project.entity';
@@ -15,6 +15,7 @@ import {CnUsersService} from '../../cn-users/cn-users.service';
 import {DateTime} from 'luxon';
 import {CnProjectLevel} from './cn-project-level.enum';
 import {CnSpace} from '../../cn-spaces/cn-space.entity';
+import {BlBadRequestException} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnProjectsService extends CnAbstractWithStatusService<CnProject, CnProjectStatus> {
@@ -106,7 +107,7 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
 
   public async shareProject(project: CnProject, groupId: string): Promise<CnGroup> {
     if (project.isSharedToGroup(groupId)) {
-      throw new BadRequestException(CnErrorText.PROJECT_ALREADY_SHARED_WITH_GROUP);
+      throw new BlBadRequestException(CnErrorText.PROJECT_ALREADY_SHARED_WITH_GROUP);
     }
 
     const group = await this.groupService.findByIdAndCheck(groupId);
@@ -117,7 +118,7 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
 
   public async unshareProject(project: CnProject, groupId: string): Promise<void> {
     if (!project.isSharedToGroup(groupId)) {
-      throw new BadRequestException(CnErrorText.PROJECT_NOT_SHARED_WITH_GROUP);
+      throw new BlBadRequestException(CnErrorText.PROJECT_NOT_SHARED_WITH_GROUP);
     }
 
     project.removeSharedGroup(groupId);

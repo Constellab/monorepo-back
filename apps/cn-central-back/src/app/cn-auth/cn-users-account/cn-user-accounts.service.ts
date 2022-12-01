@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnMailTemplate} from '../../cn-core/model/config/cn-mail-template.class';
 import {InjectRepository} from '@nestjs/typeorm';
@@ -9,7 +9,13 @@ import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
 import {TokenExpiredError} from 'jsonwebtoken';
 import {hash} from 'argon2';
 import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
-import {BlAbstractPaginatedService, BlMailService, BlTokenHelper} from '@monorepo/back-core-lib';
+import {
+  BlAbstractPaginatedService,
+  BlBadRequestException,
+  BlMailService,
+  BlTokenHelper,
+  BlUnauthorizedException
+} from '@monorepo/back-core-lib';
 import {CnUserTokenPayload} from '../../cn-core/model/config/cn-config.class';
 import {CnFrontService} from '../../cn-core/services/cn-front.service';
 import {ClPage} from '@monorepo/core-lib';
@@ -48,12 +54,12 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
   public async createAccount(user: CnUser, status: CmUserStatus, entityManager: EntityManager): Promise<CnUser> {
     if (user.category === CmUserCategory.ADMIN) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
 
     const sameEmailUser: CnUser = await this.usersService.findByEmail(user.email);
     if (sameEmailUser != null) {
-      throw new BadRequestException(CnErrorText.EMAIL_ALREADY_EXIST);
+      throw new BlBadRequestException(CnErrorText.EMAIL_ALREADY_EXIST);
     }
 
     // hash the user password
@@ -87,7 +93,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     const user: CnUser = await this.decodeUserToken(token);
 
     if (user.status !== CmUserStatus.WAITING_FOR_EMAIL) {
-      throw new BadRequestException(CnErrorText.ACCOUNT_ALREADY_ACTIVATED);
+      throw new BlBadRequestException(CnErrorText.ACCOUNT_ALREADY_ACTIVATED);
     }
 
     // update the user status
@@ -164,19 +170,19 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
       payload = await BlTokenHelper.decodeToken(this.configService.getOtherJwtSecret(), token);
     } catch (e) {
       if (e instanceof TokenExpiredError) {
-        throw new BadRequestException(CnErrorText.LINK_EXPIRED);
+        throw new BlBadRequestException(CnErrorText.LINK_EXPIRED);
       }
-      throw new BadRequestException(CnErrorText.INVALID_LINK);
+      throw new BlBadRequestException(CnErrorText.INVALID_LINK);
     }
 
     if (payload == null || payload.id == null) {
-      throw new BadRequestException(CnErrorText.INVALID_LINK);
+      throw new BlBadRequestException(CnErrorText.INVALID_LINK);
     }
 
     const user: CnUser = await this.usersService.findOne(payload.id);
 
     if (user == null) {
-      throw new BadRequestException(CnErrorText.INVALID_LINK);
+      throw new BlBadRequestException(CnErrorText.INVALID_LINK);
     }
 
     return user;
@@ -190,7 +196,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     const user: CnUser = await this.usersService.findByIdAndCheck(userId);
 
     if (user.status !== CmUserStatus.WAITING_FOR_ADMIN) {
-      throw new BadRequestException(CnErrorText.ACCOUNT_ALREADY_ACTIVATED);
+      throw new BlBadRequestException(CnErrorText.ACCOUNT_ALREADY_ACTIVATED);
     }
 
     user.status = CmUserStatus.INCOMPLETE;

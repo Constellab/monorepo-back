@@ -1,5 +1,5 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
-import {BlAbstractService} from '@monorepo/back-core-lib';
+import {Injectable} from '@nestjs/common';
+import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
 import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, Repository} from 'typeorm';
 import {CnBucketCredentials} from './cn-bucket-credential.entity';
@@ -18,7 +18,7 @@ export class CnBucketCredentialsService extends BlAbstractService<CnBucketCreden
     if (credentials.space) {
       const existingCredentials = await this.findBySpaceId(credentials.space.id);
       if (existingCredentials) {
-        throw new BadRequestException(`There is already a bucket credential for the space ${credentials.space.name}`);
+        throw new BlBadRequestException(`There is already a bucket credential for the space ${credentials.space.name}`);
       }
     }
 
@@ -33,7 +33,7 @@ export class CnBucketCredentialsService extends BlAbstractService<CnBucketCreden
     const credential = await this.findBySpaceId(spaceId);
 
     if (!credential) {
-      throw new BadRequestException(`There is no bucket credential for the space ${spaceId}`);
+      throw new BlBadRequestException(`There is no bucket credential for the space ${spaceId}`);
     }
     return credential;
   }

@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {HnBrickMajorVersion, HnVersionState} from './hn-brick-major-version.entity';
 import {EntityManager, Repository} from 'typeorm';
@@ -12,6 +12,7 @@ import {HnImportTechnicalDocDTO, HnTechnicalDocInputDTO} from '../brick/hn-brick
 import {HnTechnicalFolderService} from '../technical-folder/hn-technical-folder.service';
 import {HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
+import {BlBadRequestException} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class HnBrickMajorVersionService {
@@ -87,7 +88,7 @@ export class HnBrickMajorVersionService {
       }
     });
     if (brickMajorVersion == null) {
-      throw new BadRequestException('Impossible to create a new major version');
+      throw new BlBadRequestException('Impossible to create a new major version');
       //let brickMajorVersion: HnBrickMajorVersion = await this.createNewBrickMajorVersion(+newMajor, brick);
     }
     await this.brickVersionService.createNewBrickVersion(brickMajorVersion, newVersion);

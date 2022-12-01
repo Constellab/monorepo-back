@@ -1,5 +1,5 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
-import {BlAbstractService, BlObjectStorageService} from '@monorepo/back-core-lib';
+import {Injectable} from '@nestjs/common';
+import {BlAbstractService, BlBadRequestException, BlObjectStorageService} from '@monorepo/back-core-lib';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DataSource, EntityManager, Repository} from 'typeorm';
 import {CnBucket, CnBucketContentType} from './cn-bucket.entity';
@@ -46,17 +46,17 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     if ([CnBucketContentType.SPACE_IMAGE, CnBucketContentType.USER_IMAGE].includes(bucket.contentType)) {
       const existingBucket = await this.findByContentType(bucket.contentType);
       if (existingBucket.length > 0) {
-        throw new BadRequestException(`There is already a bucket of type ${bucket.contentType}`);
+        throw new BlBadRequestException(`There is already a bucket of type ${bucket.contentType}`);
       }
       bucket.space = null;
     } else {
       // all the other type must be associated to an space
       if (!bucket.space) {
-        throw new BadRequestException(`The bucket must be associated to an space`);
+        throw new BlBadRequestException(`The bucket must be associated to an space`);
       }
 
       if (bucket.contentType === CnBucketContentType.LAB_BACKUP && bucket.objectId == null) {
-        throw new BadRequestException(`The bucket must be associated to a lab`);
+        throw new BlBadRequestException(`The bucket must be associated to a lab`);
       }
 
       // There can be only one bucket of type REPORT_IMAGE,REPORT_VIEW,COMMENT_IMAGE per space
@@ -65,7 +65,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
         const existingBucket = await this.findBySpaceAndContentType(bucket.space.id, bucket.contentType);
         if (existingBucket.length > 0) {
           // eslint-disable-next-line max-len
-          throw new BadRequestException(`There is already a bucket of type ${bucket.contentType} for the space ${bucket.space.name}`);
+          throw new BlBadRequestException(`There is already a bucket of type ${bucket.contentType} for the space ${bucket.space.name}`);
         }
       }
     }

@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable, Logger} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {
   SnDocument,
   SnDocumentSentence,
@@ -8,7 +8,7 @@ import {
   SnSmartDbScriptDoc,
   SnSmartDbScriptResult
 } from '../model/sn-document.class';
-import {BlFile} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlFile} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class SnDataImporterService {
@@ -37,7 +37,7 @@ export class SnDataImporterService {
 
   public readDataFromJsonFile(file: BlFile): SnFileImportContent {
     if (file.mimetype !== 'application/json') {
-      throw new BadRequestException('Only supporting json files');
+      throw new BlBadRequestException('Only supporting json files');
     }
 
     const content = file.buffer.toString('utf-8');
@@ -47,7 +47,7 @@ export class SnDataImporterService {
     if (json.version != null) {
       const data: SnSmartDbExport = json;
       if (typeof data.version !== 'number' || !Array.isArray(data.documents)) {
-        throw new BadRequestException('Wrong json format');
+        throw new BlBadRequestException('Wrong json format');
       }
       return {
         type: 'export', fileContent: data
@@ -55,7 +55,7 @@ export class SnDataImporterService {
     } else {
       const data: SnSmartDbScriptResult = json;
       if (!Array.isArray(data.data)) {
-        throw new BadRequestException('Wrong json format');
+        throw new BlBadRequestException('Wrong json format');
       }
 
       return {

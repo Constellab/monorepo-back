@@ -1,8 +1,9 @@
-import {Inject, Injectable, UnauthorizedException} from '@nestjs/common';
+import {Inject, Injectable} from '@nestjs/common';
 import {PassportStrategy} from '@nestjs/passport';
 import {Strategy} from 'passport-jwt';
 import {BL_JWT_CONFIG_PROVIDER, BlJwtConfig, BlTokenUser} from './bl-jwt.class';
 import {BlUser} from '../../models/bl-user.class';
+import {BlUnauthorizedException} from '../../exceptions/bl-unauthorized.exception';
 
 @Injectable()
 export class BlJwtStrategy extends PassportStrategy(Strategy) {
@@ -21,7 +22,7 @@ export class BlJwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: BlTokenUser): Promise<BlUser> {
     const currentUser: BlUser = await this.jwtConfig.usersService.findOne(payload.sub);
     if (currentUser == null) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
     return currentUser;
   }

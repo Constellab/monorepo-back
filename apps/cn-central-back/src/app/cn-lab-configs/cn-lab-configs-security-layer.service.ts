@@ -1,8 +1,9 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnAbstractSecurityLayer} from '../cn-core/class/cn-abstract-security.layer';
 import {CnLabConfig} from './cn-lab-config.entity';
 import {CnLabConfigsService} from './cn-lab-configs.service';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
+import {BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnLabConfigsSecurityLayer extends CnAbstractSecurityLayer<CnLabConfig> {
@@ -30,7 +31,7 @@ export class CnLabConfigsSecurityLayer extends CnAbstractSecurityLayer<CnLabConf
 
   // need to be an admin to get all
   async findAll(): Promise<CnLabConfig[]> {
-    if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) throw new UnauthorizedException();
+    if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) throw new BlUnauthorizedException();
 
     return this.service.findAll();
   }

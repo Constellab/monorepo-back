@@ -1,7 +1,8 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnSpaceUserService} from './cn-space-user.service';
 import {CnSpaceUser} from './cn-space-user.entity';
+import {BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnSpaceAggregateSecurity {
@@ -11,7 +12,7 @@ export class CnSpaceAggregateSecurity {
 
   public checkIsAdmin(user: CnUser): void {
     if (!this.isAdmin(user)) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
   }
 
@@ -19,7 +20,7 @@ export class CnSpaceAggregateSecurity {
     if (this.isAdmin(user)) return;
 
     if (!this.isSpaceAdmin(spaceId, user.id)) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
   }
 
@@ -38,7 +39,7 @@ export class CnSpaceAggregateSecurity {
   private async getAndCheckSpaceUser(spaceId: string, userId: string): Promise<CnSpaceUser> {
     const spaceUser = await this.spaceUserService.findOneBySpaceIdAndUserId(spaceId, userId);
     if (!spaceUser) {
-      throw new UnauthorizedException();
+      throw new BlUnauthorizedException();
     }
     return spaceUser;
   }

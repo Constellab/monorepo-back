@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {DataSource, DeleteResult, EntityManager, Repository} from 'typeorm';
@@ -14,6 +14,7 @@ import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
 import {CnReportsService} from '../cn-projects-aggregate/cn-reports/cn-reports.service';
+import {BlBadRequestException} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInstance, CnLabInstanceStatus> {
@@ -35,12 +36,12 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
     const experiments: CnExperiment[] = await this.experimentService.getExperimentsByLabInstance(id);
     if (experiments?.length > 0) {
-      throw new BadRequestException('Can\'t delete the lab instance because some experiment are linked to it');
+      throw new BlBadRequestException('Can\'t delete the lab instance because some experiment are linked to it');
     }
 
     const reports = await this.reportService.getReportsByLabInstance(id);
     if (reports?.length > 0) {
-      throw new BadRequestException('Can\'t delete the lab instance because some reports are linked to it');
+      throw new BlBadRequestException('Can\'t delete the lab instance because some reports are linked to it');
     }
 
     return super.deleteById(id, entityManager);

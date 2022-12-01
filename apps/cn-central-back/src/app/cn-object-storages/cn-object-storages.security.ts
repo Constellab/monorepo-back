@@ -1,6 +1,7 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
+import {BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 
 @Injectable()
@@ -15,7 +16,7 @@ export class CnObjectStoragesSecurity {
    * @param user
    */
   public checkAuthorizationToModifyEntity(user: CnUser): void {
-    if (!user.isAdmin()) throw new UnauthorizedException();
+    if (!user.isAdmin()) throw new BlUnauthorizedException();
   }
 
   /**
@@ -23,7 +24,7 @@ export class CnObjectStoragesSecurity {
    * @param user
    */
   public checkAuthorizationToGetCredentials(user: CnUser): void {
-    if (!user.isAdmin()) throw new UnauthorizedException();
+    if (!user.isAdmin()) throw new BlUnauthorizedException();
   }
 
   /**
@@ -35,12 +36,12 @@ export class CnObjectStoragesSecurity {
 
   public checkAuthorizationToGetBucket(spaceId: string, userInfo: CnUserSpaceInfo): void {
     // check the space context
-    if (spaceId !== userInfo.spaceId) throw new UnauthorizedException();
+    if (spaceId !== userInfo.spaceId) throw new BlUnauthorizedException();
 
-    if (!userInfo.isSpaceAdmin()) throw new UnauthorizedException();
+    if (!userInfo.isSpaceAdmin()) throw new BlUnauthorizedException();
   }
 
   public checkAuthorizationToGetAllBuckets(user: CnUser): void {
-    if (!user.isAdmin()) throw new UnauthorizedException();
+    if (!user.isAdmin()) throw new BlUnauthorizedException();
   }
 }
