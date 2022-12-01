@@ -9,6 +9,11 @@
       {{'create_invitation_help' | translate}}
     </p>
 
+    <fl-text-icon class="help-text g-text-light" *ngIf="showSharePersonalWarning">
+      <mat-icon>warnings</mat-icon>
+      <p>{{'share_personal_space_warning' | translate}}</p>
+    </fl-text-icon>
+
     <!--  Email  -->
     <mat-form-field class="g-form-input">
       <mat-label>{{'email' | translate}}</mat-label>

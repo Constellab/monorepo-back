@@ -3,20 +3,17 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaSpaceInvitService} from '../../../../ca-core/service-api/ca-space-invit.service';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {
-  CaSpaceInvit,
-  CaSpaceInvitDTO
-} from '../../../../ca-core/model/entities/ca-space-invit.class';
+import {CaSpaceInvit, CaSpaceInvitDTO} from '../../../../ca-core/model/entities/ca-space-invit.class';
 import {Validators} from '@angular/forms';
-import {CaSpaceRole} from '../../../../ca-core/model/entities/ca-space.class';
-import {CaCurrentSpaceDetailComponent} from '../ca-current-space-detail/ca-current-space-detail.component';
+import {CaSpaceRole, CaSpaceType} from '../../../../ca-core/model/entities/ca-space.class';
 
 export interface CaSpaceInvitFormDialogInput {
   spaceId: string;
+  spaceType: CaSpaceType;
 }
 
 /**
- * Dialog to create an space invitation
+ * Dialog to create a space invitation
  */
 @Component({
   selector: 'ca-space-invit-form-dialog',
@@ -63,5 +60,12 @@ export class CaSpaceInvitFormDialogComponent implements OnInit {
     this.snackBarService.openSuccessMessage({text: 'invitation_created', translateText: true});
     this.dialogRef.close(invitation);
     this.isLoading = false;
+  }
+
+  /**
+   * Show a warning when the user tries to share his personal space
+   */
+  get showSharePersonalWarning(): boolean {
+    return this.input.spaceType === 'PERSONAL';
   }
 }

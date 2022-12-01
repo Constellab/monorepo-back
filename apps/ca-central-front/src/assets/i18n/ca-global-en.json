@@ -211,5 +211,6 @@
   "city": "City",
   "generate_all_user_space": "Generate all user spaces",
   "generate_all_user_space_confirmation": "Are you sure you want to generate all user space ?",
-  "all_user_space_generated": "All user space generated"
+  "all_user_space_generated": "All user space generated",
+  "share_personal_space_warning": "You are about to share your personal space. If this is for your company or a team, we recommend to create a dedicated shared space."
 }

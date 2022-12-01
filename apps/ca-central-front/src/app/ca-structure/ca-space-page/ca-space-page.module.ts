@@ -1,16 +1,10 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {
-  CaCurrentSpacePageComponent
-} from './component/ca-current-space-page/ca-current-space-page.component';
+import {CaCurrentSpacePageComponent} from './component/ca-current-space-page/ca-current-space-page.component';
 import {CaCoreModule} from '../../ca-core/ca-core.module';
 import {CaSpaceCoreModule} from '../../ca-core/entity-module/ca-space-core/ca-space-core.module';
-import {
-  CaCurrentSpaceDetailComponent
-} from './component/ca-current-space-detail/ca-current-space-detail.component';
-import {
-  CaSpaceUsersListComponent
-} from './component/ca-space-users-list/ca-space-users-list.component';
+import {CaCurrentSpaceDetailComponent} from './component/ca-current-space-detail/ca-current-space-detail.component';
+import {CaSpaceUsersListComponent} from './component/ca-space-users-list/ca-space-users-list.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CaGroupCoreModule} from '../../ca-core/entity-module/ca-group-core/ca-group-core.module';
 import {
@@ -19,15 +13,13 @@ import {
 import {
   CaSpaceUploadPhotoDialogComponent
 } from './component/ca-space-upload-photo-dialog/ca-space-upload-photo-dialog.component';
-import {
-  CaSpaceInvitTableComponent
-} from './component/ca-space-invit-table/ca-space-invit-table.component';
+import {CaSpaceInvitTableComponent} from './component/ca-space-invit-table/ca-space-invit-table.component';
 import {
   CaSpaceInvitFormDialogComponent
 } from './component/ca-space-invit-form-dialog/ca-space-invit-form-dialog.component';
 import {
-  CaSpaceInvitListComponent
-} from './component/ca-space-invit-list/ca-space-invit-list.component';
+  CaCurrentSpaceInvitListComponent
+} from './component/ca-current-space-invit-list/ca-current-space-invit-list.component';
 import {
   CaCurrentSpaceLabInstancesListComponent
 } from './component/ca-current-space-lab-instances-list/ca-current-space-lab-instances-list.component';
@@ -51,7 +43,7 @@ import {CaRequestNewLicensesComponent} from './component/ca-request-new-licenses
     CaSpaceUploadPhotoDialogComponent,
     CaSpaceInvitTableComponent,
     CaSpaceInvitFormDialogComponent,
-    CaSpaceInvitListComponent,
+    CaCurrentSpaceInvitListComponent,
     CaCurrentSpaceLabInstancesListComponent,
     CaCurrentSpaceProjectsListComponent,
     CaCurrentSpaceTeamsListComponent,
@@ -70,7 +62,7 @@ import {CaRequestNewLicensesComponent} from './component/ca-request-new-licenses
   ],
   exports: [
     CaSpaceInvitFormDialogComponent,
-    CaSpaceInvitListComponent,
+    CaCurrentSpaceInvitListComponent,
     CaCurrentSpaceTeamsListComponent,
     CaRequestNewLicensesComponent
   ]

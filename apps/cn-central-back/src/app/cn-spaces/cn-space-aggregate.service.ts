@@ -274,13 +274,6 @@ export class CnSpaceAggregateService {
     return this.invitationService.findNotificationsBySpaceId(spaceId, page, pageSize);
   }
 
-  public async createPersonalSpace(user: CnUser, entityManager: EntityManager): Promise<CnSpace> {
-    const personalSpace = await this.spaceService.createPersonalSpace(user, entityManager);
-
-    await this.spaceUserService.addUserToSpace(personalSpace, user, CnSpaceUserRole.ADMIN, entityManager);
-
-    return personalSpace;
-  }
 
   /////////////////////////////////////// OTHERS //////////////////////////////////
 
@@ -289,6 +282,13 @@ export class CnSpaceAggregateService {
     await this.checkSpaceAdmin(userInfo.spaceId);
 
     await this.spacesMailService.requestNewLicenses(request, userInfo);
+  }
+  public async createPersonalSpace(user: CnUser, entityManager: EntityManager): Promise<CnSpace> {
+    const personalSpace = await this.spaceService.createPersonalSpace(user, entityManager);
+
+    await this.spaceUserService.addUserToSpace(personalSpace, user, CnSpaceUserRole.ADMIN, entityManager);
+
+    return personalSpace;
   }
 
   /////////////////////////////////////// SECURITY //////////////////////////////////

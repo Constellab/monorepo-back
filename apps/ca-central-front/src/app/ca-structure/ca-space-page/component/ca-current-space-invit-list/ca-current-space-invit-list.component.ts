@@ -1,43 +1,41 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CaSpaceService} from '../../../../ca-core/service-api/ca-space.service';
-import {
-  CaSpaceInvit,
-  CaSpaceInvitDatasource
-} from '../../../../ca-core/model/entities/ca-space-invit.class';
+import {CaSpaceInvit, CaSpaceInvitDatasource} from '../../../../ca-core/model/entities/ca-space-invit.class';
 import {FlDialogService, FlTableColumn} from '@monorepo/front-core-lib';
 import {
   CaSpaceInvitFormDialogComponent,
   CaSpaceInvitFormDialogInput
 } from '../ca-space-invit-form-dialog/ca-space-invit-form-dialog.component';
-import {CaCurrentSpaceDetailComponent} from '../ca-current-space-detail/ca-current-space-detail.component';
+import {CaCurrentSpaceService} from '../../../../ca-core/service-api/ca-current-space.service';
 
 /**
  * List the invitations of the space
  */
 @Component({
-  selector: 'ca-space-invit-list',
-  templateUrl: './ca-space-invit-list.component.html',
-  styleUrls: ['./ca-space-invit-list.component.scss']
+  selector: 'ca-current-space-invit-list',
+  templateUrl: './ca-current-space-invit-list.component.html',
+  styleUrls: ['./ca-current-space-invit-list.component.scss']
 })
-export class CaSpaceInvitListComponent implements OnInit {
-
-  @Input() spaceId: string;
+export class CaCurrentSpaceInvitListComponent implements OnInit {
 
   invitations: CaSpaceInvitDatasource;
 
   columns: FlTableColumn<CaSpaceInvit>[] = ['userMail', 'role', 'validUntil', 'sentThe', 'actions'];
 
   constructor(private spaceService: CaSpaceService,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private currentSpaceService: CaCurrentSpaceService) {
   }
 
   ngOnInit(): void {
-    this.invitations = this.spaceService.getInvitationsDatasource(this.spaceId);
+    this.invitations = this.spaceService.getInvitationsDatasource('current');
   }
 
-  openInvitationDialog(): void {
+  async openInvitationDialog(): Promise<void> {
+    const space = await this.currentSpaceService.getCurrentSpacePromise()
     const input: CaSpaceInvitFormDialogInput = {
-      spaceId: this.spaceId
+      spaceId: space.id,
+      spaceType: space.type
     };
     this.dialogService.openSmallDialog(CaSpaceInvitFormDialogComponent, {data: input}).afterClosed()
       .subscribe(

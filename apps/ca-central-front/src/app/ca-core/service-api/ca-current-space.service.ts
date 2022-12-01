@@ -3,7 +3,7 @@ import {CaSpaceService} from './ca-space.service';
 import {CaSpace, CaSpaceRole} from '../model/entities/ca-space.class';
 import {FlCleanableService, FlCleanerService, FlCookieService} from '@monorepo/front-core-lib';
 import {environment} from '../../../environments/ca-environment';
-import {BehaviorSubject, filter, Observable} from 'rxjs';
+import {BehaviorSubject, filter, firstValueFrom, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {CaUserDatasourcePaginated} from '../model/entities/ca-user.class';
 
@@ -66,6 +66,10 @@ export class CaCurrentSpaceService implements FlCleanableService {
     return this.currentSpace$.asObservable().pipe(
       filter(space => space != null)
     );
+  }
+
+  public getCurrentSpacePromise(): Promise<CaSpace> {
+    return firstValueFrom(this.getCurrentSpace$());
   }
 
   public getCurrentSpacePhoto$(): Observable<string> {
