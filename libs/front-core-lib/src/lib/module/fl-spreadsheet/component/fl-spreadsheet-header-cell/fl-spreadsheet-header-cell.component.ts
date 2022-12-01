@@ -125,7 +125,6 @@ export class FlSpreadsheetHeaderCellComponent implements OnInit, OnDestroy {
     const config = this.portalService.configureRelativePortal(this.elementRef.nativeElement, positions, {
       disposeOnNavigation: true,
       disposeOnOutsideClick: true,
-      elevation: true
     });
 
     this.overlayRef = this.portalService.createPortal(FlSpreadsheetHeaderInfoComponent, config, headerInfo);

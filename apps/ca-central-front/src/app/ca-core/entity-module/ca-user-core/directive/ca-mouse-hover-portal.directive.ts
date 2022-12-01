@@ -1,5 +1,5 @@
 import {Directive, Input} from '@angular/core';
-import {FlMouseHoverPortalAbstractDirective, FlMouseHoverPortalConfig, FlOverlayRef} from '@monorepo/front-core-lib';
+import {FlMouseHoverPortalAbstractDirective, FlMouseHoverPortalConfig} from '@monorepo/front-core-lib';
 import {CaUser} from '../../../model/entities/ca-user.class';
 import {CaUserInfoPortalComponent} from '../component/ca-user-info-portal/ca-user-info-portal.component';
 
@@ -18,16 +18,15 @@ export class CaMouseHoverUserPortalDirective extends FlMouseHoverPortalAbstractD
       component: CaUserInfoPortalComponent,
       portalTagName: 'CA-USER-INFO-PORTAL',
       overlayConfig: {
-        elevation: false,
         disposeOnNavigation: true
       }
     };
   }
 
-  onPortalClosed(event: MouseEvent): void {
+  onPortalClosed(): void {
   }
 
-  onPortalOpened(overlay: FlOverlayRef, event: MouseEvent): void {
+  onPortalOpened(): void {
   }
 
 }

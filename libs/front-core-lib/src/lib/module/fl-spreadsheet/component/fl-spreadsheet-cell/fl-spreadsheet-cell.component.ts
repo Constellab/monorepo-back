@@ -265,7 +265,6 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
     const config = this.portalService.configureRelativePortal(this.elementRef.nativeElement, positions, {
       disposeOnNavigation: true,
       disposeOnOutsideClick: true,
-      elevation: true
     });
 
     this.overlayRef = this.portalService.createPortal(FlSpreadsheetCellInfoComponent, config, this.cellWithCoord);

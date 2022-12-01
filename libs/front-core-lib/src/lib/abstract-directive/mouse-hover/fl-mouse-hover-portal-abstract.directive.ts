@@ -64,7 +64,6 @@ export abstract class FlMouseHoverPortalAbstractDirective extends FlMouseHoverAb
       hasBackdrop: false,
       disposeOnNavigation: true,
       showArrow: false,
-      elevation: true,
       scrollStrategy: this.portalService.getCloseOnScrollStrategy()
     };
 

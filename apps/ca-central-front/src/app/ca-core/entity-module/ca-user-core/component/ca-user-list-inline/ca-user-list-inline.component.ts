@@ -125,8 +125,6 @@ export class CaUserListInlineComponent extends FlFormFieldDirective<UserList, Ca
     const config = this.portalService.configureRelativePortalFromMouseEvent(event, position,
       {
         scrollStrategy: this.portalService.getCloseOnScrollStrategy(),
-        panelClass: 'g-portal-background',
-        elevation: true,
         disposeOnOutsideClick: true
       });
     this.additionalOverlay = this.portalService.createPortalTemplate(this.additionalUsers, config, this.viewContainerRef);

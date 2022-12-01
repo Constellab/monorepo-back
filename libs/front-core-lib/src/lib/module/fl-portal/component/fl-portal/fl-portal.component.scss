@@ -6,6 +6,8 @@
   padding: 1em;
   box-sizing: border-box;
   background-color: var(--card-background);
+  border-radius: var(--card-radius);
+  overflow: hidden;
 }
 
 .content {

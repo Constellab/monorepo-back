@@ -31,9 +31,6 @@ export class FlChartPortalHandler {
       hasBackdrop: false,
       disposeOnNavigation: true,
       disposeOnOutsideClick: true,
-      showArrow: false,
-      elevation: true,
-      panelClass: 'g-portal-background',
     };
 
     const positions: ConnectedPosition[] = [

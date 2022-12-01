@@ -20,7 +20,7 @@ export class CaMySpacesPortalComponent implements OnInit {
   currentSpace$: Observable<CaSpace>;
   currentSpaceRoute: string = CaRouterService.getCurrentSpaceRoute();
 
-  mySpaces$: Observable<CaSpace[]>;
+  otherSpaces: Observable<CaSpace[]>;
 
   appRoute = CaRouterService.getAppRoute();
 
@@ -31,7 +31,7 @@ export class CaMySpacesPortalComponent implements OnInit {
   ngOnInit(): void {
     this.currentSpace$ = this.currentSpaceService.getCurrentSpace$();
     // list all the space of the user except from the current one
-    this.mySpaces$ = this.spaceService.getMySpaces().pipe(
+    this.otherSpaces = this.spaceService.getMySpaces().pipe(
       combineLatestWith(this.currentSpaceService.getCurrentSpace$()),
       map(([spaces, currentSpace]) => spaces.filter(space => space.id !== currentSpace.id))
     );

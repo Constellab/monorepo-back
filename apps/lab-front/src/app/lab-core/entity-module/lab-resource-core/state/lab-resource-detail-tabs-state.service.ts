@@ -136,7 +136,6 @@ export class LabResourceDetailTabsState implements OnDestroy {
     const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(
       {centerHorizontally: '0', top: '0'},
       {
-        elevation: true,
         disposeOnNavigation: true,
       });
 

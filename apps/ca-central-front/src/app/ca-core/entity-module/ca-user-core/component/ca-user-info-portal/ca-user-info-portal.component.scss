@@ -2,7 +2,7 @@
   width: 22.5em;
   height: 12.5em;
   position: relative;
-  border-radius: 10px;
+  border-radius: var(--card-radius);
   overflow: hidden;
 }
 

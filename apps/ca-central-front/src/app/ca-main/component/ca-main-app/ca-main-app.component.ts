@@ -69,7 +69,6 @@ export class CaMainAppComponent implements OnInit {
     }], {
       disposeOnOutsideClick: true,
       disposeOnNavigation: true,
-      elevation: true
     });
 
     this.portalService.createPortal(CaMySpacesPortalComponent, config);

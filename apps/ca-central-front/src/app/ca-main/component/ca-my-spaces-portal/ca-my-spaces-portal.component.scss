@@ -29,5 +29,9 @@
 }
 
 .space:hover {
-  background-color: var(--card-background);
+  background-color: var(--hover-color);
+}
+
+.switch-to{
+  padding: 1em;
 }

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostBinding, Input, OnInit} from '@angular/core';
 
 /**
  * Generic component to use on portal to normalize style and prevent portal form being too big
@@ -10,6 +10,9 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./fl-portal.component.scss']
 })
 export class FlPortalComponent implements OnInit {
+
+  @HostBinding('class.mat-elevation-z5')
+  @Input() elevation: boolean = true;
 
   constructor() {
   }

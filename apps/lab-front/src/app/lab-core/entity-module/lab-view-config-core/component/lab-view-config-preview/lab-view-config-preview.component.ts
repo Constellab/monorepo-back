@@ -47,7 +47,6 @@ export class LabViewConfigPreviewComponent implements OnInit, OnDestroy {
     const portalConfig: FlPortalConfig = this.portalService.configureRelativePortal(
       element, ['left', 'bottom', 'right', 'top'],
       {
-        elevation: true,
         disposeOnNavigation: true,
         disposeOnOutsideClick: true
       });

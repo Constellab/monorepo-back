@@ -104,17 +104,17 @@ export abstract class PrWorkflowNodeProcessDirective extends PrWorkflowNodeDirec
   private onInputClick(port: PrWorkflowPort, element: Element): void {
     const menuDynamics: FlMenuDynamic[] = this.workflowManager.viewConfig.getInputMenu(port, this.node,
       this.workflowManager.getCurrentMode());
-    this.openPortPortal(port, menuDynamics, element, true);
+    this.openPortPortal(port, menuDynamics, element);
   }
 
   private onOutputClick(port: PrWorkflowPort, element: Element): void {
     const menuDynamics: FlMenuDynamic[] = this.workflowManager.viewConfig.getOutputMenu(port, this.node,
       this.workflowManager.getCurrentMode());
-    this.openPortPortal(port, menuDynamics, element, false);
+    this.openPortPortal(port, menuDynamics, element);
   }
 
   // open the portal for the input or output port
-  private openPortPortal(port: PrWorkflowPort, menuDynamics: FlMenuDynamic[], element: Element, isInput: boolean): void {
+  private openPortPortal(port: PrWorkflowPort, menuDynamics: FlMenuDynamic[], element: Element): void {
     const data: PrWorkflowPortActionPortalInput = {
       port: port,
       menuDynamics: menuDynamics
@@ -127,7 +127,6 @@ export abstract class PrWorkflowNodeProcessDirective extends PrWorkflowNodeDirec
     const config = this.portalService.configureRelativePortal(element, position, {
       disposeOnOutsideClick: true,
       disposeOnNavigation: true,
-      elevation: true
     });
 
     if (PrWorkflowNodeProcessDirective.currentOverlayRef) {

@@ -64,11 +64,7 @@ export class FlPortalActionsService {
 
     // set portal on bottom right
     const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(
-      {right: '10px', bottom: '10px'},
-      {
-        elevation: true,
-        panelClass: 'g-portal-background'
-      });
+      {right: '10px', bottom: '10px'});
 
     // open portal
     this.currentOverlay = this.portalService.createPortal(FlPortalActionsComponent, portalConfig);

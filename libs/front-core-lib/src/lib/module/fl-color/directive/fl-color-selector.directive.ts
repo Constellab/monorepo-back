@@ -33,7 +33,6 @@ export class FlColorSelectorDirective {
       this.flColorSelectorPositions, {
         disposeOnOutsideClick: true,
         disposeOnNavigation: true,
-        elevation: true,
       });
 
     this.portalService.createPortal(FlColorSelectorPortalComponent, config, this.flColorSelector).detachments().subscribe(

@@ -9,6 +9,7 @@
 
 .mat-dialog-container {
   display: flex !important;
+  border-radius: var(--card-radius) !important;
 }
 
 // Style the container child to manage full width

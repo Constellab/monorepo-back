@@ -47,7 +47,6 @@ export class CaSmartDbContentComponent implements OnInit {
       {
         disposeOnOutsideClick: true,
         disposeOnNavigation: true,
-        elevation: true
       });
 
     this.portalService.createPortal(CaSmartDbSentenceDetailComponent, config, sentence).detachments()

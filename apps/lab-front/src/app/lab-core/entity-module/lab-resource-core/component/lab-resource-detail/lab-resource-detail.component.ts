@@ -59,7 +59,6 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
     const config: FlPortalConfig = this.portalService.configureAbsolutePortal(
       {centerHorizontally: '0', top: '0'},
       {
-        elevation: true,
         disposeOnNavigation: true,
         hasBackdrop: true,
         transparentBackdrop: true,

@@ -35,7 +35,6 @@ export abstract class FlSheetLocalChartConfig extends FlSheetChartConfig {
     const portalConfig: FlPortalConfig = this.chartPortalService.configureAbsolutePortal(
       {centerHorizontally: '0', top: '0'},
       {
-        elevation: true,
         disposeOnNavigation: true
       });
 

@@ -50,7 +50,6 @@ export abstract class LabTableChartConfig extends FlSheetChartConfig {
     const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(
       {centerHorizontally: '0', top: '0'},
       {
-        elevation: true,
         disposeOnNavigation: true,
       });
 
