@@ -25,6 +25,9 @@ export class CnProjectsAggregateSecurity {
 
     if (userInfo.isSpaceAdmin()) return rootProject;
 
+    // enable always the leader to have access to the project
+    if(rootProject.leader.id === userInfo.userId) return rootProject;
+
     // check if the user is a member of one of the groups that were shared with the project
     if (!await this.groupAggregateService.userIsInAnyGroup(userInfo.userId, rootProject.getSharedGroupIds())) {
       throw new BlUnauthorizedException();

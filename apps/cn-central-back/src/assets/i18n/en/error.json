@@ -28,6 +28,7 @@
   "user_not_in_space": "The user is not in this space",
   "remove_group_last_user": "You can't remove the last user of the group",
   "project_must_have_a_group": "The project must be shared with at least one group",
+  "cant_unshared_project_leader_group": "You can't unshare the group of the project leader",
   "exp_must_be_associated_with_leaf_project": "The experiment must be associated with a leaf project (the lowest in the hierarchy)",
   "report_must_be_associated_with_leaf_project": "The report must be associated with a leaf project (the lowest in the hierarchy)",
   "cannot_deactivate_last_admin": "You can't deactivate the last admin of the space",

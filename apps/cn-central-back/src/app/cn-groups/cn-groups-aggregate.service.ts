@@ -1,5 +1,5 @@
 import {Injectable} from '@nestjs/common';
-import {CnGroup, CnGroupTeam} from './cn-group.entity';
+import {CnGroup, CnGroupSingleUser, CnGroupTeam} from './cn-group.entity';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
@@ -30,6 +30,10 @@ export class CnGroupsAggregateService {
 
     const spaceUserIds = await this.spaceUserService.findAllSpaceUserIds(userInfo.spaceId);
     return await this.groupsService.getGroupsBySpaceId(userInfo.spaceId, spaceUserIds, page, size);
+  }
+
+  public async findByIdAndCheck(id: string): Promise<CnGroup> {
+    return this.groupsService.findByIdAndCheck(id);
   }
 
   ////////////////////////////////////// TEAMS  ////////////////////////////////
@@ -127,6 +131,9 @@ export class CnGroupsAggregateService {
     return await this.groupsService.getUsersOfGroups(groupIds);
   }
 
+  public async getUserSingleGroup(userId: string): Promise<CnGroupSingleUser> {
+    return await this.groupsService.getUserSingleGroup(userId);
+  }
 
   /////////////////////////////// AUTHORIZATION ///////////////////////////////
 

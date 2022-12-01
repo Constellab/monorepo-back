@@ -105,14 +105,14 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
     });
   }
 
-  public async shareProject(project: CnProject, groupId: string): Promise<CnGroup> {
+  public async shareProject(project: CnProject, groupId: string, entityManager?: EntityManager): Promise<CnGroup> {
     if (project.isSharedToGroup(groupId)) {
       throw new BlBadRequestException(CnErrorText.PROJECT_ALREADY_SHARED_WITH_GROUP);
     }
 
     const group = await this.groupService.findByIdAndCheck(groupId);
     project.sharedGroups.push(group);
-    await this.update(project);
+    await this.update(project, entityManager);
     return group;
   }
 

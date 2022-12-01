@@ -4,7 +4,7 @@ import {CnProjectsAggregateSecurity} from './cn-projects-aggregate.security';
 import {CnProject} from './cn-projects/cn-project.entity';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
-import {CnGroup} from '../cn-groups/cn-group.entity';
+import {CnGroup, CnGroupSingleUser} from '../cn-groups/cn-group.entity';
 import {CnProjectStatusHistory} from './cn-projects/cn-project-status-history.entity';
 import {CnProjectStatus} from './cn-projects/cn-project-status.enum';
 import {CnExperimentsService} from './cn-experiments/cn-experiments.service';
@@ -20,13 +20,13 @@ import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-projects/cn-project-level.enum';
 import {CnProjectAncestorTreeDTO, CnProjectAncestorType, CnProjectDtoHelper} from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
-import {CnUsersService} from '../cn-users/cn-users.service';
 import {CmRichTextI} from '@monorepo/common-model';
 import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
 import {CnProjectCommentService} from '../cn-project-comment/cn-project-comment.service';
 import {CnCommentImage, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
 import {BlBadRequestException, BlFile, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {DataSource} from 'typeorm';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -38,7 +38,7 @@ export class CnProjectAggregateService {
               private reportService: CnReportsService,
               private groupAggregateService: CnGroupsAggregateService,
               private projectCommentService: CnProjectCommentService,
-              private userService: CnUsersService) {
+              private datasource: DataSource) {
   }
 
   /////////////////////////////////////// PROJECT //////////////////////////////////
@@ -210,22 +210,26 @@ export class CnProjectAggregateService {
   }
 
   public async updateProjectLeader(projectId: string, userId: string): Promise<CnProject> {
-    const project = await this.projectService.findByIdAndCheck(projectId);
+    const project = await this.projectService.findByIdAndCheck(projectId, {sharedGroups: true});
     const rootProject = await this.projectService.getRootProjectWithSharedGroup(project);
-
-    const newLeader = await this.userService.findByIdAndCheck(userId);
 
     // check if the current user has the authorization to update the leader
     await this.projectSecurity.checkUpdateProjectLeader(project, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
 
-    // check if the new leader can view the project
-    if (!await this.groupAggregateService.userIsInAnyGroup(newLeader.id, rootProject.getSharedGroupIds())) {
-      throw new BlBadRequestException('The new leader does not have access to the project.');
-    }
+    const leaderSingleGroup = await this.groupAggregateService.getUserSingleGroup(userId);
 
-    // update the leader
-    project.leader = newLeader;
-    return this.projectService.update(project);
+    return this.datasource.transaction(async (entityManager) => {
+
+      // the group must be shared with the new leader single group
+      // so if it is not shared, we add it
+      if (!rootProject.isSharedToGroup(leaderSingleGroup.id)) {
+        await this.projectService.shareProject(rootProject, leaderSingleGroup.id, entityManager);
+      }
+
+      // update the leader
+      project.leader = await leaderSingleGroup.user;
+      return this.projectService.update(project, entityManager);
+    });
   }
 
   public async updateDescription(projectId: string, description: CmRichTextI): Promise<CnProject> {
@@ -396,6 +400,13 @@ export class CnProjectAggregateService {
 
     if (project.sharedGroups.length <= 1) {
       throw new BlBadRequestException(CnErrorText.PROJECT_MUST_HAVE_A_GROUP);
+    }
+
+    // forbid to unshare the single user group of the leader
+    // this is to unsure the leader will always have access to the project
+    const group = await this.groupAggregateService.findByIdAndCheck(groupId);
+    if(group instanceof CnGroupSingleUser && group.userId === project.leader.id) {
+      throw new BlBadRequestException(CnErrorText.CANT_UNSHARED_PROJECT_LEADER_GROUP);
     }
 
     return this.projectService.unshareProject(project, groupId);

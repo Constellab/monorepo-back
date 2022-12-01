@@ -30,6 +30,7 @@ export enum CnErrorText {
   USER_NOT_IN_SPACE = 'error.user_not_in_space',
   REMOVE_GROUP_LAST_USER = 'error.remove_group_last_user',
   PROJECT_MUST_HAVE_A_GROUP ='error.project_must_have_a_group',
+  CANT_UNSHARED_PROJECT_LEADER_GROUP = 'error.cant_unshared_project_leader_group',
   EXP_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT = 'error.exp_must_be_associated_with_leaf_project',
   REPORT_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT = 'error.report_must_be_associated_with_leaf_project',
   CANNOT_DEACTIVATE_LAST_ADMIN = 'error.cannot_deactivate_last_admin',
