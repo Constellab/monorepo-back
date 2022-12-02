@@ -93,7 +93,7 @@ export class CnAuthController {
   private configureTokenCookie(token: string, expiresInMilliseconds: number, response: Response): void {
     response.cookie(cnJwtConfig.authorizationCookie, token,
       {
-        path: '/', maxAge: expiresInMilliseconds, sameSite: 'lax',
+        path: '/', maxAge: expiresInMilliseconds, sameSite: 'none',
         httpOnly: true, secure: !this.configService.isLocal(),
       });
   }
