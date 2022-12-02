@@ -137,6 +137,8 @@ export interface CaProjectAncestorTreeDTO {
 
 export interface CaProjectTreeDto {
   id: string;
+  code: string;
   title: string;
   children: CaProjectTreeDto[];
+  levelStatus: CaProjectLevelStatus;
 }

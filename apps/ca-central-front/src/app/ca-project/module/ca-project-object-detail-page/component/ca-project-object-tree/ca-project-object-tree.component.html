@@ -8,22 +8,22 @@
       <mat-tree-node *matTreeNodeDef="let node"
                      class="g-text-small tree-node"
                      [ngClass]="{'leaf-node-margin': node.level === 1, 'selected-tree-node': node.isSelected}">
-        <ca-project-icon class="node-icon" type="leaf" iconClass="g-icon-small"></ca-project-icon>
+        <ca-project-icon class="node-icon" [type]="node.levelStatus" iconClass="g-icon-small"></ca-project-icon>
         <a [routerLink]="node.id | caDetailRoute:'project'"
            [queryParams]="{} | caProjectObjectQueryParams | async"
            class="project-title g-text-link">
-          {{node.title}}
+          {{node.code}}
         </a>
       </mat-tree-node>
       <!-- This is the tree node template for expandable nodes -->
       <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
                      class="g-text-small tree-node" [ngClass]="{'selected-tree-node': node.isSelected}">
-        <ca-project-icon class="node-icon" type="parent" iconClass="g-icon-small"></ca-project-icon>
+        <ca-project-icon class="node-icon" [type]="node.levelStatus" iconClass="g-icon-small"></ca-project-icon>
 
         <a [routerLink]="node.id | caDetailRoute:'project'"
            [queryParams]="{} | caProjectObjectQueryParams | async"
            class="project-title g-text-link">
-          {{node.title}}
+          {{node.code}}
         </a>
         <button mat-icon-button matTreeNodeToggle class="g-button-icon-small toggle-parent-button"
                 [attr.aria-label]="'Toggle ' + node.title" type="button">

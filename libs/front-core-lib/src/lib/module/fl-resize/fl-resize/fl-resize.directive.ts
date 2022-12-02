@@ -1,7 +1,7 @@
 import {Directive, ElementRef, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output, Renderer2} from '@angular/core';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
-import {Observable, Subscription} from 'rxjs';
+import {Observable, of, Subscription} from 'rxjs';
 
 export type FlResizeMode = 'width' | 'height' | 'both' | 'bothKeepRatio';
 
@@ -32,7 +32,7 @@ export class FlResizeDirective implements OnInit, OnDestroy {
   /**
    * Observable on the disabled value of the text-editor
    */
-  @Input() disabled$: Observable<boolean>;
+  @Input() disabled$: Observable<boolean> = of(false);
 
   /**
    * Size of the resizer element in px
@@ -52,7 +52,7 @@ export class FlResizeDirective implements OnInit, OnDestroy {
   // size of the host on mouse down event  relative to current mode
   private baseHostSize: FlCoord;
 
-  private resizerDivs: HTMLElement[];
+  private resizerDivs: HTMLElement[] = [];
 
   private subscription: Subscription;
 
@@ -82,6 +82,7 @@ export class FlResizeDirective implements OnInit, OnDestroy {
       for (const rDiv of this.resizerDivs) {
         this.renderer.removeChild(this.elementRef.nativeElement, rDiv);
       }
+      this.resizerDivs = [];
     } else {
       // create the resizer
       this.createResizer(this.flResize);

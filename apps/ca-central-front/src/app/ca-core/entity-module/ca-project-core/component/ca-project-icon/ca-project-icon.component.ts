@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaProject} from '../../../../model/entities/ca-project.class';
+import {CaProject, CaProjectLevelStatus} from '../../../../model/entities/ca-project.class';
 
 /**
  * Icon for a project if it is a parent or a leaf project
@@ -11,7 +11,7 @@ import {CaProject} from '../../../../model/entities/ca-project.class';
 })
 export class CaProjectIconComponent implements OnInit {
 
-  @Input() type: 'parent' | 'leaf';
+  @Input() type: CaProjectLevelStatus;
 
   @Input() project: CaProject;
 
@@ -24,14 +24,17 @@ export class CaProjectIconComponent implements OnInit {
   }
 
   get projectType(): 'parent' | 'leaf' {
-    return this.type ?? (this.project.isLeaf() ? 'leaf' : 'parent');
+    if (this.type) {
+      return this.type === CaProjectLevelStatus.PARENT ? 'parent' : 'leaf';
+    }
+    return this.project.isLeaf() ? 'leaf' : 'parent';
   }
 
   get projectIcon(): string {
     return this.projectType === 'leaf' ? 'project' : 'folder';
   }
 
-  get backgroundClass(): string{
+  get backgroundClass(): string {
     return this.projectType === 'leaf' ? 'g-warn-background' : 'g-accent-background';
   }
 

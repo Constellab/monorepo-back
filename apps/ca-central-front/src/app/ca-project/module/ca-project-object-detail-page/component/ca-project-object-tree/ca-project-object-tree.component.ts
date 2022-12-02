@@ -1,5 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {CaProjectAncestorTreeDTO, CaProjectTreeDto} from '../../../../../ca-core/model/entities/ca-project.class';
+import {
+  CaProjectAncestorTreeDTO,
+  CaProjectLevelStatus,
+  CaProjectTreeDto
+} from '../../../../../ca-core/model/entities/ca-project.class';
 import {Subscription} from 'rxjs';
 import {FlFlatTreeControl} from '@monorepo/front-core-lib';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
@@ -7,10 +11,12 @@ import {CaProjectObjectDetailState} from '../../../ca-project-object-core/state/
 
 interface CaProjectFlatNode {
   id: string;
-  title: string;
+  code: string;
   level: number;
   expandable: boolean;
   isSelected: boolean;
+  levelStatus: CaProjectLevelStatus;
+
 }
 
 /**
@@ -38,8 +44,9 @@ export class CaProjectObjectTreeComponent implements OnInit, OnDestroy {
       id: node.id,
       expandable: !!node.children && node.children.length > 0,
       level: level,
-      title: node.title,
-      isSelected: false
+      code: node.code,
+      isSelected: false,
+      levelStatus: node.levelStatus
     };
   };
 

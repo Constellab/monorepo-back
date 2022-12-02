@@ -43,7 +43,7 @@ export class LabReportService {
   private reportFormToBody(report: LabReportForm): { title: string, project_id: string } {
     return {
       title: report.title,
-      project_id: report.project.id
+      project_id: report.project?.id ?? null
     };
   }
 

@@ -17,7 +17,7 @@
         <div class="radio-content">
           <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em"
                class="radio-text">
-            <ca-project-icon type="leaf"></ca-project-icon>
+            <ca-project-icon [type]="levelStatus.LEAF"></ca-project-icon>
             <div>{{'modern_project' | translate}}</div>
           </div>
 
@@ -31,7 +31,7 @@
         <div class="radio-content">
           <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em"
                class="radio-text">
-            <ca-project-icon type="parent"></ca-project-icon>
+            <ca-project-icon [type]="levelStatus.PARENT"></ca-project-icon>
             <div>{{'classic_project' | translate}}</div>
           </div>
 

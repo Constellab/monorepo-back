@@ -366,7 +366,7 @@ export class CnProjectAggregateService {
     this.logger.log('getReportImage');
     const user = CnCurrentUserHelper.getCurrentUser();
     this.logger.log('user: ' + user?.fullname ?? 'null');
-    const space = CnCurrentUserHelper.getCurrentSpace()
+    const space = CnCurrentUserHelper.getCurrentSpace();
     this.logger.log('space: ' + space?.name ?? 'null');
     const report = await this.findReport(reportId);
     //
@@ -411,7 +411,7 @@ export class CnProjectAggregateService {
     // forbid to unshare the single user group of the leader
     // this is to unsure the leader will always have access to the project
     const group = await this.groupAggregateService.findByIdAndCheck(groupId);
-    if(group instanceof CnGroupSingleUser && group.userId === project.leader.id) {
+    if (group instanceof CnGroupSingleUser && group.userId === project.leader.id) {
       throw new BlBadRequestException(CnErrorText.CANT_UNSHARED_PROJECT_LEADER_GROUP);
     }
 

@@ -1,31 +1,38 @@
-<fl-async-section [arrayObs]="groupsArray" class="g-full-height">
+<fl-dialog-header>
+  {{'project_shared_groups' | translate}}
+</fl-dialog-header>
 
-  <ng-container *flSectionBody="let groups">
+<mat-dialog-content>
+  <fl-async-section [arrayObs]="groupsArray" class="g-full-height">
 
-    <fl-card class="g-full-height">
-      <fl-card-header>
-        <h2>{{'project_shared_groups' | translate}}</h2>
+    <ng-container *flSectionBody="let groups">
 
-        <fl-card-actions>
+      <fl-card class="g-full-height">
+        <fl-card-header>
+
+          <fl-card-actions>
+
+          </fl-card-actions>
+        </fl-card-header>
+
+        <fl-card-body>
+          <div *ngFor="let group of groups" fxLayout="row" fxLayoutAlign="space-between center">
+            <ca-group-inline [group]="group"></ca-group-inline>
+
+            <button mat-icon-button type="button" (click)="openUnshareDialog(group)"
+                    [matTooltip]="'unshare' | translate" *ngIf="canEdit$ | async">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+
           <button mat-stroked-button type="button" (click)="openShareDialog()"
-                  *ngIf="canEdit$ | async">
+                  *ngIf="canEdit$ | async" class="share-button">
             <mat-icon>share</mat-icon>
             <span>{{'share' | translate}}</span>
           </button>
-        </fl-card-actions>
-      </fl-card-header>
+        </fl-card-body>
+      </fl-card>
+    </ng-container>
 
-      <fl-card-body>
-        <div *ngFor="let group of groups" fxLayout="row" fxLayoutAlign="space-between center">
-          <ca-group-inline [group]="group"></ca-group-inline>
-
-          <button mat-icon-button type="button" (click)="openUnshareDialog(group)"
-                  [matTooltip]="'unshare' | translate" *ngIf="canEdit$ | async">
-            <mat-icon>clear</mat-icon>
-          </button>
-        </div>
-      </fl-card-body>
-    </fl-card>
-  </ng-container>
-
-</fl-async-section>
+  </fl-async-section>
+</mat-dialog-content>
