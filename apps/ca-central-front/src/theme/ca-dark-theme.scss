@@ -8,7 +8,7 @@
 // include drawflow theme
 @include drawflow-theme($theme);
 
-.dashboard-background{
+.g-dashboard-background{
   background-image: linear-gradient(
       130deg,
       hsl(0deg 0% 13%) 20%,
