@@ -3,7 +3,6 @@ import {CnUser} from '../../../cn-users/cn-user.entity';
 import {Column, ManyToOne} from 'typeorm';
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 import {CnBaseEntity} from './cn-base.entity';
-import {CnProject} from '../../../cn-projects-aggregate/cn-projects/cn-project.entity';
 
 export class CnComment extends CnBaseEntity {
 
@@ -16,10 +15,6 @@ export class CnComment extends CnBaseEntity {
 
   @Column({default: false})
   isResponse: boolean;
-
-  @Type(() => CnProject)
-  @ManyToOne(() => CnProject, {eager: true, nullable: false})
-  project: CnProject;
 
   constructor() {
     super();
