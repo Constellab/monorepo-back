@@ -8,7 +8,6 @@ import {
   ViewContainerRef
 } from '@angular/core';
 import {FlDynamicFieldAbstractDirective} from '@monorepo/front-core-lib';
-import {LabPythonEditorComponent} from '../../../../standalone-component/lab-python-editor/lab-python-editor.component';
 
 /**
  * Component used under {@link FlDynamicFieldComponent} to show
@@ -26,7 +25,7 @@ export class LabPythonCodeDynamicFieldComponent extends FlDynamicFieldAbstractDi
 
   @ViewChild('viewContainer', {static: true, read: ViewContainerRef}) viewContainer: ViewContainerRef;
 
-  private componentRef: ComponentRef<LabPythonEditorComponent>;
+  private componentRef: ComponentRef<any>;
 
   constructor(private changeDetectorRef: ChangeDetectorRef) {
     super();
