@@ -1,7 +1,7 @@
 import {Directive, ElementRef, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output, Renderer2} from '@angular/core';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
-import {Observable} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 
 export type FlResizeMode = 'width' | 'height' | 'both' | 'bothKeepRatio';
 
@@ -54,6 +54,8 @@ export class FlResizeDirective implements OnInit, OnDestroy {
 
   private resizerDivs: HTMLElement[];
 
+  private subscription: Subscription;
+
 
   constructor(private renderer: Renderer2,
               private elementRef: ElementRef<HTMLElement>,
@@ -64,7 +66,9 @@ export class FlResizeDirective implements OnInit, OnDestroy {
     // set the parent to relative
     this.renderer.setStyle(this.elementRef.nativeElement, 'position', 'relative');
 
-    this.disabled$.subscribe(disable => this.onDisableChange(disable))
+    if (this.disabled$) {
+      this.subscription = this.disabled$.subscribe(disable => this.onDisableChange(disable));
+    }
   }
 
   /**
@@ -72,10 +76,10 @@ export class FlResizeDirective implements OnInit, OnDestroy {
    * @param disable
    * @private
    */
-  private onDisableChange(disable: boolean): void{
-    if(disable){
-      if(!this.resizerDivs || this.resizerDivs.length == 0) return;
-      for(const rDiv of this.resizerDivs){
+  private onDisableChange(disable: boolean): void {
+    if (disable) {
+      if (!this.resizerDivs || this.resizerDivs.length == 0) return;
+      for (const rDiv of this.resizerDivs) {
         this.renderer.removeChild(this.elementRef.nativeElement, rDiv);
       }
     } else {
@@ -288,6 +292,8 @@ export class FlResizeDirective implements OnInit, OnDestroy {
     if (this.mouseMoveListener) {
       this.mouseMoveListener();
     }
+
+    this.subscription?.unsubscribe();
   }
 
 

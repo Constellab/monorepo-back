@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {CnProjectsService} from './cn-projects/cn-projects.service';
 import {CnProjectsAggregateSecurity} from './cn-projects-aggregate.security';
 import {CnProject} from './cn-projects/cn-project.entity';
@@ -31,6 +31,7 @@ import {DataSource} from 'typeorm';
 @Injectable()
 export class CnProjectAggregateService {
 
+  protected readonly logger = new Logger(CnProjectAggregateService.name);
 
   constructor(private projectService: CnProjectsService,
               private projectSecurity: CnProjectsAggregateSecurity,
@@ -362,8 +363,13 @@ export class CnProjectAggregateService {
 
   async getReportImage(reportId: string, filename: string): Promise<IncomingMessage> {
     // check that the user can get the report
+    this.logger.log('getReportImage');
+    const user = CnCurrentUserHelper.getCurrentUser();
+    this.logger.log('user: ' + user?.fullname ?? 'null');
+    const space = CnCurrentUserHelper.getCurrentSpace()
+    this.logger.log('space: ' + space?.name ?? 'null');
     const report = await this.findReport(reportId);
-
+    //
     // check that the filename is in the report
     const content = new CnReportContent(report.content);
     if (content.getFigureOp(filename) == null) {

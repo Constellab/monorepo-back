@@ -2,7 +2,7 @@
 :host {
   min-height: 100px;
   border: var(--card-background) 1px solid;
-  border-radius: 5px;
+  border-radius: var(--card-radius);
   display: flex;
   box-sizing: border-box;
 }
