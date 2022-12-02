@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnProjectComment} from './cn-project-comment.entity';
 import {DataSource, Repository} from 'typeorm';
@@ -10,6 +10,8 @@ import {BlAbstractPaginatedService, BlObjectStorageService} from '@monorepo/back
 import {CnNotificationService, CnNotificationType} from '../cn-notification/cn-notification.service';
 import {CnNotificationCreateDTO} from '../cn-notification/cn-notification.entity';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
+import {CmRichText, CmRichTextI} from '@monorepo/common-model';
+import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 
 @Injectable()
 export class CnProjectCommentService extends CnCommentService<CnProjectComment> {
@@ -55,7 +57,7 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
   }
 
   async getProjectComments(projectId: string, page: number, size: number): Promise<ClPage<CnProjectComment>> {
-    const a: any = await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+    return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
       where: {
         project: {
           id: projectId
@@ -66,6 +68,37 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
         createdAt: 'DESC' as any
       }
     }, this.projectCommentRepository.manager, CnProjectComment);
-    return a;
+  }
+
+  async delete(commentId: string, projectId: string): Promise<void> {
+    await this.dataSource.transaction(async () => {
+      const comment: CnProjectComment = await this.projectCommentRepository.findOneBy({
+        id: commentId, project: {
+          id: projectId
+        }
+      });
+
+      if(comment.createdBy.id != CnCurrentUserHelper.getCurrentUser().id) {
+        throw new UnauthorizedException();
+      }
+      await this.deleteComment(comment);
+    });
+  }
+
+  async updateComment(projectId: string, commentId: string, content: CmRichTextI): Promise<CnProjectComment> {
+    return await this.dataSource.transaction(async () => {
+      const comment: CnProjectComment = await this.projectCommentRepository.findOneBy({
+        id: commentId,
+        project: {
+          id: projectId
+        }
+      });
+
+      if(comment.createdBy.id != CnCurrentUserHelper.getCurrentUser().id) {
+        throw new UnauthorizedException();
+      }
+      comment.content = CmRichText.getOptimisedContent(content);
+      return await this.projectCommentRepository.save(comment);
+    });
   }
 }

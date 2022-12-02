@@ -20,7 +20,7 @@ import {
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CaGroup} from '../model/entities/ca-group.entity';
 import {CaUser} from '../model/entities/ca-user.class';
-import {CaProjectComment, CaProjectCommentDatasourcePaginated} from '../model/entities/ca-comment.class';
+import {CaComment, CaProjectComment, CaProjectCommentDatasourcePaginated} from '../model/entities/ca-comment.class';
 import {CmRichTextI} from '@monorepo/common-model';
 import {map} from 'rxjs/operators';
 
@@ -161,6 +161,15 @@ export class CaProjectService {
   public newProjectComment(projectId: string, content: CmRichTextI, parentCommentId?: string): Observable<CaProjectComment> {
     return this.apiService.post(`${this.route}/${projectId}/comment`,
       {content: content, parentCommentId: parentCommentId}, CaProjectComment);
+  }
+
+  public editProjectComment(projectId: string, commentId: string, content: CmRichTextI): Observable<CaProjectComment> {
+    return this.apiService.put(`${this.route}/${projectId}/comment/${commentId}`,
+      {content: content}, CaProjectComment);
+  }
+
+  public deleteProjectComment(projectId: string, commentId: string): Observable<CaProjectComment>{
+    return this.apiService.post(`${this.route}/${projectId}/comment/${commentId}/delete`, null, CaProjectComment);
   }
 
   uploadCommentImage(file: File): Observable<FlTextEditorUploadedImage> {

@@ -30,6 +30,8 @@ export class CaCommentTextEditorConfig extends FlTextEditorConfig implements FlT
     return [];
   }
 
+
+
   getToolbarConfig(): any {
     return {
       container: [
@@ -47,10 +49,12 @@ export class CaCommentTextEditorConfig extends FlTextEditorConfig implements FlT
       {
         icon: 'image',
         type: 'fileExplorer',
-        onAction: (imgBlob: Blob, state: FlTextEditorState) => this.insertImageFromFile(
-          new File([imgBlob], ClStringHelper.generateUUID()),
-          state
-        )
+        onAction: (imgFile: File, state: FlTextEditorState) =>
+          this.insertImageFromFile(
+            new File([imgFile], ClStringHelper.generateUUID() + '.' + imgFile.name.split('.').pop(),
+              {type: imgFile.type}),
+            state
+          )
       },
       {
         icon: 'sentiment_satisfied',
@@ -66,14 +70,14 @@ export class CaCommentTextEditorConfig extends FlTextEditorConfig implements FlT
     ];
   }
 
-  private insertImageFromFile(file: File, state: FlTextEditorState): void {
+  insertImageFromFile(file: File, state: FlTextEditorState): void {
     const index = state.getCurrentSelectionIndex();
     this.projectService.uploadCommentImage(file).subscribe(
       fileUrl => state.insertImageFromUrl(fileUrl, index)
     );
   }
 
-  private openEmojiPanel(event: Event, state: FlTextEditorState): void {
+  openEmojiPanel(event: Event, state: FlTextEditorState): void {
     this.sendEmojiButtonEvent$.emit(event.target as HTMLElement);
   }
 
@@ -81,4 +85,44 @@ export class CaCommentTextEditorConfig extends FlTextEditorConfig implements FlT
     this.sendButtonEvent$.emit(true);
   }
 
+}
+
+
+export class CaEditCommentTextEditorConfig extends CaCommentTextEditorConfig {
+
+  getSnowButtons(): FlTextEditorSnowButton[] {
+    return [
+      {
+        icon: 'image',
+        type: 'fileExplorer',
+        onAction: (imgBlob: Blob, state: FlTextEditorState) => this.insertImageFromFile(
+          new File([imgBlob], ClStringHelper.generateUUID(), {type: imgBlob.type}),
+          state
+        )
+      },
+      {
+        icon: 'sentiment_satisfied',
+        type: 'button',
+        onAction: (e, state: FlTextEditorState) => this.openEmojiPanel(e, state)
+      },
+      {
+        icon: 'cancel',
+        type: 'button',
+        onAction: () => this.sendCancelEditEvent()
+      },
+      {
+        icon: 'save',
+        type: 'button',
+        onAction: () => this.sendEditEvent()
+      }
+    ];
+  }
+
+  private sendCancelEditEvent(): void {
+    this.sendButtonEvent$.emit(false);
+  }
+
+  private sendEditEvent(): void {
+    this.sendButtonEvent$.emit(true);
+  }
 }

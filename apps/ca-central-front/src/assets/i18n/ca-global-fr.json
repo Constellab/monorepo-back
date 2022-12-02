@@ -215,4 +215,7 @@
   "share_personal_space_warning": "Vous êtes sur le point de partager votre espace personnel. Si c'est pour votre entreprise ou une équipe, nous vous recommandons de créer un espace partagé dédié.",
   "switch_to_space": "Changer vers",
   "manage_your_space": "Gérer votre espace"
+  "delete_comment_title": "Supprimer le commentaire",
+  "delete_comment_confirmation": "Êtes-vous sûr de vouloir supprimer le commentaire ?",
+  "delete_comment_success": "Commentaire supprimé"
 }

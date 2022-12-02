@@ -2,13 +2,16 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {CaProject} from '../../../../../ca-core/model/entities/ca-project.class';
 import {CaProjectDetailState} from '../../state/ca-project-detail.state';
-import {CaProjectCommentDatasourcePaginated} from '../../../../../ca-core/model/entities/ca-comment.class';
+import {
+  CaProjectComment,
+  CaProjectCommentDatasourcePaginated
+} from '../../../../../ca-core/model/entities/ca-comment.class';
 import {CaProjectService} from '../../../../../ca-core/service-api/ca-project.service';
 import {CaAuthenticatedUserService} from '../../../../../ca-core/service-api/ca-authenticated-user.service';
 import {CaCommentTextEditorConfig} from '../../../../../ca-core/model/config/ca-comment-text-editor.config';
 import {FormControl, Validators} from '@angular/forms';
 import {CmRichText} from '@monorepo/common-model';
-import {FlPortalService} from '@monorepo/front-core-lib';
+import {FlConfirmDialogInput, FlDialogService, FlOverlayRef, FlPortalService} from '@monorepo/front-core-lib';
 import {
   FlEmojiPickerPortalComponent
 } from '../../../../../../../../../libs/front-core-lib/src/lib/module/fl-emoji-picker/component/fl-emoji-picker-portal/fl-emoji-picker-portal.component';
@@ -34,8 +37,8 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
   constructor(private state: CaProjectDetailState,
               private projectService: CaProjectService,
               private userService: CaAuthenticatedUserService,
-              private portalService: FlPortalService
-  ) {
+              private portalService: FlPortalService,
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
@@ -97,6 +100,36 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
     this.formControl.setValue(CmRichText.addEmoji(this.formControl.value, event));
   }
 
+  eventOnMessage(event: [FlOverlayRef, string], comment: CaProjectComment): void {
+    switch (event[1]) {
+      case 'delete':
+        const input: FlConfirmDialogInput = {
+          title: 'delete_comment_title',
+          content: 'delete_comment_confirmation',
+          translateTitleAndContent: true,
+          successMessage: 'delete_comment_success',
+          translateMessage: true
+        };
+        this.dialogService.openConfirmDialog(input).afterClosed().subscribe((res) => {
+          if(res.choice)
+            this.deleteComment(this.projectId, comment);
+        });
+        event[0].dispose();
+        break;
+      case 'edit':
+        event[0].dispose();
+        break;
+      default:
+        break;
+    }
+  }
+
+  private deleteComment(projectId: string, comment: CaProjectComment): void {
+    this.projectService.deleteProjectComment(projectId, comment.id).subscribe(() => {
+      this.comments.removeItem(comment);
+    });
+  }
+
   private openEmojiPannel(btEmoji: HTMLElement): void {
     const config = this.portalService.configureRelativePortal(btEmoji, ['top', 'bottom', 'left', 'right'],
       {
@@ -106,8 +139,8 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
         transparentBackdrop: true
       });
     this.portalService.createPortal(FlEmojiPickerPortalComponent, config).detachments().subscribe(
-      emoji =>{
-        if(emoji)
+      emoji => {
+        if (emoji)
           this.addEmoji(emoji)
       }
     );

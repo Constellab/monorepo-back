@@ -82,6 +82,9 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   @HostBinding('class')
   elementClass = 'text-editor';
 
+  @HostBinding('class.ql-dense')
+  @Input() dense: boolean = false;
+
   private quill: Quill;
 
   private blockAddButtonOverlay?: FlOverlayRef;
@@ -124,7 +127,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
       if (ClStringHelper.isHttpLink(node.nodeValue)) {
         FlQuillSetup.addMatcherLink(node.nodeValue, delta, this.state);
       }
-      return;
+      return delta;
     });
 
     this.state.init(this.quill, this.config, this.editorElement.nativeElement, this.disabled);

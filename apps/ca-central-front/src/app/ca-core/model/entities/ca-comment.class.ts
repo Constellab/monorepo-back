@@ -1,7 +1,7 @@
 import {CaBaseEntity} from './ca-base-entity.class';
 import {Type} from 'class-transformer';
-import {CaProject} from './ca-project.class';
 import {FlDatasourcePaginated, FlQuillJson} from '@monorepo/front-core-lib';
+import {CaProject} from './ca-project.class';
 
 
 export class CaComment extends CaBaseEntity {

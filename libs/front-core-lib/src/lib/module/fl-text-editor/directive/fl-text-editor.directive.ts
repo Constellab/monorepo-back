@@ -1,4 +1,4 @@
-import {Directive, ElementRef, Inject, Input, OnDestroy, OnInit, SecurityContext, ViewChild} from '@angular/core';
+import {Directive, ElementRef, HostBinding, Inject, Input, OnDestroy, OnInit, SecurityContext} from '@angular/core';
 import Quill from 'quill';
 
 import {ScrollDispatcher} from '@angular/cdk/overlay';
@@ -30,6 +30,8 @@ export class FlTextEditorDirective implements OnInit, OnDestroy {
    */
   @Input() scrollContainer: 'auto' | 'child' = 'auto'
   @Input() value: string | FlQuillJson;
+  @HostBinding('class.ql-dense')
+  @Input() dense: boolean = false;
 
   private quill: Quill;
 
@@ -46,6 +48,7 @@ export class FlTextEditorDirective implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.elementRef.nativeElement.classList.add('ql-directive');
     this.elementRef.nativeElement.classList.add('text-editor');
+
     // create and configure quill
     this.quill = new Quill(this.elementRef.nativeElement,
       {

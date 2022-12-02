@@ -29,7 +29,7 @@ import {
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CmRichTextI} from '@monorepo/common-model';
 import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
-import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
+import {CnComment, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {FilesInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 
@@ -196,10 +196,25 @@ export class CnProjectsController {
     return this.projectAggregate.createProjectComment(newComment, projectId);
   }
 
+  //Edit comment content
+  @Put(':projectId/comment/:commentId')
+  updateProjectComment(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+                @Param('commentId', new ParseUUIDPipe()) commentId: string,
+                @Body() body: any): Promise<CnComment>{
+    return this.projectAggregate.updateProjectComment(projectId, commentId, body.content);
+  }
+
+
   @Get(':projectId/comments')
   getProjectComments(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                      @Query('page', new ParseIntPipe()) page: number,
                      @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnProjectComment>> {
     return this.projectAggregate.getProjectComments(projectId, page, size);
+  }
+
+  @Post(':projectId/comment/:commentId/delete')
+  deleteProjectComment(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+                       @Param('commentId', new ParseUUIDPipe()) commentId: string): Promise<void> {
+    return this.projectAggregate.deleteProjectComment(projectId, commentId);
   }
 }

@@ -16,7 +16,6 @@
 
 .editor-snow{
   width: 100%;
-  text-align: justify;
   max-width: 100%;
   max-height: inherit;
 }
@@ -32,13 +31,13 @@
 }
 
 .snow-menu-div{
-  max-width: 20%;
+  max-width: 30%;
   width: auto;
   height: 40px;
   position: absolute;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  right: 2.5em;
-  top: 40px;
+  right: 2.25em;
+  margin-top: 40px;
 }

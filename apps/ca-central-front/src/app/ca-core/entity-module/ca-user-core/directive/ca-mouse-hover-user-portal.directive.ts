@@ -4,7 +4,7 @@ import {CaUser} from '../../../model/entities/ca-user.class';
 import {CaUserInfoPortalComponent} from '../component/ca-user-info-portal/ca-user-info-portal.component';
 
 @Directive({
-  selector: '[caMouseUserHoverPortal]'
+  selector: '[caMouseHoverUserPortal]'
 })
 export class CaMouseHoverUserPortalDirective extends FlMouseHoverPortalAbstractDirective {
 

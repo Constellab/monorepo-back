@@ -1,4 +1,4 @@
-<div class="comment" fxLayout="row">
+<div class="comment" fxLayout="row" caMouseHoverCommentPortal [data]="data" [isEditMode$]="isEditMode$">
   <div class="profile-pic">
     <fl-user-profile-picture [user]="comment.createdBy" size="3.75"></fl-user-profile-picture>
   </div>
@@ -8,8 +8,20 @@
       {{comment.createdBy.firstname}} - <fl-from-now [date]="comment.createdAt"></fl-from-now>
     </div>
 
-    <div flTextEditor mode="JSON" [config]="textEditorConfig" [value]="comment.content" class="message"></div>
+    <div flTextEditor mode="JSON" [config]="textEditorConfig" [value]="getCommentContent()"
+         class="message" *ngIf="!(isEditMode$ | async)" [dense]="true"></div>
 
+    <div class="edit-comment-div" *ngIf="isEditMode$ | async">
+      <fl-section [isLoading]="isLoading" [object]="formControl" class="section">
+        <ng-container *flSectionBody>
+          <fl-text-editor [formControl]="formControl" [config]="textEditorConfig" mode="JSON" [leftButtons]="false"
+                          placeholder="{{'write_a_comment' | translate}}"
+                          theme="VISIBLE_BUTTON" class="input-message" scrollContainer="child"
+                          (keydown.control.enter)="enterEvent($event)">
+          </fl-text-editor>
+        </ng-container>
+      </fl-section>
+    </div>
   </div>
 
 </div>

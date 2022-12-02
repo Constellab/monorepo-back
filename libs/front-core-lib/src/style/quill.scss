@@ -35,7 +35,7 @@
 }
 
 .ql-container.ql-snow .ql-editor{
-  padding-right: 20%;
+  padding-right: 32.5%;
   max-width: inherit;
   overflow-x: hidden;
 }
@@ -68,6 +68,11 @@
   fill: var(--primary-color) !important;
 }
 
+.ql-snow .ql-editor code{
+  background-color: var(--card-background);
+  color: var(--color-foreground);
+}
+
 .ql-toolbar.ql-snow .ql-formats{
   margin: 0;
   padding: 0 7.5px;
@@ -78,6 +83,7 @@
   padding-left: 0;
   border-left: none;
 }
+
 
 
 
@@ -238,3 +244,11 @@
 //.ql-directive .ql-editor *:last-child br{
 //  display: none;
 //}
+
+
+// DENSE
+.ql-dense .ql-editor p{
+  line-height: 1em !important;
+  margin-bottom: 0 !important;
+  margin-top: 0.8em;
+}

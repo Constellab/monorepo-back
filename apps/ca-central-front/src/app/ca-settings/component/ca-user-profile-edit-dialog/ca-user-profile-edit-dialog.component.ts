@@ -132,7 +132,7 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
       this.editPhotoImgElement.style.display = 'block';
       this.editPhotoImgElement.src = URL.createObjectURL(b);
     }
-    this.addFile(new File([b], 'i.png'));
+    this.addFile(new File([b], 'i.png', {type: 'image/png'}));
   }
 
   private addFile(file: File): void {

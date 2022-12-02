@@ -214,5 +214,8 @@
   "all_user_space_generated": "All user space generated",
   "share_personal_space_warning": "You are about to share your personal space. If this is for your company or a team, we recommend to create a dedicated shared space.",
   "switch_to_space": "Switch to",
-  "manage_your_space": "Manage your space"
+  "manage_your_space": "Manage your space",
+  "delete_comment_title": "Delete comment",
+  "delete_comment_confirmation": "Are you sure you want to delete this comment ?",
+  "delete_comment_success": "Comment deleted"
 }

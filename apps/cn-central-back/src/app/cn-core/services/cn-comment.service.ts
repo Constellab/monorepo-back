@@ -42,4 +42,8 @@ export class CnCommentService<T> {
   async createComment(comment: T): Promise<T> {
     return this.dataSource.manager.save(comment);
   }
+
+  async deleteComment(comment: T): Promise<T> {
+    return this.dataSource.manager.remove(comment);
+  }
 }

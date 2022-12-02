@@ -462,6 +462,10 @@ export class CnProjectAggregateService {
 
   /////////////////////////////////////// PROJECT COMMENT //////////////////////////////////
 
+  public async updateProjectComment(projectId: string, comment: string, content: CmRichTextI): Promise<CnProjectComment> {
+    return this.projectCommentService.updateComment(projectId, comment, content);
+  }
+
   public async createProjectComment(newComment: CnNewComment, projectId: string): Promise<CnProjectComment> {
     const project = await this.projectService.findById(projectId);
     return this.projectCommentService.create(newComment, project);
@@ -469,6 +473,10 @@ export class CnProjectAggregateService {
 
   public async getProjectComments(projectId: string, page: number, size: number): Promise<ClPage<CnProjectComment>> {
     return this.projectCommentService.getProjectComments(projectId, page, size);
+  }
+
+  public async deleteProjectComment(projectId: string, commentId: string): Promise<void> {
+    return this.projectCommentService.delete(commentId, projectId);
   }
 
   public async saveCommentImage(files: BlFile[]): Promise<CnCommentImage> {
