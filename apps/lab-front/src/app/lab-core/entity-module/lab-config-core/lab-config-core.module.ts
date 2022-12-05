@@ -10,7 +10,6 @@ import {LabTagDynamicFieldComponent} from './component/lab-tag-dynamic-field/lab
 import {
   LabPythonCodeDynamicFieldComponent
 } from './component/lab-python-code-dynamic-field/lab-python-code-dynamic-field.component';
-import {LabPythonEditorComponent} from '../../standalone-component/lab-python-editor/lab-python-editor.component';
 
 
 @NgModule({
@@ -24,14 +23,13 @@ import {LabPythonEditorComponent} from '../../standalone-component/lab-python-ed
     LabConfigureSpecsFormComponent,
     LabPythonCodeDynamicFieldComponent,
   ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
 
-        LabCoreModule,
-        LabPythonEditorComponent,
-    ],
+    LabCoreModule,
+  ],
 })
 export class LabConfigCoreModule {
 }
