@@ -9,9 +9,9 @@
       </fl-text-icon>
 
       <fl-section-actions>
-        <button mat-flat-button type="button" color="accent"
-                (click)="createTeam()" class="g-button-small" [matTooltip]="'create_team' | translate">
+        <button mat-stroked-button type="button" (click)="createTeam()">
           <mat-icon>add</mat-icon>
+          {{'create_team' | translate}}
         </button>
 
       </fl-section-actions>

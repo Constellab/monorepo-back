@@ -1,6 +1,6 @@
 <ca-dashboard-list-layout [datasource]="smartDb$"
                    sectionTitle="my_smart_db" titleIcon="smart_db" emptyText="no_smart_db"
-                   addText="add_new_smart_db"
+                   addText="add_new_smart_db" [showAddButton]="false"
                    [completeListRoute]="mySmartDbsRoute" completeListText="all_smart_db">
   <ng-template let-item>
     <ca-smart-db-card [smartDb]="item"></ca-smart-db-card>

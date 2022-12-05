@@ -18,7 +18,7 @@
                      [ngTemplateOutletContext]="{$implicit: item}"></ng-template>
       </a>
 
-      <ca-add-card *ngIf="datasource.page?.totalElements < maxItems"
+      <ca-add-card *ngIf="showAddButton && datasource.page?.totalElements < maxItems"
                    (click)="addClicked($event)"
                    [cardTitle]="addText | translate">
       </ca-add-card>

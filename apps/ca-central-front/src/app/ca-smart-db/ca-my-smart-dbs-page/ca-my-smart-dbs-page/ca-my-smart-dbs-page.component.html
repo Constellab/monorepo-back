@@ -9,9 +9,10 @@
       </fl-text-icon>
 
       <fl-section-actions *caIsAdmin>
-        <button mat-flat-button type="button" color="accent" [matTooltip]="'smart_db.create' | translate"
-                (click)="openCreateSmartDbDialog()" class="g-button-small">
+        <button mat-stroked-button type="button"
+                (click)="openCreateSmartDbDialog()">
           <mat-icon>add</mat-icon>
+          {{'smart_db.create' | translate}}
         </button>
       </fl-section-actions>
     </fl-section-header>

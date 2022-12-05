@@ -28,6 +28,8 @@ export class CaDashboardListLayoutComponent implements OnInit {
 
   @Input() addText: string;
 
+  @Input() showAddButton: boolean = true;
+
   @Output() addClick: EventEmitter<MouseEvent> = new EventEmitter();
 
   // get the template reference of content

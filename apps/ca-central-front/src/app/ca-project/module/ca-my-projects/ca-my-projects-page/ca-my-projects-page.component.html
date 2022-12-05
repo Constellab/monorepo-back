@@ -9,9 +9,10 @@
       </fl-text-icon>
 
       <fl-section-actions>
-        <button mat-flat-button type="button" color="accent"
-                (click)="openCreateProjectDialog()" class="g-button-small">
+        <button mat-stroked-button type="button"
+                (click)="openCreateProjectDialog()">
           <mat-icon>add</mat-icon>
+          <span>{{'new_project' | translate}}</span>
         </button>
 
       </fl-section-actions>
