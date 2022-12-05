@@ -2,7 +2,7 @@
 
   <!-- Button to toggle project tree  -->
   <button mat-icon-button type="button" *ngIf="showTreeButton$ | async; else noButton"
-          (click)="toggleTree()">
+          (click)="toggleTree()" class="toggle-button">
     <mat-icon>account_tree</mat-icon>
   </button>
 

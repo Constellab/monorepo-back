@@ -438,3 +438,8 @@ mat-tree {
     height: 45px !important;
   }
 }
+
+/************************************* MAT MENU ***********************************/
+.mat-menu-panel {
+  border-radius: var(--card-radius) !important;
+}

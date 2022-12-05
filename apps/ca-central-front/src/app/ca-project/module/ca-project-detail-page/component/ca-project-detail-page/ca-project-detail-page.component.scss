@@ -6,27 +6,31 @@
 
 .main-container {
   height: 100%;
+  padding-top: var(--main-menu-margin);
+  padding-right: 1em;
 }
 
 .left-section {
   padding-bottom: 1em;
   height: 100%;
-}
-
-.breadcrumbs {
-  // use to align breadcrumbs button with project icon
-  padding-left: 0.4em;
+  padding-left: 1em;
   padding-right: 1em;
 }
 
 .page-content {
-  padding-left: 1em;
-  padding-right: 1em;
   padding-bottom: 1em;
 }
 
 .right-section {
+  height: 100%;
+  padding-bottom: 1em;
+  box-sizing: border-box;
+}
+
+.right-panel{
   background-color: var(--card-background);
-  border-radius: var(--card-radius) 0 0 var(--card-radius);
+  border-radius: var(--card-radius);
+  display: block;
+  overflow: hidden;
   height: 100%;
 }

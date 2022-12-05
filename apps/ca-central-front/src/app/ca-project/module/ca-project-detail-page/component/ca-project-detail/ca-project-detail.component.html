@@ -9,7 +9,7 @@
 
     <!--   Settings menu   -->
     <div fxLayout="row" fxLayoutGap="1em">
-      <button mat-icon-button (click)="openShareDialog(project)" class="g-primary-background"
+      <button mat-icon-button (click)="openShareDialog(project)" class="g-button-shadow"
               *ngIf="isRootProject$ | async" [matTooltip]="'project_shared_groups' | translate">
         <mat-icon>share</mat-icon>
       </button>
@@ -17,7 +17,7 @@
                                (projectUpdated)="onProjectUpdated($event)"
                                (projectDeleted)="onProjectDeleted($event)"
                                (childProjectCreated)="onChildCreated($event)"
-                               class="actions-button"></ca-project-actions-menu>
+                               class="actions-button g-button-shadow"></ca-project-actions-menu>
     </div>
   </div>
 
@@ -44,7 +44,7 @@
          [routerLink]="'.'" queryParamsHandling="merge"
          [queryParams]="descriptionQueryParams"
          [matTooltip]="'show_project_description' | translate"
-         class="g-primary-button-icon-border"
+         class="g-button-shadow"
          [ngClass]="{'panel-button-selected': rightPanel.type === 'description'}">
         <mat-icon>description</mat-icon>
       </a>
@@ -53,7 +53,7 @@
          [routerLink]="'.'" queryParamsHandling="merge"
          [queryParams]="commentQueryParams"
          [matTooltip]="'show_project_comments' | translate"
-         class="g-primary-button-icon-border"
+         class="g-button-shadow"
          [ngClass]="{'panel-button-selected': rightPanel.type === 'comments'}">
         <mat-icon>comment</mat-icon>
       </a>

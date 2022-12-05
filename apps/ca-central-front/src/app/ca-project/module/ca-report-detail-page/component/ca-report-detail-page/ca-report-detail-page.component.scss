@@ -1,7 +1,8 @@
-// override default page padding
+// override default page padding and align with main menu
 .page {
-  padding: 0 1em 1em 1em;
+  padding: var(--main-menu-margin) 1em 0 1em;
 }
+
 
 .detail{
   display: flex;

@@ -1,6 +1,6 @@
 // override default page padding
 .page {
-  padding: 0 1em 0 1em;
+  padding: var(--main-menu-margin) 1em 0 1em;
 }
 
 .header {
