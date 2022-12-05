@@ -11,7 +11,6 @@ export * from './fl-for-by-id-of/fl-for-by-id-of.directive';
 export * from './fl-input-max-length/fl-input-max-length.directive';
 export * from './fl-mouse-hover/fl-mouse-hover.directive';
 export * from './fl-outside-click/fl-outside-click.directive';
-export * from './fl-print/fl-print.directive';
 
 // Export the models
 export * from '../fl-text-editor/model/fl-text-editor.class';

@@ -18,3 +18,10 @@
   height: 100%;
   width: 50%;
 }
+
+@media print {
+  .center{
+    width: 100%;
+    max-width: none !important;
+  }
+}

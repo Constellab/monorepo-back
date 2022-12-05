@@ -1,6 +1,6 @@
-<div fxLayout="row" fxLayoutAlign="center" class="container">
+<div fxLayout="row" fxLayoutAlign="center start" class="container">
 
-  <div class="side">
+  <div class="side g-print-hide">
     <ng-content select="fl-article-left-side"></ng-content>
   </div>
 
@@ -8,7 +8,7 @@
     <ng-content select="fl-article"></ng-content>
   </div>
 
-  <div class="side">
+  <div class="g-print-hide">
     <ng-content select="fl-article-right-side"></ng-content>
   </div>
 </div>

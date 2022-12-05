@@ -7,7 +7,6 @@ import {FlMouseHoverDirective} from './fl-mouse-hover/fl-mouse-hover.directive';
 import {FlOutsideClickDirective} from './fl-outside-click/fl-outside-click.directive';
 import {FlDisableAnimationInitDirective} from './fl-disable-animation-init/fl-disable-animation-init.directive';
 import {FlAutofocusDirective} from './fl-autofocus/fl-autofocus.directive';
-import {FlPrintDirective} from './fl-print/fl-print.directive';
 import {FlElasticSearchDirective} from './fl-elastic-search/fl-elastic-search.directive';
 import {FlAutoScrollToAnchorDirective} from './fl-auto-scroll-to-anchor/fl-auto-scroll-to-anchor.directive';
 import {FlBackupImageDirective} from './fl-backup-image/fl-backup-image.directive';
@@ -25,7 +24,6 @@ import {FlActiveRouteDirective} from './fl-active-route/fl-active-route.directiv
     FlOutsideClickDirective,
     FlDisableAnimationInitDirective,
     FlAutofocusDirective,
-    FlPrintDirective,
     FlElasticSearchDirective,
     FlAutoScrollToAnchorDirective,
     FlBackupImageDirective,
@@ -38,7 +36,6 @@ import {FlActiveRouteDirective} from './fl-active-route/fl-active-route.directiv
     FlOutsideClickDirective,
     FlDisableAnimationInitDirective,
     FlAutofocusDirective,
-    FlPrintDirective,
     FlElasticSearchDirective,
     FlAutoScrollToAnchorDirective,
     FlBackupImageDirective,

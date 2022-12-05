@@ -31,4 +31,6 @@ export class CaReportDetailPageComponent implements OnInit {
   private init(id: string): void {
     this.report$ = this.reportService.getById(id);
   }
+
+
 }

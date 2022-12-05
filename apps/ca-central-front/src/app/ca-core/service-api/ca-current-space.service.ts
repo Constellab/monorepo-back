@@ -6,6 +6,7 @@ import {environment} from '../../../environments/ca-environment';
 import {BehaviorSubject, filter, firstValueFrom, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {CaUserDatasourcePaginated} from '../model/entities/ca-user.class';
+import {Title} from '@angular/platform-browser';
 
 /**
  * Service to manage the current space
@@ -24,7 +25,8 @@ export class CaCurrentSpaceService implements FlCleanableService {
   private devSpaceStorageKey: string = 'local-space';
 
   constructor(private spaceService: CaSpaceService,
-              private cookieService: FlCookieService) {
+              private cookieService: FlCookieService,
+              private titleService: Title) {
     FlCleanerService.getInstance().registerService(this);
   }
 
@@ -51,6 +53,7 @@ export class CaCurrentSpaceService implements FlCleanableService {
   public setCurrentSpace(space: CaSpace): void {
     this.currentSpace$.next(space);
     this.currentSpaceDomainDev = space.domain;
+    this.titleService.setTitle(space.name);
 
     if (!environment.production) {
       this.cookieService.setCookie(this.devSpaceStorageKey, space.domain);

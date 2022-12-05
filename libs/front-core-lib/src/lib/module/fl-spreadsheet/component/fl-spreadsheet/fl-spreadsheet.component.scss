@@ -71,3 +71,8 @@
   transform-origin: 0 0;
 }
 
+@media print {
+  .container{
+    color: black;
+  }
+}

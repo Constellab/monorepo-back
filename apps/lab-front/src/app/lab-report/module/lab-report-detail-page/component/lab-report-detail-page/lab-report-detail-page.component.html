@@ -11,10 +11,10 @@
         <h2 fxFlex="auto">{{report.title}}</h2>
 
         <lab-sync-object-button [object]="report" [syncObjectFunc]="syncObjectFunc"
-                                (objectUpdate)="onReportUpdate($event)">
+                                (objectUpdate)="onReportUpdate($event)" class="g-print-hide">
         </lab-sync-object-button>
 
-        <div *ngIf="!report.isValidated">
+        <div *ngIf="!report.isValidated" class="g-print-hide">
           <button mat-icon-button type="button" [matTooltip]="'biox.update_report' | translate"
                   (click)="updateReport()">
             <mat-icon>edit</mat-icon>
@@ -39,7 +39,7 @@
       </div>
 
       <!--   Content   -->
-      <fl-article-container fxFlex="auto">
+      <fl-article-container>
         <fl-article-left-side>
 
           <!--  Project  -->
@@ -70,8 +70,9 @@
           </p>
         </fl-article-left-side>
         <fl-article>
-          <fl-text-editor [(ngModel)]="content" mode="JSON" [disabled]="report.isValidated" class="g-full-height"
-                          (textChange)="onContentUpdate($event)" flPrint [config]="textEditorConfig"
+          <fl-text-editor [(ngModel)]="content" mode="JSON" [disabled]="report.isValidated"
+                          class="g-full-height g-print-section"
+                          (textChange)="onContentUpdate($event)" [config]="textEditorConfig"
                           [placeholder]="'biox.report_placeholder' | translate" [autoFocus]="true"></fl-text-editor>
         </fl-article>
         <fl-article-right-side class="experiments">

@@ -1,6 +1,6 @@
 <mat-sidenav-container class="page" autosize>
-  <mat-sidenav mode="side" [opened]="true" position="start"
-               [ngClass]="toolbarColorClass | async">
+  <mat-sidenav mode="side" [opened]="true" position="start" [fixedInViewport]="true"
+               [ngClass]="toolbarColorClass | async" class="sidenav g-print-hide">
 
     <fl-expansion-menu [(expanded)]="menuExpanded">
 
@@ -11,7 +11,10 @@
                  flBackupImage="assets/logo/logo.png"/>
           </a>
 
-          <div *ngIf="menuExpanded" class="lab-name">{{labName}}</div>
+          <div *ngIf="menuExpanded" class="lab-name">
+            <p>{{labName}}</p>
+            <p *ngIf="spaceName" class="g-text-light g-text-small">{{spaceName}}</p>
+          </div>
         </div>
 
         <!-- List of main menu links   -->

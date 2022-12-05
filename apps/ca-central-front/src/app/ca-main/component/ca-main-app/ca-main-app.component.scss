@@ -3,8 +3,6 @@
 }
 
 
-
-
 .sidenav {
   width: 5rem;
   border-right: none;
@@ -96,4 +94,11 @@
 .notif-button {
   margin-bottom: 1em;
   margin-left: 2px; //align the button with the profile picture
+}
+
+@media print {
+  // use to hide menu on print
+  .content {
+    margin-left: 0 !important;
+  }
 }

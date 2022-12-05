@@ -3,8 +3,13 @@
   min-height: 100vh;
 }
 
+.sidenav{
+  height: 100vh;
+}
+
 .lab-name{
   opacity: 0.7;
+  word-break: break-word;
 }
 
 .column-container {
@@ -43,5 +48,12 @@
 
 
 .content {
-  height: 100vh;
+  min-height: 100vh;
 }
+
+@media print {
+  .content {
+    margin-left: 0 !important;
+  }
+}
+

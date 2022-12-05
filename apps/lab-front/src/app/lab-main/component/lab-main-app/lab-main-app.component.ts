@@ -28,6 +28,7 @@ export class LabMainAppComponent implements OnInit {
   labName: string;
 
   logo = 'assets/logo/logo.png';
+  spaceName?: string = null;
 
   constructor(private labEnvManager: LabEnvStore,
               private authenticatedUserService: LabAuthenticatedUserService,
@@ -59,6 +60,7 @@ export class LabMainAppComponent implements OnInit {
     this.setLabName(systemInfo.labName);
     if (systemInfo.space) {
       this.logo = this.systemService.getSpacePhotoUrl(systemInfo.space.photo);
+      this.spaceName = systemInfo.space.name;
     } else {
       console.error('No space found');
     }
