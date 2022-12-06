@@ -10,6 +10,14 @@ import {
   LabBrickCallMigrationDialogComponent
 } from './component/lab-brick-call-migration-dialog/lab-brick-call-migration-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {
+  LabMonitoringDashboardPageComponent
+} from './component/lab-monitoring-dashboard-page/lab-monitoring-dashboard-page.component';
+import {
+  LabMonitoringVenvsPageComponent
+} from './component/lab-monitoring-venvs-page/lab-monitoring-venvs-page.component';
+import {RouterModule} from '@angular/router';
+import {LabVenvCoreModule} from '../../lab-core/entity-module/lab-venv-core/lab-venv-core.module';
 
 
 @NgModule({
@@ -19,14 +27,18 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
     LabInfoComponent,
     LabBrickMessageListComponent,
     LabBrickInfoComponent,
-    LabBrickCallMigrationDialogComponent
+    LabBrickCallMigrationDialogComponent,
+    LabMonitoringDashboardPageComponent,
+    LabMonitoringVenvsPageComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    RouterModule,
 
     LabCoreModule,
+    LabVenvCoreModule,
   ]
 })
 export class LabMonitoringPageModule {

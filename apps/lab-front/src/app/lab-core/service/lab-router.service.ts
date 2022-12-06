@@ -50,9 +50,7 @@ export class LabRouterService {
     return `${this.getViewBoxRoute()}/view-config/${id}`;
   }
 
-  public static getMonitoringRoute(): string {
-    return labConstMonitoringFullRoute;
-  }
+
 
   public static getReportSearchRoute(): string {
     return labConstReportFullRoute;
@@ -72,6 +70,15 @@ export class LabRouterService {
 
   public static getLoginRoute(): string {
     return `/login`;
+  }
+
+  /////////////////// MONITORING ///////////////////
+  public static getMonitoringRoute(): string {
+    return labConstMonitoringFullRoute;
+  }
+
+  public static getMonitoringVenvsRoutes(): string {
+    return `${LabRouterService.getMonitoringRoute()}/venvs`;
   }
 
   /////////////////// NAVIGATE METHODS ///////////////////

@@ -1,6 +1,7 @@
 {
   "monitoring": {
     "monitoring": "Monitoring",
+    "dashboard": "Dashboard",
     "lab_running": "The lab is up and running",
     "lab_not_running": "The lab is not running",
     "lab_no_brick_message": "No message",
@@ -22,6 +23,19 @@
     "delete_unavailable_typings_confirmation": "Are you sure you want to remove the unavailable typings from the database ?",
     "delete_unavailable_typings_success": "Unavailable typings have been deleted",
     "synchronize_projects": "Synchronize projects",
-    "projects_synchronized": "Projects synchronized"
+    "projects_synchronized": "Projects synchronized",
+    "venv_list": "Virtual environments",
+    "venv_type": "Type",
+    "venv_origin_config_file": "Origin config file",
+    "venv_base_folder": "Base folder",
+    "venv_folder": "Folder",
+    "venv_size": "Size",
+    "venv_configuration": "Configuration file",
+    "delete_venv": "Delete virtual environment",
+    "delete_venv_confirmation": "Are you sure you want to delete this virtual environment ? It will be reinstalled the next time it is needed.",
+    "delete_venv_success": "Virtual environment deleted",
+    "delete_all_venvs": "Delete all virtual environments",
+    "delete_all_venvs_confirmation": "Are you sure you want to delete all virtual environments ? This will completely clear the virtual environments folder.",
+    "delete_all_venvs_success": "All virtual environments have been deleted"
   }
 }

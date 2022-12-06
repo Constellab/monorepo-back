@@ -1,6 +1,7 @@
 {
   "monitoring": {
     "monitoring": "Monitoring",
+    "dashboard": "Dashboard",
     "lab_running": "Le lab fonctionne",
     "lab_not_running": "Le lab est arrêté",
     "lab_no_brick_message": "Aucun message",
@@ -22,6 +23,19 @@
     "delete_unavailable_typings_confirmation": "Êtes-vous sûr de vouloir supprimer les typings indisponibles de la base de donnée ?",
     "delete_unavailable_typings_success": "Typings indisponibles supprimés",
     "synchronize_projects": "Synchroniser les projets",
-    "projects_synchronized": "Projets synchronisés"
+    "projects_synchronized": "Projets synchronisés",
+    "venv_list": "Environnements virtuels",
+    "venv_type": "Type",
+    "venv_origin_config_file": "Fichier de config d'origine",
+    "venv_base_folder": "Dossier de base",
+    "venv_folder": "Dossier",
+    "venv_size": "Taille",
+    "venv_configuration": "Fichier de configuration",
+    "delete_venv": "Supprimer l'environnement virtuel",
+    "delete_venv_confirmation": "Êtes-vous sûr de vouloir supprimer cet environnement virtuel ? Il sera réinstallé la prochaine fois qu'il sera nécessaire.",
+    "delete_venv_success": "Environnement virtuel supprimé",
+    "delete_all_venvs": "Supprimer tous les environnements virtuels",
+    "delete_all_venvs_confirmation": "Êtes-vous sûr de vouloir supprimer tous les environnements virtuels ? Cela va complétement vider le dosser des environnements virtuels.",
+    "delete_all_venvs_success": "Environnements virtuels supprimés"
   }
 }

@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {LabRouterService} from '../../../../lab-core/service/lab-router.service';
 
 @Component({
   selector: 'lab-monitoring-page',
@@ -7,7 +8,12 @@ import {Component, OnInit} from '@angular/core';
 })
 export class LabMonitoringPageComponent implements OnInit {
 
-  constructor() { }
+  monitoringRoute = LabRouterService.getMonitoringRoute();
+
+  monitoringVenvsRoute = LabRouterService.getMonitoringVenvsRoutes();
+
+  constructor() {
+  }
 
   ngOnInit(): void {
   }

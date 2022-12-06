@@ -1,0 +1,31 @@
+<fl-card>
+  <fl-card-header>
+    <fl-text-icon>
+      <mat-icon class="g-icon-big">takeout_dining</mat-icon>
+      <h2>{{'monitoring.venv_list' | translate}}</h2>
+    </fl-text-icon>
+
+    <fl-card-actions>
+      <button mat-stroked-button type="button" color="warn"
+              class="g-button-small" (click)="openDeleteAllEnvsDialog()">
+        {{'monitoring.delete_all_venvs' | translate}}
+      </button>
+    </fl-card-actions>
+  </fl-card-header>
+
+  <fl-card-body>
+
+    <fl-async-section [object]="venvsStatus$">
+
+      <ng-container *flSectionBody="let venvsStatus">
+
+        <fl-key-value>
+          <fl-key>{{'monitoring.venv_base_folder' | translate}}</fl-key>
+          {{venvsStatus.venvFolder}}
+        </fl-key-value>
+
+        <lab-venv-table [datasource]="venvsList" [columns]="displayedColumns"></lab-venv-table>
+      </ng-container>
+    </fl-async-section>
+  </fl-card-body>
+</fl-card>
