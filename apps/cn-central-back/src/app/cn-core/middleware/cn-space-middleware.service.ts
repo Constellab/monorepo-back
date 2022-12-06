@@ -1,4 +1,4 @@
-import {Injectable, Logger, NestMiddleware} from '@nestjs/common';
+import {Injectable, NestMiddleware} from '@nestjs/common';
 import {NextFunction, Request, Response} from 'express';
 import {CnSpaceService} from '../../cn-spaces/cn-space.service';
 import {CnCoreConfigService} from '../modules/cn-core-config/cn-core-config.service';
@@ -15,8 +15,6 @@ export const CN_LOCAL_SPACE_COOKIE = 'local-space';
  */
 @Injectable()
 export class CnSpaceMiddleware implements NestMiddleware<Request, Response> {
-  protected readonly logger = new Logger(CnSpaceMiddleware.name);
-
   constructor(private spaceService: CnSpaceService,
               private configService: CnCoreConfigService) {
   }
@@ -28,7 +26,6 @@ export class CnSpaceMiddleware implements NestMiddleware<Request, Response> {
     } else {
       const origin = req.header('origin') ?? req.header('referer');
       spaceDomain = ClStringHelper.getLowestDomainFromUrl(origin);
-      this.logger.log(`Space domain: '${spaceDomain}', origin: '${origin}'`);
     }
 
     if (spaceDomain == null) {

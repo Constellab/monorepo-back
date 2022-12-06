@@ -21,7 +21,7 @@ export class CaCurrentSpaceLabInstancesListComponent implements OnInit {
   constructor(private labInstanceService: CaLabInstanceService) { }
 
   ngOnInit(): void {
-    this.labInstances = this.labInstanceService.getCurrentLabInstancesDatasource();
+    this.labInstances = this.labInstanceService.getAllByCurrentSpaceDatasource();
   }
 
 }

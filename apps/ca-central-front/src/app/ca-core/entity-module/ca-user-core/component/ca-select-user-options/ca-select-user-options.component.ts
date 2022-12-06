@@ -10,8 +10,12 @@ import {CaSpaceService} from '../../../../service-api/ca-space.service';
 import {Observable} from 'rxjs';
 import {CaUsersService} from '../../../../service-api/ca-users.service';
 import {map} from 'rxjs/operators';
+import {CaAuthenticatedUserService} from '../../../../service-api/ca-authenticated-user.service';
 
-export type CaSelectUserMode = 'all' | 'space';
+/**
+ * AllForAdmin --> show all user only for G admin user otherwise space
+ */
+export type CaSelectUserMode = 'all' | 'space' | 'allForAdmin';
 
 @Component({
   selector: 'ca-select-user-options',
@@ -29,6 +33,7 @@ export class CaSelectUserOptionsComponent extends FlEmbeddedOptionsAbstractDirec
 
   constructor(private spaceService: CaSpaceService,
               private userService: CaUsersService,
+              private authenticatedUserService: CaAuthenticatedUserService,
               @Host() private select: MatSelect) {
     super(select);
   }
@@ -39,7 +44,7 @@ export class CaSelectUserOptionsComponent extends FlEmbeddedOptionsAbstractDirec
   }
 
   private getUsers(): void {
-    if (this.mode === 'all') {
+    if (this.mode === 'all' || (this.mode === 'allForAdmin' && this.authenticatedUserService.isAdmin())) {
       this.datasource = new FlEntityPaginatedDatasource(
         (page, size) => this.userService.findAll(page, size),
         20);

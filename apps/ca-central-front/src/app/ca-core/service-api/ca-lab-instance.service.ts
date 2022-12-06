@@ -82,6 +82,17 @@ export class CaLabInstanceService {
     return this.apiService.get(`${this.route}/${id}/login`);
   }
 
+  public getAllByCurrentSpace(page: number, size: number): Observable<ClPageI<CaLabInstanceWithSpace>> {
+    return this.apiService.get(`${this.route}/current-space`, CaLabInstanceWithSpace,
+      {page: page, pageSize: size, resultIsPaginated: true});
+  }
+
+  public getAllByCurrentSpaceDatasource(): CaLabInstanceWithSpaceDatasource {
+    return new FlEntityPaginatedDatasource(
+      (page, size) => this.getAllByCurrentSpace(page, size), 20
+    );
+  }
+
   public getAll(page: number, size: number): Observable<ClPageI<CaLabInstanceWithSpace>> {
     return this.apiService.get(this.route, CaLabInstanceWithSpace,
       {page: page, pageSize: size, resultIsPaginated: true});

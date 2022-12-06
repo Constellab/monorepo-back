@@ -45,7 +45,7 @@ export class CnLabInstancesController {
   }
 
   /**
-   * return the list of running lab instance created by the current user
+   * return the list of running lab instance shared with the current user
    */
   @Get('current')
   public getCurrentLabInstances(@Query('page', ParseIntPipe) page: number,

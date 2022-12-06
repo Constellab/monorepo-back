@@ -6,17 +6,17 @@
 
   <div fxLayout="row" fxLayoutAlign="start center">
     <button mat-icon-button type="button" (click)="openLabNameUpdate(labInstance)"
-            [matTooltip]="'update_lab_name' | translate" class="g-button-action">
+            [matTooltip]="'update_lab_name' | translate" class="g-button-action g-button-shadow">
       <mat-icon>edit</mat-icon>
     </button>
 
     <button mat-icon-button type="button" (click)="openStatusHistoryDialog(labInstance)"
-            [matTooltip]="'status_history' | translate" class="g-button-action">
+            [matTooltip]="'status_history' | translate" class="g-button-action g-button-shadow">
       <mat-icon>history</mat-icon>
     </button>
 
     <fl-status-chip [status]="labInstance.currentStatus.status"
-                    class="g-text-big">
+                    class="g-text-big g-button-action">
     </fl-status-chip>
   </div>
 </div>

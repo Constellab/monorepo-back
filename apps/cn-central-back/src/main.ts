@@ -4,11 +4,11 @@ import {WINSTON_MODULE_NEST_PROVIDER} from 'nest-winston';
 import {blGetCorsConfig, blGetRabbitMQUrl, blTransportQueueHub} from '@monorepo/back-core-lib';
 import {
   CN_ENVIRONMENT_PROFILE_KEY,
-  CN_ENVIRONMENT_PROFILE_PROD_VALUE,
   CN_RABBITMQ_PASSWORD_KEY,
   CN_RABBITMQ_PORT_KEY,
   CN_RABBITMQ_URL_KEY,
-  CN_RABBITMQ_USER_KEY
+  CN_RABBITMQ_USER_KEY,
+  CnEnvironmentProfile
 } from './app/cn-core/model/config/cn-config.class';
 import {Transport} from '@nestjs/microservices';
 import {CN_LOCAL_SPACE_COOKIE} from './app/cn-core/middleware/cn-space-middleware.service';
@@ -18,7 +18,9 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(CnAppModule);
 
   // enable cors
-  const isLocal = process.env[CN_ENVIRONMENT_PROFILE_KEY] !== CN_ENVIRONMENT_PROFILE_PROD_VALUE;
+  const env: CnEnvironmentProfile = process.env[CN_ENVIRONMENT_PROFILE_KEY] as any;
+  const isLocal = env === 'dev' || env === 'docker' || env === 'test';
+  console.log('isLocal ---------------', isLocal);
   // allow the local-space header only for local env
   const additionalHeader = isLocal ? [CN_LOCAL_SPACE_COOKIE] : [];
   app.enableCors(blGetCorsConfig(['constellab.space', 'preconstellab.com'], isLocal, additionalHeader));
