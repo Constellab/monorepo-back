@@ -80,7 +80,7 @@ export class SnDocElasticsearchService {
           match_all: {},
         },
       },
-      size: 10000
+      size: 10000 // max value
     });
 
     const hits: SnElasticsearchHit<SnDocument>[] = body.hits.hits;
