@@ -82,6 +82,7 @@ import {
   FlBioNetworkNodePositionsComponent
 } from './component/fl-bio-network-node-positions/fl-bio-network-node-positions.component';
 import {FlLoaderModule} from '../fl-loader/fl-loader.module';
+import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -145,6 +146,7 @@ import {FlLoaderModule} from '../fl-loader/fl-loader.module';
     FlTextIconModule,
     FlDialogModule,
     FlLoaderModule,
+    FlCorePipeModule,
   ],
 })
 export class FlBioNetworkModule {

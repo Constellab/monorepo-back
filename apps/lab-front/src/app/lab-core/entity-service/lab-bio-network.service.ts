@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {FlBioNetworkService, FlCoord} from '@monorepo/front-core-lib';
+import {FlBioNetworkService, FlUpdateMetabolite} from '@monorepo/front-core-lib';
 import {Observable, of} from 'rxjs';
 
 
@@ -12,8 +12,8 @@ export class LabBioNetworkService extends FlBioNetworkService{
   }
 
 
-  saveNodePosition(metaboliteId: string, position: FlCoord): Observable<boolean> {
-    console.log('save metabolite position', metaboliteId, position);
+  saveNodePosition(metaboliteInfo: FlUpdateMetabolite): Observable<boolean> {
+    console.log('save metabolite position', metaboliteInfo);
     return of(true);
   }
 

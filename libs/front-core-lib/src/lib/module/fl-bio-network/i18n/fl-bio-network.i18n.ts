@@ -87,9 +87,13 @@ const flBioNetworkI18nFr: FlLangTranslation = {
     legend_link: 'Lien',
     legend_dotted_link: 'Lien entre les reaction dupliquées',
     node_positions: 'Positions du noeud',
-    save_positions_to_biota_help: 'Sauvegarder les positions dans Biota. A utiliser seulement si vous avez accès à la brick biota en tant que développeur.',
+    save_positions_to_biota_help: 'Sauvegarder les positions et le niveau dans Biota. A utiliser seulement si vous avez accès à la brick biota en tant que développeur.',
     save_positions_to_biota: 'Sauvegarder',
-    save_positions_to_biota_success: 'Positions sauvegardées',
+    save_metabolite_success: 'Metabolite sauvegardées',
+    metabolite_level: 'Niveau',
+    metabolite_level_1: 'Majeur',
+    metabolite_level_2: 'Mineur',
+    metabolite_level_3: 'Cofacteur',
   }
 };
 
@@ -173,9 +177,13 @@ const flBioNetworkI18nEn: FlLangTranslation = {
     legend_link: 'Link',
     legend_dotted_link: 'Link between duplicated reactions',
     node_positions: 'Node positions',
-    save_positions_to_biota_help: 'Save positions in Biota. Use only if you have access to the biota brick as a developer.',
+    save_positions_to_biota_help: 'Save positions and level in Biota. Use only if you have access to the biota brick as a developer.',
     save_positions_to_biota: 'Save',
-    save_positions_to_biota_success: 'Positions saved',
+    save_metabolite_success: 'Metabolite saved',
+    metabolite_level: 'Level',
+    metabolite_level_1: 'Major',
+    metabolite_level_2: 'Minor',
+    metabolite_level_3: 'Cofactor',
   }
 };
 
