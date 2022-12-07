@@ -65,15 +65,13 @@ export class CnExperiment extends CnEntity {
   @ManyToOne(() => CnUser, {eager: true, nullable: true})
   validatedBy: CnUser;
 
-  @Column({nullable: true})
-  @BlLuxonDateTimeColumn()
+  @BlLuxonDateTimeColumn({nullable: true})
   validatedAt: DateTime;
 
   @Type(() => CnUser)
-  @ManyToOne(() => CnUser, {eager: true, nullable: true})
+  @ManyToOne(() => CnUser, {eager: true, nullable: false})
   lastSyncBy: CnUser;
 
-  @Column({nullable: true})
-  @BlLuxonDateTimeColumn()
+  @BlLuxonDateTimeColumn({nullable: false})
   lastSyncAt: DateTime;
 }

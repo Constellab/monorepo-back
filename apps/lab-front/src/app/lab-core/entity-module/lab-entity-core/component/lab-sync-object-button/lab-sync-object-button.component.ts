@@ -1,6 +1,11 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {LabProjectObject} from '../../../../model/entities/lab-project.class';
-import {FlConfirmDialogInput, FlConfirmDialogResult, FlDialogService} from '@monorepo/front-core-lib';
+import {
+  FlConfirmDialogInput,
+  FlConfirmDialogResult,
+  FlDialogService,
+  FlTranslateService
+} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 
 /**
@@ -17,11 +22,14 @@ export class LabSyncObjectButtonComponent<T extends LabProjectObject> implements
 
   @Input() syncObjectFunc: (id: string) => Observable<T>;
 
+  @Input() additionalConfirmText: string;
+
   @Output() objectUpdate: EventEmitter<T> = new EventEmitter();
 
   isLoading: boolean = false;
 
-  constructor(private dialogService: FlDialogService) {
+  constructor(private dialogService: FlDialogService,
+              private translateService: FlTranslateService) {
   }
 
   ngOnInit(): void {
@@ -38,10 +46,16 @@ export class LabSyncObjectButtonComponent<T extends LabProjectObject> implements
   }
 
   private openSyncConfirmDialog(): void {
+    let content =  `<p>${this.translateService.translate('biox.sync_object_confirmation')}</p>`;
+
+    if(this.additionalConfirmText){
+      content += `<p>${this.translateService.translate(this.additionalConfirmText)}</p>`;
+    }
+
     const data: FlConfirmDialogInput = {
-      title: 'biox.sync_with_central',
-      content: 'biox.sync_object_confirmation',
-      translateTitleAndContent: true,
+      title: this.translateService.translate('biox.sync_with_central'),
+      content: content,
+      translateTitleAndContent: false,
     };
 
     this.dialogService.openConfirmDialog(data).afterClosed().subscribe(

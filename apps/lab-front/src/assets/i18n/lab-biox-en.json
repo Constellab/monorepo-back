@@ -86,6 +86,7 @@
     "not_synced_with_central": "Not synced with Central",
     "sync_object_need_project": "You need to attach the object to a project to sync it with Central",
     "sync_object_confirmation": "Sync the object with Central ? Once the object is synced, it can't be attached to another projet. The synchronized objects are visible in Central.",
+    "sync_report_confirmation": "If the report is associated with experiments, the experiments will also be synced.",
     "open_resource_toolbar": "Open toolbar",
     "no_views_on_resource": "No views found",
     "view_specs": "Views",

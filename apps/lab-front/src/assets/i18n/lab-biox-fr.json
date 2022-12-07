@@ -86,6 +86,7 @@
     "not_synced_with_central": "Non synchronisé avec Central",
     "sync_object_need_project": "Vous devez rattacher l'objet à un projet pour la synchroniser avec Central",
     "sync_object_confirmation": "Synchroniser l'objet avec Central ? Une fois synchronisée, l'objet ne peut pas être rattaché à un autre projet. Les objets synchronisées sont visibles dans Central",
+    "sync_report_confirmation": "Si le rapport est associé à des expériences, les expériences seront également synchronisées.",
     "open_resource_toolbar": "Ouvrir la barre d'outil",
     "no_views_on_resource": "Aucune vue trouvée",
     "view_specs": "Vues",

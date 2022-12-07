@@ -10,7 +10,7 @@
         </mat-icon>
         <h2 fxFlex="auto">{{report.title}}</h2>
 
-        <lab-sync-object-button [object]="report" [syncObjectFunc]="syncObjectFunc"
+        <lab-sync-object-button [object]="report" [syncObjectFunc]="syncObjectFunc" additionalConfirmText="biox.sync_report_confirmation"
                                 (objectUpdate)="onReportUpdate($event)" class="g-print-hide">
         </lab-sync-object-button>
 
