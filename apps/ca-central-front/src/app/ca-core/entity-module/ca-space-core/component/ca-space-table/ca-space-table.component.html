@@ -1,5 +1,14 @@
 <mat-table fxFlex="100" mat-table [dataSource]="datasource">
 
+  <!-- name -->
+  <ng-container matColumnDef="name">
+    <mat-header-cell *matHeaderCellDef>
+      {{'name' | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let space">
+      <ca-space-inline [space]="space"></ca-space-inline>
+    </mat-cell>
+  </ng-container>
 
   <!-- Created -->
   <ng-container matColumnDef="created">

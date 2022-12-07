@@ -14,7 +14,7 @@ export class CaSpaceTableComponent extends FlTableAbstractDirective<CaSpace>
   currentSpaceRoute = CaRouterService.getCurrentSpaceRoute();
 
   constructor() {
-    super(['created', 'lastModified', 'detail']);
+    super(['name', 'created', 'lastModified', 'detail']);
   }
 
   ngOnInit(): void {

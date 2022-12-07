@@ -23,7 +23,7 @@ export class CaAdminLabInstancesListComponent implements OnInit {
 
   labInstances: CaLabInstanceWithSpaceDatasource = this.labInstanceService.getAllDatasource();
 
-  displayedColumns: FlTableColumn<CaLabInstance>[] = ['space', 'name', 'currentStatus',
+  displayedColumns: FlTableColumn<CaLabInstance>[] = ['name', 'space', 'currentStatus',
     {accessor: 'virtualHost', columnName: 'virtual_host'}, 'serverInfo', 'actions'];
 
   constructor(private labInstanceService: CaLabInstanceService,

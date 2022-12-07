@@ -15,9 +15,11 @@
     <fl-async-section [arrayObs]="datasource" emptyText="no_lab_project">
 
       <ng-container *flSectionBody>
-        <ca-lab-instance-projects-table [datasource]="datasource" [columns]="column"
-                                        [labInstanceId]="labInstanceId">
-        </ca-lab-instance-projects-table>
+        <div class="g-infinite-table g-scrollable-element">
+          <ca-lab-instance-projects-table [datasource]="datasource" [columns]="column"
+                                          [labInstanceId]="labInstanceId">
+          </ca-lab-instance-projects-table>
+        </div>
       </ng-container>
 
     </fl-async-section>
