@@ -11,6 +11,7 @@ import {CookieService} from 'ngx-cookie-service';
 import {
   FlApiModule,
   FlAuthModule,
+  FlBioNetworkModule,
   FlDialogModule,
   FlHttpInterceptorService,
   FlIconModule,
@@ -98,6 +99,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     FlUserModule.forRoot(CaUserConfig),
 
     RvResourceViewModule.forRoot({availableViews: rvDefaultViewTypeInfos}),
+    FlBioNetworkModule.forRoot(),
 
     TdTechnicalDocModule.forRoot(CaTdServiceConfig),
   ],

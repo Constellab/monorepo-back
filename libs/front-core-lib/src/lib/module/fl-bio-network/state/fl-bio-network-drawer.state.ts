@@ -2,7 +2,6 @@ import {Injectable, NgZone, OnDestroy} from '@angular/core';
 import {MatDrawer} from '@angular/material/sidenav';
 import {FlBioNetworkDrawerAction, FlBioNetworkDrawerStateValue} from '../model/fl-bio-network-drawer-action.class';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {filter, map} from 'rxjs/operators';
 import {flRxjsEnterNgZone} from '../../../utils/fl-rxjs-enter-ng-zone';
 
 
@@ -48,12 +47,8 @@ export class FlBioNetworkDrawerState implements OnDestroy {
     });
   }
 
-  public drawerClosed$(): Observable<void> {
-    return this.drawer.openedChange.pipe(
-      filter(open => !open),
-      map(() => {
-      })
-    );
+  public drawnOpenChange(): Observable<boolean> {
+    return this.drawer.openedChange;
   }
 
 

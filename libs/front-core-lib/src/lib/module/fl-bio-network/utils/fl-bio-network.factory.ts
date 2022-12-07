@@ -112,6 +112,9 @@ export class FlBioNetworkFactory {
   private initMetabolitesNodes(metabolites: FlBioNetworkMetabolite[], selectedClusters: string[]): void {
 
     for (const metabolite of metabolites) {
+      if(metabolite.id === 'hydrogen_peroxide_cytosol'){
+        console.log('debug');
+      }
       // Skip cofactors, they will be created when creating the links
       if (metabolite.is_cofactor) {
         continue;

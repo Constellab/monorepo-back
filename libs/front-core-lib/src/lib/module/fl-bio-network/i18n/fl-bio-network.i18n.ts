@@ -1,6 +1,7 @@
 import {ClSupportedLanguage} from '@monorepo/core-lib';
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import {FlLangTranslation, FlTranslateObject} from '@monorepo/front-core-lib';
+/* eslint-disable max-len */
 
 
 /**
@@ -85,6 +86,10 @@ const flBioNetworkI18nFr: FlLangTranslation = {
     legend_cofactor: 'Cofacteur',
     legend_link: 'Lien',
     legend_dotted_link: 'Lien entre les reaction dupliquées',
+    node_positions: 'Positions du noeud',
+    save_positions_to_biota_help: 'Sauvegarder les positions dans Biota. A utiliser seulement si vous avez accès à la brick biota en tant que développeur.',
+    save_positions_to_biota: 'Sauvegarder',
+    save_positions_to_biota_success: 'Positions sauvegardées',
   }
 };
 
@@ -167,6 +172,10 @@ const flBioNetworkI18nEn: FlLangTranslation = {
     legend_cofactor: 'Cofactor',
     legend_link: 'Link',
     legend_dotted_link: 'Link between duplicated reactions',
+    node_positions: 'Node positions',
+    save_positions_to_biota_help: 'Save positions in Biota. Use only if you have access to the biota brick as a developer.',
+    save_positions_to_biota: 'Save',
+    save_positions_to_biota_success: 'Positions saved',
   }
 };
 

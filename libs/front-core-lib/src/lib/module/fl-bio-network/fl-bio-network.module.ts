@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {ModuleWithProviders, NgModule, Provider, Type} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {
   FlBioNetworkNodeDetailComponent
@@ -76,6 +76,12 @@ import {
 } from './component/fl-bio-network-node-cofactor-detail/fl-bio-network-node-cofactor-detail.component';
 import {FlBioNetworkLegendComponent} from './component/fl-bio-network-legend/fl-bio-network-legend.component';
 import {FlDialogModule} from '../fl-dialog/fl-dialog.module';
+import {ScrollingModule} from '@angular/cdk/scrolling';
+import {FlBioNetworkService} from './service/fl-bio-network.service';
+import {
+  FlBioNetworkNodePositionsComponent
+} from './component/fl-bio-network-node-positions/fl-bio-network-node-positions.component';
+import {FlLoaderModule} from '../fl-loader/fl-loader.module';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -101,9 +107,11 @@ import {FlDialogModule} from '../fl-dialog/fl-dialog.module';
     FlBioNetworkNodeReactionDetailComponent,
     FlBioNetworkNodeCofactorDetailComponent,
     FlBioNetworkLegendComponent,
+    FlBioNetworkNodePositionsComponent,
   ],
   exports: [
     FlBioNetworkComponent,
+    FlBioNetworkNodePositionsComponent,
   ],
   imports: [
     CommonModule,
@@ -125,7 +133,7 @@ import {FlDialogModule} from '../fl-dialog/fl-dialog.module';
     MatAutocompleteModule,
     MatExpansionModule,
     MatProgressBarModule,
-
+    ScrollingModule,
 
     FlTranslateModule,
     FlJsonEditorModule,
@@ -136,10 +144,23 @@ import {FlDialogModule} from '../fl-dialog/fl-dialog.module';
     FlDateModule,
     FlTextIconModule,
     FlDialogModule,
+    FlLoaderModule,
   ],
 })
 export class FlBioNetworkModule {
   constructor(translateService: FlTranslateService) {
     translateService.addModuleTranslation('FlBioNetworkModule', flBioNetworkI18n);
+  }
+
+  public static forRoot(bioNetworkServiceClass?: Type<FlBioNetworkService>): ModuleWithProviders<FlBioNetworkModule> {
+    const providers: Provider[] = [];
+    if (bioNetworkServiceClass) {
+      providers.push({provide: FlBioNetworkService, useClass: bioNetworkServiceClass});
+    }
+
+    return {
+      ngModule: FlBioNetworkModule,
+      providers: providers,
+    };
   }
 }

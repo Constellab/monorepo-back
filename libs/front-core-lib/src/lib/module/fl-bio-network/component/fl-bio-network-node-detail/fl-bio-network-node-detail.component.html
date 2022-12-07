@@ -13,10 +13,11 @@
         {{'flBioNetwork.details' | translate}}
       </mat-panel-title>
     </mat-expansion-panel-header>
-    <div>x: {{node.x}}</div>
-    <div>y: {{node.y}}</div>
+
     <fl-pretty-json class="g-section json" [object]="node.data" [previewMaxTextLength]="30"></fl-pretty-json>
   </mat-expansion-panel>
+
+  <fl-bio-network-node-positions [node]="node"></fl-bio-network-node-positions>
 
   <fl-bio-network-node-links class="g-section" [node]="node"></fl-bio-network-node-links>
 </div>

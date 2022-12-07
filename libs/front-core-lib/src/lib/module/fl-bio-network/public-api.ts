@@ -10,9 +10,13 @@ export * from './component/fl-bio-network-config/fl-bio-network-config.component
 export * from './component/fl-bio-network-drawer/fl-bio-network-drawer.component';
 export * from './component/fl-bio-network-engine-config/fl-bio-network-engine-config.component';
 export * from './component/fl-bio-network-engine-progress/fl-bio-network-engine-progress.component';
+export * from './component/fl-bio-network-legend/fl-bio-network-legend.component';
 export * from './component/fl-bio-network-metabolite-detail/fl-bio-network-metabolite-detail.component';
 export * from './component/fl-bio-network-node-detail/fl-bio-network-node-detail.component';
 export * from './component/fl-bio-network-node-links/fl-bio-network-node-links.component';
+export * from './component/fl-bio-network-node-metabolite-detail/fl-bio-network-node-metabolite-detail.component';
+export * from './component/fl-bio-network-node-reaction-detail/fl-bio-network-node-reaction-detail.component';
+export * from './component/fl-bio-network-node-positions/fl-bio-network-node-positions.component';
 export * from './component/fl-bio-network-node-search/fl-bio-network-node-search.component';
 export * from './component/fl-bio-network-reaction-detail/fl-bio-network-reaction-detail.component';
 export * from './component/fl-bio-network-reaction-flux/fl-bio-network-reaction-flux.component';
@@ -41,6 +45,9 @@ export * from './renderer/fl-bio-network-object.renderer';
 export * from './renderer/fl-bio-network-nodes.renderer';
 export * from './renderer/fl-bio-network-reaction.renderer';
 export * from './renderer/fl-bio-network-zoom.renderer';
+
+// Services
+export * from './service/fl-bio-network.service';
 
 // States
 export * from './state/fl-bio-network.state';

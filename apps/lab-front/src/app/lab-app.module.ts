@@ -9,6 +9,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {
   FlApiModule,
   FlAuthModule,
+  FlBioNetworkModule,
   FlDialogModule,
   FlHttpInterceptorService,
   FlIconModule,
@@ -40,6 +41,7 @@ import {TdTechnicalDocModule} from '@monorepo/technical-doc';
 import {LabTdServiceConfig} from './lab-core/service/lab-td-service.config';
 import {labConstResourceViewTypeInfos} from './lab-core/model/entities/resource/lab-resource-view-type.class';
 import {PrProtocolModule} from '@monorepo/protocol';
+import {LabBioNetworkService} from './lab-core/entity-service/lab-bio-network.service';
 
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
@@ -87,6 +89,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
       blots: [{blot: FlTextEditorFigureBlot, componentType: FlTextEditorFigureComponent},
         {blot: LabReportContentViewBlot, componentType: LabReportContentViewComponent}]
     }),
+    FlBioNetworkModule.forRoot(LabBioNetworkService),
     RvResourceViewModule.forRoot({availableViews: labConstResourceViewTypeInfos}),
     TdTechnicalDocModule.forRoot(LabTdServiceConfig),
 

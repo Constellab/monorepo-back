@@ -142,7 +142,7 @@ export class FlBioNetworkMainRenderer implements OnDestroy {
     this.nodesRenderer.render();
 
     this.linksRenderer = new FlBioNetworkLinksRenderer(graphRenderer, this.optionState.getOptions$(),
-      this.selectionState.getSelectionMode$(), grey);
+      this.selectionState.getSelectionMode$(), themeDetail.hover);
     this.linksRenderer.render();
 
 

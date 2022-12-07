@@ -1,0 +1,21 @@
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    {{'flBioNetwork.node_positions' | translate}}
+  </mat-expansion-panel-header>
+
+  <div>x: {{node.x}}</div>
+  <div>y: {{node.y}}</div>
+
+  <!-- Section to save positions to biota -->
+  <div *ngIf="serviceIsEnabled">
+
+    <p class="g-text-light g-text-small help-text"> {{'flBioNetwork.save_positions_to_biota_help' | translate}}</p>
+
+    <button mat-stroked-button type="button" class="g-button-small g-centered-forced"
+            (click)="savePositions()">
+      <mat-icon>save</mat-icon>
+      {{'flBioNetwork.save_positions_to_biota' | translate}}
+      <fl-button-loader *ngIf="saveIsLoading"></fl-button-loader>
+    </button>
+  </div>
+</mat-expansion-panel>
