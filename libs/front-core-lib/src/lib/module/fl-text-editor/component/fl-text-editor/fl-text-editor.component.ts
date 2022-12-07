@@ -117,6 +117,8 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
             matchVisual: false
           }
         },
+        // prevent the tooltip to go outside the editor
+        bounds: this.elementRef.nativeElement,
         placeholder: this.placeholder,
         scrollingContainer: FlQuillSetup.getScrollingContainer(this.scrollContainer, this.scrollDispatcher,
           this.document.documentElement, this.elementRef)
