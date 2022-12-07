@@ -11,9 +11,6 @@ export function blGetCorsConfig(domains: string[], isLocal: boolean, additionalA
     const exactOrigin = domains.map(domain => new RegExp(`https:\\/\\/${domain.replace('.', '\\.')}`));
     origin = [...originRegex, ...exactOrigin, 'http://localhost:4200'];
   }
-  console.log('isLocal ---------------', isLocal);
-  console.log('origin ---------------', origin);
-  console.log('additionalAllowedHeader ---------------', additionalAllowedHeader);
 
   return {
     origin: origin, // use regex instead of simple '*'

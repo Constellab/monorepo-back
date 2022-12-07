@@ -20,7 +20,6 @@ async function bootstrap(): Promise<void> {
   // enable cors
   const env: CnEnvironmentProfile = process.env[CN_ENVIRONMENT_PROFILE_KEY] as any;
   const isLocal = env === 'dev' || env === 'docker' || env === 'test';
-  console.log('isLocal ---------------', isLocal);
   // allow the local-space header only for local env
   const additionalHeader = isLocal ? [CN_LOCAL_SPACE_COOKIE] : [];
   app.enableCors(blGetCorsConfig(['constellab.space', 'preconstellab.com'], isLocal, additionalHeader));

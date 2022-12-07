@@ -13,8 +13,13 @@ import {CaProjectService} from '../../../../service-api/ca-project.service';
 import {Observable} from 'rxjs';
 import {FlFormFieldDirective} from '@monorepo/front-core-lib';
 import {NgControl} from '@angular/forms';
+import {CaAuthenticatedUserService} from '../../../../service-api/ca-authenticated-user.service';
 
-
+/**
+ * List project to select one
+ * If user is a space admin, he can select any project from the space
+ * Otherwise, he can only select project shared with him
+ */
 @Component({
   selector: 'ca-select-project',
   templateUrl: './ca-select-project.component.html',
@@ -32,12 +37,17 @@ export class CaSelectProjectComponent extends FlFormFieldDirective<CaProject>
   isLoading: boolean = false;
 
   constructor(@Optional() @Self() ngControl: NgControl,
-              private projectService: CaProjectService) {
+              private projectService: CaProjectService,
+              private authenticatedUserService: CaAuthenticatedUserService) {
     super(ngControl);
   }
 
   ngOnInit(): void {
-    this.projectsDatasource = this.projectService.getMyProjectsDatasource();
+    if (this.authenticatedUserService.isCurrentSpaceAdmin()) {
+      this.projectsDatasource = this.projectService.getProjectByCurrentSpaceDatasource();
+    } else {
+      this.projectsDatasource = this.projectService.getMyProjectsDatasource();
+    }
     this.projects$ = this.projectsDatasource.connect();
   }
 
@@ -57,7 +67,7 @@ export class CaSelectProjectComponent extends FlFormFieldDirective<CaProject>
   }
 
   selectCard(project: CaProject): void {
-    if(this.disabled) return;
+    if (this.disabled) return;
     this.setAndEmitValue(project);
   }
 
