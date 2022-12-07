@@ -71,7 +71,8 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
         },
         currentStatus: {
           status: CnLabInstanceStatus.RUNNING
-        }
+        },
+        spaceId: userInfo.spaceId
       },
       relations: ['currentStatus'],
       order: {

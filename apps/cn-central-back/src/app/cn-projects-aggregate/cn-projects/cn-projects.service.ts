@@ -5,14 +5,12 @@ import {CnProject} from './cn-project.entity';
 import {CnAbstractWithStatusService} from '../../cn-core/class/cn-abstract-with-status.service';
 import {CnProjectStatus} from './cn-project-status.enum';
 import {CnProjectStatusHistory} from './cn-project-status-history.entity';
-import {ClPageI} from '@monorepo/core-lib';
+import {ClDateHelper, ClPageI} from '@monorepo/core-lib';
 import {CnGroupsService} from '../../cn-groups/cn-groups.service';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 import {CnGroup} from '../../cn-groups/cn-group.entity';
-import {CnUsersService} from '../../cn-users/cn-users.service';
-import {DateTime} from 'luxon';
 import {CnProjectLevel} from './cn-project-level.enum';
 import {CnSpace} from '../../cn-spaces/cn-space.entity';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
@@ -22,7 +20,7 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
 
   constructor(@InjectRepository(CnProject) private repository: TreeRepository<CnProject>,
               @InjectRepository(CnProjectStatusHistory) statusHistoRepo: Repository<CnProjectStatusHistory>,
-              private groupService: CnGroupsService, private userService: CnUsersService,
+              private groupService: CnGroupsService,
               datasource: DataSource) {
     super(repository, CnProject, statusHistoRepo, CnProjectStatusHistory, datasource);
   }
@@ -86,8 +84,7 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
   }
 
   public async getProjectsOfUserId(userId: string, spaceId: string): Promise<CnProject[]> {
-    const user = await this.userService.findByIdAndCheck(userId);
-    return (await this.getProjectOfUser(user.id, spaceId, 0, 1000)).objects;
+    return (await this.getProjectOfUser(userId, spaceId, 0, 1000)).objects;
   }
 
   /**
@@ -136,13 +133,16 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
     return this.findWithSharedGroups(project.rootParentId);
   }
 
+  // TODO to improve
   public async getOnGoingProjectsNumber(): Promise<number> {
     const user: CnUser = CnCurrentUserHelper.getAndCheckCurrentUser();
     const space: CnSpace = CnCurrentUserHelper.getAndCheckCurrentSpace();
     const projects: CnProject[] = await this.getProjectsOfUserId(user.id, space.id);
+
+    const currentDate = ClDateHelper.getDate();
     return (projects.filter(project =>
-      project.startingDate < DateTime.fromJSDate(new Date()) &&
-      project.endingDate > DateTime.fromJSDate(new Date()))).length;
+      (project.startingDate == null || project.startingDate < currentDate) &&
+      (project.endingDate == null || project.endingDate > currentDate))).length;
   }
 
   /**

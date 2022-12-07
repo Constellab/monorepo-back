@@ -18,8 +18,6 @@ import {AxiosResponse} from 'axios';
 import {CnReportContent, CnReportViewConfig} from './cn-report-content.class';
 import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
-import {CnUser} from '../../cn-users/cn-user.entity';
-import {CnUsersService} from '../../cn-users/cn-users.service';
 
 @Injectable()
 export class CnReportsService extends BlAbstractService<CnReport> {
@@ -28,8 +26,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
               private objectStorageService: BlObjectStorageService,
               private configService: CnCoreConfigService,
               private externalLabService: CnExternalLabApiService,
-              private labConfigService: CnLabConfigsService,
-              private userService: CnUsersService) {
+              private labConfigService: CnLabConfigsService) {
     super(repository, CnReport);
   }
 
@@ -122,15 +119,19 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   }
 
   async getView(filename: string): Promise<IncomingMessage> {
-    return await this.objectStorageService.getObject(this.getBucketConfig('view'),filename);
+    return await this.objectStorageService.getObject(this.getBucketConfig('view'), filename);
   }
 
-  public async getCurrentUserValidatedReport(): Promise<CnReport[]> {
-    const currentUser: CnUser = this.userService.getCurrent();
+  public async getCurrentUserVCreatedReport(): Promise<CnReport[]> {
+    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+
     return this.repository.find({
       where: {
-        validatedBy: {
-          id: currentUser.id
+        createdBy: {
+          id: userInfo.userId
+        },
+        project: {
+          spaceId: userInfo.spaceId
         }
       }
     });

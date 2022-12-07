@@ -7,16 +7,13 @@ import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
 import {BlAbstractService, BlBadRequestException, BlUnauthorizedException} from '@monorepo/back-core-lib';
-import {CnUser} from '../../cn-users/cn-user.entity';
-import {CnUsersService} from '../../cn-users/cn-users.service';
 import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
 
 @Injectable()
 export class CnExperimentsService extends BlAbstractService<CnExperiment> {
 
   constructor(@InjectRepository(CnExperiment) private repository: Repository<CnExperiment>,
-              private labConfigService: CnLabConfigsService,
-              private userService: CnUsersService) {
+              private labConfigService: CnLabConfigsService) {
     super(repository, CnExperiment);
   }
 
@@ -99,12 +96,15 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
   }
 
 
-  public async getCurrentUserValidatedExperiment(): Promise<CnExperiment[]> {
-    const currentUser: CnUser = this.userService.getCurrent();
+  public async getCurrentUserCreatedExperiment(): Promise<CnExperiment[]> {
+    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     return await this.repository.find({
       where: {
-        validatedBy: {
-          id: currentUser.id
+        createdBy: {
+          id: userInfo.userId
+        },
+        project: {
+          spaceId: userInfo.spaceId
         }
       },
       order: {
@@ -117,7 +117,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
 
   //Get user last 3 experiments
   public async getCurrentUserLastExperiments(): Promise<CnExperiment[]> {
-    return (await this.getCurrentUserValidatedExperiment()).slice(0, 3);
+    return (await this.getCurrentUserCreatedExperiment()).slice(0, 3);
   }
 
   public async getExperimentLabConfig(experimentId: string): Promise<CnLabConfig> {
