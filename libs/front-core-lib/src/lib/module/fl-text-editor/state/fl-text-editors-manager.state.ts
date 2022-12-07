@@ -15,6 +15,8 @@ interface FlTextEditorStateStore {
 @Injectable({providedIn: 'root'})
 export class FlTextEditorsManagerState {
 
+  public static textEditorElementClass = 'g-text-editor-element';
+
   private states: FlTextEditorStateStore[] = [];
 
   constructor() {
@@ -42,7 +44,7 @@ export class FlTextEditorsManagerState {
   }
 
   public getState(element: HTMLElement): FlTextEditorState | null {
-    const parentElement = FlHtmlHelper.getParent(element, {className: 'text-editor'});
+    const parentElement = FlHtmlHelper.getParent(element, {className: FlTextEditorsManagerState.textEditorElementClass});
 
     if (parentElement == null) {
       return null;

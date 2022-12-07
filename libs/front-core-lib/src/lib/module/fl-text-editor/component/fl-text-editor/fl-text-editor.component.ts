@@ -10,6 +10,7 @@ import {
   OnInit,
   Optional,
   Output,
+  Renderer2,
   SecurityContext,
   Self,
   ViewChild
@@ -54,7 +55,7 @@ type FlTextEditorMode = 'HTML' | 'JSON'
   selector: 'fl-text-editor',
   templateUrl: './fl-text-editor.component.html',
   styleUrls: ['./fl-text-editor.component.scss'],
-  providers: [FlTextEditorState]
+  providers: [FlTextEditorState],
 })
 export class FlTextEditorComponent extends FlFormFieldDirective<string> implements OnInit, OnDestroy {
 
@@ -79,8 +80,6 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
 
   @Output() textChange: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('editor', {static: true}) editorElement: ElementRef<HTMLElement>;
-  @HostBinding('class')
-  elementClass = 'text-editor';
 
   @HostBinding('class.ql-dense')
   @Input() dense: boolean = false;
@@ -93,13 +92,15 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
               private sanitizer: DomSanitizer,
               @Inject(DOCUMENT) private document: Document,
               private scrollDispatcher: ScrollDispatcher,
-              private elementRef: ElementRef,
+              private elementRef: ElementRef<HTMLElement>,
               private portalService: FlPortalService,
               private zone: NgZone,
               private state: FlTextEditorState,
-              private managerState: FlTextEditorsManagerState) {
+              private managerState: FlTextEditorsManagerState,
+              private renderer: Renderer2) {
     super(ngControl);
     managerState.registerTextEditor(elementRef.nativeElement, state);
+    renderer.addClass(this.elementRef.nativeElement, FlTextEditorsManagerState.textEditorElementClass);
   }
 
   ngOnInit(): void {
@@ -142,7 +143,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
       this.quill.focus();
     }
 
-    if(this.theme === 'VISIBLE_BUTTON'){
+    if (this.theme === 'VISIBLE_BUTTON') {
       const keyboard = this.quill.getModule('keyboard');
       //Delete the linebreak event on enter key pressed
       delete keyboard.bindings[13];
@@ -154,7 +155,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
 
   }
 
-  getState(): FlTextEditorState{
+  getState(): FlTextEditorState {
     return this.state;
   }
 

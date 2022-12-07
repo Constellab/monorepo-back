@@ -3,11 +3,13 @@
               [opened]="!isSmallScreen || sideNavIsOpen">
     <div class="sidenav">
 
-      <mat-form-field class="input-tech-doc g-form-field-compact-height" appearance="outline">
-        <mat-label>{{'research_doc' | translate}}</mat-label>
-        <mat-icon matPrefix>search</mat-icon>
-        <input type="text" matInput [formControl]="searchTechDocControl" autocomplete="off">
-      </mat-form-field>
+      <div class="search-container">
+        <mat-form-field class="input-tech-doc g-form-field-compact-height" appearance="outline">
+          <mat-label>{{'research_doc' | translate}}</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input type="text" matInput [formControl]="searchTechDocControl" autocomplete="off">
+        </mat-form-field>
+      </div>
 
       <mat-tree *ngIf="dataSource$ | async" [dataSource]="dataSource$ | async" [treeControl]="treeControl"
                 class="tree item g-full-height g-drag-anim-order"

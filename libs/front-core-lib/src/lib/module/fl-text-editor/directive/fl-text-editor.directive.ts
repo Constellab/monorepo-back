@@ -1,4 +1,14 @@
-import {Directive, ElementRef, HostBinding, Inject, Input, OnDestroy, OnInit, SecurityContext} from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  HostBinding,
+  Inject,
+  Input,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+  SecurityContext
+} from '@angular/core';
 import Quill from 'quill';
 
 import {ScrollDispatcher} from '@angular/cdk/overlay';
@@ -28,7 +38,7 @@ export class FlTextEditorDirective implements OnInit, OnDestroy {
    * If auto it finds the parent scrollable element (use cdkScrollable),
    * otherwise it uses the child .ql-editor as scrollable
    */
-  @Input() scrollContainer: 'auto' | 'child' = 'auto'
+  @Input() scrollContainer: 'auto' | 'child' = 'auto';
   @Input() value: string | FlQuillJson;
   @HostBinding('class.ql-dense')
   @Input() dense: boolean = false;
@@ -41,13 +51,14 @@ export class FlTextEditorDirective implements OnInit, OnDestroy {
               private scrollDispatcher: ScrollDispatcher,
               private sanitizer: DomSanitizer,
               private portalService: FlPortalService,
-              private managerState: FlTextEditorsManagerState) {
+              private managerState: FlTextEditorsManagerState,
+              renderer: Renderer2) {
     managerState.registerTextEditor(elementRef.nativeElement, state);
+    renderer.addClass(this.elementRef.nativeElement, 'ql-directive');
+    renderer.addClass(this.elementRef.nativeElement, FlTextEditorsManagerState.textEditorElementClass);
   }
 
   ngOnInit(): void {
-    this.elementRef.nativeElement.classList.add('ql-directive');
-    this.elementRef.nativeElement.classList.add('text-editor');
 
     // create and configure quill
     this.quill = new Quill(this.elementRef.nativeElement,
@@ -82,23 +93,23 @@ export class FlTextEditorDirective implements OnInit, OnDestroy {
    * Remove the last <p><br></p> element in the text editor
    * @private
    */
-  private removeLastUselessElement(): void{
+  private removeLastUselessElement(): void {
     const elements: any[] = this.quill.getContents().ops;
-    const lastElement: any = elements[elements.length-1]??null;
-    const preLastElement: any = elements[elements.length-2]??null;
+    const lastElement: any = elements[elements.length - 1] ?? null;
+    const preLastElement: any = elements[elements.length - 2] ?? null;
 
-    if(lastElement && lastElement.insert && lastElement.insert == '\n' &&
-      preLastElement && preLastElement.insert && preLastElement.insert.figure){
+    if (lastElement && lastElement.insert && lastElement.insert == '\n' &&
+      preLastElement && preLastElement.insert && preLastElement.insert.figure) {
       elements.pop();
       const editorElement: HTMLDivElement = this.elementRef.nativeElement.querySelector('.ql-editor');
-      editorElement.removeChild(editorElement.childNodes[editorElement.childElementCount-1]);
+      editorElement.removeChild(editorElement.childNodes[editorElement.childElementCount - 1]);
     }
 
   }
 
   ngOnDestroy(): void {
     const editorElement: HTMLDivElement = this.elementRef.nativeElement.querySelector('.ql-editor');
-    if(editorElement){
+    if (editorElement) {
       this.managerState.unregisterTextEditor(editorElement);
     }
   }

@@ -25,12 +25,16 @@
   height: auto;
   width: 20rem;
   min-width: 20rem;
-  padding-right: 1em;
   max-width: 25rem  ;
   background-color: var(--main-background);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+.search-container{
+  padding-left: 1em;
+  padding-right: 1em;
 }
 
 @media (max-width: 959px) {
