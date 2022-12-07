@@ -4,6 +4,7 @@ import {RvResourceView} from '@monorepo/resource-view';
 import {CaReportViewConfig} from '../../model/ca-report-content-view.class';
 import {FlTextEditorElementDirective, FlTextEditorsManagerState} from '@monorepo/front-core-lib';
 import {CaTextEditorConfig} from '../../../../../ca-core/model/config/ca-text-editor-config.class';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'ca-report-content-view',
@@ -25,7 +26,9 @@ export class CaReportContentViewComponent extends FlTextEditorElementDirective i
   }
 
   ngOnInit(): void {
-    this.view$ = this.config.getView(this.viewConfig.filename);
+    this.view$ = this.config.getView(this.viewConfig.filename).pipe(
+      map(reportView => reportView.view)
+    );
   };
 
 }

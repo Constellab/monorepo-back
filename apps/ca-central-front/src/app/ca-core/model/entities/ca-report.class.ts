@@ -1,10 +1,11 @@
 import {CaBaseEntity} from './ca-base-entity.class';
 import {FlQuillJson} from '@monorepo/front-core-lib';
-import {Type} from 'class-transformer';
+import {Expose, Type} from 'class-transformer';
 import {CaUser} from './ca-user.class';
 import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {CaProjectObject} from './ca-project.class';
+import {RvResourceView} from '@monorepo/resource-view';
 
 export class CaReport extends CaBaseEntity implements CaProjectObject {
 
@@ -27,4 +28,15 @@ export class CaReport extends CaBaseEntity implements CaProjectObject {
 
   @Type(() => CaUser)
   lastSyncBy?: CaUser;
+}
+
+export class CaResourceView {
+
+  view: RvResourceView;
+
+  @Expose({name: 'resource_id'})
+  resourceId: string;
+
+  @Expose({name: 'view_config'})
+  viewConfig: any;
 }

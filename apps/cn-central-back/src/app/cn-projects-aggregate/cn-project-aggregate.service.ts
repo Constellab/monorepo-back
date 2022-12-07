@@ -384,7 +384,7 @@ export class CnProjectAggregateService {
     // check that the filename is in the report
     const content = new CnReportContent(report.content);
     if (content.getViewsOp(filename) == null) {
-      throw new BlUnauthorizedException();
+      throw new BlUnauthorizedException("The view is not in the report");
     }
     return this.reportService.getView(filename);
   }

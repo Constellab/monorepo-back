@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {CaReport} from '../model/entities/ca-report.class';
+import {CaReport, CaResourceView} from '../model/entities/ca-report.class';
 import {FlApiService, FlQuillJson} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {RvResourceView} from '@monorepo/resource-view';
 
 @Injectable({
   providedIn: 'root'
@@ -36,8 +35,8 @@ export class CaReportService {
     return this.apiService.getBaseRouteUrl(`${this.route}/${reportId}/image/${filename}`);
   }
 
-  getView(reportId: string, filename: string): Observable<RvResourceView> {
-    return this.apiService.get(`${this.route}/${reportId}/view/${filename}`);
+  getView(reportId: string, filename: string): Observable<CaResourceView> {
+    return this.apiService.get(`${this.route}/${reportId}/view/${filename}`, CaResourceView);
   }
 
 }

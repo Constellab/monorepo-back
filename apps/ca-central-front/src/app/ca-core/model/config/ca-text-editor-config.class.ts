@@ -2,12 +2,12 @@ import {
   FlQuillConfig,
   FlTextEditorBlockAddButton,
   FlTextEditorConfig,
-  FlTextEditorImageLoader, FlTextEditorSnowButton,
-  FlTextEditorState
+  FlTextEditorImageLoader,
+  FlTextEditorSnowButton
 } from '@monorepo/front-core-lib';
 import {CaReportService} from '../../service-api/ca-report.service';
-import {RvResourceView} from '@monorepo/resource-view';
 import {Observable} from 'rxjs';
+import {CaResourceView} from '../entities/ca-report.class';
 
 /**
  * Config for the text editor in the report
@@ -31,11 +31,11 @@ export class CaTextEditorConfig extends FlTextEditorConfig implements FlTextEdit
     return this.reportService.getImageUrl(this.reportId, filename);
   }
 
-  public getView(filename: string): Observable<RvResourceView> {
+  public getView(filename: string): Observable<CaResourceView> {
     return this.reportService.getView(this.reportId, filename);
   }
 
-  onPasteImage(imgFile: File, state: FlTextEditorState): any {
+  onPasteImage(): any {
     return null;
   }
 
