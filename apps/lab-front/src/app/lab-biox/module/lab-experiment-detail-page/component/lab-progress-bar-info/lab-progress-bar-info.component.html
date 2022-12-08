@@ -1,10 +1,26 @@
-<fl-key-value class="execution-time" *ngIf="progressBar.data.elapsedTime > 0">
-  <fl-key>{{'biox.execution_time' | translate}}</fl-key>
-  {{progressBar.data.elapsedTime * 1000 | flDuration}}
-</fl-key-value>
+<ng-container *ngIf="elapsedTime$ | async as elapsedTime">
+  <fl-key-value  *ngIf="elapsedTime > 0">
+    <fl-key>{{'biox.execution_time' | translate}}</fl-key>
+    {{elapsedTime | flDuration}}
+  </fl-key-value>
+</ng-container>
 
-<div>
-  <div *ngFor="let message of progressBar.data.messages">
+<div *ngIf="progressBar$ | async as progressBar">
+  <div class="dates">
+    <fl-key-value *ngIf="progressBar.startedAt">
+      <fl-key>{{'begin_date' | translate}}</fl-key>
+      {{progressBar.startedAt | flDate:'DATETIME_MED_WITH_SECONDS'}}
+    </fl-key-value>
+
+    <fl-key-value *ngIf="progressBar.endedAt">
+      <fl-key>{{'end_date' | translate}}</fl-key>
+      {{progressBar.endedAt | flDate:'DATETIME_MED_WITH_SECONDS'}}
+    </fl-key-value>
+  </div>
+
+
+
+  <div *ngFor="let message of progressBar.messages">
     <!--    <div fxLayout="row" fxLayoutAlign="space-between" class="g-full">-->
     <div fxLayout="row" fxLayoutAlign="space-between" class="g-full">
       <fl-status-chip [status]="message.type" mode="iconText" size="small"></fl-status-chip>

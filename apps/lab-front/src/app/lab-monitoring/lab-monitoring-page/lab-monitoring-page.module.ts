@@ -18,6 +18,8 @@ import {
 } from './component/lab-monitoring-venvs-page/lab-monitoring-venvs-page.component';
 import {RouterModule} from '@angular/router';
 import {LabVenvCoreModule} from '../../lab-core/entity-module/lab-venv-core/lab-venv-core.module';
+import {LabMonitoringLogsPageComponent} from './component/lab-monitoring-logs-page/lab-monitoring-logs-page.component';
+import {LabLogCoreModule} from '../../lab-core/entity-module/lab-log-core/lab-log-core.module';
 
 
 @NgModule({
@@ -29,7 +31,8 @@ import {LabVenvCoreModule} from '../../lab-core/entity-module/lab-venv-core/lab-
     LabBrickInfoComponent,
     LabBrickCallMigrationDialogComponent,
     LabMonitoringDashboardPageComponent,
-    LabMonitoringVenvsPageComponent
+    LabMonitoringVenvsPageComponent,
+    LabMonitoringLogsPageComponent
   ],
   imports: [
     CommonModule,
@@ -39,6 +42,7 @@ import {LabVenvCoreModule} from '../../lab-core/entity-module/lab-venv-core/lab-
 
     LabCoreModule,
     LabVenvCoreModule,
+    LabLogCoreModule,
   ]
 })
 export class LabMonitoringPageModule {

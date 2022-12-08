@@ -36,6 +36,14 @@
     "delete_venv_success": "Environnement virtuel supprimé",
     "delete_all_venvs": "Supprimer tous les environnements virtuels",
     "delete_all_venvs_confirmation": "Êtes-vous sûr de vouloir supprimer tous les environnements virtuels ? Cela va complétement vider le dosser des environnements virtuels.",
-    "delete_all_venvs_success": "Environnements virtuels supprimés"
+    "delete_all_venvs_success": "Environnements virtuels supprimés",
+    "logs": "Logs",
+    "log_folder": "Dosser des logs",
+    "log_file": "Fichier de log",
+    "log_size": "Taille",
+    "view_logs": "Voir les logs",
+    "log_content": "Contenu",
+    "log_from_date": "Depuis",
+    "log_to_date": "Jusqu'à"
   }
 }

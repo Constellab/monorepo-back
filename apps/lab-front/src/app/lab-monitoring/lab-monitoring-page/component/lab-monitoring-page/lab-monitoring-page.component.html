@@ -14,10 +14,14 @@
       {{'monitoring.dashboard' | translate}}
     </a>
 
-    <a mat-button [routerLink]="monitoringVenvsRoute" routerLinkActive="menu-active"
-       [routerLinkActiveOptions]="{exact: true}">
+    <a mat-button [routerLink]="monitoringVenvsRoute" routerLinkActive="menu-active">
       <mat-icon>takeout_dining</mat-icon>
       {{'monitoring.venv_list' | translate}}
+    </a>
+
+    <a mat-button [routerLink]="monitoringLogsRoute" routerLinkActive="menu-active">
+      <mat-icon>description</mat-icon>
+      {{'monitoring.logs' | translate}}
     </a>
   </div>
 

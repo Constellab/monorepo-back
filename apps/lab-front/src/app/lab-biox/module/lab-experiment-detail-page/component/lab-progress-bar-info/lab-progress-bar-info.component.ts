@@ -1,5 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {LabProgressBar} from '../../../../../lab-core/model/entities/lab-progress-bar.entity';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 /**
  * Show information about a {@link LabProgressBar}
@@ -11,12 +13,17 @@ import {LabProgressBar} from '../../../../../lab-core/model/entities/lab-progres
 })
 export class LabProgressBarInfoComponent implements OnInit {
 
-  @Input() progressBar: LabProgressBar;
+  @Input() progressBar$: Observable<LabProgressBar>;
+
+  elapsedTime$: Observable<number>;
 
   constructor() {
   }
 
   ngOnInit(): void {
+    this.elapsedTime$ = this.progressBar$.pipe(
+      map(progressBar => progressBar.elapsedTime)
+    );
   }
 
 }

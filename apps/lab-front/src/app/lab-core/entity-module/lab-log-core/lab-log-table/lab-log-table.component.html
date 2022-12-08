@@ -1,0 +1,68 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource">
+
+
+  <!-- Name-->
+  <ng-container matColumnDef="name">
+    <mat-header-cell *matHeaderCellDef>
+      {{'monitoring.log_file' | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let log">
+      {{log.name}}
+    </mat-cell>
+  </ng-container>
+
+  <!-- fileSize-->
+  <ng-container matColumnDef="fileSize">
+    <mat-header-cell *matHeaderCellDef>
+      {{'monitoring.log_size' | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let log">
+      {{log.fileSize | flByteText}}
+    </mat-cell>
+  </ng-container>
+
+
+  <!-- Actions -->
+  <ng-container matColumnDef="actions">
+    <mat-header-cell class="g-table-icon-button-cell" *matHeaderCellDef>
+    </mat-header-cell>
+    <mat-cell class="g-table-icon-button-cell" *matCellDef="let row">
+
+      <!--   Mat menu containing action buttons   -->
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" xPosition="before">
+
+        <button mat-menu-item type="button"
+                (click)="openCompleteLog(row)">
+          <mat-icon>visibility</mat-icon>
+          <span>{{'monitoring.view_logs' | translate}}</span>
+        </button>
+
+        <button mat-menu-item type="button"
+                (click)="downloadLog(row)">
+          <mat-icon>download</mat-icon>
+          <span>{{'monitoring.log_download' | translate}}</span>
+        </button>
+      </mat-menu>
+    </mat-cell>
+  </ng-container>
+
+
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
+    <mat-header-cell *matHeaderCellDef>
+      {{column.columnName | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <div>
+        <span>{{row[column.accessor]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+</mat-table>

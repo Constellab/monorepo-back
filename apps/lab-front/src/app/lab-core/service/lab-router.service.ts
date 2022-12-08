@@ -77,8 +77,12 @@ export class LabRouterService {
     return labConstMonitoringFullRoute;
   }
 
-  public static getMonitoringVenvsRoutes(): string {
+  public static getMonitoringVenvsRoute(): string {
     return `${LabRouterService.getMonitoringRoute()}/venvs`;
+  }
+
+  public static getMonitoringLogsRoute(): string {
+    return `${LabRouterService.getMonitoringRoute()}/logs`;
   }
 
   /////////////////// NAVIGATE METHODS ///////////////////

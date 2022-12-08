@@ -36,6 +36,15 @@
     "delete_venv_success": "Virtual environment deleted",
     "delete_all_venvs": "Delete all virtual environments",
     "delete_all_venvs_confirmation": "Are you sure you want to delete all virtual environments ? This will completely clear the virtual environments folder.",
-    "delete_all_venvs_success": "All virtual environments have been deleted"
+    "delete_all_venvs_success": "All virtual environments have been deleted",
+    "logs": "Logs",
+    "log_folder": "Log folder",
+    "log_file": "Log file",
+    "log_size": "Size",
+    "view_logs": "View logs",
+    "log_content": "Content",
+    "log_from_date": "From date",
+    "log_to_date": "To date",
+    "log_download": "Download file"
   }
 }

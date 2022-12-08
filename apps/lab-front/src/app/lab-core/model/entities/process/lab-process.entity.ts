@@ -5,6 +5,10 @@ import {FlStatus, FlStatusTransform} from '@monorepo/front-core-lib';
 import {LabBaseEntityWithUser} from '../lab-user.entity';
 import {TdTypingName} from '@monorepo/technical-doc';
 import {PrConfigValues, PrIO, PrProcess, prProcessStatusDict} from '@monorepo/protocol';
+import {DateTime} from 'luxon';
+import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
+
+export type LabProcessClass = 'TASK' | 'PROTOCOL';
 
 export interface LabProcessData {
   title: string;
@@ -59,6 +63,16 @@ export class LabProcess extends LabBaseEntityWithUser implements PrProcess {
   @Expose({name: 'brick_version'})
   brickVersion: string;
 
+  @Expose({name: 'started_at'})
+  @ClLuxonDateTimeTransform()
+  startedAt?: DateTime;
+
+  @Expose({name: 'ended_at'})
+  @ClLuxonDateTimeTransform()
+  endedAt?: DateTime;
+
+
+
 
   public hasConfig(): boolean {
     return this.config?.specs.hasProperties() ?? false;
@@ -96,5 +110,9 @@ export class LabProcess extends LabBaseEntityWithUser implements PrProcess {
 
   isRunning(): boolean {
     return this.status.value === 'RUNNING';
+  }
+
+  getProcessType(): LabProcessClass {
+    return this.isProtocol ? 'PROTOCOL' : 'TASK';
   }
 }

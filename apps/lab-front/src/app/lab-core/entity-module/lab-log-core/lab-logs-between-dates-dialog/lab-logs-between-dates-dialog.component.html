@@ -1,0 +1,12 @@
+<fl-dialog-header>
+  {{title}}
+</fl-dialog-header>
+
+<mat-dialog-content>
+  <fl-async-section [object]="logs$">
+
+    <ng-container *flSectionBody="let logs">
+      <lab-logs-between-dates [logs]="logs"></lab-logs-between-dates>
+    </ng-container>
+  </fl-async-section>
+</mat-dialog-content>

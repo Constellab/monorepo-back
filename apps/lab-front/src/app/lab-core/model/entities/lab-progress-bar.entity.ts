@@ -1,6 +1,6 @@
 import {LabBaseEntity} from '../global/lab-entity.entity';
 import {Expose, Type} from 'class-transformer';
-import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
+import {ClDateHelper, ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
 
@@ -29,52 +29,33 @@ export class LabProgressMessage {
   type: FlStatus<LabProgressBarMessageType>;
 }
 
-export class LabProgressBarData extends LabBaseEntity {
-
-  // % per second
-  @Expose({name: 'average_speed'})
-  averageSpeed: number;
-
-  // time when the execution ended
-  @Expose({name: 'current_time'})
-  currentTime: number;
-
-  // duration of the process in second
-  @Expose({name: 'elapsed_time'})
-  elapsedTime: number;
-
-  @Expose({name: 'max_value'})
-  maxValue: number;
-
-  // list of messages for the different steps of the progress
-  @Type(() => LabProgressMessage)
-  messages: LabProgressMessage[];
-
-  // in second
-  @Expose({name: 'remaining_time'})
-  remainingTime: number;
-
-  // time when the execution started
-  @Expose({name: 'start_time'})
-  startTime: number;
-
-  value: number;
-}
 
 export class LabProgressBar extends LabBaseEntity {
 
   process: { id: string, type: string };
 
-  @Type(() => LabProgressBarData)
-  data: LabProgressBarData;
+  @Expose({name: 'started_at'})
+  @ClLuxonDateTimeTransform()
+  startedAt: DateTime;
 
-  // return true if the progress as started (can be running or finished)
-  wasStarted(): boolean {
-    return this.data.elapsedTime > 0;
-  }
+  @Expose({name: 'ended_at'})
+  @ClLuxonDateTimeTransform()
+  endedAt: DateTime;
 
-  // get in percentage the progress
-  getProgress(): number {
-    return (this.data.value / this.data.maxValue) * 100;
+  // value of the progress between 0 and 100
+  @Expose({name: 'current_value'})
+  currentValue: number;
+
+  @Type(() => LabProgressMessage)
+  messages: LabProgressMessage[];
+
+
+  // duration of the process in millisecond
+  get elapsedTime(): number {
+    if(this.startedAt == null) return 0;
+
+    const endedAt = this.endedAt ?? ClDateHelper.getDate();
+
+    return endedAt.diff(this.startedAt, 'millisecond').milliseconds;
   }
 }

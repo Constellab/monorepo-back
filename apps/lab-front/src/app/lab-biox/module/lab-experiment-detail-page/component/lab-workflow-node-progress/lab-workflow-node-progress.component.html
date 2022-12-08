@@ -7,12 +7,24 @@
     <div class="element">
       <fl-key-value *ngIf="process.status.value === 'RUNNING'">
         <fl-key>{{'biox.node_progress' | translate}}</fl-key>
-        {{process.progressBar.getProgress()}} %
+        {{process.progressBar.currentValue}} %
       </fl-key-value>
 
-      <fl-key-value *ngIf="process.progressBar.data.elapsedTime > 0">
-        <fl-key>{{'biox.execution_time' | translate}}</fl-key>
-        {{process.progressBar.data.elapsedTime * 1000 | flDuration}}
+      <ng-container *ngIf="elapsedTime$ | async as elapsedTime">
+        <fl-key-value *ngIf="elapsedTime > 0">
+          <fl-key>{{'biox.execution_time' | translate}}</fl-key>
+          {{elapsedTime | flDuration}}
+        </fl-key-value>
+      </ng-container>
+
+      <fl-key-value *ngIf="process.startedAt">
+        <fl-key>{{'begin_date' | translate}}</fl-key>
+        {{process.startedAt | flDate:'DATETIME_MED_WITH_SECONDS'}}
+      </fl-key-value>
+
+      <fl-key-value *ngIf="process.endedAt">
+        <fl-key>{{'end_date' | translate}}</fl-key>
+        {{process.endedAt | flDate:'DATETIME_MED_WITH_SECONDS'}}
       </fl-key-value>
     </div>
 
@@ -20,6 +32,12 @@
             class="g-button-small element detail-button">
       <mat-icon>description</mat-icon>
       {{'biox.node_progress_detail' | translate}}
+    </button>
+
+    <button mat-stroked-button type="button" (click)="openProcessLogs(process)"
+            class="g-button-small element detail-button">
+      <mat-icon>description</mat-icon>
+      {{'biox.view_process_logs' | translate}}
     </button>
 
   </ng-container>

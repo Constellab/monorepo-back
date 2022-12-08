@@ -1,0 +1,17 @@
+<div>
+  <fl-key-value>
+    <fl-key>{{'monitoring.log_from_date' | translate}}</fl-key>
+    {{logs.fromDate | flDate:'DATETIME_MED_WITH_SECONDS'}}
+  </fl-key-value>
+
+  <fl-key-value>
+    <fl-key>{{'monitoring.log_to_date' | translate}}</fl-key>
+    {{logs.toDate | flDate:'DATETIME_MED_WITH_SECONDS'}}
+  </fl-key-value>
+
+  <div class="logs">
+    <p *ngFor="let log of logs.logs">
+      {{log.level}} - {{log.datetime}} - {{log.content}}
+    </p>
+  </div>
+</div>
