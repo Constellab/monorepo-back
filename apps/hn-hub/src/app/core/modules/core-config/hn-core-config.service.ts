@@ -82,7 +82,7 @@ export class HnCoreConfigService {
     let res: string;
     switch (this.getEnvironmentProfile()) {
       case 'prod':
-        res = 'https://hub.gencovery.com/';
+        res = 'https://constellab.community/';
         break;
       case 'preprod':
         res = 'https://hub-pre-prod.gencovery.com/';

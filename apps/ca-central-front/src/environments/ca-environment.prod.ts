@@ -3,6 +3,6 @@ export const environment = {
   apiUrl: 'https://api.constellab.space/',
   smartDbApiUrl: 'http://localhost:3340/',
   hubApiUrl: 'https://hub-back.constellab.gencovery.com/',
-  hubUrl: 'https://hub.gencovery.com/',
+  hubUrl: 'https://constellab.community/',
   frontDomain: 'constellab.space',
 };

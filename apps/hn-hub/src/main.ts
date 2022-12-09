@@ -10,7 +10,7 @@ async function bootstrap(): Promise<void> {
 
   // enable cors
   app.enableCors(blGetCorsConfig(
-    ['gencovery.com'],
+    ['gencovery.com', 'constellab.community'],
     process.env[HN_ENVIRONMENT_PROFILE_KEY] !== HN_ENVIRONMENT_PROFILE_PROD_VALUE)
   );
 
