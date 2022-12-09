@@ -7,7 +7,7 @@
 
 <!-- Type unavailable -->
 <div *ngIf="_entity.status === 'UNAVAILABLE'">
-  <fl-key-value  class="key-val">
+  <fl-key-value  class="doc-info">
     <fl-key>{{'td.status' | translate}}</fl-key>
     {{_entity.status}}
   </fl-key-value>
@@ -15,7 +15,15 @@
   <td-type-unavailable [typingName]="_entity.typingName"></td-type-unavailable>
 </div>
 
-<fl-key-value *ngIf="_entity.parentTypingName" class="key-val parent-link-div">
+<!-- Typing Name-->
+<fl-key-value *ngIf="_entity.typingName" class="doc-info">
+  <fl-key>{{'td.typing_name' | translate}}</fl-key>
+    {{_entity.typingName}}
+</fl-key-value>
+
+
+<!-- Parent info -->
+<fl-key-value *ngIf="_entity.parentTypingName" class="doc-info parent-link-div">
   <fl-key>{{'td.parent' | translate}}</fl-key>
   <div class="parent-link-div">
     <div class="resource-color-div" [style.background-color]="color" *ngIf="entityParentType==='RESOURCE'"></div>
@@ -23,6 +31,8 @@
     v.{{_entity.parentVersion}}
   </div>
 </fl-key-value>
-<p>{{_entity.shortDescription}}</p>
 
-<div class="technical-doc-content ql-editor markdown" [innerHTML]="(_entity.doc | tdMarkdown)"></div>
+
+<p class="doc-info">{{_entity.shortDescription}}</p>
+
+<div class="doc-info technical-doc-content ql-editor markdown" [innerHTML]="(_entity.doc | tdMarkdown)"></div>
