@@ -18,6 +18,8 @@ export class LabFsNodeEntity extends LabEntity {
 
   name: string;
 
+  path: string;
+
   isImage(): boolean {
     return FlFileHelper.extensionIsImage(this.getExtension());
   }
