@@ -32,7 +32,7 @@ deploy-lab:
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    # Read the version number form version.env file
+    # Read the version git tag
     - export VERSION=$CI_COMMIT_TAG
     # Build the docker image from Dockerfile with a latest tag and a tag for the commit
     - docker build --cache-from $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:latest --tag $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:$VERSION --tag $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:latest . -f apps/lab-front/Dockerfile
