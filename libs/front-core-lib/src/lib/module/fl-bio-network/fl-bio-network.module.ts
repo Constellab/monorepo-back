@@ -79,8 +79,8 @@ import {FlDialogModule} from '../fl-dialog/fl-dialog.module';
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import {FlBioNetworkService} from './service/fl-bio-network.service';
 import {
-  FlBioNetworkNodePositionsComponent
-} from './component/fl-bio-network-node-positions/fl-bio-network-node-positions.component';
+  FlBioNetworkNodeLayoutComponent
+} from './component/fl-bio-network-node-layout/fl-bio-network-node-layout.component';
 import {FlLoaderModule} from '../fl-loader/fl-loader.module';
 import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
 
@@ -108,11 +108,11 @@ import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
     FlBioNetworkNodeReactionDetailComponent,
     FlBioNetworkNodeCofactorDetailComponent,
     FlBioNetworkLegendComponent,
-    FlBioNetworkNodePositionsComponent,
+    FlBioNetworkNodeLayoutComponent,
   ],
   exports: [
     FlBioNetworkComponent,
-    FlBioNetworkNodePositionsComponent,
+    FlBioNetworkNodeLayoutComponent,
   ],
   imports: [
     CommonModule,

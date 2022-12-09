@@ -1,22 +1,30 @@
 import {Injectable} from '@angular/core';
-import {FlBioNetworkService, FlUpdateMetabolite} from '@monorepo/front-core-lib';
-import {Observable, of} from 'rxjs';
+import {FlApiService, FlBioNetworkService, FlUpdateMetabolite} from '@monorepo/front-core-lib';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class LabBioNetworkService extends FlBioNetworkService{
+export class LabBioNetworkService extends FlBioNetworkService {
+
+  private route: string = 'biota/compound';
+
+  constructor(private apiService: FlApiService) {
+    super();
+  }
+
   enableSave(): boolean {
     return true;
   }
 
 
-  saveNodePosition(metaboliteInfo: FlUpdateMetabolite): Observable<boolean> {
-    console.log('save metabolite position', metaboliteInfo);
-    return of(true);
+  saveMetaboliteLayout(metaboliteInfo: FlUpdateMetabolite): Observable<boolean> {
+    return this.apiService.put(this.route + '/layout', metaboliteInfo).pipe(
+      map(response => response != null)
+    );
   }
-
 
 
 }

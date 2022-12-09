@@ -2,6 +2,7 @@ import {ClHelpService} from '@monorepo/core-lib';
 import {
   FlBioNetwork,
   FlBioNetworkClusterInfo,
+  flBioNetworkIsCofactor,
   FlBioNetworkMetabolite,
   FlBioNetworkPathwayDetail,
   flBioNetworkPathwayIdSeparator,
@@ -127,11 +128,11 @@ export class FlBioNetworkHelper {
     const clusters: FlBioNetworkClusterInfo[] = [];
 
     for (const [key, value] of Object.entries(metabolite.layout.clusters)) {
-      let cluster = clusters.find(c => c.clusterId === value.parent);
+      let cluster = clusters.find(c => c.clusterId === value.id);
 
       if (!cluster) {
         cluster = {
-          clusterId: value.parent,
+          clusterId: value.id,
           subClusterIds: [],
         };
         clusters.push(cluster);
@@ -149,7 +150,7 @@ export class FlBioNetworkHelper {
     // the reaction is the clusters of all metabolites associated to the reaction (excluding the cofactors)
     for (const metaboliteId of Object.keys(reaction.metabolites)) {
       const metabolite: FlBioNetworkMetabolite = metabolites.find(m => m.id === metaboliteId);
-      if (!metabolite || metabolite.is_cofactor) continue;
+      if (!metabolite || flBioNetworkIsCofactor(metabolite.type)) continue;
 
       const metabolitesClusters = FlBioNetworkHelper.getMetaboliteClusters(metabolite);
       for (const cluster of metabolitesClusters) {

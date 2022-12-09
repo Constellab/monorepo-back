@@ -16,7 +16,7 @@ export * from './component/fl-bio-network-node-detail/fl-bio-network-node-detail
 export * from './component/fl-bio-network-node-links/fl-bio-network-node-links.component';
 export * from './component/fl-bio-network-node-metabolite-detail/fl-bio-network-node-metabolite-detail.component';
 export * from './component/fl-bio-network-node-reaction-detail/fl-bio-network-node-reaction-detail.component';
-export * from './component/fl-bio-network-node-positions/fl-bio-network-node-positions.component';
+export * from './component/fl-bio-network-node-layout/fl-bio-network-node-layout.component';
 export * from './component/fl-bio-network-node-search/fl-bio-network-node-search.component';
 export * from './component/fl-bio-network-reaction-detail/fl-bio-network-reaction-detail.component';
 export * from './component/fl-bio-network-reaction-flux/fl-bio-network-reaction-flux.component';

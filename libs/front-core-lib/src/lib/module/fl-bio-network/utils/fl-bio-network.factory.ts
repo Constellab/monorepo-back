@@ -2,6 +2,7 @@ import {
   FlBioNetwork,
   FlBioNetworkClusterInfo,
   FlBioNetworkCompartment,
+  flBioNetworkIsCofactor,
   FlBioNetworkMetabolite,
   FlBioNetworkReaction,
   FlPathwayDatabase
@@ -112,11 +113,8 @@ export class FlBioNetworkFactory {
   private initMetabolitesNodes(metabolites: FlBioNetworkMetabolite[], selectedClusters: string[]): void {
 
     for (const metabolite of metabolites) {
-      if(metabolite.id === 'hydrogen_peroxide_cytosol'){
-        console.log('debug');
-      }
       // Skip cofactors, they will be created when creating the links
-      if (metabolite.is_cofactor) {
+      if (flBioNetworkIsCofactor(metabolite.type)) {
         continue;
       }
       const metaboliteClusters: FlBioNetworkClusterInfo[] = FlBioNetworkHelper.getMetaboliteClusters(metabolite);
@@ -171,7 +169,7 @@ export class FlBioNetworkFactory {
 
         let metaboliteNode: FlBioNetworkNode;
 
-        if (metabolite.is_cofactor) {
+        if (flBioNetworkIsCofactor(metabolite.type)) {
 
           // create the cofactor node (ignore its cluster)
           metaboliteNode = this.createCofactor(metabolite);

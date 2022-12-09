@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, Optional} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit, Optional} from '@angular/core';
 import {FlBioNetworkService, FlUpdateMetabolite} from '../../service/fl-bio-network.service';
 import {FlBioNetworkNode} from '../../model/fl-bio-network-node.class';
 import {FlSnackBarService} from '../../../fl-snack-bar/fl-snack-bar.service';
@@ -13,11 +13,11 @@ import {FlBioNetworkNodeMetabolite} from '../../model/fl-bio-network-node-metabo
  * if enable
  */
 @Component({
-  selector: 'fl-bio-network-node-positions',
-  templateUrl: './fl-bio-network-node-positions.component.html',
-  styleUrls: ['./fl-bio-network-node-positions.component.scss']
+  selector: 'fl-bio-network-node-layout',
+  templateUrl: './fl-bio-network-node-layout.component.html',
+  styleUrls: ['./fl-bio-network-node-layout.component.scss']
 })
-export class FlBioNetworkNodePositionsComponent implements OnInit, OnDestroy {
+export class FlBioNetworkNodeLayoutComponent implements OnInit, OnDestroy {
 
   node$: Observable<FlBioNetworkNode>;
   metabolites$: Observable<FlBioNetworkNodeMetabolite>;
@@ -34,7 +34,8 @@ export class FlBioNetworkNodePositionsComponent implements OnInit, OnDestroy {
 
   constructor(@Optional() private bioNetworkService: FlBioNetworkService,
               private drawerState: FlBioNetworkDrawerState,
-              private snackBarService: FlSnackBarService) {
+              private snackBarService: FlSnackBarService,
+              private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -62,9 +63,9 @@ export class FlBioNetworkNodePositionsComponent implements OnInit, OnDestroy {
         level: this.nodeLevel
       };
 
-      this.bioNetworkService.saveNodePosition(updateMetabolite).subscribe({
+      this.bioNetworkService.saveMetaboliteLayout(updateMetabolite).subscribe({
         next: result => this.savePositionsSuccess(result),
-        error: () => this.saveIsLoading = false
+        error: () => this.onError()
       });
     }
   }
@@ -72,11 +73,17 @@ export class FlBioNetworkNodePositionsComponent implements OnInit, OnDestroy {
   private savePositionsSuccess(result: boolean): void {
     if (result) {
       this.snackBarService.openSuccessMessage({
-        text: 'flBioNetwork.save_positions_to_biota_success',
+        text: 'flBioNetwork.save_metabolite_success',
         translateText: true
       });
     }
     this.saveIsLoading = false;
+    this.cdr.markForCheck();
+  }
+
+  private onError(): void {
+    this.saveIsLoading = false;
+    this.cdr.markForCheck();
   }
 
   ngOnDestroy(): void {

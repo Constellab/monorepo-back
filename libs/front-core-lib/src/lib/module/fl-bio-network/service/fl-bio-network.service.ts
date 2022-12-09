@@ -14,5 +14,5 @@ export abstract class FlBioNetworkService{
   abstract enableSave(): boolean;
 
 
-  abstract saveNodePosition(metaboliteInfo: FlUpdateMetabolite): Observable<boolean>;
+  abstract saveMetaboliteLayout(metaboliteInfo: FlUpdateMetabolite): Observable<boolean>;
 }

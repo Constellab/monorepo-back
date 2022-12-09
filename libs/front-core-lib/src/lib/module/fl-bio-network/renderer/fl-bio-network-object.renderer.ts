@@ -71,7 +71,7 @@ export abstract class FlBioNetworkObjectRenderer {
     : FlBioNetworkObjectColorFunction {
     return (node: FlBioNetworkGraphObject) => {
       for (const cluster of clusters) {
-        if (node.isInCluster(cluster.name)) {
+        if (node.isInCluster(cluster.id)) {
           return cluster.color;
         }
       }

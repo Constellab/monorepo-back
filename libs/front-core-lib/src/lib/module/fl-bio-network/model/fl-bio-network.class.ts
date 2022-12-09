@@ -18,25 +18,31 @@ export enum FlBioNetworkMetaboliteLevel {
   COFACTOR = 3
 }
 
-export interface FlBioNetworkObject{
+export interface FlBioNetworkObject {
   id: string;
   name: string;
   level: FlBioNetworkMetaboliteLevel;
 }
 
+export type FlBioNetworkMetaboliteType =  'default' | 'cofactor' | 'residue';
 
-export interface FlBioNetworkMetabolite extends FlBioNetworkObject{
+export interface FlBioNetworkMetabolite extends FlBioNetworkObject {
   compartment: string;
   charge?: any;
   mass?: any;
   formula?: string;
   chebi_id?: string;
   layout?: FlBioNetworkLayout;
-  is_cofactor: boolean;
+
+  type: FlBioNetworkMetaboliteType;
+}
+
+export function flBioNetworkIsCofactor(type: FlBioNetworkMetaboliteType): boolean {
+  return type === 'cofactor' || type === 'residue';
 }
 
 
-export interface FlBioNetworkReaction extends FlBioNetworkObject{
+export interface FlBioNetworkReaction extends FlBioNetworkObject {
   metabolites: Record<string, number>;
   lower_bound?: number;
   upper_bound?: number;
@@ -57,7 +63,7 @@ export interface FlBioNetworkCluster extends FlCoord {
   y: number;
   level: FlBioNetworkMetaboliteLevel;
   name: string;
-  parent: string;
+  id: string;
 }
 
 export interface FlBioNetworkCompartment {
@@ -105,6 +111,7 @@ export interface FlBioNetworkPathwayDetail {
 
 // TODO to improve when the cluster will be fully activated
 export interface FlBioNetworkClusterSelection {
+  id: string;
   name: string;
   selected: boolean;
   highlighted: boolean;

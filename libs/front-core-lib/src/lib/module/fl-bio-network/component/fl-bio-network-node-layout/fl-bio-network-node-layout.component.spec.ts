@@ -1,18 +1,18 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {FlBioNetworkNodePositionsComponent} from './fl-bio-network-node-positions.component';
+import {FlBioNetworkNodeLayoutComponent} from './fl-bio-network-node-layout.component';
 
 describe('FlBioNetworkNodeSaveComponent', () => {
-  let component: FlBioNetworkNodePositionsComponent;
-  let fixture: ComponentFixture<FlBioNetworkNodePositionsComponent>;
+  let component: FlBioNetworkNodeLayoutComponent;
+  let fixture: ComponentFixture<FlBioNetworkNodeLayoutComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FlBioNetworkNodePositionsComponent ]
+      declarations: [ FlBioNetworkNodeLayoutComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(FlBioNetworkNodePositionsComponent);
+    fixture = TestBed.createComponent(FlBioNetworkNodeLayoutComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
