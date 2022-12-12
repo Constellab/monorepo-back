@@ -1,9 +1,9 @@
-import {FlEntity} from '@monorepo/front-core-lib';
+import {FlUser} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {LabBaseEntity} from '../global/lab-entity.entity';
 import {ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 
-export class LabUser implements FlEntity {
+export class LabUser implements FlUser {
   id: string;
 
   email: string;

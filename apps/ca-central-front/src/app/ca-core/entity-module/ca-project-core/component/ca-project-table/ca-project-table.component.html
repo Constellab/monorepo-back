@@ -15,7 +15,7 @@
       <span> {{'creation_info' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let project">
-      <ca-user-with-date [user]="project.createdBy" [date]="project.createdAt"></ca-user-with-date>
+      <fl-user-with-date [user]="project.createdBy" [date]="project.createdAt"></fl-user-with-date>
     </mat-cell>
   </ng-container>
 
@@ -25,7 +25,7 @@
       <span> {{'project_leader' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let project">
-      <ca-user-inline [user]="project.leader"></ca-user-inline>
+      <fl-user-inline [user]="project.leader"></fl-user-inline>
     </mat-cell>
   </ng-container>
 

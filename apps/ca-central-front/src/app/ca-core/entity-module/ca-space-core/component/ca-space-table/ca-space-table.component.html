@@ -16,7 +16,7 @@
       {{'creation_info' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let space">
-      <ca-user-with-date [user]="space.createdBy" [date]="space.createdAt"></ca-user-with-date>
+      <fl-user-with-date [user]="space.createdBy" [date]="space.createdAt"></fl-user-with-date>
     </mat-cell>
   </ng-container>
 
@@ -26,7 +26,7 @@
       {{'last_modification_info' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let space">
-      <ca-user-with-date [user]="space.lastModifiedBy" [date]="space.lastModifiedAt"></ca-user-with-date>
+      <fl-user-with-date [user]="space.lastModifiedBy" [date]="space.lastModifiedAt"></fl-user-with-date>
 
     </mat-cell>
   </ng-container>

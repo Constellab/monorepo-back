@@ -111,5 +111,5 @@
   "dashboard": "Dashboard",
   "settings": "Settings",
   "reduce_menu": "Reduce",
-  "validation_info": "Validated on {{date}} by {{user}}"
+  "validation_info": "Validated"
 }

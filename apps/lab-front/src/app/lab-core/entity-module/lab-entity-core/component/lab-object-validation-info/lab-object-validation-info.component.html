@@ -1,8 +1,7 @@
 <!--  Validated info  -->
 <fl-text-icon *ngIf="object.validatedBy && object.validatedAt"
-              [matTooltip]="object.validatedAt | flDate:'DATETIME_MED'">
+              fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
   <mat-icon flIcon="validated"></mat-icon>
-  <p>
-    {{'validation_info' | translate: {date: object.validatedAt | flDate, user: object.validatedBy.fullname} }}
-  </p>
+  <div>{{'validation_info' | translate}}</div>
+  <fl-user-with-date [user]="object.validatedBy" [date]="object.validatedAt"></fl-user-with-date>
 </fl-text-icon>

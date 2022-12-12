@@ -1,18 +1,18 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {CaUserWithDateComponent} from './ca-user-with-date.component';
+import {FlUserInlineComponent} from './fl-user-inline.component';
 
-describe('CaUserWithDateComponent', () => {
-  let component: CaUserWithDateComponent;
-  let fixture: ComponentFixture<CaUserWithDateComponent>;
+describe('FlUserInlineComponent', () => {
+  let component: FlUserInlineComponent;
+  let fixture: ComponentFixture<FlUserInlineComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CaUserWithDateComponent ]
+      declarations: [ FlUserInlineComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CaUserWithDateComponent);
+    fixture = TestBed.createComponent(FlUserInlineComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -37,7 +37,8 @@ import {
   FlTextEditorModule,
   FlTextIconModule,
   FlThemeModule,
-  FlTranslateModule
+  FlTranslateModule,
+  FlUserModule
 } from '@monorepo/front-core-lib';
 import {RvResourceViewModule} from '@monorepo/resource-view';
 import {TdTechnicalDocModule} from '@monorepo/technical-doc';
@@ -89,6 +90,7 @@ import {PrProtocolModule} from '@monorepo/protocol';
     FlMenuDynamicModule,
     FlAutocompleteMultipleModule,
     FlThemeModule,
+    FlUserModule,
 
     //  Other lib
     RvResourceViewModule,

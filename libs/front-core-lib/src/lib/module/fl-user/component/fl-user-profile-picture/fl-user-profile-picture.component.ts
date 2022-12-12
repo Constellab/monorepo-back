@@ -1,13 +1,8 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {FlUserConfig} from '../service/fl-user-config.config';
+import {FlUserConfig} from '../../service/fl-user-config.config';
 import {Subject} from 'rxjs';
+import {FlUser} from '../../model/fl-user.class';
 
-export interface FlUserProfilePicture {
-  firstname: string;
-  lastname: string;
-  photo: string;
-  id: string;
-}
 
 export type FlUserProfilePictureSize = 'small' | 'medium' | 'big';
 
@@ -18,7 +13,7 @@ export type FlUserProfilePictureSize = 'small' | 'medium' | 'big';
 })
 export class FlUserProfilePictureComponent implements OnInit, OnDestroy {
 
-  @Input() user: FlUserProfilePicture;
+  @Input() user: FlUser;
 
   /**
    * Default size of size in em

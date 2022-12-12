@@ -51,10 +51,7 @@
       <span>{{'creation_info' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let experiment">
-      <fl-creation-info [createdAt]="experiment.createdAt"
-                        [createdBy]="experiment.createdBy.fullname"
-                        class="g-text-small">
-      </fl-creation-info>
+      <fl-user-with-date [user]="experiment.createdBy" [date]="experiment.createdAt"></fl-user-with-date>
     </mat-cell>
   </ng-container>
 

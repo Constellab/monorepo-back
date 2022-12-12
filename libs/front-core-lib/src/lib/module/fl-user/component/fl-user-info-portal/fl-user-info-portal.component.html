@@ -8,18 +8,18 @@
   <div class="bot-side">
     <div class="user-bot-info">
       <fl-text-icon iconPosition="start" *ngIf="user.company">
-        <mat-icon flIcon="space"></mat-icon>
+        <mat-icon>space</mat-icon>
         {{user.company}}
       </fl-text-icon>
       <fl-text-icon iconPosition="start" *ngIf="user.activity">
-        <mat-icon flIcon="badge"></mat-icon>
+        <mat-icon>badge</mat-icon>
         {{user.activity}}
       </fl-text-icon>
-      <a [routerLink]="'app/user/' + user.id">
+      <a [routerLink]="userRoute" *ngIf="userRoute">
         <button class="button-view-profile g-button-small"  mat-stroked-button color="primary" type="button">
           <fl-text-icon iconPosition="start">
-            <mat-icon flIcon="person" class="g-button-icon-small"></mat-icon>
-            {{'view_profile' | translate}}
+            <mat-icon class="g-button-icon-small">person</mat-icon>
+            {{'flUser.view_profile' | translate}}
           </fl-text-icon>
         </button>
       </a>

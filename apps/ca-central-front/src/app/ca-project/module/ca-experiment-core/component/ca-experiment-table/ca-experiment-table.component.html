@@ -30,7 +30,7 @@
       <span> {{'created_by' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let experiment">
-      <ca-user-inline [user]="experiment.createdBy"></ca-user-inline>
+      <fl-user-inline [user]="experiment.createdBy"></fl-user-inline>
     </mat-cell>
   </ng-container>
 

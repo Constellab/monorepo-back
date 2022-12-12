@@ -25,8 +25,8 @@
             <mat-checkbox [(ngModel)]="userSelection.selected" (change)="emitCurrentValue()"
                           [disabled]="disabled">
             </mat-checkbox>
-            <ca-user-inline [user]="userSelection.user"
-                            class="additional-user" (click)="selectUser(userSelection)"></ca-user-inline>
+            <fl-user-inline [user]="userSelection.user"
+                            class="additional-user" (click)="selectUser(userSelection)"></fl-user-inline>
           </div>
 
           <fl-infinite-load-more-result *ngIf="userDatasource" [datasource]="userDatasource"

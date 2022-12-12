@@ -3,6 +3,7 @@ import {FlFormFieldDirective, FlMenuDynamic, FlTranslateService} from '@monorepo
 import {LabProject, LabProjectWithChildren} from '../../../../model/entities/lab-project.class';
 import {NgControl} from '@angular/forms';
 import {LabProjectService} from '../../../../entity-service/lab-project.service';
+import {ClHelpService} from '@monorepo/core-lib';
 
 /**
  * Button to be used in a form to select a project
@@ -71,6 +72,11 @@ export class LabProjectSelectButtonComponent extends FlFormFieldDirective<LabPro
 
   get buttonText(): string {
     return this.value ? this.value.title : this.translateService.translate('biox.select_project');
+  }
+
+  clearValue(event: MouseEvent): void {
+    ClHelpService.stopEventPropagation(event);
+    this.setAndEmitValue(null);
   }
 
 }

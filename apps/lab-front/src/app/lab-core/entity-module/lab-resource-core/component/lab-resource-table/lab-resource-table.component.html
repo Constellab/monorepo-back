@@ -43,10 +43,7 @@
       <span> {{'creation_info' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let resource">
-      <fl-creation-info [createdAt]="resource.createdAt"
-                        [createdBy]="resource.createdBy.fullname"
-                        class="g-text-small">
-      </fl-creation-info>
+      <fl-user-with-date [user]="resource.createdBy" [date]="resource.createdAt"></fl-user-with-date>
       <!--      <fl-from-now [date]="resource.createdAt"></fl-from-now>-->
     </mat-cell>
   </ng-container>

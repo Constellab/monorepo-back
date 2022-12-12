@@ -82,7 +82,7 @@
     "remove_experiment_from_queue_confirmation": "Enlever l'expérience de la queue d'exécution ? Elle ne sera pas exécutée.",
     "experiment_removed_from_queue": "L'expérience à été enlevée de la queue",
     "experiment_monitoring": "Monitoring",
-    "last_sync_info": "Dernière synchronisation {{date}} par {{user}}",
+    "last_sync": "Dernière synchronisation",
     "sync_with_central": "Synchroniser avec Central",
     "not_synced_with_central": "Non synchronisé avec Central",
     "sync_object_need_project": "Vous devez rattacher l'objet à un projet pour la synchroniser avec Central",

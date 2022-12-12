@@ -82,7 +82,7 @@
     "remove_experiment_from_queue_confirmation": "Remove the experiment from execution queue ? It will not be executed.",
     "experiment_removed_from_queue": "Experiment removed from queue",
     "experiment_monitoring": "Monitoring",
-    "last_sync_info": "Last sync {{date}} by {{user}}",
+    "last_sync": "Last sync",
     "sync_with_central": "Sync with Central",
     "not_synced_with_central": "Not synced with Central",
     "sync_object_need_project": "You need to attach the object to a project to sync it with Central",

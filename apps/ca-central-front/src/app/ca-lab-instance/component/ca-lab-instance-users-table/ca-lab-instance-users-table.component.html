@@ -6,7 +6,7 @@
       <span>{{'user' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let labUser">
-      <ca-user-inline [user]="labUser.user"></ca-user-inline>
+      <fl-user-inline [user]="labUser.user"></fl-user-inline>
     </mat-cell>
   </ng-container>
 
@@ -26,7 +26,7 @@
       <span>{{'lab_added_by' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let labUser">
-      <ca-user-inline [user]="labUser.createdBy"></ca-user-inline>
+      <fl-user-inline [user]="labUser.createdBy"></fl-user-inline>
     </mat-cell>
   </ng-container>
 

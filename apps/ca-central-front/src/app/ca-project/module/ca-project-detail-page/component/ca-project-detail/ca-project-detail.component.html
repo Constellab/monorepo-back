@@ -26,7 +26,7 @@
   <div class="project-info">
     <div fxLayout="row" fxLayoutAlign="start center" class="project-leader">
       <span class="g-text-light project-leader-title">{{'project_leader' | translate}} : &nbsp;</span>
-      <ca-user-inline [user]="project.leader" class="project-leader-user"></ca-user-inline>
+      <fl-user-inline [user]="project.leader" class="project-leader-user"></fl-user-inline>
     </div>
 
     <fl-date-range [startingDate]="project.startingDate" [endingDate]="project.endingDate"

@@ -1,8 +1,8 @@
 import {DateTime} from 'luxon';
 import {ClLuxonDateTimeTransform, ClSupportedLanguage} from '@monorepo/core-lib';
-import {FlEntity} from '@monorepo/front-core-lib';
+import {FlUser} from '@monorepo/front-core-lib';
 
-export class HaUser implements FlEntity {
+export class HaUser implements FlUser {
   id: string;
 
   firstname: string;

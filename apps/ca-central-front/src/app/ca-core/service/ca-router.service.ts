@@ -5,9 +5,9 @@ import {
   caConstLabInstancesRoute,
   caConstMyProjectsRoute,
   caConstProjectRoute,
-  caConstSettingsRoute,
   caConstSmartDbRoute,
-  caConstStructureRoute
+  caConstStructureRoute,
+  caConstUserPageRoute
 } from '../utils/ca-base-route';
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
@@ -157,8 +157,8 @@ export class CaRouterService {
 
 
   ////////////////////////// SETTINGS ///////////////////////
-  public static getSettingsRoute(): string {
-    return CaRouterService.getFullRoute(caConstSettingsRoute);
+  public static getUserDetailRoute(userId: string): string {
+    return CaRouterService.getFullRoute(caConstUserPageRoute + '/' + userId);
   }
 
   private static getFullRoute(route: string): string {

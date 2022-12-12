@@ -1,24 +1,24 @@
 import {Injectable} from '@angular/core';
+
+import {LabEnvironmentHelper} from '../../utils/lab-environment.helper';
 import {FlUserConfig} from '@monorepo/front-core-lib';
-import {environment} from '../../../../environments/ha-environment';
 
 @Injectable({
   providedIn: 'root'
 })
-export class HaUserConfig extends FlUserConfig {
+export class LabUserConfig extends FlUserConfig {
 
   constructor() {
     super();
   }
 
   getUserPhotoUrl(userId: string): string {
-    return environment.constellabApiUrl + 'users/photo/' + userId;
+    return LabEnvironmentHelper.getCentralApiUrl() + 'users/photo/' + userId;
   }
 
   getUserDetailRoute(userId: string): string {
+    // disabled user detail route
     return null;
   }
-
-
 
 }

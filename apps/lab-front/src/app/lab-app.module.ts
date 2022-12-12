@@ -22,7 +22,8 @@ import {
   FlTextEditorFigureComponent,
   FlTextEditorModule,
   FlThemeService,
-  FlTranslateModule
+  FlTranslateModule,
+  FlUserModule
 } from '@monorepo/front-core-lib';
 import {labSvgIcons} from './lab-core/utils/lab-svg-icon-config';
 import {ClSupportedLanguage} from '@monorepo/core-lib';
@@ -42,6 +43,7 @@ import {LabTdServiceConfig} from './lab-core/service/lab-td-service.config';
 import {labConstResourceViewTypeInfos} from './lab-core/model/entities/resource/lab-resource-view-type.class';
 import {PrProtocolModule} from '@monorepo/protocol';
 import {LabBioNetworkService} from './lab-core/entity-service/lab-bio-network.service';
+import {LabUserConfig} from './lab-core/model/config/lab-user-config.service';
 
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
@@ -92,6 +94,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     FlBioNetworkModule.forRoot(LabBioNetworkService),
     RvResourceViewModule.forRoot({availableViews: labConstResourceViewTypeInfos}),
     TdTechnicalDocModule.forRoot(LabTdServiceConfig),
+    FlUserModule.forRoot(LabUserConfig),
 
     PrProtocolModule.forRoot(),
 

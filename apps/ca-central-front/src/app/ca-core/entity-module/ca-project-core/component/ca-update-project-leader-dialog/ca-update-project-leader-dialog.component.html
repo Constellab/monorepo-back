@@ -13,11 +13,11 @@
                   [placeholder]="'project_leader' | translate"
                   [compareWith]="compareWith">
         <mat-option *ngFor="let user of users$ | async" [value]="user">
-          <ca-user-inline [user]="user"></ca-user-inline>
+          <fl-user-inline [user]="user"></fl-user-inline>
         </mat-option>
 
         <mat-select-trigger *ngIf="formControl.value">
-          <ca-user-inline [user]="formControl.value"></ca-user-inline>
+          <fl-user-inline [user]="formControl.value"></fl-user-inline>
         </mat-select-trigger>
       </mat-select>
       <mat-error *ngIf="formControl.hasError('required')">

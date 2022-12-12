@@ -19,33 +19,6 @@
   <!---------------------------- Progress ---------------------------->
   <lab-workflow-node-progress [process$]="labProcess$"></lab-workflow-node-progress>
 
-  <!---------------------------- Inputs ---------------------------->
-  <mat-expansion-panel *ngIf="showInputs$ | async" [expanded]="true">
-    <mat-expansion-panel-header>
-      <mat-panel-title class="g-not-selectable">
-        <fl-text-icon>
-          <mat-icon>login</mat-icon>
-          {{'biox.node_inputs' | translate}}
-        </fl-text-icon>
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-
-    <td-io-docs [ioSpecs]="node.getInputSpecs()" class="g-text-small"></td-io-docs>
-  </mat-expansion-panel>
-
-
-  <!---------------------------- Outputs ---------------------------->
-  <mat-expansion-panel *ngIf="showOutput$ | async" [expanded]="true">
-    <mat-expansion-panel-header>
-      <mat-panel-title class="g-not-selectable">
-        <fl-text-icon>
-          <mat-icon>logout</mat-icon>
-          {{'biox.node_outputs' | translate}}
-        </fl-text-icon>
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <td-io-docs [ioSpecs]="node.getOutputSpecs()" class="g-text-small"></td-io-docs>
-  </mat-expansion-panel>
 
 
   <!---------------------------- Config ---------------------------->
@@ -107,4 +80,33 @@
       <lab-protocol-config></lab-protocol-config>
     </mat-expansion-panel>
   </ng-container>
+
+  <!---------------------------- Inputs ---------------------------->
+  <mat-expansion-panel *ngIf="showInputs$ | async" [expanded]="false">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="g-not-selectable">
+        <fl-text-icon>
+          <mat-icon>login</mat-icon>
+          {{'biox.node_inputs' | translate}}
+        </fl-text-icon>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <td-io-docs [ioSpecs]="node.getInputSpecs()" class="g-text-small"></td-io-docs>
+  </mat-expansion-panel>
+
+
+  <!---------------------------- Outputs ---------------------------->
+  <mat-expansion-panel *ngIf="showOutput$ | async" [expanded]="false">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="g-not-selectable">
+        <fl-text-icon>
+          <mat-icon>logout</mat-icon>
+          {{'biox.node_outputs' | translate}}
+        </fl-text-icon>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <td-io-docs [ioSpecs]="node.getOutputSpecs()" class="g-text-small"></td-io-docs>
+  </mat-expansion-panel>
+
 </div>

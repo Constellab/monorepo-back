@@ -36,7 +36,7 @@
       {{'creation_info' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
-      <ca-user-with-date [user]="row.createdBy" [date]="row.createdAt"></ca-user-with-date>
+      <fl-user-with-date [user]="row.createdBy" [date]="row.createdAt"></fl-user-with-date>
     </mat-cell>
   </ng-container>
 
@@ -46,7 +46,7 @@
       {{'last_modification_info' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
-      <ca-user-with-date [user]="row.lastModifiedBy" [date]="row.lastModifiedAt"></ca-user-with-date>
+      <fl-user-with-date [user]="row.lastModifiedBy" [date]="row.lastModifiedAt"></fl-user-with-date>
 
     </mat-cell>
   </ng-container>

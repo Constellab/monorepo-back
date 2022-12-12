@@ -1,5 +1,5 @@
 <fl-infinite-scroll [datasource]="datasource">
     <mat-option *ngFor="let user of users$ | async" [value]="user">
-      <ca-user-inline [user]="user"></ca-user-inline>
+      <fl-user-inline [user]="user"></fl-user-inline>
     </mat-option>
 </fl-infinite-scroll>
