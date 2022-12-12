@@ -12,6 +12,10 @@ import {
   LabLogBetweenDatesDialogInput,
   LabLogsBetweenDatesDialogComponent
 } from '../../../../../lab-core/entity-module/lab-log-core/lab-logs-between-dates-dialog/lab-logs-between-dates-dialog.component';
+import {
+  LabMonitorBetweenDatesDialogComponent,
+  LabMonitorBetweenDatesDialogInput
+} from '../../../../../lab-core/entity-module/lab-monitor-core/lab-monitor-between-dates-dialog/lab-monitor-between-dates-dialog.component';
 
 @Component({
   selector: 'lab-workflow-node-progress',
@@ -46,8 +50,17 @@ export class LabWorkflowNodeProgressComponent implements OnInit {
     const input: LabLogBetweenDatesDialogInput = {
       title: process.instanceName,
       logs$: this.processService.getProcessLogs(process.getProcessType(), process.id)
-    }
+    };
 
     this.dialogService.openBigDialog(LabLogsBetweenDatesDialogComponent, {data: input});
+  }
+
+  openProcessMonitor(process: LabProcess): void {
+    const input: LabMonitorBetweenDatesDialogInput = {
+      title: process.instanceName,
+      monitor$: this.processService.getProcessMonitor(process.getProcessType(), process.id)
+    };
+
+    this.dialogService.openBigDialog(LabMonitorBetweenDatesDialogComponent, {data: input});
   }
 }

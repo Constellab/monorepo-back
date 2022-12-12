@@ -20,7 +20,7 @@ export interface FlChartData {
 
 export class FlChart2dDatum implements FlChartData {
 
-  tags?: Record<string, string>
+  tags?: Record<string, string>;
 
   constructor(protected x: number, protected y: number,
               protected xLabel?: string, protected yLabel?: string) {
@@ -35,18 +35,16 @@ export class FlChart2dDatum implements FlChartData {
   }
 
   getXLabel(): string {
-    return this.xLabel ?? this.getX()?.toString() ?? '';
+    return this.xLabel ?? this.x?.toString() ?? '';
   }
 
   getYLabel(): string {
-    return this.yLabel ?? this.getY()?.toString() ?? '';
+    return this.yLabel ?? this.y?.toString() ?? '';
   }
 
   get valid(): boolean {
     return this.x != null && this.y != null;
   }
-
-
 }
 
 export class FlChart3dDatum extends FlChart2dDatum {

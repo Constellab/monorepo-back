@@ -77,6 +77,9 @@ export class LabRouterService {
     return labConstMonitoringFullRoute;
   }
 
+  public static getMonitoringUsageRoute(): string {
+    return `${LabRouterService.getMonitoringRoute()}/usage`;
+  }
   public static getMonitoringVenvsRoute(): string {
     return `${LabRouterService.getMonitoringRoute()}/venvs`;
   }

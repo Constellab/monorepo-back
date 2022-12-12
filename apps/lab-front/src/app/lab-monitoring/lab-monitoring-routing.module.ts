@@ -12,11 +12,15 @@ import {
 import {
   LabMonitoringLogsPageComponent
 } from './lab-monitoring-page/component/lab-monitoring-logs-page/lab-monitoring-logs-page.component';
+import {
+  LabMonitoringUsagePageComponent
+} from './lab-monitoring-page/component/lab-monitoring-usage-page/lab-monitoring-usage-page.component';
 
 const routes: Routes = [
   {
     path: '', component: LabMonitoringPageComponent, children: [
       {path: '', component: LabMonitoringDashboardPageComponent},
+      {path: 'usage', component: LabMonitoringUsagePageComponent},
       {path: 'venvs', component: LabMonitoringVenvsPageComponent},
       {path: 'logs', component: LabMonitoringLogsPageComponent},
     ]

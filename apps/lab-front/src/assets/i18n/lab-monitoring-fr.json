@@ -43,7 +43,21 @@
     "log_size": "Taille",
     "view_logs": "Voir les logs",
     "log_content": "Contenu",
-    "log_from_date": "Depuis",
-    "log_to_date": "Jusqu'à"
+    "from_date": "Depuis",
+    "to_date": "Jusqu'à",
+    "global_usage": "Utilisation globale",
+    "all_cpu_percent": "Utilisations des CPU",
+    "network_consumption": "Consommation réseau",
+    "network_in_mb" : "Entrant(Mo)",
+    "network_out_mb" : "Sortant(Mo)",
+    "disk_usage": "Utilisation du disque (%)",
+    "cpu_usage": "Utilisation des CPU (%)",
+    "memory_usage": "Utilisation de la RAM (%)",
+    "swap_usage": "Utilisation du swap (%)",
+    "total_disk_space": "Espace disque total",
+    "total_disk_space_used": "Espace disque utilisé",
+    "total_disk_space_free": "Espace disque libre",
+    "number_of_processes": "Nombre de processus",
+    "total_memory": "Mémoire totale"
   }
 }

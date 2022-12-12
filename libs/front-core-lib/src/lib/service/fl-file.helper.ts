@@ -90,7 +90,7 @@ export class FlFileHelper {
     const translateService = FlTranslateService.getInstance();
     let unit: number = 0;
     let unitSize = size;
-    while (unitSize >= 1024) {
+    while (unitSize >= 1024 && unit < 4) {
       unit++;
       unitSize = unitSize / 1024;
     }
@@ -101,7 +101,8 @@ export class FlFileHelper {
     if (unit === 0) text = 'flCoreComponent.byte_symbol';
     else if (unit === 1) text = 'flCoreComponent.kilo_byte_symbole';
     else if (unit === 2) text = 'flCoreComponent.mega_byte_symbole';
-    else text = 'flCoreComponent.giga_byte_symbole';
+    else if (unit === 3) text = 'flCoreComponent.giga_byte_symbole';
+    else text = 'flCoreComponent.tera_byte_symbole';
 
     return roundedSize + ' ' + translateService.translate(text);
   }

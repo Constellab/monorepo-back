@@ -216,6 +216,7 @@
     "select_project": "Sélectionner un projet",
     "select_project_help": "Vous pouvez sélectionner un projet maintenant pour organiser vos object et les synchroniser avec Central. Si vous ne sélectionnez pas de project, vous pourrez toujours le faire plus tard pas la page de l'objet.",
     "view_process_logs": "Voir les logs serveurs",
-    "log_download": "Télécharger le fichier"
+    "log_download": "Télécharger le fichier",
+    "view_process_monitoring": "Monitoring"
   }
 }

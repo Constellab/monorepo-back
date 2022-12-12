@@ -215,6 +215,7 @@
     "no_running_experiment": "No running experiment",
     "select_project": "Select a project",
     "select_project_help": "You can select a project now to organize you objects and synchronize them with Central. If you don't select a project, you can do it later in the object page.",
-    "view_process_logs": "View server logs"
+    "view_process_logs": "View server logs",
+    "view_process_monitoring": "Monitoring"
   }
 }

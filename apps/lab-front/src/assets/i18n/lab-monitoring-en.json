@@ -43,8 +43,22 @@
     "log_size": "Size",
     "view_logs": "View logs",
     "log_content": "Content",
-    "log_from_date": "From date",
-    "log_to_date": "To date",
-    "log_download": "Download file"
+    "from_date": "From date",
+    "to_date": "To date",
+    "log_download": "Download file",
+    "global_usage": "Global usage",
+    "all_cpu_percent": "CPU usage",
+    "network_consumption": "Network consumption",
+    "network_in_mb" : "In(MB)",
+    "network_out_mb" : "Out(MB)",
+    "disk_usage": "Disk usage (%)",
+    "cpu_usage": "CPU usage (%)",
+    "memory_usage": "RAM usage (%)",
+    "swap_usage": "Swap usage (%)",
+    "total_disk_space": "Total disk space",
+    "total_disk_space_used": "Total disk space used",
+    "total_disk_space_free": "Total disk space free",
+    "number_of_processes": "Number of processes",
+    "total_memory": "Total RAM"
   }
 }

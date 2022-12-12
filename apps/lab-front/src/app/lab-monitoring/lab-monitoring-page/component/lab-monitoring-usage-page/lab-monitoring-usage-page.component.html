@@ -1,0 +1,19 @@
+<fl-card>
+  <fl-card-header>
+    <fl-text-icon>
+      <mat-icon class="g-icon-big">monitor_heart</mat-icon>
+      <h2>{{'monitoring.monitoring' | translate}}</h2>
+    </fl-text-icon>
+
+  </fl-card-header>
+
+  <fl-card-body>
+
+    <fl-async-section [object]="monitor$" class="g-full-height">
+
+      <ng-container *flSectionBody="let monitor">
+        <lab-monitor-between-dates [monitor]="monitor"></lab-monitor-between-dates>
+      </ng-container>
+    </fl-async-section>
+  </fl-card-body>
+</fl-card>

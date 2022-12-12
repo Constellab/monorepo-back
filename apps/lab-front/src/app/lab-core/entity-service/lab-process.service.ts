@@ -3,6 +3,7 @@ import {FlApiService} from '@monorepo/front-core-lib';
 import {LabLogsBetweenDates} from '../model/entities/lab-log.entity';
 import {Observable} from 'rxjs';
 import {LabProcessClass} from '../model/entities/process/lab-process.entity';
+import {LabMonitorBetweenDates} from '../model/entities/lab-monitor.entity';
 
 
 @Injectable({
@@ -16,6 +17,10 @@ export class LabProcessService {
   }
 
   public getProcessLogs(processType: LabProcessClass, id: string): Observable<LabLogsBetweenDates> {
-    return this.apiService.get(`${this.route}/logs/${processType}/${id}`, LabLogsBetweenDates);
+    return this.apiService.get(`${this.route}/${processType}/${id}/logs`, LabLogsBetweenDates);
+  }
+
+  public getProcessMonitor(processType: LabProcessClass, id: string): Observable<LabMonitorBetweenDates> {
+    return this.apiService.get(`${this.route}/${processType}/${id}/monitor`, LabMonitorBetweenDates);
   }
 }
