@@ -30,6 +30,15 @@ import {
 } from '../../../../../lab-core/entity-module/lab-entity-core/component/lab-validate-object-dialog/lab-validate-object-dialog.component';
 import {LabProject} from '../../../../../lab-core/model/entities/lab-project.class';
 import {LabQueueService} from '../../../../../lab-core/entity-service/lab-queue.service';
+import {
+  LabLogBetweenDatesDialogInput,
+  LabLogsBetweenDatesDialogComponent
+} from '../../../../../lab-core/entity-module/lab-log-core/lab-logs-between-dates-dialog/lab-logs-between-dates-dialog.component';
+import {
+  LabMonitorBetweenDatesDialogComponent,
+  LabMonitorBetweenDatesDialogInput
+} from '../../../../../lab-core/entity-module/lab-monitor-core/lab-monitor-between-dates-dialog/lab-monitor-between-dates-dialog.component';
+import {LabProcessService} from '../../../../../lab-core/entity-service/lab-process.service';
 
 /**
  * Header for the experiment detail page
@@ -52,7 +61,8 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
               private tagDialogService: FlTagDialogService,
               private routerService: LabRouterService,
               private queueService: LabQueueService,
-              private translateService: FlTranslateService) {
+              private translateService: FlTranslateService,
+              private processService: LabProcessService) {
   }
 
   ngOnInit(): void {
@@ -126,15 +136,7 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
     }
   }
 
-  openProgressInformation(): void {
-    this.dialogService.openSmallDialog(LabProgressBarInfoDialogComponent,
-      {
-        data:
-          this.experimentState.getMainProtocol$().pipe(
-            map(flow => flow.progressBar)
-          )
-      });
-  }
+
 
   openTagsFormDialog(): void {
     const experiment = this.experimentState.currentExperiment;
@@ -242,6 +244,34 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
     if (result.choice) {
       this.routerService.navigateToExperimentListRoute();
     }
+  }
+
+  openProgressInformation(): void {
+    this.dialogService.openMediumDialog(LabProgressBarInfoDialogComponent,
+      {
+        data:
+          this.experimentState.getMainProtocol$().pipe(
+            map(flow => flow.progressBar)
+          )
+      });
+  }
+
+  openProcessLogs(experiment: LabExperiment): void {
+    const input: LabLogBetweenDatesDialogInput = {
+      title: experiment.title,
+      logs$: this.processService.getProcessLogs('PROTOCOL', experiment.protocol.id)
+    };
+
+    this.dialogService.openBigDialog(LabLogsBetweenDatesDialogComponent, {data: input});
+  }
+
+  openProcessMonitor(experiment: LabExperiment): void {
+    const input: LabMonitorBetweenDatesDialogInput = {
+      title: experiment.title,
+      monitor$: this.processService.getProcessMonitor('PROTOCOL', experiment.protocol.id)
+    };
+
+    this.dialogService.openBigDialog(LabMonitorBetweenDatesDialogComponent, {data: input});
   }
 
 }

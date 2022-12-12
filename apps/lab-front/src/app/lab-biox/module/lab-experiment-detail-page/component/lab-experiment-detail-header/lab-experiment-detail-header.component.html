@@ -51,6 +51,11 @@
       {{'biox.clone_experiment' | translate}}
     </button>
 
+    <button mat-menu-item [matMenuTriggerFor]="monitoring">
+      <mat-icon>troubleshoot</mat-icon>
+      {{'biox.experiment_monitoring' | translate}}
+    </button>
+
     <button mat-menu-item type="button" (click)="removeExperimentFromQueue()"
             class="g-warn-text" *ngIf="experiment.status.value === 'IN_QUEUE'">
       <mat-icon color="warn">stop</mat-icon>
@@ -65,10 +70,26 @@
 
   </mat-menu>
 
+  <!-- Monitoring menu -->
+  <mat-menu #monitoring>
+    <button mat-menu-item type="button" (click)="openProgressInformation()">
+      <mat-icon>description</mat-icon>
+      {{'biox.node_progress_detail' | translate}}
+    </button>
+
+    <button mat-menu-item type="button" (click)="openProcessLogs(experiment)">
+      <mat-icon>description</mat-icon>
+      {{'biox.view_process_logs' | translate}}
+    </button>
+
+    <button mat-menu-item type="button" (click)="openProcessMonitor(experiment)">
+      <mat-icon>troubleshoot</mat-icon>
+      {{'biox.view_process_monitoring' | translate}}
+    </button>
+  </mat-menu>
 
   <fl-status-chip [status]="experiment.status" mode="iconText"
-                  class="status" (click)="openProgressInformation()"
-                  [ngClass]="{'g-clickable': experiment.status.value !== 'DRAFT'}"></fl-status-chip>
+                  class="status"></fl-status-chip>
 
 
 </div>
