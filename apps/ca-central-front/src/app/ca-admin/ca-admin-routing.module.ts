@@ -4,12 +4,14 @@ import {CaAdminDashboardPageComponent} from './component/ca-admin-dashboard-page
 import {CaAdminPageComponent} from './component/ca-admin-page/ca-admin-page.component';
 import {CaAdminServersPageComponent} from './component/ca-admin-servers-page/ca-admin-servers-page.component';
 import {CaAdminSpacesPageComponent} from './component/ca-admin-spaces-page/ca-admin-spaces-page.component';
+import {CaAdminUsersPageComponent} from './component/ca-admin-users-page/ca-admin-users-page.component';
 
 const routes: Route[] = [
   {
     path: '', component: CaAdminPageComponent, children: [
       {path: '', component: CaAdminDashboardPageComponent},
       {path: 'spaces', component: CaAdminSpacesPageComponent},
+      {path: 'users', component: CaAdminUsersPageComponent},
       {path: 'servers', component: CaAdminServersPageComponent},
     ]
   },

@@ -8,8 +8,10 @@ import {
 import {CaUserTableComponent} from './component/ca-user-table/ca-user-table.component';
 import {CaCustomLibraryModule} from '../../custom-library/ca-custom-library.module';
 import {CaUserListInlineComponent} from './component/ca-user-list-inline/ca-user-list-inline.component';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
+import {CaUserSearchComponent} from './component/ca-user-search/ca-user-search.component';
+import {CaUserSearchFormComponent} from './component/ca-user-search-form/ca-user-search-form.component';
 
 /**
  * Module containing users component
@@ -20,16 +22,21 @@ import {RouterModule} from '@angular/router';
     CaAuthenticatedUserInlineComponent,
     CaUserTableComponent,
     CaUserListInlineComponent,
+    CaUserSearchComponent,
+    CaUserSearchFormComponent,
   ],
   exports: [
     CaSelectUserOptionsComponent,
     CaAuthenticatedUserInlineComponent,
     CaUserTableComponent,
     CaUserListInlineComponent,
+    CaUserSearchComponent,
+    CaUserSearchFormComponent,
   ],
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
 
     CaCustomMaterialModule,
     CaCustomLibraryModule,

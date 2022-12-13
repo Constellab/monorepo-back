@@ -10,6 +10,8 @@ import {
   BlBucketConfig,
   BlFile,
   BlObjectStorageService,
+  BlSearchBuilder,
+  BlSearchParams,
   BlUnauthorizedException,
   BlUserService
 } from '@monorepo/back-core-lib';
@@ -135,5 +137,13 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     user.has2FA = enable;
     await this.repository.save(user);
     return enable;
+  }
+
+  public async search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnUser>>{
+    if(!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) throw new BlUnauthorizedException();
+    const builder = new BlSearchBuilder();
+    const options = builder.buildSearchParams(searchParams);
+
+    return this.findPaginated(page, size, options);
   }
 }

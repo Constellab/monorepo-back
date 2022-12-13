@@ -30,7 +30,6 @@ export class CaUser extends CaEntity implements FlUser {
 
   category: CmUserCategory;
 
-  phone: string;
 
   activity?: string;
 

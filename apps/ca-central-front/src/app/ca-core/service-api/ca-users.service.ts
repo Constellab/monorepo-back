@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {CaUser} from '../model/entities/ca-user.class';
-import {FlApiService} from '@monorepo/front-core-lib';
-import {ClPageI} from '@monorepo/core-lib';
+import {FlAdvancedSearchInput, FlApiService, FlSearchConverter} from '@monorepo/front-core-lib';
+import {ClPage, ClPageI} from '@monorepo/core-lib';
+import {CaUserSearch, CaUserSearchFields} from '../entity-module/ca-user-core/model/ca-user-search.class';
 
 /**
  * Service for the User entities
@@ -24,6 +25,16 @@ export class CaUsersService {
   public findAll(page: number, pageSize: number): Observable<ClPageI<CaUser>> {
     return this.apiService.get(`${this.route}`, CaUser,
       {page: page, pageSize: pageSize, resultIsPaginated: true});
+  }
+
+  public search(page: number, pageSize: number, filters?: CaUserSearchFields): Observable<ClPage<CaUser>> {
+    const data: FlAdvancedSearchInput = {
+      filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, CaUserSearch.advancedSearchConverter),
+      sortsCriteria: null
+    };
+    return this.apiService.post(`${this.route}/search`, data, CaUser, {
+      page: page, pageSize: pageSize, resultIsPaginated: true
+    });
   }
 
 

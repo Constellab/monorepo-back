@@ -32,6 +32,16 @@
     </mat-cell>
   </ng-container>
 
+  <!-- category -->
+  <ng-container matColumnDef="category">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'user_category' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let user">
+      <span>{{user.category | translate}}</span>
+    </mat-cell>
+  </ng-container>
+
 
   <!-- Custom action where template is defined by parent -->
   <ng-container matColumnDef="customTemplate">

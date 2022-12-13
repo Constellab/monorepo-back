@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Post,
   Put,
   Query,
   Res,
@@ -15,7 +16,14 @@ import {CnUser, CnUserEditDTO} from './cn-user.entity';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
 import {ClPage, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {CmUserCategory} from '@monorepo/common-model';
-import {BlFile, BlParseEnumPipe, BlParsePipe, BlPublic, BlResponseHelper} from '@monorepo/back-core-lib';
+import {
+  BlFile,
+  BlParseEnumPipe,
+  BlParsePipe,
+  BlPublic,
+  BlResponseHelper,
+  BlSearchParams
+} from '@monorepo/back-core-lib';
 import {FilesInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 
@@ -76,5 +84,12 @@ export class CnUsersController {
   public async set2FA(@Body('enabled') enabled: boolean): Promise<{ enabled: boolean }> {
     const enable = await this.usersService.set2FA(enabled);
     return {enabled: enable};
+  }
+
+  @Post('search')
+  public async search(@Body() searchParams: BlSearchParams,
+                      @Query('page', new ParseIntPipe()) page: number,
+                      @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnUser>> {
+    return this.usersService.search(searchParams, page, size);
   }
 }

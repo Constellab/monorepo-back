@@ -218,5 +218,6 @@
   "manage_your_space": "Gérer votre espace",
   "delete_comment_title": "Supprimer le commentaire",
   "delete_comment_confirmation": "Êtes-vous sûr de vouloir supprimer le commentaire ?",
-  "delete_comment_success": "Commentaire supprimé"
+  "delete_comment_success": "Commentaire supprimé",
+  "users": "Utilisateurs"
 }

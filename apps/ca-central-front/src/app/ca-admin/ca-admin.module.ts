@@ -33,6 +33,7 @@ import {
 } from './component/ca-admin-bucket-regions-list/ca-admin-bucket-regions-list.component';
 import {CaAdminBucketListComponent} from './component/ca-admin-bucket-list/ca-admin-bucket-list.component';
 import {CaAdminSpacesPageComponent} from './component/ca-admin-spaces-page/ca-admin-spaces-page.component';
+import {CaAdminUsersPageComponent} from './component/ca-admin-users-page/ca-admin-users-page.component';
 
 /**
  * Module only accessible by the admins
@@ -51,6 +52,7 @@ import {CaAdminSpacesPageComponent} from './component/ca-admin-spaces-page/ca-ad
     CaAdminBucketRegionsListComponent,
     CaAdminBucketListComponent,
     CaAdminSpacesPageComponent,
+    CaAdminUsersPageComponent,
   ],
   imports: [
     CommonModule,
@@ -63,6 +65,9 @@ import {CaAdminSpacesPageComponent} from './component/ca-admin-spaces-page/ca-ad
     CaObjectStorageCoreModule,
 
     CaAdminRoutingModule,
+  ],
+  exports: [
+    CaAdminUsersPageComponent
   ]
 })
 export class CaAdminModule {

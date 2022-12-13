@@ -16,7 +16,7 @@ export class CaUserTableComponent extends FlTableAbstractDirective<CaUser> imple
   @ContentChild(TemplateRef) templateRef: TemplateRef<any>;
 
   constructor() {
-    super(['photo', 'fullname', 'createdAt', 'customTemplate']);
+    super(['photo', 'fullname', 'createdAt', 'category', 'customTemplate']);
   }
 
   ngOnInit(): void {
