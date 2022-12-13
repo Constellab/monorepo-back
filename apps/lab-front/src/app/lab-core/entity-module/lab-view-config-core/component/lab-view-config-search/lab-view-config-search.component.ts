@@ -5,21 +5,12 @@ import {
   FlSearchState,
   FlTableColumn,
   FlTag,
-  flThemeDetailLight
+  FlThemeService
 } from '@monorepo/front-core-lib';
 import {LabViewConfig, LabViewConfigDatasource} from '../../../../model/entities/resource/lab-view-config.entity';
 import {LabViewConfigSearch, LabViewConfigSearchFields} from '../../model/lab-view-config-search.class';
 import {LabViewConfigService} from '../../../../entity-service/lab-view-config.service';
 
-const savedSearch: FlSavedSearch[] = [{
-  searchName: 'lab-view-config',
-  id: null,
-  label: 'All views',
-  color: flThemeDetailLight.primary,
-  version: 1,
-  default: true,
-  filtersCriteria: {} as Partial<LabViewConfigSearchFields>
-}];
 
 /**
  * Search on view config, only work for search linked to a report
@@ -43,7 +34,8 @@ export class LabViewConfigSearchComponent implements OnInit {
   columns: FlTableColumn<LabViewConfig>[];
 
   constructor(private searchState: FlSearchState<any>,
-              private viewConfigService: LabViewConfigService) {
+              private viewConfigService: LabViewConfigService,
+              private themeService: FlThemeService) {
   }
 
   ngOnInit(): void {
@@ -52,7 +44,7 @@ export class LabViewConfigSearchComponent implements OnInit {
       searchFunc: this.viewConfigService.getViewConfigSearchFunction(this.reportId),
       buildAdvancedForm: LabViewConfigSearch.getAdvancedSearchForm,
       advancedFormClass: LabViewConfigSearchFields,
-      savedSearch: savedSearch,
+      savedSearch: this.getSavedSearch(),
       advancedSearchFormManagerConfig: LabViewConfigSearch.advancedSearchManagerConfig,
       storeSearchInUrl: false
     };
@@ -65,6 +57,19 @@ export class LabViewConfigSearchComponent implements OnInit {
       this.columns.push('action');
     }
 
+  }
+
+  private getSavedSearch(): FlSavedSearch[] {
+    // list of predefined search of the resources
+    return [{
+      searchName: 'lab-view-config',
+      id: null,
+      label: 'All views',
+      color: this.themeService.getCurrentThemeDetail().primary,
+      version: 1,
+      default: true,
+      filtersCriteria: {} as Partial<LabViewConfigSearchFields>
+    }];
   }
 
   selectViewConfig(viewConfig: LabViewConfig): void {

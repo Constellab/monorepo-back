@@ -8,7 +8,7 @@ import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnSpaceUserService} from './cn-space-user.service';
 import {CnSpaceUser, CnSpaceUserRole} from './cn-space-user.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {BlBadRequestException, BlFile} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlFile, BlSearchParams} from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
 import {CnSpaceInvit} from './cn-space-invit.entity';
 import {CnSpaceInvitService} from './cn-space-invit.service';
@@ -108,6 +108,12 @@ export class CnSpaceAggregateService {
     this.checkAdmin();
 
     return this.spaceService.getAll(page, size);
+  }
+
+  public async search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnSpace>> {
+    this.checkAdmin();
+
+    return this.spaceService.search(searchParams, page, size);
   }
 
   public async uploadSpacePhoto(spaceId: string, file: BlFile): Promise<CnSpace> {

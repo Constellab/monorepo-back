@@ -12,9 +12,12 @@ import {CaRouterService} from '../../../ca-core/service/ca-router.service';
 export class CaAdminPageComponent implements OnInit {
 
   adminRoute = CaRouterService.getAdminRoute();
+
+  adminSpacesRoute = CaRouterService.getAdminSpacesRoute();
   adminServersRoute = CaRouterService.getAdminServersRoute();
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
   }

@@ -2,7 +2,14 @@ import {Injectable} from '@nestjs/common';
 import {CnSpace, CnSpaceType} from './cn-space.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DeleteResult, EntityManager, Repository} from 'typeorm';
-import {BlAbstractService, BlBucketConfig, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
+import {
+  BlAbstractService,
+  BlBucketConfig,
+  BlFile,
+  BlObjectStorageService,
+  BlSearchBuilder,
+  BlSearchParams
+} from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import {IncomingMessage} from 'http';
@@ -85,5 +92,13 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
       bucket: this.configService.getSpaceImageBucket(),
       credentials: this.configService.getDefaultObjectStorageCredentials()
     };
+  }
+
+  public search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnSpace>>{
+    const searchBuilder = new BlSearchBuilder();
+    const findOptions = searchBuilder.buildSearchParams(searchParams);
+
+
+    return this.findPaginated(page, size, findOptions);
   }
 }

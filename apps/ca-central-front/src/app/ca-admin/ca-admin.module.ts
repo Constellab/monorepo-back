@@ -17,8 +17,6 @@ import {
   CaAdminLabInstancesListComponent
 } from './component/ca-admin-lab-instances-list/ca-admin-lab-instances-list.component';
 import {CaLabCoreModule} from '../ca-core/entity-module/ca-lab-core/ca-lab-core.module';
-
-import {CaAdminSpacesListComponent} from './component/ca-admin-spaces-list/ca-admin-spaces-list.component';
 import {CaSpaceCoreModule} from '../ca-core/entity-module/ca-space-core/ca-space-core.module';
 import {CaAdminServersPageComponent} from './component/ca-admin-servers-page/ca-admin-servers-page.component';
 import {CaAdminPageComponent} from './component/ca-admin-page/ca-admin-page.component';
@@ -34,6 +32,7 @@ import {
   CaAdminBucketRegionsListComponent
 } from './component/ca-admin-bucket-regions-list/ca-admin-bucket-regions-list.component';
 import {CaAdminBucketListComponent} from './component/ca-admin-bucket-list/ca-admin-bucket-list.component';
+import {CaAdminSpacesPageComponent} from './component/ca-admin-spaces-page/ca-admin-spaces-page.component';
 
 /**
  * Module only accessible by the admins
@@ -45,13 +44,13 @@ import {CaAdminBucketListComponent} from './component/ca-admin-bucket-list/ca-ad
     CaAdminAccountActivationButtonComponent,
     CaAdminServerInfoListComponent,
     CaAdminLabInstancesListComponent,
-    CaAdminSpacesListComponent,
     CaAdminServersPageComponent,
     CaAdminPageComponent,
     CaAdminCloudProvidersListComponent,
     CaAdminBucketCredentialsListComponent,
     CaAdminBucketRegionsListComponent,
     CaAdminBucketListComponent,
+    CaAdminSpacesPageComponent,
   ],
   imports: [
     CommonModule,

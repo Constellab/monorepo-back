@@ -58,6 +58,13 @@ body {
   max-height: 20em;
 }
 
+// when a flex element has this class, it takes all the width in the advanced search
+// right panel, but not in a full page
+.g-search-field {
+  flex: 1 1 12em;
+  min-width: 0;
+}
+
 ///////////////// Responsive grids //////////////////////
 
 .g-grid-5-rows {

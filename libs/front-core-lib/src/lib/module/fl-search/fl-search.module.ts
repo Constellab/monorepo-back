@@ -21,6 +21,8 @@ import {FlSearchDateIntervalComponent} from './component/fl-search-date-interval
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
+import {FlSearchDrawerToggleDirective} from './directive/fl-search-drawer-toggle/fl-search-drawer-toggle.directive';
+import {FlSearchHeaderActionsComponent} from './component/fl-search-header-actions/fl-search-header-actions.component';
 
 
 @NgModule({
@@ -31,6 +33,8 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
     FlSearchResultComponent,
     FlSearchSavedListComponent,
     FlSearchDateIntervalComponent,
+    FlSearchDrawerToggleDirective,
+    FlSearchHeaderActionsComponent,
   ],
   exports: [
     FlSearchComponent,
@@ -39,6 +43,8 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
     FlSearchResultComponent,
     FlSearchSavedListComponent,
     FlSearchDateIntervalComponent,
+    FlSearchDrawerToggleDirective,
+    FlSearchHeaderActionsComponent,
   ],
   imports: [
     CommonModule,

@@ -23,7 +23,10 @@ export function BlLuxonDateColumn(config?: BlLuxonDateColumnConfig): PropertyDec
   // construct TypeOrm transformer
   const transformer: ValueTransformer = {
     // from object to DB
-    to: (value: DateTime): string => ClDateHelper.serializeDate(value),
+    to: (value: DateTime): string => {
+      if (!(value instanceof DateTime)) return value;
+      return ClDateHelper.serializeDate(value)
+    },
     // from DB to object
     from: (value: Date): DateTime => value == null ? null : ClDateHelper.getDate(value)
   };
@@ -51,7 +54,10 @@ export function BlLuxonDateTimeColumn(config?: BlLuxonDateColumnConfig): Propert
   // construct TypeOrm transformer
   const transformer: ValueTransformer = {
     // from object to DB
-    to: (value: DateTime): string => ClDateHelper.serializeDateTime(value),
+    to: (value: DateTime): string => {
+      if (!(value instanceof DateTime)) return value;
+      return ClDateHelper.serializeDateTime(value);
+    },
     // from DB to object
     from: (value: Date): DateTime => value == null ? null : ClDateHelper.getDate(value)
   };

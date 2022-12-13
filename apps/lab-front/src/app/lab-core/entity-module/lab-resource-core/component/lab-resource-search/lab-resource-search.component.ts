@@ -9,7 +9,7 @@ import {
   FlSearchState,
   FlTableColumn,
   FlTag,
-  flThemeDetailLight
+  FlThemeService
 } from '@monorepo/front-core-lib';
 import {LabResourceSearch, LabResourceSearchFields} from '../../model/lab-resource-advanced-search.class';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
@@ -27,17 +27,6 @@ import {LabRouterService} from '../../../../service/lab-router.service';
 
 export const labResourceSearchName: string = 'biox-resource';
 
-// list of predefined search of the resources
-const savedSearch: FlSavedSearch[] = [
-  {
-    searchName: labResourceSearchName,
-    id: null,
-    label: 'All',
-    color: flThemeDetailLight.primary,
-    version: 1,
-    default: true,
-    filtersCriteria: {} as Partial<LabResourceSearchFields>
-  }];
 
 /**
  * Complete component to search on resource. It supports a select mode and manage file upload.
@@ -79,7 +68,8 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
               private dialogService: FlDialogService,
               private actionsService: FlPortalActionsService,
               private fileResourceService: LabFileResourceService,
-              private resourceService: LabResourceService) {
+              private resourceService: LabResourceService,
+              private themeService: FlThemeService) {
   }
 
   ngOnInit(): void {
@@ -192,7 +182,7 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
   }
 
   private savedSearches(): FlSavedSearch[] {
-    const savedSearchCloned: FlSavedSearch[] = ClHelpService.deepClone(savedSearch);
+    const savedSearchCloned: FlSavedSearch[] = ClHelpService.deepClone(this.getSavedSearch());
     if (this.customSavedSearches?.length > 0) {
       // if one of the custom saved search is the default one, we override the default
       if (this.customSavedSearches.some(search => search.default)) {
@@ -204,6 +194,19 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
     }
 
     return savedSearchCloned;
+  }
+
+  private getSavedSearch(): FlSavedSearch[] {
+    // list of predefined search of the resources
+    return [{
+      searchName: labResourceSearchName,
+      id: null,
+      label: 'All',
+      color: this.themeService.getCurrentThemeDetail().primary,
+      version: 1,
+      default: true,
+      filtersCriteria: {} as Partial<LabResourceSearchFields>
+    }];
   }
 
   ngOnDestroy(): void {

@@ -11,6 +11,7 @@ import {
   FlDateModule,
   FlDialogModule,
   FlDrawerModule,
+  FlEmojiPickerModule,
   FlFormModule,
   FlIconModule,
   FlImageModule,
@@ -22,6 +23,7 @@ import {
   FlMenuDynamicModule,
   FlPortalActionsModule,
   FlPortalModule,
+  FlSearchModule,
   FlSectionModule,
   FlSnackBarModule,
   FlStatusModule,
@@ -32,9 +34,6 @@ import {
 } from '@monorepo/front-core-lib';
 import {RvResourceViewModule} from '@monorepo/resource-view';
 import {PrProtocolModule} from '@monorepo/protocol';
-import {
-  FlEmojiPickerModule
-} from '../../../../../../libs/front-core-lib/src/lib/module/fl-emoji-picker/fl-emoji-picker.module';
 
 /**
  * Regrouped all the needed import from library
@@ -76,6 +75,7 @@ import {
     FlDrawerModule,
     FlColorModule,
     FlEmojiPickerModule,
+    FlSearchModule,
 
 
     RvResourceViewModule,

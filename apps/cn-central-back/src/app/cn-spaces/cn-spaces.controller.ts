@@ -17,7 +17,7 @@ import {
 import {CnSpace} from './cn-space.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {CnSpaceAggregateService} from './cn-space-aggregate.service';
-import {BlFile, BlParsePipe, BlPublic, BlResponseHelper} from '@monorepo/back-core-lib';
+import {BlFile, BlParsePipe, BlPublic, BlResponseHelper, BlSearchParams} from '@monorepo/back-core-lib';
 import {CnSpaceUser, CnSpaceUserRole} from './cn-space-user.entity';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
@@ -82,11 +82,17 @@ export class CnSpacesController {
     return this.spaceAggregateService.getAll(page, size);
   }
 
+  @Post('search')
+  public async search(@Body() searchParams: BlSearchParams,
+                      @Query('page', new ParseIntPipe()) page: number,
+                      @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnSpace>> {
+    return this.spaceAggregateService.search(searchParams, page, size);
+  }
+
   @CnUserCategories(CmUserCategory.ADMIN)
   @Post(':id/user/:userId')
   public async addUserToSpace(@Param('id') id: string,
-                              @Param('userId', new ParseUUIDPipe()) userId: string)
-    : Promise<CnSpaceUser> {
+                              @Param('userId', new ParseUUIDPipe()) userId: string): Promise<CnSpaceUser> {
     return this.spaceAggregateService.addUserToSpace(id, userId);
   }
 

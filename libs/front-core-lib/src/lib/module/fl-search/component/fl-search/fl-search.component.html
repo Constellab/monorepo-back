@@ -7,14 +7,7 @@
 
   <mat-drawer-content class="content" fxLayout="column">
 
-    <div fxLayout="row">
-      <div fxFlex="auto">
-        <ng-content select="fl-search-header"></ng-content>
-      </div>
-      <button mat-icon-button type="button" (click)="toggleDrawer()">
-        <mat-icon>menu</mat-icon>
-      </button>
-    </div>
+    <ng-content select="fl-search-header"></ng-content>
 
 
     <!--   Number of results   -->
@@ -27,7 +20,7 @@
     </p>
 
     <fl-infinite-table-container fxFlex="grow" [datasource]="datasource" class="table-container">
-          <ng-content select="fl-search-result"></ng-content>
+      <ng-content select="fl-search-result"></ng-content>
     </fl-infinite-table-container>
 
   </mat-drawer-content>

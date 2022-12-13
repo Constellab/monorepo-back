@@ -1,4 +1,4 @@
-<div class="g-page">
+<div class="g-page-fixed">
 
   <div class="g-page-title nav-bar"
        fxLayout="row" fxLayoutAlign="row center" fxLayoutGap="1em">
@@ -13,8 +13,12 @@
       {{'admin_dashboard_page' | translate}}
     </a>
 
-    <a mat-button [routerLink]="adminServersRoute" routerLinkActive="menu-active"
-       [routerLinkActiveOptions]="{exact: true}">
+    <a mat-button [routerLink]="adminSpacesRoute" routerLinkActive="menu-active">
+      <mat-icon>space</mat-icon>
+      {{'space_list' | translate}}
+    </a>
+
+    <a mat-button [routerLink]="adminServersRoute" routerLinkActive="menu-active">
       <mat-icon>dns</mat-icon>
       {{'admin_servers_page' | translate}}
     </a>

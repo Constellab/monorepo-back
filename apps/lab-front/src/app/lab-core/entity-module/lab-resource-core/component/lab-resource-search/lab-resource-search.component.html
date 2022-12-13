@@ -7,31 +7,29 @@
 
 
   <!--  Center header  -->
-  <fl-search-header fxLayout="row">
+  <fl-search-header>
 
-    <div fxFlex="grow" class="saved-search-container"
-         fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em">
-      <fl-text-icon>
-        <mat-icon flIcon="folder"></mat-icon>
-        <h2>{{'databox.file_explorer' | translate}}</h2>
-      </fl-text-icon>
-      <div class="separator"></div>
-      <fl-search-saved-list></fl-search-saved-list>
-    </div>
+    <fl-text-icon>
+      <mat-icon flIcon="folder"></mat-icon>
+      <h2>{{'databox.file_explorer' | translate}}</h2>
+    </fl-text-icon>
 
-    <!--   Upload files     -->
-    <fl-input-file-icon-container [matTooltip]="'databox.upload_file' | translate" icon="upload_file"
-                                  class="upload-button" color="accent">
-      <input flInputFile [multiple]="true" type="file" (fileChange)="openUploadFiles($event)"
-             [(ngModel)]="files">
-    </fl-input-file-icon-container>
+    <fl-search-header-actions fxLayout="row">
 
-    <!--   Upload folders     -->
-    <fl-input-file-icon-container [matTooltip]="'databox.upload_folder' | translate" icon="drive_folder_upload"
-                                  class="upload-button" color="accent">
-      <input flInputFile type="file" (fileChange)="openUploadFolder($event)" [multiple]="true"
-             [(ngModel)]="files" webkitdirectory mozdirectory [strictMode]="false">
-    </fl-input-file-icon-container>
+      <!--   Upload files     -->
+      <fl-input-file-icon-container [matTooltip]="'databox.upload_file' | translate" icon="upload_file"
+                                    class="upload-button" color="accent">
+        <input flInputFile [multiple]="true" type="file" (fileChange)="openUploadFiles($event)"
+               [(ngModel)]="files">
+      </fl-input-file-icon-container>
+
+      <!--   Upload folders     -->
+      <fl-input-file-icon-container [matTooltip]="'databox.upload_folder' | translate" icon="drive_folder_upload"
+                                    class="upload-button" color="accent">
+        <input flInputFile type="file" (fileChange)="openUploadFolder($event)" [multiple]="true"
+               [(ngModel)]="files" webkitdirectory mozdirectory [strictMode]="false">
+      </fl-input-file-icon-container>
+    </fl-search-header-actions>
   </fl-search-header>
 
 

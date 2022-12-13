@@ -61,6 +61,7 @@
   "created_by": "Créé par",
   "created_at": "Créé le",
   "created_the": "Créé le",
+  "creation_date": "Date de création",
   "last_modified_at": "Dernière modification le",
   "last_modified_by": "Dernière modification par",
   "last_modified_the": "Dernière modification le",
@@ -214,7 +215,7 @@
   "all_user_space_generated": "Les espaces personnels ont été générés",
   "share_personal_space_warning": "Vous êtes sur le point de partager votre espace personnel. Si c'est pour votre entreprise ou une équipe, nous vous recommandons de créer un espace partagé dédié.",
   "switch_to_space": "Changer vers",
-  "manage_your_space": "Gérer votre espace"
+  "manage_your_space": "Gérer votre espace",
   "delete_comment_title": "Supprimer le commentaire",
   "delete_comment_confirmation": "Êtes-vous sûr de vouloir supprimer le commentaire ?",
   "delete_comment_success": "Commentaire supprimé"

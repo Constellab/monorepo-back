@@ -9,6 +9,9 @@ export * from './component/fl-search-header/fl-search-header.component';
 export * from './component/fl-search-result/fl-search-result.component';
 export * from './component/fl-search-saved-list/fl-search-saved-list.component';
 
+// Directives
+export * from './directive/fl-search-drawer-toggle/fl-search-drawer-toggle.directive';
+
 // Models
 export * from './model/fl-sort.class';
 export * from './model/fl-search.class';

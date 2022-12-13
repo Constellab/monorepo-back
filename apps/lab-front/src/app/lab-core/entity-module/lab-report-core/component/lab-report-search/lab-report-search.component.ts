@@ -6,7 +6,7 @@ import {
   FlSearchConfig,
   FlSearchState,
   FlTableColumn,
-  flThemeDetailLight
+  FlThemeService
 } from '@monorepo/front-core-lib';
 import {LabReportSearch, LabReportSearchFields} from '../../model/lab-report-advanced-search.class';
 import {LabReport} from '../../../../model/entities/lab-report.entity';
@@ -17,15 +17,6 @@ import {
   LabReportFormDialogInput
 } from '../lab-report-form-dialog/lab-report-form-dialog.component';
 
-const savedSearch: FlSavedSearch[] = [{
-  searchName: 'lab-report',
-  id: null,
-  label: 'Reports',
-  color: flThemeDetailLight.primary,
-  version: 1,
-  default: true,
-  filtersCriteria: {isValidated: false} as Partial<LabReportSearchFields>
-}];
 
 @Component({
   selector: 'lab-report-search',
@@ -50,7 +41,8 @@ export class LabReportSearchComponent implements OnInit {
   constructor(private searchState: FlSearchState<any>,
               private reportService: LabReportService,
               private routerService: LabRouterService,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private themeService: FlThemeService) {
   }
 
   ngOnInit(): void {
@@ -59,12 +51,24 @@ export class LabReportSearchComponent implements OnInit {
       searchFunc: this.reportService.getAdvancedSearchFunction(),
       buildAdvancedForm: LabReportSearch.getAdvancedSearchForm,
       advancedFormClass: LabReportSearchFields,
-      savedSearch: savedSearch,
+      savedSearch: this.getSavedSearch(),
       advancedSearchFormManagerConfig: LabReportSearch.advancedSearchManagerConfig,
       storeSearchInUrl: this.fullPageSearch
     };
     this.searchState.init(config);
     this.datasource = this.searchState.datasource;
+  }
+
+  private getSavedSearch(): FlSavedSearch[] {
+    return [{
+      searchName: 'lab-report',
+      id: null,
+      label: 'Reports',
+      color: this.themeService.getCurrentThemeDetail().primary,
+      version: 1,
+      default: true,
+      filtersCriteria: {isValidated: false} as Partial<LabReportSearchFields>
+    }];
   }
 
   openCreateReportFormDialog(): void {

@@ -3,14 +3,11 @@ import {CaProjectComment} from '../../../ca-core/model/entities/ca-comment.class
 import {CaEditCommentTextEditorConfig} from '../../../ca-core/model/config/ca-comment-text-editor.config';
 import {CaProjectService} from '../../../ca-core/service-api/ca-project.service';
 import {Subject} from 'rxjs';
-import {FlOverlayRef, FlPortalService} from '@monorepo/front-core-lib';
+import {FlEmojiPickerPortalComponent, FlOverlayRef, FlPortalService} from '@monorepo/front-core-lib';
 import {CaMouseHoverCommentData} from '../../directive/ca-mouse-hover-comment-portal.directive';
 import {CaAuthenticatedUserService} from '../../../ca-core/service-api/ca-authenticated-user.service';
 import {CaCommentMenuPortalButton} from '../ca-comment-menu-portal/ca-comment-menu-portal.component';
 import {FormControl, Validators} from '@angular/forms';
-import {
-  FlEmojiPickerPortalComponent
-} from '../../../../../../../libs/front-core-lib/src/lib/module/fl-emoji-picker/component/fl-emoji-picker-portal/fl-emoji-picker-portal.component';
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 
 @Component({

@@ -8,7 +8,7 @@ import {
   FlSearchState,
   FlTableColumn,
   FlTag,
-  flThemeDetailLight
+  FlThemeService
 } from '@monorepo/front-core-lib';
 import {LabExperimentSearch, LabExperimentSearchFields} from '../../model/lab-experiment-advanced-search.class';
 import {LabExperimentService} from '../../../../entity-service/lab-experiment.service';
@@ -16,16 +16,6 @@ import {LabExperiment} from '../../../../model/entities/lab-experiment.entity';
 import {LabExperimentFormDialogComponent} from '../lab-experiment-form-dialog/lab-experiment-form-dialog.component';
 import {LabRouterService} from '../../../../service/lab-router.service';
 
-// list of predefined search of the resources
-const savedSearch: FlSavedSearch[] = [{
-  searchName: 'lab-experiment',
-  id: null,
-  label: 'All experiments',
-  color: flThemeDetailLight.primary,
-  version: 1,
-  default: true,
-  filtersCriteria: {type: 'EXPERIMENT', isValidated: false, isArchived: false} as Partial<LabExperimentSearchFields>
-}];
 
 @Component({
   selector: 'lab-experiment-search',
@@ -50,7 +40,8 @@ export class LabExperimentSearchComponent implements OnInit {
   constructor(private searchState: FlSearchState<any>,
               private experimentService: LabExperimentService,
               private dialogService: FlDialogService,
-              private routerService: LabRouterService) {
+              private routerService: LabRouterService,
+              private themeService: FlThemeService) {
   }
 
   ngOnInit(): void {
@@ -59,12 +50,25 @@ export class LabExperimentSearchComponent implements OnInit {
       searchFunc: this.experimentService.getAdvancedSearchFunction(),
       buildAdvancedForm: LabExperimentSearch.getAdvancedSearchForm,
       advancedFormClass: LabExperimentSearchFields,
-      savedSearch: savedSearch,
+      savedSearch: this.getSavedSearch(),
       advancedSearchFormManagerConfig: LabExperimentSearch.advancedSearchManagerConfig,
       storeSearchInUrl: this.fullPageSearch
     };
     this.searchState.init(config);
     this.datasource = this.searchState.datasource;
+  }
+
+  private getSavedSearch(): FlSavedSearch[] {
+    // list of predefined search of the resources
+    return [{
+      searchName: 'lab-experiment',
+      id: null,
+      label: 'All experiments',
+      color: this.themeService.getCurrentThemeDetail().primary,
+      version: 1,
+      default: true,
+      filtersCriteria: {type: 'EXPERIMENT', isValidated: false, isArchived: false} as Partial<LabExperimentSearchFields>
+    }];
   }
 
   createExperiment(): void {

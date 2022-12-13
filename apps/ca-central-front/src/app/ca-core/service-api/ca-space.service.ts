@@ -1,5 +1,11 @@
 import {Injectable} from '@angular/core';
-import {FlApiCrudService, FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
+import {
+  FlAdvancedSearchInput,
+  FlApiCrudService,
+  FlApiService,
+  FlEntityPaginatedDatasource,
+  FlSearchConverter
+} from '@monorepo/front-core-lib';
 import {
   CaSaveSpaceDTO,
   CaSpace,
@@ -14,6 +20,7 @@ import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CaSpaceInvit, CaSpaceInvitDatasource} from '../model/entities/ca-space-invit.class';
 import {CaRequestNewLicensesDto} from '../model/dto/ca-space.dto';
 import {CaUser, CaUserDatasourcePaginated} from '../model/entities/ca-user.class';
+import {CaSpaceSearch, CaSpaceSearchFields} from '../entity-module/ca-space-core/model/ca-space-search.class';
 
 @Injectable({
   providedIn: 'root'
@@ -117,6 +124,16 @@ export class CaSpaceService extends FlApiCrudService<CaSpace, CaSaveSpaceDTO> {
   public getSpaceSimpleUsersDatasource(spaceId: string): CaUserDatasourcePaginated {
     return new FlEntityPaginatedDatasource(
       (page, size) => this.getSpaceSimpleUsers(spaceId, page, size), 20);
+  }
+
+  public search(page: number, pageSize: number, filters?: CaSpaceSearchFields): Observable<ClPage<CaSpace>> {
+    const data: FlAdvancedSearchInput = {
+      filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, CaSpaceSearch.advancedSearchConverter),
+      sortsCriteria: null
+    };
+    return this.apiService.post(`${this.route}/search`, data, CaSpace, {
+      page: page, pageSize: pageSize, resultIsPaginated: true
+    });
   }
 
   ////////////////////////////////// OTHERS //////////////////////////////////
