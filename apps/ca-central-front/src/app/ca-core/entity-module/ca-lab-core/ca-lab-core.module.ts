@@ -21,6 +21,10 @@ import {
 import {CaLabLoginButtonComponent} from './component/ca-lab-login-button/ca-lab-login-button.component';
 import {CaSpaceCoreModule} from '../ca-space-core/ca-space-core.module';
 import {CaConfigCoreModule} from '../ca-config-core/ca-config-core.module';
+import {CaLabInstanceSearchComponent} from './component/ca-lab-instance-search/ca-lab-instance-search.component';
+import {
+  CaLabInstanceSearchFormComponent
+} from './component/ca-lab-instance-search-form/ca-lab-instance-search-form.component';
 
 /**
  * Core module for Lab and LabInstance
@@ -34,6 +38,8 @@ import {CaConfigCoreModule} from '../ca-config-core/ca-config-core.module';
     CaLabInstanceFormDialogComponent,
     CaLabInstanceStatusDialogComponent,
     CaLabLoginButtonComponent,
+    CaLabInstanceSearchComponent,
+    CaLabInstanceSearchFormComponent,
   ],
   exports: [
     CaLabInstanceCardComponent,
@@ -42,6 +48,8 @@ import {CaConfigCoreModule} from '../ca-config-core/ca-config-core.module';
     CaLabInstanceTableComponent,
     CaLabInstanceFormDialogComponent,
     CaLabLoginButtonComponent,
+    CaLabInstanceSearchComponent,
+    CaLabInstanceSearchFormComponent,
   ],
   imports: [
     CommonModule,

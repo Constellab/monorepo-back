@@ -13,9 +13,6 @@ import {
   CaAdminServerInfoListComponent
 } from './component/ca-admin-server-info-list/ca-admin-server-info-list.component';
 import {CaServerInfoCoreModule} from '../ca-core/entity-module/ca-server-info-core/ca-server-info-core.module';
-import {
-  CaAdminLabInstancesListComponent
-} from './component/ca-admin-lab-instances-list/ca-admin-lab-instances-list.component';
 import {CaLabCoreModule} from '../ca-core/entity-module/ca-lab-core/ca-lab-core.module';
 import {CaSpaceCoreModule} from '../ca-core/entity-module/ca-space-core/ca-space-core.module';
 import {CaAdminServersPageComponent} from './component/ca-admin-servers-page/ca-admin-servers-page.component';
@@ -34,6 +31,9 @@ import {
 import {CaAdminBucketListComponent} from './component/ca-admin-bucket-list/ca-admin-bucket-list.component';
 import {CaAdminSpacesPageComponent} from './component/ca-admin-spaces-page/ca-admin-spaces-page.component';
 import {CaAdminUsersPageComponent} from './component/ca-admin-users-page/ca-admin-users-page.component';
+import {
+  CaAdminLabInstancesPageComponent
+} from './component/ca-admin-lab-instances-page/ca-admin-lab-instances-page.component';
 
 /**
  * Module only accessible by the admins
@@ -44,7 +44,6 @@ import {CaAdminUsersPageComponent} from './component/ca-admin-users-page/ca-admi
     CaAdminAccountsActivationComponent,
     CaAdminAccountActivationButtonComponent,
     CaAdminServerInfoListComponent,
-    CaAdminLabInstancesListComponent,
     CaAdminServersPageComponent,
     CaAdminPageComponent,
     CaAdminCloudProvidersListComponent,
@@ -53,6 +52,7 @@ import {CaAdminUsersPageComponent} from './component/ca-admin-users-page/ca-admi
     CaAdminBucketListComponent,
     CaAdminSpacesPageComponent,
     CaAdminUsersPageComponent,
+    CaAdminLabInstancesPageComponent,
   ],
   imports: [
     CommonModule,

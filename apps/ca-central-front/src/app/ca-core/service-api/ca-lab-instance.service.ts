@@ -9,8 +9,15 @@ import {
   CaLabInstanceWithSpace,
   CaLabInstanceWithSpaceDatasource
 } from '../model/entities/ca-lab-instance.class';
-import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
-import {ClPageI} from '@monorepo/core-lib';
+import {
+  FlAdvancedSearchInput,
+  FlApiService,
+  FlArrayObs,
+  FlEntityArrayObs,
+  FlEntityPaginatedDatasource,
+  FlSearchConverter
+} from '@monorepo/front-core-lib';
+import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {
   CaExternalLabBackup,
   CaExternalLabBackupHistory,
@@ -22,6 +29,10 @@ import {
 } from '../model/entities/ca-lab-manager.class';
 import {CaLabInstanceUser, CaLabInstanceUserRole} from '../model/entities/ca-lab-instance-user.class';
 import {CaLabInstanceProject} from '../model/entities/ca-lab-instance-project.class';
+import {
+  CaLabInstanceSearch,
+  CaLabInstanceSearchFields
+} from '../entity-module/ca-lab-core/model/ca-lab-instance-search.class';
 
 @Injectable({
   providedIn: 'root'
@@ -93,15 +104,15 @@ export class CaLabInstanceService {
     );
   }
 
-  public getAll(page: number, size: number): Observable<ClPageI<CaLabInstanceWithSpace>> {
-    return this.apiService.get(this.route, CaLabInstanceWithSpace,
-      {page: page, pageSize: size, resultIsPaginated: true});
-  }
-
-  public getAllDatasource(): CaLabInstanceWithSpaceDatasource {
-    return new FlEntityPaginatedDatasource(
-      (page, size) => this.getAll(page, size), 20
-    );
+  public searchAll(page: number, pageSize: number,
+                   filters?: CaLabInstanceSearchFields): Observable<ClPage<CaLabInstanceWithSpace>> {
+    const data: FlAdvancedSearchInput = {
+      filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, CaLabInstanceSearch.advancedSearchConverter),
+      sortsCriteria: null
+    };
+    return this.apiService.post(`${this.route}/search`, data, CaLabInstanceWithSpace, {
+      page: page, pageSize: pageSize, resultIsPaginated: true
+    });
   }
 
 

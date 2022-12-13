@@ -5,6 +5,9 @@ import {CaAdminPageComponent} from './component/ca-admin-page/ca-admin-page.comp
 import {CaAdminServersPageComponent} from './component/ca-admin-servers-page/ca-admin-servers-page.component';
 import {CaAdminSpacesPageComponent} from './component/ca-admin-spaces-page/ca-admin-spaces-page.component';
 import {CaAdminUsersPageComponent} from './component/ca-admin-users-page/ca-admin-users-page.component';
+import {
+  CaAdminLabInstancesPageComponent
+} from './component/ca-admin-lab-instances-page/ca-admin-lab-instances-page.component';
 
 const routes: Route[] = [
   {
@@ -12,6 +15,7 @@ const routes: Route[] = [
       {path: '', component: CaAdminDashboardPageComponent},
       {path: 'spaces', component: CaAdminSpacesPageComponent},
       {path: 'users', component: CaAdminUsersPageComponent},
+      {path: 'labs', component: CaAdminLabInstancesPageComponent},
       {path: 'servers', component: CaAdminServersPageComponent},
     ]
   },

@@ -9,7 +9,7 @@ import {
   CnExternalLabUser,
   CnExternalLabUserRole
 } from '../cn-external-lab-api/model/cn-external-lab-api.class';
-import {ClPageI} from '@monorepo/core-lib';
+import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {
   CnLabComposeUpOptions,
@@ -26,7 +26,7 @@ import {
 } from './cn-lab-instance.dto';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstancesSecurity} from './cn-lab-instances.security';
-import {BlBadRequestException, BlDtoHelper, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlDtoHelper, BlSearchParams, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
 import {CnExternalLabUserService} from '../cn-external-lab-api/cn-external-lab-user.service';
 import {CnExternalLabApiService} from '../cn-external-lab-api/cn-external-lab-api.service';
@@ -133,12 +133,6 @@ export class CnLabInstanceAggregateService {
     return await this.labInstancesService.getStatusHistory(id) as CnLabInstanceStatusHistory[];
   }
 
-  async findAll(page: number, size: number): Promise<ClPageI<CnLabInstance>> {
-    await this.security.checkAuthorizationToFindAll(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
-
-    return this.labInstancesService.findAll(page, size);
-  }
-
   public async updateName(labInstanceId: string, name: string): Promise<CnLabInstance> {
     await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
@@ -149,6 +143,12 @@ export class CnLabInstanceAggregateService {
     await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
     return this.labInstancesService.getLabConfig(labInstanceId);
+  }
+
+  async search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnLabInstance>> {
+    await this.security.checkAuthorizationToFindAll(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+
+    return this.labInstancesService.search(searchParams, page, size);
   }
 
   /////////////////////////////////////// EXTERNAL LAB SERVICE //////////////////////////////////

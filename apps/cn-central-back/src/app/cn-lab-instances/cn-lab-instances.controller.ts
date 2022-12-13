@@ -2,7 +2,7 @@ import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post,
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstanceAggregateService} from './cn-lab-instance-aggregate.service';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
-import {BlDtoHelper, BlParseEnumPipe, BlParsePipe} from '@monorepo/back-core-lib';
+import {BlDtoHelper, BlParseEnumPipe, BlParsePipe, BlSearchParams} from '@monorepo/back-core-lib';
 import {ClPageI} from '@monorepo/core-lib';
 import {
   CnLabFindOneDto,
@@ -67,12 +67,12 @@ export class CnLabInstancesController {
     return await this.aggregateService.getByCurrentSpace(page, size);
   }
 
-
-  @Get()
-  async findAll(@Query('page', ParseIntPipe) page: number,
-                @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnLabInstanceAdminDto>> {
+  @Post('search')
+  async searchAll(@Body() searchParam: BlSearchParams,
+                  @Query('page', ParseIntPipe) page: number,
+                  @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnLabInstanceAdminDto>> {
     // use a DTO to return all the field including the apiKey
-    const labInstances = await this.aggregateService.findAll(page, size);
+    const labInstances = await this.aggregateService.search(searchParam, page, size);
     return BlDtoHelper.pageToDto(CnLabInstanceAdminDto, labInstances);
   }
 

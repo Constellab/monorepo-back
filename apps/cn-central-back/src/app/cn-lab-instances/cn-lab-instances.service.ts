@@ -14,7 +14,7 @@ import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
 import {CnReportsService} from '../cn-projects-aggregate/cn-reports/cn-reports.service';
-import {BlBadRequestException} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlSearchBuilder, BlSearchParams} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInstance, CnLabInstanceStatus> {
@@ -99,17 +99,6 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     });
   }
 
-
-  public async findAll(page: number, size: number): Promise<ClPage<CnLabInstance>> {
-    return await this.findPaginated(page, size,
-      {
-        relations: {space: true},
-        order: {lastModifiedAt: 'DESC' as any},
-      },
-    );
-  }
-
-
   public async updateName(labInstanceId: string, name: string): Promise<CnLabInstance> {
     const lab: CnLabInstance = await this.findByIdAndCheck(labInstanceId);
     lab.name = name;
@@ -143,5 +132,14 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
         spaceId: spaceId
       }
     });
+  }
+
+  public async search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnLabInstance>> {
+    const builder = new BlSearchBuilder();
+    const options = builder.buildSearchParams(searchParams);
+    // get the space
+    options.relations = {space: true};
+
+    return this.findPaginated(page, size, options);
   }
 }

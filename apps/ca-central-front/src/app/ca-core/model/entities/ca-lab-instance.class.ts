@@ -16,7 +16,7 @@ import {CaLabInstanceUserRole} from './ca-lab-instance-user.class';
 
 export type CaLabInstanceStatus = 'RUNNING' | 'STOPPED';
 
-const caLabInstanceStatusDict: FlStatusDict<CaLabInstanceStatus> = {
+export const caLabInstanceStatusDict: FlStatusDict<CaLabInstanceStatus> = {
   RUNNING: FlStatusHelper.getRunningStatus('RUNNING'),
   STOPPED: FlStatusHelper.getStoppedStatus('STOPPED')
 };

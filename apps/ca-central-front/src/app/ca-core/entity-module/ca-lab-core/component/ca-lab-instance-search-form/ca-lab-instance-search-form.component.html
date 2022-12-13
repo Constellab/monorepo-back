@@ -1,0 +1,65 @@
+<div fxLayout="column" class="form" [formGroup]="formGp">
+
+  <div fxLayout="row wrap" fxLayoutGap="1em" fxLayoutAlign="space-between center"
+       class="g-full g-form-field-compact">
+
+    <!--  Name  -->
+    <mat-form-field class="g-search-field">
+      <mat-label>{{'name' | translate }}</mat-label>
+      <input matInput formControlName="name" [placeholder]="'name' | translate" autocomplete="off">
+    </mat-form-field>
+
+    <!--  VirtualHost  -->
+    <mat-form-field class="g-search-field">
+      <mat-label>{{'virtual_host' | translate }}</mat-label>
+      <input matInput formControlName="virtualHost" [placeholder]="'virtual_host' | translate" autocomplete="off">
+    </mat-form-field>
+
+
+    <!--  CurrentStatus  -->
+    <mat-form-field class="g-search-field">
+      <mat-label>{{'status' | translate }}</mat-label>
+      <mat-select formControlName="currentStatus" [placeholder]="'status' | translate">
+        <mat-option *ngFor="let key of status | flObjectKeys" [value]="status[key].value">
+          {{status[key].name | translate}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+
+    <!--  City  -->
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'region' | translate}}</mat-label>
+      <mat-select [formControlName]="'city'">
+        <ca-select-city-options></ca-select-city-options>
+      </mat-select>
+    </mat-form-field>
+
+    <!--  Server info  -->
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'server_info' | translate}}</mat-label>
+      <mat-select placeholder="{{'server_info' | translate}}" formControlName="serverInfo">
+        <ca-select-server-info-options></ca-select-server-info-options>
+      </mat-select>
+    </mat-form-field>
+
+    <!--Created by-->
+    <mat-form-field class="g-search-field">
+      <mat-label>{{'created_by' | translate }}</mat-label>
+      <mat-select formControlName="createdBy" [placeholder]="'created_by' | translate">
+        <ca-select-user-options mode="all"></ca-select-user-options>
+      </mat-select>
+    </mat-form-field>
+
+    <!--  Creation date  -->
+    <div class="g-form-field-no-hint g-full">
+      <p class="g-text-small">{{'creation_date' | translate}}</p>
+      <fl-search-date-interval formGroupName="createdAt">
+      </fl-search-date-interval>
+    </div>
+
+  </div>
+
+</div>
+
+

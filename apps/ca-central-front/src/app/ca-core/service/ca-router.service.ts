@@ -161,6 +161,10 @@ export class CaRouterService {
     return `${CaRouterService.getAdminRoute()}/users`;
   }
 
+  public static getAdminLabsRoute(): string {
+    return `${CaRouterService.getAdminRoute()}/labs`;
+  }
+
   public static getAdminServersRoute(): string {
     return `${CaRouterService.getAdminRoute()}/servers`;
   }

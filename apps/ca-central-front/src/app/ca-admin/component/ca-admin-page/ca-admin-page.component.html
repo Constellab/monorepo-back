@@ -14,13 +14,18 @@
     </a>
 
     <a mat-button [routerLink]="adminSpacesRoute" routerLinkActive="menu-active">
-      <mat-icon flIcon="space">space</mat-icon>
+      <mat-icon flIcon="space"></mat-icon>
       {{'space_list' | translate}}
     </a>
 
     <a mat-button [routerLink]="adminUsersRoute" routerLinkActive="menu-active">
       <mat-icon>people</mat-icon>
       {{'users' | translate}}
+    </a>
+
+    <a mat-button [routerLink]="adminLabsRoute" routerLinkActive="menu-active">
+      <mat-icon flIcon="lab"></mat-icon>
+      {{'lab_instances' | translate}}
     </a>
 
     <a mat-button [routerLink]="adminServersRoute" routerLinkActive="menu-active">

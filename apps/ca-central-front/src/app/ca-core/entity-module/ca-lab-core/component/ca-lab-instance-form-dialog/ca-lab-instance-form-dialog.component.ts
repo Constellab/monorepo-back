@@ -8,7 +8,6 @@ import {Validators} from '@angular/forms';
 import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
 import {CaCountryService} from '../../../../service-api/ca-country.service';
 import {CaCountry} from '../../../../model/entities/ca-country.entity';
-import {CaCity} from '../../../../model/entities/ca-city.entity';
 
 export type CaLabInstanceFormDialogInput = FlFormDialogInput<CaLabInstanceForm>;
 
@@ -72,10 +71,5 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
   getUpdateSuccessMessage(): string {
     return 'lab_instance_updated';
   }
-
-  compareSelectCity(x: CaCity, y: CaCity): boolean {
-    return x && y ? x.id === y.id : x === y;
-  }
-
 
 }
