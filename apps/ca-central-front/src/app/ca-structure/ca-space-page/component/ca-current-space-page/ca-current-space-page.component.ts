@@ -1,10 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import {CaSpaceService} from '../../../../ca-core/service-api/ca-space.service';
+import {CaRouterService} from '../../../../ca-core/service/ca-router.service';
 import {Observable} from 'rxjs';
-import {CaSpace} from '../../../../ca-core/model/entities/ca-space.class';
+import {CaSpace} from '../../../../ca-core/model/entities/space/ca-space.class';
 import {CaCurrentSpaceService} from '../../../../ca-core/service-api/ca-current-space.service';
-import {CaCurrentSpaceDetailComponent} from '../ca-current-space-detail/ca-current-space-detail.component';
 
 @Component({
   selector: 'ca-current-space-page',
@@ -13,17 +11,16 @@ import {CaCurrentSpaceDetailComponent} from '../ca-current-space-detail/ca-curre
 })
 export class CaCurrentSpacePageComponent implements OnInit {
 
-  space$: Observable<CaSpace>;
+  space$: Observable<CaSpace> = this.currentSpaceService.getCurrentSpace$();
 
+  dashboardRoute = CaRouterService.getCurrentSpaceRoute();
 
+  usersRoute = CaRouterService.getCurrentSpaceUsersRoute();
 
-  constructor(private route: ActivatedRoute,
-              private spaceService: CaSpaceService,
-              private currentSpaceService: CaCurrentSpaceService) {
+  constructor(private currentSpaceService: CaCurrentSpaceService) {
   }
 
   ngOnInit(): void {
-    this.space$ = this.currentSpaceService.getCurrentSpace$();
   }
 
 }

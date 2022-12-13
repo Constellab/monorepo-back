@@ -13,6 +13,10 @@ import {CaSelectSpaceOptionsComponent} from './component/ca-select-space-options
 import {CaExternalSpaceLinkDirective} from './pipe/ca-external-space-link.directive';
 import {CaSpaceSearchComponent} from './component/ca-space-search/ca-space-search.component';
 import {CaSpaceSearchFormComponent} from './component/ca-space-search-form/ca-space-search-form.component';
+import {CaSpaceUserSearchComponent} from './component/ca-space-user-search/ca-space-user-search.component';
+import {
+  CaSpaceUserSearchFormComponent
+} from './component/ca-space-user-search-form/ca-space-user-search-form.component';
 
 
 @NgModule({
@@ -27,6 +31,8 @@ import {CaSpaceSearchFormComponent} from './component/ca-space-search-form/ca-sp
     CaExternalSpaceLinkDirective,
     CaSpaceSearchComponent,
     CaSpaceSearchFormComponent,
+    CaSpaceUserSearchComponent,
+    CaSpaceUserSearchFormComponent,
   ],
   exports: [
     CaSpaceTableComponent,
@@ -39,6 +45,8 @@ import {CaSpaceSearchFormComponent} from './component/ca-space-search-form/ca-sp
     CaExternalSpaceLinkDirective,
     CaSpaceSearchComponent,
     CaSpaceSearchFormComponent,
+    CaSpaceUserSearchComponent,
+    CaSpaceUserSearchFormComponent,
   ],
   imports: [
     CommonModule,

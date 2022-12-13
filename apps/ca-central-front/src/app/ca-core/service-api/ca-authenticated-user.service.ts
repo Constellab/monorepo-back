@@ -12,7 +12,7 @@ import {
 import {ClStringHelper, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {CmUserCategory} from '@monorepo/common-model';
 import {CaCurrentSpaceService} from './ca-current-space.service';
-import {CaSpaceInfoDto} from '../model/entities/ca-space.class';
+import {CaSpaceInfoDto} from '../model/entities/space/ca-space.class';
 import {CaSpaceService} from './ca-space.service';
 import {DOCUMENT} from '@angular/common';
 import {environment} from '../../../environments/ca-environment';

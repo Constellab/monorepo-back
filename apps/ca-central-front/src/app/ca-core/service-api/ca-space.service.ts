@@ -6,21 +6,18 @@ import {
   FlEntityPaginatedDatasource,
   FlSearchConverter
 } from '@monorepo/front-core-lib';
-import {
-  CaSaveSpaceDTO,
-  CaSpace,
-  CaSpaceDatasource,
-  CaSpaceInfoDto,
-  CaSpaceRole,
-  CaSpaceUser,
-  CaSpaceUserDatasource
-} from '../model/entities/ca-space.class';
+import {CaSaveSpaceDTO, CaSpace, CaSpaceDatasource, CaSpaceInfoDto,} from '../model/entities/space/ca-space.class';
 import {Observable} from 'rxjs';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
-import {CaSpaceInvit, CaSpaceInvitDatasource} from '../model/entities/ca-space-invit.class';
+import {CaSpaceInvit, CaSpaceInvitDatasource} from '../model/entities/space/ca-space-invit.class';
 import {CaRequestNewLicensesDto} from '../model/dto/ca-space.dto';
 import {CaUser, CaUserDatasourcePaginated} from '../model/entities/ca-user.class';
 import {CaSpaceSearch, CaSpaceSearchFields} from '../entity-module/ca-space-core/model/ca-space-search.class';
+import {CaSpaceRole, CaSpaceUser, CaSpaceUserDatasource} from '../model/entities/space/ca-space-user.class';
+import {
+  CaSpaceUserSearch,
+  CaSpaceUserSearchFields
+} from '../entity-module/ca-space-core/model/ca-space-user-search.class';
 
 @Injectable({
   providedIn: 'root'
@@ -50,6 +47,37 @@ export class CaSpaceService extends FlApiCrudService<CaSpace, CaSaveSpaceDTO> {
       (page, size) => this.getAll(page, size), 20);
   }
 
+
+  public uploadSpacePhoto(spaceId: string, photo: File): Observable<CaSpace> {
+    const formData = new FormData();
+    formData.append('photo', photo);
+    return this.apiService.put(`${this.route}/${spaceId}/photo`, formData, CaSpace);
+  }
+
+  public getSpacePhoto(filename: string): string {
+    return this.apiService.getBaseRouteUrl(`${this.route}/photo/${filename}`);
+  }
+
+
+  public getCurrentSpace(): Observable<CaSpace> {
+    return this.apiService.get(`${this.route}/current`, CaSpace);
+  }
+
+  public getDefaultSpace(): Observable<CaSpace> {
+    return this.apiService.get(`${this.route}/default`, CaSpace);
+  }
+
+  public search(page: number, pageSize: number, filters?: CaSpaceSearchFields): Observable<ClPage<CaSpace>> {
+    const data: FlAdvancedSearchInput = {
+      filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, CaSpaceSearch.advancedSearchConverter),
+      sortsCriteria: null
+    };
+    return this.apiService.post(`${this.route}/search`, data, CaSpace, {
+      page: page, pageSize: pageSize, resultIsPaginated: true
+    });
+  }
+
+  ////////////////////////////////// USER //////////////////////////////////////
   public getUsersOfSpace(spaceId: string, page: number, size: number): Observable<ClPage<CaSpaceUser>> {
     return this.apiService.get(`${this.route}/${spaceId}/user`, CaSpaceUser,
       {page: page, pageSize: size, resultIsPaginated: true});
@@ -80,35 +108,6 @@ export class CaSpaceService extends FlApiCrudService<CaSpace, CaSaveSpaceDTO> {
     return this.apiService.put(`${this.route}/${spaceId}/user/${userId}/role/${role}`, null);
   }
 
-  public uploadSpacePhoto(spaceId: string, photo: File): Observable<CaSpace> {
-    const formData = new FormData();
-    formData.append('photo', photo);
-    return this.apiService.put(`${this.route}/${spaceId}/photo`, formData, CaSpace);
-  }
-
-  public getSpacePhoto(filename: string): string {
-    return this.apiService.getBaseRouteUrl(`${this.route}/photo/${filename}`);
-  }
-
-  public getInvitationsDatasource(spaceId: string): CaSpaceInvitDatasource {
-    return new FlEntityPaginatedDatasource(
-      (page, size) =>
-        this.getInvitations(spaceId, page, size), 20);
-  }
-
-  public getInvitations(spaceId: string, page: number, pageSize: number): Observable<ClPageI<CaSpaceInvit>> {
-    return this.apiService.get(`${this.route}/${spaceId}/invitations`, CaSpaceInvit,
-      {resultIsPaginated: true, page: page, pageSize: pageSize});
-  }
-
-  public getCurrentSpace(): Observable<CaSpace> {
-    return this.apiService.get(`${this.route}/current`, CaSpace);
-  }
-
-  public getDefaultSpace(): Observable<CaSpace> {
-    return this.apiService.get(`${this.route}/default`, CaSpace);
-  }
-
   public getSpaceUser(spaceId: string, userId: string): Observable<CaUser> {
     return this.apiService.get(`${this.route}/${spaceId}/user/${userId}`, CaUser);
   }
@@ -126,14 +125,28 @@ export class CaSpaceService extends FlApiCrudService<CaSpace, CaSaveSpaceDTO> {
       (page, size) => this.getSpaceSimpleUsers(spaceId, page, size), 20);
   }
 
-  public search(page: number, pageSize: number, filters?: CaSpaceSearchFields): Observable<ClPage<CaSpace>> {
+
+  public searchSpaceUsers(spaceId: string, page: number, pageSize: number,
+                          filters?: CaSpaceUserSearchFields): Observable<ClPage<CaSpaceUser>> {
     const data: FlAdvancedSearchInput = {
-      filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, CaSpaceSearch.advancedSearchConverter),
+      filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, CaSpaceUserSearch.advancedSearchConverter),
       sortsCriteria: null
     };
-    return this.apiService.post(`${this.route}/search`, data, CaSpace, {
+    return this.apiService.post(`${this.route}/${spaceId}/user/search`, data, CaSpaceUser, {
       page: page, pageSize: pageSize, resultIsPaginated: true
     });
+  }
+
+  ////////////////////////////////// INVITATION //////////////////////////////////////
+  public getInvitationsDatasource(spaceId: string): CaSpaceInvitDatasource {
+    return new FlEntityPaginatedDatasource(
+      (page, size) =>
+        this.getInvitations(spaceId, page, size), 20);
+  }
+
+  public getInvitations(spaceId: string, page: number, pageSize: number): Observable<ClPageI<CaSpaceInvit>> {
+    return this.apiService.get(`${this.route}/${spaceId}/invitations`, CaSpaceInvit,
+      {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 
   ////////////////////////////////// OTHERS //////////////////////////////////

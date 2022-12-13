@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Optional, Output} from '@angular/core';
-import {AbstractControl, UntypedFormControl, UntypedFormGroup, FormGroupDirective, NgForm} from '@angular/forms';
+import {AbstractControl, FormGroupDirective, NgForm, UntypedFormControl, UntypedFormGroup} from '@angular/forms';
 import {Subscription} from 'rxjs';
 import {FlFormFilledInput, FlFormInputName, FlFormInputsManagerConfig} from '../fl-form-inputs-manager.class';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
@@ -40,7 +40,7 @@ export class FlFormInputsManagerComponent implements OnInit, OnDestroy {
   /**
    * If true, the false values are considered as null and the chip will not be created
    */
-  @Input() skipFalseBoolean : boolean = true;
+  @Input() skipFalseBoolean : boolean = false;
 
   /**
    * Event called whenever the chip list is refreshed (on form value change)

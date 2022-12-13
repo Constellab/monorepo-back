@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
   FlDatasourcePaginated,
   FlDialogService,
+  FlEntityPaginatedDatasource,
   FlSavedSearch,
   FlSearchConfig,
   FlSearchState,
@@ -48,15 +49,19 @@ export class LabReportSearchComponent implements OnInit {
   ngOnInit(): void {
     const config: FlSearchConfig = {
       version: 1,
-      searchFunc: this.reportService.getAdvancedSearchFunction(),
       buildAdvancedForm: LabReportSearch.getAdvancedSearchForm,
       advancedFormClass: LabReportSearchFields,
       savedSearch: this.getSavedSearch(),
-      advancedSearchFormManagerConfig: LabReportSearch.advancedSearchManagerConfig,
+      advancedFormManager: {
+        config: LabReportSearch.advancedSearchManagerConfig,
+        skipFalseBoolean: true
+      },
       storeSearchInUrl: this.fullPageSearch
     };
-    this.searchState.init(config);
-    this.datasource = this.searchState.datasource;
+
+    this.datasource = new FlEntityPaginatedDatasource(this.reportService.getAdvancedSearchFunction(),
+      20, false);
+    this.searchState.init(config, this.datasource);
   }
 
   private getSavedSearch(): FlSavedSearch[] {

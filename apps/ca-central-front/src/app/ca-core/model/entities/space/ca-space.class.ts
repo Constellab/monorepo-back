@@ -1,7 +1,8 @@
-import {CaBaseEntity} from './ca-base-entity.class';
+import {CaBaseEntity} from '../ca-base-entity.class';
 import {FlDatasourcePaginated} from '@monorepo/front-core-lib';
-import {CaUser} from './ca-user.class';
+import {CaUser} from '../ca-user.class';
 import {Type} from 'class-transformer';
+import {CaSpaceRole} from './ca-space-user.class';
 
 export type CaSpaceType = 'BASIC' | 'PERSONAL';
 
@@ -19,28 +20,6 @@ export class CaSpace extends CaBaseEntity {
 }
 
 export type CaSpaceDatasource = FlDatasourcePaginated<CaSpace>;
-
-export enum CaSpaceRole {
-  ADMIN = 'ADMIN',
-  USER = 'USER'
-}
-
-export class CaSpaceUser {
-  @Type(() => CaUser)
-  user: CaUser;
-
-  role: CaSpaceRole;
-
-  active: boolean;
-}
-
-export class CaSpaceUserDatasource extends FlDatasourcePaginated<CaSpaceUser> {
-
-  protected equals(a: CaSpaceUser, b: CaSpaceUser): boolean {
-    return a.user.id === b.user.id;
-  }
-}
-
 
 export interface CaSaveSpaceDTO {
   id: string;

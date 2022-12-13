@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angula
 import {
   FlDatasourcePaginated,
   FlDialogService,
+  FlEntityPaginatedDatasource,
   FlPortalAction,
   FlPortalActionsService,
   FlSavedSearch,
@@ -81,15 +82,20 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
 
     const searchConfig: FlSearchConfig = {
       version: 1,
-      searchFunc: this.resourceService.getAdvancedSearchFunction(),
       buildAdvancedForm: LabResourceSearch.getAdvancedSearchForm,
       advancedFormClass: LabResourceSearchFields,
       savedSearch: this.savedSearches(),
-      advancedSearchFormManagerConfig: LabResourceSearch.advancedSearchManagerConfig,
+      advancedFormManager: {
+        config: LabResourceSearch.advancedSearchManagerConfig,
+        skipFalseBoolean: true
+      },
       storeSearchInUrl: this.fullPageSearch
     };
-    this.searchState.init(searchConfig);
-    this.datasource = this.searchState.datasource;
+
+    this.datasource = new FlEntityPaginatedDatasource(this.resourceService.getAdvancedSearchFunction(),
+      20, false);
+
+    this.searchState.init(searchConfig, this.datasource);
     this.listenToUploadAction();
   }
 

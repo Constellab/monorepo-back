@@ -3,8 +3,6 @@ import {FlDatasourcePaginated} from '../../../model/datasource/fl-datasource-pag
 import {FormGroup} from '@ngneat/reactive-forms';
 import {MatDrawer} from '@angular/material/sidenav';
 import {FlSearchConfig} from './fl-search-state-config.class';
-import {FlEntityPaginatedDatasource} from '../../../model/datasource/fl-entity-datasource.class';
-import {FlEntity} from '../../../model/fl-entity.class';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FlAdvancedSearchObject, FlSearchPageUrlHelper, FlSearchUrlObject} from './fl-search-url.helper';
 import {first} from 'rxjs/operators';
@@ -19,7 +17,7 @@ type FlSearchMode = 'advanced' | 'default';
  * Use to manage the start of a search component.
  */
 @Injectable()
-export class FlSearchState<T extends FlEntity> implements OnDestroy {
+export class FlSearchState<T> implements OnDestroy {
 
   private config: FlSearchConfig;
   // datasource containing the data
@@ -48,13 +46,12 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
 
   /**
    * Init the search page and call first search
-   * @param config
    */
-  public init(config: FlSearchConfig): void {
+  public init(config: FlSearchConfig, datasource: FlDatasourcePaginated<T>): void {
     this.config = config;
     this.advancedSearchFormGroup = config.buildAdvancedForm();
+    this.datasource = datasource;
 
-    this.datasource = new FlEntityPaginatedDatasource(config.searchFunc, 20, false);
 
     if (config.storeSearchInUrl) {
       this.subscribeToNavigation();

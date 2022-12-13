@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Host, OnDestroy, OnInit} from '@angular/core';
 import {FlDatasourcePaginated, FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
-import {CaSpace} from '../../../../model/entities/ca-space.class';
+import {CaSpace} from '../../../../model/entities/space/ca-space.class';
 import {CaSpaceService} from '../../../../service-api/ca-space.service';
 import {MatSelect} from '@angular/material/select';
 

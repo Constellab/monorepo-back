@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import {CaSpaceInvitFull} from '../../../ca-core/model/entities/ca-space-invit.class';
+import {CaSpaceInvitFull} from '../../../ca-core/model/entities/space/ca-space-invit.class';
 import {CaSpaceInvitService} from '../../../ca-core/service-api/ca-space-invit.service';
 import {ActivatedRoute} from '@angular/router';
 import {CaSpaceService} from '../../../ca-core/service-api/ca-space.service';

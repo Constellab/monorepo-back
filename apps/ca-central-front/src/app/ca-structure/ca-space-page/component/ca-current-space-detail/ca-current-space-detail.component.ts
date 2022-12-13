@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {CaSaveSpaceDTO, CaSpace} from '../../../../ca-core/model/entities/ca-space.class';
+import {CaSaveSpaceDTO, CaSpace} from '../../../../ca-core/model/entities/space/ca-space.class';
 import {
   FlConfirmDialogInput,
   FlConfirmDialogResult,

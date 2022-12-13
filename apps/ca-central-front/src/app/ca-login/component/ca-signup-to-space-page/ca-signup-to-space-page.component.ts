@@ -4,7 +4,7 @@ import {FlSignupFormComponent, FlSignUpUser, FlSnackBarService} from '@monorepo/
 import {CaSpaceInvitService} from '../../../ca-core/service-api/ca-space-invit.service';
 import {ActivatedRoute} from '@angular/router';
 import {CaRouterService} from '../../../ca-core/service/ca-router.service';
-import {CaSpaceInvitFull} from '../../../ca-core/model/entities/ca-space-invit.class';
+import {CaSpaceInvitFull} from '../../../ca-core/model/entities/space/ca-space-invit.class';
 import {Observable, tap} from 'rxjs';
 import {CaUserAccountsService} from '../../../ca-core/service-api/ca-user-accounts.service';
 

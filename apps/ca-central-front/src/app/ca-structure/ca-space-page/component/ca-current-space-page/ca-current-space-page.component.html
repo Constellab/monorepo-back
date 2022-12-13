@@ -1,28 +1,24 @@
-<div class="g-page">
+<div class="g-page-fixed">
 
-  <fl-async-section [object]="space$">
+  <div class="g-page-title nav-bar"
+       fxLayout="row" fxLayoutAlign="row center" fxLayoutGap="1em">
 
-    <ng-container *flSectionBody="let space">
-      <ca-current-space-detail></ca-current-space-detail>
 
-      <ca-space-users-list [spaceId]="space.id" class="g-section">
+    <h1 *ngIf="space$ | async as space"
+        class="title">{{space.name | translate}}</h1>
 
-      </ca-space-users-list>
+    <a mat-button [routerLink]="dashboardRoute" routerLinkActive="menu-active"
+       [routerLinkActiveOptions]="{exact: true}">
+      <mat-icon>dashboard</mat-icon>
+      {{'admin_dashboard_page' | translate}}
+    </a>
 
-      <!--  Admin section    -->
-      <ng-container *caIsSpaceAdmin>
-        <ca-current-space-invit-list class="g-section">
-        </ca-current-space-invit-list>
+    <a mat-button [routerLink]="usersRoute" routerLinkActive="menu-active">
+      <mat-icon>people</mat-icon>
+      {{'space_users' | translate}}
+    </a>
 
-        <ca-current-space-lab-instances-list class="g-section">
-        </ca-current-space-lab-instances-list>
+  </div>
 
-        <ca-current-space-projects-list class="g-section">
-        </ca-current-space-projects-list>
-
-        <ca-current-space-teams-list class="g-section">
-        </ca-current-space-teams-list>
-      </ng-container>
-    </ng-container>
-  </fl-async-section>
+  <router-outlet></router-outlet>
 </div>

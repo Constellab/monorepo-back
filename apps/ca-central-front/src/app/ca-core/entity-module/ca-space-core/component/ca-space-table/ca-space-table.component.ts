@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FlTableAbstractDirective} from '@monorepo/front-core-lib';
-import {CaSpace} from '../../../../model/entities/ca-space.class';
+import {CaSpace} from '../../../../model/entities/space/ca-space.class';
 import {CaRouterService} from '../../../../service/ca-router.service';
 
 @Component({

@@ -3,9 +3,10 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaSpaceInvitService} from '../../../../ca-core/service-api/ca-space-invit.service';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {CaSpaceInvit, CaSpaceInvitDTO} from '../../../../ca-core/model/entities/ca-space-invit.class';
+import {CaSpaceInvit, CaSpaceInvitDTO} from '../../../../ca-core/model/entities/space/ca-space-invit.class';
 import {Validators} from '@angular/forms';
-import {CaSpaceRole, CaSpaceType} from '../../../../ca-core/model/entities/ca-space.class';
+import {CaSpaceType} from '../../../../ca-core/model/entities/space/ca-space.class';
+import {CaSpaceRole} from '../../../../ca-core/model/entities/space/ca-space-user.class';
 
 export interface CaSpaceInvitFormDialogInput {
   spaceId: string;

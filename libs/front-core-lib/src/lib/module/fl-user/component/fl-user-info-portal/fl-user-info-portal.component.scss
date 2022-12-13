@@ -16,9 +16,9 @@
 .top-side .user-top-info{
   position: absolute;
   color: white;
-  left: 42%;
+  left: 32%;
   bottom: 5%;
-  width: 60%;
+  width: 68%;
 }
 
 .top-side .user-top-info .fullname{
@@ -46,8 +46,8 @@
 
 .user-bot-info{
   position: absolute;
-  left: 42%;
-  width: 60%;
+  left: 32%;
+  width: 68%;
   top: 5%;
   height: 95%;
 }
@@ -55,4 +55,8 @@
 .button-view-profile{
   position: absolute;
   bottom: 10%;
+}
+
+.email{
+  word-break: break-word;
 }

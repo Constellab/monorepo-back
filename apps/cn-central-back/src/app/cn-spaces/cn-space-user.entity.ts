@@ -1,6 +1,10 @@
-import {Column, Entity, ManyToOne, PrimaryColumn} from 'typeorm';
+import {BeforeInsert, Column, Entity, ManyToOne, PrimaryColumn, Relation} from 'typeorm';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnSpace} from './cn-space.entity';
+import {Type} from 'class-transformer';
+import {BlLuxonDateTimeColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
+import {DateTime} from 'luxon';
+import {ClDateHelper} from '@monorepo/core-lib';
 
 export enum CnSpaceUserRole {
   ADMIN = 'ADMIN',
@@ -33,7 +37,20 @@ export class CnSpaceUser {
   @Column({default: true})
   active: boolean;
 
+  @BlLuxonDateTimeColumn({nullable: false, update: false})
+  createdAt: DateTime;
+
+  @Type(() => CnUser)
+  @ManyToOne(() => CnUser, {eager: true, nullable: false})
+  @BlNotUpdatable()
+  addedBy: Relation<CnUser>;
+
   isSpaceAdmin(): boolean {
     return this.role === CnSpaceUserRole.ADMIN;
+  }
+
+  @BeforeInsert()
+  setCreatedInfo(): void {
+    this.createdAt = ClDateHelper.getDate();
   }
 }

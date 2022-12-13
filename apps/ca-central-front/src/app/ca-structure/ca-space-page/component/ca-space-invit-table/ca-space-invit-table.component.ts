@@ -7,13 +7,12 @@ import {
   FlDialogService,
   FlTableAbstractDirective
 } from '@monorepo/front-core-lib';
-import {CaSpaceRole} from '../../../../ca-core/model/entities/ca-space.class';
 import {
   CaSpaceUserRoleDialogComponent,
   CaSpaceUserRoleDialogInput
 } from '../ca-space-user-role-dialog/ca-space-user-role-dialog.component';
-import {CaSpaceInvit} from '../../../../ca-core/model/entities/ca-space-invit.class';
-import {CaCurrentSpaceDetailComponent} from '../ca-current-space-detail/ca-current-space-detail.component';
+import {CaSpaceInvit} from '../../../../ca-core/model/entities/space/ca-space-invit.class';
+import {CaSpaceRole} from '../../../../ca-core/model/entities/space/ca-space-user.class';
 
 /**
  * Table for the SpaceInvit entity with actions

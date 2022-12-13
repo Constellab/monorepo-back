@@ -98,6 +98,13 @@ export class CnSpaceAggregateService {
     return this.spaceUserService.findBySpace(id, page, size);
   }
 
+  public async searchUserInSpace(id: string, searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnSpaceUser>> {
+    id = this.getSpaceId(id);
+    await this.checkSpaceMember(id);
+
+    return this.spaceUserService.searchUser(id, searchParams, page, size);
+  }
+
   public async getUserOfSpace(id: string, userId: string): Promise<CnUser> {
     id = this.getSpaceId(id);
     await this.checkSpaceMember(id);
@@ -142,7 +149,8 @@ export class CnSpaceAggregateService {
     const user = await this.userService.findByIdAndCheck(userId);
     const space = await this.spaceService.findByIdAndCheck(spaceID);
 
-    return await this.spaceUserService.addUserToSpace(space, user, CnSpaceUserRole.USER);
+    return await this.spaceUserService.addUserToSpace(space, user,
+      CnSpaceUserRole.USER, CnCurrentUserHelper.getAndCheckCurrentUser());
   }
 
   public async removeUserFromSpace(spaceId: string, userId: string): Promise<void> {
@@ -265,7 +273,8 @@ export class CnSpaceAggregateService {
       throw new BlBadRequestException('The invitation email does not match the user email');
     }
 
-    await this.spaceUserService.addUserToSpace(invitation.space, user, invitation.role, entityManager);
+    await this.spaceUserService.addUserToSpace(invitation.space, user, invitation.role, invitation.createdBy,
+      entityManager);
 
     await this.invitationService.deleteById(invitation.id, entityManager);
 
@@ -289,10 +298,12 @@ export class CnSpaceAggregateService {
 
     await this.spacesMailService.requestNewLicenses(request, userInfo);
   }
+
   public async createPersonalSpace(user: CnUser, entityManager: EntityManager): Promise<CnSpace> {
     const personalSpace = await this.spaceService.createPersonalSpace(user, entityManager);
 
-    await this.spaceUserService.addUserToSpace(personalSpace, user, CnSpaceUserRole.ADMIN, entityManager);
+    await this.spaceUserService.addUserToSpace(personalSpace, user, CnSpaceUserRole.ADMIN,
+      user, entityManager);
 
     return personalSpace;
   }

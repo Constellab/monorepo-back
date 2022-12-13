@@ -2,7 +2,7 @@ import {CaBaseEntity} from './ca-base-entity.class';
 import {CaCloudProvider} from './ca-cloud-provider.class';
 import {CaCity} from './ca-city.entity';
 import {Type} from 'class-transformer';
-import {CaSpace} from './ca-space.class';
+import {CaSpace} from './space/ca-space.class';
 import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 
 export class CaBucketRegion extends CaBaseEntity {

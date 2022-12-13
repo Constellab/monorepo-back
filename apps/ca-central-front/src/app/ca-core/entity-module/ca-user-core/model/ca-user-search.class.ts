@@ -6,6 +6,7 @@ import {
   FlSearchDateInterval
 } from '@monorepo/front-core-lib';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
+import {Type} from 'class-transformer';
 
 
 export class CaUserSearchFields {
@@ -20,6 +21,7 @@ export class CaUserSearchFields {
 
   company: string;
 
+  @Type(() => FlSearchDateInterval)
   createdAt: FlSearchDateInterval;
 }
 

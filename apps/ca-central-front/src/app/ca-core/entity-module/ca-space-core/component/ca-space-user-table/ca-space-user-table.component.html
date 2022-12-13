@@ -20,6 +20,16 @@
     </mat-cell>
   </ng-container>
 
+  <!-- AddedInfo -->
+  <ng-container matColumnDef="addedInfo">
+    <mat-header-cell *matHeaderCellDef>
+      {{'space_user_added_info' | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <fl-user-with-date [user]="row.addedBy" [date]="row.createdAt"></fl-user-with-date>
+    </mat-cell>
+  </ng-container>
+
   <!-- active -->
   <ng-container matColumnDef="active">
     <mat-header-cell *matHeaderCellDef>

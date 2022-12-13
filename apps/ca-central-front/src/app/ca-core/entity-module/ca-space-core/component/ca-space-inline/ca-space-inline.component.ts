@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaSpace} from '../../../../model/entities/ca-space.class';
+import {CaSpace} from '../../../../model/entities/space/ca-space.class';
 
 @Component({
   selector: 'ca-space-inline',

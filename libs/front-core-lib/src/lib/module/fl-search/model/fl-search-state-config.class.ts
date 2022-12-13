@@ -10,10 +10,16 @@ import {Observable} from 'rxjs';
 export interface FlSearchConfig {
   version: number;
   buildAdvancedForm: () => FormGroup; // method to create the advanced form group
-  searchFunc: FLSearchFunction;
   advancedFormClass: ClClassReference;
   savedSearch?: FlSavedSearch[];
-  advancedSearchFormManagerConfig: FlFormInputsManagerConfig;
+
+  advancedFormManager: {
+    config: FlFormInputsManagerConfig;
+    /**
+     * If true, the false values are considered as null and the form manager chip will not be created
+     */
+    skipFalseBoolean?: boolean;
+  };
   storeSearchInUrl: boolean; // if true the url is modified when a search is made
 }
 

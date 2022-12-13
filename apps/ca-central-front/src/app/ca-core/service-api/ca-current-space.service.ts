@@ -1,12 +1,15 @@
 import {Injectable} from '@angular/core';
 import {CaSpaceService} from './ca-space.service';
-import {CaSpace, CaSpaceRole} from '../model/entities/ca-space.class';
+import {CaSpace} from '../model/entities/space/ca-space.class';
 import {FlCleanableService, FlCleanerService, FlCookieService} from '@monorepo/front-core-lib';
 import {environment} from '../../../environments/ca-environment';
 import {BehaviorSubject, filter, firstValueFrom, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {CaUserDatasourcePaginated} from '../model/entities/ca-user.class';
 import {Title} from '@angular/platform-browser';
+import {CaSpaceRole, CaSpaceUser} from '../model/entities/space/ca-space-user.class';
+import {CaSpaceUserSearchFields} from '../entity-module/ca-space-core/model/ca-space-user-search.class';
+import {ClPage} from '@monorepo/core-lib';
 
 /**
  * Service to manage the current space
@@ -87,8 +90,35 @@ export class CaCurrentSpaceService implements FlCleanableService {
     return this.currentUserRoleInSpace === CaSpaceRole.ADMIN;
   }
 
+  //////////////////////////// API METHODS ////////////////////////////
+
   public getCurrentSpaceUsersDatasource(): CaUserDatasourcePaginated {
     return this.spaceService.getSpaceSimpleUsersDatasource('current');
+  }
+
+  public searchSpaceUsers(page: number, pageSize: number,
+                          filters?: CaSpaceUserSearchFields): Observable<ClPage<CaSpaceUser>> {
+    return this.spaceService.searchSpaceUsers('current', page, pageSize, filters);
+  }
+
+  public addUserToSpace(userId: string): Observable<CaSpaceUser> {
+    return this.spaceService.addUserToSpace('current', userId);
+  }
+
+  public activateUser(userId: string): Observable<void> {
+    return this.spaceService.activateUser('current', userId);
+  }
+
+  public deactivateUser(userId: string): Observable<void> {
+    return this.spaceService.deactivateUser('current', userId);
+  }
+
+  public updateUserRole(userId: string, role: CaSpaceRole): Observable<void> {
+    return this.spaceService.updateUserRole('current', userId, role);
+  }
+
+  public removeUserFromSpace(userId: string): Observable<void> {
+    return this.spaceService.removeUserFromSpace('current', userId);
   }
 
 

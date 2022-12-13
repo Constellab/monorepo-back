@@ -89,6 +89,15 @@ export class CnSpacesController {
     return this.spaceAggregateService.search(searchParams, page, size);
   }
 
+  @Post(':id/user/search')
+  public async searchUserInSpace(@Param('id') id: string,
+                                 @Body() searchParams: BlSearchParams,
+                                 @Query('page', new ParseIntPipe()) page: number,
+                                 @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnSpaceUser>> {
+    return this.spaceAggregateService.searchUserInSpace(id, searchParams, page, size);
+  }
+
+
   @CnUserCategories(CmUserCategory.ADMIN)
   @Post(':id/user/:userId')
   public async addUserToSpace(@Param('id') id: string,
@@ -135,6 +144,7 @@ export class CnSpacesController {
     const spaceUsers = await this.spaceAggregateService.getUsersOfSpace(id, page, size);
     return spaceUsers.map(spaceUser => spaceUser.user);
   }
+
 
   @Get(':id/invitations')
   public async getInvitationsBySpace(@Param('id') id: string,

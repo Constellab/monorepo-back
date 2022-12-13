@@ -7,6 +7,11 @@
   </div>
   <div class="bot-side">
     <div class="user-bot-info">
+      <fl-text-icon>
+        <mat-icon>mail</mat-icon>
+        <div class="g-text-small email">{{user.email}}</div>
+      </fl-text-icon>
+
       <fl-text-icon iconPosition="start" *ngIf="user.company">
         <mat-icon>space</mat-icon>
         {{user.company}}

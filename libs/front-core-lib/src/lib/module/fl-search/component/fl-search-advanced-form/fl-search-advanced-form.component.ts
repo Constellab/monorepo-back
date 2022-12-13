@@ -16,12 +16,15 @@ export class FlSearchAdvancedFormComponent implements OnInit {
   formGp: FormGroup;
 
   formInputConfig: FlFormInputsManagerConfig;
+  skipFalseBoolean: boolean;
 
   constructor(private searchState: FlSearchState<any>) {
   }
 
   ngOnInit(): void {
-    this.formInputConfig = this.searchState.getConfig().advancedSearchFormManagerConfig;
+    const config = this.searchState.getConfig();
+    this.formInputConfig = config.advancedFormManager.config;
+    this.skipFalseBoolean = config.advancedFormManager.skipFalseBoolean;
     this.formGp = this.searchState.advancedSearchFormGroup;
   }
 

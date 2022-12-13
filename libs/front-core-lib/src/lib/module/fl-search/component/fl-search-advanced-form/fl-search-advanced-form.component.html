@@ -1,6 +1,8 @@
 <form [formGroup]="formGp" (ngSubmit)="submit()">
 
-  <fl-form-inputs-manager [config]="formInputConfig" [translateByDefault]="true"></fl-form-inputs-manager>
+  <fl-form-inputs-manager [config]="formInputConfig"
+                          [translateByDefault]="true"
+                          [skipFalseBoolean]="skipFalseBoolean"></fl-form-inputs-manager>
 
   <div fxLayout="column" class="form">
     <ng-content></ng-content>

@@ -1,5 +1,12 @@
 import {Component, OnInit} from '@angular/core';
-import {FlSavedSearch, FlSearchConfig, FlSearchState, FlTableColumn, FlThemeService} from '@monorepo/front-core-lib';
+import {
+  FlEntityPaginatedDatasource,
+  FlSavedSearch,
+  FlSearchConfig,
+  FlSearchState,
+  FlTableColumn,
+  FlThemeService
+} from '@monorepo/front-core-lib';
 import {CaUser, CaUserDatasourcePaginated} from '../../../../model/entities/ca-user.class';
 import {CaUsersService} from '../../../../service-api/ca-users.service';
 import {CaUserSearch, CaUserSearchFields} from '../../model/ca-user-search.class';
@@ -24,15 +31,19 @@ export class CaUserSearchComponent implements OnInit {
   ngOnInit(): void {
     const config: FlSearchConfig = {
       version: 1,
-      searchFunc: (page, size, filters) => this.userService.search(page, size, filters),
       buildAdvancedForm: CaUserSearch.getAdvancedSearchForm,
       advancedFormClass: CaUserSearchFields,
       savedSearch: this.getSavedSearch(),
-      advancedSearchFormManagerConfig: CaUserSearch.advancedSearchManagerConfig,
+      advancedFormManager: {
+        config: CaUserSearch.advancedSearchManagerConfig,
+      },
       storeSearchInUrl: true
     };
-    this.searchState.init(config);
-    this.datasource = this.searchState.datasource;
+
+    this.datasource = new FlEntityPaginatedDatasource((page, size, filters) => this.userService.search(page, size, filters)
+      , 20, false);
+
+    this.searchState.init(config, this.datasource);
   }
 
   private getSavedSearch(): FlSavedSearch[] {

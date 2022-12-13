@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {CaSpaceService} from '../../../../ca-core/service-api/ca-space.service';
-import {CaSpaceInvit, CaSpaceInvitDatasource} from '../../../../ca-core/model/entities/ca-space-invit.class';
+import {CaSpaceInvit, CaSpaceInvitDatasource} from '../../../../ca-core/model/entities/space/ca-space-invit.class';
 import {FlDialogService, FlTableColumn} from '@monorepo/front-core-lib';
 import {
   CaSpaceInvitFormDialogComponent,

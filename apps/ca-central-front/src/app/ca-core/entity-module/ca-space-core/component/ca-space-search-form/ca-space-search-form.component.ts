@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {UntypedFormGroup} from '@angular/forms';
 import {FlSearchState} from '@monorepo/front-core-lib';
-import {CaSpaceType} from '../../../../model/entities/ca-space.class';
+import {CaSpaceType} from '../../../../model/entities/space/ca-space.class';
 
 @Component({
   selector: 'ca-space-search-form',

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {FlApiService} from '@monorepo/front-core-lib';
 import {CaUser} from '../model/entities/ca-user.class';
 import {Observable} from 'rxjs';
-import {CaSpaceInvit, CaSpaceInvitDTO, CaSpaceInvitFull} from '../model/entities/ca-space-invit.class';
+import {CaSpaceInvit, CaSpaceInvitDTO, CaSpaceInvitFull} from '../model/entities/space/ca-space-invit.class';
 
 @Injectable({
   providedIn: 'root'

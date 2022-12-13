@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CaSpaceUser, CaSpaceUserDatasource} from '../../../../model/entities/ca-space.class';
 import {FlTableAbstractDirective} from '@monorepo/front-core-lib';
+import {CaSpaceUser, CaSpaceUserDatasource} from '../../../../model/entities/space/ca-space-user.class';
 
 /**
- * Table to list the users of an space
+ * Table to list the users of a space
  */
 @Component({
   selector: 'ca-space-user-table',
@@ -24,7 +24,7 @@ export class CaSpaceUserTableComponent extends FlTableAbstractDirective<CaSpaceU
   @Output() updateRole: EventEmitter<CaSpaceUser> = new EventEmitter();
 
   constructor() {
-    super(['user', 'role', 'active', 'actions']);
+    super(['user', 'role', 'active', 'addedInfo', 'actions']);
   }
 
   ngOnInit(): void {

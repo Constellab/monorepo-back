@@ -11,7 +11,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
 import {CaCity} from './ca-city.entity';
-import {CaSpace} from './ca-space.class';
+import {CaSpace} from './space/ca-space.class';
 import {CaLabInstanceUserRole} from './ca-lab-instance-user.class';
 
 export type CaLabInstanceStatus = 'RUNNING' | 'STOPPED';

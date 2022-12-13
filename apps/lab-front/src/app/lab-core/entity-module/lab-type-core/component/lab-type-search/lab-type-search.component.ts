@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
+  FlEntityPaginatedDatasource,
   FlSavedSearch,
   FlSearchConfig,
   FLSearchFunction,
@@ -85,15 +86,18 @@ export class LabTypeSearchComponent implements OnInit {
 
     const config: FlSearchConfig = {
       version: 1,
-      searchFunc: searchFunction,
       buildAdvancedForm: LabTypeSearch.getAdvancedSearchForm,
       advancedFormClass: LabTypeSearchFields,
       savedSearch: this.getSavedSearch(),
-      advancedSearchFormManagerConfig: LabTypeSearch.advancedSearchManagerConfig,
+      advancedFormManager: {
+        config: LabTypeSearch.advancedSearchManagerConfig,
+        skipFalseBoolean: true,
+      },
       storeSearchInUrl: this.fullPageSearch
     };
-    this.searchState.init(config);
-    this.datasource = this.searchState.datasource;
+
+    this.datasource = new FlEntityPaginatedDatasource(searchFunction, 20, false);
+    this.searchState.init(config, this.datasource);
   }
 
   private getSavedSearch(): FlSavedSearch[] {

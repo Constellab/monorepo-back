@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
+  FlEntityPaginatedDatasource,
   FlSavedSearch,
   FlSearchConfig,
   FlSearchState,
@@ -41,15 +42,20 @@ export class LabViewConfigSearchComponent implements OnInit {
   ngOnInit(): void {
     const config: FlSearchConfig = {
       version: 1,
-      searchFunc: this.viewConfigService.getViewConfigSearchFunction(this.reportId),
       buildAdvancedForm: LabViewConfigSearch.getAdvancedSearchForm,
       advancedFormClass: LabViewConfigSearchFields,
       savedSearch: this.getSavedSearch(),
-      advancedSearchFormManagerConfig: LabViewConfigSearch.advancedSearchManagerConfig,
+      advancedFormManager: {
+        config: LabViewConfigSearch.advancedSearchManagerConfig,
+        skipFalseBoolean: true
+      },
       storeSearchInUrl: false
     };
-    this.searchState.init(config);
-    this.datasource = this.searchState.datasource;
+
+    this.datasource = new FlEntityPaginatedDatasource(this.viewConfigService.getViewConfigSearchFunction(this.reportId),
+      20, false);
+
+    this.searchState.init(config, this.datasource);
 
     this.columns = ['title', 'resource', 'tags', 'preview', 'flagged'];
     // add the action column only when the search is in full page (view box)

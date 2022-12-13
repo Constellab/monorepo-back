@@ -1,12 +1,18 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnSpaceUser, CnSpaceUserRole} from './cn-space-user.entity';
-import {EntityManager, Repository} from 'typeorm';
+import {EntityManager, FindOneOptions, Repository} from 'typeorm';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnSpace, CnSpaceType} from './cn-space.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {ClPage} from '@monorepo/core-lib';
-import {BlAbstractPaginatedService, BlBadRequestException} from '@monorepo/back-core-lib';
+import {
+  BlAbstractPaginatedService,
+  BlBadRequestException,
+  BlSearchBuilder,
+  BlSearchParams
+} from '@monorepo/back-core-lib';
+import {FindOptionsWhere} from 'typeorm/find-options/FindOptionsWhere';
 
 @Injectable()
 export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> {
@@ -37,7 +43,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
 
 
   public async addUserToSpace(space: CnSpace, user: CnUser,
-                              role: CnSpaceUserRole,
+                              role: CnSpaceUserRole, addedBy: CnUser,
                               entityManager?: EntityManager): Promise<CnSpaceUser> {
     if (await this.userIsSpaceMember(space.id, user.id)) {
       throw new BlBadRequestException(CnErrorText.USER_ALREADY_IN_SPACE);
@@ -48,6 +54,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     spaceUser.space = space;
     spaceUser.role = role;
     spaceUser.active = true;
+    spaceUser.addedBy = addedBy;
     return await this.getEntityManager(entityManager).save(spaceUser);
   }
 
@@ -106,6 +113,27 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
       where: {spaceId: spaceId},
       relations: {user: true}
     });
+  }
+
+  public async searchUser(spaceId: string, searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnSpaceUser>> {
+    const searchBuilder = new BlSearchBuilder();
+    const options: FindOneOptions<CnSpaceUser> = searchBuilder.buildSearchParams(searchParams);
+
+    const additionalOptions: FindOptionsWhere<CnSpaceUser> = {
+      spaceId: spaceId,
+    }
+
+    options.where = {
+      ...options.where,
+      ...additionalOptions,
+    }
+
+    // load the user
+    options.relations = {
+      user: true
+    }
+
+    return await this.findPaginated(page, size, options);
   }
 
   public async findAllSpaceUserIds(spaceId: string): Promise<string[]> {

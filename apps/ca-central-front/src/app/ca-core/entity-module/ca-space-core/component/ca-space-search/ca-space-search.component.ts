@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {
   FlConfirmDialogInput,
   FlDialogService,
+  FlEntityPaginatedDatasource,
   FlFormDialogInput,
   FlSavedSearch,
   FlSearchConfig,
@@ -11,7 +12,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {CaSpaceService} from '../../../../service-api/ca-space.service';
 import {CaSpaceSearch, CaSpaceSearchFields} from '../../model/ca-space-search.class';
-import {CaSpace, CaSpaceDatasource} from '../../../../model/entities/ca-space.class';
+import {CaSpace, CaSpaceDatasource} from '../../../../model/entities/space/ca-space.class';
 import {CaSpaceFormDialogComponent} from '../ca-space-form-dialog/ca-space-form-dialog.component';
 
 
@@ -37,15 +38,19 @@ export class CaSpaceSearchComponent implements OnInit {
   ngOnInit(): void {
     const config: FlSearchConfig = {
       version: 1,
-      searchFunc: (page, size, filters) => this.spaceService.search(page, size, filters),
       buildAdvancedForm: CaSpaceSearch.getAdvancedSearchForm,
       advancedFormClass: CaSpaceSearchFields,
       savedSearch: this.getSavedSearch(),
-      advancedSearchFormManagerConfig: CaSpaceSearch.advancedSearchManagerConfig,
+      advancedFormManager: {
+        config: CaSpaceSearch.advancedSearchManagerConfig,
+      },
       storeSearchInUrl: true
     };
-    this.searchState.init(config);
-    this.datasource = this.searchState.datasource;
+
+    this.datasource = new FlEntityPaginatedDatasource(
+      (page, size, filters) => this.spaceService.search(page, size, filters),
+      20, false);
+    this.searchState.init(config, this.datasource);
   }
 
   private getSavedSearch(): FlSavedSearch[] {

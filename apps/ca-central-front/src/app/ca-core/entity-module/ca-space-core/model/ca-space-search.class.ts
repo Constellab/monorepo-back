@@ -1,4 +1,4 @@
-import {CaSpaceType} from '../../../model/entities/ca-space.class';
+import {CaSpaceType} from '../../../model/entities/space/ca-space.class';
 import {
   FlFormInputsManagerConfig,
   FlSearchConverter,
@@ -7,6 +7,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {CaUser} from '../../../model/entities/ca-user.class';
+import {Type} from 'class-transformer';
 
 export class CaSpaceSearchFields {
 
@@ -16,8 +17,10 @@ export class CaSpaceSearchFields {
 
   type: CaSpaceType;
 
+  @Type(() => FlSearchDateInterval)
   createdAt: FlSearchDateInterval;
 
+  @Type(() => CaUser)
   createdBy: CaUser;
 }
 

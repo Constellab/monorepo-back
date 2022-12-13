@@ -4,7 +4,6 @@ import {CaCurrentSpacePageComponent} from './component/ca-current-space-page/ca-
 import {CaCoreModule} from '../../ca-core/ca-core.module';
 import {CaSpaceCoreModule} from '../../ca-core/entity-module/ca-space-core/ca-space-core.module';
 import {CaCurrentSpaceDetailComponent} from './component/ca-current-space-detail/ca-current-space-detail.component';
-import {CaSpaceUsersListComponent} from './component/ca-space-users-list/ca-space-users-list.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CaGroupCoreModule} from '../../ca-core/entity-module/ca-group-core/ca-group-core.module';
 import {
@@ -32,13 +31,19 @@ import {
   CaCurrentSpaceTeamsListComponent
 } from './component/ca-current-space-teams-list/ca-current-space-teams-list.component';
 import {CaRequestNewLicensesComponent} from './component/ca-request-new-licenses/ca-request-new-licenses.component';
+import {RouterModule} from '@angular/router';
+import {
+  CaCurrentSpaceUsersPageComponent
+} from './component/ca-current-space-users-page/ca-current-space-users-page.component';
+import {
+  CaCurrentSpaceDashboardPageComponent
+} from './component/ca-current-space-dashboard-page/ca-current-space-dashboard-page.component';
 
 
 @NgModule({
   declarations: [
     CaCurrentSpacePageComponent,
     CaCurrentSpaceDetailComponent,
-    CaSpaceUsersListComponent,
     CaSpaceUserRoleDialogComponent,
     CaSpaceUploadPhotoDialogComponent,
     CaSpaceInvitTableComponent,
@@ -48,11 +53,14 @@ import {CaRequestNewLicensesComponent} from './component/ca-request-new-licenses
     CaCurrentSpaceProjectsListComponent,
     CaCurrentSpaceTeamsListComponent,
     CaRequestNewLicensesComponent,
+    CaCurrentSpaceUsersPageComponent,
+    CaCurrentSpaceDashboardPageComponent,
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    RouterModule,
 
     CaCoreModule,
     CaSpaceCoreModule,

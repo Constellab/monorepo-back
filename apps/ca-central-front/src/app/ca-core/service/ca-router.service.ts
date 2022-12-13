@@ -111,9 +111,6 @@ export class CaRouterService {
 
 
   ////////////////////////// STRUCTURE MODULE ///////////////////////
-  public static getCurrentSpaceRoute(): string {
-    return CaRouterService.getFullRoute(`${caConstStructureRoute}/current-space`);
-  }
 
 
   public static getTeamRoute(teamId: string): string {
@@ -139,6 +136,15 @@ export class CaRouterService {
 
   public navigateToJoinSpace(code: string): void {
     this.router.navigate([CaRouterService.getJoinSpaceRoute(code)]);
+  }
+
+  ////////////////////////////// CURRENT SPACE ///////////////////////////
+  public static getCurrentSpaceRoute(): string {
+    return CaRouterService.getFullRoute(`${caConstStructureRoute}/current-space`);
+  }
+
+  public static getCurrentSpaceUsersRoute(): string {
+    return `${CaRouterService.getCurrentSpaceRoute()}/users`;
   }
 
   ////////////////////////// ADMIN ///////////////////////
