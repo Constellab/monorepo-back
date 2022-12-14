@@ -1,16 +1,5 @@
 <mat-table fxFlex="100" mat-table [dataSource]="datasource">
 
-  <!-- Photo -->
-  <ng-container matColumnDef="photo">
-    <mat-header-cell class="photo" *matHeaderCellDef>
-    </mat-header-cell>
-    <mat-cell class="photo" *matCellDef="let user">
-      <fl-user-profile-picture [user]="user" [size]="'medium'"></fl-user-profile-picture>
-<!--      <fl-round-image [imageUrl]="user.getPhotoWithDefault()"-->
-<!--                       size="2.5rem">-->
-<!--      </fl-round-image>-->
-    </mat-cell>
-  </ng-container>
 
   <!-- fullname -->
   <ng-container matColumnDef="fullname">
@@ -18,7 +7,7 @@
       <span>{{'fullname' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let user">
-      <span>{{user.fullname}}</span>
+      <fl-user-inline [user]="user"></fl-user-inline>
     </mat-cell>
   </ng-container>
 

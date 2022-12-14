@@ -15,7 +15,7 @@ export class CaAdminAccountsActivationComponent implements OnInit {
 
   users: CaUserDatasourcePaginated = this.accountService.findUsersToAdminActivateDatasource();
 
-  displayedColumns: FlTableColumn<CaUser>[] = ['photo', 'fullname', 'email', 'createdAt', 'customTemplate'];
+  displayedColumns: FlTableColumn<CaUser>[] = ['fullname', 'email', 'createdAt', 'customTemplate'];
 
   constructor(private accountService: CaUserAccountsService) {
   }

@@ -22,7 +22,7 @@ export class CaTeamUsersListComponent implements OnInit {
 
   users: CaUserDatasourcePaginated;
 
-  displayedColumns: FlTableColumn<CaUser>[] = ['photo', 'fullname', 'customTemplate'];
+  displayedColumns: FlTableColumn<CaUser>[] = ['fullname', 'customTemplate'];
 
   constructor(private groupService: CaGroupService,
               private dialogService: FlDialogService) {
