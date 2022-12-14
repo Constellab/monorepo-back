@@ -1,53 +1,74 @@
 import {BlSearchFilterCriteria, BlSearchOperatorStr, BlSearchParams, BlSearchSortCriteria} from './bl-search.class';
 import {Between, In, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not} from 'typeorm';
-import {FindOptionsOrderValue} from 'typeorm/find-options/FindOptionsOrder';
+import {FindOptionsOrder, FindOptionsOrderValue} from 'typeorm/find-options/FindOptionsOrder';
 import {FindOneOptions} from 'typeorm/find-options/FindOneOptions';
+import {FindOptionsWhere} from 'typeorm/find-options/FindOptionsWhere';
+import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
 
-export class BlSearchBuilder {
+export class BlSearchBuilder<T> {
+
+  private whereOptions: FindOptionsWhere<T> = {};
+  private orderOptions: FindOptionsOrder<T> = {};
+  private relations: FindOptionsRelations<T> = {};
 
 
-  public buildSearchParams(searchParams: BlSearchParams): FindOneOptions {
-    const findOptions: FindOneOptions = {};
+  public addSearchParams(searchParams: BlSearchParams): void {
     if (searchParams.filtersCriteria) {
-      findOptions.where = {};
       for (const filter of searchParams.filtersCriteria) {
-
-        findOptions.where = {
-          ...findOptions.where,
-          ...this.convertFilterToWhere(filter)
-        };
+        this.addSearchCriteria(filter);
       }
     }
 
     if (searchParams.sortsCriteria) {
-      findOptions.order = {};
       for (const sort of searchParams.sortsCriteria) {
-        findOptions.order = {
-          ...findOptions.order,
-          ...this.convertSortToOrder(sort)
-        };
+        this.addSortCriteria(sort);
       }
     }
-    return findOptions;
   }
 
-  private convertFilterToWhere(filter: BlSearchFilterCriteria): any {
+
+  public mergeWhereOptions(where: FindOptionsWhere<T>): void {
+    this.whereOptions = {
+      ...this.whereOptions,
+      ...where
+    };
+  }
+
+  public mergeOrderOptions(order: FindOptionsOrder<T>): void {
+    this.orderOptions = {
+      ...this.orderOptions,
+      ...order
+    };
+  }
+
+  public setRelations(relations: FindOptionsRelations<T>): void {
+    this.relations = relations;
+  }
+
+  public build(): FindOneOptions<T> {
+    return {
+      where: this.whereOptions,
+      order: this.orderOptions,
+      relations: this.relations
+    };
+  }
+
+  private addSearchCriteria(filter: BlSearchFilterCriteria): void {
     // the keys are separated by dot
     const keys = filter.key.split('.');
 
-    const condition = {};
-    let currentCondition = condition;
+    let currentCondition = this.whereOptions;
     // build the filter object
     for (let i = 0; i < keys.length; i++) {
       if (i === keys.length - 1) {
         currentCondition[keys[i]] = this.convertFilterValue(filter.operator, filter.value);
       } else {
-        currentCondition[keys[i]] = {};
+        if (currentCondition[keys[i]] == null) {
+          currentCondition[keys[i]] = {};
+        }
       }
-      currentCondition = condition[keys[i]];
+      currentCondition = currentCondition[keys[i]];
     }
-
-    return condition;
   }
 
 
@@ -86,23 +107,22 @@ export class BlSearchBuilder {
     }
   }
 
-  private convertSortToOrder(sort: BlSearchSortCriteria): any {
+  private addSortCriteria(sort: BlSearchSortCriteria): void {
     // the keys are separated by dot
     const keys = sort.key.split('.');
 
-    const order = {};
-    let currentOrder = order;
+    let currentOrder = this.orderOptions;
     // build the filter object
     for (let i = 0; i < keys.length; i++) {
       if (i === keys.length - 1) {
         currentOrder[keys[i]] = sort.order as FindOptionsOrderValue;
       } else {
-        currentOrder[keys[i]] = {};
+        if (currentOrder[keys[i]] == null) {
+          currentOrder[keys[i]] = {};
+        }
       }
-      currentOrder = order[keys[i]];
+      currentOrder = currentOrder[keys[i]];
     }
-
-    return order;
   }
 
 

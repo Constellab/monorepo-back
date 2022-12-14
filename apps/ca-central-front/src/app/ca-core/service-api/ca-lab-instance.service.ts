@@ -6,8 +6,7 @@ import {
   CaLabInstanceFindOneDto,
   CaLabInstanceForm,
   CaLabInstanceStatusHistory,
-  CaLabInstanceWithSpace,
-  CaLabInstanceWithSpaceDatasource
+  CaLabInstanceWithSpace
 } from '../model/entities/ca-lab-instance.class';
 import {
   FlAdvancedSearchInput,
@@ -93,17 +92,6 @@ export class CaLabInstanceService {
     return this.apiService.get(`${this.route}/${id}/login`);
   }
 
-  public getAllByCurrentSpace(page: number, size: number): Observable<ClPageI<CaLabInstanceWithSpace>> {
-    return this.apiService.get(`${this.route}/current-space`, CaLabInstanceWithSpace,
-      {page: page, pageSize: size, resultIsPaginated: true});
-  }
-
-  public getAllByCurrentSpaceDatasource(): CaLabInstanceWithSpaceDatasource {
-    return new FlEntityPaginatedDatasource(
-      (page, size) => this.getAllByCurrentSpace(page, size), 20
-    );
-  }
-
   public searchAll(page: number, pageSize: number,
                    filters?: CaLabInstanceSearchFields): Observable<ClPage<CaLabInstanceWithSpace>> {
     const data: FlAdvancedSearchInput = {
@@ -111,6 +99,17 @@ export class CaLabInstanceService {
       sortsCriteria: null
     };
     return this.apiService.post(`${this.route}/search`, data, CaLabInstanceWithSpace, {
+      page: page, pageSize: pageSize, resultIsPaginated: true
+    });
+  }
+
+  public searchInCurrentSpace(page: number, pageSize: number,
+                              filters?: CaLabInstanceSearchFields): Observable<ClPage<CaLabInstance>> {
+    const data: FlAdvancedSearchInput = {
+      filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, CaLabInstanceSearch.advancedSearchConverter),
+      sortsCriteria: null
+    };
+    return this.apiService.post(`${this.route}/current-space/search`, data, CaLabInstanceWithSpace, {
       page: page, pageSize: pageSize, resultIsPaginated: true
     });
   }

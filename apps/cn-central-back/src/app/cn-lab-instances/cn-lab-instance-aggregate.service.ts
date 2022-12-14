@@ -145,10 +145,17 @@ export class CnLabInstanceAggregateService {
     return this.labInstancesService.getLabConfig(labInstanceId);
   }
 
-  async search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnLabInstance>> {
+  async searchAll(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnLabInstance>> {
     await this.security.checkAuthorizationToFindAll(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
 
-    return this.labInstancesService.search(searchParams, page, size);
+    return this.labInstancesService.searchAll(searchParams, page, size);
+  }
+
+  async searchInCurrentSpace(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnLabInstance>> {
+    await this.security.checkAuthorizationToFindAllBySpace(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+
+    return this.labInstancesService.searchInSpace(CnCurrentUserHelper.getAndCheckUserSpaceInfo().spaceId,
+      searchParams, page, size);
   }
 
   /////////////////////////////////////// EXTERNAL LAB SERVICE //////////////////////////////////

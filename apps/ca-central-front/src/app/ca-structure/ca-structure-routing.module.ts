@@ -12,12 +12,16 @@ import {
 import {
   CaCurrentSpaceUsersPageComponent
 } from './ca-space-page/component/ca-current-space-users-page/ca-current-space-users-page.component';
+import {
+  CaCurrentSpaceLabInstancesPageComponent
+} from './ca-space-page/component/ca-current-space-lab-instances-page/ca-current-space-lab-instances-page.component';
 
 const routes: Route[] = [
   {
     path: 'current-space', component: CaCurrentSpacePageComponent, children: [
       {path: '', component: CaCurrentSpaceDashboardPageComponent},
       {path: 'users', component: CaCurrentSpaceUsersPageComponent},
+      {path: 'labs', component: CaCurrentSpaceLabInstancesPageComponent},
     ]
   },
   {path: 'team/:id', component: CaTeamPageComponent},

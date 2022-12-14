@@ -67,12 +67,19 @@ export class CnLabInstancesController {
     return await this.aggregateService.getByCurrentSpace(page, size);
   }
 
+  @Post('current-space/search')
+  async searchInCurrentSpace(@Body() searchParam: BlSearchParams,
+                             @Query('page', ParseIntPipe) page: number,
+                             @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnLabInstance>> {
+    return await this.aggregateService.searchInCurrentSpace(searchParam, page, size);
+  }
+
   @Post('search')
   async searchAll(@Body() searchParam: BlSearchParams,
                   @Query('page', ParseIntPipe) page: number,
                   @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnLabInstanceAdminDto>> {
     // use a DTO to return all the field including the apiKey
-    const labInstances = await this.aggregateService.search(searchParam, page, size);
+    const labInstances = await this.aggregateService.searchAll(searchParam, page, size);
     return BlDtoHelper.pageToDto(CnLabInstanceAdminDto, labInstances);
   }
 

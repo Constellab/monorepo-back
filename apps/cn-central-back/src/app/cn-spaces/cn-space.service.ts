@@ -32,11 +32,11 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     return this.create(space);
   }
 
-  public async createPersonalSpace(user: CnUser, entityManager: EntityManager): Promise<CnSpace>{
+  public async createPersonalSpace(user: CnUser, entityManager: EntityManager): Promise<CnSpace> {
     const space = new CnSpace();
     space.name = user.fullname;
     space.nbLicenses = 0;
-    space.type= CnSpaceType.PERSONAL;
+    space.type = CnSpaceType.PERSONAL;
     space.createdBy = user;
     space.lastModifiedBy = user;
     return entityManager.save(space);
@@ -94,11 +94,11 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     };
   }
 
-  public search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnSpace>>{
-    const searchBuilder = new BlSearchBuilder();
-    const findOptions = searchBuilder.buildSearchParams(searchParams);
+  public search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnSpace>> {
+    const searchBuilder = new BlSearchBuilder<CnSpace>();
+    searchBuilder.addSearchParams(searchParams);
 
 
-    return this.findPaginated(page, size, findOptions);
+    return this.findPaginated(page, size, searchBuilder.build());
   }
 }

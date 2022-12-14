@@ -147,6 +147,10 @@ export class CaRouterService {
     return `${CaRouterService.getCurrentSpaceRoute()}/users`;
   }
 
+  public static getCurrentSpaceLabsRoute(): string {
+    return `${CaRouterService.getCurrentSpaceRoute()}/labs`;
+  }
+
   ////////////////////////// ADMIN ///////////////////////
 
   public static getAdminRoute(): string {

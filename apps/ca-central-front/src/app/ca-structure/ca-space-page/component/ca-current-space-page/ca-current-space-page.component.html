@@ -18,6 +18,12 @@
       {{'space_users' | translate}}
     </a>
 
+    <a mat-button [routerLink]="labsRoute" routerLinkActive="menu-active"
+       *caIsSpaceAdmin>
+      <mat-icon flIcon="lab">people</mat-icon>
+      {{'lab_instances' | translate}}
+    </a>
+
   </div>
 
   <router-outlet></router-outlet>

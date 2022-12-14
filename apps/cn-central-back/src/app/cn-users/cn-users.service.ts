@@ -119,7 +119,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
   async editUser(userEdit: CnUserEditDTO): Promise<CnUser> {
     const user: CnUser = await this.repository.findOneBy({id: userEdit.id});
-    if(userEdit.firstname != user.firstname || userEdit.lastname != user.lastname || userEdit.activity != user.activity
+    if (userEdit.firstname != user.firstname || userEdit.lastname != user.lastname || userEdit.activity != user.activity
       || userEdit.company != user.company || userEdit.biography != user.biography) {
       user.firstname = userEdit.firstname;
       user.lastname = userEdit.lastname;
@@ -139,11 +139,11 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     return enable;
   }
 
-  public async search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnUser>>{
-    if(!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) throw new BlUnauthorizedException();
-    const builder = new BlSearchBuilder();
-    const options = builder.buildSearchParams(searchParams);
+  public async search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnUser>> {
+    if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) throw new BlUnauthorizedException();
+    const builder = new BlSearchBuilder<CnUser>();
+    builder.addSearchParams(searchParams);
 
-    return this.findPaginated(page, size, options);
+    return this.findPaginated(page, size, builder.build());
   }
 }

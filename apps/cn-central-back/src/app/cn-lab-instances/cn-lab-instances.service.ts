@@ -134,12 +134,21 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     });
   }
 
-  public async search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnLabInstance>> {
-    const builder = new BlSearchBuilder();
-    const options = builder.buildSearchParams(searchParams);
-    // get the space
-    options.relations = {space: true};
+  public async searchInSpace(spaceId: string, searchParams: BlSearchParams,
+                             page: number, size: number): Promise<ClPage<CnLabInstance>> {
+    const searchBuilder = new BlSearchBuilder<CnLabInstance>();
+    searchBuilder.addSearchParams(searchParams);
+    searchBuilder.mergeWhereOptions({spaceId: spaceId});
 
-    return this.findPaginated(page, size, options);
+    return this.findPaginated(page, size, searchBuilder.build());
+
+  }
+
+  public async searchAll(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnLabInstance>> {
+    const searchBuilder = new BlSearchBuilder<CnLabInstance>();
+    searchBuilder.addSearchParams(searchParams);
+    searchBuilder.setRelations({space: true})
+
+    return this.findPaginated(page, size, searchBuilder.build());
   }
 }

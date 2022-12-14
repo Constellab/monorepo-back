@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnSpaceUser, CnSpaceUserRole} from './cn-space-user.entity';
-import {EntityManager, FindOneOptions, Repository} from 'typeorm';
+import {EntityManager, Repository} from 'typeorm';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnSpace, CnSpaceType} from './cn-space.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
@@ -12,7 +12,6 @@ import {
   BlSearchBuilder,
   BlSearchParams
 } from '@monorepo/back-core-lib';
-import {FindOptionsWhere} from 'typeorm/find-options/FindOptionsWhere';
 
 @Injectable()
 export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> {
@@ -116,24 +115,12 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
   }
 
   public async searchUser(spaceId: string, searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnSpaceUser>> {
-    const searchBuilder = new BlSearchBuilder();
-    const options: FindOneOptions<CnSpaceUser> = searchBuilder.buildSearchParams(searchParams);
+    const searchBuilder = new BlSearchBuilder<CnSpaceUser>();
+    searchBuilder.addSearchParams(searchParams);
+    searchBuilder.mergeWhereOptions({spaceId: spaceId});
+    searchBuilder.setRelations({user: true});
 
-    const additionalOptions: FindOptionsWhere<CnSpaceUser> = {
-      spaceId: spaceId,
-    }
-
-    options.where = {
-      ...options.where,
-      ...additionalOptions,
-    }
-
-    // load the user
-    options.relations = {
-      user: true
-    }
-
-    return await this.findPaginated(page, size, options);
+    return await this.findPaginated(page, size, searchBuilder.build());
   }
 
   public async findAllSpaceUserIds(spaceId: string): Promise<string[]> {

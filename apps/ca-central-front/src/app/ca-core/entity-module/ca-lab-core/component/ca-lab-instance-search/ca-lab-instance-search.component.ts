@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {
   FlDialogService,
   FlEntityPaginatedDatasource,
@@ -8,11 +8,7 @@ import {
   FlTableColumn,
   FlThemeService
 } from '@monorepo/front-core-lib';
-import {
-  CaLabInstance,
-  CaLabInstanceWithSpace,
-  CaLabInstanceWithSpaceDatasource
-} from '../../../../model/entities/ca-lab-instance.class';
+import {CaLabInstance, CaLabInstanceDatasource} from '../../../../model/entities/ca-lab-instance.class';
 import {CaLabInstanceService} from '../../../../service-api/ca-lab-instance.service';
 import {CaLabInstanceSearch, CaLabInstanceSearchFields} from '../../model/ca-lab-instance-search.class';
 import {
@@ -28,10 +24,16 @@ import {
 })
 export class CaLabInstanceSearchComponent implements OnInit {
 
-  datasource: CaLabInstanceWithSpaceDatasource;
+  /**
+   * Mode for the search
+   * All --> search in all lab, only for admin
+   * CurrentSpace --> search in the current space, only for space admin
+   */
+  @Input() mode: 'all' | 'current-space';
 
-  columns: FlTableColumn<CaLabInstance>[] = ['name', 'space', 'currentStatus',
-    {accessor: 'virtualHost', columnName: 'virtual_host'}, 'serverInfo', 'actions'];
+  datasource: CaLabInstanceDatasource;
+
+  columns: FlTableColumn<CaLabInstance>[];
 
 
   constructor(private searchState: FlSearchState<any>,
@@ -52,10 +54,10 @@ export class CaLabInstanceSearchComponent implements OnInit {
       storeSearchInUrl: true
     };
 
-    this.datasource = new FlEntityPaginatedDatasource(
-      (page, size, filters) => this.labInstanceService.searchAll(page, size, filters),
-      20, false);
+    this.datasource = this.getDatasource();
     this.searchState.init(config, this.datasource);
+
+    this.columns = this.getColumns();
   }
 
   private getSavedSearch(): FlSavedSearch[] {
@@ -70,6 +72,34 @@ export class CaLabInstanceSearchComponent implements OnInit {
     }];
   }
 
+  private getDatasource(): CaLabInstanceDatasource {
+    switch (this.mode) {
+      case 'all':
+        return new FlEntityPaginatedDatasource(
+          (page, size, filters) => this.labInstanceService.searchAll(page, size, filters),
+          20, false);
+      case 'current-space':
+        return new FlEntityPaginatedDatasource(
+          (page, size, filters) => this.labInstanceService.searchInCurrentSpace(page, size, filters),
+          20, false);
+      default:
+        throw new Error(`[CaLabInstanceSearchComponent] Unknown mode '${this.mode}'`);
+    }
+  }
+
+  private getColumns(): FlTableColumn<CaLabInstance>[] {
+    switch (this.mode) {
+      case 'all':
+        return ['name', 'space', 'currentStatus',
+          {accessor: 'virtualHost', columnName: 'virtual_host'}, 'serverInfo', 'actions'];
+      case 'current-space':
+        return ['name', 'currentStatus',
+          {accessor: 'virtualHost', columnName: 'virtual_host'}, 'serverInfo'];
+      default:
+        throw new Error(`[CaLabInstanceSearchComponent] Unknown mode '${this.mode}'`);
+    }
+  }
+
   openCreateLabInstanceForm(): void {
     const dialogInput: CaLabInstanceFormDialogInput = {
       mode: 'create'
@@ -81,7 +111,7 @@ export class CaLabInstanceSearchComponent implements OnInit {
       );
   }
 
-  private onCreateLabInstanceClosed(labInstance?: CaLabInstanceWithSpace): void {
+  private onCreateLabInstanceClosed(labInstance?: CaLabInstance): void {
     if (labInstance) {
       this.datasource.unshiftItem(labInstance);
     }
