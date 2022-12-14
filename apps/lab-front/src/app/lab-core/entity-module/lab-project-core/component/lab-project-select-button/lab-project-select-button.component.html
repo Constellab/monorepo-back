@@ -1,5 +1,5 @@
 <button mat-stroked-button type="button" [disabled]="disabled"
-        [matMenuTriggerFor]="menuComponent.menu">
+        [matMenuTriggerFor]="menuComponent.menu" class="button">
   <mat-icon flIcon="project" *ngIf="value"></mat-icon>
   {{buttonText}}
   <fl-button-loader *ngIf="isLoading"></fl-button-loader>
