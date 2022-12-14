@@ -11,6 +11,12 @@ export class BlSearchBuilder<T> {
   private orderOptions: FindOptionsOrder<T> = {};
   private relations: FindOptionsRelations<T> = {};
 
+  private readonly defaultOrder: FindOptionsOrder<T>;
+
+  constructor(defaultOrder: FindOptionsOrder<T> = {}) {
+    this.defaultOrder = defaultOrder;
+  }
+
 
   public addSearchParams(searchParams: BlSearchParams): void {
     if (searchParams.filtersCriteria) {
@@ -48,12 +54,12 @@ export class BlSearchBuilder<T> {
   public build(): FindOneOptions<T> {
     return {
       where: this.whereOptions,
-      order: this.orderOptions,
+      order: this.orderOptions ?? this.defaultOrder,
       relations: this.relations
     };
   }
 
-  private addSearchCriteria(filter: BlSearchFilterCriteria): void {
+  protected addSearchCriteria(filter: BlSearchFilterCriteria): void {
     // the keys are separated by dot
     const keys = filter.key.split('.');
 
@@ -107,7 +113,7 @@ export class BlSearchBuilder<T> {
     }
   }
 
-  private addSortCriteria(sort: BlSearchSortCriteria): void {
+  protected addSortCriteria(sort: BlSearchSortCriteria): void {
     // the keys are separated by dot
     const keys = sort.key.split('.');
 

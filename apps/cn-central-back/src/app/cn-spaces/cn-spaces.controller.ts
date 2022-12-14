@@ -83,7 +83,7 @@ export class CnSpacesController {
   }
 
   @Post('search')
-  public async search(@Body() searchParams: BlSearchParams,
+  public async search(@Body(new BlParsePipe(BlSearchParams)) searchParams: BlSearchParams,
                       @Query('page', new ParseIntPipe()) page: number,
                       @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnSpace>> {
     return this.spaceAggregateService.search(searchParams, page, size);
@@ -91,7 +91,7 @@ export class CnSpacesController {
 
   @Post(':id/user/search')
   public async searchUserInSpace(@Param('id') id: string,
-                                 @Body() searchParams: BlSearchParams,
+                                 @Body(new BlParsePipe(BlSearchParams)) searchParams: BlSearchParams,
                                  @Query('page', new ParseIntPipe()) page: number,
                                  @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnSpaceUser>> {
     return this.spaceAggregateService.searchUserInSpace(id, searchParams, page, size);

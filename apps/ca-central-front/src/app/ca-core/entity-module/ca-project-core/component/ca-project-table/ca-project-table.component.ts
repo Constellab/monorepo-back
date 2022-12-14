@@ -13,7 +13,7 @@ export class CaProjectTableComponent extends FlTableAbstractDirective<CaProject>
   @Input() datasource: CaProjectDatasource;
 
   constructor(private routerService: CaRouterService) {
-    super(['title', 'creation', 'status', 'leader', 'actions']);
+    super(['code', 'title', 'creation', 'status', 'leader', 'actions']);
   }
 
   ngOnInit(): void {

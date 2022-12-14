@@ -18,11 +18,17 @@
       {{'space_users' | translate}}
     </a>
 
-    <a mat-button [routerLink]="labsRoute" routerLinkActive="menu-active"
-       *caIsSpaceAdmin>
-      <mat-icon flIcon="lab">people</mat-icon>
-      {{'lab_instances' | translate}}
-    </a>
+    <ng-container *caIsSpaceAdmin>
+      <a mat-button [routerLink]="labsRoute" routerLinkActive="menu-active">
+        <mat-icon flIcon="lab"></mat-icon>
+        {{'lab_instances' | translate}}
+      </a>
+
+      <a mat-button [routerLink]="projectsRoute" routerLinkActive="menu-active">
+        <mat-icon flIcon="project"></mat-icon>
+        {{'projects' | translate}}
+      </a>
+    </ng-container>
 
   </div>
 

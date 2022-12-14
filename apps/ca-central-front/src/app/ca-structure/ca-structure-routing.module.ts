@@ -15,6 +15,9 @@ import {
 import {
   CaCurrentSpaceLabInstancesPageComponent
 } from './ca-space-page/component/ca-current-space-lab-instances-page/ca-current-space-lab-instances-page.component';
+import {
+  CaCurrentSpaceProjectsPageComponent
+} from './ca-space-page/component/ca-current-space-projects-page/ca-current-space-projects-page.component';
 
 const routes: Route[] = [
   {
@@ -22,6 +25,7 @@ const routes: Route[] = [
       {path: '', component: CaCurrentSpaceDashboardPageComponent},
       {path: 'users', component: CaCurrentSpaceUsersPageComponent},
       {path: 'labs', component: CaCurrentSpaceLabInstancesPageComponent},
+      {path: 'projects', component: CaCurrentSpaceProjectsPageComponent},
     ]
   },
   {path: 'team/:id', component: CaTeamPageComponent},

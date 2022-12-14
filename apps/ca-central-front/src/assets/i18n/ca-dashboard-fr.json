@@ -90,5 +90,7 @@
   "go_to_team": "Aller à l'équipe",
   "all_smart_db": "Tous les smartDB",
   "add_new_smart_db": "Ajouter une nouvelle smartDB",
-  "go_to_smart_db": "Aller à la smartDB"
+  "go_to_smart_db": "Aller à la smartDB",
+  "include_sub_projects": "Inclure les sous projets",
+  "projects": "Projets"
 }

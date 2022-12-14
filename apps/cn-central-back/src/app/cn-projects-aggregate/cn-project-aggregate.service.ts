@@ -25,7 +25,7 @@ import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity'
 import {CnProjectCommentService} from '../cn-project-comment/cn-project-comment.service';
 import {CnCommentImage, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
-import {BlBadRequestException, BlFile, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlFile, BlSearchParams, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {DataSource} from 'typeorm';
 
 @Injectable()
@@ -136,6 +136,12 @@ export class CnProjectAggregateService {
     const info = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     await this.projectSecurity.checkFindAllBySpace(info);
     return this.projectService.getBySpace(info.spaceId, page, size);
+  }
+
+  public async searchInCurrentSpace(searchParams: BlSearchParams, page: number, size: number): Promise<ClPageI<CnProject>> {
+    const info = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+    await this.projectSecurity.checkFindAllBySpace(info);
+    return this.projectService.searchInSpace(info.spaceId, searchParams, page, size);
   }
 
   public async getProjectOfTeam(teamId: string, page: number, size: number): Promise<ClPageI<CnProject>> {

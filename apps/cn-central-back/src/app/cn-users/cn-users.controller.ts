@@ -87,7 +87,7 @@ export class CnUsersController {
   }
 
   @Post('search')
-  public async search(@Body() searchParams: BlSearchParams,
+  public async search(@Body(new BlParsePipe(BlSearchParams)) searchParams: BlSearchParams,
                       @Query('page', new ParseIntPipe()) page: number,
                       @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnUser>> {
     return this.usersService.search(searchParams, page, size);

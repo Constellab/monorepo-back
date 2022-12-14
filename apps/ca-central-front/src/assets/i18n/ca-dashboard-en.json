@@ -91,5 +91,7 @@
   "go_to_team": "Go to team",
   "all_smart_db": "All smartDB",
   "add_new_smart_db": "Add new smartDB",
-  "go_to_smart_db": "Go to smartDB"
+  "go_to_smart_db": "Go to smartDB",
+  "include_sub_projects": "Include sub projects",
+  "projects": "Projects"
 }

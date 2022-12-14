@@ -20,9 +20,6 @@ import {
   CaCurrentSpaceInvitListComponent
 } from './component/ca-current-space-invit-list/ca-current-space-invit-list.component';
 import {CaLabCoreModule} from '../../ca-core/entity-module/ca-lab-core/ca-lab-core.module';
-import {
-  CaCurrentSpaceProjectsListComponent
-} from './component/ca-current-space-projects-list/ca-current-space-projects-list.component';
 import {CaProjectCoreModule} from '../../ca-core/entity-module/ca-project-core/ca-project-core.module';
 import {
   CaCurrentSpaceTeamsListComponent
@@ -38,6 +35,9 @@ import {
 import {
   CaCurrentSpaceLabInstancesPageComponent
 } from './component/ca-current-space-lab-instances-page/ca-current-space-lab-instances-page.component';
+import {
+  CaCurrentSpaceProjectsPageComponent
+} from './component/ca-current-space-projects-page/ca-current-space-projects-page.component';
 
 
 @NgModule({
@@ -49,12 +49,12 @@ import {
     CaSpaceInvitTableComponent,
     CaSpaceInvitFormDialogComponent,
     CaCurrentSpaceInvitListComponent,
-    CaCurrentSpaceProjectsListComponent,
     CaCurrentSpaceTeamsListComponent,
     CaRequestNewLicensesComponent,
     CaCurrentSpaceUsersPageComponent,
     CaCurrentSpaceDashboardPageComponent,
     CaCurrentSpaceLabInstancesPageComponent,
+    CaCurrentSpaceProjectsPageComponent,
   ],
   imports: [
     CommonModule,

@@ -5,7 +5,7 @@ import {CnProject} from './cn-project.entity';
 import {CnAbstractWithStatusService} from '../../cn-core/class/cn-abstract-with-status.service';
 import {CnProjectStatus} from './cn-project-status.enum';
 import {CnProjectStatusHistory} from './cn-project-status-history.entity';
-import {ClDateHelper, ClPageI} from '@monorepo/core-lib';
+import {ClDateHelper, ClPage} from '@monorepo/core-lib';
 import {CnGroupsService} from '../../cn-groups/cn-groups.service';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
 import {CnUser} from '../../cn-users/cn-user.entity';
@@ -13,7 +13,8 @@ import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 import {CnGroup} from '../../cn-groups/cn-group.entity';
 import {CnProjectLevel} from './cn-project-level.enum';
 import {CnSpace} from '../../cn-spaces/cn-space.entity';
-import {BlBadRequestException} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlSearchParams} from '@monorepo/back-core-lib';
+import {CnProjectSearchBuilder} from './cn-project-search.builder';
 
 @Injectable()
 export class CnProjectsService extends CnAbstractWithStatusService<CnProject, CnProjectStatus> {
@@ -67,13 +68,13 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
     return projects;
   }
 
-  public async getCurrentProjects(page: number, size: number): Promise<ClPageI<CnProject>> {
+  public async getCurrentProjects(page: number, size: number): Promise<ClPage<CnProject>> {
     const spaceUser = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
 
     return this.getProjectOfUser(spaceUser.userId, spaceUser.spaceId, page, size);
   }
 
-  public async getBySpace(spaceId: string, page: number, size: number): Promise<ClPageI<CnProject>> {
+  public async getBySpace(spaceId: string, page: number, size: number): Promise<ClPage<CnProject>> {
     return this.findPaginated(page, size, {
       where: {
         spaceId: spaceId,
@@ -90,7 +91,7 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
   /**
    * Get all projects shared with a group paginated
    */
-  public async getProjectsOfGroup(groupId: string, page: number, size: number): Promise<ClPageI<CnProject>> {
+  public async getProjectsOfGroup(groupId: string, page: number, size: number): Promise<ClPage<CnProject>> {
     return await this.findPaginated(page, size, {
       where: {
         currentLevel: CnProjectLevel.PROJECT,
@@ -148,7 +149,7 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
   /**
    * Get project by groups of user
    */
-  private async getProjectOfUser(userId: string, spaceId: string, page: number, size: number): Promise<ClPageI<CnProject>> {
+  private async getProjectOfUser(userId: string, spaceId: string, page: number, size: number): Promise<ClPage<CnProject>> {
     const groupIds = await this.groupService.getAllGroupIdsOfUser(userId, spaceId);
 
     return await this.findPaginated(page, size, {
@@ -161,6 +162,15 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
       },
       order: {lastModifiedAt: 'DESC' as any}
     });
+  }
+
+  public async searchInSpace(spaceId: string, searchParam: BlSearchParams,
+                             page: number, size: number): Promise<ClPage<CnProject>> {
+    const searchBuilder = new CnProjectSearchBuilder({lastModifiedAt: 'DESC' as any});
+    searchBuilder.addSearchParams(searchParam);
+    searchBuilder.mergeWhereOptions({spaceId: spaceId});
+
+    return await this.findPaginated(page, size, searchBuilder.build());
   }
 
 }

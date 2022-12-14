@@ -19,7 +19,31 @@ export interface BlSearchSortCriteria {
   nullOption?: BlSearchOrderNullOption;
 }
 
-export interface BlSearchParams {
+export class BlSearchParams {
+
   filtersCriteria: BlSearchFilterCriteria[];
+
   sortsCriteria: BlSearchSortCriteria[];
+
+  constructor(filtersCriteria: BlSearchFilterCriteria[] = [], sortsCriteria: BlSearchSortCriteria[] = []) {
+    this.filtersCriteria = filtersCriteria;
+    this.sortsCriteria = sortsCriteria;
+  }
+
+  public hasFilter(key: string): boolean {
+    return this.filtersCriteria.some(filter => filter.key === key);
+  }
+
+  public removeFilter(key: string): void {
+    this.filtersCriteria = this.filtersCriteria.filter(filter => filter.key !== key);
+  }
+
+  public getFilterValue(key: string): any | null {
+    const filter = this.filtersCriteria.find(filter => filter.key === key);
+    return filter?.value ?? null;
+  }
+
+  public clone(): BlSearchParams {
+    return new BlSearchParams(this.filtersCriteria, this.sortsCriteria);
+  }
 }

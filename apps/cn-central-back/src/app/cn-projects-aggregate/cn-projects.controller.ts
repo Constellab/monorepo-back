@@ -16,7 +16,14 @@ import {
 import {CnProject} from './cn-projects/cn-project.entity';
 import {CnProjectStatus} from './cn-projects/cn-project-status.enum';
 import {CnProjectStatusHistory} from './cn-projects/cn-project-status-history.entity';
-import {BlFile, BlParseEnumPipe, BlParsePipe, BlPublic, BlResponseHelper} from '@monorepo/back-core-lib';
+import {
+  BlFile,
+  BlParseEnumPipe,
+  BlParsePipe,
+  BlPublic,
+  BlResponseHelper,
+  BlSearchParams
+} from '@monorepo/back-core-lib';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnGroup} from '../cn-groups/cn-group.entity';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
@@ -73,6 +80,13 @@ export class CnProjectsController {
   async getByCurrentSpace(@Query('page', ParseIntPipe) page: number,
                           @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProject>> {
     return await this.projectAggregate.getByCurrentSpace(page, size);
+  }
+
+  @Post('current-space/search')
+  async searchInCurrentSpace(@Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
+                             @Query('page', ParseIntPipe) page: number,
+                             @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProject>> {
+    return await this.projectAggregate.searchInCurrentSpace(searchParam, page, size);
   }
 
   @Get('group/:groupId')
@@ -199,8 +213,8 @@ export class CnProjectsController {
   //Edit comment content
   @Put(':projectId/comment/:commentId')
   updateProjectComment(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                @Param('commentId', new ParseUUIDPipe()) commentId: string,
-                @Body() body: any): Promise<CnComment>{
+                       @Param('commentId', new ParseUUIDPipe()) commentId: string,
+                       @Body() body: any): Promise<CnComment> {
     return this.projectAggregate.updateProjectComment(projectId, commentId, body.content);
   }
 

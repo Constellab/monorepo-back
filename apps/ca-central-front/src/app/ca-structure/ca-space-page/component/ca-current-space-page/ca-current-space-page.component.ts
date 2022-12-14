@@ -17,6 +17,7 @@ export class CaCurrentSpacePageComponent implements OnInit {
 
   usersRoute = CaRouterService.getCurrentSpaceUsersRoute();
   labsRoute = CaRouterService.getCurrentSpaceLabsRoute();
+  projectsRoute = CaRouterService.getCurrentSpaceProjectsRoute();
 
   constructor(private currentSpaceService: CaCurrentSpaceService) {
   }

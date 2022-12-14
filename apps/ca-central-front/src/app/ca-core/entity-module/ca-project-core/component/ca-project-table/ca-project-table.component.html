@@ -1,4 +1,18 @@
 <mat-table fxFlex="100" mat-table [dataSource]="datasource" class="table">
+
+  <!-- Code -->
+  <ng-container matColumnDef="code">
+    <mat-header-cell *matHeaderCellDef>
+      <span> {{'code' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let project">
+      <ca-project-icon [project]="project"></ca-project-icon>
+      <div class="code">{{project.code}}</div>
+    </mat-cell>
+  </ng-container>
+
+
+
   <!-- Title -->
   <ng-container matColumnDef="title">
     <mat-header-cell *matHeaderCellDef>

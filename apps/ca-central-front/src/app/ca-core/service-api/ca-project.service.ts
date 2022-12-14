@@ -10,19 +10,22 @@ import {
 } from '../model/entities/ca-project.class';
 import {Observable} from 'rxjs';
 import {
+  FlAdvancedSearchInput,
   FlApiService,
   FlArrayObs,
   FlEntityArrayObs,
   FlEntityPaginatedDatasource,
   FlQuillJson,
+  FlSearchConverter,
   FlTextEditorUploadedImage,
 } from '@monorepo/front-core-lib';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CaGroup} from '../model/entities/ca-group.entity';
 import {CaUser} from '../model/entities/ca-user.class';
-import {CaComment, CaProjectComment, CaProjectCommentDatasourcePaginated} from '../model/entities/ca-comment.class';
+import {CaProjectComment, CaProjectCommentDatasourcePaginated} from '../model/entities/ca-comment.class';
 import {CmRichTextI} from '@monorepo/common-model';
 import {map} from 'rxjs/operators';
+import {CaProjectSearch, CaProjectSearchFields} from '../entity-module/ca-project-core/model/ca-project-search.class';
 
 /**
  * Service to manage project entity
@@ -147,6 +150,16 @@ export class CaProjectService {
     return this.apiService.get(`${this.route}/tree/${objectType}/${objectId}`);
   }
 
+  public searchInCurrentSpace(page: number, pageSize: number, filters?: CaProjectSearchFields): Observable<ClPageI<CaProject>> {
+    const data: FlAdvancedSearchInput = {
+      filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, CaProjectSearch.advancedSearchConverter),
+      sortsCriteria: null
+    };
+    return this.apiService.post(`${this.route}/current-space/search`, data, CaProject, {
+      page: page, pageSize: pageSize, resultIsPaginated: true
+    });
+  }
+
   /////////////////////////////// COMMENTS //////////////////////////////////
   public getProjectComments(userId: string): CaProjectCommentDatasourcePaginated {
     return new FlEntityPaginatedDatasource(
@@ -168,7 +181,7 @@ export class CaProjectService {
       {content: content}, CaProjectComment);
   }
 
-  public deleteProjectComment(projectId: string, commentId: string): Observable<CaProjectComment>{
+  public deleteProjectComment(projectId: string, commentId: string): Observable<CaProjectComment> {
     return this.apiService.post(`${this.route}/${projectId}/comment/${commentId}/delete`, null, CaProjectComment);
   }
 
