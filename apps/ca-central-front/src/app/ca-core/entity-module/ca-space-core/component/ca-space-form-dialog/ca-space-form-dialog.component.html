@@ -16,7 +16,7 @@
     </mat-form-field>
 
     <!--  Nb of licences  -->
-    <mat-form-field class="g-form-input">
+    <mat-form-field class="g-form-input" *caIsAdmin>
       <mat-label>{{'nb_of_licenses' | translate}}</mat-label>
       <input matInput formControlName="nbLicenses" required type="number"
              [placeholder]="'nb_of_licenses' | translate" min="0">

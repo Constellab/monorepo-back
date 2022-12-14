@@ -25,11 +25,11 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     super(repository, CnSpace);
   }
 
-  public async createBasicSpace(space: CnSpace): Promise<CnSpace> {
+  public async createBasicSpace(space: CnSpace, entityManager: EntityManager): Promise<CnSpace> {
     space.type = CnSpaceType.BASIC;
     space.createdBy = CnCurrentUserHelper.getAndCheckCurrentUser();
     space.lastModifiedBy = CnCurrentUserHelper.getAndCheckCurrentUser();
-    return this.create(space);
+    return this.create(space, entityManager);
   }
 
   public async createPersonalSpace(user: CnUser, entityManager: EntityManager): Promise<CnSpace> {

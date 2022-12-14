@@ -35,5 +35,13 @@
         </a>
       </ng-container>
     </fl-async-section>
+
+    <mat-divider class="g-full"></mat-divider>
+    <div class="space" (click)="openCreateSpaceDialog()">
+      <fl-text-icon>
+        <mat-icon>add</mat-icon>
+        {{'create_space' | translate}}
+      </fl-text-icon>
+    </div>
   </fl-portal-content>
 </fl-portal>

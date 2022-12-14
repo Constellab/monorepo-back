@@ -47,17 +47,33 @@ export class CnSpaceAggregateService {
   }
 
   public createBasicSpace(entity: CnSpace): Promise<CnSpace> {
-    this.checkAdmin();
-    return this.spaceService.createBasicSpace(entity);
+    // if the user is not admin, he can't set the nb of licenses
+    if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) {
+      entity.nbLicenses = 0;
+    }
+
+    return this.datasource.transaction(async (entityManager: EntityManager) => {
+
+      const space = await this.spaceService.createBasicSpace(entity, entityManager);
+
+      const user = CnCurrentUserHelper.getAndCheckCurrentUser();
+      await this.spaceUserService.addUserToSpace(space, user, CnSpaceUserRole.ADMIN, user, entityManager);
+
+      return space;
+    });
   }
 
   public async update(entity: CnSpace): Promise<CnSpace> {
-    this.checkAdmin();
+    await this.checkSpaceAdmin(entity.id);
+    // if the user is not admin, he can't set the nb of licenses
+    if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) {
+      entity.nbLicenses = undefined;
+    }
     return this.spaceService.update(entity);
   }
 
   public async delete(id: string): Promise<void> {
-    this.checkAdmin();
+    await this.checkSpaceAdmin(id);
 
     const space = await this.spaceService.findByIdAndCheck(id);
 

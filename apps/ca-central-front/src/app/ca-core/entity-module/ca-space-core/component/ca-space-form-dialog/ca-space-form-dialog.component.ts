@@ -7,6 +7,8 @@ import {Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {CaSpaceService} from '../../../../service-api/ca-space.service';
 
+export type CaSpaceFormDialogInput = FlFormDialogInput<CaSaveSpaceDTO>;
+
 @Component({
   selector: 'ca-space-form-dialog',
   templateUrl: './ca-space-form-dialog.component.html',
@@ -17,7 +19,7 @@ export class CaSpaceFormDialogComponent extends FlFormDialogAbstractDirective<Ca
 
   constructor(snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<CaSpaceFormDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<CaSaveSpaceDTO>,
+              @Inject(MAT_DIALOG_DATA) dialogInput: CaSpaceFormDialogInput,
               private spaceService: CaSpaceService) {
     super(dialogInput, snackBarService, dialogRef);
   }
@@ -35,7 +37,7 @@ export class CaSpaceFormDialogComponent extends FlFormDialogAbstractDirective<Ca
     return new FormBuilder().group({
       id: [null],
       name: [null, [Validators.required]],
-      nbLicenses: [null, [Validators.required]]
+      nbLicenses: [0, [Validators.required]]
     });
   }
 

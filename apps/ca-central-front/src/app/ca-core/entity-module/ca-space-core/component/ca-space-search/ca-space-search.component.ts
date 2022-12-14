@@ -3,7 +3,6 @@ import {
   FlConfirmDialogInput,
   FlDialogService,
   FlEntityPaginatedDatasource,
-  FlFormDialogInput,
   FlSavedSearch,
   FlSearchConfig,
   FlSearchState,
@@ -13,7 +12,10 @@ import {
 import {CaSpaceService} from '../../../../service-api/ca-space.service';
 import {CaSpaceSearch, CaSpaceSearchFields} from '../../model/ca-space-search.class';
 import {CaSpace, CaSpaceDatasource} from '../../../../model/entities/space/ca-space.class';
-import {CaSpaceFormDialogComponent} from '../ca-space-form-dialog/ca-space-form-dialog.component';
+import {
+  CaSpaceFormDialogComponent,
+  CaSpaceFormDialogInput
+} from '../ca-space-form-dialog/ca-space-form-dialog.component';
 
 
 @Component({
@@ -66,7 +68,7 @@ export class CaSpaceSearchComponent implements OnInit {
   }
 
   createSpace(): void {
-    const input: FlFormDialogInput = {
+    const input: CaSpaceFormDialogInput = {
       mode: 'create'
     };
 
