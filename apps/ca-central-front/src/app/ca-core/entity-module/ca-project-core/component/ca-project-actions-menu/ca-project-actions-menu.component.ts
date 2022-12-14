@@ -132,7 +132,11 @@ export class CaProjectActionsMenuComponent implements OnInit {
     this.dialogService.openSmallDialog(CaUpdateProjectLeaderDialogComponent, {
       data: dialogInput
     }).afterClosed().subscribe(
-      leader => this.project.leader = leader
+      leader => {
+        if (leader) {
+          this.project.leader = leader;
+        }
+      }
     );
   }
 

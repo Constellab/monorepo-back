@@ -1,6 +1,5 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FlUserConfig} from '../../service/fl-user-config.config';
-import {Subject} from 'rxjs';
 import {FlUser} from '../../model/fl-user.class';
 
 
@@ -11,16 +10,16 @@ export type FlUserProfilePictureSize = 'small' | 'medium' | 'big';
   templateUrl: './fl-user-profile-picture.component.html',
   styleUrls: ['./fl-user-profile-picture.component.scss']
 })
-export class FlUserProfilePictureComponent implements OnInit, OnDestroy {
+export class FlUserProfilePictureComponent implements OnInit {
 
-  @Input() user: FlUser;
+  @Input() set user(user: FlUser) {
+    this.setUser(user);
+  }
 
   /**
    * Default size of size in em
    */
   @Input() size: FlUserProfilePictureSize | string | number = 'medium';
-
-  @Input() hasPhoto$: Subject<boolean> = new Subject<boolean>();
 
   circleSize: string;
 
@@ -28,18 +27,13 @@ export class FlUserProfilePictureComponent implements OnInit, OnDestroy {
 
   initials: string;
 
-  imgSrc: string;
+  imgSrc?: string;
 
   constructor(private userConfig: FlUserConfig) {
   }
 
   ngOnInit(): void {
-    if (this.user) {
-      this.initials = (this.user.firstname?.charAt(0) ?? '') + (this.user.lastname?.charAt(0) ?? '');
-      if (this.user.photo) {
-        this.getPhotoLink();
-      }
-    }
+
     switch (this.size) {
       case 'small':
         this.circleSize = '2.5em';
@@ -58,29 +52,19 @@ export class FlUserProfilePictureComponent implements OnInit, OnDestroy {
         this.circleSize = this.size + 'em';
         this.fontSize = (+this.circleSize) / 4;
     }
-
   }
 
-  getPhotoLink(): string {
-    const link: string = this.userConfig.getUserPhotoUrl(this.user.id);
-    this.checkIfImage(link);
-    return link;
-  }
-
-  private checkIfImage(link: string): void {
-    const img: HTMLImageElement = new Image();
-    img.src = link;
-    img.onload = () => {
-      this.imgSrc = link;
-      this.hasPhoto$.next(true);
-    };
-
-    img.onerror = () => {
-      this.hasPhoto$.next(false);
-    };
-  }
-
-  ngOnDestroy(): void {
-    this.hasPhoto$.complete();
+  private setUser(user: FlUser): void {
+    if (user) {
+      this.initials = (user.firstname?.charAt(0) ?? '') + (user.lastname?.charAt(0) ?? '');
+      if (user.photo) {
+        this.imgSrc = this.userConfig.getUserPhotoUrl(user.id);
+      }else{
+        this.imgSrc = null;
+      }
+    } else {
+      this.initials = '';
+      this.imgSrc = null;
+    }
   }
 }

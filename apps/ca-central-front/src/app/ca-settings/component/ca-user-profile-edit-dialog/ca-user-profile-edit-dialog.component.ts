@@ -1,4 +1,4 @@
-import {Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaUser} from '../../../ca-core/model/entities/ca-user.class';
 import {
@@ -7,7 +7,7 @@ import {
   FlImageHelper,
   FlSnackBarService
 } from '@monorepo/front-core-lib';
-import {Observable, Subject} from 'rxjs';
+import {Observable} from 'rxjs';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {CaAuthenticatedUserService} from '../../../ca-core/service-api/ca-authenticated-user.service';
@@ -18,7 +18,7 @@ import {CaAuthenticatedUserService} from '../../../ca-core/service-api/ca-authen
   styleUrls: ['./ca-user-profile-edit-dialog.component.scss']
 })
 export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirective<Partial<CaUser>, CaUser>
-  implements OnInit, OnDestroy {
+  implements OnInit {
 
   @ViewChild('input') inputPhoto: ElementRef<HTMLInputElement>;
   editPhotoImgElement: HTMLImageElement;
@@ -29,14 +29,11 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
   errorFileText: string;
   currentImgLink: string;
   photoDiv: HTMLDivElement;
-  hasPhoto$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(
-    snackBarService: FlSnackBarService,
-    dialogRef: MatDialogRef<CaUserProfileEditDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<Partial<CaUser>>,
-    private authenticatedUserService: CaAuthenticatedUserService
-  ) {
+  constructor(snackBarService: FlSnackBarService,
+              dialogRef: MatDialogRef<CaUserProfileEditDialogComponent>,
+              @Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<Partial<CaUser>>,
+              private authenticatedUserService: CaAuthenticatedUserService) {
     super(dialogInput, snackBarService, dialogRef);
     this.user = dialogInput.object as CaUser;
   }
@@ -121,7 +118,6 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
   }
 
   private async compressBlob(blob: Blob): Promise<void> {
-    this.hasPhoto$.next(true);
     const b: Blob = await FlImageHelper.compressBlob(blob, 360, 360, 240, 240);
 
     if (this.editPhotoImgElement) {
@@ -139,10 +135,6 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
     this.newImageFile = file;
     this.isLoadingImport = false;
     this.formGp.updateValueAndValidity();
-  }
-
-  ngOnDestroy(): void {
-    this.hasPhoto$.complete();
   }
 
 }

@@ -14,7 +14,7 @@
       </div>
       <input flInputFile type="file" accept="image/jpg,image/jpeg,image/png" (fileChange)="onFileSelected($event)"
              [strictMode]="true" [autoClearHtmlInput]="true" [hidden]="true" id="input-photo" #input>
-      <fl-user-profile-picture [user]="user" [size]="'big'" [hasPhoto$]="hasPhoto$">
+      <fl-user-profile-picture [user]="user" [size]="'big'">
 
       </fl-user-profile-picture>
     </div>

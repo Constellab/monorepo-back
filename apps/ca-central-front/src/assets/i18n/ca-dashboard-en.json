@@ -1,5 +1,5 @@
 {
-  "welcome_message": "Welcome to {{name}}'s space",
+  "welcome_message": "Welcome to {{name}} space",
   "my_projects": "My projects",
   "no_project": "No project",
   "my_smart_db": "My smartDB",
