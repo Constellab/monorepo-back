@@ -22,6 +22,10 @@ import {
   LabTypeDialogComponent,
   LabTypeDialogInput
 } from '../../../lab-type-core/component/lab-type-dialog/lab-type-dialog.component';
+import {
+  LabShareLinkFormDialogComponent,
+  LabShareLinkFormDialogInput
+} from '../../../lab-share-link-core/component/lab-share-link-form-dialog/lab-share-link-form-dialog.component';
 
 /**
  * Action menu button for resources, it has a ng-content for custom buttons
@@ -130,11 +134,22 @@ export class LabResourceActionsMenuComponent implements OnInit {
     }
   }
 
-  openTypingDoc(): void{
+  openTypingDoc(): void {
     const data: LabTypeDialogInput = {
       typingName: this.resource.resourceTypingName
-    }
+    };
     this.dialogService.openMediumDialog(LabTypeDialogComponent, {data: data});
+  }
+
+  openShareDialog(): void {
+    const data: LabShareLinkFormDialogInput = {
+      mode: 'create',
+      entityType: 'RESOURCE',
+      entityId: this.resource.id,
+      createTitle: 'biox.share_resource'
+    };
+
+    this.dialogService.openSmallDialog(LabShareLinkFormDialogComponent, {data: data});
   }
 
 

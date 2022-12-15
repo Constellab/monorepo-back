@@ -1,0 +1,97 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource" class="table">
+
+
+  <!-- Entity type -->
+  <ng-container matColumnDef="entityType">
+    <mat-header-cell *matHeaderCellDef>
+      <span> {{'biox.share_link_entity_type' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <mat-icon color="warn" *ngIf="row.status === 'ERROR'"
+                [matTooltip]="'biox.share_link_object_not_found'| translate">
+        errors
+      </mat-icon>
+      <div>{{'biox.share_link_entity_type_' + row.entityType | translate}}</div>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Name -->
+  <ng-container matColumnDef="entityName">
+    <mat-header-cell *matHeaderCellDef>
+      <span> {{'name' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      {{row.entityName}}
+    </mat-cell>
+  </ng-container>
+
+  <!-- Valid until -->
+  <ng-container matColumnDef="validUntil">
+    <mat-header-cell *matHeaderCellDef>
+      <span> {{'biox.share_link_valid_until' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <div [matTooltip]="row.validUntil | flDate:'DATETIME_MED'"
+           [ngClass]="{'g-warn-text' : !row.isValid()}">
+        {{row.validUntil | flDate}}
+      </div>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Download link -->
+  <ng-container matColumnDef="downloadLink">
+    <mat-header-cell *matHeaderCellDef>
+      <span> {{'biox.share_link_download' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <div class="download-link">
+        {{getDownloadLink(row)}}
+      </div>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Actions -->
+  <ng-container matColumnDef="actions">
+    <mat-header-cell class="g-table-icon-button-cell" *matHeaderCellDef>
+    </mat-header-cell>
+    <mat-cell class="g-table-icon-button-cell" *matCellDef="let row">
+
+      <!--   Mat menu containing action buttons   -->
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" xPosition="before">
+
+        <button mat-menu-item type="button"
+                (click)="openUpdateDialog(row)">
+          <mat-icon>edit</mat-icon>
+          <span>{{'biox.update_share_link' | translate}}</span>
+        </button>
+
+        <button mat-menu-item type="button"
+                class="g-warn-text" (click)="deleteShareLink(row)">
+          <mat-icon color="warn">clear</mat-icon>
+          <span>{{'biox.delete_share_link' | translate}}</span>
+        </button>
+
+      </mat-menu>
+    </mat-cell>
+  </ng-container>
+
+
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
+    <mat-header-cell *matHeaderCellDef>
+      {{column.columnName | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let experiment">
+      <div>
+        <span>{{experiment[column.accessor]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+</mat-table>

@@ -82,6 +82,7 @@ import {
 import {
   LabResourceChildrenListComponent
 } from './component/lab-resource-children-list/lab-resource-children-list.component';
+import {LabShareLinkCoreModule} from '../lab-share-link-core/lab-share-link-core.module';
 
 
 @NgModule({
@@ -118,28 +119,28 @@ import {
     LabResourceViewDetailDialogComponent,
     LabResourceChildrenListComponent,
   ],
-    exports: [
-        LabResourceTypeSelectOptionsComponent,
-        LabResourceViewPortalComponent,
-        LabResourceTableComponent,
-        LabResourceSearchComponent,
-        LabResourceOriginOptionsComponent,
-        LabSelectResourceDialogComponent,
-        LabResourceCardComponent,
-        LabImportResourceDialogComponent,
-        LabResourceDetailDialogComponent,
-        LabUpdateResourceTypeComponent,
-        LabUpdateResourceNameDialogComponent,
-        LabResourceActionsMenuComponent,
-        LabConfigureResourceViewComponent,
-        LabResourceDetailTabsComponent,
-        LabResourceDetailTabHeaderComponent,
-        LabResourceDetailComponent,
-        LabResourceViewDetailComponent,
-        LabResourcePreviewButtonComponent,
-        LabResourceViewDetailDialogComponent,
-        LabResourceViewSpecListComponent
-    ],
+  exports: [
+    LabResourceTypeSelectOptionsComponent,
+    LabResourceViewPortalComponent,
+    LabResourceTableComponent,
+    LabResourceSearchComponent,
+    LabResourceOriginOptionsComponent,
+    LabSelectResourceDialogComponent,
+    LabResourceCardComponent,
+    LabImportResourceDialogComponent,
+    LabResourceDetailDialogComponent,
+    LabUpdateResourceTypeComponent,
+    LabUpdateResourceNameDialogComponent,
+    LabResourceActionsMenuComponent,
+    LabConfigureResourceViewComponent,
+    LabResourceDetailTabsComponent,
+    LabResourceDetailTabHeaderComponent,
+    LabResourceDetailComponent,
+    LabResourceViewDetailComponent,
+    LabResourcePreviewButtonComponent,
+    LabResourceViewDetailDialogComponent,
+    LabResourceViewSpecListComponent
+  ],
   imports: [
     CommonModule,
     RouterModule,
@@ -157,6 +158,7 @@ import {
     LabProjectCoreModule,
     LabViewConfigCoreModule,
     LabReportCoreModule,
+    LabShareLinkCoreModule,
   ],
 })
 export class LabResourceCoreModule {

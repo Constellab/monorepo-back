@@ -212,11 +212,26 @@
     "configure_viewer_help_2": "Configure the view for the resource",
     "viewer_selected_configuration": "Configuration",
     "viewer_not_configured": "The viewer is not configured yet",
-    "running_experiment_l": "Running experiments",
+    "running_experiment_list": "Running experiments",
     "no_running_experiment": "No running experiment",
     "select_project": "Select a project",
     "select_project_help": "You can select a project now to organize you objects and synchronize them with Central. If you don't select a project, you can do it later in the object page.",
     "view_process_logs": "View server logs",
-    "view_process_monitoring": "Monitoring"
+    "log_download": "Download logs",
+    "view_process_monitoring": "Monitoring",
+    "share_resource": "Share resource",
+    "share_entity_success": "Share link generated",
+    "update_share_link": "Update share link",
+    "share_link_updated": "Share link updated",
+    "delete_share_link": "Delete share link",
+    "delete_share_link_confirmation": "Are you sure you want to delete the share link ? The link will be expired",
+    "share_link_deleted": "Share link deleted",
+    "share_link_entity_type": "Object type",
+    "share_link_entity_type_RESOURCE": "Resource",
+    "share_link_valid_until": "Valid until",
+    "share_link_object_not_found": "The associated object might have been deleted and was not found, this link is not valid anymore",
+    "share_object_help": "You can share an object with a link that will be valid for a limited time. Anyone with the share link will be able to view and download the object. You can delete the share link at any time.",
+    "share_link_download": "Download link",
+    "share_links": "Share links"
   }
 }

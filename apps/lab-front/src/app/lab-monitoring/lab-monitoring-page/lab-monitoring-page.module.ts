@@ -24,6 +24,10 @@ import {
   LabMonitoringUsagePageComponent
 } from './component/lab-monitoring-usage-page/lab-monitoring-usage-page.component';
 import {LabMonitorCoreModule} from '../../lab-core/entity-module/lab-monitor-core/lab-monitor-core.module';
+import {
+  LabMonitoringShareLinksPageComponent
+} from './component/lab-monitoring-share-links-page/lab-monitoring-share-links-page.component';
+import {LabShareLinkCoreModule} from '../../lab-core/entity-module/lab-share-link-core/lab-share-link-core.module';
 
 
 @NgModule({
@@ -37,7 +41,8 @@ import {LabMonitorCoreModule} from '../../lab-core/entity-module/lab-monitor-cor
     LabMonitoringDashboardPageComponent,
     LabMonitoringVenvsPageComponent,
     LabMonitoringLogsPageComponent,
-    LabMonitoringUsagePageComponent
+    LabMonitoringUsagePageComponent,
+    LabMonitoringShareLinksPageComponent
   ],
   imports: [
     CommonModule,
@@ -49,6 +54,7 @@ import {LabMonitorCoreModule} from '../../lab-core/entity-module/lab-monitor-cor
     LabVenvCoreModule,
     LabLogCoreModule,
     LabMonitorCoreModule,
+    LabShareLinkCoreModule
   ]
 })
 export class LabMonitoringPageModule {

@@ -15,6 +15,9 @@ import {
 import {
   LabMonitoringUsagePageComponent
 } from './lab-monitoring-page/component/lab-monitoring-usage-page/lab-monitoring-usage-page.component';
+import {
+  LabMonitoringShareLinksPageComponent
+} from './lab-monitoring-page/component/lab-monitoring-share-links-page/lab-monitoring-share-links-page.component';
 
 const routes: Routes = [
   {
@@ -23,6 +26,7 @@ const routes: Routes = [
       {path: 'usage', component: LabMonitoringUsagePageComponent},
       {path: 'venvs', component: LabMonitoringVenvsPageComponent},
       {path: 'logs', component: LabMonitoringLogsPageComponent},
+      {path: 'share-links', component: LabMonitoringShareLinksPageComponent}
     ]
   },
 ];

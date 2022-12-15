@@ -218,6 +218,20 @@
     "select_project_help": "Vous pouvez sélectionner un projet maintenant pour organiser vos object et les synchroniser avec Central. Si vous ne sélectionnez pas de project, vous pourrez toujours le faire plus tard pas la page de l'objet.",
     "view_process_logs": "Voir les logs serveurs",
     "log_download": "Télécharger le fichier",
-    "view_process_monitoring": "Monitoring"
+    "view_process_monitoring": "Monitoring",
+    "share_resource": "Partager la ressource",
+    "share_entity_success": "Lien de partage généré",
+    "update_share_link": "Modifier le lien de partage",
+    "share_link_updated": "Lien de partage modifié",
+    "delete_share_link": "Supprimer le lien de partage",
+    "delete_share_link_confirmation": "Êtes-vous sûr de vouloir supprimer le lien de partage ? Le lien ne sera plus valide.",
+    "share_link_deleted": "Lien de partage supprimé",
+    "share_link_entity_type": "Type d'objet",
+    "share_link_entity_type_RESOURCE": "Ressource",
+    "share_link_valid_until": "Valide jusqu'au",
+    "share_link_object_not_found": "L'objet associé a dû être supprimé et n'a pas pu être trouvé, le lien n'est plus valide",
+    "share_object_help_fr": "Vous pouvez partager un objet avec un lien qui sera valide pour une durée limitée. Toute personne disposant du lien pourra visualiser et télécharger l'objet. Vous pouvez supprimer le lien de partage à tout moment.",
+    "share_link_download": "Lien de téléchargement",
+    "share_links": "Liens de partage"
   }
 }

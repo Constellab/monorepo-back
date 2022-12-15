@@ -10,10 +10,11 @@ export class LabMonitoringPageComponent implements OnInit {
 
   monitoringRoute = LabRouterService.getMonitoringRoute();
 
-  monitoringUsageRoute = LabRouterService.getMonitoringUsageRoute();
+  usageRoute = LabRouterService.getMonitoringUsageRoute();
 
-  monitoringVenvsRoute = LabRouterService.getMonitoringVenvsRoute();
-  monitoringLogsRoute = LabRouterService.getMonitoringLogsRoute();
+  venvsRoute = LabRouterService.getMonitoringVenvsRoute();
+  logsRoute = LabRouterService.getMonitoringLogsRoute();
+  shareLinksRoute = LabRouterService.getMonitoringShareLinksRoute();
 
   constructor() {
   }

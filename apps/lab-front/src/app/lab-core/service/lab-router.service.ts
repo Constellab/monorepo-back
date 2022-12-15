@@ -88,6 +88,10 @@ export class LabRouterService {
     return `${LabRouterService.getMonitoringRoute()}/logs`;
   }
 
+  public static getMonitoringShareLinksRoute(): string {
+    return `${LabRouterService.getMonitoringRoute()}/share-links`;
+  }
+
   /////////////////// NAVIGATE METHODS ///////////////////
   public navigateToAppRoute(): void {
     this.router.navigate([LabRouterService.getAppRoute()]);
