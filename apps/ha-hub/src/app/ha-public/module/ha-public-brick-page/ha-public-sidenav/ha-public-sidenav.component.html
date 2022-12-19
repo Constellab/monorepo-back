@@ -22,8 +22,8 @@
           <a (click)="closeSideNav()" [routerLink]="node.completePath"
              [relativeTo]="activatedRoute" [routerLinkActive]="'active'" class="line item" draggable="false"
              *ngIf="node.id != null">
-            <div matLine [matTreeNodePadding]="node.level+1" matTreeNodePaddingIndent="15px" class="link-item line-mat">
-              <span [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px'}" class="line-text">
+            <div matLine [matTreeNodePadding]="(node.level+1)" matTreeNodePaddingIndent="15px" class="link-item line-mat">
+              <span [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px', 'max-width': 'calc(100% - ' + (node.level*15).toString() + 'px)'}" class="line-text">
                   {{node.name}}
               </span>
               <div class="line-icons" *ngIf="(isAdmin | async) && hoverId === node.id">
@@ -81,11 +81,11 @@
 
         <!-- This is the tree node template for leaf nodes -->
         <mat-tree-node *matTreeNodeDef="let node" class="line">
-          <a [matTreeNodePadding]="node.level + 1" matTreeNodePaddingIndent="15px" class="item" mat-list-item
+          <a [matTreeNodePadding]="node.level + 1" matTreeNodePaddingIndent="15px" mat-list-item
              (click)="closeSideNav()"
-             [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px'}"
+             [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px', 'max-width': 'calc(100% - ' + (node.level*15).toString() + 'px)'}"
              [routerLink]="node.completePath" [relativeTo]="activatedRoute" [routerLinkActive]="'active'">
-            <div matLine>
+            <div matLine class="line-text line-text-tech-doc">
               {{node.name}}
             </div>
           </a>

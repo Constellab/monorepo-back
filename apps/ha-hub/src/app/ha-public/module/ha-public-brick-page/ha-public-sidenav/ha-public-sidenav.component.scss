@@ -64,6 +64,7 @@
   flex-direction: row;
   align-items: center;
   flex: auto;
+  width: 0px;
 }
 
 .drag-drop-bt{
@@ -97,7 +98,6 @@
 }
 
 .line-mat{
-  max-width: calc(100% - 15px);
   vertical-align: middle;
   height: 100%;
   display: inline-flex;
@@ -111,6 +111,10 @@
   text-overflow: ellipsis;
   padding-right: 1em;
   display: block;
+}
+
+.line-text-tech-doc{
+  width: calc(100% - 30px);
 }
 
 .line-icons{
