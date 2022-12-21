@@ -58,6 +58,8 @@
     "total_disk_space_used": "Espace disque utilisé",
     "total_disk_space_free": "Espace disque libre",
     "number_of_processes": "Nombre de processus",
-    "total_memory": "Mémoire totale"
+    "total_memory": "Mémoire totale",
+    "clean_lab": "Nettoyer les données non utilisées du lab",
+    "clean_lab_confirmation": "Ceci va nettoyer toutes les données inutilisées du lab. Il va supprimer les fichiers temporaires et les ressources fantômes (ressources qui n'ont pas été correctement supprimées). Il ne peut être exécuté que si il n'y a pas d'expérience en attente ou en cours. Cela peut prendre quelques minutes."
   }
 }

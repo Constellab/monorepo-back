@@ -49,4 +49,8 @@ export class LabSystemService {
     return LabEnvironmentHelper.getCentralApiUrl() + '/spaces/photo/' + filename;
   }
 
+  public triggerGarbageCollection(): Observable<void> {
+    return this.apiService.post(`${this.route}/garbage-collector`, null);
+  }
+
 }

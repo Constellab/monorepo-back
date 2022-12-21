@@ -1,7 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {LabSystemService} from '../../../../lab-core/service/lab-system.service';
 import {LabSystemInfo} from '../../../../lab-core/model/global/lab-system.class';
-import {FlDialogService, FlSnackBarService} from '@monorepo/front-core-lib';
+import {
+  FlConfirmDialogInput,
+  FlConfirmDialogResult,
+  FlDialogService,
+  FlPortalActionsService,
+  FlSnackBarService
+} from '@monorepo/front-core-lib';
 import {LabTypeService} from '../../../../lab-core/entity-service/lab-type.service';
 import {LabProjectService} from '../../../../lab-core/entity-service/lab-project.service';
 
@@ -21,7 +27,8 @@ export class LabInfoComponent implements OnInit {
               private typeService: LabTypeService,
               private dialogService: FlDialogService,
               private projectService: LabProjectService,
-              private snackBarService: FlSnackBarService) {
+              private snackBarService: FlSnackBarService,
+              private actionService: FlPortalActionsService) {
   }
 
   ngOnInit(): void {
@@ -67,6 +74,29 @@ export class LabInfoComponent implements OnInit {
   private synchronizeSuccess(): void {
     this.synchronizeLoading = false;
     this.snackBarService.openSuccessMessage({text: 'monitoring.projects_synchronized', translateText: true});
+  }
+
+  cleanLab(): void {
+    const input: FlConfirmDialogInput = {
+      title: 'monitoring.clean_lab',
+      content: 'monitoring.clean_lab_confirmation',
+      translateTitleAndContent: true,
+    };
+
+    this.dialogService.openConfirmDialog(input).afterClosed().subscribe(
+      result => this.onCleanLabClosed(result)
+    );
+
+  }
+
+  private onCleanLabClosed(result: FlConfirmDialogResult): void {
+    if (result.choice) {
+      this.actionService.addAction({
+        type: 'lab-garbage-collector',
+        action: this.systemService.triggerGarbageCollection(),
+        text: {text: 'monitoring.clean_lab', translateText: true},
+      }, true);
+    }
   }
 }
 

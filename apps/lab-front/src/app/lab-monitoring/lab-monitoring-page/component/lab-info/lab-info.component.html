@@ -23,15 +23,20 @@
     </fl-text-icon>
 
     <div class="action">
-      <button mat-stroked-button type="button" class="g-button-small"
+      <button mat-stroked-button type="button" class="g-button-small action-button"
               (click)="deleteUnavailableTypings()">
         {{'monitoring.delete_unavailable_typings' | translate}}
       </button>
 
-      <button mat-stroked-button type="button" class="g-button-small synchronize-button"
+      <button mat-stroked-button type="button" class="g-button-small action-button"
               (click)="synchronizeProjects()">
         {{'monitoring.synchronize_projects' | translate}}
         <fl-button-loader *ngIf="synchronizeLoading" size="small"></fl-button-loader>
+      </button>
+
+      <button mat-stroked-button type="button" class="g-button-small action-button"
+              (click)="cleanLab()">
+        {{'monitoring.clean_lab' | translate}}
       </button>
 
     </div>

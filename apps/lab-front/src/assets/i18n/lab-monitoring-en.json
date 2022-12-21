@@ -59,6 +59,8 @@
     "total_disk_space_used": "Total disk space used",
     "total_disk_space_free": "Total disk space free",
     "number_of_processes": "Number of processes",
-    "total_memory": "Total RAM"
+    "total_memory": "Total RAM",
+    "clean_lab": "Clean unused data",
+    "clean_lab_confirmation": "This will clean all unused data from the lab. It will remove the temporary files and shadow resources (resources that were not correctly deleted). It can only be executed if there is no waiting or running experiment. It might take a few minutes."
   }
 }
