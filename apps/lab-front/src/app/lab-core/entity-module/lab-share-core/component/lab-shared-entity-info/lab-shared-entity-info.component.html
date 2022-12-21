@@ -24,9 +24,16 @@
   </fl-card-header>
 
   <fl-card-body>
-    <div *ngIf="shareLink$ | async as shareLink; else notShared2">
-      {{'biox.share_link_exist' | translate: {date: shareLink.validUntil | flDate} }}
-    </div>
+    <ng-container *ngIf="shareLink$ | async as shareLink; else notShared2">
+      <div>
+        {{'biox.share_link_exist' | translate }}
+        <span [matTooltip]="shareLink.validUntil | flDate: 'DATETIME_MED'"
+              [ngClass]="{'g-warn-text': !shareLink.isValid()}">{{shareLink.validUntil | flDate}}</span>
+      </div>
+      <div class="g-text-link g-text-small g-text-light" (click)="copyDownloadLink(shareLink)">
+        {{getDownloadLink(shareLink)}}
+      </div>
+    </ng-container>
 
     <ng-template #notShared2>
       {{'biox.no_share_link' | translate}}

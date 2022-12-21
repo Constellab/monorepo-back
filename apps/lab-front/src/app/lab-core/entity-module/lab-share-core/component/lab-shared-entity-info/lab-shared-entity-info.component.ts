@@ -6,7 +6,7 @@ import {
   LabShareLinkType
 } from '../../../../model/entities/lab-share.entity';
 import {LabShareService} from '../../../../entity-service/lab-share.service';
-import {FlDialogService, FlTableColumn} from '@monorepo/front-core-lib';
+import {FlClipboardService, FlDialogService, FlSnackBarService, FlTableColumn} from '@monorepo/front-core-lib';
 import {
   LabShareLinkFormDialogComponent,
   LabShareLinkFormDialogInput
@@ -37,7 +37,9 @@ export class LabSharedEntityInfoComponent implements OnInit {
 
   constructor(private shareService: LabShareService,
               private shareLinkService: LabShareLinkService,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private clipboardService: FlClipboardService,
+              private snackBarService: FlSnackBarService) {
   }
 
   ngOnInit(): void {
@@ -88,6 +90,20 @@ export class LabSharedEntityInfoComponent implements OnInit {
 
   onShareLinkDelete(): void {
     this.shareLink$ = of(null);
+  }
+
+  getDownloadLink(shareLink: LabShareLink): string {
+    if (shareLink) {
+      return this.shareLinkService.getDownloadLink(shareLink.entityType, shareLink.token);
+    }
+    return null;
+  }
+
+  copyDownloadLink(shareLink: LabShareLink): void {
+    const result = this.clipboardService.copy(this.shareService.getDownloadRoute(shareLink.entityType, shareLink.token));
+    if (result) {
+      this.snackBarService.openSuccessMessage({text: 'biox.share_link_copied', translateText: true});
+    }
   }
 
 }

@@ -28,7 +28,8 @@
 
 
       <fl-search-result>
-        <ca-lab-instance-table [datasource]="datasource" [columns]="columns"></ca-lab-instance-table>
+        <ca-lab-instance-table [datasource]="datasource" [columns]="columns"
+                               [disableLink]="mode === 'all'"></ca-lab-instance-table>
       </fl-search-result>
 
     </fl-search>

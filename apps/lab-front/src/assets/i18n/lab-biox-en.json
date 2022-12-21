@@ -244,7 +244,7 @@
     "share_origin_at": "Shared",
     "view_shared_object": "View object",
     "copy_share_link": "Copy share link",
-    "share_link_exist": "A share link valid until {{date}} exists",
+    "share_link_exist": "Share link valid until the",
     "no_share_link": "No share link",
     "share_link_copied": "Link copied",
     "share_to_lab": "Lab",
@@ -252,6 +252,6 @@
     "shared_by": "Shared by",
     "received_by": "Received by",
     "share_info": "Share information",
-    "not_shared_yet": "Not shared yet"
+    "not_shared_yet": "No lab downloaded the object yet"
   }
 }

@@ -37,7 +37,7 @@ export class LabShareLinkService {
       (page, size) => this.getAll(page, size), 20);
   }
 
-  public getDownloadRoute(entityType: LabShareLinkType, token: string): string{
+  public getDownloadLink(entityType: LabShareLinkType, token: string): string{
     return this.apiService.getBaseRouteUrl(`${this.route}/${entityType.toLowerCase()}/download/${token}`);
   }
 
