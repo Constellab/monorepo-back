@@ -1,11 +1,16 @@
-<div fxLayout="column" fxLayoutGap="1em">
+<fl-portal>
+  <fl-portal-content>
 
-  <div>
-    <div>x : {{x}}</div>
-    <div>y : {{y}}</div>
-    <div>{{'flChart.value' | translate}} : {{z}}</div>
+    <div fxLayout="column" fxLayoutGap="1em">
 
-  </div>
+      <div>
+        <div>x : {{x}}</div>
+        <div>y : {{y}}</div>
+        <div>{{'flChart.value' | translate}} : {{z}}</div>
 
-  <fl-tag-list [tags]="data.tags"></fl-tag-list>
-</div>
+      </div>
+
+      <fl-tag-list [tags]="data.tags"></fl-tag-list>
+    </div>
+  </fl-portal-content>
+</fl-portal>

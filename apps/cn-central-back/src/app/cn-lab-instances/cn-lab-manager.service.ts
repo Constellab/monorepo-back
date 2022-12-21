@@ -136,6 +136,7 @@ export class CnLabManagerService {
     }
 
     const labManagerConfig: CnLabManagerUpdateConfigDTO = {
+      labId: labInstance.id,
       labName: labInstance.name,
       frontVersion: frontVersion,
       biotaMariaDbUrl: biotaMariaDbUrl,

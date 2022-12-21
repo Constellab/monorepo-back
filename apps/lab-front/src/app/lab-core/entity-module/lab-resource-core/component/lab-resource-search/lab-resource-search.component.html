@@ -29,6 +29,11 @@
         <input flInputFile type="file" (fileChange)="openUploadFolder($event)" [multiple]="true"
                [(ngModel)]="files" webkitdirectory mozdirectory [strictMode]="false">
       </fl-input-file-icon-container>
+
+      <button mat-icon-button type="button" color="accent" (click)="openImportFromUrlDialog()"
+              [matTooltip]="'biox.import_from_another_lab' | translate">
+        <mat-icon>cloud_download</mat-icon>
+      </button>
     </fl-search-header-actions>
   </fl-search-header>
 

@@ -82,7 +82,10 @@ import {
 import {
   LabResourceChildrenListComponent
 } from './component/lab-resource-children-list/lab-resource-children-list.component';
-import {LabShareLinkCoreModule} from '../lab-share-link-core/lab-share-link-core.module';
+import {LabShareCoreModule} from '../lab-share-core/lab-share-core.module';
+import {
+  LabImportResourceFromLabComponent
+} from './component/lab-import-resource-from-lab/lab-import-resource-from-lab.component';
 
 
 @NgModule({
@@ -118,6 +121,7 @@ import {LabShareLinkCoreModule} from '../lab-share-link-core/lab-share-link-core
     LabResourcePreviewButtonComponent,
     LabResourceViewDetailDialogComponent,
     LabResourceChildrenListComponent,
+    LabImportResourceFromLabComponent,
   ],
   exports: [
     LabResourceTypeSelectOptionsComponent,
@@ -139,7 +143,8 @@ import {LabShareLinkCoreModule} from '../lab-share-link-core/lab-share-link-core
     LabResourceViewDetailComponent,
     LabResourcePreviewButtonComponent,
     LabResourceViewDetailDialogComponent,
-    LabResourceViewSpecListComponent
+    LabResourceViewSpecListComponent,
+    LabImportResourceFromLabComponent,
   ],
   imports: [
     CommonModule,
@@ -158,7 +163,7 @@ import {LabShareLinkCoreModule} from '../lab-share-link-core/lab-share-link-core
     LabProjectCoreModule,
     LabViewConfigCoreModule,
     LabReportCoreModule,
-    LabShareLinkCoreModule,
+    LabShareCoreModule,
   ],
 })
 export class LabResourceCoreModule {

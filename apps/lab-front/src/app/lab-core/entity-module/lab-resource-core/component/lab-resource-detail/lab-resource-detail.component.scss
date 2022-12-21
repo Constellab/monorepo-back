@@ -25,6 +25,15 @@
   grid-row: span 2;
 }
 
+.view-specs{
+  flex: 3;
+}
+
+.sub-left-section{
+  flex: 1;
+  min-height: 0;
+}
+
 @media (max-width: 1290px) {
   .content-grid {
     grid-template-columns: 34fr 66fr;

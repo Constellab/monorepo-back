@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
-import {LabShareLink, LabShareLinkDatasource, LabShareLinkType} from '../model/entities/lab-share-link.entity';
+import {LabShareLink, LabShareLinkDatasource, LabShareLinkType} from '../model/entities/lab-share.entity';
 import {Observable} from 'rxjs';
 import {ClPageI} from '@monorepo/core-lib';
 
@@ -9,7 +9,7 @@ import {ClPageI} from '@monorepo/core-lib';
 })
 export class LabShareLinkService {
 
-  private route: string = 'share';
+  private route: string = 'share-link';
 
   constructor(private apiService: FlApiService) {
   }
@@ -39,5 +39,9 @@ export class LabShareLinkService {
 
   public getDownloadRoute(entityType: LabShareLinkType, token: string): string{
     return this.apiService.getBaseRouteUrl(`${this.route}/${entityType.toLowerCase()}/download/${token}`);
+  }
+
+  public getShareLink(entityType: LabShareLinkType, entityId: string): Observable<LabShareLink> {
+    return this.apiService.get(`${this.route}/${entityType}/${entityId}`, LabShareLink)
   }
 }

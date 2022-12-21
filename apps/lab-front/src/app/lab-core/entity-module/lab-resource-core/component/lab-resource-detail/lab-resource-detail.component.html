@@ -35,11 +35,13 @@
         <lab-resource-view-spec-list [resourceId]="resource.id"
                                      [resourceTypingName]="resource.resourceTypingName"
                                      (viewConfigured)="callView($event)"
-                                     [ngClass]="{'view-specs' : !resource.hasChildren}"
-                                     fxFlex="grow">
+                                     class="view-specs">
         </lab-resource-view-spec-list>
-        <lab-resource-children-list *ngIf="resource.hasChildren" fxFlex="50%"
+        <lab-resource-children-list *ngIf="resource.hasChildren" class="sub-left-section"
                                     [resourceId]="resource.id"></lab-resource-children-list>
+
+        <lab-shared-entity-info [entityType]="'RESOURCE'" [entityId]="resource.id"
+                                class="sub-left-section"></lab-shared-entity-info>
       </div>
 
       <lab-resource-info [resource]="resource"></lab-resource-info>

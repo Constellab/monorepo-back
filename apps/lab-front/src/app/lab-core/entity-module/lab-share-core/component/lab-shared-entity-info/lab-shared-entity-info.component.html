@@ -1,0 +1,43 @@
+<fl-card class="g-full-height">
+
+  <fl-card-header>
+    <fl-text-icon>
+      <mat-icon>share</mat-icon>
+      <h2>{{'biox.share_info' | translate}}</h2>
+    </fl-text-icon>
+
+
+    <fl-card-actions>
+      <lab-share-link-actions-menu *ngIf="shareLink$ | async as shareLink; else notShared"
+                                   [shareLink]="shareLink" (update)="onShareLinkUpdate($event)"
+                                   (delete)="onShareLinkDelete()">
+      </lab-share-link-actions-menu>
+
+      <ng-template #notShared>
+        <button mat-stroked-button type="button" (click)="openShareDialog()" class="g-button-small">
+          <mat-icon>share</mat-icon>
+          <span>{{shareButtonText | translate}}</span>
+        </button>
+      </ng-template>
+
+    </fl-card-actions>
+  </fl-card-header>
+
+  <fl-card-body>
+    <div *ngIf="shareLink$ | async as shareLink; else notShared2">
+      {{'biox.share_link_exist' | translate: {date: shareLink.validUntil | flDate} }}
+    </div>
+
+    <ng-template #notShared2>
+      {{'biox.no_share_link' | translate}}
+    </ng-template>
+
+
+    <fl-infinite-scroll [datasource]="sharedEntities" class="g-infinite-table" textNoResult="biox.not_shared_yet">
+      <lab-shared-entity-table [datasource]="sharedEntities" [columns]="displayedColumns">
+      </lab-shared-entity-table>
+    </fl-infinite-scroll>
+  </fl-card-body>
+
+
+</fl-card>

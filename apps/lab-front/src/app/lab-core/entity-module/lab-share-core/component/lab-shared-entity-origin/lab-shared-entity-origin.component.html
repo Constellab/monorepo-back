@@ -1,0 +1,21 @@
+<fl-key-value>
+  <fl-key>{{'biox.share_origin_lab' | translate}}</fl-key>
+  {{sharedEntity.labName}}<span *ngIf="sharedEntity.labId"> ({{sharedEntity.labId}})</span>
+</fl-key-value>
+
+<fl-key-value>
+  <fl-key>{{'biox.share_origin_by' | translate}}</fl-key>
+  {{sharedEntity.userFirstname}} {{sharedEntity.userLastname}}<span
+  *ngIf="sharedEntity.userId"> ({{sharedEntity.userId}})</span>
+</fl-key-value>
+
+<fl-key-value>
+  <fl-key>{{'biox.share_origin_space' | translate}}</fl-key>
+  {{sharedEntity.spaceName}}<span *ngIf="sharedEntity.spaceId"> ({{sharedEntity.spaceId}})</span>
+</fl-key-value>
+
+
+<fl-key-value>
+  <fl-key>{{'biox.share_origin_at' | translate}}</fl-key>
+  <fl-from-now [date]="sharedEntity.createdAt"></fl-from-now>
+</fl-key-value>

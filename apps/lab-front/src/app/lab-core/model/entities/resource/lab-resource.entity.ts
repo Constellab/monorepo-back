@@ -29,7 +29,8 @@ export class LabFsNodeEntity extends LabEntity {
   }
 }
 
-export type LabResourceOrigin = 'UPLOADED' | 'GENERATED' | 'IMPORTED' | 'TRANSFORMED' | 'ACTIONS';
+export type LabResourceOrigin = 'UPLOADED' | 'GENERATED' | 'IMPORTED' | 'TRANSFORMED'
+  | 'ACTIONS' | 'IMPORTED_FROM_LAB';
 
 export class LabResource extends LabEntityWithTag implements LabFlaggedEntity {
 

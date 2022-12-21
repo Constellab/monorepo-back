@@ -16,6 +16,7 @@ import {
 } from '../ca-lab-instance-status-dialog/ca-lab-instance-status-dialog.component';
 import {CaLabInstanceService} from '../../../../service-api/ca-lab-instance.service';
 import {CaRouterService} from '../../../../service/ca-router.service';
+import {ClHelpService} from '@monorepo/core-lib';
 
 
 @Component({
@@ -92,4 +93,7 @@ export class CaLabInstanceTableComponent extends FlTableAbstractDirective<CaLabI
     }
   }
 
+  stopEventPropagation(event: Event): void {
+    ClHelpService.stopEventPropagation(event);
+  }
 }

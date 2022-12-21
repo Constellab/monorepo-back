@@ -6,7 +6,7 @@ import {LabExperiment} from '../../model/entities/lab-experiment.entity';
 import {LabResource} from '../../model/entities/resource/lab-resource.entity';
 import {LabViewConfig} from '../../model/entities/resource/lab-view-config.entity';
 
-type LabObjectType = 'experiment' | 'resource' | 'report' | 'viewConfig';
+export type LabObjectType = 'experiment' | 'resource' | 'report' | 'viewConfig';
 
 /**
  * Pipe to get the detail route of an object

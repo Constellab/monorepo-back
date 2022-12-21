@@ -1,0 +1,62 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource" class="table">
+
+
+  <!-- Lab -->
+  <ng-container matColumnDef="lab">
+    <mat-header-cell *matHeaderCellDef>
+      {{'biox.share_to_lab' | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+        {{row.labName}}
+    </mat-cell>
+  </ng-container>
+
+  <!-- Space -->
+  <ng-container matColumnDef="space">
+    <mat-header-cell *matHeaderCellDef>
+      {{'biox.share_to_space' | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      {{row.spaceName}}
+    </mat-cell>
+  </ng-container>
+
+
+  <!-- Receiver -->
+  <ng-container matColumnDef="receiver">
+    <mat-header-cell *matHeaderCellDef>
+      {{'biox.received_by' | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      {{row.userFirstname}} {{row.userLastname}}
+    </mat-cell>
+  </ng-container>
+
+
+  <!-- SharedBy -->
+  <ng-container matColumnDef="sharedBy">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'biox.shared_by' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <fl-user-with-date [user]="row.createdBy" [date]="row.createdAt"></fl-user-with-date>
+    </mat-cell>
+  </ng-container>
+
+
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
+    <mat-header-cell *matHeaderCellDef>
+      {{column.columnName | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let experiment">
+      <div>
+        <span>{{experiment[column.accessor]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+</mat-table>

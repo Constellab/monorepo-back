@@ -58,7 +58,7 @@
     <mat-cell *matCellDef="let labInstance" class="action-column g-table-icon-button-cell">
 
       <!--   Mat menu containing action buttons   -->
-      <button mat-icon-button [matMenuTriggerFor]="menu">
+      <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventPropagation($event)">
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #menu="matMenu" xPosition="before">

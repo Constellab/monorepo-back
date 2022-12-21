@@ -20,15 +20,19 @@
 
 
     <!--  Origin  -->
-    <fl-text-icon class="line">
+    <fl-text-icon class="line" (click)="openResourceShareOrigin()">
       <mat-icon>trip_origin</mat-icon>
-      {{'biox.resource_origin' | translate}} : <span
-      class="g-text-light">{{'biox.resource_origin_' + resource.origin | translate}}</span>
+      <div [ngClass]="{'g-text-link': resource.origin === 'IMPORTED_FROM_LAB'}">
+        {{'biox.resource_origin' | translate}} :
+        <span class="g-text-light">
+        {{'biox.resource_origin_' + resource.origin | translate}}
+      </span>
+      </div>
     </fl-text-icon>
 
     <ng-container *ngIf="resource.isFsNode()">
       <!--  File  -->
-      <fl-text-icon class="line" >
+      <fl-text-icon class="line">
         <mat-icon>{{resource.fsNode.isFile ? 'description' : 'folder'}}</mat-icon>
         {{resource.fsNode.name}} : {{resource.fsNode.size | flByteText}}
       </fl-text-icon>

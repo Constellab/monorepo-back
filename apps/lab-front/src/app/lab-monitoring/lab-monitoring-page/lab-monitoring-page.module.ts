@@ -27,7 +27,7 @@ import {LabMonitorCoreModule} from '../../lab-core/entity-module/lab-monitor-cor
 import {
   LabMonitoringShareLinksPageComponent
 } from './component/lab-monitoring-share-links-page/lab-monitoring-share-links-page.component';
-import {LabShareLinkCoreModule} from '../../lab-core/entity-module/lab-share-link-core/lab-share-link-core.module';
+import {LabShareCoreModule} from '../../lab-core/entity-module/lab-share-core/lab-share-core.module';
 
 
 @NgModule({
@@ -54,7 +54,7 @@ import {LabShareLinkCoreModule} from '../../lab-core/entity-module/lab-share-lin
     LabVenvCoreModule,
     LabLogCoreModule,
     LabMonitorCoreModule,
-    LabShareLinkCoreModule
+    LabShareCoreModule
   ]
 })
 export class LabMonitoringPageModule {

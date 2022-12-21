@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {LabShareLinkService} from '../../../../lab-core/entity-service/lab-share-link.service';
-import {LabShareLink, LabShareLinkDatasource} from '../../../../lab-core/model/entities/lab-share-link.entity';
+import {LabShareLink, LabShareLinkDatasource} from '../../../../lab-core/model/entities/lab-share.entity';
 import {FlTableColumn} from '@monorepo/front-core-lib';
 
 @Component({

@@ -25,6 +25,9 @@ import {ClCoreJsonConvert, ClHelpService} from '@monorepo/core-lib';
 import {Subscription} from 'rxjs';
 import {LabFileResourceService} from '../../../../entity-service/lab-file-resource.service';
 import {LabRouterService} from '../../../../service/lab-router.service';
+import {
+  LabImportResourceFromLabComponent
+} from '../lab-import-resource-from-lab/lab-import-resource-from-lab.component';
 
 export const labResourceSearchName: string = 'biox-resource';
 
@@ -70,7 +73,8 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
               private actionsService: FlPortalActionsService,
               private fileResourceService: LabFileResourceService,
               private resourceService: LabResourceService,
-              private themeService: FlThemeService) {
+              private themeService: FlThemeService,
+              private routerService: LabRouterService) {
   }
 
   ngOnInit(): void {
@@ -213,6 +217,18 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
       default: true,
       filtersCriteria: {} as Partial<LabResourceSearchFields>
     }];
+  }
+
+  openImportFromUrlDialog(): void {
+    this.dialogService.openSmallDialog(LabImportResourceFromLabComponent).afterClosed().subscribe({
+      next: result => this.onImportFromUrlClosed(result)
+    });
+  }
+
+  private onImportFromUrlClosed(result: LabResource): void {
+    if (result) {
+      this.routerService.navigateToResourceDetail(result.id);
+    }
   }
 
   ngOnDestroy(): void {

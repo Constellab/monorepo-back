@@ -5,6 +5,9 @@ import {
   LabTypeDialogInput
 } from '../../../lab-type-core/component/lab-type-dialog/lab-type-dialog.component';
 import {FlDialogService} from '@monorepo/front-core-lib';
+import {
+  LabSharedEntityOriginDialogComponent
+} from '../../../lab-share-core/component/lab-shared-entity-origin-dialog/lab-shared-entity-origin-dialog.component';
 
 /**
  * Component to show info about a resource
@@ -24,10 +27,16 @@ export class LabResourceInfoComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  openTypingDoc(): void{
+  openTypingDoc(): void {
     const data: LabTypeDialogInput = {
       typingName: this.resource.resourceTypingName
-    }
+    };
     this.dialogService.openMediumDialog(LabTypeDialogComponent, {data: data});
+  }
+
+  openResourceShareOrigin(): void {
+    if (this.resource.origin === 'IMPORTED_FROM_LAB') {
+      this.dialogService.openMediumDialog(LabSharedEntityOriginDialogComponent, {data: this.resource.id});
+    }
   }
 }

@@ -28,6 +28,7 @@ import {LabProcessType} from '../model/entities/lab-type/lab-process-type.entity
 import {LabTag} from '../model/entities/lab-tag.entity';
 import {RvTransformerParams} from '@monorepo/resource-view';
 import {PrConfigValues} from '@monorepo/protocol';
+import {LabSharedEntity} from '../model/entities/lab-share.entity';
 
 
 @Injectable({
@@ -189,5 +190,11 @@ export class LabResourceService {
 
     FlFileHelper.downloadUrl(fullUrl);
   }
+
+  //////////////////////////////////////// SHARED RESOURCE ///////////////////////////////////////
+  public getSharedResourceOrigin(id: string): Observable<LabSharedEntity> {
+    return this.apiService.get(`${this.route}/${id}/shared-origin`, LabSharedEntity);
+  }
+
 
 }
