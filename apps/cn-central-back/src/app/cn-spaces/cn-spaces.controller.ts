@@ -177,11 +177,24 @@ export class CnSpacesController {
     return this.spaceAggregateService.getUserOfSpace(id, userId);
   }
 
+  @Get('check-if-common-space/:userAId/:userBId')
+  public async checkUsersHaveCommonSpace(@Param('userAId') userAId: string,
+                                       @Param('userBId') userBId: string): Promise<boolean> {
+    return this.spaceAggregateService.checkUsersHaveCommonSpace(userAId, userBId);
+  }
+
   ////////////////////////////////////// OTHERS //////////////////////////////////////
+
+
   @Post(':id/request-new-licenses')
   public async requestNewLicences(@Param('id') id: string,
                                   @Body() request: CnRequestNewLicensesDto): Promise<void> {
     return this.spaceAggregateService.requestNewLicenses(id, request);
+  }
+
+  @Get('user/:userId')
+  public async getAndCheckUser(@Param('userId') userId: string): Promise<CnUser> {
+    return this.spaceAggregateService.getAndCheckUser(userId);
   }
 
   @Post('generate-all-user-personal-space')

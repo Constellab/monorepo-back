@@ -14,7 +14,7 @@
 .nav-bar{
   background-color: var(--card-background);
   padding: 1em 5%;
-  height: 4.5em !important;
+  height: 3.5em !important;
   display: flex;
 }
 
@@ -26,10 +26,10 @@
   margin-left: 5em;
 }
 
-.test{
+.body{
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 6.5em);
+  min-height: calc(100vh - 5em);
 }
 
 .router{
@@ -46,7 +46,6 @@
   align-items: center;
   justify-content: center;
   vertical-align: middle;
-  margin-top: 2em;
 }
 
 .footer-text{

@@ -125,6 +125,10 @@ export class CaSpaceService extends FlApiCrudService<CaSpace, CaSaveSpaceDTO> {
       (page, size) => this.getSpaceSimpleUsers(spaceId, page, size), 20);
   }
 
+  public checkUsersHaveCommonSpace(userAId: string, userBId: string): Observable<boolean>{
+    return this.apiService.get(`${this.route}/check-if-common-space/${userAId}/${userBId}`, Boolean);
+  }
+
 
   public searchSpaceUsers(spaceId: string, page: number, pageSize: number,
                           filters?: CaSpaceUserSearchFields): Observable<ClPage<CaSpaceUser>> {
@@ -158,5 +162,8 @@ export class CaSpaceService extends FlApiCrudService<CaSpace, CaSaveSpaceDTO> {
     return this.apiService.post(`${this.route}/generate-all-user-personal-space`, null);
   }
 
+  public getAndCheckUser(userId: string): Observable<CaUser>{
+    return this.apiService.get(`${this.route}/user/${userId}`, CaUser);
+  }
 }
 

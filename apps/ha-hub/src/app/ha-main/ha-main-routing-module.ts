@@ -16,6 +16,11 @@ const routes: Routes = [
     loadChildren: () => import('../ha-public/ha-public.module').then(m => m.HaPublicModule)
   },
   {
+    path: 'stories',
+    component: HaMainComponent,
+    loadChildren: () => import('../ha-public/ha-public.module').then(m => m.HaPublicModule)
+  },
+  {
     path: 'login',
     component: HaLoginPageComponent,
   },

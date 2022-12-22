@@ -29,7 +29,7 @@ const routes: Route[] = [
     component: HaPublicEditBrickPageComponent
   },
   {
-    component: HaPublicBrickPageComponent,
+    component: HaPublicSidenavComponent,
     matcher: (url: UrlSegment[]) => {
       return url.length >= 2 && (url[1].path.match(/^v\d+$/g) || url[1].path.match(/^latest$/g))
         ? {
@@ -44,7 +44,6 @@ const routes: Route[] = [
     children: [
       {
         path: 'doc',
-        component: HaPublicSidenavComponent,
         children: [
           {
             path: 'technical-folder/:type/:uniqueName',

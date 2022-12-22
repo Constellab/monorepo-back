@@ -305,6 +305,10 @@ export class CnSpaceAggregateService {
     return this.invitationService.findNotificationsBySpaceId(spaceId, page, pageSize);
   }
 
+  public async checkUsersHaveCommonSpace(userAId: string, userBId: string): Promise<boolean> {
+    return this.spaceUserService.checkUsersHaveCommonSpace(userAId, userBId);
+  }
+
 
   /////////////////////////////////////// OTHERS //////////////////////////////////
 
@@ -363,6 +367,14 @@ export class CnSpaceAggregateService {
       }
     }
 
+  }
+
+  public async getAndCheckUser(userId: string): Promise<CnUser>{
+    if((await this.spaceUserService.checkIfGetUserIsAllowed(userId, this.userService.getCurrent().id)) ||
+      this.userService.getCurrent().isAdmin()){
+      return this.userService.findById(userId);
+    }
+    throw new BlBadRequestException(CnErrorText.USER_NOT_IN_SPACE);
   }
 
 }
