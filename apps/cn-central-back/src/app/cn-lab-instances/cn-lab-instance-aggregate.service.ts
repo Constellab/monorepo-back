@@ -68,14 +68,6 @@ export class CnLabInstanceAggregateService {
 
     const labInstance = BlDtoHelper.fromDto(CnLabInstance, createLabInstance);
 
-    // create the shared group for the owner
-    const labInstanceGroup = new CnLabInstanceUser();
-    labInstanceGroup.labInstanceId = labInstance.id;
-    labInstanceGroup.user = await this.usersService.findByIdAndCheck(createLabInstance.owner.id);
-    labInstanceGroup.role = CnLabInstanceUserRole.OWNER;
-
-    labInstance.sharedGroups = [labInstanceGroup];
-
     return this.labInstancesService.create(labInstance);
   }
 

@@ -54,6 +54,7 @@ export class CnLabFindOneDto {
 
 export interface CnLabInstanceConfigDTO {
   brickVersions: CnBrickVersionDTO[];
+  glabTag: 'latest' | 'beta' | string;
 }
 
 

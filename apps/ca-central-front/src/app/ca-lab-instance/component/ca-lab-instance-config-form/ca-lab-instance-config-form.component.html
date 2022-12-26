@@ -30,7 +30,30 @@
     </mat-list>
 
 
-    <button mat-flat-button color="primary" type="button" (click)="save()" class="g-centered-forced">
+    <mat-expansion-panel class="advanced-config">
+      <mat-expansion-panel-header>
+        {{'lab_instance_advanced_config' | translate}}
+      </mat-expansion-panel-header>
+
+      <fl-text-icon>
+        <mat-icon color="warn">warnings</mat-icon>
+        <p class="g-warn-text">{{'lab_instance_advanced_config_warning' | translate}}</p>
+      </fl-text-icon>
+
+      <mat-form-field class="g-form-input">
+        <mat-label>{{'name' | translate}}</mat-label>
+        <input matInput [(ngModel)]="labConfig.glabTag" [placeholder]="'glab_image_tag' | translate">
+
+        <mat-hint>{{'glab_image_tag_recommended' | translate}}: 'latest', 'beta'</mat-hint>
+      </mat-form-field>
+
+      <button mat-stroked-button type="button" (click)="resetToDefault()"
+              class="g-centered-forced g-button-small">
+        {{'lab_instance_reset_config' | translate}}
+      </button>
+    </mat-expansion-panel>
+
+    <button mat-flat-button color="primary" type="button" (click)="save()" class="g-centered-forced save-button">
       {{'save' | translate}}
       <fl-button-loader *ngIf="isLoading"></fl-button-loader>
     </button>

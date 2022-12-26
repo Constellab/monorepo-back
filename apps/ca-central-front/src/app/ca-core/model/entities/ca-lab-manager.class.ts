@@ -84,6 +84,7 @@ export class CaBrickVersionDTO {
 
 export class CaLabInstanceConfig {
   brickVersions: CaBrickVersionDTO[];
+  glabTag: 'latest' | 'beta' | string;
 }
 
 

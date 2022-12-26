@@ -1,4 +1,4 @@
-import {Column, Entity, ManyToOne, Unique} from 'typeorm';
+import {Column, Entity, ManyToOne} from 'typeorm';
 import {BlBadRequestException, BlEntityWithId, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnBrick} from './cn-brick.entity';
 import {CmVersion, CmVersionTransform} from '@monorepo/common-model';
@@ -20,8 +20,6 @@ export enum CnVersionType {
   BETA = 'BETA'
 }
 
-
-@Unique(['brick', 'major', 'minor', 'patch'])
 @Entity('brick_version')
 export class CnBrickVersion extends BlEntityWithId {
   @BlNotUpdatable()

@@ -139,6 +139,7 @@ export class CnLabManagerService {
       labId: labInstance.id,
       labName: labInstance.name,
       frontVersion: frontVersion,
+      glabTag: config.glabTag || 'latest',
       biotaMariaDbUrl: biotaMariaDbUrl,
       bricks: []
     };
@@ -164,7 +165,8 @@ export class CnLabManagerService {
 
 
     const labInstanceConfig: CnLabInstanceConfigDTO = {
-      brickVersions: []
+      brickVersions: [],
+      glabTag: labManagerConfig.glabTag
     };
     for (const brick of labManagerConfig.bricks) {
       labInstanceConfig.brickVersions.push({

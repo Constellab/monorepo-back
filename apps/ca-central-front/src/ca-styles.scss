@@ -98,6 +98,13 @@ body {
   grid-gap: 1em;
 }
 
+@media (max-width: 1279px) {
+  .g-grid-4-rows {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+
 @media (max-width: 959px) {
   .g-grid-4-rows {
     grid-template-columns: 1fr 1fr;

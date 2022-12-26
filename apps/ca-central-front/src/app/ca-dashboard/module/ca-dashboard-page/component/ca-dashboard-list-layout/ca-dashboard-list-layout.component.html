@@ -24,7 +24,7 @@
       </ca-add-card>
     </div>
 
-    <div *ngIf="datasource.page?.totalElements > maxItems" class="all-button">
+    <div *ngIf="datasource.page?.totalElements >= maxItems" class="all-button">
       <fl-text-icon iconPosition="end" gap="0">
         <a class="g-text-link" [routerLink]="completeListRoute">
           {{completeListText | translate}}

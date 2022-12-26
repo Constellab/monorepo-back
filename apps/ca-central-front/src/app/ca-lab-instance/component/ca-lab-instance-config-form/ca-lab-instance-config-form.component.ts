@@ -90,4 +90,8 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
     this.isLoading = false;
     this.snackBarService.openSuccessMessage({text: 'lab_instance_config_updated', translateText: true});
   }
+
+  resetToDefault(): void {
+    this.labConfig.glabTag = 'latest';
+  }
 }
