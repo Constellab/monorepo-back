@@ -122,14 +122,14 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
 
 
   getLabManagerApiInfo(): CnExternalApiInfo {
-    // return {
-    //   apiKey: this.labManagerApiKey,
-    //   apiUrl: this.labManagerUrl
-    // };
-    // only for local dev
     return {
-      apiKey: '123456',
-      apiUrl: 'http://localhost:3080'
+      apiKey: this.labManagerApiKey,
+      apiUrl: this.labManagerUrl
     };
+    // only for local dev
+    // return {
+    //   apiKey: '123456',
+    //   apiUrl: 'http://localhost:3080'
+    // };
   }
 }
