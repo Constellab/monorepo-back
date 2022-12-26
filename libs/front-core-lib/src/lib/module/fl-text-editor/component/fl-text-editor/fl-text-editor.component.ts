@@ -72,6 +72,9 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
 
   @Input() leftButtons: boolean = true;
 
+  @HostBinding('class.ql-no-padding')
+  @Input() noPadding: boolean = false;
+
   /**
    * If auto it finds the parent scrollable element (use cdkScrollable),
    * otherwise it uses the child .ql-editor as scrollable

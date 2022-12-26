@@ -516,18 +516,19 @@ export class HaPublicSidenavComponent implements OnInit {
 
 
 
-  componentAdded(event: HaPublicDocComponent): void{
-    event.newItemEvent.subscribe(e => {
-      if(e == 'rename'){
-        this.getDocumentations();
-      } else if(e == 'delete'){
-        this.brickService.getBrickDocs(this.brickId, this.brickVersion).subscribe((data) => {
-          this.rebuildTreeForData(data.children);
-          this.router.navigate(['.'], {relativeTo: this.route})
-        });
-      }
-    });
+  componentAdded(event: HaPublicDocComponent): void {
+    if (event && event.newItemEvent) {
+      event.newItemEvent.subscribe(e => {
+        if (e == 'rename') {
+          this.getDocumentations();
+        } else if (e == 'delete') {
+          this.brickService.getBrickDocs(this.brickId, this.brickVersion).subscribe((data) => {
+            this.rebuildTreeForData(data.children);
+            this.router.navigate(['.'], {relativeTo: this.route})
+          });
+        }
+      });
+    }
   }
-
 }
 

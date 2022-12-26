@@ -5,7 +5,7 @@
 
 <div class="sidenavBody" *ngIf="!docNotFound">
 
-  <div class="content">
+  <div class="content g-scrollable-element">
     <div class="loader" *ngIf="isLoading">
       <fl-loader size="medium"></fl-loader>
     </div>
@@ -24,8 +24,8 @@
     </div>
     <form class="documentation-form" [formGroup]="formGp" *ngIf="!isLoading">
       <fl-text-editor class="content-editor g-max-article-width" formControlName="content"
-                      [disabled]="(isAdmin | async) === false || isDisabled" mode="JSON" scrollContainer="child"
-                      [config]="textEditorConfig" (textChange)="onContentUpdate($event)"
+                      [disabled]="(isAdmin | async) === false || isDisabled" mode="JSON" scrollContainer="auto"
+                      [config]="textEditorConfig" (textChange)="onContentUpdate($event)" [noPadding]="true"
                       flAutoScrollToAnchor></fl-text-editor>
     </form>
   </div>

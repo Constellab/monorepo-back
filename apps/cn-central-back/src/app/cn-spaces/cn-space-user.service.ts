@@ -157,6 +157,17 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     return spaceUser.space;
   }
 
+  public async checkUsersHaveCommonSpace(userAId: string, userBId: string): Promise<boolean> {
+    const userASpaces: CnSpace[] = await this.getSpacesOfUser(userAId);
+    const userBSpaces: CnSpace[] = await this.getSpacesOfUser(userBId);
+
+    //Check common space
+    if (userASpaces.find((space) => userBSpaces.find((spaceB) => spaceB.id === space.id)) == null) {
+      return false;
+    }
+    return true;
+  }
+
   public async findUserBySpaceIdAndId(spaceId: string, userId: string): Promise<CnUser> {
     const spaceUser: CnSpaceUser = await this.repository.findOne({
       where: {
@@ -166,5 +177,13 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
       relations: {user: true}
     });
     return spaceUser.user;
+  }
+
+  public async checkIfGetUserIsAllowed(userId: string, currentUserId: string): Promise<boolean>{
+    if(await this.checkUsersHaveCommonSpace(userId, currentUserId)){
+      return true;
+    } else {
+      return false;
+    }
   }
 }

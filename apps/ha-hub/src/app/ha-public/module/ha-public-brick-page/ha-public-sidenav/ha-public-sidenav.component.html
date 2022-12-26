@@ -11,6 +11,18 @@
         </mat-form-field>
       </div>
 
+      <a (click)="closeSideNav()" [routerLink]="'.'"
+         [relativeTo]="activatedRoute" [routerLinkActive]="'active'" class="line item">
+        <div matLine class="link-item line-mat">
+              <span class="main-line-text line-text">
+                  {{'introduction' | translate}}
+              </span>
+        </div>
+
+      </a>
+
+
+
       <mat-tree *ngIf="dataSource$ | async" [dataSource]="dataSource$ | async" [treeControl]="treeControl"
                 class="tree item g-full-height g-drag-anim-order"
                 cdkDropList (cdkDropListDropped)="drop($event)" [trackBy]="trackByIdentity">
@@ -19,11 +31,11 @@
                        [cdkDragDisabled]="(isAdmin | async) === false || node.name == null"
                        class="draggable-element g-drag-hide-placeholder" [cdkDragData]="node"
                        (mouseenter)="hoverId=node.id" (mouseleave)="hoverId=null">
-          <a (click)="closeSideNav()" [routerLink]="node.completePath"
+          <a (click)="closeSideNav()" [routerLink]="'doc/' + node.completePath"
              [relativeTo]="activatedRoute" [routerLinkActive]="'active'" class="line item" draggable="false"
              *ngIf="node.id != null">
-            <div matLine [matTreeNodePadding]="node.level+1" matTreeNodePaddingIndent="15px" class="link-item line-mat">
-              <span [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px'}" class="line-text">
+            <div matLine [matTreeNodePadding]="(node.level+1)" matTreeNodePaddingIndent="15px" class="link-item line-mat">
+              <span [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px', 'max-width': 'calc(100% - ' + (node.level*15).toString() + 'px)'}" class="line-text">
                   {{node.name}}
               </span>
               <div class="line-icons" *ngIf="(isAdmin | async) && hoverId === node.id">
@@ -81,11 +93,11 @@
 
         <!-- This is the tree node template for leaf nodes -->
         <mat-tree-node *matTreeNodeDef="let node" class="line">
-          <a [matTreeNodePadding]="node.level + 1" matTreeNodePaddingIndent="15px" class="item" mat-list-item
+          <a [matTreeNodePadding]="node.level + 1" matTreeNodePaddingIndent="15px" mat-list-item
              (click)="closeSideNav()"
-             [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px'}"
-             [routerLink]="node.completePath" [relativeTo]="activatedRoute" [routerLinkActive]="'active'">
-            <div matLine>
+             [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px', 'max-width': 'calc(100% - ' + (node.level*15).toString() + 'px)'}"
+             [routerLink]="'doc/' + node.completePath" [relativeTo]="activatedRoute" [routerLinkActive]="'active'">
+            <div matLine class="line-text line-text-tech-doc">
               {{node.name}}
             </div>
           </a>
@@ -112,9 +124,16 @@
       </mat-tree>
 
 
-      <div class="sidenav-empty-space">
+      <a (click)="closeSideNav()" [routerLink]="'version'"
+         [relativeTo]="activatedRoute" [routerLinkActive]="'active'" class="line item">
+        <div matLine class="link-item line-mat">
+              <span class="main-line-text line-text">
+                  {{'version' | translate}}
+              </span>
+        </div>
+      </a>
 
-      </div>
+      <div class="sidenav-empty-space"></div>
 
       <button mat-raised-button color="primary" (click)="onClickMenu($event, true)" class="bt-add-doc"
               *ngIf="(isAdmin | async)">
