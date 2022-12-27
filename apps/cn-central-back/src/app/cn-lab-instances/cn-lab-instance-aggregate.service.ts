@@ -41,6 +41,8 @@ import {CnExternalLabProjectService} from '../cn-external-lab-api/cn-external-la
 import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 import {CnObjectStoragesAggregateService} from '../cn-object-storages/cn-object-storages-aggregate.service';
+import {CnCpInstance} from './cloud-provider/cn-cloud-provider-external.class';
+import {CnLabCloudProviderService} from './cloud-provider/cn-lab-cloud-provider.service';
 
 
 @Injectable()
@@ -60,7 +62,8 @@ export class CnLabInstanceAggregateService {
               private externalLabProjectService: CnExternalLabProjectService,
               private externalLabApiService: CnExternalLabApiService,
               private dataSource: DataSource,
-              private objectStorageService: CnObjectStoragesAggregateService) {
+              private objectStorageService: CnObjectStoragesAggregateService,
+              private cloudProviderService: CnLabCloudProviderService) {
   }
 
   async create(createLabInstance: CnLabInstanceCreateDTO): Promise<CnLabInstance> {
@@ -402,6 +405,21 @@ export class CnLabInstanceAggregateService {
     return labProjects.map(labProject => labProject.project);
   }
 
+
+  /////////////////////////// CLOUD PROVIDER //////////////////////////////
+
+  public async initServerInstance(labInstanceId: string): Promise<CnCpInstance> {
+    await this.checkAuthorizationToUpdateCloudProvider();
+    return this.cloudProviderService.initInstance(labInstanceId, 'OVH', 'GRA7',
+      'HOURLY', 10, 'CLASSIC');
+  }
+
+  public async deleteServerInstance(labInstanceId: string): Promise<void> {
+    await this.checkAuthorizationToUpdateCloudProvider();
+    await this.cloudProviderService.deleteLabInstanceServerAndVolume(labInstanceId, 'OVH');
+  }
+
+
   //////////////////////////// AUTHORIZATION ////////////////////////////////
   private async getAndCheckAuthorizationToFindById(id: string): Promise<CnLabInstance> {
     const labInstance = await this.labInstancesService.findByIdAndCheck(id, {space: true});
@@ -420,6 +438,10 @@ export class CnLabInstanceAggregateService {
     const labInstance = await this.labInstancesService.findByIdAndCheck(id, {sharedGroups: true, space: true});
     await this.security.checkAuthorizationToManageLab(labInstance, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return labInstance;
+  }
+
+  private async checkAuthorizationToUpdateCloudProvider(): Promise<void> {
+    await this.security.checkAuthorizationToUpdateCloudProvider(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
   }
 
 

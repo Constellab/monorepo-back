@@ -174,5 +174,21 @@ export class CnCoreConfigService {
   public getCommentObjectStorageBucket(): string {
     return this.isProduction() ? 'constellab-comment-image-prod' : 'constellab-comment-image-pre-prod';
   }
+
+  public getOvhServiceName(): string {
+    return this.configService.get('OVH_SERVICE_NAME');
+  }
+
+  public getOvhAppKey(): string {
+    return this.configService.get('OVH_APP_KEY');
+  }
+
+  public getOvhAppSecret(): string {
+    return this.configService.get('OVH_APP_SECRET');
+  }
+
+  public getOvhConsumerKey(): string {
+    return this.configService.get('OVH_CONSUMER_KEY');
+  }
 }
 

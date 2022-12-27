@@ -14,7 +14,6 @@ import {CnLabInstance} from '../cn-lab-instances/cn-lab-instance.entity';
 @Injectable()
 export class CnObjectStoragesAggregateService {
 
-  private static LabBackupDefaultCloudProvider = 'OVH';
   private static LabBackupDefaultRegion = 'gra';
   private static LabBackupCredentialName = 'LAB_BACKUP';
 
@@ -35,11 +34,11 @@ export class CnObjectStoragesAggregateService {
 
     const credentials = await this.bucketCredentialsService.findByName(CnObjectStoragesAggregateService.LabBackupCredentialName);
 
-    if(credentials == null) {
+    if (credentials == null) {
       throw new Error(`Credentials named ${CnObjectStoragesAggregateService.LabBackupCredentialName} not found`);
     }
     const region = await this.bucketRegionService.findByCloudProviderNameAndTechnicalNameAndCheck(
-      CnObjectStoragesAggregateService.LabBackupDefaultCloudProvider, CnObjectStoragesAggregateService.LabBackupDefaultRegion);
+      'OVH', CnObjectStoragesAggregateService.LabBackupDefaultRegion);
 
     const bucket = new CnBucket();
     bucket.name = labInstance.id; // use id as bucket name

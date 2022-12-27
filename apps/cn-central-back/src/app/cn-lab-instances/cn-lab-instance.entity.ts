@@ -36,7 +36,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
 
   // api key shared with the glab instance API
   @Exclude()
-  @Column({nullable: false, length: 255, unique: true})
+  @Column({nullable: false, length: 255})
   glabApiKey: string;
 
   // api key shared with the lab manager API
@@ -64,6 +64,24 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     {cascade: ['insert']})
   sharedGroups: CnLabInstanceUser[];
 
+  @Type(() => CnServerInfo)
+  @ManyToOne(() => CnServerInfo,
+    (serverInfo: CnServerInfo) => serverInfo.labInstances,
+    {nullable: false, eager: true})
+  serverInfo: CnServerInfo;
+
+  @ManyToOne(() => CnCity, {onDelete: 'RESTRICT', eager: true})
+  city: CnCity;
+
+  // id of the ovh, aws, instance
+  @Column({nullable: true, length: 255})
+  serverInstanceId: string
+
+  // id of the ovh, aws, volume
+  @Column({nullable: true, length: 255})
+  serverVolumeId: string;
+
+
   // url of the api server
   @Expose()
   get glabUrl(): string {
@@ -80,14 +98,6 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     return `https://lab-manager.${this.virtualHost}`;
   }
 
-  @Type(() => CnServerInfo)
-  @ManyToOne(() => CnServerInfo,
-    (serverInfo: CnServerInfo) => serverInfo.labInstances,
-    {nullable: false, eager: true})
-  serverInfo: CnServerInfo;
-
-  @ManyToOne(() => CnCity, {onDelete: 'RESTRICT', eager: true})
-  city: CnCity;
 
   // generate the apiKey
   @BeforeInsert()
@@ -131,5 +141,9 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     //   apiKey: '123456',
     //   apiUrl: 'http://localhost:3080'
     // };
+  }
+
+  public getSubDomainDsnRecord(): string {
+    return '*.' + this.virtualHost.split('.')[0];
   }
 }

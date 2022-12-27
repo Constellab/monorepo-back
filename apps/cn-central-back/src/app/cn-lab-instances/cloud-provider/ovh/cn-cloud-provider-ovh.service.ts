@@ -1,0 +1,214 @@
+import {CnCloudProviderExternalService} from '../cn-cloud-provider-external.service';
+import {CnOvhService} from './cn-ovh.service';
+import {
+  CnCpCreateInstanceRequest,
+  CnCpCreateVolumeRequest,
+  CnCpInstance,
+  CnCpInstanceStatus,
+  CnCpVolume,
+  CnCpVolumeStatus,
+  CnCpVolumeType
+} from '../cn-cloud-provider-external.class';
+import {BadRequestException, Injectable} from '@nestjs/common';
+import {
+  CnOvhCreateDomainRecordRequest,
+  CnOvhCreateInstanceRequest,
+  CnOvhCreateVolumeRequest,
+  CnOvhInstance,
+  CnOvhInstanceStatus,
+  CnOvhVolume
+} from './ovh.class';
+import {CnCoreConfigService} from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
+import {CnCloudProviderName} from '../../../cn-cloud-providers/cn-cloud-provider.entity';
+
+@Injectable()
+export class CnCloudProviderOvhService extends CnCloudProviderExternalService {
+
+  private static IMAGE_NAME = 'Ubuntu 20.04';
+  private static SSK_KEY_ID = '516d5675616d46746157343d';
+  private static DAILY_BACKUP_CRON = '50 0 * * *'; // every day at 00:50
+  private static LAB_DOMAIN = 'gencovery.io';
+
+  constructor(private configService: CnCoreConfigService,
+              private ovhService: CnOvhService) {
+    super();
+  }
+
+  getName(): CnCloudProviderName {
+    return 'OVH';
+  }
+
+
+  public async createInstance(instance: CnCpCreateInstanceRequest): Promise<CnCpInstance> {
+    if (instance.backupFrequency !== 'DAILY') {
+      throw new BadRequestException(`The backup mode ${instance.backupFrequency} is not supported`);
+    }
+
+    // const flavorName = 'd2-2';
+    const flavor = await this.ovhService.getServerInfoByRegionAndName(instance.region, instance.serverName);
+    if (!flavor) {
+      throw new BadRequestException(`The server ${instance.serverName} is not available in region ${instance.region}`);
+    }
+
+    const image = await this.ovhService.getImageByRegionAndName(instance.region, CnCloudProviderOvhService.IMAGE_NAME);
+    if (!image) {
+      throw new BadRequestException(`The ubuntu image is not available in region ${instance.region}`);
+    }
+
+
+    const request: CnOvhCreateInstanceRequest = {
+      name: instance.name,
+      region: instance.region,
+      flavorId: flavor.id,
+      imageId: image.id,
+      sshKeyId: CnCloudProviderOvhService.SSK_KEY_ID,
+      monthlyBilling: instance.billing === 'MONTHLY',
+      autobackup: {
+        rotation: instance.backupRotation,
+        cron: CnCloudProviderOvhService.DAILY_BACKUP_CRON,
+      }
+
+    };
+
+    const ovhInstance = await this.ovhService.createInstance(request);
+
+    return this.convertOvhInstance(ovhInstance);
+  }
+
+  public async getInstance(id: string): Promise<CnCpInstance> {
+    const ovhInstance = await this.ovhService.getInstance(id);
+    return this.convertOvhInstance(ovhInstance);
+  }
+
+
+  private convertOvhInstance(instance: CnOvhInstance): CnCpInstance {
+    return {
+      id: instance.id,
+      status: this.ovhStatusToCpStatus(instance.status),
+      ipv4: this.getIpv4Address(instance),
+    };
+  }
+
+  private getIpv4Address(instance: CnOvhInstance): string | null {
+    const ipAddress = instance.ipAddresses.find((ip) => ip.type === 'public' && ip.version === 4);
+
+    return ipAddress ? ipAddress.ip : null;
+  }
+
+  private ovhStatusToCpStatus(status: CnOvhInstanceStatus): CnCpInstanceStatus {
+    switch (status) {
+      case 'ACTIVE':
+        return 'RUNNING';
+      case 'BUILD':
+        return 'CREATING';
+      case 'HARD_REBOOT':
+      case 'REBOOT':
+      case 'RESCUE':
+      case 'RESIZE':
+      case 'REVERT_RESIZE':
+      case 'VERIFY_RESIZE':
+        return 'RESTARTING';
+      case 'PASSWORD':
+      case 'SHUTOFF':
+      case 'SUSPENDED':
+      case 'UNKNOWN':
+        return 'STOPPED';
+    }
+  }
+
+  deleteInstance(id: string): Promise<void> {
+    return this.ovhService.deleteInstance(id);
+  }
+
+
+  ///////////////////////////////////////// VOLUME //////////////////////////////////////////
+  public async createVolume(volume: CnCpCreateVolumeRequest): Promise<CnCpVolume> {
+    const request: CnOvhCreateVolumeRequest = {
+      region: volume.region,
+      size: volume.size,
+      type: volume.type === 'CLASSIC' ? 'classic' : 'high-speed',
+      name: volume.name,
+      description: volume.description
+    };
+
+    const ovhVolume = await this.ovhService.createVolume(request);
+    return this.convertVolume(ovhVolume);
+  }
+
+  public async attachVolumeToInstance(instanceId: string, volumeId: string): Promise<CnCpVolume> {
+    const ovhVolume = await this.ovhService.attachVolumeToInstance(instanceId, volumeId);
+    return this.convertVolume(ovhVolume);
+  }
+
+  public async getVolume(volumeId: string): Promise<CnCpVolume> {
+    const ovhVolume = await this.ovhService.getVolume(volumeId);
+    return this.convertVolume(ovhVolume);
+  }
+
+  private convertVolume(volume: CnOvhVolume): CnCpVolume {
+    let volumeStatus: CnCpVolumeStatus;
+    switch (volume.status) {
+      case 'creating':
+        volumeStatus = 'CREATING';
+        break;
+      case 'available':
+        volumeStatus = 'AVAILABLE';
+        break;
+      case 'in-use':
+        volumeStatus = 'IN_USE';
+        break;
+      case 'reserved':
+        volumeStatus = 'ATTACHING';
+        break;
+    }
+
+    let volumeType: CnCpVolumeType;
+    switch (volume.type) {
+      case 'classic':
+        volumeType = 'CLASSIC';
+        break;
+      case 'high-speed':
+        volumeType = 'HIGH_SPEED';
+        break;
+    }
+
+    return {
+      id: volume.id,
+      name: volume.name,
+      region: volume.region,
+      size: volume.size,
+      status: volumeStatus,
+      type: volumeType,
+      attachedTo: volume.attachedTo[0],
+    };
+  }
+
+  deleteVolume(volumeId: string): Promise<void> {
+    return this.ovhService.deleteVolume(volumeId);
+  }
+
+
+  /////////////////////////////// DNS ///////////////////////////////
+  public async createDomainForLab(ipv4: string, subDomain: string): Promise<any> {
+    const request: CnOvhCreateDomainRecordRequest = {
+      fieldType: 'A',
+      subDomain: subDomain,
+      target: ipv4,
+    };
+
+    return await this.ovhService.createDomainRecord(CnCloudProviderOvhService.LAB_DOMAIN, request);
+  }
+
+  public async labDomainRecordExists(subDomain: string): Promise<boolean> {
+    return this.ovhService.domainRecordExist(CnCloudProviderOvhService.LAB_DOMAIN, subDomain, 'A');
+  }
+
+  public async deleteDomainRecord(subDomain: string): Promise<void> {
+    const recordIds: number[] = await this.ovhService.getDomainRecordIdBySubDomain(CnCloudProviderOvhService.LAB_DOMAIN, subDomain, 'A')
+
+    for (const recordId of recordIds) {
+      await this.ovhService.deleteDomainRecord(CnCloudProviderOvhService.LAB_DOMAIN, recordId);
+    }
+  }
+
+}

@@ -4,6 +4,7 @@ import {CnBucketRegion} from './cn-bucker-region.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, Repository} from 'typeorm';
 import {ClPage} from '@monorepo/core-lib';
+import {CnCloudProviderName} from '../../cn-cloud-providers/cn-cloud-provider.entity';
 
 
 @Injectable()
@@ -45,7 +46,7 @@ export class CnBucketRegionService extends BlAbstractService<CnBucketRegion> {
     });
   }
 
-  public async findByCloudProviderNameAndTechnicalNameAndCheck(cloudProviderName: string,
+  public async findByCloudProviderNameAndTechnicalNameAndCheck(cloudProviderName: CnCloudProviderName,
                                                                technicalName: string): Promise<CnBucketRegion> {
     const region = await this.repository.findOneBy({
       cloudProvider: {name: cloudProviderName},

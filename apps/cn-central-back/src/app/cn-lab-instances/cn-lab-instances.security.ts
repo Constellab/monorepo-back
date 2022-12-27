@@ -73,4 +73,12 @@ export class CnLabInstancesSecurity {
     if (!userInfo.isSpaceAdmin()) throw new BlUnauthorizedException();
   }
 
+  /**
+   * For now, only the G admin can call update method on cloud provider (like create server, volume, dns)
+   * @param userInfo
+   */
+  public checkAuthorizationToUpdateCloudProvider(userInfo: CnUserSpaceInfo): void {
+    if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
+  }
+
 }

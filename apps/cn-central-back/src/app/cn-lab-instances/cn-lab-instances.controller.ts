@@ -19,12 +19,15 @@ import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
 import {CnLabInstanceProject} from './project/cn-lab-instance-project.entity';
 import {CnExternalLabBackup, CnExternalLabBackupHistory} from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import {CnCpInstance} from './cloud-provider/cn-cloud-provider-external.class';
+
 
 @Controller('lab-instances')
 export class CnLabInstancesController {
 
   constructor(private aggregateService: CnLabInstanceAggregateService) {
   }
+
 
   @Post()
   async create(@Body(new BlParsePipe(CnLabInstanceCreateDTO)) createLabInstance: CnLabInstanceCreateDTO): Promise<CnLabInstanceAdminDto> {
@@ -304,6 +307,17 @@ export class CnLabInstancesController {
   @Get(':id/backup/history')
   async getBackups(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnExternalLabBackupHistory> {
     return await this.aggregateService.getBackupHistory(id);
+  }
+
+  /////////////////////////// CLOUD PROVIDER //////////////////////////////
+  @Post(':id/cloud-provider/init')
+  async initCloudProvider(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnCpInstance> {
+    return await this.aggregateService.initServerInstance(id);
+  }
+
+  @Delete(':id/cloud-provider')
+  async deleteServerInstance(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    await this.aggregateService.deleteServerInstance(id);
   }
 
 }
