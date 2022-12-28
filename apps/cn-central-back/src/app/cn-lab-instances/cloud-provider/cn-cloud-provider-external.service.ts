@@ -17,6 +17,10 @@ export abstract class CnCloudProviderExternalService {
 
   public abstract deleteInstance(id: string): Promise<void>;
 
+  public abstract startInstance(id: string): Promise<void>;
+
+  public abstract stopInstance(id: string): Promise<void>;
+
   public abstract createVolume(volume: CnCpCreateVolumeRequest): Promise<CnCpVolume>;
 
   public abstract attachVolumeToInstance(instanceId: string, volumeId: string): Promise<CnCpVolume> ;

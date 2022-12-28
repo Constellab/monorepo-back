@@ -64,15 +64,15 @@
       <mat-menu #menu="matMenu" xPosition="before">
 
         <button mat-menu-item type="button"
-                (click)="updateBucketRegion(row)">
+                (click)="updateRegion(row)">
           <mat-icon>edit</mat-icon>
-          <span>{{'update_bucket_region' | translate}}</span>
+          <span>{{'update_cloud_provider_region' | translate}}</span>
         </button>
 
         <button mat-menu-item type="button"
-                class="g-warn-text" (click)="deleteBucketRegion(row)">
+                class="g-warn-text" (click)="deleteRegion(row)">
           <mat-icon color="warn">clear</mat-icon>
-          <span>{{'delete_bucket_region' | translate}}</span>
+          <span>{{'delete_cloud_provider_region' | translate}}</span>
         </button>
       </mat-menu>
     </mat-cell>

@@ -1,5 +1,7 @@
 import {CaBaseEntity} from './ca-base-entity.class';
 import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
+import {Type} from 'class-transformer';
+import {CaCity} from './ca-city.entity';
 
 
 export class CaCloudProvider extends CaBaseEntity {
@@ -11,3 +13,18 @@ export class CaCloudProvider extends CaBaseEntity {
 
 
 export type CaCloudProviderDatasource = FlEntityPaginatedDatasource<CaCloudProvider>;
+
+export class CaCloudProviderRegion extends CaBaseEntity {
+
+  technicalName: string;
+
+  endpoint: string;
+
+  @Type(() => CaCloudProvider)
+  cloudProvider: CaCloudProvider;
+
+  @Type(() => CaCity)
+  city: CaCity;
+}
+
+export type CaCloudProviderRegionDatasource = FlEntityPaginatedDatasource<CaCloudProviderRegion>;

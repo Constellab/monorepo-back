@@ -2,7 +2,6 @@ import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post,
 import {CnObjectStoragesAggregateService} from './cn-object-storages-aggregate.service';
 import {CnBucket} from './cn-buckets/cn-bucket.entity';
 import {ClPage} from '@monorepo/core-lib';
-import {CnBucketRegion} from './cn-bucket-regions/cn-bucker-region.entity';
 import {CnBucketCredentials} from './cn-bucket-credential/cn-bucket-credential.entity';
 import {CnBucketCredentialsFull} from './cn-object-storage.dto';
 import {BlDtoHelper, BlParsePipe} from '@monorepo/back-core-lib';
@@ -35,30 +34,6 @@ export class CnObjectStoragesController {
   public async getBuckets(@Query('page', ParseIntPipe) page: number,
                           @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnBucket>> {
     return this.service.getBuckets(page, size);
-  }
-
-  ////////////////////////////// REGION //////////////////////////////
-
-  @Post('regions')
-  public async createBucketRegion(@Body(new BlParsePipe(CnBucketRegion)) region: CnBucketRegion): Promise<CnBucketRegion> {
-    return this.service.createBucketRegion(region);
-  }
-
-  @Put('regions')
-  public async updateBucketRegion(@Body(new BlParsePipe(CnBucketRegion)) region: CnBucketRegion): Promise<CnBucketRegion> {
-    return this.service.updateBucketRegion(region);
-  }
-
-  @Delete('regions/:id')
-  public async deleteBucketRegion(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return this.service.deleteBucketRegion(id);
-  }
-
-
-  @Get('regions')
-  public async getBucketRegions(@Query('page', ParseIntPipe) page: number,
-                                @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnBucketRegion>> {
-    return this.service.getBucketRegions(page, size);
   }
 
   ////////////////////////////// CREDENTIALS //////////////////////////////

@@ -1,35 +1,63 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query} from '@nestjs/common';
-import {CnCloudProvidersService} from './cn-cloud-providers.service';
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
 import {CnCloudProvider} from './cn-cloud-provider.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {BlParsePipe} from '@monorepo/back-core-lib';
+import {CnCloudProviderAggregateService} from './cn-cloud-provider-aggregate.service';
+import {CnCloudProviderRegion} from './cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 
 @Controller('cloud-providers')
 export class CnCloudProvidersController {
 
-  constructor(private service: CnCloudProvidersService) {
+  constructor(private service: CnCloudProviderAggregateService) {
   }
 
+  ///////////////////////////////// CLOUD PROVIDER /////////////////////////////////
   @Post()
   public async create(@Body(new BlParsePipe(CnCloudProvider)) cloudProvider: CnCloudProvider): Promise<CnCloudProvider> {
-    return this.service.createSecure(cloudProvider);
+    return this.service.createCloudProvider(cloudProvider);
   }
 
 
   @Put()
   public async update(@Body(new BlParsePipe(CnCloudProvider)) cloudProvider: CnCloudProvider): Promise<CnCloudProvider> {
-    return this.service.updateSecure(cloudProvider);
+    return this.service.updateCloudProvider(cloudProvider);
   }
 
   @Delete(':id')
   public async delete(@Param('id') id: string): Promise<void> {
-    return this.service.deleteSecure(id);
+    return this.service.deleteCloudProvider(id);
   }
 
   @Get()
   public async findAll(@Query('page', ParseIntPipe) page: number,
                        @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnCloudProvider>> {
-    return this.service.findAllSecure(page, size);
+    return this.service.findAllCloudProviders(page, size);
+  }
+
+  ////////////////////////////// REGION //////////////////////////////
+
+  @Post('regions')
+  public async createRegion(
+    @Body(new BlParsePipe(CnCloudProviderRegion)) region: CnCloudProviderRegion): Promise<CnCloudProviderRegion> {
+    return this.service.createRegion(region);
+  }
+
+  @Put('regions')
+  public async updateRegion(
+    @Body(new BlParsePipe(CnCloudProviderRegion)) region: CnCloudProviderRegion): Promise<CnCloudProviderRegion> {
+    return this.service.updateRegion(region);
+  }
+
+  @Delete('regions/:id')
+  public async deleteRegion(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return this.service.deleteRegion(id);
+  }
+
+
+  @Get('regions')
+  public async getRegions(@Query('page', ParseIntPipe) page: number,
+                          @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnCloudProviderRegion>> {
+    return this.service.getRegions(page, size);
   }
 
 }

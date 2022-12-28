@@ -25,6 +25,7 @@ import {CnObjectStoragesModule} from '../cn-object-storages/cn-object-storages.m
 import {CnOvhService} from './cloud-provider/ovh/cn-ovh.service';
 import {CnLabCloudProviderService} from './cloud-provider/cn-lab-cloud-provider.service';
 import {CnCloudProviderOvhService} from './cloud-provider/ovh/cn-cloud-provider-ovh.service';
+import {CnLabSshService} from './cloud-provider/cn-lab-ssh.service';
 
 @Module({
   imports: [
@@ -58,7 +59,8 @@ import {CnCloudProviderOvhService} from './cloud-provider/ovh/cn-cloud-provider-
     CnLabInstanceProjectService,
     CnLabCloudProviderService,
     CnOvhService,
-    CnCloudProviderOvhService
+    CnCloudProviderOvhService,
+    CnLabSshService
   ],
   exports: [
     CnLabInstancesService,

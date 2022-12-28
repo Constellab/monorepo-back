@@ -5,6 +5,7 @@ import {CnCloudProviderExternalService} from './cn-cloud-provider-external.servi
 import {
   CnCpBackupFrequency,
   CnCpBillingType,
+  CnCpCompleteInfo,
   CnCpCreateInstanceRequest,
   CnCpCreateVolumeRequest,
   CnCpInstance,
@@ -29,27 +30,51 @@ export class CnLabCloudProviderService {
               private labInstanceService: CnLabInstancesService) {
   }
 
+  public async getCompleteInfo(labInstance: CnLabInstance,
+                               cloudProvider: CnCloudProviderName): Promise<CnCpCompleteInfo> {
+    const cloudProviderService = this.getCloudProviderService(cloudProvider);
+
+    const info: CnCpCompleteInfo = {
+      instance: null,
+      volume: null,
+      domainRecord: null
+    };
+
+    const promises = [];
+    if (labInstance.serverInstanceId) {
+      promises.push(cloudProviderService.getInstance(labInstance.serverInstanceId)
+        .then((instance) => info.instance = instance)
+        .catch(err => this.logger.error(err)));
+    }
+
+    if (labInstance.serverVolumeId) {
+      promises.push(cloudProviderService.getVolume(labInstance.serverVolumeId)
+        .then((volume) => info.volume = volume)
+        .catch(err => this.logger.error(err)));
+    }
+
+    info.domainRecord = await this.ovhCloudProviderService.getLabDomainRecord(labInstance.getSubDomainDsnRecord());
+    promises.push(this.ovhCloudProviderService.getLabDomainRecord(labInstance.getSubDomainDsnRecord())
+      .then((domainRecord) => info.domainRecord = domainRecord)
+      .catch(err => this.logger.error(err)));
+
+    return Promise.all(promises).then(() => info);
+  }
+
   /**
    * Function to init the server instance in the cloud provider
    * It creates the instance if it doesn't exist
    * It creates the volume if it doesn't exist
    * It attaches the volume to the instance if not attached
    * It creates the domain record if it doesn't exist
-   * @param labInstanceId
-   * @param cloudProvider
-   * @param region
-   * @param billing
-   * @param volumeSize
-   * @param volumeType
    */
-  public async initInstance(labInstanceId: string,
+  public async initInstance(labInstance: CnLabInstance,
                             cloudProvider: CnCloudProviderName,
                             region: string,
                             billing: CnCpBillingType,
                             volumeSize: number,
-                            volumeType: CnCpVolumeType): Promise<CnCpInstance> {
+                            volumeType: CnCpVolumeType): Promise<CnLabInstance> {
 
-    let labInstance = await this.labInstanceService.findByIdAndCheck(labInstanceId);
     const cloudProviderService = this.getCloudProviderService(cloudProvider);
 
     let serverInstance: CnCpInstance;
@@ -115,7 +140,7 @@ export class CnLabCloudProviderService {
       await this.attachVolumeToInstance(cloudProviderService, serverInstance.id, volume.id, labInstance.id);
     } else {
       // check that the volume is attached to the instance
-      if(volume.attachedTo !== serverInstance.id) {
+      if (volume.attachedTo !== serverInstance.id) {
         // eslint-disable-next-line max-len
         throw new BadRequestException(`For lab ${labInstance.id}, volume ${volume.id} is not attached to instance ${serverInstance.id} but to '${volume.attachedTo}'`);
       }
@@ -125,7 +150,7 @@ export class CnLabCloudProviderService {
     // create domain record
     await this.createDomainRecordForLab(labInstance, serverInstance.ipv4);
 
-    return serverInstance;
+    return labInstance;
   }
 
   private async createLabInstance(service: CnCloudProviderExternalService, labInstance: CnLabInstance,
@@ -210,15 +235,15 @@ export class CnLabCloudProviderService {
       this.logger.log(`Deleting server instance ${labInstance.serverInstanceId} for lab ${labInstance.id}`);
       await cloudProviderService.deleteInstance(labInstance.serverInstanceId);
       this.logger.log(`Server instance ${labInstance.serverInstanceId} deleted for lab ${labInstance.id}`);
-    }else{
+    } else {
       this.logger.log(`No server instance for lab ${labInstance.id}`);
     }
 
-    if(labInstance.serverVolumeId) {
+    if (labInstance.serverVolumeId) {
       this.logger.log(`Deleting volume ${labInstance.serverVolumeId} for lab ${labInstance.id}`);
       await cloudProviderService.deleteVolume(labInstance.serverVolumeId);
       this.logger.log(`Volume ${labInstance.serverVolumeId} deleted for lab ${labInstance.id}`);
-    }else{
+    } else {
       this.logger.log(`No volume for lab ${labInstance.id}. Skipping deletion`);
     }
 
@@ -229,7 +254,9 @@ export class CnLabCloudProviderService {
     labInstance.serverInstanceId = null;
     await this.labInstanceService.update(labInstance);
 
-    // update lab instance status
-    await this.labInstanceService.updateCurrentStatus(CnLabInstanceStatus.STOPPED, labInstance.id);
+    if (labInstance.currentStatus.status !== CnLabInstanceStatus.STOPPED) {
+      // update lab instance status
+      await this.labInstanceService.updateCurrentStatus(CnLabInstanceStatus.STOPPED, labInstance.id);
+    }
   }
 }

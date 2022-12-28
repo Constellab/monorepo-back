@@ -6,7 +6,6 @@ import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {
   CnExternalLabBackup,
   CnExternalLabBackupHistory,
-  CnExternalLabUser,
   CnExternalLabUserRole
 } from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
@@ -41,8 +40,9 @@ import {CnExternalLabProjectService} from '../cn-external-lab-api/cn-external-la
 import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 import {CnObjectStoragesAggregateService} from '../cn-object-storages/cn-object-storages-aggregate.service';
-import {CnCpInstance} from './cloud-provider/cn-cloud-provider-external.class';
+import {CnCpCompleteInfo} from './cloud-provider/cn-cloud-provider-external.class';
 import {CnLabCloudProviderService} from './cloud-provider/cn-lab-cloud-provider.service';
+import {CnLabSshService} from './cloud-provider/cn-lab-ssh.service';
 
 
 @Injectable()
@@ -63,7 +63,8 @@ export class CnLabInstanceAggregateService {
               private externalLabApiService: CnExternalLabApiService,
               private dataSource: DataSource,
               private objectStorageService: CnObjectStoragesAggregateService,
-              private cloudProviderService: CnLabCloudProviderService) {
+              private cloudProviderService: CnLabCloudProviderService,
+              private labSshService: CnLabSshService) {
   }
 
   async create(createLabInstance: CnLabInstanceCreateDTO): Promise<CnLabInstance> {
@@ -185,7 +186,7 @@ export class CnLabInstanceAggregateService {
   }
 
 
-  public async checkStatus(labInstanceId: string): Promise<CnExternalLabUser[]> {
+  public async checkStatus(labInstanceId: string): Promise<any> {
     const lab: CnLabInstance = await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
     try {
@@ -408,14 +409,32 @@ export class CnLabInstanceAggregateService {
 
   /////////////////////////// CLOUD PROVIDER //////////////////////////////
 
-  public async initServerInstance(labInstanceId: string): Promise<CnCpInstance> {
-    await this.checkAuthorizationToUpdateCloudProvider();
-    return this.cloudProviderService.initInstance(labInstanceId, 'OVH', 'GRA7',
+  public async getServerInfo(labInstanceId: string): Promise<CnCpCompleteInfo> {
+    const labInstance = await this.getAndCheckAuthorizationToUpdateCloudProvider(labInstanceId);
+    return this.cloudProviderService.getCompleteInfo(labInstance, 'OVH');
+  }
+
+  public async initCompleteLab(labInstanceId: string): Promise<CnLabInstance> {
+    let labInstance = await this.getAndCheckAuthorizationToUpdateCloudProvider(labInstanceId);
+    labInstance = await this.cloudProviderService.initInstance(labInstance, 'OVH', 'GRA7',
+      'HOURLY', 10, 'CLASSIC');
+
+    return this.labSshService.initLabServer(labInstance);
+  }
+
+  public async initServerInstance(labInstanceId: string): Promise<CnLabInstance> {
+    const labInstance = await this.getAndCheckAuthorizationToUpdateCloudProvider(labInstanceId);
+    return this.cloudProviderService.initInstance(labInstance, 'OVH', 'GRA7',
       'HOURLY', 10, 'CLASSIC');
   }
 
+  public async initLabServer(labInstanceId: string): Promise<CnLabInstance> {
+    const labInstance = await this.getAndCheckAuthorizationToUpdateCloudProvider(labInstanceId);
+    return await this.labSshService.initLabServer(labInstance);
+  }
+
   public async deleteServerInstance(labInstanceId: string): Promise<void> {
-    await this.checkAuthorizationToUpdateCloudProvider();
+    await this.getAndCheckAuthorizationToUpdateCloudProvider(labInstanceId);
     await this.cloudProviderService.deleteLabInstanceServerAndVolume(labInstanceId, 'OVH');
   }
 
@@ -440,8 +459,9 @@ export class CnLabInstanceAggregateService {
     return labInstance;
   }
 
-  private async checkAuthorizationToUpdateCloudProvider(): Promise<void> {
+  private async getAndCheckAuthorizationToUpdateCloudProvider(id: string): Promise<CnLabInstance> {
     await this.security.checkAuthorizationToUpdateCloudProvider(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    return await this.labInstancesService.findByIdAndCheck(id, {sharedGroups: true, space: true});
   }
 
 

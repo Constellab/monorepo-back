@@ -19,13 +19,15 @@ import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
 import {CnLabInstanceProject} from './project/cn-lab-instance-project.entity';
 import {CnExternalLabBackup, CnExternalLabBackupHistory} from '../cn-external-lab-api/model/cn-external-lab-api.class';
-import {CnCpInstance} from './cloud-provider/cn-cloud-provider-external.class';
+import {CnOvhService} from './cloud-provider/ovh/cn-ovh.service';
+import {CnCpCompleteInfo} from './cloud-provider/cn-cloud-provider-external.class';
 
 
 @Controller('lab-instances')
 export class CnLabInstancesController {
 
-  constructor(private aggregateService: CnLabInstanceAggregateService) {
+  constructor(private aggregateService: CnLabInstanceAggregateService,
+              private ovhService: CnOvhService) {
   }
 
 
@@ -310,14 +312,34 @@ export class CnLabInstancesController {
   }
 
   /////////////////////////// CLOUD PROVIDER //////////////////////////////
+  @Get(':id/cloud-provider/status')
+  async getCloudProviderInfo(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnCpCompleteInfo> {
+    return await this.aggregateService.getServerInfo(id);
+  }
+
   @Post(':id/cloud-provider/init')
-  async initCloudProvider(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnCpInstance> {
+  async initCloudProvider(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
     return await this.aggregateService.initServerInstance(id);
   }
 
   @Delete(':id/cloud-provider')
   async deleteServerInstance(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     await this.aggregateService.deleteServerInstance(id);
+  }
+
+  @Post(':id/cloud-provider/command')
+  async executeCommand(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
+    return await this.aggregateService.initLabServer(id);
+  }
+
+  @Post(':id/cloud-provider/stop')
+  async stop(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
+    return await this.ovhService.stopInstance(id);
+  }
+
+  @Post(':id/cloud-provider/start')
+  async start(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
+    return await this.ovhService.startInstance(id);
   }
 
 }

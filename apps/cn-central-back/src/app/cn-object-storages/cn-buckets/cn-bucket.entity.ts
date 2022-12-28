@@ -1,6 +1,8 @@
 import {Column, Entity, ManyToOne} from 'typeorm';
 import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
-import {CnBucketRegion} from '../cn-bucket-regions/cn-bucker-region.entity';
+import {
+  CnCloudProviderRegion
+} from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnBucketCredentials} from '../cn-bucket-credential/cn-bucket-credential.entity';
 import {CnSpace} from '../../cn-spaces/cn-space.entity';
 import {BlBucketConfig, BlNotUpdatable} from '@monorepo/back-core-lib';
@@ -21,9 +23,9 @@ export enum CnBucketContentType {
 @Entity('bucket')
 export class CnBucket extends CnBaseEntity {
 
-  @Type(() => CnBucketRegion)
-  @ManyToOne(() => CnBucketRegion, {nullable: false})
-  region: CnBucketRegion;
+  @Type(() => CnCloudProviderRegion)
+  @ManyToOne(() => CnCloudProviderRegion, {nullable: false})
+  region: CnCloudProviderRegion;
 
   @Type(() => CnBucketCredentials)
   @ManyToOne(() => CnBucketCredentials, {nullable: false})

@@ -30,7 +30,7 @@ export interface CnOvhInstance {
   flavor: any;
   image: any;
   sshKey: any;
-
+  monthlyBilling?: boolean;
 }
 
 export interface CnOvhCreateVolumeRequest {
@@ -66,7 +66,7 @@ export interface CnOvhCreateDomainRecordRequest {
   ttl?: number;
 }
 
-export interface CnOvhCreateDomainRecordResponse {
+export interface CnOvhDomainRecord {
   id: string;
   zone: string;
   subDomain: string;

@@ -2,14 +2,14 @@ import {
   CnDomainFieldType,
   CnOvhAttachVolumeRequest,
   CnOvhCreateDomainRecordRequest,
-  CnOvhCreateDomainRecordResponse,
   CnOvhCreateInstanceRequest,
   CnOvhCreateVolumeRequest,
+  CnOvhDomainRecord,
   CnOvhFlavor,
   CnOvhImage,
   CnOvhInstance,
   CnOvhVolume
-} from './ovh.class';
+} from './cn-ovh.class';
 import {CnCoreConfigService} from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
 import {Injectable} from '@nestjs/common';
 
@@ -65,6 +65,15 @@ export class CnOvhService {
     return await this.ovh.requestPromised('DELETE', `/cloud/project/${this.serviceName}/instance/${instanceId}`);
   }
 
+  ////////////////////////////////// START & STOP //////////////////////////////////
+
+  public async stopInstance(instanceId: string): Promise<any> {
+    return await this.ovh.requestPromised('POST', `/cloud/project/${this.serviceName}/instance/${instanceId}/shelve`);
+  }
+
+  public async startInstance(instanceId: string): Promise<any> {
+    return await this.ovh.requestPromised('POST', `/cloud/project/${this.serviceName}/instance/${instanceId}/unshelve`);
+  }
 
   ///////////////////////////////////////// VOLUME /////////////////////////////////////////
 
@@ -93,7 +102,7 @@ export class CnOvhService {
   /////////////////////////////// DNS ///////////////////////////////
 
 
-  public async createDomainRecord(domain: string, request: CnOvhCreateDomainRecordRequest): Promise<CnOvhCreateDomainRecordResponse> {
+  public async createDomainRecord(domain: string, request: CnOvhCreateDomainRecordRequest): Promise<CnOvhDomainRecord> {
     const response = await this.ovh.requestPromised('POST', `/domain/zone/${domain}/record`, request);
 
     await this.refreshDns(domain);
@@ -117,6 +126,10 @@ export class CnOvhService {
   public async deleteDomainRecord(domain: string, recordId: number): Promise<void> {
     await this.ovh.requestPromised('DELETE', `/domain/zone/${domain}/record/${recordId}`);
     await this.refreshDns(domain);
+  }
+
+  public getDomainRecord(domain: string, recordId: number): Promise<CnOvhDomainRecord> {
+    return this.ovh.requestPromised('GET', `/domain/zone/${domain}/record/${recordId}`);
   }
 
   private async refreshDns(domain: string): Promise<void> {

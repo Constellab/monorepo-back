@@ -17,11 +17,11 @@
 
     <!--  Endpoint  -->
     <mat-form-field class="g-form-input" appearance="outline">
-      <mat-label>{{'bucket_region_endpoint' | translate}}</mat-label>
+      <mat-label>{{'cloud_provider_region_endpoint' | translate}}</mat-label>
       <input matInput formControlName="endpoint" required flInputMaxLength="255"
-             [placeholder]="'bucket_region_endpoint' | translate">
+             [placeholder]="'cloud_provider_region_endpoint' | translate">
       <mat-error *ngIf="formGp.get('endpoint').hasError('required')">
-        {{'bucket_region_endpoint' | flErrorRequired}}
+        {{'cloud_provider_region_endpoint' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 

@@ -26,8 +26,8 @@ import {
 } from './component/ca-admin-bucket-credentials-list/ca-admin-bucket-credentials-list.component';
 import {CaObjectStorageCoreModule} from '../ca-core/entity-module/ca-object-storage-core/ca-object-storage-core.module';
 import {
-  CaAdminBucketRegionsListComponent
-} from './component/ca-admin-bucket-regions-list/ca-admin-bucket-regions-list.component';
+  CaAdminCloudProviderRegionsListComponent
+} from './component/ca-admin-cloud-provider-regions-list/ca-admin-cloud-provider-regions-list.component';
 import {CaAdminBucketListComponent} from './component/ca-admin-bucket-list/ca-admin-bucket-list.component';
 import {CaAdminSpacesPageComponent} from './component/ca-admin-spaces-page/ca-admin-spaces-page.component';
 import {CaAdminUsersPageComponent} from './component/ca-admin-users-page/ca-admin-users-page.component';
@@ -48,7 +48,7 @@ import {
     CaAdminPageComponent,
     CaAdminCloudProvidersListComponent,
     CaAdminBucketCredentialsListComponent,
-    CaAdminBucketRegionsListComponent,
+    CaAdminCloudProviderRegionsListComponent,
     CaAdminBucketListComponent,
     CaAdminSpacesPageComponent,
     CaAdminUsersPageComponent,

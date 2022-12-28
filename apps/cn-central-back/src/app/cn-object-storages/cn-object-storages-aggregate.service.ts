@@ -1,27 +1,25 @@
 import {Injectable} from '@nestjs/common';
 import {CnBucketsService} from './cn-buckets/cn-buckets.service';
 import {CnBucketCredentialsService} from './cn-bucket-credential/cn-bucket-credentials.service';
-import {CnBucketRegionService} from './cn-bucket-regions/cn-bucket-regions.service';
 import {CnObjectStoragesSecurity} from './cn-object-storages.security';
 import {CnBucketCredentials} from './cn-bucket-credential/cn-bucket-credential.entity';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {ClPage} from '@monorepo/core-lib';
-import {CnBucketRegion} from './cn-bucket-regions/cn-bucker-region.entity';
 import {CnBucket, CnBucketContentType} from './cn-buckets/cn-bucket.entity';
 import {CnLabInstance} from '../cn-lab-instances/cn-lab-instance.entity';
+import {CnCloudProviderAggregateService} from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
 
 
 @Injectable()
 export class CnObjectStoragesAggregateService {
 
-  private static LabBackupDefaultRegion = 'gra';
   private static LabBackupCredentialName = 'LAB_BACKUP';
 
 
   constructor(private securityService: CnObjectStoragesSecurity,
               private bucketService: CnBucketsService,
               private bucketCredentialsService: CnBucketCredentialsService,
-              private bucketRegionService: CnBucketRegionService) {
+              private cloudProviderService: CnCloudProviderAggregateService) {
   }
 
 
@@ -37,8 +35,7 @@ export class CnObjectStoragesAggregateService {
     if (credentials == null) {
       throw new Error(`Credentials named ${CnObjectStoragesAggregateService.LabBackupCredentialName} not found`);
     }
-    const region = await this.bucketRegionService.findByCloudProviderNameAndTechnicalNameAndCheck(
-      'OVH', CnObjectStoragesAggregateService.LabBackupDefaultRegion);
+    const region = await this.cloudProviderService.getDefaultRegion();
 
     const bucket = new CnBucket();
     bucket.name = labInstance.id; // use id as bucket name
@@ -74,35 +71,6 @@ export class CnObjectStoragesAggregateService {
     await this.securityService.checkAuthorizationToGetAllBuckets(CnCurrentUserHelper.getAndCheckCurrentUser());
     return this.bucketService.findAll(page, size);
   }
-
-
-  /////////////////////////// REGION ///////////////////////////
-
-  public async createBucketRegion(region: CnBucketRegion): Promise<CnBucketRegion> {
-    this.checkAuthorizationToModifyEntity();
-    return this.bucketRegionService.create(region);
-  }
-
-  public async updateBucketRegion(region: CnBucketRegion): Promise<CnBucketRegion> {
-    this.checkAuthorizationToModifyEntity();
-    return this.bucketRegionService.update(region);
-  }
-
-  public async deleteBucketRegion(id: string): Promise<void> {
-    this.checkAuthorizationToModifyEntity();
-    await this.bucketRegionService.deleteById(id);
-  }
-
-  public async getBucketRegion(id: string): Promise<CnBucketRegion> {
-    this.checkAuthorizationToGetEntity();
-    return this.bucketRegionService.findByIdAndCheck(id);
-  }
-
-  public async getBucketRegions(page: number, size: number): Promise<ClPage<CnBucketRegion>> {
-    this.checkAuthorizationToGetEntity();
-    return this.bucketRegionService.findAll(page, size);
-  }
-
 
   /////////////////////////// CREDENTIALS ///////////////////////////
 

@@ -1,25 +1,25 @@
 import {Injectable} from '@nestjs/common';
 import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
-import {CnBucketRegion} from './cn-bucker-region.entity';
+import {CnCloudProviderRegion} from './cn-cloud-provider-region.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, Repository} from 'typeorm';
 import {ClPage} from '@monorepo/core-lib';
-import {CnCloudProviderName} from '../../cn-cloud-providers/cn-cloud-provider.entity';
+import {CnCloudProviderName} from '../cn-cloud-provider.entity';
 
 
 @Injectable()
-export class CnBucketRegionService extends BlAbstractService<CnBucketRegion> {
+export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProviderRegion> {
 
-  constructor(@InjectRepository(CnBucketRegion) private repository: Repository<CnBucketRegion>) {
-    super(repository, CnBucketRegion);
+  constructor(@InjectRepository(CnCloudProviderRegion) private repository: Repository<CnCloudProviderRegion>) {
+    super(repository, CnCloudProviderRegion);
   }
 
-  public async create(entity: CnBucketRegion, entityManager?: EntityManager): Promise<CnBucketRegion> {
+  public async create(entity: CnCloudProviderRegion, entityManager?: EntityManager): Promise<CnCloudProviderRegion> {
     entity = await this.checkRegionBeforeSave(entity);
     return super.create(entity, entityManager);
   }
 
-  public async update(entity: CnBucketRegion, entityManager?: EntityManager): Promise<CnBucketRegion> {
+  public async update(entity: CnCloudProviderRegion, entityManager?: EntityManager): Promise<CnCloudProviderRegion> {
     entity = await this.checkRegionBeforeSave(entity);
     return super.update(entity, entityManager);
   }
@@ -29,7 +29,7 @@ export class CnBucketRegionService extends BlAbstractService<CnBucketRegion> {
    * @param region
    * @private
    */
-  private async checkRegionBeforeSave(region: CnBucketRegion): Promise<CnBucketRegion> {
+  private async checkRegionBeforeSave(region: CnCloudProviderRegion): Promise<CnCloudProviderRegion> {
     const existingRegion = await this.findByCloudProviderAndTechnicalName(region.cloudProvider.id, region.technicalName);
 
     if (existingRegion && existingRegion.id !== region.id) {
@@ -39,7 +39,7 @@ export class CnBucketRegionService extends BlAbstractService<CnBucketRegion> {
     return region;
   }
 
-  public findByCloudProviderAndTechnicalName(cloudProviderId: string, technicalName: string): Promise<CnBucketRegion> {
+  public findByCloudProviderAndTechnicalName(cloudProviderId: string, technicalName: string): Promise<CnCloudProviderRegion> {
     return this.repository.findOneBy({
       cloudProvider: {id: cloudProviderId},
       technicalName: technicalName
@@ -47,7 +47,7 @@ export class CnBucketRegionService extends BlAbstractService<CnBucketRegion> {
   }
 
   public async findByCloudProviderNameAndTechnicalNameAndCheck(cloudProviderName: CnCloudProviderName,
-                                                               technicalName: string): Promise<CnBucketRegion> {
+                                                               technicalName: string): Promise<CnCloudProviderRegion> {
     const region = await this.repository.findOneBy({
       cloudProvider: {name: cloudProviderName},
       technicalName: technicalName
@@ -59,7 +59,7 @@ export class CnBucketRegionService extends BlAbstractService<CnBucketRegion> {
     return region;
   }
 
-  public findAll(page: number, size: number): Promise<ClPage<CnBucketRegion>> {
+  public findAll(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
     return this.findPaginated(page, size);
   }
 

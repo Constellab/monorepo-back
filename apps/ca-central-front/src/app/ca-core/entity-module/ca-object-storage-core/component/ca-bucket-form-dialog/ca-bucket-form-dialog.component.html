@@ -30,12 +30,12 @@
 
     <!--  Region  -->
     <mat-form-field class="g-form-input">
-      <mat-label>{{'bucket_region' | translate}}</mat-label>
-      <mat-select formControlName="region" required [placeholder]="'bucket_region' | translate">
+      <mat-label>{{'cloud_provider_region' | translate}}</mat-label>
+      <mat-select formControlName="region" required [placeholder]="'cloud_provider_region' | translate">
         <ca-select-bucket-region-options></ca-select-bucket-region-options>
       </mat-select>
       <mat-error *ngIf="formGp.get('region').hasError('required')">
-        {{'bucket_region' | flErrorRequired}}
+        {{'cloud_provider_region' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 

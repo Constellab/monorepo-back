@@ -1,24 +1,8 @@
 import {CaBaseEntity} from './ca-base-entity.class';
-import {CaCloudProvider} from './ca-cloud-provider.class';
-import {CaCity} from './ca-city.entity';
+import {CaCloudProvider, CaCloudProviderRegion} from './ca-cloud-provider.class';
 import {Type} from 'class-transformer';
 import {CaSpace} from './space/ca-space.class';
 import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
-
-export class CaBucketRegion extends CaBaseEntity {
-
-  technicalName: string;
-
-  endpoint: string;
-
-  @Type(() => CaCloudProvider)
-  cloudProvider: CaCloudProvider;
-
-  @Type(() => CaCity)
-  city: CaCity;
-}
-
-export type CaBucketRegionDatasource = FlEntityPaginatedDatasource<CaBucketRegion>;
 
 
 export class CaBucketCredentials extends CaBaseEntity {
@@ -72,8 +56,8 @@ export class CaBucket extends CaBaseEntity {
 
 export class CaBucketFull extends CaBucket {
 
-  @Type(() => CaBucketRegion)
-  region: CaBucketRegion;
+  @Type(() => CaCloudProviderRegion)
+  region: CaCloudProviderRegion;
 
   @Type(() => CaBucketCredentials)
   credentials: CaBucketCredentials;

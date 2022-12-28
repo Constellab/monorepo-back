@@ -4,6 +4,7 @@ import {CnFrontService} from './services/cn-front.service';
 import {BlExternalApiModule, BlRequestContextModule, BlTranslateModule} from '@monorepo/back-core-lib';
 import {HttpModule} from '@nestjs/axios';
 import {CnConfigEntitySecurity} from './security/cn-config-entity.security';
+import {CnCommandService} from './services/cn-command.service';
 
 /**
  * Core module of the app, export all modules
@@ -20,6 +21,7 @@ import {CnConfigEntitySecurity} from './security/cn-config-entity.security';
   providers: [
     CnFrontService,
     CnConfigEntitySecurity,
+    CnCommandService,
   ],
   exports: [
     CnCoreConfigModule,
@@ -30,6 +32,7 @@ import {CnConfigEntitySecurity} from './security/cn-config-entity.security';
     // Providers
     CnFrontService,
     CnConfigEntitySecurity,
+    CnCommandService,
   ]
 })
 export class CnCoreModule {
