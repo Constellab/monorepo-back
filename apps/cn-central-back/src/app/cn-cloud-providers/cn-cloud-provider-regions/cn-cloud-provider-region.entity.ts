@@ -19,6 +19,6 @@ export class CnCloudProviderRegion extends CnBaseEntity {
   @Column({nullable: false, length: 20})
   technicalName: string;
 
-  @Column({nullable: false, length: 255})
-  endpoint: string;
+  @Column({nullable: true, length: 255})
+  s3Endpoint: string;
 }

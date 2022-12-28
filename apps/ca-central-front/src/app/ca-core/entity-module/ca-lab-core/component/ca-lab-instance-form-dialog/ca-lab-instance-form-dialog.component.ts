@@ -51,7 +51,7 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
       glabApiKey: [null],
       labManagerApiKey: [null],
       codelabToken: [null],
-      city: [null, Validators.required],
+      region: [null, Validators.required],
       space: [{value: null, disabled: this.isUpdateMode()}, Validators.required],
     });
   }

@@ -48,7 +48,7 @@
   "cloud_provider_region_deleted": "Région supprimé",
   "cloud_provider_region_endpoint": "Endpoint",
   "bucket_name": "Nom du bucket",
-  "cloud_provider_region": "Région du bucket",
+  "cloud_provider_region": "Région",
   "bucket_endpoint": "Endpoint du bucket",
   "bucket_content_type": "Type de contenu",
   "bucket_object_id": "ID de l'objet",

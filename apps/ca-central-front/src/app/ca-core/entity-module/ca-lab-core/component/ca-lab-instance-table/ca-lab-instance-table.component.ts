@@ -49,7 +49,7 @@ export class CaLabInstanceTableComponent extends FlTableAbstractDirective<CaLabI
         name: labInstance.name,
         virtualHost: labInstance.virtualHost,
         serverInfo: labInstance.serverInfo,
-        city: labInstance.city,
+        region: labInstance.region,
         codelabToken: labInstance.codelabToken,
         glabApiKey: labInstance.glabApiKey,
         labManagerApiKey: labInstance.labManagerApiKey,

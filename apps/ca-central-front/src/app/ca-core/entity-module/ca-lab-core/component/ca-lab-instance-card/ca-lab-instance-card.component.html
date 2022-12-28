@@ -11,7 +11,7 @@
 
 
   <fl-card-body>
-    <ca-city [city]="labInstance.city"></ca-city>
+    <ca-city [city]="labInstance.region.city"></ca-city>
 
     <div class="g-text-light g-text-small since-the">
       {{labInstance.currentStatus.status.name | translate}} {{'since_the' | translate}}

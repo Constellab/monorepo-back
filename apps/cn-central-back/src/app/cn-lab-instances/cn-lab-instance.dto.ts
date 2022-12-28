@@ -5,11 +5,11 @@ import {CnServerInfo} from '../cn-servers-info/cn-server-info.entity';
 import {BlBaseEntityDto, BlDtoHelper} from '@monorepo/back-core-lib';
 import {CnBrickVersionDTO} from '../cn-bricks/cn-brick.dto';
 import {CnLabConfigDto} from '../cn-lab-configs/cn-lab-config.dto';
-import {CnCity} from '../cn-city/cn-city.entity';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {Type} from 'class-transformer';
 import {CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
 import {CnLabInstance} from './cn-lab-instance.entity';
+import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 
 
 /**
@@ -25,7 +25,7 @@ export class CnLabInstanceDto extends BlBaseEntityDto {
   codelabToken: string = undefined;
   frontUrl: string = undefined;
   serverInfo: CnServerInfo = undefined;
-  city: CnCity = undefined;
+  region: CnCloudProviderRegion = undefined;
   space: CnSpace = undefined;
 }
 
@@ -78,8 +78,8 @@ export class CnLabInstanceCreateDTO {
   labManagerApiKey: string;
   codelabToken: string;
 
-  @Type(() => CnCity)
-  city: CnCity;
+  @Type(() => CnCloudProviderRegion)
+  region: CnCloudProviderRegion;
 
   @Type(() => CnSpace)
   space: CnSpace;

@@ -317,9 +317,19 @@ export class CnLabInstancesController {
     return await this.aggregateService.getServerInfo(id);
   }
 
-  @Post(':id/cloud-provider/init')
+  @Post(':id/cloud-provider/init-all')
+  async initCompleteLab(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
+    return await this.aggregateService.initCompleteLab(id);
+  }
+
+  @Post(':id/cloud-provider/init-cloud')
   async initCloudProvider(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
     return await this.aggregateService.initServerInstance(id);
+  }
+
+  @Post(':id/cloud-provider/init-server')
+  async initLabServer(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
+    return await this.aggregateService.initLabServer(id);
   }
 
   @Delete(':id/cloud-provider')
@@ -327,10 +337,6 @@ export class CnLabInstancesController {
     await this.aggregateService.deleteServerInstance(id);
   }
 
-  @Post(':id/cloud-provider/command')
-  async executeCommand(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
-    return await this.aggregateService.initLabServer(id);
-  }
 
   @Post(':id/cloud-provider/stop')
   async stop(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {

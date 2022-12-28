@@ -19,11 +19,6 @@ export class CnLabSshService {
   }
 
   public async initLabServer(labInstance: CnLabInstance): Promise<CnLabInstance> {
-    const sshTest = await this.checkSshConnection(labInstance.virtualHost, true);
-    if (!sshTest) {
-      throw new BadRequestException(`SSH connection to ${labInstance.virtualHost} failed`);
-    }
-
     // get Dockerlab repository
     await this.refreshDockerlabRepo(labInstance);
 
@@ -83,34 +78,46 @@ export class CnLabSshService {
     this.logger.log(`Executing command -- ${rebootServer} -- for lab ${labInstance.id}`);
     await this.commandService.execCommand(rebootServer, CnExecCommandMode.STDERR_AS_SUCCESS, true);
 
+    await this.waitForSshConnection(labInstance);
+  }
 
+  /**
+   * Call ssh regularly to check if the server is up. Timeout after 100000 seconds
+   * Raise an exception if the server is not up after 100000 seconds
+   * @param labInstance
+   * @private
+   */
+  public async waitForSshConnection(labInstance: CnLabInstance): Promise<void> {
     // wait for server to reboot
     let count = 0;
     while (count < 10) {
-      this.logger.log(`Waiting for server to reboot for lab ${labInstance.id}. Attempt ${count + 1} of 10`);
-      // wait 10 seconds
-      await new Promise(r => setTimeout(r, 10000));
 
       const result = await this.checkSshConnection(labInstance.virtualHost);
       if (result) {
-        break;
-      } else {
-        count++;
+        return;
       }
 
       if (count >= 10) {
-        throw new BadRequestException(`Server did not reboot for lab ${labInstance.id}`);
+        break;
       }
+
+      this.logger.log(`Waiting for server to be available for lab ${labInstance.id}. Attempt ${count + 1} of 10`);
+      // wait 10 seconds
+      await new Promise(r => setTimeout(r, 10000));
+      count++;
     }
 
+    throw new BadRequestException(`Server is not available for lab ${labInstance.id}`);
   }
 
-  private async checkSshConnection(virtualHost: string, addHostToFingerprint: boolean = false): Promise<boolean> {
+  public async checkSshConnection(virtualHost: string): Promise<boolean> {
 
     // option to add host to fingerprint
-    const option = addHostToFingerprint ? '-o StrictHostKeyChecking=no ' : '';
-    const command = `ssh ${option} lab.${virtualHost} "echo test"`;
-
+    // use a cat because sometimes the ssh never finishes, and it blocks the process.
+    // it requires to kill the process manually, it happens less with cat
+    // TODO TO improve check
+    const command = `ssh -o StrictHostKeyChecking=no ubuntu@lab.${virtualHost} "cat /var/log/auth.log"`;
+    this.logger.log(`Checking ssh connection for ${virtualHost}`);
     try {
       await this.commandService.execCommand(command, CnExecCommandMode.STDERR_AS_WARNING);
       return true;

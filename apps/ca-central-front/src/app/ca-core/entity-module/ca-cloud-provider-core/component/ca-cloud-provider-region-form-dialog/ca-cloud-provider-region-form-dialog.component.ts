@@ -34,9 +34,9 @@ export class CaCloudProviderRegionFormDialogComponent
     return new FormBuilder().group({
       id: [null],
       technicalName: [null, Validators.required],
-      endpoint: [null, Validators.required],
       cloudProvider: [null, Validators.required],
       city: [null, Validators.required],
+      s3Endpoint: [null],
     });
   }
 

@@ -69,25 +69,25 @@ export class CnLabCloudProviderService {
    * It creates the domain record if it doesn't exist
    */
   public async initInstance(labInstance: CnLabInstance,
-                            cloudProvider: CnCloudProviderName,
-                            region: string,
                             billing: CnCpBillingType,
                             volumeSize: number,
                             volumeType: CnCpVolumeType): Promise<CnLabInstance> {
 
-    const cloudProviderService = this.getCloudProviderService(cloudProvider);
+    const cloudProviderName = labInstance.serverInfo.cloudProvider.name
+    const regionName = labInstance.region.technicalName;
+    const cloudProviderService = this.getCloudProviderService(cloudProviderName);
 
     let serverInstance: CnCpInstance;
 
     if (labInstance.serverInstanceId == null) {
       // Creating the server instance
-      serverInstance = await this.createLabInstance(cloudProviderService, labInstance, region, billing);
+      serverInstance = await this.createLabInstance(cloudProviderService, labInstance, regionName, billing);
       labInstance.serverInstanceId = serverInstance.id;
       labInstance = await this.labInstanceService.update(labInstance);
     } else {
       serverInstance = await cloudProviderService.getInstance(labInstance.serverInstanceId);
       if (serverInstance == null) {
-        throw new BadRequestException(`Server instance ${labInstance.serverInstanceId} not found in cloud provider ${cloudProvider}`);
+        throw new BadRequestException(`Server instance ${labInstance.serverInstanceId} not found in cloud provider ${cloudProviderName}`);
       }
       this.logger.log(`Server instance ${labInstance.serverInstanceId} already exists for lab ${labInstance.id}. Skipping creation`);
     }
@@ -96,13 +96,13 @@ export class CnLabCloudProviderService {
 
     if (labInstance.serverVolumeId == null) {
       // Creating the volume
-      volume = await this.createVolume(cloudProviderService, labInstance, region, volumeSize, volumeType);
+      volume = await this.createVolume(cloudProviderService, labInstance, regionName, volumeSize, volumeType);
       labInstance.serverVolumeId = volume.id;
       labInstance = await this.labInstanceService.update(labInstance);
     } else {
       volume = await cloudProviderService.getVolume(labInstance.serverVolumeId);
       if (volume == null) {
-        throw new BadRequestException(`Volume ${labInstance.serverVolumeId} not found in cloud provider ${cloudProvider}`);
+        throw new BadRequestException(`Volume ${labInstance.serverVolumeId} not found in cloud provider ${cloudProviderName}`);
       }
       this.logger.log(`Volume ${labInstance.serverVolumeId} already exists for lab ${labInstance.id}. Skipping creation`);
     }
@@ -112,17 +112,17 @@ export class CnLabCloudProviderService {
     while ((serverInstance.status === 'CREATING' || volume.status === 'CREATING') && count < 10) {
       // wait 30 seconds
       // eslint-disable-next-line max-len
-      this.logger.log(`Waiting for instance ${serverInstance.id} and volume ${volume.id} to be ready for lab ${labInstance.id} in cloud provider ${cloudProvider}. Count: ${count}`);
+      this.logger.log(`Waiting for instance ${serverInstance.id} and volume ${volume.id} to be ready for lab ${labInstance.id} in cloud provider ${cloudProviderName}. Count: ${count}`);
       await new Promise(r => setTimeout(r, 30000));
 
       // refresh lab instance if needed
       if (serverInstance.status !== 'RUNNING') {
-        serverInstance = await this.getCloudProviderService(cloudProvider).getInstance(serverInstance.id);
+        serverInstance = await this.getCloudProviderService(cloudProviderName).getInstance(serverInstance.id);
       }
 
       // refresh volume if needed
       if (volume.status !== 'AVAILABLE') {
-        volume = await this.getCloudProviderService(cloudProvider).getVolume(volume.id);
+        volume = await this.getCloudProviderService(cloudProviderName).getVolume(volume.id);
       }
 
       count++;

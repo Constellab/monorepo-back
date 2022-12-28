@@ -15,15 +15,6 @@
       </mat-error>
     </mat-form-field>
 
-    <!--  Endpoint  -->
-    <mat-form-field class="g-form-input" appearance="outline">
-      <mat-label>{{'cloud_provider_region_endpoint' | translate}}</mat-label>
-      <input matInput formControlName="endpoint" required flInputMaxLength="255"
-             [placeholder]="'cloud_provider_region_endpoint' | translate">
-      <mat-error *ngIf="formGp.get('endpoint').hasError('required')">
-        {{'cloud_provider_region_endpoint' | flErrorRequired}}
-      </mat-error>
-    </mat-form-field>
 
     <!--  Cloud provider  -->
     <mat-form-field class="g-form-input" appearance="outline">
@@ -45,6 +36,13 @@
       <mat-error *ngIf="formGp.get('city').hasError('required')">
         {{'city' | flErrorRequired}}
       </mat-error>
+    </mat-form-field>
+
+    <!--  S3Endpoint  -->
+    <mat-form-field class="g-form-input" appearance="outline">
+      <mat-label>{{'cloud_provider_region_endpoint' | translate}}</mat-label>
+      <input matInput formControlName="s3Endpoint" flInputMaxLength="255"
+             [placeholder]="'cloud_provider_region_endpoint' | translate">
     </mat-form-field>
 
   </form>

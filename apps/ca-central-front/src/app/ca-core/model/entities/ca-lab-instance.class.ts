@@ -10,9 +10,9 @@ import {
   FlStatusTransform
 } from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
-import {CaCity} from './ca-city.entity';
 import {CaSpace} from './space/ca-space.class';
 import {CaLabInstanceUserRole} from './ca-lab-instance-user.class';
+import {CaCloudProviderRegion} from './ca-cloud-provider.class';
 
 export type CaLabInstanceStatus = 'RUNNING' | 'STOPPED';
 
@@ -45,8 +45,8 @@ export class CaLabInstance extends CaBaseEntity {
 
   virtualHost: string;
 
-  @Type(() => CaCity)
-  city: CaCity;
+  @Type(() => CaCloudProviderRegion)
+  region: CaCloudProviderRegion
 
   @Type(() => CaServerInfo)
   serverInfo: CaServerInfo;
@@ -90,8 +90,9 @@ export class CaLabInstanceForm {
   labManagerApiKey: string;
   codelabToken: string;
 
-  @Type(() => CaCity)
-  city: CaCity;
+  @Type(() => CaCloudProviderRegion)
+  region: CaCloudProviderRegion
+
 
   @Type(() => CaSpace)
   space: CaSpace;

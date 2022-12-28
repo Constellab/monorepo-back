@@ -34,13 +34,13 @@
       </mat-error>
     </mat-form-field>
 
-    <!-- City -->
+    <!-- Region -->
     <mat-form-field class="g-form-input">
-      <mat-label>{{'region' | translate}}</mat-label>
-      <mat-select formControlName="city">
-        <ca-select-city-options></ca-select-city-options>
+      <mat-label>{{'cloud_provider_region' | translate}}</mat-label>
+      <mat-select formControlName="region">
+        <ca-select-cloud-provider-region-options></ca-select-cloud-provider-region-options>
       </mat-select>
-      <mat-error *ngIf="formGp.get('city').hasError('required')">
+      <mat-error *ngIf="formGp.get('region').hasError('required')">
         {{'region' | flErrorRequired}}
       </mat-error>
     </mat-form-field>

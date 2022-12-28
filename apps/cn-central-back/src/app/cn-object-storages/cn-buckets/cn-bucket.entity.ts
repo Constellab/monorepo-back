@@ -49,7 +49,7 @@ export class CnBucket extends CnBaseEntity {
 
   public getBucketConfig(): BlBucketConfig {
     return {
-      endpoint: this.region.endpoint,
+      endpoint: this.region.s3Endpoint,
       region: this.region.technicalName,
       bucket: this.name,
       credentials: {

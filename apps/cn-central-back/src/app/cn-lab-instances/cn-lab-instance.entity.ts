@@ -7,10 +7,10 @@ import {CnServerInfo} from '../cn-servers-info/cn-server-info.entity';
 import {CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 import {randomBytes} from 'crypto';
 import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
-import {CnCity} from '../cn-city/cn-city.entity';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {CnLabInstanceUser} from './user/cn-lab-instance-user.entity';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
+import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 
 
 /**
@@ -70,8 +70,8 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     {nullable: false, eager: true})
   serverInfo: CnServerInfo;
 
-  @ManyToOne(() => CnCity, {onDelete: 'RESTRICT', eager: true})
-  city: CnCity;
+  @ManyToOne(() => CnCloudProviderRegion, {onDelete: 'RESTRICT', eager: true})
+  region: CnCloudProviderRegion;
 
   // id of the ovh, aws, instance
   @Column({nullable: true, length: 255})

@@ -18,7 +18,7 @@ export class CaCloudProviderRegion extends CaBaseEntity {
 
   technicalName: string;
 
-  endpoint: string;
+  s3Endpoint: string;
 
   @Type(() => CaCloudProvider)
   cloudProvider: CaCloudProvider;

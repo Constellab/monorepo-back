@@ -25,6 +25,7 @@ import {CaLabInstanceSearchComponent} from './component/ca-lab-instance-search/c
 import {
   CaLabInstanceSearchFormComponent
 } from './component/ca-lab-instance-search-form/ca-lab-instance-search-form.component';
+import {CaCloudProviderCoreModule} from '../ca-cloud-provider-core/ca-cloud-provider-core.module';
 
 /**
  * Core module for Lab and LabInstance
@@ -60,6 +61,7 @@ import {
     CaServerInfoCoreModule,
     CaSpaceCoreModule,
     CaConfigCoreModule,
+    CaCloudProviderCoreModule,
 
     CaCoreModule,
   ]

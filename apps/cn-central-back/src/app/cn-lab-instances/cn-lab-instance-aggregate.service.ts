@@ -1,4 +1,4 @@
-import {Injectable, Logger} from '@nestjs/common';
+import {BadRequestException, Injectable, Logger} from '@nestjs/common';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstancesService} from './cn-lab-instances.service';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
@@ -68,6 +68,10 @@ export class CnLabInstanceAggregateService {
   }
 
   async create(createLabInstance: CnLabInstanceCreateDTO): Promise<CnLabInstance> {
+    if(createLabInstance.region.cloudProvider.id !== createLabInstance.serverInfo.cloudProvider.id){
+      throw new BlBadRequestException('Cloud Provider and Region must be the same');
+    }
+
     await this.security.checkAuthorizationToCreate(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
 
     const labInstance = BlDtoHelper.fromDto(CnLabInstance, createLabInstance);
@@ -77,6 +81,10 @@ export class CnLabInstanceAggregateService {
 
 
   async update(updateLabInstance: CnLabInstanceCreateDTO): Promise<CnLabInstance> {
+    if(updateLabInstance.region.cloudProvider.id !== updateLabInstance.serverInfo.cloudProvider.id){
+      throw new BlBadRequestException('Cloud Provider and Region must be the same');
+    }
+
     const labInstanceDb: CnLabInstance = await this.getAndCheckAuthorizationToUpdate(updateLabInstance.id);
     const labInstance = BlDtoHelper.fromDto(CnLabInstance, updateLabInstance);
     return this.labInstancesService.updateWithCompare(labInstance, labInstanceDb);
@@ -416,20 +424,29 @@ export class CnLabInstanceAggregateService {
 
   public async initCompleteLab(labInstanceId: string): Promise<CnLabInstance> {
     let labInstance = await this.getAndCheckAuthorizationToUpdateCloudProvider(labInstanceId);
-    labInstance = await this.cloudProviderService.initInstance(labInstance, 'OVH', 'GRA7',
+    labInstance = await this.cloudProviderService.initInstance(labInstance,
       'HOURLY', 10, 'CLASSIC');
+
+    // wait for the DNS to be ready
+    await this.labSshService.waitForSshConnection(labInstance);
 
     return this.labSshService.initLabServer(labInstance);
   }
 
   public async initServerInstance(labInstanceId: string): Promise<CnLabInstance> {
     const labInstance = await this.getAndCheckAuthorizationToUpdateCloudProvider(labInstanceId);
-    return this.cloudProviderService.initInstance(labInstance, 'OVH', 'GRA7',
+    return this.cloudProviderService.initInstance(labInstance,
       'HOURLY', 10, 'CLASSIC');
   }
 
   public async initLabServer(labInstanceId: string): Promise<CnLabInstance> {
     const labInstance = await this.getAndCheckAuthorizationToUpdateCloudProvider(labInstanceId);
+
+    const sshTest = await this.labSshService.checkSshConnection(labInstance.virtualHost);
+    if (!sshTest) {
+      throw new BadRequestException(`SSH connection to ${labInstance.virtualHost} failed`);
+    }
+
     return await this.labSshService.initLabServer(labInstance);
   }
 

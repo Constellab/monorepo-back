@@ -9,7 +9,7 @@ import {
 } from '../../../../model/entities/ca-cloud-provider.class';
 
 @Component({
-  selector: 'ca-select-bucket-region-options',
+  selector: 'ca-select-cloud-provider-region-options',
   templateUrl: './ca-select-cloud-provider-region-options.component.html',
   styleUrls: ['./ca-select-cloud-provider-region-options.component.scss']
 })
