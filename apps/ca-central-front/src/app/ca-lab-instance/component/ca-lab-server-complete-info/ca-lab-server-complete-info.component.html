@@ -1,0 +1,127 @@
+<!-- Server instance -->
+<div>
+  <h2>{{'lab_server_instance' | translate}}</h2>
+  <div *ngIf="serverInfo.instance; else noInstance">
+    <fl-key-value>
+      <fl-key>{{'name' | translate}}</fl-key>
+      {{serverInfo.instance.name}}
+    </fl-key-value>
+
+    <fl-key-value>
+      <fl-key>{{'status' | translate}}</fl-key>
+      {{serverInfo.instance.status}}
+    </fl-key-value>
+
+    <fl-key-value>
+      <fl-key>{{'lab_ip_address' | translate}}</fl-key>
+      {{serverInfo.instance.ipv4}}
+    </fl-key-value>
+
+    <fl-key-value>
+      <fl-key>{{'region' | translate}}</fl-key>
+      {{serverInfo.instance.region}}
+    </fl-key-value>
+
+    <fl-key-value>
+      <fl-key>{{'lab_billing' | translate}}</fl-key>
+      {{serverInfo.instance.billing}}
+    </fl-key-value>
+
+    <fl-key-value>
+      <fl-key>{{'id' | translate}}</fl-key>
+      {{serverInfo.instance.id}}
+    </fl-key-value>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>{{'lab_detail_object' | translate}}</mat-expansion-panel-header>
+
+      <fl-pretty-json [object]="serverInfo.instance.originalObject"></fl-pretty-json>
+    </mat-expansion-panel>
+  </div>
+
+  <ng-template #noInstance>
+    <fl-error-text [errorMessage]="'lab_no_server_instance' | translate"></fl-error-text>
+  </ng-template>
+</div>
+
+<!-- Volume -->
+<div class="g-section">
+  <h2>{{'lab_server_volume' | translate}}</h2>
+  <div *ngIf="serverInfo.volume; else noVolume">
+
+    <fl-key-value>
+      <fl-key>{{'name' | translate}}</fl-key>
+      {{serverInfo.instance.name}}
+    </fl-key-value>
+
+    <fl-key-value>
+      <fl-key>{{'status' | translate}}</fl-key>
+      {{serverInfo.volume.status}}
+    </fl-key-value>
+
+    <fl-key-value>
+      <fl-key>{{'lab_volume_size' | translate}}</fl-key>
+      {{serverInfo.volume.size}}
+    </fl-key-value>
+
+    <fl-key-value>
+      <fl-key>{{'lab_volume_type' | translate}}</fl-key>
+      {{serverInfo.volume.type}}
+    </fl-key-value>
+
+    <fl-key-value>
+      <fl-key>{{'region' | translate}}</fl-key>
+      {{serverInfo.volume.region}}
+    </fl-key-value>
+
+    <fl-key-value>
+      <fl-key>{{'lab_volume_attached_to' | translate}}</fl-key>
+      {{serverInfo.volume.attachedTo}}
+    </fl-key-value>
+
+    <fl-key-value>
+      <fl-key>{{'id' | translate}}</fl-key>
+      {{serverInfo.volume.id}}
+    </fl-key-value>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>{{'lab_detail_object' | translate}}</mat-expansion-panel-header>
+
+      <fl-pretty-json [object]="serverInfo.volume.originalObject"></fl-pretty-json>
+    </mat-expansion-panel>
+  </div>
+
+  <ng-template #noVolume>
+    <fl-error-text [errorMessage]="'lab_no_server_volume' | translate"></fl-error-text>
+  </ng-template>
+</div>
+
+<!-- DNS record -->
+<div class="g-section">
+  <h2>{{'lab_dns_record' | translate}}</h2>
+  <div *ngIf="serverInfo.domainRecord; else noDNS">
+    <fl-key-value>
+      <fl-key>{{'lab_dns_zone' | translate}}</fl-key>
+      {{serverInfo.domainRecord.zone}}
+    </fl-key-value>
+
+    <fl-key-value>
+      <fl-key>{{'lab_dns_subdomain' | translate}}</fl-key>
+      {{serverInfo.domainRecord.subDomain}}
+    </fl-key-value>
+
+    <fl-key-value>
+      <fl-key>{{'lab_dns_record_type' | translate}}</fl-key>
+      {{serverInfo.domainRecord.fieldType}}
+    </fl-key-value>
+
+    <fl-key-value>
+      <fl-key>{{'lab_dns_record_value' | translate}}</fl-key>
+      {{serverInfo.domainRecord.target}}
+    </fl-key-value>
+  </div>
+
+  <ng-template #noDNS>
+    <fl-error-text [errorMessage]="'lab_no_dns_record' | translate"></fl-error-text>
+  </ng-template>
+</div>

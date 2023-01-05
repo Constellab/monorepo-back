@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {Observable} from 'rxjs';
-import {CaExternalLabBackupHistory} from '../../../ca-core/model/entities/ca-lab-manager.class';
+import {CaExternalLabBackupHistory} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
 import {map} from 'rxjs/operators';
 
 @Component({

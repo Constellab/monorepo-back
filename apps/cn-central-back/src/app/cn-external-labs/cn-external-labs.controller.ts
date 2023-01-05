@@ -27,7 +27,7 @@ export class CnExternalLabsController {
   @ClLabRobotAuthentication()
   @Put('start')
   onLabStart(@Body() labStart: CnLabInstanceStartDTO): Promise<void> {
-    return this.labInstanceAggregator.markLabAsStarted(labStart);
+    return this.labInstanceAggregator.registerLabConfig(labStart);
   }
 
   @Put('project/:projectId/experiment')

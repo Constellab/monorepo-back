@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
 import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experiment.service';
-import {CaLabConfig} from '../../../../../ca-core/model/entities/ca-lab-config.class';
+import {CaLabConfig} from '../../../../../ca-core/model/entities/lab/ca-lab-config.class';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {CaBrick, CaBrickVersion} from '../../../../../ca-core/model/entities/ca-brick.class';
 import {CaBrickService} from '../../../../../ca-core/service-api/ca-brick.service';

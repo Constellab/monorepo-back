@@ -7,7 +7,7 @@ import {
   FlSearchDateInterval
 } from '@monorepo/front-core-lib';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {CaLabInstanceStatus} from '../../../model/entities/ca-lab-instance.class';
+import {CaLabInstanceStatus} from '../../../model/entities/lab/ca-lab-instance.class';
 import {CaCity} from '../../../model/entities/ca-city.entity';
 import {CaServerInfo} from '../../../model/entities/ca-server-info.class';
 

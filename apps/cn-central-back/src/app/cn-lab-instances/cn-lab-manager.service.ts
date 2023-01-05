@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable, Logger} from '@nestjs/common';
 import {
   CnLabComposeUpOptions,
   CnLabDockerPs,
@@ -22,6 +22,7 @@ import {BlBadRequestException, BlBucketConfig} from '@monorepo/back-core-lib';
  */
 @Injectable()
 export class CnLabManagerService {
+  private readonly logger = new Logger(CnLabManagerService.name);
 
 
   constructor(private labManagerApiService: CnExternalLabManagerApiService,
@@ -34,9 +35,8 @@ export class CnLabManagerService {
   }
 
   public async getLabStatus(labInstance: CnLabInstance): Promise<CnLabManagerStatus> {
-    try {
-      await this.healthCheck(labInstance.getLabManagerApiInfo().apiUrl);
-    } catch (e) {
+    const isRunning = await this.healthCheck(labInstance.getLabManagerApiInfo().apiUrl);
+    if (!isRunning) {
       throw new BlBadRequestException('The lab manager is not running');
     }
 
@@ -176,6 +176,32 @@ export class CnLabManagerService {
     }
 
     return labInstanceConfig;
+  }
+
+  /**
+   * Call health check on the lab manager until the lab is ready
+   */
+  public async waitForHealthCheck(labManagerUrl: string): Promise<void> {
+    // wait for server to reboot
+    let count = 0;
+    while (count < 10) {
+
+      const result = await this.healthCheck(labManagerUrl);
+      if (result) {
+        return;
+      }
+
+      if (count >= 10) {
+        break;
+      }
+
+      this.logger.log(`Waiting for server to be available for lab manager ${labManagerUrl}. Attempt ${count + 1} of 10`);
+      // wait 10 seconds
+      await new Promise(r => setTimeout(r, 10000));
+      count++;
+    }
+
+    throw new BadRequestException(`Server is not available for lab manager ${labManagerUrl}`);
   }
 
   /////////////////////////////////////////////// BACKUP /////////////////////////////////////////////////////

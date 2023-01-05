@@ -1,0 +1,101 @@
+<fl-card>
+
+  <fl-card-header>
+    <fl-text-icon>
+      <mat-icon>dns</mat-icon>
+      <h2>{{'lab_server' | translate}}</h2>
+    </fl-text-icon>
+  </fl-card-header>
+
+  <fl-card-body>
+
+    <p class="status" *ngIf="statusAction$ | async as statusAction">
+      {{statusAction.message | translate}}
+      <button *ngIf="statusAction.action" mat-stroked-button class="status-action-button"
+              type="button" (click)="statusAction.action()">
+        {{statusAction.actionText | translate}}
+      </button>
+    </p>
+
+    <ng-container *ngIf="status$ | async as status">
+
+      <!--  If the lab is starting or stopping, show current progress message    -->
+      <fl-key-value>
+        <fl-key>{{'lab_server_current_progress' | translate}}</fl-key>
+        {{status.serverProgressText}}
+      </fl-key-value>
+
+
+      <fl-text-ok-nok [value]="status.hasServerInstanceId"
+                      [okText]="'lab_server_instance_configured' | translate"
+                      [nokText]="'lab_server_instance_not_configured' | translate">
+      </fl-text-ok-nok>
+
+      <fl-text-ok-nok [value]="status.hasServerVolumeId"
+                      [okText]="'lab_server_volume_configured' | translate"
+                      [nokText]="'lab_server_volume_not_configured' | translate">
+      </fl-text-ok-nok>
+
+      <fl-text-ok-nok [value]="status.labManagerIsRunning"
+                      [okText]="'lab_manager_running' | translate"
+                      [nokText]="'lab_manager_not_running' | translate">
+      </fl-text-ok-nok>
+
+      <fl-text-ok-nok [value]="status.labIsRunning"
+                      [okText]="'lab_is_running' | translate"
+                      [nokText]="'lab_is_not_running' | translate">
+      </fl-text-ok-nok>
+    </ng-container>
+
+
+    <div class="g-section">
+
+      <ca-lab-instance-start-stop *ngIf="isOwner$ | async" class="g-button-action actions-button">
+      </ca-lab-instance-start-stop>
+
+      <button mat-stroked-button type="button" (click)="forceStatusRefresh()"
+              class="g-button-small actions-button">
+        <mat-icon>refresh</mat-icon>
+        {{'refresh_status' | translate}}
+      </button>
+
+      <button mat-stroked-button type="button" class="g-button-small actions-button"
+              (click)="openServerInfoDialog()">
+        <mat-icon>info</mat-icon>
+        {{'lab_server_info' | translate}}
+      </button>
+    </div>
+
+    <mat-expansion-panel *ngIf="isOwner$ | async">
+      <mat-expansion-panel-header>
+        {{'lab_advanced_configuration' | translate}}
+      </mat-expansion-panel-header>
+
+      <fl-text-icon class="warning-text">
+        <mat-icon color="warn">warnings</mat-icon>
+        {{'lab_advanced_configuration_warning' | translate}}
+      </fl-text-icon>
+
+      <button mat-stroked-button type="button" class="g-button-small actions-button"
+              (click)="initServer()">
+        {{'lab_init_server' | translate}}
+      </button>
+
+      <button mat-stroked-button type="button" class="g-button-small actions-button"
+              (click)="configureServer()">
+        {{'lab_configure_server' | translate}}
+      </button>
+
+      <button mat-stroked-button type="button" class="g-button-small actions-button"
+              (click)="configureLab()">
+        {{'lab_configure_lab' | translate}}
+      </button>
+
+      <button mat-stroked-button type="button" class="g-button-small actions-button"
+              color="warn" (click)="deleteServer()">
+        {{'lab_delete_server' | translate}}
+      </button>
+
+    </mat-expansion-panel>
+  </fl-card-body>
+</fl-card>

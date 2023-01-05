@@ -10,6 +10,7 @@ import {Type} from 'class-transformer';
 import {CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import {CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 
 
 /**
@@ -35,6 +36,8 @@ export class CnLabInstanceDto extends BlBaseEntityDto {
 export class CnLabInstanceAdminDto extends CnLabInstanceDto {
   glabApiKey: string = undefined;
   labManagerApiKey: string = undefined;
+  serverInstanceId: string = undefined;
+  serverVolumeId: string = undefined;
 }
 
 export class CnLabFindOneDto {
@@ -42,6 +45,9 @@ export class CnLabFindOneDto {
   labInstance: CnLabInstanceDto = undefined;
 
   userRole: CnLabInstanceUserRole;
+
+  labManagerIsRunning: boolean;
+  labIsRunning: boolean;
 
   static create(labInstance: CnLabInstance, userRole: CnLabInstanceUserRole): CnLabFindOneDto {
     const dto = new CnLabFindOneDto();
@@ -83,5 +89,16 @@ export class CnLabInstanceCreateDTO {
 
   @Type(() => CnSpace)
   space: CnSpace;
+
+  serverInstanceId: string;
+  serverVolumeId: string;
 }
 
+export interface CnLabInstanceStatusDTO {
+  labStatus: CnLabInstanceStatus;
+  labManagerIsRunning: boolean;
+  labIsRunning: boolean;
+  hasServerInstanceId: boolean;
+  hasServerVolumeId: boolean;
+  serverProgressText: string;
+}

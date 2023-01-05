@@ -3,7 +3,7 @@ import {FormControl, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {CaProject} from '../../../ca-core/model/entities/ca-project.class';
-import {CaLabInstanceProject} from '../../../ca-core/model/entities/ca-lab-instance-project.class';
+import {CaLabInstanceProject} from '../../../ca-core/model/entities/lab/ca-lab-instance-project.class';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 
 export interface CaLabInstanceAddProjectDialogInput {

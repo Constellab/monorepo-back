@@ -1,5 +1,8 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {CaExternalLabBackup, CaExternalLabBackupStorage} from '../../../ca-core/model/entities/ca-lab-manager.class';
+import {
+  CaExternalLabBackup,
+  CaExternalLabBackupStorage
+} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
 
 /**
  * Show 1 backup information for a lab instance

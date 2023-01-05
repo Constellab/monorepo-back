@@ -1,5 +1,5 @@
 import {CaBaseEntity} from './ca-base-entity.class';
-import {CaLabInstance} from './ca-lab-instance.class';
+import {CaLabInstance} from './lab/ca-lab-instance.class';
 import {CaStatusHistory} from './ca-status-history.class';
 import {FlQuillJson, FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';

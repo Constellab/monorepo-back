@@ -9,6 +9,7 @@ import {
   CnLabInstanceAdminDto,
   CnLabInstanceConfigDTO,
   CnLabInstanceCreateDTO,
+  CnLabInstanceStatusDTO,
 } from './cn-lab-instance.dto';
 import {
   CnLabComposeUpOptions,
@@ -19,15 +20,13 @@ import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
 import {CnLabInstanceProject} from './project/cn-lab-instance-project.entity';
 import {CnExternalLabBackup, CnExternalLabBackupHistory} from '../cn-external-lab-api/model/cn-external-lab-api.class';
-import {CnOvhService} from './cloud-provider/ovh/cn-ovh.service';
 import {CnCpCompleteInfo} from './cloud-provider/cn-cloud-provider-external.class';
 
 
 @Controller('lab-instances')
 export class CnLabInstancesController {
 
-  constructor(private aggregateService: CnLabInstanceAggregateService,
-              private ovhService: CnOvhService) {
+  constructor(private aggregateService: CnLabInstanceAggregateService) {
   }
 
 
@@ -126,14 +125,6 @@ export class CnLabInstancesController {
   }
 
   /**
-   * return the history of the status
-   */
-  @Get(':id/status-history')
-  getStatusHistory(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusHistory[]> {
-    return this.aggregateService.getStatusHistory(id);
-  }
-
-  /**
    * Update the lab name
    */
   @Put(':id/name/:name')
@@ -155,6 +146,31 @@ export class CnLabInstancesController {
   @Get(':id/lab-config')
   public getLabInstanceConfig(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabConfig> {
     return this.aggregateService.getLabInstanceConfig(id);
+  }
+
+  //////////////////////////// STATUS ////////////////////////////////
+  /**
+   * return the history of the status
+   */
+  @Get(':id/status')
+  getStatus(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusDTO> {
+    return this.aggregateService.getStatus(id);
+  }
+
+  /**
+   * return the history of the status
+   */
+  @Get(':id/status/history')
+  getStatusHistory(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusHistory[]> {
+    return this.aggregateService.getStatusHistory(id);
+  }
+
+  /**
+   * stop a lab instance
+   */
+  @Put(':id/status/refresh')
+  public refreshStatus(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusDTO> {
+    return this.aggregateService.refreshStatus(id);
   }
 
   //////////////////////////// USERS ////////////////////////////////
@@ -207,85 +223,85 @@ export class CnLabInstancesController {
 
   //////////////////////////// LAB MANAGER ////////////////////////////////
 
-  @Get(':id/status')
+  @Get(':id/lab-manager/status')
   async getContainersStatus(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabManagerStatus> {
-    return this.aggregateService.getStatus(id);
+    return this.aggregateService.getLabManagerStatus(id);
   }
 
-  @Get(':id/containers')
+  @Get(':id/lab-manager/containers')
   async listContainers(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabDockerPs[]> {
     return await this.aggregateService.listContainers(id);
   }
 
-  @Get(':id/:containerName/logs')
+  @Get(':id/lab-manager/:containerName/logs')
   async getLogs(@Param('id', new ParseUUIDPipe()) id: string, @Param('containerName') containerName: string): Promise<string> {
     return await this.aggregateService.getLogs(id, containerName);
   }
 
-  @Post(':id/init-all')
+  @Post(':id/lab-manager/init-all')
   async initAll(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return await this.aggregateService.initAll(id);
   }
 
-  @Post(':id/up-containers')
+  @Post(':id/lab-manager/up-containers')
   async upContainers(@Param('id', new ParseUUIDPipe()) id: string,
                      @Body() options: CnLabComposeUpOptions): Promise<void> {
     return await this.aggregateService.upContainers(id, options);
   }
 
-  @Post(':id/restart-containers')
+  @Post(':id/lab-manager/restart-containers')
   async restartContainers(@Param('id', new ParseUUIDPipe()) id: string,
                           @Body() options: CnLabComposeUpOptions): Promise<void> {
     return await this.aggregateService.restartContainers(id, options);
   }
 
-  @Post(':id/down-containers')
+  @Post(':id/lab-manager/down-containers')
   async downContainers(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return await this.aggregateService.downContainers(id);
   }
 
-  @Post(':id/pull-containers')
+  @Post(':id/lab-manager/pull-containers')
   async pullContainers(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return await this.aggregateService.pullContainers(id);
   }
 
-  @Post(':id/pull-biota-db')
+  @Post(':id/lab-manager/pull-biota-db')
   async pullBiotaDb(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.aggregateService.pullBiota(id);
   }
 
-  @Post(':id/registry-login')
+  @Post(':id/lab-manager/registry-login')
   async registryLogin(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.aggregateService.registryLogin(id);
   }
 
-  @Post(':id/stop-current-task')
+  @Post(':id/lab-manager/stop-current-task')
   public stopCurrentTask(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.aggregateService.stopCurrentTask(id);
   }
 
-  @Post(':id/system-prune')
+  @Post(':id/lab-manager/system-prune')
   public systemPrune(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.aggregateService.systemPrune(id);
   }
 
-  @Put(':id/config')
+  @Put(':id/lab-manager/config')
   async updateConfig(@Param('id', new ParseUUIDPipe()) id: string,
                      @Body() config: CnLabInstanceConfigDTO): Promise<void> {
     return await this.aggregateService.updateConfig(id, config);
   }
 
-  @Get(':id/config')
+  @Get(':id/lab-manager/config')
   async getConfig(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceConfigDTO> {
     return await this.aggregateService.getConfig(id);
   }
 
-  @Put(':id/adminer/start')
+  @Put(':id/lab-manager/adminer/start')
   async startAdminer(@Param('id', new ParseUUIDPipe()) id: string): Promise<boolean> {
     return await this.aggregateService.startAdminer(id);
   }
 
-  @Put(':id/adminer/stop')
+  @Put(':id/lab-manager/adminer/stop')
   async stopAdminer(@Param('id', new ParseUUIDPipe()) id: string): Promise<boolean> {
     return await this.aggregateService.stopAdminer(id);
   }
@@ -311,41 +327,29 @@ export class CnLabInstancesController {
     return await this.aggregateService.getBackupHistory(id);
   }
 
-  /////////////////////////// CLOUD PROVIDER //////////////////////////////
-  @Get(':id/cloud-provider/status')
-  async getCloudProviderInfo(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnCpCompleteInfo> {
+  /////////////////////////// SERVER //////////////////////////////
+  @Get(':id/server/info')
+  async getServerInfo(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnCpCompleteInfo> {
     return await this.aggregateService.getServerInfo(id);
   }
 
-  @Post(':id/cloud-provider/init-all')
-  async initCompleteLab(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
-    return await this.aggregateService.initCompleteLab(id);
+  @Post(':id/server/init')
+  async init(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
+    return await this.aggregateService.init(id);
   }
 
-  @Post(':id/cloud-provider/init-cloud')
-  async initCloudProvider(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
-    return await this.aggregateService.initServerInstance(id);
+  @Post(':id/server/configure-server')
+  async configureServer(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
+    return await this.aggregateService.configureServer(id);
   }
 
-  @Post(':id/cloud-provider/init-server')
-  async initLabServer(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
-    return await this.aggregateService.initLabServer(id);
+  @Post(':id/server/configure-lab')
+  async configureLab(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
+    return await this.aggregateService.configureLab(id);
   }
 
-  @Delete(':id/cloud-provider')
+  @Delete(':id/server')
   async deleteServerInstance(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     await this.aggregateService.deleteServerInstance(id);
   }
-
-
-  @Post(':id/cloud-provider/stop')
-  async stop(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
-    return await this.ovhService.stopInstance(id);
-  }
-
-  @Post(':id/cloud-provider/start')
-  async start(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
-    return await this.ovhService.startInstance(id);
-  }
-
 }

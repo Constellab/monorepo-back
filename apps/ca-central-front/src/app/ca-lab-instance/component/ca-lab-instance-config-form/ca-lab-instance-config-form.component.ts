@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {FlDialogService, FlSnackBarService} from '@monorepo/front-core-lib';
-import {CaBrickVersionDTO, CaLabInstanceConfig} from '../../../ca-core/model/entities/ca-lab-manager.class';
+import {CaBrickVersionDTO, CaLabInstanceConfig} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
 import {
   CaLabInstanceConfigBrickComponent
 } from '../ca-lab-instance-config-brick/ca-lab-instance-config-brick.component';

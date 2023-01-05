@@ -34,9 +34,9 @@
 
   <!-- Custom action where template is defined by parent -->
   <ng-container matColumnDef="customTemplate">
-    <mat-header-cell *matHeaderCellDef class="g-table-icon-button-cell">
+    <mat-header-cell *matHeaderCellDef>
     </mat-header-cell>
-    <mat-cell *matCellDef="let user" class="g-table-icon-button-cell">
+    <mat-cell *matCellDef="let user">
       <ng-container *ngTemplateOutlet="templateRef; context: getUserViewContext(user)"></ng-container>
     </mat-cell>
   </ng-container>

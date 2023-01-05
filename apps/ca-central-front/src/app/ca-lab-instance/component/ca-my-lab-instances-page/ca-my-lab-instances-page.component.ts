@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {CaLabInstanceDatasource} from '../../../ca-core/model/entities/ca-lab-instance.class';
+import {CaLabInstanceDatasource} from '../../../ca-core/model/entities/lab/ca-lab-instance.class';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 
 @Component({

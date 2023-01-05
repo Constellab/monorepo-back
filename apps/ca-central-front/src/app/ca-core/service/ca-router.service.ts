@@ -51,10 +51,6 @@ export class CaRouterService {
     this.router.navigate([CaRouterService.getDashboardRoute()]);
   }
 
-  public static getLabInstanceDetailRoute(labInstanceId: string): string {
-    return CaRouterService.getFullRoute(`${caConstLabInstancesRoute}/${labInstanceId}`);
-  }
-
   //////////////////////////// PROJECT //////////////////////////////
 
 
@@ -78,11 +74,20 @@ export class CaRouterService {
     return CaRouterService.getFullRoute(`${caConstProjectRoute}/report/${reportId}`);
   }
 
+
+  //////////////////////////// Lab //////////////////////////////
+
   public static getMyLabInstancesRoute(): string {
     return CaRouterService.getFullRoute(caConstLabInstancesRoute);
   }
 
+  public static getLabInstanceDetailRoute(labInstanceId: string): string {
+    return CaRouterService.getFullRoute(`${caConstLabInstancesRoute}/${labInstanceId}`);
+  }
 
+  public static getLabInstanceConfigRoute(labInstanceId: string): string {
+    return `${CaRouterService.getLabInstanceDetailRoute(labInstanceId)}/config`;
+  }
   ////////////////////////// SMART DB ///////////////////////
 
   public static getMySmartDbsRoute(): string {

@@ -1,7 +1,10 @@
 <fl-card>
 
   <fl-card-header>
-    <h2>{{'lab_manager' | translate}}</h2>
+    <fl-text-icon>
+      <mat-icon>engineering</mat-icon>
+      <h2>{{'lab_manager' | translate}}</h2>
+    </fl-text-icon>
 
     <fl-card-actions class="action-buttons">
 
@@ -20,60 +23,62 @@
   <fl-card-body>
 
     <!--  Global status  -->
-    <fl-async-section [object]="labStatus$" [showServerErrorText]="true">
+    <fl-async-section [object]="labManagerStatus$" [showServerErrorText]="true" emptyText="lab_manager_not_running">
       <ng-container *flSectionBody="let labStatus">
-        <ca-lab-instance-manager-status [labStatus]="labStatus" [adminerUrl]="labInstance.adminerUrl"></ca-lab-instance-manager-status>
+        <ca-lab-instance-manager-status [labStatus]="labStatus"
+                                        [adminerUrl]="labInstance.adminerUrl"></ca-lab-instance-manager-status>
+
+
+        <!--  Action button  -->
+        <div class="action-buttons g-section">
+          <button mat-stroked-button type="button" color="primary"
+                  class="g-button-small" (click)="initAll()">Init all
+          </button>
+          <button mat-stroked-button type="button" color="primary"
+                  class="g-button-small" (click)="upContainers()">Up containers
+          </button>
+          <button mat-stroked-button type="button" color="primary"
+                  class="g-button-small" (click)="restartContainers()">Restart containers
+          </button>
+          <button mat-stroked-button type="button" color="primary"
+                  class="g-button-small" (click)="pullContainers()">Pull containers
+          </button>
+          <button mat-stroked-button type="button" color="primary"
+                  class="g-button-small" (click)="pullBiotaDb()">Pull biota
+          </button>
+          <button mat-stroked-button type="button" color="primary"
+                  class="g-button-small" (click)="registryLogin()">Registry login
+          </button>
+          <button mat-stroked-button type="button" color="warn"
+                  class="g-button-small" (click)="downContainers()">Down containers
+          </button>
+          <button mat-stroked-button type="button" color="warn"
+                  class="g-button-small" (click)="stopCurrentTask()">Stop current task
+          </button>
+          <button mat-stroked-button type="button" color="warn"
+                  class="g-button-small" (click)="systemPrune()">System prune
+          </button>
+
+          <button mat-stroked-button type="button" color="warn"
+                  class="g-button-small" (click)="startAdminer()">Start adminer
+          </button>
+
+          <button mat-stroked-button type="button" color="warn"
+                  class="g-button-small" (click)="stopAdminer()">Stop adminer
+          </button>
+        </div>
+
+
+        <!--  Lab config  -->
+        <ca-lab-instance-config [labInstanceId]="labInstance.id"
+                                class="g-section content"></ca-lab-instance-config>
+
       </ng-container>
     </fl-async-section>
 
-    <!--  Action button  -->
-    <div class="action-buttons g-section">
-      <button mat-stroked-button type="button" color="primary"
-              class="g-button-small" (click)="initAll()">Init all
-      </button>
-      <button mat-stroked-button type="button" color="primary"
-              class="g-button-small" (click)="upContainers()">Up containers
-      </button>
-      <button mat-stroked-button type="button" color="primary"
-              class="g-button-small" (click)="restartContainers()">Restart containers
-      </button>
-      <button mat-stroked-button type="button" color="primary"
-              class="g-button-small" (click)="pullContainers()">Pull containers
-      </button>
-      <button mat-stroked-button type="button" color="primary"
-              class="g-button-small" (click)="pullBiotaDb()">Pull biota
-      </button>
-      <button mat-stroked-button type="button" color="primary"
-              class="g-button-small" (click)="registryLogin()">Registry login
-      </button>
-      <button mat-stroked-button type="button" color="warn"
-              class="g-button-small" (click)="downContainers()">Down containers
-      </button>
-      <button mat-stroked-button type="button" color="warn"
-              class="g-button-small" (click)="stopCurrentTask()">Stop current task
-      </button>
-      <button mat-stroked-button type="button" color="warn"
-              class="g-button-small" (click)="systemPrune()">System prune
-      </button>
-
-      <button mat-stroked-button type="button" color="warn"
-              class="g-button-small" (click)="startAdminer()">Start adminer
-      </button>
-
-      <button mat-stroked-button type="button" color="warn"
-              class="g-button-small" (click)="stopAdminer()">Stop adminer
-      </button>
-    </div>
-
-
-    <!--  Lab config  -->
-    <ca-lab-instance-config [labInstanceId]="labInstance.id"
-                            class="g-section content"></ca-lab-instance-config>
-
-    <mat-divider></mat-divider>
-
+    <mat-divider class="divider"></mat-divider>
     <!--  List of containers  -->
-    <ca-lab-docker-containers [labInstanceId]="labInstance.id" class="g-section"></ca-lab-docker-containers>
+    <ca-lab-docker-containers [labInstanceId]="labInstance.id"></ca-lab-docker-containers>
 
   </fl-card-body>
 

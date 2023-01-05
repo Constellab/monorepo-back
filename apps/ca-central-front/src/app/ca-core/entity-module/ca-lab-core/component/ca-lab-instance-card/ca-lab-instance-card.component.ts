@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CaLabInstance} from '../../../../model/entities/ca-lab-instance.class';
+import {CaLabInstance} from '../../../../model/entities/lab/ca-lab-instance.class';
 import {FlStatusChipMode} from '@monorepo/front-core-lib';
 
 /**

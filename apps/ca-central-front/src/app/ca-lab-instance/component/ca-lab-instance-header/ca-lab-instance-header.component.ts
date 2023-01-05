@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {CaLabInstance} from '../../../ca-core/model/entities/ca-lab-instance.class';
+import {CaLabInstance, CaLabInstanceStatus} from '../../../ca-core/model/entities/lab/ca-lab-instance.class';
 import {
   CaStatusHistoryListDialogComponent,
   CaStatusHistoryListDialogInput
@@ -8,10 +8,12 @@ import {
   CaLabInstanceUpdateNameDialogComponent,
   LabInstanceUpdateNameDialogInput
 } from '../ca-lab-instance-update-name-dialog/ca-lab-instance-update-name-dialog.component';
-import {FlDialogService} from '@monorepo/front-core-lib';
+import {FlDialogService, FlStatus} from '@monorepo/front-core-lib';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {CaLabInstanceDetailPageState} from '../../state/ca-lab-instance-detail-page.state';
 import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {CaRouterService} from '../../../ca-core/service/ca-router.service';
 
 /**
  * Header info about the lab instance in the detail page
@@ -23,7 +25,10 @@ import {Observable} from 'rxjs';
 })
 export class CaLabInstanceHeaderComponent implements OnInit {
 
-  labInstance$: Observable<CaLabInstance>;
+  labInstance$: Observable<CaLabInstance> = this.state.getLabInstance$();
+  labStatus$: Observable<FlStatus<CaLabInstanceStatus>> = this.state.getStatus$().pipe(
+    map(status => status.labStatus)
+  );
 
   constructor(private dialogService: FlDialogService,
               private labInstanceService: CaLabInstanceService,
@@ -31,7 +36,6 @@ export class CaLabInstanceHeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.labInstance$ = this.state.getLabInstance$();
   }
 
   openStatusHistoryDialog(labInstance: CaLabInstance): void {
@@ -55,6 +59,14 @@ export class CaLabInstanceHeaderComponent implements OnInit {
     if (labInstance) {
       this.state.updateLab(labInstance);
     }
+  }
+
+  getDetailRoute(labInstance: CaLabInstance): string{
+    return CaRouterService.getLabInstanceDetailRoute(labInstance.id);
+  }
+
+  getConfigRoute(labInstance: CaLabInstance): string{
+    return CaRouterService.getLabInstanceConfigRoute(labInstance.id);
   }
 
 }

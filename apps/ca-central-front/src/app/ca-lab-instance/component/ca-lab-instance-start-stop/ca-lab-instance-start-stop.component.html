@@ -1,0 +1,18 @@
+<ng-container *ngIf="status$ | async as status">
+  <!--  Start and stop button  -->
+  <button *ngIf="status.labStatus.value === 'RUNNING'; else stopped"
+          mat-stroked-button color="warn" type="button"
+          (click)="stopLab()" class="g-button-small">
+    <mat-icon>stop</mat-icon>
+    <span>{{'stop_lab' | translate}}</span>
+  </button>
+  <ng-template #stopped>
+    <button mat-stroked-button color="primary" type="button"
+            (click)="startLab()" class="g-button-small"
+            [disabled]="!status.hasServerInstanceId || status.labStatus.value === 'STARTING' ||
+                         status.labStatus.value === 'STOPPING'">
+      <mat-icon>play_arrow</mat-icon>
+      <span>{{'start_lab' | translate}}</span>
+    </button>
+  </ng-template>
+</ng-container>

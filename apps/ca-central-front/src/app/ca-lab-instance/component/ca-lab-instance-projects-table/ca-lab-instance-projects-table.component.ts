@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {
   CaLabInstanceProject,
   CaLabInstanceProjectDatasource
-} from '../../../ca-core/model/entities/ca-lab-instance-project.class';
+} from '../../../ca-core/model/entities/lab/ca-lab-instance-project.class';
 import {
   FlConfirmDialogInput,
   FlConfirmDialogResult,

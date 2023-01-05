@@ -1,8 +1,7 @@
 import {PrConfigView, PrWorkflowMode, PrWorkflowNodeProcess, PrWorkflowPort} from '@monorepo/protocol';
 import {FlMenuDynamicButton} from '@monorepo/front-core-lib';
 import {ClHelpService} from '@monorepo/core-lib';
-import {CaLabInstanceService} from '../../../../ca-core/service-api/ca-lab-instance.service';
-import {CaLabInstance} from '../../../../ca-core/model/entities/ca-lab-instance.class';
+import {CaLabInstance} from '../../../../ca-core/model/entities/lab/ca-lab-instance.class';
 
 export class CaWorkflowConfig extends PrConfigView {
 

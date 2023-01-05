@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {CaLabInstance} from '../../../ca-core/model/entities/ca-lab-instance.class';
+import {CaLabInstance} from '../../../ca-core/model/entities/lab/ca-lab-instance.class';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {ActivatedRoute} from '@angular/router';
 import {CaLabInstanceDetailPageState} from '../../state/ca-lab-instance-detail-page.state';
@@ -34,9 +34,5 @@ export class CaLabInstanceDetailPageComponent implements OnInit {
     this.state.init(id);
     this.labInstance$ = this.state.getLabInstance$();
     this.isOwner$ = this.state.isLabOwner$();
-  }
-
-  onLabUpdate(lanInstance: CaLabInstance): void {
-    this.state.updateLab(lanInstance);
   }
 }

@@ -5,7 +5,7 @@ import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
 import {Validators} from '@angular/forms';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
-import {CaLabInstanceUser, CaLabInstanceUserRole} from '../../../ca-core/model/entities/ca-lab-instance-user.class';
+import {CaLabInstanceUser, CaLabInstanceUserRole} from '../../../ca-core/model/entities/lab/ca-lab-instance-user.class';
 import {CaUser} from '../../../ca-core/model/entities/ca-user.class';
 
 export interface LabInstanceUserFormDialogInput extends FlFormDialogInput<CaLabInstanceUserForm> {

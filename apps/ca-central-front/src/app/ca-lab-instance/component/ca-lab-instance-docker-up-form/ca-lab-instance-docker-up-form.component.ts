@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {CaLabComposeUpOptions} from '../../../ca-core/model/entities/ca-lab-manager.class';
+import {CaLabComposeUpOptions} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
 import {MatDialogRef} from '@angular/material/dialog';
 
 /**

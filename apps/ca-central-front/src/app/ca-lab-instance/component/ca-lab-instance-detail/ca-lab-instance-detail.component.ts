@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {CaLabInstance} from '../../../ca-core/model/entities/ca-lab-instance.class';
+import {CaLabInstance} from '../../../ca-core/model/entities/lab/ca-lab-instance.class';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {
   CaLabInstanceCodelabInfoComponent
@@ -15,6 +15,7 @@ import {Observable} from 'rxjs';
 export class CaLabInstanceDetailComponent implements OnInit {
 
   labInstance$: Observable<CaLabInstance>;
+  isLoading: boolean = false;
 
   constructor(private state: CaLabInstanceDetailPageState,
               private dialogService: FlDialogService) {
@@ -27,11 +28,5 @@ export class CaLabInstanceDetailComponent implements OnInit {
   openCodelabInfo(labInstance: CaLabInstance): void {
     this.dialogService.openMediumDialog(CaLabInstanceCodelabInfoComponent, {data: labInstance});
   }
-
-
-  onLabUpdate(labInstance: CaLabInstance): void {
-    this.state.updateLab(labInstance);
-  }
-
 
 }

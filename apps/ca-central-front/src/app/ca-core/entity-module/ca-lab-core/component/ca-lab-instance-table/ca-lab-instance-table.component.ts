@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaLabInstance, CaLabInstanceWithSpace} from '../../../../model/entities/ca-lab-instance.class';
+import {CaLabInstance, CaLabInstanceWithSpace} from '../../../../model/entities/lab/ca-lab-instance.class';
 import {
   CaLabInstanceFormDialogComponent,
   CaLabInstanceFormDialogInput
@@ -53,6 +53,8 @@ export class CaLabInstanceTableComponent extends FlTableAbstractDirective<CaLabI
         codelabToken: labInstance.codelabToken,
         glabApiKey: labInstance.glabApiKey,
         labManagerApiKey: labInstance.labManagerApiKey,
+        serverInstanceId: labInstance.serverInstanceId,
+        serverVolumeId: labInstance.serverVolumeId,
         space: labInstance.space,
       }
     };

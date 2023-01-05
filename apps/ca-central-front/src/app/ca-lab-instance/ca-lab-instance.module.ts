@@ -66,6 +66,22 @@ import {
   CaLabBackupHistoryDialogComponent
 } from './component/ca-lab-backup-history-dialog/ca-lab-backup-history-dialog.component';
 import {CaConfigCoreModule} from '../ca-core/entity-module/ca-config-core/ca-config-core.module';
+import {
+  CaLabInstanceDashboardPageComponent
+} from './component/ca-lab-instance-dashboard-page/ca-lab-instance-dashboard-page.component';
+import {
+  CaLabInstanceConfigPageComponent
+} from './component/ca-lab-instance-config-page/ca-lab-instance-config-page.component';
+import {CaLabInstanceServerComponent} from './component/ca-lab-instance-server/ca-lab-instance-server.component';
+import {
+  CaLabServerCompleteInfoComponent
+} from './component/ca-lab-server-complete-info/ca-lab-server-complete-info.component';
+import {
+  CaLabServerCompleteInfoDialogComponent
+} from './component/ca-lab-server-complete-info-dialog/ca-lab-server-complete-info-dialog.component';
+import {
+  CaLabInstanceStartStopComponent
+} from './component/ca-lab-instance-start-stop/ca-lab-instance-start-stop.component';
 
 /**
  * Module the lab instance detail page with iframe for the lab
@@ -95,7 +111,13 @@ import {CaConfigCoreModule} from '../ca-core/entity-module/ca-config-core/ca-con
     CaLabInstanceHeaderComponent,
     CaLabInstanceManageBackupComponent,
     CaLabInstanceBackupComponent,
-    CaLabBackupHistoryDialogComponent
+    CaLabBackupHistoryDialogComponent,
+    CaLabInstanceDashboardPageComponent,
+    CaLabInstanceConfigPageComponent,
+    CaLabInstanceServerComponent,
+    CaLabServerCompleteInfoComponent,
+    CaLabServerCompleteInfoDialogComponent,
+    CaLabInstanceStartStopComponent,
   ],
   imports: [
     CommonModule,

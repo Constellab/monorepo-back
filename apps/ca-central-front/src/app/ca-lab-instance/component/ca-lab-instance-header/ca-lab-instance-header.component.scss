@@ -1,0 +1,13 @@
+.nav-bar {
+  background-color: var(--card-background);
+  border-radius: var(--card-radius);
+  padding: 1em;
+}
+
+.nav-button{
+  margin-left: 1em;
+}
+
+.menu-active{
+  color: var(--primary-color);
+}

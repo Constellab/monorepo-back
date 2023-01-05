@@ -7,12 +7,12 @@ export interface CnCpCreateInstanceRequest {
   name: string;
   region: string;
   serverName: string;
-  billing:CnCpBillingType;
+  billing: CnCpBillingType;
   backupRotation: number;
   backupFrequency: CnCpBackupFrequency;
 }
 
-export type CnCpInstanceStatus = 'CREATING' | 'RUNNING' | 'RESTARTING' | 'STOPPED';
+export type CnCpInstanceStatus = 'CREATING' | 'RUNNING' | 'RESTARTING' | 'STOPPED' | 'STOPPING';
 
 export interface CnCpInstance {
   id: string;

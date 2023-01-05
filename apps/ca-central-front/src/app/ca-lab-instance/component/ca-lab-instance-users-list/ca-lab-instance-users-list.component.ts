@@ -8,7 +8,9 @@ import {
 import {
   CaLabInstanceUser,
   CaLabInstanceUserDatasource
-} from '../../../ca-core/model/entities/ca-lab-instance-user.class';
+} from '../../../ca-core/model/entities/lab/ca-lab-instance-user.class';
+import {CaLabInstanceDetailPageState} from '../../state/ca-lab-instance-detail-page.state';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'ca-lab-instance-users-list',
@@ -23,8 +25,11 @@ export class CaLabInstanceUsersListComponent implements OnInit {
 
   datasource: CaLabInstanceUserDatasource;
 
+  isOwner$: Observable<boolean> = this.state.isLabOwner$();
+
   constructor(private labInstanceService: CaLabInstanceService,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private state: CaLabInstanceDetailPageState) {
   }
 
   ngOnInit(): void {

@@ -4,11 +4,13 @@ import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance
 import {
   CaLabInstanceProject,
   CaLabInstanceProjectDatasource
-} from '../../../ca-core/model/entities/ca-lab-instance-project.class';
+} from '../../../ca-core/model/entities/lab/ca-lab-instance-project.class';
 import {
   CaLabInstanceAddProjectDialogComponent,
   CaLabInstanceAddProjectDialogInput
 } from '../ca-lab-instance-add-project-dialog/ca-lab-instance-add-project-dialog.component';
+import {CaLabInstanceDetailPageState} from '../../state/ca-lab-instance-detail-page.state';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'ca-lab-instance-projects-list',
@@ -23,8 +25,11 @@ export class CaLabInstanceProjectsListComponent implements OnInit {
 
   datasource: CaLabInstanceProjectDatasource;
 
+  isOwner$: Observable<boolean> = this.state.isLabOwner$();
+
   constructor(private labInstanceService: CaLabInstanceService,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private state: CaLabInstanceDetailPageState) {
   }
 
   ngOnInit(): void {

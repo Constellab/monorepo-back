@@ -8,7 +8,7 @@ import {
 import {
   CaLabInstanceUser,
   CaLabInstanceUserDatasource
-} from '../../../ca-core/model/entities/ca-lab-instance-user.class';
+} from '../../../ca-core/model/entities/lab/ca-lab-instance-user.class';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {
   CaLabInstanceUserFormDialogComponent,

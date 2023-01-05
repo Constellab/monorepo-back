@@ -9,7 +9,7 @@
     <mat-form-field class="g-form-input">
       <mat-label>{{'name' | translate}}</mat-label>
       <input matInput formControlName="name" required flInputMaxLength="50"
-             placeholder="{{'name' | translate}}">
+             [placeholder]="'name' | translate">
     </mat-form-field>
 
 
@@ -17,7 +17,7 @@
     <mat-form-field class="g-form-input">
       <mat-label>{{'virtual_host' | translate}}</mat-label>
       <input matInput formControlName="virtualHost" required flInputMaxLength="255"
-             placeholder="{{'virtual_host' | translate}}">
+             [placeholder]="'virtual_host' | translate">
       <mat-error *ngIf="formGp.get('virtualHost').hasError('required')">
         {{'virtual_host' | flErrorRequired}}
       </mat-error>
@@ -26,7 +26,7 @@
     <!--  Server info  -->
     <mat-form-field class="g-form-input">
       <mat-label>{{'server_info' | translate}}</mat-label>
-      <mat-select placeholder="{{'server_info' | translate}}" formControlName="serverInfo">
+      <mat-select [placeholder]="'server_info' | translate" formControlName="serverInfo">
         <ca-select-server-info-options></ca-select-server-info-options>
       </mat-select>
       <mat-error *ngIf="formGp.get('serverInfo').hasError('required')">
@@ -48,7 +48,7 @@
     <!--  Space  -->
     <mat-form-field class="g-form-input">
       <mat-label>{{'space' | translate}}</mat-label>
-      <mat-select placeholder="{{'space' | translate}}" formControlName="space" required>
+      <mat-select [placeholder]="'space' | translate" formControlName="space" required>
         <ca-select-space-options></ca-select-space-options>
       </mat-select>
       <mat-error *ngIf="formGp.get('space').hasError('required')">
@@ -59,7 +59,7 @@
     <!--  Owner  -->
     <mat-form-field class="g-form-input" *ngIf="isCreateMode()">
       <mat-label>{{'owner' | translate}}</mat-label>
-      <mat-select placeholder="{{'owner' | translate}}" formControlName="owner" required>
+      <mat-select [placeholder]="'owner' | translate" formControlName="owner" required>
         <ca-select-user-options mode="all"></ca-select-user-options>
       </mat-select>
       <mat-error *ngIf="formGp.get('owner').hasError('required')">
@@ -71,21 +71,35 @@
     <mat-form-field class="g-form-input">
       <mat-label>{{'glab_api_key' | translate}}</mat-label>
       <input matInput formControlName="glabApiKey" flInputMaxLength="255"
-             placeholder="{{'glab_api_key' | translate}}">
+             [placeholder]="'glab_api_key' | translate">
     </mat-form-field>
 
     <!--  Lab manager Api key  -->
     <mat-form-field class="g-form-input">
       <mat-label>{{'lab_manager_api_key' | translate}}</mat-label>
       <input matInput formControlName="labManagerApiKey" flInputMaxLength="255"
-             placeholder="{{'lab_manager_api_key' | translate}}">
+             [placeholder]="'lab_manager_api_key' | translate">
     </mat-form-field>
 
     <!--  Codelab token  -->
     <mat-form-field class="g-form-input">
       <mat-label>{{'codelab_token' | translate}}</mat-label>
       <input matInput formControlName="codelabToken" flInputMaxLength="255"
-             placeholder="{{'codelab_token' | translate}}">
+             [placeholder]="'codelab_token' | translate">
+    </mat-form-field>
+
+    <!--  Server instance id  -->
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'lab_server_instance_id' | translate}}</mat-label>
+      <input matInput formControlName="serverInstanceId" flInputMaxLength="255"
+             [placeholder]="'lab_server_instance_id' | translate">
+    </mat-form-field>
+
+    <!--  Volume id  -->
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'lab_server_volume_id' | translate}}</mat-label>
+      <input matInput formControlName="serverVolumeId" flInputMaxLength="255"
+             [placeholder]="'lab_server_volume_id' | translate">
     </mat-form-field>
   </form>
 </mat-dialog-content>

@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {CaBrickVersionDTO} from '../../../ca-core/model/entities/ca-lab-manager.class';
+import {CaBrickVersionDTO} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Validators} from '@angular/forms';
 

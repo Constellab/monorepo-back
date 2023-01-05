@@ -1,0 +1,17 @@
+<fl-async-section [object]="labInstance$" fxFlex="grow">
+  <ng-container *flSectionBody="let labInstance">
+    <div fxLayout="column" fxFlex="grow">
+
+      <div fxLayout="row" fxLayoutAlign="space-between stretch" class="g-section">
+        <ca-lab-instance-detail fxFlex="49%"></ca-lab-instance-detail>
+
+        <ca-server-info-card [serverInfo]="labInstance.serverInfo" fxFlex="49%"></ca-server-info-card>
+
+      </div>
+      <ca-lab-instance-users-list class="g-section" [labInstanceId]="labInstance.id"></ca-lab-instance-users-list>
+
+      <ca-lab-instance-projects-list class="g-section"
+                                     [labInstanceId]="labInstance.id"></ca-lab-instance-projects-list>
+    </div>
+  </ng-container>
+</fl-async-section>

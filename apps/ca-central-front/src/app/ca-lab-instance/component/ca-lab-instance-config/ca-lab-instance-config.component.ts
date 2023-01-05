@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {Observable} from 'rxjs';
-import {CaLabInstanceConfig} from '../../../ca-core/model/entities/ca-lab-manager.class';
+import {CaLabInstanceConfig} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
 
 /**
  * Component to configure the lab instance (bricks)

@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
 import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experiment.service';
-import {CaLabInstance} from '../../../../../ca-core/model/entities/ca-lab-instance.class';
+import {CaLabInstance} from '../../../../../ca-core/model/entities/lab/ca-lab-instance.class';
 import {Observable} from 'rxjs';
 import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
 import {CaReportService} from '../../../../../ca-core/service-api/ca-report.service';

@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaLabManagerStatus} from '../../../ca-core/model/entities/ca-lab-manager.class';
+import {CaLabManagerStatus} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
 
 /**
  * Simple component to display the lab status via the manager

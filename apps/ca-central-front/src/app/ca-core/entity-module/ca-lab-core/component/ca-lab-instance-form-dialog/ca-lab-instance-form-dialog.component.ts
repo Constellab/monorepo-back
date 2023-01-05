@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {CaLabInstanceForm, CaLabInstanceWithSpace} from '../../../../model/entities/ca-lab-instance.class';
+import {CaLabInstanceForm, CaLabInstanceWithSpace} from '../../../../model/entities/lab/ca-lab-instance.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
@@ -51,6 +51,8 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
       glabApiKey: [null],
       labManagerApiKey: [null],
       codelabToken: [null],
+      serverInstanceId: [null],
+      serverVolumeId: [null],
       region: [null, Validators.required],
       space: [{value: null, disabled: this.isUpdateMode()}, Validators.required],
     });

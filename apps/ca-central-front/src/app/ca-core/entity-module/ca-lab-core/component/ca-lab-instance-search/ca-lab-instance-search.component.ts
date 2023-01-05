@@ -8,7 +8,7 @@ import {
   FlTableColumn,
   FlThemeService
 } from '@monorepo/front-core-lib';
-import {CaLabInstance, CaLabInstanceDatasource} from '../../../../model/entities/ca-lab-instance.class';
+import {CaLabInstance, CaLabInstanceDatasource} from '../../../../model/entities/lab/ca-lab-instance.class';
 import {CaLabInstanceService} from '../../../../service-api/ca-lab-instance.service';
 import {CaLabInstanceSearch, CaLabInstanceSearchFields} from '../../model/ca-lab-instance-search.class';
 import {

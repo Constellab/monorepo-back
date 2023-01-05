@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {UntypedFormGroup} from '@angular/forms';
 import {FlSearchState, FlStatusDict} from '@monorepo/front-core-lib';
-import {CaLabInstanceStatus, caLabInstanceStatusDict} from '../../../../model/entities/ca-lab-instance.class';
+import {CaLabInstanceStatus, caLabInstanceStatusDict} from '../../../../model/entities/lab/ca-lab-instance.class';
 
 @Component({
   selector: 'ca-lab-instance-search-form',

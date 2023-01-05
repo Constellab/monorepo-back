@@ -221,5 +221,6 @@
   "delete_comment_success": "Comment deleted",
   "users": "Users",
   "space_user_added_by": "Added by",
-  "space_user_added_info": "Added info"
+  "space_user_added_info": "Added info",
+  "id": "Id"
 }

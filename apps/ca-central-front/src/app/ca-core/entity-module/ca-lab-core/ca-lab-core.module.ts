@@ -5,9 +5,6 @@ import {CaLabInstanceCardComponent} from './component/ca-lab-instance-card/ca-la
 import {
   CaSelectAccessibleLabInstanceOptionsComponent
 } from './component/ca-select-accessible-lab-instance-options/ca-select-accessible-lab-instance-options.component';
-import {
-  CaLabInstanceStartStopComponent
-} from './component/ca-lab-instance-start-stop/ca-lab-instance-start-stop.component';
 import {RouterModule} from '@angular/router';
 import {CaLabInstanceTableComponent} from './component/ca-lab-instance-table/ca-lab-instance-table.component';
 import {
@@ -34,7 +31,6 @@ import {CaCloudProviderCoreModule} from '../ca-cloud-provider-core/ca-cloud-prov
   declarations: [
     CaLabInstanceCardComponent,
     CaSelectAccessibleLabInstanceOptionsComponent,
-    CaLabInstanceStartStopComponent,
     CaLabInstanceTableComponent,
     CaLabInstanceFormDialogComponent,
     CaLabInstanceStatusDialogComponent,
@@ -45,7 +41,6 @@ import {CaCloudProviderCoreModule} from '../ca-cloud-provider-core/ca-cloud-prov
   exports: [
     CaLabInstanceCardComponent,
     CaSelectAccessibleLabInstanceOptionsComponent,
-    CaLabInstanceStartStopComponent,
     CaLabInstanceTableComponent,
     CaLabInstanceFormDialogComponent,
     CaLabLoginButtonComponent,

@@ -1,7 +1,7 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
-import {Observable, Subscription} from 'rxjs';
-import {CaLabComposeUpOptions, CaLabManagerStatus} from '../../../ca-core/model/entities/ca-lab-manager.class';
+import {distinct, Observable, throwError} from 'rxjs';
+import {CaLabComposeUpOptions, CaLabManagerStatus} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
 import {FlDialogService, FlPortalActionsService} from '@monorepo/front-core-lib';
 import {
   CaLabInstanceDockerUpFormComponent
@@ -9,7 +9,10 @@ import {
 import {
   CaLabInstanceStatusDialogComponent
 } from '../../../ca-core/entity-module/ca-lab-core/component/ca-lab-instance-status-dialog/ca-lab-instance-status-dialog.component';
-import {CaLabInstance} from '../../../ca-core/model/entities/ca-lab-instance.class';
+import {CaLabInstance} from '../../../ca-core/model/entities/lab/ca-lab-instance.class';
+import {CaLabInstanceDetailPageState} from '../../state/ca-lab-instance-detail-page.state';
+import {ClSubscriptionHandler} from '@monorepo/core-lib';
+import {map} from 'rxjs/operators';
 
 /**
  * Component only accessible by the admin
@@ -23,28 +26,36 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
 
   @Input() labInstance: CaLabInstance;
 
-  labStatus$: Observable<CaLabManagerStatus>;
+  labManagerStatus$: Observable<CaLabManagerStatus>;
 
   private readonly actionType = 'lab-manager';
 
-  private subscription: Subscription;
+  private subscription: ClSubscriptionHandler = new ClSubscriptionHandler();
 
   constructor(private labInstanceService: CaLabInstanceService,
               private actionService: FlPortalActionsService,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private state: CaLabInstanceDetailPageState) {
   }
 
   ngOnInit(): void {
     // refresh the values on new action result
-    this.subscription = this.actionService.getResult$(this.actionType).subscribe(
+    this.subscription.add(this.actionService.getResult$(this.actionType).subscribe(
       () => this.refresh()
-    );
+    ));
 
-    this.refresh();
+    this.subscription.add(this.state.getStatus$().pipe(
+      map(status => status.labManagerIsRunning),
+      distinct()
+    ).subscribe(status => this.refresh(status)));
   }
 
-  refresh(): void {
-    this.labStatus$ = this.labInstanceService.getLabManagerStatus(this.labInstance.id);
+  refresh(isRunning: boolean = true): void {
+    if(!isRunning) {
+      this.labManagerStatus$ = throwError(() => 'Lab manager is not running');
+      return;
+    }
+    this.labManagerStatus$ = this.labInstanceService.getLabManagerStatus(this.labInstance.id);
   }
 
   openStatusDialog(): void {

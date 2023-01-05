@@ -1,9 +1,12 @@
 <fl-card>
 
   <fl-card-header>
-    <h2>{{'lab_projects' | translate}}</h2>
+    <fl-text-icon>
+      <mat-icon flIcon="project"></mat-icon>
+      <h2>{{'lab_projects' | translate}}</h2>
+    </fl-text-icon>
 
-    <fl-card-actions *caIsAdmin>
+    <fl-card-actions *ngIf="isOwner$ | async">
       <button mat-icon-button type="button" (click)="openAddProjectDialog()"
               [matTooltip]="'lab_add_project' | translate">
         <mat-icon>add</mat-icon>

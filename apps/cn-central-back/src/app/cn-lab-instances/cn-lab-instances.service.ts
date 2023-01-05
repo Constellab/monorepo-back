@@ -81,13 +81,23 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     });
   }
 
-  public startInstance(id: string): Promise<CnLabInstance> {
-    return this.updateCurrentStatus(CnLabInstanceStatus.RUNNING, id);
+  public markInstanceAsRunning(id: string): Promise<CnLabInstance> {
+    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.RUNNING, id);
   }
 
-  public stopInstance(id: string): Promise<CnLabInstance> {
-    return this.updateCurrentStatus(CnLabInstanceStatus.STOPPED, id);
+  public markInstanceAsStopped(id: string): Promise<CnLabInstance> {
+    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.STOPPED, id);
   }
+
+  public markInstanceAsStarting(id: string): Promise<CnLabInstance> {
+    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.STARTING, id);
+  }
+
+  public markInstanceAsStopping(id: string): Promise<CnLabInstance> {
+    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.STOPPING, id);
+  }
+
+
 
 
   public findLabByApiKey(apiKey: string): Promise<CnLabInstance> {
@@ -109,14 +119,13 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   /**
    * Called by the lab to tell central it has started
    */
-  public async markLabAsStarted(labStart: CnLabInstanceStartDTO): Promise<void> {
+  public async registerLabConfig(labStart: CnLabInstanceStartDTO): Promise<void> {
     const labConfig = await this.labConfigService.getOrCreateLabConfig(labStart.lab_config);
 
     const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
 
     labInstance.labConfig = labConfig;
     await this.update(labInstance);
-    // await this.startInstance(labInstance.id)
   }
 
   public async getLabConfig(labInstanceId: string): Promise<CnLabConfig> {
@@ -150,5 +159,11 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     searchBuilder.setRelations({space: true})
 
     return this.findPaginated(page, size, searchBuilder.build());
+  }
+
+  public async updateServerStatusText(labInstanceId: string, text: string): Promise<CnLabInstance> {
+    const labInstance = await this.findByIdAndCheck(labInstanceId);
+    labInstance.serverProgressText = text;
+    return this.repository.save(labInstance);
   }
 }

@@ -4,7 +4,7 @@ import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {Validators} from '@angular/forms';
-import {CaLabInstance} from '../../../ca-core/model/entities/ca-lab-instance.class';
+import {CaLabInstance} from '../../../ca-core/model/entities/lab/ca-lab-instance.class';
 
 export interface LabInstanceUpdateNameDialogInput {
   labInstanceId: string;

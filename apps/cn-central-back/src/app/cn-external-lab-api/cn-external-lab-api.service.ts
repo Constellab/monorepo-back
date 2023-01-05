@@ -23,7 +23,8 @@ export class CnExternalLabApiService {
   }
 
   public async healthCheck(labInfo: CnExternalApiInfo): Promise<boolean> {
-    return lastValueFrom(this.get(labInfo, `health-check`));
+    return lastValueFrom(this.get(labInfo, `health-check`,
+      null, {logError: false, timeout: 10000})).then(() => true).catch(() => false);
   }
 
   public async getSettings(labInfo: CnExternalApiInfo): Promise<any> {

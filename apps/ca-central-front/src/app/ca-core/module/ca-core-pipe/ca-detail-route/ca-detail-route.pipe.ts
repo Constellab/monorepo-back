@@ -2,7 +2,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {CaEntity} from '../../../model/entities/ca-entity.entity';
 import {CaProject} from '../../../model/entities/ca-project.class';
 import {CaSmartDb} from '../../../model/entities/ca-smart-db.entity';
-import {CaLabInstance} from '../../../model/entities/ca-lab-instance.class';
+import {CaLabInstance} from '../../../model/entities/lab/ca-lab-instance.class';
 import {CaRouterService} from '../../../service/ca-router.service';
 import {CaGroup, CaGroupType} from '../../../model/entities/ca-group.entity';
 import {CaExperiment} from '../../../model/entities/ca-experiment.class';

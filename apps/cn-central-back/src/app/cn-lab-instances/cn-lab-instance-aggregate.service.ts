@@ -21,7 +21,8 @@ import {
   CnLabFindOneDto,
   CnLabInstanceConfigDTO,
   CnLabInstanceCreateDTO,
-  CnLabInstanceStartDTO
+  CnLabInstanceStartDTO,
+  CnLabInstanceStatusDTO
 } from './cn-lab-instance.dto';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstancesSecurity} from './cn-lab-instances.security';
@@ -43,6 +44,7 @@ import {CnObjectStoragesAggregateService} from '../cn-object-storages/cn-object-
 import {CnCpCompleteInfo} from './cloud-provider/cn-cloud-provider-external.class';
 import {CnLabCloudProviderService} from './cloud-provider/cn-lab-cloud-provider.service';
 import {CnLabSshService} from './cloud-provider/cn-lab-ssh.service';
+import {CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 
 
 @Injectable()
@@ -68,7 +70,7 @@ export class CnLabInstanceAggregateService {
   }
 
   async create(createLabInstance: CnLabInstanceCreateDTO): Promise<CnLabInstance> {
-    if(createLabInstance.region.cloudProvider.id !== createLabInstance.serverInfo.cloudProvider.id){
+    if (createLabInstance.region.cloudProvider.id !== createLabInstance.serverInfo.cloudProvider.id) {
       throw new BlBadRequestException('Cloud Provider and Region must be the same');
     }
 
@@ -81,7 +83,7 @@ export class CnLabInstanceAggregateService {
 
 
   async update(updateLabInstance: CnLabInstanceCreateDTO): Promise<CnLabInstance> {
-    if(updateLabInstance.region.cloudProvider.id !== updateLabInstance.serverInfo.cloudProvider.id){
+    if (updateLabInstance.region.cloudProvider.id !== updateLabInstance.serverInfo.cloudProvider.id) {
       throw new BlBadRequestException('Cloud Provider and Region must be the same');
     }
 
@@ -117,26 +119,6 @@ export class CnLabInstanceAggregateService {
     return this.labInstancesService.getCurrentRunningLabInstances();
   }
 
-  async startInstance(id: string): Promise<CnLabInstance> {
-    await this.getAndCheckAuthorizationToFindById(id);
-
-    return this.labInstancesService.startInstance(id);
-  }
-
-  async stopInstance(id: string): Promise<CnLabInstance> {
-    await this.getAndCheckAuthorizationToFindById(id);
-
-    return this.labInstancesService.stopInstance(id);
-  }
-
-
-  async getStatusHistory(id: string): Promise<CnLabInstanceStatusHistory[]> {
-    // check that the user can get experiment
-    await this.getAndCheckAuthorizationToFindById(id);
-
-    return await this.labInstancesService.getStatusHistory(id) as CnLabInstanceStatusHistory[];
-  }
-
   public async updateName(labInstanceId: string, name: string): Promise<CnLabInstance> {
     await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
@@ -160,6 +142,54 @@ export class CnLabInstanceAggregateService {
 
     return this.labInstancesService.searchInSpace(CnCurrentUserHelper.getAndCheckUserSpaceInfo().spaceId,
       searchParams, page, size);
+  }
+
+  /////////////////////////////////////// STATUS  //////////////////////////////////
+  async getStatus(id: string): Promise<CnLabInstanceStatusDTO> {
+    // check that the user can get experiment
+    const labInstance = await this.getAndCheckAuthorizationToFindById(id);
+    const promises: [Promise<boolean>, Promise<boolean>] = [
+      this.labManagerService.healthCheck(labInstance.getLabManagerApiInfo().apiUrl),
+      this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo())
+    ];
+
+    const status: CnLabInstanceStatusDTO = await Promise.all(promises).then(([labManagerStatus, glabStatus]) =>
+      ({
+        labStatus: labInstance.currentStatus.status,
+        labManagerIsRunning: labManagerStatus,
+        labIsRunning: glabStatus,
+        hasServerInstanceId: !!labInstance.serverInstanceId,
+        hasServerVolumeId: !!labInstance.serverVolumeId,
+        serverProgressText: labInstance.serverProgressText,
+      }));
+
+    // if the lab status does not correspond to the lab manager status, we update the status
+    if (labInstance.serverInstanceId &&
+      (status.labStatus === CnLabInstanceStatus.RUNNING && !status.labManagerIsRunning) ||
+      (status.labStatus !== CnLabInstanceStatus.RUNNING && status.labIsRunning)) {
+      const newLabInstance = await this.cloudProviderService.refreshLabStatus(labInstance.id);
+      status.labStatus = newLabInstance.currentStatus.status;
+    }
+
+    return status;
+  }
+
+  async getStatusHistory(id: string): Promise<CnLabInstanceStatusHistory[]> {
+    // check that the user can get experiment
+    await this.getAndCheckAuthorizationToFindById(id);
+
+    return await this.labInstancesService.getStatusHistory(id) as CnLabInstanceStatusHistory[];
+  }
+
+  /**
+   * Refresh the lab status based on server status
+   * @param id
+   */
+  async refreshStatus(id: string): Promise<CnLabInstanceStatusDTO> {
+    const labInstance = await this.getAndCheckAuthorizationToFindById(id);
+
+    await this.cloudProviderService.refreshLabStatus(labInstance.id);
+    return this.getStatus(id);
   }
 
   /////////////////////////////////////// EXTERNAL LAB SERVICE //////////////////////////////////
@@ -197,9 +227,9 @@ export class CnLabInstanceAggregateService {
   public async checkStatus(labInstanceId: string): Promise<any> {
     const lab: CnLabInstance = await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
-    try {
-      await this.externalLabApiService.healthCheck(lab.getGlabApiInfo());
-    } catch {
+    const isRunning = await this.externalLabApiService.healthCheck(lab.getGlabApiInfo());
+    this.logger.log('Lab ' + labInstanceId + ' is running : ' + isRunning);
+    if (!isRunning) {
       throw new BlBadRequestException('The lab is not running');
     }
 
@@ -297,7 +327,7 @@ export class CnLabInstanceAggregateService {
 
   //////////////////////////// LAB MANAGER ////////////////////////////////
 
-  public async getStatus(labId: string): Promise<CnLabManagerStatus> {
+  public async getLabManagerStatus(labId: string): Promise<CnLabManagerStatus> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.getLabStatus(labInstance);
   }
@@ -405,8 +435,8 @@ export class CnLabInstanceAggregateService {
   }
 
   /////////////////////////// EXTERNAL LAB //////////////////////////////
-  public async markLabAsStarted(labStart: CnLabInstanceStartDTO): Promise<void> {
-    await this.labInstancesService.markLabAsStarted(labStart);
+  public async registerLabConfig(labStart: CnLabInstanceStartDTO): Promise<void> {
+    await this.labInstancesService.registerLabConfig(labStart);
   }
 
   public async getCurrentLabInstanceProjects(): Promise<CnProject[]> {
@@ -419,10 +449,10 @@ export class CnLabInstanceAggregateService {
 
   public async getServerInfo(labInstanceId: string): Promise<CnCpCompleteInfo> {
     const labInstance = await this.getAndCheckAuthorizationToUpdateCloudProvider(labInstanceId);
-    return this.cloudProviderService.getCompleteInfo(labInstance, 'OVH');
+    return this.cloudProviderService.getCompleteInfo(labInstance);
   }
 
-  public async initCompleteLab(labInstanceId: string): Promise<CnLabInstance> {
+  public async init(labInstanceId: string): Promise<CnLabInstance> {
     let labInstance = await this.getAndCheckAuthorizationToUpdateCloudProvider(labInstanceId);
     labInstance = await this.cloudProviderService.initInstance(labInstance,
       'HOURLY', 10, 'CLASSIC');
@@ -430,16 +460,20 @@ export class CnLabInstanceAggregateService {
     // wait for the DNS to be ready
     await this.labSshService.waitForSshConnection(labInstance);
 
-    return this.labSshService.initLabServer(labInstance);
+    await this.labSshService.initLabServer(labInstance);
+
+    return this.labInstancesService.updateServerStatusText(labInstance.id, `Server and lab manager up and lab ready to be configured`);
   }
 
-  public async initServerInstance(labInstanceId: string): Promise<CnLabInstance> {
+  public async configureServer(labInstanceId: string): Promise<CnLabInstance> {
     const labInstance = await this.getAndCheckAuthorizationToUpdateCloudProvider(labInstanceId);
-    return this.cloudProviderService.initInstance(labInstance,
+    await this.cloudProviderService.initInstance(labInstance,
       'HOURLY', 10, 'CLASSIC');
+
+    return this.labInstancesService.updateServerStatusText(labInstance.id, `Server up and ready to be configured`);
   }
 
-  public async initLabServer(labInstanceId: string): Promise<CnLabInstance> {
+  public async configureLab(labInstanceId: string): Promise<CnLabInstance> {
     const labInstance = await this.getAndCheckAuthorizationToUpdateCloudProvider(labInstanceId);
 
     const sshTest = await this.labSshService.checkSshConnection(labInstance.virtualHost);
@@ -447,14 +481,28 @@ export class CnLabInstanceAggregateService {
       throw new BadRequestException(`SSH connection to ${labInstance.virtualHost} failed`);
     }
 
-    return await this.labSshService.initLabServer(labInstance);
+    await this.labSshService.initLabServer(labInstance);
+
+    return this.labInstancesService.updateServerStatusText(labInstance.id, `Lab manager up and lab ready to be configured`);
+
   }
 
   public async deleteServerInstance(labInstanceId: string): Promise<void> {
-    await this.getAndCheckAuthorizationToUpdateCloudProvider(labInstanceId);
-    await this.cloudProviderService.deleteLabInstanceServerAndVolume(labInstanceId, 'OVH');
+    const labInstance = await this.getAndCheckAuthorizationToUpdateCloudProvider(labInstanceId);
+    await this.cloudProviderService.deleteLabInstanceServerAndVolume(labInstance);
   }
 
+  async startInstance(id: string): Promise<CnLabInstance> {
+    const labInstance = await this.getAndCheckAuthorizationToManageLab(id);
+
+    return this.cloudProviderService.startLab(labInstance);
+  }
+
+  async stopInstance(id: string): Promise<CnLabInstance> {
+    const labInstance = await this.getAndCheckAuthorizationToManageLab(id);
+
+    return this.cloudProviderService.stopLab(labInstance);
+  }
 
   //////////////////////////// AUTHORIZATION ////////////////////////////////
   private async getAndCheckAuthorizationToFindById(id: string): Promise<CnLabInstance> {

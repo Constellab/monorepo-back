@@ -11,6 +11,7 @@ import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {CnLabInstanceUser} from './user/cn-lab-instance-user.entity';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import {CnCloudProviderName} from '../cn-cloud-providers/cn-cloud-provider.entity';
 
 
 /**
@@ -74,13 +75,19 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   region: CnCloudProviderRegion;
 
   // id of the ovh, aws, instance
+  @Exclude()
   @Column({nullable: true, length: 255})
   serverInstanceId: string
 
   // id of the ovh, aws, volume
+  @Exclude()
   @Column({nullable: true, length: 255})
   serverVolumeId: string;
 
+  // text about the current server status
+  @Exclude()
+  @Column({type: 'text'})
+  serverProgressText: string;
 
   // url of the api server
   @Expose()
@@ -145,5 +152,9 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
 
   public getSubDomainDsnRecord(): string {
     return '*.' + this.virtualHost.split('.')[0];
+  }
+
+  public getCloudProviderName(): CnCloudProviderName {
+    return this.serverInfo.cloudProvider.name;
   }
 }

@@ -1,7 +1,7 @@
-import {CaBaseEntity} from './ca-base-entity.class';
-import {CaStatusHistory} from './ca-status-history.class';
-import {CaServerInfo} from './ca-server-info.class';
-import {CaUser} from './ca-user.class';
+import {CaBaseEntity} from '../ca-base-entity.class';
+import {CaStatusHistory} from '../ca-status-history.class';
+import {CaServerInfo} from '../ca-server-info.class';
+import {CaUser} from '../ca-user.class';
 import {
   FlEntityPaginatedDatasource,
   FlStatus,
@@ -10,15 +10,17 @@ import {
   FlStatusTransform
 } from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
-import {CaSpace} from './space/ca-space.class';
+import {CaSpace} from '../space/ca-space.class';
 import {CaLabInstanceUserRole} from './ca-lab-instance-user.class';
-import {CaCloudProviderRegion} from './ca-cloud-provider.class';
+import {CaCloudProviderRegion} from '../ca-cloud-provider.class';
 
-export type CaLabInstanceStatus = 'RUNNING' | 'STOPPED';
+export type CaLabInstanceStatus = 'RUNNING' | 'STOPPED' | 'STARTING' | 'STOPPING';
 
 export const caLabInstanceStatusDict: FlStatusDict<CaLabInstanceStatus> = {
   RUNNING: FlStatusHelper.getRunningStatus('RUNNING'),
-  STOPPED: FlStatusHelper.getStoppedStatus('STOPPED')
+  STOPPED: FlStatusHelper.getStoppedStatus('STOPPED'),
+  STARTING: FlStatusHelper.getWarningStatus('STARTING', 'lab_starting'),
+  STOPPING: FlStatusHelper.getWarningStatus('STOPPING', 'lab_stopping'),
 };
 
 export class CaLabInstanceStatusHistory extends CaStatusHistory<CaLabInstanceStatus> {
@@ -46,7 +48,7 @@ export class CaLabInstance extends CaBaseEntity {
   virtualHost: string;
 
   @Type(() => CaCloudProviderRegion)
-  region: CaCloudProviderRegion
+  region: CaCloudProviderRegion;
 
   @Type(() => CaServerInfo)
   serverInfo: CaServerInfo;
@@ -56,7 +58,8 @@ export class CaLabInstance extends CaBaseEntity {
   glabApiKey?: string;
   labManagerApiKey?: string;
   codelabToken?: string;
-
+  serverInstanceId?: string;
+  serverVolumeId?: string;
 
   public isRunning(): boolean {
     return this.currentStatus.status.value === 'RUNNING';
@@ -86,12 +89,15 @@ export class CaLabInstanceForm {
 
   @Type(() => CaUser)
   owner?: CaUser;
+
   glabApiKey: string;
   labManagerApiKey: string;
   codelabToken: string;
+  serverInstanceId: string;
+  serverVolumeId: string;
 
   @Type(() => CaCloudProviderRegion)
-  region: CaCloudProviderRegion
+  region: CaCloudProviderRegion;
 
 
   @Type(() => CaSpace)
@@ -105,3 +111,14 @@ export class CaLabInstanceFindOneDto {
   userRole: CaLabInstanceUserRole;
 }
 
+export class CaLabInstanceStatusDTO {
+  @FlStatusTransform(caLabInstanceStatusDict)
+  labStatus: FlStatus<CaLabInstanceStatus>;
+  labManagerIsRunning: boolean;
+
+  labIsRunning: boolean;
+
+  hasServerInstanceId: boolean;
+  hasServerVolumeId: boolean;
+  serverProgressText: string;
+}

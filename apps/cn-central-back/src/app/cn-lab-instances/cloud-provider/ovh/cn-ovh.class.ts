@@ -11,8 +11,12 @@ export interface CnOvhCreateInstanceRequest {
   },
 }
 
-export type CnOvhInstanceStatus = 'ACTIVE' | 'BUILD' | 'HARD_REBOOT' | 'PASSWORD' | 'REBOOT' |
-  'RESCUE' | 'RESIZE' | 'REVERT_RESIZE' | 'SHUTOFF' | 'SUSPENDED' | 'UNKNOWN' | 'VERIFY_RESIZE';
+export type CnOvhInstanceStatus = 'ACTIVE' |
+  'BUILD' | 'BUILDING' | 'DELETED' | 'DELETING' | 'ERROR' | 'HARD_REBOOT' | 'MIGRATING' |
+  'PASSWORD' | 'PAUSED' | 'REBOOT' | 'REBUILD' | 'RESCUE' | 'RESCUED' | 'RESCUING' | 'RESIZE' | 'RESIZED' |
+  'RESUMING' | 'REVERT_RESIZE' | 'SHELVED' | 'SHELVED_OFFLOADED' | 'SHELVING' | 'SHUTOFF' | 'SNAPSHOTTING' |
+  'SOFT_DELETED' | 'STOPPED' | 'SUSPENDED' | 'UNKNOWN' | 'UNRESCUING' | 'UNSHELVING' | 'VERIFY_RESIZE';
+
 
 export interface CnOvhInstance {
   id: string;
@@ -24,7 +28,7 @@ export interface CnOvhInstance {
     networkId: string;
     gatewayIp: string;
   }[];
-  status:CnOvhInstanceStatus;
+  status: CnOvhInstanceStatus;
   created: string;
   region: string;
   flavor: any;

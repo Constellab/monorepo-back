@@ -23,8 +23,6 @@
       <ca-lab-login-button *ngIf="labInstance.isRunning()" [labInstanceId]="labInstance.id"
                            size="small">
       </ca-lab-login-button>
-      <ca-lab-instance-start-stop [labInstance]="labInstance" (update)="onLabUpdate($event)">
-      </ca-lab-instance-start-stop>
     </div>
   </fl-card-body>
 

@@ -221,5 +221,6 @@
   "delete_comment_success": "Commentaire supprimé",
   "users": "Utilisateurs",
   "space_user_added_by": "Ajouté par",
-  "space_user_added_info": "Info ajout"
+  "space_user_added_info": "Info ajout",
+  "id": "Id"
 }

@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Observable, of} from 'rxjs';
-import {CaLabDockerPs} from '../../../ca-core/model/entities/ca-lab-manager.class';
+import {CaLabDockerPs} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 
 @Component({

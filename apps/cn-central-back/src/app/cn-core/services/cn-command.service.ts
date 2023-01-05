@@ -1,12 +1,11 @@
 import {Injectable, Logger} from '@nestjs/common';
-import {ChildProcess, exec, execFile, spawn} from 'child_process';
+import {ChildProcess, exec, execFile, ExecOptions, spawn} from 'child_process';
 import {Observable} from 'rxjs';
 
 export interface CnSpawnResult {
   status: 'success' | 'error';
   data: string;
 }
-
 
 export interface CnSpawnResponse {
   childProcess: ChildProcess;
@@ -19,6 +18,28 @@ export enum CnExecCommandMode {
   STDERR_AS_SUCCESS // consider STDERR as success and return stdout and stderr
 }
 
+
+export interface CnExecOptions extends ExecOptions {
+
+  /**
+   * Mode to handle stderr
+   * default is CnExecCommandMode.STDERR_AS_WARNING
+   */
+  errorMode?: CnExecCommandMode;
+
+  /**
+   * if true error are ignored and error is returned in the result
+   * default false
+   */
+  ignoreError?: boolean;
+}
+
+const cnExecCommandDefaultOptions: CnExecOptions = {
+  errorMode: CnExecCommandMode.STDERR_AS_WARNING,
+  ignoreError: false
+}
+
+
 /**
  * Service to execute shell commands and scripts
  */
@@ -30,17 +51,15 @@ export class CnCommandService {
   /**
    * Execute a command and return the result once the command is finished
    * @param command command to execute
-   * @param mode mode to handle stderr
-   * @param ignoreError if true error are ignored and error is returned in the result
+   * @param options options to pass to the command
    */
-  public execCommand(command: string, mode: CnExecCommandMode = CnExecCommandMode.STDERR_AS_WARNING,
-                     ignoreError: boolean = false): Promise<string> {
+  public execCommand(command: string, options: CnExecOptions = cnExecCommandDefaultOptions): Promise<string> {
 
     return new Promise(((resolve, reject) => {
-      exec(command,
+      exec(command, options,
         (error, stdout, stderr) => {
           if (error) {
-            if (ignoreError) {
+            if (options.ignoreError) {
               return resolve(error.toString());
             } else {
               this.logger.error(`Error during the execution of the command '${command}'. Error : '${error}'`);
@@ -48,7 +67,7 @@ export class CnCommandService {
             }
           }
 
-          switch (mode) {
+          switch (options.errorMode) {
             case CnExecCommandMode.STDERR_AS_SUCCESS:
               return resolve(stdout + stderr);
             case CnExecCommandMode.STDERR_AS_WARNING:

@@ -5,9 +5,10 @@ import {
   CaLabInstanceDatasource,
   CaLabInstanceFindOneDto,
   CaLabInstanceForm,
+  CaLabInstanceStatusDTO,
   CaLabInstanceStatusHistory,
   CaLabInstanceWithSpace
-} from '../model/entities/ca-lab-instance.class';
+} from '../model/entities/lab/ca-lab-instance.class';
 import {
   FlAdvancedSearchInput,
   FlApiService,
@@ -25,13 +26,14 @@ import {
   CaLabInstanceConfig,
   CaLabManagerStatus,
   CaLabTaskStatusInfo
-} from '../model/entities/ca-lab-manager.class';
-import {CaLabInstanceUser, CaLabInstanceUserRole} from '../model/entities/ca-lab-instance-user.class';
-import {CaLabInstanceProject} from '../model/entities/ca-lab-instance-project.class';
+} from '../model/entities/lab/ca-lab-manager.class';
+import {CaLabInstanceUser, CaLabInstanceUserRole} from '../model/entities/lab/ca-lab-instance-user.class';
+import {CaLabInstanceProject} from '../model/entities/lab/ca-lab-instance-project.class';
 import {
   CaLabInstanceSearch,
   CaLabInstanceSearchFields
 } from '../entity-module/ca-lab-core/model/ca-lab-instance-search.class';
+import {CaServerCompleteInfo} from '../model/entities/lab/ca-lab-server.class';
 
 @Injectable({
   providedIn: 'root'
@@ -81,10 +83,6 @@ export class CaLabInstanceService {
     return this.apiService.get(`${this.route}/${id}`, CaLabInstanceFindOneDto);
   }
 
-  public getStatusHistories(id: string): FlArrayObs<CaLabInstanceStatusHistory> {
-    return new FlEntityArrayObs(this.apiService.get(`${this.route}/${id}/status-history`, CaLabInstanceStatusHistory));
-  }
-
   /**
    * Log the user to the lab instance and return the authentication in the cookie
    */
@@ -121,6 +119,19 @@ export class CaLabInstanceService {
 
   public checkStatus(id: string): Observable<any> {
     return this.apiService.get(`${this.route}/${id}/check-status`);
+  }
+
+  //////////////////////////// STATUS ////////////////////////////////
+  public getStatus(id: string): Observable<CaLabInstanceStatusDTO> {
+    return this.apiService.get(`${this.route}/${id}/status`, CaLabInstanceStatusDTO);
+  }
+
+  public refreshStatus(id: string): Observable<CaLabInstanceStatusDTO> {
+    return this.apiService.put(`${this.route}/${id}/status/refresh`, null, CaLabInstanceStatusDTO);
+  }
+
+  public getStatusHistories(id: string): FlArrayObs<CaLabInstanceStatusHistory> {
+    return new FlEntityArrayObs(this.apiService.get(`${this.route}/${id}/status/history`, CaLabInstanceStatusHistory));
   }
 
   //////////////////////////// USERS ////////////////////////////////
@@ -160,72 +171,72 @@ export class CaLabInstanceService {
   //////////////////////////// LAB MANAGER ////////////////////////////////
 
   public getLabManagerStatus(id: string): Observable<CaLabManagerStatus> {
-    return this.apiService.get(`${this.route}/${id}/status`, CaLabManagerStatus);
+    return this.apiService.get(`${this.route}/${id}/lab-manager/status`, CaLabManagerStatus);
   }
 
   public getCurrentTask(id: string): Observable<CaLabTaskStatusInfo> {
-    return this.apiService.get(`${this.route}/${id}/current-task`);
+    return this.apiService.get(`${this.route}/${id}/lab-manager/current-task`);
   }
 
   public listContainers(id: string): Observable<CaLabDockerPs[]> {
-    return this.apiService.get(`${this.route}/${id}/containers`, CaLabDockerPs);
+    return this.apiService.get(`${this.route}/${id}/lab-manager/containers`, CaLabDockerPs);
   }
 
   public getLogs(id: string, containerName: string): Observable<string> {
-    return this.apiService.get(`${this.route}/${id}/${containerName}/logs`, null,
+    return this.apiService.get(`${this.route}/${id}/lab-manager/${containerName}/logs`, null,
       {responseType: 'text'});
   }
 
   public initAll(id: string): Observable<void> {
-    return this.apiService.post(`${this.route}/${id}/init-all`, null);
+    return this.apiService.post(`${this.route}/${id}/lab-manager/init-all`, null);
   }
 
   public upContainers(id: string, options: CaLabComposeUpOptions): Observable<void> {
-    return this.apiService.post(`${this.route}/${id}/up-containers`, options);
+    return this.apiService.post(`${this.route}/${id}/lab-manager/up-containers`, options);
   }
 
   public restartContainers(id: string, options: CaLabComposeUpOptions): Observable<void> {
-    return this.apiService.post(`${this.route}/${id}/restart-containers`, options);
+    return this.apiService.post(`${this.route}/${id}/lab-manager/restart-containers`, options);
   }
 
   public downContainers(id: string): Observable<void> {
-    return this.apiService.post(`${this.route}/${id}/down-containers`, null);
+    return this.apiService.post(`${this.route}/${id}/lab-manager/down-containers`, null);
   }
 
   public pullContainers(id: string): Observable<void> {
-    return this.apiService.post(`${this.route}/${id}/pull-containers`, null);
+    return this.apiService.post(`${this.route}/${id}/lab-manager/pull-containers`, null);
   }
 
   public pullBiotaDb(id: string): Observable<void> {
-    return this.apiService.post(`${this.route}/${id}/pull-biota-db`, null);
+    return this.apiService.post(`${this.route}/${id}/lab-manager/pull-biota-db`, null);
   }
 
   public registryLogin(id: string): Observable<void> {
-    return this.apiService.post(`${this.route}/${id}/registry-login`, null);
+    return this.apiService.post(`${this.route}/${id}/lab-manager/registry-login`, null);
   }
 
   public stopCurrentTask(id: string): Observable<void> {
-    return this.apiService.post(`${this.route}/${id}/stop-current-task`, null);
+    return this.apiService.post(`${this.route}/${id}/lab-manager/stop-current-task`, null);
   }
 
   public systemPrune(id: string): Observable<void> {
-    return this.apiService.post(`${this.route}/${id}/system-prune`, null);
+    return this.apiService.post(`${this.route}/${id}/lab-manager/system-prune`, null);
   }
 
   public updateConfig(id: string, config: CaLabInstanceConfig): Observable<void> {
-    return this.apiService.put(`${this.route}/${id}/config`, config, CaLabInstanceConfig);
+    return this.apiService.put(`${this.route}/${id}/lab-manager/config`, config, CaLabInstanceConfig);
   }
 
   public getConfig(id: string): Observable<CaLabInstanceConfig> {
-    return this.apiService.get(`${this.route}/${id}/config`, CaLabInstanceConfig);
+    return this.apiService.get(`${this.route}/${id}/lab-manager/config`, CaLabInstanceConfig);
   }
 
   public startAdminer(id: string): Observable<boolean> {
-    return this.apiService.put(`${this.route}/${id}/adminer/start`, null);
+    return this.apiService.put(`${this.route}/${id}/lab-manager/adminer/start`, null);
   }
 
   public stopAdminer(id: string): Observable<boolean> {
-    return this.apiService.put(`${this.route}/${id}/adminer/stop`, null);
+    return this.apiService.put(`${this.route}/${id}/lab-manager/adminer/stop`, null);
   }
 
   //////////////////////////// BACKUP ////////////////////////////////
@@ -244,5 +255,27 @@ export class CaLabInstanceService {
 
   public getBackupHistory(id: string): Observable<CaExternalLabBackupHistory> {
     return this.apiService.get(`${this.route}/${id}/backup/history`, CaExternalLabBackupHistory);
+  }
+
+  //////////////////////////// SERVER ////////////////////////////////
+
+  public getServerInfo(id: string): Observable<CaServerCompleteInfo> {
+    return this.apiService.get(`${this.route}/${id}/server/info`, CaServerCompleteInfo);
+  }
+
+  public initServer(id: string): Observable<CaLabInstance> {
+    return this.apiService.post(`${this.route}/${id}/server/init`, CaLabInstance);
+  }
+
+  public configureServer(id: string): Observable<CaLabInstance> {
+    return this.apiService.post(`${this.route}/${id}/server/configure-server`, CaLabInstance);
+  }
+
+  public configureLab(id: string): Observable<CaLabInstance> {
+    return this.apiService.post(`${this.route}/${id}/server/configure-lab`, CaLabInstance);
+  }
+
+  public deleteServer(id: string): Observable<void> {
+    return this.apiService.delete(`${this.route}/${id}/server`);
   }
 }

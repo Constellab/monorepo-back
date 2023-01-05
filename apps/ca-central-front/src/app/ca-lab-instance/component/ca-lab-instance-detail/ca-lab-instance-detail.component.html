@@ -30,10 +30,6 @@
                          [labInstanceId]="labInstance.id">
     </ca-lab-login-button>
 
-    <ca-lab-instance-start-stop [labInstance]="labInstance" (update)="onLabUpdate($event)"
-                                class="g-button-action">
-    </ca-lab-instance-start-stop>
-
     <button mat-stroked-button type="button" (click)="openCodelabInfo(labInstance)"
             class="g-button-small">
       <mat-icon flIcon="code"></mat-icon>

@@ -53,6 +53,27 @@ export abstract class CnAbstractWithStatusService<T extends CnEntityWithStatus<C
 
   /**
    * update the entity current status and closed previous status
+   * only if the current status has changed need to send the db entity
+   */
+  async updateCurrentStatusIfChanged(status: S, id: string): Promise<T> {
+    return await this.updateCurrentStatusIfChangedWithDbEntity(status, await this.findByIdAndCheck(id));
+  }
+
+  /**
+   * update the entity current status and closed previous status
+   * only if the current status has changed need to send the db entity
+   */
+  async updateCurrentStatusIfChangedWithDbEntity(status: S, dbEntity: T): Promise<T> {
+    if (dbEntity.currentStatus.status === status) {
+      return dbEntity;
+    }
+
+    return await this.updateCurrentStatusWithDbEntity(status, dbEntity);
+  }
+
+
+  /**
+   * update the entity current status and closed previous status
    * need to send the db entity
    */
   async updateCurrentStatusWithDbEntity(status: S, dbEntity: T): Promise<T> {

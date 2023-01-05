@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, Host, OnInit} from '@angular/core';
 import {CaLabInstanceService} from '../../../../service-api/ca-lab-instance.service';
 import {MatSelect} from '@angular/material/select';
-import {CaLabInstance} from '../../../../model/entities/ca-lab-instance.class';
+import {CaLabInstance} from '../../../../model/entities/lab/ca-lab-instance.class';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 
 @Component({

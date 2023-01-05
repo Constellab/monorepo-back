@@ -105,19 +105,39 @@ export class CnCloudProviderOvhService extends CnCloudProviderExternalService {
       case 'ACTIVE':
         return 'RUNNING';
       case 'BUILD':
-        return 'CREATING';
+      case 'REBUILD':
+      case 'BUILDING':
       case 'HARD_REBOOT':
       case 'REBOOT':
       case 'RESCUE':
+      case 'RESCUING':
+      case 'RESUMING':
       case 'RESIZE':
+      case 'RESIZED':
       case 'REVERT_RESIZE':
       case 'VERIFY_RESIZE':
+      case 'MIGRATING':
+      case 'SNAPSHOTTING':
         return 'RESTARTING';
       case 'PASSWORD':
       case 'SHUTOFF':
       case 'SUSPENDED':
       case 'UNKNOWN':
+      case 'SHELVED':
+      case 'SHELVED_OFFLOADED':
+      case 'PAUSED':
+      case 'ERROR':
+      case 'RESCUED':
+      case 'UNRESCUING':
+      case 'DELETED':
+      case 'SOFT_DELETED':
+      case 'STOPPED':
         return 'STOPPED';
+      case 'SHELVING':
+      case 'DELETING':
+        return 'STOPPING';
+      case 'UNSHELVING':
+        return 'CREATING';
     }
   }
 
@@ -132,7 +152,6 @@ export class CnCloudProviderOvhService extends CnCloudProviderExternalService {
   stopInstance(id: string): Promise<void> {
     return this.ovhService.stopInstance(id);
   }
-
 
 
   ///////////////////////////////////////// VOLUME //////////////////////////////////////////
@@ -193,7 +212,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderExternalService {
       size: volume.size,
       status: volumeStatus,
       type: volumeType,
-      attachedTo: volume.attachedTo[0],
+      attachedTo: volume.attachedTo != null ? volume.attachedTo[0] : null,
       originalObject: volume
     };
   }
@@ -229,7 +248,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderExternalService {
   }
 
   public async deleteDomainRecord(subDomain: string): Promise<void> {
-    const recordIds: number[] = await this.ovhService.getDomainRecordIdBySubDomain(CnCloudProviderOvhService.LAB_DOMAIN, subDomain, 'A')
+    const recordIds: number[] = await this.ovhService.getDomainRecordIdBySubDomain(CnCloudProviderOvhService.LAB_DOMAIN, subDomain, 'A');
 
     for (const recordId of recordIds) {
       await this.ovhService.deleteDomainRecord(CnCloudProviderOvhService.LAB_DOMAIN, recordId);

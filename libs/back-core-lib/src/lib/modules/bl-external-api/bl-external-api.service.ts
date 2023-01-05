@@ -26,7 +26,7 @@ export class BlExternalApiService {
               options: BlExternalApiHttpOption = {}): Observable<any> {
     return this.httpService.post(route, this.convertObjectToPlain(body), options as any).pipe(
       map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)),
-      catchError(err => this.catchError(err, route)),
+      catchError(err => this.catchError(err, route, options.logError)),
     );
   }
 
@@ -41,7 +41,7 @@ export class BlExternalApiService {
              options: BlExternalApiHttpOption = {}): Observable<any> {
     return this.httpService.put(route, this.convertObjectToPlain(body), options as any).pipe(
       map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)),
-      catchError(err => this.catchError(err, route)),
+      catchError(err => this.catchError(err, route, options.logError)),
     );
   }
 
@@ -55,7 +55,7 @@ export class BlExternalApiService {
                 options: BlExternalApiHttpOption = {}): Observable<any> {
     return this.httpService.delete(route, options as any).pipe(
       map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)),
-      catchError(err => this.catchError(err, route)),
+      catchError(err => this.catchError(err, route, options.logError)),
     );
   }
 
@@ -69,7 +69,7 @@ export class BlExternalApiService {
              options: BlExternalApiHttpOption = {}): Observable<any> {
     return this.httpService.get(route, options as any).pipe(
       map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)),
-      catchError(err => this.catchError(err, route)),
+      catchError(err => this.catchError(err, route, options.logError)),
     );
   }
 
@@ -81,7 +81,9 @@ export class BlExternalApiService {
     // add the formData header
     options.headers = Object.assign({}, options.headers, formData.getHeaders());
 
-    return this.post(route, formData.getBuffer(), classReference, options);
+    return this.post(route, formData.getBuffer(), classReference, options).pipe(
+      catchError(err => this.catchError(err, route, options.logError)),
+    );
   }
 
   /**
@@ -115,7 +117,7 @@ export class BlExternalApiService {
   }
 
   private deserializePage(json: any, classReference: ClDeserializationRef): ClPageI<any> {
-    // if the result if paginated (we supposed the json is type of ClPage)
+    // if the result is paginated (we supposed the json is type of ClPage)
     if (json.data != null && json.data instanceof Array) {
       return {
         first: json.paginator.is_first_page,
@@ -131,7 +133,7 @@ export class BlExternalApiService {
     }
   }
 
-  private catchError(error: AxiosError, route: string): Observable<never> {
+  private catchError(error: AxiosError, route: string, logError?: boolean): Observable<never> {
 
     const apiError: BlExternalApiError = {
       status: error.response ? error.response.status : null,
@@ -152,10 +154,13 @@ export class BlExternalApiService {
       apiError.message = errorData.detail;
     }
 
-    if (apiError.message) {
-      Logger.error(`[BLApiService] Error during call to route '${route}' : ${apiError.message}`);
-    } else {
-      Logger.error(`[BLApiService] Error during call to route '${route}'`);
+    // log if log error is not set to false (default is true)
+    if (logError !== false) {
+      if (apiError.message) {
+        Logger.error(`[BLApiService] Error during call to route '${route}' : ${apiError.message}`);
+      } else {
+        Logger.error(`[BLApiService] Error during call to route '${route}'`);
+      }
     }
     return throwError(apiError as any);
 

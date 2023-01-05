@@ -6,7 +6,10 @@ import {
   FlDialogService,
   FlPortalActionsService
 } from '@monorepo/front-core-lib';
-import {CaExternalLabBackup, CaExternalLabBackupStorage} from '../../../ca-core/model/entities/ca-lab-manager.class';
+import {
+  CaExternalLabBackup,
+  CaExternalLabBackupStorage
+} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
 import {Observable} from 'rxjs';
 import {
   CaLabBackupHistoryDialogComponent

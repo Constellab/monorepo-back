@@ -17,6 +17,12 @@ export interface BlExternalApiHttpOption extends AxiosRequestConfig {
    * If data, it only returns the content of the response
    */
   observe?: BlExternalApiHttpOptionObserve;
+
+  /**
+   * Log error in the console if true
+   * Default is true
+   */
+  logError?: boolean;
 }
 
 export interface BlExternalApiError{

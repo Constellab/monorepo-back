@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaLabDockerPs} from '../../../ca-core/model/entities/ca-lab-manager.class';
+import {CaLabDockerPs} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {
   CaLabDockerContainerLogsComponent,

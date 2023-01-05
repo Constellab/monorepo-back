@@ -3,7 +3,7 @@ import {Observable} from 'rxjs';
 import {CaExperiment} from '../model/entities/ca-experiment.class';
 import {FlApiService} from '@monorepo/front-core-lib';
 import {CaTechnicalReport} from '../model/entities/ca-technical-report.class';
-import {CaLabConfig} from '../model/entities/ca-lab-config.class';
+import {CaLabConfig} from '../model/entities/lab/ca-lab-config.class';
 
 @Injectable({
   providedIn: 'root'

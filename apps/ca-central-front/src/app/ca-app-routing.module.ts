@@ -19,6 +19,7 @@ const routes: Routes = [
         scrollPositionRestoration: 'enabled',
         relativeLinkResolution: 'corrected',
         paramsInheritanceStrategy: 'always',
+        anchorScrolling: 'enabled',
 
       }
     )],
