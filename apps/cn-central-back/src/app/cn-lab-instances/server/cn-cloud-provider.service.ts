@@ -1,13 +1,10 @@
-import {
-  CnCpCreateInstanceRequest,
-  CnCpCreateVolumeRequest,
-  CnCpInstance,
-  CnCpVolume
-} from './cn-cloud-provider-external.class';
+import {CnCpCreateInstanceRequest, CnCpCreateVolumeRequest, CnCpInstance, CnCpVolume} from './cn-cloud-provider.class';
 import {CnCloudProviderName} from '../../cn-cloud-providers/cn-cloud-provider.entity';
 
-
-export abstract class CnCloudProviderExternalService {
+/**
+ * Abstract class to communicate with different cloud provider
+ */
+export abstract class CnCloudProviderService {
 
   public abstract getName(): CnCloudProviderName;
 

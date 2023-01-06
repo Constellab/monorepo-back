@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable, Logger} from '@nestjs/common';
 import {CnCloudProviderName} from '../../cn-cloud-providers/cn-cloud-provider.entity';
 import {CnCloudProviderOvhService} from './ovh/cn-cloud-provider-ovh.service';
-import {CnCloudProviderExternalService} from './cn-cloud-provider-external.service';
+import {CnCloudProviderService} from './cn-cloud-provider.service';
 import {
   CnCpBackupFrequency,
   CnCpBillingType,
@@ -12,19 +12,21 @@ import {
   CnCpInstanceStatus,
   CnCpVolume,
   CnCpVolumeType
-} from './cn-cloud-provider-external.class';
+} from './cn-cloud-provider.class';
 import {CnLabInstance} from '../cn-lab-instance.entity';
 import {CnLabInstancesService} from '../cn-lab-instances.service';
 import {CnLabInstanceStatus} from '../status/cn-lab-instance-status.enum';
 
-
+/**
+ * Service to manage the lab server via the cloud provider
+ */
 @Injectable()
-export class CnLabCloudProviderService {
+export class CnLabServerService {
 
   private static readonly BACKUP_ROTATION = 7;
   private static readonly BACKUP_FREQUENCY: CnCpBackupFrequency = 'DAILY';
 
-  private readonly logger = new Logger(CnLabCloudProviderService.name);
+  private readonly logger = new Logger(CnLabServerService.name);
 
 
   constructor(private ovhCloudProviderService: CnCloudProviderOvhService,
@@ -162,7 +164,7 @@ export class CnLabCloudProviderService {
     return labInstance;
   }
 
-  private async createLabInstance(service: CnCloudProviderExternalService, labInstance: CnLabInstance,
+  private async createLabInstance(service: CnCloudProviderService, labInstance: CnLabInstance,
                                   region: string, billing: CnCpBillingType): Promise<CnCpInstance> {
     await this.labInstanceService.updateServerStatusText(labInstance.id,
       `Creating server instance ${labInstance.serverInfo.name} in cloud provider ${service.getName()}`
@@ -174,15 +176,15 @@ export class CnLabCloudProviderService {
       region: region,
       serverName: labInstance.serverInfo.name,
       billing: billing,
-      backupFrequency: CnLabCloudProviderService.BACKUP_FREQUENCY,
-      backupRotation: CnLabCloudProviderService.BACKUP_ROTATION
+      backupFrequency: CnLabServerService.BACKUP_FREQUENCY,
+      backupRotation: CnLabServerService.BACKUP_ROTATION
     };
     const serverInstance = await service.createInstance(instanceRequest);
     this.logger.log(`Instance ${serverInstance.id} created in for lab ${labInstance.id} in cloud provider ${service.getName()}`);
     return serverInstance;
   }
 
-  private async createVolume(service: CnCloudProviderExternalService, labInstance: CnLabInstance,
+  private async createVolume(service: CnCloudProviderService, labInstance: CnLabInstance,
                              region: string, volumeSize: number,
                              volumeType: CnCpVolumeType): Promise<CnCpVolume> {
     const volumeRequest: CnCpCreateVolumeRequest = {
@@ -224,7 +226,7 @@ export class CnLabCloudProviderService {
     this.logger.log(`Domain record created for lab ${labInstance.id} with subdomain ${subDomain}`);
   }
 
-  private async attachVolumeToInstance(service: CnCloudProviderExternalService, serverInstanceId: string, volumeId: string,
+  private async attachVolumeToInstance(service: CnCloudProviderService, serverInstanceId: string, volumeId: string,
                                        labInstanceId: string): Promise<CnCpVolume> {
     await this.labInstanceService.updateServerStatusText(labInstanceId, 'Attaching volume to server instance');
     // eslint-disable-next-line max-len
@@ -395,7 +397,7 @@ export class CnLabCloudProviderService {
   }
 
 
-  private getCloudProviderService(cloudProvider: CnCloudProviderName): CnCloudProviderExternalService {
+  private getCloudProviderService(cloudProvider: CnCloudProviderName): CnCloudProviderService {
     switch (cloudProvider) {
       case 'OVH':
         return this.ovhCloudProviderService;

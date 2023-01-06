@@ -3,16 +3,18 @@ import {CnLabInstance} from '../cn-lab-instance.entity';
 import {CnCommandService, CnExecCommandMode} from '../../cn-core/services/cn-command.service';
 import {CnLabInstancesService} from '../cn-lab-instances.service';
 import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-config.service';
-import {CnLabCloudProviderService} from './cn-lab-cloud-provider.service';
 import {CnLabManagerService} from '../cn-lab-manager.service';
 
+/**
+ * Service to execute ssh command to the lab server
+ */
 @Injectable()
 export class CnLabSshService {
 
   private static readonly DOCKERLAB_FOLDER = 'dockerlab';
   private static readonly DOCKERLAB_REPO = 'gitlab.com/gencovery/infra/dockerlab.git';
 
-  private readonly logger = new Logger(CnLabCloudProviderService.name);
+  private readonly logger = new Logger(CnLabSshService.name);
 
   constructor(private labInstanceService: CnLabInstancesService,
               private commandService: CnCommandService,

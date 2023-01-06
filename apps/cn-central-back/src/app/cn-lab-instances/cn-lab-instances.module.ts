@@ -22,10 +22,10 @@ import {CnLabInstanceProjectService} from './project/cn-lab-instance-project.ser
 import {CnProjectsAggregateModule} from '../cn-projects-aggregate/cn-project-aggregate.module';
 import {CnReportsModule} from '../cn-projects-aggregate/cn-reports/cn-reports.module';
 import {CnObjectStoragesModule} from '../cn-object-storages/cn-object-storages.module';
-import {CnOvhService} from './cloud-provider/ovh/cn-ovh.service';
-import {CnLabCloudProviderService} from './cloud-provider/cn-lab-cloud-provider.service';
-import {CnCloudProviderOvhService} from './cloud-provider/ovh/cn-cloud-provider-ovh.service';
-import {CnLabSshService} from './cloud-provider/cn-lab-ssh.service';
+import {CnOvhService} from './server/ovh/cn-ovh.service';
+import {CnLabServerService} from './server/cn-lab-server.service';
+import {CnCloudProviderOvhService} from './server/ovh/cn-cloud-provider-ovh.service';
+import {CnLabSshService} from './server/cn-lab-ssh.service';
 
 @Module({
   imports: [
@@ -57,7 +57,7 @@ import {CnLabSshService} from './cloud-provider/cn-lab-ssh.service';
     CnLabInstancesSecurity,
     CnLabInstanceUserService,
     CnLabInstanceProjectService,
-    CnLabCloudProviderService,
+    CnLabServerService,
     CnOvhService,
     CnCloudProviderOvhService,
     CnLabSshService

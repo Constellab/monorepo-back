@@ -1,4 +1,4 @@
-import {CnCloudProviderExternalService} from '../cn-cloud-provider-external.service';
+import {CnCloudProviderService} from '../cn-cloud-provider.service';
 import {CnOvhService} from './cn-ovh.service';
 import {
   CnCpCreateInstanceRequest,
@@ -8,7 +8,7 @@ import {
   CnCpVolume,
   CnCpVolumeStatus,
   CnCpVolumeType
-} from '../cn-cloud-provider-external.class';
+} from '../cn-cloud-provider.class';
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {
   CnOvhCreateDomainRecordRequest,
@@ -23,7 +23,7 @@ import {CnCoreConfigService} from '../../../cn-core/modules/cn-core-config/cn-co
 import {CnCloudProviderName} from '../../../cn-cloud-providers/cn-cloud-provider.entity';
 
 @Injectable()
-export class CnCloudProviderOvhService extends CnCloudProviderExternalService {
+export class CnCloudProviderOvhService extends CnCloudProviderService {
 
   private static IMAGE_NAME = 'Ubuntu 20.04';
   private static SSK_KEY_ID = '516d5675616d46746157343d';

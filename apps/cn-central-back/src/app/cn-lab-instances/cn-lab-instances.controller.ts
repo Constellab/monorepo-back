@@ -20,7 +20,7 @@ import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
 import {CnLabInstanceProject} from './project/cn-lab-instance-project.entity';
 import {CnExternalLabBackup, CnExternalLabBackupHistory} from '../cn-external-lab-api/model/cn-external-lab-api.class';
-import {CnCpCompleteInfo} from './cloud-provider/cn-cloud-provider-external.class';
+import {CnCpCompleteInfo} from './server/cn-cloud-provider.class';
 
 
 @Controller('lab-instances')

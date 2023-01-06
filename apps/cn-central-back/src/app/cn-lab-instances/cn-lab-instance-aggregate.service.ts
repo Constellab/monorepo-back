@@ -45,9 +45,9 @@ import {CnExternalLabProjectService} from '../cn-external-lab-api/cn-external-la
 import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 import {CnObjectStoragesAggregateService} from '../cn-object-storages/cn-object-storages-aggregate.service';
-import {CnCpCompleteInfo} from './cloud-provider/cn-cloud-provider-external.class';
-import {CnLabCloudProviderService} from './cloud-provider/cn-lab-cloud-provider.service';
-import {CnLabSshService} from './cloud-provider/cn-lab-ssh.service';
+import {CnCpCompleteInfo} from './server/cn-cloud-provider.class';
+import {CnLabServerService} from './server/cn-lab-server.service';
+import {CnLabSshService} from './server/cn-lab-ssh.service';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
 
@@ -70,7 +70,7 @@ export class CnLabInstanceAggregateService {
               private externalLabApiService: CnExternalLabApiService,
               private dataSource: DataSource,
               private objectStorageService: CnObjectStoragesAggregateService,
-              private cloudProviderService: CnLabCloudProviderService,
+              private labServerService: CnLabServerService,
               private labSshService: CnLabSshService,
               private labConfigService: CnLabConfigsService) {
   }
@@ -199,7 +199,7 @@ export class CnLabInstanceAggregateService {
   async refreshStatus(id: string): Promise<CnLabInstanceStatusDTO> {
     let labInstance = await this.getAndCheckAuthorizationToFindById(id);
 
-    labInstance = await this.cloudProviderService.refreshLabStatus(labInstance.id);
+    labInstance = await this.labServerService.refreshLabStatus(labInstance.id);
     return this.getStatus(labInstance);
   }
 
@@ -506,7 +506,7 @@ export class CnLabInstanceAggregateService {
 
   public async getServerInfo(labInstanceId: string): Promise<CnCpCompleteInfo> {
     const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId);
-    return this.cloudProviderService.getCompleteInfo(labInstance);
+    return this.labServerService.getCompleteInfo(labInstance);
   }
 
   public async initServer(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
@@ -519,7 +519,7 @@ export class CnLabInstanceAggregateService {
       // if an error occurred we just refresh the lab status
       (error: Error) => {
         this.logger.error(`Error during initServer: ${error.message}`);
-        this.cloudProviderService.refreshLabStatus(labInstance.id).catch();
+        this.labServerService.refreshLabStatus(labInstance.id).catch();
       }
     );
 
@@ -548,7 +548,7 @@ export class CnLabInstanceAggregateService {
       // if an error occurred we just refresh the lab status
       (error: Error) => {
         this.logger.error(`Error during createServer: ${error.message}`);
-        this.cloudProviderService.refreshLabStatus(labInstance.id).catch();
+        this.labServerService.refreshLabStatus(labInstance.id).catch();
       }
     );
 
@@ -556,7 +556,7 @@ export class CnLabInstanceAggregateService {
   }
 
   private async createServerAsync(labInstance: CnLabInstance, refreshStatus: boolean): Promise<CnLabInstance> {
-    labInstance = await this.cloudProviderService.initInstance(labInstance,
+    labInstance = await this.labServerService.initInstance(labInstance,
       'HOURLY', 10, 'CLASSIC');
 
     if (refreshStatus) {
@@ -582,7 +582,7 @@ export class CnLabInstanceAggregateService {
       // if an error occurred we just refresh the lab status
       (error: Error) => {
         this.logger.error(`Error during configureServerAsync: ${error.message}`);
-        this.cloudProviderService.refreshLabStatus(labInstance.id).catch();
+        this.labServerService.refreshLabStatus(labInstance.id).catch();
       }
     );
 
@@ -619,19 +619,19 @@ export class CnLabInstanceAggregateService {
     const labInstance = await this.checkServerStatusBeforeAction(labInstanceId);
 
     this.security.checkAuthorizationToDeleteServer(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
-    await this.cloudProviderService.deleteLabInstanceServerAndVolume(labInstance);
+    await this.labServerService.deleteLabInstanceServerAndVolume(labInstance);
   }
 
   async startInstance(id: string): Promise<CnLabInstance> {
     const labInstance = await this.checkServerStatusBeforeAction(id);
 
-    return this.cloudProviderService.startLab(labInstance);
+    return this.labServerService.startLab(labInstance);
   }
 
   async stopInstance(id: string): Promise<CnLabInstance> {
     const labInstance = await this.checkServerStatusBeforeAction(id);
 
-    return this.cloudProviderService.stopLab(labInstance);
+    return this.labServerService.stopLab(labInstance);
   }
 
   /**
@@ -643,7 +643,7 @@ export class CnLabInstanceAggregateService {
   private async checkServerStatusBeforeAction(id: string): Promise<CnLabInstance> {
     // check authorization
     let labInstance = await this.getAndCheckAuthorizationToManageLab(id);
-    labInstance = await this.cloudProviderService.refreshLabStatus(labInstance.id);
+    labInstance = await this.labServerService.refreshLabStatus(labInstance.id);
 
     if (labInstance.serverIsBusy()) {
       throw new BadRequestException(`Server is ${labInstance.currentStatus.status} and cannot configured`);
