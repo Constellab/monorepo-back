@@ -1,6 +1,6 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {CaLabInstanceService} from '../../ca-core/service-api/ca-lab-instance.service';
-import {BehaviorSubject, filter, Observable} from 'rxjs';
+import {BehaviorSubject, filter, Observable, Subscription} from 'rxjs';
 import {
   CaLabInstance,
   CaLabInstanceFindOneDto,
@@ -9,9 +9,15 @@ import {
 import {map} from 'rxjs/operators';
 import {CaAuthenticatedUserService} from '../../ca-core/service-api/ca-authenticated-user.service';
 import {CaLabInstanceUserRole} from '../../ca-core/model/entities/lab/ca-lab-instance-user.class';
+import {FlPortalActionsService} from '@monorepo/front-core-lib';
 
+/**
+ * State for the lab instance detail page.
+ */
 @Injectable()
 export class CaLabInstanceDetailPageState implements OnDestroy {
+
+  public static readonly actionType = 'CaLabInstanceDetailPageState';
 
   private labInstance$: BehaviorSubject<CaLabInstance>;
   private userRole$: BehaviorSubject<CaLabInstanceUserRole>;
@@ -21,8 +27,12 @@ export class CaLabInstanceDetailPageState implements OnDestroy {
 
   private timeout: any;
 
+  private subscription: Subscription;
+
+
   constructor(private labInstanceService: CaLabInstanceService,
-              private authenticatedUserService: CaAuthenticatedUserService) {
+              private authenticatedUserService: CaAuthenticatedUserService,
+              private portalService: FlPortalActionsService) {
   }
 
   public init(id: string): void {
@@ -35,7 +45,11 @@ export class CaLabInstanceDetailPageState implements OnDestroy {
     });
 
     this.status$ = new BehaviorSubject(null);
-    this.refreshStatus();
+    this.getStatus();
+
+    this.subscription = this.portalService.getResult$(CaLabInstanceDetailPageState.actionType).subscribe(
+      (result) => this.getStatus(result.result)
+    );
   }
 
   private getLabInstanceSuccess(labInstance: CaLabInstanceFindOneDto): void {
@@ -48,11 +62,16 @@ export class CaLabInstanceDetailPageState implements OnDestroy {
     this.userRole$.error(error);
   }
 
-  public refreshStatus(): void {
-    this.labInstanceService.getStatus(this.id).subscribe({
-      next: status => this.setStatus(status),
-      error: error => this.status$.error(error)
-    });
+  public getStatus(object?: CaLabInstanceStatusDTO): void {
+    if (object && object instanceof CaLabInstanceStatusDTO) {
+      this.setStatus(object);
+    } else {
+      // otherwise, request the status
+      this.labInstanceService.getStatus(this.id).subscribe({
+        next: status => this.setStatus(status),
+        error: error => this.status$.error(error)
+      });
+    }
   }
 
 
@@ -67,7 +86,7 @@ export class CaLabInstanceDetailPageState implements OnDestroy {
 
     // if the lab is busy, refresh the status every 10 seconds
     if (status.labStatus.value === 'STARTING' || status.labStatus.value === 'STOPPING') {
-      this.timeout = setTimeout(() => this.refreshStatus(), 10000);
+      this.timeout = setTimeout(() => this.getStatus(), 10000);
     }
   }
 
@@ -99,9 +118,15 @@ export class CaLabInstanceDetailPageState implements OnDestroy {
     );
   }
 
+  public serverIsBusy$(): Observable<boolean> {
+    return this.getStatus$().pipe(
+      map(status => status.labStatus.value === 'STARTING' || status.labStatus.value === 'STOPPING')
+    );
+  }
+
   public updateLab(labInstance: CaLabInstance): void {
     this.labInstance$.next(labInstance);
-    this.refreshStatus();
+    this.getStatus();
   }
 
   public getLabInstanceId(): string {
@@ -112,6 +137,7 @@ export class CaLabInstanceDetailPageState implements OnDestroy {
     this.labInstance$?.complete();
     this.userRole$?.complete();
     this.status$?.complete();
+    this.subscription?.unsubscribe();
   }
 
 }

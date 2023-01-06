@@ -12,7 +12,7 @@ import {
   FlTranslateService
 } from '@monorepo/front-core-lib';
 import {caConstLoginRoute} from '../utils/ca-base-route';
-import {CmNestApiError} from '@monorepo/common-model';
+import {CmApiError} from '@monorepo/common-model';
 import {environment} from '../../../environments/ca-environment';
 import {PlatformLocation} from '@angular/common';
 
@@ -51,7 +51,7 @@ export class CaApiErrorService extends FlApiErrorService {
     };
 
     // check if the error is formatted from nest api
-    const nestError: CmNestApiError = errorResponse.error;
+    const nestError: CmApiError = errorResponse.error;
     if (nestError && nestError.code != null && nestError.instanceId != null
       && nestError.detail != null && nestError.status != null) {
       serverError.nestedError = nestError;
@@ -119,7 +119,7 @@ export class CaApiErrorService extends FlApiErrorService {
   /**
    * Handle the error message for the not specific errors
    */
-  private getErrorMessage(error: CmNestApiError, defaultError: string): string {
+  private getErrorMessage(error: CmApiError, defaultError: string): string {
     return error?.detail ?? defaultError;
   }
 }

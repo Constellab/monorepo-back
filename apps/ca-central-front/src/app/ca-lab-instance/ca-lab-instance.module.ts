@@ -82,6 +82,9 @@ import {
 import {
   CaLabInstanceStartStopComponent
 } from './component/ca-lab-instance-start-stop/ca-lab-instance-start-stop.component';
+import {
+  CaLabInstanceServerStatusComponent
+} from './component/ca-lab-instance-server-status/ca-lab-instance-server-status.component';
 
 /**
  * Module the lab instance detail page with iframe for the lab
@@ -118,6 +121,7 @@ import {
     CaLabServerCompleteInfoComponent,
     CaLabServerCompleteInfoDialogComponent,
     CaLabInstanceStartStopComponent,
+    CaLabInstanceServerStatusComponent,
   ],
   imports: [
     CommonModule,

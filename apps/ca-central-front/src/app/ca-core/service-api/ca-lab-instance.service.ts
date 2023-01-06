@@ -263,16 +263,16 @@ export class CaLabInstanceService {
     return this.apiService.get(`${this.route}/${id}/server/info`, CaServerCompleteInfo);
   }
 
-  public initServer(id: string): Observable<CaLabInstance> {
-    return this.apiService.post(`${this.route}/${id}/server/init`, CaLabInstance);
+  public initServer(id: string): Observable<CaLabInstanceStatusDTO> {
+    return this.apiService.post(`${this.route}/${id}/server/init`, null, CaLabInstanceStatusDTO);
   }
 
-  public configureServer(id: string): Observable<CaLabInstance> {
-    return this.apiService.post(`${this.route}/${id}/server/configure-server`, CaLabInstance);
+  public createServer(id: string): Observable<CaLabInstanceStatusDTO> {
+    return this.apiService.post(`${this.route}/${id}/server/create`, null, CaLabInstanceStatusDTO);
   }
 
-  public configureLab(id: string): Observable<CaLabInstance> {
-    return this.apiService.post(`${this.route}/${id}/server/configure-lab`, CaLabInstance);
+  public configureServer(id: string): Observable<CaLabInstanceStatusDTO> {
+    return this.apiService.post(`${this.route}/${id}/server/configure`, null, CaLabInstanceStatusDTO);
   }
 
   public deleteServer(id: string): Observable<void> {

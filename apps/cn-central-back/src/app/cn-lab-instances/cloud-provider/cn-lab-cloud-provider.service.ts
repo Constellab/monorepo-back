@@ -365,7 +365,7 @@ export class CnLabCloudProviderService {
   public async refreshLabStatus(labInstanceId: string): Promise<CnLabInstance> {
     const labInstance = await this.labInstanceService.findByIdAndCheck(labInstanceId);
     if (!labInstance.serverInstanceId) {
-      throw new BadRequestException(`Lab has no server instance was it correctly initialized?`);
+      return await this.labInstanceService.markInstanceAsStopped(labInstanceId);
     }
 
     const cloudProviderService = this.getCloudProviderService(labInstance.getCloudProviderName());

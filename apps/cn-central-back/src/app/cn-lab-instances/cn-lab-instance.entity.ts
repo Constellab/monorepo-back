@@ -86,7 +86,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
 
   // text about the current server status
   @Exclude()
-  @Column({type: 'text'})
+  @Column({type: 'text', nullable: true})
   serverProgressText: string;
 
   // url of the api server
@@ -156,5 +156,9 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
 
   public getCloudProviderName(): CnCloudProviderName {
     return this.serverInfo.cloudProvider.name;
+  }
+
+  public serverIsBusy(): boolean {
+    return this.currentStatus.status === CnLabInstanceStatus.STARTING || this.currentStatus.status === CnLabInstanceStatus.STOPPING;
   }
 }

@@ -10,7 +10,7 @@ import {
   FlSnackBarService,
   FlTranslateService
 } from '@monorepo/front-core-lib';
-import {CmNestApiError} from '@monorepo/common-model';
+import {CmApiError} from '@monorepo/common-model';
 
 
 /**
@@ -29,7 +29,7 @@ export class HaApiErrorService extends FlApiErrorService {
   /**
    * Handle the error message for the not specific errors
    */
-  private static getErrorMessage(error: CmNestApiError, defaultError: string): string {
+  private static getErrorMessage(error: CmApiError, defaultError: string): string {
     return error?.detail ?? defaultError;
   }
 
@@ -53,7 +53,7 @@ export class HaApiErrorService extends FlApiErrorService {
     };
 
     // check if the error is formatted from nest api
-    const nestError: CmNestApiError = errorResponse.error;
+    const nestError: CmApiError = errorResponse.error;
     if (nestError && nestError.code != null && nestError.instanceId != null
       && nestError.detail != null && nestError.status != null) {
       serverError.nestedError = nestError;

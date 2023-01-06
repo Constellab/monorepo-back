@@ -32,10 +32,10 @@ export class CnLabInstancesSecurity {
    * The user needs to be an owner of the lab instance
    */
   public async checkAuthorizationToManageLab(labInstance: CnLabInstance, userInfo: CnUserSpaceInfo): Promise<CnLabInstanceUserRole> {
-    // check the spac context
+    // check the space context
     if (labInstance.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException();
 
-    // spac admin is considered as owner
+    // space admin is considered as owner
     if (userInfo.isSpaceAdmin()) return CnLabInstanceUserRole.OWNER;
 
     const group = await this.labInstanceGroupService.findByLabInstanceIdAndUserId(labInstance.id, userInfo.userId);
@@ -49,10 +49,10 @@ export class CnLabInstancesSecurity {
 
 
   public async checkAuthorizationToFindById(labInstance: CnLabInstance, userInfo: CnUserSpaceInfo): Promise<CnLabInstanceUserRole> {
-    // check the spac context
+    // check the space context
     if (labInstance.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException();
 
-    // spac admin is considered as owner
+    // space admin is considered as owner
     if (userInfo.isSpaceAdmin()) return CnLabInstanceUserRole.OWNER;
 
     const group = await this.labInstanceGroupService.findByLabInstanceIdAndUserId(labInstance.id, userInfo.userId);
@@ -77,7 +77,7 @@ export class CnLabInstancesSecurity {
    * For now, only the G admin can call update method on cloud provider (like create server, volume, dns)
    * @param userInfo
    */
-  public checkAuthorizationToUpdateCloudProvider(userInfo: CnUserSpaceInfo): void {
+  public checkAuthorizationToDeleteServer(userInfo: CnUserSpaceInfo): void {
     if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
   }
 

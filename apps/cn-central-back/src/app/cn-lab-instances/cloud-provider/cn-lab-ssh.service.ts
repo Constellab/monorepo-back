@@ -20,7 +20,7 @@ export class CnLabSshService {
               private labManagerService: CnLabManagerService) {
   }
 
-  public async initLabServer(labInstance: CnLabInstance): Promise<CnLabInstance> {
+  public async configureServer(labInstance: CnLabInstance): Promise<CnLabInstance> {
     // get Dockerlab repository
     await this.refreshDockerlabRepo(labInstance);
 
@@ -62,7 +62,7 @@ export class CnLabSshService {
   private async refreshDockerlabRepo(labInstance: CnLabInstance): Promise<void> {
     const cd = this.getSshCommand(labInstance.virtualHost, [`cd ${CnLabSshService.DOCKERLAB_FOLDER}`]);
     const cdResult = await this.commandService.execCommand(cd,
-      {errorMode: CnExecCommandMode.STDERR_AS_SUCCESS, ignoreError: true});
+      {errorMode: CnExecCommandMode.STDERR_AS_SUCCESS, ignoreError: true, timeout: 10000});
 
     // if the repo does exist, we pull the latest version
     if (cdResult === '') {
@@ -131,6 +131,8 @@ export class CnLabSshService {
     // it requires to kill the process manually, it happens less with cat
     // TODO TO improve check
     const command = `ssh -o StrictHostKeyChecking=no ubuntu@lab.${virtualHost} "ls"`;
+    // use ping because it does not block
+    // const command = `ping lab.${virtualHost}`;
     this.logger.log(`Checking ssh connection for ${virtualHost}`);
     try {
       await this.commandService.execCommand(command, {errorMode: CnExecCommandMode.STDERR_AS_WARNING, timeout: 10000});

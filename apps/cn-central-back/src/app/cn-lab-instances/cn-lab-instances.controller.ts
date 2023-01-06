@@ -137,7 +137,7 @@ export class CnLabInstancesController {
    */
   @Get(':id/check-status')
   public checkStatus(@Param('id', new ParseUUIDPipe()) id: string): Promise<any> {
-    return this.aggregateService.checkStatus(id);
+    return this.aggregateService.checkLabManagerStatus(id);
   }
 
   /**
@@ -154,7 +154,7 @@ export class CnLabInstancesController {
    */
   @Get(':id/status')
   getStatus(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusDTO> {
-    return this.aggregateService.getStatus(id);
+    return this.aggregateService.getLabStatus(id);
   }
 
   /**
@@ -334,18 +334,18 @@ export class CnLabInstancesController {
   }
 
   @Post(':id/server/init')
-  async init(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
-    return await this.aggregateService.init(id);
+  async init(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusDTO> {
+    return await this.aggregateService.initServer(id);
   }
 
-  @Post(':id/server/configure-server')
-  async configureServer(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
+  @Post(':id/server/create')
+  async createServer(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusDTO> {
+    return await this.aggregateService.createServer(id);
+  }
+
+  @Post(':id/server/configure')
+  async configureServer(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusDTO> {
     return await this.aggregateService.configureServer(id);
-  }
-
-  @Post(':id/server/configure-lab')
-  async configureLab(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
-    return await this.aggregateService.configureLab(id);
   }
 
   @Delete(':id/server')

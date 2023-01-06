@@ -19,7 +19,7 @@
   "language_not_supported": "The language is not supported",
   "user_already_exist_in_lab": "The user already exists in the lab",
   "lab_user_not_activated": "The lab user is not activated",
-  "lab_user_not_found": "You user does not exists in the lab, please request the administrator to add your user to the lab",
+  "lab_user_not_found": "Your user does not exists in the lab, please ask the lab owner to add your user.",
   "project_already_shared_with_group": "The project is already shared with this group",
   "project_not_shared_with_group": "The project is not shared with this group",
   "user_already_in_group": "The user already is in the group",

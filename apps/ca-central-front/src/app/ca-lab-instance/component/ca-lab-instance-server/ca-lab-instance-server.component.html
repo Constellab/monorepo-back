@@ -9,13 +9,17 @@
 
   <fl-card-body>
 
-    <p class="status" *ngIf="statusAction$ | async as statusAction">
-      {{statusAction.message | translate}}
-      <button *ngIf="statusAction.action" mat-stroked-button class="status-action-button"
-              type="button" (click)="statusAction.action()">
-        {{statusAction.actionText | translate}}
-      </button>
-    </p>
+    <ng-container *ngIf="status$ | async as status">
+      <div *ngIf="status.labStatus.value === 'STARTING' || status.labStatus.value === 'STOPPING'"
+           fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em">
+
+        <fl-loader size="small"></fl-loader>
+        <p>{{(status.labStatus.value === 'STARTING' ? 'lab_is_starting' : 'lab_is_stopping') | translate}}</p>
+      </div>
+    </ng-container>
+
+
+    <ca-lab-instance-server-status class="status"></ca-lab-instance-server-status>
 
     <ng-container *ngIf="status$ | async as status">
 
@@ -82,17 +86,17 @@
       </button>
 
       <button mat-stroked-button type="button" class="g-button-small actions-button"
+              (click)="createServer()">
+        {{'lab_create_server' | translate}}
+      </button>
+
+      <button mat-stroked-button type="button" class="g-button-small actions-button"
               (click)="configureServer()">
         {{'lab_configure_server' | translate}}
       </button>
 
       <button mat-stroked-button type="button" class="g-button-small actions-button"
-              (click)="configureLab()">
-        {{'lab_configure_lab' | translate}}
-      </button>
-
-      <button mat-stroked-button type="button" class="g-button-small actions-button"
-              color="warn" (click)="deleteServer()">
+              color="warn" (click)="deleteServer()" *caIsAdmin>
         {{'lab_delete_server' | translate}}
       </button>
 

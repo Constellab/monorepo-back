@@ -1,11 +1,9 @@
-import {HttpStatus} from '@nestjs/common';
-
 /**
  * Format of the nest response error
  */
-export interface CmNestApiError {
+export interface CmApiError {
   // http status
-  status: HttpStatus;
+  status: number;
 
   // unique error code
   code: string;
