@@ -35,7 +35,9 @@ import {
 import {
   CaLabInstanceDockerUpFormComponent
 } from './component/ca-lab-instance-docker-up-form/ca-lab-instance-docker-up-form.component';
-import {CaLabInstanceConfigComponent} from './component/ca-lab-instance-config/ca-lab-instance-config.component';
+import {
+  CaLabInstanceManagerConfigComponent
+} from './component/ca-lab-instance-manager-config/ca-lab-instance-manager-config.component';
 import {
   CaLabInstanceConfigFormComponent
 } from './component/ca-lab-instance-config-form/ca-lab-instance-config-form.component';
@@ -103,7 +105,7 @@ import {
     CaLabDockerContainerLogsComponent,
     CaLabInstanceManagerStatusComponent,
     CaLabInstanceDockerUpFormComponent,
-    CaLabInstanceConfigComponent,
+    CaLabInstanceManagerConfigComponent,
     CaLabInstanceConfigFormComponent,
     CaLabInstanceConfigBrickComponent,
     CaLabDockerContainersComponent,

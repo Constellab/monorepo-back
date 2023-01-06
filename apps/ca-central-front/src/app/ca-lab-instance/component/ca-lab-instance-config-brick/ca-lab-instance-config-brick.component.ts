@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {CaBrickVersionDTO} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
+import {CaLabManagerBrickVersionDTO} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Validators} from '@angular/forms';
 
@@ -12,13 +12,13 @@ import {Validators} from '@angular/forms';
 })
 export class CaLabInstanceConfigBrickComponent implements OnInit {
 
-  formGp: FormGroup<CaBrickVersionDTO>;
+  formGp: FormGroup<CaLabManagerBrickVersionDTO>;
 
   minVersion: string;
 
   private isUpdate: boolean;
 
-  constructor(@Inject(MAT_DIALOG_DATA) private brickVersionDTO: CaBrickVersionDTO,
+  constructor(@Inject(MAT_DIALOG_DATA) private brickVersionDTO: CaLabManagerBrickVersionDTO,
               private dialogRef: MatDialogRef<CaLabInstanceConfigBrickComponent>) {
   }
 

@@ -6,6 +6,11 @@ import {
 } from '../ca-lab-instance-codelab-info/ca-lab-instance-codelab-info.component';
 import {CaLabInstanceDetailPageState} from '../../state/ca-lab-instance-detail-page.state';
 import {Observable} from 'rxjs';
+import {
+  CaLabConfigDialogComponent,
+  CaLabConfigDialogInput
+} from '../../../ca-core/entity-module/ca-lab-core/component/ca-lab-config-dialog/ca-lab-config-dialog.component';
+import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 
 @Component({
   selector: 'ca-lab-instance-detail',
@@ -18,7 +23,8 @@ export class CaLabInstanceDetailComponent implements OnInit {
   isLoading: boolean = false;
 
   constructor(private state: CaLabInstanceDetailPageState,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private labInstanceService: CaLabInstanceService) {
   }
 
   ngOnInit(): void {
@@ -27,6 +33,12 @@ export class CaLabInstanceDetailComponent implements OnInit {
 
   openCodelabInfo(labInstance: CaLabInstance): void {
     this.dialogService.openMediumDialog(CaLabInstanceCodelabInfoComponent, {data: labInstance});
+  }
+
+  openLabConfig(labInstance: CaLabInstance): void {
+    const input: CaLabConfigDialogInput = this.labInstanceService.getConfig(labInstance.id);
+
+    this.dialogService.openSmallDialog(CaLabConfigDialogComponent, {data: input});
   }
 
 }

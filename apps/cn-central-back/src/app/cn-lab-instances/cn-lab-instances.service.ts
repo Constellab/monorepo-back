@@ -9,9 +9,6 @@ import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnExperiment} from '../cn-projects-aggregate/cn-experiments/cn-experiment.entity';
 import {CnExperimentsService} from '../cn-projects-aggregate/cn-experiments/cn-experiments.service';
-import {CnLabInstanceStartDTO} from './cn-lab-instance.dto';
-import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
-import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
 import {CnReportsService} from '../cn-projects-aggregate/cn-reports/cn-reports.service';
 import {BlBadRequestException, BlSearchBuilder, BlSearchParams} from '@monorepo/back-core-lib';
@@ -23,7 +20,6 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
               @InjectRepository(CnLabInstanceStatusHistory) statusHistoRepo: Repository<CnLabInstanceStatusHistory>,
               private experimentService: CnExperimentsService,
               private reportService: CnReportsService,
-              private labConfigService: CnLabConfigsService,
               datasource: DataSource) {
     super(repository, CnLabInstance, statusHistoRepo, CnLabInstanceStatusHistory, datasource);
   }
@@ -98,8 +94,6 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   }
 
 
-
-
   public findLabByApiKey(apiKey: string): Promise<CnLabInstance> {
     return this.repository.findOne({
       where: {
@@ -113,26 +107,6 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     const lab: CnLabInstance = await this.findByIdAndCheck(labInstanceId);
     lab.name = name;
     return this.repository.save(lab);
-  }
-
-
-  /**
-   * Called by the lab to tell central it has started
-   */
-  public async registerLabConfig(labStart: CnLabInstanceStartDTO): Promise<void> {
-    const labConfig = await this.labConfigService.getOrCreateLabConfig(labStart.lab_config);
-
-    const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
-
-    labInstance.labConfig = labConfig;
-    await this.update(labInstance);
-  }
-
-  public async getLabConfig(labInstanceId: string): Promise<CnLabConfig> {
-    const labInstance = await this.findByIdAndCheck(labInstanceId, {
-      labConfig: {brickVersions: {brick: true}}
-    });
-    return labInstance.labConfig;
   }
 
   public async findBySpace(spaceId: string, page: number, size: number): Promise<ClPage<CnLabInstance>> {
@@ -156,7 +130,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   public async searchAll(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnLabInstance>> {
     const searchBuilder = new BlSearchBuilder<CnLabInstance>();
     searchBuilder.addSearchParams(searchParams);
-    searchBuilder.setRelations({space: true})
+    searchBuilder.setRelations({space: true});
 
     return this.findPaginated(page, size, searchBuilder.build());
   }

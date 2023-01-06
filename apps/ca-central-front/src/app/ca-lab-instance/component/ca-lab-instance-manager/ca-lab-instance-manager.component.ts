@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {distinct, Observable, throwError} from 'rxjs';
 import {CaLabComposeUpOptions, CaLabManagerStatus} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
@@ -9,7 +9,6 @@ import {
 import {
   CaLabInstanceStatusDialogComponent
 } from '../../../ca-core/entity-module/ca-lab-core/component/ca-lab-instance-status-dialog/ca-lab-instance-status-dialog.component';
-import {CaLabInstance} from '../../../ca-core/model/entities/lab/ca-lab-instance.class';
 import {CaLabInstanceDetailPageState} from '../../state/ca-lab-instance-detail-page.state';
 import {ClSubscriptionHandler} from '@monorepo/core-lib';
 import {map} from 'rxjs/operators';
@@ -24,7 +23,8 @@ import {map} from 'rxjs/operators';
 })
 export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
 
-  @Input() labInstance: CaLabInstance;
+  adminerUrl$: Observable<string>;
+  labInstanceId: string = this.state.getLabInstanceId();
 
   labManagerStatus$: Observable<CaLabManagerStatus>;
 
@@ -48,23 +48,27 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
       map(status => status.labManagerIsRunning),
       distinct()
     ).subscribe(status => this.refresh(status)));
+
+    this.adminerUrl$ = this.state.getLabInstance$().pipe(
+      map(labInstance => labInstance.adminerUrl)
+    );
   }
 
   refresh(isRunning: boolean = true): void {
-    if(!isRunning) {
+    if (!isRunning) {
       this.labManagerStatus$ = throwError(() => 'Lab manager is not running');
       return;
     }
-    this.labManagerStatus$ = this.labInstanceService.getLabManagerStatus(this.labInstance.id);
+    this.labManagerStatus$ = this.labInstanceService.getLabManagerStatus(this.state.getLabInstanceId());
   }
 
   openStatusDialog(): void {
-    this.dialogService.openMediumDialog(CaLabInstanceStatusDialogComponent, {data: this.labInstance.id});
+    this.dialogService.openMediumDialog(CaLabInstanceStatusDialogComponent, {data: this.state.getLabInstanceId()});
   }
 
   initAll(): void {
     this.actionService.addAction({
-      action: this.labInstanceService.initAll(this.labInstance.id),
+      action: this.labInstanceService.initAll(this.state.getLabInstanceId()),
       text: 'Init all',
       type: this.actionType
     });
@@ -75,7 +79,7 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
       formValue => {
         if (formValue) {
           this.actionService.addAction({
-            action: this.labInstanceService.upContainers(this.labInstance.id, formValue),
+            action: this.labInstanceService.upContainers(this.state.getLabInstanceId(), formValue),
             text: 'Up containers',
             type: this.actionType
           });
@@ -89,7 +93,7 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
       formValue => {
         if (formValue) {
           this.actionService.addAction({
-            action: this.labInstanceService.restartContainers(this.labInstance.id, formValue),
+            action: this.labInstanceService.restartContainers(this.state.getLabInstanceId(), formValue),
             text: 'Restart containers',
             type: this.actionType
           });
@@ -104,7 +108,7 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
 
   downContainers(): void {
     this.actionService.addAction({
-      action: this.labInstanceService.downContainers(this.labInstance.id),
+      action: this.labInstanceService.downContainers(this.state.getLabInstanceId()),
       text: 'Down containers',
       type: this.actionType
     });
@@ -112,7 +116,7 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
 
   pullContainers(): void {
     this.actionService.addAction({
-      action: this.labInstanceService.pullContainers(this.labInstance.id),
+      action: this.labInstanceService.pullContainers(this.state.getLabInstanceId()),
       text: 'Pull containers',
       type: this.actionType
     });
@@ -120,7 +124,7 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
 
   pullBiotaDb(): void {
     this.actionService.addAction({
-      action: this.labInstanceService.pullBiotaDb(this.labInstance.id),
+      action: this.labInstanceService.pullBiotaDb(this.state.getLabInstanceId()),
       text: 'Pull biota db',
       type: this.actionType
     });
@@ -128,7 +132,7 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
 
   registryLogin(): void {
     this.actionService.addAction({
-      action: this.labInstanceService.registryLogin(this.labInstance.id),
+      action: this.labInstanceService.registryLogin(this.state.getLabInstanceId()),
       text: 'Registry login',
       type: this.actionType
     });
@@ -136,7 +140,7 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
 
   stopCurrentTask(): void {
     this.actionService.addAction({
-      action: this.labInstanceService.stopCurrentTask(this.labInstance.id),
+      action: this.labInstanceService.stopCurrentTask(this.state.getLabInstanceId()),
       text: 'Stop current task',
       type: this.actionType
     });
@@ -144,7 +148,7 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
 
   systemPrune(): void {
     this.actionService.addAction({
-      action: this.labInstanceService.systemPrune(this.labInstance.id),
+      action: this.labInstanceService.systemPrune(this.state.getLabInstanceId()),
       text: 'System prune',
       type: this.actionType
     });
@@ -152,7 +156,7 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
 
   startAdminer(): void {
     this.actionService.addAction({
-      action: this.labInstanceService.startAdminer(this.labInstance.id),
+      action: this.labInstanceService.startAdminer(this.state.getLabInstanceId()),
       text: 'Start adminer',
       type: this.actionType
     });
@@ -160,7 +164,7 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
 
   stopAdminer(): void {
     this.actionService.addAction({
-      action: this.labInstanceService.stopAdminer(this.labInstance.id),
+      action: this.labInstanceService.stopAdminer(this.state.getLabInstanceId()),
       text: 'Stop adminer',
       type: this.actionType
     });

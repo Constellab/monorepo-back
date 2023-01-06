@@ -123,7 +123,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
   public async getExperimentLabConfig(experimentId: string): Promise<CnLabConfig> {
     return (await this.repository.findOne({
       where: {id: experimentId},
-      relations: {labConfig: {brickVersions: true}},
+      relations: {labConfig: {brickVersions: {brick: true}}},
     })).labConfig;
   }
 }

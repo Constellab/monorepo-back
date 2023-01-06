@@ -77,13 +77,13 @@ export class CaLabManagerStatus {
   adminerIsRunning: boolean;
 }
 
-export class CaBrickVersionDTO {
+export class CaLabManagerBrickVersionDTO {
   name: string;
   version: string;
 }
 
-export class CaLabInstanceConfig {
-  brickVersions: CaBrickVersionDTO[];
+export class CaLabManagerConfig {
+  brickVersions: CaLabManagerBrickVersionDTO[];
   glabTag: 'latest' | 'beta' | string;
 }
 

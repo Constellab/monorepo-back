@@ -23,6 +23,8 @@ import {
   CaLabInstanceSearchFormComponent
 } from './component/ca-lab-instance-search-form/ca-lab-instance-search-form.component';
 import {CaCloudProviderCoreModule} from '../ca-cloud-provider-core/ca-cloud-provider-core.module';
+import {CaLabConfigDialogComponent} from './component/ca-lab-config-dialog/ca-lab-config-dialog.component';
+import {CaLabConfigComponent} from './component/ca-lab-config/ca-lab-config.component';
 
 /**
  * Core module for Lab and LabInstance
@@ -37,6 +39,8 @@ import {CaCloudProviderCoreModule} from '../ca-cloud-provider-core/ca-cloud-prov
     CaLabLoginButtonComponent,
     CaLabInstanceSearchComponent,
     CaLabInstanceSearchFormComponent,
+    CaLabConfigDialogComponent,
+    CaLabConfigComponent,
   ],
   exports: [
     CaLabInstanceCardComponent,
@@ -46,6 +50,8 @@ import {CaCloudProviderCoreModule} from '../ca-cloud-provider-core/ca-cloud-prov
     CaLabLoginButtonComponent,
     CaLabInstanceSearchComponent,
     CaLabInstanceSearchFormComponent,
+    CaLabConfigDialogComponent,
+    CaLabConfigComponent,
   ],
   imports: [
     CommonModule,

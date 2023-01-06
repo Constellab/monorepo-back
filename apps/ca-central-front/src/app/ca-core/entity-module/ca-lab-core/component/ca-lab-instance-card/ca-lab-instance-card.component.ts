@@ -1,6 +1,5 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {CaLabInstance} from '../../../../model/entities/lab/ca-lab-instance.class';
-import {FlStatusChipMode} from '@monorepo/front-core-lib';
 
 /**
  * Card to display a {@link CaLabInstance}
@@ -16,11 +15,6 @@ export class CaLabInstanceCardComponent implements OnInit {
 
   @Input() mode: 'small' | 'big' = 'small';
 
-  @Output() labInstanceUpdated: EventEmitter<CaLabInstance> = new EventEmitter<CaLabInstance>();
-
-
-  isLoading: boolean = false;
-
   constructor() {
   }
 
@@ -28,13 +22,5 @@ export class CaLabInstanceCardComponent implements OnInit {
 
   }
 
-  onLabUpdate(lab: CaLabInstance): void {
-    this.labInstance = lab;
-    this.labInstanceUpdated.emit(lab);
-  }
-
-  get statusChipMode(): FlStatusChipMode {
-    return this.mode === 'small' ? 'iconOnly' : 'iconText';
-  }
 
 }

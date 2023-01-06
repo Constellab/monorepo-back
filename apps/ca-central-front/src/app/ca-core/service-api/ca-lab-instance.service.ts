@@ -23,7 +23,7 @@ import {
   CaExternalLabBackupHistory,
   CaLabComposeUpOptions,
   CaLabDockerPs,
-  CaLabInstanceConfig,
+  CaLabManagerConfig,
   CaLabManagerStatus,
   CaLabTaskStatusInfo
 } from '../model/entities/lab/ca-lab-manager.class';
@@ -34,6 +34,7 @@ import {
   CaLabInstanceSearchFields
 } from '../entity-module/ca-lab-core/model/ca-lab-instance-search.class';
 import {CaServerCompleteInfo} from '../model/entities/lab/ca-lab-server.class';
+import {CaLabConfig} from '../model/entities/lab/ca-lab-config.class';
 
 @Injectable({
   providedIn: 'root'
@@ -119,6 +120,10 @@ export class CaLabInstanceService {
 
   public checkStatus(id: string): Observable<any> {
     return this.apiService.get(`${this.route}/${id}/check-status`);
+  }
+
+  public getConfig(id: string): Observable<CaLabConfig> {
+    return this.apiService.get(`${this.route}/${id}/config`, CaLabConfig);
   }
 
   //////////////////////////// STATUS ////////////////////////////////
@@ -223,12 +228,12 @@ export class CaLabInstanceService {
     return this.apiService.post(`${this.route}/${id}/lab-manager/system-prune`, null);
   }
 
-  public updateConfig(id: string, config: CaLabInstanceConfig): Observable<void> {
-    return this.apiService.put(`${this.route}/${id}/lab-manager/config`, config, CaLabInstanceConfig);
+  public updateLabManagerConfig(id: string, config: CaLabManagerConfig): Observable<void> {
+    return this.apiService.put(`${this.route}/${id}/lab-manager/config`, config, CaLabManagerConfig);
   }
 
-  public getConfig(id: string): Observable<CaLabInstanceConfig> {
-    return this.apiService.get(`${this.route}/${id}/lab-manager/config`, CaLabInstanceConfig);
+  public getLabManagerConfig(id: string): Observable<CaLabManagerConfig> {
+    return this.apiService.get(`${this.route}/${id}/lab-manager/config`, CaLabManagerConfig);
   }
 
   public startAdminer(id: string): Observable<boolean> {

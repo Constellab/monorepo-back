@@ -1,16 +1,11 @@
-<fl-async-section [object]="labInstance$" fxFlex="grow">
-  <ng-container *flSectionBody="let labInstance">
-    <!--   Owner section      -->
-    <ng-container *ngIf="isOwner$ | async">
+<!--   Owner section      -->
+<ng-container *ngIf="isOwner$ | async">
 
 
-      <ca-lab-instance-server class="g-section"></ca-lab-instance-server>
+  <ca-lab-instance-server class="g-section"></ca-lab-instance-server>
 
-      <ca-lab-instance-manager [labInstance]="labInstance"
-                               class="g-section"></ca-lab-instance-manager>
+  <ca-lab-instance-manager class="g-section"></ca-lab-instance-manager>
 
-      <ca-lab-instance-manage-backup class="g-section"
-                                     [labInstanceId]="labInstance.id"></ca-lab-instance-manage-backup>
-    </ng-container>
+  <ca-lab-instance-manage-backup class="g-section"></ca-lab-instance-manage-backup>
+</ng-container>
 
-  </ng-container>

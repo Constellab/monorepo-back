@@ -36,10 +36,10 @@ export class CaExperimentService {
   }
 
   public getExperimentTechnicalReport(experimentId: string): Observable<CaTechnicalReport>{
-    return this.apiService.get(`${this.route}/experiment-technical-report/${experimentId}`, CaTechnicalReport);
+    return this.apiService.get(`${this.route}/${experimentId}/technical-report`, CaTechnicalReport);
   }
 
   public getExperimentLabConfig(experimentId: string): Observable<CaLabConfig>{
-    return this.apiService.get(`${this.route}/experiment-lab-config/${experimentId}`, CaLabConfig);
+    return this.apiService.get(`${this.route}/${experimentId}/lab-config`, CaLabConfig);
   }
 }

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {
   FlConfirmDialogInput,
@@ -14,6 +14,8 @@ import {Observable} from 'rxjs';
 import {
   CaLabBackupHistoryDialogComponent
 } from '../ca-lab-backup-history-dialog/ca-lab-backup-history-dialog.component';
+import {CaLabInstanceDetailPageState} from '../../state/ca-lab-instance-detail-page.state';
+import {map} from 'rxjs/operators';
 
 /**
  * Component to manage the backup of a lab instance
@@ -26,11 +28,13 @@ import {
 })
 export class CaLabInstanceManageBackupComponent implements OnInit {
 
-  @Input() labInstanceId: string;
-
+  labManagerIsRunning$: Observable<boolean> = this.state.getStatus$().pipe(
+    map(status => status.labManagerIsRunning)
+  );
   currentStatus$: Observable<CaExternalLabBackup>;
 
-  constructor(private labInstanceService: CaLabInstanceService,
+  constructor(private state: CaLabInstanceDetailPageState,
+              private labInstanceService: CaLabInstanceService,
               private actionService: FlPortalActionsService,
               private dialogService: FlDialogService) {
   }
@@ -40,7 +44,7 @@ export class CaLabInstanceManageBackupComponent implements OnInit {
   }
 
   refreshCurrentStatus(): void {
-    this.currentStatus$ = this.labInstanceService.getBackupCurrentStatus(this.labInstanceId);
+    this.currentStatus$ = this.labInstanceService.getBackupCurrentStatus(this.state.getLabInstanceId());
   }
 
 
@@ -49,7 +53,7 @@ export class CaLabInstanceManageBackupComponent implements OnInit {
       title: 'backup_lab_production',
       content: 'backup_lab_production_confirmation',
       translateTitleAndContent: true,
-      observable: this.labInstanceService.backupProd(this.labInstanceId),
+      observable: this.labInstanceService.backupProd(this.state.getLabInstanceId()),
       successMessage: 'backup_lab_production_started',
       translateMessage: true
     };
@@ -70,7 +74,7 @@ export class CaLabInstanceManageBackupComponent implements OnInit {
       title: 'stop_lab_current_backup',
       content: 'stop_lab_current_backup_confirmation',
       translateTitleAndContent: true,
-      observable: this.labInstanceService.stopCurrentBackup(this.labInstanceId),
+      observable: this.labInstanceService.stopCurrentBackup(this.state.getLabInstanceId()),
       successMessage: 'lab_current_backup_stopped',
       translateMessage: true
     };
@@ -87,7 +91,7 @@ export class CaLabInstanceManageBackupComponent implements OnInit {
   }
 
   showBackupHistory(): void {
-    this.dialogService.openMediumDialog(CaLabBackupHistoryDialogComponent, {data: this.labInstanceId});
+    this.dialogService.openMediumDialog(CaLabBackupHistoryDialogComponent, {data: this.state.getLabInstanceId()});
   }
 
 }

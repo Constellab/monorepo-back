@@ -26,7 +26,7 @@
     <fl-async-section [object]="labManagerStatus$" [showServerErrorText]="true" emptyText="lab_manager_not_running">
       <ng-container *flSectionBody="let labStatus">
         <ca-lab-instance-manager-status [labStatus]="labStatus"
-                                        [adminerUrl]="labInstance.adminerUrl"></ca-lab-instance-manager-status>
+                                        [adminerUrl]="adminerUrl$ | async"></ca-lab-instance-manager-status>
 
 
         <!--  Action button  -->
@@ -70,15 +70,15 @@
 
 
         <!--  Lab config  -->
-        <ca-lab-instance-config [labInstanceId]="labInstance.id"
-                                class="g-section content"></ca-lab-instance-config>
+        <ca-lab-instance-manager-config [labInstanceId]="labInstanceId"
+                                class="g-section content"></ca-lab-instance-manager-config>
 
       </ng-container>
     </fl-async-section>
 
     <mat-divider class="divider"></mat-divider>
     <!--  List of containers  -->
-    <ca-lab-docker-containers [labInstanceId]="labInstance.id"></ca-lab-docker-containers>
+    <ca-lab-docker-containers [labInstanceId]="labInstanceId"></ca-lab-docker-containers>
 
   </fl-card-body>
 

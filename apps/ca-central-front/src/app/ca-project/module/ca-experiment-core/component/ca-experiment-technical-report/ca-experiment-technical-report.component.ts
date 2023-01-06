@@ -4,9 +4,6 @@ import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experim
 import {CaTechnicalReport} from '../../../../../ca-core/model/entities/ca-technical-report.class';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {
-  CaExperimentLabConfigDialogComponent
-} from '../ca-experiment-lab-config-dialog/ca-experiment-lab-config-dialog.component';
-import {
   PrWorkflow,
   PrWorkflowActionSelectNode,
   PrWorkflowActionState,
@@ -20,6 +17,10 @@ import {ClStringHelper} from '@monorepo/core-lib';
 import {map} from 'rxjs/operators';
 import {CaLabInstanceService} from '../../../../../ca-core/service-api/ca-lab-instance.service';
 import {CaWorkflowFactory} from '../../model/ca-workflow.factory';
+import {
+  CaLabConfigDialogComponent,
+  CaLabConfigDialogInput
+} from '../../../../../ca-core/entity-module/ca-lab-core/component/ca-lab-config-dialog/ca-lab-config-dialog.component';
 
 @Component({
   selector: 'ca-experiment-technical-report',
@@ -66,7 +67,8 @@ export class CaExperimentTechnicalReportComponent implements OnInit, OnDestroy {
   }
 
   openLabConfigDialog(): void {
-    this.dialogService.openSmallDialog(CaExperimentLabConfigDialogComponent, {data: this.experiment});
+    const input: CaLabConfigDialogInput = this.experimentService.getExperimentLabConfig(this.experiment.id);
+    this.dialogService.openSmallDialog(CaLabConfigDialogComponent, {data: input});
   }
 
   private onTechnicalReportSuccess(technicalReport: CaTechnicalReport): void {

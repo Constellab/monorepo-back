@@ -49,6 +49,7 @@ import {CnCpCompleteInfo} from './cloud-provider/cn-cloud-provider-external.clas
 import {CnLabCloudProviderService} from './cloud-provider/cn-lab-cloud-provider.service';
 import {CnLabSshService} from './cloud-provider/cn-lab-ssh.service';
 import {CnUser} from '../cn-users/cn-user.entity';
+import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
 
 
 @Injectable()
@@ -70,7 +71,8 @@ export class CnLabInstanceAggregateService {
               private dataSource: DataSource,
               private objectStorageService: CnObjectStoragesAggregateService,
               private cloudProviderService: CnLabCloudProviderService,
-              private labSshService: CnLabSshService) {
+              private labSshService: CnLabSshService,
+              private labConfigService: CnLabConfigsService) {
   }
 
   async create(createLabInstance: CnLabInstanceCreateDTO): Promise<CnLabInstance> {
@@ -129,12 +131,6 @@ export class CnLabInstanceAggregateService {
     return this.labInstancesService.updateName(labInstanceId, name);
   }
 
-  public async getLabInstanceConfig(labInstanceId: string): Promise<CnLabConfig> {
-    await this.getAndCheckAuthorizationToFindById(labInstanceId);
-
-    return this.labInstancesService.getLabConfig(labInstanceId);
-  }
-
   async searchAll(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnLabInstance>> {
     await this.security.checkAuthorizationToFindAll(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
 
@@ -146,6 +142,20 @@ export class CnLabInstanceAggregateService {
 
     return this.labInstancesService.searchInSpace(CnCurrentUserHelper.getAndCheckUserSpaceInfo().spaceId,
       searchParams, page, size);
+  }
+
+  public async getConfig(id: string): Promise<CnLabConfig> {
+    await this.getAndCheckAuthorizationToFindById(id);
+
+    const labInstance = await this.labInstancesService.findByIdAndCheck(id ,{
+      labConfig: {brickVersions: {brick: true}}
+    });
+
+    if (!labInstance.labConfig) {
+      throw new BadRequestException('Lab config not found');
+    }
+
+    return labInstance.labConfig;
   }
 
   /////////////////////////////////////// STATUS  //////////////////////////////////
@@ -429,12 +439,12 @@ export class CnLabInstanceAggregateService {
     return this.labManagerService.systemPrune(labInstance);
   }
 
-  public async updateConfig(labId: string, config: CnLabInstanceConfigDTO): Promise<void> {
+  public async updateLabManagerConfig(labId: string, config: CnLabInstanceConfigDTO): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.updateConfig(labInstance, config);
   }
 
-  public async getConfig(labId: string): Promise<CnLabInstanceConfigDTO> {
+  public async getLabManagerConfig(labId: string): Promise<CnLabInstanceConfigDTO> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.getConfig(labInstance);
   }
@@ -478,7 +488,12 @@ export class CnLabInstanceAggregateService {
 
   /////////////////////////// EXTERNAL LAB //////////////////////////////
   public async registerLabConfig(labStart: CnLabInstanceStartDTO): Promise<void> {
-    await this.labInstancesService.registerLabConfig(labStart);
+    const labConfig = await this.labConfigService.getOrCreateLabConfig(labStart.lab_config);
+
+    const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
+
+    labInstance.labConfig = labConfig;
+    await this.labInstancesService.update(labInstance);
   }
 
   public async getCurrentLabInstanceProjects(): Promise<CnProject[]> {

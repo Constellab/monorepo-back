@@ -40,7 +40,7 @@ export class CnExperimentsController {
   /**
    * Get experiment's reports
    */
-  @Get('experiment-technical-report/:experimentId')
+  @Get(':experimentId/technical-report')
   async getExperimentTechnicalReport(@Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<CnExperimentProtocol> {
     return this.projectAggregate.findExperimentTechnicalReport(experimentId);
   }
@@ -48,7 +48,7 @@ export class CnExperimentsController {
   /**
    * Get experiment's lab config
    */
-  @Get('experiment-lab-config/:experimentId')
+  @Get(':experimentId/lab-config')
   async getExperimentLabConfig(@Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<CnLabConfig> {
     return this.projectAggregate.findExperimentLabConfig(experimentId);
   }

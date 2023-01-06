@@ -1,5 +1,6 @@
 import {CaEntity} from './ca-entity.entity';
 import {CmVersion} from '@monorepo/common-model';
+import {Type} from 'class-transformer';
 
 /**
  * List of basic gws bricks
@@ -55,3 +56,8 @@ export class CaBrickVersion extends CaEntity {
   }
 }
 
+export class CaBrickVersionComplete extends CaBrickVersion {
+
+  @Type(() => CaBrick)
+  brick: CaBrick;
+}

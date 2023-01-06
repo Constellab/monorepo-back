@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {CaLabInstanceConfigComponent} from './ca-lab-instance-config.component';
+import {CaLabInstanceManagerConfigComponent} from './ca-lab-instance-manager-config.component';
 
 describe('CaLabInstanceConfigComponent', () => {
-  let component: CaLabInstanceConfigComponent;
-  let fixture: ComponentFixture<CaLabInstanceConfigComponent>;
+  let component: CaLabInstanceManagerConfigComponent;
+  let fixture: ComponentFixture<CaLabInstanceManagerConfigComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CaLabInstanceConfigComponent ]
+      declarations: [ CaLabInstanceManagerConfigComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CaLabInstanceConfigComponent);
+    fixture = TestBed.createComponent(CaLabInstanceManagerConfigComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

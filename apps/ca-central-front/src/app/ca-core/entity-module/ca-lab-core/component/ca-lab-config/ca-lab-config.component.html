@@ -1,0 +1,13 @@
+<h2>{{labConfig.label}}</h2>
+
+<h4>Bricks</h4>
+<ul>
+  <li *ngFor="let brickVersion of labConfig.brickVersions">
+    <fl-key-value>
+      <fl-key><a [href]="getBrickLink(brickVersion)" target="_blank"
+                 class="g-text-link g-primary-text">{{brickVersion.brick.name}}</a>
+      </fl-key>
+      v{{brickVersion.version}}
+    </fl-key-value>
+  </li>
+</ul>

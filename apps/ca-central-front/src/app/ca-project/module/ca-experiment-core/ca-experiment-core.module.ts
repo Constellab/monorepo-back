@@ -19,9 +19,6 @@ import {
   CaExperimentTechnicalReportLinkComponent
 } from './component/ca-experiment-technical-report-link/ca-experiment-technical-report-link.component';
 import {
-  CaExperimentLabConfigDialogComponent
-} from './component/ca-experiment-lab-config-dialog/ca-experiment-lab-config-dialog.component';
-import {
   CaExperimentTechnicalReportIntOutComponent
 } from './component/ca-experiment-technical-report-int-out/ca-experiment-technical-report-int-out.component';
 import {
@@ -54,7 +51,6 @@ import {
     CaExperimentTechnicalReportNodeComponent,
     CaExperimentTechnicalReportGraphComponent,
     CaExperimentTechnicalReportLinkComponent,
-    CaExperimentLabConfigDialogComponent,
     CaExperimentTechnicalReportIntOutComponent,
     CaExperimentTechnicalReportProcessDocDialogComponent,
     CaExperimentTechnicalReportWorkflowDrawerComponent,

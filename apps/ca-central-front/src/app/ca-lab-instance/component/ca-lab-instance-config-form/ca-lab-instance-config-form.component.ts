@@ -1,7 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {FlDialogService, FlSnackBarService} from '@monorepo/front-core-lib';
-import {CaBrickVersionDTO, CaLabInstanceConfig} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
+import {
+  CaLabManagerBrickVersionDTO,
+  CaLabManagerConfig
+} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
 import {
   CaLabInstanceConfigBrickComponent
 } from '../ca-lab-instance-config-brick/ca-lab-instance-config-brick.component';
@@ -21,7 +24,7 @@ import {
 export class CaLabInstanceConfigFormComponent implements OnInit {
   @Input() labInstanceId: string;
 
-  @Input() labConfig: CaLabInstanceConfig;
+  @Input() labConfig: CaLabManagerConfig;
 
   isLoading: boolean = false;
 
@@ -33,7 +36,7 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  openBrickVersionDetailDialog(brickVersionDTO: CaBrickVersionDTO): void {
+  openBrickVersionDetailDialog(brickVersionDTO: CaLabManagerBrickVersionDTO): void {
     const data: CaBrickVersionDetailDialogInput = {
       brickName: brickVersionDTO.name,
       brickVersion: brickVersionDTO.version,
@@ -42,14 +45,14 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
     this.dialogService.openSmallDialog(CaBrickVersionDetailDialogComponent, {data: data});
   }
 
-  openBrickVersionForm(brickVersionDTO?: CaBrickVersionDTO): void {
+  openBrickVersionForm(brickVersionDTO?: CaLabManagerBrickVersionDTO): void {
     this.dialogService.openSmallDialog(CaLabInstanceConfigBrickComponent, {data: brickVersionDTO}).afterClosed().subscribe(
       brickVersion => this.onBrickDialogClosed(brickVersionDTO == null ? 'add' : 'update', brickVersion)
     );
   }
 
 
-  private onBrickDialogClosed(mode: 'add' | 'update', brickVersionDTO?: CaBrickVersionDTO,): void {
+  private onBrickDialogClosed(mode: 'add' | 'update', brickVersionDTO?: CaLabManagerBrickVersionDTO,): void {
     if (!brickVersionDTO) return;
 
     const brick = this.labConfig.brickVersions.find(brickVersion => brickVersion.name === brickVersionDTO.name);
@@ -78,9 +81,9 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
     }
   }
 
-  private updateConfig(config: CaLabInstanceConfig): void {
+  private updateConfig(config: CaLabManagerConfig): void {
     this.isLoading = true;
-    this.labInstanceService.updateConfig(this.labInstanceId, config).subscribe(
+    this.labInstanceService.updateLabManagerConfig(this.labInstanceId, config).subscribe(
       () => this.updateConfigSuccess(),
       () => this.isLoading = false
     );

@@ -141,11 +141,11 @@ export class CnLabInstancesController {
   }
 
   /**
-   * Check the lab status and returns settings if ok
+   * Get the config of the lab
    */
-  @Get(':id/lab-config')
+  @Get(':id/config')
   public getLabInstanceConfig(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabConfig> {
-    return this.aggregateService.getLabInstanceConfig(id);
+    return this.aggregateService.getConfig(id);
   }
 
   //////////////////////////// STATUS ////////////////////////////////
@@ -288,12 +288,12 @@ export class CnLabInstancesController {
   @Put(':id/lab-manager/config')
   async updateConfig(@Param('id', new ParseUUIDPipe()) id: string,
                      @Body() config: CnLabInstanceConfigDTO): Promise<void> {
-    return await this.aggregateService.updateConfig(id, config);
+    return await this.aggregateService.updateLabManagerConfig(id, config);
   }
 
   @Get(':id/lab-manager/config')
   async getConfig(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceConfigDTO> {
-    return await this.aggregateService.getConfig(id);
+    return await this.aggregateService.getLabManagerConfig(id);
   }
 
   @Put(':id/lab-manager/adminer/start')
