@@ -8,7 +8,7 @@ import {CnLabConfigDto} from '../cn-lab-configs/cn-lab-config.dto';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {Type} from 'class-transformer';
 import {CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
-import {CnLabInstance} from './cn-lab-instance.entity';
+import {CnLabInstance, CnLabInstanceBillingMode, CnLabInstanceVolumeType} from './cn-lab-instance.entity';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 
@@ -28,6 +28,9 @@ export class CnLabInstanceDto extends BlBaseEntityDto {
   serverInfo: CnServerInfo = undefined;
   region: CnCloudProviderRegion = undefined;
   space: CnSpace = undefined;
+  billingMode: CnLabInstanceBillingMode = undefined;
+  volumeType: CnLabInstanceVolumeType = undefined;
+  volumeSize: number = undefined;
 }
 
 /**

@@ -87,6 +87,7 @@ import {
 import {
   CaLabInstanceServerStatusComponent
 } from './component/ca-lab-instance-server-status/ca-lab-instance-server-status.component';
+import {CaLabServerInfoCardComponent} from './component/ca-lab-server-info-card/ca-lab-server-info-card.component';
 
 /**
  * Module the lab instance detail page with iframe for the lab
@@ -124,6 +125,7 @@ import {
     CaLabServerCompleteInfoDialogComponent,
     CaLabInstanceStartStopComponent,
     CaLabInstanceServerStatusComponent,
+    CaLabServerInfoCardComponent,
   ],
   imports: [
     CommonModule,

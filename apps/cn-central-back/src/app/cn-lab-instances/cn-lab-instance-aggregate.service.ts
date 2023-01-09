@@ -556,8 +556,7 @@ export class CnLabInstanceAggregateService {
   }
 
   private async createServerAsync(labInstance: CnLabInstance, refreshStatus: boolean): Promise<CnLabInstance> {
-    labInstance = await this.labServerService.initInstance(labInstance,
-      'HOURLY', 10, 'CLASSIC');
+    labInstance = await this.labServerService.initInstance(labInstance);
 
     if (refreshStatus) {
       labInstance = await this.refreshStatusAndServerText(labInstance.id);

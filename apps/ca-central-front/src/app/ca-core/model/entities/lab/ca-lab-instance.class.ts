@@ -15,6 +15,8 @@ import {CaLabInstanceUserRole} from './ca-lab-instance-user.class';
 import {CaCloudProviderRegion} from '../ca-cloud-provider.class';
 
 export type CaLabInstanceStatus = 'RUNNING' | 'STOPPED' | 'STARTING' | 'STOPPING';
+export type CaLabInstanceBillingMode = 'HOURLY' | 'MONTHLY';
+export type CaLabInstanceVolumeType = 'CLASSIC' | 'HIGH_SPEED';
 
 export const caLabInstanceStatusDict: FlStatusDict<CaLabInstanceStatus> = {
   RUNNING: FlStatusHelper.getRunningStatus('RUNNING'),
@@ -61,6 +63,10 @@ export class CaLabInstance extends CaBaseEntity {
   serverInstanceId?: string;
   serverVolumeId?: string;
 
+  billingMode: CaLabInstanceBillingMode;
+  volumeSize: number;
+  volumeType: CaLabInstanceVolumeType;
+
   public isRunning(): boolean {
     return this.currentStatus.status.value === 'RUNNING';
   }
@@ -77,7 +83,6 @@ export class CaLabInstanceWithSpace extends CaLabInstance {
 
 
 export type CaLabInstanceDatasource = FlEntityPaginatedDatasource<CaLabInstance>;
-export type CaLabInstanceWithSpaceDatasource = FlEntityPaginatedDatasource<CaLabInstanceWithSpace>;
 
 export class CaLabInstanceForm {
   id: string;
@@ -89,6 +94,10 @@ export class CaLabInstanceForm {
 
   @Type(() => CaUser)
   owner?: CaUser;
+
+  billingMode: CaLabInstanceBillingMode;
+  volumeSize: number;
+  volumeType: CaLabInstanceVolumeType;
 
   glabApiKey: string;
   labManagerApiKey: string;

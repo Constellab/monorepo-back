@@ -4,14 +4,12 @@ import {CnCloudProviderOvhService} from './ovh/cn-cloud-provider-ovh.service';
 import {CnCloudProviderService} from './cn-cloud-provider.service';
 import {
   CnCpBackupFrequency,
-  CnCpBillingType,
   CnCpCompleteInfo,
   CnCpCreateInstanceRequest,
   CnCpCreateVolumeRequest,
   CnCpInstance,
   CnCpInstanceStatus,
-  CnCpVolume,
-  CnCpVolumeType
+  CnCpVolume
 } from './cn-cloud-provider.class';
 import {CnLabInstance} from '../cn-lab-instance.entity';
 import {CnLabInstancesService} from '../cn-lab-instances.service';
@@ -70,20 +68,16 @@ export class CnLabServerService {
    * It attaches the volume to the instance if not attached
    * It creates the domain record if it doesn't exist
    */
-  public async initInstance(labInstance: CnLabInstance,
-                            billing: CnCpBillingType,
-                            volumeSize: number,
-                            volumeType: CnCpVolumeType): Promise<CnLabInstance> {
+  public async initInstance(labInstance: CnLabInstance): Promise<CnLabInstance> {
 
     const cloudProviderName = labInstance.getCloudProviderName();
-    const regionName = labInstance.region.technicalName;
     const cloudProviderService = this.getCloudProviderService(cloudProviderName);
 
     let serverInstance: CnCpInstance;
 
     if (!labInstance.serverInstanceId) {
       // Creating the server instance
-      serverInstance = await this.createLabInstance(cloudProviderService, labInstance, regionName, billing);
+      serverInstance = await this.createLabInstance(cloudProviderService, labInstance);
       labInstance.serverInstanceId = serverInstance.id;
       labInstance = await this.labInstanceService.update(labInstance);
     } else {
@@ -98,7 +92,7 @@ export class CnLabServerService {
 
     if (!labInstance.serverVolumeId) {
       // Creating the volume
-      volume = await this.createVolume(cloudProviderService, labInstance, regionName, volumeSize, volumeType);
+      volume = await this.createVolume(cloudProviderService, labInstance);
       labInstance.serverVolumeId = volume.id;
       labInstance = await this.labInstanceService.update(labInstance);
     } else {
@@ -164,8 +158,10 @@ export class CnLabServerService {
     return labInstance;
   }
 
-  private async createLabInstance(service: CnCloudProviderService, labInstance: CnLabInstance,
-                                  region: string, billing: CnCpBillingType): Promise<CnCpInstance> {
+  private async createLabInstance(service: CnCloudProviderService, labInstance: CnLabInstance): Promise<CnCpInstance> {
+
+    const regionName = labInstance.region.technicalName;
+
     await this.labInstanceService.updateServerStatusText(labInstance.id,
       `Creating server instance ${labInstance.serverInfo.name} in cloud provider ${service.getName()}`
     );
@@ -173,9 +169,9 @@ export class CnLabServerService {
     this.logger.log(`Creating server instance ${labInstance.name} ${labInstance.serverInfo.name} for lab ${labInstance.id} in cloud provider ${service.getName()}`);
     const instanceRequest: CnCpCreateInstanceRequest = {
       name: labInstance.name,
-      region: region,
+      region: regionName,
       serverName: labInstance.serverInfo.name,
-      billing: billing,
+      billing: labInstance.billingMode,
       backupFrequency: CnLabServerService.BACKUP_FREQUENCY,
       backupRotation: CnLabServerService.BACKUP_ROTATION
     };
@@ -184,15 +180,14 @@ export class CnLabServerService {
     return serverInstance;
   }
 
-  private async createVolume(service: CnCloudProviderService, labInstance: CnLabInstance,
-                             region: string, volumeSize: number,
-                             volumeType: CnCpVolumeType): Promise<CnCpVolume> {
+  private async createVolume(service: CnCloudProviderService, labInstance: CnLabInstance): Promise<CnCpVolume> {
+
     const volumeRequest: CnCpCreateVolumeRequest = {
       name: labInstance.name,
       description: 'Volume for lab ' + labInstance.name,
-      size: volumeSize,
-      type: volumeType,
-      region: region
+      size: labInstance.volumeSize,
+      type: labInstance.volumeType,
+      region: labInstance.region.technicalName
     };
 
     await this.labInstanceService.updateServerStatusText(labInstance.id,

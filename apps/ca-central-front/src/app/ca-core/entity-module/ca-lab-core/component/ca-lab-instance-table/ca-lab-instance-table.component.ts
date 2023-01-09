@@ -56,6 +56,9 @@ export class CaLabInstanceTableComponent extends FlTableAbstractDirective<CaLabI
         serverInstanceId: labInstance.serverInstanceId,
         serverVolumeId: labInstance.serverVolumeId,
         space: labInstance.space,
+        billingMode: labInstance.billingMode,
+        volumeType: labInstance.volumeType,
+        volumeSize: labInstance.volumeSize,
       }
     };
 

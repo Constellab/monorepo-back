@@ -5,7 +5,12 @@ import {Observable} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaLabInstanceService} from '../../../../service-api/ca-lab-instance.service';
 import {Validators} from '@angular/forms';
-import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
+import {
+  FlFormDialogAbstractDirective,
+  FlFormDialogInput,
+  FlGlobalValidators,
+  FlSnackBarService
+} from '@monorepo/front-core-lib';
 import {CaCountryService} from '../../../../service-api/ca-country.service';
 import {CaCountry} from '../../../../model/entities/ca-country.entity';
 
@@ -48,6 +53,9 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
       virtualHost: [null, [Validators.required]],
       serverInfo: [null, [Validators.required]],
       owner: [null, this.isCreateMode() ? Validators.required : null],
+      billingMode: ['MONTHLY', [Validators.required]],
+      volumeSize: [null, [Validators.required, FlGlobalValidators.isInteger, Validators.min(50)]],
+      volumeType: ['HIGH_SPEED', [Validators.required]],
       glabApiKey: [null],
       labManagerApiKey: [null],
       codelabToken: [null],

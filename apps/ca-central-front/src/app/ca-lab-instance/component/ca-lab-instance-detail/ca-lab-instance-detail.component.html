@@ -3,7 +3,7 @@
   <fl-card-body>
 
     <!--   Lab url   -->
-    <fl-text-icon iconPosition="start">
+    <fl-text-icon>
       <mat-icon>link</mat-icon>
       <fl-key-value>
         <fl-key>{{'url' | translate}}</fl-key>
@@ -15,11 +15,19 @@
     </fl-text-icon>
 
 
-    <fl-text-icon iconPosition="start">
+    <fl-text-icon>
       <mat-icon>location_on</mat-icon>
       <fl-key-value class="key-val-inline">
         <fl-key class="key">{{'region' | translate}}</fl-key>
         <ca-city [city]="labInstance.region.city" class="city"></ca-city>
+      </fl-key-value>
+    </fl-text-icon>
+
+    <fl-text-icon>
+      <mat-icon>attach_money</mat-icon>
+      <fl-key-value class="key-val-inline">
+        <fl-key class="key">{{'lab_billing_mode' | translate}}</fl-key>
+        {{'lab_billing_mode_' + labInstance.billingMode | translate}}
       </fl-key-value>
     </fl-text-icon>
 

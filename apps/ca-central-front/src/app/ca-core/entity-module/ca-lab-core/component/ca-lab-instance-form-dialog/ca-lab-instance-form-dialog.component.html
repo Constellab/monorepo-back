@@ -67,6 +67,42 @@
       </mat-error>
     </mat-form-field>
 
+    <!--  Billing mode  -->
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'lab_billing_mode' | translate}}</mat-label>
+      <mat-select formControlName="billingMode"
+                  [placeholder]="'lab_billing_mode' | translate" required>
+        <mat-option value="MONTHLY">{{'lab_billing_mode_MONTHLY' | translate}}</mat-option>
+        <mat-option value="HOURLY">{{'lab_billing_mode_HOURLY' | translate}}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="formGp.get('billingMode').hasError('required')">
+        {{'lab_billing_mode' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
+
+    <!--  Volume type  -->
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'lab_volume_type' | translate}}</mat-label>
+      <mat-select formControlName="volumeType"
+                  [placeholder]="'lab_volume_type' | translate" required>
+        <mat-option value="CLASSIC">{{'lab_volume_type_CLASSIC' | translate}}</mat-option>
+        <mat-option value="HIGH_SPEED">{{'lab_volume_type_HIGH_SPEED' | translate}}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="formGp.get('volumeType').hasError('required')">
+        {{'lab_volume_type' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Volume Size -->
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'lab_volume_size' | translate}}</mat-label>
+      <input matInput formControlName="volumeSize"
+             [placeholder]="'lab_volume_size' | translate" type="number">
+      <mat-error *ngIf="formGp.get('volumeSize').invalid">
+        {{'lab_volume_size_error' | translate}}
+      </mat-error>
+    </mat-form-field>
+
     <!--  Glab Api key  -->
     <mat-form-field class="g-form-input">
       <mat-label>{{'glab_api_key' | translate}}</mat-label>

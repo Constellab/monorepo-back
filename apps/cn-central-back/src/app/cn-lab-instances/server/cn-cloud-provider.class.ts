@@ -1,13 +1,13 @@
 import {CnOvhDomainRecord} from './ovh/cn-ovh.class';
+import {CnLabInstanceBillingMode, CnLabInstanceVolumeType} from '../cn-lab-instance.entity';
 
-export type CnCpBillingType = 'HOURLY' | 'MONTHLY';
 export type CnCpBackupFrequency = 'DAILY';
 
 export interface CnCpCreateInstanceRequest {
   name: string;
   region: string;
   serverName: string;
-  billing: CnCpBillingType;
+  billing: CnLabInstanceBillingMode;
   backupRotation: number;
   backupFrequency: CnCpBackupFrequency;
 }
@@ -22,18 +22,17 @@ export interface CnCpInstance {
   // complete object of the cloud provider
   originalObject: any;
   region: string;
-  billing: CnCpBillingType;
+  billing: CnLabInstanceBillingMode;
 }
 
 export type CnCpVolumeStatus = 'CREATING' | 'AVAILABLE' | 'IN_USE' | 'ATTACHING';
-export type CnCpVolumeType = 'CLASSIC' | 'HIGH_SPEED';
 
 export interface CnCpCreateVolumeRequest {
   name: string;
   description?: string;
   region: string;
   size: number; // In GB
-  type: CnCpVolumeType;
+  type: CnLabInstanceVolumeType;
 }
 
 export interface CnCpVolume {
@@ -42,7 +41,7 @@ export interface CnCpVolume {
   status: CnCpVolumeStatus;
   region: string;
   size: number; // In GB
-  type: CnCpVolumeType;
+  type: CnLabInstanceVolumeType;
   attachedTo: string;
   // complete object of the cloud provider
   originalObject: any;

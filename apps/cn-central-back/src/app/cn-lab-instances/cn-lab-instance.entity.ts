@@ -13,6 +13,16 @@ import {BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnCloudProviderName} from '../cn-cloud-providers/cn-cloud-provider.entity';
 
+export enum CnLabInstanceBillingMode {
+  HOURLY = 'HOURLY',
+  MONTHLY = 'MONTHLY'
+}
+
+export enum CnLabInstanceVolumeType {
+  CLASSIC = 'CLASSIC',
+  HIGH_SPEED = 'HIGH_SPEED'
+}
+
 
 /**
  * A lab instance is a running lab
@@ -77,7 +87,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   // id of the ovh, aws, instance
   @Exclude()
   @Column({nullable: true, length: 255})
-  serverInstanceId: string
+  serverInstanceId: string;
 
   // id of the ovh, aws, volume
   @Exclude()
@@ -88,6 +98,19 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Exclude()
   @Column({type: 'text', nullable: true})
   serverProgressText: string;
+
+  @Column({
+    type: 'enum', enum: CnLabInstanceBillingMode, nullable: false,
+  })
+  billingMode: CnLabInstanceBillingMode;
+
+  @Column({nullable: false, type: 'int'})
+  volumeSize: number;
+
+  @Column({
+    type: 'enum', enum: CnLabInstanceVolumeType, nullable: false,
+  })
+  volumeType: CnLabInstanceVolumeType;
 
   // url of the api server
   @Expose()

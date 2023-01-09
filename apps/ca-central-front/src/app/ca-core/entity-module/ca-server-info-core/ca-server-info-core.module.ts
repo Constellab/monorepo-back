@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CaServerInfoCardComponent} from './component/ca-server-info-card/ca-server-info-card.component';
+import {CaServerInfoDetailComponent} from './component/ca-server-info-detail/ca-server-info-detail.component';
 import {CaCoreModule} from '../../ca-core.module';
 import {CaServerInfoTableComponent} from './component/ca-server-info-table/ca-server-info-table.component';
 import {
@@ -19,7 +19,7 @@ import {CaCloudProviderCoreModule} from '../ca-cloud-provider-core/ca-cloud-prov
 
 @NgModule({
   declarations: [
-    CaServerInfoCardComponent,
+    CaServerInfoDetailComponent,
     CaServerInfoTableComponent,
     CaServerInfoFormDialogComponent,
     CaSelectDiskTypeOptionsComponent,
@@ -27,7 +27,7 @@ import {CaCloudProviderCoreModule} from '../ca-cloud-provider-core/ca-cloud-prov
     CaServerInfoInlineComponent,
   ],
   exports: [
-    CaServerInfoCardComponent,
+    CaServerInfoDetailComponent,
     CaServerInfoTableComponent,
     CaServerInfoFormDialogComponent,
     CaSelectDiskTypeOptionsComponent,

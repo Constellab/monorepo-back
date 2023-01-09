@@ -1,9 +1,7 @@
-<fl-card class="g-full-height">
-  <fl-card-header>
-    <h2>{{'server_info' | translate}}</h2>
-  </fl-card-header>
+<div class="container">
 
-  <fl-card-body>
+
+  <div>
     <fl-key-value>
       <fl-key>{{'cloud_provider' | translate}}</fl-key>
       {{serverInfo.cloudProvider.name}}
@@ -11,14 +9,6 @@
     <fl-key-value>
       <fl-key>{{'name' | translate}}</fl-key>
       {{serverInfo.name}}
-    </fl-key-value>
-    <fl-key-value>
-      <fl-key>{{'diskSpace' | translate}}</fl-key>
-      {{serverInfo.diskSpace}}
-    </fl-key-value>
-    <fl-key-value>
-      <fl-key>{{'diskType' | translate}}</fl-key>
-      {{serverInfo.diskType}}
     </fl-key-value>
     <fl-key-value>
       <fl-key>{{'cpuCount' | translate}}</fl-key>
@@ -40,7 +30,17 @@
         {{serverInfo.gpuType}}
       </fl-key-value>
     </ng-container>
+  </div>
 
-  </fl-card-body>
-
-</fl-card>
+  <div>
+    <fl-key-value>
+      <fl-key>{{'diskSpace' | translate}}</fl-key>
+      {{serverInfo.diskSpace}}
+    </fl-key-value>
+    <fl-key-value>
+      <fl-key>{{'diskType' | translate}}</fl-key>
+      {{serverInfo.diskType}}
+    </fl-key-value>
+    <ng-content></ng-content>
+  </div>
+</div>

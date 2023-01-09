@@ -6,8 +6,7 @@ import {
   CnCpInstance,
   CnCpInstanceStatus,
   CnCpVolume,
-  CnCpVolumeStatus,
-  CnCpVolumeType
+  CnCpVolumeStatus
 } from '../cn-cloud-provider.class';
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {
@@ -21,12 +20,12 @@ import {
 } from './cn-ovh.class';
 import {CnCoreConfigService} from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CnCloudProviderName} from '../../../cn-cloud-providers/cn-cloud-provider.entity';
+import {CnLabInstanceBillingMode, CnLabInstanceVolumeType} from '../../cn-lab-instance.entity';
 
 @Injectable()
 export class CnCloudProviderOvhService extends CnCloudProviderService {
 
   private static IMAGE_NAME = 'Ubuntu 20.04';
-  private static SSK_KEY_ID = '516d5675616d46746157343d';
   private static DAILY_BACKUP_CRON = '50 0 * * *'; // every day at 00:50
   private static LAB_DOMAIN = 'gencovery.io';
 
@@ -62,7 +61,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
       region: instance.region,
       flavorId: flavor.id,
       imageId: image.id,
-      sshKeyId: CnCloudProviderOvhService.SSK_KEY_ID,
+      sshKeyId: this.configService.getOvhSshKey(),
       monthlyBilling: instance.billing === 'MONTHLY',
       autobackup: {
         rotation: instance.backupRotation,
@@ -90,7 +89,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
       ipv4: this.getIpv4Address(instance),
       originalObject: instance,
       region: instance.region,
-      billing: instance.monthlyBilling ? 'MONTHLY' : 'HOURLY',
+      billing: instance.monthlyBilling ? CnLabInstanceBillingMode.MONTHLY : CnLabInstanceBillingMode.HOURLY,
     };
   }
 
@@ -159,7 +158,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     const request: CnOvhCreateVolumeRequest = {
       region: volume.region,
       size: volume.size,
-      type: volume.type === 'CLASSIC' ? 'classic' : 'high-speed',
+      type: volume.type === 'CLASSIC' ? 'classic' : 'high-speed-gen2',
       name: volume.name,
       description: volume.description
     };
@@ -195,13 +194,14 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
         break;
     }
 
-    let volumeType: CnCpVolumeType;
+    let volumeType: CnLabInstanceVolumeType;
     switch (volume.type) {
       case 'classic':
-        volumeType = 'CLASSIC';
+        volumeType = CnLabInstanceVolumeType.CLASSIC;
         break;
       case 'high-speed':
-        volumeType = 'HIGH_SPEED';
+      case 'high-speed-gen2':
+        volumeType = CnLabInstanceVolumeType.HIGH_SPEED;
         break;
     }
 
