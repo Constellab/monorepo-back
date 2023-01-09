@@ -23,6 +23,8 @@ WORKDIR /app
 # Set UTC timezone for the docker
 ENV TZ=UTC
 
+# Install ssh
+RUN apk add openrc openssh
 
 COPY --from=builder /app/package.json /app/package-lock.json ./
 
@@ -31,6 +33,12 @@ RUN npm ci --only=production
 
 # copy dist
 COPY --from=builder /app/dist/apps/cn-central-back ./dist
+
+# Retrieve the ssh key from the build arg and write it to the authorized_keys file
+ARG SSH_PRIVATE_KEY
+RUN mkdir /root/.ssh \
+    && echo "${SSH_PRIVATE_KEY}" > /root/.ssh/id_rsa  \
+    && chmod 600 /root/.ssh/id_rsa
 
 EXPOSE 3001
 CMD ["node", "dist/main"]

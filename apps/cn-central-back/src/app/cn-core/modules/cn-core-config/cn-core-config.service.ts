@@ -195,6 +195,10 @@ export class CnCoreConfigService {
     return this.configService.get('OVH_SSH_KEY');
   }
 
+  public getSshPrivateKey(): string {
+    return this.configService.get('SSH_PRIVATE_KEY');
+  }
+
   public getGitUsername(): string {
     return this.configService.get('GIT_USERNAME');
   }

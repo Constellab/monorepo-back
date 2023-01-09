@@ -181,6 +181,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     let volumeStatus: CnCpVolumeStatus;
     switch (volume.status) {
       case 'creating':
+      case 'building':
         volumeStatus = 'CREATING';
         break;
       case 'available':

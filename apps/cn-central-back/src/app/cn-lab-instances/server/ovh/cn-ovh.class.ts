@@ -49,7 +49,7 @@ export interface CnOvhCreateVolumeRequest {
 export interface CnOvhVolume {
   id: string;
   name: string;
-  status: 'creating' | 'in-use' | 'available' | 'reserved';
+  status: 'creating' | 'in-use' | 'available' | 'reserved' | 'building';
   region: string;
   size: number;
   type: 'classic' | 'high-speed' | 'high-speed-gen2';

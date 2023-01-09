@@ -13,6 +13,7 @@ export class CnLabSshService {
 
   private static readonly DOCKERLAB_FOLDER = 'dockerlab';
   private static readonly DOCKERLAB_REPO = 'gitlab.com/gencovery/infra/dockerlab.git';
+  private static readonly SSH_PRIVATE_KEY_LOCATION = '/root/.ssh/id_rsa';
 
   private readonly logger = new Logger(CnLabSshService.name);
 
@@ -146,6 +147,8 @@ export class CnLabSshService {
   }
 
   private getSshCommand(virtualHost: string, commands: string[]): string {
-    return `ssh ubuntu@lab.${virtualHost} "${commands.join(';')}"`;
+    // in pre-prod and prod env, set the path to the ssh key
+    const option = this.coreConfigService.isLocal() ? '' : `-i ${CnLabSshService.SSH_PRIVATE_KEY_LOCATION}`;
+    return `ssh ${option} ubuntu@lab.${virtualHost} "${commands.join(';')}"`;
   }
 }
