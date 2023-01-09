@@ -7,6 +7,7 @@ export * from './component/fl-dynamic-field/fl-dynamic-field.component';
 export * from './component/fl-dynamic-field-boolean/fl-dynamic-field-boolean.component';
 export * from './component/fl-dynamic-field-input/fl-dynamic-field-input.component';
 export * from './component/fl-dynamic-field-select/fl-dynamic-field-select.component';
+export * from './component/fl-dynamic-field-textarea/fl-dynamic-field-textarea.component';
 export * from './component/fl-dynamic-form-array/fl-dynamic-form-array.component';
 export * from './component/fl-dynamic-form-group/fl-dynamic-form-group.component';
 export * from './component/fl-dynamic-field-list/fl-dynamic-field-list.component';

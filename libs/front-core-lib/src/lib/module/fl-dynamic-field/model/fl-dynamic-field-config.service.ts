@@ -12,6 +12,9 @@ import {
 } from '@monorepo/front-core-lib';
 import {ComponentRef, Injectable, ViewContainerRef} from '@angular/core';
 import {FormControl} from '@angular/forms';
+import {
+  FlDynamicFieldTextareaComponent
+} from '../component/fl-dynamic-field-textarea/fl-dynamic-field-textarea.component';
 
 /**
  * Configuration for the {@link FlDynamicFieldComponent}
@@ -58,6 +61,9 @@ export class FlDynamicFieldConfigService {
           break;
         case 'boolean':
           viewComponentRef = this.createBooleanComponent(viewContainer);
+          break;
+        case 'textarea':
+          viewComponentRef = this.createTextareaComponent(viewContainer);
           break;
         default:
           throw new Error('Unknown type: ' + config.type);
@@ -107,6 +113,10 @@ export class FlDynamicFieldConfigService {
 
   private createBooleanComponent(viewContainer: ViewContainerRef): ComponentRef<FlDynamicFieldAbstractDirective> {
     return viewContainer.createComponent(FlDynamicFieldBooleanComponent);
+  }
+
+  private createTextareaComponent(viewContainer: ViewContainerRef): ComponentRef<FlDynamicFieldAbstractDirective> {
+    return viewContainer.createComponent(FlDynamicFieldTextareaComponent);
   }
 }
 

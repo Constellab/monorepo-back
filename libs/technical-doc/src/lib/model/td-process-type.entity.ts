@@ -49,7 +49,7 @@ export type TdConfigSpecSimple =
 
 export interface TdConfigSpecString extends TdConfigSpecBase {
 
-  type: 'str';
+  type: 'str' | 'text';
 }
 
 export interface TdConfigSpecFloat extends TdConfigSpecBase {
@@ -121,6 +121,7 @@ export interface TdConfigSpecBase {
 // If the config property is a string or a float
 export type TdConfigSpecType =
   'str'
+  | 'text'
   | 'int'
   | 'float'
   | 'list'

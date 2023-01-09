@@ -1,7 +1,7 @@
 /**
  * Generic config for a FormGroup, FormArray or FormControl
  */
-export type                                                              FlDynamicFormAbstractControl =
+export type FlDynamicFormAbstractControl =
   FlDynamicFormGroupConfig | FlDynamicFormArrayConfig | FlDynamicFieldConfig
 
 /**
@@ -37,7 +37,7 @@ export interface FlDynamicFormArrayConfig extends FlDynamicFormConfigBase {
  * Configuration for a FormControl
  */
 export type FlDynamicFieldConfig = FlDynamicFieldConfigInput | FlDynamicFieldConfigSelect | FlDynamicFieldConfigList
-  | FlDynamicFieldConfigBoolean | FlDynamicFieldConfigUnknown;
+  | FlDynamicFieldConfigBoolean | FlDynamicFieldConfigTextArea | FlDynamicFieldConfigUnknown;
 
 
 export interface FlDynamicFieldConfigBase extends FlDynamicFormConfigBase {
@@ -85,7 +85,11 @@ export interface FlDynamicFieldConfigBoolean extends FlDynamicFieldConfigBase {
   type: 'boolean';
 }
 
-// use for additional type configured outside of the library
+export interface FlDynamicFieldConfigTextArea extends FlDynamicFieldConfigBase {
+  type: 'textarea';
+}
+
+// use for additional type configured outside the library
 export interface FlDynamicFieldConfigUnknown extends FlDynamicFieldConfigBase {
   type: string;
 }

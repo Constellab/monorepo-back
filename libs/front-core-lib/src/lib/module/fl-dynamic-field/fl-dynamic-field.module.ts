@@ -25,6 +25,9 @@ import {FlDynamicFieldInputComponent} from './component/fl-dynamic-field-input/f
 import {FlDynamicFieldSelectComponent} from './component/fl-dynamic-field-select/fl-dynamic-field-select.component';
 import {FlDynamicFieldBooleanComponent} from './component/fl-dynamic-field-boolean/fl-dynamic-field-boolean.component';
 import {FlDynamicFieldListComponent} from './component/fl-dynamic-field-list/fl-dynamic-field-list.component';
+import {
+  FlDynamicFieldTextareaComponent
+} from './component/fl-dynamic-field-textarea/fl-dynamic-field-textarea.component';
 
 
 /**
@@ -42,6 +45,7 @@ import {FlDynamicFieldListComponent} from './component/fl-dynamic-field-list/fl-
     FlDynamicFieldSelectComponent,
     FlDynamicFieldBooleanComponent,
     FlDynamicFieldListComponent,
+    FlDynamicFieldTextareaComponent,
   ],
   exports: [
     FlDynamicFieldComponent,
@@ -49,6 +53,7 @@ import {FlDynamicFieldListComponent} from './component/fl-dynamic-field-list/fl-
     FlMultiInputsComponent,
     FlDynamicFormArrayComponent,
     FlDynamicAbstractFormComponent,
+    FlDynamicFieldTextareaComponent,
   ],
   imports: [
     CommonModule,

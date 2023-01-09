@@ -95,6 +95,11 @@ export class PrConfigSpecs extends ClRecordWrapper<TdConfigSpec> {
       config.type = 'pythonCode';
       config.fullWidth = true;
       return config;
+    }else if(spec.type === 'text'){
+      const config: FlDynamicFieldConfig = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
+      config.type = 'textarea';
+      config.fullWidth = true;
+      return config;
     } else {
       const config: FlDynamicFieldConfigInput = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
       config.type = 'input';
