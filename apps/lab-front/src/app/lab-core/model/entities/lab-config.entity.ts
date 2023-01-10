@@ -1,8 +1,8 @@
 import {LabBaseEntity} from '../global/lab-entity.entity';
 import {ClRecordWrapperTransform} from '@monorepo/core-lib';
 import {FlDynamicFormGroupConfig} from '@monorepo/front-core-lib';
-import {TdConfigSpecVisibility} from '@monorepo/technical-doc';
 import {PrConfigSpecs, PrConfigValues} from '@monorepo/protocol';
+import {TdParamSpecVisibility} from '@monorepo/technical-doc';
 
 /**
  * form structure for the {@link LabConfigureSpecsFormComponent}
@@ -51,11 +51,11 @@ export class LabConfig extends LabBaseEntity {
   /**
    * Get a FlDynamicFormFieldConfig based on config spec and params to create a form
    */
-  public getDynamicFormFieldsConfig(visibility?: TdConfigSpecVisibility): FlDynamicFormGroupConfig {
+  public getDynamicFormFieldsConfig(visibility?: TdParamSpecVisibility): FlDynamicFormGroupConfig {
     return this.specs.convertToFieldConfigs(visibility);
   }
 
-  public hasConfig(visibility?: TdConfigSpecVisibility): boolean {
+  public hasConfig(visibility?: TdParamSpecVisibility): boolean {
     return this.specs.hasConfigs(visibility);
   }
 

@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {TdTypeEntity, TdUniqueType} from '../../model/td-type.entity';
-import {TdTypingName} from '../../model/td-typing-name.entity';
+import {TdTypeEntity, TdUniqueType} from '../../model/td-type.class';
+import {TdTypingName} from '../../model/td-typing-name.class';
 import {FlColorHelper} from '@monorepo/front-core-lib';
 
 @Component({

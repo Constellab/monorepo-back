@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {TdUniqueType} from '../../model/td-type.entity';
+import {TdUniqueType} from '../../model/td-type.class';
 import {TdServiceConfig} from '../../service/td-service-config.config';
-import {TdTypingName} from '../../model/td-typing-name.entity';
+import {TdTypingName} from '../../model/td-typing-name.class';
 
 @Component({
   selector: 'td-tech-doc-link',

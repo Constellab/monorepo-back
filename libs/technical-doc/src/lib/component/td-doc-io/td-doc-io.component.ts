@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {TdIOSpec} from '../../model/td-process-type.entity';
+import {TdIOSpec} from '../../model/td-process-type.class';
 
 @Component({
   selector: 'td-doc-io',

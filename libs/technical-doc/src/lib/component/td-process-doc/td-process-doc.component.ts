@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {TdProcessType} from '../../model/td-process-type.entity';
+import {TdProcessType} from '../../model/td-process-type.class';
 
 @Component({
   selector: 'td-process-doc',

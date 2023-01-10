@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {TdConfigSpec, TdConfigSpecParamSet} from '../../model/td-process-type.entity';
+import {TdParamSpec, TdParamSpecParamSet} from '../../model/td-config-spec.class';
 
 @Component({
   selector: 'td-config',
@@ -8,8 +8,7 @@ import {TdConfigSpec, TdConfigSpecParamSet} from '../../model/td-process-type.en
 })
 export class TdConfigComponent implements OnInit {
 
-  @Input()
-  configSpecs?: Record<string, TdConfigSpec>;
+  @Input() configSpecs?: Record<string, TdParamSpec>;
 
   constructor() {
   }
@@ -18,12 +17,12 @@ export class TdConfigComponent implements OnInit {
 
   }
 
-  public getParamSet(confSpec: TdConfigSpec): Record<string, TdConfigSpec>{
-    return (confSpec as TdConfigSpecParamSet).param_set;
+  public getParamSet(confSpec: TdParamSpec): Record<string, TdParamSpec> {
+    return (confSpec as TdParamSpecParamSet).additional_info.param_set;
   }
 
-  public getMaxParamSetOccurrences(confSpec: TdConfigSpec): number{
-    return (confSpec as TdConfigSpecParamSet).max_number_of_occurrences;
+  public getMaxParamSetOccurrences(confSpec: TdParamSpec): number {
+    return (confSpec as TdParamSpecParamSet).additional_info.max_number_of_occurrences;
   }
 
 }

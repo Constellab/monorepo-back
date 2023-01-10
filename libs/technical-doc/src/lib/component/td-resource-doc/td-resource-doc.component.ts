@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {TdResourceType} from '../../model/td-resource-type.entity';
+import {TdResourceType} from '../../model/td-resource-type.class';
 
 @Component({
   selector: 'td-resource-doc',

@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {TdTypeEntity} from '../../model/td-type.entity';
+import {TdTypeEntity} from '../../model/td-type.class';
 
 @Component({
   selector: 'td-technical-doc',

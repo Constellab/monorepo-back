@@ -1,6 +1,6 @@
 import {Component, Input, OnChanges, OnInit} from '@angular/core';
 import {FlColorHelper} from '@monorepo/front-core-lib';
-import {TdTypeEntity} from '../../model/td-type.entity';
+import {TdTypeEntity} from '../../model/td-type.class';
 
 @Component({
   selector: 'td-technical-doc-header',

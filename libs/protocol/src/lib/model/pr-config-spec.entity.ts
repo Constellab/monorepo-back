@@ -9,17 +9,17 @@ import {
   FlDynamicFormAbstractControl,
   FlDynamicFormGroupConfig,
 } from '@monorepo/front-core-lib';
-import {TdConfigSpec, TdConfigSpecSimple, TdConfigSpecVisibility} from '@monorepo/technical-doc';
+import {tdCodeParamSpecTypeList, TdParamSpec, TdParamSpecSimple, TdParamSpecVisibility} from '@monorepo/technical-doc';
 import {PrConfigValues} from './pr-config.class';
 
 /**
  * Record class that contain the list of config spec
  */
-export class PrConfigSpecs extends ClRecordWrapper<TdConfigSpec> {
+export class PrConfigSpecs extends ClRecordWrapper<TdParamSpec> {
 
-  record: Record<string, TdConfigSpec>;
+  record: Record<string, TdParamSpec>;
 
-  constructor(record?: Record<string, TdConfigSpec>) {
+  constructor(record?: Record<string, TdParamSpec>) {
     super();
     if (record) {
       this.record = record;
@@ -30,19 +30,19 @@ export class PrConfigSpecs extends ClRecordWrapper<TdConfigSpec> {
   /**
    * Method to convert the ConfigSpec to a FlDynamicFormFieldConfig to create a form
    */
-  public convertToFieldConfigs(visibility?: TdConfigSpecVisibility): FlDynamicFormGroupConfig {
+  public convertToFieldConfigs(visibility?: TdParamSpecVisibility): FlDynamicFormGroupConfig {
     return this.convertRecordToFieldConfigs(this.record, visibility);
   }
 
 
-  public convertRecordToFieldConfigs(record: Record<string, TdConfigSpec>, visibility?: TdConfigSpecVisibility)
+  public convertRecordToFieldConfigs(record: Record<string, TdParamSpec>, visibility?: TdParamSpecVisibility)
     : FlDynamicFormGroupConfig {
     const configs: FlDynamicFormGroupConfig = {
       controlType: 'formGroup',
       subConfigs: {}
     };
     for (const specName in record) {
-      const configSpec: TdConfigSpec = record[specName];
+      const configSpec: TdParamSpec = record[specName];
 
       // if a visibility is specified, only get the config for this visibility
       if (visibility && configSpec.visibility !== visibility) continue;
@@ -53,16 +53,16 @@ export class PrConfigSpecs extends ClRecordWrapper<TdConfigSpec> {
   }
 
 
-  private convertToAbstractConfig(spec: TdConfigSpec, defaultPlaceholder: string): FlDynamicFormAbstractControl {
+  private convertToAbstractConfig(spec: TdParamSpec, defaultPlaceholder: string): FlDynamicFormAbstractControl {
     if (spec.type === 'param_set') {
       const defaultValues = this.getConfigSpecDefaultValue(spec);
       return {
         controlType: 'formArray',
-        formGpConfig: this.convertRecordToFieldConfigs(spec.param_set),
+        formGpConfig: this.convertRecordToFieldConfigs(spec.additional_info.param_set),
         placeholder: spec.human_name ?? defaultPlaceholder,
         hint: spec.short_description,
         minSize: spec.optional ? 0 : 1,
-        maxSize: spec.max_number_of_occurrences > 0 ? spec.max_number_of_occurrences : null,
+        maxSize: spec.additional_info.max_number_of_occurrences > 0 ? spec.additional_info.max_number_of_occurrences : null,
         newElementDefaultValue: defaultValues != null ? defaultValues[0] : null,
       };
     } else {
@@ -70,7 +70,7 @@ export class PrConfigSpecs extends ClRecordWrapper<TdConfigSpec> {
     }
   }
 
-  private convertToControlConfig(spec: TdConfigSpecSimple, defaultPlaceholder: string): FlDynamicFieldConfig {
+  private convertToControlConfig(spec: TdParamSpecSimple, defaultPlaceholder: string): FlDynamicFieldConfig {
     // create a select
     if (spec.allowed_values) {
       const config: FlDynamicFieldConfigSelect = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
@@ -90,12 +90,12 @@ export class PrConfigSpecs extends ClRecordWrapper<TdConfigSpec> {
       const config: FlDynamicFieldConfig = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
       config.type = 'tags';
       return config;
-    } else if (spec.type === 'python_code_param') {
+    } else if (tdCodeParamSpecTypeList.includes(spec.type)) {
       const config: FlDynamicFieldConfig = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
-      config.type = 'pythonCode';
+      config.type = spec.type;
       config.fullWidth = true;
       return config;
-    }else if(spec.type === 'text'){
+    } else if (spec.type === 'text') {
       const config: FlDynamicFieldConfig = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
       config.type = 'textarea';
       config.fullWidth = true;
@@ -108,15 +108,15 @@ export class PrConfigSpecs extends ClRecordWrapper<TdConfigSpec> {
 
 
       if (spec.type === 'int' || spec.type === 'float') {
-        config.min = spec.min_value;
-        config.max = spec.max_value;
+        config.min = spec.additional_info.min_value;
+        config.max = spec.additional_info.max_value;
         config.integer = spec.type === 'int';
       }
       return config;
     }
   }
 
-  private convertToBaseFieldConfig(spec: TdConfigSpec, defaultPlaceholder: string): FlDynamicFieldConfigBase {
+  private convertToBaseFieldConfig(spec: TdParamSpec, defaultPlaceholder: string): FlDynamicFieldConfigBase {
     return {
       controlType: 'formControl',
       type: null,
@@ -132,7 +132,7 @@ export class PrConfigSpecs extends ClRecordWrapper<TdConfigSpec> {
   public getDefaultConfig(): PrConfigValues {
     const defaultConfig: PrConfigValues = {};
     for (const specName of Object.keys(this.record)) {
-      const spec: TdConfigSpec = this.record[specName];
+      const spec: TdParamSpec = this.record[specName];
       if (spec.type === 'param_set' && spec.optional) {
         defaultConfig[specName] = null;
       } else {
@@ -148,12 +148,12 @@ export class PrConfigSpecs extends ClRecordWrapper<TdConfigSpec> {
    * @param spec
    * @private
    */
-  private getConfigSpecDefaultValue(spec: TdConfigSpec): any {
+  private getConfigSpecDefaultValue(spec: TdParamSpec): any {
     if (spec.type === 'param_set') {
 
       const defaultConfig: any = {};
-      for (const subSpecName of Object.keys(spec.param_set)) {
-        const subSpec: TdConfigSpec = spec.param_set[subSpecName];
+      for (const subSpecName of Object.keys(spec.additional_info.param_set)) {
+        const subSpec: TdParamSpec = spec.additional_info.param_set[subSpecName];
         defaultConfig[subSpecName] = this.getConfigSpecDefaultValue(subSpec);
       }
 
@@ -175,7 +175,7 @@ export class PrConfigSpecs extends ClRecordWrapper<TdConfigSpec> {
     return Object.assign(this.getNullConfig(), this.getDefaultConfig(), config);
   }
 
-  public hasConfigs(visibility?: TdConfigSpecVisibility): boolean {
+  public hasConfigs(visibility?: TdParamSpecVisibility): boolean {
     if (visibility == null) {
       return this.record != null && Object.keys(this.record).length > 0;
     } else {

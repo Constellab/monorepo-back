@@ -1,4 +1,4 @@
-import {TdProcessType} from './td-process-type.entity';
+import {TdProcessType} from './td-process-type.class';
 
 /**
  * Define the a protocole

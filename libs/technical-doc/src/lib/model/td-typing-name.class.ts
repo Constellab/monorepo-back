@@ -1,4 +1,4 @@
-import {TdTypeObjectType} from './td-type.entity';
+import {TdTypeObjectType} from './td-type.class';
 import {RvConfigValues, RvTransformerParams} from '@monorepo/resource-view';
 import {FlColorHelper} from '@monorepo/front-core-lib';
 

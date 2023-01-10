@@ -58,7 +58,11 @@ export class FlThemeService {
       this.loadTheme(theme);
 
       this.storeTheme(theme);
+
     }
+
+    // set the class theme in the body element to be able to use it in the css
+    this.renderer.addClass(this.document.body, 'g-' + theme);
   }
 
   // change the app theme by changing the css file

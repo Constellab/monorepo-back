@@ -1,4 +1,4 @@
-import {TdTypingName} from '../model/td-typing-name.entity';
+import {TdTypingName} from '../model/td-typing-name.class';
 
 export interface TdTechnicalDocUrl{
   isAbsolute: boolean;

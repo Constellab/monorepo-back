@@ -1,4 +1,4 @@
-import {TdTypeEntity} from './td-type.entity';
+import {TdTypeEntity} from './td-type.class';
 
 
 export type TdResourceType = TdTypeEntity;

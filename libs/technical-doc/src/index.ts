@@ -2,12 +2,13 @@ export * from './lib/td-technical-doc.module';
 
 
 // model
-export * from './lib/model/td-process-type.entity';
-export * from './lib/model/td-task-type.entity';
-export * from './lib/model/td-type.entity';
-export * from './lib/model/td-resource-type.entity';
-export * from './lib/model/td-typing-name.entity';
-export * from './lib/model/td-protocol-type.entity';
+export * from './lib/model/td-config-spec.class';
+export * from './lib/model/td-process-type.class';
+export * from './lib/model/td-task-type.class';
+export * from './lib/model/td-type.class';
+export * from './lib/model/td-resource-type.class';
+export * from './lib/model/td-typing-name.class';
+export * from './lib/model/td-protocol-type.class';
 
 //component
 export * from './lib/component/td-technical-doc/td-technical-doc.component';

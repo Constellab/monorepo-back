@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {TdTypingName} from '../model/td-typing-name.entity';
+import {TdTypingName} from '../model/td-typing-name.class';
 
 /**
  * Simple pipe to convert a typing name str to TypingName

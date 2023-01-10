@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {PrConfig} from '@monorepo/protocol';
-import {TdConfigSpec} from '@monorepo/technical-doc';
+import {TdParamSpec} from '@monorepo/technical-doc';
 
 @Component({
   selector: 'pr-workflow-process-config-info-dialog',
@@ -11,7 +11,7 @@ import {TdConfigSpec} from '@monorepo/technical-doc';
 export class PrWorkflowProcessConfigInfoDialogComponent implements OnInit {
 
   displayedColumns: string[] = ['human_name', 'short_description', 'default_value'];
-  configDataSource: TdConfigSpec[];
+  configDataSource: TdParamSpec[];
 
   constructor(@Inject(MAT_DIALOG_DATA) config: PrConfig) {
     this.configDataSource = Object.values(config.specs);

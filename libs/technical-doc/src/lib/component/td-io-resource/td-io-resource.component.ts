@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlColorHelper} from '@monorepo/front-core-lib';
-import {TdResourceTypeDTO} from '../../model/td-process-type.entity';
-import {TdUniqueType} from '../../model/td-type.entity';
+import {TdResourceTypeDTO} from '../../model/td-process-type.class';
+import {TdUniqueType} from '../../model/td-type.class';
 
 @Component({
   selector: 'td-io-resource',
