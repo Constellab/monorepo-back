@@ -1,0 +1,32 @@
+<fl-dialog-header>
+  {{title | translate}}
+</fl-dialog-header>
+
+<mat-dialog-content>
+  <form (ngSubmit)="submit()" id="link-form">
+
+    <!--  Formula  -->
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'flTextEditor.formula' | translate}}</mat-label>
+      <textarea matInput [formControl]="formulaControl" required
+                placeholder="{{'flTextEditor.formula' | translate}}" rows="4">
+      </textarea>
+      <mat-error *ngIf="formulaControl.hasError('required')">
+        {{'flTextEditor.formula' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
+
+  </form>
+
+  <div class="preview">
+    <p class="g-text-light">{{'flTextEditor.formula_preview' | translate}}</p>
+    <ng-template #viewContainer></ng-template>
+  </div>
+</mat-dialog-content>
+
+<div mat-dialog-actions>
+  <button mat-flat-button color="primary" type="submit" form="link-form"
+          class="g-centered-forced">
+    {{'flTextEditor.ok' | translate}}
+  </button>
+</div>

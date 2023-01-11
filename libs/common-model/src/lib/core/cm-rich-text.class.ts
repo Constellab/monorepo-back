@@ -43,6 +43,15 @@ export interface CmRichTextLink {
   insert: string;
 }
 
+/**
+ * Object representing the value stored to create a formula
+ */
+export interface CmRichTextFormula {
+  formula: string;
+  title?: string;
+  caption?: string;
+}
+
 export interface CmRichTextHeader {
   attributes: CmRichTextHeaderAttribute;
   insert: string;

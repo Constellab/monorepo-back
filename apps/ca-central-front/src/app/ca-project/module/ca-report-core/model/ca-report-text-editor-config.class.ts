@@ -5,14 +5,14 @@ import {
   FlTextEditorImageLoader,
   FlTextEditorSnowButton
 } from '@monorepo/front-core-lib';
-import {CaReportService} from '../../service-api/ca-report.service';
+import {CaReportService} from '../../../../ca-core/service-api/ca-report.service';
 import {Observable} from 'rxjs';
-import {CaResourceView} from '../entities/ca-report.class';
+import {CaResourceView} from '../../../../ca-core/model/entities/ca-report.class';
 
 /**
  * Config for the text editor in the report
  */
-export class CaTextEditorConfig extends FlTextEditorConfig implements FlTextEditorImageLoader {
+export class CaReportTextEditorConfig extends FlTextEditorConfig implements FlTextEditorImageLoader {
 
   constructor(private reportService: CaReportService, private reportId: string) {
     super();

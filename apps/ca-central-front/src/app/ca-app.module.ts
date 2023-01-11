@@ -19,8 +19,6 @@ import {
   FlPortalModule,
   flSetRootInjector,
   FlSnackBarModule,
-  FlTextEditorFigureBlot,
-  FlTextEditorFigureComponent,
   FlTextEditorModule,
   FlThemeService,
   FlTranslateModule,
@@ -88,12 +86,8 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     FlPortalActionsModule.forRoot(),
     FlTextEditorModule.forRoot({
       blots: [
-        {
-          blot: FlTextEditorFigureBlot, componentType: FlTextEditorFigureComponent
-        },
-        {
-          blot: CaReportContentViewBlot, componentType: CaReportContentViewComponent
-        }]
+        {blot: CaReportContentViewBlot, componentType: CaReportContentViewComponent}
+      ]
     }),
 
     FlUserModule.forRoot(CaUserConfig),

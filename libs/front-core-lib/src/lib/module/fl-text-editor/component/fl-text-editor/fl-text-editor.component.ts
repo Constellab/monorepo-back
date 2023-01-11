@@ -154,14 +154,8 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
       delete keyboard.bindings[13];
     }
 
-
     this.quill.on('text-change', () => this.setAndEmitValue(this.getQuillValue()));
     this.quill.on('editor-change', (changeEvent: any, obj: any) => this.onEditorChange(changeEvent, obj));
-
-  }
-
-  getState(): FlTextEditorState {
-    return this.state;
   }
 
   callChangeEvent(value: string): void {

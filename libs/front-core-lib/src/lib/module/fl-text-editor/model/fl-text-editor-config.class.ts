@@ -5,6 +5,10 @@ import {
   FlTextEditorLinkDialogComponent,
   FlTextEditorLinkDialogInput
 } from '../component/fl-text-editor-link-dialog/fl-text-editor-link-dialog.component';
+import {
+  FlTextEditorFormulaDialogComponent,
+  FlTextEditorFormulaDialogInput
+} from '../component/fl-text-editor-formula-dialog/fl-text-editor-formula-dialog.component';
 
 /**
  * Config for the TextEditor component. It needs to be provided to the component.
@@ -27,7 +31,7 @@ export abstract class FlTextEditorConfig {
     };
   }
 
-  public getTheme(themeMode: 'VISIBLE_BUTTON' | 'OVERRIDE_BUTTON'): 'snow' | 'bubble'{
+  public getTheme(themeMode: 'VISIBLE_BUTTON' | 'OVERRIDE_BUTTON'): 'snow' | 'bubble' {
     return themeMode === 'VISIBLE_BUTTON' ? 'snow' : 'bubble';
   }
 
@@ -90,4 +94,29 @@ export abstract class FlTextEditorConfig {
       });
   }
 
+  protected getFormulaAddButton(state: FlTextEditorState, dialogService: FlDialogService): FlTextEditorBlockAddButton {
+    return {
+      icon: 'functions',
+      type: 'button',
+      onAction: () => this.addFormula(state, dialogService),
+      tooltip: 'flTextEditor.add_formula'
+    };
+  }
+
+  private addFormula(state: FlTextEditorState, dialogService: FlDialogService): void {
+    const index = state.getCurrentSelectionIndex();
+
+    const input: FlTextEditorFormulaDialogInput = {
+      mode: 'create'
+    };
+    dialogService.openSmallDialog(FlTextEditorFormulaDialogComponent, {data: input}).afterClosed().subscribe(
+      (formula: string) => {
+        if (formula) {
+          state.insertFormula(formula, index);
+        }
+      });
+  }
+
+
 }
+

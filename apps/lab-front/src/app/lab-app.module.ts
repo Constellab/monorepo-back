@@ -18,8 +18,6 @@ import {
   flSetRootInjector,
   FlSnackBarModule,
   FlTagModule,
-  FlTextEditorFigureBlot,
-  FlTextEditorFigureComponent,
   FlTextEditorModule,
   FlThemeService,
   FlTranslateModule,
@@ -88,8 +86,9 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     FlAuthModule.forRoot(LabAuthService),
     FlTagModule.forRoot(LabTagService),
     FlTextEditorModule.forRoot({
-      blots: [{blot: FlTextEditorFigureBlot, componentType: FlTextEditorFigureComponent},
-        {blot: LabReportContentViewBlot, componentType: LabReportContentViewComponent}]
+      blots: [
+        {blot: LabReportContentViewBlot, componentType: LabReportContentViewComponent},
+      ]
     }),
     FlBioNetworkModule.forRoot(LabBioNetworkService),
     RvResourceViewModule.forRoot({availableViews: labConstResourceViewTypeInfos}),

@@ -40,6 +40,7 @@ export class LabReportTextEditorConfig extends FlTextEditorConfig implements FlT
       },
       this.getCodeBlockAddButton(state),
       this.getHintBlockAddButton(state),
+      this.getFormulaAddButton(state, this.dialogService),
     ];
   }
 

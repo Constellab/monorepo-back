@@ -1,7 +1,7 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import Quill, {RangeStatic} from 'quill';
 import {FlTextEditorUploadedImage} from '../model/fl-text-editor-image.class';
-import {CmRichTextFigure, CmRichTextVideo} from '@monorepo/common-model';
+import {CmRichTextFigure, CmRichTextFormula, CmRichTextVideo} from '@monorepo/common-model';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {FlTextEditorConfig} from '../model/fl-text-editor-config.class';
 import {FlTextEditorHintType} from '../model/fl-text-editor-hint-blot.class';
@@ -64,6 +64,13 @@ export class FlTextEditorState implements OnDestroy {
       caption: ''
     };
     this.insertEmbed(index, 'video', data);
+  }
+
+  public insertFormula(formula: string, index: number): void {
+    const value: CmRichTextFormula = {
+      formula: formula
+    }
+    this.quill.insertEmbed(index, 'customFormula', value);
   }
 
   public insertLink(index: number, link: string, linkName: string): void{

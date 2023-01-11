@@ -18,6 +18,10 @@ const flTextEditorI18nFr: FlLangTranslation = {
     add_a_video: 'Ajouter une vidéo youtube',
     video_url_error: 'L\'url de la vidéo youtube est invalide',
     not_youtube_link_error: 'Ce n\'est pas un lien de vidéo youtube',
+    add_formula: 'Ajouter une formule',
+    formula: 'Formule',
+    edit_formula: 'Éditer la formule',
+    formula_preview: 'Aperçu',
   }
 };
 
@@ -34,7 +38,10 @@ const flTextEditorI18nEn: FlLangTranslation = {
     add_a_video: 'Add a youtube video',
     video_url_error: 'Invalid youtube video url',
     not_youtube_link_error: 'This is not a youtube video url',
-
+    add_formula: 'Add a formula',
+    formula: 'Formula',
+    edit_formula: 'Edit formula',
+    formula_preview: 'Preview',
   }
 };
 

@@ -32,7 +32,7 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
   }
 
   getSnowButtons(): FlTextEditorSnowButton[] {
-    return []
+    return [];
   }
 
   getBlockAddButtons(state: FlTextEditorState): FlTextEditorBlockAddButton[] {
@@ -48,6 +48,7 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
       this.getCodeBlockAddButton(state),
       this.getHintBlockAddButton(state),
       this.getVideoAddButton(state, this.dialogService),
+      this.getFormulaAddButton(state, this.dialogService)
     ];
   }
 
@@ -66,7 +67,7 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
     const config: any = {
       brickName: this.brickName,
       major: this.major
-    }
+    };
 
     this.dialogService.openMediumDialog(HaPublicFindDocComponent, {data: config}).afterClosed().subscribe((link) => {
       if (link && link.id) {

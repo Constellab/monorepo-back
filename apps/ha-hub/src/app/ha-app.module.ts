@@ -11,12 +11,9 @@ import {
   flIconsDefault,
   FlPortalModule,
   FlSnackBarModule,
-  FlTextEditorFigureBlot,
-  FlTextEditorFigureComponent,
   FlTextEditorModule,
-  FlTextEditorVideoBlot,
-  FlTextEditorVideoComponent,
-  FlTranslateModule, FlUserModule
+  FlTranslateModule,
+  FlUserModule
 } from '@monorepo/front-core-lib';
 import {HaApiServiceConfig} from './ha-core/ha-model/ha-config/ha-api-module.config';
 import {HaApiErrorService} from './ha-core/ha-model/ha-config/ha-api-error.service';
@@ -71,12 +68,8 @@ function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): (
       iconsToRegister: flIconsDefault
     }),
     FlTextEditorModule.forRoot({
-      blots: [
-        {blot: FlTextEditorFigureBlot, componentType: FlTextEditorFigureComponent},
-        {blot: FlTextEditorVideoBlot, componentType: FlTextEditorVideoComponent},
-      ]
+      blots: []
     }),
-
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,

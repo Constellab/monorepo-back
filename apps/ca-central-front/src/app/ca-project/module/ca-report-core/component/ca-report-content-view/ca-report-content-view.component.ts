@@ -3,7 +3,7 @@ import {Observable} from 'rxjs';
 import {RvResourceView} from '@monorepo/resource-view';
 import {CaReportViewConfig} from '../../model/ca-report-content-view.class';
 import {FlTextEditorElementDirective, FlTextEditorsManagerState} from '@monorepo/front-core-lib';
-import {CaTextEditorConfig} from '../../../../../ca-core/model/config/ca-text-editor-config.class';
+import {CaReportTextEditorConfig} from '../../model/ca-report-text-editor-config.class';
 import {map} from 'rxjs/operators';
 
 @Component({
@@ -17,7 +17,7 @@ export class CaReportContentViewComponent extends FlTextEditorElementDirective i
 
   view$: Observable<RvResourceView>;
 
-  private config: CaTextEditorConfig;
+  private config: CaReportTextEditorConfig;
 
   constructor(elementRef: ElementRef<HTMLElement>,
               managersState: FlTextEditorsManagerState) {
