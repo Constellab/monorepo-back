@@ -22,7 +22,11 @@ export class CnFrontService {
    * Get the base url of the website (without the url of the space)
    */
   public getBaseWebsiteURL(): string {
-    return 'https://' + this.configService.getCentralFrontDomain();
+    if (this.configService.isLocal()) {
+      return 'http://' + this.configService.getCentralFrontDomain();
+    } else {
+      return 'https://' + this.configService.getCentralFrontDomain();
+    }
   }
 
   /**

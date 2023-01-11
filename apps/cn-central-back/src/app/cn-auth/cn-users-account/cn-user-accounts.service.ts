@@ -97,7 +97,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     }
 
     // update the user status
-    user.status = CmUserStatus.WAITING_FOR_ADMIN;
+    user.status = CmUserStatus.INCOMPLETE;
     await this.usersService.update(user);
   }
 
