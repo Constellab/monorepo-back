@@ -15,7 +15,7 @@ import {r} from '@codemirror/legacy-modes/mode/r';
 import {yaml} from '@codemirror/legacy-modes/mode/yaml';
 import {julia} from '@codemirror/legacy-modes/mode/julia';
 import {perl} from '@codemirror/legacy-modes/mode/perl';
-import {LabCodeEditorLanguage} from './lab-code-editor.class';
+import {FlCodeEditorLanguage} from './fl-code-editor.class';
 
 
 /**
@@ -24,15 +24,15 @@ import {LabCodeEditorLanguage} from './lab-code-editor.class';
  * is only loaded when needed.
  */
 @Component({
-  selector: 'lab-code-editor',
+  selector: 'fl-code-editor',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './lab-code-editor.component.html',
-  styleUrls: ['./lab-code-editor.component.scss']
+  templateUrl: './fl-code-editor.component.html',
+  styleUrls: ['./fl-code-editor.component.scss']
 })
-export class LabCodeEditorComponent implements OnInit, OnDestroy {
+export class FlCodeEditorComponent implements OnInit, OnDestroy {
 
-  @Input() language: LabCodeEditorLanguage;
+  @Input() language: FlCodeEditorLanguage;
 
   @Input() formCtrl: FormControl;
 
@@ -66,7 +66,7 @@ export class LabCodeEditorComponent implements OnInit, OnDestroy {
     });
   }
 
-  private getLanguage(language: LabCodeEditorLanguage): Extension {
+  private getLanguage(language: FlCodeEditorLanguage): Extension {
     switch (language) {
       case 'python':
         return python();

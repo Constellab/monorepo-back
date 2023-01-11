@@ -9,7 +9,9 @@ import {
   ViewContainerRef
 } from '@angular/core';
 import {FlDynamicFieldAbstractDirective} from '@monorepo/front-core-lib';
-import {LabCodeEditorLanguage} from '../../../../standalone-component/lab-code-editor/lab-code-editor.class';
+import {
+  FlCodeEditorLanguage
+} from '../../../../../../../../../libs/front-core-lib/src/lib/standalone-component/fl-code-editor/fl-code-editor.class';
 import {TdParamSpecType} from '@monorepo/technical-doc';
 
 /**
@@ -37,8 +39,9 @@ export class LabCodeEditorDynamicFieldComponent extends FlDynamicFieldAbstractDi
   }
 
   async ngOnInit(): Promise<void> {
-    const {LabCodeEditorComponent} = await import('../../../../standalone-component/lab-code-editor/lab-code-editor.component');
-    this.componentRef = this.viewContainer.createComponent(LabCodeEditorComponent);
+    // eslint-disable-next-line max-len
+    const {FlCodeEditorComponent} = await import('../../../../../../../../../libs/front-core-lib/src/lib/standalone-component/fl-code-editor/fl-code-editor.component');
+    this.componentRef = this.viewContainer.createComponent(FlCodeEditorComponent);
     this.componentRef.instance.formCtrl = this.formCtrl;
     this.componentRef.instance.language = this.getCodeEditorLanguage();
     // use change detection to force the OnInit of LabPythonEditorComponent to be called
@@ -47,7 +50,7 @@ export class LabCodeEditorDynamicFieldComponent extends FlDynamicFieldAbstractDi
     this.changeDetectorRef.markForCheck();
   }
 
-  private getCodeEditorLanguage(): LabCodeEditorLanguage {
+  private getCodeEditorLanguage(): FlCodeEditorLanguage {
     switch (this.specType) {
       case 'python_code_param':
         return 'python';

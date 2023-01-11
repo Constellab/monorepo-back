@@ -1,18 +1,18 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {LabCodeEditorComponent} from './lab-code-editor.component';
+import {FlCodeEditorComponent} from './fl-code-editor.component';
 
 describe('LabPythonEditorComponent', () => {
-  let component: LabCodeEditorComponent;
-  let fixture: ComponentFixture<LabCodeEditorComponent>;
+  let component: FlCodeEditorComponent;
+  let fixture: ComponentFixture<FlCodeEditorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ LabCodeEditorComponent ]
+      imports: [ FlCodeEditorComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(LabCodeEditorComponent);
+    fixture = TestBed.createComponent(FlCodeEditorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
