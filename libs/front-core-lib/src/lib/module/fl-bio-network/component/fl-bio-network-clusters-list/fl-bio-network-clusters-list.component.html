@@ -26,8 +26,7 @@
 
   <mat-checkbox (click)="$event.stopPropagation()"
                 (change)="selectionChanged(cluster)"
-                [(ngModel)]="cluster.selected"
-                class="g-mat-checkbox-wrap-text">
+                [(ngModel)]="cluster.selected">
     <div class="g-text-small g-text-capitalize-first">
       {{cluster.name}}
     </div>

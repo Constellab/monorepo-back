@@ -1,19 +1,22 @@
 // Style used for the dialog and portal
 
 // set the max height for the content as full screen
-.mat-dialog-content {
+.mat-mdc-dialog-content {
   max-height: none !important;
   display: flex;
   flex: 1 1 100%;
 }
 
-.mat-dialog-container {
+.mat-mdc-dialog-container {
   display: flex !important;
+}
+
+.mat-mdc-dialog-surface{
   border-radius: var(--card-radius) !important;
 }
 
 // Style the container child to manage full width
-.mat-dialog-container > *:first-child {
+.mat-mdc-dialog-container > *:first-child {
   max-height: calc(100vh - 48px) !important;
   display: flex;
   flex-direction: column;
@@ -23,12 +26,12 @@
 
 // Specific style to allow elements to overflow the dialog container and dialog content
 .g-dialog-allow-overflow {
-  .mat-dialog-container, mat-dialog-content {
+  .mat-mdc-dialog-container, mat-mdc-dialog-content {
     overflow: initial;
   }
 }
 
-.g-dialog-main-background mat-dialog-container{
+.g-dialog-main-background mat-mdc-dialog-container{
   background-color: var(--main-background);
 }
 
