@@ -1,9 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {UntypedFormGroup} from '@angular/forms';
-import {
-  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
-  MatLegacyDialogRef as MatDialogRef
-} from '@angular/material/legacy-dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {LabConfig, LabConfigureSpecsForm} from '../../../../model/entities/lab-config.entity';
 import {LabConfigureSpecsFormComponent} from '../lab-configure-specs-form/lab-configure-specs-form.component';
 import {FlDynamicFieldConfigService, FlFormHelper} from '@monorepo/front-core-lib';

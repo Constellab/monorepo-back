@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {Observable} from 'rxjs';
 import {CaServerCompleteInfo} from '../../../ca-core/model/entities/lab/ca-lab-server.class';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';

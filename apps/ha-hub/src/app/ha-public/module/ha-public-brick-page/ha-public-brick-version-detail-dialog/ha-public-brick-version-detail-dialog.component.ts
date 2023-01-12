@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {HaBrickVersion} from '../../../../ha-core/ha-model/ha-entities/ha-brick-version.class';
-import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {HaBrickVersionReferenceState, HaReferenceDTO} from '../../../../ha-core/ha-model/ha-entities/ha-version.class';
 import {HaBrickVersionService} from '../../../../ha-core/ha-service/ha-brick-version.service';
 import {HaAuthenticatedUserService} from '../../../../ha-core/ha-service/ha-authenticated-user.service';

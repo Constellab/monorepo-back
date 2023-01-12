@@ -8,24 +8,24 @@ import {FlJsonEditorModule} from '../fl-json-editor/fl-json-editor.module';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatIconModule} from '@angular/material/icon';
-import {MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyTooltipModule as MatTooltipModule} from '@angular/material/legacy-tooltip';
+import {MatButtonModule} from '@angular/material/button';
+import {MatTooltipModule} from '@angular/material/tooltip';
 import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
 import {
   FlBioNetworkNodeLinksComponent
 } from './component/fl-bio-network-node-links/fl-bio-network-node-links.component';
-import {MatLegacyListModule as MatListModule} from '@angular/material/legacy-list';
+import {MatListModule} from '@angular/material/list';
 import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.module';
-import {MatLegacySliderModule as MatSliderModule} from '@angular/material/legacy-slider';
+import {MatSliderModule} from '@angular/material/slider';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {FlBioNetworkDrawerComponent} from './component/fl-bio-network-drawer/fl-bio-network-drawer.component';
 import {FlBioNetworkConfigComponent} from './component/fl-bio-network-config/fl-bio-network-config.component';
-import {MatLegacyCheckboxModule as MatCheckboxModule} from '@angular/material/legacy-checkbox';
-import {MatLegacyFormFieldModule as MatFormFieldModule} from '@angular/material/legacy-form-field';
-import {MatLegacySelectModule as MatSelectModule} from '@angular/material/legacy-select';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatSelectModule} from '@angular/material/select';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flBioNetworkI18n} from './i18n/fl-bio-network.i18n';
-import {MatLegacyTabsModule as MatTabsModule} from '@angular/material/legacy-tabs';
+import {MatTabsModule} from '@angular/material/tabs';
 import {
   FlBioNetworkActionBarComponent
 } from './component/fl-bio-network-action-bar/fl-bio-network-action-bar.component';
@@ -39,8 +39,8 @@ import {FlDrawerModule} from '../fl-drawer/fl-drawer.module';
 import {
   FlBioNetworkNodeSearchComponent
 } from './component/fl-bio-network-node-search/fl-bio-network-node-search.component';
-import {MatLegacyInputModule as MatInputModule} from '@angular/material/legacy-input';
-import {MatLegacyAutocompleteModule as MatAutocompleteModule} from '@angular/material/legacy-autocomplete';
+import {MatInputModule} from '@angular/material/input';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {
   FlBioNetworkReactionDetailComponent
 } from './component/fl-bio-network-reaction-detail/fl-bio-network-reaction-detail.component';
@@ -59,7 +59,7 @@ import {
 import {
   FlBioNetworkEngineProgressComponent
 } from './component/fl-bio-network-engine-progress/fl-bio-network-engine-progress.component';
-import {MatLegacyProgressBarModule as MatProgressBarModule} from '@angular/material/legacy-progress-bar';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {FlDateModule} from '../fl-date/fl-date.module';
 import {
   FlBioNetworkReactionFluxComponent

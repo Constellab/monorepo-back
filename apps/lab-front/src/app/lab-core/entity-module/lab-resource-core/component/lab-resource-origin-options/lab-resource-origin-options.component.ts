@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Host, OnInit, Optional} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
-import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
+import {MatSelect} from '@angular/material/select';
 
 @Component({
   selector: 'lab-resource-origin-options',

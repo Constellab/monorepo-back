@@ -12,7 +12,7 @@ import {
   CaGroupShareDialogComponent,
   CaGroupShareDialogInput
 } from '../../../../../ca-core/entity-module/ca-group-core/component/ca-group-share-dialog/ca-group-share-dialog.component';
-import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {Observable} from 'rxjs';
 
 export interface CaProjectSharedGroupsListInput {

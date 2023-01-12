@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, Host, OnDestroy, OnInit} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
+import {MatSelect} from '@angular/material/select';
 import {
   CaBucketCredentialsFull,
   CaBucketCredentialsFullDatasource

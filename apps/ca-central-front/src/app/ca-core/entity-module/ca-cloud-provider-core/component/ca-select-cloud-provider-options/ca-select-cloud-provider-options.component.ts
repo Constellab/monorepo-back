@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Host, OnDestroy, OnInit} from '@angular/core';
-import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
+import {MatSelect} from '@angular/material/select';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {CaCloudProviderService} from '../../../../service-api/ca-cloud-provider.service';
 import {CaCloudProvider, CaCloudProviderDatasource} from '../../../../model/entities/ca-cloud-provider.class';

@@ -14,14 +14,14 @@ import {HaPublicVersionsComponent} from './ha-public-versions/ha-public-versions
 import {
   HaPublicBrickVersionsTableComponent
 } from './ha-public-brick-versions-table/ha-public-brick-versions-table.component';
-import {MatLegacyTableModule as MatTableModule} from '@angular/material/legacy-table';
+import {MatTableModule} from '@angular/material/table';
 import {FlDateModule, FlInputFileModule, FlKeyValueModule} from '@monorepo/front-core-lib';
 import {HaPublicBrickDescriptionComponent} from './ha-public-brick-description/ha-public-brick-description.component';
-import {MatLegacyCardModule as MatCardModule} from '@angular/material/legacy-card';
-import {MatLegacyRadioModule as MatRadioModule} from '@angular/material/legacy-radio';
+import {MatCardModule} from '@angular/material/card';
+import {MatRadioModule} from '@angular/material/radio';
 import {HaPublicDocComponent} from './ha-public-doc/ha-public-doc.component';
 import {HaPublicEditBrickDialogComponent} from './ha-public-edit-brick-dialog/ha-public-edit-brick-dialog.component';
-import {MatLegacyTooltipModule as MatTooltipModule} from '@angular/material/legacy-tooltip';
+import {MatTooltipModule} from '@angular/material/tooltip';
 import {
   HaPublicBrickVersionDetailDialogComponent
 } from './ha-public-brick-version-detail-dialog/ha-public-brick-version-detail-dialog.component';

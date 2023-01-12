@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {FlChartBoxPlotData} from '../../../model/data/fl-chart-box-plot-data.class';
 import {FL_PORTAL_DATA} from '../../../../fl-portal/model/fl-portal.class';
-import {MatLegacyMenuTrigger as MatMenuTrigger} from '@angular/material/legacy-menu';
+import {MatMenuTrigger} from '@angular/material/menu';
 import {FlChartDataWithSerie} from '../../../model/data/fl-chart-serie.class';
 import {FlTagColorer} from '../../../../fl-tag/fl-tag-colorer.class';
 

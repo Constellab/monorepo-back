@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {FlDialogService} from '../fl-dialog/fl-dialog.service';
-import {MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
+import {MatDialogRef} from '@angular/material/dialog';
 import {
   FlTagFormDialogComponent,
   FlTagFormDialogInput

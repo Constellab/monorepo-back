@@ -3,11 +3,9 @@ import {Observable, of} from 'rxjs';
 import {FlFormFieldDirective} from '../../../abstract-directive/form/fl-form-field.directive';
 import {NgControl} from '@angular/forms';
 import {ENTER, TAB} from '@angular/cdk/keycodes';
-import {MatLegacyInput as MatInput} from '@angular/material/legacy-input';
-import {
-  MatLegacyAutocompleteSelectedEvent as MatAutocompleteSelectedEvent
-} from '@angular/material/legacy-autocomplete';
-import {MatLegacyChipInputEvent as MatChipInputEvent} from '@angular/material/legacy-chips';
+import {MatInput} from '@angular/material/input';
+import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
+import {MatChipInputEvent} from '@angular/material/chips';
 
 @Component({
   selector: 'fl-autocomplete-multiple',

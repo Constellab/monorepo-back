@@ -1,7 +1,7 @@
 import {Injector, ModuleWithProviders, NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FlTextEditorComponent} from './component/fl-text-editor/fl-text-editor.component';
-import {MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';
+import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {
   FlTextEditorBlockAddButtonComponent
@@ -12,8 +12,8 @@ import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.modu
 import {FlTextEditorFigureComponent} from './component/fl-text-editor-figure/fl-text-editor-figure.component';
 import {createCustomElement} from '@angular/elements';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatLegacyInputModule as MatInputModule} from '@angular/material/legacy-input';
-import {MatLegacyFormFieldModule as MatFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flTextEditorI18n} from './i18n/fl-text-editor.i18n';
@@ -21,7 +21,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {FlResizeModule} from '../fl-resize/fl-resize.module';
 import Quill from 'quill';
 import {FlTextEditorModuleConfig, FlTextEditorModuleConfigBlot} from './model/fl-text-editor-module-config.class';
-import {MatLegacyTooltipModule as MatTooltipModule} from '@angular/material/legacy-tooltip';
+import {MatTooltipModule} from '@angular/material/tooltip';
 import {
   FlTextEditorTitleCaptionComponent
 } from './component/fl-text-editor-title-caption/fl-text-editor-title-caption.component';

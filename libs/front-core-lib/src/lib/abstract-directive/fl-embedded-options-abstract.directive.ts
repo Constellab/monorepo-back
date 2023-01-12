@@ -1,7 +1,7 @@
 import {AfterViewInit, Directive, QueryList, ViewChildren} from '@angular/core';
-import {MatLegacyAutocomplete as MatAutocomplete} from '@angular/material/legacy-autocomplete';
-import {MatLegacyOption as MatOption} from '@angular/material/legacy-core';
-import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
+import {MatAutocomplete} from '@angular/material/autocomplete';
+import {MatOption} from '@angular/material/core';
+import {MatSelect} from '@angular/material/select';
 import {ClHelpService} from '@monorepo/core-lib';
 
 /**

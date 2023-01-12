@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
-import {MatLegacySliderChange as MatSliderChange} from '@angular/material/legacy-slider';
 import {filter} from 'rxjs/operators';
 import {FlBioNetworkGraph} from '../../model/fl-bio-network-graph.class';
 import {FlBioNetworkOptionsState, FlBioNetworkParticleColorScale} from '../../state/fl-bio-network-options.state';
@@ -116,8 +115,9 @@ export class FlBioNetworkActionBarComponent implements OnInit {
   }
 
   // set opacity to 0.1 to link where abs value is lower than slider value
-  fluxThresholdChange(change: MatSliderChange): void {
-    this.selectionState.fluxThresholdOpacity(change.value);
+  fluxThresholdChange(change: Event): void {
+    console.log('AAAAAAAAAA')
+    // this.selectionState.fluxThresholdOpacity(change.value);
   }
 
   private resetSlider(): void {

@@ -1,10 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormControl} from '@ngneat/reactive-forms';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
-import {
-  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
-  MatLegacyDialogRef as MatDialogRef
-} from '@angular/material/legacy-dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {Validators} from '@angular/forms';
 import {CaLabInstance} from '../../../ca-core/model/entities/lab/ca-lab-instance.class';

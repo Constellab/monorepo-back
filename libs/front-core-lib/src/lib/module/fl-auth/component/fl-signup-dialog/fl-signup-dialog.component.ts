@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormGroup} from '@ngneat/reactive-forms';
-import {MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
+import {MatDialogRef} from '@angular/material/dialog';
 import {FlSignUpUser} from '../../model/fl-sign-up-user.class';
 import {FlUserAccountService} from '../../service/fl-user-account.service';
 import {FlSnackBarService} from '../../../fl-snack-bar/fl-snack-bar.service';

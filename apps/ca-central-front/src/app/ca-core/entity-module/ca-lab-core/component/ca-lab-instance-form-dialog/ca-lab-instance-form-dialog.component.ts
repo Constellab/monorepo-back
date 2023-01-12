@@ -2,10 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {CaLabInstanceForm, CaLabInstanceWithSpace} from '../../../../model/entities/lab/ca-lab-instance.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
-import {
-  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
-  MatLegacyDialogRef as MatDialogRef
-} from '@angular/material/legacy-dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaLabInstanceService} from '../../../../service-api/ca-lab-instance.service';
 import {Validators} from '@angular/forms';
 import {

@@ -4,9 +4,9 @@ import {
   FlResizePortalFullscreenButtonComponent
 } from './fl-resize-fullscreen-button/fl-resize-portal-fullscreen-button.component';
 import {FlResizeDirective} from './fl-resize/fl-resize.directive';
-import {MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';
+import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
-import {MatLegacyTooltipModule as MatTooltipModule} from '@angular/material/legacy-tooltip';
+import {MatTooltipModule} from '@angular/material/tooltip';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flResizeI18n} from './fl-resize.i18n';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';

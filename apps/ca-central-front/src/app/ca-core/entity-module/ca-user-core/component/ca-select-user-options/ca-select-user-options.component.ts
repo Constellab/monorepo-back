@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Host, Input, OnDestroy, OnInit} from '@angular/core';
-import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
+import {MatSelect} from '@angular/material/select';
 import {CaUser} from '../../../../model/entities/ca-user.class';
 import {
   FlDatasourcePaginated,

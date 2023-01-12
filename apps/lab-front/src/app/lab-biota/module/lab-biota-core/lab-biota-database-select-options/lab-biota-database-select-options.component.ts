@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Host, OnInit} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
-import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
+import {MatSelect} from '@angular/material/select';
 import {labBiotaDatabaseGroups} from '../../../model/lab-biota-database.class';
 
 /**

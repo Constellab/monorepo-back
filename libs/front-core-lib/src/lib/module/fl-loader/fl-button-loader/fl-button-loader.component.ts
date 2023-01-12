@@ -1,5 +1,5 @@
 import {Component, ElementRef, Host, Input, OnDestroy, OnInit, Optional, Renderer2} from '@angular/core';
-import {MatLegacyButton as MatButton} from '@angular/material/legacy-button';
+import {MatButton} from '@angular/material/button';
 
 /**
  * Loader to be inserted in a button

@@ -1,11 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {FlMenuDynamic, FlMenuDynamicButton} from '../../model/fl-menu-dynamic.class';
-import {
-  LegacyMenuPositionX as MenuPositionX,
-  LegacyMenuPositionY as MenuPositionY,
-  MatLegacyMenu as MatMenu,
-  MatLegacyMenuTrigger as MatMenuTrigger
-} from '@angular/material/legacy-menu';
+import {MatMenu, MatMenuTrigger, MenuPositionX, MenuPositionY} from '@angular/material/menu';
 
 @Component({
   selector: 'fl-menu-dynamic',

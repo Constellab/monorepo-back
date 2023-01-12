@@ -5,7 +5,7 @@ import {
   CaNotificationDatasourcePaginated,
   CaNotificationType
 } from '../../ca-core/model/entities/ca-notification.class';
-import {MatLegacySlideToggleChange as MatSlideToggleChange} from '@angular/material/legacy-slide-toggle';
+import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {ClStringHelper} from '@monorepo/core-lib';
 
 

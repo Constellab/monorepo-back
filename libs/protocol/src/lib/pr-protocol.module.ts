@@ -24,8 +24,8 @@ import {
   PrWorkflowNodeInterfaceComponent
 } from './component/pr-workflow-node-interface/pr-workflow-node-interface.component';
 import {PrWorkflowActionState} from './state/pr-workflow-action-state';
-import {MatLegacyTooltipModule as MatTooltipModule} from '@angular/material/legacy-tooltip';
-import {MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatButtonModule} from '@angular/material/button';
 import {
   PrWorkflowLayersBreadcrumbComponent
 } from './component/pr-workflow-layers-breadcrumb/pr-workflow-layers-breadcrumb.component';
@@ -33,13 +33,13 @@ import {prProtocolI18n} from './pr-protocol.i18n';
 import {
   PrWorkflowPortActionPortalComponent
 } from './component/pr-workflow-port-action-portal/pr-workflow-port-action-portal.component';
-import {MatLegacyMenuModule as MatMenuModule} from '@angular/material/legacy-menu';
+import {MatMenuModule} from '@angular/material/menu';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {PrWorkflowNodeViewerComponent} from './component/pr-workflow-node-viewer/pr-workflow-node-viewer.component';
 import {
   PrWorkflowProcessConfigInfoDialogComponent
 } from './component/pr-workflow-process-config-info-dialog/pr-workflow-process-config-info-dialog.component';
-import {MatLegacyTableModule as MatTableModule} from '@angular/material/legacy-table';
+import {MatTableModule} from '@angular/material/table';
 
 
 @NgModule({

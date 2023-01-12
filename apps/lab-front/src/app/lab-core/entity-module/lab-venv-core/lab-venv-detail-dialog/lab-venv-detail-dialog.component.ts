@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {LabVenvService} from '../../../entity-service/lab-venv.service';
 import {Observable} from 'rxjs';
 import {LabVEnvCompleteInfo} from '../../../model/entities/lab-venv.entity';

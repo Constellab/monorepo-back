@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {LabResourceView} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {Observable} from 'rxjs';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
-import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {RvTransformerParams} from '@monorepo/resource-view';
 import {PrConfigValues} from '@monorepo/protocol';
 

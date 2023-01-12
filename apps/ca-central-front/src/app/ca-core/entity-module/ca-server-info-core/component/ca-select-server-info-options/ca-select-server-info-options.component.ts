@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, Host, OnDestroy, OnInit} from '@angular/core';
 import {CaServerInfoService} from '../../../../service-api/ca-server-info.service';
 import {CaServerInfo, CaServerInfoDatasource} from '../../../../model/entities/ca-server-info.class';
-import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
+import {MatSelect} from '@angular/material/select';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 

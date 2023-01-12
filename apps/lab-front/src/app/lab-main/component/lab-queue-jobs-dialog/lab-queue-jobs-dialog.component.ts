@@ -8,7 +8,7 @@ import {
   FlEntityArrayObs,
   FlTableColumn
 } from '@monorepo/front-core-lib';
-import {MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
+import {MatDialogRef} from '@angular/material/dialog';
 import {LabQueueService} from '../../../lab-core/entity-service/lab-queue.service';
 import {LabQueueJob} from '../../../lab-core/model/entities/lab-queue.entity';
 import {LabExperimentService} from '../../../lab-core/entity-service/lab-experiment.service';

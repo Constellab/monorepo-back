@@ -5,10 +5,7 @@ import {mergeMap, Observable, of, startWith} from 'rxjs';
 import {FormControl} from '@ngneat/reactive-forms';
 import {map} from 'rxjs/operators';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
-import {
-  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
-  MatLegacyDialogRef as MatDialogRef
-} from '@angular/material/legacy-dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {HaRouterService} from '../../../../ha-core/ha-service/ha-router.service';
 import {clRxjsElasticSearch, ClStringHelper} from '@monorepo/core-lib';
 

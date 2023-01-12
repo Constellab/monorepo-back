@@ -2,7 +2,7 @@ import {AfterViewInit, Component, Host, OnDestroy, OnInit} from '@angular/core';
 import {FlDatasourcePaginated, FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {CaSpace} from '../../../../model/entities/space/ca-space.class';
 import {CaSpaceService} from '../../../../service-api/ca-space.service';
-import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
+import {MatSelect} from '@angular/material/select';
 
 /**
  * Component to be placed in a mat-select to add option of all space

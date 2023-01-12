@@ -1,5 +1,5 @@
 import {Directive} from '@angular/core';
-import {MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
+import {MatDialogRef} from '@angular/material/dialog';
 import {Observable} from 'rxjs';
 import {FlSnackBarService} from '../../module/fl-snack-bar/fl-snack-bar.service';
 import {FlFormDialogInput} from '../../model/fl-form.class';

@@ -14,7 +14,7 @@ import {
   FlTranslateService
 } from '@monorepo/front-core-lib';
 import {TdIoDocsComponent} from './component/td-io-docs/td-io-docs.component';
-import {MatLegacyChipsModule as MatChipsModule} from '@angular/material/legacy-chips';
+import {MatChipsModule} from '@angular/material/chips';
 import {MatDividerModule} from '@angular/material/divider';
 import {FlexModule} from '@angular/flex-layout';
 import {TdIoResourceComponent} from './component/td-io-resource/td-io-resource.component';
@@ -25,7 +25,7 @@ import {TdMarkdownPipe} from './pipe/td-markdown.pipe';
 import {TdConfigComponent} from './component/td-config/td-config.component';
 import {TdTechnicalDocHeaderComponent} from './component/td-technical-doc-header/td-technical-doc-header.component';
 import {TdDocIoComponent} from './component/td-doc-io/td-doc-io.component';
-import {MatLegacyTooltipModule as MatTooltipModule} from '@angular/material/legacy-tooltip';
+import {MatTooltipModule} from '@angular/material/tooltip';
 import {TdTypeUnavailableComponent} from './component/td-type-unavailable/td-type-unavailable.component';
 import {TdTypingNamePipe} from './pipe/td-typing-name.pipe';
 

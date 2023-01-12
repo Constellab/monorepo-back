@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Host, OnInit} from '@angular/core';
 import {CaDiskType} from '../../../../model/entities/ca-server-info.class';
-import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
+import {MatSelect} from '@angular/material/select';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 
 @Component({

@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {FlBioNetworkOptionsState} from '../../state/fl-bio-network-options.state';
-import {MatLegacySelectChange as MatSelectChange} from '@angular/material/legacy-select';
+import {MatSelectChange} from '@angular/material/select';
 import {FlBioNetworkClusterSelection} from '../../model/fl-bio-network.class';
 
 /**

@@ -1,9 +1,5 @@
 import {Injectable} from '@angular/core';
-import {
-  MatLegacySnackBar as MatSnackBar,
-  MatLegacySnackBarConfig as MatSnackBarConfig,
-  MatLegacySnackBarRef as MatSnackBarRef
-} from '@angular/material/legacy-snack-bar';
+import {MatSnackBar, MatSnackBarConfig, MatSnackBarRef} from '@angular/material/snack-bar';
 import {ComponentType} from '@angular/cdk/overlay';
 import {
   FlSnackBarAdditionalConfig,
