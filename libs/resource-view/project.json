@@ -1,4 +1,5 @@
 {
+  "name": "resource-view",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "sourceRoot": "libs/resource-view/src",
@@ -6,9 +7,7 @@
   "targets": {
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": [
-        "coverage/libs/resource-view"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/libs/resource-view"],
       "options": {
         "jestConfig": "libs/resource-view/jest.config.ts",
         "passWithNoTests": true
@@ -24,7 +23,5 @@
       }
     }
   },
-  "tags": [
-    "front"
-  ]
+  "tags": ["front"]
 }

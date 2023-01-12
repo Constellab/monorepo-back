@@ -1,30 +1,36 @@
 import {NgModule} from '@angular/core';
-import {MatButtonModule} from '@angular/material/button';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
-import {MatDialogModule} from '@angular/material/dialog';
+import {MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';
+import {MatLegacySnackBarModule as MatSnackBarModule} from '@angular/material/legacy-snack-bar';
+import {MatLegacyDialogModule as MatDialogModule} from '@angular/material/legacy-dialog';
 import {MatIconModule} from '@angular/material/icon';
-import {MAT_TOOLTIP_DEFAULT_OPTIONS, MatTooltipModule} from '@angular/material/tooltip';
+import {
+  MAT_LEGACY_TOOLTIP_DEFAULT_OPTIONS as MAT_TOOLTIP_DEFAULT_OPTIONS,
+  MatLegacyTooltipModule as MatTooltipModule
+} from '@angular/material/legacy-tooltip';
 import {DateAdapter, MAT_DATE_FORMATS, MatRippleModule} from '@angular/material/core';
 import {FlLuxonDateAdapter, flLuxonDateFormat, flMatFormFieldConfig, flTooltipConfig} from '@monorepo/front-core-lib';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatToolbarModule} from '@angular/material/toolbar';
-import {MatTableModule} from '@angular/material/table';
-import {MatTabsModule} from '@angular/material/tabs';
-import {MatMenuModule} from '@angular/material/menu';
-import {MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyTableModule as MatTableModule} from '@angular/material/legacy-table';
+import {MatLegacyTabsModule as MatTabsModule} from '@angular/material/legacy-tabs';
+import {MatLegacyMenuModule as MatMenuModule} from '@angular/material/legacy-menu';
+import {
+  MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS as MAT_FORM_FIELD_DEFAULT_OPTIONS,
+  MatLegacyFormFieldModule as MatFormFieldModule
+} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule as MatInputModule} from '@angular/material/legacy-input';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatDividerModule} from '@angular/material/divider';
-import {MatListModule} from '@angular/material/list';
+import {MatLegacyListModule as MatListModule} from '@angular/material/legacy-list';
 import {MatTreeModule} from '@angular/material/tree';
-import {MatSelectModule} from '@angular/material/select';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatLegacySelectModule as MatSelectModule} from '@angular/material/legacy-select';
+import {MatLegacySlideToggleModule as MatSlideToggleModule} from '@angular/material/legacy-slide-toggle';
 import {DragDropModule} from '@angular/cdk/drag-drop';
-import {MatRadioModule} from '@angular/material/radio';
+import {MatLegacyRadioModule as MatRadioModule} from '@angular/material/legacy-radio';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatLegacyCheckboxModule as MatCheckboxModule} from '@angular/material/legacy-checkbox';
 
 /**
  * Regrouped all the needed import for this app from material

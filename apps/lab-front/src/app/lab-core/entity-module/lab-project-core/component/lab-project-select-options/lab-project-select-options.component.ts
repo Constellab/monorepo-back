@@ -2,7 +2,7 @@ import {AfterViewInit, Component, Host, OnInit, Optional} from '@angular/core';
 import {LabProject} from '../../../../model/entities/lab-project.class';
 import {LabProjectService} from '../../../../entity-service/lab-project.service';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
-import {MatSelect} from '@angular/material/select';
+import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
 
 /**
  * Component to place under a mat-select to show the list of projects

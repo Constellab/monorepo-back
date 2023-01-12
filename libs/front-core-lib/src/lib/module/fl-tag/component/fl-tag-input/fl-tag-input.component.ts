@@ -14,7 +14,10 @@ import {
 import {NgControl, UntypedFormControl} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {map, mergeMap, startWith, tap} from 'rxjs/operators';
-import {MatAutocompleteSelectedEvent, MatAutocompleteTrigger} from '@angular/material/autocomplete';
+import {
+  MatLegacyAutocompleteSelectedEvent as MatAutocompleteSelectedEvent,
+  MatLegacyAutocompleteTrigger as MatAutocompleteTrigger
+} from '@angular/material/legacy-autocomplete';
 import {TAB} from '@angular/cdk/keycodes';
 import {ClHelpService, clRxjsElasticSearch} from '@monorepo/core-lib';
 import {FlFormFieldDirective} from '../../../../abstract-directive/form/fl-form-field.directive';

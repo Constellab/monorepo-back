@@ -5,7 +5,7 @@ import {FlFromNowPipe} from './pipe/fl-from-now/fl-from-now.pipe';
 import {FlDateRangeComponent} from './component/fl-date-range/fl-date-range.component';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {FlFromNowComponent} from './component/fl-from-now/fl-from-now.component';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatLegacyTooltipModule as MatTooltipModule} from '@angular/material/legacy-tooltip';
 import {FlCreationInfoComponent} from './component/fl-creation-info/fl-creation-info.component';
 import {
   FlLastModificationInfoComponent

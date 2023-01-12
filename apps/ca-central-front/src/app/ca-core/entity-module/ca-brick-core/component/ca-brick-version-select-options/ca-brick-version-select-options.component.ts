@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Host, Input, OnInit} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
-import {MatSelect} from '@angular/material/select';
+import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
 import {Observable, of} from 'rxjs';
 import {CaBrickVersion} from '../../../../model/entities/ca-brick.class';
 import {CaBrickService} from '../../../../service-api/ca-brick.service';

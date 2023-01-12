@@ -6,8 +6,4 @@
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
 
-// Define material font
-$typography: mat.define-typography-config(
-  $font-family: 'Poppins',
-);
-@include mat.core($typography);
+@include mat.core();

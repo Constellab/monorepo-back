@@ -1,7 +1,10 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {CaGroup} from '../../../../model/entities/ca-group.entity';
 import {Observable} from 'rxjs';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {
+  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
+  MatLegacyDialogRef as MatDialogRef
+} from '@angular/material/legacy-dialog';
 import {FormControl} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {FlSnackBarService} from '@monorepo/front-core-lib';

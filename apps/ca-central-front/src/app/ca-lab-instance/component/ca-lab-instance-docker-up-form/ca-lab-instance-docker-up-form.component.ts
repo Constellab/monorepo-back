@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {CaLabComposeUpOptions} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
-import {MatDialogRef} from '@angular/material/dialog';
+import {MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
 
 /**
  * Form dialog to select options before running a compose up or restart

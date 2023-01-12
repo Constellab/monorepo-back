@@ -1,5 +1,8 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {
+  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
+  MatLegacyDialogRef as MatDialogRef
+} from '@angular/material/legacy-dialog';
 import {LabResourceViewSpecWithConfig} from '../../../../../lab-core/model/entities/resource/lab-resource-view.entity';
 import {labConvertTransformersWithConfigToParams} from '../../../../../lab-core/model/global/lab-transformer.class';
 import {ClHelpService} from '@monorepo/core-lib';

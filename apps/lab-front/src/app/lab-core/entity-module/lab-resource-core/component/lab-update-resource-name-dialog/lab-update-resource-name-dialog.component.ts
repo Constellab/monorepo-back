@@ -1,5 +1,8 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {
+  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
+  MatLegacyDialogRef as MatDialogRef
+} from '@angular/material/legacy-dialog';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {FlSnackBarService} from '@monorepo/front-core-lib';

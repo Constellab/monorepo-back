@@ -14,10 +14,15 @@
         foreground: $foreground,
       )
   );
+  // Define material font
+  $typography: mat.define-typography-config(
+    $font-family: 'Poppins',
+  );
   @return map_merge(
       $theme,
       (
         color: $color,
+        //typography: $typography,
       )
   );
 }

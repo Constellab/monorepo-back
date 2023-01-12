@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, Inject, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
 import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
 import {FlMenuDynamic} from '../../model/fl-menu-dynamic.class';
-import {MatMenuTrigger} from '@angular/material/menu';
+import {MatLegacyMenuTrigger as MatMenuTrigger} from '@angular/material/legacy-menu';
 import {FlOverlayRef} from '../../../fl-portal/model/fl-overlay-ref.class';
 import {FlEventWrapper} from '../../../../model/fl-event-wrapper.class';
 import {FlMenuDynamicComponent} from '../fl-menu-dynamic/fl-menu-dynamic.component';

@@ -1,28 +1,34 @@
 import {NgModule} from '@angular/core';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {MatDialogModule} from '@angular/material/dialog';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatSelectModule} from '@angular/material/select';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatLegacyDialogModule as MatDialogModule} from '@angular/material/legacy-dialog';
+import {MatLegacyProgressSpinnerModule as MatProgressSpinnerModule} from '@angular/material/legacy-progress-spinner';
+import {
+  MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS as MAT_FORM_FIELD_DEFAULT_OPTIONS,
+  MatLegacyFormFieldModule as MatFormFieldModule
+} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule as MatInputModule} from '@angular/material/legacy-input';
+import {MatLegacySelectModule as MatSelectModule} from '@angular/material/legacy-select';
+import {MatLegacySnackBarModule as MatSnackBarModule} from '@angular/material/legacy-snack-bar';
 import {MatSidenavModule} from '@angular/material/sidenav';
-import {MAT_TOOLTIP_DEFAULT_OPTIONS, MatTooltipModule} from '@angular/material/tooltip';
+import {
+  MAT_LEGACY_TOOLTIP_DEFAULT_OPTIONS as MAT_TOOLTIP_DEFAULT_OPTIONS,
+  MatLegacyTooltipModule as MatTooltipModule
+} from '@angular/material/legacy-tooltip';
 import {MatIconModule} from '@angular/material/icon';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {DateAdapter, MAT_DATE_FORMATS, MatRippleModule} from '@angular/material/core';
 import {MatDividerModule} from '@angular/material/divider';
-import {MatListModule} from '@angular/material/list';
-import {MatChipsModule} from '@angular/material/chips';
-import {MatTableModule} from '@angular/material/table';
+import {MatLegacyListModule as MatListModule} from '@angular/material/legacy-list';
+import {MatLegacyChipsModule as MatChipsModule} from '@angular/material/legacy-chips';
+import {MatLegacyTableModule as MatTableModule} from '@angular/material/legacy-table';
 import {FlLuxonDateAdapter, flLuxonDateFormat, flMatFormFieldConfig, flTooltipConfig} from '@monorepo/front-core-lib';
-import {MatMenuModule} from '@angular/material/menu';
+import {MatLegacyMenuModule as MatMenuModule} from '@angular/material/legacy-menu';
 import {MatExpansionModule} from '@angular/material/expansion';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatRadioModule} from '@angular/material/radio';
+import {MatLegacyCheckboxModule as MatCheckboxModule} from '@angular/material/legacy-checkbox';
+import {MatLegacyRadioModule as MatRadioModule} from '@angular/material/legacy-radio';
 import {MatTreeModule} from '@angular/material/tree';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatLegacySlideToggleModule as MatSlideToggleModule} from '@angular/material/legacy-slide-toggle';
 
 
 /**

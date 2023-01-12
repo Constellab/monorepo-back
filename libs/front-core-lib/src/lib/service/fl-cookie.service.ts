@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {CookieService} from 'ngx-cookie-service';
-import {MatDialog} from '@angular/material/dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatLegacyDialog as MatDialog} from '@angular/material/legacy-dialog';
+import {MatLegacySnackBar as MatSnackBar} from '@angular/material/legacy-snack-bar';
 import {FlPlatformService} from './fl-plateform.service';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {FlAcceptanceCookie, FlAcceptanceCookiesConfig, FlCookieOptions} from './model/fl-cookie.class';

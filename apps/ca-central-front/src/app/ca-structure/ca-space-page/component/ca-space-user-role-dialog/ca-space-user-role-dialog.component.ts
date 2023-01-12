@@ -1,5 +1,8 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {
+  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
+  MatLegacyDialogRef as MatDialogRef
+} from '@angular/material/legacy-dialog';
 import {CaSpaceService} from '../../../../ca-core/service-api/ca-space.service';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {FormControl, Validators} from '@angular/forms';

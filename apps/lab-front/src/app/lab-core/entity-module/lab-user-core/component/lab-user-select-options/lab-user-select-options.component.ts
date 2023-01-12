@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, Host, OnInit, Optional} from '@angular/core';
 import {Observable} from 'rxjs';
 import {LabUser} from '../../../../model/entities/lab-user.entity';
-import {MatSelect} from '@angular/material/select';
+import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
 import {LabUserService} from '../../../../entity-service/lab-user.service';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 
