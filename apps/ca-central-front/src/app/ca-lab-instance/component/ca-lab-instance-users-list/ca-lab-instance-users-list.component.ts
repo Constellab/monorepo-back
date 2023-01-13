@@ -11,6 +11,7 @@ import {
 } from '../../../ca-core/model/entities/lab/ca-lab-instance-user.class';
 import {CaLabInstanceDetailPageState} from '../../state/ca-lab-instance-detail-page.state';
 import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'ca-lab-instance-users-list',
@@ -21,7 +22,15 @@ export class CaLabInstanceUsersListComponent implements OnInit {
 
   @Input() labInstanceId: string;
 
-  column: FlTableColumn<CaLabInstanceUser>[] = ['user', 'role', 'createdBy', 'createdAt', 'actions'];
+  columns$: Observable<FlTableColumn<CaLabInstanceUser>[]> = this.state.isLabOwner$().pipe(
+    map(isLabOwner => {
+      const columns = ['user', 'role', 'createdBy', 'createdAt'];
+      // set the action column only if the user is the lab owner
+      if (isLabOwner) {
+        columns.push('actions');
+      }
+      return columns;
+    }));
 
   datasource: CaLabInstanceUserDatasource;
 

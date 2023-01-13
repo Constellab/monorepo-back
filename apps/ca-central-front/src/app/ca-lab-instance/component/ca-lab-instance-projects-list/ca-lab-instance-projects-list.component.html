@@ -19,7 +19,7 @@
 
       <ng-container *flSectionBody>
         <div class="g-infinite-table g-scrollable-element">
-          <ca-lab-instance-projects-table [datasource]="datasource" [columns]="column"
+          <ca-lab-instance-projects-table [datasource]="datasource" [columns]="columns$ | async"
                                           [labInstanceId]="labInstanceId">
           </ca-lab-instance-projects-table>
         </div>

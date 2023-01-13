@@ -45,7 +45,7 @@ export class CaSpaceUserSearchComponent implements OnInit {
   ngOnInit(): void {
 
     // only show the remove button if the user is an admin
-    if (this.authenticatedUserService.isAdmin()) {
+    if (this.currentSpaceService.isSpaceAdmin()) {
       this.columns.push('actions');
     }
 

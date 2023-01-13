@@ -11,6 +11,7 @@ import {
 } from '../ca-lab-instance-add-project-dialog/ca-lab-instance-add-project-dialog.component';
 import {CaLabInstanceDetailPageState} from '../../state/ca-lab-instance-detail-page.state';
 import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'ca-lab-instance-projects-list',
@@ -21,7 +22,15 @@ export class CaLabInstanceProjectsListComponent implements OnInit {
 
   @Input() labInstanceId: string;
 
-  column: FlTableColumn<CaLabInstanceProject>[] = ['project', 'createdBy', 'createdAt', 'actions'];
+  columns$: Observable<FlTableColumn<CaLabInstanceProject>[]> = this.state.isLabOwner$().pipe(
+    map(isLabOwner => {
+      const columns = ['project', 'createdBy', 'createdAt'];
+      // set the action column only if the user is the lab owner
+      if (isLabOwner) {
+        columns.push('actions');
+      }
+      return columns;
+    }));
 
   datasource: CaLabInstanceProjectDatasource;
 
