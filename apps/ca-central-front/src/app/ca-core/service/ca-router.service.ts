@@ -126,21 +126,12 @@ export class CaRouterService {
     return CaRouterService.getFullRoute(`${caConstStructureRoute}/my-teams`);
   }
 
-  public static getJoinSpaceRoute(code: string): string {
-    return CaRouterService.getFullRoute(`${caConstStructureRoute}/join-space/${code}`);
-  }
-
-
   public navigateToMyTeams(): void {
     this.router.navigate([CaRouterService.getMyTeamsRoute()]);
   }
 
   public navigateToTeam(teamId: string): void {
     this.router.navigate([CaRouterService.getTeamRoute(teamId)]);
-  }
-
-  public navigateToJoinSpace(code: string): void {
-    this.router.navigate([CaRouterService.getJoinSpaceRoute(code)]);
   }
 
   ////////////////////////////// CURRENT SPACE ///////////////////////////

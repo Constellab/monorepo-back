@@ -1,6 +1,6 @@
 import {Body, Controller, Delete, Get, Param, ParseEnumPipe, ParseUUIDPipe, Post, Put} from '@nestjs/common';
 import {CnSpaceAggregateService} from './cn-space-aggregate.service';
-import {CnSpaceInvitDto} from './cn-space.dto';
+import {CnSpaceInvitCreateDto, CnSpaceInvitReadDto} from './cn-space.dto';
 import {CnSpaceInvit} from './cn-space-invit.entity';
 import {CnSpaceUserRole} from './cn-space-user.entity';
 import {BlPublic} from '@monorepo/back-core-lib';
@@ -17,11 +17,11 @@ export class CnSpaceInvitController {
 
   @BlPublic()
   @Get('code/:code')
-  public async getInvitationByCode(@Param('code') code: string): Promise<CnSpaceInvit> {
+  public async getInvitationByCode(@Param('code') code: string): Promise<CnSpaceInvitReadDto> {
     return this.spaceAggregateService.getInvitationByCode(code);
   }
 
-
+  @BlPublic()
   @Post('code/:code/accept')
   public async acceptInvitationExistingUser(@Param('code') code: string): Promise<CnUser> {
     return this.spaceAggregateService.existingUserAcceptsInvitation(code);
@@ -29,7 +29,7 @@ export class CnSpaceInvitController {
 
   @Post(':spaceId')
   public async createInvitation(@Param('spaceId') id: string,
-                                @Body() invitDto: CnSpaceInvitDto): Promise<CnSpaceInvit> {
+                                @Body() invitDto: CnSpaceInvitCreateDto): Promise<CnSpaceInvit> {
     return this.spaceAggregateService.inviteUserToSpace(id, invitDto);
   }
 

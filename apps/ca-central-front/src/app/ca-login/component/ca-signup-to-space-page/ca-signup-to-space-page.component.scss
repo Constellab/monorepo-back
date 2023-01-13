@@ -2,27 +2,33 @@
   flex: 1
 }
 
-.container{
-  height: 100%;
-}
-
-.help-card{
+.card {
   width: 50em;
   margin: auto;
 }
 
-.form-cards{
-  margin-top: 5em;
-}
 
-.logo{
+.logo {
   width: 10em;
 }
 
-.feat{
+.feat {
   font-size: 8em;
 }
 
-.help-text{
+.help-text {
   margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.invitation-text {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  text-align: center;
+}
+
+.join-button {
+  margin-top: 1em;
+  margin-inline: auto;
+  display: block;
 }

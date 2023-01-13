@@ -12,7 +12,7 @@ import {BlBadRequestException, BlFile, BlSearchParams} from '@monorepo/back-core
 import {IncomingMessage} from 'http';
 import {CnSpaceInvit} from './cn-space-invit.entity';
 import {CnSpaceInvitService} from './cn-space-invit.service';
-import {CnRequestNewLicensesDto, CnSpaceInvitDto} from './cn-space.dto';
+import {CnRequestNewLicensesDto, CnSpaceInvitCreateDto, CnSpaceInvitReadDto} from './cn-space.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {DataSource, EntityManager} from 'typeorm';
 import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
@@ -219,11 +219,17 @@ export class CnSpaceAggregateService {
 
   /////////////////////////////////////// INVITATION //////////////////////////////////
 
-  public async getInvitationByCode(code: string): Promise<CnSpaceInvit> {
-    return await this.invitationService.findByCodeAndCheckValidity(code);
+  public async getInvitationByCode(code: string): Promise<CnSpaceInvitReadDto> {
+    const invit = await this.invitationService.findByCodeAndCheckValidity(code);
+
+    const user = await this.userService.findByEmail(invit.userMail);
+    return {
+      invitation: invit,
+      existingUser: user
+    };
   }
 
-  public async inviteUserToSpace(spaceId: string, invitDto: CnSpaceInvitDto): Promise<CnSpaceInvit> {
+  public async inviteUserToSpace(spaceId: string, invitDto: CnSpaceInvitCreateDto): Promise<CnSpaceInvit> {
     spaceId = this.getSpaceId(spaceId);
     await this.checkSpaceAdmin(spaceId);
 
@@ -273,8 +279,13 @@ export class CnSpaceAggregateService {
   public async existingUserAcceptsInvitation(code: string): Promise<CnUser> {
     const invitation = await this.findInvitationByCodeAndCheckValidity(code);
 
+    const user = await this.userService.findByEmail(invitation.userMail);
+    if (user == null) {
+      throw new BlBadRequestException("User not found");
+    }
+
     return await this.datasource.transaction(async (transaction) => {
-      return await this.acceptInvitation(invitation, CnCurrentUserHelper.getAndCheckCurrentUser(), transaction);
+      return await this.acceptInvitation(invitation, user, transaction);
     });
   }
 
@@ -369,9 +380,9 @@ export class CnSpaceAggregateService {
 
   }
 
-  public async getAndCheckUser(userId: string): Promise<CnUser>{
-    if((await this.spaceUserService.checkIfGetUserIsAllowed(userId, this.userService.getCurrent().id)) ||
-      this.userService.getCurrent().isAdmin()){
+  public async getAndCheckUser(userId: string): Promise<CnUser> {
+    if ((await this.spaceUserService.checkIfGetUserIsAllowed(userId, this.userService.getCurrent().id)) ||
+      this.userService.getCurrent().isAdmin()) {
       return this.userService.findById(userId);
     }
     throw new BlBadRequestException(CnErrorText.USER_NOT_IN_SPACE);

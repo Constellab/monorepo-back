@@ -1,7 +1,9 @@
 import {CnSpaceUserRole} from './cn-space-user.entity';
+import {CnUser} from '../cn-users/cn-user.entity';
+import {CnSpaceInvit} from './cn-space-invit.entity';
 
 
-export interface CnSpaceInvitDto {
+export interface CnSpaceInvitCreateDto {
   userMail: string;
   role: CnSpaceUserRole;
 }
@@ -12,7 +14,10 @@ export interface CnRequestNewLicensesDto {
   text?: string;
 }
 
-export interface CnRequestNewLabDto{
+export interface CnSpaceInvitReadDto{
 
-  text?: string;
+  invitation: CnSpaceInvit;
+
+  // provided if the email in the invitation corresponds to an existing user
+  existingUser?: CnUser;
 }

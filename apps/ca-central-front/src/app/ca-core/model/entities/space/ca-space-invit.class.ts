@@ -5,6 +5,7 @@ import {CaSpace} from './ca-space.class';
 import {FlDatasourcePaginated} from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
 import {CaSpaceRole} from './ca-space-user.class';
+import {CaUser} from '../ca-user.class';
 
 export class CaSpaceInvit extends CaBaseEntity {
 
@@ -30,7 +31,15 @@ export class CaSpaceInvitFull extends CaSpaceInvit {
 
 export type CaSpaceInvitDatasource = FlDatasourcePaginated<CaSpaceInvit>;
 
-export interface CaSpaceInvitDTO {
+export interface CaSpaceInvitCreateDTO {
   userMail: string;
   role: CaSpaceRole;
+}
+
+export class CaSpaceInvitReadDTO {
+  @Type(() => CaSpaceInvitFull)
+  invitation: CaSpaceInvitFull;
+
+  // provided if the email in the invitation corresponds to an existing user
+  existingUser?: CaUser;
 }

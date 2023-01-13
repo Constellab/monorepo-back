@@ -4,7 +4,6 @@ import {CaSpacePageModule} from './ca-space-page/ca-space-page.module';
 import {CaStructureRoutingModule} from './ca-structure-routing.module';
 import {CaMyGroupsPageModule} from './ca-my-groups-page/ca-my-groups-page.module';
 import {CaTeamPageModule} from './ca-team-page/ca-team-page.module';
-import {CaJoinSpacePageModule} from './ca-join-space-page/ca-join-space-page.module';
 
 /**
  * Module that group the space, group and user management
@@ -17,7 +16,6 @@ import {CaJoinSpacePageModule} from './ca-join-space-page/ca-join-space-page.mod
     CaSpacePageModule,
     CaMyGroupsPageModule,
     CaTeamPageModule,
-    CaJoinSpacePageModule,
 
     CaStructureRoutingModule,
   ]

@@ -33,6 +33,10 @@ export class CnFrontService {
    * Get the base url of the website (without the url of the space)
    */
   public getSpaceWebsiteURL(spaceDomain: string): string {
-    return `https://${spaceDomain}.${this.configService.getCentralFrontDomain()}`;
+    if (this.configService.isLocal()) {
+      return `http://${this.configService.getCentralFrontDomain()}`;
+    } else {
+      return `https://${spaceDomain}.${this.configService.getCentralFrontDomain()}`;
+    }
   }
 }

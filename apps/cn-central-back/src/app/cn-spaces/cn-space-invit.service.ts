@@ -6,7 +6,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {CnSpace} from './cn-space.entity';
 import {CnSpaceUserRole} from './cn-space-user.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {CnSpaceInvitDto} from './cn-space.dto';
+import {CnSpaceInvitCreateDto} from './cn-space.dto';
 import {DateTime} from 'luxon';
 import {ClDateHelper, ClPage} from '@monorepo/core-lib';
 import {CnUsersService} from '../cn-users/cn-users.service';
@@ -25,7 +25,7 @@ export class CnSpaceInvitService extends BlAbstractService<CnSpaceInvit> {
     super(repository, CnSpaceInvit);
   }
 
-  public async createInvitation(space: CnSpace, invitDto: CnSpaceInvitDto): Promise<CnSpaceInvit> {
+  public async createInvitation(space: CnSpace, invitDto: CnSpaceInvitCreateDto): Promise<CnSpaceInvit> {
     const invit = await this.repository.findOneBy({spaceId: space.id, userMail: invitDto.userMail});
 
     if (invit) {

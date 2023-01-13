@@ -4,9 +4,10 @@ import {FlSignupFormComponent, FlSignUpUser, FlSnackBarService} from '@monorepo/
 import {CaSpaceInvitService} from '../../../ca-core/service-api/ca-space-invit.service';
 import {ActivatedRoute} from '@angular/router';
 import {CaRouterService} from '../../../ca-core/service/ca-router.service';
-import {CaSpaceInvitFull} from '../../../ca-core/model/entities/space/ca-space-invit.class';
+import {CaSpaceInvitReadDTO} from '../../../ca-core/model/entities/space/ca-space-invit.class';
 import {Observable, tap} from 'rxjs';
 import {CaUserAccountsService} from '../../../ca-core/service-api/ca-user-accounts.service';
+import {CaAuthService} from '../../service/ca-auth.service';
 
 /**
  * Page on which the user can join an space. He can create an account or use an existing one.
@@ -18,18 +19,20 @@ import {CaUserAccountsService} from '../../../ca-core/service-api/ca-user-accoun
 })
 export class CaSignupToSpacePageComponent implements OnInit {
 
-  invitation$: Observable<CaSpaceInvitFull>;
+  invitation$: Observable<CaSpaceInvitReadDTO>;
+
   invitationCode: string;
 
   signupFormGp: FormGroup<FlSignUpUser>;
 
-  signupIsLoading: boolean = false;
+  isLoading: boolean = false;
 
   constructor(private route: ActivatedRoute,
               private spaceInvitService: CaSpaceInvitService,
               private snackBarService: FlSnackBarService,
               private routerService: CaRouterService,
-              private userAccountService: CaUserAccountsService) {
+              private userAccountService: CaUserAccountsService,
+              private authService: CaAuthService) {
   }
 
   ngOnInit(): void {
@@ -45,17 +48,15 @@ export class CaSignupToSpacePageComponent implements OnInit {
     );
   }
 
-  private getInvitationSuccess(invitation: CaSpaceInvitFull): void {
-
+  private getInvitationSuccess(invitation: CaSpaceInvitReadDTO): void {
     this.signupFormGp = FlSignupFormComponent.buildFormGroup();
-    this.signupFormGp.get('email').setValue(invitation.userMail);
+    this.signupFormGp.get('email').setValue(invitation.invitation.userMail);
     this.signupFormGp.get('email').disable();
-
   }
 
 
   signupSubmit(): void {
-    if (this.signupFormGp.valid && !this.signupIsLoading) {
+    if (this.signupFormGp.valid && !this.isLoading) {
       this.signup(this.signupFormGp.getRawValue());
     } else {
       this.signupFormGp.markAllAsTouched();
@@ -63,10 +64,10 @@ export class CaSignupToSpacePageComponent implements OnInit {
   }
 
   private signup(user: FlSignUpUser): void {
-    this.signupIsLoading = true;
+    this.isLoading = true;
     this.userAccountService.createUserAndJoinSpace(this.invitationCode, user).subscribe({
       next: () => this.signupSuccess(),
-      error: () => this.signupIsLoading = false
+      error: () => this.isLoading = false
     });
   }
 
@@ -74,10 +75,26 @@ export class CaSignupToSpacePageComponent implements OnInit {
     this.snackBarService.openSuccessMessage(
       {text: 'join_space_new_user_success', translateText: true}, 7000);
     this.routerService.navigatorToLoginRoute();
-    this.signupIsLoading = false;
+    this.isLoading = false;
   }
 
-  loginSuccess(): void {
-    this.routerService.navigateToJoinSpace(this.invitationCode);
+
+  acceptInvitation(): void {
+    this.isLoading = true;
+    this.spaceInvitService.acceptInvitationExistingUser(this.invitationCode).subscribe({
+      next: () => this.acceptInvitationSuccess(),
+      error: () => this.isLoading = false
+    });
+  }
+
+  private acceptInvitationSuccess(): void {
+    this.isLoading = false;
+    this.snackBarService.openSuccessMessage({text: 'join_space_existing_user_success', translateText: true});
+
+    if (this.authService.hasAuthorizationCookie()) {
+      this.routerService.navigateToDashboard();
+    } else {
+      this.routerService.navigatorToLoginRoute();
+    }
   }
 }

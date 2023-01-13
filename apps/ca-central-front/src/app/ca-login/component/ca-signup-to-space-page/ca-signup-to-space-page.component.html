@@ -4,71 +4,70 @@
 
 
     <ng-container *flSectionBody="let invitation">
-      <div class="container">
+      <fl-card class="card">
+        <fl-card-body fxLayout="column">
 
-        <div>
-          <fl-card class="help-card">
-            <fl-card-body>
+          <div fxLayout="row" fxLayoutAlign="space-evenly center">
 
-              <div fxLayout="row" fxLayoutAlign="space-evenly center">
+            <img src="assets/logo/logo.png" alt="Gencovery logo"
+                 class="logo"/>
 
-                <img src="assets/logo/logo.png" alt="Gencovery logo"
-                     class="logo"/>
+            <ng-container *ngIf="invitation.invitation.space.photo">
+              <div class="feat">x</div>
+              <img [src]="invitation.invitation.space | caSpacePhoto" alt="Space logo"
+                   class="logo"/>
+            </ng-container>
+          </div>
 
-                <ng-container *ngIf="invitation.space.photo">
-                  <div class="feat">x</div>
-                  <img [src]="invitation.space | caSpacePhoto" alt="Space logo"
-                       class="logo"/>
-                </ng-container>
+          <p class="invitation-text" [innerHTML]="'join_space_invitation' | translate: {
+                    fullname: invitation.invitation.createdBy.fullname,
+                    space: invitation.invitation.space.name
+                }">
+
+
+            <!-- Sign up option   -->
+          <div *ngIf="!invitation.existingUser; else userExist">
+
+
+            <p class="help-text">{{'join_space_sign_up' | translate}}</p>
+
+            <form [formGroup]="signupFormGp" (ngSubmit)="signupSubmit()" id="invit-signup">
+
+              <fl-signup-form [formGp]="signupFormGp"></fl-signup-form>
+
+              <div class="g-text-centered">
+                <button mat-flat-button color="accent" type="submit" form="invit-signup"
+                        class="g-button-big">
+                  {{'flAuth.signup' | translate}}
+                  <fl-button-loader *ngIf="isLoading"></fl-button-loader>
+                </button>
               </div>
 
-              <p class="help-text" [innerHTML]="'join_space_help' | translate: {
-            fullname: invitation.createdBy.fullname,
-            space: invitation.space.name
-          }">
+            </form>
+          </div>
 
-              <p class="help-text">{{'join_space_help_2' | translate}}</p>
-            </fl-card-body>
-          </fl-card>
-        </div>
+          <!--  Accept invitation when invitation was send to an email link to an account   -->
+          <ng-template #userExist>
+            <div>
 
-        <div fxLayout="row" fxLayoutAlign="space-evenly center" class="form-cards">
+              <p class="help-text" [innerHTML]="'join_space_sign_in' | translate: {
+                    email: invitation.existingUser.email
+                }">
+              </p>
 
-          <!-- Sign up option   -->
-          <fl-card fxFlex="50em">
-            <fl-card-header>
-              <h2 class="g-text-centered">{{'flAuth.signup' | translate}}</h2>
-            </fl-card-header>
 
-            <fl-card-body>
+              <button mat-flat-button color="primary" type="button" (click)="acceptInvitation()"
+                      class="join-button">
+                {{ 'join_space' | translate: {space: invitation.invitation.space.name} }}
+                <fl-button-loader *ngIf="isLoading"></fl-button-loader>
+              </button>
 
-              <form [formGroup]="signupFormGp" (ngSubmit)="signupSubmit()" id="invit-signup">
+            </div>
+          </ng-template>
 
-                <fl-signup-form [formGp]="signupFormGp"></fl-signup-form>
+        </fl-card-body>
+      </fl-card>
 
-                <div class="g-text-centered">
-                  <button mat-flat-button color="accent" type="submit" form="invit-signup"
-                          class="g-button-big">
-                    {{'flAuth.signup' | translate}}
-                    <fl-button-loader *ngIf="signupIsLoading"></fl-button-loader>
-                  </button>
-                </div>
-
-              </form>
-            </fl-card-body>
-          </fl-card>
-
-          <!--  Login option    -->
-          <fl-card fxFlex="30em">
-            <fl-card-header>
-              <h2 class="g-text-centered">{{'flAuth.sign_in' | translate}}</h2>
-            </fl-card-header>
-            <fl-card-body>
-              <fl-complete-login (loginSuccess)="loginSuccess()" [hideLoginFooter]="true"></fl-complete-login>
-            </fl-card-body>
-          </fl-card>
-        </div>
-      </div>
     </ng-container>
   </fl-async-section>
 

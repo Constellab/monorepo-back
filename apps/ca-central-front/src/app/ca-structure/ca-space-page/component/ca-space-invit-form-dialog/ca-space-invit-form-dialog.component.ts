@@ -3,7 +3,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaSpaceInvitService} from '../../../../ca-core/service-api/ca-space-invit.service';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {CaSpaceInvit, CaSpaceInvitDTO} from '../../../../ca-core/model/entities/space/ca-space-invit.class';
+import {CaSpaceInvit, CaSpaceInvitCreateDTO} from '../../../../ca-core/model/entities/space/ca-space-invit.class';
 import {Validators} from '@angular/forms';
 import {CaSpaceType} from '../../../../ca-core/model/entities/space/ca-space.class';
 import {CaSpaceRole} from '../../../../ca-core/model/entities/space/ca-space-user.class';
@@ -23,7 +23,7 @@ export interface CaSpaceInvitFormDialogInput {
 })
 export class CaSpaceInvitFormDialogComponent implements OnInit {
 
-  formGp: FormGroup<CaSpaceInvitDTO>;
+  formGp: FormGroup<CaSpaceInvitCreateDTO>;
 
   availableRoles = CaSpaceRole;
 
@@ -48,7 +48,7 @@ export class CaSpaceInvitFormDialogComponent implements OnInit {
     }
   }
 
-  private createInvitation(invitationDto: CaSpaceInvitDTO): void {
+  private createInvitation(invitationDto: CaSpaceInvitCreateDTO): void {
     this.isLoading = true;
     this.spaceInvitService.createInvitation(this.input.spaceId, invitationDto).subscribe({
       next: invitation => this.createSuccess(invitation),
