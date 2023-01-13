@@ -1,7 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {UntypedFormGroup} from '@angular/forms';
 import {FlSearchState, FlStatusDict} from '@monorepo/front-core-lib';
 import {CaLabInstanceStatus, caLabInstanceStatusDict} from '../../../../model/entities/lab/ca-lab-instance.class';
+import {
+  CaSelectUserMode
+} from '../../../ca-user-core/component/ca-select-user-options/ca-select-user-options.component';
 
 @Component({
   selector: 'ca-lab-instance-search-form',
@@ -10,9 +13,13 @@ import {CaLabInstanceStatus, caLabInstanceStatusDict} from '../../../../model/en
 })
 export class CaLabInstanceSearchFormComponent implements OnInit {
 
+  @Input() mode: 'all' | 'current-space';
+
   formGp: UntypedFormGroup;
 
   status: FlStatusDict<CaLabInstanceStatus> = caLabInstanceStatusDict;
+
+  selectUserMode: CaSelectUserMode;
 
 
   constructor(private searchState: FlSearchState<any>) {
@@ -20,5 +27,6 @@ export class CaLabInstanceSearchFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.formGp = this.searchState.advancedSearchFormGroup;
+    this.selectUserMode = this.mode === 'all' ? 'all' : 'space';
   }
 }
