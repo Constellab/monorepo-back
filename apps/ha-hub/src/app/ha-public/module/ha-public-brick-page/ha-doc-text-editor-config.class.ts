@@ -95,6 +95,7 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
 
 
   onPasteImage(file: File, state: FlTextEditorState): any {
-    return this.insertImageFromFile(file, state);
+    this.insertImageFromFile(file, state);
+    return {ops: []} //Return the delta without modification with the image pasted
   }
 }

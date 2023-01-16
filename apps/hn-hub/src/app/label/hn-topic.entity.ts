@@ -4,11 +4,11 @@ import {HnStory} from '../story/hn-story.entity';
 
 
 //TODO: Rename to HnStoryTopic
-@Entity('label')
-export class HnLabel extends BlEntityWithId {
+@Entity('Topic')
+export class HnTopic extends BlEntityWithId {
   @Column()
   name: string;
 
-  @ManyToMany(() => HnStory, story => story.labels)
+  @ManyToMany(() => HnStory, story => story.topics)
   stories: HnStory[];
 }

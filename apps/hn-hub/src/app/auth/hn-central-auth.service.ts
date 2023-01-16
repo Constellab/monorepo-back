@@ -1,9 +1,10 @@
 import {Injectable} from '@nestjs/common';
-import {CmCredentials, CmCredentials2Fa} from '@monorepo/common-model';
+import {CmCredentials, CmCredentials2Fa, CmUserCategory} from '@monorepo/common-model';
 import {BlExternalApiService, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {lastValueFrom} from 'rxjs';
 import {HnUser} from '../users/hn-user.entity';
+import {ClSupportedLanguage} from '@monorepo/core-lib';
 
 export interface HnExternalCheckCredentialResponse {
   status: 'OK' | '2FA_REQUIRED';

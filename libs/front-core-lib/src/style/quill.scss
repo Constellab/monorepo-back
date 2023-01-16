@@ -10,7 +10,8 @@
 
 // make the editor scrollable
 .ql-editor {
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   max-height: inherit;
   width: inherit;
   padding: 12px 16px;

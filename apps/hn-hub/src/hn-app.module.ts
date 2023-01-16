@@ -45,7 +45,7 @@ import { HnProtocolModule } from './app/protocol/hn-protocol.module';
 import { HnBrickVersionReferenceModule } from './app/brick-version-reference/hn-brick-version-reference.module';
 import { HnDatabaseConfig } from './app/core/model/config/hn-database-config.class';
 import { HnStoryModule } from './app/story/hn-story.module';
-import { HnLabelModule } from './app/label/hn-label.module';
+import { HnTopicModule } from './app/label/hn-topic.module';
 
 
 function typeOrmConfig(
@@ -157,7 +157,7 @@ function configureTransportModule(
     HnProtocolModule,
     HnBrickVersionReferenceModule,
     HnStoryModule,
-    HnLabelModule,
+    HnTopicModule,
   ],
   controllers: [],
   providers: [

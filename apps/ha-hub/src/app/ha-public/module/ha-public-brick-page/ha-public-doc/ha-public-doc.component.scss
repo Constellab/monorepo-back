@@ -1,7 +1,10 @@
 .content-editor{
   border: none;
   margin: auto;
-  padding: 0 1em;
+}
+
+.content{
+  overflow: auto;
 }
 
 .documentation-form{

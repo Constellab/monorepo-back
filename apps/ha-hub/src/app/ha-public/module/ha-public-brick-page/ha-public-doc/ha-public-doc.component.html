@@ -5,7 +5,7 @@
 
 <div class="sidenavBody" *ngIf="!docNotFound">
 
-  <div class="content g-scrollable-element">
+  <div class="content g-scrollable-element" cdkScrollable>
     <div class="loader" *ngIf="isLoading">
       <fl-loader size="medium"></fl-loader>
     </div>

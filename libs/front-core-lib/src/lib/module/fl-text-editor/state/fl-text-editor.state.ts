@@ -73,12 +73,12 @@ export class FlTextEditorState implements OnDestroy {
     this.quill.insertEmbed(index, 'customFormula', value);
   }
 
-  public insertLink(index: number, link: string, linkName: string): void{
-    this.quill.insertText(index, linkName, 'link', link, Quill.sources.USER);
+  public insertLink(index: number, link: string, linkName: string): any{
+    return this.quill.insertText(index, linkName, 'link', link, Quill.sources.USER);
   }
 
-  public insertText(index: number, text: string): void {
-    this.quill.insertText(index, text);
+  public insertText(index: number, text: string): any {
+    return this.quill.insertText(index, text);
   }
 
   public insertEmbed(index: number, type: string, value: any): void {
@@ -99,6 +99,10 @@ export class FlTextEditorState implements OnDestroy {
     return this.getCurrentSelection().index;
   }
 
+  // Remove the content from index to index + size and return the new delta
+  public removeContent(index: number, size: number): any {
+    return this.quill.deleteText(index, 0);
+  }
 
   //////////////////////////////////////// ELEMENT MANIP /////////////////////////////////
 

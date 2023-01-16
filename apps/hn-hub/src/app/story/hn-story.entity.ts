@@ -1,10 +1,10 @@
 import {Column, Entity, ManyToMany} from 'typeorm';
 import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
-import {HnLabel} from '../label/hn-label.entity';
-import {JoinTable} from 'typeorm/browser';
+import {HnTopic} from '../label/hn-topic.entity';
+import {JoinTable} from 'typeorm';
 
-@Entity('story')
+@Entity('Story')
 export class HnStory extends HnBaseEntity {
   @Column()
   title: string;
@@ -15,13 +15,13 @@ export class HnStory extends HnBaseEntity {
   @Column({nullable: true})
   mainPicture?: string;
 
-  @ManyToMany(() => HnLabel, label => label.stories, {cascade: ["insert", "update"]})
+  @ManyToMany(() => HnTopic, topic => topic.stories, {cascade: ["insert", "update"]})
   @JoinTable()
-  labels: HnLabel[];
+  topics: HnTopic[];
 
-  init(title: string, content: CmRichTextI, labels: HnLabel[]): void {
+  init(title: string, content: CmRichTextI, labels: HnTopic[]): void {
     this.content = content;
     this.title = title;
-    this.labels = labels;
+    this.topics = labels;
   }
 }

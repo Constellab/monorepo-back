@@ -87,6 +87,8 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   @HostBinding('class.ql-dense')
   @Input() dense: boolean = false;
 
+  i = 0;
+
   private quill: Quill;
 
   private blockAddButtonOverlay?: FlOverlayRef;
@@ -127,14 +129,17 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
           this.document.documentElement, this.elementRef)
       }
     );
+
     this.quill.clipboard.addMatcher('IMG', (node, delta) => FlQuillSetup.addMatcher(node, delta, this.state, this.config));
 
     this.quill.clipboard.addMatcher(Node.TEXT_NODE, (node, delta): any => {
       if (ClStringHelper.isHttpLink(node.nodeValue)) {
-        FlQuillSetup.addMatcherLink(node.nodeValue, delta, this.state);
+        delta.ops = []
+        FlQuillSetup.addMatcherLink(this.state.getCurrentSelectionIndex(), node.nodeValue, delta, this.state);
       }
       return delta;
     });
+
 
     this.state.init(this.quill, this.config, this.editorElement.nativeElement, this.disabled);
 

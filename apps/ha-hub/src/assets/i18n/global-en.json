@@ -77,5 +77,6 @@
   "ok": "ok",
   "created_by": "Created by",
   "email": "Email",
-  "identity": "Identity"
+  "identity": "Identity",
+  "view": "View"
 }

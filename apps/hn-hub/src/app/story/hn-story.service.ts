@@ -3,18 +3,18 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {HnStory} from './hn-story.entity';
 import {Repository} from 'typeorm';
 import {CmRichTextI} from '@monorepo/common-model';
-import {HnLabel} from '../label/hn-label.entity';
-import {HnLabelService} from '../label/hn-label.service';
+import {HnTopic} from '../label/hn-topic.entity';
+import {HnTopicService} from '../label/hn-topic.service';
 
 @Injectable()
 export class HnStoryService {
 
   constructor(@InjectRepository(HnStory)
               private readonly storyRepository: Repository<HnStory>,
-              private readonly labelService: HnLabelService,
+              private readonly labelService: HnTopicService,
   ){}
 
-  async createStory(title: string, content: CmRichTextI, labels: HnLabel[] = []): Promise<HnStory> {
+  async createStory(title: string, content: CmRichTextI, labels: HnTopic[] = []): Promise<HnStory> {
     const story = new HnStory();
     story.init(title, content, labels);
     return story;
@@ -28,7 +28,7 @@ export class HnStoryService {
     return this.storyRepository.find();
   }
 
-  async getStoriesByLabel(label: HnLabel): Promise<HnStory[]> {
+  async getStoriesByLabel(label: HnTopic): Promise<HnStory[]> {
     return this.labelService.getLabel(label.id).then(label => label.stories);
   }
 }

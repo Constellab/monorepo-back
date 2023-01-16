@@ -16,6 +16,7 @@ export class FlQuillSetup {
 
     // retrieve scrollable parents
     const scrollableElements = scrollDispatcher.getAncestorScrollContainers(elementRef);
+
     // if there are some scrollable parent, use the first one
     if (scrollableElements.length > 0) {
       return scrollableElements[scrollableElements.length - 1].getElementRef().nativeElement;
@@ -25,9 +26,8 @@ export class FlQuillSetup {
     return documentElement;
   }
 
-  public static addMatcherLink(link: string, delta: any, state: FlTextEditorState): any{
-    const index: number = state.getCurrentSelectionIndex();
-    state.insertLink(index, link, link);
+  public static addMatcherLink(index: number, link: string, delta: any, state: FlTextEditorState): any{
+    return state.insertLink(index, link, link);
   }
 
   public static addMatcher(node: any, delta: any, state: FlTextEditorState, config: FlTextEditorConfig): any{
@@ -49,8 +49,7 @@ export class FlQuillSetup {
       };
     } else if (imageData.startsWith('data')) {
       const blob: Blob = FlFileHelper.convertBase64ToBlob(insertImage.image.split(',')[1], 'image/png');
-      config.onPasteImage(new File([blob], ClStringHelper.generateUUID()), state);
-      delta.ops = [];
+      delta = config.onPasteImage(new File([blob], ClStringHelper.generateUUID()), state);
     }
     return delta;
   }
