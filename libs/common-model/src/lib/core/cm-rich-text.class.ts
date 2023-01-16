@@ -94,6 +94,10 @@ export class CmRichText {
 
   }
 
+  public static newRichText(): CmRichTextI {
+    return {ops: []};
+  }
+
   public static getOptimisedContent(content: CmRichTextI): CmRichTextI{
     if(content.ops[0] && !content.ops[0].attributes && content.ops[0].insert &&
       (typeof content.ops[0].insert === 'string' || content.ops[0].insert instanceof String)){

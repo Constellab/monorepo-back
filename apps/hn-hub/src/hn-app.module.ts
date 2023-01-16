@@ -1,13 +1,18 @@
-import {ClassSerializerInterceptor, MiddlewareConsumer, Module, RequestMethod,} from '@nestjs/common';
-import {ConfigModule} from '@nestjs/config';
-import {APP_FILTER, APP_GUARD, APP_INTERCEPTOR} from '@nestjs/core';
-import {TypeOrmModule, TypeOrmModuleOptions} from '@nestjs/typeorm';
-import {join} from 'path';
-import {HnCoreConfigModule} from './app/core/modules/core-config/hn-core-config.module';
-import {HnCoreConfigService} from './app/core/modules/core-config/hn-core-config.service';
-import {HnDocumentationModule} from './app/documentation/hn-documentation.module';
-import {HnUserModule} from './app/users/hn-user.module';
-import {HnAuthModule} from './app/auth/hn-auth.module';
+import {
+  ClassSerializerInterceptor,
+  MiddlewareConsumer,
+  Module,
+  RequestMethod,
+} from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { join } from 'path';
+import { HnCoreConfigModule } from './app/core/modules/core-config/hn-core-config.module';
+import { HnCoreConfigService } from './app/core/modules/core-config/hn-core-config.service';
+import { HnDocumentationModule } from './app/documentation/hn-documentation.module';
+import { HnUserModule } from './app/users/hn-user.module';
+import { HnAuthModule } from './app/auth/hn-auth.module';
 import {
   blConfigureLogger,
   BlCookieHelper,
@@ -20,25 +25,28 @@ import {
   BlTransportModule,
   BlTransportModuleConfig,
 } from '@monorepo/back-core-lib';
-import {HnCoreModule} from './app/core/hn-core.module';
-import {HnUserService} from './app/users/hn-user.service';
-import {Request} from 'express';
-import {hnJwtConfig} from './app/auth/hn-jwt.config';
-import {HnJwtAuthGuard} from './app/core/guards/hn-jwt-auth.guard';
-import {HnFolderModule} from './app/folder/hn-folder.module';
-import {WinstonModule, WinstonModuleOptions} from 'nest-winston';
-import {I18nJsonLoader, I18nModule} from 'nestjs-i18n';
-import {clDefaultLang} from '@monorepo/core-lib';
-import {HnBrickModule} from './app/brick/hn-brick.module';
-import {HnBrickVersionModule} from './app/brick-version/hn-brick-version.module';
-import {HnBrickMajorVersionModule} from './app/brick-major-version/hn-brick-major-version.module';
-import {HnCoreExceptionHandlerFilter} from './app/core/filters/hn-core-exception-handler.filter';
-import {HnTechnicalFolderModule} from './app/technical-folder/hn-technical-folder.module';
-import {HnResourceModule} from './app/resource/hn-resource.module';
-import {HnTaskModule} from './app/task/hn-task.module';
-import {HnProtocolModule} from './app/protocol/hn-protocol.module';
-import {HnBrickVersionReferenceModule} from './app/brick-version-reference/hn-brick-version-reference.module';
-import {HnDatabaseConfig} from './app/core/model/config/hn-database-config.class';
+import { HnCoreModule } from './app/core/hn-core.module';
+import { HnUserService } from './app/users/hn-user.service';
+import { Request } from 'express';
+import { hnJwtConfig } from './app/auth/hn-jwt.config';
+import { HnJwtAuthGuard } from './app/core/guards/hn-jwt-auth.guard';
+import { HnFolderModule } from './app/folder/hn-folder.module';
+import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
+import { I18nJsonLoader, I18nModule } from 'nestjs-i18n';
+import { clDefaultLang } from '@monorepo/core-lib';
+import { HnBrickModule } from './app/brick/hn-brick.module';
+import { HnBrickVersionModule } from './app/brick-version/hn-brick-version.module';
+import { HnBrickMajorVersionModule } from './app/brick-major-version/hn-brick-major-version.module';
+import { HnCoreExceptionHandlerFilter } from './app/core/filters/hn-core-exception-handler.filter';
+import { HnTechnicalFolderModule } from './app/technical-folder/hn-technical-folder.module';
+import { HnResourceModule } from './app/resource/hn-resource.module';
+import { HnTaskModule } from './app/task/hn-task.module';
+import { HnProtocolModule } from './app/protocol/hn-protocol.module';
+import { HnBrickVersionReferenceModule } from './app/brick-version-reference/hn-brick-version-reference.module';
+import { HnDatabaseConfig } from './app/core/model/config/hn-database-config.class';
+import { HnStoryModule } from './app/story/hn-story.module';
+import { HnLabelModule } from './app/label/hn-label.module';
+
 
 function typeOrmConfig(
   configService: HnCoreConfigService
@@ -134,7 +142,6 @@ function configureTransportModule(
     HnCoreModule,
     BlObjectStorageModule,
 
-
     BlExternalApiModule,
 
     HnDocumentationModule,
@@ -148,7 +155,9 @@ function configureTransportModule(
     HnResourceModule,
     HnTaskModule,
     HnProtocolModule,
-    HnBrickVersionReferenceModule
+    HnBrickVersionReferenceModule,
+    HnStoryModule,
+    HnLabelModule,
   ],
   controllers: [],
   providers: [
@@ -174,6 +183,6 @@ export class AppModule {
     consumer
       // register the RequestContextMiddleware to be able to access the request anywhere
       .apply(BlRequestContextMiddleware)
-      .forRoutes({path: '*', method: RequestMethod.ALL});
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }

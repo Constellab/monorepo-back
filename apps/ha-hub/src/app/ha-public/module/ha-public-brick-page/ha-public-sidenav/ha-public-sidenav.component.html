@@ -11,14 +11,23 @@
         </mat-form-field>
       </div>
 
+      <div class="title-line item">
+        <div class="brick-name-line link-item line-mat">
+          <h2 class="line-text">
+            {{brickName}}
+          </h2>
+        </div>
+      </div>
+
+
+<!--  TODO: RENAME INTRODUCTION -->
       <a (click)="closeSideNav()" [routerLink]="'.'"
          [relativeTo]="activatedRoute" [routerLinkActive]="'active'" class="line item">
         <div matLine class="link-item line-mat">
               <span class="main-line-text line-text">
-                  {{'introduction' | translate}}
+                  {{'identity' | translate}}
               </span>
         </div>
-
       </a>
 
 
