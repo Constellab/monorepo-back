@@ -62,9 +62,12 @@ export class FlSheetChartSelectionHistogram extends FlSheetChartSelection {
       this.series[0].name);
 
     // define the axisXLabelFormat
-    series.axisXLabelTicksFormat = (index: number) => {
-      const ChartDataBin: FlChartDataBin = serie.data[index];
-      return ChartDataBin.getIntervalText();
+    series.axisXLabelTicksFormat = {
+      format:(_: number, index: number) => {
+        const ChartDataBin: FlChartDataBin = serie.data[index];
+        return ChartDataBin.getIntervalText();
+      },
+      maxLabelLength: FlChartDataBin.getIntervalTextLength()
     };
     series.addSerie(serie);
 

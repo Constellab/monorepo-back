@@ -1,8 +1,9 @@
-import {FlChart2dDatum, FlChartAxisTickFormat, FlChartData, FlChartDataContainer} from './fl-chart-data.class';
+import {FlChart2dDatum, FlChartData, FlChartDataContainer} from './fl-chart-data.class';
 import {FlChartDataWithSerie, FlChartSerie, FlChartSerieWithColor} from './fl-chart-serie.class';
 import {FlChartDomain} from '../fl-chart-domain.class';
 import {FlChartScaleColor} from '../scale/fl-chart-scale-color.class';
 import {FlTagHelper} from '../../../fl-tag/fl-tag.class';
+import {FlChartAxisTickFormat} from '../drawer/fl-chart-axis.class';
 
 /**
  * Object to manage multiple series
@@ -28,6 +29,17 @@ export class FlChartMultiSerie<Data extends FlChartData> implements FlChartDataC
 
   constructor(series: FlChartSerie<Data>[] = []) {
     this.series = series;
+  }
+
+  /**
+   * Method to convert a tick label list to tick format function
+   * @param tickLabels
+   */
+  public static tickLabelsToTickFormat(tickLabels: string[]): FlChartAxisTickFormat {
+    return {
+      format: (value) => tickLabels[value] ?? value.toString(),
+      maxLabelLength: tickLabels.reduce((p, c) => Math.max(p, c?.toString()?.length ?? 0), 0)
+    };
   }
 
   // flatten the data of the series
@@ -98,7 +110,7 @@ export class FlChartMultiSerie<Data extends FlChartData> implements FlChartDataC
    */
   public setXTickLabels(xTickLabels: string[]): void {
     if (xTickLabels) {
-      this.axisXLabelTicksFormat = (value) => (xTickLabels[value] ?? value).toString();
+      this.axisXLabelTicksFormat = FlChart2dMultiSerie.tickLabelsToTickFormat(xTickLabels);
     }
   }
 
@@ -108,7 +120,7 @@ export class FlChartMultiSerie<Data extends FlChartData> implements FlChartDataC
    */
   public setYTickLabels(yTickLabels: string[]): void {
     if (yTickLabels) {
-      this.axisYLabelTicksFormat = (value) => (yTickLabels[value] ?? value).toString();
+      this.axisYLabelTicksFormat = FlChart2dMultiSerie.tickLabelsToTickFormat(yTickLabels);
     }
   }
 

@@ -4,7 +4,7 @@
 export class ClNumberHelper {
 
   /**
-   * convert a string to a number. It support the ',' and scientific notation, it also remove weird character
+   * convert a string to a number. It supports the ',' and scientific notation, it also remove weird character
    * @param str
    * @param defaultValue if provided, it returns the value if we couldn't convert the string to number
    *                      If not provided it returns null

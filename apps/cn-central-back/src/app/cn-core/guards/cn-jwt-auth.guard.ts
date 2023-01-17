@@ -49,7 +49,6 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
     const space = CnCurrentUserHelper.getCurrentSpace();
 
     // if a space is in the context, check if the user is in the space
-    // noinspection RedundantIfStatementJS
     if (space) {
       // consider a G admin as an admin of all spaces
       if (user.isAdmin()) {

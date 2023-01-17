@@ -32,7 +32,6 @@ abstract class FlChartBar extends FlChartConfig {
       .setInitialDomain(this.dataContainer.getDomainXComplete());
     const xAxis: FlChartAxisBand = new FlChartAxisBand('bottom').setScale(xScale)
       .rotateTickText()
-      .setMaxTickLength(FlChartAxisBand.xRotateTickMaxLength)
       .setSmartTickFormat(FlChartAxisBand.tickXRotateWidth, this.dataContainer.axisXLabelTicksFormat)
       .setLabel(this.dataContainer.axisXLabel);
 

@@ -14,6 +14,11 @@ export class FlChartDataBin extends FlChart2dDatum {
     super(x, y);
   }
 
+  // TODO to improve
+  public static getIntervalTextLength(): number {
+    return 25;
+  }
+
 
   addData(): void {
     this.y++;

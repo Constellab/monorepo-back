@@ -3,6 +3,7 @@ import {LabMonitor, LabMonitorBetweenDates} from '../../../model/entities/lab-mo
 import {
   FlChart2dDatum,
   FlChart2dMultiSerie,
+  FlChartAxisTickFormat,
   FlChartLine2d,
   FlChartSerie,
   FlFileHelper,
@@ -146,9 +147,12 @@ export class LabMonitorBetweenDatesComponent implements OnInit {
     return date.toFormat('yyyy-MM-dd HH:mm:ss');
   }
 
-  private getXAxisTickFormat(): (value: number) => string {
-    return (value: number) => {
-      return DateTime.fromMillis(value).toFormat('HH:mm:ss');
+  private getXAxisTickFormat(): FlChartAxisTickFormat {
+    return {
+      format: (value: number) => {
+        return DateTime.fromMillis(value).toFormat('HH:mm:ss');
+      },
+      maxLabelLength: 8
     };
   }
 

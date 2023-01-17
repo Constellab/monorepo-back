@@ -46,11 +46,13 @@ export function rvHistogramToChart(view: RvResourceViewHistogram): FlChartConfig
     series.addSerie(new FlChartSerie(data, viewSerie.name));
   }
 
-
-  // set the axisXRvelFormat but taking the interval text of the first serie
-  series.axisXLabelTicksFormat = (_: number, index: number) => {
-    const dataHisto: FlChartDataBin = series.series[0].data[index];
-    return dataHisto.getIntervalText();
+  // define the axisXLabelFormat
+  series.axisXLabelTicksFormat = {
+    format: (_: number, index: number) => {
+      const dataHisto: FlChartDataBin = series.series[0].data[index];
+      return dataHisto.getIntervalText();
+    },
+    maxLabelLength: FlChartDataBin.getIntervalTextLength()
   };
 
   return new FlChartHistogram(series);

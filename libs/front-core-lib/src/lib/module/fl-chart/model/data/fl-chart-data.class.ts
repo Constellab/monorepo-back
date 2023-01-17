@@ -1,5 +1,3 @@
-export type FlChartAxisTickFormat = (domainValue: number, index: number) => string;
-
 /**
  * Object containing a list of data
  */

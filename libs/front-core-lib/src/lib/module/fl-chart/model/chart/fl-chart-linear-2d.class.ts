@@ -46,6 +46,7 @@ export abstract class FlChartLinear2d extends FlChartConfig {
     const xScale: FlChartScaleLinear = new FlChartScaleNumber()
       .setInitialDomain(this.dataContainer.getDomainXLinear(this.getExtendDomain()));
     const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale)
+      .rotateTickText()
       .setTickFormat(this.dataContainer.axisXLabelTicksFormat)
       .setLabel(this.dataContainer.axisXLabel);
 

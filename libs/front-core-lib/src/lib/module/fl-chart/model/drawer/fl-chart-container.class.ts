@@ -8,6 +8,13 @@ import {
 import {FlChartAxis} from './fl-chart-axis.class';
 import {ClHelpService} from '@monorepo/core-lib';
 
+interface FlChartContainerMargin {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
 /**
  * Chart container, it can contain multiple renderer
  * to be able to show multi chart type in same container
@@ -36,7 +43,7 @@ export abstract class FlChartContainer<Data, Renderer extends FlChartNoAxisRende
     return this;
   }
 
-  protected get margin(): any {
+  protected get margin(): FlChartContainerMargin {
     return {top: 0, right: 0, bottom: 0, left: 0};
   }
 
@@ -69,9 +76,10 @@ export abstract class FlChartContainer<Data, Renderer extends FlChartNoAxisRende
 
   // set the width and height, of the chart rendering element and the axis will be added to the size
   public setChartRendererSize(width: number, height: number): void {
+    const margin = this.margin;
     this.setGroupSize(
-      width + this.margin.left + this.margin.right,
-      height + this.margin.top + this.margin.bottom);
+      width + margin.left + margin.right,
+      height + margin.top + margin.bottom);
   }
 
   protected onSizeChanged(): void {
@@ -84,21 +92,24 @@ export abstract class FlChartContainer<Data, Renderer extends FlChartNoAxisRende
   get groupHeight(): number {
     return this._groupHeight;
   }
+
   get groupWidth(): number {
     return this._groupWidth;
   }
 
   public get chartWidth(): number {
-    return this._groupWidth - this.margin.left - this.margin.right;
+    const margin = this.margin;
+    return this._groupWidth - margin.left - margin.right;
   }
 
   public get chartHeight(): number {
-    return this._groupHeight - this.margin.top - this.margin.bottom;
+    const margin = this.margin;
+    return this._groupHeight - margin.top - margin.bottom;
   }
 }
 
 /**
- * Chart container with 2 axis
+ * Chart container with 2 axis on left and bottom
  */
 export class FlChartContainer2Axis<Data> extends FlChartContainer<Data, FlChart2AxisRenderer<Data>> {
 
@@ -106,20 +117,19 @@ export class FlChartContainer2Axis<Data> extends FlChartContainer<Data, FlChart2
 
   public yAxis: FlChartAxis;
 
-  public zoomTransitionDuration: number = 250;
-
-  protected get margin(): any {
+  protected get margin(): FlChartContainerMargin {
     // set some margin so the legends are included
-    return {top: 20, right: 10, bottom: 100, left: 100};
+    // noinspection JSSuspiciousNameCombination
+    return {top: 20, right: 10, bottom: this.xAxis.getSize(), left: this.yAxis.getSize()};
   }
 
   public initXAxis(axis: FlChartAxis): this {
-    this.xAxis = axis.setZoomDuration(this.zoomTransitionDuration);
+    this.xAxis = axis;
     return this;
   }
 
   public initAxisY(yAxis: FlChartAxis): this {
-    this.yAxis = yAxis.setZoomDuration(this.zoomTransitionDuration);
+    this.yAxis = yAxis;
     return this;
   }
 

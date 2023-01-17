@@ -2,16 +2,17 @@ import {FlChartConfig, FlChartRightSectionConfig} from '../fl-chart-config.class
 import {FlChartContainer, FlChartContainer2Axis} from '../drawer/fl-chart-container.class';
 import {FlChartSVGLegend} from '../legend/fl-chart-legend.class';
 import {FlChartBrush} from '../drawer/fl-chart-brush.class';
-import {FlChart3dDatum, FlChartAxisTickFormat, FlChartDataContainer} from '../data/fl-chart-data.class';
+import {FlChart3dDatum, FlChartDataContainer} from '../data/fl-chart-data.class';
 import {FlChartScaleColor, FlChartScaleColorLinear} from '../scale/fl-chart-scale-color.class';
 import {FlChartDomain} from '../fl-chart-domain.class';
 import {FlChartLegendHeatMap} from '../legend/fl-chart-legend-heat-map.class';
 import {FlChartScaleBand} from '../scale/fl-chart-scale.class';
-import {FlChartAxis, FlChartAxisBand} from '../drawer/fl-chart-axis.class';
+import {FlChartAxis, FlChartAxisBand, FlChartAxisTickFormat} from '../drawer/fl-chart-axis.class';
 import {FlChartRendererHeatMap} from '../../renderer/fl-chart-renderer-heat-map.plot';
 import {
   FlChartLegendHeatMapComponent
 } from '../../component/fl-chart-right-section/fl-chart-legend-heat-map/fl-chart-legend-heat-map.component';
+import {FlChart2dMultiSerie} from '../data/fl-chart-multi-serie.class';
 
 /**
  * Data container for heat map data
@@ -19,8 +20,8 @@ import {
 export class FlChartHeatMapDataContainer implements FlChartDataContainer<FlChart3dDatum> {
 
   // name of the axis
-  axisXLabel: string
-  axisYLabel: string
+  axisXLabel: string;
+  axisYLabel: string;
 
   /**
    * Function to format the x-axis labels
@@ -63,7 +64,7 @@ export class FlChartHeatMapDataContainer implements FlChartDataContainer<FlChart
    */
   public setXTickLabels(xTickLabels: string[]): void {
     if (xTickLabels) {
-      this.axisXLabelFormat = (value) => (xTickLabels[value] ?? value).toString();
+      this.axisXLabelFormat = FlChart2dMultiSerie.tickLabelsToTickFormat(xTickLabels);
     }
   }
 
@@ -73,7 +74,7 @@ export class FlChartHeatMapDataContainer implements FlChartDataContainer<FlChart
    */
   public setYTickLabels(yTickLabels: string[]): void {
     if (yTickLabels) {
-      this.axisYLabelFormat = (value) => (yTickLabels[value] ?? value).toString();
+      this.axisYLabelFormat = FlChart2dMultiSerie.tickLabelsToTickFormat(yTickLabels);
     }
   }
 }
@@ -105,7 +106,6 @@ export class FlChartHeatMap extends FlChartConfig {
       .padding(0.01);
     const xAxis: FlChartAxis = new FlChartAxisBand('bottom').setScale(xScale)
       .setTickFormat(this.dataContainer.axisXLabelFormat)
-      .setMaxTickLength(FlChartAxisBand.xRotateTickMaxLength)
       .rotateTickText()
       .setLabel(this.dataContainer.axisXLabel);
 
@@ -115,7 +115,6 @@ export class FlChartHeatMap extends FlChartConfig {
       .setInitialDomain(this.dataContainer.getDomainYComplete().reverse())
       .padding(0.01);
     const yAxis: FlChartAxisBand = new FlChartAxisBand('left').setScale(yScale)
-      .setMaxTickLength(FlChartAxisBand.yTickMaxLength)
       .setTickFormat(this.dataContainer.axisYLabelFormat)
       .setLabel(this.dataContainer.axisYLabel);
 
