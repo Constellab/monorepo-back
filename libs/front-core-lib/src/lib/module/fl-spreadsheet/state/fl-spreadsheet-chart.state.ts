@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import {FlPortalService} from '../../fl-portal/service/fl-portal.service';
 import {FlPortalConfig} from '../../fl-portal/model/fl-portal-config.class';
 import {FlSheetChartSelectionComponent} from '../component/fl-sheet-chart-selection/fl-sheet-chart-selection.component';
@@ -12,8 +12,10 @@ import {
   FlSpreadsheetChartSelectionInput
 } from '../model/chart/fl-sheet-chart-selection-form.class';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
-import {Observable} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {FlSnackBarService} from '../../fl-snack-bar/fl-snack-bar.service';
+import {FlPortalActionsService} from '../../fl-portal-actions/service/fl-portal-actions.service';
+import {FlPortalActionResult} from '../../fl-portal-actions/model/fl-portal-actions.class';
 
 
 interface SelectionWithOverlay {
@@ -22,18 +24,31 @@ interface SelectionWithOverlay {
 }
 
 @Injectable()
-export class FlSpreadsheetChartState {
+export class FlSpreadsheetChartState implements OnDestroy {
 
   private overlayRef: FlOverlayRef;
 
   // store all the current overlay ref and the corresponding selection
   private currentSelections: Map<symbol, SelectionWithOverlay> = new Map();
 
+  private chartActionName = 'spreadsheet-chart-create';
+
+  private subscription: Subscription;
+
   constructor(private state: FlSpreadsheetState,
               private portalService: FlPortalService,
               private chartPortalService: FlChartPortalService,
               private selectionState: FlSpreadsheetSelectionState,
-              private snackBarService: FlSnackBarService) {
+              private snackBarService: FlSnackBarService,
+              private actionService: FlPortalActionsService) {
+
+    // listen to chart creation actions
+    this.subscription = this.actionService.getResult$(this.chartActionName).subscribe(
+      (action: FlPortalActionResult<FlOverlayRef>) => {
+        if (action.status === 'success') {
+          this.registerPortalOverlay(action.result, action.additionalInformation);
+        }
+      });
   }
 
   public openChartSelectionPortal(selection?: FlSheetChartSelectionForm): void {
@@ -96,9 +111,13 @@ export class FlSpreadsheetChartState {
         this.getContextMenuItem(result.formValue.id));
 
       if (chartOverlay instanceof Observable) {
-        chartOverlay.subscribe(
-          conf => this.registerPortalOverlay(conf, result.formValue)
-        );
+        // call the action service to register the chart creation
+        this.actionService.addAction({
+          type: this.chartActionName,
+          action: chartOverlay,
+          text: {text: 'flSpreadsheet.creating_chart', translateText: true},
+          additionalInformation: result.formValue
+        }, true);
       } else {
         this.registerPortalOverlay(chartOverlay, result.formValue);
       }
@@ -176,4 +195,10 @@ export class FlSpreadsheetChartState {
 
     return menu;
   }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
+  }
+
+
 }
