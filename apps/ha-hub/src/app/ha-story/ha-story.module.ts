@@ -8,18 +8,22 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {HaCustomMaterialModule} from '../ha-core/ha-custom-material/ha-custom-material.module';
 import {HaCoreModule} from '../ha-core/ha-core.module';
 import { HaStoryCreateDialogComponent } from './module/ha-story-create-dialog/ha-story-create-dialog.component';
-import {NgIf} from '@angular/common';
+import {AsyncPipe, NgForOf, NgIf} from '@angular/common';
+import {FlDateModule} from "@monorepo/front-core-lib";
 
 @NgModule({
   declarations: [HaStoryPageComponent, HaStoryEditPageComponent, HaStoryListPageComponent, HaStoryCreateDialogComponent],
-  imports: [
-    HaStoryRoutingModule,
-    HaCustomLibraryModule,
-    ReactiveFormsModule,
-    HaCustomMaterialModule,
-    HaCoreModule,
-    NgIf,
-  ]
+    imports: [
+        HaStoryRoutingModule,
+        HaCustomLibraryModule,
+        ReactiveFormsModule,
+        HaCustomMaterialModule,
+        HaCoreModule,
+        NgIf,
+        AsyncPipe,
+        NgForOf,
+        FlDateModule,
+    ]
 })
 export class HaStoryModule {
 }

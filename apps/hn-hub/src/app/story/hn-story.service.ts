@@ -3,16 +3,30 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {HnStory} from './hn-story.entity';
 import {Repository} from 'typeorm';
 import {HnTopicService} from '../topic/hn-topic.service';
-import {ClPage} from '@monorepo/core-lib';
-import {BlAbstractPaginatedService} from '@monorepo/back-core-lib';
-import {CmRichText} from '@monorepo/common-model';
+import {ClPage, ClStringHelper} from '@monorepo/core-lib';
+import {BlAbstractPaginatedService, BlBucketConfig, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
+import {CmRichText, CmRichTextI, CmRichTextImageCP} from '@monorepo/common-model';
+import imageSize from 'image-size';
+import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
+import {IncomingMessage} from 'http';
+import {ISizeCalculationResult} from 'image-size/dist/types/interface';
+import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
+
+class HnStoryImage {
+  filename: string;
+  width: number;
+  height: number;
+}
 
 @Injectable()
 export class HnStoryService {
 
+
   constructor(@InjectRepository(HnStory)
               private readonly storyRepository: Repository<HnStory>,
               private readonly topicService: HnTopicService,
+              private objectStorageService: BlObjectStorageService,
+              private configService: HnCoreConfigService
   ) {
   }
 
@@ -29,18 +43,106 @@ export class HnStoryService {
 
   async getStories(page: number, size: number): Promise<ClPage<HnStory>> {
     return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+      where: [
+        {
+          createdBy: {
+            id: HnCurrentUserHelper.getCurrentUser().id
+          }
+        }, {
+          status: 1
+        }
+      ],
       order: {createdAt: 'DESC' as any}
     }, this.storyRepository.manager, HnStory);
   }
 
   async getStoriesByTopicId(topicId: string, page: number, size: number): Promise<ClPage<HnStory>> {
     return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
-      where: {
-        topics: {
-          id: topicId
+      where: [
+        {
+          topics: {
+            id: topicId
+          },
+          createdBy: {
+            id: HnCurrentUserHelper.getCurrentUser().id
+          }
+        }, {
+          topics: {
+            id: topicId
+          },
+          status: 1
         }
-      },
+      ],
       order: {createdAt: 'DESC' as any}
     }, this.storyRepository.manager, HnStory);
+  }
+
+  async updateStoryTitle(id: string, title: string): Promise<HnStory> {
+    const story = await this.getStory(id);
+    story.title = title;
+    return this.storyRepository.save(story);
+  }
+
+  async updateStoryContent(id: string, content: CmRichTextI): Promise<HnStory> {
+    const story = await this.getStory(id);
+    story.content = await this.editContent(content);
+    const richText = new CmRichText(content);
+    story.firstParagraph = ClStringHelper.replaceLineBreaksBySpace(richText.getFirstParagraph());
+    story.mainPicture = richText.getFirstFigureLink();
+    return this.storyRepository.save(story);
+  }
+
+  async editContent(content: CmRichTextI): Promise<CmRichTextI> {
+    const imageCP: CmRichTextImageCP[] = CmRichText.getImageCP(content);
+    for (const im of imageCP) {
+      if ('image' in im.insert) {
+        const base64Img: string = im.insert.image.split(',')[1];
+        const imgBuffer: Buffer = new Buffer(base64Img, 'base64');
+        const imgBlFile: BlFile = {
+          buffer: imgBuffer,
+          encoding: null,
+          mimetype: 'image',
+          size: null,
+          originalname: 'any.png'
+        };
+        const imgSize: ISizeCalculationResult = imageSize(imgBuffer);
+        const imgName: string = await this.objectStorageService.uploadObject(
+          this.getBucketConfig(), imgBlFile, true);
+        im.insert = {
+          figure: {
+            filename: imgName,
+            height: imgSize.height,
+            width: imgSize.width,
+            naturalWidth: imgSize.width,
+            naturalHeight: imgSize.height
+          }
+        };
+      }
+    }
+    return content;
+  }
+
+  async saveImage(files: BlFile[]): Promise<any> {
+    const storyImage: HnStoryImage = new HnStoryImage();
+    for (const file of files) {
+      const imSize = imageSize(file.buffer);
+      storyImage.filename = await this.objectStorageService.uploadObject(this.getBucketConfig(), file, true);
+      storyImage.width = imSize.width;
+      storyImage.height = imSize.height;
+    }
+    return storyImage;
+  }
+
+  async getImage(filename: string): Promise<IncomingMessage> {
+    return await this.objectStorageService.getObject(this.getBucketConfig(), filename);
+  }
+
+  private getBucketConfig(): BlBucketConfig {
+    return {
+      endpoint: this.configService.getDefaultObjectStorageEndPoint(),
+      region: this.configService.getDefaultObjectStorageRegion(),
+      bucket: this.configService.getStoryImageObjectStorageBucket(),
+      credentials: this.configService.getDefaultObjectStorageCredentials()
+    };
   }
 }

@@ -78,6 +78,10 @@ export class HnCoreConfigService {
     return this.isProduction() ? 'hub-documentation-prod' : 'hub-documentation-pre-prod';
   }
 
+  public getStoryImageObjectStorageBucket(): string {
+    return this.isProduction() ? 'community-stories-prod' : 'community-stories-pre-prod';
+  }
+
   public getFrontRootUrl(): string {
     let res: string;
     switch (this.getEnvironmentProfile()) {

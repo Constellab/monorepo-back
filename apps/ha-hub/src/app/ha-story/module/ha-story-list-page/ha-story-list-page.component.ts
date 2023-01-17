@@ -4,8 +4,9 @@ import {
   HaCreateStoryDtoInput,
   HaStoryCreateDialogComponent
 } from '../ha-story-create-dialog/ha-story-create-dialog.component';
-import {HaStory} from '../../../ha-core/ha-model/ha-entities/ha-story.class';
+import {HaStory, HaStoryDatasourcePaginated} from '../../../ha-core/ha-model/ha-entities/ha-story.class';
 import {Router} from '@angular/router';
+import {HaStoryService} from '../../../ha-core/ha-service/ha-story.service';
 
 @Component({
   selector: 'ha-ha-story-list-page',
@@ -14,10 +15,15 @@ import {Router} from '@angular/router';
 })
 export class HaStoryListPageComponent implements OnInit {
 
+
+  stories: HaStoryDatasourcePaginated;
+
   constructor(private dialogService: FlDialogService,
-              private router: Router) { }
+              private router: Router,
+              private storyService: HaStoryService) { }
 
   ngOnInit(): void {
+    this.stories = this.storyService.getAllPaginated();
   }
 
 
@@ -29,8 +35,12 @@ export class HaStoryListPageComponent implements OnInit {
 
     this.dialogService.openSmallDialog(HaStoryCreateDialogComponent, {data: input}).afterClosed().subscribe((story: HaStory) => {
       if (story){
-        this.router.navigate(['/edit/', story.id]);
+        this.router.navigate(['stories/edit/', story.id]);
       }
     });
+  }
+
+  getStoryImageLink(imageName: string): string{
+    return this.storyService.getImageUrl(imageName);
   }
 }

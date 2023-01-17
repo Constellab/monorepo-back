@@ -1,9 +1,23 @@
-import {Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Query} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Query, Res, UploadedFiles,
+  UseInterceptors
+} from '@nestjs/common';
 import {HnStoryService} from './hn-story.service';
-import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
+import {BlFile, BlParsePipe, BlPublic, BlResponseHelper} from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
 import {HnStory} from './hn-story.entity';
 import {HnCreateStoryDto} from './hn-story.dto';
+import {CmRichTextI} from '@monorepo/common-model';
+import {FilesInterceptor} from '@nestjs/platform-express';
+import {Response} from 'express';
 
 @Controller('story')
 export class HnStoryController {
@@ -34,6 +48,32 @@ export class HnStoryController {
   @Post()
   async createStory(@Body(new BlParsePipe(HnCreateStoryDto)) createStoryDto: HnCreateStoryDto): Promise<HnStory> {
     return this.storyService.createStory(createStoryDto.title);
+  }
+
+  @Put(':id/title')
+  async updateStoryTitle(@Param('id', new ParseUUIDPipe()) id: string,
+                          @Body('title') title: string): Promise<HnStory> {
+    return this.storyService.updateStoryTitle(id, title);
+  }
+
+  @Put(':id/content')
+  async updateStoryContent(@Param('id', new ParseUUIDPipe()) id: string,
+                            @Body('content') content: CmRichTextI): Promise<HnStory> {
+    return this.storyService.updateStoryContent(id, content);
+  }
+
+  @UseInterceptors(FilesInterceptor('file'))
+  @Put('image')
+  saveImage(@UploadedFiles() files: BlFile[]): Promise<any>{
+    return this.storyService.saveImage(files);
+  }
+
+  @BlPublic()
+  @Get('image/:filename')
+  async getImage(@Param('filename') filename: string,
+           @Res() response: Response): Promise<any> {
+    const file = await this.storyService.getImage(filename);
+    BlResponseHelper.setMessageAndCache(response, file);
   }
 
 }

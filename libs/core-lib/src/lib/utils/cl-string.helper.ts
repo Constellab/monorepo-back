@@ -232,4 +232,17 @@ export class ClStringHelper {
 
     return str;
   }
+
+  /**
+   * Return the string with line breaks replaced by a point with a space
+   */
+  public static replaceLineBreaksBySpace(str: string): string {
+    if (str == null) return null;
+
+    str = str.replace(/(?:\r\n|\r|\n)/g, ' ');
+
+
+
+    return str;
+  }
 }

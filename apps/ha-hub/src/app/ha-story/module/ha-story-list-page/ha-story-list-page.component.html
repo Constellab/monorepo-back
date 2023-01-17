@@ -1,4 +1,28 @@
-<button mat-flat-button color="primary" (click)="openCreateDocDialog()" *haIsAdmin class="button-create">
-  {{'create' | translate}}
-  <mat-icon>add</mat-icon>
-</button>
+<div class="main-container">
+
+  <div class="left-side-div">
+
+  </div>
+
+  <div class="stories-div">
+    <h1>{{'stories' | translate}}</h1>
+    <div class="stories-list">
+      <a class="story" *ngFor="let story of stories?.connect() | async" [routerLink]="story.id">
+        <div class="story-content">
+          <h5>{{story.title}}</h5>
+          <p>{{story.firstParagraph}}</p>
+          <fl-user-inline [user]="story.createdBy" class="small-text"></fl-user-inline>
+          <p class="small-text">{{story.createdAt | flDate:'DATETIME_MED'}}</p>
+        </div>
+        <img *ngIf="story.mainPicture && story.mainPicture.length > 0" [src]="getStoryImageLink(story.mainPicture)" class="story-image"/>
+      </a>
+    </div>
+  </div>
+
+  <div class="right-side-div">
+    <button mat-flat-button type="button" class="create-story-bt" *haIsAdmin (click)="openCreateDocDialog()">
+      <mat-icon >add_circle</mat-icon>
+      {{'create_story' | translate}}
+    </button>
+  </div>
+</div>

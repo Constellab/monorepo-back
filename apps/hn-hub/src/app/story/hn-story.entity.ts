@@ -5,8 +5,8 @@ import {HnTopic} from '../topic/hn-topic.entity';
 import {JoinTable} from 'typeorm';
 
 export enum HnStoryStatus{
-  DRAFT = 'DRAFT',
-  PUBLISHED = 'PUBLISHED',
+  DRAFT = 0,
+  PUBLISHED = 1,
 }
 
 @Entity('Story')
@@ -16,6 +16,9 @@ export class HnStory extends HnBaseEntity {
 
   @Column({name: 'content', type: 'simple-json'})
   content: Record<string, any> = CmRichText.newRichText();
+
+  @Column({nullable: true, type:'varchar'})
+  firstParagraph?: string;
 
   @Column({nullable: true})
   mainPicture?: string;

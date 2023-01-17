@@ -12,7 +12,7 @@
           <mat-icon *ngIf="brick.visibility === 'public'" matTooltip="{{'public_brick' | translate}}">
             public
           </mat-icon>
-          <h2 class="brick-name">{{brick.name}}</h2>
+          <h4 class="brick-name">{{brick.name}}</h4>
           <fl-text-icon iconPosition="end" gap="0.2em"><mat-icon
             class="mat-primary">check</mat-icon>Verified
           </fl-text-icon>
@@ -42,7 +42,7 @@
     </div>
   </div>
   <div class="right-side-div side-description-div">
-    <h2>{{'technical_information' | translate}}</h2>
+    <h4>{{'technical_information' | translate}}</h4>
     <br *ngIf="brick.gitRepo && isAdmin">
     <fl-key-value *ngIf="brick.gitRepo && isAdmin">
       <fl-key>{{'repo_git' | translate}}</fl-key>

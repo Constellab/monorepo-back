@@ -1,0 +1,30 @@
+<div class="main-div g-max-article-width" *ngIf="story">
+  <div class="top-div">
+    <div class="inputs-div">
+      <mat-form-field class="form-field">
+        <mat-label>{{'title' | translate}}</mat-label>
+        <input matInput flInputMaxLength="100" [placeholder]="'title' | translate" (input)="onTitleChange($event)"
+               [value]="story.title">
+        <mat-icon matSuffix *ngIf="titleChange" (click)="saveTitle()">save</mat-icon>
+        <mat-error *ngIf="!inputTitle || inputTitle.length === 0">{{'title' | flErrorRequired}}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="form-field">
+        <mat-label>{{'title' | translate}}</mat-label>
+        <input matInput flInputMaxLength="100" [placeholder]="'title' | translate" (input)="onTitleChange($event)"
+               [value]="story.title">
+        <mat-icon matSuffix *ngIf="titleChange" (click)="saveTitle()">save</mat-icon>
+        <mat-error *ngIf="!inputTitle || inputTitle.length === 0">{{'title' | flErrorRequired}}</mat-error>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <form class="story-content-form" [formGroup]="formGp" id="story-content-form" [ngClass]="contentEditorIsFocused ? ['focus'] : []">
+    <fl-text-editor class="content-editor g-max-article-width" mode="JSON" scrollContainer="auto"
+                    formControlName="content"
+                    [config]="textEditorConfig" (textChange)="onContentUpdate($event)" [noPadding]="true"
+                    (focusin)="onFocus($event)" (focusout)="onUnFocus($event)">
+    </fl-text-editor>
+  </form>
+
+</div>

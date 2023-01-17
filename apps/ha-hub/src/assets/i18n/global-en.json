@@ -80,5 +80,6 @@
   "identity": "Identity",
   "view": "View",
   "create_story": "Create Story",
-  "story_created": "Story created"
+  "story_created": "Story created",
+  "stories": "Stories"
 }

@@ -234,6 +234,42 @@ export class CmRichText {
   }
 
 
+  // Get the first paragraph of the content
+  public getFirstParagraph(size:number=100): string {
+    const content: CmRichTextI = this.getContent();
+    let firstParagraph = '';
+    if (content.ops) {
+      for (const op of content.ops) {
+        if (op.insert) {
+          if (typeof op.insert === 'string' || op.insert instanceof String) {
+            if (firstParagraph.length < size) {
+              firstParagraph += op.insert;
+            } else {
+              break;
+            }
+          }
+        }
+
+      }
+    }
+    return firstParagraph.slice(0, size);
+  }
+
+  // Get the first figure link of the content
+  public getFirstFigureLink(): string {
+    const content: CmRichTextI = this.getContent();
+    let firstPictureLink = '';
+    if (content.ops) {
+      for (const op of content.ops) {
+        if (op.insert && op.insert.figure && op.insert.figure.filename) {
+          firstPictureLink = op.insert.figure.filename;
+          break;
+        }
+      }
+    }
+    return firstPictureLink;
+  }
+
   ///////////////////////////////////// FIGURE ///////////////////////////////////////////////
 
 

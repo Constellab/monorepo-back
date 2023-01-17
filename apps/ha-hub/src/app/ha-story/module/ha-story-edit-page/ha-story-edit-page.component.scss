@@ -1,0 +1,46 @@
+.main-div {
+  margin: 0 auto;
+}
+
+.top-div{
+  display: flex;
+}
+
+.inputs-div{
+  width: 65%;
+  padding-right: 5%;
+}
+
+.form-field{
+  width: 100%;
+}
+
+.content-form-field{
+  width: 100%;
+}
+
+.story-content-form{
+  border: 1px solid var(--hover-color);
+  margin: auto;
+  padding: 0 0.75em;
+  transition: 0.2s;
+  border-radius: 0.5em;
+}
+
+.story-content-form:hover{
+  border: 1px solid var(--color-foreground);
+}
+
+.content-editor{
+  border: none;
+  min-height: 40em;
+}
+
+.focus{
+  transition: 0s !important;
+  border: 1px solid var(--primary-color) !important;
+}
+
+//*{
+//  outline: 1px red solid;
+//}
