@@ -9,6 +9,6 @@ export class HnTopic extends BlEntityWithId {
   @Column()
   name: string;
 
-  @ManyToMany(() => HnStory, story => story.topics)
-  stories: HnStory[];
+  @ManyToMany(() => HnStory, story => story.topics, {nullable: true})
+  stories?: HnStory[];
 }

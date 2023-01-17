@@ -78,5 +78,7 @@
   "created_by": "Créé par",
   "email": "Email",
   "identity": "Identité",
-  "view": "Voir"
+  "view": "Voir",
+  "create_story": "Créer une Story",
+  "story_created": "Story créée"
 }

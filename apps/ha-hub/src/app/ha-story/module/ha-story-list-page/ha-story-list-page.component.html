@@ -1,1 +1,4 @@
-<p>ha-story-list-page works!</p>
+<button mat-flat-button color="primary" (click)="openCreateDocDialog()" *haIsAdmin class="button-create">
+  {{'create' | translate}}
+  <mat-icon>add</mat-icon>
+</button>

@@ -78,5 +78,7 @@
   "created_by": "Created by",
   "email": "Email",
   "identity": "Identity",
-  "view": "View"
+  "view": "View",
+  "create_story": "Create Story",
+  "story_created": "Story created"
 }

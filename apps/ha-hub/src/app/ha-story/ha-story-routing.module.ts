@@ -10,7 +10,7 @@ const routes: Route[] = [
     component: HaStoryListPageComponent,
   },
   {
-    path: 'edit',
+    path: 'edit/:id',
     component: HaStoryEditPageComponent
   },
   {

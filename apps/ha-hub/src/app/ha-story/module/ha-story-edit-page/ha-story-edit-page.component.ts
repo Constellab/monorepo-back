@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {HaStoryService} from '../../../ha-core/ha-service/ha-story.service';
 
 @Component({
   selector: 'ha-ha-story-edit-page',
@@ -7,9 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HaStoryEditPageComponent implements OnInit {
 
-  constructor() { }
+
+  constructor(
+    private storyService: HaStoryService
+  ) {
+  }
 
   ngOnInit(): void {
+
   }
 
 }
