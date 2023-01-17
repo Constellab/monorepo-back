@@ -3,7 +3,7 @@ import {LabMonitor, LabMonitorBetweenDates} from '../../../model/entities/lab-mo
 import {
   FlChart2dDatum,
   FlChart2dMultiSerie,
-  FlChartAxisTickFormat,
+  FlChartLabelFormatter,
   FlChartLine2d,
   FlChartSerie,
   FlFileHelper,
@@ -50,38 +50,35 @@ export class LabMonitorBetweenDatesComponent implements OnInit {
     series.addSerie(this.getSwapPercentSeries());
 
     // Set x ticks to date format
-    series.axisXLabelTicksFormat = this.getXAxisTickFormat();
+    series.axisXLabelTicksFormatter = this.getXAxisTickFormat();
     this.mainChart = new FlChartLine2d(series);
   }
 
   private getCpuPercentSeries(): FlChartSerie<FlChart2dDatum> {
     const data = this.monitor.monitors.map((monitor) => {
       return new FlChart2dDatum(monitor.createdAt.valueOf(),
-        monitor.cpuPercent, this.formatX(monitor.createdAt));
+        monitor.cpuPercent);
     });
     return new FlChartSerie(data, this.translateService.translate('monitoring.cpu_usage'));
   }
 
   private getDiskPercentSeries(): FlChartSerie<FlChart2dDatum> {
     const data = this.monitor.monitors.map((monitor) => {
-      return new FlChart2dDatum(monitor.createdAt.valueOf(), monitor.diskUsagePercent,
-        this.formatX(monitor.createdAt));
+      return new FlChart2dDatum(monitor.createdAt.valueOf(), monitor.diskUsagePercent);
     });
     return new FlChartSerie(data, this.translateService.translate('monitoring.disk_usage'));
   }
 
   private getRamPercentSeries(): FlChartSerie<FlChart2dDatum> {
     const data = this.monitor.monitors.map((monitor) => {
-      return new FlChart2dDatum(monitor.createdAt.valueOf(), monitor.ramUsagePercent,
-        this.formatX(monitor.createdAt));
+      return new FlChart2dDatum(monitor.createdAt.valueOf(), monitor.ramUsagePercent);
     });
     return new FlChartSerie(data, this.translateService.translate('monitoring.memory_usage'));
   }
 
   private getSwapPercentSeries(): FlChartSerie<FlChart2dDatum> {
     const data = this.monitor.monitors.map((monitor) => {
-      return new FlChart2dDatum(monitor.createdAt.valueOf(), monitor.swapMemoryPercent,
-        this.formatX(monitor.createdAt));
+      return new FlChart2dDatum(monitor.createdAt.valueOf(), monitor.swapMemoryPercent);
     });
     return new FlChartSerie(data, this.translateService.translate('monitoring.swap_usage'));
   }
@@ -98,7 +95,7 @@ export class LabMonitorBetweenDatesComponent implements OnInit {
     }
 
     // Set x ticks to date format
-    series.axisXLabelTicksFormat = this.getXAxisTickFormat();
+    series.axisXLabelTicksFormatter = this.getXAxisTickFormat();
 
     this.allCpuChart = new FlChartLine2d(series);
   }
@@ -106,8 +103,7 @@ export class LabMonitorBetweenDatesComponent implements OnInit {
   private getCpuDetailPercentSeries(cpuIndex: number): FlChartSerie<FlChart2dDatum> {
     const data = this.monitor.monitors.map((monitor) => {
       return new FlChart2dDatum(monitor.createdAt.valueOf(),
-        monitor.data.allCpuPercent[cpuIndex] ?? 0,
-        this.formatX(monitor.createdAt));
+        monitor.data.allCpuPercent[cpuIndex] ?? 0);
     });
     return new FlChartSerie(data, `CPU ${cpuIndex} (%)`);
   }
@@ -118,9 +114,7 @@ export class LabMonitorBetweenDatesComponent implements OnInit {
     // in network
     const data = this.monitor.monitors.map((monitor) => {
       return new FlChart2dDatum(monitor.createdAt.valueOf(),
-        (monitor.netIoBytesRecv ?? 0) / 1024 / 1024,
-        this.formatX(monitor.createdAt),
-        FlFileHelper.getFileSizeText(monitor.netIoBytesSent));
+        (monitor.netIoBytesRecv ?? 0) / 1024 / 1024);
     });
     series.addSerie(new FlChartSerie(data,
       this.translateService.translate('monitoring.network_in_mb')));
@@ -129,31 +123,30 @@ export class LabMonitorBetweenDatesComponent implements OnInit {
     // out network
     const data2 = this.monitor.monitors.map((monitor) => {
       return new FlChart2dDatum(monitor.createdAt.valueOf(),
-        (monitor.netIoBytesSent ?? 0) / 1024 / 1024,
-        this.formatX(monitor.createdAt),
-        FlFileHelper.getFileSizeText(monitor.netIoBytesSent));
+        (monitor.netIoBytesSent ?? 0) / 1024 / 1024);
     });
 
     series.addSerie(new FlChartSerie(data2,
       this.translateService.translate('monitoring.network_out_mb')));
 
-    // Set x ticks to date format
-    series.axisXLabelTicksFormat = this.getXAxisTickFormat();
+    // Set tick formatter
+    series.axisXLabelTicksFormatter = this.getXAxisTickFormat();
+    series.axisYLabelTicksFormatter = new FlChartLabelFormatter(
+      (value: number) => FlFileHelper.getFileSizeText(value),
+      10
+    );
+
 
     this.networkChart = new FlChartLine2d(series);
   }
 
-  private formatX(date: DateTime): string {
-    return date.toFormat('yyyy-MM-dd HH:mm:ss');
-  }
 
-  private getXAxisTickFormat(): FlChartAxisTickFormat {
-    return {
-      format: (value: number) => {
-        return DateTime.fromMillis(value).toFormat('HH:mm:ss');
-      },
-      maxLabelLength: 8
-    };
+  private getXAxisTickFormat(): FlChartLabelFormatter {
+    return new FlChartLabelFormatter(
+      (value: number) => DateTime.fromMillis(value).toFormat('HH:mm:ss'),
+      8,
+      (value: number) => DateTime.fromMillis(value).toFormat('yyyy-MM-dd HH:mm:ss')
+    );
   }
 
 }

@@ -12,6 +12,7 @@ import {FlChartMultiSerie} from '../model/data/fl-chart-multi-serie.class';
 import {FlChartColorFunction} from '../model/scale/fl-chart-scale-color.class';
 import {FlTagColorer} from '../../fl-tag/fl-tag-colorer.class';
 import {FlTagWithColor} from '../../fl-tag/fl-tag.class';
+import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 
 
 export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlChartMultiSerie<FlChartBoxPlotData>,
@@ -154,7 +155,7 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
   private onSelectedTagUpdate(selectedTags: FlTagWithColor[]): void {
     if (selectedTags.length > 0) {
       const colorFunction: (d: FlChartDataWithSerie<FlChartBoxPlotData>) => string = (d: FlChartDataWithSerie<FlChartBoxPlotData>) => {
-        return FlTagColorer.getObjectColor(d.data.tags, selectedTags);
+        return FlTagColorer.getObjectColor(d.data.tags, selectedTags, FlColorHelper.transparentBlack);
       };
       this.setColorFunction(colorFunction);
     } else {

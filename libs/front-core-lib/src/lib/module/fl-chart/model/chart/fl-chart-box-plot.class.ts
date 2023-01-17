@@ -40,7 +40,7 @@ export class FlChartBoxPlot extends FlChartConfig {
       .paddingOuter(0.3);
     const xAxis: FlChartAxis = new FlChartAxisBand('bottom').setScale(xScale)
       .rotateTickText()
-      .setSmartTickFormat(FlChartAxisBand.tickXRotateWidth, this.dataContainer.axisXLabelTicksFormat)
+      .setSmartTickFormat(FlChartAxisBand.tickXRotateWidth, this.dataContainer.axisXLabelTicksFormatter)
       .setLabel(this.dataContainer.axisXLabel);
 
 

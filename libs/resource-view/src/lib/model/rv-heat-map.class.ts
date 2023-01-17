@@ -37,7 +37,7 @@ export function rvHeatMapToChart(view: RvResourceViewHeatMap): FlChartConfig {
     for (let row = 0; row < viewData[column].length; row++) {
       const rowInfo: RvResourceViewHeaderMapHeader = view.data.rows ? view.data.rows[row] : {name: row.toString(), tags: {}}
       const value = ClNumberHelper.fromString(viewData[column][row], null);
-      const datum = new FlChart3dDatum(column, row, value, columnInfo.name, rowInfo.name);
+      const datum = new FlChart3dDatum(column, row, value);
       datum.tags = Object.assign({}, columnInfo.tags, rowInfo.tags)
 
       data.push(datum)

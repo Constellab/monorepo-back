@@ -3,11 +3,15 @@ import {FL_PORTAL_DATA} from '../../../../fl-portal/model/fl-portal.class';
 import {FlChartDataWithSerie} from '../../../model/data/fl-chart-serie.class';
 import {FlChart2dDatum} from '../../../model/data/fl-chart-data.class';
 import {FlTagColorer} from '../../../../fl-tag/fl-tag-colorer.class';
+import {FlOverlayRef} from '../../../../fl-portal/model/fl-overlay-ref.class';
+import {FlChartLabelFormatter} from '../../../model/fl-chart-label-formatter.class';
 
 export interface FlChartDataWithSeriePortalInput {
   data: FlChartDataWithSerie<FlChart2dDatum>;
   color: string;
   tagColorer?: FlTagColorer;
+  xLabelFormatter: FlChartLabelFormatter;
+  yLabelFormatter: FlChartLabelFormatter;
 }
 
 /**
@@ -26,13 +30,28 @@ export class FlChartDataWithSeriePortalComponent implements OnInit {
   color: string;
   tagColorer?: FlTagColorer;
 
-  constructor(@Inject(FL_PORTAL_DATA) input: FlChartDataWithSeriePortalInput) {
+  x: number;
+  y: number;
+
+  xLabelFormatter: FlChartLabelFormatter;
+  yLabelFormatter: FlChartLabelFormatter;
+
+  constructor(@Inject(FL_PORTAL_DATA) input: FlChartDataWithSeriePortalInput,
+              private overlayRef: FlOverlayRef) {
     this.data = input.data;
     this.color = input.color;
     this.tagColorer = input.tagColorer;
+    this.x = this.data.data.getX();
+    this.y = this.data.data.getY();
+    this.xLabelFormatter = input.xLabelFormatter;
+    this.yLabelFormatter = input.yLabelFormatter;
   }
 
   ngOnInit(): void {
+  }
+
+  closePortal(): void {
+    this.overlayRef.dispose();
   }
 
 }

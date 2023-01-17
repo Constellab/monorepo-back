@@ -14,7 +14,8 @@ export class FlTagColorer {
 
   private tags$: BehaviorSubject<FlTagColorWithSelection[]>;
 
-  constructor(tagsColors: FlTagWithColor[], private colors: string[]) {
+  constructor(tagsColors: FlTagWithColor[], private colors: string[],
+              private defaultColor: string = 'black') {
     this.tags$ = new BehaviorSubject(this.tagsWithColorToTagsWithSelection(tagsColors));
   }
 
@@ -75,37 +76,37 @@ export class FlTagColorer {
     return this.tags$.asObservable();
   }
 
-  public getTagColor(tags: FlTag, defaultColor: string = 'black'): string {
-    return this.getTagColorFromTag(tags, this.tags$.value, defaultColor);
+  public getTagColor(tags: FlTag): string {
+    return this.getTagColorFromTag(tags, this.tags$.value);
   }
 
 
-  public getTagColor$(tags: FlTag, defaultColor: string = 'black'): Observable<string> {
-    return this.tags$.pipe(map(tagColors => this.getTagColorFromTag(tags, tagColors, defaultColor)));
+  public getTagColor$(tags: FlTag): Observable<string> {
+    return this.tags$.pipe(map(tagColors => this.getTagColorFromTag(tags, tagColors)));
   }
 
-  public getSelectedTagColor$(tags: FlTag, defaultColor: string = 'black'): Observable<string> {
+  public getSelectedTagColor$(tags: FlTag): Observable<string> {
     return this.getSelectedTags$().pipe(
-      map((tagColors) => this.getTagColorFromTag(tags, tagColors, defaultColor))
+      map((tagColors) => this.getTagColorFromTag(tags, tagColors))
     );
   }
 
-  private getTagColorFromTag(tag: FlTag, tagColors: FlTagWithColor[], defaultColor: string = 'black'): string {
+  private getTagColorFromTag(tag: FlTag, tagColors: FlTagWithColor[]): string {
     const tagColor = tagColors.find(t => tag.key === t.key && tag.value === t.value);
     // if the key value has a color, return it
     if (tagColor) {
       return tagColor.color;
     }
 
-    return defaultColor;
+    return this.defaultColor;
   }
 
-  public getTaggedObjectColor(tags: Record<string, string>, defaultColor: string = 'black'): string {
-    return FlTagColorer.getObjectColor(tags, this.tags$.value, defaultColor);
+  public getTaggedObjectColor(tags: Record<string, string>): string {
+    return FlTagColorer.getObjectColor(tags, this.tags$.value, this.defaultColor);
   }
 
-  public getTaggedObjectColor$(tags: Record<string, string>, defaultColor: string = 'black'): Observable<string> {
-    return this.tags$.pipe(map(tagColors => FlTagColorer.getObjectColor(tags, tagColors, defaultColor)));
+  public getTaggedObjectColor$(tags: Record<string, string>): Observable<string> {
+    return this.tags$.pipe(map(tagColors => FlTagColorer.getObjectColor(tags, tagColors, this.defaultColor)));
   }
 
   /**

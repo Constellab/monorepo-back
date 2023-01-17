@@ -4,7 +4,11 @@ import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
 import {flRootInjector} from '../../../../utils/fl-root-injector';
 import {FlRelativeOverlayConfig} from '../../../fl-portal/model/fl-portal.class';
 import {FlPortalConfig} from '../../../fl-portal/model/fl-portal-config.class';
-import {NgZone, RendererFactory2} from '@angular/core';
+import {NgZone} from '@angular/core';
+import {
+  FlChartDataWithSeriePortalComponent,
+  FlChartDataWithSeriePortalInput
+} from '../../component/fl-chart-data-portal/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
 
 /**
  * Used to opening and closing portal
@@ -18,10 +22,12 @@ export class FlChartPortalHandler {
 
   private clickListener: () => void;
 
-  public openPortal(element: Element, component: ComponentType<any>, data: any): void {
-
-    this.closePortal(true);
-    this.portalFixed = false;
+  public openPortal(element: Element, component: ComponentType<any>, data: any,
+                    fixPortal: boolean = false): void {
+    // close the existing portal unless existing portal is fixed and new portal is not
+    this.closePortal(fixPortal);
+    if (this.currentHoverOverlay != null) return;
+    this.portalFixed = fixPortal;
 
     const portalService: FlPortalService = flRootInjector.get(FlPortalService);
     const ngZone: NgZone = flRootInjector.get(NgZone);
@@ -52,21 +58,10 @@ export class FlChartPortalHandler {
     });
   }
 
-  /**
-   * Fix the portal. Once fixed, the portal will only be close if closeFixedPortal is set to true when closing
-   * or the user click elsewhere
-   */
-  public fixPortal(): void {
-    this.portalFixed = true;
-    const rendererFactory: RendererFactory2 = flRootInjector.get(RendererFactory2);
-    const renderer = rendererFactory.createRenderer(null, null);
-
-    // use a timeout before adding the click listener, otherwise it closes it directly
-    setTimeout(() => {
-      this.clickListener = renderer.listen('body', 'click', () => {
-        this.closePortal(true);
-      });
-    }, 0);
+  public openDataWithSeriePortal(element: Element, data: FlChartDataWithSeriePortalInput,
+                                 fixPortal: boolean = false): void {
+    // create the portal
+    this.openPortal(element, FlChartDataWithSeriePortalComponent, data, fixPortal);
   }
 
   public closePortal(closeFixedPortal: boolean = false): void {
@@ -79,5 +74,7 @@ export class FlChartPortalHandler {
     if (this.clickListener) {
       this.clickListener();
     }
+    this.currentHoverOverlay = null;
+    this.portalFixed = false;
   }
 }

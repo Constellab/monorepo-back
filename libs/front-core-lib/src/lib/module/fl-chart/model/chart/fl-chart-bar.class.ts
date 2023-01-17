@@ -27,12 +27,17 @@ abstract class FlChartBar extends FlChartConfig {
   getChartContainer(): FlChartContainer<any> {
     const chartContainer: FlChartContainer2Axis<FlChart2dMultiSerie<any>> = new FlChartContainer2Axis();
 
+    for(const serie of this.dataContainer.series) {
+      for(let i = 0; i < serie.data.length; i++) {
+        serie.data[i].y = serie.data[i].y * 100000;
+      }
+    }
     // build the x-axis and scale based on ScaleBand
     const xScale: FlChartScaleBand = new FlChartScaleBand()
       .setInitialDomain(this.dataContainer.getDomainXComplete());
     const xAxis: FlChartAxisBand = new FlChartAxisBand('bottom').setScale(xScale)
       .rotateTickText()
-      .setSmartTickFormat(FlChartAxisBand.tickXRotateWidth, this.dataContainer.axisXLabelTicksFormat)
+      .setSmartTickFormat(FlChartAxisBand.tickXRotateWidth, this.dataContainer.axisXLabelTicksFormatter)
       .setLabel(this.dataContainer.axisXLabel);
 
 

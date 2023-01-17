@@ -7,12 +7,12 @@ import {FlChartScaleColor, FlChartScaleColorLinear} from '../scale/fl-chart-scal
 import {FlChartDomain} from '../fl-chart-domain.class';
 import {FlChartLegendHeatMap} from '../legend/fl-chart-legend-heat-map.class';
 import {FlChartScaleBand} from '../scale/fl-chart-scale.class';
-import {FlChartAxis, FlChartAxisBand, FlChartAxisTickFormat} from '../drawer/fl-chart-axis.class';
+import {FlChartAxis, FlChartAxisBand} from '../drawer/fl-chart-axis.class';
 import {FlChartRendererHeatMap} from '../../renderer/fl-chart-renderer-heat-map.plot';
 import {
   FlChartLegendHeatMapComponent
 } from '../../component/fl-chart-right-section/fl-chart-legend-heat-map/fl-chart-legend-heat-map.component';
-import {FlChart2dMultiSerie} from '../data/fl-chart-multi-serie.class';
+import {FlChartLabelFormatter} from '../fl-chart-label-formatter.class';
 
 /**
  * Data container for heat map data
@@ -26,12 +26,12 @@ export class FlChartHeatMapDataContainer implements FlChartDataContainer<FlChart
   /**
    * Function to format the x-axis labels
    */
-  axisXLabelFormat: FlChartAxisTickFormat | null;
+  axisXLabelFormat: FlChartLabelFormatter | null;
 
   /**
    * Function to format the y-axis labels
    */
-  axisYLabelFormat: FlChartAxisTickFormat | null;
+  axisYLabelFormat: FlChartLabelFormatter | null;
 
   constructor(private data: FlChart3dDatum[][]) {
   }
@@ -64,7 +64,7 @@ export class FlChartHeatMapDataContainer implements FlChartDataContainer<FlChart
    */
   public setXTickLabels(xTickLabels: string[]): void {
     if (xTickLabels) {
-      this.axisXLabelFormat = FlChart2dMultiSerie.tickLabelsToTickFormat(xTickLabels);
+      this.axisXLabelFormat = FlChartLabelFormatter.fromTickLabels(xTickLabels);
     }
   }
 
@@ -74,7 +74,7 @@ export class FlChartHeatMapDataContainer implements FlChartDataContainer<FlChart
    */
   public setYTickLabels(yTickLabels: string[]): void {
     if (yTickLabels) {
-      this.axisYLabelFormat = FlChart2dMultiSerie.tickLabelsToTickFormat(yTickLabels);
+      this.axisYLabelFormat = FlChartLabelFormatter.fromTickLabels(yTickLabels);
     }
   }
 }
@@ -105,7 +105,7 @@ export class FlChartHeatMap extends FlChartConfig {
       .setInitialDomain(this.dataContainer.getDomainXComplete())
       .padding(0.01);
     const xAxis: FlChartAxis = new FlChartAxisBand('bottom').setScale(xScale)
-      .setTickFormat(this.dataContainer.axisXLabelFormat)
+      .setTickFormatter(this.dataContainer.axisXLabelFormat)
       .rotateTickText()
       .setLabel(this.dataContainer.axisXLabel);
 
@@ -115,7 +115,7 @@ export class FlChartHeatMap extends FlChartConfig {
       .setInitialDomain(this.dataContainer.getDomainYComplete().reverse())
       .padding(0.01);
     const yAxis: FlChartAxisBand = new FlChartAxisBand('left').setScale(yScale)
-      .setTickFormat(this.dataContainer.axisYLabelFormat)
+      .setTickFormatter(this.dataContainer.axisYLabelFormat)
       .setLabel(this.dataContainer.axisYLabel);
 
     const chartContainer: FlChartContainer2Axis<FlChartHeatMapDataContainer> =

@@ -3,7 +3,8 @@ import {FlChartScaleBand} from '../model/scale/fl-chart-scale.class';
 import {FlChart3dDatum} from '../model/data/fl-chart-data.class';
 import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-handler.class';
 import {
-  FlChartHeatMapDataPortalComponent
+  FlChartHeatMapDataPortalComponent,
+  FlChartHeatMapDataPortalInput
 } from '../component/fl-chart-data-portal/fl-chart-heat-map-data-portal/fl-chart-heat-map-data-portal.component';
 import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 import {FlChartHeatMapDataContainer} from '../model/chart/fl-chart-heat-map.class';
@@ -27,6 +28,7 @@ export class FlChartRendererHeatMap extends FlChart2AxisRenderer<FlChartHeatMapD
       .append('rect')
       .on('mouseover', (event, d) => this.onMouseHover(event, d))
       .on('mouseout', () => this.onMouseOut())
+      .on('click', (event, d) => this.onMouseClick(event, d))
       .attr('x', ((d: FlChart3dDatum) => xScale.scale(d.getX())))
       .attr('y', d => yScale.scale(d.getY()))
       .attr('width', xScale.bandwidth())
@@ -38,10 +40,21 @@ export class FlChartRendererHeatMap extends FlChart2AxisRenderer<FlChartHeatMapD
     throw new Error('Refresh not supported in Heat map');
   }
 
-  private onMouseHover(event: MouseEvent, d: FlChart3dDatum): void {
+  private onMouseClick(event: MouseEvent, d: FlChart3dDatum): void {
+    this.openPortal(event, d, true);
+  }
 
-    // create the portal
-    this.portalHandler.openPortal(event.target as any, FlChartHeatMapDataPortalComponent, d);
+  private onMouseHover(event: MouseEvent, d: FlChart3dDatum): void {
+    this.openPortal(event, d, false);
+  }
+
+  private openPortal(event: MouseEvent, d: FlChart3dDatum, fixPortal: boolean): void {
+    const data: FlChartHeatMapDataPortalInput = {
+      data: d,
+      xLabelFormatter: this.data.xAxis.getTickFormatter(),
+      yLabelFormatter: this.data.yAxis.getTickFormatter()
+    };
+    this.portalHandler.openPortal(event.target as any, FlChartHeatMapDataPortalComponent, data, fixPortal);
   }
 
   private onMouseOut(): void {

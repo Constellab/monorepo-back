@@ -9,6 +9,7 @@ import {FlChartBarPlot, FlChartHistogram, FlChartStackedBar} from '../../../fl-c
 import {FlChartSerie} from '../../../fl-chart/model/data/fl-chart-serie.class';
 import {ClNumberHelper} from '@monorepo/core-lib';
 import {FlChartDataBin, flChartGetDataBins} from '../../../fl-chart/model/data/fl-chart-data-bin.class';
+import {FlChartLabelFormatter} from '../../../fl-chart/model/fl-chart-label-formatter.class';
 
 
 // Basic bar plot and stack plot
@@ -62,13 +63,13 @@ export class FlSheetChartSelectionHistogram extends FlSheetChartSelection {
       this.series[0].name);
 
     // define the axisXLabelFormat
-    series.axisXLabelTicksFormat = {
-      format:(_: number, index: number) => {
+    series.axisXLabelTicksFormatter = new FlChartLabelFormatter(
+      (index: number) => {
         const ChartDataBin: FlChartDataBin = serie.data[index];
         return ChartDataBin.getIntervalText();
       },
-      maxLabelLength: FlChartDataBin.getIntervalTextLength()
-    };
+      FlChartDataBin.getIntervalTextLength()
+    );
     series.addSerie(serie);
 
     series.axisXLabel = this.xAxisLabel;

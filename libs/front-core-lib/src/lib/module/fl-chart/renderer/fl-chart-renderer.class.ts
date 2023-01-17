@@ -3,6 +3,7 @@ import {FlChartScale} from '../model/scale/fl-chart-scale.class';
 import {FlThemeDetail} from '../../fl-theme/model/fl-theme-detail.class';
 import {FlThemeService} from '../../fl-theme/fl-theme.service';
 import {FlChartColorFunction} from '../model/scale/fl-chart-scale-color.class';
+import {FlChartAxis} from '../model/drawer/fl-chart-axis.class';
 
 
 /**
@@ -19,6 +20,8 @@ export interface FlChartNoAxisRendererInput<Data> {
  * Object needed by the renderer to renderer the charts with 2 axis
  */
 export interface FlChart2AxisRendererInput<Data> extends FlChartNoAxisRendererInput<Data> {
+  xAxis: FlChartAxis;
+  yAxis: FlChartAxis;
   xScale: FlChartScale;
   yScale: FlChartScale;
 }

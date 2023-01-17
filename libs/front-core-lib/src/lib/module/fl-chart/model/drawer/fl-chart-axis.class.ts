@@ -2,8 +2,9 @@ import {FlChartScale, FlChartScaleBand} from '../scale/fl-chart-scale.class';
 import {axisBottom, axisLeft, axisRight, axisTop, Numeric} from 'd3';
 import {Selection} from 'd3-selection';
 import {Axis, AxisScale} from 'd3-axis';
-import {ClNumberHelper, ClStringHelper} from '@monorepo/core-lib';
+import {ClNumberHelper} from '@monorepo/core-lib';
 import {FlD3SelectionSimple} from '../fl-d3.class';
+import {FlChartLabelFormatFunction, FlChartLabelFormatter} from '../fl-chart-label-formatter.class';
 
 
 /**
@@ -41,7 +42,7 @@ export class FlChartAxis {
 
   protected label: string;
 
-  private tickFormat: FlChartAxisTickFormat | null;
+  private tickFormatter: FlChartLabelFormatter | null;
 
   constructor(type: FlChartAxisType) {
     this.type = type;
@@ -52,15 +53,15 @@ export class FlChartAxis {
     return this;
   }
 
-  public setTickFormat(tickFormat: FlChartAxisTickFormat): this {
-    if (tickFormat) {
-      this.tickFormat = tickFormat;
+  public setTickFormatter(tickFormatter: FlChartLabelFormatter): this {
+    if (tickFormatter) {
+      this.tickFormatter = tickFormatter;
     }
     return this;
   }
 
-  public getTickFormat(): FlChartAxisTickFormat {
-    return this.tickFormat ?? this.defaultTickLabel();
+  public getTickFormatter(): FlChartLabelFormatter {
+    return this.tickFormatter ?? this.defaultTickLabel();
   }
 
   public setZoomDuration(duration: number): this {
@@ -78,12 +79,12 @@ export class FlChartAxis {
       .attr('transform', this.getAxisTransform(chartHeight, chartWidth))
       .call(this.createAxis());
 
-    this.drawLabel();
+    this.drawAxisLabel();
     this.refreshTickLabels();
   }
 
   // draw the axis label
-  private drawLabel(): void {
+  private drawAxisLabel(): void {
     if (this.label) {
 
       let pos: number;
@@ -121,8 +122,10 @@ export class FlChartAxis {
 
   private getTickLabelSize(): number {
     const charSize = this.type === 'left' ? FlChartAxis.yRequiredWidthPerChar : FlChartAxis.xRotateRequiredHeightPerChar;
+
+    const maxLabelLength = Math.min(this.getTickFormatter().shortFormatMaxLength, FlChartAxis.maxTickLabelLength);
     // calculate size of the text + padding
-    return (this.getTickFormat().maxLabelLength * charSize) + FlChartAxis.tickLabelPadding;
+    return (maxLabelLength * charSize) + FlChartAxis.tickLabelPadding;
   }
 
   /**
@@ -145,11 +148,12 @@ export class FlChartAxis {
   }
 
   private refreshTickTitle(): void {
+    const tickFormatter = this.getTickFormatter();
     // add title to tick (only if a tick format exist)
     this.getTickTextSelection()
       // add a title to each tick
       .append('title')
-      .text(this.tickFormat?.format ?? ((d) => d?.toString()));
+      .text(d => tickFormatter.formatLong(d));
   }
 
   private getTickTextSelection(): FlD3SelectionSimple {
@@ -160,10 +164,10 @@ export class FlChartAxis {
     const axis: Axis<Numeric> = this.getAxisFactory()(this.scale.d3Scale);
 
     // set the tick method if exists
-    const tickFormat: FlChartAxisTickFormat = this.getTickFormat();
+    const tickFormat = this.getTickFormatter();
     // set the tick format method and limit length of tick
     axis.tickFormat((d, index) =>
-      ClStringHelper.limiteLength(tickFormat.format(d.valueOf(), index), FlChartAxis.maxTickLabelLength));
+      tickFormat.formatShort(d.valueOf(), index, FlChartAxis.maxTickLabelLength));
 
     return axis;
   }
@@ -205,22 +209,19 @@ export class FlChartAxis {
    * With this the max label length is 7 because the number are displayed with 4 digits after the commas (ex: 1.2345)
    *  or in scientific notation with 2 digit after the commas (ex: 1.23e+5)
    */
-  private defaultTickLabel(): FlChartAxisTickFormat {
-    return {
-      maxLabelLength: 7,
-      format: (num) => {
-        if (num === 0) return '0';
-        const precision: number = 4;
-        if (Math.abs(num) > 10 ** precision || Math.abs(num) < 10 ** (-precision)) {
-          return num.toExponential(2);
-        } else {
-          return ClNumberHelper.round(num, precision).toString();
-        }
+  private defaultTickLabel(): FlChartLabelFormatter {
+    const format: FlChartLabelFormatFunction = (num) => {
+      if (num === 0) return '0';
+      const precision: number = 4;
+      if (Math.abs(num) > 10 ** precision || Math.abs(num) < 10 ** (-precision)) {
+        return num.toExponential(2);
+      } else {
+        return ClNumberHelper.round(num, precision).toString();
       }
     };
 
+    return new FlChartLabelFormatter(format, 7, (d) => d?.toString());
   }
-
 
   ///////////////////////////////// ZOOM ////////////////////////////////
 
@@ -279,27 +280,27 @@ export class FlChartAxisBand extends FlChartAxis {
    * @param tickSize average size of the tick in px
    * @param tickFormat
    */
-  public setSmartTickFormat(tickSize: number, tickFormat?: FlChartAxisTickFormat): this {
+  public setSmartTickFormat(tickSize: number, tickFormat?: FlChartLabelFormatter): this {
 
     if (tickFormat == null) {
-      tickFormat = {
-        format: (d) => d?.toString() ?? null,
-        maxLabelLength: FlChartAxis.maxTickLabelLength
-      };
+      tickFormat = new FlChartLabelFormatter(
+        (d) => d?.toString() ?? null,
+        FlChartAxis.maxTickLabelLength
+      );
     }
 
-    this.setTickFormat({
-      format: (d, index) => {
-        const bandWidth: number = this.scale.bandwidth();
+    const format: FlChartLabelFormatFunction = (d, index) => {
+      const bandWidth: number = this.scale.bandwidth();
 
-        // calculate the tick interval
-        const tickInterval: number = Math.ceil(tickSize / bandWidth);
+      // calculate the tick interval
+      const tickInterval: number = Math.ceil(tickSize / bandWidth);
 
-        // for each tick interval modulo, display the tick, otherwise show an empty string
-        return index % tickInterval === 0 ? tickFormat.format(d, index) : null;
-      },
-      maxLabelLength: tickFormat.maxLabelLength
-    });
+      // for each tick interval modulo, display the tick, otherwise show an empty string
+      return index % tickInterval === 0 ? tickFormat.formatShort(d, index) : null;
+    };
+
+    const smartTickFormat = new FlChartLabelFormatter(format, tickFormat.shortFormatMaxLength);
+    this.setTickFormatter(smartTickFormat);
 
     return this;
   }

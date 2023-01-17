@@ -14,6 +14,7 @@ export *
 export * from './component/fl-chart-data-portal/fl-chart-heat-map-data-portal/fl-chart-heat-map-data-portal.component';
 export *
   from './component/fl-chart-data-portal/fl-chart-stacked-bar-data-portal/fl-chart-stacked-bar-data-portal.component';
+export * from './component/fl-chart-data-portal/fl-chart-value/fl-chart-value.component';
 export * from './component/fl-chart-data-portal/fl-chart-venn-data-portal/fl-chart-venn-data-portal.component';
 // Right section
 export * from './component/fl-chart-right-section/fl-chart-legend-heat-map/fl-chart-legend-heat-map.component';
@@ -24,6 +25,7 @@ export *
 // Pipes
 export * from './pipe/fl-chart-color-function.pipe';
 export * from './pipe/fl-chart-scale.pipe';
+export * from './pipe/fl-chart-value-formatter.pipe';
 
 // Export the service
 export * from './service/fl-chart-portal.service';
@@ -61,7 +63,6 @@ export * from './model/legend/fl-chart-legend-heat-map.class';
 export * from './model/legend/fl-chart-legend-multi-series.class';
 
 // Portal-handler
-export * from './model/portal-handler/fl-chart-data-with-serie-portal-handler.class';
 export * from './model/portal-handler/fl-chart-portal-handler.class';
 
 // Scale
@@ -71,6 +72,7 @@ export * from './model/scale/fl-chart-scale-color.class';
 export * from './model/fl-chart.class';
 export * from './model/fl-chart-config.class';
 export * from './model/fl-chart-domain.class';
+export * from './model/fl-chart-label-formatter.class';
 export * from './model/fl-d3.class';
 
 

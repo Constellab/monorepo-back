@@ -23,6 +23,8 @@ export class FlColorHelper {
   public static readonly blueGrey = 'rgba(162,184,240,1)';
   public static readonly palePurple = 'rgba(158,126,233,1)';
 
+  public static transparentBlack = 'rgba(0,0,0,0.5)';
+
   // color for color blind : https://jfly.uni-koeln.de/color/
   // return ['rgba(230,159,0,1)', 'rgba(86,180,233,1)', 'rgba(0,158,115,1)', 'rgba(240,228,66,1)',
   //   'rgba(0,114,178,1)', 'rgba(213,92,0,1)', 'rgba(204,121,167,1)'];

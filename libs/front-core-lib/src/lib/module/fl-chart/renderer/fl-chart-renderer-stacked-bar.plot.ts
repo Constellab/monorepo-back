@@ -48,7 +48,7 @@ export class FlChartRendererStackedBarPlot extends FlChart2AxisRenderer<FlChart2
       .data(d => d)
       .join('rect')
       .on('mouseover', (event, d) => this.onMouseHover(event, d))
-      .on('click', () => this.onMouseClick())
+      .on('click', (event, d) => this.onMouseClick(event, d))
       .on('mouseout', () => this.onMouseOut())
       .attr('class', this.barClassName)
       .each((data, index, nodes) =>
@@ -67,17 +67,23 @@ export class FlChartRendererStackedBarPlot extends FlChart2AxisRenderer<FlChart2
   }
 
   private onMouseHover(event: MouseEvent, d: SeriesPoint<FlChartDataWithSerie<FlChart2dDatum>[]>): void {
+    this.openPortal(event, d, false);
+  }
+
+  private onMouseClick(event: MouseEvent, d: SeriesPoint<FlChartDataWithSerie<FlChart2dDatum>[]>): void {
+    this.openPortal(event, d, true);
+  }
+
+  private openPortal(event: MouseEvent, d: SeriesPoint<FlChartDataWithSerie<FlChart2dDatum>[]>, fixPortal: boolean): void {
     const data: FlChartStackedBarDataPortalInput = {
       data: d.data,
-      seriesColorScale: this.colorScale
+      seriesColorScale: this.colorScale,
+      xLabelFormatter: this.data.xAxis.getTickFormatter(),
+      yLabelFormatter: this.data.yAxis.getTickFormatter(),
     };
 
     // create the portal
-    this.portalHandler.openPortal(event.target as any, FlChartStackedBarDataPortalComponent, data);
-  }
-
-  private onMouseClick(): void {
-    this.portalHandler.fixPortal();
+    this.portalHandler.openPortal(event.target as any, FlChartStackedBarDataPortalComponent, data, fixPortal);
   }
 
   private onMouseOut(): void {

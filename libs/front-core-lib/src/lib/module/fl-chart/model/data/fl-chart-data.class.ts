@@ -20,8 +20,7 @@ export class FlChart2dDatum implements FlChartData {
 
   tags?: Record<string, string>;
 
-  constructor(protected x: number, protected y: number,
-              protected xLabel?: string, protected yLabel?: string) {
+  constructor(protected x: number, protected y: number) {
   }
 
   getX(defaultValue: number = null): number {
@@ -32,13 +31,6 @@ export class FlChart2dDatum implements FlChartData {
     return this.y ?? defaultValue;
   }
 
-  getXLabel(): string {
-    return this.xLabel ?? this.x?.toString() ?? '';
-  }
-
-  getYLabel(): string {
-    return this.yLabel ?? this.y?.toString() ?? '';
-  }
 
   get valid(): boolean {
     return this.x != null && this.y != null;
@@ -46,9 +38,8 @@ export class FlChart2dDatum implements FlChartData {
 }
 
 export class FlChart3dDatum extends FlChart2dDatum {
-  constructor(x: number, y: number, private z: number,
-              xLabel?: string, yLabel?: string) {
-    super(x, y, xLabel, yLabel);
+  constructor(x: number, y: number, private z: number) {
+    super(x, y);
   }
 
   getZ(defaultValue: number = null): number {

@@ -3,10 +3,13 @@ import {FlChartDataWithSerie} from '../../../model/data/fl-chart-serie.class';
 import {FlChart2dDatum} from '../../../model/data/fl-chart-data.class';
 import {FlChartScaleColor} from '../../../model/scale/fl-chart-scale-color.class';
 import {FL_PORTAL_DATA} from '../../../../fl-portal/model/fl-portal.class';
+import {FlChartLabelFormatter} from '../../../model/fl-chart-label-formatter.class';
 
 export interface FlChartStackedBarDataPortalInput {
   data: FlChartDataWithSerie<FlChart2dDatum>[];
   seriesColorScale: FlChartScaleColor;
+  xLabelFormatter: FlChartLabelFormatter;
+  yLabelFormatter: FlChartLabelFormatter;
 }
 
 /**
@@ -20,7 +23,10 @@ export interface FlChartStackedBarDataPortalInput {
 })
 export class FlChartStackedBarDataPortalComponent implements OnInit {
 
-  x: any;
+  x: number;
+
+  xLabelFormatter: FlChartLabelFormatter;
+  yLabelFormatter: FlChartLabelFormatter;
 
   data: FlChartDataWithSerie<FlChart2dDatum>[];
   seriesColorScale: FlChartScaleColor;
@@ -33,6 +39,8 @@ export class FlChartStackedBarDataPortalComponent implements OnInit {
     if (this.data?.length > 0) {
       this.x = this.data[0].data.getX();
     }
+    this.xLabelFormatter = input.xLabelFormatter;
+    this.yLabelFormatter = input.yLabelFormatter;
   }
 
 

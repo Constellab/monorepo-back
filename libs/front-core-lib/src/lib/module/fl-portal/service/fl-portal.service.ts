@@ -133,7 +133,10 @@ export class FlPortalService {
    * This portal is not linked to a host element
    */
   public configureAbsolutePortalFromMouseEvent(mouseEvent: MouseEvent, configuration: FlOverlayConfig = {}): FlPortalConfig {
-    return this.configureAbsolutePortal({top: mouseEvent.clientY + 'px', left: mouseEvent.clientX + 'px'}, configuration);
+    return this.configureAbsolutePortal({
+      top: mouseEvent.clientY + 'px',
+      left: mouseEvent.clientX + 'px'
+    }, configuration);
   }
 
   /**
@@ -233,7 +236,7 @@ export class FlPortalService {
    * @param config the portal configuration
    * @param viewContainerRef
    */
-  public createPortalTemplate(template: TemplateRef<any>, config: FlPortalConfig, viewContainerRef: ViewContainerRef): FlOverlayRef{
+  public createPortalTemplate(template: TemplateRef<any>, config: FlPortalConfig, viewContainerRef: ViewContainerRef): FlOverlayRef {
     // we create the overlay
     const overlayRef: FlOverlayRef = this.createOverlay(config.config);
 
@@ -292,11 +295,9 @@ export class FlPortalService {
     let outsideClickListener: () => void;
     if (config.config.disposeOnOutsideClick) {
       // add a listener on the body
-      // wait 500 ms before listening to event because it will be called if the portal is opened with a click
-      setTimeout(() => {
-        outsideClickListener = this.renderer.listen('body', 'mousedown',
-          (event: MouseEvent) => this.handleOutsideClick(event, overlayRef));
-      }, 0);
+      outsideClickListener = this.renderer.listen('body', 'mousedown',
+        (event: MouseEvent) => this.handleOutsideClick(event, overlayRef)
+      );
     }
 
     // merge events and unsubscribe on the first emission
@@ -305,6 +306,7 @@ export class FlPortalService {
       if (val) {
         overlayRef.dispose();
       }
+
       // clear the outside click listener if it exists
       if (outsideClickListener) {
         outsideClickListener();

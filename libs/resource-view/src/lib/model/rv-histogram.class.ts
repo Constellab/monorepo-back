@@ -3,11 +3,12 @@ import {
   FlChartConfig,
   FlChartDataBin,
   FlChartHistogram,
+  FlChartLabelFormatter,
   FlChartSerie
 } from '@monorepo/front-core-lib';
 import {RvResourceViewBase} from './rv-resource-view.class';
 
-export interface RvResourceViewHistogram extends RvResourceViewBase{
+export interface RvResourceViewHistogram extends RvResourceViewBase {
   type: 'histogram-view';
   data: RvResourceViewHistogramData;
 }
@@ -47,13 +48,13 @@ export function rvHistogramToChart(view: RvResourceViewHistogram): FlChartConfig
   }
 
   // define the axisXLabelFormat
-  series.axisXLabelTicksFormat = {
-    format: (_: number, index: number) => {
+  series.axisXLabelTicksFormatter = new FlChartLabelFormatter(
+    (index: number) => {
       const dataHisto: FlChartDataBin = series.series[0].data[index];
       return dataHisto.getIntervalText();
     },
-    maxLabelLength: FlChartDataBin.getIntervalTextLength()
-  };
+    FlChartDataBin.getIntervalTextLength()
+  );
 
   return new FlChartHistogram(series);
 }

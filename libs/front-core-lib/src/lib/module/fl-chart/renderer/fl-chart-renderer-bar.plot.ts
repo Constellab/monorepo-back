@@ -10,8 +10,10 @@ import {
   FlChartBinDataPortalInput
 } from '../component/fl-chart-data-portal/fl-chart-bin-data-portal/fl-chart-bin-data-portal.component';
 import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
-import {FlChartDataWithSeriePortalHandler} from '../model/portal-handler/fl-chart-data-with-serie-portal-handler.class';
 import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-handler.class';
+import {
+  FlChartDataWithSeriePortalInput
+} from '../component/fl-chart-data-portal/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
 
 
 /**
@@ -22,7 +24,7 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
   private readonly groupClassName: string = 'serie';
 
   private portalHandler: FlChartPortalHandler = new FlChartPortalHandler();
-  private portalWithSerieHandler: FlChartDataWithSeriePortalHandler = new FlChartDataWithSeriePortalHandler();
+  private portalWithSerieHandler: FlChartPortalHandler = new FlChartPortalHandler();
 
   constructor(private colorScale: FlChartScaleColor) {
     super();
@@ -123,8 +125,14 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
 
       // basic portal
     } else {
+      const data: FlChartDataWithSeriePortalInput = {
+        data: d,
+        color: this.colorScale.scale(d.serieKey),
+        xLabelFormatter: this.data.xAxis.getTickFormatter(),
+        yLabelFormatter: this.data.yAxis.getTickFormatter(),
+      };
       // create the portal
-      this.portalWithSerieHandler.openPortal(event.target as any, d, this.colorScale.scale(d.serieKey));
+      this.portalWithSerieHandler.openDataWithSeriePortal(event.target as any, data);
     }
   }
 
