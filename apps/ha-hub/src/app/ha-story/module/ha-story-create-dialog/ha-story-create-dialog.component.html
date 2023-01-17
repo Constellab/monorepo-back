@@ -1,0 +1,22 @@
+<fl-dialog-header>
+  {{'create_story' | translate}}
+</fl-dialog-header>
+
+<mat-dialog-content>
+  <form (ngSubmit)="submit()" id="story-form" [formGroup]="formGp">
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'title' | translate}}</mat-label>
+      <input matInput formControlName="title" required flInputMaxLength="100" [placeholder]="'title' | translate">
+      <mat-error *ngIf="formGp.get('title').hasError('required')">
+        {{'title' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<div mat-dialog-actions>
+  <button mat-flat-button color="primary" type="submit" form="story-form" class="g-centered-forced">
+    {{'save' | translate}}
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
+  </button>
+</div>
