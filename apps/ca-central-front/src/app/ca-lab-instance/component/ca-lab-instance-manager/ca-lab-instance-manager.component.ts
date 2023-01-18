@@ -12,6 +12,7 @@ import {
 import {CaLabInstanceDetailPageState} from '../../state/ca-lab-instance-detail-page.state';
 import {ClSubscriptionHandler} from '@monorepo/core-lib';
 import {map} from 'rxjs/operators';
+import {CaLabInstanceDetailServerState} from '../../state/ca-lab-instance-detail-server.state';
 
 /**
  * Component only accessible by the admin
@@ -35,7 +36,8 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
   constructor(private labInstanceService: CaLabInstanceService,
               private actionService: FlPortalActionsService,
               private dialogService: FlDialogService,
-              private state: CaLabInstanceDetailPageState) {
+              private state: CaLabInstanceDetailPageState,
+              private serverState: CaLabInstanceDetailServerState) {
   }
 
   ngOnInit(): void {
@@ -168,6 +170,10 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
       text: 'Stop adminer',
       type: this.actionType
     });
+  }
+
+  updateLabManager(): void {
+    this.serverState.updateLabManager();
   }
 
 

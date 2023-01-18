@@ -38,10 +38,6 @@ export class CaLabInstanceServerComponent implements OnInit {
     this.serverState.configureServer();
   }
 
-  updateLabManager(): void {
-    this.serverState.updateLabManager();
-  }
-
   updateDockerlabRepo(): void {
     this.serverState.updateDockerlabRepo();
   }
