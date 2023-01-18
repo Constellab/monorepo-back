@@ -64,7 +64,7 @@ export class FlInputMaxLengthDirective implements OnInit, OnDestroy {
 
   // open the portal if it doesn't already exist
   private openTooltipPortal(): void {
-    this.tooltipService.openTooltipWithTranslate(this.elementRef, 'input_max_length', ['right'],
+    this.tooltipService.openTooltipWithTranslate(this.elementRef, 'input_max_length', [this.position],
       'flInputMaxLength', this.duration,
       {param: {count: this.elementRef.nativeElement.maxLength}});
   }

@@ -1,10 +1,10 @@
-.mat-tooltip {
+.tooltip {
   color: #fff;
   border-radius: 4px;
   margin: 14px;
   max-width: 250px;
-  padding-left: 8px;
-  padding-right: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
+  background-color: var(--card-background);
+  padding: 6px 8px;
 }

@@ -1,10 +1,11 @@
 <div *ngIf="project$ | async; let project">
 
-  <div fxLayout="row" fxLayoutAlign="space-between center">
+  <div fxLayout="row" fxLayoutAlign="space-between start">
 
-    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em">
+    <div fxLayout="row wrap" fxLayoutAlign="start center">
       <ca-project-icon [project]="project"></ca-project-icon>
-      <h1>{{project.code}}</h1>
+      <h1 class="project-code">{{project.code}}</h1>
+      <div class="project-title g-text-big">{{project.title}}</div>
     </div>
 
     <!--   Settings menu   -->
@@ -21,7 +22,7 @@
     </div>
   </div>
 
-  <h2 class="project-title">{{project.title}}</h2>
+
 
   <div class="project-info">
     <div fxLayout="row" fxLayoutAlign="start center" class="project-leader">
