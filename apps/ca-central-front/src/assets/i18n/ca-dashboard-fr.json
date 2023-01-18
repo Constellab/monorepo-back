@@ -70,7 +70,6 @@
   "activity": "Activité",
   "company": "Entreprise",
   "biography": "Biographie",
-  "go_to_project": "Aller au projet",
   "add_new_sub_project": "Ajouter un projet",
   "modern_project": "Projet moderne",
   "modern_project_description": "Projet qui contiendra des rapports et des expériences.",
@@ -82,15 +81,12 @@
   "project_deleted": "Projet supprimé",
   "all_projects": "Tous les projets",
   "all_lab_instances": "Toutes les labs",
-  "go_to_lab": "Aller au lab",
   "add_new_project": "Ajouter un projet",
   "add_new_lab": "Ajouter un nouveau lab digital",
   "all_teams": "Toutes les équipes",
   "add_new_team": "Ajouter une nouvelle équipe",
-  "go_to_team": "Aller à l'équipe",
   "all_smart_db": "Tous les smartDB",
   "add_new_smart_db": "Ajouter une nouvelle smartDB",
-  "go_to_smart_db": "Aller à la smartDB",
   "include_sub_projects": "Inclure les sous projets",
   "projects": "Projets"
 }

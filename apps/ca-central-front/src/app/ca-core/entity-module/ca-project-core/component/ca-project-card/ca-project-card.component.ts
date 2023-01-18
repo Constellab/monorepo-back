@@ -14,8 +14,6 @@ export class CaProjectCardComponent implements OnInit {
 
   @Input() project: CaProject;
 
-  @Input() hideGoToProjectButton: boolean = false;
-
   constructor() {
   }
 

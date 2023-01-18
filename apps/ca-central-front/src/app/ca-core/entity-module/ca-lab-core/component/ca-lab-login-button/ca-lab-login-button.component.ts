@@ -11,6 +11,8 @@ export class CaLabLoginButtonComponent implements OnInit {
 
   @Input() labInstanceId: string;
 
+  @Input() isRunning: boolean = false;
+
   @Input() size: 'small' | 'normal' = 'normal';
 
   isLoading: boolean = false;
@@ -24,10 +26,10 @@ export class CaLabLoginButtonComponent implements OnInit {
   loginToLab(event: MouseEvent): void {
     ClHelpService.stopEventPropagation(event);
     this.isLoading = true;
-    this.labInstanceService.logUserToLab(this.labInstanceId).subscribe(
-      result => this.loginSuccess(result.url),
-      () => this.isLoading = false
-    );
+    this.labInstanceService.logUserToLab(this.labInstanceId).subscribe({
+      next: result => this.loginSuccess(result.url),
+      error: () => this.isLoading = false
+    });
   }
 
   private loginSuccess(url: string): void {

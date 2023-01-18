@@ -7,12 +7,13 @@
     <span>{{'stop_lab' | translate}}</span>
   </button>
   <ng-template #stopped>
-    <button mat-stroked-button color="primary" type="button"
-            (click)="startLab()" class="g-button-small"
-            [disabled]="!status.hasServerInstanceId || status.labStatus.value === 'STARTING' ||
-                         status.labStatus.value === 'STOPPING'">
-      <mat-icon>play_arrow</mat-icon>
-      <span>{{'start_lab' | translate}}</span>
-    </button>
+    <span [matTooltip]="'start_lab_disabled' | translate" [matTooltipDisabled]="serverIsReady$ | async">
+      <button mat-stroked-button color="primary" type="button"
+              (click)="startLab()" class="g-button-small"
+              [disabled]="(serverIsReady$ | async) === false">
+        <mat-icon>play_arrow</mat-icon>
+        <span>{{'start_lab' | translate}}</span>
+      </button>
+    </span>
   </ng-template>
 </ng-container>

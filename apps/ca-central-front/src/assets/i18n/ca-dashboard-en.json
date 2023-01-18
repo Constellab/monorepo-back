@@ -70,7 +70,6 @@
   "activity": "Activity",
   "company": "Company",
   "biography": "Biography",
-  "go_to_project": "Go to project",
   "add_new_sub_project": "Add new project",
   "modern_project": "Modern project",
   "modern_project_description": "Project that will contain reports and experiments.",
@@ -83,15 +82,12 @@
   "project_deleted": "Project deleted",
   "all_projects": "All projects",
   "all_lab_instances": "All labs",
-  "go_to_lab": "Go to lab",
   "add_new_project": "Add new project",
   "add_new_lab": "Add new digital lab",
   "all_teams": "All teams",
   "add_new_team": "Add new team",
-  "go_to_team": "Go to team",
   "all_smart_db": "All smartDB",
   "add_new_smart_db": "Add new smartDB",
-  "go_to_smart_db": "Go to smartDB",
   "include_sub_projects": "Include sub projects",
   "projects": "Projects"
 }

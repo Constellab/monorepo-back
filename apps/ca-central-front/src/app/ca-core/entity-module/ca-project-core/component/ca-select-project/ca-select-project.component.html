@@ -2,7 +2,6 @@
   <div fxLayout="row wrap" fxLayoutGap="1%">
     <ca-project-card *ngFor="let project of projects$ | async"
                      (click)="selectCard(project)" [project]="project"
-                     [hideGoToProjectButton]="true"
                      class="card" [ngClass]="{'selected-card': isSelected(project)}"
                      fxFlex="15em"></ca-project-card>
   </div>

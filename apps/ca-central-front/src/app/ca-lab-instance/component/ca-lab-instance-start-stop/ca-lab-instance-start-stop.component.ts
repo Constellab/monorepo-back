@@ -9,6 +9,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {CaLabInstanceDetailPageState} from '../../state/ca-lab-instance-detail-page.state';
 import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 /**
  * Toggle button to start or stop the lab instance
@@ -21,6 +22,9 @@ import {Observable} from 'rxjs';
 export class CaLabInstanceStartStopComponent implements OnInit {
 
   status$: Observable<CaLabInstanceStatusDTO> = this.state.getStatus$();
+  serverIsReady$: Observable<boolean> = this.state.getStatus$().pipe(
+    map(status => status.hasServerInstanceId && status.labStatus.value != 'STARTING' && status.labStatus.value != 'STOPPING')
+  );
 
   constructor(private state: CaLabInstanceDetailPageState,
               private labInstanceService: CaLabInstanceService,

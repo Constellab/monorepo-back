@@ -20,6 +20,7 @@ import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance
 export class CaLabInstanceDetailComponent implements OnInit {
 
   labInstance$: Observable<CaLabInstance>;
+  isOwner$: Observable<boolean> = this.state.isLabOwner$();
   isLoading: boolean = false;
 
   constructor(private state: CaLabInstanceDetailPageState,

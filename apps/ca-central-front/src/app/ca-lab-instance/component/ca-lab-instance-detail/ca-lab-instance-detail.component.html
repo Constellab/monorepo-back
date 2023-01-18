@@ -34,9 +34,9 @@
   </fl-card-body>
 
   <fl-card-footer layoutGap="0.5em">
-    <ca-lab-login-button *ngIf="labInstance.isRunning()"
-                         [labInstanceId]="labInstance.id">
-    </ca-lab-login-button>
+    <ca-lab-login-button [labInstanceId]="labInstance.id" [isRunning]="labInstance.isRunning()"></ca-lab-login-button>
+
+    <ca-lab-instance-start-stop *ngIf="isOwner$ | async"></ca-lab-instance-start-stop>
 
     <button mat-stroked-button type="button" (click)="openCodelabInfo(labInstance)"
             class="g-button-small">
@@ -46,8 +46,8 @@
 
     <button mat-stroked-button type="button" (click)="openLabConfig(labInstance)"
             class="g-button-small">
-      <mat-icon>settings</mat-icon>
-      {{'lab_configuration' | translate}}
+      <mat-icon>info</mat-icon>
+      {{'brick_versions' | translate}}
     </button>
 
 

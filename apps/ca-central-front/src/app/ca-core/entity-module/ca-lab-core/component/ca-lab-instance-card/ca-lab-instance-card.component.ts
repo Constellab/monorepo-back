@@ -13,8 +13,6 @@ export class CaLabInstanceCardComponent implements OnInit {
 
   @Input() labInstance: CaLabInstance;
 
-  @Input() mode: 'small' | 'big' = 'small';
-
   constructor() {
   }
 
@@ -22,5 +20,16 @@ export class CaLabInstanceCardComponent implements OnInit {
 
   }
 
+  // prevent ripple effect when used on card
+  stopEventPropagation(event: Event): void {
+    event.stopPropagation();
+  }
 
+  get iconBackground(): string {
+    return this.labInstance.isRunning() ? 'g-primary-background' : 'g-warn-background';
+  }
+
+  get statusTooltip(): string {
+    return this.labInstance.currentStatus.status.name;
+  }
 }
