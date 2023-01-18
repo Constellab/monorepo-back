@@ -114,6 +114,14 @@ export class CnLabInstancesController {
   }
 
   /**
+   * Route to update the dockerlab repository
+   */
+  @Put(':id/dockerlab/update')
+  public updateDockerlabRepository(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusDTO> {
+    return this.aggregateService.updateDockerlab(id);
+  }
+
+  /**
    * Get the url to log into the lab
    * return the labInstance
    */
@@ -222,6 +230,14 @@ export class CnLabInstancesController {
   }
 
   //////////////////////////// LAB MANAGER ////////////////////////////////
+
+  /**
+   * Route to update the docker image of the lab manager
+   */
+  @Put(':id/lab-manager/update')
+  public updateLabManager(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusDTO> {
+    return this.aggregateService.updateLabManager(id);
+  }
 
   @Get(':id/lab-manager/status')
   async getContainersStatus(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabManagerStatus> {

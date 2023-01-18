@@ -80,6 +80,8 @@ export class CaLabInstanceService {
     return this.apiService.put(`${this.route}/${id}/stop`, null, CaLabInstance);
   }
 
+
+
   public findById(id: string): Observable<CaLabInstanceFindOneDto> {
     return this.apiService.get(`${this.route}/${id}`, CaLabInstanceFindOneDto);
   }
@@ -174,6 +176,10 @@ export class CaLabInstanceService {
   }
 
   //////////////////////////// LAB MANAGER ////////////////////////////////
+
+  public updateLabManager(id: string): Observable<CaLabInstanceStatusDTO> {
+    return this.apiService.put(`${this.route}/${id}/lab-manager/update`, null, CaLabInstanceStatusDTO);
+  }
 
   public getLabManagerStatus(id: string): Observable<CaLabManagerStatus> {
     return this.apiService.get(`${this.route}/${id}/lab-manager/status`, CaLabManagerStatus);
@@ -282,5 +288,9 @@ export class CaLabInstanceService {
 
   public deleteServer(id: string): Observable<void> {
     return this.apiService.delete(`${this.route}/${id}/server`);
+  }
+
+  public updateDockerlabRepository(id: string): Observable<CaLabInstanceStatusDTO> {
+    return this.apiService.put(`${this.route}/${id}/dockerlab/update`,null,  CaLabInstanceStatusDTO);
   }
 }

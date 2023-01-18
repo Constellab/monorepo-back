@@ -68,6 +68,26 @@ export class CaLabInstanceDetailServerState {
     });
   }
 
+  updateLabManager(): void {
+    const input: FlConfirmDialogInput = {
+      title: 'lab_update_lab_manager',
+      content: 'lab_update_lab_manager_confirmation',
+      translateTitleAndContent: true,
+    };
+
+    this.openDialog(input, this.labInstanceService.updateLabManager(this.state.getLabInstanceId()));
+  }
+
+  updateDockerlabRepo(): void {
+    const input: FlConfirmDialogInput = {
+      title: 'lab_update_dockerlab_repo',
+      content: 'lab_update_dockerlab_repo_confirmation',
+      translateTitleAndContent: true,
+    };
+
+    this.openDialog(input, this.labInstanceService.updateDockerlabRepository(this.state.getLabInstanceId()));
+  }
+
   deleteServer(): void {
     const input: FlConfirmDialogInput = {
       title: 'lab_delete_server',

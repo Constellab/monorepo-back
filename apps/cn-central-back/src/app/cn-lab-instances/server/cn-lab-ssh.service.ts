@@ -28,33 +28,26 @@ export class CnLabSshService {
     await this.refreshDockerlabRepo(labInstance);
 
     // Execute prepare_server.sh
-    await this.labInstanceService.updateServerStatusText(labInstance.id, `Prepare and configure server`);
-    const prepareServer = this.getSshCommand(labInstance.virtualHost, [`cd ${CnLabSshService.DOCKERLAB_FOLDER}/utils`,
-      'bash prepare_server.sh']);
-    this.logger.log(`Executing command -- ${prepareServer} -- for lab ${labInstance.id}`);
-    await this.commandService.execCommand(prepareServer);
+    await this.callPrepareServer(labInstance);
 
     await this.rebootAndWaitForServer(labInstance);
 
-
-    // Execute init.sh with variables
-    const env = this.coreConfigService.isProduction() ? 'prod' : 'pre-prod';
-    const runInit = this.getSshCommand(labInstance.virtualHost,
-      [`bash ${CnLabSshService.DOCKERLAB_FOLDER}/utils/init.sh ${labInstance.virtualHost} ${env} ${labInstance.labManagerApiKey}`]);
-    this.logger.log(`Run init.sh file for lab ${labInstance.id}`);
-    await this.commandService.execCommand(runInit);
+    // Execute init.sh
+    await this.callInitScript(labInstance);
 
     // execute docker compose up
-    await this.labInstanceService.updateServerStatusText(labInstance.id, `Starting lab manager`);
-    const dockerComposeUp = this.getSshCommand(labInstance.virtualHost, [`cd ${CnLabSshService.DOCKERLAB_FOLDER}`,
-      'docker-compose up -d']);
-    this.logger.log(`Executing command -- ${dockerComposeUp} -- for lab ${labInstance.id}`);
-    await this.commandService.execCommand(dockerComposeUp);
+    await this.callDockerComposeUp(labInstance);
 
     // wait for lab manager
     await this.labManagerService.waitForHealthCheck(labInstance.getLabManagerApiInfo().apiUrl);
 
     return labInstance;
+  }
+
+  // pull the dockerlab repo and update the lab instance status
+  public async updateDockerlabRepo(labInstance: CnLabInstance): Promise<void> {
+    await this.refreshDockerlabRepo(labInstance);
+    await this.labInstanceService.updateServerStatusText(labInstance.id, `Dockerlab repository updated`);
   }
 
   /**
@@ -79,11 +72,19 @@ export class CnLabSshService {
       await this.labInstanceService.updateServerStatusText(labInstance.id, `Pulling dockerlab repository`);
       // Git clone
       // eslint-disable-next-line max-len
-      const repo = `https://${this.coreConfigService.getGitUsername()}:${this.coreConfigService.getGitPassword()}@${CnLabSshService.DOCKERLAB_REPO}`;
+      const repo = `https://${this.coreConfigService.getGwsGitlabUsername()}:${this.coreConfigService.getGwsGitlabPassword()}@${CnLabSshService.DOCKERLAB_REPO}`;
       const gitClone = this.getSshCommand(labInstance.virtualHost, [`git clone ${repo}`]);
       this.logger.log(`Executing clone for dockerlab repository ${CnLabSshService.DOCKERLAB_REPO} for lab ${labInstance.id}`);
       await this.commandService.execCommand(gitClone);
     }
+  }
+
+  private async callPrepareServer(labInstance: CnLabInstance): Promise<void> {
+    await this.labInstanceService.updateServerStatusText(labInstance.id, `Prepare and configure server`);
+    const prepareServer = this.getSshCommand(labInstance.virtualHost, [`cd ${CnLabSshService.DOCKERLAB_FOLDER}/utils`,
+      'bash prepare_server.sh']);
+    this.logger.log(`Executing command -- ${prepareServer} -- for lab ${labInstance.id}`);
+    await this.commandService.execCommand(prepareServer);
   }
 
   private async rebootAndWaitForServer(labInstance: CnLabInstance): Promise<void> {
@@ -96,6 +97,33 @@ export class CnLabSshService {
       {errorMode: CnExecCommandMode.STDERR_AS_SUCCESS, ignoreError: true});
 
     await this.waitForSshConnection(labInstance);
+  }
+
+
+  private async callInitScript(labInstance: CnLabInstance): Promise<void> {
+
+    const variables = [
+      labInstance.virtualHost,
+      this.coreConfigService.isProduction() ? 'prod' : 'pre-prod',
+      labInstance.labManagerApiKey,
+      this.coreConfigService.getGwsGitlabUsername(),
+      this.coreConfigService.getGwsGitlabPassword()
+    ];
+
+    const runInit = this.getSshCommand(labInstance.virtualHost,
+      // eslint-disable-next-line max-len
+      [`bash ${CnLabSshService.DOCKERLAB_FOLDER}/utils/init.sh ${variables.join(' ')}`]);
+    this.logger.log(`Run init.sh file for lab ${labInstance.id}`);
+    await this.commandService.execCommand(runInit);
+  }
+
+  private async callDockerComposeUp(labInstance: CnLabInstance): Promise<void> {
+    // execute docker compose up
+    await this.labInstanceService.updateServerStatusText(labInstance.id, `Starting lab manager`);
+    const dockerComposeUp = this.getSshCommand(labInstance.virtualHost, [`cd ${CnLabSshService.DOCKERLAB_FOLDER}`,
+      'docker-compose up -d']);
+    this.logger.log(`Executing command -- ${dockerComposeUp} -- for lab ${labInstance.id}`);
+    await this.commandService.execCommand(dockerComposeUp);
   }
 
   /**
@@ -150,5 +178,14 @@ export class CnLabSshService {
     // in pre-prod and prod env, set the path to the ssh key
     const option = this.coreConfigService.isLocal() ? '' : `-i ${CnLabSshService.SSH_PRIVATE_KEY_LOCATION}`;
     return `ssh ${option} ubuntu@lab.${virtualHost} "${commands.join(';')}"`;
+  }
+
+  public async updateLabManager(labInstance: CnLabInstance): Promise<void> {
+    await this.labInstanceService.updateServerStatusText(labInstance.id, `Updating lab manager`);
+    const updateLabManager = this.getSshCommand(labInstance.virtualHost, [`cd ${CnLabSshService.DOCKERLAB_FOLDER}`,
+      '. update_lab_manager.sh']);
+    this.logger.log(`Executing command -- ${updateLabManager} -- for lab ${labInstance.id}`);
+    await this.commandService.execCommand(updateLabManager);
+    await this.labInstanceService.updateServerStatusText(labInstance.id, `Lab manager updated`);
   }
 }

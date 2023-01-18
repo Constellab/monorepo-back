@@ -199,12 +199,12 @@ export class CnCoreConfigService {
     return this.configService.get('SSH_PRIVATE_KEY');
   }
 
-  public getGitUsername(): string {
-    return this.configService.get('GIT_USERNAME');
+  public getGwsGitlabUsername(): string {
+    return this.configService.get('GWS_GITLAB_USERNAME');
   }
 
-  public getGitPassword(): string {
-    return this.configService.get('GIT_PASSWORD');
+  public getGwsGitlabPassword(): string {
+    return this.configService.get('GWS_GITLAB_PASSWORD');
   }
 }
 

@@ -633,6 +633,20 @@ export class CnLabInstanceAggregateService {
     return this.labServerService.stopLab(labInstance);
   }
 
+  async updateLabManager(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
+    const labInstance = await this.checkServerStatusBeforeAction(labInstanceId);
+
+    await this.labSshService.updateLabManager(labInstance);
+    return this.getStatus(labInstance);
+  }
+
+  async updateDockerlab(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
+    const labInstance = await this.checkServerStatusBeforeAction(labInstanceId);
+
+    await this.labSshService.updateDockerlabRepo(labInstance);
+    return this.getStatus(labInstance);
+  }
+
   /**
    * Before any action on the server, refresh the lab instance status and
    * check that the server is in a state where it can be managed
