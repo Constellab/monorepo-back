@@ -32,7 +32,7 @@ export class FlQuillConfig {
     ['bold', 'italic', 'underline', 'strike'],
     [{list: 'ordered'}, {list: 'bullet'}],
     [{header: [2, 3, 4, false]}],
-    [{align: []}, {color: ['#000', '#e60000', '#ff9900', '#008a00', '#0066cc', '#9933ff']}],
+    [{align: []}, {color: ['#000', '#e60000', '#ff9900', '#008a00', '#0066cc', '#9933ff', '#fff']}],
     [{indent: '-1'}, {indent: '+1'}],
     ['link', 'blockquote', 'code', 'clean'],
   ];
@@ -41,7 +41,7 @@ export class FlQuillConfig {
     ['bold', 'italic', 'underline'],
     [{list: 'ordered'}, {list: 'bullet'}],
     [{header: [2, 3, false]}],
-    [{color: ['#000', '#e60000', '#ff9900', '#008a00', '#0066cc', '#9933ff']}, 'link', 'clean'],
+    [{color: ['#000', '#e60000', '#ff9900', '#008a00', '#0066cc', '#9933ff', '#fff']}, 'link', 'clean'],
   ];
 
 
