@@ -9,6 +9,7 @@ import {
   FlTextEditorState
 } from '@monorepo/front-core-lib';
 import {HaStoryService} from '../../../ha-core/ha-service/ha-story.service';
+import {CmRichTextI} from '@monorepo/common-model';
 
 /**
  * Config for the text editor in the report

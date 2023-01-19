@@ -4,6 +4,7 @@ import {CmCredentials, CmCredentials2Fa} from '@monorepo/common-model';
 import {BlJwtService} from '@monorepo/back-core-lib';
 import {HnUser} from '../users/hn-user.entity';
 import {HnCentralAuthService} from './hn-central-auth.service';
+import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 
 export interface HnAuthResponse {
   status: 'LOGGED_IN' | '2FA_REQUIRED';
@@ -17,11 +18,14 @@ export class HnAuthService {
   constructor(
     private userService: HnUserService,
     private jwtService: BlJwtService,
-    private centralAuthService: HnCentralAuthService) {
+    private centralAuthService: HnCentralAuthService,
+    private coreConfigService: HnCoreConfigService) {
   }
 
   async login(credentials: CmCredentials): Promise<HnAuthResponse> {
-    const checkCredential = await this.centralAuthService.checkUserCredentialAndAdmin(credentials);
+    const checkCredential =
+      this.coreConfigService.isLocal() ? await this.userService.getUserCredentialsResponse(credentials)
+        : await this.centralAuthService.checkUserCredentialAndAdmin(credentials);
 
     // if there is no 2FA, the user can be logged in
     if (checkCredential.status === 'OK') {

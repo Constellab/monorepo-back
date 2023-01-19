@@ -1,0 +1,54 @@
+.back-link{
+  display: block;
+  width: fit-content;
+}
+
+.navigation-div{
+  margin-top: 30px;
+  padding: 0 100px 13px 100px;
+  border-bottom: 1px solid var(--card-background);
+}
+
+.story-div{
+  display: flex;
+  padding: 0 100px;
+}
+
+.right-div{
+  margin-top: 13px;
+  width: 295px;
+  height: fit-content;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--card-background);
+  border-radius: 18px;
+  padding: 8px;
+}
+
+.title{
+
+  border-radius: 10px;
+  padding: 7px 8px;
+  margin-top: 8px;
+}
+
+.big-title{
+  background-color: var(--main-background);
+}
+
+.small-title{
+  background-color: var(--hover-color);
+}
+
+.title:first-child{
+  margin-top: 0;
+}
+
+.story-content{
+  margin-top: 3px;
+}
+
+.text-editor{
+  border: none;
+}

@@ -189,7 +189,7 @@ export class CmRichText {
     return this.richText;
   }
 
-  public getHeaders(headersSize: number[]): string[] {
+  public getHeaders(headersSize: number[]): any[] {
     const headers: any[] = [];
     const contentData: any[] = this.getContent().ops;
     if (contentData != null) {

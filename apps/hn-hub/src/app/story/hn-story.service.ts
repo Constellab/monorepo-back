@@ -5,7 +5,7 @@ import {Repository} from 'typeorm';
 import {HnTopicService} from '../topic/hn-topic.service';
 import {ClPage, ClStringHelper} from '@monorepo/core-lib';
 import {BlAbstractPaginatedService, BlBucketConfig, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
-import {CmRichText, CmRichTextI, CmRichTextImageCP} from '@monorepo/common-model';
+import {CmRichText, CmRichTextHeader, CmRichTextI, CmRichTextImageCP} from '@monorepo/common-model';
 import imageSize from 'image-size';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {IncomingMessage} from 'http';
@@ -93,6 +93,23 @@ export class HnStoryService {
   }
 
   async editContent(content: CmRichTextI): Promise<CmRichTextI> {
+    const headers: CmRichTextHeader[] = CmRichText.getHeaders(content);
+    const listId: string[] = [];
+    for (const h of headers) {
+      if (h.attributes.header.id) {
+        h.attributes.header.id = ClStringHelper.toIdForUrl(h.attributes.header.id);
+        if (h.attributes.header.id.length > 0) {
+          const sameTitleNumber: number = listId.filter(value => value == h.attributes.header.id).length;
+          if (sameTitleNumber > 0) {
+            h.attributes.header.id = h.attributes.header.id + sameTitleNumber;
+          }
+          listId.push(h.attributes.header.id);
+        } else {
+          delete h.attributes.header.id;
+        }
+      }
+    }
+
     const imageCP: CmRichTextImageCP[] = CmRichText.getImageCP(content);
     for (const im of imageCP) {
       if ('image' in im.insert) {

@@ -1,1 +1,25 @@
-<p>ha-story-page works!</p>
+<div class="navigation-div">
+  <a [routerLink]="'..'" class="back-link">
+    <fl-text-icon [iconPosition]="'start'">
+      <mat-icon>arrow_back</mat-icon>
+      {{'back_to_all_stories' | translate}}
+    </fl-text-icon>
+  </a>
+</div>
+<div class="story-div" *ngIf="story">
+  <div class="story-content">
+    <h2>
+      {{story.title}}
+    </h2>
+    <fl-text-editor class="text-editor g-max-article-width" [disabled]="true" mode="JSON" scrollContainer="auto"
+                    [config]="textEditorConfig" [noPadding]="true" flAutoScrollToAnchor [formControl]="formControl">
+    </fl-text-editor>
+  </div>
+
+  <div class="right-div" *ngIf="titles && titles.length > 0">
+    <a [routerLink]="'.'" *ngFor="let title of titles" [fragment]="title.id" class="title"
+       [ngClass]="title.level === 2 ? ['big-title'] : ['small-title']">
+      {{title.title}}
+    </a>
+  </div>
+</div>

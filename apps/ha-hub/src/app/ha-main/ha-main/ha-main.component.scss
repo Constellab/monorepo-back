@@ -29,11 +29,12 @@
 .body{
   display: flex;
   flex-direction: column;
-  margin-top: 16px;
+  max-height: 100%;
 }
 
 .router{
   flex: 1 0 auto;
+  padding-bottom: 1em;
 }
 
 .footer{

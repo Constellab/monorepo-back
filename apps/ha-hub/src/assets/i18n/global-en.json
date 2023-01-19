@@ -81,5 +81,6 @@
   "view": "View",
   "create_story": "Create Story",
   "story_created": "Story created",
-  "stories": "Stories"
+  "stories": "Stories",
+  "back_to_all_stories": "Back to all stories"
 }

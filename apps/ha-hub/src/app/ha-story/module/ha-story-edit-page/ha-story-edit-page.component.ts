@@ -6,7 +6,6 @@ import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {CmRichTextI} from '@monorepo/common-model';
 import {FlDebouncer, FlDialogService} from '@monorepo/front-core-lib';
 import {HaStoryTextEditorConfig} from './ha-story-text-editor.config';
-import {HaDocTextEditorConfig} from '../../../ha-public/module/ha-public-brick-page/ha-doc-text-editor-config.class';
 
 @Component({
   selector: 'ha-ha-story-edit-page',
