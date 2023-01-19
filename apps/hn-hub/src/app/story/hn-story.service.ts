@@ -111,6 +111,7 @@ export class HnStoryService {
     }
 
     const imageCP: CmRichTextImageCP[] = CmRichText.getImageCP(content);
+
     for (const im of imageCP) {
       if ('image' in im.insert) {
         const base64Img: string = im.insert.image.split(',')[1];

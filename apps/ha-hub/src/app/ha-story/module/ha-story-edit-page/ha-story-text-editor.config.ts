@@ -46,7 +46,9 @@ export class HaStoryTextEditorConfig extends FlTextEditorConfig implements FlTex
   insertImageFromFile(file: File, textEditorState: FlTextEditorState): void {
     const index = textEditorState.getCurrentSelectionIndex();
     this.storyService.uploadImage(file).subscribe(
-      fileUrl => textEditorState.insertImageFromUrl(fileUrl, index)
+      fileUrl => {
+        textEditorState.insertImageFromUrl(fileUrl, index)
+      }
     );
   }
 
@@ -55,6 +57,7 @@ export class HaStoryTextEditorConfig extends FlTextEditorConfig implements FlTex
   }
 
   onPasteImage(file: File, state: FlTextEditorState): any {
+
     this.insertImageFromFile(file, state);
     return {ops: []} //Return the delta without modification with the image pasted
   }

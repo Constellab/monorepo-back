@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   HostBinding,
@@ -58,6 +59,8 @@ export class FlTextEditorFigureComponent extends FlTextEditorElementDirective im
 
   disabled$: Observable<boolean>;
 
+  init = false;
+
   constructor(private sanitizer: DomSanitizer,
               elementRef: ElementRef<HTMLElement>,
               managersState: FlTextEditorsManagerState) {
@@ -66,35 +69,32 @@ export class FlTextEditorFigureComponent extends FlTextEditorElementDirective im
   }
 
   ngOnInit(): void {
-    if(ClStringHelper.isHttpLink(this.filename)){
+    if (ClStringHelper.isHttpLink(this.filename)) {
       this.sanitizedUrl = this.filename;
     } else {
       this.sanitizedUrl = this.sanitizer.sanitize(SecurityContext.URL, this.config.getImageUrl(this.filename));
     }
     this.disabled$ = this.getDisabled$();
-    this.initSize();
+    // let the parent have its width
+    setTimeout(() => this.initSize(), 0)
   }
 
-  private initSize(): void {
 
+
+  private initSize(): void {
     const width = parseFloat(this.width);
     const height = parseFloat(this.height);
-    // if the size of the image was not modified
-    if (this.width === this.naturalWidth && this.height === this.naturalHeight) {
-      const parentWidth = this.elementRef.nativeElement.clientWidth;
-
-      // if the image is larger than container, resize it
-      if (parentWidth > 0 && width > parentWidth) {
-        this.imageWidth = parentWidth;
-        this.imageHeight = ((parentWidth / width) * parseFloat(this.height));
-      } else {
-        this.imageWidth = width;
-        this.imageHeight = height;
-      }
+    const parentWidth = this.elementRef.nativeElement.clientWidth;
+    // if the image is larger than container, resize it
+    if (parentWidth > 0 && width > parentWidth) {
+      this.imageWidth = parentWidth;
+      this.imageHeight = ((parentWidth / width) * parseFloat(this.height));
     } else {
       this.imageWidth = width;
       this.imageHeight = height;
     }
+
+    this.init = true;
   }
 
   onImageResize(resizeEvent: FlResizeEvent): void {

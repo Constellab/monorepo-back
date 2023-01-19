@@ -14,7 +14,6 @@ export class FlTextEditorFigureBlot extends FlQuillEmbed {
 
   static create(value: CmRichTextFigure): any {
     const node: HTMLElement = super.create(value) as any;
-
     node.setAttribute('filename', value.filename);
     node.setAttribute('natural-width', value.naturalWidth?.toString());
     node.setAttribute('natural-height', value.naturalHeight?.toString());
@@ -22,7 +21,6 @@ export class FlTextEditorFigureBlot extends FlQuillEmbed {
     node.setAttribute('height', value.height?.toString() ?? value.naturalHeight?.toString());
     node.setAttribute('image-title', value.title ?? '');
     node.setAttribute('caption', value.caption ?? '');
-
     return node;
   }
 

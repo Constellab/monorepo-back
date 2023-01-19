@@ -21,7 +21,7 @@ export class FlImageHelper{
       img.src = url;
     });
     const img = await loadImage(blobUrl);
-    let [newWidth, newHeight] = FlImageHelper.calculateSize(img, resizeWidthMax, resizeHeightMax);
+    let [newWidth, newHeight] = FlImageHelper.calculateSize(img, resizeWidthMax);
     const canvas: HTMLCanvasElement = document.createElement('canvas');
     canvas.width = cropWidth;
     canvas.height = cropHeight;
@@ -49,21 +49,15 @@ export class FlImageHelper{
    * @param maxH
    * @param maxW
    */
-  public static calculateSize(img: HTMLImageElement, maxH: number, maxW: number): [number, number] {
+  public static calculateSize(img: HTMLImageElement, maxW: number = 960): [number, number] {
     let width: number = img.width;
     let height: number = img.height;
 
-    if (width > height) {
-      if (width > maxW) {
-        height = Math.round((height * maxW) / width);
-        width = maxW;
-      }
-    } else {
-      if (height > maxH) {
-        width = Math.round((width * maxH) / height);
-        height = maxH;
-      }
+    if (width > maxW) {
+      height = Math.round((height * maxW) / width);
+      width = maxW;
     }
+
     return [width, height];
   }
 }

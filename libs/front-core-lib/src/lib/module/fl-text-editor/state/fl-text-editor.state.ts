@@ -12,7 +12,7 @@ export class FlTextEditorState implements OnDestroy {
 
   public textEditorContainer: HTMLElement;
 
-  private quill: Quill;
+  public quill: Quill;
 
   private disabled$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private outsideClick$: Subject<MouseEvent>= new Subject();
@@ -31,7 +31,7 @@ export class FlTextEditorState implements OnDestroy {
   }
 
 
-  public insertImageFromUrl(image: FlTextEditorUploadedImage, index: number): void {
+  public insertImageFromUrl(image: FlTextEditorUploadedImage, index: number): any {
     const figure: CmRichTextFigure = {
       filename: image.filename,
       width: image.width,
@@ -39,7 +39,7 @@ export class FlTextEditorState implements OnDestroy {
       naturalWidth: image.width,
       naturalHeight: image.height
     };
-    this.insertEmbed(index, 'figure', figure);
+    return this.insertEmbed(index, 'figure', figure);
   }
 
   public insertCodeBlock(): void {
@@ -81,8 +81,8 @@ export class FlTextEditorState implements OnDestroy {
     return this.quill.insertText(index, text);
   }
 
-  public insertEmbed(index: number, type: string, value: any): void {
-    this.quill.insertEmbed(index, type, value, Quill.sources.USER);
+  public insertEmbed(index: number, type: string, value: any): any {
+    return this.quill.insertEmbed(index, type, value, Quill.sources.USER);
   }
 
   public removeFormat(): void {

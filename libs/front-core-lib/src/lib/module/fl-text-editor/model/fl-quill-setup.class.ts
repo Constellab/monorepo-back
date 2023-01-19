@@ -32,25 +32,27 @@ export class FlQuillSetup {
 
   public static addMatcher(node: any, delta: any, state: FlTextEditorState, config: FlTextEditorConfig): any{
     const insertImage: any = delta.ops[0].insert;
+    const firstDelta: any = delta;
     const imageData: string = insertImage.image;
     if (imageData.startsWith('http')) {
-      delta.ops[0] = {
-        insert: {
-          figure: {
-            filename: imageData,
-            width: null,
-            height: null,
-            naturalWidth: null,
-            naturalHeight: null,
-            title: '',
-            caption: ''
-          }
-        }
-      };
+      const img = new Image();
+      img.src = imageData;
+      img.onload = () => {0
+        delta = state.insertImageFromUrl({
+          filename: img.src,
+          width: img.width,
+          height: img.height
+        }, state.getCurrentSelectionIndex());
+
+        return delta;
+      }
     } else if (imageData.startsWith('data')) {
       const blob: Blob = FlFileHelper.convertBase64ToBlob(insertImage.image.split(',')[1], 'image/png');
       delta = config.onPasteImage(new File([blob], ClStringHelper.generateUUID()), state);
+      return delta;
     }
-    return delta;
+
+    return firstDelta == delta ? {ops:[]} : delta;
   }
+
 }

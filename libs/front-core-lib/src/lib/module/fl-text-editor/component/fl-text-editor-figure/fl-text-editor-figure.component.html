@@ -1,4 +1,4 @@
-<figure contenteditable="false" #figure>
+<figure contenteditable="false" #figure *ngIf="init">
   <div flResize="bothKeepRatio" class="image-container" (flResizeChanged)="onImageResize($event)" [disabled$]="disabled$"
        [style.width]="imageWidth + 'px'" [style.height]="imageHeight + 'px'">
     <img [src]="sanitizedUrl" draggable="false"

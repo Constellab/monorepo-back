@@ -251,7 +251,6 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
       for (const e of array) {
         if (e.name == value.name && array.indexOf(e) != index) {
           t = CmVersion.fromString(e.version) < CmVersion.fromString(value.version);
-          console.log(t);
         }
       }
       return t;
