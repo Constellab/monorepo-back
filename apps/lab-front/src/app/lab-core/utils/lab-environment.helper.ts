@@ -54,7 +54,7 @@ export class LabEnvironmentHelper {
   }
 
   public static getCentralConfigLabUrl(labId: string): string {
-    return `${LabEnvironmentHelper.getCentralFrontAppUrl()}/labs/${labId}`;
+    return `${LabEnvironmentHelper.getCentralFrontAppUrl()}/labs/${labId}/config`;
   }
 
   public static getEnv(): Environment {
