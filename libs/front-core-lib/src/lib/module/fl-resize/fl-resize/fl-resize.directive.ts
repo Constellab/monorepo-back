@@ -84,14 +84,15 @@ export class FlResizeDirective implements OnInit, OnDestroy {
       }
       this.resizerDivs = [];
     } else {
-      // create the resizer
-      this.createResizer(this.flResize);
-
       // when both mode, also activate width and height resizer
+      // create them before the both resizer so it is on top of the other resizer
       if (this.flResize === 'both' || this.flResize === 'bothKeepRatio') {
         this.createResizer('width');
         this.createResizer('height');
       }
+
+      // create the resizer
+      this.createResizer(this.flResize);
     }
   }
 
