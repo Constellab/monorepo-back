@@ -37,7 +37,12 @@ export class LabResourceViewPortalComponent implements OnInit {
     };
     this.contextMenuItems = input.contextMenuItems;
 
-    if (input.labView.view.type === 'multi-view') {
+    // do not define the container, the heat map defines it itself
+    if (input.labView.viewConfig.viewType === 'heatmap-view') {
+      this.width = null;
+      this.height = null;
+      // big portal for the multi view
+    } else if (input.labView.view.type === 'multi-view') {
       this.width = 'min(1000px, 90vw)';
       this.height = 'min(1000px, 90vh)';
     } else {

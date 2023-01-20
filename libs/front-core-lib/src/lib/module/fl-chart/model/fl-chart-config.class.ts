@@ -15,9 +15,25 @@ export interface FlChartRightSectionConfig {
 }
 
 /**
+ * Configure the size of the chart
+ */
+export type FlChartSizeConfig = {
+  // the complete chart will fit the container
+  type: 'fit-container';
+} |
+  // define a fixed size for the chart renderer (excluding the legend, axis, etc.)
+  {
+    type: 'fixed';
+    width: number;
+    height: number;
+  }
+
+/**
  * Config object to draw a new chart
  */
 export abstract class FlChartConfig {
+
+  public sizeConfig: FlChartSizeConfig = {type: 'fit-container'};
 
   private _theme: FlThemeDetail;
 

@@ -129,7 +129,11 @@ export class FlChartHeatMap extends FlChartConfig {
     // force the size of the chart so the heat map rect are squares
     const width = this.rectSize * this.dataContainer.getColumnCount();
     const height = this.rectSize * this.dataContainer.getRowCount();
-    chartContainer.setChartRendererSize(width, height);
+    this.sizeConfig = {
+      type: 'fixed',
+      width,
+      height
+    }
 
     return chartContainer;
   }

@@ -22,20 +22,22 @@ export class FlChartState {
     this.chart = chart;
   }
 
-  public initChart(width: number, height: number, container: HTMLElement): void {
+  public initChart(container: HTMLElement, containerWidth: number, containerHeight: number): void {
     this.chartSVG = new FlChartSvg();
-    this.renderChart(width, height, container);
+    this.renderChart(container, containerWidth, containerHeight);
   }
 
-  private renderChart(width: number, height: number, container: HTMLElement): void {
+  private renderChart(container: HTMLElement, containerWidth: number, containerHeight: number): void {
     this.chartContainer = this.chart.getChartContainer();
 
+    const rendererConfigSize = this.chart.sizeConfig;
     // if the chart container has a size defined, use it to set the SVG size
-    if (this.chartContainer.sizeIsSet()) {
+    if (rendererConfigSize.type === 'fixed') {
+      this.chartContainer.setChartRendererSize(rendererConfigSize.width, rendererConfigSize.height);
       this.chartSVG.setSVGSize(this.chartContainer.groupWidth, this.chartContainer.groupHeight);
     } else {
       // otherwise, use the HTMLElement size
-      this.chartSVG.setSVGSize(width, height);
+      this.chartSVG.setSVGSize(containerWidth, containerHeight);
       this.chartContainer.setGroupSize(this.chartSVG.chartContainerWidth, this.chartSVG.chartContainerHeight);
     }
     this.chartSVG.initSvg(container);

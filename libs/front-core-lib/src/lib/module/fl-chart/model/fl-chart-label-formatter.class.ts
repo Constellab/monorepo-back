@@ -34,6 +34,7 @@ export class FlChartLabelFormatter {
    */
   public static getDefaultTickLabel(): FlChartLabelFormatter {
     const format: FlChartLabelFormatFunction = (num) => {
+      if (num == null) return 'null';
       if (num === 0) return '0';
       const precision: number = 4;
       if (Math.abs(num) > 10 ** precision || Math.abs(num) < 10 ** (-precision)) {

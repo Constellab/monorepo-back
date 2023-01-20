@@ -84,22 +84,21 @@ export class FlChartComponent implements OnInit, OnDestroy {
   }
 
   private initChart(): void {
-    const size: Size = this.svgSize;
-
+    const containerSize: Size = this.svgSize;
+    // const size = this.chart.getChartRendererSize();
     // set a default width and height
-    if (size.width <= 0) {
-      size.width = 400;
+    if (containerSize.width <= 0) {
+      containerSize.width = 400;
     }
-    if (size.height <= 0) {
-      size.height = 400;
+    if (containerSize.height <= 0) {
+      containerSize.height = 400;
     }
 
     this.state.initData(this.chart);
-    this.state.initChart(size.width, size.height,
-      this.chartContainer.nativeElement);
+    this.state.initChart(this.chartContainer.nativeElement, containerSize.width, containerSize.height);
 
-    this.previousWidth = size.width;
-    this.previousHeight = size.height;
+    this.previousWidth = containerSize.width;
+    this.previousHeight = containerSize.height;
 
     this.subscribeToResize();
   }
@@ -118,14 +117,14 @@ export class FlChartComponent implements OnInit, OnDestroy {
   }
 
   // clear the svg and rebuild the chart
-  private redrawChart(size: Size): void {
-    if (size.width <= 0 || size.height <= 0) {
+  private redrawChart(containerSize: Size): void {
+    if (containerSize.width <= 0 || containerSize.height <= 0) {
       return;
     }
     console.log('Redraw chart');
     this.state.chartSVG.svg.remove();
-    this.state.initChart(size.width, size.height,
-      this.chartContainer.nativeElement);
+    this.state.initChart(this.chartContainer.nativeElement,
+      containerSize.width, containerSize.height);
   }
 
   private get svgSize(): Size {
