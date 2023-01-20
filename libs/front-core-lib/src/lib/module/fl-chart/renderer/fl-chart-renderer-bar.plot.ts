@@ -24,7 +24,6 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
   private readonly groupClassName: string = 'serie';
 
   private portalHandler: FlChartPortalHandler = new FlChartPortalHandler();
-  private portalWithSerieHandler: FlChartPortalHandler = new FlChartPortalHandler();
 
   constructor(private colorScale: FlChartScaleColor) {
     super();
@@ -45,11 +44,11 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
       .join('g')
       .attr('class', this.groupClassName)  // I add the class line to be able to modify this line later on.
       .attr('transform', (d) =>
-        this.getGroupTranslate(this.data.xScale, this.data.chartWidth, d))
+        this.getGroupTranslate(this.data.xAxis.scale, this.data.chartWidth, d))
 
       // for each group generate the values
       .each((data, index, nodes) =>
-        this.drawSerie(nodes[index] as any, data, (this.data.xScale as unknown as FlChartScaleBand).bandwidth()));
+        this.drawSerie(nodes[index] as any, data, (this.data.xAxis.scale as FlChartScaleBand).bandwidth()));
   }
 
   private drawSerie(group: SVGElement, chartData: FlChartDataWithSerie<FlChart2dDatum>[],
@@ -60,11 +59,12 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
     select(group).selectAll('rect')
       .data(chartData)
       .join('rect')
-      .on('mouseover', (event, d) => this.onMouseHover(event, d))
-      .on('mouseout', () => this.onMouseOut())
+      .on('mouseover', (event, d) => this.openPortal(event, d, false))
+      .on('mouseout', () => this.closePortal())
+      .on('click', (event, d) => this.openPortal(event, d, true))
       .style('fill', (d) => this.colorScale.scale(d.serieKey))
       .each((d, index, nodes: SVGRectElement[]) =>
-        this.drawBar(d, nodes[index], barWidth, this.data.yScale, index));
+        this.drawBar(d, nodes[index], barWidth, this.data.yAxis.scale, index));
   }
 
 
@@ -113,7 +113,7 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
   }
 
 
-  private onMouseHover(event: MouseEvent, d: FlChartDataWithSerie<FlChart2dDatum>): void {
+  private openPortal(event: MouseEvent, d: FlChartDataWithSerie<FlChart2dDatum>, fixPortal: boolean): void {
     // handle the FlChartDataBin portal
     if (d.data instanceof FlChartDataBin) {
       const data: FlChartBinDataPortalInput = {
@@ -121,7 +121,7 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
         color: this.colorScale.scale(d.serieKey)
       };
       // create the portal
-      this.portalHandler.openPortal(event.target as any, FlChartBinDataPortalComponent, data);
+      this.portalHandler.openPortal(event.target as any, FlChartBinDataPortalComponent, data, fixPortal);
 
       // basic portal
     } else {
@@ -132,12 +132,12 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
         yLabelFormatter: this.data.yAxis.getTickFormatter(),
       };
       // create the portal
-      this.portalWithSerieHandler.openDataWithSeriePortal(event.target as any, data);
+      this.portalHandler.openDataWithSeriePortal(event.target as any, data, fixPortal);
     }
   }
 
-  private onMouseOut(): void {
+
+  private closePortal(): void {
     this.portalHandler.closePortal();
-    this.portalWithSerieHandler.closePortal();
   }
 }

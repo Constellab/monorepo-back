@@ -164,8 +164,6 @@ export class FlChartContainer2Axis<Data> extends FlChartContainer<Data, FlChart2
       data: this.dataContainer,
       xAxis: this.xAxis,
       yAxis: this.yAxis,
-      xScale: this.xAxis.scale,
-      yScale: this.yAxis.scale,
       chartHeight: this.chartHeight,
       chartWidth: this.chartWidth
     };

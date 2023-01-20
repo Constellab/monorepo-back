@@ -1,5 +1,4 @@
 import {Selection} from 'd3-selection';
-import {FlChartScale} from '../model/scale/fl-chart-scale.class';
 import {FlThemeDetail} from '../../fl-theme/model/fl-theme-detail.class';
 import {FlThemeService} from '../../fl-theme/fl-theme.service';
 import {FlChartColorFunction} from '../model/scale/fl-chart-scale-color.class';
@@ -22,8 +21,6 @@ export interface FlChartNoAxisRendererInput<Data> {
 export interface FlChart2AxisRendererInput<Data> extends FlChartNoAxisRendererInput<Data> {
   xAxis: FlChartAxis;
   yAxis: FlChartAxis;
-  xScale: FlChartScale;
-  yScale: FlChartScale;
 }
 
 /**
@@ -79,7 +76,7 @@ export abstract class FlChart2AxisRendererWithColors<Data, Datum> extends FlChar
   protected constructor(protected defaultColorFunction: FlChartColorFunction<Datum>) {
     super();
     // init the current color function
-    this.currentColorFunction = defaultColorFunction
+    this.currentColorFunction = defaultColorFunction;
   }
 
   /**

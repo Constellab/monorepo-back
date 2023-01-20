@@ -35,10 +35,10 @@ export class FlChartRendererStraightLines extends FlChart2AxisRenderer<any> {
       .join('line')
       .attr('class', this.lineClassName)
       .transition().duration(withTransition ? flD3DefaultTransitionDuration : 0)
-      .attr('x1', d => d.orientation === 'vertical' ? this.data.xScale.scale(d.position) : 0)
-      .attr('y1', d => d.orientation === 'horizontal' ? this.data.yScale.scale(d.position) : 0)
-      .attr('x2', d => d.orientation === 'vertical' ? this.data.xScale.scale(d.position) : this.data.chartWidth)
-      .attr('y2', d => d.orientation === 'horizontal' ? this.data.yScale.scale(d.position) : this.data.chartHeight)
+      .attr('x1', d => d.orientation === 'vertical' ? this.data.xAxis.scale.scale(d.position) : 0)
+      .attr('y1', d => d.orientation === 'horizontal' ? this.data.yAxis.scale.scale(d.position) : 0)
+      .attr('x2', d => d.orientation === 'vertical' ? this.data.xAxis.scale.scale(d.position) : this.data.chartWidth)
+      .attr('y2', d => d.orientation === 'horizontal' ? this.data.yAxis.scale.scale(d.position) : this.data.chartHeight)
       .attr('stroke', theme.cardBackground);
 
   }

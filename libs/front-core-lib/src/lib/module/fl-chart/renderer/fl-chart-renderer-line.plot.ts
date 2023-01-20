@@ -29,7 +29,7 @@ export class FlChartRendererLinePlot extends FlChart2AxisRenderer<FlChart2dMulti
       .attr('stroke', serie => this.colorScale.scale(serie.key))
       .attr('class', this.serieClassName)  // I add the class line to be able to modify this line later on.
       .attr('stroke-width', 1.5)
-      .attr('d', this.getDValue(this.data.xScale, this.data.yScale)
+      .attr('d', this.getDValue(this.data.xAxis.scale, this.data.yAxis.scale)
       );
   }
 
@@ -37,7 +37,7 @@ export class FlChartRendererLinePlot extends FlChart2AxisRenderer<FlChart2dMulti
     this.data.container
       .selectAll(`.${this.serieClassName}`)
       .transition()
-      .attr('d', this.getDValue(this.data.xScale, this.data.yScale));
+      .attr('d', this.getDValue(this.data.xAxis.scale, this.data.yAxis.scale));
   }
 
   private getDValue(xScale: FlChartScale,

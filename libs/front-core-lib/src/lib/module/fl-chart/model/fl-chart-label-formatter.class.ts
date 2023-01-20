@@ -1,4 +1,4 @@
-import {ClStringHelper} from '@monorepo/core-lib';
+import {ClNumberHelper, ClStringHelper} from '@monorepo/core-lib';
 
 export type FlChartLabelFormatFunction = (domainValue: number, index: number) => string;
 
@@ -25,6 +25,25 @@ export class FlChartLabelFormatter {
       (value) => tickLabels[value] ?? value.toString(),
       tickLabels.reduce((p, c) => Math.max(p, c?.toString()?.length ?? 0), 0)
     );
+  }
+
+  /**
+   * Convert a number to a string using scientific notation for number > 10000 or < 0.0001
+   * With this the max label length is 7 because the number are displayed with 4 digits after the commas (ex: 1.2345)
+   *  or in scientific notation with 2 digit after the commas (ex: 1.23e+5)
+   */
+  public static getDefaultTickLabel(): FlChartLabelFormatter {
+    const format: FlChartLabelFormatFunction = (num) => {
+      if (num === 0) return '0';
+      const precision: number = 4;
+      if (Math.abs(num) > 10 ** precision || Math.abs(num) < 10 ** (-precision)) {
+        return num.toExponential(2);
+      } else {
+        return ClNumberHelper.round(num, precision).toString();
+      }
+    };
+
+    return new FlChartLabelFormatter(format, 7, (d) => d?.toString());
   }
 
   /**

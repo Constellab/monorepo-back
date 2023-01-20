@@ -18,15 +18,21 @@ export class FlChartHeatMapDataPortalComponent implements OnInit {
 
   data: FlChart3dDatum;
 
-  x: string;
-  y: string;
+  x: number;
+  y: number;
   z: number;
+
+  xLabelFormatter: FlChartLabelFormatter;
+  yLabelFormatter: FlChartLabelFormatter;
+  zLabelFormatter: FlChartLabelFormatter = FlChartLabelFormatter.getDefaultTickLabel();
 
   constructor(@Inject(FL_PORTAL_DATA) input: FlChartHeatMapDataPortalInput) {
     this.data = input.data;
-    this.x = input.xLabelFormatter.formatShort(input.data.getX());
-    this.y = input.yLabelFormatter.formatShort(input.data.getY());
+    this.x = input.data.getX();
+    this.y = input.data.getY();
     this.z = input.data.getZ();
+    this.xLabelFormatter = input.xLabelFormatter;
+    this.yLabelFormatter = input.yLabelFormatter;
   }
 
   ngOnInit(): void {

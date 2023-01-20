@@ -60,10 +60,10 @@ export class FlChartRendererStackedBarPlot extends FlChart2AxisRenderer<FlChart2
 
     selection
       // use the x from the first data because there have the same X, if return undefined, set to chartWidth to hide it
-      .attr('x', d => this.data.xScale.scale(d.data[0].data.getX(), this.data.chartWidth))
-      .attr('y', d => this.data.yScale.scale(d[1]))
-      .attr('height', d => Math.max(this.data.yScale.scale(d[0]) - this.data.yScale.scale(d[1]), 0))
-      .attr('width', (this.data.xScale as FlChartScaleBand).bandwidth());
+      .attr('x', d => this.data.xAxis.scale.scale(d.data[0].data.getX(), this.data.chartWidth))
+      .attr('y', d => this.data.yAxis.scale.scale(d[1]))
+      .attr('height', d => Math.max(this.data.yAxis.scale.scale(d[0]) - this.data.yAxis.scale.scale(d[1]), 0))
+      .attr('width', (this.data.xAxis.scale as FlChartScaleBand).bandwidth());
   }
 
   private onMouseHover(event: MouseEvent, d: SeriesPoint<FlChartDataWithSerie<FlChart2dDatum>[]>): void {

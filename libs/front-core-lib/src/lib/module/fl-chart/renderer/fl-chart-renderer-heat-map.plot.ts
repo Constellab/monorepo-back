@@ -19,8 +19,8 @@ export class FlChartRendererHeatMap extends FlChart2AxisRenderer<FlChartHeatMapD
 
   renderFirst(): void {
     const data: FlChart3dDatum[] = this.data.data.getData();
-    const xScale: FlChartScaleBand = this.data.xScale as FlChartScaleBand;
-    const yScale: FlChartScaleBand = this.data.yScale as FlChartScaleBand;
+    const xScale: FlChartScaleBand = this.data.xAxis.scale as FlChartScaleBand;
+    const yScale: FlChartScaleBand = this.data.yAxis.scale as FlChartScaleBand;
 
     this.data.container.selectAll()
       .data(data)

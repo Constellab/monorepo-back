@@ -280,16 +280,17 @@ export class FlChartRendererVennDiagram extends FlChartNoAxisRenderer<FlChartVen
       // .attr('fill', textColor)
       // .style('text-shadow', this.getTextShadow(backgroundColor))
       .style('font-size', `${fontSize}px`)
-      .on('mouseover', (event, d) => this.onMouseHover(event, d.section))
-      .on('mouseout', () => this.onMouseOut());
+      .on('mouseover', (event, d) => this.openPortal(event, d.section, false))
+      .on('mouseout', () => this.closePortal())
+      .on('click', (event, d) => this.openPortal(event, d.section, true));
   }
 
-  private onMouseHover(event: MouseEvent, d: FlChartVennDataSection): void {
+  private openPortal(event: MouseEvent, d: FlChartVennDataSection, fixPortal: boolean): void {
     // create the portal
-    this.portalHandler.openPortal(event.target as any, FlChartVennDataPortalComponent, d);
+    this.portalHandler.openPortal(event.target as any, FlChartVennDataPortalComponent, d, fixPortal);
   }
 
-  private onMouseOut(): void {
+  private closePortal(): void {
     this.portalHandler.closePortal();
   }
 

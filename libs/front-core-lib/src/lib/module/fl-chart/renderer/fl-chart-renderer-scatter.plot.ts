@@ -37,8 +37,8 @@ export class FlChartRendererScatterPlot extends FlChart2AxisRendererWithColors<F
       .append('circle')
       .attr('r', 3)
       .style('fill', this.currentColorFunction)
-      .attr('cx', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.xScale.scale(d.data.getX()))
-      .attr('cy', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.yScale.scale(d.data.getY()))
+      .attr('cx', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.xAxis.scale.scale(d.data.getX()))
+      .attr('cy', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.yAxis.scale.scale(d.data.getY()))
       .on('mouseover', (event, d) => this.onMouseHover(event, d))
       .on('mouseout', () => this.onMouseOut())
       .on('click', (event, d) => this.onMouseClick(event, d));
@@ -52,8 +52,8 @@ export class FlChartRendererScatterPlot extends FlChart2AxisRendererWithColors<F
     this.data.container
       .selectAll(`circle`)
       .transition()
-      .attr('cx', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.xScale.scale(d.data.getX()))
-      .attr('cy', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.yScale.scale(d.data.getY()));
+      .attr('cx', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.xAxis.scale.scale(d.data.getX()))
+      .attr('cy', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.yAxis.scale.scale(d.data.getY()));
   }
 
   protected refreshColor(colorFunction: FlChartColorFunction<FlChartDataWithSerie<FlChart2dDatum>>): void {

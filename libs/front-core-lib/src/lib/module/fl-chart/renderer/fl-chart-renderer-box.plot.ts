@@ -45,7 +45,7 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
   refreshRender(): void {
     const data: FlChartDataWithSerie<FlChartBoxPlotData>[][] = this.data.data.invert();
 
-    const bandWidth: number = (this.data.xScale as FlChartScaleBand).bandwidth();
+    const bandWidth: number = (this.data.xAxis.scale as FlChartScaleBand).bandwidth();
 
     // draw the groups for each invert array
     this.data.container
@@ -55,7 +55,7 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
       .join('g')
       .attr('class', this.groupClassName)  // I add the class line to be able to modify this line later on.
       .attr('transform', (d, i) =>
-        this.getGroupTranslate(this.data.xScale, this.data.chartWidth, i))
+        this.getGroupTranslate(this.data.xAxis.scale, this.data.chartWidth, i))
       .each((data, index, nodes) =>
         this.drawBoxPlotGroup(nodes[index] as any, data, bandWidth));
   }
@@ -72,8 +72,9 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
       .join('g')
       .attr('class', this.boxPlotGroupClassName)
       .attr('transform', (d, i) => `translate(${groupWidth * i},0)`)
-      .on('mouseover', (event, d) => this.onMouseHover(event, d))
-      .on('mouseout', () => this.onMouseOut())
+      .on('mouseover', (event, d) => this.openPortal(event, d, false))
+      .on('mouseout', () => this.closePortal())
+      .on('click', (event, d) => this.openPortal(event, d, true))
       .each((data, index, nodes) =>
         this.drawBoxPlot(nodes[index] as any, data, groupWidth));
   }
@@ -102,8 +103,8 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
       .attr('class', this.verticalLineClassName)
       .attr('x1', xCenter)
       .attr('x2', xCenter)
-      .attr('y1', d => this.data.yScale.scale(d.data.lowerWhisker))
-      .attr('y2', d => this.data.yScale.scale(d.data.upperWhisker))
+      .attr('y1', d => this.data.yAxis.scale.scale(d.data.lowerWhisker))
+      .attr('y2', d => this.data.yAxis.scale.scale(d.data.upperWhisker))
       .attr('stroke', theme.foreground);
 
     // Place the box
@@ -112,8 +113,8 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
       .data([dataWithSerie])
       .join('rect')
       .attr('x', x1)
-      .attr('y', d => this.data.yScale.scale(d.data.q3))
-      .attr('height', d => (this.data.yScale.scale(d.data.q1) - this.data.yScale.scale(d.data.q3)))
+      .attr('y', d => this.data.yAxis.scale.scale(d.data.q3))
+      .attr('height', d => (this.data.yAxis.scale.scale(d.data.q1) - this.data.yAxis.scale.scale(d.data.q3)))
       .attr('width', width)
       .attr('stroke', theme.foreground)
       .attr('class', this.rectColorClassName)
@@ -127,8 +128,8 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
       .attr('class', this.horizontalLineClassName)
       .attr('x1', x1)
       .attr('x2', width + padding)
-      .attr('y1', (d) => this.data.yScale.scale(d))
-      .attr('y2', (d) => this.data.yScale.scale(d))
+      .attr('y1', (d) => this.data.yAxis.scale.scale(d))
+      .attr('y2', (d) => this.data.yAxis.scale.scale(d))
       .attr('stroke', theme.foreground);
   }
 
@@ -139,16 +140,16 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
     return 'translate(' + (scale == null ? (chartWidth + 10) : scale) + ',0)';
   }
 
-  private onMouseHover(event: MouseEvent, data: FlChartDataWithSerie<FlChartBoxPlotData>): void {
+  private openPortal(event: MouseEvent, data: FlChartDataWithSerie<FlChartBoxPlotData>, fixPortal: boolean): void {
     const input: FlChartBoxPlotDataPortalInput = {
       data: data,
       color: this.defaultColorFunction(data),
       tagColorer: this.tagColorer
     };
-    this.portalHandler.openPortal(event.target as any, FlChartBoxPlotDataPortalComponent, input);
+    this.portalHandler.openPortal(event.target as any, FlChartBoxPlotDataPortalComponent, input, fixPortal);
   }
 
-  private onMouseOut(): void {
+  private closePortal(): void {
     this.portalHandler.closePortal();
   }
 
