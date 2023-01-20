@@ -59,6 +59,7 @@
   "codelab_link": "CODELAB",
   "dev_env_toggle": "Dev environment",
   "dev_env_not_available": "The development environment is shutdown. To start it, open the CODELAB and launch the application",
+  "lab_config": "Configuration du lab",
   "error_code": "Code",
   "http_status": "HTTP status",
   "auto_dev_login_failed": "The automatic connexion to the development environment failed, please lo on manually",

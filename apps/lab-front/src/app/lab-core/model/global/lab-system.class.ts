@@ -18,4 +18,6 @@ export class LabSystemInfo {
   @Type(() => LabSpace)
   space: LabSpace;
 
+  id: string;
+
 }

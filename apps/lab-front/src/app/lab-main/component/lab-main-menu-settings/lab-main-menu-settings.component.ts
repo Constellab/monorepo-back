@@ -7,6 +7,7 @@ import {LabSystemService} from '../../../lab-core/service/lab-system.service';
 import {LabEnvironmentHelper} from '../../../lab-core/utils/lab-environment.helper';
 import {LabRouterService} from '../../../lab-core/service/lab-router.service';
 import {LabQueueJobsDialogComponent} from '../lab-queue-jobs-dialog/lab-queue-jobs-dialog.component';
+import {LabSystemInfo} from '../../../lab-core/model/global/lab-system.class';
 
 /**
  * Component for the settings button on top right of the screen
@@ -18,10 +19,11 @@ import {LabQueueJobsDialogComponent} from '../lab-queue-jobs-dialog/lab-queue-jo
 })
 export class LabMainMenuSettingsComponent implements OnInit {
 
-
   codeServerUrl: string;
 
   monitoringRoute = LabRouterService.getMonitoringRoute();
+
+  labConfigRoute: string;
 
   constructor(private authenticationService: LabAuthService,
               private router: Router,
@@ -31,6 +33,14 @@ export class LabMainMenuSettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.codeServerUrl = LabEnvironmentHelper.getCodelabFullUrl();
+
+    this.systemService.getSystemInfo().subscribe(
+      systemInfo => this.getSystemInfoSuccess(systemInfo)
+    );
+  }
+
+  private getSystemInfoSuccess(systemInfo: LabSystemInfo): void {
+    this.labConfigRoute = LabEnvironmentHelper.getCentralConfigLabUrl(systemInfo.id);
   }
 
   logout(): void {

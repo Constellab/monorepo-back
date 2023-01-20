@@ -40,6 +40,11 @@
       <span>{{'queue_jobs' | translate}}</span>
     </button>
 
+    <a *ngIf="labConfigRoute" mat-menu-item [href]="labConfigRoute">
+      <mat-icon>settings</mat-icon>
+      <span>{{'lab_config' | translate}}</span>
+    </a>
+
     <button mat-menu-item type="button" (click)="logout()">
       <mat-icon color="warn">logout</mat-icon>
       <span class="g-warn-text">{{'flAuth.logout' | translate}}</span>
