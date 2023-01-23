@@ -1,5 +1,16 @@
+.navigation-div{
+  margin-top: 30px;
+  padding: 0 100px 13px 100px;
+  border-bottom: 1px solid var(--card-background);
+}
+
+.back-link{
+  display: block;
+  width: fit-content;
+}
+
 .main-div {
-  margin: 0 auto;
+  margin: 8px auto 0 auto;
 }
 
 .top-div{
@@ -39,6 +50,14 @@
 .focus{
   transition: 0s !important;
   border: 1px solid var(--primary-color) !important;
+}
+
+.publish-story-bt {
+  width: 100%;
+  border-radius: 18px !important;
+  background-color: var(--card-background);
+  height: 56px;
+  padding: 8px;
 }
 
 //*{

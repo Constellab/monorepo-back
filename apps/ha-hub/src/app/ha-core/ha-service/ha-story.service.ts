@@ -1,14 +1,11 @@
 import {Injectable} from '@angular/core';
-import {
-  FlApiService,
-  FlEntityPaginatedDatasource,
-  FlTextEditorImageLoader,
-  FlTextEditorUploadedImage
-} from '@monorepo/front-core-lib';
+import {FlApiService, FlEntityPaginatedDatasource, FlTextEditorUploadedImage} from '@monorepo/front-core-lib';
 import {
   HaCreateStoryDto,
   HaListStoryDto,
+  HaMyStoriesDataSource,
   HaStory,
+  HaStoryDataSourceDataDto,
   HaStoryDatasourcePaginated
 } from '../ha-model/ha-entities/ha-story.class';
 import {Observable} from 'rxjs';
@@ -122,5 +119,18 @@ export class HaStoryService {
 
   getImageUrl(filename: string): string {
     return this.getFilePath(filename);
+  }
+
+  publishStory(id: string): Observable<HaStory> {
+    return this.apiService.put(`${this.route}/${id}/publish`, {});
+  }
+
+  getMyStories(): HaMyStoriesDataSource {
+    return new FlEntityPaginatedDatasource((page, size) =>
+      this.getMyStoriesPaginated(page, size), 10);
+  }
+
+  private getMyStoriesPaginated(page: number, size: number): Observable<ClPage<HaStoryDataSourceDataDto>> {
+    return this.apiService.get(this.route + '/my', HaStory, {page: page, pageSize: size, resultIsPaginated: true});
   }
 }

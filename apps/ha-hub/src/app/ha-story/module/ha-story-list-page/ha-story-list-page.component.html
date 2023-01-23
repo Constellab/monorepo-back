@@ -11,7 +11,7 @@
         <div class="story-content">
           <h5>{{story.title}}</h5>
           <p>{{story.firstParagraph}}</p>
-          <fl-user-inline [user]="story.createdBy" class="small-text"></fl-user-inline>
+          <fl-user-inline [user]="story.createdBy" class="small-text" [showPopUp]="false"></fl-user-inline>
           <p class="small-text">{{story.createdAt | flDate:'DATETIME_MED'}}</p>
         </div>
         <img *ngIf="story.mainPicture && story.mainPicture.length > 0" [src]="getStoryImageLink(story.mainPicture)" class="story-image"/>
@@ -20,9 +20,13 @@
   </div>
 
   <div class="right-side-div">
-    <button mat-flat-button type="button" class="create-story-bt" *haIsAdmin (click)="openCreateDocDialog()">
+    <button mat-flat-button type="button" class="bt" *haIsAdmin (click)="openCreateDocDialog()">
       <mat-icon >add_circle</mat-icon>
       {{'create_story' | translate}}
+    </button>
+
+    <button mat-flat-button type="button" class="bt my-stories-bt" *haIsAdmin [routerLink]="'my-stories'">
+      {{'my_stories' | translate}}
     </button>
   </div>
 </div>

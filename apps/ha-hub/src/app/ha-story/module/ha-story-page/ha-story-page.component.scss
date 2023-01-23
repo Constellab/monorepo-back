@@ -11,19 +11,21 @@
 
 .story-div{
   display: flex;
-  padding: 0 100px;
+  width: calc(60rem + 20px + 295px);
+  margin: 0 auto;
 }
 
 .right-div{
   margin-top: 13px;
+  margin-left: 20px;
   width: 295px;
   height: fit-content;
-  margin-left: auto;
   display: flex;
   flex-direction: column;
   background-color: var(--card-background);
   border-radius: 18px;
   padding: 8px;
+
 }
 
 .title{
@@ -52,4 +54,8 @@
 .text-editor{
   border: none;
   width: 60rem;
+}
+
+.story-date{
+  margin-left: 3em;
 }

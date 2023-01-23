@@ -3,9 +3,10 @@ import {HaStoryService} from '../../../ha-core/ha-service/ha-story.service';
 import {HaStory, HaStoryContentFormDTO} from '../../../ha-core/ha-model/ha-entities/ha-story.class';
 import {ActivatedRoute} from '@angular/router';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {CmRichTextI} from '@monorepo/common-model';
-import {FlDebouncer, FlDialogService} from '@monorepo/front-core-lib';
+import {CmRichText, CmRichTextI} from '@monorepo/common-model';
+import {FlConfirmDialogInput, FlDebouncer, FlDialogService} from '@monorepo/front-core-lib';
 import {HaStoryTextEditorConfig} from './ha-story-text-editor.config';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'ha-ha-story-edit-page',
@@ -24,6 +25,10 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
 
   contentEditorIsFocused: boolean = false;
   private contentDebouncer: FlDebouncer<CmRichTextI>;
+
+  contentHasError: boolean = false;
+
+  contentError: string;
 
 
   constructor(
@@ -97,11 +102,39 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
     this.storyService.updateContent(this.story.id, value).subscribe();
   }
 
-  onFocus(event: any): void{
+  onFocus(event: any): void {
     this.contentEditorIsFocused = true;
   }
 
-  onUnFocus(event: any): void{
+  onUnFocus(event: any): void {
     this.contentEditorIsFocused = false;
+  }
+
+  publish(): void {
+
+    if(new CmRichText(this.formGp.get('content').value).getFirstFigureLink().length > 0){
+      this.contentHasError = false;
+      const input: FlConfirmDialogInput = {
+        title: 'publish_story',
+        content: 'publish_story_dialog_content',
+        successMessage: 'story_published',
+        observable: this.publishStory(),
+        translateMessage: true,
+        translateTitleAndContent: true
+      }
+      this.dialogService.openConfirmDialog(input).afterClosed().subscribe((res) => {
+        console.log(res);
+        if (res.choice && res.result) {
+          this.story = res.result;
+        }
+      });
+    } else {
+      this.contentHasError = true;
+      this.contentError = 'story_content_no_picture_error';
+    }
+  }
+
+  private publishStory(): Observable<HaStory> {
+    return this.storyService.publishStory(this.story.id);
   }
 }

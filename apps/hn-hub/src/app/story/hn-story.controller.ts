@@ -39,6 +39,15 @@ export class HnStoryController {
     return this.storyService.getStoriesByTopicId(topicId, page, size);
   }
 
+  /***
+   * Get my stories paginated
+   */
+  @Get('my')
+  async getMyStories(@Query('page', new ParseIntPipe()) page: number,
+                     @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStory>> {
+    return this.storyService.getMyStories(page, size);
+  }
+
   @BlPublic()
   @Get(':id')
   async getStory(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnStory> {
@@ -75,5 +84,14 @@ export class HnStoryController {
     const file = await this.storyService.getImage(filename);
     BlResponseHelper.setMessageAndCache(response, file);
   }
+
+  /***
+   * Publish the story
+   */
+  @Put(':id/publish')
+  async publishStory(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnStory> {
+    return this.storyService.publishStory(id);
+  }
+
 
 }

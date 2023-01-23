@@ -46,7 +46,20 @@ export class HaListStoryDto{
   createdBy: HaUser;
 }
 
+export class HaStoryDataSourceDataDto{
+  id: string;
+  title: string;
+
+  status: HaStoryStatus;
+  createdAt: DateTime;
+
+  @Type(() => HaUser)
+  createdBy: HaUser;
+}
+
 export type HaStoryDatasourcePaginated = FlDatasourcePaginated<HaListStoryDto>;
+
+export type HaMyStoriesDataSource = FlDatasourcePaginated<HaStoryDataSourceDataDto>;
 
 export class HaStoryContentFormDTO extends HaEntity {
   content: CmRichTextI;

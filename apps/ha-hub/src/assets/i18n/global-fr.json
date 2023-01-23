@@ -83,4 +83,14 @@
   "story_created": "Story créée",
   "stories": "Stories",
   "back_to_all_stories": "Retour à toutes les stories",
+  "publish_story": "Publier la story",
+  "publish_story_dialog_content": "Êtes-vous sûr de vouloir publier cette story ?",
+  "story_published": "Story publiée",
+  "yes": "Oui",
+  "no": "Non",
+  "story_content_no_picture_error": "Le contenu de la story doit contenir au moins une image",
+  "back_to_my_stories": "Retour à mes stories",
+  "my_stories": "Mes stories",
+  "created": "Créée",
+  "status": "Statut"
 }

@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {HnStory} from './hn-story.entity';
+import {HnStory, HnStoryStatus} from './hn-story.entity';
 import {Repository} from 'typeorm';
 import {HnTopicService} from '../topic/hn-topic.service';
 import {ClPage, ClStringHelper} from '@monorepo/core-lib';
@@ -41,17 +41,26 @@ export class HnStoryService {
     return this.storyRepository.findOneBy({id: id});
   }
 
+  async getMyStories(page: number, size: number): Promise<ClPage<HnStory>> {
+    return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+      where: {
+        createdBy: {
+          id: HnCurrentUserHelper.getCurrentUser().id
+        }
+      },
+      order: {
+        createdAt: 'DESC' as any
+      }
+    },
+    this.storyRepository.manager, HnStory
+    );
+  }
+
   async getStories(page: number, size: number): Promise<ClPage<HnStory>> {
     return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
-      where: [
-        {
-          createdBy: {
-            id: HnCurrentUserHelper.getCurrentUser().id
-          }
-        }, {
-          status: 1
-        }
-      ],
+      where: {
+        status: HnStoryStatus.PUBLISHED
+      },
       order: {createdAt: 'DESC' as any}
     }, this.storyRepository.manager, HnStory);
   }
@@ -63,14 +72,7 @@ export class HnStoryService {
           topics: {
             id: topicId
           },
-          createdBy: {
-            id: HnCurrentUserHelper.getCurrentUser().id
-          }
-        }, {
-          topics: {
-            id: topicId
-          },
-          status: 1
+          status: HnStoryStatus.PUBLISHED
         }
       ],
       order: {createdAt: 'DESC' as any}
@@ -162,5 +164,14 @@ export class HnStoryService {
       bucket: this.configService.getStoryImageObjectStorageBucket(),
       credentials: this.configService.getDefaultObjectStorageCredentials()
     };
+  }
+
+  async publishStory(id: string): Promise<HnStory> {
+    const story: HnStory = await this.getStory(id);
+    if (new CmRichText(story.content as CmRichTextI).getFirstFigureLink().length <= 0) {
+      throw new Error('Story must have a main picture');
+    }
+    story.status = HnStoryStatus.PUBLISHED;
+    return this.storyRepository.save(story);
   }
 }

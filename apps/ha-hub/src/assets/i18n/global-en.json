@@ -82,5 +82,15 @@
   "create_story": "Create Story",
   "story_created": "Story created",
   "stories": "Stories",
-  "back_to_all_stories": "Back to all stories"
+  "back_to_all_stories": "Back to all stories",
+  "publish_story": "Publish story",
+  "publish_story_dialog_content": "Are you sure you want to publish this story ?",
+  "story_published": "Story published",
+  "yes": "Yes",
+  "no": "No",
+  "story_content_no_picture_error": "The story content must contain at least one picture",
+  "back_to_my_stories": "Back to my stories",
+  "my_stories": "My stories",
+  "created": "Created",
+  "status": "Status"
 }

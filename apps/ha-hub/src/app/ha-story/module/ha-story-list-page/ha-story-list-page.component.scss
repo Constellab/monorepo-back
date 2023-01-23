@@ -68,10 +68,15 @@ h5 {
   margin: 0;
 }
 
-.create-story-bt {
+
+.bt{
   width: 100%;
   border-radius: 18px !important;
   background-color: var(--card-background);
   height: 56px;
   padding: 8px;
+}
+
+.my-stories-bt{
+  margin-top: 20px;
 }

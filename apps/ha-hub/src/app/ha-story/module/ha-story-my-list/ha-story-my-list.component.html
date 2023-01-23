@@ -1,0 +1,58 @@
+<div class="navigation-div">
+  <a [routerLink]="'..'" class="back-link">
+    <fl-text-icon [iconPosition]="'start'">
+      <mat-icon>arrow_back</mat-icon>
+      {{'back_to_all_stories' | translate}}
+    </fl-text-icon>
+  </a>
+</div>
+
+
+<div class="main-div">
+  <div class="my-stories-table">
+    <mat-table mat-table fxFlex="100" [dataSource]="myStories">
+
+      <ng-container matColumnDef="title">
+        <mat-header-cell *matHeaderCellDef> {{'title' | translate}} </mat-header-cell>
+        <mat-cell *matCellDef="let story"> {{story.title}} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef> {{'status' | translate}} </mat-header-cell>
+        <mat-cell *matCellDef="let story">
+      <span [style.color]="story.status === 'PUBLISHED' ? 'var(--primary-color)' : 'var(--secondary-color)'">
+        {{story.status | translate}}
+      </span>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="createdAt">
+        <mat-header-cell *matHeaderCellDef> {{'created' | translate}} </mat-header-cell>
+        <mat-cell *matCellDef="let story">
+          <fl-from-now [date]="story.createdAt" [prefix]="'created' | translate"></fl-from-now>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="button">
+        <mat-header-cell *matHeaderCellDef class="g-table-icon-button-cell"></mat-header-cell>
+        <mat-cell *matCellDef="let story" class="g-table-icon-button-cell">
+          <button mat-icon-button type="button" [routerLink]="'../edit/' + story.id">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+  </div>
+
+  <div class="right-side-div">
+    <button mat-flat-button type="button" class="bt" *haIsAdmin (click)="openCreateDocDialog()">
+      <mat-icon >add_circle</mat-icon>
+      {{'create_story' | translate}}
+    </button>
+  </div>
+</div>
+
+

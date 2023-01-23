@@ -5,8 +5,8 @@ import {HnTopic} from '../topic/hn-topic.entity';
 import {JoinTable} from 'typeorm';
 
 export enum HnStoryStatus{
-  DRAFT = 0,
-  PUBLISHED = 1,
+  DRAFT = 'DRAFT',
+  PUBLISHED = 'PUBLISHED',
 }
 
 @Entity('Story')

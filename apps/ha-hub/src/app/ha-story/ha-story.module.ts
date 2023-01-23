@@ -10,9 +10,11 @@ import {HaCoreModule} from '../ha-core/ha-core.module';
 import { HaStoryCreateDialogComponent } from './module/ha-story-create-dialog/ha-story-create-dialog.component';
 import {AsyncPipe, NgForOf, NgIf} from '@angular/common';
 import {FlDateModule} from "@monorepo/front-core-lib";
+import { HaStoryMyListComponent } from './module/ha-story-my-list/ha-story-my-list.component';
+import {MatTableModule} from "@angular/material/table";
 
 @NgModule({
-  declarations: [HaStoryPageComponent, HaStoryEditPageComponent, HaStoryListPageComponent, HaStoryCreateDialogComponent],
+  declarations: [HaStoryPageComponent, HaStoryEditPageComponent, HaStoryListPageComponent, HaStoryCreateDialogComponent, HaStoryMyListComponent],
     imports: [
         HaStoryRoutingModule,
         HaCustomLibraryModule,
@@ -23,6 +25,7 @@ import {FlDateModule} from "@monorepo/front-core-lib";
         AsyncPipe,
         NgForOf,
         FlDateModule,
+        MatTableModule,
     ]
 })
 export class HaStoryModule {

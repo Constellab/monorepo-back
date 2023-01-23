@@ -1,3 +1,12 @@
+<div class="navigation-div">
+  <a [routerLink]="'../../my-stories'" class="back-link">
+    <fl-text-icon [iconPosition]="'start'">
+      <mat-icon>arrow_back</mat-icon>
+      {{'back_to_my_stories' | translate}}
+    </fl-text-icon>
+  </a>
+</div>
+
 <div class="main-div g-max-article-width" *ngIf="story">
   <div class="top-div">
     <div class="inputs-div">
@@ -17,8 +26,14 @@
         <mat-error *ngIf="!inputTitle || inputTitle.length === 0">{{'title' | flErrorRequired}}</mat-error>
       </mat-form-field>
     </div>
+    <div *ngIf="story.status === 'DRAFT'">
+      <button mat-flat-button type="button" class="publish-story-bt" *haIsAdmin (click)="publish()">
+        {{'publish_story' | translate}}
+      </button>
+    </div>
   </div>
 
+  <mat-error *ngIf="contentHasError">{{contentError | translate}}</mat-error>
   <form class="story-content-form" [formGroup]="formGp" id="story-content-form" [ngClass]="contentEditorIsFocused ? ['focus'] : []">
     <fl-text-editor class="content-editor g-max-article-width" mode="JSON" scrollContainer="auto"
                     formControlName="content"
