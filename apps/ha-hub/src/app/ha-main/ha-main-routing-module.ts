@@ -26,8 +26,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    pathMatch: 'full',
-    redirectTo: 'bricks'
+    component: HaMainComponent
   },
   {
     path: '**',

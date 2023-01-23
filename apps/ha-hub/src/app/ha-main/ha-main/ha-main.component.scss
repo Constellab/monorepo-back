@@ -1,9 +1,21 @@
 .gencovery-logo{
-  height: 2.5em;
+  height: 100%;
   margin: 0;
 }
 
 .gencovery-hub-logo img{
+  height: 100%;
+}
+
+.nav-bar-links{
+  background-color: var(--card-background);
+  margin: 0 auto;
+  padding: 0 7px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
   height: 100%;
 }
 
@@ -12,18 +24,17 @@
 }
 
 .nav-bar{
-  background-color: var(--card-background);
-  padding: 1em 5%;
-  height: 3.5em !important;
+  margin-top: 16px;
   display: flex;
-}
-
-.spacer{
-  flex: 1 1 auto;
+  height: 40px;
+  padding: 0 100px;
 }
 
 .option{
-  margin-left: 5em;
+  font-weight: normal;
+  width: auto; //9rem;
+  margin: auto 3rem;
+  text-align: center;
 }
 
 .body{
@@ -59,35 +70,6 @@
 .footer-logo{
   height: 60%;
   padding-right: 10px;
-}
-
-@media (max-width: 1279px) {
-  .option{
-    margin-left: 3em;
-  }
-}
-
-@media (max-width: 599px) {
-  .footer{
-    font-size: 0.85em;
-  }
-
-  .footer-text{
-    padding-left: 2px;
-    padding-right: 2px;
-  }
-
-  .footer-logo{
-    padding-right: 2px;
-  }
-
-  .nav-bar{
-    padding: 1em 1%;
-  }
-  .option{
-    font-size: 2em;
-    margin-left: 1.5em;
-  }
 }
 
 .span-initials:hover{
