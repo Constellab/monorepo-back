@@ -9,6 +9,13 @@ export enum HnStoryStatus{
   PUBLISHED = 'PUBLISHED',
 }
 
+export enum HnStoryCategory{
+  DOCUMENTATION = 'DOCUMENTATION',
+  PRODUCT_DOCUMENTATION = 'PRODUCT_DOCUMENTATION',
+  USE_CASE = 'USE_CASE',
+  ARTICLE = 'ARTICLE'
+}
+
 @Entity('Story')
 export class HnStory extends HnBaseEntity {
   @Column()
@@ -29,6 +36,9 @@ export class HnStory extends HnBaseEntity {
 
   @Column({type: 'enum', enum: HnStoryStatus, default: HnStoryStatus.DRAFT})
   status: HnStoryStatus;
+
+  @Column({type: 'enum', enum: HnStoryCategory, default: HnStoryCategory.ARTICLE})
+  category: HnStoryCategory;
 
   init(title: string, content: CmRichTextI, labels: HnTopic[]): void {
     this.content = content;

@@ -12,6 +12,11 @@
   <div class="my-stories-table">
     <mat-table mat-table fxFlex="100" [dataSource]="myStories">
 
+      <ng-container matColumnDef="category">
+        <mat-header-cell *matHeaderCellDef> {{'category' | translate}} </mat-header-cell>
+        <mat-cell *matCellDef="let story"> {{story.category.toLowerCase() | translate}} </mat-cell>
+      </ng-container>
+
       <ng-container matColumnDef="title">
         <mat-header-cell *matHeaderCellDef> {{'title' | translate}} </mat-header-cell>
         <mat-cell *matCellDef="let story"> {{story.title}} </mat-cell>

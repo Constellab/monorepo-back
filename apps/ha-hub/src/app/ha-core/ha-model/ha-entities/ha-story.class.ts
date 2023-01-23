@@ -11,6 +11,13 @@ export enum HaStoryStatus{
   PUBLISHED = 'PUBLISHED'
 }
 
+export enum HaStoryCategory{
+  DOCUMENTATION = 'DOCUMENTATION',
+  PRODUCT_DOCUMENTATION = 'PRODUCT_DOCUMENTATION',
+  USE_CASE = 'USE_CASE',
+  ARTICLE = 'ARTICLE'
+}
+
 export class HaStory{
   id: string;
   title: string;
@@ -28,10 +35,15 @@ export class HaStory{
   createdBy: HaUser;
 
   createdAt: DateTime;
+
+  category: HaStoryCategory;
 }
 
 export class HaCreateStoryDto{
   title: string;
+
+  category: HaStoryCategory;
+
 }
 
 export class HaListStoryDto{
@@ -42,6 +54,8 @@ export class HaListStoryDto{
   topics?: HaTopic[];
   createdAt: DateTime;
 
+  category: HaStoryCategory;
+
   @Type(() => HaUser)
   createdBy: HaUser;
 }
@@ -49,6 +63,8 @@ export class HaListStoryDto{
 export class HaStoryDataSourceDataDto{
   id: string;
   title: string;
+
+  category: HaStoryCategory;
 
   status: HaStoryStatus;
   createdAt: DateTime;

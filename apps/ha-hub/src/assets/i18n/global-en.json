@@ -94,5 +94,9 @@
   "created": "Created",
   "status": "Status",
   "bricks": "Bricks",
-  "home": "Home"
+  "home": "Home",
+  "product_documentation": "Product documentation",
+  "use_case": "Use case",
+  "article": "Article",
+  "category": "Category"
 }

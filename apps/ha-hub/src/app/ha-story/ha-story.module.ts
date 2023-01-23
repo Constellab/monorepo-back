@@ -12,6 +12,7 @@ import {AsyncPipe, NgForOf, NgIf} from '@angular/common';
 import {FlDateModule} from "@monorepo/front-core-lib";
 import { HaStoryMyListComponent } from './module/ha-story-my-list/ha-story-my-list.component';
 import {MatTableModule} from "@angular/material/table";
+import {MatRadioModule} from "@angular/material/radio";
 
 @NgModule({
   declarations: [HaStoryPageComponent, HaStoryEditPageComponent, HaStoryListPageComponent, HaStoryCreateDialogComponent, HaStoryMyListComponent],
@@ -26,6 +27,7 @@ import {MatTableModule} from "@angular/material/table";
         NgForOf,
         FlDateModule,
         MatTableModule,
+        MatRadioModule,
     ]
 })
 export class HaStoryModule {

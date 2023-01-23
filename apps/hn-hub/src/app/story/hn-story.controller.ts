@@ -56,7 +56,7 @@ export class HnStoryController {
 
   @Post()
   async createStory(@Body(new BlParsePipe(HnCreateStoryDto)) createStoryDto: HnCreateStoryDto): Promise<HnStory> {
-    return this.storyService.createStory(createStoryDto.title);
+    return this.storyService.createStory(createStoryDto);
   }
 
   @Put(':id/title')

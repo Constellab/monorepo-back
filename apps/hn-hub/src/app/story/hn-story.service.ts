@@ -11,6 +11,7 @@ import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.se
 import {IncomingMessage} from 'http';
 import {ISizeCalculationResult} from 'image-size/dist/types/interface';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
+import {HnCreateStoryDto} from './hn-story.dto';
 
 class HnStoryImage {
   filename: string;
@@ -30,9 +31,10 @@ export class HnStoryService {
   ) {
   }
 
-  async createStory(title: string): Promise<HnStory> {
+  async createStory(data: HnCreateStoryDto): Promise<HnStory> {
     const story = new HnStory();
-    story.title = title;
+    story.title = data.title;
+    story.category = data.category;
     story.content = CmRichText.newRichText();
     return this.storyRepository.save(story);
   }

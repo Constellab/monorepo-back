@@ -20,12 +20,12 @@
   </div>
 
   <div class="right-side-div">
-    <button mat-flat-button type="button" class="bt" *haIsAdmin (click)="openCreateDocDialog()">
+    <button mat-flat-button type="button" class="bt" *haIsAuthenticated (click)="openCreateDocDialog()">
       <mat-icon >add_circle</mat-icon>
       {{'create_story' | translate}}
     </button>
 
-    <button mat-flat-button type="button" class="bt my-stories-bt" *haIsAdmin [routerLink]="'my-stories'">
+    <button mat-flat-button type="button" class="bt my-stories-bt" *haIsAuthenticated [routerLink]="'my-stories'">
       {{'my_stories' | translate}}
     </button>
   </div>

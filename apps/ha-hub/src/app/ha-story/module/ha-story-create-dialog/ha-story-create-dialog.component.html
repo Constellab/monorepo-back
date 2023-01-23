@@ -4,6 +4,13 @@
 
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="story-form" [formGroup]="formGp">
+    <mat-radio-group formControlName="category" name="category" class="radio-button-zone">
+      <mat-radio-button [value]="'ARTICLE'" [checked]="true" class="rb">{{'article' | translate }}</mat-radio-button>
+      <mat-radio-button [value]="'DOCUMENTATION'" class="rb">{{'documentation' | translate }}</mat-radio-button>
+      <mat-radio-button [value]="'PRODUCT_DOCUMENTATION'" class="rb" *haIsAdmin>{{'product_documentation' | translate }}</mat-radio-button>
+      <mat-radio-button [value]="'USE_CASE'" class="rb">{{'use_case' | translate }}</mat-radio-button>
+    </mat-radio-group>
+
     <mat-form-field class="g-form-input">
       <mat-label>{{'title' | translate}}</mat-label>
       <input matInput formControlName="title" required flInputMaxLength="100" [placeholder]="'title' | translate">

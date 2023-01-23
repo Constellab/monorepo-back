@@ -16,7 +16,7 @@ import {Router} from '@angular/router';
 export class HaStoryMyListComponent implements OnInit {
 
   myStories: HaMyStoriesDataSource;
-  displayedColumns: string[] = ['title', 'status', 'createdAt', 'button'];
+  displayedColumns: string[] = ['category', 'title', 'status', 'createdAt', 'button'];
 
   constructor(
     private storyService: HaStoryService,
