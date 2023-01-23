@@ -133,4 +133,13 @@ export class HaStoryService {
   private getMyStoriesPaginated(page: number, size: number): Observable<ClPage<HaStoryDataSourceDataDto>> {
     return this.apiService.get(this.route + '/my', HaStory, {page: page, pageSize: size, resultIsPaginated: true});
   }
+
+
+  /***
+   * Check if the current user is the story owner
+   * @param storyId story id
+   */
+  isStoryOwner(storyId: string): Observable<boolean> {
+    return this.apiService.get(`${this.route}/${storyId}/is-owner`, Boolean);
+  }
 }

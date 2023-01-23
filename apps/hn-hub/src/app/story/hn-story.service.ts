@@ -174,4 +174,9 @@ export class HnStoryService {
     story.status = HnStoryStatus.PUBLISHED;
     return this.storyRepository.save(story);
   }
+
+  async isStoryOwner(id: string): Promise<boolean> {
+    const story = await this.getStory(id);
+    return story.createdBy.id === HnCurrentUserHelper.getCurrentUser().id;
+  }
 }

@@ -94,4 +94,12 @@ export class HnStoryController {
   }
 
 
+  /***
+   * Check if the current user is the owner of the story
+   */
+  @Get(':id/is-owner')
+  async isStoryOwner(@Param('id', new ParseUUIDPipe()) id: string): Promise<boolean> {
+    return this.storyService.isStoryOwner(id);
+  }
+
 }

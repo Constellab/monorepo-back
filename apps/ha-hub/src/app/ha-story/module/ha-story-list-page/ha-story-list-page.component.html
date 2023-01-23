@@ -5,7 +5,7 @@
   </div>
 
   <div class="stories-div">
-    <h1>{{'stories' | translate}}</h1>
+    <h1 class="title">{{'stories' | translate}}</h1>
     <div class="stories-list">
       <a class="story" *ngFor="let story of stories?.connect() | async" [routerLink]="story.id">
         <div class="story-content">

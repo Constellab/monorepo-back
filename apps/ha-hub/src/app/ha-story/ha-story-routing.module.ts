@@ -4,6 +4,8 @@ import {HaStoryEditPageComponent} from './module/ha-story-edit-page/ha-story-edi
 import {HaStoryPageComponent} from './module/ha-story-page/ha-story-page.component';
 import {NgModule} from '@angular/core';
 import {HaStoryMyListComponent} from './module/ha-story-my-list/ha-story-my-list.component';
+import {HaLoginGuard} from '../ha-core/ha-guard/ha-login.guard';
+import {HaStoryGuard} from '../ha-core/ha-guard/ha-story.guard';
 
 const routes: Route[] = [
   {
@@ -12,11 +14,13 @@ const routes: Route[] = [
   },
   {
     path: 'my-stories',
-    component: HaStoryMyListComponent
+    component: HaStoryMyListComponent,
+    canActivate: [HaLoginGuard]
   },
   {
     path: 'edit/:id',
-    component: HaStoryEditPageComponent
+    component: HaStoryEditPageComponent,
+    canActivate: [HaStoryGuard]
   },
   {
     path: ':id',
