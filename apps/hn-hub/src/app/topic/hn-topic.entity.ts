@@ -11,4 +11,7 @@ export class HnTopic extends BlEntityWithId {
 
   @ManyToMany(() => HnStory, story => story.topics, {nullable: true})
   stories?: HnStory[];
+
+  @Column({nullable: true})
+  popularityIndex?: number;
 }

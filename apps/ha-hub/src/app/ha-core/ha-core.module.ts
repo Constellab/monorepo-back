@@ -5,14 +5,16 @@ import { HaIsAdminDirective } from './ha-module/ha-core-directive/ha-is-admin/ha
 import {
   HaIsAuthenticatedDirective
 } from './ha-module/ha-core-directive/ha-is-authenticated/ha-is-authenticated.directive';
+import {HaFilterArrayPipe} from './ha-pipe/ha-filter-array.pipe';
 
 @NgModule({
   exports: [
     HaCustomLibraryModule,
     HaCustomMaterialModule,
     HaIsAdminDirective,
-    HaIsAuthenticatedDirective
+    HaIsAuthenticatedDirective,
+    HaFilterArrayPipe
   ],
-  declarations: [HaIsAdminDirective, HaIsAuthenticatedDirective]
+  declarations: [HaIsAdminDirective, HaIsAuthenticatedDirective, HaFilterArrayPipe]
 })
 export class HaCoreModule {}

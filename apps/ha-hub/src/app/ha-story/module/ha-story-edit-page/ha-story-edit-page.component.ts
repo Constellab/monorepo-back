@@ -6,7 +6,13 @@ import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 import {FlConfirmDialogInput, FlDebouncer, FlDialogService} from '@monorepo/front-core-lib';
 import {HaStoryTextEditorConfig} from './ha-story-text-editor.config';
-import {Observable} from 'rxjs';
+import {mergeMap, Observable, of, startWith} from 'rxjs';
+import {HaTopic, HaTopicDto} from '../../../ha-core/ha-model/ha-entities/ha-topic.class';
+import {HaTopicService} from '../../../ha-core/ha-service/ha-topic.service';
+import {map} from 'rxjs/operators';
+import {FormControl} from '@angular/forms';
+import {ClStringHelper} from '@monorepo/core-lib';
+import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 
 @Component({
   selector: 'ha-ha-story-edit-page',
@@ -31,10 +37,21 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
   contentError: string;
 
 
+  topicControl: FormControl<string | HaTopic> = new FormControl<string | HaTopic>('');
+
+  topics: HaTopicDto[];
+
+  filteredTopics: Observable<HaTopicDto[]>;
+
+  canSaveTopic: boolean = false;
+
+  inputTopic: string = '';
+
   constructor(
     private storyService: HaStoryService,
     private activatedRoute: ActivatedRoute,
-    private dialogService: FlDialogService
+    private dialogService: FlDialogService,
+    private topicService: HaTopicService
   ) {
   }
 
@@ -57,6 +74,20 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
         }
       }
     );
+
+    this.topicService.getAll().subscribe(topics => {
+      this.topics = topics;
+      this.filteredTopics = this.topicControl.valueChanges.pipe(
+        startWith(''),
+        map(value => {
+          if (value == null || value == '') return [];
+          const name = typeof value === 'string' ? value : value.name;
+          this.canSaveTopic = name && name.trim() !== '';
+          return name ? this._filter(name).slice(0, 3).filter((topic => !this.story.topics.find(t => t.id === topic.id))) :
+            this.topics.slice(0, 3).filter((topic => !this.story.topics.find(t => t.id === topic.id)));
+        }),
+      );
+    });
   }
 
   onTitleChange(event: any): void {
@@ -76,6 +107,37 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
     });
   }
 
+  saveTopic(): void {
+    const topic: HaTopicDto = typeof this.topicControl.value === 'string' ?
+      new HaTopicDto(this.topicControl.value) : new HaTopicDto(this.topicControl.value.name, this.topicControl.value.id);
+
+    if (topic.id == null) {
+      const input: FlConfirmDialogInput = {
+        title: 'new_topic',
+        content: 'new_topic_content',
+        translateTitleAndContent: true,
+        observable: this.addTopicToStory(topic)
+      }
+
+      this.dialogService.openConfirmDialog(input).afterClosed().subscribe();
+
+    } else {
+      this.addTopicToStory(topic).subscribe();
+    }
+  }
+
+  addTopicToStory(topic: HaTopicDto): Observable<HaTopic> {
+    return this.storyService.addTopicToStory(topic, this.story.id).pipe(
+      mergeMap((res: HaTopic) => {
+        this.story.topics.push(res);
+        this.topicControl.setValue('');
+        this.inputTopic = '';
+        if (this.story.topics.length >= 5) this.topicControl.disable();
+        return of(res);
+      })
+    );
+  }
+
   onContentUpdate(content: any): void {
     this.contentDebouncer.setValue(content);
   }
@@ -91,11 +153,8 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
     });
   }
 
-  private getStory(id: string): void {
-    this.storyService.getById(id).subscribe(story => {
-      this.story = story;
-      this.formGp.patchValue(this.story);
-    });
+  displayFn(topic: HaTopic): string {
+    return topic && topic.name ? topic.name : '';
   }
 
   private saveContent(value: CmRichTextI): void {
@@ -123,7 +182,6 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
         translateTitleAndContent: true
       }
       this.dialogService.openConfirmDialog(input).afterClosed().subscribe((res) => {
-        console.log(res);
         if (res.choice && res.result) {
           this.story = res.result;
         }
@@ -136,5 +194,31 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
 
   private publishStory(): Observable<HaStory> {
     return this.storyService.publishStory(this.story.id);
+  }
+
+  removeTopic(topic: HaTopic): void {
+    this.storyService.removeTopicFromStory(topic.id, this.story.id).subscribe(() => {
+      this.story.topics = this.story.topics.filter(t => t.id !== topic.id);
+      this.topics = this.topics.filter(t => t.id !== topic.id);
+      this.topicControl.enable();
+    });
+  }
+
+  private getStory(id: string): void {
+    this.storyService.getById(id).subscribe(story => {
+      this.story = story;
+      if (this.story.topics.length >= 5) this.topicControl.disable();
+      this.formGp.patchValue(this.story);
+    });
+  }
+
+  private _filter(name: string): HaTopicDto[] {
+    const filterValue = name.toLowerCase();
+
+    return this.topics.filter(topic => topic.name.toLowerCase().includes(filterValue));
+  }
+
+  onSelectTopic(event: MatAutocompleteSelectedEvent): void {
+    this.addTopicToStory(event.option.value).subscribe();
   }
 }

@@ -1,48 +1,33 @@
-<section class="title-section">
-  <div class="title-div">
-    <h1>{{'hub_home_title' | translate}}</h1>
-    <p>{{'hub_home_subtitle' | translate}}</p>
+<div class="main-container">
+  <div class="left-side-div">
+    <a routerLink="edit">
+      <button mat-flat-button type="button" class="bt" *haIsAuthenticated>
+        <mat-icon >add_circle</mat-icon>
+        {{'create_brick' | translate}}
+      </button>
+    </a>
   </div>
-  <div class="title-image"></div>
-  <div class="title-left-corner"></div>
-</section>
 
-
-<section class="brick-list-section">
-  <div class="brick-list">
-    <ng-container *ngFor="let brick of bricks">
-      <a [routerLink]="getBrickRoute(brick)">
-        <div class="brick">
-          <div class="brick-logo" [style.background-image]="
-      brick.imageLink ? 'url(\''+ brick.imageLink +'\')' :
-      'url(\'assets/images/gencovery-logo.png\')'"
-               [style.background-size]="brick.imageLink ? '70%' : '100%'"></div>
-          <div class="brick-info">
-            <h4>{{brick.name}}</h4>
-            <div fxLayout="row">
-              <mat-icon class="lock-icon"
-                        matTooltip="{{'private_brick' | translate}}">
-                {{brick.visibility === 'private' ? 'lock' : 'public'}}
-              </mat-icon>
-              <div fxLayout="column">
-                <fl-text-icon iconPosition="end" gap="0.2em">
-                  <mat-icon class="mat-primary">check</mat-icon>
-                  Verified
-                </fl-text-icon>
-                <p>{{brick.lastVersion.toString()}}</p>
-              </div>
-            </div>
+  <div class="bricks-div">
+    <h1 class="title">{{'bricks' | translate}}</h1>
+    <div class="bricks-list">
+      <a class="brick" *ngFor="let b of bricks; let i" [routerLink]="getBrickRoute(b)">
+        <div class="brick-logo" [style.background-image]="
+              b.imageLink ? 'url(\''+ b.imageLink +'\')' :
+              'url(\'assets/images/gencovery-logo.png\')'"
+             [style.background-size]="b.imageLink ? '70%' : '100%'"></div>
+        <div class="brick-info">
+          <div class="brick-name-line">
+            {{b.name}}
+          </div>
+          <div class="brick-description small-text">
+            {{b.description.substring(0, 100) + '...'}}
+          </div>
+          <div class="brick-version small-text">
+            {{b.lastVersion.toString()}}
           </div>
         </div>
       </a>
-    </ng-container>
+    </div>
   </div>
-
-  <button mat-flat-button color="primary" routerLink="edit" *haIsAdmin class="button-create">
-    {{'create' | translate}}
-    <mat-icon>add</mat-icon>
-  </button>
-</section>
-
-
-
+</div>

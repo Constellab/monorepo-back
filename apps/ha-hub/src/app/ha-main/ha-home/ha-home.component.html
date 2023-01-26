@@ -1,0 +1,53 @@
+<div class="home g-dashboard-background">
+  <mat-toolbar class="nav-bar">
+    <a routerLink="../" class="gencovery-hub-logo gencovery-logo">
+      <img alt="" src="../../../assets/images/gencovery-logo.png"/>
+    </a>
+
+
+    <div class="nav-bar-links">
+      <h5 class="option"><a [href]="'./'">{{'home'| translate}}</a></h5>
+      <h5 class="option"><a [href]="'stories'">{{'stories' | translate}}</a></h5>
+      <h5 class="option"><a [href]="'bricks'">{{'bricks' | translate}}</a></h5>
+      <h5 class="option"><a [href]="constellabUrl" target="_blank">Constellab</a></h5>
+    </div>
+
+    <span class="span-initials">
+    <ng-container *ngIf="(userConnected$ | async) == null">
+    <a [routerLink]="loginRoute" mat-flat-button color="primary"
+       class="g-centered-forced">
+      {{'login' | translate}}
+    </a>
+  </ng-container>
+    <fl-user-profile-picture [user]="user" [matMenuTriggerFor]="userMenu" *ngIf="userConnected$ | async as user">
+    </fl-user-profile-picture></span>
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item [routerLink]="'../admin'">{{'admin_dashboard' | translate}}</button>
+      <button mat-menu-item (click)="logout()">{{'logout' |translate}}</button>
+    </mat-menu>
+  </mat-toolbar>
+
+  <div class="home-main-div">
+    <div class="titles-div">
+      <h1>{{'home_title' | translate}}</h1>
+      <h4>{{'home_subtitle' | translate}}</h4>
+    </div>
+
+<!--    <div class="portals-div">-->
+<!--      <div class="portal-div">-->
+<!--        <h5>{{'bricks_portal' | translate}}</h5>-->
+<!--      </div>-->
+<!--      <div class="portal-div">-->
+<!--        <h5>{{'stories_portal' | translate}}</h5>-->
+<!--      </div>-->
+<!--      <div class="portal-div">-->
+<!--        <h5>{{'webinaires_portal' | translate}}</h5>-->
+<!--      </div>-->
+<!--      <div class="portal-div">-->
+<!--        <h5>{{'forum' | translate}}</h5>-->
+<!--      </div>-->
+<!--    </div>-->
+  </div>
+</div>
+
+

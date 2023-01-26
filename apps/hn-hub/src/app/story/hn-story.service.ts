@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {HnStory, HnStoryStatus} from './hn-story.entity';
-import {Repository} from 'typeorm';
+import {FindOptionsWhere, In, Like, Repository} from 'typeorm';
 import {HnTopicService} from '../topic/hn-topic.service';
 import {ClPage, ClStringHelper} from '@monorepo/core-lib';
 import {BlAbstractPaginatedService, BlBucketConfig, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
@@ -11,7 +11,10 @@ import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.se
 import {IncomingMessage} from 'http';
 import {ISizeCalculationResult} from 'image-size/dist/types/interface';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
-import {HnCreateStoryDto} from './hn-story.dto';
+import {HnCreateStoryDto, HnStoryFilter} from './hn-story.dto';
+import {HnTopicDto} from '../topic/hn-topic.dto';
+import {HnTopic} from '../topic/hn-topic.entity';
+import {DateTime} from 'luxon';
 
 class HnStoryImage {
   filename: string;
@@ -40,7 +43,12 @@ export class HnStoryService {
   }
 
   async getStory(id: string): Promise<HnStory> {
-    return this.storyRepository.findOneBy({id: id});
+    return await this.storyRepository.findOne({
+      where: {
+        id: id
+      },
+      relations: ['topics']
+    });
   }
 
   async getMyStories(page: number, size: number): Promise<ClPage<HnStory>> {
@@ -50,6 +58,7 @@ export class HnStoryService {
           id: HnCurrentUserHelper.getCurrentUser().id
         }
       },
+      relations: ['topics'],
       order: {
         createdAt: 'DESC' as any
       }
@@ -63,6 +72,30 @@ export class HnStoryService {
       where: {
         status: HnStoryStatus.PUBLISHED
       },
+      relations: ['topics'],
+      order: {createdAt: 'DESC' as any}
+    }, this.storyRepository.manager, HnStory);
+  }
+
+  async getStoriesByFilter(filters: HnStoryFilter, page: number, size: number): Promise<ClPage<HnStory>> {
+    const where: FindOptionsWhere<HnStory> = {};
+    if (filters.categories && filters.categories.length > 0) {
+      where.category = In(filters.categories);
+    }
+    if (filters.topics && filters.topics.length > 0) {
+      where.topics = {
+        id: In(filters.topics)
+      };
+    }
+    if (filters.title && filters.title.length > 0) {
+      where.title = Like(`%${filters.title}%`);
+    }
+
+    where.status = HnStoryStatus.PUBLISHED;
+
+    return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+      where: where,
+      relations: ['topics'],
       order: {createdAt: 'DESC' as any}
     }, this.storyRepository.manager, HnStory);
   }
@@ -77,6 +110,7 @@ export class HnStoryService {
           status: HnStoryStatus.PUBLISHED
         }
       ],
+      relations: ['topics'],
       order: {createdAt: 'DESC' as any}
     }, this.storyRepository.manager, HnStory);
   }
@@ -84,6 +118,26 @@ export class HnStoryService {
   async updateStoryTitle(id: string, title: string): Promise<HnStory> {
     const story = await this.getStory(id);
     story.title = title;
+    return this.storyRepository.save(story);
+  }
+
+  async addStoryTopic(id: string, topic: HnTopicDto): Promise<HnTopic> {
+    const t: HnTopic = await this.topicService.getOrCreateTopic(topic);
+    const story: HnStory = await this.getStory(id);
+    story.topics.push(t);
+    await this.storyRepository.save(story);
+    t.popularityIndex++;
+    return this.topicService.saveTopic(t);
+  }
+
+  async removeTopic(id: string, topicId: string): Promise<HnStory> {
+    const story = await this.getStory(id);
+    story.topics = story.topics.filter(t => t.id !== topicId);
+    const topic: HnTopic = await this.topicService.getTopic(topicId);
+    if (topic.popularityIndex > 0) {
+      topic.popularityIndex--;
+      await this.topicService.saveTopic(topic);
+    }
     return this.storyRepository.save(story);
   }
 
@@ -174,6 +228,7 @@ export class HnStoryService {
       throw new Error('Story must have a main picture');
     }
     story.status = HnStoryStatus.PUBLISHED;
+    story.publishedAt = new DateTime();
     return this.storyRepository.save(story);
   }
 

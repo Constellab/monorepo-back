@@ -6,12 +6,13 @@ import {
   HaMyStoriesDataSource,
   HaStory,
   HaStoryDataSourceDataDto,
-  HaStoryDatasourcePaginated
+  HaStoryDatasourcePaginated, HaStoryFilter
 } from '../ha-model/ha-entities/ha-story.class';
 import {Observable} from 'rxjs';
 import {ClPage} from '@monorepo/core-lib';
 import {CmRichTextI} from '@monorepo/common-model';
 import {map} from 'rxjs/operators';
+import {HaTopic, HaTopicDto} from '../ha-model/ha-entities/ha-topic.class';
 
 
 @Injectable({
@@ -55,6 +56,16 @@ export class HaStoryService {
   public getAllPaginated(): HaStoryDatasourcePaginated {
     return new FlEntityPaginatedDatasource(
       (page, size) => this.getAll(page, size), 10);
+  }
+
+
+  public getAllPaginatedFiltered(filters: HaStoryFilter): HaStoryDatasourcePaginated {
+    return new FlEntityPaginatedDatasource(
+      (page, size) => this.getAllByFilter(filters, page, size), 10);
+  }
+
+  private getAllByFilter(filters: HaStoryFilter, page: number, size: number): Observable<ClPage<HaListStoryDto>> {
+    return this.apiService.post(this.route + '/filter', filters, HaStory, {page: page, pageSize: size, resultIsPaginated: true});
   }
 
   /**
@@ -141,5 +152,18 @@ export class HaStoryService {
    */
   isStoryOwner(storyId: string): Observable<boolean> {
     return this.apiService.get(`${this.route}/${storyId}/is-owner`, Boolean);
+  }
+
+  /***
+   * Add topic to story
+   * @param topicDto topic to add
+   * @param storyId story id
+   */
+  addTopicToStory(topicDto: HaTopicDto, storyId: string): Observable<HaTopic> {
+    return this.apiService.put(`${this.route}/${storyId}/add-topic`, topicDto, HaTopic);
+  }
+
+  removeTopicFromStory(topicId: string, storyId: string): Observable<any> {
+    return this.apiService.put(`${this.route}/${storyId}/remove-topic/${topicId}`, {});
   }
 }

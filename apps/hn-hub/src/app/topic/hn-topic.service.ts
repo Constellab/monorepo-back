@@ -10,7 +10,7 @@ export class HnTopicService {
               private readonly topicRepository: Repository<HnTopic>) {
   }
 
-  async checkToCreateTopic(topic: HnTopicDto): Promise<HnTopic> {
+  async getOrCreateTopic(topic: HnTopicDto): Promise<HnTopic> {
     if(topic.id){
       const t: HnTopic = await this.topicRepository.findOneBy({id: topic.id})
       if (t) return t;
@@ -23,4 +23,33 @@ export class HnTopicService {
   async getTopic(id: string): Promise<HnTopic> {
     return this.topicRepository.findOneBy({id: id});
   }
+
+  /***
+   * Get all topics ordered by popularityIndex and name
+   */
+  async getTopics(): Promise<HnTopic[]> {
+    return this.topicRepository.find({
+      order: {
+        popularityIndex: 'DESC',
+        name: 'ASC'
+      }
+    });
+  }
+
+  async saveTopic(topic: HnTopic): Promise<HnTopic> {
+    if (topic.popularityIndex <= 0) {
+      return this.topicRepository.remove(topic);
+    }
+    return this.topicRepository.save(topic);
+  }
+
+  async getMostPopularTopics(): Promise<HnTopic[]> {
+    return this.topicRepository.find({
+      order: {
+        popularityIndex: 'DESC',
+      },
+      take: 6
+    });
+  }
+
 }

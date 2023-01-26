@@ -14,10 +14,12 @@ import {HnStoryService} from './hn-story.service';
 import {BlFile, BlParsePipe, BlPublic, BlResponseHelper} from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
 import {HnStory} from './hn-story.entity';
-import {HnCreateStoryDto} from './hn-story.dto';
+import {HnCreateStoryDto, HnStoryFilter} from './hn-story.dto';
 import {CmRichTextI} from '@monorepo/common-model';
 import {FilesInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
+import {HnTopicDto} from '../topic/hn-topic.dto';
+import {HnTopic} from '../topic/hn-topic.entity';
 
 @Controller('story')
 export class HnStoryController {
@@ -30,6 +32,16 @@ export class HnStoryController {
                    @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStory>> {
     return this.storyService.getStories(page, size);
   }
+
+
+  @BlPublic()
+  @Post('filter')
+  async getStoriesByFilter(@Body() filter: HnStoryFilter,
+                           @Query('page', new ParseIntPipe()) page: number,
+                           @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStory>> {
+    return this.storyService.getStoriesByFilter(filter, page, size);
+  }
+
 
   @BlPublic()
   @Get('topic/:topicId')
@@ -63,6 +75,19 @@ export class HnStoryController {
   async updateStoryTitle(@Param('id', new ParseUUIDPipe()) id: string,
                           @Body('title') title: string): Promise<HnStory> {
     return this.storyService.updateStoryTitle(id, title);
+  }
+
+  @Put(':id/add-topic')
+  async updateAddStoryTopic(@Param('id', new ParseUUIDPipe()) id: string,
+                         @Body() topic: HnTopicDto): Promise<HnTopic> {
+    console.log('updateAddStoryTopic', topic);
+    return this.storyService.addStoryTopic(id, topic);
+  }
+
+  @Put(':id/remove-topic/:topicId')
+  async updateRemoveStoryTopic(@Param('id', new ParseUUIDPipe()) id: string,
+                               @Param('topicId', new ParseUUIDPipe()) topicId: string): Promise<HnStory> {
+    return this.storyService.removeTopic(id, topicId);
   }
 
   @Put(':id/content')

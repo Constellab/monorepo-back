@@ -5,3 +5,9 @@ export class HnCreateStoryDto {
 
   category: HnStoryCategory;
 }
+
+export class HnStoryFilter {
+  categories: string[];
+  topics: string[];
+  title: string;
+}

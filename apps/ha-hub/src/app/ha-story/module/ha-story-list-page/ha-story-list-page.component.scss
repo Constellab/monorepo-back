@@ -10,7 +10,7 @@
 
 .left-side-div {
   width: 295px;
-  margin-top: 80px;
+  margin-top: 96px;
 }
 
 .stories-div {
@@ -81,6 +81,39 @@ h5 {
   padding: 8px;
 }
 
+
+.left-side-div-categories{
+  background-color: var(--card-background);
+  margin-bottom: 1em;
+  padding: 8px;
+  border-radius: 18px;
+}
+
+.category{
+  padding: 7px;
+  margin-bottom: 8px;
+  background-color: var(--main-background);
+  border-radius: 10px;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.category:last-child{
+  margin-bottom: 0;
+}
+
+.category-selected{
+  background-color: var(--primary-color);
+  color: var(--text-primary-color);
+}
+
 .my-stories-bt{
   margin-top: 20px;
+  margin-bottom: 20px;
 }
+
+.left-side-div-title{
+  margin-left: 10px;
+  margin-bottom: 5px;
+}
+

@@ -14,15 +14,7 @@
         <mat-label>{{'title' | translate}}</mat-label>
         <input matInput flInputMaxLength="100" [placeholder]="'title' | translate" (input)="onTitleChange($event)"
                [value]="story.title">
-        <mat-icon matSuffix *ngIf="titleChange" (click)="saveTitle()">save</mat-icon>
-        <mat-error *ngIf="!inputTitle || inputTitle.length === 0">{{'title' | flErrorRequired}}</mat-error>
-      </mat-form-field>
-
-      <mat-form-field class="form-field">
-        <mat-label>{{'title' | translate}}</mat-label>
-        <input matInput flInputMaxLength="100" [placeholder]="'title' | translate" (input)="onTitleChange($event)"
-               [value]="story.title">
-        <mat-icon matSuffix *ngIf="titleChange" (click)="saveTitle()">save</mat-icon>
+        <mat-icon matSuffix *ngIf="titleChange" (click)="saveTitle()" class="input-icon">save</mat-icon>
         <mat-error *ngIf="!inputTitle || inputTitle.length === 0">{{'title' | flErrorRequired}}</mat-error>
       </mat-form-field>
     </div>
@@ -32,6 +24,31 @@
       </button>
     </div>
   </div>
+
+  <mat-form-field class="form-field">
+    <mat-label>{{'topics' | translate}}</mat-label>
+
+    <mat-chip-list #topicChipList>
+      <mat-chip *ngFor="let topic of story.topics" (removed)="removeTopic(topic)">
+        {{topic.name}}
+        <button matChipRemove>
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-chip>
+      <input matInput flInputMaxLength="30" [formControl]="topicControl"
+             [matAutocomplete]="auto" [matChipInputFor]="topicChipList">
+
+      <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectTopic($event)">
+        <mat-option *ngFor="let topic of filteredTopics | async" [value]="topic">
+          {{topic.name}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-chip-list>
+    <mat-icon matSuffix *ngIf="canSaveTopic && story.topics.length < 5" (click)="saveTopic()" class="input-icon">
+      save
+    </mat-icon>
+
+  </mat-form-field>
 
   <mat-error *ngIf="contentHasError">{{contentError | translate}}</mat-error>
   <form class="story-content-form" [formGroup]="formGp" id="story-content-form" [ngClass]="contentEditorIsFocused ? ['focus'] : []">

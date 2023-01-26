@@ -10,19 +10,15 @@
     <h5 class="option"><a [href]="constellabUrl" target="_blank">Constellab</a></h5>
   </div>
 
-  <ng-container *ngIf="(userConnected$ | async) == null">
-    <a mat-flat-button color="primary" class="g-centered-forced bt-register"
-       [href]="constellabUrl" target="_blank">
-      {{'register' | translate}}
-    </a>
+
+  <span class="span-initials">
+    <ng-container *ngIf="(userConnected$ | async) == null">
     <a [routerLink]="loginRoute" mat-flat-button color="primary"
        class="g-centered-forced">
       {{'login' | translate}}
     </a>
   </ng-container>
-
-  <span class="span-initials" [matMenuTriggerFor]="userMenu" *ngIf="userConnected$ | async as user">
-    <fl-user-profile-picture [user]="user">
+    <fl-user-profile-picture [user]="user" [matMenuTriggerFor]="userMenu" *ngIf="userConnected$ | async as user">
     </fl-user-profile-picture></span>
   <mat-menu #userMenu="matMenu">
     <button mat-menu-item [routerLink]="'../admin'">{{'admin_dashboard' | translate}}</button>

@@ -29,7 +29,7 @@ export class HaStory{
 
   mainPicture?: string;
 
-  topics?: HaTopic[];
+  topics: HaTopic[] = [];
 
   @Type(() => HaUser)
   createdBy: HaUser;
@@ -37,6 +37,10 @@ export class HaStory{
   createdAt: DateTime;
 
   category: HaStoryCategory;
+
+  publishedAt: DateTime;
+
+  lastModifiedAt: DateTime;
 }
 
 export class HaCreateStoryDto{
@@ -58,6 +62,9 @@ export class HaListStoryDto{
 
   @Type(() => HaUser)
   createdBy: HaUser;
+
+  publishedAt: DateTime;
+  lastModifiedAt: DateTime;
 }
 
 export class HaStoryDataSourceDataDto{
@@ -71,6 +78,23 @@ export class HaStoryDataSourceDataDto{
 
   @Type(() => HaUser)
   createdBy: HaUser;
+
+  publishedAt: DateTime;
+  lastModifiedAt: DateTime;
+
+  topics?: HaTopic[];
+}
+
+export class HaStoryFilter{
+  title: string;
+  categories: string[];
+  topics: string[];
+
+  constructor() {
+    this.categories = [];
+    this.topics = [];
+    this.title = '';
+  }
 }
 
 export type HaStoryDatasourcePaginated = FlDatasourcePaginated<HaListStoryDto>;

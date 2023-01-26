@@ -3,6 +3,8 @@ import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 import {HnTopic} from '../topic/hn-topic.entity';
 import {JoinTable} from 'typeorm';
+import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
+import {DateTime} from 'luxon';
 
 export enum HnStoryStatus{
   DRAFT = 'DRAFT',
@@ -30,7 +32,7 @@ export class HnStory extends HnBaseEntity {
   @Column({nullable: true})
   mainPicture?: string;
 
-  @ManyToMany(() => HnTopic, topic => topic.stories, {nullable: true})
+  @ManyToMany(() => HnTopic, topic => topic.stories, {nullable: true, eager: true})
   @JoinTable()
   topics?: HnTopic[];
 
@@ -39,6 +41,9 @@ export class HnStory extends HnBaseEntity {
 
   @Column({type: 'enum', enum: HnStoryCategory, default: HnStoryCategory.ARTICLE})
   category: HnStoryCategory;
+
+  @BlLuxonDateTimeColumn({nullable: true})
+  publishedAt: DateTime;
 
   init(title: string, content: CmRichTextI, labels: HnTopic[]): void {
     this.content = content;

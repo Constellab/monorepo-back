@@ -3,6 +3,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {HaMainComponent} from './ha-main/ha-main.component';
 import {Ha404Component} from '../ha-public/module/ha404/ha404.component';
 import {HaLoginPageComponent} from './ha-login-page/ha-login-page.component';
+import {HaHomeComponent} from './ha-home/ha-home.component';
 
 const routes: Routes = [
   {
@@ -26,7 +27,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    component: HaMainComponent
+    component: HaHomeComponent
   },
   {
     path: '**',

@@ -1,0 +1,64 @@
+.home{
+  width: 100%;
+  height: 100%;
+}
+
+.gencovery-logo{
+  height: 100%;
+  margin: 0;
+}
+
+.gencovery-hub-logo img{
+  height: 100%;
+}
+
+.nav-bar{
+  display: flex;
+  height: 56px;
+  padding: 16px 100px 0 100px;
+  background-color: transparent;
+}
+
+.span-initials{
+  cursor: pointer;
+}
+
+.titles-div{
+  width: 58em;
+}
+
+.titles-div > h4{
+  width: 80%;
+}
+
+.home-main-div{
+  padding: 0 100px;
+  margin-top: 10vh;
+}
+
+.portals-div{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 10vh;
+  background-color: var(--main-background);
+  border-radius: 18px;
+  padding: 8px;
+}
+
+.nav-bar-links{
+  background-color: var(--card-background);
+  margin: 0 auto;
+  padding: 0 7px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+.option{
+  font-weight: normal;
+  width: auto; //9rem;
+  margin: auto 3rem;
+  text-align: center;
+}
