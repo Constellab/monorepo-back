@@ -80,7 +80,6 @@ export class HnStoryController {
   @Put(':id/add-topic')
   async updateAddStoryTopic(@Param('id', new ParseUUIDPipe()) id: string,
                          @Body() topic: HnTopicDto): Promise<HnTopic> {
-    console.log('updateAddStoryTopic', topic);
     return this.storyService.addStoryTopic(id, topic);
   }
 

@@ -13,7 +13,7 @@ export class HnTopicController {
   @Get()
   getTopics(): Promise<HnTopic[]>{
     return this.topicService.getTopics();
-  }
+}
 
   @BlPublic()
   @Get('popular')

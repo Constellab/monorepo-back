@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {HnStory, HnStoryStatus} from './hn-story.entity';
-import {FindOptionsWhere, In, Like, Repository} from 'typeorm';
+import {FindOptionsOrder, FindOptionsOrderProperty, FindOptionsWhere, In, Like, Repository} from 'typeorm';
 import {HnTopicService} from '../topic/hn-topic.service';
 import {ClPage, ClStringHelper} from '@monorepo/core-lib';
 import {BlAbstractPaginatedService, BlBucketConfig, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
@@ -79,6 +79,7 @@ export class HnStoryService {
 
   async getStoriesByFilter(filters: HnStoryFilter, page: number, size: number): Promise<ClPage<HnStory>> {
     const where: FindOptionsWhere<HnStory> = {};
+    const order: FindOptionsOrder<HnStory> = {};
     if (filters.categories && filters.categories.length > 0) {
       where.category = In(filters.categories);
     }
@@ -92,12 +93,13 @@ export class HnStoryService {
     }
 
     where.status = HnStoryStatus.PUBLISHED;
+    order.createdAt =  'DESC' as any
 
-    return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+    return (await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
       where: where,
       relations: ['topics'],
-      order: {createdAt: 'DESC' as any}
-    }, this.storyRepository.manager, HnStory);
+      order: order
+    }, this.storyRepository.manager, HnStory));
   }
 
   async getStoriesByTopicId(topicId: string, page: number, size: number): Promise<ClPage<HnStory>> {
@@ -228,7 +230,7 @@ export class HnStoryService {
       throw new Error('Story must have a main picture');
     }
     story.status = HnStoryStatus.PUBLISHED;
-    story.publishedAt = new DateTime();
+    story.publishedAt = DateTime.now();
     return this.storyRepository.save(story);
   }
 

@@ -11,7 +11,6 @@ import {HaTopic, HaTopicDto} from '../../../ha-core/ha-model/ha-entities/ha-topi
 import {HaTopicService} from '../../../ha-core/ha-service/ha-topic.service';
 import {map} from 'rxjs/operators';
 import {FormControl} from '@angular/forms';
-import {ClStringHelper} from '@monorepo/core-lib';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 
 @Component({
