@@ -42,14 +42,13 @@ export class LabRouterService {
     return `${labConstDataboxFullRoute}/resource/${id}`;
   }
 
-  public static getViewBoxRoute(): string{
+  public static getViewBoxRoute(): string {
     return labConstViewboxFullRoute;
   }
 
-  public static getViewConfigDetailRoute(id: string): string{
+  public static getViewConfigDetailRoute(id: string): string {
     return `${this.getViewBoxRoute()}/view-config/${id}`;
   }
-
 
 
   public static getReportSearchRoute(): string {
@@ -64,7 +63,7 @@ export class LabRouterService {
     return labConstDocFullRoute;
   }
 
-  public static getTechnicalDocRoute(typingName: string): string{
+  public static getTechnicalDocRoute(typingName: string): string {
     return `${LabRouterService.getDocRoute()}/technical-doc/${typingName}`;
   }
 
@@ -80,8 +79,13 @@ export class LabRouterService {
   public static getMonitoringUsageRoute(): string {
     return `${LabRouterService.getMonitoringRoute()}/usage`;
   }
+
   public static getMonitoringVenvsRoute(): string {
     return `${LabRouterService.getMonitoringRoute()}/venvs`;
+  }
+
+  public static getMonitoringBrickDataRoute(): string {
+    return `${LabRouterService.getMonitoringRoute()}/bricks-data`;
   }
 
   public static getMonitoringLogsRoute(): string {

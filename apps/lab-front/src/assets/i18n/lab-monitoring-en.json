@@ -61,6 +61,19 @@
     "number_of_processes": "Number of processes",
     "total_memory": "Total RAM",
     "clean_lab": "Clean unused data",
-    "clean_lab_confirmation": "This will clean all unused data from the lab. It will remove the temporary files and shadow resources (resources that were not correctly deleted). It can only be executed if there is no waiting or running experiment. It might take a few minutes."
+    "clean_lab_confirmation": "This will clean all unused data from the lab. It will remove the temporary files and shadow resources (resources that were not correctly deleted). It can only be executed if there is no waiting or running experiment. It might take a few minutes.",
+    "bricks_data": "Bricks data",
+    "bricks_data_help": "Here is the list of external files and folders downloaded by tasks.",
+    "brick_data_size": "Size",
+    "brick_data_type": "Type",
+    "brick_data_brick_name": "Brick name",
+    "brick_data_file": "File",
+    "brick_data_folder": "Folder",
+    "delete_brick_data": "Delete brick data",
+    "delete_brick_data_confirmation": "Are you sure you want to delete this brick data ?",
+    "brick_data_deleted": "Brick data deleted",
+    "delete_all_brick_data": "Delete all brick data",
+    "delete_all_brick_data_confirmation": "Are you sure you want to delete all bricks data ?",
+    "all_brick_data_deleted": "All bricks data have been deleted"
   }
 }

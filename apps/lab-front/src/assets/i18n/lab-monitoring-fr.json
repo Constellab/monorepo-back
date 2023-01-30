@@ -45,6 +45,7 @@
     "log_content": "Contenu",
     "from_date": "Depuis",
     "to_date": "Jusqu'à",
+    "log_download": "Télécharger le fichier",
     "global_usage": "Utilisation globale",
     "all_cpu_percent": "Utilisations des CPU",
     "network_consumption": "Consommation réseau",
@@ -60,6 +61,19 @@
     "number_of_processes": "Nombre de processus",
     "total_memory": "Mémoire totale",
     "clean_lab": "Nettoyer les données non utilisées du lab",
-    "clean_lab_confirmation": "Ceci va nettoyer toutes les données inutilisées du lab. Il va supprimer les fichiers temporaires et les ressources fantômes (ressources qui n'ont pas été correctement supprimées). Il ne peut être exécuté que si il n'y a pas d'expérience en attente ou en cours. Cela peut prendre quelques minutes."
+    "clean_lab_confirmation": "Ceci va nettoyer toutes les données inutilisées du lab. Il va supprimer les fichiers temporaires et les ressources fantômes (ressources qui n'ont pas été correctement supprimées). Il ne peut être exécuté que si il n'y a pas d'expérience en attente ou en cours. Cela peut prendre quelques minutes.",
+    "bricks_data": "Données des briques",
+    "bricks_data_help": "Voici la list des fichiers et dossiers externent téléchargé par des tâches.",
+    "brick_data_size": "Taille",
+    "brick_data_type": "Type",
+    "brick_data_brick_name": "Nom de la brique",
+    "brick_data_file": "Fichier",
+    "brick_data_folder": "Dossier",
+    "delete_brick_data": "Supprimer les données de la brique",
+    "delete_brick_data_confirmation": "Êtes-vous sûr de vouloir supprimer cette donnée de brique ?",
+    "brick_data_deleted": "Donnée de brique supprimée",
+    "delete_all_brick_data": "Supprimer toutes les données de brique",
+    "delete_all_brick_data_confirmation": "Êtes-vous sûr de vouloir supprimer toutes les données de brique ?",
+    "all_brick_data_deleted": "Toutes les données de brique ont été supprimées"
   }
 }

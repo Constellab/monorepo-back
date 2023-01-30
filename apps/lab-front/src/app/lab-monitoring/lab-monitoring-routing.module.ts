@@ -18,6 +18,9 @@ import {
 import {
   LabMonitoringShareLinksPageComponent
 } from './lab-monitoring-page/component/lab-monitoring-share-links-page/lab-monitoring-share-links-page.component';
+import {
+  LabMonitoringBrickDataPageComponent
+} from './lab-monitoring-page/component/lab-monitoring-brick-data-page/lab-monitoring-brick-data-page.component';
 
 const routes: Routes = [
   {
@@ -25,6 +28,7 @@ const routes: Routes = [
       {path: '', component: LabMonitoringDashboardPageComponent},
       {path: 'usage', component: LabMonitoringUsagePageComponent},
       {path: 'venvs', component: LabMonitoringVenvsPageComponent},
+      {path: 'bricks-data', component: LabMonitoringBrickDataPageComponent},
       {path: 'logs', component: LabMonitoringLogsPageComponent},
       {path: 'share-links', component: LabMonitoringShareLinksPageComponent}
     ]
