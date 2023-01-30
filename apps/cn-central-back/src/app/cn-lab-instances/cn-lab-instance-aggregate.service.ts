@@ -147,7 +147,7 @@ export class CnLabInstanceAggregateService {
   public async getConfig(id: string): Promise<CnLabConfig> {
     await this.getAndCheckAuthorizationToFindById(id);
 
-    const labInstance = await this.labInstancesService.findByIdAndCheck(id ,{
+    const labInstance = await this.labInstancesService.findByIdAndCheck(id, {
       labConfig: {brickVersions: {brick: true}}
     });
 
@@ -235,10 +235,9 @@ export class CnLabInstanceAggregateService {
         case 'gws_core.WRONG_CREDENTIALS_USER_NOT_FOUND' :
         case 'gws_core.OBJECT_ID_NOT_FOUND' :
           throw new BlUnauthorizedException(CnErrorText.LAB_USER_NOT_FOUND);
-        default:
-          this.logger.error(e);
-          throw new BlBadRequestException(CnErrorText.LAB_AUTH_ERROR);
       }
+      this.logger.error(e);
+      throw new BlBadRequestException(CnErrorText.LAB_AUTH_ERROR);
     }
   }
 
@@ -252,22 +251,19 @@ export class CnLabInstanceAggregateService {
     // Check if the user is listed in the lab user
     const group = await this.labInstanceGroupService.findByLabInstanceIdAndUserId(labInstance.id,
       user.id);
+    if (!group) return null;
 
-    if (group) {
-      try {
-        const externalRole: CnExternalLabUserRole = group.role === CnLabInstanceUserRole.OWNER ? 'ADMIN' : 'USER';
-        await this.externalLabUserService.addUser(labInstance.getGlabApiInfo(), user, externalRole);
+    try {
+      const externalRole: CnExternalLabUserRole = group.role === CnLabInstanceUserRole.OWNER ? 'ADMIN' : 'USER';
+      await this.externalLabUserService.addUser(labInstance.getGlabApiInfo(), user, externalRole);
 
-        const token =
-          await this.externalLabUserService.generateTempAccess(labInstance.getGlabApiInfo(),
-            CnCurrentUserHelper.getAndCheckCurrentUser(), labInstance.space);
+      const token =
+        await this.externalLabUserService.generateTempAccess(labInstance.getGlabApiInfo(),
+          CnCurrentUserHelper.getAndCheckCurrentUser(), labInstance.space);
 
-        return new CnLabInstanceToken(labInstance, token.temp_token);
-        // eslint-disable-next-line no-empty
-      } catch (e: any) {
-        return null;
-      }
-    } else {
+      return new CnLabInstanceToken(labInstance, token.temp_token);
+      // eslint-disable-next-line no-empty
+    } catch (e: any) {
       return null;
     }
   }

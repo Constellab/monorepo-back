@@ -60,6 +60,7 @@ export class CnLabSshService {
     const cdResult = await this.commandService.execCommand(cd,
       {errorMode: CnExecCommandMode.STDERR_AS_SUCCESS, ignoreError: true, timeout: 10000});
 
+    // todo does not work if this is the first time the ssh connection is made
     // if the repo does exist, we pull the latest version
     if (cdResult === '') {
       await this.labInstanceService.updateServerStatusText(labInstance.id, `Cloning dockerlab repository`);
