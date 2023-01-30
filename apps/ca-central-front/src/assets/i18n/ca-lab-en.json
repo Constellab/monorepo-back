@@ -149,7 +149,7 @@
   "lab_update_lab_manager": "Update lab manager",
   "lab_update_lab_manager_confirmation": "Are you sure you want to update the lab manager ? This can take several minutes.",
   "lab_update_dockerlab_repo": "Pull dockerlab repo",
-  "lab_update_dockerlab_repo_confirmation": "Are you sure you want to pull the dockerlab repo ?.",
+  "lab_update_dockerlab_repo_confirmation": "Are you sure you want to pull the dockerlab repo ?",
   "lab_delete_server": "Delete server",
   "lab_delete_server_confirmation": "Are you sure you want to delete the server? All data will be lost and cannot be recovered. The Lab will no longer be accessible.",
   "lab_server_deleted": "Server deleted",

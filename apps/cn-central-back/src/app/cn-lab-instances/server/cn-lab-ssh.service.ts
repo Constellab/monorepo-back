@@ -177,7 +177,7 @@ export class CnLabSshService {
   private getSshCommand(virtualHost: string, commands: string[]): string {
     // in pre-prod and prod env, set the path to the ssh key
     const option = this.coreConfigService.isLocal() ? '' : `-i ${CnLabSshService.SSH_PRIVATE_KEY_LOCATION}`;
-    return `ssh ${option} ubuntu@lab.${virtualHost} "${commands.join(';')}"`;
+    return `ssh ${option} -o StrictHostKeyChecking=no ubuntu@lab.${virtualHost} "${commands.join(';')}"`;
   }
 
   public async updateLabManager(labInstance: CnLabInstance): Promise<void> {
