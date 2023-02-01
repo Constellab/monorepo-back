@@ -90,7 +90,7 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
   @Exclude()
   @BlNotUpdatable()
   @ManyToOne(() => CnProject, {nullable: true})
-  rootParent?: CnProject
+  rootParent?: CnProject;
 
   @Column({nullable: true, update: false})
   rootParentId?: string;
@@ -128,6 +128,13 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
     if (index >= 0) {
       this.sharedGroups.splice(index, 1);
     }
+  }
+
+  public getRootParentId(): string {
+    if (this.currentLevel === CnProjectLevel.PROJECT) {
+      return this.id;
+    }
+    return this.rootParentId;
   }
 
 }

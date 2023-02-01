@@ -89,5 +89,11 @@
   "all_smart_db": "All smartDB",
   "add_new_smart_db": "Add new smartDB",
   "include_sub_projects": "Include sub projects",
-  "projects": "Projects"
+  "projects": "Projects",
+  "project_settings": "Settings",
+  "project_storage": "Storage",
+  "project_storage_not_configured": "Storage not configured. Please configure it to be able to store reports, documents and use comments.",
+  "project_storage_configured": "Storage configured",
+  "configure_project_storage": "Configure storage",
+  "configure_project_storage_help": "This configuration will define where the reports, documents and comments associated with this project and sub projects will be stored. Once defined, the location cannot be changed. Please choose a location with a cloud provider for your data"
 }

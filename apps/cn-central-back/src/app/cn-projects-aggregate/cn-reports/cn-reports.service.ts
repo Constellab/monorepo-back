@@ -8,6 +8,7 @@ import {
   BlAbstractService,
   BlBadRequestException,
   BlBucketConfig,
+  BlFile,
   BlObjectStorageService
 } from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
@@ -18,6 +19,7 @@ import {AxiosResponse} from 'axios';
 import {CnReportContent, CnReportViewConfig} from './cn-report-content.class';
 import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
+import {CnObjectStoragesAggregateService} from '../../cn-object-storages/cn-object-storages-aggregate.service';
 
 @Injectable()
 export class CnReportsService extends BlAbstractService<CnReport> {
@@ -26,7 +28,8 @@ export class CnReportsService extends BlAbstractService<CnReport> {
               private objectStorageService: BlObjectStorageService,
               private configService: CnCoreConfigService,
               private externalLabService: CnExternalLabApiService,
-              private labConfigService: CnLabConfigsService) {
+              private labConfigService: CnLabConfigsService,
+              private objectStorageAggregatorService: CnObjectStoragesAggregateService) {
     super(repository, CnReport);
   }
 
@@ -50,7 +53,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   }
 
   async createReport(createReportDto: CnCreateReportWithConfigDto, experiments: CnExperiment[],
-                     project: CnProject): Promise<CnReport> {
+                     project: CnProject, bucket: BlBucketConfig, files: BlFile[]): Promise<CnReport> {
 
     const reportDb: CnReport = await this.findById(createReportDto.report.id);
     if (reportDb && reportDb.projectId !== project.id) {
@@ -63,9 +66,19 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     const reportDto: CnSaveReportDto = createReportDto.report;
     const richText = new CnReportContent(reportDto.content);
 
-    await this.loadReportImages(richText);
+    const prefix = `reports/${reportDto.id}/`;
 
-    await this.loadReportViews(richText);
+    // use v2
+    if (files != null && createReportDto.resource_views != null) {
+      await this.loadReportImagesV2(richText, bucket, files, prefix);
+      await this.loadReportViewsV2(richText, bucket, createReportDto.resource_views, prefix);
+    } else {
+      // upload view and images
+      await this.loadReportImages(richText, bucket, prefix);
+
+      await this.loadReportViews(richText, bucket, prefix);
+
+    }
 
     const report = new CnReport();
     report.id = reportDto.id;
@@ -114,12 +127,12 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     return this.findByIdAndCheck(id, {experiments: true});
   }
 
-  async getImage(filename: string): Promise<IncomingMessage> {
-    return await this.objectStorageService.getObject(this.getBucketConfig('image'), filename);
+  async getImage(filename: string, projectId: string): Promise<IncomingMessage> {
+    return await this.objectStorageService.getObject(await this.getBucketConfig(projectId), filename);
   }
 
-  async getView(filename: string): Promise<IncomingMessage> {
-    return await this.objectStorageService.getObject(this.getBucketConfig('view'), filename);
+  async getView(filename: string, projectId: string): Promise<IncomingMessage> {
+    return await this.objectStorageService.getObject(await this.getBucketConfig(projectId), filename);
   }
 
   public async getCurrentUserVCreatedReport(): Promise<CnReport[]> {
@@ -139,10 +152,9 @@ export class CnReportsService extends BlAbstractService<CnReport> {
 
   /**
    * Method to load the image of the report and store them in the object storage
-   * @param richText
-   * @private
    */
-  private async loadReportImages(richText: CnReportContent): Promise<void> {
+  private async loadReportImages(richText: CnReportContent, bucket: BlBucketConfig,
+                                 prefix: string): Promise<void> {
     for (const figureOp of richText.getFiguresOps()) {
 
       const figure = figureOp.insert.figure;
@@ -151,17 +163,29 @@ export class CnReportsService extends BlAbstractService<CnReport> {
 
       // Upload the image to the object storage and update the figure filename
       figureOp.insert.figure.filename = await this.objectStorageService.uploadIncomingMessage(
-        this.getBucketConfig('image'), result.data,
-        figure.filename, result.headers['content-type']);
+        bucket, result.data,
+        prefix + figure.filename, result.headers['content-type']);
+    }
+  }
+
+  /**
+   * Methode to store the images of the report in the object storage
+   */
+  private async loadReportImagesV2(richText: CnReportContent, bucket: BlBucketConfig,
+                                   files: BlFile[], prefix: string): Promise<void> {
+    for (const file of files) {
+      let filename = prefix + file.originalname;
+      filename = await this.objectStorageService.uploadObject(bucket, file, {filename: filename});
+
+      richText.updateFigure(file.originalname, {filename: filename});
     }
   }
 
   /**
    * Method to load the resource view of the report and store them in the object storage
-   * @param richText
-   * @private
    */
-  private async loadReportViews(richText: CnReportContent): Promise<void> {
+  private async loadReportViews(richText: CnReportContent, bucket: BlBucketConfig,
+                                prefix: string): Promise<void> {
 
     for (const specialOp of richText.getViewsOps()) {
       const viewConfig: CnReportViewConfig = specialOp.insert.resource_view;
@@ -174,17 +198,30 @@ export class CnReportsService extends BlAbstractService<CnReport> {
 
       // save the filename in the content
       specialOp.insert.resource_view.filename = await this.objectStorageService.uploadJson(
-        this.getBucketConfig('view'), view);
+        bucket, view, prefix);
     }
   }
 
-  private getBucketConfig(bucketType: 'image' | 'view'): BlBucketConfig {
-    return {
-      endpoint: this.configService.getDefaultObjectStorageEndPoint(),
-      region: this.configService.getDefaultObjectStorageRegion(),
-      bucket: bucketType === 'image' ? this.configService.getReportImageObjectStorageBucket() :
-        this.configService.getReportViewObjectStorageBucket(),
-      credentials: this.configService.getDefaultObjectStorageCredentials()
-    };
+  /**
+   * Method to load the resource view of the report and store them in the object storage
+   */
+  private async loadReportViewsV2(richText: CnReportContent, bucket: BlBucketConfig,
+                                  resourceViews: Record<string, any>,
+                                  prefix: string): Promise<void> {
+
+    for (const specialOp of richText.getViewsOps()) {
+      const viewConfig: CnReportViewConfig = specialOp.insert.resource_view;
+
+      const viewData = resourceViews[viewConfig.id];
+
+      // upload the json and save the filename in the content
+      specialOp.insert.resource_view.filename = await this.objectStorageService.uploadJson(
+        bucket, viewData, prefix);
+    }
+  }
+
+  private async getBucketConfig(projectId: string): Promise<BlBucketConfig> {
+    const bucket = await this.objectStorageAggregatorService.getAndCheckProjectBucket(projectId);
+    return bucket.getBucketConfig();
   }
 }

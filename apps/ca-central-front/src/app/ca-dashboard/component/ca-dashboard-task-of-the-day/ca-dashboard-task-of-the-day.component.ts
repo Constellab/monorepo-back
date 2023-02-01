@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {environment} from '../../../../../../environments/ca-environment';
+import {environment} from '../../../../environments/ca-environment';
 
 export interface CaTask{
   id: string;

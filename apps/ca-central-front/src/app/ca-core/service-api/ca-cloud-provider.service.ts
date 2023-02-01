@@ -70,4 +70,15 @@ export class CaCloudProviderService {
       (page: number, pageSize: number) => this.getAllRegions(page, pageSize), 20
     );
   }
+
+  public getS3Regions(page: number, size: number): Observable<ClPageI<CaCloudProviderRegion>> {
+    return this.apiService.get(this.regionsRoute + '/s3', CaCloudProviderRegion,
+      {page: page, pageSize: size, resultIsPaginated: true});
+  }
+
+  public getS3RegionsDatasource(): CaCloudProviderRegionDatasource {
+    return new FlEntityPaginatedDatasource(
+      (page: number, pageSize: number) => this.getS3Regions(page, pageSize), 20
+    );
+  }
 }

@@ -38,8 +38,9 @@ export class CnReportsController {
 
   /**
    * Return an image of the report
+   * Use filename(*) to catch all the filename (including slashes)
    */
-  @Get(':id/image/:filename')
+  @Get(':id/image/:filename(*)')
   public async getImage(@Param('id', new ParseUUIDPipe()) id: string,
                         @Param('filename') filename: string,
                         @Res() response: Response): Promise<any> {
@@ -49,8 +50,9 @@ export class CnReportsController {
 
   /**
    * Return a view of the report
+    * Use filename(*) to catch all the filename (including slashes)
    */
-  @Get(':id/view/:filename')
+  @Get(':id/view/:filename(*)')
   public async getView(@Param('id', new ParseUUIDPipe()) id: string,
                        @Param('filename') filename: string,
                        @Res() response: Response): Promise<any> {

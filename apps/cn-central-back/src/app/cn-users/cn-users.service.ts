@@ -90,7 +90,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     }
 
     user.photo = await this.objectStorageService.uploadObject(
-      this.getUserProfilePhotoBucketConfig(), file, true);
+      this.getUserProfilePhotoBucketConfig(), file, {generateRandomObjectName: true});
     return await this.repository.save(user);
   }
 

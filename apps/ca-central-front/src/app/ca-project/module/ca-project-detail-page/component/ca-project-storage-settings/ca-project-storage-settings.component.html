@@ -1,0 +1,30 @@
+<fl-async-section [object]="projectBucket$" [nullOrEmptyIsValid]="true">
+
+  <fl-section-header>
+    <fl-text-icon>
+      <mat-icon>storage</mat-icon>
+      <h3>{{'project_storage' | translate}}</h3>
+    </fl-text-icon>
+  </fl-section-header>
+
+  <ng-container *flSectionBody="let bucket">
+    <div class="body">
+      <div *ngIf="bucket; else notConfigured">
+        <fl-text-ok-nok [value]="true" [okText]="'project_storage_configured' | translate">
+        </fl-text-ok-nok>
+        <ca-bucket-info [bucket]="bucket"></ca-bucket-info>
+      </div>
+
+      <ng-template #notConfigured>
+        <fl-text-ok-nok [value]="false" [nokText]="'project_storage_not_configured' | translate">
+        </fl-text-ok-nok>
+
+        <div class="g-text-centered configure-button">
+          <button mat-stroked-button type="button" (click)="configureStorage()">
+            {{'configure_project_storage' | translate}}
+          </button>
+        </div>
+      </ng-template>
+    </div>
+  </ng-container>
+</fl-async-section>

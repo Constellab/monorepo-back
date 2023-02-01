@@ -4,33 +4,35 @@ import {CnProjectComment} from './cn-project-comment.entity';
 import {DataSource, Repository} from 'typeorm';
 import {CnCommentService} from '../cn-core/services/cn-comment.service';
 import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
-import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
+import {CnCommentImage, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {ClPage} from '@monorepo/core-lib';
-import {BlAbstractPaginatedService, BlObjectStorageService} from '@monorepo/back-core-lib';
+import {BlAbstractPaginatedService, BlBucketConfig, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
 import {CnNotificationService, CnNotificationType} from '../cn-notification/cn-notification.service';
 import {CnNotificationCreateDTO} from '../cn-notification/cn-notification.entity';
-import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 
 @Injectable()
 export class CnProjectCommentService extends CnCommentService<CnProjectComment> {
 
-  constructor(
-    @InjectRepository(CnProjectComment)
-    private projectCommentRepository: Repository<CnProjectComment>,
-    private notificationService: CnNotificationService,
-    objectStorageService: BlObjectStorageService,
-    configService: CnCoreConfigService,
-    dataSource: DataSource,
-  ) {
-    super(dataSource, objectStorageService, configService);
+  private static readonly COMMENT_IMAGE_PREFIX = 'comment';
+
+  constructor(@InjectRepository(CnProjectComment)
+              private projectCommentRepository: Repository<CnProjectComment>,
+              private notificationService: CnNotificationService,
+              objectStorageService: BlObjectStorageService,
+              dataSource: DataSource) {
+    super(dataSource, objectStorageService);
+  }
+
+  async saveProjectCommentImage(files: BlFile[], bucketConfig: BlBucketConfig, projectId: string): Promise<CnCommentImage> {
+    return this.saveImage(files, bucketConfig,
+      CnProjectCommentService.COMMENT_IMAGE_PREFIX + '/' + projectId + '/');
   }
 
   async create(newComment: CnNewComment, project: CnProject): Promise<CnProjectComment> {
-    let comment: CnProjectComment = null;
 
-    comment = await this.dataSource.transaction(async () => {
+    const comment: CnProjectComment = await this.dataSource.transaction(async () => {
       const projectComment: CnProjectComment = CnProjectComment.create(newComment, project);
       if (projectComment.isResponse) {
         projectComment.parentComment = await this.projectCommentRepository.findOneBy({id: newComment.parentCommentId});
@@ -38,7 +40,7 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
       return await this.createComment(projectComment);
     });
 
-    if(comment && comment.createdBy.id != project.leader.id){
+    if (comment && comment.createdBy.id != project.leader.id) {
       const newNotification: CnNotificationCreateDTO = {
         createdBy: comment.createdBy,
         user: comment.project.leader,
@@ -48,7 +50,7 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
         objectId: comment.id,
         objectType: CnNotificationType.PROJECT_COMMENT,
         spaceId: project.spaceId
-      }
+      };
       await this.notificationService.createNotification(newNotification);
     }
 
@@ -78,7 +80,7 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
         }
       });
 
-      if(comment.createdBy.id != CnCurrentUserHelper.getCurrentUser().id) {
+      if (comment.createdBy.id != CnCurrentUserHelper.getCurrentUser().id) {
         throw new UnauthorizedException();
       }
       await this.deleteComment(comment);
@@ -94,7 +96,7 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
         }
       });
 
-      if(comment.createdBy.id != CnCurrentUserHelper.getCurrentUser().id) {
+      if (comment.createdBy.id != CnCurrentUserHelper.getCurrentUser().id) {
         throw new UnauthorizedException();
       }
       comment.content = CmRichText.getOptimisedContent(content);

@@ -16,14 +16,7 @@ import {
 import {CnProject} from './cn-projects/cn-project.entity';
 import {CnProjectStatus} from './cn-projects/cn-project-status.enum';
 import {CnProjectStatusHistory} from './cn-projects/cn-project-status-history.entity';
-import {
-  BlFile,
-  BlParseEnumPipe,
-  BlParsePipe,
-  BlPublic,
-  BlResponseHelper,
-  BlSearchParams
-} from '@monorepo/back-core-lib';
+import {BlFile, BlParseEnumPipe, BlParsePipe, BlResponseHelper, BlSearchParams} from '@monorepo/back-core-lib';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnGroup} from '../cn-groups/cn-group.entity';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
@@ -39,6 +32,8 @@ import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity'
 import {CnComment, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {FilesInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
+import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 @Controller('projects')
 export class CnProjectsController {
@@ -187,26 +182,27 @@ export class CnProjectsController {
   /////////////////////////////// COMMENTS ///////////////////////////////////////////
 
   @UseInterceptors(FilesInterceptor('file'))
-  @Put('/comment/image')
-  saveCommentImage(@UploadedFiles() files: BlFile[]): Promise<any> {
-    return this.projectAggregate.saveCommentImage(files);
+  @Put(':projectId/comment/image')
+  saveCommentImage(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+                   @UploadedFiles() files: BlFile[]): Promise<any> {
+    return this.projectAggregate.saveCommentImage(files, projectId);
   }
 
   /**
-   * Return an image of the report
+   * Return an image of a comment
+   * Use filename(*) to catch all the filename (including slashes)
    */
-  @BlPublic()
-  @Get('comment/image/:filename')
-  public async get(@Param('filename') filename: string,
+  @Get(':projectId/comment/image/:filename(*)')
+  public async get(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+                   @Param('filename') filename: string,
                    @Res() response: Response): Promise<any> {
-    const file = await this.projectAggregate.getCommentImage(filename);
+    const file = await this.projectAggregate.getCommentImage(filename, projectId);
     BlResponseHelper.setMessageAndCache(response, file);
   }
 
   @Post(':projectId/comment/')
-  createProjectComment(
-    @Param('projectId', new ParseUUIDPipe()) projectId: string,
-    @Body(new BlParsePipe(CnNewComment)) newComment: CnNewComment): Promise<CnProjectComment> {
+  createProjectComment(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+                       @Body(new BlParsePipe(CnNewComment)) newComment: CnNewComment): Promise<CnProjectComment> {
     return this.projectAggregate.createProjectComment(newComment, projectId);
   }
 
@@ -230,5 +226,17 @@ export class CnProjectsController {
   deleteProjectComment(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                        @Param('commentId', new ParseUUIDPipe()) commentId: string): Promise<void> {
     return this.projectAggregate.deleteProjectComment(projectId, commentId);
+  }
+
+  /////////////////////////////// Project Bucket ///////////////////////////////////////////
+  @Post(':projectId/bucket')
+  createProjectBucket(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+                      @Body() region: CnCloudProviderRegion): Promise<CnBucket> {
+    return this.projectAggregate.createProjectBucket(projectId, region);
+  }
+
+  @Get(':projectId/bucket')
+  getProjectBucket(@Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnBucket> {
+    return this.projectAggregate.getProjectBucket(projectId);
   }
 }

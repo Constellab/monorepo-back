@@ -15,7 +15,7 @@ import {CaBaseEntity} from '../../../../ca-core/model/entities/ca-base-entity.cl
 import {ClSubscriptionHandler} from '@monorepo/core-lib';
 
 export type CaProjectDetailRightPanel = {
-  type: 'description' | 'report' | 'experiment' | 'comments'
+  type: 'description' | 'report' | 'experiment' | 'comments' | 'settings';
   objectId: string;
 }
 
@@ -45,13 +45,6 @@ export class CaProjectDetailState implements OnDestroy {
     this.queryParamHandler = new FlQueryParamHandler(router, route);
   }
 
-  public static emptyQueryParams(): CaProjectDetailRightPanel {
-    return {
-      type: null,
-      objectId: null
-    };
-  }
-
   public init(id$: Observable<string>): void {
     this.id$ = id$;
     this.project$ = new BehaviorSubject<CaProject>(null);
@@ -70,7 +63,7 @@ export class CaProjectDetailState implements OnDestroy {
 
     this.subscription.add(this.id$.pipe(
       first(), // as the share is handle at the root project level, not need to refresh it every time
-      switchMap(id => this.projectService.getUsersOfProject(id))
+      switchMap(id => this.projectService.getUsersOfProject(id)),
     ).subscribe({
       next: users => this.users$.next(users),
       error: error => this.users$.error(error)

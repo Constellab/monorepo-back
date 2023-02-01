@@ -69,7 +69,7 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     await this.deletePhoto(space);
 
     space.photo = await this.objectStorageService.uploadObject(this.getBucketConfig(), file,
-      true);
+      {generateRandomObjectName: true});
     return this.update(space);
   }
 

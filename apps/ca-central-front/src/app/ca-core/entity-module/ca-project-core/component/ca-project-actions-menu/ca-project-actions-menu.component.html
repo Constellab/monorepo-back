@@ -31,6 +31,12 @@
     <span>{{'change_project_leader' | translate}}</span>
   </button>
 
+  <a mat-menu-item type="button" [routerLink]="detailRoute"
+     [queryParams]="{type: 'settings'}">
+    <mat-icon>settings</mat-icon>
+    <span>{{'project_settings' | translate}}</span>
+  </a>
+
   <button mat-menu-item type="button" (click)="openDeleteProjectDialog()"
           class="g-warn-text">
     <mat-icon color="warn">delete</mat-icon>

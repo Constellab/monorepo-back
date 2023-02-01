@@ -27,8 +27,21 @@ import {
 } from './component/ca-project-experiment-preview/ca-project-experiment-preview.component';
 import {CaLabCoreModule} from '../../../ca-core/entity-module/ca-lab-core/ca-lab-core.module';
 import {CaProjectCommentsComponent} from './component/ca-project-comments/ca-project-comments.component';
-import {CaCommentModule} from "../../../ca-comment/ca-comment.module";
+import {CaCommentModule} from '../../../ca-comment/ca-comment.module';
 import {PickerModule} from '@ctrl/ngx-emoji-mart';
+import {CaProjectSettingsComponent} from './component/ca-project-settings/ca-project-settings.component';
+import {
+  CaProjectStorageSettingsComponent
+} from './component/ca-project-storage-settings/ca-project-storage-settings.component';
+import {
+  CaProjectConfigureStorageComponent
+} from './component/ca-project-configure-storage/ca-project-configure-storage.component';
+import {
+  CaObjectStorageCoreModule
+} from '../../../ca-core/entity-module/ca-object-storage-core/ca-object-storage-core.module';
+import {
+  CaCloudProviderCoreModule
+} from '../../../ca-core/entity-module/ca-cloud-provider-core/ca-cloud-provider-core.module';
 
 /**
  * Module for the project detail page
@@ -45,6 +58,9 @@ import {PickerModule} from '@ctrl/ngx-emoji-mart';
     CaProjectReportPreviewComponent,
     CaProjectExperimentPreviewComponent,
     CaProjectCommentsComponent,
+    CaProjectSettingsComponent,
+    CaProjectStorageSettingsComponent,
+    CaProjectConfigureStorageComponent,
   ],
   imports: [
     CommonModule,
@@ -61,6 +77,8 @@ import {PickerModule} from '@ctrl/ngx-emoji-mart';
     CaGroupCoreModule,
     CaLabCoreModule,
     CaCommentModule,
+    CaObjectStorageCoreModule,
+    CaCloudProviderCoreModule,
   ]
 })
 export class CaProjectDetailPageModule {

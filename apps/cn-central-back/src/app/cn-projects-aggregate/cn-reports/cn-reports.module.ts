@@ -6,6 +6,7 @@ import {CnReport} from './cn-report.entity';
 import {CnExternalLabApiModule} from '../../cn-external-lab-api/cn-external-lab-api.module';
 import {CnLabConfigsModule} from '../../cn-lab-configs/cn-lab-configs.module';
 import {CnUsersModule} from '../../cn-users/cn-users.module';
+import {CnObjectStoragesModule} from '../../cn-object-storages/cn-object-storages.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import {CnUsersModule} from '../../cn-users/cn-users.module';
     CnCoreModule,
     CnExternalLabApiModule,
     CnLabConfigsModule,
-    CnUsersModule
+    CnUsersModule,
+    CnObjectStoragesModule,
   ],
   providers: [CnReportsService],
   exports: [CnReportsService]

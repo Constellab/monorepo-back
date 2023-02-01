@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {HnStory, HnStoryStatus} from './hn-story.entity';
-import {FindOptionsOrder, FindOptionsOrderProperty, FindOptionsWhere, In, Like, Repository} from 'typeorm';
+import {FindOptionsOrder, FindOptionsWhere, In, Like, Repository} from 'typeorm';
 import {HnTopicService} from '../topic/hn-topic.service';
 import {ClPage, ClStringHelper} from '@monorepo/core-lib';
 import {BlAbstractPaginatedService, BlBucketConfig, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
@@ -53,17 +53,17 @@ export class HnStoryService {
 
   async getMyStories(page: number, size: number): Promise<ClPage<HnStory>> {
     return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
-      where: {
-        createdBy: {
-          id: HnCurrentUserHelper.getCurrentUser().id
+        where: {
+          createdBy: {
+            id: HnCurrentUserHelper.getCurrentUser().id
+          }
+        },
+        relations: ['topics'],
+        order: {
+          createdAt: 'DESC' as any
         }
       },
-      relations: ['topics'],
-      order: {
-        createdAt: 'DESC' as any
-      }
-    },
-    this.storyRepository.manager, HnStory
+      this.storyRepository.manager, HnStory
     );
   }
 
@@ -93,7 +93,7 @@ export class HnStoryService {
     }
 
     where.status = HnStoryStatus.PUBLISHED;
-    order.createdAt =  'DESC' as any
+    order.createdAt = 'DESC' as any;
 
     return (await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
       where: where,
@@ -185,7 +185,7 @@ export class HnStoryService {
         };
         const imgSize: ISizeCalculationResult = imageSize(imgBuffer);
         const imgName: string = await this.objectStorageService.uploadObject(
-          this.getBucketConfig(), imgBlFile, true);
+          this.getBucketConfig(), imgBlFile, {generateRandomObjectName: true});
         im.insert = {
           figure: {
             filename: imgName,
@@ -204,7 +204,8 @@ export class HnStoryService {
     const storyImage: HnStoryImage = new HnStoryImage();
     for (const file of files) {
       const imSize = imageSize(file.buffer);
-      storyImage.filename = await this.objectStorageService.uploadObject(this.getBucketConfig(), file, true);
+      storyImage.filename = await this.objectStorageService.uploadObject(this.getBucketConfig(), file,
+        {generateRandomObjectName: true});
       storyImage.width = imSize.width;
       storyImage.height = imSize.height;
     }

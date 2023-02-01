@@ -9,6 +9,7 @@ import {CaAuthenticatedUserService} from '../../../ca-core/service-api/ca-authen
 import {CaCommentMenuPortalButton} from '../ca-comment-menu-portal/ca-comment-menu-portal.component';
 import {FormControl, Validators} from '@angular/forms';
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
+import {CaProjectDetailState} from '../../../ca-project/module/ca-project-detail-page/state/ca-project-detail.state';
 
 @Component({
   selector: 'ca-comment-div',
@@ -27,7 +28,8 @@ export class CaCommentDivComponent implements OnInit {
 
   data: CaMouseHoverCommentData;
 
-  textEditorConfig: CaEditCommentTextEditorConfig = new CaEditCommentTextEditorConfig(this.projectService);
+  textEditorConfig: CaEditCommentTextEditorConfig = new CaEditCommentTextEditorConfig(this.projectService,
+    this.state.getProjectId$());
 
   isEditMode$: Subject<boolean> = new Subject<boolean>();
   isLoading: boolean = false;
@@ -36,7 +38,8 @@ export class CaCommentDivComponent implements OnInit {
 
   constructor(private projectService: CaProjectService,
               private authUserService: CaAuthenticatedUserService,
-              private portalService: FlPortalService) {
+              private portalService: FlPortalService,
+              private state: CaProjectDetailState) {
   }
 
   ngOnInit(): void {
@@ -48,31 +51,31 @@ export class CaCommentDivComponent implements OnInit {
         onClick: (event: MouseEvent, overlayRef?: FlOverlayRef) => {
           this.eventOnMessage$.next([overlayRef, 'addReaction']);
         }
-      }]
+      }];
     if (this.authUserService.getUser().id === this.comment.createdBy.id && this.comment.createdAt.diffNow('minute').as('minute') > -5) {
       this.buttons.push({
-        icon: 'edit',
-        text: 'Edit',
-        type: 'button',
-        onClick: (event: MouseEvent, overlayRef?: FlOverlayRef) => {
-          this.isEditMode$.next(true);
-          this.formControl = new FormControl(this.comment.content, [Validators.required, Validators.min(1)]);
-          this.eventOnMessage$.next([overlayRef, 'edit']);
-        }
-      },
-      {
-        icon: 'delete',
-        text: 'Delete',
-        type: 'button',
-        onClick: (event, overlayRef: FlOverlayRef) => {
-          this.eventOnMessage$.next([overlayRef, 'delete']);
-        }
-      });
+          icon: 'edit',
+          text: 'Edit',
+          type: 'button',
+          onClick: (event: MouseEvent, overlayRef?: FlOverlayRef) => {
+            this.isEditMode$.next(true);
+            this.formControl = new FormControl(this.comment.content, [Validators.required, Validators.min(1)]);
+            this.eventOnMessage$.next([overlayRef, 'edit']);
+          }
+        },
+        {
+          icon: 'delete',
+          text: 'Delete',
+          type: 'button',
+          onClick: (event, overlayRef: FlOverlayRef) => {
+            this.eventOnMessage$.next([overlayRef, 'delete']);
+          }
+        });
     }
     this.data = {
       comment: this.comment,
       buttons: this.buttons
-    }
+    };
 
 
     this.onEventOnEdit();
@@ -89,7 +92,7 @@ export class CaCommentDivComponent implements OnInit {
 
       this.comment.content = comment.content;
       this.isEditMode$.next(false);
-    })
+    });
   }
 
   private onEventOnEdit(): void {
@@ -122,12 +125,12 @@ export class CaCommentDivComponent implements OnInit {
     this.portalService.createPortal(FlEmojiPickerPortalComponent, config).detachments().subscribe(
       emoji => {
         if (emoji)
-          this.addEmoji(emoji)
+          this.addEmoji(emoji);
       }
     );
   }
 
-  getCommentContent(): CmRichTextI{
+  getCommentContent(): CmRichTextI {
     return this.comment.content;
   }
 

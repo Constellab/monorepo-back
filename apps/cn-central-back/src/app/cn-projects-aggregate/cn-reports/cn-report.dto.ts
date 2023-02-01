@@ -43,4 +43,7 @@ export class CnCreateReportWithConfigDto {
   report: CnSaveReportDto;
   lab_config: CnLabConfigDto;
   experiment_ids: string[];
+  // contains all the json view of the report
+  // key = view id, value = json view
+  resource_views: Record<string, any>;
 }

@@ -21,6 +21,7 @@ import {CaProjectService} from '../../../../service-api/ca-project.service';
 import {Observable} from 'rxjs';
 import {CaUser} from '../../../../model/entities/ca-user.class';
 import {ClHelpService} from '@monorepo/core-lib';
+import {CaRouterService} from '../../../../service/ca-router.service';
 
 /**
  * Action menu button to edit or a project
@@ -159,6 +160,10 @@ export class CaProjectActionsMenuComponent implements OnInit {
     if (result.choice) {
       this.projectDeleted.emit(this.project);
     }
+  }
+
+  get detailRoute(): string {
+    return CaRouterService.getProjectDetailRoute(this.project.id);
   }
 
 }

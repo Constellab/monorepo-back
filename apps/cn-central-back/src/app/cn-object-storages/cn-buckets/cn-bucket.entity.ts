@@ -12,9 +12,8 @@ export enum CnBucketContentType {
   LAB_BACKUP = 'LAB_BACKUP',
   SPACE_IMAGE = 'SPACE_IMAGE',
   USER_IMAGE = 'USER_IMAGE',
-  REPORT_IMAGE = 'REPORT_IMAGE',
-  REPORT_VIEW = 'REPORT_VIEW',
-  COMMENT_IMAGE = 'COMMENT_IMAGE',
+  // Bucket containing all the file of a project : reports, experiments, comment image, document.
+  PROJECT = 'PROJECT',
 }
 
 /**

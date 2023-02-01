@@ -88,5 +88,12 @@
   "all_smart_db": "Tous les smartDB",
   "add_new_smart_db": "Ajouter une nouvelle smartDB",
   "include_sub_projects": "Inclure les sous projets",
-  "projects": "Projets"
+  "projects": "Projets",
+  "labs": "Labs",
+  "project_settings": "Paramètres",
+  "project_storage": "Stockage",
+  "project_storage_not_configured": "Stockage non configuré. Veuillez le configurer pour pouvoir stocker des rapports, des documents et utiliser les commentaires.",
+  "project_storage_configured": "Stockage configuré",
+  "configure_project_storage": "Configurer le stockage",
+  "configure_project_storage_help": "Cette configuration définira où les rapports, documents et commentaires associés à ce projet et ses sous projets seront stockés. Une fois définie, la localisation ne pourra pas être modifiée. Veuillez choisir un emplacement avec un fournisseur de cloud pour vos données"
 }

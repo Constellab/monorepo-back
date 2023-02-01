@@ -1,5 +1,6 @@
 import {Observable} from 'rxjs';
 import {FlTranslateService} from '../module/fl-translate/service/fl-translate.service';
+import {ClNumberHelper} from '@monorepo/core-lib';
 
 /**
  * Helper to manage files, like download a file
@@ -92,11 +93,12 @@ export class FlFileHelper {
 
     for(const unit of units){
       if(size < 1024){
-        return `${size} ${translateService.translate(unit)}`;
+        return `${ClNumberHelper.round(size, 2)} ${translateService.translate(unit)}`;
       }
       size /= 1024;
     }
-    return `${size} ${translateService.translate('flCoreComponent.tera_byte_symbole')}`;
+
+    return `${ClNumberHelper.round(size, 2)} ${translateService.translate('flCoreComponent.tera_byte_symbole')}`;
   }
 
 

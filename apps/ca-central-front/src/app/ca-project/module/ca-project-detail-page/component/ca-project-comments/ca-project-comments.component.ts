@@ -29,7 +29,7 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
   project$: Observable<CaProject>;
   comments: CaProjectCommentDatasourcePaginated;
   currentUserId: string;
-  textEditorConfig: CaCommentTextEditorConfig = new CaCommentTextEditorConfig(this.projectService);
+  textEditorConfig: CaCommentTextEditorConfig = new CaCommentTextEditorConfig(this.projectService, this.state.getProjectId$());
   formControl: FormControl;
   isLoading: boolean = false;
   projectId: string;

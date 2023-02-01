@@ -33,7 +33,8 @@ import {CnCloudProvidersModule} from '../cn-cloud-providers/cn-cloud-providers.m
     CnObjectStoragesController
   ],
   exports: [
-    CnObjectStoragesAggregateService
+    CnObjectStoragesAggregateService,
+    CnBucketsService,
   ]
 })
 export class CnObjectStoragesModule {

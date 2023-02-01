@@ -29,7 +29,7 @@ const routes: Route[] = [
       //////////////////////// DASHBOARD /////////////////////////
       {
         path: caConstDashboardRoute,
-        loadChildren: () => import('../ca-dashboard/ca-dashboard.module').then(m => m.CaDashboardModule)
+        loadChildren: () => import('../ca-dashboard/ca-dashboard-page.module').then(m => m.CaDashboardPageModule)
       },
 
       //////////////////////// LAB INSTANCE /////////////////////////

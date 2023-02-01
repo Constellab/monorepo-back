@@ -42,7 +42,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
    * @private
    */
   private async checkBucketBeforeSave(bucket: CnBucket): Promise<CnBucket> {
-    // There can be only on bucket of type SPACE_IMAGE or USER_IMAGE
+    // There can be only one bucket of type SPACE_IMAGE or USER_IMAGE
     if ([CnBucketContentType.SPACE_IMAGE, CnBucketContentType.USER_IMAGE].includes(bucket.contentType)) {
       const existingBucket = await this.findByContentType(bucket.contentType);
       if (existingBucket.length > 0) {
@@ -50,23 +50,15 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       }
       bucket.space = null;
     } else {
-      // all the other type must be associated to an space
+      // all the other type must be associated to a space
       if (!bucket.space) {
         throw new BlBadRequestException(`The bucket must be associated to an space`);
       }
 
       if (bucket.contentType === CnBucketContentType.LAB_BACKUP && bucket.objectId == null) {
         throw new BlBadRequestException(`The bucket must be associated to a lab`);
-      }
-
-      // There can be only one bucket of type REPORT_IMAGE,REPORT_VIEW,COMMENT_IMAGE per space
-      if ([CnBucketContentType.REPORT_IMAGE, CnBucketContentType.REPORT_VIEW, CnBucketContentType.COMMENT_IMAGE]
-        .includes(bucket.contentType)) {
-        const existingBucket = await this.findBySpaceAndContentType(bucket.space.id, bucket.contentType);
-        if (existingBucket.length > 0) {
-          // eslint-disable-next-line max-len
-          throw new BlBadRequestException(`There is already a bucket of type ${bucket.contentType} for the space ${bucket.space.name}`);
-        }
+      } else if (bucket.contentType === CnBucketContentType.PROJECT && bucket.objectId == null) {
+        throw new BlBadRequestException(`The bucket must be associated to a project`);
       }
     }
 
@@ -74,19 +66,23 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
   }
 
   public findByContentTypeAndObjectId(contentType: CnBucketContentType, objectId: string): Promise<CnBucket> {
+    if(objectId == null) throw new BlBadRequestException(`The objectId must be defined`);
     return this.repository.findOne({
       where: {
         contentType: contentType,
         objectId: objectId
+      },
+      relations: {
+        region: true,
+        credentials: true
       }
     });
   }
 
-  public async deleteBucket(bucket: CnBucket): Promise<void> {
-    await this.datasource.transaction(async (entityManager) => {
-      await entityManager.remove(bucket);
-      await this.objectStorageService.deleteBucket(bucket.getBucketConfig());
-    });
+  public async deleteBucket(bucketId: string, entityManager: EntityManager): Promise<void> {
+    const bucket = await this.findById(bucketId, {credentials: true, region: true});
+    await entityManager.remove(bucket);
+    await this.objectStorageService.deleteBucket(bucket.getBucketConfig());
   }
 
   public async findBySpaceAndContentType(spaceId: string, contentType: CnBucketContentType): Promise<CnBucket[]> {

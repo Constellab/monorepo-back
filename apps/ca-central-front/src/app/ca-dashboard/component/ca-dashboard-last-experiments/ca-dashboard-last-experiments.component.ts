@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experiment.service';
-import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
+import {CaExperimentService} from '../../../ca-core/service-api/ca-experiment.service';
+import {CaExperiment} from '../../../ca-core/model/entities/ca-experiment.class';
 
 @Component({
   selector: 'ca-dashboard-last-experiments',

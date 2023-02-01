@@ -69,6 +69,11 @@ export class CnCloudProviderAggregateService {
     return this.cloudProviderRegionService.findAll(page, size);
   }
 
+  public async getS3Regions(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
+    this.checkAuthorizationToGetEntity();
+    return this.cloudProviderRegionService.findS3Regions(page, size);
+  }
+
   public async getDefaultRegion(): Promise<CnCloudProviderRegion> {
     return await this.cloudProviderRegionService.findByCloudProviderNameAndTechnicalNameAndCheck(
       'OVH', CnCloudProviderAggregateService.LabBackupDefaultRegion);

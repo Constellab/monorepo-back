@@ -60,4 +60,10 @@ export class CnCloudProvidersController {
     return this.service.getRegions(page, size);
   }
 
+  @Get('regions/s3')
+  public async getS3Regions(@Query('page', ParseIntPipe) page: number,
+                            @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnCloudProviderRegion>> {
+    return this.service.getS3Regions(page, size);
+  }
+
 }

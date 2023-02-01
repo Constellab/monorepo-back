@@ -1,13 +1,13 @@
 import {Component, OnInit} from '@angular/core';
-import {CaProjectService} from '../../../../../ca-core/service-api/ca-project.service';
-import {CaRouterService} from '../../../../../ca-core/service/ca-router.service';
-import {CaProject, CaProjectDatasource, CaProjectLevel} from '../../../../../ca-core/model/entities/ca-project.class';
+import {CaProjectService} from '../../../ca-core/service-api/ca-project.service';
+import {CaRouterService} from '../../../ca-core/service/ca-router.service';
+import {CaProject, CaProjectDatasource, CaProjectLevel} from '../../../ca-core/model/entities/ca-project.class';
 import {CaDashboardListLayoutComponent} from '../ca-dashboard-list-layout/ca-dashboard-list-layout.component';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {
   CaProjectFormDialogComponent,
   CaProjectFormDialogInput
-} from '../../../../../ca-core/entity-module/ca-project-core/component/ca-project-form-dialog/ca-project-form-dialog.component';
+} from '../../../ca-core/entity-module/ca-project-core/component/ca-project-form-dialog/ca-project-form-dialog.component';
 
 /**
  * Small list of project in the dashboard

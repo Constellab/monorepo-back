@@ -38,9 +38,7 @@ export enum CaBucketContentType {
   LAB_BACKUP = 'LAB_BACKUP',
   SPACE_IMAGE = 'SPACE_IMAGE',
   USER_IMAGE = 'USER_IMAGE',
-  REPORT_IMAGE = 'REPORT_IMAGE',
-  REPORT_VIEW = 'REPORT_VIEW',
-  COMMENT_IMAGE = 'COMMENT_IMAGE',
+  PROJECT = 'PROJECT',
 }
 
 export class CaBucket extends CaBaseEntity {

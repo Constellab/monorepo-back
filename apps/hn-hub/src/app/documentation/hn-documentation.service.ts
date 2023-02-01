@@ -168,7 +168,7 @@ export class HnDocumentationService {
         };
         const imgSize: ISizeCalculationResult = imageSize(imgBuffer);
         const imgName: string = await this.objectStorageService.uploadObject(
-          this.getBucketConfig(), imgBlFile, true);
+          this.getBucketConfig(), imgBlFile, {generateRandomObjectName: true});
         im.insert = {
           figure: {
             filename: imgName,
@@ -219,7 +219,7 @@ export class HnDocumentationService {
     for (const file of files) {
       const imSize = imageSize(file.buffer);
       docImage.filename = await this.objectStorageService.uploadObject(
-        this.getBucketConfig(), file, true);
+        this.getBucketConfig(), file, {generateRandomObjectName: true});
       docImage.width = imSize.width;
       docImage.height = imSize.height;
     }

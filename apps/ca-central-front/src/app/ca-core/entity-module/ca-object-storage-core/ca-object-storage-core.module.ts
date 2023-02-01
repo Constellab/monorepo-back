@@ -19,6 +19,7 @@ import {CaBucketTableComponent} from './component/ca-bucket-table/ca-bucket-tabl
 import {
   CaBucketCredentialsInlineComponent
 } from './component/ca-bucket-credentials-inline/ca-bucket-credentials-inline.component';
+import {CaBucketInfoComponent} from './component/ca-bucket-info/ca-bucket-info.component';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import {
     CaSelectBucketCredentialsOptionsComponent,
     CaBucketFormDialogComponent,
     CaBucketTableComponent,
-    CaBucketCredentialsInlineComponent
+    CaBucketCredentialsInlineComponent,
+    CaBucketInfoComponent
   ],
   exports: [
     CaBucketCredentialsTableComponent,
@@ -36,7 +38,8 @@ import {
     CaSelectBucketCredentialsOptionsComponent,
     CaBucketFormDialogComponent,
     CaBucketTableComponent,
-    CaBucketCredentialsInlineComponent
+    CaBucketCredentialsInlineComponent,
+    CaBucketInfoComponent
   ],
   imports: [
     CommonModule,

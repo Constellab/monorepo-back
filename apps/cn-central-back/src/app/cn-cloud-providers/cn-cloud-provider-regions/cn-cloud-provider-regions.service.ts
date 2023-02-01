@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnCloudProviderRegion} from './cn-cloud-provider-region.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, Repository} from 'typeorm';
+import {And, EntityManager, IsNull, Not, Repository} from 'typeorm';
 import {ClPage} from '@monorepo/core-lib';
 import {CnCloudProviderName} from '../cn-cloud-provider.entity';
 
@@ -61,6 +61,14 @@ export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProvi
 
   public findAll(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
     return this.findPaginated(page, size);
+  }
+
+  public findS3Regions(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
+    return this.findPaginated(page, size, {
+      where: {
+        s3Endpoint: And(Not(IsNull()), Not(''))
+      }
+    });
   }
 
 }

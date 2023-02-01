@@ -1,0 +1,8 @@
+<div class="section">
+  <fl-text-icon>
+    <mat-icon>settings</mat-icon>
+    <h2>{{'project_settings' | translate}}</h2>
+  </fl-text-icon>
+
+  <ca-project-storage-settings class="g-section" *ngIf="showStorageSettings$ | async"></ca-project-storage-settings>
+</div>

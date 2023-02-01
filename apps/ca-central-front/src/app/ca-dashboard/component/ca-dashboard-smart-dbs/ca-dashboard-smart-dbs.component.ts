@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {CaSmartDbDatasource} from '../../../../../ca-core/model/entities/ca-smart-db.entity';
-import {CaSmartDbService} from '../../../../../ca-core/service-api/ca-smart-db.service';
-import {CaRouterService} from '../../../../../ca-core/service/ca-router.service';
+import {CaSmartDbDatasource} from '../../../ca-core/model/entities/ca-smart-db.entity';
+import {CaSmartDbService} from '../../../ca-core/service-api/ca-smart-db.service';
+import {CaRouterService} from '../../../ca-core/service/ca-router.service';
 
 /**
  * Component to list the current smart dbs of the user

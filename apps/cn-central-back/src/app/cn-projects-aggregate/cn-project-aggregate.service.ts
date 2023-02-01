@@ -27,6 +27,9 @@ import {CnCommentImage, CnNewComment} from '../cn-core/model/entities/cn-comment
 import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
 import {BlBadRequestException, BlFile, BlSearchParams, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {DataSource} from 'typeorm';
+import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import {CnObjectStoragesAggregateService} from '../cn-object-storages/cn-object-storages-aggregate.service';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -39,7 +42,8 @@ export class CnProjectAggregateService {
               private reportService: CnReportsService,
               private groupAggregateService: CnGroupsAggregateService,
               private projectCommentService: CnProjectCommentService,
-              private datasource: DataSource) {
+              private datasource: DataSource,
+              private objectStoragesAggregateService: CnObjectStoragesAggregateService) {
   }
 
   /////////////////////////////////////// PROJECT //////////////////////////////////
@@ -121,7 +125,10 @@ export class CnProjectAggregateService {
         {detailArgs: {labNames: names}});
     }
 
-    await this.projectService.deleteById(id);
+    await this.datasource.transaction(async entityManager => {
+      await this.projectService.deleteById(id, entityManager);
+      await this.objectStoragesAggregateService.deleteProjectBucket(id, entityManager);
+    });
   }
 
   async findProject(id: string): Promise<CnProject> {
@@ -172,10 +179,7 @@ export class CnProjectAggregateService {
         break;
     }
 
-
-    const project = await this.projectService.findWithSharedGroups(projectId);
-    const rootProject = await this.projectSecurity.checkFindOneAndGetRootProject(project,
-      CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    const rootProject = await this.checkFindOneAndGetRootProject(projectId);
 
     return await this.projectService.getProjectTree(rootProject);
   }
@@ -322,8 +326,9 @@ export class CnProjectAggregateService {
     return report;
   }
 
-  async createLabReport(createReportDto: CnCreateReportWithConfigDto, projectId: string): Promise<void> {
-    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+  async createLabReport(createReportDto: CnCreateReportWithConfigDto, projectId: string,
+                        files: BlFile[]): Promise<void> {
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
     if (project.levelStatus === CnProjectLevelStatus.PARENT) {
       throw new BlBadRequestException(CnErrorText.REPORT_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT);
@@ -344,7 +349,9 @@ export class CnProjectAggregateService {
       experiments.push(experiment);
     }
 
-    await this.reportService.createReport(createReportDto, experiments, project);
+    const bucket = await this.objectStoragesAggregateService.getAndCheckProjectBucket(project.getRootParentId());
+
+    await this.reportService.createReport(createReportDto, experiments, project, bucket.getBucketConfig(), files);
   }
 
   async deleteLabReport(projectId: string, reportId: string): Promise<void> {
@@ -368,31 +375,29 @@ export class CnProjectAggregateService {
   }
 
   async getReportImage(reportId: string, filename: string): Promise<IncomingMessage> {
-    // check that the user can get the report
-    this.logger.log('getReportImage');
-    const user = CnCurrentUserHelper.getCurrentUser();
-    this.logger.log('user: ' + user?.fullname ?? 'null');
-    const space = CnCurrentUserHelper.getCurrentSpace();
-    this.logger.log('space: ' + space?.name ?? 'null');
-    const report = await this.findReport(reportId);
-    //
+    const report = await this.reportService.findByIdAndCheck(reportId);
+
+    const project = await this.checkFindOneAndGetRootProject(report.projectId);
+
     // check that the filename is in the report
     const content = new CnReportContent(report.content);
     if (content.getFigureOp(filename) == null) {
       throw new BlUnauthorizedException();
     }
-    return this.reportService.getImage(filename);
+    return this.reportService.getImage(filename, project.getRootParentId());
   }
 
   async getReportView(reportId: string, filename: string): Promise<IncomingMessage> {
-    const report = await this.findReport(reportId);
+    const report = await this.reportService.findByIdAndCheck(reportId);
+
+    const project = await this.checkFindOneAndGetRootProject(report.projectId);
 
     // check that the filename is in the report
     const content = new CnReportContent(report.content);
     if (content.getViewsOp(filename) == null) {
-      throw new BlUnauthorizedException("The view is not in the report");
+      throw new BlUnauthorizedException('The view is not in the report');
     }
-    return this.reportService.getView(filename);
+    return this.reportService.getView(filename, project.getRootParentId());
   }
 
   /////////////////////////////////////// GROUPS //////////////////////////////////
@@ -429,9 +434,7 @@ export class CnProjectAggregateService {
    * @param projectId
    */
   public async getProjectSharedGroups(projectId: string): Promise<CnGroup[]> {
-    const project = await this.projectService.findWithSharedGroups(projectId);
-
-    const rootProject = await this.projectSecurity.checkFindOneAndGetRootProject(project, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    const rootProject = await this.checkFindOneAndGetRootProject(projectId);
     return rootProject.sharedGroups;
   }
 
@@ -446,25 +449,6 @@ export class CnProjectAggregateService {
     const groupIds = groups.map(group => group.id);
     return this.groupAggregateService.getUsersOfGroups(groupIds);
   }
-
-
-  /////////////////////////////////////// SECURITY //////////////////////////////////
-
-
-  private async getAndCheckAuthorizationForFindOne(projectId: string): Promise<CnProject> {
-    const dbProject = await this.projectService.findWithSharedGroups(projectId);
-
-    await this.projectSecurity.checkFindOne(dbProject, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
-    return dbProject;
-  }
-
-  private async getAndCheckAuthorizationForUpdate(projectId: string): Promise<CnProject> {
-    const dbProject = await this.projectService.findWithSharedGroups(projectId);
-
-    await this.projectSecurity.checkUpdate(dbProject, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
-    return dbProject;
-  }
-
 
   /////////////////////////////////////// PROJECT COMMENT //////////////////////////////////
 
@@ -485,11 +469,63 @@ export class CnProjectAggregateService {
     return this.projectCommentService.delete(commentId, projectId);
   }
 
-  public async saveCommentImage(files: BlFile[]): Promise<CnCommentImage> {
-    return this.projectCommentService.saveImage(files);
+  public async saveCommentImage(files: BlFile[], projectId: string): Promise<CnCommentImage> {
+    const rootProject = await this.checkFindOneAndGetRootProject(projectId);
+
+    const bucket = await this.objectStoragesAggregateService.getAndCheckProjectBucket(rootProject.id);
+    return this.projectCommentService.saveProjectCommentImage(files, bucket.getBucketConfig(), projectId);
   }
 
-  public async getCommentImage(filename: string): Promise<IncomingMessage> {
-    return await this.projectCommentService.getImage(filename);
+  public async getCommentImage(filename: string, projectId: string): Promise<IncomingMessage> {
+    const rootProject = await this.checkFindOneAndGetRootProject(projectId);
+
+    const bucket = await this.objectStoragesAggregateService.getAndCheckProjectBucket(rootProject.id);
+    return await this.projectCommentService.getImage(filename, bucket.getBucketConfig());
   }
+
+  /////////////////////////////////////// PROJECT BUCKET //////////////////////////////////
+  public async createProjectBucket(projectId: string, region: CnCloudProviderRegion): Promise<CnBucket> {
+    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+
+    if (project.currentLevel !== CnProjectLevel.PROJECT) {
+      throw new BlBadRequestException('Only root projects can have a bucket');
+    }
+
+    return this.objectStoragesAggregateService.createProjectBucket(project, region);
+  }
+
+  public async getProjectBucket(projectId: string): Promise<CnBucket> {
+    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+
+    if (project.currentLevel !== CnProjectLevel.PROJECT) {
+      throw new BlBadRequestException('Only root projects can have a bucket');
+    }
+
+    return this.objectStoragesAggregateService.getProjectBucket(projectId);
+  }
+
+  /////////////////////////////////////// SECURITY //////////////////////////////////
+
+
+  private async getAndCheckAuthorizationForFindOne(projectId: string): Promise<CnProject> {
+    const dbProject = await this.projectService.findWithSharedGroups(projectId);
+
+    await this.projectSecurity.checkFindOne(dbProject, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    return dbProject;
+  }
+
+  private async getAndCheckAuthorizationForUpdate(projectId: string): Promise<CnProject> {
+    const dbProject = await this.projectService.findWithSharedGroups(projectId);
+
+    await this.projectSecurity.checkUpdate(dbProject, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    return dbProject;
+  }
+
+  private async checkFindOneAndGetRootProject(projectId: string): Promise<CnProject> {
+    const project = await this.projectService.findWithSharedGroups(projectId);
+
+    return await this.projectSecurity.checkFindOneAndGetRootProject(project, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+  }
+
+
 }

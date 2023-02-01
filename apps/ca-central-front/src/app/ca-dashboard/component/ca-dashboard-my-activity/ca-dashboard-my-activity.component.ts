@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {CaStatsService} from '../../../../../ca-core/service-api/ca-stats.service';
-import {CaStats} from '../../../../../ca-core/model/entities/ca-stats.class';
+import {CaStatsService} from '../../../ca-core/service-api/ca-stats.service';
+import {CaStats} from '../../../ca-core/model/entities/ca-stats.class';
 
 @Component({
   selector: 'ca-dashboard-my-activity',

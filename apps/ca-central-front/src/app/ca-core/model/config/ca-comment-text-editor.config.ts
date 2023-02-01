@@ -8,28 +8,32 @@ import {
   FlTextEditorState
 } from '@monorepo/front-core-lib';
 import {EventEmitter} from '@angular/core';
+import {Observable} from 'rxjs';
 
 export class CaCommentTextEditorConfig extends FlTextEditorConfig implements FlTextEditorImageLoader {
 
   sendButtonEvent$: EventEmitter<boolean> = new EventEmitter<boolean>();
   sendEmojiButtonEvent$: EventEmitter<HTMLElement> = new EventEmitter<HTMLElement>();
 
-  constructor(private projectService: CaProjectService) {
+  private projectId: string;
+
+  constructor(private projectService: CaProjectService, private projectId$: Observable<string>) {
     super();
+    this.projectId$.subscribe(projectId => this.projectId = projectId);
   }
+
 
   onPasteImage(imgFile: File, state: FlTextEditorState): any {
     return this.insertImageFromFile(imgFile, state);
   }
 
   public getImageUrl(filename: string): string {
-    return this.projectService.getCommentImageUrl(filename);
+    return this.projectService.getCommentImageUrl(filename, this.projectId);
   }
 
-  getBlockAddButtons(state: FlTextEditorState): FlTextEditorBlockAddButton[] {
+  getBlockAddButtons(): FlTextEditorBlockAddButton[] {
     return [];
   }
-
 
 
   getToolbarConfig(): any {
@@ -41,7 +45,7 @@ export class CaCommentTextEditorConfig extends FlTextEditorConfig implements FlT
         ['blockquote'],
         ['code']
       ]
-    }
+    };
   }
 
   getSnowButtons(): FlTextEditorSnowButton[] {
@@ -59,7 +63,7 @@ export class CaCommentTextEditorConfig extends FlTextEditorConfig implements FlT
       {
         icon: 'sentiment_satisfied',
         type: 'button',
-        onAction: (e, state: FlTextEditorState) => this.openEmojiPanel(e, state)
+        onAction: (e) => this.openEmojiPanel(e)
       },
       {
         icon: 'send',
@@ -72,12 +76,12 @@ export class CaCommentTextEditorConfig extends FlTextEditorConfig implements FlT
 
   insertImageFromFile(file: File, state: FlTextEditorState): void {
     const index = state.getCurrentSelectionIndex();
-    this.projectService.uploadCommentImage(file).subscribe(
+    this.projectService.uploadCommentImage(file, this.projectId).subscribe(
       fileUrl => state.insertImageFromUrl(fileUrl, index)
     );
   }
 
-  openEmojiPanel(event: Event, state: FlTextEditorState): void {
+  openEmojiPanel(event: Event): void {
     this.sendEmojiButtonEvent$.emit(event.target as HTMLElement);
   }
 
@@ -103,7 +107,7 @@ export class CaEditCommentTextEditorConfig extends CaCommentTextEditorConfig {
       {
         icon: 'sentiment_satisfied',
         type: 'button',
-        onAction: (e, state: FlTextEditorState) => this.openEmojiPanel(e, state)
+        onAction: (e) => this.openEmojiPanel(e)
       },
       {
         icon: 'cancel',

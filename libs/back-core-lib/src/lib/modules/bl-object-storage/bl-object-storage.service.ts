@@ -25,6 +25,15 @@ export interface BlObjectStorageCredentials {
   secretAccessKey: string;
 }
 
+export interface BlObjectStorageUploadOptions {
+  // if true generate a random name for the object
+  generateRandomObjectName?: boolean;
+  // if provided, force the filename of the object
+  filename?: string;
+  // if provided, the object will be stored in a folder with this prefix
+  prefix?: string;
+}
+
 /**
  * Service to communicate with an object storage s3 to store files.
  */
@@ -39,15 +48,21 @@ export class BlObjectStorageService {
   }
 
   public async uploadObject(config: BlBucketConfig, obj: BlFile,
-                            generateRandomObjectName: boolean = false): Promise<string> {
+                            options: BlObjectStorageUploadOptions = {}): Promise<string> {
     const s3Client = this.getClient(config);
 
     let filename: string;
-    if (generateRandomObjectName) {
+    if (options.filename) {
+      filename = options.filename;
+    } else if (options.generateRandomObjectName) {
       const extension = BlFileHelper.getFileExtension(obj.originalname);
       filename = this.generateRandomFileName(extension);
     } else {
       filename = obj.originalname;
+    }
+
+    if(options.prefix){
+      filename = options.prefix + filename;
     }
 
     await s3Client.send(new PutObjectCommand({
@@ -68,10 +83,10 @@ export class BlObjectStorageService {
     return filename;
   }
 
-  public async uploadJson(config: BlBucketConfig, json: any): Promise<string> {
+  public async uploadJson(config: BlBucketConfig, json: any, prefix: string = ''): Promise<string> {
     const s3Client = this.getClient(config);
 
-    const filename: string = this.generateRandomFileName('json');
+    const filename: string = prefix + this.generateRandomFileName('json');
 
     await s3Client.send(new PutObjectCommand({
       Bucket: config.bucket, Key: filename, Body: JSON.stringify(json), ContentType: 'application/json'

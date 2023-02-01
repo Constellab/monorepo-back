@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {CaLabInstanceService} from '../../../../../ca-core/service-api/ca-lab-instance.service';
-import {CaLabInstanceDatasource} from '../../../../../ca-core/model/entities/lab/ca-lab-instance.class';
-import {CaRouterService} from '../../../../../ca-core/service/ca-router.service';
+import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
+import {CaLabInstanceDatasource} from '../../../ca-core/model/entities/lab/ca-lab-instance.class';
+import {CaRouterService} from '../../../ca-core/service/ca-router.service';
 import {CaDashboardListLayoutComponent} from '../ca-dashboard-list-layout/ca-dashboard-list-layout.component';
 
 /**

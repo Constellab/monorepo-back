@@ -8,6 +8,11 @@ import {ClPage} from '@monorepo/core-lib';
 import {CnBucket, CnBucketContentType} from './cn-buckets/cn-bucket.entity';
 import {CnLabInstance} from '../cn-lab-instances/cn-lab-instance.entity';
 import {CnCloudProviderAggregateService} from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
+import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import {BlBadRequestException} from '@monorepo/back-core-lib';
+import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
+import {CnSpace} from '../cn-spaces/cn-space.entity';
+import {EntityManager} from 'typeorm';
 
 
 @Injectable()
@@ -33,7 +38,7 @@ export class CnObjectStoragesAggregateService {
     const credentials = await this.bucketCredentialsService.findByName(CnObjectStoragesAggregateService.LabBackupCredentialName);
 
     if (credentials == null) {
-      throw new Error(`Credentials named ${CnObjectStoragesAggregateService.LabBackupCredentialName} not found`);
+      throw new BlBadRequestException(`Credentials named ${CnObjectStoragesAggregateService.LabBackupCredentialName} not found`);
     }
     const region = await this.cloudProviderService.getDefaultRegion();
 
@@ -46,6 +51,52 @@ export class CnObjectStoragesAggregateService {
     bucket.objectId = labInstance.id; // link this bucket with the lab instance
 
     return this.bucketService.createBucket(bucket);
+  }
+
+  public async createProjectBucket(project: CnProject, region: CnCloudProviderRegion): Promise<CnBucket> {
+    const existingBucket = await this.getProjectBucket(project.id);
+    if (existingBucket) {
+      throw new BlBadRequestException(`Bucket for project already exists`);
+    }
+
+    const credentials = await this.bucketCredentialsService.findByName(CnObjectStoragesAggregateService.LabBackupCredentialName);
+
+    if (credentials == null) {
+      throw new BlBadRequestException(`Credentials named ${CnObjectStoragesAggregateService.LabBackupCredentialName} not found`);
+    }
+
+    const bucket = new CnBucket();
+    bucket.name = project.id; // use id as bucket name
+    bucket.region = region;
+    bucket.credentials = credentials;
+    bucket.contentType = CnBucketContentType.PROJECT;
+    const space = new CnSpace();
+    space.id = project.spaceId;
+    bucket.space = space;
+    bucket.objectId = project.id; // link this bucket with the project
+
+    return this.bucketService.createBucket(bucket);
+  }
+
+  public async getProjectBucket(projectId: string): Promise<CnBucket> {
+    return this.bucketService.findByContentTypeAndObjectId(CnBucketContentType.PROJECT, projectId);
+  }
+
+  public async getAndCheckProjectBucket(projectId: string): Promise<CnBucket> {
+    const bucket = await this.getProjectBucket(projectId);
+    if (bucket == null) {
+      // eslint-disable-next-line max-len
+      throw new BlBadRequestException(`Storage for project not found. PLease ask the project manager to configure the storage for this project`);
+    }
+    return bucket;
+  }
+
+  public async deleteProjectBucket(projectId: string, entityManager: EntityManager): Promise<void> {
+    const bucket = await this.getProjectBucket(projectId);
+    if (bucket == null) {
+      return;
+    }
+    await this.bucketService.deleteBucket(bucket.id, entityManager);
   }
 
 

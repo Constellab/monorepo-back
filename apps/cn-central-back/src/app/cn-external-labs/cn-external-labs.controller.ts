@@ -1,6 +1,17 @@
-import {Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  UploadedFiles,
+  UseInterceptors
+} from '@nestjs/common';
 import {ClLabGuard, ClLabRobotAuthentication} from '../cn-core/decorators/cn-lab-guard.decorator';
-import {BlParsePipe} from '@monorepo/back-core-lib';
+import {BlFile, BlParsePipe} from '@monorepo/back-core-lib';
 import {CnCreateLabExperimentDto} from '../cn-projects-aggregate/cn-experiments/cn-experiment.dto';
 import {CnCreateReportWithConfigDto} from '../cn-projects-aggregate/cn-reports/cn-report.dto';
 import {CnLabInstanceStartDTO} from '../cn-lab-instances/cn-lab-instance.dto';
@@ -10,6 +21,8 @@ import {CnLabInstanceMailService} from '../cn-lab-instances/mail/cn-lab-instance
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 import {CnLabInstanceAggregateService} from '../cn-lab-instances/cn-lab-instance-aggregate.service';
+import {FilesInterceptor} from '@nestjs/platform-express';
+import {ClCoreJsonConvert} from '@monorepo/core-lib';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -44,12 +57,21 @@ export class CnExternalLabsController {
     return this.projectAggregator.deleteLabExperiment(projectId, experimentId);
   }
 
-
+  // Todo to remove once all the lab are updated (v 0.4.6)
   @Put('project/:projectId/report')
-  saveReport(
-    @Param('projectId', new ParseUUIDPipe()) projectId: string,
-    @Body(new BlParsePipe(CnCreateReportWithConfigDto)) createReportDto: CnCreateReportWithConfigDto): Promise<void> {
-    return this.projectAggregator.createLabReport(createReportDto, projectId);
+  saveReport(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+             @Body(new BlParsePipe(CnCreateReportWithConfigDto)) createReportDto: CnCreateReportWithConfigDto): Promise<void> {
+    return this.projectAggregator.createLabReport(createReportDto, projectId, null);
+  }
+
+  @UseInterceptors(FilesInterceptor('files'))
+  @Put('project/:projectId/report/v2')
+  saveReport2(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+              @Body() body: { body: string },
+              @UploadedFiles() files: BlFile[]): Promise<void> {
+    const createReportDto: CnCreateReportWithConfigDto
+      = ClCoreJsonConvert.deserializeObject(JSON.parse(body.body), CnCreateReportWithConfigDto);
+    return this.projectAggregator.createLabReport(createReportDto, projectId, files);
   }
 
   @Delete('project/:projectId/report/:reportId')

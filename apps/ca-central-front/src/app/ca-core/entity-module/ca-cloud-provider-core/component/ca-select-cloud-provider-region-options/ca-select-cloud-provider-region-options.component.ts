@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Host, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Host, Input, OnDestroy, OnInit} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {MatSelect} from '@angular/material/select';
@@ -16,6 +16,8 @@ import {
 export class CaSelectCloudProviderRegionOptionsComponent extends FlEmbeddedOptionsAbstractDirective
   implements OnInit, AfterViewInit, OnDestroy {
 
+  @Input() mode: 'all' | 's3' = 'all';
+
   datasource: CaCloudProviderRegionDatasource;
   regions$: Observable<CaCloudProviderRegion[]>;
 
@@ -27,7 +29,12 @@ export class CaSelectCloudProviderRegionOptionsComponent extends FlEmbeddedOptio
 
   ngOnInit(): void {
     this.overrideCompareWithOnIds(this.select);
-    this.datasource = this.cloudProviderService.getAllRegionsDatasource();
+
+    if (this.mode === 'all') {
+      this.datasource = this.cloudProviderService.getAllRegionsDatasource();
+    } else {
+      this.datasource = this.cloudProviderService.getS3RegionsDatasource();
+    }
     this.regions$ = this.datasource.connect();
   }
 

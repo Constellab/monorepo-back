@@ -26,6 +26,8 @@ import {CaProjectComment, CaProjectCommentDatasourcePaginated} from '../model/en
 import {CmRichTextI} from '@monorepo/common-model';
 import {map} from 'rxjs/operators';
 import {CaProjectSearch, CaProjectSearchFields} from '../entity-module/ca-project-core/model/ca-project-search.class';
+import {CaBucket, CaBucketFull} from '../model/entities/ca-object-storage.class';
+import {CaCloudProviderRegion} from '../model/entities/ca-cloud-provider.class';
 
 /**
  * Service to manage project entity
@@ -185,10 +187,10 @@ export class CaProjectService {
     return this.apiService.post(`${this.route}/${projectId}/comment/${commentId}/delete`, null, CaProjectComment);
   }
 
-  uploadCommentImage(file: File): Observable<FlTextEditorUploadedImage> {
+  uploadCommentImage(file: File, projectId: string): Observable<FlTextEditorUploadedImage> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.apiService.put(`${this.route}/comment/image`, formData).pipe(
+    return this.apiService.put(`${this.route}/${projectId}/comment/image`, formData).pipe(
       map(
         (uploadedFile: any) => {
           return {
@@ -201,11 +203,18 @@ export class CaProjectService {
     );
   }
 
-  public getFilePath(filename: string): string {
-    return this.apiService.getBaseRouteUrl(`${this.route}/comment/image/${filename}`);
+  public getCommentImageUrl(filename: string, projectId: string): string {
+    return this.apiService.getBaseRouteUrl(`${this.route}/${projectId}/comment/image/${filename}`);
   }
 
-  getCommentImageUrl(filename: string): string {
-    return this.getFilePath(filename);
+
+
+  /////////////////////////////// Project Bucket ///////////////////////////////////////////
+  public getProjectBucket(projectId: string): Observable<CaBucketFull | null> {
+    return this.apiService.get(`${this.route}/${projectId}/bucket`, CaBucketFull);
+  }
+
+  public createProjectBucket(projectId: string, region: CaCloudProviderRegion): Observable<CaBucket> {
+    return this.apiService.post(`${this.route}/${projectId}/bucket`, region, CaBucket);
   }
 }
