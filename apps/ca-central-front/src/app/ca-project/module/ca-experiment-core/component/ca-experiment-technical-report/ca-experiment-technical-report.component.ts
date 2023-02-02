@@ -1,7 +1,7 @@
 import {Component, Input, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
+import {CaExperiment} from '../../../../../ca-core/model/entities/project/ca-experiment.class';
 import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experiment.service';
-import {CaTechnicalReport} from '../../../../../ca-core/model/entities/ca-technical-report.class';
+import {CaTechnicalReport} from '../../../../../ca-core/model/entities/project/ca-technical-report.class';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {
   PrWorkflow,

@@ -7,7 +7,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {CaReportService} from '../../../../ca-core/service-api/ca-report.service';
 import {Observable} from 'rxjs';
-import {CaResourceView} from '../../../../ca-core/model/entities/ca-report.class';
+import {CaResourceView} from '../../../../ca-core/model/entities/project/ca-report.class';
 
 /**
  * Config for the text editor in the report

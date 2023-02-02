@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
+import {CaReport} from '../../../../../ca-core/model/entities/project/ca-report.class';
 import {FlArrayObs, FlTableColumn} from '@monorepo/front-core-lib';
 
 @Component({

@@ -60,8 +60,9 @@ export class FlInputFileDirective extends FlFormFieldMultipleDirective<File>
   @HostListener('change')
   listenOnChange(): void {
     this.fileChanged(this.elementRef.nativeElement.files);
-    if(this.autoClearHtmlInput){
+    if (this.autoClearHtmlInput) {
       this.elementRef.nativeElement.value = '';
+      this.clearValue();
     }
   }
 

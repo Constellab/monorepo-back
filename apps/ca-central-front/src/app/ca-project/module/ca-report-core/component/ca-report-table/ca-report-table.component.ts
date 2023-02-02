@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FlTableAbstractDirective} from '@monorepo/front-core-lib';
-import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
+import {CaReport} from '../../../../../ca-core/model/entities/project/ca-report.class';
 
 @Component({
   selector: 'ca-report-table',

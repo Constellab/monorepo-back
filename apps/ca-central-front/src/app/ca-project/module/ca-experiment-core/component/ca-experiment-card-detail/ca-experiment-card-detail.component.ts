@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
+import {CaExperiment} from '../../../../../ca-core/model/entities/project/ca-experiment.class';
 
 /**
  * Detail card of the experiment used in the experiment page

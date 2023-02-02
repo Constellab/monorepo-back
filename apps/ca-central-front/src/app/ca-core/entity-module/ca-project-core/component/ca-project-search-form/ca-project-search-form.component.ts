@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {UntypedFormGroup} from '@angular/forms';
 import {FlSearchState, FlStatusDict} from '@monorepo/front-core-lib';
-import {CaProjectStatus, caProjectStatusDict} from '../../../../model/entities/ca-project.class';
+import {CaProjectStatus, caProjectStatusDict} from '../../../../model/entities/project/ca-project.class';
 
 @Component({
   selector: 'ca-project-search-form',

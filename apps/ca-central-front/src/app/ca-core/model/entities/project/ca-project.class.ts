@@ -1,5 +1,5 @@
-import {CaBaseEntity} from './ca-base-entity.class';
-import {CaStatusHistory} from './ca-status-history.class';
+import {CaBaseEntity} from '../ca-base-entity.class';
+import {CaStatusHistory} from '../ca-status-history.class';
 import {DateTime} from 'luxon';
 import {ClLuxonDateTransform} from '@monorepo/core-lib';
 import {
@@ -11,7 +11,7 @@ import {
   FlStatusTransform
 } from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
-import {CaUser} from './ca-user.class';
+import {CaUser} from '../ca-user.class';
 
 export type CaProjectStatus = 'ACTIVE' | 'IN_PROGRESS' | 'ARCHIVED';
 

@@ -1,14 +1,14 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {BehaviorSubject, filter, first, Observable, switchMap} from 'rxjs';
-import {CaProject} from '../../../../ca-core/model/entities/ca-project.class';
+import {CaProject} from '../../../../ca-core/model/entities/project/ca-project.class';
 import {CaProjectService} from '../../../../ca-core/service-api/ca-project.service';
 import {CaUser} from '../../../../ca-core/model/entities/ca-user.class';
 import {map} from 'rxjs/operators';
 import {CaAuthenticatedUserService} from '../../../../ca-core/service-api/ca-authenticated-user.service';
 import {FlArrayObs, FlEntityArrayObs, FlQueryParamHandler, FlQuillJson} from '@monorepo/front-core-lib';
 import {ActivatedRoute, Router} from '@angular/router';
-import {CaReport} from '../../../../ca-core/model/entities/ca-report.class';
-import {CaExperiment} from '../../../../ca-core/model/entities/ca-experiment.class';
+import {CaReport} from '../../../../ca-core/model/entities/project/ca-report.class';
+import {CaExperiment} from '../../../../ca-core/model/entities/project/ca-experiment.class';
 import {CaReportService} from '../../../../ca-core/service-api/ca-report.service';
 import {CaExperimentService} from '../../../../ca-core/service-api/ca-experiment.service';
 import {CaBaseEntity} from '../../../../ca-core/model/entities/ca-base-entity.class';

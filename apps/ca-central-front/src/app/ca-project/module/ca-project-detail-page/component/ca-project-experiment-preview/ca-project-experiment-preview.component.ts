@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {filter, Observable, switchMap} from 'rxjs';
-import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
+import {CaExperiment} from '../../../../../ca-core/model/entities/project/ca-experiment.class';
 import {CaProjectDetailState} from '../../state/ca-project-detail.state';
 import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experiment.service';
 

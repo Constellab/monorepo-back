@@ -1,12 +1,12 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {CaEntity} from '../../../model/entities/ca-entity.entity';
-import {CaProject} from '../../../model/entities/ca-project.class';
+import {CaProject} from '../../../model/entities/project/ca-project.class';
 import {CaSmartDb} from '../../../model/entities/ca-smart-db.entity';
 import {CaLabInstance} from '../../../model/entities/lab/ca-lab-instance.class';
 import {CaRouterService} from '../../../service/ca-router.service';
 import {CaGroup, CaGroupType} from '../../../model/entities/ca-group.entity';
-import {CaExperiment} from '../../../model/entities/ca-experiment.class';
-import {CaReport} from '../../../model/entities/ca-report.class';
+import {CaExperiment} from '../../../model/entities/project/ca-experiment.class';
+import {CaReport} from '../../../model/entities/project/ca-report.class';
 
 type CaObjectType = 'project' | 'experiment' | 'report' | 'smartDb' | 'labInstance' | 'group';
 

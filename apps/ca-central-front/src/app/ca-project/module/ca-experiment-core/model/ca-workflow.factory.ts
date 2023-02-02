@@ -2,7 +2,7 @@ import {
   CaTechnicalReportGraph,
   CaTechnicalReportProcess,
   ProtocolLayout
-} from '../../../../ca-core/model/entities/ca-technical-report.class';
+} from '../../../../ca-core/model/entities/project/ca-technical-report.class';
 import {
   PrProcess,
   prProcessStatusDict,

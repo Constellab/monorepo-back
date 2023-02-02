@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CaProject, CaProjectStatus, caProjectStatusDict} from '../../../../model/entities/ca-project.class';
+import {CaProject, CaProjectStatus, caProjectStatusDict} from '../../../../model/entities/project/ca-project.class';
 import {
   CaProjectFormDialogComponent,
   CaProjectFormDialogInput

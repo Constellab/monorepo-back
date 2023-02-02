@@ -3,7 +3,7 @@ import {CaProjectDetailState} from '../../state/ca-project-detail.state';
 import {debounceTime, Observable, Subscription, switchMap} from 'rxjs';
 import {FlDebouncer, FlQuillJson, FlTextEditorBasicConfig, FlTextEditorConfig} from '@monorepo/front-core-lib';
 import {FormControl} from '@angular/forms';
-import {CaProject} from '../../../../../ca-core/model/entities/ca-project.class';
+import {CaProject} from '../../../../../ca-core/model/entities/project/ca-project.class';
 import {CaProjectService} from '../../../../../ca-core/service-api/ca-project.service';
 
 @Component({

@@ -53,4 +53,5 @@ export enum CnErrorText {
   DELETE_PROJECT_WITH_EXPERIMENTS = 'error.delete_project_with_experiments',
   DELETE_PROJECT_WITH_REPORTS = 'error.delete_project_with_reports',
   DELETE_PROJECT_USED_IN_LAB = 'error.delete_project_used_in_lab',
+  DOCUMENT_ALREADY_EXIST = 'error.document_already_exist',
 }

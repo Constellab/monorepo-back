@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import {CaProject} from '../../../../../ca-core/model/entities/ca-project.class';
+import {CaProject} from '../../../../../ca-core/model/entities/project/ca-project.class';
 import {CaProjectDetailState} from '../../state/ca-project-detail.state';
 import {
   CaProjectComment,

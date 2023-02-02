@@ -4,7 +4,7 @@ import {CaUser} from '../../../../model/entities/ca-user.class';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaProjectService} from '../../../../service-api/ca-project.service';
 import {FormControl, Validators} from '@angular/forms';
-import {CaProject} from '../../../../model/entities/ca-project.class';
+import {CaProject} from '../../../../model/entities/project/ca-project.class';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {ClHelpService} from '@monorepo/core-lib';
 

@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
+import {CaExperiment} from '../../../../../ca-core/model/entities/project/ca-experiment.class';
 import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experiment.service';
 import {Observable} from 'rxjs';
-import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
+import {CaReport} from '../../../../../ca-core/model/entities/project/ca-report.class';
 import {CaReportService} from '../../../../../ca-core/service-api/ca-report.service';
 import {map} from 'rxjs/operators';
 import {FlArrayObs, FlEntityArrayObs} from '@monorepo/front-core-lib';

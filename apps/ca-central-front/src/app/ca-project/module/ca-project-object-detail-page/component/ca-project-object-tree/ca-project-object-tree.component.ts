@@ -3,7 +3,7 @@ import {
   CaProjectAncestorTreeDTO,
   CaProjectLevelStatus,
   CaProjectTreeDto
-} from '../../../../../ca-core/model/entities/ca-project.class';
+} from '../../../../../ca-core/model/entities/project/ca-project.class';
 import {Subscription} from 'rxjs';
 import {FlFlatTreeControl} from '@monorepo/front-core-lib';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';

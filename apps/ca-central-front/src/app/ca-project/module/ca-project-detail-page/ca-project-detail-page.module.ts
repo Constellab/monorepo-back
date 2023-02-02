@@ -42,6 +42,10 @@ import {
 import {
   CaCloudProviderCoreModule
 } from '../../../ca-core/entity-module/ca-cloud-provider-core/ca-cloud-provider-core.module';
+import {
+  CaProjectDocumentsListComponent
+} from './component/ca-project-documents-list/ca-project-documents-list.component';
+import {CaDocumentCoreModule} from '../ca-document-core/ca-document-core.module';
 
 /**
  * Module for the project detail page
@@ -61,6 +65,7 @@ import {
     CaProjectSettingsComponent,
     CaProjectStorageSettingsComponent,
     CaProjectConfigureStorageComponent,
+    CaProjectDocumentsListComponent,
   ],
   imports: [
     CommonModule,
@@ -74,6 +79,7 @@ import {
     CaProjectCoreModule,
     CaExperimentCoreModule,
     CaReportCoreModule,
+    CaDocumentCoreModule,
     CaGroupCoreModule,
     CaLabCoreModule,
     CaCommentModule,

@@ -1,6 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {CaProjectService} from '../../../../ca-core/service-api/ca-project.service';
-import {CaProject, CaProjectDatasource, CaProjectLevel} from '../../../../ca-core/model/entities/ca-project.class';
+import {
+  CaProject,
+  CaProjectDatasource,
+  CaProjectLevel
+} from '../../../../ca-core/model/entities/project/ca-project.class';
 import {
   CaProjectFormDialogComponent,
   CaProjectFormDialogInput

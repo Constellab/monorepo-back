@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
-import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
+import {CaReport} from '../../../../../ca-core/model/entities/project/ca-report.class';
+import {CaExperiment} from '../../../../../ca-core/model/entities/project/ca-experiment.class';
 import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experiment.service';
 import {FlArrayObs, FlEntityArrayObs} from '@monorepo/front-core-lib';
 

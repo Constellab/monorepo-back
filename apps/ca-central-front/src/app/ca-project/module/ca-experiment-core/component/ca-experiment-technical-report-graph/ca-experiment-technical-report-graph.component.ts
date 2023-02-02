@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaTechnicalReportGraph} from '../../../../../ca-core/model/entities/ca-technical-report.class';
+import {CaTechnicalReportGraph} from '../../../../../ca-core/model/entities/project/ca-technical-report.class';
 
 @Component({
   selector: 'ca-experiment-technical-report-graph',

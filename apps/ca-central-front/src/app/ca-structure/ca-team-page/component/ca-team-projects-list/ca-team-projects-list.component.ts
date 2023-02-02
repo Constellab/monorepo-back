@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CaProjectService} from '../../../../ca-core/service-api/ca-project.service';
-import {CaProjectDatasource} from '../../../../ca-core/model/entities/ca-project.class';
+import {CaProjectDatasource} from '../../../../ca-core/model/entities/project/ca-project.class';
 
 /**
  * Component to list the projects of a group

@@ -8,7 +8,7 @@ import {
   Output,
   Self
 } from '@angular/core';
-import {CaProject, CaProjectDatasource} from '../../../../model/entities/ca-project.class';
+import {CaProject, CaProjectDatasource} from '../../../../model/entities/project/ca-project.class';
 import {CaProjectService} from '../../../../service-api/ca-project.service';
 import {Observable} from 'rxjs';
 import {FlFormFieldDirective} from '@monorepo/front-core-lib';

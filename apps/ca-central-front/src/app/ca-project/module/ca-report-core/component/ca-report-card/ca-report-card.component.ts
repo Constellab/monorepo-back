@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
+import {CaReport} from '../../../../../ca-core/model/entities/project/ca-report.class';
 
 /**
  * Simple card to display a report

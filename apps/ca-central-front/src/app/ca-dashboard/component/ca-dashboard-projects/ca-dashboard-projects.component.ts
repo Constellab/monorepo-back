@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {CaProjectService} from '../../../ca-core/service-api/ca-project.service';
 import {CaRouterService} from '../../../ca-core/service/ca-router.service';
-import {CaProject, CaProjectDatasource, CaProjectLevel} from '../../../ca-core/model/entities/ca-project.class';
+import {CaProject, CaProjectDatasource, CaProjectLevel} from '../../../ca-core/model/entities/project/ca-project.class';
 import {CaDashboardListLayoutComponent} from '../ca-dashboard-list-layout/ca-dashboard-list-layout.component';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {

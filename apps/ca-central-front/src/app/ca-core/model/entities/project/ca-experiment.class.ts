@@ -1,11 +1,11 @@
-import {CaBaseEntity} from './ca-base-entity.class';
-import {CaLabInstance} from './lab/ca-lab-instance.class';
-import {CaStatusHistory} from './ca-status-history.class';
+import {CaBaseEntity} from '../ca-base-entity.class';
+import {CaLabInstance} from '../lab/ca-lab-instance.class';
+import {CaStatusHistory} from '../ca-status-history.class';
 import {FlQuillJson, FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
 import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
-import {CaUser} from './ca-user.class';
+import {CaUser} from '../ca-user.class';
 import {CaProject, CaProjectObject} from './ca-project.class';
 
 export type CaExperimentStatus = 'DRAFT' | 'SUCCESS' | 'ERROR' | 'ARCHIVED';

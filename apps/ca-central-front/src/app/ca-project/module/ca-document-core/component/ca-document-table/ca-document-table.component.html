@@ -1,0 +1,84 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource">
+
+  <!-- Name -->
+  <ng-container matColumnDef="name">
+    <mat-header-cell *matHeaderCellDef class="g-column-width-2">
+      <span> {{'name' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row" class="g-column-width-2">
+      {{row.name}}
+    </mat-cell>
+  </ng-container>
+
+  <!-- Size -->
+  <ng-container matColumnDef="size">
+    <mat-header-cell *matHeaderCellDef>
+      <span> {{'document_size' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      {{row.size | flByteText}}
+    </mat-cell>
+  </ng-container>
+
+  <!-- CreationInfo -->
+  <ng-container matColumnDef="creationInfo">
+    <mat-header-cell *matHeaderCellDef>
+      <span> {{'upload_info' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <fl-user-with-date [user]="row.createdBy" [date]="row.createdAt"></fl-user-with-date>
+    </mat-cell>
+  </ng-container>
+
+
+  <!-- Actions -->
+  <ng-container matColumnDef="actions">
+    <mat-header-cell class="g-table-icon-button-cell" *matHeaderCellDef>
+    </mat-header-cell>
+    <mat-cell class="g-table-icon-button-cell" *matCellDef="let row">
+
+      <!--   Mat menu containing action buttons   -->
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" xPosition="before">
+
+        <a mat-menu-item type="button" [href]="getDocumentPreviewUrl(row)" target="_blank">
+          <mat-icon>visibility</mat-icon>
+          <span>{{'preview_document' | translate}}</span>
+        </a>
+
+        <a mat-menu-item type="button" [href]="getDocumentDownloadUrl(row)" download>
+          <mat-icon>download_document</mat-icon>
+          <span>{{'download_document' | translate}}</span>
+        </a>
+
+        <button mat-menu-item type="button"
+                class="g-warn-text" (click)="deleteDocument(row)">
+          <mat-icon color="warn">clear</mat-icon>
+          <span>{{'delete_document' | translate}}</span>
+        </button>
+      </mat-menu>
+    </mat-cell>
+  </ng-container>
+
+
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
+    <mat-header-cell *matHeaderCellDef>
+      {{column.columnName | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let experiment">
+      <div>
+        <span>{{experiment[column.accessor]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+
+  <!-- Mode selectable -->
+  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+
+</mat-table>

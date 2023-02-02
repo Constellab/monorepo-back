@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaProject, CaProjectLevelStatus} from '../../../../model/entities/ca-project.class';
+import {CaProject, CaProjectLevelStatus} from '../../../../model/entities/project/ca-project.class';
 
 /**
  * Icon for a project if it is a parent or a leaf project

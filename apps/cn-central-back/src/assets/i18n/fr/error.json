@@ -50,5 +50,6 @@
   "delete_project_with_children": "Vous ne pouvez pas supprimer un projet qui a des sous projets",
   "delete_project_with_exps": "Vous ne pouvez pas supprimer un projet qui a des expériences",
   "delete_project_with_reports": "Vous ne pouvez pas supprimer un projet qui a des rapports",
-  "delete_project_used_in_lab": "Ce projet est utilisé dans les lab suivants : [{labNames}], vous ne pouvez pas le supprimer"
+  "delete_project_used_in_lab": "Ce projet est utilisé dans les lab suivants : [{labNames}], vous ne pouvez pas le supprimer",
+  "document_already_exist": "Un document avec le même nom existe déjà"
 }

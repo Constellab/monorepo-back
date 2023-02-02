@@ -24,6 +24,8 @@ import {CnObjectStoragesAggregateService} from '../../cn-object-storages/cn-obje
 @Injectable()
 export class CnReportsService extends BlAbstractService<CnReport> {
 
+  private static readonly REPORT_BUCKET_PREFIX = 'reports';
+
   constructor(@InjectRepository(CnReport) private repository: Repository<CnReport>,
               private objectStorageService: BlObjectStorageService,
               private configService: CnCoreConfigService,
@@ -66,7 +68,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     const reportDto: CnSaveReportDto = createReportDto.report;
     const richText = new CnReportContent(reportDto.content);
 
-    const prefix = `reports/${reportDto.id}/`;
+    const prefix = `${CnReportsService.REPORT_BUCKET_PREFIX}/${reportDto.id}/`;
 
     // use v2
     if (files != null && createReportDto.resource_views != null) {

@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {CaExperiment} from '../model/entities/ca-experiment.class';
+import {CaExperiment} from '../model/entities/project/ca-experiment.class';
 import {FlApiService} from '@monorepo/front-core-lib';
-import {CaTechnicalReport} from '../model/entities/ca-technical-report.class';
+import {CaTechnicalReport} from '../model/entities/project/ca-technical-report.class';
 import {CaLabConfig} from '../model/entities/lab/ca-lab-config.class';
 
 @Injectable({

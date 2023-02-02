@@ -4,7 +4,7 @@ import {
   CaProjectAncestorTreeDTO,
   CaProjectObjectRef,
   CaProjectTreeDto
-} from '../../../../ca-core/model/entities/ca-project.class';
+} from '../../../../ca-core/model/entities/project/ca-project.class';
 import {CaProjectService} from '../../../../ca-core/service-api/ca-project.service';
 import {ClCachedObservable} from '@monorepo/core-lib';
 import {FlQueryParamHandler, FlRouterHelper} from '@monorepo/front-core-lib';

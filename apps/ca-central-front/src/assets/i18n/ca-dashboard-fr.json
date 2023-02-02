@@ -95,5 +95,15 @@
   "project_storage_not_configured": "Stockage non configuré. Veuillez le configurer pour pouvoir stocker des rapports, des documents et utiliser les commentaires.",
   "project_storage_configured": "Stockage configuré",
   "configure_project_storage": "Configurer le stockage",
-  "configure_project_storage_help": "Cette configuration définira où les rapports, documents et commentaires associés à ce projet et ses sous projets seront stockés. Une fois définie, la localisation ne pourra pas être modifiée. Veuillez choisir un emplacement avec un fournisseur de cloud pour vos données"
+  "configure_project_storage_help": "Cette configuration définira où les rapports, documents et commentaires associés à ce projet et ses sous projets seront stockés. Une fois définie, la localisation ne pourra pas être modifiée. Veuillez choisir un emplacement avec un fournisseur de cloud pour vos données",
+  "project_documents": "Documents",
+  "upload_document": "Uploader un document",
+  "delete_document": "Supprimer le document",
+  "delete_document_confirmation": "Êtes-vous sûr de vouloir supprimer ce document ?",
+  "document_deleted": "Document supprimé",
+  "document_size": "Taille",
+  "uploading_document": "Envoie de {{name}}",
+  "preview_document": "Voir",
+  "download_document": "Télécharger",
+  "upload_info": "Upload"
 }

@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {CaProjectDetailState} from '../../state/ca-project-detail.state';
 import {filter, Observable, switchMap} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
+import {CaReport} from '../../../../../ca-core/model/entities/project/ca-report.class';
 
 /**
  * Component in the project page right panel to show the preview of the report

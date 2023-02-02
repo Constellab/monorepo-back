@@ -30,6 +30,8 @@ import {DataSource} from 'typeorm';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnObjectStoragesAggregateService} from '../cn-object-storages/cn-object-storages-aggregate.service';
+import {CnDocumentsService} from './cn-documents/cn-documents.service';
+import {CnDocument} from './cn-documents/cn-document.entity';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -43,7 +45,8 @@ export class CnProjectAggregateService {
               private groupAggregateService: CnGroupsAggregateService,
               private projectCommentService: CnProjectCommentService,
               private datasource: DataSource,
-              private objectStoragesAggregateService: CnObjectStoragesAggregateService) {
+              private objectStoragesAggregateService: CnObjectStoragesAggregateService,
+              private documentService: CnDocumentsService) {
   }
 
   /////////////////////////////////////// PROJECT //////////////////////////////////
@@ -482,6 +485,44 @@ export class CnProjectAggregateService {
     const bucket = await this.objectStoragesAggregateService.getAndCheckProjectBucket(rootProject.id);
     return await this.projectCommentService.getImage(filename, bucket.getBucketConfig());
   }
+
+  /////////////////////////////////////// DOCUMENT //////////////////////////////////
+
+  public async uploadDocument(projectId: string, file: BlFile): Promise<CnDocument> {
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    return this.documentService.uploadDocument(file, project);
+  }
+
+  public async getDocument(projectId: string, filename: string): Promise<IncomingMessage>{
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    const document = await this.documentService.findDocumentByPath(filename);
+
+    if(document == null){
+      throw new BlBadRequestException('Document not found');
+    }
+    if(document.projectId != projectId){
+      throw new BlUnauthorizedException();
+    }
+
+    return this.documentService.getDocument(project, filename);
+  }
+
+  public async deleteDocument(documentId: string): Promise<void> {
+    const document = await this.documentService.findByIdAndCheck(documentId);
+
+    const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
+
+    return this.documentService.deleteDocument(documentId, project);
+  }
+
+  public async getDocumentsByProject(projectId: string, page: number, size: number): Promise<ClPage<CnDocument>> {
+    await this.getAndCheckAuthorizationForUpdate(projectId);
+
+    return this.documentService.getDocumentsByProject(projectId, page, size);
+  }
+
 
   /////////////////////////////////////// PROJECT BUCKET //////////////////////////////////
   public async createProjectBucket(projectId: string, region: CnCloudProviderRegion): Promise<CnBucket> {

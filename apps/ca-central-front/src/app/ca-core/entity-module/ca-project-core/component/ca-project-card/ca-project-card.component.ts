@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {CaProject} from '../../../../model/entities/ca-project.class';
+import {CaProject} from '../../../../model/entities/project/ca-project.class';
 
 /**
  * Card for a project

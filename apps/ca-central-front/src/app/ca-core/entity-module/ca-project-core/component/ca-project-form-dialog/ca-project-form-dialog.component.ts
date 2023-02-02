@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {CaProject, CaProjectLevel, CaProjectLevelStatus} from '../../../../model/entities/ca-project.class';
+import {CaProject, CaProjectLevel, CaProjectLevelStatus} from '../../../../model/entities/project/ca-project.class';
 import {CaProjectService} from '../../../../service-api/ca-project.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';

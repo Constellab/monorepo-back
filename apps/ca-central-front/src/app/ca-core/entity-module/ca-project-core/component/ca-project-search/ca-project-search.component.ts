@@ -7,7 +7,7 @@ import {
   FlTableColumn,
   FlThemeService
 } from '@monorepo/front-core-lib';
-import {CaProject, CaProjectDatasource} from '../../../../model/entities/ca-project.class';
+import {CaProject, CaProjectDatasource} from '../../../../model/entities/project/ca-project.class';
 import {CaProjectService} from '../../../../service-api/ca-project.service';
 import {CaProjectSearch, CaProjectSearchFields} from '../../model/ca-project-search.class';
 

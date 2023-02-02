@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaProjectObject} from '../../../../../ca-core/model/entities/ca-project.class';
+import {CaProjectObject} from '../../../../../ca-core/model/entities/project/ca-project.class';
 
 /**
  * Simple component to show information about the validation of a project object

@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
+import {CaExperiment} from '../../../../../ca-core/model/entities/project/ca-experiment.class';
 import {FlTextEditorBasicConfig, FlTextEditorConfig} from '@monorepo/front-core-lib';
 
 @Component({

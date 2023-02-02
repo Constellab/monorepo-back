@@ -7,7 +7,7 @@ import {
   CaProjectStatus,
   CaProjectStatusHistory,
   CaProjectTreeDto
-} from '../model/entities/ca-project.class';
+} from '../model/entities/project/ca-project.class';
 import {Observable} from 'rxjs';
 import {
   FlAdvancedSearchInput,
@@ -28,6 +28,7 @@ import {map} from 'rxjs/operators';
 import {CaProjectSearch, CaProjectSearchFields} from '../entity-module/ca-project-core/model/ca-project-search.class';
 import {CaBucket, CaBucketFull} from '../model/entities/ca-object-storage.class';
 import {CaCloudProviderRegion} from '../model/entities/ca-cloud-provider.class';
+import {CaDocument, CaDocumentDatasource} from '../model/entities/project/ca-document.class';
 
 /**
  * Service to manage project entity
@@ -208,6 +209,35 @@ export class CaProjectService {
   }
 
 
+  //////////////////////////////////// DOCUMENTS ///////////////////////////////////////////
+  public uploadDocument(file: File, projectId: string): Observable<CaDocument> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.apiService.post(`${this.route}/${projectId}/document`, formData, CaDocument);
+  }
+
+  public getDocumentPreviewUrl(projectId: string, documentId: string): string {
+    return this.apiService.getBaseRouteUrl(`${this.route}/${projectId}/document/preview/${documentId}`);
+  }
+
+  public getDocumentDownloadUrl(projectId: string, documentId: string): string {
+    return this.apiService.getBaseRouteUrl(`${this.route}/${projectId}/document/download/${documentId}`);
+  }
+
+  public deleteDocument(documentId: string): Observable<void> {
+    return this.apiService.delete(`${this.route}/document/${documentId}`);
+  }
+
+  public getDocuments(projectId: string, page: number, size: number): Observable<ClPageI<CaDocument>>{
+    return this.apiService.get(`${this.route}/${projectId}/document`, CaDocument, {
+      page: page, pageSize: size, resultIsPaginated: true
+    });
+  }
+
+  public getDocumentsDatasource(projectId: string): CaDocumentDatasource {
+    return new FlEntityPaginatedDatasource(
+      (page, size) => this.getDocuments(projectId, page, size), 20);
+  }
 
   /////////////////////////////// Project Bucket ///////////////////////////////////////////
   public getProjectBucket(projectId: string): Observable<CaBucketFull | null> {

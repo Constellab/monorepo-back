@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {CaProject} from '../../../../../ca-core/model/entities/ca-project.class';
+import {CaProject} from '../../../../../ca-core/model/entities/project/ca-project.class';
 import {CaProjectService} from '../../../../../ca-core/service-api/ca-project.service';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {CaProjectDetailRightPanel, CaProjectDetailState} from '../../state/ca-project-detail.state';

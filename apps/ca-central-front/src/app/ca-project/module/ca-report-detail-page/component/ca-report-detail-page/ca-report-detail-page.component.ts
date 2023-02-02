@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
+import {CaReport} from '../../../../../ca-core/model/entities/project/ca-report.class';
 import {CaReportService} from '../../../../../ca-core/service-api/ca-report.service';
 import {ActivatedRoute} from '@angular/router';
 import {map} from 'rxjs/operators';

@@ -7,7 +7,7 @@ import {
   FlSearchDateInterval
 } from '@monorepo/front-core-lib';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {CaProjectStatus} from '../../../model/entities/ca-project.class';
+import {CaProjectStatus} from '../../../model/entities/project/ca-project.class';
 
 export class CaProjectSearchFields {
 

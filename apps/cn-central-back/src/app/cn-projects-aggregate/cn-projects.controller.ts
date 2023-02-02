@@ -10,6 +10,8 @@ import {
   Put,
   Query,
   Res,
+  StreamableFile,
+  UploadedFile,
   UploadedFiles,
   UseInterceptors
 } from '@nestjs/common';
@@ -30,10 +32,11 @@ import {CnUser} from '../cn-users/cn-user.entity';
 import {CmRichTextI} from '@monorepo/common-model';
 import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
 import {CnComment, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
-import {FilesInterceptor} from '@nestjs/platform-express';
+import {FileInterceptor, FilesInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import {CnDocument} from './cn-documents/cn-document.entity';
 
 @Controller('projects')
 export class CnProjectsController {
@@ -228,6 +231,47 @@ export class CnProjectsController {
     return this.projectAggregate.deleteProjectComment(projectId, commentId);
   }
 
+  /////////////////////////////// DOCUMENT ///////////////////////////////////////////
+  @UseInterceptors(FileInterceptor('file'))
+  @Post(':projectId/document')
+  async uploadDocument(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+                       @UploadedFile() file: BlFile): Promise<CnDocument> {
+    return this.projectAggregate.uploadDocument(projectId, file);
+  }
+
+
+  /**
+   * Return a document
+   */
+  @Get(':projectId/document/preview/:filename(*)')
+  public async previewDocument(@Param('projectId') projectId: string,
+                               @Param('filename') filename: string,
+                               @Res() response: Response): Promise<any> {
+    const file = await this.projectAggregate.getDocument(projectId, filename);
+    BlResponseHelper.setMessage(response, file);
+  }
+
+  @Get(':projectId/document/download/:filename(*)')
+  public async downloadDocument(@Param('projectId') projectId: string,
+                                @Param('filename') filename: string): Promise<StreamableFile> {
+    const file = await this.projectAggregate.getDocument(projectId, filename);
+    return BlResponseHelper.getFileResponse(file);
+  }
+
+
+  @Delete('document/:documentId')
+  deleteDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<void> {
+    return this.projectAggregate.deleteDocument(documentId);
+  }
+
+  @Get(':projectId/document')
+  public getCurrentLabInstances(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+                                @Query('page', ParseIntPipe) page: number,
+                                @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnDocument>> {
+    return this.projectAggregate.getDocumentsByProject(projectId, page, size);
+  }
+
+
   /////////////////////////////// Project Bucket ///////////////////////////////////////////
   @Post(':projectId/bucket')
   createProjectBucket(@Param('projectId', new ParseUUIDPipe()) projectId: string,
@@ -239,4 +283,6 @@ export class CnProjectsController {
   getProjectBucket(@Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnBucket> {
     return this.projectAggregate.getProjectBucket(projectId);
   }
+
+
 }

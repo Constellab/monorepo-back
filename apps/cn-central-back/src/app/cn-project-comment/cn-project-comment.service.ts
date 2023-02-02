@@ -15,7 +15,7 @@ import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 @Injectable()
 export class CnProjectCommentService extends CnCommentService<CnProjectComment> {
 
-  private static readonly COMMENT_IMAGE_PREFIX = 'comment';
+  private static readonly COMMENT_BUCKET_PREFIX = 'comments';
 
   constructor(@InjectRepository(CnProjectComment)
               private projectCommentRepository: Repository<CnProjectComment>,
@@ -27,7 +27,7 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
 
   async saveProjectCommentImage(files: BlFile[], bucketConfig: BlBucketConfig, projectId: string): Promise<CnCommentImage> {
     return this.saveImage(files, bucketConfig,
-      CnProjectCommentService.COMMENT_IMAGE_PREFIX + '/' + projectId + '/');
+      CnProjectCommentService.COMMENT_BUCKET_PREFIX + '/' + projectId + '/');
   }
 
   async create(newComment: CnNewComment, project: CnProject): Promise<CnProjectComment> {
