@@ -39,12 +39,12 @@
 
     <!--  Created by & Last modified bt  -->
     <p class="g-text-small g-text-light separator">
-      <fl-creation-info [createdBy]="experiment.createdBy.fullname"
-                        [createdAt]="experiment.createdAt"></fl-creation-info>
+      <fl-creation-info [user]="experiment.createdBy"
+                        [date]="experiment.createdAt"></fl-creation-info>
     </p>
     <p class="g-text-small g-text-light">
-      <fl-last-modification-info [lastModifiedBy]="experiment.lastModifiedBy.fullname"
-                                 [lastModifiedAt]="experiment.lastModifiedAt"></fl-last-modification-info>
+      <fl-last-modification-info [user]="experiment.lastModifiedBy"
+                                 [date]="experiment.lastModifiedAt"></fl-last-modification-info>
     </p>
 
 

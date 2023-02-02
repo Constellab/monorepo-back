@@ -6,10 +6,6 @@ import {FlDateRangeComponent} from './component/fl-date-range/fl-date-range.comp
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {FlFromNowComponent} from './component/fl-from-now/fl-from-now.component';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import {FlCreationInfoComponent} from './component/fl-creation-info/fl-creation-info.component';
-import {
-  FlLastModificationInfoComponent
-} from './component/fl-last-modification-info/fl-last-modification-info.component';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flDateI18n} from './i18n/fl-date.i18n';
 import {FlDurationPipe} from './pipe/fl-duration/fl-duration.pipe';
@@ -24,8 +20,6 @@ import {FlLastSyncInfoComponent} from './component/fl-last-sync-info/fl-last-syn
     FlDatePipe,
     FlFromNowPipe,
     FlFromNowComponent,
-    FlCreationInfoComponent,
-    FlLastModificationInfoComponent,
     FlDurationPipe,
     FlLastSyncInfoComponent,
   ],
@@ -34,8 +28,6 @@ import {FlLastSyncInfoComponent} from './component/fl-last-sync-info/fl-last-syn
     FlDatePipe,
     FlFromNowPipe,
     FlFromNowComponent,
-    FlCreationInfoComponent,
-    FlLastModificationInfoComponent,
     FlDurationPipe,
     FlLastSyncInfoComponent,
   ],

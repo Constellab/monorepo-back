@@ -20,7 +20,7 @@ import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-projects/cn-project-level.enum';
 import {CnProjectAncestorTreeDTO, CnProjectAncestorType, CnProjectDtoHelper} from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
-import {CmRichTextI} from '@monorepo/common-model';
+import {CmRichTextFigure, CmRichTextI} from '@monorepo/common-model';
 import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
 import {CnProjectCommentService} from '../cn-project-comment/cn-project-comment.service';
 import {CnCommentImage, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
@@ -32,6 +32,7 @@ import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnObjectStoragesAggregateService} from '../cn-object-storages/cn-object-storages-aggregate.service';
 import {CnDocumentsService} from './cn-documents/cn-documents.service';
 import {CnDocument} from './cn-documents/cn-document.entity';
+import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -180,6 +181,10 @@ export class CnProjectAggregateService {
         const report = await this.reportService.findByIdAndCheck(objectId);
         projectId = report.projectId;
         break;
+      case 'document':
+        const document = await this.documentService.findByIdAndCheck(objectId);
+        projectId = document.projectId;
+        break;
     }
 
     const rootProject = await this.checkFindOneAndGetRootProject(projectId);
@@ -211,6 +216,10 @@ export class CnProjectAggregateService {
         projectId = report.projectId;
         ancestors.push({type: 'report', id: report.id, title: report.title});
         break;
+      case 'document':
+        const doc = await this.documentService.findByIdAndCheck(objectId);
+        projectId = doc.projectId;
+        ancestors.push({type: 'document', id: doc.id, title: doc.name});
     }
 
     // retrieve the project ancestors
@@ -494,19 +503,19 @@ export class CnProjectAggregateService {
     return this.documentService.uploadDocument(file, project);
   }
 
-  public async getDocument(projectId: string, filename: string): Promise<IncomingMessage>{
+  public async getDocument(projectId: string, filename: string): Promise<IncomingMessage> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    const document = await this.documentService.findDocumentByPath(filename);
+    const document = await this.documentService.findDocumentByProjectAndName(projectId, filename);
 
-    if(document == null){
+    if (document == null) {
       throw new BlBadRequestException('Document not found');
     }
-    if(document.projectId != projectId){
+    if (document.projectId != projectId) {
       throw new BlUnauthorizedException();
     }
 
-    return this.documentService.getDocument(project, filename);
+    return this.documentService.getDocument(project, document.filePath);
   }
 
   public async deleteDocument(documentId: string): Promise<void> {
@@ -521,6 +530,53 @@ export class CnProjectAggregateService {
     await this.getAndCheckAuthorizationForUpdate(projectId);
 
     return this.documentService.getDocumentsByProject(projectId, page, size);
+  }
+
+  public async renameDocument(documentId: string, newName: string): Promise<CnDocument> {
+    const document = await this.documentService.findByIdAndCheck(documentId);
+
+    await this.getAndCheckAuthorizationForFindOne(document.projectId);
+
+    return this.documentService.renameDocument(document, newName);
+  }
+
+  ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
+  public async createConstellabDocument(projectId: string, filename: string): Promise<CnConstellabDocument> {
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    return this.documentService.createConstellabDocument(project, filename);
+  }
+
+  public async updateConstellabDocument(documentId: string, content: CmRichTextI): Promise<CnConstellabDocument> {
+    const document = await this.documentService.findByIdAndCheck(documentId);
+
+    const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
+
+    return this.documentService.updateConstellabDocument(project, document, content);
+  }
+
+  public async getConstellabDocument(documentId: string): Promise<CnConstellabDocument> {
+    const document = await this.documentService.findByIdAndCheck(documentId);
+
+    const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
+
+    return this.documentService.getConstellabDocument(project, document);
+  }
+
+  public async uploadImageToConstellabDocument(documentId: string, file: BlFile): Promise<CmRichTextFigure> {
+    const document = await this.documentService.findByIdAndCheck(documentId);
+
+    const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
+
+    return this.documentService.uploadImageToConstellabDocument(project, document, file);
+  }
+
+  public async getConstellabDocumentImage(documentId: string, filepath: string): Promise<IncomingMessage> {
+    const document = await this.documentService.findByIdAndCheck(documentId);
+
+    const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
+
+    return this.documentService.getImageFromConstellabDocument(project, filepath);
   }
 
 

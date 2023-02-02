@@ -70,6 +70,8 @@ export class CaProjectObjectBreadcrumbComponent implements OnInit {
         return CaRouterService.getExperimentDetailRoute(ancestor.id);
       case 'report':
         return CaRouterService.getReportDetailRoute(ancestor.id);
+      case 'document':
+        return CaRouterService.getDocumentDetailRoute(ancestor.id);
     }
   }
 

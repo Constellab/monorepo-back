@@ -11,9 +11,7 @@ describe('FlLastModificationInfoComponent', () => {
       declarations: [ FlLastModificationInfoComponent ]
     })
     .compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(FlLastModificationInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

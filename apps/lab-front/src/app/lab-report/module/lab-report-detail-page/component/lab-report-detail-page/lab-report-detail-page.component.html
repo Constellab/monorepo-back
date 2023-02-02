@@ -10,7 +10,8 @@
         </mat-icon>
         <h2 fxFlex="auto">{{report.title}}</h2>
 
-        <lab-sync-object-button [object]="report" [syncObjectFunc]="syncObjectFunc" additionalConfirmText="biox.sync_report_confirmation"
+        <lab-sync-object-button [object]="report" [syncObjectFunc]="syncObjectFunc"
+                                additionalConfirmText="biox.sync_report_confirmation"
                                 (objectUpdate)="onReportUpdate($event)" class="g-print-hide">
         </lab-sync-object-button>
 
@@ -61,12 +62,12 @@
 
           <!--  Created by & Last modified bt  -->
           <p class="g-text-small g-text-light separator">
-            <fl-creation-info [createdBy]="report.createdBy.fullname"
-                              [createdAt]="report.createdAt"></fl-creation-info>
+            <fl-creation-info [user]="report.createdBy"
+                              [date]="report.createdAt"></fl-creation-info>
           </p>
           <p class="g-text-small g-text-light">
-            <fl-last-modification-info [lastModifiedBy]="report.lastModifiedBy.fullname"
-                                       [lastModifiedAt]="report.lastModifiedAt"></fl-last-modification-info>
+            <fl-last-modification-info [user]="report.lastModifiedBy"
+                                       [date]="report.lastModifiedAt"></fl-last-modification-info>
           </p>
         </fl-article-left-side>
         <fl-article>

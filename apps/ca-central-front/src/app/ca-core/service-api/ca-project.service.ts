@@ -23,12 +23,12 @@ import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CaGroup} from '../model/entities/ca-group.entity';
 import {CaUser} from '../model/entities/ca-user.class';
 import {CaProjectComment, CaProjectCommentDatasourcePaginated} from '../model/entities/ca-comment.class';
-import {CmRichTextI} from '@monorepo/common-model';
+import {CmRichTextFigure, CmRichTextI} from '@monorepo/common-model';
 import {map} from 'rxjs/operators';
 import {CaProjectSearch, CaProjectSearchFields} from '../entity-module/ca-project-core/model/ca-project-search.class';
 import {CaBucket, CaBucketFull} from '../model/entities/ca-object-storage.class';
 import {CaCloudProviderRegion} from '../model/entities/ca-cloud-provider.class';
-import {CaDocument, CaDocumentDatasource} from '../model/entities/project/ca-document.class';
+import {CaConstellabDocument, CaDocument, CaDocumentDatasource} from '../model/entities/project/ca-document.class';
 
 /**
  * Service to manage project entity
@@ -228,7 +228,7 @@ export class CaProjectService {
     return this.apiService.delete(`${this.route}/document/${documentId}`);
   }
 
-  public getDocuments(projectId: string, page: number, size: number): Observable<ClPageI<CaDocument>>{
+  public getDocuments(projectId: string, page: number, size: number): Observable<ClPageI<CaDocument>> {
     return this.apiService.get(`${this.route}/${projectId}/document`, CaDocument, {
       page: page, pageSize: size, resultIsPaginated: true
     });
@@ -238,6 +238,35 @@ export class CaProjectService {
     return new FlEntityPaginatedDatasource(
       (page, size) => this.getDocuments(projectId, page, size), 20);
   }
+
+  public renameDocument(documentId: string, name: string): Observable<CaDocument> {
+    return this.apiService.put(`${this.route}/document/${documentId}/rename`, {name: name}, CaDocument);
+  }
+
+  //////////////////////////////////// CONSTELLAB DOCUMENT ///////////////////////////////////////////
+
+  public createConstellabDocument(projectId: string, filename: string): Observable<CaConstellabDocument> {
+    return this.apiService.post(`${this.route}/${projectId}/constellab-document`, {name: filename}, CaConstellabDocument);
+  }
+
+  public updateConstellabDocument(documentId: string, content: CmRichTextI): Observable<CaConstellabDocument> {
+    return this.apiService.put(`${this.route}/constellab-document/${documentId}`, content, CaConstellabDocument);
+  }
+
+  public getConstellabDocument(documentId: string): Observable<CaConstellabDocument> {
+    return this.apiService.get(`${this.route}/constellab-document/${documentId}`, CaConstellabDocument);
+  }
+
+  public uploadConstellabDocumentImage(file: File, documentId: string): Observable<CmRichTextFigure> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.apiService.post(`${this.route}/constellab-document/${documentId}/image`, formData);
+  }
+
+  public getConstellabDocumentImageUrl(documentId: string, filename: string): string {
+    return this.apiService.getBaseRouteUrl(`${this.route}/constellab-document/${documentId}/image/${filename}`);
+  }
+
 
   /////////////////////////////// Project Bucket ///////////////////////////////////////////
   public getProjectBucket(projectId: string): Observable<CaBucketFull | null> {

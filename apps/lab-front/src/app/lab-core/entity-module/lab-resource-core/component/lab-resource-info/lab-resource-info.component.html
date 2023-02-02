@@ -64,7 +64,7 @@
     <!--  Creation info  -->
     <fl-text-icon class="line">
       <mat-icon>save</mat-icon>
-      <fl-creation-info [createdBy]="resource.createdBy.fullname" [createdAt]="resource.createdAt"></fl-creation-info>
+      <fl-creation-info [user]="resource.createdBy" [date]="resource.createdAt"></fl-creation-info>
     </fl-text-icon>
 
   </fl-card-body>

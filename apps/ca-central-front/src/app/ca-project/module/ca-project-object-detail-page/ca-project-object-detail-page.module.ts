@@ -12,6 +12,7 @@ import {CaProjectObjectCoreModule} from '../ca-project-object-core/ca-project-ob
 import {RouterModule} from '@angular/router';
 import {CaProjectObjectTreeComponent} from './component/ca-project-object-tree/ca-project-object-tree.component';
 import {CaProjectCoreModule} from '../../../ca-core/entity-module/ca-project-core/ca-project-core.module';
+import {CaDocumentDetailPageModule} from '../ca-document-detail-page/ca-document-detail-page.module';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import {CaProjectCoreModule} from '../../../ca-core/entity-module/ca-project-cor
     CaExperimentDetailPageModule,
     CaReportDetailPageModule,
     CaProjectObjectCoreModule,
+    CaDocumentDetailPageModule,
 
     CaProjectDetailPageRoutingModule,
   ]

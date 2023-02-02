@@ -37,28 +37,9 @@
     </mat-header-cell>
     <mat-cell class="g-table-icon-button-cell" *matCellDef="let row">
 
-      <!--   Mat menu containing action buttons   -->
-      <button mat-icon-button [matMenuTriggerFor]="menu">
-        <mat-icon>more_vert</mat-icon>
-      </button>
-      <mat-menu #menu="matMenu" xPosition="before">
-
-        <a mat-menu-item type="button" [href]="getDocumentPreviewUrl(row)" target="_blank">
-          <mat-icon>visibility</mat-icon>
-          <span>{{'preview_document' | translate}}</span>
-        </a>
-
-        <a mat-menu-item type="button" [href]="getDocumentDownloadUrl(row)" download>
-          <mat-icon>download_document</mat-icon>
-          <span>{{'download_document' | translate}}</span>
-        </a>
-
-        <button mat-menu-item type="button"
-                class="g-warn-text" (click)="deleteDocument(row)">
-          <mat-icon color="warn">clear</mat-icon>
-          <span>{{'delete_document' | translate}}</span>
-        </button>
-      </mat-menu>
+      <ca-document-actions-menu [document]="row"
+                                (documentUpdated)="updateDocument($event)"
+                                (documentDeleted)="deleteDocument($event)"></ca-document-actions-menu>
     </mat-cell>
   </ng-container>
 

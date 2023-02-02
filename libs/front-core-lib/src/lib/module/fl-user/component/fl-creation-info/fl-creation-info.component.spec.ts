@@ -11,9 +11,7 @@ describe('FlCreationInfoComponent', () => {
       declarations: [ FlCreationInfoComponent ]
     })
     .compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(FlCreationInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

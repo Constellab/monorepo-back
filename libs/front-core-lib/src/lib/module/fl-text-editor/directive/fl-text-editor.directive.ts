@@ -20,7 +20,7 @@ import {FlTextEditorConfig} from '../model/fl-text-editor-config.class';
 import {FlQuillJson} from '../model/fl-text-editor.class';
 import {FlPortalService} from '../../fl-portal/service/fl-portal.service';
 import {FlTextEditorsManagerState} from '../state/fl-text-editors-manager.state';
-import {FlQuillSetup} from '../model/fl-quill-setup.class';
+import {FlQuillScrollContainer, FlQuillSetup} from '../model/fl-quill-setup.class';
 import {FlQuillDelta} from '../model/fl-quill-export.class';
 
 type FlTextEditorMode = 'HTML' | 'JSON'
@@ -38,7 +38,7 @@ export class FlTextEditorDirective implements OnInit, OnDestroy {
    * If auto it finds the parent scrollable element (use cdkScrollable),
    * otherwise it uses the child .ql-editor as scrollable
    */
-  @Input() scrollContainer: 'auto' | 'child' = 'auto';
+  @Input() scrollContainer: FlQuillScrollContainer = 'auto';
   @Input() value: string | FlQuillJson;
   @HostBinding('class.ql-dense')
   @Input() dense: boolean = false;

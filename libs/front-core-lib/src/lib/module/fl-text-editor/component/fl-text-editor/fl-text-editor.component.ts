@@ -34,7 +34,7 @@ import {FlTextEditorsManagerState} from '../../state/fl-text-editors-manager.sta
 import {FlTextEditorConfig} from '../../model/fl-text-editor-config.class';
 import {FlQuillBlock, FlQuillDelta} from '../../model/fl-quill-export.class';
 import {FlHtmlHelper} from '../../../../utils/fl-html.helper';
-import {FlQuillSetup} from '../../model/fl-quill-setup.class';
+import {FlQuillScrollContainer, FlQuillSetup} from '../../model/fl-quill-setup.class';
 import {ClStringHelper} from '@monorepo/core-lib';
 
 hljs.registerLanguage('python', python);
@@ -79,15 +79,13 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
    * If auto it finds the parent scrollable element (use cdkScrollable),
    * otherwise it uses the child .ql-editor as scrollable
    */
-  @Input() scrollContainer: 'auto' | 'child' = 'auto';
+  @Input() scrollContainer: FlQuillScrollContainer = 'auto';
 
   @Output() textChange: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('editor', {static: true}) editorElement: ElementRef<HTMLElement>;
 
   @HostBinding('class.ql-dense')
   @Input() dense: boolean = false;
-
-  i = 0;
 
   private quill: Quill;
 

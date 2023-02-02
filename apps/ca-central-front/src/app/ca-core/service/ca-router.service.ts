@@ -74,6 +74,14 @@ export class CaRouterService {
     return CaRouterService.getFullRoute(`${caConstProjectRoute}/report/${reportId}`);
   }
 
+  public static getDocumentDetailRoute(documentId: string): string {
+    return CaRouterService.getFullRoute(`${caConstProjectRoute}/document/${documentId}`);
+  }
+
+  public navigateToDocumentDetail(documentId: string): void {
+    this.router.navigate([CaRouterService.getDocumentDetailRoute(documentId)]);
+  }
+
 
   //////////////////////////// Lab //////////////////////////////
 

@@ -15,12 +15,12 @@
 
       <!--  Created by & Last modified bt  -->
       <p class="g-text-small g-text-light">
-        <fl-creation-info [createdBy]="report.createdBy.fullname"
-                          [createdAt]="report.createdAt"></fl-creation-info>
+        <fl-creation-info [user]="report.createdBy"
+                          [date]="report.createdAt"></fl-creation-info>
       </p>
       <p class="g-text-small g-text-light">
-        <fl-last-modification-info [lastModifiedBy]="report.lastModifiedBy.fullname"
-                                   [lastModifiedAt]="report.lastModifiedAt"></fl-last-modification-info>
+        <fl-last-modification-info [user]="report.lastModifiedBy"
+                                   [date]="report.lastModifiedAt"></fl-last-modification-info>
     </fl-article-left-side>
 
     <fl-article>
@@ -28,7 +28,8 @@
     </fl-article>
 
     <fl-article-right-side>
-      <button mat-stroked-button (click)="printReport()" class="g-button-small print-button">
+      <button mat-stroked-button type="button" (click)="printReport()"
+              class="g-button-small print-button">
         {{'print_report' | translate}}
         <mat-icon>print</mat-icon>
       </button>

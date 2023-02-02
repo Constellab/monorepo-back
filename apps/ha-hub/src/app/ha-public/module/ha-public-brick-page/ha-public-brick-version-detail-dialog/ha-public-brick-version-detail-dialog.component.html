@@ -10,8 +10,8 @@
 
 <fl-key-value>
   <fl-key>{{'last_modification_info' | translate}}</fl-key>
-  <fl-last-modification-info [lastModifiedBy]="bv.lastModifiedBy?.fullname"
-                             [lastModifiedAt]="bv.lastModifiedAt">
+  <fl-last-modification-info [user]="bv.lastModifiedBy"
+                             [date]="bv.lastModifiedAt">
   </fl-last-modification-info>
 </fl-key-value>
 

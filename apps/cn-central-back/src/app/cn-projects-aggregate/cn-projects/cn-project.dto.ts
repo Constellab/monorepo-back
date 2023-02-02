@@ -1,7 +1,7 @@
 import {CnProject} from './cn-project.entity';
 import {CnProjectLevelStatus} from './cn-project-level.enum';
 
-export type CnProjectAncestorType = 'project' | 'experiment' | 'report'
+export type CnProjectAncestorType = 'project' | 'experiment' | 'report' | 'document';
 
 export interface CnProjectAncestorTreeDTO {
   id: string;

@@ -6,6 +6,12 @@
     </fl-text-icon>
 
     <fl-card-actions>
+
+      <button mat-icon-button type="button" (click)="createConstellabDocument()"
+              [matTooltip]="'create_constellab_document' | translate">
+        <mat-icon>add</mat-icon>
+      </button>
+
       <!--   Upload files     -->
       <fl-input-file-icon-container [matTooltip]="'upload_document' | translate" icon="cloud_upload">
         <input flInputFile [multiple]="true" type="file" (fileChange)="uploadDocument($event)"

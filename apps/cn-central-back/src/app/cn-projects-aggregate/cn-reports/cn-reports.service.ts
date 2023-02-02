@@ -200,7 +200,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
 
       // save the filename in the content
       specialOp.insert.resource_view.filename = await this.objectStorageService.uploadJson(
-        bucket, view, prefix);
+        bucket, view, {prefix});
     }
   }
 
@@ -218,7 +218,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
 
       // upload the json and save the filename in the content
       specialOp.insert.resource_view.filename = await this.objectStorageService.uploadJson(
-        bucket, viewData, prefix);
+        bucket, viewData, {prefix});
     }
   }
 

@@ -7,8 +7,10 @@ import {CaRouterService} from '../../../service/ca-router.service';
 import {CaGroup, CaGroupType} from '../../../model/entities/ca-group.entity';
 import {CaExperiment} from '../../../model/entities/project/ca-experiment.class';
 import {CaReport} from '../../../model/entities/project/ca-report.class';
+import {CaDocument} from '../../../model/entities/project/ca-document.class';
 
-type CaObjectType = 'project' | 'experiment' | 'report' | 'smartDb' | 'labInstance' | 'group';
+type CaObjectType = 'project' | 'experiment' | 'report' |
+  'smartDb' | 'labInstance' | 'group' | 'document';
 
 
 /**
@@ -49,6 +51,8 @@ export class CaDetailRoutePipe implements PipeTransform {
         return CaRouterService.getLabInstanceDetailRoute(id);
       case 'group':
         return CaRouterService.getTeamRoute(id);
+      case 'document':
+        return CaRouterService.getDocumentDetailRoute(id);
       default:
         console.error(`[caDetailRoute] object type ${objectType} not supported`);
         return null;
@@ -74,6 +78,8 @@ export class CaDetailRoutePipe implements PipeTransform {
         case CaGroupType.SINGLE_USER:
           return [null, obj.id];
       }
+    } else if (obj instanceof CaDocument) {
+      return ['document', obj.id];
     } else {
       console.error('[caDetailRoute] The object is not supported');
       return [null, null];

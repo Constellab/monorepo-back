@@ -119,7 +119,7 @@ export interface CaProjectObject extends FlEntity {
 }
 
 
-export type CaProjectAncestorType = 'project' | 'experiment' | 'report';
+export type CaProjectAncestorType = 'project' | 'experiment' | 'report' | 'document'
 
 export interface CaProjectObjectRef {
   id: string;

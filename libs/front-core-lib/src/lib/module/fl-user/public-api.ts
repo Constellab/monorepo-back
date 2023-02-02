@@ -2,6 +2,8 @@
 export * from './fl-user.module';
 
 // Export the component
+export * from './component/fl-creation-info/fl-creation-info.component';
+export * from './component/fl-last-modification-info/fl-last-modification-info.component';
 export * from './component/fl-user-info-portal/fl-user-info-portal.component';
 export * from './component/fl-user-inline/fl-user-inline.component';
 export * from './component/fl-user-profile-picture/fl-user-profile-picture.component';

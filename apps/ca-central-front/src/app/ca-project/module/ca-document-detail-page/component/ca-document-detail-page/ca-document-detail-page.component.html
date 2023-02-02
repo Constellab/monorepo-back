@@ -1,0 +1,60 @@
+<div class="g-page page">
+
+  <ca-project-object-breadcrumb class="g-print-hide"></ca-project-object-breadcrumb>
+
+  <fl-section [isLoading]="isLoading" [object]="document" class="section">
+
+    <ng-template flSectionBody>
+
+
+      <fl-article-container>
+        <fl-article-left-side>
+          <fl-card>
+            <fl-card-body>
+              <fl-creation-info [user]="document.createdBy" [date]="document.createdAt">
+              </fl-creation-info>
+
+              <fl-last-modification-info [user]="document.lastModifiedBy"
+                                         [date]="document.lastModifiedAt"></fl-last-modification-info>
+
+            </fl-card-body>
+          </fl-card>
+        </fl-article-left-side>
+
+        <fl-article>
+          <fl-card class="g-full-height">
+            <fl-card-body>
+              <div fxLayout="row" fxLayoutAlign="space-between center" class="header">
+                <h1>{{document.name}}</h1>
+
+                <div class="g-print-hide">
+                  <button mat-stroked-button type="button" (click)="toggleEditMode()"
+                          class="button g-button-small">
+                    <mat-icon>{{editMode ? 'visibility' : 'edit'}}</mat-icon>
+                    <span>{{editMode ? 'view' : 'edit' | translate}}</span>
+                  </button>
+
+                  <button mat-stroked-button type="button" (click)="print()" class="button g-button-small">
+                    {{'print_document' | translate}}
+                    <mat-icon>print</mat-icon>
+                  </button>
+
+                  <ca-document-actions-menu [document]="document" [showViewLinks]="false"
+                                            (documentUpdated)="updateDocument($event)"
+                                            (documentDeleted)="deleteDocument()"></ca-document-actions-menu>
+                </div>
+              </div>
+
+
+              <fl-text-editor [(ngModel)]="documentContent" [config]="textEditorConfig" mode="JSON"
+                              (textChange)="onContentUpdate($event)" [disabled]="!editMode" scrollContainer="body"
+                              class="g-full-height g-print-section"
+                              [ngClass]="{'text-editor-edit': editMode}"></fl-text-editor>
+            </fl-card-body>
+          </fl-card>
+        </fl-article>
+      </fl-article-container>
+
+    </ng-template>
+  </fl-section>
+</div>

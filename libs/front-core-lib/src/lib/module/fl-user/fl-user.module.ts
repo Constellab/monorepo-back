@@ -17,6 +17,10 @@ import {MatButtonModule} from '@angular/material/button';
 import {FlDateModule} from '../fl-date/fl-date.module';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flUserI18n} from './fl-user.i18n';
+import {FlCreationInfoComponent} from './component/fl-creation-info/fl-creation-info.component';
+import {
+  FlLastModificationInfoComponent
+} from './component/fl-last-modification-info/fl-last-modification-info.component';
 
 
 @NgModule({
@@ -25,14 +29,18 @@ import {flUserI18n} from './fl-user.i18n';
     FlUserInlineComponent,
     FlUserWithDateComponent,
     FlUserMouseHoverPortalDirective,
-    FlUserInfoPortalComponent
+    FlUserInfoPortalComponent,
+    FlCreationInfoComponent,
+    FlLastModificationInfoComponent
   ],
   exports: [
     FlUserProfilePictureComponent,
     FlUserInlineComponent,
     FlUserWithDateComponent,
     FlUserMouseHoverPortalDirective,
-    FlUserInfoPortalComponent
+    FlUserInfoPortalComponent,
+    FlCreationInfoComponent,
+    FlLastModificationInfoComponent
   ],
   imports: [
     CommonModule,

@@ -29,7 +29,7 @@ import {
   CnProjectTreeDto
 } from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
-import {CmRichTextI} from '@monorepo/common-model';
+import {CmRichTextFigure, CmRichTextI} from '@monorepo/common-model';
 import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
 import {CnComment, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {FileInterceptor, FilesInterceptor} from '@nestjs/platform-express';
@@ -37,6 +37,7 @@ import {Response} from 'express';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnDocument} from './cn-documents/cn-document.entity';
+import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
 
 @Controller('projects')
 export class CnProjectsController {
@@ -265,12 +266,50 @@ export class CnProjectsController {
   }
 
   @Get(':projectId/document')
-  public getCurrentLabInstances(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                                @Query('page', ParseIntPipe) page: number,
-                                @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnDocument>> {
+  public getDocumentsByProject(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+                               @Query('page', ParseIntPipe) page: number,
+                               @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnDocument>> {
     return this.projectAggregate.getDocumentsByProject(projectId, page, size);
   }
 
+  @Put('document/:documentId/rename')
+  public renameDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string,
+                        @Body() name: { name: string }): Promise<CnDocument> {
+    return this.projectAggregate.renameDocument(documentId, name.name);
+  }
+
+  ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
+  @Post(':projectId/constellab-document')
+  public createConstellabDocument(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+                                  @Body() name: { name: string }): Promise<CnConstellabDocument> {
+    return this.projectAggregate.createConstellabDocument(projectId, name.name);
+  }
+
+  @Put('constellab-document/:documentId')
+  public updateConstellabDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string,
+                                  @Body() body: CmRichTextI): Promise<CnConstellabDocument> {
+    return this.projectAggregate.updateConstellabDocument(documentId, body);
+  }
+
+  @Get('constellab-document/:documentId')
+  public getConstellabDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<CnConstellabDocument> {
+    return this.projectAggregate.getConstellabDocument(documentId);
+  }
+
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('constellab-document/:documentId/image')
+  async uploadImageToConstellabDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string,
+                                        @UploadedFile() file: BlFile): Promise<CmRichTextFigure> {
+    return this.projectAggregate.uploadImageToConstellabDocument(documentId, file);
+  }
+
+  @Get('constellab-document/:documentId/image/:filename(*)')
+  public async getConstellabDocumentImage(@Param('documentId') documentId: string,
+                                          @Param('filename') filename: string,
+                                          @Res() response: Response): Promise<any> {
+    const file = await this.projectAggregate.getConstellabDocumentImage(documentId, filename);
+    BlResponseHelper.setMessage(response, file);
+  }
 
   /////////////////////////////// Project Bucket ///////////////////////////////////////////
   @Post(':projectId/bucket')

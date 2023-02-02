@@ -1,10 +1,25 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CaProjectDetailState} from '../../state/ca-project-detail.state';
 import {CaProjectService} from '../../../../../ca-core/service-api/ca-project.service';
-import {CaDocument, CaDocumentDatasource} from '../../../../../ca-core/model/entities/project/ca-document.class';
+import {
+  CaConstellabDocument,
+  CaDocument,
+  CaDocumentDatasource
+} from '../../../../../ca-core/model/entities/project/ca-document.class';
 import {firstValueFrom} from 'rxjs';
-import {FlPortalAction, FlPortalActionsService, FlTableColumn, FlTranslateService} from '@monorepo/front-core-lib';
+import {
+  FlDialogService,
+  FlPortalAction,
+  FlPortalActionsService,
+  FlTableColumn,
+  FlTranslateService
+} from '@monorepo/front-core-lib';
 import {ClHelpService, ClSubscriptionHandler} from '@monorepo/core-lib';
+import {CaRouterService} from '../../../../../ca-core/service/ca-router.service';
+import {
+  CaDocumentNameFormDialogComponent,
+  CaDocumentNameFormDialogInput
+} from '../../../ca-document-core/component/ca-document-name-form-dialog/ca-document-name-form-dialog.component';
 
 /**
  * Card to list the document of the current project
@@ -26,7 +41,9 @@ export class CaProjectDocumentsListComponent implements OnInit, OnDestroy {
   constructor(private state: CaProjectDetailState,
               private projectService: CaProjectService,
               private actionService: FlPortalActionsService,
-              private translateService: FlTranslateService) {
+              private translateService: FlTranslateService,
+              private routerService: CaRouterService,
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
@@ -67,6 +84,22 @@ export class CaProjectDocumentsListComponent implements OnInit, OnDestroy {
     const currentProjectId = await firstValueFrom(this.state.getProjectId$());
     if (currentProjectId !== projectId) return;
     this.documentDatasource.unshiftItem(document);
+  }
+
+  async createConstellabDocument(): Promise<void> {
+    const input: CaDocumentNameFormDialogInput = {
+      mode: 'create',
+      projectId: await firstValueFrom(this.state.getProjectId$())
+    };
+
+    this.dialogService.openSmallDialog(CaDocumentNameFormDialogComponent, {data: input}).afterClosed()
+      .subscribe((doc: CaConstellabDocument) => this.createConstellabDocClosed(doc));
+  }
+
+  private createConstellabDocClosed(doc?: CaConstellabDocument): void {
+    if (doc) {
+      this.routerService.navigateToDocumentDetail(doc.document.id);
+    }
   }
 
   ngOnDestroy(): void {

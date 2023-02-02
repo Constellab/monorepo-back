@@ -74,7 +74,13 @@ export class CaProjectObjectDetailState implements OnDestroy {
         type: 'report',
         id: params.reportId
       };
-    } else {
+    } else if(params.documentId){
+      return {
+        type: 'document',
+        id: params.documentId
+      };
+    }
+    else {
       return {
         type: 'project',
         id: params.projectId

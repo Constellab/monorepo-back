@@ -5,13 +5,17 @@ import {
   CreateBucketCommand,
   DeleteBucketCommand,
   DeleteObjectCommand,
+  DeleteObjectsCommand,
   GetObjectCommand,
   HeadObjectCommand,
+  HeadObjectCommandOutput,
+  ListObjectsCommand,
   PutObjectCommand,
   S3Client
 } from '@aws-sdk/client-s3';
 import {BlFile} from '../../models/bl-file.class';
 import {IncomingMessage} from 'http';
+import {_Object} from '@aws-sdk/client-s3/dist-types/models/models_0';
 
 export interface BlBucketConfig {
   endpoint: string;
@@ -51,19 +55,7 @@ export class BlObjectStorageService {
                             options: BlObjectStorageUploadOptions = {}): Promise<string> {
     const s3Client = this.getClient(config);
 
-    let filename: string;
-    if (options.filename) {
-      filename = options.filename;
-    } else if (options.generateRandomObjectName) {
-      const extension = BlFileHelper.getFileExtension(obj.originalname);
-      filename = this.generateRandomFileName(extension);
-    } else {
-      filename = obj.originalname;
-    }
-
-    if(options.prefix){
-      filename = options.prefix + filename;
-    }
+    const filename = this.getFilename(options, BlFileHelper.getFileExtension(obj.originalname), obj.originalname);
 
     await s3Client.send(new PutObjectCommand({
       Bucket: config.bucket, Key: filename, Body: obj.buffer, ContentType: obj.mimetype
@@ -83,10 +75,10 @@ export class BlObjectStorageService {
     return filename;
   }
 
-  public async uploadJson(config: BlBucketConfig, json: any, prefix: string = ''): Promise<string> {
+  public async uploadJson(config: BlBucketConfig, json: any, options: BlObjectStorageUploadOptions = {}): Promise<string> {
     const s3Client = this.getClient(config);
 
-    const filename: string = prefix + this.generateRandomFileName('json');
+    const filename = this.getFilename(options, 'json');
 
     await s3Client.send(new PutObjectCommand({
       Bucket: config.bucket, Key: filename, Body: JSON.stringify(json), ContentType: 'application/json'
@@ -115,7 +107,7 @@ export class BlObjectStorageService {
     try {
       // use to check if the object exist
       // because if we call delete on a none existing object, the request never ends
-      await s3Client.send(new HeadObjectCommand({Bucket: config.bucket, Key: objectName}));
+      await this.getObjectInfo(config, objectName);
     } catch (e) {
       return false;
     }
@@ -123,6 +115,54 @@ export class BlObjectStorageService {
     await s3Client.send(new DeleteObjectCommand({Bucket: config.bucket, Key: objectName}));
     return true;
   }
+
+  public async deleteObjectsByPrefix(config: BlBucketConfig, prefix: string): Promise<void> {
+    const objects = await this.getObjectsByPrefix(config, prefix);
+
+    await this.deleteMultipleObjects(config, objects.map((obj) => obj.Key));
+  }
+
+  public async deleteMultipleObjects(config: BlBucketConfig, objectNames: string[]): Promise<void> {
+    const s3Client = this.getClient(config);
+
+    await s3Client.send(new DeleteObjectsCommand({
+      Bucket: config.bucket,
+      Delete: {Objects: objectNames.map((name) => ({Key: name}))}
+    }));
+  }
+
+  public async getObjectsByPrefix(config: BlBucketConfig, prefix: string): Promise<_Object[]> {
+    const s3Client = this.getClient(config);
+
+    const result = await s3Client.send(new ListObjectsCommand({Bucket: config.bucket, Prefix: prefix}));
+    return result.Contents ?? [];
+  }
+
+  public getObjectInfo(config: BlBucketConfig, objectName: string): Promise<HeadObjectCommandOutput> {
+    const s3Client = this.getClient(config);
+
+    return s3Client.send(new HeadObjectCommand({Bucket: config.bucket, Key: objectName}));
+  }
+
+  public getObjectAsJson(config: BlBucketConfig, objectName: string): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.getObject(config, objectName)
+        .then((message) => {
+          let body = '';
+          message.on('data', (chunk) => {
+            body += chunk;
+          });
+          message.on('end', () => {
+            resolve(JSON.parse(body));
+          });
+        })
+        .catch((e) => {
+          reject(e);
+        });
+    });
+  }
+
+  ////////////////////////////////////////// BUCKET //////////////////////////////////////////
 
   public async createBucket(config: BlBucketConfig): Promise<void> {
     const s3Client = this.getClient(config);
@@ -143,5 +183,25 @@ export class BlObjectStorageService {
       region: config.region,
       credentials: config.credentials
     });
+  }
+
+  private getFilename(options: BlObjectStorageUploadOptions, extension: string, defaultName?: string): string {
+    let filename: string;
+    if (options.filename) {
+      filename = options.filename;
+    } else if (options.generateRandomObjectName) {
+      filename = this.generateRandomFileName(extension);
+    } else {
+      if (defaultName) {
+        filename = defaultName;
+      } else {
+        filename = this.generateRandomFileName(extension);
+      }
+    }
+
+    if (options.prefix) {
+      filename = options.prefix + filename;
+    }
+    return filename;
   }
 }

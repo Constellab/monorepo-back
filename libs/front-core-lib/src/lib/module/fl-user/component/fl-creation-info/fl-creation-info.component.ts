@@ -1,9 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {FlUser} from '../../model/fl-user.class';
 import {DateTime} from 'luxon';
 
-/**
- * Simple component to show a text like : 'Created by michel two days ago'
- */
 @Component({
   selector: 'fl-creation-info',
   templateUrl: './fl-creation-info.component.html',
@@ -11,12 +9,10 @@ import {DateTime} from 'luxon';
 })
 export class FlCreationInfoComponent implements OnInit {
 
-  @Input() createdBy: string;
+  @Input() user: FlUser;
+  @Input() date: DateTime;
 
-  @Input() createdAt: DateTime;
-
-  constructor() {
-  }
+  constructor() { }
 
   ngOnInit(): void {
   }

@@ -104,6 +104,12 @@
   "document_size": "Taille",
   "uploading_document": "Envoie de {{name}}",
   "preview_document": "Voir",
+  "view_document": "Voir",
   "download_document": "Télécharger",
-  "upload_info": "Upload"
+  "upload_info": "Upload",
+  "create_constellab_document": "Créer un document Constellab",
+  "document_created": "Document créé",
+  "rename_document": "Renommer le document",
+  "document_renamed": "Document renommé",
+  "print_document": "Imprimer"
 }

@@ -30,8 +30,8 @@
       {{'last_modification_info' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let version">
-      <fl-last-modification-info [lastModifiedBy]="version.lastModifiedBy?.fullname"
-                                 [lastModifiedAt]="version.lastModifiedAt">
+      <fl-last-modification-info [user]="version.lastModifiedBy"
+                                 [date]="version.lastModifiedAt">
       </fl-last-modification-info>
     </mat-cell>
   </ng-container>

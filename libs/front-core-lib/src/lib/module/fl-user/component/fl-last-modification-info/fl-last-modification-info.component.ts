@@ -1,8 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {FlUser} from '@monorepo/front-core-lib';
 import {DateTime} from 'luxon';
 
 /**
- * Simple component to show a text like : 'Last modified by michel two days ago'
+ * Simple component to show the last modification info
  */
 @Component({
   selector: 'fl-last-modification-info',
@@ -11,9 +12,8 @@ import {DateTime} from 'luxon';
 })
 export class FlLastModificationInfoComponent implements OnInit {
 
-  @Input() lastModifiedBy: string;
-
-  @Input() lastModifiedAt: DateTime;
+  @Input() user: FlUser;
+  @Input() date: DateTime;
 
   constructor() { }
 

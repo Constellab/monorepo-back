@@ -10,12 +10,16 @@ import {ClSupportedLanguage} from '@monorepo/core-lib';
 const flCoreComponentI18nFr: FlLangTranslation = {
   flUser: {
     view_profile: "Voir le profil",
+    creation: 'Création',
+    last_modification: 'Dernière modification',
   }
 };
 
 const flCoreComponentI18nEn: FlLangTranslation = {
   flUser: {
     view_profile: "View profile",
+    creation: 'Creation',
+    last_modification: 'Last modification',
   }
 };
 
