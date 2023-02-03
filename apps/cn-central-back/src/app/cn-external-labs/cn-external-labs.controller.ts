@@ -68,7 +68,7 @@ export class CnExternalLabsController {
   @Put('project/:projectId/report/v2')
   saveReport2(@Param('projectId', new ParseUUIDPipe()) projectId: string,
               @Body() body: { body: string },
-              @UploadedFiles() files: BlFile[]): Promise<void> {
+              @UploadedFiles() files: BlFile[] = []): Promise<void> {
     const createReportDto: CnCreateReportWithConfigDto
       = ClCoreJsonConvert.deserializeObject(JSON.parse(body.body), CnCreateReportWithConfigDto);
     return this.projectAggregator.createLabReport(createReportDto, projectId, files);
