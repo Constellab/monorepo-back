@@ -5,7 +5,7 @@
   <ng-container *ngIf="showViewLinks">
     <a mat-menu-item type="button" *ngIf="document.isConstellabDocument; else normalDoc"
        [routerLink]="document | caDetailRoute">
-      <mat-icon>visibility</mat-icon>
+      <mat-icon>visibility</mat-icon>²²yh
       <span>{{'view_document' | translate}}</span>
     </a>
 
@@ -16,7 +16,7 @@
       </a>
 
       <a mat-menu-item type="button" [href]="getDocumentDownloadUrl()" download>
-        <mat-icon>download_document</mat-icon>
+        <mat-icon>cloud_download</mat-icon>
         <span>{{'download_document' | translate}}</span>
       </a>
     </ng-template>

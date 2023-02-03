@@ -13,6 +13,7 @@ import {BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {EntityManager} from 'typeorm';
+import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 
 
 @Injectable()
@@ -86,7 +87,7 @@ export class CnObjectStoragesAggregateService {
     const bucket = await this.getProjectBucket(projectId);
     if (bucket == null) {
       // eslint-disable-next-line max-len
-      throw new BlBadRequestException(`Storage for project not found. PLease ask the project manager to configure the storage for this project`);
+      throw new BlBadRequestException(CnErrorText.PROJECT_BUCKET_NOT_FOUND);
     }
     return bucket;
   }
