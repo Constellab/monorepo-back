@@ -90,7 +90,7 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
                          entityManager?: EntityManager): Promise<T> {
     const entity: T = await this.findById(id, relations, entityManager);
     if (entity == null) {
-      throw new NotFoundException();
+      throw new NotFoundException('Object not found');
     }
     return entity;
   }
