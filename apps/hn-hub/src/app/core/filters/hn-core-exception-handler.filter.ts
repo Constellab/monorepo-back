@@ -27,7 +27,9 @@ export class HnCoreExceptionHandlerFilter extends BlCoreExceptionHandlerFilter {
   protected logUnknownError(error: Error, instanceId: string): void {
     const request: Request = HnCurrentUserHelper.getCurrentRequest();
     const userString = HnCurrentUserHelper.getCurrentUser() ?? 'No user';
-    this.logger.error(`Error during request ${request.url} | Method ${request.method} | User : ${userString} | InstanceId ${instanceId}`);
-    this.logger.error(error.stack);
+    this.logger.error(`Error during request ${request.url} | Method ${request.method} | User : ${userString} | InstanceId ${instanceId} | Error : ${error.message}`);
+    if (error.stack) {
+      this.logger.error(error.stack);
+    }
   }
 }

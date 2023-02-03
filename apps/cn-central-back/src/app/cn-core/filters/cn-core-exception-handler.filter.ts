@@ -29,8 +29,10 @@ export class CnCoreExceptionHandlerFilter extends BlCoreExceptionHandlerFilter {
     const userString = CnCurrentUserHelper.getCurrentUser()?.getUserInfo() ?? 'No user';
     const spaceString = CnCurrentUserHelper.getCurrentSpace()?.id ?? 'No space';
     // eslint-disable-next-line max-len
-    this.logger.error(`Error during request ${request.url} | Method ${request.method} | User : ${userString} | Space : ${spaceString} | InstanceId ${instanceId}`);
-    this.logger.error(error.stack);
+    this.logger.error(`Error during request ${request.url} | Method ${request.method} | User : ${userString} | Space : ${spaceString} | InstanceId ${instanceId} | Error : ${error.message}`);
+    if (error.stack) {
+      this.logger.error(error.stack);
+    }
   }
 
 }
