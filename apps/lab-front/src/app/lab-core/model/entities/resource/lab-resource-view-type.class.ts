@@ -72,7 +72,7 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     }
   },
   'resources-list-view': {
-    icon: 'list',
+    icon: 'format_list_bulleted',
     text: 'biox.resource_view_resources_list',
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,

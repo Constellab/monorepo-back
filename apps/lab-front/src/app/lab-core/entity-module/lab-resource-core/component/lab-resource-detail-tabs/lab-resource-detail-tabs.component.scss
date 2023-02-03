@@ -1,15 +1,25 @@
-:host{
+:host {
   height: 100%;
 }
 
-.content{
+.min-height {
+  min-height: 100%;
+}
+
+.fixed-height {
+  height: 100%;
+}
+
+.content {
   display: block;
   height: 100%;
   padding-top: 1em;
   box-sizing: border-box;
 }
 
-.resource{
+.resource {
   padding-left: 2em;
   padding-right: 2em;
+  display: flex;
+  flex: 1;
 }

@@ -1,6 +1,9 @@
 .container {
-  height: 100%;
   margin-bottom: 0;
+  padding-bottom: 1em;
+  box-sizing: border-box;
+  min-height: 100%;
+  width: 100%;
 }
 
 .header-title {
@@ -9,48 +12,48 @@
 
 .content-grid {
   display: grid;
+  gap: 1em;
   grid-template-columns: 34fr 33fr 33fr;
-  grid-template-rows: 49% 49%;
-  height: 100%;
-  gap: 1%;
-  min-height: 40em;
-}
-
-.section {
-  display: block;
-  margin-top: 1em;
-}
-
-.left-section {
-  grid-row: span 2;
+  // set the height of the rows
+  grid-auto-rows: minmax(25em, auto);
+  min-height: 100%;
 }
 
 .view-specs{
-  flex: 2;
+  grid-row: span 2;
 }
 
-.sub-left-section{
-  flex: 1;
-  min-height: 0;
+.shared-entity{
+  grid-column: span 2;
 }
 
 @media (max-width: 1290px) {
   .content-grid {
-    grid-template-columns: 34fr 66fr;
+    grid-template-columns: 34% 66%;
+    min-height: initial;
   }
 
-  .left-section {
-    grid-row: span 4;
+  .shared-entity{
+    grid-column: span 1;
+  }
+
+  // make children list stay on the left
+  .children-list{
+    grid-row: 3 / 6;
   }
 }
 
 @media (max-width: 959px) {
   .content-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
+    grid-template-columns: 100%;
+    grid-auto-rows: auto 25em 25em 25em 25em 25em 25em;
   }
 
-  .left-section {
-    grid-row: auto;
+  .children-list, .view-specs{
+    grid-row: span 1;
+  }
+
+  .empty{
+    display: none;
   }
 }

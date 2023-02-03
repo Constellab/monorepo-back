@@ -6,14 +6,15 @@
       <lab-resource-detail-tab-header [tab]="tab" [showCloseButton]="!first"></lab-resource-detail-tab-header>
     </ng-template>
 
-    <fl-async-section [object]="$any(tab.obs)" fxLayout="column" class="g-full-height main-section">
+    <fl-async-section [object]="$any(tab.obs)" fxLayout="column"
+                      [ngClass]="{'fixed-height': tab.type === 'view', 'min-height': tab.type === 'resource'}">
 
       <ng-container *flSectionBody="let result">
         <lab-resource-detail *ngIf="tab.type === 'resource'; else view"
                              [resource]="result" [readOnly]="readOnly" class="content resource"></lab-resource-detail>
 
         <ng-template #view>
-          <lab-resource-view-detail [labView]="result" class="content"></lab-resource-view-detail>
+          <lab-resource-view-detail [labView]="result" class="content view"></lab-resource-view-detail>
         </ng-template>
       </ng-container>
     </fl-async-section>

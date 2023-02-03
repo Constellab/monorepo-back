@@ -31,18 +31,11 @@
     <div class="content-grid">
 
 
-      <div class="left-section" fxLayout="column" fxLayoutGap="1em">
-        <lab-resource-view-spec-list [resourceId]="resource.id"
-                                     [resourceTypingName]="resource.resourceTypingName"
-                                     (viewConfigured)="callView($event)"
-                                     class="view-specs">
-        </lab-resource-view-spec-list>
-        <lab-resource-children-list *ngIf="resource.hasChildren" class="sub-left-section"
-                                    [resourceId]="resource.id"></lab-resource-children-list>
-
-        <lab-shared-entity-info [entityType]="'RESOURCE'" [entityId]="resource.id"
-                                class="sub-left-section"></lab-shared-entity-info>
-      </div>
+      <lab-resource-view-spec-list [resourceId]="resource.id"
+                                   [resourceTypingName]="resource.resourceTypingName"
+                                   (viewConfigured)="callView($event)"
+                                   class="view-specs">
+      </lab-resource-view-spec-list>
 
       <lab-resource-info [resource]="resource"></lab-resource-info>
 
@@ -51,7 +44,17 @@
 
       <lab-experiments-using-resource [resourceId]="resource.id"></lab-experiments-using-resource>
 
+
       <lab-reports-using-resource [resourceId]="resource.id"></lab-reports-using-resource>
+
+      <lab-resource-children-list *ngIf="resource.hasChildren; else empty"
+                                  [resourceId]="resource.id"></lab-resource-children-list>
+      <ng-template #empty>
+        <div class="children-list empty"></div>
+      </ng-template>
+
+      <lab-shared-entity-info [entityType]="'RESOURCE'" [entityId]="resource.id"
+                              class="shared-entity"></lab-shared-entity-info>
     </div>
   </ng-container>
 </fl-section>
