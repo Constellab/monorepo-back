@@ -1,17 +1,18 @@
-<mat-toolbar class="nav-bar">
-  <a routerLink="../" class="gencovery-hub-logo gencovery-logo">
-    <img alt="" src="../../../assets/images/gencovery-logo.png"/>
-  </a>
+<div class="main g-dashboard-background">
+  <mat-toolbar class="nav-bar">
+    <a routerLink="../" class="gencovery-hub-logo gencovery-logo">
+      <img alt="" src="../../../assets/images/gencovery-logo.png"/>
+    </a>
 
-  <div class="nav-bar-links">
-    <h5 class="option"><a [href]="'./'">{{'home'| translate}}</a></h5>
-    <h5 class="option"><a [href]="'stories'">{{'stories' | translate}}</a></h5>
-    <h5 class="option"><a [href]="'bricks'">{{'bricks' | translate}}</a></h5>
-    <h5 class="option"><a [href]="constellabUrl" target="_blank">Constellab</a></h5>
-  </div>
+    <div class="nav-bar-links">
+      <h5 class="option"><a [routerLink]="getHomeRoute()">{{'home'| translate}}</a></h5>
+      <h5 class="option"><a [routerLink]="getStoryListRoute()">{{'stories' | translate}}</a></h5>
+      <h5 class="option"><a [routerLink]="getBrickListRoute()">{{'bricks' | translate}}</a></h5>
+      <h5 class="option"><a [href]="constellabUrl" target="_blank">Constellab</a></h5>
+    </div>
 
 
-  <span class="span-initials">
+    <span class="span-initials">
     <ng-container *ngIf="(userConnected$ | async) == null">
     <a [routerLink]="loginRoute" mat-flat-button color="primary"
        class="g-centered-forced">
@@ -20,28 +21,16 @@
   </ng-container>
     <fl-user-profile-picture [user]="user" [matMenuTriggerFor]="userMenu" *ngIf="userConnected$ | async as user">
     </fl-user-profile-picture></span>
-  <mat-menu #userMenu="matMenu">
-    <button mat-menu-item [routerLink]="'../admin'">{{'admin_dashboard' | translate}}</button>
-    <button mat-menu-item (click)="logout()">{{'logout' |translate}}</button>
-  </mat-menu>
-</mat-toolbar>
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item [routerLink]="'../admin'">{{'admin_dashboard' | translate}}</button>
+      <button mat-menu-item (click)="logout()">{{'logout' |translate}}</button>
+    </mat-menu>
+  </mat-toolbar>
 
-<div class="body g-scrollable-element">
-  <div class="router">
-    <router-outlet></router-outlet>
+  <div class="body g-scrollable-element">
+    <div class="router">
+      <router-outlet></router-outlet>
+    </div>
   </div>
-
-<!--  <footer class="footer">-->
-<!--    <img alt="" class="footer-logo" src="../../../assets/images/gencovery-logo.png" fxHide.gt-sm/>-->
-<!--    <img alt="" class="footer-logo" src="../../../assets/images/gencovery-logo-text.png" fxHide.lt-md/>-->
-<!--    <div class="footer-text" fxHide.lt-md>Connecting people through innovation</div>-->
-<!--    <div class="footer-text">©2022 – Gencovery – All Rights Reserved</div>-->
-<!--    <div class="footer-text">-->
-<!--      <a href="https://gencovery.com/legal/privacy-policy/">Private Policy</a>-->
-<!--    </div>-->
-<!--    <div class="footer-text">-->
-<!--      <a href="https://gencovery.com/legal/terms-of-use/">Terms of use</a>-->
-<!--    </div>-->
-<!--  </footer>-->
 </div>
 

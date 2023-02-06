@@ -28,7 +28,8 @@ export class HaHomeComponent implements OnInit {
     this.constellabUrl = this.apiService.getConstellabUrl();
   }
 
-  logout(): void {
-    this.authService.logout().subscribe();
+
+  getConstellabUrl(): string {
+    return this.apiService.getConstellabUrl();
   }
 }

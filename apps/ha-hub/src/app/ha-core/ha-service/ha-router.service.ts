@@ -13,6 +13,14 @@ export class HaRouterService {
     return environment.hubUrl;
   }
 
+  public static getHomeRoute(): string {
+    return '/';
+  }
+
+  public static getStoryListRoute(): string {
+    return '/stories/';
+  }
+
   public static getBrickListRoute(): string {
     return '/bricks/';
   }

@@ -1,7 +1,6 @@
 .navigation-div{
   margin-top: 30px;
   padding: 0 100px 13px 100px;
-  border-bottom: 1px solid var(--card-background);
 }
 
 .back-link{
@@ -10,7 +9,10 @@
 }
 
 .main-div {
-  margin: 8px auto 0 auto;
+  margin: 8px auto;
+  background-color: var(--main-background);
+  padding: 18px 36px;
+  border-radius: 18px;
 }
 
 .top-div{

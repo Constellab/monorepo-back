@@ -26,15 +26,15 @@ const routes: Routes = [
     component: HaLoginPageComponent,
   },
   {
-    path: '',
-    component: HaHomeComponent
-  },
-  {
     path: '**',
     component: HaMainComponent,
     children: [
       {
         path: '',
+        component: HaHomeComponent
+      },
+      {
+        path: '**',
         component: Ha404Component
       }
     ]

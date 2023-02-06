@@ -36,8 +36,8 @@
   "repo_error": "A brick must reference at least one repository",
   "sub_patch_number": "Sub patch number",
   "import_technical_documentation": "Import technical documentation",
-  "home_title": "Share your applications and services in Community",
-  "home_subtitle": "Community Is The Easiest Way To Share, Protect, And Deliver Your Applications And Services.",
+  "home_title": "Constellab™ Community\nExplore, Learn & Share",
+  "home_subtitle": "Supported by people committed to democratising AI for data biologists.",
   "drag_and_drop_to_move": "Drag and drop to move",
   "create_element": "Create element",
   "technical_information": "Technical informations",
@@ -107,9 +107,10 @@
   "categories": "Categories",
   "last_modified": "Last modified",
   "published": "Published",
-  "bricks_portal": "Bricks portal",
-  "stories_portal": "Stories portal",
-  "webinaires_portal": "Webinaires portal",
+  "webinaires": "Webinaires",
   "forum": "Forum",
-  "create_brick": "Create brick"
+  "create_brick": "Create brick",
+  "bricks_description": "Get Access to Technical Documentations",
+  "stories_description": "Read and share tutorials, use-case and other articles",
+  "copyright": "Copyright © 2023 Gencovery Inc. All rights reserved."
 }

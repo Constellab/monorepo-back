@@ -34,4 +34,16 @@ export class HaMainComponent implements OnInit {
     this.authService.logout().subscribe();
   }
 
+  getHomeRoute(): string {
+    return HaRouterService.getHomeRoute();
+  }
+
+  getStoryListRoute(): string {
+    return HaRouterService.getStoryListRoute();
+  }
+
+  getBrickListRoute(): string {
+    return HaRouterService.getBrickListRoute();
+  }
+
 }
