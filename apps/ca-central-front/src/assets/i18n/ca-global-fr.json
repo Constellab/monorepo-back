@@ -221,5 +221,7 @@
   "users": "Utilisateurs",
   "space_user_added_by": "Ajouté par",
   "space_user_added_info": "Info ajout",
-  "id": "Id"
+  "id": "Id",
+  "last_login": "Dernière connexion",
+  "mail_not_validated": "Mail non validé"
 }

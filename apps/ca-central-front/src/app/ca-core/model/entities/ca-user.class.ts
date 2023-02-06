@@ -1,7 +1,7 @@
 import {DateTime} from 'luxon';
 import {ClLuxonDateTimeTransform, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {CaEntity} from './ca-entity.entity';
-import {CmUserCategory} from '@monorepo/common-model';
+import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
 import {FlDatasourcePaginated, FlUser} from '@monorepo/front-core-lib';
 
 export interface CaNewUser {
@@ -43,9 +43,13 @@ export class CaUser extends CaEntity implements FlUser {
 
   company?: string;
 
+  status: CmUserStatus;
 
   @ClLuxonDateTimeTransform()
   createdAt: DateTime;
+
+  @ClLuxonDateTimeTransform()
+  lastLoginSuccess?: DateTime;
 
   get fullname(): string {
     return (this.firstname || '') + ' ' + (this.lastname || '');
@@ -65,6 +69,10 @@ export class CaUser extends CaEntity implements FlUser {
       return true;
     }
     return categories.includes(this.category);
+  }
+
+  public statusMailNotValidated(): boolean {
+    return this.status === CmUserStatus.WAITING_FOR_EMAIL;
   }
 }
 

@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {UntypedFormGroup} from '@angular/forms';
 import {FlSearchState} from '@monorepo/front-core-lib';
-import {CmUserCategory} from '@monorepo/common-model';
 
 @Component({
   selector: 'ca-user-search-form',
@@ -10,8 +9,6 @@ import {CmUserCategory} from '@monorepo/common-model';
 })
 export class CaUserSearchFormComponent implements OnInit {
   formGp: UntypedFormGroup;
-
-  userCategories = CmUserCategory;
 
   constructor(private searchState: FlSearchState<any>) { }
 

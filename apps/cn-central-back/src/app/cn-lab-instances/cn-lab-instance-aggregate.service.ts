@@ -515,7 +515,7 @@ export class CnLabInstanceAggregateService {
       // if an error occurred we just refresh the lab status
       (error: Error) => {
         this.logger.error(`Error during initServer: ${error.message}`);
-        this.labServerService.refreshLabStatus(labInstance.id).catch();
+        this.labServerService.refreshLabStatus(labInstance.id).catch(err => this.logger.error(err));
       }
     );
 
@@ -544,7 +544,7 @@ export class CnLabInstanceAggregateService {
       // if an error occurred we just refresh the lab status
       (error: Error) => {
         this.logger.error(`Error during createServer: ${error.message}`);
-        this.labServerService.refreshLabStatus(labInstance.id).catch();
+        this.labServerService.refreshLabStatus(labInstance.id).catch(err => this.logger.error(err));
       }
     );
 
@@ -577,7 +577,7 @@ export class CnLabInstanceAggregateService {
       // if an error occurred we just refresh the lab status
       (error: Error) => {
         this.logger.error(`Error during configureServerAsync: ${error.message}`);
-        this.labServerService.refreshLabStatus(labInstance.id).catch();
+        this.labServerService.refreshLabStatus(labInstance.id).catch(err => this.logger.error(err));
       }
     );
 

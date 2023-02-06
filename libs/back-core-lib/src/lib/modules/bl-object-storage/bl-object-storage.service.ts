@@ -1,5 +1,5 @@
 import {Injectable} from '@nestjs/common';
-import {ClStringHelper} from '@monorepo/core-lib';
+import {ClHelpService, ClStringHelper} from '@monorepo/core-lib';
 import {BlFileHelper} from '../../utils/bl-file-helper';
 import {
   CreateBucketCommand,
@@ -123,6 +123,7 @@ export class BlObjectStorageService {
   }
 
   public async deleteMultipleObjects(config: BlBucketConfig, objectNames: string[]): Promise<void> {
+    if (ClHelpService.isNullOrEmpty(objectNames)) return;
     const s3Client = this.getClient(config);
 
     await s3Client.send(new DeleteObjectsCommand({

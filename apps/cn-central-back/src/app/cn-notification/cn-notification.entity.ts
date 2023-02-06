@@ -4,7 +4,6 @@ import {Type} from 'class-transformer';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {CnNotificationType} from './cn-notification.service';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 
@@ -49,7 +48,6 @@ export class CnNotification extends BlEntityWithId implements BlNotification{
 
   @BeforeInsert()
   setCreatedInfo(): void {
-    this.createdBy = CnCurrentUserHelper.getAndCheckCurrentUser();
     this.createdAt = ClDateHelper.getDate();
   }
 
@@ -61,6 +59,7 @@ export class CnNotification extends BlEntityWithId implements BlNotification{
     this.link = notificationData.link;
     this.text = notificationData.text;
     this.text2 = notificationData.text2;
+    this.createdBy = notificationData.createdBy;
   }
 }
 

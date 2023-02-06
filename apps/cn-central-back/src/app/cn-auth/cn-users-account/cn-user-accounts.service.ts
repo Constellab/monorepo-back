@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnMailTemplate} from '../../cn-core/model/config/cn-mail-template.class';
 import {InjectRepository} from '@nestjs/typeorm';
@@ -21,6 +21,7 @@ import {CnFrontService} from '../../cn-core/services/cn-front.service';
 import {ClPage} from '@monorepo/core-lib';
 import {CnSpaceAggregateService} from '../../cn-spaces/cn-space-aggregate.service';
 import {CnGroupsService} from '../../cn-groups/cn-groups.service';
+import {CnNotificationService, CnNotificationType} from '../../cn-notification/cn-notification.service';
 
 /**
  * Service to handle users' account (signup, mail validation, password forgotten, reset password...)
@@ -31,6 +32,8 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
   private readonly oneDay: number = 86400;
   private readonly controllerRoute: string = '/accounts';
 
+  private readonly logger = new Logger(CnUserAccountsService.name);
+
   constructor(@InjectRepository(CnUser) private repository: Repository<CnUser>,
               private configService: CnCoreConfigService,
               private mailService: BlMailService,
@@ -38,7 +41,8 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
               private datasource: DataSource,
               private frontService: CnFrontService,
               private spaceAggregateService: CnSpaceAggregateService,
-              private groupService: CnGroupsService) {
+              private groupService: CnGroupsService,
+              private notificationService: CnNotificationService) {
     super(repository, CnUser);
   }
 
@@ -73,7 +77,12 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     await this.groupService.createOwnGroup(user, entityManager);
 
     // create the user personal space
-    await this.spaceAggregateService.createPersonalSpace(dbUser, entityManager);
+    const space = await this.spaceAggregateService.createPersonalSpace(dbUser, entityManager);
+
+    // send notification to gencovery user to warn him that a new user has been created
+    this.sendCreateAccountNotification(dbUser, space.id).catch(
+      error => this.logger.error('Error while sending create account notification: ' + error)
+    );
 
     return dbUser;
   }
@@ -222,6 +231,32 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
       return await this.spaceAggregateService.acceptInvitation(invitation, userDb, transaction);
     });
+  }
+
+  /**
+   * Send notification to admin when a new user is created
+   * @param user
+   * @param spaceId
+   * @private
+   */
+  private async sendCreateAccountNotification(user: CnUser, spaceId: string): Promise<void> {
+    const adminUserMails = this.configService.newUserNotifReceiver();
+
+    for (const adminUserMail of adminUserMails) {
+      const adminUser = await this.usersService.findByEmail(adminUserMail);
+
+      if (adminUser == null) continue;
+      await this.notificationService.createNotification({
+        createdBy: user,
+        objectType: CnNotificationType.NEW_USER,
+        objectId: user.id,
+        user: adminUser,
+        text: `New user : ${user.firstname} ${user.lastname}`,
+        text2: user.email,
+        link: CnFrontService.getUserRoute(user.id),
+        spaceId: spaceId
+      });
+    }
   }
 
 }

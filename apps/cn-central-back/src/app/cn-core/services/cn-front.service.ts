@@ -10,6 +10,10 @@ export class CnFrontService {
   constructor(private configService: CnCoreConfigService) {
   }
 
+  public static getUserRoute(userId: string): string{
+    return `/user/${userId}`;
+  }
+
   public getLoginUrl(): string {
     return this.getBaseWebsiteURL() + '/login';
   }

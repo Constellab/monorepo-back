@@ -10,15 +10,14 @@ export enum CnNotificationType {
   PROJECT_COMMENT = 'PROJECT_COMMENT',
   REPORT_COMMENT = 'REPORT_COMMENT',
   COMMENT_MENTION = 'COMMENT_MENTION',
-  COMMENT_RESPONSE = 'COMMENT_RESPONSE'
+  COMMENT_RESPONSE = 'COMMENT_RESPONSE',
+  NEW_USER = 'NEW_USER',
 }
 
 @Injectable()
 export class CnNotificationService extends BlAbstractService<CnNotification> {
 
-  constructor(
-    @InjectRepository(CnNotification) private notificationRepository: Repository<CnNotification>
-  ) {
+  constructor(@InjectRepository(CnNotification) private notificationRepository: Repository<CnNotification>) {
     super(notificationRepository, CnNotification);
   }
 

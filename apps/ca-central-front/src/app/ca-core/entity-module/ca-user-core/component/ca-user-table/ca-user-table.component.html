@@ -31,6 +31,16 @@
     </mat-cell>
   </ng-container>
 
+  <!-- Last login success -->
+  <ng-container matColumnDef="lastLogin">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'last_login' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let user">
+      <fl-from-now *ngIf="user.lastLoginSuccess" [date]="user.lastLoginSuccess"></fl-from-now>
+      <fl-text-ok-nok *ngIf="user.statusMailNotValidated()" [value]="false" [nokText]="'mail_not_validated' | translate"></fl-text-ok-nok>
+    </mat-cell>
+  </ng-container>
 
   <!-- Custom action where template is defined by parent -->
   <ng-container matColumnDef="customTemplate">

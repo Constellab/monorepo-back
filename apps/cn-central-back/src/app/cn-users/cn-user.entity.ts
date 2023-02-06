@@ -41,6 +41,9 @@ export class CnUser extends BlEntityWithId implements BlUser {
   @BlLuxonDateTimeColumn({nullable: true})
   lastLoginAttempt: DateTime;
 
+  @BlLuxonDateTimeColumn({nullable: true})
+  lastLoginSuccess: DateTime;
+
   @Column({nullable: false, type: 'enum', enum: ClSupportedLanguage, default: clDefaultLang})
   lang: ClSupportedLanguage;
 

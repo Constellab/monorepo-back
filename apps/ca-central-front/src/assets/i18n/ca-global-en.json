@@ -221,5 +221,7 @@
   "users": "Users",
   "space_user_added_by": "Added by",
   "space_user_added_info": "Added info",
-  "id": "Id"
+  "id": "Id",
+  "last_login": "Last login",
+  "mail_not_validated": "Mail not validated"
 }

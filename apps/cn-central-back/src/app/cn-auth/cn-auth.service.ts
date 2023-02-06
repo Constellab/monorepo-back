@@ -129,9 +129,7 @@ export class CnAuthService {
     }
 
     // login successful
-    if (user.failedLoginCount > 0) {
-      await this.resetFailedLoginCount(user);
-    }
+    await this.loginSuccess(user);
 
     return user;
   }
@@ -155,8 +153,10 @@ export class CnAuthService {
    * @param user
    * @private
    */
-  private async resetFailedLoginCount(user: CnUser): Promise<void> {
+  private async loginSuccess(user: CnUser): Promise<void> {
     user.failedLoginCount = 0;
+    user.lastLoginSuccess = ClDateHelper.getDate();
+
     await this.usersService.update(user);
   }
 }

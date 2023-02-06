@@ -73,6 +73,8 @@ export class CaNotificationsPortalComponent implements OnInit {
         return 'project';
       case CaNotificationType.REPORT_COMMENT:
         return 'report';
+      case CaNotificationType.NEW_USER:
+        return 'people';
       default:
         return '';
     }

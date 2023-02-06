@@ -11,6 +11,7 @@ import {CnUserAccountsController} from './cn-users-account/cn-user-accounts.cont
 import {CnSpacesModule} from '../cn-spaces/cn-spaces.module';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnGroupsModule} from '../cn-groups/cn-groups.module';
+import {CnNotificationModule} from '../cn-notification/cn-notification.module';
 
 
 @Module({
@@ -21,6 +22,7 @@ import {CnGroupsModule} from '../cn-groups/cn-groups.module';
     CnCoreModule,
     CnSpacesModule,
     CnGroupsModule,
+    CnNotificationModule,
   ],
   providers: [
     CnAuthService,

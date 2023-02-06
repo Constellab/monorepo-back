@@ -206,5 +206,12 @@ export class CnCoreConfigService {
   public getGwsGitlabPassword(): string {
     return this.configService.get('GWS_GITLAB_PASSWORD');
   }
+
+  /**
+   * List of user email to notify when a new user is created
+   */
+  public newUserNotifReceiver(): string[] {
+    return this.configService.get('NEW_USER_NOTIF_RECEIVERS').split(',');
+  }
 }
 

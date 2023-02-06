@@ -23,6 +23,9 @@ export class CaUserSearchFields {
 
   @Type(() => FlSearchDateInterval)
   createdAt: FlSearchDateInterval;
+
+  @Type(() => FlSearchDateInterval)
+  lastLoginSuccess: FlSearchDateInterval;
 }
 
 export class CaUserSearch {
@@ -34,6 +37,7 @@ export class CaUserSearch {
     category: 'user_category',
     company: 'company',
     createdAt: 'creation_date',
+    lastLoginSuccess: 'last_login',
   };
 
   public static advancedSearchConverter: FlSearchCriteriaConverter<CaUserSearchFields> = {
@@ -43,6 +47,7 @@ export class CaUserSearch {
     category: {key: 'category', operator: 'IN'},
     company: {key: 'company', operator: 'MATCH'},
     createdAt: FlSearchConverter.dateInterval('createdAt'),
+    lastLoginSuccess: FlSearchConverter.dateInterval('lastLoginSuccess'),
   };
 
   public static getAdvancedSearchForm(): FormGroup<CaUserSearchFields> {
@@ -53,6 +58,10 @@ export class CaUserSearch {
       category: null,
       company: null,
       createdAt: new FormBuilder().group<FlSearchDateInterval>({
+        from: [null],
+        to: [null],
+      }),
+      lastLoginSuccess: new FormBuilder().group<FlSearchDateInterval>({
         from: [null],
         to: [null],
       }),

@@ -21,7 +21,7 @@ export class CaUserSearchComponent implements OnInit {
 
   datasource: CaUserDatasourcePaginated;
 
-  columns: FlTableColumn<CaUser>[] = ['fullname', 'email', 'category', 'createdAt'];
+  columns: FlTableColumn<CaUser>[] = ['fullname', 'email', 'category', 'lastLogin', 'createdAt'];
 
   constructor(private searchState: FlSearchState<any>,
               private userService: CaUsersService,
