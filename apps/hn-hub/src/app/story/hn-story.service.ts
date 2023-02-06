@@ -1,10 +1,24 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {HnStory, HnStoryStatus} from './hn-story.entity';
-import {FindOptionsOrder, FindOptionsWhere, In, Like, Repository} from 'typeorm';
+import {
+  FindOptionsOrder,
+  FindOptionsOrderProperty,
+  FindOptionsRelations,
+  FindOptionsWhere,
+  In,
+  Like,
+  Repository
+} from 'typeorm';
 import {HnTopicService} from '../topic/hn-topic.service';
 import {ClPage, ClStringHelper} from '@monorepo/core-lib';
-import {BlAbstractPaginatedService, BlBucketConfig, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
+import {
+  BlAbstractPaginatedService,
+  BlBucketConfig,
+  BlFile,
+  BlObjectStorageService,
+  BlSearchBuilder
+} from '@monorepo/back-core-lib';
 import {CmRichText, CmRichTextHeader, CmRichTextI, CmRichTextImageCP} from '@monorepo/common-model';
 import imageSize from 'image-size';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
@@ -53,17 +67,17 @@ export class HnStoryService {
 
   async getMyStories(page: number, size: number): Promise<ClPage<HnStory>> {
     return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
-        where: {
-          createdBy: {
-            id: HnCurrentUserHelper.getCurrentUser().id
-          }
-        },
-        relations: ['topics'],
-        order: {
-          createdAt: 'DESC' as any
+      where: {
+        createdBy: {
+          id: HnCurrentUserHelper.getCurrentUser().id
         }
       },
-      this.storyRepository.manager, HnStory
+      relations: ['topics'],
+      order: {
+        createdAt: 'DESC' as any
+      }
+    },
+    this.storyRepository.manager, HnStory
     );
   }
 
@@ -79,7 +93,7 @@ export class HnStoryService {
 
   async getStoriesByFilter(filters: HnStoryFilter, page: number, size: number): Promise<ClPage<HnStory>> {
     const where: FindOptionsWhere<HnStory> = {};
-    const order: FindOptionsOrder<HnStory> = {};
+    const order: FindOptionsOrder<HnStory> = {createdAt:  'DESC' as any};
     if (filters.categories && filters.categories.length > 0) {
       where.category = In(filters.categories);
     }
@@ -93,8 +107,7 @@ export class HnStoryService {
     }
 
     where.status = HnStoryStatus.PUBLISHED;
-    order.createdAt = 'DESC' as any;
-
+    // TODO: Fix the research + order + relations
     return (await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
       where: where,
       relations: ['topics'],

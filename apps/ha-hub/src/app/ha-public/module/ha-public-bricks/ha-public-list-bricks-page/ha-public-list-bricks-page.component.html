@@ -21,7 +21,7 @@
             {{b.name}}
           </div>
           <div class="brick-description small-text">
-            {{b.description.substring(0, 100) + '...'}}
+            {{b.description.substring(0, 100) + (b.description.length > 100 ? '...' : '')}}
           </div>
           <div class="brick-version small-text">
             {{b.lastVersion.toString()}}

@@ -15,6 +15,7 @@ import {HaStoryService} from '../../../ha-core/ha-service/ha-story.service';
 import {HaTopicService} from '../../../ha-core/ha-service/ha-topic.service';
 import {Observable} from 'rxjs';
 import {HaTopicDto} from '../../../ha-core/ha-model/ha-entities/ha-topic.class';
+import {ClStringHelper} from '@monorepo/core-lib';
 
 @Component({
   selector: 'ha-ha-story-list-page',
@@ -69,7 +70,7 @@ export class HaStoryListPageComponent implements OnInit {
   }
 
   getStoryImageLink(imageName: string): string {
-    return this.storyService.getImageUrl(imageName);
+    return ClStringHelper.isHttpLink(imageName) ? imageName : this.storyService.getImageUrl(imageName);
   }
 
   selectTopic(topic: HaTopicDto): void {

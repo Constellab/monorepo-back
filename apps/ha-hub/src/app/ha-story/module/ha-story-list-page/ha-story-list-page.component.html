@@ -45,7 +45,8 @@
             </mat-chip>
           </mat-chip-list>
         </div>
-        <img *ngIf="story.mainPicture && story.mainPicture.length > 0" [src]="getStoryImageLink(story.mainPicture)" class="story-image"/>
+        <div *ngIf="story.mainPicture && story.mainPicture.length > 0" [style.background-image]="'url(\'' + getStoryImageLink(story.mainPicture) + '\')'" class="story-image">
+        </div>
       </a>
     </div>
   </div>
