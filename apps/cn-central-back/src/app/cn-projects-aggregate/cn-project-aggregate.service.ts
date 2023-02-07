@@ -527,7 +527,7 @@ export class CnProjectAggregateService {
   }
 
   public async getDocumentsByProject(projectId: string, page: number, size: number): Promise<ClPage<CnDocument>> {
-    await this.getAndCheckAuthorizationForUpdate(projectId);
+    await this.getAndCheckAuthorizationForFindOne(projectId);
 
     return this.documentService.getDocumentsByProject(projectId, page, size);
   }
