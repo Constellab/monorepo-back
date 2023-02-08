@@ -22,6 +22,8 @@
     <fl-section-actions>
       <lab-flag-button [entity]="labView.viewConfig"></lab-flag-button>
 
+      <rv-technical-info-button [technicalInfo]="labView.view.technical_info"></rv-technical-info-button>
+
       <lab-view-config-actions-menu [viewConfig]="labView.viewConfig"
                                     (update)="onUpdate($event)"
                                     (updateTags)="onTagUpdate($event)"></lab-view-config-actions-menu>

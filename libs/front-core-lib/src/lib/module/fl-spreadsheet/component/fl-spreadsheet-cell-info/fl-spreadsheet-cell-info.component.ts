@@ -9,7 +9,7 @@ import {FlSheetHeaderInfo} from '../../model/fl-sheet-headers.class';
  * Small portal to show information about a cell
  */
 @Component({
-  selector: 'fl--spreadsheet-cell-info',
+  selector: 'fl-spreadsheet-cell-info',
   templateUrl: './fl-spreadsheet-cell-info.component.html',
   styleUrls: ['./fl-spreadsheet-cell-info.component.scss']
 })

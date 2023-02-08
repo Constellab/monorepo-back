@@ -21,7 +21,7 @@ export class LabMainAppComponent implements OnInit {
 
   centralAppUrl: string;
 
-  menuExpanded: boolean = false;
+  menuExpanded: boolean = true;
 
   appRoute = LabRouterService.getAppRoute();
 
