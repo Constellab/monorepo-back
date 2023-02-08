@@ -284,21 +284,25 @@ export class LabWorkflowEditConfig implements OnDestroy {
         }
         break;
       case 'nodeMoved':
-        if (workflowEvent.node instanceof PrWorkflowNodeProcess) {
-          // save the node positions
-          this.protocolService.saveProcessLayout(workflowEvent.protocolId, workflowEvent.node.nodeName,
-            workflowEvent.node.getCoords()).subscribe();
-        } else if (workflowEvent.node instanceof PrWorkflowNodeInterface) {
-          this.protocolService.saveInterfaceLayout(workflowEvent.protocolId, workflowEvent.node.interfaceName,
-            workflowEvent.node.getCoords()).subscribe();
-        } else if (workflowEvent.node instanceof PrWorkflowNodeOuterface) {
-          this.protocolService.saveOuterfaceLayout(workflowEvent.protocolId, workflowEvent.node.outerfaceName,
-            workflowEvent.node.getCoords()).subscribe();
-        }
+        this.saveNodePosition(workflowEvent.node, workflowEvent.protocolId);
         return;
     }
 
     this.actionsService.addAction(portalAction);
+  }
+
+  private saveNodePosition(node: PrWorkflowNode, protocolId: string): void {
+    if (node instanceof PrWorkflowNodeProcess) {
+      // save the node positions
+      this.protocolService.saveProcessLayout(protocolId, node.nodeName,
+        node.getCoords()).subscribe();
+    } else if (node instanceof PrWorkflowNodeInterface) {
+      this.protocolService.saveInterfaceLayout(protocolId, node.interfaceName,
+        node.getCoords()).subscribe();
+    } else if (node instanceof PrWorkflowNodeOuterface) {
+      this.protocolService.saveOuterfaceLayout(protocolId, node.outerfaceName,
+        node.getCoords()).subscribe();
+    }
   }
 
   private onWorkflowActionResult(actionResult: FlPortalActionResult): void {
@@ -343,6 +347,9 @@ export class LabWorkflowEditConfig implements OnDestroy {
     // add the node to the workflow
     const layer: PrWorkflowLayer = this.workflow.findLayerWithId(layerId);
     layer.addNode(node);
+
+    // save the node positions after the creation
+    this.saveNodePosition(node, layerId);
   }
 
   private onNewNodeWithConnector(processWithLink: PrAddNodeWithConnection, relativeCoord: PrNodeRelativeCoord): void {
