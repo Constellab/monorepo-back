@@ -24,6 +24,20 @@
       <input matInput formControlName="title" [placeholder]="'title' | translate" autocomplete="off">
     </mat-form-field>
 
+    <!--  Projects -->
+    <mat-expansion-panel [expanded]="true" class="g-full" *ngIf="showProjectFilter">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{'biox.projects' | translate }}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <lab-project-select formControlName="project" (selectionChange)="callSearch()"></lab-project-select>
+    </mat-expansion-panel>
+
+    <!--   Tags    -->
+    <lab-tag-dashboard formControlName="tags" (selectionChange)="callSearch()"
+                       class="tags"></lab-tag-dashboard>
 
     <!--  Creation date  -->
     <div class="g-no-hint g-full g-form-field-compact">
@@ -38,9 +52,6 @@
       {{'biox.view_include_not_flagged' | translate }}
     </mat-checkbox>
 
-    <!--   Tags    -->
-    <lab-tag-dashboard formControlName="tags" (selectionChange)="onTagSelectionChange()"
-                       class="tags"></lab-tag-dashboard>
 
 
 

@@ -9,6 +9,17 @@
       <input matInput formControlName="title" [placeholder]="'title' | translate" autocomplete="off">
     </mat-form-field>
 
+    <!--  Projects -->
+    <mat-expansion-panel [expanded]="true" class="project">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{'biox.projects' | translate }}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <lab-project-select formControlName="project" (selectionChange)="callSearch()"></lab-project-select>
+    </mat-expansion-panel>
+
     <!--  Created by  -->
     <mat-form-field class="g-full">
       <mat-label>{{'created_by' | translate }}</mat-label>

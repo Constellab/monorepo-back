@@ -69,7 +69,7 @@ export class LabProjectSelectComponent extends FlFormFieldDirective<FlFlatTreeCo
     // create the datasource and set data
     this.dataSource = new MatTreeFlatDataSource(this.value, treeFlattener, projects);
 
-    if(this.tempSelectedProjects?.length > 0) {
+    if (this.tempSelectedProjects?.length > 0) {
       this.selectProjects(this.tempSelectedProjects);
     }
 
@@ -89,7 +89,11 @@ export class LabProjectSelectComponent extends FlFormFieldDirective<FlFlatTreeCo
 
   private selectProjects(projects: LabProject[]): void {
     if (this.value) {
-      this.value.dataNodes.forEach(node => node.selected = projects.find(project => project.id === node.project.id) != null);
+      const nodes = this.value.dataNodes.filter(node => projects.find(project => project.id === node.project.id) != null);
+      for (const node of nodes) {
+        this.value.expandAncestors(node);
+        node.selected = true;
+      }
     }
     this.tempSelectedProjects = projects;
   }
@@ -100,7 +104,7 @@ export class LabProjectSelectComponent extends FlFormFieldDirective<FlFlatTreeCo
   }
 
   toggleProjectSelection(project: LabProjectFlatNode): void {
-    if(this.disabled) return;
+    if (this.disabled) return;
 
     project.selected = !project.selected;
     this.emitCurrentValue();

@@ -25,6 +25,7 @@ import {LabEntityCoreModule} from '../lab-entity-core/lab-entity-core.module';
 import {RouterModule} from '@angular/router';
 import {LabViewConfigPreviewComponent} from './component/lab-view-config-preview/lab-view-config-preview.component';
 import {LabViewTypeImageComponent} from './component/lab-view-type-image/lab-view-type-image.component';
+import {LabProjectCoreModule} from '../lab-project-core/lab-project-core.module';
 
 
 @NgModule({
@@ -60,6 +61,7 @@ import {LabViewTypeImageComponent} from './component/lab-view-type-image/lab-vie
     LabCoreModule,
     LabTagCoreModule,
     LabEntityCoreModule,
+    LabProjectCoreModule,
   ],
 })
 export class LabViewConfigCoreModule {

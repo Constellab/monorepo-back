@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FlSearchState} from '@monorepo/front-core-lib';
 import {FormGroup} from '@ngneat/reactive-forms';
 
@@ -9,6 +9,8 @@ import {FormGroup} from '@ngneat/reactive-forms';
 })
 export class LabViewConfigSearchFormComponent implements OnInit {
 
+  @Input() showProjectFilter: boolean = true;
+
   formGp: FormGroup;
 
   constructor(private searchState: FlSearchState<any>) {
@@ -18,7 +20,7 @@ export class LabViewConfigSearchFormComponent implements OnInit {
     this.formGp = this.searchState.advancedSearchFormGroup;
   }
 
-  onTagSelectionChange(): void {
+  callSearch(): void {
     this.searchState.callAdvancedSearchFromForm();
   }
 

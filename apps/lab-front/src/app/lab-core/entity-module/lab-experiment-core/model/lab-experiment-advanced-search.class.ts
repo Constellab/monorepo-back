@@ -19,6 +19,8 @@ export class LabExperimentSearchFields {
   type: LabExperimentType;
   status: LabExperimentStatus;
   tags: FlTag[];
+
+  @Type(() => LabProject)
   project: LabProject[];
 
   @Type(() => FlSearchDateInterval)

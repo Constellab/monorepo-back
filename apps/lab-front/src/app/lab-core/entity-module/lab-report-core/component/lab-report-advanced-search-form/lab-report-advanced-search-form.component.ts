@@ -18,4 +18,8 @@ export class LabReportAdvancedSearchFormComponent implements OnInit {
     this.formGp = this.searchState.advancedSearchFormGroup;
   }
 
+  callSearch(): void {
+    this.searchState.callAdvancedSearchFromForm();
+  }
+
 }

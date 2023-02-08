@@ -2,7 +2,8 @@
 
   <!-- Advanced section in the right in a drawer -->
   <fl-search-advanced-form>
-    <lab-view-config-search-form></lab-view-config-search-form>
+    <!--  Show project filter only when full page (the search). Otherwise, it is useless  -->
+    <lab-view-config-search-form [showProjectFilter]="fullPageSearch"></lab-view-config-search-form>
   </fl-search-advanced-form>
 
 

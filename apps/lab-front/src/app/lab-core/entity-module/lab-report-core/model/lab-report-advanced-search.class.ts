@@ -7,10 +7,13 @@ import {
 } from '@monorepo/front-core-lib';
 import {LabSearchConverter} from '../../../model/global/lab-search-converter.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
+import {LabProject} from '../../../model/entities/lab-project.class';
 
 
 export class LabReportSearchFields {
   title: string;
+  @Type(() => LabProject)
+  project: LabProject[];
 
   createdBy: string[];
 
@@ -31,6 +34,7 @@ export class LabReportSearch {
    */
   public static advancedSearchManagerConfig: FlFormInputsManagerConfig<LabReportSearchFields> = {
     title: 'title',
+    project: 'biox.project',
     // group the creation date into one chip
     createdAt: 'creation_date',
     createdBy: 'created_by',
@@ -45,6 +49,7 @@ export class LabReportSearch {
    */
   public static advancedSearchConverter: FlSearchCriteriaConverter<LabReportSearchFields> = {
     title: {key: 'title', operator: 'CONTAINS'},
+    project: {key: 'project', operator: 'IN', convertValue: FlSearchConverter.getEntitiesId},
     // Date
     createdBy: {key: 'created_by', operator: 'IN'},
     createdAt: FlSearchConverter.dateInterval('created_at'),
@@ -58,6 +63,7 @@ export class LabReportSearch {
     return new FormBuilder().group(
       {
         title: [null],
+        project: [null],
         createdBy: [null],
         createdAt: new FormBuilder().group<FlSearchDateInterval>({
           from: [null],

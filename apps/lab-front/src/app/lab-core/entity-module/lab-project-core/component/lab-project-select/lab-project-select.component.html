@@ -11,7 +11,10 @@
         <div class="node-content leaf" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
           <div class="circle-color" [style.background-color]="node.project.id | flStringToRgb"></div>
 
-          <div>{{node.project.title}}</div>
+          <div>
+            <div>{{node.project.title}}</div>
+<!--            <div class="g-text-light g-text-tiny">{{node.project.title}}</div>-->
+          </div>
         </div>
       </mat-tree-node>
       <!-- This is the tree node template for expandable nodes -->
@@ -24,8 +27,10 @@
               {{value.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
             </mat-icon>
           </button>
+
           <div>
-            {{node.project.title}}
+            <div>{{node.project.title}}</div>
+<!--            <div class="g-text-light g-text-tiny">{{node.project.title}}</div>-->
           </div>
         </div>
       </mat-tree-node>

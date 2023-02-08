@@ -105,4 +105,16 @@ export class FlFlatTreeControl<T, K = T> extends FlatTreeControl<T, K> {
     return true;
   }
 
+  /**
+   * Expand all the ancestors of a node until the root
+   * @param dataNode
+   */
+  public expandAncestors(dataNode: T): void {
+    let parent: T | null = this.getAncestor(dataNode);
+
+    while (parent != null) {
+      this.expand(parent);
+      parent = this.getAncestor(parent);
+    }
+  }
 }
