@@ -1,0 +1,15 @@
+
+<h4>{{brickName}} {{brickVersion}}</h4>
+
+<h5>{{currentPage}}</h5>
+
+<ng-container *ngFor="let title of docTitles; let i = index">
+  <ng-container *ngIf="title.level === 2; else e">
+    <a [routerLink]="'.'" [fragment]="title.id" *ngIf="title.id"><h5>{{title.title}}</h5></a>
+    <a [routerLink]="'.'" *ngIf="!title.id"><h5>{{title.title}}</h5></a>
+  </ng-container>
+  <ng-template #e>
+    <a [routerLink]="'.'" [fragment]="title.id" *ngIf="title.id"><p>{{title.title}}</p></a>
+    <a [routerLink]="'.'" *ngIf="!title.id"><p>{{title.title}}</p></a>
+  </ng-template>
+</ng-container>
