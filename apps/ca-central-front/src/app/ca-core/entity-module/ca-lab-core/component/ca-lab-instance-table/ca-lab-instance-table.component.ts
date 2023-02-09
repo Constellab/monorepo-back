@@ -59,6 +59,8 @@ export class CaLabInstanceTableComponent extends FlTableAbstractDirective<CaLabI
         billingMode: labInstance.billingMode,
         volumeType: labInstance.volumeType,
         volumeSize: labInstance.volumeSize,
+        gwsCoreProdDbPassword: labInstance.gwsCoreProdDbPassword,
+        gwsCoreDevDbPassword: labInstance.gwsCoreDevDbPassword
       }
     };
 

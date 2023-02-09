@@ -41,6 +41,8 @@ export class CnLabInstanceAdminDto extends CnLabInstanceDto {
   labManagerApiKey: string = undefined;
   serverInstanceId: string = undefined;
   serverVolumeId: string = undefined;
+  gwsCoreProdDbPassword: string = undefined;
+  gwsCoreDevDbPassword: string = undefined;
 }
 
 export class CnLabFindOneDto {

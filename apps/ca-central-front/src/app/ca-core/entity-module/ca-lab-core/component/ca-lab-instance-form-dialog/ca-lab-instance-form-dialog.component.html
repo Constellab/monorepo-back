@@ -124,6 +124,20 @@
              [placeholder]="'codelab_token' | translate">
     </mat-form-field>
 
+    <!--  Prod db password  -->
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'lab_gws_core_prod_db_password' | translate}}</mat-label>
+      <input matInput formControlName="gwsCoreProdDbPassword" flInputMaxLength="255"
+             [placeholder]="'lab_gws_core_prod_db_password' | translate">
+    </mat-form-field>
+
+    <!--  Dev db password  -->
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'lab_gws_core_dev_db_password' | translate}}</mat-label>
+      <input matInput formControlName="gwsCoreDevDbPassword" flInputMaxLength="255"
+             [placeholder]="'lab_gws_core_dev_db_password' | translate">
+    </mat-form-field>
+
     <!--  Server instance id  -->
     <mat-form-field class="g-form-input">
       <mat-label>{{'lab_server_instance_id' | translate}}</mat-label>

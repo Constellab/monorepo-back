@@ -61,6 +61,8 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
       codelabToken: [null],
       serverInstanceId: [null],
       serverVolumeId: [null],
+      gwsCoreProdDbPassword: [null],
+      gwsCoreDevDbPassword: [null],
       region: [null, Validators.required],
       space: [{value: null, disabled: this.isUpdateMode()}, Validators.required],
     });

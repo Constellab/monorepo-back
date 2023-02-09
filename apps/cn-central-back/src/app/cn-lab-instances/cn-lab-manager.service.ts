@@ -59,6 +59,8 @@ export class CnLabManagerService {
       centralApiUrl: this.configService.getApiUrl(),
       centralFrontUrl: `https://${space.domain}.${this.configService.getCentralFrontDomain()}`,
       hubFrontUrl: this.configService.getHubFrontUrl(),
+      gwsCoreProdPassword: labInstance.gwsCoreProdDbPassword,
+      gwsCoreDevPassword: labInstance.gwsCoreDevDbPassword,
     };
     return this.labManagerApiService.initAll(labInstance.getLabManagerApiInfo(), initConfig);
   }

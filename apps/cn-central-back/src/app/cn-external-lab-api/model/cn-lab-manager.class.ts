@@ -50,6 +50,8 @@ export interface CnLabManagerInitConfig {
   centralFrontUrl: string;
   centralApiUrl: string;
   hubFrontUrl: string;
+  gwsCoreProdPassword: string;
+  gwsCoreDevPassword: string;
 }
 
 /**

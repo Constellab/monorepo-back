@@ -184,5 +184,7 @@
   "lab_status_lab_running": "Le lab est démarré et disponible. Si votre utilisateur a été ajouté au lab, vous pouvez vous connecter.",
   "lab_server_current_progress": "Progression",
   "lab_advanced_configuration": "Configuration avancée",
-  "lab_advanced_configuration_warning": "Attention, n'utilisez les options suivantes que si vous savez ce que vous faites."
+  "lab_advanced_configuration_warning": "Attention, n'utilisez les options suivantes que si vous savez ce que vous faites.",
+  "lab_gws_core_prod_db_password": "Mot de passe de la base de données de prod",
+  "lab_gws_core_dev_db_password": "Mot de passe de la base de données de dev"
 }

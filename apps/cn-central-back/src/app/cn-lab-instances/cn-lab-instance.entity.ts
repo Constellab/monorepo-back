@@ -63,6 +63,14 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Column({nullable: false, length: 255})
   codelabToken: string;
 
+  @Exclude()
+  @Column({nullable: false, length: 255})
+  gwsCoreProdDbPassword: string;
+
+  @Exclude()
+  @Column({nullable: false, length: 255})
+  gwsCoreDevDbPassword: string;
+
   @BlNotUpdatable()
   @ManyToOne(() => CnSpace, {nullable: false})
   space: CnSpace;
@@ -133,15 +141,15 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @BeforeInsert()
   @BeforeUpdate()
   generateApiKey(): void {
-    if (!this.glabApiKey) {
-      this.glabApiKey = randomBytes(48).toString('base64').replace(/\W/g, '');
-    }
-    if (!this.labManagerApiKey) {
-      this.labManagerApiKey = randomBytes(48).toString('base64').replace(/\W/g, '');
-    }
-    if (!this.codelabToken) {
-      this.codelabToken = randomBytes(48).toString('base64').replace(/\W/g, '');
-    }
+    if (!this.glabApiKey) this.glabApiKey = this.generateRandomPassword();
+    if (!this.labManagerApiKey) this.labManagerApiKey = this.generateRandomPassword();
+    if (!this.codelabToken) this.codelabToken = this.generateRandomPassword();
+    if (!this.gwsCoreProdDbPassword) this.gwsCoreProdDbPassword = this.generateRandomPassword();
+    if (!this.gwsCoreDevDbPassword) this.gwsCoreDevDbPassword = this.generateRandomPassword();
+  }
+
+  private generateRandomPassword(): string {
+    return randomBytes(48).toString('base64').replace(/\W/g, '');
   }
 
   isRunning(): boolean {

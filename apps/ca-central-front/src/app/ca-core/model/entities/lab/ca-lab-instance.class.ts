@@ -55,6 +55,9 @@ export class CaLabInstance extends CaBaseEntity {
   @Type(() => CaServerInfo)
   serverInfo: CaServerInfo;
 
+  billingMode: CaLabInstanceBillingMode;
+  volumeSize: number;
+  volumeType: CaLabInstanceVolumeType;
 
   // only provided when getting lab as admin
   glabApiKey?: string;
@@ -62,10 +65,8 @@ export class CaLabInstance extends CaBaseEntity {
   codelabToken?: string;
   serverInstanceId?: string;
   serverVolumeId?: string;
-
-  billingMode: CaLabInstanceBillingMode;
-  volumeSize: number;
-  volumeType: CaLabInstanceVolumeType;
+  gwsCoreProdDbPassword?: string;
+  gwsCoreDevDbPassword?: string;
 
   public isRunning(): boolean {
     return this.currentStatus.status.value === 'RUNNING';
@@ -104,6 +105,8 @@ export class CaLabInstanceForm {
   codelabToken: string;
   serverInstanceId: string;
   serverVolumeId: string;
+  gwsCoreProdDbPassword: string;
+  gwsCoreDevDbPassword: string;
 
   @Type(() => CaCloudProviderRegion)
   region: CaCloudProviderRegion;
