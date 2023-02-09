@@ -80,20 +80,23 @@ export class FlChartAxis {
   private drawAxisLabel(): void {
     if (this.label) {
 
-      let pos: number;
+      let x: number;
+      let y : number;
       let transform: string = null;
       if (this.type === 'left') {
-        pos = this.axisContainer.node().getBBox().height / 2;
+        x = -(this.axisContainer.node().getBBox().height / 2);
+        y = -this.getTickLabelSize()
         // write text vertically
-        transform = 'translate(0)rotate(90)';
+        transform = 'translate(0)rotate(270)';
       } else if (this.type === 'bottom') {
-        pos = this.axisContainer.node().getBBox().width / 2;
+        x = this.axisContainer.node().getBBox().width / 2;
+        y = this.getTickLabelSize();
       }
       // on top of the axis, centered
       this.axisContainer.append('text')
         .text(this.label)
-        .attr('x', pos)
-        .attr('y', this.getTickLabelSize())
+        .attr('x', x)
+        .attr('y', y)
         .attr('fill', 'currentcolor')
         .attr('text-anchor', 'middle')
         .style('font-size', FlChartAxis.axisLabelFontSize + 'px')
