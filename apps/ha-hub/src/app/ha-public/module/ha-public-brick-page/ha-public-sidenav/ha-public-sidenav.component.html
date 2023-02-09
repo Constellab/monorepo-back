@@ -1,162 +1,90 @@
-<mat-drawer-container class="container" [hasBackdrop]="isSmallScreen" (backdropClick)="closeSideNav()">
-  <mat-drawer class="g-full-height g-styled-scrollbar" [mode]="isSmallScreen ? 'over' : 'side'"
-              [opened]="!isSmallScreen || sideNavIsOpen">
-    <div class="sidenav">
+<button mat-flat-button type="button" class="bt" (click)="onClickMenu($event, true)" *haIsAuthenticated>
+  <mat-icon >add_circle</mat-icon>
+  {{'create_element' | translate}}
+</button>
+<div class="sidenav g-scrollable-element">
+  <mat-form-field class="input-tech-doc g-form-field-compact-height" appearance="outline">
+    <mat-label>{{'research_doc' | translate}}</mat-label>
+    <mat-icon matPrefix>search</mat-icon>
+    <input type="text" matInput [formControl]="searchTechDocControl" autocomplete="off">
+  </mat-form-field>
 
-      <div class="search-container">
-        <mat-form-field class="input-tech-doc g-form-field-compact-height" appearance="outline">
-          <mat-label>{{'research_doc' | translate}}</mat-label>
-          <mat-icon matPrefix>search</mat-icon>
-          <input type="text" matInput [formControl]="searchTechDocControl" autocomplete="off">
-        </mat-form-field>
+  <a [routerLink]="'.'"
+     [relativeTo]="activatedRoute" [routerLinkActive]="'active'" class="sidenav-item small-text">
+    {{'introduction' | translate}}
+  </a>
+
+
+  <mat-tree *ngIf="dataSource$ | async" [dataSource]="dataSource$ | async" [treeControl]="treeControl"
+            cdkDropList (cdkDropListDropped)="drop($event)" [trackBy]="trackByIdentity">
+    <!-- This is the tree node template for leaf nodes -->
+    <mat-tree-node *matTreeNodeDef="let node" cdkDrag
+                   [cdkDragDisabled]="isAuthenticated === false || node.name == null" [cdkDragData]="node"
+                   (mouseenter)="hoverId=node.id" (mouseleave)="hoverId=null"
+                   class="sidenav-item small-text sidenav-item-with-icon g-drag-hide-placeholder"
+                   [ngStyle]="{'margin-left' : (node.level)*15 + 'px'}">
+      <a [routerLink]="'doc/' + node.completePath"
+         [relativeTo]="activatedRoute" [routerLinkActive]="'active'" *ngIf="node.id != null">
+        {{node.name}}
+      </a>
+      <div class="line-icons">
+        <mat-icon cdkDragHandle class="drag-drop-bt g-icon-small" *ngIf="isAuthenticated && hoverId===node.id">
+          drag_handle
+        </mat-icon>
       </div>
+    </mat-tree-node>
 
-      <div class="title-line item">
-        <div class="brick-name-line link-item line-mat">
-          <h4 class="line-text">
-            {{brickName}}
-          </h4>
-        </div>
+    <mat-tree-node *matTreeNodeDef="let node;when: hasChild" cdkDrag
+                   [cdkDragDisabled]="isAuthenticated === false || node.name == null" [cdkDragData]="node"
+                   (mouseenter)="hoverId=node.id" (mouseleave)="hoverId=null"
+                   class="sidenav-item small-text sidenav-item-with-icon g-drag-hide-placeholder icon-pointer"
+                   [ngStyle]="{'margin-left' : (node.level)*15 + 'px'}" (click)="expansionModel.toggle(node)"
+                   matTreeNodeToggle>
+      <div *ngIf="node.id != null">
+        {{node.name}}
       </div>
+      <div class="line-icons">
+        <mat-icon class="g-icon-small icon-pointer">
+          {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+        </mat-icon>
+        <mat-icon (click)="onClickMenu($event, true, false, node.id)" *ngIf="isAuthenticated && hoverId===node.id"
+                  class="g-icon-small icon-pointer">
+          more_vert
+        </mat-icon>
+        <mat-icon cdkDragHandle class="drag-drop-bt g-icon-small" *ngIf="isAuthenticated && hoverId===node.id">
+          drag_handle
+        </mat-icon>
+      </div>
+    </mat-tree-node>
+  </mat-tree>
 
+  <mat-tree *ngIf="technicalDataSource$ | async" [dataSource]="technicalDataSource$ | async"
+            [treeControl]="treeControl">
 
-<!--  TODO: RENAME INTRODUCTION -->
-      <a (click)="closeSideNav()" [routerLink]="'.'"
-         [relativeTo]="activatedRoute" [routerLinkActive]="'active'" class="line item">
-        <div matLine class="link-item line-mat">
-              <span class="main-line-text line-text">
-                  {{'identity' | translate}}
-              </span>
-        </div>
+    <mat-tree-node *matTreeNodeDef="let node" class="sidenav-item small-text"
+                   [ngStyle]="{'margin-left' : (node.level)*15 + 'px'}">
+      <a [routerLink]="'doc/' + node.completePath" [relativeTo]="activatedRoute" [routerLinkActive]="'active'"
+         *ngIf="node.id != null">
+        {{node.name}}
       </a>
 
+    </mat-tree-node>
 
+    <mat-tree-node *matTreeNodeDef="let node;when: hasChild" class="sidenav-item sidenav-item-with-icon small-text icon-pointer"
+                   [ngStyle]="{'margin-left' : (node.level)*15 + 'px'}" (click)="expansionModel.toggle(node)" matTreeNodeToggle>
+      <div *ngIf="node.id != null">
+        {{node.name}}
+      </div>
+      <div class="line-icons">
+        <mat-icon class="g-icon-small icon-pointer">
+          {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+        </mat-icon>
+      </div>
+    </mat-tree-node>
 
-      <mat-tree *ngIf="dataSource$ | async" [dataSource]="dataSource$ | async" [treeControl]="treeControl"
-                class="tree item g-full-height g-drag-anim-order"
-                cdkDropList (cdkDropListDropped)="drop($event)" [trackBy]="trackByIdentity">
-        <!-- This is the tree node template for leaf nodes -->
-        <mat-tree-node *matTreeNodeDef="let node" cdkDrag
-                       [cdkDragDisabled]="(isAdmin | async) === false || node.name == null"
-                       class="draggable-element g-drag-hide-placeholder" [cdkDragData]="node"
-                       (mouseenter)="hoverId=node.id" (mouseleave)="hoverId=null">
-          <a (click)="closeSideNav()" [routerLink]="'doc/' + node.completePath"
-             [relativeTo]="activatedRoute" [routerLinkActive]="'active'" class="line item" draggable="false"
-             *ngIf="node.id != null">
-            <div matLine [matTreeNodePadding]="(node.level+1)" matTreeNodePaddingIndent="15px" class="link-item line-mat">
-              <span [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px', 'max-width': 'calc(100% - ' + (node.level*15).toString() + 'px)'}" class="line-text">
-                  {{node.name}}
-              </span>
-              <div class="line-icons" *ngIf="(isAdmin | async) && hoverId === node.id">
-                <button type="button" mat-icon-button matTooltip="{{'drag_and_drop_to_move' | translate}}"
-                        class="g-button-icon-small">
-                  <mat-icon cdkDragHandle class="drag-drop-bt">
-                    drag_handle
-                  </mat-icon>
-                </button>
-              </div>
-            </div>
+  </mat-tree>
 
-          </a>
-        </mat-tree-node>
-
-
-        <!-- This is the tree node template for expandable nodes -->
-        <mat-tree-node *matTreeNodeDef="let node;when: hasChild" cdkDrag [cdkDragData]="node"
-                       [cdkDragDisabled]="(isAdmin | async) === false"
-                       class="draggable-element g-drag-hide-placeholder">
-          <div class="line item"
-               [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px'}" (click)="expansionModel.toggle(node)"
-               matTreeNodeToggle (mouseenter)="hoverId=node.id" (mouseleave)="hoverId=null">
-
-            <div matLine class="line-mat link-item" [matTreeNodePadding]="node.level+1" matTreeNodePaddingIndent="15px">
-              <span class="line-text" [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px'}">
-                {{node.name}}
-              </span>
-              <div class="line-icons">
-                <button type="button" mat-icon-button class="g-button-icon-small">
-                  <mat-icon>
-                    {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-                  </mat-icon>
-                </button>
-                <button type="button" mat-icon-button class="g-button-icon-small"
-                        *ngIf="(isAdmin | async) && hoverId===node.id">
-                  <mat-icon (click)="onClickMenu($event, true, false, node.id)">
-                    more_vert
-                  </mat-icon>
-                </button>
-                <button type="button" mat-icon-button matTooltip="{{'drag_and_drop_to_move' | translate}}"
-                        class="g-button-icon-small" *ngIf="(isAdmin | async) && hoverId===node.id">
-                  <mat-icon cdkDragHandle class="drag-drop-bt">
-                    drag_handle
-                  </mat-icon>
-                </button>
-              </div>
-            </div>
-          </div>
-        </mat-tree-node>
-      </mat-tree>
-
-      <mat-tree *ngIf="technicalDataSource$ | async" [dataSource]="technicalDataSource$ | async"
-                [treeControl]="treeControl" class="tree item g-full-height">
-
-        <!-- This is the tree node template for leaf nodes -->
-        <mat-tree-node *matTreeNodeDef="let node" class="line">
-          <a [matTreeNodePadding]="node.level + 1" matTreeNodePaddingIndent="15px" mat-list-item
-             (click)="closeSideNav()"
-             [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px', 'max-width': 'calc(100% - ' + (node.level*15).toString() + 'px)'}"
-             [routerLink]="'doc/' + node.completePath" [relativeTo]="activatedRoute" [routerLinkActive]="'active'">
-            <div matLine class="line-text line-text-tech-doc">
-              {{node.name}}
-            </div>
-          </a>
-        </mat-tree-node>
-
-
-        <!-- This is the tree node template for expandable nodes -->
-        <mat-tree-node *matTreeNodeDef="let node;when: hasChild">
-          <div class="line item">
-            <div matLine class="item" [matTreeNodePadding]="node.level+1" matTreeNodePaddingIndent="15px"
-                 [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px'}"
-                 (click)="expansionModel.toggle(node)" matTreeNodeToggle>
-              {{node.name}}
-            </div>
-            <div class="line-icons">
-              <button type="button" mat-icon-button class="g-button-icon-small" matTreeNodeToggle>
-                <mat-icon>
-                  {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-                </mat-icon>
-              </button>
-            </div>
-          </div>
-        </mat-tree-node>
-      </mat-tree>
-
-
-      <a (click)="closeSideNav()" [routerLink]="'version'"
-         [relativeTo]="activatedRoute" [routerLinkActive]="'active'" class="line item">
-        <div matLine class="link-item line-mat">
-              <span class="main-line-text line-text">
-                  {{'version' | translate}}
-              </span>
-        </div>
-      </a>
-
-      <div class="sidenav-empty-space"></div>
-
-      <button mat-raised-button color="primary" (click)="onClickMenu($event, true)" class="bt-add-doc"
-              *ngIf="(isAdmin | async)">
-        {{'create_element' | translate}}
-      </button>
-    </div>
-  </mat-drawer>
-
-  <mat-drawer-content class="sidenav-content">
-    <div *ngIf="isSmallScreen" class="small-screen-title">
-      <mat-icon (click)="openSideNav()" class="bt-open-side-nav">menu</mat-icon>
-    </div>
-    <div [class]="isSmallScreen ? 'small-router' : 'router'">
-      <router-outlet (activate)="componentAdded($event)"></router-outlet>
-    </div>
-  </mat-drawer-content>
-</mat-drawer-container>
+  <a [routerLink]="'version'" [relativeTo]="activatedRoute" [routerLinkActive]="'active'" class="sidenav-item small-text">
+    {{'version' | translate}}
+  </a>
+</div>

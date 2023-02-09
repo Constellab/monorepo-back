@@ -1,75 +1,57 @@
-<div class="brick-description" *ngIf="brick != null && lastVersion != null">
-  <div class="left-side-div side-description-div">
-    <div class="main-description-div">
-      <div class="brick-logo" [style.background-image]="
-      brick.imageLink ? 'url(\''+ brick.imageLink +'\')' :
-      'url(\'assets/logo/logo.png\')'"></div>
-      <div class="brick-info">
-        <span class="display-inline">
-          <mat-icon *ngIf="brick.visibility === 'private'" matTooltip="{{'private_brick' | translate}}">
-            lock
-          </mat-icon>
-          <mat-icon *ngIf="brick.visibility === 'public'" matTooltip="{{'public_brick' | translate}}">
-            public
-          </mat-icon>
-          <h4 class="brick-name">{{brick.name}}</h4>
-          <fl-text-icon iconPosition="end" gap="0.2em"><mat-icon
-            class="mat-primary">check</mat-icon>Verified
-          </fl-text-icon>
-          <button mat-icon-button color="primary" (click)="createEditBrickDialog()" *haIsAdmin class="button-edit">
-            <mat-icon>edit</mat-icon>
-          </button>
-        </span>
-        <br>
-        <fl-key-value class="brick-description-value">
-          <fl-key>{{'description' | translate}}</fl-key>
-          {{brick.description}}
-        </fl-key-value>
-        <br>
+<div class="main-div" *ngIf="brick">
+  <div class="left-side-div">
+    <div>
+      <div class="title-div">
+        <img [src]="brick.imageLink ? brick.imageLink : 'assets/logo/logo.png'" class="brick-icon">
+        <h2>{{brick.name}}</h2>
+        <mat-icon *ngIf="brick.visibility === 'public'" class="icon" matTooltip="{{'public_brick' | translate}}">
+          public
+        </mat-icon>
+        <mat-icon class="mat-primary icon check-icon">check</mat-icon>
+      </div>
+
+      <div class="description-div">
+        <h5>{{'description' | translate}} : </h5>
+        <p>{{brick.description}}</p>
+      </div>
+      <div class="version-div" *ngIf="lastVersion">
         <fl-key-value>
           <fl-key>{{'version' | translate}}</fl-key>
           {{lastVersion.toString()}}
         </fl-key-value>
-        <br>
       </div>
     </div>
-    <div class="tags-div">
-      <mat-chip-list>
-        <mat-chip>Gencovery Data</mat-chip>
-        <mat-chip>Analysis</mat-chip>
-        <mat-chip>Verified</mat-chip>
-      </mat-chip-list>
-    </div>
-  </div>
-  <div class="right-side-div side-description-div">
-    <h4>{{'technical_information' | translate}}</h4>
-    <br *ngIf="brick.gitRepo && isAdmin">
-    <fl-key-value *ngIf="brick.gitRepo && isAdmin">
-      <fl-key>{{'repo_git' | translate}}</fl-key>
-      {{brick.gitRepo}}
-    </fl-key-value>
-    <br *ngIf="brick.pipRepo && isAdmin">
-    <fl-key-value *ngIf="brick.pipRepo && isAdmin">
-      <fl-key>{{'repo_pip' | translate}}</fl-key>
-      {{brick.pipRepo}}
-    </fl-key-value>
-    <br>
-    <fl-key-value>
-      <fl-key>{{'type_of_repository' | translate}}</fl-key>
-      {{latestBrickVersion.repoType}}
-    </fl-key-value>
-    <br>
-    <fl-key-value *ngIf="references && references.length > 0">
-      <fl-key>References</fl-key>
-      <div *ngFor="let r of references">
-        <a [routerLink]="'../../../' + r.name">{{r.name}}</a> v{{r.version}}
+
+    <div class="tech-div">
+      <h5>{{'technical_information' | translate}}</h5>
+
+      <div class="tech-info-div" *ngIf="latestBrickVersion">
+        {{'type_of_repository' | translate}} :
+        <p class="g-scrollable-element">{{latestBrickVersion.repoType}}</p>
       </div>
-    </fl-key-value>
-    <br>
-    <div class="display-inline">
-      <fl-user-profile-picture [user]="brick.createdBy"></fl-user-profile-picture>
-      <fl-creation-info [date]="brick.createdAt" [user]="brick.createdBy"
-                        class="creator-info"></fl-creation-info>
+
+      <div class="tech-info-div" *ngIf="brick.gitRepo && isAdmin">
+        {{'repo_git' | translate}} :
+        <p class="g-scrollable-element">{{brick.gitRepo}}</p>
+      </div>
+
+      <div class="tech-info-div" *ngIf="brick.pipRepo && isAdmin">
+        {{'repo_pip' | translate}} :
+        <p class="g-scrollable-element">{{brick.pipRepo}}</p>
+      </div>
+
+      <div class="tech-info-div" *ngIf="references && references.length > 0">
+        {{'references' | translate}} :
+        <p *ngFor="let r of references" class="g-scrollable-element">
+          <a [routerLink]="'/bricks/' + r.name">{{r.name}}</a> v{{r.version}}
+        </p>
+      </div>
     </div>
+
+
   </div>
+<!--  <div class="right-side-div g-scrollable-element" *ngIf="brick && lastVersion">-->
+<!--    <ha-public-brick-right-panel [brickName]="brick.name" [brickVersion]="lastVersion.toString()" [currentPage]="'introduction'"-->
+<!--                                 [currentPageAsTranslation]="true"></ha-public-brick-right-panel>-->
+<!--  </div>-->
 </div>

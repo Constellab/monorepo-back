@@ -4,11 +4,15 @@
       <img alt="" src="../../../assets/images/gencovery-logo.png"/>
     </a>
 
-    <div class="nav-bar-links">
+    <div class="nav-bar-links" *ngIf="currentUrlSegment.length > 0">
       <h5 class="option"><a [routerLink]="getHomeRoute()">{{'home'| translate}}</a></h5>
       <h5 class="option"><a [routerLink]="getStoryListRoute()">{{'stories' | translate}}</a></h5>
       <h5 class="option"><a [routerLink]="getBrickListRoute()">{{'bricks' | translate}}</a></h5>
       <h5 class="option"><a [href]="constellabUrl" target="_blank">Constellab</a></h5>
+    </div>
+
+    <div class="spacer" *ngIf="currentUrlSegment.length === 0">
+
     </div>
 
 

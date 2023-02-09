@@ -14,6 +14,9 @@ import {
 } from './module/ha-public-brick-page/ha-public-brick-description/ha-public-brick-description.component';
 import {HaPublicTechDocComponent} from './module/ha-public-brick-page/ha-public-tech-doc/ha-public-tech-doc.component';
 import {Ha404Component} from './module/ha404/ha404.component';
+import {
+  HaPublicBrickPageComponent
+} from './module/ha-public-brick-page/ha-public-brick-page/ha-public-brick-page.component';
 
 
 const routes: Route[] = [
@@ -26,7 +29,7 @@ const routes: Route[] = [
     component: HaPublicEditBrickPageComponent
   },
   {
-    component: HaPublicSidenavComponent,
+    component: HaPublicBrickPageComponent,
     matcher: (url: UrlSegment[]) => {
       return url.length >= 2 && (url[1].path.match(/^v\d+$/g) || url[1].path.match(/^latest$/g))
         ? {

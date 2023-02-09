@@ -1,17 +1,13 @@
 <ha-ha404 [errorText]="'error_tech_doc_not_found'" *ngIf="techDocNotFound"></ha-ha404>
 
-<div class="sidenavBody" *ngIf="!techDocNotFound">
-  <div class="loader" *ngIf="isLoading">
-    <fl-loader size="medium"></fl-loader>
-  </div>
-  <div class="content" *ngIf="!isLoading">
+<div class="loader" *ngIf="isLoading">
+  <fl-loader size="medium"></fl-loader>
+</div>
+<div class="doc-div" *ngIf="!isLoading && techDoc">
+  <div class="doc-div-content g-max-article-width g-scrollable-element">
     <div class="doc-title-div" *ngIf="techDoc">
       <td-technical-doc-header [technicalDoc]="techDoc"></td-technical-doc-header>
     </div>
-    <div class="technical-doc-div g-styled-scrollbar g-max-article-width" *ngIf="techDoc">
-      <td-technical-doc [technicalDoc]="techDoc"></td-technical-doc>
-    </div>
-  </div>
-  <div class="side" fxHide.lt-lg>
+    <td-technical-doc [technicalDoc]="techDoc"></td-technical-doc>
   </div>
 </div>

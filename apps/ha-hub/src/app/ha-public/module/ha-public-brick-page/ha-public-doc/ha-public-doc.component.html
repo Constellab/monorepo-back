@@ -3,43 +3,30 @@
   <ha-ha404 [errorText]="'error_doc_not_found'" ></ha-ha404>
 </div>
 
-<div class="sidenavBody" *ngIf="!docNotFound">
 
-  <div class="content g-scrollable-element" cdkScrollable>
-    <div class="loader" *ngIf="isLoading">
-      <fl-loader size="medium"></fl-loader>
-    </div>
-    <div class="doc-title-div" *ngIf="documentation && !isLoading">
-      <div class="doc-title-bt">
-        <h4 class="doc-title">{{documentation.title}}</h4>
-        <div class="doc-bt" *ngIf="isAdmin | async">
-          <button mat-icon-button type="button" (click)="onClickMenu($event)">
-            <mat-icon>
-              more_vert
-            </mat-icon>
-          </button>
-        </div>
+<div class="main-panel" *ngIf="!docNotFound">
+  <div class="loader" *ngIf="isLoading || !documentation">
+    <fl-loader size="medium"></fl-loader>
+  </div>
+  <div class="doc-div" *ngIf="!isLoading && documentation">
+    <div class="doc-div-content g-max-article-width">
+      <div class="doc-title-div">
+        <h4>{{documentation.title}}</h4>
+        <button mat-icon-button type="button" (click)="onClickMenu($event)" *ngIf="isAdmin | async">
+          <mat-icon>
+            more_vert
+          </mat-icon>
+        </button>
       </div>
-
+      <form class="documentation-form" [formGroup]="formGp" *ngIf="!isLoading">
+        <fl-text-editor class="content-editor g-max-article-width" formControlName="content"
+                        [disabled]="(isAdmin | async) === false || isDisabled" mode="JSON" scrollContainer="auto"
+                        [config]="textEditorConfig" (textChange)="onContentUpdate($event)" [noPadding]="true"
+                        flAutoScrollToAnchor></fl-text-editor>
+      </form>
     </div>
-    <form class="documentation-form" [formGroup]="formGp" *ngIf="!isLoading">
-      <fl-text-editor class="content-editor g-max-article-width" formControlName="content"
-                      [disabled]="(isAdmin | async) === false || isDisabled" mode="JSON" scrollContainer="auto"
-                      [config]="textEditorConfig" (textChange)="onContentUpdate($event)" [noPadding]="true"
-                      flAutoScrollToAnchor></fl-text-editor>
-    </form>
   </div>
-  <div class="side" fxHide.lt-lg>
-    <div *ngIf="documentation" class="title-side-line"></div>
-    <ng-container *ngFor="let title of titles; let i = index">
-      <ng-container *ngIf="title.level === 2; else e">
-        <a [routerLink]="'.'" [fragment]="title.id" *ngIf="title.id"><h3>{{title.title}}</h3></a>
-        <a [routerLink]="'.'" *ngIf="!title.id"><h3>{{title.title}}</h3></a>
-      </ng-container>
-      <ng-template #e>
-        <a [routerLink]="'.'" [fragment]="title.id" *ngIf="title.id"><h4>{{title.title}}</h4></a>
-        <a [routerLink]="'.'" *ngIf="!title.id"><h4>{{title.title}}</h4></a>
-      </ng-template>
-    </ng-container>
-  </div>
+<!--  <div class="right-div  g-scrollable-element" *ngIf="documentation">-->
+<!--    <ha-public-brick-right-panel [currentPage]="documentation.title" [brickVersion]="brickVersion" [brickName]="brickName" [docTitles]="titles"></ha-public-brick-right-panel>-->
+<!--  </div>-->
 </div>

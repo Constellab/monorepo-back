@@ -77,12 +77,13 @@
   "ok": "ok",
   "created_by": "Créé par",
   "email": "Email",
-  "identity": "Identité",
+  "introduction": "Introduction",
   "view": "Voir",
   "create_story": "Créer une Story",
   "story_created": "Story créée",
   "stories": "Stories",
   "back_to_all_stories": "Retour à toutes les stories",
+  "back_to_all_bricks": "Retour à toutes les briques",
   "publish_story": "Publier la story",
   "publish_story_dialog_content": "Êtes-vous sûr de vouloir publier cette story ?",
   "story_published": "Story publiée",
@@ -112,5 +113,6 @@
   "create_brick": "Créer une brique",
   "bricks_description": "Acceder aux documentations techniques des bricks",
   "stories_description": "Lire et partager des tutoriels, use cases et articles",
-  "copyright": "Copyright © 2023 Gencovery Inc. Tous droits réservés."
+  "copyright": "Copyright © 2023 Gencovery Inc. Tous droits réservés.",
+  "related_tags": "Tags associés"
 }

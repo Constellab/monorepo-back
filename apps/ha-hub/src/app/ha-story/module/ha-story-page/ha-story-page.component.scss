@@ -3,17 +3,6 @@
   width: fit-content;
 }
 
-.navigation-div{
-  margin-top: 30px;
-  padding: 0 100px 13px 100px;
-}
-
-.story-div{
-  display: flex;
-  width: calc(60rem + 20px + 295px);
-  margin: 0 auto;
-}
-
 .right-div{
   margin-top: 13px;
   margin-left: 20px;
@@ -47,11 +36,10 @@
 }
 
 .story-content{
-  margin-top: 3px;
   background-color: var(--main-background);
   padding: 16px;
   border-radius: 16px;
-  margin-bottom: 8px;
+  margin: 19px auto 8px auto;
 }
 
 .text-editor{

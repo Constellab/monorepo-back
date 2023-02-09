@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {
   HaMateTreeFlatDataSource,
   HaNode,
@@ -29,12 +29,13 @@ import {HaDocumentation} from '../../../../ha-core/ha-model/ha-entities/ha-docum
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {SelectionModel} from '@angular/cdk/collections';
 import {Observable, of, startWith, Subscription, tap} from 'rxjs';
-import {HaAuthenticatedUserService} from '../../../../ha-core/ha-service/ha-authenticated-user.service';
 import {MediaChange, MediaObserver} from '@angular/flex-layout';
 import {FormControl} from '@ngneat/reactive-forms';
 import {ClStringHelper} from '@monorepo/core-lib';
 import {map} from 'rxjs/operators';
 import {HaPublicDocComponent} from '../ha-public-doc/ha-public-doc.component';
+import {HaBrick} from '../../../../ha-core/ha-model/ha-entities/ha-brick.class';
+import {HaAuthService} from '../../../../ha-core/ha-service/ha-auth.service';
 
 
 interface FlatNode {
@@ -52,13 +53,13 @@ interface FlatNode {
   styleUrls: ['./ha-public-sidenav.component.scss']
 })
 export class HaPublicSidenavComponent implements OnInit {
+
+  @Input() brick: HaBrick;
   searchTechDocControl = new FormControl<string>('');
-  isAdmin: Observable<boolean> = this.authUserService.isAdmin();
+  isAuthenticated: boolean = this.loginService.hasAuthorizationCookie();
   brickId: string;
   brickName: string;
   brickVersion: string;
-  overNodeLevel: number = 0;
-  currentNode: FlatNode;
   menuOpen: boolean;
   openedMenu: FlOverlayRef;
 
@@ -105,7 +106,7 @@ export class HaPublicSidenavComponent implements OnInit {
 
   constructor(
     private brickService: HaBrickService,
-    private authUserService: HaAuthenticatedUserService,
+    private loginService: HaAuthService,
     private route: ActivatedRoute,
     private router: Router,
     private contextMenuService: FlMenuDynamicService,
@@ -191,25 +192,23 @@ export class HaPublicSidenavComponent implements OnInit {
 
 
   onClickMenu(event: MouseEvent, isFolder: boolean, hasChild: boolean = false, id?: string): void {
-    this.isAdmin.subscribe(isAdmin => {
-      if (isAdmin) {
-        event.preventDefault();
-        event.stopPropagation();
-        if (this.menuOpen) {
-          this.openedMenu.overlayRef.detach();
-        }
-        if (!id) {
-          this.brickService.getRootFolderId(this.brickId, this.brickVersion).subscribe(res => {
-            this.openCreateDialog(res.id);
-          });
-        } else {
-          this.openedMenu =
-            this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, id, hasChild), event);
-          this.menuOpen = true;
-        }
-
+    if (this.isAuthenticated) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (this.menuOpen) {
+        this.openedMenu.overlayRef.detach();
       }
-    });
+      if (!id) {
+        this.brickService.getRootFolderId(this.brickId, this.brickVersion).subscribe(res => {
+          this.openCreateDialog(res.id);
+        });
+      } else {
+        this.openedMenu =
+            this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, id, hasChild), event);
+        this.menuOpen = true;
+      }
+
+    }
   }
 
   private getContextMenuConfig(isFolder: boolean, id?: string, hasChild: boolean = false): FlMenuDynamic[] {

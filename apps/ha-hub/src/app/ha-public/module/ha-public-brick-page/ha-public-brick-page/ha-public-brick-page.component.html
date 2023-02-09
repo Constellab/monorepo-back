@@ -1,16 +1,33 @@
 <ha-ha404 [errorText]="'error_brick_not_found'" *ngIf="brickNotFound"></ha-ha404>
 
 <fl-async-section [object]="brick$" class="full-w" *ngIf="!brickNotFound">
-
   <ng-container *flSectionBody="let brick">
-    <nav mat-tab-nav-bar mat-align-tabs="center" class="nav-height">
-      <a mat-tab-link (click)="activeLink = '.'" routerLink="." [active]="activeLink === '.'"><b>{{brick.name}}</b></a>
-      <a mat-tab-link (click)="activeLink = 'doc'" routerLink="doc"
-         [active]="activeLink === 'doc'"> Documentation </a>
-      <a mat-tab-link (click)="activeLink = 'version'" routerLink="version"
-         [active]="activeLink === 'version'"> Versions </a>
-    </nav>
-    <router-outlet></router-outlet>
-  </ng-container>
 
+    <div class="left-panel">
+      <mat-icon class="button-left-panel" haSidenavButton></mat-icon>
+      <a [routerLink]="'/bricks'" class="back-link">
+        <fl-text-icon [iconPosition]="'start'">
+          <mat-icon>arrow_back</mat-icon>
+          {{'back_to_all_bricks' | translate}}
+        </fl-text-icon>
+      </a>
+      <ha-public-sidenav [brick]="brick"></ha-public-sidenav>
+      <div class="sidenav-div">
+        <p>{{'related_tags' | translate}} :</p>
+        <mat-chip-list>
+          <mat-chip>Gencovery data</mat-chip>
+          <mat-chip>Analysis</mat-chip>
+          <mat-chip>Verified</mat-chip>
+        </mat-chip-list>
+      </div>
+    </div>
+    <div class="main-panel">
+      <div class="brick-content-div">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+    <!--    <router-outlet></router-outlet>-->
+  </ng-container>
 </fl-async-section>
+
+

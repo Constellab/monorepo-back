@@ -45,7 +45,6 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   lastUrl: string = null;
   isAdmin: Observable<boolean> = this.authUserService.isAdmin();
   isCheck: boolean = false;
-  activatedRoute: ActivatedRoute = this.route;
   isLoading: boolean = true;
   textEditorConfig: HaDocTextEditorConfig;
   docNotFound: boolean = false;

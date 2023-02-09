@@ -77,12 +77,13 @@
   "ok": "ok",
   "created_by": "Created by",
   "email": "Email",
-  "identity": "Identity",
+  "introduction": "Introduction",
   "view": "View",
   "create_story": "Create Story",
   "story_created": "Story created",
   "stories": "Stories",
   "back_to_all_stories": "Back to all stories",
+  "back_to_all_bricks": "Back to all bricks",
   "publish_story": "Publish story",
   "publish_story_dialog_content": "Are you sure you want to publish this story ?",
   "story_published": "Story published",
@@ -112,5 +113,6 @@
   "create_brick": "Create brick",
   "bricks_description": "Get Access to Technical Documentations",
   "stories_description": "Read and share tutorials, use-case and other articles",
-  "copyright": "Copyright © 2023 Gencovery Inc. All rights reserved."
+  "copyright": "Copyright © 2023 Gencovery Inc. All rights reserved.",
+  "related_tags": "Related tags"
 }

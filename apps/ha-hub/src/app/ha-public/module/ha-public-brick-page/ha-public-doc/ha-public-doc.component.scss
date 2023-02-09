@@ -1,121 +1,61 @@
-.content-editor{
-  border: none;
+
+
+.loader{
   margin: auto;
-  min-height: 75vh;
 }
 
-.content{
-  overflow: auto;
-}
-
-.documentation-form{
-  width: 100%;
-  flex: 1 1 auto;
-  min-height: 0;
-  max-height: calc(100vh - 10.2em);
-}
-
-.sidenavBody{
-  width: calc(100% - 2px);
-  height: calc(100% - 2px);
-  display: flex;
-  position: relative;
-}
-
-.side h3, .side h4{
-  overflow: hidden;
-  text-overflow: ellipsis;
-  height: 40px;
-  line-height: 40px;
-  width: 96%;
-  padding-left: 0.5em;
-}
-
-.side h3:hover, .side h4:hover{
+.doc-div{
+  border-radius: 18px;
+  padding: 0 9px 0 9px;
   background-color: var(--card-background);
 }
 
-.side h3{
-  font-weight: normal;
-  font-size: 14px;
-}
-
-.side h4{
-  font-size: 12px;
-}
-
-.title-doc-side{
-  padding-top: 0.2em  ;
-  width: 100%;
-  padding-left: 0.2em;
-}
-
-.title-side-line{
-  width: 98%;
-  border-bottom: 2px solid var(--card-background);
-  margin-bottom: 1em;
-}
-
-.side h4{
-  padding-left: 1em;
-  margin: 0 !important;
-}
-
-.side{
-  flex: none;
-  width: 25rem;
-  padding-left: 0.5em;
-  border-left: 2px solid var(--card-background);
-}
-
-.content{
-  flex: auto;
-  height: calc(100vh - 5em);
-  padding-left: 1em;
-  padding-right: 1em;
-  display: flex;
-  flex-direction: column;
+.doc-div-content{
+  width: 60rem;
+  min-height: 90vh;
 }
 
 .doc-title-div{
-  width: 100%;
-  height: 5em;
-}
-
-.doc-title-bt{
   display: flex;
-  flex-direction: row;
-  border-bottom: 3px solid var(--card-background);
-  padding: 1em 0px 0.2em;
+  align-items: center;
 }
 
-.doc-bt{
+.doc-title-div > button{
   margin-left: auto;
 }
 
-.loader{
-  width: 100%;
-  height: 100%;
-  margin: 2em auto;
-  text-align: center;
+
+.content-editor{
+  border: none;
 }
 
-.no-doc-div{
-  height: 100%;
-  width: 100%;
-  text-align: center;
-  font-size: 1.5em;
-}
-
-@media (max-width: 1279px) {
-
-  .content{
-    width: 100%;
-    max-width: 100%;
-    padding-right: 0;
-  }
-
-  .content-editor{
-    padding-right: 0;
-  }
-}
+//.right-div{
+//  max-width: max-content;
+//  text-overflow: ellipsis;
+//  overflow: hidden;
+//  white-space: nowrap;
+//  padding: 8px;
+//  border-radius: 18px;
+//  background-color: var(--card-background);
+//  right: 100px;
+//  width: 279px;
+//  position: fixed;
+//  top: 138px;
+//  height: fit-content;
+//  max-height: 50vh;
+//  min-height: 20%;
+//}
+//
+//.right-div *{
+//  display: block;
+//  max-width: max-content;
+//  text-overflow: ellipsis;
+//  overflow: hidden;
+//  white-space: nowrap;
+//  margin-bottom: 0.25em;
+//}
+//
+//.right-div p{
+//  padding-left: 1em;
+//  margin: 0 !important;
+//}

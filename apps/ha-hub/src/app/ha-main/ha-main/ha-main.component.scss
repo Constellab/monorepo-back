@@ -31,6 +31,7 @@
   padding: 16px 100px 0 100px;
   background-color: transparent;
   margin-bottom: 8px;
+  justify-content: space-between;
 }
 
 .option{
@@ -43,7 +44,7 @@
 .body{
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 64px);
+  max-height: calc(100vh - var(--navbar-height));
 }
 
 .router{

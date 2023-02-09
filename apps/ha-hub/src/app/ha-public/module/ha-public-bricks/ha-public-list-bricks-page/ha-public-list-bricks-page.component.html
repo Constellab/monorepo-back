@@ -1,14 +1,14 @@
 <div class="main-container">
-  <div class="left-side-div">
+  <div class="left-panel">
     <a routerLink="edit">
-      <button mat-flat-button type="button" class="bt" *haIsAuthenticated>
+      <button mat-flat-button type="button" class="bt first-bt" *haIsAuthenticated>
         <mat-icon >add_circle</mat-icon>
         {{'create_brick' | translate}}
       </button>
     </a>
   </div>
 
-  <div class="bricks-div">
+  <div class="main-panel">
     <h1 class="title">{{'bricks' | translate}}</h1>
     <div class="bricks-list">
       <a class="brick" *ngFor="let b of bricks; let i" [routerLink]="getBrickRoute(b)">

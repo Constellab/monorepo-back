@@ -1,42 +1,64 @@
-.container {
-  width: 100%;
-  background-color: var(--main-background);
-  flex-direction: row;
-  display: flex;
-  height: calc(100vh - 64px);
-}
-
-.main-line-text{
-  font-size: 14px;
-  max-width: calc(100% - 15px);
-  padding-left: 15px;
-}
-
-.sidenav-content {
-  height: 100%;
-  flex: auto;
-  // POUR LA POP UP DU TEXT EDITOR
-  min-width: 0;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-}
-
 .sidenav {
-  min-height: 100%;
-  height: auto;
-  width: 20rem;
-  min-width: 20rem;
-  max-width: 25rem  ;
-  background-color: var(--main-background);
+  padding: 8px;
+  border-radius: 18px;
+  background-color: var(--card-background);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  max-height: 50vh;
 }
 
-.search-container{
-  padding-left: 1em;
-  padding-right: 1em;
+::ng-deep .mat-form-field-wrapper{
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+::ng-deep .mat-form-field-outline-start {
+  border-radius: 10px 0 0 10px !important;
+  min-width: 10px !important;
+}
+
+::ng-deep .mat-form-field-outline-end {
+  border-radius: 0 10px 10px 0 !important;
+}
+
+::ng-deep .mat-tree-node {
+  min-height: 0 !important;
+}
+
+.input-tech-doc{
+  padding-bottom: 0!important;
+  margin-bottom: 0;
+}
+
+.sidenav-item{
+  margin-top: 8px;
+  padding: 7px 8px;
+  background-color: var(--main-background);
+  border-radius: 10px;
+}
+
+.sidenav-item > a{
+  height: 100%;
+  width: 100%;
+}
+
+.sidenav-item-with-icon{
+  display: flex;
+  justify-content: space-between;
+}
+
+.icon-pointer:hover{
+  cursor: pointer;
+}
+
+.bt{
+  margin-bottom: 8px;
+  width: 100%;
+  border-radius: 10px !important;
+  background-color: var(--card-background);
+  height: 56px;
+  padding: 8px;
 }
 
 @media (max-width: 959px) {
@@ -75,12 +97,6 @@
 
 .drag-drop-bt{
   cursor: grab;
-}
-
-.draggable-element{
-  background-color: inherit;
-  min-height: 40px !important;
-  height: 40px;
 }
 
 .line, .title-line{
@@ -154,13 +170,6 @@
   padding-left: 0.2em;
   padding-bottom: 0.3em;
   padding-right: 0.2em;
-}
-
-.input-tech-doc{
-  padding-bottom: 0!important;
-  margin-bottom: 0;
-  margin-top: 0.5em;
-  width: 100%;
 }
 
 .router{

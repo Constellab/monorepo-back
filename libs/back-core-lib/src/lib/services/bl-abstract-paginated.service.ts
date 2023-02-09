@@ -20,7 +20,7 @@ export abstract class BlAbstractPaginatedService<T> {
 
     // get and count the total number of result
     const [result, totalElements] = await entityManager.findAndCount(entityClass, pageOptions);
-    console.log(pageOptions)
+
     return ClPage.fromPagination(safePage, safeSize, totalElements, result);
   }
 

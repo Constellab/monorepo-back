@@ -6,6 +6,7 @@ import {FlDialogService} from '@monorepo/front-core-lib';
 import {HaAuthService} from '../../ha-core/ha-service/ha-auth.service';
 import {HaApiServiceConfig} from '../../ha-core/ha-model/ha-config/ha-api-module.config';
 import {HaRouterService} from '../../ha-core/ha-service/ha-router.service';
+import {ActivatedRoute, UrlSegment} from '@angular/router';
 
 @Component({
   selector: 'ha-main',
@@ -19,15 +20,21 @@ export class HaMainComponent implements OnInit {
 
   loginRoute: string = HaRouterService.getLoginRoute();
 
+  currentUrlSegment: UrlSegment[];
+
 
   constructor(private authUserService: HaAuthenticatedUserService,
               private authService: HaAuthService,
               private dialogService: FlDialogService,
-              private apiService: HaApiServiceConfig) {
+              private apiService: HaApiServiceConfig,
+              private activatedRoute: ActivatedRoute) {
   }
 
   ngOnInit(): void {
     this.constellabUrl = this.apiService.getConstellabUrl();
+    this.activatedRoute.url.subscribe(url => {
+      this.currentUrlSegment = url;
+    });
   }
 
   logout(): void {

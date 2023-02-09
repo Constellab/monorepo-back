@@ -1,4 +1,4 @@
-<div class="navigation-div">
+<div class="left-panel">
   <a [routerLink]="'..'" class="back-link">
     <fl-text-icon [iconPosition]="'start'">
       <mat-icon>arrow_back</mat-icon>
@@ -6,7 +6,7 @@
     </fl-text-icon>
   </a>
 </div>
-<div class="story-div" *ngIf="story">
+<div class="main-panel" *ngIf="story">
   <div class="story-content">
     <h2>
       {{story.title}}

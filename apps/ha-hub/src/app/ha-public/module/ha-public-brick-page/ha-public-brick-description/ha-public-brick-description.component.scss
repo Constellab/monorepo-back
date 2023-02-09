@@ -1,112 +1,93 @@
-.brick-description{
-  width: 80%;
-  margin-left: 10%;
-  margin-top: 1em;
+.main-div {
   display: flex;
-  flex-direction: row;
+  justify-content: space-between;
 }
 
-.brick-name{
-  margin: 0 0.7em;
-}
-
-.brick-description .side-description-div{
-  width: 50%;
-  padding: 1em 3em;
-}
-
-.brick-description .right-side-div{
-  border-left: 2px solid var(--card-background);
-}
-
-.brick-logo{
-  height: 120px;
-  min-width: 120px;
-  background-size: cover;
-  background-position: center;
-}
-
-.main-description-div{
+.left-side-div {
+  width: 60rem;
+  border-radius: 18px;
+  background-color: var(--card-background);
+  padding: 0 8px 8px 8px;
   display: flex;
-  flex-direction: row;
-
 }
 
-.brick-info{
-  padding-left: 1em;
-  flex: auto;
+.tech-div{
+  margin-top: 16px;
+  margin-left: 20px;
 }
 
-.left-side-div{
+.right-side-div {
+  position: fixed;
+  padding: 8px;
+  width: 279px;
+  height: fit-content;
+  border-radius: 18px;
+  background-color: var(--card-background);
+  max-height: 50vh;
+  right: 100px;
+}
+
+.right-side-div > *{
+  margin-right: 8px;
+}
+
+.title-div {
   display: flex;
-  flex-direction: column;
-}
-
-.tags-div{
-  margin-top: 1em;
-  max-width: 100%;
-}
-
-.display-inline{
-  display: flex;
-  flex-direction: row;
-  font-size: 1em;
   align-items: center;
-  width: 100%;
+  margin-left: 8px;
 }
 
-.button-edit{
-  margin-left: auto;
+.title-div > .icon {
+  margin-left: 0.6em;
+  font-size: 32px;
+  height: 32px;
+  width: 32px;
 }
 
-.creator-info{
-  margin-left: 0.5em;
-  line-height: 2em;
+.check-icon{
+  font-size: 24px !important;
+  height: 24px !important;
+  width: 24px !important;
+  border-radius: 50%;
+  border: solid 2px var(--primary-color);
 }
 
-.brick-description-value{
-  white-space: pre-line;
+h2{
+  margin-block-start: -8px !important;
 }
 
-
-@media (max-width: 1279px) {
-  .brick-description{
-    width: 90%;
-    margin-left: 5%;
-  }
+.brick-icon{
+  margin-right: 8px;
+  margin-top: 10px;
+  width: 105px;
+  height: 105px;
 }
 
-@media (max-width: 959px) {
-  .brick-description{
-    flex-direction: column;
-  }
-
-  .brick-description .side-description-div{
-    width: 100%;
-    padding: 1em 1em;
-  }
-
-  .brick-description .right-side-div{
-    border: none;
-  }
+.description-div{
+  margin-left: 8px;
+  margin-top: 20px;
 }
 
-@media (max-width: 599px) {
-  .brick-description .side-description-div{
-    padding: 1em 0;
-  }
+.version-div{
+  margin-left: 8px;
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
 
-  .brick-info{
-    padding: 0;
-  }
+.tech-info-div{
+  margin-top: 15px;
+}
 
-  .main-description-div{
-    flex-direction: column;
-  }
+.tech-info-div:last-child{
+  margin-bottom: 8px;
+}
 
-  .brick-logo{
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin-bottom: 1em;
-  }
+.tech-info-div > p{
+  margin-top: 11px;
+  padding: 8px;
+  background-color: var(--main-background);
+  border-radius: 10px;
+  max-width: calc(100% - 16px);
+  width: fit-content;
+  min-width: 175px;
 }
