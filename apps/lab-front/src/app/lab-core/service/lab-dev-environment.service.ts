@@ -4,6 +4,7 @@ import {Observable, of} from 'rxjs';
 import {LabEnvironmentHelper} from '../utils/lab-environment.helper';
 import {catchError, map, mergeMap, tap} from 'rxjs/operators';
 import {LabEnvStore} from './lab-env.store';
+import {LabAuthenticatedUserService} from './lab-authenticated-user.service';
 
 /**
  * Service to manage the DEV environment
@@ -12,7 +13,8 @@ import {LabEnvStore} from './lab-env.store';
 export class LabDevEnvironmentService {
 
   constructor(private httpClient: HttpClient,
-              private labEnvManager: LabEnvStore) {
+              private labEnvManager: LabEnvStore,
+              private authenticatedUserService: LabAuthenticatedUserService){
   }
 
   /**
@@ -22,7 +24,7 @@ export class LabDevEnvironmentService {
    *  - the user's dev token is valid
    */
   public init(): Observable<void> {
-    // if the user is int dev mode
+    // if the user is in dev mode
     if (this.labEnvManager.getLabEnvironmentStorageValue() === 'dev') {
       // we check if the dev api is running
       return this.userIsLoggedInDev().pipe(
@@ -81,7 +83,19 @@ export class LabDevEnvironmentService {
    * If success, its returns the token for dev env
    */
   private logUserInDevEnv(): Observable<boolean> {
-    return this.httpClient.post(LabEnvironmentHelper.getDevCoreApiUrl() + 'dev-login', null).pipe(
+    return this.authenticatedUserService.generateTemp().pipe(
+      mergeMap(code => this.devLogin(code)),
+    );
+
+    // return this.httpClient.post(LabEnvironmentHelper.getDevCoreApiUrl() + 'dev-login', null).pipe(
+    //   tap(() => this.devLoginSuccess()),
+    //   map(() => true),
+    //   catchError(() => of(false)),
+    // );
+  }
+
+  private devLogin(code: string): Observable<boolean> {
+    return this.httpClient.post(LabEnvironmentHelper.getDevCoreApiUrl() + `check-temp/${code}`, null).pipe(
       tap(() => this.devLoginSuccess()),
       map(() => true),
       catchError(() => of(false)),

@@ -10,6 +10,7 @@ import {LabErrorDetailComponent} from './component/lab-error-detail/lab-error-de
 import {LabMainMenuSettingsComponent} from './component/lab-main-menu-settings/lab-main-menu-settings.component';
 import {LabQueueJobsDialogComponent} from './component/lab-queue-jobs-dialog/lab-queue-jobs-dialog.component';
 import {LabExperimentCoreModule} from '../lab-core/entity-module/lab-experiment-core/lab-experiment-core.module';
+import {FormsModule} from '@angular/forms';
 
 
 @NgModule({
@@ -23,6 +24,7 @@ import {LabExperimentCoreModule} from '../lab-core/entity-module/lab-experiment-
   imports: [
     CommonModule,
     RouterModule,
+    FormsModule,
 
     LabCoreModule,
 

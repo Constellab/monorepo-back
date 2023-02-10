@@ -47,7 +47,11 @@ export class LabEnvironmentToggleComponent implements OnInit, OnDestroy {
   toggleChange(change: MatSlideToggleChange): void {
     if (change.checked) {
       this.labEnvService.activateDevEnvironment().subscribe(
-        result => this.onActivateDevEnvironment(result)
+        result => this.onActivateDevEnvironment(result),
+        () => {
+          console.log('AAAA')
+          this.checked = false;
+        }
       );
     } else {
       this.labEnvStore.setLabEnvironment('prod');

@@ -1,6 +1,6 @@
 <mat-slide-toggle
   color="primary"
-  [checked]="checked"
+  [(ngModel)]="checked"
   [disabled]="disabled"
   (change)="toggleChange($event)"
   (click)="stopEventPropagation($event)">

@@ -6,7 +6,7 @@ import {
   FlThemeService,
   FlTranslateService
 } from '@monorepo/front-core-lib';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {LabUser} from '../model/entities/lab-user.entity';
 
 /**
@@ -47,6 +47,10 @@ export class LabAuthenticatedUserService implements FlCleanableService {
     this.themeService.changeTheme(user.theme);
 
     this.userSubject$.next(user);
+  }
+
+  public generateTemp(): Observable<string> {
+    return this.apiService.get('generate-temp');
   }
 
   clean(): void {
