@@ -346,7 +346,8 @@ export class CnLabInstanceAggregateService {
         email: labUsers.user.email,
         group: externalRole,
         is_active: true,
-      }});
+      };
+    });
   }
 
 
@@ -362,8 +363,12 @@ export class CnLabInstanceAggregateService {
 
       const labProject = await this.labInstanceProjectService.createLabInstanceProject(labInstance, projectTree, entityManager);
 
-      // add the project to the lab
-      await this.externalLabProjectService.addProjectInLab(labInstance.getGlabApiInfo(), projectTree);
+      // add the user to the lab is the lab is running
+      const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo());
+      if (labIsRunning) {
+        // add the project to the lab
+        await this.externalLabProjectService.addProjectInLab(labInstance.getGlabApiInfo(), projectTree);
+      }
 
       return labProject;
     });
