@@ -6,13 +6,6 @@
   <form (ngSubmit)="submit()" id="lab-up-form" [formGroup]="formGp"
         class="form">
 
-    <!--  Update bricks  -->
-    <div>
-      <mat-checkbox formControlName="updateBricks">
-        {{'lab_update_bricks' | translate}}
-      </mat-checkbox>
-    </div>
-
     <!--  Update containers  -->
     <div>
       <mat-checkbox formControlName="updateContainers">

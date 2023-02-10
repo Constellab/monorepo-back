@@ -46,7 +46,6 @@ export class CaLabDockerPs {
 }
 
 export interface CaLabComposeUpOptions {
-  updateBricks?: boolean;
   updateContainers?: boolean;
   pruneSystem?: boolean;
 }
