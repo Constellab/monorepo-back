@@ -6,6 +6,7 @@ import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {
   CnExternalLabBackup,
   CnExternalLabBackupHistory,
+  CnExternalLabUser,
   CnExternalLabUserRole
 } from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
@@ -332,6 +333,20 @@ export class CnLabInstanceAggregateService {
     const labInstance = await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
     return this.labInstanceGroupService.findByLabInstanceId(labInstance.id);
+  }
+
+  public async getCurrentLabInstanceSharedUsers(): Promise<CnExternalLabUser[]> {
+    const labUsers = await this.labInstanceGroupService.findByLabInstanceId(CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
+    return labUsers.map(labUsers => {
+      const externalRole: CnExternalLabUserRole = labUsers.role === CnLabInstanceUserRole.OWNER ? 'ADMIN' : 'USER';
+      return {
+        id: labUsers.user.id,
+        first_name: labUsers.user.firstname,
+        last_name: labUsers.user.lastname,
+        email: labUsers.user.email,
+        group: externalRole,
+        is_active: true,
+      }});
   }
 
 

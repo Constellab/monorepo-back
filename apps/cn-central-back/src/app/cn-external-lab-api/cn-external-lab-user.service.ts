@@ -71,7 +71,6 @@ export class CnExternalLabUserService {
       first_name: user.firstname,
       last_name: user.lastname,
       is_active: true,
-      is_admin: role === 'ADMIN'
     };
 
     return lastValueFrom(this.externalLabApiService.post(labInfo, this.route, newLabUser));

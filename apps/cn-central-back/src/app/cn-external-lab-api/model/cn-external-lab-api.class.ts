@@ -13,7 +13,6 @@ export interface CnExternalLabUser {
   email: string;
   group: CnExternalLabUserRole;
   is_active: boolean;
-  is_admin: boolean;
   first_name: string;
   last_name: string;
 }

@@ -23,6 +23,7 @@ import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity'
 import {CnLabInstanceAggregateService} from '../cn-lab-instances/cn-lab-instance-aggregate.service';
 import {FilesInterceptor} from '@nestjs/platform-express';
 import {ClCoreJsonConvert} from '@monorepo/core-lib';
+import {CnExternalLabUser} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -91,8 +92,15 @@ export class CnExternalLabsController {
       body);
   }
 
+  /////////////////////////////// SYNCRONIZATION ///////////////////////////////
+
   @Get('project/all-trees')
   getAllProjectTrees(): Promise<CnProject[]> {
     return this.labInstanceAggregator.getCurrentLabInstanceProjects();
+  }
+
+  @Get('user')
+  getAllLabUsers(): Promise<CnExternalLabUser[]> {
+    return this.labInstanceAggregator.getCurrentLabInstanceSharedUsers();
   }
 }
