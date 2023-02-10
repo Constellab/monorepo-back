@@ -92,13 +92,15 @@ export class CnExternalLabsController {
       body);
   }
 
-  /////////////////////////////// SYNCRONIZATION ///////////////////////////////
-
+  /////////////////////////////// SYNCHRONIZATION ///////////////////////////////
+  // those routes does not require user authentication because they are called by the lab server and are just get
+  @ClLabRobotAuthentication()
   @Get('project/all-trees')
   getAllProjectTrees(): Promise<CnProject[]> {
     return this.labInstanceAggregator.getCurrentLabInstanceProjects();
   }
 
+  @ClLabRobotAuthentication()
   @Get('user')
   getAllLabUsers(): Promise<CnExternalLabUser[]> {
     return this.labInstanceAggregator.getCurrentLabInstanceSharedUsers();
