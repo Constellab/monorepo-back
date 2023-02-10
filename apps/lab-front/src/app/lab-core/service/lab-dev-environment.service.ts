@@ -95,7 +95,7 @@ export class LabDevEnvironmentService {
   }
 
   private devLogin(code: string): Observable<boolean> {
-    return this.httpClient.post(LabEnvironmentHelper.getDevCoreApiUrl() + `check-temp/${code}`, null).pipe(
+    return this.httpClient.post(LabEnvironmentHelper.getDevCoreApiUrl() + `dev-login/${code}`, null).pipe(
       tap(() => this.devLoginSuccess()),
       map(() => true),
       catchError(() => of(false)),
