@@ -9,9 +9,14 @@ import {randomBytes} from 'crypto';
 import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {CnLabInstanceUser} from './user/cn-lab-instance-user.entity';
-import {BlNotUpdatable} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnCloudProviderName} from '../cn-cloud-providers/cn-cloud-provider.entity';
+
+export enum CnLabInstanceType {
+  CLOUD = 'CLOUD',
+  ON_PREMISE = 'ON_PREMISE'
+}
 
 export enum CnLabInstanceBillingMode {
   HOURLY = 'HOURLY',
@@ -33,6 +38,12 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Column({nullable: false, length: 50})
   name: string;
 
+
+  @Column({
+    type: 'enum', enum: CnLabInstanceType, nullable: false,
+  })
+  type: CnLabInstanceType;
+
   @Type(() => CnLabConfig)
   @ManyToOne(() => CnLabConfig, {nullable: true})
   labConfig: CnLabConfig;
@@ -50,17 +61,17 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Column({nullable: false, length: 255})
   glabApiKey: string;
 
-  // api key shared with the lab manager API
+  // api key shared with the lab manager APImi
   @Exclude()
-  @Column({nullable: false, length: 255})
+  @Column({nullable: true, length: 255})
   labManagerApiKey: string;
 
-  @Column({nullable: false, length: 255})
+  @Column({nullable: true, length: 255})
   virtualHost: string;
 
   // api key shared with the lab manager API
   @Exclude()
-  @Column({nullable: false, length: 255})
+  @Column({nullable: true, length: 255})
   codelabToken: string;
 
   @Exclude()
@@ -86,10 +97,11 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Type(() => CnServerInfo)
   @ManyToOne(() => CnServerInfo,
     (serverInfo: CnServerInfo) => serverInfo.labInstances,
-    {nullable: false, eager: true})
+    {nullable: true, eager: true})
   serverInfo: CnServerInfo;
 
-  @ManyToOne(() => CnCloudProviderRegion, {onDelete: 'RESTRICT', eager: true})
+  @ManyToOne(() => CnCloudProviderRegion,
+    {onDelete: 'RESTRICT', eager: true, nullable: true})
   region: CnCloudProviderRegion;
 
   // id of the ovh, aws, instance
@@ -108,15 +120,15 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   serverProgressText: string;
 
   @Column({
-    type: 'enum', enum: CnLabInstanceBillingMode, nullable: false,
+    type: 'enum', enum: CnLabInstanceBillingMode, nullable: true,
   })
   billingMode: CnLabInstanceBillingMode;
 
-  @Column({nullable: false, type: 'int'})
+  @Column({nullable: true, type: 'int'})
   volumeSize: number;
 
   @Column({
-    type: 'enum', enum: CnLabInstanceVolumeType, nullable: false,
+    type: 'enum', enum: CnLabInstanceVolumeType, nullable: true,
   })
   volumeType: CnLabInstanceVolumeType;
 
@@ -142,10 +154,13 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @BeforeUpdate()
   generateApiKey(): void {
     if (!this.glabApiKey) this.glabApiKey = this.generateRandomPassword();
-    if (!this.labManagerApiKey) this.labManagerApiKey = this.generateRandomPassword();
-    if (!this.codelabToken) this.codelabToken = this.generateRandomPassword();
     if (!this.gwsCoreProdDbPassword) this.gwsCoreProdDbPassword = this.generateRandomPassword();
     if (!this.gwsCoreDevDbPassword) this.gwsCoreDevDbPassword = this.generateRandomPassword();
+
+    if (this.type === CnLabInstanceType.CLOUD) {
+      if (!this.labManagerApiKey) this.labManagerApiKey = this.generateRandomPassword();
+      if (!this.codelabToken) this.codelabToken = this.generateRandomPassword();
+    }
   }
 
   private generateRandomPassword(): string {
@@ -185,7 +200,18 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     return '*.' + this.virtualHost.split('.')[0];
   }
 
+  public isOnPremise(): boolean {
+    return this.type === CnLabInstanceType.ON_PREMISE;
+  }
+
+  public isCloud(): boolean {
+    return this.type === CnLabInstanceType.CLOUD;
+  }
+
   public getCloudProviderName(): CnCloudProviderName {
+    if (this.isOnPremise()) {
+      throw new BlBadRequestException('Cannot get cloud provider name for on premise instance');
+    }
     return this.serverInfo.cloudProvider.name;
   }
 

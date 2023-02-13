@@ -47,6 +47,7 @@ export class CaLabInstanceTableComponent extends FlTableAbstractDirective<CaLabI
       mode: 'update', object: {
         id: labInstance.id,
         name: labInstance.name,
+        type: labInstance.type,
         virtualHost: labInstance.virtualHost,
         serverInfo: labInstance.serverInfo,
         region: labInstance.region,

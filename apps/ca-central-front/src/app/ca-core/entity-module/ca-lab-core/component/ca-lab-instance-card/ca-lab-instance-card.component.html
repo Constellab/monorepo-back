@@ -11,7 +11,7 @@
 
 
   <fl-card-body>
-    <ca-city [city]="labInstance.region.city"></ca-city>
+    <ca-city *ngIf="labInstance.region" [city]="labInstance.region.city"></ca-city>
 
     <div class="g-text-light g-text-small since-the">
       {{labInstance.currentStatus.status.name | translate}} {{'since_the' | translate}}
@@ -20,7 +20,9 @@
 
 
     <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="0.5em" class="action-buttons">
-      <ca-lab-login-button [labInstanceId]="labInstance.id" [isRunning]="labInstance.isRunning()" size="small"></ca-lab-login-button>
+      <ca-lab-login-button *ngIf="labInstance.isCloud"
+                           [labInstanceId]="labInstance.id" [isRunning]="labInstance.isRunning()"
+                           size="small"></ca-lab-login-button>
 
       <a mat-stroked-button [routerLink]="labInstance | caDetailRoute" class="g-button-small"
          (click)="stopEventPropagation($event)" (mousedown)="stopEventPropagation($event)">

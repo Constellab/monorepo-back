@@ -6,7 +6,12 @@
       {{'name' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let labInstance">
-      <span>{{labInstance.name}}</span>
+      <fl-text-icon>
+        <mat-icon [matTooltip]="'lab_instance_type_' + labInstance.type | translate">
+          {{labInstance.typeIcon}}
+        </mat-icon>
+        <span>{{labInstance.name}}</span>
+      </fl-text-icon>
     </mat-cell>
   </ng-container>
 
@@ -46,7 +51,8 @@
       {{'server_info' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let labInstance">
-      <ca-server-info-inline [serverInfo]="labInstance.serverInfo"></ca-server-info-inline>
+      <ca-server-info-inline *ngIf="labInstance.serverInfo" [serverInfo]="labInstance.serverInfo">
+      </ca-server-info-inline>
     </mat-cell>
   </ng-container>
 

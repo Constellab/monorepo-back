@@ -55,4 +55,5 @@ export enum CnErrorText {
   DELETE_PROJECT_USED_IN_LAB = 'error.delete_project_used_in_lab',
   DOCUMENT_ALREADY_EXIST = 'error.document_already_exist',
   PROJECT_BUCKET_NOT_FOUND = 'error.project_bucket_not_found',
+  CANT_MANAGE_ON_PREMISE_LAB = 'error.cant_manage_on_premise_lab'
 }

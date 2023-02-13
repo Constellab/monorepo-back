@@ -1,5 +1,9 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {CaLabInstanceForm, CaLabInstanceWithSpace} from '../../../../model/entities/lab/ca-lab-instance.class';
+import {
+  CaLabInstanceForm,
+  CaLabInstanceType,
+  CaLabInstanceWithSpace
+} from '../../../../model/entities/lab/ca-lab-instance.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
@@ -44,15 +48,19 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
       this.countries = cities;
     });
     this.init();
+
+    if (this.isUpdateMode()) {
+      this.onTypeChange(this.formGp.value.type);
+    }
   }
 
   buildForm(): FormGroup<CaLabInstanceForm> {
     return new FormBuilder().group({
       id: [null],
       name: [null, [Validators.required]],
+      type: [{value: 'CLOUD', disabled: this.isUpdateMode()}, [Validators.required]],
       virtualHost: [null, [Validators.required]],
       serverInfo: [null, [Validators.required]],
-      owner: [null, this.isCreateMode() ? Validators.required : null],
       billingMode: ['MONTHLY', [Validators.required]],
       volumeSize: [null, [Validators.required, FlGlobalValidators.isInteger, Validators.min(50)]],
       volumeType: ['HIGH_SPEED', [Validators.required]],
@@ -66,6 +74,38 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
       region: [null, Validators.required],
       space: [{value: null, disabled: this.isUpdateMode()}, Validators.required],
     });
+  }
+
+  onTypeChange(type: CaLabInstanceType): void {
+    if (type === 'CLOUD') {
+      this.formGp.get('virtualHost').enable();
+      this.formGp.get('serverInfo').enable();
+      this.formGp.get('billingMode').enable();
+      this.formGp.get('volumeSize').enable();
+      this.formGp.get('volumeType').enable();
+      this.formGp.get('labManagerApiKey').enable();
+      this.formGp.get('codelabToken').enable();
+      this.formGp.get('serverInstanceId').enable();
+      this.formGp.get('serverVolumeId').enable();
+      this.formGp.get('region').enable();
+
+    } else {
+      this.formGp.get('virtualHost').disable();
+      this.formGp.get('serverInfo').disable();
+      this.formGp.get('billingMode').disable();
+      this.formGp.get('volumeSize').disable();
+      this.formGp.get('volumeType').disable();
+      this.formGp.get('labManagerApiKey').disable();
+      this.formGp.get('codelabToken').disable();
+      this.formGp.get('serverInstanceId').disable();
+      this.formGp.get('serverVolumeId').disable();
+      this.formGp.get('region').disable();
+    }
+    this.formGp.updateValueAndValidity();
+  }
+
+  isCloud(): boolean {
+    return this.formGp.value.type === 'CLOUD';
   }
 
   create(formValue: CaLabInstanceForm): Observable<CaLabInstanceWithSpace> {

@@ -5,7 +5,7 @@
       <div fxLayout="row" fxLayoutAlign="space-between stretch" class="g-section">
         <ca-lab-instance-detail fxFlex="49%"></ca-lab-instance-detail>
 
-        <ca-lab-server-info-card [labInstance]="labInstance" fxFlex="49%"></ca-lab-server-info-card>
+        <ca-lab-server-info-card *ngIf="labInstance.isCloud" [labInstance]="labInstance" fxFlex="49%"></ca-lab-server-info-card>
 
       </div>
       <ca-lab-instance-users-list class="g-section" [labInstanceId]="labInstance.id"></ca-lab-instance-users-list>

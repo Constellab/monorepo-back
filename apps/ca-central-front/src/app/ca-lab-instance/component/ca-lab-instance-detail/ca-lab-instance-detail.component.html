@@ -2,8 +2,17 @@
 
   <fl-card-body>
 
-    <!--   Lab url   -->
+    <!--   Lab type   -->
     <fl-text-icon>
+      <mat-icon>{{labInstance.typeIcon}}</mat-icon>
+      <fl-key-value>
+        <fl-key>{{'lab_instance_type' | translate}}</fl-key>
+        {{'lab_instance_type_' + labInstance.type | translate}}
+      </fl-key-value>
+    </fl-text-icon>
+
+    <!--   Lab url   -->
+    <fl-text-icon *ngIf="labInstance.isCloud">
       <mat-icon>link</mat-icon>
       <fl-key-value>
         <fl-key>{{'url' | translate}}</fl-key>
@@ -15,7 +24,7 @@
     </fl-text-icon>
 
 
-    <fl-text-icon>
+    <fl-text-icon *ngIf="labInstance.region">
       <mat-icon>location_on</mat-icon>
       <fl-key-value class="key-val-inline">
         <fl-key class="key">{{'region' | translate}}</fl-key>
@@ -23,7 +32,7 @@
       </fl-key-value>
     </fl-text-icon>
 
-    <fl-text-icon>
+    <fl-text-icon *ngIf="labInstance.billingMode">
       <mat-icon>attach_money</mat-icon>
       <fl-key-value class="key-val-inline">
         <fl-key class="key">{{'lab_billing_mode' | translate}}</fl-key>
@@ -34,15 +43,19 @@
   </fl-card-body>
 
   <fl-card-footer layoutGap="0.5em">
-    <ca-lab-login-button [labInstanceId]="labInstance.id" [isRunning]="labInstance.isRunning()"></ca-lab-login-button>
 
-    <ca-lab-instance-start-stop *ngIf="isOwner$ | async"></ca-lab-instance-start-stop>
+    <ng-container *ngIf="labInstance.isCloud">
 
-    <button mat-stroked-button type="button" (click)="openCodelabInfo(labInstance)"
-            class="g-button-small">
-      <mat-icon flIcon="code"></mat-icon>
-      {{'codelab_info' | translate}}
-    </button>
+      <ca-lab-login-button [labInstanceId]="labInstance.id" [isRunning]="labInstance.isRunning()"></ca-lab-login-button>
+
+      <ca-lab-instance-start-stop *ngIf="isOwner$ | async"></ca-lab-instance-start-stop>
+
+      <button mat-stroked-button type="button" (click)="openCodelabInfo(labInstance)"
+              class="g-button-small">
+        <mat-icon flIcon="code"></mat-icon>
+        {{'codelab_info' | translate}}
+      </button>
+    </ng-container>
 
     <button mat-stroked-button type="button" (click)="openLabConfig(labInstance)"
             class="g-button-small">

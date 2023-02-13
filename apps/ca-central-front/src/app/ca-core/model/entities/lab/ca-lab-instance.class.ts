@@ -1,7 +1,6 @@
 import {CaBaseEntity} from '../ca-base-entity.class';
 import {CaStatusHistory} from '../ca-status-history.class';
 import {CaServerInfo} from '../ca-server-info.class';
-import {CaUser} from '../ca-user.class';
 import {
   FlEntityPaginatedDatasource,
   FlStatus,
@@ -17,6 +16,7 @@ import {CaCloudProviderRegion} from '../ca-cloud-provider.class';
 export type CaLabInstanceStatus = 'RUNNING' | 'STOPPED' | 'STARTING' | 'STOPPING';
 export type CaLabInstanceBillingMode = 'HOURLY' | 'MONTHLY';
 export type CaLabInstanceVolumeType = 'CLASSIC' | 'HIGH_SPEED';
+export type CaLabInstanceType = 'CLOUD' | 'ON_PREMISE';
 
 export const caLabInstanceStatusDict: FlStatusDict<CaLabInstanceStatus> = {
   RUNNING: FlStatusHelper.getRunningStatus('RUNNING'),
@@ -37,6 +37,8 @@ export class CaLabInstanceStatusHistory extends CaStatusHistory<CaLabInstanceSta
 export class CaLabInstance extends CaBaseEntity {
 
   name: string;
+
+  type: CaLabInstanceType;
 
   @Type(() => CaLabInstanceStatusHistory)
   currentStatus: CaLabInstanceStatusHistory = null;
@@ -75,6 +77,18 @@ export class CaLabInstance extends CaBaseEntity {
   get adminerUrl(): string {
     return `https://adminer.${this.virtualHost}`;
   }
+
+  get isCloud(): boolean {
+    return this.type === 'CLOUD';
+  }
+
+  get isOnPremise(): boolean {
+    return this.type === 'ON_PREMISE';
+  }
+
+  get typeIcon(): string {
+    return this.isCloud ? 'cloud' : 'computer';
+  }
 }
 
 export class CaLabInstanceWithSpace extends CaLabInstance {
@@ -88,13 +102,11 @@ export type CaLabInstanceDatasource = FlEntityPaginatedDatasource<CaLabInstance>
 export class CaLabInstanceForm {
   id: string;
   name: string;
+  type: CaLabInstanceType;
   virtualHost: string;
 
   @Type(() => CaServerInfo)
   serverInfo: CaServerInfo;
-
-  @Type(() => CaUser)
-  owner?: CaUser;
 
   billingMode: CaLabInstanceBillingMode;
   volumeSize: number;

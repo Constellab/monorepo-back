@@ -77,10 +77,6 @@ export class CnLabInstanceAggregateService {
   }
 
   async create(createLabInstance: CnLabInstanceCreateDTO): Promise<CnLabInstance> {
-    if (createLabInstance.region.cloudProvider.id !== createLabInstance.serverInfo.cloudProvider.id) {
-      throw new BlBadRequestException('Cloud Provider and Region must be the same');
-    }
-
     await this.security.checkAuthorizationToCreate(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
 
     const labInstance = BlDtoHelper.fromDto(CnLabInstance, createLabInstance);
@@ -90,10 +86,6 @@ export class CnLabInstanceAggregateService {
 
 
   async update(updateLabInstance: CnLabInstanceCreateDTO): Promise<CnLabInstance> {
-    if (updateLabInstance.region.cloudProvider.id !== updateLabInstance.serverInfo.cloudProvider.id) {
-      throw new BlBadRequestException('Cloud Provider and Region must be the same');
-    }
-
     const labInstanceDb: CnLabInstance = await this.getAndCheckAuthorizationToUpdate(updateLabInstance.id);
     const labInstance = BlDtoHelper.fromDto(CnLabInstance, updateLabInstance);
     return this.labInstancesService.updateWithCompare(labInstance, labInstanceDb);
@@ -209,6 +201,10 @@ export class CnLabInstanceAggregateService {
   async login(id: string): Promise<CnLabInstanceToken> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToFindById(id);
 
+    if (labInstance.isOnPremise()) {
+      throw new BlBadRequestException(CnErrorText.CANT_MANAGE_ON_PREMISE_LAB);
+    }
+
     // check that the lab is running
     if (!labInstance.isRunning()) {
       throw new BlBadRequestException(CnErrorText.LAB_STOPPED);
@@ -273,6 +269,10 @@ export class CnLabInstanceAggregateService {
   public async checkLabManagerStatus(labInstanceId: string): Promise<any> {
     const lab: CnLabInstance = await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
+    if (lab.isOnPremise()) {
+      throw new BlBadRequestException(CnErrorText.CANT_MANAGE_ON_PREMISE_LAB);
+    }
+
     const isRunning = await this.externalLabApiService.healthCheck(lab.getGlabApiInfo());
     this.logger.log('Lab ' + labInstanceId + ' is running : ' + isRunning);
     if (!isRunning) {
@@ -289,7 +289,7 @@ export class CnLabInstanceAggregateService {
   /////////////////////////////////////// GROUPS //////////////////////////////////
 
   public async addUserToLab(labInstanceId: string, userId: string, role: CnLabInstanceUserRole): Promise<CnLabInstanceUser> {
-    const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId);
+    const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId, false);
     const user = await this.usersService.findByIdAndCheck(userId);
 
 
@@ -298,11 +298,13 @@ export class CnLabInstanceAggregateService {
       // use group if we share team latter
       const labInstanceGroup = await this.labInstanceGroupService.createLabInstanceGroup(labInstance, user, role, entityManager);
 
-      // add the user to the lab is the lab is running
-      const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo());
-      if (labIsRunning) {
-        const externalRole: CnExternalLabUserRole = role === CnLabInstanceUserRole.OWNER ? 'ADMIN' : 'USER';
-        await this.externalLabUserService.addUser(labInstance.getGlabApiInfo(), user, externalRole);
+      if (labInstance.isCloud()) {
+        // add the user to the lab is the lab is running
+        const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo());
+        if (labIsRunning) {
+          const externalRole: CnExternalLabUserRole = role === CnLabInstanceUserRole.OWNER ? 'ADMIN' : 'USER';
+          await this.externalLabUserService.addUser(labInstance.getGlabApiInfo(), user, externalRole);
+        }
       }
 
       return labInstanceGroup;
@@ -310,19 +312,26 @@ export class CnLabInstanceAggregateService {
   }
 
   public async updateUserLabRole(labInstanceId: string, groupId: string, role: CnLabInstanceUserRole): Promise<CnLabInstanceUser> {
-    await this.getAndCheckAuthorizationToManageLab(labInstanceId);
+    await this.getAndCheckAuthorizationToManageLab(labInstanceId, false);
 
     return this.labInstanceGroupService.updateLabInstanceGroupRole(labInstanceId, groupId, role);
   }
 
   public async removeUserFromLab(labInstanceId: string, userId: string): Promise<void> {
-    const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId);
+    const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId, false);
 
     return await this.dataSource.transaction(async entityManager => {
       await this.labInstanceGroupService.deleteLabInstanceGroup(labInstanceId, userId, entityManager);
 
-      // deactivate the user in the lab
-      await this.externalLabUserService.deactivateUser(labInstance.getGlabApiInfo(), userId);
+      if (labInstance.isCloud()) {
+        // add the user to the lab is the lab is running
+        const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo());
+
+        if (labIsRunning) {
+          // deactivate the user in the lab
+          await this.externalLabUserService.deactivateUser(labInstance.getGlabApiInfo(), userId);
+        }
+      }
     });
   }
 
@@ -335,27 +344,11 @@ export class CnLabInstanceAggregateService {
     return this.labInstanceGroupService.findByLabInstanceId(labInstance.id);
   }
 
-  public async getCurrentLabInstanceSharedUsers(): Promise<CnExternalLabUser[]> {
-    const labUsers = await this.labInstanceGroupService.findByLabInstanceId(CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
-    return labUsers.map(labUsers => {
-      const externalRole: CnExternalLabUserRole = labUsers.role === CnLabInstanceUserRole.OWNER ? 'ADMIN' : 'USER';
-      return {
-        id: labUsers.user.id,
-        first_name: labUsers.user.firstname,
-        last_name: labUsers.user.lastname,
-        email: labUsers.user.email,
-        group: externalRole,
-        is_active: true,
-      };
-    });
-  }
-
-
   //////////////////////////// PROJECT ////////////////////////////////
 
   public async addProjectInLab(labInstanceId: string, projectId: string): Promise<CnLabInstanceProject> {
     // get and check if the user can manage the lab
-    const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId);
+    const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId, false);
     // get and check if the user can see the project
     const projectTree = await this.projectAggregateService.getProjectTree(projectId);
 
@@ -381,6 +374,7 @@ export class CnLabInstanceAggregateService {
     return await this.dataSource.transaction(async entityManager => {
       await this.labInstanceProjectService.deleteLabInstanceProject(labInstanceId, projectId, entityManager);
 
+      // TODO what to do with on premise lab ?
       // remove the project from the lab
       await this.externalLabProjectService.deleteProjectInLab(labInstance.getGlabApiInfo(), projectId);
     });
@@ -516,6 +510,22 @@ export class CnLabInstanceAggregateService {
     const labProjects = await this.labInstanceProjectService.findByLabInstanceId(CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
     return labProjects.map(labProject => labProject.project);
   }
+
+  public async getCurrentLabInstanceSharedUsers(): Promise<CnExternalLabUser[]> {
+    const labUsers = await this.labInstanceGroupService.findByLabInstanceId(CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
+    return labUsers.map(labUsers => {
+      const externalRole: CnExternalLabUserRole = labUsers.role === CnLabInstanceUserRole.OWNER ? 'ADMIN' : 'USER';
+      return {
+        id: labUsers.user.id,
+        first_name: labUsers.user.firstname,
+        last_name: labUsers.user.lastname,
+        email: labUsers.user.email,
+        group: externalRole,
+        is_active: true,
+      };
+    });
+  }
+
 
 
   /////////////////////////// SERVER //////////////////////////////
@@ -694,8 +704,12 @@ export class CnLabInstanceAggregateService {
     return labInstance;
   }
 
-  private async getAndCheckAuthorizationToManageLab(id: string): Promise<CnLabInstance> {
+  private async getAndCheckAuthorizationToManageLab(id: string, refuseOnPremise: boolean = true): Promise<CnLabInstance> {
     const labInstance = await this.labInstancesService.findByIdAndCheck(id, {sharedGroups: true, space: true});
+
+    if(refuseOnPremise && labInstance.isOnPremise()) {
+      throw new BlBadRequestException(CnErrorText.CANT_MANAGE_ON_PREMISE_LAB);
+    }
     await this.security.checkAuthorizationToManageLab(labInstance, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return labInstance;
   }

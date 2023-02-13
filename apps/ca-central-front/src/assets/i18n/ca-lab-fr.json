@@ -185,5 +185,10 @@
   "lab_advanced_configuration": "Configuration avancée",
   "lab_advanced_configuration_warning": "Attention, n'utilisez les options suivantes que si vous savez ce que vous faites.",
   "lab_gws_core_prod_db_password": "Mot de passe de la base de données de prod",
-  "lab_gws_core_dev_db_password": "Mot de passe de la base de données de dev"
+  "lab_gws_core_dev_db_password": "Mot de passe de la base de données de dev",
+  "lab_instance_type": "Type de lab",
+  "lab_instance_type_CLOUD": "Cloud",
+  "lab_instance_type_CLOUD_desc": "Le lab est hébergé sur le cloud, sécurisé, accessible de partout, sauvegardé automatiquement et inclut des supports",
+  "lab_instance_type_ON_PREMISE": "On premise",
+  "lab_instance_type_ON_PREMISE_desc": "Le lab est hébergé sur votre ordinateur, accessible uniquement depuis votre ordinateur, non sauvegardé et ne comprend pas de supports."
 }

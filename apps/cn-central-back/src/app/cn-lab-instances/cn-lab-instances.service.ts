@@ -5,7 +5,7 @@ import {DataSource, DeleteResult, EntityManager, Repository} from 'typeorm';
 import {CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 import {CnAbstractWithStatusService} from '../cn-core/class/cn-abstract-with-status.service';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
-import {ClPage, ClPageI} from '@monorepo/core-lib';
+import {ClHelpService, ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnExperiment} from '../cn-projects-aggregate/cn-experiments/cn-experiment.entity';
 import {CnExperimentsService} from '../cn-projects-aggregate/cn-experiments/cn-experiments.service';
@@ -26,7 +26,43 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
 
 
   async create(entity: CnLabInstance): Promise<CnLabInstance> {
+    this.checkLabInstanceBeforeSave(entity);
+
     return super.createWithStatus(entity, CnLabInstanceStatus.STOPPED);
+  }
+
+
+  async update(entity: CnLabInstance, entityManager?: EntityManager): Promise<CnLabInstance> {
+    this.checkLabInstanceBeforeSave(entity);
+    return super.update(entity, entityManager);
+  }
+
+  private checkLabInstanceBeforeSave(entity: CnLabInstance): void {
+    if (entity.isCloud()) {
+      if (ClHelpService.isNullOrEmpty(entity.virtualHost) ||
+        ClHelpService.isNullOrEmpty(entity.serverInfo) ||
+        ClHelpService.isNullOrEmpty(entity.region) ||
+        ClHelpService.isNullOrEmpty(entity.billingMode) ||
+        ClHelpService.isNullOrEmpty(entity.volumeType) ||
+        ClHelpService.isNullOrEmpty(entity.volumeSize)) {
+        throw new BlBadRequestException('Missing parameters for cloud instance');
+      }
+
+      if (entity.region.cloudProvider.id !== entity.serverInfo.cloudProvider.id) {
+        throw new BlBadRequestException('Cloud Provider and Region must be the same');
+      }
+    } else {
+      entity.virtualHost = null;
+      entity.serverInfo = null;
+      entity.region = null;
+      entity.billingMode = null;
+      entity.volumeType = null;
+      entity.volumeSize = null;
+      entity.labManagerApiKey = null;
+      entity.codelabToken = null;
+      entity.serverInstanceId = null;
+      entity.serverVolumeId = null;
+    }
   }
 
   async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {

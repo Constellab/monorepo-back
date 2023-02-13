@@ -185,5 +185,10 @@
   "lab_advanced_configuration": "Configuration avancée",
   "lab_advanced_configuration_warning": "Warning, use the following options only if you know what you are doing.",
   "lab_gws_core_prod_db_password": "Prod db password",
-  "lab_gws_core_dev_db_password": "Dev db password"
+  "lab_gws_core_dev_db_password": "Dev db password",
+  "lab_instance_type": "Lab type",
+  "lab_instance_type_CLOUD": "Cloud",
+  "lab_instance_type_CLOUD_desc": "The lab is hosted on the cloud, secured, accessible from anywhere, automatically backed up and includes supports.",
+  "lab_instance_type_ON_PREMISE": "On premise",
+  "lab_instance_type_ON_PREMISE_desc": "The lab is hosted on your computer, accessible from your computer only, not backed up and does not include supports."
 }
