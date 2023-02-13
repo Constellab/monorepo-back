@@ -49,8 +49,8 @@ export class LabAuthenticatedUserService implements FlCleanableService {
     this.userSubject$.next(user);
   }
 
-  public generateTemp(): Observable<string> {
-    return this.apiService.get('generate-temp');
+  public generateDevLoginUniqueCode(): Observable<string> {
+    return this.apiService.get('dev-login-unique-code/generate');
   }
 
   clean(): void {

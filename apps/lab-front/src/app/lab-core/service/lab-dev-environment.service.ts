@@ -83,15 +83,9 @@ export class LabDevEnvironmentService {
    * If success, its returns the token for dev env
    */
   private logUserInDevEnv(): Observable<boolean> {
-    return this.authenticatedUserService.generateTemp().pipe(
+    return this.authenticatedUserService.generateDevLoginUniqueCode().pipe(
       mergeMap(code => this.devLogin(code)),
     );
-
-    // return this.httpClient.post(LabEnvironmentHelper.getDevCoreApiUrl() + 'dev-login', null).pipe(
-    //   tap(() => this.devLoginSuccess()),
-    //   map(() => true),
-    //   catchError(() => of(false)),
-    // );
   }
 
   private devLogin(code: string): Observable<boolean> {
