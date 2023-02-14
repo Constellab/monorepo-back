@@ -36,7 +36,7 @@ services:
     restart: on-failure:10
     container_name: glab
     ports:
-      - 3002:3000
+      - 3100:3000
 
   # Codelab
   codelab:
@@ -79,8 +79,8 @@ services:
   front:
     image: registry.gitlab.com/gencovery/core/monorepo/lab-front:0.5.6  #TODO TO PARAMETERIZE
     environment:
-      - API_URL=http://localhost:3102/
-      - LAB_PROD_API_URL=http://localhost:3102/
+      - API_URL=http://localhost:3100/
+      - LAB_PROD_API_URL=http://localhost:3100/
       - LAB_DEV_API_URL=http://localhost:3101/
       - CODE_SERVER_URL=http://localhost:8081
       - VIRTUAL_HOST=
