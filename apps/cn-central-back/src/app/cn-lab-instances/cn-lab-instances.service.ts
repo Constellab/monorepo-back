@@ -51,7 +51,13 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       if (entity.region.cloudProvider.id !== entity.serverInfo.cloudProvider.id) {
         throw new BlBadRequestException('Cloud Provider and Region must be the same');
       }
+
+      entity.onPremisePlatform = null;
     } else {
+      if (ClHelpService.isNullOrEmpty(entity.onPremisePlatform)) {
+        throw new BlBadRequestException('Missing parameters platform for on premise instance');
+      }
+
       entity.virtualHost = null;
       entity.serverInfo = null;
       entity.region = null;

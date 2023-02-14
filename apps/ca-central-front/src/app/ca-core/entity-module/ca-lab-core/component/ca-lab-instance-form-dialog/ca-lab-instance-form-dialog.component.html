@@ -61,6 +61,16 @@
       </mat-error>
     </mat-form-field>
 
+    <!--  On Premise Platform  -->
+    <div *ngIf="!isCloud()" class="on-premise-platform">
+      {{'lab_on_premise_platform' | translate}}
+      <mat-radio-group formControlName="onPremisePlatform"  required>
+        <mat-radio-button value="WINDOWS" color="primary">Windows</mat-radio-button>
+        <mat-radio-button value="MAC" color="primary">Mac OS</mat-radio-button>
+        <mat-radio-button value="LINUX" color="primary">Linux</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
     <ng-container *ngIf="isCloud()">
       <!--  Virtual host  -->
       <mat-form-field class="g-form-input">

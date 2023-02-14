@@ -1,5 +1,4 @@
 import {Module} from '@nestjs/common';
-import {CnCoreConfigModule} from './modules/cn-core-config/cn-core-config.module';
 import {CnFrontService} from './services/cn-front.service';
 import {BlExternalApiModule, BlRequestContextModule, BlTranslateModule} from '@monorepo/back-core-lib';
 import {HttpModule} from '@nestjs/axios';
@@ -12,7 +11,6 @@ import {CnCommandService} from './services/cn-command.service';
  */
 @Module({
   imports: [
-    CnCoreConfigModule,
     BlRequestContextModule,
     BlTranslateModule,
     BlExternalApiModule,
@@ -24,7 +22,6 @@ import {CnCommandService} from './services/cn-command.service';
     CnCommandService,
   ],
   exports: [
-    CnCoreConfigModule,
     BlRequestContextModule,
     BlTranslateModule,
     BlExternalApiModule,

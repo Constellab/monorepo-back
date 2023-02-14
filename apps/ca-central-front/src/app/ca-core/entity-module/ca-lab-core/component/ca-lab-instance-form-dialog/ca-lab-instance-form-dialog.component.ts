@@ -13,6 +13,7 @@ import {
   FlFormDialogAbstractDirective,
   FlFormDialogInput,
   FlGlobalValidators,
+  FlPlatformService,
   FlSnackBarService
 } from '@monorepo/front-core-lib';
 import {CaCountryService} from '../../../../service-api/ca-country.service';
@@ -34,7 +35,8 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
               dialogRef: MatDialogRef<CaLabInstanceFormDialogComponent>,
               @Inject(MAT_DIALOG_DATA) dialogInput: CaLabInstanceFormDialogInput,
               private labInstanceService: CaLabInstanceService,
-              private countryService: CaCountryService) {
+              private countryService: CaCountryService,
+              private platformService: FlPlatformService) {
     super(dialogInput, snackBarService, dialogRef);
   }
 
@@ -49,9 +51,7 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
     });
     this.init();
 
-    if (this.isUpdateMode()) {
-      this.onTypeChange(this.formGp.value.type);
-    }
+    this.onTypeChange(this.formGp.value.type);
   }
 
   buildForm(): FormGroup<CaLabInstanceForm> {
@@ -73,6 +73,7 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
       gwsCoreDevDbPassword: [null],
       region: [null, Validators.required],
       space: [{value: null, disabled: this.isUpdateMode()}, Validators.required],
+      onPremisePlatform: [this.platformService.isSafari() ? 'MAC' : 'WINDOWS', [Validators.required]]
     });
   }
 
@@ -89,6 +90,8 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
       this.formGp.get('serverVolumeId').enable();
       this.formGp.get('region').enable();
 
+      this.formGp.get('onPremisePlatform').disable();
+
     } else {
       this.formGp.get('virtualHost').disable();
       this.formGp.get('serverInfo').disable();
@@ -100,6 +103,8 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
       this.formGp.get('serverInstanceId').disable();
       this.formGp.get('serverVolumeId').disable();
       this.formGp.get('region').disable();
+
+      this.formGp.get('onPremisePlatform').enable();
     }
     this.formGp.updateValueAndValidity();
   }

@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query, Res} from '@nestjs/common';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstanceAggregateService} from './cn-lab-instance-aggregate.service';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
@@ -21,6 +21,9 @@ import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-u
 import {CnLabInstanceProject} from './project/cn-lab-instance-project.entity';
 import {CnExternalLabBackup, CnExternalLabBackupHistory} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {CnCpCompleteInfo} from './server/cn-cloud-provider.class';
+import {Response} from 'express';
+// import AdmZip from 'adm-zip';
+import * as AdmZip from 'adm-zip';
 
 
 @Controller('lab-instances')
@@ -367,5 +370,23 @@ export class CnLabInstancesController {
   @Delete(':id/server')
   async deleteServerInstance(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     await this.aggregateService.deleteServerInstance(id);
+  }
+
+  /////////////////////////// ON PREMISE //////////////////////////////
+  @Get(':id/on-premise/generate-config')
+  async generateOnPremiseConfig(@Param('id', new ParseUUIDPipe()) id: string,
+                                @Res() response: Response): Promise<any> {
+    const result = await this.aggregateService.generateOnPremiseConfig(id);
+
+    // create a zip file
+    const zip = new AdmZip();
+    zip.addFile('docker-compose.yml', Buffer.from(result.dockerCompose, 'utf8'));
+    zip.addFile('config.json', Buffer.from(JSON.stringify(result.config, null, 4), 'utf8'));
+    response.set({
+      'Content-Type': 'application/octet-stream',
+      'Content-Disposition': 'attachment; filename=on-premise.zip'
+    });
+    const data = zip.toBuffer();
+    response.send(data);
   }
 }

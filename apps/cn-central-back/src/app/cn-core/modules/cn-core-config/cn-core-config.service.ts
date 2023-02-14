@@ -1,4 +1,4 @@
-import {Injectable, LogLevel} from '@nestjs/common';
+import {Inject, Injectable, LogLevel} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import {
   CN_ENVIRONMENT_PROFILE_KEY,
@@ -16,12 +16,17 @@ import {
   BlTransportModuleConfig,
   blTransportQueueHub
 } from '@monorepo/back-core-lib';
+import {CN_CORE_MODULE_CONFIG, CnCoreConfigModuleConfig} from './cn-core-module-config.class';
+import {join} from 'path';
 
 
 @Injectable()
 export class CnCoreConfigService {
 
-  constructor(protected configService: ConfigService) {
+  private readonly assets = 'assets';
+
+  constructor(protected configService: ConfigService,
+              @Inject(CN_CORE_MODULE_CONFIG) private config: CnCoreConfigModuleConfig) {
   }
 
   public getEnvironmentProfile(): CnEnvironmentProfile {
@@ -212,6 +217,15 @@ export class CnCoreConfigService {
    */
   public newUserNotifReceiver(): string[] {
     return this.configService.get('NEW_USER_NOTIF_RECEIVERS').split(',');
+  }
+
+
+  public getDistPath(...path: string[]): string {
+    return join(this.config.distFolder, ...path);
+  }
+
+  public getAssetPath(...path: string[]): string {
+    return this.getDistPath(this.assets, ...path);
   }
 }
 

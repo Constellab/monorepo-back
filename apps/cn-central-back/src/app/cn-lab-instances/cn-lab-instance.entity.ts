@@ -28,6 +28,11 @@ export enum CnLabInstanceVolumeType {
   HIGH_SPEED = 'HIGH_SPEED'
 }
 
+export enum CnOnPremisePlatform {
+  LINUX = 'LINUX',
+  WINDOWS = 'WINDOWS',
+  MAC = 'MAC'
+}
 
 /**
  * A lab instance is a running lab
@@ -131,6 +136,11 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     type: 'enum', enum: CnLabInstanceVolumeType, nullable: true,
   })
   volumeType: CnLabInstanceVolumeType;
+
+  @Column({
+    type: 'enum', enum: CnOnPremisePlatform, nullable: true,
+  })
+  onPremisePlatform: CnOnPremisePlatform;
 
   // url of the api server
   @Expose()

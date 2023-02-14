@@ -84,6 +84,7 @@ export class LabProjectSelectComponent extends FlFormFieldDirective<FlFlatTreeCo
   }
 
   writeValue(obj: LabProject[]): void {
+    if (obj == null) obj = [];
     this.selectProjects(obj);
   }
 

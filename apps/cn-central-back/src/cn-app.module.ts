@@ -124,10 +124,12 @@ function configureTransportModule(
       envFilePath: join(__dirname, 'environments', 'dev.env'),
     }),
 
+    CnCoreConfigModule.forRoot({distFolder: join(__dirname)}),
+
     TypeOrmModule.forRootAsync({
       useFactory: typeOrmConfig,
       inject: [CnCoreConfigService],
-      imports: [CnCoreConfigModule],
+      imports: [],
     }),
 
     I18nModule.forRoot({

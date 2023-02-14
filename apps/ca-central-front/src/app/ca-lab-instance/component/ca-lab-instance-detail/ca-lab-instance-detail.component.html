@@ -55,7 +55,13 @@
         <mat-icon flIcon="code"></mat-icon>
         {{'codelab_info' | translate}}
       </button>
+
     </ng-container>
+    <a mat-stroked-button [href]="getOnPremiseConfigDownloadUrl(labInstance)"
+       download *ngIf="labInstance.isOnPremise">
+      <mat-icon>cloud_download</mat-icon>
+      <span>{{'download_on_premise_config' | translate}}</span>
+    </a>
 
     <button mat-stroked-button type="button" (click)="openLabConfig(labInstance)"
             class="g-button-small">

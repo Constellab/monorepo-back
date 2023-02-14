@@ -293,4 +293,10 @@ export class CaLabInstanceService {
   public updateDockerlabRepository(id: string): Observable<CaLabInstanceStatusDTO> {
     return this.apiService.put(`${this.route}/${id}/dockerlab/update`,null,  CaLabInstanceStatusDTO);
   }
+
+  //////////////////////////// ON PREMISE ////////////////////////////////
+
+  public getOnPremiseConfigDownloadUrl(id: string): string {
+    return this.apiService.getBaseRouteUrl(`${this.route}/${id}/on-premise/generate-config`)
+  }
 }

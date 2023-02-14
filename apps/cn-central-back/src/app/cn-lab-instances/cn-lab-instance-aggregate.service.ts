@@ -51,6 +51,7 @@ import {CnLabServerService} from './server/cn-lab-server.service';
 import {CnLabSshService} from './server/cn-lab-ssh.service';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
+import {CnLabInstanceOnPremiseService, CnLabOnPremiseConfig} from './on-premise/cn-lab-instance-on-premise.service';
 
 
 @Injectable()
@@ -73,7 +74,8 @@ export class CnLabInstanceAggregateService {
               private objectStorageService: CnObjectStoragesAggregateService,
               private labServerService: CnLabServerService,
               private labSshService: CnLabSshService,
-              private labConfigService: CnLabConfigsService) {
+              private labConfigService: CnLabConfigsService,
+              private onPremiseService: CnLabInstanceOnPremiseService) {
   }
 
   async create(createLabInstance: CnLabInstanceCreateDTO): Promise<CnLabInstance> {
@@ -689,6 +691,18 @@ export class CnLabInstanceAggregateService {
     }
     return labInstance;
   }
+
+  /////////////////////////// ON PREMISE //////////////////////////////
+  public async generateOnPremiseConfig(labInstanceId: string): Promise<CnLabOnPremiseConfig> {
+    const lab = await this.getAndCheckAuthorizationToFindById(labInstanceId);
+
+    if(!lab.isOnPremise()){
+      throw new BadRequestException('Lab is not on premise');
+    }
+
+    return this.onPremiseService.generateOnPremiseConfig(lab);
+  }
+
 
   //////////////////////////// AUTHORIZATION ////////////////////////////////
   private async getAndCheckAuthorizationToFindById(id: string): Promise<CnLabInstance> {

@@ -1,0 +1,181 @@
+version: "3"
+services:
+
+  glab:
+    image: registry.gitlab.com/gencovery/infra/gpm/glab-cpu:beta
+    environment:
+      - LAB_ID=${LAB_ID}
+      - LAB_NAME=${LAB_NAME}
+      - LAB_MODE=prod
+      - LAB_ENVIRONMENT=LOCAL
+      - LAB_PROD_API_URL=http://localhost:3100
+      - LAB_DEV_API_URL=http://codelab:3000
+      - CENTRAL_API_KEY=${CENTRAL_API_KEY}
+      - CENTRAL_API_URL=${CENTRAL_API_URL}
+      - FRONT_URL=http://localhost:80
+      - FRONT_VERSION=0.5.6 #TODO TO PARAMETERIZE
+      - CONDA_VERSION=latest
+      - GPU=
+      - VIRTUAL_HOST=
+      - BIOTA_BIODATA_DIR=/data/gws_biota/biodata/
+      - GWS_GIT_LOGIN=${GWS_GIT_LOGIN}
+      - GWS_GIT_PWD=${GWS_GIT_PWD}
+      - GWS_CORE_DB_PASSWORD=${GWS_CORE_PROD_DB_PASSWORD}
+      - SECRET_KEY=${SECRET_KEY}
+    depends_on:
+      - gws_core_prod_db
+      - gws_biota_db
+    volumes:
+      - lab-on-premise-lab:/lab
+      - lab-on-premise-logs:/logs
+      - lab-on-premise-data:/data
+      - lab-on-premise-settings:/conf/settings
+      - ./config.json:/conf/config.json:ro
+    networks:
+      - gencovery-network-on-premise
+    restart: on-failure:10
+    container_name: glab
+    ports:
+      - 3002:3000
+
+  # Codelab
+  codelab:
+    image: registry.gitlab.com/gencovery/infra/gpm/codelab-cpu:beta
+    environment:
+      - LAB_ID=${LAB_ID}
+      - LAB_NAME=${LAB_NAME}
+      - LAB_MODE=dev
+      - LAB_ENVIRONMENT=LOCAL
+      - LAB_PROD_API_URL=http://glab:3000
+      - LAB_DEV_API_URL=http://localhost:3101
+      - FRONT_URL=http://localhost:80
+      - FRONT_VERSION=0.5.6 #TODO TO PARAMETERIZE
+      - CONDA_VERSION=latest
+      - GPU=
+      - VIRTUAL_HOST=
+      - BIOTA_BIODATA_DIR=/data/gws_biota/biodata/
+      - GWS_GIT_LOGIN=${GWS_GIT_LOGIN}
+      - GWS_GIT_PWD=${GWS_GIT_PWD}
+      - GWS_CORE_DB_PASSWORD=${GWS_CORE_DEV_DB_PASSWORD}
+      - SECRET_KEY=${SECRET_KEY}
+    depends_on:
+      - gws_core_dev_db
+      - gws_biota_db
+    volumes:
+      - lab-on-premise-dev-lab:/lab
+      - lab-on-premise-dev-logs:/logs
+      - lab-on-premise-dev-data:/data
+      - lab-on-premise-dev-settings:/conf/settings
+      - ./config.json:/conf/config.json:ro
+    networks:
+      - gencovery-network-on-premise
+    container_name: codelab
+    ports:
+      - 8081:8080
+      - 3101:3000
+
+
+  # Front
+  front:
+    image: registry.gitlab.com/gencovery/core/monorepo/lab-front:0.5.6  #TODO TO PARAMETERIZE
+    environment:
+      - API_URL=http://localhost:3102/
+      - LAB_PROD_API_URL=http://localhost:3102/
+      - LAB_DEV_API_URL=http://localhost:3101/
+      - CODE_SERVER_URL=http://localhost:8081
+      - VIRTUAL_HOST=
+      - CENTRAL_FRONT_URL=${CENTRAL_FRONT_URL}
+      - CENTRAL_API_URL=${CENTRAL_API_URL}
+      - HUB_FRONT_URL=${HUB_FRONT_URL}
+    networks:
+      - gencovery-network-on-premise
+    container_name: front
+    ports:
+      - 80:81
+
+  # GWS Core Production DB
+  gws_core_prod_db:
+    image: mariadb:10.7.4
+    command: --max_allowed_packet=256M
+    environment:
+      - MYSQL_ROOT_PASSWORD=${GWS_CORE_PROD_DB_PASSWORD}
+      - MYSQL_USER=gws_core
+      - MYSQL_PASSWORD=${GWS_CORE_PROD_DB_PASSWORD}
+      - MYSQL_DATABASE=gws_core
+    volumes:
+      - lab-on-premise-gws-core-prod-db:/var/lib/mysql
+    networks:
+      - gencovery-network-on-premise
+    container_name: gws_core_prod_db
+    ports:
+      - 3406:3306
+
+  # GWS Core Development DB
+  gws_core_dev_db:
+    image: mariadb:10.7.4
+    command: --max_allowed_packet=256M
+    environment:
+      - MYSQL_ROOT_PASSWORD=${GWS_CORE_DEV_DB_PASSWORD}
+      - MYSQL_USER=gws_core
+      - MYSQL_PASSWORD=${GWS_CORE_DEV_DB_PASSWORD}
+      - MYSQL_DATABASE=gws_core
+    volumes:
+      - lab-on-premise-gws-core-dev-db:/var/lib/mysql
+    networks:
+      - gencovery-network-on-premise
+    container_name: gws_core_dev_db
+    ports:
+      - 3407:3306
+
+  # GWS Test db
+  test_gws_dev_db:
+    image: mariadb:10.7.4
+    command: --max_allowed_packet=256M
+    environment:
+      - MYSQL_ROOT_PASSWORD=gencovery
+      - MYSQL_USER=test_gws
+      - MYSQL_PASSWORD=gencovery
+      - MYSQL_DATABASE=test_gws
+    volumes:
+      - lab-on-premise-test-gws-dev-db:/var/lib/mysql
+    networks:
+      - gencovery-network-on-premise
+    container_name: test_gws_dev_db
+    ports:
+      - 3408:3306
+
+  # GWS Biota Production DB
+  gws_biota_db:
+    image: mariadb:10.7.4
+    command: --max_allowed_packet=256M
+    environment:
+      - MYSQL_ROOT_PASSWORD=gencovery
+      - MYSQL_USER=gws_biota
+      - MYSQL_PASSWORD=gencovery
+      - MYSQL_DATABASE=gws_biota
+    volumes:
+      - lab-on-premise-gws-biota-db:/var/lib/mysql
+    networks:
+      - gencovery-network-on-premise
+    container_name: gws_biota_db
+    ports:
+      - 3409:3306
+
+volumes:
+  lab-on-premise-lab:
+  lab-on-premise-logs:
+  lab-on-premise-data:
+  lab-on-premise-settings:
+  lab-on-premise-dev-lab:
+  lab-on-premise-dev-logs:
+  lab-on-premise-dev-data:
+  lab-on-premise-dev-settings:
+  lab-on-premise-gws-core-prod-db:
+  lab-on-premise-gws-core-dev-db:
+  lab-on-premise-test-gws-dev-db:
+  lab-on-premise-gws-biota-db:
+
+
+networks:
+  gencovery-network-on-premise:
+    external: false

@@ -6,7 +6,6 @@ import {SnDatabaseConfig} from './model/sn-config.class';
 import {SnDocElasticsearchService} from './service/sn-doc-elasticsearch.service';
 import {SnDataImporterService} from './service/sn-data-importer.service';
 import {SnDocService} from './service/sn-doc.service';
-import {CnCoreConfigModule} from '../cn-core/modules/cn-core-config/cn-core-config.module';
 import {SnCoreConfigService} from '../cn-core/modules/cn-core-config/sn-core-config.service';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {SnSmartDbEntity} from './model/sn-smart-db.entity';
@@ -32,7 +31,7 @@ function elasticSearchConfig(configService: SnCoreConfigService): ElasticsearchM
     ElasticsearchModule.registerAsync({
       useFactory: elasticSearchConfig,
       inject: [SnCoreConfigService],
-      imports: [CnCoreConfigModule]
+      imports: []
     }),
     TypeOrmModule.forFeature([SnSmartDbEntity]),
     CnGroupsModule,

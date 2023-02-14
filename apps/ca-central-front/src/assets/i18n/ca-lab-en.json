@@ -190,5 +190,7 @@
   "lab_instance_type_CLOUD": "Cloud",
   "lab_instance_type_CLOUD_desc": "The lab is hosted on the cloud, secured, accessible from anywhere, automatically backed up and includes supports.",
   "lab_instance_type_ON_PREMISE": "On premise",
-  "lab_instance_type_ON_PREMISE_desc": "The lab is hosted on your computer, accessible from your computer only, not backed up and does not include supports."
+  "lab_instance_type_ON_PREMISE_desc": "The lab is hosted on your computer, accessible from your computer only, not backed up and does not include supports.",
+  "download_on_premise_config": "Download lab config",
+  "lab_on_premise_platform": "Platform"
 }

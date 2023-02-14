@@ -42,4 +42,8 @@ export class CaLabInstanceDetailComponent implements OnInit {
     this.dialogService.openSmallDialog(CaLabConfigDialogComponent, {data: input});
   }
 
+  getOnPremiseConfigDownloadUrl(labInstance: CaLabInstance): string {
+    return this.labInstanceService.getOnPremiseConfigDownloadUrl(labInstance.id);
+  }
+
 }

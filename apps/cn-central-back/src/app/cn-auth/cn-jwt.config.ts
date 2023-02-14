@@ -1,4 +1,4 @@
-const tokenDurationInSeconds: number = 60 * 60 * 24; // duration of the token in seconds
+const tokenDurationInSeconds: number = 60 * 60 * 24 * 2; // duration of the token in seconds, 2 days
 
 export const cnJwtConfig = {
   tokenDurationInSeconds: tokenDurationInSeconds, // duration of the token in seconds

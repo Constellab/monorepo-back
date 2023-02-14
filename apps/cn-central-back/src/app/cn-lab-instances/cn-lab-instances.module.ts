@@ -26,6 +26,7 @@ import {CnOvhService} from './server/ovh/cn-ovh.service';
 import {CnLabServerService} from './server/cn-lab-server.service';
 import {CnCloudProviderOvhService} from './server/ovh/cn-cloud-provider-ovh.service';
 import {CnLabSshService} from './server/cn-lab-ssh.service';
+import {CnLabInstanceOnPremiseService} from './on-premise/cn-lab-instance-on-premise.service';
 
 @Module({
   imports: [
@@ -60,7 +61,8 @@ import {CnLabSshService} from './server/cn-lab-ssh.service';
     CnLabServerService,
     CnOvhService,
     CnCloudProviderOvhService,
-    CnLabSshService
+    CnLabSshService,
+    CnLabInstanceOnPremiseService,
   ],
   exports: [
     CnLabInstancesService,

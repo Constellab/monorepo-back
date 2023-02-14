@@ -17,6 +17,7 @@ export type CaLabInstanceStatus = 'RUNNING' | 'STOPPED' | 'STARTING' | 'STOPPING
 export type CaLabInstanceBillingMode = 'HOURLY' | 'MONTHLY';
 export type CaLabInstanceVolumeType = 'CLASSIC' | 'HIGH_SPEED';
 export type CaLabInstanceType = 'CLOUD' | 'ON_PREMISE';
+export type CaLabOnPromisePlatform = 'WINDOWS' | 'LINUX' | 'MAC';
 
 export const caLabInstanceStatusDict: FlStatusDict<CaLabInstanceStatus> = {
   RUNNING: FlStatusHelper.getRunningStatus('RUNNING'),
@@ -69,6 +70,7 @@ export class CaLabInstance extends CaBaseEntity {
   serverVolumeId?: string;
   gwsCoreProdDbPassword?: string;
   gwsCoreDevDbPassword?: string;
+  onPremisePlatform?: CaLabOnPromisePlatform;
 
   public isRunning(): boolean {
     return this.currentStatus.status.value === 'RUNNING';
@@ -126,6 +128,7 @@ export class CaLabInstanceForm {
 
   @Type(() => CaSpace)
   space: CaSpace;
+  onPremisePlatform: CaLabOnPromisePlatform;
 }
 
 export class CaLabInstanceFindOneDto {
