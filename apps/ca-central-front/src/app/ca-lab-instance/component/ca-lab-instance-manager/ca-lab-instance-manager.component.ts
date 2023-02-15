@@ -4,7 +4,8 @@ import {distinct, Observable, throwError} from 'rxjs';
 import {CaLabComposeUpOptions, CaLabManagerStatus} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
 import {FlDialogService, FlPortalActionsService} from '@monorepo/front-core-lib';
 import {
-  CaLabInstanceDockerUpFormComponent
+  CaLabInstanceDockerUpFormComponent,
+  CaLabInstanceDockerUpFormInput
 } from '../ca-lab-instance-docker-up-form/ca-lab-instance-docker-up-form.component';
 import {
   CaLabInstanceStatusDialogComponent
@@ -77,7 +78,7 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
   }
 
   upContainers(): void {
-    this.openLabUpForm().subscribe(
+    this.openLabUpForm({mode: 'start'}).subscribe(
       formValue => {
         if (formValue) {
           this.actionService.addAction({
@@ -91,7 +92,7 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
   }
 
   restartContainers(): void {
-    this.openLabUpForm().subscribe(
+    this.openLabUpForm({mode: 'restart'}).subscribe(
       formValue => {
         if (formValue) {
           this.actionService.addAction({
@@ -104,8 +105,8 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
     );
   }
 
-  private openLabUpForm(): Observable<CaLabComposeUpOptions> {
-    return this.dialogService.openSmallDialog(CaLabInstanceDockerUpFormComponent).afterClosed();
+  private openLabUpForm(mode: CaLabInstanceDockerUpFormInput): Observable<CaLabComposeUpOptions> {
+    return this.dialogService.openSmallDialog(CaLabInstanceDockerUpFormComponent, {data: mode}).afterClosed();
   }
 
   downContainers(): void {

@@ -8,6 +8,7 @@ import {
   cnExternalLabApiKeySchema
 } from '../cn-core/model/config/cn-config.class';
 import {
+  CnLabComposeRestartOptions,
   CnLabComposeUpOptions,
   CnLabDockerPs,
   CnLabManagerConfigDTO,
@@ -60,7 +61,7 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/up-containers`, options));
   }
 
-  public async restartContainers(apiInfo: CnExternalApiInfo, options?: CnLabComposeUpOptions): Promise<void> {
+  public async restartContainers(apiInfo: CnExternalApiInfo, options?: CnLabComposeRestartOptions): Promise<void> {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/restart-containers`, options));
   }
 

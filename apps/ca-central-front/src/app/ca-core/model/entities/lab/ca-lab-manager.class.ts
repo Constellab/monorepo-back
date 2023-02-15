@@ -50,6 +50,11 @@ export interface CaLabComposeUpOptions {
   pruneSystem?: boolean;
 }
 
+export interface CaLabComposeRestartOptions extends CaLabComposeUpOptions{
+  destroyContainers?: boolean; // if true container will be destroyed and recreated
+}
+
+
 export type CaLabTaskStatus = 'RUNNING' | 'SUCCESS' | 'ERROR';
 
 const caLabTaskStatusDict: FlStatusDict<CaLabTaskStatus> = {

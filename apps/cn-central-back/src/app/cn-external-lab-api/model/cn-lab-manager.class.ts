@@ -26,6 +26,10 @@ export interface CnLabComposeUpOptions {
   pruneSystem?: string;
 }
 
+export interface CnLabComposeRestartOptions extends CnLabComposeUpOptions{
+  destroyContainers?: boolean; // if true container will be destroyed and recreated
+}
+
 export type CnLabTaskStatus = 'RUNNING' | 'SUCCESS' | 'ERROR';
 
 export interface CnLabTaskStatusInfo {

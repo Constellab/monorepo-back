@@ -1,5 +1,6 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {
+  CnLabComposeRestartOptions,
   CnLabComposeUpOptions,
   CnLabDockerPs,
   CnLabManagerInitConfig,
@@ -69,7 +70,7 @@ export class CnLabManagerService {
     return this.labManagerApiService.upContainers(labInstance.getLabManagerApiInfo(), options);
   }
 
-  public async restartContainers(labInstance: CnLabInstance, options?: CnLabComposeUpOptions): Promise<void> {
+  public async restartContainers(labInstance: CnLabInstance, options?: CnLabComposeRestartOptions): Promise<void> {
     return this.labManagerApiService.restartContainers(labInstance.getLabManagerApiInfo(), options);
   }
 

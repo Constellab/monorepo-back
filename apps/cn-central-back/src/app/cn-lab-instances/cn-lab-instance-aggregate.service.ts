@@ -12,6 +12,7 @@ import {
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {
+  CnLabComposeRestartOptions,
   CnLabComposeUpOptions,
   CnLabDockerPs,
   CnLabManagerStatus
@@ -416,7 +417,7 @@ export class CnLabInstanceAggregateService {
     return this.labManagerService.upContainers(labInstance, options);
   }
 
-  public async restartContainers(labId: string, options?: CnLabComposeUpOptions): Promise<void> {
+  public async restartContainers(labId: string, options?: CnLabComposeRestartOptions): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.restartContainers(labInstance, options);
   }

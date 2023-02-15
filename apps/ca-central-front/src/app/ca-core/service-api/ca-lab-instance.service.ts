@@ -21,6 +21,7 @@ import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {
   CaExternalLabBackup,
   CaExternalLabBackupHistory,
+  CaLabComposeRestartOptions,
   CaLabComposeUpOptions,
   CaLabDockerPs,
   CaLabManagerConfig,
@@ -206,7 +207,7 @@ export class CaLabInstanceService {
     return this.apiService.post(`${this.route}/${id}/lab-manager/up-containers`, options);
   }
 
-  public restartContainers(id: string, options: CaLabComposeUpOptions): Observable<void> {
+  public restartContainers(id: string, options: CaLabComposeRestartOptions): Observable<void> {
     return this.apiService.post(`${this.route}/${id}/lab-manager/restart-containers`, options);
   }
 

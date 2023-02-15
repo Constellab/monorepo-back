@@ -12,6 +12,7 @@ import {
   CnLabInstanceStatusDTO,
 } from './cn-lab-instance.dto';
 import {
+  CnLabComposeRestartOptions,
   CnLabComposeUpOptions,
   CnLabDockerPs,
   CnLabManagerStatus
@@ -270,7 +271,7 @@ export class CnLabInstancesController {
 
   @Post(':id/lab-manager/restart-containers')
   async restartContainers(@Param('id', new ParseUUIDPipe()) id: string,
-                          @Body() options: CnLabComposeUpOptions): Promise<void> {
+                          @Body() options: CnLabComposeRestartOptions): Promise<void> {
     return await this.aggregateService.restartContainers(id, options);
   }
 

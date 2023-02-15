@@ -1,5 +1,5 @@
 <fl-dialog-header>
-  {{'lab_manager_compose_up_form' | translate}}
+  {{title | translate}}
 </fl-dialog-header>
 
 <mat-dialog-content>
@@ -17,6 +17,13 @@
     <div>
       <mat-checkbox formControlName="pruneSystem">
         {{'lab_prune_system' | translate}}
+      </mat-checkbox>
+    </div>
+
+    <!--  Docker destroy container  -->
+    <div *ngIf="isRestart">
+      <mat-checkbox formControlName="destroyContainers">
+        {{'lab_restart_destroy_containers' | translate}}
       </mat-checkbox>
     </div>
   </form>
