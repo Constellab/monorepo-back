@@ -1,26 +1,36 @@
 import {Injectable} from '@nestjs/common';
 import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 import {existsSync, readFileSync} from 'fs';
-import {CnLabInstance} from '../cn-lab-instance.entity';
+import {CnLabInstance, CnLabOnPremisePlatform} from '../cn-lab-instance.entity';
 import {CnFrontService} from '../../cn-core/services/cn-front.service';
+import {HttpService} from '@nestjs/axios';
+import {lastValueFrom} from 'rxjs';
+import {BlBadRequestException} from '@monorepo/back-core-lib';
 
 export interface CnLabOnPremiseConfig {
   dockerCompose: string;
   config: any;
+  exeFile: { name: string, buffer: Buffer };
 }
 
 
 @Injectable()
 export class CnLabInstanceOnPremiseService {
 
+  private static readonly WINDOWS_EXE_FILE =
+    'https://storage.sbg.cloud.ovh.net/v1/AUTH_a0286631d7b24afba3f3cdebed2992aa/public/on-premise-start.exe';
+
   constructor(private configService: CnCoreConfigService,
-              private frontService: CnFrontService) {
+              private frontService: CnFrontService,
+              private httpService: HttpService) {
   }
 
-  public generateOnPremiseConfig(labInstance: CnLabInstance): CnLabOnPremiseConfig {
+  public async generateOnPremiseConfig(labInstance: CnLabInstance): Promise<CnLabOnPremiseConfig> {
+    const exe = await this.getExeFile(labInstance.onPremisePlatform);
     return {
       dockerCompose: this.generateDockerCompose(labInstance),
-      config: this.getConfig()
+      config: this.getConfig(),
+      exeFile: exe
     };
   }
 
@@ -66,6 +76,7 @@ export class CnLabInstanceOnPremiseService {
             'source': 'https://$GWS_GIT_LOGIN:$GWS_GIT_PWD@gitlab.com/gencovery/core',
             'packages': [
               {'name': 'gws_core', 'version': '0.4.7', 'is_brick': true},
+              {'name': 'gws_biota', 'version': '0.4.5', 'is_brick': true},
               {'name': 'skeleton', 'version': '0.1.0', 'is_brick': true}
             ]
           }
@@ -73,7 +84,32 @@ export class CnLabInstanceOnPremiseService {
         'variables': {}
       }
     };
+  }
 
+  /**
+   * Get the exe file used to start the lab
+   * @param platform
+   * @private
+   */
+  private async getExeFile(platform: CnLabOnPremisePlatform): Promise<{ name: string, buffer: Buffer }> {
+    let name: string = null;
+    let url: string = null;
+
+    switch (platform) {
+      case CnLabOnPremisePlatform.WINDOWS:
+        name = 'on-premise-start.exe';
+        url = CnLabInstanceOnPremiseService.WINDOWS_EXE_FILE;
+        break;
+      default:
+        throw new BlBadRequestException(`Platform '${platform}' is not supported`);
+    }
+
+    // download the exe form url https://storage.sbg.cloud.ovh.net/v1/AUTH_a0286631d7b24afba3f3cdebed2992aa/public
+    const response = await lastValueFrom(this.httpService.get(url, {responseType: 'arraybuffer'}));
+    return {
+      name: name,
+      buffer: Buffer.from(response.data, 'binary')
+    };
   }
 
   private readDockerComposeTemplate(): string {

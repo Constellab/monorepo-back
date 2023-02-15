@@ -382,6 +382,7 @@ export class CnLabInstancesController {
     const zip = new AdmZip();
     zip.addFile('docker-compose.yml', Buffer.from(result.dockerCompose, 'utf8'));
     zip.addFile('config.json', Buffer.from(JSON.stringify(result.config, null, 4), 'utf8'));
+    zip.addFile(result.exeFile.name, result.exeFile.buffer);
     response.set({
       'Content-Type': 'application/octet-stream',
       'Content-Disposition': 'attachment; filename=on-premise.zip'

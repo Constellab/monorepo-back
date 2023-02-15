@@ -13,7 +13,7 @@ import {
   CnLabInstanceBillingMode,
   CnLabInstanceType,
   CnLabInstanceVolumeType,
-  CnOnPremisePlatform
+  CnLabOnPremisePlatform
 } from './cn-lab-instance.entity';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
@@ -38,7 +38,7 @@ export class CnLabInstanceDto extends BlBaseEntityDto {
   billingMode: CnLabInstanceBillingMode = undefined;
   volumeType: CnLabInstanceVolumeType = undefined;
   volumeSize: number = undefined;
-  onPremisePlatform?: CnOnPremisePlatform = undefined;
+  onPremisePlatform?: CnLabOnPremisePlatform = undefined;
 }
 
 /**
@@ -102,7 +102,7 @@ export class CnLabInstanceCreateDTO {
 
   serverInstanceId: string;
   serverVolumeId: string;
-  onPremisePlatform?: CnOnPremisePlatform;
+  onPremisePlatform?: CnLabOnPremisePlatform;
 }
 
 export interface CnLabInstanceStatusDTO {

@@ -154,7 +154,7 @@ services:
       - MYSQL_PASSWORD=gencovery
       - MYSQL_DATABASE=gws_biota
     volumes:
-      - lab-on-premise-gws-biota-db:/var/lib/mysql
+      - ./mariadb:/var/lib/mysql
     networks:
       - gencovery-network-on-premise
     container_name: gws_biota_db
@@ -173,7 +173,6 @@ volumes:
   lab-on-premise-gws-core-prod-db:
   lab-on-premise-gws-core-dev-db:
   lab-on-premise-test-gws-dev-db:
-  lab-on-premise-gws-biota-db:
 
 
 networks:

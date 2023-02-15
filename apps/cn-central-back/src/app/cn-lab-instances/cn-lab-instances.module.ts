@@ -27,6 +27,7 @@ import {CnLabServerService} from './server/cn-lab-server.service';
 import {CnCloudProviderOvhService} from './server/ovh/cn-cloud-provider-ovh.service';
 import {CnLabSshService} from './server/cn-lab-ssh.service';
 import {CnLabInstanceOnPremiseService} from './on-premise/cn-lab-instance-on-premise.service';
+import {HttpModule} from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -49,6 +50,8 @@ import {CnLabInstanceOnPremiseService} from './on-premise/cn-lab-instance-on-pre
     CnExperimentsModule,
     CnReportsModule,
     CnObjectStoragesModule,
+
+    HttpModule,
   ],
   providers: [
     CnLabInstancesService,
