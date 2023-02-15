@@ -35,7 +35,8 @@ async function bootstrap(): Promise<void> {
       urls: [blGetRabbitMQUrl(process.env[CN_RABBITMQ_USER_KEY], process.env[CN_RABBITMQ_PASSWORD_KEY], process.env[CN_RABBITMQ_URL_KEY], process.env[CN_RABBITMQ_PORT_KEY])],
       queue: blTransportQueueHub,
       queueOptions: {
-        durable: false
+        durable: true,
+        deliveryMode: 2 // enable persistent messaging
       },
     },
   });

@@ -8,6 +8,7 @@ import {
   CaMySpacesPortalComponent
 } from './component/ca-my-spaces-portal/ca-my-spaces-portal.component';
 import {CaSpaceCoreModule} from '../ca-core/entity-module/ca-space-core/ca-space-core.module';
+import {MatBadgeModule} from "@angular/material/badge";
 
 /**
  * Main modules tha manage the pages once the user is connected
@@ -17,17 +18,18 @@ import {CaSpaceCoreModule} from '../ca-core/entity-module/ca-space-core/ca-space
     CaMainAppComponent,
     CaMySpacesPortalComponent
   ],
-  imports: [
-    CommonModule,
+    imports: [
+        CommonModule,
 
-    CaCoreModule,
-    CaSpaceCoreModule,
+        CaCoreModule,
+        CaSpaceCoreModule,
 
-    // routing
-    CaMainRoutingModule,
-    CaCoreModule,
-    CaNotificationsModule
-  ]
+        // routing
+        CaMainRoutingModule,
+        CaCoreModule,
+        CaNotificationsModule,
+        MatBadgeModule
+    ]
 })
 export class CaMainModule {
 }

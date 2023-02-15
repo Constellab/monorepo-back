@@ -24,6 +24,6 @@ export class HaStoryGuard implements CanActivate {
       return this.router.createUrlTree([CaRouterService.getLoginRoute()]);
     }
     const storyId = this.activatedRoute.snapshot.params.id;
-    return this.authUserService.isAdmin() || this.storyService.isStoryOwner(storyId);
+    return this.authUserService.isAdmin() || this.storyService.isStoryOwnerOrCoAuthor(storyId);
   }
 }

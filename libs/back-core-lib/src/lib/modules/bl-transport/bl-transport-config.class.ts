@@ -23,3 +23,5 @@ export function blGetRabbitMQUrl(username: string, password: string, url: string
 }
 
 export const blTransportQueueHub = 'hub_queue';
+
+export const blTransportQueueConstellabUser = 'constellab_user';

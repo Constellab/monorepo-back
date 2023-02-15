@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {HnUserService} from '../users/hn-user.service';
 import {CmCredentials, CmCredentials2Fa} from '@monorepo/common-model';
 import {BlJwtService} from '@monorepo/back-core-lib';
-import {HnUser} from '../users/hn-user.entity';
+import {HnUser, HnUserConstellabDTO} from '../users/hn-user.entity';
 import {HnCentralAuthService} from './hn-central-auth.service';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 
@@ -28,8 +28,13 @@ export class HnAuthService {
         : await this.centralAuthService.checkUserCredentialAndAdmin(credentials);
 
     // if there is no 2FA, the user can be logged in
-    if (checkCredential.status === 'OK') {
-      const user: HnUser = await this.createOrUpdateUser(checkCredential.user);
+    if (checkCredential.status === 'OK' && checkCredential.user) {
+      let user: HnUser = await this.userService.findOne(checkCredential.user.id);
+
+      if(!user) {
+        await this.userService.createOrUpdate(checkCredential.user);
+        user = await this.userService.findOne(checkCredential.user.id);
+      }
 
       const token = this.jwtService.generateToken(user.id, user.email);
       return {
@@ -46,14 +51,19 @@ export class HnAuthService {
 
   async loginWith2FA(credentials: CmCredentials2Fa): Promise<string> {
     const user: HnUser = await this.centralAuthService.check2FA(credentials);
-    const dbUser = await this.createOrUpdateUser(user);
+    let dbUser = await this.userService.findOne(user.id);
+
+    if(!dbUser) {
+      await this.userService.createOrUpdate(user);
+      dbUser = await this.userService.findOne(user.id);
+    }
 
     return this.jwtService.generateToken(dbUser.id, dbUser.email);
   }
 
 
-  async createOrUpdateUser(userFromCentral: HnUser): Promise<HnUser> {
-    const user: HnUser = new HnUser();
+  async createOrUpdateUser(userFromCentral: HnUser): Promise<void> {
+    const user: HnUserConstellabDTO = new HnUserConstellabDTO();
     user.id = userFromCentral.id;
     user.firstname = userFromCentral.firstname;
     user.lastname = userFromCentral.lastname;

@@ -84,6 +84,8 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
       error => this.logger.error('Error while sending create account notification: ' + error)
     );
 
+    this.usersService.sendUserToTransport(dbUser);
+
     return dbUser;
   }
 

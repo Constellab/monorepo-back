@@ -35,7 +35,7 @@
         <div class="story-content">
           <h5>{{story.title}}</h5>
           <p>{{story.firstParagraph}}</p>
-          <fl-user-inline [user]="story.createdBy" class="small-text" [showPopUp]="false"></fl-user-inline>
+          <fl-user-inline [user]="story.getAuthor()" class="small-text" [showPopUp]="false"></fl-user-inline>
           <p class="small-text">
             {{(story.publishedAt < story.lastModifiedAt ? 'last_modified' : 'published') | translate}} :
             {{(story.publishedAt < story.lastModifiedAt ? story.lastModifiedAt : story.publishedAt) | flDate:'DATETIME_MED'}}

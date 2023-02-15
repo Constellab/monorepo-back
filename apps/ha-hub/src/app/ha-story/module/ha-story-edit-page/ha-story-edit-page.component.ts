@@ -4,7 +4,7 @@ import {HaStory, HaStoryContentFormDTO} from '../../../ha-core/ha-model/ha-entit
 import {ActivatedRoute} from '@angular/router';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
-import {FlConfirmDialogInput, FlDebouncer, FlDialogService} from '@monorepo/front-core-lib';
+import {FlConfirmDialogInput, FlDebouncer, FlDialogService, FlFormDialogInput} from '@monorepo/front-core-lib';
 import {HaStoryTextEditorConfig} from './ha-story-text-editor.config';
 import {mergeMap, Observable, of, startWith} from 'rxjs';
 import {HaTopic, HaTopicDto} from '../../../ha-core/ha-model/ha-entities/ha-topic.class';
@@ -12,6 +12,9 @@ import {HaTopicService} from '../../../ha-core/ha-service/ha-topic.service';
 import {map} from 'rxjs/operators';
 import {FormControl} from '@angular/forms';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
+import {HaAuthenticatedUserService} from '../../../ha-core/ha-service/ha-authenticated-user.service';
+import {HaUser} from '../../../ha-core/ha-model/ha-entities/ha-user';
+import {HaStoryCoAuthorDialogComponent} from '../ha-story-co-author-dialog/ha-story-co-author-dialog.component';
 
 @Component({
   selector: 'ha-ha-story-edit-page',
@@ -50,7 +53,8 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
     private storyService: HaStoryService,
     private activatedRoute: ActivatedRoute,
     private dialogService: FlDialogService,
-    private topicService: HaTopicService
+    private topicService: HaTopicService,
+    private authenticatedUserService: HaAuthenticatedUserService
   ) {
   }
 
@@ -219,5 +223,26 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
 
   onSelectTopic(event: MatAutocompleteSelectedEvent): void {
     this.addTopicToStory(event.option.value).subscribe();
+  }
+
+  isAuthor(): Observable<boolean> {
+    return this.authenticatedUserService.getUser().pipe(
+      mergeMap((user: HaUser) => {
+        return of(user.id === this.story.getAuthor().id);
+      })
+    );
+  }
+
+  openCoAuthorDialog(): void {
+    const input: FlFormDialogInput<HaStory> = {
+      mode: 'update',
+      object: this.story
+    }
+
+    this.dialogService.openSmallDialog(HaStoryCoAuthorDialogComponent, {data: input}).afterClosed().subscribe((res) => {
+      if (res && res.choice && res.result) {
+        this.story = res.result;
+      }
+    });
   }
 }

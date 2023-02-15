@@ -1,0 +1,12 @@
+<ng-container *ngIf="invite">
+
+  <div class="invite-div">
+    <h4>{{invite.createdBy.fullname}} {{'invite_text' | translate}} {{invite.story.title}}</h4>
+
+    <button mat-flat-button type="button" (click)="acceptInvite()" [disabled]="isLoading">
+      {{'become_coauthor' | translate}}
+      <fl-loader *ngIf="isLoading" class="loader" [size]="20"></fl-loader>
+    </button>
+  </div>
+
+</ng-container>

@@ -114,5 +114,14 @@
   "bricks_description": "Acceder aux documentations techniques des bricks",
   "stories_description": "Lire et partager des tutoriels, use cases et articles",
   "copyright": "Copyright © 2023 Gencovery Inc. Tous droits réservés.",
-  "related_tags": "Tags associés"
+  "related_tags": "Tags associés",
+  "constellab_description": "Votre constellation de laboratoires numériques pour renforcer la R&D collaborative",
+  "add_coauthors": "Ajouter des co-auteurs",
+  "coauthors": "Co-auteurs",
+  "coauthors_updated_successfully": "Co-auteurs mis à jour avec succès",
+  "remove_coauthor": "Retirer le co-auteur",
+  "remove_coauthor_dialog_content": "Êtes-vous sûr de vouloir retirer ce co-auteur ?",
+  "remove_coauthor_success": "Co-auteur retiré avec succès",
+  "become_coauthor": "Devenir co-auteur",
+  "invite_text": "vous invite à devenir co-auteur de la story"
 }

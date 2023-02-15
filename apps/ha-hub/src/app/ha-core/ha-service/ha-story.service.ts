@@ -13,6 +13,7 @@ import {ClPage} from '@monorepo/core-lib';
 import {CmRichTextI} from '@monorepo/common-model';
 import {map} from 'rxjs/operators';
 import {HaTopic, HaTopicDto} from '../ha-model/ha-entities/ha-topic.class';
+import {HaStoryAuthorInvite} from '../ha-model/ha-entities/ha-story-author-invite.class';
 
 
 @Injectable({
@@ -150,8 +151,8 @@ export class HaStoryService {
    * Check if the current user is the story owner
    * @param storyId story id
    */
-  isStoryOwner(storyId: string): Observable<boolean> {
-    return this.apiService.get(`${this.route}/${storyId}/is-owner`, Boolean);
+  isStoryOwnerOrCoAuthor(storyId: string): Observable<boolean> {
+    return this.apiService.get(`${this.route}/${storyId}/is-owner-or-co-author`, Boolean);
   }
 
   /***
@@ -165,5 +166,37 @@ export class HaStoryService {
 
   removeTopicFromStory(topicId: string, storyId: string): Observable<any> {
     return this.apiService.put(`${this.route}/${storyId}/remove-topic/${topicId}`, {});
+  }
+
+  /***
+   * Update story co-authors
+   * @param storyId story id
+   * @param coAuthors co authors mails
+   */
+  updateStoryCoAuthors(storyId: string, coAuthors: string[]): Observable<HaStory> {
+    return this.apiService.put(`${this.route}/${storyId}/co-authors`, coAuthors, HaStory);
+  }
+
+  /***
+   * Remove story co-author
+   * @param storyId story id
+   * @param coAuthor co author id
+   */
+  removeStoryCoAuthor(storyId: string, coAuthorId: string): Observable<HaStory> {
+    return this.apiService.put(`${this.route}/${storyId}/remove-co-author/${coAuthorId}`, {}, HaStory);
+  }
+
+  /***
+   * Check if invitation is valid
+   */
+  isInvitationValid(token: string): Observable<HaStoryAuthorInvite> {
+    return this.apiService.get(`${this.route}/invite/${token}/is-valid`, HaStoryAuthorInvite);
+  }
+
+  /***
+   * Accept invitation
+   */
+  acceptInvite(token: string): Observable<HaStory> {
+    return this.apiService.put(`${this.route}/invite/${token}/accept`, {});
   }
 }

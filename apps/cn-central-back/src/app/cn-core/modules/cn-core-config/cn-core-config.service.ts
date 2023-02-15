@@ -14,7 +14,7 @@ import {
   BlMailConfig,
   BlObjectStorageCredentials,
   BlTransportModuleConfig,
-  blTransportQueueHub
+  blTransportQueueConstellabUser
 } from '@monorepo/back-core-lib';
 import {CN_CORE_MODULE_CONFIG, CnCoreConfigModuleConfig} from './cn-core-module-config.class';
 import {join} from 'path';
@@ -110,7 +110,7 @@ export class CnCoreConfigService {
 
   public getTransportModuleConfig(): BlTransportModuleConfig {
     return {
-      queue: blTransportQueueHub,
+      queue: blTransportQueueConstellabUser,
       username: this.configService.get(CN_RABBITMQ_USER_KEY),
       password: this.configService.get(CN_RABBITMQ_PASSWORD_KEY),
       url: this.configService.get(CN_RABBITMQ_URL_KEY),

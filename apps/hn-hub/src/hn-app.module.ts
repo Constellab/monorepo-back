@@ -20,6 +20,8 @@ import {
   BlJwtConfig,
   BlJwtModule,
   BlLoggerConfig,
+  BlMailModule,
+  BlMailModuleConfig,
   BlObjectStorageModule,
   BlRequestContextMiddleware,
   BlTransportModule,
@@ -46,7 +48,8 @@ import { HnBrickVersionReferenceModule } from './app/brick-version-reference/hn-
 import { HnDatabaseConfig } from './app/core/model/config/hn-database-config.class';
 import { HnStoryModule } from './app/story/hn-story.module';
 import { HnTopicModule } from './app/topic/hn-topic.module';
-
+import { HnStoryAuthorModule } from './app/story-author/hn-story-author.module';
+import { HnStoryAuthorInviteModule } from './app/story-author-invite/hn-story-author-invite.module';
 
 function typeOrmConfig(
   configService: HnCoreConfigService
@@ -97,6 +100,15 @@ function configureTransportModule(
   return configService.getTransportModuleConfig();
 }
 
+function configureMailModule(
+  configService: HnCoreConfigService
+): BlMailModuleConfig {
+  return {
+    mailConfig: configService.getMailConfig(),
+    templateFolder: join(__dirname, 'assets/templates/'),
+  };
+}
+
 @Module({
   imports: [
     // let the config module on top of the imports
@@ -139,6 +151,12 @@ function configureTransportModule(
       inject: [HnCoreConfigService],
     }),
 
+    BlMailModule.forRootAsync({
+      imports: [HnCoreModule],
+      useFactory: configureMailModule,
+      inject: [HnCoreConfigService],
+    }),
+
     HnCoreModule,
     BlObjectStorageModule,
 
@@ -158,6 +176,8 @@ function configureTransportModule(
     HnBrickVersionReferenceModule,
     HnStoryModule,
     HnTopicModule,
+    HnStoryAuthorModule,
+    HnStoryAuthorInviteModule,
   ],
   controllers: [],
   providers: [

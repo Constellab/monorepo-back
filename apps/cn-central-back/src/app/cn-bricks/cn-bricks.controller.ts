@@ -2,7 +2,7 @@ import {Controller, Get, Param, ParseUUIDPipe} from '@nestjs/common';
 import {CnBricksService} from './cn-bricks.service';
 import {CnBrick} from './cn-brick.entity';
 import {CnBrickVersion} from './cn-brick-version.entity';
-import {EventPattern} from '@nestjs/microservices';
+import {Ctx, EventPattern, Payload, RmqContext} from '@nestjs/microservices';
 import {CnBrickSaveDTO} from './cn-brick.dto';
 import {CmVersion} from '@monorepo/common-model';
 
@@ -34,7 +34,7 @@ export class CnBricksController {
   }
 
   @EventPattern('brick')
-  handleUserCreated(brickDto: CnBrickSaveDTO): Promise<void> {
+  async handleBrickVersion(brickDto: CnBrickSaveDTO): Promise<void> {
     return this.service.saveBrick(brickDto);
   }
 }

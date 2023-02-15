@@ -20,6 +20,7 @@ import {FilesInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {HnTopicDto} from '../topic/hn-topic.dto';
 import {HnTopic} from '../topic/hn-topic.entity';
+import {HnStoryAuthorInvite} from '../story-author-invite/hn-story-author-invite.entity';
 
 @Controller('story')
 export class HnStoryController {
@@ -121,9 +122,43 @@ export class HnStoryController {
   /***
    * Check if the current user is the owner of the story
    */
-  @Get(':id/is-owner')
-  async isStoryOwner(@Param('id', new ParseUUIDPipe()) id: string): Promise<boolean> {
-    return this.storyService.isStoryOwner(id);
+  @Get(':id/is-owner-or-co-author')
+  async isStoryOwnerOrCoAuthor(@Param('id', new ParseUUIDPipe()) id: string): Promise<boolean> {
+    return this.storyService.isStoryOwnerOrCoAuthor(id);
   }
 
+  /***
+   * Update Story Co Authors
+   */
+  @Put(':id/co-authors')
+  async updateStoryCoAuthors(@Param('id', new ParseUUIDPipe()) id: string,
+                              @Body() coAuthors: string[]): Promise<HnStory> {
+    return this.storyService.updateStoryCoAuthors(id, coAuthors);
+  }
+
+  /***
+   * Remove story co-author
+   */
+  @Put(':id/remove-co-author/:coAuthorId')
+  async removeStoryCoAuthor(@Param('id', new ParseUUIDPipe()) id: string,
+                              @Param('coAuthorId', new ParseUUIDPipe()) coAuthorId: string): Promise<void> {
+    return this.storyService.removeStoryCoAuthor(id, coAuthorId);
+  }
+
+
+  /***
+   * Is invite valid
+   */
+  @Get('invite/:token/is-valid')
+  isInviteValid(@Param('token') token: string): Promise<HnStoryAuthorInvite> {
+    return this.storyService.isInviteValid(token);
+  }
+
+  /***
+   * Accept invite
+   */
+  @Put('invite/:token/accept')
+  acceptInvite(@Param('token') token: string): Promise<HnStory> {
+    return this.storyService.acceptInvite(token);
+  }
 }

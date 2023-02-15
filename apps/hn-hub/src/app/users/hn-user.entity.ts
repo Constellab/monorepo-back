@@ -1,11 +1,16 @@
-import {BlEntityWithId, BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
-import {BeforeInsert, Column, Entity} from 'typeorm';
+import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
+import {BeforeInsert, Column, Entity, ManyToMany, OneToMany, PrimaryColumn} from 'typeorm';
 import {DateTime} from 'luxon';
 import {ClDateHelper, clDefaultLang, ClSupportedLanguage} from '@monorepo/core-lib';
 import {CmUserCategory} from '@monorepo/common-model';
+import {HnStory} from '../story/hn-story.entity';
+import {HnStoryAuthor} from '../story-author/hn-story-author.entity';
 
 @Entity('User')
-export class HnUser extends BlEntityWithId {
+export class HnUser {
+
+  @PrimaryColumn('uuid')
+  id: string;
 
   @Column({nullable: false, length: 50})
   firstname: string;
@@ -25,6 +30,9 @@ export class HnUser extends BlEntityWithId {
   @Column({nullable: false, type: 'enum', enum: ClSupportedLanguage, default: clDefaultLang})
   lang: ClSupportedLanguage;
 
+  @OneToMany(() => HnStoryAuthor, storyAuthor => storyAuthor.user, {nullable: true})
+  storyAuthors: HnStoryAuthor[];
+
   @BeforeInsert()
   initValues(): void {
     this.createdAt = ClDateHelper.getDate();
@@ -33,4 +41,27 @@ export class HnUser extends BlEntityWithId {
   isAdmin(): boolean {
     return this.category === CmUserCategory.ADMIN;
   }
+
+  setData(userDto: HnUserConstellabDTO): void {
+    this.id = userDto.id;
+    this.firstname = userDto.firstname;
+    this.lastname = userDto.lastname;
+    this.email = userDto.email;
+    this.category = userDto.category;
+  }
+
+}
+
+
+export class HnUserConstellabDTO {
+  id: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  category: CmUserCategory;
+  activity?: string;
+  company?: string;
+  biography?: string;
+
+  lang: ClSupportedLanguage;
 }

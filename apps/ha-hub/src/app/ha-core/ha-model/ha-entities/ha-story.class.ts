@@ -18,6 +18,23 @@ export enum HaStoryCategory{
   ARTICLE = 'ARTICLE'
 }
 
+
+export enum HaStoryAuthorStatus{
+  AUTHOR = 'AUTHOR',
+  PENDING = 'PENDING',
+  ACTIVE = 'ACTIVE'
+}
+
+export class HaStoryAuthor{
+  id: string;
+  status: HaStoryAuthorStatus;
+
+  @Type(() => HaUser)
+  user: HaUser;
+
+  story: HaStory;
+}
+
 export class HaStory{
   id: string;
   title: string;
@@ -31,8 +48,8 @@ export class HaStory{
 
   topics: HaTopic[] = [];
 
-  @Type(() => HaUser)
-  createdBy: HaUser;
+  @Type(() => HaStoryAuthor)
+  storyAuthors: HaStoryAuthor[];
 
   createdAt: DateTime;
 
@@ -41,6 +58,14 @@ export class HaStory{
   publishedAt: DateTime;
 
   lastModifiedAt: DateTime;
+
+  getCoAuthors(): HaUser[]{
+    return this.storyAuthors.filter(storyAuthor => storyAuthor.status === HaStoryAuthorStatus.ACTIVE).map(storyAuthor => storyAuthor.user);
+  }
+
+  getAuthor(): HaUser{
+    return this.storyAuthors.filter(storyAuthor => storyAuthor.status === HaStoryAuthorStatus.AUTHOR)[0].user;
+  }
 }
 
 export class HaCreateStoryDto{
@@ -60,11 +85,15 @@ export class HaListStoryDto{
 
   category: HaStoryCategory;
 
-  @Type(() => HaUser)
-  createdBy: HaUser;
+  @Type(() => HaStoryAuthor)
+  storyAuthors: HaStoryAuthor[];
 
   publishedAt: DateTime;
   lastModifiedAt: DateTime;
+
+  getAuthor(): HaUser{
+    return this.storyAuthors.filter(storyAuthor => storyAuthor.status === HaStoryAuthorStatus.AUTHOR)[0].user;
+  }
 }
 
 export class HaStoryDataSourceDataDto{
@@ -76,13 +105,17 @@ export class HaStoryDataSourceDataDto{
   status: HaStoryStatus;
   createdAt: DateTime;
 
-  @Type(() => HaUser)
-  createdBy: HaUser;
+  @Type(() => HaStoryAuthor)
+  storyAuthors: HaStoryAuthor[];
 
   publishedAt: DateTime;
   lastModifiedAt: DateTime;
 
   topics?: HaTopic[];
+
+  getAuthor(): HaUser{
+    return this.storyAuthors.filter(storyAuthor => storyAuthor.status === HaStoryAuthorStatus.AUTHOR)[0].user;
+  }
 }
 
 export class HaStoryFilter{

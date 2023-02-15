@@ -17,8 +17,9 @@ function configClientsModule(config: BlTransportModuleConfig): ClientProviderOpt
       urls: [blGetRabbitMQUrl(config.username, config.password, config.url, config.port)],
       queue: config.queue,
       queueOptions: {
-        durable: false
-      },
+        durable: true,
+        deliveryMode: 2 // enable persistent messaging
+      }
     },
   };
 }

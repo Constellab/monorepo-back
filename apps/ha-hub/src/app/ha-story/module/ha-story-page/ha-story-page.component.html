@@ -11,7 +11,7 @@
     <h2>
       {{story.title}}
     </h2>
-    <fl-user-inline class="small-text" [user]="story.createdBy" [showPopUp]="false"></fl-user-inline>
+    <fl-user-inline class="small-text" [user]="story.getAuthor()" [showPopUp]="false"></fl-user-inline>
     <p class="small-text story-date">{{story.createdAt | flDate:'DATETIME_MED'}}</p>
     <fl-text-editor class="text-editor g-max-article-width" [disabled]="true" mode="JSON" scrollContainer="auto"
                     [config]="textEditorConfig" [noPadding]="true" flAutoScrollToAnchor [formControl]="formControl">

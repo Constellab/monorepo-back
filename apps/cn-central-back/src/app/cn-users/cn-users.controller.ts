@@ -92,4 +92,9 @@ export class CnUsersController {
                       @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnUser>> {
     return this.usersService.search(searchParams, page, size);
   }
+
+  @Put('send-all-to-queue')
+  sendAllToQueue(): Promise<void> {
+    return this.usersService.sendAllUsersToQueue();
+  }
 }

@@ -34,5 +34,4 @@ export abstract class HnBaseEntity extends BlEntityWithId {
     this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser();
     this.lastModifiedAt = ClDateHelper.getDate();
   }
-
 }

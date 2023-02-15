@@ -1,24 +1,10 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {HnStory, HnStoryStatus} from './hn-story.entity';
-import {
-  FindOptionsOrder,
-  FindOptionsOrderProperty,
-  FindOptionsRelations,
-  FindOptionsWhere,
-  In,
-  Like,
-  Repository
-} from 'typeorm';
+import {FindOptionsOrder, FindOptionsWhere, In, Like, Repository} from 'typeorm';
 import {HnTopicService} from '../topic/hn-topic.service';
 import {ClPage, ClStringHelper} from '@monorepo/core-lib';
-import {
-  BlAbstractPaginatedService,
-  BlBucketConfig,
-  BlFile,
-  BlObjectStorageService,
-  BlSearchBuilder
-} from '@monorepo/back-core-lib';
+import {BlAbstractPaginatedService, BlBucketConfig, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
 import {CmRichText, CmRichTextHeader, CmRichTextI, CmRichTextImageCP} from '@monorepo/common-model';
 import imageSize from 'image-size';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
@@ -29,6 +15,9 @@ import {HnCreateStoryDto, HnStoryFilter} from './hn-story.dto';
 import {HnTopicDto} from '../topic/hn-topic.dto';
 import {HnTopic} from '../topic/hn-topic.entity';
 import {DateTime} from 'luxon';
+import {HnStoryAuthorService} from '../story-author/hn-story-author.service';
+import {HnStoryAuthor, HnStoryAuthorStatus} from '../story-author/hn-story-author.entity';
+import {HnStoryAuthorInvite, HnStoryAuthorInviteStatus} from '../story-author-invite/hn-story-author-invite.entity';
 
 class HnStoryImage {
   filename: string;
@@ -44,7 +33,9 @@ export class HnStoryService {
               private readonly storyRepository: Repository<HnStory>,
               private readonly topicService: HnTopicService,
               private objectStorageService: BlObjectStorageService,
-              private configService: HnCoreConfigService
+              private configService: HnCoreConfigService,
+
+              private storyAuthorService: HnStoryAuthorService
   ) {
   }
 
@@ -53,7 +44,10 @@ export class HnStoryService {
     story.title = data.title;
     story.category = data.category;
     story.content = CmRichText.newRichText();
-    return this.storyRepository.save(story);
+
+    const dbStory: HnStory = await this.storyRepository.save(story);
+    await this.storyAuthorService.createStoryAuthor(dbStory, HnCurrentUserHelper.getCurrentUser());
+    return dbStory;
   }
 
   async getStory(id: string): Promise<HnStory> {
@@ -67,11 +61,24 @@ export class HnStoryService {
 
   async getMyStories(page: number, size: number): Promise<ClPage<HnStory>> {
     return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
-      where: {
-        createdBy: {
-          id: HnCurrentUserHelper.getCurrentUser().id
+      where: [
+        {
+          storyAuthors: {
+            user: {
+              id: HnCurrentUserHelper.getCurrentUser().id
+            },
+            status: HnStoryAuthorStatus.AUTHOR
+          }
+        },
+        {
+          storyAuthors: {
+            user: {
+              id: HnCurrentUserHelper.getCurrentUser().id
+            },
+            status: HnStoryAuthorStatus.COAUTHOR
+          }
         }
-      },
+      ],
       relations: ['topics'],
       order: {
         createdAt: 'DESC' as any
@@ -248,8 +255,41 @@ export class HnStoryService {
     return this.storyRepository.save(story);
   }
 
-  async isStoryOwner(id: string): Promise<boolean> {
+  async isStoryOwnerOrCoAuthor(id: string): Promise<boolean> {
     const story = await this.getStory(id);
-    return story.createdBy.id === HnCurrentUserHelper.getCurrentUser().id;
+    return story.getAuthor().id === HnCurrentUserHelper.getCurrentUser().id ||
+      story.storyAuthors.some((sA: HnStoryAuthor) => sA.user.id === HnCurrentUserHelper.getCurrentUser().id &&
+        (sA.status === HnStoryAuthorStatus.COAUTHOR || sA.status === HnStoryAuthorStatus.AUTHOR));
   }
+
+  async updateStoryCoAuthors(id: string, newCoAuthorsMail: string[]): Promise<HnStory> {
+    const story: HnStory = await this.getStory(id);
+    await this.storyAuthorService.updateStoryCoAuthors(story, newCoAuthorsMail);
+    return this.storyRepository.save(story);
+  }
+
+  async removeStoryCoAuthor(id: string, coAuthorId: string): Promise<void> {
+    return this.storyAuthorService.removeStoryCoAuthor(id, coAuthorId);
+  }
+
+  async isInviteValid(token: string): Promise<HnStoryAuthorInvite> {
+    const storyAuthorInvite: HnStoryAuthorInvite = await this.storyAuthorService.getStoryAuthorInviteByToken(token);
+    return (storyAuthorInvite && storyAuthorInvite.status === HnStoryAuthorInviteStatus.PENDING &&
+      storyAuthorInvite.email === HnCurrentUserHelper.getCurrentUser().email) ? storyAuthorInvite : null;
+  }
+
+  async acceptInvite(token: string): Promise<HnStory> {
+    const storyAuthorInvite: HnStoryAuthorInvite = await this.isInviteValid(token);
+    if (storyAuthorInvite) {
+      const story: HnStory = await this.getStory(storyAuthorInvite.story.id);
+      const storyAuthor: HnStoryAuthor = new HnStoryAuthor();
+      storyAuthor.status = HnStoryAuthorStatus.COAUTHOR;
+      storyAuthor.user = HnCurrentUserHelper.getCurrentUser();
+      storyAuthor.story = story;
+      const acceptStoryInvite: boolean = await this.storyAuthorService.acceptInvite(storyAuthor, storyAuthorInvite);
+      return acceptStoryInvite ? story : null;
+    }
+    throw new Error('Invalid invite');
+  }
+
 }

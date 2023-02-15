@@ -9,7 +9,12 @@ import {
   HN_RABBITMQ_USER_KEY,
   HnEnvironmentProfile
 } from '../../model/config/hn-config.class';
-import {BlObjectStorageCredentials, BlTransportModuleConfig, blTransportQueueHub} from '@monorepo/back-core-lib';
+import {
+  BlMailConfig,
+  BlObjectStorageCredentials,
+  BlTransportModuleConfig,
+  blTransportQueueHub
+} from '@monorepo/back-core-lib';
 import {HnDatabaseConfig} from '../../model/config/hn-database-config.class';
 
 @Injectable()
@@ -97,12 +102,59 @@ export class HnCoreConfigService {
     return res;
   }
 
+  public getConstellabFrontRootUrl(): string {
+    let res: string;
+    switch (this.getEnvironmentProfile()) {
+      case 'prod':
+        res = 'https://constellab.gencovery.com//';
+        break;
+      case 'preprod':
+        res = 'https://constellab-pre-prod.gencovery.com/';
+        break;
+      case 'dev':
+        res = 'http://localhost:4200/';
+    }
+    return res;
+  }
+
   public getLogLevel(): LogLevel {
     return this.configService.get('LOG_LEVEL') ?? 'log';
   }
 
   public getLogPath(): string {
     return this.configService.get('LOG_PATH');
+  }
+
+  public getMailConfig(): BlMailConfig {
+    return {
+      host: this.configService.get('MAIL_HOST'),
+      port: this.getConfigNumber('MAIL_PORT'),
+      secure: this.getConfigBoolean('MAIL_SECURE'),
+      user: this.configService.get('MAIL_USER'),
+      password: this.configService.get('MAIL_PASSWORD'),
+      sender: this.configService.get('MAIL_SENDER')
+    };
+  }
+
+  protected getConfigNumber(configName: string): number {
+    try {
+      return parseInt(this.configService.get(configName), 10);
+    } catch (error) {
+      console.error('Error while parsing config ' + configName + ' to number');
+      throw error;
+    }
+  }
+
+  protected getConfigBoolean(configName: string): boolean {
+    const stringBool: string = this.configService.get(configName);
+
+    if (stringBool === 'false') {
+      return false;
+    } else if (stringBool === 'true') {
+      return true;
+    } else {
+      throw Error('Error while parsing config ' + configName + ' to boolean');
+    }
   }
 
   // protected getConfigNumber(configName: string): number {

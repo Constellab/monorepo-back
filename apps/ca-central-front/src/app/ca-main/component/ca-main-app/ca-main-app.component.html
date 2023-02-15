@@ -31,7 +31,7 @@
       <div class="user-container"
            fxLayout="column" fxLayoutAlign="start center">
 
-        <button mat-icon-button type="button" class="notif-button" (click)="openNotificationDiv()">
+        <button mat-icon-button type="button" class="notif-button" (click)="openNotificationDiv()" [matBadge]="" matBadgeColor="warn">
           <mat-icon>notifications</mat-icon>
         </button>
         <ca-authenticated-user-inline [showName]="false"></ca-authenticated-user-inline>

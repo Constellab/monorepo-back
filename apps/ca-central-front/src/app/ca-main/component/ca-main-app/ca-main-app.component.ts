@@ -11,6 +11,8 @@ import {Observable} from 'rxjs';
 import {CaCurrentSpaceService} from '../../../ca-core/service-api/ca-current-space.service';
 import {map} from 'rxjs/operators';
 import {CaRouterService} from '../../../ca-core/service/ca-router.service';
+import {CaNotificationsService} from '../../../ca-core/service-api/ca-notifications.service';
+import {CaNotificationDatasourcePaginated} from '../../../ca-core/model/entities/ca-notification.class';
 
 /**
  * Main app component. Menu on the left and page on the right
@@ -35,7 +37,8 @@ export class CaMainAppComponent implements OnInit {
 
   constructor(private authenticatedUserService: CaAuthenticatedUserService,
               private currentSpaceService: CaCurrentSpaceService,
-              private portalService: FlPortalService) {
+              private portalService: FlPortalService,
+              private notificationsService: CaNotificationsService) {
   }
 
   ngOnInit(): void {
@@ -84,6 +87,10 @@ export class CaMainAppComponent implements OnInit {
     });
 
     this.portalService.createPortal(CaNotificationsPortalComponent, config).detachments().subscribe();
+  }
+
+  getNumberOfNotifications():  CaNotificationDatasourcePaginated {
+    return this.notificationsService.getUserNotifications(this.authenticatedUserService.getUser().id, true);
   }
 
 }

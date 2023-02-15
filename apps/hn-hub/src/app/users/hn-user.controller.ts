@@ -1,6 +1,7 @@
 import {Controller, Get} from '@nestjs/common';
 import {HnUserService} from './hn-user.service';
-import {HnUser} from './hn-user.entity';
+import {HnUser, HnUserConstellabDTO} from './hn-user.entity';
+import {EventPattern} from '@nestjs/microservices';
 
 @Controller('user')
 export class HnUserController {
@@ -10,5 +11,10 @@ export class HnUserController {
   @Get()
   async getCurrent(): Promise<HnUser> {
     return await this.userService.getCurrent();
+  }
+
+  @EventPattern('user')
+  handleUserCreated(userDto: HnUserConstellabDTO): Promise<void> {
+    return this.userService.createOrUpdate(userDto);
   }
 }

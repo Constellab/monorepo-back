@@ -13,9 +13,11 @@ import {FlDateModule} from "@monorepo/front-core-lib";
 import { HaStoryMyListComponent } from './module/ha-story-my-list/ha-story-my-list.component';
 import {MatTableModule} from "@angular/material/table";
 import {MatRadioModule} from "@angular/material/radio";
+import { HaStoryCoAuthorDialogComponent } from './module/ha-story-co-author-dialog/ha-story-co-author-dialog.component';
+import { HaStoryInvitePageComponent } from './module/ha-story-invite-page/ha-story-invite-page.component';
 
 @NgModule({
-  declarations: [HaStoryPageComponent, HaStoryEditPageComponent, HaStoryListPageComponent, HaStoryCreateDialogComponent, HaStoryMyListComponent],
+  declarations: [HaStoryPageComponent, HaStoryEditPageComponent, HaStoryListPageComponent, HaStoryCreateDialogComponent, HaStoryMyListComponent, HaStoryCoAuthorDialogComponent, HaStoryInvitePageComponent],
   imports: [
     HaStoryRoutingModule,
     HaCustomLibraryModule,

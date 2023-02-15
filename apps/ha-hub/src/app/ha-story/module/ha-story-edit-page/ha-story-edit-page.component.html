@@ -23,6 +23,9 @@
         {{'publish_story' | translate}}
       </button>
     </div>
+    <button mat-icon-button type="button" class="co-author-bt" *ngIf="isAuthor() | async" (click)="openCoAuthorDialog()">
+      <mat-icon>group_add</mat-icon>
+    </button>
   </div>
 
   <mat-form-field class="form-field">

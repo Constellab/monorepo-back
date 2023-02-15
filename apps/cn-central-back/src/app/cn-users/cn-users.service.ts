@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {CnUser, CnUserEditDTO} from './cn-user.entity';
+import {CnUser, CnUserEditDTO, CnUserTransportDto} from './cn-user.entity';
 import {Repository} from 'typeorm';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
@@ -12,6 +12,7 @@ import {
   BlObjectStorageService,
   BlSearchBuilder,
   BlSearchParams,
+  BlTransportService,
   BlUnauthorizedException,
   BlUserService
 } from '@monorepo/back-core-lib';
@@ -25,7 +26,8 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
   constructor(
     @InjectRepository(CnUser) private repository: Repository<CnUser>,
     private objectStorageService: BlObjectStorageService,
-    private configService: CnCoreConfigService) {
+    private configService: CnCoreConfigService,
+    private transportService: BlTransportService) {
     super(repository, CnUser);
   }
 
@@ -126,7 +128,9 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
       user.activity = userEdit.activity;
       user.company = userEdit.company;
       user.biography = userEdit.biography;
-      return this.repository.save(user);
+      const dbUser: CnUser = await this.repository.save(user);
+      this.sendUserToTransport(dbUser);
+      return dbUser;
     } else {
       return user;
     }
@@ -145,5 +149,34 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     builder.addSearchParams(searchParams);
 
     return this.findPaginated(page, size, builder.build());
+  }
+
+  public async sendAllUsersToQueue(): Promise<void> {
+    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
+
+    if (!user.isAdmin()) {
+      throw new BlUnauthorizedException('You must be an admin to synchronize the versions');
+    }
+
+    const users = await this.findAll();
+    users.forEach((u) => {
+      this.sendUserToTransport(u);
+    });
+  }
+
+
+  public sendUserToTransport(user: CnUser): void {
+    const u: CnUserTransportDto = {
+      id: user.id,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+      category: user.category,
+      activity: user.activity,
+      company: user.company,
+      lang: user.lang,
+      biography: user.biography
+    };
+    this.transportService.emit('user', u);
   }
 }
