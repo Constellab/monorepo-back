@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable, Logger} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {CnCloudProviderName} from '../../cn-cloud-providers/cn-cloud-provider.entity';
 import {CnCloudProviderOvhService} from './ovh/cn-cloud-provider-ovh.service';
 import {CnCloudProviderService} from './cn-cloud-provider.service';
@@ -14,6 +14,7 @@ import {
 import {CnLabInstance} from '../cn-lab-instance.entity';
 import {CnLabInstancesService} from '../cn-lab-instances.service';
 import {CnLabInstanceStatus} from '../status/cn-lab-instance-status.enum';
+import {BlBadRequestException} from '@monorepo/back-core-lib';
 
 /**
  * Service to manage the lab server via the cloud provider
@@ -83,7 +84,7 @@ export class CnLabServerService {
     } else {
       serverInstance = await cloudProviderService.getInstance(labInstance.serverInstanceId);
       if (serverInstance == null) {
-        throw new BadRequestException(`Server instance ${labInstance.serverInstanceId} not found in cloud provider ${cloudProviderName}`);
+        throw new BlBadRequestException(`Server instance ${labInstance.serverInstanceId} not found in cloud provider ${cloudProviderName}`);
       }
       this.logger.log(`Server instance ${labInstance.serverInstanceId} already exists for lab ${labInstance.id}. Skipping creation`);
     }
@@ -98,7 +99,7 @@ export class CnLabServerService {
     } else {
       volume = await cloudProviderService.getVolume(labInstance.serverVolumeId);
       if (volume == null) {
-        throw new BadRequestException(`Volume ${labInstance.serverVolumeId} not found in cloud provider ${cloudProviderName}`);
+        throw new BlBadRequestException(`Volume ${labInstance.serverVolumeId} not found in cloud provider ${cloudProviderName}`);
       }
       this.logger.log(`Volume ${labInstance.serverVolumeId} already exists for lab ${labInstance.id}. Skipping creation`);
     }
@@ -132,12 +133,12 @@ export class CnLabServerService {
     if (serverInstance.status === 'CREATING') {
       await this.labInstanceService.updateServerStatusText(labInstance.id,
         'Server instance not ready, please refresh the status if few minutes and then contact the support if the problem persists');
-      throw new BadRequestException('Instance not ready');
+      throw new BlBadRequestException('Instance not ready');
     }
     if (volume.status === 'CREATING') {
       await this.labInstanceService.updateServerStatusText(labInstance.id,
         'Volume not ready, please refresh the status if few minutes and then contact the support if the problem persists');
-      throw new BadRequestException('Volume not ready');
+      throw new BlBadRequestException('Volume not ready');
     }
 
     // Attaching the volume to the server
@@ -147,7 +148,7 @@ export class CnLabServerService {
       // check that the volume is attached to the instance
       if (volume.attachedTo !== serverInstance.id) {
         // eslint-disable-next-line max-len
-        throw new BadRequestException(`For lab ${labInstance.id}, volume ${volume.id} is not attached to instance ${serverInstance.id} but to '${volume.attachedTo}'`);
+        throw new BlBadRequestException(`For lab ${labInstance.id}, volume ${volume.id} is not attached to instance ${serverInstance.id} but to '${volume.attachedTo}'`);
       }
       this.logger.log(`Volume ${volume.id} was already attached to lab ${labInstance.id}. Skipping attachment`);
     }
@@ -212,7 +213,7 @@ export class CnLabServerService {
     if (!ipv4) {
       await this.labInstanceService.updateServerStatusText(labInstance.id,
         'The ip adresse of the server is not available, please retry in few minutes and contact the support if the problem persists');
-      throw new BadRequestException(`No IP address for lab ${labInstance.id} with server id ${labInstance.serverInstanceId}`);
+      throw new BlBadRequestException(`No IP address for lab ${labInstance.id} with server id ${labInstance.serverInstanceId}`);
     }
 
     await this.labInstanceService.updateServerStatusText(labInstance.id, 'Creating DNS record for the lab');
@@ -267,7 +268,7 @@ export class CnLabServerService {
 
   public async startLab(labInstance: CnLabInstance): Promise<CnLabInstance> {
     if (!labInstance.serverInstanceId) {
-      throw new BadRequestException(`Lab has no server instance was it correctly initialized?`);
+      throw new BlBadRequestException(`Lab has no server instance was it correctly initialized?`);
     }
 
     const cloudProviderService = this.getCloudProviderService(labInstance.getCloudProviderName());
@@ -281,12 +282,12 @@ export class CnLabServerService {
         this.logger.log(`Refreshing lab ${labInstance.id} status to running`);
         return await this.labInstanceService.markInstanceAsRunning(labInstance.id);
       } else {
-        throw new BadRequestException(`Lab is already running`);
+        throw new BlBadRequestException(`Lab is already running`);
       }
     }
 
     if (serverInstance.status === 'CREATING' || serverInstance.status === 'RESTARTING' || serverInstance.status === 'STOPPING') {
-      throw new BadRequestException(`Lab is currently ${serverInstance.status}`);
+      throw new BlBadRequestException(`Lab is currently ${serverInstance.status}`);
     }
 
     // if the server is stopped
@@ -299,7 +300,7 @@ export class CnLabServerService {
 
   public async stopLab(labInstance: CnLabInstance): Promise<CnLabInstance> {
     if (!labInstance.serverInstanceId) {
-      throw new BadRequestException(`Lab has no server instance was it correctly initialized?`);
+      throw new BlBadRequestException(`Lab has no server instance was it correctly initialized?`);
     }
 
     const cloudProviderService = this.getCloudProviderService(labInstance.getCloudProviderName());
@@ -313,12 +314,12 @@ export class CnLabServerService {
         this.logger.log(`Refreshing lab ${labInstance.id} status to stopped`);
         return await this.labInstanceService.markInstanceAsStopped(labInstance.id);
       } else {
-        throw new BadRequestException(`Lab is already stopped`);
+        throw new BlBadRequestException(`Lab is already stopped`);
       }
     }
 
     if (serverInstance.status === 'CREATING' || serverInstance.status === 'RESTARTING' || serverInstance.status === 'STOPPING') {
-      throw new BadRequestException(`Lab is currently ${serverInstance.status}`);
+      throw new BlBadRequestException(`Lab is currently ${serverInstance.status}`);
     }
 
     // if the server is running
@@ -386,7 +387,7 @@ export class CnLabServerService {
 
     const labStatus: CnLabInstanceStatus = statusMapping[serverInstanceStatus];
     if (!labStatus) {
-      throw new BadRequestException(`Unknown server status ${serverInstanceStatus}`);
+      throw new BlBadRequestException(`Unknown server status ${serverInstanceStatus}`);
     }
     return this.labInstanceService.updateCurrentStatusIfChangedWithDbEntity(labStatus, labInstance);
   }
@@ -397,7 +398,7 @@ export class CnLabServerService {
       case 'OVH':
         return this.ovhCloudProviderService;
       default:
-        throw new BadRequestException(`Cloud provider ${cloudProvider} not supported`);
+        throw new BlBadRequestException(`Cloud provider ${cloudProvider} not supported`);
     }
   }
 

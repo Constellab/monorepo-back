@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable, Logger} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {
   CnLabComposeUpOptions,
   CnLabDockerPs,
@@ -203,7 +203,7 @@ export class CnLabManagerService {
       count++;
     }
 
-    throw new BadRequestException(`Server is not available for lab manager ${labManagerUrl}`);
+    throw new BlBadRequestException(`Server is not available for lab manager ${labManagerUrl}`);
   }
 
   /////////////////////////////////////////////// BACKUP /////////////////////////////////////////////////////

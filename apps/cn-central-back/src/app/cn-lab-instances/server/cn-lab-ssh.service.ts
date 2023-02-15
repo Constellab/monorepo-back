@@ -1,9 +1,10 @@
-import {BadRequestException, Injectable, Logger} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {CnLabInstance} from '../cn-lab-instance.entity';
 import {CnCommandService, CnExecCommandMode} from '../../cn-core/services/cn-command.service';
 import {CnLabInstancesService} from '../cn-lab-instances.service';
 import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CnLabManagerService} from '../cn-lab-manager.service';
+import {BlBadRequestException} from '@monorepo/back-core-lib';
 
 /**
  * Service to execute ssh command to the lab server
@@ -153,7 +154,7 @@ export class CnLabSshService {
       count++;
     }
 
-    throw new BadRequestException(`Server is not available for lab ${labInstance.id}`);
+    throw new BlBadRequestException(`Server is not available for lab ${labInstance.id}`);
   }
 
   public async checkSshConnection(virtualHost: string): Promise<boolean> {

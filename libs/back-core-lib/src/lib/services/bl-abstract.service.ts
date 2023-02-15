@@ -1,5 +1,4 @@
 import {DeleteResult, EntityManager, Repository} from 'typeorm';
-import {NotFoundException} from '@nestjs/common';
 import {FindOneOptions} from 'typeorm/find-options/FindOneOptions';
 import {BlEntityWithId} from '../models/bl-entity-with-id.entity';
 import {BlPersistenceAction, BlPersistenceLogger} from './bl-persistence-logger';
@@ -7,6 +6,7 @@ import {blPropertyIsNotUpdatable} from '../decorators/bl-not-updatable.decorator
 import {BlAbstractPaginatedService} from './bl-abstract-paginated.service';
 import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
 import {BlBadRequestException} from '../exceptions/bl-bad-request.exception';
+import {BlNotFoundException} from '../exceptions/bl-not-found.exception';
 
 export abstract class BlAbstractService<T extends BlEntityWithId>
   extends BlAbstractPaginatedService<T> {
@@ -90,7 +90,7 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
                          entityManager?: EntityManager): Promise<T> {
     const entity: T = await this.findById(id, relations, entityManager);
     if (entity == null) {
-      throw new NotFoundException('Object not found');
+      throw new BlNotFoundException(`Object '${this.entityClass.name}' with id ${id} not found`);
     }
     return entity;
   }

@@ -8,7 +8,7 @@ import {
   CnCpVolume,
   CnCpVolumeStatus
 } from '../cn-cloud-provider.class';
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {
   CnOvhCreateDomainRecordRequest,
   CnOvhCreateInstanceRequest,
@@ -21,6 +21,7 @@ import {
 import {CnCoreConfigService} from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CnCloudProviderName} from '../../../cn-cloud-providers/cn-cloud-provider.entity';
 import {CnLabInstanceBillingMode, CnLabInstanceVolumeType} from '../../cn-lab-instance.entity';
+import {BlBadRequestException} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnCloudProviderOvhService extends CnCloudProviderService {
@@ -41,18 +42,18 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
 
   public async createInstance(instance: CnCpCreateInstanceRequest): Promise<CnCpInstance> {
     if (instance.backupFrequency !== 'DAILY') {
-      throw new BadRequestException(`The backup mode ${instance.backupFrequency} is not supported`);
+      throw new BlBadRequestException(`The backup mode ${instance.backupFrequency} is not supported`);
     }
 
     // const flavorName = 'd2-2';
     const flavor = await this.ovhService.getServerInfoByRegionAndName(instance.region, instance.serverName);
     if (!flavor) {
-      throw new BadRequestException(`The server ${instance.serverName} is not available in region ${instance.region}`);
+      throw new BlBadRequestException(`The server ${instance.serverName} is not available in region ${instance.region}`);
     }
 
     const image = await this.ovhService.getImageByRegionAndName(instance.region, CnCloudProviderOvhService.IMAGE_NAME);
     if (!image) {
-      throw new BadRequestException(`The ubuntu image is not available in region ${instance.region}`);
+      throw new BlBadRequestException(`The ubuntu image is not available in region ${instance.region}`);
     }
 
 

@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable, Logger} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstancesService} from './cn-lab-instances.service';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
@@ -147,7 +147,7 @@ export class CnLabInstanceAggregateService {
     });
 
     if (!labInstance.labConfig) {
-      throw new BadRequestException('Lab config not found');
+      throw new BlBadRequestException('Lab config not found');
     }
 
     return labInstance.labConfig;
@@ -599,7 +599,7 @@ export class CnLabInstanceAggregateService {
 
     const sshTest = await this.labSshService.checkSshConnection(labInstance.virtualHost);
     if (!sshTest) {
-      throw new BadRequestException(`SSH connection to ${labInstance.virtualHost} failed`);
+      throw new BlBadRequestException(`SSH connection to ${labInstance.virtualHost} failed`);
     }
 
     labInstance = await this.labInstancesService.markInstanceAsStarting(labInstance.id);
@@ -687,7 +687,7 @@ export class CnLabInstanceAggregateService {
     labInstance = await this.labServerService.refreshLabStatus(labInstance.id);
 
     if (labInstance.serverIsBusy()) {
-      throw new BadRequestException(`Server is ${labInstance.currentStatus.status} and cannot configured`);
+      throw new BlBadRequestException(`Server is ${labInstance.currentStatus.status} and cannot configured`);
     }
     return labInstance;
   }
@@ -697,7 +697,7 @@ export class CnLabInstanceAggregateService {
     const lab = await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
     if(!lab.isOnPremise()){
-      throw new BadRequestException('Lab is not on premise');
+      throw new BlBadRequestException('Lab is not on premise');
     }
 
     return this.onPremiseService.generateOnPremiseConfig(lab);

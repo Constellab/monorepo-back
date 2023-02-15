@@ -1,9 +1,10 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {ElasticsearchService} from '@nestjs/elasticsearch';
 import {ClPageI} from '@monorepo/core-lib';
 import {SnDocSearchResult, SnDocument} from '../model/sn-document.class';
 import {SnElasticsearchHit, SnElasticsearchResult} from '../model/sn-elasticsearch.class';
 import {SnDocResultConvertHelper} from '../model/sn-doc-result-convert.helper';
+import {BlNotFoundException} from '@monorepo/back-core-lib';
 
 
 @Injectable()
@@ -42,7 +43,7 @@ export class SnDocElasticsearchService {
     const doc = await this.findById(index, id);
 
     if (doc == null) {
-      throw new NotFoundException('Document not found');
+      throw new BlNotFoundException('Document not found');
     }
     return doc;
   }
