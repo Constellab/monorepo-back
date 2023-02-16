@@ -125,6 +125,7 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
     } else {
 
       this.editPhotoImgElement = this.photoDiv.querySelector('img');
+      console.log(this.editPhotoImgElement)
       this.editPhotoImgElement.style.display = 'block';
       this.editPhotoImgElement.src = URL.createObjectURL(b);
     }
