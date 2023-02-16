@@ -4,19 +4,17 @@ import {
   CnLabComposeUpOptions,
   CnLabDockerPs,
   CnLabManagerInitConfig,
-  CnLabManagerStatus,
-  CnLabManagerUpdateConfigDTO
+  CnLabManagerStatus
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnExternalLabManagerApiService} from '../cn-external-lab-api/cn-external-lab-manager-api.service';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstanceConfigDTO} from './cn-lab-instance.dto';
-import {CnBricksService} from '../cn-bricks/cn-bricks.service';
-import {CmVersion} from '@monorepo/common-model';
-import {CnBrickGWS, CnBrickVersionTechnicalKey} from '../cn-bricks/cn-brick.dto';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {CnExternalLabBackup, CnExternalLabBackupHistory} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {BlBadRequestException, BlBucketConfig} from '@monorepo/back-core-lib';
+import {CnLabConfigFile} from '../cn-lab-configs/cn-lab-config-file.class';
+import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
 
 /**
  * Service to call the api of the lab manager
@@ -27,8 +25,8 @@ export class CnLabManagerService {
 
 
   constructor(private labManagerApiService: CnExternalLabManagerApiService,
-              private brickService: CnBricksService,
-              private configService: CnCoreConfigService) {
+              private configService: CnCoreConfigService,
+              private labConfigService: CnLabConfigsService) {
   }
 
   public async healthCheck(labManagerUrl: string): Promise<boolean> {
@@ -107,78 +105,15 @@ export class CnLabManagerService {
   }
 
   public async updateConfig(labInstance: CnLabInstance, config: CnLabInstanceConfigDTO): Promise<void> {
-    // check if the gws core is in the brick list
-    const gwsCore = config.brickVersions.find(brickVersion => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_CORE.toLowerCase());
+    const configFile: CnLabConfigFile = await this.labConfigService.getLabConfigFile(labInstance, config);
 
-    if (gwsCore == null) {
-      throw new BlBadRequestException(`The brick '${CnBrickGWS.GWS_CORE}' must be set in the config`);
-    }
-
-    // retrieve the lab front version
-    const gwsCoreVersion = CmVersion.fromString(gwsCore.version);
-    // get gws_core version
-    const gwsCoreBrickVersion = await this.brickService.getBrickVersion(CnBrickGWS.GWS_CORE, gwsCoreVersion);
-    // get the front version from the technical info
-    const frontVersion = gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_FRONT_VERSION];
-    if (frontVersion == null) {
-      throw new BlBadRequestException(`The front version does not exists for '${CnBrickGWS.GWS_CORE}' version '${gwsCore.version}'`);
-    }
-
-    // get the maria db url
-    const gwsBiota = config.brickVersions.find(brickVersion => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_BIOTA.toLowerCase());
-    if (gwsBiota == null) {
-      throw new BlBadRequestException(`The brick '${CnBrickGWS.GWS_BIOTA}' must be set in the config`);
-    }
-    // get gws_core version
-    const gwsBiotaBrickVersion = await this.brickService.getBrickVersion(CnBrickGWS.GWS_BIOTA,
-      CmVersion.fromString(gwsBiota.version));
-
-    const biotaMariaDbUrl = gwsBiotaBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_BIOTA_MARIA_DB_URL];
-    if (biotaMariaDbUrl == null) {
-      throw new BlBadRequestException(`The maria db url does not exists for '${CnBrickGWS.GWS_BIOTA}' version '${gwsBiota.version}'`);
-    }
-
-    const labManagerConfig: CnLabManagerUpdateConfigDTO = {
-      labId: labInstance.id,
-      labName: labInstance.name,
-      frontVersion: frontVersion,
-      glabTag: config.glabTag || 'latest',
-      biotaMariaDbUrl: biotaMariaDbUrl,
-      bricks: []
-    };
-
-    for (const brick of config.brickVersions) {
-      const brickVersion = await this.brickService.getBrickVersionAndCheck(brick.name, CmVersion.fromString(brick.version));
-
-      labManagerConfig.bricks.push({
-        name: brickVersion.brick.name,
-        version: brickVersion.version.toString(),
-        isHidden: true, // force all bricks to be hidden
-        repo: brickVersion.getRepo(),
-        repoType: brickVersion.repoType,
-        technicalInfo: brickVersion.technicalInfo
-      });
-    }
-
-    return this.labManagerApiService.updateConfig(labInstance.getLabManagerApiInfo(), labManagerConfig);
+    return this.labManagerApiService.updateConfig(labInstance.getLabManagerApiInfo(), configFile);
   }
 
   public async getConfig(labInstance: CnLabInstance): Promise<CnLabInstanceConfigDTO> {
-    const labManagerConfig = await this.labManagerApiService.getConfig(labInstance.getLabManagerApiInfo());
+    const configFile: CnLabConfigFile = await this.labManagerApiService.getConfig(labInstance.getLabManagerApiInfo());
 
-
-    const labInstanceConfig: CnLabInstanceConfigDTO = {
-      brickVersions: [],
-      glabTag: labManagerConfig.glabTag
-    };
-    for (const brick of labManagerConfig.bricks) {
-      labInstanceConfig.brickVersions.push({
-        name: brick.name,
-        version: brick.version,
-      });
-    }
-
-    return labInstanceConfig;
+    return this.labConfigService.configFileToLabInstanceConfig(configFile);
   }
 
   /**

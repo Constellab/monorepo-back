@@ -57,17 +57,6 @@ export interface CnLabManagerInitConfig {
   gwsCoreDevPassword: string;
 }
 
-/**
- * Object to communicate with lab manager to update the config
- */
-export interface CnLabManagerUpdateConfigDTO {
-  labId: string;
-  labName: string;
-  frontVersion: string;
-  glabTag: 'latest' | 'beta' | string;
-  biotaMariaDbUrl: string;
-  bricks: CnLabManagerBrickVersionDTO[];
-}
 
 export interface CnLabManagerBrickVersionDTO {
   name: string;

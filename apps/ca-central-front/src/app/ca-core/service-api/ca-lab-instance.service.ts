@@ -129,6 +129,10 @@ export class CaLabInstanceService {
     return this.apiService.get(`${this.route}/${id}/config`, CaLabConfig);
   }
 
+  public updateConfig(id: string, config: CaLabManagerConfig): Observable<void> {
+    return this.apiService.put(`${this.route}/${id}/config`, config, CaLabManagerConfig);
+  }
+
   //////////////////////////// STATUS ////////////////////////////////
   public getStatus(id: string): Observable<CaLabInstanceStatusDTO> {
     return this.apiService.get(`${this.route}/${id}/status`, CaLabInstanceStatusDTO);
@@ -233,10 +237,6 @@ export class CaLabInstanceService {
 
   public systemPrune(id: string): Observable<void> {
     return this.apiService.post(`${this.route}/${id}/lab-manager/system-prune`, null);
-  }
-
-  public updateLabManagerConfig(id: string, config: CaLabManagerConfig): Observable<void> {
-    return this.apiService.put(`${this.route}/${id}/lab-manager/config`, config, CaLabManagerConfig);
   }
 
   public getLabManagerConfig(id: string): Observable<CaLabManagerConfig> {

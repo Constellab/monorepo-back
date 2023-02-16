@@ -160,6 +160,12 @@ export class CnLabInstancesController {
     return this.aggregateService.getConfig(id);
   }
 
+  @Put(':id/config')
+  async updateConfig(@Param('id', new ParseUUIDPipe()) id: string,
+                     @Body() config: CnLabInstanceConfigDTO): Promise<void> {
+    return await this.aggregateService.updateConfig(id, config);
+  }
+
   //////////////////////////// STATUS ////////////////////////////////
   /**
    * return the history of the status
@@ -303,12 +309,6 @@ export class CnLabInstancesController {
   @Post(':id/lab-manager/system-prune')
   public systemPrune(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.aggregateService.systemPrune(id);
-  }
-
-  @Put(':id/lab-manager/config')
-  async updateConfig(@Param('id', new ParseUUIDPipe()) id: string,
-                     @Body() config: CnLabInstanceConfigDTO): Promise<void> {
-    return await this.aggregateService.updateLabManagerConfig(id, config);
   }
 
   @Get(':id/lab-manager/config')

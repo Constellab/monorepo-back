@@ -2,7 +2,7 @@ version: "3"
 services:
 
   glab:
-    image: registry.gitlab.com/gencovery/infra/gpm/glab-cpu:beta
+    image: registry.gitlab.com/gencovery/infra/gpm/glab-cpu:${GLAB_TAG}
     environment:
       - LAB_ID=${LAB_ID}
       - LAB_NAME=${LAB_NAME}
@@ -13,7 +13,7 @@ services:
       - CENTRAL_API_KEY=${CENTRAL_API_KEY}
       - CENTRAL_API_URL=${CENTRAL_API_URL}
       - FRONT_URL=http://localhost:80
-      - FRONT_VERSION=0.5.6 #TODO TO PARAMETERIZE
+      - FRONT_VERSION=${FRONT_VERSION}
       - CONDA_VERSION=latest
       - GPU=
       - VIRTUAL_HOST=
@@ -40,7 +40,7 @@ services:
 
   # Codelab
   codelab:
-    image: registry.gitlab.com/gencovery/infra/gpm/codelab-cpu:beta
+    image: registry.gitlab.com/gencovery/infra/gpm/codelab-cpu:${GLAB_TAG}
     environment:
       - LAB_ID=${LAB_ID}
       - LAB_NAME=${LAB_NAME}
@@ -49,7 +49,7 @@ services:
       - LAB_PROD_API_URL=http://glab:3000
       - LAB_DEV_API_URL=http://localhost:3101
       - FRONT_URL=http://localhost:80
-      - FRONT_VERSION=0.5.6 #TODO TO PARAMETERIZE
+      - FRONT_VERSION=${FRONT_VERSION}
       - CONDA_VERSION=latest
       - GPU=
       - VIRTUAL_HOST=
@@ -77,7 +77,7 @@ services:
 
   # Front
   front:
-    image: registry.gitlab.com/gencovery/core/monorepo/lab-front:0.5.6  #TODO TO PARAMETERIZE
+    image: registry.gitlab.com/gencovery/core/monorepo/lab-front:${FRONT_VERSION}
     environment:
       - API_URL=http://localhost:3100/
       - LAB_PROD_API_URL=http://localhost:3100/

@@ -118,6 +118,15 @@ export class CaLabInstanceDetailPageState implements OnDestroy {
     );
   }
 
+  /**
+   * return true if the lab in on cloud
+   */
+  public isCloud$(): Observable<boolean> {
+    return this.getLabInstance$().pipe(
+      map(labInstance => labInstance.isCloud)
+    );
+  }
+
   public serverIsBusy$(): Observable<boolean> {
     return this.getStatus$().pipe(
       map(status => status.labStatus.value === 'STARTING' || status.labStatus.value === 'STOPPING')

@@ -5,9 +5,13 @@ import {DataSource, Repository} from 'typeorm';
 import {CnLabConfigDto} from './cn-lab-config.dto';
 import {ClHelpService} from '@monorepo/core-lib';
 import {CnBricksService} from '../cn-bricks/cn-bricks.service';
-import {CnBrickVersionDTO} from '../cn-bricks/cn-brick.dto';
+import {CnBrickGWS, CnBrickVersionDTO, CnBrickVersionTechnicalKey} from '../cn-bricks/cn-brick.dto';
 import {CmVersion} from '@monorepo/common-model';
-import {BlAbstractService} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
+import {CnLabInstance} from '../cn-lab-instances/cn-lab-instance.entity';
+import {CnLabInstanceConfigDTO} from '../cn-lab-instances/cn-lab-instance.dto';
+import {CnConfigFileEnvRepository, CnLabConfigFile, CnLabConfigFileEnv} from './cn-lab-config-file.class';
+import {CnRepoType} from '../cn-bricks/cn-brick-version.entity';
 
 @Injectable()
 export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
@@ -78,6 +82,127 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
       h = Math.imul(31, h) + str.charCodeAt(i) | 0;
 
     return h;
+  }
+
+  public async getCompleteConfig(labConfigId: string): Promise<CnLabConfig> {
+    return await this.findById(labConfigId, {
+      brickVersions: {brick: true}
+    });
+  }
+
+  ////////////////////////////////////////////// CONFIG FILE ////////////////////////////////////////////////////
+
+  /**
+   * Generate the json for the config file of a lab
+   * @param labInstance
+   * @param config
+   */
+  public async getLabConfigFile(labInstance: CnLabInstance, config: CnLabInstanceConfigDTO): Promise<CnLabConfigFile> {
+    // check if the gws core is in the brick list
+    const gwsCore = config.brickVersions.find(brickVersion => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_CORE.toLowerCase());
+
+    if (gwsCore == null) {
+      throw new BlBadRequestException(`The brick '${CnBrickGWS.GWS_CORE}' must be set in the config`);
+    }
+
+    // retrieve the lab front version
+    const gwsCoreVersion = CmVersion.fromString(gwsCore.version);
+    // get gws_core version
+    const gwsCoreBrickVersion = await this.brickService.getBrickVersion(CnBrickGWS.GWS_CORE, gwsCoreVersion);
+    // get the front version from the technical info
+    const frontVersion = gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_FRONT_VERSION];
+    if (frontVersion == null) {
+      throw new BlBadRequestException(`The front version does not exists for '${CnBrickGWS.GWS_CORE}' version '${gwsCore.version}'`);
+    }
+
+    // get the maria db url
+    const gwsBiota = config.brickVersions.find(brickVersion => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_BIOTA.toLowerCase());
+    if (gwsBiota == null) {
+      throw new BlBadRequestException(`The brick '${CnBrickGWS.GWS_BIOTA}' must be set in the config`);
+    }
+    // get gws_core version
+    const gwsBiotaBrickVersion = await this.brickService.getBrickVersion(CnBrickGWS.GWS_BIOTA,
+      CmVersion.fromString(gwsBiota.version));
+
+    const biotaMariaDbUrl = gwsBiotaBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_BIOTA_MARIA_DB_URL];
+    if (biotaMariaDbUrl == null) {
+      throw new BlBadRequestException(`The maria db url does not exists for '${CnBrickGWS.GWS_BIOTA}' version '${gwsBiota.version}'`);
+    }
+
+    return {
+      lab_id: labInstance.id,
+      name: labInstance.name,
+      front_version: frontVersion,
+      glab_tag: config.glabTag || 'latest',
+      biota_maria_db_url: biotaMariaDbUrl,
+      variables: {},
+      environment: await this.brickConfigToConfigEnv(config.brickVersions),
+    };
+  }
+
+  private async brickConfigToConfigEnv(brickVersions: CnBrickVersionDTO[]): Promise<CnLabConfigFileEnv> {
+    const labConfig: CnLabConfigFileEnv = {git: [], pip: [], variables: {}};
+
+
+    for (const brick of brickVersions) {
+      const brickVersion = await this.brickService.getBrickVersionAndCheck(brick.name, CmVersion.fromString(brick.version));
+
+      // add the package to the right place
+      let packageEnvs: CnConfigFileEnvRepository[];
+
+      if (brickVersion.repoType === CnRepoType.GIT) {
+        packageEnvs = labConfig.pip;
+      } else {
+        packageEnvs = labConfig.git;
+      }
+
+      // create the package env with the right source if it doesn't exist
+      if (packageEnvs.findIndex(git => git.source === brickVersion.repoType) < 0) {
+        packageEnvs.push({
+          source: brickVersion.getRepo(),
+          packages: []
+        });
+      }
+
+      // retrieve the package en with repo
+      const packageEnv = packageEnvs.find(git => git.source === brickVersion.getRepo());
+      // add the brick into the repo
+      packageEnv.packages.push({
+        name: brick.name,
+        version: brickVersion.version.toString(),
+        is_brick: true,
+        is_hidden: true, // force all bricks to be hidden
+      });
+    }
+
+    return labConfig;
+  }
+
+  public configFileToLabInstanceConfig(configFile: CnLabConfigFile): CnLabInstanceConfigDTO {
+    if (configFile == null) {
+      return {
+        glabTag: 'latest',
+        brickVersions: [],
+      };
+    }
+
+    const config: CnLabInstanceConfigDTO = {
+      glabTag: configFile.glab_tag,
+      brickVersions: [],
+    };
+
+    for (const env of [...configFile.environment.pip, ...configFile.environment.git]) {
+      for (const brick of env.packages) {
+        if (brick.is_brick) {
+          config.brickVersions.push({
+            name: brick.name,
+            version: brick.version,
+          });
+        }
+      }
+    }
+
+    return config;
   }
 
 }

@@ -26,6 +26,9 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
 
   @Input() labConfig: CaLabManagerConfig;
 
+  @Input() showAdvanced: boolean = true;
+
+
   isLoading: boolean = false;
 
   constructor(private labInstanceService: CaLabInstanceService,
@@ -83,7 +86,7 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
 
   private updateConfig(config: CaLabManagerConfig): void {
     this.isLoading = true;
-    this.labInstanceService.updateLabManagerConfig(this.labInstanceId, config).subscribe(
+    this.labInstanceService.updateConfig(this.labInstanceId, config).subscribe(
       () => this.updateConfigSuccess(),
       () => this.isLoading = false
     );

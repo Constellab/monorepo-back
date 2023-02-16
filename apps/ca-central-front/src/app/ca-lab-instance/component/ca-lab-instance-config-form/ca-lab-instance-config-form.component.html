@@ -30,7 +30,7 @@
     </mat-list>
 
 
-    <mat-expansion-panel class="advanced-config">
+    <mat-expansion-panel class="advanced-config" *ngIf="showAdvanced">
       <mat-expansion-panel-header>
         {{'lab_instance_advanced_config' | translate}}
       </mat-expansion-panel-header>

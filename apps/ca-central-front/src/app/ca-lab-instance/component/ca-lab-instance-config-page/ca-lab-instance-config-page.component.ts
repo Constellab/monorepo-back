@@ -14,6 +14,8 @@ export class CaLabInstanceConfigPageComponent implements OnInit {
 
   isOwner$: Observable<boolean> = this.state.isLabOwner$();
 
+  isCloud$: Observable<boolean> = this.state.isCloud$();
+
   constructor(private state: CaLabInstanceDetailPageState) {
   }
 

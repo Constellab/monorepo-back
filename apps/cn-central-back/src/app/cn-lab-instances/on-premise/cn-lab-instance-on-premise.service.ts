@@ -6,10 +6,13 @@ import {CnFrontService} from '../../cn-core/services/cn-front.service';
 import {HttpService} from '@nestjs/axios';
 import {lastValueFrom} from 'rxjs';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
+import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
+import {CnLabConfigFile} from '../../cn-lab-configs/cn-lab-config-file.class';
+import {CnLabInstanceConfigDTO} from '../cn-lab-instance.dto';
 
 export interface CnLabOnPremiseConfig {
   dockerCompose: string;
-  config: any;
+  config: CnLabConfigFile;
   exeFile: { name: string, buffer: Buffer };
 }
 
@@ -22,20 +25,22 @@ export class CnLabInstanceOnPremiseService {
 
   constructor(private configService: CnCoreConfigService,
               private frontService: CnFrontService,
-              private httpService: HttpService) {
+              private httpService: HttpService,
+              private labConfigService: CnLabConfigsService) {
   }
 
   public async generateOnPremiseConfig(labInstance: CnLabInstance): Promise<CnLabOnPremiseConfig> {
+    const config = await this.getConfig(labInstance);
     const exe = await this.getExeFile(labInstance.onPremisePlatform);
     return {
-      dockerCompose: this.generateDockerCompose(labInstance),
-      config: this.getConfig(),
+      dockerCompose: this.generateDockerCompose(labInstance, config),
+      config: config,
       exeFile: exe
     };
   }
 
 
-  private generateDockerCompose(labInstance: CnLabInstance): string {
+  private generateDockerCompose(labInstance: CnLabInstance, config: CnLabConfigFile): string {
     let content = this.readDockerComposeTemplate();
 
     // replace all '${LAB_ID}' by labInstance.id
@@ -53,37 +58,34 @@ export class CnLabInstanceOnPremiseService {
       .replace(/\${SECRET_KEY}/g, labInstance.id)
       .replace(/\${GWS_CORE_DEV_DB_PASSWORD}/g, labInstance.gwsCoreDevDbPassword)
       .replace(/\${CENTRAL_FRONT_URL}/g, this.frontService.getBaseWebsiteURL())
-      .replace(/\${HUB_FRONT_URL}/g, this.configService.getHubFrontUrl());
+      .replace(/\${HUB_FRONT_URL}/g, this.configService.getHubFrontUrl())
+      .replace(/\${FRONT_VERSION}/g, config.front_version)
+      .replace(/\${GLAB_TAG}/g, config.glab_tag)
 
     return content;
   }
 
-  private getConfig(): any {
-    return {
-      'name': 'app',
-      'title': 'Gencovery Lab',
-      'description': 'Gencovery Digital Lab as a Service',
-      'app_dir': '/app',
-      'uri': '91620768-2cdd-11eb-adc1-0242ac120002',
-      'variables': {
-        'gws_biota:sqlite3db_url': 'https://share.gencovery.com/s/Eo34Y8sxgqSdSMz/download',
-        'gws_biota:mariadb_url': ''
-      },
-      'environment': {
-        'pip': [],
-        'git': [
-          {
-            'source': 'https://$GWS_GIT_LOGIN:$GWS_GIT_PWD@gitlab.com/gencovery/core',
-            'packages': [
-              {'name': 'gws_core', 'version': '0.4.7', 'is_brick': true},
-              {'name': 'gws_biota', 'version': '0.4.5', 'is_brick': true},
-              {'name': 'skeleton', 'version': '0.1.0', 'is_brick': true}
-            ]
-          }
-        ],
-        'variables': {}
-      }
+  private async getConfig(labInstance: CnLabInstance): Promise<CnLabConfigFile> {
+
+    if (labInstance.labConfigId == null) {
+      throw new BlBadRequestException('Please configure the lab before generate the config file');
+    }
+
+    const config = await this.labConfigService.getCompleteConfig(labInstance.labConfigId);
+
+    const configDTO: CnLabInstanceConfigDTO = {
+      glabTag: 'latest', // force latest tag,
+      brickVersions: []
     };
+
+    for (const brickVersion of config.brickVersions) {
+      configDTO.brickVersions.push({
+        name: brickVersion.brick.name,
+        version: brickVersion.version.toString()
+      });
+    }
+
+    return this.labConfigService.getLabConfigFile(labInstance, configDTO);
   }
 
   /**

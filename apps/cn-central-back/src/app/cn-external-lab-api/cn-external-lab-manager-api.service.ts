@@ -11,16 +11,15 @@ import {
   CnLabComposeRestartOptions,
   CnLabComposeUpOptions,
   CnLabDockerPs,
-  CnLabManagerConfigDTO,
   CnLabManagerInitConfig,
-  CnLabManagerStatus,
-  CnLabManagerUpdateConfigDTO
+  CnLabManagerStatus
 } from './model/cn-lab-manager.class';
 import {
   CnExternalLabBackup,
   CnExternalLabBackupHistory,
   CnExternalLabCreateBackupDto
 } from './model/cn-external-lab-api.class';
+import {CnLabConfigFile} from '../cn-lab-configs/cn-lab-config-file.class';
 
 /**
  * Service to call the api of the lab manager
@@ -89,11 +88,11 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/system-prune`, null));
   }
 
-  public async updateConfig(apiInfo: CnExternalApiInfo, config: CnLabManagerUpdateConfigDTO): Promise<void> {
+  public async updateConfig(apiInfo: CnExternalApiInfo, config: CnLabConfigFile): Promise<void> {
     return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/config`, config));
   }
 
-  public async getConfig(apiInfo: CnExternalApiInfo): Promise<CnLabManagerConfigDTO> {
+  public async getConfig(apiInfo: CnExternalApiInfo): Promise<CnLabConfigFile> {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/config`));
   }
 

@@ -53,6 +53,7 @@ import {CnLabSshService} from './server/cn-lab-ssh.service';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
 import {CnLabInstanceOnPremiseService, CnLabOnPremiseConfig} from './on-premise/cn-lab-instance-on-premise.service';
+import {CnBrickGWS} from '../cn-bricks/cn-brick.dto';
 
 
 @Injectable()
@@ -141,17 +142,49 @@ export class CnLabInstanceAggregateService {
   }
 
   public async getConfig(id: string): Promise<CnLabConfig> {
-    await this.getAndCheckAuthorizationToFindById(id);
+    const lab = await this.getAndCheckAuthorizationToFindById(id);
 
-    const labInstance = await this.labInstancesService.findByIdAndCheck(id, {
-      labConfig: {brickVersions: {brick: true}}
-    });
-
-    if (!labInstance.labConfig) {
-      throw new BlBadRequestException('Lab config not found');
+    if (lab.labConfigId == null) {
+      throw new BlBadRequestException('Lab config not found. Was the lab started once ?');
     }
 
-    return labInstance.labConfig;
+
+    return this.labConfigService.getCompleteConfig(lab.labConfigId);
+  }
+
+  /**
+   * Update the lab bricks config.
+   * If the lab is on premise, the config is updated directly in the lab instance.
+   * If the lab is on cloud, it only updates the lab manager config (the config is then update when the lab is restarted)
+   * @param labId
+   * @param config
+   */
+  public async updateConfig(labId: string, config: CnLabInstanceConfigDTO): Promise<void> {
+    // check if the gws core is in the brick list
+    const gwsCore = config.brickVersions.find(brickVersion => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_CORE.toLowerCase());
+
+    if (gwsCore == null) {
+      throw new BlBadRequestException(`The brick '${CnBrickGWS.GWS_CORE}' must be set in the config`);
+    }
+
+    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId, false);
+
+    if (labInstance.isCloud()) {
+      await this.labManagerService.updateConfig(labInstance, config);
+    } else {
+      // for on premise lab, we need to update the lab config directly (there is no lab manager)
+      const labConfig = await this.labConfigService.getOrCreateLabConfig({
+        version: 1,
+        brick_versions: config.brickVersions,
+      });
+
+      await this.updateLabInstanceConfig(labInstance, labConfig);
+    }
+  }
+
+  private async updateLabInstanceConfig(labInstance: CnLabInstance, labConfig: CnLabConfig): Promise<CnLabInstance> {
+    labInstance.labConfig = labConfig;
+    return this.labInstancesService.update(labInstance);
   }
 
   /////////////////////////////////////// STATUS  //////////////////////////////////
@@ -452,11 +485,6 @@ export class CnLabInstanceAggregateService {
     return this.labManagerService.systemPrune(labInstance);
   }
 
-  public async updateLabManagerConfig(labId: string, config: CnLabInstanceConfigDTO): Promise<void> {
-    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
-    return this.labManagerService.updateConfig(labInstance, config);
-  }
-
   public async getLabManagerConfig(labId: string): Promise<CnLabInstanceConfigDTO> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.getConfig(labInstance);
@@ -505,8 +533,7 @@ export class CnLabInstanceAggregateService {
 
     const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
 
-    labInstance.labConfig = labConfig;
-    await this.labInstancesService.update(labInstance);
+    await this.updateLabInstanceConfig(labInstance, labConfig);
   }
 
   public async getCurrentLabInstanceProjects(): Promise<CnProject[]> {
@@ -528,7 +555,6 @@ export class CnLabInstanceAggregateService {
       };
     });
   }
-
 
 
   /////////////////////////// SERVER //////////////////////////////
@@ -697,7 +723,7 @@ export class CnLabInstanceAggregateService {
   public async generateOnPremiseConfig(labInstanceId: string): Promise<CnLabOnPremiseConfig> {
     const lab = await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
-    if(!lab.isOnPremise()){
+    if (!lab.isOnPremise()) {
       throw new BlBadRequestException('Lab is not on premise');
     }
 
@@ -722,7 +748,7 @@ export class CnLabInstanceAggregateService {
   private async getAndCheckAuthorizationToManageLab(id: string, refuseOnPremise: boolean = true): Promise<CnLabInstance> {
     const labInstance = await this.labInstancesService.findByIdAndCheck(id, {sharedGroups: true, space: true});
 
-    if(refuseOnPremise && labInstance.isOnPremise()) {
+    if (refuseOnPremise && labInstance.isOnPremise()) {
       throw new BlBadRequestException(CnErrorText.CANT_MANAGE_ON_PREMISE_LAB);
     }
     await this.security.checkAuthorizationToManageLab(labInstance, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
