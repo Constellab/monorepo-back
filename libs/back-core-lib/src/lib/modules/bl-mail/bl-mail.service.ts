@@ -109,7 +109,7 @@ export class BlMailService {
       viewEngine: {
         extname: '.hbs', // handlebars extension
         layoutsDir: this.moduleConfig.templateFolder, // location of handlebars templates
-        defaultLayout: 'cn-main-' + lang, // name of main template, will wrap all other templates
+        defaultLayout: 'main-' + lang, // name of main template, will wrap all other templates
         partialsDir: this.moduleConfig.templateFolder, // location of your subtemplates aka. header, footer etc
       },
       viewPath: this.moduleConfig.templateFolder,
