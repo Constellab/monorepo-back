@@ -17,14 +17,19 @@
   margin-top: 10vh;
 }
 
+.section-div{
+  display: flex;
+  flex-direction: row;
+  margin: 20vh auto 0 auto;
+  width: fit-content;
+}
+
 .portals-div{
   display: flex;
   flex-direction: row;
-  margin: 10vh auto 0 auto;
   background-color: var(--card-background);
   border-radius: 18px;
   padding: 8px;
-  width: fit-content;
 }
 
 .portal-div{
@@ -106,8 +111,6 @@
 }
 
 .constellab-portal-div{
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 1em;
-  background-color: var(--card-background);
+  margin-left: 5em;
+  margin-top: 8px;
 }

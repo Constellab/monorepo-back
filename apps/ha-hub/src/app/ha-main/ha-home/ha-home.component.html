@@ -5,39 +5,35 @@
       <h4>{{'home_subtitle' | translate}}</h4>
     </div>
 
-    <div class="portals-div">
-      <a class="portal-div" [routerLink]="'/stories'">
-        <div class="portal-div-image">
-        </div>
-        <div class="portal-div-content">
-          <h4>{{'stories' | translate}}</h4>
-          <h5>{{'stories_description' | translate}}</h5>
-        </div>
-      </a>
-      <a class="portal-div" [routerLink]="'/bricks'">
-        <div class="portal-div-image">
-        </div>
-        <div class="portal-div-content">
-          <h4>{{'bricks' | translate}}</h4>
-          <h5>{{'bricks_description' | translate}}</h5>
-        </div>
-      </a>
-      <!--      <div class="portal-div">-->
-      <!--        <h5>{{'webinaires' | translate}}</h5>-->
-      <!--      </div>-->
-      <!--      <div class="portal-div">-->
-      <!--        <h5>{{'forum' | translate}}</h5>-->
-      <!--      </div>-->
-    </div>
+    <div class="section-div">
+      <div class="portals-div">
+        <a class="portal-div" [routerLink]="'/stories'">
+          <div class="portal-div-image">
+          </div>
+          <div class="portal-div-content">
+            <h4>{{'stories' | translate}}</h4>
+            <h5>{{'stories_description' | translate}}</h5>
+          </div>
+        </a>
+        <a class="portal-div" [routerLink]="'/bricks'">
+          <div class="portal-div-image">
+          </div>
+          <div class="portal-div-content">
+            <h4>{{'bricks' | translate}}</h4>
+            <h5>{{'bricks_description' | translate}}</h5>
+          </div>
+        </a>
+      </div>
 
-    <a class="portal-div constellab-portal-div" [href]="constellabUrl" target="_blank">
-      <div class="portal-div-image">
-      </div>
-      <div class="portal-div-content">
-        <h4>Constellab <mat-icon>arrow_outward</mat-icon></h4>
-        <h5>{{'constellab_description' | translate}}</h5>
-      </div>
-    </a>
+      <a class="portal-div constellab-portal-div" [href]="constellabUrl" target="_blank">
+        <div class="portal-div-image">
+        </div>
+        <div class="portal-div-content">
+          <h4>Constellab <mat-icon>arrow_outward</mat-icon></h4>
+          <h5>{{'constellab_description' | translate}}</h5>
+        </div>
+      </a>
+    </div>
   </div>
 
   <footer class="footer small-text">
