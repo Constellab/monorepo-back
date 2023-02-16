@@ -150,7 +150,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
       // add the package to the right place
       let packageEnvs: CnConfigFileEnvRepository[];
 
-      if (brickVersion.repoType === CnRepoType.GIT) {
+      if (brickVersion.repoType === CnRepoType.PIP) {
         packageEnvs = labConfig.pip;
       } else {
         packageEnvs = labConfig.git;
