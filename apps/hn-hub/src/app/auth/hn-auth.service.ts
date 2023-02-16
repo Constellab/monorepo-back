@@ -25,7 +25,7 @@ export class HnAuthService {
   async login(credentials: CmCredentials): Promise<HnAuthResponse> {
     const checkCredential =
       this.coreConfigService.isLocal() ? await this.userService.getUserCredentialsResponse(credentials)
-        : await this.centralAuthService.checkUserCredentialAndAdmin(credentials);
+        : await this.centralAuthService.checkUserCredential(credentials);
 
     // if there is no 2FA, the user can be logged in
     if (checkCredential.status === 'OK' && checkCredential.user) {

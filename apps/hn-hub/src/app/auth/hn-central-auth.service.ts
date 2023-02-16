@@ -23,10 +23,10 @@ export class HnCentralAuthService {
     private coreConfigService: HnCoreConfigService) {
   }
 
-  async checkUserCredentialAndAdmin(credentials: CmCredentials): Promise<HnExternalCheckCredentialResponse> {
+  async checkUserCredential(credentials: CmCredentials): Promise<HnExternalCheckCredentialResponse> {
     try {
       return await lastValueFrom(this.blExternalApiService
-        .post(this.buildRoute('external/check-credentials/true'), credentials));
+        .post(this.buildRoute('external/check-credentials/false'), credentials));
 
     } catch (e: any) {
       if (e.status >= 500 && e.status < 600) {
