@@ -22,10 +22,12 @@ import {
   BlParsePipe,
   BlPublic,
   BlResponseHelper,
-  BlSearchParams
+  BlSearchParams, BlUnauthorizedException
 } from '@monorepo/back-core-lib';
 import {FilesInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
+import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
+import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 
 @Controller('users')
 export class CnUsersController {
@@ -95,6 +97,10 @@ export class CnUsersController {
 
   @Put('send-all-to-queue')
   sendAllToQueue(): Promise<void> {
-    return this.usersService.sendAllUsersToQueue();
+    //If current user is admin, send all users to queue
+    if (CnCurrentUserHelper.getCurrentUser().isAdmin()) {
+      return this.usersService.sendAllUsersToQueue();
+    }
+    throw new BlUnauthorizedException(CnErrorText.ACCOUNT_NOT_ADMIN_ACTIVATED);
   }
 }
