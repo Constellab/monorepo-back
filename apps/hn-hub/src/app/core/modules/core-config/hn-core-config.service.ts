@@ -106,10 +106,10 @@ export class HnCoreConfigService {
     let res: string;
     switch (this.getEnvironmentProfile()) {
       case 'prod':
-        res = 'https://constellab.gencovery.com//';
+        res = 'https://constellab.space/';
         break;
       case 'preprod':
-        res = 'https://gencovery.preconstellab.com/';
+        res = 'https://preconstellab.com/';
         break;
       case 'dev':
         res = 'http://localhost:4200/';
