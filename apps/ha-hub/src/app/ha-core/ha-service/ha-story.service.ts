@@ -182,8 +182,8 @@ export class HaStoryService {
    * @param storyId story id
    * @param coAuthor co author id
    */
-  removeStoryCoAuthor(storyId: string, coAuthorId: string): Observable<HaStory> {
-    return this.apiService.put(`${this.route}/${storyId}/remove-co-author/${coAuthorId}`, {}, HaStory);
+  removeStoryCoAuthor(storyId: string, storyAuthorId: string): Observable<HaStory> {
+    return this.apiService.put(`${this.route}/${storyId}/remove-co-author/${storyAuthorId}`, {}, HaStory);
   }
 
   /***

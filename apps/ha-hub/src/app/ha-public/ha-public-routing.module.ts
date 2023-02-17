@@ -27,7 +27,7 @@ const routes: Route[] = [
   {
     path: 'edit',
     component: HaPublicEditBrickPageComponent,
-    canLoad: [HaAdminGuard],
+    canActivate: [HaAdminGuard],
   },
   {
     component: HaPublicBrickPageComponent,

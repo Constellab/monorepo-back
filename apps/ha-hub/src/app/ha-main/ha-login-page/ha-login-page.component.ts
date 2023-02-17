@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
 import {HaAuthenticatedUserService} from '../../ha-core/ha-service/ha-authenticated-user.service';
+import {Location} from '@angular/common';
 
 @Component({
   selector: 'ha-login-page',
@@ -8,8 +8,9 @@ import {HaAuthenticatedUserService} from '../../ha-core/ha-service/ha-authentica
   styleUrls: ['./ha-login-page.component.scss']
 })
 export class HaLoginPageComponent implements OnInit {
+  previousUrl: string;
 
-  constructor(private router: Router,
+  constructor(private location: Location,
               private authenticatedUserService: HaAuthenticatedUserService) {
   }
 
@@ -18,7 +19,7 @@ export class HaLoginPageComponent implements OnInit {
 
   onLoginSuccess(): void {
     this.authenticatedUserService.init();
-    this.router.navigate(['/']);
+    this.location.back();
   }
 
 }

@@ -29,8 +29,11 @@ export class HnStoryAuthorService {
     }
   }
 
-  async removeStoryCoAuthor(storyId: string, coAuthorId: string): Promise<void> {
-    await this.storyAuthorRepository.delete({story: {id: storyId}, user: {id: coAuthorId}});
+  async removeStoryCoAuthor(storyAuthorId: string): Promise<void> {
+    const storyAuthor: HnStoryAuthor = await this.storyAuthorRepository.findOneBy({id: storyAuthorId});
+    if (storyAuthor) {
+      await this.storyAuthorRepository.remove(storyAuthor);
+    }
   }
 
   async getStoryAuthorInviteByToken(token: string): Promise<HnStoryAuthorInvite> {

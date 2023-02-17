@@ -139,10 +139,10 @@ export class HnStoryController {
   /***
    * Remove story co-author
    */
-  @Put(':id/remove-co-author/:coAuthorId')
+  @Put(':id/remove-co-author/:storyAuthorId')
   async removeStoryCoAuthor(@Param('id', new ParseUUIDPipe()) id: string,
-                              @Param('coAuthorId', new ParseUUIDPipe()) coAuthorId: string): Promise<void> {
-    return this.storyService.removeStoryCoAuthor(id, coAuthorId);
+                              @Param('storyAuthorId', new ParseUUIDPipe()) storyAuthorId: string): Promise<void> {
+    return this.storyService.removeStoryCoAuthor(id, storyAuthorId);
   }
 
 

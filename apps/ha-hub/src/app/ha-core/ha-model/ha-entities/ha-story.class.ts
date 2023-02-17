@@ -21,8 +21,7 @@ export enum HaStoryCategory{
 
 export enum HaStoryAuthorStatus{
   AUTHOR = 'AUTHOR',
-  PENDING = 'PENDING',
-  ACTIVE = 'ACTIVE'
+  COAUTHOR = 'COAUTHOR'
 }
 
 export class HaStoryAuthor{
@@ -58,10 +57,6 @@ export class HaStory{
   publishedAt: DateTime;
 
   lastModifiedAt: DateTime;
-
-  getCoAuthors(): HaUser[]{
-    return this.storyAuthors.filter(storyAuthor => storyAuthor.status === HaStoryAuthorStatus.ACTIVE).map(storyAuthor => storyAuthor.user);
-  }
 
   getAuthor(): HaUser{
     return this.storyAuthors.filter(storyAuthor => storyAuthor.status === HaStoryAuthorStatus.AUTHOR)[0].user;

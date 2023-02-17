@@ -45,6 +45,7 @@
 .text-editor{
   border: none;
   width: 60rem;
+  max-width: calc(100vw - 32px);
 }
 
 .story-date{

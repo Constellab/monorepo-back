@@ -300,12 +300,12 @@ export class HnStoryService {
     return this.storyRepository.save(story);
   }
 
-  async removeStoryCoAuthor(id: string, coAuthorId: string): Promise<void> {
+  async removeStoryCoAuthor(id: string, storyAuthorId: string): Promise<void> {
     const isAuthor: boolean = await this.isStoryOwnerOrCoAuthor(id, true);
     if (!isAuthor) {
       throw new BlUnauthorizedException('You are not authorized to update this story');
     }
-    return this.storyAuthorService.removeStoryCoAuthor(id, coAuthorId);
+    return this.storyAuthorService.removeStoryCoAuthor(storyAuthorId);
   }
 
   async isInviteValid(token: string): Promise<HnStoryAuthorInvite> {

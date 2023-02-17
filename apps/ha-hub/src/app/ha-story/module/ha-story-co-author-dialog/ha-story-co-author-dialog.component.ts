@@ -6,7 +6,7 @@ import {
   FlFormDialogInput,
   FlSnackBarService
 } from '@monorepo/front-core-lib';
-import {HaStory, HaStoryAuthor} from '../../../ha-core/ha-model/ha-entities/ha-story.class';
+import {HaStory, HaStoryAuthor, HaStoryAuthorStatus} from '../../../ha-core/ha-model/ha-entities/ha-story.class';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {HaStoryService} from '../../../ha-core/ha-service/ha-story.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
@@ -14,7 +14,7 @@ import {Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {MatChipInputEvent} from '@angular/material/chips';
-import {ClStringHelper} from '@monorepo/core-lib';
+import {Location} from '@angular/common';
 
 export type HaCreateStoryDtoInput = FlFormDialogInput<HaCoAuthorFormData>;
 
@@ -41,18 +41,26 @@ export class HaStoryCoAuthorDialogComponent extends FlFormDialogAbstractDirectiv
   coAuthors: HaCoAuthorEmail[] = [];
   storyId: string;
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
+
   constructor(snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<HaStoryCoAuthorDialogComponent>,
               @Inject(MAT_DIALOG_DATA) dialogInput: HaCreateStoryDtoInput,
               private dialogService: FlDialogService,
-              private storyService: HaStoryService) {
+              private storyService: HaStoryService,
+              private location: Location) {
     super(dialogInput, snackBarService, dialogRef);
     this.storyId = dialogInput.object.id;
-    this.coAuthors = dialogInput.object.storyAuthors.map(sA => ({id: sA.id, fullName: sA.user.fullname, email: sA.user.email})).slice(1);
   }
 
   ngOnInit(): void {
     this.formGp = this.buildForm();
+    this.storyService.getById(this.storyId).subscribe(story => {
+      this.coAuthors = story.storyAuthors.filter(value => (value.status != HaStoryAuthorStatus.AUTHOR)).map(sA => ({
+        id: sA.id,
+        fullName: sA.user.fullname,
+        email: sA.user.email
+      }));
+    });
   }
 
   buildForm(): FormGroup<HaCoAuthorFormData> {
@@ -74,19 +82,19 @@ export class HaStoryCoAuthorDialogComponent extends FlFormDialogAbstractDirectiv
     event.chipInput?.clear();
   }
 
-  openRemoveConfirmDialog(coAuthor: HaCoAuthorEmail): void {
+  openRemoveConfirmDialog(storyAuthor: HaCoAuthorEmail): void {
     const input: FlConfirmDialogInput = {
       title: 'remove_coauthor',
       content: 'remove_coauthor_dialog_content',
       translateTitleAndContent: true,
       successMessage: 'remove_coauthor_success',
       translateMessage: true,
-      observable: this.storyService.removeStoryCoAuthor(this.storyId, coAuthor.id)
+      observable: this.storyService.removeStoryCoAuthor(this.storyId, storyAuthor.id)
     }
 
     this.dialogService.openConfirmDialog(input).afterClosed().subscribe(result => {
       if (result) {
-        this.remove(coAuthor);
+        this.remove(storyAuthor);
       }
     });
   }
