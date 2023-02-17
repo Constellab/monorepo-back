@@ -186,7 +186,7 @@ export class CnLabSshService {
   public async updateLabManager(labInstance: CnLabInstance): Promise<void> {
     await this.labInstanceService.updateServerStatusText(labInstance.id, `Updating lab manager`);
     const updateLabManager = this.getSshCommand(labInstance.virtualHost, [`cd ${CnLabSshService.DOCKERLAB_FOLDER}`,
-      `. update_lab_manager.sh ${this.coreConfigService.getLabManagerVersion()}}`]);
+      `. update_lab_manager.sh ${this.coreConfigService.getLabManagerVersion()}`]);
     this.logger.log(`Executing command -- ${updateLabManager} -- for lab ${labInstance.id}`);
     await this.commandService.execCommand(updateLabManager);
     await this.labInstanceService.updateServerStatusText(labInstance.id, `Lab manager updated`);
