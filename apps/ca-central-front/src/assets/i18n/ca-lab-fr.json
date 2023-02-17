@@ -60,6 +60,7 @@
   "lab_containers": "Conteneurs",
   "lab_manager_task": "Tâche",
   "lab_manager_no_task": "Aucune tâche",
+  "lab_manager_not_compatible_with_central": "La version du lab manager actuelle : '{{labManagerVersion}}' n'est peut-être pas compatible. Version recommandée '{{compatibleVersion}}'. Veuillez cliquer sur 'Mettre à jour le lab manager' avant de faire toute manipulation avec le lab manager.",
   "lab_manager_compose_up_form": "Option pour démarrer le lab",
   "lab_manager_compose_restart_form": "Option pour redémarrer le lab",
   "lab_manager_adminer_running": "Attention, le service adminer est en cours d'exécution, veuillez l'arrêter une fois que les manipulations sur le BD sont terminées",

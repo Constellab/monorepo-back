@@ -39,7 +39,10 @@ export class CnLabManagerService {
       throw new BlBadRequestException('The lab manager is not running');
     }
 
-    return this.labManagerApiService.getStatus(labInstance.getLabManagerApiInfo());
+    const status = await this.labManagerApiService.getStatus(labInstance.getLabManagerApiInfo());
+    // set the lab manager compatible version for central
+    status.labManagerCompatibleVersionForCentral = this.configService.getLabManagerVersion();
+    return status;
   }
 
   public async listContainers(labInstance: CnLabInstance): Promise<CnLabDockerPs[]> {

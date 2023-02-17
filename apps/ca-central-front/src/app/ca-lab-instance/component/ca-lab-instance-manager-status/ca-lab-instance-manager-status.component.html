@@ -14,6 +14,17 @@
   <span>{{labStatus.currentTask.name}} {{labStatus.currentTask.info}}</span>
 </div>
 
+<div *ngIf="labStatus.labManagerVersion !== labStatus.labManagerCompatibleVersionForCentral"
+     class="version-warning">
+  <fl-text-icon>
+    <mat-icon color="warn">warnings</mat-icon>
+    {{'lab_manager_not_compatible_with_central' | translate: {
+    'labManagerVersion': labStatus.labManagerVersion,
+    'compatibleVersion': labStatus.labManagerCompatibleVersionForCentral
+  } }}
+  </fl-text-icon>
+</div>
+
 <ng-template #noTask>
   {{'lab_manager_no_task' | translate}}
 </ng-template>
