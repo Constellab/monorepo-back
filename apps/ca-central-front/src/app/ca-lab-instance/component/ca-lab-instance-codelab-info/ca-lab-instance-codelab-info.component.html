@@ -17,10 +17,16 @@
     codelab
   </fl-key-value>
 
-  <fl-key-value>
-    <fl-key>{{'codelab_user_token' | translate}}</fl-key>
-    <span class="g-text-link" (click)="copyToTokenToClipboard()" [matTooltip]="'codelab_copy_token' | translate">{{labInstance.codelabToken}}</span>
-  </fl-key-value>
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <div>
+      <span class="g-text-link" (click)="copyToTokenToClipboard()">{{'codelab_token_click_to_copy' | translate}}</span>
+      <span *ngIf="showCodeLabToken"> : {{labInstance.codelabToken}}</span>
+    </div>
+    <button mat-icon-button type="button" (click)="toggleShowCodeLabToken()"
+            [matTooltip]="(showCodeLabToken? 'hide_codelab_token' : 'show_codelab_token') | translate">
+      <mat-icon>{{showCodeLabToken ? 'visibility_off' : 'visibility'}}</mat-icon>
+    </button>
+  </div>
 
   <fl-key-value>
     <fl-key>{{'codelab_more_info' | translate}}</fl-key>

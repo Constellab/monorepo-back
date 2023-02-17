@@ -19,6 +19,8 @@ export class CaLabInstanceCodelabInfoComponent implements OnInit {
   codelabUrl: string;
   hubHelpUrl = CaHubUrlHelper.getDevEnvironmentUrl();
 
+  showCodeLabToken = false;
+
   constructor(@Inject(MAT_DIALOG_DATA) labInstance: CaLabInstance,
               private clipboardService: FlClipboardService,
               private snackBarService: FlSnackBarService) {
@@ -35,5 +37,9 @@ export class CaLabInstanceCodelabInfoComponent implements OnInit {
     if (result) {
       this.snackBarService.openSuccessMessage({text: 'codelab_token_copied', translateText: true});
     }
+  }
+
+  toggleShowCodeLabToken(): void {
+    this.showCodeLabToken = !this.showCodeLabToken;
   }
 }
