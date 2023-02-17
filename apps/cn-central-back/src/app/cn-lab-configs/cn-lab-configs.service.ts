@@ -191,7 +191,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
       brickVersions: [],
     };
 
-    for (const env of [...configFile.environment.pip, ...configFile.environment.git]) {
+    for (const env of [...configFile.environment?.pip ?? [] , ...configFile.environment?.git ?? []]) {
       for (const brick of env.packages) {
         if (brick.is_brick) {
           config.brickVersions.push({
