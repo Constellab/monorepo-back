@@ -227,5 +227,10 @@ export class CnCoreConfigService {
   public getAssetPath(...path: string[]): string {
     return this.getDistPath(this.assets, ...path);
   }
+
+  // return the lab manager version related to the current version of central
+  public getLabManagerVersion(): string {
+    return '1.0.0';
+  }
 }
 
