@@ -59,6 +59,7 @@
   "lab_container_logs": "View logs",
   "lab_containers": "Containers",
   "lab_manager_task": "Task",
+  "lab_manager_version": "Lab manager version",
   "lab_manager_not_compatible_with_central": "Current lab manager version : '{{labManagerVersion}}' might not be compatible. Recommended version '{{compatibleVersion}}'. Please click on 'Update lab manager' before doing any manipulation with the lab manager.",
   "lab_manager_no_task": "No task",
   "lab_manager_compose_up_form": "Option to up the lab",

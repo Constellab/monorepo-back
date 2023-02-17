@@ -14,6 +14,11 @@
   <span>{{labStatus.currentTask.name}} {{labStatus.currentTask.info}}</span>
 </div>
 
+<fl-key-value>
+  <fl-key>{{'lab_manager_version' | translate}}</fl-key>
+  {{labStatus.labManagerVersion}}
+</fl-key-value>
+
 <div *ngIf="labStatus.labManagerVersion !== labStatus.labManagerCompatibleVersionForCentral"
      class="version-warning">
   <fl-text-icon>
