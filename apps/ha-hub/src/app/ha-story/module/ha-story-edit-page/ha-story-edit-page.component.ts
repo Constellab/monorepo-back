@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {HaStoryService} from '../../../ha-core/ha-service/ha-story.service';
 import {HaStory, HaStoryContentFormDTO} from '../../../ha-core/ha-model/ha-entities/ha-story.class';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 import {FlConfirmDialogInput, FlDebouncer, FlDialogService, FlFormDialogInput} from '@monorepo/front-core-lib';
@@ -54,7 +54,8 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private dialogService: FlDialogService,
     private topicService: HaTopicService,
-    private authenticatedUserService: HaAuthenticatedUserService
+    private authenticatedUserService: HaAuthenticatedUserService,
+    private router: Router
   ) {
   }
 
@@ -186,6 +187,7 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
       }
       this.dialogService.openConfirmDialog(input).afterClosed().subscribe((res) => {
         if (res.choice && res.result) {
+          this.router.navigate(['/stories', res.result.id])
           this.story = res.result;
         }
       });

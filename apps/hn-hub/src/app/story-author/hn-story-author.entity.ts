@@ -9,7 +9,7 @@ export enum HnStoryAuthorStatus {
   AUTHOR = 'AUTHOR'
 }
 
-@Entity()
+@Entity('StoryAuthor')
 export class HnStoryAuthor extends BlEntityWithId {
 
   @Column('enum', {enum: HnStoryAuthorStatus})

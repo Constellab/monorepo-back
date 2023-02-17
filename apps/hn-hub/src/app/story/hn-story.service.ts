@@ -4,7 +4,13 @@ import {HnStory, HnStoryStatus} from './hn-story.entity';
 import {FindOptionsOrder, FindOptionsWhere, In, Like, Repository} from 'typeorm';
 import {HnTopicService} from '../topic/hn-topic.service';
 import {ClPage, ClStringHelper} from '@monorepo/core-lib';
-import {BlAbstractPaginatedService, BlBucketConfig, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
+import {
+  BlAbstractPaginatedService,
+  BlBucketConfig,
+  BlFile,
+  BlObjectStorageService,
+  BlUnauthorizedException
+} from '@monorepo/back-core-lib';
 import {CmRichText, CmRichTextHeader, CmRichTextI, CmRichTextImageCP} from '@monorepo/common-model';
 import imageSize from 'image-size';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
@@ -138,12 +144,20 @@ export class HnStoryService {
   }
 
   async updateStoryTitle(id: string, title: string): Promise<HnStory> {
+    const isAuthor: boolean = await this.isStoryOwnerOrCoAuthor(id);
+    if (!isAuthor) {
+      throw new BlUnauthorizedException('You are not authorized to update this story');
+    }
     const story = await this.getStory(id);
     story.title = title;
     return this.storyRepository.save(story);
   }
 
   async addStoryTopic(id: string, topic: HnTopicDto): Promise<HnTopic> {
+    const isAuthor: boolean = await this.isStoryOwnerOrCoAuthor(id);
+    if (!isAuthor) {
+      throw new BlUnauthorizedException('You are not authorized to update this story');
+    }
     const t: HnTopic = await this.topicService.getOrCreateTopic(topic);
     const story: HnStory = await this.getStory(id);
     story.topics.push(t);
@@ -153,6 +167,10 @@ export class HnStoryService {
   }
 
   async removeTopic(id: string, topicId: string): Promise<HnStory> {
+    const isAuthor: boolean = await this.isStoryOwnerOrCoAuthor(id);
+    if (!isAuthor) {
+      throw new BlUnauthorizedException('You are not authorized to update this story');
+    }
     const story = await this.getStory(id);
     story.topics = story.topics.filter(t => t.id !== topicId);
     const topic: HnTopic = await this.topicService.getTopic(topicId);
@@ -164,6 +182,10 @@ export class HnStoryService {
   }
 
   async updateStoryContent(id: string, content: CmRichTextI): Promise<HnStory> {
+    const isAuthor: boolean = await this.isStoryOwnerOrCoAuthor(id);
+    if (!isAuthor) {
+      throw new BlUnauthorizedException('You are not authorized to update this story');
+    }
     const story = await this.getStory(id);
     story.content = await this.editContent(content);
     const richText = new CmRichText(content);
@@ -246,6 +268,10 @@ export class HnStoryService {
   }
 
   async publishStory(id: string): Promise<HnStory> {
+    const isAuthor: boolean = await this.isStoryOwnerOrCoAuthor(id);
+    if (!isAuthor) {
+      throw new BlUnauthorizedException('You are not authorized to update this story');
+    }
     const story: HnStory = await this.getStory(id);
     if (new CmRichText(story.content as CmRichTextI).getFirstFigureLink().length <= 0) {
       throw new Error('Story must have a main picture');
@@ -255,20 +281,30 @@ export class HnStoryService {
     return this.storyRepository.save(story);
   }
 
-  async isStoryOwnerOrCoAuthor(id: string): Promise<boolean> {
+  async isStoryOwnerOrCoAuthor(id: string, onlyOwner: boolean = false): Promise<boolean> {
     const story = await this.getStory(id);
     return story.getAuthor().id === HnCurrentUserHelper.getCurrentUser().id ||
-      story.storyAuthors.some((sA: HnStoryAuthor) => sA.user.id === HnCurrentUserHelper.getCurrentUser().id &&
-        (sA.status === HnStoryAuthorStatus.COAUTHOR || sA.status === HnStoryAuthorStatus.AUTHOR));
+      story.storyAuthors.some((sA: HnStoryAuthor) =>
+        sA.user.id === HnCurrentUserHelper.getCurrentUser().id && onlyOwner ?
+          sA.status === HnStoryAuthorStatus.AUTHOR :
+          (sA.status === HnStoryAuthorStatus.COAUTHOR || sA.status === HnStoryAuthorStatus.AUTHOR));
   }
 
   async updateStoryCoAuthors(id: string, newCoAuthorsMail: string[]): Promise<HnStory> {
+    const isAuthor: boolean = await this.isStoryOwnerOrCoAuthor(id, true);
+    if (!isAuthor) {
+      throw new BlUnauthorizedException('You are not authorized to update this story');
+    }
     const story: HnStory = await this.getStory(id);
     await this.storyAuthorService.updateStoryCoAuthors(story, newCoAuthorsMail);
     return this.storyRepository.save(story);
   }
 
   async removeStoryCoAuthor(id: string, coAuthorId: string): Promise<void> {
+    const isAuthor: boolean = await this.isStoryOwnerOrCoAuthor(id, true);
+    if (!isAuthor) {
+      throw new BlUnauthorizedException('You are not authorized to update this story');
+    }
     return this.storyAuthorService.removeStoryCoAuthor(id, coAuthorId);
   }
 

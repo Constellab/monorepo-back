@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, Post, Put} from '@nestjs/common';
+import {Body, Controller, Get, Param, Post, Put, UseGuards} from '@nestjs/common';
 import {HnBrickService} from './hn-brick.service';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
@@ -13,8 +13,11 @@ import {
   HnTechnicalDocInputDTO
 } from './hn-brick.dto';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
+import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
+import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 
 @Controller('brick')
+@UseGuards(HnIsAdminGuard)
 export class HnBrickController {
   constructor(private readonly brickService: HnBrickService) {
   }
@@ -60,6 +63,7 @@ export class HnBrickController {
   }
 
 
+  @IsAdmin()
   @Post()
   create(@Body(new BlParsePipe(HnCreateBrickDTO)) createBrick: HnCreateBrickDTO): Promise<HnBrick> {
     if (!createBrick.name.includes(' ')) {
@@ -69,6 +73,7 @@ export class HnBrickController {
     }
   }
 
+  @IsAdmin()
   @Post('create-technical-doc')
   async createTechnicalDoc(@Body(new BlParsePipe(HnCreateTechnicalDocContent)) content: HnCreateTechnicalDocContent): Promise<boolean> {
     return this.brickService.createTechnicalDoc(content);
@@ -86,6 +91,7 @@ export class HnBrickController {
     return await this.brickService.findTechDoc(input);
   }
 
+  @IsAdmin()
   @Post('new-version')
   createNewVersion(@Body(new BlParsePipe(HnNewVersionDTO)) newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
     return this.brickService.createNewVersion(newVersion);
@@ -97,11 +103,13 @@ export class HnBrickController {
     return this.brickService.getLatestBrickVersion(brickName);
   }
 
+  @IsAdmin()
   @Put('edit')
   public editBrick(@Body(new BlParsePipe(HnEditBrickDTO)) editedBrick: HnEditBrickDTO): Promise<HnBrick> {
     return this.brickService.editBrick(editedBrick);
   }
 
+  @IsAdmin()
   @Post('is-actual-brick-and-new-version')
   async isActualBrickAndNewVersion(@Body(new BlParsePipe(HnIsActualBrickAndNewVersionDTO))
     content: HnIsActualBrickAndNewVersionDTO): Promise<[boolean, boolean]> {
@@ -117,7 +125,6 @@ export class HnBrickController {
       brickName,
       major === 'latest' ? (await this.getLatestBrickVersion(brickName)).version.major : +(major.slice(1)));
   }
-
   @Post('get-doc-by-link')
   async getDocByLink(@Body() body: any): Promise<HnDocumentationSearchDTO>{
     return this.brickService.getDocByLink(body.link);

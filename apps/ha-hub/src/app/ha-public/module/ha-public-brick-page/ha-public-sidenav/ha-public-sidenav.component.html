@@ -19,7 +19,7 @@
             cdkDropList (cdkDropListDropped)="drop($event)" [trackBy]="trackByIdentity">
     <!-- This is the tree node template for leaf nodes -->
     <mat-tree-node *matTreeNodeDef="let node" cdkDrag
-                   [cdkDragDisabled]="isAuthenticated === false || node.name == null" [cdkDragData]="node"
+                   [cdkDragDisabled]="!(isAdmin$ | async) || node.name == null" [cdkDragData]="node"
                    (mouseenter)="hoverId=node.id" (mouseleave)="hoverId=null"
                    class="sidenav-item small-text sidenav-item-with-icon g-drag-hide-placeholder"
                    [ngStyle]="{'margin-left' : (node.level)*15 + 'px'}">
@@ -28,14 +28,14 @@
         {{node.name}}
       </a>
       <div class="line-icons">
-        <mat-icon cdkDragHandle class="drag-drop-bt g-icon-small" *ngIf="isAuthenticated && hoverId===node.id">
+        <mat-icon cdkDragHandle class="drag-drop-bt g-icon-small" *ngIf="(isAdmin$ | async) && hoverId===node.id">
           drag_handle
         </mat-icon>
       </div>
     </mat-tree-node>
 
     <mat-tree-node *matTreeNodeDef="let node;when: hasChild" cdkDrag
-                   [cdkDragDisabled]="isAuthenticated === false || node.name == null" [cdkDragData]="node"
+                   [cdkDragDisabled]="!(isAdmin$ | async) || node.name == null" [cdkDragData]="node"
                    (mouseenter)="hoverId=node.id" (mouseleave)="hoverId=null"
                    class="sidenav-item small-text sidenav-item-with-icon g-drag-hide-placeholder icon-pointer"
                    [ngStyle]="{'margin-left' : (node.level)*15 + 'px'}" (click)="expansionModel.toggle(node)"
@@ -47,11 +47,11 @@
         <mat-icon class="g-icon-small icon-pointer">
           {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
         </mat-icon>
-        <mat-icon (click)="onClickMenu($event, true, false, node.id)" *ngIf="isAuthenticated && hoverId===node.id"
+        <mat-icon (click)="onClickMenu($event, true, false, node.id)" *ngIf="(isAdmin$ | async) && hoverId===node.id"
                   class="g-icon-small icon-pointer">
           more_vert
         </mat-icon>
-        <mat-icon cdkDragHandle class="drag-drop-bt g-icon-small" *ngIf="isAuthenticated && hoverId===node.id">
+        <mat-icon cdkDragHandle class="drag-drop-bt g-icon-small" *ngIf="(isAdmin$ | async) && hoverId===node.id">
           drag_handle
         </mat-icon>
       </div>

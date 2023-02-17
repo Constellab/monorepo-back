@@ -56,3 +56,44 @@
 .span-initials:hover{
   cursor: pointer;
 }
+
+
+@media (max-width: 1160px) {
+  .nav-bar{
+    padding: 16px 50px 0 50px;
+  }
+}
+
+@media (max-width: 900px) {
+  .nav-bar{
+    padding: 16px 0px 0 0px;
+  }
+
+  .nav-bar{
+    margin-left: 48px;
+    width: calc(100% - 48px)
+  }
+
+  .nav-bar-links{
+    padding: 0;
+  }
+
+  .option{
+    margin: auto 1rem;
+  }
+}
+
+@media (max-width: 700px) {
+
+  .option{
+    margin: auto 0.5em;
+  }
+}
+
+
+@media (max-width: 550px) {
+
+  .option{
+    margin: auto 0.2em;
+  }
+}

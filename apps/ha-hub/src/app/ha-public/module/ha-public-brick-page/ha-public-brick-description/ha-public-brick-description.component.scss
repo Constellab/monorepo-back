@@ -3,8 +3,10 @@
   justify-content: space-between;
 }
 
+
 .left-side-div {
   width: 60rem;
+  max-width: calc(100vw - 18px);
   border-radius: 18px;
   background-color: var(--card-background);
   padding: 0 8px 8px 8px;
@@ -87,7 +89,23 @@ h2{
   padding: 8px;
   background-color: var(--main-background);
   border-radius: 10px;
-  max-width: calc(100% - 16px);
+  max-width: 300px;
+  white-space: nowrap;
   width: fit-content;
   min-width: 175px;
+}
+
+
+.tech-info{
+
+}
+
+@media (max-width: 1160px) {
+  .left-side-div{
+    flex-direction: column;
+  }
+
+  .tech-info-div > p{
+    max-width: calc(100% - 3em);
+  }
 }

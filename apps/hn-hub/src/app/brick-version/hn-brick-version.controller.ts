@@ -1,10 +1,13 @@
-import {Controller, Get, Param, ParseIntPipe, Put, Query} from '@nestjs/common';
+import {Controller, Get, Param, ParseIntPipe, Put, Query, UseGuards} from '@nestjs/common';
 import {HnBrickVersionService} from './hn-brick-version.service';
 import {ClPageI} from '@monorepo/core-lib';
 import {HnBrickVersion, HnReferenceDTO} from './hn-brick-version.entity';
 import {BlPublic} from '@monorepo/back-core-lib';
+import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
+import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
 
 @Controller('brick-version')
+@UseGuards(HnIsAdminGuard)
 export class HnBrickVersionController {
   constructor(private readonly brickVersionService: HnBrickVersionService) {
   }
@@ -12,6 +15,7 @@ export class HnBrickVersionController {
   /**
    * Route to send all the brick version to the queue
    */
+  @IsAdmin()
   @Put('send-all-to-queue')
   sendAllToQueue(): Promise<void> {
     return this.brickVersionService.sendAllBrickVersionToQueue();

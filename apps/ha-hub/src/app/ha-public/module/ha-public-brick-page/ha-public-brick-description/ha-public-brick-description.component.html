@@ -27,22 +27,22 @@
 
       <div class="tech-info-div" *ngIf="latestBrickVersion">
         {{'type_of_repository' | translate}} :
-        <p class="g-scrollable-element">{{latestBrickVersion.repoType}}</p>
+        <p class="g-scrollable-element tech-info">{{latestBrickVersion.repoType}}</p>
       </div>
 
       <div class="tech-info-div" *ngIf="brick.gitRepo && isAdmin">
         {{'repo_git' | translate}} :
-        <p class="g-scrollable-element">{{brick.gitRepo}}</p>
+        <p class="g-scrollable-element tech-info">{{brick.gitRepo}}</p>
       </div>
 
       <div class="tech-info-div" *ngIf="brick.pipRepo && isAdmin">
         {{'repo_pip' | translate}} :
-        <p class="g-scrollable-element">{{brick.pipRepo}}</p>
+        <p class="g-scrollable-element tech-info">{{brick.pipRepo}}</p>
       </div>
 
       <div class="tech-info-div" *ngIf="references && references.length > 0">
         {{'references' | translate}} :
-        <p *ngFor="let r of references" class="g-scrollable-element">
+        <p *ngFor="let r of references" class="g-scrollable-element tech-info">
           <a [routerLink]="'/bricks/' + r.name">{{r.name}}</a> v{{r.version}}
         </p>
       </div>

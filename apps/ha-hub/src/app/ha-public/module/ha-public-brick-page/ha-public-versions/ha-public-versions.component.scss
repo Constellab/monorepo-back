@@ -9,7 +9,7 @@
 .table-version{
   display: flex;
   flex-direction: column;
-  max-width: 60rem;
+  max-width: calc(100vw - 16px);
   width: 60rem;
   border-radius: 18px;
   background-color: var(--card-background);

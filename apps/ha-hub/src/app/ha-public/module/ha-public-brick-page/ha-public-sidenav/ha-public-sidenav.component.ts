@@ -36,6 +36,7 @@ import {map} from 'rxjs/operators';
 import {HaPublicDocComponent} from '../ha-public-doc/ha-public-doc.component';
 import {HaBrick} from '../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 import {HaAuthService} from '../../../../ha-core/ha-service/ha-auth.service';
+import {HaAuthenticatedUserService} from '../../../../ha-core/ha-service/ha-authenticated-user.service';
 
 
 interface FlatNode {
@@ -56,7 +57,7 @@ export class HaPublicSidenavComponent implements OnInit {
 
   @Input() brick: HaBrick;
   searchTechDocControl = new FormControl<string>('');
-  isAuthenticated: boolean = this.loginService.hasAuthorizationCookie();
+  isAdmin$: Observable<boolean> = this.authenticatedUserService.isAdmin();
   brickId: string;
   brickName: string;
   brickVersion: string;
@@ -114,7 +115,8 @@ export class HaPublicSidenavComponent implements OnInit {
     private folderService: HaFolderService,
     private dialogService: FlDialogService,
     public mediaObserver: MediaObserver,
-    private changeDetectorRefs: ChangeDetectorRef
+    private changeDetectorRefs: ChangeDetectorRef,
+    private authenticatedUserService: HaAuthenticatedUserService
   ) {
   }
 
@@ -192,22 +194,19 @@ export class HaPublicSidenavComponent implements OnInit {
 
 
   onClickMenu(event: MouseEvent, isFolder: boolean, hasChild: boolean = false, id?: string): void {
-    if (this.isAuthenticated) {
-      event.preventDefault();
-      event.stopPropagation();
-      if (this.menuOpen) {
-        this.openedMenu.overlayRef.detach();
-      }
-      if (!id) {
-        this.brickService.getRootFolderId(this.brickId, this.brickVersion).subscribe(res => {
-          this.openCreateDialog(res.id);
-        });
-      } else {
-        this.openedMenu =
+    event.preventDefault();
+    event.stopPropagation();
+    if (this.menuOpen) {
+      this.openedMenu.overlayRef.detach();
+    }
+    if (!id) {
+      this.brickService.getRootFolderId(this.brickId, this.brickVersion).subscribe(res => {
+        this.openCreateDialog(res.id);
+      });
+    } else {
+      this.openedMenu =
             this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, id, hasChild), event);
-        this.menuOpen = true;
-      }
-
+      this.menuOpen = true;
     }
   }
 

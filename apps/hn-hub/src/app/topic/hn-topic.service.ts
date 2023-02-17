@@ -3,6 +3,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {HnTopic} from './hn-topic.entity';
 import {Repository} from 'typeorm';
 import {HnTopicDto} from './hn-topic.dto';
+import {ClStringHelper} from '@monorepo/core-lib';
 
 @Injectable()
 export class HnTopicService {
@@ -15,7 +16,11 @@ export class HnTopicService {
       const t: HnTopic = await this.topicRepository.findOneBy({id: topic.id})
       if (t) return t;
     }
-    const t: HnTopic = new HnTopic();
+    topic.name = ClStringHelper.removeAccentFromString(ClStringHelper.trimAndRemoveDuplicateSpaces(topic.name).toLowerCase());
+    topic.name = topic.name.charAt(0).toUpperCase() + topic.name.slice(1);
+    let t: HnTopic = await this.topicRepository.findOneBy({name: topic.name});
+    if (t) return t;
+    t = new HnTopic();
     t.name = topic.name;
     return this.topicRepository.save(t);
   }

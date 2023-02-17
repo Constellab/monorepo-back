@@ -3,7 +3,6 @@ import {Route, RouterModule, UrlSegment} from '@angular/router';
 import {
   HaPublicListBricksPageComponent
 } from './module/ha-public-bricks/ha-public-list-bricks-page/ha-public-list-bricks-page.component';
-import {HaPublicSidenavComponent} from './module/ha-public-brick-page/ha-public-sidenav/ha-public-sidenav.component';
 import {HaPublicDocComponent} from './module/ha-public-brick-page/ha-public-doc/ha-public-doc.component';
 import {
   HaPublicEditBrickPageComponent
@@ -17,6 +16,7 @@ import {Ha404Component} from './module/ha404/ha404.component';
 import {
   HaPublicBrickPageComponent
 } from './module/ha-public-brick-page/ha-public-brick-page/ha-public-brick-page.component';
+import {HaAdminGuard} from '../ha-core/ha-guard/ha-admin.guard';
 
 
 const routes: Route[] = [
@@ -26,7 +26,8 @@ const routes: Route[] = [
   },
   {
     path: 'edit',
-    component: HaPublicEditBrickPageComponent
+    component: HaPublicEditBrickPageComponent,
+    canLoad: [HaAdminGuard],
   },
   {
     component: HaPublicBrickPageComponent,

@@ -1,4 +1,15 @@
-import {Body, Controller, Delete, Get, Param, Put, Res, UploadedFiles, UseInterceptors} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Put,
+  Res,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors
+} from '@nestjs/common';
 import {HnDocumentation, HnDocumentationDTO} from './hn-documentation.entity';
 import {HnDocumentationService} from './hn-documentation.service';
 import {BlFile, BlParsePipe, BlPublic, BlResponseHelper} from '@monorepo/back-core-lib';
@@ -6,8 +17,11 @@ import {FilesInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {HnNodeDTO} from '../folder/hn-folder.dto';
 import {CmRichTextI} from '@monorepo/common-model';
+import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
+import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 
 @Controller('documentation')
+@UseGuards(HnIsAdminGuard)
 export class HnDocumentationController {
   constructor(private readonly documentationService: HnDocumentationService) {
   }
@@ -25,6 +39,7 @@ export class HnDocumentationController {
     return docsDto;
   }
 
+  @IsAdmin()
   @Put('content/:id')
   async updateContent(@Param('id') id: string,
                       @Body() updateContentDoc: CmRichTextI): Promise<HnDocumentation> {
@@ -37,16 +52,19 @@ export class HnDocumentationController {
     return await this.documentationService.findOne(id);
   }
 
+  @IsAdmin()
   @Delete(':id')
   remove(@Param('id') id: string): Promise<void> {
     return this.documentationService.remove(id);
   }
 
+  @IsAdmin()
   @Put()
   update(@Body(new BlParsePipe(HnNodeDTO)) updatedDoc: HnNodeDTO): Promise<HnDocumentation> {
     return this.documentationService.update(updatedDoc);
   }
 
+  @IsAdmin()
   @UseInterceptors(FilesInterceptor('file'))
   @Put('/image')
   saveImage(@UploadedFiles() files: BlFile[]): Promise<any> {
