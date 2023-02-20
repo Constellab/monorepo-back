@@ -8,6 +8,7 @@ import {RvViewNetworkComponent} from '../component/rv-view-network/rv-view-netwo
 import {RvViewSpreadsheetComponent} from '../component/rv-view-spreadsheet/rv-view-spreadsheet.component';
 import {RvViewTextComponent} from '../component/rv-view-text/rv-view-text.component';
 import {FlThemeSwitch} from '@monorepo/front-core-lib';
+import {RvViewImageComponent} from '../component/rv-view-image/rv-view-image.component';
 
 // Information of the view type
 export interface RvResourceViewTypeInfo {
@@ -91,7 +92,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     text: 'rvResourceView.resource_view_image',
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
-    viewComponent: null,
+    viewComponent: RvViewImageComponent,
     image: null,
   },
   'scatter-plot-2d-view': {

@@ -30,6 +30,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatIconModule} from '@angular/material/icon';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatButtonModule} from '@angular/material/button';
+import {RvViewImageComponent} from './component/rv-view-image/rv-view-image.component';
 
 @NgModule({
   imports: [
@@ -63,6 +64,7 @@ import {MatButtonModule} from '@angular/material/button';
     RvTechnicalInfoButtonComponent,
     RvTechnicalInfoDialogComponent,
     RvReportResourceViewComponent,
+    RvViewImageComponent,
   ],
   exports: [
     RvResourceViewComponent,
@@ -75,6 +77,7 @@ import {MatButtonModule} from '@angular/material/button';
     RvTechnicalInfoButtonComponent,
     RvTechnicalInfoDialogComponent,
     RvReportResourceViewComponent,
+    RvViewImageComponent,
   ],
 })
 export class RvResourceViewModule {
