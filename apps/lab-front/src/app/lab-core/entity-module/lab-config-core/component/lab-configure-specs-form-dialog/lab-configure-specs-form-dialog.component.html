@@ -11,7 +11,7 @@
 
 <div mat-dialog-actions>
   <button mat-flat-button color="primary" type="submit" form="config-form"
-          class="g-centered-forced">
+          class="g-centered-forced" [disabled]="input.disabled">
     {{input.submitButtonText | translate}}
   </button>
 </div>

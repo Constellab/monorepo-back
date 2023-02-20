@@ -8,7 +8,7 @@ import {FlDialogService} from '@monorepo/front-core-lib';
 import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-page.state';
 import {MatExpansionPanel} from '@angular/material/expansion';
 import {LabWorkflowNodeDetailState} from '../../state/lab-workflow-node-detail.state';
-import {Observable} from 'rxjs';
+import {firstValueFrom, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {LabProcess} from '../../../../../lab-core/model/entities/process/lab-process.entity';
 import {
@@ -72,7 +72,8 @@ export class LabWorkflowNodeDetailComponent implements OnInit {
     const input: LabConfigureSpecsFormDialogInput = {
       configData: process.config,
       title: 'biox.configuration',
-      submitButtonText: 'save'
+      submitButtonText: 'save',
+      disabled: !(await firstValueFrom(this.isEditable$))
     };
 
     this.dialogService.openMediumDialog(LabConfigureSpecsFormDialogComponent,

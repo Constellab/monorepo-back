@@ -10,6 +10,7 @@ export interface LabConfigureSpecsFormDialogInput {
   configData: LabConfig;
   title: string;
   submitButtonText: string;
+  disabled?: boolean;
 }
 
 /**
@@ -43,6 +44,10 @@ export class LabConfigureSpecsFormDialogComponent implements OnInit {
 
   private buildFormGp(configData: LabConfig): void {
     this.formGp = LabConfigureSpecsFormComponent.buildFormGroup(configData);
+
+    if (this.input.disabled) {
+      this.formGp.disable();
+    }
     this.configData = configData;
   }
 
