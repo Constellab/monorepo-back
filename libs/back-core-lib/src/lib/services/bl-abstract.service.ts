@@ -27,7 +27,8 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
 
     const newEntity: T = await this.getEntityManager(entityManager).save(entity);
 
-    this.logAction('INSERT', newEntity.id);
+    // if there is no transaction, the log is written after the next commit
+    this.logAction('INSERT', newEntity.id, entityManager == null);
     return newEntity;
   }
 
@@ -58,9 +59,9 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
 
     }
 
-    const newEntity2: T = await this.getEntityManager(entityManager).save(newEntity);
-
-    this.logAction('UPDATE', newEntity2.id);
+    // log before update, otherwise the commit is done before the log
+    const newEntity2 = await this.getEntityManager(entityManager).save(newEntity);
+    this.logAction('UPDATE', newEntity2.id, entityManager == null);
     return newEntity2;
   }
 
@@ -69,7 +70,7 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
     const deleteResult: DeleteResult = await this.getEntityManager(entityManager).delete(this.entityClass, id);
 
     if (deleteResult.affected > 0) {
-      this.logAction('DELETE', id);
+      this.logAction('DELETE', id, entityManager == null);
     }
     return deleteResult;
   }
@@ -95,8 +96,14 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
     return entity;
   }
 
-  // use to log persistence
-  private logAction(actionName: BlPersistenceAction, entityId: string): void {
-    this.persistenceLogger.logPersistence(actionName, entityId, this.entityClass.name);
+  /**
+   *  use to log persistence
+   * @param actionName
+   * @param entityId
+   * @param directLog set it to true to directly log when there are on transaction
+   * @private
+   */
+  private logAction(actionName: BlPersistenceAction, entityId: string, directLog: boolean): void {
+    this.persistenceLogger.logPersistence(actionName, entityId, this.entityClass.name, directLog);
   }
 }

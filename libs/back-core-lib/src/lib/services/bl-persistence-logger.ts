@@ -42,6 +42,7 @@ export class BlPersistenceLogger extends AdvancedConsoleLogger {
     // if this is a commit, write all persistence logs
     if (this.queryIsCommit(query)) {
       this.writeTransactionLogs();
+      this.clearLogs();
       // if this is a rollback, clear persistence logs
     } else if (this.queryIsRollback(query)) {
       this.clearLogs();
@@ -51,7 +52,17 @@ export class BlPersistenceLogger extends AdvancedConsoleLogger {
   }
 
   // save the log to log it on commit
-  logPersistence(actionName: BlPersistenceAction, entityId: string, entityName: string): void {
+  logPersistence(actionName: BlPersistenceAction, entityId: string, entityName: string, directLog: boolean): void {
+    if (directLog) {
+      this.writeLog(actionName, entityId, entityName);
+      return;
+    }
+
+    // avoid duplicate logs
+    if (this.transactionLogs.find(log => log.entityId === entityId && log.entityName === entityName
+      && log.action === actionName) != null) {
+      return;
+    }
     this.transactionLogs.push({
       action: actionName,
       entityId: entityId,
@@ -61,8 +72,12 @@ export class BlPersistenceLogger extends AdvancedConsoleLogger {
 
   private writeTransactionLogs(): void {
     for (const log of this.transactionLogs) {
-      this.logger.log(`[${log.action}] Object type : ${log.entityName} | Id : ${log.entityId} | ${this.getUserLog()}`);
+      this.writeLog(log.action, log.entityId, log.entityName);
     }
+  }
+
+  private writeLog(actionName: BlPersistenceAction, entityId: string, entityName: string): void {
+    this.logger.log(`[${actionName}] Object type : ${entityName} | Id : ${entityId} | ${this.getUserLog()}`);
   }
 
 
