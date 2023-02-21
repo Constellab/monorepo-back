@@ -2,12 +2,14 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {
   CaLabInstance,
+  CaLabInstanceAdminForm,
   CaLabInstanceDatasource,
   CaLabInstanceFindOneDto,
-  CaLabInstanceForm,
+  CaLabInstanceOnPremiseForm,
   CaLabInstanceStatusDTO,
   CaLabInstanceStatusHistory,
-  CaLabInstanceWithSpace
+  CaLabInstanceWithSpace,
+  CaRequestLabInstance
 } from '../model/entities/lab/ca-lab-instance.class';
 import {
   FlAdvancedSearchInput,
@@ -47,16 +49,29 @@ export class CaLabInstanceService {
   constructor(private apiService: FlApiService) {
   }
 
-  public create(entity: CaLabInstanceForm): Observable<CaLabInstanceWithSpace> {
-    return this.apiService.post(this.route, entity, CaLabInstanceWithSpace, {serialization: CaLabInstanceForm});
+  public createAdmin(entity: CaLabInstanceAdminForm): Observable<CaLabInstanceWithSpace> {
+    return this.apiService.post(`${this.route}/admin`, entity, CaLabInstanceWithSpace,
+      {serialization: CaLabInstanceAdminForm});
   }
 
-  public update(entity: CaLabInstanceForm): Observable<CaLabInstanceWithSpace> {
-    return this.apiService.put(this.route, entity, CaLabInstanceWithSpace, {serialization: CaLabInstanceForm});
+  public updateAdmin(entity: CaLabInstanceAdminForm): Observable<CaLabInstanceWithSpace> {
+    return this.apiService.put(`${this.route}/admin`, entity, CaLabInstanceWithSpace, {serialization: CaLabInstanceAdminForm});
+  }
+
+  public createOnPremiseLab(entity: CaLabInstanceOnPremiseForm): Observable<CaLabInstance> {
+    return this.apiService.post(`${this.route}/on-premise`, entity, CaLabInstance);
+  }
+
+  public updateLab(entity: CaLabInstanceAdminForm): Observable<CaLabInstance> {
+    return this.apiService.put(`${this.route}`, entity, CaLabInstance);
   }
 
   public delete(id: string): Observable<CaLabInstance> {
     return this.apiService.deleteById(this.route, id, CaLabInstance);
+  }
+
+  public requestNewLabInstance(request: CaRequestLabInstance): Observable<CaLabInstance> {
+    return this.apiService.post(this.route + '/request-lab-instance', request, CaLabInstance);
   }
 
   public getCurrentLabInstancesDatasource(pageSize: number = 20): CaLabInstanceDatasource {
@@ -80,7 +95,6 @@ export class CaLabInstanceService {
   public stopLabInstance(id: string): Observable<CaLabInstance> {
     return this.apiService.put(`${this.route}/${id}/stop`, null, CaLabInstance);
   }
-
 
 
   public findById(id: string): Observable<CaLabInstanceFindOneDto> {
@@ -114,11 +128,6 @@ export class CaLabInstanceService {
     return this.apiService.post(`${this.route}/current-space/search`, data, CaLabInstanceWithSpace, {
       page: page, pageSize: pageSize, resultIsPaginated: true
     });
-  }
-
-
-  public updateName(id: string, name: string): Observable<CaLabInstance> {
-    return this.apiService.put(`${this.route}/${id}/name/${name}`, null, CaLabInstance);
   }
 
   public checkStatus(id: string): Observable<any> {
@@ -292,12 +301,12 @@ export class CaLabInstanceService {
   }
 
   public updateDockerlabRepository(id: string): Observable<CaLabInstanceStatusDTO> {
-    return this.apiService.put(`${this.route}/${id}/dockerlab/update`,null,  CaLabInstanceStatusDTO);
+    return this.apiService.put(`${this.route}/${id}/dockerlab/update`, null, CaLabInstanceStatusDTO);
   }
 
   //////////////////////////// ON PREMISE ////////////////////////////////
 
   public getOnPremiseConfigDownloadUrl(id: string): string {
-    return this.apiService.getBaseRouteUrl(`${this.route}/${id}/on-premise/generate-config`)
+    return this.apiService.getBaseRouteUrl(`${this.route}/${id}/on-premise/generate-config`);
   }
 }

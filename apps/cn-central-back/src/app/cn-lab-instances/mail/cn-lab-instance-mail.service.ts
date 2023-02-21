@@ -1,10 +1,14 @@
 import {Injectable} from '@nestjs/common';
-import {CnLabInstancesService} from '../cn-lab-instances.service';
 import {CnLabInstance} from '../cn-lab-instance.entity';
 import {CnLabInstanceMailTemplate, CnLabInstanceSendMailDto} from './cn-lab-instance-mail.dto';
 import {BlBadRequestException, BlMailService} from '@monorepo/back-core-lib';
 import {CnMailTemplate} from '../../cn-core/model/config/cn-mail-template.class';
 import {CnUsersService} from '../../cn-users/cn-users.service';
+import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-config.service';
+import {CnRequestLabInstance} from '../cn-lab-instance.dto';
+import {CnSpace} from '../../cn-spaces/cn-space.entity';
+import {CnUser} from '../../cn-users/cn-user.entity';
+import {ClSupportedLanguage} from '@monorepo/core-lib';
 
 
 /**
@@ -13,13 +17,13 @@ import {CnUsersService} from '../../cn-users/cn-users.service';
 @Injectable()
 export class CnLabInstanceMailService {
 
-  constructor(private labInstanceService: CnLabInstancesService,
-              private mailService: BlMailService,
-              private userService: CnUsersService) {
+  constructor(private mailService: BlMailService,
+              private userService: CnUsersService,
+              private configService: CnCoreConfigService) {
   }
 
   public async sendMailFromLab(labInstance: CnLabInstance, sendMailDTO: CnLabInstanceSendMailDto): Promise<void> {
-    const template = this.getTemplate(sendMailDTO.mail_template);
+    const template = this.getLabTemplate(sendMailDTO.mail_template);
 
     for (const receiver of sendMailDTO.receiver_ids) {
       const user = await this.userService.findByIdAndCheck(receiver);
@@ -27,10 +31,20 @@ export class CnLabInstanceMailService {
       const data = Object.assign({}, sendMailDTO.data, {user: user});
       await this.mailService.sendMailToUser(template, user, data);
     }
-
   }
 
-  private getTemplate(type: CnLabInstanceMailTemplate): string {
+  public async sendRequestLabInstanceMail(request: CnRequestLabInstance, user: CnUser, space: CnSpace): Promise<void> {
+    await this.mailService.sendMail(CnMailTemplate.request_lab_instance, this.configService.getGencoveryContactMail(),
+      ClSupportedLanguage.en, {
+        user: user,
+        space: space,
+        dataType: request.dataType,
+        dataSize: request.dataSize,
+        additionalInfo: request.additionalInfo,
+      });
+  }
+
+  private getLabTemplate(type: CnLabInstanceMailTemplate): string {
     switch (type) {
       case 'experiment-finished':
         return CnMailTemplate.experiment_finished;

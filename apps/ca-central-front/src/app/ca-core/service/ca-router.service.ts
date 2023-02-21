@@ -93,6 +93,10 @@ export class CaRouterService {
     return CaRouterService.getFullRoute(`${caConstLabInstancesRoute}/${labInstanceId}`);
   }
 
+  public navigateToLabInstanceDetail(labInstanceId: string): void {
+    this.router.navigate([CaRouterService.getLabInstanceDetailRoute(labInstanceId)]);
+  }
+
   public static getLabInstanceConfigRoute(labInstanceId: string): string {
     return `${CaRouterService.getLabInstanceDetailRoute(labInstanceId)}/config`;
   }

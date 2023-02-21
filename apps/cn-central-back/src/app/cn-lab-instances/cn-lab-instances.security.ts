@@ -14,7 +14,7 @@ export class CnLabInstancesSecurity {
               private labInstanceGroupService: CnLabInstanceUserService) {
   }
 
-  public checkAuthorizationToCreate(userInfo: CnUserSpaceInfo): void {
+  public checkAuthorizationToCreateAdmin(labInstance: CnLabInstance, userInfo: CnUserSpaceInfo): void {
     if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
   }
 
@@ -23,8 +23,16 @@ export class CnLabInstancesSecurity {
    * @param labInstance
    * @param userInfo
    */
-  public checkAuthorizationToUpdate(labInstance: CnLabInstance, userInfo: CnUserSpaceInfo): void {
+  public checkAuthorizationToUpdateAdmin(labInstance: CnLabInstance, userInfo: CnUserSpaceInfo): void {
     if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
+  }
+
+  /**
+   * Anyone can create an on premise  lab instance
+   * @param labInstance
+   */
+  public checkAuthorizationCreateOnPremiseLabInstance(labInstance: CnLabInstance): void {
+    if (!labInstance.isOnPremise()) throw new BlUnauthorizedException();
   }
 
   /**

@@ -1,7 +1,8 @@
 <ca-dashboard-list-layout [datasource]="labInstancesDatasource"
-                   sectionTitle="my_labs" titleIcon="lab" emptyText="no_lab_instance"
-                   [completeListRoute]="myLabInstancesRoute" completeListText="all_lab_instances"
-                   addText="add_new_lab" [showAddButton]="false">
+                          sectionTitle="my_labs" titleIcon="lab" emptyText="no_lab_instance"
+                          [completeListRoute]="myLabInstancesRoute" completeListText="all_lab_instances"
+                          addText="add_new_lab" [showAddButton]="true"
+                          (addClick)="openCreateLabInstanceDialog()">
   <ng-template let-item>
     <ca-lab-instance-card [labInstance]="item"></ca-lab-instance-card>
   </ng-template>

@@ -6,5 +6,6 @@
   "cn-password-forgotten": "Réinitialiser votre mot de passe",
   "cn-signup": "Confirmez votre email : Inscription à la platform Gencovery",
   "cn-request-new-licenses": "Constellab - Demande de nouvelles licences",
-  "cn-two-factor-authentication": "Constellab - Authentification à deux facteurs"
+  "cn-two-factor-authentication": "Constellab - Authentification à deux facteurs",
+  "cn-request-lab-instance": "Constellab - Demande d'une instance de lab"
 }

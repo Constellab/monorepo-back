@@ -11,6 +11,15 @@
       </fl-key-value>
     </fl-text-icon>
 
+    <!--   Platform   -->
+    <fl-text-icon *ngIf="labInstance.onPremisePlatform">
+      <mat-icon>info</mat-icon>
+      <fl-key-value>
+        <fl-key>{{'lab_on_premise_platform' | translate}}</fl-key>
+        {{labInstance.onPremisePlatform}}
+      </fl-key-value>
+    </fl-text-icon>
+
     <!--   Lab url   -->
     <fl-text-icon *ngIf="labInstance.isCloud">
       <mat-icon>link</mat-icon>

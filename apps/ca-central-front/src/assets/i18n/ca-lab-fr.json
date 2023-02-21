@@ -33,7 +33,6 @@
   "lab_user_is_active": "Utilisateur actif",
   "lab_user_create": "Ajouter un utilisateur au lab",
   "lab_user_created": "Utilisateur ajouté au lab",
-  "update_lab_name": "Modifier le nom du lab",
   "lab_name_updated": "Nom du lab modifié",
   "lab_type": "Type de lab",
   "glab_api_key": "Clé d'api Glab",
@@ -195,5 +194,12 @@
   "lab_instance_type_CLOUD": "Cloud",
   "lab_instance_type_CLOUD_desc": "Le lab est hébergé sur le cloud, sécurisé, accessible de partout, sauvegardé automatiquement et inclut des supports",
   "lab_instance_type_ON_PREMISE": "On premise",
-  "lab_instance_type_ON_PREMISE_desc": "Le lab est hébergé sur votre ordinateur, accessible uniquement depuis votre ordinateur, non sauvegardé et ne comprend pas de supports."
+  "lab_instance_type_ON_PREMISE_desc": "Le lab est hébergé sur votre ordinateur, accessible uniquement depuis votre ordinateur, non sauvegardé et ne comprend pas de supports.",
+  "download_on_premise_config": "Télécharger la configuration",
+  "lab_on_premise_platform": "Plateforme",
+  "lab_instance_request_help": "Une demande de nouveau lab sera envoyée à l'équipe de support. Nous vous recontacterons dans les plus brefs délais. Veuillez répondre aux questions suivantes ce qui nous permettra de mieux comprendre votre besoin.",
+  "lab_instance_request_data_type": "Quel type de données allez-vous analyser dans le lab ?",
+  "lab_instance_request_data_size": "Quelle est la taille des données ?",
+  "lab_instance_request_additional_info": "Avez-vous des informations complémentaires à nous fournir (ex. besoins spécifiques, cas d'utilisation, etc.) ?",
+  "lab_instance_request_sent": "Demande envoyée, nous vous recontacterons dans les plus brefs délais."
 }

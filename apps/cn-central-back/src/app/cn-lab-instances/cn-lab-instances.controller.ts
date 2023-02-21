@@ -8,8 +8,11 @@ import {
   CnLabFindOneDto,
   CnLabInstanceAdminDto,
   CnLabInstanceConfigDTO,
-  CnLabInstanceCreateDTO,
+  CnLabInstanceCreateAdminDTO,
+  CnLabInstanceCreateOnPremiseDTO,
+  CnLabInstanceDto,
   CnLabInstanceStatusDTO,
+  CnRequestLabInstance,
 } from './cn-lab-instance.dto';
 import {
   CnLabComposeRestartOptions,
@@ -23,7 +26,6 @@ import {CnLabInstanceProject} from './project/cn-lab-instance-project.entity';
 import {CnExternalLabBackup, CnExternalLabBackupHistory} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {CnCpCompleteInfo} from './server/cn-cloud-provider.class';
 import {Response} from 'express';
-// import AdmZip from 'adm-zip';
 import * as AdmZip from 'adm-zip';
 
 
@@ -34,22 +36,43 @@ export class CnLabInstancesController {
   }
 
 
-  @Post()
-  async create(@Body(new BlParsePipe(CnLabInstanceCreateDTO)) createLabInstance: CnLabInstanceCreateDTO): Promise<CnLabInstanceAdminDto> {
-    const labInstance = await this.aggregateService.create(createLabInstance);
+  @Post('admin')
+  async createAdmin(@Body(new BlParsePipe(CnLabInstanceCreateAdminDTO)) createLabInstance: CnLabInstanceCreateAdminDTO):
+    Promise<CnLabInstanceAdminDto> {
+    const labInstance = await this.aggregateService.createAdmin(createLabInstance);
     return BlDtoHelper.toDto(CnLabInstanceAdminDto, labInstance);
   }
 
   // use the DTO to get the apiKey (which is excluded)
-  @Put()
-  async update(@Body(new BlParsePipe(CnLabInstanceCreateDTO)) labInstanceDto: CnLabInstanceCreateDTO): Promise<CnLabInstanceAdminDto> {
-    const labInstance = await this.aggregateService.update(labInstanceDto);
+  @Put('admin')
+  async updateAdmin(@Body(new BlParsePipe(CnLabInstanceCreateAdminDTO)) labInstanceDto: CnLabInstanceCreateAdminDTO):
+    Promise<CnLabInstanceAdminDto> {
+    const labInstance = await this.aggregateService.updateAdmin(labInstanceDto);
     return BlDtoHelper.toDto(CnLabInstanceAdminDto, labInstance);
+  }
+
+  @Post('on-premise')
+  async createOnPremise(@Body(new BlParsePipe(CnLabInstanceCreateOnPremiseDTO)) createLabInstance: CnLabInstanceCreateOnPremiseDTO):
+    Promise<CnLabInstanceDto> {
+    const labInstance = await this.aggregateService.createOnPremise(createLabInstance);
+    return BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
+  }
+
+  @Put()
+  async update(@Body(new BlParsePipe(CnLabInstanceCreateOnPremiseDTO)) labInstanceDto: CnLabInstanceCreateOnPremiseDTO):
+    Promise<CnLabInstanceDto> {
+    const labInstance = await this.aggregateService.updateLab(labInstanceDto);
+    return BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
   }
 
   @Delete(':id')
   async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.aggregateService.delete(id);
+  }
+
+  @Post('request-lab-instance')
+  async requestLabInstance(@Body() request: CnRequestLabInstance): Promise<void> {
+    await this.aggregateService.requestLabInstance(request);
   }
 
   /**
@@ -134,14 +157,6 @@ export class CnLabInstancesController {
     const result = await this.aggregateService.login(id);
     // redirect to lab auto login page
     return {url: result.labInstance.getGlabApiInfo().apiUrl + '/core-api/login-temp-access/' + result.token};
-  }
-
-  /**
-   * Update the lab name
-   */
-  @Put(':id/name/:name')
-  public updateName(@Param('id', new ParseUUIDPipe()) id: string, @Param('name') name: string): Promise<CnLabInstance> {
-    return this.aggregateService.updateName(id, name);
   }
 
   /**

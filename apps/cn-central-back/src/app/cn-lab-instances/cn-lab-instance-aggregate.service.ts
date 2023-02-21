@@ -1,5 +1,5 @@
 import {Injectable, Logger} from '@nestjs/common';
-import {CnLabInstance} from './cn-lab-instance.entity';
+import {CnLabInstance, CnLabInstanceType} from './cn-lab-instance.entity';
 import {CnLabInstancesService} from './cn-lab-instances.service';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
@@ -22,9 +22,11 @@ import {CnLabInstanceToken} from './user/cn-lab-instance-token.class';
 import {
   CnLabFindOneDto,
   CnLabInstanceConfigDTO,
-  CnLabInstanceCreateDTO,
+  CnLabInstanceCreateAdminDTO,
+  CnLabInstanceCreateOnPremiseDTO,
   CnLabInstanceStartDTO,
-  CnLabInstanceStatusDTO
+  CnLabInstanceStatusDTO,
+  CnRequestLabInstance
 } from './cn-lab-instance.dto';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstancesSecurity} from './cn-lab-instances.security';
@@ -54,6 +56,7 @@ import {CnUser} from '../cn-users/cn-user.entity';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
 import {CnLabInstanceOnPremiseService, CnLabOnPremiseConfig} from './on-premise/cn-lab-instance-on-premise.service';
 import {CnBrickGWS} from '../cn-bricks/cn-brick.dto';
+import {CnLabInstanceMailService} from './mail/cn-lab-instance-mail.service';
 
 
 @Injectable()
@@ -77,28 +80,83 @@ export class CnLabInstanceAggregateService {
               private labServerService: CnLabServerService,
               private labSshService: CnLabSshService,
               private labConfigService: CnLabConfigsService,
-              private onPremiseService: CnLabInstanceOnPremiseService) {
+              private onPremiseService: CnLabInstanceOnPremiseService,
+              private labMailService: CnLabInstanceMailService) {
   }
 
-  async create(createLabInstance: CnLabInstanceCreateDTO): Promise<CnLabInstance> {
-    await this.security.checkAuthorizationToCreate(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
-
+  /**
+   * Create a lab instance with all information (only for admin)
+   */
+  async createAdmin(createLabInstance: CnLabInstanceCreateAdminDTO): Promise<CnLabInstance> {
     const labInstance = BlDtoHelper.fromDto(CnLabInstance, createLabInstance);
+
+    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+    await this.security.checkAuthorizationToCreateAdmin(labInstance, userInfo);
 
     return this.labInstancesService.create(labInstance);
   }
 
-
-  async update(updateLabInstance: CnLabInstanceCreateDTO): Promise<CnLabInstance> {
-    const labInstanceDb: CnLabInstance = await this.getAndCheckAuthorizationToUpdate(updateLabInstance.id);
+  /**
+   * Update a lab instance with all information (only for admin)
+   */
+  async updateAdmin(updateLabInstance: CnLabInstanceCreateAdminDTO): Promise<CnLabInstance> {
+    const labInstanceDb: CnLabInstance = await this.getAndCheckAuthorizationToUpdateAdmin(updateLabInstance.id);
     const labInstance = BlDtoHelper.fromDto(CnLabInstance, updateLabInstance);
+
     return this.labInstancesService.updateWithCompare(labInstance, labInstanceDb);
   }
 
+  /**
+   * Accessible by any user to create his own on premise lab instance
+   * @param createLabInstance
+   */
+  async createOnPremise(createLabInstance: CnLabInstanceCreateOnPremiseDTO): Promise<CnLabInstance> {
+    const labInstance = new CnLabInstance();
+    labInstance.name = createLabInstance.name;
+    labInstance.onPremisePlatform = createLabInstance.onPremisePlatform;
+    labInstance.type = CnLabInstanceType.ON_PREMISE;
+
+    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+    labInstance.setSpace(userInfo.space);
+
+    await this.security.checkAuthorizationCreateOnPremiseLabInstance(labInstance);
+
+    return this.dataSource.transaction(async entityManager => {
+      const labInstanceDb = await this.labInstancesService.create(labInstance, entityManager);
+
+      // add the user as OWNER of his lab
+      await this.labInstanceGroupService.createLabInstanceGroup(labInstance, userInfo.user, CnLabInstanceUserRole.OWNER, entityManager);
+      return labInstanceDb;
+    });
+  }
+
+  /**
+   * Update accessible for any owner of the lab, he can update only few parameters
+   * @param updateLabInstance
+   */
+  async updateLab(updateLabInstance: CnLabInstanceCreateOnPremiseDTO): Promise<CnLabInstance> {
+    const labInstanceDb: CnLabInstance = await this.labInstancesService.findByIdAndCheck(updateLabInstance.id);
+    labInstanceDb.name = updateLabInstance.name;
+
+    if (updateLabInstance.onPremisePlatform && labInstanceDb.isOnPremise()) {
+      labInstanceDb.onPremisePlatform = updateLabInstance.onPremisePlatform;
+    }
+
+    await this.security.checkAuthorizationToManageLab(labInstanceDb, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+
+    return this.labInstancesService.update(labInstanceDb);
+  }
+
   async delete(id: string): Promise<void> {
-    await this.getAndCheckAuthorizationToUpdate(id);
+    await this.getAndCheckAuthorizationToUpdateAdmin(id);
     await this.labInstancesService.deleteById(id);
   }
+
+  async requestLabInstance(request: CnRequestLabInstance): Promise<void> {
+    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+    return this.labMailService.sendRequestLabInstanceMail(request, userInfo.user, userInfo.space);
+  }
+
 
   async findByIdAndCheck(id: string): Promise<CnLabFindOneDto> {
     const labInstance = await this.labInstancesService.findByIdAndCheck(id);
@@ -111,7 +169,6 @@ export class CnLabInstanceAggregateService {
     return this.labInstancesService.findBySpace(CnCurrentUserHelper.getCurrentSpace().id, page, size);
   }
 
-
   getCurrentLabInstances(page: number, size: number): Promise<ClPageI<CnLabInstance>> {
     // no security check because the get is filtered with user id
     return this.labInstancesService.getCurrentLabInstances(page, size);
@@ -120,12 +177,6 @@ export class CnLabInstanceAggregateService {
   getCurrentRunningLabInstances(): Promise<CnLabInstance[]> {
     // no security check because the get is filtered with user id
     return this.labInstancesService.getCurrentRunningLabInstances();
-  }
-
-  public async updateName(labInstanceId: string, name: string): Promise<CnLabInstance> {
-    await this.getAndCheckAuthorizationToFindById(labInstanceId);
-
-    return this.labInstancesService.updateName(labInstanceId, name);
   }
 
   async searchAll(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnLabInstance>> {
@@ -739,9 +790,9 @@ export class CnLabInstanceAggregateService {
   }
 
 
-  private async getAndCheckAuthorizationToUpdate(id: string): Promise<CnLabInstance> {
+  private async getAndCheckAuthorizationToUpdateAdmin(id: string): Promise<CnLabInstance> {
     const labInstance = await this.labInstancesService.findByIdAndCheck(id, {sharedGroups: true, space: true});
-    this.security.checkAuthorizationToUpdate(labInstance, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    this.security.checkAuthorizationToUpdateAdmin(labInstance, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return labInstance;
   }
 

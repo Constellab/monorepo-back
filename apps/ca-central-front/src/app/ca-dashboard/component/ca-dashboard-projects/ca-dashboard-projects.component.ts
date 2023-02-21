@@ -45,7 +45,8 @@ export class CaDashboardProjectsComponent implements OnInit {
     };
     this.dialogService.openSmallDialog(CaProjectFormDialogComponent, {data: dialogInput}).afterClosed().subscribe(
       projects => this.onCreateProjectDialogClosed(projects)
-    );  }
+    );
+  }
 
   private onCreateProjectDialogClosed(project?: CaProject): void{
     if(project){

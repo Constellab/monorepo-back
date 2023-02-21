@@ -12,9 +12,9 @@ import {CaLabInstance, CaLabInstanceDatasource} from '../../../../model/entities
 import {CaLabInstanceService} from '../../../../service-api/ca-lab-instance.service';
 import {CaLabInstanceSearch, CaLabInstanceSearchFields} from '../../model/ca-lab-instance-search.class';
 import {
-  CaLabInstanceFormDialogComponent,
-  CaLabInstanceFormDialogInput
-} from '../ca-lab-instance-form-dialog/ca-lab-instance-form-dialog.component';
+  CaLabInstanceAdminFormDialogComponent,
+  CaLabInstanceAdminFormDialogInput
+} from '../ca-lab-instance-admin-form-dialog/ca-lab-instance-admin-form-dialog.component';
 
 @Component({
   selector: 'ca-lab-instance-search',
@@ -101,11 +101,11 @@ export class CaLabInstanceSearchComponent implements OnInit {
   }
 
   openCreateLabInstanceForm(): void {
-    const dialogInput: CaLabInstanceFormDialogInput = {
+    const dialogInput: CaLabInstanceAdminFormDialogInput = {
       mode: 'create'
     };
 
-    this.dialogService.openSmallDialog(CaLabInstanceFormDialogComponent, {data: dialogInput}).afterClosed()
+    this.dialogService.openSmallDialog(CaLabInstanceAdminFormDialogComponent, {data: dialogInput}).afterClosed()
       .subscribe(
         labInstance => this.onCreateLabInstanceClosed(labInstance)
       );

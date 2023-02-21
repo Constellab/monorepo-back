@@ -25,12 +25,15 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   }
 
 
-  async create(entity: CnLabInstance): Promise<CnLabInstance> {
+  async create(entity: CnLabInstance, entityManager?: EntityManager): Promise<CnLabInstance> {
     this.checkLabInstanceBeforeSave(entity);
 
-    return super.createWithStatus(entity, CnLabInstanceStatus.STOPPED);
+    if (entityManager) {
+      return super.createWithStatusTransaction(entity, CnLabInstanceStatus.STOPPED, entityManager);
+    } else {
+      return super.createWithStatus(entity, CnLabInstanceStatus.STOPPED);
+    }
   }
-
 
   async update(entity: CnLabInstance, entityManager?: EntityManager): Promise<CnLabInstance> {
     this.checkLabInstanceBeforeSave(entity);
@@ -145,11 +148,6 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     });
   }
 
-  public async updateName(labInstanceId: string, name: string): Promise<CnLabInstance> {
-    const lab: CnLabInstance = await this.findByIdAndCheck(labInstanceId);
-    lab.name = name;
-    return this.repository.save(lab);
-  }
 
   public async findBySpace(spaceId: string, page: number, size: number): Promise<ClPage<CnLabInstance>> {
     return this.findPaginated(page, size, {

@@ -23,6 +23,7 @@ import {
   FlMenuDynamicModule,
   FlPortalActionsModule,
   FlPortalModule,
+  FlRadioButtonBigModule,
   FlSearchModule,
   FlSectionModule,
   FlSnackBarModule,
@@ -76,6 +77,7 @@ import {PrProtocolModule} from '@monorepo/protocol';
     FlColorModule,
     FlEmojiPickerModule,
     FlSearchModule,
+    FlRadioButtonBigModule,
 
 
     RvResourceViewModule,

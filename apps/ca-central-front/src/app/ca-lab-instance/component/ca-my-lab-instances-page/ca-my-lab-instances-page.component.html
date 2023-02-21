@@ -9,6 +9,13 @@
         <h1>{{'my_labs' | translate}}</h1>
       </fl-text-icon>
 
+      <fl-section-actions>
+        <button mat-stroked-button type="button"
+                (click)="openCreateLabInstanceDialog()">
+          <mat-icon>add</mat-icon>
+          <span>{{'add_new_lab' | translate}}</span>
+        </button>
+      </fl-section-actions>
     </fl-section-header>
 
     <ng-container *flSectionBody="let labInstances">

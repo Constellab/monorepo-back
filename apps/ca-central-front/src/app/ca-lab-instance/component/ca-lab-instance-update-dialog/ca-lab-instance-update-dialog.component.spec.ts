@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {CaLabInstanceUpdateNameDialogComponent} from './ca-lab-instance-update-name-dialog.component';
+import {CaLabInstanceUpdateDialogComponent} from './ca-lab-instance-update-dialog.component';
 
 describe('LabInstanceUpdateNameDialogComponent', () => {
-  let component: CaLabInstanceUpdateNameDialogComponent;
-  let fixture: ComponentFixture<CaLabInstanceUpdateNameDialogComponent>;
+  let component: CaLabInstanceUpdateDialogComponent;
+  let fixture: ComponentFixture<CaLabInstanceUpdateDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CaLabInstanceUpdateNameDialogComponent ]
+      declarations: [ CaLabInstanceUpdateDialogComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CaLabInstanceUpdateNameDialogComponent);
+    fixture = TestBed.createComponent(CaLabInstanceUpdateDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

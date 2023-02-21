@@ -20,8 +20,8 @@ import {
 } from './component/ca-lab-instance-user-form-dialog/ca-lab-instance-user-form-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
-  CaLabInstanceUpdateNameDialogComponent
-} from './component/ca-lab-instance-update-name-dialog/ca-lab-instance-update-name-dialog.component';
+  CaLabInstanceUpdateDialogComponent
+} from './component/ca-lab-instance-update-dialog/ca-lab-instance-update-dialog.component';
 import {CaLabInstanceManagerComponent} from './component/ca-lab-instance-manager/ca-lab-instance-manager.component';
 import {
   CaLabDockerContainersListComponent
@@ -101,7 +101,7 @@ import {CaLabOnPremiseConfigComponent} from './component/ca-lab-on-premise-confi
     CaLabInstanceUsersListComponent,
     CaLabInstanceUsersTableComponent,
     CaLabInstanceUserFormDialogComponent,
-    CaLabInstanceUpdateNameDialogComponent,
+    CaLabInstanceUpdateDialogComponent,
     CaLabInstanceManagerComponent,
     CaLabDockerContainersListComponent,
     CaLabDockerContainerLogsComponent,

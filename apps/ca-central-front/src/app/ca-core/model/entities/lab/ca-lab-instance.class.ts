@@ -37,6 +37,8 @@ export class CaLabInstanceStatusHistory extends CaStatusHistory<CaLabInstanceSta
  */
 export class CaLabInstance extends CaBaseEntity {
 
+  static MAX_NAME_LENGTH = 50;
+
   name: string;
 
   type: CaLabInstanceType;
@@ -101,35 +103,42 @@ export class CaLabInstanceWithSpace extends CaLabInstance {
 
 export type CaLabInstanceDatasource = FlEntityPaginatedDatasource<CaLabInstance>;
 
-export class CaLabInstanceForm {
+export class CaLabInstanceAdminForm {
   id: string;
   name: string;
   type: CaLabInstanceType;
-  virtualHost: string;
+  virtualHost?: string;
 
   @Type(() => CaServerInfo)
-  serverInfo: CaServerInfo;
+  serverInfo?: CaServerInfo;
 
-  billingMode: CaLabInstanceBillingMode;
-  volumeSize: number;
-  volumeType: CaLabInstanceVolumeType;
+  billingMode?: CaLabInstanceBillingMode;
+  volumeSize?: number;
+  volumeType?: CaLabInstanceVolumeType;
 
-  glabApiKey: string;
-  labManagerApiKey: string;
-  codelabToken: string;
-  serverInstanceId: string;
-  serverVolumeId: string;
-  gwsCoreProdDbPassword: string;
-  gwsCoreDevDbPassword: string;
+  glabApiKey?: string;
+  labManagerApiKey?: string;
+  codelabToken?: string;
+  serverInstanceId?: string;
+  serverVolumeId?: string;
+  gwsCoreProdDbPassword?: string;
+  gwsCoreDevDbPassword?: string;
 
   @Type(() => CaCloudProviderRegion)
-  region: CaCloudProviderRegion;
+  region?: CaCloudProviderRegion;
 
 
   @Type(() => CaSpace)
-  space: CaSpace;
+  space?: CaSpace;
+  onPremisePlatform?: CaLabOnPromisePlatform;
+}
+
+export class CaLabInstanceOnPremiseForm {
+  id: string;
+  name: string;
   onPremisePlatform: CaLabOnPromisePlatform;
 }
+
 
 export class CaLabInstanceFindOneDto {
   @Type(() => CaLabInstance)
@@ -148,4 +157,14 @@ export class CaLabInstanceStatusDTO {
   hasServerInstanceId: boolean;
   hasServerVolumeId: boolean;
   serverProgressText: string;
+}
+
+/**
+ * Object used when a user wants to create a lab instance
+ * He provides free text
+ */
+export interface CaRequestLabInstance {
+  dataType?: string;
+  dataSize?: string;
+  additionalInfo?: string;
 }

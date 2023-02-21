@@ -81,7 +81,7 @@ export interface CnLabInstanceStartDTO {
   lab_config: CnLabConfigDto;
 }
 
-export class CnLabInstanceCreateDTO {
+export class CnLabInstanceCreateAdminDTO {
   id: string;
   name: string;
   type: CnLabInstanceType;
@@ -105,6 +105,12 @@ export class CnLabInstanceCreateDTO {
   onPremisePlatform?: CnLabOnPremisePlatform;
 }
 
+export class CnLabInstanceCreateOnPremiseDTO {
+  id: string;
+  name: string;
+  onPremisePlatform: CnLabOnPremisePlatform;
+}
+
 export interface CnLabInstanceStatusDTO {
   labStatus: CnLabInstanceStatus;
   labManagerIsRunning: boolean;
@@ -112,4 +118,14 @@ export interface CnLabInstanceStatusDTO {
   hasServerInstanceId: boolean;
   hasServerVolumeId: boolean;
   serverProgressText: string;
+}
+
+/**
+ * Object used when a user wants to create a lab instance
+ * He provides free text
+ */
+export interface CnRequestLabInstance{
+  dataType?: string;
+  dataSize?: string;
+  additionalInfo?: string;
 }

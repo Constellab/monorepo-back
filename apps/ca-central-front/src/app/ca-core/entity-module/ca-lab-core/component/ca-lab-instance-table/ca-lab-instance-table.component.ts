@@ -1,9 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CaLabInstance, CaLabInstanceWithSpace} from '../../../../model/entities/lab/ca-lab-instance.class';
 import {
-  CaLabInstanceFormDialogComponent,
-  CaLabInstanceFormDialogInput
-} from '../ca-lab-instance-form-dialog/ca-lab-instance-form-dialog.component';
+  CaLabInstanceAdminFormDialogComponent,
+  CaLabInstanceAdminFormDialogInput
+} from '../ca-lab-instance-admin-form-dialog/ca-lab-instance-admin-form-dialog.component';
 import {
   FlArrayObs,
   FlConfirmDialogInput,
@@ -43,7 +43,7 @@ export class CaLabInstanceTableComponent extends FlTableAbstractDirective<CaLabI
   }
 
   openUpdateDialog(labInstance: CaLabInstanceWithSpace): void {
-    const dialogInput: CaLabInstanceFormDialogInput = {
+    const dialogInput: CaLabInstanceAdminFormDialogInput = {
       mode: 'update', object: {
         id: labInstance.id,
         name: labInstance.name,
@@ -66,7 +66,7 @@ export class CaLabInstanceTableComponent extends FlTableAbstractDirective<CaLabI
       }
     };
 
-    this.dialogService.openSmallDialog(CaLabInstanceFormDialogComponent, {data: dialogInput}).afterClosed().subscribe(
+    this.dialogService.openSmallDialog(CaLabInstanceAdminFormDialogComponent, {data: dialogInput}).afterClosed().subscribe(
       result => this.onUpdateClosed(result)
     );
   }

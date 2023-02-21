@@ -12,34 +12,27 @@
     <!--  Level status  -->
     <mat-radio-group aria-label="Select an option" formControlName="levelStatus"
                      fxLayout="row" fxLayoutAlign="space-between stretch">
-      <mat-radio-button [value]="levelStatus.LEAF" fxFlex="49%"
-                        color="primary" class="radio-button">
-        <div class="radio-content">
-          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em"
-               class="radio-text">
-            <ca-project-icon [type]="levelStatus.LEAF"></ca-project-icon>
-            <div>{{'modern_project' | translate}}</div>
-          </div>
-
-          <div class="g-text-small radio-description">
-            {{'modern_project_description' | translate}}
-          </div>
+      <fl-radio-button-big [value]="levelStatus.LEAF" fxFlex="49%">
+        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+          <ca-project-icon [type]="levelStatus.LEAF"></ca-project-icon>
+          <div>{{'modern_project' | translate}}</div>
         </div>
-      </mat-radio-button>
-      <mat-radio-button [value]="levelStatus.PARENT" fxFlex="49%"
-                        color="primary" class="radio-button">
-        <div class="radio-content">
-          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em"
-               class="radio-text">
-            <ca-project-icon [type]="levelStatus.PARENT"></ca-project-icon>
-            <div>{{'classic_project' | translate}}</div>
-          </div>
 
-          <div class="g-text-small radio-description">
-            {{'classic_project_description' | translate}}
-          </div>
+        <div class="g-text-small radio-description">
+          {{'modern_project_description' | translate}}
         </div>
-      </mat-radio-button>
+      </fl-radio-button-big>
+
+      <fl-radio-button-big [value]="levelStatus.PARENT" fxFlex="49%">
+        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+          <ca-project-icon [type]="levelStatus.PARENT"></ca-project-icon>
+          <div>{{'classic_project' | translate}}</div>
+        </div>
+
+        <div class="g-text-small radio-description">
+          {{'classic_project_description' | translate}}
+        </div>
+      </fl-radio-button-big>
     </mat-radio-group>
 
     <!--  Code  -->

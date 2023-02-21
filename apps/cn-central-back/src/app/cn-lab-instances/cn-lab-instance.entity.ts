@@ -231,4 +231,9 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   public serverIsBusy(): boolean {
     return this.currentStatus.status === CnLabInstanceStatus.STARTING || this.currentStatus.status === CnLabInstanceStatus.STOPPING;
   }
+
+  public setSpace(space: CnSpace): void {
+    this.space = space;
+    this.spaceId = space.id;
+  }
 }

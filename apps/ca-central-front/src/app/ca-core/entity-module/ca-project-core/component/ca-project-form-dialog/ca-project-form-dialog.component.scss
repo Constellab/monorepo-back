@@ -4,27 +4,6 @@
   margin-bottom: 0.5em;
 }
 
-.radio-button {
-  padding: 1em;
-  border: 1px solid var(--hover-color);
-  border-radius: var(--card-radius);
-  overflow-wrap: break-word;
-}
-
-.radio-button.mat-radio-checked {
-  border-color: var(--primary-color);
-}
-
-.radio-content {
-  width: 100%;
-  white-space: normal;
-  padding-left: 0.5em;
-}
-
-// set light color only when button is not disabled
-.radio-button:not(.mat-radio-disabled) .radio-description{
-  color: var(--light-color)
-}
 
 .radio-description{
   margin-top: 0.5em;

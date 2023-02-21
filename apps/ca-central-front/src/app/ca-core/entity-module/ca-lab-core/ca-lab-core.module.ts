@@ -8,8 +8,8 @@ import {
 import {RouterModule} from '@angular/router';
 import {CaLabInstanceTableComponent} from './component/ca-lab-instance-table/ca-lab-instance-table.component';
 import {
-  CaLabInstanceFormDialogComponent
-} from './component/ca-lab-instance-form-dialog/ca-lab-instance-form-dialog.component';
+  CaLabInstanceAdminFormDialogComponent
+} from './component/ca-lab-instance-admin-form-dialog/ca-lab-instance-admin-form-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CaServerInfoCoreModule} from '../ca-server-info-core/ca-server-info-core.module';
 import {
@@ -25,6 +25,9 @@ import {
 import {CaCloudProviderCoreModule} from '../ca-cloud-provider-core/ca-cloud-provider-core.module';
 import {CaLabConfigDialogComponent} from './component/ca-lab-config-dialog/ca-lab-config-dialog.component';
 import {CaLabConfigComponent} from './component/ca-lab-config/ca-lab-config.component';
+import {
+  CaLabInstanceFormDialogComponent
+} from './component/ca-lab-instance-form-dialog/ca-lab-instance-form-dialog.component';
 
 /**
  * Core module for Lab and LabInstance
@@ -34,24 +37,26 @@ import {CaLabConfigComponent} from './component/ca-lab-config/ca-lab-config.comp
     CaLabInstanceCardComponent,
     CaSelectAccessibleLabInstanceOptionsComponent,
     CaLabInstanceTableComponent,
-    CaLabInstanceFormDialogComponent,
+    CaLabInstanceAdminFormDialogComponent,
     CaLabInstanceStatusDialogComponent,
     CaLabLoginButtonComponent,
     CaLabInstanceSearchComponent,
     CaLabInstanceSearchFormComponent,
     CaLabConfigDialogComponent,
     CaLabConfigComponent,
+    CaLabInstanceFormDialogComponent,
   ],
   exports: [
     CaLabInstanceCardComponent,
     CaSelectAccessibleLabInstanceOptionsComponent,
     CaLabInstanceTableComponent,
-    CaLabInstanceFormDialogComponent,
+    CaLabInstanceAdminFormDialogComponent,
     CaLabLoginButtonComponent,
     CaLabInstanceSearchComponent,
     CaLabInstanceSearchFormComponent,
     CaLabConfigDialogComponent,
     CaLabConfigComponent,
+    CaLabInstanceFormDialogComponent,
   ],
   imports: [
     CommonModule,

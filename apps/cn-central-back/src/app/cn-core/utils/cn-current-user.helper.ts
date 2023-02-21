@@ -105,6 +105,10 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
     return this.getAndCheckCurrentRoleInSpace() === CnSpaceUserRole.ADMIN;
   }
 
+  static isAdmin(): boolean{
+    return this.getAndCheckCurrentUser().isAdmin();
+  }
+
   static setCurrentRoleInSpace(role: CnSpaceUserRole): void {
     this.setAdditionalData('roleInSpace', role);
   }
