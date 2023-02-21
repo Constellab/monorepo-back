@@ -2,7 +2,6 @@ import {AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChil
 import {PrWorkflowManagerState} from '../../state/pr-workflow-manager-state';
 import {PrWorkflow, PrWorkflowMode} from '../../model/pr-workflow.class';
 import {Observable, Subscription} from 'rxjs';
-import {PrConfigEdit} from '../../model/pr-config-edit.class';
 import {PrConfigView} from '../../model/pr-config-view.class';
 
 
@@ -19,8 +18,6 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() mode$: Observable<PrWorkflowMode>;
 
   @Input() viewConfig: PrConfigView;
-
-  @Input() editConfig?: PrConfigEdit;
 
   @ViewChild('workflow', {static: false}) container: ElementRef<HTMLElement>;
 

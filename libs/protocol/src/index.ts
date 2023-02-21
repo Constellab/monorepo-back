@@ -18,7 +18,6 @@ export * from './lib/model/pr-config.class';
 export * from './lib/model/pr-config-spec.entity';
 export * from './lib/model/pr-workflow-action.class';
 export * from './lib/model/pr-workflow-drawer-event.class';
-export * from './lib/model/pr-config-edit.class';
 export * from './lib/model/node/pr-workflow-node-output.class';
 export * from './lib/model/node/pr-workflow-node-source.class';
 export * from './lib/model/node/pr-workflow-node-viewer.class';
