@@ -12,8 +12,8 @@
           <div class="circle-color" [style.background-color]="node.project.id | flStringToRgb"></div>
 
           <div>
-            <div>{{node.project.title}}</div>
-<!--            <div class="g-text-light g-text-tiny">{{node.project.title}}</div>-->
+            <div>{{node.project.code}}<span class="text-pipe">|</span><span class="g-text-light">{{node.project.title}}</span></div>
+            <!--            <div class="g-text-light g-text-tiny">{{node.project.title}}</div>-->
           </div>
         </div>
       </mat-tree-node>
@@ -29,8 +29,8 @@
           </button>
 
           <div>
-            <div>{{node.project.title}}</div>
-<!--            <div class="g-text-light g-text-tiny">{{node.project.title}}</div>-->
+            <div>{{node.project.code}}<span class="text-pipe">|</span><span class="g-text-light">{{node.project.title}}</span></div>
+            <!--            <div class="g-text-light g-text-tiny">{{node.project.title}}</div>-->
           </div>
         </div>
       </mat-tree-node>

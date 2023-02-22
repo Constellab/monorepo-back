@@ -32,6 +32,7 @@ import {
   LabMonitoringBrickDataPageComponent
 } from './component/lab-monitoring-brick-data-page/lab-monitoring-brick-data-page.component';
 import {LabBrickCoreModule} from '../../lab-core/entity-module/lab-brick-core/lab-brick-core.module';
+import {LabSynchroDialogComponent} from './component/lab-synchro-dialog/lab-synchro-dialog.component';
 
 
 @NgModule({
@@ -47,7 +48,8 @@ import {LabBrickCoreModule} from '../../lab-core/entity-module/lab-brick-core/la
     LabMonitoringLogsPageComponent,
     LabMonitoringUsagePageComponent,
     LabMonitoringShareLinksPageComponent,
-    LabMonitoringBrickDataPageComponent
+    LabMonitoringBrickDataPageComponent,
+    LabSynchroDialogComponent
   ],
   imports: [
     CommonModule,

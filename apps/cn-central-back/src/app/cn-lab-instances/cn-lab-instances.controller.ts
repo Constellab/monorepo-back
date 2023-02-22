@@ -401,7 +401,7 @@ export class CnLabInstancesController {
     zip.addFile(result.exeFile.name, result.exeFile.buffer);
     response.set({
       'Content-Type': 'application/octet-stream',
-      'Content-Disposition': 'attachment; filename=on-premise.zip'
+      'Content-Disposition': 'attachment; filename=constellab-on-premise.zip'
     });
     const data = zip.toBuffer();
     response.send(data);

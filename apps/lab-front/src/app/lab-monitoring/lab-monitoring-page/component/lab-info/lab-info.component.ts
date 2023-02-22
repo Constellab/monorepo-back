@@ -10,6 +10,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {LabTypeService} from '../../../../lab-core/entity-service/lab-type.service';
 import {LabProjectService} from '../../../../lab-core/entity-service/lab-project.service';
+import {LabSynchroDialogComponent} from '../lab-synchro-dialog/lab-synchro-dialog.component';
 
 @Component({
   selector: 'lab-info',
@@ -21,7 +22,6 @@ export class LabInfoComponent implements OnInit {
   labInfo: LabSystemInfo;
   isLoading: boolean = true;
 
-  synchronizeLoading: boolean = false;
 
   constructor(private systemService: LabSystemService,
               private typeService: LabTypeService,
@@ -61,20 +61,10 @@ export class LabInfoComponent implements OnInit {
     });
   }
 
-  synchronizeProjects(): void {
-    if (this.synchronizeLoading) return;
-
-    this.synchronizeLoading = true;
-    this.projectService.synchronizeProjects().subscribe({
-      next: () => this.synchronizeSuccess(),
-      error: () => this.synchronizeLoading = false
-    });
+  syncLab(): void {
+    this.dialogService.openSmallDialog(LabSynchroDialogComponent);
   }
 
-  private synchronizeSuccess(): void {
-    this.synchronizeLoading = false;
-    this.snackBarService.openSuccessMessage({text: 'monitoring.projects_synchronized', translateText: true});
-  }
 
   cleanLab(): void {
     const input: FlConfirmDialogInput = {

@@ -6,8 +6,8 @@
 </div>
 
 <!-- Type unavailable -->
-<div *ngIf="_entity.status === 'UNAVAILABLE'">
-  <fl-key-value  class="doc-info">
+<div *ngIf="_entity.status === 'UNAVAILABLE'" class="doc-info">
+  <fl-key-value>
     <fl-key>{{'td.status' | translate}}</fl-key>
     {{_entity.status}}
   </fl-key-value>

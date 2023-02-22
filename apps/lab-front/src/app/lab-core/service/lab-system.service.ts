@@ -53,4 +53,10 @@ export class LabSystemService {
     return this.apiService.post(`${this.route}/garbage-collector`, null);
   }
 
+  public synchronize(syncUsers: boolean, syncProjects: boolean): Observable<void> {
+    return this.apiService.post(`${this.route}/synchronize`, {
+      sync_users: syncUsers,
+      sync_projects: syncProjects
+    });
+  }
 }
