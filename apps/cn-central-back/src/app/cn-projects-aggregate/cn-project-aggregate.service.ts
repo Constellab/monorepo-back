@@ -192,6 +192,15 @@ export class CnProjectAggregateService {
     return await this.projectService.getProjectTree(rootProject);
   }
 
+  /**
+   * Method not secured to get a list of project trees
+   * @param projects
+   */
+  public async getProjectTrees(projects: CnProject[]): Promise<CnProject[]> {
+    const rootProjects = projects.map(project => this.projectService.getProjectTree(project));
+    return await Promise.all(rootProjects);
+  }
+
   public async getChildren(projectId: string): Promise<CnProject[]> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 

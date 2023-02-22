@@ -589,7 +589,8 @@ export class CnLabInstanceAggregateService {
 
   public async getCurrentLabInstanceProjects(): Promise<CnProject[]> {
     const labProjects = await this.labInstanceProjectService.findByLabInstanceId(CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
-    return labProjects.map(labProject => labProject.project);
+    const projects = labProjects.map(labProject => labProject.project);
+    return this.projectAggregateService.getProjectTrees(projects);
   }
 
   public async getCurrentLabInstanceSharedUsers(): Promise<CnExternalLabUser[]> {

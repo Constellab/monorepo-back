@@ -29,6 +29,10 @@ export class CnProjectDtoHelper {
     };
   }
 
+  public static convertToProjectTreeDtoList(projects: CnProject[]): CnProjectTreeDto[] {
+    return projects.map(project => CnProjectDtoHelper.convertToProjectTreeDto(project));
+  }
+
   public static convertProjectAncestorTreeDtos(projects: CnProject[]): CnProjectAncestorTreeDTO[] {
     return projects.map(project => ({
       id: project.id,
