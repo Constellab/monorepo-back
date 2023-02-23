@@ -45,7 +45,8 @@ export class LabMonitorBetweenDatesComponent implements OnInit {
     const series: FlChart2dMultiSerie<FlChart2dDatum> = new FlChart2dMultiSerie();
 
     series.addSerie(this.getCpuPercentSeries());
-    series.addSerie(this.getDiskPercentSeries());
+    series.addSerie(this.getOSDiskPercentSeries());
+    series.addSerie(this.getLabDiskPercentSeries());
     series.addSerie(this.getRamPercentSeries());
     series.addSerie(this.getSwapPercentSeries());
 
@@ -62,11 +63,18 @@ export class LabMonitorBetweenDatesComponent implements OnInit {
     return new FlChartSerie(data, this.translateService.translate('monitoring.cpu_usage'));
   }
 
-  private getDiskPercentSeries(): FlChartSerie<FlChart2dDatum> {
+  private getOSDiskPercentSeries(): FlChartSerie<FlChart2dDatum> {
     const data = this.monitor.monitors.map((monitor) => {
       return new FlChart2dDatum(monitor.createdAt.valueOf(), monitor.diskUsagePercent);
     });
-    return new FlChartSerie(data, this.translateService.translate('monitoring.disk_usage'));
+    return new FlChartSerie(data, this.translateService.translate('monitoring.os_disk_usage'));
+  }
+
+  private getLabDiskPercentSeries(): FlChartSerie<FlChart2dDatum> {
+    const data = this.monitor.monitors.map((monitor) => {
+      return new FlChart2dDatum(monitor.createdAt.valueOf(), monitor.externalDiskUsagePercent);
+    });
+    return new FlChartSerie(data, this.translateService.translate('monitoring.lab_disk_usage'));
   }
 
   private getRamPercentSeries(): FlChartSerie<FlChart2dDatum> {

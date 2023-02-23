@@ -1,29 +1,16 @@
 <div>
   <div>
-    <fl-key-value>
-      <fl-key>{{'monitoring.from_date' | translate}}</fl-key>
-      {{monitor.fromDate | flDate:'DATETIME_MED_WITH_SECONDS'}}
-    </fl-key-value>
-
-    <fl-key-value>
-      <fl-key>{{'monitoring.to_date' | translate}}</fl-key>
-      {{monitor.toDate | flDate:'DATETIME_MED_WITH_SECONDS'}}
-    </fl-key-value>
-
     <ng-container *ngIf="lastMonitor">
       <fl-key-value>
-        <fl-key>{{'monitoring.total_disk_space' | translate}}</fl-key>
-        {{lastMonitor.diskTotal | flByteText}}
+        <fl-key>{{'monitoring.os_disk_space' | translate}}</fl-key>
+        {{lastMonitor.diskUsageUsed | flByteText}} / {{lastMonitor.diskTotal | flByteText}}
+        ({{lastMonitor.diskUsageFree | flByteText}} {{'monitoring.disk_space_available' | translate}})
       </fl-key-value>
 
       <fl-key-value>
-        <fl-key>{{'monitoring.total_disk_space_used' | translate}}</fl-key>
-        {{lastMonitor.diskUsageUsed | flByteText}}
-      </fl-key-value>
-
-      <fl-key-value>
-        <fl-key>{{'monitoring.total_disk_space_free' | translate}}</fl-key>
-        {{lastMonitor.diskUsageFree | flByteText}}
+        <fl-key>{{'monitoring.external_disk_space' | translate}}</fl-key>
+        {{lastMonitor.externalDiskUsageUsed | flByteText}} / {{lastMonitor.externalDiskTotal | flByteText}}
+        ({{lastMonitor.externalDiskUsageFree | flByteText}} {{'monitoring.disk_space_available' | translate}})
       </fl-key-value>
 
       <fl-key-value>
@@ -36,6 +23,18 @@
         {{lastMonitor.ramUsageTotal | flByteText}}
       </fl-key-value>
     </ng-container>
+
+    <div class="date">
+      <fl-key-value>
+        <fl-key>{{'monitoring.from_date' | translate}}</fl-key>
+        {{monitor.fromDate | flDate:'DATETIME_MED_WITH_SECONDS'}}
+      </fl-key-value>
+
+      <fl-key-value>
+        <fl-key>{{'monitoring.to_date' | translate}}</fl-key>
+        {{monitor.toDate | flDate:'DATETIME_MED_WITH_SECONDS'}}
+      </fl-key-value>
+    </div>
   </div>
 
   <div>

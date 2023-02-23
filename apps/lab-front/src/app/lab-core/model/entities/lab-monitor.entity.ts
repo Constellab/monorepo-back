@@ -30,6 +30,18 @@ export class LabMonitor extends LabBaseEntity{
   @Expose({name: 'disk_usage_percent'})
   diskUsagePercent: number;
 
+  @Expose({name: 'external_disk_total'})
+  externalDiskTotal: number;
+
+  @Expose({name: 'external_disk_usage_used'})
+  externalDiskUsageUsed: number;
+
+  @Expose({name: 'external_disk_usage_free'})
+  externalDiskUsageFree: number;
+
+  @Expose({name: 'external_disk_usage_percent'})
+  externalDiskUsagePercent: number;
+
   @Expose({name: 'swap_memory_total'})
   swapMemoryTotal: number;
 
