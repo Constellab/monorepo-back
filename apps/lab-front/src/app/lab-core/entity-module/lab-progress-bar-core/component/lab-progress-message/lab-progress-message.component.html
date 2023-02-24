@@ -1,0 +1,11 @@
+<div fxLayout="row" fxLayoutAlign="space-between" class="g-full">
+  <fl-status-chip [status]="progressMessage.type" mode="iconText" size="small"></fl-status-chip>
+  <div class="g-text-light date"
+       [matTooltip]="progressMessage.datetime | flDate:'D, HH:mm:ss'">
+    {{progressMessage.datetime | flDate : 'HH:mm:ss'}}
+  </div>
+</div>
+
+<fl-limit-height class="text">
+  {{progressMessage.text}}
+</fl-limit-height>

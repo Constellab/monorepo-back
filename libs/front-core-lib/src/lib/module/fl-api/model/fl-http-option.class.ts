@@ -32,7 +32,7 @@ export type FlHttpOptionSerialization = 'classToPlain' | 'stringify' | 'none' | 
 
 export interface FlHttpOption extends FlHttpGetUrlOption{
   headers?: HttpHeaders;
-  observe?: any;
+  observe?: 'events' | any;
   responseType?: 'blob' | 'arraybuffer' | 'text' | any;
   params?: HttpParams | {
     [param: string]: string | string[];

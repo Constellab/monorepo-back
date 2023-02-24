@@ -1,0 +1,27 @@
+<ng-container *ngIf="elapsedTime$ | async as elapsedTime">
+  <fl-key-value *ngIf="elapsedTime > 0">
+    <fl-key>{{'biox.execution_time' | translate}}</fl-key>
+    {{elapsedTime | flDuration}}
+  </fl-key-value>
+</ng-container>
+
+<div *ngIf="progressBar$ | async as progressBar">
+  <div class="dates">
+    <fl-key-value *ngIf="progressBar.startedAt">
+      <fl-key>{{'begin_date' | translate}}</fl-key>
+      {{progressBar.startedAt | flDate:'DATETIME_MED_WITH_SECONDS'}}
+    </fl-key-value>
+
+    <fl-key-value *ngIf="progressBar.endedAt">
+      <fl-key>{{'end_date' | translate}}</fl-key>
+      {{progressBar.endedAt | flDate:'DATETIME_MED_WITH_SECONDS'}}
+    </fl-key-value>
+  </div>
+
+
+  <div *ngFor="let message of progressBar.messages">
+    <lab-progress-message [progressMessage]="message"></lab-progress-message>
+
+    <mat-divider class="divider"></mat-divider>
+  </div>
+</div>

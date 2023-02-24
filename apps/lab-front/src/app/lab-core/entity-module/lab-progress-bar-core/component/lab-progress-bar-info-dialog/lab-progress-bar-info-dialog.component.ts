@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {LabProgressBar} from '../../../../../lab-core/model/entities/lab-progress-bar.entity';
+import {LabProgressBar} from '../../../../model/entities/lab-progress-bar.entity';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {Observable} from 'rxjs';
 

@@ -1,10 +1,8 @@
-<fl-dialog-header>
-</fl-dialog-header>
-
+<fl-dialog-header></fl-dialog-header>
 
 <mat-dialog-content>
   <fl-async-section [object]="progressBar$">
-    <ng-container *flSectionBody="let progressBar">
+    <ng-container *flSectionBody>
       <lab-progress-bar-info [progressBar$]="progressBar$"></lab-progress-bar-info>
     </ng-container>
   </fl-async-section>

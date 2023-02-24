@@ -54,10 +54,12 @@
       <span> {{'resource_type' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let resource">
-      {{resource.resourceTypeHumanName}}
-      <span *ngIf="resource.fsNode?.size != null" class="g-text-light">
-        &nbsp;({{resource.fsNode.size | flByteText}})
-      </span>
+      <div>
+        <div>{{resource.resourceTypeHumanName}}</div>
+        <div *ngIf="resource.fsNode?.size != null" class="g-text-light g-text-tiny">
+          {{resource.fsNode.size | flByteText}}
+        </div>
+      </div>
     </mat-cell>
   </ng-container>
 

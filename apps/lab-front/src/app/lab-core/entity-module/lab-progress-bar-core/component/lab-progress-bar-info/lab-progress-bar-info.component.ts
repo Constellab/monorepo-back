@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {LabProgressBar} from '../../../../../lab-core/model/entities/lab-progress-bar.entity';
+import {LabProgressBar} from '../../../../model/entities/lab-progress-bar.entity';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 

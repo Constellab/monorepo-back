@@ -15,7 +15,7 @@ import {
 import {Observable} from 'rxjs';
 import {
   LabProgressBarInfoDialogComponent
-} from '../lab-progress-bar-info-dialog/lab-progress-bar-info-dialog.component';
+} from '../../../../../lab-core/entity-module/lab-progress-bar-core/component/lab-progress-bar-info-dialog/lab-progress-bar-info-dialog.component';
 import {map} from 'rxjs/operators';
 import {LabExperimentService} from '../../../../../lab-core/entity-service/lab-experiment.service';
 import {LabRouterService} from '../../../../../lab-core/service/lab-router.service';

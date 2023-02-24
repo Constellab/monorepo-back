@@ -15,16 +15,12 @@ import {
   LabWorkflowDrawerActionComponent
 } from './component/lab-workflow-drawer-action/lab-workflow-drawer-action.component';
 import {LabWorkflowNodeConfigComponent} from './component/lab-workflow-node-config/lab-workflow-node-config.component';
-import {LabProgressBarInfoComponent} from './component/lab-progress-bar-info/lab-progress-bar-info.component';
 import {LabTaskSourceConfigComponent} from './component/lab-task-source-config/lab-task-source-config.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {LabWorkflowNodeDetailState} from './state/lab-workflow-node-detail.state';
 import {
   LabExperimentDetailHeaderComponent
 } from './component/lab-experiment-detail-header/lab-experiment-detail-header.component';
-import {
-  LabProgressBarInfoDialogComponent
-} from './component/lab-progress-bar-info-dialog/lab-progress-bar-info-dialog.component';
 import {LabExperimentDetailComponent} from './component/lab-experiment-detail/lab-experiment-detail.component';
 import {
   LabExperimentAssociatedReportsComponent
@@ -52,6 +48,9 @@ import {
 import {LabReportCoreModule} from '../../../lab-core/entity-module/lab-report-core/lab-report-core.module';
 import {LabLogCoreModule} from '../../../lab-core/entity-module/lab-log-core/lab-log-core.module';
 import {LabMonitorCoreModule} from '../../../lab-core/entity-module/lab-monitor-core/lab-monitor-core.module';
+import {
+  LabProgressBarCoreModule
+} from '../../../lab-core/entity-module/lab-progress-bar-core/lab-progress-bar-core.module';
 
 
 @NgModule({
@@ -62,10 +61,8 @@ import {LabMonitorCoreModule} from '../../../lab-core/entity-module/lab-monitor-
     LabWorkflowNodeDetailComponent,
     LabWorkflowDrawerActionComponent,
     LabWorkflowNodeConfigComponent,
-    LabProgressBarInfoComponent,
     LabTaskSourceConfigComponent,
     LabExperimentDetailHeaderComponent,
-    LabProgressBarInfoDialogComponent,
     LabExperimentDetailComponent,
     LabExperimentAssociatedReportsComponent,
     LabProtocolConfigComponent,
@@ -93,6 +90,7 @@ import {LabMonitorCoreModule} from '../../../lab-core/entity-module/lab-monitor-
     LabReportCoreModule,
     LabLogCoreModule,
     LabMonitorCoreModule,
+    LabProgressBarCoreModule,
   ],
   providers: [
     // declare the state here otherwise the angular element can't access them

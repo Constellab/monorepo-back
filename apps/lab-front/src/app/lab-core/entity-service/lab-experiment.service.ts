@@ -50,7 +50,7 @@ export class LabExperimentService {
     return this.apiService.post(this.route, this.experimentFormToBody(experiment), LabExperiment);
   }
 
-  // update the experiment and the protocol inside if provided
+  // update the experiment
   public update(experimentId: string, experiment: LabExperimentSimpleForm): Observable<LabExperiment> {
     return this.apiService.put(`${this.route}/${experimentId}`, this.experimentFormToBody(experiment), LabExperiment);
   }

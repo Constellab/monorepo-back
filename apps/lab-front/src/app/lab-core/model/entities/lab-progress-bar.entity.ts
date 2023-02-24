@@ -27,12 +27,12 @@ export class LabProgressMessage {
 
   @FlStatusTransform(labProgressBarMessageTypeDict)
   type: FlStatus<LabProgressBarMessageType>;
+
+  progress?: number;
 }
 
 
 export class LabProgressBar extends LabBaseEntity {
-
-  process: { id: string, type: string };
 
   @Expose({name: 'started_at'})
   @ClLuxonDateTimeTransform()

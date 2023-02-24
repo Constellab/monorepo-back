@@ -6,7 +6,7 @@ import {LabProgressBar} from '../../../../../lab-core/model/entities/lab-progres
 import {map} from 'rxjs/operators';
 import {
   LabProgressBarInfoDialogComponent
-} from '../lab-progress-bar-info-dialog/lab-progress-bar-info-dialog.component';
+} from '../../../../../lab-core/entity-module/lab-progress-bar-core/component/lab-progress-bar-info-dialog/lab-progress-bar-info-dialog.component';
 import {LabProcessService} from '../../../../../lab-core/entity-service/lab-process.service';
 import {
   LabLogBetweenDatesDialogInput,
