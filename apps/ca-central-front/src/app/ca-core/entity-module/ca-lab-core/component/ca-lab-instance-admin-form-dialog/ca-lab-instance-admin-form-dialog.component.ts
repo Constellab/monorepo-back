@@ -56,7 +56,7 @@ export class CaLabInstanceAdminFormDialogComponent extends FlFormDialogAbstractD
     });
     this.init();
 
-    this.onTypeChange(this.formGp.value.type);
+    this.onTypeChange(this.formGp.getRawValue().type);
   }
 
   buildForm(): FormGroup<CaLabInstanceAdminForm> {
@@ -115,7 +115,7 @@ export class CaLabInstanceAdminFormDialogComponent extends FlFormDialogAbstractD
   }
 
   isCloud(): boolean {
-    return this.formGp.value.type === 'CLOUD';
+    return this.formGp.getRawValue().type === 'CLOUD';
   }
 
   create(formValue: CaLabInstanceAdminForm): Observable<CaLabInstanceWithSpace> {
