@@ -3,7 +3,11 @@
   <fl-bio-network-reaction-detail [reaction]="node.data">
   </fl-bio-network-reaction-detail>
 
-  <fl-key-value>
+
+  <fl-bio-network-reaction-content [reaction$]="node$"></fl-bio-network-reaction-content>
+
+
+  <fl-key-value class="g-section">
     <fl-key>{{'flBioNetwork.pathway' | translate}}</fl-key>
     {{node.cluster.clusterId}}
   </fl-key-value>
@@ -13,59 +17,10 @@
 
     <ul>
       <li *ngFor="let reaction of duplicateReactions$ | async"
-          class="g-text-link" (click)="selectNode(reaction)">
+          class="g-text-link" (click)="selectNode(reaction)"
+          [ngClass]="{'selected-pathway':reaction.cluster.clusterId === node.cluster.clusterId}">
         {{reaction.cluster.clusterId}}
       </li>
     </ul>
   </div>
-
-  <div class="section">
-    <fl-text-icon>
-      <mat-icon>swipe_left_alt</mat-icon>
-      <p>{{'flBioNetwork.reaction_substrate' | translate}} :</p>
-    </fl-text-icon>
-
-    <ul>
-      <li *ngFor="let substrate of reactionSubstrate$ | async">
-        <span class="g-text-link" (click)="selectNode(substrate)">
-          {{substrate.name}}
-        </span>
-
-        <a class="chebi-id g-text-small g-text-light g-text-link"
-           *ngIf="substrate.getChebiId() as id" target="_blank"
-           [href]="substrate.getChebiId() | flBioNetworkLink:'chebi'">
-          <fl-text-icon gap="0" iconPosition="end">
-            <mat-icon class="g-icon-tiny">open_in_new</mat-icon>
-            ({{id}})
-          </fl-text-icon>
-        </a>
-      </li>
-    </ul>
-  </div>
-
-  <div class="section">
-    <fl-text-icon>
-      <mat-icon>swipe_right_alt</mat-icon>
-      <p>{{'flBioNetwork.reaction_products' | translate}} :</p>
-    </fl-text-icon>
-
-
-    <ul>
-      <li *ngFor="let product of reactionProducts$ | async">
-        <span class="g-text-link" (click)="selectNode(product)">
-          {{product.name}}
-        </span>
-
-        <a class="chebi-id g-text-small g-text-light g-text-link"
-           *ngIf="product.getChebiId() as id" target="_blank"
-           [href]="product.getChebiId() | flBioNetworkLink:'chebi'">
-          <fl-text-icon gap="0" iconPosition="end">
-            <mat-icon class="g-icon-tiny">open_in_new</mat-icon>
-            ({{id}})
-          </fl-text-icon>
-        </a>
-      </li>
-    </ul>
-  </div>
-
 </ng-container>

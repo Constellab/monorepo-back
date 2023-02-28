@@ -4,6 +4,7 @@ import {FlBioNetworkNodeCofactor} from './fl-bio-network-node-cofactor.class';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlExternalLinkService} from '../../../service/fl-external-link.service';
 import {FlBioNetworkNodeMetabolite} from './fl-bio-network-node-metabolite.class';
+import {FlBioNetworkHelper} from '../utils/fl-bio-network.helper';
 
 export class FlBioNetworkNodeReaction extends FlBioNetworkNode {
 
@@ -98,6 +99,26 @@ export class FlBioNetworkNodeReaction extends FlBioNetworkNode {
    */
   public getSameReactionNodesInOtherCluster(): FlBioNetworkNode[] {
     return this.getConnectedNodes().filter(node => node instanceof FlBioNetworkNodeReaction);
+  }
+
+  public getProductIds(): string[] {
+    const ids: string[] = [];
+    for(const keys of Object.keys(this.data.metabolites)) {
+      if(!FlBioNetworkHelper.metaboliteIsConsumed(keys, this.data)) {
+        ids.push(keys);
+      }
+    }
+    return ids;
+  }
+
+  public getSubstratIds(): string[] {
+    const ids: string[] = [];
+    for(const keys of Object.keys(this.data.metabolites)) {
+      if(FlBioNetworkHelper.metaboliteIsConsumed(keys, this.data)) {
+        ids.push(keys);
+      }
+    }
+    return ids;
   }
 
 }

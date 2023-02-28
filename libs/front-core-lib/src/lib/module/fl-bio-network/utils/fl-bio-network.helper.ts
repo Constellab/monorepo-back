@@ -75,7 +75,11 @@ export class FlBioNetworkHelper {
   public static metaboliteIsConsumed(metaboliteId: string, reaction: FlBioNetworkReaction): boolean {
     const simulation = FlBioNetworkHelper.getReactionSimulationValue(reaction.data);
     // if the simulation value is negative, the link is inverted
-    return simulation * reaction.metabolites[metaboliteId] < 0;
+    return (simulation * reaction.metabolites[metaboliteId]) < 0;
+  }
+
+  public static metaboliteValueIsConsumed(value: number): boolean {
+    return value < 0;
   }
 
   public static getReactionSimulationValue(reactionData: FlBioNetworkReactionData): number {
