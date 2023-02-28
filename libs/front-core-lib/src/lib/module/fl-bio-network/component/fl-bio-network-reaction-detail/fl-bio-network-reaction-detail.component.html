@@ -9,24 +9,10 @@
     {{reaction.name}}
   </fl-key-value>
 
-  <fl-key-value>
-    <fl-key>{{'flBioNetwork.enzyme_name' | translate}}</fl-key>
-    {{reaction.enzyme.title}}
-  </fl-key-value>
-
-  <fl-key-value *ngIf="reaction.enzyme.ec_number">
-    <fl-key>{{'flBioNetwork.enzyme_ec_number' | translate}}</fl-key>
-    <a [href]="brendaUrl" class="g-text-link link" target="_blank">
-      <fl-text-icon gap="0" iconPosition="end">
-        <mat-icon class="g-icon-tiny">open_in_new</mat-icon>
-        {{reaction.enzyme.ec_number}}
-      </fl-text-icon>
-    </a>
-  </fl-key-value>
-
   <fl-key-value *ngIf="reaction.rhea_id">
     <fl-key>{{'flBioNetwork.rhea_id' | translate}}</fl-key>
-    <a [href]="rheaUrl" class="g-text-link link" target="_blank">
+    <a [href]="reaction.rhea_id | flBioNetworkLink:'rhea'"
+       class="g-text-link link" target="_blank">
       <fl-text-icon gap="0" iconPosition="end">
         <mat-icon class="g-icon-tiny">open_in_new</mat-icon>
         {{reaction.rhea_id}}
@@ -34,14 +20,24 @@
     </a>
   </fl-key-value>
 
-  <fl-bio-network-reaction-flux [reaction]="reaction"></fl-bio-network-reaction-flux>
+  <div *ngIf="reaction.enzymes">
+    {{'flBioNetwork.enzymes' | translate}} :
 
-  <ng-container *ngIf="pathways?.length > 0">
-    <fl-key-value class="pathways">
-      <fl-key>{{'flBioNetwork.pathways' | translate}}</fl-key>
-      <ul *ngFor="let pathway of pathways">
-        <li>{{pathway.name}}</li>
-      </ul>
-    </fl-key-value>
-  </ng-container>
+    <ul>
+      <li *ngFor="let enzyme of reaction.enzymes">
+        <span>{{enzyme.name}} </span>
+        <ng-container *ngIf="enzyme.ec_number">
+          <a [href]="enzyme.ec_number | flBioNetworkLink:'brenda'"
+              class="g-text-link link g-text-light g-text-small" target="_blank">
+          <fl-text-icon gap="0" iconPosition="end">
+            <mat-icon class="g-icon-tiny">open_in_new</mat-icon>
+            ({{enzyme.ec_number}})
+          </fl-text-icon>
+        </a>
+        </ng-container>
+      </li>
+    </ul>
+  </div>
+
+  <fl-bio-network-reaction-flux [reaction]="reaction"></fl-bio-network-reaction-flux>
 </div>

@@ -24,7 +24,7 @@ export interface FlBioNetworkObject {
   level: FlBioNetworkMetaboliteLevel;
 }
 
-export type FlBioNetworkMetaboliteType =  'default' | 'cofactor' | 'residue';
+export type FlBioNetworkMetaboliteType = 'default' | 'cofactor' | 'residue';
 
 export interface FlBioNetworkMetabolite extends FlBioNetworkObject {
   compartment: string;
@@ -46,7 +46,7 @@ export interface FlBioNetworkReaction extends FlBioNetworkObject {
   metabolites: Record<string, number>;
   lower_bound?: number;
   upper_bound?: number;
-  enzyme?: FlBioNetworkEnzyme;
+  enzymes: FlBioNetworkEnzyme[];
   data: FlBioNetworkReactionData;
   layout?: FlCoord;
   rhea_id?: string;
@@ -80,17 +80,15 @@ export interface FlBioNetworkClusterInfo {
   subClusterIds: string[];
 }
 
-// Information about the enzyme in the reaction
+// info of which enzyme the reaction is
 export interface FlBioNetworkEnzyme {
-  title: string;
+  name: string;
   ec_number: string;
   pathways: FlBioNetworkPathways;
 }
 
 // list of database ref for a pathway
 export type FlPathwayDatabase = keyof FlBioNetworkPathways;
-
-export const flPathwayDatabases: FlPathwayDatabase[] = ['kegg', 'brenda', 'metacyc'];
 
 // info of which pathway the reaction is
 // It define the pathway name based for known DB (EU, US, Japan)
@@ -99,8 +97,6 @@ export interface FlBioNetworkPathways {
   kegg?: FlBioNetworkPathwayDetail;
   metacyc?: FlBioNetworkPathwayDetail;
 }
-
-export const flBioNetworkPathwayIdSeparator: string = '; ';
 
 export interface FlBioNetworkPathwayDetail {
   // list of ids of the pathways separated by the separator
@@ -118,14 +114,6 @@ export interface FlBioNetworkClusterSelection {
   color: string;
 }
 
-export interface FlBioNetworkClusterGroupSelection {
-  name: string;
-  children: FlBioNetworkClusterSelection2[];
-}
-
-export interface FlBioNetworkClusterSelection2 {
-  name: string;
-}
 
 export interface FlBioNetworkReactionData {
   simulations?: Record<string, FlBioNetworkReactionDataFlux>;
@@ -137,13 +125,3 @@ export interface FlBioNetworkReactionDataFlux {
   upper_bound: number;
   // labels?: [];
 }
-
-export const flDefaultPathwayReactionValue: FlBioNetworkReactionData = {
-  simulations: {'default': {value: 1, lower_bound: 1, upper_bound: 1}}
-};
-
-export const flDefaultPathway: FlBioNetworkPathwayDetail = {
-  id: 'Default',
-  name: 'Default'
-};
-

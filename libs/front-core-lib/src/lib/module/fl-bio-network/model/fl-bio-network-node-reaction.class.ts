@@ -9,7 +9,6 @@ export class FlBioNetworkNodeReaction extends FlBioNetworkNode {
 
   public type: 'reaction';
   public data: FlBioNetworkReaction;
-  public pathwayIds: string[]; // list of pathway for the reaction
   public cluster: FlBioNetworkClusterInfo;
 
   private readonly cofactorDistance = 20;
@@ -17,16 +16,10 @@ export class FlBioNetworkNodeReaction extends FlBioNetworkNode {
 
   constructor(name: string, cluster: FlBioNetworkClusterInfo,
               defaultColor: string, strokeColor: string,
-              data: FlBioNetworkReaction, pathwayIds: string[],
+              data: FlBioNetworkReaction,
               public existsInMultipleCluster: boolean) {
     super(name, 'reaction', defaultColor, strokeColor, data);
     this.cluster = cluster;
-    this.pathwayIds = pathwayIds;
-  }
-
-
-  public isInPathway(id: string): boolean {
-    return this.pathwayIds.includes(id);
   }
 
   isInCluster(id: string): boolean {

@@ -1,8 +1,6 @@
 import {FlBioNetworkNode} from './fl-bio-network-node.class';
 import {FlBioNetworkClusterInfo, FlBioNetworkMetabolite, FlBioNetworkMetaboliteLevel} from './fl-bio-network.class';
-import {FlBioNetworkNodeReaction} from './fl-bio-network-node-reaction.class';
 import {ClHelpService} from '@monorepo/core-lib';
-import {FlExternalLinkService} from '../../../service/fl-external-link.service';
 
 
 export class FlBioNetworkNodeMetabolite extends FlBioNetworkNode {
@@ -25,11 +23,6 @@ export class FlBioNetworkNodeMetabolite extends FlBioNetworkNode {
     return this.level;
   }
 
-  isInPathway(id: string): boolean {
-    // check if any connected reaction is in the pathway
-    return this.getConnectedNodes().filter(n => n instanceof FlBioNetworkNodeReaction).some(n => n.isInPathway(id));
-  }
-
   isInCluster(id: string): boolean {
     return this.cluster.clusterId === id;
   }
@@ -45,10 +38,5 @@ export class FlBioNetworkNodeMetabolite extends FlBioNetworkNode {
 
   public getChebiId(): string | null {
     return ClHelpService.isNullOrEmpty(this.data.chebi_id) ? null : this.data.chebi_id;
-  }
-
-  public getChebiLink(): string | null {
-    const chebiId = this.getChebiId();
-    return chebiId ? FlExternalLinkService.getChebiLink(chebiId) : null;
   }
 }

@@ -2,7 +2,6 @@ import {FlBioNetworkMetabolite, FlBioNetworkMetaboliteLevel} from './fl-bio-netw
 import {FlBioNetworkNode} from './fl-bio-network-node.class';
 import {FlBioNetworkNodeReaction} from './fl-bio-network-node-reaction.class';
 import {ClHelpService} from '@monorepo/core-lib';
-import {FlExternalLinkService} from '../../../service/fl-external-link.service';
 
 export const flBioNetworkCofactorColor = '#ffaa33';
 
@@ -19,11 +18,6 @@ export class FlBioNetworkNodeCofactor extends FlBioNetworkNode {
 
   protected _getLevel(): FlBioNetworkMetaboliteLevel {
     return FlBioNetworkMetaboliteLevel.COFACTOR;
-  }
-
-  isInPathway(id: string): boolean {
-    // check if any connected reaction is in the pathway
-    return this.getConnectedNodes().filter(n => n instanceof FlBioNetworkNodeReaction).some(n => n.isInPathway(id));
   }
 
   isInCluster(id: string): boolean {
@@ -44,11 +38,6 @@ export class FlBioNetworkNodeCofactor extends FlBioNetworkNode {
 
   public getChebiId(): string | null {
     return ClHelpService.isNullOrEmpty(this.data.chebi_id) ? null : this.data.chebi_id;
-  }
-
-  public getChebiLink(): string | null {
-    const chebiId = this.getChebiId();
-    return chebiId ? FlExternalLinkService.getChebiLink(chebiId) : null;
   }
 
 

@@ -21,6 +21,30 @@
 
   <div class="section">
     <fl-text-icon>
+      <mat-icon>swipe_left_alt</mat-icon>
+      <p>{{'flBioNetwork.reaction_substrate' | translate}} :</p>
+    </fl-text-icon>
+
+    <ul>
+      <li *ngFor="let substrate of reactionSubstrate$ | async">
+        <span class="g-text-link" (click)="selectNode(substrate)">
+          {{substrate.name}}
+        </span>
+
+        <a class="chebi-id g-text-small g-text-light g-text-link"
+           *ngIf="substrate.getChebiId() as id" target="_blank"
+           [href]="substrate.getChebiId() | flBioNetworkLink:'chebi'">
+          <fl-text-icon gap="0" iconPosition="end">
+            <mat-icon class="g-icon-tiny">open_in_new</mat-icon>
+            ({{id}})
+          </fl-text-icon>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <fl-text-icon>
       <mat-icon>swipe_right_alt</mat-icon>
       <p>{{'flBioNetwork.reaction_products' | translate}} :</p>
     </fl-text-icon>
@@ -34,7 +58,7 @@
 
         <a class="chebi-id g-text-small g-text-light g-text-link"
            *ngIf="product.getChebiId() as id" target="_blank"
-           [href]="product.getChebiLink()">
+           [href]="product.getChebiId() | flBioNetworkLink:'chebi'">
           <fl-text-icon gap="0" iconPosition="end">
             <mat-icon class="g-icon-tiny">open_in_new</mat-icon>
             ({{id}})
@@ -44,27 +68,4 @@
     </ul>
   </div>
 
-  <div class="section">
-    <fl-text-icon>
-      <mat-icon>swipe_left_alt</mat-icon>
-      <p>{{'flBioNetwork.reaction_substrate' | translate}} :</p>
-    </fl-text-icon>
-
-    <ul>
-      <li *ngFor="let substrate of reactionSubstrate$ | async">
-        <span class="g-text-link" (click)="selectNode(substrate)">
-          {{substrate.name}}
-        </span>
-
-        <a class="chebi-id g-text-small g-text-light g-text-link"
-           *ngIf="substrate.getChebiId() as id" target="_blank"
-           [href]="substrate.getChebiLink()">
-          <fl-text-icon gap="0" iconPosition="end">
-            <mat-icon class="g-icon-tiny">open_in_new</mat-icon>
-            ({{id}})
-          </fl-text-icon>
-        </a>
-      </li>
-    </ul>
-  </div>
 </ng-container>
