@@ -18,6 +18,7 @@ export * from './component/fl-bio-network-node-metabolite-detail/fl-bio-network-
 export * from './component/fl-bio-network-node-reaction-detail/fl-bio-network-node-reaction-detail.component';
 export * from './component/fl-bio-network-node-layout/fl-bio-network-node-layout.component';
 export * from './component/fl-bio-network-node-search/fl-bio-network-node-search.component';
+export * from './component/fl-bio-network-reaction-content/fl-bio-network-reaction-content.component';
 export * from './component/fl-bio-network-reaction-detail/fl-bio-network-reaction-detail.component';
 export * from './component/fl-bio-network-reaction-flux/fl-bio-network-reaction-flux.component';
 export * from './component/fl-bio-network-selection-info/fl-bio-network-selection-info.component';
@@ -34,6 +35,9 @@ export * from './model/fl-bio-network-node-link.class';
 export * from './model/fl-bio-network-node-metabolite.class';
 export * from './model/fl-bio-network-node-reaction.class';
 export * from './model/fl-bio-network-selection.class';
+
+// Pipe
+export * from './pipe/fl-bio-network-link.pipe';
 
 // Renderer
 export * from './renderer/fl-bio-network-cofactor.renderer';

@@ -4,8 +4,7 @@ import {
   FlBioNetworkCompartment,
   flBioNetworkIsCofactor,
   FlBioNetworkMetabolite,
-  FlBioNetworkReaction,
-  FlPathwayDatabase
+  FlBioNetworkReaction
 } from '../model/fl-bio-network.class';
 import {FlBioNetworkHelper} from './fl-bio-network.helper';
 import {FlBioNetworkNodeMetabolite} from '../model/fl-bio-network-node-metabolite.class';
@@ -34,15 +33,14 @@ export class FlBioNetworkFactory {
   }
 
 
-  public convertNetworkToNetworkD3(network: FlBioNetwork, selectedPathways: string[],
-                                   pathwayDatabase: FlPathwayDatabase): FlBioNetworkGraph {
+  public convertNetworkToNetworkD3(network: FlBioNetwork, selectedPathways: string[]): FlBioNetworkGraph {
     this.initCompartmentColors(network.compartments);
 
     // create the metabolites nodes form the reactions
     this.initMetabolitesNodes(network.metabolites, selectedPathways);
 
     // set the reactions
-    this.initReactionsNodes(network.reactions, network.metabolites, selectedPathways, pathwayDatabase);
+    this.initReactionsNodes(network.reactions, network.metabolites, selectedPathways);
 
     // create the links from the reactions
     this.initLinksAndCofactors(network.metabolites);
@@ -57,15 +55,13 @@ export class FlBioNetworkFactory {
    */
   private initReactionsNodes(reactions: FlBioNetworkReaction[],
                              metabolites: FlBioNetworkMetabolite[],
-                             selectedCluster: string[],
-                             pathwayDatabase: FlPathwayDatabase): void {
+                             selectedCluster: string[]): void {
     const reactionNodes: FlBioNetworkNodeReaction[] = [];
 
 
     for (const reaction of reactions) {
 
       const reactionsClusters: FlBioNetworkClusterInfo[] = FlBioNetworkHelper.getReactionClusters(reaction, metabolites);
-      const reactionPathways: string[] = FlBioNetworkHelper.getReactionPathwayId(reaction, pathwayDatabase);
       const existsInMultipleCluster: boolean = reactionsClusters.length > 1;
 
       const sameReactionNodes: FlBioNetworkNodeReaction[] = [];
@@ -81,7 +77,7 @@ export class FlBioNetworkFactory {
           reaction.name ? reaction.name : reaction.id,
           reactionCluster,
           this.themeDetail.hover, this.themeDetail.foreground, reaction,
-          reactionPathways, existsInMultipleCluster
+          existsInMultipleCluster
         );
         reactionNodes.push(reactionNode);
         sameReactionNodes.push(reactionNode);
@@ -89,14 +85,14 @@ export class FlBioNetworkFactory {
 
       // if the reaction is in multiple cluster, add the link between the reaction nodes
       if (sameReactionNodes.length > 1) {
-        // create an object of all the combinaison of the reactions
-        const combinaisons: { from: FlBioNetworkNodeReaction, to: FlBioNetworkNodeReaction }[] = sameReactionNodes.flatMap(
+        // create an object of all the combination of the reactions
+        const combinations: { from: FlBioNetworkNodeReaction, to: FlBioNetworkNodeReaction }[] = sameReactionNodes.flatMap(
           (v, i) => sameReactionNodes.slice(i + 1).map(w => ({from: v, to: w}))
         );
 
-        // for each combinaison, create a cross cluster link between the two reaction
-        for (const combinaison of combinaisons) {
-          const link = new FlBioNetworkLink(combinaison.from, combinaison.to, 0,
+        // for each combination, create a cross cluster link between the two reaction
+        for (const combination of combinations) {
+          const link = new FlBioNetworkLink(combination.from, combination.to, 0,
             this.themeDetail.hover, 'cross-cluster-link');
           this.interClusterLinks.push(link);
         }

@@ -83,6 +83,8 @@ import {
 } from './component/fl-bio-network-node-layout/fl-bio-network-node-layout.component';
 import {FlLoaderModule} from '../fl-loader/fl-loader.module';
 import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
+import { FlBioNetworkLinkPipe } from './pipe/fl-bio-network-link.pipe';
+import { FlBioNetworkReactionContentComponent } from './component/fl-bio-network-reaction-content/fl-bio-network-reaction-content.component';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -109,6 +111,8 @@ import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
     FlBioNetworkNodeCofactorDetailComponent,
     FlBioNetworkLegendComponent,
     FlBioNetworkNodeLayoutComponent,
+    FlBioNetworkLinkPipe,
+    FlBioNetworkReactionContentComponent,
   ],
   exports: [
     FlBioNetworkComponent,

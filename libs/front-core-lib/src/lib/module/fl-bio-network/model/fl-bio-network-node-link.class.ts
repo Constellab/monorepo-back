@@ -208,10 +208,6 @@ export class FlBioNetworkLink extends FlBioNetworkGraphObject
     return Math.max(this.source.getLevel(), this.target.getLevel());
   }
 
-  public isInPathway(id: string): boolean {
-    return this.target.isInPathway(id) || this.source.isInPathway(id);
-  }
-
   public isInCluster(id: string): boolean {
     return this.target.isInCluster(id) || this.source.isInCluster(id);
   }

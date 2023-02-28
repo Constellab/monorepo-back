@@ -10,6 +10,7 @@ import {
   FlBioNetworkState
 } from '@monorepo/front-core-lib';
 import {filter, map, switchMap} from 'rxjs/operators';
+import {clRxjsDebug} from '@monorepo/core-lib';
 
 /**
  * Detail information about one reaction node
@@ -39,10 +40,11 @@ export class FlBioNetworkNodeReactionDetailComponent implements OnInit {
   ngOnInit(): void {
     this.node$ = this.drawerState.getState$().pipe(
       filter(state => state.selectedNode instanceof FlBioNetworkNodeReaction),
-      map(state => state.selectedNode as FlBioNetworkNodeReaction)
+      map(state => state.selectedNode as FlBioNetworkNodeReaction),
+      clRxjsDebug(),
     );
 
-    // retrieve all the nodes with the same metabolite id
+    // retrieve all the nodes with the same reaction id
     this.duplicateReactions$ = this.node$.pipe(
       switchMap(node => this.state.getChartData$().pipe(
         map(chartData => chartData?.getReactionNodesByObjectId(node.data.id) ?? [])

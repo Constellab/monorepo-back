@@ -1,7 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlBioNetworkMetabolite} from '../../model/fl-bio-network.class';
-import {ClHelpService} from '@monorepo/core-lib';
-import {FlExternalLinkService} from '../../../../service/fl-external-link.service';
 
 /**
  * Detail information for a Metabolite object
@@ -19,11 +17,5 @@ export class FlBioNetworkMetaboliteDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-  }
-
-  get chebiUrl(): string {
-    if (ClHelpService.isNullOrEmpty(this.metabolite.chebi_id)) return null;
-
-    return FlExternalLinkService.getChebiLink(this.metabolite.chebi_id);
   }
 }

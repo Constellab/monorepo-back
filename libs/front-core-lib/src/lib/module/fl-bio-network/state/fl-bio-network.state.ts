@@ -129,7 +129,7 @@ export class FlBioNetworkState implements OnDestroy {
     }
 
     const factory = new FlBioNetworkFactory(this.themeService.getCurrentThemeDetail(), this.engineState.engineConfig.ignoreNodePositions);
-    const chartData: FlBioNetworkGraph = factory.convertNetworkToNetworkD3(this.getSelectedNetwork(), clusterIds, this.getDatabase());
+    const chartData: FlBioNetworkGraph = factory.convertNetworkToNetworkD3(this.getSelectedNetwork(), clusterIds);
 
     this.chartData$.next(chartData);
   }
@@ -147,30 +147,6 @@ export class FlBioNetworkState implements OnDestroy {
     this.emitClustersSelectionChange();
   }
 
-  private getPathwayList(database: FlPathwayDatabase): FlBioNetworkClusterSelection[] {
-    if (database == null || this.getSelectedNetwork() == null) {
-      return [];
-    }
-
-    if (this.pathwayListCache[database] == null) {
-      this.pathwayListCache[database] = FlBioNetworkHelper.getPathwaysList(this.getSelectedNetwork(), database).map(
-        // convert pathway detail to pathwaySelection
-        pathway => {
-          const id = pathway.id ? pathway.id : pathway.name;
-          const name = pathway.name ? pathway.name : pathway.id;
-          return {
-            id: id,
-            name: name,
-            selected: false,
-            highlighted: false,
-            color: FlColorHelper.stringToRGBColor(name)
-          };
-        }
-      );
-    }
-
-    return this.pathwayListCache[database];
-  }
 
   private getClustersList(): FlBioNetworkClusterSelection[] {
     if (this.getSelectedNetwork() == null) {

@@ -1,8 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {FlExternalLinkService} from '../../../../service/fl-external-link.service';
 import {FlBioNetworkNode} from '../../model/fl-bio-network-node.class';
-import {FlBioNetworkNodeReaction} from '../../model/fl-bio-network-node-reaction.class';
-import {ClHelpService} from '@monorepo/core-lib';
 
 interface Link {
   link: string;
@@ -36,13 +34,6 @@ export class FlBioNetworkNodeLinksComponent implements OnInit {
 
   private setLinks(node: FlBioNetworkNode): void {
     const links: Link[] = [];
-
-    // if this is a reaction, and it has an ec number, show brenda link
-    if (node instanceof FlBioNetworkNodeReaction &&
-      !ClHelpService.isNullOrEmpty(node.data.enzyme?.ec_number ?? null)) {
-      // brenda link
-      links.push({name: 'Brenda', link: FlExternalLinkService.getBrendaLink(node.data.enzyme.ec_number)});
-    }
 
     // google scholar search link
     links.push({name: 'Google scholar', link: FlExternalLinkService.getGoogleArchiveSearch(node.name)});

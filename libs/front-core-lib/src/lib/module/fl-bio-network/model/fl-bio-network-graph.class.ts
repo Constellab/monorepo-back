@@ -56,11 +56,6 @@ export class FlBioNetworkGraph {
     return this.links.filter(link => link.getLevel() !== FlBioNetworkMetaboliteLevel.COFACTOR);
   }
 
-  // return all the reaction of a pathway
-  public getReactionsOfPathway(pathwayId: string): FlBioNetworkNodeReaction[] {
-    return this.reactions.filter(reaction => reaction.isInPathway(pathwayId));
-  }
-
   public getAllObjects(): FlBioNetworkGraphObject[] {
     return [...this.getAllNodes(), ...this.links];
   }
@@ -182,8 +177,6 @@ export abstract class FlBioNetworkGraphObject {
   // the lower the level, the most important the node is
   // level for the zoom
   protected abstract _getLevel(): FlBioNetworkMetaboliteLevel;
-
-  public abstract isInPathway(id: string): boolean;
 
   public abstract isInCluster(id: string): boolean;
 
