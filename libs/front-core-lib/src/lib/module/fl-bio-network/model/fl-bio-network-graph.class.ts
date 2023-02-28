@@ -139,7 +139,6 @@ export class FlBioNetworkGraph {
     return this.reactions.filter(node => node.data.id === reactionId);
   }
 
-
   public getMetaboliteAndReactionNodesByObjectId(objectId: string): FlBioNetworkNode[] {
     return [...this.getMetaboliteNodesByObjectId(objectId), ...this.getReactionNodesByObjectId(objectId)];
   }

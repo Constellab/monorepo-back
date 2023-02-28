@@ -1,1 +1,48 @@
-<p>fl-bio-network-reaction-content works!</p>
+<div class="section">
+  <fl-text-icon>
+    <mat-icon>swipe_left_alt</mat-icon>
+    <p>{{'flBioNetwork.reaction_substrate' | translate}} :</p>
+  </fl-text-icon>
+
+  <ul>
+    <li *ngFor="let substrate of reactionSubstrate$ | async">
+        <span class="g-text-link" (click)="selectNode(substrate, 'substrat')">
+          {{substrate.name}}
+        </span>
+
+      <a class="chebi-id g-text-small g-text-light g-text-link"
+         *ngIf="substrate.chebi_id" target="_blank"
+         [href]="substrate.chebi_id | flBioNetworkLink:'chebi'">
+        <fl-text-icon gap="0" iconPosition="end">
+          <mat-icon class="g-icon-tiny">open_in_new</mat-icon>
+          ({{substrate.chebi_id}})
+        </fl-text-icon>
+      </a>
+    </li>
+  </ul>
+</div>
+
+<div class="section">
+  <fl-text-icon>
+    <mat-icon>swipe_right_alt</mat-icon>
+    <p>{{'flBioNetwork.reaction_products' | translate}} :</p>
+  </fl-text-icon>
+
+
+  <ul>
+    <li *ngFor="let product of reactionProducts$ | async">
+        <span class="g-text-link" (click)="selectNode(product, 'product')">
+          {{product.name}}
+        </span>
+
+      <a class="chebi-id g-text-small g-text-light g-text-link"
+         *ngIf="product.chebi_id" target="_blank"
+         [href]="product.chebi_id | flBioNetworkLink:'chebi'">
+        <fl-text-icon gap="0" iconPosition="end">
+          <mat-icon class="g-icon-tiny">open_in_new</mat-icon>
+          ({{product.chebi_id}})
+        </fl-text-icon>
+      </a>
+    </li>
+  </ul>
+</div>

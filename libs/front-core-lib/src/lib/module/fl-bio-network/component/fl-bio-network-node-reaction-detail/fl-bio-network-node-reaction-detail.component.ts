@@ -3,14 +3,11 @@ import {Observable} from 'rxjs';
 import {
   FlBioNetworkDrawerState,
   FlBioNetworkNode,
-  FlBioNetworkNodeCofactor,
-  FlBioNetworkNodeMetabolite,
   FlBioNetworkNodeReaction,
   FlBioNetworkSelectionState,
   FlBioNetworkState
 } from '@monorepo/front-core-lib';
 import {filter, map, switchMap} from 'rxjs/operators';
-import {clRxjsDebug} from '@monorepo/core-lib';
 
 /**
  * Detail information about one reaction node
@@ -28,9 +25,6 @@ export class FlBioNetworkNodeReactionDetailComponent implements OnInit {
   // list of the same metabolite node
   duplicateReactions$: Observable<FlBioNetworkNodeReaction[]>;
 
-  reactionProducts$: Observable<(FlBioNetworkNodeMetabolite | FlBioNetworkNodeCofactor)[]>;
-
-  reactionSubstrate$: Observable<(FlBioNetworkNodeMetabolite | FlBioNetworkNodeCofactor)[]>;
 
   constructor(private drawerState: FlBioNetworkDrawerState,
               private state: FlBioNetworkState,
@@ -41,7 +35,6 @@ export class FlBioNetworkNodeReactionDetailComponent implements OnInit {
     this.node$ = this.drawerState.getState$().pipe(
       filter(state => state.selectedNode instanceof FlBioNetworkNodeReaction),
       map(state => state.selectedNode as FlBioNetworkNodeReaction),
-      clRxjsDebug(),
     );
 
     // retrieve all the nodes with the same reaction id
@@ -49,14 +42,6 @@ export class FlBioNetworkNodeReactionDetailComponent implements OnInit {
       switchMap(node => this.state.getChartData$().pipe(
         map(chartData => chartData?.getReactionNodesByObjectId(node.data.id) ?? [])
       )));
-
-    this.reactionProducts$ = this.node$.pipe(
-      map(node => node?.getPreviousMetabolites() ?? []),
-    );
-
-    this.reactionSubstrate$ = this.node$.pipe(
-      map(node => node?.getNextMetabolites() ?? []),
-    );
   }
 
   selectNode(node: FlBioNetworkNode): void {
