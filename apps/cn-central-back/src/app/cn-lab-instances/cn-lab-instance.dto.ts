@@ -70,10 +70,11 @@ export class CnLabFindOneDto {
   }
 }
 
+export type CnGlabTag = 'latest' | 'beta' | string;
 
 export interface CnLabInstanceConfigDTO {
   brickVersions: CnBrickVersionDTO[];
-  glabTag: 'latest' | 'beta' | string;
+  glabTag: CnGlabTag;
 }
 
 
@@ -111,6 +112,10 @@ export class CnLabInstanceCreateOnPremiseDTO {
   onPremisePlatform: CnLabOnPremisePlatform;
 }
 
+export class CnLabInstanceOnPremiseConfig {
+  glabTag: CnGlabTag;
+}
+
 export interface CnLabInstanceStatusDTO {
   labStatus: CnLabInstanceStatus;
   labManagerIsRunning: boolean;
@@ -124,7 +129,7 @@ export interface CnLabInstanceStatusDTO {
  * Object used when a user wants to create a lab instance
  * He provides free text
  */
-export interface CnRequestLabInstance{
+export interface CnRequestLabInstance {
   dataType?: string;
   dataSize?: string;
   additionalInfo?: string;

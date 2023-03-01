@@ -8,7 +8,7 @@ import {lastValueFrom} from 'rxjs';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
 import {CnLabConfigFile} from '../../cn-lab-configs/cn-lab-config-file.class';
-import {CnLabInstanceConfigDTO} from '../cn-lab-instance.dto';
+import {CnLabInstanceConfigDTO, CnLabInstanceOnPremiseConfig} from '../cn-lab-instance.dto';
 
 export interface CnLabOnPremiseConfig {
   dockerCompose: string;
@@ -20,17 +20,15 @@ export interface CnLabOnPremiseConfig {
 @Injectable()
 export class CnLabInstanceOnPremiseService {
 
-  private static readonly WINDOWS_EXE_FILE =
-    'https://storage.sbg.cloud.ovh.net/v1/AUTH_a0286631d7b24afba3f3cdebed2992aa/public/on-premise-start.exe';
-
   constructor(private configService: CnCoreConfigService,
               private frontService: CnFrontService,
               private httpService: HttpService,
               private labConfigService: CnLabConfigsService) {
   }
 
-  public async generateOnPremiseConfig(labInstance: CnLabInstance): Promise<CnLabOnPremiseConfig> {
-    const config = await this.getConfig(labInstance);
+  public async generateOnPremiseConfig(labInstance: CnLabInstance,
+                                       onPremiseConfig: CnLabInstanceOnPremiseConfig): Promise<CnLabOnPremiseConfig> {
+    const config = await this.getConfig(labInstance, onPremiseConfig);
     const exe = await this.getExeFile(labInstance.onPremisePlatform);
     return {
       dockerCompose: this.generateDockerCompose(labInstance, config),
@@ -60,12 +58,12 @@ export class CnLabInstanceOnPremiseService {
       .replace(/\${CENTRAL_FRONT_URL}/g, this.frontService.getBaseWebsiteURL())
       .replace(/\${HUB_FRONT_URL}/g, this.configService.getHubFrontUrl())
       .replace(/\${FRONT_VERSION}/g, config.front_version)
-      .replace(/\${GLAB_TAG}/g, config.glab_tag)
+      .replace(/\${GLAB_TAG}/g, config.glab_tag);
 
     return content;
   }
 
-  private async getConfig(labInstance: CnLabInstance): Promise<CnLabConfigFile> {
+  private async getConfig(labInstance: CnLabInstance, onPremiseConfig: CnLabInstanceOnPremiseConfig): Promise<CnLabConfigFile> {
 
     if (labInstance.labConfigId == null) {
       throw new BlBadRequestException('Please configure the lab before generate the config file');
@@ -74,7 +72,7 @@ export class CnLabInstanceOnPremiseService {
     const config = await this.labConfigService.getCompleteConfig(labInstance.labConfigId);
 
     const configDTO: CnLabInstanceConfigDTO = {
-      glabTag: 'latest', // force latest tag,
+      glabTag: onPremiseConfig.glabTag,
       brickVersions: []
     };
 
@@ -100,7 +98,12 @@ export class CnLabInstanceOnPremiseService {
     switch (platform) {
       case CnLabOnPremisePlatform.WINDOWS:
         name = 'on-premise-start.exe';
-        url = CnLabInstanceOnPremiseService.WINDOWS_EXE_FILE;
+        url = this.configService.getLabOnPremiseWindowsExeUrl();
+        break;
+      case CnLabOnPremisePlatform.MAC:
+      case CnLabOnPremisePlatform.LINUX:
+        name = 'on-premise-start-mac';
+        url = this.configService.getLabOnPremiseMacExeUrl();
         break;
       default:
         throw new BlBadRequestException(`Platform '${platform}' is not supported`);

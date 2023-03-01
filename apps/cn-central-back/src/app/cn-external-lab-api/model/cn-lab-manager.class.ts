@@ -69,7 +69,3 @@ export interface CnLabManagerBrickVersionDTO {
   technicalInfo: Record<string, string>;
 }
 
-export interface CnLabManagerConfigDTO {
-  bricks: CnLabManagerBrickVersionDTO[];
-  glabTag: 'latest' | 'beta' | string;
-}

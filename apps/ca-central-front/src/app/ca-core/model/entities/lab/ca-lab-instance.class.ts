@@ -168,3 +168,7 @@ export interface CaRequestLabInstance {
   dataSize?: string;
   additionalInfo?: string;
 }
+
+export interface CaLabInstanceOnPremiseConfig {
+  glabTag: 'beta' | 'latest' | string;
+}

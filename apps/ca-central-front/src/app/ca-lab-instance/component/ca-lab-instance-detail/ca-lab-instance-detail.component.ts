@@ -11,6 +11,10 @@ import {
   CaLabConfigDialogInput
 } from '../../../ca-core/entity-module/ca-lab-core/component/ca-lab-config-dialog/ca-lab-config-dialog.component';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
+import {
+  CaLabOnPremiseDownloadConfigComponent,
+  CaLabOnPremiseDownloadConfigInput
+} from '../ca-lab-on-premise-download-config/ca-lab-on-premise-download-config.component';
 
 @Component({
   selector: 'ca-lab-instance-detail',
@@ -42,8 +46,11 @@ export class CaLabInstanceDetailComponent implements OnInit {
     this.dialogService.openSmallDialog(CaLabConfigDialogComponent, {data: input});
   }
 
-  getOnPremiseConfigDownloadUrl(labInstance: CaLabInstance): string {
-    return this.labInstanceService.getOnPremiseConfigDownloadUrl(labInstance.id);
+  getOnPremiseConfigDownloadUrl(labInstance: CaLabInstance): void {
+    const input: CaLabOnPremiseDownloadConfigInput = {
+      labInstanceId: labInstance.id,
+    }
+    this.dialogService.openSmallDialog(CaLabOnPremiseDownloadConfigComponent, {data: input});
   }
 
 }

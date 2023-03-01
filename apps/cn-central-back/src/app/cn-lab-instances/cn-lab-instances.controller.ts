@@ -11,6 +11,7 @@ import {
   CnLabInstanceCreateAdminDTO,
   CnLabInstanceCreateOnPremiseDTO,
   CnLabInstanceDto,
+  CnLabInstanceOnPremiseConfig,
   CnLabInstanceStatusDTO,
   CnRequestLabInstance,
 } from './cn-lab-instance.dto';
@@ -389,10 +390,11 @@ export class CnLabInstancesController {
   }
 
   /////////////////////////// ON PREMISE //////////////////////////////
-  @Get(':id/on-premise/generate-config')
+  @Post(':id/on-premise/generate-config')
   async generateOnPremiseConfig(@Param('id', new ParseUUIDPipe()) id: string,
+                                @Body() onPremiseConfig: CnLabInstanceOnPremiseConfig,
                                 @Res() response: Response): Promise<any> {
-    const result = await this.aggregateService.generateOnPremiseConfig(id);
+    const result = await this.aggregateService.generateOnPremiseConfig(id, onPremiseConfig);
 
     // create a zip file
     const zip = new AdmZip();

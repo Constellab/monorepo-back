@@ -5,6 +5,7 @@ import {
   CaLabInstanceAdminForm,
   CaLabInstanceDatasource,
   CaLabInstanceFindOneDto,
+  CaLabInstanceOnPremiseConfig,
   CaLabInstanceOnPremiseForm,
   CaLabInstanceStatusDTO,
   CaLabInstanceStatusHistory,
@@ -306,7 +307,9 @@ export class CaLabInstanceService {
 
   //////////////////////////// ON PREMISE ////////////////////////////////
 
-  public getOnPremiseConfigDownloadUrl(id: string): string {
-    return this.apiService.getBaseRouteUrl(`${this.route}/${id}/on-premise/generate-config`);
+  public getOnPremiseConfigDownloadUrl(id: string, config: CaLabInstanceOnPremiseConfig): Observable<Blob> {
+    return this.apiService.post(
+      `${this.route}/${id}/on-premise/generate-config`, config, null,
+      {responseType: 'blob'});
   }
 }

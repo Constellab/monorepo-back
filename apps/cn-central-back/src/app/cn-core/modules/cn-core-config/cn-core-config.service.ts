@@ -232,5 +232,13 @@ export class CnCoreConfigService {
   public getLabManagerVersion(): string {
     return this.configService.get('LAB_MANAGER_VERSION');
   }
+
+  public getLabOnPremiseWindowsExeUrl(): string {
+    return this.configService.get('LAB_ON_PREMISE_WINDOWS_EXE_URL');
+  }
+
+  public getLabOnPremiseMacExeUrl(): string {
+    return this.configService.get('LAB_ON_PREMISE_MAC_EXE_URL');
+  }
 }
 

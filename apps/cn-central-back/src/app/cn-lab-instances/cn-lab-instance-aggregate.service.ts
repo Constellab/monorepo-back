@@ -24,6 +24,7 @@ import {
   CnLabInstanceConfigDTO,
   CnLabInstanceCreateAdminDTO,
   CnLabInstanceCreateOnPremiseDTO,
+  CnLabInstanceOnPremiseConfig,
   CnLabInstanceStartDTO,
   CnLabInstanceStatusDTO,
   CnRequestLabInstance
@@ -772,14 +773,15 @@ export class CnLabInstanceAggregateService {
   }
 
   /////////////////////////// ON PREMISE //////////////////////////////
-  public async generateOnPremiseConfig(labInstanceId: string): Promise<CnLabOnPremiseConfig> {
+  public async generateOnPremiseConfig(labInstanceId: string,
+                                       onPremiseConfig: CnLabInstanceOnPremiseConfig): Promise<CnLabOnPremiseConfig> {
     const lab = await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
     if (!lab.isOnPremise()) {
       throw new BlBadRequestException('Lab is not on premise');
     }
 
-    return this.onPremiseService.generateOnPremiseConfig(lab);
+    return this.onPremiseService.generateOnPremiseConfig(lab, onPremiseConfig);
   }
 
 

@@ -66,11 +66,11 @@
       </button>
 
     </ng-container>
-    <a mat-stroked-button [href]="getOnPremiseConfigDownloadUrl(labInstance)"
-       download *ngIf="labInstance.isOnPremise">
+    <button mat-stroked-button (click)="getOnPremiseConfigDownloadUrl(labInstance)"
+            *ngIf="labInstance.isOnPremise" type="button">
       <mat-icon>cloud_download</mat-icon>
       <span>{{'download_on_premise_config' | translate}}</span>
-    </a>
+    </button>
 
     <button mat-stroked-button type="button" (click)="openLabConfig(labInstance)"
             class="g-button-small">
