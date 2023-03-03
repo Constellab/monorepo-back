@@ -14,8 +14,26 @@
 .on-premise-platform {
   margin-bottom: 1em;
 
-  mat-radio-button{
+  mat-radio-button {
     margin-right: 1em;
     margin-left: 1em;
   }
+}
+
+.cloud-radio {
+
+  &.mat-radio-group {
+    display: block;
+    margin-bottom: 1em;
+  }
+
+  mat-radio-button {
+    display: block;
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
+  }
+}
+
+.lab-need {
+  margin-top: 1em;
 }

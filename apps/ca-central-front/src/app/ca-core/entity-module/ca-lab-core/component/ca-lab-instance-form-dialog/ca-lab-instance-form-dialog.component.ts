@@ -28,8 +28,10 @@ interface CaLabInstanceForm {
   type: CaLabInstanceType;
   onPremisePlatform?: CaLabOnPromisePlatform;
 
-  dataType?: string;
-  dataSize?: string;
+  cloudProvider?: string;
+  cpuCount?: string;
+  storageSize?: string;
+  labNeed?: string;
   additionalInfo?: string;
 }
 
@@ -69,8 +71,10 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
       id: [null],
       name: [null, [Validators.required]],
       type: [{value: 'CLOUD', disabled: this.isUpdateMode()}, [Validators.required]],
-      dataType: [null],
-      dataSize: [null],
+      cloudProvider: [null],
+      cpuCount: [null],
+      storageSize: [null],
+      labNeed: [null],
       additionalInfo: [null],
       onPremisePlatform: [this.platformService.isSafari() ? 'MAC' : 'WINDOWS', [Validators.required]],
     });
@@ -109,8 +113,10 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
 
   private requestCloudLab(formValue: CaLabInstanceForm): Observable<CaLabInstance> {
     return this.labInstanceService.requestNewLabInstance({
-      dataType: formValue.dataType,
-      dataSize: formValue.dataSize,
+      cloudProvider: formValue.cloudProvider,
+      cpuCount: formValue.cpuCount,
+      storageSize: formValue.storageSize,
+      labNeed: formValue.labNeed,
       additionalInfo: formValue.additionalInfo,
     });
   }

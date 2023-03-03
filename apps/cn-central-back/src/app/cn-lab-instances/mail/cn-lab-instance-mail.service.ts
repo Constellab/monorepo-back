@@ -38,8 +38,10 @@ export class CnLabInstanceMailService {
       ClSupportedLanguage.en, {
         user: user,
         space: space,
-        dataType: request.dataType,
-        dataSize: request.dataSize,
+        cloudProvider: request.cloudProvider,
+        cpuCount: request.cpuCount,
+        storageSize: request.storageSize,
+        labNeed: request.labNeed,
         additionalInfo: request.additionalInfo,
       });
   }

@@ -39,25 +39,46 @@
     <ng-container *ngIf="isCloud(); else onPromise">
 
       <p class="help-text g-text-light">{{'lab_instance_request_help' | translate}}</p>
-      <!--  Data type  -->
-      <mat-form-field class="g-form-input">
-        <mat-label>{{'lab_instance_request_data_type' | translate}}</mat-label>
-        <textarea matInput formControlName="dataType"
-                  [placeholder]="'lab_instance_request_data_type' | translate">
-        </textarea>
-      </mat-form-field>
 
-      <!--  Data size  -->
-      <mat-form-field class="g-form-input">
-        <mat-label>{{'lab_instance_request_data_size' | translate}}</mat-label>
-        <textarea matInput formControlName="dataSize"
-                  [placeholder]="'lab_instance_request_data_size' | translate"></textarea>
+      <!--  Cloud provider  -->
+      <div>{{'lab_instance_request_cloud_provider' | translate}}</div>
+      <mat-radio-group formControlName="cloudProvider" class="cloud-radio">
+        <mat-radio-button value="OVH">OVH</mat-radio-button>
+        <mat-radio-button value="AZURE">AZURE</mat-radio-button>
+        <mat-radio-button value="AWS">AWS</mat-radio-button>
+        <mat-radio-button value="GCP">GCP</mat-radio-button>
+        <mat-radio-button value="I don’t know / Other">I don’t know / Other</mat-radio-button>
+      </mat-radio-group>
+
+      <!--  Cpu count  -->
+      <div>{{'lab_instance_request_cpu_count' | translate}}</div>
+      <mat-radio-group formControlName="cpuCount" class="cloud-radio">
+        <mat-radio-button value="2">2</mat-radio-button>
+        <mat-radio-button value="4">4</mat-radio-button>
+        <mat-radio-button value="8">8</mat-radio-button>
+        <mat-radio-button value=">8">more than 8</mat-radio-button>
+        <mat-radio-button value="I don’t know / Other">I don’t know / Other</mat-radio-button>
+      </mat-radio-group>
+
+      <!--  Storage size  -->
+      <div>{{'lab_instance_request_storage' | translate}}</div>
+      <mat-radio-group formControlName="storageSize" class="cloud-radio">
+        <mat-radio-button value="< 500 GB"><500 {{'flCoreComponent.giga_byte_symbole' | translate}}</mat-radio-button>
+        <mat-radio-button value="> 500 GB">>500 {{'flCoreComponent.giga_byte_symbole' | translate}}</mat-radio-button>
+        <mat-radio-button value="I don’t know / Other">I don’t know / Other</mat-radio-button>
+      </mat-radio-group>
+
+      <!--  Lab need  -->
+      <mat-form-field class="g-form-input lab-need">
+        <mat-label>{{'lab_instance_request_need' | translate}}</mat-label>
+        <textarea matInput formControlName="labNeed" rows="4"
+                  [placeholder]="'lab_instance_request_need' | translate"></textarea>
       </mat-form-field>
 
       <!--  Additional data  -->
       <mat-form-field class="g-form-input">
         <mat-label>{{'lab_instance_request_additional_info' | translate}}</mat-label>
-        <textarea matInput formControlName="additionalInfo"
+        <textarea matInput formControlName="additionalInfo" rows="4"
                   [placeholder]="'lab_instance_request_additional_info' | translate"></textarea>
       </mat-form-field>
 

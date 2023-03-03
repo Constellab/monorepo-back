@@ -164,8 +164,10 @@ export class CaLabInstanceStatusDTO {
  * He provides free text
  */
 export interface CaRequestLabInstance {
-  dataType?: string;
-  dataSize?: string;
+  cloudProvider?: string;
+  cpuCount?: string;
+  storageSize?: string;
+  labNeed?: string;
   additionalInfo?: string;
 }
 

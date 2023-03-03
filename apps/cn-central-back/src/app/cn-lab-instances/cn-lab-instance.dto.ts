@@ -130,7 +130,9 @@ export interface CnLabInstanceStatusDTO {
  * He provides free text
  */
 export interface CnRequestLabInstance {
-  dataType?: string;
-  dataSize?: string;
+  cloudProvider?: string;
+  cpuCount?: string;
+  storageSize?: string;
+  labNeed?: string;
   additionalInfo?: string;
 }
