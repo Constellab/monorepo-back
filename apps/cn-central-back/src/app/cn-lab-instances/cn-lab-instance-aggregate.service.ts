@@ -197,7 +197,7 @@ export class CnLabInstanceAggregateService {
     const lab = await this.getAndCheckAuthorizationToFindById(id);
 
     if (lab.labConfigId == null) {
-      throw new BlBadRequestException('Lab config not found. Was the lab started once ?');
+      throw new BlBadRequestException(CnErrorText.LAB_CONFIG_NOT_FOUND);
     }
 
 

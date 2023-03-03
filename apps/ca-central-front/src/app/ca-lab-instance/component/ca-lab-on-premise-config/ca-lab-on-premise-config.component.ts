@@ -5,6 +5,7 @@ import {CaLabManagerConfig} from '../../../ca-core/model/entities/lab/ca-lab-man
 import {CaLabConfig} from '../../../ca-core/model/entities/lab/ca-lab-config.class';
 import {catchError, map} from 'rxjs/operators';
 import {CaLabInstanceDetailPageState} from '../../state/ca-lab-instance-detail-page.state';
+import {FlServerError, FlSnackBarService} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'ca-lab-on-premise-config',
@@ -17,9 +18,9 @@ export class CaLabOnPremiseConfigComponent implements OnInit {
 
   labConfig$: Observable<CaLabManagerConfig>;
 
-
   constructor(private state: CaLabInstanceDetailPageState,
-              private labInstanceService: CaLabInstanceService) {
+              private labInstanceService: CaLabInstanceService,
+              private snackBarService: FlSnackBarService) {
   }
 
   ngOnInit(): void {
@@ -27,12 +28,20 @@ export class CaLabOnPremiseConfigComponent implements OnInit {
   }
 
   private getConfig(): void {
-    this.labConfig$ = this.labInstanceService.getConfig(this.labInstanceId).pipe(
+    this.labConfig$ = this.labInstanceService.getConfig(this.labInstanceId, true).pipe(
       map(config => this.convertToLabManagerConfig(config)),
-      catchError(() => of({
-        glabTag: null,
-        brickVersions: [],
-      }))
+      catchError((error: FlServerError) => {
+        // if the configuration is not found, we return an empty config
+        if (error.nestedError?.code === 'error.lab_config_not_found') {
+          return of({
+            glabTag: null,
+            brickVersions: [],
+          });
+        } else {
+          this.snackBarService.openErrorMessage(error.message);
+          throw error;
+        }
+      })
     );
   }
 

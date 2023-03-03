@@ -73,7 +73,8 @@
   "lab_update_containers": "Mettre à jour les conteneurs",
   "lab_start_container": "Démarrer le lab",
   "lab_instance_config": "Configuration du lab",
-  "lab_instance_config_updated": "Configuration sauvegardée. Il faut redémarrer le lab pour que les changements soient appliqués",
+  "lab_instance_cloud_config_updated": "Configuration sauvegardée. Vous devez redémarrer le lab pour que les changements soient appliqués",
+  "lab_instance_on_premise_config_updated": "Configuration sauvegardée. Vous devez télécharger la configuration et lancer votre lab sur votre ordinateur pour que les changements soient appliqués",
   "lab_instance_add_brick": "Ajouter une brique",
   "lab_instance_update_brick": "Modifier une brique",
   "lab_instance_brick_already_exists": "La brique {{brickName}} existe déjà dans le lab",
@@ -201,5 +202,7 @@
   "lab_instance_request_data_type": "Quel type de données allez-vous analyser dans le lab ?",
   "lab_instance_request_data_size": "Quelle est la taille des données ?",
   "lab_instance_request_additional_info": "Avez-vous des informations complémentaires à nous fournir (ex. besoins spécifiques, cas d'utilisation, etc.) ?",
-  "lab_instance_request_sent": "Demande envoyée, nous vous recontacterons dans les plus brefs délais."
+  "lab_instance_request_sent": "Demande envoyée, nous vous recontacterons dans les plus brefs délais.",
+  "lab_not_configured_help": "Le lab n'est pas configuré. Veuillez ajouter les bricks souhaitées sur votre lab. La brick 'gws_core' est obligatoire.",
+  "lab_config_changed": "Configuration modifiée, veuillez cliquer sur le bouton \"Sauvegarder\" pour enregistrer les changements."
 }

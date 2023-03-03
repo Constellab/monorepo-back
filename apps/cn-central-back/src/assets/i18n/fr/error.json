@@ -54,6 +54,5 @@
   "document_already_exist": "Un document avec le même nom existe déjà",
   "project_bucket_not_found": "Le stockage pour ce projet n'a pas été trouvé. Veuillez demander au responsable du projet de configurer le stockage pour ce projet (dans les paramètres)",
   "cant_manage_on_premise_lab": "Vous ne pouvez pas gérer un lab on premise à distance",
-  "download_on_premise_config": "Télécharger la configuration du lab",
-  "lab_on_premise_platform": "Plateforme"
+  "lab_config_not_found_fr": "Configuration du lab non trouvée. Pour un lab cloud, la configuration est créée au démarrage du lab. A-t-il été démarré au moins une fois ?"
 }

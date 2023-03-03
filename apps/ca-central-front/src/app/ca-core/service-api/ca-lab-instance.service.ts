@@ -135,8 +135,8 @@ export class CaLabInstanceService {
     return this.apiService.get(`${this.route}/${id}/check-status`);
   }
 
-  public getConfig(id: string): Observable<CaLabConfig> {
-    return this.apiService.get(`${this.route}/${id}/config`, CaLabConfig);
+  public getConfig(id: string, hideSnackBarError: boolean = false): Observable<CaLabConfig> {
+    return this.apiService.get(`${this.route}/${id}/config`, CaLabConfig, {hideSnackBarError});
   }
 
   public updateConfig(id: string, config: CaLabManagerConfig): Observable<void> {

@@ -12,6 +12,8 @@ import {
   CaBrickVersionDetailDialogComponent,
   CaBrickVersionDetailDialogInput
 } from '../../../ca-core/entity-module/ca-brick-core/component/ca-brick-version-detail-dialog/ca-brick-version-detail-dialog.component';
+import {CaBrickGWS} from '../../../ca-core/model/entities/ca-brick.class';
+import {CaLabInstanceType} from '../../../ca-core/model/entities/lab/ca-lab-instance.class';
 
 /**
  * Form to update the lab instance config
@@ -24,12 +26,15 @@ import {
 export class CaLabInstanceConfigFormComponent implements OnInit {
   @Input() labInstanceId: string;
 
+  @Input() labType: CaLabInstanceType;
+
   @Input() labConfig: CaLabManagerConfig;
 
   @Input() showAdvanced: boolean = true;
 
-
   isLoading: boolean = false;
+
+  configChanged: boolean = false;
 
   constructor(private labInstanceService: CaLabInstanceService,
               private snackBarService: FlSnackBarService,
@@ -59,13 +64,12 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
     if (!brickVersionDTO) return;
 
     const brick = this.labConfig.brickVersions.find(brickVersion => brickVersion.name === brickVersionDTO.name);
-    if (mode === 'add') {
-      if (brick) {
-        this.snackBarService.openErrorMessage({
-          text: 'lab_instance_brick_already_exists',
-          translateText: true, translateParam: {param: {brickName: brickVersionDTO.name}}
-        });
-      }
+    if (mode === 'add' && brick) {
+      this.snackBarService.openErrorMessage({
+        text: 'lab_instance_brick_already_exists',
+        translateText: true, translateParam: {param: {brickName: brickVersionDTO.name}}
+      });
+      return;
     }
 
 
@@ -75,6 +79,7 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
     } else {
       this.labConfig.brickVersions.push(brickVersionDTO);
     }
+    this.configChanged = true;
 
   }
 
@@ -94,10 +99,20 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
 
   private updateConfigSuccess(): void {
     this.isLoading = false;
-    this.snackBarService.openSuccessMessage({text: 'lab_instance_config_updated', translateText: true});
+    if (this.labType === 'CLOUD') {
+      this.snackBarService.openSuccessMessage({text: 'lab_instance_cloud_config_updated', translateText: true}, 10000);
+    } else {
+      this.snackBarService.openSuccessMessage({text: 'lab_instance_on_premise_config_updated', translateText: true}, 10000);
+    }
+    this.configChanged = false;
   }
 
   resetToDefault(): void {
     this.labConfig.glabTag = 'latest';
+  }
+
+  isConfigured(): boolean {
+    return this.labConfig.brickVersions.length > 0 &&
+      this.labConfig.brickVersions.find(brick => brick.name === CaBrickGWS.GWS_CORE) != null;
   }
 }
