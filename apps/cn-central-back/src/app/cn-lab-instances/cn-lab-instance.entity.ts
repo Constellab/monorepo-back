@@ -9,7 +9,7 @@ import {randomBytes} from 'crypto';
 import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {CnLabInstanceUser} from './user/cn-lab-instance-user.entity';
-import {BlBadRequestException, BlNotUpdatable} from '@monorepo/back-core-lib';
+import {BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnCloudProviderName} from '../cn-cloud-providers/cn-cloud-provider.entity';
 
@@ -90,11 +90,10 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Column({nullable: false, length: 255})
   gwsCoreDevDbPassword: string;
 
-  @BlNotUpdatable()
   @ManyToOne(() => CnSpace, {nullable: false})
   space: CnSpace;
 
-  @Column({nullable: false, update: false})
+  @Column({nullable: false})
   spaceId?: string;
 
   @OneToMany(() => CnLabInstanceUser,

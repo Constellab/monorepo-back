@@ -22,7 +22,7 @@ export class LabEnvironmentHelper {
   // return the full URL for the codelab with direct link to open the right folder
   public static getCodelabFullUrl(): string {
     // eslint-disable-next-line max-len
-    return `${LabEnvironmentHelper.getCodelabUrl()}?folder=vscode-remote://codelab.${LabEnvironmentHelper.getEnv().settings.virtualHost}/lab/user`;
+    return `${LabEnvironmentHelper.getCodelabUrl()}/?folder=/lab/user`;
   }
 
   public static getBaseApiUrl(): string {

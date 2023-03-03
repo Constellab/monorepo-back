@@ -112,7 +112,7 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
   }
 
   isConfigured(): boolean {
-    return this.labConfig.brickVersions.length > 0 &&
+    return this.labConfig?.brickVersions?.length > 0 &&
       this.labConfig.brickVersions.find(brick => brick.name === CaBrickGWS.GWS_CORE) != null;
   }
 }

@@ -29,7 +29,7 @@ export class CaLabInstanceCodelabInfoComponent implements OnInit {
 
   ngOnInit(): void {
     // eslint-disable-next-line max-len
-    this.codelabUrl = `https://codelab.${this.labInstance.virtualHost}.gencovery.io/?folder=vscode-remote://codelab.${this.labInstance.virtualHost}.gencovery.io/lab/user`;
+    this.codelabUrl = `https://codelab.${this.labInstance.virtualHost}/?folder=/lab/user`;
   }
 
   copyToTokenToClipboard(): void {

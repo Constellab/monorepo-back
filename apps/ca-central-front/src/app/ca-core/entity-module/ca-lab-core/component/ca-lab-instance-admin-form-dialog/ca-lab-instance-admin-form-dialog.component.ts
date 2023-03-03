@@ -77,7 +77,7 @@ export class CaLabInstanceAdminFormDialogComponent extends FlFormDialogAbstractD
       gwsCoreProdDbPassword: [null],
       gwsCoreDevDbPassword: [null],
       region: [null, Validators.required],
-      space: [{value: null, disabled: this.isUpdateMode()}, Validators.required],
+      space: [null, Validators.required],
       onPremisePlatform: [this.platformService.isSafari() ? 'MAC' : 'WINDOWS', [Validators.required]]
     });
   }

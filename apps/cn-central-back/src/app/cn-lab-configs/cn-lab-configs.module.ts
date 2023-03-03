@@ -3,7 +3,6 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import {CnLabConfig} from './cn-lab-config.entity';
 import {CnLabConfigsService} from './cn-lab-configs.service';
 import {CnLabConfigsController} from './cn-lab-configs.controller';
-import {CnLabConfigsSecurityLayer} from './cn-lab-configs-security-layer.service';
 import {CnBricksModule} from '../cn-bricks/cn-bricks.module';
 
 @Module({
@@ -12,7 +11,7 @@ import {CnBricksModule} from '../cn-bricks/cn-bricks.module';
 
     CnBricksModule,
   ],
-  providers: [CnLabConfigsService, CnLabConfigsSecurityLayer],
+  providers: [CnLabConfigsService],
   controllers: [CnLabConfigsController],
   exports: [CnLabConfigsService]
 })
