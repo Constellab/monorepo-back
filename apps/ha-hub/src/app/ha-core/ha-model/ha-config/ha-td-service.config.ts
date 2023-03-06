@@ -13,7 +13,7 @@ export class HaTdServiceConfig extends TdServiceConfig {
   getTechnicalDocUrl(parentVersion: string, typingName: TdTypingName): TdTechnicalDocUrl {
 
     return {
-      url: HaRouterService.getTechDocRoute(
+      url: HaRouterService.getTechnicalDocRoute(
         typingName.brickName,
         parentVersion.split('.')[0],
         typingName.type.toLowerCase(),

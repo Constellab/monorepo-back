@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {HaDocumentationService} from '../../../../ha-core/ha-service/ha-documentation.service';
 import {HaAuthenticatedUserService} from '../../../../ha-core/ha-service/ha-authenticated-user.service';
@@ -23,7 +23,8 @@ export class HaPublicTechDocComponent implements OnInit {
     private brickService: HaBrickService,
     private documentationService: HaDocumentationService,
     private authUserService: HaAuthenticatedUserService,
-    private route: ActivatedRoute) {
+    private route: ActivatedRoute,
+    private router: Router) {
   }
 
 
@@ -32,10 +33,16 @@ export class HaPublicTechDocComponent implements OnInit {
   }
 
   private getActiveDoc(): void {
+    let brickName: string;
+    let brickVersion: string;
+    if (this.router.url.includes('tech-doc') || this.router.url.includes('product-doc')) {
+      brickName = this.router.url.includes('tech-doc') ? 'gws_core' : 'gws_academy';
+      brickVersion = 'latest';
+    }
     this.route.params.subscribe(params => {
       this.techDocNotFound = false;
       this.isLoading = true;
-      this.brickService.getTechDocByPath(params.brickName, params.version,
+      this.brickService.getTechDocByPath(brickName ?? params.brickName, brickVersion ?? params.version,
         params.type, params.uniqueName).subscribe(techDoc => {
         if (techDoc == null) {
           this.techDocNotFound = true;

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {HaBrick, HaEditBrickDTO} from '../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {HaBrickVersion} from '../../../../ha-core/ha-model/ha-entities/ha-brick-version.class';
 import {CmVersion} from '@monorepo/common-model';
 import {FlDialogService, FlFormDialogInput} from '@monorepo/front-core-lib';
@@ -26,6 +26,7 @@ export class HaPublicBrickDescriptionComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private brickService: HaBrickService,
     private brickVersionService: HaBrickVersionService,
     private dialogService: FlDialogService,
@@ -34,13 +35,21 @@ export class HaPublicBrickDescriptionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.parent.params.subscribe(params => {
-      this.setLastBrickVersion(params.brickName);
-      this.brickService.getByName(params.brickName).subscribe(brick => {
-        this.brick = brick;
+    if (this.router.url.includes('tech-doc') || this.router.url.includes('product-doc')) {
+      this.setBrick(this.router.url.includes('tech-doc') ? 'gws_core' : 'gws_academy');
+      this.setLastBrickVersion(this.router.url.includes('tech-doc') ? 'gws_core' : 'gws_academy');
+    } else {
+      this.route.parent.params.subscribe(params => {
+        this.setLastBrickVersion(params.brickName);
+        this.setBrick(params.brickName);
       });
-      this.isAdmin$().subscribe(admin => this.isAdmin = admin);
+    }
+    this.isAdmin$().subscribe(admin => this.isAdmin = admin);
+  }
 
+  private setBrick(brickName: string): void {
+    this.brickService.getByName(brickName).subscribe(brick => {
+      this.brick = brick;
     });
   }
 
@@ -52,7 +61,7 @@ export class HaPublicBrickDescriptionComponent implements OnInit {
     });
   }
 
-  private setDirectReferences(brickVersionId: string): void{
+  private setDirectReferences(brickVersionId: string): void {
     this.brickVersionService.getDirectReferences(brickVersionId).subscribe(res => {
       this.references = res;
     })
@@ -75,7 +84,7 @@ export class HaPublicBrickDescriptionComponent implements OnInit {
   }
 
   private openSmallDialog(input: any): void {
-    this.dialogService.openSmallDialog(HaPublicEditBrickDialogComponent, {data: input}).afterClosed().subscribe(
+    this.dialogService.openMediumDialog(HaPublicEditBrickDialogComponent, {data: input}).afterClosed().subscribe(
       (res: HaBrick) => {
         if (res != null) {
           this.brick = res;

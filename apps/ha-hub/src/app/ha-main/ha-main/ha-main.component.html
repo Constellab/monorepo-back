@@ -5,10 +5,10 @@
     </a>
 
     <div class="nav-bar-links" *ngIf="currentUrlSegment.length > 0">
-      <h5 class="option"><a [routerLink]="getHomeRoute()">{{'home'| translate}}</a></h5>
       <h5 class="option"><a [routerLink]="getStoryListRoute()">{{'stories' | translate}}</a></h5>
       <h5 class="option"><a [routerLink]="getBrickListRoute()">{{'bricks' | translate}}</a></h5>
-      <h5 class="option"><a [href]="constellabUrl" target="_blank">Constellab</a></h5>
+      <h5 class="option"><a [routerLink]="getProductDocRoute()">{{'product_doc'| translate}}</a></h5>
+      <h5 class="option"><a [routerLink]="getTechDocRoute()">{{'tech_doc'| translate}}</a></h5>
     </div>
 
     <div class="spacer" *ngIf="currentUrlSegment.length === 0">
@@ -31,7 +31,7 @@
     </mat-menu>
   </mat-toolbar>
 
-  <div class="body g-scrollable-element">
+  <div class="body g-scrollable-element" cdkScrollable>
     <div class="router">
       <router-outlet></router-outlet>
     </div>

@@ -14,6 +14,14 @@
 
 .doc-div-content{
   min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+form{
+  //take all the available flex space
+  flex: 1;
+  display: flex;
 }
 
 .doc-title-div{
@@ -28,6 +36,7 @@
 
 .content-editor{
   border: none;
+  width: 100%;
 }
 
 //.right-div{

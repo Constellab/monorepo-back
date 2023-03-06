@@ -16,7 +16,6 @@ import {ActivatedRoute, UrlSegment} from '@angular/router';
 export class HaMainComponent implements OnInit {
 
   userConnected$: Observable<HaUser> = this.authUserService.getUser();
-  constellabUrl: string;
 
   loginRoute: string = HaRouterService.getLoginRoute();
 
@@ -31,7 +30,6 @@ export class HaMainComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.constellabUrl = this.apiService.getConstellabUrl();
     this.activatedRoute.url.subscribe(url => {
       this.currentUrlSegment = url;
     });
@@ -41,16 +39,20 @@ export class HaMainComponent implements OnInit {
     this.authService.logout().subscribe();
   }
 
-  getHomeRoute(): string {
-    return HaRouterService.getHomeRoute();
-  }
-
   getStoryListRoute(): string {
     return HaRouterService.getStoryListRoute();
   }
 
   getBrickListRoute(): string {
     return HaRouterService.getBrickListRoute();
+  }
+
+  getProductDocRoute(): string {
+    return HaRouterService.getProducDocRoute();
+  }
+
+  getTechDocRoute(): string {
+    return HaRouterService.getTechDocRoute();
   }
 
 }

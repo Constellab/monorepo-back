@@ -124,7 +124,8 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
         bounds: this.elementRef.nativeElement,
         placeholder: this.placeholder,
         scrollingContainer: FlQuillSetup.getScrollingContainer(this.scrollContainer, this.scrollDispatcher,
-          this.document.documentElement, this.elementRef)
+          this.document.documentElement, this.elementRef),
+        strict: true
       }
     );
 
@@ -134,10 +135,10 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
       if (ClStringHelper.isHttpLink(node.nodeValue)) {
         delta.ops = []
         FlQuillSetup.addMatcherLink(this.state.getCurrentSelectionIndex(), node.nodeValue, delta, this.state);
+      } else {
+        FlQuillSetup.addMatcherText(this.state.getCurrentSelectionIndex(), node.nodeValue, delta, this.state);
       }
-      return delta;
     });
-
 
     this.state.init(this.quill, this.config, this.editorElement.nativeElement, this.disabled);
 

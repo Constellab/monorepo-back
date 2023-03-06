@@ -4,7 +4,7 @@ import {
   HaBrickVersionDataSource
 } from '../../../../ha-core/ha-model/ha-entities/ha-brick-version.class';
 import {HaBrickVersionService} from '../../../../ha-core/ha-service/ha-brick-version.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {FlDialogService, FlFormDialogInput, FlTableColumn} from '@monorepo/front-core-lib';
 import {HaNewVersionDTO} from '../../../../ha-core/ha-model/ha-entities/ha-version.class';
@@ -28,16 +28,25 @@ export class HaPublicVersionsComponent implements OnInit {
     private brickVersionService: HaBrickVersionService,
     private route: ActivatedRoute,
     private brickService: HaBrickService,
-    private dialogService: FlDialogService
+    private dialogService: FlDialogService,
+    private router: Router
   ) {
   }
 
   ngOnInit(): void {
-    this.route.parent.url.subscribe(url => {
-      this.brickService.getByName(url[0].path).subscribe(brick => {
-        this.brickId = brick.id;
-        this.setDataSource();
+    if (this.router.url.includes('tech-doc') || this.router.url.includes('product-doc')) {
+      this.init(this.router.url.includes('tech-doc') ? 'gws_core' : 'gws_academy');
+    } else {
+      this.route.parent.url.subscribe(url => {
+        this.init(url[0].path);
       });
+    }
+  }
+
+  private init(brickName: string): void {
+    this.brickService.getByName(brickName).subscribe(brick => {
+      this.brickId = brick.id;
+      this.setDataSource();
     });
   }
 

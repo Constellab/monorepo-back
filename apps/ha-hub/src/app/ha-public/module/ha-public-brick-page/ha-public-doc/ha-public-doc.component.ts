@@ -66,11 +66,14 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.buildForm();
-    this.route.parent.parent.url.subscribe(url => {
-      this.brickName = url[0].path;
-      this.brickVersion = url[1].path;
-      this.getActiveDoc();
-    });
+
+    if (this.router.url.includes('tech-doc') || this.router.url.includes('product-doc')) {
+      this.init(this.router.url.includes('tech-doc') ? 'gws_core' : 'gws_academy', 'latest');
+    } else {
+      this.route.parent.parent.url.subscribe(url => {
+        this.init(url[0].path, url[1].path);
+      });
+    }
 
     //create a debouncer to save the description after x second of idle
     this.contentDebouncer = new FlDebouncer(FlDebouncer.AUTO_SAVE_DEBOUNCE_TIME);
@@ -81,6 +84,12 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
         }
       }
     );
+  }
+
+  private init(brickName: string, brickVersion: string): void{
+    this.brickName = brickName;
+    this.brickVersion = brickVersion;
+    this.getActiveDoc();
   }
 
   private getActiveDoc(): void {
@@ -112,8 +121,6 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
       isFirstDoc = true;
       this.brickService.getFirstDoc(this.brickName, this.brickVersion).subscribe(doc => {
         if(doc){
-          this.docNotFound = false;
-          this.isCheck = true;
           this.actionOnDoc(isFirstDoc, doc);
         } else {
           this.docNotFound = true;
@@ -124,8 +131,6 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
       path = url.join('/') + '/';
       this.brickService.getDocByPath(this.brickName, path, this.brickVersion).subscribe(doc => {
         if(doc){
-          this.docNotFound = false;
-          this.isCheck = true;
           this.actionOnDoc(isFirstDoc, doc);
         } else {
           this.docNotFound = true;
@@ -139,6 +144,9 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
     if (isFirstDoc) {
       this.router.navigate([`${this.router.url}/${doc.completePath}`]).then();
     }
+    this.docNotFound = false;
+    this.isCheck = true;
+    this.isDisabled = true;
     this.documentation = doc;
 
     this.setFormGroupValue(doc);

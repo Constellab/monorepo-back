@@ -139,15 +139,23 @@ export class HaPublicSidenavComponent implements OnInit {
       });
 
 
-    this.route.params.subscribe(params => {
-      this.brickService.getByName(params['brickName']).subscribe(brick => {
-        this.brickId = brick.id;
-        this.brickName = brick.name
-        this.brickVersion = params['version'];
-
-        this.getTechnicalDocumentations();
-        this.getDocumentations();
+    if(this.router.url.includes('tech-doc') || this.router.url.includes('product-doc')){
+      this.init(this.router.url.includes('tech-doc') ? 'gws_core' : 'gws_academy', 'latest');
+    } else {
+      this.route.params.subscribe(params => {
+        this.init(params['brickName'], params['version']);
       });
+    }
+  }
+
+  private init(brickName: string, brickVersion: string): void {
+    this.brickService.getByName(brickName).subscribe(brick => {
+      this.brickId = brick.id;
+      this.brickName = brick.name
+      this.brickVersion = brickVersion;
+
+      this.getTechnicalDocumentations();
+      this.getDocumentations();
     });
   }
 

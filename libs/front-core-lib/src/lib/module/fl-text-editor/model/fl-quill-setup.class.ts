@@ -58,4 +58,8 @@ export class FlQuillSetup {
     return firstDelta == delta ? {ops: []} : delta;
   }
 
+  public static addMatcherText(index: number, text: string, delta: any, state: FlTextEditorState): any{
+    return state.insertText(index, text);
+  }
+
 }

@@ -29,6 +29,14 @@ export class HaRouterService {
     return '/login';
   }
 
+  public static getProducDocRoute(): string {
+    return '/product-doc/';
+  }
+
+  public static getTechDocRoute(): string {
+    return '/technical-folder/';
+  }
+
   public static getBrickPageRoute(brickName: string, brickMajor?: string): string {
     const brickMajorUrl = brickMajor == null || brickMajor === 'latest' ? 'latest' : `v${brickMajor}`;
     return `${this.getBrickListRoute()}${brickName}/${brickMajorUrl}/`;
@@ -42,7 +50,7 @@ export class HaRouterService {
     return `${this.getBrickDocsPageRoute(brickName, brickMajor)}${completePath}`;
   }
 
-  public static getTechDocRoute(parentBrickName: string, parentVersion: string, objectType: string, docParentUniqueName: string): string {
+  public static getTechnicalDocRoute(parentBrickName: string, parentVersion: string, objectType: string, docParentUniqueName: string): string {
     return `${this.getBrickDocsPageRoute(parentBrickName, parentVersion)}technical-folder/${objectType}/${docParentUniqueName}`;
   }
 
