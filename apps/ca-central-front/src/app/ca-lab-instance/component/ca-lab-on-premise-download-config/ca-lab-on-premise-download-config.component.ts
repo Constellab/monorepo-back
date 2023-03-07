@@ -27,7 +27,7 @@ export class CaLabOnPremiseDownloadConfigComponent implements OnInit {
 
   ngOnInit(): void {
     this.formGp = this.formBuilder.group({
-      glabTag: ['beta', Validators.required]
+      glabTag: ['latest', Validators.required]
     });
   }
 
