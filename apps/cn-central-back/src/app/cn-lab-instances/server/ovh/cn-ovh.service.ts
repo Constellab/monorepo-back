@@ -98,8 +98,8 @@ export class CnOvhService {
       return await this.ovh.requestPromised('POST', route, request);
     } catch (e) {
       // when attaching failed, retry in 30s because OVH tells volume is ready but it's not
-      this.logger.error(`Error while attaching volume ${volumeId} to instance ${instanceId}, retrying in 30s. Error: ${e}`);
-      await new Promise(r => setTimeout(r, 30000));
+      this.logger.error(`Error while attaching volume ${volumeId} to instance ${instanceId}, retrying in 45s. Error: ${e.toString()}`);
+      await new Promise(r => setTimeout(r, 45000));
       return await this.ovh.requestPromised('POST', route, request);
     }
   }
