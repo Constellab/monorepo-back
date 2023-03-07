@@ -98,7 +98,7 @@ export class CnLabSshService {
     await this.commandService.execCommand(rebootServer,
       {errorMode: CnExecCommandMode.STDERR_AS_SUCCESS, ignoreError: true});
 
-    await this.waitForSshConnection(labInstance);
+    await this.waitForSshConnection(labInstance, 2);
   }
 
 
