@@ -50,8 +50,6 @@ export class CnLabInstanceOnPremiseService {
       .replace(/\${LAB_NAME}/g, labInstance.name)
       .replace(/\${CENTRAL_API_KEY}/g, labInstance.glabApiKey)
       .replace(/\${CENTRAL_API_URL}/g, this.configService.getApiUrl())
-      .replace(/\${GWS_GIT_LOGIN}/g, this.configService.getGwsGitlabUsername())
-      .replace(/\${GWS_GIT_PWD}/g, this.configService.getGwsGitlabPassword())
       .replace(/\${GWS_CORE_PROD_DB_PASSWORD}/g, labInstance.gwsCoreProdDbPassword)
       .replace(/\${SECRET_KEY}/g, labInstance.id)
       .replace(/\${GWS_CORE_DEV_DB_PASSWORD}/g, labInstance.gwsCoreDevDbPassword)
