@@ -125,20 +125,20 @@ export class CnLabManagerService {
   public async waitForHealthCheck(labManagerUrl: string): Promise<void> {
     // wait for server to reboot
     let count = 0;
-    while (count < 10) {
+    while (count < 15) {
 
       const result = await this.healthCheck(labManagerUrl);
       if (result) {
         return;
       }
 
-      if (count >= 10) {
+      if (count >= 15) {
         break;
       }
 
-      this.logger.log(`Waiting for server to be available for lab manager ${labManagerUrl}. Attempt ${count + 1} of 10`);
-      // wait 10 seconds
-      await new Promise(r => setTimeout(r, 10000));
+      this.logger.log(`Waiting for server to be available for lab manager ${labManagerUrl}. Attempt ${count + 1} of 15`);
+      // wait 15 seconds
+      await new Promise(r => setTimeout(r, 15000));
       count++;
     }
 

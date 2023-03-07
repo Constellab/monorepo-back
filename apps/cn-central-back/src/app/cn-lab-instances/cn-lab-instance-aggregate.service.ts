@@ -636,7 +636,7 @@ export class CnLabInstanceAggregateService {
     labInstance = await this.createServerAsync(labInstance, false);
 
     // wait for the DNS to be ready
-    // wait for 2 consecutive success
+    // wait for 2 consecutive success because DNS propagation can take some time
     await this.labSshService.waitForSshConnection(labInstance, 2);
 
     await this.configureServerAsync(labInstance, false);

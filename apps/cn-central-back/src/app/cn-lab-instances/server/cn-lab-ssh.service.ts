@@ -153,13 +153,14 @@ export class CnLabSshService {
         successCount = 0;
       }
 
-      if (count >= 10) {
+      if (count >= 15) {
         break;
       }
 
-      this.logger.log(`Waiting for server to be available for lab ${labInstance.id}. Attempt ${count + 1} of 15. Success {successCount} of ${consecutiveRequiredSuccess}`);
+      // eslint-disable-next-line max-len
+      this.logger.log(`Waiting for server to be available for lab ${labInstance.id}. Attempt ${count + 1} of 15. Success ${successCount} of ${consecutiveRequiredSuccess}`);
       // wait 10 seconds
-      await new Promise(r => setTimeout(r, 10000));
+      await new Promise(r => setTimeout(r, 15000));
       count++;
     }
 
