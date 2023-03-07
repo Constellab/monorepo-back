@@ -11,7 +11,7 @@ import {
   CnOvhVolume
 } from './cn-ovh.class';
 import {CnCoreConfigService} from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ovh = require('ovh');
@@ -24,10 +24,15 @@ interface CnOvh {
 
 @Injectable()
 export class CnOvhService {
+  // to test ovh api, generate a token here : https://eu.api.ovh.com/createToken/, set all request type with '/*'
+  // then update dev env
 
   private static UBUNTU_USER = 'ubuntu';
   private ovh: CnOvh;
   private serviceName: string;
+
+  private readonly logger = new Logger(CnOvhService.name);
+
 
   constructor(private configService: CnCoreConfigService) {
     this.initOvh();
@@ -87,7 +92,16 @@ export class CnOvhService {
       instanceId: instanceId,
     };
 
-    return await this.ovh.requestPromised('POST', `/cloud/project/${this.serviceName}/volume/${volumeId}/attach`, request);
+    const route = `/cloud/project/${this.serviceName}/volume/${volumeId}/attach`;
+
+    try {
+      return await this.ovh.requestPromised('POST', route, request);
+    } catch (e) {
+      // when attaching failed, retry in 30s because OVH tells volume is ready but it's not
+      this.logger.error(`Error while attaching volume ${volumeId} to instance ${instanceId}, retrying in 30s. Error: ${e}`);
+      await new Promise(r => setTimeout(r, 30000));
+      return await this.ovh.requestPromised('POST', route, request);
+    }
   }
 
   public async getVolume(volumeId: string): Promise<CnOvhVolume> {
