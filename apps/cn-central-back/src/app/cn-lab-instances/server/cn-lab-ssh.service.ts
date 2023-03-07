@@ -164,7 +164,7 @@ export class CnLabSshService {
     // use a cat because sometimes the ssh never finishes, and it blocks the process.
     // it requires to kill the process manually, it happens less with cat
     // TODO TO improve check
-    const command = `ssh -o StrictHostKeyChecking=no -t ubuntu@lab.${virtualHost} "ls"`;
+    const command = `ssh -o StrictHostKeyChecking=no ubuntu@lab.${virtualHost} "ls"`;
     // use ping because it does not block
     // const command = `ping lab.${virtualHost}`;
     this.logger.log(`Checking ssh connection for ${virtualHost}`);
@@ -180,7 +180,7 @@ export class CnLabSshService {
   private getSshCommand(virtualHost: string, commands: string[]): string {
     // in pre-prod and prod env, set the path to the ssh key
     const option = this.coreConfigService.isLocal() ? '' : `-i ${CnLabSshService.SSH_PRIVATE_KEY_LOCATION}`;
-    return `ssh ${option} -o StrictHostKeyChecking=no -t ubuntu@lab.${virtualHost} "${commands.join(';')}"`;
+    return `ssh ${option} -o StrictHostKeyChecking=no ubuntu@lab.${virtualHost} "${commands.join(';')}"`;
   }
 
   public async updateLabManager(labInstance: CnLabInstance): Promise<void> {
