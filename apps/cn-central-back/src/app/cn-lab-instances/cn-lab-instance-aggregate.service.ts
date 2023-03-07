@@ -625,10 +625,7 @@ export class CnLabInstanceAggregateService {
     // call the init async (return the server response immediately)
     this.initServerAsync(labInstance).catch(
       // if an error occurred we just refresh the lab status
-      (error: Error) => {
-        this.logger.error(`Error during initServer: ${error.message}`);
-        this.labServerService.refreshLabStatus(labInstance.id).catch(err => this.logger.error(err));
-      }
+      (error: Error) => this.onError(labInstance.id, `Error during server initiliasation : ${error.message}`)
     );
 
     return this.getStatus(labInstance);
@@ -654,10 +651,7 @@ export class CnLabInstanceAggregateService {
     // call the init async (return the server response immediately)
     this.createServerAsync(labInstance, true).catch(
       // if an error occurred we just refresh the lab status
-      (error: Error) => {
-        this.logger.error(`Error during createServer: ${error.message}`);
-        this.labServerService.refreshLabStatus(labInstance.id).catch(err => this.logger.error(err));
-      }
+      (error: Error) => this.onError(labInstance.id, `Error during server creation: ${error.message}`)
     );
 
     return this.getStatus(labInstance);
@@ -687,10 +681,7 @@ export class CnLabInstanceAggregateService {
     // call the init async (return the server response immediately)
     this.configureServerAsync(labInstance, true).catch(
       // if an error occurred we just refresh the lab status
-      (error: Error) => {
-        this.logger.error(`Error during configureServerAsync: ${error.message}`);
-        this.labServerService.refreshLabStatus(labInstance.id).catch(err => this.logger.error(err));
-      }
+      (error: Error) => this.onError(labInstance.id, `Error during server configuration: ${error.message}`)
     );
 
     return this.getStatus(labInstance);
@@ -720,6 +711,12 @@ export class CnLabInstanceAggregateService {
     }
 
     return this.labInstancesService.updateServerStatusText(labInstanceId, text);
+  }
+
+  private async onError(labInstanceId: string, message: string): Promise<void> {
+    this.logger.error(message);
+    await this.labInstancesService.updateServerStatusText(labInstanceId, message).catch(err => this.logger.error(err));
+    this.labServerService.refreshLabStatus(labInstanceId).catch(err => this.logger.error(err));
   }
 
   public async deleteServerInstance(labInstanceId: string): Promise<void> {
