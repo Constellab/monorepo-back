@@ -30,6 +30,8 @@ export class FlStatusHelper {
   public static archivedIcon: string = 'inventory_2';
   public static draftIcon: string = 'hourglass_empty';
   public static stoppedIcon: string = 'stop';
+  public static debugIcon: string = 'bug_report';
+
 
   public static successBackgroundClass: string = flThemeClass.primaryBackground;
   public static errorBackgroundClass: string = flThemeClass.warnBackground;
@@ -111,7 +113,10 @@ export class FlStatusHelper {
 
   public static getCriticalStatus<STATUS = string>(value: STATUS): FlStatus<STATUS> {
     return FlStatusHelper.getErrorStatus(value, 'flStatus.critical', FlStatusHelper.errorIcon);
+  }
 
+  public static getDebugStatus<STATUS = string>(value: STATUS): FlStatus<STATUS> {
+    return FlStatusHelper.getInfoStatus(value, 'flStatus.debug', FlStatusHelper.debugIcon);
   }
 }
 

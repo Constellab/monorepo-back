@@ -5,9 +5,10 @@ import {DateTime} from 'luxon';
 import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
 
 
-export type LabProgressBarMessageType = 'SUCCESS' | 'INFO' | 'ERROR' | 'WARNING' | 'PROGRESS'
+export type LabProgressBarMessageType = 'SUCCESS' | 'INFO' | 'ERROR' | 'WARNING' | 'PROGRESS' | 'DEBUG';
 
 const labProgressBarMessageTypeDict: FlStatusDict<LabProgressBarMessageType> = {
+  DEBUG: FlStatusHelper.getDebugStatus('DEBUG'),
   INFO: FlStatusHelper.getInfoStatus('INFO'),
   SUCCESS: FlStatusHelper.getSuccessStatus('SUCCESS'),
   ERROR: FlStatusHelper.getErrorStatus('ERROR'),
@@ -52,7 +53,7 @@ export class LabProgressBar extends LabBaseEntity {
 
   // duration of the process in millisecond
   get elapsedTime(): number {
-    if(this.startedAt == null) return 0;
+    if (this.startedAt == null) return 0;
 
     const endedAt = this.endedAt ?? ClDateHelper.getDate();
 

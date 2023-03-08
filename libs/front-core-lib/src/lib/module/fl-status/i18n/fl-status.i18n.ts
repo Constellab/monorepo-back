@@ -14,7 +14,8 @@ const flStatusFr: FlLangTranslation = {
     archived: 'Archivé',
     draft: 'Brouillon',
     stopped: 'Arrêté',
-    critical: 'Critique'
+    critical: 'Critique',
+    debug: 'Debug'
   }
 };
 
@@ -28,7 +29,8 @@ const flStatusEn: FlLangTranslation = {
     archived: 'Archived',
     draft: 'Draft',
     stopped: 'Stopped',
-    critical: 'Critical'
+    critical: 'Critical',
+    debug: 'Debug'
   }
 };
 
