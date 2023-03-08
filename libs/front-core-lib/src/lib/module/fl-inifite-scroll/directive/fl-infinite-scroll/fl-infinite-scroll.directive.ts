@@ -1,6 +1,26 @@
-import {AfterViewInit, Directive, ElementRef, EventEmitter, HostListener, Input, Output} from '@angular/core';
+import {
+  AfterViewInit,
+  Directive,
+  ElementRef,
+  EventEmitter,
+  Inject,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  Renderer2
+} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
+import {FlHtmlFindParentOptions, FlHtmlHelper} from '../../../../utils/fl-html.helper';
 
-export type FlInfiniteScrollMode = 'container' | 'body';
+/**
+ * Mode for the infinite scroll
+ * - container: the scroll is on the container
+ * - body: the scroll is on the body
+ * - FlHtmlFindParentOptions: object to search for parent
+ * - HTMLElement: the scroll is on the given HTMLElement
+ */
+export type FlInfiniteScrollMode = 'container' | 'body' | FlHtmlFindParentOptions | HTMLElement;
 
 /**
  * Directive to be placed on a scrollable container and it emits an event when
@@ -15,7 +35,7 @@ export type FlInfiniteScrollMode = 'container' | 'body';
 @Directive({
   selector: '[flInfiniteScroll]'
 })
-export class FlInfiniteScrollDirective implements AfterViewInit {
+export class FlInfiniteScrollDirective implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * Distance from bottom (in pixel) when the flTrigger is called
@@ -72,27 +92,50 @@ export class FlInfiniteScrollDirective implements AfterViewInit {
   // true when we are waiting flInfiniteAfterDebounce after an event
   private isWaiting: boolean = false;
 
+  private listener: () => void;
 
-  constructor(private elementRef: ElementRef<HTMLElement>) {
+  private scrollableElement: HTMLElement;
+
+
+  constructor(private elementRef: ElementRef<HTMLElement>,
+              private renderer: Renderer2,
+              @Inject(DOCUMENT) private document: Document) {
   }
+
+  ngOnInit(): void {
+    const element = this.getElement();
+    this.listener = this.renderer.listen(element, 'scroll',
+      (event: Event) => this.checkDistance(event));
+  }
+
+  private getElement(): HTMLElement {
+    if (!this.scrollableElement) {
+      if (this.flInfiniteMode === 'body') {
+        this.scrollableElement = this.document.body;
+      } else if (this.flInfiniteMode === 'container') {
+        this.scrollableElement = this.elementRef.nativeElement;
+      } else if (this.flInfiniteMode instanceof HTMLElement) {
+        this.scrollableElement = this.flInfiniteMode;
+      } else {
+        const parent = FlHtmlHelper.getParent(this.elementRef.nativeElement, this.flInfiniteMode);
+
+        if (parent) {
+          this.scrollableElement = parent;
+        } else {
+          console.error('No scrollable parent found for the flInfiniteScroll directive');
+          this.scrollableElement = this.elementRef.nativeElement;
+        }
+      }
+    }
+
+    return this.scrollableElement;
+  }
+
 
   ngAfterViewInit(): void {
     if (this.flInfiniteCheckOnInit) {
       // use a time to avoid check problem
       setTimeout(() => this.checkDistance(null), 0);
-    }
-  }
-
-
-  @HostListener('scroll', ['$event']) containerScroll(event: Event): void {
-    if (this.flInfiniteMode === 'container') {
-      this.checkDistance(event);
-    }
-  }
-
-  @HostListener('window:scroll', ['$event']) windowScroll(event: Event): void {
-    if (this.flInfiniteMode === 'body') {
-      this.checkDistance(event);
     }
   }
 
@@ -112,7 +155,7 @@ export class FlInfiniteScrollDirective implements AfterViewInit {
     const height = this.getHeight();
 
     //Check if the event is trigger for the reverse mode
-    if(this.flReverseMode){
+    if (this.flReverseMode) {
       const distanceFromBottom = -distanceFromTop;
       const distance = totalHeight - (distanceFromBottom + height);
       if (distance <= this.flInfiniteTriggerDistance) {
@@ -143,26 +186,34 @@ export class FlInfiniteScrollDirective implements AfterViewInit {
   }
 
   private getDistanceFromTop(): number {
-    if (this.flInfiniteMode === 'container') {
-      return this.elementRef.nativeElement.scrollTop;
-    } else {
+    if (this.flInfiniteMode === 'body') {
       return ((document.body.getBoundingClientRect() as any).y * -1) || 0;
+    } else {
+      return this.getElement().scrollTop;
     }
   }
 
   private getTotalHeight(): number {
-    if (this.flInfiniteMode === 'container') {
-      return this.elementRef.nativeElement.scrollHeight;
-    } else {
+    if (this.flInfiniteMode === 'body') {
       return document.body.scrollHeight || 0;
+    } else {
+      return this.getElement().scrollHeight;
     }
   }
 
   private getHeight(): number {
-    if (this.flInfiniteMode === 'container') {
-      return this.elementRef.nativeElement.clientHeight;
-    } else {
+    if (this.flInfiniteMode === 'body') {
       return document.body.clientHeight || 0;
+    } else {
+      return this.getElement().clientHeight;
     }
   }
+
+  ngOnDestroy(): void {
+    if (this.listener) {
+      this.listener();
+    }
+  }
+
+
 }

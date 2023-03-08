@@ -7,11 +7,11 @@
   </fl-dialog-header-actions>
 </fl-dialog-header>
 
-<mat-dialog-content>
+<mat-dialog-content #content>
   <fl-async-section [object]="progressBar$">
 
     <ng-container *flSectionBody>
-      <lab-progress-bar-info [progressBar$]="progressBar$"></lab-progress-bar-info>
+      <lab-progress-bar-info [progressBar$]="progressBar$" [scrollableElement]="content"></lab-progress-bar-info>
     </ng-container>
   </fl-async-section>
 </mat-dialog-content>

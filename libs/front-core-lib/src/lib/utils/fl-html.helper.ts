@@ -1,3 +1,10 @@
+
+export interface FlHtmlFindParentOptions {
+  className?: string;
+  tagName?: string;
+  element?: HTMLElement;
+}
+
 /**
  * Helper to manage HTML
  */
@@ -47,7 +54,7 @@ export class FlHtmlHelper {
    * @param element
    * @param parent if string, it compares with the classe
    */
-  public static isChildOf(element: HTMLElement, parent: { element?: HTMLElement, className?: string, tag?: string }): boolean {
+  public static isChildOf(element: HTMLElement, parent: FlHtmlFindParentOptions): boolean {
     return FlHtmlHelper.getParent(element, parent) != null;
   }
 
@@ -57,7 +64,7 @@ export class FlHtmlHelper {
    * @param parent provide one of the field to search
    */
   public static getParent(element: HTMLElement,
-                          parent: { element?: HTMLElement, className?: string, tagName?: string }): HTMLElement | null {
+                          parent: FlHtmlFindParentOptions): HTMLElement | null {
     let current: HTMLElement = element;
 
     while (current != null && current.tagName !== 'BODY') {

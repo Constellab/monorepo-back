@@ -2,7 +2,7 @@ import {LabBaseEntity} from '../global/lab-entity.entity';
 import {Expose, Type} from 'class-transformer';
 import {ClDateHelper, ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
-import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
+import {FlArrayObs, FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
 
 
 export type LabProgressBarMessageType = 'SUCCESS' | 'INFO' | 'ERROR' | 'WARNING' | 'PROGRESS' | 'DEBUG';
@@ -47,9 +47,6 @@ export class LabProgressBar extends LabBaseEntity {
   @Expose({name: 'current_value'})
   currentValue: number;
 
-  @Type(() => LabProgressMessage)
-  messages: LabProgressMessage[];
-
 
   // duration of the process in millisecond
   get elapsedTime(): number {
@@ -59,4 +56,28 @@ export class LabProgressBar extends LabBaseEntity {
 
     return endedAt.diff(this.startedAt, 'millisecond').milliseconds;
   }
+}
+
+export class LabProgressBarMessages extends LabProgressBar {
+
+  @Expose({name: 'from_datetime'})
+  @ClLuxonDateTimeTransform()
+  fromDatetime: DateTime;
+
+  @Expose({name: 'to_datetime'})
+  @ClLuxonDateTimeTransform()
+  toDatetime: DateTime;
+
+  @Type(() => LabProgressMessage)
+  messages: LabProgressMessage[];
+}
+
+
+export class LabProgressMessageDatasource extends FlArrayObs<LabProgressMessage> {
+  protected equals(a: LabProgressMessage, b: LabProgressMessage): boolean {
+    return a.datetime === b.datetime && a.text === b.text && a.type.value === b.type.value;
+  }
+
+
+
 }

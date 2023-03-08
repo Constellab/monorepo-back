@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlDatasourcePaginated} from '../../../../model/datasource/fl-datasource-paginated.class';
+import {FlInfiniteScrollMode} from '../../directive/fl-infinite-scroll/fl-infinite-scroll.directive';
 
 
 /**
@@ -51,7 +52,7 @@ export class FlInfiniteScrollComponent implements OnInit {
    *
    * If body it listens to the windows scroll event and check the scroll on the body
    */
-  @Input() infiniteMode: 'container' | 'body' = 'container';
+  @Input() infiniteMode: FlInfiniteScrollMode = 'container';
 
   @Input() reverseMode: boolean = false;
 

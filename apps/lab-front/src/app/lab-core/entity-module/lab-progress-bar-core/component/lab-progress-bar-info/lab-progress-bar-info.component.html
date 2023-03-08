@@ -18,10 +18,23 @@
     </fl-key-value>
   </div>
 
+  <div (flInfiniteScroll)="loadMoreMessages()" [flInfiniteDisabled]="loadMoreIsLoading || loadMoreCompleted"
+       [flInfiniteMode]="scrollableElement" class="infinite-container">
+    <div *ngFor="let message of messages$ | async; trackBy:trackMessageByDatetime">
+      <lab-progress-message [progressMessage]="message"></lab-progress-message>
 
-  <div *ngFor="let message of progressBar.messages">
-    <lab-progress-message [progressMessage]="message"></lab-progress-message>
+      <mat-divider class="divider"></mat-divider>
 
-    <mat-divider class="divider"></mat-divider>
+    </div>
+
+    <div class="g-text-centered" *ngIf="!loadMoreCompleted">
+      <button [disabled]="loadMoreIsLoading || loadMoreCompleted" class="g-button-small"
+              mat-stroked-button color="primary" type="button" (click)="loadMoreMessages()">
+        {{'show_more_result' | translate}}
+        <fl-button-loader *ngIf="loadMoreIsLoading"></fl-button-loader>
+      </button>
+    </div>
   </div>
+
+
 </div>

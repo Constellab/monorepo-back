@@ -127,7 +127,10 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
     const array: T[] = this.array;
     for (const item of items) {
       const index = array.findIndex(v => this.equals(item, v));
-      array[index] = item;
+
+      if (index >= 0) {
+        array[index] = item;
+      }
     }
 
     this.array = array;
@@ -166,7 +169,10 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
 
     for (const item of items) {
       const index = array.findIndex(v => this.equals(item, v));
-      array.splice(index, 1);
+
+      if (index >= 0) {
+        array.splice(index, 1);
+      }
     }
 
     this.array = array;
