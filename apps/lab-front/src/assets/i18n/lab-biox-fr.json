@@ -252,6 +252,8 @@
     "shared_by": "Partagé par",
     "received_by": "Reçu par",
     "share_info": "Informations de partage",
-    "not_shared_yet": "Aucun lab n'a encore téléchargé cet objet"
+    "not_shared_yet": "Aucun lab n'a encore téléchargé cet objet",
+    "download_messages": "Télécharger les messages",
+    "download_logs": "Télécharger les logs"
   }
 }

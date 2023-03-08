@@ -2,6 +2,8 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {LabProgressBar} from '../../../../model/entities/lab-progress-bar.entity';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {Observable} from 'rxjs';
+import {LabProgressBarService} from '../../../../entity-service/lab-progress-bar.service';
+import {map} from 'rxjs/operators';
 
 /**
  * Show information about a {@link LabProgressBar} in a dialog
@@ -15,11 +17,17 @@ export class LabProgressBarInfoDialogComponent implements OnInit {
 
   progressBar$: Observable<LabProgressBar>;
 
-  constructor(@Inject(MAT_DIALOG_DATA) progressBar$: Observable<LabProgressBar>) {
+  downloadUrl$: Observable<string>;
+
+  constructor(@Inject(MAT_DIALOG_DATA) progressBar$: Observable<LabProgressBar>,
+              private labProgressBarService: LabProgressBarService) {
     this.progressBar$ = progressBar$;
   }
 
   ngOnInit(): void {
+    this.downloadUrl$ = this.progressBar$.pipe(
+      map(progressBar => this.labProgressBarService.getDownloadProgressBarUrl(progressBar.id))
+    );
   }
 
 }

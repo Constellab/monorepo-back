@@ -49,7 +49,8 @@ export class LabWorkflowNodeProgressComponent implements OnInit {
   openProcessLogs(process: LabProcess): void {
     const input: LabLogBetweenDatesDialogInput = {
       title: process.instanceName,
-      logs$: this.processService.getProcessLogs(process.getProcessType(), process.id)
+      logs$: this.processService.getProcessLogs(process.getProcessType(), process.id),
+      downloadUrl: this.processService.getDownloadProcessLogUrl(process.getProcessType(), process.id)
     };
 
     this.dialogService.openBigDialog(LabLogsBetweenDatesDialogComponent, {data: input});

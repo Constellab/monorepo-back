@@ -252,6 +252,8 @@
     "shared_by": "Shared by",
     "received_by": "Received by",
     "share_info": "Share information",
-    "not_shared_yet": "No lab downloaded the object yet"
+    "not_shared_yet": "No lab downloaded the object yet",
+    "download_messages": "Download messages",
+    "download_logs": "Download logs"
   }
 }

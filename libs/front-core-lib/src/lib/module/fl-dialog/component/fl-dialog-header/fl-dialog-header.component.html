@@ -6,6 +6,7 @@
     <ng-content></ng-content>
   </div>
   <div *ngIf="!hideCloseButton">
+    <ng-content select="fl-dialog-header-actions"></ng-content>
     <button mat-icon-button type="button" [matTooltip]="'close' | translate"
             [mat-dialog-close]="null" tabindex="-1">
       <mat-icon>close</mat-icon>

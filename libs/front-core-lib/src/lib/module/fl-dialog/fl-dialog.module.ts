@@ -11,6 +11,7 @@ import {FlDialogService} from './fl-dialog.service';
 import {FlLoaderModule} from '../fl-loader/fl-loader.module';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {FlSnackBarModule} from '../fl-snack-bar/fl-snack-bar.module';
+import { FlDialogHeaderActionsComponent } from './component/fl-dialog-header-actions/fl-dialog-header-actions.component';
 
 /**
  * Core modules containing components
@@ -18,10 +19,12 @@ import {FlSnackBarModule} from '../fl-snack-bar/fl-snack-bar.module';
 @NgModule({
   declarations: [
     FlConfirmDialogComponent,
-    FlDialogHeaderComponent
+    FlDialogHeaderComponent,
+    FlDialogHeaderActionsComponent
   ],
   exports: [
     FlDialogHeaderComponent,
+    FlDialogHeaderActionsComponent,
 
     MatDialogModule,
   ],
@@ -49,3 +52,4 @@ export class FlDialogModule {
     };
   }
 }
+

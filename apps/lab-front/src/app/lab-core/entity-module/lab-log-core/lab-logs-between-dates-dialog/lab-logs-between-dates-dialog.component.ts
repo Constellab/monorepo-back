@@ -7,6 +7,7 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 export interface LabLogBetweenDatesDialogInput {
   title: string;
   logs$: Observable<LabLogsBetweenDates>;
+  downloadUrl?: string;
 }
 
 /**
@@ -21,10 +22,12 @@ export class LabLogsBetweenDatesDialogComponent implements OnInit {
 
   title: string;
   logs$: Observable<LabLogsBetweenDates>;
+  downloadUrl?: string;
 
   constructor(@Inject(MAT_DIALOG_DATA) input: LabLogBetweenDatesDialogInput) {
     this.title = input.title;
     this.logs$ = input.logs$;
+    this.downloadUrl = input.downloadUrl;
   }
 
   ngOnInit(): void {

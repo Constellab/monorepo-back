@@ -137,7 +137,6 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
   }
 
 
-
   openTagsFormDialog(): void {
     const experiment = this.experimentState.currentExperiment;
     this.tagDialogService.openUpdateTagDialog({
@@ -259,7 +258,8 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
   openProcessLogs(experiment: LabExperiment): void {
     const input: LabLogBetweenDatesDialogInput = {
       title: experiment.title,
-      logs$: this.processService.getProcessLogs('PROTOCOL', experiment.protocol.id)
+      logs$: this.processService.getProcessLogs('PROTOCOL', experiment.protocol.id),
+      downloadUrl: this.processService.getDownloadProcessLogUrl('PROTOCOL', experiment.protocol.id)
     };
 
     this.dialogService.openBigDialog(LabLogsBetweenDatesDialogComponent, {data: input});

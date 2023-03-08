@@ -1,5 +1,12 @@
 <fl-dialog-header>
   {{title}}
+
+  <fl-dialog-header-actions *ngIf="downloadUrl">
+    <a [href]="downloadUrl" download mat-icon-button
+       [matTooltip]="'biox.download_logs' | translate">
+      <mat-icon>cloud_download</mat-icon>
+    </a>
+  </fl-dialog-header-actions>
 </fl-dialog-header>
 
 <mat-dialog-content>

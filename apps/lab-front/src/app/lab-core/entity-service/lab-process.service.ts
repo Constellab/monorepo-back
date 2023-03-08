@@ -20,6 +20,10 @@ export class LabProcessService {
     return this.apiService.get(`${this.route}/${processType}/${id}/logs`, LabLogsBetweenDates);
   }
 
+  public getDownloadProcessLogUrl(processType: LabProcessClass, id: string): string {
+    return this.apiService.getBaseRouteUrl(`${this.route}/${processType}/${id}/logs/download`);
+  }
+
   public getProcessMonitor(processType: LabProcessClass, id: string): Observable<LabMonitorBetweenDates> {
     return this.apiService.get(`${this.route}/${processType}/${id}/monitor`, LabMonitorBetweenDates);
   }
