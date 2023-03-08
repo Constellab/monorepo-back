@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, Host, Input, OnInit} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {MatSelect} from '@angular/material/select';
-import {Observable, of} from 'rxjs';
+import {mergeMap, Observable, of} from 'rxjs';
 import {CaBrickVersion} from '../../../../model/entities/ca-brick.class';
 import {CaBrickService} from '../../../../service-api/ca-brick.service';
 import {map} from 'rxjs/operators';
@@ -25,7 +25,7 @@ export class CaBrickVersionSelectOptionsComponent extends FlEmbeddedOptionsAbstr
   /**
    * If provided only the version higher or equal than this version are shown
    */
-  @Input() minVersion?: string;
+  @Input() minVersion$?: Observable<string>;
 
   versions$: Observable<CaBrickVersion[]>;
 
@@ -40,19 +40,27 @@ export class CaBrickVersionSelectOptionsComponent extends FlEmbeddedOptionsAbstr
   private loadVersions(brickName: string): void {
     if (brickName) {
       this.versions$ = this.brickService.getBrickVersions(brickName).pipe(
-        map(brickVersions => this.filterVersions(brickVersions))
+        mergeMap(brickVersions => this.filterVersionObservable(brickVersions))
       );
     } else {
       this.versions$ = of([]);
     }
   }
 
-  private filterVersions(brickVersions: CaBrickVersion[]): CaBrickVersion[] {
-    if (this.minVersion == null) return brickVersions;
+  private filterVersionObservable(brickVersions: CaBrickVersion[]): Observable<CaBrickVersion[]> {
+    if (this.minVersion$ == null) return of(brickVersions);
 
-    const minVersion = CmVersion.fromString(this.minVersion);
+    return this.minVersion$.pipe(
+      map(minVersion => this.filterVersions(brickVersions, minVersion))
+    );
+  }
 
-    return brickVersions.filter(brickVersion => brickVersion.isEqualOrHigher(minVersion));
+  private filterVersions(brickVersions: CaBrickVersion[], minVersion?: string): CaBrickVersion[] {
+    if (minVersion == null) return brickVersions;
+
+    const minVersionObj = CmVersion.fromString(minVersion);
+
+    return brickVersions.filter(brickVersion => brickVersion.isEqualOrHigher(minVersionObj));
   }
 
 

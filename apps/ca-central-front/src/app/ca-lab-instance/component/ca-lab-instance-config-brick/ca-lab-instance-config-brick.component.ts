@@ -1,8 +1,10 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {CaLabManagerBrickVersionDTO} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Validators} from '@angular/forms';
+import {BehaviorSubject} from 'rxjs';
+import {MatCheckboxChange} from '@angular/material/checkbox';
 
 
 @Component({
@@ -10,11 +12,12 @@ import {Validators} from '@angular/forms';
   templateUrl: './ca-lab-instance-config-brick.component.html',
   styleUrls: ['./ca-lab-instance-config-brick.component.scss']
 })
-export class CaLabInstanceConfigBrickComponent implements OnInit {
+export class CaLabInstanceConfigBrickComponent implements OnInit, OnDestroy {
 
   formGp: FormGroup<CaLabManagerBrickVersionDTO>;
 
-  minVersion: string;
+  minVersion$: BehaviorSubject<string>;
+  currentVersion: string;
 
   private isUpdate: boolean;
 
@@ -36,7 +39,8 @@ export class CaLabInstanceConfigBrickComponent implements OnInit {
     if (this.brickVersionDTO) {
       this.formGp.patchValue(this.brickVersionDTO);
       this.formGp.get('name').disable();
-      this.minVersion = this.brickVersionDTO.version;
+      this.currentVersion = this.brickVersionDTO.version;
+      this.minVersion$ = new BehaviorSubject(this.brickVersionDTO.version);
     }
   }
 
@@ -49,5 +53,19 @@ export class CaLabInstanceConfigBrickComponent implements OnInit {
   get title(): string {
     return this.isUpdate ? 'lab_instance_update_brick' : 'lab_instance_add_brick';
   }
+
+  toggleLowerVersion(event: MatCheckboxChange): void {
+    if (event.checked) {
+      this.minVersion$.next(null);
+    } else {
+      this.minVersion$.next(this.currentVersion);
+    }
+
+  }
+
+  ngOnDestroy(): void {
+    this.minVersion$?.complete();
+  }
+
 
 }

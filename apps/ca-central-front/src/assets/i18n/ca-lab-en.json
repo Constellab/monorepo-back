@@ -206,5 +206,6 @@
   "lab_instance_request_additional_info": "Do you have any additional information to provide (e.g. specific needs, use cases, etc.) ?",
   "lab_instance_request_sent": "Request sent, we will contact you as soon as possible.",
   "lab_not_configured_help": "The lab is not configured. Please add the bricks you want on your lab. The 'gws_core' brick is mandatory.",
-  "lab_config_changed": "Configuration modified, please click on the \"Save\" button to save the changes."
+  "lab_config_changed": "Configuration modified, please click on the \"Save\" button to save the changes.",
+  "lab_brick_version_show_previous": "Show previous versions. Warning, this can cause errors. Only use if you know what you are doing."
 }

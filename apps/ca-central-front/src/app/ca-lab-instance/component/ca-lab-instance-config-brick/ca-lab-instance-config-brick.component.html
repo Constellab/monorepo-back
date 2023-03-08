@@ -17,18 +17,24 @@
     </mat-form-field>
 
 
-    <!--  Brick  -->
+    <!--  Brick version -->
     <mat-form-field class="g-form-input">
       <mat-label>{{'brick_version' | translate}}</mat-label>
       <mat-select placeholder="{{'brick_version' | translate}}" formControlName="version">
         <ca-brick-version-select-options [brickName]="formGp.getRawValue().name"
-                                         [minVersion]="minVersion"></ca-brick-version-select-options>
+                                         [minVersion$]="minVersion$"></ca-brick-version-select-options>
       </mat-select>
       <mat-error *ngIf="formGp.get('version').hasError('required')">
         {{'brick_version' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 
+
+    <!--  Show lower version  -->
+    <mat-checkbox *ngIf="currentVersion" (change)="toggleLowerVersion($event)"
+                  class="g-mat-checkbox-include-bottom g-mat-checkbox-wrap-text">
+      {{'lab_brick_version_show_previous' | translate}}
+    </mat-checkbox>
 
   </form>
 </mat-dialog-content>
