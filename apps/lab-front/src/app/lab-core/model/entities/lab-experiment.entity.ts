@@ -13,6 +13,7 @@ import {LabUser} from './lab-user.entity';
 import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {LabProjectObject} from './lab-project.class';
+import {LabRunningProcessInfo} from './process/lab-process.entity';
 
 export type LabExperimentStatus = 'DRAFT' | 'IN_QUEUE' | 'WAITING_FOR_CLI_PROCESS' | 'RUNNING' | 'SUCCESS' | 'ERROR';
 
@@ -99,4 +100,18 @@ export type LabExperimentDatasource = FlEntityPaginatedDatasource<LabExperiment>
 export interface LabExperimentSimpleForm {
   title: string;
   project: LabEntity;
+}
+
+export class LabRunningExperimentInfo extends LabEntity {
+
+  title: string;
+
+  @Expose({name: 'running_tasks'})
+  @Type(() => LabRunningProcessInfo)
+  runningTasks: LabRunningProcessInfo;
+
+  project: {
+    id: string;
+    title: string;
+  };
 }

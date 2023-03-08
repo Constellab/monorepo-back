@@ -1,32 +1,35 @@
-import {Component, OnInit} from '@angular/core';
-import {LabExperiment} from '../../../lab-core/model/entities/lab-experiment.entity';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {LabExperiment, LabRunningExperimentInfo} from '../../../lab-core/model/entities/lab-experiment.entity';
 import {
   FlArrayObs,
   FlConfirmDialogInput,
   FlConfirmDialogResult,
   FlDialogService,
-  FlEntityArrayObs,
-  FlTableColumn
+  FlEntityArrayObs
 } from '@monorepo/front-core-lib';
 import {MatDialogRef} from '@angular/material/dialog';
 import {LabQueueService} from '../../../lab-core/entity-service/lab-queue.service';
 import {LabQueueJob} from '../../../lab-core/model/entities/lab-queue.entity';
 import {LabExperimentService} from '../../../lab-core/entity-service/lab-experiment.service';
+import {Subscription, tap, zip} from 'rxjs';
 
 @Component({
   selector: 'lab-queue-jobs-dialog',
   templateUrl: './lab-queue-jobs-dialog.component.html',
   styleUrls: ['./lab-queue-jobs-dialog.component.scss']
 })
-export class LabQueueJobsDialogComponent implements OnInit {
+export class LabQueueJobsDialogComponent implements OnInit, OnDestroy {
 
-  runningExperiments: FlArrayObs<LabExperiment>;
-  experimentColumns: FlTableColumn<LabExperiment>[] = ['title', 'tags'];
-
+  runningExperiments: FlArrayObs<LabRunningExperimentInfo>;
+  experimentColumns: string[] = ['title', 'runningTasks'];
 
   jobs: LabQueueJob[];
 
   isLoading: boolean = true;
+
+  private refreshRate: number = 15000;
+  private timer: any;
+  private subscription: Subscription;
 
   constructor(private dialogRef: MatDialogRef<LabQueueJobsDialogComponent>,
               private queueService: LabQueueService,
@@ -35,15 +38,25 @@ export class LabQueueJobsDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getJobs();
-    this.runningExperiments = new FlEntityArrayObs(this.experimentService.getRunningExperiments());
+    this.loadInfo();
+    this.runningExperiments = new FlEntityArrayObs();
   }
 
-  private getJobs(): void {
-    this.queueService.getQueueJobs().subscribe({
+  private loadInfo(): void {
+    const getJobs = this.queueService.getQueueJobs().pipe(tap({
       next: jobs => this.getJobSuccess(jobs),
       error: () => this.isLoading = false
-    });
+    }));
+
+    const getRunningExperiments = this.experimentService.getRunningExperiments().pipe(tap({
+      next: experiments => this.runningExperiments.array = experiments,
+    }));
+
+    this.subscription = zip([getJobs, getRunningExperiments]).subscribe(() => this.getSuccess());
+  }
+
+  private getSuccess(): void {
+    this.timer = setTimeout(() => this.loadInfo(), this.refreshRate);
   }
 
   private getJobSuccess(jobs: LabQueueJob[]): void {
@@ -53,7 +66,6 @@ export class LabQueueJobsDialogComponent implements OnInit {
 
 
   removeExperimentFromQueue(job: LabQueueJob, index: number): void {
-
     const input: FlConfirmDialogInput = {
       title: 'biox.remove_experiment_from_queue',
       content: 'biox.remove_experiment_from_queue_confirmation',
@@ -73,4 +85,11 @@ export class LabQueueJobsDialogComponent implements OnInit {
       this.jobs.splice(index, 1);
     }
   }
+
+  ngOnDestroy(): void {
+    clearTimeout(this.timer);
+    this.subscription?.unsubscribe();
+  }
+
+
 }

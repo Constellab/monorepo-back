@@ -9,7 +9,12 @@ import {
   FlTag
 } from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {LabExperiment, LabExperimentDatasource, LabExperimentSimpleForm} from '../model/entities/lab-experiment.entity';
+import {
+  LabExperiment,
+  LabExperimentDatasource,
+  LabExperimentSimpleForm,
+  LabRunningExperimentInfo
+} from '../model/entities/lab-experiment.entity';
 import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
 import {LabTag} from '../model/entities/lab-tag.entity';
 import {
@@ -111,8 +116,8 @@ export class LabExperimentService {
     });
   }
 
-  public getRunningExperiments(): Observable<LabExperiment[]> {
-    return this.apiService.get(`${this.route}/running`, LabExperiment);
+  public getRunningExperiments(): Observable<LabRunningExperimentInfo[]> {
+    return this.apiService.get(`${this.route}/running`, LabRunningExperimentInfo);
   }
 
   public deleteExperiment(id: string): Observable<void> {

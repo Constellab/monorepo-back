@@ -1,12 +1,13 @@
 import {LabConfig} from '../lab-config.entity';
 import {Expose, Type} from 'class-transformer';
-import {LabProgressBar} from '../lab-progress-bar.entity';
+import {LabProgressBar, LabProgressMessage} from '../lab-progress-bar.entity';
 import {FlStatus, FlStatusTransform} from '@monorepo/front-core-lib';
 import {LabBaseEntityWithUser} from '../lab-user.entity';
 import {TdTypingName} from '@monorepo/technical-doc';
 import {PrConfigValues, PrIO, PrProcess, prProcessStatusDict} from '@monorepo/protocol';
 import {DateTime} from 'luxon';
 import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
+import {LabEntity} from '../../global/lab-entity.entity';
 
 export type LabProcessClass = 'TASK' | 'PROTOCOL';
 
@@ -72,8 +73,6 @@ export class LabProcess extends LabBaseEntityWithUser implements PrProcess {
   endedAt?: DateTime;
 
 
-
-
   public hasConfig(): boolean {
     return this.config?.specs.hasProperties() ?? false;
   }
@@ -115,4 +114,15 @@ export class LabProcess extends LabBaseEntityWithUser implements PrProcess {
   getProcessType(): LabProcessClass {
     return this.isProtocol ? 'PROTOCOL' : 'TASK';
   }
+}
+
+export class LabRunningProcessInfo extends LabEntity{
+
+  title: string;
+
+  @Expose({name: 'last_message'})
+  @Type(() => LabProgressMessage)
+  lastMessage: LabProgressMessage;
+
+  progression: number;
 }

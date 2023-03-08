@@ -1,0 +1,6 @@
+<div class="title">
+  <strong>{{runningProcess.title}}</strong> | {{runningProcess.progression}}%
+</div>
+
+<lab-progress-message *ngIf="runningProcess.lastMessage"
+                      [progressMessage]="runningProcess.lastMessage"></lab-progress-message>

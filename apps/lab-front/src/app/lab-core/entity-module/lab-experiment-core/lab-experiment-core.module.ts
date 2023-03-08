@@ -26,6 +26,8 @@ import {LabSelectExperimentComponent} from './component/lab-select-experiment/la
 import {LabTagCoreModule} from '../lab-tag-core/lab-tag-core.module';
 import {LabEntityCoreModule} from '../lab-entity-core/lab-entity-core.module';
 import {LabProjectCoreModule} from '../lab-project-core/lab-project-core.module';
+import { LabRunningExperimentTableComponent } from './component/lab-running-experiment-table/lab-running-experiment-table.component';
+import {LabProcessCoreModule} from '../lab-process-core/lab-process-core.module';
 
 
 @NgModule({
@@ -39,6 +41,7 @@ import {LabProjectCoreModule} from '../lab-project-core/lab-project-core.module'
     LabExperimentTypeOptionsComponent,
     LabSelectExperimentDialogComponent,
     LabSelectExperimentComponent,
+    LabRunningExperimentTableComponent,
   ],
   exports: [
     LabExperimentTableComponent,
@@ -50,6 +53,7 @@ import {LabProjectCoreModule} from '../lab-project-core/lab-project-core.module'
     LabExperimentTypeOptionsComponent,
     LabSelectExperimentDialogComponent,
     LabSelectExperimentComponent,
+    LabRunningExperimentTableComponent,
   ],
   imports: [
     CommonModule,
@@ -62,6 +66,7 @@ import {LabProjectCoreModule} from '../lab-project-core/lab-project-core.module'
     LabUserCoreModule,
     LabTagCoreModule,
     LabProjectCoreModule,
+    LabProcessCoreModule,
   ]
 })
 export class LabExperimentCoreModule {

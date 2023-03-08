@@ -34,6 +34,7 @@ export class LabExperimentDetailPageState {
   private refreshIntervalDuration: number = 15000;
   private timeout: any;
   private refreshSubscription: Subscription;
+  private experimentSubscription: Subscription;
 
 
   constructor(private experimentService: LabExperimentService,
@@ -112,7 +113,7 @@ export class LabExperimentDetailPageState {
   }
 
   private refreshExperiment(): void {
-    this.experimentService.getExperiment(this.currentExperiment.id).subscribe(
+    this.experimentSubscription = this.experimentService.getExperiment(this.currentExperiment.id).subscribe(
       experiment => this.updateExperiment(experiment)
     );
   }
@@ -182,6 +183,7 @@ export class LabExperimentDetailPageState {
       this.timeout = null;
     }
     this.refreshSubscription?.unsubscribe();
+    this.experimentSubscription?.unsubscribe();
   }
 
   /////////////////////////////////// FLOW ////////////////////////////////////
@@ -215,7 +217,7 @@ export class LabExperimentDetailPageState {
     }
 
     // if the refreshed protocol is the main protocol, update the main protocol
-    if(protocol.id === this.mainProtocol$.value?.id){
+    if (protocol.id === this.mainProtocol$.value?.id) {
       this.mainProtocol$.next(protocol);
     }
   }

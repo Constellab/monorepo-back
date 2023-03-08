@@ -254,6 +254,7 @@
     "share_info": "Share information",
     "not_shared_yet": "No lab downloaded the object yet",
     "download_messages": "Download messages",
-    "download_logs": "Download logs"
+    "download_logs": "Download logs",
+    "running_tasks": "Running tasks"
   }
 }
