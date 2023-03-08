@@ -1,7 +1,11 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {CaNotification, CaNotificationDatasourcePaginated} from '../model/entities/ca-notification.class';
+import {
+  CaNotification,
+  CaNotificationDatasourcePaginated,
+  CaNotificationNumber, CaNotificationType
+} from '../model/entities/ca-notification.class';
 import {ClPage} from '@monorepo/core-lib';
 
 @Injectable({
@@ -20,8 +24,12 @@ export class CaNotificationsService {
   }
 
   public getAll(userId: string, page: number, size: number, onlyNotRead: boolean): Observable<ClPage<CaNotification>> {
-    return this.apiService.get(`${this.route}/${userId}?onlyNotRead=${onlyNotRead}`, CaNotification,
+    return this.apiService.get(`${this.route}?onlyNotRead=${onlyNotRead}`, CaNotification,
       {page: page, pageSize: size, resultIsPaginated: true});
+  }
+
+  public getAllNotRead(): Observable<CaNotification[]> {
+    return this.apiService.get(`${this.route}/not-read`, CaNotification);
   }
 
   public readAllNotifications(userId: string): Observable<void>{
@@ -30,5 +38,12 @@ export class CaNotificationsService {
 
   public read(notifId: string): Observable<void>{
     return this.apiService.get(`${this.route}/read/${notifId}`);
+  }
+
+  public readEntityNotificationsByLink(link: string, notificationType: CaNotificationType): Observable<void>{
+    return this.apiService.post(`${this.route}/read-entity-notifications-by-link`, {
+      link: link,
+      notificationType: notificationType
+    });
   }
 }

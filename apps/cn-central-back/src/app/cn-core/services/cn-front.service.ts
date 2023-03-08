@@ -10,8 +10,12 @@ export class CnFrontService {
   constructor(private configService: CnCoreConfigService) {
   }
 
-  public static getUserRoute(userId: string): string{
-    return `/user/${userId}`;
+  public static getAdminUsersRoute(): string{
+    return 'app/admin/users';
+  }
+
+  public static getProjectCommentRoute(projectId: string): string{
+    return 'app/project/' + projectId + '?type=comments'
   }
 
   public getLoginUrl(): string {

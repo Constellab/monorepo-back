@@ -15,6 +15,9 @@ import {FlConfirmDialogInput, FlDialogService, FlOverlayRef, FlPortalService} fr
 import {
   FlEmojiPickerPortalComponent
 } from '../../../../../../../../../libs/front-core-lib/src/lib/module/fl-emoji-picker/component/fl-emoji-picker-portal/fl-emoji-picker-portal.component';
+import {CaNotificationState} from '../../../../../ca-core/state/ca-notification.state';
+import {Router} from '@angular/router';
+import {CaNotificationType} from '../../../../../ca-core/model/entities/ca-notification.class';
 
 
 @Component({
@@ -38,7 +41,9 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
               private projectService: CaProjectService,
               private userService: CaAuthenticatedUserService,
               private portalService: FlPortalService,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private notificationState: CaNotificationState,
+              private router: Router) {
   }
 
   ngOnInit(): void {
@@ -48,8 +53,8 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
     this.project$.subscribe(project => {
       this.projectId = project.id;
       this.comments = this.projectService.getProjectComments(this.projectId);
+      this.readProjectCommentsNotification();
     });
-
 
     this.currentUserId = this.userService.getUser().id;
 
@@ -66,13 +71,17 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
     })
   }
 
+  private readProjectCommentsNotification(): void {
+    this.notificationState.readEntityNotificationsByLink(this.router.url.slice(1), CaNotificationType.PROJECT_COMMENT).subscribe();
+  }
+
   enterEvent(event: Event): void {
     event.preventDefault();
     this.createNewComment();
   }
 
 
-  private createNewComment(): void{
+  private createNewComment(): void {
     if (!CmRichText.isEmpty(this.formControl.value)) {
       this.projectService.newProjectComment(this.projectId, this.formControl.value).subscribe((newComment) => {
         if (newComment) {
@@ -144,6 +153,12 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
           this.addEmoji(emoji)
       }
     );
+  }
+
+  atEvent(event: KeyboardEvent): void {
+    if(event.key === '@') {
+      console.log('atEvent')
+    }
   }
 
   ngOnDestroy(): void {

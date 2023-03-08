@@ -33,7 +33,9 @@ export class CaNotification extends CaEntity {
 }
 
 export type CaNotificationDatasourcePaginated = FlDatasourcePaginated<CaNotification>;
-
+export interface CaNotificationNumber {
+  number: number;
+}
 export enum CaNotificationType {
   EXPERIMENT_COMMENT = 'EXPERIMENT_COMMENT',
   PROJECT_COMMENT = 'PROJECT_COMMENT',

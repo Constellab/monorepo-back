@@ -76,11 +76,8 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     // create the user own group
     await this.groupService.createOwnGroup(user, entityManager);
 
-    // create the user personal space
-    const space = await this.spaceAggregateService.createPersonalSpace(dbUser, entityManager);
-
     // send notification to gencovery user to warn him that a new user has been created
-    this.sendCreateAccountNotification(dbUser, space.id).catch(
+    this.sendCreateAccountNotification(dbUser).catch(
       error => this.logger.error('Error while sending create account notification: ' + error)
     );
 
@@ -241,7 +238,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
    * @param spaceId
    * @private
    */
-  private async sendCreateAccountNotification(user: CnUser, spaceId: string): Promise<void> {
+  private async sendCreateAccountNotification(user: CnUser): Promise<void> {
     const adminUserMails = this.configService.newUserNotifReceiver();
 
     for (const adminUserMail of adminUserMails) {
@@ -255,8 +252,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
         user: adminUser,
         text: `New user : ${user.firstname} ${user.lastname}`,
         text2: user.email,
-        link: CnFrontService.getUserRoute(user.id),
-        spaceId: spaceId
+        link: CnFrontService.getAdminUsersRoute()
       });
     }
   }

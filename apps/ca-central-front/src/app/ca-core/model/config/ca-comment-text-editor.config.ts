@@ -9,17 +9,23 @@ import {
 } from '@monorepo/front-core-lib';
 import {EventEmitter} from '@angular/core';
 import {Observable} from 'rxjs';
+import {CaUser} from '../entities/ca-user.class';
 
 export class CaCommentTextEditorConfig extends FlTextEditorConfig implements FlTextEditorImageLoader {
 
   sendButtonEvent$: EventEmitter<boolean> = new EventEmitter<boolean>();
   sendEmojiButtonEvent$: EventEmitter<HTMLElement> = new EventEmitter<HTMLElement>();
+  sendUserPanelEvent$: EventEmitter<boolean> = new EventEmitter<boolean>();
+  userList: CaUser[] = [];
 
   private projectId: string;
 
-  constructor(private projectService: CaProjectService, private projectId$: Observable<string>) {
+  constructor(private projectService: CaProjectService, private projectId$: Observable<string>, userList?: CaUser[]) {
     super();
     this.projectId$.subscribe(projectId => this.projectId = projectId);
+    if (userList) {
+      this.userList = userList;
+    }
   }
 
 
@@ -82,6 +88,10 @@ export class CaCommentTextEditorConfig extends FlTextEditorConfig implements FlT
   }
 
   openEmojiPanel(event: Event): void {
+    this.sendEmojiButtonEvent$.emit(event.target as HTMLElement);
+  }
+
+  openUserListPanel(event: Event): void {
     this.sendEmojiButtonEvent$.emit(event.target as HTMLElement);
   }
 

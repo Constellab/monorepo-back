@@ -54,23 +54,23 @@ export class CaCommentDivComponent implements OnInit {
       }];
     if (this.authUserService.getUser().id === this.comment.createdBy.id && this.comment.createdAt.diffNow('minute').as('minute') > -5) {
       this.buttons.push({
-          icon: 'edit',
-          text: 'Edit',
-          type: 'button',
-          onClick: (event: MouseEvent, overlayRef?: FlOverlayRef) => {
-            this.isEditMode$.next(true);
-            this.formControl = new FormControl(this.comment.content, [Validators.required, Validators.min(1)]);
-            this.eventOnMessage$.next([overlayRef, 'edit']);
-          }
-        },
-        {
-          icon: 'delete',
-          text: 'Delete',
-          type: 'button',
-          onClick: (event, overlayRef: FlOverlayRef) => {
-            this.eventOnMessage$.next([overlayRef, 'delete']);
-          }
-        });
+        icon: 'edit',
+        text: 'Edit',
+        type: 'button',
+        onClick: (event: MouseEvent, overlayRef?: FlOverlayRef) => {
+          this.isEditMode$.next(true);
+          this.formControl = new FormControl(this.comment.content, [Validators.required, Validators.min(1)]);
+          this.eventOnMessage$.next([overlayRef, 'edit']);
+        }
+      },
+      {
+        icon: 'delete',
+        text: 'Delete',
+        type: 'button',
+        onClick: (event, overlayRef: FlOverlayRef) => {
+          this.eventOnMessage$.next([overlayRef, 'delete']);
+        }
+      });
     }
     this.data = {
       comment: this.comment,
@@ -132,6 +132,10 @@ export class CaCommentDivComponent implements OnInit {
 
   getCommentContent(): CmRichTextI {
     return this.comment.content;
+  }
+
+  atEvent(event: Event): void {
+    console.log(event);
   }
 
   private addEmoji(event: string): void {

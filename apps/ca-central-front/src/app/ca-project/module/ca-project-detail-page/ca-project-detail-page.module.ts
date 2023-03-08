@@ -46,6 +46,7 @@ import {
   CaProjectDocumentsListComponent
 } from './component/ca-project-documents-list/ca-project-documents-list.component';
 import {CaDocumentCoreModule} from '../ca-document-core/ca-document-core.module';
+import {MatBadgeModule} from "@angular/material/badge";
 
 /**
  * Module for the project detail page
@@ -67,25 +68,26 @@ import {CaDocumentCoreModule} from '../ca-document-core/ca-document-core.module'
     CaProjectConfigureStorageComponent,
     CaProjectDocumentsListComponent,
   ],
-  imports: [
-    CommonModule,
-    RouterModule,
-    FormsModule,
-    ReactiveFormsModule,
-    PickerModule,
+    imports: [
+        CommonModule,
+        RouterModule,
+        FormsModule,
+        ReactiveFormsModule,
+        PickerModule,
 
-    CaCoreModule,
-    CaProjectObjectCoreModule,
-    CaProjectCoreModule,
-    CaExperimentCoreModule,
-    CaReportCoreModule,
-    CaDocumentCoreModule,
-    CaGroupCoreModule,
-    CaLabCoreModule,
-    CaCommentModule,
-    CaObjectStorageCoreModule,
-    CaCloudProviderCoreModule,
-  ]
+        CaCoreModule,
+        CaProjectObjectCoreModule,
+        CaProjectCoreModule,
+        CaExperimentCoreModule,
+        CaReportCoreModule,
+        CaDocumentCoreModule,
+        CaGroupCoreModule,
+        CaLabCoreModule,
+        CaCommentModule,
+        CaObjectStorageCoreModule,
+        CaCloudProviderCoreModule,
+        MatBadgeModule,
+    ]
 })
 export class CaProjectDetailPageModule {
 }

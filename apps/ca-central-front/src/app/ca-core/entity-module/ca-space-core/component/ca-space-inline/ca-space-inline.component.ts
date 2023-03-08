@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CaSpace} from '../../../../model/entities/space/ca-space.class';
+import {CaNotificationState} from '../../../../state/ca-notification.state';
 
 @Component({
   selector: 'ca-space-inline',
@@ -9,10 +10,18 @@ import {CaSpace} from '../../../../model/entities/space/ca-space.class';
 export class CaSpaceInlineComponent implements OnInit {
 
   @Input() space: CaSpace;
+  nbNotif: number | string = '';
 
-  constructor() { }
+  @Input() showNotif: boolean = false;
+
+  constructor(private notificationState: CaNotificationState) {
+  }
 
   ngOnInit(): void {
+    if (this.showNotif)
+      this.notificationState.getSpaceUserNotificationsNumber(this.space.id).subscribe((number) => {
+        this.nbNotif = number;
+      });
   }
 
 }

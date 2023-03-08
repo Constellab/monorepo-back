@@ -7,6 +7,7 @@ import {
 } from '../../ca-core/model/entities/ca-notification.class';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {ClStringHelper} from '@monorepo/core-lib';
+import {CaNotificationState} from '../../ca-core/state/ca-notification.state';
 
 
 @Component({
@@ -20,6 +21,7 @@ export class CaNotificationsPortalComponent implements OnInit {
   slideState: boolean = true;
 
   constructor(private authUserService: CaAuthenticatedUserService,
+              private notificationState: CaNotificationState,
               private notificationsService: CaNotificationsService) {
   }
 
@@ -46,7 +48,7 @@ export class CaNotificationsPortalComponent implements OnInit {
 
   getNotificationLink(link: string): string {
     const l = link.split('?');
-    return ClStringHelper.isHttpLink(l[0]) ? l[0] : 'app' + l[0];
+    return ClStringHelper.isHttpLink(l[0]) ? l[0] : l[0];
   }
 
   getNotificationQueryParams(link: string): { [query: string]: string } {
@@ -59,10 +61,6 @@ export class CaNotificationsPortalComponent implements OnInit {
       }
     }
     return qP;
-  }
-
-  readNotif(notifId: string): void {
-    this.notificationsService.read(notifId).subscribe();
   }
 
   getNotificationObjectIcon(objectType: CaNotificationType): string {

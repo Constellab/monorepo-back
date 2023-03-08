@@ -3,7 +3,7 @@ import {CaProject} from '../../../../../ca-core/model/entities/project/ca-projec
 import {CaProjectService} from '../../../../../ca-core/service-api/ca-project.service';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {CaProjectDetailRightPanel, CaProjectDetailState} from '../../state/ca-project-detail.state';
-import {Observable} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {CaUser} from '../../../../../ca-core/model/entities/ca-user.class';
 import {
   CaProjectSharedGroupsListComponent,
@@ -11,6 +11,9 @@ import {
 } from '../ca-project-shared-groups-list/ca-project-shared-groups-list.component';
 import {map} from 'rxjs/operators';
 import {CaRouterService} from '../../../../../ca-core/service/ca-router.service';
+import {CaNotificationNumber, CaNotificationType} from '../../../../../ca-core/model/entities/ca-notification.class';
+import {Router} from '@angular/router';
+import {CaNotificationState} from '../../../../../ca-core/state/ca-notification.state';
 
 /**
  * Show detailed information for a project , used in ProjectDetailPage
@@ -32,10 +35,14 @@ export class CaProjectDetailComponent implements OnInit {
   commentQueryParams: CaProjectDetailRightPanel = {type: 'comments', objectId: null};
   descriptionQueryParams: CaProjectDetailRightPanel = {type: 'description', objectId: null};
 
+  commentsNotifNumber$: Observable<number | string>;
+
   constructor(private dialogService: FlDialogService,
               private projectService: CaProjectService,
               private state: CaProjectDetailState,
-              private routerService: CaRouterService) {
+              private routerService: CaRouterService,
+              private router: Router,
+              private notificationState: CaNotificationState) {
   }
 
   ngOnInit(): void {
@@ -46,6 +53,7 @@ export class CaProjectDetailComponent implements OnInit {
     this.isRootProject$ = this.state.getProject$().pipe(
       map(project => project.isRoot())
     );
+    this.updateCommentNotifNumber();
   }
 
   onProjectUpdated(project: CaProject): void {
@@ -71,5 +79,16 @@ export class CaProjectDetailComponent implements OnInit {
     };
 
     this.dialogService.openSmallDialog(CaProjectSharedGroupsListComponent, {data: input});
+  }
+
+  updateCommentNotifNumber(): void {
+    let url = this.router.url;
+    if (url.includes('?type')) {
+      url = url.replace('description', 'comments').slice(1);
+    } else {
+      url = url.slice(1) + '?type=comments'
+    }
+
+    this.commentsNotifNumber$ = this.notificationState.getEntityNotificationsNumberByLink(url);
   }
 }

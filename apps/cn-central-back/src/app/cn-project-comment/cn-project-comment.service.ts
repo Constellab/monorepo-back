@@ -11,6 +11,7 @@ import {CnNotificationService, CnNotificationType} from '../cn-notification/cn-n
 import {CnNotificationCreateDTO} from '../cn-notification/cn-notification.entity';
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
+import {CnFrontService} from '../cn-core/services/cn-front.service';
 
 @Injectable()
 export class CnProjectCommentService extends CnCommentService<CnProjectComment> {
@@ -44,7 +45,7 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
       const newNotification: CnNotificationCreateDTO = {
         createdBy: comment.createdBy,
         user: comment.project.leader,
-        link: '/project/' + project.id + '?type=comments',
+        link: CnFrontService.getProjectCommentRoute(project.id),
         text: comment.createdBy.firstname + ' a commenté votre projet',
         text2: comment.project.title,
         objectId: comment.id,

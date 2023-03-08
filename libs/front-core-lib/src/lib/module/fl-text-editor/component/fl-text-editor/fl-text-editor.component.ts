@@ -118,7 +118,8 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
           toolbar: this.config.getToolbarConfig(),
           clipboard: {
             matchVisual: false
-          }
+          },
+
         },
         // prevent the tooltip to go outside the editor
         bounds: this.elementRef.nativeElement,

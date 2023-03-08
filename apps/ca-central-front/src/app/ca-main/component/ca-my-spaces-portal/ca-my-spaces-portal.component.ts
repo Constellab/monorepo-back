@@ -11,7 +11,8 @@ import {
   CaSpaceFormDialogComponent,
   CaSpaceFormDialogInput
 } from '../../../ca-core/entity-module/ca-space-core/component/ca-space-form-dialog/ca-space-form-dialog.component';
-
+import {CaNotificationNumber} from '../../../ca-core/model/entities/ca-notification.class';
+import {CaNotificationsService} from '../../../ca-core/service-api/ca-notifications.service';
 
 /**
  * Portal to list the space of the user with possibility to switch between them
@@ -40,7 +41,9 @@ export class CaMySpacesPortalComponent implements OnInit {
     // list all the space of the user except from the current one
     this.otherSpaces = this.spaceService.getMySpaces().pipe(
       combineLatestWith(this.currentSpaceService.getCurrentSpace$()),
-      map(([spaces, currentSpace]) => spaces.filter(space => space.id !== currentSpace.id))
+      map(([spaces, currentSpace]) => {
+        return spaces.filter(space => space.id !== currentSpace.id)
+      })
     );
   }
 

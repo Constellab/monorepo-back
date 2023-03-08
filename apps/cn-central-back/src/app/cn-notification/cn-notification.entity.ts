@@ -39,7 +39,7 @@ export class CnNotification extends BlEntityWithId implements BlNotification{
   @ManyToOne(() => CnSpace, {eager: true, nullable: false})
   space: CnSpace;
 
-  @Column({nullable: false, update: false})
+  @Column({nullable: true, update: false})
   spaceId: string;
 
   @Type(() => CnUser)
@@ -63,6 +63,9 @@ export class CnNotification extends BlEntityWithId implements BlNotification{
   }
 }
 
+export interface CnNotificationNumber{
+  number: number;
+}
 export interface CnNotificationCreateDTO{
   createdBy: CnUser;
   objectType: CnNotificationType;
@@ -70,6 +73,6 @@ export interface CnNotificationCreateDTO{
   user: CnUser;
   text: string;
   text2: string;
-  spaceId: string;
+  spaceId?: string;
   link: string;
 }

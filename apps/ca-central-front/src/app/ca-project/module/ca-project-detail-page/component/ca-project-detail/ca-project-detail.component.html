@@ -55,7 +55,8 @@
          [queryParams]="commentQueryParams"
          [matTooltip]="'show_project_comments' | translate"
          class="g-button-shadow"
-         [ngClass]="{'panel-button-selected': rightPanel.type === 'comments'}">
+         [ngClass]="{'panel-button-selected': rightPanel.type === 'comments'}"
+         [matBadge]="commentsNotifNumber$ | async" matBadgeColor="warn">
         <mat-icon>comment</mat-icon>
       </a>
     </ng-container>

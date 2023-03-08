@@ -11,10 +11,10 @@
       <mat-divider class="divider"></mat-divider>
       <div fxLayout="row">
         <span>{{'most_recent' | translate}}</span>
-        <span class="g-text-link read-all-text" (click)="readAllNotifications()">{{'all_marked_as_read' | translate}}</span>
+        <span class="g-text-link read-all-text" (click)="readAllNotifications()">{{'mark_all_as_read' | translate}}</span>
       </div>
 
-      <a *ngFor="let notif of notifications.connect() | async" class="notification" (click)="readNotif(notif.id)"
+      <a *ngFor="let notif of notifications.connect() | async" class="notification"
          [routerLink]="getNotificationLink(notif.link)" [queryParams]="getNotificationQueryParams(notif.link)">
         <div class="created-by-pp">
           <fl-user-profile-picture [user]="notif.createdBy" size="4"></fl-user-profile-picture>

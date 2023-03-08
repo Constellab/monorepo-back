@@ -28,7 +28,7 @@
         <div class="switch-to g-text-light">{{'switch_to_space' | translate}}</div>
         <a *ngFor="let space of spaces" [caExternalSpaceLink]="appRoute"
            [caExternalSpaceDomain]="space.domain">
-          <ca-space-inline [space]="space" class="space">
+          <ca-space-inline [space]="space" class="space" [showNotif]="true">
           </ca-space-inline>
         </a>
       </ng-container>

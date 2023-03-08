@@ -17,6 +17,7 @@ import {CaSpaceUserSearchComponent} from './component/ca-space-user-search/ca-sp
 import {
   CaSpaceUserSearchFormComponent
 } from './component/ca-space-user-search-form/ca-space-user-search-form.component';
+import {MatBadgeModule} from "@angular/material/badge";
 
 
 @NgModule({
@@ -48,14 +49,15 @@ import {
     CaSpaceUserSearchComponent,
     CaSpaceUserSearchFormComponent,
   ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    RouterModule,
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        RouterModule,
 
-    CaCoreModule,
-  ],
+        CaCoreModule,
+        MatBadgeModule,
+    ],
 })
 export class CaSpaceCoreModule {
 }

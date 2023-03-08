@@ -34,11 +34,15 @@
   box-sizing: border-box;
 }
 
-.logo {
+.logo-div{
   margin-top: 1em;
+  width: fit-content;
+  margin-inline: auto;
+}
+
+.logo {
   display: block;
   width: 34px;
-  margin-inline: auto;
   cursor: pointer;
 }
 

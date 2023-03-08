@@ -12,7 +12,11 @@ import {CaCurrentSpaceService} from '../../../ca-core/service-api/ca-current-spa
 import {map} from 'rxjs/operators';
 import {CaRouterService} from '../../../ca-core/service/ca-router.service';
 import {CaNotificationsService} from '../../../ca-core/service-api/ca-notifications.service';
-import {CaNotificationDatasourcePaginated} from '../../../ca-core/model/entities/ca-notification.class';
+import {
+  CaNotificationDatasourcePaginated,
+  CaNotificationNumber
+} from '../../../ca-core/model/entities/ca-notification.class';
+import {CaNotificationState} from '../../../ca-core/state/ca-notification.state';
 
 /**
  * Main app component. Menu on the left and page on the right
@@ -35,10 +39,14 @@ export class CaMainAppComponent implements OnInit {
 
   dashboardRoute = CaRouterService.getDashboardRoute();
 
+  numberOfNotifications$: Observable<string | number>;
+
+  otherSpaceNotificationsNumber$: Observable<string | number>;
+
   constructor(private authenticatedUserService: CaAuthenticatedUserService,
               private currentSpaceService: CaCurrentSpaceService,
               private portalService: FlPortalService,
-              private notificationsService: CaNotificationsService) {
+              private notificationState: CaNotificationState) {
   }
 
   ngOnInit(): void {
@@ -48,6 +56,10 @@ export class CaMainAppComponent implements OnInit {
     this.logo$ = this.currentSpaceService.getCurrentSpacePhoto$().pipe(
       map(photo => photo ?? 'assets/logo/logo.png')
     );
+    this.notificationState.init();
+
+    this.numberOfNotifications$ = this.notificationState.getNotReadNotificationsNumber();
+    this.otherSpaceNotificationsNumber$ = this.notificationState.getOtherSpacesNotificationsNumber();
   }
 
   private initAccessibleLinks(): void {
@@ -88,9 +100,4 @@ export class CaMainAppComponent implements OnInit {
 
     this.portalService.createPortal(CaNotificationsPortalComponent, config).detachments().subscribe();
   }
-
-  getNumberOfNotifications():  CaNotificationDatasourcePaginated {
-    return this.notificationsService.getUserNotifications(this.authenticatedUserService.getUser().id, true);
-  }
-
 }

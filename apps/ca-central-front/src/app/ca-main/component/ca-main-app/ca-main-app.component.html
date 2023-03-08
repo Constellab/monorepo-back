@@ -8,11 +8,13 @@
                position="start"
                class="sidenav g-print-hide">
 
-    <div fxLayout="column" class="column-container">
+    <div fxLayout="column" class="column-container" >
 
-      <img [src]="logo$ | async" alt="Space logo"
+      <div class="logo-div" [matBadge]="otherSpaceNotificationsNumber$ | async" matBadgeColor="warn">
+        <img [src]="logo$ | async" alt="Space logo"
            class="logo" (click)="openMySpacesPortal()"
-           flBackupImage="assets/logo/logo.png"/>
+           flBackupImage="assets/logo/logo.png" />
+      </div>
       <!-- List of main menu links   -->
       <div fxFlex="auto" class="menu" fxLayout="column" fxLayoutAlign="start center">
         <div class="buttons">
@@ -31,7 +33,8 @@
       <div class="user-container"
            fxLayout="column" fxLayoutAlign="start center">
 
-        <button mat-icon-button type="button" class="notif-button" (click)="openNotificationDiv()" [matBadge]="" matBadgeColor="warn">
+        <button mat-icon-button type="button" class="notif-button" (click)="openNotificationDiv()"
+                [matBadge]="numberOfNotifications$ | async" matBadgeColor="warn">
           <mat-icon>notifications</mat-icon>
         </button>
         <ca-authenticated-user-inline [showName]="false"></ca-authenticated-user-inline>
