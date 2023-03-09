@@ -12,7 +12,7 @@ import {
   CnLabComposeUpOptions,
   CnLabDockerPs,
   CnLabManagerInitConfig,
-  CnLabManagerStatus
+  CnLabManagerStatus, CnLabPullBiotaOptions
 } from './model/cn-lab-manager.class';
 import {
   CnExternalLabBackup,
@@ -72,8 +72,8 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/pull-containers`, null));
   }
 
-  public async pullBiota(apiInfo: CnExternalApiInfo): Promise<void> {
-    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/pull-biota-db`, null));
+  public async pullBiota(apiInfo: CnExternalApiInfo, options: CnLabPullBiotaOptions): Promise<void> {
+    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/pull-biota-db`, options));
   }
 
   public async registryLogin(apiInfo: CnExternalApiInfo): Promise<void> {

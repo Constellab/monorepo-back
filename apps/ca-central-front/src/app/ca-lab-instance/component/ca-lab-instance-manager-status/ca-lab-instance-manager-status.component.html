@@ -30,6 +30,11 @@
   </fl-text-icon>
 </div>
 
+<fl-key-value *ngIf="labStatus.biotaDbUrl">
+  <fl-key>{{'biota_db_url' | translate}}</fl-key>
+  {{labStatus.biotaDbUrl}}
+</fl-key-value>
+
 <ng-template #noTask>
   {{'lab_manager_no_task' | translate}}
 </ng-template>

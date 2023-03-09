@@ -54,6 +54,9 @@ export interface CaLabComposeRestartOptions extends CaLabComposeUpOptions{
   destroyContainers?: boolean; // if true container will be destroyed and recreated
 }
 
+export interface CaLabPullBiotaOptions {
+  forceUpdate?: boolean;
+}
 
 export type CaLabTaskStatus = 'RUNNING' | 'SUCCESS' | 'ERROR';
 
@@ -82,6 +85,7 @@ export class CaLabManagerStatus {
 
   labManagerVersion: string;
   labManagerRecommendedVersion: string; // version provided by central to tell the compatible version for the lab manager
+  biotaDbUrl?: string;
 }
 
 export class CaLabManagerBrickVersionDTO {

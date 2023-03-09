@@ -28,7 +28,7 @@ import {
   CaLabComposeUpOptions,
   CaLabDockerPs,
   CaLabManagerConfig,
-  CaLabManagerStatus,
+  CaLabManagerStatus, CaLabPullBiotaOptions,
   CaLabTaskStatusInfo
 } from '../model/entities/lab/ca-lab-manager.class';
 import {CaLabInstanceUser, CaLabInstanceUserRole} from '../model/entities/lab/ca-lab-instance-user.class';
@@ -233,8 +233,8 @@ export class CaLabInstanceService {
     return this.apiService.post(`${this.route}/${id}/lab-manager/pull-containers`, null);
   }
 
-  public pullBiotaDb(id: string): Observable<void> {
-    return this.apiService.post(`${this.route}/${id}/lab-manager/pull-biota-db`, null);
+  public pullBiotaDb(id: string, options: CaLabPullBiotaOptions): Observable<void> {
+    return this.apiService.post(`${this.route}/${id}/lab-manager/pull-biota-db`, options);
   }
 
   public registryLogin(id: string): Observable<void> {

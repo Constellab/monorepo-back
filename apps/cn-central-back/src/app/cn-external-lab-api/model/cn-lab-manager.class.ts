@@ -30,6 +30,10 @@ export interface CnLabComposeRestartOptions extends CnLabComposeUpOptions{
   destroyContainers?: boolean; // if true container will be destroyed and recreated
 }
 
+export interface CnLabPullBiotaOptions {
+  forceUpdate?: boolean;
+}
+
 export type CnLabTaskStatus = 'RUNNING' | 'SUCCESS' | 'ERROR';
 
 export interface CnLabTaskStatusInfo {

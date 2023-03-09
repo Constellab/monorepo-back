@@ -19,7 +19,7 @@ import {
   CnLabComposeRestartOptions,
   CnLabComposeUpOptions,
   CnLabDockerPs,
-  CnLabManagerStatus
+  CnLabManagerStatus, CnLabPullBiotaOptions
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
@@ -309,8 +309,9 @@ export class CnLabInstancesController {
   }
 
   @Post(':id/lab-manager/pull-biota-db')
-  async pullBiotaDb(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return this.aggregateService.pullBiota(id);
+  async pullBiotaDb(@Param('id', new ParseUUIDPipe()) id: string,
+                    @Body() options: CnLabPullBiotaOptions): Promise<void> {
+    return this.aggregateService.pullBiota(id, options);
   }
 
   @Post(':id/lab-manager/registry-login')

@@ -15,7 +15,7 @@ import {
   CnLabComposeRestartOptions,
   CnLabComposeUpOptions,
   CnLabDockerPs,
-  CnLabManagerStatus
+  CnLabManagerStatus, CnLabPullBiotaOptions
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnLabManagerService} from './cn-lab-manager.service';
 import {CnLabInstanceToken} from './user/cn-lab-instance-token.class';
@@ -517,9 +517,9 @@ export class CnLabInstanceAggregateService {
     return this.labManagerService.pullContainers(labInstance);
   }
 
-  public async pullBiota(labId: string): Promise<void> {
+  public async pullBiota(labId: string, options: CnLabPullBiotaOptions): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
-    return this.labManagerService.pullBiota(labInstance);
+    return this.labManagerService.pullBiota(labInstance, options);
   }
 
   public async registryLogin(labId: string): Promise<void> {

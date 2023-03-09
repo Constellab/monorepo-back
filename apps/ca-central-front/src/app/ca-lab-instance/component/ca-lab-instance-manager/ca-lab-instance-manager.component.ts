@@ -14,6 +14,9 @@ import {CaLabInstanceDetailPageState} from '../../state/ca-lab-instance-detail-p
 import {ClSubscriptionHandler} from '@monorepo/core-lib';
 import {map} from 'rxjs/operators';
 import {CaLabInstanceDetailServerState} from '../../state/ca-lab-instance-detail-server.state';
+import {
+  CaLabPullBiotaFormDialogComponent
+} from '../ca-lab-pull-biota-form-dialog/ca-lab-pull-biota-form-dialog.component';
 
 /**
  * Component only accessible by the admin
@@ -128,11 +131,17 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
   }
 
   pullBiotaDb(): void {
-    this.actionService.addAction({
-      action: this.labInstanceService.pullBiotaDb(this.state.getLabInstanceId()),
-      text: 'Pull biota db',
-      type: this.actionType
-    });
+    this.dialogService.openSmallDialog(CaLabPullBiotaFormDialogComponent).afterClosed().subscribe(
+      result => {
+        if (result) {
+          this.actionService.addAction({
+            action: this.labInstanceService.pullBiotaDb(this.state.getLabInstanceId(), result),
+            text: {text: 'pull_biota', translateText: true},
+            type: this.actionType
+          });
+        }
+      }
+    );
   }
 
   registryLogin(): void {

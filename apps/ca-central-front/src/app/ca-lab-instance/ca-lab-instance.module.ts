@@ -91,6 +91,7 @@ import {CaLabServerInfoCardComponent} from './component/ca-lab-server-info-card/
 import {CaLabOnPremiseConfigComponent} from './component/ca-lab-on-premise-config/ca-lab-on-premise-config.component';
 import { CaLabOnPremiseDownloadConfigComponent } from './component/ca-lab-on-premise-download-config/ca-lab-on-premise-download-config.component';
 import { CaLabManagerUpdateDialogComponent } from './component/ca-lab-manager-update-dialog/ca-lab-manager-update-dialog.component';
+import { CaLabPullBiotaFormDialogComponent } from './component/ca-lab-pull-biota-form-dialog/ca-lab-pull-biota-form-dialog.component';
 
 /**
  * Module the lab instance detail page with iframe for the lab
@@ -132,6 +133,7 @@ import { CaLabManagerUpdateDialogComponent } from './component/ca-lab-manager-up
     CaLabOnPremiseConfigComponent,
     CaLabOnPremiseDownloadConfigComponent,
     CaLabManagerUpdateDialogComponent,
+    CaLabPullBiotaFormDialogComponent,
   ],
   imports: [
     CommonModule,
