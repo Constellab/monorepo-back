@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
-import {distinct, Observable, throwError} from 'rxjs';
+import {distinct, Observable, share, throwError} from 'rxjs';
 import {CaLabComposeUpOptions, CaLabManagerStatus} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
 import {FlDialogService, FlPortalActionsService} from '@monorepo/front-core-lib';
 import {
@@ -62,7 +62,9 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
       this.labManagerStatus$ = throwError(() => 'Lab manager is not running');
       return;
     }
-    this.labManagerStatus$ = this.labInstanceService.getLabManagerStatus(this.state.getLabInstanceId());
+    // share() is used to avoid multiple calls to the server
+    this.labManagerStatus$ = this.labInstanceService.getLabManagerStatus(this.state.getLabInstanceId())
+      .pipe(share());
   }
 
   openStatusDialog(): void {
@@ -173,8 +175,8 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateLabManager(): void {
-    this.serverState.updateLabManager();
+  updateLabManager(labStatus: CaLabManagerStatus): void {
+    this.serverState.updateLabManager(labStatus.labManagerVersion, labStatus.labManagerRecommendedVersion);
   }
 
 

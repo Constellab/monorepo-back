@@ -58,6 +58,9 @@ export class LabProgressBar extends LabBaseEntity {
   }
 }
 
+/**
+ * Object that contains list of messages between 2 date of the progress bar
+ */
 export class LabProgressBarMessages extends LabProgressBar {
 
   @Expose({name: 'from_datetime'})

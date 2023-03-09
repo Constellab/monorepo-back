@@ -229,7 +229,7 @@ export class CnCoreConfigService {
   }
 
   // return the lab manager version related to the current version of central
-  public getLabManagerVersion(): string {
+  public getLabManagerRecommendedVersion(): string {
     return this.configService.get('LAB_MANAGER_VERSION');
   }
 

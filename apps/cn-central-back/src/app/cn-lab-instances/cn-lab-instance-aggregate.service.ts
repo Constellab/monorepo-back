@@ -739,10 +739,10 @@ export class CnLabInstanceAggregateService {
     return this.labServerService.stopLab(labInstance);
   }
 
-  async updateLabManager(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
+  async updateLabManager(labInstanceId: string, labManagerVersion: string): Promise<CnLabInstanceStatusDTO> {
     const labInstance = await this.checkServerStatusBeforeAction(labInstanceId);
 
-    await this.labSshService.updateLabManager(labInstance);
+    await this.labSshService.updateLabManager(labInstance, labManagerVersion);
     return this.getStatus(labInstance);
   }
 

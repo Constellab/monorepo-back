@@ -19,13 +19,13 @@
   {{labStatus.labManagerVersion}}
 </fl-key-value>
 
-<div *ngIf="labStatus.labManagerVersion !== labStatus.labManagerCompatibleVersionForCentral"
+<div *ngIf="labStatus.labManagerVersion !== labStatus.labManagerRecommendedVersion"
      class="version-warning">
   <fl-text-icon>
     <mat-icon color="warn">warnings</mat-icon>
     {{'lab_manager_not_compatible_with_central' | translate: {
     'labManagerVersion': labStatus.labManagerVersion,
-    'compatibleVersion': labStatus.labManagerCompatibleVersionForCentral
+    'compatibleVersion': labStatus.labManagerRecommendedVersion
   } }}
   </fl-text-icon>
 </div>

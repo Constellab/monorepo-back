@@ -11,6 +11,10 @@ import {
   FlPortalActionsService
 } from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
+import {
+  CaLabManagerUpdateDialogComponent,
+  CaLabManagerUpdateDialogInput
+} from '../component/ca-lab-manager-update-dialog/ca-lab-manager-update-dialog.component';
 
 /**
  * State in the lab instance detail page to manage the server status.
@@ -68,14 +72,21 @@ export class CaLabInstanceDetailServerState {
     });
   }
 
-  updateLabManager(): void {
-    const input: FlConfirmDialogInput = {
-      title: 'lab_update_lab_manager',
-      content: 'lab_update_lab_manager_confirmation',
-      translateTitleAndContent: true,
+  updateLabManager(currentVersion: string, recommendedVersion: string): void {
+    const input: CaLabManagerUpdateDialogInput = {
+      labInstanceId: this.state.getLabInstanceId(),
+      labManagerCurrentVersion: currentVersion,
+      labManagerRecommendedVersion: recommendedVersion
     };
 
-    this.openDialog(input, this.labInstanceService.updateLabManager(this.state.getLabInstanceId()));
+    this.dialogService.openSmallDialog(CaLabManagerUpdateDialogComponent, {data: input}).afterClosed().subscribe(
+      (result: Observable<any>) => {
+        if (result) {
+          this.addPortalAction('lab_update_lab_manager', result);
+        }
+      }
+    );
+
   }
 
   updateDockerlabRepo(): void {
@@ -95,7 +106,7 @@ export class CaLabInstanceDetailServerState {
       translateTitleAndContent: true,
     };
 
-    this.openDialog(input, this.labInstanceService.deleteServer(this.state.getLabInstanceId()))
+    this.openDialog(input, this.labInstanceService.deleteServer(this.state.getLabInstanceId()));
   }
 
   private openDialog(input: FlConfirmDialogInput, action: Observable<any>): void {
@@ -106,12 +117,16 @@ export class CaLabInstanceDetailServerState {
 
   private onDialogClosed(result: FlConfirmDialogResult, text: string, action: Observable<any>): void {
     if (result.choice) {
-      this.portalService.addAction({
-        type: CaLabInstanceDetailPageState.actionType,
-        text: {text: text, translateText: true},
-        action: action
-      });
+      this.addPortalAction(text, action);
     }
+  }
+
+  private addPortalAction(text: string, action: Observable<any>): void {
+    this.portalService.addAction({
+      type: CaLabInstanceDetailPageState.actionType,
+      text: {text: text, translateText: true},
+      action: action
+    });
   }
 
 

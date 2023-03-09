@@ -260,9 +260,10 @@ export class CnLabInstancesController {
   /**
    * Route to update the docker image of the lab manager
    */
-  @Put(':id/lab-manager/update')
-  public updateLabManager(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusDTO> {
-    return this.aggregateService.updateLabManager(id);
+  @Put(':id/lab-manager/update/:version')
+  public updateLabManager(@Param('id', new ParseUUIDPipe()) id: string,
+                          @Param('version') version: string): Promise<CnLabInstanceStatusDTO> {
+    return this.aggregateService.updateLabManager(id, version);
   }
 
   @Get(':id/lab-manager/status')

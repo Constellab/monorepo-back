@@ -90,6 +90,7 @@ import {
 import {CaLabServerInfoCardComponent} from './component/ca-lab-server-info-card/ca-lab-server-info-card.component';
 import {CaLabOnPremiseConfigComponent} from './component/ca-lab-on-premise-config/ca-lab-on-premise-config.component';
 import { CaLabOnPremiseDownloadConfigComponent } from './component/ca-lab-on-premise-download-config/ca-lab-on-premise-download-config.component';
+import { CaLabManagerUpdateDialogComponent } from './component/ca-lab-manager-update-dialog/ca-lab-manager-update-dialog.component';
 
 /**
  * Module the lab instance detail page with iframe for the lab
@@ -130,6 +131,7 @@ import { CaLabOnPremiseDownloadConfigComponent } from './component/ca-lab-on-pre
     CaLabServerInfoCardComponent,
     CaLabOnPremiseConfigComponent,
     CaLabOnPremiseDownloadConfigComponent,
+    CaLabManagerUpdateDialogComponent,
   ],
   imports: [
     CommonModule,

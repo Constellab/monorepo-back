@@ -110,7 +110,7 @@ export class CnLabSshService {
       labInstance.labManagerApiKey,
       this.coreConfigService.getGwsGitlabUsername(),
       this.coreConfigService.getGwsGitlabPassword(),
-      this.coreConfigService.getLabManagerVersion()
+      this.coreConfigService.getLabManagerRecommendedVersion()
     ];
 
     const runInit = this.getSshCommand(labInstance.virtualHost,
@@ -192,10 +192,10 @@ export class CnLabSshService {
     return `ssh ${option} -o StrictHostKeyChecking=no ubuntu@lab.${virtualHost} "${commands.join(';')}"`;
   }
 
-  public async updateLabManager(labInstance: CnLabInstance): Promise<void> {
-    await this.labInstanceService.updateServerStatusText(labInstance.id, `Updating lab manager`);
+  public async updateLabManager(labInstance: CnLabInstance, labManagerVersion: string): Promise<void> {
+    await this.labInstanceService.updateServerStatusText(labInstance.id, `Updating lab manager to version ${labManagerVersion}`);
     const updateLabManager = this.getSshCommand(labInstance.virtualHost, [`cd ${CnLabSshService.DOCKERLAB_FOLDER}`,
-      `. update_lab_manager.sh ${this.coreConfigService.getLabManagerVersion()}`]);
+      `. update_lab_manager.sh ${labManagerVersion}`]);
     this.logger.log(`Executing command -- ${updateLabManager} -- for lab ${labInstance.id}`);
     await this.commandService.execCommand(updateLabManager);
     await this.labInstanceService.updateServerStatusText(labInstance.id, `Lab manager updated`);

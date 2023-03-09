@@ -43,7 +43,7 @@ export interface CnLabManagerStatus {
   currentTask?: CnLabTaskStatusInfo;
   adminerIsRunning: boolean;
   labManagerVersion: string;
-  labManagerCompatibleVersionForCentral?: string; // version provided by central to tell the compatible version for the lab manager
+  labManagerRecommendedVersion: string; // version provided by central to tell the compatible version for the lab manager
 }
 
 /**
@@ -58,14 +58,3 @@ export interface CnLabManagerInitConfig {
   gwsCoreProdPassword: string;
   gwsCoreDevPassword: string;
 }
-
-
-export interface CnLabManagerBrickVersionDTO {
-  name: string;
-  repo: string;
-  repoType: 'PIP' | 'GIT';
-  version: string;
-  isHidden: boolean;
-  technicalInfo: Record<string, string>;
-}
-

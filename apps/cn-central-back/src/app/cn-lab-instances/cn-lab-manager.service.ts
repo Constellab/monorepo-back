@@ -41,7 +41,7 @@ export class CnLabManagerService {
 
     const status = await this.labManagerApiService.getStatus(labInstance.getLabManagerApiInfo());
     // set the lab manager compatible version for central
-    status.labManagerCompatibleVersionForCentral = this.configService.getLabManagerVersion();
+    status.labManagerRecommendedVersion = this.configService.getLabManagerRecommendedVersion();
     return status;
   }
 

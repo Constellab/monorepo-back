@@ -81,7 +81,7 @@ export class CaLabManagerStatus {
   adminerIsRunning: boolean;
 
   labManagerVersion: string;
-  labManagerCompatibleVersionForCentral?: string; // version provided by central to tell the compatible version for the lab manager
+  labManagerRecommendedVersion: string; // version provided by central to tell the compatible version for the lab manager
 }
 
 export class CaLabManagerBrickVersionDTO {

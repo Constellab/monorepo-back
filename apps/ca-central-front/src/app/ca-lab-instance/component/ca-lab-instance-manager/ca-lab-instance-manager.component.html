@@ -9,7 +9,7 @@
     <fl-card-actions class="action-buttons">
 
       <button mat-stroked-button type="button" class="g-button-small actions-button"
-              (click)="updateLabManager()">
+              *ngIf="labManagerStatus$ | async as status" (click)="updateLabManager(status)">
         {{'lab_update_lab_manager' | translate}}
       </button>
 

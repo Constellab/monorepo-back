@@ -192,8 +192,8 @@ export class CaLabInstanceService {
 
   //////////////////////////// LAB MANAGER ////////////////////////////////
 
-  public updateLabManager(id: string): Observable<CaLabInstanceStatusDTO> {
-    return this.apiService.put(`${this.route}/${id}/lab-manager/update`, null, CaLabInstanceStatusDTO);
+  public updateLabManager(id: string, version: string): Observable<CaLabInstanceStatusDTO> {
+    return this.apiService.put(`${this.route}/${id}/lab-manager/update/${version}`, null, CaLabInstanceStatusDTO);
   }
 
   public getLabManagerStatus(id: string): Observable<CaLabManagerStatus> {
