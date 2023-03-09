@@ -113,6 +113,7 @@ export class HnDocumentationService {
     const doc: HnDocumentation = await this.documentationsRepository.findOneBy({id: id});
     if (doc) {
       doc.content = await this.editContent(updateContentDoc);
+
       const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
       if (!currentUser.isAdmin()) {
         throw new BlUnauthorizedException();
@@ -124,7 +125,6 @@ export class HnDocumentationService {
   async editContent(content: CmRichTextI): Promise<CmRichTextI> {
     const links: CmRichTextLink[] = CmRichText.getLinks(content);
     const headers: CmRichTextHeader[] = CmRichText.getHeaders(content);
-
     for (const l of links) {
       if (l.attributes.link.startsWith(this.configService.getFrontRootUrl())) {
         const link: string[] = l.attributes.link.substring(this.configService.getFrontRootUrl().length).split('/');
@@ -185,7 +185,7 @@ export class HnDocumentationService {
 
   async getDocumentationIdAndCPByUrl(link: string[]): Promise<[string, string]> {
     const brickName: string = link[1];
-    const majorVersion: number = +(link[2].slice(1));
+    const majorVersion: number = link[2] != 'latest' ? +(link[2].slice(1)) : null;
     link.splice(0, 4);
     if (link[link.length - 1] == '') {
       link.pop();
@@ -197,7 +197,8 @@ export class HnDocumentationService {
       completePath = completePath.split('#')[0];
     }
     completePath = completePath + '/';
-    const documentation: HnDocumentation = await this.documentationsRepository.findOne({
+
+    const documentations: HnDocumentation[] = await this.documentationsRepository.find({
       where: {
         completePath: completePath,
         folder: {
@@ -211,6 +212,17 @@ export class HnDocumentationService {
       },
       relations: ['folder']
     });
+    let documentation: HnDocumentation;
+    if(documentations.length > 1){
+      //sort by major version
+      documentation = documentations.sort((a, b) => a.folder.brickMajorVersion.major - b.folder.brickMajorVersion.major)[0];
+    }
+    else{
+      if (documentations.length == 1) {
+        documentation = documentations[0];
+      }
+    }
+
     return [documentation.id, anchor ? completePath.slice(0, -1) + '#' + anchor : completePath];
   }
 
