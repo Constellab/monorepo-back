@@ -167,6 +167,19 @@ export class CmRichText {
     return isEmpty;
   }
 
+  public static getMentions(content: CmRichTextI): string[] {
+    const mentions: string[] = [];
+    const contentData: any[] = content.ops;
+    if (contentData != null) {
+      contentData.forEach((c) => {
+        if (c.insert && c.insert.mention) {
+          mentions.push(c.insert.mention.id);
+        }
+      })
+    }
+    return mentions;
+  }
+
   public static addEmoji(content: CmRichTextI, emoji: string): CmRichTextI {
     if(this.isEmpty(content)){
       content.ops = [{insert: emoji}];

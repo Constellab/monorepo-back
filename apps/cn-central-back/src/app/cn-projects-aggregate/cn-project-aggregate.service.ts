@@ -20,7 +20,7 @@ import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-projects/cn-project-level.enum';
 import {CnProjectAncestorTreeDTO, CnProjectAncestorType, CnProjectDtoHelper} from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
-import {CmRichTextFigure, CmRichTextI} from '@monorepo/common-model';
+import {CmRichText, CmRichTextFigure, CmRichTextI} from '@monorepo/common-model';
 import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
 import {CnProjectCommentService} from '../cn-project-comment/cn-project-comment.service';
 import {CnCommentImage, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
@@ -33,6 +33,7 @@ import {CnObjectStoragesAggregateService} from '../cn-object-storages/cn-object-
 import {CnDocumentsService} from './cn-documents/cn-documents.service';
 import {CnDocument} from './cn-documents/cn-document.entity';
 import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
+import {CnUsersService} from '../cn-users/cn-users.service';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -479,7 +480,10 @@ export class CnProjectAggregateService {
 
   public async createProjectComment(newComment: CnNewComment, projectId: string): Promise<CnProjectComment> {
     const project = await this.projectService.findById(projectId);
-    return this.projectCommentService.create(newComment, project);
+
+    const userMentions: CnUser[] = await this.getUserMentions(projectId, newComment.content);
+
+    return this.projectCommentService.create(newComment, project, userMentions);
   }
 
   public async getProjectComments(projectId: string, page: number, size: number): Promise<ClPage<CnProjectComment>> {
@@ -633,5 +637,25 @@ export class CnProjectAggregateService {
     return await this.projectSecurity.checkFindOneAndGetRootProject(project, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
   }
 
+  private async getUserMentions(projectId: string, content: CmRichTextI): Promise<CnUser[]> {
+    const userMentions: CnUser[] = [];
+    const mentions: string[] = CmRichText.getMentions(content);
+    if (mentions.length > 0) {
+      for(const m of mentions){
+        if(m == '0'){
+          const users = await this.getUsersOfProject(projectId);
+          for(const u of users){
+            if(!userMentions.find(um => um.id == u.id) && u.id != CnCurrentUserHelper.getCurrentUser().id) // avoid duplicate
+              userMentions.push(u);
+          }
+        } else {
+          const user = (await this.getUsersOfProject(projectId)).find(u => u.id == m);
+          if(!userMentions.find(um => um.id == user.id) && user.id != CnCurrentUserHelper.getCurrentUser().id) // avoid duplicate
+            userMentions.push(user);
+        }
+      }
+    }
+    return userMentions;
+  }
 
 }

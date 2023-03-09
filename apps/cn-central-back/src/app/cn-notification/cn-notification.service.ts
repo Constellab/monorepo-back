@@ -6,6 +6,7 @@ import {BlAbstractService, BlUnauthorizedException} from '@monorepo/back-core-li
 import {ClPage} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnSpaceUserService} from '../cn-spaces/cn-space-user.service';
+import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
 
 export enum CnNotificationType {
   EXPERIMENT_COMMENT = 'EXPERIMENT_COMMENT',

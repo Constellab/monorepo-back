@@ -15,7 +15,6 @@ export class CaCommentTextEditorConfig extends FlTextEditorConfig implements FlT
 
   sendButtonEvent$: EventEmitter<boolean> = new EventEmitter<boolean>();
   sendEmojiButtonEvent$: EventEmitter<HTMLElement> = new EventEmitter<HTMLElement>();
-  sendUserPanelEvent$: EventEmitter<boolean> = new EventEmitter<boolean>();
   userList: CaUser[] = [];
 
   private projectId: string;
@@ -26,6 +25,10 @@ export class CaCommentTextEditorConfig extends FlTextEditorConfig implements FlT
     if (userList) {
       this.userList = userList;
     }
+  }
+
+  setUsers(userList: CaUser[]): void {
+    this.userList = userList;
   }
 
 
@@ -39,6 +42,22 @@ export class CaCommentTextEditorConfig extends FlTextEditorConfig implements FlT
 
   getBlockAddButtons(): FlTextEditorBlockAddButton[] {
     return [];
+  }
+
+  getExtraModules(): any {
+    return {
+      mention: {
+        allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+        mentionDenotationChars: ['@'],
+        source: (searchTerm: string, renderList: any, mentionChar: string) => {
+          const values: any[] = [{id: '0', value: 'everyone'}];
+          values.push(...this.userList.map(user => {
+            return {id: user.id, value: user.fullname}
+          }));
+          renderList(values.filter(v => v.value.toLowerCase().includes(searchTerm.toLowerCase())), searchTerm);
+        }
+      }
+    };
   }
 
 
@@ -88,10 +107,6 @@ export class CaCommentTextEditorConfig extends FlTextEditorConfig implements FlT
   }
 
   openEmojiPanel(event: Event): void {
-    this.sendEmojiButtonEvent$.emit(event.target as HTMLElement);
-  }
-
-  openUserListPanel(event: Event): void {
     this.sendEmojiButtonEvent$.emit(event.target as HTMLElement);
   }
 

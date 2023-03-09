@@ -23,6 +23,8 @@ export abstract class FlTextEditorConfig {
 
   public abstract onPasteImage(imgFile: File, state: FlTextEditorState): any;
 
+
+
   protected getCodeBlockAddButton(state: FlTextEditorState): FlTextEditorBlockAddButton {
     return {
       icon: 'code',
@@ -115,6 +117,10 @@ export abstract class FlTextEditorConfig {
           state.insertFormula(formula, index);
         }
       });
+  }
+
+  public getExtraModules(): any {
+    return {};
   }
 
 

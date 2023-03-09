@@ -12,6 +12,7 @@ import {CnNotificationCreateDTO} from '../cn-notification/cn-notification.entity
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnFrontService} from '../cn-core/services/cn-front.service';
+import {CnUser} from '../cn-users/cn-user.entity';
 
 @Injectable()
 export class CnProjectCommentService extends CnCommentService<CnProjectComment> {
@@ -31,7 +32,7 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
       CnProjectCommentService.COMMENT_BUCKET_PREFIX + '/' + projectId + '/');
   }
 
-  async create(newComment: CnNewComment, project: CnProject): Promise<CnProjectComment> {
+  async create(newComment: CnNewComment, project: CnProject, userMentions: CnUser[]): Promise<CnProjectComment> {
 
     const comment: CnProjectComment = await this.dataSource.transaction(async () => {
       const projectComment: CnProjectComment = CnProjectComment.create(newComment, project);
@@ -41,12 +42,12 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
       return await this.createComment(projectComment);
     });
 
-    if (comment && comment.createdBy.id != project.leader.id) {
+    for(const uM of userMentions) {
       const newNotification: CnNotificationCreateDTO = {
         createdBy: comment.createdBy,
-        user: comment.project.leader,
+        user: uM,
         link: CnFrontService.getProjectCommentRoute(project.id),
-        text: comment.createdBy.firstname + ' a commenté votre projet',
+        text: 'project_comment_mention_notification_text',
         text2: comment.project.title,
         objectId: comment.id,
         objectType: CnNotificationType.PROJECT_COMMENT,
@@ -55,7 +56,19 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
       await this.notificationService.createNotification(newNotification);
     }
 
-
+    if (comment && comment.createdBy.id != project.leader.id) {
+      const newNotification: CnNotificationCreateDTO = {
+        createdBy: comment.createdBy,
+        user: comment.project.leader,
+        link: CnFrontService.getProjectCommentRoute(project.id),
+        text: 'project_comment_notification_text',
+        text2: comment.project.title,
+        objectId: comment.id,
+        objectType: CnNotificationType.PROJECT_COMMENT,
+        spaceId: project.spaceId
+      };
+      await this.notificationService.createNotification(newNotification);
+    }
     return comment;
   }
 

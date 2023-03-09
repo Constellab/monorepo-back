@@ -36,6 +36,7 @@ import {FlQuillBlock, FlQuillDelta} from '../../model/fl-quill-export.class';
 import {FlHtmlHelper} from '../../../../utils/fl-html.helper';
 import {FlQuillScrollContainer, FlQuillSetup} from '../../model/fl-quill-setup.class';
 import {ClStringHelper} from '@monorepo/core-lib';
+import "quill-mention";
 
 hljs.registerLanguage('python', python);
 
@@ -107,20 +108,23 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   }
 
   ngOnInit(): void {
+    let modules:any = {
+      syntax: {
+        highlight: (text: string) => hljs.highlight(text, {language: 'python'}).value
+      }, // Include syntax module
+      toolbar: this.config.getToolbarConfig(),
+      clipboard: {
+        matchVisual: false
+      }
+    }
+
+    modules = Object.assign(modules, this.config.getExtraModules());
+
     // create and configure quill
     this.quill = new Quill(this.editorElement.nativeElement,
       {
         theme: this.config.getTheme(this.theme),
-        modules: {
-          syntax: {
-            highlight: (text: string) => hljs.highlight(text, {language: 'python'}).value
-          }, // Include syntax module
-          toolbar: this.config.getToolbarConfig(),
-          clipboard: {
-            matchVisual: false
-          },
-
-        },
+        modules: modules,
         // prevent the tooltip to go outside the editor
         bounds: this.elementRef.nativeElement,
         placeholder: this.placeholder,
@@ -156,7 +160,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     if (this.theme === 'VISIBLE_BUTTON') {
       const keyboard = this.quill.getModule('keyboard');
       //Delete the linebreak event on enter key pressed
-      delete keyboard.bindings[13];
+      //delete keyboard.bindings[13];
     }
 
     this.quill.on('text-change', () => this.setAndEmitValue(this.getQuillValue()));

@@ -223,5 +223,7 @@
   "space_user_added_info": "Added info",
   "id": "Id",
   "last_login": "Last login",
-  "mail_not_validated": "Mail not validated"
+  "mail_not_validated": "Mail not validated",
+  "project_comment_notification_text": "{{firstname}} commented your project",
+  "project_comment_mention_notification_text": "{{firstname}} mentioned you in a comment"
 }

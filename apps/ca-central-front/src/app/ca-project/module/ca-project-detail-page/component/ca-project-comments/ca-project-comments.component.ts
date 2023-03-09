@@ -14,7 +14,7 @@ import {CmRichText} from '@monorepo/common-model';
 import {FlConfirmDialogInput, FlDialogService, FlOverlayRef, FlPortalService} from '@monorepo/front-core-lib';
 import {
   FlEmojiPickerPortalComponent
-} from '../../../../../../../../../libs/front-core-lib/src/lib/module/fl-emoji-picker/component/fl-emoji-picker-portal/fl-emoji-picker-portal.component';
+} from '@monorepo/front-core-lib';
 import {CaNotificationState} from '../../../../../ca-core/state/ca-notification.state';
 import {Router} from '@angular/router';
 import {CaNotificationType} from '../../../../../ca-core/model/entities/ca-notification.class';
@@ -32,7 +32,8 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
   project$: Observable<CaProject>;
   comments: CaProjectCommentDatasourcePaginated;
   currentUserId: string;
-  textEditorConfig: CaCommentTextEditorConfig = new CaCommentTextEditorConfig(this.projectService, this.state.getProjectId$());
+  textEditorConfig: CaCommentTextEditorConfig = new CaCommentTextEditorConfig(this.projectService,
+    this.state.getProjectId$());
   formControl: FormControl;
   isLoading: boolean = false;
   projectId: string;
@@ -54,6 +55,10 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
       this.projectId = project.id;
       this.comments = this.projectService.getProjectComments(this.projectId);
       this.readProjectCommentsNotification();
+
+      this.projectService.getUsersOfProject(this.projectId).subscribe(users => {
+        this.textEditorConfig.setUsers(users);
+      });
     });
 
     this.currentUserId = this.userService.getUser().id;
@@ -89,19 +94,6 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
         }
       });
       this.formControl.setValue(null);
-    }
-  }
-
-  closeEmojiPicker(event: Event): void {
-    const element: HTMLElement = event.target as HTMLElement;
-    if (element.classList.contains('mat-icon') && this.openEmojiPicker == false) {
-      this.openEmojiPicker = true;
-      return;
-    }
-
-    if (this.isEmojiPickerVisible) {
-      this.isEmojiPickerVisible = false;
-      this.openEmojiPicker = false;
     }
   }
 
@@ -153,12 +145,6 @@ export class CaProjectCommentsComponent implements OnInit, OnDestroy {
           this.addEmoji(emoji)
       }
     );
-  }
-
-  atEvent(event: KeyboardEvent): void {
-    if(event.key === '@') {
-      console.log('atEvent')
-    }
   }
 
   ngOnDestroy(): void {

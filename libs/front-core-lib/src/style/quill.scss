@@ -25,9 +25,11 @@
 
 //Primary color for snow theme tool bar
 
+//TODO: check if removing the overflow hidden is not breaking anything
 .ql-container{
-  overflow: hidden;
+  //overflow: hidden;
 }
+
 .ql-container.ql-snow{
   border: none;
   background-color: var(--main-background);
@@ -258,4 +260,30 @@
 // NO PADDING
 .ql-no-padding .ql-editor{
   padding: 12px 0px;
+}
+
+
+// MENTION
+.ql-mention-list {
+  list-style-type: none;
+  transform: translateY(-2px);
+  margin-top: 0;
+  padding: 0px 0px 0px 20px;
+  z-index: 100;
+}
+
+.ql-mention-list .ql-mention-list-item {
+  cursor: pointer;
+  padding: 10px 10px;
+  background-color: var(--card-background);
+}
+
+.ql-mention-list .ql-mention-list-item.selected {
+  background-color: var(--hover-color);
+}
+
+span.mention {
+  background-color: var(--card-background);
+  padding: 2px 5px;
+  border-radius: 2px;
 }
