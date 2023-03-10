@@ -21,6 +21,10 @@
   margin-bottom: 1em;
 }
 
+h5{
+  font-size: 20px;
+}
+
 .story {
   background-color: var(--card-background);
   border-radius: 18px;
@@ -32,8 +36,9 @@
 
 .story-content {
   margin: 8px;
-  width: 509px;
-  height: 168px;
+  width: calc(100% - 206px);
+  display: flex;
+  flex-direction: column;
 }
 
 .story-content *{
@@ -41,14 +46,13 @@
 }
 
 .story-image{
-  margin: 8px;
+  margin: auto;
   height: 168px;
   width: 174px;
   border-radius: 10px;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  margin-left: auto;
 }
 
 h1{
@@ -110,4 +114,9 @@ h5 {
   margin-left: 10px;
   margin-bottom: 5px;
 }
+
+.user-info{
+  margin-top: auto;
+}
+
 

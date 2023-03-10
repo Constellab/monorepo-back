@@ -190,7 +190,7 @@
   "view_read_notifications": "View read notifications",
   "most_recent": "Most recent",
   "mark_all_as_read": "Mark all as read",
-  "write_a_comment": "Write a comment here",
+  "write_a_comment": "Write a comment here (@ to mention someone)",
   "request_new_licenses": "Request new licenses",
   "request_new_licenses_help": "You can request new licenses for your space to access Constellab. We will shortly contact you about your request.",
   "new_licenses_requested": "Request sent, we will contact you shortly",

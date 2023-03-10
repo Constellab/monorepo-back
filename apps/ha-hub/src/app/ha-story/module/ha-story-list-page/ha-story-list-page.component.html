@@ -34,8 +34,8 @@
       <a class="story" *ngFor="let story of stories?.connect() | async" [routerLink]="story.id">
         <div class="story-content">
           <h5>{{story.title}}</h5>
-          <p>{{story.firstParagraph}}</p>
-          <fl-user-inline [user]="story.getAuthor()" class="small-text" [showPopUp]="false"></fl-user-inline>
+          <p class="small-text">{{story.firstParagraph.length >= 100 ? (story.firstParagraph + '...') : story.firstParagraph}}</p>
+          <fl-user-inline [user]="story.getAuthor()" class="small-text user-info" [showPopUp]="false"></fl-user-inline>
           <p class="small-text">
             {{(story.publishedAt < story.lastModifiedAt ? 'last_modified' : 'published') | translate}} :
             {{(story.publishedAt < story.lastModifiedAt ? story.lastModifiedAt : story.publishedAt) | flDate:'DATETIME_MED'}}

@@ -228,7 +228,7 @@
 
 
 .ql-directive .ql-editor{
-  padding: 0;
+  padding: 0.4em 0;
 }
 
 .ql-directive .ql-editor *:first-child{
@@ -285,5 +285,5 @@
 span.mention {
   background-color: var(--card-background);
   padding: 2px 5px;
-  border-radius: 2px;
+  border-radius: 5px;
 }
