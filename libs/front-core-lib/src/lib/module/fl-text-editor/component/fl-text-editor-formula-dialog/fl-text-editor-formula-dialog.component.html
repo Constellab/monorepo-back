@@ -5,6 +5,13 @@
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="link-form">
 
+    <div class="help-text">
+      {{'flTextEditor.formula_help_text' | translate}} :
+      <a href="https://katex.org/docs/supported.html" target="_blank" class="g-text-link">
+        https://katex.org/docs/supported.html
+      </a>
+    </div>
+
     <!--  Formula  -->
     <mat-form-field class="g-form-input">
       <mat-label>{{'flTextEditor.formula' | translate}}</mat-label>
