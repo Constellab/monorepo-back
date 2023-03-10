@@ -16,7 +16,7 @@
     </a>
 
     <a mat-button [routerLink]="getConfigRoute(labInstance)" routerLinkActive="menu-active"
-       class="nav-button">
+       class="nav-button" *ngIf="isOwner$ | async">
       <mat-icon>settings</mat-icon>
       {{'lab_configuration' | translate}}
     </a>

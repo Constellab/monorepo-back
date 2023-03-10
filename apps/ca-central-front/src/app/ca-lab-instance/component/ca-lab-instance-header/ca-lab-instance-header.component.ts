@@ -30,6 +30,8 @@ export class CaLabInstanceHeaderComponent implements OnInit {
     map(status => status.labStatus)
   );
 
+  isOwner$: Observable<boolean> = this.state.isLabOwner$();
+
   constructor(private dialogService: FlDialogService,
               private labInstanceService: CaLabInstanceService,
               private state: CaLabInstanceDetailPageState) {

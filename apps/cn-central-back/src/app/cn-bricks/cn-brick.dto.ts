@@ -1,4 +1,5 @@
 import {CnRepoType, CnVersionState, CnVersionType} from './cn-brick-version.entity';
+import {CnBrickVisibility} from './cn-brick.entity';
 
 export interface CnBrickVersionDTO {
   name: string;
@@ -30,6 +31,7 @@ export interface CnBrickSaveDTO {
   name: string;
   pipRepo: string;
   gitRepo: string;
+  visibility: CnBrickVisibility;
   versions: CnBrickVersionSaveDTO[];
 }
 

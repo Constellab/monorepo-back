@@ -36,6 +36,7 @@ export class CaLabInstanceConfigBrickComponent implements OnInit, OnDestroy {
       version: [null, Validators.required],
     });
 
+    // TODO is brick is admin and the user don't have access, the input will be empty but working
     if (this.brickVersionDTO) {
       this.formGp.patchValue(this.brickVersionDTO);
       this.formGp.get('name').disable();

@@ -1,11 +1,13 @@
 import {Injectable} from '@nestjs/common';
-import {CnBrick} from './cn-brick.entity';
+import {CnBrick, CnBrickVisibility} from './cn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {CnBrickVersion} from './cn-brick-version.entity';
 import {CmVersion} from '@monorepo/common-model';
 import {CnBrickSaveDTO} from './cn-brick.dto';
 import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
+import {FindOptionsWhere} from 'typeorm';
+import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 
 @Injectable()
 export class CnBricksService extends BlAbstractService<CnBrick> {
@@ -23,6 +25,7 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
     brick.name = brickSaveDTO.name;
     brick.pipRepo = brickSaveDTO.pipRepo;
     brick.gitRepo = brickSaveDTO.gitRepo;
+    brick.visibility = brickSaveDTO.visibility;
     brick = await this.brickRepo.save(brick);
 
     // create or update brick version
@@ -72,7 +75,12 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
   }
 
   public getAllBricks(): Promise<CnBrick[]> {
-    return this.brickRepo.find({relations: ['versions']});
+    // for non admin, only return public bricks
+    const where: FindOptionsWhere<CnBrick> = {};
+    if (!CnCurrentUserHelper.isAdmin()) {
+      where.visibility = CnBrickVisibility.PUBLIC;
+    }
+    return this.brickRepo.find({where: where, relations: ['versions']});
   }
 
   public async getBrickVersions(brickName: string): Promise<CnBrickVersion[]> {
