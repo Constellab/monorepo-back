@@ -34,7 +34,7 @@ export class HaRouterService {
   }
 
   public static getTechDocRoute(): string {
-    return '/technical-folder/';
+    return '/tech-doc/';
   }
 
   public static getBrickPageRoute(brickName: string, brickMajor?: string): string {
