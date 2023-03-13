@@ -51,6 +51,11 @@
   flex: 1 0 auto;
 }
 
+.doc-menu-bt{
+  cursor: pointer;
+}
+
+
 
 
 .span-initials:hover{
@@ -87,13 +92,5 @@
 
   .option{
     margin: auto 0.5em;
-  }
-}
-
-
-@media (max-width: 550px) {
-
-  .option{
-    margin: auto 0.2em;
   }
 }

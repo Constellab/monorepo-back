@@ -125,6 +125,6 @@
   "remove_coauthor_success": "Co-auteur retiré avec succès",
   "become_coauthor": "Devenir co-auteur",
   "invite_text": "vous invite à devenir co-auteur de la story",
-  "product_doc": "Doc produit",
-  "tech_doc": "Doc technique",
+  "product_doc": "Documentation produit",
+  "tech_doc": "Documentation technique"
 }
