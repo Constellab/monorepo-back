@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {FormControl} from '@ngneat/reactive-forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
 import {Validators} from '@angular/forms';
 import {FlGlobalValidators, FlSnackBarService, FlStatus, FlStatusDict} from '@monorepo/front-core-lib';
 

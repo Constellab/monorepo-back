@@ -6,7 +6,7 @@ import {HaPublicEditBrickFormComponent} from './ha-public-edit-brick-form/ha-pub
 import {TranslateModule} from "@ngx-translate/core";
 import {ReactiveFormsModule} from "@angular/forms";
 import {HaCoreModule} from '../../../ha-core/ha-core.module';
-import {MatRadioModule} from "@angular/material/radio";
+import {MatLegacyRadioModule as MatRadioModule} from "@angular/material/legacy-radio";
 import {HaPublicCoreModule} from '../ha-public-core/ha-public-core.module';
 import {FlInputFileModule, FlKeyValueModule} from "@monorepo/front-core-lib";
 

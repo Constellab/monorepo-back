@@ -7,7 +7,7 @@ import {debounceTime, map, startWith} from 'rxjs/operators';
 import {FlBioNetworkObject} from '../../model/fl-bio-network.class';
 import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 import {ClHelpService, ClStringHelper, ClSubscriptionHandler} from '@monorepo/core-lib';
-import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
+import {MatLegacyAutocompleteTrigger as MatAutocompleteTrigger} from '@angular/material/legacy-autocomplete';
 import {FlBioNetworkDrawerState} from '../../state/fl-bio-network-drawer.state';
 
 /**

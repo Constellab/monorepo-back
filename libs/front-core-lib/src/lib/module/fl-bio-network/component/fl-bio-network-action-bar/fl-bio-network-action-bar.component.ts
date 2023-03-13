@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
-import {MatSliderChange} from '@angular/material/slider';
+import {MatLegacySliderChange as MatSliderChange} from '@angular/material/legacy-slider';
 import {filter} from 'rxjs/operators';
 import {FlBioNetworkGraph} from '../../model/fl-bio-network-graph.class';
 import {FlBioNetworkOptionsState, FlBioNetworkParticleColorScale} from '../../state/fl-bio-network-options.state';

@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {Observable} from 'rxjs';
 import {LabSharedEntity} from '../../../../model/entities/lab-share.entity';

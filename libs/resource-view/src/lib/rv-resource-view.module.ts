@@ -26,10 +26,10 @@ import {RvViewSpreadsheetComponent} from './component/rv-view-spreadsheet/rv-vie
 import {RvTechnicalInfoButtonComponent} from './component/rv-technical-info-button/rv-technical-info-button.component';
 import {RvTechnicalInfoDialogComponent} from './component/rv-technical-info-dialog/rv-technical-info-dialog.component';
 import {RvReportResourceViewComponent} from './component/rv-report-resource-view/rv-report-resource-view.component';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatLegacyTooltipModule as MatTooltipModule} from '@angular/material/legacy-tooltip';
 import {MatIconModule} from '@angular/material/icon';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';
 import {RvViewImageComponent} from './component/rv-view-image/rv-view-image.component';
 
 @NgModule({

@@ -7,13 +7,13 @@ import {
   FlSnackBarService
 } from '@monorepo/front-core-lib';
 import {HaStory, HaStoryAuthor, HaStoryAuthorStatus} from '../../../ha-core/ha-model/ha-entities/ha-story.class';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
 import {HaStoryService} from '../../../ha-core/ha-service/ha-story.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import {MatChipInputEvent} from '@angular/material/chips';
+import {MatLegacyChipInputEvent as MatChipInputEvent} from '@angular/material/legacy-chips';
 import {Location} from '@angular/common';
 
 export type HaCreateStoryDtoInput = FlFormDialogInput<HaCoAuthorFormData>;

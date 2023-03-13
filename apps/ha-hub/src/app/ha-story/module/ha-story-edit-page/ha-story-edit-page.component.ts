@@ -11,7 +11,7 @@ import {HaTopic, HaTopicDto} from '../../../ha-core/ha-model/ha-entities/ha-topi
 import {HaTopicService} from '../../../ha-core/ha-service/ha-topic.service';
 import {map} from 'rxjs/operators';
 import {FormControl} from '@angular/forms';
-import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
+import {MatLegacyAutocompleteSelectedEvent as MatAutocompleteSelectedEvent} from '@angular/material/legacy-autocomplete';
 import {HaAuthenticatedUserService} from '../../../ha-core/ha-service/ha-authenticated-user.service';
 import {HaUser} from '../../../ha-core/ha-model/ha-entities/ha-user';
 import {HaStoryCoAuthorDialogComponent} from '../ha-story-co-author-dialog/ha-story-co-author-dialog.component';

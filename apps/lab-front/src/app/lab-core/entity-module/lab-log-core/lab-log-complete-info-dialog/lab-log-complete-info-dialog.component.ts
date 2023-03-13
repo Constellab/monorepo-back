@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {LabLogCompleteInfo} from '../../../model/entities/lab-log.entity';
 import {LabLogService} from '../../../entity-service/lab-log.service';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
 
 export interface LabLogCompleteInfoDialogInput {
   logName: string;

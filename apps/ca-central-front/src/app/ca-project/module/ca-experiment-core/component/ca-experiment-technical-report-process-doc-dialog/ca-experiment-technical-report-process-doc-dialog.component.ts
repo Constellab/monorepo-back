@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {TdTypeEntity} from '@monorepo/technical-doc';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
 
 @Component({
   selector: 'ca-experiment-technical-report-process-doc-dialog',

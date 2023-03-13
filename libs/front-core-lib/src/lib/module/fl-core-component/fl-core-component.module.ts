@@ -7,9 +7,9 @@ import {FlLimitHeightComponent} from './component/fl-limit-height/fl-limit-heigh
 import {FlNewWebsiteVersionComponent} from './component/fl-new-website-version/fl-new-website-version.component';
 import {FlChipComponent} from './component/fl-chip/fl-chip.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatLegacyTooltipModule as MatTooltipModule} from '@angular/material/legacy-tooltip';
 import {MatIconModule} from '@angular/material/icon';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';
 import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
 import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
 import {FlLoaderModule} from '../fl-loader/fl-loader.module';
@@ -17,7 +17,7 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {
   FlSelectLanguageOptionsComponent
 } from './component/fl-select-language-options/fl-select-language-options.component';
-import {MatOptionModule} from '@angular/material/core';
+import {MatLegacyOptionModule as MatOptionModule} from '@angular/material/legacy-core';
 import {FlExternalLinkComponent} from './component/fl-external-link/fl-external-link.component';
 import {
   FlSelectUserCategoryOptionComponent

@@ -11,8 +11,8 @@ import { HaStoryCreateDialogComponent } from './module/ha-story-create-dialog/ha
 import {AsyncPipe, NgForOf, NgIf} from '@angular/common';
 import {FlDateModule} from "@monorepo/front-core-lib";
 import { HaStoryMyListComponent } from './module/ha-story-my-list/ha-story-my-list.component';
-import {MatTableModule} from "@angular/material/table";
-import {MatRadioModule} from "@angular/material/radio";
+import {MatLegacyTableModule as MatTableModule} from "@angular/material/legacy-table";
+import {MatLegacyRadioModule as MatRadioModule} from "@angular/material/legacy-radio";
 import { HaStoryCoAuthorDialogComponent } from './module/ha-story-co-author-dialog/ha-story-co-author-dialog.component';
 import { HaStoryInvitePageComponent } from './module/ha-story-invite-page/ha-story-invite-page.component';
 
