@@ -54,6 +54,7 @@
   "replace_version_text": "This action will replace an existing version",
   "file_wrong_type": "The imported file is not a valid json file",
   "file_wrong_brick_or_major": "Wrong brick or major version",
+  "file_wrong_format": "The file 'settings.json' is not in the correct format",
   "brick_already_exists": "The brick referenced in the 'settings.json' file already exists",
   "error_page_not_found": "Error : Page not found",
   "error_doc_not_found": "Error : Documentation not found",
