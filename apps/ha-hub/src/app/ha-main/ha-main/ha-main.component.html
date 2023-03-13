@@ -7,8 +7,11 @@
     <div class="nav-bar-links" *ngIf="currentUrlSegment.length > 0">
       <h5 class="option"><a [routerLink]="getStoryListRoute()">{{'stories' | translate}}</a></h5>
       <h5 class="option"><a [routerLink]="getBrickListRoute()">{{'bricks' | translate}}</a></h5>
-      <h5 class="option"><a [routerLink]="getProductDocRoute()">{{'product_doc'| translate}}</a></h5>
-      <h5 class="option"><a [routerLink]="getTechDocRoute()">{{'tech_doc'| translate}}</a></h5>
+      <h5 class="option doc-menu-bt" [matMenuTriggerFor]="docMenu">{{'documentation' | translate}}</h5>
+      <mat-menu #docMenu="matMenu">
+        <a mat-menu-item [routerLink]="getProductDocRoute()" class="doc-menu-item">{{'product_doc'| translate}}</a>
+        <a mat-menu-item [routerLink]="getTechDocRoute()" class="doc-menu-item">{{'tech_doc'| translate}}</a>
+      </mat-menu>
     </div>
 
     <div class="spacer" *ngIf="currentUrlSegment.length === 0">
