@@ -41,7 +41,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/cn-central-back"],
+      "outputs": ["{workspaceRoot}/coverage/apps/cn-central-back"],
       "options": {
         "jestConfig": "apps/cn-central-back/jest.config.ts",
         "passWithNoTests": true
