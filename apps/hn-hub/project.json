@@ -6,13 +6,15 @@
   "prefix": "hn-hub",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nrwl/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/hn-hub",
         "main": "apps/hn-hub/src/main.ts",
         "tsConfig": "apps/hn-hub/tsconfig.app.json",
-        "assets": ["apps/hn-hub/src/assets", "apps/hn-hub/src/environments"]
+        "assets": ["apps/hn-hub/src/assets", "apps/hn-hub/src/environments"],
+        "target": "node",
+        "compiler": "tsc"
       },
       "configurations": {
         "production": {
