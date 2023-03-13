@@ -309,7 +309,7 @@ export class CnLabInstanceAggregateService {
       const error = e as BlExternalApiError;
 
       // we try to add the user to the lab and reconnect
-      const instanceToken = this.addUserAndConnect(labInstance, CnCurrentUserHelper.getAndCheckCurrentUser());
+      const instanceToken = await this.addUserAndConnect(labInstance, CnCurrentUserHelper.getAndCheckCurrentUser());
       if (instanceToken) {
         return instanceToken;
       }
