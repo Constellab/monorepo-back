@@ -1,9 +1,9 @@
 import {Directive} from '@angular/core';
-import {MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
-import {FormGroup} from '@ngneat/reactive-forms';
+import {MatDialogRef} from '@angular/material/dialog';
 import {Observable} from 'rxjs';
 import {FlSnackBarService} from '../../module/fl-snack-bar/fl-snack-bar.service';
 import {FlFormDialogInput} from '../../model/fl-form.class';
+import {FormGroup} from '@ngneat/reactive-forms';
 
 /**
  * Abstract directive to structure form dialog component that support create and update mode
@@ -47,7 +47,7 @@ export abstract class FlFormDialogAbstractDirective<FORM_TYPE, ENTITY = FORM_TYP
   }
 
   protected patchUpdate(): void {
-    this.formGp.patchValue(this.dialogInput.object);
+    this.formGp.patchValue(this.dialogInput.object as any);
   }
 
 

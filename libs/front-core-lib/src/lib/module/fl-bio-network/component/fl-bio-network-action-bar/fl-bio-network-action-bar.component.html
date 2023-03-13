@@ -76,14 +76,13 @@
     <!--   Slider to hide link     -->
     <div class="g-full">
       <p class="g-text-small g-text-light">{{'flBioNetwork.flux_threshold' | translate}} : {{fluxThreshold}}</p>
-      <mat-slider class="slider" color="primary"
+      <mat-slider discrete class="slider" color="primary"
                   [max]="maxFluxValue"
                   [min]="0"
                   [step]="1"
-                  [thumbLabel]="true"
                   tickInterval="auto"
-                  [(ngModel)]="fluxThreshold"
-                  (change)="fluxThresholdChange($event)">
+                  [(ngModel)]="fluxThreshold">
+        <input matSliderThumb (change)="fluxThresholdChange($event)">
       </mat-slider>
     </div>
   </div>

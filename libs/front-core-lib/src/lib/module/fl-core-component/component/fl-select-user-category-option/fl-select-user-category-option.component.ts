@@ -1,6 +1,8 @@
 import {AfterViewInit, Component, Host, Input, OnInit} from '@angular/core';
-import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
-import {FlEmbeddedOptionsAbstractDirective} from '../../../../abstract-directive/fl-embedded-options-abstract.directive';
+import {MatSelect} from '@angular/material/select';
+import {
+  FlEmbeddedOptionsAbstractDirective
+} from '../../../../abstract-directive/fl-embedded-options-abstract.directive';
 
 /**
  * List of option for a {@link CmUserCategory}
