@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {FlPortalActionsService} from '@monorepo/front-core-lib';
 import {LabSystemService} from '../../../../lab-core/service/lab-system.service';
-import {MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
+import {MatDialogRef} from '@angular/material/dialog';
 
 interface LabSynchroForm {
   syncUsers: boolean;

@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, Host, OnInit} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
-import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
 import {labBiotaDatabaseGroups} from '../../../model/lab-biota-database.class';
+import {MatSelect} from '@angular/material/select';
 
 /**
  * Component to be placed under a select or autocomplete to list biota database options

@@ -1,9 +1,9 @@
 import {AfterViewInit, Component, Host, OnInit, Optional} from '@angular/core';
 import {Observable} from 'rxjs';
 import {LabUser} from '../../../../model/entities/lab-user.entity';
-import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
 import {LabUserService} from '../../../../entity-service/lab-user.service';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
+import {MatSelect} from '@angular/material/select';
 
 @Component({
   selector: 'lab-user-select-options',

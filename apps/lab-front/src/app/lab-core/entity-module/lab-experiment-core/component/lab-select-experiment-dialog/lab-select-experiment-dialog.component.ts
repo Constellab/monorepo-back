@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
 import {LabExperiment} from '../../../../model/entities/lab-experiment.entity';
+import {MatDialogRef} from '@angular/material/dialog';
 
 /**
  * Dialog to search on experiment and select one

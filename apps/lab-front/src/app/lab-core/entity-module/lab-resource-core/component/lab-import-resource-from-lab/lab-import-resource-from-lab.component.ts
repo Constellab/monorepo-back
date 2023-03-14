@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
-import {MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {LabShareService} from '../../../../entity-service/lab-share.service';
+import {MatDialogRef} from '@angular/material/dialog';
 
 /**
  * Import a resource from another lab with the share link

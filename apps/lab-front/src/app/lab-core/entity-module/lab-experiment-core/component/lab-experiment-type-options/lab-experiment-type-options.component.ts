@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, Host, OnInit, Optional} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective, FlStatus} from '@monorepo/front-core-lib';
-import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
 import {labExperimentTypeDict} from '../../../../model/entities/lab-experiment.entity';
+import {MatSelect} from '@angular/material/select';
 
 @Component({
   selector: 'lab-experiment-type-options',

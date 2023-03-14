@@ -1,10 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MatLegacySlideToggleChange as MatSlideToggleChange} from '@angular/material/legacy-slide-toggle';
 import {LabDevEnvironmentService} from '../../../lab-core/service/lab-dev-environment.service';
 import {Subscription} from 'rxjs';
 import {LabEnvStore} from '../../../lab-core/service/lab-env.store';
 import {LabRouterService} from '../../../lab-core/service/lab-router.service';
 import {Router} from '@angular/router';
+import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'lab-environment-toggle',

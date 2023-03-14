@@ -1,12 +1,12 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
 import {LabReport, LabReportForm} from '../../../../model/entities/lab-report.entity';
-import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
 import {Validators} from '@angular/forms';
 import {LabReportService} from '../../../../entity-service/lab-report.service';
 import {LabEntity} from '../../../../model/global/lab-entity.entity';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 export interface LabReportFormDialogInput extends FlFormDialogInput<LabReportForm> {
   reportId?: string;

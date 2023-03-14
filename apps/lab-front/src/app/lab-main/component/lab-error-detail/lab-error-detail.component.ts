@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
 import {LabApiError} from '../../../lab-core/model/global/lab-api-error.class';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 /**
  * Component showed when the detail button is clicked on a error message

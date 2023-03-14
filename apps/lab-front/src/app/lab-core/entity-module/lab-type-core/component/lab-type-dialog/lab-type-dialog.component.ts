@@ -1,9 +1,9 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
 import {LabTypeEntity} from '../../../../model/entities/lab-type/lab-type.entity';
 import {LabRouterService} from '../../../../service/lab-router.service';
 import {LabTypeService} from '../../../../entity-service/lab-type.service';
 import {Observable} from 'rxjs';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 export interface LabTypeDialogInput {
   typingName: string;

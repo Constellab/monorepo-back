@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {LabProgressBar} from '../../../../model/entities/lab-progress-bar.entity';
-import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
 import {Observable} from 'rxjs';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 /**
  * Show information about a {@link LabProgressBar} in a dialog
