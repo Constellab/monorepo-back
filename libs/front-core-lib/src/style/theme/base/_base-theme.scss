@@ -69,7 +69,8 @@
     --main-background: #{$background-color};
 
     --card-background: #{mat.get-color-from-palette($background, card)};
-    --card-radius: 20px
+    --card-radius: 20px;
+    --navbar-height: 64px;
   }
 
   body {
