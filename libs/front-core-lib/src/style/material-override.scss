@@ -383,3 +383,8 @@ mat-tree {
 .mat-mdc-menu-panel {
   border-radius: var(--card-radius) !important;
 }
+
+/************************************* MAT DIALOG ***********************************/
+.mat-mdc-dialog-surface {
+  padding: 24px !important;
+}
