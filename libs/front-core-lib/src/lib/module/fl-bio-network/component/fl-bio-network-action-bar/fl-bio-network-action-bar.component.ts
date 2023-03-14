@@ -116,7 +116,7 @@ export class FlBioNetworkActionBarComponent implements OnInit {
   }
 
   // set opacity to 0.1 to link where abs value is lower than slider value
-  fluxThresholdChange(change: MatSliderChange): void {
+  fluxThresholdChange(change: any): void {
     this.selectionState.fluxThresholdOpacity(change.value);
   }
 
