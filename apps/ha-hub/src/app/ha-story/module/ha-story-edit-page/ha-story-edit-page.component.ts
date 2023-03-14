@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {HaStoryService} from '../../../ha-core/ha-service/ha-story.service';
 import {HaStory, HaStoryContentFormDTO} from '../../../ha-core/ha-model/ha-entities/ha-story.class';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -48,6 +48,8 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
   canSaveTopic: boolean = false;
 
   inputTopic: string = '';
+
+  @ViewChild('topicInput') topicInput: ElementRef<HTMLInputElement>;
 
   constructor(
     private storyService: HaStoryService,
@@ -134,7 +136,8 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
     return this.storyService.addTopicToStory(topic, this.story.id).pipe(
       mergeMap((res: HaTopic) => {
         this.story.topics.push(res);
-        this.topicControl.setValue('');
+        this.topicControl.setValue(null);
+        this.topicInput.nativeElement.value = '';
         this.inputTopic = '';
         if (this.story.topics.length >= 5) this.topicControl.disable();
         return of(res);
