@@ -1,6 +1,6 @@
 <div class="main g-dashboard-background">
   <mat-toolbar class="nav-bar">
-    <a routerLink="../" class="gencovery-hub-logo gencovery-logo" fxHide.lt-lg>
+    <a routerLink="/" class="gencovery-hub-logo gencovery-logo" fxHide.lt-lg>
       <img alt="" src="../../../assets/images/gencovery-logo.png"/>
     </a>
 
@@ -29,7 +29,7 @@
     <fl-user-profile-picture [user]="user" [matMenuTriggerFor]="userMenu" *ngIf="userConnected$ | async as user">
     </fl-user-profile-picture></span>
     <mat-menu #userMenu="matMenu">
-      <button mat-menu-item [routerLink]="'../admin'">{{'admin_dashboard' | translate}}</button>
+      <button mat-menu-item [routerLink]="'/admin'">{{'admin_dashboard' | translate}}</button>
       <button mat-menu-item (click)="logout()">{{'logout' |translate}}</button>
     </mat-menu>
   </mat-toolbar>

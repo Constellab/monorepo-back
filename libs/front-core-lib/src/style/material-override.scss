@@ -1,61 +1,100 @@
 /**
   Global file to override material properties
  */
-@use '@angular/material' as mat;
 
-// Reduce the default size of the icon button
-@include mat.icon-button-density(-2);
-// Reduce the default height of form fields
-@include mat.private-form-field-density(-2);
 
 //////////////////////////////////// FORM FIELD //////////////////////////////////
 
-
-.g-form-field-no-hint.mat-mdc-form-field, .g-form-field-no-hint {
-  .mat-mdc-form-field-subscript-wrapper {
-    display: none;
-  }
+// class to make the mat-hint relative so the form-field includes it even if it is big
+.g-form-field-hint-include .mat-form-field-subscript-wrapper {
+  position: relative;
 }
 
+// if the mat hint is include, not need for the bottom padding
+.g-form-field-hint-include .mat-form-field-wrapper {
+  padding-bottom: 0;
+}
+
+.g-form-field-no-hint.mat-form-field, .g-form-field-no-hint .mat-form-field:not(.g-with-hint) {
+  .mat-form-field-wrapper {
+    padding-bottom: 0.2em;
+  }
+
+  .mat-form-field-underline {
+    bottom: 0.4em;
+  }
+}
 
 @mixin g-form-field-compact-height {
   &.mat-form-field-appearance-outline {
-    @include mat.private-form-field-density(-5);
-    // reduce font size of the label
-    --mdc-typography-body1-font-size: 12px;
-    // reduce size of the icon and button icon
-    @include mat.icon-button-density(-5);
-    --mdc-icon-button-icon-size: 18px;
+    .mat-form-field-infix {
+      padding-top: 0;
+      padding-bottom: 0.4em;
+    }
+
+    .mat-form-field-label-wrapper {
+      top: -1.35em;
+      padding-top: 1.6em;
+    }
+
+    &.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
+      transform: translateY(-.9em) scale(.75);
+      width: 133.33333%;
+    }
+
+    .mat-select-arrow-wrapper {
+      transform: translateY(-15%);
+    }
+
+    .mat-form-field-prefix,
+    .mat-form-field-suffix {
+      margin-top: -5px;
+    }
+
+    .mat-form-field-prefix .mat-icon-button,
+    .mat-form-field-suffix .mat-icon-button {
+      width: 1.5em;
+      height: 1.5em;
+    }
+
+    .mat-input-element, .mat-form-field-label, .mat-select {
+      font-size: 0.85rem;
+    }
   }
 }
 
-
 @mixin g-form-field-compact-width {
-  .mat-mdc-form-field-infix {
+  .mat-form-field-infix {
     width: 120px;
   }
 }
 
-// make a mat-mdc-form-field compact in height and width
-.g-form-field-compact.mat-mdc-form-field, .g-form-field-compact .mat-mdc-form-field:not(.g-no-compact-form) {
+// make a mat-form-field compact in height and width
+.g-form-field-compact.mat-form-field, .g-form-field-compact .mat-form-field:not(.g-no-compact-form) {
   @include g-form-field-compact-height;
   @include g-form-field-compact-width;
 }
 
-// make a mat-mdc-form-field compact in height
-.g-form-field-compact-height.mat-mdc-form-field, .g-form-field-compact-height .mat-mdc-form-field:not(.g-no-compact-form) {
+// make a mat-form-field compact in height
+.g-form-field-compact-height.mat-form-field, .g-form-field-compact-height .mat-form-field:not(.g-no-compact-form) {
   @include g-form-field-compact-height;
 }
 
-// make a mat-mdc-form-field compact in width
-.g-form-field-compact-width.mat-mdc-form-field, .g-form-field-compact-width .mat-mdc-form-field:not(.g-no-compact-form) {
+// make a mat-form-field compact in width
+.g-form-field-compact-width.mat-form-field, .g-form-field-compact-width .mat-form-field:not(.g-no-compact-form) {
   @include g-form-field-compact-width;
 }
 
 
 //////////////////////////////////// BUTTON //////////////////////////////////
+// dirty fix to fix vertical align of icon in button. The initial font-size is 14px
+.mat-button, .mat-raised-button, .mat-icon-button, .mat-stroked-button,
+.mat-flat-button, .mat-fab, .mat-mini-fab {
+  font-size: 13px
+}
+
 // set the button texts to uppercase
-.mdc-button {
+.mat-stroked-button, .mat-raised-button, .mat-button, .mat-flat-button {
   text-transform: uppercase;
   overflow: hidden !important;
   border-radius: 30px !important;
@@ -69,17 +108,17 @@
 }
 
 // set the border color of the stroked = to color (not grey)
-.mat-mdc-outlined-button:not(.mat-button-disabled) {
-  border-color: currentColor !important;
+.mat-stroked-button:not(.mat-button-disabled) {
+  border-color: currentColor;
 }
 
 // increase a bit, the width of stroked buttons
-.mat-mdc-outlined-button {
+.mat-stroked-button {
   border-width: 2px !important;
 }
 
 // add margin to the button's icons
-.mat-mdc-outlined-button, .mat-mdc-raised-button, .mat-mdc-button, .mat-mdc-flat-button {
+.mat-stroked-button, .mat-raised-button, .mat-button, .mat-flat-button {
   .material-icons {
     margin-right: 5px;
     margin-left: 5px;
@@ -87,41 +126,48 @@
 }
 
 
-.mdc-button.g-button-big {
-  font-size: 1.3rem;
-  padding: 0.6em 1em;
+.g-button-medium {
+  font-size: 1.3rem !important;
 }
 
-.mdc-button.g-button-small {
-  font-size: 0.8rem;
-  padding-left: 1em;
-  padding-right: 1em;
-  line-height: 2.0em;
-  height: 26px !important;
+.g-button-medium mat-icon {
+  margin-top: -0.23em;
+  margin-right: 0.3em;
+}
+
+
+.g-button-big {
+  font-size: 1.5rem !important;
+  padding: 0.6em 2em !important;
+}
+
+.g-button-small {
+  font-size: 0.8rem !important;
+  padding-left: 1em !important;
+  padding-right: 1em !important;
+  line-height: 2.0em !important;
 
   // remove margin of icon
   .material-icons, .material-icons-outlined {
     margin-right: 2px;
     margin-left: 2px;
-    margin-top: 1px;
+    margin-top: -1px;
     font-size: 19px;
     height: 19px;
     width: 19px;
   }
 }
 
-.mdc-icon-button.g-button-icon-border {
-  border: 1px solid;
-  // equalize border
-  padding: 1px !important;
+.g-button-icon-border {
+  border: 1px solid !important;
+  box-sizing: content-box !important;
 }
 
-
 .g-button-icon-small {
-  &.mdc-icon-button, & .mdc-icon-button {
+  &.mat-icon-button, & .mat-icon-button {
     width: 30px;
     height: 30px;
-    padding: 2px;
+    line-height: 30px;
 
     mat-icon {
       height: 18px;
@@ -133,7 +179,7 @@
 }
 
 .g-button-icon-tiny {
-  &.mdc-icon-button, & .mdc-icon-button {
+  &.mat-icon-button, & .mat-icon-button {
     width: 20px;
     height: 20px;
     line-height: 20px;
@@ -168,18 +214,18 @@
 
 // force all the child mat table to take the color of the main background
 // useful for search page
-.g-mat-table-main-background .mat-mdc-table {
+.g-mat-table-main-background .mat-table {
   background-color: var(--main-background);
 }
 
-.mat-mdc-header-cell {
+.mat-header-cell {
   padding-right: 5px;
   box-sizing: border-box;
   max-width: 100%;
 }
 
 // set font size and define a right padding to separate cells
-.mat-mdc-cell {
+.mat-cell {
   font-size: 12px;
   padding-left: 5px; // use to add a small space between 2 columns
   box-sizing: border-box;
@@ -190,7 +236,6 @@
 .g-table-row-selectable {
   cursor: pointer;
 }
-
 .g-table-row-selectable:hover {
   background: var(--hover-color);
 }
@@ -274,7 +319,28 @@ mat-tree {
   background-color: transparent !important;
 }
 
+
+/******************************* SIDENAV & DRAWER ***************************/
+// class to hide the backdrop of a drawer
+.g-sidenav-hide-backdrop .mat-drawer-backdrop.mat-drawer-shown {
+  background-color: transparent;
+}
+
+/********************************* EXPANSION PANEL *****************************/
+// disable left and right padding of expansion panel body
+.g-expansion-disable-side-padding .mat-expansion-panel-body {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 /************************************* MAT TAB ***********************************/
+
+// Set all the mat-tab as flex 1 to take all the groupe space without wrap on horizontal scroll
+.g-mat-tab-flex .mat-tab-label {
+  padding: 0;
+  min-width: 0;
+  flex: 1;
+}
 
 // Set all the mat-tab smaller
 .g-mat-tab-dense .mat-tab-label {
@@ -284,11 +350,11 @@ mat-tree {
 
 // set the mat-tab full height of the mat-tab-group
 // to be place on mat-tab-group
-.g-mat-tab-full-height .mat-mdc-tab-body-wrapper {
+.g-mat-tab-full-height .mat-tab-body-wrapper {
   flex-grow: 1;
 }
 
-.g-mat-tab-header-card-background .mat-mdc-tab-header {
+.g-mat-tab-header-card-background .mat-tab-header {
   background-color: var(--card-background);
 
 }
@@ -306,6 +372,13 @@ mat-tree {
 }
 
 /************************************* MAT CHECKBOX ***********************************/
+// allow the checkbox text to wrap
+.g-mat-checkbox-wrap-text {
+  .mat-checkbox-layout .mat-checkbox-label {
+    line-height: normal;
+    white-space: initial;
+  }
+}
 
 // to place on a mat-checkbox to include the bottom section of it to avoid overflow
 .g-mat-checkbox-include-bottom {
@@ -368,6 +441,6 @@ mat-tree {
 }
 
 /************************************* MAT MENU ***********************************/
-.mat-mdc-menu-panel {
+.mat-menu-panel {
   border-radius: var(--card-radius) !important;
 }
