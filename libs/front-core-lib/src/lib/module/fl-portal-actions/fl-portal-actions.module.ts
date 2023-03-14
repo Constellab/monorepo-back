@@ -7,14 +7,14 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatIconModule} from '@angular/material/icon';
 import {FlLoaderModule} from '../fl-loader/fl-loader.module';
 import {FlPortalActionsService} from './service/fl-portal-actions.service';
-import {MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';
 import {FlPortalActionsState} from './service/fl-portal-actions.state';
 import {MatDividerModule} from '@angular/material/divider';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
-import {MatLegacyTooltipModule as MatTooltipModule} from '@angular/material/legacy-tooltip';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flPortalActionI18n} from './i18n/fl-portal-action.i18n';
 import {RouterModule} from '@angular/router';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatButtonModule} from '@angular/material/button';
 
 
 @NgModule({

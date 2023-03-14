@@ -1,6 +1,6 @@
 import {Directive, ElementRef, OnInit, Optional, Renderer2, Self} from '@angular/core';
 import {FlExpansionMenuComponent} from '../fl-expansion-menu/fl-expansion-menu.component';
-import {MatLegacyTooltip as MatTooltip} from '@angular/material/legacy-tooltip';
+import {MatTooltip} from '@angular/material/tooltip';
 
 /**
  * Directive that must be place on a mat-button to work correctly. It adds classes and logic for button

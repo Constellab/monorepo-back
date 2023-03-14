@@ -5,11 +5,11 @@ import {FlFromNowPipe} from './pipe/fl-from-now/fl-from-now.pipe';
 import {FlDateRangeComponent} from './component/fl-date-range/fl-date-range.component';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {FlFromNowComponent} from './component/fl-from-now/fl-from-now.component';
-import {MatLegacyTooltipModule as MatTooltipModule} from '@angular/material/legacy-tooltip';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flDateI18n} from './i18n/fl-date.i18n';
 import {FlDurationPipe} from './pipe/fl-duration/fl-duration.pipe';
 import {FlLastSyncInfoComponent} from './component/fl-last-sync-info/fl-last-sync-info.component';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 /**
  * Module regrouping component and pipe for dates

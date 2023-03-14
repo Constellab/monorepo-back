@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ClSupportedLanguage} from '@monorepo/core-lib';
 import {CaAuthenticatedUserService} from '../../../ca-core/service-api/ca-authenticated-user.service';
-import {MatLegacySelectChange as MatSelectChange} from '@angular/material/legacy-select';
+import {MatSelectChange} from '@angular/material/select';
 
 /**
  * Component to change the app language of the current user

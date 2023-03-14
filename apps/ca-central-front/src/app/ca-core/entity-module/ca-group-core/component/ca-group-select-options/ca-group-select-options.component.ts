@@ -1,9 +1,9 @@
 import {AfterViewInit, Component, Host, OnDestroy, OnInit} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
-import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
 import {CaGroupService} from '../../../../service-api/ca-group.service';
 import {Observable} from 'rxjs';
 import {CaGroup, CaGroupDatasource} from '../../../../model/entities/ca-group.entity';
+import {MatSelect} from '@angular/material/select';
 
 /**
  * Component for mat-select or mat-autocomplete to list the current group of the user

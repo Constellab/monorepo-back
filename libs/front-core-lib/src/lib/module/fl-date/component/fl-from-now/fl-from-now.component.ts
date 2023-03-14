@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ClDateInput} from '@monorepo/core-lib';
-import {LegacyTooltipPosition as TooltipPosition} from '@angular/material/legacy-tooltip';
+import {TooltipPosition} from '@angular/material/tooltip';
 
 /**
  * Component to show a from with form now format and a tooltip with the exact date

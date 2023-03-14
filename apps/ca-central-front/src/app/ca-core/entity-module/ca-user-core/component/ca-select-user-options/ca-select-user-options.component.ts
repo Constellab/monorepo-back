@@ -1,5 +1,4 @@
 import {AfterViewInit, Component, Host, Input, OnDestroy, OnInit} from '@angular/core';
-import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
 import {CaUser} from '../../../../model/entities/ca-user.class';
 import {
   FlDatasourcePaginated,
@@ -11,6 +10,7 @@ import {Observable} from 'rxjs';
 import {CaUsersService} from '../../../../service-api/ca-users.service';
 import {map} from 'rxjs/operators';
 import {CaAuthenticatedUserService} from '../../../../service-api/ca-authenticated-user.service';
+import {MatSelect} from '@angular/material/select';
 
 /**
  * AllForAdmin --> show all user only for G admin user otherwise space

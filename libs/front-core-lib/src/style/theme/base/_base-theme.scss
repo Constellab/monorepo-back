@@ -52,11 +52,17 @@
   $color-warning: orange;
   $color-error: mat.get-color-from-palette($warn);
 
+  @include mat.all-legacy-component-typographies();
+  @include mat.legacy-core();
+
+  @include mat.core-theme($mat-theme);
   // apply the material theme
   @include mat.all-component-themes($mat-theme);
 
   // call input file mixin
   @include _file-input-color($mat-theme);
+
+  @include mat.strong-focus-indicators-theme($mat-theme);
 
   :root {
     --primary-color: #{mat.get-color-from-palette($primary)};

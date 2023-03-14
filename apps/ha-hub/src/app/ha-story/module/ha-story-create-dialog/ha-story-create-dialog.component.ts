@@ -3,9 +3,9 @@ import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} fro
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
 import {HaCreateStoryDto, HaStory, HaStoryCategory} from '../../../ha-core/ha-model/ha-entities/ha-story.class';
-import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
 import {HaStoryService} from '../../../ha-core/ha-service/ha-story.service';
 import {Validators} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 export type HaCreateStoryDtoInput = FlFormDialogInput<HaCreateStoryDto>;
 

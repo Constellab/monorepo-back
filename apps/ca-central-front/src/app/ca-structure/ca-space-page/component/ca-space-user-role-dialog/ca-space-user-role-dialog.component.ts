@@ -1,10 +1,10 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
 import {CaSpaceService} from '../../../../ca-core/service-api/ca-space.service';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {FormControl, Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {CaSpaceRole} from '../../../../ca-core/model/entities/space/ca-space-user.class';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 export interface CaSpaceUserRoleDialogInput {
   currentRole: CaSpaceRole;

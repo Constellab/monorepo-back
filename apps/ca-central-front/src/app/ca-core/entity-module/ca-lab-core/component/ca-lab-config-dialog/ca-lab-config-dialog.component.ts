@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {CaLabConfig} from '../../../../model/entities/lab/ca-lab-config.class';
-import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 
 export type CaLabConfigDialogInput = Observable<CaLabConfig>;

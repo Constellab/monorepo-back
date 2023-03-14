@@ -2,7 +2,7 @@ import {AfterViewInit, Component, Host, OnInit} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {CaCountry} from '../../../../model/entities/ca-country.entity';
 import {CaCountryService} from '../../../../service-api/ca-country.service';
-import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
+import {MatSelect} from '@angular/material/select';
 
 @Component({
   selector: 'ca-select-city-options',

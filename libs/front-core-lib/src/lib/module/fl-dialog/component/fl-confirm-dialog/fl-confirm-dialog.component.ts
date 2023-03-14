@@ -1,9 +1,9 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
 import {Observable} from 'rxjs';
 import {FlConfirmDialogInput, FlConfirmDialogResult} from '../../model/fl-confirm-dialog.class';
 import {FlSnackBarService} from '../../../fl-snack-bar/fl-snack-bar.service';
 import {FlTranslateService} from '../../../fl-translate/service/fl-translate.service';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @Component({
   selector: 'fl-confirm-dialog',

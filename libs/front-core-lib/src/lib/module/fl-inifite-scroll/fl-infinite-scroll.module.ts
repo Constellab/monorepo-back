@@ -6,13 +6,13 @@ import {
   FlInfiniteLoadMoreResultComponent
 } from './component/fl-infinite-load-more-result/fl-infinite-load-more-result.component';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
-import {MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatIconModule} from '@angular/material/icon';
 import {FlLoaderModule} from '../fl-loader/fl-loader.module';
 import {
   FlInfiniteTableContainerComponent
 } from './component/fl-infinite-table-container/fl-infinite-table-container.component';
+import {MatButtonModule} from '@angular/material/button';
 
 
 @NgModule({

@@ -1,5 +1,4 @@
 import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
-import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
 import {CaUser} from '../../../ca-core/model/entities/ca-user.class';
 import {
   FlFormDialogAbstractDirective,
@@ -11,6 +10,7 @@ import {Observable} from 'rxjs';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {CaAuthenticatedUserService} from '../../../ca-core/service-api/ca-authenticated-user.service';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @Component({
   selector: 'ca-user-profile-edit-dialog',

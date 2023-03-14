@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {FlBioNetwork} from '../../model/fl-bio-network.class';
-import {MatLegacySelectChange as MatSelectChange} from '@angular/material/legacy-select';
 import {FlDialogService} from '../../../fl-dialog/fl-dialog.service';
 import {FlBioNetworkLegendComponent} from '../fl-bio-network-legend/fl-bio-network-legend.component';
+import {MatSelectChange} from '@angular/material/select';
 
 /**
  * Component to select the network and the pathways database
