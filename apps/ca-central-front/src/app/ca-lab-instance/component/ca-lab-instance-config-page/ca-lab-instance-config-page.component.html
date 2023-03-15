@@ -3,6 +3,9 @@
 
   <ng-container *ngIf="(isCloud$ | async); else onPremise">
 
+
+    <ca-lab-instance-global-status class="g-section"></ca-lab-instance-global-status>
+
     <ca-lab-instance-server class="g-section"></ca-lab-instance-server>
 
     <ca-lab-instance-manager class="g-section"></ca-lab-instance-manager>

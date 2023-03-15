@@ -1,6 +1,6 @@
 <ng-container *ngIf="status$ | async as status">
   <!--  Start and stop button  -->
-  <button *ngIf="status.labStatus.value === 'RUNNING'; else stopped"
+  <button *ngIf="status.labStatus.value === 'SERVER_RUNNING' || status.labStatus.value === 'LAB_RUNNING'; else stopped"
           mat-stroked-button color="warn" type="button"
           (click)="stopLab()" class="g-button-small">
     <mat-icon>stop</mat-icon>

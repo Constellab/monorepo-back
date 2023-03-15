@@ -29,7 +29,7 @@ export class CaLabInstanceDockerUpFormComponent implements OnInit {
 
   private initForm(): void {
     this.formGp = new FormBuilder().group({
-      updateContainers: [false],
+      updateContainers: [true],
       pruneSystem: [true],
       destroyContainers: [false],
     });

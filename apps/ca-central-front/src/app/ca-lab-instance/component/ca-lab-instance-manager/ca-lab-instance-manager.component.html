@@ -9,7 +9,7 @@
     <fl-card-actions class="action-buttons">
 
       <button mat-stroked-button type="button" class="g-button-small actions-button"
-              *ngIf="labManagerStatus$ | async as status" (click)="updateLabManager(status)">
+              (click)="updateLabManager()">
         {{'lab_update_lab_manager' | translate}}
       </button>
 
@@ -21,6 +21,7 @@
       <button mat-stroked-button type="button" class="g-button-small button" (click)="refresh()">
         <mat-icon>refresh</mat-icon>
         <span>{{'lab_manager_refresh' | translate}}</span>
+        <fl-button-loader size="small" *ngIf="refreshIsLoading"></fl-button-loader>
       </button>
     </fl-card-actions>
   </fl-card-header>
@@ -28,62 +29,25 @@
   <fl-card-body>
 
     <!--  Global status  -->
-    <fl-async-section [object]="labManagerStatus$" [showServerErrorText]="true" emptyText="lab_manager_not_running">
-      <ng-container *flSectionBody="let labStatus">
-        <ca-lab-instance-manager-status [labStatus]="labStatus"
-                                        [adminerUrl]="adminerUrl$ | async"></ca-lab-instance-manager-status>
-
-
-        <!--  Action button  -->
-        <div class="action-buttons g-section">
-          <button mat-stroked-button type="button" color="primary"
-                  class="g-button-small" (click)="initAll()">Init all
-          </button>
-          <button mat-stroked-button type="button" color="primary"
-                  class="g-button-small" (click)="upContainers()">Up containers
-          </button>
-          <button mat-stroked-button type="button" color="primary"
-                  class="g-button-small" (click)="restartContainers()">Restart containers
-          </button>
-          <button mat-stroked-button type="button" color="primary"
-                  class="g-button-small" (click)="pullContainers()">Pull containers
-          </button>
-          <button mat-stroked-button type="button" color="primary"
-                  class="g-button-small" (click)="pullBiotaDb()">{{'pull_biota' | translate}}
-          </button>
-          <button mat-stroked-button type="button" color="primary"
-                  class="g-button-small" (click)="registryLogin()">Registry login
-          </button>
-          <button mat-stroked-button type="button" color="warn"
-                  class="g-button-small" (click)="downContainers()">Down containers
-          </button>
-          <button mat-stroked-button type="button" color="warn"
-                  class="g-button-small" (click)="stopCurrentTask()">Stop current task
-          </button>
-          <button mat-stroked-button type="button" color="warn"
-                  class="g-button-small" (click)="systemPrune()">System prune
-          </button>
-
-          <button mat-stroked-button type="button" color="warn"
-                  class="g-button-small" (click)="startAdminer()">Start adminer
-          </button>
-
-          <button mat-stroked-button type="button" color="warn"
-                  class="g-button-small" (click)="stopAdminer()">Stop adminer
-          </button>
-        </div>
-
+    <fl-async-section [object]="labManagerStatus$" [isFlStatusEvent]="true" [showServerErrorText]="true" emptyText="lab_manager_not_running">
+      <ng-container *flSectionBody>
+        <ca-lab-instance-manager-status></ca-lab-instance-manager-status>
 
         <!--  Lab config  -->
         <ca-lab-instance-manager-config [labInstanceId]="labInstanceId"
-                                class="g-section content"></ca-lab-instance-manager-config>
+                                        class="g-section content"></ca-lab-instance-manager-config>
 
       </ng-container>
     </fl-async-section>
 
-    <mat-divider class="divider"></mat-divider>
-    <!--  List of containers  -->
-    <ca-lab-docker-containers [labInstanceId]="labInstanceId"></ca-lab-docker-containers>
+
+    <mat-expansion-panel class="advanced-config">
+      <mat-expansion-panel-header>
+        {{'lab_manager_advanced_config' | translate}}
+      </mat-expansion-panel-header>
+
+      <ca-lab-instance-manager-advanced></ca-lab-instance-manager-advanced>
+    </mat-expansion-panel>
 
   </fl-card-body>
 

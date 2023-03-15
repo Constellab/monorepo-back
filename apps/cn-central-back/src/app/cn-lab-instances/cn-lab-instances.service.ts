@@ -29,9 +29,9 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     this.checkLabInstanceBeforeSave(entity);
 
     if (entityManager) {
-      return super.createWithStatusTransaction(entity, CnLabInstanceStatus.STOPPED, entityManager);
+      return super.createWithStatusTransaction(entity, CnLabInstanceStatus.SERVER_STOPPED, entityManager);
     } else {
-      return super.createWithStatus(entity, CnLabInstanceStatus.STOPPED);
+      return super.createWithStatus(entity, CnLabInstanceStatus.SERVER_STOPPED);
     }
   }
 
@@ -111,7 +111,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
           userId: userInfo.userId
         },
         currentStatus: {
-          status: CnLabInstanceStatus.RUNNING
+          status: CnLabInstanceStatus.SERVER_RUNNING
         },
         spaceId: userInfo.spaceId
       },
@@ -122,20 +122,24 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     });
   }
 
-  public markInstanceAsRunning(id: string): Promise<CnLabInstance> {
-    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.RUNNING, id);
+  public markInstanceAsServerRunning(id: string): Promise<CnLabInstance> {
+    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_RUNNING, id);
   }
 
-  public markInstanceAsStopped(id: string): Promise<CnLabInstance> {
-    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.STOPPED, id);
+  public markInstanceAsLabRunning(id: string): Promise<CnLabInstance> {
+    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.LAB_RUNNING, id);
   }
 
-  public markInstanceAsStarting(id: string): Promise<CnLabInstance> {
-    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.STARTING, id);
+  public markInstanceAsServerStopped(id: string): Promise<CnLabInstance> {
+    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_STOPPED, id);
   }
 
-  public markInstanceAsStopping(id: string): Promise<CnLabInstance> {
-    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.STOPPING, id);
+  public markInstanceAsServerStarting(id: string): Promise<CnLabInstance> {
+    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_STARTING, id);
+  }
+
+  public markInstanceAsServerStopping(id: string): Promise<CnLabInstance> {
+    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_STOPPING, id);
   }
 
 

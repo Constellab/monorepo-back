@@ -15,6 +15,7 @@ import {CnLabInstance} from '../cn-lab-instance.entity';
 import {CnLabInstancesService} from '../cn-lab-instances.service';
 import {CnLabInstanceStatus} from '../status/cn-lab-instance-status.enum';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
+import {CnExternalLabApiService} from '../../cn-external-lab-api/cn-external-lab-api.service';
 
 /**
  * Service to manage the lab server via the cloud provider
@@ -29,7 +30,8 @@ export class CnLabServerService {
 
 
   constructor(private ovhCloudProviderService: CnCloudProviderOvhService,
-              private labInstanceService: CnLabInstancesService) {
+              private labInstanceService: CnLabInstancesService,
+              private externalLabApiService: CnExternalLabApiService) {
   }
 
   public async getCompleteInfo(labInstance: CnLabInstance): Promise<CnCpCompleteInfo> {
@@ -260,9 +262,9 @@ export class CnLabServerService {
     labInstance.serverInstanceId = null;
     await this.labInstanceService.update(labInstance);
 
-    if (labInstance.currentStatus.status !== CnLabInstanceStatus.STOPPED) {
+    if (labInstance.currentStatus.status !== CnLabInstanceStatus.SERVER_STOPPED) {
       // update lab instance status
-      await this.labInstanceService.updateCurrentStatus(CnLabInstanceStatus.STOPPED, labInstance.id);
+      await this.labInstanceService.updateCurrentStatus(CnLabInstanceStatus.SERVER_STOPPED, labInstance.id);
     }
   }
 
@@ -278,9 +280,9 @@ export class CnLabServerService {
     // if the server is running
     if (serverInstance.status === 'RUNNING') {
       //set lab instance to running if it is not already
-      if (labInstance.currentStatus.status !== CnLabInstanceStatus.RUNNING) {
-        this.logger.log(`Refreshing lab ${labInstance.id} status to running`);
-        return await this.labInstanceService.markInstanceAsRunning(labInstance.id);
+      if (labInstance.currentStatus.status !== CnLabInstanceStatus.SERVER_RUNNING) {
+        this.logger.log(`Refreshing lab ${labInstance.id} status to server running`);
+        return await this.labInstanceService.markInstanceAsServerRunning(labInstance.id);
       } else {
         throw new BlBadRequestException(`Lab is already running`);
       }
@@ -292,7 +294,7 @@ export class CnLabServerService {
 
     // if the server is stopped
     await cloudProviderService.startInstance(labInstance.serverInstanceId);
-    labInstance = await this.labInstanceService.markInstanceAsStarting(labInstance.id);
+    labInstance = await this.labInstanceService.markInstanceAsServerStarting(labInstance.id);
 
     this.checkServerNotBusyAsync(labInstance);
     return labInstance;
@@ -310,9 +312,9 @@ export class CnLabServerService {
     // if the server is stopped
     if (serverInstance.status === 'STOPPED') {
       //set lab instance to stopped if it is not already
-      if (labInstance.currentStatus.status !== CnLabInstanceStatus.STOPPED) {
+      if (labInstance.currentStatus.status !== CnLabInstanceStatus.SERVER_STOPPED) {
         this.logger.log(`Refreshing lab ${labInstance.id} status to stopped`);
-        return await this.labInstanceService.markInstanceAsStopped(labInstance.id);
+        return await this.labInstanceService.markInstanceAsServerStopped(labInstance.id);
       } else {
         throw new BlBadRequestException(`Lab is already stopped`);
       }
@@ -324,7 +326,7 @@ export class CnLabServerService {
 
     // if the server is running
     await cloudProviderService.stopInstance(labInstance.serverInstanceId);
-    labInstance = await this.labInstanceService.markInstanceAsStopping(labInstance.id);
+    labInstance = await this.labInstanceService.markInstanceAsServerStopping(labInstance.id);
 
     this.checkServerNotBusyAsync(labInstance);
     return labInstance;
@@ -348,8 +350,8 @@ export class CnLabServerService {
       const labInstance = await this.refreshLabStatus(labInstanceId);
 
 
-      if (labInstance.currentStatus.status === CnLabInstanceStatus.RUNNING ||
-        labInstance.currentStatus.status === CnLabInstanceStatus.STOPPED) {
+      if (labInstance.currentStatus.status === CnLabInstanceStatus.SERVER_RUNNING ||
+        labInstance.currentStatus.status === CnLabInstanceStatus.SERVER_STOPPED) {
         return;
       }
       count++;
@@ -362,10 +364,19 @@ export class CnLabServerService {
    */
   public async refreshLabStatus(labInstanceId: string): Promise<CnLabInstance> {
     const labInstance = await this.labInstanceService.findByIdAndCheck(labInstanceId);
-    if (!labInstance.serverInstanceId) {
-      return await this.labInstanceService.markInstanceAsStopped(labInstanceId);
+
+    // if the lab is running, don't check server status, mark it as running
+    const healthCheck = await this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo());
+    if(healthCheck){
+      return await this.labInstanceService.markInstanceAsLabRunning(labInstanceId);
     }
 
+    // if the server instance id is not set, mark the lab as stopped
+    if (!labInstance.serverInstanceId) {
+      return await this.labInstanceService.markInstanceAsServerStopped(labInstanceId);
+    }
+
+    // check server status
     const cloudProviderService = this.getCloudProviderService(labInstance.getCloudProviderName());
     const serverInstance = await cloudProviderService.getInstance(labInstance.serverInstanceId);
     return await this.updateLabStatusFromServerStatus(labInstance, serverInstance.status);
@@ -378,11 +389,11 @@ export class CnLabServerService {
    */
   private updateLabStatusFromServerStatus(labInstance: CnLabInstance, serverInstanceStatus: CnCpInstanceStatus): Promise<CnLabInstance> {
     const statusMapping: Record<CnCpInstanceStatus, CnLabInstanceStatus> = {
-      'RUNNING': CnLabInstanceStatus.RUNNING,
-      'STOPPED': CnLabInstanceStatus.STOPPED,
-      'CREATING': CnLabInstanceStatus.STARTING,
-      'RESTARTING': CnLabInstanceStatus.STARTING,
-      'STOPPING': CnLabInstanceStatus.STOPPING,
+      'RUNNING': CnLabInstanceStatus.SERVER_RUNNING,
+      'STOPPED': CnLabInstanceStatus.SERVER_STOPPED,
+      'CREATING': CnLabInstanceStatus.SERVER_STARTING,
+      'RESTARTING': CnLabInstanceStatus.SERVER_STARTING,
+      'STOPPING': CnLabInstanceStatus.SERVER_STOPPING,
     };
 
     const labStatus: CnLabInstanceStatus = statusMapping[serverInstanceStatus];

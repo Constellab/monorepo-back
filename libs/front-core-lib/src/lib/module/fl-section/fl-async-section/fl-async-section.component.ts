@@ -16,6 +16,7 @@ import {FlDatasource} from '../../../model/datasource/fl-datasource.class';
 import {delay} from 'rxjs/operators';
 import {FlServerError} from '../../fl-api/model/fl-server-error.class';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
+import {FlStatusEvent} from '../../../model/fl-status-event.class';
 
 @Component({
   selector: 'fl-async-section',
@@ -83,6 +84,12 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
    */
   @Input() showServerErrorText: boolean = false;
 
+  /**
+   * If true, the provided observable is a FlStatusEvent observable.
+   * The FlStatusEvent is used to manage the success, loading and error state of the section.
+   */
+  @Input() isFlStatusEvent: boolean = false;
+
   /** Content that will be rendered lazily. */
   @ContentChild(FlSectionBodyDirective, {read: TemplateRef, static: true}) lazyContent: TemplateRef<any>;
 
@@ -113,10 +120,19 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
 
     // the delay is useful to init other input before call success or error method
     // because this method is call before ngOnInit
-    this.subscription = observable.pipe(delay(0)).subscribe(
-      result => this.onSuccess(result),
-      error => this.onError(error)
-    );
+    this.subscription = observable.pipe(delay(0)).subscribe({
+      next: result => this.onResponse(result),
+      error: error => this.onError(error)
+    });
+  }
+
+  private onResponse(result: any): void {
+    if (this.isFlStatusEvent) {
+      this.onStatusEvent(result as FlStatusEvent);
+      return;
+    }
+
+    this.onSuccess(result);
   }
 
   private onSuccess(result: any): void {
@@ -142,6 +158,14 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
       this.setInfoText(true);
     }
     this.cdr.detectChanges();
+  }
+
+  private onStatusEvent(event: FlStatusEvent): void {
+    if (event.status === 'success') {
+      this.onSuccess(event.object);
+    } else if (event.status === 'error') {
+      this.onError(event.error);
+    }
   }
 
   private setInfoText(error: boolean): void {

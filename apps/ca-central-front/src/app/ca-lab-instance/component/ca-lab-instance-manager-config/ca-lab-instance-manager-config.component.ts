@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {Observable} from 'rxjs';
 import {CaLabManagerConfig} from '../../../ca-core/model/entities/lab/ca-lab-manager.class';
+import {CaLabInstanceDetailManagerState} from '../../state/ca-lab-instance-detail-manager.state';
 
 /**
  * Component to configure the lab instance (bricks)
@@ -17,11 +18,16 @@ export class CaLabInstanceManagerConfigComponent implements OnInit {
 
   labConfig$: Observable<CaLabManagerConfig>;
 
-  constructor(private labInstanceService: CaLabInstanceService) {
+  constructor(private labInstanceService: CaLabInstanceService,
+              private managerState: CaLabInstanceDetailManagerState) {
   }
 
   ngOnInit(): void {
     this.labConfig$ = this.labInstanceService.getLabManagerConfig(this.labInstanceId);
+  }
+
+  refreshStatus(): void {
+    this.managerState.refreshStatus();
   }
 
 }

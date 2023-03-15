@@ -92,6 +92,8 @@ import {CaLabOnPremiseConfigComponent} from './component/ca-lab-on-premise-confi
 import { CaLabOnPremiseDownloadConfigComponent } from './component/ca-lab-on-premise-download-config/ca-lab-on-premise-download-config.component';
 import { CaLabManagerUpdateDialogComponent } from './component/ca-lab-manager-update-dialog/ca-lab-manager-update-dialog.component';
 import { CaLabPullBiotaFormDialogComponent } from './component/ca-lab-pull-biota-form-dialog/ca-lab-pull-biota-form-dialog.component';
+import { CaLabInstanceManagerAdvancedComponent } from './component/ca-lab-instance-manager-advanced/ca-lab-instance-manager-advanced.component';
+import { CaLabInstanceGlobalStatusComponent } from './component/ca-lab-instance-global-status/ca-lab-instance-global-status.component';
 
 /**
  * Module the lab instance detail page with iframe for the lab
@@ -134,6 +136,8 @@ import { CaLabPullBiotaFormDialogComponent } from './component/ca-lab-pull-biota
     CaLabOnPremiseDownloadConfigComponent,
     CaLabManagerUpdateDialogComponent,
     CaLabPullBiotaFormDialogComponent,
+    CaLabInstanceManagerAdvancedComponent,
+    CaLabInstanceGlobalStatusComponent,
   ],
   imports: [
     CommonModule,

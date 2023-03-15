@@ -1,9 +1,3 @@
-export type CnLabContainersStatus = 'STOP' | 'DOWN' | 'UP' | 'PARTIALLY_UP'
-
-export interface CnLabContainerStatusInfo {
-  status: CnLabContainersStatus;
-  info?: string;
-}
 
 export interface CnLabDockerPs {
   command: string;
@@ -34,21 +28,6 @@ export interface CnLabPullBiotaOptions {
   forceUpdate?: boolean;
 }
 
-export type CnLabTaskStatus = 'RUNNING' | 'SUCCESS' | 'ERROR';
-
-export interface CnLabTaskStatusInfo {
-  name: string;
-  status: CnLabTaskStatus;
-  info?: string;
-}
-
-export interface CnLabManagerStatus {
-  containersStatus: CnLabContainerStatusInfo;
-  currentTask?: CnLabTaskStatusInfo;
-  adminerIsRunning: boolean;
-  labManagerVersion: string;
-  labManagerRecommendedVersion: string; // version provided by central to tell the compatible version for the lab manager
-}
 
 /**
  * Object to config the lab manager required on init

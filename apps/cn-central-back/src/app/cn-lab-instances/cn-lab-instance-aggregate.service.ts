@@ -15,7 +15,7 @@ import {
   CnLabComposeRestartOptions,
   CnLabComposeUpOptions,
   CnLabDockerPs,
-  CnLabManagerStatus, CnLabPullBiotaOptions
+  CnLabPullBiotaOptions
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnLabManagerService} from './cn-lab-manager.service';
 import {CnLabInstanceToken} from './user/cn-lab-instance-token.class';
@@ -477,7 +477,7 @@ export class CnLabInstanceAggregateService {
 
   //////////////////////////// LAB MANAGER ////////////////////////////////
 
-  public async getLabManagerStatus(labId: string): Promise<CnLabManagerStatus> {
+  public async getLabManagerStatus(labId: string): Promise<any> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.getLabStatus(labInstance);
   }
@@ -552,6 +552,10 @@ export class CnLabInstanceAggregateService {
     return this.labManagerService.stopAdminer(labInstance);
   }
 
+  public getLabManagerRecommendedVersion(): string {
+    return this.labManagerService.getLabManagerRecommendedVersion();
+  }
+
   /////////////////////////// BACKUP ////////////////////////////////
 
   public async createProdBackup(labId: string): Promise<CnExternalLabBackup> {
@@ -583,8 +587,9 @@ export class CnLabInstanceAggregateService {
   public async registerLabConfig(labStart: CnLabInstanceStartDTO): Promise<void> {
     const labConfig = await this.labConfigService.getOrCreateLabConfig(labStart.lab_config);
 
-    const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
+    let labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
 
+    labInstance = await this.labInstancesService.markInstanceAsLabRunning(labInstance.id)
     await this.updateLabInstanceConfig(labInstance, labConfig);
   }
 
@@ -620,7 +625,7 @@ export class CnLabInstanceAggregateService {
   public async initServer(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
     let labInstance = await this.checkServerStatusBeforeAction(labInstanceId);
 
-    labInstance = await this.labInstancesService.markInstanceAsStarting(labInstance.id);
+    labInstance = await this.labInstancesService.markInstanceAsServerStarting(labInstance.id);
 
     // call the init async (return the server response immediately)
     this.initServerAsync(labInstance).catch(
@@ -647,7 +652,7 @@ export class CnLabInstanceAggregateService {
   public async createServer(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
     let labInstance = await this.checkServerStatusBeforeAction(labInstanceId);
 
-    labInstance = await this.labInstancesService.markInstanceAsStarting(labInstance.id);
+    labInstance = await this.labInstancesService.markInstanceAsServerStarting(labInstance.id);
 
     // call the init async (return the server response immediately)
     this.createServerAsync(labInstance, true).catch(
@@ -677,7 +682,7 @@ export class CnLabInstanceAggregateService {
       throw new BlBadRequestException(`SSH connection to ${labInstance.virtualHost} failed`);
     }
 
-    labInstance = await this.labInstancesService.markInstanceAsStarting(labInstance.id);
+    labInstance = await this.labInstancesService.markInstanceAsServerStarting(labInstance.id);
 
     // call the init async (return the server response immediately)
     this.configureServerAsync(labInstance, true).catch(

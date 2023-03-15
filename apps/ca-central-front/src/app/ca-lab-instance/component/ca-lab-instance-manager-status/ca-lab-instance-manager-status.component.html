@@ -1,46 +1,60 @@
-<!-- Container status-->
-<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="1em"
-     class="status">
-  <span>{{'lab_manager_status' | translate}} : </span>
-  <fl-status-chip [status]="labStatus.containersStatus.status"></fl-status-chip>
-  <span *ngIf="labStatus.containersStatus.info">{{labStatus.containersStatus.info}}</span>
-</div>
+<ng-container *ngIf="managerStatus$ | async as labStatus">
+  <!-- Current status -->
+  <div *ngIf="currentStatus$ | async as currentStatus" class="current-status">
+    <fl-text-icon>
+      <mat-icon [ngClass]="currentStatus.iconClass">{{currentStatus.icon}}</mat-icon>
+      {{currentStatus.text | translate}}
 
-<!-- Lab task -->
-<div *ngIf="labStatus.currentTask != null; else noTask"
-     fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="1em">
-  <span>{{'lab_manager_task' | translate}} : </span>
-  <fl-status-chip [status]="labStatus.currentTask.status"></fl-status-chip>
-  <span>{{labStatus.currentTask.name}} {{labStatus.currentTask.info}}</span>
-</div>
+      <button *ngIf="currentStatus.buttonText" mat-stroked-button class="status-action-button"
+              type="button" (click)="currentStatusAction(currentStatus.buttonText)"
+              [disabled]="labStatus.currentTask.status.value === 'RUNNING'">
+        {{currentStatus.buttonText | translate}}
+      </button>
+    </fl-text-icon>
+  </div>
 
-<fl-key-value>
-  <fl-key>{{'lab_manager_version' | translate}}</fl-key>
-  {{labStatus.labManagerVersion}}
-</fl-key-value>
 
-<div *ngIf="labStatus.labManagerVersion !== labStatus.labManagerRecommendedVersion"
-     class="version-warning">
-  <fl-text-icon>
-    <mat-icon color="warn">warnings</mat-icon>
-    {{'lab_manager_not_compatible_with_central' | translate: {
-    'labManagerVersion': labStatus.labManagerVersion,
-    'compatibleVersion': labStatus.labManagerRecommendedVersion
-  } }}
-  </fl-text-icon>
-</div>
+  <!-- Lab task -->
+  <div *ngIf="labStatus.currentTask; else noTask"
+       fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="1em">
+    <span>{{'lab_manager_task' | translate}} : </span>
 
-<fl-key-value *ngIf="labStatus.biotaDbUrl">
-  <fl-key>{{'biota_db_url' | translate}}</fl-key>
-  {{labStatus.biotaDbUrl}}
-</fl-key-value>
+    <fl-loader size="small" *ngIf="labStatus.currentTask.status.value === 'RUNNING'; else finished"></fl-loader>
+    <ng-template #finished>
+      <fl-status-chip [status]="labStatus.currentTask.status" size="small"></fl-status-chip>
+    </ng-template>
 
-<ng-template #noTask>
-  {{'lab_manager_no_task' | translate}}
-</ng-template>
+
+    <span>{{labStatus.currentTask.name}} {{labStatus.currentTask.info}}</span>
+  </div>
+
+  <ng-template #noTask>
+    {{'lab_manager_no_task' | translate}}
+  </ng-template>
+
+
+  <fl-key-value>
+    <fl-key>{{'lab_manager_version' | translate}}</fl-key>
+    {{labStatus.version}}
+  </fl-key-value>
+
+  <ng-container *ngIf="recommendedVersion$ | async as recommendedVersion">
+    <div *ngIf="labStatus.version && labStatus.version !== recommendedVersion"
+         class="version-warning">
+      <fl-text-icon>
+        <mat-icon color="warn">warnings</mat-icon>
+        {{'lab_manager_not_compatible_with_central' | translate: {
+        'labManagerVersion': labStatus.version,
+        'compatibleVersion': recommendedVersion
+      } }}
+      </fl-text-icon>
+    </div>
+  </ng-container>
+
+</ng-container>
 
 <!-- Lab Adminer runnings -->
-<div *ngIf="labStatus.adminerIsRunning">
+<div *ngIf="adminerUrl$ | async as adminerUrl">
   <fl-text-icon class="g-text-big g-warn-text">
     <mat-icon>warnings</mat-icon>
     {{'lab_manager_adminer_running' | translate}}

@@ -4,7 +4,7 @@ import {
   CnLabComposeUpOptions,
   CnLabDockerPs,
   CnLabManagerInitConfig,
-  CnLabManagerStatus, CnLabPullBiotaOptions
+  CnLabPullBiotaOptions
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnExternalLabManagerApiService} from '../cn-external-lab-api/cn-external-lab-manager-api.service';
 import {CnLabInstance} from './cn-lab-instance.entity';
@@ -33,16 +33,17 @@ export class CnLabManagerService {
     return this.labManagerApiService.healthCheck(labManagerUrl);
   }
 
-  public async getLabStatus(labInstance: CnLabInstance): Promise<CnLabManagerStatus> {
+  public async getLabStatus(labInstance: CnLabInstance): Promise<any> {
     const isRunning = await this.healthCheck(labInstance.getLabManagerApiInfo().apiUrl);
     if (!isRunning) {
       throw new BlBadRequestException('The lab manager is not running');
     }
 
-    const status = await this.labManagerApiService.getStatus(labInstance.getLabManagerApiInfo());
-    // set the lab manager compatible version for central
-    status.labManagerRecommendedVersion = this.configService.getLabManagerRecommendedVersion();
-    return status;
+    return this.labManagerApiService.getStatus(labInstance.getLabManagerApiInfo());
+  }
+
+  public getLabManagerRecommendedVersion(): string {
+    return this.configService.getLabManagerRecommendedVersion();
   }
 
   public async listContainers(labInstance: CnLabInstance): Promise<CnLabDockerPs[]> {

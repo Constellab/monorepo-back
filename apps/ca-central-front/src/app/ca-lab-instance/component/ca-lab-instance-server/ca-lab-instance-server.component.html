@@ -10,58 +10,26 @@
   <fl-card-body>
 
     <ng-container *ngIf="status$ | async as status">
-      <div *ngIf="status.labStatus.value === 'STARTING' || status.labStatus.value === 'STOPPING'"
+      <div *ngIf="status.labStatus.value === 'SERVER_STARTING' || status.labStatus.value === 'SERVER_STOPPING'"
            fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em">
 
         <fl-loader size="small"></fl-loader>
-        <p>{{(status.labStatus.value === 'STARTING' ? 'lab_is_starting' : 'lab_is_stopping') | translate}}</p>
+        <p>{{(status.labStatus.value === 'SERVER_STARTING' ? 'lab_is_starting' : 'lab_is_stopping') | translate}}</p>
       </div>
     </ng-container>
 
+    <fl-key-value *ngIf="status$ | async as status">
+      <fl-key>{{'lab_server_current_progress' | translate}}</fl-key>
+      {{status.serverProgressText}}
+    </fl-key-value>
 
     <ca-lab-instance-server-status class="status"></ca-lab-instance-server-status>
-
-    <ng-container *ngIf="status$ | async as status">
-
-      <!--  If the lab is starting or stopping, show current progress message    -->
-      <fl-key-value>
-        <fl-key>{{'lab_server_current_progress' | translate}}</fl-key>
-        {{status.serverProgressText}}
-      </fl-key-value>
-
-
-      <fl-text-ok-nok [value]="status.hasServerInstanceId"
-                      [okText]="'lab_server_instance_configured' | translate"
-                      [nokText]="'lab_server_instance_not_configured' | translate">
-      </fl-text-ok-nok>
-
-      <fl-text-ok-nok [value]="status.hasServerVolumeId"
-                      [okText]="'lab_server_volume_configured' | translate"
-                      [nokText]="'lab_server_volume_not_configured' | translate">
-      </fl-text-ok-nok>
-
-      <fl-text-ok-nok [value]="status.labManagerIsRunning"
-                      [okText]="'lab_manager_running' | translate"
-                      [nokText]="'lab_manager_not_running' | translate">
-      </fl-text-ok-nok>
-
-      <fl-text-ok-nok [value]="status.labIsRunning"
-                      [okText]="'lab_is_running' | translate"
-                      [nokText]="'lab_is_not_running' | translate">
-      </fl-text-ok-nok>
-    </ng-container>
 
 
     <div class="g-section">
 
       <ca-lab-instance-start-stop *ngIf="isOwner$ | async" class="g-button-action actions-button">
       </ca-lab-instance-start-stop>
-
-      <button mat-stroked-button type="button" (click)="forceStatusRefresh()"
-              class="g-button-small actions-button">
-        <mat-icon>refresh</mat-icon>
-        {{'refresh_status' | translate}}
-      </button>
 
       <button mat-stroked-button type="button" class="g-button-small actions-button"
               (click)="openServerInfoDialog()">

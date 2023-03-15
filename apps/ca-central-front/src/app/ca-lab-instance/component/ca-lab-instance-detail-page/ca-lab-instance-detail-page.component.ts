@@ -5,12 +5,14 @@ import {ActivatedRoute} from '@angular/router';
 import {CaLabInstanceDetailPageState} from '../../state/ca-lab-instance-detail-page.state';
 import {Observable} from 'rxjs';
 import {CaLabInstanceDetailServerState} from '../../state/ca-lab-instance-detail-server.state';
+import {CaLabInstanceDetailManagerState} from '../../state/ca-lab-instance-detail-manager.state';
 
 @Component({
   selector: 'ca-lab-instance-detail-page',
   templateUrl: './ca-lab-instance-detail-page.component.html',
   styleUrls: ['./ca-lab-instance-detail-page.component.scss'],
-  providers: [CaLabInstanceDetailPageState, CaLabInstanceDetailServerState]
+  providers: [CaLabInstanceDetailPageState,
+    CaLabInstanceDetailServerState, CaLabInstanceDetailManagerState]
 })
 export class CaLabInstanceDetailPageComponent implements OnInit {
 

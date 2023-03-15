@@ -6,10 +6,16 @@
   <form (ngSubmit)="submit()" id="update-lab-manager">
 
     <div class="help-text">
-      {{'lab_manager_not_compatible_with_central' | translate: {
-      'labManagerVersion': input.labManagerCurrentVersion,
-      'compatibleVersion': input.labManagerRecommendedVersion
-    } }}
+
+      <fl-key-value>
+        <fl-key>{{'lab_manager_version' | translate}}</fl-key>
+        {{input.labManagerCurrentVersion}}
+      </fl-key-value>
+
+      <fl-key-value>
+        <fl-key>{{'lab_manager_recommended_version' | translate}}</fl-key>
+        {{input.labManagerRecommendedVersion}}
+      </fl-key-value>
     </div>
 
     <!--  Lab manager version  -->

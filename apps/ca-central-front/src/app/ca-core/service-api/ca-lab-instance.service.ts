@@ -27,7 +27,7 @@ import {
   CaLabComposeRestartOptions,
   CaLabComposeUpOptions,
   CaLabDockerPs,
-  CaLabManagerConfig,
+  CaLabManagerConfig, CaLabManagerRecommendedVersion,
   CaLabManagerStatus, CaLabPullBiotaOptions,
   CaLabTaskStatusInfo
 } from '../model/entities/lab/ca-lab-manager.class';
@@ -197,7 +197,8 @@ export class CaLabInstanceService {
   }
 
   public getLabManagerStatus(id: string): Observable<CaLabManagerStatus> {
-    return this.apiService.get(`${this.route}/${id}/lab-manager/status`, CaLabManagerStatus);
+    return this.apiService.get(`${this.route}/${id}/lab-manager/status`, CaLabManagerStatus,
+      {hideSnackBarError: true});
   }
 
   public getCurrentTask(id: string): Observable<CaLabTaskStatusInfo> {
@@ -259,6 +260,10 @@ export class CaLabInstanceService {
 
   public stopAdminer(id: string): Observable<boolean> {
     return this.apiService.put(`${this.route}/${id}/lab-manager/adminer/stop`, null);
+  }
+
+  public getLabManagerRecommendedVersion(): Observable<CaLabManagerRecommendedVersion> {
+    return this.apiService.get(`${this.route}/lab-manager/recommended-version`);
   }
 
   //////////////////////////// BACKUP ////////////////////////////////

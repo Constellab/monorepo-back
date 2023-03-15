@@ -1,13 +1,13 @@
+.content {
+  margin-bottom: 1em;
+}
 
-.action-buttons button{
+.action-buttons button {
   margin-right: 1em;
+  margin-bottom: 0.5em;
 }
 
-.content{
-  margin-bottom: 1em;
-}
-
-.divider{
+.advanced-config{
   margin-top: 1em;
-  margin-bottom: 1em;
+  background-color: var(--main-background);
 }

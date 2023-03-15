@@ -25,6 +25,7 @@ export class CaLabInstanceDetailComponent implements OnInit {
 
   labInstance$: Observable<CaLabInstance>;
   isOwner$: Observable<boolean> = this.state.isLabOwner$();
+  labIsRunning$: Observable<boolean> = this.state.labIsRunning$();
   isLoading: boolean = false;
 
   constructor(private state: CaLabInstanceDetailPageState,

@@ -19,7 +19,7 @@ import {
   CnLabComposeRestartOptions,
   CnLabComposeUpOptions,
   CnLabDockerPs,
-  CnLabManagerStatus, CnLabPullBiotaOptions
+  CnLabPullBiotaOptions
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
@@ -184,7 +184,7 @@ export class CnLabInstancesController {
 
   //////////////////////////// STATUS ////////////////////////////////
   /**
-   * return the history of the status
+   * return the lab status
    */
   @Get(':id/status')
   getStatus(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusDTO> {
@@ -267,7 +267,7 @@ export class CnLabInstancesController {
   }
 
   @Get(':id/lab-manager/status')
-  async getContainersStatus(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabManagerStatus> {
+  async getContainersStatus(@Param('id', new ParseUUIDPipe()) id: string): Promise<any> {
     return this.aggregateService.getLabManagerStatus(id);
   }
 
@@ -342,6 +342,13 @@ export class CnLabInstancesController {
   @Put(':id/lab-manager/adminer/stop')
   async stopAdminer(@Param('id', new ParseUUIDPipe()) id: string): Promise<boolean> {
     return await this.aggregateService.stopAdminer(id);
+  }
+
+  @Get('lab-manager/recommended-version')
+  getLabManagerRecommendedVersion(): { labManagerRecommendedVersion: string } {
+    return {
+      labManagerRecommendedVersion: this.aggregateService.getLabManagerRecommendedVersion()
+    };
   }
 
   //////////////////////////// BACKUP ////////////////////////////////

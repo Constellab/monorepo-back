@@ -10,7 +10,7 @@ export class CnLabInstanceStatusHistory extends CnStatusHistory<CnLabInstanceSta
 
   @Column({
     type: 'enum', enum: CnLabInstanceStatus, nullable: false,
-    default: CnLabInstanceStatus.RUNNING,
+    default: CnLabInstanceStatus.SERVER_RUNNING,
   })
   status: CnLabInstanceStatus;
 

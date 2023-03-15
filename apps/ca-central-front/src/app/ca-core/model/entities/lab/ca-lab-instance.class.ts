@@ -13,17 +13,18 @@ import {CaSpace} from '../space/ca-space.class';
 import {CaLabInstanceUserRole} from './ca-lab-instance-user.class';
 import {CaCloudProviderRegion} from '../ca-cloud-provider.class';
 
-export type CaLabInstanceStatus = 'RUNNING' | 'STOPPED' | 'STARTING' | 'STOPPING';
+export type CaLabInstanceStatus = 'LAB_RUNNING' | 'SERVER_STOPPED' | 'SERVER_STARTING' | 'SERVER_STOPPING' | 'SERVER_RUNNING';
 export type CaLabInstanceBillingMode = 'HOURLY' | 'MONTHLY';
 export type CaLabInstanceVolumeType = 'CLASSIC' | 'HIGH_SPEED';
 export type CaLabInstanceType = 'CLOUD' | 'ON_PREMISE';
 export type CaLabOnPromisePlatform = 'WINDOWS' | 'LINUX' | 'MAC';
 
 export const caLabInstanceStatusDict: FlStatusDict<CaLabInstanceStatus> = {
-  RUNNING: FlStatusHelper.getRunningStatus('RUNNING'),
-  STOPPED: FlStatusHelper.getStoppedStatus('STOPPED'),
-  STARTING: FlStatusHelper.getWarningStatus('STARTING', 'lab_starting'),
-  STOPPING: FlStatusHelper.getWarningStatus('STOPPING', 'lab_stopping'),
+  LAB_RUNNING: FlStatusHelper.getRunningStatus('LAB_RUNNING'),
+  SERVER_STOPPED: FlStatusHelper.getStoppedStatus('SERVER_STOPPED'),
+  SERVER_STARTING: FlStatusHelper.getWarningStatus('SERVER_STARTING', 'lab_starting'),
+  SERVER_STOPPING: FlStatusHelper.getWarningStatus('SERVER_STOPPING', 'lab_stopping'),
+  SERVER_RUNNING: FlStatusHelper.getWarningStatus('SERVER_RUNNING', 'lab_server_running'),
 };
 
 export class CaLabInstanceStatusHistory extends CaStatusHistory<CaLabInstanceStatus> {
@@ -75,7 +76,7 @@ export class CaLabInstance extends CaBaseEntity {
   onPremisePlatform?: CaLabOnPromisePlatform;
 
   public isRunning(): boolean {
-    return this.currentStatus.status.value === 'RUNNING';
+    return this.currentStatus.status.value === 'LAB_RUNNING';
   }
 
   get adminerUrl(): string {

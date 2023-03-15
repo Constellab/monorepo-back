@@ -64,13 +64,6 @@ export class CaLabInstanceDetailServerState {
     this.openDialog(input, this.labInstanceService.configureServer(this.state.getLabInstanceId()));
   }
 
-  refreshStatus(): void {
-    this.portalService.addAction({
-      type: CaLabInstanceDetailPageState.actionType,
-      text: {text: 'refresh_status', translateText: true},
-      action: this.labInstanceService.refreshStatus(this.state.getLabInstanceId())
-    });
-  }
 
   updateLabManager(currentVersion: string, recommendedVersion: string): void {
     const input: CaLabManagerUpdateDialogInput = {

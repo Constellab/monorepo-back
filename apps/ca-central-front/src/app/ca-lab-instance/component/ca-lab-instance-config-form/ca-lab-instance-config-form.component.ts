@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {FlDialogService, FlSnackBarService} from '@monorepo/front-core-lib';
 import {
@@ -31,6 +31,8 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
   @Input() labConfig: CaLabManagerConfig;
 
   @Input() showAdvanced: boolean = true;
+
+  @Output() labConfigured: EventEmitter<void> = new EventEmitter<void>();
 
   isLoading: boolean = false;
 
@@ -105,6 +107,7 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
       this.snackBarService.openSuccessMessage({text: 'lab_instance_on_premise_config_updated', translateText: true}, 10000);
     }
     this.configChanged = false;
+    this.labConfigured.emit();
   }
 
   resetToDefault(): void {

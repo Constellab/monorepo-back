@@ -42,10 +42,6 @@ export class CaLabInstanceServerComponent implements OnInit {
     this.serverState.updateDockerlabRepo();
   }
 
-  forceStatusRefresh(): void {
-    this.serverState.refreshStatus();
-  }
-
   deleteServer(): void {
     this.serverState.deleteServer();
   }

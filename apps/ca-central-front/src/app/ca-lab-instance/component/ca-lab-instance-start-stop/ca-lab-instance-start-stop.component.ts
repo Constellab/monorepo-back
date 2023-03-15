@@ -23,7 +23,7 @@ export class CaLabInstanceStartStopComponent implements OnInit {
 
   status$: Observable<CaLabInstanceStatusDTO> = this.state.getStatus$();
   serverIsReady$: Observable<boolean> = this.state.getStatus$().pipe(
-    map(status => status.hasServerInstanceId && status.labStatus.value != 'STARTING' && status.labStatus.value != 'STOPPING')
+    map(status => status.hasServerInstanceId && status.labStatus.value != 'SERVER_STARTING' && status.labStatus.value != 'SERVER_STOPPING')
   );
 
   constructor(private state: CaLabInstanceDetailPageState,
@@ -64,11 +64,11 @@ export class CaLabInstanceStartStopComponent implements OnInit {
   private onLabUpdate(result: FlConfirmDialogResult<CaLabInstance>): void {
     if (!result.choice) return;
     let successText: string;
-    if (result.result.currentStatus.status.value === 'STARTING') {
+    if (result.result.currentStatus.status.value === 'SERVER_STARTING') {
       successText = 'lab_is_starting';
-    } else if (result.result.currentStatus.status.value === 'STOPPING') {
+    } else if (result.result.currentStatus.status.value === 'SERVER_STOPPING') {
       successText = 'lab_is_stopping';
-    } else if (result.result.currentStatus.status.value === 'RUNNING') {
+    } else if (result.result.currentStatus.status.value === 'LAB_RUNNING') {
       successText = 'lab_started';
     } else {
       successText = 'lab_stopped';

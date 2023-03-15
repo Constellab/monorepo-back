@@ -180,7 +180,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   }
 
   isRunning(): boolean {
-    return this.currentStatus?.status === CnLabInstanceStatus.RUNNING ?? false;
+    return this.currentStatus?.status === CnLabInstanceStatus.SERVER_RUNNING ?? false;
   }
 
   getGlabApiInfo(): CnExternalApiInfo {
@@ -228,7 +228,8 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   }
 
   public serverIsBusy(): boolean {
-    return this.currentStatus.status === CnLabInstanceStatus.STARTING || this.currentStatus.status === CnLabInstanceStatus.STOPPING;
+    return this.currentStatus.status === CnLabInstanceStatus.SERVER_STARTING ||
+      this.currentStatus.status === CnLabInstanceStatus.SERVER_STOPPING;
   }
 
   public setSpace(space: CnSpace): void {

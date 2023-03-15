@@ -83,9 +83,19 @@ export class CaLabManagerStatus {
 
   adminerIsRunning: boolean;
 
-  labManagerVersion: string;
-  labManagerRecommendedVersion: string; // version provided by central to tell the compatible version for the lab manager
-  biotaDbUrl?: string;
+  version: string;
+  biota: {
+    exists: boolean;
+    dbUrl ?: string;
+  };
+  isConfigured: boolean;
+  isInitialized: boolean;
+  // version of the lab manager that has been used to init the lab
+  lastInitVersion: string;
+}
+
+export class CaLabManagerRecommendedVersion{
+  labManagerRecommendedVersion: string;
 }
 
 export class CaLabManagerBrickVersionDTO {

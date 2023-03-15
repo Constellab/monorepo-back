@@ -26,6 +26,7 @@ export class CaLabInstanceDetailPageState implements OnDestroy {
   private id: string;
 
   private timeout: any;
+  private statusRefreshFrequency = 10000;
 
   private subscription: Subscription;
 
@@ -85,8 +86,9 @@ export class CaLabInstanceDetailPageState implements OnDestroy {
     }
 
     // if the lab is busy, refresh the status every 10 seconds
-    if (status.labStatus.value === 'STARTING' || status.labStatus.value === 'STOPPING') {
-      this.timeout = setTimeout(() => this.getStatus(), 10000);
+    if (status.labStatus.value === 'SERVER_STARTING' || status.labStatus.value === 'SERVER_STOPPING' ||
+      status.labStatus.value === 'SERVER_RUNNING') {
+      this.timeout = setTimeout(() => this.getStatus(), this.statusRefreshFrequency);
     }
   }
 
@@ -127,9 +129,9 @@ export class CaLabInstanceDetailPageState implements OnDestroy {
     );
   }
 
-  public serverIsBusy$(): Observable<boolean> {
+  public labIsRunning$(): Observable<boolean> {
     return this.getStatus$().pipe(
-      map(status => status.labStatus.value === 'STARTING' || status.labStatus.value === 'STOPPING')
+      map(status => status.labIsRunning)
     );
   }
 
@@ -141,6 +143,15 @@ export class CaLabInstanceDetailPageState implements OnDestroy {
   public getLabInstanceId(): string {
     return this.id;
   }
+
+  refreshStatus(): void {
+    this.portalService.addAction({
+      type: CaLabInstanceDetailPageState.actionType,
+      text: {text: 'refresh_status', translateText: true},
+      action: this.labInstanceService.refreshStatus(this.getLabInstanceId())
+    });
+  }
+
 
   ngOnDestroy(): void {
     this.labInstance$?.complete();

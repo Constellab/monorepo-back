@@ -55,7 +55,7 @@
 
     <ng-container *ngIf="labInstance.isCloud">
 
-      <ca-lab-login-button [labInstanceId]="labInstance.id" [isRunning]="labInstance.isRunning()"></ca-lab-login-button>
+      <ca-lab-login-button [labInstanceId]="labInstance.id" [isRunning]="labIsRunning$ | async"></ca-lab-login-button>
 
       <ca-lab-instance-start-stop *ngIf="isOwner$ | async"></ca-lab-instance-start-stop>
 

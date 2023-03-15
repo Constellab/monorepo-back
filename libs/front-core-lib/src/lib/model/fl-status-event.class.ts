@@ -1,3 +1,5 @@
+import {Observable} from 'rxjs';
+import {filter, map} from 'rxjs/operators';
 
 
 export type FlStatusEventType = 'waiting' | 'loading' | 'error' | 'success'
@@ -21,3 +23,17 @@ export interface FlStatusEventError<T = any> {
 export interface FlStatusEventEmpty {
   status: 'waiting' | 'loading';
 }
+
+/**
+ * Operator to filter FlStatusEvent to return object only when status is success
+ */
+export function flStatutEventSuccess<T>() {
+  return (source: Observable<FlStatusEvent<T>>): Observable<T> => {
+    return source.pipe(
+      filter((event: FlStatusEvent) => event.status === 'success'),
+      // if the lowercase flag is true, change the input to lowercase
+      map((event: FlStatusEvent) => (event as FlStatusEventSuccess).object),
+    );
+  };
+}
+
