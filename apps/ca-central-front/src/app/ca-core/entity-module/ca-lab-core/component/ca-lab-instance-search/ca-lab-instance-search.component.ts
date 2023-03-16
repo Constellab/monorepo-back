@@ -15,6 +15,7 @@ import {
   CaLabInstanceAdminFormDialogComponent,
   CaLabInstanceAdminFormDialogInput
 } from '../ca-lab-instance-admin-form-dialog/ca-lab-instance-admin-form-dialog.component';
+import {CaLabInstanceSearchMode} from '../ca-lab-instance-search-form/ca-lab-instance-search-form.component';
 
 @Component({
   selector: 'ca-lab-instance-search',
@@ -29,7 +30,7 @@ export class CaLabInstanceSearchComponent implements OnInit {
    * All --> search in all lab, only for admin
    * CurrentSpace --> search in the current space, only for space admin
    */
-  @Input() mode: 'all' | 'current-space';
+  @Input() mode: CaLabInstanceSearchMode;
 
   datasource: CaLabInstanceDatasource;
 

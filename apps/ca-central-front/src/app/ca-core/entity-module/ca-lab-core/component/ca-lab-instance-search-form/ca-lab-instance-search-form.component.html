@@ -15,6 +15,14 @@
       <input matInput formControlName="virtualHost" [placeholder]="'virtual_host' | translate" autocomplete="off">
     </mat-form-field>
 
+    <!--  Space  -->
+    <mat-form-field class="g-search-field" *ngIf="mode === 'all'">
+      <mat-label>{{'space' | translate}}</mat-label>
+      <mat-select formControlName="spaces" multiple>
+        <ca-select-space-options></ca-select-space-options>
+      </mat-select>
+    </mat-form-field>
+
 
     <!--  CurrentStatus  -->
     <mat-form-field class="g-search-field">
@@ -28,17 +36,18 @@
 
 
     <!--  City  -->
-    <mat-form-field class="g-form-input">
+    <mat-form-field class="g-search-field">
       <mat-label>{{'region' | translate}}</mat-label>
-      <mat-select [formControlName]="'city'">
+      <mat-select formControlName="city">
         <ca-select-city-options></ca-select-city-options>
       </mat-select>
     </mat-form-field>
 
+
     <!--  Server info  -->
-    <mat-form-field class="g-form-input">
+    <mat-form-field class="g-search-field">
       <mat-label>{{'server_info' | translate}}</mat-label>
-      <mat-select placeholder="{{'server_info' | translate}}" formControlName="serverInfo">
+      <mat-select [placeholder]="'server_info' | translate" formControlName="serverInfo">
         <ca-select-server-info-options></ca-select-server-info-options>
       </mat-select>
     </mat-form-field>

@@ -6,6 +6,8 @@ import {
   CaSelectUserMode
 } from '../../../ca-user-core/component/ca-select-user-options/ca-select-user-options.component';
 
+export type CaLabInstanceSearchMode = 'all' | 'current-space';
+
 @Component({
   selector: 'ca-lab-instance-search-form',
   templateUrl: './ca-lab-instance-search-form.component.html',
@@ -13,7 +15,7 @@ import {
 })
 export class CaLabInstanceSearchFormComponent implements OnInit {
 
-  @Input() mode: 'all' | 'current-space';
+  @Input() mode: CaLabInstanceSearchMode;
 
   formGp: UntypedFormGroup;
 

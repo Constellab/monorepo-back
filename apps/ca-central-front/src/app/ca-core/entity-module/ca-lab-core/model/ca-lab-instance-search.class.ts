@@ -10,6 +10,7 @@ import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {CaLabInstanceStatus} from '../../../model/entities/lab/ca-lab-instance.class';
 import {CaCity} from '../../../model/entities/ca-city.entity';
 import {CaServerInfo} from '../../../model/entities/ca-server-info.class';
+import {CaSpace} from '../../../model/entities/space/ca-space.class';
 
 
 export class CaLabInstanceSearchFields {
@@ -31,6 +32,9 @@ export class CaLabInstanceSearchFields {
 
   @Type(() => FlSearchDateInterval)
   createdAt: FlSearchDateInterval;
+
+  @Type(() => CaSpace)
+  spaces: CaSpace[];
 }
 
 export class CaLabInstanceSearch {
@@ -43,6 +47,7 @@ export class CaLabInstanceSearch {
     serverInfo: 'server_info',
     createdBy: 'created_by',
     createdAt: 'creation_date',
+    spaces: 'space',
   };
 
   public static advancedSearchConverter: FlSearchCriteriaConverter<CaLabInstanceSearchFields> = {
@@ -53,6 +58,7 @@ export class CaLabInstanceSearch {
     serverInfo: {key: 'serverInfo.id', operator: 'EQ', convertValue: FlSearchConverter.getEntityId},
     createdBy: {key: 'createdBy.id', operator: 'EQ', convertValue: FlSearchConverter.getEntityId},
     createdAt: FlSearchConverter.dateInterval('createdAt'),
+    spaces: {key: 'space.id', operator: 'IN', convertValue: FlSearchConverter.getEntitiesId},
   };
 
   public static getAdvancedSearchForm(): FormGroup<CaLabInstanceSearchFields> {
@@ -67,6 +73,7 @@ export class CaLabInstanceSearch {
         from: [null],
         to: [null],
       }),
+      spaces: null,
     });
   }
 }
