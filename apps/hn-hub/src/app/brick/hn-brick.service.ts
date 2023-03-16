@@ -70,8 +70,8 @@ export class HnBrickService {
   }
 
   async find(): Promise<HnBrickListDTO[]> {
-    const bricks: HnBrick[] = this.isCurrentAdmin() ? await this.bricksRepository.find() :
-      await this.bricksRepository.find({where: {visibility: HnBrickVisibility.PUBLIC}});
+    const bricks: HnBrick[] = this.isCurrentAdmin() ? await this.bricksRepository.find({order: {name: 'ASC'}}) :
+      await this.bricksRepository.find({where: {visibility: HnBrickVisibility.PUBLIC}, order: {name: 'ASC'}});
     const res: HnBrickListDTO[] = [];
     for (const brick of bricks) {
       const resBrick = new HnBrickListDTO();

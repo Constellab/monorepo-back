@@ -65,6 +65,7 @@ h4 {
 
 h5 {
   font-size: 21.3px;
+  line-height: 20px;
 }
 
 .small-text {
@@ -110,6 +111,14 @@ h5 {
   top: 1em;
   z-index: 3;
   cursor: pointer;
+}
+
+.center-before {
+  transform: translateX(50%);
+}
+
+.center-after {
+  transform: translateX(-50%);
 }
 
 @media (max-width: 1600px) {

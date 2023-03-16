@@ -6,13 +6,17 @@
     </fl-text-icon>
   </a>
 </div>
-<div class="main-panel" *ngIf="story">
+<div class="story-pannel" *ngIf="story">
   <div class="story-content">
     <h2>
       {{story.title}}
     </h2>
-    <fl-user-inline class="small-text" [user]="story.getAuthor()" [showPopUp]="false"></fl-user-inline>
-    <p class="small-text story-date">{{story.createdAt | flDate:'DATETIME_MED'}}</p>
+    <p class="small-text user-date-info">
+      <fl-user-inline [user]="story.getAuthor()" [showPopUp]="false" [asSpecificSize]="true"></fl-user-inline>
+      <span class="g-text-small date-info">{{story.createdAt | flDate:'DATETIME_MED'}}</span>
+    </p>
+
+
     <fl-text-editor class="text-editor g-max-article-width" [disabled]="true" mode="JSON" scrollContainer="auto"
                     [config]="textEditorConfig" [noPadding]="true" flAutoScrollToAnchor [formControl]="formControl">
     </fl-text-editor>

@@ -7,7 +7,6 @@ import {
 } from './ha-module/ha-core-directive/ha-is-authenticated/ha-is-authenticated.directive';
 import { HaSidenavButtonDirective } from './ha-module/ha-core-directive/ha-sidenav-button/ha-sidenav-button.directive';
 import {HaFilterArrayPipe} from './ha-pipe/ha-filter-array.pipe';
-
 @NgModule({
   exports: [
     HaCustomLibraryModule,
@@ -15,7 +14,7 @@ import {HaFilterArrayPipe} from './ha-pipe/ha-filter-array.pipe';
     HaIsAdminDirective,
     HaIsAuthenticatedDirective,
     HaFilterArrayPipe,
-    HaSidenavButtonDirective
+    HaSidenavButtonDirective,
   ],
   declarations: [HaIsAdminDirective, HaIsAuthenticatedDirective, HaFilterArrayPipe, HaSidenavButtonDirective]
 })

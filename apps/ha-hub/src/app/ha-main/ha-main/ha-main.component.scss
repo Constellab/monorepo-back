@@ -55,13 +55,26 @@
   cursor: pointer;
 }
 
-
-
-
 .span-initials:hover{
   cursor: pointer;
 }
 
+.doc-menu-item{
+  width: calc(240px - 32px);
+  text-align: center;
+}
+
+.doc-nav-div{
+  display: flex;
+  height: 100%;
+  padding-bottom: 8px;
+  width: 240px;
+  //width: 212px;
+}
+
+.doc-nav-div h5{
+  margin: auto;
+}
 
 @media (max-width: 1160px) {
   .nav-bar{
@@ -86,6 +99,10 @@
   .option{
     margin: auto 1rem;
   }
+
+  .doc-menu-item{
+
+  }
 }
 
 @media (max-width: 700px) {
@@ -93,4 +110,5 @@
   .option{
     margin: auto 0.5em;
   }
+
 }

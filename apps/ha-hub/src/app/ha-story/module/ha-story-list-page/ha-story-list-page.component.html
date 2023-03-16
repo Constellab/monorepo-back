@@ -35,10 +35,9 @@
         <div class="story-content">
           <h5>{{story.title}}</h5>
           <p class="small-text">{{story.firstParagraph.length >= 100 ? (story.firstParagraph + '...') : story.firstParagraph}}</p>
-          <fl-user-inline [user]="story.getAuthor()" class="small-text user-info" [showPopUp]="false"></fl-user-inline>
-          <p class="small-text">
-            {{(story.publishedAt < story.lastModifiedAt ? 'last_modified' : 'published') | translate}} :
-            {{(story.publishedAt < story.lastModifiedAt ? story.lastModifiedAt : story.publishedAt) | flDate:'DATETIME_MED'}}
+          <p class="small-text user-info">
+            <fl-user-inline [user]="story.getAuthor()" [showPopUp]="false" [asSpecificSize]="true"></fl-user-inline>
+            <span class="g-text-small date-info">{{(story.publishedAt < story.lastModifiedAt ? story.lastModifiedAt : story.publishedAt) | flDate:'DATETIME_MED'}}</span>
           </p>
           <mat-chip-list>
             <mat-chip *ngFor="let storyTopic of story.topics">

@@ -12,6 +12,7 @@ export type FlUserProfilePictureSize = 'small' | 'medium' | 'big';
 })
 export class FlUserProfilePictureComponent implements OnInit {
 
+  @Input() border: boolean = false;
   @Input() set user(user: FlUser) {
     this.setUser(user);
   }

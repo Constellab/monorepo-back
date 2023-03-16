@@ -14,6 +14,8 @@ export class FlUserInlineComponent implements OnInit {
 
   @Input() showPopUp: boolean = true;
 
+  @Input() asSpecificSize: boolean = false;
+
   constructor() { }
 
   ngOnInit(): void {

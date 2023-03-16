@@ -19,32 +19,23 @@
 }
 
 .section-div{
-  margin: 18vh auto 1em auto;
-  width: fit-content;
-}
-
-.portals-div{
+  margin: 16vh auto 1em auto;
+  justify-content: center;
   display: flex;
   flex-direction: row;
-  background-color: var(--card-background);
-  border-radius: 18px;
-  max-width: 812px;
   flex-wrap: wrap;
-  padding: 4px;
-  width: fit-content;
-  margin: auto;
-  margin-bottom: 8px;
+  gap: 8px;
 }
 
 .portal-div{
-  margin: 4px;
-  padding: 8px;
+  border: 8px solid var(--card-background);
   display: flex;
   flex-direction: row;
   width: calc(398px - 16px);
   height: calc(168px - 16px);
-  border-radius: 10px;
+  border-radius: 18px;
   background-color: var(--main-background);
+  padding: 8px;
 }
 
 .portal-div-image{
@@ -61,29 +52,6 @@
   //space-between;
   justify-content: space-between;
 }
-
-.doc-portals-div{
-  display: flex;
-  flex-direction: column;
-}
-
-.doc-portals-div h4{
-  margin: auto;
-}
-
-.doc-portals-div > div{
-  display: flex;
-}
-
-.doc-portal-div{
-  width: 300px;
-  height: 100px;
-}
-
-.doc-portal-div > h5{
-  margin: auto;
-}
-
 
 .footer{
   margin-top: auto;
@@ -115,30 +83,7 @@
   border-left: none;
 }
 
-.constellab-portal-div{
-  margin: auto;
-}
-
-@media (max-width: 1450px) {
-  .section-div{
-    margin-top: 10vh;
-    flex-direction: column;
-    align-items: center;
-  }
-}
-
-
-@media (max-width: 850px) {
-  .portals-div{
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .portal-div{
-    margin-top: 8px;
-  }
-
-  .doc-portals-div > div{
-    flex-direction: column;
-  }
+.different-doc-links{
+  display: flex;
+  flex-direction: column;
 }
