@@ -1,7 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
 import {CaBucketCredentialsFull} from '../../../../model/entities/ca-object-storage.class';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {
   CaCloudProviderFormDialogInput
 } from '../../../ca-cloud-provider-core/component/ca-cloud-provider-form-dialog/ca-cloud-provider-form-dialog.component';
@@ -9,6 +8,7 @@ import {CaObjectStorageService} from '../../../../service-api/ca-object-storage.
 import {Observable} from 'rxjs';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 export type CaBucketCredentialsFormDialogInput = FlFormDialogInput<CaBucketCredentialsFull>;
 

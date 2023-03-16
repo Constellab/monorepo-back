@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {CaStatusHistory} from '../../../model/entities/ca-status-history.class';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {FlArrayObs} from '@monorepo/front-core-lib';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 export interface CaStatusHistoryListDialogInput {
   statusHistoriesObs: FlArrayObs<CaStatusHistory<any>>;

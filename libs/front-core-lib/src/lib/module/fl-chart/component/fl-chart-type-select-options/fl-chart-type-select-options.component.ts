@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Host, Input, OnInit} from '@angular/core';
-import {MatSelect} from '@angular/material/select';
+import { MatSelect } from '@angular/material/select';
 import {
   FlEmbeddedOptionsAbstractDirective
 } from '../../../../abstract-directive/fl-embedded-options-abstract.directive';

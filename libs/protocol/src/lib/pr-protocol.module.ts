@@ -24,8 +24,6 @@ import {
   PrWorkflowNodeInterfaceComponent
 } from './component/pr-workflow-node-interface/pr-workflow-node-interface.component';
 import {PrWorkflowActionState} from './state/pr-workflow-action-state';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {MatButtonModule} from '@angular/material/button';
 import {
   PrWorkflowLayersBreadcrumbComponent
 } from './component/pr-workflow-layers-breadcrumb/pr-workflow-layers-breadcrumb.component';
@@ -33,13 +31,15 @@ import {prProtocolI18n} from './pr-protocol.i18n';
 import {
   PrWorkflowPortActionPortalComponent
 } from './component/pr-workflow-port-action-portal/pr-workflow-port-action-portal.component';
-import {MatMenuModule} from '@angular/material/menu';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {PrWorkflowNodeViewerComponent} from './component/pr-workflow-node-viewer/pr-workflow-node-viewer.component';
 import {
   PrWorkflowProcessConfigInfoDialogComponent
 } from './component/pr-workflow-process-config-info-dialog/pr-workflow-process-config-info-dialog.component';
+import {MatMenuModule} from '@angular/material/menu';
 import {MatTableModule} from '@angular/material/table';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatButtonModule} from '@angular/material/button';
 
 
 @NgModule({

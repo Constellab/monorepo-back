@@ -2,8 +2,8 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit
 import {Subscription} from 'rxjs';
 import {FlBioNetworkDrawerState} from '../../state/fl-bio-network-drawer.state';
 import {FlBioNetworkDrawerActionName} from '../../model/fl-bio-network-drawer-action.class';
-import {MatTabGroup} from '@angular/material/tabs';
 import {flCdkOverlayContainerClass} from '../../../../utils/fl-material.config';
+import {MatTabGroup} from '@angular/material/tabs';
 
 @Component({
   selector: 'fl-bio-network-drawer',

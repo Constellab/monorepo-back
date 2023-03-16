@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {CookieService} from 'ngx-cookie-service';
-import {MatDialog} from '@angular/material/dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import {FlPlatformService} from './fl-plateform.service';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {FlAcceptanceCookie, FlAcceptanceCookiesConfig, FlCookieOptions} from './model/fl-cookie.class';
+import {MatDialog} from '@angular/material/dialog';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 /**
  * Service to manage browser cookies.

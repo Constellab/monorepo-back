@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Host, Input, OnInit} from '@angular/core';
-import {MatSelect} from '@angular/material/select';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
+import {MatSelect} from '@angular/material/select';
 
 /**
  * List of option for a {@link CmUserCategory}

@@ -1,7 +1,8 @@
 import {AfterViewInit, Directive, QueryList, ViewChildren} from '@angular/core';
-import {MatAutocomplete} from '@angular/material/autocomplete';
-import {MatOption} from '@angular/material/core';
-import {MatSelect} from '@angular/material/select';
+import { MatAutocomplete } from '@angular/material/autocomplete';
+import { MatOption } from '@angular/material/core';
+import { MatSelect } from '@angular/material/select';
+
 import {ClHelpService} from '@monorepo/core-lib';
 
 /**

@@ -1,10 +1,10 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {CaProject} from '../../../ca-core/model/entities/project/ca-project.class';
 import {CaLabInstanceProject} from '../../../ca-core/model/entities/lab/ca-lab-instance-project.class';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 export interface CaLabInstanceAddProjectDialogInput {
   labInstanceId: string;

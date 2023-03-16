@@ -7,14 +7,13 @@ import {HaCustomLibraryModule} from "../ha-core/ha-custom-library/ha-custom-libr
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HaCustomMaterialModule} from '../ha-core/ha-custom-material/ha-custom-material.module';
 import {HaCoreModule} from '../ha-core/ha-core.module';
-import { HaStoryCreateDialogComponent } from './module/ha-story-create-dialog/ha-story-create-dialog.component';
+import {HaStoryCreateDialogComponent} from './module/ha-story-create-dialog/ha-story-create-dialog.component';
 import {AsyncPipe, NgForOf, NgIf} from '@angular/common';
 import {FlDateModule} from "@monorepo/front-core-lib";
-import { HaStoryMyListComponent } from './module/ha-story-my-list/ha-story-my-list.component';
-import {MatTableModule} from "@angular/material/table";
-import {MatRadioModule} from "@angular/material/radio";
-import { HaStoryCoAuthorDialogComponent } from './module/ha-story-co-author-dialog/ha-story-co-author-dialog.component';
-import { HaStoryInvitePageComponent } from './module/ha-story-invite-page/ha-story-invite-page.component';
+import {HaStoryMyListComponent} from './module/ha-story-my-list/ha-story-my-list.component';
+import {HaStoryCoAuthorDialogComponent} from './module/ha-story-co-author-dialog/ha-story-co-author-dialog.component';
+import {HaStoryInvitePageComponent} from './module/ha-story-invite-page/ha-story-invite-page.component';
+
 
 @NgModule({
   declarations: [HaStoryPageComponent, HaStoryEditPageComponent, HaStoryListPageComponent, HaStoryCreateDialogComponent, HaStoryMyListComponent, HaStoryCoAuthorDialogComponent, HaStoryInvitePageComponent],
@@ -28,8 +27,7 @@ import { HaStoryInvitePageComponent } from './module/ha-story-invite-page/ha-sto
     AsyncPipe,
     NgForOf,
     FlDateModule,
-    MatTableModule,
-    MatRadioModule,
+
     FormsModule,
   ]
 })

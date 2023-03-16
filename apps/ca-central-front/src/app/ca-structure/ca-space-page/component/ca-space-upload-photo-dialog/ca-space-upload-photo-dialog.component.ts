@@ -1,9 +1,9 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {CaSpace} from '../../../../ca-core/model/entities/space/ca-space.class';
 import {FormControl, Validators} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaSpaceService} from '../../../../ca-core/service-api/ca-space.service';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 
 export interface CaSpaceUploadPhotoDialogInput {

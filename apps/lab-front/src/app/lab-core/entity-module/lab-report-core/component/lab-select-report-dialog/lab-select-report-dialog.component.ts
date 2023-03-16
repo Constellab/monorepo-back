@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {MatDialogRef} from '@angular/material/dialog';
 import {LabReport} from '../../../../model/entities/lab-report.entity';
+import {MatDialogRef} from '@angular/material/dialog';
 
 /**
  * Dialog that used the report search to select a report

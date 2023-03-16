@@ -1,53 +1,53 @@
 import {Injector, ModuleWithProviders, NgModule} from '@angular/core';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {FlTextEditorLink} from './model/fl-text-editor-link-without-target.class';
+import {FlInputFileModule} from '../fl-input-file/fl-input-file.module';
 import {CommonModule} from '@angular/common';
-import {FlTextEditorComponent} from './component/fl-text-editor/fl-text-editor.component';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
 import {
   FlTextEditorBlockAddButtonComponent
 } from './component/fl-text-editor-block-add-button/fl-text-editor-block-add-button.component';
-import {FlPortalModule} from '../fl-portal/fl-portal.module';
-import {FlInputFileModule} from '../fl-input-file/fl-input-file.module';
-import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
-import {FlTextEditorFigureComponent} from './component/fl-text-editor-figure/fl-text-editor-figure.component';
-import {createCustomElement} from '@angular/elements';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatInputModule} from '@angular/material/input';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {FlTranslateModule} from '../fl-translate/fl-translate.module';
-import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
-import {flTextEditorI18n} from './i18n/fl-text-editor.i18n';
-import {FlexLayoutModule} from '@angular/flex-layout';
-import {FlResizeModule} from '../fl-resize/fl-resize.module';
-import Quill from 'quill';
-import {FlTextEditorModuleConfig, FlTextEditorModuleConfigBlot} from './model/fl-text-editor-module-config.class';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {
-  FlTextEditorTitleCaptionComponent
-} from './component/fl-text-editor-title-caption/fl-text-editor-title-caption.component';
-import {FlTextEditorHintBlot} from './model/fl-text-editor-hint-blot.class';
 import {
   FlTextEditorDragButtonsComponent
 } from './component/fl-text-editor-drag-buttons/fl-text-editor-drag-buttons.component';
-import {FlTextEditorVideoComponent} from './component/fl-text-editor-video/fl-text-editor-video.component';
-import {
-  FlTextEditorLinkDialogComponent
-} from './component/fl-text-editor-link-dialog/fl-text-editor-link-dialog.component';
+import Quill from 'quill';
 import {FlDialogModule} from '../fl-dialog/fl-dialog.module';
-import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
-import {FlTextEditorHeaderId} from './model/fl-text-editor-header-id.class';
-import {FlTextEditorLink} from './model/fl-text-editor-link-without-target.class';
-import {FlTextEditorDirective} from './directive/fl-text-editor.directive';
+import {flTextEditorI18n} from './i18n/fl-text-editor.i18n';
+import {FlTextEditorFormulaBlot} from './model/fl-text-editor-formula-blot.class';
+import {MatInputModule} from '@angular/material/input';
 import {
   FlTextEditorSnowButtonComponent
 } from './component/fl-text-editor-snow-button/fl-text-editor-snow-button.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
+import {FlPortalModule} from '../fl-portal/fl-portal.module';
 import {FlTextEditorFormulaComponent} from './component/fl-text-editor-formula/fl-text-editor-formula.component';
+import {
+  FlTextEditorLinkDialogComponent
+} from './component/fl-text-editor-link-dialog/fl-text-editor-link-dialog.component';
+import {FlTextEditorDirective} from './directive/fl-text-editor.directive';
 import {
   FlTextEditorFormulaDialogComponent
 } from './component/fl-text-editor-formula-dialog/fl-text-editor-formula-dialog.component';
+import {createCustomElement} from '@angular/elements';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
+import {MatButtonModule} from '@angular/material/button';
+import {FlTextEditorHeaderId} from './model/fl-text-editor-header-id.class';
 import {FlTextEditorFigureBlot} from './model/fl-text-editor-figure-blot.class';
-import {FlTextEditorFormulaBlot} from './model/fl-text-editor-formula-blot.class';
+import {FlTextEditorVideoComponent} from './component/fl-text-editor-video/fl-text-editor-video.component';
+import {FlTextEditorHintBlot} from './model/fl-text-editor-hint-blot.class';
+import {MatIconModule} from '@angular/material/icon';
+import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {FlTextEditorVideoBlot} from './model/fl-text-editor-video-blot.class';
+import {FlTextEditorModuleConfig, FlTextEditorModuleConfigBlot} from './model/fl-text-editor-module-config.class';
+import {FlResizeModule} from '../fl-resize/fl-resize.module';
+import {FlTextEditorComponent} from './component/fl-text-editor/fl-text-editor.component';
+import {
+  FlTextEditorTitleCaptionComponent
+} from './component/fl-text-editor-title-caption/fl-text-editor-title-caption.component';
+import {FlTranslateModule} from '../fl-translate/fl-translate.module';
+import {FlexLayoutModule} from '@angular/flex-layout';
+import {FlTextEditorFigureComponent} from './component/fl-text-editor-figure/fl-text-editor-figure.component';
 
 
 @NgModule({

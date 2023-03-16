@@ -19,8 +19,6 @@
 }
 
 .section-div{
-  display: flex;
-  flex-direction: row;
   margin: 18vh auto 1em auto;
   width: fit-content;
 }
@@ -33,6 +31,9 @@
   max-width: 812px;
   flex-wrap: wrap;
   padding: 4px;
+  width: fit-content;
+  margin: auto;
+  margin-bottom: 8px;
 }
 
 .portal-div{
@@ -59,6 +60,28 @@
   flex-direction: column;
   //space-between;
   justify-content: space-between;
+}
+
+.doc-portals-div{
+  display: flex;
+  flex-direction: column;
+}
+
+.doc-portals-div h4{
+  margin: auto;
+}
+
+.doc-portals-div > div{
+  display: flex;
+}
+
+.doc-portal-div{
+  width: 300px;
+  height: 100px;
+}
+
+.doc-portal-div > h5{
+  margin: auto;
 }
 
 
@@ -93,7 +116,7 @@
 }
 
 .constellab-portal-div{
-  margin: auto 0 auto 5em;
+  margin: auto;
 }
 
 @media (max-width: 1450px) {
@@ -101,10 +124,6 @@
     margin-top: 10vh;
     flex-direction: column;
     align-items: center;
-  }
-
-  .constellab-portal-div{
-    margin-left: 0;
   }
 }
 
@@ -116,7 +135,10 @@
   }
 
   .portal-div{
-    margin-left: 0;
     margin-top: 8px;
+  }
+
+  .doc-portals-div > div{
+    flex-direction: column;
   }
 }

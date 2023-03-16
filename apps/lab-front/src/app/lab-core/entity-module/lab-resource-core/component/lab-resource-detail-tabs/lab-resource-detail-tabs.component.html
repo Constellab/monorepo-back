@@ -1,5 +1,5 @@
 <mat-tab-group class="g-full-height g-mat-tab-full-height" [animationDuration]="'0'"
-               [(selectedIndex)]="selectedTabIndex">
+               [(selectedIndex)]="selectedTabIndex" [mat-stretch-tabs]="false">
   <mat-tab *ngFor="let tab of tabs; let first = first; trackBy: trackByViewSymbol">
 
     <ng-template mat-tab-label>

@@ -1,5 +1,4 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {
   LabConfigureSpecsFormComponent
@@ -18,6 +17,7 @@ import {LabTypeEntity} from '../../../../model/entities/lab-type/lab-type.entity
 import {LabTypeService} from '../../../../entity-service/lab-type.service';
 import {TdTypingName} from '@monorepo/technical-doc';
 import {PrConfigValues} from '@monorepo/protocol';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 export interface LabImportResourceDialogInput {
   resourceId: string;

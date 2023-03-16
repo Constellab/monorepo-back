@@ -1,10 +1,10 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {FormControl} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @Component({
   selector: 'lab-update-resource-name-dialog',

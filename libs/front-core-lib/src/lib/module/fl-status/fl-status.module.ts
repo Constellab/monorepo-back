@@ -6,9 +6,9 @@ import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.modu
 import {FlIconModule} from '../fl-svg-icon/fl-icon.module';
 import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
-import {MatTooltipModule} from '@angular/material/tooltip';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flStatusI18n} from './i18n/fl-status.i18n';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [

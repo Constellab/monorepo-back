@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl} from '@ngneat/reactive-forms';
-import {MatDialogRef} from '@angular/material/dialog';
 import {Validators} from '@angular/forms';
 import {FlUserAccountService} from '../../service/fl-user-account.service';
 import {FlSnackBarService} from '../../../fl-snack-bar/fl-snack-bar.service';
+import {MatDialogRef} from '@angular/material/dialog';
 
 /**
  * Dialog with a simple form where the user enter his email to receive the

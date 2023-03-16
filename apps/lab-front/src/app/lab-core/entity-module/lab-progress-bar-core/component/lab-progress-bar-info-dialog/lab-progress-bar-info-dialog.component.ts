@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {LabProgressBar} from '../../../../model/entities/lab-progress-bar.entity';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {Observable} from 'rxjs';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {LabProgressBarService} from '../../../../entity-service/lab-progress-bar.service';
 import {map} from 'rxjs/operators';
 

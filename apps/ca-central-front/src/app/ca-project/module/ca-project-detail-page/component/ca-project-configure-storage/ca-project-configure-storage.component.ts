@@ -1,5 +1,4 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
 import {CaProjectService} from '../../../../../ca-core/service-api/ca-project.service';
 import {CaCloudProviderRegion} from '../../../../../ca-core/model/entities/ca-cloud-provider.class';
@@ -7,6 +6,7 @@ import {CaBucket} from '../../../../../ca-core/model/entities/ca-object-storage.
 import {Observable} from 'rxjs';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 interface CaProjectConfigureForm {
   region: CaCloudProviderRegion;

@@ -13,7 +13,6 @@ import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
 import {MatIconModule} from '@angular/material/icon';
 import {RouterModule} from '@angular/router';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
-import {MatButtonModule} from '@angular/material/button';
 import {FlDateModule} from '../fl-date/fl-date.module';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flUserI18n} from './fl-user.i18n';
@@ -21,6 +20,7 @@ import {FlCreationInfoComponent} from './component/fl-creation-info/fl-creation-
 import {
   FlLastModificationInfoComponent
 } from './component/fl-last-modification-info/fl-last-modification-info.component';
+import {MatButtonModule} from '@angular/material/button';
 
 
 @NgModule({

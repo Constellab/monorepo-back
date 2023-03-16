@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, TemplateRef, ViewChild} from '@angular/core';
-import {MatDialogRef} from '@angular/material/dialog';
 import {FlDialogService} from '../../../fl-dialog/fl-dialog.service';
+import {MatDialogRef} from '@angular/material/dialog';
 
 
 /**

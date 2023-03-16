@@ -25,7 +25,6 @@ import {
   CaExperimentTechnicalReportProcessDocDialogComponent
 } from './component/ca-experiment-technical-report-process-doc-dialog/ca-experiment-technical-report-process-doc-dialog.component';
 import {TdTechnicalDocModule} from '@monorepo/technical-doc';
-import {MatTabsModule} from '@angular/material/tabs';
 import {
   CaExperimentTechnicalReportWorkflowDrawerComponent
 } from './component/ca-experiment-technical-report-workflow-drawer/ca-experiment-technical-report-workflow-drawer.component';
@@ -41,6 +40,7 @@ import {CaProjectObjectCoreModule} from '../ca-project-object-core/ca-project-ob
 import {
   CaExperimentCardDetailComponent
 } from './component/ca-experiment-card-detail/ca-experiment-card-detail.component';
+import {MatTabsModule} from '@angular/material/tabs';
 
 
 @NgModule({

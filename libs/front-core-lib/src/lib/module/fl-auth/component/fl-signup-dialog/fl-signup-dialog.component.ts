@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {FormGroup} from '@ngneat/reactive-forms';
-import {MatDialogRef} from '@angular/material/dialog';
 import {FlSignUpUser} from '../../model/fl-sign-up-user.class';
 import {FlUserAccountService} from '../../service/fl-user-account.service';
 import {FlSnackBarService} from '../../../fl-snack-bar/fl-snack-bar.service';
 import {FlSignupFormComponent} from '../fl-signup-form/fl-signup-form.component';
+import {MatDialogRef} from '@angular/material/dialog';
 
 /**
  * Signup dialog to create a new user

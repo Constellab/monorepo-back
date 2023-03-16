@@ -1,8 +1,8 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {CaLabInstance} from '../../../ca-core/model/entities/lab/ca-lab-instance.class';
 import {CaHubUrlHelper} from '../../../ca-core/utils/ca-hub-url.helper';
 import {FlClipboardService, FlSnackBarService} from '@monorepo/front-core-lib';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 /**
  * Dialog to show information about the codelab of a lab instance

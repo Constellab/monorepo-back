@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {FlSavedSearch} from '@monorepo/front-core-lib';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 export interface LabSelectResourceDialogInput {
   savedSearches?: FlSavedSearch[];

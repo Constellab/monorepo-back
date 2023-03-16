@@ -1,6 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {Validators} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaProject, CaProjectLevel, CaProjectLevelStatus} from '../../../../model/entities/project/ca-project.class';
 import {CaProjectService} from '../../../../service-api/ca-project.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
@@ -12,6 +11,7 @@ import {
   FlTextEditorBasicConfig,
   FlTextEditorConfig
 } from '@monorepo/front-core-lib';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 export interface CaProjectFormDialogInput extends FlFormDialogInput<CaProject> {
   level: CaProjectLevel;

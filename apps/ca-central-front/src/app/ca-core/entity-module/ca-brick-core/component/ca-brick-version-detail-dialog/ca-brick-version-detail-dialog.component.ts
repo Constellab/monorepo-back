@@ -1,8 +1,8 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {CaBrickService} from '../../../../service-api/ca-brick.service';
 import {Observable} from 'rxjs';
 import {CaBrickVersion} from '../../../../model/entities/ca-brick.class';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 export interface CaBrickVersionDetailDialogInput {
   brickName: string;

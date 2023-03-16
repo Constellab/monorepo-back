@@ -1,11 +1,11 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
 import {Validators} from '@angular/forms';
 import {CaCloudProviderService} from '../../../../service-api/ca-cloud-provider.service';
 import {CaCloudProviderRegion} from '../../../../model/entities/ca-cloud-provider.class';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 export type CaCloudProviderRegionFormDialogInput = FlFormDialogInput<CaCloudProviderRegion>;
 

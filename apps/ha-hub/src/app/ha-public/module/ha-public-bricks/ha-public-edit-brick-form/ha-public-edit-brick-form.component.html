@@ -27,9 +27,9 @@
 
 
   <!--  description  -->
-  <mat-form-field class="g-form-input no-margin-bottom" appearance="fill">
+  <mat-form-field class="g-form-input no-margin-bottom" appearance="outline">
     <mat-label>{{'description' | translate}}</mat-label>
-    <textarea matInput formControlName="description" maxlength="255"></textarea>
+    <textarea matInput formControlName="description" maxlength="255" placeholder="{{'description' | translate}}"></textarea>
     <mat-error *ngIf="formGp.get('description').hasError('required')">
       {{'description' | flErrorRequired}}
     </mat-error>
@@ -48,15 +48,15 @@
   </div>
 
   <!--  pipRepo  -->
-  <mat-form-field class="g-form-input input-repo" appearance="fill">
+  <mat-form-field class="g-form-input input-repo" appearance="outline">
     <mat-label>{{'repo_pip' | translate}}</mat-label>
-    <input matInput type="text" formControlName="repoPip">
+    <input matInput type="text" formControlName="repoPip" placeholder="{{'repo_pip' | translate}}">
   </mat-form-field>
 
   <!--  gitRepo  -->
-  <mat-form-field class="g-form-input no-margin-bottom" appearance="fill">
+  <mat-form-field class="g-form-input no-margin-bottom" appearance="outline">
     <mat-label>{{'repo_git' | translate}}</mat-label>
-    <input matInput type="text" formControlName="repoGit">
+    <input matInput type="text" formControlName="repoGit" placeholder="{{'repo_git' | translate}}">
   </mat-form-field>
 
   <p class="error-repo" *ngIf="repoError">

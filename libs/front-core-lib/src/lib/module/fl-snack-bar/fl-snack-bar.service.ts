@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {MatSnackBar, MatSnackBarConfig, MatSnackBarRef} from '@angular/material/snack-bar';
 import {ComponentType} from '@angular/cdk/overlay';
 import {
   FlSnackBarAdditionalConfig,
@@ -8,6 +7,7 @@ import {
 } from './model/fl-snack-bar.class';
 import {FlSnackBarInfoComponent} from './component/fl-snack-bar-info/fl-snack-bar-info.component';
 import {FlTranslatableText} from '../fl-translate/model/fl-translate-param';
+import {MatSnackBar, MatSnackBarConfig, MatSnackBarRef} from '@angular/material/snack-bar';
 
 /**
  * Snack bar service to create snack bar

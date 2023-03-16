@@ -18,39 +18,35 @@
         </a>
         <a class="portal-div" [routerLink]="'/bricks'">
           <div class="portal-div-image">
-            <img src="../../../assets/images/bricks-logo.svg" />
+            <img src="../../../assets/images/bricks-logo.svg"/>
           </div>
           <div class="portal-div-content">
             <h4>{{'bricks' | translate}}</h4>
             <h5>{{'bricks_description' | translate}}</h5>
           </div>
         </a>
-        <a class="portal-div" [routerLink]="'/product-doc'">
-          <div class="portal-div-image">
-            <img src="../../../assets/images/bricks-logo.svg" />
-          </div>
-          <div class="portal-div-content">
-            <h4>{{'product_doc' | translate}}</h4>
-<!--            <h5>{{'product_doc_description' | translate}}</h5>-->
-          </div>
-        </a>
-        <a class="portal-div" [routerLink]="'/tech-doc'">
-          <div class="portal-div-image">
-            <img src="../../../assets/images/bricks-logo.svg" />
-          </div>
-          <div class="portal-div-content">
-            <h4>{{'tech_doc' | translate}}</h4>
-<!--            <h5>{{'tech_doc_description' | translate}}</h5>-->
-          </div>
-        </a>
+      </div>
+
+      <div class="portals-div doc-portals-div">
+        <h4>{{'documentation' | translate}}</h4>
+        <div>
+          <a class="portal-div doc-portal-div" [routerLink]="'/product-doc'">
+            <h5>{{'product_doc' | translate}}</h5>
+          </a>
+          <a class="portal-div doc-portal-div" [routerLink]="'/tech-doc'">
+            <h5>{{'tech_doc' | translate}}</h5>
+          </a>
+        </div>
       </div>
 
       <a class="portal-div constellab-portal-div" [href]="constellabUrl" target="_blank">
         <div class="portal-div-image">
-          <img src="../../../assets/images/constellab-logo.svg" />
+          <img src="../../../assets/images/constellab-logo.svg"/>
         </div>
         <div class="portal-div-content">
-          <h4>Constellab <mat-icon>arrow_outward</mat-icon></h4>
+          <h4>Constellab
+            <mat-icon>arrow_outward</mat-icon>
+          </h4>
           <h5>{{'constellab_description' | translate}}</h5>
         </div>
       </a>

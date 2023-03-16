@@ -1,8 +1,8 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {Observable} from 'rxjs';
 import {LabSharedEntity} from '../../../../model/entities/lab-share.entity';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 /**
  * Component to show the origin of a shared resource.

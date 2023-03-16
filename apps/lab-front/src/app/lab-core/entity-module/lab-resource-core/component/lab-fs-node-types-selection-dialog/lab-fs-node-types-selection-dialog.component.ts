@@ -1,5 +1,4 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {LabFileResourceService} from '../../../../entity-service/lab-file-resource.service';
 import {FormArray, FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
@@ -7,6 +6,7 @@ import {Observable} from 'rxjs';
 import {ClCachedObservable} from '@monorepo/core-lib';
 import {LabTypeEntity} from '../../../../model/entities/lab-type/lab-type.entity';
 import {TdTypingName} from '@monorepo/technical-doc';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 
 export type LabFsNodeTypesSelectionDialogMode = 'files' | 'folder' | 'filesOrFolder';

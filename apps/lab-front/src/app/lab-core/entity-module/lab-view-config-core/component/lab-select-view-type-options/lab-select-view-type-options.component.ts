@@ -1,9 +1,9 @@
 import {AfterViewInit, Component, Host, OnInit} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
-import {MatSelect} from '@angular/material/select';
 import {RvResourceViewTypeInfo} from '@monorepo/resource-view';
 import {labConstResourceViewTypeInfos} from '../../../../model/entities/resource/lab-resource-view-type.class';
 import {LabViewConfigSearch} from '../../model/lab-view-config-search.class';
+import {MatSelect} from '@angular/material/select';
 
 @Component({
   selector: 'lab-select-view-type-options',
