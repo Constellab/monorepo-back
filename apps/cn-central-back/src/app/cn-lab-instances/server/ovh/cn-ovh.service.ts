@@ -41,16 +41,16 @@ export class CnOvhService {
   ////////////////////////////////// INSTANCE //////////////////////////////////
 
   public async createInstance(request: CnOvhCreateInstanceRequest): Promise<CnOvhInstance> {
-    return await this.ovh.requestPromised('POST', `/cloud/project/${this.serviceName}/instance`, request);
+    return await this.requestPromised('POST', `/cloud/project/${this.serviceName}/instance`, request);
   }
 
   public getInstance(instanceId: string): Promise<CnOvhInstance> {
-    return this.ovh.requestPromised('GET', `/cloud/project/${this.serviceName}/instance/${instanceId}`);
+    return this.requestPromised('GET', `/cloud/project/${this.serviceName}/instance/${instanceId}`);
   }
 
 
   public async getServerInfoByRegionAndName(region: string, name: string): Promise<CnOvhFlavor | null> {
-    const flavors: CnOvhFlavor[] = await this.ovh.requestPromised('GET', `/cloud/project/${this.serviceName}/flavor`, {
+    const flavors: CnOvhFlavor[] = await this.requestPromised('GET', `/cloud/project/${this.serviceName}/flavor`, {
       region: region,
     });
 
@@ -58,7 +58,7 @@ export class CnOvhService {
   }
 
   public async getImageByRegionAndName(region: string, name: string): Promise<CnOvhImage | null> {
-    const images: CnOvhImage[] = await this.ovh.requestPromised('GET', `/cloud/project/${this.serviceName}/image`, {
+    const images: CnOvhImage[] = await this.requestPromised('GET', `/cloud/project/${this.serviceName}/image`, {
       region: region,
     });
 
@@ -67,23 +67,23 @@ export class CnOvhService {
   }
 
   public async deleteInstance(instanceId: string): Promise<any> {
-    return await this.ovh.requestPromised('DELETE', `/cloud/project/${this.serviceName}/instance/${instanceId}`);
+    return await this.requestPromised('DELETE', `/cloud/project/${this.serviceName}/instance/${instanceId}`);
   }
 
   ////////////////////////////////// START & STOP //////////////////////////////////
 
   public async stopInstance(instanceId: string): Promise<any> {
-    return await this.ovh.requestPromised('POST', `/cloud/project/${this.serviceName}/instance/${instanceId}/shelve`);
+    return await this.requestPromised('POST', `/cloud/project/${this.serviceName}/instance/${instanceId}/shelve`);
   }
 
   public async startInstance(instanceId: string): Promise<any> {
-    return await this.ovh.requestPromised('POST', `/cloud/project/${this.serviceName}/instance/${instanceId}/unshelve`);
+    return await this.requestPromised('POST', `/cloud/project/${this.serviceName}/instance/${instanceId}/unshelve`);
   }
 
   ///////////////////////////////////////// VOLUME /////////////////////////////////////////
 
   public async createVolume(request: CnOvhCreateVolumeRequest): Promise<CnOvhVolume> {
-    return await this.ovh.requestPromised('POST', `/cloud/project/${this.serviceName}/volume`, request);
+    return await this.requestPromised('POST', `/cloud/project/${this.serviceName}/volume`, request);
   }
 
 
@@ -95,21 +95,21 @@ export class CnOvhService {
     const route = `/cloud/project/${this.serviceName}/volume/${volumeId}/attach`;
 
     try {
-      return await this.ovh.requestPromised('POST', route, request);
+      return await this.requestPromised('POST', route, request);
     } catch (e) {
       // when attaching failed, retry in 30s because OVH tells volume is ready but it's not
       this.logger.error(`Error while attaching volume ${volumeId} to instance ${instanceId}, retrying in 45s. Error: ${e.toString()}`);
       await new Promise(r => setTimeout(r, 45000));
-      return await this.ovh.requestPromised('POST', route, request);
+      return await this.requestPromised('POST', route, request);
     }
   }
 
   public async getVolume(volumeId: string): Promise<CnOvhVolume> {
-    return await this.ovh.requestPromised('GET', `/cloud/project/${this.serviceName}/volume/${volumeId}`);
+    return await this.requestPromised('GET', `/cloud/project/${this.serviceName}/volume/${volumeId}`);
   }
 
   public async deleteVolume(volumeId: string): Promise<any> {
-    return await this.ovh.requestPromised('DELETE', `/cloud/project/${this.serviceName}/volume/${volumeId}`);
+    return await this.requestPromised('DELETE', `/cloud/project/${this.serviceName}/volume/${volumeId}`);
   }
 
 
@@ -117,7 +117,7 @@ export class CnOvhService {
 
 
   public async createDomainRecord(domain: string, request: CnOvhCreateDomainRecordRequest): Promise<CnOvhDomainRecord> {
-    const response = await this.ovh.requestPromised('POST', `/domain/zone/${domain}/record`, request);
+    const response = await this.requestPromised('POST', `/domain/zone/${domain}/record`, request);
 
     await this.refreshDns(domain);
 
@@ -125,7 +125,7 @@ export class CnOvhService {
   }
 
   public getDomainRecordIdBySubDomain(domain: string, subDomain: string, type: CnDomainFieldType): Promise<number[]> {
-    return this.ovh.requestPromised('GET', `/domain/zone/${domain}/record`, {
+    return this.requestPromised('GET', `/domain/zone/${domain}/record`, {
       fieldType: type,
       subDomain: subDomain,
     });
@@ -138,20 +138,29 @@ export class CnOvhService {
   }
 
   public async deleteDomainRecord(domain: string, recordId: number): Promise<void> {
-    await this.ovh.requestPromised('DELETE', `/domain/zone/${domain}/record/${recordId}`);
+    await this.requestPromised('DELETE', `/domain/zone/${domain}/record/${recordId}`);
     await this.refreshDns(domain);
   }
 
   public getDomainRecord(domain: string, recordId: number): Promise<CnOvhDomainRecord> {
-    return this.ovh.requestPromised('GET', `/domain/zone/${domain}/record/${recordId}`);
+    return this.requestPromised('GET', `/domain/zone/${domain}/record/${recordId}`);
   }
 
   private async refreshDns(domain: string): Promise<void> {
     // apply modifications
-    await this.ovh.requestPromised('POST', `/domain/zone/${domain}/refresh`);
+    await this.requestPromised('POST', `/domain/zone/${domain}/refresh`);
   }
 
   //////////////////////////// OTHER ////////////////////////////
+  private requestPromised(method: 'GET' | 'POST' | 'PUT' | 'DELETE', route: string, body?: any): Promise<any> {
+    return this.ovh.requestPromised(method, route, body).catch((e) => {
+      const strError = e.message ?? e.toString();
+      this.logger.error(`Error while calling OVH API route : ${route} | Method : ${method} | Error : ${strError}`);
+      throw e;
+    });
+  }
+
+
   private initOvh(): void {
     this.ovh = ovh({
       appKey: this.configService.getOvhAppKey(),
