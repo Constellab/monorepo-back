@@ -43,7 +43,7 @@
 // Opacity 1 for the selected menu
 .selected-menu {
   opacity: 1;
-  color: var(--primary-color);
+  color: var(--primary-color) !important;
 }
 
 

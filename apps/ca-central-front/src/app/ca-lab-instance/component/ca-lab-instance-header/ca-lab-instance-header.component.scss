@@ -9,5 +9,5 @@
 }
 
 .menu-active{
-  color: var(--primary-color);
+  --mdc-text-button-label-text-color: var(--primary-color);
 }

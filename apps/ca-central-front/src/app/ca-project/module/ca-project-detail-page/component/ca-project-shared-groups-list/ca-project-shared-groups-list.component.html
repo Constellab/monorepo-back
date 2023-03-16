@@ -7,31 +7,22 @@
 
     <ng-container *flSectionBody="let groups">
 
-      <fl-card class="g-full-height">
-        <fl-card-header>
 
-          <fl-card-actions>
+      <div *ngFor="let group of groups" fxLayout="row" fxLayoutAlign="space-between center">
+        <ca-group-inline [group]="group"></ca-group-inline>
 
-          </fl-card-actions>
-        </fl-card-header>
+        <button mat-icon-button type="button" (click)="openUnshareDialog(group)"
+                [matTooltip]="'unshare' | translate" *ngIf="canEdit$ | async">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
 
-        <fl-card-body>
-          <div *ngFor="let group of groups" fxLayout="row" fxLayoutAlign="space-between center">
-            <ca-group-inline [group]="group"></ca-group-inline>
+      <button mat-stroked-button type="button" (click)="openShareDialog()"
+              *ngIf="canEdit$ | async" class="share-button">
+        <mat-icon>share</mat-icon>
+        <span>{{'share' | translate}}</span>
+      </button>
 
-            <button mat-icon-button type="button" (click)="openUnshareDialog(group)"
-                    [matTooltip]="'unshare' | translate" *ngIf="canEdit$ | async">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </div>
-
-          <button mat-stroked-button type="button" (click)="openShareDialog()"
-                  *ngIf="canEdit$ | async" class="share-button">
-            <mat-icon>share</mat-icon>
-            <span>{{'share' | translate}}</span>
-          </button>
-        </fl-card-body>
-      </fl-card>
     </ng-container>
 
   </fl-async-section>

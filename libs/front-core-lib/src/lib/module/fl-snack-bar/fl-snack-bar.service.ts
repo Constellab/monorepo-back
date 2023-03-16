@@ -32,7 +32,7 @@ export class FlSnackBarService {
       mode: 'success',
       text: message,
       additionalConfig: additionalConfig,
-    }, 'g-primary-background', duration);
+    }, 'g-snackbar-primary', duration);
   }
 
   /**
@@ -48,7 +48,7 @@ export class FlSnackBarService {
       mode: 'error',
       text: message,
       additionalConfig: additionalConfig,
-    }, 'g-warn-background', duration);
+    }, 'g-snackbar-warn', duration);
   }
 
   private openSnackBarInfo(data: FlSnackBarInfoInput, panelClass: string, duration: number)

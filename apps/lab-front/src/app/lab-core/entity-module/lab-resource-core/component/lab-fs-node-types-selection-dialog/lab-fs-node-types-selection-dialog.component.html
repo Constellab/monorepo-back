@@ -10,7 +10,7 @@
 
     <!--     When uploading a folder, we show 2 options  -->
     <div *ngIf="selectedNodes === 'filesOrFolder'" class="folder-mode">
-      <mat-radio-group class="g-mat-radio-wrap-text" formControlName="nodeMode"
+      <mat-radio-group formControlName="nodeMode"
                        (change)="onNodeModeChange($event.value)">
         <mat-radio-button value="files">{{'databox.folder_upload_files_options' | translate }}</mat-radio-button>
         <mat-radio-button value="folder"

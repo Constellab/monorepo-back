@@ -17,15 +17,29 @@
   }
 }
 
+// align the text vertically in the input
+.mat-mdc-text-field-wrapper.mdc-text-field--outlined .mdc-text-field__input {
+  padding-top: 5px;
+}
 
 @mixin g-form-field-compact-height {
   &.mat-form-field-appearance-outline {
     @include mat.private-form-field-density(-5);
-    // reduce font size of the label
-    --mdc-typography-body1-font-size: 12px;
     // reduce size of the icon and button icon
     @include mat.icon-button-density(-5);
     --mdc-icon-button-icon-size: 18px;
+  }
+
+  .mat-mdc-form-field-icon-prefix > .mat-icon,
+  .mat-mdc-form-field-icon-suffix > .mat-icon {
+    padding: 0 !important;
+    margin-left: 4px !important;
+    margin-right: 4px !important;
+  }
+
+  // center the text vertically in the input
+  .mat-mdc-input-element {
+    padding-top: 4px;
   }
 }
 
@@ -37,32 +51,21 @@
 }
 
 // make a mat-mdc-form-field compact in height and width
-.g-form-field-compact.mat-mdc-form-field, .g-form-field-compact .mat-mdc-form-field:not(.g-no-compact-form) {
+.g-form-field-compact.mat-mdc-form-field,
+.g-form-field-compact .mat-mdc-form-field:not(.g-no-compact-form) {
   @include g-form-field-compact-height;
   @include g-form-field-compact-width;
 }
 
 // make a mat-mdc-form-field compact in height
-.g-form-field-compact-height.mat-mdc-form-field, .g-form-field-compact-height .mat-mdc-form-field:not(.g-no-compact-form) {
+.g-form-field-compact-height.mat-mdc-form-field,
+.g-form-field-compact-height .mat-mdc-form-field:not(.g-no-compact-form) {
   @include g-form-field-compact-height;
-  .mat-mdc-form-field-subscript-wrapper{
-    display: none !important;
-  }
-  .mat-mdc-form-field-icon-prefix>.mat-icon{
-    padding: 0!important;
-    margin-left: 4px!important;
-  }
-
-  .mat-mdc-form-field-infix{
-    border-top: none !important;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-  }
 }
 
 // make a mat-mdc-form-field compact in width
-.g-form-field-compact-width.mat-mdc-form-field, .g-form-field-compact-width .mat-mdc-form-field:not(.g-no-compact-form) {
+.g-form-field-compact-width.mat-mdc-form-field,
+.g-form-field-compact-width .mat-mdc-form-field:not(.g-no-compact-form) {
   @include g-form-field-compact-width;
 }
 
@@ -73,13 +76,14 @@
   text-transform: uppercase;
   overflow: hidden !important;
   border-radius: 30px !important;
-  //text-overflow: ellipsis;
-  //white-space: nowrap;
+  padding: 0 16px 0 16px !important;
+  white-space: nowrap;
 
   // margin to separate the text from the icon
   .material-icons, .material-icons-outlined {
     margin-right: 5px;
   }
+
 }
 
 // set the border color of the stroked = to color (not grey)
@@ -100,10 +104,18 @@
   }
 }
 
+// resize icon on normal button
+.mat-mdc-button > .mat-icon {
+  font-size: 24px !important;
+  height: 24px !important;
+  width: 24px !important;
+}
+
 
 .mdc-button.g-button-big {
   font-size: 1.3rem;
-  padding: 0.6em 1em;
+  padding-inline: 2em;
+  height: 50px;
 }
 
 .mdc-button.g-button-small {
@@ -115,9 +127,6 @@
 
   // remove margin of icon
   .material-icons, .material-icons-outlined {
-    margin-right: 2px;
-    margin-left: 2px;
-    margin-top: 1px;
     font-size: 19px;
     height: 19px;
     width: 19px;
@@ -128,6 +137,12 @@
   border: 1px solid;
   // equalize border
   padding: 1px !important;
+}
+
+// force the basic font family on the icon button
+// otherwise the icon on <a> tag are not vertically centered
+.mdc-icon-button {
+  font-family: initial;
 }
 
 
@@ -187,15 +202,19 @@
 }
 
 .mat-mdc-header-cell {
-  padding-right: 5px;
   box-sizing: border-box;
   max-width: 100%;
+}
+
+// override the space between 2 columns
+mat-cell.mdc-data-table__cell, mat-header-cell.mdc-data-table__header-cell {
+  padding-right: 0 ;
+  padding-left: 5px ;
 }
 
 // set font size and define a right padding to separate cells
 .mat-mdc-cell {
   font-size: 12px;
-  padding-left: 5px; // use to add a small space between 2 columns
   box-sizing: border-box;
   max-width: 100%;
 }
@@ -205,8 +224,8 @@
   cursor: pointer;
 }
 
-.g-table-row-selectable:hover {
-  background: var(--hover-color);
+mat-row.g-table-row-selectable:hover {
+  background-color: var(--hover-color) !important;
 }
 
 .g-column-width-fit {
@@ -275,7 +294,7 @@
   padding-left: 34px !important;
 }
 
-// To be place only on the first mat-cell to define a colored border
+// To be placed only on the first mat-cell to define a colored border
 .g-cell-with-left-border {
   border-left-style: solid;
   border-left-width: 10px;
@@ -325,12 +344,6 @@ mat-tree {
 }
 
 /************************************* MAT RADIO BUTTON ***********************************/
-.g-mat-radio-wrap-text {
-  .mat-radio-label {
-    white-space: initial;
-  }
-}
-
 // to place on a mat-checkbox to include the bottom section of it to avoid overflow
 .g-mat-radio-include-bottom {
   padding-bottom: 12px;
@@ -388,3 +401,13 @@ mat-tree {
 .mat-mdc-dialog-surface {
   padding: 24px !important;
 }
+
+/************************************* MAT SNACKBAR ***********************************/
+.g-snackbar-primary {
+  --mdc-snackbar-container-color: var(--primary-color);
+}
+
+.g-snackbar-warn {
+  --mdc-snackbar-container-color: var(--warn-color);
+}
+

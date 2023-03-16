@@ -1,8 +1,17 @@
 :host {
-  padding-top: 24px;
+  padding-top: 10px;
   display: block;
+}
+
+.dialog-title{
+  padding: 0 0 20px 0;
 }
 
 .fake-icon {
   width: 40px;
+}
+
+
+.title-text{
+  line-height: 40px; // center vertically with icon button
 }
