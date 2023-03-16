@@ -141,7 +141,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
         delta.ops = []
         FlQuillSetup.addMatcherLink(this.state.getCurrentSelectionIndex(), node.nodeValue, delta, this.state);
       } else {
-        FlQuillSetup.addMatcherText(this.state.getCurrentSelectionIndex(), node.nodeValue, delta, this.state);
+        FlQuillSetup.addMatcherText(this.state.getCurrentSelectionIndex(), node.nodeValue, this.state);
       }
     });
 

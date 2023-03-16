@@ -5,6 +5,12 @@ import {FlTextEditorState} from '../state/fl-text-editor.state';
 import {FlTextEditorConfig} from './fl-text-editor-config.class';
 import {ClStringHelper} from '@monorepo/core-lib';
 
+/**
+ * Detect the scrolling container for the text editor
+ * - 'auto' will detect the first parent that is scrollable
+ * - 'child' will use the child .ql-editor as scrollable
+ * - 'body' will use the body as scrollable
+ */
 export type FlQuillScrollContainer = 'auto' | 'child' | 'body';
 
 export class FlQuillSetup {
@@ -58,7 +64,7 @@ export class FlQuillSetup {
     return firstDelta == delta ? {ops: []} : delta;
   }
 
-  public static addMatcherText(index: number, text: string, delta: any, state: FlTextEditorState): any{
+  public static addMatcherText(index: number, text: string, state: FlTextEditorState): any{
     return state.insertText(index, text);
   }
 

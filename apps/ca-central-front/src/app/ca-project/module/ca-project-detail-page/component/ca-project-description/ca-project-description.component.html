@@ -15,7 +15,7 @@
 
   <ng-container *flSectionBody>
     <fl-text-editor [config]="textEditorConfig" [ngClass]="{'hide-border': !edit}"
-                    [formControl]="formControl" mode="JSON"
+                    [formControl]="formControl" mode="JSON" scrollContainer="child"
                     [placeholder]="'project_description_placeholder' | translate"></fl-text-editor>
   </ng-container>
 </fl-section>
