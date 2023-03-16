@@ -343,8 +343,8 @@ export class CnLabServerService {
     // Waiting for the server and the volume to be ready
     let count = 0;
     while (count <= 20) {
-      // wait for 30 seconds
-      await new Promise(r => setTimeout(r, 30000));
+      // wait for 60 seconds because start and stop can take a while
+      await new Promise(r => setTimeout(r, 60000));
 
       this.logger.log(`Checking if server of lab ${labInstanceId} is ready`);
       const labInstance = await this.refreshLabStatus(labInstanceId);
