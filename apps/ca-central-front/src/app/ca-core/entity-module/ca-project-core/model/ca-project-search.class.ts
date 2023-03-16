@@ -46,8 +46,8 @@ export class CaProjectSearch {
   };
 
   public static advancedSearchConverter: FlSearchCriteriaConverter<CaProjectSearchFields> = {
-    code: {key: 'name', operator: 'MATCH'},
-    title: {key: 'name', operator: 'MATCH'},
+    code: {key: 'code', operator: 'MATCH'},
+    title: {key: 'title', operator: 'MATCH'},
     startingDate: FlSearchConverter.dateInterval('startingDate'),
     endingDate: FlSearchConverter.dateInterval('endingDate'),
     currentStatus: {key: 'currentStatus.status', operator: 'EQ'},
