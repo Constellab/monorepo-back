@@ -18,7 +18,7 @@ import {HaTopicDto} from '../../../ha-core/ha-model/ha-entities/ha-topic.class';
 import {ClStringHelper} from '@monorepo/core-lib';
 
 @Component({
-  selector: 'ha-ha-story-list-page',
+  selector: 'ha-story-list-page',
   templateUrl: './ha-story-list-page.component.html',
   styleUrls: ['./ha-story-list-page.component.scss']
 })

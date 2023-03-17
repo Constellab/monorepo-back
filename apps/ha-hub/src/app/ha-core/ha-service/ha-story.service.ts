@@ -117,10 +117,10 @@ export class HaStoryService {
     return this.apiService.getBaseRouteUrl(`${this.route}/image/${filename}`);
   }
 
-  uploadImage(file: File): Observable<FlTextEditorUploadedImage> {
+  uploadImage(file: File, storyId: string): Observable<FlTextEditorUploadedImage> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.apiService.put(`${this.route}/image`, formData);
+    return this.apiService.put(`${this.route}/image/${storyId}`, formData);
   }
 
   getImageUrl(filename: string): string {

@@ -99,9 +99,10 @@ export class HnStoryController {
   }
 
   @UseInterceptors(FileInterceptor('file'))
-  @Put('image')
-  saveImage(@UploadedFile() file: BlFile): Promise<CmRichTextUploadedImage> {
-    return this.storyService.saveImage(file);
+  @Put('image/:storyId')
+  saveImage(@UploadedFile() file: BlFile,
+            @Param('storyId', new ParseUUIDPipe()) storyId: string): Promise<CmRichTextUploadedImage> {
+    return this.storyService.saveImage(file, storyId);
   }
 
   @BlPublic()

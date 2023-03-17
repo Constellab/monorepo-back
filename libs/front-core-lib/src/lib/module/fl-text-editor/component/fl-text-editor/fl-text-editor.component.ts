@@ -133,6 +133,8 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
         strict: true
       }
     );
+    //Remove unnecessary matchers
+    this.quill.clipboard.matchers = this.quill.clipboard.matchers.filter((matcher) => matcher[0] !== Node.TEXT_NODE);
 
     this.quill.clipboard.addMatcher('IMG', (node, delta) => FlQuillSetup.addMatcher(node, delta, this.state, this.config));
 

@@ -62,9 +62,6 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.buildForm();
 
-    this.textEditorConfig =
-      new HaStoryTextEditorConfig(this.storyService, this.dialogService);
-
     this.activatedRoute.params.subscribe(params => {
       this.getStory(params.id);
     });
@@ -212,6 +209,8 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
   private getStory(id: string): void {
     this.storyService.getById(id).subscribe(story => {
       this.story = story;
+      this.textEditorConfig =
+        new HaStoryTextEditorConfig(this.storyService, this.dialogService, this.story.id);
       if (this.story.topics.length >= 5) this.topicControl.disable();
       this.formGp.patchValue(this.story);
     });

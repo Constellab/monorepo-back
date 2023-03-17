@@ -131,7 +131,6 @@ export class HnDocumentationService {
 
   async editContent(content: CmRichTextI): Promise<CmRichTextI> {
     const links: CmRichTextLink[] = CmRichText.getLinks(content);
-    const headers: CmRichTextHeader[] = CmRichText.getHeaders(content);
     for (const l of links) {
       if (l.attributes.link.startsWith(this.configService.getFrontRootUrl())) {
         const link: string[] = l.attributes.link.substring(this.configService.getFrontRootUrl().length).split('/');
@@ -145,6 +144,7 @@ export class HnDocumentationService {
       }
     }
 
+    const headers: CmRichTextHeader[] = CmRichText.getHeaders(content);
     const listId: string[] = [];
     for (const h of headers) {
       if (h.attributes.header.id) {

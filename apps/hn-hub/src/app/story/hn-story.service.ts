@@ -12,17 +12,9 @@ import {
   BlObjectStorageService,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
-import {
-  CmRichText,
-  CmRichTextHeader,
-  CmRichTextI,
-  CmRichTextImageCP,
-  CmRichTextUploadedImage
-} from '@monorepo/common-model';
-import imageSize from 'image-size';
+import {CmRichText, CmRichTextI, CmRichTextUploadedImage} from '@monorepo/common-model';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {IncomingMessage} from 'http';
-import {ISizeCalculationResult} from 'image-size/dist/types/interface';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnCreateStoryDto, HnStoryFilter} from './hn-story.dto';
 import {HnTopicDto} from '../topic/hn-topic.dto';
@@ -68,30 +60,30 @@ export class HnStoryService {
 
   async getMyStories(page: number, size: number): Promise<ClPage<HnStory>> {
     return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
-        where: [
-          {
-            storyAuthors: {
-              user: {
-                id: HnCurrentUserHelper.getCurrentUser().id
-              },
-              status: HnStoryAuthorStatus.AUTHOR
-            }
-          },
-          {
-            storyAuthors: {
-              user: {
-                id: HnCurrentUserHelper.getCurrentUser().id
-              },
-              status: HnStoryAuthorStatus.COAUTHOR
-            }
+      where: [
+        {
+          storyAuthors: {
+            user: {
+              id: HnCurrentUserHelper.getCurrentUser().id
+            },
+            status: HnStoryAuthorStatus.AUTHOR
           }
-        ],
-        relations: ['topics'],
-        order: {
-          createdAt: 'DESC' as any
+        },
+        {
+          storyAuthors: {
+            user: {
+              id: HnCurrentUserHelper.getCurrentUser().id
+            },
+            status: HnStoryAuthorStatus.COAUTHOR
+          }
         }
-      },
-      this.storyRepository.manager, HnStory
+      ],
+      relations: ['topics'],
+      order: {
+        createdAt: 'DESC' as any
+      }
+    },
+    this.storyRepository.manager, HnStory
     );
   }
 
@@ -188,62 +180,18 @@ export class HnStoryService {
       throw new BlUnauthorizedException('You are not authorized to update this story');
     }
     const story = await this.getStory(id);
-    story.content = await this.editContent(content);
+    story.content = content;
     const richText = new CmRichText(content);
     story.firstParagraph = ClStringHelper.replaceLineBreaksBySpace(richText.getFirstParagraph());
     story.mainPicture = richText.getFirstFigureLink();
     return this.storyRepository.save(story);
   }
 
-  async editContent(content: CmRichTextI): Promise<CmRichTextI> {
-    const headers: CmRichTextHeader[] = CmRichText.getHeaders(content);
-    const listId: string[] = [];
-    for (const h of headers) {
-      if (h.attributes.header.id) {
-        h.attributes.header.id = ClStringHelper.toIdForUrl(h.attributes.header.id);
-        if (h.attributes.header.id.length > 0) {
-          const sameTitleNumber: number = listId.filter(value => value == h.attributes.header.id).length;
-          if (sameTitleNumber > 0) {
-            h.attributes.header.id = h.attributes.header.id + sameTitleNumber;
-          }
-          listId.push(h.attributes.header.id);
-        } else {
-          delete h.attributes.header.id;
-        }
-      }
+  async saveImage(file: BlFile, storyId: string): Promise<CmRichTextUploadedImage> {
+    const isAuthor: boolean = await this.isStoryOwnerOrCoAuthor(storyId);
+    if (!isAuthor) {
+      throw new BlUnauthorizedException('You are not authorized to update this story');
     }
-
-    const imageCP: CmRichTextImageCP[] = CmRichText.getImageCP(content);
-
-    for (const im of imageCP) {
-      if ('image' in im.insert) {
-        const base64Img: string = im.insert.image.split(',')[1];
-        const imgBuffer: Buffer = new Buffer(base64Img, 'base64');
-        const imgBlFile: BlFile = {
-          buffer: imgBuffer,
-          encoding: null,
-          mimetype: 'image',
-          size: null,
-          originalname: 'any.png'
-        };
-        const imgSize: ISizeCalculationResult = imageSize(imgBuffer);
-        const imgName: string = await this.objectStorageService.uploadObject(
-          this.getBucketConfig(), imgBlFile, {generateRandomObjectName: true});
-        im.insert = {
-          figure: {
-            filename: imgName,
-            height: imgSize.height,
-            width: imgSize.width,
-            naturalWidth: imgSize.width,
-            naturalHeight: imgSize.height
-          }
-        };
-      }
-    }
-    return content;
-  }
-
-  async saveImage(file: BlFile): Promise<CmRichTextUploadedImage> {
     const imSize = BlImageHelper.getImageSize(file);
     const filename = await this.objectStorageService.uploadObject(this.getBucketConfig(), file,
       {generateRandomObjectName: true});

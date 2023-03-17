@@ -16,9 +16,13 @@ import {HaStoryService} from '../../../ha-core/ha-service/ha-story.service';
 @Injectable({providedIn: 'root'})
 export class HaStoryTextEditorConfig extends FlTextEditorConfig implements FlTextEditorImageLoader {
 
+  private storyId: string;
   constructor(private storyService: HaStoryService,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              storyId?: string) {
     super();
+    if(storyId)
+      this.storyId = storyId;
   }
 
   getToolbarConfig(): any {
@@ -44,7 +48,7 @@ export class HaStoryTextEditorConfig extends FlTextEditorConfig implements FlTex
 
   insertImageFromFile(file: File, textEditorState: FlTextEditorState): void {
     const index = textEditorState.getCurrentSelectionIndex();
-    this.storyService.uploadImage(file).subscribe(
+    this.storyService.uploadImage(file, this.storyId).subscribe(
       fileUrl => {
         textEditorState.insertImageFromUrl(fileUrl, index)
       }
