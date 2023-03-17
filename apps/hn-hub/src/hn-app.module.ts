@@ -102,6 +102,8 @@ function configureMailModule(
   return {
     mailConfig: configService.getMailConfig(),
     templateFolder: join(__dirname, 'assets/templates/'),
+    defaultLayout: 'main-',
+    defaultData: {contactMail: configService.getGencoveryContactMail()}
   };
 }
 

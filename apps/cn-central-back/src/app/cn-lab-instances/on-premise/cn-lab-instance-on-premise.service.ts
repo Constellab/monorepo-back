@@ -54,7 +54,7 @@ export class CnLabInstanceOnPremiseService {
       .replace(/\${SECRET_KEY}/g, labInstance.id)
       .replace(/\${GWS_CORE_DEV_DB_PASSWORD}/g, labInstance.gwsCoreDevDbPassword)
       .replace(/\${CENTRAL_FRONT_URL}/g, this.frontService.getBaseWebsiteURL())
-      .replace(/\${HUB_FRONT_URL}/g, this.configService.getHubFrontUrl())
+      .replace(/\${HUB_FRONT_URL}/g, this.configService.getCommunityFrontUrl())
       .replace(/\${FRONT_VERSION}/g, config.front_version)
       .replace(/\${GLAB_TAG}/g, config.glab_tag);
 

@@ -157,6 +157,10 @@ export class HnCoreConfigService {
     }
   }
 
+  public getGencoveryContactMail(): string {
+    return this.configService.get('GENCOVERY_CONTACT_MAIL');
+  }
+
   // protected getConfigNumber(configName: string): number {
   //   try {
   //     return parseInt(this.configService.get(configName), 10);

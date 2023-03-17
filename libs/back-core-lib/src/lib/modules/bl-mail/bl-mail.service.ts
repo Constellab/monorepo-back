@@ -56,12 +56,15 @@ export class BlMailService {
     // configure the mail to use template .hbs files
     transporter.use('compile', hbs(this.getTemplateOptions(lang)));
 
+    // add default data to the data passed in parameter
+    const completeData = Object.assign({}, this.moduleConfig.defaultData, data)
+
     const mailOptions = {
       from: this.getMailSender(),
       to: recipients,
       subject: await this.translateSubject(template),
       template: this.getTemplatePath(template, lang),
-      context: data,
+      context: completeData,
     };
 
     return new Promise((resolve) => {
@@ -109,7 +112,8 @@ export class BlMailService {
       viewEngine: {
         extname: '.hbs', // handlebars extension
         layoutsDir: this.moduleConfig.templateFolder, // location of handlebars templates
-        defaultLayout: 'main-' + lang, // name of main template, will wrap all other templates
+        // name of main template, will wrap all other templates
+        defaultLayout: this.moduleConfig.defaultLayout ? this.moduleConfig.defaultLayout + lang : null,
         partialsDir: this.moduleConfig.templateFolder, // location of your subtemplates aka. header, footer etc
       },
       viewPath: this.moduleConfig.templateFolder,

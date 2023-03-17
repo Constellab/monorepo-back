@@ -107,6 +107,20 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     // update the user status
     user.status = CmUserStatus.INCOMPLETE;
     await this.usersService.update(user);
+
+    // send mail asynchronously
+    this.sendAccountValidatedMail(user).catch(
+      error => this.logger.error('Error while sending account validated mail: ' + error)
+    );
+  }
+
+  private async sendAccountValidatedMail(user: CnUser): Promise<boolean> {
+    return this.mailService.sendMailToUser(CnMailTemplate.signup_validated, user, {
+      user: user,
+      documentationLink: this.frontService.getCommunityProductDocUrl(),
+      communityLink: this.configService.getCommunityFrontUrl(),
+      contactMail: this.configService.getGencoveryContactMail()
+    });
   }
 
   async unlockAccount(token: string): Promise<void> {
@@ -235,7 +249,6 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
   /**
    * Send notification to admin when a new user is created
    * @param user
-   * @param spaceId
    * @private
    */
   private async sendCreateAccountNotification(user: CnUser): Promise<void> {
@@ -256,5 +269,6 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
       });
     }
   }
+
 
 }

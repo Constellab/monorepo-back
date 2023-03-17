@@ -1,10 +1,11 @@
 {
-  "cn-account-locked": "Compte bloqué",
+  "cn-account-locked": "Constellab - Compte bloqué",
   "cn-experiment-finished": "Constellab - Expérience terminée",
   "cn-space-invit-new-user": "Constellab - Invitation à rejoindre un espace",
   "cn-space-invit-existing-user": "Constellab - Invitation à rejoindre un espace",
-  "cn-password-forgotten": "Réinitialiser votre mot de passe",
-  "cn-signup": "Confirmez votre email : Inscription à la platform Gencovery",
+  "cn-password-forgotten": "Constellab - Réinitialiser votre mot de passe",
+  "cn-signup": "Constellab - Validez votre inscription",
+  "cn-signup-validated": "Constellab - Bienvenue",
   "cn-request-new-licenses": "Constellab - Demande de nouvelles licences",
   "cn-two-factor-authentication": "Constellab - Authentification à deux facteurs",
   "cn-request-lab-instance": "Constellab - Demande d'une instance de lab"

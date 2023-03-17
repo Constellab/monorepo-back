@@ -135,8 +135,8 @@ export class CnCoreConfigService {
     return this.configService.get('FRONT_DOMAIN');
   }
 
-  public getHubFrontUrl(): string {
-    return this.configService.get('HUB_FRONT_URL');
+  public getCommunityFrontUrl(): string {
+    return this.configService.get('COMMUNITY_FRONT_URL');
   }
 
   protected getConfigNumber(configName: string): number {

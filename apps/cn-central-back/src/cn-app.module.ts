@@ -56,9 +56,7 @@ import {CnProjectCommentModule} from './app/cn-project-comment/cn-project-commen
 import {CnCloudProvidersModule} from './app/cn-cloud-providers/cn-cloud-providers.module';
 import {I18nAbstractLoaderOptions} from 'nestjs-i18n/dist/loaders/i18n.abstract.loader';
 
-function typeOrmConfig(
-  configService: CnCoreConfigService
-): TypeOrmModuleOptions {
+function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();
   return {
     type: 'mysql',
@@ -75,9 +73,7 @@ function typeOrmConfig(
   };
 }
 
-function configureLogger(
-  configService: CnCoreConfigService
-): WinstonModuleOptions {
+function configureLogger(configService: CnCoreConfigService): WinstonModuleOptions {
   const logConfig: BlLoggerConfig = {
     logLevel: configService.getLogLevel(),
     logFilePath: configService.isLocal() ? null : configService.getLogPath(),
@@ -85,10 +81,7 @@ function configureLogger(
   return blConfigureLogger(logConfig);
 }
 
-function configureJwtModule(
-  configService: CnCoreConfigService,
-  userService: CnUsersService
-): BlJwtConfig {
+function configureJwtModule(configService: CnCoreConfigService, userService: CnUsersService): BlJwtConfig {
   return {
     jwtSecret: configService.getJwtSecret(),
     jwtFromRequest: (request: Request) =>
@@ -101,18 +94,16 @@ function configureJwtModule(
   };
 }
 
-function configureMailModule(
-  configService: CnCoreConfigService
-): BlMailModuleConfig {
+function configureMailModule(configService: CnCoreConfigService): BlMailModuleConfig {
   return {
     mailConfig: configService.getMailConfig(),
     templateFolder: join(__dirname, 'assets/templates/'),
+    defaultLayout: 'main-',
+    defaultData: {contactMail: configService.getGencoveryContactMail()}
   };
 }
 
-function configureTransportModule(
-  configService: CnCoreConfigService
-): BlTransportModuleConfig {
+function configureTransportModule(configService: CnCoreConfigService): BlTransportModuleConfig {
   return configService.getTransportModuleConfig();
 }
 

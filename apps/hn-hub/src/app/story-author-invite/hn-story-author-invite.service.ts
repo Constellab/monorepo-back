@@ -8,6 +8,7 @@ import {HnStory} from '../story/hn-story.entity';
 import {HnUser} from '../users/hn-user.entity';
 import {BlMailService} from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
+import {HnMailTemplate} from '../core/model/config/cn-mail-template.class';
 
 @Injectable()
 export class HnStoryAuthorInviteService {
@@ -35,17 +36,17 @@ export class HnStoryAuthorInviteService {
     const data = {
       storyTitle: story.title,
       url: this.coreConfigService.getFrontRootUrl() + 'stories/invite/' + storyAuthorMail.token,
-      invitUser : inviteMail.createdBy,
+      invitUser: inviteMail.createdBy,
       user: null as HnUser,
       subscribeUrl: ''
-    }
+    };
 
     if (user) {
-      template = 'hn-story-invit-existing-user'
+      template = HnMailTemplate.story_invit_existing_user;
       lang = user.lang;
       data.user = user;
     } else {
-      template = 'hn-story-invit-new-user';
+      template = HnMailTemplate.story_invit_new_user;
       lang = inviteMail.createdBy.lang;
       data.subscribeUrl = this.coreConfigService.getConstellabFrontRootUrl() + 'login';
     }
@@ -56,9 +57,9 @@ export class HnStoryAuthorInviteService {
     return this.storyAuthorInviteRepository.findOneBy({token: token});
   }
 
-  async acceptInvite(storyAuthorInvite: HnStoryAuthorInvite): Promise<boolean>{
+  async acceptInvite(storyAuthorInvite: HnStoryAuthorInvite): Promise<boolean> {
     storyAuthorInvite.status = HnStoryAuthorInviteStatus.ACCEPTED;
-    return (await this.storyAuthorInviteRepository.save(storyAuthorInvite)) != null
+    return (await this.storyAuthorInviteRepository.save(storyAuthorInvite)) != null;
   }
 
 }

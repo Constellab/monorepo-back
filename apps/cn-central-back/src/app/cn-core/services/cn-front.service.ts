@@ -47,4 +47,14 @@ export class CnFrontService {
       return `https://${spaceDomain}.${this.configService.getCentralFrontDomain()}`;
     }
   }
+
+
+  //////////////////////////// COMMUNITY ////////////////////////////
+  public getCommunityUrl(): string {
+    return this.configService.getCommunityFrontUrl();
+  }
+
+  public getCommunityProductDocUrl(): string {
+    return this.getCommunityUrl() + '/product-doc';
+  }
 }

@@ -6,8 +6,6 @@ import {ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClThem
 import {DateTime} from 'luxon';
 import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
 import {BlEntityWithId, BlLuxonDateTimeColumn, BlUser} from '@monorepo/back-core-lib';
-import {HnBrickVisibility} from '../../../../hn-hub/src/app/brick/hn-brick.entity';
-import {HnBrickVersionTransportDto} from '../../../../hn-hub/src/app/brick/hn-brick.dto';
 
 
 @Entity('user')

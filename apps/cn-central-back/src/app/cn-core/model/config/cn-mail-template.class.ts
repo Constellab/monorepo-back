@@ -5,6 +5,7 @@
 export enum CnMailTemplate {
   account_locked = 'cn-account-locked',
   signup = 'cn-signup',
+  signup_validated = 'cn-signup-validated',
   password_forgotten = 'cn-password-forgotten',
   space_invit_new_user = 'cn-space-invit-new-user',
   space_invit_existing_user = 'cn-space-invit-existing-user',

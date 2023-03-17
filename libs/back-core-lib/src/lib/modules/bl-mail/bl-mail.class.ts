@@ -19,8 +19,10 @@ export interface BlMailConfig {
  * configuration for the mail module
  */
 export interface BlMailModuleConfig {
-  mailConfig: BlMailConfig
+  mailConfig: BlMailConfig;
   templateFolder: string;
+  defaultLayout?: string; // name of the mail template in the template folder without the lang
+  defaultData?: Record<string, any>;
 }
 
 export interface BlMailModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
