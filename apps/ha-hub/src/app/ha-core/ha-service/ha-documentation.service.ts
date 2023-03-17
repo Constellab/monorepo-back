@@ -3,7 +3,6 @@ import {FlApiService, FlTextEditorUploadedImage} from '@monorepo/front-core-lib'
 import {Observable} from 'rxjs';
 import {HaDocumentation, HaDocumentationContentFormDTO} from '../ha-model/ha-entities/ha-documentation.class';
 import {HaNodeDTO} from '../ha-model/ha-entities/ha-node.class';
-import {map} from 'rxjs/operators';
 
 /**
  * Service to manage documentation entity
@@ -61,17 +60,7 @@ export class HaDocumentationService {
   uploadImage(file: File): Observable<FlTextEditorUploadedImage> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.apiService.put(`${this.route}/image`, formData).pipe(
-      map(
-        (uploadedFile: any) => {
-          return {
-            filename: uploadedFile.filename,
-            width: uploadedFile.width,
-            height: uploadedFile.height,
-          };
-        }
-      )
-    );
+    return this.apiService.put(`${this.route}/image`, formData);
   }
 
   getImageUrl(filename: string): string {

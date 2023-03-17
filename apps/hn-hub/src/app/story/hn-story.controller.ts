@@ -7,7 +7,9 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-  Query, Res, UploadedFiles,
+  Query,
+  Res,
+  UploadedFile,
   UseInterceptors
 } from '@nestjs/common';
 import {HnStoryService} from './hn-story.service';
@@ -15,8 +17,8 @@ import {BlFile, BlParsePipe, BlPublic, BlResponseHelper} from '@monorepo/back-co
 import {ClPage} from '@monorepo/core-lib';
 import {HnStory} from './hn-story.entity';
 import {HnCreateStoryDto, HnStoryFilter} from './hn-story.dto';
-import {CmRichTextI} from '@monorepo/common-model';
-import {FilesInterceptor} from '@nestjs/platform-express';
+import {CmRichTextI, CmRichTextUploadedImage} from '@monorepo/common-model';
+import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {HnTopicDto} from '../topic/hn-topic.dto';
 import {HnTopic} from '../topic/hn-topic.entity';
@@ -47,8 +49,8 @@ export class HnStoryController {
   @BlPublic()
   @Get('topic/:topicId')
   async getStoriesByTopicId(@Param('topicId', new ParseUUIDPipe()) topicId: string,
-                   @Query('page', new ParseIntPipe()) page: number,
-                   @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStory>> {
+                            @Query('page', new ParseIntPipe()) page: number,
+                            @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStory>> {
     return this.storyService.getStoriesByTopicId(topicId, page, size);
   }
 
@@ -74,13 +76,13 @@ export class HnStoryController {
 
   @Put(':id/title')
   async updateStoryTitle(@Param('id', new ParseUUIDPipe()) id: string,
-                          @Body('title') title: string): Promise<HnStory> {
+                         @Body('title') title: string): Promise<HnStory> {
     return this.storyService.updateStoryTitle(id, title);
   }
 
   @Put(':id/add-topic')
   async updateAddStoryTopic(@Param('id', new ParseUUIDPipe()) id: string,
-                         @Body() topic: HnTopicDto): Promise<HnTopic> {
+                            @Body() topic: HnTopicDto): Promise<HnTopic> {
     return this.storyService.addStoryTopic(id, topic);
   }
 
@@ -92,20 +94,20 @@ export class HnStoryController {
 
   @Put(':id/content')
   async updateStoryContent(@Param('id', new ParseUUIDPipe()) id: string,
-                            @Body('content') content: CmRichTextI): Promise<HnStory> {
+                           @Body('content') content: CmRichTextI): Promise<HnStory> {
     return this.storyService.updateStoryContent(id, content);
   }
 
-  @UseInterceptors(FilesInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file'))
   @Put('image')
-  saveImage(@UploadedFiles() files: BlFile[]): Promise<any>{
-    return this.storyService.saveImage(files);
+  saveImage(@UploadedFile() file: BlFile): Promise<CmRichTextUploadedImage> {
+    return this.storyService.saveImage(file);
   }
 
   @BlPublic()
   @Get('image/:filename')
   async getImage(@Param('filename') filename: string,
-           @Res() response: Response): Promise<any> {
+                 @Res() response: Response): Promise<any> {
     const file = await this.storyService.getImage(filename);
     BlResponseHelper.setMessageAndCache(response, file);
   }
@@ -132,7 +134,7 @@ export class HnStoryController {
    */
   @Put(':id/co-authors')
   async updateStoryCoAuthors(@Param('id', new ParseUUIDPipe()) id: string,
-                              @Body() coAuthors: string[]): Promise<HnStory> {
+                             @Body() coAuthors: string[]): Promise<HnStory> {
     return this.storyService.updateStoryCoAuthors(id, coAuthors);
   }
 
@@ -141,7 +143,7 @@ export class HnStoryController {
    */
   @Put(':id/remove-co-author/:storyAuthorId')
   async removeStoryCoAuthor(@Param('id', new ParseUUIDPipe()) id: string,
-                              @Param('storyAuthorId', new ParseUUIDPipe()) storyAuthorId: string): Promise<void> {
+                            @Param('storyAuthorId', new ParseUUIDPipe()) storyAuthorId: string): Promise<void> {
     return this.storyService.removeStoryCoAuthor(id, storyAuthorId);
   }
 

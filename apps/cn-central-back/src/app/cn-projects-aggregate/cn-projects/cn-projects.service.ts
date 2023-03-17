@@ -19,6 +19,7 @@ import {CnProjectSearchBuilder} from './cn-project-search.builder';
 @Injectable()
 export class CnProjectsService extends CnAbstractWithStatusService<CnProject, CnProjectStatus> {
 
+
   constructor(@InjectRepository(CnProject) private repository: TreeRepository<CnProject>,
               @InjectRepository(CnProjectStatusHistory) statusHistoRepo: Repository<CnProjectStatusHistory>,
               private groupService: CnGroupsService,
@@ -103,26 +104,6 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
     });
   }
 
-  public async shareProject(project: CnProject, groupId: string, entityManager?: EntityManager): Promise<CnGroup> {
-    if (project.isSharedToGroup(groupId)) {
-      throw new BlBadRequestException(CnErrorText.PROJECT_ALREADY_SHARED_WITH_GROUP);
-    }
-
-    const group = await this.groupService.findByIdAndCheck(groupId);
-    project.sharedGroups.push(group);
-    await this.update(project, entityManager);
-    return group;
-  }
-
-  public async unshareProject(project: CnProject, groupId: string): Promise<void> {
-    if (!project.isSharedToGroup(groupId)) {
-      throw new BlBadRequestException(CnErrorText.PROJECT_NOT_SHARED_WITH_GROUP);
-    }
-
-    project.removeSharedGroup(groupId);
-    await this.update(project);
-  }
-
   public async findWithSharedGroups(projectId: string): Promise<CnProject> {
     return this.findByIdAndCheck(projectId, {sharedGroups: true});
   }
@@ -131,7 +112,7 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
     if (project.currentLevel === CnProjectLevel.PROJECT) {
       return project;
     }
-    return this.findWithSharedGroups(project.rootParentId);
+    return this.findWithSharedGroups(project.getRootParentId());
   }
 
   // TODO to improve
@@ -172,5 +153,29 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
 
     return await this.findPaginated(page, size, searchBuilder.build());
   }
+
+
+  ///////////////////////////////// SHARE /////////////////////////////////
+
+  public async shareProject(project: CnProject, groupId: string, entityManager?: EntityManager): Promise<CnGroup> {
+    if (project.isSharedToGroup(groupId)) {
+      throw new BlBadRequestException(CnErrorText.PROJECT_ALREADY_SHARED_WITH_GROUP);
+    }
+
+    const group = await this.groupService.findByIdAndCheck(groupId);
+    project.sharedGroups.push(group);
+    await this.update(project, entityManager);
+    return group;
+  }
+
+  public async unshareProject(project: CnProject, groupId: string): Promise<void> {
+    if (!project.isSharedToGroup(groupId)) {
+      throw new BlBadRequestException(CnErrorText.PROJECT_NOT_SHARED_WITH_GROUP);
+    }
+
+    project.removeSharedGroup(groupId);
+    await this.update(project);
+  }
+
 
 }

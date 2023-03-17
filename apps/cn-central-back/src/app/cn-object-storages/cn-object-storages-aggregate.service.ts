@@ -10,16 +10,14 @@ import {CnLabInstance} from '../cn-lab-instances/cn-lab-instance.entity';
 import {CnCloudProviderAggregateService} from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
-import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {EntityManager} from 'typeorm';
-import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 
 
 @Injectable()
 export class CnObjectStoragesAggregateService {
 
-  private static LabBackupCredentialName = 'LAB_BACKUP';
+  public static LabBackupCredentialName = 'LAB_BACKUP';
 
 
   constructor(private securityService: CnObjectStoragesSecurity,
@@ -30,74 +28,68 @@ export class CnObjectStoragesAggregateService {
 
 
   public async getOrCreateLabBackupBucket(labInstance: CnLabInstance): Promise<CnBucket> {
-    const labBackupBucket = await this.bucketService.findLabBackupBucket(labInstance.id, labInstance.spaceId);
-
-    if (labBackupBucket) {
-      return labBackupBucket;
-    }
-
-    const credentials = await this.bucketCredentialsService.findByName(CnObjectStoragesAggregateService.LabBackupCredentialName);
-
-    if (credentials == null) {
-      throw new BlBadRequestException(`Credentials named ${CnObjectStoragesAggregateService.LabBackupCredentialName} not found`);
-    }
     const region = await this.cloudProviderService.getDefaultRegion();
 
-    const bucket = new CnBucket();
-    bucket.name = labInstance.id; // use id as bucket name
-    bucket.space = labInstance.space;
-    bucket.region = region;
-    bucket.credentials = credentials;
-    bucket.contentType = CnBucketContentType.LAB_BACKUP;
-    bucket.objectId = labInstance.id; // link this bucket with the lab instance
-
-    return this.bucketService.createBucket(bucket);
+    return this.getOrCreateObjectBucket(CnObjectStoragesAggregateService.LabBackupCredentialName, region,
+      labInstance.id, labInstance.spaceId,
+      CnBucketContentType.LAB_BACKUP, labInstance.id);
   }
 
-  public async createProjectBucket(project: CnProject, region: CnCloudProviderRegion): Promise<CnBucket> {
-    const existingBucket = await this.getProjectBucket(project.id);
-    if (existingBucket) {
-      throw new BlBadRequestException(`Bucket for project already exists`);
+  //////////////////////////// OBJECT BUCKET ///////////////////////////
+  public findByContentTypeAndObjectId(contentType: CnBucketContentType, objectId: string): Promise<CnBucket> {
+    return this.bucketService.findByContentTypeAndObjectId(contentType, objectId);
+  }
+
+
+  public async createObjectBucket(credentialsName: string, region: CnCloudProviderRegion,
+                                  bucketName: string, spaceId: string,
+                                  contentType: CnBucketContentType, objectId: string): Promise<CnBucket> {
+    const bucket = await this.findByContentTypeAndObjectId(contentType, objectId);
+
+    if (bucket) {
+      throw new BlBadRequestException(`Bucket for this object already exists`);
     }
 
-    const credentials = await this.bucketCredentialsService.findByName(CnObjectStoragesAggregateService.LabBackupCredentialName);
+    return this.createObjectBucketPrivate(credentialsName, region, bucketName, spaceId, contentType, objectId);
+  }
+
+  public async getOrCreateObjectBucket(credentialsName: string, region: CnCloudProviderRegion,
+                                       bucketName: string, spaceId: string,
+                                       contentType: CnBucketContentType, objectId: string): Promise<CnBucket> {
+    const bucket = await this.bucketService.findByContentTypeAndObjectId(contentType, objectId);
+
+    if (bucket) {
+      return bucket;
+    }
+
+    return this.createObjectBucketPrivate(credentialsName, region, bucketName, spaceId, contentType, objectId);
+  }
+
+  private async createObjectBucketPrivate(credentialsName: string, region: CnCloudProviderRegion,
+                                          bucketName: string, spaceId: string,
+                                          contentType: CnBucketContentType, objectId: string): Promise<CnBucket> {
+
+    const credentials = await this.bucketCredentialsService.findByName(credentialsName);
 
     if (credentials == null) {
-      throw new BlBadRequestException(`Credentials named ${CnObjectStoragesAggregateService.LabBackupCredentialName} not found`);
+      throw new BlBadRequestException(`Credentials named ${credentialsName} not found`);
     }
 
     const bucket = new CnBucket();
-    bucket.name = project.id; // use id as bucket name
+    bucket.name = bucketName;
     bucket.region = region;
     bucket.credentials = credentials;
-    bucket.contentType = CnBucketContentType.PROJECT;
+    bucket.contentType = contentType;
     const space = new CnSpace();
-    space.id = project.spaceId;
+    space.id = spaceId;
     bucket.space = space;
-    bucket.objectId = project.id; // link this bucket with the project
+    bucket.objectId = objectId;
 
     return this.bucketService.createBucket(bucket);
   }
 
-  public async getProjectBucket(projectId: string): Promise<CnBucket> {
-    return this.bucketService.findByContentTypeAndObjectId(CnBucketContentType.PROJECT, projectId);
-  }
-
-  public async getAndCheckProjectBucket(projectId: string): Promise<CnBucket> {
-    const bucket = await this.getProjectBucket(projectId);
-    if (bucket == null) {
-      // eslint-disable-next-line max-len
-      throw new BlBadRequestException(CnErrorText.PROJECT_BUCKET_NOT_FOUND);
-    }
-    return bucket;
-  }
-
-  public async deleteProjectBucket(projectId: string, entityManager: EntityManager): Promise<void> {
-    const bucket = await this.getProjectBucket(projectId);
-    if (bucket == null) {
-      return;
-    }
-    await this.bucketService.deleteBucket(bucket.id, entityManager);
+  public async deleteBucketNotSecure(id: string, entityManager?: EntityManager): Promise<void> {
+    await this.bucketService.deleteById(id, entityManager);
   }
 
 

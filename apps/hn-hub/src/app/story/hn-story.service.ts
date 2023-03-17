@@ -8,10 +8,17 @@ import {
   BlAbstractPaginatedService,
   BlBucketConfig,
   BlFile,
+  BlImageHelper,
   BlObjectStorageService,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
-import {CmRichText, CmRichTextHeader, CmRichTextI, CmRichTextImageCP} from '@monorepo/common-model';
+import {
+  CmRichText,
+  CmRichTextHeader,
+  CmRichTextI,
+  CmRichTextImageCP,
+  CmRichTextUploadedImage
+} from '@monorepo/common-model';
 import imageSize from 'image-size';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {IncomingMessage} from 'http';
@@ -25,11 +32,6 @@ import {HnStoryAuthorService} from '../story-author/hn-story-author.service';
 import {HnStoryAuthor, HnStoryAuthorStatus} from '../story-author/hn-story-author.entity';
 import {HnStoryAuthorInvite, HnStoryAuthorInviteStatus} from '../story-author-invite/hn-story-author-invite.entity';
 
-class HnStoryImage {
-  filename: string;
-  width: number;
-  height: number;
-}
 
 @Injectable()
 export class HnStoryService {
@@ -40,7 +42,6 @@ export class HnStoryService {
               private readonly topicService: HnTopicService,
               private objectStorageService: BlObjectStorageService,
               private configService: HnCoreConfigService,
-
               private storyAuthorService: HnStoryAuthorService
   ) {
   }
@@ -67,30 +68,30 @@ export class HnStoryService {
 
   async getMyStories(page: number, size: number): Promise<ClPage<HnStory>> {
     return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
-      where: [
-        {
-          storyAuthors: {
-            user: {
-              id: HnCurrentUserHelper.getCurrentUser().id
-            },
-            status: HnStoryAuthorStatus.AUTHOR
+        where: [
+          {
+            storyAuthors: {
+              user: {
+                id: HnCurrentUserHelper.getCurrentUser().id
+              },
+              status: HnStoryAuthorStatus.AUTHOR
+            }
+          },
+          {
+            storyAuthors: {
+              user: {
+                id: HnCurrentUserHelper.getCurrentUser().id
+              },
+              status: HnStoryAuthorStatus.COAUTHOR
+            }
           }
-        },
-        {
-          storyAuthors: {
-            user: {
-              id: HnCurrentUserHelper.getCurrentUser().id
-            },
-            status: HnStoryAuthorStatus.COAUTHOR
-          }
+        ],
+        relations: ['topics'],
+        order: {
+          createdAt: 'DESC' as any
         }
-      ],
-      relations: ['topics'],
-      order: {
-        createdAt: 'DESC' as any
-      }
-    },
-    this.storyRepository.manager, HnStory
+      },
+      this.storyRepository.manager, HnStory
     );
   }
 
@@ -106,7 +107,7 @@ export class HnStoryService {
 
   async getStoriesByFilter(filters: HnStoryFilter, page: number, size: number): Promise<ClPage<HnStory>> {
     const where: FindOptionsWhere<HnStory> = {};
-    const order: FindOptionsOrder<HnStory> = {createdAt:  'DESC' as any};
+    const order: FindOptionsOrder<HnStory> = {createdAt: 'DESC' as any};
     if (filters.categories && filters.categories.length > 0) {
       where.category = In(filters.categories);
     }
@@ -242,16 +243,16 @@ export class HnStoryService {
     return content;
   }
 
-  async saveImage(files: BlFile[]): Promise<any> {
-    const storyImage: HnStoryImage = new HnStoryImage();
-    for (const file of files) {
-      const imSize = imageSize(file.buffer);
-      storyImage.filename = await this.objectStorageService.uploadObject(this.getBucketConfig(), file,
-        {generateRandomObjectName: true});
-      storyImage.width = imSize.width;
-      storyImage.height = imSize.height;
-    }
-    return storyImage;
+  async saveImage(file: BlFile): Promise<CmRichTextUploadedImage> {
+    const imSize = BlImageHelper.getImageSize(file);
+    const filename = await this.objectStorageService.uploadObject(this.getBucketConfig(), file,
+      {generateRandomObjectName: true});
+
+    return {
+      filename: filename,
+      width: imSize.width,
+      height: imSize.height,
+    };
   }
 
   async getImage(filename: string): Promise<IncomingMessage> {

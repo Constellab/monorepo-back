@@ -4,20 +4,19 @@ import {CnProjectComment} from './cn-project-comment.entity';
 import {DataSource, Repository} from 'typeorm';
 import {CnCommentService} from '../cn-core/services/cn-comment.service';
 import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
-import {CnCommentImage, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
+import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {BlAbstractPaginatedService, BlBucketConfig, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
 import {CnNotificationService, CnNotificationType} from '../cn-notification/cn-notification.service';
 import {CnNotificationCreateDTO} from '../cn-notification/cn-notification.entity';
-import {CmRichText, CmRichTextI} from '@monorepo/common-model';
+import {CmRichText, CmRichTextI, CmRichTextUploadedImage} from '@monorepo/common-model';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnFrontService} from '../cn-core/services/cn-front.service';
 import {CnUser} from '../cn-users/cn-user.entity';
+import {CnProjectBucketService} from '../cn-projects-aggregate/cn-project-bucket/cn-project-bucket.service';
 
 @Injectable()
 export class CnProjectCommentService extends CnCommentService<CnProjectComment> {
-
-  private static readonly COMMENT_BUCKET_PREFIX = 'comments';
 
   constructor(@InjectRepository(CnProjectComment)
               private projectCommentRepository: Repository<CnProjectComment>,
@@ -27,9 +26,9 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
     super(dataSource, objectStorageService);
   }
 
-  async saveProjectCommentImage(files: BlFile[], bucketConfig: BlBucketConfig, projectId: string): Promise<CnCommentImage> {
-    return this.saveImage(files, bucketConfig,
-      CnProjectCommentService.COMMENT_BUCKET_PREFIX + '/' + projectId + '/');
+  async saveProjectCommentImage(file: BlFile, bucketConfig: BlBucketConfig, projectId: string): Promise<CmRichTextUploadedImage> {
+    const prefix = CnProjectBucketService.getPrefix('COMMENTS', projectId);
+    return this.saveImage(file, bucketConfig, prefix);
   }
 
   async create(newComment: CnNewComment, project: CnProject, userMentions: CnUser[]): Promise<CnProjectComment> {
@@ -42,7 +41,7 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
       return await this.createComment(projectComment);
     });
 
-    for(const uM of userMentions) {
+    for (const uM of userMentions) {
       const newNotification: CnNotificationCreateDTO = {
         createdBy: comment.createdBy,
         user: uM,

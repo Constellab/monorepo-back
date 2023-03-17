@@ -6,6 +6,7 @@ import {CnProject} from './cn-project.entity';
 import {CnProjectStatusHistory} from './cn-project-status-history.entity';
 import {CnGroupsModule} from '../../cn-groups/cn-groups.module';
 import {CnUsersModule} from '../../cn-users/cn-users.module';
+import {CnProjectBucketModule} from '../cn-project-bucket/cn-project-bucket.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import {CnUsersModule} from '../../cn-users/cn-users.module';
     CnCoreModule,
     CnGroupsModule,
     CnUsersModule,
+    CnProjectBucketModule
   ],
   providers: [
     CnProjectsService,

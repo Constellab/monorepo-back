@@ -24,7 +24,6 @@ import {CaGroup} from '../model/entities/ca-group.entity';
 import {CaUser} from '../model/entities/ca-user.class';
 import {CaProjectComment, CaProjectCommentDatasourcePaginated} from '../model/entities/ca-comment.class';
 import {CmRichTextFigure, CmRichTextI} from '@monorepo/common-model';
-import {map} from 'rxjs/operators';
 import {CaProjectSearch, CaProjectSearchFields} from '../entity-module/ca-project-core/model/ca-project-search.class';
 import {CaBucket, CaBucketFull} from '../model/entities/ca-object-storage.class';
 import {CaCloudProviderRegion} from '../model/entities/ca-cloud-provider.class';
@@ -137,17 +136,10 @@ export class CaProjectService {
     return this.apiService.get(`${this.route}/${projectId}/users`, CaUser);
   }
 
-  public updateDescription(id: string, description: string): Observable<CaProject> {
-    return this.apiService.put(`${this.route}/${id}/description`, description, CaProject);
-  }
-
   public updateProjectLeader(id: string, userId: string): Observable<CaProject> {
     return this.apiService.put(`${this.route}/${id}/leader/${userId}`, null, CaProject);
   }
 
-  public getProjectDescription(id: string): Observable<FlQuillJson> {
-    return this.apiService.get(`${this.route}/${id}/description`);
-  }
 
   public getProjectTree(objectType: CaProjectAncestorType, objectId: string): Observable<CaProjectTreeDto> {
     return this.apiService.get(`${this.route}/tree/${objectType}/${objectId}`);
@@ -161,6 +153,26 @@ export class CaProjectService {
     return this.apiService.post(`${this.route}/current-space/search`, data, CaProject, {
       page: page, pageSize: pageSize, resultIsPaginated: true
     });
+  }
+
+  /////////////////////////////////// DESCRIPTION //////////////////////////////////
+
+  public getProjectDescription(id: string): Observable<FlQuillJson> {
+    return this.apiService.get(`${this.route}/${id}/description`);
+  }
+
+  public updateDescription(id: string, description: string): Observable<CaProject> {
+    return this.apiService.put(`${this.route}/${id}/description`, description, CaProject);
+  }
+
+  uploadDescriptionImage(projectId: string, file: File): Observable<FlTextEditorUploadedImage> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.apiService.put(`${this.route}/${projectId}/description/image`, formData);
+  }
+
+  public getDescriptionImageUrl(projectId: string, filename: string): string {
+    return this.apiService.getBaseRouteUrl(`${this.route}/${projectId}/description/image/${filename}`);
   }
 
   /////////////////////////////// COMMENTS //////////////////////////////////
@@ -191,17 +203,7 @@ export class CaProjectService {
   uploadCommentImage(file: File, projectId: string): Observable<FlTextEditorUploadedImage> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.apiService.put(`${this.route}/${projectId}/comment/image`, formData).pipe(
-      map(
-        (uploadedFile: any) => {
-          return {
-            filename: uploadedFile.filename,
-            width: uploadedFile.width,
-            height: uploadedFile.height,
-          };
-        }
-      )
-    );
+    return this.apiService.put(`${this.route}/${projectId}/comment/image`, formData);
   }
 
   public getCommentImageUrl(filename: string, projectId: string): string {

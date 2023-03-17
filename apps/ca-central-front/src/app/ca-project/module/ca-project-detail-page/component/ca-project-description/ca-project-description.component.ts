@@ -1,10 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CaProjectDetailState} from '../../state/ca-project-detail.state';
 import {debounceTime, Observable, Subscription, switchMap} from 'rxjs';
-import {FlDebouncer, FlQuillJson, FlTextEditorBasicConfig, FlTextEditorConfig} from '@monorepo/front-core-lib';
+import {FlDebouncer, FlDialogService, FlQuillJson, FlTextEditorConfig} from '@monorepo/front-core-lib';
 import {FormControl} from '@angular/forms';
 import {CaProject} from '../../../../../ca-core/model/entities/project/ca-project.class';
 import {CaProjectService} from '../../../../../ca-core/service-api/ca-project.service';
+import {CaProjectDescriptionTextEditorConfig} from './ca-project-description-text-editor.config';
 
 @Component({
   selector: 'ca-project-description',
@@ -19,17 +20,19 @@ export class CaProjectDescriptionComponent implements OnInit, OnDestroy {
   edit: boolean = false;
   formControl: FormControl;
 
-  textEditorConfig: FlTextEditorConfig = new FlTextEditorBasicConfig();
+  textEditorConfig: FlTextEditorConfig;
 
   isLoading: boolean = false;
 
   private subscription: Subscription;
 
   constructor(private state: CaProjectDetailState,
-              private projectService: CaProjectService) {
+              private projectService: CaProjectService,
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
+    this.textEditorConfig = new CaProjectDescriptionTextEditorConfig(this.state.getProjectId$(), this.projectService, this.dialogService);
     this.project$ = this.state.getProject$();
     this.formControl = new FormControl({disabled: true, value: null});
 

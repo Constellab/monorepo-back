@@ -10,6 +10,15 @@ export interface CmRichTextOp {
 }
 
 /**
+ * Required information for a new upload image
+ */
+export interface CmRichTextUploadedImage{
+  filename: string;
+  width: number;
+  height: number;
+}
+
+/**
  * Object representing the value stored to create a figure
  */
 export interface CmRichTextFigure {

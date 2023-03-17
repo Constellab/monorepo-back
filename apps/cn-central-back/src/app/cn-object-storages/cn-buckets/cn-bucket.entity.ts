@@ -1,4 +1,4 @@
-import {Column, Entity, ManyToOne} from 'typeorm';
+import {Column, Entity, ManyToOne, Unique} from 'typeorm';
 import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
 import {
   CnCloudProviderRegion
@@ -20,6 +20,7 @@ export enum CnBucketContentType {
  * Represent a bucket in an object storage
  */
 @Entity('bucket')
+@Unique(['contentType', 'objectId'])
 export class CnBucket extends CnBaseEntity {
 
   @Type(() => CnCloudProviderRegion)

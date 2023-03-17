@@ -20,20 +20,19 @@ import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-projects/cn-project-level.enum';
 import {CnProjectAncestorTreeDTO, CnProjectAncestorType, CnProjectDtoHelper} from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
-import {CmRichText, CmRichTextFigure, CmRichTextI} from '@monorepo/common-model';
+import {CmRichText, CmRichTextI, CmRichTextUploadedImage} from '@monorepo/common-model';
 import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
 import {CnProjectCommentService} from '../cn-project-comment/cn-project-comment.service';
-import {CnCommentImage, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
+import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
 import {BlBadRequestException, BlFile, BlSearchParams, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {DataSource} from 'typeorm';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
-import {CnObjectStoragesAggregateService} from '../cn-object-storages/cn-object-storages-aggregate.service';
 import {CnDocumentsService} from './cn-documents/cn-documents.service';
 import {CnDocument} from './cn-documents/cn-document.entity';
 import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
-import {CnUsersService} from '../cn-users/cn-users.service';
+import {CnProjectBucketService} from './cn-project-bucket/cn-project-bucket.service';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -47,7 +46,7 @@ export class CnProjectAggregateService {
               private groupAggregateService: CnGroupsAggregateService,
               private projectCommentService: CnProjectCommentService,
               private datasource: DataSource,
-              private objectStoragesAggregateService: CnObjectStoragesAggregateService,
+              private projectBucketService: CnProjectBucketService,
               private documentService: CnDocumentsService) {
   }
 
@@ -132,7 +131,7 @@ export class CnProjectAggregateService {
 
     await this.datasource.transaction(async entityManager => {
       await this.projectService.deleteById(id, entityManager);
-      await this.objectStoragesAggregateService.deleteProjectBucket(id, entityManager);
+      await this.projectBucketService.deleteProjectBucket(id, entityManager);
     });
   }
 
@@ -265,10 +264,28 @@ export class CnProjectAggregateService {
     });
   }
 
+  /////////////////////////////////////// PROJECT DESCRIPTION //////////////////////////////////
+
+  public async getDescription(projectId: string): Promise<CmRichTextI> {
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+    return project.description;
+  }
+
   public async updateDescription(projectId: string, description: CmRichTextI): Promise<CnProject> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
     project.description = description;
     return this.projectService.update(project);
+  }
+
+  public async saveDescriptionImage(projectId: string, file: BlFile): Promise<CmRichTextUploadedImage> {
+    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+    return this.projectBucketService.saveDescriptionImage(project, file);
+  }
+
+  public async getDescriptionImage(projectId: string, filename: string): Promise<IncomingMessage> {
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    return this.projectBucketService.getObject(project.getRootParentId(), filename);
   }
 
   /////////////////////////////////////// PROJECT STATUS //////////////////////////////////
@@ -371,9 +388,9 @@ export class CnProjectAggregateService {
       experiments.push(experiment);
     }
 
-    const bucket = await this.objectStoragesAggregateService.getAndCheckProjectBucket(project.getRootParentId());
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
-    await this.reportService.createReport(createReportDto, experiments, project, bucket.getBucketConfig(), files);
+    await this.reportService.createReport(createReportDto, experiments, project, bucketConfig, files);
   }
 
   async deleteLabReport(projectId: string, reportId: string): Promise<void> {
@@ -494,18 +511,18 @@ export class CnProjectAggregateService {
     return this.projectCommentService.delete(commentId, projectId);
   }
 
-  public async saveCommentImage(files: BlFile[], projectId: string): Promise<CnCommentImage> {
+  public async saveCommentImage(file: BlFile, projectId: string): Promise<CmRichTextUploadedImage> {
     const rootProject = await this.checkFindOneAndGetRootProject(projectId);
 
-    const bucket = await this.objectStoragesAggregateService.getAndCheckProjectBucket(rootProject.id);
-    return this.projectCommentService.saveProjectCommentImage(files, bucket.getBucketConfig(), projectId);
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(rootProject.id);
+    return this.projectCommentService.saveProjectCommentImage(file, bucketConfig, projectId);
   }
 
   public async getCommentImage(filename: string, projectId: string): Promise<IncomingMessage> {
     const rootProject = await this.checkFindOneAndGetRootProject(projectId);
 
-    const bucket = await this.objectStoragesAggregateService.getAndCheckProjectBucket(rootProject.id);
-    return await this.projectCommentService.getImage(filename, bucket.getBucketConfig());
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(rootProject.id);
+    return await this.projectCommentService.getImage(filename, bucketConfig);
   }
 
   /////////////////////////////////////// DOCUMENT //////////////////////////////////
@@ -576,7 +593,7 @@ export class CnProjectAggregateService {
     return this.documentService.getConstellabDocument(project, document);
   }
 
-  public async uploadImageToConstellabDocument(documentId: string, file: BlFile): Promise<CmRichTextFigure> {
+  public async uploadImageToConstellabDocument(documentId: string, file: BlFile): Promise<CmRichTextUploadedImage> {
     const document = await this.documentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
@@ -601,7 +618,7 @@ export class CnProjectAggregateService {
       throw new BlBadRequestException('Only root projects can have a bucket');
     }
 
-    return this.objectStoragesAggregateService.createProjectBucket(project, region);
+    return this.projectBucketService.createProjectBucket(project, region);
   }
 
   public async getProjectBucket(projectId: string): Promise<CnBucket> {
@@ -611,7 +628,7 @@ export class CnProjectAggregateService {
       throw new BlBadRequestException('Only root projects can have a bucket');
     }
 
-    return this.objectStoragesAggregateService.getProjectBucket(projectId);
+    return this.projectBucketService.getProjectBucket(projectId);
   }
 
   /////////////////////////////////////// SECURITY //////////////////////////////////
@@ -641,16 +658,16 @@ export class CnProjectAggregateService {
     const userMentions: CnUser[] = [];
     const mentions: string[] = CmRichText.getMentions(content);
     if (mentions.length > 0) {
-      for(const m of mentions){
-        if(m == '0'){
+      for (const m of mentions) {
+        if (m == '0') {
           const users = await this.getUsersOfProject(projectId);
-          for(const u of users){
-            if(!userMentions.find(um => um.id == u.id) && u.id != CnCurrentUserHelper.getCurrentUser().id) // avoid duplicate
+          for (const u of users) {
+            if (!userMentions.find(um => um.id == u.id) && u.id != CnCurrentUserHelper.getCurrentUser().id) // avoid duplicate
               userMentions.push(u);
           }
         } else {
           const user = (await this.getUsersOfProject(projectId)).find(u => u.id == m);
-          if(!userMentions.find(um => um.id == user.id) && user.id != CnCurrentUserHelper.getCurrentUser().id) // avoid duplicate
+          if (!userMentions.find(um => um.id == user.id) && user.id != CnCurrentUserHelper.getCurrentUser().id) // avoid duplicate
             userMentions.push(user);
         }
       }

@@ -29,15 +29,6 @@ export class CnBucketCredentialsService extends BlAbstractService<CnBucketCreden
     return this.repository.findOneBy({space: {id: spaceId}});
   }
 
-  public async findBySpaceIdAndCheck(spaceId: string): Promise<CnBucketCredentials> {
-    const credential = await this.findBySpaceId(spaceId);
-
-    if (!credential) {
-      throw new BlBadRequestException(`There is no bucket credential for the space ${spaceId}`);
-    }
-    return credential;
-  }
-
   public findAll(page: number, size: number): Promise<ClPage<CnBucketCredentials>> {
     return this.findPaginated(page, size, {
       relations: {

@@ -85,15 +85,6 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     await this.objectStorageService.deleteBucket(bucket.getBucketConfig());
   }
 
-  public async findBySpaceAndContentType(spaceId: string, contentType: CnBucketContentType): Promise<CnBucket[]> {
-    return await this.repository.find({
-      where: {
-        space: {id: spaceId},
-        contentType: contentType
-      }
-    });
-  }
-
   public async findByContentType(contentType: CnBucketContentType): Promise<CnBucket[]> {
     return await this.repository.find({
       where: {
@@ -112,17 +103,4 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     });
   }
 
-  public async findLabBackupBucket(labInstanceId: string, spaceId: string): Promise<CnBucket> {
-    return await this.repository.findOne({
-      where: {
-        contentType: CnBucketContentType.LAB_BACKUP,
-        objectId: labInstanceId,
-        space: {id: spaceId}
-      },
-      relations: {
-        credentials: true,
-        region: true
-      }
-    });
-  }
 }

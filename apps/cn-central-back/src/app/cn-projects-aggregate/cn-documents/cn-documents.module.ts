@@ -1,16 +1,16 @@
 import {Module} from '@nestjs/common';
 import {CnCoreModule} from '../../cn-core/cn-core.module';
-import {CnObjectStoragesModule} from '../../cn-object-storages/cn-object-storages.module';
 import {CnDocumentsService} from './cn-documents.service';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {CnDocument} from './cn-document.entity';
+import {CnProjectBucketModule} from '../cn-project-bucket/cn-project-bucket.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([CnDocument]),
 
     CnCoreModule,
-    CnObjectStoragesModule,
+    CnProjectBucketModule,
   ],
   providers: [CnDocumentsService],
   exports: [CnDocumentsService]

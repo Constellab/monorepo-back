@@ -5,21 +5,28 @@ import {HnDocumentation, HnDocumentationSearchDTO} from './hn-documentation.enti
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnUser} from '../users/hn-user.entity';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
-import {BlBucketConfig, BlFile, BlObjectStorageService, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {
+  BlBucketConfig,
+  BlFile,
+  BlImageHelper,
+  BlObjectStorageService,
+  BlUnauthorizedException
+} from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {IncomingMessage} from 'http';
 import imageSize from 'image-size';
 import {HnNodeDTO} from '../folder/hn-folder.dto';
-import {CmRichText, CmRichTextHeader, CmRichTextI, CmRichTextImageCP, CmRichTextLink} from '@monorepo/common-model';
+import {
+  CmRichText,
+  CmRichTextHeader,
+  CmRichTextI,
+  CmRichTextImageCP,
+  CmRichTextLink,
+  CmRichTextUploadedImage
+} from '@monorepo/common-model';
 import {HnFolder} from '../folder/hn-folder.entity';
 import {ISizeCalculationResult} from 'image-size/dist/types/interface';
 import {ClStringHelper} from '@monorepo/core-lib';
-
-class HnDocImage {
-  filename: string;
-  width: number;
-  height: number;
-}
 
 @Injectable()
 export class HnDocumentationService {
@@ -213,11 +220,10 @@ export class HnDocumentationService {
       relations: ['folder']
     });
     let documentation: HnDocumentation;
-    if(documentations.length > 1){
+    if (documentations.length > 1) {
       //sort by major version
       documentation = documentations.sort((a, b) => a.folder.brickMajorVersion.major - b.folder.brickMajorVersion.major)[0];
-    }
-    else{
+    } else {
       if (documentations.length == 1) {
         documentation = documentations[0];
       }
@@ -226,16 +232,16 @@ export class HnDocumentationService {
     return [documentation.id, anchor ? completePath.slice(0, -1) + '#' + anchor : completePath];
   }
 
-  async saveImage(files: BlFile[]): Promise<HnDocImage> {
-    const docImage: HnDocImage = new HnDocImage();
-    for (const file of files) {
-      const imSize = imageSize(file.buffer);
-      docImage.filename = await this.objectStorageService.uploadObject(
-        this.getBucketConfig(), file, {generateRandomObjectName: true});
-      docImage.width = imSize.width;
-      docImage.height = imSize.height;
-    }
-    return docImage;
+  async saveImage(file: BlFile): Promise<CmRichTextUploadedImage> {
+    const imSize = BlImageHelper.getImageSize(file);
+    const filename = await this.objectStorageService.uploadObject(
+      this.getBucketConfig(), file, {generateRandomObjectName: true});
+
+    return {
+      filename: filename,
+      width: imSize.width,
+      height: imSize.height
+    };
   }
 
   async getImage(filename: string): Promise<IncomingMessage> {

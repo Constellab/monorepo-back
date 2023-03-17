@@ -1,22 +1,11 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Put,
-  Res,
-  UploadedFiles,
-  UseGuards,
-  UseInterceptors
-} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Put, Res, UploadedFile, UseGuards, UseInterceptors} from '@nestjs/common';
 import {HnDocumentation, HnDocumentationDTO} from './hn-documentation.entity';
 import {HnDocumentationService} from './hn-documentation.service';
 import {BlFile, BlParsePipe, BlPublic, BlResponseHelper} from '@monorepo/back-core-lib';
-import {FilesInterceptor} from '@nestjs/platform-express';
+import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {HnNodeDTO} from '../folder/hn-folder.dto';
-import {CmRichTextI} from '@monorepo/common-model';
+import {CmRichTextI, CmRichTextUploadedImage} from '@monorepo/common-model';
 import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
 import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 
@@ -35,7 +24,7 @@ export class HnDocumentationController {
       if (!doc.path.includes('/')) {
         docsDto.push(new HnDocumentationDTO(doc));
       }
-    })
+    });
     return docsDto;
   }
 
@@ -65,10 +54,10 @@ export class HnDocumentationController {
   }
 
   @IsAdmin()
-  @UseInterceptors(FilesInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file'))
   @Put('/image')
-  saveImage(@UploadedFiles() files: BlFile[]): Promise<any> {
-    return this.documentationService.saveImage(files);
+  saveImage(@UploadedFile() file: BlFile): Promise<CmRichTextUploadedImage> {
+    return this.documentationService.saveImage(file);
   }
 
   /**

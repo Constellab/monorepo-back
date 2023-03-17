@@ -201,7 +201,7 @@ export class BlObjectStorageService {
     }
 
     if (options.prefix) {
-      filename = options.prefix + filename;
+      filename = options.prefix + '/' + filename;
     }
     return filename;
   }

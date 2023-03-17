@@ -6,12 +6,12 @@ import {
   HaMyStoriesDataSource,
   HaStory,
   HaStoryDataSourceDataDto,
-  HaStoryDatasourcePaginated, HaStoryFilter
+  HaStoryDatasourcePaginated,
+  HaStoryFilter
 } from '../ha-model/ha-entities/ha-story.class';
 import {Observable} from 'rxjs';
 import {ClPage} from '@monorepo/core-lib';
 import {CmRichTextI} from '@monorepo/common-model';
-import {map} from 'rxjs/operators';
 import {HaTopic, HaTopicDto} from '../ha-model/ha-entities/ha-topic.class';
 import {HaStoryAuthorInvite} from '../ha-model/ha-entities/ha-story-author-invite.class';
 
@@ -66,7 +66,11 @@ export class HaStoryService {
   }
 
   private getAllByFilter(filters: HaStoryFilter, page: number, size: number): Observable<ClPage<HaListStoryDto>> {
-    return this.apiService.post(this.route + '/filter', filters, HaStory, {page: page, pageSize: size, resultIsPaginated: true});
+    return this.apiService.post(this.route + '/filter', filters, HaStory, {
+      page: page,
+      pageSize: size,
+      resultIsPaginated: true
+    });
   }
 
   /**
@@ -116,17 +120,7 @@ export class HaStoryService {
   uploadImage(file: File): Observable<FlTextEditorUploadedImage> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.apiService.put(`${this.route}/image`, formData).pipe(
-      map(
-        (uploadedFile: any) => {
-          return {
-            filename: uploadedFile.filename,
-            width: uploadedFile.width,
-            height: uploadedFile.height,
-          };
-        }
-      )
-    );
+    return this.apiService.put(`${this.route}/image`, formData);
   }
 
   getImageUrl(filename: string): string {

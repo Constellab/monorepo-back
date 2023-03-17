@@ -4,34 +4,32 @@ import {
   BlBadRequestException,
   BlFile,
   BlFileHelper,
+  BlImageHelper,
   BlObjectStorageService
 } from '@monorepo/back-core-lib';
 import {CnProject} from '../cn-projects/cn-project.entity';
-import {CnObjectStoragesAggregateService} from '../../cn-object-storages/cn-object-storages-aggregate.service';
 import {IncomingMessage} from 'http';
 import {CnDocument} from './cn-document.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DataSource, Repository} from 'typeorm';
 import {ClPage} from '@monorepo/core-lib';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
-import {CmRichText, CmRichTextFigure, CmRichTextI} from '@monorepo/common-model';
-import imageSize from 'image-size';
+import {CmRichText, CmRichTextI, CmRichTextUploadedImage} from '@monorepo/common-model';
 import {CnConstellabDocument} from './cn-document-dto.class';
+import {CnProjectBucketService} from '../cn-project-bucket/cn-project-bucket.service';
 
 @Injectable()
 export class CnDocumentsService extends BlAbstractService<CnDocument> {
-  private static readonly DOCUMENT_BUCKET_PREFIX = 'documents';
-  private static readonly CONSTELLAB_DOC_IMAGE_BUCKET_PREFIX = 'constellab_doc_images';
 
   constructor(@InjectRepository(CnDocument) private repository: Repository<CnDocument>,
               private objectStorageService: BlObjectStorageService,
-              private objectStoragesAggregateService: CnObjectStoragesAggregateService,
+              private projectBucketService: CnProjectBucketService,
               private datasource: DataSource) {
     super(repository, CnDocument);
   }
 
   public async uploadDocument(file: BlFile, project: CnProject): Promise<CnDocument> {
-    const bucket = await this.objectStoragesAggregateService.getAndCheckProjectBucket(project.getRootParentId());
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
     const existingDocument = await this.findDocumentByProjectAndName(project.id, file.originalname);
     if (existingDocument) {
@@ -51,30 +49,31 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
       document.filePath = this.generateDocumentFilePath(project.id, extension);
       const dbDocument = await entityManager.save(document);
 
-      await this.objectStorageService.uploadObject(bucket.getBucketConfig(), file,
+      await this.objectStorageService.uploadObject(bucketConfig, file,
         {filename: document.filePath});
       return dbDocument;
     });
   }
 
   public async getDocument(project: CnProject, filePath: string): Promise<IncomingMessage> {
-    const bucket = await this.objectStoragesAggregateService.getAndCheckProjectBucket(project.getRootParentId());
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
-    return this.objectStorageService.getObject(bucket.getBucketConfig(), filePath);
+    return this.objectStorageService.getObject(bucketConfig, filePath);
   }
 
   public async deleteDocument(id: string, project: CnProject): Promise<void> {
-    const bucket = await this.objectStoragesAggregateService.getAndCheckProjectBucket(project.getRootParentId());
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
     const document = await this.findByIdAndCheck(id);
 
     return this.datasource.transaction(async (entityManager) => {
       await entityManager.remove(document);
-      await this.objectStorageService.deleteObjectIfExist(bucket.getBucketConfig(), document.filePath);
+      await this.objectStorageService.deleteObjectIfExist(bucketConfig, document.filePath);
 
       // if this is a constellab document, delete all images as well
       if (document.isConstellabDocument) {
-        await this.objectStorageService.deleteObjectsByPrefix(bucket.getBucketConfig(), this.getConstellabDocImagePrefix(id));
+        const prefix = CnProjectBucketService.getPrefix('CONSTELLAB_DOC_IMAGE', id);
+        await this.objectStorageService.deleteObjectsByPrefix(bucketConfig, prefix);
       }
     });
   }
@@ -102,7 +101,7 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
 
   async createConstellabDocument(project: CnProject, filename: string): Promise<CnConstellabDocument> {
-    const bucket = await this.objectStoragesAggregateService.getAndCheckProjectBucket(project.getRootParentId());
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
     const content = CmRichText.newRichText();
 
     return this.datasource.transaction(async (entityManager) => {
@@ -117,18 +116,18 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
       document.filePath = this.generateDocumentFilePath(project.id, 'json');
       const dbDocument = await entityManager.save(document);
 
-      await this.objectStorageService.uploadJson(bucket.getBucketConfig(), content, {filename: document.filePath});
+      await this.objectStorageService.uploadJson(bucketConfig, content, {filename: document.filePath});
 
       return new CnConstellabDocument(dbDocument, content);
     });
   }
 
   async updateConstellabDocument(project: CnProject, document: CnDocument, content: CmRichTextI): Promise<CnConstellabDocument> {
-    const bucket = await this.objectStoragesAggregateService.getAndCheckProjectBucket(project.getRootParentId());
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
-    await this.objectStorageService.uploadJson(bucket.getBucketConfig(), content, {filename: document.filePath});
+    await this.objectStorageService.uploadJson(bucketConfig, content, {filename: document.filePath});
 
-    const objectInfo = await this.objectStorageService.getObjectInfo(bucket.getBucketConfig(), document.filePath);
+    const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig, document.filePath);
 
     // update the document size and last modification info
     document.size = objectInfo.ContentLength;
@@ -139,44 +138,36 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
 
   async getConstellabDocument(project: CnProject, document: CnDocument): Promise<CnConstellabDocument> {
     if (!document.isConstellabDocument) throw new BlBadRequestException('The document is not a constellab document');
-    const bucket = await this.objectStoragesAggregateService.getAndCheckProjectBucket(project.getRootParentId());
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
-    const content = await this.objectStorageService.getObjectAsJson(bucket.getBucketConfig(), document.filePath);
+    const content = await this.objectStorageService.getObjectAsJson(bucketConfig, document.filePath);
 
     return new CnConstellabDocument(document, content);
   }
 
-  async uploadImageToConstellabDocument(project: CnProject, document: CnDocument, file: BlFile): Promise<CmRichTextFigure> {
-    const bucket = await this.objectStoragesAggregateService.getAndCheckProjectBucket(project.getRootParentId());
+  async uploadImageToConstellabDocument(project: CnProject, document: CnDocument, file: BlFile): Promise<CmRichTextUploadedImage> {
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
+    const imSize = BlImageHelper.getImageSize(file);
     const filename = this.objectStorageService.generateRandomFileName(BlFileHelper.getFileExtension(file.originalname));
-    const filePath = `${this.getConstellabDocImagePrefix(document.id)}/${filename}`;
+    const filePath = `${CnProjectBucketService.getPrefix('CONSTELLAB_DOC_IMAGE', document.id)}/${filename}`;
 
-    const imSize = imageSize(file.buffer);
-    const figure: CmRichTextFigure = {
+    await this.objectStorageService.uploadObject(bucketConfig, file, {filename: filePath});
+
+    return {
       filename: filePath,
-      naturalHeight: imSize.height,
-      naturalWidth: imSize.width,
       height: imSize.height,
       width: imSize.width,
     };
-
-    await this.objectStorageService.uploadObject(bucket.getBucketConfig(), file, {filename: filePath});
-
-    return figure;
   }
 
   async getImageFromConstellabDocument(project: CnProject, filePath: string): Promise<IncomingMessage> {
-    const bucket = await this.objectStoragesAggregateService.getAndCheckProjectBucket(project.getRootParentId());
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
-    return this.objectStorageService.getObject(bucket.getBucketConfig(), filePath);
-  }
-
-  private getConstellabDocImagePrefix(documentId: string): string {
-    return `${CnDocumentsService.CONSTELLAB_DOC_IMAGE_BUCKET_PREFIX}/${documentId}`;
+    return this.objectStorageService.getObject(bucketConfig, filePath);
   }
 
   private generateDocumentFilePath(projectId: string, extension: string): string {
-    return `${CnDocumentsService.DOCUMENT_BUCKET_PREFIX}/${projectId}/${this.objectStorageService.generateRandomFileName(extension)}`;
+    return `${CnProjectBucketService.getPrefix('DOCUMENTS', projectId)}/${this.objectStorageService.generateRandomFileName(extension)}`;
   }
 }

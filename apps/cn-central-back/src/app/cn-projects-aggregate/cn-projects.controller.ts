@@ -12,7 +12,6 @@ import {
   Res,
   StreamableFile,
   UploadedFile,
-  UploadedFiles,
   UseInterceptors
 } from '@nestjs/common';
 import {CnProject} from './cn-projects/cn-project.entity';
@@ -29,10 +28,10 @@ import {
   CnProjectTreeDto
 } from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
-import {CmRichTextFigure, CmRichTextI} from '@monorepo/common-model';
+import {CmRichTextI, CmRichTextUploadedImage} from '@monorepo/common-model';
 import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
 import {CnComment, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
-import {FileInterceptor, FilesInterceptor} from '@nestjs/platform-express';
+import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
@@ -160,12 +159,6 @@ export class CnProjectsController {
     return this.projectAggregate.getUsersOfProject(id);
   }
 
-  @Get(':id/description')
-  async findDescription(@Param('id', ParseUUIDPipe) id: string): Promise<CmRichTextI> {
-    const project = await this.projectAggregate.findProject(id);
-    return project.description;
-  }
-
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string): Promise<CnProject> {
     return this.projectAggregate.findProject(id);
@@ -177,19 +170,45 @@ export class CnProjectsController {
     return this.projectAggregate.updateProjectLeader(id, leaderId);
   }
 
+  /////////////////////////////////// DESCRIPTION //////////////////////////////////////
+
+  @Get(':id/description')
+  getDescription(@Param('id', ParseUUIDPipe) id: string): Promise<CmRichTextI> {
+    return this.projectAggregate.getDescription(id);
+  }
+
   @Put(':id/description')
   updateDescription(@Param('id', new ParseUUIDPipe()) id: string,
                     @Body() description: CmRichTextI): Promise<CnProject> {
     return this.projectAggregate.updateDescription(id, description);
   }
 
+  @UseInterceptors(FileInterceptor('file'))
+  @Put(':projectId/description/image')
+  saveDescriptionImage(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+                       @UploadedFile() file: BlFile): Promise<CmRichTextUploadedImage> {
+    return this.projectAggregate.saveDescriptionImage(projectId, file);
+  }
+
+  /**
+   * Return an image of a comment
+   * Use filename(*) to catch all the filename (including slashes)
+   */
+  @Get(':projectId/description/image/:filename(*)')
+  public async getDescriptionImage(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+                                   @Param('filename') filename: string,
+                                   @Res() response: Response): Promise<any> {
+    const file = await this.projectAggregate.getDescriptionImage(projectId, filename);
+    BlResponseHelper.setMessageAndCache(response, file);
+  }
+
   /////////////////////////////// COMMENTS ///////////////////////////////////////////
 
-  @UseInterceptors(FilesInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file'))
   @Put(':projectId/comment/image')
   saveCommentImage(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                   @UploadedFiles() files: BlFile[]): Promise<any> {
-    return this.projectAggregate.saveCommentImage(files, projectId);
+                   @UploadedFile() file: BlFile): Promise<CmRichTextUploadedImage> {
+    return this.projectAggregate.saveCommentImage(file, projectId);
   }
 
   /**
@@ -197,9 +216,9 @@ export class CnProjectsController {
    * Use filename(*) to catch all the filename (including slashes)
    */
   @Get(':projectId/comment/image/:filename(*)')
-  public async get(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                   @Param('filename') filename: string,
-                   @Res() response: Response): Promise<any> {
+  public async getCommentImage(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+                               @Param('filename') filename: string,
+                               @Res() response: Response): Promise<any> {
     const file = await this.projectAggregate.getCommentImage(filename, projectId);
     BlResponseHelper.setMessageAndCache(response, file);
   }
@@ -299,7 +318,7 @@ export class CnProjectsController {
   @UseInterceptors(FileInterceptor('file'))
   @Post('constellab-document/:documentId/image')
   async uploadImageToConstellabDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string,
-                                        @UploadedFile() file: BlFile): Promise<CmRichTextFigure> {
+                                        @UploadedFile() file: BlFile): Promise<CmRichTextUploadedImage> {
     return this.projectAggregate.uploadImageToConstellabDocument(documentId, file);
   }
 

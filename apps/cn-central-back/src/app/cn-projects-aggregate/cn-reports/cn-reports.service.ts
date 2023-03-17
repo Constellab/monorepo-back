@@ -19,19 +19,17 @@ import {AxiosResponse} from 'axios';
 import {CnReportContent, CnReportViewConfig} from './cn-report-content.class';
 import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
-import {CnObjectStoragesAggregateService} from '../../cn-object-storages/cn-object-storages-aggregate.service';
+import {CnProjectBucketService} from '../cn-project-bucket/cn-project-bucket.service';
 
 @Injectable()
 export class CnReportsService extends BlAbstractService<CnReport> {
-
-  private static readonly REPORT_BUCKET_PREFIX = 'reports';
 
   constructor(@InjectRepository(CnReport) private repository: Repository<CnReport>,
               private objectStorageService: BlObjectStorageService,
               private configService: CnCoreConfigService,
               private externalLabService: CnExternalLabApiService,
               private labConfigService: CnLabConfigsService,
-              private objectStorageAggregatorService: CnObjectStoragesAggregateService) {
+              private projectBucketService: CnProjectBucketService) {
     super(repository, CnReport);
   }
 
@@ -68,7 +66,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     const reportDto: CnSaveReportDto = createReportDto.report;
     const richText = new CnReportContent(reportDto.content);
 
-    const prefix = `${CnReportsService.REPORT_BUCKET_PREFIX}/${reportDto.id}/`;
+    const prefix = CnProjectBucketService.getPrefix('REPORTS', reportDto.id);
 
     // use v2
     if (files != null && createReportDto.resource_views != null) {
@@ -223,7 +221,6 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   }
 
   private async getBucketConfig(projectId: string): Promise<BlBucketConfig> {
-    const bucket = await this.objectStorageAggregatorService.getAndCheckProjectBucket(projectId);
-    return bucket.getBucketConfig();
+    return await this.projectBucketService.getAndCheckProjectBucketConfig(projectId);
   }
 }
