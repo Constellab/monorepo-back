@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {CaNotificationsService} from '../service-api/ca-notifications.service';
-import {CaNotification, CaNotificationNumber, CaNotificationType} from '../model/entities/ca-notification.class';
+import {CaNotification, CaNotificationType} from '../model/entities/ca-notification.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {CaCurrentSpaceService} from '../service-api/ca-current-space.service';
@@ -28,7 +28,7 @@ export class CaNotificationState {
   public getNotReadNotificationsNumber(): Observable<number | string> {
     return this.notifications$.asObservable().pipe(map((notifications: CaNotification[]) => {
       notifications = notifications.filter((notif: CaNotification) =>
-        notif.space.id === this.currentSpaceId || (notif.space.id == null));
+        notif.space == null || notif.space.id === this.currentSpaceId);
       if (notifications.length > 0) {
         return notifications.length;
       } else {
@@ -39,7 +39,7 @@ export class CaNotificationState {
 
   public getOtherSpacesNotificationsNumber(): Observable<number | string> {
     return this.notifications$.asObservable().pipe(map((notifications: CaNotification[]) => {
-      notifications = notifications.filter((notif: CaNotification) => notif.space.id != null && notif.space.id !== this.currentSpaceId);
+      notifications = notifications.filter((notif: CaNotification) => notif.space != null && notif.space.id !== this.currentSpaceId);
       if (notifications.length > 0) {
         return notifications.length;
       } else {
@@ -50,7 +50,7 @@ export class CaNotificationState {
 
   public getSpaceUserNotificationsNumber(spaceId: string): Observable<number | string> {
     return this.notifications$.asObservable().pipe(map((notifications: CaNotification[]) => {
-      notifications = notifications.filter((notif: CaNotification) => notif.space.id === spaceId);
+      notifications = notifications.filter((notif: CaNotification) => notif.space != null && notif.space.id === spaceId);
       if (notifications.length > 0) {
         return notifications.length;
       } else {
@@ -61,7 +61,8 @@ export class CaNotificationState {
 
   public getEntityNotificationsNumberByLink(link: string): Observable<number | string> {
     return this.notifications$.asObservable().pipe(map((notifications: CaNotification[]) => {
-      notifications = notifications.filter((notif: CaNotification) => notif.link === link && notif.space.id == this.currentSpaceId);
+      notifications = notifications.filter((notif: CaNotification) => notif.link === link &&
+        notif.space != null && notif.space.id == this.currentSpaceId);
       if (notifications.length > 0) {
         return notifications.length;
       } else {

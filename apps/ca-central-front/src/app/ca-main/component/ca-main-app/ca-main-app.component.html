@@ -1,5 +1,4 @@
-<mat-sidenav-container class="container g-dashboard-background"
-                       [ngClass]="{'container-mobile': sidenavMode === 'over'}">
+<mat-sidenav-container class="container g-dashboard-background" autosize>
 
   <mat-sidenav [fixedInViewport]="true"
                [mode]="sidenavMode"
@@ -8,38 +7,67 @@
                position="start"
                class="sidenav g-print-hide">
 
-    <div fxLayout="column" class="column-container" >
+    <fl-expansion-menu [(expanded)]="menuExpanded" class="expansion-menu">
 
-      <div class="logo-div" [matBadge]="otherSpaceNotificationsNumber$ | async" matBadgeColor="warn">
-        <img [src]="logo$ | async" alt="Space logo"
-           class="logo" (click)="openMySpacesPortal()"
-           flBackupImage="assets/logo/logo.png" />
-      </div>
-      <!-- List of main menu links   -->
-      <div fxFlex="auto" class="menu" fxLayout="column" fxLayoutAlign="start center">
-        <div class="buttons">
-          <div *ngFor="let link of accessibleLinks">
-            <a mat-icon-button [routerLink]="link.route"
-               class="nav-button" routerLinkActive="selected-menu"
-               [matTooltip]="link.label | translate" matTooltipPosition="after">
-              <mat-icon [flIcon]="link.icon"></mat-icon>
-            </a>
+
+      <div fxLayout="column" class="column-container g-scrollable-element">
+
+        <div class="logo-div"
+             fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
+             (click)="openMySpacesPortal()" [ngClass]="{'logo-small': menuExpanded}">
+          <div [matBadge]="otherSpaceNotificationsNumber$ | async" matBadgeColor="warn" class="logo-container">
+            <img [src]="spaceLogo$ | async" alt="Space logo"
+                 class="logo" flBackupImage="assets/logo/logo.png"/>
           </div>
+          <span *ngIf="menuExpanded" class="g-text-light space-name">{{spaceName$ | async}}</span>
+        </div>
+
+        <div class="divider"></div>
+
+
+        <!-- List of main menu links   -->
+        <div fxFlex="auto" class="menu" fxLayout="column" fxLayoutAlign="start center">
+          <div class="buttons">
+            <div *ngFor="let link of accessibleLinks">
+              <a mat-button [routerLink]="link.route" flExpansionMenuButton
+                 class="nav-button" routerLinkActive="selected-menu"
+                 [matTooltip]="link.label | translate" matTooltipPosition="after">
+                <mat-icon [flIcon]="link.icon"></mat-icon>
+                <span>{{link.label | translate}}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+
+        <!--  Additional buttons  -->
+        <div class="additional-button" [ngClass]="{'additional-button-small': menuExpanded}">
+
+          <!--    Grow/Reduce menu button      -->
+          <button mat-button class="reduce-button"
+                  flExpansionMenuButton flExpansionMenuButtonToggle>
+            <mat-icon>{{menuExpanded ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+            <span>{{'reduce_menu' | translate}}</span>
+          </button>
+
+          <div [matBadge]="numberOfNotifications$ | async" matBadgeColor="warn" [matBadgeHidden]="false">
+            <button mat-button type="button" (click)="openNotificationDiv()"
+                    flExpansionMenuButton class="notif-button"
+            >
+              <mat-icon>notifications</mat-icon>
+              <span>
+              {{'notifications' | translate}}
+            </span>
+            </button>
+          </div>
+
+          <ca-authenticated-user-inline [showName]="menuExpanded"></ca-authenticated-user-inline>
         </div>
       </div>
 
-      <!--  Authenticated user info  -->
-
-      <div class="user-container"
-           fxLayout="column" fxLayoutAlign="start center">
-
-        <button mat-icon-button type="button" class="notif-button" (click)="openNotificationDiv()"
-                [matBadge]="numberOfNotifications$ | async" matBadgeColor="warn">
-          <mat-icon>notifications</mat-icon>
-        </button>
-        <ca-authenticated-user-inline [showName]="false"></ca-authenticated-user-inline>
-      </div>
-    </div>
+    </fl-expansion-menu>
 
   </mat-sidenav>
 

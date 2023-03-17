@@ -1,10 +1,10 @@
 <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.4em"
      [flUserMouseHoverPortal]="user" [flMouseEnterDelay]="750" [flDisabled]="!showPopUp">
   <fl-user-profile-picture [user]="user" class="person-picture"
-                           size="small"></fl-user-profile-picture>
+                           [size]="profilePictureSize"></fl-user-profile-picture>
 
-  <div class="user-name" [ngClass]="asSpecificSize ? '' : 'g-text-small'" *ngIf="showName">
-    <p>{{user.fullname}}</p>
+  <div class="user-name" [ngClass]="customTextSize ? '' : 'g-text-small'" *ngIf="showName">
+    {{user.fullname}}
   </div>
 
 </div>

@@ -12,7 +12,7 @@
       {{story.title}}
     </h2>
     <p class="small-text user-date-info">
-      <fl-user-inline [user]="story.getAuthor()" [showPopUp]="false" [asSpecificSize]="true"></fl-user-inline>
+      <fl-user-inline [user]="story.getAuthor()" [showPopUp]="false" [customTextSize]="true"></fl-user-inline>
       <span class="g-text-small date-info">{{story.createdAt | flDate:'DATETIME_MED'}}</span>
     </p>
 

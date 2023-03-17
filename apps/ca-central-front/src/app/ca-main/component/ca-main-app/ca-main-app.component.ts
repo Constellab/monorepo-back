@@ -10,12 +10,6 @@ import {MatSidenav} from '@angular/material/sidenav';
 import {Observable} from 'rxjs';
 import {CaCurrentSpaceService} from '../../../ca-core/service-api/ca-current-space.service';
 import {map} from 'rxjs/operators';
-import {CaRouterService} from '../../../ca-core/service/ca-router.service';
-import {CaNotificationsService} from '../../../ca-core/service-api/ca-notifications.service';
-import {
-  CaNotificationDatasourcePaginated,
-  CaNotificationNumber
-} from '../../../ca-core/model/entities/ca-notification.class';
 import {CaNotificationState} from '../../../ca-core/state/ca-notification.state';
 
 /**
@@ -30,14 +24,15 @@ export class CaMainAppComponent implements OnInit {
 
   @ViewChild(MatSidenav, {static: true, read: ElementRef}) sidenav: ElementRef<HTMLElement>;
 
-  logo$: Observable<string>;
+  menuExpanded: boolean = true;
+
+  spaceLogo$: Observable<string>;
+  spaceName$: Observable<string>;
 
   accessibleLinks: CaMainMenuLink[];
 
   // set always side mode
   sidenavMode: 'over' | 'side' = 'side';
-
-  dashboardRoute = CaRouterService.getDashboardRoute();
 
   numberOfNotifications$: Observable<string | number>;
 
@@ -53,8 +48,11 @@ export class CaMainAppComponent implements OnInit {
     this.initAccessibleLinks();
 
     // if the current space has a photo, use it, otherwise, use the default logo of gencovery
-    this.logo$ = this.currentSpaceService.getCurrentSpacePhoto$().pipe(
+    this.spaceLogo$ = this.currentSpaceService.getCurrentSpacePhoto$().pipe(
       map(photo => photo ?? 'assets/logo/logo.png')
+    );
+    this.spaceName$ = this.currentSpaceService.getCurrentSpace$().pipe(
+      map(space => space?.name ?? null)
     );
     this.notificationState.init();
 

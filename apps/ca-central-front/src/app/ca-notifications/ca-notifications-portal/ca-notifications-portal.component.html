@@ -20,7 +20,7 @@
           <fl-user-profile-picture [user]="notif.createdBy" size="4"></fl-user-profile-picture>
         </div>
         <div class="notification-content">
-          <div class="notification-text">{{notif.text | translate:{firstname: notif.createdBy.firstname} }}</div>
+          <div class="notification-text">{{notif.text}}</div>
 
           <fl-text-icon iconPosition="start" [gap]="'3px'">
 

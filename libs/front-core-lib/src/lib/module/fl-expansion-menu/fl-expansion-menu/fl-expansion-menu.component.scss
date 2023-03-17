@@ -1,6 +1,8 @@
 :host {
   display: block;
   height: 100%;
+  --expanded-menu-large-width: 11rem;
+  --expanded-menu-small-width: 50px;
 }
 
 .menu {
@@ -12,11 +14,11 @@
 }
 
 .menu-small {
-  width: 50px;
+  width: var(--expanded-menu-small-width);
 }
 
 .menu-large {
-  width: 11rem;
+  width: var(--expanded-menu-large-width);
 }
 
 .header-container {

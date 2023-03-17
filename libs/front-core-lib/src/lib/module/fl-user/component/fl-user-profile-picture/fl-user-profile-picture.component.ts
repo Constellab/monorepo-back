@@ -3,7 +3,7 @@ import {FlUserConfig} from '../../service/fl-user-config.config';
 import {FlUser} from '../../model/fl-user.class';
 
 
-export type FlUserProfilePictureSize = 'small' | 'medium' | 'big';
+export type FlUserProfilePictureSize = 'small' | 'medium' | 'big' | string | number;
 
 @Component({
   selector: 'fl-user-profile-picture',
@@ -20,7 +20,7 @@ export class FlUserProfilePictureComponent implements OnInit {
   /**
    * Default size of size in em
    */
-  @Input() size: FlUserProfilePictureSize | string | number = 'medium';
+  @Input() size: FlUserProfilePictureSize = 'medium';
 
   circleSize: string;
 

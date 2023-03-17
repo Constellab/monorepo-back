@@ -225,5 +225,7 @@
   "last_login": "Last login",
   "mail_not_validated": "Mail not validated",
   "project_comment_notification_text": "{{firstname}} commented your project",
-  "project_comment_mention_notification_text": "{{firstname}} mentioned you in a comment"
+  "project_comment_mention_notification_text": "{{firstname}} mentioned you in a comment",
+  "reduce_menu": "Reduce",
+  "notifications": "Notifications"
 }
