@@ -5,6 +5,7 @@ export type FlMenuDynamic = FlMenuDynamicButton | FlMenuDynamicLink;
 export class FlMenuDynamicButton {
   type : 'button';
   text: FlTranslatableText;
+  subText?: FlTranslatableText;
   icon?: string;
   children?: FlMenuDynamic[];
   onClick?: (event: MouseEvent) => void;
@@ -15,6 +16,7 @@ export class FlMenuDynamicButton {
 export class FlMenuDynamicLink {
   type : 'link';
   text: FlTranslatableText;
+  subText?: FlTranslatableText;
   link: string;
   icon?: string;
   divider?: boolean; // if true, it adds a divider before the button

@@ -14,6 +14,7 @@ import {LabReportContentViewComponent} from './component/lab-report-content-view
 import {LabResourceCoreModule} from '../../../lab-core/entity-module/lab-resource-core/lab-resource-core.module';
 import {LabEntityCoreModule} from '../../../lab-core/entity-module/lab-entity-core/lab-entity-core.module';
 import {LabExperimentCoreModule} from '../../../lab-core/entity-module/lab-experiment-core/lab-experiment-core.module';
+import {LabProjectCoreModule} from '../../../lab-core/entity-module/lab-project-core/lab-project-core.module';
 
 
 @NgModule({
@@ -32,6 +33,7 @@ import {LabExperimentCoreModule} from '../../../lab-core/entity-module/lab-exper
     LabResourceCoreModule,
     LabEntityCoreModule,
     LabExperimentCoreModule,
+    LabProjectCoreModule,
   ],
   exports: [
     LabReportContentViewComponent

@@ -1,0 +1,9 @@
+<div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+  <div class="project-color" [style.background-color]="project.id | flStringToRgb">
+  </div>
+
+  <div>
+    <div class="text">{{project.code}}</div>
+    <div class="g-text-small g-text-light text">{{project.title}}</div>
+  </div>
+</div>

@@ -9,6 +9,7 @@ import {
   LabProjectSelectButtonComponent
 } from './component/lab-project-select-button/lab-project-select-button.component';
 import {LabProjectSelectComponent} from './component/lab-project-select/lab-project-select.component';
+import { LabProjectInlineComponent } from './component/lab-project-inline/lab-project-inline.component';
 
 
 @NgModule({
@@ -16,12 +17,14 @@ import {LabProjectSelectComponent} from './component/lab-project-select/lab-proj
     LabProjectSelectOptionsComponent,
     LabProjectSelectButtonComponent,
     LabProjectSelectComponent,
+    LabProjectInlineComponent,
 
   ],
   exports: [
     LabProjectSelectOptionsComponent,
     LabProjectSelectButtonComponent,
     LabProjectSelectComponent,
+    LabProjectInlineComponent,
 
   ],
   imports: [

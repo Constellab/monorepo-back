@@ -1,13 +1,14 @@
-
 <!--    Link    -->
 <a *ngIf="menuDynamic.type === 'link'" mat-menu-item [routerLink]="menuDynamic.link">
   <mat-icon *ngIf="menuDynamic.icon" [flIcon]="menuDynamic.icon"></mat-icon>
-  {{menuDynamic.text | flTranslatableText}}
+  <div>{{menuDynamic.text | flTranslatableText}}</div>
+  <div *ngIf="menuDynamic.subText" class="g-text-small g-text-light">{{menuDynamic.subText}}</div>
 </a>
 
 <!--    Button    -->
 <button *ngIf="menuDynamic.type === 'button'" mat-menu-item (click)="callItem(menuDynamic, $event)"
         [disabled]="menuDynamic.disabled">
   <mat-icon *ngIf="menuDynamic.icon" [flIcon]="menuDynamic.icon"></mat-icon>
-  {{menuDynamic.text | flTranslatableText}}
+  <div>{{menuDynamic.text | flTranslatableText}}</div>
+  <div *ngIf="menuDynamic.subText" class="g-text-small g-text-light">{{menuDynamic.subText}}</div>
 </button>

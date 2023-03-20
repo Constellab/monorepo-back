@@ -15,10 +15,7 @@
     <!--  Project  -->
     <fl-text-icon *ngIf="experiment.project" class="separator">
       <mat-icon flIcon="project"></mat-icon>
-      <fl-key-value>
-        <fl-key>{{'biox.project' | translate}}</fl-key>
-        {{experiment.project.title | translate}}
-      </fl-key-value>
+      <lab-project-inline [project]="experiment.project"></lab-project-inline>
     </fl-text-icon>
 
     <!--  Type  -->

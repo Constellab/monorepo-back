@@ -1,7 +1,7 @@
 import {LabBaseEntityWithUser, LabUser} from './lab-user.entity';
 import {Expose, Type} from 'class-transformer';
 import {FlDatasourcePaginated, FlQuillJson} from '@monorepo/front-core-lib';
-import {LabProjectObject} from './lab-project.class';
+import {LabProject, LabProjectObject} from './lab-project.class';
 import {LabEntity} from '../global/lab-entity.entity';
 import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
@@ -14,10 +14,8 @@ export class LabReport extends LabBaseEntityWithUser implements LabProjectObject
 
   content: LabReportContent;
 
-  project: {
-    id: string;
-    title: string;
-  };
+  @Type(() => LabProject)
+  project: LabProject;
 
   @Expose({name: 'is_validated'})
   isValidated: boolean;

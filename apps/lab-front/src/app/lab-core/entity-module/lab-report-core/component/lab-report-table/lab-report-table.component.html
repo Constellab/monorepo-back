@@ -6,7 +6,7 @@
       <span> {{'title' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let report" class="g-cell-with-left-border"
-              [style.borderLeftColor]="report.project?.id | flStringToRgb">
+              [style.border-left-color]="report.project?.id | flStringToRgb">
 
       <div>
         <div>{{report.title}}</div>

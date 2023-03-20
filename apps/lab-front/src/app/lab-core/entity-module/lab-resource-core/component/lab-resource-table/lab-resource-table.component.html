@@ -6,7 +6,7 @@
       <span> {{'name' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let resource" class="g-cell-with-left-border name-cell"
-              [style.borderLeftColor]="resource.experiment?.id | flStringToRgb">
+              [style.border-left-color]="resource.experiment?.id | flStringToRgb">
 
       <button *ngIf="resource.hasChildren; else leftPadding" mat-icon-button type="button"
               (click)="toggleResourceChildren(resource, $event)"
@@ -142,7 +142,7 @@
     </mat-header-cell>
     <mat-cell *matCellDef="let resource" [attr.colspan]="_columns.length"
               class="expanded-cell"
-              [style.borderLeftColor]="resource.experiment?.id | flStringToRgb">
+              [style.border-left-color]="resource.experiment?.id | flStringToRgb">
       <div class="expanded-cell-content" *ngIf="resource === expandedResource">
 
         <lab-resource-table

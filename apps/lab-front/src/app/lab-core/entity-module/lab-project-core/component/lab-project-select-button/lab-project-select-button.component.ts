@@ -53,7 +53,8 @@ export class LabProjectSelectButtonComponent extends FlFormFieldDirective<LabPro
     }
     return {
       type: 'button',
-      text: project.title,
+      text: project.code,
+      subText: project.title,
       children: project.children.map(child => this.projectTreeToFlMenuDynamic(child)),
       onClick: onClick
     };

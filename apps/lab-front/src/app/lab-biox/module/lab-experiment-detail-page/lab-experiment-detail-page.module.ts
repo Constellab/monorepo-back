@@ -51,6 +51,7 @@ import {LabMonitorCoreModule} from '../../../lab-core/entity-module/lab-monitor-
 import {
   LabProgressBarCoreModule
 } from '../../../lab-core/entity-module/lab-progress-bar-core/lab-progress-bar-core.module';
+import {LabProjectCoreModule} from '../../../lab-core/entity-module/lab-project-core/lab-project-core.module';
 
 
 @NgModule({
@@ -91,6 +92,7 @@ import {
     LabLogCoreModule,
     LabMonitorCoreModule,
     LabProgressBarCoreModule,
+    LabProjectCoreModule,
   ],
   providers: [
     // declare the state here otherwise the angular element can't access them

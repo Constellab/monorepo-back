@@ -12,7 +12,7 @@ import {LabEntityWithTag} from './lab-entity-with-tag.entity';
 import {LabUser} from './lab-user.entity';
 import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
-import {LabProjectObject} from './lab-project.class';
+import {LabProject, LabProjectObject} from './lab-project.class';
 import {LabRunningProcessInfo} from './process/lab-process.entity';
 
 export type LabExperimentStatus = 'DRAFT' | 'IN_QUEUE' | 'WAITING_FOR_CLI_PROCESS' | 'RUNNING' | 'SUCCESS' | 'ERROR';
@@ -80,10 +80,8 @@ export class LabExperiment extends LabEntityWithTag implements LabProjectObject 
     return this.lastSyncAt != null;
   }
 
-  project: {
-    id: string;
-    title: string;
-  };
+  @Type(() => LabProject)
+  project: LabProject;
 
   isEditable(): boolean {
     return !this.isArchived && !this.isValidated && !this.isRunning() && this.status.value !== 'IN_QUEUE';

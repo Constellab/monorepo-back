@@ -15,7 +15,7 @@
                                 (objectUpdate)="onReportUpdate($event)" class="g-print-hide">
         </lab-sync-object-button>
 
-        <div *ngIf="!report.isValidated" class="g-print-hide">
+        <div *ngIf="!report.isValidated" class="g-print-hide action-buttons">
           <button mat-icon-button type="button" [matTooltip]="'biox.update_report' | translate"
                   (click)="updateReport()">
             <mat-icon>edit</mat-icon>
@@ -46,10 +46,7 @@
           <!--  Project  -->
           <fl-text-icon *ngIf="report.project" class="separator">
             <mat-icon flIcon="project"></mat-icon>
-            <fl-key-value>
-              <fl-key>{{'biox.project' | translate}}</fl-key>
-              {{report.project.title | translate}}
-            </fl-key-value>
+            <lab-project-inline [project]="report.project"></lab-project-inline>
           </fl-text-icon>
 
           <!--  Validated info  -->

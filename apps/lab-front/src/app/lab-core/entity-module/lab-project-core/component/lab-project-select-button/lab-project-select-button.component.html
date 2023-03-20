@@ -1,11 +1,13 @@
 <button mat-stroked-button type="button" [disabled]="disabled"
         [matMenuTriggerFor]="menuComponent.menu" class="button">
   <mat-icon flIcon="project" *ngIf="value"></mat-icon>
-  {{buttonText}}
-  <fl-button-loader *ngIf="isLoading"></fl-button-loader>
 
-  <mat-icon *ngIf="value"
-            (click)="clearValue($event)">clear</mat-icon>
+  <fl-text-icon iconPosition="end">
+    {{buttonText}}
+    <mat-icon *ngIf="value" (click)="clearValue($event)">clear</mat-icon>
+  </fl-text-icon>
+
+  <fl-button-loader *ngIf="isLoading"></fl-button-loader>
 </button>
 
 <fl-menu-dynamic #menuComponent [menuItems]="menuDynamics"></fl-menu-dynamic>

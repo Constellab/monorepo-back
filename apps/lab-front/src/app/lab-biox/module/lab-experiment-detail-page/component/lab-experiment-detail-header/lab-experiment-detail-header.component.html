@@ -13,10 +13,15 @@
   </lab-sync-object-button>
 
 
-  <button mat-icon-button type="button" [matMenuTriggerFor]="menu">
+  <button mat-icon-button type="button" [matMenuTriggerFor]="menu"
+          class="buttons">
     <mat-icon>more_vert</mat-icon>
   </button>
 
+  <fl-status-chip [status]="experiment.status" mode="iconText"
+                  class="buttons"></fl-status-chip>
+
+  <!-- Menu -->
   <mat-menu #menu>
     <button mat-menu-item type="button" (click)="openCreateReport()">
       <mat-icon>post_add</mat-icon>
@@ -87,9 +92,6 @@
       {{'biox.view_process_monitoring' | translate}}
     </button>
   </mat-menu>
-
-  <fl-status-chip [status]="experiment.status" mode="iconText"
-                  class="status"></fl-status-chip>
 
 
 </div>
