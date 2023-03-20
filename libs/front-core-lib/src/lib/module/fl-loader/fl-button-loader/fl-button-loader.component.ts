@@ -1,5 +1,5 @@
 import {Component, ElementRef, Host, Input, OnDestroy, OnInit, Optional, Renderer2} from '@angular/core';
-import {MatButton} from '@angular/material/button';
+import {MatButton, MatIconButton} from '@angular/material/button';
 
 /**
  * Loader to be inserted in a button
@@ -28,6 +28,7 @@ export class FlButtonLoaderComponent implements OnInit, OnDestroy {
   private readonly hideTextClass: string = 'g-button-hide-text';
 
   constructor(@Host() @Optional() private button: MatButton,
+              @Host() @Optional() private iconButton: MatIconButton,
               private elementRef: ElementRef<HTMLElement>,
               private renderer2: Renderer2) {
   }
@@ -37,8 +38,9 @@ export class FlButtonLoaderComponent implements OnInit, OnDestroy {
       this.position = this.defaultPosition;
     }
 
-    if (this.button && this.disabledButtonOnLoad) {
-      this.button.disabled = true;
+    const button = this.getButton();
+    if (button && this.disabledButtonOnLoad) {
+      button.disabled = true;
     }
 
     if (this.position === 'override') {
@@ -60,12 +62,16 @@ export class FlButtonLoaderComponent implements OnInit, OnDestroy {
 
   // return true if the button is an icon button
   private isIconButton(): boolean {
-    return this.button?._elementRef.nativeElement.classList.contains('mat-icon-button') ?? false;
+    return this.iconButton != null;
   }
 
   // default position
   private get defaultPosition(): 'left' | 'right' | 'override' {
     return this.isIconButton() ? 'override' : 'right';
+  }
+
+  private getButton(): MatButton | MatIconButton {
+    return this.button ?? this.iconButton;
   }
 
 
