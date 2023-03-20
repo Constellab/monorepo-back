@@ -33,33 +33,30 @@
     }
 
     .expansion-menu-button-small {
-      min-width: initial;
-      border-radius: 50%;
-      border: none;
-      padding: 0;
-      width: 34px;
+      min-width: initial  !important;
+      border-radius: 50%  !important;
+      border: none  !important;
+      padding: 0  !important;
+      width: 34px  !important;
     }
 
     // use to hide the text when the menu is retracted
     .expansion-menu-button-small .mdc-button__label > span {
-      display: none;
+      display: none  !important;
     }
 
     .expansion-menu-button-large {
-      width: 100%;
-      justify-content: left;
+      width: 100%  !important;
+      justify-content: left  !important;
     }
 
     .expansion-menu-button:hover {
-      opacity: 1;
+      opacity: 1  !important;
     }
 
     .expansion-menu-button mat-icon {
-      font-size: 24px;
-      height: 24px;
-      width: 24px;
-      margin-left: 5px;
-      margin-right: 5px;
+      margin-left: 5px  !important;
+      margin-right: 5px  !important;
     }
   }
 }
