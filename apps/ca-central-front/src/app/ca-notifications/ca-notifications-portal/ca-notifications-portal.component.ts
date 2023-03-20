@@ -40,7 +40,7 @@ export class CaNotificationsPortalComponent implements OnInit {
   }
 
   readAllNotifications(): void {
-    this.notificationsService.readAllNotifications(this.authUserService.getUser().id).subscribe(() => {
+    this.notificationsService.readAllNotifications().subscribe(() => {
       this.updateNotifications();
     });
   }

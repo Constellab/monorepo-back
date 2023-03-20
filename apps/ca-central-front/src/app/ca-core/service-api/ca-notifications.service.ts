@@ -4,7 +4,7 @@ import {Observable} from 'rxjs';
 import {
   CaNotification,
   CaNotificationDatasourcePaginated,
-  CaNotificationNumber, CaNotificationType
+  CaNotificationType
 } from '../model/entities/ca-notification.class';
 import {ClPage} from '@monorepo/core-lib';
 
@@ -32,15 +32,15 @@ export class CaNotificationsService {
     return this.apiService.get(`${this.route}/not-read`, CaNotification);
   }
 
-  public readAllNotifications(userId: string): Observable<void>{
-    return this.apiService.get(`${this.route}/readAll/${userId}`);
+  public readAllNotifications(): Observable<void> {
+    return this.apiService.post(`${this.route}/readAll`, null);
   }
 
-  public read(notifId: string): Observable<void>{
-    return this.apiService.get(`${this.route}/read/${notifId}`);
+  public read(notifId: string): Observable<void> {
+    return this.apiService.post(`${this.route}/read/${notifId}`, null);
   }
 
-  public readEntityNotificationsByLink(link: string, notificationType: CaNotificationType): Observable<void>{
+  public readEntityNotificationsByLink(link: string, notificationType: CaNotificationType): Observable<void> {
     return this.apiService.post(`${this.route}/read-entity-notifications-by-link`, {
       link: link,
       notificationType: notificationType

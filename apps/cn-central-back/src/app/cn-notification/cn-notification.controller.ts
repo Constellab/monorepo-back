@@ -33,12 +33,12 @@ export class CnNotificationController {
     return this.notificationService.getNotReadNotifications();
   }
 
-  @Get('readAll')
+  @Post('readAll')
   readAllNotifications(): Promise<void> {
     return this.notificationService.readAllNotification();
   }
 
-  @Get('read/:notifId')
+  @Post('read/:notifId')
   read(@Param('notifId', new ParseUUIDPipe()) notifId: string): Promise<void> {
     return this.notificationService.read(notifId);
   }
