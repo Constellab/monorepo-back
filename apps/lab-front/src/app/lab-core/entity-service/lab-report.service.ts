@@ -58,8 +58,8 @@ export class LabReportService {
     return this.apiService.put(`${this.route}/${id}/content/add-view/${viewConfigId}`, null, LabReport);
   }
 
-  public syncWithCentral(id: string): Observable<LabReport> {
-    return this.apiService.put(`${this.route}/${id}/sync-with-central`, null, LabReport);
+  public syncWithSpace(id: string): Observable<LabReport> {
+    return this.apiService.put(`${this.route}/${id}/sync-with-space`, null, LabReport);
   }
 
   public delete(id: string): Observable<void> {

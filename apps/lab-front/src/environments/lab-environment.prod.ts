@@ -14,8 +14,8 @@ export const environment: Environment = {
     devApiBaseUrl: '',
     codeServerUrl: '',
     virtualHost: '',
-    centralFrontUrl: '',
-    centralApiUrl: '',
+    spaceFrontUrl: '',
+    spaceApiUrl: '',
     hubFrontUrl: '',
   }
 };

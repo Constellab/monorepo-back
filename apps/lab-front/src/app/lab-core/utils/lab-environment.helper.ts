@@ -37,24 +37,24 @@ export class LabEnvironmentHelper {
     return `${LabEnvironmentHelper.getDevBaseApiUrl()}${LabEnvironmentHelper.coreApiRoute}/`;
   }
 
-  public static getCentralFrontUrl(): string {
-    return LabEnvironmentHelper.getEnv().settings.centralFrontUrl;
+  public static getSpaceFrontUrl(): string {
+    return LabEnvironmentHelper.getEnv().settings.spaceFrontUrl;
   }
 
-  public static getCentralApiUrl(): string {
-    return LabEnvironmentHelper.getEnv().settings.centralApiUrl;
+  public static getSpaceApiUrl(): string {
+    return LabEnvironmentHelper.getEnv().settings.spaceApiUrl;
   }
 
   public static getHubFrontUrl(): string {
     return LabEnvironmentHelper.getEnv().settings.hubFrontUrl;
   }
 
-  public static getCentralFrontAppUrl(): string {
-    return LabEnvironmentHelper.getCentralFrontUrl() + '/app';
+  public static getSpaceFrontAppUrl(): string {
+    return LabEnvironmentHelper.getSpaceFrontUrl() + '/app';
   }
 
-  public static getCentralConfigLabUrl(labId: string): string {
-    return `${LabEnvironmentHelper.getCentralFrontAppUrl()}/labs/${labId}/config`;
+  public static getSpaceConfigLabUrl(labId: string): string {
+    return `${LabEnvironmentHelper.getSpaceFrontAppUrl()}/labs/${labId}/config`;
   }
 
   public static getEnv(): Environment {

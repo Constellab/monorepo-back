@@ -67,7 +67,7 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.experiment$ = this.experimentState.getExperiment$();
-    this.syncObjectFunc = (id: string) => this.experimentService.syncWithCentral(id);
+    this.syncObjectFunc = (id: string) => this.experimentService.syncWithSpace(id);
   }
 
   openUpdateDialog(): void {

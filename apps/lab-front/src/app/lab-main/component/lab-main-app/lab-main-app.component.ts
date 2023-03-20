@@ -19,7 +19,7 @@ export class LabMainAppComponent implements OnInit {
 
   accessibleLinks: MainMenuLink[] = mainMenuLinks;
 
-  centralAppUrl: string;
+  spaceAppUrl: string = LabEnvironmentHelper.getSpaceFrontAppUrl();
 
   menuExpanded: boolean = true;
 
@@ -37,7 +37,6 @@ export class LabMainAppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.centralAppUrl = LabEnvironmentHelper.getCentralFrontAppUrl();
     this.authenticatedUserService.loadAuthenticatedUser();
     // init lab name
     this.setLabName('Lab');

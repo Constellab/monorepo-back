@@ -18,8 +18,8 @@ export const environment: Environment = {
     devApiBaseUrl: apiBaseUrl,
     codeServerUrl: 'http://localhost:80/',
     virtualHost: 'localhost',
-    centralFrontUrl: 'http://localhost:4200',
-    centralApiUrl: 'http://localhost:3001',
+    spaceFrontUrl: 'http://localhost:4200',
+    spaceApiUrl: 'http://localhost:3001',
     hubFrontUrl: 'https://hub-pre-prod.gencovery.com'
   },
 };

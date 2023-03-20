@@ -49,7 +49,7 @@ export class LabReportDetailPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.syncObjectFunc = (id: string) => this.reportService.syncWithCentral(id);
+    this.syncObjectFunc = (id: string) => this.reportService.syncWithSpace(id);
     this.route.params.subscribe(
       params => this.init(params.id)
     );

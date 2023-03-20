@@ -9,7 +9,7 @@ import {
 import {Observable} from 'rxjs';
 
 /**
- * Component containing the button to sync a lab project object with central
+ * Component containing the button to sync a lab project object with space
  */
 @Component({
   selector: 'lab-sync-object-button',
@@ -53,7 +53,7 @@ export class LabSyncObjectButtonComponent<T extends LabProjectObject> implements
     }
 
     const data: FlConfirmDialogInput = {
-      title: this.translateService.translate('biox.sync_with_central'),
+      title: this.translateService.translate('biox.sync_with_space'),
       content: content,
       translateTitleAndContent: false,
     };

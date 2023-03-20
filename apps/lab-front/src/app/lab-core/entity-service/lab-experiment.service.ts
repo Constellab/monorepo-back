@@ -71,8 +71,8 @@ export class LabExperimentService {
     return this.apiService.put(`${this.route}/${experimentId}/description`, description, LabExperiment);
   }
 
-  public syncWithCentral(id: string): Observable<LabExperiment> {
-    return this.apiService.put(`${this.route}/${id}/sync-with-central`, null, LabExperiment);
+  public syncWithSpace(id: string): Observable<LabExperiment> {
+    return this.apiService.put(`${this.route}/${id}/sync-with-space`, null, LabExperiment);
   }
 
   // launch an experiment

@@ -46,7 +46,7 @@ export class LabSystemService {
   }
 
   public getSpacePhotoUrl(filename: string): string {
-    return LabEnvironmentHelper.getCentralApiUrl() + '/spaces/photo/' + filename;
+    return LabEnvironmentHelper.getSpaceApiUrl() + '/spaces/photo/' + filename;
   }
 
   public triggerGarbageCollection(): Observable<void> {

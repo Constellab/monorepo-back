@@ -25,11 +25,11 @@ export interface LabEnvironmentSettings {
   // domain name of the server
   virtualHost: string;
 
-  // url of the central front
-  centralFrontUrl: string;
+  // url of the space front
+  spaceFrontUrl: string;
 
-  // url of the central api
-  centralApiUrl: string;
+  // url of the space api
+  spaceApiUrl: string;
 
   // url of the hub front
   hubFrontUrl: string;

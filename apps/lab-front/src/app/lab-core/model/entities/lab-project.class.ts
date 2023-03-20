@@ -15,13 +15,10 @@ export class LabProjectWithChildren extends LabProject {
 }
 
 /**
- * Interface representing an object inside a project that can be validated and synchronized with central
+ * Interface representing an object inside a project that can be validated and synchronized with space
  */
 export interface LabProjectObject extends FlEntity {
-  project: {
-    id: string;
-    title: string;
-  };
+  project: LabProject;
 
   isValidated: boolean;
   validatedBy?: LabUser;
