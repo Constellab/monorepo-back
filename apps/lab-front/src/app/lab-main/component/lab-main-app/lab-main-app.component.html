@@ -4,18 +4,22 @@
 
     <fl-expansion-menu [(expanded)]="menuExpanded">
 
-      <div fxLayout="column" class="g-scrollable-element column-container">
-        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
-          <a [routerLink]="appRoute">
-            <img [src]="logo" alt="Space logo" class="logo"
-                 flBackupImage="assets/fl-logo/constellab-logo.svg"/>
-          </a>
 
-          <div *ngIf="menuExpanded" class="lab-name">
-            <p>{{labName}}</p>
-            <p *ngIf="spaceName" class="g-text-light g-text-small">{{spaceName}}</p>
+      <div fxLayout="column" class="g-scrollable-element column-container">
+
+        <a class="align-container logo-div" [ngClass]="{'align-container-center': menuExpanded}">
+          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+            <a [routerLink]="appRoute">
+              <img [src]="logo" alt="Space logo" class="logo"  [ngClass]="{'logo-expanded': menuExpanded}"
+                   flBackupImage="assets/fl-logo/constellab-logo.svg"/>
+            </a>
+
+            <div *ngIf="menuExpanded" class="lab-name">
+              <p>{{labName}}</p>
+              <p *ngIf="spaceName" class="g-text-light g-text-small">{{spaceName}}</p>
+            </div>
           </div>
-        </div>
+        </a>
 
         <!-- List of main menu links   -->
         <div fxFlex="auto" class="menu" fxLayout="column">

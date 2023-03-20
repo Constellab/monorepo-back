@@ -1,7 +1,7 @@
 :host {
   display: block;
   height: 100%;
-  --expanded-menu-large-width: 11rem;
+  --expanded-menu-large-width: 12rem;
   --expanded-menu-small-width: 50px;
 }
 
@@ -27,36 +27,36 @@
   fl-expansion-menu {
 
     .expansion-menu-button {
-      opacity: 0.7;
-      height: 34px;
-      padding-left: 5px;
+      opacity: 0.7 !important;
+      height: 34px !important;
+      padding-left: 5px !important;
     }
 
     .expansion-menu-button-small {
-      min-width: initial  !important;
-      border-radius: 50%  !important;
-      border: none  !important;
-      padding: 0  !important;
-      width: 34px  !important;
+      min-width: initial !important;
+      border-radius: 50% !important;
+      border: none !important;
+      padding: 0 !important;
+      width: 34px !important;
     }
 
     // use to hide the text when the menu is retracted
     .expansion-menu-button-small .mdc-button__label > span {
-      display: none  !important;
+      display: none !important;
     }
 
     .expansion-menu-button-large {
-      width: 100%  !important;
-      justify-content: left  !important;
+      width: 100% !important;
+      justify-content: left !important;
     }
 
     .expansion-menu-button:hover {
-      opacity: 1  !important;
+      opacity: 1 !important;
     }
 
     .expansion-menu-button mat-icon {
-      margin-left: 5px  !important;
-      margin-right: 5px  !important;
+      margin-left: 5px !important;
+      margin-right: 5px !important;
     }
   }
 }
