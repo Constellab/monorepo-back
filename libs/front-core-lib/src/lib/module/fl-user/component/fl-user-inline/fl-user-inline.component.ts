@@ -13,9 +13,10 @@ export class FlUserInlineComponent implements OnInit {
 
   @Input() showName: boolean = true;
 
-  @Input() showPopUp: boolean = true;
-
-  @Input() customTextSize: boolean = false;
+  /**
+   * If true a portal with the user profile will be displayed on hover
+   */
+  @Input() portalOnHover: boolean = true;
 
   /**
    * Default size of size in em
@@ -25,6 +26,19 @@ export class FlUserInlineComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  getTextSizeClass(): string {
+    switch (this.profilePictureSize){
+      case 'small':
+        return 'g-text-small';
+      case 'medium':
+        return 'g-text-normal';
+      case 'large':
+        return 'g-text-big';
+    }
+
+    return null;
   }
 
 }

@@ -12,21 +12,24 @@
 
       <div fxLayout="column" class="column-container g-scrollable-element">
 
-        <div class="logo-div"
-             fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
-             (click)="openMySpacesPortal()" [ngClass]="{'logo-small': menuExpanded}">
-          <div [matBadge]="otherSpaceNotificationsNumber$ | async" matBadgeColor="warn" class="logo-container">
-            <img [src]="spaceLogo$ | async" alt="Space logo"
-                 class="logo" flBackupImage="assets/logo/logo.png"/>
+        <div class="align-container logo-div" [ngClass]="{'align-container-center': menuExpanded}"
+             (click)="openMySpacesPortal()" >
+          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px"
+               [ngClass]="{'logo-expanded': menuExpanded}">
+            <div [matBadge]="otherSpaceNotificationsNumber$ | async" matBadgeColor="warn"
+                 class="logo-container">
+              <img [src]="spaceLogo$ | async" alt="Space logo"
+                   class="logo" flBackupImage="assets/logo/logo.png"/>
+            </div>
+            <span *ngIf="menuExpanded" class="g-text-light space-name">{{spaceName$ | async}}</span>
           </div>
-          <span *ngIf="menuExpanded" class="g-text-light space-name">{{spaceName$ | async}}</span>
         </div>
 
         <div class="divider"></div>
 
 
         <!-- List of main menu links   -->
-        <div fxFlex="auto" class="menu" fxLayout="column" fxLayoutAlign="start center">
+        <div fxFlex="auto" fxLayout="column" fxLayoutAlign="start center">
           <div class="buttons">
             <div *ngFor="let link of accessibleLinks">
               <a mat-button [routerLink]="link.route" flExpansionMenuButton
@@ -43,7 +46,7 @@
 
 
         <!--  Additional buttons  -->
-        <div class="additional-button" [ngClass]="{'additional-button-small': menuExpanded}">
+        <div class="align-container" [ngClass]="{'align-container-center': menuExpanded}">
 
           <!--    Grow/Reduce menu button      -->
           <button mat-button class="reduce-button"
