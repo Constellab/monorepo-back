@@ -16,6 +16,8 @@ import {BlBadRequestException, BlSearchBuilder, BlSearchParams} from '@monorepo/
 @Injectable()
 export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInstance, CnLabInstanceStatus> {
 
+  private static readonly SUPPORTED_MAIN_DOMAINS = ['gencovery.io', 'gencovery.app'];
+
   constructor(@InjectRepository(CnLabInstance) private repository: Repository<CnLabInstance>,
               @InjectRepository(CnLabInstanceStatusHistory) statusHistoRepo: Repository<CnLabInstanceStatusHistory>,
               private experimentService: CnExperimentsService,
@@ -41,6 +43,17 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   }
 
   private checkLabInstanceBeforeSave(entity: CnLabInstance): void {
+    // check domain name
+    if (ClHelpService.isNullOrEmpty(entity.virtualHost)) {
+      throw new BlBadRequestException('Virtual host is required');
+    }
+
+    if (!CnLabInstancesService.SUPPORTED_MAIN_DOMAINS.includes(entity.getMainDomain())) {
+      throw new BlBadRequestException(
+        `Virtual host must be a valid domain name : ${CnLabInstancesService.SUPPORTED_MAIN_DOMAINS.join(', ')}`);
+    }
+
+
     if (entity.isCloud()) {
       if (ClHelpService.isNullOrEmpty(entity.virtualHost) ||
         ClHelpService.isNullOrEmpty(entity.serverInfo) ||

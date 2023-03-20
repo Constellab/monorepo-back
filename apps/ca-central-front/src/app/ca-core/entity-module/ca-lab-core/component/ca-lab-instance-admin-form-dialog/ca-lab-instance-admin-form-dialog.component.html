@@ -75,6 +75,9 @@
         <mat-error *ngIf="formGp.get('virtualHost').hasError('required')">
           {{'virtual_host' | flErrorRequired}}
         </mat-error>
+        <mat-error *ngIf="formGp.get('virtualHost').hasError('invalid')">
+          {{'lab_virtual_host_error' | translate: {domain: supportedDomainsText} }}
+        </mat-error>
       </mat-form-field>
 
       <!--  Server info  -->

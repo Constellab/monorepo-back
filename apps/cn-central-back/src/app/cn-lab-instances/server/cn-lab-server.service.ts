@@ -56,8 +56,7 @@ export class CnLabServerService {
         .catch(err => this.logger.error(err)));
     }
 
-    info.domainRecord = await this.ovhCloudProviderService.getLabDomainRecord(labInstance.getSubDomainDsnRecord());
-    promises.push(this.ovhCloudProviderService.getLabDomainRecord(labInstance.getSubDomainDsnRecord())
+    promises.push(this.ovhCloudProviderService.getLabDomainRecord(labInstance.getMainDomain(), labInstance.getSubDomainName())
       .then((domainRecord) => info.domainRecord = domainRecord)
       .catch(err => this.logger.error(err)));
 
@@ -203,12 +202,13 @@ export class CnLabServerService {
   }
 
   private async createDomainRecordForLab(labInstance: CnLabInstance, ipv4: string): Promise<void> {
-    const subDomain = labInstance.getSubDomainDsnRecord();
+    const mainDomain = labInstance.getMainDomain();
+    const subDomainName = labInstance.getSubDomainName();
 
-    const domainExists = await this.ovhCloudProviderService.labDomainRecordExists(subDomain);
+    const domainExists = await this.ovhCloudProviderService.labDomainRecordExists(mainDomain, subDomainName);
     // check if the domain record already exists
     if (domainExists) {
-      this.logger.log(`Domain record ${subDomain} for lab ${labInstance.id} already exists, skipping creation`);
+      this.logger.log(`Domain record ${subDomainName} for lab ${labInstance.id} already exists, skipping creation`);
       return;
     }
 
@@ -219,9 +219,9 @@ export class CnLabServerService {
     }
 
     await this.labInstanceService.updateServerStatusText(labInstance.id, 'Creating DNS record for the lab');
-    this.logger.log(`Creating domain record for lab ${labInstance.id} with subdomain ${subDomain}`);
-    await this.ovhCloudProviderService.createDomainForLab(ipv4, subDomain);
-    this.logger.log(`Domain record created for lab ${labInstance.id} with subdomain ${subDomain}`);
+    this.logger.log(`Creating domain record for lab ${labInstance.id} with subdomain ${subDomainName}`);
+    await this.ovhCloudProviderService.createDomainForLab(ipv4, mainDomain, subDomainName);
+    this.logger.log(`Domain record created for lab ${labInstance.id} with subdomain ${subDomainName}`);
   }
 
   private async attachVolumeToInstance(service: CnCloudProviderService, serverInstanceId: string, volumeId: string,
@@ -255,8 +255,8 @@ export class CnLabServerService {
       this.logger.log(`No volume for lab ${labInstance.id}. Skipping deletion`);
     }
 
-    this.logger.log(`Deleting domain record ${labInstance.getSubDomainDsnRecord()} for lab ${labInstance.id}`);
-    await this.ovhCloudProviderService.deleteDomainRecord(labInstance.getSubDomainDsnRecord());
+    this.logger.log(`Deleting domain record ${labInstance.virtualHost} for lab ${labInstance.id}`);
+    await this.ovhCloudProviderService.deleteDomainRecord(labInstance.getMainDomain(), labInstance.getSubDomainName());
 
     labInstance.serverVolumeId = null;
     labInstance.serverInstanceId = null;
@@ -367,7 +367,7 @@ export class CnLabServerService {
 
     // if the lab is running, don't check server status, mark it as running
     const healthCheck = await this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo());
-    if(healthCheck){
+    if (healthCheck) {
       return await this.labInstanceService.markInstanceAsLabRunning(labInstanceId);
     }
 

@@ -19,6 +19,8 @@ export type CaLabInstanceVolumeType = 'CLASSIC' | 'HIGH_SPEED';
 export type CaLabInstanceType = 'CLOUD' | 'ON_PREMISE';
 export type CaLabOnPromisePlatform = 'WINDOWS' | 'LINUX' | 'MAC';
 
+export const CaLabSupportedDomains = ['gencovery.io', 'gencovery.app'];
+
 export const caLabInstanceStatusDict: FlStatusDict<CaLabInstanceStatus> = {
   LAB_RUNNING: FlStatusHelper.getRunningStatus('LAB_RUNNING'),
   SERVER_STOPPED: FlStatusHelper.getStoppedStatus('SERVER_STOPPED'),

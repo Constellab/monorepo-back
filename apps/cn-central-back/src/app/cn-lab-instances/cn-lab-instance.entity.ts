@@ -208,8 +208,16 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     // };
   }
 
-  public getSubDomainDsnRecord(): string {
-    return '*.' + this.virtualHost.split('.')[0];
+  // get the subdomain name
+  // ex: if the virtual host is 'rio.gencovery.io', the subdomain record is 'rio'
+  public getSubDomainName(): string {
+    return this.virtualHost.split('.')[0];
+  }
+
+  // get the main domain name
+  // ex: if the virtual host is 'rio.gencovery.io', the subdomain record is 'gencovery.io'
+  public getMainDomain(): string {
+    return this.virtualHost.split('.').slice(1).join('.');
   }
 
   public isOnPremise(): boolean {

@@ -28,7 +28,6 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
 
   private static IMAGE_NAME = 'Ubuntu 20.04';
   private static DAILY_BACKUP_CRON = '50 0 * * *'; // every day at 00:50
-  private static LAB_DOMAIN = 'gencovery.io';
 
   constructor(private configService: CnCoreConfigService,
               private ovhService: CnOvhService) {
@@ -225,35 +224,37 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
 
 
   /////////////////////////////// DNS ///////////////////////////////
-  public async createDomainForLab(ipv4: string, subDomain: string): Promise<any> {
+  public async createDomainForLab(ipv4: string, mainDomain: string, subDomainName: string): Promise<any> {
     const request: CnOvhCreateDomainRecordRequest = {
       fieldType: 'A',
-      subDomain: subDomain,
+      subDomain: '*.' + subDomainName,
       target: ipv4,
     };
 
-    return await this.ovhService.createDomainRecord(CnCloudProviderOvhService.LAB_DOMAIN, request);
+    return await this.ovhService.createDomainRecord(mainDomain, request);
   }
 
-  public async labDomainRecordExists(subDomain: string): Promise<boolean> {
-    return this.ovhService.domainRecordExist(CnCloudProviderOvhService.LAB_DOMAIN, subDomain, 'A');
+  public async labDomainRecordExists(mainDomain: string, subDomainName: string): Promise<boolean> {
+    return this.ovhService.domainRecordExist(mainDomain, '*.' + subDomainName, 'A');
   }
 
-  public async getLabDomainRecord(subDomain: string): Promise<CnOvhDomainRecord | null> {
-    const recordIds: number[] = await this.ovhService.getDomainRecordIdBySubDomain(CnCloudProviderOvhService.LAB_DOMAIN, subDomain, 'A');
+  public async getLabDomainRecord(mainDomain: string, subDomainName: string): Promise<CnOvhDomainRecord | null> {
+    const recordIds: number[] = await this.ovhService.getDomainRecordIdBySubDomain(
+      mainDomain, subDomainName, 'A');
 
     if (recordIds.length === 0) {
       return null;
     }
 
-    return this.ovhService.getDomainRecord(CnCloudProviderOvhService.LAB_DOMAIN, recordIds[0]);
+    return this.ovhService.getDomainRecord(mainDomain, recordIds[0]);
   }
 
-  public async deleteDomainRecord(subDomain: string): Promise<void> {
-    const recordIds: number[] = await this.ovhService.getDomainRecordIdBySubDomain(CnCloudProviderOvhService.LAB_DOMAIN, subDomain, 'A');
+  public async deleteDomainRecord(mainDomain: string, subDomainName: string): Promise<void> {
+    const recordIds: number[] = await this.ovhService.getDomainRecordIdBySubDomain(mainDomain,
+      '*.' + subDomainName, 'A');
 
     for (const recordId of recordIds) {
-      await this.ovhService.deleteDomainRecord(CnCloudProviderOvhService.LAB_DOMAIN, recordId);
+      await this.ovhService.deleteDomainRecord(mainDomain, recordId);
     }
   }
 

@@ -222,5 +222,6 @@
   "lab_not_configured_help": "The lab is not configured. Please add the bricks you want on your lab. The 'gws_core' brick is mandatory.",
   "lab_config_changed": "Configuration modified, please click on the \"Save\" button to save the changes.",
   "lab_brick_version_show_previous": "Show previous versions. Warning, this can cause errors. Only use if you know what you are doing.",
-  "lab_global_info": "Global info"
+  "lab_global_info": "Global info",
+  "lab_virtual_host_error": "The virtual host must be a subdomain of {{domain}}"
 }
