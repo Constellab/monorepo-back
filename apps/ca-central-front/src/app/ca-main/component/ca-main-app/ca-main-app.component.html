@@ -1,7 +1,7 @@
 <mat-sidenav-container class="container g-dashboard-background" autosize>
 
   <mat-sidenav [fixedInViewport]="true"
-               [mode]="sidenavMode"
+               mode="side"
                [opened]="true"
                [disableClose]="true"
                position="start"
@@ -19,7 +19,7 @@
             <div [matBadge]="otherSpaceNotificationsNumber$ | async" matBadgeColor="warn"
                  class="logo-container">
               <img [src]="spaceLogo$ | async" alt="Space logo"
-                   class="logo" flBackupImage="assets/logo/logo.png"/>
+                   class="logo" flBackupImage="assets/logo/constellab-logo.svg"/>
             </div>
             <span *ngIf="menuExpanded" class="g-text-light space-name">{{spaceName$ | async}}</span>
           </div>
@@ -74,8 +74,7 @@
 
   </mat-sidenav>
 
-  <mat-sidenav-content [ngClass]="{'no-margin' : sidenavMode === 'over'}"
-                       class="content">
+  <mat-sidenav-content class="content">
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 

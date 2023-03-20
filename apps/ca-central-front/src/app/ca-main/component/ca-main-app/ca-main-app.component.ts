@@ -31,9 +31,6 @@ export class CaMainAppComponent implements OnInit {
 
   accessibleLinks: CaMainMenuLink[];
 
-  // set always side mode
-  sidenavMode: 'over' | 'side' = 'side';
-
   numberOfNotifications$: Observable<string | number>;
 
   otherSpaceNotificationsNumber$: Observable<string | number>;
@@ -49,7 +46,7 @@ export class CaMainAppComponent implements OnInit {
 
     // if the current space has a photo, use it, otherwise, use the default logo of gencovery
     this.spaceLogo$ = this.currentSpaceService.getCurrentSpacePhoto$().pipe(
-      map(photo => photo ?? 'assets/logo/logo.png')
+      map(photo => photo ?? 'assets/logo/constellab-logo.svg')
     );
     this.spaceName$ = this.currentSpaceService.getCurrentSpace$().pipe(
       map(space => space?.name ?? null)

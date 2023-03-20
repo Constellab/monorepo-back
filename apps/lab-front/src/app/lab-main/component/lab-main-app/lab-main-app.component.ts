@@ -27,7 +27,7 @@ export class LabMainAppComponent implements OnInit {
 
   labName: string;
 
-  logo = 'assets/logo/logo.png';
+  logo = 'assets/logo/constellab-logo.svg';
   spaceName?: string = null;
 
   constructor(private labEnvManager: LabEnvStore,

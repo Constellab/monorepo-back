@@ -64,12 +64,17 @@
 }
 
 .logo {
-  width: 34px;
+  width: 38px;
+  max-height: 40px;
 }
 
 .space-name {
   overflow: hidden;
   line-height: 1em;
+}
+
+.space-name:hover {
+  color: var(--color-foreground);
 }
 
 .divider {
@@ -95,11 +100,6 @@
 // Opacity 1 for the selected menu
 .selected-menu {
   opacity: 1;
-}
-
-// in over mode the sidenav content must have 0 margin
-.no-margin {
-  margin-left: 0 !important;
 }
 
 .content {
