@@ -180,7 +180,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   }
 
   isRunning(): boolean {
-    return this.currentStatus?.status === CnLabInstanceStatus.SERVER_RUNNING ?? false;
+    return this.currentStatus?.status === CnLabInstanceStatus.LAB_RUNNING ?? false;
   }
 
   getGlabApiInfo(): CnExternalApiInfo {
