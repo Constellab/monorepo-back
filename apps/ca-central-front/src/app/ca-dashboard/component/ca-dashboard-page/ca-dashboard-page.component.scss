@@ -4,7 +4,7 @@
 }
 
 .dashboard-left {
-  padding: 1em 0.5em 1em 1em
+  padding: var(--main-menu-margin) 0.5em var(--main-menu-margin) 1em
 }
 
 .dashboard-right {
@@ -35,11 +35,11 @@
   box-sizing: border-box;
 }
 
-.support{
+.support {
   margin: auto;
 }
 
-.community-logo{
+.community-logo {
   height: 80%;
   margin: auto;
 }

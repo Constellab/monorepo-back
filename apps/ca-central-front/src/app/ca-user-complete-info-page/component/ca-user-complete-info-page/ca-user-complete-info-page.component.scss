@@ -1,3 +1,10 @@
+:host{
+  margin-top: var(--main-menu-margin);
+  display: block;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
 .user-pp{
   position: relative;
   bottom: -4.5em;
@@ -11,6 +18,7 @@
   background-color: var(--primary-color);
   display: flex;
   align-items: flex-end;
+  border-radius: var(--card-radius);
 }
 
 .header-div{
