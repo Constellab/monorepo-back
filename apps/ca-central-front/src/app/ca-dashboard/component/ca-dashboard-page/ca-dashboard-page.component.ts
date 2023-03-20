@@ -4,6 +4,7 @@ import {CaCurrentSpaceService} from '../../../ca-core/service-api/ca-current-spa
 import {Observable} from 'rxjs';
 import {CaSpace} from '../../../ca-core/model/entities/space/ca-space.class';
 import {CaUserDatasourcePaginated} from '../../../ca-core/model/entities/ca-user.class';
+import {FlThemeService} from '@monorepo/front-core-lib';
 
 /**
  * Page containing the user dashboard
@@ -22,11 +23,17 @@ export class CaDashboardPageComponent implements OnInit, OnDestroy {
 
   currentDate: Date = new Date();
 
-  constructor(private currentSpaceService: CaCurrentSpaceService) {
+  communityLogo: string;
+
+  constructor(private currentSpaceService: CaCurrentSpaceService,
+              private themeService: FlThemeService) {
 
   }
 
   ngOnInit(): void {
+    this.communityLogo = this.themeService.isDarkTheme() ?
+      'assets/logo/community_logo_text_white.svg' :
+      'assets/logo/community_logo_text_black.svg';
   }
 
   ngOnDestroy(): void {
