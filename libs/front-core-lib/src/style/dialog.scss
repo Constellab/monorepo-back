@@ -1,36 +1,44 @@
 // Style used for the dialog and portal
 
-// set the max height for the content as full screen
-.mat-dialog-content {
-  max-height: none !important;
-  display: flex;
-  flex: 1 1 100%;
+// set the color of the text in dialog to default color
+// otherwise, material set light grey as color
+.mat-mdc-dialog-container{
+  --mdc-dialog-supporting-text-color: var(--color-foreground);
 }
 
-.mat-dialog-container {
-  display: flex !important;
+// remove padding of dialog content
+.mdc-dialog .mdc-dialog__content{
+  padding: 10px 0 10px 0 !important;
+}
+
+.mat-mdc-dialog-surface{
   border-radius: var(--card-radius) !important;
 }
 
-// Style the container child to manage full width
-.mat-dialog-container > *:first-child {
-  max-height: calc(100vh - 48px) !important;
+// Style the component inside the dialog to be full height of parent
+.mat-mdc-dialog-surface > *:first-child {
   display: flex;
   flex-direction: column;
-  flex: 1 1 100%;
-  max-width: 100%;
+  height: 100%;
 }
+
+// override the max height of the dialog content
+.mat-mdc-dialog-content {
+  max-height: none !important;
+}
+
 
 // Specific style to allow elements to overflow the dialog container and dialog content
 .g-dialog-allow-overflow {
-  .mat-dialog-container, mat-dialog-content {
+  .mat-mdc-dialog-container, mat-mdc-dialog-content {
     overflow: initial;
   }
 }
 
-.g-dialog-main-background mat-dialog-container{
-  background-color: var(--main-background);
+.g-dialog-main-background .mat-mdc-dialog-container{
+  --mdc-dialog-container-color: var(--main-background);
 }
+
 
 /********************* SMALL DIALOG ***********************/
 .g-small-dialog {

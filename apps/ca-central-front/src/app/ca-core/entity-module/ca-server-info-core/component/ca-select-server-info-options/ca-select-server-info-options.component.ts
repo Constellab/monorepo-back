@@ -1,9 +1,9 @@
 import {AfterViewInit, Component, Host, OnDestroy, OnInit} from '@angular/core';
 import {CaServerInfoService} from '../../../../service-api/ca-server-info.service';
 import {CaServerInfo, CaServerInfoDatasource} from '../../../../model/entities/ca-server-info.class';
-import {MatSelect} from '@angular/material/select';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
+import {MatSelect} from '@angular/material/select';
 
 @Component({
   selector: 'ca-select-server-info-options',

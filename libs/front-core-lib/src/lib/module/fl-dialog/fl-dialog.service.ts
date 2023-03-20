@@ -1,4 +1,3 @@
-import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {ComponentType} from '@angular/cdk/overlay';
 import {Injectable, TemplateRef} from '@angular/core';
 import {merge, Observable} from 'rxjs';
@@ -8,6 +7,7 @@ import {FlConfirmDialogInput} from './model/fl-confirm-dialog.class';
 import {FlConfirmDialogComponent} from './component/fl-confirm-dialog/fl-confirm-dialog.component';
 import {FlPlatformService} from '../../service/fl-plateform.service';
 import {ClHelpService} from '@monorepo/core-lib';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 
 /**
  * Service to open responsive dialog. The max-height and width of the dialog

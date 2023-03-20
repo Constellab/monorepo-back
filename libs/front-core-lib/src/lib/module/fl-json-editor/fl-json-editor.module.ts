@@ -3,7 +3,6 @@ import {CommonModule} from '@angular/common';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {FlSnackBarModule} from '../fl-snack-bar/fl-snack-bar.module';
 import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
-import {MatDialogModule} from '@angular/material/dialog';
 import {FlDialogModule} from '../fl-dialog/fl-dialog.module';
 import {FlPrettyJsonComponent} from './fl-pretty-json/fl-pretty-json.component';
 import {MatTreeModule} from '@angular/material/tree';
@@ -13,6 +12,7 @@ import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flJsonEditorI18n} from './i18n/fl-json-editor.i18n';
 import {FlPrettyJsonDialogComponent} from './fl-pretty-json-dialog/fl-pretty-json-dialog.component';
+import {MatDialogModule} from '@angular/material/dialog';
 
 /**
  * Module containing a component to edit json in html

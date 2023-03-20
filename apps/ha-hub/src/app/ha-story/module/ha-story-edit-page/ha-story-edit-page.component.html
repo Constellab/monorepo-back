@@ -31,22 +31,23 @@
   <mat-form-field class="form-field">
     <mat-label>{{'topics' | translate}}</mat-label>
 
-    <mat-chip-list #topicChipList>
-      <mat-chip *ngFor="let topic of story.topics" (removed)="removeTopic(topic)">
+    <mat-chip-grid #topicChipList>
+      <mat-chip-row *ngFor="let topic of story.topics" (removed)="removeTopic(topic)">
         {{topic.name}}
         <button matChipRemove>
           <mat-icon>cancel</mat-icon>
         </button>
-      </mat-chip>
-      <input matInput flInputMaxLength="30" [formControl]="topicControl"
-             [matAutocomplete]="auto" [matChipInputFor]="topicChipList">
+      </mat-chip-row>
+    </mat-chip-grid>
 
-      <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectTopic($event)">
-        <mat-option *ngFor="let topic of filteredTopics | async" [value]="topic">
-          {{topic.name}}
-        </mat-option>
-      </mat-autocomplete>
-    </mat-chip-list>
+    <input matInput flInputMaxLength="30" [formControl]="topicControl"
+           [matAutocomplete]="auto" [matChipInputFor]="topicChipList" #topicInput>
+    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayFn"
+                      (optionSelected)="onSelectTopic($event)">
+      <mat-option *ngFor="let topic of filteredTopics | async" [value]="topic">
+        {{topic.name}}
+      </mat-option>
+    </mat-autocomplete>
     <mat-icon matSuffix *ngIf="canSaveTopic && story.topics.length < 5" (click)="saveTopic()" class="input-icon">
       save
     </mat-icon>

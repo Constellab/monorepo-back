@@ -1,10 +1,10 @@
 import {Component, ComponentRef, Inject, OnDestroy, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {FormControl} from '@ngneat/reactive-forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Validators} from '@angular/forms';
 import {FlFormDialogInput} from '../../../../model/fl-form.class';
 import {debounceTime} from 'rxjs/operators';
 import {startWith} from 'rxjs';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 export type FlTextEditorFormulaDialogInput = FlFormDialogInput<string>;
 

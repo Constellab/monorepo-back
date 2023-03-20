@@ -42,9 +42,7 @@
         <mat-header-cell *matHeaderCellDef class="g-table-icon-button-cell"></mat-header-cell>
         <mat-cell *matCellDef="let story" class="g-table-icon-button-cell">
           <a [routerLink]="'/stories/edit/' + story.id">
-            <button mat-icon-button type="button">
               <mat-icon>edit</mat-icon>
-            </button>
           </a>
         </mat-cell>
       </ng-container>

@@ -9,7 +9,7 @@
 
     <ng-template #fileExplorer>
 <!--         Upload files-->
-      <fl-input-file-icon-container [icon]="buttons[0].icon" class="menu-button" [border]="false"
+      <fl-input-file-icon-container [icon]="buttons[0].icon" class="menu-button"
                                     size="small" [matTooltip]="buttons[0].tooltip | translate" [disabled]="button.disabled" >
         <input flInputFile [strictMode]="true" accept="image/*" type="file" [disabled]="button.disabled"
                [autoClearHtmlInput]="true" (fileChange)="onAction(buttons[0], $event)">

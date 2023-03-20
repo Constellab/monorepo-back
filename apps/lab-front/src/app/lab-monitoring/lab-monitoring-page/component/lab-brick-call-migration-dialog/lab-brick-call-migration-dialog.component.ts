@@ -1,12 +1,12 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {LabBrickService} from '../../../../lab-core/entity-service/lab-brick.service';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Observable} from 'rxjs';
 import {LabBrickMigration} from '../../../../lab-core/model/entities/lab-brick.entity';
 import {FormControl} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {CmVersion} from '@monorepo/common-model';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 /**
  * Dialog to list available migration a call them manually

@@ -5,9 +5,9 @@ import {mergeMap, Observable, of, startWith} from 'rxjs';
 import {FormControl} from '@ngneat/reactive-forms';
 import {map} from 'rxjs/operators';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {HaRouterService} from '../../../../ha-core/ha-service/ha-router.service';
 import {clRxjsElasticSearch, ClStringHelper} from '@monorepo/core-lib';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @Component({
   selector: 'ha-public-find-doc-dialog',

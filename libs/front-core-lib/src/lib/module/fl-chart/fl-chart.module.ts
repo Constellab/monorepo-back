@@ -4,19 +4,16 @@ import {FlChartPortalComponent} from './component/fl-chart-portal/fl-chart-porta
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {FlChartPortalService} from './service/fl-chart-portal.service';
 import {FlPortalModule} from '../fl-portal/fl-portal.module';
-import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {
   FlChartTypeSelectOptionsComponent
 } from './component/fl-chart-type-select-options/fl-chart-type-select-options.component';
-import {MatOptionModule} from '@angular/material/core';
 import {CommonModule} from '@angular/common';
 import {FlIconModule} from '../fl-svg-icon/fl-icon.module';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flChartI18n} from './i18n/fl-chart.i18n';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
-import {MatTooltipModule} from '@angular/material/tooltip';
 import {
   FlChartDataWithSeriePortalComponent
 } from './component/fl-chart-data-portal/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
@@ -56,6 +53,9 @@ import {
 import {FlChartColorFunctionPipe} from './pipe/fl-chart-color-function.pipe';
 import {FlChartValueComponent} from './component/fl-chart-data-portal/fl-chart-value/fl-chart-value.component';
 import {FlChartValueFormatterPipe} from './pipe/fl-chart-value-formatter.pipe';
+import {MatButtonModule} from '@angular/material/button';
+import {MatOptionModule} from '@angular/material/core';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 /**
  * Main module exporting all the chart modules

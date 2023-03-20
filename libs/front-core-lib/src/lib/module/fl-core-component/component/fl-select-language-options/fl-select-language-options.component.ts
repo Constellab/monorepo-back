@@ -1,6 +1,8 @@
 import {AfterViewInit, Component, Host, OnInit} from '@angular/core';
 import {clLangNameMap, ClSupportedLanguage} from '@monorepo/core-lib';
-import {FlEmbeddedOptionsAbstractDirective} from '../../../../abstract-directive/fl-embedded-options-abstract.directive';
+import {
+  FlEmbeddedOptionsAbstractDirective
+} from '../../../../abstract-directive/fl-embedded-options-abstract.directive';
 import {MatSelect} from '@angular/material/select';
 
 

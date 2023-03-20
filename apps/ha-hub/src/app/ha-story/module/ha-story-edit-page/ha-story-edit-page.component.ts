@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {HaStoryService} from '../../../ha-core/ha-service/ha-story.service';
 import {HaStory, HaStoryContentFormDTO} from '../../../ha-core/ha-model/ha-entities/ha-story.class';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -11,10 +11,10 @@ import {HaTopic, HaTopicDto} from '../../../ha-core/ha-model/ha-entities/ha-topi
 import {HaTopicService} from '../../../ha-core/ha-service/ha-topic.service';
 import {map} from 'rxjs/operators';
 import {FormControl} from '@angular/forms';
-import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {HaAuthenticatedUserService} from '../../../ha-core/ha-service/ha-authenticated-user.service';
 import {HaUser} from '../../../ha-core/ha-model/ha-entities/ha-user';
 import {HaStoryCoAuthorDialogComponent} from '../ha-story-co-author-dialog/ha-story-co-author-dialog.component';
+import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 
 @Component({
   selector: 'ha-ha-story-edit-page',
@@ -48,6 +48,8 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
   canSaveTopic: boolean = false;
 
   inputTopic: string = '';
+
+  @ViewChild('topicInput') topicInput: ElementRef<HTMLInputElement>;
 
   constructor(
     private storyService: HaStoryService,
@@ -131,7 +133,8 @@ export class HaStoryEditPageComponent implements OnInit, OnDestroy {
     return this.storyService.addTopicToStory(topic, this.story.id).pipe(
       mergeMap((res: HaTopic) => {
         this.story.topics.push(res);
-        this.topicControl.setValue('');
+        this.topicControl.setValue(null);
+        this.topicInput.nativeElement.value = '';
         this.inputTopic = '';
         if (this.story.topics.length >= 5) this.topicControl.disable();
         return of(res);

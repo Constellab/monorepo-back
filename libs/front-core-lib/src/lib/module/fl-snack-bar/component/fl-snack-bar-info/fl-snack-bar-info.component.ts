@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_SNACK_BAR_DATA, MatSnackBarRef} from '@angular/material/snack-bar';
 import {FlSnackBarInfoInput, FlSnackBarMode} from '../../model/fl-snack-bar.class';
 import {FlTranslatableText} from '../../../fl-translate/model/fl-translate-param';
+import {MAT_SNACK_BAR_DATA, MatSnackBarRef} from '@angular/material/snack-bar';
 
 /**
  * Simple snack bar to display an error or success message

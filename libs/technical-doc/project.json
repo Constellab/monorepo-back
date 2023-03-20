@@ -1,4 +1,5 @@
 {
+  "name": "technical-doc",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "sourceRoot": "libs/technical-doc/src",
@@ -6,7 +7,7 @@
   "targets": {
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/technical-doc"],
+      "outputs": ["{workspaceRoot}/coverage/libs/technical-doc"],
       "options": {
         "jestConfig": "libs/technical-doc/jest.config.ts",
         "passWithNoTests": true

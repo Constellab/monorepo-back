@@ -21,19 +21,6 @@
   width: var(--expanded-menu-large-width);
 }
 
-.header-container {
-  position: relative;
-}
-
-.expanded-button {
-  position: absolute;
-  height: 100%;
-  right: -20px;
-  top: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
 // style of the buttons inside the menu
 ::ng-deep {
@@ -54,13 +41,13 @@
     }
 
     // use to hide the text when the menu is retracted
-    .expansion-menu-button-small .mat-button-wrapper > span {
+    .expansion-menu-button-small .mdc-button__label > span {
       display: none;
     }
 
     .expansion-menu-button-large {
       width: 100%;
-      text-align: left;
+      justify-content: left;
     }
 
     .expansion-menu-button:hover {

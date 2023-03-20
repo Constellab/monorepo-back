@@ -1,9 +1,9 @@
 import {AfterViewInit, Component, Host, OnDestroy, OnInit} from '@angular/core';
-import {MatSelect} from '@angular/material/select';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {CaCloudProviderService} from '../../../../service-api/ca-cloud-provider.service';
 import {CaCloudProvider, CaCloudProviderDatasource} from '../../../../model/entities/ca-cloud-provider.class';
 import {Observable} from 'rxjs';
+import {MatSelect} from '@angular/material/select';
 
 @Component({
   selector: 'ca-select-cloud-provider-options',

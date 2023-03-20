@@ -6,7 +6,6 @@ import {
 } from '../../../../model/entities/lab/ca-lab-instance.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaLabInstanceService} from '../../../../service-api/ca-lab-instance.service';
 import {Validators} from '@angular/forms';
 import {
@@ -18,6 +17,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {CaCountryService} from '../../../../service-api/ca-country.service';
 import {CaCountry} from '../../../../model/entities/ca-country.entity';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 export type CaLabInstanceAdminFormDialogInput = FlFormDialogInput<CaLabInstanceAdminForm>;
 

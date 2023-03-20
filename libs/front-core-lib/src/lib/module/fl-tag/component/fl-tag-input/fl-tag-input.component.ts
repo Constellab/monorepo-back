@@ -14,12 +14,12 @@ import {
 import {NgControl, UntypedFormControl} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {map, mergeMap, startWith, tap} from 'rxjs/operators';
-import {MatAutocompleteSelectedEvent, MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {TAB} from '@angular/cdk/keycodes';
 import {ClHelpService, clRxjsElasticSearch} from '@monorepo/core-lib';
 import {FlFormFieldDirective} from '../../../../abstract-directive/form/fl-form-field.directive';
 import {FlTag, FlTagEntity, FlTagHelper, FlTagService} from '../../fl-tag.class';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import {MatAutocompleteSelectedEvent, MatAutocompleteTrigger} from '@angular/material/autocomplete';
 
 type FlTagInput = FlTag[] | Record<string, string>
 

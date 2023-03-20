@@ -2,7 +2,6 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FlSearchComponent} from './component/fl-search/fl-search.component';
 import {FlInfiniteScrollModule} from '../fl-inifite-scroll/fl-infinite-scroll.module';
-import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {FlexLayoutModule} from '@angular/flex-layout';
@@ -18,11 +17,12 @@ import {FlFormInputsManagerModule} from '../fl-form-inputs-manager/fl-form-input
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {FlSearchSavedListComponent} from './component/fl-search-saved-list/fl-search-saved-list.component';
 import {FlSearchDateIntervalComponent} from './component/fl-search-date-interval/fl-search-date-interval.component';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {FlSearchDrawerToggleDirective} from './directive/fl-search-drawer-toggle/fl-search-drawer-toggle.directive';
 import {FlSearchHeaderActionsComponent} from './component/fl-search-header-actions/fl-search-header-actions.component';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
 
 
 @NgModule({

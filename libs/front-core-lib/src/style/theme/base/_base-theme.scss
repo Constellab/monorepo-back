@@ -4,7 +4,7 @@
 
 // function to set the background and foreground palette in material theme
 // from https://github.com/angular/components/issues/6244#issuecomment-1017629612
-@function set-background-foreground($theme, $background, $foreground) {
+@function set-default-values($theme, $background, $foreground) {
   $color: map_get($theme, color);
 
   $color: map_merge(
@@ -14,10 +14,20 @@
         foreground: $foreground,
       )
   );
+  // Define material font
+  $typography: mat.define-typography-config(
+    $font-family: 'Poppins',
+    $body-1: mat.define-typography-level(13px, 18px, 400, 'Poppins'),
+    $body-2: mat.define-typography-level(13px, 22px, 500, 'Poppins'),
+    $subtitle-2: mat.define-typography-level(13px, 18px, 400, 'Poppins'),
+    $button: mat.define-typography-level(13px, 13px, 500, 'Poppins'),
+    $caption: mat.define-typography-level(10px, 10px, 500, 'Poppins'),
+  );
   @return map_merge(
       $theme,
       (
         color: $color,
+        typography: $typography,
       )
   );
 }
@@ -27,7 +37,7 @@
   This mixin must be call only once
  */
 @mixin _base-theme($mat-theme, $background, $foreground) {
-  $mat-theme: set-background-foreground($mat-theme, $background, $foreground);
+  $mat-theme: set-default-values($mat-theme, $background, $foreground);
 
   $color: mat.get-color-config($mat-theme);
   $primary: map-get($color, primary);
@@ -43,17 +53,24 @@
   $color-warning: orange;
   $color-error: mat.get-color-from-palette($warn);
 
+  //@include mat.all-legacy-component-typographies();
+  @include mat.legacy-core();
+
+  @include mat.core-theme($mat-theme);
   // apply the material theme
   @include mat.all-component-themes($mat-theme);
 
   // call input file mixin
   @include _file-input-color($mat-theme);
 
+  @include mat.strong-focus-indicators-theme($mat-theme);
+
   :root {
     --primary-color: #{mat.get-color-from-palette($primary)};
     --primary-color-contrast: #{mat.get-color-from-palette($primary, default-contrast)};
     --accent-color: #{mat.get-color-from-palette($accent)};
     --warn-color: #{mat.get-color-from-palette($warn)};
+    --warn-color-contrast: #{mat.get-color-from-palette($warn, default-contrast)};
     --success-color: #{$color-success};
     --warning-color: #{$color-warning};
     --color-foreground: #{$foreground-color};

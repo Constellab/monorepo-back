@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
 
 const routes: Routes = [
   {
@@ -14,12 +14,12 @@ const routes: Routes = [
     RouterModule.forRoot(
       routes,
       // load all lazy module on start
-      {
-        preloadingStrategy: PreloadAllModules,
-        scrollPositionRestoration: 'enabled',
-        relativeLinkResolution: 'legacy',
-        initialNavigation: 'enabledBlocking',
-      }
+      // load all lazy module on start
+{
+    preloadingStrategy: PreloadAllModules,
+    scrollPositionRestoration: 'enabled',
+    initialNavigation: 'enabledBlocking'
+}
     ),
   ],
   exports: [RouterModule],

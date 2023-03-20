@@ -1,7 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {
   HaAddVersionInput,
   HaNewVersionDTO,
@@ -10,6 +9,7 @@ import {
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
 import {Validators} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @Component({
   selector: 'ha-public-add-version-dialog',

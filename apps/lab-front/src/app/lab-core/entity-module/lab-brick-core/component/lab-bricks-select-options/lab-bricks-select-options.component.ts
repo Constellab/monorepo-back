@@ -1,9 +1,9 @@
 import {AfterViewInit, Component, Host, OnInit, Optional} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
-import {MatSelect} from '@angular/material/select';
 import {LabBrickService} from '../../../../entity-service/lab-brick.service';
 import {Observable} from 'rxjs';
 import {LabBrickEntity} from '../../../../model/entities/lab-brick.entity';
+import {MatSelect} from '@angular/material/select';
 
 @Component({
   selector: 'lab-bricks-select-options',

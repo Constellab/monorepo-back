@@ -1,12 +1,12 @@
 import {AfterViewInit, Component, Host, OnDestroy, OnInit} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {MatSelect} from '@angular/material/select';
 import {
   CaBucketCredentialsFull,
   CaBucketCredentialsFullDatasource
 } from '../../../../model/entities/ca-object-storage.class';
 import {CaObjectStorageService} from '../../../../service-api/ca-object-storage.service';
+import {MatSelect} from '@angular/material/select';
 
 @Component({
   selector: 'ca-select-bucket-credentials-options',

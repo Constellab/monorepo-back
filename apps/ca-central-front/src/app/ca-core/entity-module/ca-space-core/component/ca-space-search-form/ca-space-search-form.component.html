@@ -7,6 +7,8 @@
     <mat-form-field class="g-full">
       <mat-label>{{'name' | translate }}</mat-label>
       <input matInput formControlName="name" [placeholder]="'name' | translate" autocomplete="off">
+      <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+
     </mat-form-field>
 
     <!--  Domain  -->
@@ -35,7 +37,7 @@
 
     <!--  Creation date  -->
     <div class="g-form-field-no-hint g-full">
-      <p class="g-text-small">{{'creation_date' | translate}}</p>
+      <p class="g-text-small date">{{'creation_date' | translate}}</p>
       <fl-search-date-interval formGroupName="createdAt">
       </fl-search-date-interval>
     </div>

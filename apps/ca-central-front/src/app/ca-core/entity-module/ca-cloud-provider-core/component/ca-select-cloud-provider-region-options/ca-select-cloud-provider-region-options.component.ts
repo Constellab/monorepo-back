@@ -1,12 +1,12 @@
 import {AfterViewInit, Component, Host, Input, OnDestroy, OnInit} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {MatSelect} from '@angular/material/select';
 import {CaCloudProviderService} from '../../../../service-api/ca-cloud-provider.service';
 import {
   CaCloudProviderRegion,
   CaCloudProviderRegionDatasource
 } from '../../../../model/entities/ca-cloud-provider.class';
+import {MatSelect} from '@angular/material/select';
 
 @Component({
   selector: 'ca-select-cloud-provider-region-options',

@@ -2,8 +2,8 @@ import {AfterViewInit, Component, Host, OnInit} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {CaBrick} from '../../../../model/entities/ca-brick.class';
-import {MatSelect} from '@angular/material/select';
 import {CaBrickService} from '../../../../service-api/ca-brick.service';
+import {MatSelect} from '@angular/material/select';
 
 /**
  * Select options of all brick and use name as value

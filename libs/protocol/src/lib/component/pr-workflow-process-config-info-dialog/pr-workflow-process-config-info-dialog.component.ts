@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {PrConfig} from '@monorepo/protocol';
 import {TdParamSpec} from '@monorepo/technical-doc';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 @Component({
   selector: 'pr-workflow-process-config-info-dialog',

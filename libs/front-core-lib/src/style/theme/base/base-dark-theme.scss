@@ -95,3 +95,8 @@ $background-color: mat.get-color-from-palette($background, background);
   background: -ms-linear-gradient(top, rgba(0, 0, 0, 0) 0%, mat.get-color-from-palette($background, card) 70%);
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, mat.get-color-from-palette($background, card) 70%);
 }
+
+.g-button-shadow, .mdc-icon-button.g-button-shadow {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+

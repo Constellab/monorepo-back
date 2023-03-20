@@ -11,7 +11,7 @@
     <!--  actions -->
     <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
       <ng-container *ngIf="resourceId$ | async as resourceId">
-        <button mat-stroked-button type="button" class="g-button-small" *ngIf="resourceId"
+        <button mat-stroked-button type="button" class="g-button-small button" *ngIf="resourceId"
                 (click)="openResourceDetail(resourceId)">
           <mat-icon>visibility</mat-icon>
           {{'resource' | translate}}

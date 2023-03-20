@@ -1,5 +1,4 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaSpaceInvitService} from '../../../../ca-core/service-api/ca-space-invit.service';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
@@ -7,6 +6,7 @@ import {CaSpaceInvit, CaSpaceInvitCreateDTO} from '../../../../ca-core/model/ent
 import {Validators} from '@angular/forms';
 import {CaSpaceType} from '../../../../ca-core/model/entities/space/ca-space.class';
 import {CaSpaceRole} from '../../../../ca-core/model/entities/space/ca-space-user.class';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 export interface CaSpaceInvitFormDialogInput {
   spaceId: string;
