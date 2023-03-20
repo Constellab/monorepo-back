@@ -47,17 +47,15 @@
     <div class="g-full" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em">
 
       <a class="link-button" href="mailto:clientsuccess@gencovery.com" matRipple>
-        <fl-text-icon>
+        <fl-text-icon class="support">
           <mat-icon>help</mat-icon>
           <div>{{'support' | translate}}</div>
         </fl-text-icon>
       </a>
 
       <a [href]="hubLink" target="_blank" class="link-button" matRipple>
-        <fl-text-icon>
-          <mat-icon>hub</mat-icon>
-          <div>{{'hub' | translate}}</div>
-        </fl-text-icon>
+        <img src="assets/logo/community_logo_text_white.svg" alt="Community logo"
+             class="community-logo"/>
       </a>
     </div>
 
