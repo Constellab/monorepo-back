@@ -32,8 +32,8 @@ export class CaDashboardPageComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.communityLogo = this.themeService.isDarkTheme() ?
-      'assets/logo/community_logo_text_white.svg' :
-      'assets/logo/community_logo_text_black.svg';
+      'assets/fl-logo/community_logo_text_white.svg' :
+      'assets/fl-logo/community_logo_text_black.svg';
   }
 
   ngOnDestroy(): void {

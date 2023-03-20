@@ -7,7 +7,7 @@
       "installMode": "prefetch",
       "resources": {
         "files": [
-          "/assets/logo/favicon.png",
+          "/assets/fl-logo/favicon.png",
           "/index.html",
           "/manifest.webmanifest",
           "/*.css",

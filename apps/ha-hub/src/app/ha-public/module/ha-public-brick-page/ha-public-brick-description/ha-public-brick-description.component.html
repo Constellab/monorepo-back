@@ -2,7 +2,7 @@
   <div class="left-side-div">
     <div>
       <div class="title-div">
-        <img [src]="brick.imageLink ? brick.imageLink : 'assets/logo/logo.png'" class="brick-icon">
+        <img [src]="brick.imageLink ? brick.imageLink : 'assets/fl-logo/logo.png'" class="brick-icon">
         <h2>{{brick.name}}</h2>
         <mat-icon *ngIf="brick.visibility === 'public'" class="icon" matTooltip="{{'public_brick' | translate}}">
           public

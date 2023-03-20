@@ -17,17 +17,17 @@
           {
             "glob": "**/*",
             "input": "libs/front-core-lib/src/assets/mat-icons",
-            "output": "assets/mat-icons"
+            "output": "assets/fl-mat-icons"
           },
           {
             "glob": "**/*",
             "input": "libs/front-core-lib/src/assets/logo",
-            "output": "assets/logo"
+            "output": "assets/fl-logo"
           },
           {
             "glob": "**/*",
             "input": "libs/front-core-lib/src/assets/font",
-            "output": "assets/font"
+            "output": "assets/fl-font"
           },
           {
             "glob": "**/*",

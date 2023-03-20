@@ -14,7 +14,7 @@
       <a class="brick" *ngFor="let b of bricks; let i" [routerLink]="getBrickRoute(b)">
         <div class="brick-logo" [style.background-image]="
               b.imageLink ? 'url(\''+ b.imageLink +'\')' :
-              'url(\'assets/logo/logo.png\')'"
+              'url(\'assets/fl-logo/logo.png\')'"
              [style.background-size]="b.imageLink ? '70%' : '100%'"></div>
         <div class="brick-info">
           <div class="brick-name-line">

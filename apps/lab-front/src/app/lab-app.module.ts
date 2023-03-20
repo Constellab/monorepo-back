@@ -75,7 +75,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
 
     // configuration of Front library
     FlIconModule.forRoot({
-      iconFolder: 'assets/mat-icons/',
+      iconFolder: 'assets/fl-mat-icons/',
       iconsToRegister: labSvgIcons
     }),
 

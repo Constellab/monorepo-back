@@ -46,7 +46,7 @@ export class CaMainAppComponent implements OnInit {
 
     // if the current space has a photo, use it, otherwise, use the default logo of gencovery
     this.spaceLogo$ = this.currentSpaceService.getCurrentSpacePhoto$().pipe(
-      map(photo => photo ?? 'assets/logo/constellab-logo.svg')
+      map(photo => photo ?? 'assets/fl-logo/constellab-logo.svg')
     );
     this.spaceName$ = this.currentSpaceService.getCurrentSpace$().pipe(
       map(space => space?.name ?? null)

@@ -64,7 +64,7 @@ function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): (
     FlPortalModule.forRoot(),
 
     FlIconModule.forRoot({
-      iconFolder: 'assets/mat-icons/',
+      iconFolder: 'assets/fl-mat-icons/',
       iconsToRegister: flIconsDefault
     }),
     FlTextEditorModule.forRoot({
