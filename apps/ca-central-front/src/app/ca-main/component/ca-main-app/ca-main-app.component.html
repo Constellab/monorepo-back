@@ -16,7 +16,7 @@
              (click)="openMySpacesPortal()" >
           <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px"
                [ngClass]="{'logo-expanded': menuExpanded}">
-            <div [matBadge]="(otherSpaceNotificationsNumber$ | async) + '10'" matBadgeColor="warn"
+            <div [matBadge]="otherSpaceNotificationsNumber$ | async" matBadgeColor="warn"
                  class="logo-container">
               <img [src]="spaceLogo$ | async" alt="Space logo"
                    class="logo" flBackupImage="assets/fl-logo/constellab-logo.svg"/>
@@ -55,7 +55,7 @@
             <span>{{'reduce_menu' | translate}}</span>
           </button>
 
-          <div [matBadge]="(numberOfNotifications$ | async) + '10'" matBadgeColor="warn" [matBadgeHidden]="false">
+          <div [matBadge]="numberOfNotifications$ | async" matBadgeColor="warn" [matBadgeHidden]="false">
             <button mat-button type="button" (click)="openNotificationDiv()"
                     flExpansionMenuButton class="notif-button"
             >
