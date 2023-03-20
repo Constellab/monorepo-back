@@ -7,7 +7,7 @@
 
       <button *ngIf="currentStatus.buttonText" mat-stroked-button class="status-action-button"
               type="button" (click)="currentStatusAction(currentStatus.buttonText)"
-              [disabled]="labStatus.currentTask.status.value === 'RUNNING'">
+              [disabled]="labStatus.currentTask && labStatus.currentTask.status.value === 'RUNNING'">
         {{currentStatus.buttonText | translate}}
       </button>
     </fl-text-icon>
