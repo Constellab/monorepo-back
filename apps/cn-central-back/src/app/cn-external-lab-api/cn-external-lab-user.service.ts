@@ -6,7 +6,6 @@ import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
 import {lastValueFrom} from 'rxjs';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 
-
 /**
  * Service to call route for user in the lab instance
  */
@@ -47,13 +46,6 @@ export class CnExternalLabUserService {
   /**
    * Retrieve the list of user in the lab
    */
-  public async getUsers(labInfo: CnExternalApiInfo): Promise<CnExternalLabUser[]> {
-    return lastValueFrom(this.externalLabApiService.get(labInfo, this.route));
-  }
-
-  /**
-   * Retrieve the list of user in the lab
-   */
   public getUser(labInfo: CnExternalApiInfo, userId: string): Promise<CnExternalLabUser> {
     return lastValueFrom(this.externalLabApiService.get(labInfo, `${this.route}/${userId}`));
   }
@@ -71,6 +63,8 @@ export class CnExternalLabUserService {
       first_name: user.firstname,
       last_name: user.lastname,
       is_active: true,
+      theme: user.theme,
+      lang: user.lang
     };
 
     return lastValueFrom(this.externalLabApiService.post(labInfo, this.route, newLabUser));

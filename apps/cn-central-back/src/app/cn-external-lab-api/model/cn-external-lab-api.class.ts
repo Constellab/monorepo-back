@@ -1,6 +1,7 @@
 /**
  * Response when logged in a user to the lab instance
  */
+import {ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 
 export interface CnExternalLabLoginResponse {
   temp_token: string;
@@ -15,12 +16,10 @@ export interface CnExternalLabUser {
   is_active: boolean;
   first_name: string;
   last_name: string;
+  theme: ClTheme;
+  lang: ClSupportedLanguage;
 }
 
-export interface CnExternalNewLabUser {
-  userId: string;
-  group: CnExternalLabUserRole;
-}
 
 export interface CnExternalLabCallView {
   values: Record<string, any>;

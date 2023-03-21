@@ -610,6 +610,8 @@ export class CnLabInstanceAggregateService {
         email: labUsers.user.email,
         group: externalRole,
         is_active: true,
+        theme: labUsers.user.theme,
+        lang: labUsers.user.lang,
       };
     });
   }
