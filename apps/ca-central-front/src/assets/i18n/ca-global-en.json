@@ -227,5 +227,6 @@
   "project_comment_notification_text": "{{firstname}} commented your project",
   "project_comment_mention_notification_text": "{{firstname}} mentioned you in a comment",
   "reduce_menu": "Reduce",
-  "notifications": "Notifications"
+  "notifications": "Notifications",
+  "phone_number": "Phone number"
 }

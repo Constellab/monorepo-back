@@ -75,6 +75,9 @@ export class CnUser extends BlEntityWithId implements BlUser {
   @Column({default: false})
   has2FA: boolean;
 
+  @Column({nullable: true, length: 50})
+  phone: string;
+
   //////////////////// TRANSIENT METHODS //////////////////
 
   @BeforeInsert()
@@ -112,6 +115,7 @@ export class CnUserEditDTO {
   activity: string;
   company: string;
   biography: string;
+  phone: string;
 }
 
 export interface CnUserTransportDto {

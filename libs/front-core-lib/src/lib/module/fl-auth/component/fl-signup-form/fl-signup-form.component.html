@@ -75,13 +75,13 @@
   <!--  Phone  -->
   <mat-form-field fxFlex="49%">
     <mat-label>{{'flAuth.phone_number' | translate}}</mat-label>
-    <input matInput formControlName="phone"
+    <input matInput formControlName="phone" flInputMaxLength="50"
            [placeholder]="'flAuth.phone_number' | translate">
   </mat-form-field>
 
 
   <!--   CGU/CGV  -->
-  <div>
+  <div class="cgu">
     <div fxLayout="row" fxLayoutAlign="start center" class="cgu-container">
       <mat-checkbox formControlName="validateCGU" [disableRipple]="true">
       </mat-checkbox>
