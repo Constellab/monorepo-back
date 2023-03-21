@@ -15,7 +15,7 @@ export class CaCommunityHelper {
   }
 
   public static getProductDocUrl(): string {
-    return this.getTechDocUrl() + "product-doc";
+    return this.getCommunityUrl() + "product-doc";
   }
 
   public static getDevEnvironmentUrl(): string {
