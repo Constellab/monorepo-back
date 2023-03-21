@@ -22,6 +22,7 @@ const flAuthI18nFr: FlLangTranslation = {
     password_weak_error: 'Le mot de passe doit contenir au moins 8 caractères, 1 lettre et 1 nombre',
     repeat_password_error: 'Le mot de passe répété dest différent',
     signup_link: 'Vous n\'avez pas de compte? Inscrivez-vous',
+    sign_in_link: 'Vous avez déjà un compte? Connectez-vous',
     account_created: 'Compte créé, nous vous avons envoyé un mail pour l\'activer',
     accept_cgu_cgv_text: `J'accepte les <a href="https://gencovery.com/legal/terms-of-use" target="_blank">Conditions générales d'utilisation</a> et la <a href="https://gencovery.com/legal/privacy-policy" target="_blank">politique de confidentialité</a>`,
     accept_cgu_cgv_error: 'Vous devez accepter les conditions pour créer un compte',
@@ -30,6 +31,7 @@ const flAuthI18nFr: FlLangTranslation = {
     two_fa_help: 'Entrez le code de sécurité envoyé par email',
     two_fa_cancel: 'Annuler',
     two_fa_invalid_code: 'Code invalide',
+    phone_number: 'Numéro de téléphone',
   }
 };
 
@@ -49,6 +51,7 @@ const flAuthI18nEn: FlLangTranslation = {
     password_weak_error: 'The password must contain at least 8 characters, 1 letter and 1 number',
     repeat_password_error: 'The repeat password is not the same',
     signup_link: 'Doesn\'t have an account? Sign up',
+    sign_in_link: 'Already have an account? Sign in',
     account_created: 'Account created, we sent you an email to activate your account',
     accept_cgu_cgv_text: `I agree to the website <a href="https://gencovery.com/legal/terms-of-use" target="_blank">Terms of Use</a> and <a href="https://gencovery.com/legal/privacy-policy" target="_blank">Privacy Policy</a>`,
     accept_cgu_cgv_error: 'You must agree to the conditions to create an account',
@@ -57,6 +60,7 @@ const flAuthI18nEn: FlLangTranslation = {
     two_fa_help: 'Enter the security code sent by email',
     two_fa_cancel: 'Cancel',
     two_fa_invalid_code: 'Invalid code',
+    phone_number: 'Phone number',
   }
 };
 

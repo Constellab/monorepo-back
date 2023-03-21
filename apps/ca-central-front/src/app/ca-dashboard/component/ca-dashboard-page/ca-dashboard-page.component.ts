@@ -23,17 +23,12 @@ export class CaDashboardPageComponent implements OnInit, OnDestroy {
 
   currentDate: Date = new Date();
 
-  communityLogo: string;
-
   constructor(private currentSpaceService: CaCurrentSpaceService,
               private themeService: FlThemeService) {
 
   }
 
   ngOnInit(): void {
-    this.communityLogo = this.themeService.isDarkTheme() ?
-      'assets/fl-logo/community_logo_text_white.svg' :
-      'assets/fl-logo/community_logo_text_black.svg';
   }
 
   ngOnDestroy(): void {

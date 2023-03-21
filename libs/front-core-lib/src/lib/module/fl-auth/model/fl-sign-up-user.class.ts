@@ -8,4 +8,5 @@ export interface FlSignUpUser {
   password: string;
   repeatPassword: string;
   validateCGU: boolean;
+  phone ?: string;
 }

@@ -5,9 +5,11 @@ import {CaLoginGuard} from './guard/ca-login.guard';
 import {FlResetPasswordPageComponent} from '@monorepo/front-core-lib';
 import {CaSignupToSpacePageComponent} from './component/ca-signup-to-space-page/ca-signup-to-space-page.component';
 import {CaNoSpacePageComponent} from './component/ca-no-space-page/ca-no-space-page.component';
+import {CaSignupPageComponent} from './component/ca-signup-page/ca-signup-page.component';
 
 const loginRoutes: Routes = [
   {path: 'login', component: CaLoginPageComponent, canActivate: [CaLoginGuard]},
+  {path: 'signup', component: CaSignupPageComponent},
   {path: 'signup-space/:code', component: CaSignupToSpacePageComponent},
   {path: 'reset-password/:token', component: FlResetPasswordPageComponent},
   {path: 'no-space', component: CaNoSpacePageComponent},

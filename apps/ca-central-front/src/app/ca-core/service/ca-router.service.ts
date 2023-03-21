@@ -30,6 +30,10 @@ export class CaRouterService {
     return `/login`;
   }
 
+  public static getSignupRoute(): string {
+    return `/signup`;
+  }
+
   public navigatorToLoginRoute(): void {
     this.router.navigate([CaRouterService.getLoginRoute()]);
   }

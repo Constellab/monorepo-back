@@ -9,6 +9,7 @@ import {
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CaSpaceCoreModule} from '../ca-core/entity-module/ca-space-core/ca-space-core.module';
 import {CaNoSpacePageComponent} from './component/ca-no-space-page/ca-no-space-page.component';
+import { CaSignupPageComponent } from './component/ca-signup-page/ca-signup-page.component';
 
 /**
  * Module containing page when the user in not logged
@@ -18,6 +19,7 @@ import {CaNoSpacePageComponent} from './component/ca-no-space-page/ca-no-space-p
     CaLoginPageComponent,
     CaSignupToSpacePageComponent,
     CaNoSpacePageComponent,
+    CaSignupPageComponent,
   ],
   imports: [
     CommonModule,

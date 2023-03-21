@@ -1,0 +1,22 @@
+<div class="page" fxLayout="row" fxLayoutAlign="center center"
+     fxLayoutAlign.xs="center start">
+  <fl-card class="card" fxFlex="32em" fxFlex.xs="100%">
+    <fl-card-body>
+      <img [src]="logo" alt="Gencovery logo" class="logo"/>
+
+      <form (ngSubmit)="submit()" [formGroup]="formGp">
+        <fl-signup-form [formGp]="formGp"></fl-signup-form>
+
+        <button mat-flat-button color="accent" type="submit"
+                class="centered g-button-big">
+          {{'flAuth.signup' | translate}}
+          <fl-button-loader *ngIf="isLoading"></fl-button-loader>
+        </button>
+      </form>
+
+      <ng-content></ng-content>
+    </fl-card-body>
+  </fl-card>
+
+</div>
+

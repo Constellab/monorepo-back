@@ -11,7 +11,6 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {flAuthI18n} from './i18n/fl-auth.i18n';
 import {FlPasswordForgottenComponent} from './component/fl-password-forgotten/fl-password-forgotten.component';
 import {FlResetPasswordPageComponent} from './component/fl-reset-password-page/fl-reset-password-page.component';
-import {FlSignupDialogComponent} from './component/fl-signup-dialog/fl-signup-dialog.component';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
@@ -29,6 +28,7 @@ import {FlSignupFormComponent} from './component/fl-signup-form/fl-signup-form.c
 import {FlCompleteLoginComponent} from './component/fl-complete-login/fl-complete-login.component';
 import {FlLoginTwoFAComponent} from './component/fl-login-two-f-a/fl-login-two-f-a.component';
 import {FlLoginPageComponent} from './component/fl-login-page/fl-login-page.component';
+import {FlSignupPageComponent} from './component/fl-signup-page/fl-signup-page.component';
 
 /**
  * Module containing component for authentication, sign up, password reset
@@ -38,19 +38,19 @@ import {FlLoginPageComponent} from './component/fl-login-page/fl-login-page.comp
     FlLoginComponent,
     FlPasswordForgottenComponent,
     FlResetPasswordPageComponent,
-    FlSignupDialogComponent,
     FlSignupFormComponent,
     FlCompleteLoginComponent,
     FlLoginTwoFAComponent,
     FlLoginPageComponent,
+    FlSignupPageComponent,
   ],
   exports: [
     FlPasswordForgottenComponent,
     FlResetPasswordPageComponent,
-    FlSignupDialogComponent,
     FlSignupFormComponent,
     FlCompleteLoginComponent,
     FlLoginPageComponent,
+    FlSignupPageComponent,
   ],
   imports: [
     CommonModule,
