@@ -31,6 +31,16 @@
     </mat-cell>
   </ng-container>
 
+  <!-- Phone -->
+  <ng-container matColumnDef="phone">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'phone_number' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let user">
+      <span>{{user.phone}}</span>
+    </mat-cell>
+  </ng-container>
+
   <!-- Last login success -->
   <ng-container matColumnDef="lastLogin">
     <mat-header-cell *matHeaderCellDef>

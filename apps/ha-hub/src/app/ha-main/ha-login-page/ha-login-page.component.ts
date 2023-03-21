@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {HaAuthenticatedUserService} from '../../ha-core/ha-service/ha-authenticated-user.service';
 import {Location} from '@angular/common';
+import {environment} from '../../../environments/ha-environment';
 
 @Component({
   selector: 'ha-login-page',
@@ -8,7 +9,9 @@ import {Location} from '@angular/common';
   styleUrls: ['./ha-login-page.component.scss']
 })
 export class HaLoginPageComponent implements OnInit {
-  previousUrl: string;
+
+  spaceSignupRoute: string = environment.constellabUrl + 'signup';
+
 
   constructor(private location: Location,
               private authenticatedUserService: HaAuthenticatedUserService) {

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Params} from '@angular/router';
-import {FlSnackBarService} from '@monorepo/front-core-lib';
+import {FlDialogService, FlPasswordForgottenComponent, FlSnackBarService} from '@monorepo/front-core-lib';
 import {CaRouterService} from '../../../ca-core/service/ca-router.service';
 
 @Component({
@@ -12,8 +12,11 @@ export class CaLoginPageComponent implements OnInit {
 
   appRoute: string = CaRouterService.getAppRoute();
 
+  signupRoute: string = CaRouterService.getSignupRoute();
+
   constructor(private route: ActivatedRoute,
-              private snackBarService: FlSnackBarService) {
+              private snackBarService: FlSnackBarService,
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
@@ -34,6 +37,10 @@ export class CaLoginPageComponent implements OnInit {
         this.snackBarService.openSuccessMessage({text: params.success, translateText: true});
       }
     }, 300);
+  }
+
+  openPasswordForgotten(): void {
+    this.dialogService.openSmallDialog(FlPasswordForgottenComponent);
   }
 
 }

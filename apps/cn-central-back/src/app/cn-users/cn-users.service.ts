@@ -121,13 +121,13 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
   async editUser(userEdit: CnUserEditDTO): Promise<CnUser> {
     const user: CnUser = await this.repository.findOneBy({id: userEdit.id});
-    if (userEdit.firstname != user.firstname || userEdit.lastname != user.lastname || userEdit.activity != user.activity
-      || userEdit.company != user.company || userEdit.biography != user.biography) {
+    if (userEdit) {
       user.firstname = userEdit.firstname;
       user.lastname = userEdit.lastname;
       user.activity = userEdit.activity;
       user.company = userEdit.company;
       user.biography = userEdit.biography;
+      user.phone = userEdit.phone;
       const dbUser: CnUser = await this.repository.save(user);
       this.sendUserToTransport(dbUser);
       return dbUser;

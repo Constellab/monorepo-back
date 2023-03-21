@@ -1,4 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {FlThemeService} from '../../../fl-theme/fl-theme.service';
 
 @Component({
   selector: 'fl-login-page',
@@ -12,17 +13,20 @@ export class FlLoginPageComponent implements OnInit {
    */
   @Input() redirectionRoute?: string;
 
-  /**
-   * If true the password reset link and signup link are hidden
-   */
-  @Input() hideLoginFooter: boolean = false;
+  @Input() lightThemeLogo: string = 'assets/fl-logo/constellab-logo-text-black.svg';
+
+  @Input() darkThemeLogo: string = 'assets/fl-logo/constellab-logo-text-white.svg';
 
   @Output() loginSuccess: EventEmitter<void> = new EventEmitter<void>();
 
-  constructor() {
+  logo: string;
+
+  constructor(private themeService: FlThemeService) {
   }
 
   ngOnInit(): void {
+    this.logo = this.themeService.isDarkTheme() ? this.darkThemeLogo :
+      this.lightThemeLogo;
   }
 
   onLoginSuccess(): void {

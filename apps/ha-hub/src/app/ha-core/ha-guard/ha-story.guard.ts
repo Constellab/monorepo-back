@@ -3,8 +3,8 @@ import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, Router, UrlTree} fr
 import {HaAuthenticatedUserService} from '../ha-service/ha-authenticated-user.service';
 import {HaStoryService} from '../ha-service/ha-story.service';
 import {mergeMap, Observable} from 'rxjs';
-import {CaRouterService} from '../../../../../ca-central-front/src/app/ca-core/service/ca-router.service';
 import {HaAuthService} from '../ha-service/ha-auth.service';
+import {HaRouterService} from '../ha-service/ha-router.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +21,7 @@ export class HaStoryGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     if (!this.loginService.hasAuthorizationCookie()) {
-      return this.router.createUrlTree([CaRouterService.getLoginRoute()]);
+      return this.router.createUrlTree([HaRouterService.getLoginRoute()]);
     }
     const storyId = route.paramMap.get('id');
     return this.authUserService.isAdmin().pipe(

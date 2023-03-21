@@ -17,9 +17,10 @@ export class FlSignupFormComponent implements OnInit {
   @Input() formGp: FormGroup<FlSignUpUser>;
 
 
-  constructor() { }
+  constructor() {
+  }
 
-  public static buildFormGroup(): FormGroup<FlSignUpUser>{
+  public static buildFormGroup(): FormGroup<FlSignUpUser> {
     return new FormBuilder().group({
       firstname: [null, Validators.required],
       lastname: [null, Validators.required],
@@ -28,7 +29,8 @@ export class FlSignupFormComponent implements OnInit {
       repeatPassword: [null, [Validators.required,
         FlGlobalValidators.repeatPasswordValidator('password')]],
       category: [null, Validators.required],
-      validateCGU: [false, FlGlobalValidators.isValue(true)]
+      validateCGU: [false, FlGlobalValidators.isValue(true)],
+      phone: [null]
     });
   }
 

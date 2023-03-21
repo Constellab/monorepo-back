@@ -6,7 +6,7 @@ export const environment = {
   production: false,
   apiUrl: 'http://localhost:3333/',
   constellabApiUrl: 'https://api.preconstellab.com/',
-  constellabUrl: 'https://constellab-pre-prod.gencovery.com/',
+  constellabUrl: 'https://preconstellab.com/',
   hubUrl: 'http://localhost:4200/'
 };
 

@@ -15,6 +15,7 @@ import {
   CaLabOnPremiseDownloadConfigComponent,
   CaLabOnPremiseDownloadConfigInput
 } from '../ca-lab-on-premise-download-config/ca-lab-on-premise-download-config.component';
+import {CaCommunityHelper} from '../../../ca-core/utils/ca-community.helper';
 
 @Component({
   selector: 'ca-lab-instance-detail',
@@ -27,6 +28,8 @@ export class CaLabInstanceDetailComponent implements OnInit {
   isOwner$: Observable<boolean> = this.state.isLabOwner$();
   labIsRunning$: Observable<boolean> = this.state.labIsRunning$();
   isLoading: boolean = false;
+
+  onPremiseDocUrl: string = CaCommunityHelper.getOnPremiseDocUrl();
 
   constructor(private state: CaLabInstanceDetailPageState,
               private dialogService: FlDialogService,

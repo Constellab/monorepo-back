@@ -29,14 +29,6 @@
     <fl-button-loader *ngIf="isLoading"></fl-button-loader>
   </button>
 
-
-  <div class="footer" fxLayout="row wrap" fxLayoutAlign="space-between" *ngIf="!hideFooter">
-    <span class="g-text-light g-text-small g-text-link" (click)="openPasswordForgotten()">
-      {{'flAuth.forgot_password' | translate}}
-    </span>
-    <span class="g-primary-text g-text-small g-text-link" (click)="openSignupDialog()">
-      {{'flAuth.signup_link' | translate}}
-    </span>
-  </div>
+  <ng-content></ng-content>
 </form>
 

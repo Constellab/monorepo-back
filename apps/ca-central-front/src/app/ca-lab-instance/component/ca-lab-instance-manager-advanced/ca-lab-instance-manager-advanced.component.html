@@ -10,7 +10,7 @@
       <span *ngIf="labStatus.containersStatus.info">{{labStatus.containersStatus.info}}</span>
     </div>
 
-    <fl-key-value *ngIf="labStatus.biota.dbUrl">
+    <fl-key-value *ngIf="labStatus.biota?.dbUrl">
       <fl-key>{{'biota_db_url' | translate}}</fl-key>
       {{labStatus.biota.dbUrl}}
     </fl-key-value>

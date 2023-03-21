@@ -1,10 +1,7 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {FlDialogService} from '../../../fl-dialog/fl-dialog.service';
 import {CmCredentials} from '@monorepo/common-model';
 import {FlAuthLoginResponse, FlAuthService} from '../../service/fl-auth.service';
-import {FlSignupDialogComponent} from '../fl-signup-dialog/fl-signup-dialog.component';
-import {FlPasswordForgottenComponent} from '../fl-password-forgotten/fl-password-forgotten.component';
 import {Validators} from '@angular/forms';
 
 /**
@@ -17,18 +14,13 @@ import {Validators} from '@angular/forms';
 })
 export class FlLoginComponent implements OnInit {
 
-  /**
-   * If true the password reset link and signup link are hidden
-   */
-  @Input() hideFooter: boolean = false;
 
   @Output() loginSuccess: EventEmitter<FlAuthLoginResponse> = new EventEmitter<FlAuthLoginResponse>();
 
   formGp: FormGroup<CmCredentials>;
   isLoading = false;
 
-  constructor(private authService: FlAuthService,
-              private dialogService: FlDialogService) {
+  constructor(private authService: FlAuthService) {
   }
 
   ngOnInit(): void {
@@ -46,10 +38,10 @@ export class FlLoginComponent implements OnInit {
   login(): void {
     if (this.formGp.valid) {
       this.isLoading = true;
-      this.authService.login(this.formGp.getRawValue()).subscribe(
-        response => this.onLoginSuccess(response),
-        () => this.error()
-      );
+      this.authService.login(this.formGp.getRawValue()).subscribe({
+        next: response => this.onLoginSuccess(response),
+        error: () => this.error()
+      });
     } else {
       this.formGp.markAllAsTouched();
     }
@@ -64,14 +56,6 @@ export class FlLoginComponent implements OnInit {
   private error(): void {
     this.isLoading = false;
     this.formGp.get('password').reset();
-  }
-
-  openSignupDialog(): void {
-    this.dialogService.openSmallDialog(FlSignupDialogComponent, {disableClose: true});
-  }
-
-  openPasswordForgotten(): void {
-    this.dialogService.openSmallDialog(FlPasswordForgottenComponent);
   }
 
 }

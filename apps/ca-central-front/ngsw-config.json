@@ -7,7 +7,7 @@
       "installMode": "prefetch",
       "resources": {
         "files": [
-          "/assets/fl-logo/favicon.png",
+          "/assets/fl-logo/constellab-favicon.png",
           "/index.html",
           "/manifest.webmanifest",
           "/*.css",

@@ -212,6 +212,7 @@
   "lab_instance_type_ON_PREMISE_desc": "The lab is hosted on your computer, accessible from your computer only, not backed up and does not include supports.",
   "download_on_premise_config": "Download lab config",
   "lab_on_premise_platform": "Platform",
+  "lab_on_premise_how_to_link": "How to configure and run the On Premises lab ?",
   "lab_instance_request_help": "A new lab request will be sent to the support team. We will contact you as soon as possible. Please answer the following questions.",
   "lab_instance_request_cloud_provider": "Which cloud provider do you need ?",
   "lab_instance_request_cpu_count": "How many CPU cores do you need ?",

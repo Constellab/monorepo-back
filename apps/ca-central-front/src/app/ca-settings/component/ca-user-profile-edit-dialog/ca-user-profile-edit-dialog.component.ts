@@ -45,16 +45,17 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
   buildForm(): FormGroup<Partial<CaUser>> {
     return new FormBuilder().group({
       id: [null],
-      lastname: [{value: null}, Validators.required],
-      firstname: [{value: null}, Validators.required],
+      lastname: [null, Validators.required],
+      firstname: [null, Validators.required],
       activity: [null],
       company: [null],
+      phone: [null],
       biography: [null, Validators.max(500)],
       photo: [null],
     });
   }
 
-  create(formValue: Partial<CaUser>): Observable<CaUser> {
+  create(): Observable<CaUser> {
     return undefined;
   }
 

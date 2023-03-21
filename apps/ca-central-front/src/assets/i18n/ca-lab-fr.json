@@ -212,6 +212,7 @@
   "lab_instance_type_ON_PREMISE_desc": "Le lab est hébergé sur votre ordinateur, accessible uniquement depuis votre ordinateur, non sauvegardé et ne comprend pas de supports.",
   "download_on_premise_config": "Télécharger la configuration",
   "lab_on_premise_platform": "Plateforme",
+  "lab_on_premise_how_to_link": "Comment configurer et démarrer le lab On Premises ?",
   "lab_instance_request_help": "Une demande de nouveau lab sera envoyée à l'équipe de support. Nous vous recontacterons dans les plus brefs délais. Veuillez répondre aux questions suivantes.",
   "lab_instance_request_cloud_provider": "De quel fournisseur de cloud avez-vous besoin ?",
   "lab_instance_request_cpu_count": "De combien de coeurs CPU avez-vous besoin ?",

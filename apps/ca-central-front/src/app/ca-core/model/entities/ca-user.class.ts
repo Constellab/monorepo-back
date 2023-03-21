@@ -13,14 +13,6 @@ export interface CaNewUser {
   repeatPassword: string;
 }
 
-export class CaEditUserDTO {
-  id: string;
-  firstname?: string;
-  lastname?: string;
-  email?: string;
-  photo?: string;
-}
-
 export class CaUser extends CaEntity implements FlUser {
   firstname: string;
 
@@ -44,6 +36,8 @@ export class CaUser extends CaEntity implements FlUser {
   company?: string;
 
   status: CmUserStatus;
+
+  phone?: string;
 
   @ClLuxonDateTimeTransform()
   createdAt: DateTime;

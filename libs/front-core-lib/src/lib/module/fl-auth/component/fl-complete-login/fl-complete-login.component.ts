@@ -24,11 +24,6 @@ export class FlCompleteLoginComponent implements OnInit {
    */
   @Input() redirectionRoute?: string;
 
-  /**
-   * If true the password reset link and signup link are hidden
-   */
-  @Input() hideLoginFooter: boolean = false;
-
   @Output() loginSuccess: EventEmitter<void> = new EventEmitter<void>();
 
   currentView$: Observable<'login' | '2fa'>;

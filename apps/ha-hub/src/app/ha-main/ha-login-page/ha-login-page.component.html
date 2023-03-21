@@ -1,1 +1,11 @@
-<fl-login-page (loginSuccess)="onLoginSuccess()" [hideLoginFooter]="true"></fl-login-page>
+<fl-login-page
+  darkThemeLogo="assets/fl-logo/community-logo-text-white.svg"
+  lightThemeLogo="assets/fl-logo/community-logo-text-black.svg"
+  (loginSuccess)="onLoginSuccess()" class="g-dashboard-background login">
+
+  <div class="footer">
+    <a class="g-primary-text g-text-small g-text-link" [href]="spaceSignupRoute">
+      {{'flAuth.signup_link' | translate}}
+    </a>
+  </div>
+</fl-login-page>

@@ -2,10 +2,12 @@
      fxLayoutAlign.xs="center start">
   <fl-card class="card" fxFlex="32em" fxFlex.xs="100%">
     <fl-card-body>
-      <img src="assets/fl-logo/logo_with_name.png" alt="Gencovery logo" class="logo"/>
+      <img [src]="logo" alt="Gencovery logo" class="logo"/>
 
-      <fl-complete-login [redirectionRoute]="redirectionRoute" (loginSuccess)="onLoginSuccess()" [hideLoginFooter]="hideLoginFooter"
-                         class="login"></fl-complete-login>
+      <fl-complete-login [redirectionRoute]="redirectionRoute" (loginSuccess)="onLoginSuccess()"
+                         class="login">
+        <ng-content></ng-content>
+      </fl-complete-login>
     </fl-card-body>
   </fl-card>
 
