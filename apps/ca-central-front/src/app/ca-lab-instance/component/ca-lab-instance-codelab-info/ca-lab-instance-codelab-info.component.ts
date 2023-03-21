@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {CaLabInstance} from '../../../ca-core/model/entities/lab/ca-lab-instance.class';
-import {CaHubUrlHelper} from '../../../ca-core/utils/ca-hub-url.helper';
+import {CaCommunityHelper} from '../../../ca-core/utils/ca-community.helper';
 import {FlClipboardService, FlSnackBarService} from '@monorepo/front-core-lib';
 
 /**
@@ -17,7 +17,7 @@ export class CaLabInstanceCodelabInfoComponent implements OnInit {
   labInstance: CaLabInstance;
 
   codelabUrl: string;
-  hubHelpUrl = CaHubUrlHelper.getDevEnvironmentUrl();
+  communityHelpUrl = CaCommunityHelper.getDevEnvironmentUrl();
 
   showCodeLabToken = false;
 
