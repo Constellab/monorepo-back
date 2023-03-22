@@ -10,4 +10,15 @@
     border-radius: 5px; // same as mat input
     overflow: hidden;
   }
+
+  // caret color
+  .ͼ3 .cm-cursor {
+    border-left-color: var(--color-foreground);
+  }
+
+  // background color for selected lines
+  .ͼ3 .cm-activeLine, .ͼ3.cm-focused .cm-selectionBackground, // dark theme
+  .ͼ2 .cm-activeLine, .ͼ2.cm-focused .cm-selectionBackground{ // light theme
+    background-color: var(--hover-color);
+  }
 }
