@@ -52,6 +52,7 @@
     "download_resource_title": "Télécharger la ressource",
     "preparing_resource_download": "Préparation du téléchargement",
     "downloading_resource": "Téléchargement de la ressource",
+    "downloading_resource_help_text": "Le téléchargement de la ressource est en cours, vous pouvez suivre l'avancement dans les expériences en cours.",
     "resource_preview": "Preview",
     "resource_next_text_load": "Charger plus de texte",
     "resource_previous_text_load": "Charger le texte précédent",

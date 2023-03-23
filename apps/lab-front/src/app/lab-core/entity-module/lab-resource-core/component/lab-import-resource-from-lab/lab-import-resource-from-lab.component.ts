@@ -42,6 +42,8 @@ export class LabImportResourceFromLabComponent implements OnInit {
       text: { text: 'biox.downloading_resource', translateText: true },
       successLink: (resource: LabResource) => LabRouterService.getResourceDetailRoute(resource.id),
     })
+
+    this.snackBarService.openSuccessMessage({text: 'biox.downloading_resource_help_text', translateText: true}, 5000)
     this.dialogRef.close();
   }
 }
