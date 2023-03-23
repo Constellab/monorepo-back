@@ -76,10 +76,9 @@
           <span>{{'refresh_invitation_expiration' | translate}}</span>
         </button>
 
-        <button mat-menu-item type="button" class="g-warn-text"
-                (click)="openDeleteInvitationDialog(row)">
+        <button mat-menu-item type="button" (click)="openDeleteInvitationDialog(row)">
           <mat-icon color="warn">delete</mat-icon>
-          <span>{{'delete_invitation' | translate}}</span>
+          <span class="g-warn-text">{{'delete_invitation' | translate}}</span>
         </button>
 
       </mat-menu>

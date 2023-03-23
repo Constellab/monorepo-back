@@ -68,9 +68,9 @@
     </button>
 
     <button mat-menu-item type="button" (click)="deleteExperiment()"
-            *ngIf="experiment.isEditable()" class="g-warn-text">
+            *ngIf="experiment.isEditable()">
       <mat-icon color="warn">delete</mat-icon>
-      {{'biox.delete_experiment' | translate}}
+      <span class="g-warn-text">{{'biox.delete_experiment' | translate}}</span>
     </button>
 
   </mat-menu>

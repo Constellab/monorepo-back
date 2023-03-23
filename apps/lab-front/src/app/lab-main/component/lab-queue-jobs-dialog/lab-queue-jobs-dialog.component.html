@@ -11,7 +11,8 @@
     </fl-section-header>
 
     <ng-container *flSectionBody>
-      <lab-running-experiment-table [datasource]="runningExperiments" [columns]="experimentColumns"></lab-running-experiment-table>
+      <lab-running-experiment-table [datasource]="runningExperiments" [columns]="experimentColumns"
+                                    class="content"></lab-running-experiment-table>
     </ng-container>
 
   </fl-async-section>
@@ -25,7 +26,7 @@
     </fl-section-header>
 
     <ng-container *flSectionBody>
-      <mat-list>
+      <mat-list class="content">
         <mat-list-item *ngFor="let job of jobs; let index = index">
           <h3 matLine><a [routerLink]="job.experiment | labDetailRoute" class="g-text-link">{{job.experiment.title}}</a>
           </h3>
