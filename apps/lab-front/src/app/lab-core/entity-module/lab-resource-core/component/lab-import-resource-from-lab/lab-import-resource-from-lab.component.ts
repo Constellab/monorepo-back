@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
-import {FlSnackBarService} from '@monorepo/front-core-lib';
+import {FlPortalActionsService, FlSnackBarService} from '@monorepo/front-core-lib';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {LabShareService} from '../../../../entity-service/lab-share.service';
 import {MatDialogRef} from '@angular/material/dialog';
+import {LabRouterService} from '../../../../service/lab-router.service';
 
 /**
  * Import a resource from another lab with the share link
@@ -17,11 +18,10 @@ export class LabImportResourceFromLabComponent implements OnInit {
 
   formCtrl: FormControl;
 
-  isLoading: boolean;
-
   constructor(private dialogRef: MatDialogRef<LabImportResourceFromLabComponent>,
               private shareService: LabShareService,
-              private snackBarService: FlSnackBarService) {
+              private snackBarService: FlSnackBarService,
+              private actionService: FlPortalActionsService) {
   }
 
   ngOnInit(): void {
@@ -29,22 +29,19 @@ export class LabImportResourceFromLabComponent implements OnInit {
   }
 
   submit(): void {
-    if (!this.isLoading && this.formCtrl.valid) {
+    if (this.formCtrl.valid) {
       this.importResource(this.formCtrl.value);
     }
   }
 
   private importResource(url: string): void {
-    this.isLoading = true;
-    this.shareService.importResourceFromLab(url).subscribe({
-      next: resource => this.importResourceSuccess(resource),
-      error: () => this.isLoading = false
-    });
-  }
 
-  private importResourceSuccess(resource: LabResource): void {
-    this.snackBarService.openSuccessMessage({text: 'biox.resource_imported', translateText: true});
-    this.dialogRef.close(resource);
-    this.isLoading = false;
+    this.actionService.addAction({
+      type: 'import-resource',
+      action: this.shareService.importResourceFromLab(url),
+      text: { text: 'biox.downloading_resource', translateText: true },
+      successLink: (resource: LabResource) => LabRouterService.getResourceDetailRoute(resource.id),
+    })
+    this.dialogRef.close();
   }
 }

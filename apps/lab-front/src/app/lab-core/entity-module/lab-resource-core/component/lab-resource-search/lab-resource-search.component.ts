@@ -73,8 +73,7 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
               private actionsService: FlPortalActionsService,
               private fileResourceService: LabFileResourceService,
               private resourceService: LabResourceService,
-              private themeService: FlThemeService,
-              private routerService: LabRouterService) {
+              private themeService: FlThemeService) {
   }
 
   ngOnInit(): void {
@@ -220,15 +219,7 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
   }
 
   openImportFromUrlDialog(): void {
-    this.dialogService.openSmallDialog(LabImportResourceFromLabComponent).afterClosed().subscribe({
-      next: result => this.onImportFromUrlClosed(result)
-    });
-  }
-
-  private onImportFromUrlClosed(result: LabResource): void {
-    if (result) {
-      this.routerService.navigateToResourceDetail(result.id);
-    }
+    this.dialogService.openSmallDialog(LabImportResourceFromLabComponent);
   }
 
   ngOnDestroy(): void {
