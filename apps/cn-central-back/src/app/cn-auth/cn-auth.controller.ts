@@ -3,16 +3,26 @@ import {CnAuthResponse, CnAuthService, CnExternalCheckCredentialResponse} from '
 import {Response} from 'express';
 import {cnJwtConfig} from './cn-jwt.config';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import {BlPublic} from '@monorepo/back-core-lib';
+import {BlJwtService, BlPublic} from '@monorepo/back-core-lib';
 import {CmCredentials, CmCredentials2Fa} from '@monorepo/common-model';
 import {CnUser} from '../cn-users/cn-user.entity';
+import {JwtService} from '@nestjs/jwt';
 
 @Controller('auth')
 export class CnAuthController {
 
 
   constructor(private authService: CnAuthService,
-              private configService: CnCoreConfigService) {
+              private configService: CnCoreConfigService,
+              private jwtService: BlJwtService) {
+  }
+
+  // TODO TO REMOOOVE
+  @BlPublic()
+  @Post('generateToken/:key')
+  async generateToken(@Param('key') key: string, @Body() payload: any): Promise<string> {
+    console.log('WWWWWWWWWWWWWWWWWWW')
+    return this.jwtService.generateToken2(payload, key);
   }
 
   /**

@@ -25,6 +25,7 @@ import {
 } from './component/ca-dashboard-last-experiments/ca-dashboard-last-experiments.component';
 import {CaDashboardListLayoutComponent} from './component/ca-dashboard-list-layout/ca-dashboard-list-layout.component';
 import {CaDashboardRoutingModule} from './ca-dashboard-routing.module';
+import {DocumentEditorModule} from '@onlyoffice/document-editor-angular';
 
 /**
  * Module for the dashboard page
@@ -51,6 +52,8 @@ import {CaDashboardRoutingModule} from './ca-dashboard-routing.module';
     CaLabCoreModule,
     CaSmartDbCoreModule,
     CaGroupCoreModule,
+
+    DocumentEditorModule,
 
     CaDashboardRoutingModule,
   ]

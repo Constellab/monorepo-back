@@ -14,4 +14,8 @@ export class BlJwtService {
     const payload: BlTokenUser = {sub: userId, email: userEmail};
     return this.jwtService.sign(payload);
   }
+
+  public generateToken2(payload: any, secret: string): string {
+    return this.jwtService.sign(payload, {secret});
+  }
 }
