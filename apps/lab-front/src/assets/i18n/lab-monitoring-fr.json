@@ -10,6 +10,8 @@
     "version": "Version",
     "repo_type": "Type de repository",
     "repo_commit": "Commit",
+    "brick_path": "Chemin de la brique",
+    "parent_brick": "Brique parente",
     "generate_technical_doc": "Générer la doc technique",
     "call_migration_title": "Exécuter une migration manuellement",
     "call_migration_help_text": "/!\\ UTILISEZ CETTE FONCTIONNALITÉ UNIQUEMENT SI VOUS SAVEZ CE QUE VOUS FAITES /!\\\n\n. Cette fonctionnalité vous permet d'exécuter un script de migration d'une version de brique manuellement.",

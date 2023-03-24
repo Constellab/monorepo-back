@@ -2,6 +2,8 @@ import {LabEntity} from '../global/lab-entity.entity';
 import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {CmVersion, CmVersionTransform} from '@monorepo/common-model';
+import {DateTime} from 'luxon';
+import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 
 export type LabBrickMessageStatus = 'INFO' | 'ERROR'  | 'CRITICAL'| 'WARNING'
 
@@ -51,6 +53,12 @@ export class LabBrickEntity extends LabEntity {
 
   @Expose({name: 'repo_commit'})
   repoCommit?: string
+
+  @Expose({name: 'parent_name'})
+  parentName ?: string;
+
+  @Expose({name: 'brick_path'})
+  brickPath: string;
 
   hasMessages(): boolean {
     return this.countMessages() > 0;

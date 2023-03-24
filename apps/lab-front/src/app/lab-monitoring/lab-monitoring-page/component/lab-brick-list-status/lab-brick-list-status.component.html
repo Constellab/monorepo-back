@@ -10,6 +10,7 @@
           <mat-panel-title>
             <fl-status-chip mode="iconText" [status]="brick.status" class="status"></fl-status-chip>
             {{brick.name}}
+            <span *ngIf="brick.version" class="g-text-small g-text-light version">{{brick.version}}</span>
           </mat-panel-title>
           <mat-panel-description>{{'monitoring.messages_count' | translate: {count: brick.countMessages()} }}</mat-panel-description>
         </mat-expansion-panel-header>

@@ -13,6 +13,16 @@
   {{brick.repoCommit}}
 </fl-key-value>
 
+<fl-key-value *ngIf="brick.brickPath">
+  <fl-key>{{'monitoring.brick_path' | translate}}</fl-key>
+  {{brick.brickPath}}
+</fl-key-value>
+
+<fl-key-value *ngIf="brick.parentName">
+  <fl-key>{{'monitoring.parent_brick' | translate}}</fl-key>
+  {{brick.parentName}}
+</fl-key-value>
+
 <div class="action-buttons">
 
   <button mat-stroked-button color="primary" type="button" (click)="generateTechnicalDoc()"

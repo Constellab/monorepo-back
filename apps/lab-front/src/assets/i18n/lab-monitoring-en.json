@@ -10,6 +10,8 @@
     "version": "Version",
     "repo_type": "Repository type",
     "repo_commit": "Commit",
+    "brick_path": "Brick path",
+    "parent_brick": "Parent brick",
     "generate_technical_doc": "Generate technical doc",
     "call_migration_title": "Call migration manually",
     "call_migration_help_text": "/!\\ USE THIS FUNCTIONALITY ONLY IF YOU KNOW WHAT YOU ARE DOING /!\\\n\n. This let you call a migration script manually of a specific brick version.",
