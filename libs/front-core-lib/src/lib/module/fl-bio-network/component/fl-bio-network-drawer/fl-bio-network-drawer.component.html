@@ -1,7 +1,8 @@
 <div class="container"
      flMouseHover (flMouseLeave)="closeDrawer()" [flMouseLeaveDelay]="300"
      [flExcludeElement]="cdkContainerClass" [flDisabled]="pinnedDrawer" fxLayout="row">
-  <mat-tab-group [(selectedIndex)]="tabIndex" animationDuration="0" class="tab-group g-mat-tab-dense">
+  <mat-tab-group [(selectedIndex)]="tabIndex" animationDuration="0" class="tab-group g-mat-tab-dense"
+                 mat-stretch-tabs="false">
     <mat-tab [label]="'flBioNetwork.config' | translate">
       <fl-bio-network-config class="tab-body"></fl-bio-network-config>
     </mat-tab>

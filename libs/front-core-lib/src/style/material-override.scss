@@ -3,10 +3,14 @@
  */
 @use '@angular/material' as mat;
 
-// Reduce the default size of the icon button
-@include mat.icon-button-density(-2);
-// Reduce the default height of form fields
-@include mat.private-form-field-density(-2);
+body {
+  // Reduce the default size of the icon button
+  @include mat.icon-button-density(-2);
+  // Reduce the default height of form fields
+  @include mat.private-form-field-density(-2);
+  // reduce the default height of the checkbox
+  @include mat.checkbox-density(-3);
+}
 
 //////////////////////////////////// FORM FIELD //////////////////////////////////
 
@@ -42,7 +46,6 @@
     padding-top: 4px;
   }
 }
-
 
 @mixin g-form-field-compact-width {
   .mat-mdc-form-field-infix {
@@ -147,7 +150,7 @@
 
 
 .g-button-icon-small {
-  &.mdc-icon-button, & .mdc-icon-button {
+  &.mdc-icon-button.mat-mdc-button-base, & .mdc-icon-button.mat-mdc-button-base {
     width: 30px;
     height: 30px;
     padding: 2px;
@@ -162,9 +165,10 @@
 }
 
 .g-button-icon-tiny {
-  &.mdc-icon-button, & .mdc-icon-button {
+  &.mdc-icon-button.mat-mdc-button-base, & .mdc-icon-button.mat-mdc-button-base {
     width: 20px;
     height: 20px;
+    padding: 0;
     line-height: 20px;
 
     mat-icon {
@@ -195,10 +199,9 @@
 
 /***************************** Table *****************************/
 
-// force all the child mat table to take the color of the main background
-// useful for search page
-.g-mat-table-main-background .mat-mdc-table {
-  background-color: var(--main-background);
+// set the border to the table because last line does not have it
+mat-table.mat-mdc-table{
+  border-bottom: 1px solid var(--hover-color);
 }
 
 .mat-mdc-header-cell {
@@ -208,8 +211,8 @@
 
 // override the space between 2 columns
 mat-cell.mdc-data-table__cell, mat-header-cell.mdc-data-table__header-cell {
-  padding-right: 0 ;
-  padding-left: 5px ;
+  padding-right: 0;
+  padding-left: 5px;
 }
 
 // set font size and define a right padding to separate cells
@@ -217,6 +220,12 @@ mat-cell.mdc-data-table__cell, mat-header-cell.mdc-data-table__header-cell {
   font-size: 12px;
   box-sizing: border-box;
   max-width: 100%;
+}
+
+// force all the child mat table to take the color of the main background
+// useful for search page
+.g-mat-table-main-background .mat-mdc-table {
+  background-color: var(--main-background);
 }
 
 // to be place on mat-row to make the line selectable
@@ -306,6 +315,10 @@ mat-tree {
 }
 
 /************************************* MAT TAB ***********************************/
+
+.mat-mdc-tab-header{
+  border-bottom: 1px solid var(--hover-color);
+}
 
 // Set all the mat-tab smaller
 .g-mat-tab-dense .mat-tab-label {
@@ -411,3 +424,8 @@ mat-tree {
   --mdc-snackbar-container-color: var(--warn-color);
 }
 
+/************************************* MAT SLIDER ***********************************/
+mat-slider.g-slider-full-width{
+  // reduce size because of margin of the slider
+  width: calc(100% - 18px);
+}

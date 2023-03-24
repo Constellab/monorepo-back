@@ -53,8 +53,6 @@
   $color-warning: orange;
   $color-error: mat.get-color-from-palette($warn);
 
-  //@include mat.all-legacy-component-typographies();
-  @include mat.legacy-core();
 
   @include mat.core-theme($mat-theme);
   // apply the material theme

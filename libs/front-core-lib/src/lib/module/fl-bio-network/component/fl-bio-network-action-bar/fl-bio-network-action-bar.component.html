@@ -41,7 +41,7 @@
     </mat-checkbox>
 
     <div fxLayout="row wrap" fxLayoutAlign="start center"
-         class="g-full g-form-field-compact g-form-field-no-hint">
+         class="g-full g-form-field-compact">
 
       <mat-form-field class="g-search-field input">
         <mat-label>{{'flBioNetwork.particle_size' | translate}}</mat-label>
@@ -74,15 +74,13 @@
     </div>
 
     <!--   Slider to hide link     -->
-    <div class="g-full">
+    <div class="g-slider-full-width">
       <p class="g-text-small g-text-light">{{'flBioNetwork.flux_threshold' | translate}} : {{fluxThreshold}}</p>
-      <mat-slider discrete class="slider" color="primary"
+      <mat-slider discrete class="slider g-slider-full-width" color="primary"
                   [max]="maxFluxValue"
                   [min]="0"
-                  [step]="1"
-                  tickInterval="auto"
-                  [(ngModel)]="fluxThreshold">
-        <input matSliderThumb (change)="fluxThresholdChange($event)">
+                  [step]="1">
+        <input matSliderThumb (valueChange)="fluxThresholdChange($event)" [(ngModel)]="fluxThreshold">
       </mat-slider>
     </div>
   </div>
