@@ -110,12 +110,19 @@ export class CaLabManagerConfig {
 
 
 ////////////////////////////// BACKUP //////////////////////////
+
+export type CaExternalLabBackupStatus = 'IN_PROGRESS' | 'DONE' | 'ERROR';
+
+export interface CaExternalLabBackupStatusObject {
+  status: CaExternalLabBackupStatus
+  message: string;
+}
+
 export class CaExternalLabBackup {
-  status: 'IN_PROGRESS' | 'DONE' | 'ERROR';
+  status: CaExternalLabBackupStatus;
 
   @Type(() => CaExternalLabBackupStorage)
   storages: CaExternalLabBackupStorage[];
-  message?: string;
 }
 
 export class CaExternalLabBackupStorage {
@@ -128,8 +135,10 @@ export class CaExternalLabBackupStorage {
 
   @ClLuxonDateTimeTransform()
   endUploadAt?: DateTime;
-  status: 'IN_PROGRESS' | 'DONE' | 'ERROR';
-  message?: string;
+  status: CaExternalLabBackupStatus;
+
+  dataStatus: CaExternalLabBackupStatusObject;
+  dbStatus: CaExternalLabBackupStatusObject;
 }
 
 export class CaExternalLabBackupHistory {

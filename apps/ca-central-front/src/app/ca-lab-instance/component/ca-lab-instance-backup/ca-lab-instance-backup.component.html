@@ -3,23 +3,23 @@
   <div class="container">
     <div>
       <fl-key-value>
-        <fl-key>{{'lab_current_backup_status' | translate}}</fl-key>
+        <fl-key>{{'lab_backup_status' | translate}}</fl-key>
         {{subBackup.status}}
       </fl-key-value>
 
       <fl-key-value>
-        <fl-key>{{'lab_current_backup_started_at' | translate}}</fl-key>
+        <fl-key>{{'lab_backup_started_at' | translate}}</fl-key>
         {{subBackup.startUploadAt | flDate: 'DATETIME_MED'}}
       </fl-key-value>
 
       <ng-container *ngIf="subBackup.endUploadAt">
         <fl-key-value>
-          <fl-key>{{'lab_current_backup_finished_at' | translate}}</fl-key>
+          <fl-key>{{'lab_backup_finished_at' | translate}}</fl-key>
           {{subBackup.endUploadAt | flDate: 'DATETIME_MED'}}
         </fl-key-value>
 
         <fl-key-value>
-          <fl-key>{{'lab_current_backup_duration' | translate}}</fl-key>
+          <fl-key>{{'lab_backup_duration' | translate}}</fl-key>
           {{getDuration(subBackup) | flDuration}}
         </fl-key-value>
       </ng-container>
@@ -42,8 +42,14 @@
     </div>
   </div>
 
-  <div class="message-section">
-    <p><strong>{{'lab_current_backup_progress' | translate}}</strong></p>
-    <div class="message">{{subBackup.message}}</div>
-  </div>
+    <div *ngIf="subBackup.dbStatus" class="message-section">
+      <p><strong>{{'lab_backup_database' | translate}}</strong></p>
+      <div class="message">{{subBackup.dbStatus.status}} : {{subBackup.dbStatus.message}}</div>
+    </div>
+
+    <div *ngIf="subBackup.dataStatus" class="message-section">
+      <p><strong>{{'lab_backup_data' | translate}}</strong></p>
+      <div class="message">{{subBackup.dataStatus.status}} : {{subBackup.dataStatus.message}}</div>
+    </div>
+
 </div>
