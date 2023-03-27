@@ -20,19 +20,21 @@
   <ng-container *flSectionBody>
     <mat-list class="g-mat-list-dense">
       <mat-list-item *ngFor="let brickVersion of labConfig.brickVersions">
-        <div matLine>{{brickVersion.name}} : {{brickVersion.version}}</div>
+        <div matListItemTitle>{{brickVersion.name}} : {{brickVersion.version}}</div>
 
-        <!-- Info button -->
-        <button mat-icon-button type="button" class="g-button-icon-small"
-                (click)="openBrickVersionDetailDialog(brickVersion)"
-                [matTooltip]="'brick_version_view_detail' | translate">
-          <mat-icon>info</mat-icon>
-        </button>
+        <div matListItemMeta class="g-te">
+          <!-- Info button -->
+          <button mat-icon-button type="button" class="g-button-icon-small button"
+                  (click)="openBrickVersionDetailDialog(brickVersion)"
+                  [matTooltip]="'brick_version_view_detail' | translate">
+            <mat-icon>info</mat-icon>
+          </button>
 
-        <button mat-icon-button type="button" class="g-button-icon-small" (click)="openBrickVersionForm(brickVersion)"
-                [matTooltip]="'lab_instance_update_brick' | translate">
-          <mat-icon>edit</mat-icon>
-        </button>
+          <button mat-icon-button type="button" class="g-button-icon-small button" (click)="openBrickVersionForm(brickVersion)"
+                  [matTooltip]="'lab_instance_update_brick' | translate">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
       </mat-list-item>
     </mat-list>
 
