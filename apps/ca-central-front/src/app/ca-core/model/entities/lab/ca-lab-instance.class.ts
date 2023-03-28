@@ -13,13 +13,18 @@ import {CaSpace} from '../space/ca-space.class';
 import {CaLabInstanceUserRole} from './ca-lab-instance-user.class';
 import {CaCloudProviderRegion} from '../ca-cloud-provider.class';
 
-export type CaLabInstanceStatus = 'LAB_RUNNING' | 'SERVER_STOPPED' | 'SERVER_STARTING' | 'SERVER_STOPPING' | 'SERVER_RUNNING';
+export type CaLabInstanceStatus =
+  'LAB_RUNNING'
+  | 'SERVER_STOPPED'
+  | 'SERVER_STARTING'
+  | 'SERVER_STOPPING'
+  | 'SERVER_RUNNING';
 export type CaLabInstanceBillingMode = 'HOURLY' | 'MONTHLY';
 export type CaLabInstanceVolumeType = 'CLASSIC' | 'HIGH_SPEED';
 export type CaLabInstanceType = 'CLOUD' | 'ON_PREMISE';
 export type CaLabOnPromisePlatform = 'WINDOWS' | 'LINUX' | 'MAC';
 
-export const CaLabSupportedDomains = ['gencovery.io', 'gencovery.app'];
+export const CaLabSupportedDomains = ['gencovery.io', 'constellab.app'];
 
 export const caLabInstanceStatusDict: FlStatusDict<CaLabInstanceStatus> = {
   LAB_RUNNING: FlStatusHelper.getRunningStatus('LAB_RUNNING'),

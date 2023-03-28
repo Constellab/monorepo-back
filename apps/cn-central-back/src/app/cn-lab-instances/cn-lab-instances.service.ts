@@ -16,7 +16,7 @@ import {BlBadRequestException, BlSearchBuilder, BlSearchParams} from '@monorepo/
 @Injectable()
 export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInstance, CnLabInstanceStatus> {
 
-  private static readonly SUPPORTED_MAIN_DOMAINS = ['gencovery.io', 'gencovery.app'];
+  private static readonly SUPPORTED_MAIN_DOMAINS = ['gencovery.io', 'constellab.app'];
 
   constructor(@InjectRepository(CnLabInstance) private repository: Repository<CnLabInstance>,
               @InjectRepository(CnLabInstanceStatusHistory) statusHistoRepo: Repository<CnLabInstanceStatusHistory>,

@@ -1,8 +1,8 @@
 # Build step
-FROM node:14-alpine as buildContainer
+FROM node:18-alpine as buildContainer
 
-# Ebnvironement profile for the build 'dev', 'pre-prod' or 'prod'
-ARG ENVIRONMENT_PROFILE=${ENVIRONMENT_PROFILE}
+# Environment profile for the build 'dev', 'pre-prod' or 'prod'
+ARG ENVIRONMENT_PROFILE=pre-prod
 WORKDIR /app
 
 # Copy package.json

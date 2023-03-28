@@ -21,6 +21,7 @@
     "strictFunctionTypes": false,
     "suppressImplicitAnyIndexErrors": true,
     "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
     "paths": {
       "@monorepo/back-core-lib": ["libs/back-core-lib/src/index.ts"],
       "@monorepo/common-model": ["libs/common-model/src/index.ts"],
