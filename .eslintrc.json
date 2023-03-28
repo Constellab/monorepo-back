@@ -66,16 +66,9 @@
           2,
           {
             "SwitchCase": 1,
-            "FunctionDeclaration": {
-              "parameters": "first",
-              // or an integer
-              "body": 1
-            },
-            "FunctionExpression": {
-              "parameters": "first",
-              // or an integer
-              "body": 1
-            }
+            // use to ignore error for properties (apply because decorators where not working)
+            // https://stackoverflow.com/questions/70642350/eslint-indent-rule-indents-decorated-members
+            "ignoredNodes": ["PropertyDefinition"]
           }
         ],
         "max-len": [
