@@ -6,13 +6,11 @@ import {map} from 'rxjs/operators';
 import {CaCurrentSpaceService} from '../../../ca-core/service-api/ca-current-space.service';
 import {CaRouterService} from '../../../ca-core/service/ca-router.service';
 import {FlDialogService} from '@monorepo/front-core-lib';
-import {environment} from '../../../../environments/ca-environment';
 import {
   CaSpaceFormDialogComponent,
   CaSpaceFormDialogInput
 } from '../../../ca-core/entity-module/ca-space-core/component/ca-space-form-dialog/ca-space-form-dialog.component';
-import {CaNotificationNumber} from '../../../ca-core/model/entities/ca-notification.class';
-import {CaNotificationsService} from '../../../ca-core/service-api/ca-notifications.service';
+import {CaEnvironmentHelper} from '../../../ca-core/utils/ca-environment.helper';
 
 /**
  * Portal to list the space of the user with possibility to switch between them
@@ -42,7 +40,7 @@ export class CaMySpacesPortalComponent implements OnInit {
     this.otherSpaces = this.spaceService.getMySpaces().pipe(
       combineLatestWith(this.currentSpaceService.getCurrentSpace$()),
       map(([spaces, currentSpace]) => {
-        return spaces.filter(space => space.id !== currentSpace.id)
+        return spaces.filter(space => space.id !== currentSpace.id);
       })
     );
   }
@@ -59,7 +57,7 @@ export class CaMySpacesPortalComponent implements OnInit {
 
   private onCreateSpaceClosed(space?: CaSpace): void {
     if (space) {
-      if (!environment.production) {
+      if (!CaEnvironmentHelper.isProduction()) {
         this.currentSpaceService.setCurrentSpaceDomainDev(space.domain);
       }
       window.location.href = CaRouterService.getSpaceDomainUrl(space.domain, CaRouterService.getAppRoute());

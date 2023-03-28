@@ -6,40 +6,43 @@ variables:
   DOCKER_DRIVER: overlay
   GIT_DEPTH: 0
   LAB_FRONT_IMAGE: lab-front
-
+  CA_IMAGE: central-front
 
 stages:
   - build-lab
-  - deploy-lab
+  - build-central
 
 # Build lab front
 build-lab:
-  image: node:18.3.17-alpine
-  stage: build-lab
-  script:
-    - npm ci
-    - npm run lab-front:build-prod
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - dist/apps/lab-front/
-  only:
-    - tags
-
-# Push lab-front image to the docker registry using Dockerfile of the lab-front
-deploy-lab:
-  stage: deploy-lab
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  stage: build-lab
   script:
-    # Read the version git tag
-    - export VERSION=$CI_COMMIT_TAG
-    # Build the docker image from Dockerfile with a latest tag and a tag for the commit
-    - docker build --cache-from $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:latest --tag $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:$VERSION --tag $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:latest . -f apps/lab-front/Dockerfile
+    # retrieve version number from tag ex : ca_1.0.0
+    - export VERSION=$(echo $CI_COMMIT_TAG | cut -d'_' -f2)
+    # Build the docker image from Dockerfile with the latest tag and a tag for the version
+    - docker build --tag $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:$VERSION --tag $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:latest -f apps/lab-front/Dockerfile .
     # Push both image in the registry
     - docker push $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:$VERSION
     - docker push $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:latest
   only:
-    - tags
+    - /lab_.*/
+
+# Build central front
+build-central:
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  stage: build-central
+  script:
+    # retrieve version number from tag ex : ca_1.0.0
+    - export VERSION=$(echo $CI_COMMIT_TAG | cut -d'_' -f2)
+    # Build the docker image from Dockerfile with the latest tag and a tag for the version
+    - docker build --tag $CI_REGISTRY_IMAGE/$CA_IMAGE:$VERSION --tag $CI_REGISTRY_IMAGE/$CA_IMAGE:latest -f apps/ca-central-front/Dockerfile .
+    # Push both image in the registry
+    - docker push $CI_REGISTRY_IMAGE/CA_IMAGE:$VERSION
+    - docker push $CI_REGISTRY_IMAGE/CA_IMAGE:latest
+  only:
+    - /ca_.*/
+
 
 

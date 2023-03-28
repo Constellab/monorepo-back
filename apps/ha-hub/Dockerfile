@@ -8,8 +8,6 @@ WORKDIR /app
 # Copy package.json
 COPY /package.json /package-lock.json ./
 
-#COPY ./nginx.conf /app/
-
 # Install dependencies
 RUN npm ci
 

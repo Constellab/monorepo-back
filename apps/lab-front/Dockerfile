@@ -1,8 +1,23 @@
+# Build step
+FROM node:18-alpine3.17 as buildContainer
+
+WORKDIR /app
+
+# Copy package.json
+COPY /package.json /package-lock.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy the workspace and build the app
+COPY / .
+
+RUN npm run lab-front:build-prod
 
 # Dockerfile used by the gitlab ci
 FROM nginx:alpine
 # Copy the dist lab-front
-COPY dist/apps/lab-front /usr/share/nginx/html
+COPY --from=buildContainer /app/dist/apps/lab-front /usr/share/nginx/html
 
 # Copy the default nginx.conf
 COPY apps/lab-front/nginx.conf /etc/nginx/conf.d/default.conf
@@ -14,9 +29,9 @@ COPY apps/lab-front/entrypoint.sh /entrypoint.sh
 # does not work with port but expose
 EXPOSE 81
 
-RUN sed -i -e 's/\r$//' /entrypoint.sh
-RUN sed -i -e 's/\r$//' /etc/nginx/conf.d/default.conf
-RUN chmod +x /entrypoint.sh
+RUN sed -i -e 's/\r$//' /entrypoint.sh && \
+    sed -i -e 's/\r$//' /etc/nginx/conf.d/default.conf && \
+    chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["nginx","-g","daemon off;"]
 

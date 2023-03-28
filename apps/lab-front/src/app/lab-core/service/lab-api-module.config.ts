@@ -2,7 +2,7 @@ import {FlApiServiceConfig} from '@monorepo/front-core-lib';
 import {ClCoreJsonConvert, ClDeserializationRef, ClPageI} from '@monorepo/core-lib';
 import {Injectable} from '@angular/core';
 import {LabEnvStore} from './lab-env.store';
-import {LabEnvironment} from '../model/global/lab-environment.class';
+import {LabAppEnvironment} from '../model/global/lab-environment.class';
 import {LabEnvironmentHelper} from '../utils/lab-environment.helper';
 
 /**
@@ -53,7 +53,7 @@ export class LabApiServiceConfig extends FlApiServiceConfig {
   }
 
   getApiUrl(): string {
-    const env: LabEnvironment = this.labEnvStore.getLabEnvironment();
+    const env: LabAppEnvironment = this.labEnvStore.getLabEnvironment();
     if (env === 'dev') {
       return LabEnvironmentHelper.getDevCoreApiUrl();
     }

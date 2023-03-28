@@ -11,7 +11,6 @@ import {FlBioNetworkOptions} from '../state/fl-bio-network-options.state';
 import {Observable} from 'rxjs';
 import {FlBioNetworkObjectColorFunction, FlBioNetworkObjectRenderer} from './fl-bio-network-object.renderer';
 import {FlBioNetworkGraphRenderer} from './fl-bio-network-main.renderer';
-import {FlBioNetworkGraphObject} from '../model/fl-bio-network-graph.class';
 import {FlBioNetworkMetaboliteLevel} from '../model/fl-bio-network.class';
 import {FlBioNetworkSelectionEvent, FlBioNetworkSelectionMode} from '../model/fl-bio-network-selection.class';
 import {FlThemeDetail} from '../../fl-theme/model/fl-theme-detail.class';
@@ -77,7 +76,7 @@ export class FlBioNetworkNodesRenderer extends FlBioNetworkObjectRenderer {
                           selectionMode: FlBioNetworkSelectionMode,
                           selectedNode: FlBioNetworkNode | null,
                           showRelatedCofactor: boolean): void {
-    let visibilityNode: (object: FlBioNetworkGraphObject) => boolean;
+    let visibilityNode: (object: FlBioNetworkNode) => boolean;
 
     const levelVisibility = this.getLevelVisibilityFunction(visibleLevels, selectionMode);
 

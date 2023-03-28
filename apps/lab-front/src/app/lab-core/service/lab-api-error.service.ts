@@ -16,7 +16,7 @@ import {LabErrorDetailComponent} from '../../lab-main/component/lab-error-detail
 import {Router} from '@angular/router';
 import {labConstLoginRoute} from '../utils/lab-base-route';
 import {LabEnvStore} from './lab-env.store';
-import {LabEnvironment} from '../model/global/lab-environment.class';
+import {LabAppEnvironment} from '../model/global/lab-environment.class';
 import {PlatformLocation} from '@angular/common';
 
 @Injectable()
@@ -87,7 +87,7 @@ export class LabApiErrorService extends FlApiErrorService {
    * @private
    */
   private logoutUser(): void {
-    const env: LabEnvironment = this.labEnvManager.getLabEnvironment();
+    const env: LabAppEnvironment = this.labEnvManager.getLabEnvironment();
 
     if (env === 'dev') {
       //switch to prod environment

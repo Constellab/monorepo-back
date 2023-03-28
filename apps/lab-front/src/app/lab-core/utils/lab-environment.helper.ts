@@ -1,6 +1,6 @@
 import {environment} from '../../../environments/lab-environment';
-import {Environment} from '../../../environments/lab-environment.class';
-import {LabEnvironment} from '../model/global/lab-environment.class';
+import {LabEnvironment} from '../../../environments/lab-environment.class';
+import {LabAppEnvironment} from '../model/global/lab-environment.class';
 
 /**
  * Static class to access environment
@@ -57,7 +57,7 @@ export class LabEnvironmentHelper {
     return `${LabEnvironmentHelper.getSpaceFrontAppUrl()}/labs/${labId}/config`;
   }
 
-  public static getEnv(): Environment {
+  public static getEnv(): LabEnvironment {
     return environment;
   }
 
@@ -69,7 +69,7 @@ export class LabEnvironmentHelper {
    * Return the lab environment of an URL
    * @param url
    */
-  public static getLabEnvFromUrl(url: string): LabEnvironment | null {
+  public static getLabEnvFromUrl(url: string): LabAppEnvironment | null {
     if (url.startsWith(LabEnvironmentHelper.getBaseApiUrl())) {
       return 'prod';
     } else if (url.startsWith(LabEnvironmentHelper.getDevBaseApiUrl())) {

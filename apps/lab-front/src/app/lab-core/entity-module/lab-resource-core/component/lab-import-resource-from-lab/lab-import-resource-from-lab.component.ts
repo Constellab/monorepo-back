@@ -39,11 +39,11 @@ export class LabImportResourceFromLabComponent implements OnInit {
     this.actionService.addAction({
       type: 'import-resource',
       action: this.shareService.importResourceFromLab(url),
-      text: { text: 'biox.downloading_resource', translateText: true },
+      text: {text: 'biox.downloading_resource', translateText: true},
       successLink: (resource: LabResource) => LabRouterService.getResourceDetailRoute(resource.id),
-    })
+    }, false);
 
-    this.snackBarService.openSuccessMessage({text: 'biox.downloading_resource_help_text', translateText: true}, 5000)
+    this.snackBarService.openSuccessMessage({text: 'biox.downloading_resource_help_text', translateText: true}, 5000);
     this.dialogRef.close();
   }
 }

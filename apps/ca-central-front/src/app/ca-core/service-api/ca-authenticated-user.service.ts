@@ -15,7 +15,7 @@ import {CaCurrentSpaceService} from './ca-current-space.service';
 import {CaSpaceInfoDto} from '../model/entities/space/ca-space.class';
 import {CaSpaceService} from './ca-space.service';
 import {DOCUMENT} from '@angular/common';
-import {environment} from '../../../environments/ca-environment';
+import {CaEnvironmentHelper} from '../utils/ca-environment.helper';
 
 /**
  * Service to handle the current authenticated user
@@ -78,13 +78,13 @@ export class CaAuthenticatedUserService implements FlCleanableService {
 
   private storeCurrentAuthenticatedInfo(spaceInfo: CaSpaceInfoDto): CaSpaceInfoDto {
 
-    if (environment.production) {
+    if (CaEnvironmentHelper.isProduction()) {
       // if the website space domain does not correspond to the user space domain
       // redirect to the website space domain
       const url = this.document.defaultView.location.href;
       const domain = ClStringHelper.getLowestDomainFromUrl(url);
       if (domain !== spaceInfo.space.domain) {
-        this.document.defaultView.location.href = `https://${spaceInfo.space.domain}.${environment.frontDomain}`;
+        this.document.defaultView.location.href = `https://${spaceInfo.space.domain}.${CaEnvironmentHelper.getFrontDomain()}`;
         // throw an error so the guard does not navigate to the page
         throw new Error('Redirect to the space domain');
       }
@@ -144,7 +144,7 @@ export class CaAuthenticatedUserService implements FlCleanableService {
 
   public editUser(newUserInfo: Partial<CaUser>, newUserPhoto: File): Observable<CaUser> {
 
-    if(newUserPhoto){
+    if (newUserPhoto) {
       const formData = new FormData();
       formData.append('photo', newUserPhoto);
       return this.apiService.put(this.currentUserRoute + '/photo/' + newUserInfo.id, formData).pipe(
@@ -152,7 +152,7 @@ export class CaAuthenticatedUserService implements FlCleanableService {
         map((res) => res)
       );
     } else {
-      return this.apiService.put(this.currentUserRoute + '/edit' , newUserInfo, CaUser);
+      return this.apiService.put(this.currentUserRoute + '/edit', newUserInfo, CaUser);
     }
   }
 

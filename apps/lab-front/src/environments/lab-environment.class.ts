@@ -1,7 +1,7 @@
 /**
  * Interface for environment,
  */
-export interface Environment {
+export interface LabEnvironment {
   // true if the app is compiled in prod mode
   production: boolean;
 

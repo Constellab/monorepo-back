@@ -78,7 +78,7 @@ export class LabProgressBarMessages extends LabProgressBar {
 
 export class LabProgressMessageDatasource extends FlArrayObs<LabProgressMessage> {
   protected equals(a: LabProgressMessage, b: LabProgressMessage): boolean {
-    return a.datetime === b.datetime && a.text === b.text && a.type.value === b.type.value;
+    return a.datetime.equals(b.datetime) && a.text === b.text && a.type.value === b.type.value;
   }
 
 

@@ -10,7 +10,7 @@ import {
   FlCookieService
 } from '@monorepo/front-core-lib';
 import {CmCredentials, CmCredentials2Fa} from '@monorepo/common-model';
-import {environment} from '../../../environments/ca-environment';
+import {CaEnvironmentHelper} from '../../ca-core/utils/ca-environment.helper';
 
 /**
  * Service to handle login and logout and store cookie to check if user is connected
@@ -45,13 +45,13 @@ export class CaAuthService extends FlAuthService {
    */
   public logout(): Observable<void> {
     return this.apiService.post(this.route + '/logout', null).pipe(
-      tap(() => this.clearAuthExpirationCookie(environment.frontDomain)),
+      tap(() => this.clearAuthExpirationCookie(CaEnvironmentHelper.getFrontDomain())),
       tap(() => this.clearServices())
     );
   }
 
   public afterLogin(expiresIn: number): void {
-    this.storeAuthExpirationCookie(expiresIn, environment.frontDomain);
+    this.storeAuthExpirationCookie(expiresIn, CaEnvironmentHelper.getFrontDomain());
   }
 
 

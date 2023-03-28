@@ -3,10 +3,10 @@ import {CaTechnicalReportProcess} from '../../../../../ca-core/model/entities/pr
 import {TdTypeEntity, TdTypingName} from '@monorepo/technical-doc';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {HttpClient} from '@angular/common/http';
-import {environment} from '../../../../../../environments/ca-environment';
 import {
   CaExperimentTechnicalReportProcessDocDialogComponent
 } from '../ca-experiment-technical-report-process-doc-dialog/ca-experiment-technical-report-process-doc-dialog.component';
+import {CaCommunityHelper} from '../../../../../ca-core/utils/ca-community.helper';
 
 @Component({
   selector: 'ca-experiment-technical-report-node',
@@ -30,7 +30,7 @@ export class CaExperimentTechnicalReportNodeComponent implements OnInit {
   }
 
   openTechDocDialog(): void {
-    this.http.post(`${environment.hubApiUrl}brick/technical-doc-by-path`, {
+    this.http.post(CaCommunityHelper.getTechnicalDocByPathApiUrl(), {
       brickName: this.typingName.brickName,
       brickVersion: this.node.brick_version,
       techDocType: this.typingName.type.toLowerCase(),

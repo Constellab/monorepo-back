@@ -11,7 +11,7 @@ import {
 } from '../utils/ca-base-route';
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
-import {environment} from '../../../environments/ca-environment';
+import {CaEnvironmentHelper} from '../utils/ca-environment.helper';
 
 /* eslint-disable @typescript-eslint/member-ordering */
 /**
@@ -208,10 +208,10 @@ export class CaRouterService {
 
 
   public static getSpaceDomainBaseUrl(spaceDomain: string): string {
-    if (environment.production) {
-      return `https://${spaceDomain}.${environment.frontDomain}`;
+    if (CaEnvironmentHelper.isProduction()) {
+      return `https://${spaceDomain}.${CaEnvironmentHelper.getFrontDomain()}`;
     } else {
-      return `http://${environment.frontDomain}:4200`;
+      return `http://${CaEnvironmentHelper.getFrontDomain()}:4200`;
     }
   }
 

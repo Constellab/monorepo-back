@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {CaSpaceService} from './ca-space.service';
 import {CaSpace} from '../model/entities/space/ca-space.class';
 import {FlCleanableService, FlCleanerService, FlCookieService} from '@monorepo/front-core-lib';
-import {environment} from '../../../environments/ca-environment';
 import {BehaviorSubject, filter, firstValueFrom, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {CaUserDatasourcePaginated} from '../model/entities/ca-user.class';
@@ -10,6 +9,7 @@ import {Title} from '@angular/platform-browser';
 import {CaSpaceRole, CaSpaceUser} from '../model/entities/space/ca-space-user.class';
 import {CaSpaceUserSearchFields} from '../entity-module/ca-space-core/model/ca-space-user-search.class';
 import {ClPage} from '@monorepo/core-lib';
+import {CaEnvironmentHelper} from '../utils/ca-environment.helper';
 
 /**
  * Service to manage the current space
@@ -35,7 +35,7 @@ export class CaCurrentSpaceService implements FlCleanableService {
 
   public init(): void {
     // in dev, load the domain from the local storage
-    if (!environment.production) {
+    if (!CaEnvironmentHelper.isProduction()) {
       this.currentSpaceDomainDev = this.cookieService.getStringCookie(this.devSpaceStorageKey);
     }
   }
@@ -58,7 +58,7 @@ export class CaCurrentSpaceService implements FlCleanableService {
     this.currentSpaceDomainDev = space.domain;
     this.titleService.setTitle(space.name);
 
-    if (!environment.production) {
+    if (!CaEnvironmentHelper.isProduction()) {
       this.cookieService.setCookie(this.devSpaceStorageKey, space.domain);
     }
   }
@@ -126,7 +126,7 @@ export class CaCurrentSpaceService implements FlCleanableService {
     this.currentSpace$.next(null);
     this.currentUserRoleInSpace = null;
     this.currentSpaceDomainDev = null;
-    if (!environment.production) {
+    if (!CaEnvironmentHelper.isProduction()) {
       this.cookieService.removeCookie(this.devSpaceStorageKey);
     }
   }

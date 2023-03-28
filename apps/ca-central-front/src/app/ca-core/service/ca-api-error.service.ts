@@ -13,8 +13,8 @@ import {
 } from '@monorepo/front-core-lib';
 import {caConstLoginRoute} from '../utils/ca-base-route';
 import {CmApiError} from '@monorepo/common-model';
-import {environment} from '../../../environments/ca-environment';
 import {PlatformLocation} from '@angular/common';
+import {CaEnvironmentHelper} from '../utils/ca-environment.helper';
 
 
 /**
@@ -101,7 +101,7 @@ export class CaApiErrorService extends FlApiErrorService {
     // to assure the user is disconnected
     this.cookieService.removeCookie(flAuthExpiredCookie, {
       sameSite: 'Strict', path: '/', secure: false,
-      domain: environment.frontDomain
+      domain: CaEnvironmentHelper.getFrontDomain()
     });
 
     // redirect the user to the login page, with autoRedirect param to avoid infinite loop

@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {environment} from '../../../../environments/ca-environment';
+import {CaCommunityHelper} from '../../../ca-core/utils/ca-community.helper';
 
-export interface CaTask{
+export interface CaTask {
   id: string;
   brickName: string;
   brickMajor: number;
@@ -21,13 +21,13 @@ export class CaDashboardTaskOfTheDayComponent implements OnInit {
   task: CaTask;
   taskHubUrl: string;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
 
   ngOnInit(): void {
-    this.http.get(`${environment.hubApiUrl}task/task-of-the-day`).subscribe((res: CaTask) => {
+    this.http.get(CaCommunityHelper.getTaskOfTheDayApiUrl()).subscribe((res: CaTask) => {
       this.task = res;
-      this.taskHubUrl = `${environment.hubUrl}bricks/` +
-        `${this.task.brickName}/latest/doc/technical-folder/task/${this.task.uniqueName}`;
+      this.taskHubUrl = CaCommunityHelper.getTaskUrl(this.task.brickName, this.task.uniqueName);
     });
   }
 

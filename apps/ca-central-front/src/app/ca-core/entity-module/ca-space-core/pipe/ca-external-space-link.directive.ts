@@ -1,8 +1,8 @@
 import {Directive, ElementRef, HostListener, Input, OnInit} from '@angular/core';
-import {environment} from '../../../../../environments/ca-environment';
 import {CaRouterService} from '../../../service/ca-router.service';
 import {CaCurrentSpaceService} from '../../../service-api/ca-current-space.service';
 import {ClHelpService} from '@monorepo/core-lib';
+import {CaEnvironmentHelper} from '../../../utils/ca-environment.helper';
 
 /**
  * Use to generate an external link to a another space (useful for the admin pages)
@@ -25,7 +25,7 @@ export class CaExternalSpaceLinkDirective implements OnInit {
   @Input() caExternalSpaceDomain: string;
 
   @HostListener('click', ['$event']) onMouseEnter(event: MouseEvent): void {
-    if (environment.production) return;
+    if (CaEnvironmentHelper.isProduction()) return;
 
     this.currentSpaceService.setCurrentSpaceDomainDev(this.caExternalSpaceDomain);
     ClHelpService.stopEventPropagation(event);
@@ -38,7 +38,7 @@ export class CaExternalSpaceLinkDirective implements OnInit {
   }
 
   ngOnInit(): void {
-    if (environment.production) {
+    if (CaEnvironmentHelper.isProduction()) {
       // in prod generate the url for the other domain
       this.elementRef.nativeElement.href =
         CaRouterService.getSpaceDomainUrl(this.caExternalSpaceDomain, this.caExternalSpaceLink);

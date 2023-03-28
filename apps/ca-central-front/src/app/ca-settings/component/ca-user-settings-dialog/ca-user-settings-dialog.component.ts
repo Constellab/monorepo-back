@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {CaAuthService} from '../../../ca-login/service/ca-auth.service';
 import {Router} from '@angular/router';
-import {environment} from '../../../../environments/ca-environment';
+import {CaEnvironmentHelper} from '../../../ca-core/utils/ca-environment.helper';
 
 /**
  * Settings page
@@ -32,8 +32,8 @@ export class CaUserSettingsDialogComponent implements OnInit {
   }
 
   private logoutSuccess(): void {
-    if (window && environment.production) {
-      window.location.href = `https://${environment.frontDomain}`;
+    if (window && CaEnvironmentHelper.isProduction()) {
+      window.location.href = `https://${CaEnvironmentHelper.getFrontDomain()}`;
     } else {
       this.router.navigate(['/']);
     }

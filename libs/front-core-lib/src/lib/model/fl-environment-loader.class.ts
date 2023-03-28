@@ -1,12 +1,10 @@
-import {labEnvironmentPath, LabEnvironmentSettings} from './lab-environment.class';
-
 /**
  * Method to load the environment in the assets
  */
-export function labLoadEnvironmentFromAssets(): Promise<LabEnvironmentSettings> {
+export function flLoadEnvironmentFromAssets(envPath: string): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const xmlhttp = new XMLHttpRequest();
-    xmlhttp.open('GET', './' + labEnvironmentPath, true);
+    xmlhttp.open('GET', './' + envPath, true);
     xmlhttp.onload = () => {
       if (xmlhttp.status === 200) {
         resolve(JSON.parse(xmlhttp.responseText));

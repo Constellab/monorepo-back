@@ -53,7 +53,7 @@ export abstract class FlChartBrush {
     }
 
     // This remove the grey brush area as soon as the selection has been done
-    this.chart.chartContainer.select('.brush').call(this.brush.move, null);
+    this.chart.chartContainer.select('.brush').call(this.brush.move as any, null);
 
     this.zoom(extent);
   }

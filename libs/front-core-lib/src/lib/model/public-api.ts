@@ -7,6 +7,7 @@ export * from './shared/public-api';
 // Export the model
 export * from './fl-debouncer.class';
 export * from './fl-entity.class';
+export * from './fl-environment-loader.class';
 export * from './fl-event-wrapper.class';
 export * from './fl-flat-tree-control.class';
 export * from './fl-form.class';

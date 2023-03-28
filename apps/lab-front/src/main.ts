@@ -2,13 +2,13 @@ import {enableProdMode} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {LabAppModule} from './app/lab-app.module';
 import {environment} from './environments/lab-environment';
-import {LabEnvironmentSettings} from './environments/lab-environment.class';
-import {labLoadEnvironmentFromAssets} from './environments/lab-environment-loader';
+import {labEnvironmentPath, LabEnvironmentSettings} from './environments/lab-environment.class';
+import {flLoadEnvironmentFromAssets} from '@monorepo/front-core-lib';
 
 if (environment.production) {
   enableProdMode();
 
-  labLoadEnvironmentFromAssets().then((env: LabEnvironmentSettings) => {
+  flLoadEnvironmentFromAssets(labEnvironmentPath).then((env: LabEnvironmentSettings) => {
     // set the environment setting from the json file
     environment.settings = env;
 

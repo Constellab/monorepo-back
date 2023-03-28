@@ -59,7 +59,6 @@ import 'zone.js/dist/zone'; // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
-import 'document-register-element';
 
 // import reflect to make class-transform work
 import 'reflect-metadata/Reflect';

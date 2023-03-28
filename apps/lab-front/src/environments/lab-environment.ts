@@ -1,4 +1,4 @@
-import {Environment} from './lab-environment.class';
+import {LabEnvironment} from './lab-environment.class';
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
@@ -10,7 +10,7 @@ import {Environment} from './lab-environment.class';
  */
 const apiBaseUrl: string = 'http://localhost:3000/';
 // const apiBaseUrl: string = 'https://glab-prod.tokyo.gencovery.io/';
-export const environment: Environment = {
+export const environment: LabEnvironment = {
   production: false,
   settings: {
     apiBaseUrl: apiBaseUrl,

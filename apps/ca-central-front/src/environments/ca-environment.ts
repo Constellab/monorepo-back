@@ -2,14 +2,21 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-export const environment = {
+import {CaEnvironment} from './ca-environment.class';
+
+/**
+ * File for local environment,
+ *
+ * NEVER IMPORT ENVIRONMENT DIRECTLY FORM HERE, USE ENVIRONMENT HELPER INSTEAD
+ */
+export const environment: CaEnvironment = {
   production: false,
-  apiUrl: 'http://localhost:3001/',
-  smartDbApiUrl: 'http://localhost:3340/',
-  // apiUrl: 'https://pre-prod-back.gws.gencovery.com/',
-  hubApiUrl: 'http://localhost:3333/',
-  hubUrl: 'http://localhost:4200/',
-  frontDomain: 'localhost',
+  settings: {
+    apiUrl: 'http://localhost:3001',
+    communityApiUrl: 'http://localhost:3333',
+    communityFrontUrl: 'http://localhost:4200',
+    frontDomain: 'localhost',
+  }
 };
 
 /*

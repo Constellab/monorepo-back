@@ -1,7 +1,7 @@
 import {FlApiServiceConfig} from '@monorepo/front-core-lib';
-import {environment} from '../../../../environments/ca-environment';
 import {ClCoreJsonConvert, ClDeserializationRef, ClPageI} from '@monorepo/core-lib';
 import {Injectable} from '@angular/core';
+import {CaEnvironmentHelper} from '../../utils/ca-environment.helper';
 
 /**
  * Class to configure the FlApiService
@@ -22,7 +22,7 @@ export class CaApiServiceConfig extends FlApiServiceConfig {
   }
 
   getApiUrl(): string {
-    return environment.apiUrl;
+    return CaEnvironmentHelper.getApiUrl();
   }
 
   getHeaders(): Record<string, string> {

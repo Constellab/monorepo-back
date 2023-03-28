@@ -16,7 +16,6 @@
         "inlineStyleLanguage": "scss",
         "assets": [
           "apps/ca-central-front/src/assets",
-          "apps/ca-central-front/src/manifest.webmanifest",
           {
             "glob": "**/*",
             "input": "libs/front-core-lib/src/assets/mat-icons",
@@ -89,33 +88,6 @@
             {
               "replace": "apps/ca-central-front/src/environments/ca-environment.ts",
               "with": "apps/ca-central-front/src/environments/ca-environment.prod.ts"
-            }
-          ],
-          "budgets": [
-            {
-              "type": "initial",
-              "maximumWarning": "2mb",
-              "maximumError": "5mb"
-            },
-            {
-              "type": "anyComponentStyle",
-              "maximumWarning": "6kb",
-              "maximumError": "30kb"
-            }
-          ]
-        },
-        "preprod": {
-          "serviceWorker": false,
-          "outputHashing": "all",
-          "optimization": {
-            "styles": {
-              "inlineCritical": false
-            }
-          },
-          "fileReplacements": [
-            {
-              "replace": "apps/ca-central-front/src/environments/ca-environment.ts",
-              "with": "apps/ca-central-front/src/environments/ca-environment.preprod.ts"
             }
           ],
           "budgets": [

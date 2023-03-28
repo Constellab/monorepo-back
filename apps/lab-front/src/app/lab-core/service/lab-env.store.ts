@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {FlCleanableService, FlCleanerService, FlLocalStorageService} from '@monorepo/front-core-lib';
-import {LabEnvironment} from '../model/global/lab-environment.class';
+import {LabAppEnvironment} from '../model/global/lab-environment.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -12,24 +12,24 @@ export class LabEnvStore implements FlCleanableService {
 
   private readonly labEnvironmentStorageKey: string = 'lab-environment';
 
-  private _labEnvironment$: BehaviorSubject<LabEnvironment> = new BehaviorSubject('prod');
+  private _labEnvironment$: BehaviorSubject<LabAppEnvironment> = new BehaviorSubject('prod');
 
   constructor(private localStorage: FlLocalStorageService) {
     FlCleanerService.getInstance().registerService(this);
   }
 
-  public setLabEnvironment(environment: LabEnvironment): void {
+  public setLabEnvironment(environment: LabAppEnvironment): void {
     if (this.getLabEnvironment() === environment) return;
 
     this.localStorage.setItem(this.labEnvironmentStorageKey, environment);
     this._labEnvironment$.next(environment);
   }
 
-  public getLabEnvironment$(): Observable<LabEnvironment> {
+  public getLabEnvironment$(): Observable<LabAppEnvironment> {
     return this._labEnvironment$.asObservable();
   }
 
-  public getLabEnvironment(): LabEnvironment {
+  public getLabEnvironment(): LabAppEnvironment {
     return this._labEnvironment$.value;
   }
 
@@ -45,7 +45,7 @@ export class LabEnvStore implements FlCleanableService {
    * Return the environment store in the local storage with prod by default
    * @private
    */
-  public getLabEnvironmentStorageValue(): LabEnvironment {
+  public getLabEnvironmentStorageValue(): LabAppEnvironment {
     const value: string = this.localStorage.getItem(this.labEnvironmentStorageKey);
 
     if (value == null) {
