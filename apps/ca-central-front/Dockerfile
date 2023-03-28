@@ -16,7 +16,7 @@ RUN npm ci
 # Copy the workspace and build the app
 COPY / .
 
-RUN npm run ca-central-front:build-$ENVIRONMENT_PROFILE
+RUN npm run ca-central-front:build-$ENVIRONMENT_PROFILE -- --verbose
 
 # Run step
 FROM nginx:alpine
