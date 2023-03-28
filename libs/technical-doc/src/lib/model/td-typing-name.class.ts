@@ -1,6 +1,12 @@
 import {TdTypeObjectType} from './td-type.class';
-import {RvConfigValues, RvTransformerParams} from '@monorepo/resource-view';
 import {FlColorHelper} from '@monorepo/front-core-lib';
+
+export type TdConfigValues = Record<string, any>
+
+export interface TdTransformerParams {
+  typing_name: string;
+  config_values: TdConfigValues;
+}
 
 /**
  * Base class to find the unique name or brick name of a typing name
@@ -60,8 +66,8 @@ export interface TdTaskViewerConfig {
   resource_typing_name: string;
   view_config: {
     view_method_name: string;
-    config_values: RvConfigValues;
-    transformers: RvTransformerParams[];
+    config_values: TdConfigValues;
+    transformers: TdTransformerParams[];
   }
 }
 

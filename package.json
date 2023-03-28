@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "ng": "nx",
+    "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2020 browser module main",
     "nx": "nx",
     "start": "nx serve",
     "build": "nx build",
@@ -51,6 +52,7 @@
     "cn-central-back:lint": "nx run cn-central-back:lint",
     "cn-central-back:build-image-dev": "docker build -f apps/cn-central-back/Dockerfile -t cn-central-back .",
     "ha-hub:serve": "nx serve ha-hub",
+    "ha-hub:serve-ssr": "nx run ha-hub:serve-ssr",
     "ha-hub:build-prod": "nx build ha-hub --prod",
     "ha-hub:build-pre-prod": "nx build ha-hub --configuration=preprod",
     "ha-hub:build-dev": "nx build ha-hub --configuration=devevelopment",
@@ -78,6 +80,7 @@
     "@angular/platform-browser-dynamic": "15.2.4",
     "@angular/router": "15.2.4",
     "@angular/service-worker": "15.2.4",
+    "@angular/platform-server": "~15.2.0",
     "@aws-sdk/client-s3": "^3.186.0",
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/lang-python": "^6.1.0",
@@ -96,6 +99,7 @@
     "@nestjs/platform-express": "^9.1.4",
     "@nestjs/typeorm": "^9.0.1",
     "@ngneat/reactive-forms": "^1.4.4",
+    "@nguniversal/express-engine": "~15.1.0",
     "@ngx-translate/core": "^14.0.0",
     "@nrwl/angular": "15.8.9",
     "adm-zip": "^0.5.10",
@@ -108,6 +112,7 @@
     "class-validator": "^0.14.0",
     "codemirror": "^6.0.1",
     "d3": "7.3.0",
+    "document-register-element": "^1.7.2",
     "drawflow": "0.0.58",
     "force-graph": "^1.42.9",
     "highlight.js": "^11.4.0",
@@ -146,6 +151,7 @@
     "@angular/language-service": "15.2.4",
     "@nestjs/schematics": "9.0.3",
     "@nestjs/testing": "9.1.4",
+    "@nguniversal/builders": "~15.1.0",
     "@nrwl/cli": "15.8.9",
     "@nrwl/cypress": "15.8.9",
     "@nrwl/eslint-plugin-nx": "15.8.9",
@@ -194,4 +200,3 @@
     "typescript": "4.9.5"
   }
 }
-

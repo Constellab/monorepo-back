@@ -8,7 +8,7 @@
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
       "options": {
-        "outputPath": "dist/apps/ha-hub",
+        "outputPath": "dist/apps/ha-hub/browser",
         "index": "apps/ha-hub/src/index.html",
         "main": "apps/ha-hub/src/main.ts",
         "polyfills": "apps/ha-hub/src/polyfills.ts",
@@ -162,6 +162,63 @@
         "jestConfig": "apps/ha-hub/jest.config.ts",
         "passWithNoTests": true
       }
+    },
+    "server": {
+      "dependsOn": ["build"],
+      "executor": "@angular-devkit/build-angular:server",
+      "options": {
+        "outputPath": "dist/apps/ha-hub/server",
+        "main": "apps/ha-hub/server.ts",
+        "tsConfig": "apps/ha-hub/tsconfig.server.json"
+      },
+      "configurations": {
+        "production": {
+          "outputHashing": "media",
+          "fileReplacements": [
+            {
+              "replace": "apps/ha-hub/src/environments/ha-environment.ts",
+              "with": "apps/ha-hub/src/environments/ha-environment.prod.ts"
+            }
+          ]
+        },
+        "development": {
+          "optimization": false,
+          "sourceMap": true,
+          "extractLicenses": false
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve-ssr": {
+      "executor": "@nguniversal/builders:ssr-dev-server",
+      "configurations": {
+        "development": {
+          "browserTarget": "ha-hub:build:development",
+          "serverTarget": "ha-hub:server:development"
+        },
+        "production": {
+          "browserTarget": "ha-hub:build:production",
+          "serverTarget": "ha-hub:server:production"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "prerender": {
+      "executor": "@nguniversal/builders:prerender",
+      "options": {
+        "routes": ["/"]
+      },
+      "configurations": {
+        "development": {
+          "browserTarget": "ha-hub:build:development",
+          "serverTarget": "ha-hub:server:development"
+        },
+        "production": {
+          "browserTarget": "ha-hub:build:production",
+          "serverTarget": "ha-hub:server:production"
+        }
+      },
+      "defaultConfiguration": "production"
     }
   },
   "tags": ["front"]
