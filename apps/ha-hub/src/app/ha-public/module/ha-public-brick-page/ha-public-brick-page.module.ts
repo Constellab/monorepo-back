@@ -28,7 +28,7 @@ import {
 import {HaPublicTechDocComponent} from './ha-public-tech-doc/ha-public-tech-doc.component';
 import {Ha404Component} from '../ha404/ha404.component';
 import {HaPublicFindDocComponent} from './ha-public-find-doc/ha-public-find-doc.component';
-import { HaPublicBrickRightPanelComponent } from './ha-public-brick-right-panel/ha-public-brick-right-panel.component';
+import {HaPublicBrickRightPanelComponent} from './ha-public-brick-right-panel/ha-public-brick-right-panel.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +45,7 @@ import { HaPublicBrickRightPanelComponent } from './ha-public-brick-right-panel/
     HaPublicTechDocComponent,
     Ha404Component,
     HaPublicFindDocComponent,
-    HaPublicBrickRightPanelComponent,
+    HaPublicBrickRightPanelComponent
   ],
   imports: [
     HaPublicCoreModule,
@@ -60,7 +60,7 @@ import { HaPublicBrickRightPanelComponent } from './ha-public-brick-right-panel/
     MatRadioModule,
     FormsModule,
     MatTooltipModule,
-    FlInputFileModule
+    FlInputFileModule,
   ]
 })
 export class HaPublicBrickPageModule {

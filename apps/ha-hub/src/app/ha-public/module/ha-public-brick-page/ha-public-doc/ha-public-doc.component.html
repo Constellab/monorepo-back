@@ -1,6 +1,5 @@
-
-<div class="no-doc-div"*ngIf="docNotFound">
-  <ha-ha404 [errorText]="'error_doc_not_found'" ></ha-ha404>
+<div class="no-doc-div" *ngIf="docNotFound">
+  <ha-ha404 [errorText]="'error_doc_not_found'"></ha-ha404>
 </div>
 
 
@@ -26,7 +25,11 @@
       </form>
     </div>
   </div>
-<!--  <div class="right-div  g-scrollable-element" *ngIf="documentation">-->
-<!--    <ha-public-brick-right-panel [currentPage]="documentation.title" [brickVersion]="brickVersion" [brickName]="brickName" [docTitles]="titles"></ha-public-brick-right-panel>-->
-<!--  </div>-->
 </div>
+<div class="right-div g-scrollable-element" *ngIf="documentation">
+  <div>
+    <ha-public-brick-right-panel [currentPage]="documentation.title" [brickVersion]="brickVersion" [brickName]="brickName"
+                                 [docTitles]="titles"></ha-public-brick-right-panel>
+  </div>
+</div>
+

@@ -92,7 +92,7 @@ export class BlObjectStorageService {
 
     const result = await s3Client.send(new GetObjectCommand({Bucket: config.bucket, Key: objectName}));
 
-    return result.Body as IncomingMessage;
+    return result.Body as any as IncomingMessage;
   }
 
   /**

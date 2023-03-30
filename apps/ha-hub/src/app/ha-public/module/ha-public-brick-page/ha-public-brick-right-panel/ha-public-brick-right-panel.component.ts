@@ -1,4 +1,13 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  Directive,
+  ElementRef,
+  HostListener,
+  Input,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
 
 export interface HaDocTitle {
   title: string;
@@ -11,7 +20,7 @@ export interface HaDocTitle {
   templateUrl: './ha-public-brick-right-panel.component.html',
   styleUrls: ['./ha-public-brick-right-panel.component.scss']
 })
-export class HaPublicBrickRightPanelComponent implements OnInit {
+export class HaPublicBrickRightPanelComponent {
 
   @Input()
   brickName: string;
@@ -25,9 +34,6 @@ export class HaPublicBrickRightPanelComponent implements OnInit {
   @Input()
   currentPageAsTranslation: boolean = false;
 
-  constructor() { }
-
-  ngOnInit(): void {
+  constructor() {
   }
-
 }

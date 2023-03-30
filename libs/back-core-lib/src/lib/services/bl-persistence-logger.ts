@@ -54,7 +54,7 @@ export class BlPersistenceLogger extends AdvancedConsoleLogger {
   // save the log to log it on commit
   logPersistence(actionName: BlPersistenceAction, entityId: string, entityName: string, directLog: boolean): void {
     if (directLog) {
-      this.writeLog(actionName, entityId, entityName);
+      this.writeL(actionName, entityId, entityName);
       return;
     }
 
@@ -72,11 +72,11 @@ export class BlPersistenceLogger extends AdvancedConsoleLogger {
 
   private writeTransactionLogs(): void {
     for (const log of this.transactionLogs) {
-      this.writeLog(log.action, log.entityId, log.entityName);
+      this.writeL(log.action, log.entityId, log.entityName);
     }
   }
 
-  private writeLog(actionName: BlPersistenceAction, entityId: string, entityName: string): void {
+  private writeL(actionName: BlPersistenceAction, entityId: string, entityName: string): void {
     this.logger.log(`[${actionName}] Object type : ${entityName} | Id : ${entityId} | ${this.getUserLog()}`);
   }
 
