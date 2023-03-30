@@ -133,8 +133,6 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
         strict: true
       }
     );
-    //Remove unnecessary matchers
-    this.quill.clipboard.matchers = this.quill.clipboard.matchers.filter((matcher) => matcher[0] !== Node.TEXT_NODE);
 
     this.quill.clipboard.addMatcher('IMG', (node, delta) => FlQuillSetup.addMatcher(node, delta, this.state, this.config));
 
@@ -142,9 +140,8 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
       if (ClStringHelper.isHttpLink(node.nodeValue)) {
         delta.ops = []
         FlQuillSetup.addMatcherLink(this.state.getCurrentSelectionIndex(), node.nodeValue, delta, this.state);
-      } else {
-        FlQuillSetup.addMatcherText(this.state.getCurrentSelectionIndex(), node.nodeValue, this.state);
       }
+      return delta;
     });
 
     this.state.init(this.quill, this.config, this.editorElement.nativeElement, this.disabled);

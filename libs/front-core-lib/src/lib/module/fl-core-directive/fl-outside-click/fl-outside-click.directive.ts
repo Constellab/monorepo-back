@@ -41,7 +41,8 @@ export class FlOutsideClickDirective implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.listener();
+    if(this.listener)
+      this.listener();
   }
 
 }
