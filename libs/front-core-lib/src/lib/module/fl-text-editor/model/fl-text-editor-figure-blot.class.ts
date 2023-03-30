@@ -2,7 +2,7 @@ import {CmRichTextFigure} from '@monorepo/common-model';
 import {FlQuillEmbed} from './fl-quill-export.class';
 
 
-export class FlTextEditorFigureBlot extends FlQuillEmbed {
+export class FlTextEditorFigureBlot extends FlQuillEmbed{
 
   static blotName = 'figure';
   static tagName = 'fl-text-editor-figure';

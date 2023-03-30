@@ -10,6 +10,7 @@ import {
   OnInit,
   Optional,
   Output,
+  PLATFORM_ID,
   Renderer2,
   SecurityContext,
   Self,
@@ -19,7 +20,7 @@ import {FlQuillJson, FlTextEditorBlockAddButton} from '../../model/fl-text-edito
 import {FlFormFieldDirective} from '../../../../abstract-directive/form/fl-form-field.directive';
 import {NgControl} from '@angular/forms';
 import {DomSanitizer} from '@angular/platform-browser';
-import {DOCUMENT} from '@angular/common';
+import {DOCUMENT, isPlatformBrowser} from '@angular/common';
 import {ScrollDispatcher} from '@angular/cdk/overlay';
 import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
 import {FlOverlayRef} from '../../../fl-portal/model/fl-overlay-ref.class';
@@ -32,11 +33,11 @@ import python from 'highlight.js/lib/languages/python';
 import Quill, {BoundsStatic, RangeStatic} from 'quill';
 import {FlTextEditorsManagerState} from '../../state/fl-text-editors-manager.state';
 import {FlTextEditorConfig} from '../../model/fl-text-editor-config.class';
-import {FlQuillBlock, FlQuillDelta} from '../../model/fl-quill-export.class';
 import {FlHtmlHelper} from '../../../../utils/fl-html.helper';
 import {FlQuillScrollContainer, FlQuillSetup} from '../../model/fl-quill-setup.class';
 import {ClStringHelper} from '@monorepo/core-lib';
-import "quill-mention";
+import BlockBlot from 'parchment/dist/src/blot/block';
+//import "quill-mention"; //TODO: check how to import this
 
 hljs.registerLanguage('python', python);
 
@@ -92,6 +93,8 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
 
   private blockAddButtonOverlay?: FlOverlayRef;
 
+  private testBrowser: boolean;
+
   constructor(@Optional() @Self() ngControl: NgControl,
               private sanitizer: DomSanitizer,
               @Inject(DOCUMENT) private document: Document,
@@ -101,14 +104,25 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
               private zone: NgZone,
               private state: FlTextEditorState,
               private managerState: FlTextEditorsManagerState,
-              private renderer: Renderer2) {
+              private renderer: Renderer2,
+              // eslint-disable-next-line @typescript-eslint/ban-types
+              @Inject(PLATFORM_ID) platformId: Object) {
     super(ngControl);
     managerState.registerTextEditor(elementRef.nativeElement, state);
     renderer.addClass(this.elementRef.nativeElement, FlTextEditorsManagerState.textEditorElementClass);
+    this.testBrowser = isPlatformBrowser(platformId);
   }
 
-  ngOnInit(): void {
-    let modules:any = {
+  async ngOnInit(): Promise<void> {
+    if (!this.testBrowser) {
+      this.editorElement.nativeElement.innerHTML = 'LMAOOOOOOOOOOOOOOOO';
+      //TODO: transform the content of the editor in HTML and print it
+      return;
+    }
+
+    const quillImport = await import('quill') as any;
+
+    let modules: any = {
       syntax: {
         highlight: (text: string) => hljs.highlight(text, {language: 'python'}).value
       }, // Include syntax module
@@ -121,7 +135,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     modules = Object.assign(modules, this.config.getExtraModules());
 
     // create and configure quill
-    this.quill = new Quill(this.editorElement.nativeElement,
+    this.quill = new quillImport.default(this.editorElement.nativeElement,
       {
         theme: this.config.getTheme(this.theme),
         modules: modules,
@@ -143,6 +157,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
       }
       return delta;
     });
+
 
     this.state.init(this.quill, this.config, this.editorElement.nativeElement, this.disabled);
 
@@ -216,7 +231,9 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     if (this.mode === 'HTML') {
       this.setHTML(value);
     } else {
-      this.setJsonDelta(value);
+      this.setJsonDelta(value).then(() => {
+        console.log(this.quill.getContents());
+      });
     }
   }
 
@@ -225,8 +242,8 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     this.quill.root.innerHTML = this.sanitizer.sanitize(SecurityContext.HTML, html);
   }
 
-  private setJsonDelta(json: FlQuillJson): void {
-    const delta = json?.ops != null ? new FlQuillDelta(json.ops) : [];
+  private async setJsonDelta(json: FlQuillJson): Promise<void> {
+    const delta: any = json?.ops != null ? json.ops : [];
     this.quill.setContents(delta, 'silent');
   }
 
@@ -245,11 +262,14 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
       this.closeBlockAddButtonOverlay();
       if (range.length === 0) {
         const scroll: any = this.quill.scroll;
-        const [block] = scroll.descendant(FlQuillBlock, range.index);
-        if (block != null && block.domNode.firstChild instanceof HTMLBRElement) {
-          const lineBounds: BoundsStatic = this.quill.getBounds(range.index, range.length);
-          this.showBlockAddButton(lineBounds, buttons);
-        }
+        import('quill').then((quillImport) => {
+          const FlQuillBlock = quillImport.default.import('blots/block') as typeof BlockBlot;
+          const [block] = scroll.descendant(FlQuillBlock, range.index);
+          if (block != null && block.domNode.firstChild instanceof HTMLBRElement) {
+            const lineBounds: BoundsStatic = this.quill.getBounds(range.index, range.length);
+            this.showBlockAddButton(lineBounds, buttons);
+          }
+        });
       }
     });
   }

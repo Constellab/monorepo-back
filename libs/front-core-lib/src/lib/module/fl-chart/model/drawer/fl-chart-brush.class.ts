@@ -52,6 +52,7 @@ export abstract class FlChartBrush {
       return;
     }
 
+    //TODO: ATTENTION as any
     // This remove the grey brush area as soon as the selection has been done
     this.chart.chartContainer.select('.brush').call(this.brush.move as any, null);
 

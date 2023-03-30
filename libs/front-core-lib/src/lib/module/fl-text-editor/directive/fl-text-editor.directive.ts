@@ -6,13 +6,14 @@ import {
   Input,
   OnDestroy,
   OnInit,
+  PLATFORM_ID,
   Renderer2,
   SecurityContext
 } from '@angular/core';
 import Quill from 'quill';
 
 import {ScrollDispatcher} from '@angular/cdk/overlay';
-import {DOCUMENT} from '@angular/common';
+import {DOCUMENT, isPlatformBrowser} from '@angular/common';
 import {DomSanitizer} from '@angular/platform-browser';
 import hljs from 'highlight.js/lib/core';
 import {FlTextEditorState} from '../state/fl-text-editor.state';
@@ -21,7 +22,6 @@ import {FlQuillJson} from '../model/fl-text-editor.class';
 import {FlPortalService} from '../../fl-portal/service/fl-portal.service';
 import {FlTextEditorsManagerState} from '../state/fl-text-editors-manager.state';
 import {FlQuillScrollContainer, FlQuillSetup} from '../model/fl-quill-setup.class';
-import {FlQuillDelta} from '../model/fl-quill-export.class';
 
 type FlTextEditorMode = 'HTML' | 'JSON'
 
@@ -45,6 +45,8 @@ export class FlTextEditorDirective implements OnInit, OnDestroy {
 
   private quill: Quill;
 
+  private testBrowser: boolean;
+
   constructor(@Inject(DOCUMENT) private document: Document,
               private state: FlTextEditorState,
               private elementRef: ElementRef,
@@ -52,16 +54,23 @@ export class FlTextEditorDirective implements OnInit, OnDestroy {
               private sanitizer: DomSanitizer,
               private portalService: FlPortalService,
               private managerState: FlTextEditorsManagerState,
-              renderer: Renderer2) {
+              renderer: Renderer2,
+              // eslint-disable-next-line @typescript-eslint/ban-types
+              @Inject(PLATFORM_ID) platformId: Object) {
     managerState.registerTextEditor(elementRef.nativeElement, state);
     renderer.addClass(this.elementRef.nativeElement, 'ql-directive');
     renderer.addClass(this.elementRef.nativeElement, FlTextEditorsManagerState.textEditorElementClass);
+    this.testBrowser = isPlatformBrowser(platformId);
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+
+    if (!this.testBrowser) return;
+
+    const quillImport = await import('quill') as any;
 
     // create and configure quill
-    this.quill = new Quill(this.elementRef.nativeElement,
+    this.quill = new quillImport.default(this.elementRef.nativeElement,
       {
         theme: 'bubble',
         modules: {
@@ -83,7 +92,7 @@ export class FlTextEditorDirective implements OnInit, OnDestroy {
     if (this.mode === 'HTML') {
       this.quill.root.innerHTML = this.sanitizer.sanitize(SecurityContext.HTML, (this.value as string));
     } else {
-      const delta = (this.value as FlQuillJson)?.ops != null ? new FlQuillDelta((this.value as FlQuillJson).ops) : [];
+      const delta: any = (this.value as FlQuillJson)?.ops != null ? (this.value as FlQuillJson).ops : [];
       this.quill.setContents(delta, 'silent');
       this.removeLastUselessElement();
     }

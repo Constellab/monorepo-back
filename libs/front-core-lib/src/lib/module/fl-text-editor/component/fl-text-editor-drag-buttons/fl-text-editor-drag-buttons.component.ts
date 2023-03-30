@@ -1,6 +1,16 @@
-import {Component, Inject, OnDestroy, OnInit, Renderer2, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {
+  Component,
+  Inject,
+  OnDestroy,
+  OnInit,
+  PLATFORM_ID,
+  Renderer2,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef
+} from '@angular/core';
 import {FlOverlayRef} from '../../../fl-portal/model/fl-overlay-ref.class';
-import {DOCUMENT} from '@angular/common';
+import {DOCUMENT, isPlatformBrowser} from '@angular/common';
 import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
 import {FlTextEditorState} from '../../state/fl-text-editor.state';
 
@@ -38,6 +48,7 @@ export class FlTextEditorDragButtonsComponent implements OnInit, OnDestroy {
   constructor(private state: FlTextEditorState,
               private renderer: Renderer2,
               @Inject(DOCUMENT) private document: Document,
+              @Inject(PLATFORM_ID) private platformId: string,
               private portalService: FlPortalService,
               private _viewContainerRef: ViewContainerRef) {
   }
@@ -60,10 +71,12 @@ export class FlTextEditorDragButtonsComponent implements OnInit, OnDestroy {
   }
 
   private enableIndicator(): void {
-    this.mouseOverListener = this.renderer.listen(this.state.textEditorContainer, 'mouseover',
-      (event: MouseEvent) => {
-        this.onMouseOver(event);
-      });
+    if(isPlatformBrowser(this.platformId) && this.state.textEditorContainer) {
+      this.mouseOverListener = this.renderer.listen(this.state.textEditorContainer, 'mouseover',
+        (event: MouseEvent) => {
+          this.onMouseOver(event);
+        });
+    }
   }
 
   private disableIndicator(): void {

@@ -6,6 +6,7 @@
  * available, such as `@angular/elements`.
  */
 import '@angular/platform-server/init';
+import 'reflect-metadata';
 
 export { AppServerModule } from './app/app.server.module';
 export { renderModule } from '@angular/platform-server';

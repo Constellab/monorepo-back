@@ -1,15 +1,14 @@
-import {Injector, ModuleWithProviders, NgModule} from '@angular/core';
+import {Inject, Injector, ModuleWithProviders, NgModule, PLATFORM_ID} from '@angular/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FlTextEditorLink} from './model/fl-text-editor-link-without-target.class';
 import {FlInputFileModule} from '../fl-input-file/fl-input-file.module';
-import {CommonModule} from '@angular/common';
+import {CommonModule, isPlatformServer} from '@angular/common';
 import {
   FlTextEditorBlockAddButtonComponent
 } from './component/fl-text-editor-block-add-button/fl-text-editor-block-add-button.component';
 import {
   FlTextEditorDragButtonsComponent
 } from './component/fl-text-editor-drag-buttons/fl-text-editor-drag-buttons.component';
-import Quill from 'quill';
 import {FlDialogModule} from '../fl-dialog/fl-dialog.module';
 import {flTextEditorI18n} from './i18n/fl-text-editor.i18n';
 import {FlTextEditorFormulaBlot} from './model/fl-text-editor-formula-blot.class';
@@ -96,36 +95,46 @@ export class FlTextEditorModule {
 
   private static config: FlTextEditorModuleConfig;
 
-  constructor(injector: Injector, translateService: FlTranslateService) {
+  constructor(injector: Injector, translateService: FlTranslateService,
+              // eslint-disable-next-line @typescript-eslint/ban-types
+              @Inject(PLATFORM_ID) platformId: Object) {
+
     if (FlTextEditorModule.registered) return;
+    if (isPlatformServer(platformId)) return;
 
-    // register default blots
-    Quill.register(FlTextEditorHintBlot, true);
-    Quill.register(FlTextEditorHeaderId, true);
-    Quill.register(FlTextEditorLink, true);
+    import('quill').then((quillImport) => {
+      // register default blots
+      quillImport.default.register(FlTextEditorHintBlot, true);
+      quillImport.default.register(FlTextEditorHeaderId, true);
+      quillImport.default.register(FlTextEditorLink, true);
 
-    FlTextEditorModule.registered = true;
+      FlTextEditorModule.registered = true;
 
-    translateService.addModuleTranslation('FlTextEditorModule', flTextEditorI18n);
+      translateService.addModuleTranslation('FlTextEditorModule', flTextEditorI18n);
 
-    const blots: FlTextEditorModuleConfigBlot[] = [
-      {blot: FlTextEditorFigureBlot, componentType: FlTextEditorFigureComponent},
-      {blot: FlTextEditorFormulaBlot, componentType: FlTextEditorFormulaComponent},
-      {blot: FlTextEditorVideoBlot, componentType: FlTextEditorVideoComponent},
-      ...FlTextEditorModule.config.blots
-    ]
+      const blots: FlTextEditorModuleConfigBlot[] = [
+        {blot: FlTextEditorFigureBlot, componentType: FlTextEditorFigureComponent},
+        {blot: FlTextEditorFormulaBlot, componentType: FlTextEditorFormulaComponent},
+        {blot: FlTextEditorVideoBlot, componentType: FlTextEditorVideoComponent},
+        ...FlTextEditorModule.config.blots
+      ]
 
-    // Register quill blots
-    for (const blot of blots) {
-      Quill.register(blot.blot, true);
+      // Register quill blots
+      for (const blot of blots) {
+        quillImport.default.register(blot.blot, true);
 
-      // declare the FlTextEditorFigureComponent as angular element to make the tag
-      // fl-text-editor-figure
-      customElements.define(blot.blot.tagName.toLowerCase(),
-        createCustomElement(blot.componentType, {injector: injector}));
-    }
+        // declare the FlTextEditorFigureComponent as angular element to make the tag
+        // fl-text-editor-figure
+        if (!customElements.get(blot.blot.tagName.toLowerCase())) {
+          customElements.define(blot.blot.tagName.toLowerCase(),
+            createCustomElement(blot.componentType, {injector: injector}));
+        }
+      }
+    });
+
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   public static forRoot(config: FlTextEditorModuleConfig): ModuleWithProviders<FlTextEditorModule> {
     FlTextEditorModule.config = config;
 
