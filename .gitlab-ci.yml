@@ -39,8 +39,8 @@ build-central:
     # Build the docker image from Dockerfile with the latest tag and a tag for the version
     - docker build --tag $CI_REGISTRY_IMAGE/$CA_IMAGE:$VERSION --tag $CI_REGISTRY_IMAGE/$CA_IMAGE:latest -f apps/ca-central-front/Dockerfile .
     # Push both image in the registry
-    - docker push $CI_REGISTRY_IMAGE/CA_IMAGE:$VERSION
-    - docker push $CI_REGISTRY_IMAGE/CA_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE/$CA_IMAGE:$VERSION
+    - docker push $CI_REGISTRY_IMAGE/$CA_IMAGE:latest
   only:
     - /ca_.*/
 

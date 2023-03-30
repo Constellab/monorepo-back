@@ -22,7 +22,7 @@ export class CaApiServiceConfig extends FlApiServiceConfig {
   }
 
   getApiUrl(): string {
-    return CaEnvironmentHelper.getApiUrl();
+    return CaEnvironmentHelper.getApiUrl() + '/';
   }
 
   getHeaders(): Record<string, string> {
