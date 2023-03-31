@@ -6,18 +6,20 @@
   <form (ngSubmit)="submit()" id="story-form" [formGroup]="formGp" *ngIf="formGp">
     <mat-form-field class="chip-list" appearance="fill">
       <mat-label>{{'coauthors' | translate}}</mat-label>
-      <mat-chip-list #chipList>
-        <mat-chip *ngFor="let cA of coAuthors" (removed)="remove(cA)">
+
+      <mat-chip-grid #chipGrid>
+        <mat-chip-row *ngFor="let cA of coAuthors" (removed)="remove(cA)">
           {{cA.id ? cA.fullName : cA.email}}
           <button mat-icon-button class="chip-icon-bt" (click)="cA.id ? openRemoveConfirmDialog(cA) : remove(cA)">
             <mat-icon>cancel</mat-icon>
           </button>
-        </mat-chip>
-        <input [matChipInputFor]="chipList"
+        </mat-chip-row>
+
+        <input [matChipInputFor]="chipGrid"
                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                [matChipInputAddOnBlur]="true"
                (matChipInputTokenEnd)="add($event)">
-      </mat-chip-list>
+      </mat-chip-grid>
     </mat-form-field>
   </form>
 </mat-dialog-content>

@@ -1,4 +1,4 @@
-import {Directive, Input, OnDestroy, OnInit, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, OnDestroy, OnInit, TemplateRef, ViewContainerRef} from '@angular/core';
 import {FlAbstractIfDirective} from '@monorepo/front-core-lib';
 import {HaAuthenticatedUserService} from '../../../ha-service/ha-authenticated-user.service';
 import {Observable} from 'rxjs';
@@ -8,21 +8,9 @@ import {Observable} from 'rxjs';
 })
 export class HaIsAdminDirective extends FlAbstractIfDirective implements OnInit, OnDestroy {
 
-  @Input()
-  set haIsAdminElse(templateRef: TemplateRef<any> | null){
-    this.elseTemplateRef = templateRef;
-  }
-
-  @Input()
-  set haIsAdmin(c: boolean | null){
-
-  }
-
-  constructor(
-    templateRef: TemplateRef<any>,
-    viewContainer: ViewContainerRef,
-    private authenticatedUserService: HaAuthenticatedUserService,
-  ) {
+  constructor(templateRef: TemplateRef<any>,
+              viewContainer: ViewContainerRef,
+              private authenticatedUserService: HaAuthenticatedUserService) {
     super(templateRef, viewContainer);
   }
 
@@ -33,7 +21,6 @@ export class HaIsAdminDirective extends FlAbstractIfDirective implements OnInit,
   protected showView(): Observable<boolean> {
     return this.authenticatedUserService.isAdmin();
   }
-
 
 
   ngOnDestroy(): void {

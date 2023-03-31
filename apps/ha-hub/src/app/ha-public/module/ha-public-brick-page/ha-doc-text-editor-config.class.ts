@@ -16,7 +16,6 @@ import {HaEnvironmentHelper} from '../../../ha-core/ha-model/ha-config/ha-enviro
 /**
  * Config for the text editor in the report
  */
-@Injectable({providedIn: 'root'})
 export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextEditorImageLoader {
 
   constructor(private brickName: string,

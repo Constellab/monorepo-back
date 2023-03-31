@@ -1,7 +1,7 @@
 <div>
   <h3 class="input-div" *ngIf="!inputFile">{{'import_new_brick_text1' | translate}}</h3>
   <fl-input-file-container color="primary" [placeholder]="'import_new_version_file' | translate" class="bt-input-div">
-    <input flInputFile type="file" [strictMode]="true" [autoClearHtmlInput]="true" accept="application/json" (fileChange)="onFileSelected($event)">
+    <input flInputFile type="file" [strictMode]="true" [autoClearHtmlInput]="true" accept="application/json" (fileChange)="onFileSelected($any($event))">
   </fl-input-file-container>
 </div>
 

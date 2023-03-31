@@ -29,7 +29,7 @@
       {{'login' | translate}}
     </a>
   </ng-container>
-    <fl-user-profile-picture [user]="user" [matMenuTriggerFor]="userMenu" *ngIf="userConnected$ | async as user" border="true">
+    <fl-user-profile-picture [user]="user" [matMenuTriggerFor]="userMenu" *ngIf="userConnected$ | async as user" [border]="true">
     </fl-user-profile-picture></span>
     <mat-menu #userMenu="matMenu">
       <button mat-menu-item [routerLink]="'../admin'">{{'admin_dashboard' | translate}}</button>

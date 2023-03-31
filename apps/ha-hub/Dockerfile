@@ -1,5 +1,5 @@
 # Build step
-FROM node:14-alpine as buildContainer
+FROM node:18-alpine3.17 as buildContainer
 
 WORKDIR /app
 

@@ -7,7 +7,7 @@
     <p class="input-div" *ngIf="!inputFile">{{'import_new_version_text1' | translate}}</p>
     <fl-input-file-container color="primary" [placeholder]="'import_new_version_file' | translate" class="bt-input-div">
       <input flInputFile type="file" [strictMode]="true" [autoClearHtmlInput]="true"
-             accept="application/json" (fileChange)="onFileSelected($event)">
+             accept="application/json" (fileChange)="onFileSelected($any($event))">
     </fl-input-file-container>
     <p class="input-error-text" *ngIf="errorFile">{{errorFileText | translate}}</p>
   </div>

@@ -50,7 +50,7 @@
     "ha-hub:serve": "nx serve ha-hub",
     "ha-hub:build-prod": "nx build ha-hub --prod",
     "ha-hub:build-dev": "nx build ha-hub --configuration=devevelopment",
-    "ha-hub:build-image-dev": "docker build -f apps/ha-hub/Dockerfile -t ha-hub .",
+    "ha-hub:build-image-prod": "docker build -f apps/ha-hub/Dockerfile -t ha-hub .",
     "ha-hub:caprover-deploy-pre-prod": "caprover deploy --host https://captain.constellab-pre-prod.gencovery.com --appName hub-front-pre-prod --imageName registry.gitlab.com/gencovery/core/monorepo/community-front:1.0.0",
     "ha-hub:caprover-deploy-prod": "caprover deploy --host https://captain.constellab.gencovery.com --appName hub-front --imageName registry.gitlab.com/gencovery/core/monorepo/community-front:1.0.0",
     "hn-hub:serve": "nx run hn-hub:serve",

@@ -13,7 +13,6 @@ import {HaStoryService} from '../../../ha-core/ha-service/ha-story.service';
 /**
  * Config for the text editor in the report
  */
-@Injectable({providedIn: 'root'})
 export class HaStoryTextEditorConfig extends FlTextEditorConfig implements FlTextEditorImageLoader {
 
   private storyId: string;

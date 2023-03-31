@@ -25,7 +25,7 @@
     <fl-input-file-container color="primary" [placeholder]="'import_technical_documentation' | translate"
                              *ngIf="formGp.controls['type'].value === 'TEC' && !isLoadingImport" class="g-centered-forced input-file">
       <input flInputFile type="file" [strictMode]="true"
-             accept="application/json" (fileChange)="onFileSelected($event)">
+             accept="application/json" (fileChange)="onFileSelected($any($event))">
     </fl-input-file-container>
     <p class="input-error-text" *ngIf="errorFile && formGp.controls['type'].value === 'TEC'">{{errorFileText | translate}}</p>
 
