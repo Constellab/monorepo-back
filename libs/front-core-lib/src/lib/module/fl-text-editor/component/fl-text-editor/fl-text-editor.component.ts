@@ -143,7 +143,6 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
       }
       return delta;
     });
-
     this.state.init(this.quill, this.config, this.editorElement.nativeElement, this.disabled);
 
     // init the HTML with the value set

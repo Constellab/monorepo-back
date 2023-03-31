@@ -105,7 +105,7 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   buildForm(): void {
     this.formGp = new FormBuilder().group({
       id: [null],
-      content: [null],
+      content: [{value: null, disabled: true}],
     });
   }
 

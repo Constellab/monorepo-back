@@ -41,6 +41,7 @@ export class HaStoryPageComponent implements OnInit {
     this.storyService.getById(id).subscribe((story: HaStory) => {
       this.story = story;
       this.formControl.setValue(this.story.content);
+      this.formControl.disable({emitEvent: true});
       this.titles = (new CmRichText(this.story.content)).getHeaders([2, 3]);
     });
   }

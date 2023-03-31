@@ -27,6 +27,7 @@ export class FlTextEditorState implements OnDestroy {
     this.quill = quill;
     this.config = config;
     this.textEditorContainer = textEditorContainer;
+    console.log(disabled)
     this.disabled$.next(disabled);
   }
 
