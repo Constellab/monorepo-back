@@ -1,8 +1,6 @@
 # Build step
 FROM node:14-alpine as buildContainer
 
-# Ebnvironement profile for the build 'dev', 'pre-prod' or 'prod'
-ARG ENVIRONMENT_PROFILE=${ENVIRONMENT_PROFILE}
 WORKDIR /app
 
 # Copy package.json
@@ -12,9 +10,9 @@ COPY /package.json /package-lock.json ./
 RUN npm ci
 
 # Copy the workspace and build the app
-COPY / .
+COPY ./ .
 
-RUN npm run ha-hub:build-$ENVIRONMENT_PROFILE
+RUN npm run ha-hub:build-prod
 
 # Run step
 FROM nginx:alpine
@@ -27,3 +25,14 @@ COPY --from=buildContainer /app/dist/apps/ha-hub /usr/share/nginx/html
 
 # Copy the default nginx.conf
 COPY /apps/ha-hub/nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy the entry point
+COPY apps/ha-hub/entrypoint.sh /entrypoint.sh
+
+RUN sed -i -e 's/\r$//' /entrypoint.sh && \
+    sed -i -e 's/\r$//' /etc/nginx/conf.d/default.conf && \
+    chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["nginx","-g","daemon off;"]
+
+

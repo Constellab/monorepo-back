@@ -2,12 +2,16 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-export const environment = {
+import {HaEnvironment} from './ha-environment.class';
+
+export const environment: HaEnvironment = {
   production: false,
-  apiUrl: 'http://localhost:3333/',
-  constellabApiUrl: 'https://api.preconstellab.com/',
-  constellabUrl: 'https://preconstellab.com/',
-  hubUrl: 'http://localhost:4200/'
+  settings: {
+    apiUrl: 'http://localhost:3333',
+    constellabApiUrl: 'https://api.preconstellab.com',
+    constellabFrontUrl: 'https://preconstellab.com',
+    communityFrontUrl: 'http://localhost:4200'
+  },
 };
 
 /*

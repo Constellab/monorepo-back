@@ -11,7 +11,7 @@ import {
 import {HaDocumentationService} from '../../../ha-core/ha-service/ha-documentation.service';
 import {HaPublicFindDocComponent} from './ha-public-find-doc/ha-public-find-doc.component';
 import {HaDocumentationSearchDTO} from '../../../ha-core/ha-model/ha-entities/ha-documentation.class';
-import {environment} from '../../../../environments/ha-environment';
+import {HaEnvironmentHelper} from '../../../ha-core/ha-model/ha-config/ha-environment.helper';
 
 /**
  * Config for the text editor in the report
@@ -85,8 +85,8 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
   private documentationLink(textEditorState: FlTextEditorState, doc: HaDocumentationSearchDTO): void {
     const index: number = textEditorState.getCurrentSelectionIndex();
     const value: string = doc.anchor ?
-      `${environment.hubUrl}bricks/${doc.brickName}/v${doc.major}/doc/${doc.completePath.slice(0, -1)}#${doc.anchor}`
-      : `${environment.hubUrl}bricks/${doc.brickName}/v${doc.major}/doc/${doc.completePath}`;
+      `${HaEnvironmentHelper.getCommunityFrontUrl()}/bricks/${doc.brickName}/v${doc.major}/doc/${doc.completePath.slice(0, -1)}#${doc.anchor}`
+      : `${HaEnvironmentHelper.getCommunityFrontUrl()}/bricks/${doc.brickName}/v${doc.major}/doc/${doc.completePath}`;
     const name: string = doc.anchor ?
       (doc.name === this.documentationName ? doc.anchor : `${doc.name} > ${doc.anchor}`)
       : doc.name;
@@ -96,6 +96,6 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
 
   onPasteImage(file: File, state: FlTextEditorState): any {
     this.insertImageFromFile(file, state);
-    return {ops: []} //Return the delta without modification with the image pasted
+    return {ops: []}; //Return the delta without modification with the image pasted
   }
 }

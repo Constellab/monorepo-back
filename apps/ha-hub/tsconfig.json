@@ -13,6 +13,11 @@
       "path": "./tsconfig.editor.json"
     }
   ],
+  "angularCompilerOptions": {
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  },
   "compilerOptions": {
     "target": "es2020"
   }

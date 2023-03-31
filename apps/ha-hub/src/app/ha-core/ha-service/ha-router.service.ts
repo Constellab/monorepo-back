@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {environment} from '../../../environments/ha-environment';
+import {HaEnvironmentHelper} from '../ha-model/ha-config/ha-environment.helper';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,7 @@ export class HaRouterService {
   }
 
   public static getAppUrl(): string {
-    return environment.hubUrl;
+    return HaEnvironmentHelper.getCommunityFrontUrl();
   }
 
   public static getHomeRoute(): string {

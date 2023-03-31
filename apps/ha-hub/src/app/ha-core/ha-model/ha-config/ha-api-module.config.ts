@@ -1,7 +1,7 @@
 import {FlApiServiceConfig} from '@monorepo/front-core-lib';
 import {ClCoreJsonConvert, ClDeserializationRef, ClPageI} from '@monorepo/core-lib';
 import {Injectable} from '@angular/core';
-import {environment} from '../../../../environments/ha-environment';
+import {HaEnvironmentHelper} from './ha-environment.helper';
 
 /**
  * Class to configure the FlApiService
@@ -11,7 +11,7 @@ import {environment} from '../../../../environments/ha-environment';
 })
 export class HaApiServiceConfig extends FlApiServiceConfig {
   deserializePage(json: any, classReference: ClDeserializationRef): ClPageI<any> {
-    // if the result if paginated (we supposed the json is type of ClPage)
+    // if the result is paginated (we supposed the json is type of ClPage)
     if (json.objects != null && json.objects instanceof Array) {
       json.objects = ClCoreJsonConvert.deserialize(json.objects, classReference);
       return json;
@@ -21,11 +21,7 @@ export class HaApiServiceConfig extends FlApiServiceConfig {
   }
 
   getApiUrl(): string {
-    return environment.apiUrl;
-  }
-
-  getConstellabUrl(): string{
-    return environment.constellabUrl;
+    return HaEnvironmentHelper.getApiUrl() + '/';
   }
 
   getHeaders(): Record<string, string> {

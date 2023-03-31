@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {FlUserConfig} from '@monorepo/front-core-lib';
-import {environment} from '../../../../environments/ha-environment';
+import {HaConstellabHelper} from './ha-constellab.helper';
 
 @Injectable({
   providedIn: 'root'
@@ -12,13 +12,12 @@ export class HaUserConfig extends FlUserConfig {
   }
 
   getUserPhotoUrl(userId: string): string {
-    return environment.constellabApiUrl + 'users/photo/' + userId;
+    return HaConstellabHelper.getConstellabUserPhotoUrl(userId);
   }
 
   getUserDetailRoute(userId: string): string {
     return null;
   }
-
 
 
 }

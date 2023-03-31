@@ -80,5 +80,5 @@ function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): (
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {
+export class HaAppModule {
 }

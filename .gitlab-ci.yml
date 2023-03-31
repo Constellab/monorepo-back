@@ -7,10 +7,12 @@ variables:
   GIT_DEPTH: 0
   LAB_FRONT_IMAGE: lab-front
   CA_IMAGE: central-front
+  HA_IMAGE: community-front
 
 stages:
   - build-lab
   - build-central
+  - build-hub
 
 # Build lab front
 build-lab:
@@ -44,5 +46,19 @@ build-central:
   only:
     - /ca_.*/
 
-
+# Build hub front
+build-hub:
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  stage: build-hub
+  script:
+    # retrieve version number from tag ex : ha_1.0.0
+    - export VERSION=$(echo $CI_COMMIT_TAG | cut -d'_' -f2)
+    # Build the docker image from Dockerfile with the latest tag and a tag for the version
+    - docker build --tag $CI_REGISTRY_IMAGE/$HA_IMAGE:$VERSION --tag $CI_REGISTRY_IMAGE/$HA_IMAGE:latest -f apps/ha-hub/Dockerfile .
+    # Push both image in the registry
+    - docker push $CI_REGISTRY_IMAGE/$HA_IMAGE:$VERSION
+    - docker push $CI_REGISTRY_IMAGE/$HA_IMAGE:latest
+  only:
+    - /ha_.*/
 

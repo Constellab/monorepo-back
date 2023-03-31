@@ -80,36 +80,7 @@
               "inlineCritical": false
             }
           },
-          "serviceWorker": true,
           "outputHashing": "all",
-          "budgets": [
-            {
-              "type": "initial",
-              "maximumWarning": "2mb",
-              "maximumError": "5mb"
-            },
-            {
-              "type": "anyComponentStyle",
-              "maximumWarning": "6kb",
-              "maximumError": "30kb"
-            }
-          ]
-        },
-        "preprod": {
-          "fileReplacements": [
-            {
-              "replace": "apps/ha-hub/src/environments/ha-environment.ts",
-              "with": "apps/ha-hub/src/environments/ha-environment.preprod.ts"
-            }
-          ],
-          "optimization": {
-            "styles": {
-              "inlineCritical": false
-            }
-          },
-          "serviceWorker": true,
-          "outputHashing": "all",
-          "ngswConfigPath": "apps/ha-hub/ngsw-config.json",
           "budgets": [
             {
               "type": "initial",
