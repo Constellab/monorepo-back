@@ -10,7 +10,7 @@ COPY /package.json /package-lock.json ./
 RUN npm ci
 
 # Copy the workspace and build the app
-COPY / .
+COPY ./ .
 
 RUN npm run lab-front:build-prod
 
