@@ -9,7 +9,7 @@ COPY /package.json /package-lock.json ./
 RUN npm ci
 
 # copy the rest of the app
-COPY ./ .
+COPY . .
 
 RUN npm run hn-hub:build
 

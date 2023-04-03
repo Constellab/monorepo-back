@@ -8,11 +8,13 @@ variables:
   LAB_FRONT_IMAGE: lab-front
   CA_IMAGE: central-front
   HA_IMAGE: community-front
+  CN_IMAGE: central-back
 
 stages:
   - build-lab
   - build-central
   - build-hub
+  - build-central-back
 
 # Build lab front
 build-lab:
@@ -61,4 +63,21 @@ build-hub:
     - docker push $CI_REGISTRY_IMAGE/$HA_IMAGE:latest
   only:
     - /ha_.*/
+
+
+# Build central back
+build-central-back:
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  stage: build-central-back
+  script:
+    # retrieve version number from tag ex : cn_1.0.0
+    - export VERSION=$(echo $CI_COMMIT_TAG | cut -d'_' -f2)
+    # Build the docker image from Dockerfile with the latest tag and a tag for the version
+    - docker build --tag $CI_REGISTRY_IMAGE/$CN_IMAGE:$VERSION --tag $CI_REGISTRY_IMAGE/$CN_IMAGE:latest -f apps/cn-central-back/Dockerfile .
+    # Push both image in the registry
+    - docker push $CI_REGISTRY_IMAGE/$CN_IMAGE:$VERSION
+    - docker push $CI_REGISTRY_IMAGE/$CN_IMAGE:latest
+  only:
+    - /cn_.*/
 
