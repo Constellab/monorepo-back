@@ -43,20 +43,18 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   }
 
   private checkLabInstanceBeforeSave(entity: CnLabInstance): void {
-    // check domain name
-    if (ClHelpService.isNullOrEmpty(entity.virtualHost)) {
-      throw new BlBadRequestException('Virtual host is required');
-    }
-
-    if (!CnLabInstancesService.SUPPORTED_MAIN_DOMAINS.includes(entity.getMainDomain())) {
-      throw new BlBadRequestException(
-        `Virtual host must be a valid domain name : ${CnLabInstancesService.SUPPORTED_MAIN_DOMAINS.join(', ')}`);
-    }
-
-
     if (entity.isCloud()) {
-      if (ClHelpService.isNullOrEmpty(entity.virtualHost) ||
-        ClHelpService.isNullOrEmpty(entity.serverInfo) ||
+      // check domain name
+      if (ClHelpService.isNullOrEmpty(entity.virtualHost)) {
+        throw new BlBadRequestException('Virtual host is required');
+      }
+
+      if (!CnLabInstancesService.SUPPORTED_MAIN_DOMAINS.includes(entity.getMainDomain())) {
+        throw new BlBadRequestException(
+          `Virtual host must be a valid domain name : ${CnLabInstancesService.SUPPORTED_MAIN_DOMAINS.join(', ')}`);
+      }
+
+      if (ClHelpService.isNullOrEmpty(entity.serverInfo) ||
         ClHelpService.isNullOrEmpty(entity.region) ||
         ClHelpService.isNullOrEmpty(entity.billingMode) ||
         ClHelpService.isNullOrEmpty(entity.volumeType) ||
