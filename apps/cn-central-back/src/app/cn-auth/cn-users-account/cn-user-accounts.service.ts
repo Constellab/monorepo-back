@@ -81,6 +81,9 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
       error => this.logger.error('Error while sending create account notification: ' + error)
     );
 
+    // create the user personal space
+    await this.spaceAggregateService.createPersonalSpace(dbUser, entityManager);
+
     this.usersService.sendUserToTransport(dbUser);
 
     return dbUser;
@@ -108,12 +111,26 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     user.status = CmUserStatus.INCOMPLETE;
     await this.usersService.update(user);
 
+    this.onAccountActivated(user);
+  }
+
+  /**
+   * Actions once the account is activated
+   * @param user
+   * @private
+   */
+  private onAccountActivated(user: CnUser): void {
     // send mail asynchronously
     this.sendAccountValidatedMail(user).catch(
       error => this.logger.error('Error while sending account validated mail: ' + error)
     );
   }
 
+  /**
+   * Send a welcome mail to the user with doc and info links
+   * @param user
+   * @private
+   */
   private async sendAccountValidatedMail(user: CnUser): Promise<boolean> {
     return this.mailService.sendMailToUser(CnMailTemplate.signup_validated, user, {
       user: user,
@@ -242,7 +259,11 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
       // create the user with an active but incomplete profile
       const userDb = await this.createAccount(user, CmUserStatus.INCOMPLETE, transaction);
 
-      return await this.spaceAggregateService.acceptInvitation(invitation, userDb, transaction);
+      await this.spaceAggregateService.acceptInvitation(invitation, userDb, transaction);
+
+      this.onAccountActivated(userDb);
+
+      return userDb;
     });
   }
 

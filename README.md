@@ -11,6 +11,12 @@ The angular front app for central (constellab).
 
 Prefix : Ca
 
+To build the app, push a tag with the version number and the prefix 'ca_'. 
+For example, to build the version 1.0.0, push the tag `ca_1.0.0`.
+
+Then execute the npm script ```ca-central-front:caprover-deploy-preprod``` or ```ca-central-front:caprover-deploy-prod```
+to deploy the app to caprover. Be careful of the image tag.
+
 ### Central back : Cn
 The nest app for the central (constellab). 
 
