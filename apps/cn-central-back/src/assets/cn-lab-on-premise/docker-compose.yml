@@ -166,6 +166,7 @@ services:
     ports:
       - 3408:3306
 
+  #START_BIOTA_DB The start and end comments are used by the script to replace the content of the file
   # GWS Biota Production DB
   gws_biota_db:
     image: mariadb:10.7.4
@@ -182,6 +183,8 @@ services:
     container_name: gws_biota_db
     ports:
       - 3409:3306
+  #END_BIOTA_DB
+
 
 volumes:
   lab-on-premise-lab:

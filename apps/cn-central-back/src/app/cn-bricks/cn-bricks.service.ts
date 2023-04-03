@@ -80,7 +80,11 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
     if (!CnCurrentUserHelper.isAdmin()) {
       where.visibility = CnBrickVisibility.PUBLIC;
     }
-    return this.brickRepo.find({where: where, relations: ['versions']});
+    return this.brickRepo.find({
+      where: where,
+      relations: ['versions'],
+      order: {name: 'ASC'}
+    });
   }
 
   public async getBrickVersions(brickName: string): Promise<CnBrickVersion[]> {

@@ -98,6 +98,22 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
    * @param config
    */
   public async getLabConfigFile(labInstance: CnLabInstance, config: CnLabInstanceConfigDTO): Promise<CnLabConfigFile> {
+
+    const frontVersion = await this.getFrontVersion(config);
+    const biotaMariaDbUrl = await this.getMariaDbUrl(config);
+
+    return {
+      lab_id: labInstance.id,
+      name: labInstance.name,
+      front_version: frontVersion,
+      glab_tag: config.glabTag || 'latest',
+      biota_maria_db_url: biotaMariaDbUrl,
+      variables: {},
+      environment: await this.brickConfigToConfigEnv(config.brickVersions),
+    };
+  }
+
+  private async getFrontVersion(config: CnLabInstanceConfigDTO): Promise<string> {
     // check if the gws core is in the brick list
     const gwsCore = config.brickVersions.find(brickVersion => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_CORE.toLowerCase());
 
@@ -114,11 +130,14 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     if (frontVersion == null) {
       throw new BlBadRequestException(`The front version does not exists for '${CnBrickGWS.GWS_CORE}' version '${gwsCore.version}'`);
     }
+    return frontVersion;
+  }
 
+  private async getMariaDbUrl(config: CnLabInstanceConfigDTO): Promise<string> {
     // get the maria db url
     const gwsBiota = config.brickVersions.find(brickVersion => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_BIOTA.toLowerCase());
     if (gwsBiota == null) {
-      throw new BlBadRequestException(`The brick '${CnBrickGWS.GWS_BIOTA}' must be set in the config`);
+      return null;
     }
     // get gws_core version
     const gwsBiotaBrickVersion = await this.brickService.getBrickVersion(CnBrickGWS.GWS_BIOTA,
@@ -129,15 +148,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
       throw new BlBadRequestException(`The maria db url does not exists for '${CnBrickGWS.GWS_BIOTA}' version '${gwsBiota.version}'`);
     }
 
-    return {
-      lab_id: labInstance.id,
-      name: labInstance.name,
-      front_version: frontVersion,
-      glab_tag: config.glabTag || 'latest',
-      biota_maria_db_url: biotaMariaDbUrl,
-      variables: {},
-      environment: await this.brickConfigToConfigEnv(config.brickVersions),
-    };
+    return biotaMariaDbUrl;
   }
 
   private async brickConfigToConfigEnv(brickVersions: CnBrickVersionDTO[]): Promise<CnLabConfigFileEnv> {
@@ -191,7 +202,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
       brickVersions: [],
     };
 
-    for (const env of [...configFile.environment?.pip ?? [] , ...configFile.environment?.git ?? []]) {
+    for (const env of [...configFile.environment?.pip ?? [], ...configFile.environment?.git ?? []]) {
       for (const brick of env.packages) {
         if (brick.is_brick) {
           config.brickVersions.push({

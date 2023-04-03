@@ -58,6 +58,11 @@ export class CnLabInstanceOnPremiseService {
       .replace(/\${FRONT_VERSION}/g, config.front_version)
       .replace(/\${GLAB_TAG}/g, config.glab_tag);
 
+    if (!config.biota_maria_db_url){
+      // remove all text between '#START_BIOTA_DB' and '#END_BIOTA_DB'
+      content = content.replace(/#START_BIOTA_DB[\s\S]*#END_BIOTA_DB/g, '');
+    }
+
     return content;
   }
 

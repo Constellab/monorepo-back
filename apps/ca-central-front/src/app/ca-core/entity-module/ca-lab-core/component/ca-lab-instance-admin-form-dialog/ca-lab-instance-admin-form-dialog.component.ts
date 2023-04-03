@@ -70,7 +70,7 @@ export class CaLabInstanceAdminFormDialogComponent extends FlFormDialogAbstractD
       type: [{value: 'CLOUD', disabled: this.isUpdateMode()}, [Validators.required]],
       virtualHost: [null, [Validators.required, this.virtualHostValidator()]],
       serverInfo: [null, [Validators.required]],
-      billingMode: ['MONTHLY', [Validators.required]],
+      billingMode: [null, [Validators.required]],
       volumeSize: [null, [Validators.required, FlGlobalValidators.isInteger, Validators.min(50)]],
       volumeType: ['HIGH_SPEED', [Validators.required]],
       glabApiKey: [null],
@@ -145,7 +145,7 @@ export class CaLabInstanceAdminFormDialogComponent extends FlFormDialogAbstractD
         return null;  // don't validate empty values to allow optional controls
       }
 
-      // check that the value is a sub domain of one of supportedDomains
+      // check that the value is a subdomain of one of supportedDomains
       const subDomain = value.split('.')[0];
       if (subDomain.length === 0) {
         return {invalid: true};
