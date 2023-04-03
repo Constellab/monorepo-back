@@ -5,6 +5,7 @@
 FROM node:18-alpine3.17 as builder
 WORKDIR /app
 
+COPY . .
 # Copy package and package-lock.json file for modules installation
 COPY /package.json /package-lock.json ./
 
@@ -12,7 +13,6 @@ COPY /package.json /package-lock.json ./
 RUN npm ci
 
 # copy the rest of the app
-COPY . .
 
 RUN npm run cn-central-back:build
 
