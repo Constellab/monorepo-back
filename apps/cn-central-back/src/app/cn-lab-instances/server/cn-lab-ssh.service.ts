@@ -130,8 +130,8 @@ export class CnLabSshService {
   }
 
   /**
-   * Call ssh regularly to check if the server is up. Timeout after 100000 seconds
-   * Raise an exception if the server is not up after 150000 seconds
+   * Call ssh regularly to check if the server is up.
+   * Raise an exception if the server is not up after 15 * 20 seconds
    * @param labInstance
    * @param consecutiveRequiredSuccess number of consecutive successful ssh calls required to consider the server up and running
    * @private
@@ -140,7 +140,7 @@ export class CnLabSshService {
     // wait for server to reboot
     let count = 0;
     let successCount = 0;
-    while (count < 15) {
+    while (count < 20) {
 
       const result = await this.checkSshConnection(labInstance.virtualHost);
       if (result) {
@@ -153,13 +153,9 @@ export class CnLabSshService {
         successCount = 0;
       }
 
-      if (count >= 15) {
-        break;
-      }
-
       // eslint-disable-next-line max-len
       this.logger.log(`Waiting for server to be available for lab ${labInstance.id}. Attempt ${count + 1} of 15. Success ${successCount} of ${consecutiveRequiredSuccess}`);
-      // wait 10 seconds
+      // wait 15 seconds
       await new Promise(r => setTimeout(r, 15000));
       count++;
     }
