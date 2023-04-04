@@ -22,7 +22,7 @@ build-lab:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   stage: build-lab
   script:
-    # retrieve version number from tag ex : ca_1.0.0
+    # retrieve version number from tag ex : lab_1.0.0
     - export VERSION=$(echo $CI_COMMIT_TAG | cut -d'_' -f2)
     # Build the docker image from Dockerfile with the latest tag and a tag for the version
     - docker build --tag $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:$VERSION --tag $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:latest -f apps/lab-front/Dockerfile .
