@@ -11,7 +11,7 @@ import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib'
 import {CnLabInstance} from '../cn-lab-instances/cn-lab-instance.entity';
 import {CnLabInstanceConfigDTO} from '../cn-lab-instances/cn-lab-instance.dto';
 import {CnConfigFileEnvRepository, CnLabConfigFile, CnLabConfigFileEnv} from './cn-lab-config-file.class';
-import {CnRepoType} from '../cn-bricks/cn-brick-version.entity';
+import {CnBrickVersion, CnRepoType} from '../cn-bricks/cn-brick-version.entity';
 
 @Injectable()
 export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
@@ -99,21 +99,35 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
    */
   public async getLabConfigFile(labInstance: CnLabInstance, config: CnLabInstanceConfigDTO): Promise<CnLabConfigFile> {
 
-    const frontVersion = await this.getFrontVersion(config);
+    // get gws_core version
+    const gwsCoreBrickVersion = await this.getGwsCoreBrickVersion(config);
+
+    // get the front version from the technical info
+    const frontVersion = gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_FRONT_VERSION];
+    if (frontVersion == null) {
+      // eslint-disable-next-line max-len
+      throw new BlBadRequestException(`The front version does not exists for '${CnBrickGWS.GWS_CORE}' version '${gwsCoreBrickVersion.version}'`);
+    }
+
+    // use the version set in the config, or by default version link to the gws_core brick version
+    // or use the latest version
+    const glabVersion = config.glabTag ??
+      gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_GLAB_VERSION] ?? 'latest';
+
     const biotaMariaDbUrl = await this.getMariaDbUrl(config);
 
     return {
       lab_id: labInstance.id,
       name: labInstance.name,
       front_version: frontVersion,
-      glab_tag: config.glabTag || 'latest',
+      glab_tag: glabVersion,
       biota_maria_db_url: biotaMariaDbUrl,
       variables: {},
       environment: await this.brickConfigToConfigEnv(config.brickVersions),
     };
   }
 
-  private async getFrontVersion(config: CnLabInstanceConfigDTO): Promise<string> {
+  private async getGwsCoreBrickVersion(config: CnLabInstanceConfigDTO): Promise<CnBrickVersion> {
     // check if the gws core is in the brick list
     const gwsCore = config.brickVersions.find(brickVersion => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_CORE.toLowerCase());
 
@@ -124,13 +138,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     // retrieve the lab front version
     const gwsCoreVersion = CmVersion.fromString(gwsCore.version);
     // get gws_core version
-    const gwsCoreBrickVersion = await this.brickService.getBrickVersion(CnBrickGWS.GWS_CORE, gwsCoreVersion);
-    // get the front version from the technical info
-    const frontVersion = gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_FRONT_VERSION];
-    if (frontVersion == null) {
-      throw new BlBadRequestException(`The front version does not exists for '${CnBrickGWS.GWS_CORE}' version '${gwsCore.version}'`);
-    }
-    return frontVersion;
+    return await this.brickService.getBrickVersion(CnBrickGWS.GWS_CORE, gwsCoreVersion);
   }
 
   private async getMariaDbUrl(config: CnLabInstanceConfigDTO): Promise<string> {

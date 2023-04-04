@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {FlFileHelper} from '@monorepo/front-core-lib';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
@@ -27,7 +27,7 @@ export class CaLabOnPremiseDownloadConfigComponent implements OnInit {
 
   ngOnInit(): void {
     this.formGp = this.formBuilder.group({
-      glabTag: ['latest', Validators.required]
+      glabTag: [null]
     });
   }
 

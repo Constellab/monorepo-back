@@ -7,13 +7,10 @@
 
     <!--  Glab image tag  -->
     <mat-form-field class="g-form-input">
-      <mat-label>{{'glab_image_tag' | translate}}</mat-label>
-      <input matInput formControlName="glabTag" [placeholder]="'glab_image_tag' | translate">
+      <mat-label>{{'glab_version_override' | translate}}</mat-label>
+      <input matInput formControlName="glabTag" [placeholder]="'glab_version_override' | translate">
 
-      <mat-error *ngIf="formGp.get('glabTag').hasError('required')">
-        {{'name' | flErrorRequired}}
-      </mat-error>
-      <mat-hint>{{'glab_image_tag_recommended' | translate}}: 'latest', 'beta'</mat-hint>
+      <mat-hint>{{'glab_version_override_hint' | translate}}</mat-hint>
     </mat-form-field>
 
   </form>
