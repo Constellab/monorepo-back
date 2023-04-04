@@ -49,7 +49,7 @@ export class LabViewConfigSearchComponent implements OnInit {
         config: LabViewConfigSearch.advancedSearchManagerConfig,
         skipFalseBoolean: true
       },
-      storeSearchInUrl: false
+      storeSearchInUrl: this.fullPageSearch
     };
 
     this.datasource = new FlEntityPaginatedDatasource(this.viewConfigService.getViewConfigSearchFunction(this.reportId),

@@ -76,8 +76,9 @@ export class FlButtonLoaderComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
-    if (this.button) {
-      this.button.disabled = false;
+    const button = this.getButton();
+    if (button) {
+      button.disabled = false;
     }
 
     if (this.position === 'override') {
