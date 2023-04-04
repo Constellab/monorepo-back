@@ -16,6 +16,10 @@ export class LabBrickService {
     return this.apiService.get(this.route, LabBrickEntity);
   }
 
+  public getBrick(brickName: string): Observable<LabBrickEntity | null> {
+    return this.apiService.get(`${this.route}/${brickName}`, LabBrickEntity);
+  }
+
   public generateTechnicalDoc(brickName: string): Observable<any> {
     return this.apiService.get(`${this.route}/${brickName}/technical-doc`);
   }

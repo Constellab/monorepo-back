@@ -2,10 +2,8 @@ import {LabEntity} from '../global/lab-entity.entity';
 import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {CmVersion, CmVersionTransform} from '@monorepo/common-model';
-import {DateTime} from 'luxon';
-import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 
-export type LabBrickMessageStatus = 'INFO' | 'ERROR'  | 'CRITICAL'| 'WARNING'
+export type LabBrickMessageStatus = 'INFO' | 'ERROR' | 'CRITICAL' | 'WARNING'
 
 const labBrickMessageStatusDict: FlStatusDict<LabBrickMessageStatus> = {
   INFO: FlStatusHelper.getInfoStatus('INFO'),
@@ -49,10 +47,10 @@ export class LabBrickEntity extends LabEntity {
   version: string;
 
   @Expose({name: 'repo_type'})
-  repoType: 'app'
+  repoType: 'app';
 
   @Expose({name: 'repo_commit'})
-  repoCommit?: string
+  repoCommit?: string;
 
   @Expose({name: 'parent_name'})
   parentName ?: string;
@@ -73,13 +71,14 @@ export class LabBrickEntity extends LabEntity {
  * List of basic gws bricks
  */
 export enum LabBrickGWS {
-  GWS_CORE = 'gws_core'
+  GWS_CORE = 'gws_core',
+  GWS_BIOTA = 'gws_biota',
 }
 
-export class LabBrickMigration{
+export class LabBrickMigration {
   @CmVersionTransform()
-  version: CmVersion
+  version: CmVersion;
 
   @Expose({name: 'short_description'})
-  shortDescription: string
+  shortDescription: string;
 }

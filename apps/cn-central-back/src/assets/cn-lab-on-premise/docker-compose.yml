@@ -35,7 +35,6 @@ services:
       - GWS_BIOTA_DB_PORT=3306
     depends_on:
       - gws_core_prod_db
-      - gws_biota_db
     volumes:
       - lab-on-premise-lab:/lab
       - lab-on-premise-logs:/logs
@@ -82,7 +81,6 @@ services:
       - GWS_BIOTA_DB_PORT=3306
     depends_on:
       - gws_core_dev_db
-      - gws_biota_db
     volumes:
       - lab-on-premise-dev-lab:/lab
       - lab-on-premise-dev-logs:/logs

@@ -4,8 +4,7 @@ import {
   labConstDataboxFullRoute,
   labConstReportFullRoute,
   labConstViewboxFullRoute
-} from '../../lab-core/utils/lab-base-route';
-import {technicalBricks} from './lab-technical-brick.class';
+} from '../lab-core/utils/lab-base-route';
 
 /**
  * Describe one main menu link button
@@ -20,8 +19,8 @@ export interface MainMenuLink {
 // list of the main menu links buttons
 export const mainMenuLinks: MainMenuLink[] = [
   {
-    label: technicalBricks.BIOX.label,
-    icon: technicalBricks.BIOX.icon,
+    label: 'biox.biox',
+    icon: 'experiment',
     route: labConstBioxFullRoute
   },
   {
@@ -39,15 +38,11 @@ export const mainMenuLinks: MainMenuLink[] = [
     icon: 'report',
     route: labConstReportFullRoute
   },
-  {
-    label: technicalBricks.BIOTA.label,
-    icon: technicalBricks.BIOTA.icon,
-    route: labConstBiotaFullRoute,
-    divider: true,
-  },
-  // {
-  //   label: 'add_brick',
-  //   icon: 'view_in_ar',
-  //   route: '/app/brick'
-  // }
 ];
+
+export const labBiotaMenuLink: MainMenuLink = {
+  label: 'biota.biota',
+  icon: 'database',
+  route: labConstBiotaFullRoute,
+  divider: true,
+};

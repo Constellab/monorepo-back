@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {MainMenuLink, mainMenuLinks} from '../../utils/lab-main-menu-link.class';
+import {labBiotaMenuLink, MainMenuLink, mainMenuLinks} from '../../lab-main-menu-link.class';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {LabEnvStore} from '../../../lab-core/service/lab-env.store';
@@ -9,6 +9,8 @@ import {LabRouterService} from '../../../lab-core/service/lab-router.service';
 import {LabSystemService} from '../../../lab-core/service/lab-system.service';
 import {Title} from '@angular/platform-browser';
 import {LabSystemInfo} from '../../../lab-core/model/global/lab-system.class';
+import {LabBrickService} from '../../../lab-core/entity-service/lab-brick.service';
+import {LabBrickEntity, LabBrickGWS} from '../../../lab-core/model/entities/lab-brick.entity';
 
 @Component({
   selector: 'lab-main-app',
@@ -33,7 +35,8 @@ export class LabMainAppComponent implements OnInit {
   constructor(private labEnvManager: LabEnvStore,
               private authenticatedUserService: LabAuthenticatedUserService,
               private systemService: LabSystemService,
-              private titleService: Title) {
+              private titleService: Title,
+              private brickService: LabBrickService) {
   }
 
   ngOnInit(): void {
@@ -41,6 +44,19 @@ export class LabMainAppComponent implements OnInit {
     // init lab name
     this.setLabName('Lab');
     this.getLabInfo();
+    this.checkBiota();
+  }
+
+  private checkBiota(): void {
+    this.brickService.getBrick(LabBrickGWS.GWS_BIOTA).subscribe(
+      brick => this.checkBiotaSuccess(brick)
+    );
+  }
+
+  private checkBiotaSuccess(brick: LabBrickEntity): void {
+    if (brick && brick.status.value !== 'CRITICAL') {
+      this.accessibleLinks.push(labBiotaMenuLink);
+    }
   }
 
   get toolbarColorClass(): Observable<string> {
