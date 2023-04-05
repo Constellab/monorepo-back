@@ -96,7 +96,7 @@ export class CaLabInstanceDetailManagerState implements OnDestroy {
     }
   }
 
-  public getStatusEvent$(): Observable<FlStatusEvent> {
+  public getStatusEvent$(): Observable<FlStatusEvent<CaLabManagerStatus>> {
     return this.status$.asObservable();
   }
 

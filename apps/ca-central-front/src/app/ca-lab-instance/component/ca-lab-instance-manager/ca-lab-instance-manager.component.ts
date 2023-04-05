@@ -60,9 +60,15 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
         catchError(() => of(null))
       ));
 
-    const managerVersion = await firstValueFrom(this.managerState.getStatus$()
+    const managerVersion = await firstValueFrom(this.managerState.getStatusEvent$()
       .pipe(
-        map(labStatus => labStatus.version),
+        map(statusEvent => {
+          if(statusEvent.status !== 'success') {
+            return null;
+          }else{
+            return statusEvent.object.version;
+          }
+        }),
         catchError(() => of(null))
       ));
 
