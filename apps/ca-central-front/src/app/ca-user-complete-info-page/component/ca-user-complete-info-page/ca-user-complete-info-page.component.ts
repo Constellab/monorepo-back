@@ -49,6 +49,6 @@ export class CaUserCompleteInfoPageComponent implements OnInit {
   }
 
   getUser(): void{
-    this.user$ = this.spaceService.getAndCheckUser(this.id);
+    this.user$ = this.spaceService.getUserById(this.id);
   }
 }

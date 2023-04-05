@@ -4,9 +4,6 @@ import {CaUser} from '../../../../model/entities/ca-user.class';
 import {FormControl} from '@ngneat/reactive-forms';
 import {FlSnackBarService, FlUserConfigSearchNameMode} from '@monorepo/front-core-lib';
 import {Validators} from '@angular/forms';
-import {
-  CaSelectUserMode
-} from '../../../ca-user-core/component/ca-select-user-options/ca-select-user-options.component';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 
@@ -15,7 +12,7 @@ export interface CaGroupAddUserDialogInput {
   addUserToGroup: (userId: string) => Observable<any>;
   title: string;
   successMessage: string;
-  selectUserMode?: CaSelectUserMode;
+  selectUserMode?: FlUserConfigSearchNameMode;
 }
 
 /**

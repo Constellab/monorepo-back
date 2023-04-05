@@ -162,19 +162,8 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     const userBSpaces: CnSpace[] = await this.getSpacesOfUser(userBId);
 
     //Check common space
-    if (userASpaces.find((space) => userBSpaces.find((spaceB) => spaceB.id === space.id)) == null) {
-      return false;
-    }
-    return true;
-  }
+    return userASpaces.find((space) => userBSpaces.find((spaceB) => spaceB.id === space.id)) != null;
 
-
-  public async checkIfGetUserIsAllowed(userId: string, currentUserId: string): Promise<boolean> {
-    if (await this.checkUsersHaveCommonSpace(userId, currentUserId)) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   // Search by name

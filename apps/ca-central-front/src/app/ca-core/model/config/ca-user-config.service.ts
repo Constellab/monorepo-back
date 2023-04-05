@@ -27,7 +27,7 @@ export class CaUserConfig extends FlUserConfig {
   }
 
   getUserById(userId: string): Observable<CaUser> {
-    return this.userService.findById(userId);
+    return this.spaceService.getUserById(userId);
   }
 
   getSearchByNamesDatasource(mode: FlUserConfigSearchNameMode): CaUserDatasourcePaginated {

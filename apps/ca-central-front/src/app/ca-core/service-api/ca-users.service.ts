@@ -27,10 +27,6 @@ export class CaUsersService {
     return this.apiService.getBaseRouteUrl(`${this.route}/photo/${userId}`);
   }
 
-  public findById(id: string): Observable<CaUser> {
-    return this.apiService.get(`${this.route}/${id}`, CaUser);
-  }
-
   public findAll(page: number, pageSize: number): Observable<ClPageI<CaUser>> {
     return this.apiService.get(`${this.route}`, CaUser,
       {page: page, pageSize: pageSize, resultIsPaginated: true});

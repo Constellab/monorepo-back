@@ -61,8 +61,17 @@ body {
 // when a flex element has this class, it takes all the width in the advanced search
 // right panel, but not in a full page
 .g-search-field {
-  flex: 1 1 12em;
+  flex: 1 1 12rem;
   min-width: 0;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+}
+
+// place on field in form that need to be full but allign with g-search-field
+.g-search-field-full {
+  width: 100%;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
 }
 
 ///////////////// Responsive grids //////////////////////

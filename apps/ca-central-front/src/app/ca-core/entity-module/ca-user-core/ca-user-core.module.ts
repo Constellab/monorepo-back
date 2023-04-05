@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {CaCustomMaterialModule} from '../../custom-material/ca-custom-material.module';
-import {CaSelectUserOptionsComponent} from './component/ca-select-user-options/ca-select-user-options.component';
 import {
   CaAuthenticatedUserInlineComponent
 } from './component/ca-authenticated-user-inline/ca-authenticated-user-inline.component';
@@ -18,7 +17,6 @@ import {CaUserSearchFormComponent} from './component/ca-user-search-form/ca-user
  */
 @NgModule({
   declarations: [
-    CaSelectUserOptionsComponent,
     CaAuthenticatedUserInlineComponent,
     CaUserTableComponent,
     CaUserListInlineComponent,
@@ -26,7 +24,6 @@ import {CaUserSearchFormComponent} from './component/ca-user-search-form/ca-user
     CaUserSearchFormComponent,
   ],
   exports: [
-    CaSelectUserOptionsComponent,
     CaAuthenticatedUserInlineComponent,
     CaUserTableComponent,
     CaUserListInlineComponent,

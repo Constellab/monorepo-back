@@ -1,16 +1,16 @@
 <div fxLayout="column" class="form" [formGroup]="formGp">
 
-  <div fxLayout="row wrap" fxLayoutGap="1em" fxLayoutAlign="space-between center"
+  <div fxLayout="row wrap" fxLayoutAlign="space-between center"
        class="g-full g-form-field-compact">
 
     <!--  name  -->
-    <mat-form-field class="g-full">
+    <mat-form-field class="g-search-field-full">
       <mat-label>{{'name' | translate }}</mat-label>
       <input matInput formControlName="name" [placeholder]="'name' | translate" autocomplete="off">
     </mat-form-field>
 
     <!--  Domain  -->
-    <mat-form-field class="g-full">
+    <mat-form-field class="g-search-field-full">
       <mat-label>{{'space_domain' | translate }}</mat-label>
       <input matInput formControlName="domain" [placeholder]="'space_domain' | translate" autocomplete="off">
     </mat-form-field>

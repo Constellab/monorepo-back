@@ -171,7 +171,6 @@ export class CnSpacesController {
     return this.spaceAggregateService.requestNewLicenses(id, request);
   }
 
-  // TODO to clean
   @Get('user/:userId')
   public async getAndCheckUser(@Param('userId') userId: string): Promise<CnUser> {
     return this.spaceAggregateService.getAndCheckUser(userId);

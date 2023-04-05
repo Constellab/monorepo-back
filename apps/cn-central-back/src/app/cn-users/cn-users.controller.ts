@@ -41,12 +41,6 @@ export class CnUsersController {
     return this.usersService.getCurrent();
   }
 
-  // TODO check if we keep this unsecured route
-  @Get(':id')
-  async getUser(@Param('id') id: string): Promise<CnUser> {
-    return this.usersService.findByIdAndCheck(id);
-  }
-
   @Put('current/language/:lang')
   updateLanguage(@Param('lang', new BlParseEnumPipe(ClSupportedLanguage)) lang: ClSupportedLanguage): Promise<void> {
     return this.usersService.updateLanguage(lang);

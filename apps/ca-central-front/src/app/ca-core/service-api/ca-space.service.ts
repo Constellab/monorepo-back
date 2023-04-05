@@ -8,8 +8,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {CaSaveSpaceDTO, CaSpace, CaSpaceDatasource, CaSpaceInfoDto,} from '../model/entities/space/ca-space.class';
 import {Observable} from 'rxjs';
-import {ClPage, ClPageI} from '@monorepo/core-lib';
-import {CaSpaceInvit, CaSpaceInvitDatasource} from '../model/entities/space/ca-space-invit.class';
+import {ClPage} from '@monorepo/core-lib';
 import {CaRequestNewLicensesDto} from '../model/dto/ca-space.dto';
 import {CaUser, CaUserDatasourcePaginated} from '../model/entities/ca-user.class';
 import {CaSpaceSearch, CaSpaceSearchFields} from '../entity-module/ca-space-core/model/ca-space-search.class';
@@ -134,17 +133,7 @@ export class CaSpaceService extends FlApiCrudService<CaSpace, CaSaveSpaceDTO> {
       (page, size, name) => this.searchSpaceUsersByName(spaceId, name, page, size), 20);
   }
 
-  ////////////////////////////////// INVITATION //////////////////////////////////////
-  public getInvitationsDatasource(spaceId: string): CaSpaceInvitDatasource {
-    return new FlEntityPaginatedDatasource(
-      (page, size) =>
-        this.getInvitations(spaceId, page, size), 20);
-  }
 
-  public getInvitations(spaceId: string, page: number, pageSize: number): Observable<ClPageI<CaSpaceInvit>> {
-    return this.apiService.get(`${this.route}/${spaceId}/invitations`, CaSpaceInvit,
-      {resultIsPaginated: true, page: page, pageSize: pageSize});
-  }
 
   ////////////////////////////////// OTHERS //////////////////////////////////
   public requestNewLicenses(spaceId: string, request: CaRequestNewLicensesDto): Observable<void> {
@@ -155,7 +144,8 @@ export class CaSpaceService extends FlApiCrudService<CaSpace, CaSaveSpaceDTO> {
     return this.apiService.post(`${this.route}/generate-all-user-personal-space`, null);
   }
 
-  public getAndCheckUser(userId: string): Observable<CaUser>{
+  // for now this route is here to check if the current user has a common space with requested user
+  public getUserById(userId: string): Observable<CaUser>{
     return this.apiService.get(`${this.route}/user/${userId}`, CaUser);
   }
 }

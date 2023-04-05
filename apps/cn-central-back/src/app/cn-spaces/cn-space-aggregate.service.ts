@@ -371,10 +371,11 @@ export class CnSpaceAggregateService {
   }
 
   public async getAndCheckUser(userId: string): Promise<CnUser> {
-    if ((await this.spaceUserService.checkIfGetUserIsAllowed(userId, this.userService.getCurrent().id)) ||
-      this.userService.getCurrent().isAdmin()) {
-      return this.userService.findById(userId);
+    if(CnCurrentUserHelper.isAdmin() ||
+      await this.spaceUserService.checkUsersHaveCommonSpace(userId, this.userService.getCurrent().id)){
+      return this.userService.findByIdAndCheck(userId);
     }
+
     throw new BlBadRequestException(CnErrorText.USER_NOT_IN_SPACE);
   }
 
