@@ -7,7 +7,7 @@ import {
   FlSearchDateInterval
 } from '@monorepo/front-core-lib';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {CaLabInstanceStatus} from '../../../model/entities/lab/ca-lab-instance.class';
+import {CaLabInstanceStatus, CaLabInstanceType} from '../../../model/entities/lab/ca-lab-instance.class';
 import {CaCity} from '../../../model/entities/ca-city.entity';
 import {CaServerInfo} from '../../../model/entities/ca-server-info.class';
 import {CaSpace} from '../../../model/entities/space/ca-space.class';
@@ -35,6 +35,8 @@ export class CaLabInstanceSearchFields {
 
   @Type(() => CaSpace)
   spaces: CaSpace[];
+
+  type: CaLabInstanceType;
 }
 
 export class CaLabInstanceSearch {
@@ -48,17 +50,19 @@ export class CaLabInstanceSearch {
     createdBy: 'created_by',
     createdAt: 'creation_date',
     spaces: 'space',
+    type: 'lab_instance_type',
   };
 
   public static advancedSearchConverter: FlSearchCriteriaConverter<CaLabInstanceSearchFields> = {
     name: {key: 'name', operator: 'MATCH'},
     currentStatus: {key: 'currentStatus.status', operator: 'EQ'},
     virtualHost: {key: 'virtualHost', operator: 'MATCH'},
-    city: {key: 'city.id', operator: 'EQ', convertValue: FlSearchConverter.getEntityId},
+    city: {key: 'region.city.id', operator: 'EQ', convertValue: FlSearchConverter.getEntityId},
     serverInfo: {key: 'serverInfo.id', operator: 'EQ', convertValue: FlSearchConverter.getEntityId},
     createdBy: {key: 'createdBy.id', operator: 'EQ', convertValue: FlSearchConverter.getEntityId},
     createdAt: FlSearchConverter.dateInterval('createdAt'),
     spaces: {key: 'space.id', operator: 'IN', convertValue: FlSearchConverter.getEntitiesId},
+    type: {key: 'type', operator: 'EQ'},
   };
 
   public static getAdvancedSearchForm(): FormGroup<CaLabInstanceSearchFields> {
@@ -74,6 +78,7 @@ export class CaLabInstanceSearch {
         to: [null],
       }),
       spaces: null,
+      type: null,
     });
   }
 }

@@ -52,6 +52,15 @@
       </mat-select>
     </mat-form-field>
 
+    <!--  Type  -->
+    <mat-form-field class="g-search-field">
+      <mat-label>{{'lab_instance_type' | translate}}</mat-label>
+      <mat-select [placeholder]="'lab_instance_type' | translate" formControlName="type">
+        <mat-option [value]="'CLOUD'">{{'lab_instance_type_CLOUD' | translate}}</mat-option>
+        <mat-option [value]="'ON_PREMISE'">{{'lab_instance_type_ON_PREMISE' | translate}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
     <!--Created by-->
     <mat-form-field class="g-search-field">
       <mat-label>{{'created_by' | translate }}</mat-label>
