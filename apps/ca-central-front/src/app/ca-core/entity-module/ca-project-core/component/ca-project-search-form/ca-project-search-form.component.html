@@ -16,12 +16,11 @@
     </mat-form-field>
 
     <!--Leader-->
-    <mat-form-field class="g-search-field">
-      <mat-label>{{'project_leader' | translate }}</mat-label>
-      <mat-select formControlName="leader" [placeholder]="'project_leader' | translate">
-        <ca-select-user-options mode="space"></ca-select-user-options>
-      </mat-select>
-    </mat-form-field>
+    <fl-form-field class="g-search-field">
+      <fl-select-user formControlName="leader" [placeholder]="'project_leader' | translate"
+                      mode="space">
+      </fl-select-user>
+    </fl-form-field>
 
     <!--  CurrentStatus  -->
     <mat-form-field class="g-search-field">

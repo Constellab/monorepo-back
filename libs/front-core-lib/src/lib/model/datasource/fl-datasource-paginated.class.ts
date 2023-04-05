@@ -9,7 +9,6 @@ import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
 export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
 
 
-
   /**
    * Current page information
    */
@@ -66,7 +65,7 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
   }
 
   // current page number
-  get pageNumber(): number{
+  get pageNumber(): number {
     return this.page ? this.page.currentPage : 0;
   }
 
@@ -123,6 +122,20 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
     this.isLoading = false;
     this.nextPageIsLoading = false;
     this.firstPageIsLoading = false;
+  }
+
+  public setPageData(data: T[]): void {
+    this.isReady = true;
+    this.page = {
+      first: true,
+      last: true,
+      currentPage: 0,
+      objects: data,
+      pageSize: data.length,
+      totalElements: data.length,
+      totalIsApproximate: false,
+    };
+    this.array = data;
   }
 
   ////////////////// OTHER ////////////////////////

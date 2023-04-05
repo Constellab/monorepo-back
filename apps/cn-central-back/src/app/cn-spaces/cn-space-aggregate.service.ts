@@ -89,14 +89,6 @@ export class CnSpaceAggregateService {
     await this.spaceService.deleteById(id);
   }
 
-  public async getDefaultSpace(): Promise<CnSpace> {
-    return this.spaceUserService.getUserDefaultSpaceAndCheck(CnCurrentUserHelper.getCurrentUser().id);
-  }
-
-  public async findCurrentSpace(): Promise<CnSpace> {
-    return CnCurrentUserHelper.getAndCheckCurrentSpace();
-  }
-
   public async findCurrentUserSpaces(): Promise<CnSpace[]> {
     return await this.spaceUserService.getSpacesOfUser(CnCurrentUserHelper.getCurrentUser().id);
   }
@@ -121,10 +113,12 @@ export class CnSpaceAggregateService {
     return this.spaceUserService.searchUser(id, searchParams, page, size);
   }
 
-  public async getUserOfSpace(id: string, userId: string): Promise<CnUser> {
+  public async searchUserInSpaceByName(id: string, name: string, page: number, size: number): Promise<ClPage<CnUser>> {
     id = this.getSpaceId(id);
     await this.checkSpaceMember(id);
-    return this.spaceUserService.findUserBySpaceIdAndId(id, userId);
+
+    const result = await this.spaceUserService.smartSearchByName(id, name, page, size);
+    return result.map((spaceUser: CnSpaceUser) => spaceUser.user);
   }
 
   public async getAll(page: number, size: number): Promise<ClPage<CnSpace>> {
@@ -281,7 +275,7 @@ export class CnSpaceAggregateService {
 
     const user = await this.userService.findByEmail(invitation.userMail);
     if (user == null) {
-      throw new BlBadRequestException("User not found");
+      throw new BlBadRequestException('User not found');
     }
 
     return await this.datasource.transaction(async (transaction) => {
@@ -308,16 +302,12 @@ export class CnSpaceAggregateService {
     return user;
   }
 
-  public async getNotificationsBySpace(spaceId: string, page: number,
-                                       pageSize: number): Promise<ClPage<CnSpaceInvit>> {
+  public async findInvitationsBySpaceId(spaceId: string, page: number,
+                                        pageSize: number): Promise<ClPage<CnSpaceInvit>> {
     spaceId = this.getSpaceId(spaceId);
     await this.checkSpaceAdmin(spaceId);
 
-    return this.invitationService.findNotificationsBySpaceId(spaceId, page, pageSize);
-  }
-
-  public async checkUsersHaveCommonSpace(userAId: string, userBId: string): Promise<boolean> {
-    return this.spaceUserService.checkUsersHaveCommonSpace(userAId, userBId);
+    return this.invitationService.findInvitationsBySpaceId(spaceId, page, pageSize);
   }
 
 

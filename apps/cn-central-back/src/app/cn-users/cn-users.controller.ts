@@ -22,7 +22,8 @@ import {
   BlParsePipe,
   BlPublic,
   BlResponseHelper,
-  BlSearchParams, BlUnauthorizedException
+  BlSearchParams,
+  BlUnauthorizedException
 } from '@monorepo/back-core-lib';
 import {FilesInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
@@ -38,6 +39,12 @@ export class CnUsersController {
   @Get('current')
   async current(): Promise<CnUser> {
     return this.usersService.getCurrent();
+  }
+
+  // TODO check if we keep this unsecured route
+  @Get(':id')
+  async getUser(@Param('id') id: string): Promise<CnUser> {
+    return this.usersService.findByIdAndCheck(id);
   }
 
   @Put('current/language/:lang')
@@ -93,6 +100,13 @@ export class CnUsersController {
                       @Query('page', new ParseIntPipe()) page: number,
                       @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnUser>> {
     return this.usersService.search(searchParams, page, size);
+  }
+
+  @Get('search/name/:name')
+  public async searchByName(@Param('name') name: string,
+                            @Query('page', new ParseIntPipe()) page: number,
+                            @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnUser>> {
+    return this.usersService.smartSearchByName(name, page, size);
   }
 
   @Put('send-all-to-queue')

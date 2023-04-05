@@ -41,12 +41,10 @@
     </mat-form-field>
 
     <!--Created by-->
-    <mat-form-field class="g-search-field">
-      <mat-label>{{'space_user_added_by' | translate }}</mat-label>
-      <mat-select formControlName="addedBy" [placeholder]="'space_user_added_by' | translate">
-        <ca-select-user-options mode="space"></ca-select-user-options>
-      </mat-select>
-    </mat-form-field>
+    <fl-form-field class="g-search-field">
+      <fl-select-user formControlName="addedBy" [placeholder]="'space_user_added_by' | translate"
+                      mode="space"></fl-select-user>
+    </fl-form-field>
 
     <!--  Creation date  -->
     <div class="g-form-field-no-hint g-full">

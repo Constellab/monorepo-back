@@ -42,7 +42,7 @@ export class ClPage<T> implements ClPageI<T> {
  * @param pageSize size of the page
  * @param data any data passed to the function
  */
-export type ClGetPageFunction<T> = (page: number, pageSize: number, data?: any) => Observable<ClPageI<T>>;
+export type ClGetPageFunction<T> = (page: number, pageSize: number, requestData?: any) => Observable<ClPageI<T>>;
 
 /**
  * Return an empty page

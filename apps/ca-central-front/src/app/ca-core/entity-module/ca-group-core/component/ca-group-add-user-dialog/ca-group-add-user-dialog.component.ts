@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {CaUser} from '../../../../model/entities/ca-user.class';
 import {FormControl} from '@ngneat/reactive-forms';
-import {FlSnackBarService} from '@monorepo/front-core-lib';
+import {FlSnackBarService, FlUserConfigSearchNameMode} from '@monorepo/front-core-lib';
 import {Validators} from '@angular/forms';
 import {
   CaSelectUserMode
@@ -32,7 +32,7 @@ export class CaGroupAddUserDialogComponent implements OnInit {
 
   isLoading: boolean = false;
 
-  selectUserMode: CaSelectUserMode;
+  selectUserMode: FlUserConfigSearchNameMode;
 
   constructor(@Inject(MAT_DIALOG_DATA) private input: CaGroupAddUserDialogInput,
               private dialogRef: MatDialogRef<CaGroupAddUserDialogComponent>,

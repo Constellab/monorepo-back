@@ -1,0 +1,24 @@
+<mat-form-field class="g-full" subscriptSizing="dynamic">
+  <div matPrefix *ngIf="prefixTemplate">
+    <ng-container *ngTemplateOutlet="prefixTemplate; context: getPrefixTemplateContext()"></ng-container>
+  </div>
+  <input type="text"
+         [placeholder]="placeholder"
+         matInput
+         [formControl]="inputControl"
+         [matAutocomplete]="auto"
+         #input
+         [required]="required"
+         (focus)="onFocus()" (blur)="onBlur()">
+  <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="itemSelected()">
+    <fl-infinite-scroll [datasource]="datasource" class="g-mat-option-infinite-scroll">
+      <mat-option *ngFor="let item of items$ | async" [value]="item">
+        <ng-container *ngTemplateOutlet="optionTemplate; context: {$implicit: item}"></ng-container>
+      </mat-option>
+    </fl-infinite-scroll>
+  </mat-autocomplete>
+
+  <!-- loader suffix -->
+  <fl-loader matSuffix *ngIf="datasource.isLoading || initIsLoading" [size]="20"
+             class="loader"></fl-loader>
+</mat-form-field>

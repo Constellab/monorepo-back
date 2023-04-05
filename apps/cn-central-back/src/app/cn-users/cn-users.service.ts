@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnUser, CnUserEditDTO, CnUserTransportDto} from './cn-user.entity';
-import {Repository} from 'typeorm';
+import {Like, Repository} from 'typeorm';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {
@@ -179,4 +179,52 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     };
     this.transportService.emit('user', u);
   }
+
+  // Search by name
+  public async smartSearchByName(name: string, page: number, size: number): Promise<ClPage<CnUser>> {
+    if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) throw new BlUnauthorizedException();
+
+    if (!name.includes(' ')) {
+      return this.searchByLastnameOrFirstname(name, page, size);
+    }
+
+    // if there are 2 words, search by lastname and firstname
+    // if nothing is found, search by lastname or firstname
+    const names = name.split(' ');
+    if (names.length === 2) {
+      const result = await this.searchByLastnameAndFirstname(names[0], names[1], page, size);
+
+      if (result.totalElements > 0) {
+        return result;
+      }
+    }
+
+    return this.searchByLastnameOrFirstname(name, page, size);
+  }
+
+  public searchByLastnameOrFirstname(name: string,
+                                     page: number, size: number): Promise<ClPage<CnUser>> {
+    return this.findPaginated(page, size, {
+      where: [
+        {lastname: Like(`%${name}%`)},
+        {firstname: Like(`%${name}%`)},
+      ],
+      order: {firstname: 'ASC', lastname: 'ASC'}
+    });
+  }
+
+  public async searchByLastnameAndFirstname(name1: string, name2: string,
+                                            page: number, size: number): Promise<ClPage<CnUser>> {
+    return this.findPaginated(page, size, {
+      where: [{
+        lastname: Like(`%${name1}%`),
+        firstname: Like(`%${name2}%`)
+      }, {
+        lastname: Like(`%${name2}%`),
+        firstname: Like(`%${name1}%`)
+      }],
+      order: {firstname: 'ASC', lastname: 'ASC'}
+    });
+  }
+
 }

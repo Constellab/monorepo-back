@@ -1,8 +1,14 @@
 import {Injectable} from '@angular/core';
-import {FlApiService} from '@monorepo/front-core-lib';
+import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {CaUser} from '../model/entities/ca-user.class';
 import {Observable} from 'rxjs';
-import {CaSpaceInvit, CaSpaceInvitCreateDTO, CaSpaceInvitReadDTO} from '../model/entities/space/ca-space-invit.class';
+import {
+  CaSpaceInvit,
+  CaSpaceInvitCreateDTO,
+  CaSpaceInvitDatasource,
+  CaSpaceInvitReadDTO
+} from '../model/entities/space/ca-space-invit.class';
+import {ClPageI} from '@monorepo/core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -41,4 +47,16 @@ export class CaSpaceInvitService {
   public deleteInvitation(invitId: string): Observable<void> {
     return this.apiService.delete(`${this.route}/${invitId}`);
   }
+
+  public getInvitationsDatasource(spaceId: string): CaSpaceInvitDatasource {
+    return new FlEntityPaginatedDatasource(
+      (page, size) =>
+        this.getInvitations(spaceId, page, size), 20);
+  }
+
+  public getInvitations(spaceId: string, page: number, pageSize: number): Observable<ClPageI<CaSpaceInvit>> {
+    return this.apiService.get(`${this.route}/space/${spaceId}`, CaSpaceInvit,
+      {resultIsPaginated: true, page: page, pageSize: pageSize});
+  }
+
 }

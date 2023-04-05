@@ -21,6 +21,8 @@ import {
   FlLastModificationInfoComponent
 } from './component/fl-last-modification-info/fl-last-modification-info.component';
 import {MatButtonModule} from '@angular/material/button';
+import {FlSelectUserComponent} from './component/fl-select-user/fl-select-user.component';
+import {FlInputSearchModule} from '../fl-input-search/fl-input-search.module';
 
 
 @NgModule({
@@ -31,7 +33,8 @@ import {MatButtonModule} from '@angular/material/button';
     FlUserMouseHoverPortalDirective,
     FlUserInfoPortalComponent,
     FlCreationInfoComponent,
-    FlLastModificationInfoComponent
+    FlLastModificationInfoComponent,
+    FlSelectUserComponent
   ],
   exports: [
     FlUserProfilePictureComponent,
@@ -40,7 +43,8 @@ import {MatButtonModule} from '@angular/material/button';
     FlUserMouseHoverPortalDirective,
     FlUserInfoPortalComponent,
     FlCreationInfoComponent,
-    FlLastModificationInfoComponent
+    FlLastModificationInfoComponent,
+    FlSelectUserComponent,
   ],
   imports: [
     CommonModule,
@@ -53,6 +57,7 @@ import {MatButtonModule} from '@angular/material/button';
     FlTextIconModule,
     FlTranslateModule,
     FlDateModule,
+    FlInputSearchModule,
   ]
 })
 export class FlUserModule {

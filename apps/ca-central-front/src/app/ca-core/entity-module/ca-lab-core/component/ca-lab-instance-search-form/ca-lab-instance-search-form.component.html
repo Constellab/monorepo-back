@@ -62,12 +62,10 @@
     </mat-form-field>
 
     <!--Created by-->
-    <mat-form-field class="g-search-field">
-      <mat-label>{{'created_by' | translate }}</mat-label>
-      <mat-select formControlName="createdBy" [placeholder]="'created_by' | translate">
-        <ca-select-user-options [mode]="selectUserMode"></ca-select-user-options>
-      </mat-select>
-    </mat-form-field>
+    <fl-form-field class="g-search-field">
+      <fl-select-user formControlName="createdBy" [mode]="selectUserMode"
+                      [placeholder]="'created_by' | translate"></fl-select-user>
+    </fl-form-field>
 
     <!--  Creation date  -->
     <div class="g-form-field-no-hint g-full">

@@ -380,6 +380,14 @@ mat-tree {
   line-height: initial;
 }
 
+// class to place on fl-infinite-scroll component to make it work on portal for
+// mat-select or mat-autocomplete
+fl-infinite-scroll.g-mat-option-infinite-scroll{
+  max-height: 100%;
+  width: 100%;
+  display: flex;
+}
+
 /************************************* MAT CHIP ***********************************/
 .g-mat-chip-small {
   font-size: 0.8em !important;

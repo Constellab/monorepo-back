@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnSpaceUser, CnSpaceUserRole} from './cn-space-user.entity';
-import {EntityManager, Repository} from 'typeorm';
+import {EntityManager, Like, Repository} from 'typeorm';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnSpace, CnSpaceType} from './cn-space.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
@@ -168,22 +168,64 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     return true;
   }
 
-  public async findUserBySpaceIdAndId(spaceId: string, userId: string): Promise<CnUser> {
-    const spaceUser: CnSpaceUser = await this.repository.findOne({
-      where: {
-        userId: userId,
-        spaceId: spaceId
-      },
-      relations: {user: true}
-    });
-    return spaceUser.user;
-  }
 
-  public async checkIfGetUserIsAllowed(userId: string, currentUserId: string): Promise<boolean>{
-    if(await this.checkUsersHaveCommonSpace(userId, currentUserId)){
+  public async checkIfGetUserIsAllowed(userId: string, currentUserId: string): Promise<boolean> {
+    if (await this.checkUsersHaveCommonSpace(userId, currentUserId)) {
       return true;
     } else {
       return false;
     }
+  }
+
+  // Search by name
+  public async smartSearchByName(spaceId: string, name: string, page: number, size: number): Promise<ClPage<CnSpaceUser>> {
+
+    if (!name.includes(' ')) {
+      return this.searchByLastnameOrFirstname(spaceId, name, page, size);
+    }
+
+    // if there are 2 words, search by lastname and firstname
+    // if nothing is found, search by lastname or firstname
+    const names = name.split(' ');
+    if (names.length === 2) {
+      const result = await this.searchByLastnameAndFirstname(spaceId, names[0], names[1], page, size);
+
+      if (result.totalElements > 0) {
+        return result;
+      }
+    }
+
+    return this.searchByLastnameOrFirstname(spaceId, name, page, size);
+  }
+
+  public searchByLastnameOrFirstname(spaceId: string, name: string,
+                                     page: number, size: number): Promise<ClPage<CnSpaceUser>> {
+    return this.findPaginated(page, size, {
+      where: [
+        {user: {lastname: Like(`%${name}%`)}, spaceId: spaceId},
+        {user: {firstname: Like(`%${name}%`)}, spaceId: spaceId},
+      ],
+      relations: {user: true},
+      order: {user: {firstname: 'ASC', lastname: 'ASC'}}
+    });
+  }
+
+  public async searchByLastnameAndFirstname(spaceId: string, name1: string, name2: string,
+                                            page: number, size: number): Promise<ClPage<CnSpaceUser>> {
+    return this.findPaginated(page, size, {
+      where: [{
+        user: {
+          lastname: Like(`%${name1}%`),
+          firstname: Like(`%${name2}%`)
+        }, spaceId: spaceId
+      }, {
+        user: {
+          lastname: Like(`%${name2}%`),
+          firstname: Like(`%${name1}%`)
+        }, spaceId: spaceId
+      }],
+      relations: {user: true},
+      order: {user: {firstname: 'ASC', lastname: 'ASC'}}
+    });
   }
 }

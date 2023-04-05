@@ -58,15 +58,6 @@ export class CaSpaceService extends FlApiCrudService<CaSpace, CaSaveSpaceDTO> {
     return this.apiService.getBaseRouteUrl(`${this.route}/photo/${filename}`);
   }
 
-
-  public getCurrentSpace(): Observable<CaSpace> {
-    return this.apiService.get(`${this.route}/current`, CaSpace);
-  }
-
-  public getDefaultSpace(): Observable<CaSpace> {
-    return this.apiService.get(`${this.route}/default`, CaSpace);
-  }
-
   public search(page: number, pageSize: number, filters?: CaSpaceSearchFields): Observable<ClPage<CaSpace>> {
     const data: FlAdvancedSearchInput = {
       filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, CaSpaceSearch.advancedSearchConverter),
@@ -108,10 +99,6 @@ export class CaSpaceService extends FlApiCrudService<CaSpace, CaSaveSpaceDTO> {
     return this.apiService.put(`${this.route}/${spaceId}/user/${userId}/role/${role}`, null);
   }
 
-  public getSpaceUser(spaceId: string, userId: string): Observable<CaUser> {
-    return this.apiService.get(`${this.route}/${spaceId}/user/${userId}`, CaUser);
-  }
-
   /**
    * Return the list of user for an space (not SpaceUser)
    */
@@ -125,11 +112,6 @@ export class CaSpaceService extends FlApiCrudService<CaSpace, CaSaveSpaceDTO> {
       (page, size) => this.getSpaceSimpleUsers(spaceId, page, size), 20);
   }
 
-  public checkUsersHaveCommonSpace(userAId: string, userBId: string): Observable<boolean>{
-    return this.apiService.get(`${this.route}/check-if-common-space/${userAId}/${userBId}`, Boolean);
-  }
-
-
   public searchSpaceUsers(spaceId: string, page: number, pageSize: number,
                           filters?: CaSpaceUserSearchFields): Observable<ClPage<CaSpaceUser>> {
     const data: FlAdvancedSearchInput = {
@@ -139,6 +121,17 @@ export class CaSpaceService extends FlApiCrudService<CaSpace, CaSaveSpaceDTO> {
     return this.apiService.post(`${this.route}/${spaceId}/user/search`, data, CaSpaceUser, {
       page: page, pageSize: pageSize, resultIsPaginated: true
     });
+  }
+
+  public searchSpaceUsersByName(spaceId: string, name: string, page: number, pageSize: number): Observable<ClPage<CaUser>> {
+    return this.apiService.get(`${this.route}/${spaceId}/user/search/name/${name}`, CaUser, {
+      page: page, pageSize: pageSize, resultIsPaginated: true
+    });
+  }
+
+  public searchSpaceUsersByNameDatasource(spaceId: string): CaUserDatasourcePaginated {
+    return new FlEntityPaginatedDatasource(
+      (page, size, name) => this.searchSpaceUsersByName(spaceId, name, page, size), 20);
   }
 
   ////////////////////////////////// INVITATION //////////////////////////////////////

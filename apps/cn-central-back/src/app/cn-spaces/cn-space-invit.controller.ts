@@ -1,10 +1,23 @@
-import {Body, Controller, Delete, Get, Param, ParseEnumPipe, ParseUUIDPipe, Post, Put} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseEnumPipe,
+  ParseIntPipe,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Query
+} from '@nestjs/common';
 import {CnSpaceAggregateService} from './cn-space-aggregate.service';
 import {CnSpaceInvitCreateDto, CnSpaceInvitReadDto} from './cn-space.dto';
 import {CnSpaceInvit} from './cn-space-invit.entity';
 import {CnSpaceUserRole} from './cn-space-user.entity';
 import {BlPublic} from '@monorepo/back-core-lib';
 import {CnUser} from '../cn-users/cn-user.entity';
+import {ClPage} from '@monorepo/core-lib';
 
 @Controller('space-invit')
 export class CnSpaceInvitController {
@@ -53,6 +66,13 @@ export class CnSpaceInvitController {
   @Delete(':id')
   public async deleteInvitation(@Param('id', new ParseUUIDPipe()) invitId: string): Promise<void> {
     return this.spaceAggregateService.deleteInvitation(invitId);
+  }
+
+  @Get('space/:id')
+  public async getInvitationsBySpace(@Param('id') id: string,
+                                     @Query('page', new ParseIntPipe()) page: number,
+                                     @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnSpaceInvit>> {
+    return this.spaceAggregateService.findInvitationsBySpaceId(id, page, size);
   }
 
 }

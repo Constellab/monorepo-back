@@ -23,7 +23,6 @@ import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
 import {CmUserCategory} from '@monorepo/common-model';
-import {CnSpaceInvit} from './cn-space-invit.entity';
 import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
 import {CnRequestNewLicensesDto} from './cn-space.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
@@ -39,16 +38,6 @@ export class CnSpacesController {
     return this.spaceAggregateService.getCurrentInfo();
   }
 
-
-  @Get('default')
-  getDefault(): Promise<CnSpace> {
-    return this.spaceAggregateService.getDefaultSpace();
-  }
-
-  @Get('current')
-  findCurrent(): Promise<CnSpace> {
-    return this.spaceAggregateService.findCurrentSpace();
-  }
 
   @Get('my-spaces')
   findCurrentUserSpaces(): Promise<CnSpace[]> {
@@ -89,12 +78,40 @@ export class CnSpacesController {
     return this.spaceAggregateService.search(searchParams, page, size);
   }
 
+  @UseInterceptors(FileInterceptor('photo'))
+  @Put(':id/photo')
+  async uploadSpacePhoto(@Param('id') id: string,
+                         @UploadedFile() file: BlFile): Promise<CnSpace> {
+    return this.spaceAggregateService.uploadSpacePhoto(id, file);
+  }
+
+  /**
+   * Return the image of a space
+   */
+  @BlPublic()
+  @Get('photo/:filename')
+  public async getImage(@Param('filename') filename: string,
+                        @Res() response: Response): Promise<any> {
+    const file = await this.spaceAggregateService.getPhoto(filename);
+    BlResponseHelper.setMessageAndCache(response, file);
+  }
+
+  //////////////////////////////////////// USER ////////////////////////////////////////
+
   @Post(':id/user/search')
   public async searchUserInSpace(@Param('id') id: string,
                                  @Body(new BlParsePipe(BlSearchParams)) searchParams: BlSearchParams,
                                  @Query('page', new ParseIntPipe()) page: number,
                                  @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnSpaceUser>> {
     return this.spaceAggregateService.searchUserInSpace(id, searchParams, page, size);
+  }
+
+  @Get(':id/user/search/name/:name')
+  public async searchUserByNameInSpace(@Param('id') id: string,
+                                       @Param('name') name: string,
+                                       @Query('page', new ParseIntPipe()) page: number,
+                                       @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnUser>> {
+    return this.spaceAggregateService.searchUserInSpaceByName(id, name, page, size);
   }
 
 
@@ -145,44 +162,6 @@ export class CnSpacesController {
     return spaceUsers.map(spaceUser => spaceUser.user);
   }
 
-
-  @Get(':id/invitations')
-  public async getInvitationsBySpace(@Param('id') id: string,
-                                     @Query('page', new ParseIntPipe()) page: number,
-                                     @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnSpaceInvit>> {
-    return this.spaceAggregateService.getNotificationsBySpace(id, page, size);
-  }
-
-  @UseInterceptors(FileInterceptor('photo'))
-  @Put(':id/photo')
-  async uploadSpacePhoto(@Param('id') id: string,
-                         @UploadedFile() file: BlFile): Promise<CnSpace> {
-    return this.spaceAggregateService.uploadSpacePhoto(id, file);
-  }
-
-  /**
-   * Return an image of an space
-   */
-  @BlPublic()
-  @Get('photo/:filename')
-  public async getImage(@Param('filename') filename: string,
-                        @Res() response: Response): Promise<any> {
-    const file = await this.spaceAggregateService.getPhoto(filename);
-    BlResponseHelper.setMessageAndCache(response, file);
-  }
-
-  @Get(':id/user/:userId')
-  public async getUserOfSpace(@Param('id') id: string,
-                              @Param('userId', new ParseUUIDPipe()) userId: string): Promise<CnUser> {
-    return this.spaceAggregateService.getUserOfSpace(id, userId);
-  }
-
-  @Get('check-if-common-space/:userAId/:userBId')
-  public async checkUsersHaveCommonSpace(@Param('userAId') userAId: string,
-                                       @Param('userBId') userBId: string): Promise<boolean> {
-    return this.spaceAggregateService.checkUsersHaveCommonSpace(userAId, userBId);
-  }
-
   ////////////////////////////////////// OTHERS //////////////////////////////////////
 
 
@@ -192,6 +171,7 @@ export class CnSpacesController {
     return this.spaceAggregateService.requestNewLicenses(id, request);
   }
 
+  // TODO to clean
   @Get('user/:userId')
   public async getAndCheckUser(@Param('userId') userId: string): Promise<CnUser> {
     return this.spaceAggregateService.getAndCheckUser(userId);

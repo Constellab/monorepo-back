@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {CaSpaceService} from '../../../../ca-core/service-api/ca-space.service';
 import {CaSpaceInvit, CaSpaceInvitDatasource} from '../../../../ca-core/model/entities/space/ca-space-invit.class';
 import {FlDialogService, FlTableColumn} from '@monorepo/front-core-lib';
 import {
@@ -7,6 +6,7 @@ import {
   CaSpaceInvitFormDialogInput
 } from '../ca-space-invit-form-dialog/ca-space-invit-form-dialog.component';
 import {CaCurrentSpaceService} from '../../../../ca-core/service-api/ca-current-space.service';
+import {CaSpaceInvitService} from '../../../../ca-core/service-api/ca-space-invit.service';
 
 /**
  * List the invitations of the space
@@ -22,17 +22,17 @@ export class CaCurrentSpaceInvitListComponent implements OnInit {
 
   columns: FlTableColumn<CaSpaceInvit>[] = ['userMail', 'role', 'validUntil', 'sentThe', 'actions'];
 
-  constructor(private spaceService: CaSpaceService,
+  constructor(private spaceInvitService: CaSpaceInvitService,
               private dialogService: FlDialogService,
               private currentSpaceService: CaCurrentSpaceService) {
   }
 
   ngOnInit(): void {
-    this.invitations = this.spaceService.getInvitationsDatasource('current');
+    this.invitations = this.spaceInvitService.getInvitationsDatasource('current');
   }
 
   async openInvitationDialog(): Promise<void> {
-    const space = await this.currentSpaceService.getCurrentSpacePromise()
+    const space = await this.currentSpaceService.getCurrentSpacePromise();
     const input: CaSpaceInvitFormDialogInput = {
       spaceId: space.id,
       spaceType: space.type

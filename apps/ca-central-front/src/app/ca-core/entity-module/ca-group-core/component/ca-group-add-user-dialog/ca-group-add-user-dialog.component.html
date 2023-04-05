@@ -6,16 +6,14 @@
   <form (ngSubmit)="submit()" id="add-user-to-space-form">
 
     <!--  User  -->
-    <mat-form-field class="g-form-input">
-      <mat-label>{{'user' | translate}}</mat-label>
-      <mat-select [formControl]="formControl" [placeholder]="'user' | translate"
-                  required>
-        <ca-select-user-options [mode]="selectUserMode"></ca-select-user-options>
-      </mat-select>
+    <fl-form-field>
+      <fl-select-user [formControl]="formControl" [mode]="selectUserMode"
+                      [placeholder]="'user' | translate"
+                      [required]="true"></fl-select-user>
       <mat-error *ngIf="formControl.hasError('required')">
         {{'user' | flErrorRequired}}
       </mat-error>
-    </mat-form-field>
+    </fl-form-field>
 
   </form>
 </mat-dialog-content>

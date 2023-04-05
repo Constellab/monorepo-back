@@ -88,8 +88,8 @@ export class CnSpaceInvitService extends BlAbstractService<CnSpaceInvit> {
     return this.spaceMailService.sendInvitationMail(invit, user, this.VALIDITY_DURATION_IN_DAYS);
   }
 
-  public async findNotificationsBySpaceId(spaceId: string, page: number,
-                                          pageSize: number): Promise<ClPage<CnSpaceInvit>> {
+  public async findInvitationsBySpaceId(spaceId: string, page: number,
+                                        pageSize: number): Promise<ClPage<CnSpaceInvit>> {
     return this.findPaginated(page, pageSize, {
       where: {spaceId: spaceId},
       order: {createdAt: 'DESC' as any},

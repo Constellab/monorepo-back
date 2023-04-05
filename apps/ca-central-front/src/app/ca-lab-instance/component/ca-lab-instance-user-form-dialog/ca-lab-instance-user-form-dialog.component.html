@@ -6,15 +6,13 @@
   <form (ngSubmit)="submit()" id="lab-user-form" [formGroup]="formGp">
 
     <!--  User  -->
-    <mat-form-field class="g-form-input">
-      <mat-label>{{'user' | translate}}</mat-label>
-      <mat-select placeholder="{{'user' | translate}}" formControlName="user">
-        <ca-select-user-options mode="allForAdmin"></ca-select-user-options>
-      </mat-select>
+    <fl-form-field class="g-form-input">
+      <fl-select-user formControlName="user" [placeholder]="'user' | translate"
+                      mode="allForAdmin"></fl-select-user>
       <mat-error *ngIf="formGp.get('user').hasError('required')">
         {{'user' | flErrorRequired}}
       </mat-error>
-    </mat-form-field>
+    </fl-form-field>
 
 
     <!--    Role      -->
