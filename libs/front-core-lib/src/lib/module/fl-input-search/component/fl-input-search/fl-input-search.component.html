@@ -2,6 +2,7 @@
   <div matPrefix *ngIf="prefixTemplate">
     <ng-container *ngTemplateOutlet="prefixTemplate; context: getPrefixTemplateContext()"></ng-container>
   </div>
+  <mat-label>{{placeholder}}</mat-label>
   <input type="text"
          [placeholder]="placeholder"
          matInput

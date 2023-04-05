@@ -17,6 +17,10 @@ export class CaSpace extends CaBaseEntity {
   nbLicenses: number;
 
   type: CaSpaceType;
+
+  toString(): string {
+    return this.name;
+  }
 }
 
 export type CaSpaceDatasource = FlDatasourcePaginated<CaSpace>;

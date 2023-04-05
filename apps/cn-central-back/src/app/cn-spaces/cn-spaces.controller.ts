@@ -78,6 +78,13 @@ export class CnSpacesController {
     return this.spaceAggregateService.search(searchParams, page, size);
   }
 
+  @Get('search/name/:name')
+  public async searchByName(@Param('name') name: string,
+                            @Query('page', new ParseIntPipe()) page: number,
+                            @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnSpace>> {
+    return this.spaceAggregateService.searchByName(name, page, size);
+  }
+
   @UseInterceptors(FileInterceptor('photo'))
   @Put(':id/photo')
   async uploadSpacePhoto(@Param('id') id: string,

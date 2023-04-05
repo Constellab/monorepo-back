@@ -16,12 +16,9 @@
     </mat-form-field>
 
     <!--  Space  -->
-    <mat-form-field class="g-search-field" *ngIf="mode === 'all'">
-      <mat-label>{{'space' | translate}}</mat-label>
-      <mat-select formControlName="spaces" multiple>
-        <ca-select-space-options></ca-select-space-options>
-      </mat-select>
-    </mat-form-field>
+    <fl-form-field class="g-search-field" *ngIf="mode === 'all'">
+      <ca-select-space formControlName="space" [placeholder]="'space' | translate"></ca-select-space>
+    </fl-form-field>
 
 
     <!--  CurrentStatus  -->

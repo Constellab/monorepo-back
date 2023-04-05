@@ -67,6 +67,12 @@ export class CaSpaceService extends FlApiCrudService<CaSpace, CaSaveSpaceDTO> {
     });
   }
 
+  public searchByNames(name: string, page: number, pageSize: number): Observable<ClPage<CaSpace>> {
+    return this.apiService.get(`${this.route}/search/name/${name}`, CaSpace, {
+      page: page, pageSize: pageSize, resultIsPaginated: true
+    });
+  }
+
   ////////////////////////////////// USER //////////////////////////////////////
   public getUsersOfSpace(spaceId: string, page: number, size: number): Observable<ClPage<CaSpaceUser>> {
     return this.apiService.get(`${this.route}/${spaceId}/user`, CaSpaceUser,
@@ -134,7 +140,6 @@ export class CaSpaceService extends FlApiCrudService<CaSpace, CaSaveSpaceDTO> {
   }
 
 
-
   ////////////////////////////////// OTHERS //////////////////////////////////
   public requestNewLicenses(spaceId: string, request: CaRequestNewLicensesDto): Observable<void> {
     return this.apiService.post(`${this.route}/${spaceId}/request-new-licenses`, request);
@@ -145,7 +150,7 @@ export class CaSpaceService extends FlApiCrudService<CaSpace, CaSaveSpaceDTO> {
   }
 
   // for now this route is here to check if the current user has a common space with requested user
-  public getUserById(userId: string): Observable<CaUser>{
+  public getUserById(userId: string): Observable<CaUser> {
     return this.apiService.get(`${this.route}/user/${userId}`, CaUser);
   }
 }

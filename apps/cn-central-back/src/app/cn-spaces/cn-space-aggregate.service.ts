@@ -133,6 +133,12 @@ export class CnSpaceAggregateService {
     return this.spaceService.search(searchParams, page, size);
   }
 
+  public async searchByName(name: string, page: number, size: number): Promise<ClPage<CnSpace>> {
+    this.checkAdmin();
+
+    return this.spaceService.searchByName(name, page, size);
+  }
+
   public async uploadSpacePhoto(spaceId: string, file: BlFile): Promise<CnSpace> {
     spaceId = this.getSpaceId(spaceId);
     await this.checkSpaceAdmin(spaceId);

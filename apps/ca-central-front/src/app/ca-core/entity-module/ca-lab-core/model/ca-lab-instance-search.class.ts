@@ -34,7 +34,7 @@ export class CaLabInstanceSearchFields {
   createdAt: FlSearchDateInterval;
 
   @Type(() => CaSpace)
-  spaces: CaSpace[];
+  space: CaSpace;
 
   type: CaLabInstanceType;
 }
@@ -49,7 +49,7 @@ export class CaLabInstanceSearch {
     serverInfo: 'server_info',
     createdBy: 'created_by',
     createdAt: 'creation_date',
-    spaces: 'space',
+    space: 'space',
     type: 'lab_instance_type',
   };
 
@@ -61,7 +61,7 @@ export class CaLabInstanceSearch {
     serverInfo: {key: 'serverInfo.id', operator: 'EQ', convertValue: FlSearchConverter.getEntityId},
     createdBy: {key: 'createdBy.id', operator: 'EQ', convertValue: FlSearchConverter.getEntityId},
     createdAt: FlSearchConverter.dateInterval('createdAt'),
-    spaces: {key: 'space.id', operator: 'IN', convertValue: FlSearchConverter.getEntitiesId},
+    space: {key: 'space.id', operator: 'EQ', convertValue: FlSearchConverter.getEntityId},
     type: {key: 'type', operator: 'EQ'},
   };
 
@@ -77,7 +77,7 @@ export class CaLabInstanceSearch {
         from: [null],
         to: [null],
       }),
-      spaces: null,
+      space: null,
       type: null,
     });
   }

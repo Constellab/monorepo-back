@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {CnSpace, CnSpaceType} from './cn-space.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {DeleteResult, EntityManager, Repository} from 'typeorm';
+import {DeleteResult, EntityManager, Like, Repository} from 'typeorm';
 import {
   BlAbstractService,
   BlBucketConfig,
@@ -100,5 +100,9 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
 
 
     return this.findPaginated(page, size, searchBuilder.build());
+  }
+
+  public searchByName(name: string, page: number, size: number): Promise<ClPage<CnSpace>> {
+    return this.findPaginated(page, size, {where: {name: Like(`%${name}%`)}, order: {name: 'ASC'}});
   }
 }

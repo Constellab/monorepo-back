@@ -51,15 +51,13 @@
     </mat-form-field>
 
     <!--  Space  -->
-    <mat-form-field class="g-form-input">
-      <mat-label>{{'space' | translate}}</mat-label>
-      <mat-select formControlName="space" [placeholder]="'space' | translate">
-        <ca-select-space-options></ca-select-space-options>
-      </mat-select>
+    <fl-form-field class="g-form-input">
+      <ca-select-space formControlName="space" [placeholder]="'space' | translate"
+                       [required]="true"></ca-select-space>
       <mat-error *ngIf="formGp.get('space').hasError('required')">
         {{'space' | flErrorRequired}}
       </mat-error>
-    </mat-form-field>
+    </fl-form-field>
 
     <!--  Object id  -->
     <mat-form-field class="g-form-input">

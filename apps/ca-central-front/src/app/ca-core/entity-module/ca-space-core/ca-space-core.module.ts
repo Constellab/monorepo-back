@@ -9,7 +9,6 @@ import {CaSpaceUserTableComponent} from './component/ca-space-user-table/ca-spac
 import {CaSpacePhotoPipe} from './pipe/ca-space-photo.pipe';
 import {CaSpacePhotoComponent} from './component/ca-space-photo/ca-space-photo.component';
 import {CaSpaceInlineComponent} from './component/ca-space-inline/ca-space-inline.component';
-import {CaSelectSpaceOptionsComponent} from './component/ca-select-space-options/ca-select-space-options.component';
 import {CaExternalSpaceLinkDirective} from './pipe/ca-external-space-link.directive';
 import {CaSpaceSearchComponent} from './component/ca-space-search/ca-space-search.component';
 import {CaSpaceSearchFormComponent} from './component/ca-space-search-form/ca-space-search-form.component';
@@ -17,7 +16,8 @@ import {CaSpaceUserSearchComponent} from './component/ca-space-user-search/ca-sp
 import {
   CaSpaceUserSearchFormComponent
 } from './component/ca-space-user-search-form/ca-space-user-search-form.component';
-import {MatBadgeModule} from "@angular/material/badge";
+import {MatBadgeModule} from '@angular/material/badge';
+import {CaSelectSpaceComponent} from './component/ca-select-space/ca-select-space.component';
 
 
 @NgModule({
@@ -28,12 +28,12 @@ import {MatBadgeModule} from "@angular/material/badge";
     CaSpacePhotoPipe,
     CaSpacePhotoComponent,
     CaSpaceInlineComponent,
-    CaSelectSpaceOptionsComponent,
     CaExternalSpaceLinkDirective,
     CaSpaceSearchComponent,
     CaSpaceSearchFormComponent,
     CaSpaceUserSearchComponent,
     CaSpaceUserSearchFormComponent,
+    CaSelectSpaceComponent,
   ],
   exports: [
     CaSpaceTableComponent,
@@ -42,22 +42,22 @@ import {MatBadgeModule} from "@angular/material/badge";
     CaSpacePhotoPipe,
     CaSpacePhotoComponent,
     CaSpaceInlineComponent,
-    CaSelectSpaceOptionsComponent,
     CaExternalSpaceLinkDirective,
     CaSpaceSearchComponent,
     CaSpaceSearchFormComponent,
     CaSpaceUserSearchComponent,
     CaSpaceUserSearchFormComponent,
+    CaSelectSpaceComponent,
   ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        RouterModule,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
 
-        CaCoreModule,
-        MatBadgeModule,
-    ],
+    CaCoreModule,
+    MatBadgeModule,
+  ],
 })
 export class CaSpaceCoreModule {
 }

@@ -46,15 +46,13 @@
     </mat-form-field>
 
     <!--  Space  -->
-    <mat-form-field class="g-form-input">
-      <mat-label>{{'space' | translate}}</mat-label>
-      <mat-select [placeholder]="'space' | translate" formControlName="space" required>
-        <ca-select-space-options></ca-select-space-options>
-      </mat-select>
+    <fl-form-field class="g-form-input">
+      <ca-select-space formControlName="space" [placeholder]="'space' | translate"
+                       [required]="true"></ca-select-space>
       <mat-error *ngIf="formGp.get('space').hasError('required')">
         {{'space' | flErrorRequired}}
       </mat-error>
-    </mat-form-field>
+    </fl-form-field>
 
     <!--  On Premise Platform  -->
     <div *ngIf="!isCloud()" class="on-premise-platform">
@@ -107,8 +105,8 @@
         <mat-label>{{'lab_billing_mode' | translate}}</mat-label>
         <mat-select formControlName="billingMode"
                     [placeholder]="'lab_billing_mode' | translate" required>
-          <mat-option value="MONTHLY">{{'lab_billing_mode_MONTHLY' | translate}}</mat-option>
-          <mat-option value="HOURLY">{{'lab_billing_mode_HOURLY' | translate}}</mat-option>
+          <mat-option [value]="'MONTHLY'">{{'lab_billing_mode_MONTHLY' | translate}}</mat-option>
+          <mat-option [value]="'HOURLY'">{{'lab_billing_mode_HOURLY' | translate}}</mat-option>
         </mat-select>
         <mat-error *ngIf="formGp.get('billingMode').hasError('required')">
           {{'lab_billing_mode' | flErrorRequired}}
@@ -120,8 +118,8 @@
         <mat-label>{{'lab_volume_type' | translate}}</mat-label>
         <mat-select formControlName="volumeType"
                     [placeholder]="'lab_volume_type' | translate" required>
-          <mat-option value="CLASSIC">{{'lab_volume_type_CLASSIC' | translate}}</mat-option>
-          <mat-option value="HIGH_SPEED">{{'lab_volume_type_HIGH_SPEED' | translate}}</mat-option>
+          <mat-option [value]="'CLASSIC'">{{'lab_volume_type_CLASSIC' | translate}}</mat-option>
+          <mat-option [value]="'HIGH_SPEED'">{{'lab_volume_type_HIGH_SPEED' | translate}}</mat-option>
         </mat-select>
         <mat-error *ngIf="formGp.get('volumeType').hasError('required')">
           {{'lab_volume_type' | flErrorRequired}}
