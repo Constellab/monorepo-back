@@ -49,14 +49,14 @@
         <p>{{'lab_instance_advanced_config_warning' | translate}}</p>
       </fl-text-icon>
 
-      <mat-form-field class="g-form-input">
+      <mat-form-field class="g-form-input glab-override">
         <mat-label>{{'glab_version_override' | translate}}</mat-label>
         <input matInput [(ngModel)]="labConfig.glabTag" [placeholder]="'glab_version_override' | translate">
 
         <mat-hint>{{'glab_version_override_hint' | translate}}</mat-hint>
       </mat-form-field>
 
-      <button mat-stroked-button type="button" (click)="resetToDefault()"
+      <button mat-stroked-button type="button" (click)="resetGlabTagToDefault()"
               class="g-centered-forced g-button-small">
         {{'lab_instance_reset_config' | translate}}
       </button>

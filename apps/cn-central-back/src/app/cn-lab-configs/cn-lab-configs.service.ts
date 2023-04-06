@@ -111,8 +111,8 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
 
     // use the version set in the config, or by default version link to the gws_core brick version
     // or use the latest version
-    const glabVersion = config.glabTag ??
-      gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_GLAB_VERSION] ?? 'latest';
+    const glabVersion = config.glabTag ||
+      gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_GLAB_VERSION] || 'latest';
 
     const biotaMariaDbUrl = await this.getMariaDbUrl(config);
 

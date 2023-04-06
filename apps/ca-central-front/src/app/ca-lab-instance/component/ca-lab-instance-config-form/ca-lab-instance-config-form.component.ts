@@ -81,8 +81,8 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
     } else {
       this.labConfig.brickVersions.push(brickVersionDTO);
     }
+    this.resetGlabTagToDefault();
     this.configChanged = true;
-
   }
 
   save(): void {
@@ -110,8 +110,8 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
     this.labConfigured.emit();
   }
 
-  resetToDefault(): void {
-    this.labConfig.glabTag = 'latest';
+  resetGlabTagToDefault(): void {
+    this.labConfig.glabTag = '';
   }
 
   isConfigured(): boolean {
