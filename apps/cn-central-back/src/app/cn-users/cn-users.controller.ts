@@ -8,7 +8,7 @@ import {
   Put,
   Query,
   Res,
-  UploadedFiles,
+  UploadedFile,
   UseInterceptors
 } from '@nestjs/common';
 import {CnUsersService} from './cn-users.service';
@@ -25,7 +25,7 @@ import {
   BlSearchParams,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
-import {FilesInterceptor} from '@nestjs/platform-express';
+import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
@@ -64,18 +64,27 @@ export class CnUsersController {
     return this.usersService.editUser(userEdit);
   }
 
-  @UseInterceptors(FilesInterceptor('photo'))
+  @UseInterceptors(FileInterceptor('photo'))
   @Put('current/photo/:userId')
-  saveNewPhoto(@Param('userId') userId: string, @UploadedFiles() files: BlFile[]): Promise<CnUser> {
-    return files[0] ? this.usersService.saveNewPhoto(files[0], userId) : null;
+  saveNewPhoto(@Param('userId') userId: string, @UploadedFile() file: BlFile): Promise<CnUser> {
+    return this.usersService.saveNewPhoto(file, userId);
   }
 
+  // TODO remove when community is not using it anymore
   @BlPublic()
   @Get('photo/:userId')
   public async getUserPhoto(@Param('userId') userId: string,
                             @Res() response: Response): Promise<any> {
     const file = await this.usersService.getUserPhoto(userId);
     BlResponseHelper.setMessage(response, file);
+  }
+
+  @BlPublic()
+  @Get('photo-v2/:photoId')
+  public async getUserPhotoV2(@Param('photoId') photoId: string,
+                            @Res() response: Response): Promise<any> {
+    const file = await this.usersService.getUserPhotoV2(photoId);
+    BlResponseHelper.setMessageAndCache(response, file);
   }
 
   @Get('current/2-fa')

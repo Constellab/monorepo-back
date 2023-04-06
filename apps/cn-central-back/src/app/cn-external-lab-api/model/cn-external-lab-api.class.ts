@@ -18,6 +18,7 @@ export interface CnExternalLabUser {
   last_name: string;
   theme: ClTheme;
   lang: ClSupportedLanguage;
+  photo: string;
 }
 
 

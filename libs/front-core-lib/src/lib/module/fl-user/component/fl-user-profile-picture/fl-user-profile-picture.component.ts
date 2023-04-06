@@ -59,7 +59,7 @@ export class FlUserProfilePictureComponent implements OnInit {
     if (user) {
       this.initials = (user.firstname?.charAt(0) ?? '') + (user.lastname?.charAt(0) ?? '');
       if (user.photo) {
-        this.imgSrc = this.userConfig.getUserPhotoUrl(user.id);
+        this.imgSrc = this.userConfig.getUserPhotoUrl(user.photo);
       }else{
         this.imgSrc = null;
       }

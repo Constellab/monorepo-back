@@ -13,8 +13,8 @@ export class LabUserConfig extends FlUserConfig {
     super();
   }
 
-  getUserPhotoUrl(userId: string): string {
-    return LabEnvironmentHelper.getSpaceApiUrl() + 'users/photo/' + userId;
+  getUserPhotoUrl(photo: string): string {
+    return LabEnvironmentHelper.getSpaceApiUrl() + '/users/photo-v2/' + photo;
   }
 
   getUserDetailRoute(userId: string): string {

@@ -30,7 +30,8 @@ export class CnExternalLabUserService {
         lastname: user.lastname,
         email: user.email,
         theme: user.theme,
-        lang: user.lang
+        lang: user.lang,
+        photo: user.photo
       },
       space: {
         id: labSpace.id,
@@ -64,7 +65,8 @@ export class CnExternalLabUserService {
       last_name: user.lastname,
       is_active: true,
       theme: user.theme,
-      lang: user.lang
+      lang: user.lang,
+      photo: user.photo
     };
 
     return lastValueFrom(this.externalLabApiService.post(labInfo, this.route, newLabUser));

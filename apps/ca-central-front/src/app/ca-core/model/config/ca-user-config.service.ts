@@ -18,8 +18,8 @@ export class CaUserConfig extends FlUserConfig {
     super();
   }
 
-  getUserPhotoUrl(userId: string): string {
-    return this.userService.getUserPhoto(userId);
+  getUserPhotoUrl(photoUrl: string): string {
+    return this.userService.getUserPhoto(photoUrl);
   }
 
   getUserDetailRoute(userId: string): string {

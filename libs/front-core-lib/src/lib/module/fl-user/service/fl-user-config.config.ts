@@ -8,7 +8,7 @@ import {Observable} from 'rxjs';
 export type FlUserConfigSearchNameMode = 'all' | 'space' | 'allForAdmin';
 
 export abstract class FlUserConfig {
-  public abstract getUserPhotoUrl(userId: string): string;
+  public abstract getUserPhotoUrl(photoUrl: string): string;
 
   public abstract getUserDetailRoute(userId: string): string;
 

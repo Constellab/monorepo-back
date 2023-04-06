@@ -23,8 +23,8 @@ export class CaUsersService {
   constructor(private apiService: FlApiService) {
   }
 
-  public getUserPhoto(userId: string): string {
-    return this.apiService.getBaseRouteUrl(`${this.route}/photo/${userId}`);
+  public getUserPhoto(photo: string): string {
+    return this.apiService.getBaseRouteUrl(`${this.route}/photo-v2/${photo}`);
   }
 
   public findAll(page: number, pageSize: number): Observable<ClPageI<CaUser>> {
