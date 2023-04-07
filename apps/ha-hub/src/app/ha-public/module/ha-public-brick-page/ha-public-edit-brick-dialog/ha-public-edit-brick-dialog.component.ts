@@ -38,7 +38,9 @@ export class HaPublicEditBrickDialogComponent extends FlFormDialogAbstractDirect
       description: [null, [Validators.required, Validators.maxLength(255)]],
       gitRepo: [null],
       pipRepo: [null],
-      visibility: [null]
+      visibility: [null],
+      credentialUsername: [null],
+      credentialPassword: [null]
     });
   }
 

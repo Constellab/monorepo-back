@@ -54,11 +54,12 @@ export class CnLabInstanceOnPremiseService {
       .replace(/\${SECRET_KEY}/g, labInstance.id)
       .replace(/\${GWS_CORE_DEV_DB_PASSWORD}/g, labInstance.gwsCoreDevDbPassword)
       .replace(/\${CENTRAL_FRONT_URL}/g, this.frontService.getBaseWebsiteURL())
-      .replace(/\${HUB_FRONT_URL}/g, this.configService.getCommunityFrontUrl())
+      .replace(/\${COMMUNITY_FRONT_URL}/g, this.configService.getCommunityFrontUrl())
+      .replace(/\${COMMUNITY_API_URL}/g, this.configService.getCommunityApiUrl())
       .replace(/\${FRONT_VERSION}/g, config.front_version)
       .replace(/\${GLAB_TAG}/g, config.glab_tag);
 
-    if (!config.biota_maria_db_url){
+    if (!config.biota_maria_db_url) {
       // remove all text between '#START_BIOTA_DB' and '#END_BIOTA_DB'
       content = content.replace(/#START_BIOTA_DB[\s\S]*#END_BIOTA_DB/g, '');
     }

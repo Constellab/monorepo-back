@@ -8,19 +8,18 @@ import {LabEnvironment} from './lab-environment.class';
  *
  * NEVER IMPORT ENVIRONMENT DIRECTLY FORM HERE, USE ENVIRONMENT HELPER INSTEAD
  */
-const apiBaseUrl: string = 'http://localhost:3000/';
-// const apiBaseUrl: string = 'https://glab-prod.tokyo.gencovery.io/';
+const apiBaseUrl: string = 'http://localhost:3000';
 export const environment: LabEnvironment = {
   production: false,
   settings: {
     apiBaseUrl: apiBaseUrl,
-    // devApiBaseUrl: apiBaseUrl,
     devApiBaseUrl: apiBaseUrl,
-    codeServerUrl: 'http://localhost:80/',
+    codelabUrl: 'http://localhost:80',
     virtualHost: 'localhost',
     spaceFrontUrl: 'http://localhost:4200',
     spaceApiUrl: 'http://localhost:3001',
-    hubFrontUrl: 'https://hub-pre-prod.gencovery.com'
+    communityFrontUrl: 'https://hub-pre-prod.gencovery.com',
+    communityApiUrl: 'https://hub-back-pre-prod.constellab-pre-prod.gencovery.com',
   },
 };
 

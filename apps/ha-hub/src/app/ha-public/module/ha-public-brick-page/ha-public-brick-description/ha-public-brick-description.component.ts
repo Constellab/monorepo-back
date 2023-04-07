@@ -74,6 +74,8 @@ export class HaPublicBrickDescriptionComponent implements OnInit {
     node.gitRepo = this.brick.gitRepo;
     node.pipRepo = this.brick.pipRepo;
     node.visibility = this.brick.visibility;
+    node.credentialUsername = this.brick.credentialUsername;
+    node.credentialPassword = this.brick.credentialPassword;
 
     const input: FlFormDialogInput<HaEditBrickDTO> = {
       mode: 'update',

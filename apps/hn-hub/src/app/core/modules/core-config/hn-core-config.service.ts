@@ -44,6 +44,11 @@ export class HnCoreConfigService {
     return this.configService.get('CENTRAL_API_URL');
   }
 
+  // api key to communicate with central api
+  public getCentralApiKey(): string {
+    return this.configService.get('CENTRAL_API_KEY');
+  }
+
   public getDatabaseConfig(): HnDatabaseConfig {
     return {
       host: this.configService.get('DATABASE_HOST'),
@@ -160,6 +165,8 @@ export class HnCoreConfigService {
   public getGencoveryContactMail(): string {
     return this.configService.get('GENCOVERY_CONTACT_MAIL');
   }
+
+
 
   // protected getConfigNumber(configName: string): number {
   //   try {

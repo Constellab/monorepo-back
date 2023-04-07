@@ -8,7 +8,8 @@
     <!--  description  -->
     <mat-form-field class="g-form-input" appearance="outline">
       <mat-label>{{'description' | translate}}</mat-label>
-      <textarea matInput formControlName="description" flInputMaxLength="255" placeholder="{{'description' | translate}}"></textarea>
+      <textarea matInput formControlName="description" flInputMaxLength="255"
+                placeholder="{{'description' | translate}}"></textarea>
       <mat-error *ngIf="formGp.get('description').hasError('required')">
         {{'description' | flErrorRequired}}
       </mat-error>
@@ -30,9 +31,25 @@
     </mat-form-field>
 
     <!--  gitRepo  -->
-    <mat-form-field class="g-form-input no-margin-bottom" appearance="outline">
+    <mat-form-field class="g-form-input input-repo" appearance="outline">
       <mat-label>{{'repo_git' | translate}}</mat-label>
       <input matInput type="text" formControlName="gitRepo" placeholder="{{'repo_git' | translate}}">
+    </mat-form-field>
+
+    <p>{{'repo_credentials' | translate}}</p>
+
+    <!--  Repo credentials username  -->
+    <mat-form-field class="g-form-input input-repo" appearance="outline">
+      <mat-label>{{'repo_credentials_username' | translate}}</mat-label>
+      <input matInput type="text" formControlName="credentialUsername"
+             placeholder="{{'repo_credentials_username' | translate}}">
+    </mat-form-field>
+
+    <!--  Repo credentials password  -->
+    <mat-form-field class="g-form-input no-margin-bottom" appearance="outline">
+      <mat-label>{{'repo_credentials_password' | translate}}</mat-label>
+      <input matInput type="text" formControlName="credentialPassword"
+             placeholder="{{'repo_credentials_password' | translate}}">
     </mat-form-field>
 
     <p class="error-repo" *ngIf="repoError">

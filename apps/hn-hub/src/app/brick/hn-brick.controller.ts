@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, Post, Put, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, Param, Post, Put, Req, UseGuards} from '@nestjs/common';
 import {HnBrickService} from './hn-brick.service';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
@@ -15,6 +15,7 @@ import {
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
 import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
 import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
+import {Request} from 'express';
 
 @Controller('brick')
 @UseGuards(HnIsAdminGuard)
@@ -34,6 +35,19 @@ export class HnBrickController {
     return this.brickService.findByName(name);
   }
 
+  /**
+   * Special route that is called by the lab using the central API key to retrieve info about the brick.
+   * If the key is present and valid, private bricks can be accessed.
+   * @param name
+   * @param request
+   */
+  @BlPublic()
+  @Get('central/name/:name')
+  findOneByNameCentral(@Param('name') name: string,
+                       @Req() request: Request): Promise<HnBrick> {
+    return this.brickService.findByNameCentral(name, request.header('X-Api-Key'));
+  }
+
   @BlPublic()
   @Get('docs/:brickId/:version')
   async findDocsByBrick(@Param('brickId') brickId: string, @Param('version') version: string): Promise<HnNode> {
@@ -42,7 +56,9 @@ export class HnBrickController {
 
   @BlPublic()
   @Get('root-folder/:brickId/:version')
-  async findRootFolderId(@Param('brickId') brickId: string, @Param('version') version: string): Promise<{ id: string }> {
+  async findRootFolderId(@Param('brickId') brickId: string, @Param('version') version: string): Promise<{
+    id: string
+  }> {
     const id: string = await this.brickService.findRootFolderId(await this.brickService.findById(brickId), version);
     return {id: id};
   }
@@ -112,21 +128,22 @@ export class HnBrickController {
   @IsAdmin()
   @Post('is-actual-brick-and-new-version')
   async isActualBrickAndNewVersion(@Body(new BlParsePipe(HnIsActualBrickAndNewVersionDTO))
-    content: HnIsActualBrickAndNewVersionDTO): Promise<[boolean, boolean]> {
+                                     content: HnIsActualBrickAndNewVersionDTO): Promise<[boolean, boolean]> {
     return this.brickService.isActualBrickAndNewVersion(content);
   }
 
   @Get('get-docs-by-name/:brickName/:major')
   async getDocsByBrickNameMajor(
     @Param('brickName') brickName: string,
-    @Param('major') major: string): Promise<HnDocumentationSearchDTO[]>{
+    @Param('major') major: string): Promise<HnDocumentationSearchDTO[]> {
 
     return this.brickService.getDocsByBrickNameMajor(
       brickName,
       major === 'latest' ? (await this.getLatestBrickVersion(brickName)).version.major : +(major.slice(1)));
   }
+
   @Post('get-doc-by-link')
-  async getDocByLink(@Body() body: any): Promise<HnDocumentationSearchDTO>{
+  async getDocByLink(@Body() body: any): Promise<HnDocumentationSearchDTO> {
     return this.brickService.getDocByLink(body.link);
   }
 }

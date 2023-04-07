@@ -29,5 +29,4 @@ RUN npm ci --only=production
 # copy dist
 COPY --from=builder /app/dist/apps/hn-hub ./dist
 
-EXPOSE 3001
 CMD ["node", "dist/main"]

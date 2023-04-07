@@ -88,8 +88,6 @@ export class HnBrickListDTO{
   id: string;
   name: string;
   description: string;
-  pipRepo: string;
-  gitRepo: string;
   lastVersion: CmVersion;
   isCertified?: boolean;
   imageLink?: string;
@@ -102,6 +100,8 @@ export class HnEditBrickDTO{
   pipRepo: string;
   gitRepo: string;
   visibility: HnBrickVisibility;
+  credentialUsername?: string;
+  credentialPassword?: string;
 }
 
 export class HnTechnicalDocInputDTO{

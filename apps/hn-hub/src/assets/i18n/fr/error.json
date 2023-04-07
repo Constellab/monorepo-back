@@ -3,5 +3,6 @@
   "unauthorized": "Non autorisé",
   "column_too_long": "Champ '{field}' trop long",
   "wrong_credentials": "Mauvais email ou mot de passe",
-  "brick_already_exist": "Une brique avec ce nom existe déjà"
+  "brick_already_exist": "Une brique avec ce nom existe déjà",
+  "brick_not_found": "La brique '{name}' n'a pas été trouvée. A-t-elle été déclarée dans Constellab Community ?"
 }

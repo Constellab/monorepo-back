@@ -3,7 +3,7 @@ import {HnUserService} from '../users/hn-user.service';
 import {CmCredentials, CmCredentials2Fa} from '@monorepo/common-model';
 import {BlJwtService} from '@monorepo/back-core-lib';
 import {HnUser, HnUserConstellabDTO} from '../users/hn-user.entity';
-import {HnCentralAuthService} from './hn-central-auth.service';
+import {HnCentralAuthService, HnExternalCheckCredentialResponse} from './hn-central-auth.service';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 
 export interface HnAuthResponse {
@@ -23,15 +23,29 @@ export class HnAuthService {
   }
 
   async login(credentials: CmCredentials): Promise<HnAuthResponse> {
-    const checkCredential =
-      this.coreConfigService.isLocal() ? await this.userService.getUserCredentialsResponse(credentials)
-        : await this.centralAuthService.checkUserCredential(credentials);
+    let checkCredential: HnExternalCheckCredentialResponse = null;
+
+    // in local don't call central auth
+    if (this.coreConfigService.isLocal()) {
+      const user = await this.userService.findOneByEmail(credentials.email);
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+      checkCredential = {
+        status: 'OK',
+        user: user
+      };
+    } else {
+      checkCredential = await this.centralAuthService.checkUserCredential(credentials);
+    }
 
     // if there is no 2FA, the user can be logged in
     if (checkCredential.status === 'OK' && checkCredential.user) {
+
       let user: HnUser = await this.userService.findOne(checkCredential.user.id);
 
-      if(!user) {
+      if (!user) {
         await this.userService.createOrUpdate(checkCredential.user);
         user = await this.userService.findOne(checkCredential.user.id);
       }
@@ -40,12 +54,12 @@ export class HnAuthService {
       return {
         status: 'LOGGED_IN',
         token: token,
-      }
-    }else{
+      };
+    } else {
       return {
         status: '2FA_REQUIRED',
         twoFAUrlCode: checkCredential.twoFAUrlCode,
-      }
+      };
     }
   }
 
@@ -53,7 +67,7 @@ export class HnAuthService {
     const user: HnUser = await this.centralAuthService.check2FA(credentials);
     let dbUser = await this.userService.findOne(user.id);
 
-    if(!dbUser) {
+    if (!dbUser) {
       await this.userService.createOrUpdate(user);
       dbUser = await this.userService.findOne(user.id);
     }

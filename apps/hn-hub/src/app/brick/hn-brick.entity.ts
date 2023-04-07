@@ -3,6 +3,8 @@ import {Column, Entity, Unique} from 'typeorm';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CmVersion} from '@monorepo/common-model';
 import {HnReferenceDTO, HnRepoType} from '../brick-version/hn-brick-version.entity';
+import {Expose} from 'class-transformer';
+import {ClHelpService} from '@monorepo/core-lib';
 
 export class HnCreateBrickDTO {
   name: string;
@@ -16,9 +18,11 @@ export class HnCreateBrickDTO {
   references?: HnReferenceDTO[];
   technicalInfo?: Record<string, any>;
   visibility: HnBrickVisibility;
+  credentialUsername?: string;
+  credentialPassword?: string;
 }
 
-export enum HnBrickVisibility{
+export enum HnBrickVisibility {
   PRIVATE = 'private',
   PUBLIC = 'public'
 }
@@ -48,13 +52,43 @@ export class HnBrick extends HnBaseEntity {
   @Column({nullable: true})
   imageLink?: string;
 
+  @Column({nullable: true})
+  credentialUsername?: string;
+
+  @Column({nullable: true})
+  credentialPassword?: string;
+
   initialize(name: string, description: string, isCertified: boolean,
-             visibility: HnBrickVisibility, repoPip?: string, repoGit?:string): void {
+             visibility: HnBrickVisibility, repoPip?: string, repoGit?: string,
+             credentialUsername?: string, credentialPassword?: string): void {
     this.name = name;
     this.description = description;
     this.isCertified = isCertified;
     this.gitRepo = repoGit;
     this.pipRepo = repoPip;
     this.visibility = visibility;
+    this.credentialUsername = credentialUsername;
+    this.credentialPassword = credentialPassword;
+  }
+
+  /**
+   * Build the url with the credential if they are set
+   */
+  @Expose({toPlainOnly: true})
+  get repositoryType(): 'pip' | 'git' {
+    return !ClHelpService.isNullOrEmpty(this.pipRepo) ? 'pip' : 'git';
+  }
+
+  /**
+   * Build the url with the credential if they are set
+   */
+  @Expose({toPlainOnly: true})
+  get repositoryAccessUrl(): string {
+    const url = this.gitRepo || this.pipRepo;
+
+    if (this.credentialUsername && this.credentialPassword) {
+      return url.replace('https://', `https://${this.credentialUsername}:${this.credentialPassword}@`);
+    }
+    return url;
   }
 }

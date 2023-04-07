@@ -23,6 +23,10 @@ export class HaBrick extends HaEntity {
   lastVersion: CmVersion;
 
   imageLink?: string;
+
+  credentialUsername?: string;
+
+  credentialPassword?: string;
 }
 
 export class HaBrickCreationDTO{
@@ -32,6 +36,8 @@ export class HaBrickCreationDTO{
   repoPip: string;
   version: string | CmVersion;
   repoType: HaRepoType;
+  credentialUsername?: string;
+  credentialPassword?: string;
   isBeta: boolean = false;
   visibility: HaBrickVisibility;
   subPatch?: number;
@@ -74,4 +80,6 @@ export class HaEditBrickDTO{
   gitRepo: string;
   pipRepo: string;
   visibility: HaBrickVisibility;
+  credentialUsername?: string;
+  credentialPassword?: string;
 }

@@ -50,7 +50,9 @@ export class HaPublicEditBrickFormComponent implements OnInit {
       repoPip: [null],
       technicalInfo: [null],
       references: [null],
-      visibility: [HaBrickVisibility.PUBLIC]
+      visibility: [HaBrickVisibility.PUBLIC],
+      credentialUsername: [null],
+      credentialPassword: [null]
     });
     this.test = this.formGp.value.visibility === 'public'
   }

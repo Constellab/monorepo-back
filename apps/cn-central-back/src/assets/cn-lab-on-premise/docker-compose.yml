@@ -18,9 +18,11 @@ services:
       - GPU=
       - VIRTUAL_HOST=
       - BIOTA_BIODATA_DIR=/data/gws_biota/biodata/
-      - GWS_GIT_LOGIN=${GWS_GIT_LOGIN}
-      - GWS_GIT_PWD=${GWS_GIT_PWD}
       - SECRET_KEY=${SECRET_KEY}
+      # COMMUNITY
+      - COMMUNITY_API_URL=${COMMUNITY_API_URL}
+      - COMMUNITY_FRONT_URL=${COMMUNITY_FRONT_URL}
+      - COMMUNITY_API_KEY=
       # GWS_CORE database
       - GWS_CORE_DB_HOST=gws_core_prod_db
       - GWS_CORE_DB_USER=gws_core
@@ -64,9 +66,11 @@ services:
       - GPU=
       - VIRTUAL_HOST=
       - BIOTA_BIODATA_DIR=/data/gws_biota/biodata/
-      - GWS_GIT_LOGIN=${GWS_GIT_LOGIN}
-      - GWS_GIT_PWD=${GWS_GIT_PWD}
       - SECRET_KEY=${SECRET_KEY}
+      # COMMUNITY
+      - COMMUNITY_API_URL=${COMMUNITY_API_URL}
+      - COMMUNITY_FRONT_URL=${COMMUNITY_FRONT_URL}
+      - COMMUNITY_API_KEY=
       # GWS_CORE database
       - GWS_CORE_DB_HOST=gws_core_dev_db
       - GWS_CORE_DB_USER=gws_core
@@ -99,14 +103,15 @@ services:
   front:
     image: registry.gitlab.com/gencovery/core/monorepo/lab-front:${FRONT_VERSION}
     environment:
-      - API_URL=http://localhost:3100/
-      - LAB_PROD_API_URL=http://localhost:3100/
-      - LAB_DEV_API_URL=http://localhost:3101/
-      - CODE_SERVER_URL=http://localhost:8081
+      - API_URL=http://localhost:3100
+      - LAB_PROD_API_URL=http://localhost:3100
+      - LAB_DEV_API_URL=http://localhost:3101
+      - CODELAB_URL=http://localhost:8081
       - VIRTUAL_HOST=
       - CENTRAL_FRONT_URL=${CENTRAL_FRONT_URL}
       - CENTRAL_API_URL=${CENTRAL_API_URL}
-      - HUB_FRONT_URL=${HUB_FRONT_URL}
+      - COMMUNITY_FRONT_URL=${COMMUNITY_FRONT_URL}
+      - COMMUNITY_API_URL=${COMMUNITY_API_URL}
     networks:
       - gencovery-network-on-premise
     container_name: front

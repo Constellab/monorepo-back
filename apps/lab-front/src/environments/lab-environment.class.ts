@@ -19,8 +19,8 @@ export interface LabEnvironmentSettings {
   // base url for the api in dev environment
   devApiBaseUrl: string;
 
-  // url for the jupyter lab
-  codeServerUrl: string;
+  // url for the codelab
+  codelabUrl: string;
 
   // domain name of the server
   virtualHost: string;
@@ -31,8 +31,11 @@ export interface LabEnvironmentSettings {
   // url of the space api
   spaceApiUrl: string;
 
-  // url of the hub front
-  hubFrontUrl: string;
+  // url of the community front
+  communityFrontUrl: string;
+
+  // url of the community api
+  communityApiUrl: string;
 }
 
 // Path of the environment json file created during the docker run (used in production)

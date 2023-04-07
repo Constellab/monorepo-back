@@ -12,10 +12,11 @@ export const environment: LabEnvironment = {
   settings: {
     apiBaseUrl: '',
     devApiBaseUrl: '',
-    codeServerUrl: '',
+    codelabUrl: '',
     virtualHost: '',
     spaceFrontUrl: '',
     spaceApiUrl: '',
-    hubFrontUrl: '',
+    communityFrontUrl: '',
+    communityApiUrl: '',
   }
 };

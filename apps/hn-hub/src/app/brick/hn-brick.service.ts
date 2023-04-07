@@ -52,7 +52,8 @@ export class HnBrickService {
 
     if (createdBrick) {
       brick.initialize(createdBrick.name, createdBrick.description, false,
-        createdBrick.visibility, createdBrick.repoPip, createdBrick.repoGit);
+        createdBrick.visibility, createdBrick.repoPip, createdBrick.repoGit,
+        createdBrick.credentialUsername, createdBrick.credentialPassword);
     }
 
     brick = await this.dataSource.transaction(async entityManager => {
@@ -78,8 +79,6 @@ export class HnBrickService {
       resBrick.id = brick.id;
       resBrick.name = brick.name;
       resBrick.description = brick.description;
-      resBrick.gitRepo = brick.gitRepo;
-      resBrick.pipRepo = brick.pipRepo;
       resBrick.imageLink = brick.imageLink;
       resBrick.isCertified = brick.isCertified;
       resBrick.visibility = brick.visibility;
@@ -89,7 +88,7 @@ export class HnBrickService {
     return res;
   }
 
-  async findByName(name: string): Promise<HnBrick> {
+  async findByName(name: string): Promise<HnBrick | null> {
     const isAdmin: boolean = this.isCurrentAdmin();
     const brick: HnBrick = isAdmin ? await this.bricksRepository.findOne({
       where: {
@@ -108,7 +107,29 @@ export class HnBrickService {
     }
 
     return brick;
+  }
 
+  async findByNameCentral(name: string, centralApiKey?: string): Promise<HnBrick> {
+
+    const brick: HnBrick = await this.bricksRepository.findOne({
+      where: {name: name}
+    });
+
+    if (brick == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_NOT_FOUND, {detailArgs: {name: name}});
+    }
+
+    // if the brick is private, it needs a valid centralApiKey
+    if (brick.visibility === HnBrickVisibility.PRIVATE) {
+      if (centralApiKey == null) {
+        throw new BlUnauthorizedException();
+      }
+      if (this.configService.getCentralApiKey() !== centralApiKey) {
+        throw new BlUnauthorizedException();
+      }
+    }
+
+    return brick;
   }
 
   async findById(i: string): Promise<HnBrick> {
@@ -179,6 +200,8 @@ export class HnBrickService {
       brick.gitRepo = editedBrick.gitRepo;
       brick.pipRepo = editedBrick.pipRepo;
       brick.visibility = editedBrick.visibility;
+      brick.credentialUsername = editedBrick.credentialUsername;
+      brick.credentialPassword = editedBrick.credentialPassword;
     }
     const lastBrickMajorVersion: HnBrickVersion = await this.brickMajorVersionService.getLatestBrickVersion(brick.name);
     await this.bricksRepository.save(brick);
