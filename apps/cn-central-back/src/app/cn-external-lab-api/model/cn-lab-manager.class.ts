@@ -37,7 +37,9 @@ export interface CnLabManagerInitConfig {
   codelabToken: string;
   centralFrontUrl: string;
   centralApiUrl: string;
-  hubFrontUrl: string;
+  communityFrontUrl: string;
+  communityApiUrl: string;
+  communityApiKey: string;
   gwsCoreProdPassword: string;
   gwsCoreDevPassword: string;
 }

@@ -143,6 +143,10 @@ export class CnCoreConfigService {
     return this.configService.get('COMMUNITY_API_URL');
   }
 
+  public getCommunityApiKey(): string {
+    return this.configService.get('COMMUNITY_API_KEY');
+  }
+
   protected getConfigNumber(configName: string): number {
     try {
       return parseInt(this.configService.get(configName), 10);

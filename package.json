@@ -56,8 +56,8 @@
     "hn-hub:serve": "nx run hn-hub:serve",
     "hn-hub:build": "nx run hn-hub:build",
     "hn-hub:build-image-dev": "docker build -f apps/hn-hub/Dockerfile -t hn-hub .",
-    "hn-hub:caprover-deploy-pre-prod": "caprover deploy --host https://captain.constellab-pre-prod.gencovery.com --appName hub-back-pre-prod --branch develop",
-    "hn-hub:caprover-deploy-prod": "caprover deploy --host https://captain.constellab.gencovery.com/ --appName hub-back --branch master"
+    "hn-hub:caprover-deploy-pre-prod": "caprover deploy --host https://captain.constellab-pre-prod.gencovery.com --appName hub-back-pre-prod --imageName registry.gitlab.com/gencovery/core/monorepo/community-back:1.0.0",
+    "hn-hub:caprover-deploy-prod": "caprover deploy --host https://captain.constellab.gencovery.com/ --appName hub-back --imageName registry.gitlab.com/gencovery/core/monorepo/community-back:1.0.0"
   },
   "private": true,
   "dependencies": {
