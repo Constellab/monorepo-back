@@ -6,5 +6,6 @@ export enum HnErrorText {
   SERVER_ERROR = 'error.server_error',
   COLUMN_TOO_LONG = 'error.column_too_long',
   BRICK_ALREADY_EXIST = 'error.brick_already_exist',
-  BRICK_NOT_FOUND = 'error.brick_not_found'
+  BRICK_NOT_FOUND = 'error.brick_not_found',
+  BRICK_VERSION_NOT_FOUND = 'error.brick_version_not_found',
 }

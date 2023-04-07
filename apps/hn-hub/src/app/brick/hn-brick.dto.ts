@@ -110,3 +110,14 @@ export class HnTechnicalDocInputDTO{
   techDocType: string;
   techDocUniqueName: string;
 }
+
+/**
+ * DTO containing minimum information to download a brick version
+ */
+export class HnBrickVersionDownloadDTO{
+  brickName: string;
+  brickVersion: string;
+  repoType: HnRepoType;
+  repositoryUrl: string;
+  repositoryAccessUrl: string;
+}

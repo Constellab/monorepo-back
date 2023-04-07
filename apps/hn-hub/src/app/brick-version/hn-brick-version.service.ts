@@ -1,9 +1,14 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {HnBrickVersion, HnNewVersionDTO, HnReferenceDTO} from './hn-brick-version.entity';
-import {DataSource, EntityManager, Repository} from 'typeorm';
+import {DataSource, EntityManager, IsNull, Repository} from 'typeorm';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
-import {BlAbstractService, BlTransportService, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {
+  BlAbstractService,
+  BlNotFoundException,
+  BlTransportService,
+  BlUnauthorizedException
+} from '@monorepo/back-core-lib';
 import {HnBrickTransportDto} from '../brick/hn-brick.dto';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {ClPageI, ClStringHelper} from '@monorepo/core-lib';
@@ -14,6 +19,7 @@ import {
   HnBrickVersionRefState
 } from '../brick-version-reference/hn-brick-version-reference.entity';
 import {HnUserService} from '../users/hn-user.service';
+import {HnErrorText} from '../core/model/config/hn-error-text.class';
 
 @Injectable()
 export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
@@ -289,6 +295,29 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
       }]
     };
     this.transportService.emit('brick', brick);
+  }
+
+  public async findByVersionStringAndCheck(brickName: string, versionStr: string): Promise<HnBrickVersion> {
+    const version = CmVersion.fromString(versionStr);
+    const brickVersion = await this.brickVersionsRepository.findOne({
+      where: {
+        brickMajorVersion: {
+          brick: {
+            name: brickName
+          },
+          major: version.major
+        },
+        minor: version.minor,
+        patch: version.patch,
+        subPatch: version.isBeta() ? version.subPatch : IsNull()
+      }
+    });
+
+    if(!brickVersion) {
+      throw new BlNotFoundException(HnErrorText.BRICK_VERSION_NOT_FOUND,
+        {detailArgs: {name: brickName, version: version} });
+    }
+    return brickVersion;
   }
 
 }

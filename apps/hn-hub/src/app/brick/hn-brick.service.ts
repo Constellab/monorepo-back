@@ -13,6 +13,7 @@ import {HnNode} from '../folder/hn-folder.dto';
 import {HnErrorText} from '../core/model/config/hn-error-text.class';
 import {
   HnBrickListDTO,
+  HnBrickVersionDownloadDTO,
   HnCreateTechnicalDocContent,
   HnEditBrickDTO,
   HnIsActualBrickAndNewVersionDTO,
@@ -109,7 +110,7 @@ export class HnBrickService {
     return brick;
   }
 
-  async findByNameCentral(name: string, centralApiKey?: string): Promise<HnBrick> {
+  async findByNameCentral(name: string, version: string, centralApiKey?: string): Promise<HnBrickVersionDownloadDTO> {
 
     const brick: HnBrick = await this.bricksRepository.findOne({
       where: {name: name}
@@ -121,15 +122,21 @@ export class HnBrickService {
 
     // if the brick is private, it needs a valid centralApiKey
     if (brick.visibility === HnBrickVisibility.PRIVATE) {
-      if (centralApiKey == null) {
-        throw new BlUnauthorizedException();
-      }
-      if (this.configService.getCentralApiKey() !== centralApiKey) {
+      if (centralApiKey == null || this.configService.getCentralApiKey() !== centralApiKey) {
         throw new BlUnauthorizedException();
       }
     }
 
-    return brick;
+    // get the version
+    const brickVersion: HnBrickVersion = await this.brickVersionService.findByVersionStringAndCheck(name, version);
+
+    return {
+      brickName: brick.name,
+      brickVersion: brickVersion.version.toString(),
+      repoType: brickVersion.repoType,
+      repositoryUrl: brick.repositoryUrl,
+      repositoryAccessUrl: brick.repositoryAccessUrl,
+    };
   }
 
   async findById(i: string): Promise<HnBrick> {

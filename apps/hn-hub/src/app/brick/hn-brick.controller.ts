@@ -7,6 +7,7 @@ import {HnDocumentation, HnDocumentationSearchDTO} from '../documentation/hn-doc
 import {HnNode} from '../folder/hn-folder.dto';
 import {
   HnBrickListDTO,
+  HnBrickVersionDownloadDTO,
   HnCreateTechnicalDocContent,
   HnEditBrickDTO,
   HnIsActualBrickAndNewVersionDTO,
@@ -38,14 +39,13 @@ export class HnBrickController {
   /**
    * Special route that is called by the lab using the central API key to retrieve info about the brick.
    * If the key is present and valid, private bricks can be accessed.
-   * @param name
-   * @param request
    */
   @BlPublic()
-  @Get('central/name/:name')
+  @Get('central/name/:name/:version')
   findOneByNameCentral(@Param('name') name: string,
-                       @Req() request: Request): Promise<HnBrick> {
-    return this.brickService.findByNameCentral(name, request.header('X-Api-Key'));
+                        @Param('version') version: string,
+                       @Req() request: Request): Promise<HnBrickVersionDownloadDTO> {
+    return this.brickService.findByNameCentral(name, version, request.header('X-Api-Key'));
   }
 
   @BlPublic()
