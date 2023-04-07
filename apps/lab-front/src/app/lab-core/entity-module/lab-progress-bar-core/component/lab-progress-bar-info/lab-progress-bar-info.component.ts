@@ -86,16 +86,17 @@ export class LabProgressBarInfoComponent implements OnInit, OnDestroy {
     this.loadMoreIsLoading = false;
     this.addMessageToList(messages);
 
-    // if the number of messages is less than the number of messages requested, it means that there is no more messages
-    if (messages.messages.length < this.nbOfMessages) {
-      this.loadMoreCompleted = true;
-    }
   }
 
   // add message to the list, avoid duplicate and respect order
   private addMessageToList(messages: LabProgressBarMessages): void {
     this.messageDatasource.removeItem(messages.messages);
     this.messageDatasource.addItem(messages.messages, (a, b) => a.datetime > b.datetime);
+
+    // if the number of messages is less than the number of messages requested, it means that there is no more messages
+    if (messages.messages.length < this.nbOfMessages) {
+      this.loadMoreCompleted = true;
+    }
   }
 
   ngOnDestroy(): void {
