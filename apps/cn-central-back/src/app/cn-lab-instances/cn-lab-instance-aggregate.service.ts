@@ -612,6 +612,7 @@ export class CnLabInstanceAggregateService {
         is_active: true,
         theme: labUsers.user.theme,
         lang: labUsers.user.lang,
+        photo: labUsers.user.photo,
       };
     });
   }
