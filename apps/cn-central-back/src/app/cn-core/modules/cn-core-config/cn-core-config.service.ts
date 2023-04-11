@@ -184,10 +184,6 @@ export class CnCoreConfigService {
     return this.isProduction() ? 'constellab-space-image-prod' : 'constellab-space-image-pre-prod';
   }
 
-  public getCommentObjectStorageBucket(): string {
-    return this.isProduction() ? 'constellab-comment-image-prod' : 'constellab-comment-image-pre-prod';
-  }
-
   public getOvhServiceName(): string {
     return this.configService.get('OVH_SERVICE_NAME');
   }
@@ -208,16 +204,28 @@ export class CnCoreConfigService {
     return this.configService.get('OVH_SSH_KEY');
   }
 
-  public getSshPrivateKey(): string {
-    return this.configService.get('SSH_PRIVATE_KEY');
+  public getDockerRegistryUrl(): string {
+    return this.configService.get('DOCKER_REGISTRY_URL');
   }
 
-  public getGwsGitlabUsername(): string {
-    return this.configService.get('GWS_GITLAB_USERNAME');
+  public getDockerRegistryUsername(): string {
+    return this.configService.get('DOCKER_REGISTRY_USERNAME');
   }
 
-  public getGwsGitlabPassword(): string {
-    return this.configService.get('GWS_GITLAB_PASSWORD');
+  public getDockerRegistryPassword(): string {
+    return this.configService.get('DOCKER_REGISTRY_PASSWORD');
+  }
+
+  public getDockerlabRepoUrl(): string {
+    return this.configService.get('DOCKERLAB_REPO_URL');
+  }
+
+  public getDockerlabRepoUsername(): string {
+    return this.configService.get('DOCKERLAB_REPO_USERNAME');
+  }
+
+  public getDockerlabRepoPassword(): string {
+    return this.configService.get('DOCKERLAB_REPO_PASSWORD');
   }
 
   /**

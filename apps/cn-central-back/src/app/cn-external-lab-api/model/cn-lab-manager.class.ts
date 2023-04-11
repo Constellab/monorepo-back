@@ -42,4 +42,9 @@ export interface CnLabManagerInitConfig {
   communityApiKey: string;
   gwsCoreProdPassword: string;
   gwsCoreDevPassword: string;
+  dockerRegistry: {
+    url: string;
+    username: string;
+    password: string;
+  }
 }

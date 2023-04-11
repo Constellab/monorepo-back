@@ -66,6 +66,11 @@ export class CnLabManagerService {
       communityApiKey: this.configService.getCommunityApiKey(),
       gwsCoreProdPassword: labInstance.gwsCoreProdDbPassword,
       gwsCoreDevPassword: labInstance.gwsCoreDevDbPassword,
+      dockerRegistry: {
+        url: this.configService.getDockerRegistryUrl(),
+        username: this.configService.getDockerRegistryUsername(),
+        password: this.configService.getDockerRegistryPassword(),
+      }
     };
     return this.labManagerApiService.initAll(labInstance.getLabManagerApiInfo(), initConfig);
   }

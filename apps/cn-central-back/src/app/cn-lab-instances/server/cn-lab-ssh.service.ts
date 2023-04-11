@@ -13,7 +13,6 @@ import {BlBadRequestException} from '@monorepo/back-core-lib';
 export class CnLabSshService {
 
   private static readonly DOCKERLAB_FOLDER = 'dockerlab';
-  private static readonly DOCKERLAB_REPO = 'gitlab.com/gencovery/infra/dockerlab.git';
   private static readonly SSH_PRIVATE_KEY_LOCATION = '/root/.ssh/id_rsa';
 
   private readonly logger = new Logger(CnLabSshService.name);
@@ -74,9 +73,9 @@ export class CnLabSshService {
       await this.labInstanceService.updateServerStatusText(labInstance.id, `Pulling dockerlab repository`);
       // Git clone
       // eslint-disable-next-line max-len
-      const repo = `https://${this.coreConfigService.getGwsGitlabUsername()}:${this.coreConfigService.getGwsGitlabPassword()}@${CnLabSshService.DOCKERLAB_REPO}`;
+      const repo = `https://${this.coreConfigService.getDockerlabRepoUsername()}:${this.coreConfigService.getDockerlabRepoPassword()}@${this.coreConfigService.getDockerlabRepoUrl()}`;
       const gitClone = this.getSshCommand(labInstance.virtualHost, [`git clone ${repo}`]);
-      this.logger.log(`Executing clone for dockerlab repository ${CnLabSshService.DOCKERLAB_REPO} for lab ${labInstance.id}`);
+      this.logger.log(`Executing clone for dockerlab repository ${this.coreConfigService.getDockerlabRepoUrl()} for lab ${labInstance.id}`);
       await this.commandService.execCommand(gitClone);
     }
   }
@@ -108,8 +107,9 @@ export class CnLabSshService {
       labInstance.virtualHost,
       this.coreConfigService.isProduction() ? 'prod' : 'pre-prod',
       labInstance.labManagerApiKey,
-      this.coreConfigService.getGwsGitlabUsername(),
-      this.coreConfigService.getGwsGitlabPassword(),
+      this.coreConfigService.getDockerRegistryUrl(),
+      this.coreConfigService.getDockerRegistryUsername(),
+      this.coreConfigService.getDockerRegistryPassword(),
       this.coreConfigService.getLabManagerRecommendedVersion()
     ];
 
