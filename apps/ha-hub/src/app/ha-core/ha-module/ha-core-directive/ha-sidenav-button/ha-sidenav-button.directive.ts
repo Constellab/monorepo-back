@@ -7,6 +7,7 @@ import {Router} from '@angular/router';
 export class HaSidenavButtonDirective implements OnInit {
   isOpen: boolean = false;
   isActivated: boolean = false;
+  windowSize: number;
 
   constructor(private elementRef: ElementRef,
               private router: Router,) {
@@ -29,7 +30,8 @@ export class HaSidenavButtonDirective implements OnInit {
   @HostListener('window:resize', ['$event'])
   onResize(event: any): void {
     const sidenav: any = this.elementRef.nativeElement.closest('.left-panel');
-    if(event.target.innerWidth > 1160 && this.isActivated) {
+    this.windowSize = event.target.innerWidth;
+    if(this.windowSize > 1160 && this.isActivated) {
       sidenav.style.left = 'var(--margin-side)';
       this.isOpen = false;
       this.elementRef.nativeElement.innerHTML = 'menu';
@@ -44,7 +46,7 @@ export class HaSidenavButtonDirective implements OnInit {
     if (sidenav == null || !targetElement) return;
     const clickedInside = sidenav.contains(targetElement);
 
-    if (!clickedInside && window.innerWidth <= 1160) {
+    if (!clickedInside && this.windowSize && this.windowSize <= 1160) {
       this.isOpen = false;
       sidenav.style.left = '-100%';
       this.elementRef.nativeElement.innerHTML = 'menu';
