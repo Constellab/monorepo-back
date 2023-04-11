@@ -21,6 +21,9 @@ export class HnUser {
   @Column({unique: true, nullable: false, update: false})
   email: string;
 
+  @Column({nullable: true})
+  photo: string;
+
   @Column({nullable: false, type: 'enum', enum: CmUserCategory})
   category: CmUserCategory;
 
@@ -46,6 +49,7 @@ export class HnUser {
     this.id = userDto.id;
     this.firstname = userDto.firstname;
     this.lastname = userDto.lastname;
+    this.photo = userDto.photo;
     this.email = userDto.email;
     this.category = userDto.category;
   }
@@ -62,6 +66,6 @@ export class HnUserConstellabDTO {
   activity?: string;
   company?: string;
   biography?: string;
-
+  photo: string;
   lang: ClSupportedLanguage;
 }
