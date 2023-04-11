@@ -61,23 +61,21 @@ export class CnLabSshService {
       {errorMode: CnExecCommandMode.STDERR_AS_SUCCESS, ignoreError: true, timeout: 10000});
 
     // todo does not work if this is the first time the ssh connection is made
-    // if the repo does exist, we pull the latest version
+    // if the repo does exist, delete it to re-clone it
     if (cdResult === '') {
-      await this.labInstanceService.updateServerStatusText(labInstance.id, `Cloning dockerlab repository`);
-
-      // Git pull
-      const gitPull = this.getSshCommand(labInstance.virtualHost, [`cd ${CnLabSshService.DOCKERLAB_FOLDER}`, 'git pull']);
-      this.logger.log(`Executing command -- ${gitPull} -- for lab ${labInstance.id}`);
-      await this.commandService.execCommand(gitPull);
-    } else {
-      await this.labInstanceService.updateServerStatusText(labInstance.id, `Pulling dockerlab repository`);
-      // Git clone
-      // eslint-disable-next-line max-len
-      const repo = `https://${this.coreConfigService.getDockerlabRepoUsername()}:${this.coreConfigService.getDockerlabRepoPassword()}@${this.coreConfigService.getDockerlabRepoUrl()}`;
-      const gitClone = this.getSshCommand(labInstance.virtualHost, [`git clone ${repo}`]);
-      this.logger.log(`Executing clone for dockerlab repository ${this.coreConfigService.getDockerlabRepoUrl()} for lab ${labInstance.id}`);
-      await this.commandService.execCommand(gitClone);
+      await this.labInstanceService.updateServerStatusText(labInstance.id, `Deleting dockerlab repository`);
+      const rm = this.getSshCommand(labInstance.virtualHost, [`rm -rf ${CnLabSshService.DOCKERLAB_FOLDER}`]);
+      this.logger.log(`Executing command -- ${rm} -- for lab ${labInstance.id}`);
+      await this.commandService.execCommand(rm);
     }
+    // clone the repo
+    await this.labInstanceService.updateServerStatusText(labInstance.id, `Pulling dockerlab repository`);
+    // Git clone
+    // eslint-disable-next-line max-len
+    const repo = `https://${this.coreConfigService.getDockerlabRepoUsername()}:${this.coreConfigService.getDockerlabRepoPassword()}@${this.coreConfigService.getDockerlabRepoUrl()}`;
+    const gitClone = this.getSshCommand(labInstance.virtualHost, [`git clone ${repo}`]);
+    this.logger.log(`Executing clone for dockerlab repository ${this.coreConfigService.getDockerlabRepoUrl()} for lab ${labInstance.id}`);
+    await this.commandService.execCommand(gitClone);
   }
 
   private async callPrepareServer(labInstance: CnLabInstance): Promise<void> {
