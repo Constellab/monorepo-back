@@ -2,41 +2,6 @@
  * Helper class with only static methods to simplify String management
  */
 export class ClStringHelper {
-  /**
-   * Method to check if the string container contain the partialString
-   * @param container the string container
-   * @param partialString string to check if it's in the container
-   * @param trim if true, the strings are trimmed
-   * @param toLowerCase if true, the string are converted to lower case for comparison
-   * @param replaceAccent if false the accent are replace by the letter (an 'é' equals 'e')
-   */
-  public static stringContains(container: string, partialString: string, trim: boolean = true,
-                               toLowerCase: boolean = true, replaceAccent: boolean = false): boolean {
-    if (container == null || partialString == null ||
-      typeof container !== 'string' || typeof partialString !== 'string') {
-      return false;
-    }
-
-    let containerStr: string = container;
-    let partialStr: string = partialString;
-
-    if (trim) {
-      containerStr = containerStr.trim();
-      partialStr = partialStr.trim();
-    }
-
-    if (toLowerCase) {
-      containerStr = containerStr.toLowerCase();
-      partialStr = partialString.toLowerCase();
-    }
-
-    if (replaceAccent) {
-      containerStr = this.removeAccentFromString(containerStr);
-      partialStr = this.removeAccentFromString(partialStr);
-    }
-
-    return containerStr.indexOf(partialStr) !== -1;
-  }
 
   /**
    * Replace all the accent in a string with the corresponding letter
@@ -52,26 +17,6 @@ export class ClStringHelper {
     return str.normalize('NFD').replace(regex, '');
   }
 
-  /**
-   * Remove all the whitespace from a string
-   * @param str string
-   */
-  public static removeAllWhitespaceFromString(str: string): string {
-    // use a new RegExp otherwise the ngc build doesn't works
-    const regex = new RegExp(/\s/g);
-    return str.replace(regex, '');
-  }
-
-  /**
-   * Remove all the instance of characters (or substring) from a string
-   * @param str string
-   * @param charToRemove list of characters (or substring) to remove
-   */
-  public static removeCharactersFromString(str: string, charToRemove: string[]): string {
-    // use a new RegExp otherwise the ngc build doesn't works
-    const regex = new RegExp(`[${charToRemove.join()}]`, 'g');
-    return str.replace(regex, '');
-  }
 
   /**
    * Trim a string and replace duplicate spaces with one space
@@ -91,48 +36,6 @@ export class ClStringHelper {
    */
   public static isHttpLink(str: string): boolean {
     return str.substring(0, 8) === 'https://' || str.substring(0, 7) === 'http://';
-  }
-
-  /**
-   * Capitalize a string
-   *
-   * Example 'hello' --> 'Hello'
-   * @param str string to capitalize
-   */
-  public static capitalize(str: string): string {
-    if (str == null || str.length === 0) {
-      return str;
-    }
-
-    return str[0].toUpperCase() + str.substring(1).toLowerCase();
-  }
-
-  /**
-   * Capitalize every word of a string
-   *
-   * Example 'hello michael' --> 'Hello Michael'
-   * @param str string to capitalize
-   */
-  public static capitalizeAllWords(str: string): string {
-    if (str == null || str.length === 0) {
-      return str;
-    }
-
-    // split the string on spaces
-    const strList = str.split(' ');
-
-    // capitalize each words
-    return strList.map((s) => ClStringHelper.capitalize(s)).join(' ');
-  }
-
-  /**
-   * Simple method to create a regex with a string
-   * It escape the special regex characters if the regex needs to match it
-   * @param str special regex characters to escape (or normal characters, it will be ignored)
-   */
-  public static regexEscapeCharacters(str: string): string {
-    const regex = new RegExp(/[-/\\^$*+?.()|[\]{}]/gi);
-    return str.replace(regex, '\\$&');
   }
 
   /**
@@ -169,34 +72,6 @@ export class ClStringHelper {
       startIndex = index + searchStrLen;
     }
     return indices;
-  }
-
-  public static replaceAt(str: string, index: number, replacementLength: number, replacement: string): string {
-    return str.substring(0, index) + replacement + str.substring(index + replacementLength);
-  }
-
-  /**
-   * Limit length of a string a complete with '...'
-   */
-  public static limiteLength(str: string, length: number): string {
-    if (!str) return str;
-
-    if (typeof str !== 'string') {
-      str = (str as any).toString();
-    }
-
-    if (str.length <= length) return str;
-    // when stripping, remove few more characters so the '...' doesn't not overlap
-    return str.substring(0, length - 3) + '...';
-  }
-
-  /**
-   * Convert Test hello --> test-hello
-   * @param str
-   */
-  public static toKebabCase(str: string): string {
-    if (str == null) return null;
-    return str.trim().replace(/\s+/g, '-').toLowerCase();
   }
 
   /**
@@ -240,8 +115,6 @@ export class ClStringHelper {
     if (str == null) return null;
 
     str = str.replace(/(?:\r\n|\r|\n)/g, ' ');
-
-
 
     return str;
   }

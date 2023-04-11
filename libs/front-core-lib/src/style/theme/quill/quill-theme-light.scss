@@ -1,9 +1,0 @@
-@import "./quill-theme-base";
-
-@mixin _quill-theme-light($mat-theme) {
-
-  // include json editor base theme
-  @include _quill-theme-base($mat-theme);
-
-  // Specific styles for the light theme
-}

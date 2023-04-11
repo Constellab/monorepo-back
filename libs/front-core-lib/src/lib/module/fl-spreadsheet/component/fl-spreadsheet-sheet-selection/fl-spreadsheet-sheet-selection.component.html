@@ -1,8 +1,0 @@
-<ng-container *ngIf="sheets$ | async as sheets">
-  <div class="container" *ngIf="sheets?.length > 1">
-    <mat-button-toggle-group [formControl]="formControl" class="g-mat-button-toggle-small"
-                             (change)="selectSpreadsheet($event)">
-      <mat-button-toggle *ngFor="let sheet of sheets" [value]="sheet.id">{{sheet.name}}</mat-button-toggle>
-    </mat-button-toggle-group>
-  </div>
-</ng-container>

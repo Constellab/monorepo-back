@@ -1,5 +1,0 @@
-<mat-optgroup *ngFor="let group of databaseGroups" [label]="group.name | translate">
-  <mat-option *ngFor="let database of group.databases" [value]="database.typingName">
-    {{database.name | translate}}
-  </mat-option>
-</mat-optgroup>

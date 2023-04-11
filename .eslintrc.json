@@ -22,24 +22,8 @@
             "allow": [],
             "depConstraints": [
               {
-                "sourceTag": "front",
-                "onlyDependOnLibsWithTags": [
-                  "front",
-                  "ts-core"
-                ]
-              },
-              {
-                "sourceTag": "back",
-                "onlyDependOnLibsWithTags": [
-                  "back",
-                  "ts-core"
-                ]
-              },
-              {
                 "sourceTag": "*",
-                "onlyDependOnLibsWithTags": [
-                  "*"
-                ]
+                "onlyDependOnLibsWithTags": ["*"]
               }
             ]
           }
@@ -52,10 +36,7 @@
         "*.tsx"
       ],
       "extends": [
-        "plugin:@nrwl/nx/typescript",
-        "plugin:@nrwl/nx/angular",
-        "plugin:@nrwl/nx/angular",
-        "plugin:@angular-eslint/template/process-inline-templates"
+        "plugin:@nrwl/nx/typescript"
       ],
       "parserOptions": {
         "project": "./tsconfig.*?.json"
@@ -97,9 +78,7 @@
           {
             "allowExpressions": true
           }
-        ],
-        "@angular-eslint/no-empty-lifecycle-method": "off",
-        "@angular-eslint/no-input-rename": "off"
+        ]
       }
     },
     {

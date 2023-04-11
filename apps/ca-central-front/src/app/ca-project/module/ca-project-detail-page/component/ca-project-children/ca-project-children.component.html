@@ -1,9 +1,0 @@
-<div class="g-grid-3-rows">
-  <a *ngFor="let project of children$ | async" [routerLink]="project | caDetailRoute">
-    <ca-project-card [project]="project"></ca-project-card>
-  </a>
-
-  <ca-add-card [cardTitle]="'add_new_sub_project' | translate"
-               (click)="openChildCreation()"></ca-add-card>
-</div>
-

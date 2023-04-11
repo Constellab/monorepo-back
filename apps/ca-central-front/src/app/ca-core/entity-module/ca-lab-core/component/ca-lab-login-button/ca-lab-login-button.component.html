@@ -1,8 +1,0 @@
-<div [matTooltip]="'lab_login_disabled' | translate" [matTooltipDisabled]="isRunning">
-  <button mat-stroked-button color="primary" (click)="loginToLab($event)" [disabled]="!isRunning"
-          [ngClass]="buttonClass" (mousedown)="stopEventPropagation($event)">
-    {{'go_to_lab' | translate}}
-    <mat-icon *ngIf="!isLoading">arrow_forward_ios</mat-icon>
-    <fl-button-loader *ngIf="isLoading" [size]="size"></fl-button-loader>
-  </button>
-</div>

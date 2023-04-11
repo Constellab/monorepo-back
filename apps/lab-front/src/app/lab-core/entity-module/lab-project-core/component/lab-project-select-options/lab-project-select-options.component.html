@@ -1,7 +1,0 @@
-<mat-option *ngFor="let project of projects" [value]="project">
-  {{project.title}}
-</mat-option>
-
-<mat-option disabled class="g-mat-option-hide-checkbox" *ngIf="projects?.length === 0">
-  {{'biox.no_project' | translate}}
-</mat-option>

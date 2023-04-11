@@ -1,7 +1,0 @@
-<div>
-  <h3 class="title" [innerHTML]="doc.title | caSmartDbHighlight:doc.titleHighlights"
-      (click)="selectDoc()"></h3>
-
-  <p *ngFor="let highlight of highlights" [innerHTML]="highlight">
-  </p>
-</div>

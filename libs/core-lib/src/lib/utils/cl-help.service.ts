@@ -1,5 +1,3 @@
-import {TrackByFunction} from '@angular/core';
-
 /**
  * Class with static method to simplify dev
  */
@@ -17,78 +15,6 @@ export class ClHelpService {
     return JSON.parse(JSON.stringify(object));
   }
 
-
-  /**
-   * Compare element on ids
-   * @param o1 first element
-   * @param o2 second element
-   */
-  public static compareFnIds(o1: any, o2: any): boolean {
-    return ClHelpService.compareFn(o1, o2, 'id');
-  }
-
-  /**
-   * Compare element on field name
-   * @param o1 first element
-   * @param o2 second element
-   * @param fieldName object attribute to compare
-   */
-  public static compareFn(o1: any, o2: any, fieldName: string = 'id'): boolean {
-    if (o1 == null && o2 == null) {
-      return true;
-    }
-
-    if (o1 == null || o2 == null) {
-      return false;
-    }
-    return o1[fieldName] === o2[fieldName];
-  }
-
-  /**
-   * Track by id function for NgFor to track by id
-   */
-  public static trackByIdFunction(): TrackByFunction<{ id: any }> {
-    return (index: number, item: { id: string }): string => item.id;
-  }
-
-  /**
-   * Insert an element into an ordered item when the compareFn function return < 0
-   * @param item item to remove
-   * @param array array
-   * @param order function to compare elements. Inserted when order returns true
-   */
-  public static insertIntoOrderedArray<T>(item: T, array: T[],
-                                          order: (a: T, b: T, index: number) => boolean): void {
-    // true if the element has been added in the loop
-    let added: boolean = false;
-
-    for (let i = 0; i < array.length; i++) {
-      if (order(item, array[i], i)) {
-        array.splice(i, 0, item);
-        added = true;
-        break;
-      }
-    }
-    if (!added) {
-      array.push(item);
-    }
-  }
-
-  /**
-   * Remove an element from array
-   * @param item item to remove
-   * @param array array
-   * @param compareFn function to compare elements
-   */
-  public static removeSingleElementInArray(item: any, array: any[], compareFn: (a: any, b: any) => boolean): void {
-    for (let i = 0; i < array.length; i++) {
-      if (compareFn(item, array[i])) {
-        array.splice(i, 1);
-        return;
-      }
-    }
-  }
-
   /**
    * Simple method to convert a type 'T | T[]' to 'T[]'
    * @param object object or array
@@ -102,40 +28,6 @@ export class ClHelpService {
     } else {
       return [object];
     }
-  }
-
-  /**
-   * Function to convert a string or number value to number
-   * @param num number to convert
-   * @param defaultValue default value to use if an error happened
-   */
-  public static convertStringOrNumberToNumber(num: number | string, defaultValue: number = 0): number {
-    let convertedNumber: number;
-    if (typeof num === 'string') {
-      convertedNumber = parseInt(num, 10);
-    } else if (typeof num === 'number') {
-      convertedNumber = num;
-    } else {
-      convertedNumber = defaultValue;
-    }
-
-    if (isNaN(convertedNumber)) {
-      return defaultValue;
-    } else {
-      return convertedNumber;
-    }
-  }
-
-
-  /**
-   * Coerces a data-bound value (typically a string) to a boolean.
-   *
-   * Useful for component input
-   *
-   * Return true if value is '' or 'true' or true
-   */
-  public static coerceBooleanOrEmptyProperty(value: any): boolean {
-    return value === '' || value === true || value === 'true';
   }
 
   /**
@@ -169,39 +61,6 @@ export class ClHelpService {
   public static isNullOrEmpty(value: any): boolean {
     return value == null || ClHelpService.isEmptyArray(value) || ClHelpService.isEmptyString(value)
       || ClHelpService.isEmptyObject(value) || value === 0;
-  }
-
-  /**
-   * return a copy of the value without the null values
-   */
-  public static getNonEmptyProperties(value: any): any {
-    if (value == null) {
-      return {};
-    }
-
-    const copy: any = {};
-    for (const key of Object.keys(value)) {
-      if (!ClHelpService.isNullOrEmpty(value[key])) {
-        copy[key] = value[key];
-      }
-    }
-    return copy;
-  }
-
-  /**
-   * return false if object is null of if all properties are none
-   */
-  public static objectHasNonNullProperties(value: any): boolean {
-    if (value == null) {
-      return false;
-    }
-
-    for (const key of Object.keys(value)) {
-      if (!ClHelpService.isNullOrEmpty(value[key])) {
-        return true;
-      }
-    }
-    return false;
   }
 
 
@@ -254,28 +113,4 @@ export class ClHelpService {
     return 0;
   }
 
-  /**
-   * Stop event immediate propagation
-   */
-  public static stopEventPropagation(ev: Event): void {
-    ev.stopImmediatePropagation();
-    ev.preventDefault();
-  }
-
-  /**
-   * Method to flatten an array
-   */
-  public static flatArray<T>(array2d: T[][]): T[] {
-    const flatArray: T[] = [];
-    array2d.forEach(subArray => flatArray.push(...subArray));
-    return flatArray;
-  }
-
-  /**
-   * Simple 2d array transpose.
-   * @param array
-   */
-  public static transpose2dArray(array: any[][]): any[][] {
-    return array[0].map((col, i) => array.map(row => row[i]));
-  }
 }

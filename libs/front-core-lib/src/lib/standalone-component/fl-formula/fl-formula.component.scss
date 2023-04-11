@@ -1,5 +1,0 @@
-// we dynamically add the KaTeX CSS to the page,
-// so is it not included in the main bundle
-// I also updated the project.json max ComponentStyle size error to 300kb
-// because of this
-@import "katex/dist/katex.min.css";

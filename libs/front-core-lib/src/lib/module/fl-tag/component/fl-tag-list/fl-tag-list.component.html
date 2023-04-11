@@ -1,9 +1,0 @@
-<div>
-  <fl-tag *ngFor="let tag of tags | flTagsToList | slice:0:limitNumber" [flTag]="tag"
-          [tagColorer]="tagColorer"
-          (click)="selectTag(tag, $event)"></fl-tag>
-</div>
-
-<div *ngIf="showNoTagMessage && tags.length === 0" class="g-text-small g-text-light">
-  {{'no_tags' | translate}}
-</div>

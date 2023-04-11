@@ -1,38 +1,23 @@
-# Monorepo
+# Monorepo back
 
-This project contains all the gencovery code for Angular and Nest app.
+This project contains all the gencovery code for Nest back app.
 
 All the app and libraries hava a prefix to simplify search
 
 ## Apps
-
-### Central front : Ca
-The angular front app for central (constellab). 
-
-Prefix : Ca
-
-To build the app, push a tag with the version number and the prefix 'ca_'. 
-For example, to build the version 1.0.0, push the tag `ca_1.0.0`.
-
-Then execute the npm script ```ca-central-front:caprover-deploy-preprod``` or ```ca-central-front:caprover-deploy-prod```
-to deploy the app to caprover. Be careful of the image tag.
 
 ### Central back : Cn
 The nest app for the central (constellab). 
 
 Prefix: Cn
 
-### Lab front
-The angular front app for the lab. One front is available per lab. 
+To build the app, push a tag with the version number and the prefix 'cn_'.
+For example, to build the version 1.0.0, push the tag `cn_1.0.0`.
 
-Prefix : Lab
+Then execute the npm script ```cn-central-back:caprover-deploy-preprod``` or ```cn-central-back:caprover-deploy-prod```
+to deploy the app to caprover. Be careful of the image tag.
 
-### Hub front (ha-hub) : Da
-The hub angular app containing the documentation.
-
-Prefix : Ha
-
-### Hub back (hn-hub) : Dn
+### Hub back (hn-hub) : Hn
 The hub nest app containing the documentation.
 
 Prefix : Hn
@@ -48,11 +33,6 @@ Prefix : Cl
 Typescript library for font and back to share models (interfaces, classes)
 
 Prefix : Cm
-
-### front-core-lib : Fl
-Library for angular app that contains modules, components, directives, pipes and classes
-
-Prefix : Fl
 
 ### back-core-lib : Bl
 Library for nest apps that contain generic back classes

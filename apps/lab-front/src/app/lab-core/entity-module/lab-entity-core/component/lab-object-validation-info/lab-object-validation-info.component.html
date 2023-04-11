@@ -1,7 +1,0 @@
-<!--  Validated info  -->
-<fl-text-icon *ngIf="object.validatedBy && object.validatedAt"
-              fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
-  <mat-icon flIcon="validated"></mat-icon>
-  <div>{{'validation_info' | translate}}</div>
-  <fl-user-with-date [user]="object.validatedBy" [date]="object.validatedAt"></fl-user-with-date>
-</fl-text-icon>

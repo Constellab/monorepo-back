@@ -1,9 +1,0 @@
-<mat-grid-list [cols]="view.data.nb_of_columns" rowHeight="400">
-  <mat-grid-tile
-    *ngFor="let subView of view.data.views"
-    [colspan]="subView.colspan"
-    [rowspan]="subView.rowspan">
-    <rv-resource-view [view]="subView.view" [config]="config" [resourceId]="resourceId" [displayMode]="displayMode"></rv-resource-view>
-  </mat-grid-tile>
-</mat-grid-list>
-

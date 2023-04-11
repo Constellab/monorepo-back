@@ -1,9 +1,0 @@
-<ca-dashboard-list-layout [datasource]="projectsDatasource"
-                   sectionTitle="my_projects" titleIcon="folder" emptyText="no_project"
-                   addText="add_new_project"
-                   [completeListRoute]="myProjectsRoute" completeListText="all_projects"
-                   (addClick)="openCreateProjectDialog()">
-  <ng-template let-item>
-    <ca-project-card [project]="item"></ca-project-card>
-  </ng-template>
-</ca-dashboard-list-layout>

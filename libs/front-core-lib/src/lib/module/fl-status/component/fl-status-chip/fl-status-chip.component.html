@@ -1,9 +1,0 @@
-<fl-chip *ngIf="status$ | async as status" [ngClass]="status.backgroundColorClass"
-         [matTooltip]="status.name | translate" [matTooltipDisabled]="tooltipDisabledBool"
-         [matTooltipPosition]="tooltipPosition" [size]="size">
-  <fl-text-icon [gap]="gap" [iconPosition]="iconPosition">
-    <mat-icon *ngIf="showIcon" [flIcon]="status.icon" [ngClass]="iconClass"></mat-icon>
-    <span *ngIf="showText" class="g-text-uppercase">{{status.name | translate}}</span>
-  </fl-text-icon>
-</fl-chip>
-

@@ -1,9 +1,0 @@
-<fl-form-field>
-  <fl-multi-inputs [formControl]="formCtrl" [required]="required"
-                   [placeholder]="placeholder" [hint]="hint"
-                   [prefix]="prefix"
-                   [suffix]="suffix"></fl-multi-inputs>
-  <mat-error *ngIf="formCtrl.hasError('required')">
-    {{placeholder | flErrorRequired:false }}
-  </mat-error>
-</fl-form-field>

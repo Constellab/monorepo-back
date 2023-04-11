@@ -1,9 +1,0 @@
-<div class="user-icon" [style.height]="sizeNumber+'em'" [style.width]="sizeNumber+'em'"
-     [style.line-height]="sizeNumber+'em'" [style.font-size]="fontSize+'em'"
-     [ngClass]="{'g-primary-background' : !photo}">
-  <img [src]="photo" class="user-icon-image" *ngIf="photo; else showInitial" [alt]="label"/>
-  <ng-template #showInitial>
-    <span>{{ initial }}</span>
-  </ng-template>
-</div>
-

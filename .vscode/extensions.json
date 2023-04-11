@@ -1,7 +1,5 @@
 {
   "recommendations": [
-    "nrwl.angular-console",
-    "angular.ng-template",
     "dbaeumer.vscode-eslint",
     "firsttris.vscode-jest-runner"
   ]

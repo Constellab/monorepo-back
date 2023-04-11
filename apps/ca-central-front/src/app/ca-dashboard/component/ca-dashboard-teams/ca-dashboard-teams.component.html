@@ -1,9 +1,0 @@
-<ca-dashboard-list-layout [datasource]="teamsDatasource"
-                   sectionTitle="my_teams" titleIcon="group" emptyText="no_team"
-                   addText="add_new_team"
-                   [completeListRoute]="myTeamsRoute" completeListText="all_teams"
-                   (addClick)="openCreateTeamDialog()">
-  <ng-template let-item>
-    <ca-team-card [team]="item"></ca-team-card>
-  </ng-template>
-</ca-dashboard-list-layout>
