@@ -12,9 +12,15 @@ export interface CnLabConfigFile {
 }
 
 export interface CnLabConfigFileEnv {
+  bricks: CnConfigFileBrick[];
   pip: CnConfigFileEnvRepository[];
   git: CnConfigFileEnvRepository[];
   variables: Record<string, string>;
+}
+
+export interface CnConfigFileBrick{
+  name: string;
+  version: string;
 }
 
 export interface CnConfigFileEnvRepository {
@@ -26,6 +32,5 @@ export interface CnConfigFileEnvPackage {
   name: string;
   version: string; // version supported by pip, can be empty, ==2.0 or >=2.1
   is_brick: boolean;
-  is_hidden: boolean;
 }
 

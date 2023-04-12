@@ -10,8 +10,8 @@ import {CmVersion} from '@monorepo/common-model';
 import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnLabInstance} from '../cn-lab-instances/cn-lab-instance.entity';
 import {CnLabInstanceConfigDTO} from '../cn-lab-instances/cn-lab-instance.dto';
-import {CnConfigFileEnvRepository, CnLabConfigFile, CnLabConfigFileEnv} from './cn-lab-config-file.class';
-import {CnBrickVersion, CnRepoType} from '../cn-bricks/cn-brick-version.entity';
+import {CnLabConfigFile, CnLabConfigFileEnv} from './cn-lab-config-file.class';
+import {CnBrickVersion} from '../cn-bricks/cn-brick-version.entity';
 
 @Injectable()
 export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
@@ -160,37 +160,15 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
   }
 
   private async brickConfigToConfigEnv(brickVersions: CnBrickVersionDTO[]): Promise<CnLabConfigFileEnv> {
-    const labConfig: CnLabConfigFileEnv = {git: [], pip: [], variables: {}};
+    const labConfig: CnLabConfigFileEnv = {bricks: [], git: [], pip: [], variables: {}};
 
 
     for (const brick of brickVersions) {
       const brickVersion = await this.brickService.getBrickVersionAndCheck(brick.name, CmVersion.fromString(brick.version));
 
-      // add the package to the right place
-      let packageEnvs: CnConfigFileEnvRepository[];
-
-      if (brickVersion.repoType === CnRepoType.PIP) {
-        packageEnvs = labConfig.pip;
-      } else {
-        packageEnvs = labConfig.git;
-      }
-
-      // create the package env with the right source if it doesn't exist
-      if (packageEnvs.findIndex(git => git.source === brickVersion.repoType) < 0) {
-        packageEnvs.push({
-          source: brickVersion.getRepo(),
-          packages: []
-        });
-      }
-
-      // retrieve the package en with repo
-      const packageEnv = packageEnvs.find(git => git.source === brickVersion.getRepo());
-      // add the brick into the repo
-      packageEnv.packages.push({
+      labConfig.bricks.push({
         name: brick.name,
         version: brickVersion.version.toString(),
-        is_brick: true,
-        is_hidden: true, // force all bricks to be hidden
       });
     }
 
@@ -210,6 +188,14 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
       brickVersions: [],
     };
 
+    for (const brick of configFile.environment?.bricks ?? []) {
+      config.brickVersions.push({
+        name: brick.name,
+        version: brick.version,
+      });
+    }
+
+    // TODO TO REMOVE ONCE LABS ARE UPDATED
     for (const env of [...configFile.environment?.pip ?? [], ...configFile.environment?.git ?? []]) {
       for (const brick of env.packages) {
         if (brick.is_brick) {
