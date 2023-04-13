@@ -1,12 +1,11 @@
 import {Injectable} from '@nestjs/common';
 import {CnBrick, CnBrickVisibility} from './cn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
-import {CnBrickVersion} from './cn-brick-version.entity';
+import {FindOptionsWhere, IsNull, Repository} from 'typeorm';
+import {CnBrickVersion, CnVersionType} from './cn-brick-version.entity';
 import {CmVersion} from '@monorepo/common-model';
 import {CnBrickSaveDTO} from './cn-brick.dto';
 import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
-import {FindOptionsWhere} from 'typeorm';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 
 @Injectable()
@@ -57,7 +56,8 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
           major: version.major,
           minor: version.minor,
           patch: version.patch,
-          subPatch: version.subPatch
+          versionType: version.isBeta() ? CnVersionType.BETA : CnVersionType.NORMAL,
+          subPatch: version.isBeta() ? version.subPatch : IsNull()
         },
         relations: ['brick']
       });
