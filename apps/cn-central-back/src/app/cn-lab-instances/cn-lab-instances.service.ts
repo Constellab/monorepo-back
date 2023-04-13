@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnLabInstance} from './cn-lab-instance.entity';
-import {DataSource, DeleteResult, EntityManager, Repository} from 'typeorm';
+import {DataSource, DeleteResult, EntityManager, Not, Repository} from 'typeorm';
 import {CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 import {CnAbstractWithStatusService} from '../cn-core/class/cn-abstract-with-status.service';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
@@ -28,7 +28,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
 
 
   async create(entity: CnLabInstance, entityManager?: EntityManager): Promise<CnLabInstance> {
-    this.checkLabInstanceBeforeSave(entity);
+    await this.checkLabInstanceBeforeSave(entity);
 
     if (entityManager) {
       return super.createWithStatusTransaction(entity, CnLabInstanceStatus.SERVER_STOPPED, entityManager);
@@ -38,21 +38,14 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   }
 
   async update(entity: CnLabInstance, entityManager?: EntityManager): Promise<CnLabInstance> {
-    this.checkLabInstanceBeforeSave(entity);
+    await this.checkLabInstanceBeforeSave(entity);
     return super.update(entity, entityManager);
   }
 
-  private checkLabInstanceBeforeSave(entity: CnLabInstance): void {
+  private async checkLabInstanceBeforeSave(entity: CnLabInstance): Promise<void> {
     if (entity.isCloud()) {
-      // check domain name
-      if (ClHelpService.isNullOrEmpty(entity.virtualHost)) {
-        throw new BlBadRequestException('Virtual host is required');
-      }
-
-      if (!CnLabInstancesService.SUPPORTED_MAIN_DOMAINS.includes(entity.getMainDomain())) {
-        throw new BlBadRequestException(
-          `Virtual host must be a valid domain name : ${CnLabInstancesService.SUPPORTED_MAIN_DOMAINS.join(', ')}`);
-      }
+      // check virtual host
+      entity.virtualHost = await this.checkLabInstanceVirtualHost(entity);
 
       if (ClHelpService.isNullOrEmpty(entity.serverInfo) ||
         ClHelpService.isNullOrEmpty(entity.region) ||
@@ -83,6 +76,41 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       entity.serverInstanceId = null;
       entity.serverVolumeId = null;
     }
+  }
+
+  private async checkLabInstanceVirtualHost(entity: CnLabInstance): Promise<string> {
+
+    const virtualHost = entity.virtualHost;
+    // check domain name
+    if (ClHelpService.isNullOrEmpty(virtualHost)) {
+      throw new BlBadRequestException('Virtual host is required');
+    }
+
+    // check that the virtual host is not already used
+    const lab = await this.repository.findOne({
+      where: {
+        virtualHost: virtualHost,
+        id: entity.id ? Not(entity.id) : undefined
+      }
+    });
+    if (lab) {
+      throw new BlBadRequestException(`Virtual host already used by another lab instance : ${virtualHost}`);
+    }
+
+    // check domain name
+    if (!CnLabInstancesService.SUPPORTED_MAIN_DOMAINS.includes(entity.getMainDomain())) {
+      throw new BlBadRequestException(
+        `Virtual host must be a valid domain name : ${CnLabInstancesService.SUPPORTED_MAIN_DOMAINS.join(', ')}`);
+    }
+
+    const domainPart = entity.getSubDomainName();
+    // check that the virtual host does not contain character other than a-z, 0-9 and -
+    if (!/^[a-z0-9-]+$/.test(domainPart)) {
+      throw new BlBadRequestException('Virtual host can contain only alphanumeric characters and \'-\'');
+    }
+
+    // force the virtual host to be lower case
+    return virtualHost.toLowerCase();
   }
 
   async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
