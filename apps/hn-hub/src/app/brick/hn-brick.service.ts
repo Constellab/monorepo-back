@@ -122,9 +122,7 @@ export class HnBrickService {
 
     // if the brick is private, it needs a valid centralApiKey
     if (brick.visibility === HnBrickVisibility.PRIVATE) {
-      //TODO: centralApiKey
-      // if (centralApiKey == null || this.configService.getCentralApiKey() !== centralApiKey) {
-      if (centralApiKey == null){
+      if (centralApiKey == null || this.configService.getCentralApiKey() !== centralApiKey) {
         throw new BlUnauthorizedException();
       }
     }

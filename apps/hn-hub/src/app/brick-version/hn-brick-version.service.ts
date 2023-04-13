@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {HnBrickVersion, HnNewVersionDTO, HnReferenceDTO} from './hn-brick-version.entity';
+import {HnBrickVersion, HnNewVersionDTO, HnReferenceDTO, HnVersionType} from './hn-brick-version.entity';
 import {DataSource, EntityManager, IsNull, Repository} from 'typeorm';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 import {
@@ -50,6 +50,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
       }
       const newBrickVersion: HnBrickVersion = new HnBrickVersion();
       const version: CmVersion = CmVersion.fromString(newVersion.version);
+
       const bv: HnBrickVersion = await this.brickVersionsRepository.findOne({
         where: {
           brickMajorVersion: {
@@ -57,7 +58,8 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
           },
           minor: version.minor,
           patch: version.patch,
-          subPatch: version.subPatch
+          versionType: version.isBeta() ? HnVersionType.BETA : HnVersionType.NORMAL,
+          subPatch: version.isBeta() ? version.subPatch : IsNull()
         }
       });
       if (bv != null) {
@@ -88,7 +90,8 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
               },
               minor: cmV.minor,
               patch: cmV.patch,
-              subPatch: cmV.subPatch
+              versionType: cmV.isBeta() ? HnVersionType.BETA : HnVersionType.NORMAL,
+              subPatch: cmV.isBeta() ? cmV.subPatch : IsNull()
             },
             relations: ['brickMajorVersion', 'brickMajorVersion.brick']
           });
@@ -211,7 +214,8 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
         },
         minor: v.minor,
         patch: v.patch,
-        subPatch: v.subPatch
+        versionType: v.isBeta() ? HnVersionType.BETA : HnVersionType.NORMAL,
+        subPatch: v.isBeta() ? v.subPatch : IsNull()
       }
     });
     if (bv && bv.version.major != v.major) {
