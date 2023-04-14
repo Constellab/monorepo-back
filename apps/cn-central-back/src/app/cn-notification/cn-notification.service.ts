@@ -40,14 +40,14 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
         user: {
           id: CnCurrentUserHelper.getAndCheckCurrentUser().id
         },
-        space: {id: Raw((id) => `${id} = :spaceId OR ${id} IS NULL`, {spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id})}
+        space: {id: Raw((id) => `(${id} = :spaceId OR ${id} IS NULL)`, {spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id})}
       }
         :
         {
           user: {
             id: CnCurrentUserHelper.getAndCheckCurrentUser().id
           },
-          space: {id: Raw((id) => `${id} = :spaceId OR ${id} IS NULL`, {spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id})}
+          space: {id: Raw((id) => `(${id} = :spaceId OR ${id} IS NULL)`, {spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id})}
         },
       order: {
         createdAt: 'DESC' as any
@@ -100,7 +100,7 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
       number: (await this.notificationRepository.findBy({
         user: {id: CnCurrentUserHelper.getAndCheckCurrentUser().id},
         isRead: false,
-        space: {id: Raw((id) => `${id} = :spaceId OR ${id} IS NULL`, {spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id})}
+        space: {id: Raw((id) => `(${id} = :spaceId OR ${id} IS NULL)`, {spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id})}
       })).length
     };
   }
@@ -150,7 +150,7 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
         },
         isRead: false,
         space: {
-          id: Raw((id) => `${id} != :spaceId AND ${id} IS NOT NULL`, {spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id})
+          id: Raw((id) => `(${id} != :spaceId AND ${id} IS NOT NULL)`, {spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id})
         },
       })).length
     };
