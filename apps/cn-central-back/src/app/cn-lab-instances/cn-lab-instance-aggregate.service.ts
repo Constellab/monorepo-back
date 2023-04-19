@@ -101,10 +101,10 @@ export class CnLabInstanceAggregateService {
    * Update a lab instance with all information (only for admin)
    */
   async updateAdmin(updateLabInstance: CnLabInstanceCreateAdminDTO): Promise<CnLabInstance> {
-    const labInstanceDb: CnLabInstance = await this.getAndCheckAuthorizationToUpdateAdmin(updateLabInstance.id);
+    await this.getAndCheckAuthorizationToUpdateAdmin(updateLabInstance.id);
     const labInstance = BlDtoHelper.fromDto(CnLabInstance, updateLabInstance);
 
-    return this.labInstancesService.updateWithCompare(labInstance, labInstanceDb);
+    return this.labInstancesService.update(labInstance);
   }
 
   /**
