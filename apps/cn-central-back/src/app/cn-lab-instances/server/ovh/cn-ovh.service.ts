@@ -12,6 +12,7 @@ import {
 } from './cn-ovh.class';
 import {CnCoreConfigService} from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
 import {Injectable, Logger} from '@nestjs/common';
+import {BlBadRequestException} from '@monorepo/back-core-lib';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ovh = require('ovh');
@@ -156,7 +157,7 @@ export class CnOvhService {
     return this.ovh.requestPromised(method, route, body).catch((e) => {
       const strError = e.message ?? e.toString();
       this.logger.error(`Error while calling OVH API route : ${route} | Method : ${method} | Error : ${strError}`);
-      throw e;
+      throw new BlBadRequestException(strError);
     });
   }
 
