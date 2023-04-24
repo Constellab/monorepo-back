@@ -171,7 +171,10 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
           }
         },
         order: {
-          createdAt: 'DESC' as any
+          minor: 'DESC',
+          patch: 'DESC',
+          versionType: 'ASC',
+          subPatch: 'DESC'
         },
         relations: ['brickMajorVersion']
       }
@@ -195,11 +198,12 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
       where: {
         brickMajorVersion: {
           id: brickMajorVersionId
-        }
+        },
+        versionType: HnVersionType.NORMAL
       },
       order: {
         minor: 'DESC',
-        patch: 'DESC'
+        patch: 'DESC',
       }
     });
     return brickVersions[0];
