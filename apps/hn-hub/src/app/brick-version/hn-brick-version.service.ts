@@ -198,10 +198,10 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
       where: {
         brickMajorVersion: {
           id: brickMajorVersionId
-        },
-        versionType: HnVersionType.NORMAL
+        }
       },
       order: {
+        versionType: 'ASC',
         minor: 'DESC',
         patch: 'DESC',
       }
