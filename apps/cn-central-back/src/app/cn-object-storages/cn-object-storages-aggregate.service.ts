@@ -6,7 +6,6 @@ import {CnBucketCredentials} from './cn-bucket-credential/cn-bucket-credential.e
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {ClPage} from '@monorepo/core-lib';
 import {CnBucket, CnBucketContentType} from './cn-buckets/cn-bucket.entity';
-import {CnLabInstance} from '../cn-lab-instances/cn-lab-instance.entity';
 import {CnCloudProviderAggregateService} from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
@@ -27,12 +26,12 @@ export class CnObjectStoragesAggregateService {
   }
 
 
-  public async getOrCreateLabBackupBucket(labInstance: CnLabInstance): Promise<CnBucket> {
+  public async getOrCreateLabBackupBucket(labInstanceId: string, labInstanceSpaceId: string): Promise<CnBucket> {
     const region = await this.cloudProviderService.getDefaultRegion();
 
     return this.getOrCreateObjectBucket(CnObjectStoragesAggregateService.LabBackupCredentialName, region,
-      labInstance.id, labInstance.spaceId,
-      CnBucketContentType.LAB_BACKUP, labInstance.id);
+      labInstanceId, labInstanceSpaceId,
+      CnBucketContentType.LAB_BACKUP, labInstanceId);
   }
 
   //////////////////////////// OBJECT BUCKET ///////////////////////////

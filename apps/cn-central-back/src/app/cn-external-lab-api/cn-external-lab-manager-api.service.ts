@@ -17,7 +17,7 @@ import {
 import {
   CnExternalLabBackup,
   CnExternalLabBackupHistory,
-  CnExternalLabCreateBackupDto
+  CnExternalLabBackupInfoDto
 } from './model/cn-external-lab-api.class';
 import {CnLabConfigFile} from '../cn-lab-configs/cn-lab-config-file.class';
 
@@ -107,7 +107,7 @@ export class CnExternalLabManagerApiService {
 
   ///////////////////////////////////// BACKUP /////////////////////////////////////
 
-  createProdBackup(apiInfo: CnExternalApiInfo, createBackup: CnExternalLabCreateBackupDto): Promise<CnExternalLabBackup> {
+  createProdBackup(apiInfo: CnExternalApiInfo, createBackup: CnExternalLabBackupInfoDto): Promise<CnExternalLabBackup> {
     return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/prod`, createBackup));
   }
 

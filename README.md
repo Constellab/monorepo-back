@@ -17,6 +17,8 @@ For example, to build the version 1.0.0, push the tag `cn_1.0.0`.
 Then execute the npm script ```cn-central-back:caprover-deploy-preprod``` or ```cn-central-back:caprover-deploy-prod```
 to deploy the app to caprover. Be careful of the image tag.
 
+To build the image locally : ```docker build -t cn-central-back-test -f apps/cn-central-back/Dockerfile .```
+
 ### Hub back (hn-hub) : Hn
 The hub nest app containing the documentation.
 

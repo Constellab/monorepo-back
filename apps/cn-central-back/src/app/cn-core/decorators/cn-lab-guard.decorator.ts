@@ -3,8 +3,8 @@ import {CnLabAuthGuard} from '../guards/cn-lab-auth.guard';
 import {Reflector} from '@nestjs/core';
 import {BlReflectorHelper} from '@monorepo/back-core-lib';
 
-export const cnLabAuthMetadata = 'labAuth';
-export const cnLabRobotAuthMetadata = 'labRobotAuth';
+const cnLabAuthMetadata = 'labAuth';
+const cnLabRobotAuthMetadata = 'labRobotAuth';
 
 /**
  * @LabGuard decorator for method or class to make a route authenticated with
@@ -12,7 +12,7 @@ export const cnLabRobotAuthMetadata = 'labRobotAuth';
  *
  * The {@link CnLabAuthGuard} check this decorator
  */
-export function ClLabGuard(): MethodDecorator & ClassDecorator {
+export function CnLabGuard(): MethodDecorator & ClassDecorator {
   // use to combined 2 decorators
   return (target: any, property?: string | symbol, descriptor?: TypedPropertyDescriptor<any>): void => {
     // set the labAuth metadata
@@ -35,7 +35,7 @@ export function cnIsDecoratedWithLabAuth(reflector: Reflector, context: Executio
  * Useful for route that are called automatically by the lab
  * @constructor
  */
-export function ClLabRobotAuthentication(): MethodDecorator & ClassDecorator {
+export function CnLabRobotAuthentication(): MethodDecorator & ClassDecorator {
   // use to combined 2 decorators
   return (target: any, property?: string | symbol, descriptor?: TypedPropertyDescriptor<any>): void => {
     // set the labAuth metadata

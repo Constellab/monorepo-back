@@ -6,6 +6,7 @@ import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {
   CnExternalLabBackup,
   CnExternalLabBackupHistory,
+  CnExternalLabBackupInfoDto,
   CnExternalLabUser,
   CnExternalLabUserRole
 } from '../cn-external-lab-api/model/cn-external-lab-api.class';
@@ -562,9 +563,9 @@ export class CnLabInstanceAggregateService {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
 
     // get or create the bucket associated with this lab instance
-    const bucket = await this.objectStorageService.getOrCreateLabBackupBucket(labInstance);
+    const backupInfo = await this.getLabBackupInfo(labInstance.id, labInstance.spaceId);
 
-    return this.labManagerService.createProdBackup(labInstance, bucket.getBucketConfig());
+    return this.labManagerService.createProdBackup(labInstance, backupInfo);
   }
 
   public async stopCurrentBackup(labId: string): Promise<boolean> {
@@ -583,13 +584,22 @@ export class CnLabInstanceAggregateService {
     return this.labManagerService.getBackupHistory(labInstance);
   }
 
+  private async getLabBackupInfo(labInstanceId: string, labInstanceSpaceId: string): Promise<CnExternalLabBackupInfoDto> {
+    // get or create the bucket associated with this lab instance
+    const bucket = await this.objectStorageService.getOrCreateLabBackupBucket(labInstanceId, labInstanceSpaceId);
+
+    return {
+      buckets: [bucket.getBucketConfig()],
+    };
+  }
+
   /////////////////////////// EXTERNAL LAB //////////////////////////////
   public async registerLabConfig(labStart: CnLabInstanceStartDTO): Promise<void> {
     const labConfig = await this.labConfigService.getOrCreateLabConfig(labStart.lab_config);
 
     let labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
 
-    labInstance = await this.labInstancesService.markInstanceAsLabRunning(labInstance.id)
+    labInstance = await this.labInstancesService.markInstanceAsLabRunning(labInstance.id);
     await this.updateLabInstanceConfig(labInstance, labConfig);
   }
 
@@ -617,6 +627,11 @@ export class CnLabInstanceAggregateService {
     });
   }
 
+  /////////////////////////// EXTERNAL LAB MANAGER //////////////////////////////
+  public async getCurrentLabInstanceBackupInfo(): Promise<CnExternalLabBackupInfoDto> {
+    const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
+    return this.getLabBackupInfo(labInstance.id, labInstance.spaceId);
+  }
 
   /////////////////////////// SERVER //////////////////////////////
 

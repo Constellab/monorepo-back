@@ -191,6 +191,15 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     });
   }
 
+  public findLabByManagerApiKey(managerApiKey: string): Promise<CnLabInstance> {
+    return this.repository.findOne({
+      where: {
+        labManagerApiKey: managerApiKey
+      },
+      relations: {space: true}
+    });
+  }
+
 
   public async findBySpace(spaceId: string, page: number, size: number): Promise<ClPage<CnLabInstance>> {
     return this.findPaginated(page, size, {

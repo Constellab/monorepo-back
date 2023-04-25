@@ -31,7 +31,11 @@ export interface CnExternalLabCallView {
 
 
 ////////////////////////// BACKUP //////////////////////////
-export interface CnExternalLabCreateBackupDto {
+export interface CnExternalLabBackupInfoDto {
+  buckets: CnExternalLabBackupBucketDto[];
+}
+
+export interface CnExternalLabBackupBucketDto {
   credentials: {
     accessKeyId: string;
     secretAccessKey: string;

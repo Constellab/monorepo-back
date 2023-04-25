@@ -10,7 +10,7 @@ import {
   UploadedFiles,
   UseInterceptors
 } from '@nestjs/common';
-import {ClLabGuard, ClLabRobotAuthentication} from '../cn-core/decorators/cn-lab-guard.decorator';
+import {CnLabGuard, CnLabRobotAuthentication} from '../cn-core/decorators/cn-lab-guard.decorator';
 import {BlFile, BlParsePipe} from '@monorepo/back-core-lib';
 import {CnCreateLabExperimentDto} from '../cn-projects-aggregate/cn-experiments/cn-experiment.dto';
 import {CnCreateReportWithConfigDto} from '../cn-projects-aggregate/cn-reports/cn-report.dto';
@@ -28,7 +28,7 @@ import {CnProjectDtoHelper, CnProjectTreeDto} from '../cn-projects-aggregate/cn-
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
  */
-@ClLabGuard()
+@CnLabGuard()
 @Controller('external-labs')
 export class CnExternalLabsController {
 
@@ -38,7 +38,7 @@ export class CnExternalLabsController {
   }
 
   // route called on the lab start
-  @ClLabRobotAuthentication()
+  @CnLabRobotAuthentication()
   @Put('start')
   onLabStart(@Body() labStart: CnLabInstanceStartDTO): Promise<void> {
     return this.labInstanceAggregator.registerLabConfig(labStart);
@@ -94,14 +94,14 @@ export class CnExternalLabsController {
 
   /////////////////////////////// SYNCHRONIZATION ///////////////////////////////
   // those routes does not require user authentication because they are called by the lab server and are just get
-  @ClLabRobotAuthentication()
+  @CnLabRobotAuthentication()
   @Get('project/all-trees')
   async getAllProjectTrees(): Promise<CnProjectTreeDto[]> {
     const projects = await this.labInstanceAggregator.getCurrentLabInstanceProjects();
     return CnProjectDtoHelper.convertToProjectTreeDtoList(projects);
   }
 
-  @ClLabRobotAuthentication()
+  @CnLabRobotAuthentication()
   @Get('user')
   getAllLabUsers(): Promise<CnExternalLabUser[]> {
     return this.labInstanceAggregator.getCurrentLabInstanceSharedUsers();

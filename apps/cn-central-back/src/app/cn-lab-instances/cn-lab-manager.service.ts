@@ -11,7 +11,11 @@ import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstanceConfigDTO} from './cn-lab-instance.dto';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
-import {CnExternalLabBackup, CnExternalLabBackupHistory} from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import {
+  CnExternalLabBackup,
+  CnExternalLabBackupHistory,
+  CnExternalLabBackupInfoDto
+} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {BlBadRequestException, BlBucketConfig} from '@monorepo/back-core-lib';
 import {CnLabConfigFile} from '../cn-lab-configs/cn-lab-config-file.class';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
@@ -155,8 +159,8 @@ export class CnLabManagerService {
 
   /////////////////////////////////////////////// BACKUP /////////////////////////////////////////////////////
 
-  public async createProdBackup(labInstance: CnLabInstance, bucketConfig: BlBucketConfig): Promise<CnExternalLabBackup> {
-    return this.labManagerApiService.createProdBackup(labInstance.getLabManagerApiInfo(), bucketConfig);
+  public async createProdBackup(labInstance: CnLabInstance, backup: CnExternalLabBackupInfoDto): Promise<CnExternalLabBackup> {
+    return this.labManagerApiService.createProdBackup(labInstance.getLabManagerApiInfo(), backup);
   }
 
   public async stopCurrentBackup(labInstance: CnLabInstance): Promise<boolean> {

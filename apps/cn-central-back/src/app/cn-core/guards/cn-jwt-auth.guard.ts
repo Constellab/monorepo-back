@@ -7,6 +7,7 @@ import {blIsDecoratedWithPublic, BlUnauthorizedException} from '@monorepo/back-c
 import {CnCurrentUserHelper} from '../utils/cn-current-user.helper';
 import {CnSpaceUserService} from '../../cn-spaces/cn-space-user.service';
 import {CnSpaceUserRole} from '../../cn-spaces/cn-space-user.entity';
+import {cnIsDecoratedWithLabManagerAuth} from '../decorators/cn-lab-manager-guard.decorator';
 
 /**
  * Guard to check if the user has a authentication token
@@ -32,7 +33,7 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
     }
 
     // if the method or class is annotated with @LabGuard
-    // authentication is manage by {@link CnLabAuthGuard}
+    // authentication is manage by {@link CnLabAuthGuard} or {@link CnLabManagerAuthGuard}
     if (this.contextIsLabAuth(context)) {
       return true;
     }
@@ -78,11 +79,12 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
   }
 
   /**
-   * Return true if the context method or class is annotated with the @LabAuth decorator
+   * Return true if the context method or class is annotated with the @LabAuth or @LabManagerAuth decorator
    */
   private contextIsLabAuth(context: ExecutionContext): boolean {
-    // Check if the route is annotated with @LabAuth
-    return cnIsDecoratedWithLabAuth(this.reflector, context);
+    // Check if the route is annotated with @LabAuth or @LabManagerAuth
+    return cnIsDecoratedWithLabAuth(this.reflector, context) ||
+      cnIsDecoratedWithLabManagerAuth(this.reflector, context);
   }
 
 }

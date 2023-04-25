@@ -19,23 +19,17 @@ import {cnIsLabRobotAuth} from '../decorators/cn-lab-guard.decorator';
 import {CnSpace} from '../../cn-spaces/cn-space.entity';
 import {BlUnauthorizedException} from '@monorepo/back-core-lib';
 
-/**
- * Guard to authenticate route called by the lab servers.
- * Authentication is made with apiKey
- *
- * It set the LabInstance and the Robot user in the request
- */
-@Injectable()
-export class CnLabAuthGuard implements CanActivate {
 
+export abstract class CnLabAuthGuardBase implements CanActivate {
   private readonly logger = new Logger(CnLabAuthGuard.name);
 
-  constructor(private reflector: Reflector,
-              private labInstancesService: CnLabInstancesService,
-              private usersService: CnUsersService,
-              private configService: CnCoreConfigService,
-              private spaceUserService: CnSpaceUserService) {
+  protected constructor(private reflector: Reflector,
+                        private usersService: CnUsersService,
+                        private configService: CnCoreConfigService,
+                        private spaceUserService: CnSpaceUserService) {
   }
+
+  abstract getLabFromApiKey(apiKey: string): Promise<CnLabInstance>;
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     return this.labAuthentication(context);
@@ -49,7 +43,7 @@ export class CnLabAuthGuard implements CanActivate {
       throw new BlUnauthorizedException(CnErrorText.MISSING_API_KEY);
     }
 
-    const labInstance: CnLabInstance = await this.labInstancesService.findLabByApiKey(labApiKey);
+    const labInstance: CnLabInstance = await this.getLabFromApiKey(labApiKey);
 
     if (labInstance == null) {
       throw new BlUnauthorizedException(CnErrorText.WRONG_API_KEY);
@@ -143,5 +137,49 @@ export class CnLabAuthGuard implements CanActivate {
     // get user id from the request if it exists
     return request.header(cnExternalLabUserHeader) ?? null;
   }
+}
 
+
+/**
+ * Guard to authenticate route called by the lab servers.
+ * Authentication is made with apiKey
+ *
+ * It set the LabInstance and the user or Robot in the request
+ */
+@Injectable()
+export class CnLabAuthGuard extends CnLabAuthGuardBase {
+
+  constructor(private labInstancesService: CnLabInstancesService,
+              reflector: Reflector,
+              usersService: CnUsersService,
+              configService: CnCoreConfigService,
+              spaceUserService: CnSpaceUserService) {
+    super(reflector, usersService, configService, spaceUserService);
+  }
+
+  getLabFromApiKey(apiKey: string): Promise<CnLabInstance> {
+    return this.labInstancesService.findLabByApiKey(apiKey);
+  }
+}
+
+/**
+ * Guard to authenticate route called by the lab manager.
+ * Authentication is made with apiKey
+ *
+ * It set the LabInstance and the user or Robot in the request
+ */
+@Injectable()
+export class CnLabManagerAuthGuard extends CnLabAuthGuardBase {
+
+  constructor(private labInstancesService: CnLabInstancesService,
+              reflector: Reflector,
+              usersService: CnUsersService,
+              configService: CnCoreConfigService,
+              spaceUserService: CnSpaceUserService) {
+    super(reflector, usersService, configService, spaceUserService);
+  }
+
+  getLabFromApiKey(apiKey: string): Promise<CnLabInstance> {
+    return this.labInstancesService.findLabByManagerApiKey(apiKey);
+  }
 }
