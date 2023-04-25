@@ -102,7 +102,7 @@ export class HnBrickService {
       }
     });
 
-    if (!isAdmin) {
+    if (!isAdmin && brick != null) {
       brick.gitRepo = null;
       brick.pipRepo = null;
     }
