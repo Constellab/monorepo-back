@@ -6,7 +6,7 @@ import {HnDocumentation, HnDocumentationSearchDTO} from '../documentation/hn-doc
 import {HnDocumentationService} from '../documentation/hn-documentation.service';
 import {HnUser} from '../users/hn-user.entity';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
-import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
+import {HnBrickMajorVersion, HnVersionState} from '../brick-major-version/hn-brick-major-version.entity';
 import {HnNode, HnNodeDTO} from './hn-folder.dto';
 import {BlBadRequestException, BlUnauthorizedException} from '@monorepo/back-core-lib';
 
@@ -292,11 +292,28 @@ export class HnFolderService {
       });
     }
 
-    for (const fol of folder.folders) {
-      this.getDocsByFolder(fol, major, brickName).forEach(d => {
-        documentations.push(d);
-      });
+    if(folder.folder){
+      for (const fol of folder.folders) {
+        this.getDocsByFolder(fol, major, brickName).forEach(d => {
+          documentations.push(d);
+        });
+      }
     }
     return documentations;
+  }
+
+  async findBrickMajorVersionMap(brickMajorVersion: HnBrickMajorVersion, baseMapString: string): Promise<string[]>{
+    const brickMajorVersionMap: string[] = [];
+    const mainFolder: HnFolder = await this.findFolderByBrickMajorVersion(brickMajorVersion);
+    const docs: HnDocumentationSearchDTO[] =
+      this.getDocsByFolder(mainFolder, brickMajorVersion.major.toString(), brickMajorVersion.brick.name);
+    for (const doc of docs) {
+      if(brickMajorVersion.versionState == HnVersionState.LATEST){
+        const latestBaseMapString: string = baseMapString.split('/')[0] + '/latest/';
+        brickMajorVersionMap.push(latestBaseMapString + doc.completePath.slice(0, -1));
+      }
+      brickMajorVersionMap.push(baseMapString  + '/' + doc.completePath.slice(0, -1));
+    }
+    return brickMajorVersionMap;
   }
 }

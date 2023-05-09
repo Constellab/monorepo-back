@@ -279,5 +279,15 @@ export class HnBrickService {
     return HnCurrentUserHelper.getCurrentUser() && HnCurrentUserHelper.getCurrentUser().isAdmin();
   }
 
+  async findAllMap(): Promise<string[]>{
+    const bricks: HnBrick[] = await this.bricksRepository.find();
+    let map: string[] = [];
+    for(const brick of bricks){
+      const brickMap: string[] = await this.brickMajorVersionService.findBrickMap(brick);
+      map = map.concat(brickMap);
+    }
+    return map;
+  }
+
 }
 

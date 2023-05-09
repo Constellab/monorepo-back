@@ -36,6 +36,12 @@ export class HnStoryController {
     return this.storyService.getStories(page, size);
   }
 
+  @BlPublic()
+  @Get('all-map')
+  async getAllStoriesMap(): Promise<string[]> {
+    return this.storyService.getAllStoriesMap();
+  }
+
 
   @BlPublic()
   @Post('filter')

@@ -164,4 +164,27 @@ export class HnBrickMajorVersionService {
       relations: ['brick']
     });
   }
+
+  async findBrickMap(brick: HnBrick): Promise<string[]> {
+    let brickMap: string[] = [];
+    const brickMajorVersions: HnBrickMajorVersion[] = await this.brickMajorVersionsRepository.find({
+      where: {
+        brick: {
+          id: brick.id
+        }
+      },
+      relations: ['brick']
+    });
+    brickMap.push(`${brick.name}/latest`);
+    brickMap.push(`${brick.name}/latest/version`);
+    for (const brickMajorVersion of brickMajorVersions) {
+      brickMap.push(`${brick.name}/v${brickMajorVersion.major}`);
+      brickMap.push(`${brick.name}/v${brickMajorVersion.major}/version`);
+      brickMap = brickMap.concat(await
+      this.folderService.findBrickMajorVersionMap(brickMajorVersion, `${brick.name}/v${brickMajorVersion.major}`));
+      brickMap = brickMap.concat(await
+      this.technicalFolderService.findBrickMajorVersionMap(brickMajorVersion, `${brick.name}/v${brickMajorVersion.major}`));
+    }
+    return brickMap;
+  }
 }

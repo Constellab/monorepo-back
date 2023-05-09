@@ -31,6 +31,13 @@ export class HnBrickController {
   }
 
   @BlPublic()
+  @Get('all-map')
+  findAllMap(): Promise<string[]> {
+    return this.brickService.findAllMap();
+  }
+
+
+  @BlPublic()
   @Get('name/:name')
   findOneByName(@Param('name') name: string): Promise<HnBrick> {
     return this.brickService.findByName(name);

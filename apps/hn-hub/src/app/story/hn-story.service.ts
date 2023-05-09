@@ -277,4 +277,8 @@ export class HnStoryService {
     throw new Error('Invalid invite');
   }
 
+  async getAllStoriesMap(): Promise<string[]>{
+    const stories: HnStory[] = await this.storyRepository.find({where: {status: HnStoryStatus.PUBLISHED}});
+    return stories.map((s: HnStory) => s.id);
+  }
 }

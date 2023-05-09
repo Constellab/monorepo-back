@@ -3,7 +3,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {HnTechnicalFolder} from './hn-technical-folder.entity';
 import {Repository} from 'typeorm';
 import {HnResourceService} from '../resource/hn-resource.service';
-import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
+import {HnBrickMajorVersion, HnVersionState} from '../brick-major-version/hn-brick-major-version.entity';
 import {HnImportTechnicalDocDTO, HnTechnicalDocInputDTO} from '../brick/hn-brick.dto';
 import {HnNode} from '../folder/hn-folder.dto';
 import {HnResource} from '../resource/hn-resource.entity';
@@ -13,6 +13,7 @@ import {HnTask} from '../task/hn-task.entity';
 import {HnProtocol} from '../protocol/hn-protocol.entity';
 import {HnProtocolService} from '../protocol/hn-protocol.service';
 import {HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
+import {HnFolder} from '../folder/hn-folder.entity';
 
 @Injectable()
 export class HnTechnicalFolderService {
@@ -212,5 +213,19 @@ export class HnTechnicalFolderService {
       anchor: anchor,
       brickName: brickMajorVersion.brick.name
     };
+  }
+
+  async findBrickMajorVersionMap(brickMajorVersion: HnBrickMajorVersion, baseMapString: string): Promise<string[]>{
+    const brickMajorVersionMap: string[] = [];
+    const techDocs: HnDocumentationSearchDTO[] =
+      await this.getTechDocsByBrickNameMajor(brickMajorVersion, brickMajorVersion.major.toString(), brickMajorVersion.brick.name);
+    for (const techDoc of techDocs) {
+      if(brickMajorVersion.versionState == HnVersionState.LATEST){
+        const latestBaseMapString: string = baseMapString.split('/')[0] + '/latest/doc/';
+        brickMajorVersionMap.push(latestBaseMapString + techDoc.completePath.slice(0, -1));
+      }
+      brickMajorVersionMap.push(baseMapString + '/doc/' + techDoc.completePath.slice(0, -1));
+    }
+    return brickMajorVersionMap;
   }
 }
