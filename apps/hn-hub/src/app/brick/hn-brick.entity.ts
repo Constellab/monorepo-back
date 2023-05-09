@@ -1,24 +1,6 @@
 import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
 import {Column, Entity, Unique} from 'typeorm';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
-import {CmVersion} from '@monorepo/common-model';
-import {HnReferenceDTO, HnRepoType} from '../brick-version/hn-brick-version.entity';
-
-export class HnCreateBrickDTO {
-  name: string;
-  description: string;
-  repoType: HnRepoType;
-  repoGit: string;
-  repoPip: string;
-  isBeta?: boolean;
-  subPatch?: number;
-  version: CmVersion;
-  references?: HnReferenceDTO[];
-  technicalInfo?: Record<string, any>;
-  visibility: HnBrickVisibility;
-  credentialUsername?: string;
-  credentialPassword?: string;
-}
 
 export enum HnBrickVisibility {
   PRIVATE = 'private',

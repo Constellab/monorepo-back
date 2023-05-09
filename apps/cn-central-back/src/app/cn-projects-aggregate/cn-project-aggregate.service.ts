@@ -512,14 +512,14 @@ export class CnProjectAggregateService {
   }
 
   public async saveCommentImage(file: BlFile, projectId: string): Promise<CmRichTextUploadedImage> {
-    const rootProject = await this.checkFindOneAndGetRootProject(projectId);
+    const rootProject = await this.getAndCheckAuthorizationForFindOne(projectId);
 
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(rootProject.id);
     return this.projectCommentService.saveProjectCommentImage(file, bucketConfig, projectId);
   }
 
   public async getCommentImage(filename: string, projectId: string): Promise<IncomingMessage> {
-    const rootProject = await this.checkFindOneAndGetRootProject(projectId);
+    const rootProject = await this.getAndCheckAuthorizationForFindOne(projectId);
 
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(rootProject.id);
     return await this.projectCommentService.getImage(filename, bucketConfig);

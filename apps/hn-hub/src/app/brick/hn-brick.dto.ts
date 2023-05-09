@@ -1,4 +1,4 @@
-import {HnRepoType, HnVersionType} from '../brick-version/hn-brick-version.entity';
+import {HnReferenceDTO, HnRepoType, HnVersionType} from '../brick-version/hn-brick-version.entity';
 import {HnVersionState} from '../brick-major-version/hn-brick-major-version.entity';
 import {CmVersion} from '@monorepo/common-model';
 import {HnBrickVisibility} from './hn-brick.entity';
@@ -120,4 +120,20 @@ export class HnBrickVersionDownloadDTO{
   repoType: HnRepoType;
   repositoryUrl: string;
   repositoryAccessUrl: string;
+}
+
+export class HnCreateBrickDTO {
+  name: string;
+  description: string;
+  repoType: HnRepoType;
+  repoGit: string;
+  repoPip: string;
+  isBeta?: boolean;
+  subPatch?: number;
+  version: CmVersion;
+  references?: HnReferenceDTO[];
+  technicalInfo?: Record<string, any>;
+  visibility: HnBrickVisibility;
+  credentialUsername?: string;
+  credentialPassword?: string;
 }

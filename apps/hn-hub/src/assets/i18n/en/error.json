@@ -4,6 +4,7 @@
   "column_too_long": "Field '{field}' too long",
   "wrong_credentials": "Wrong email or password",
   "brick_already_exist": "A brick with this name already exist",
+  "brick_name_invalid": "The brick name is invalid",
   "brick_not_found": "The brick '{name}' was not found. Was it declared in Constellab Community ?",
   "brick_version_not_found": "The version '{version}' for brick '{name}' was not found. Was it declared in Constellab Community ?"
 }

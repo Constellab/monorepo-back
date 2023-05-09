@@ -1,13 +1,13 @@
 import {Body, Controller, Get, Param, Post, Put, Req, UseGuards} from '@nestjs/common';
 import {HnBrickService} from './hn-brick.service';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
-import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
+import {HnBrick} from './hn-brick.entity';
 import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
 import {HnDocumentation, HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
 import {HnNode} from '../folder/hn-folder.dto';
 import {
   HnBrickListDTO,
-  HnBrickVersionDownloadDTO,
+  HnBrickVersionDownloadDTO, HnCreateBrickDTO,
   HnCreateTechnicalDocContent,
   HnEditBrickDTO,
   HnIsActualBrickAndNewVersionDTO,
@@ -89,11 +89,7 @@ export class HnBrickController {
   @IsAdmin()
   @Post()
   create(@Body(new BlParsePipe(HnCreateBrickDTO)) createBrick: HnCreateBrickDTO): Promise<HnBrick> {
-    if (!createBrick.name.includes(' ')) {
-      return this.brickService.create(createBrick);
-    } else {
-      return null;
-    }
+    return this.brickService.create(createBrick);
   }
 
   @IsAdmin()

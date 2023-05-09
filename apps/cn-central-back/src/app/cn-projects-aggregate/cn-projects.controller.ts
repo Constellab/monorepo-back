@@ -245,7 +245,7 @@ export class CnProjectsController {
     return this.projectAggregate.getProjectComments(projectId, page, size);
   }
 
-  @Post(':projectId/comment/:commentId/delete')
+  @Delete(':projectId/comment/:commentId/delete')
   deleteProjectComment(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                        @Param('commentId', new ParseUUIDPipe()) commentId: string): Promise<void> {
     return this.projectAggregate.deleteProjectComment(projectId, commentId);

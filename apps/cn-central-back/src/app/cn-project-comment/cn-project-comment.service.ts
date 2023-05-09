@@ -32,14 +32,11 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
   }
 
   async create(newComment: CnNewComment, project: CnProject, userMentions: CnUser[]): Promise<CnProjectComment> {
-
-    const comment: CnProjectComment = await this.dataSource.transaction(async () => {
-      const projectComment: CnProjectComment = CnProjectComment.create(newComment, project);
-      if (projectComment.isResponse) {
-        projectComment.parentComment = await this.projectCommentRepository.findOneBy({id: newComment.parentCommentId});
-      }
-      return await this.createComment(projectComment);
-    });
+    const projectComment: CnProjectComment = CnProjectComment.create(newComment, project);
+    if (projectComment.isResponse) {
+      projectComment.parentComment = await this.projectCommentRepository.findOneBy({id: newComment.parentCommentId});
+    }
+    const comment: CnProjectComment = await this.createComment(projectComment);
 
     for (const uM of userMentions) {
       const newNotification: CnNotificationCreateDTO = {
