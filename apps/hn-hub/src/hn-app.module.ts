@@ -5,7 +5,7 @@ import {TypeOrmModule, TypeOrmModuleOptions} from '@nestjs/typeorm';
 import {join} from 'path';
 import {HnCoreConfigModule} from './app/core/modules/core-config/hn-core-config.module';
 import {HnCoreConfigService} from './app/core/modules/core-config/hn-core-config.service';
-import {HnDocumentationModule} from './app/documentation/hn-documentation.module';
+import {HnDocumentationModule} from './app/brick-aggregate/documentation/hn-documentation.module';
 import {HnUserModule} from './app/users/hn-user.module';
 import {HnAuthModule} from './app/auth/hn-auth.module';
 import {
@@ -27,13 +27,13 @@ import {HnUserService} from './app/users/hn-user.service';
 import {Request} from 'express';
 import {hnJwtConfig} from './app/auth/hn-jwt.config';
 import {HnJwtAuthGuard} from './app/core/guards/hn-jwt-auth.guard';
-import {HnFolderModule} from './app/folder/hn-folder.module';
+import {HnFolderModule} from './app/brick-aggregate/folder/hn-folder.module';
 import {WinstonModule, WinstonModuleOptions} from 'nest-winston';
 import {I18nJsonLoader, I18nModule} from 'nestjs-i18n';
 import {clDefaultLang} from '@monorepo/core-lib';
-import {HnBrickModule} from './app/brick/hn-brick.module';
-import {HnBrickVersionModule} from './app/brick-version/hn-brick-version.module';
-import {HnBrickMajorVersionModule} from './app/brick-major-version/hn-brick-major-version.module';
+import {HnBrickModule} from './app/brick-aggregate/brick/hn-brick.module';
+import {HnBrickVersionModule} from './app/brick-aggregate/brick-version/hn-brick-version.module';
+import {HnBrickMajorVersionModule} from './app/brick-aggregate/brick-major-version/hn-brick-major-version.module';
 import {HnCoreExceptionHandlerFilter} from './app/core/filters/hn-core-exception-handler.filter';
 import {HnTechnicalFolderModule} from './app/technical-folder/hn-technical-folder.module';
 import {HnResourceModule} from './app/resource/hn-resource.module';
@@ -46,6 +46,7 @@ import {HnTopicModule} from './app/topic/hn-topic.module';
 import {HnStoryAuthorModule} from './app/story-author/hn-story-author.module';
 import {HnStoryAuthorInviteModule} from './app/story-author-invite/hn-story-author-invite.module';
 import {HnIsAdminGuard} from './app/core/guards/hn-is-admin.guard';
+import {HnBrickAggregateModule} from './app/brick-aggregate/hn-brick-aggregate.module';
 
 function typeOrmConfig(
   configService: HnCoreConfigService
@@ -176,6 +177,7 @@ function configureMailModule(
     HnTopicModule,
     HnStoryAuthorModule,
     HnStoryAuthorInviteModule,
+    HnBrickAggregateModule
   ],
   controllers: [],
   providers: [

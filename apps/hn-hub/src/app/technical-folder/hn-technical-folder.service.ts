@@ -3,17 +3,17 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {HnTechnicalFolder} from './hn-technical-folder.entity';
 import {Repository} from 'typeorm';
 import {HnResourceService} from '../resource/hn-resource.service';
-import {HnBrickMajorVersion, HnVersionState} from '../brick-major-version/hn-brick-major-version.entity';
-import {HnImportTechnicalDocDTO, HnTechnicalDocInputDTO} from '../brick/hn-brick.dto';
-import {HnNode} from '../folder/hn-folder.dto';
+import {HnBrickMajorVersion, HnVersionState} from '../brick-aggregate/brick-major-version/hn-brick-major-version.entity';
+import {HnImportTechnicalDocDTO, HnTechnicalDocInputDTO} from '../brick-aggregate/brick/hn-brick.dto';
+import {HnNode} from '../brick-aggregate/folder/hn-folder.dto';
 import {HnResource} from '../resource/hn-resource.entity';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
 import {HnTaskService} from '../task/hn-task.service';
 import {HnTask} from '../task/hn-task.entity';
 import {HnProtocol} from '../protocol/hn-protocol.entity';
 import {HnProtocolService} from '../protocol/hn-protocol.service';
-import {HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
-import {HnFolder} from '../folder/hn-folder.entity';
+import {HnDocumentationSearchDTO} from '../brick-aggregate/documentation/hn-documentation.entity';
+import {HnFolder} from '../brick-aggregate/folder/hn-folder.entity';
 
 @Injectable()
 export class HnTechnicalFolderService {
@@ -113,7 +113,7 @@ export class HnTechnicalFolderService {
       //TODO: faire pour les autres classes
 
       return new HnNode(technicalFolder.id, 'Technical Documentation',
-        'technical-documentation', 'technical-documentation/',
+        'technical-folder', 'technical-folder/',
         0, null, children);
     }
     return null;

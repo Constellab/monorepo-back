@@ -3,7 +3,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {HnProtocol} from './hn-protocol.entity';
 import {HnTechnicalFolder} from '../technical-folder/hn-technical-folder.entity';
-import {HnImportProtocolDTO} from '../brick/hn-brick.dto';
+import {HnImportProtocolDTO} from '../brick-aggregate/brick/hn-brick.dto';
 
 @Injectable()
 export class HnProtocolService {

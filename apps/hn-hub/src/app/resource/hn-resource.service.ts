@@ -3,7 +3,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {HnResource} from './hn-resource.entity';
 import {Repository} from 'typeorm';
 import {HnTechnicalFolder} from '../technical-folder/hn-technical-folder.entity';
-import {HnImportResourceDTO} from '../brick/hn-brick.dto';
+import {HnImportResourceDTO} from '../brick-aggregate/brick/hn-brick.dto';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
 
 @Injectable()

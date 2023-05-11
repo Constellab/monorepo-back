@@ -1,5 +1,5 @@
 import {Column, Entity, JoinColumn, ManyToOne, Unique} from 'typeorm';
-import {HnBrickVersion} from '../brick-version/hn-brick-version.entity';
+import {HnBrickVersion} from '../brick-aggregate/brick-version/hn-brick-version.entity';
 import {BlEntityWithId} from '@monorepo/back-core-lib';
 
 export enum HnBrickVersionRefState {
