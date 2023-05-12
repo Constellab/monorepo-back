@@ -7,6 +7,7 @@ import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {CmCredentials} from '@monorepo/common-model';
 import {HnExternalCheckCredentialResponse} from '../auth/hn-central-auth.service';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
+import {ClTheme} from '@monorepo/core-lib';
 
 @Injectable()
 export class HnUserService implements BlUserService {
@@ -34,6 +35,7 @@ export class HnUserService implements BlUserService {
       u.category = user.category;
       u.lang = user.lang;
       u.photo = user.photo;
+      u.theme = u.theme != null ? user.theme : u.theme;
       await this.userRepository.save(u);
     }
     return;
@@ -63,5 +65,11 @@ export class HnUserService implements BlUserService {
       status: 'OK',
       user: await this.userRepository.findOneBy({email: credentials.email})
     }
+  }
+
+  async changeTheme(theme: ClTheme): Promise<void>{
+    const user: HnUser = await this.getCurrent();
+    user.theme = theme;
+    await this.userRepository.save(user);
   }
 }

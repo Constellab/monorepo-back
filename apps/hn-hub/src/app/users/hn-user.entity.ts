@@ -1,9 +1,8 @@
 import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
-import {BeforeInsert, Column, Entity, ManyToMany, OneToMany, PrimaryColumn} from 'typeorm';
+import {BeforeInsert, Column, Entity, OneToMany, PrimaryColumn} from 'typeorm';
 import {DateTime} from 'luxon';
-import {ClDateHelper, clDefaultLang, ClSupportedLanguage} from '@monorepo/core-lib';
+import {ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {CmUserCategory} from '@monorepo/common-model';
-import {HnStory} from '../story/hn-story.entity';
 import {HnStoryAuthor} from '../story-author/hn-story-author.entity';
 
 @Entity('User')
@@ -32,6 +31,9 @@ export class HnUser {
 
   @Column({nullable: false, type: 'enum', enum: ClSupportedLanguage, default: clDefaultLang})
   lang: ClSupportedLanguage;
+
+  @Column({nullable: false, type: 'enum', enum: ClTheme, default: clDefaultTheme})
+  theme: ClTheme;
 
   @OneToMany(() => HnStoryAuthor, storyAuthor => storyAuthor.user, {nullable: true})
   storyAuthors: HnStoryAuthor[];
@@ -66,6 +68,7 @@ export class HnUserConstellabDTO {
   activity?: string;
   company?: string;
   biography?: string;
+  theme: ClTheme;
   photo: string;
   lang: ClSupportedLanguage;
 }

@@ -1,7 +1,9 @@
-import {Controller, Get} from '@nestjs/common';
+import {Controller, Get, Param, Put} from '@nestjs/common';
 import {HnUserService} from './hn-user.service';
 import {HnUser, HnUserConstellabDTO} from './hn-user.entity';
 import {EventPattern} from '@nestjs/microservices';
+import {BlParseEnumPipe} from '@monorepo/back-core-lib';
+import {ClTheme} from '@monorepo/core-lib';
 
 @Controller('user')
 export class HnUserController {
@@ -16,5 +18,10 @@ export class HnUserController {
   @EventPattern('user')
   handleUserCreated(userDto: HnUserConstellabDTO): Promise<void> {
     return this.userService.createOrUpdate(userDto);
+  }
+
+  @Put('theme/:theme')
+  async changeTheme(@Param('theme', new BlParseEnumPipe(ClTheme)) theme: ClTheme): Promise<void> {
+    return this.userService.changeTheme(theme);
   }
 }

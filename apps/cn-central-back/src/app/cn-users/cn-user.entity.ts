@@ -123,7 +123,7 @@ export interface CnUserTransportDto {
   firstname: string;
   lastname: string;
   email: string;
-
+  theme: ClTheme;
   category: CmUserCategory;
 
   lang: ClSupportedLanguage;
