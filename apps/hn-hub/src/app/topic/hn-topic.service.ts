@@ -16,7 +16,7 @@ export class HnTopicService {
       const t: HnTopic = await this.topicRepository.findOneBy({id: topic.id})
       if (t) return t;
     }
-    topic.name = ClStringHelper.removeAccentFromString(ClStringHelper.trimAndRemoveDuplicateSpaces(topic.name).toLowerCase());
+    topic.name = ClStringHelper.removeAccentFromString(ClStringHelper.trimAndRemoveDuplicateSpaces(topic.name));
     topic.name = topic.name.charAt(0).toUpperCase() + topic.name.slice(1);
     let t: HnTopic = await this.topicRepository.findOneBy({name: topic.name});
     if (t) return t;

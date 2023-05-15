@@ -2,21 +2,18 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {HnUser, HnUserConstellabDTO} from './hn-user.entity';
-import {BlObjectStorageService, BlUserService} from '@monorepo/back-core-lib';
+import {BlUserService} from '@monorepo/back-core-lib';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {CmCredentials} from '@monorepo/common-model';
 import {HnExternalCheckCredentialResponse} from '../auth/hn-central-auth.service';
-import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
-import {ClTheme} from '@monorepo/core-lib';
+import {ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 
 @Injectable()
 export class HnUserService implements BlUserService {
 
   constructor(
     @InjectRepository(HnUser)
-    private userRepository: Repository<HnUser>,
-    private objectStorageService: BlObjectStorageService,
-    private configService: HnCoreConfigService
+    private userRepository: Repository<HnUser>
   ) {
   }
 
@@ -35,7 +32,7 @@ export class HnUserService implements BlUserService {
       u.category = user.category;
       u.lang = user.lang;
       u.photo = user.photo;
-      u.theme = u.theme != null ? user.theme : u.theme;
+      u.theme = u.theme != null ? u.theme : user.theme;
       await this.userRepository.save(u);
     }
     return;
@@ -67,7 +64,13 @@ export class HnUserService implements BlUserService {
     }
   }
 
-  async changeTheme(theme: ClTheme): Promise<void>{
+  async changeLang(lang: ClSupportedLanguage): Promise<void> {
+    const user: HnUser = await this.getCurrent();
+    user.lang = lang;
+    await this.userRepository.save(user);
+  }
+
+  async changeTheme(theme: ClTheme): Promise<void> {
     const user: HnUser = await this.getCurrent();
     user.theme = theme;
     await this.userRepository.save(user);

@@ -5,7 +5,6 @@ import {HnUser} from '../users/hn-user.entity';
 
 export enum HnStoryAuthorStatus {
   COAUTHOR = 'COAUTHOR',
-
   AUTHOR = 'AUTHOR'
 }
 
@@ -26,5 +25,4 @@ export class HnStoryAuthor extends BlEntityWithId {
     this.user = user;
     this.status = HnStoryAuthorStatus.AUTHOR;
   }
-
 }

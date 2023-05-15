@@ -148,22 +148,6 @@ export class CmRichText {
     return headers;
   }
 
-  public static getImageCP(content: CmRichTextI): CmRichTextImageCP[] {
-    const imgs: CmRichTextImageCP[] = [];
-    const contentData: any[] = content.ops;
-    if (contentData != null) {
-      contentData.forEach((c) => {
-        if (c.insert && c.insert.image) {
-          const imgLink: string = c.insert.image;
-          if (imgLink.startsWith('data:image/')) {
-            imgs.push(c);
-          }
-        }
-      })
-    }
-    return imgs;
-  }
-
   public static isEmpty(content: CmRichTextI): boolean{
     let isEmpty = true;
     if (!ClHelpService.isNullOrEmpty(content) && content.ops) {

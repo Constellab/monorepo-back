@@ -41,11 +41,7 @@ export class HnStoryAuthorService {
   }
 
   async acceptInvite(storyAuthor: HnStoryAuthor, storyAuthorInvite: HnStoryAuthorInvite): Promise<boolean> {
-    let res: boolean = false;
-    res = await this.storyAuthorInviteService.acceptInvite(storyAuthorInvite);
-    if (res) {
-      return (await this.storyAuthorRepository.save(storyAuthor)) !== null;
-    }
-    return res;
+    return (await this.storyAuthorInviteService.acceptInvite(storyAuthorInvite)) != null
+      && (await this.storyAuthorRepository.save(storyAuthor)) != null;
   }
 }

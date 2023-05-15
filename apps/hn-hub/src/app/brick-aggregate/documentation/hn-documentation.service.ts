@@ -102,9 +102,10 @@ export class HnDocumentationService {
             } else {
               l.insert = linkDoc.title;
             }
+            linkDoc.completePath = path;
 
             // eslint-disable-next-line max-len
-            l.attributes.link = `${this.configService.getFrontRootUrl()}bricks/${linkDoc.folder.brickMajorVersion.brick.name}/v${linkDoc.folder.brickMajorVersion.major}/doc/${path}`;
+            l.attributes.link = this.configService.getFrontDocUrl(linkDoc);
 
             documentation.content.ops.find(
               (o: CmRichTextLink) => o.attributes && o.attributes.id && o.attributes.id === l.attributes.id)
@@ -119,7 +120,7 @@ export class HnDocumentationService {
   async updateContent(id: string, updateContentDoc: CmRichTextI): Promise<HnDocumentation> {
     const doc: HnDocumentation = await this.documentationsRepository.findOneBy({id: id});
     if (doc) {
-      doc.content = await this.editContent(updateContentDoc);
+      doc.content = await this.transformContent(updateContentDoc);
 
       const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
       if (!currentUser.isAdmin()) {
@@ -129,7 +130,8 @@ export class HnDocumentationService {
     return this.documentationsRepository.save(doc);
   }
 
-  async editContent(content: CmRichTextI): Promise<CmRichTextI> {
+  async transformContent(content: CmRichTextI): Promise<CmRichTextI> {
+    // Transform intern link with updated url
     const links: CmRichTextLink[] = CmRichText.getLinks(content);
     for (const l of links) {
       if (l.attributes.link.startsWith(this.configService.getFrontRootUrl())) {
@@ -144,6 +146,7 @@ export class HnDocumentationService {
       }
     }
 
+    // Add id to header
     const headers: CmRichTextHeader[] = CmRichText.getHeaders(content);
     const listId: string[] = [];
     for (const h of headers) {
@@ -151,42 +154,16 @@ export class HnDocumentationService {
         h.attributes.header.id = ClStringHelper.toIdForUrl(h.attributes.header.id);
         if (h.attributes.header.id.length > 0) {
           const sameTitleNumber: number = listId.filter(value => value == h.attributes.header.id).length;
+          listId.push(h.attributes.header.id);
           if (sameTitleNumber > 0) {
             h.attributes.header.id = h.attributes.header.id + sameTitleNumber;
           }
-          listId.push(h.attributes.header.id);
         } else {
           delete h.attributes.header.id;
         }
       }
     }
 
-    const imageCP: CmRichTextImageCP[] = CmRichText.getImageCP(content);
-    for (const im of imageCP) {
-      if ('image' in im.insert) {
-        const base64Img: string = im.insert.image.split(',')[1];
-        const imgBuffer: Buffer = new Buffer(base64Img, 'base64');
-        const imgBlFile: BlFile = {
-          buffer: imgBuffer,
-          encoding: null,
-          mimetype: 'image',
-          size: null,
-          originalname: 'any.png'
-        };
-        const imgSize: ISizeCalculationResult = imageSize(imgBuffer);
-        const imgName: string = await this.objectStorageService.uploadObject(
-          this.getBucketConfig(), imgBlFile, {generateRandomObjectName: true});
-        im.insert = {
-          figure: {
-            filename: imgName,
-            height: imgSize.height,
-            width: imgSize.width,
-            naturalWidth: imgSize.width,
-            naturalHeight: imgSize.height
-          }
-        };
-      }
-    }
     return content;
   }
 

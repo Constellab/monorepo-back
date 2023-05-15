@@ -16,6 +16,7 @@ import {
   blTransportQueueHub
 } from '@monorepo/back-core-lib';
 import {HnDatabaseConfig} from '../../model/config/hn-database-config.class';
+import {HnDocumentation} from '../../../brick-aggregate/documentation/hn-documentation.entity';
 
 @Injectable()
 export class HnCoreConfigService {
@@ -105,6 +106,11 @@ export class HnCoreConfigService {
         res = 'http://localhost:4200/';
     }
     return res;
+  }
+
+  public getFrontDocUrl(documentation: HnDocumentation): string {
+    return `${this.getFrontRootUrl()}bricks/${documentation.folder.brickMajorVersion.brick.name}
+    /v${documentation.folder.brickMajorVersion.major}/doc/${documentation.completePath}`;
   }
 
   public getConstellabFrontRootUrl(): string {
