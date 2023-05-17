@@ -103,7 +103,6 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     switch (status) {
       case 'ACTIVE':
         return 'RUNNING';
-      case 'BUILD':
       case 'REBUILD':
       case 'BUILDING':
       case 'HARD_REBOOT':
@@ -136,6 +135,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
       case 'DELETING':
         return 'STOPPING';
       case 'UNSHELVING':
+      case 'BUILD':
         return 'CREATING';
     }
   }
