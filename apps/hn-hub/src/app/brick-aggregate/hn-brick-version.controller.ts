@@ -1,5 +1,4 @@
 import {Controller, Get, Param, ParseIntPipe, Put, Query, UseGuards} from '@nestjs/common';
-import {HnBrickVersionService} from './brick-version/hn-brick-version.service';
 import {ClPageI} from '@monorepo/core-lib';
 import {HnBrickVersion, HnReferenceDTO} from './brick-version/hn-brick-version.entity';
 import {BlPublic} from '@monorepo/back-core-lib';

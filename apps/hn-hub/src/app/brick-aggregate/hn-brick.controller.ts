@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, Post, Put, Req, UseGuards} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, Req, UseGuards} from '@nestjs/common';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {HnBrick} from './brick/hn-brick.entity';
 import {HnBrickVersion, HnNewVersionDTO} from './brick-version/hn-brick-version.entity';
@@ -18,6 +18,8 @@ import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
 import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 import {Request} from 'express';
 import {HnBrickAggregateService} from './hn-brick-aggregate.service';
+import {HnBrickUser} from './brick-user/hn-brick-user.entity';
+import {HnBrickUserInvite} from './brick-user-invite/hn-brick-user-invite.entity';
 
 @Controller('brick')
 @UseGuards(HnIsAdminGuard)
@@ -91,7 +93,6 @@ export class HnBrickController {
     return this.brickAggregateService.createBrick(createBrick);
   }
 
-  @IsAdmin()
   @Post('create-technical-doc')
   async createTechnicalDoc(@Body(new BlParsePipe(HnCreateTechnicalDocContent)) content: HnCreateTechnicalDocContent): Promise<boolean> {
     return this.brickAggregateService.createTechnicalDoc(content);
@@ -109,7 +110,6 @@ export class HnBrickController {
     return this.brickAggregateService.findTechDocByPath(input);
   }
 
-  @IsAdmin()
   @Post('new-version')
   createNewVersion(@Body(new BlParsePipe(HnNewVersionDTO)) newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
     return this.brickAggregateService.createNewVersion(newVersion);
@@ -121,13 +121,11 @@ export class HnBrickController {
     return this.brickAggregateService.getLatestBrickVersion(brickName);
   }
 
-  @IsAdmin()
   @Put('edit')
   public editBrick(@Body(new BlParsePipe(HnEditBrickDTO)) editedBrick: HnEditBrickDTO): Promise<HnBrick> {
     return this.brickAggregateService.editBrick(editedBrick);
   }
 
-  @IsAdmin()
   @Post('is-actual-brick-and-new-version')
   async isActualBrickAndNewVersion(
     @Body(new BlParsePipe(HnIsActualBrickAndNewVersionDTO))
@@ -147,4 +145,48 @@ export class HnBrickController {
   async getDocByLink(@Body() body: any): Promise<HnDocumentationSearchDTO> {
     return this.brickAggregateService.getDocByLink(body.link);
   }
+
+  /***
+   * Update brick users
+   */
+  @Put(':id/invite-user')
+  async updateStoryCoAuthors(@Param('id', new ParseUUIDPipe()) id: string,
+                             @Body() body: any): Promise<HnBrick> {
+    return this.brickAggregateService.updateBrickUsers(id, body.email);
+  }
+
+  /***
+   * Remove brick user
+   */
+  @Delete(':id/users/:userId')
+  async removeBrickUser(@Param('id', new ParseUUIDPipe()) id: string,
+                        @Param('userId', new ParseUUIDPipe()) userId: string): Promise<boolean> {
+    return this.brickAggregateService.removeBrickUser(id, userId);
+  }
+
+  /***
+   * Is brick user invite valid
+   */
+  @Get('invite/:token/is-valid')
+  isBrickUserInviteValid(@Param('token') token: string): Promise<HnBrickUserInvite> {
+    return this.brickAggregateService.isBrickUserInviteValid(token);
+  }
+
+  /***
+   * Accept brick user invite
+   */
+  @Put('invite/:token/accept')
+  acceptBrickUserInvite(@Param('token') token: string): Promise<HnBrick> {
+    return this.brickAggregateService.acceptBrickUserInvite(token);
+  }
+
+  /***
+   * Get brick users
+   */
+  @Get(':id/users')
+  async getBrickUsers(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnBrickUser[]> {
+    return this.brickAggregateService.getBrickUsers(id);
+  }
+
+
 }

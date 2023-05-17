@@ -39,6 +39,15 @@ export class ClStringHelper {
   }
 
   /**
+   * Return true if the input string is an email
+   * It checks if the string contains a @ and a .
+   * @param str
+   */
+  public static isEmail(str: string): boolean {
+    return str.includes('@') && str.split('@')[1].includes('.');
+  }
+
+  /**
    * Generate an UUID v4, it is not a simple uuid ID and must not used for encryption
    */
   public static generateUUID(): string {

@@ -121,11 +121,6 @@ export class HnDocumentationService {
     const doc: HnDocumentation = await this.documentationsRepository.findOneBy({id: id});
     if (doc) {
       doc.content = await this.transformContent(updateContentDoc);
-
-      const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
-      if (!currentUser.isAdmin()) {
-        throw new BlUnauthorizedException();
-      }
     }
     return this.documentationsRepository.save(doc);
   }

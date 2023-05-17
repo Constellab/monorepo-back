@@ -22,7 +22,8 @@ import {HnTopic} from '../topic/hn-topic.entity';
 import {DateTime} from 'luxon';
 import {HnStoryAuthorService} from '../story-author/hn-story-author.service';
 import {HnStoryAuthor, HnStoryAuthorStatus} from '../story-author/hn-story-author.entity';
-import {HnStoryAuthorInvite, HnStoryAuthorInviteStatus} from '../story-author-invite/hn-story-author-invite.entity';
+import {HnStoryAuthorInvite} from '../story-author-invite/hn-story-author-invite.entity';
+import {HnInviteStatus} from '../core/model/config/hn-invite-status.enum';
 
 
 @Injectable()
@@ -259,7 +260,7 @@ export class HnStoryService {
 
   async isInviteValid(token: string): Promise<HnStoryAuthorInvite> {
     const storyAuthorInvite: HnStoryAuthorInvite = await this.storyAuthorService.getStoryAuthorInviteByToken(token);
-    return (storyAuthorInvite && storyAuthorInvite.status === HnStoryAuthorInviteStatus.PENDING &&
+    return (storyAuthorInvite && storyAuthorInvite.status === HnInviteStatus.PENDING &&
       storyAuthorInvite.email === HnCurrentUserHelper.getCurrentUser().email) ? storyAuthorInvite : null;
   }
 

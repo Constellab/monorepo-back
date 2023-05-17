@@ -174,6 +174,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
       firstname: user.firstname,
       lastname: user.lastname,
       email: user.email,
+      theme: user.theme,
       category: user.category,
       activity: user.activity,
       company: user.company,

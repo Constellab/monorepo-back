@@ -4,7 +4,6 @@ import {HnTopic} from '../topic/hn-topic.entity';
 import {BlEntityWithId, BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
 import {DateTime} from 'luxon';
 import {HnUser} from '../users/hn-user.entity';
-import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {HnStoryAuthor} from '../story-author/hn-story-author.entity';
 

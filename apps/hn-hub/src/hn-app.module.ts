@@ -46,6 +46,8 @@ import {HnTopicModule} from './app/topic/hn-topic.module';
 import {HnStoryAuthorModule} from './app/story-author/hn-story-author.module';
 import {HnStoryAuthorInviteModule} from './app/story-author-invite/hn-story-author-invite.module';
 import {HnIsAdminGuard} from './app/core/guards/hn-is-admin.guard';
+import {HnBrickUserModule} from './app/brick-aggregate/brick-user/hn-brick-user.module';
+import {HnBrickUserInviteModule} from './app/brick-aggregate/brick-user-invite/hn-brick-user-invite.module';
 import {HnBrickAggregateModule} from './app/brick-aggregate/hn-brick-aggregate.module';
 
 function typeOrmConfig(
@@ -177,6 +179,8 @@ function configureMailModule(
     HnTopicModule,
     HnStoryAuthorModule,
     HnStoryAuthorInviteModule,
+    HnBrickUserModule,
+    HnBrickUserInviteModule,
     HnBrickAggregateModule
   ],
   controllers: [],

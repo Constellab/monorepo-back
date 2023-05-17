@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {HnStoryAuthorInvite, HnStoryAuthorInviteStatus} from './hn-story-author-invite.entity';
+import {HnStoryAuthorInvite} from './hn-story-author-invite.entity';
 import {Repository} from 'typeorm';
 import {HnUserService} from '../users/hn-user.service';
 import {ClStringHelper, ClSupportedLanguage} from '@monorepo/core-lib';
@@ -8,7 +8,8 @@ import {HnStory} from '../story/hn-story.entity';
 import {HnUser} from '../users/hn-user.entity';
 import {BlMailService} from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
-import {HnMailTemplate} from '../core/model/config/cn-mail-template.class';
+import {HnMailTemplate} from '../core/model/config/hn-mail-template.class';
+import {HnInviteStatus} from '../core/model/config/hn-invite-status.enum';
 
 @Injectable()
 export class HnStoryAuthorInviteService {
@@ -58,7 +59,7 @@ export class HnStoryAuthorInviteService {
   }
 
   async acceptInvite(storyAuthorInvite: HnStoryAuthorInvite): Promise<boolean> {
-    storyAuthorInvite.status = HnStoryAuthorInviteStatus.ACCEPTED;
+    storyAuthorInvite.status = HnInviteStatus.ACCEPTED;
     return (await this.storyAuthorInviteRepository.save(storyAuthorInvite)) != null;
   }
 

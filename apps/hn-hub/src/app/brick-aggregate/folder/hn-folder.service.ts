@@ -221,10 +221,6 @@ export class HnFolderService {
   }
 
   async updateTree(updatedTree: HnNode[]): Promise<HnNode[]> {
-    const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
-    if (!currentUser.category.includes('ADMIN')) {
-      throw new BlUnauthorizedException();
-    }
     for (const node of updatedTree) {
       let isUpdated = false;
       if (node.children) {

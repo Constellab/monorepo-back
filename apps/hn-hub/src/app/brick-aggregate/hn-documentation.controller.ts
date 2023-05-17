@@ -6,7 +6,6 @@ import {Response} from 'express';
 import {HnNodeDTO} from './folder/hn-folder.dto';
 import {CmRichTextI, CmRichTextUploadedImage} from '@monorepo/common-model';
 import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
-import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 import {HnBrickAggregateService} from './hn-brick-aggregate.service';
 
 @Controller('documentation')
@@ -21,7 +20,6 @@ export class HnDocumentationController {
     return this.brickAggregateService.findAllDocs();
   }
 
-  @IsAdmin()
   @Put('content/:id')
   updateContent(@Param('id') id: string,
                       @Body() updateContentDoc: CmRichTextI): Promise<HnDocumentation> {
@@ -34,22 +32,20 @@ export class HnDocumentationController {
     return this.brickAggregateService.findDocById(id);
   }
 
-  @IsAdmin()
   @Delete(':id')
   remove(@Param('id') id: string): Promise<void> {
     return this.brickAggregateService.removeDoc(id);
   }
 
-  @IsAdmin()
   @Put()
   update(@Body(new BlParsePipe(HnNodeDTO)) updatedDoc: HnNodeDTO): Promise<HnDocumentation> {
     return this.brickAggregateService.updateDoc(updatedDoc);
   }
 
-  @IsAdmin()
   @UseInterceptors(FileInterceptor('file'))
   @Put('/image')
   saveImage(@UploadedFile() file: BlFile): Promise<CmRichTextUploadedImage> {
+    //TODO: Check how to secure this root
     return this.brickAggregateService.saveDocImage(file);
   }
 

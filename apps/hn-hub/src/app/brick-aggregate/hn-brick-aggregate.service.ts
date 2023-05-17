@@ -4,7 +4,10 @@ import {
   HnBrickListDTO,
   HnBrickVersionDownloadDTO,
   HnCreateBrickDTO,
-  HnCreateTechnicalDocContent, HnEditBrickDTO, HnIsActualBrickAndNewVersionDTO, HnTechnicalDocInputDTO
+  HnCreateTechnicalDocContent,
+  HnEditBrickDTO,
+  HnIsActualBrickAndNewVersionDTO,
+  HnTechnicalDocInputDTO
 } from './brick/hn-brick.dto';
 import {HnBrick} from './brick/hn-brick.entity';
 import {HnNode, HnNodeDTO} from './folder/hn-folder.dto';
@@ -13,15 +16,20 @@ import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.enti
 import {HnBrickVersion, HnNewVersionDTO, HnReferenceDTO} from './brick-version/hn-brick-version.entity';
 import {HnBrickMajorVersionService} from './brick-major-version/hn-brick-major-version.service';
 import {HnBrickVersionService} from './brick-version/hn-brick-version.service';
-import {ClPageI} from '@monorepo/core-lib';
+import {ClPageI, ClStringHelper} from '@monorepo/core-lib';
 import {DataSource} from 'typeorm';
 import {HnBrickMajorVersion} from './brick-major-version/hn-brick-major-version.entity';
 import {CmRichTextI, CmRichTextUploadedImage, CmVersion} from '@monorepo/common-model';
 import {HnFolderService} from './folder/hn-folder.service';
 import {HnFolder} from './folder/hn-folder.entity';
 import {HnDocumentationService} from './documentation/hn-documentation.service';
-import {BlFile} from '@monorepo/back-core-lib';
+import {BlFile, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
+import {HnBrickUserService} from './brick-user/hn-brick-user.service';
+import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
+import {HnBrickUserInviteService} from './brick-user-invite/hn-brick-user-invite.service';
+import {HnBrickUserInvite} from './brick-user-invite/hn-brick-user-invite.entity';
+import {HnBrickUser} from './brick-user/hn-brick-user.entity';
 
 @Injectable()
 export class HnBrickAggregateService {
@@ -31,6 +39,8 @@ export class HnBrickAggregateService {
     private brickVersionService: HnBrickVersionService,
     private folderService: HnFolderService,
     private documentationService: HnDocumentationService,
+    private brickUserService: HnBrickUserService,
+    private brickUserInviteService: HnBrickUserInviteService,
     private dataSource: DataSource
   ) {
   }
@@ -55,6 +65,9 @@ export class HnBrickAggregateService {
     let brick: HnBrick;
     const brickVersion: HnBrickVersion = await this.dataSource.transaction(async entityManager => {
       brick = await this.brickService.create(body, entityManager);
+      if (!HnCurrentUserHelper.getCurrentUser().isAdmin()) {
+        await this.brickUserService.createCreatorBrickUser(brick, HnCurrentUserHelper.getCurrentUser(), entityManager);
+      }
       if (body.isBeta) body.version.subPatch = body.subPatch;
       const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionService.create(brick, body, entityManager);
       const version: CmVersion = body.version.subPatch != null ?
@@ -75,7 +88,49 @@ export class HnBrickAggregateService {
 
     await this.brickVersionService.sendBrickVersionIdToTransport(brickVersion.id);
     return brick;
+  }
 
+  async updateBrickUsers(brickId: string, email: string): Promise<HnBrick> {
+    const brick: HnBrick = await this.brickService.findById(brickId);
+
+    if (!brick || (!HnCurrentUserHelper.getCurrentUser().isAdmin() && brick.createdBy.id !== HnCurrentUserHelper.getCurrentUser().id)) {
+      throw new BlUnauthorizedException('You are not authorized to update this brick');
+    }
+
+
+    if (ClStringHelper.isEmail(email)) {
+      await this.brickUserInviteService.createBrickUserMail(brick, email);
+    }
+
+
+    return brick;
+  }
+
+  async removeBrickUser(brickId: string, userId: string): Promise<boolean> {
+    const brick: HnBrick = await this.brickService.findById(brickId);
+    return this.brickUserService.checkAndRemoveBrickUser(brick, userId);
+  }
+
+  async acceptBrickUserInvite(token: string): Promise<HnBrick> {
+    const brickUserInvite: HnBrickUserInvite = await this.brickUserInviteService.getAndCheckInvite(token);
+    if (!brickUserInvite)
+      throw new BlUnauthorizedException('This invite is not valid');
+    const brick: HnBrick = await this.brickService.findBrickForInviteById(brickUserInvite.brick.id);
+    await this.brickUserInviteService.acceptBrickUserInvite(brickUserInvite);
+    await this.brickUserService.createSimpleBrickUser(brick, HnCurrentUserHelper.getCurrentUser());
+    return brick;
+  }
+
+  async getBrickUsers(brickId: string): Promise<HnBrickUser[]> {
+    const brick: HnBrick = await this.brickService.findById(brickId);
+    if (!brick || (!HnCurrentUserHelper.getCurrentUser().isAdmin() && brick.createdBy.id !== HnCurrentUserHelper.getCurrentUser().id)) {
+      throw new BlUnauthorizedException('You are not authorized to get users of this brick');
+    }
+    return this.brickUserService.getBrickUsers(brick);
+  }
+
+  async isBrickUserInviteValid(token: string): Promise<HnBrickUserInvite> {
+    return await this.brickUserInviteService.getAndCheckInvite(token);
   }
 
   async editBrick(editedBrick: HnEditBrickDTO): Promise<HnBrick> {
@@ -96,15 +151,25 @@ export class HnBrickAggregateService {
 
   //------------------------------------- FOLDERS -------------------------------------
 
+  async checkIfUserHasRightsOnFolder(id: string): Promise<void>{
+    const folder: HnFolder = await this.folderService.findById(id);
+    const brickMajorVersion: HnBrickMajorVersion = folder.brickMajorVersion;
+    const brick: HnBrick = brickMajorVersion.brick;
+    this.brickService.checkIfUserHasRightOnTheBrick(brick);
+  }
+
   async createFolder(createFolder: HnNodeDTO): Promise<HnFolder> {
+    await this.checkIfUserHasRightsOnFolder(createFolder.folderId);
     return this.folderService.create(createFolder);
   }
 
   async updateFolder(updatedFolder: HnNodeDTO): Promise<HnFolder> {
+    await this.checkIfUserHasRightsOnFolder(updatedFolder.id);
     return this.folderService.update(updatedFolder);
   }
 
   async updateTree(updatedTree: HnNode[]): Promise<HnNode[]> {
+    await this.checkIfUserHasRightsOnFolder(updatedTree[0].parentId);
     return this.folderService.updateTree(updatedTree);
   }
 
@@ -121,12 +186,14 @@ export class HnBrickAggregateService {
   }
 
   async removeFolder(id: string): Promise<void> {
+    await this.checkIfUserHasRightsOnFolder(id);
     return this.folderService.remove(id);
   }
 
   //------------------------------------- DOCS -------------------------------------
 
   async createDoc(createDocumentation: HnNodeDTO): Promise<HnDocumentation> {
+    await this.checkIfUserHasRightsOnFolder(createDocumentation.folderId);
     return this.folderService.createDoc(createDocumentation);
   }
 
@@ -146,10 +213,12 @@ export class HnBrickAggregateService {
   }
 
   async removeDoc(id: string): Promise<void> {
+    await this.checkIfUserHasRightsOnDoc(id);
     return this.documentationService.remove(id);
   }
 
   async updateDoc(updatedDoc: HnNodeDTO): Promise<HnDocumentation> {
+    await this.checkIfUserHasRightsOnDoc(updatedDoc.id);
     return this.documentationService.update(updatedDoc);
   }
 
@@ -162,7 +231,16 @@ export class HnBrickAggregateService {
   }
 
   async updateDocContent(id: string, updateContentDoc: CmRichTextI): Promise<HnDocumentation>{
+    await this.checkIfUserHasRightsOnDoc(id);
     return this.documentationService.updateContent(id, updateContentDoc);
+  }
+
+  async checkIfUserHasRightsOnDoc(id: string): Promise<void>{
+    const doc: HnDocumentation = await this.documentationService.findById(id);
+    const folder: HnFolder = doc.folder;
+    const brickMajorVersion: HnBrickMajorVersion = folder.brickMajorVersion;
+    const brick: HnBrick = brickMajorVersion.brick;
+    this.brickService.checkIfUserHasRightOnTheBrick(brick);
   }
 
   async findDocsByParentId(id: string): Promise<HnDocumentation[]> {

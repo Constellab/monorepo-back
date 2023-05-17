@@ -4,6 +4,7 @@ import {DateTime} from 'luxon';
 import {ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {CmUserCategory} from '@monorepo/common-model';
 import {HnStoryAuthor} from '../story-author/hn-story-author.entity';
+import {HnBrickUser} from '../brick-aggregate/brick-user/hn-brick-user.entity';
 
 @Entity('User')
 export class HnUser {
@@ -37,6 +38,9 @@ export class HnUser {
 
   @OneToMany(() => HnStoryAuthor, storyAuthor => storyAuthor.user, {nullable: true})
   storyAuthors: HnStoryAuthor[];
+
+  @OneToMany(() => HnBrickUser, brickUser => brickUser.user, {nullable: true})
+  brickUsers: HnBrickUser[];
 
   @BeforeInsert()
   initValues(): void {
