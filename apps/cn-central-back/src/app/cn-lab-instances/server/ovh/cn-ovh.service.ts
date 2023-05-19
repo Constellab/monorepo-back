@@ -13,6 +13,7 @@ import {
 import {CnCoreConfigService} from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
 import {Injectable, Logger} from '@nestjs/common';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
+import {cnServerUbuntuUser} from '../cn-cloud-provider.class';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ovh = require('ovh');
@@ -28,7 +29,6 @@ export class CnOvhService {
   // to test ovh api, generate a token here : https://eu.api.ovh.com/createToken/, set all request type with '/*'
   // then update dev env
 
-  private static UBUNTU_USER = 'ubuntu';
   private ovh: CnOvh;
   private serviceName: string;
 
@@ -64,7 +64,7 @@ export class CnOvhService {
     });
 
     return images.find((image) => image.name === name && image.status === 'active' && image.type === 'linux'
-      && image.user === CnOvhService.UBUNTU_USER);
+      && image.user === cnServerUbuntuUser);
   }
 
   public async deleteInstance(instanceId: string): Promise<any> {

@@ -20,8 +20,9 @@ import {
 } from './cn-ovh.class';
 import {CnCoreConfigService} from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CnCloudProviderName} from '../../../cn-cloud-providers/cn-cloud-provider.entity';
-import {CnLabInstanceBillingMode, CnLabInstanceVolumeType} from '../../cn-lab-instance.entity';
+import {CnLabInstance, CnLabInstanceBillingMode, CnLabInstanceVolumeType} from '../../cn-lab-instance.entity';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
+import {CnLabSshService} from '../cn-lab-ssh.service';
 
 @Injectable()
 export class CnCloudProviderOvhService extends CnCloudProviderService {
@@ -29,8 +30,12 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
   private static IMAGE_NAME = 'Ubuntu 20.04';
   private static DAILY_BACKUP_CRON = '50 0 * * *'; // every day at 00:50
 
+  private static MOUNT_FILE = 'mount_ovh.sh';
+  private static MOUNT_DISK_NAME = 'sdb';
+
   constructor(private configService: CnCoreConfigService,
-              private ovhService: CnOvhService) {
+              private ovhService: CnOvhService,
+              private sshService: CnLabSshService) {
     super();
   }
 
@@ -86,18 +91,12 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
       id: instance.id,
       name: instance.name,
       status: this.ovhStatusToCpStatus(instance.status),
-      ipv4: this.getIpv4Address(instance),
       originalObject: instance,
       region: instance.region,
       billing: instance.monthlyBilling ? CnLabInstanceBillingMode.MONTHLY : CnLabInstanceBillingMode.HOURLY,
     };
   }
 
-  private getIpv4Address(instance: CnOvhInstance): string | null {
-    const ipAddress = instance.ipAddresses.find((ip) => ip.type === 'public' && ip.version === 4);
-
-    return ipAddress ? ipAddress.ip : null;
-  }
 
   private ovhStatusToCpStatus(status: CnOvhInstanceStatus): CnCpInstanceStatus {
     switch (status) {
@@ -213,7 +212,6 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
       size: volume.size,
       status: volumeStatus,
       type: volumeType,
-      attachedTo: volume.attachedTo != null ? volume.attachedTo[0] : null,
       originalObject: volume
     };
   }
@@ -222,6 +220,25 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     return this.ovhService.deleteVolume(volumeId);
   }
 
+  async getIpAddress(id: string): Promise<string> {
+    const instance = await this.ovhService.getInstance(id);
+
+    const ipAddress = instance.ipAddresses.find((ip) => ip.type === 'public' && ip.version === 4);
+
+    return ipAddress ? ipAddress.ip : null;
+  }
+
+  async volumeIsAttachedToInstance(instanceId: string, volumeId: string): Promise<boolean> {
+    const volume = await this.ovhService.getVolume(volumeId);
+
+    return volume.attachedTo != null && volume.attachedTo[0] === instanceId;
+  }
+
+  async mountVolume(labInstance: CnLabInstance): Promise<void> {
+    const mountScript = this.sshService.getMountFolder() + '/' + CnCloudProviderOvhService.MOUNT_FILE;
+
+    await this.sshService.execSshCommand(labInstance, [`bash ${mountScript} ${CnCloudProviderOvhService.MOUNT_DISK_NAME}`]);
+  }
 
   /////////////////////////////// DNS ///////////////////////////////
   public async createDomainForLab(ipv4: string, mainDomain: string, subDomainName: string): Promise<any> {

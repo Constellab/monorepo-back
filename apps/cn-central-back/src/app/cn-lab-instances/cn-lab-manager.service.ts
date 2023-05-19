@@ -16,7 +16,7 @@ import {
   CnExternalLabBackupHistory,
   CnExternalLabBackupInfoDto
 } from '../cn-external-lab-api/model/cn-external-lab-api.class';
-import {BlBadRequestException, BlBucketConfig} from '@monorepo/back-core-lib';
+import {BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnLabConfigFile} from '../cn-lab-configs/cn-lab-config-file.class';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
 
@@ -148,7 +148,7 @@ export class CnLabManagerService {
         break;
       }
 
-      this.logger.log(`Waiting for server to be available for lab manager ${labManagerUrl}. Attempt ${count + 1} of 15`);
+      this.logger.log(`Waiting for lab manager ${labManagerUrl} to be available. Attempt ${count + 1} of 15`);
       // wait 15 seconds
       await new Promise(r => setTimeout(r, 15000));
       count++;

@@ -53,12 +53,13 @@ import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity'
 import {CnObjectStoragesAggregateService} from '../cn-object-storages/cn-object-storages-aggregate.service';
 import {CnCpCompleteInfo} from './server/cn-cloud-provider.class';
 import {CnLabServerService} from './server/cn-lab-server.service';
-import {CnLabSshService} from './server/cn-lab-ssh.service';
+import {CnLabConfigurerService} from './server/cn-lab-configurer.service';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
 import {CnLabInstanceOnPremiseService, CnLabOnPremiseConfig} from './on-premise/cn-lab-instance-on-premise.service';
 import {CnBrickGWS} from '../cn-bricks/cn-brick.dto';
 import {CnLabInstanceMailService} from './mail/cn-lab-instance-mail.service';
+import {CnLabSshService} from './server/cn-lab-ssh.service';
 
 
 @Injectable()
@@ -80,6 +81,7 @@ export class CnLabInstanceAggregateService {
               private dataSource: DataSource,
               private objectStorageService: CnObjectStoragesAggregateService,
               private labServerService: CnLabServerService,
+              private labConfigurerService: CnLabConfigurerService,
               private labSshService: CnLabSshService,
               private labConfigService: CnLabConfigsService,
               private onPremiseService: CnLabInstanceOnPremiseService,
@@ -712,7 +714,7 @@ export class CnLabInstanceAggregateService {
   }
 
   public async configureServerAsync(labInstance: CnLabInstance, refreshStatus: boolean): Promise<CnLabInstance> {
-    labInstance = await this.labSshService.configureServer(labInstance);
+    labInstance = await this.labConfigurerService.configureServer(labInstance);
 
     if (refreshStatus) {
       labInstance = await this.refreshStatusAndServerText(labInstance.id);
@@ -765,14 +767,14 @@ export class CnLabInstanceAggregateService {
   async updateLabManager(labInstanceId: string, labManagerVersion: string): Promise<CnLabInstanceStatusDTO> {
     const labInstance = await this.checkServerStatusBeforeAction(labInstanceId);
 
-    await this.labSshService.updateLabManager(labInstance, labManagerVersion);
+    await this.labConfigurerService.updateLabManager(labInstance, labManagerVersion);
     return this.getStatus(labInstance);
   }
 
   async updateDockerlab(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
     const labInstance = await this.checkServerStatusBeforeAction(labInstanceId);
 
-    await this.labSshService.updateDockerlabRepo(labInstance);
+    await this.labConfigurerService.updateDockerlabRepo(labInstance);
     return this.getStatus(labInstance);
   }
 

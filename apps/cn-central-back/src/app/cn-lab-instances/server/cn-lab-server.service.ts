@@ -1,5 +1,4 @@
 import {Injectable, Logger} from '@nestjs/common';
-import {CnCloudProviderName} from '../../cn-cloud-providers/cn-cloud-provider.entity';
 import {CnCloudProviderOvhService} from './ovh/cn-cloud-provider-ovh.service';
 import {CnCloudProviderService} from './cn-cloud-provider.service';
 import {
@@ -16,6 +15,8 @@ import {CnLabInstancesService} from '../cn-lab-instances.service';
 import {CnLabInstanceStatus} from '../status/cn-lab-instance-status.enum';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnExternalLabApiService} from '../../cn-external-lab-api/cn-external-lab-api.service';
+import {CnCloudProviderFactory} from './cn-cloud-provider.factory';
+import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 
 /**
  * Service to manage the lab server via the cloud provider
@@ -30,12 +31,13 @@ export class CnLabServerService {
 
 
   constructor(private ovhCloudProviderService: CnCloudProviderOvhService,
+              private cloudProviderFactory: CnCloudProviderFactory,
               private labInstanceService: CnLabInstancesService,
               private externalLabApiService: CnExternalLabApiService) {
   }
 
   public async getCompleteInfo(labInstance: CnLabInstance): Promise<CnCpCompleteInfo> {
-    const cloudProviderService = this.getCloudProviderService(labInstance.getCloudProviderName());
+    const cloudProviderService = this.cloudProviderFactory.getCloudProviderService(labInstance.getCloudProviderName());
 
     const info: CnCpCompleteInfo = {
       instance: null,
@@ -73,7 +75,7 @@ export class CnLabServerService {
   public async initInstance(labInstance: CnLabInstance): Promise<CnLabInstance> {
 
     const cloudProviderName = labInstance.getCloudProviderName();
-    const cloudProviderService = this.getCloudProviderService(cloudProviderName);
+    const cloudProviderService = this.cloudProviderFactory.getCloudProviderService(cloudProviderName);
 
     let serverInstance: CnCpInstance;
 
@@ -118,14 +120,15 @@ export class CnLabServerService {
       this.logger.log(`Waiting for instance ${serverInstance.id} and volume ${volume.id} to be ready for lab ${labInstance.id} in cloud provider ${cloudProviderName}. Count: ${count}`);
       await new Promise(r => setTimeout(r, 30000));
 
+      const cloudProviderService = this.cloudProviderFactory.getCloudProviderService(cloudProviderName);
       // refresh lab instance if needed
       if (serverInstance.status !== 'RUNNING') {
-        serverInstance = await this.getCloudProviderService(cloudProviderName).getInstance(serverInstance.id);
+        serverInstance = await cloudProviderService.getInstance(serverInstance.id);
       }
 
       // refresh volume if needed
       if (volume.status !== 'AVAILABLE') {
-        volume = await this.getCloudProviderService(cloudProviderName).getVolume(volume.id);
+        volume = await cloudProviderService.getVolume(volume.id);
       }
 
       count++;
@@ -147,15 +150,16 @@ export class CnLabServerService {
       await this.attachVolumeToInstance(cloudProviderService, serverInstance.id, volume.id, labInstance.id);
     } else {
       // check that the volume is attached to the instance
-      if (volume.attachedTo !== serverInstance.id) {
+      if (!await cloudProviderService.volumeIsAttachedToInstance(serverInstance.id, volume.id)) {
         // eslint-disable-next-line max-len
-        throw new BlBadRequestException(`For lab ${labInstance.id}, volume ${volume.id} is not attached to instance ${serverInstance.id} but to '${volume.attachedTo}'`);
+        throw new BlBadRequestException(`For lab ${labInstance.id}, volume ${volume.id} is not attached to instance ${serverInstance.id}.'`);
       }
       this.logger.log(`Volume ${volume.id} was already attached to lab ${labInstance.id}. Skipping attachment`);
     }
 
     // create domain record
-    await this.createDomainRecordForLab(labInstance, serverInstance.ipv4);
+    const ipv4 = await cloudProviderService.getIpAddress(serverInstance.id);
+    await this.createDomainRecordForLab(labInstance, ipv4);
 
     return labInstance;
   }
@@ -237,11 +241,13 @@ export class CnLabServerService {
 
 
   public async deleteLabInstanceServerAndVolume(labInstance: CnLabInstance): Promise<void> {
-    const cloudProviderService = this.getCloudProviderService(labInstance.getCloudProviderName());
+    const cloudProviderService = this.cloudProviderFactory.getCloudProviderService(labInstance.getCloudProviderName());
 
     if (labInstance.serverInstanceId) {
       this.logger.log(`Deleting server instance ${labInstance.serverInstanceId} for lab ${labInstance.id}`);
       await cloudProviderService.deleteInstance(labInstance.serverInstanceId);
+      labInstance.serverInstanceId = null;
+      await this.labInstanceService.update(labInstance);
       this.logger.log(`Server instance ${labInstance.serverInstanceId} deleted for lab ${labInstance.id}`);
     } else {
       this.logger.log(`No server instance for lab ${labInstance.id}`);
@@ -250,6 +256,8 @@ export class CnLabServerService {
     if (labInstance.serverVolumeId) {
       this.logger.log(`Deleting volume ${labInstance.serverVolumeId} for lab ${labInstance.id}`);
       await cloudProviderService.deleteVolume(labInstance.serverVolumeId);
+      labInstance.serverVolumeId = null;
+      await this.labInstanceService.update(labInstance);
       this.logger.log(`Volume ${labInstance.serverVolumeId} deleted for lab ${labInstance.id}`);
     } else {
       this.logger.log(`No volume for lab ${labInstance.id}. Skipping deletion`);
@@ -257,10 +265,6 @@ export class CnLabServerService {
 
     this.logger.log(`Deleting domain record ${labInstance.virtualHost} for lab ${labInstance.id}`);
     await this.ovhCloudProviderService.deleteDomainRecord(labInstance.getMainDomain(), labInstance.getSubDomainName());
-
-    labInstance.serverVolumeId = null;
-    labInstance.serverInstanceId = null;
-    await this.labInstanceService.update(labInstance);
 
     if (labInstance.currentStatus.status !== CnLabInstanceStatus.SERVER_STOPPED) {
       // update lab instance status
@@ -273,7 +277,7 @@ export class CnLabServerService {
       throw new BlBadRequestException(`Lab has no server instance was it correctly initialized?`);
     }
 
-    const cloudProviderService = this.getCloudProviderService(labInstance.getCloudProviderName());
+    const cloudProviderService = this.cloudProviderFactory.getCloudProviderService(labInstance.getCloudProviderName());
 
     const serverInstance = await cloudProviderService.getInstance(labInstance.serverInstanceId);
 
@@ -293,6 +297,8 @@ export class CnLabServerService {
     }
 
     // if the server is stopped
+    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
+    this.logger.log(`Starting server instance ${labInstance.serverInstanceId} for lab ${labInstance.id} by ${user.email}`);
     await cloudProviderService.startInstance(labInstance.serverInstanceId);
     labInstance = await this.labInstanceService.markInstanceAsServerStarting(labInstance.id);
 
@@ -305,7 +311,7 @@ export class CnLabServerService {
       throw new BlBadRequestException(`Lab has no server instance was it correctly initialized?`);
     }
 
-    const cloudProviderService = this.getCloudProviderService(labInstance.getCloudProviderName());
+    const cloudProviderService = this.cloudProviderFactory.getCloudProviderService(labInstance.getCloudProviderName());
 
     const serverInstance = await cloudProviderService.getInstance(labInstance.serverInstanceId);
 
@@ -325,6 +331,8 @@ export class CnLabServerService {
     }
 
     // if the server is running
+    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
+    this.logger.log(`Stopping server instance ${labInstance.serverInstanceId} for lab ${labInstance.id} by ${user.email}`);
     await cloudProviderService.stopInstance(labInstance.serverInstanceId);
     labInstance = await this.labInstanceService.markInstanceAsServerStopping(labInstance.id);
 
@@ -342,9 +350,9 @@ export class CnLabServerService {
 
     // Waiting for the server and the volume to be ready
     let count = 0;
-    while (count <= 20) {
+    while (count <= 40) {
       // wait for 60 seconds because start and stop can take a while
-      await new Promise(r => setTimeout(r, 60000));
+      await new Promise(r => setTimeout(r, 30000));
 
       this.logger.log(`Checking if server of lab ${labInstanceId} is ready`);
       const labInstance = await this.refreshLabStatus(labInstanceId);
@@ -365,7 +373,7 @@ export class CnLabServerService {
   public async refreshLabStatus(labInstanceId: string): Promise<CnLabInstance> {
     const labInstance = await this.labInstanceService.findByIdAndCheck(labInstanceId);
 
-    // if the lab is running, don't check server status, mark it as running
+    // // if the lab is running, don't check server status, mark it as running
     const healthCheck = await this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo());
     if (healthCheck) {
       return await this.labInstanceService.markInstanceAsLabRunning(labInstanceId);
@@ -377,7 +385,7 @@ export class CnLabServerService {
     }
 
     // check server status
-    const cloudProviderService = this.getCloudProviderService(labInstance.getCloudProviderName());
+    const cloudProviderService = this.cloudProviderFactory.getCloudProviderService(labInstance.getCloudProviderName());
     const serverInstance = await cloudProviderService.getInstance(labInstance.serverInstanceId);
     return await this.updateLabStatusFromServerStatus(labInstance, serverInstance.status);
   }
@@ -401,16 +409,6 @@ export class CnLabServerService {
       throw new BlBadRequestException(`Unknown server status ${serverInstanceStatus}`);
     }
     return this.labInstanceService.updateCurrentStatusIfChangedWithDbEntity(labStatus, labInstance);
-  }
-
-
-  private getCloudProviderService(cloudProvider: CnCloudProviderName): CnCloudProviderService {
-    switch (cloudProvider) {
-      case 'OVH':
-        return this.ovhCloudProviderService;
-      default:
-        throw new BlBadRequestException(`Cloud provider ${cloudProvider} not supported`);
-    }
   }
 
 }
