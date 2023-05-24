@@ -53,6 +53,6 @@
   "delete_project_used_in_lab": "This project is used in the following labs [{labNames}], you can't delete it",
   "document_already_exist" : "A document with the same name already exists",
   "project_bucket_not_found" : "Storage for project not found. Please ask the project manager to configure the storage for this project (in the settings)",
-  "cant_manage_desktop_lab": "You can't manage on premise lab remotely",
+  "cant_manage_desktop_lab": "You can't manage desktop lab remotely",
   "lab_config_not_found": "Lab config not found. For on cloud lab, the configuration is create on lab start. Was it started once ?"
 }

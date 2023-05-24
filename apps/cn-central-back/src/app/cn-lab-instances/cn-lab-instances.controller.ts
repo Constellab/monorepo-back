@@ -9,9 +9,9 @@ import {
   CnLabInstanceAdminDto,
   CnLabInstanceConfigDTO,
   CnLabInstanceCreateAdminDTO,
-  CnLabInstanceCreateOnPremiseDTO,
+  CnLabInstanceCreateDesktopDTO,
   CnLabInstanceDto,
-  CnLabInstanceOnPremiseConfig,
+  CnLabInstanceDesktopConfig,
   CnLabInstanceStatusDTO,
   CnRequestLabInstance,
 } from './cn-lab-instance.dto';
@@ -52,15 +52,15 @@ export class CnLabInstancesController {
     return BlDtoHelper.toDto(CnLabInstanceAdminDto, labInstance);
   }
 
-  @Post('on-premise')
-  async createOnPremise(@Body(new BlParsePipe(CnLabInstanceCreateOnPremiseDTO)) createLabInstance: CnLabInstanceCreateOnPremiseDTO):
+  @Post('desktop')
+  async createDesktop(@Body(new BlParsePipe(CnLabInstanceCreateDesktopDTO)) createLabInstance: CnLabInstanceCreateDesktopDTO):
     Promise<CnLabInstanceDto> {
-    const labInstance = await this.aggregateService.createOnPremise(createLabInstance);
+    const labInstance = await this.aggregateService.createDesktop(createLabInstance);
     return BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
   }
 
   @Put()
-  async update(@Body(new BlParsePipe(CnLabInstanceCreateOnPremiseDTO)) labInstanceDto: CnLabInstanceCreateOnPremiseDTO):
+  async update(@Body(new BlParsePipe(CnLabInstanceCreateDesktopDTO)) labInstanceDto: CnLabInstanceCreateDesktopDTO):
     Promise<CnLabInstanceDto> {
     const labInstance = await this.aggregateService.updateLab(labInstanceDto);
     return BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
@@ -398,12 +398,12 @@ export class CnLabInstancesController {
     await this.aggregateService.deleteServerInstance(id);
   }
 
-  /////////////////////////// ON PREMISE //////////////////////////////
-  @Post(':id/on-premise/generate-config')
-  async generateOnPremiseConfig(@Param('id', new ParseUUIDPipe()) id: string,
-                                @Body() onPremiseConfig: CnLabInstanceOnPremiseConfig,
-                                @Res() response: Response): Promise<any> {
-    const result = await this.aggregateService.generateOnPremiseConfig(id, onPremiseConfig);
+  /////////////////////////// DESKTOP //////////////////////////////
+  @Post(':id/desktop/generate-config')
+  async generateDesktopConfig(@Param('id', new ParseUUIDPipe()) id: string,
+                              @Body() desktopConfig: CnLabInstanceDesktopConfig,
+                              @Res() response: Response): Promise<any> {
+    const result = await this.aggregateService.generateDesktopConfig(id, desktopConfig);
 
     // create a zip file
     const zip = new AdmZip();
@@ -412,7 +412,7 @@ export class CnLabInstancesController {
     zip.addFile(result.exeFile.name, result.exeFile.buffer);
     response.set({
       'Content-Type': 'application/octet-stream',
-      'Content-Disposition': 'attachment; filename=constellab-on-premise.zip'
+      'Content-Disposition': 'attachment; filename=constellab-desktop.zip'
     });
     const data = zip.toBuffer();
     response.send(data);

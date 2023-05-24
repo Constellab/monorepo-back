@@ -60,10 +60,10 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
         throw new BlBadRequestException('Cloud Provider and Region must be the same');
       }
 
-      entity.onPremisePlatform = null;
+      entity.desktopPlatform = null;
     } else {
-      if (ClHelpService.isNullOrEmpty(entity.onPremisePlatform)) {
-        throw new BlBadRequestException('Missing parameters platform for on premise instance');
+      if (ClHelpService.isNullOrEmpty(entity.desktopPlatform)) {
+        throw new BlBadRequestException('Missing parameters platform for desktop instance');
       }
 
       entity.virtualHost = null;
@@ -86,10 +86,10 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       throw new BlBadRequestException('Name is required');
     }
 
-    // check that the name does not contain character other than a-Z, 0-9, - and _.
-    // And that it does not start or end with a - or _
-    if (!/^[a-zA-Z0-9_-]+$/.test(name) || /^[-_]|[-_]$/.test(name)) {
-      throw new BlBadRequestException('Name can only contain alphanumeric characters, - or _. It cannot start or end with a - or _');
+    // check that the name does not contain character other than a-Z, 0-9.
+    // And that it does not start or end with a -.
+    if (!/^[a-zA-Z0-9-]+$/.test(name) || /^-|-$/.test(name)) {
+      throw new BlBadRequestException('Name can only contain alphanumeric characters and \'-\'. It cannot start or end with a \'-\'.');
     }
 
     // check that the name is not already used

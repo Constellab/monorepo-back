@@ -26,7 +26,7 @@ import {CnOvhService} from './server/ovh/cn-ovh.service';
 import {CnLabServerService} from './server/cn-lab-server.service';
 import {CnCloudProviderOvhService} from './server/ovh/cn-cloud-provider-ovh.service';
 import {CnLabConfigurerService} from './server/cn-lab-configurer.service';
-import {CnLabInstanceOnPremiseService} from './on-premise/cn-lab-instance-on-premise.service';
+import {CnLabInstanceDesktopService} from './desktop/cn-lab-instance-desktop.service';
 import {HttpModule} from '@nestjs/axios';
 import {CnAzureService} from './server/azure/cn-azure.service';
 import {CnCloudProviderAzureService} from './server/azure/cn-cloud-provider-azure.service';
@@ -69,7 +69,7 @@ import {CnCloudProviderFactory} from './server/cn-cloud-provider.factory';
     CnOvhService,
     CnCloudProviderOvhService,
     CnLabConfigurerService,
-    CnLabInstanceOnPremiseService,
+    CnLabInstanceDesktopService,
     CnAzureService,
     CnCloudProviderAzureService,
     CnLabSshService,

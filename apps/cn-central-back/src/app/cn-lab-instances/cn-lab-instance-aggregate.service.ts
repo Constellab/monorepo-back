@@ -24,8 +24,8 @@ import {
   CnLabFindOneDto,
   CnLabInstanceConfigDTO,
   CnLabInstanceCreateAdminDTO,
-  CnLabInstanceCreateOnPremiseDTO,
-  CnLabInstanceOnPremiseConfig,
+  CnLabInstanceCreateDesktopDTO,
+  CnLabInstanceDesktopConfig,
   CnLabInstanceStartDTO,
   CnLabInstanceStatusDTO,
   CnRequestLabInstance
@@ -56,7 +56,7 @@ import {CnLabServerService} from './server/cn-lab-server.service';
 import {CnLabConfigurerService} from './server/cn-lab-configurer.service';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
-import {CnLabInstanceOnPremiseService, CnLabOnPremiseConfig} from './on-premise/cn-lab-instance-on-premise.service';
+import {CnLabInstanceDesktopService, CnLabDesktopConfig} from './desktop/cn-lab-instance-desktop.service';
 import {CnBrickGWS} from '../cn-bricks/cn-brick.dto';
 import {CnLabInstanceMailService} from './mail/cn-lab-instance-mail.service';
 import {CnLabSshService} from './server/cn-lab-ssh.service';
@@ -84,7 +84,7 @@ export class CnLabInstanceAggregateService {
               private labConfigurerService: CnLabConfigurerService,
               private labSshService: CnLabSshService,
               private labConfigService: CnLabConfigsService,
-              private onPremiseService: CnLabInstanceOnPremiseService,
+              private labInstanceDesktopService: CnLabInstanceDesktopService,
               private labMailService: CnLabInstanceMailService) {
   }
 
@@ -111,19 +111,19 @@ export class CnLabInstanceAggregateService {
   }
 
   /**
-   * Accessible by any user to create his own on premise lab instance
+   * Accessible by any user to create his own desktop lab instance
    * @param createLabInstance
    */
-  async createOnPremise(createLabInstance: CnLabInstanceCreateOnPremiseDTO): Promise<CnLabInstance> {
+  async createDesktop(createLabInstance: CnLabInstanceCreateDesktopDTO): Promise<CnLabInstance> {
     const labInstance = new CnLabInstance();
     labInstance.name = createLabInstance.name;
-    labInstance.onPremisePlatform = createLabInstance.onPremisePlatform;
+    labInstance.desktopPlatform = createLabInstance.desktopPlatform;
     labInstance.type = CnLabInstanceType.DESKTOP;
 
     const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     labInstance.setSpace(userInfo.space);
 
-    await this.security.checkAuthorizationCreateOnPremiseLabInstance(labInstance);
+    await this.security.checkAuthorizationCreateDesktopLabInstance(labInstance);
 
     return this.dataSource.transaction(async entityManager => {
       const labInstanceDb = await this.labInstancesService.create(labInstance, entityManager);
@@ -138,12 +138,12 @@ export class CnLabInstanceAggregateService {
    * Update accessible for any owner of the lab, he can update only few parameters
    * @param updateLabInstance
    */
-  async updateLab(updateLabInstance: CnLabInstanceCreateOnPremiseDTO): Promise<CnLabInstance> {
+  async updateLab(updateLabInstance: CnLabInstanceCreateDesktopDTO): Promise<CnLabInstance> {
     const labInstanceDb: CnLabInstance = await this.labInstancesService.findByIdAndCheck(updateLabInstance.id);
     labInstanceDb.name = updateLabInstance.name;
 
-    if (updateLabInstance.onPremisePlatform && labInstanceDb.isOnPremise()) {
-      labInstanceDb.onPremisePlatform = updateLabInstance.onPremisePlatform;
+    if (updateLabInstance.desktopPlatform && labInstanceDb.isDesktop()) {
+      labInstanceDb.desktopPlatform = updateLabInstance.desktopPlatform;
     }
 
     await this.security.checkAuthorizationToManageLab(labInstanceDb, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
@@ -209,7 +209,7 @@ export class CnLabInstanceAggregateService {
 
   /**
    * Update the lab bricks config.
-   * If the lab is on premise, the config is updated directly in the lab instance.
+   * If the lab is desktop, the config is updated directly in the lab instance.
    * If the lab is on cloud, it only updates the lab manager config (the config is then update when the lab is restarted)
    * @param labId
    * @param config
@@ -227,7 +227,7 @@ export class CnLabInstanceAggregateService {
     if (labInstance.isCloud()) {
       await this.labManagerService.updateConfig(labInstance, config);
     } else {
-      // for on premise lab, we need to update the lab config directly (there is no lab manager)
+      // for on desktop, we need to update the lab config directly (there is no lab manager)
       const labConfig = await this.labConfigService.getOrCreateLabConfig({
         version: 1,
         brick_versions: config.brickVersions,
@@ -292,7 +292,7 @@ export class CnLabInstanceAggregateService {
   async login(id: string): Promise<CnLabInstanceToken> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToFindById(id);
 
-    if (labInstance.isOnPremise()) {
+    if (labInstance.isDesktop()) {
       throw new BlBadRequestException(CnErrorText.CANT_MANAGE_DESKTOP_LAB);
     }
 
@@ -360,7 +360,7 @@ export class CnLabInstanceAggregateService {
   public async checkLabManagerStatus(labInstanceId: string): Promise<any> {
     const lab: CnLabInstance = await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
-    if (lab.isOnPremise()) {
+    if (lab.isDesktop()) {
       throw new BlBadRequestException(CnErrorText.CANT_MANAGE_DESKTOP_LAB);
     }
 
@@ -465,7 +465,7 @@ export class CnLabInstanceAggregateService {
     return await this.dataSource.transaction(async entityManager => {
       await this.labInstanceProjectService.deleteLabInstanceProject(labInstanceId, projectId, entityManager);
 
-      // TODO what to do with on premise lab ?
+      // TODO what to do with desktop lab ?
       // remove the project from the lab
       await this.externalLabProjectService.deleteProjectInLab(labInstance.getGlabApiInfo(), projectId);
     });
@@ -795,16 +795,16 @@ export class CnLabInstanceAggregateService {
     return labInstance;
   }
 
-  /////////////////////////// ON PREMISE //////////////////////////////
-  public async generateOnPremiseConfig(labInstanceId: string,
-                                       onPremiseConfig: CnLabInstanceOnPremiseConfig): Promise<CnLabOnPremiseConfig> {
+  /////////////////////////// DESKTOP //////////////////////////////
+  public async generateDesktopConfig(labInstanceId: string,
+                                     desktopConfig: CnLabInstanceDesktopConfig): Promise<CnLabDesktopConfig> {
     const lab = await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
-    if (!lab.isOnPremise()) {
-      throw new BlBadRequestException('Lab is not on premise');
+    if (!lab.isDesktop()) {
+      throw new BlBadRequestException('Lab is not desktop');
     }
 
-    return this.onPremiseService.generateOnPremiseConfig(lab, onPremiseConfig);
+    return this.labInstanceDesktopService.generateDesktopConfig(lab, desktopConfig);
   }
 
 
@@ -822,10 +822,10 @@ export class CnLabInstanceAggregateService {
     return labInstance;
   }
 
-  private async getAndCheckAuthorizationToManageLab(id: string, refuseOnPremise: boolean = true): Promise<CnLabInstance> {
+  private async getAndCheckAuthorizationToManageLab(id: string, refuseDesktop: boolean = true): Promise<CnLabInstance> {
     const labInstance = await this.labInstancesService.findByIdAndCheck(id, {sharedGroups: true, space: true});
 
-    if (refuseOnPremise && labInstance.isOnPremise()) {
+    if (refuseDesktop && labInstance.isDesktop()) {
       throw new BlBadRequestException(CnErrorText.CANT_MANAGE_DESKTOP_LAB);
     }
     await this.security.checkAuthorizationToManageLab(labInstance, CnCurrentUserHelper.getAndCheckUserSpaceInfo());

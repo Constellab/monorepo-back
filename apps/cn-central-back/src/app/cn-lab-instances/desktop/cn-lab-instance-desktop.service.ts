@@ -1,16 +1,16 @@
 import {Injectable} from '@nestjs/common';
 import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 import {existsSync, readFileSync} from 'fs';
-import {CnLabInstance, CnLabOnPremisePlatform} from '../cn-lab-instance.entity';
+import {CnLabInstance, CnLabDesktopPlatform} from '../cn-lab-instance.entity';
 import {CnFrontService} from '../../cn-core/services/cn-front.service';
 import {HttpService} from '@nestjs/axios';
 import {lastValueFrom} from 'rxjs';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
 import {CnLabConfigFile} from '../../cn-lab-configs/cn-lab-config-file.class';
-import {CnLabInstanceConfigDTO, CnLabInstanceOnPremiseConfig} from '../cn-lab-instance.dto';
+import {CnLabInstanceConfigDTO, CnLabInstanceDesktopConfig} from '../cn-lab-instance.dto';
 
-export interface CnLabOnPremiseConfig {
+export interface CnLabDesktopConfig {
   dockerCompose: string;
   config: CnLabConfigFile;
   exeFile: { name: string, buffer: Buffer };
@@ -18,7 +18,7 @@ export interface CnLabOnPremiseConfig {
 
 
 @Injectable()
-export class CnLabInstanceOnPremiseService {
+export class CnLabInstanceDesktopService {
 
   constructor(private configService: CnCoreConfigService,
               private frontService: CnFrontService,
@@ -26,10 +26,10 @@ export class CnLabInstanceOnPremiseService {
               private labConfigService: CnLabConfigsService) {
   }
 
-  public async generateOnPremiseConfig(labInstance: CnLabInstance,
-                                       onPremiseConfig: CnLabInstanceOnPremiseConfig): Promise<CnLabOnPremiseConfig> {
-    const config = await this.getConfig(labInstance, onPremiseConfig);
-    const exe = await this.getExeFile(labInstance.onPremisePlatform);
+  public async generateDesktopConfig(labInstance: CnLabInstance,
+                                     desktopConfig: CnLabInstanceDesktopConfig): Promise<CnLabDesktopConfig> {
+    const config = await this.getConfig(labInstance, desktopConfig);
+    const exe = await this.getExeFile(labInstance.desktopPlatform);
     return {
       dockerCompose: this.generateDockerCompose(labInstance, config),
       config: config,
@@ -67,7 +67,7 @@ export class CnLabInstanceOnPremiseService {
     return content;
   }
 
-  private async getConfig(labInstance: CnLabInstance, onPremiseConfig: CnLabInstanceOnPremiseConfig): Promise<CnLabConfigFile> {
+  private async getConfig(labInstance: CnLabInstance, desktopConfig: CnLabInstanceDesktopConfig): Promise<CnLabConfigFile> {
 
     if (labInstance.labConfigId == null) {
       throw new BlBadRequestException('Please configure the lab before generate the config file');
@@ -76,7 +76,7 @@ export class CnLabInstanceOnPremiseService {
     const config = await this.labConfigService.getCompleteConfig(labInstance.labConfigId);
 
     const configDTO: CnLabInstanceConfigDTO = {
-      glabTag: onPremiseConfig.glabTag,
+      glabTag: desktopConfig.glabTag,
       brickVersions: []
     };
 
@@ -95,19 +95,19 @@ export class CnLabInstanceOnPremiseService {
    * @param platform
    * @private
    */
-  private async getExeFile(platform: CnLabOnPremisePlatform): Promise<{ name: string, buffer: Buffer }> {
+  private async getExeFile(platform: CnLabDesktopPlatform): Promise<{ name: string, buffer: Buffer }> {
     let name: string = null;
     let url: string = null;
 
     switch (platform) {
-      case CnLabOnPremisePlatform.WINDOWS:
-        name = 'on-premise-start.exe';
-        url = this.configService.getLabOnPremiseWindowsExeUrl();
+      case CnLabDesktopPlatform.WINDOWS:
+        name = 'desktop-start.exe';
+        url = this.configService.getLabDesktopWindowsExeUrl();
         break;
-      case CnLabOnPremisePlatform.MAC:
-      case CnLabOnPremisePlatform.LINUX:
-        name = 'on-premise-start-mac';
-        url = this.configService.getLabOnPremiseMacExeUrl();
+      case CnLabDesktopPlatform.MAC:
+      case CnLabDesktopPlatform.LINUX:
+        name = 'desktop-start-mac';
+        url = this.configService.getLabDesktopMacExeUrl();
         break;
       default:
         throw new BlBadRequestException(`Platform '${platform}' is not supported`);
@@ -122,7 +122,7 @@ export class CnLabInstanceOnPremiseService {
   }
 
   private readDockerComposeTemplate(): string {
-    const path = this.configService.getAssetPath('cn-lab-on-premise', 'docker-compose.yml');
+    const path = this.configService.getAssetPath('cn-lab-desktop', 'docker-compose.yml');
 
     return this.readFile(path).toString();
   }

@@ -65,15 +65,8 @@ export class CnAzureService {
       }
     };
 
-
-    try {
-      return await computeClient.virtualMachines.beginCreateOrUpdateAndWait(this.getResourceGroup(),
-        name, vmParameters);
-    } catch (e) {
-      console.log('Error');
-      console.log(e);
-      throw e;
-    }
+    return await computeClient.virtualMachines.beginCreateOrUpdateAndWait(this.getResourceGroup(),
+      name, vmParameters);
   }
 
   // Create a volume

@@ -278,11 +278,11 @@ export class CnCoreConfigService {
     return this.configService.get('LAB_MANAGER_VERSION');
   }
 
-  public getLabOnPremiseWindowsExeUrl(): string {
+  public getLabDesktopWindowsExeUrl(): string {
     return this.configService.get('LAB_DESKTOP_WINDOWS_EXE_URL');
   }
 
-  public getLabOnPremiseMacExeUrl(): string {
+  public getLabDesktopMacExeUrl(): string {
     return this.configService.get('LAB_DESKTOP_MAC_EXE_URL');
   }
 }
