@@ -279,11 +279,11 @@ export class CnCoreConfigService {
   }
 
   public getLabOnPremiseWindowsExeUrl(): string {
-    return this.configService.get('LAB_ON_PREMISE_WINDOWS_EXE_URL');
+    return this.configService.get('LAB_DESKTOP_WINDOWS_EXE_URL');
   }
 
   public getLabOnPremiseMacExeUrl(): string {
-    return this.configService.get('LAB_ON_PREMISE_MAC_EXE_URL');
+    return this.configService.get('LAB_DESKTOP_MAC_EXE_URL');
   }
 }
 

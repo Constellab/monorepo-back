@@ -15,7 +15,7 @@ import {CnCloudProviderName} from '../cn-cloud-providers/cn-cloud-provider.entit
 
 export enum CnLabInstanceType {
   CLOUD = 'CLOUD',
-  ON_PREMISE = 'ON_PREMISE'
+  DESKTOP = 'DESKTOP'
 }
 
 export enum CnLabInstanceBillingMode {
@@ -221,7 +221,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   }
 
   public isOnPremise(): boolean {
-    return this.type === CnLabInstanceType.ON_PREMISE;
+    return this.type === CnLabInstanceType.DESKTOP;
   }
 
   public isCloud(): boolean {

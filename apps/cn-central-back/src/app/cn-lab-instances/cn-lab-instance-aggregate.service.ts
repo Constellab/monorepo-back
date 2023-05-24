@@ -118,7 +118,7 @@ export class CnLabInstanceAggregateService {
     const labInstance = new CnLabInstance();
     labInstance.name = createLabInstance.name;
     labInstance.onPremisePlatform = createLabInstance.onPremisePlatform;
-    labInstance.type = CnLabInstanceType.ON_PREMISE;
+    labInstance.type = CnLabInstanceType.DESKTOP;
 
     const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     labInstance.setSpace(userInfo.space);
@@ -293,7 +293,7 @@ export class CnLabInstanceAggregateService {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToFindById(id);
 
     if (labInstance.isOnPremise()) {
-      throw new BlBadRequestException(CnErrorText.CANT_MANAGE_ON_PREMISE_LAB);
+      throw new BlBadRequestException(CnErrorText.CANT_MANAGE_DESKTOP_LAB);
     }
 
     // check that the lab is running
@@ -361,7 +361,7 @@ export class CnLabInstanceAggregateService {
     const lab: CnLabInstance = await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
     if (lab.isOnPremise()) {
-      throw new BlBadRequestException(CnErrorText.CANT_MANAGE_ON_PREMISE_LAB);
+      throw new BlBadRequestException(CnErrorText.CANT_MANAGE_DESKTOP_LAB);
     }
 
     const isRunning = await this.externalLabApiService.healthCheck(lab.getGlabApiInfo());
@@ -826,7 +826,7 @@ export class CnLabInstanceAggregateService {
     const labInstance = await this.labInstancesService.findByIdAndCheck(id, {sharedGroups: true, space: true});
 
     if (refuseOnPremise && labInstance.isOnPremise()) {
-      throw new BlBadRequestException(CnErrorText.CANT_MANAGE_ON_PREMISE_LAB);
+      throw new BlBadRequestException(CnErrorText.CANT_MANAGE_DESKTOP_LAB);
     }
     await this.security.checkAuthorizationToManageLab(labInstance, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return labInstance;

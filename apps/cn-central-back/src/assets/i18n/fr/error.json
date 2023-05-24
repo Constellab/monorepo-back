@@ -53,6 +53,6 @@
   "delete_project_used_in_lab": "Ce projet est utilisé dans les lab suivants : [{labNames}], vous ne pouvez pas le supprimer",
   "document_already_exist": "Un document avec le même nom existe déjà",
   "project_bucket_not_found": "Le stockage pour ce projet n'a pas été trouvé. Veuillez demander au responsable du projet de configurer le stockage pour ce projet (dans les paramètres)",
-  "cant_manage_on_premise_lab": "Vous ne pouvez pas gérer un lab on premise à distance",
+  "cant_manage_desktop_lab": "Vous ne pouvez pas gérer un lab on premise à distance",
   "lab_config_not_found_fr": "Configuration du lab non trouvée. Pour un lab cloud, la configuration est créée au démarrage du lab. A-t-il été démarré au moins une fois ?"
 }
