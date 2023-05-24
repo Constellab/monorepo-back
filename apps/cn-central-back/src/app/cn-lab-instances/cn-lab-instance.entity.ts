@@ -40,7 +40,7 @@ export enum CnLabOnPremisePlatform {
 @Entity('lab_instance')
 export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory> {
 
-  @Column({nullable: false, length: 50})
+  @Column({nullable: false, length: 50, unique: true})
   name: string;
 
 
@@ -74,7 +74,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Column({nullable: true, length: 255})
   labManagerApiKey: string;
 
-  @Column({nullable: true, length: 255})
+  @Column({nullable: true, length: 255, unique: true})
   virtualHost: string;
 
   // api key shared with the lab manager API

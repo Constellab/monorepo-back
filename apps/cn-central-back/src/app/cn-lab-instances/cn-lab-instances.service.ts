@@ -43,6 +43,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   }
 
   private async checkLabInstanceBeforeSave(entity: CnLabInstance): Promise<void> {
+    entity.name = await this.checkLabInstanceName(entity);
     if (entity.isCloud()) {
       // check virtual host
       entity.virtualHost = await this.checkLabInstanceVirtualHost(entity);
@@ -76,6 +77,33 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       entity.serverInstanceId = null;
       entity.serverVolumeId = null;
     }
+  }
+
+  private async checkLabInstanceName(entity: CnLabInstance): Promise<string> {
+
+    const name = entity.name;
+    if (ClHelpService.isNullOrEmpty(name)) {
+      throw new BlBadRequestException('Name is required');
+    }
+
+    // check that the name does not contain character other than a-Z, 0-9, - and _.
+    // And that it does not start or end with a - or _
+    if (!/^[a-zA-Z0-9_-]+$/.test(name) || /^[-_]|[-_]$/.test(name)) {
+      throw new BlBadRequestException('Name can only contain alphanumeric characters, - or _. It cannot start or end with a - or _');
+    }
+
+    // check that the name is not already used
+    const lab = await this.repository.findOne({
+      where: {
+        name: name,
+        id: entity.id ? Not(entity.id) : undefined
+      }
+    });
+    if (lab) {
+      throw new BlBadRequestException(`Name already used by another lab instance : ${name}`);
+    }
+
+    return name;
   }
 
   private async checkLabInstanceVirtualHost(entity: CnLabInstance): Promise<string> {
