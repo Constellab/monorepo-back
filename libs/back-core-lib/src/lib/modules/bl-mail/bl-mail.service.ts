@@ -34,14 +34,15 @@ export class BlMailService {
    * The .hbs filename and translation key in mail-subject must be the same
    * @param receiver receiver
    * @param data map to pass data to template
+   * @param subject if provided, override the subject from the template
    * @return true if the mail was sent, false otherwise
    */
-  async sendMailToUser(template: string, receiver: BlUser | BlUser[], data?: Record<string, any>): Promise<boolean> {
+  async sendMailToUser(template: string, receiver: BlUser | BlUser[], data?: Record<string, any>, subject?: string): Promise<boolean> {
     const receivers: BlUser[] = ClHelpService.convertObjectOrArrayToArray(receiver);
 
     let result: boolean = true;
     for (const rec of receivers) {
-      const res = await this.sendMail(template, rec.email, rec.lang, data);
+      const res = await this.sendMail(template, rec.email, rec.lang, data, subject);
 
       if (!res) result = false;
     }
@@ -49,7 +50,8 @@ export class BlMailService {
     return result;
   }
 
-  public async sendMail(template: string, recipients: string, lang: ClSupportedLanguage, data?: Record<string, any>): Promise<boolean> {
+  public async sendMail(template: string, recipients: string, lang: ClSupportedLanguage,
+                        data?: Record<string, any>, subject?: string): Promise<boolean> {
     const transporter = nodemailer.createTransport(this.getTransportConfig());
 
     // use https://nicholaspretorius.github.io/til0025/ example for configuration
@@ -57,12 +59,12 @@ export class BlMailService {
     transporter.use('compile', hbs(this.getTemplateOptions(lang)));
 
     // add default data to the data passed in parameter
-    const completeData = Object.assign({}, this.moduleConfig.defaultData, data)
+    const completeData = Object.assign({}, this.moduleConfig.defaultData, data);
 
     const mailOptions = {
       from: this.getMailSender(),
       to: recipients,
-      subject: await this.translateSubject(template),
+      subject: subject ? subject : (await this.translateSubject(template)),
       template: this.getTemplatePath(template, lang),
       context: completeData,
     };

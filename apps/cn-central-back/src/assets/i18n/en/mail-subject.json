@@ -8,5 +8,6 @@
   "cn-signup-validated": "Constellab - Welcome",
   "cn-request-new-licenses": "Constellab - Request new licences",
   "cn-two-factor-authentication": "Constellab - Two factor authentication",
-  "cn-request-lab-instance": "Constellab - Request lab instance"
+  "cn-request-lab-instance": "Constellab - Request lab instance",
+  "cn-generic": "Constellab - Notification"
 }

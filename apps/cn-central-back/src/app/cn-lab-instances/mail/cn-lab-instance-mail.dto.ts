@@ -5,5 +5,6 @@ export class CnLabInstanceSendMailDto {
   receiver_ids: string[];
   mail_template: CnLabInstanceMailTemplate;
   data?: Record<string, any>;
+  subject?: string;
 }
 

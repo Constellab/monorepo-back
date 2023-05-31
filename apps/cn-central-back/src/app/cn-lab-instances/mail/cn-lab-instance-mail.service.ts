@@ -29,7 +29,7 @@ export class CnLabInstanceMailService {
       const user = await this.userService.findByIdAndCheck(receiver);
       // add the user info to data
       const data = Object.assign({}, sendMailDTO.data, {user: user});
-      await this.mailService.sendMailToUser(template, user, data);
+      await this.mailService.sendMailToUser(template, user, data, sendMailDTO.subject);
     }
   }
 
@@ -51,7 +51,7 @@ export class CnLabInstanceMailService {
       case 'experiment-finished':
         return CnMailTemplate.experiment_finished;
       default:
-        throw new BlBadRequestException(`The email template for the type '${type}' does not exist`);
+        return CnMailTemplate.generic;
     }
   }
 

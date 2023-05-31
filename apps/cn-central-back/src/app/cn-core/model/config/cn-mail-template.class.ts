@@ -1,4 +1,3 @@
-
 /**
  * List of available mail template
  */
@@ -14,5 +13,8 @@ export enum CnMailTemplate {
   request_lab_instance = 'cn-request-lab-instance',
 
   // Mail send by the lab
-  experiment_finished = 'cn-experiment-finished'
+  experiment_finished = 'cn-experiment-finished',
+
+  // Other
+  generic = 'cn-generic'
 }
