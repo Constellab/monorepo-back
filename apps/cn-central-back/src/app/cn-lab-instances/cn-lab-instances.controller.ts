@@ -142,6 +142,14 @@ export class CnLabInstancesController {
   }
 
   /**
+   * backup stop a lab instance
+   */
+  @Put(':id/backup-and-stop')
+  public backupAndStopInstance(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
+    return this.aggregateService.backupLabAndStopInstance(id);
+  }
+
+  /**
    * Route to update the dockerlab repository
    */
   @Put(':id/dockerlab/update')
@@ -362,9 +370,9 @@ export class CnLabInstancesController {
     return await this.aggregateService.stopCurrentBackup(id);
   }
 
-  @Get(':id/backup/current-status')
+  @Get(':id/backup/last-status')
   async getCurrentBackup(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnExternalLabBackup> {
-    return await this.aggregateService.getBackupCurrentStatus(id);
+    return await this.aggregateService.getBackupLastStatus(id);
   }
 
   @Get(':id/backup/history')

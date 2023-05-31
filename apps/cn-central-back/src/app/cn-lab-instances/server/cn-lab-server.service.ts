@@ -330,6 +330,23 @@ export class CnLabServerService {
       throw new BlBadRequestException(`Lab is currently ${serverInstance.status}`);
     }
 
+
+    // check if there are any running containers
+    const labActivity = await this.externalLabApiService.getLabGlobalActivity(labInstance.getGlabApiInfo())
+      .catch(error => {
+        this.logger.error(`Could not get lab activity for lab ${labInstance.id}. Error: ${error}`);
+        return null;
+      });
+
+    if (labActivity?.running_experiments > 0) {
+      throw new BlBadRequestException(`Lab has ${labActivity.running_experiments} running containers. Please stop them first`);
+    }
+
+    if (labActivity?.queued_experiments > 0) {
+      throw new BlBadRequestException(`Lab has ${labActivity.queued_experiments} queued experiments. Please remove them form queue first`);
+    }
+
+
     // if the server is running
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
     this.logger.log(`Stopping server instance ${labInstance.serverInstanceId} for lab ${labInstance.id} by ${user.email}`);

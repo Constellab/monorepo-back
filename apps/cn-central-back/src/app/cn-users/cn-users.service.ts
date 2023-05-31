@@ -231,4 +231,8 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     });
   }
 
+  public getRobotUser(): Promise<CnUser> {
+    return this.repository.findOneBy({email: this.configService.getRobotUserMail()});
+  }
+
 }

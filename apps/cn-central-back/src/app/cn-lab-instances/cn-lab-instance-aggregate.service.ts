@@ -576,9 +576,9 @@ export class CnLabInstanceAggregateService {
   }
 
 
-  public async getBackupCurrentStatus(labId: string): Promise<CnExternalLabBackup> {
+  public async getBackupLastStatus(labId: string): Promise<CnExternalLabBackup> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
-    return this.labManagerService.getBackupCurrentStatus(labInstance);
+    return this.labManagerService.getBackupLastStatus(labInstance);
   }
 
   public async getBackupHistory(labId: string): Promise<CnExternalLabBackupHistory> {
@@ -795,7 +795,18 @@ export class CnLabInstanceAggregateService {
     return labInstance;
   }
 
-  /////////////////////////// DESKTOP //////////////////////////////
+  /**
+   * Backup the lab, and mark the instance as backing up before stopping
+   * A cron job will stop the instance when the backup is done
+   * @param id
+   */
+  public async backupLabAndStopInstance(id: string): Promise<CnLabInstance> {
+    await this.createProdBackup(id);
+
+    return this.labInstancesService.markInstanceAsBackingUpBeforeStopping(id);
+  }
+
+  ////////////////////////// DESKTOP //////////////////////////////
   public async generateDesktopConfig(labInstanceId: string,
                                      desktopConfig: CnLabInstanceDesktopConfig): Promise<CnLabDesktopConfig> {
     const lab = await this.getAndCheckAuthorizationToFindById(labInstanceId);

@@ -55,6 +55,7 @@ import {CnNotificationModule} from './app/cn-notification/cn-notification.module
 import {CnProjectCommentModule} from './app/cn-project-comment/cn-project-comment.module';
 import {CnCloudProvidersModule} from './app/cn-cloud-providers/cn-cloud-providers.module';
 import {I18nAbstractLoaderOptions} from 'nestjs-i18n/dist/loaders/i18n.abstract.loader';
+import {ScheduleModule} from '@nestjs/schedule';
 
 function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();
@@ -131,6 +132,7 @@ function configureTransportModule(configService: CnCoreConfigService): BlTranspo
         watch: true, //    // enable live translation
       } as I18nAbstractLoaderOptions,
     }),
+    ScheduleModule.forRoot(),
 
     // Custom module
     CnCoreModule,

@@ -28,10 +28,13 @@ import {CnCloudProviderOvhService} from './server/ovh/cn-cloud-provider-ovh.serv
 import {CnLabConfigurerService} from './server/cn-lab-configurer.service';
 import {CnLabInstanceDesktopService} from './desktop/cn-lab-instance-desktop.service';
 import {HttpModule} from '@nestjs/axios';
+import {CnLabInstancesCron} from './cn-lab-instances.cron';
 import {CnAzureService} from './server/azure/cn-azure.service';
 import {CnCloudProviderAzureService} from './server/azure/cn-cloud-provider-azure.service';
 import {CnLabSshService} from './server/cn-lab-ssh.service';
 import {CnCloudProviderFactory} from './server/cn-cloud-provider.factory';
+import {CnLabStatusRule} from './status-rule/cn-lab-status-rule.entity';
+import {CnLabStatusRuleService} from './status-rule/cn-lab-status-rule.service';
 
 @Module({
   imports: [
@@ -39,7 +42,8 @@ import {CnCloudProviderFactory} from './server/cn-cloud-provider.factory';
       CnLabInstance,
       CnLabInstanceStatusHistory,
       CnLabInstanceUser,
-      CnLabInstanceProject
+      CnLabInstanceProject,
+      CnLabStatusRule,
     ]),
 
     CnCoreModule,
@@ -74,6 +78,8 @@ import {CnCloudProviderFactory} from './server/cn-cloud-provider.factory';
     CnCloudProviderAzureService,
     CnLabSshService,
     CnCloudProviderFactory,
+    CnLabInstancesCron,
+    CnLabStatusRuleService
   ],
   exports: [
     CnLabInstancesService,

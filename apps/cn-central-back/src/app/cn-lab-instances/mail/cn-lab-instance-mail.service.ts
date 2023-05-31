@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {CnLabInstance} from '../cn-lab-instance.entity';
 import {CnLabInstanceMailTemplate, CnLabInstanceSendMailDto} from './cn-lab-instance-mail.dto';
-import {BlBadRequestException, BlMailService} from '@monorepo/back-core-lib';
+import {BlMailService} from '@monorepo/back-core-lib';
 import {CnMailTemplate} from '../../cn-core/model/config/cn-mail-template.class';
 import {CnUsersService} from '../../cn-users/cn-users.service';
 import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-config.service';

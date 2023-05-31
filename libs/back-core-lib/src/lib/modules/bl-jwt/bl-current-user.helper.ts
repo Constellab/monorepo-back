@@ -7,11 +7,20 @@ import {BlUnauthorizedException} from '../../exceptions/bl-unauthorized.exceptio
  * User context helper to get the current user or current request
  */
 export class BlCurrentUserHelper extends BlRequestContextHelper {
+
+
+  private static manualUser: BlUser | null = null;
   /**
    * returns the current authenticated user or null if not authenticated
    */
   static getCurrentUser(): BlUser | null {
     const request: Express.Request = this.getCurrentRequest();
+
+    // if there is no request and a manual user is set, return it
+    // this is used for cron jobs
+    if(request == null && this.manualUser != null) {
+      return this.manualUser;
+    }
     return (request && request.user as BlUser) || null;
   }
 
@@ -49,5 +58,17 @@ export class BlCurrentUserHelper extends BlRequestContextHelper {
 
   private static getLangHeader(): string {
     return this.getHeaderFromContext(clLangCookie);
+  }
+
+  /**
+   * Only use on none request context like cron and clean after use
+   * @param user
+   */
+  public static setManualUser(user: BlUser | null): void {
+    BlCurrentUserHelper.manualUser = user;
+  }
+
+  public static cleanManualUser(): void {
+    BlCurrentUserHelper.manualUser = null;
   }
 }

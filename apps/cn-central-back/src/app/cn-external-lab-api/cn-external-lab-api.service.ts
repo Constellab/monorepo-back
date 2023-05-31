@@ -8,7 +8,7 @@ import {
   cnExternalLabApiKeySchema,
   cnExternalLabUserHeader
 } from '../cn-core/model/config/cn-config.class';
-import {CnExternalLabCallView} from './model/cn-external-lab-api.class';
+import {CnExternalLabCallView, CnLabGlobalActivity} from './model/cn-external-lab-api.class';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 
 /**
@@ -41,6 +41,9 @@ export class CnExternalLabApiService {
       {observe: 'response', responseType: 'stream'}));
   }
 
+  public async getLabGlobalActivity(labInfo: CnExternalApiInfo): Promise<CnLabGlobalActivity> {
+    return lastValueFrom(this.get(labInfo, `lab/global-activity`));
+  }
 
   /**
    * Make a http post with the ip of the lab and the API key of the lab in header

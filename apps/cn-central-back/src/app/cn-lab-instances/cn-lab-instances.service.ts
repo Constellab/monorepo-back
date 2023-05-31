@@ -1,8 +1,8 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnLabInstance} from './cn-lab-instance.entity';
-import {DataSource, DeleteResult, EntityManager, Not, Repository} from 'typeorm';
-import {CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
+import {DataSource, DeleteResult, EntityManager, In, Not, Repository} from 'typeorm';
+import {CnLabInstanceStatus, cnLabInstanceTemporaryStatuses} from './status/cn-lab-instance-status.enum';
 import {CnAbstractWithStatusService} from '../cn-core/class/cn-abstract-with-status.service';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
 import {ClHelpService, ClPage, ClPageI} from '@monorepo/core-lib';
@@ -209,6 +209,10 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_STOPPING, id);
   }
 
+  public markInstanceAsBackingUpBeforeStopping(id: string): Promise<CnLabInstance> {
+    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.BACKING_UP_BEFORE_STOP, id);
+  }
+
 
   public findLabByApiKey(apiKey: string): Promise<CnLabInstance> {
     return this.repository.findOne({
@@ -259,5 +263,19 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     const labInstance = await this.findByIdAndCheck(labInstanceId);
     labInstance.serverProgressText = text;
     return this.repository.save(labInstance);
+  }
+
+  /**
+   * Retrieve the complete list of lab instances where current status is
+   * temporary (like server starting, stopping, etc...)
+   */
+  public async getLabInstancesWithTempStatus(): Promise<CnLabInstance[]> {
+    return this.repository.find({
+      where: {
+        currentStatus: {
+          status: In(cnLabInstanceTemporaryStatuses)
+        }
+      }
+    });
   }
 }

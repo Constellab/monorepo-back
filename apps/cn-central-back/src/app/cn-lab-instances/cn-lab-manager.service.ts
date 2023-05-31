@@ -167,8 +167,8 @@ export class CnLabManagerService {
     return this.labManagerApiService.stopCurrentBackup(labInstance.getLabManagerApiInfo());
   }
 
-  public async getBackupCurrentStatus(labInstance: CnLabInstance): Promise<CnExternalLabBackup> {
-    return this.labManagerApiService.getBackupCurrentStatus(labInstance.getLabManagerApiInfo());
+  public async getBackupLastStatus(labInstance: CnLabInstance): Promise<CnExternalLabBackup> {
+    return this.labManagerApiService.getLastBackupStatus(labInstance.getLabManagerApiInfo());
   }
 
   public async getBackupHistory(labInstance: CnLabInstance): Promise<CnExternalLabBackupHistory> {

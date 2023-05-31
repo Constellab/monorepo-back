@@ -115,7 +115,8 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/stop-current`, null));
   }
 
-  getBackupCurrentStatus(apiInfo: CnExternalApiInfo): Promise<CnExternalLabBackup> {
+  getLastBackupStatus(apiInfo: CnExternalApiInfo): Promise<CnExternalLabBackup> {
+    // TODO change to last-status once all lab manager are updated to v1.2.0
     return lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/current-status`));
   }
 
