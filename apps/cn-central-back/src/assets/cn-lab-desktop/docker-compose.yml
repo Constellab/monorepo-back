@@ -38,13 +38,13 @@ services:
     depends_on:
       - gws_core_prod_db
     volumes:
-      - lab-on-premise-lab:/lab
-      - lab-on-premise-logs:/logs
-      - lab-on-premise-data:/data
-      - lab-on-premise-settings:/conf/settings
+      - lab-desktop-${LAB_ID}-lab:/lab
+      - lab-desktop-${LAB_ID}-logs:/logs
+      - lab-desktop-${LAB_ID}-data:/data
+      - lab-desktop-${LAB_ID}-settings:/conf/settings
       - ./config.json:/conf/config.json:ro
     networks:
-      - gencovery-network-on-premise
+      - lab-desktop-network-${LAB_ID}
     restart: on-failure:5
     container_name: glab
     ports:
@@ -86,13 +86,13 @@ services:
     depends_on:
       - gws_core_dev_db
     volumes:
-      - lab-on-premise-dev-lab:/lab
-      - lab-on-premise-dev-logs:/logs
-      - lab-on-premise-dev-data:/data
-      - lab-on-premise-dev-settings:/conf/settings
+      - lab-desktop-${LAB_ID}-dev-lab:/lab
+      - lab-desktop-${LAB_ID}-dev-logs:/logs
+      - lab-desktop-${LAB_ID}-dev-data:/data
+      - lab-desktop-${LAB_ID}-dev-settings:/conf/settings
       - ./config.json:/conf/config.json:ro
     networks:
-      - gencovery-network-on-premise
+      - lab-desktop-network-${LAB_ID}
     container_name: codelab
     ports:
       - 8081:8080
@@ -113,7 +113,7 @@ services:
       - COMMUNITY_FRONT_URL=${COMMUNITY_FRONT_URL}
       - COMMUNITY_API_URL=${COMMUNITY_API_URL}
     networks:
-      - gencovery-network-on-premise
+      - lab-desktop-network-${LAB_ID}
     container_name: front
     ports:
       - 80:81
@@ -128,9 +128,9 @@ services:
       - MYSQL_PASSWORD=${GWS_CORE_PROD_DB_PASSWORD}
       - MYSQL_DATABASE=gws_core
     volumes:
-      - lab-on-premise-gws-core-prod-db:/var/lib/mysql
+      - lab-desktop-${LAB_ID}-gws-core-prod-db:/var/lib/mysql
     networks:
-      - gencovery-network-on-premise
+      - lab-desktop-network-${LAB_ID}
     container_name: gws_core_prod_db
     ports:
       - 3406:3306
@@ -145,9 +145,9 @@ services:
       - MYSQL_PASSWORD=${GWS_CORE_DEV_DB_PASSWORD}
       - MYSQL_DATABASE=gws_core
     volumes:
-      - lab-on-premise-gws-core-dev-db:/var/lib/mysql
+      - lab-desktop-${LAB_ID}-gws-core-dev-db:/var/lib/mysql
     networks:
-      - gencovery-network-on-premise
+      - lab-desktop-network-${LAB_ID}
     container_name: gws_core_dev_db
     ports:
       - 3407:3306
@@ -162,9 +162,9 @@ services:
       - MYSQL_PASSWORD=gencovery
       - MYSQL_DATABASE=test_gws
     volumes:
-      - lab-on-premise-test-gws-dev-db:/var/lib/mysql
+      - lab-desktop-${LAB_ID}-test-gws-dev-db:/var/lib/mysql
     networks:
-      - gencovery-network-on-premise
+      - lab-desktop-network-${LAB_ID}
     container_name: test_gws_dev_db
     ports:
       - 3408:3306
@@ -182,7 +182,7 @@ services:
     volumes:
       - ./mariadb:/var/lib/mysql
     networks:
-      - gencovery-network-on-premise
+      - lab-desktop-network-${LAB_ID}
     container_name: gws_biota_db
     ports:
       - 3409:3306
@@ -190,19 +190,19 @@ services:
 
 
 volumes:
-  lab-on-premise-lab:
-  lab-on-premise-logs:
-  lab-on-premise-data:
-  lab-on-premise-settings:
-  lab-on-premise-dev-lab:
-  lab-on-premise-dev-logs:
-  lab-on-premise-dev-data:
-  lab-on-premise-dev-settings:
-  lab-on-premise-gws-core-prod-db:
-  lab-on-premise-gws-core-dev-db:
-  lab-on-premise-test-gws-dev-db:
+  lab-desktop-${LAB_ID}-lab:
+  lab-desktop-${LAB_ID}-logs:
+  lab-desktop-${LAB_ID}-data:
+  lab-desktop-${LAB_ID}-settings:
+  lab-desktop-${LAB_ID}-dev-lab:
+  lab-desktop-${LAB_ID}-dev-logs:
+  lab-desktop-${LAB_ID}-dev-data:
+  lab-desktop-${LAB_ID}-dev-settings:
+  lab-desktop-${LAB_ID}-gws-core-prod-db:
+  lab-desktop-${LAB_ID}-gws-core-dev-db:
+  lab-desktop-${LAB_ID}-test-gws-dev-db:
 
 
 networks:
-  gencovery-network-on-premise:
+  lab-desktop-network-${LAB_ID}:
     external: false

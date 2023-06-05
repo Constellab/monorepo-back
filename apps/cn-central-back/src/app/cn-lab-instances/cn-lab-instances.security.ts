@@ -28,11 +28,11 @@ export class CnLabInstancesSecurity {
   }
 
   /**
-   * Anyone can create an on premise  lab instance
+   * Anyone can create an desktopn  lab instance
    * @param labInstance
    */
-  public checkAuthorizationCreateOnPremiseLabInstance(labInstance: CnLabInstance): void {
-    if (!labInstance.isOnPremise()) throw new BlUnauthorizedException();
+  public checkAuthorizationCreateDesktopLabInstance(labInstance: CnLabInstance): void {
+    if (!labInstance.isDesktop()) throw new BlUnauthorizedException();
   }
 
   /**

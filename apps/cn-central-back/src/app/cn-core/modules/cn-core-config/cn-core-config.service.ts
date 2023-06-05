@@ -184,6 +184,8 @@ export class CnCoreConfigService {
     return this.isProduction() ? 'constellab-space-image-prod' : 'constellab-space-image-pre-prod';
   }
 
+  /////////////////////////////// OVH ///////////////////////////////
+
   public getOvhServiceName(): string {
     return this.configService.get('OVH_SERVICE_NAME');
   }
@@ -203,6 +205,29 @@ export class CnCoreConfigService {
   public getOvhSshKey(): string {
     return this.configService.get('OVH_SSH_KEY');
   }
+
+  /////////////////////////////// AZURE ///////////////////////////////
+
+  public getAzureSubscriptionId(): string {
+    return this.configService.get('AZURE_SUBSCRIPTION_ID');
+  }
+
+  public getAzureResourceGroup(): string {
+    return this.configService.get('AZURE_RESOURCE_GROUP');
+  }
+
+  public getAzureSshKey(): string {
+    return this.configService.get('AZURE_SSH_KEY');
+  }
+
+  public getAzureNetwork(): string {
+    return this.configService.get('AZURE_NETWORK');
+  }
+
+  public getAzureNetworkSubnet(): string {
+    return this.configService.get('AZURE_NETWORK_SUBNET');
+  }
+  /////////////////////////////// LAB CONFIG ///////////////////////////////
 
   public getDockerRegistryUrl(): string {
     return this.configService.get('DOCKER_REGISTRY_URL');
@@ -228,6 +253,10 @@ export class CnCoreConfigService {
     return this.configService.get('DOCKERLAB_REPO_PASSWORD');
   }
 
+  public getDockerlabRepoBranch(): string {
+    return this.configService.get('DOCKERLAB_REPO_BRANCH');
+  }
+
   /**
    * List of user email to notify when a new user is created
    */
@@ -249,12 +278,12 @@ export class CnCoreConfigService {
     return this.configService.get('LAB_MANAGER_VERSION');
   }
 
-  public getLabOnPremiseWindowsExeUrl(): string {
-    return this.configService.get('LAB_ON_PREMISE_WINDOWS_EXE_URL');
+  public getLabDesktopWindowsExeUrl(): string {
+    return this.configService.get('LAB_DESKTOP_WINDOWS_EXE_URL');
   }
 
-  public getLabOnPremiseMacExeUrl(): string {
-    return this.configService.get('LAB_ON_PREMISE_MAC_EXE_URL');
+  public getLabDesktopMacExeUrl(): string {
+    return this.configService.get('LAB_DESKTOP_MAC_EXE_URL');
   }
 }
 

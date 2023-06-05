@@ -15,7 +15,7 @@ import {CnCloudProviderName} from '../cn-cloud-providers/cn-cloud-provider.entit
 
 export enum CnLabInstanceType {
   CLOUD = 'CLOUD',
-  ON_PREMISE = 'ON_PREMISE'
+  DESKTOP = 'DESKTOP'
 }
 
 export enum CnLabInstanceBillingMode {
@@ -28,7 +28,7 @@ export enum CnLabInstanceVolumeType {
   HIGH_SPEED = 'HIGH_SPEED'
 }
 
-export enum CnLabOnPremisePlatform {
+export enum CnLabDesktopPlatform {
   LINUX = 'LINUX',
   WINDOWS = 'WINDOWS',
   MAC = 'MAC'
@@ -40,7 +40,7 @@ export enum CnLabOnPremisePlatform {
 @Entity('lab_instance')
 export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory> {
 
-  @Column({nullable: false, length: 50})
+  @Column({nullable: false, length: 50, unique: true})
   name: string;
 
 
@@ -74,7 +74,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Column({nullable: true, length: 255})
   labManagerApiKey: string;
 
-  @Column({nullable: true, length: 255})
+  @Column({nullable: true, length: 255, unique: true})
   virtualHost: string;
 
   // api key shared with the lab manager API
@@ -140,9 +140,9 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   volumeType: CnLabInstanceVolumeType;
 
   @Column({
-    type: 'enum', enum: CnLabOnPremisePlatform, nullable: true,
+    type: 'enum', enum: CnLabDesktopPlatform, nullable: true,
   })
-  onPremisePlatform: CnLabOnPremisePlatform;
+  desktopPlatform: CnLabDesktopPlatform;
 
   // url of the api server
   @Expose()
@@ -220,8 +220,8 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     return this.virtualHost.split('.').slice(1).join('.');
   }
 
-  public isOnPremise(): boolean {
-    return this.type === CnLabInstanceType.ON_PREMISE;
+  public isDesktop(): boolean {
+    return this.type === CnLabInstanceType.DESKTOP;
   }
 
   public isCloud(): boolean {
@@ -229,8 +229,8 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   }
 
   public getCloudProviderName(): CnCloudProviderName {
-    if (this.isOnPremise()) {
-      throw new BlBadRequestException('Cannot get cloud provider name for on premise instance');
+    if (this.isDesktop()) {
+      throw new BlBadRequestException('Cannot get cloud provider name for desktop lab');
     }
     return this.serverInfo.cloudProvider.name;
   }

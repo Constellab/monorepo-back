@@ -42,7 +42,6 @@ export interface CnCpVolume {
   region: string;
   size: number; // In GB
   type: CnLabInstanceVolumeType;
-  attachedTo: string;
   // complete object of the cloud provider
   originalObject: any;
 }
@@ -52,3 +51,6 @@ export interface CnCpCompleteInfo {
   volume: CnCpVolume;
   domainRecord: CnOvhDomainRecord;
 }
+
+export const cnServerUbuntuUser = 'ubuntu';
+export const cnServerSshAuthorizedKeyPath = `/home/${cnServerUbuntuUser}/.ssh/authorized_keys`;
