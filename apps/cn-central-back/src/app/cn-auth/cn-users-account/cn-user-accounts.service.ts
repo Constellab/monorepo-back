@@ -12,6 +12,7 @@ import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
 import {
   BlAbstractPaginatedService,
   BlBadRequestException,
+  BlCaptchaService,
   BlMailService,
   BlTokenHelper,
   BlUnauthorizedException
@@ -22,6 +23,7 @@ import {ClPage} from '@monorepo/core-lib';
 import {CnSpaceAggregateService} from '../../cn-spaces/cn-space-aggregate.service';
 import {CnGroupsService} from '../../cn-groups/cn-groups.service';
 import {CnNotificationService, CnNotificationType} from '../../cn-notification/cn-notification.service';
+import {CnCreateUserDto} from '../../cn-users/cn-user.dto';
 
 /**
  * Service to handle users' account (signup, mail validation, password forgotten, reset password...)
@@ -42,12 +44,28 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
               private frontService: CnFrontService,
               private spaceAggregateService: CnSpaceAggregateService,
               private groupService: CnGroupsService,
-              private notificationService: CnNotificationService) {
+              private notificationService: CnNotificationService,
+              private captchaService: BlCaptchaService) {
     super(repository, CnUser);
   }
 
-  async signup(user: CnUser): Promise<CnUser> {
+  async signup(createUser: CnCreateUserDto): Promise<CnUser> {
+
+    const captchaValid = await this.captchaService.validateCaptcha(createUser.captcha);
+
+    if (!captchaValid) {
+      throw new BlBadRequestException('Invalid captcha');
+    }
+
     return await this.datasource.transaction(async entityManager => {
+      const user = new CnUser();
+      user.firstname = createUser.firstname;
+      user.lastname = createUser.lastname;
+      user.email = createUser.email;
+      user.password = createUser.password;
+      user.category = createUser.category;
+      user.phone = createUser.phone;
+
       const newUser: CnUser = await this.createAccount(user, CmUserStatus.WAITING_FOR_EMAIL, entityManager);
 
       // await mail send to include it in transaction

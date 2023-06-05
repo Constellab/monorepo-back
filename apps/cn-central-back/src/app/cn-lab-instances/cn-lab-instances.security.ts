@@ -1,5 +1,5 @@
 import {Injectable} from '@nestjs/common';
-import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
+import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
 import {CnLabInstanceUserService} from './user/cn-lab-instance-user.service';

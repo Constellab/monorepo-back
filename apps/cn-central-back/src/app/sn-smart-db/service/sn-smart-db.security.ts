@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {CnGroupsAggregateService} from '../../cn-groups/cn-groups-aggregate.service';
 import {SnSmartDbEntity, SnSmartDbType} from '../model/sn-smart-db.entity';
-import {CnUserSpaceInfo} from '../../cn-users/cn-user-space-info.dto';
+import {CnUserSpaceInfo} from '../../cn-users/cn-user.dto';
 import {BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 /**

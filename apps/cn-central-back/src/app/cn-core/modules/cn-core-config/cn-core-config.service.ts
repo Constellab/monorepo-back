@@ -285,5 +285,9 @@ export class CnCoreConfigService {
   public getLabDesktopMacExeUrl(): string {
     return this.configService.get('LAB_DESKTOP_MAC_EXE_URL');
   }
+
+  public getCaptchaSecretKey(): string {
+    return this.configService.get('CAPTCHA_SECRET_KEY');
+  }
 }
 

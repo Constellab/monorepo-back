@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, ParseBoolPipe, Post, Res} from '@nestjs/common';
+import {Body, Controller, Param, ParseBoolPipe, Post, Res} from '@nestjs/common';
 import {CnAuthResponse, CnAuthService, CnExternalCheckCredentialResponse} from './cn-auth.service';
 import {Response} from 'express';
 import {cnJwtConfig} from './cn-jwt.config';

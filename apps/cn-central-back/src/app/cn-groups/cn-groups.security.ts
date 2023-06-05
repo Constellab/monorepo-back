@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {CnUserTeamService} from './cn-user-team.service';
 import {CnGroupTeam} from './cn-group.entity';
 import {CnGroupsService} from './cn-groups.service';
-import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
+import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
 import {BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 /**

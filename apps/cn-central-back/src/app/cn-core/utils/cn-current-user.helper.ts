@@ -3,7 +3,7 @@ import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
 import {CnSpace} from '../../cn-spaces/cn-space.entity';
 import {CnSpaceUserRole} from '../../cn-spaces/cn-space-user.entity';
-import {CnUserSpaceInfo} from '../../cn-users/cn-user-space-info.dto';
+import {CnUserSpaceInfo} from '../../cn-users/cn-user.dto';
 
 export interface CnRequestAuthInfo {
   labInstance?: CnLabInstance;

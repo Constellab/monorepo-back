@@ -1,6 +1,18 @@
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {CnUser} from './cn-user.entity';
 import {CnSpaceUserRole} from '../cn-spaces/cn-space-user.entity';
+import {CmUserCategory} from '@monorepo/common-model';
+
+
+export interface CnCreateUserDto {
+  firstname: string;
+  lastname: string;
+  email: string;
+  password: string;
+  category: CmUserCategory;
+  phone?: string;
+  captcha?: string;
+}
 
 /**
  * Object contains information of a user in a space

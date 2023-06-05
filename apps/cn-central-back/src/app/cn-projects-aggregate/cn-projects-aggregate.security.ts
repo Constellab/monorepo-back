@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {CnProject} from './cn-projects/cn-project.entity';
 import {CnProjectsService} from './cn-projects/cn-projects.service';
-import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
+import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
 import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
 import {BlUnauthorizedException} from '@monorepo/back-core-lib';
 

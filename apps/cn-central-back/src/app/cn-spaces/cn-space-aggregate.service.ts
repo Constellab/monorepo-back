@@ -15,7 +15,7 @@ import {CnSpaceInvitService} from './cn-space-invit.service';
 import {CnRequestNewLicensesDto, CnSpaceInvitCreateDto, CnSpaceInvitReadDto} from './cn-space.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {DataSource, EntityManager} from 'typeorm';
-import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
+import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
 import {CnSpacesMailService} from './cn-spaces-mail.service';
 
 @Injectable()

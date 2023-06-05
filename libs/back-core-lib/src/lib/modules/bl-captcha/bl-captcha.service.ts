@@ -1,0 +1,31 @@
+import {Inject, Injectable, Logger} from '@nestjs/common';
+import {BL_CAPTCHA_CONFIG_PROVIDER, BlCaptchaModuleConfig} from './bl-captcha.class';
+import {lastValueFrom} from 'rxjs';
+import {BlExternalApiService} from '../bl-external-api/bl-external-api.service';
+
+
+@Injectable()
+export class BlCaptchaService {
+  private readonly logger = new Logger(BlCaptchaService.name);
+
+  constructor(@Inject(BL_CAPTCHA_CONFIG_PROVIDER) private moduleConfig: BlCaptchaModuleConfig,
+              private externalApiService: BlExternalApiService) {
+  }
+
+  public async validateCaptcha(captcha: string): Promise<boolean> {
+    if (this.moduleConfig.localEnv) {
+      return true;
+    }
+
+    const route = `https://www.google.com/recaptcha/api/siteverify?secret=${this.moduleConfig.secretKey}&response=${captcha}`;
+    const response: { success: boolean, 'error-codes': string[] } =
+      await lastValueFrom(this.externalApiService.post(route, null));
+
+    if (!response.success) {
+      // TODO remove logger once captcha is ok
+      this.logger.error(`Invalid captcha : ${response['error-codes'].join(',')}`);
+    }
+    return response.success;
+
+  }
+}

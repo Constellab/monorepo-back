@@ -23,7 +23,7 @@ import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
 import {CmUserCategory} from '@monorepo/common-model';
-import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
+import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
 import {CnRequestNewLicensesDto} from './cn-space.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
 

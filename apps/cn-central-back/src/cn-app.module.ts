@@ -27,6 +27,8 @@ import {clDefaultLang} from '@monorepo/core-lib';
 import {CnFrontErrorsModule} from './app/cn-front-errors/cn-front-errors.module';
 import {WinstonModule, WinstonModuleOptions} from 'nest-winston';
 import {
+  BlCaptchaModule,
+  BlCaptchaModuleConfig,
   blConfigureLogger,
   BlCookieHelper,
   BlJwtConfig,
@@ -109,6 +111,13 @@ function configureTransportModule(configService: CnCoreConfigService): BlTranspo
   return configService.getTransportModuleConfig();
 }
 
+function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaModuleConfig {
+  return {
+    secretKey: configService.getCaptchaSecretKey(),
+    localEnv: configService.isLocal(),
+  };
+}
+
 @Module({
   imports: [
     // let the config module on top of the imports
@@ -167,6 +176,12 @@ function configureTransportModule(configService: CnCoreConfigService): BlTranspo
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: 10,
+    }),
+
+    BlCaptchaModule.forRootAsync({
+      useFactory: configureCaptchaModule,
+      imports: [CnCoreModule],
+      inject: [CnCoreConfigService],
     }),
 
     // Entities module

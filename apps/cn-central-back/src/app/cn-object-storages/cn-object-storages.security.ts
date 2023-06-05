@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {CnUser} from '../cn-users/cn-user.entity';
-import {CnUserSpaceInfo} from '../cn-users/cn-user-space-info.dto';
+import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
 import {BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 
