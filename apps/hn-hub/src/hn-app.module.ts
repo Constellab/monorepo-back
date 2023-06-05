@@ -83,11 +83,12 @@ function configureJwtModule(
 ): BlJwtConfig {
   return {
     jwtSecret: configService.getJwtSecret(),
-    jwtFromRequest: (request: Request) =>
-      BlCookieHelper.getCookieFromHeader(
+    jwtFromRequest: (request: Request) =>{
+      return request.headers.authorization ?? BlCookieHelper.getCookieFromHeader(
         request.headers.cookie,
         hnJwtConfig.authorizationCookie
-      ),
+      )
+    },
     usersService: userService,
     tokenDurationInSeconds: hnJwtConfig.tokenDurationInSeconds,
   };

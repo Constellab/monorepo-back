@@ -1,4 +1,4 @@
-import {Controller, Get, Param, Put} from '@nestjs/common';
+import {Controller, Get, Param, Put, Req} from '@nestjs/common';
 import {HnUserService} from './hn-user.service';
 import {HnUser, HnUserConstellabDTO} from './hn-user.entity';
 import {EventPattern} from '@nestjs/microservices';
@@ -11,7 +11,7 @@ export class HnUserController {
   }
 
   @Get()
-  async getCurrent(): Promise<HnUser> {
+  async getCurrent(@Req() req: Request): Promise<HnUser> {
     return await this.userService.getCurrent();
   }
 
