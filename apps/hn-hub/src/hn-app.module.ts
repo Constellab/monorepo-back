@@ -49,6 +49,7 @@ import {HnIsAdminGuard} from './app/core/guards/hn-is-admin.guard';
 import {HnBrickUserModule} from './app/brick-aggregate/brick-user/hn-brick-user.module';
 import {HnBrickUserInviteModule} from './app/brick-aggregate/brick-user-invite/hn-brick-user-invite.module';
 import {HnBrickAggregateModule} from './app/brick-aggregate/hn-brick-aggregate.module';
+import {ThrottlerModule} from '@nestjs/throttler';
 
 function typeOrmConfig(
   configService: HnCoreConfigService
@@ -157,6 +158,10 @@ function configureMailModule(
       imports: [HnCoreModule],
       useFactory: configureMailModule,
       inject: [HnCoreConfigService],
+    }),
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 10,
     }),
 
     HnCoreModule,
