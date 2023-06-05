@@ -4,7 +4,7 @@ import {Response} from 'express';
 import {hnJwtConfig} from './hn-jwt.config';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {CmCredentials, CmCredentials2Fa} from '@monorepo/common-model';
-import {BlPublic} from '@monorepo/back-core-lib';
+import {BlPublicSecure} from '@monorepo/back-core-lib';
 
 @Controller('auth')
 export class HnAuthController {
@@ -19,7 +19,7 @@ export class HnAuthController {
    * IF 2FA activated, return 2FA_REQUIRED
    * Else  It stores automatically in a secure cookie
    */
-  @BlPublic()
+  @BlPublicSecure()
   @Post('login')
   async login(@Body() credentials: CmCredentials, @Res() response: Response): Promise<void> {
     const result: HnAuthResponse = await this.authService.login(credentials);
@@ -36,7 +36,7 @@ export class HnAuthController {
    * Login with 2Fa code after the basic login
    * It stores automatically in a secure cookie
    */
-  @BlPublic()
+  @BlPublicSecure()
   @Post('login-2fa')
   async login2Fa(@Body() credentials: CmCredentials2Fa, @Res() response: Response): Promise<void> {
     const token = await this.authService.loginWith2FA(credentials);
@@ -45,7 +45,7 @@ export class HnAuthController {
     response.send({status: 'LOGGED_IN', expiresIn: hnJwtConfig.tokenDurationInMilliseconds});
   }
 
-  @BlPublic()
+  @BlPublicSecure()
   @Post('logout')
   async logout(@Body() body: any, @Res() response: Response): Promise<void> {
     this.clearTokenCookie(response);

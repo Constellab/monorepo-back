@@ -1,7 +1,7 @@
 import {Body, Controller, Post} from '@nestjs/common';
 import {CnFrontErrorsService} from './cn-front-errors.service';
 import {CnFrontError} from './cn-front-error.entity';
-import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
+import {BlParsePipe, BlPublicSecure} from '@monorepo/back-core-lib';
 
 @Controller('front-errors')
 export class CnFrontErrorsController {
@@ -12,7 +12,7 @@ export class CnFrontErrorsController {
   /**
    * Log a front error
    */
-  @BlPublic()
+  @BlPublicSecure()
   @Post()
   create(@Body(new BlParsePipe(CnFrontError)) error: CnFrontError): Promise<CnFrontError> {
     return this.service.logFrontError(error);

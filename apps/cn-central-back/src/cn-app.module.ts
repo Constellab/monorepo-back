@@ -56,6 +56,7 @@ import {CnProjectCommentModule} from './app/cn-project-comment/cn-project-commen
 import {CnCloudProvidersModule} from './app/cn-cloud-providers/cn-cloud-providers.module';
 import {I18nAbstractLoaderOptions} from 'nestjs-i18n/dist/loaders/i18n.abstract.loader';
 import {ScheduleModule} from '@nestjs/schedule';
+import {ThrottlerModule} from '@nestjs/throttler';
 
 function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();
@@ -163,6 +164,10 @@ function configureTransportModule(configService: CnCoreConfigService): BlTranspo
       imports: [CnCoreModule],
       inject: [CnCoreConfigService],
     }),
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 10,
+    }),
 
     // Entities module
     CnUsersModule,
@@ -209,7 +214,7 @@ function configureTransportModule(configService: CnCoreConfigService): BlTranspo
     {
       provide: APP_GUARD,
       useClass: CnUserCategoryGuard,
-    },
+    }
   ],
 })
 export class CnAppModule implements NestModule {

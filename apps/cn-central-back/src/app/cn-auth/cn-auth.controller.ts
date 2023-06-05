@@ -1,9 +1,9 @@
-import {Body, Controller, Param, ParseBoolPipe, Post, Res} from '@nestjs/common';
+import {Body, Controller, Get, Param, ParseBoolPipe, Post, Res} from '@nestjs/common';
 import {CnAuthResponse, CnAuthService, CnExternalCheckCredentialResponse} from './cn-auth.service';
 import {Response} from 'express';
 import {cnJwtConfig} from './cn-jwt.config';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import {BlPublic} from '@monorepo/back-core-lib';
+import {BlPublicSecure} from '@monorepo/back-core-lib';
 import {CmCredentials, CmCredentials2Fa} from '@monorepo/common-model';
 import {CnUser} from '../cn-users/cn-user.entity';
 
@@ -21,7 +21,7 @@ export class CnAuthController {
    * IF 2FA activated, return 2FA_REQUIRED
    * Else  It stores automatically in a secure cookie
    */
-  @BlPublic()
+  @BlPublicSecure()
   @Post('login')
   async login(@Body() credentials: CmCredentials, @Res() response: Response): Promise<void> {
     const result: CnAuthResponse = await this.authService.login(credentials);
@@ -38,7 +38,7 @@ export class CnAuthController {
    * Login with 2Fa code after the basic login
    * It stores automatically in a secure cookie
    */
-  @BlPublic()
+  @BlPublicSecure()
   @Post('login-2fa')
   async login2Fa(@Body() credentials: CmCredentials2Fa, @Res() response: Response): Promise<void> {
     const token = await this.authService.loginWith2FA(credentials);
@@ -51,7 +51,7 @@ export class CnAuthController {
   /**
    * Check if a user can login with the credential and check that the user have the right role
    */
-  @BlPublic()
+  @BlPublicSecure()
   @Post('external/check-credentials/:requiresAdmin')
   checkCredentialsWithRole(@Param('requiresAdmin', new ParseBoolPipe) requiresAdmin: boolean,
                            @Body() credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
@@ -61,7 +61,7 @@ export class CnAuthController {
   /**
    * Called by external service to check the 2fa code and return user if ok
    */
-  @BlPublic()
+  @BlPublicSecure()
   @Post('external/check-2fa')
   externalCheck2Fa(@Body() credentials: CmCredentials2Fa): Promise<CnUser> {
     return this.authService.externalCheck2FA(credentials);
@@ -70,7 +70,7 @@ export class CnAuthController {
   /**
    * Logout, it removes the Authorization cookie
    */
-  @BlPublic()
+  @BlPublicSecure()
   @Post('logout')
   async logout(@Body() credentials: CmCredentials, @Res() response: Response): Promise<void> {
 

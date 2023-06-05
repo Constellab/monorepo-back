@@ -16,7 +16,7 @@ import {CnUserAccountsService} from './cn-user-accounts.service';
 import {CnFrontService} from '../../cn-core/services/cn-front.service';
 import {CnUserCategories} from '../../cn-core/decorators/cn-user-category.decorator';
 import {CmUserCategory} from '@monorepo/common-model';
-import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
+import {BlParsePipe, BlPublicSecure} from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
 
 /**
@@ -29,7 +29,7 @@ export class CnUserAccountsController {
               private frontService: CnFrontService) {
   }
 
-  @BlPublic()
+  @BlPublicSecure()
   @Post()
   create(@Body(new BlParsePipe(CnUser)) entity: CnUser): Promise<CnUser> {
     return this.userAccountsService.signup(entity);
@@ -38,7 +38,7 @@ export class CnUserAccountsController {
   /**
    * Open route for account activation with link sent by mail
    */
-  @BlPublic()
+  @BlPublicSecure()
   @Get('activation/:token')
   async accountActivation(@Param('token') token: string, @Res() response: Response): Promise<void> {
     const loginUrl = this.frontService.getLoginUrl();
@@ -60,7 +60,7 @@ export class CnUserAccountsController {
   /**
    * Open route to unlock account with link sent by mail
    */
-  @BlPublic()
+  @BlPublicSecure()
   @Get('unlock/:token')
   async unlockAccount(@Param('token') token: string, @Res() response: Response): Promise<void> {
     const loginUrl = this.frontService.getLoginUrl();
@@ -82,7 +82,7 @@ export class CnUserAccountsController {
   /**
    * Open route to send an email with link to reset password
    */
-  @BlPublic()
+  @BlPublicSecure()
   @Post('password-forgotten')
   async passwordForgotten(@Body() body: { email: string }): Promise<void> {
     await this.userAccountsService.passwordForgotten(body.email);
@@ -91,7 +91,7 @@ export class CnUserAccountsController {
   /**
    * Open route to reset password with link
    */
-  @BlPublic()
+  @BlPublicSecure()
   @Post('reset-password/:token')
   async resetPassword(@Param('token') token: string,
                       @Body() body: { password: string }): Promise<void> {
@@ -125,10 +125,10 @@ export class CnUserAccountsController {
    * @param invitCode
    * @param entity
    */
-  @BlPublic()
+  @BlPublicSecure()
   @Post('sign-up-in-space/:invitCode')
   public async createUserAndJoinSpace(@Param('invitCode') invitCode: string,
-                                       @Body(new BlParsePipe(CnUser)) entity: CnUser): Promise<CnUser> {
+                                      @Body(new BlParsePipe(CnUser)) entity: CnUser): Promise<CnUser> {
     return this.userAccountsService.createUserAndJoinSpace(invitCode, entity);
   }
 
