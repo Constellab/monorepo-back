@@ -41,9 +41,6 @@ export class CnLabInstanceDesktopService {
   private generateDockerCompose(labInstance: CnLabInstance, config: CnLabConfigFile): string {
     let content = this.readDockerComposeTemplate();
 
-    // replace all '${LAB_ID}' by labInstance.id
-    content = content.replace(/\${LAB_ID}/g, labInstance.id);
-
     // replace variables
     content = content
       .replace(/\${LAB_ID}/g, labInstance.id)

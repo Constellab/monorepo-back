@@ -12,7 +12,7 @@ import {
 } from './cn-cloud-provider.class';
 import {CnLabInstance} from '../cn-lab-instance.entity';
 import {CnLabInstancesService} from '../cn-lab-instances.service';
-import {CnLabInstanceStatus} from '../status/cn-lab-instance-status.enum';
+import {CnLabInstanceStatus, cnLabInstanceTemporaryStatuses} from '../status/cn-lab-instance-status.enum';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnExternalLabApiService} from '../../cn-external-lab-api/cn-external-lab-api.service';
 import {CnCloudProviderFactory} from './cn-cloud-provider.factory';
@@ -326,7 +326,7 @@ export class CnLabServerService {
       }
     }
 
-    if (serverInstance.status === 'CREATING' || serverInstance.status === 'RESTARTING' || serverInstance.status === 'STOPPING') {
+    if (serverInstance.status !== 'RUNNING') {
       throw new BlBadRequestException(`Lab is currently ${serverInstance.status}`);
     }
 
@@ -375,8 +375,7 @@ export class CnLabServerService {
       const labInstance = await this.refreshLabStatus(labInstanceId);
 
 
-      if (labInstance.currentStatus.status === CnLabInstanceStatus.SERVER_RUNNING ||
-        labInstance.currentStatus.status === CnLabInstanceStatus.SERVER_STOPPED) {
+      if (cnLabInstanceTemporaryStatuses.includes(labInstance.currentStatus.status)) {
         return;
       }
       count++;

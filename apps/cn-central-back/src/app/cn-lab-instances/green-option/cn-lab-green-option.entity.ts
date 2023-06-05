@@ -4,16 +4,7 @@ import {BlNotUpdatable} from '@monorepo/back-core-lib';
 import {Type} from 'class-transformer';
 import {CnLabInstance} from '../cn-lab-instance.entity';
 
-
-export enum CnLabStatusRuleAction {
-  START_LAB = 'START_LAB',
-  STOP_LAB = 'STOP_LAB',
-}
-
-export enum CnLabStatusRuleType {
-  // Start rules
-  START_AFTER_TIME = 'START_AFTER_TIME',
-
+export enum CnLabGreenOptionType {
   // Stop rules
   STOP_AFTER_EXPERIMENT = 'STOP_AFTER_EXPERIMENT',
   STOP_AFTER_BACKUP = 'STOP_AFTER_BACKUP',
@@ -21,32 +12,24 @@ export enum CnLabStatusRuleType {
   STOP_AFTER_INACTIVITY_TIME = 'STOP_AFTER_INACTIVITY_TIME',
 }
 
-export interface CnLabStatusRuleStopAfterTimeValue{
+export interface CnLabGreenOptionStopAfterTimeValue {
   // hours and minutes are based on UTC time
   // after the time is reached, the lab will be stopped
   hours: number;
   minutes: number;
-  // list of days of the week when the rule is active
-  // based on week days (1 = Monday, 7 = Sunday)
-  days: number[];
+  timezone: string;
 }
 
-export interface CnLabStatusRuleStopAfterInactivityValue{
+export interface CnLabGreenOptionStopAfterInactivityValue {
   // inactivity time in minutes
-  inactivityTime: number;
-  // list of days of the week when the rule is active
-  // based on week days (1 = Monday, 7 = Sunday)
-  days: number[];
+  inactivityDuration: number;
 }
 
-@Entity('lab_status_rule')
-export class CnLabStatusRule extends CnBaseEntity {
+@Entity('lab_green_option')
+export class CnLabGreenOption extends CnBaseEntity {
 
-  @Column({nullable: false, length: 50, enum: CnLabStatusRuleAction})
-  action: CnLabStatusRuleAction;
-
-  @Column({nullable: false, length: 50, enum: CnLabStatusRuleType})
-  type: CnLabStatusRuleType;
+  @Column({type: 'enum', nullable: false, enum: CnLabGreenOptionType, update: false})
+  type: CnLabGreenOptionType;
 
   @Column({type: 'simple-json', nullable: true})
   value: any;
@@ -56,11 +39,13 @@ export class CnLabStatusRule extends CnBaseEntity {
   @ManyToOne(() => CnLabInstance, {nullable: false})
   labInstance: CnLabInstance;
 
+  @Column()
+  labInstanceId: string;
+
   /**
    * If false, the rule will be deleted after it is executed
    */
   @Column({nullable: false})
   isPersistent: boolean;
-
 
 }

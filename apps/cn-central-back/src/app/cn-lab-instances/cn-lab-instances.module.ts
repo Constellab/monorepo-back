@@ -33,8 +33,8 @@ import {CnAzureService} from './server/azure/cn-azure.service';
 import {CnCloudProviderAzureService} from './server/azure/cn-cloud-provider-azure.service';
 import {CnLabSshService} from './server/cn-lab-ssh.service';
 import {CnCloudProviderFactory} from './server/cn-cloud-provider.factory';
-import {CnLabStatusRule} from './status-rule/cn-lab-status-rule.entity';
-import {CnLabStatusRuleService} from './status-rule/cn-lab-status-rule.service';
+import {CnLabGreenOption} from './green-option/cn-lab-green-option.entity';
+import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.service';
 
 @Module({
   imports: [
@@ -43,7 +43,7 @@ import {CnLabStatusRuleService} from './status-rule/cn-lab-status-rule.service';
       CnLabInstanceStatusHistory,
       CnLabInstanceUser,
       CnLabInstanceProject,
-      CnLabStatusRule,
+      CnLabGreenOption,
     ]),
 
     CnCoreModule,
@@ -79,7 +79,7 @@ import {CnLabStatusRuleService} from './status-rule/cn-lab-status-rule.service';
     CnLabSshService,
     CnCloudProviderFactory,
     CnLabInstancesCron,
-    CnLabStatusRuleService
+    CnLabGreenOptionService
   ],
   exports: [
     CnLabInstancesService,

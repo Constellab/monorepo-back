@@ -4,16 +4,18 @@ import {CnLabInstancesService} from './cn-lab-instances.service';
 import {CnLabServerService} from './server/cn-lab-server.service';
 import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {CnLabStatusRuleService} from './status-rule/cn-lab-status-rule.service';
+import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.service';
 import {
-  CnLabStatusRule,
-  CnLabStatusRuleAction, CnLabStatusRuleStopAfterInactivityValue,
-  CnLabStatusRuleStopAfterTimeValue,
-  CnLabStatusRuleType
-} from './status-rule/cn-lab-status-rule.entity';
+  CnLabGreenOption,
+  CnLabGreenOptionStopAfterInactivityValue,
+  CnLabGreenOptionStopAfterTimeValue,
+  CnLabGreenOptionType
+} from './green-option/cn-lab-green-option.entity';
 import {CnExternalLabManagerApiService} from '../cn-external-lab-api/cn-external-lab-manager-api.service';
 import {CnExternalLabApiService} from '../cn-external-lab-api/cn-external-lab-api.service';
 import {ClDateHelper} from '@monorepo/core-lib';
+import {DateTime} from 'luxon';
+import {CnLabInstance} from './cn-lab-instance.entity';
 
 /**
  * Service that gather all the cron jobs for the lab instances
@@ -26,7 +28,7 @@ export class CnLabInstancesCron {
   constructor(private labServerService: CnLabServerService,
               private labInstanceService: CnLabInstancesService,
               private userService: CnUsersService,
-              private labRuleService: CnLabStatusRuleService,
+              private labRuleService: CnLabGreenOptionService,
               private labManagerService: CnExternalLabManagerApiService,
               private externalLabApiService: CnExternalLabApiService) {
   }
@@ -37,8 +39,7 @@ export class CnLabInstancesCron {
   // '0 */10 * * * *' = every 10 minutes
   @Cron('0 */10 * * * *')
   async refreshLabInstanceStatus(): Promise<void> {
-    this.logger.log('[Cron] Start refreshing the status of the lab instances...');
-
+    this.logger.debug('[Cron] Start of refresh lab instance status')
     await this.setRobotUserInContext();
 
     await this.refreshLabTempStatus();
@@ -48,7 +49,7 @@ export class CnLabInstancesCron {
     await this.checkStopAfterInactivity();
 
     this.cleanRobotUserInContext();
-    this.logger.log('[Cron] End refreshing the status of the lab instances...');
+    this.logger.debug('[Cron] End of refresh lab instance status')
   }
 
   private async refreshLabTempStatus(): Promise<void> {
@@ -60,9 +61,7 @@ export class CnLabInstancesCron {
   }
 
   private async checkStopAfterBackup(): Promise<void> {
-    const rules = await this.labRuleService.findRulesByActionAndType(
-      CnLabStatusRuleAction.STOP_LAB,
-      CnLabStatusRuleType.STOP_AFTER_BACKUP);
+    const rules = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_BACKUP);
 
     for (const rule of rules) {
       const lab = rule.labInstance;
@@ -74,22 +73,13 @@ export class CnLabInstancesCron {
           continue;
         }
 
-
-        this.logger.log(`[Cron] Stopping the lab ${lab.id} after backup...`);
-        // if the backup is finished, we stop the lab
-        await this.labServerService.stopLab(lab).catch(err => {
-          this.logger.error(`Error while stopping the lab ${lab.id} after backup: ${err.message}`);
-        });
-
-        await this.cleanRuleAfterExecution(rule);
+        await this.stopLab(lab, rule);
       }
     }
   }
 
   private async checkStopAfterExperiment(): Promise<void> {
-    const rules = await this.labRuleService.findRulesByActionAndType(
-      CnLabStatusRuleAction.STOP_LAB,
-      CnLabStatusRuleType.STOP_AFTER_EXPERIMENT);
+    const rules = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_EXPERIMENT);
 
     for (const rule of rules) {
       const lab = rule.labInstance;
@@ -100,82 +90,65 @@ export class CnLabInstancesCron {
           continue;
         }
 
-        this.logger.log(`[Cron] Stopping lab ${lab.id} after experiment`);
-        // if the experiment is finished, we stop the lab
-        await this.labServerService.stopLab(lab).catch(err => {
-          this.logger.error(`Error while stopping the lab ${lab.id} after experiment: ${err.message}`);
-        });
-
-        await this.cleanRuleAfterExecution(rule);
+        await this.stopLab(lab, rule);
       }
     }
   }
 
   private async checkStopAfterTime(): Promise<void> {
-    const rules = await this.labRuleService.findRulesByActionAndType(
-      CnLabStatusRuleAction.STOP_LAB,
-      CnLabStatusRuleType.STOP_AFTER_TIME);
+    const rules = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_TIME);
 
     for (const rule of rules) {
       const lab = rule.labInstance;
-      if (lab.isRunning()) {
-        const value: CnLabStatusRuleStopAfterTimeValue = rule.value as CnLabStatusRuleStopAfterTimeValue;
+      if (!lab.isRunning()) {
+        const value: CnLabGreenOptionStopAfterTimeValue = rule.value as CnLabGreenOptionStopAfterTimeValue;
 
-        // check if today is active day in rule
-        const today = ClDateHelper.getDate();
-        if (!value.days.includes(today.weekday)) continue;
+        // get the current date in the rule timezone
+        const today = DateTime.local({zone: value.timezone});
+        // if (!value.days.includes(today.weekday)) continue;
 
-        // build the date of the rule for today
-        const ruleDate = ClDateHelper.getDate().set({hour: value.hours, minute: value.minutes});
+        // Get the same day date with time from the rule
+        const ruleDate = DateTime.local({zone: value.timezone}).set({hour: value.hours, minute: value.minutes});
 
         // check if current time is after stop time
-        if(today < ruleDate) continue;
+        if (today < ruleDate) continue;
 
-        this.logger.log(`[Cron] Stopping lab ${lab.id} after time hour ${value.hours} minute ${value.minutes}`);
-        // if the experiment is finished, we stop the lab
-        await this.labServerService.stopLab(lab).catch(err => {
-          this.logger.error(`Error while stopping the lab ${lab.id} after time: ${err.message}`);
-        });
-
-        await this.cleanRuleAfterExecution(rule);
+        await this.stopLab(lab, rule, `hour ${value.hours} minute ${value.minutes}`);
       }
     }
   }
 
   private async checkStopAfterInactivity(): Promise<void> {
-    const rules = await this.labRuleService.findRulesByActionAndType(
-      CnLabStatusRuleAction.STOP_LAB,
-      CnLabStatusRuleType.STOP_AFTER_INACTIVITY_TIME);
+    const rules = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_INACTIVITY_TIME);
 
     for (const rule of rules) {
       const lab = rule.labInstance;
       if (lab.isRunning()) {
-        const value: CnLabStatusRuleStopAfterInactivityValue = rule.value as CnLabStatusRuleStopAfterInactivityValue;
-
-        // check if today is active day in rule
-        const today = ClDateHelper.getDate();
-        if (!value.days.includes(today.weekday)) continue;
+        const value: CnLabGreenOptionStopAfterInactivityValue = rule.value as CnLabGreenOptionStopAfterInactivityValue;
 
         const labGlobalActivity = await this.externalLabApiService.getLabGlobalActivity(lab.getGlabApiInfo()).catch(() => null);
-        if(labGlobalActivity.last_activity == null) continue;
+        if (labGlobalActivity.last_activity == null) continue;
 
         const lastActivityDate = ClDateHelper.getDate(labGlobalActivity.last_activity.created_at);
 
         // check if differences in minutes between last activity and now is greater than inactivity time
-        if(lastActivityDate.diffNow('minutes').minutes < value.inactivityTime) continue;
+        if (lastActivityDate.diffNow('minutes').minutes < value.inactivityDuration) continue;
 
-        this.logger.log(`[Cron] Stopping lab ${lab.id} after time inactivity ${value.inactivityTime} minutes`);
-        // if the experiment is finished, we stop the lab
-        await this.labServerService.stopLab(lab).catch(err => {
-          this.logger.error(`Error while stopping the lab ${lab.id} after inactivity: ${err.message}`);
-        });
-
-        await this.cleanRuleAfterExecution(rule);
+        await this.stopLab(lab, rule, `${value.inactivityDuration} minutes`);
       }
     }
   }
 
-  private async cleanRuleAfterExecution(rule: CnLabStatusRule): Promise<void> {
+  private async stopLab(lab: CnLabInstance, rule: CnLabGreenOption, ruleDetail?: string): Promise<void> {
+    this.logger.log(`[Cron] Stopping lab :${lab.id}, rule: ${rule.type} ${ruleDetail ? `(${ruleDetail})` : ''}`);
+    await this.labServerService.stopLab(lab).then(async () => {
+      await this.cleanRuleAfterExecution(rule);
+    }).catch(err => {
+      this.logger.error(`Error while stopping the lab : ${lab.id}, rule : ${rule.type}, error: ${err.message}`);
+    });
+  }
+
+  private async cleanRuleAfterExecution(rule: CnLabGreenOption): Promise<void> {
     if (!rule.isPersistent) {
       await this.labRuleService.deleteById(rule.id);
     }

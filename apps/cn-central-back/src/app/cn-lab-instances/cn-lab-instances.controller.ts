@@ -10,8 +10,8 @@ import {
   CnLabInstanceConfigDTO,
   CnLabInstanceCreateAdminDTO,
   CnLabInstanceCreateDesktopDTO,
-  CnLabInstanceDto,
   CnLabInstanceDesktopConfig,
+  CnLabInstanceDto,
   CnLabInstanceStatusDTO,
   CnRequestLabInstance,
 } from './cn-lab-instance.dto';
@@ -28,6 +28,8 @@ import {CnExternalLabBackup, CnExternalLabBackupHistory} from '../cn-external-la
 import {CnCpCompleteInfo} from './server/cn-cloud-provider.class';
 import {Response} from 'express';
 import * as AdmZip from 'adm-zip';
+import {CnLabGreenOption} from './green-option/cn-lab-green-option.entity';
+import {CnLabGreenOptionFormDto} from './green-option/cn-lab-green-option.dto';
 
 
 @Controller('lab-instances')
@@ -404,6 +406,30 @@ export class CnLabInstancesController {
   @Delete(':id/server')
   async deleteServerInstance(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     await this.aggregateService.deleteServerInstance(id);
+  }
+
+  /////////////////////////// STATUS RULES //////////////////////////////
+
+  @Post(':id/green-options')
+  async createGreenOption(@Param('id', new ParseUUIDPipe()) id: string,
+                         @Body() greenOption: CnLabGreenOptionFormDto): Promise<CnLabGreenOption> {
+    return await this.aggregateService.createGreenOption(id, greenOption);
+  }
+
+  @Put('green-options/:ruleId')
+  async updateGreenOption(@Param('ruleId', new ParseUUIDPipe()) ruleId: string,
+                         @Body() greenOption: CnLabGreenOptionFormDto): Promise<CnLabGreenOption> {
+    return await this.aggregateService.updateGreenOption(ruleId, greenOption);
+  }
+
+  @Delete('green-options/:ruleId')
+  async deleteGreenOption(@Param('ruleId', new ParseUUIDPipe()) ruleId: string): Promise<void> {
+    return await this.aggregateService.deleteGreenOption(ruleId);
+  }
+
+  @Get(':id/green-options')
+  async getGreenOptions(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabGreenOption[]> {
+    return await this.aggregateService.getGreenOptions(id);
   }
 
   /////////////////////////// DESKTOP //////////////////////////////

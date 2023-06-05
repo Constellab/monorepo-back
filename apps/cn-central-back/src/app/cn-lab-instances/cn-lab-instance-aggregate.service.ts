@@ -56,10 +56,13 @@ import {CnLabServerService} from './server/cn-lab-server.service';
 import {CnLabConfigurerService} from './server/cn-lab-configurer.service';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
-import {CnLabInstanceDesktopService, CnLabDesktopConfig} from './desktop/cn-lab-instance-desktop.service';
+import {CnLabDesktopConfig, CnLabInstanceDesktopService} from './desktop/cn-lab-instance-desktop.service';
 import {CnBrickGWS} from '../cn-bricks/cn-brick.dto';
 import {CnLabInstanceMailService} from './mail/cn-lab-instance-mail.service';
 import {CnLabSshService} from './server/cn-lab-ssh.service';
+import {CnLabGreenOption} from './green-option/cn-lab-green-option.entity';
+import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.service';
+import {CnLabGreenOptionFormDto} from './green-option/cn-lab-green-option.dto';
 
 
 @Injectable()
@@ -85,7 +88,8 @@ export class CnLabInstanceAggregateService {
               private labSshService: CnLabSshService,
               private labConfigService: CnLabConfigsService,
               private labInstanceDesktopService: CnLabInstanceDesktopService,
-              private labMailService: CnLabInstanceMailService) {
+              private labMailService: CnLabInstanceMailService,
+              private labGreenOptionService: CnLabGreenOptionService) {
   }
 
   /**
@@ -804,6 +808,30 @@ export class CnLabInstanceAggregateService {
     await this.createProdBackup(id);
 
     return this.labInstancesService.markInstanceAsBackingUpBeforeStopping(id);
+  }
+
+  ////////////////////////// STATUS RULES  //////////////////////////////
+
+  public async createGreenOption(labInstanceId: string, greenOption: CnLabGreenOptionFormDto): Promise<CnLabGreenOption> {
+    const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId);
+    return this.labGreenOptionService.createFromDTO(greenOption, labInstance);
+  }
+
+  public async updateGreenOption(greenOptionId: string, greenOption: CnLabGreenOptionFormDto): Promise<CnLabGreenOption> {
+    const greenOptionDb = await this.labGreenOptionService.findByIdAndCheck(greenOptionId);
+    await this.getAndCheckAuthorizationToManageLab(greenOptionDb.labInstanceId);
+    return this.labGreenOptionService.updateFromDTO(greenOptionId, greenOption);
+  }
+
+  public async deleteGreenOption(id: string): Promise<void> {
+    const greenOption = await this.labGreenOptionService.findByIdAndCheck(id);
+    await this.getAndCheckAuthorizationToManageLab(greenOption.labInstanceId);
+    await this.labGreenOptionService.deleteById(id);
+  }
+
+  public async getGreenOptions(labInstanceId: string): Promise<CnLabGreenOption[]> {
+    await this.getAndCheckAuthorizationToManageLab(labInstanceId);
+    return this.labGreenOptionService.findRulesByLabInstanceId(labInstanceId);
   }
 
   ////////////////////////// DESKTOP //////////////////////////////
