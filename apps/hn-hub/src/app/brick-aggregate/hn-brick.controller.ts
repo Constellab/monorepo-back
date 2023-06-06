@@ -158,10 +158,9 @@ export class HnBrickController {
   /***
    * Remove brick user
    */
-  @Delete(':id/users/:userId')
-  async removeBrickUser(@Param('id', new ParseUUIDPipe()) id: string,
-                        @Param('userId', new ParseUUIDPipe()) userId: string): Promise<boolean> {
-    return this.brickAggregateService.removeBrickUser(id, userId);
+  @Delete('remove-brick-user/:brickUserId')
+  async removeBrickUser(@Param('brickUserId', new ParseUUIDPipe()) brickUserId: string): Promise<boolean> {
+    return this.brickAggregateService.removeBrickUser(brickUserId);
   }
 
   /***

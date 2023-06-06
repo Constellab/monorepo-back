@@ -108,9 +108,8 @@ export class HnBrickAggregateService {
     return brick;
   }
 
-  async removeBrickUser(brickId: string, userId: string): Promise<boolean> {
-    const brick: HnBrick = await this.brickService.findById(brickId);
-    return this.brickUserService.checkAndRemoveBrickUser(brick, userId);
+  async removeBrickUser(brickUserId: string): Promise<boolean> {
+    return await this.brickUserService.checkAndRemoveBrickUser(brickUserId);
   }
 
   async acceptBrickUserInvite(token: string): Promise<HnBrick> {

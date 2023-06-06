@@ -22,18 +22,8 @@ export class HnBrickUserService {
     return this.brickUserRepository.save(brickUser);
   }
 
-  async checkAndRemoveBrickUser(brick: HnBrick, userId: string): Promise<boolean> {
-    const brickUser: HnBrickUser = await this.brickUserRepository.findOne({
-      where: {
-        brick: {
-          id: brick.id
-        },
-        user: {
-          id: userId,
-        },
-        status: HnBrickUserStatus.SIMPLE_USER
-      }
-    });
+  async checkAndRemoveBrickUser(brickUserId: string): Promise<boolean> {
+    const brickUser = await this.brickUserRepository.findOneBy({id: brickUserId});
 
     if(!brickUser){
       return false;
