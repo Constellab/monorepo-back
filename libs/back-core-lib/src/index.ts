@@ -7,6 +7,9 @@ export * from './lib/decorators/public-api';
 // Exceptions
 export * from './lib/exceptions/public-api';
 
+// Guards
+export * from './lib/guards/public-api';
+
 // Model
 export * from './lib/models/public-api';
 

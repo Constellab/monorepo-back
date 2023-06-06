@@ -12,10 +12,11 @@ import {
 } from './app/cn-core/model/config/cn-config.class';
 import {Transport} from '@nestjs/microservices';
 import {CN_LOCAL_SPACE_COOKIE} from './app/cn-core/middleware/cn-space-middleware.service';
+import {NestExpressApplication} from '@nestjs/platform-express';
 
 async function bootstrap(): Promise<void> {
 
-  const app = await NestFactory.create(CnAppModule);
+  const app = await NestFactory.create<NestExpressApplication>(CnAppModule);
 
   // enable cors
   const env: CnEnvironmentProfile = process.env[CN_ENVIRONMENT_PROFILE_KEY] as any;
@@ -24,10 +25,14 @@ async function bootstrap(): Promise<void> {
   const additionalHeader = isLocal ? [CN_LOCAL_SPACE_COOKIE] : [];
   app.enableCors(blGetCorsConfig(['constellab.space', 'preconstellab.com'], isLocal, additionalHeader));
 
+  // enable proxy, tell express to trust the first proxy
+  // https://docs.nestjs.com/security/rate-limiting#proxies
+  app.set('trust proxy', 1);
+
   // enable custom logger using winston
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
-  // activate a micro service to enable transport listening
+  // activate a micro-service to enable transport listening
   app.connectMicroservice({
     transport: Transport.RMQ,
     options: {
