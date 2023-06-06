@@ -4,7 +4,6 @@ import {BlExternalApiService, BlUnauthorizedException} from '@monorepo/back-core
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {lastValueFrom} from 'rxjs';
 import {HnUser} from '../users/hn-user.entity';
-import {HnUserService} from '../users/hn-user.service';
 
 export interface HnExternalCheckCredentialResponse {
   status: 'OK' | '2FA_REQUIRED';
