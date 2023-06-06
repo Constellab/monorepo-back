@@ -47,4 +47,5 @@ export interface CnLabManagerInitConfig {
     username: string;
     password: string;
   }
+  captchaSiteKey: string;
 }

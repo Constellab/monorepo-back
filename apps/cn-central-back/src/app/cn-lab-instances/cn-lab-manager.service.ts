@@ -74,7 +74,8 @@ export class CnLabManagerService {
         url: this.configService.getDockerRegistryUrl(),
         username: this.configService.getDockerRegistryUsername(),
         password: this.configService.getDockerRegistryPassword(),
-      }
+      },
+      captchaSiteKey: this.configService.getCaptchaSiteKey(),
     };
     return this.labManagerApiService.initAll(labInstance.getLabManagerApiInfo(), initConfig);
   }
