@@ -72,7 +72,9 @@ export class HnUserService implements BlUserService {
 
   async changeTheme(theme: ClTheme): Promise<void> {
     const user: HnUser = await this.getCurrent();
-    user.theme = theme;
-    await this.userRepository.save(user);
+    if(user.theme != theme){
+      user.theme = theme;
+      await this.userRepository.save(user);
+    }
   }
 }
