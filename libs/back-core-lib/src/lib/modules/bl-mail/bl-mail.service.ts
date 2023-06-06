@@ -72,7 +72,7 @@ export class BlMailService {
     return new Promise((resolve) => {
       transporter.sendMail(mailOptions, (error: Error | null) => {
         if (error) {
-          this.logger.error('Error during mail send');
+          this.logger.error(`Error during mail send using template ${template} to ${recipients} in lang ${lang}`);
           this.logger.error(error);
           resolve(false);
         }

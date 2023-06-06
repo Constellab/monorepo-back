@@ -6,7 +6,7 @@ import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {CnUserAccountsService} from './cn-users-account/cn-user-accounts.service';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {CmCredentials, CmCredentials2Fa, CmUserStatus} from '@monorepo/common-model';
-import {BlJwtService, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {BlCaptchaService, BlJwtService, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {CnUser2FAService} from './cn-user-2-f-a/cn-user-2-f-a.service';
 
 export interface CnAuthResponse {
@@ -33,11 +33,17 @@ export class CnAuthService {
               private jwtService: BlJwtService,
               private configService: CnCoreConfigService,
               private userAccountsService: CnUserAccountsService,
-              private user2FaService: CnUser2FAService) {
+              private user2FaService: CnUser2FAService,
+              private captchaService: BlCaptchaService) {
     this.failedLoginLock = configService.getFailedLoginLock();
   }
 
   async login(credentials: CmCredentials): Promise<CnAuthResponse> {
+    const captchaCheck = await this.captchaService.validateCaptcha(credentials.captcha);
+
+    if(!captchaCheck) {
+      throw new BlUnauthorizedException(CnErrorText.INVALID_CAPTCHA);
+    }
     const user = await this.checkCredentialsAndUser(credentials);
 
     if (user.has2FA) {
@@ -64,13 +70,37 @@ export class CnAuthService {
    * Called by external services to check credentials of a user
    * @param credentials
    * @param requiresAdmin if true the user needs to be an admin
+   * TODO to remove once all lab are on v0.5.4
    */
-  async externalCheckCredentials(credentials: CmCredentials, requiresAdmin: boolean): Promise<CnExternalCheckCredentialResponse> {
+  async externalCheckCredentialsWithRole(credentials: CmCredentials, requiresAdmin: boolean): Promise<CnExternalCheckCredentialResponse> {
     const user = await this.checkCredentialsAndUser(credentials);
 
     if (requiresAdmin && user.category !== 'ADMIN') {
       throw new BlUnauthorizedException(CnErrorText.WRONG_CREDENTIALS);
     }
+
+    if (user.has2FA) {
+      const user2FA = await this.user2FaService.generateCode(user);
+      return {
+        status: '2FA_REQUIRED',
+        twoFAUrlCode: user2FA.urlCode
+      };
+    } else {
+      return {
+        status: 'OK',
+        user
+      };
+    }
+  }
+
+  async externalCheckCredentials(credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
+    const captchaCheck = await this.captchaService.validateCaptcha(credentials.captcha);
+
+    if(!captchaCheck) {
+      throw new BlUnauthorizedException(CnErrorText.INVALID_CAPTCHA);
+    }
+
+    const user = await this.checkCredentialsAndUser(credentials);
 
     if (user.has2FA) {
       const user2FA = await this.user2FaService.generateCode(user);

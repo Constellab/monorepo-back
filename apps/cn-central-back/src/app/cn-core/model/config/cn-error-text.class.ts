@@ -57,4 +57,5 @@ export enum CnErrorText {
   PROJECT_BUCKET_NOT_FOUND = 'error.project_bucket_not_found',
   CANT_MANAGE_DESKTOP_LAB = 'error.cant_manage_desktop_lab',
   LAB_CONFIG_NOT_FOUND = 'error.lab_config_not_found',
+  INVALID_CAPTCHA = 'error.invalid_captcha',
 }

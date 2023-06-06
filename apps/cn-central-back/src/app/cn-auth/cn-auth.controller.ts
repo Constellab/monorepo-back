@@ -55,7 +55,13 @@ export class CnAuthController {
   @Post('external/check-credentials/:requiresAdmin')
   checkCredentialsWithRole(@Param('requiresAdmin', new ParseBoolPipe) requiresAdmin: boolean,
                            @Body() credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
-    return this.authService.externalCheckCredentials(credentials, requiresAdmin);
+    return this.authService.externalCheckCredentialsWithRole(credentials, requiresAdmin);
+  }
+
+  @BlPublicSecure()
+  @Post('external/check-credentials')
+  checkCredentials(@Body() credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
+    return this.authService.externalCheckCredentials(credentials);
   }
 
   /**

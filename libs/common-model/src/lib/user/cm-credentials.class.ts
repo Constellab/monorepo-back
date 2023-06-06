@@ -5,6 +5,7 @@
 export interface CmCredentials {
   email: string;
   password: string;
+  captcha?: string;
 }
 
 /**

@@ -54,7 +54,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     const captchaValid = await this.captchaService.validateCaptcha(createUser.captcha);
 
     if (!captchaValid) {
-      throw new BlBadRequestException('Invalid captcha');
+      throw new BlBadRequestException(CnErrorText.INVALID_CAPTCHA);
     }
 
     return await this.datasource.transaction(async entityManager => {
@@ -184,7 +184,9 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
     // send mail asynchronously
     this.mailService.sendMailToUser(CnMailTemplate.password_forgotten, user,
-      {user: user, passwordForgottenLink: passwordForgottenLink}).then();
+      {user: user, passwordForgottenLink: passwordForgottenLink}).then().catch(
+      error => this.logger.error('Error while sending password forgotten mail: ' + error)
+    );
   }
 
   async resetPassword(token: string, password: string): Promise<void> {
@@ -192,6 +194,8 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
     // hash the user password
     user.password = await this.hashPassword(password);
+    // reset the failed login count to unlock the account
+    user.failedLoginCount = 0;
 
     // save the new password
     await this.usersService.update(user);
@@ -206,7 +210,9 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
     // send mail asynchronously
     this.mailService.sendMailToUser(CnMailTemplate.account_locked, user,
-      {user: user, failedLoginLocked: failedLoginLock, unlockUrl: unlockUrl}).then();
+      {user: user, failedLoginLocked: failedLoginLock, unlockUrl: unlockUrl}).then().catch(
+      error => this.logger.error('Error while sending account locked mail to : ' + error)
+    );
   }
 
   /**
