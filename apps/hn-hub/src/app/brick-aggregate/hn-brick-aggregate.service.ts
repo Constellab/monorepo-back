@@ -9,7 +9,7 @@ import {
   HnIsActualBrickAndNewVersionDTO,
   HnTechnicalDocInputDTO
 } from './brick/hn-brick.dto';
-import {HnBrick} from './brick/hn-brick.entity';
+import {HnBrick, HnBrickVisibility} from './brick/hn-brick.entity';
 import {HnNode, HnNodeDTO} from './folder/hn-folder.dto';
 import {HnDocumentation, HnDocumentationDTO, HnDocumentationSearchDTO} from './documentation/hn-documentation.entity';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
@@ -55,8 +55,10 @@ export class HnBrickAggregateService {
     const bricks: HnBrick[] = await this.brickService.find();
     let map: string[] = [];
     for(const brick of bricks){
-      const brickMap: string[] = await this.brickMajorVersionService.findBrickMap(brick);
-      map = map.concat(brickMap);
+      if(brick.visibility === HnBrickVisibility.PUBLIC){
+        const brickMap: string[] = await this.brickMajorVersionService.findBrickMap(brick);
+        map = map.concat(brickMap);
+      }
     }
     return map;
   }

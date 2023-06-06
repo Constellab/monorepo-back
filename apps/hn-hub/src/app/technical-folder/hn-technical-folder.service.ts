@@ -3,7 +3,10 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {HnTechnicalFolder} from './hn-technical-folder.entity';
 import {Repository} from 'typeorm';
 import {HnResourceService} from '../resource/hn-resource.service';
-import {HnBrickMajorVersion, HnVersionState} from '../brick-aggregate/brick-major-version/hn-brick-major-version.entity';
+import {
+  HnBrickMajorVersion,
+  HnVersionState
+} from '../brick-aggregate/brick-major-version/hn-brick-major-version.entity';
 import {HnImportTechnicalDocDTO, HnTechnicalDocInputDTO} from '../brick-aggregate/brick/hn-brick.dto';
 import {HnNode} from '../brick-aggregate/folder/hn-folder.dto';
 import {HnResource} from '../resource/hn-resource.entity';
@@ -13,7 +16,6 @@ import {HnTask} from '../task/hn-task.entity';
 import {HnProtocol} from '../protocol/hn-protocol.entity';
 import {HnProtocolService} from '../protocol/hn-protocol.service';
 import {HnDocumentationSearchDTO} from '../brick-aggregate/documentation/hn-documentation.entity';
-import {HnFolder} from '../brick-aggregate/folder/hn-folder.entity';
 
 @Injectable()
 export class HnTechnicalFolderService {

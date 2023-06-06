@@ -305,10 +305,10 @@ export class HnFolderService {
       this.getDocsByFolder(mainFolder, brickMajorVersion.major.toString(), brickMajorVersion.brick.name);
     for (const doc of docs) {
       if(brickMajorVersion.versionState == HnVersionState.LATEST){
-        const latestBaseMapString: string = baseMapString.split('/')[0] + '/latest/';
+        const latestBaseMapString: string = baseMapString.split('/')[0] + '/latest/doc/';
         brickMajorVersionMap.push(latestBaseMapString + doc.completePath.slice(0, -1));
       }
-      brickMajorVersionMap.push(baseMapString  + '/' + doc.completePath.slice(0, -1));
+      brickMajorVersionMap.push(baseMapString  + '/doc/' + doc.completePath.slice(0, -1));
     }
     return brickMajorVersionMap;
   }
