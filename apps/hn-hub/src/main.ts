@@ -1,31 +1,37 @@
 import {NestFactory} from '@nestjs/core';
-import {AppModule} from './hn-app.module';
 import {blGetCorsConfig, blGetRabbitMQUrl, blTransportQueueConstellabUser} from '@monorepo/back-core-lib';
 import {
   HN_ENVIRONMENT_PROFILE_KEY,
-  HN_ENVIRONMENT_PROFILE_PROD_VALUE,
   HN_RABBITMQ_PASSWORD_KEY,
   HN_RABBITMQ_PORT_KEY,
   HN_RABBITMQ_URL_KEY,
-  HN_RABBITMQ_USER_KEY
+  HN_RABBITMQ_USER_KEY,
+  HnEnvironmentProfile
 } from './app/core/model/config/hn-config.class';
 import * as bodyParser from 'body-parser';
 import {Transport} from '@nestjs/microservices';
+import {NestExpressApplication} from '@nestjs/platform-express';
+import {WINSTON_MODULE_NEST_PROVIDER} from 'nest-winston';
+import {HnAppModule} from './hn-app.module';
+
 
 async function bootstrap(): Promise<void> {
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(HnAppModule);
 
   // enable cors
-  app.enableCors(blGetCorsConfig(
-    ['gencovery.com', 'constellab.community'],
-    process.env[HN_ENVIRONMENT_PROFILE_KEY] !== HN_ENVIRONMENT_PROFILE_PROD_VALUE)
-  );
+  const env: HnEnvironmentProfile = process.env[HN_ENVIRONMENT_PROFILE_KEY] as HnEnvironmentProfile;
+  const isLocal = env === 'dev' || env === 'docker' || env === 'test';
+  app.enableCors(blGetCorsConfig(['gencovery.com', 'constellab.community'], isLocal));
 
-  app.use(bodyParser.json({limit: '50mb'}));
-  app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+  // enable proxy, tell express to trust the first proxy
+  // https://docs.nestjs.com/security/rate-limiting#proxies
+  app.set('trust proxy', 1);
 
-  // activate a micro service to enable transport listening
+  // enable custom logger using winston
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+
+  // activate a microservice to enable transport listening
   app.connectMicroservice({
     transport: Transport.RMQ,
     options: {
@@ -42,6 +48,9 @@ async function bootstrap(): Promise<void> {
   // await app.startAllMicroservices();
   app.startAllMicroservices().then(() => console.log('Successfully init microservice'))
     .catch(err => `Error during microservice init. Error : ${err}`);
+
+  app.use(bodyParser.json({limit: '50mb'}));
+  app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
   const port = process.env.port || 3333;
   await app.listen(port, () => {

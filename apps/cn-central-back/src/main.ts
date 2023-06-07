@@ -19,7 +19,7 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(CnAppModule);
 
   // enable cors
-  const env: CnEnvironmentProfile = process.env[CN_ENVIRONMENT_PROFILE_KEY] as any;
+  const env: CnEnvironmentProfile = process.env[CN_ENVIRONMENT_PROFILE_KEY] as CnEnvironmentProfile;
   const isLocal = env === 'dev' || env === 'docker' || env === 'test';
   // allow the local-space header only for local env
   const additionalHeader = isLocal ? [CN_LOCAL_SPACE_COOKIE] : [];
@@ -32,7 +32,7 @@ async function bootstrap(): Promise<void> {
   // enable custom logger using winston
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
-  // activate a micro-service to enable transport listening
+  // activate a microservice to enable transport listening
   app.connectMicroservice({
     transport: Transport.RMQ,
     options: {
@@ -49,6 +49,7 @@ async function bootstrap(): Promise<void> {
   // await app.startAllMicroservices();
   app.startAllMicroservices().then(() => console.log('Successfully init microservice'))
     .catch(err => `Error during microservice init. Error : ${err}`);
+
   const port = 3001;
   await app.listen(port, () => {
     console.log('Listening at http://localhost:' + port + '/');

@@ -212,7 +212,7 @@ function configureMailModule(
     }
   ],
 })
-export class AppModule {
+export class HnAppModule {
   configure(consumer: MiddlewareConsumer): any {
     consumer
       // register the RequestContextMiddleware to be able to access the request anywhere
