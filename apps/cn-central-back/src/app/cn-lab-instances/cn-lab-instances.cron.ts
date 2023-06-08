@@ -61,10 +61,10 @@ export class CnLabInstancesCron {
   }
 
   private async checkStopAfterBackup(): Promise<void> {
-    const rules = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_BACKUP);
+    const options = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_BACKUP);
 
-    for (const rule of rules) {
-      const lab = rule.labInstance;
+    for (const option of options) {
+      const lab = await this.labInstanceService.findByIdAndCheck(option.labInstanceId);
       if (lab.isRunning()) {
         const backup = await this.labManagerService.getLastBackupStatus(lab.getLabManagerApiInfo()).catch(() => null);
 
@@ -73,16 +73,16 @@ export class CnLabInstancesCron {
           continue;
         }
 
-        await this.stopLab(lab, rule);
+        await this.stopLab(lab, option);
       }
     }
   }
 
   private async checkStopAfterExperiment(): Promise<void> {
-    const rules = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_EXPERIMENT);
+    const options = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_EXPERIMENT);
 
-    for (const rule of rules) {
-      const lab = rule.labInstance;
+    for (const option of options) {
+      const lab = await this.labInstanceService.findByIdAndCheck(option.labInstanceId);
       if (lab.isRunning()) {
         const labGlobalActivity = await this.externalLabApiService.getLabGlobalActivity(lab.getGlabApiInfo()).catch(() => null);
 
@@ -90,41 +90,41 @@ export class CnLabInstancesCron {
           continue;
         }
 
-        await this.stopLab(lab, rule);
+        await this.stopLab(lab, option);
       }
     }
   }
 
   private async checkStopAfterTime(): Promise<void> {
-    const rules = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_TIME);
+    const options = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_TIME);
 
-    for (const rule of rules) {
-      const lab = rule.labInstance;
+    for (const option of options) {
+      const lab = await this.labInstanceService.findByIdAndCheck(option.labInstanceId);
       if (lab.isRunning()) {
-        const value: CnLabGreenOptionStopAfterTimeValue = rule.value as CnLabGreenOptionStopAfterTimeValue;
+        const value: CnLabGreenOptionStopAfterTimeValue = option.value as CnLabGreenOptionStopAfterTimeValue;
 
-        // get the current date in the rule timezone
+        // get the current date in the option timezone
         const today = DateTime.local({zone: value.timezone});
         // if (!value.days.includes(today.weekday)) continue;
 
-        // Get the same day date with time from the rule
+        // Get the same day date with time from the option
         const ruleDate = DateTime.local({zone: value.timezone}).set({hour: value.hours, minute: value.minutes});
 
         // check if current time is after stop time
         if (today < ruleDate) continue;
 
-        await this.stopLab(lab, rule, `hour ${value.hours} minute ${value.minutes}`);
+        await this.stopLab(lab, option, `hour ${value.hours} minute ${value.minutes} (${value.timezone})`);
       }
     }
   }
 
   private async checkStopAfterInactivity(): Promise<void> {
-    const rules = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_INACTIVITY_TIME);
+    const options = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_INACTIVITY_TIME);
 
-    for (const rule of rules) {
-      const lab = rule.labInstance;
+    for (const option of options) {
+      const lab = await this.labInstanceService.findByIdAndCheck(option.labInstanceId);
       if (lab.isRunning()) {
-        const value: CnLabGreenOptionStopAfterInactivityValue = rule.value as CnLabGreenOptionStopAfterInactivityValue;
+        const value: CnLabGreenOptionStopAfterInactivityValue = option.value as CnLabGreenOptionStopAfterInactivityValue;
 
         const labGlobalActivity = await this.externalLabApiService.getLabGlobalActivity(lab.getGlabApiInfo()).catch(() => null);
         if (labGlobalActivity.last_activity == null) continue;
@@ -134,23 +134,23 @@ export class CnLabInstancesCron {
         // check if differences in minutes between last activity and now is greater than inactivity time
         if (lastActivityDate.diffNow('minutes').minutes < value.inactivityDuration) continue;
 
-        await this.stopLab(lab, rule, `${value.inactivityDuration} minutes`);
+        await this.stopLab(lab, option, `${value.inactivityDuration} minutes`);
       }
     }
   }
 
-  private async stopLab(lab: CnLabInstance, rule: CnLabGreenOption, ruleDetail?: string): Promise<void> {
-    this.logger.log(`[Cron] Stopping lab :${lab.id}, rule: ${rule.type} ${ruleDetail ? `(${ruleDetail})` : ''}`);
+  private async stopLab(lab: CnLabInstance, option: CnLabGreenOption, ruleDetail?: string): Promise<void> {
+    this.logger.log(`[Cron] Stopping lab :${lab.id}, option: ${option.type} ${ruleDetail ? `(${ruleDetail})` : ''}`);
     await this.labServerService.stopLab(lab).then(async () => {
-      await this.cleanRuleAfterExecution(rule);
+      await this.cleanRuleAfterExecution(option);
     }).catch(err => {
-      this.logger.error(`Error while stopping the lab : ${lab.id}, rule : ${rule.type}, error: ${err.message}`);
+      this.logger.error(`Error while stopping the lab : ${lab.id}, option : ${option.type}, error: ${err.message}`);
     });
   }
 
-  private async cleanRuleAfterExecution(rule: CnLabGreenOption): Promise<void> {
-    if (!rule.isPersistent) {
-      await this.labRuleService.deleteById(rule.id);
+  private async cleanRuleAfterExecution(option: CnLabGreenOption): Promise<void> {
+    if (!option.isPersistent) {
+      await this.labRuleService.deleteById(option.id);
     }
   }
 
