@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {CnLabInstance} from './cn-lab-instance.entity';
+import {CnLabInstance, CnLabInstanceType} from './cn-lab-instance.entity';
 import {DataSource, DeleteResult, EntityManager, In, Not, Repository} from 'typeorm';
 import {CnLabInstanceStatus, cnLabInstanceTemporaryStatuses} from './status/cn-lab-instance-status.enum';
 import {CnAbstractWithStatusService} from '../cn-core/class/cn-abstract-with-status.service';
@@ -92,15 +92,18 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       throw new BlBadRequestException('Name can only contain alphanumeric characters and \'-\'. It cannot start or end with a \'-\'.');
     }
 
-    // check that the name is not already used
-    const lab = await this.repository.findOne({
-      where: {
-        name: name,
-        id: entity.id ? Not(entity.id) : undefined
+    // check that the name is not already used for cloud lab
+    if (entity.isCloud()) {
+      const lab = await this.repository.findOne({
+        where: {
+          name: name,
+          id: entity.id ? Not(entity.id) : undefined,
+          type: CnLabInstanceType.CLOUD
+        }
+      });
+      if (lab) {
+        throw new BlBadRequestException(`A cloud lab with name ${name} already exist.`);
       }
-    });
-    if (lab) {
-      throw new BlBadRequestException(`Name already used by another lab instance : ${name}`);
     }
 
     return name;

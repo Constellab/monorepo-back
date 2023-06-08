@@ -40,9 +40,8 @@ export enum CnLabDesktopPlatform {
 @Entity('lab_instance')
 export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory> {
 
-  @Column({nullable: false, length: 50, unique: true})
+  @Column({nullable: false, length: 50})
   name: string;
-
 
   @Column({
     type: 'enum', enum: CnLabInstanceType, nullable: false,
