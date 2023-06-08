@@ -100,7 +100,7 @@ export class CnLabInstancesCron {
 
     for (const rule of rules) {
       const lab = rule.labInstance;
-      if (!lab.isRunning()) {
+      if (lab.isRunning()) {
         const value: CnLabGreenOptionStopAfterTimeValue = rule.value as CnLabGreenOptionStopAfterTimeValue;
 
         // get the current date in the rule timezone
