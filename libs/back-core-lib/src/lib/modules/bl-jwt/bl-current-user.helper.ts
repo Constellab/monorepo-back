@@ -9,7 +9,7 @@ import {BlUnauthorizedException} from '../../exceptions/bl-unauthorized.exceptio
 export class BlCurrentUserHelper extends BlRequestContextHelper {
 
 
-  private static manualUser: BlUser | null = null;
+  private static robotUser: BlUser | null = null;
   /**
    * returns the current authenticated user or null if not authenticated
    */
@@ -18,8 +18,8 @@ export class BlCurrentUserHelper extends BlRequestContextHelper {
 
     // if there is no request and a manual user is set, return it
     // this is used for cron jobs
-    if(request == null && this.manualUser != null) {
-      return this.manualUser;
+    if(request == null && this.robotUser != null) {
+      return this.robotUser;
     }
     return (request && request.user as BlUser) || null;
   }
@@ -61,14 +61,10 @@ export class BlCurrentUserHelper extends BlRequestContextHelper {
   }
 
   /**
-   * Only use on none request context like cron and clean after use
+   * Default user used when no request is in the context (cron jobs)
    * @param user
    */
-  public static setManualUser(user: BlUser | null): void {
-    BlCurrentUserHelper.manualUser = user;
-  }
-
-  public static cleanManualUser(): void {
-    BlCurrentUserHelper.manualUser = null;
+  public static setRobotUser(user: BlUser | null): void {
+    BlCurrentUserHelper.robotUser = user;
   }
 }

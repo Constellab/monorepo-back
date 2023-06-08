@@ -3,7 +3,6 @@ import {Cron} from '@nestjs/schedule';
 import {CnLabInstancesService} from './cn-lab-instances.service';
 import {CnLabServerService} from './server/cn-lab-server.service';
 import {CnUsersService} from '../cn-users/cn-users.service';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.service';
 import {
   CnLabGreenOption,
@@ -39,8 +38,7 @@ export class CnLabInstancesCron {
   // '0 */10 * * * *' = every 10 minutes
   @Cron('0 */10 * * * *')
   async refreshLabInstanceStatus(): Promise<void> {
-    this.logger.debug('[Cron] Start of refresh lab instance status')
-    await this.setRobotUserInContext();
+    this.logger.debug('[Cron] Start of refresh lab instance status');
 
     await this.refreshLabTempStatus();
     await this.checkStopAfterBackup();
@@ -48,8 +46,7 @@ export class CnLabInstancesCron {
     await this.checkStopAfterTime();
     await this.checkStopAfterInactivity();
 
-    this.cleanRobotUserInContext();
-    this.logger.debug('[Cron] End of refresh lab instance status')
+    this.logger.debug('[Cron] End of refresh lab instance status');
   }
 
   private async refreshLabTempStatus(): Promise<void> {
@@ -152,15 +149,5 @@ export class CnLabInstancesCron {
     if (!option.isPersistent) {
       await this.labRuleService.deleteById(option.id);
     }
-  }
-
-
-  private async setRobotUserInContext(): Promise<void> {
-    const robotUser = await this.userService.getRobotUser();
-    CnCurrentUserHelper.setManualUser(robotUser);
-  }
-
-  private cleanRobotUserInContext(): void {
-    CnCurrentUserHelper.cleanManualUser();
   }
 }

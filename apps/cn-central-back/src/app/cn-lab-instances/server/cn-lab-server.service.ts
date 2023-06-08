@@ -246,9 +246,10 @@ export class CnLabServerService {
     if (labInstance.serverInstanceId) {
       this.logger.log(`Deleting server instance ${labInstance.serverInstanceId} for lab ${labInstance.id}`);
       await cloudProviderService.deleteInstance(labInstance.serverInstanceId);
+      const serverInstanceId = labInstance.serverInstanceId;
       labInstance.serverInstanceId = null;
       await this.labInstanceService.update(labInstance);
-      this.logger.log(`Server instance ${labInstance.serverInstanceId} deleted for lab ${labInstance.id}`);
+      this.logger.log(`Server instance ${serverInstanceId} deleted for lab ${labInstance.id}`);
     } else {
       this.logger.log(`No server instance for lab ${labInstance.id}`);
     }
@@ -256,9 +257,10 @@ export class CnLabServerService {
     if (labInstance.serverVolumeId) {
       this.logger.log(`Deleting volume ${labInstance.serverVolumeId} for lab ${labInstance.id}`);
       await cloudProviderService.deleteVolume(labInstance.serverVolumeId);
+      const volumeId = labInstance.serverVolumeId;
       labInstance.serverVolumeId = null;
       await this.labInstanceService.update(labInstance);
-      this.logger.log(`Volume ${labInstance.serverVolumeId} deleted for lab ${labInstance.id}`);
+      this.logger.log(`Volume ${volumeId} deleted for lab ${labInstance.id}`);
     } else {
       this.logger.log(`No volume for lab ${labInstance.id}. Skipping deletion`);
     }
@@ -359,7 +361,7 @@ export class CnLabServerService {
 
   private checkServerNotBusyAsync(labInstance: CnLabInstance): void {
     this.checkForServerToBeNotBusy(labInstance.id).catch(
-      error => this.logger.error(`Lab ${labInstance.id} is busy. Cannot start lab. Error: ${error}`)
+      error => this.logger.error(`Lab ${labInstance.id} is busy. Cannot update lab. Error: ${error}`)
     );
   }
 

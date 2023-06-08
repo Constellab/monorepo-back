@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, OnModuleInit} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnUser, CnUserEditDTO, CnUserTransportDto} from './cn-user.entity';
 import {Like, Repository} from 'typeorm';
@@ -7,7 +7,7 @@ import {clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme} from '@monorepo
 import {
   BlAbstractService,
   BlBadRequestException,
-  BlBucketConfig,
+  BlBucketConfig, BlCurrentUserHelper,
   BlFile,
   BlObjectStorageService,
   BlSearchBuilder,
@@ -21,7 +21,7 @@ import {IncomingMessage} from 'http';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 
 @Injectable()
-export class CnUsersService extends BlAbstractService<CnUser> implements BlUserService {
+export class CnUsersService extends BlAbstractService<CnUser> implements BlUserService, OnModuleInit {
 
   constructor(
     @InjectRepository(CnUser) private repository: Repository<CnUser>,
@@ -30,6 +30,13 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     private transportService: BlTransportService) {
     super(repository, CnUser);
   }
+
+  async onModuleInit(): Promise<void> {
+    const robotUser = await this.getRobotUser();
+    BlCurrentUserHelper.setRobotUser(robotUser);
+  }
+
+
 
   findAllPaginated(page: number, size: number): Promise<ClPage<CnUser>> {
     const currentUser = CnCurrentUserHelper.getCurrentUser();
