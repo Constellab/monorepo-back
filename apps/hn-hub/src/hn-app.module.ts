@@ -29,7 +29,7 @@ import {hnJwtConfig} from './app/auth/hn-jwt.config';
 import {HnJwtAuthGuard} from './app/core/guards/hn-jwt-auth.guard';
 import {HnFolderModule} from './app/brick-aggregate/folder/hn-folder.module';
 import {WinstonModule, WinstonModuleOptions} from 'nest-winston';
-import {I18nJsonLoader, I18nModule} from 'nestjs-i18n';
+import {AcceptLanguageResolver, CookieResolver, I18nJsonLoader, I18nModule} from 'nestjs-i18n';
 import {clDefaultLang} from '@monorepo/core-lib';
 import {HnBrickModule} from './app/brick-aggregate/brick/hn-brick.module';
 import {HnBrickVersionModule} from './app/brick-aggregate/brick-version/hn-brick-version.module';
@@ -133,6 +133,11 @@ function configureMailModule(
         path: join(__dirname, 'assets/i18n/'),
         watch: true, //    // enable live translation
       },
+      resolvers: [
+        // retrieve the language from the cookie (define to avoid error but not really used)
+        {use: CookieResolver, options: 'lang'},
+        AcceptLanguageResolver
+      ],
     }),
 
     // setup the logging module

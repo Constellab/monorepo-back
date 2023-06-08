@@ -9,7 +9,7 @@ import {APP_FILTER, APP_GUARD, APP_INTERCEPTOR} from '@nestjs/core';
 import {CnCoreConfigService} from './app/cn-core/modules/cn-core-config/cn-core-config.service';
 import {TypeOrmModuleOptions} from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
 import {CnCoreConfigModule} from './app/cn-core/modules/cn-core-config/cn-core-config.module';
-import {I18nJsonLoader, I18nModule} from 'nestjs-i18n';
+import {AcceptLanguageResolver, CookieResolver, I18nJsonLoader, I18nModule} from 'nestjs-i18n';
 import {join} from 'path';
 import {CnLabConfigsModule} from './app/cn-lab-configs/cn-lab-configs.module';
 import {CnExperimentsModule} from './app/cn-projects-aggregate/cn-experiments/cn-experiments.module';
@@ -141,6 +141,11 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
         path: join(__dirname, 'assets/i18n/'),
         watch: true, //    // enable live translation
       } as I18nAbstractLoaderOptions,
+      resolvers: [
+        // retrieve the language from the cookie (define to avoid error but not really used)
+        {use: CookieResolver, options: 'lang'},
+        AcceptLanguageResolver
+      ],
     }),
     ScheduleModule.forRoot(),
 
