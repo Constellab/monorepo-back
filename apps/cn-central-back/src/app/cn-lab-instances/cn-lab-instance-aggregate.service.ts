@@ -63,6 +63,8 @@ import {CnLabSshService} from './server/cn-lab-ssh.service';
 import {CnLabGreenOption} from './green-option/cn-lab-green-option.entity';
 import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.service';
 import {CnLabGreenOptionFormDto} from './green-option/cn-lab-green-option.dto';
+import {CnAuthService, CnExternalCheckCredentialResponse} from '../cn-auth/cn-auth.service';
+import {CmCredentials} from '@monorepo/common-model';
 
 
 @Injectable()
@@ -89,7 +91,8 @@ export class CnLabInstanceAggregateService {
               private labConfigService: CnLabConfigsService,
               private labInstanceDesktopService: CnLabInstanceDesktopService,
               private labMailService: CnLabInstanceMailService,
-              private labGreenOptionService: CnLabGreenOptionService) {
+              private labGreenOptionService: CnLabGreenOptionService,
+              private authService: CnAuthService) {
   }
 
   /**
@@ -332,6 +335,7 @@ export class CnLabInstanceAggregateService {
       throw new BlBadRequestException(CnErrorText.LAB_AUTH_ERROR);
     }
   }
+
 
   /**
    * Use on login if failed. We try to add the user if he is listed in the lab user and reconnect
@@ -633,6 +637,15 @@ export class CnLabInstanceAggregateService {
     });
   }
 
+  public async checkUserCredentials(credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
+    // check that the user has access to the lab
+    const lab = await this.getAndCheckAuthorizationToFindById(CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
+
+    // check the credentials, if the lab is cloud, it needs a valid captcha
+    // for desktop lab, no captcha is needed as this is local
+    return this.authService.externalCheckCredentials(credentials, lab.isCloud());
+  }
+
   /////////////////////////// EXTERNAL LAB MANAGER //////////////////////////////
   public async getCurrentLabInstanceBackupInfo(): Promise<CnExternalLabBackupInfoDto> {
     const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
@@ -654,7 +667,7 @@ export class CnLabInstanceAggregateService {
     // call the init async (return the server response immediately)
     this.initServerAsync(labInstance).catch(
       // if an error occurred we just refresh the lab status
-      (error: Error) => this.onError(labInstance.id, `Error during server initiliasation : ${error.message}`)
+      (error: Error) => this.onError(labInstance.id, `Error during server initialization : ${error.message}`)
     );
 
     return this.getStatus(labInstance);

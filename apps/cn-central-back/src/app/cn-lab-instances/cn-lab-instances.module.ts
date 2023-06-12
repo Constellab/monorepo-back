@@ -35,6 +35,7 @@ import {CnLabSshService} from './server/cn-lab-ssh.service';
 import {CnCloudProviderFactory} from './server/cn-cloud-provider.factory';
 import {CnLabGreenOption} from './green-option/cn-lab-green-option.entity';
 import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.service';
+import {CnAuthModule} from '../cn-auth/cn-auth.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.servic
     CnBricksModule,
     CnLabConfigsModule,
     CnGroupsModule,
+    CnAuthModule,
 
     CnProjectsAggregateModule,
     CnExperimentsModule,

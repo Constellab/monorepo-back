@@ -7,7 +7,7 @@ services:
       - LAB_ID=${LAB_ID}
       - LAB_NAME=${LAB_NAME}
       - LAB_MODE=prod
-      - LAB_ENVIRONMENT=LOCAL
+      - LAB_ENVIRONMENT=DESKTOP
       - LAB_PROD_API_URL=http://localhost:3100
       - LAB_DEV_API_URL=http://codelab:3000
       - CENTRAL_API_KEY=${CENTRAL_API_KEY}
@@ -57,7 +57,7 @@ services:
       - LAB_ID=${LAB_ID}
       - LAB_NAME=${LAB_NAME}
       - LAB_MODE=dev
-      - LAB_ENVIRONMENT=LOCAL
+      - LAB_ENVIRONMENT=DESKTOP
       - LAB_PROD_API_URL=http://glab:3000
       - LAB_DEV_API_URL=http://localhost:3101
       - FRONT_URL=http://localhost:80
@@ -112,6 +112,7 @@ services:
       - CENTRAL_API_URL=${CENTRAL_API_URL}
       - COMMUNITY_FRONT_URL=${COMMUNITY_FRONT_URL}
       - COMMUNITY_API_URL=${COMMUNITY_API_URL}
+      - CAPTCHA_SITE_KEY= # set to empty to disable captcha
     networks:
       - lab-desktop-network-${LAB_ID}
     container_name: front

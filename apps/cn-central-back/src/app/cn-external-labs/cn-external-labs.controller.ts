@@ -24,6 +24,8 @@ import {FilesInterceptor} from '@nestjs/platform-express';
 import {ClCoreJsonConvert} from '@monorepo/core-lib';
 import {CnExternalLabUser} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {CnProjectDtoHelper, CnProjectTreeDto} from '../cn-projects-aggregate/cn-projects/cn-project.dto';
+import {CmCredentials} from '@monorepo/common-model';
+import {CnExternalCheckCredentialResponse} from '../cn-auth/cn-auth.service';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -42,6 +44,11 @@ export class CnExternalLabsController {
   @Put('start')
   onLabStart(@Body() labStart: CnLabInstanceStartDTO): Promise<void> {
     return this.labInstanceAggregator.registerLabConfig(labStart);
+  }
+
+  @Post('check-credentials')
+  async checkUserCredentials(@Body() credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
+    return this.labInstanceAggregator.checkUserCredentials(credentials);
   }
 
   @Put('project/:projectId/experiment')

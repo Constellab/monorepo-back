@@ -32,6 +32,9 @@ import {CnNotificationModule} from '../cn-notification/cn-notification.module';
   controllers: [
     CnAuthController,
     CnUserAccountsController
+  ],
+  exports: [
+    CnAuthService,
   ]
 })
 export class CnAuthModule {

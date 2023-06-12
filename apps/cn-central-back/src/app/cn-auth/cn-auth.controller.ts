@@ -61,7 +61,7 @@ export class CnAuthController {
   @BlPublicSecure()
   @Post('external/check-credentials')
   checkCredentials(@Body() credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
-    return this.authService.externalCheckCredentials(credentials);
+    return this.authService.externalCheckCredentials(credentials, true);
   }
 
   /**

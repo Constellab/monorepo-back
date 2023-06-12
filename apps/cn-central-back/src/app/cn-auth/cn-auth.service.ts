@@ -41,7 +41,7 @@ export class CnAuthService {
   async login(credentials: CmCredentials): Promise<CnAuthResponse> {
     const captchaCheck = await this.captchaService.validateCaptcha(credentials.captcha);
 
-    if(!captchaCheck) {
+    if (!captchaCheck) {
       throw new BlUnauthorizedException(CnErrorText.INVALID_CAPTCHA);
     }
     const user = await this.checkCredentialsAndUser(credentials);
@@ -93,11 +93,13 @@ export class CnAuthService {
     }
   }
 
-  async externalCheckCredentials(credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
-    const captchaCheck = await this.captchaService.validateCaptcha(credentials.captcha);
+  async externalCheckCredentials(credentials: CmCredentials, checkCaptcha: boolean): Promise<CnExternalCheckCredentialResponse> {
+    if (checkCaptcha) {
+      const captchaCheck = await this.captchaService.validateCaptcha(credentials.captcha);
 
-    if(!captchaCheck) {
-      throw new BlUnauthorizedException(CnErrorText.INVALID_CAPTCHA);
+      if (!captchaCheck) {
+        throw new BlUnauthorizedException(CnErrorText.INVALID_CAPTCHA);
+      }
     }
 
     const user = await this.checkCredentialsAndUser(credentials);
