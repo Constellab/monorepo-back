@@ -46,6 +46,7 @@ export class CnExternalLabsController {
     return this.labInstanceAggregator.registerLabConfig(labStart);
   }
 
+  @CnLabRobotAuthentication()
   @Post('check-credentials')
   async checkUserCredentials(@Body() credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
     return this.labInstanceAggregator.checkUserCredentials(credentials);
