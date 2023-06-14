@@ -137,6 +137,8 @@ export class CnLabInstancesCron {
   }
 
   private async stopLab(lab: CnLabInstance, option: CnLabGreenOption, ruleDetail?: string): Promise<void> {
+    // check if there are running experiments
+    await this.labServerService.checkLabRunningExperiment(lab).catch(() => null);
     this.logger.log(`[Cron] Stopping lab :${lab.id}, option: ${option.type} ${ruleDetail ? `(${ruleDetail})` : ''}`);
     await this.labServerService.stopLab(lab).then(async () => {
       await this.cleanRuleAfterExecution(option);

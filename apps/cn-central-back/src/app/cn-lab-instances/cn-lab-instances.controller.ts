@@ -400,17 +400,22 @@ export class CnLabInstancesController {
     await this.aggregateService.deleteServerInstance(id);
   }
 
+  @Put(':id/server/task/stop')
+  async stopCurrentTaskServer(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusDTO> {
+    return await this.aggregateService.stopCurrentServerTask(id);
+  }
+
   /////////////////////////// STATUS RULES //////////////////////////////
 
   @Post(':id/green-options')
   async createGreenOption(@Param('id', new ParseUUIDPipe()) id: string,
-                         @Body() greenOption: CnLabGreenOptionFormDto): Promise<CnLabGreenOption> {
+                          @Body() greenOption: CnLabGreenOptionFormDto): Promise<CnLabGreenOption> {
     return await this.aggregateService.createGreenOption(id, greenOption);
   }
 
   @Put('green-options/:ruleId')
   async updateGreenOption(@Param('ruleId', new ParseUUIDPipe()) ruleId: string,
-                         @Body() greenOption: CnLabGreenOptionFormDto): Promise<CnLabGreenOption> {
+                          @Body() greenOption: CnLabGreenOptionFormDto): Promise<CnLabGreenOption> {
     return await this.aggregateService.updateGreenOption(ruleId, greenOption);
   }
 
