@@ -65,6 +65,7 @@ import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.servic
 import {CnLabGreenOptionFormDto} from './green-option/cn-lab-green-option.dto';
 import {CnAuthService, CnExternalCheckCredentialResponse} from '../cn-auth/cn-auth.service';
 import {CmCredentials} from '@monorepo/common-model';
+import {CnLabInstanceServerTaskStatus} from './status/cn-lab-instance-status.enum';
 
 
 @Injectable()
@@ -269,7 +270,8 @@ export class CnLabInstanceAggregateService {
         labIsRunning: glabStatus,
         hasServerInstanceId: !!labInstance.serverInstanceId,
         hasServerVolumeId: !!labInstance.serverVolumeId,
-        serverProgressText: labInstance.serverProgressText,
+        serverTaskText: labInstance.serverTaskText,
+        serverTaskStatus: labInstance.serverTaskStatus,
       }));
 
 
@@ -473,7 +475,6 @@ export class CnLabInstanceAggregateService {
     return await this.dataSource.transaction(async entityManager => {
       await this.labInstanceProjectService.deleteLabInstanceProject(labInstanceId, projectId, entityManager);
 
-      // TODO what to do with desktop lab ?
       // remove the project from the lab
       await this.externalLabProjectService.deleteProjectInLab(labInstance.getGlabApiInfo(), projectId);
     });
@@ -753,12 +754,13 @@ export class CnLabInstanceAggregateService {
       text = 'Lab running';
     }
 
-    return this.labInstancesService.updateServerStatusText(labInstanceId, text);
+    return this.labInstancesService.updateServerTask(labInstanceId, text, CnLabInstanceServerTaskStatus.SUCCESS);
   }
 
   private async onError(labInstanceId: string, message: string): Promise<void> {
     this.logger.error(message);
-    await this.labInstancesService.updateServerStatusText(labInstanceId, message).catch(err => this.logger.error(err));
+    await this.labInstancesService.updateServerTask(labInstanceId, message, CnLabInstanceServerTaskStatus.ERROR)
+      .catch(err => this.logger.error(err));
     this.labServerService.refreshLabStatus(labInstanceId).catch(err => this.logger.error(err));
   }
 
@@ -812,16 +814,6 @@ export class CnLabInstanceAggregateService {
     return labInstance;
   }
 
-  /**
-   * Backup the lab, and mark the instance as backing up before stopping
-   * A cron job will stop the instance when the backup is done
-   * @param id
-   */
-  public async backupLabAndStopInstance(id: string): Promise<CnLabInstance> {
-    await this.createProdBackup(id);
-
-    return this.labInstancesService.markInstanceAsBackingUpBeforeStopping(id);
-  }
 
   ////////////////////////// STATUS RULES  //////////////////////////////
 

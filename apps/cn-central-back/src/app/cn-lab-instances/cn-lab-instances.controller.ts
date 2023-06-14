@@ -144,14 +144,6 @@ export class CnLabInstancesController {
   }
 
   /**
-   * backup stop a lab instance
-   */
-  @Put(':id/backup-and-stop')
-  public backupAndStopInstance(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstance> {
-    return this.aggregateService.backupLabAndStopInstance(id);
-  }
-
-  /**
    * Route to update the dockerlab repository
    */
   @Put(':id/dockerlab/update')

@@ -6,6 +6,7 @@ import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-
 import {CnLabManagerService} from '../cn-lab-manager.service';
 import {CnLabSshService} from './cn-lab-ssh.service';
 import {CnCloudProviderFactory} from './cn-cloud-provider.factory';
+import {CnLabInstanceServerTaskStatus} from '../status/cn-lab-instance-status.enum';
 
 /**
  * Service to configure the lab server.
@@ -50,7 +51,7 @@ export class CnLabConfigurerService {
   // pull the dockerlab repo and update the lab instance status
   public async updateDockerlabRepo(labInstance: CnLabInstance): Promise<void> {
     await this.refreshDockerlabRepo(labInstance);
-    await this.labInstanceService.updateServerStatusText(labInstance.id, `Dockerlab repository updated`);
+    await this.labInstanceService.updateServerTask(labInstance.id, `Dockerlab repository updated`, CnLabInstanceServerTaskStatus.SUCCESS);
   }
 
   /**
@@ -66,11 +67,12 @@ export class CnLabConfigurerService {
     // todo does not work if this is the first time the ssh connection is made
     // if the repo does exist, delete it to re-clone it
     if (cdResult === '') {
-      await this.labInstanceService.updateServerStatusText(labInstance.id, `Deleting dockerlab repository`);
+      await this.labInstanceService.updateServerTask(labInstance.id, `Deleting dockerlab repository`,
+        CnLabInstanceServerTaskStatus.RUNNING);
       await this.labSshService.execSshCommand(labInstance, [`rm -rf ${CnLabSshService.DOCKERLAB_FOLDER}`]);
     }
     // clone the repo
-    await this.labInstanceService.updateServerStatusText(labInstance.id, `Pulling dockerlab repository`);
+    await this.labInstanceService.updateServerTask(labInstance.id, `Pulling dockerlab repository`, CnLabInstanceServerTaskStatus.RUNNING);
     // Git clone
     // eslint-disable-next-line max-len
     const repo = `https://${this.coreConfigService.getDockerlabRepoUsername()}:${this.coreConfigService.getDockerlabRepoPassword()}@${this.coreConfigService.getDockerlabRepoUrl()}`;
@@ -79,20 +81,20 @@ export class CnLabConfigurerService {
   }
 
   private async mountVolume(labInstance: CnLabInstance): Promise<void> {
-    await this.labInstanceService.updateServerStatusText(labInstance.id, `Mounting volume`);
+    await this.labInstanceService.updateServerTask(labInstance.id, `Mounting volume`, CnLabInstanceServerTaskStatus.RUNNING);
     const cloudProvider = this.cloudProviderFactory.getCloudProviderService(labInstance.getCloudProviderName());
     await cloudProvider.mountVolume(labInstance);
   }
 
   private async callPrepareServer(labInstance: CnLabInstance): Promise<void> {
-    await this.labInstanceService.updateServerStatusText(labInstance.id, `Prepare and configure server`);
+    await this.labInstanceService.updateServerTask(labInstance.id, `Prepare and configure server`, CnLabInstanceServerTaskStatus.RUNNING);
     await this.labSshService.execSshCommand(labInstance, [`cd ${this.labSshService.getUtilsFolder()}`,
       `bash prepare_server.sh`]);
   }
 
   private async rebootAndWaitForServer(labInstance: CnLabInstance): Promise<void> {
     // Reboot server
-    await this.labInstanceService.updateServerStatusText(labInstance.id, `Rebooting server`);
+    await this.labInstanceService.updateServerTask(labInstance.id, `Rebooting server`, CnLabInstanceServerTaskStatus.RUNNING);
 
     await this.labSshService.execSshCommand(labInstance, ['sudo reboot'],
       {errorMode: CnExecCommandMode.STDERR_AS_SUCCESS, ignoreError: true});
@@ -120,16 +122,17 @@ export class CnLabConfigurerService {
 
   private async callDockerComposeUp(labInstance: CnLabInstance): Promise<void> {
     // execute docker compose up
-    await this.labInstanceService.updateServerStatusText(labInstance.id, `Starting lab manager`);
+    await this.labInstanceService.updateServerTask(labInstance.id, `Starting lab manager`,CnLabInstanceServerTaskStatus.RUNNING);
     await this.labSshService.execSshCommand(labInstance,
       [`cd ${CnLabSshService.DOCKERLAB_FOLDER}`, 'docker-compose up -d']);
   }
 
   public async updateLabManager(labInstance: CnLabInstance, labManagerVersion: string): Promise<void> {
-    await this.labInstanceService.updateServerStatusText(labInstance.id, `Updating lab manager to version ${labManagerVersion}`);
+    await this.labInstanceService.updateServerTask(labInstance.id, `Updating lab manager to version ${labManagerVersion}`,
+      CnLabInstanceServerTaskStatus.RUNNING);
     await this.labSshService.execSshCommand(labInstance,
       [`cd ${CnLabSshService.DOCKERLAB_FOLDER}`, `. update_lab_manager.sh ${labManagerVersion}`]);
-    await this.labInstanceService.updateServerStatusText(labInstance.id, `Lab manager updated`);
+    await this.labInstanceService.updateServerTask(labInstance.id, `Lab manager updated`, CnLabInstanceServerTaskStatus.SUCCESS);
   }
 
 

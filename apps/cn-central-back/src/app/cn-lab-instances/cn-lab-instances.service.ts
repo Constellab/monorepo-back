@@ -2,7 +2,11 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnLabInstance, CnLabInstanceType} from './cn-lab-instance.entity';
 import {DataSource, DeleteResult, EntityManager, In, Not, Repository} from 'typeorm';
-import {CnLabInstanceStatus, cnLabInstanceTemporaryStatuses} from './status/cn-lab-instance-status.enum';
+import {
+  CnLabInstanceServerTaskStatus,
+  CnLabInstanceStatus,
+  cnLabInstanceTemporaryStatuses
+} from './status/cn-lab-instance-status.enum';
 import {CnAbstractWithStatusService} from '../cn-core/class/cn-abstract-with-status.service';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
 import {ClHelpService, ClPage, ClPageI} from '@monorepo/core-lib';
@@ -212,10 +216,6 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_STOPPING, id);
   }
 
-  public markInstanceAsBackingUpBeforeStopping(id: string): Promise<CnLabInstance> {
-    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.BACKING_UP_BEFORE_STOP, id);
-  }
-
 
   public findLabByApiKey(apiKey: string): Promise<CnLabInstance> {
     return this.repository.findOne({
@@ -262,9 +262,10 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return this.findPaginated(page, size, searchBuilder.build());
   }
 
-  public async updateServerStatusText(labInstanceId: string, text: string): Promise<CnLabInstance> {
+  public async updateServerTask(labInstanceId: string, text: string, status: CnLabInstanceServerTaskStatus): Promise<CnLabInstance> {
     const labInstance = await this.findByIdAndCheck(labInstanceId);
-    labInstance.serverProgressText = text;
+    labInstance.serverTaskText = text;
+    labInstance.serverTaskStatus = status;
     return this.repository.save(labInstance);
   }
 

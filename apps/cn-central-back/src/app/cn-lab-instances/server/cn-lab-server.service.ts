@@ -12,7 +12,11 @@ import {
 } from './cn-cloud-provider.class';
 import {CnLabInstance} from '../cn-lab-instance.entity';
 import {CnLabInstancesService} from '../cn-lab-instances.service';
-import {CnLabInstanceStatus, cnLabInstanceTemporaryStatuses} from '../status/cn-lab-instance-status.enum';
+import {
+  CnLabInstanceServerTaskStatus,
+  CnLabInstanceStatus,
+  cnLabInstanceTemporaryStatuses
+} from '../status/cn-lab-instance-status.enum';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnExternalLabApiService} from '../../cn-external-lab-api/cn-external-lab-api.service';
 import {CnCloudProviderFactory} from './cn-cloud-provider.factory';
@@ -113,7 +117,8 @@ export class CnLabServerService {
     while ((serverInstance.status === 'CREATING' || volume.status === 'CREATING') && count < 10) {
 
       if (count === 0) {
-        await this.labInstanceService.updateServerStatusText(labInstance.id, `Waiting for server and volume to be ready`);
+        await this.labInstanceService.updateServerTask(labInstance.id, 'Waiting for server and volume to be ready',
+          CnLabInstanceServerTaskStatus.RUNNING);
       }
       // wait 30 seconds
       // eslint-disable-next-line max-len
@@ -135,13 +140,15 @@ export class CnLabServerService {
     }
 
     if (serverInstance.status === 'CREATING') {
-      await this.labInstanceService.updateServerStatusText(labInstance.id,
-        'Server instance not ready, please refresh the status if few minutes and then contact the support if the problem persists');
+      await this.labInstanceService.updateServerTask(labInstance.id,
+        'Server instance not ready, please refresh the status if few minutes and then contact the support if the problem persists',
+        CnLabInstanceServerTaskStatus.ERROR);
       throw new BlBadRequestException('Instance not ready');
     }
     if (volume.status === 'CREATING') {
-      await this.labInstanceService.updateServerStatusText(labInstance.id,
-        'Volume not ready, please refresh the status if few minutes and then contact the support if the problem persists');
+      await this.labInstanceService.updateServerTask(labInstance.id,
+        'Volume not ready, please refresh the status if few minutes and then contact the support if the problem persists',
+        CnLabInstanceServerTaskStatus.ERROR);
       throw new BlBadRequestException('Volume not ready');
     }
 
@@ -168,8 +175,9 @@ export class CnLabServerService {
 
     const regionName = labInstance.region.technicalName;
 
-    await this.labInstanceService.updateServerStatusText(labInstance.id,
-      `Creating server instance ${labInstance.serverInfo.name} in cloud provider ${service.getName()}`
+    await this.labInstanceService.updateServerTask(labInstance.id,
+      `Creating server instance ${labInstance.serverInfo.name} in cloud provider ${service.getName()}`,
+      CnLabInstanceServerTaskStatus.RUNNING
     );
     // eslint-disable-next-line max-len
     this.logger.log(`Creating server instance ${labInstance.name} ${labInstance.serverInfo.name} for lab ${labInstance.id} in cloud provider ${service.getName()}`);
@@ -196,8 +204,9 @@ export class CnLabServerService {
       region: labInstance.region.technicalName
     };
 
-    await this.labInstanceService.updateServerStatusText(labInstance.id,
-      `Creating volume in cloud provider ${service.getName()}`
+    await this.labInstanceService.updateServerTask(labInstance.id,
+      `Creating volume in cloud provider ${service.getName()}`,
+      CnLabInstanceServerTaskStatus.RUNNING
     );
     this.logger.log(`Creating volume for lab ${labInstance.id} in cloud provider ${service.getName()}`);
     const volume = await service.createVolume(volumeRequest);
@@ -217,12 +226,14 @@ export class CnLabServerService {
     }
 
     if (!ipv4) {
-      await this.labInstanceService.updateServerStatusText(labInstance.id,
-        'The ip adresse of the server is not available, please retry in few minutes and contact the support if the problem persists');
+      await this.labInstanceService.updateServerTask(labInstance.id,
+        'The ip adresse of the server is not available, please retry in few minutes and contact the support if the problem persists',
+        CnLabInstanceServerTaskStatus.ERROR);
       throw new BlBadRequestException(`No IP address for lab ${labInstance.id} with server id ${labInstance.serverInstanceId}`);
     }
 
-    await this.labInstanceService.updateServerStatusText(labInstance.id, 'Creating DNS record for the lab');
+    await this.labInstanceService.updateServerTask(labInstance.id, 'Creating DNS record for the lab',
+      CnLabInstanceServerTaskStatus.RUNNING);
     this.logger.log(`Creating domain record for lab ${labInstance.id} with subdomain ${subDomainName}`);
     await this.ovhCloudProviderService.createDomainForLab(ipv4, mainDomain, subDomainName);
     this.logger.log(`Domain record created for lab ${labInstance.id} with subdomain ${subDomainName}`);
@@ -230,7 +241,8 @@ export class CnLabServerService {
 
   private async attachVolumeToInstance(service: CnCloudProviderService, serverInstanceId: string, volumeId: string,
                                        labInstanceId: string): Promise<CnCpVolume> {
-    await this.labInstanceService.updateServerStatusText(labInstanceId, 'Attaching volume to server instance');
+    await this.labInstanceService.updateServerTask(labInstanceId, 'Attaching volume to server instance',
+      CnLabInstanceServerTaskStatus.RUNNING);
     // eslint-disable-next-line max-len
     this.logger.log(`Attaching volume ${volumeId} to instance ${serverInstanceId} for lab ${labInstanceId} in cloud provider ${service.getName()}`);
     const volume = await service.attachVolumeToInstance(serverInstanceId, volumeId);

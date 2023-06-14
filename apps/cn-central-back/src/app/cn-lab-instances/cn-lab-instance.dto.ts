@@ -16,7 +16,7 @@ import {
   CnLabDesktopPlatform
 } from './cn-lab-instance.entity';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
+import {CnLabInstanceServerTaskStatus, CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 
 
 /**
@@ -122,7 +122,8 @@ export interface CnLabInstanceStatusDTO {
   labIsRunning: boolean;
   hasServerInstanceId: boolean;
   hasServerVolumeId: boolean;
-  serverProgressText: string;
+  serverTaskText: string;
+  serverTaskStatus: CnLabInstanceServerTaskStatus;
 }
 
 /**

@@ -4,7 +4,7 @@ import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnEntityWithStatus} from '../cn-core/model/entities/cn-entity-with-status.entity';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
 import {CnServerInfo} from '../cn-servers-info/cn-server-info.entity';
-import {CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
+import {CnLabInstanceServerTaskStatus, CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 import {randomBytes} from 'crypto';
 import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
@@ -120,10 +120,15 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Column({nullable: true, length: 255})
   serverVolumeId: string;
 
-  // text about the current server status
+  // text about the current or last server task status
   @Exclude()
   @Column({type: 'text', nullable: true})
-  serverProgressText: string;
+  serverTaskText: string;
+
+  @Exclude()
+  @Column({type: 'enum', enum: CnLabInstanceServerTaskStatus, nullable: false,
+    default: CnLabInstanceServerTaskStatus.NONE})
+  serverTaskStatus: CnLabInstanceServerTaskStatus;
 
   @Column({
     type: 'enum', enum: CnLabInstanceBillingMode, nullable: true,

@@ -3,7 +3,6 @@ export enum CnLabInstanceStatus {
   SERVER_STOPPING = 'SERVER_STOPPING',
   SERVER_RUNNING = 'SERVER_RUNNING', // server running but lab not yet
   SERVER_STOPPED = 'SERVER_STOPPED', // server stopped
-  BACKING_UP_BEFORE_STOP = 'BACKING_UP_BEFORE_STOP', // status for the bd is being backed up before stopping the server
   LAB_RUNNING = 'LAB_RUNNING', // server and lab running
 }
 
@@ -11,5 +10,11 @@ export enum CnLabInstanceStatus {
 export const cnLabInstanceTemporaryStatuses = [
   CnLabInstanceStatus.SERVER_STARTING,
   CnLabInstanceStatus.SERVER_STOPPING,
-  CnLabInstanceStatus.BACKING_UP_BEFORE_STOP
 ];
+
+export enum CnLabInstanceServerTaskStatus {
+  RUNNING = 'RUNNING',
+  SUCCESS = 'SUCCESS',
+  ERROR = 'ERROR',
+  NONE = 'NONE',
+}
