@@ -638,13 +638,14 @@ export class CnLabInstanceAggregateService {
     });
   }
 
-  public async checkUserCredentials(credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
+  public async checkUserCredentials(credentials: CmCredentials, ignoreCaptcha: boolean,
+                                    ignore2Fa: boolean): Promise<CnExternalCheckCredentialResponse> {
     // check that the user has access to the lab
     const lab = await this.getAndCheckAuthorizationToFindById(CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
 
     // check the credentials, if the lab is cloud, it needs a valid captcha
     // for desktop lab, no captcha is needed as this is local
-    return this.authService.externalCheckCredentials(credentials, lab.isCloud());
+    return this.authService.externalCheckCredentials(credentials, lab.isCloud() && !ignoreCaptcha, ignore2Fa);
   }
 
   /////////////////////////// EXTERNAL LAB MANAGER //////////////////////////////

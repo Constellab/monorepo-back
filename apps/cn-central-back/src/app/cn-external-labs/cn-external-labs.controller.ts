@@ -46,10 +46,25 @@ export class CnExternalLabsController {
     return this.labInstanceAggregator.registerLabConfig(labStart);
   }
 
+  /**
+   * Check user credentials for login
+   * @param credentials
+   */
   @CnLabRobotAuthentication()
   @Post('check-credentials')
   async checkUserCredentials(@Body() credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
-    return this.labInstanceAggregator.checkUserCredentials(credentials);
+    return this.labInstanceAggregator.checkUserCredentials(credentials, false, false);
+  }
+
+  /**
+   * Check the user credentials without checking captcha nor 2Fa.
+   * This route is not supposed to be used for login.
+   * @param credentials
+   */
+  @CnLabRobotAuthentication()
+  @Post('check-credentials-simple')
+  async checkUserCredentialsSimple(@Body() credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
+    return this.labInstanceAggregator.checkUserCredentials(credentials, true,true);
   }
 
   @Put('project/:projectId/experiment')

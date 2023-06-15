@@ -93,7 +93,8 @@ export class CnAuthService {
     }
   }
 
-  async externalCheckCredentials(credentials: CmCredentials, checkCaptcha: boolean): Promise<CnExternalCheckCredentialResponse> {
+  async externalCheckCredentials(credentials: CmCredentials, checkCaptcha: boolean,
+                                 ignore2Fa: boolean = false): Promise<CnExternalCheckCredentialResponse> {
     if (checkCaptcha) {
       const captchaCheck = await this.captchaService.validateCaptcha(credentials.captcha);
 
@@ -104,7 +105,7 @@ export class CnAuthService {
 
     const user = await this.checkCredentialsAndUser(credentials);
 
-    if (user.has2FA) {
+    if (user.has2FA && !ignore2Fa) {
       const user2FA = await this.user2FaService.generateCode(user);
       return {
         status: '2FA_REQUIRED',
