@@ -1,7 +1,6 @@
 import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
 import {CnGroup, CnGroupTeam, CnUserGroup} from './cn-group.entity';
 import {ClPageI} from '@monorepo/core-lib';
-import {CnUser} from '../cn-users/cn-user.entity';
 import {CnGroupsAggregateService} from './cn-groups-aggregate.service';
 import {BlParsePipe, BlSearchParams} from '@monorepo/back-core-lib';
 
@@ -12,10 +11,22 @@ export class CnGroupsController {
   }
 
 
-  @Get('all-current')
+  @Get('current')
   public getAllCurrentGroups(@Query('page', ParseIntPipe) page: number,
                              @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnGroup>> {
-    return this.aggregateService.findGroupsOfCurrentSpace(page, size);
+    return this.aggregateService.searchCurrentGroupByLabel(null, page, size);
+  }
+
+  @Get('current/search/label/:label')
+  public searchCurrentGroupByLabel(@Param('label') label: string,
+                                   @Query('page', ParseIntPipe) page: number,
+                                   @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnGroup>> {
+    return this.aggregateService.searchCurrentGroupByLabel(label, page, size);
+  }
+
+  @Get(':id')
+  public getGroupById(@Param('id', ParseUUIDPipe) id: string): Promise<CnGroup> {
+    return this.aggregateService.getGroupById(id);
   }
 
   ///////////////////////////// TEAMS ////////////////////////////////////

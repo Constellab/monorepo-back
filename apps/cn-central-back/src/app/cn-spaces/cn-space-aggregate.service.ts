@@ -378,7 +378,7 @@ export class CnSpaceAggregateService {
 
   public async getAndCheckUser(userId: string): Promise<CnUser> {
     if(CnCurrentUserHelper.isAdmin() ||
-      await this.spaceUserService.checkUsersHaveCommonSpace(userId, this.userService.getCurrent().id)){
+      await this.spaceUserService.usersHaveCommonSpace(userId, this.userService.getCurrent().id)){
       return this.userService.findByIdAndCheck(userId);
     }
 

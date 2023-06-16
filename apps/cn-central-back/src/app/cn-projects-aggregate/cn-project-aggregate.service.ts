@@ -259,7 +259,7 @@ export class CnProjectAggregateService {
       }
 
       // update the leader
-      project.leader = await leaderSingleGroup.user;
+      project.leader = leaderSingleGroup.user;
       return this.projectService.update(project, entityManager);
     });
   }

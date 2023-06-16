@@ -157,7 +157,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     return spaceUser.space;
   }
 
-  public async checkUsersHaveCommonSpace(userAId: string, userBId: string): Promise<boolean> {
+  public async usersHaveCommonSpace(userAId: string, userBId: string): Promise<boolean> {
     const userASpaces: CnSpace[] = await this.getSpacesOfUser(userAId);
     const userBSpaces: CnSpace[] = await this.getSpacesOfUser(userBId);
 

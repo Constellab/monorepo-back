@@ -35,8 +35,7 @@ export class CnGroup extends CnBaseEntity {
 @ChildEntity(CnGroupType.SINGLE_USER)
 export class CnGroupSingleUser extends CnGroup {
 
-  @Exclude()
-  @OneToOne(() => CnUser, (user: CnUser) => user.ownGroup, {lazy: true})
+  @OneToOne(() => CnUser, (user: CnUser) => user.ownGroup, {eager: true})
   @JoinColumn()
   user: CnUser;
 

@@ -22,11 +22,13 @@ export class CnGroupsSecurity {
    */
   public async getAndCheckAuthorizationToGetTeam(userInfo: CnUserSpaceInfo, teamId: string): Promise<CnGroupTeam> {
     const team = await this.groupService.getAndCheckTeamById(teamId);
+    this.checkAuthorizationToGetTeam(userInfo, team);
+    return team;
+  }
 
+  public checkAuthorizationToGetTeam(userInfo: CnUserSpaceInfo, team: CnGroupTeam): void {
     // check the space context
     if (team.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException();
-
-    return team;
   }
 
   /**
@@ -44,7 +46,8 @@ export class CnGroupsSecurity {
       throw new BlUnauthorizedException();
     }
 
-    return team;  }
+    return team;
+  }
 
   /**
    * A space user can see all the groups of the space

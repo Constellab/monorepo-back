@@ -11,6 +11,7 @@ import {CnSpaceUserService} from '../cn-spaces/cn-space-user.service';
 import {CnGroupsSecurity} from './cn-groups.security';
 import {CnGroupsService} from './cn-groups.service';
 import {BlSearchParams, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {CnGroupType} from './cn-group-type.enum';
 
 @Injectable()
 export class CnGroupsAggregateService {
@@ -24,16 +25,36 @@ export class CnGroupsAggregateService {
 
 
   ////////////////////////////////////// GROUPS  ////////////////////////////////
-  public async findGroupsOfCurrentSpace(page: number, size: number): Promise<ClPageI<CnGroup>> {
+
+  public async searchCurrentGroupByLabel(label: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
     const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     await this.groupSecurity.checkAuthorizationToFindAllTeamBySpace(userInfo);
 
     const spaceUserIds = await this.spaceUserService.findAllSpaceUserIds(userInfo.spaceId);
-    return await this.groupsService.getGroupsBySpaceId(userInfo.spaceId, spaceUserIds, page, size);
+    return await this.groupsService.searchGroupsByLabelInSpace(userInfo.spaceId, spaceUserIds, label, page, size);
   }
 
   public async findByIdAndCheck(id: string): Promise<CnGroup> {
     return this.groupsService.findByIdAndCheck(id);
+  }
+
+  public async getGroupById(id: string): Promise<CnGroup> {
+    const group = await this.groupsService.findByIdAndCheck(id);
+
+    // if the group is a Single User group,
+    // check current user and user from group are in the current space
+    if (group.type === CnGroupType.SINGLE_USER) {
+      const spaceId = CnCurrentUserHelper.getAndCheckUserSpaceInfo().spaceId;
+      if (!(await this.spaceUserService.userIsSpaceMember(spaceId, CnCurrentUserHelper.getAndCheckUserSpaceInfo().userId)) ||
+        !(await this.spaceUserService.userIsSpaceMember(spaceId, (group as CnGroupSingleUser).userId))) {
+        throw new BlUnauthorizedException();
+      }
+    } else {
+      // check that user can get the team
+      this.groupSecurity.checkAuthorizationToGetTeam(CnCurrentUserHelper.getAndCheckUserSpaceInfo(), group as CnGroupTeam);
+    }
+
+    return group;
   }
 
   ////////////////////////////////////// TEAMS  ////////////////////////////////

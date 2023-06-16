@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup} from './cn-group.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, FindOneOptions, In, Repository} from 'typeorm';
+import {EntityManager, FindOneOptions, In, Like, Repository} from 'typeorm';
 import {BlAbstractService, BlBadRequestException, BlSearchBuilder, BlSearchParams} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnGroupType} from './cn-group-type.enum';
@@ -84,7 +84,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
           users[user.user.id] = user.user;
         }
       } else if (group instanceof CnGroupSingleUser) {
-        const user = await group.user;
+        const user = group.user;
         users[user.id] = user;
       }
     }
@@ -100,10 +100,6 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
   /**
    * Use to find all the group of a space.
    * It needs the complete list of user of the space to return the user groups
-   * @param spaceId
-   * @param userIds
-   * @param page
-   * @param size
    */
   public async getGroupsBySpaceId(spaceId: string, userIds: string[],
                                   page: number, size: number): Promise<ClPageI<CnGroup>> {
@@ -114,6 +110,35 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     const userWhere: FindOptionsWhere<CnGroupSingleUser> = {
       userId: In(userIds)
     };
+    return this.findPaginated(page, size, {
+      where: [teamWhere, userWhere],
+      order: {
+        type: 'DESC', // have TEAM before SINGLE_USER
+        label: 'ASC',
+      }
+    });
+  }
+
+  /**
+   * Use to find all the group of a space.
+   * Possibility to search by label.
+   * It needs the complete list of user of the space to return the user groups
+   */
+  public async searchGroupsByLabelInSpace(spaceId: string, userIds: string[], label: string,
+                                          page: number, size: number): Promise<ClPageI<CnGroup>> {
+    const teamWhere: FindOptionsWhere<CnGroupTeam> = {
+      spaceId: spaceId,
+    };
+
+    const userWhere: FindOptionsWhere<CnGroupSingleUser> = {
+      userId: In(userIds),
+    };
+
+    if(!ClHelpService.isNullOrEmpty(label)){
+      teamWhere.label = Like(`%${label}%`);
+      userWhere.label = Like(`%${label}%`);
+    }
+
     return this.findPaginated(page, size, {
       where: [teamWhere, userWhere],
       order: {
