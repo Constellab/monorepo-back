@@ -8,7 +8,7 @@ import {ClPage} from '@monorepo/core-lib';
 import {CnBucket, CnBucketContentType} from './cn-buckets/cn-bucket.entity';
 import {CnCloudProviderAggregateService} from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {BlBadRequestException} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlSearchParams} from '@monorepo/back-core-lib';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {EntityManager} from 'typeorm';
 
@@ -109,10 +109,9 @@ export class CnObjectStoragesAggregateService {
     await this.bucketService.deleteById(id);
   }
 
-
-  public async getBuckets(page: number, size: number): Promise<ClPage<CnBucket>> {
+  public async searchBuckets(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnBucket>> {
     await this.securityService.checkAuthorizationToGetAllBuckets(CnCurrentUserHelper.getAndCheckCurrentUser());
-    return this.bucketService.findAll(page, size);
+    return this.bucketService.search(searchParams, page, size);
   }
 
   /////////////////////////// CREDENTIALS ///////////////////////////

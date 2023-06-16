@@ -1,5 +1,11 @@
 import {Injectable} from '@nestjs/common';
-import {BlAbstractService, BlBadRequestException, BlObjectStorageService} from '@monorepo/back-core-lib';
+import {
+  BlAbstractService,
+  BlBadRequestException,
+  BlObjectStorageService,
+  BlSearchBuilder,
+  BlSearchParams
+} from '@monorepo/back-core-lib';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DataSource, EntityManager, Repository} from 'typeorm';
 import {CnBucket, CnBucketContentType} from './cn-bucket.entity';
@@ -66,7 +72,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
   }
 
   public findByContentTypeAndObjectId(contentType: CnBucketContentType, objectId: string): Promise<CnBucket> {
-    if(objectId == null) throw new BlBadRequestException(`The objectId must be defined`);
+    if (objectId == null) throw new BlBadRequestException(`The objectId must be defined`);
     return this.repository.findOne({
       where: {
         contentType: contentType,
@@ -79,12 +85,6 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     });
   }
 
-  public async deleteBucket(bucketId: string, entityManager: EntityManager): Promise<void> {
-    const bucket = await this.findById(bucketId, {credentials: true, region: true});
-    await entityManager.remove(bucket);
-    await this.objectStorageService.deleteBucket(bucket.getBucketConfig());
-  }
-
   public async findByContentType(contentType: CnBucketContentType): Promise<CnBucket[]> {
     return await this.repository.find({
       where: {
@@ -93,14 +93,18 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     });
   }
 
-  public findAll(page: number, size: number): Promise<ClPage<CnBucket>> {
-    return this.findPaginated(page, size, {
-      relations: {
-        region: true,
-        space: true,
-        credentials: {cloudProvider: true, space: true}
-      }
+
+  public search(searchParam: BlSearchParams,
+                page: number, size: number): Promise<ClPage<CnBucket>> {
+    const searchBuilder = new BlSearchBuilder<CnBucket>({name: 'ASC'});
+    searchBuilder.addSearchParams(searchParam);
+    searchBuilder.setRelations({
+      region: true,
+      space: true,
+      credentials: {cloudProvider: true, space: true}
     });
+
+    return this.findPaginated(page, size, searchBuilder.build());
   }
 
 }

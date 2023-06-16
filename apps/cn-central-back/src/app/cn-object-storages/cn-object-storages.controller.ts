@@ -1,10 +1,10 @@
 import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
 import {CnObjectStoragesAggregateService} from './cn-object-storages-aggregate.service';
 import {CnBucket} from './cn-buckets/cn-bucket.entity';
-import {ClPage} from '@monorepo/core-lib';
+import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnBucketCredentials} from './cn-bucket-credential/cn-bucket-credential.entity';
 import {CnBucketCredentialsFull} from './cn-object-storage.dto';
-import {BlDtoHelper, BlParsePipe} from '@monorepo/back-core-lib';
+import {BlDtoHelper, BlParsePipe, BlSearchParams} from '@monorepo/back-core-lib';
 
 
 @Controller('object-storages')
@@ -29,11 +29,11 @@ export class CnObjectStoragesController {
     return this.service.deleteBucket(id);
   }
 
-
-  @Get('buckets')
-  public async getBuckets(@Query('page', ParseIntPipe) page: number,
-                          @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnBucket>> {
-    return this.service.getBuckets(page, size);
+  @Post('buckets/search')
+  searchBuckets(@Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
+                @Query('page', ParseIntPipe) page: number,
+                @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnBucket>> {
+    return this.service.searchBuckets(searchParam, page, size);
   }
 
   ////////////////////////////// CREDENTIALS //////////////////////////////

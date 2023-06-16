@@ -99,28 +99,6 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
 
   /**
    * Use to find all the group of a space.
-   * It needs the complete list of user of the space to return the user groups
-   */
-  public async getGroupsBySpaceId(spaceId: string, userIds: string[],
-                                  page: number, size: number): Promise<ClPageI<CnGroup>> {
-    const teamWhere: FindOptionsWhere<CnGroupTeam> = {
-      spaceId: spaceId
-    };
-
-    const userWhere: FindOptionsWhere<CnGroupSingleUser> = {
-      userId: In(userIds)
-    };
-    return this.findPaginated(page, size, {
-      where: [teamWhere, userWhere],
-      order: {
-        type: 'DESC', // have TEAM before SINGLE_USER
-        label: 'ASC',
-      }
-    });
-  }
-
-  /**
-   * Use to find all the group of a space.
    * Possibility to search by label.
    * It needs the complete list of user of the space to return the user groups
    */
