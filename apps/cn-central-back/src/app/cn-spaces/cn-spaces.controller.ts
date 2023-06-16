@@ -44,6 +44,11 @@ export class CnSpacesController {
     return this.spaceAggregateService.findCurrentUserSpaces();
   }
 
+  @Get('user/:userId')
+  public async getSpacesOfUser(@Param('userId') userId: string): Promise<CnSpace[]> {
+    return this.spaceAggregateService.getSpacesOfUser(userId);
+  }
+
 
   @Post()
   create(@Body(new BlParsePipe(CnSpace)) entity: CnSpace): Promise<CnSpace> {
@@ -178,10 +183,14 @@ export class CnSpacesController {
     return this.spaceAggregateService.requestNewLicenses(id, request);
   }
 
-  @Get('user/:userId')
+  // get user from a normal user,
+  // this is not the best location for this route
+  @Get('find-user/:userId')
   public async getAndCheckUser(@Param('userId') userId: string): Promise<CnUser> {
     return this.spaceAggregateService.getAndCheckUser(userId);
   }
+
+
 
   @Post('generate-all-user-personal-space')
   public async generateAllUserPersonalSpace(): Promise<void> {

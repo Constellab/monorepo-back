@@ -89,6 +89,11 @@ export class CnSpaceAggregateService {
     await this.spaceService.deleteById(id);
   }
 
+  public async getSpacesOfUser(userId: string): Promise<CnSpace[]> {
+    this.checkAdmin();
+    return await this.spaceUserService.getSpacesOfUser(userId);
+  }
+
   public async findCurrentUserSpaces(): Promise<CnSpace[]> {
     return await this.spaceUserService.getSpacesOfUser(CnCurrentUserHelper.getCurrentUser().id);
   }
@@ -377,8 +382,8 @@ export class CnSpaceAggregateService {
   }
 
   public async getAndCheckUser(userId: string): Promise<CnUser> {
-    if(CnCurrentUserHelper.isAdmin() ||
-      await this.spaceUserService.usersHaveCommonSpace(userId, this.userService.getCurrent().id)){
+    if (CnCurrentUserHelper.isAdmin() ||
+      await this.spaceUserService.usersHaveCommonSpace(userId, this.userService.getCurrent().id)) {
       return this.userService.findByIdAndCheck(userId);
     }
 
