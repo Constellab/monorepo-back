@@ -93,6 +93,7 @@ export class BlSearchBuilder<T> {
       case 'GE':
         return MoreThanOrEqual(value);
       case 'CONTAINS':
+      case 'MATCH':
         return Like(`%${value}%`);
       case 'IN':
         return In(value);
@@ -106,8 +107,6 @@ export class BlSearchBuilder<T> {
         return Like(value + '%');
       case 'END_WITH':
         return Like('%' + value);
-      case 'MATCH':
-        return Like('%' + value + '%');
       case 'BETWEEN':
         return Between(value[0], value[1]);
     }

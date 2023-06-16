@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup} from './cn-group.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, FindOneOptions, In, Repository} from 'typeorm';
-import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlBadRequestException, BlSearchBuilder, BlSearchParams} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnGroupType} from './cn-group-type.enum';
 import {ClHelpService, ClPageI} from '@monorepo/core-lib';
@@ -18,29 +18,6 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
   }
 
   ////////////////////////////////////// GROUP USERS ////////////////////////////////
-
-  public async createTeam(label: string): Promise<CnGroupTeam> {
-    let group = new CnGroupTeam();
-    group.type = CnGroupType.TEAM;
-    group.label = label;
-    group.space = CnCurrentUserHelper.getAndCheckCurrentSpace();
-
-    const entityManager = this.getEntityManager();
-    group = await this.create(group, entityManager) as CnGroupTeam;
-
-
-    const userGroup = new CnUserGroup();
-    userGroup.groupId = group.id;
-    userGroup.userId = CnCurrentUserHelper.getAndCheckCurrentUser().id;
-    await entityManager.save(userGroup);
-
-    return group;
-  }
-
-  public async updateTeamLabel(team: CnGroupTeam, label: string): Promise<CnGroup> {
-    team.label = label;
-    return this.update(team);
-  }
 
   public createOwnGroup(user: CnUser, entityManager: EntityManager): Promise<CnGroup> {
     const group: CnGroupSingleUser = new CnGroupSingleUser();
@@ -78,7 +55,6 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
       return groups;
     }
   }
-
 
 
   /**
@@ -137,8 +113,8 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
 
     const userWhere: FindOptionsWhere<CnGroupSingleUser> = {
       userId: In(userIds)
-    }
-    return this.findPaginated(page, size,{
+    };
+    return this.findPaginated(page, size, {
       where: [teamWhere, userWhere],
       order: {
         type: 'DESC', // have TEAM before SINGLE_USER
@@ -148,6 +124,30 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
   }
 
   ////////////////////////////////// TEAMS /////////////////////////
+
+  public async createTeam(label: string): Promise<CnGroupTeam> {
+    let group = new CnGroupTeam();
+    group.type = CnGroupType.TEAM;
+    group.label = label;
+    group.space = CnCurrentUserHelper.getAndCheckCurrentSpace();
+
+    const entityManager = this.getEntityManager();
+    group = await this.create(group, entityManager) as CnGroupTeam;
+
+
+    const userGroup = new CnUserGroup();
+    userGroup.groupId = group.id;
+    userGroup.userId = CnCurrentUserHelper.getAndCheckCurrentUser().id;
+    await entityManager.save(userGroup);
+
+    return group;
+  }
+
+  public async updateTeamLabel(team: CnGroupTeam, label: string): Promise<CnGroup> {
+    team.label = label;
+    return this.update(team);
+  }
+
   /**
    * Return the group if the user can view it
    * @param id
@@ -170,7 +170,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
    */
   public async getTeamsByUserAndSpace(userId: string, spaceId: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
     return this.findPaginated(page, size, this.getTeamsByUserAndSpaceOptions(userId, spaceId));
-  };
+  }
 
   private getTeamsByUserAndSpaceOptions(userId: string, spaceId: string): FindOneOptions<CnGroup> {
     const options: FindOneOptions<CnGroupTeam> = {
@@ -194,7 +194,16 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
       },
     };
     return this.findPaginated(page, size, options as any);
-  };
+  }
+
+  public async searchTeamInSpace(spaceId: string, searchParam: BlSearchParams,
+                                 page: number, size: number): Promise<ClPageI<CnGroupTeam>> {
+    const searchBuilder = new BlSearchBuilder<CnGroupTeam>({label: 'ASC'});
+    searchBuilder.addSearchParams(searchParam);
+    searchBuilder.mergeWhereOptions({spaceId: spaceId, type: CnGroupType.TEAM});
+
+    return await this.findPaginated(page, size, searchBuilder.build() as any) as any;
+  }
 
 
   ////////////////////////////////// SINGLE USER /////////////////////////

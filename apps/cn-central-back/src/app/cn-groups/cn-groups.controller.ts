@@ -1,8 +1,9 @@
-import {Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
-import {CnGroup} from './cn-group.entity';
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
+import {CnGroup, CnGroupTeam, CnUserGroup} from './cn-group.entity';
 import {ClPageI} from '@monorepo/core-lib';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnGroupsAggregateService} from './cn-groups-aggregate.service';
+import {BlParsePipe, BlSearchParams} from '@monorepo/back-core-lib';
 
 @Controller('groups')
 export class CnGroupsController {
@@ -39,7 +40,7 @@ export class CnGroupsController {
   @Get('teams/:id/users')
   public getTeamUsers(@Param('id', ParseUUIDPipe) id: string,
                       @Query('page', ParseIntPipe) page: number,
-                      @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnUser>> {
+                      @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnUserGroup>> {
     return this.aggregateService.getUsersOfTeam(id, page, size);
   }
 
@@ -56,7 +57,7 @@ export class CnGroupsController {
 
   @Post('teams/:id/add-user/:userId')
   public addUserToTeam(@Param('id', new ParseUUIDPipe()) id: string,
-                       @Param('userId', new ParseUUIDPipe()) userId: string): Promise<CnUser> {
+                       @Param('userId', new ParseUUIDPipe()) userId: string): Promise<CnUserGroup> {
     return this.aggregateService.addUserToTeam(userId, id);
   }
 
@@ -69,6 +70,13 @@ export class CnGroupsController {
   @Delete('teams/:id')
   public async deleteTeam(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     await this.aggregateService.deleteTeamById(id);
+  }
+
+  @Post('teams/current-space/search')
+  async searchTeamsInCurrentSpace(@Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
+                                  @Query('page', ParseIntPipe) page: number,
+                                  @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnGroupTeam>> {
+    return await this.aggregateService.searchTeamsInCurrentSpace(searchParam, page, size);
   }
 
 }

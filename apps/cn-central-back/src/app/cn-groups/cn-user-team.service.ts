@@ -2,7 +2,6 @@ import {CnUserGroup} from './cn-group.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {In, Repository} from 'typeorm';
 import {ClPageI} from '@monorepo/core-lib';
-import {CnUser} from '../cn-users/cn-user.entity';
 import {Injectable} from '@nestjs/common';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {BlAbstractPaginatedService, BlBadRequestException} from '@monorepo/back-core-lib';
@@ -26,7 +25,9 @@ export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
     const userGroup = new CnUserGroup();
     userGroup.groupId = groupId;
     userGroup.userId = userId;
-    return await this.repo.save(userGroup);
+    await this.repo.save(userGroup);
+
+    return this.getByUserAndGroup(userId, groupId);
   }
 
   public async removeUserFromTeam(groupId: string, userId: string): Promise<void> {
@@ -36,7 +37,7 @@ export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
 
     // check that there is at least 2 users in the group
     const count = await this.repo.count({where: {groupId: groupId}});
-    if(count === 1) {
+    if (count === 1) {
       throw new BlBadRequestException(CnErrorText.REMOVE_GROUP_LAST_USER);
     }
 
@@ -69,14 +70,22 @@ export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
   }
 
 
-  public async getUsersOfTeam(groupId: string, page: number, size: number): Promise<ClPageI<CnUser>> {
-    const result = await this.findPaginated(page, size, {
+  public async getUsersOfTeam(groupId: string, page: number, size: number): Promise<ClPageI<CnUserGroup>> {
+    return await this.findPaginated(page, size, {
       where: {
         groupId: groupId
       },
       relations: ['user'],
     });
+  }
 
-    return result.map((userGroup) => userGroup.user);
+  public async getByUserAndGroup(userId: string, groupId: string): Promise<CnUserGroup> {
+    return this.repo.findOne({
+      where: {
+        groupId: groupId,
+        userId: userId
+      },
+      relations: {user: true}
+    });
   }
 }

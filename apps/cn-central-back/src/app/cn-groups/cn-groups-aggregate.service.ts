@@ -1,5 +1,5 @@
 import {Injectable} from '@nestjs/common';
-import {CnGroup, CnGroupSingleUser, CnGroupTeam} from './cn-group.entity';
+import {CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup} from './cn-group.entity';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
@@ -10,7 +10,7 @@ import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnSpaceUserService} from '../cn-spaces/cn-space-user.service';
 import {CnGroupsSecurity} from './cn-groups.security';
 import {CnGroupsService} from './cn-groups.service';
-import {BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {BlSearchParams, BlUnauthorizedException} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnGroupsAggregateService {
@@ -81,6 +81,13 @@ export class CnGroupsAggregateService {
     return this.groupsService.getAndCheckTeamById(id);
   }
 
+  public async searchTeamsInCurrentSpace(searchParam: BlSearchParams,
+                                         page: number, size: number): Promise<ClPageI<CnGroupTeam>> {
+    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+    await this.groupSecurity.checkAuthorizationToFindAllTeamBySpace(userInfo);
+    return this.groupsService.searchTeamInSpace(userInfo.spaceId, searchParam, page, size);
+  }
+
   ////////////////////////////////////// GROUP USERS ////////////////////////////////
 
 
@@ -90,7 +97,7 @@ export class CnGroupsAggregateService {
    * @param userId
    * @param groupId
    */
-  public async addUserToTeam(userId: string, groupId: string): Promise<CnUser> {
+  public async addUserToTeam(userId: string, groupId: string): Promise<CnUserGroup> {
     await this.getAndCheckCurrentAuthorizationToUpdateTeam(groupId);
 
     // check that the added user is in the current space
@@ -99,8 +106,7 @@ export class CnGroupsAggregateService {
       throw new BlUnauthorizedException(CnErrorText.USER_NOT_IN_SPACE);
     }
 
-    await this.userGroupService.addUserToTeam(groupId, userId);
-    return this.usersService.findByIdAndCheck(userId);
+    return await this.userGroupService.addUserToTeam(groupId, userId);
   }
 
   public async removeUserFromTeam(userId: string, groupId: string): Promise<void> {
@@ -109,7 +115,7 @@ export class CnGroupsAggregateService {
     await this.userGroupService.removeUserFromTeam(groupId, userId);
   }
 
-  public async getUsersOfTeam(groupId: string, page: number, size: number): Promise<ClPageI<CnUser>> {
+  public async getUsersOfTeam(groupId: string, page: number, size: number): Promise<ClPageI<CnUserGroup>> {
     await this.getAndCheckCurrentAuthorizationToGetTeam(groupId);
 
     return this.userGroupService.getUsersOfTeam(groupId, page, size);

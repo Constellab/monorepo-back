@@ -8,8 +8,7 @@ import {CnEntity} from './cn.entity';
  * but with the @BeforeInsert() and @BeforeUpdate() methods
  * to set the creation and modification info automatically
  */
-export abstract class
-CnBaseEntity extends CnEntity {
+export abstract class CnBaseEntity extends CnEntity {
 
   @BeforeInsert()
   setCreatedInfo(): void {

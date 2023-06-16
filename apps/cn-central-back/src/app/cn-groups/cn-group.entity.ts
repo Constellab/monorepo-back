@@ -8,16 +8,18 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
-  PrimaryColumn,
+  PrimaryColumn, Relation,
   TableInheritance
 } from 'typeorm';
 import {CnBaseEntity} from '../cn-core/model/entities/cn-base.entity';
 import {CnGroupType} from './cn-group-type.enum';
 import {CnUser} from '../cn-users/cn-user.entity';
-import {Exclude} from 'class-transformer';
-import {BlNotUpdatable} from '@monorepo/back-core-lib';
+import {Exclude, Type} from 'class-transformer';
+import {BlLuxonDateTimeColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {ClDateHelper} from '@monorepo/core-lib';
+import {DateTime} from 'luxon';
+import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 
 @TableInheritance({column: {type: 'enum', enum: CnGroupType, name: 'type'}})
 @Entity('group')
@@ -89,4 +91,18 @@ export class CnUserGroup {
   @ManyToOne(() => CnGroupTeam, group => group.users,
     {onUpdate: 'CASCADE', onDelete: 'CASCADE'})
   group: CnGroupTeam;
+
+  @BlLuxonDateTimeColumn({nullable: false, update: false})
+  createdAt: DateTime;
+
+  @Type(() => CnUser)
+  @ManyToOne(() => CnUser, {eager: true, nullable: false})
+  @BlNotUpdatable()
+  createdBy: Relation<CnUser>;
+
+  @BeforeInsert()
+  setCreatedInfo(): void {
+    this.createdBy = CnCurrentUserHelper.getAndCheckCurrentUser();
+    this.createdAt = ClDateHelper.getDate();
+  }
 }
