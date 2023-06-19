@@ -7,7 +7,9 @@ import {clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme} from '@monorepo
 import {
   BlAbstractService,
   BlBadRequestException,
-  BlBucketConfig, BlCurrentUserHelper,
+  BlBucketConfig,
+  BlCsvHelper,
+  BlCurrentUserHelper,
   BlFile,
   BlObjectStorageService,
   BlSearchBuilder,
@@ -35,7 +37,6 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     const robotUser = await this.getRobotUser();
     BlCurrentUserHelper.setRobotUser(robotUser);
   }
-
 
 
   findAllPaginated(page: number, size: number): Promise<ClPage<CnUser>> {
@@ -240,6 +241,23 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
   public getRobotUser(): Promise<CnUser> {
     return this.repository.findOneBy({email: this.configService.getRobotUserMail()});
+  }
+
+  /**
+   * Export a search to a CSV file
+   * @param searchParams
+   */
+  public async exportSearch(searchParams: BlSearchParams): Promise<string> {
+    if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) throw new BlUnauthorizedException();
+    const builder = new BlSearchBuilder<CnUser>();
+    builder.addSearchParams(searchParams);
+
+    const users = await this.repository.find(builder.build());
+
+    return BlCsvHelper.toCsv(users, [
+      'id', 'firstname', 'lastname', 'email', 'photo',
+      'company', 'category', 'status', 'lastLoginSuccess', 'lang', 'theme'
+    ]);
   }
 
 }

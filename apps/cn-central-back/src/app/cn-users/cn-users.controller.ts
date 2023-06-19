@@ -82,7 +82,7 @@ export class CnUsersController {
   @BlPublic()
   @Get('photo-v2/:photoId')
   public async getUserPhotoV2(@Param('photoId') photoId: string,
-                            @Res() response: Response): Promise<any> {
+                              @Res() response: Response): Promise<any> {
     const file = await this.usersService.getUserPhotoV2(photoId);
     BlResponseHelper.setMessageAndCache(response, file);
   }
@@ -103,6 +103,16 @@ export class CnUsersController {
                       @Query('page', new ParseIntPipe()) page: number,
                       @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnUser>> {
     return this.usersService.search(searchParams, page, size);
+  }
+
+  @Post('search/export')
+  public async exportSearch(@Body(new BlParsePipe(BlSearchParams)) searchParams: BlSearchParams,
+                            @Res() res: Response): Promise<void> {
+    const users = await this.usersService.exportSearch(searchParams);
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=users.csv');
+    res.send(users);
   }
 
   @Get('search/name/:name')
