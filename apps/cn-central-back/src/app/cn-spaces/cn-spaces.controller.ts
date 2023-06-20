@@ -24,7 +24,7 @@ import {Response} from 'express';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
 import {CmUserCategory} from '@monorepo/common-model';
 import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
-import {CnRequestNewLicensesDto} from './cn-space.dto';
+import {CnRequestNewLicensesDto, CnSpaceSettingsDto} from './cn-space.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
 
 @Controller('spaces')
@@ -38,6 +38,10 @@ export class CnSpacesController {
     return this.spaceAggregateService.getCurrentInfo();
   }
 
+  @Get('current-space/settings')
+  async getCurrentSpaceSettings(): Promise<CnSpaceSettingsDto> {
+    return this.spaceAggregateService.getCurrentSpaceSettings();
+  }
 
   @Get('my-spaces')
   findCurrentUserSpaces(): Promise<CnSpace[]> {
@@ -51,12 +55,12 @@ export class CnSpacesController {
 
 
   @Post()
-  create(@Body(new BlParsePipe(CnSpace)) entity: CnSpace): Promise<CnSpace> {
+  create(@Body(new BlParsePipe(CnSpace)) entity: CnSpace): Promise<CnSpaceSettingsDto> {
     return this.spaceAggregateService.createBasicSpace(entity);
   }
 
   @Put()
-  update(@Body(new BlParsePipe(CnSpace)) entity: CnSpace): Promise<CnSpace> {
+  update(@Body(new BlParsePipe(CnSpace)) entity: CnSpace): Promise<CnSpaceSettingsDto> {
     return this.spaceAggregateService.update(entity);
   }
 

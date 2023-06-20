@@ -22,17 +22,16 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     super(repository, CnBucket);
   }
 
-  public async createBucket(bucket: CnBucket): Promise<CnBucket> {
+  public async createBucket(bucket: CnBucket, entityManager?: EntityManager): Promise<CnBucket> {
     bucket = await this.checkBucketBeforeSave(bucket);
 
-    return this.datasource.transaction(async (entityManager) => {
-      // create the bucket in DB and then in the object storage
-      const bucketDb = await super.create(bucket, entityManager);
+    entityManager = this.getEntityManager(entityManager);
+    // create the bucket in DB and then in the object storage
+    const bucketDb = await super.create(bucket, entityManager);
 
-      await this.objectStorageService.createBucket(bucketDb.getBucketConfig());
+    await this.objectStorageService.createBucket(bucketDb.getBucketConfig());
 
-      return bucketDb;
-    });
+    return bucketDb;
   }
 
   public async update(bucket: CnBucket, entityManager?: EntityManager): Promise<CnBucket> {

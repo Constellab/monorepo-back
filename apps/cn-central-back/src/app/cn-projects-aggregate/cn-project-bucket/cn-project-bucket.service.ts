@@ -68,10 +68,11 @@ export class CnProjectBucketService {
 
   /////////////////////////////// METHODS ///////////////////////////////
 
-  public async createProjectBucket(rootProject: CnProject, region: CnCloudProviderRegion): Promise<CnBucket> {
+  public async createProjectBucket(rootProject: CnProject, region: CnCloudProviderRegion,
+                                   entityManager?: EntityManager): Promise<CnBucket> {
     return this.objectStorageAggregateService.createObjectBucket(CnObjectStoragesAggregateService.LabBackupCredentialName,
-      region, rootProject.id,
-      rootProject.spaceId, CnBucketContentType.PROJECT, rootProject.id);
+      region, rootProject.id, rootProject.spaceId, CnBucketContentType.PROJECT,
+      rootProject.id, entityManager);
   }
 
   public async getProjectBucket(projectId: string): Promise<CnBucket> {

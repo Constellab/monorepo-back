@@ -71,4 +71,10 @@ export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProvi
     });
   }
 
+  public findDefaultS3Region(): Promise<CnCloudProviderRegion> {
+    return this.repository.findOneBy({
+      s3Endpoint: Not(IsNull())
+    });
+  }
+
 }

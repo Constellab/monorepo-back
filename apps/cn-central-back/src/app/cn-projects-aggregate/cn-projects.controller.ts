@@ -25,7 +25,8 @@ import {
   CnProjectAncestorTreeDTO,
   CnProjectAncestorType,
   CnProjectDtoHelper,
-  CnProjectTreeDto
+  CnProjectTreeDto,
+  CnSaveProjectDTO
 } from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CmRichTextI, CmRichTextUploadedImage} from '@monorepo/common-model';
@@ -45,19 +46,20 @@ export class CnProjectsController {
   }
 
   @Post()
-  create(@Body(new BlParsePipe(CnProject)) project: CnProject): Promise<CnProject> {
+  create(@Body(new BlParsePipe(CnSaveProjectDTO)) project: CnSaveProjectDTO): Promise<CnProject> {
     return this.projectAggregate.createProject(project);
   }
 
   @Post(':id/sub-project')
   createSubProject(@Param('id', ParseUUIDPipe) id: string,
-                   @Body(new BlParsePipe(CnProject)) workPackage: CnProject): Promise<CnProject> {
+                   @Body(new BlParsePipe(CnSaveProjectDTO)) workPackage: CnSaveProjectDTO): Promise<CnProject> {
     return this.projectAggregate.createSubProject(workPackage, id);
   }
 
-  @Put()
-  update(@Body(new BlParsePipe(CnProject)) project: CnProject): Promise<CnProject> {
-    return this.projectAggregate.updateProject(project);
+  @Put(':id')
+  update(@Param('id', ParseUUIDPipe) id: string,
+         @Body(new BlParsePipe(CnSaveProjectDTO)) project: CnSaveProjectDTO): Promise<CnProject> {
+    return this.projectAggregate.updateProject(id, project);
   }
 
   @Delete(':id')

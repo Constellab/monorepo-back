@@ -42,31 +42,36 @@ export class CnObjectStoragesAggregateService {
 
   public async createObjectBucket(credentialsName: string, region: CnCloudProviderRegion,
                                   bucketName: string, spaceId: string,
-                                  contentType: CnBucketContentType, objectId: string): Promise<CnBucket> {
+                                  contentType: CnBucketContentType, objectId: string,
+                                  entityManager?: EntityManager): Promise<CnBucket> {
     const bucket = await this.findByContentTypeAndObjectId(contentType, objectId);
 
     if (bucket) {
       throw new BlBadRequestException(`Bucket for this object already exists`);
     }
 
-    return this.createObjectBucketPrivate(credentialsName, region, bucketName, spaceId, contentType, objectId);
+    return this.createObjectBucketPrivate(credentialsName, region, bucketName, spaceId,
+      contentType, objectId, entityManager);
   }
 
   public async getOrCreateObjectBucket(credentialsName: string, region: CnCloudProviderRegion,
                                        bucketName: string, spaceId: string,
-                                       contentType: CnBucketContentType, objectId: string): Promise<CnBucket> {
+                                       contentType: CnBucketContentType, objectId: string,
+                                       entityManager?: EntityManager): Promise<CnBucket> {
     const bucket = await this.bucketService.findByContentTypeAndObjectId(contentType, objectId);
 
     if (bucket) {
       return bucket;
     }
 
-    return this.createObjectBucketPrivate(credentialsName, region, bucketName, spaceId, contentType, objectId);
+    return this.createObjectBucketPrivate(credentialsName, region, bucketName, spaceId,
+      contentType, objectId, entityManager);
   }
 
   private async createObjectBucketPrivate(credentialsName: string, region: CnCloudProviderRegion,
                                           bucketName: string, spaceId: string,
-                                          contentType: CnBucketContentType, objectId: string): Promise<CnBucket> {
+                                          contentType: CnBucketContentType, objectId: string,
+                                          entityManager?: EntityManager): Promise<CnBucket> {
 
     const credentials = await this.bucketCredentialsService.findByName(credentialsName);
 
@@ -84,7 +89,7 @@ export class CnObjectStoragesAggregateService {
     bucket.space = space;
     bucket.objectId = objectId;
 
-    return this.bucketService.createBucket(bucket);
+    return this.bucketService.createBucket(bucket, entityManager);
   }
 
   public async deleteBucketNotSecure(id: string, entityManager?: EntityManager): Promise<void> {

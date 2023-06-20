@@ -13,6 +13,7 @@ import {CnSpaceInvitController} from './cn-space-invit.controller';
 import {CnSpaceInvitService} from './cn-space-invit.service';
 import {CnCoreModule} from '../cn-core/cn-core.module';
 import {CnSpacesMailService} from './cn-spaces-mail.service';
+import {CnCloudProvidersModule} from '../cn-cloud-providers/cn-cloud-providers.module';
 
 /**
  * Module to manage spaces
@@ -22,6 +23,7 @@ import {CnSpacesMailService} from './cn-spaces-mail.service';
     TypeOrmModule.forFeature([CnSpace, CnSpaceUser, CnSpaceInvit]),
     CnUsersModule,
     CnCoreModule,
+    CnCloudProvidersModule,
   ],
   controllers: [
     CnSpacesController,

@@ -18,7 +18,12 @@ import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {CnReportContent} from './cn-reports/cn-report-content.class';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-projects/cn-project-level.enum';
-import {CnProjectAncestorTreeDTO, CnProjectAncestorType, CnProjectDtoHelper} from './cn-projects/cn-project.dto';
+import {
+  CnProjectAncestorTreeDTO,
+  CnProjectAncestorType,
+  CnProjectDtoHelper,
+  CnSaveProjectDTO
+} from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CmRichText, CmRichTextI, CmRichTextUploadedImage} from '@monorepo/common-model';
 import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
@@ -52,14 +57,24 @@ export class CnProjectAggregateService {
 
   /////////////////////////////////////// PROJECT //////////////////////////////////
 
-  async createProject(entity: CnProject): Promise<CnProject> {
-    entity.parent = null;
-    entity.currentLevel = CnProjectLevel.PROJECT;
-    entity.leader = CnCurrentUserHelper.getCurrentUser();
-    return this.projectService.create(entity);
+  async createProject(projectDto: CnSaveProjectDTO): Promise<CnProject> {
+    return this.datasource.transaction(async manager => {
+      const entity = this.createProjectFromDTO(projectDto);
+
+      entity.parent = null;
+      entity.currentLevel = CnProjectLevel.PROJECT;
+      entity.leader = CnCurrentUserHelper.getCurrentUser();
+      const dbProject = await this.projectService.create(entity, manager);
+
+      if (projectDto.storageRegion) {
+        await this.projectBucketService.createProjectBucket(dbProject, projectDto.storageRegion, manager);
+      }
+      return dbProject;
+    });
   }
 
-  async createSubProject(entity: CnProject, projectId: string): Promise<CnProject> {
+  async createSubProject(projectDto: CnSaveProjectDTO, projectId: string): Promise<CnProject> {
+    const entity = this.createProjectFromDTO(projectDto);
     entity.leader = CnCurrentUserHelper.getCurrentUser();
 
     const parentProject = await this.getAndCheckAuthorizationForUpdate(projectId);
@@ -90,8 +105,18 @@ export class CnProjectAggregateService {
     return await this.projectService.create(entity);
   }
 
-  async updateProject(entity: CnProject): Promise<CnProject> {
-    const dbProject = await this.getAndCheckAuthorizationForUpdate(entity.id);
+  private createProjectFromDTO(projectDto: CnSaveProjectDTO): CnProject {
+    const project = new CnProject();
+    project.title = projectDto.title;
+    project.code = projectDto.code;
+    project.startingDate = projectDto.startingDate;
+    project.endingDate = projectDto.endingDate;
+    project.levelStatus = projectDto.levelStatus;
+    return project;
+  }
+
+  async updateProject(id: string, entity: CnSaveProjectDTO): Promise<CnProject> {
+    const dbProject = await this.getAndCheckAuthorizationForUpdate(id);
 
     // check that the ending date is not after the parent ending date
     if (entity.endingDate && dbProject.parentId) {
@@ -100,7 +125,13 @@ export class CnProjectAggregateService {
         throw new BlBadRequestException(CnErrorText.CHILD_PROJECT_END_DATA_AFTER_PARENT);
       }
     }
-    return this.projectService.updateWithCompare(entity, dbProject);
+
+    dbProject.title = entity.title;
+    dbProject.code = entity.code;
+    dbProject.startingDate = entity.startingDate;
+    dbProject.endingDate = entity.endingDate;
+
+    return this.projectService.update(dbProject);
   }
 
   async deleteProject(id: string): Promise<void> {

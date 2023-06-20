@@ -11,7 +11,7 @@ import {CnCloudProvider} from './cn-cloud-provider.entity';
 @Injectable()
 export class CnCloudProviderAggregateService {
 
-  private static readonly LabBackupDefaultRegion = 'gra';
+  private static readonly DefaultRegion = 'gra';
 
 
   constructor(private securityService: CnCloudProviderSecurity,
@@ -51,11 +51,21 @@ export class CnCloudProviderAggregateService {
 
   public async updateRegion(region: CnCloudProviderRegion): Promise<CnCloudProviderRegion> {
     this.checkAuthorizationToModifyEntity();
+    const regionDb = await this.cloudProviderRegionService.findByIdAndCheck(region.id);
+    if (regionDb.technicalName === CnCloudProviderAggregateService.DefaultRegion &&
+      region.technicalName !== CnCloudProviderAggregateService.DefaultRegion) {
+      throw new Error('You cannot modify the name of the default region : ' + regionDb.technicalName);
+    }
     return this.cloudProviderRegionService.update(region);
   }
 
   public async deleteRegion(id: string): Promise<void> {
     this.checkAuthorizationToModifyEntity();
+
+    const bucket = await this.cloudProviderRegionService.findByIdAndCheck(id);
+    if (bucket.technicalName === CnCloudProviderAggregateService.DefaultRegion) {
+      throw new Error(`You cannot delete the default region: ${bucket.technicalName}`);
+    }
     await this.cloudProviderRegionService.deleteById(id);
   }
 
@@ -76,8 +86,9 @@ export class CnCloudProviderAggregateService {
 
   public async getDefaultRegion(): Promise<CnCloudProviderRegion> {
     return await this.cloudProviderRegionService.findByCloudProviderNameAndTechnicalNameAndCheck(
-      'OVH', CnCloudProviderAggregateService.LabBackupDefaultRegion);
+      'OVH', CnCloudProviderAggregateService.DefaultRegion);
   }
+
   //////////////////////////// AUTHORIZATION ////////////////////////////
 
   public checkAuthorizationToModifyEntity(): void {

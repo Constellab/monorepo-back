@@ -12,11 +12,12 @@ import {BlBadRequestException, BlFile, BlSearchParams} from '@monorepo/back-core
 import {IncomingMessage} from 'http';
 import {CnSpaceInvit} from './cn-space-invit.entity';
 import {CnSpaceInvitService} from './cn-space-invit.service';
-import {CnRequestNewLicensesDto, CnSpaceInvitCreateDto, CnSpaceInvitReadDto} from './cn-space.dto';
+import {CnRequestNewLicensesDto, CnSpaceInvitCreateDto, CnSpaceInvitReadDto, CnSpaceSettingsDto} from './cn-space.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {DataSource, EntityManager} from 'typeorm';
 import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
 import {CnSpacesMailService} from './cn-spaces-mail.service';
+import {CnCloudProviderAggregateService} from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
 
 @Injectable()
 export class CnSpaceAggregateService {
@@ -27,7 +28,8 @@ export class CnSpaceAggregateService {
               private invitationService: CnSpaceInvitService,
               private userService: CnUsersService,
               private datasource: DataSource,
-              private spacesMailService: CnSpacesMailService) {
+              private spacesMailService: CnSpacesMailService,
+              private cloudProviderAggregateService: CnCloudProviderAggregateService) {
   }
 
   public async getCurrentInfo(): Promise<CnUserSpaceInfo> {
@@ -46,30 +48,44 @@ export class CnSpaceAggregateService {
     return new CnUserSpaceInfo(user, space, role);
   }
 
-  public createBasicSpace(entity: CnSpace): Promise<CnSpace> {
+  public async getCurrentSpaceSettings(): Promise<CnSpaceSettingsDto> {
+    return this.getSpaceSettings(CnCurrentUserHelper.getAndCheckCurrentSpace().id);
+  }
+
+  public async getSpaceSettings(spaceId: string): Promise<CnSpaceSettingsDto> {
+    const space = await this.spaceService.findByIdAndCheck(spaceId, {
+      defaultStorageRegion: {cloudProvider: true}
+    });
+
+    return CnSpaceSettingsDto.fromSpace(space);
+  }
+
+  public async createBasicSpace(entity: CnSpace): Promise<CnSpaceSettingsDto> {
     // if the user is not admin, he can't set the nb of licenses
     if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) {
       entity.nbLicenses = 0;
     }
 
-    return this.datasource.transaction(async (entityManager: EntityManager) => {
+    let space: CnSpace = null;
+    await this.datasource.transaction(async (entityManager: EntityManager) => {
 
-      const space = await this.spaceService.createBasicSpace(entity, entityManager);
+      space = await this.spaceService.createBasicSpace(entity, entityManager);
 
       const user = CnCurrentUserHelper.getAndCheckCurrentUser();
       await this.spaceUserService.addUserToSpace(space, user, CnSpaceUserRole.ADMIN, user, entityManager);
 
-      return space;
     });
+    return this.getSpaceSettings(space.id);
   }
 
-  public async update(entity: CnSpace): Promise<CnSpace> {
+  public async update(entity: CnSpace): Promise<CnSpaceSettingsDto> {
     await this.checkSpaceAdmin(entity.id);
     // if the user is not admin, he can't set the nb of licenses
     if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) {
       entity.nbLicenses = undefined;
     }
-    return this.spaceService.update(entity);
+    const dbSpace = await this.spaceService.update(entity);
+    return this.getSpaceSettings(dbSpace.id);
   }
 
   public async delete(id: string): Promise<void> {
@@ -332,7 +348,8 @@ export class CnSpaceAggregateService {
   }
 
   public async createPersonalSpace(user: CnUser, entityManager: EntityManager): Promise<CnSpace> {
-    const personalSpace = await this.spaceService.createPersonalSpace(user, entityManager);
+    const defaultRegion = await this.cloudProviderAggregateService.getDefaultRegion();
+    const personalSpace = await this.spaceService.createPersonalSpace(user, defaultRegion, entityManager);
 
     await this.spaceUserService.addUserToSpace(personalSpace, user, CnSpaceUserRole.ADMIN,
       user, entityManager);

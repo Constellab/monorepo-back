@@ -1,5 +1,27 @@
 import {CnProject} from './cn-project.entity';
 import {CnProjectLevelStatus} from './cn-project-level.enum';
+import {DateTime} from 'luxon';
+import {ClLuxonDateTransform} from '@monorepo/core-lib';
+import {
+  CnCloudProviderRegion
+} from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import {Type} from 'class-transformer';
+
+
+export class CnSaveProjectDTO {
+  code: string;
+  title: string;
+  levelStatus: CnProjectLevelStatus;
+
+  @ClLuxonDateTransform()
+  startingDate: DateTime;
+  @ClLuxonDateTransform()
+  endingDate: DateTime;
+
+  // only for project level in creation
+  @Type(() => CnCloudProviderRegion)
+  storageRegion?: CnCloudProviderRegion;
+}
 
 export type CnProjectAncestorType = 'project' | 'experiment' | 'report' | 'document';
 
