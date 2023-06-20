@@ -9,11 +9,10 @@ import {
   Put,
   Query,
   Res,
-  UploadedFile,
   UseInterceptors
 } from '@nestjs/common';
 import {HnStoryService} from './hn-story.service';
-import {BlFile, BlParsePipe, BlPublic, BlResponseHelper} from '@monorepo/back-core-lib';
+import {BlFile, BlParsePipe, BlPublic, BlResponseHelper, BlUploadedFile} from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
 import {HnStory} from './hn-story.entity';
 import {HnCreateStoryDto, HnStoryFilter} from './hn-story.dto';
@@ -106,7 +105,7 @@ export class HnStoryController {
 
   @UseInterceptors(FileInterceptor('file'))
   @Put('image/:storyId')
-  saveImage(@UploadedFile() file: BlFile,
+  saveImage(@BlUploadedFile() file: BlFile,
             @Param('storyId', new ParseUUIDPipe()) storyId: string): Promise<CmRichTextUploadedImage> {
     return this.storyService.saveImage(file, storyId);
   }

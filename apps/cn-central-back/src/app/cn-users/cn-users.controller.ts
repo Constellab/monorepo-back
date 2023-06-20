@@ -1,16 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  Post,
-  Put,
-  Query,
-  Res,
-  UploadedFile,
-  UseInterceptors
-} from '@nestjs/common';
+import {Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, Res, UseInterceptors} from '@nestjs/common';
 import {CnUsersService} from './cn-users.service';
 import {CnUser, CnUserEditDTO} from './cn-user.entity';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
@@ -23,7 +11,8 @@ import {
   BlPublic,
   BlResponseHelper,
   BlSearchParams,
-  BlUnauthorizedException
+  BlUnauthorizedException,
+  BlUploadedFile
 } from '@monorepo/back-core-lib';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
@@ -66,7 +55,7 @@ export class CnUsersController {
 
   @UseInterceptors(FileInterceptor('photo'))
   @Put('current/photo/:userId')
-  saveNewPhoto(@Param('userId') userId: string, @UploadedFile() file: BlFile): Promise<CnUser> {
+  saveNewPhoto(@Param('userId') userId: string, @BlUploadedFile() file: BlFile): Promise<CnUser> {
     return this.usersService.saveNewPhoto(file, userId);
   }
 

@@ -1,5 +1,5 @@
 import {Body, Delete, Get, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
-import {BlParsePipe} from '../pipes/bl-parse-pipe.service';
+import {BlParsePipe} from '../pipes/bl-parse.pipe';
 import {BlAbstractService} from './bl-abstract.service';
 import {BlEntityWithId} from '../models/bl-entity-with-id.entity';
 

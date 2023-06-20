@@ -11,13 +11,12 @@ import {
   Put,
   Query,
   Res,
-  UploadedFile,
   UseInterceptors
 } from '@nestjs/common';
 import {CnSpace} from './cn-space.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {CnSpaceAggregateService} from './cn-space-aggregate.service';
-import {BlFile, BlParsePipe, BlPublic, BlResponseHelper, BlSearchParams} from '@monorepo/back-core-lib';
+import {BlFile, BlParsePipe, BlPublic, BlResponseHelper, BlSearchParams, BlUploadedFile} from '@monorepo/back-core-lib';
 import {CnSpaceUser, CnSpaceUserRole} from './cn-space-user.entity';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
@@ -97,7 +96,7 @@ export class CnSpacesController {
   @UseInterceptors(FileInterceptor('photo'))
   @Put(':id/photo')
   async uploadSpacePhoto(@Param('id') id: string,
-                         @UploadedFile() file: BlFile): Promise<CnSpace> {
+                         @BlUploadedFile() file: BlFile): Promise<CnSpace> {
     return this.spaceAggregateService.uploadSpacePhoto(id, file);
   }
 
@@ -193,7 +192,6 @@ export class CnSpacesController {
   public async getAndCheckUser(@Param('userId') userId: string): Promise<CnUser> {
     return this.spaceAggregateService.getAndCheckUser(userId);
   }
-
 
 
   @Post('generate-all-user-personal-space')

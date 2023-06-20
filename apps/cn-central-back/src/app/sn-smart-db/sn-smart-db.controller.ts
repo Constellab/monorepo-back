@@ -10,7 +10,6 @@ import {
   Put,
   Query,
   Res,
-  UploadedFile,
   UseInterceptors
 } from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express';
@@ -19,7 +18,7 @@ import {Response} from 'express';
 import {SnSmartDbService} from './service/sn-smart-db.service';
 import {SnDocSearchResult, SnDocument} from './model/sn-document.class';
 import {SnSmartDbEntity} from './model/sn-smart-db.entity';
-import {BlParsePipe} from '@monorepo/back-core-lib';
+import {BlParsePipe, BlUploadedFile} from '@monorepo/back-core-lib';
 
 @Controller('smart-db')
 export class SnSmartDbController {
@@ -103,13 +102,13 @@ export class SnSmartDbController {
 
   @Post(':id/docs/upload')
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(@Param('id', new ParseUUIDPipe()) id: string, @UploadedFile() file: any): any {
+  uploadFile(@Param('id', new ParseUUIDPipe()) id: string, @BlUploadedFile() file: any): any {
     return this.service.importDataFromFile(id, file);
   }
 
   @Post(':id/docs/init')
   @UseInterceptors(FileInterceptor('file'))
-  init(@Param('id', new ParseUUIDPipe()) id: string, @UploadedFile() file: any): any {
+  init(@Param('id', new ParseUUIDPipe()) id: string, @BlUploadedFile() file: any): any {
     return this.service.init(id, file);
   }
 }

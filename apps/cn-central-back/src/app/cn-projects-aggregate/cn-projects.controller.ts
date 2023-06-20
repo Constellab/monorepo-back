@@ -11,13 +11,19 @@ import {
   Query,
   Res,
   StreamableFile,
-  UploadedFile,
   UseInterceptors
 } from '@nestjs/common';
 import {CnProject} from './cn-projects/cn-project.entity';
 import {CnProjectStatus} from './cn-projects/cn-project-status.enum';
 import {CnProjectStatusHistory} from './cn-projects/cn-project-status-history.entity';
-import {BlFile, BlParseEnumPipe, BlParsePipe, BlResponseHelper, BlSearchParams} from '@monorepo/back-core-lib';
+import {
+  BlFile,
+  BlParseEnumPipe,
+  BlParsePipe,
+  BlResponseHelper,
+  BlSearchParams,
+  BlUploadedFile
+} from '@monorepo/back-core-lib';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnGroup} from '../cn-groups/cn-group.entity';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
@@ -38,6 +44,7 @@ import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-reg
 import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnDocument} from './cn-documents/cn-document.entity';
 import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
+
 
 @Controller('projects')
 export class CnProjectsController {
@@ -188,7 +195,7 @@ export class CnProjectsController {
   @UseInterceptors(FileInterceptor('file'))
   @Put(':projectId/description/image')
   saveDescriptionImage(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                       @UploadedFile() file: BlFile): Promise<CmRichTextUploadedImage> {
+                       @BlUploadedFile() file: BlFile): Promise<CmRichTextUploadedImage> {
     return this.projectAggregate.saveDescriptionImage(projectId, file);
   }
 
@@ -209,7 +216,7 @@ export class CnProjectsController {
   @UseInterceptors(FileInterceptor('file'))
   @Put(':projectId/comment/image')
   saveCommentImage(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                   @UploadedFile() file: BlFile): Promise<CmRichTextUploadedImage> {
+                   @BlUploadedFile() file: BlFile): Promise<CmRichTextUploadedImage> {
     return this.projectAggregate.saveCommentImage(file, projectId);
   }
 
@@ -257,7 +264,7 @@ export class CnProjectsController {
   @UseInterceptors(FileInterceptor('file'))
   @Post(':projectId/document')
   async uploadDocument(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                       @UploadedFile() file: BlFile): Promise<CnDocument> {
+                       @BlUploadedFile() file: BlFile): Promise<CnDocument> {
     return this.projectAggregate.uploadDocument(projectId, file);
   }
 
@@ -320,7 +327,7 @@ export class CnProjectsController {
   @UseInterceptors(FileInterceptor('file'))
   @Post('constellab-document/:documentId/image')
   async uploadImageToConstellabDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string,
-                                        @UploadedFile() file: BlFile): Promise<CmRichTextUploadedImage> {
+                                        @BlUploadedFile() file: BlFile): Promise<CmRichTextUploadedImage> {
     return this.projectAggregate.uploadImageToConstellabDocument(documentId, file);
   }
 

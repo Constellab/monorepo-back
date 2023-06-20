@@ -59,6 +59,7 @@ import {CnCloudProvidersModule} from './app/cn-cloud-providers/cn-cloud-provider
 import {I18nAbstractLoaderOptions} from 'nestjs-i18n/dist/loaders/i18n.abstract.loader';
 import {ScheduleModule} from '@nestjs/schedule';
 import {ThrottlerModule} from '@nestjs/throttler';
+import {MulterModule} from '@nestjs/platform-express';
 
 function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();

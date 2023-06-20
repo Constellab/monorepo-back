@@ -1,17 +1,6 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseUUIDPipe,
-  Post,
-  Put,
-  UploadedFiles,
-  UseInterceptors
-} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, UseInterceptors} from '@nestjs/common';
 import {CnLabGuard, CnLabRobotAuthentication} from '../cn-core/decorators/cn-lab-guard.decorator';
-import {BlFile, BlParsePipe} from '@monorepo/back-core-lib';
+import {BlFile, BlParsePipe, BlUploadedFiles} from '@monorepo/back-core-lib';
 import {CnCreateLabExperimentDto} from '../cn-projects-aggregate/cn-experiments/cn-experiment.dto';
 import {CnCreateReportWithConfigDto} from '../cn-projects-aggregate/cn-reports/cn-report.dto';
 import {CnLabInstanceStartDTO} from '../cn-lab-instances/cn-lab-instance.dto';
@@ -64,7 +53,7 @@ export class CnExternalLabsController {
   @CnLabRobotAuthentication()
   @Post('check-credentials-simple')
   async checkUserCredentialsSimple(@Body() credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
-    return this.labInstanceAggregator.checkUserCredentials(credentials, true,true);
+    return this.labInstanceAggregator.checkUserCredentials(credentials, true, true);
   }
 
   @Put('project/:projectId/experiment')
@@ -92,7 +81,7 @@ export class CnExternalLabsController {
   @Put('project/:projectId/report/v2')
   saveReport2(@Param('projectId', new ParseUUIDPipe()) projectId: string,
               @Body() body: { body: string },
-              @UploadedFiles() files: BlFile[] = []): Promise<void> {
+              @BlUploadedFiles() files: BlFile[] = []): Promise<void> {
     const createReportDto: CnCreateReportWithConfigDto
       = ClCoreJsonConvert.deserializeObject(JSON.parse(body.body), CnCreateReportWithConfigDto);
     return this.projectAggregator.createLabReport(createReportDto, projectId, files);

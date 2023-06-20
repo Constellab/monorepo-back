@@ -7,7 +7,7 @@ import {
   BlSearchParams
 } from '@monorepo/back-core-lib';
 import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, EntityManager, Repository} from 'typeorm';
+import {EntityManager, Repository} from 'typeorm';
 import {CnBucket, CnBucketContentType} from './cn-bucket.entity';
 import {ClPage} from '@monorepo/core-lib';
 
@@ -17,8 +17,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
 
 
   constructor(@InjectRepository(CnBucket) private repository: Repository<CnBucket>,
-              private objectStorageService: BlObjectStorageService,
-              private datasource: DataSource) {
+              private objectStorageService: BlObjectStorageService) {
     super(repository, CnBucket);
   }
 
