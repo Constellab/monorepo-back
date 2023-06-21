@@ -149,6 +149,10 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   }
 
   async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
+    const labInstance = await this.findByIdAndCheck(id);
+    if(!ClHelpService.isNullOrEmpty(labInstance.serverInstanceId) || !ClHelpService.isNullOrEmpty(labInstance.serverVolumeId)) {
+      throw new BlBadRequestException('Can\'t delete the lab instance because the server or volume still exist. Please delete them first');
+    }
     const experiments: CnExperiment[] = await this.experimentService.getExperimentsByLabInstance(id);
     if (experiments?.length > 0) {
       throw new BlBadRequestException('Can\'t delete the lab instance because some experiment are linked to it');
