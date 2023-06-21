@@ -878,9 +878,9 @@ export class CnLabInstanceAggregateService {
    * @private
    */
   private async getAndCheckServerStatusBeforeAction(id: string): Promise<CnLabInstance> {
-    let labInstance = await this.getAndCheckAuthorizationToManageLab(id, true);
+    await this.labServerService.refreshLabStatus(id);
 
-    labInstance = await this.labServerService.refreshLabStatus(labInstance.id);
+    const labInstance = await this.getAndCheckAuthorizationToManageLab(id, true);
 
     if (labInstance.serverIsBusy()) {
       throw new BlBadRequestException(`Server is ${labInstance.currentStatus.status} and cannot configured`);
