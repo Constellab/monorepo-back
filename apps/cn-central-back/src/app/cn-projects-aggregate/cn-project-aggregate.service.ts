@@ -358,8 +358,8 @@ export class CnProjectAggregateService {
   }
 
   async createLabExperiment(projectId: string, createLabExperimentDto: CnCreateLabExperimentDto): Promise<void> {
-    // check that the user can update the project
-    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+    // check that the user can get the project
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
     if (project.levelStatus === CnProjectLevelStatus.PARENT) {
       throw new BlBadRequestException(CnErrorText.EXP_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT);
@@ -369,8 +369,8 @@ export class CnProjectAggregateService {
   }
 
   async deleteLabExperiment(projectId: string, experimentId: string): Promise<void> {
-    // check that the user can update the project
-    await this.getAndCheckAuthorizationForUpdate(projectId);
+    // check that the user can get the project
+    await this.getAndCheckAuthorizationForFindOne(projectId);
 
     await this.experimentService.deleteExperiment(experimentId);
   }
@@ -425,8 +425,8 @@ export class CnProjectAggregateService {
   }
 
   async deleteLabReport(projectId: string, reportId: string): Promise<void> {
-    // check that the user can update the project
-    await this.getAndCheckAuthorizationForUpdate(projectId);
+    // check that the user can get the project
+    await this.getAndCheckAuthorizationForFindOne(projectId);
 
     await this.reportService.deleteReport(reportId);
   }
