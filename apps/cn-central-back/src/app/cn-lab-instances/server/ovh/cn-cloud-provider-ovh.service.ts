@@ -257,7 +257,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
 
   public async getLabDomainRecord(mainDomain: string, subDomainName: string): Promise<CnOvhDomainRecord | null> {
     const recordIds: number[] = await this.ovhService.getDomainRecordIdBySubDomain(
-      mainDomain, subDomainName, 'A');
+      mainDomain, '*.' + subDomainName, 'A');
 
     if (recordIds.length === 0) {
       return null;
