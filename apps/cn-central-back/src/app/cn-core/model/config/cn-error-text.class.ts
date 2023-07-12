@@ -58,4 +58,6 @@ export enum CnErrorText {
   CANT_MANAGE_DESKTOP_LAB = 'error.cant_manage_desktop_lab',
   LAB_CONFIG_NOT_FOUND = 'error.lab_config_not_found',
   INVALID_CAPTCHA = 'error.invalid_captcha',
+  NO_ACCESS_TO_PROJECT = 'error.no_access_to_project',
+  NO_PROJECT_LEADER = 'error.no_project_leader',
 }

@@ -55,5 +55,7 @@
   "project_bucket_not_found": "Le stockage pour ce projet n'a pas été trouvé. Veuillez demander au responsable du projet de configurer le stockage pour ce projet (dans les paramètres)",
   "cant_manage_desktop_lab": "Vous ne pouvez pas gérer un lab desktop à distance",
   "lab_config_not_found": "Configuration du lab non trouvée. Pour un lab cloud, la configuration est créée au démarrage du lab. A-t-il été démarré au moins une fois ?",
-  "invalid_captcha": "Captcha invalide"
+  "invalid_captcha": "Captcha invalide",
+  "no_access_to_project": "Vous n'avez pas accès à ce projet",
+  "no_project_leader": "Vous devez être le responsable du projet pour effectuer cette action"
 }
