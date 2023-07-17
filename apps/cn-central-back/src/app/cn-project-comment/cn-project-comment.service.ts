@@ -6,10 +6,17 @@ import {CnCommentService} from '../cn-core/services/cn-comment.service';
 import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {ClPage} from '@monorepo/core-lib';
-import {BlAbstractPaginatedService, BlBucketConfig, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
+import {
+  BlAbstractPaginatedService,
+  BlBucketConfig,
+  BlFile,
+  BlObjectStorageService,
+  BlRichText,
+  BlRichTextI,
+  BlRichTextUploadedImage
+} from '@monorepo/back-core-lib';
 import {CnNotificationService, CnNotificationType} from '../cn-notification/cn-notification.service';
 import {CnNotificationCreateDTO} from '../cn-notification/cn-notification.entity';
-import {CmRichText, CmRichTextI, CmRichTextUploadedImage} from '@monorepo/common-model';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnFrontService} from '../cn-core/services/cn-front.service';
 import {CnUser} from '../cn-users/cn-user.entity';
@@ -26,7 +33,7 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
     super(dataSource, objectStorageService);
   }
 
-  async saveProjectCommentImage(file: BlFile, bucketConfig: BlBucketConfig, projectId: string): Promise<CmRichTextUploadedImage> {
+  async saveProjectCommentImage(file: BlFile, bucketConfig: BlBucketConfig, projectId: string): Promise<BlRichTextUploadedImage> {
     const prefix = CnProjectBucketService.getPrefix('COMMENTS', projectId);
     return this.saveImage(file, bucketConfig, prefix);
   }
@@ -97,7 +104,7 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
     });
   }
 
-  async updateComment(projectId: string, commentId: string, content: CmRichTextI): Promise<CnProjectComment> {
+  async updateComment(projectId: string, commentId: string, content: BlRichTextI): Promise<CnProjectComment> {
     return await this.dataSource.transaction(async () => {
       const comment: CnProjectComment = await this.projectCommentRepository.findOneBy({
         id: commentId,
@@ -109,7 +116,7 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
       if (comment.createdBy.id != CnCurrentUserHelper.getCurrentUser().id) {
         throw new UnauthorizedException();
       }
-      comment.content = CmRichText.getOptimisedContent(content);
+      comment.content = BlRichText.getOptimisedContent(content);
       return await this.projectCommentRepository.save(comment);
     });
   }

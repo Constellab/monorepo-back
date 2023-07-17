@@ -2,8 +2,7 @@ import {ArgumentsHost, ExceptionFilter, HttpException, HttpStatus, Logger} from 
 import {QueryFailedError} from 'typeorm';
 import {Response} from 'express';
 import {ClStringHelper} from '@monorepo/core-lib';
-import {CmApiError} from '@monorepo/common-model';
-import {BlHttpException, BlTranslateOptions, BlTranslateService} from '@monorepo/back-core-lib';
+import {BlApiError, BlHttpException, BlTranslateOptions, BlTranslateService} from '@monorepo/back-core-lib';
 
 
 export interface BlCoreExceptionHandlerFilterOptions {
@@ -30,7 +29,7 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
   async catch(exception: unknown, host: ArgumentsHost): Promise<void> {
     const response: Response = host.switchToHttp().getResponse();
     try {
-      const error: CmApiError = await this.handleError(exception as any);
+      const error: BlApiError = await this.handleError(exception as any);
 
       response.status(error.status).json(error);
     } catch (e) {
@@ -38,7 +37,7 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
       // use catch error if an error is raised in handleError method
       // because it would break the app
       this.logger.error('Unexpected error thrown in CustomExceptionHandlerFilter | InstanceId ' + instanceId);
-      const error: CmApiError = {
+      const error: BlApiError = {
         status: HttpStatus.INTERNAL_SERVER_ERROR,
         detail: 'Server error',
         code: this.options.serverError,
@@ -49,7 +48,7 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
   }
 
 
-  private async handleError(error: Error): Promise<CmApiError> {
+  private async handleError(error: Error): Promise<BlApiError> {
     if (error instanceof BlHttpException) {
       return this.handleKnownException(error);
     } else if (error instanceof HttpException) {
@@ -61,18 +60,18 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
     }
   }
 
-  private handleKnownException(error: BlHttpException): Promise<CmApiError> {
+  private handleKnownException(error: BlHttpException): Promise<BlApiError> {
     // translate the error message and throw the exception with error code and message
     return this.convertToNestError(error.message, error.getStatus(),
       {args: error.options.detailArgs}, error.options.instanceId);
   }
 
-  private handleNestHttpException(error: HttpException): Promise<CmApiError> {
+  private handleNestHttpException(error: HttpException): Promise<BlApiError> {
     // translate the error message and throw the exception with error code and message
     return this.convertToNestError(error.message, error.getStatus());
   }
 
-  private async handleUnknownException(error: Error): Promise<CmApiError> {
+  private async handleUnknownException(error: Error): Promise<BlApiError> {
     const instanceId: string = ClStringHelper.generateUUID();
 
     // log the error
@@ -96,7 +95,7 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
   // method to log the error in the console with context info
 
   // handle ER_DATA_TOO_LONG error when inserting in DB
-  private handleDataTooLongException(error: QueryFailedError): Promise<CmApiError> {
+  private handleDataTooLongException(error: QueryFailedError): Promise<BlApiError> {
     // split message on ' character
     // example of message: ER_DATA_TOO_LONG: Data too long for column 'title' at row 1
     const splitMessage: string[] = error.message.split('\'');
@@ -115,7 +114,7 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
    */
   private async convertToNestError(errorCode: string, status: HttpStatus,
                                    translateOptions: BlTranslateOptions = {},
-                                   instanceId?: string): Promise<CmApiError> {
+                                   instanceId?: string): Promise<BlApiError> {
     // translate the error message and throw the exception with error code and message
     const translatedMessage: string = await this.translateService.translate(errorCode, translateOptions);
 

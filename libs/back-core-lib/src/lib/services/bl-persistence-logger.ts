@@ -1,6 +1,6 @@
 import {AdvancedConsoleLogger, QueryRunner} from 'typeorm';
 import {Logger} from '@nestjs/common';
-import {BlUser} from '../models/bl-user.class';
+import {BlUser} from '../models/bl-user/bl-user.class';
 import {BlCurrentUserHelper} from '../modules/bl-jwt/bl-current-user.helper';
 
 export type BlPersistenceAction = 'INSERT' | 'UPDATE' | 'DELETE';

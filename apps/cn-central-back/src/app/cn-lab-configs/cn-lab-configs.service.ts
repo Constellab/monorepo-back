@@ -6,8 +6,7 @@ import {CnLabConfigDto} from './cn-lab-config.dto';
 import {ClHelpService} from '@monorepo/core-lib';
 import {CnBricksService} from '../cn-bricks/cn-bricks.service';
 import {CnBrickGWS, CnBrickVersionDTO, CnBrickVersionTechnicalKey} from '../cn-bricks/cn-brick.dto';
-import {CmVersion} from '@monorepo/common-model';
-import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlBadRequestException, BlVersion} from '@monorepo/back-core-lib';
 import {CnLabInstance} from '../cn-lab-instances/cn-lab-instance.entity';
 import {CnLabInstanceConfigDTO} from '../cn-lab-instances/cn-lab-instance.dto';
 import {CnLabConfigFile, CnLabConfigFileEnv} from './cn-lab-config-file.class';
@@ -48,7 +47,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     return await this.datasource.transaction(async entityManager => {
 
       for (const version of labConfigDto.brick_versions) {
-        const brickVersion = await this.brickService.getBrickVersionAndCheck(version.name, CmVersion.fromString(version.version));
+        const brickVersion = await this.brickService.getBrickVersionAndCheck(version.name, BlVersion.fromString(version.version));
         labConfig.brickVersions.push(brickVersion);
       }
 
@@ -136,7 +135,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     }
 
     // retrieve the lab front version
-    const gwsCoreVersion = CmVersion.fromString(gwsCore.version);
+    const gwsCoreVersion = BlVersion.fromString(gwsCore.version);
     // get gws_core version
     return await this.brickService.getBrickVersion(CnBrickGWS.GWS_CORE, gwsCoreVersion);
   }
@@ -149,7 +148,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     }
     // get gws_core version
     const gwsBiotaBrickVersion = await this.brickService.getBrickVersion(CnBrickGWS.GWS_BIOTA,
-      CmVersion.fromString(gwsBiota.version));
+      BlVersion.fromString(gwsBiota.version));
 
     const biotaMariaDbUrl = gwsBiotaBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_BIOTA_MARIA_DB_URL];
     if (biotaMariaDbUrl == null) {
@@ -164,7 +163,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
 
 
     for (const brick of brickVersions) {
-      const brickVersion = await this.brickService.getBrickVersionAndCheck(brick.name, CmVersion.fromString(brick.version));
+      const brickVersion = await this.brickService.getBrickVersionAndCheck(brick.name, BlVersion.fromString(brick.version));
 
       labConfig.bricks.push({
         name: brick.name,

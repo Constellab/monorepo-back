@@ -10,13 +10,13 @@ import {
   BlFile,
   BlFileHelper,
   BlImageHelper,
-  BlObjectStorageService
+  BlObjectStorageService,
+  BlRichTextUploadedImage
 } from '@monorepo/back-core-lib';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
 import {EntityManager} from 'typeorm';
 import {CnObjectStoragesAggregateService} from '../../cn-object-storages/cn-object-storages-aggregate.service';
 import {IncomingMessage} from 'http';
-import {CmRichTextUploadedImage} from '@monorepo/common-model';
 
 
 /**
@@ -101,7 +101,7 @@ export class CnProjectBucketService {
   }
 
   /////////////////////////////////////////// DESCRIPTION ///////////////////////////////////////////
-  public async saveDescriptionImage(project: CnProject, file: BlFile): Promise<CmRichTextUploadedImage> {
+  public async saveDescriptionImage(project: CnProject, file: BlFile): Promise<BlRichTextUploadedImage> {
     const bucketConfig = await this.getAndCheckProjectBucketConfig(project.getRootParentId());
 
     const size = BlImageHelper.getImageSize(file);

@@ -25,12 +25,19 @@ import {
   CnSaveProjectDTO
 } from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
-import {CmRichText, CmRichTextI, CmRichTextUploadedImage} from '@monorepo/common-model';
 import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
 import {CnProjectCommentService} from '../cn-project-comment/cn-project-comment.service';
 import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
-import {BlBadRequestException, BlFile, BlSearchParams, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {
+  BlBadRequestException,
+  BlFile,
+  BlRichText,
+  BlRichTextI,
+  BlRichTextUploadedImage,
+  BlSearchParams,
+  BlUnauthorizedException
+} from '@monorepo/back-core-lib';
 import {DataSource} from 'typeorm';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
@@ -297,18 +304,18 @@ export class CnProjectAggregateService {
 
   /////////////////////////////////////// PROJECT DESCRIPTION //////////////////////////////////
 
-  public async getDescription(projectId: string): Promise<CmRichTextI> {
+  public async getDescription(projectId: string): Promise<BlRichTextI> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
     return project.description;
   }
 
-  public async updateDescription(projectId: string, description: CmRichTextI): Promise<CnProject> {
+  public async updateDescription(projectId: string, description: BlRichTextI): Promise<CnProject> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
     project.description = description;
     return this.projectService.update(project);
   }
 
-  public async saveDescriptionImage(projectId: string, file: BlFile): Promise<CmRichTextUploadedImage> {
+  public async saveDescriptionImage(projectId: string, file: BlFile): Promise<BlRichTextUploadedImage> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
     return this.projectBucketService.saveDescriptionImage(project, file);
   }
@@ -522,7 +529,7 @@ export class CnProjectAggregateService {
 
   /////////////////////////////////////// PROJECT COMMENT //////////////////////////////////
 
-  public async updateProjectComment(projectId: string, comment: string, content: CmRichTextI): Promise<CnProjectComment> {
+  public async updateProjectComment(projectId: string, comment: string, content: BlRichTextI): Promise<CnProjectComment> {
     return this.projectCommentService.updateComment(projectId, comment, content);
   }
 
@@ -542,7 +549,7 @@ export class CnProjectAggregateService {
     return this.projectCommentService.delete(commentId, projectId);
   }
 
-  public async saveCommentImage(file: BlFile, projectId: string): Promise<CmRichTextUploadedImage> {
+  public async saveCommentImage(file: BlFile, projectId: string): Promise<BlRichTextUploadedImage> {
     const rootProject = await this.getAndCheckAuthorizationForFindOne(projectId);
 
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(rootProject.id);
@@ -608,7 +615,7 @@ export class CnProjectAggregateService {
     return this.documentService.createConstellabDocument(project, filename);
   }
 
-  public async updateConstellabDocument(documentId: string, content: CmRichTextI): Promise<CnConstellabDocument> {
+  public async updateConstellabDocument(documentId: string, content: BlRichTextI): Promise<CnConstellabDocument> {
     const document = await this.documentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
@@ -624,7 +631,7 @@ export class CnProjectAggregateService {
     return this.documentService.getConstellabDocument(project, document);
   }
 
-  public async uploadImageToConstellabDocument(documentId: string, file: BlFile): Promise<CmRichTextUploadedImage> {
+  public async uploadImageToConstellabDocument(documentId: string, file: BlFile): Promise<BlRichTextUploadedImage> {
     const document = await this.documentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
@@ -685,9 +692,9 @@ export class CnProjectAggregateService {
     return await this.projectSecurity.checkFindOneAndGetRootProject(project, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
   }
 
-  private async getUserMentions(projectId: string, content: CmRichTextI): Promise<CnUser[]> {
+  private async getUserMentions(projectId: string, content: BlRichTextI): Promise<CnUser[]> {
     const userMentions: CnUser[] = [];
-    const mentions: string[] = CmRichText.getMentions(content);
+    const mentions: string[] = BlRichText.getMentions(content);
     if (mentions.length > 0) {
       for (const m of mentions) {
         if (m == '0') {

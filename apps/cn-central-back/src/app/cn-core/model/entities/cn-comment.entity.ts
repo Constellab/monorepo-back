@@ -1,13 +1,13 @@
 import {Type} from 'class-transformer';
 import {CnUser} from '../../../cn-users/cn-user.entity';
 import {Column, ManyToOne} from 'typeorm';
-import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 import {CnBaseEntity} from './cn-base.entity';
+import {BlRichText, BlRichTextI} from '@monorepo/back-core-lib';
 
 export class CnComment extends CnBaseEntity {
 
   @Column({type: 'simple-json', nullable: true, collation: 'utf8mb4_unicode_ci'})
-  content: CmRichTextI;
+  content: BlRichTextI;
 
   @Type(() => CnComment)
   @ManyToOne(() => CnUser, {nullable: true})
@@ -22,7 +22,7 @@ export class CnComment extends CnBaseEntity {
   }
 
   init(newComment: CnNewComment): void {
-    this.content = newComment ? CmRichText.getOptimisedContent(newComment.content) : null;
+    this.content = newComment ? BlRichText.getOptimisedContent(newComment.content) : null;
     if (newComment?.parentCommentId) {
       this.isResponse = true;
     }
@@ -31,7 +31,7 @@ export class CnComment extends CnBaseEntity {
 
 
 export class CnNewComment {
-  content: CmRichTextI;
+  content: BlRichTextI;
 
   parentCommentId?: string;
 }

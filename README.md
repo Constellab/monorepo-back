@@ -31,10 +31,5 @@ Typescript library for font and back for services, helpers, classes
 
 Prefix : Cl
 
-### common-model : Cm
-Typescript library for font and back to share models (interfaces, classes)
-
-Prefix : Cm
-
 ### back-core-lib : Bl
 Library for nest apps that contain generic back classes

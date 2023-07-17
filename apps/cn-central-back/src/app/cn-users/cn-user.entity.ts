@@ -4,8 +4,7 @@ import type {CnGroupSingleUser, CnGroupTeam} from '../cn-groups/cn-group.entity'
 import * as argon2 from 'argon2';
 import {ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
-import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
-import {BlEntityWithId, BlLuxonDateTimeColumn, BlUser} from '@monorepo/back-core-lib';
+import {BlEntityWithId, BlLuxonDateTimeColumn, BlUser, BlUserCategory, BlUserStatus} from '@monorepo/back-core-lib';
 
 
 @Entity('user')
@@ -24,8 +23,8 @@ export class CnUser extends BlEntityWithId implements BlUser {
   @Column({nullable: false})
   password: string;
 
-  @Column({nullable: false, type: 'enum', enum: CmUserCategory})
-  category: CmUserCategory;
+  @Column({nullable: false, type: 'enum', enum: BlUserCategory})
+  category: BlUserCategory;
 
   @Column({nullable: true})
   activity: string;
@@ -59,8 +58,8 @@ export class CnUser extends BlEntityWithId implements BlUser {
     (group: CnGroupSingleUser) => group.user)
   ownGroup: CnGroupSingleUser;
 
-  @Column({nullable: false, type: 'enum', enum: CmUserStatus, default: CmUserStatus.WAITING_FOR_EMAIL})
-  status: CmUserStatus;
+  @Column({nullable: false, type: 'enum', enum: BlUserStatus, default: BlUserStatus.WAITING_FOR_EMAIL})
+  status: BlUserStatus;
 
   @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;
@@ -104,7 +103,7 @@ export class CnUser extends BlEntityWithId implements BlUser {
   }
 
   isAdmin(): boolean {
-    return this.category === CmUserCategory.ADMIN;
+    return this.category === BlUserCategory.ADMIN;
   }
 }
 
@@ -124,7 +123,7 @@ export interface CnUserTransportDto {
   lastname: string;
   email: string;
   theme: ClTheme;
-  category: CmUserCategory;
+  category: BlUserCategory;
 
   lang: ClSupportedLanguage;
   activity: string;

@@ -1,10 +1,17 @@
 import {Body, Controller, Delete, Get, Param, Put, Res, UseGuards, UseInterceptors} from '@nestjs/common';
 import {HnDocumentation, HnDocumentationDTO} from './documentation/hn-documentation.entity';
-import {BlFile, BlParsePipe, BlPublic, BlResponseHelper, BlUploadedFile} from '@monorepo/back-core-lib';
+import {
+  BlFile,
+  BlParsePipe,
+  BlPublic,
+  BlResponseHelper,
+  BlRichTextI,
+  BlRichTextUploadedImage,
+  BlUploadedFile
+} from '@monorepo/back-core-lib';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {HnNodeDTO} from './folder/hn-folder.dto';
-import {CmRichTextI, CmRichTextUploadedImage} from '@monorepo/common-model';
 import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
 import {HnBrickAggregateService} from './hn-brick-aggregate.service';
 
@@ -22,7 +29,7 @@ export class HnDocumentationController {
 
   @Put('content/:id')
   updateContent(@Param('id') id: string,
-                @Body() updateContentDoc: CmRichTextI): Promise<HnDocumentation> {
+                @Body() updateContentDoc: BlRichTextI): Promise<HnDocumentation> {
     return this.brickAggregateService.updateDocContent(id, updateContentDoc);
   }
 
@@ -44,7 +51,7 @@ export class HnDocumentationController {
 
   @UseInterceptors(FileInterceptor('file'))
   @Put('/image')
-  saveImage(@BlUploadedFile() file: BlFile): Promise<CmRichTextUploadedImage> {
+  saveImage(@BlUploadedFile() file: BlFile): Promise<BlRichTextUploadedImage> {
     //TODO: Check how to secure this root
     return this.brickAggregateService.saveDocImage(file);
   }

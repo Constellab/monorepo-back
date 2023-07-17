@@ -1,12 +1,11 @@
 import {Column, Entity, ManyToMany, ManyToOne} from 'typeorm';
 import {Exclude, Type} from 'class-transformer';
 import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
-import {BlLuxonDateTimeColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
+import {BlLuxonDateTimeColumn, BlNotUpdatable, BlRichTextI} from '@monorepo/back-core-lib';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnReport} from '../cn-reports/cn-report.entity';
 import {CnExperimentStatus} from './cn-experiment-status.enum';
 import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
-import {CmRichTextI} from '@monorepo/common-model';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {DateTime} from 'luxon';
 import {CnEntity} from '../../cn-core/model/entities/cn.entity';
@@ -29,7 +28,7 @@ export class CnExperiment extends CnEntity {
   title: string;
 
   @Column({type: 'simple-json', array: false, nullable: true})
-  description: CmRichTextI;
+  description: BlRichTextI;
 
   @Column({type: 'enum', enum: CnExperimentStatus, nullable: false})
   status: CnExperimentStatus;

@@ -1,15 +1,15 @@
-import {Transform} from 'class-transformer';
 import {ClTransformFnParams} from '@monorepo/core-lib';
+import {Transform} from 'class-transformer';
 
 /**
  * Object to support version like 2.1.1 or 2.2.0-beta.1
  */
-export class CmVersion {
+export class BlVersion {
 
   constructor(public major: number, public minor: number, public patch: number, public subPatch?: number) {
   }
 
-  public static fromString(version: string): CmVersion {
+  public static fromString(version: string): BlVersion {
     if (version == null || version.length < 5) {
       throw new Error(`Version '${version}' is invalid`);
     }
@@ -46,14 +46,14 @@ export class CmVersion {
       throw new Error(`Version '${version}' is invalid`);
     }
 
-    return new CmVersion(major, minor, patch, subPatch);
+    return new BlVersion(major, minor, patch, subPatch);
   }
 
-  public isEqualOrHigher(other: CmVersion): boolean {
+  public isEqualOrHigher(other: BlVersion): boolean {
     return this.getDif(other) >= 0;
   }
 
-  public isEqual(other: CmVersion): boolean {
+  public isEqual(other: BlVersion): boolean {
     return this.getDif(other) === 0;
   }
 
@@ -64,7 +64,7 @@ export class CmVersion {
    * -1 if other version is higher
    * @param other
    */
-  public getDif(other: CmVersion): number {
+  public getDif(other: BlVersion): number {
     if (this.major === other.major &&
       this.minor === other.minor &&
       this.patch === other.patch &&
@@ -100,15 +100,15 @@ export class CmVersion {
   }
 }
 
-export function CmVersionTransform(): PropertyDecorator {
+export function BlVersionTransform(): PropertyDecorator {
   // convert Version to string
   const transformToPlain = Transform(
-    (params: ClTransformFnParams<CmVersion>) => params.value?.toString() ?? null,
+    (params: ClTransformFnParams<BlVersion>) => params.value?.toString() ?? null,
     {toPlainOnly: true});
 
   // create string to Version
   const transformToClass = Transform(
-    (params: ClTransformFnParams<string | null>) => params.value == null ? null : CmVersion.fromString(params.value),
+    (params: ClTransformFnParams<string | null>) => params.value == null ? null : BlVersion.fromString(params.value),
     {toClassOnly: true});
 
   return (target: any, key: string): void => {

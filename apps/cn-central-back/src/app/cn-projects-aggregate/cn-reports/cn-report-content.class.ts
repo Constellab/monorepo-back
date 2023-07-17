@@ -1,4 +1,4 @@
-import {CmRichText, CmRichTextOp} from '@monorepo/common-model';
+import {BlRichText, BlRichTextOp} from '@monorepo/back-core-lib';
 
 export interface CnReportViewConfig {
   id: string;
@@ -11,14 +11,14 @@ export interface CnReportViewConfig {
   caption: string;
 }
 
-export interface CnReportViewOp extends CmRichTextOp{
+export interface CnReportViewOp extends BlRichTextOp {
   insert: {
     resource_view: CnReportViewConfig
   };
 }
 
 
-export class CnReportContent extends CmRichText {
+export class CnReportContent extends BlRichText {
   public static readonly viewOps = 'resource_view';
 
   public getViewsOps(): CnReportViewOp[] {

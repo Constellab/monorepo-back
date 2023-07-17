@@ -1,7 +1,7 @@
 /**
  * Format of the nest response error
  */
-export interface CmApiError {
+export interface BlApiError {
   // http status
   status: number;
 

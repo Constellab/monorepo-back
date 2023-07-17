@@ -6,13 +6,12 @@ import {HnFolderService} from '../folder/hn-folder.service';
 import {HnBrick} from '../brick/hn-brick.entity';
 import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
 import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
-import {CmVersion} from '@monorepo/common-model';
 import {HnNode} from '../folder/hn-folder.dto';
 import {HnCreateBrickDTO, HnImportTechnicalDocDTO, HnTechnicalDocInputDTO} from '../brick/hn-brick.dto';
 import {HnTechnicalFolderService} from '../../technical-folder/hn-technical-folder.service';
 import {HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
 import {HnGeneratedDocEntity} from '../../core/model/entities/hn-generated-doc.entity';
-import {BlBadRequestException} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlVersion} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class HnBrickMajorVersionService {
@@ -91,7 +90,7 @@ export class HnBrickMajorVersionService {
   }
 
   async createTechnicalDoc(brick: HnBrick, importFile: HnImportTechnicalDocDTO): Promise<boolean> {
-    const importVersion: CmVersion = CmVersion.fromString(importFile.brick_version);
+    const importVersion: BlVersion = BlVersion.fromString(importFile.brick_version);
     const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionsRepository.findOne({
       where: {
         brick: {
@@ -164,9 +163,9 @@ export class HnBrickMajorVersionService {
       brickMap.push(`${brick.name}/v${brickMajorVersion.major}`);
       brickMap.push(`${brick.name}/v${brickMajorVersion.major}/version`);
       brickMap = brickMap.concat(await
-      this.folderService.findBrickMajorVersionMap(brickMajorVersion, `${brick.name}/v${brickMajorVersion.major}`));
+        this.folderService.findBrickMajorVersionMap(brickMajorVersion, `${brick.name}/v${brickMajorVersion.major}`));
       brickMap = brickMap.concat(await
-      this.technicalFolderService.findBrickMajorVersionMap(brickMajorVersion, `${brick.name}/v${brickMajorVersion.major}`));
+        this.technicalFolderService.findBrickMajorVersionMap(brickMajorVersion, `${brick.name}/v${brickMajorVersion.major}`));
     }
     return brickMap;
   }

@@ -19,11 +19,16 @@ import {HnBrickVersionService} from './brick-version/hn-brick-version.service';
 import {ClPageI, ClStringHelper} from '@monorepo/core-lib';
 import {DataSource} from 'typeorm';
 import {HnBrickMajorVersion} from './brick-major-version/hn-brick-major-version.entity';
-import {CmRichTextI, CmRichTextUploadedImage, CmVersion} from '@monorepo/common-model';
 import {HnFolderService} from './folder/hn-folder.service';
 import {HnFolder} from './folder/hn-folder.entity';
 import {HnDocumentationService} from './documentation/hn-documentation.service';
-import {BlFile, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {
+  BlFile,
+  BlRichTextI,
+  BlRichTextUploadedImage,
+  BlUnauthorizedException,
+  BlVersion
+} from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
 import {HnBrickUserService} from './brick-user/hn-brick-user.service';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
@@ -54,8 +59,8 @@ export class HnBrickAggregateService {
   async findAllMap(): Promise<string[]> {
     const bricks: HnBrick[] = await this.brickService.find();
     let map: string[] = [];
-    for(const brick of bricks){
-      if(brick.visibility === HnBrickVisibility.PUBLIC){
+    for (const brick of bricks) {
+      if (brick.visibility === HnBrickVisibility.PUBLIC) {
         const brickMap: string[] = await this.brickMajorVersionService.findBrickMap(brick);
         map = map.concat(brickMap);
       }
@@ -72,10 +77,10 @@ export class HnBrickAggregateService {
       }
       if (body.isBeta) body.version.subPatch = body.subPatch;
       const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionService.create(brick, body, entityManager);
-      const version: CmVersion = body.version.subPatch != null ?
-        new CmVersion(+body.version.major, +body.version.minor,
+      const version: BlVersion = body.version.subPatch != null ?
+        new BlVersion(+body.version.major, +body.version.minor,
           +body.version.patch, +body.version.subPatch) :
-        new CmVersion(+body.version.major, +body.version.minor, +body.version.patch);
+        new BlVersion(+body.version.major, +body.version.minor, +body.version.patch);
       const bv: HnBrickVersion = await this.brickVersionService.createNewBrickVersion(brickMajorVersion,
         {
           version: version.toString(),
@@ -152,7 +157,7 @@ export class HnBrickAggregateService {
 
   //------------------------------------- FOLDERS -------------------------------------
 
-  async checkIfUserHasRightsOnFolder(id: string): Promise<void>{
+  async checkIfUserHasRightsOnFolder(id: string): Promise<void> {
     const folder: HnFolder = await this.folderService.findById(id);
     const brickMajorVersion: HnBrickMajorVersion = folder.brickMajorVersion;
     const brick: HnBrick = brickMajorVersion.brick;
@@ -223,20 +228,20 @@ export class HnBrickAggregateService {
     return this.documentationService.update(updatedDoc);
   }
 
-  async saveDocImage(file: BlFile): Promise<CmRichTextUploadedImage>{
+  async saveDocImage(file: BlFile): Promise<BlRichTextUploadedImage> {
     return this.documentationService.saveImage(file);
   }
 
-  async getDocImage(id: string): Promise<IncomingMessage>{
+  async getDocImage(id: string): Promise<IncomingMessage> {
     return this.documentationService.getImage(id);
   }
 
-  async updateDocContent(id: string, updateContentDoc: CmRichTextI): Promise<HnDocumentation>{
+  async updateDocContent(id: string, updateContentDoc: BlRichTextI): Promise<HnDocumentation> {
     await this.checkIfUserHasRightsOnDoc(id);
     return this.documentationService.updateContent(id, updateContentDoc);
   }
 
-  async checkIfUserHasRightsOnDoc(id: string): Promise<void>{
+  async checkIfUserHasRightsOnDoc(id: string): Promise<void> {
     const doc: HnDocumentation = await this.documentationService.findById(id);
     const folder: HnFolder = doc.folder;
     const brickMajorVersion: HnBrickMajorVersion = folder.brickMajorVersion;
@@ -252,7 +257,7 @@ export class HnBrickAggregateService {
     return this.brickService.findDocsByBrickAndVersion(await this.brickService.findById(brickId), version);
   }
 
-  async findRootFolderId(brickId: string, version: string): Promise<{id: string }> {
+  async findRootFolderId(brickId: string, version: string): Promise<{ id: string }> {
     return {id: await this.brickService.findRootFolderId(await this.brickService.findById(brickId), version)};
   }
 
@@ -264,13 +269,13 @@ export class HnBrickAggregateService {
     return this.brickService.findFirstDoc(await this.brickService.findByName(brickName), version);
   }
 
-  async getDocsByBrickNameMajor(brickName: string, major: string): Promise<HnDocumentationSearchDTO[]>{
+  async getDocsByBrickNameMajor(brickName: string, major: string): Promise<HnDocumentationSearchDTO[]> {
     return this.brickService.getDocsByBrickNameMajor(
       brickName,
       major === 'latest' ? (await this.getLatestBrickVersion(brickName)).version.major : +(major.slice(1)));
   }
 
-  async getDocByLink(link: string): Promise<HnDocumentationSearchDTO>{
+  async getDocByLink(link: string): Promise<HnDocumentationSearchDTO> {
     return this.brickService.getDocByLink(link);
   }
 
@@ -290,7 +295,7 @@ export class HnBrickAggregateService {
 
   //------------------------------------- VERSION -------------------------------------
 
-  async createNewVersion(newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO>{
+  async createNewVersion(newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
     return this.brickService.createNewVersion(newVersion);
   }
 
@@ -302,15 +307,15 @@ export class HnBrickAggregateService {
     return this.brickVersionService.sendAllBrickVersionToQueue();
   }
 
-  async getCurrentBrickVersion(page: number, size: number, brickId: string): Promise<ClPageI<HnBrickVersion>>{
+  async getCurrentBrickVersion(page: number, size: number, brickId: string): Promise<ClPageI<HnBrickVersion>> {
     return this.brickVersionService.getCurrentBrickVersion(page, size, brickId);
   }
 
-  async getAllBrickVersionReferences(brickVersionId: string): Promise<HnReferenceDTO[]>{
+  async getAllBrickVersionReferences(brickVersionId: string): Promise<HnReferenceDTO[]> {
     return this.brickVersionService.getAllReferences(brickVersionId);
   }
 
-  async getBrickVersionDirectReferences(brickVersionId: string): Promise<HnReferenceDTO[]>{
+  async getBrickVersionDirectReferences(brickVersionId: string): Promise<HnReferenceDTO[]> {
     return this.brickVersionService.getDirectReferences(brickVersionId);
   }
 

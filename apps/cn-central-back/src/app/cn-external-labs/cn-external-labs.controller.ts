@@ -1,6 +1,6 @@
 import {Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, UseInterceptors} from '@nestjs/common';
 import {CnLabGuard, CnLabRobotAuthentication} from '../cn-core/decorators/cn-lab-guard.decorator';
-import {BlFile, BlParsePipe, BlUploadedFiles} from '@monorepo/back-core-lib';
+import {BlCredentials, BlFile, BlParsePipe, BlUploadedFiles} from '@monorepo/back-core-lib';
 import {CnCreateLabExperimentDto} from '../cn-projects-aggregate/cn-experiments/cn-experiment.dto';
 import {CnCreateReportWithConfigDto} from '../cn-projects-aggregate/cn-reports/cn-report.dto';
 import {CnLabInstanceStartDTO} from '../cn-lab-instances/cn-lab-instance.dto';
@@ -13,7 +13,6 @@ import {FilesInterceptor} from '@nestjs/platform-express';
 import {ClCoreJsonConvert} from '@monorepo/core-lib';
 import {CnExternalLabUser} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {CnProjectDtoHelper, CnProjectTreeDto} from '../cn-projects-aggregate/cn-projects/cn-project.dto';
-import {CmCredentials} from '@monorepo/common-model';
 import {CnExternalCheckCredentialResponse} from '../cn-auth/cn-auth.service';
 
 /**
@@ -41,7 +40,7 @@ export class CnExternalLabsController {
    */
   @CnLabRobotAuthentication()
   @Post('check-credentials')
-  async checkUserCredentials(@Body() credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
+  async checkUserCredentials(@Body() credentials: BlCredentials): Promise<CnExternalCheckCredentialResponse> {
     return this.labInstanceAggregator.checkUserCredentials(credentials, false, false);
   }
 
@@ -52,7 +51,7 @@ export class CnExternalLabsController {
    */
   @CnLabRobotAuthentication()
   @Post('check-credentials-simple')
-  async checkUserCredentialsSimple(@Body() credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
+  async checkUserCredentialsSimple(@Body() credentials: BlCredentials): Promise<CnExternalCheckCredentialResponse> {
     return this.labInstanceAggregator.checkUserCredentials(credentials, true, true);
   }
 

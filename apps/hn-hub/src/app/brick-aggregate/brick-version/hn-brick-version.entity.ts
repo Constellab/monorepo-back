@@ -1,7 +1,6 @@
 import {Column, Entity, ManyToOne, Unique} from 'typeorm';
 import {HnBaseEntity} from '../../core/model/entities/hn-base.entity';
-import {BlNotUpdatable} from '@monorepo/back-core-lib';
-import {CmVersion} from '@monorepo/common-model';
+import {BlNotUpdatable, BlVersion} from '@monorepo/back-core-lib';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 import {HnBrickVersionRefState} from '../../brick-version-reference/hn-brick-version-reference.entity';
 
@@ -30,7 +29,7 @@ export class HnNewVersionDTO {
 export interface HnReferenceDTO {
   name: string;
   version: string;
-  referenceState: HnBrickVersionRefState
+  referenceState: HnBrickVersionRefState;
 }
 
 @Unique(['brickMajorVersion', 'minor', 'patch', 'subPatch'])
@@ -53,25 +52,25 @@ export class HnBrickVersion extends HnBaseEntity {
   repoType: HnRepoType;
 
   @BlNotUpdatable()
-  @ManyToOne(() => HnBrickMajorVersion, {eager: true, onDelete: "CASCADE"})
+  @ManyToOne(() => HnBrickMajorVersion, {eager: true, onDelete: 'CASCADE'})
   brickMajorVersion: HnBrickMajorVersion;
 
   @Column({name: 'technicalInfo', type: 'simple-json', nullable: true})
   technicalInfo?: Record<string, any>;
 
-  initialize(brickMajorVersion: HnBrickMajorVersion, version: CmVersion, repoType: HnRepoType, technicalInfo: Record<string, any>): void {
+  initialize(brickMajorVersion: HnBrickMajorVersion, version: BlVersion, repoType: HnRepoType, technicalInfo: Record<string, any>): void {
     this.brickMajorVersion = brickMajorVersion;
     this.version = version;
     this.repoType = repoType;
     this.technicalInfo = technicalInfo;
   }
 
-  public get version(): CmVersion {
-    return new CmVersion(this.brickMajorVersion.major, this.minor, this.patch,
+  public get version(): BlVersion {
+    return new BlVersion(this.brickMajorVersion.major, this.minor, this.patch,
       this.versionType === HnVersionType.BETA ? this.subPatch : null);
   }
 
-  public set version(version: CmVersion) {
+  public set version(version: BlVersion) {
     this.minor = version.minor;
     this.patch = version.patch;
     this.brickMajorVersion.major = version.major;

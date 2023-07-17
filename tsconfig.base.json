@@ -24,7 +24,6 @@
     "skipDefaultLibCheck": true,
     "paths": {
       "@monorepo/back-core-lib": ["libs/back-core-lib/src/index.ts"],
-      "@monorepo/common-model": ["libs/common-model/src/index.ts"],
       "@monorepo/core-lib": ["libs/core-lib/src/index.ts"],
       "@monorepo/front-core-lib": ["libs/front-core-lib/src/index.ts"],
       "@monorepo/protocol": ["libs/protocol/src/index.ts"],

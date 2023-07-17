@@ -1,6 +1,5 @@
 import {Injectable} from '@nestjs/common';
-import {CmCredentials, CmCredentials2Fa} from '@monorepo/common-model';
-import {BlExternalApiService, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {BlCredentials, BlCredentials2Fa, BlExternalApiService, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {lastValueFrom} from 'rxjs';
 import {HnUser} from '../users/hn-user.entity';
@@ -22,7 +21,7 @@ export class HnCentralAuthService {
     private coreConfigService: HnCoreConfigService) {
   }
 
-  async checkUserCredential(credentials: CmCredentials): Promise<HnExternalCheckCredentialResponse> {
+  async checkUserCredential(credentials: BlCredentials): Promise<HnExternalCheckCredentialResponse> {
     try {
       return await lastValueFrom(this.blExternalApiService
         .post(this.buildRoute('external/check-credentials'), credentials));
@@ -35,7 +34,7 @@ export class HnCentralAuthService {
     }
   }
 
-  async check2FA(credentials: CmCredentials2Fa): Promise<HnUser> {
+  async check2FA(credentials: BlCredentials2Fa): Promise<HnUser> {
     try {
       return await lastValueFrom(
         this.blExternalApiService.post(this.buildRoute('external/check-2fa'), credentials));

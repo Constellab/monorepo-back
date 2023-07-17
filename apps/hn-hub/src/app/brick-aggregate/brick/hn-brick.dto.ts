@@ -1,7 +1,7 @@
 import {HnReferenceDTO, HnRepoType, HnVersionType} from '../brick-version/hn-brick-version.entity';
 import {HnVersionState} from '../brick-major-version/hn-brick-major-version.entity';
-import {CmVersion} from '@monorepo/common-model';
 import {HnBrickVisibility} from './hn-brick.entity';
+import {BlVersion} from '@monorepo/back-core-lib';
 
 export interface HnBrickTransportDto {
   id: string;
@@ -21,21 +21,21 @@ export interface HnBrickVersionTransportDto {
   subPatch: number;
   versionState: HnVersionState;
   repoType: HnRepoType;
-  technicalInfo: Record<string, any>
+  technicalInfo: Record<string, any>;
 }
 
-export class HnCreateTechnicalDocContent{
+export class HnCreateTechnicalDocContent {
   brickName: string;
   importFile: HnImportTechnicalDocDTO;
 }
 
-export class HnIsActualBrickAndNewVersionDTO{
+export class HnIsActualBrickAndNewVersionDTO {
   brickId: string;
   inputBrickName: string;
   inputBrickVersion: string;
 }
 
-export interface HnImportParentDTO{
+export interface HnImportParentDTO {
   typing_name: string;
   class_name: string;
   human_name: string;
@@ -43,7 +43,7 @@ export interface HnImportParentDTO{
   object_type: string; //TODO: Mettre une enum ?
 }
 
-export interface HnImportTechnicalDocDTO{
+export interface HnImportTechnicalDocDTO {
   json_version: string;
   brick_name: string;
   brick_version: string;
@@ -52,7 +52,7 @@ export interface HnImportTechnicalDocDTO{
   protocols: HnImportProtocolDTO[]
 }
 
-export interface HnImportEntity{
+export interface HnImportEntity {
   unique_name: string;
   class_name: string;
   typing_name: string;
@@ -70,31 +70,31 @@ export interface HnImportEntity{
 export type HnImportResourceDTO = HnImportEntity;
 
 
-export interface HnImportTaskDTO extends HnImportEntity{
+export interface HnImportTaskDTO extends HnImportEntity {
   input_specs: any;
   output_specs: any;
   config_specs: any;
   additional_info?: any;
 }
 
-export interface HnImportProtocolDTO extends HnImportEntity{
+export interface HnImportProtocolDTO extends HnImportEntity {
   input_specs: any;
   output_specs: any;
   config_specs: any;
   additional_info?: any;
 }
 
-export class HnBrickListDTO{
+export class HnBrickListDTO {
   id: string;
   name: string;
   description: string;
-  lastVersion: CmVersion;
+  lastVersion: BlVersion;
   isCertified?: boolean;
   imageLink?: string;
   visibility: HnBrickVisibility;
 }
 
-export class HnEditBrickDTO{
+export class HnEditBrickDTO {
   id: string;
   description: string;
   pipRepo: string;
@@ -104,7 +104,7 @@ export class HnEditBrickDTO{
   credentialPassword?: string;
 }
 
-export class HnTechnicalDocInputDTO{
+export class HnTechnicalDocInputDTO {
   brickName: string;
   brickVersion: string;
   techDocType: string;
@@ -114,7 +114,7 @@ export class HnTechnicalDocInputDTO{
 /**
  * DTO containing minimum information to download a brick version
  */
-export class HnBrickVersionDownloadDTO{
+export class HnBrickVersionDownloadDTO {
   brickName: string;
   brickVersion: string;
   repoType: HnRepoType;
@@ -130,7 +130,7 @@ export class HnCreateBrickDTO {
   repoPip: string;
   isBeta?: boolean;
   subPatch?: number;
-  version: CmVersion;
+  version: BlVersion;
   references?: HnReferenceDTO[];
   technicalInfo?: Record<string, any>;
   visibility: HnBrickVisibility;

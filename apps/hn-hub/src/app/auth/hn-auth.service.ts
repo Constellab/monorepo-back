@@ -1,7 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {HnUserService} from '../users/hn-user.service';
-import {CmCredentials, CmCredentials2Fa} from '@monorepo/common-model';
-import {BlJwtService} from '@monorepo/back-core-lib';
+import {BlCredentials, BlCredentials2Fa, BlJwtService} from '@monorepo/back-core-lib';
 import {HnUser, HnUserConstellabDTO} from '../users/hn-user.entity';
 import {HnCentralAuthService} from './hn-central-auth.service';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
@@ -22,7 +21,7 @@ export class HnAuthService {
     private coreConfigService: HnCoreConfigService) {
   }
 
-  async login(credentials: CmCredentials): Promise<HnAuthResponse> {
+  async login(credentials: BlCredentials): Promise<HnAuthResponse> {
     const checkCredential =
       this.coreConfigService.isLocal() ? await this.userService.getUserCredentialsResponse(credentials)
         : await this.centralAuthService.checkUserCredential(credentials);
@@ -31,7 +30,7 @@ export class HnAuthService {
     if (checkCredential.status === 'OK' && checkCredential.user) {
       let user: HnUser = await this.userService.findOne(checkCredential.user.id);
       await this.userService.createOrUpdate(checkCredential.user);
-      if(!user) {
+      if (!user) {
         user = await this.userService.findOne(checkCredential.user.id);
       }
 
@@ -39,20 +38,20 @@ export class HnAuthService {
       return {
         status: 'LOGGED_IN',
         token: token,
-      }
-    }else{
+      };
+    } else {
       return {
         status: '2FA_REQUIRED',
         twoFAUrlCode: checkCredential.twoFAUrlCode,
-      }
+      };
     }
   }
 
-  async loginWith2FA(credentials: CmCredentials2Fa): Promise<string> {
+  async loginWith2FA(credentials: BlCredentials2Fa): Promise<string> {
     const user: HnUser = await this.centralAuthService.check2FA(credentials);
     let dbUser = await this.userService.findOne(user.id);
 
-    if(!dbUser) {
+    if (!dbUser) {
       await this.userService.createOrUpdate(user);
       dbUser = await this.userService.findOne(user.id);
     }

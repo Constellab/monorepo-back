@@ -2,7 +2,7 @@ import {Inject, Injectable} from '@nestjs/common';
 import {PassportStrategy} from '@nestjs/passport';
 import {Strategy} from 'passport-jwt';
 import {BL_JWT_CONFIG_PROVIDER, BlJwtConfig, BlTokenUser} from './bl-jwt.class';
-import {BlUser} from '../../models/bl-user.class';
+import {BlUser} from '../../models/bl-user/bl-user.class';
 import {BlUnauthorizedException} from '../../exceptions/bl-unauthorized.exception';
 
 @Injectable()

@@ -4,35 +4,24 @@ import {EntityManager, IsNull, Repository, TreeRepository} from 'typeorm';
 import {HnFolder} from './hn-folder.entity';
 import {HnDocumentation, HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
 import {HnDocumentationService} from '../documentation/hn-documentation.service';
-import {HnUser} from '../../users/hn-user.entity';
-import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 import {HnBrickMajorVersion, HnVersionState} from '../brick-major-version/hn-brick-major-version.entity';
 import {HnNode, HnNodeDTO} from './hn-folder.dto';
-import {BlBadRequestException, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {BlBadRequestException} from '@monorepo/back-core-lib';
+import {ClStringHelper} from '@monorepo/core-lib';
 
 @Injectable()
 export class HnFolderService {
-  constructor(
-    @InjectRepository(HnFolder)
+  constructor(@InjectRepository(HnFolder)
     private foldersRepository: Repository<HnFolder>,
     @InjectRepository(HnFolder)
     private foldersTreeRepository: TreeRepository<HnFolder>,
-    private documentationService: HnDocumentationService,
-  ) {
+    private documentationService: HnDocumentationService,) {
   }
 
-  private static generatePathWithTitle(title: string): string {
-    if (title != null) {
-      const path: string = title.toLowerCase().trim();
-      const re = / /gi;
-      return path.replace(re, '-');
-    }
-    return title;
-  }
 
   async create(createFolderRes: HnNodeDTO, entityManager?: EntityManager, brickMajorVersion?: HnBrickMajorVersion): Promise<HnFolder> {
 
-    createFolderRes.path = HnFolderService.generatePathWithTitle(createFolderRes.title);
+    createFolderRes.path = ClStringHelper.generateUrlPathFromString(createFolderRes.title);
 
     let folder: HnFolder;
     if (createFolderRes.folderId) {
@@ -80,7 +69,7 @@ export class HnFolderService {
         });
     }
 
-    createDocumentationRes.path = HnFolderService.generatePathWithTitle(createDocumentationRes.title);
+    createDocumentationRes.path = ClStringHelper.generateUrlPathFromString(createDocumentationRes.title);
 
     const createDocumentation = new HnDocumentation();
 
@@ -192,7 +181,7 @@ export class HnFolderService {
       relations: {folder: true, documentations: true, folders: true}
     });
 
-    folder.path = HnFolderService.generatePathWithTitle(updatedFolder.title);
+    folder.path = ClStringHelper.generateUrlPathFromString(updatedFolder.title);
     folder.title = updatedFolder.title;
     folder.completePath = folder.folder.completePath ? folder.folder.completePath + folder.path + '/' : folder.path + '/';
 
@@ -288,7 +277,7 @@ export class HnFolderService {
       });
     }
 
-    if(folder.folder){
+    if (folder.folder) {
       for (const fol of folder.folders) {
         this.getDocsByFolder(fol, major, brickName).forEach(d => {
           documentations.push(d);
@@ -298,17 +287,17 @@ export class HnFolderService {
     return documentations;
   }
 
-  async findBrickMajorVersionMap(brickMajorVersion: HnBrickMajorVersion, baseMapString: string): Promise<string[]>{
+  async findBrickMajorVersionMap(brickMajorVersion: HnBrickMajorVersion, baseMapString: string): Promise<string[]> {
     const brickMajorVersionMap: string[] = [];
     const mainFolder: HnFolder = await this.findFolderByBrickMajorVersion(brickMajorVersion);
     const docs: HnDocumentationSearchDTO[] =
       this.getDocsByFolder(mainFolder, brickMajorVersion.major.toString(), brickMajorVersion.brick.name);
     for (const doc of docs) {
-      if(brickMajorVersion.versionState == HnVersionState.LATEST){
+      if (brickMajorVersion.versionState == HnVersionState.LATEST) {
         const latestBaseMapString: string = baseMapString.split('/')[0] + '/latest/doc/';
         brickMajorVersionMap.push(latestBaseMapString + doc.completePath.slice(0, -1));
       }
-      brickMajorVersionMap.push(baseMapString  + '/doc/' + doc.completePath.slice(0, -1));
+      brickMajorVersionMap.push(baseMapString + '/doc/' + doc.completePath.slice(0, -1));
     }
     return brickMajorVersionMap;
   }

@@ -1,8 +1,13 @@
 import {Injectable} from '@nestjs/common';
 import {DataSource} from 'typeorm';
-import {BlBucketConfig, BlFile, BlImageHelper, BlObjectStorageService} from '@monorepo/back-core-lib';
+import {
+  BlBucketConfig,
+  BlFile,
+  BlImageHelper,
+  BlObjectStorageService,
+  BlRichTextUploadedImage
+} from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
-import {CmRichTextUploadedImage} from '@monorepo/common-model';
 
 @Injectable()
 export class CnCommentService<T> {
@@ -11,7 +16,7 @@ export class CnCommentService<T> {
                         private objectStorageService: BlObjectStorageService) {
   }
 
-  async saveImage(file: BlFile, bucketConfig: BlBucketConfig, prefix?: string): Promise<CmRichTextUploadedImage> {
+  async saveImage(file: BlFile, bucketConfig: BlBucketConfig, prefix?: string): Promise<BlRichTextUploadedImage> {
     const imSize = BlImageHelper.getImageSize(file);
     const filename = await this.objectStorageService.uploadObject(bucketConfig, file,
       {generateRandomObjectName: true, prefix: prefix});

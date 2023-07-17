@@ -12,11 +12,18 @@ import {
   UseInterceptors
 } from '@nestjs/common';
 import {HnStoryService} from './hn-story.service';
-import {BlFile, BlParsePipe, BlPublic, BlResponseHelper, BlUploadedFile} from '@monorepo/back-core-lib';
+import {
+  BlFile,
+  BlParsePipe,
+  BlPublic,
+  BlResponseHelper,
+  BlRichTextI,
+  BlRichTextUploadedImage,
+  BlUploadedFile
+} from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
 import {HnStory} from './hn-story.entity';
 import {HnCreateStoryDto, HnStoryFilter} from './hn-story.dto';
-import {CmRichTextI, CmRichTextUploadedImage} from '@monorepo/common-model';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {HnTopicDto} from '../topic/hn-topic.dto';
@@ -99,14 +106,14 @@ export class HnStoryController {
 
   @Put(':id/content')
   async updateStoryContent(@Param('id', new ParseUUIDPipe()) id: string,
-                           @Body('content') content: CmRichTextI): Promise<HnStory> {
+                           @Body('content') content: BlRichTextI): Promise<HnStory> {
     return this.storyService.updateStoryContent(id, content);
   }
 
   @UseInterceptors(FileInterceptor('file'))
   @Put('image/:storyId')
   saveImage(@BlUploadedFile() file: BlFile,
-            @Param('storyId', new ParseUUIDPipe()) storyId: string): Promise<CmRichTextUploadedImage> {
+            @Param('storyId', new ParseUUIDPipe()) storyId: string): Promise<BlRichTextUploadedImage> {
     return this.storyService.saveImage(file, storyId);
   }
 

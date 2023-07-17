@@ -1,7 +1,7 @@
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {CnUser} from './cn-user.entity';
 import {CnSpaceUserRole} from '../cn-spaces/cn-space-user.entity';
-import {CmUserCategory} from '@monorepo/common-model';
+import {BlUserCategory} from '@monorepo/back-core-lib';
 
 
 export interface CnCreateUserDto {
@@ -9,7 +9,7 @@ export interface CnCreateUserDto {
   lastname: string;
   email: string;
   password: string;
-  category: CmUserCategory;
+  category: BlUserCategory;
   phone?: string;
   captcha?: string;
 }

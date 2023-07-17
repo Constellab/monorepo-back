@@ -3,9 +3,8 @@ import {CnBrick, CnBrickVisibility} from './cn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {FindOptionsWhere, IsNull, Repository} from 'typeorm';
 import {CnBrickVersion, CnVersionType} from './cn-brick-version.entity';
-import {CmVersion} from '@monorepo/common-model';
 import {CnBrickSaveDTO} from './cn-brick.dto';
-import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlBadRequestException, BlVersion} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 
 @Injectable()
@@ -48,7 +47,7 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
     return this.brickRepo.findOne({where: {name: name}});
   }
 
-  public getBrickVersion(name: string, version: CmVersion): Promise<CnBrickVersion | null> {
+  public getBrickVersion(name: string, version: BlVersion): Promise<CnBrickVersion | null> {
     return this.brickVersionRepo.findOne(
       {
         where: {
@@ -63,7 +62,7 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
       });
   }
 
-  public async getBrickVersionAndCheck(name: string, version: CmVersion): Promise<CnBrickVersion> {
+  public async getBrickVersionAndCheck(name: string, version: BlVersion): Promise<CnBrickVersion> {
     const brickVersion = await this.getBrickVersion(name, version);
 
     if (brickVersion == null) {

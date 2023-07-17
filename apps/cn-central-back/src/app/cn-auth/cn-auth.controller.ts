@@ -3,8 +3,7 @@ import {CnAuthResponse, CnAuthService, CnExternalCheckCredentialResponse} from '
 import {Response} from 'express';
 import {cnJwtConfig} from './cn-jwt.config';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import {BlPublicSecure} from '@monorepo/back-core-lib';
-import {CmCredentials, CmCredentials2Fa} from '@monorepo/common-model';
+import {BlCredentials, BlCredentials2Fa, BlPublicSecure} from '@monorepo/back-core-lib';
 import {CnUser} from '../cn-users/cn-user.entity';
 
 @Controller('auth')
@@ -23,7 +22,7 @@ export class CnAuthController {
    */
   @BlPublicSecure()
   @Post('login')
-  async login(@Body() credentials: CmCredentials, @Res() response: Response): Promise<void> {
+  async login(@Body() credentials: BlCredentials, @Res() response: Response): Promise<void> {
     const result: CnAuthResponse = await this.authService.login(credentials);
 
     if (result.status === 'LOGGED_IN') {
@@ -40,7 +39,7 @@ export class CnAuthController {
    */
   @BlPublicSecure()
   @Post('login-2fa')
-  async login2Fa(@Body() credentials: CmCredentials2Fa, @Res() response: Response): Promise<void> {
+  async login2Fa(@Body() credentials: BlCredentials2Fa, @Res() response: Response): Promise<void> {
     const token = await this.authService.loginWith2FA(credentials);
 
     this.setTokenInCookie(token, response);
@@ -54,13 +53,13 @@ export class CnAuthController {
   @BlPublicSecure()
   @Post('external/check-credentials/:requiresAdmin')
   checkCredentialsWithRole(@Param('requiresAdmin', new ParseBoolPipe) requiresAdmin: boolean,
-                           @Body() credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
+                           @Body() credentials: BlCredentials): Promise<CnExternalCheckCredentialResponse> {
     return this.authService.externalCheckCredentialsWithRole(credentials, requiresAdmin);
   }
 
   @BlPublicSecure()
   @Post('external/check-credentials')
-  checkCredentials(@Body() credentials: CmCredentials): Promise<CnExternalCheckCredentialResponse> {
+  checkCredentials(@Body() credentials: BlCredentials): Promise<CnExternalCheckCredentialResponse> {
     return this.authService.externalCheckCredentials(credentials, true);
   }
 
@@ -69,7 +68,7 @@ export class CnAuthController {
    */
   @BlPublicSecure()
   @Post('external/check-2fa')
-  externalCheck2Fa(@Body() credentials: CmCredentials2Fa): Promise<CnUser> {
+  externalCheck2Fa(@Body() credentials: BlCredentials2Fa): Promise<CnUser> {
     return this.authService.externalCheck2FA(credentials);
   }
 
@@ -78,7 +77,7 @@ export class CnAuthController {
    */
   @BlPublicSecure()
   @Post('logout')
-  async logout(@Body() credentials: CmCredentials, @Res() response: Response): Promise<void> {
+  async logout(@Body() credentials: BlCredentials, @Res() response: Response): Promise<void> {
 
     this.clearTokenCookie(response);
     response.send();

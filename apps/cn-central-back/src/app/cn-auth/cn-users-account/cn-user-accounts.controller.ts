@@ -15,8 +15,7 @@ import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnUserAccountsService} from './cn-user-accounts.service';
 import {CnFrontService} from '../../cn-core/services/cn-front.service';
 import {CnUserCategories} from '../../cn-core/decorators/cn-user-category.decorator';
-import {CmUserCategory} from '@monorepo/common-model';
-import {BlParsePipe, BlPublicSecure} from '@monorepo/back-core-lib';
+import {BlParsePipe, BlPublicSecure, BlUserCategory} from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
 
 /**
@@ -102,7 +101,7 @@ export class CnUserAccountsController {
    * Route to set the admin activate a user.
    * Only accessible by admins
    */
-  @CnUserCategories(CmUserCategory.ADMIN)
+  @CnUserCategories(BlUserCategory.ADMIN)
   @Post('adminActivation/:userId')
   async adminActivation(@Param('userId', ParseUUIDPipe) userId: string): Promise<CnUser> {
     return this.userAccountsService.adminActivation(userId);
@@ -111,7 +110,7 @@ export class CnUserAccountsController {
   /**
    * Get the list of users to need to be activated by an admin
    */
-  @CnUserCategories(CmUserCategory.ADMIN)
+  @CnUserCategories(BlUserCategory.ADMIN)
   @Get('usersToAdminActivate')
   findUsersToAdminActivate(@Query('page', ParseIntPipe) page: number,
                            @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnUser>> {

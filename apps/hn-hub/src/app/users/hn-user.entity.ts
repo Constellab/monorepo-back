@@ -1,8 +1,7 @@
-import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
+import {BlLuxonDateTimeColumn, BlUserCategory} from '@monorepo/back-core-lib';
 import {BeforeInsert, Column, Entity, OneToMany, PrimaryColumn} from 'typeorm';
 import {DateTime} from 'luxon';
 import {ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
-import {CmUserCategory} from '@monorepo/common-model';
 import {HnStoryAuthor} from '../story-author/hn-story-author.entity';
 import {HnBrickUser} from '../brick-aggregate/brick-user/hn-brick-user.entity';
 
@@ -24,8 +23,8 @@ export class HnUser {
   @Column({nullable: true})
   photo: string;
 
-  @Column({nullable: false, type: 'enum', enum: CmUserCategory})
-  category: CmUserCategory;
+  @Column({nullable: false, type: 'enum', enum: BlUserCategory})
+  category: BlUserCategory;
 
   @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;
@@ -48,7 +47,7 @@ export class HnUser {
   }
 
   isAdmin(): boolean {
-    return this.category === CmUserCategory.ADMIN;
+    return this.category === BlUserCategory.ADMIN;
   }
 
   setData(userDto: HnUserConstellabDTO): void {
@@ -68,7 +67,7 @@ export class HnUserConstellabDTO {
   firstname: string;
   lastname: string;
   email: string;
-  category: CmUserCategory;
+  category: BlUserCategory;
   activity?: string;
   company?: string;
   biography?: string;

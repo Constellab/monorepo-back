@@ -16,12 +16,19 @@ import {
 import {CnSpace} from './cn-space.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {CnSpaceAggregateService} from './cn-space-aggregate.service';
-import {BlFile, BlParsePipe, BlPublic, BlResponseHelper, BlSearchParams, BlUploadedFile} from '@monorepo/back-core-lib';
+import {
+  BlFile,
+  BlParsePipe,
+  BlPublic,
+  BlResponseHelper,
+  BlSearchParams,
+  BlUploadedFile,
+  BlUserCategory
+} from '@monorepo/back-core-lib';
 import {CnSpaceUser, CnSpaceUserRole} from './cn-space-user.entity';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
-import {CmUserCategory} from '@monorepo/common-model';
 import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
 import {CnRequestNewLicensesDto, CnSpaceSettingsDto} from './cn-space.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
@@ -130,7 +137,7 @@ export class CnSpacesController {
   }
 
 
-  @CnUserCategories(CmUserCategory.ADMIN)
+  @CnUserCategories(BlUserCategory.ADMIN)
   @Post(':id/user/:userId')
   public async addUserToSpace(@Param('id') id: string,
                               @Param('userId', new ParseUUIDPipe()) userId: string): Promise<CnSpaceUser> {

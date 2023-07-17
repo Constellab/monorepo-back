@@ -5,7 +5,10 @@ import {
   BlFile,
   BlFileHelper,
   BlImageHelper,
-  BlObjectStorageService
+  BlObjectStorageService,
+  BlRichText,
+  BlRichTextI,
+  BlRichTextUploadedImage
 } from '@monorepo/back-core-lib';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {IncomingMessage} from 'http';
@@ -14,7 +17,6 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {DataSource, Repository} from 'typeorm';
 import {ClPage} from '@monorepo/core-lib';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
-import {CmRichText, CmRichTextI, CmRichTextUploadedImage} from '@monorepo/common-model';
 import {CnConstellabDocument} from './cn-document-dto.class';
 import {CnProjectBucketService} from '../cn-project-bucket/cn-project-bucket.service';
 
@@ -102,7 +104,7 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
 
   async createConstellabDocument(project: CnProject, filename: string): Promise<CnConstellabDocument> {
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
-    const content = CmRichText.newRichText();
+    const content = BlRichText.newRichText();
 
     return this.datasource.transaction(async (entityManager) => {
 
@@ -122,7 +124,7 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
     });
   }
 
-  async updateConstellabDocument(project: CnProject, document: CnDocument, content: CmRichTextI): Promise<CnConstellabDocument> {
+  async updateConstellabDocument(project: CnProject, document: CnDocument, content: BlRichTextI): Promise<CnConstellabDocument> {
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
     await this.objectStorageService.uploadJson(bucketConfig, content, {filename: document.filePath});
@@ -145,7 +147,7 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
     return new CnConstellabDocument(document, content);
   }
 
-  async uploadImageToConstellabDocument(project: CnProject, document: CnDocument, file: BlFile): Promise<CmRichTextUploadedImage> {
+  async uploadImageToConstellabDocument(project: CnProject, document: CnDocument, file: BlFile): Promise<BlRichTextUploadedImage> {
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
     const imSize = BlImageHelper.getImageSize(file);

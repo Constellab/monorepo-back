@@ -34,6 +34,7 @@ import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstancesSecurity} from './cn-lab-instances.security';
 import {
   BlBadRequestException,
+  BlCredentials,
   BlDtoHelper,
   BlExternalApiError,
   BlSearchParams,
@@ -64,7 +65,6 @@ import {CnLabGreenOption} from './green-option/cn-lab-green-option.entity';
 import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.service';
 import {CnLabGreenOptionFormDto} from './green-option/cn-lab-green-option.dto';
 import {CnAuthService, CnExternalCheckCredentialResponse} from '../cn-auth/cn-auth.service';
-import {CmCredentials} from '@monorepo/common-model';
 import {CnLabInstanceServerTaskStatus} from './status/cn-lab-instance-status.enum';
 
 
@@ -638,7 +638,7 @@ export class CnLabInstanceAggregateService {
     });
   }
 
-  public async checkUserCredentials(credentials: CmCredentials, ignoreCaptcha: boolean,
+  public async checkUserCredentials(credentials: BlCredentials, ignoreCaptcha: boolean,
                                     ignore2Fa: boolean): Promise<CnExternalCheckCredentialResponse> {
     // check that the user has access to the lab
     const lab = await this.getAndCheckAuthorizationToFindById(CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
@@ -801,7 +801,7 @@ export class CnLabInstanceAggregateService {
   async stopCurrentServerTask(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
     let labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId);
 
-    if(labInstance.serverTaskStatus !== CnLabInstanceServerTaskStatus.RUNNING) {
+    if (labInstance.serverTaskStatus !== CnLabInstanceServerTaskStatus.RUNNING) {
       throw new BlBadRequestException('No task running');
     }
 

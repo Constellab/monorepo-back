@@ -1,5 +1,5 @@
 import {AxiosError, AxiosRequestConfig} from 'axios';
-import {CmApiError} from '@monorepo/common-model';
+import {BlApiError} from '../../models/bl-nest-api-error.class';
 
 export type BlExternalApiHttpOptionObserve = 'data' | 'response';
 
@@ -25,9 +25,9 @@ export interface BlExternalApiHttpOption extends AxiosRequestConfig {
   logError?: boolean;
 }
 
-export interface BlExternalApiError{
+export interface BlExternalApiError {
   status: number;
   message: string;
   error: AxiosError;
-  knownError?: CmApiError;
+  knownError?: BlApiError;
 }

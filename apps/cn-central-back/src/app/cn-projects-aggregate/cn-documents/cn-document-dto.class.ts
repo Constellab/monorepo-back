@@ -1,15 +1,15 @@
 import {CnDocument} from './cn-document.entity';
-import {CmRichTextI} from '@monorepo/common-model';
 import {Type} from 'class-transformer';
+import {BlRichTextI} from '@monorepo/back-core-lib';
 
 
-export class CnConstellabDocument{
+export class CnConstellabDocument {
   @Type(() => CnDocument)
   document: CnDocument;
 
-  content: CmRichTextI;
+  content: BlRichTextI;
 
-  constructor(document: CnDocument, content: CmRichTextI) {
+  constructor(document: CnDocument, content: BlRichTextI) {
     this.document = document;
     this.content = content;
   }

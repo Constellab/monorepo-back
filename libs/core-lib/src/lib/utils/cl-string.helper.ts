@@ -90,31 +90,12 @@ export class ClStringHelper {
    * @param url
    */
   public static getLowestDomainFromUrl(url: string): string {
-    if(url == null) return null;
+    if (url == null) return null;
     url = url.replace('https://', '')
       .replace('http://', '');
     const domains = url.split('.');
-    if(domains.length < 2) return null;
+    if (domains.length < 2) return null;
     return domains[0];
-  }
-
-
-  /**
-   * Return a valid id/string for url parameters
-   * @param str
-   */
-  public static toIdForUrl(str: string): string{
-    str = str.replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '');
-    str.replace('--', '-');
-    while(str[0] == '-'){
-      str = str.slice();
-    }
-
-    while (str[str.length-1] == '-'){
-      str = str.slice(0, -1);
-    }
-
-    return str;
   }
 
   /**
@@ -126,5 +107,21 @@ export class ClStringHelper {
     str = str.replace(/(?:\r\n|\r|\n)/g, ' ');
 
     return str;
+  }
+
+  /**
+   * Generate an url path from a string. It replaces spaces with dashes and remove all special characters
+   */
+  public static generateUrlPathFromString(str: string): string {
+    if (str == null) return '';
+
+    // replace all white spaces with dash
+    // remove all special characters
+    // remove all double dashes
+    // remove all dashes at the beginning and at the end
+    return ClStringHelper.trimAndRemoveDuplicateSpaces(str)
+      .replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '')
+      .replace(/--/g, '-')
+      .replace(/^-|-$/g, '');
   }
 }

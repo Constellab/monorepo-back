@@ -1,7 +1,12 @@
 import {Column, Entity, ManyToOne} from 'typeorm';
-import {BlBadRequestException, BlEntityWithId, BlNotUpdatable} from '@monorepo/back-core-lib';
+import {
+  BlBadRequestException,
+  BlEntityWithId,
+  BlNotUpdatable,
+  BlVersion,
+  BlVersionTransform
+} from '@monorepo/back-core-lib';
 import {CnBrick} from './cn-brick.entity';
-import {CmVersion, CmVersionTransform} from '@monorepo/common-model';
 import {Exclude, Expose} from 'class-transformer';
 
 export enum CnRepoType {
@@ -53,14 +58,14 @@ export class CnBrickVersion extends BlEntityWithId {
   @Column({name: 'technicalInfo', type: 'simple-json', nullable: true})
   technicalInfo?: Record<string, string>;
 
-  @CmVersionTransform()
+  @BlVersionTransform()
   @Expose()
-  public get version(): CmVersion {
-    return new CmVersion(this.major, this.minor, this.patch,
+  public get version(): BlVersion {
+    return new BlVersion(this.major, this.minor, this.patch,
       this.versionType === CnVersionType.BETA ? this.subPatch : null);
   }
 
-  public set version(version: CmVersion) {
+  public set version(version: BlVersion) {
     this.major = version.major;
     this.minor = version.minor;
     this.patch = version.patch;

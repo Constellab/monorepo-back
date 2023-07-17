@@ -10,9 +10,11 @@ import {
   BlFile,
   BlImageHelper,
   BlObjectStorageService,
+  BlRichText,
+  BlRichTextI,
+  BlRichTextUploadedImage,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
-import {CmRichText, CmRichTextI, CmRichTextUploadedImage} from '@monorepo/common-model';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {IncomingMessage} from 'http';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
@@ -43,7 +45,7 @@ export class HnStoryService {
     const story = new HnStory();
     story.title = data.title;
     story.category = data.category;
-    story.content = CmRichText.newRichText();
+    story.content = BlRichText.newRichText();
 
     const dbStory: HnStory = await this.storyRepository.save(story);
     await this.storyAuthorService.createStoryAuthor(dbStory, HnCurrentUserHelper.getCurrentUser());
@@ -60,31 +62,32 @@ export class HnStoryService {
   }
 
   async getMyStories(page: number, size: number): Promise<ClPage<HnStory>> {
-    return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
-      where: [
-        {
-          storyAuthors: {
-            user: {
-              id: HnCurrentUserHelper.getCurrentUser().id
-            },
-            status: HnStoryAuthorStatus.AUTHOR
+    return BlAbstractPaginatedService.findPaginatedStatic(page, size,
+      {
+        where: [
+          {
+            storyAuthors: {
+              user: {
+                id: HnCurrentUserHelper.getCurrentUser().id
+              },
+              status: HnStoryAuthorStatus.AUTHOR
+            }
+          },
+          {
+            storyAuthors: {
+              user: {
+                id: HnCurrentUserHelper.getCurrentUser().id
+              },
+              status: HnStoryAuthorStatus.COAUTHOR
+            }
           }
-        },
-        {
-          storyAuthors: {
-            user: {
-              id: HnCurrentUserHelper.getCurrentUser().id
-            },
-            status: HnStoryAuthorStatus.COAUTHOR
-          }
+        ],
+        relations: ['topics'],
+        order: {
+          createdAt: 'DESC' as any
         }
-      ],
-      relations: ['topics'],
-      order: {
-        createdAt: 'DESC' as any
-      }
-    },
-    this.storyRepository.manager, HnStory
+      },
+      this.storyRepository.manager, HnStory
     );
   }
 
@@ -175,20 +178,20 @@ export class HnStoryService {
     return this.storyRepository.save(story);
   }
 
-  async updateStoryContent(id: string, content: CmRichTextI): Promise<HnStory> {
+  async updateStoryContent(id: string, content: BlRichTextI): Promise<HnStory> {
     const isAuthor: boolean = await this.isStoryOwnerOrCoAuthor(id);
     if (!isAuthor) {
       throw new BlUnauthorizedException('You are not authorized to update this story');
     }
     const story = await this.getStory(id);
     story.content = content;
-    const richText = new CmRichText(content);
+    const richText = new BlRichText(content);
     story.firstParagraph = ClStringHelper.replaceLineBreaksBySpace(richText.getFirstParagraph());
     story.mainPicture = richText.getFirstFigureLink();
     return this.storyRepository.save(story);
   }
 
-  async saveImage(file: BlFile, storyId: string): Promise<CmRichTextUploadedImage> {
+  async saveImage(file: BlFile, storyId: string): Promise<BlRichTextUploadedImage> {
     const isAuthor: boolean = await this.isStoryOwnerOrCoAuthor(storyId);
     if (!isAuthor) {
       throw new BlUnauthorizedException('You are not authorized to update this story');
@@ -223,7 +226,7 @@ export class HnStoryService {
       throw new BlUnauthorizedException('You are not authorized to update this story');
     }
     const story: HnStory = await this.getStory(id);
-    if (new CmRichText(story.content as CmRichTextI).getFirstFigureLink().length <= 0) {
+    if (new BlRichText(story.content as BlRichTextI).getFirstFigureLink().length <= 0) {
       throw new Error('Story must have a main picture');
     }
     story.status = HnStoryStatus.PUBLISHED;
@@ -278,7 +281,7 @@ export class HnStoryService {
     throw new Error('Invalid invite');
   }
 
-  async getAllStoriesMap(): Promise<string[]>{
+  async getAllStoriesMap(): Promise<string[]> {
     const stories: HnStory[] = await this.storyRepository.find({where: {status: HnStoryStatus.PUBLISHED}});
     return stories.map((s: HnStory) => s.id);
   }

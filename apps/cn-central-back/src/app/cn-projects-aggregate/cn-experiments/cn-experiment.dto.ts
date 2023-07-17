@@ -3,10 +3,10 @@ import {DateTime} from 'luxon';
 import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {CnExperiment, CnExperimentProtocol} from './cn-experiment.entity';
 import {CnLabConfigDto} from '../../cn-lab-configs/cn-lab-config.dto';
-import {CmRichTextI} from '@monorepo/common-model';
 import {Type} from 'class-transformer';
 import {CnEntityDTO} from '../../cn-core/model/entities/cn.entity';
 import {CnUser} from '../../cn-users/cn-user.entity';
+import {BlRichTextI} from '@monorepo/back-core-lib';
 
 
 /**
@@ -15,7 +15,7 @@ import {CnUser} from '../../cn-users/cn-user.entity';
 export class CnSaveExperimentDto {
   id: string;
   title: string;
-  description: CmRichTextI;
+  description: BlRichTextI;
   status: CnExperimentStatus;
 
   is_validated: boolean;

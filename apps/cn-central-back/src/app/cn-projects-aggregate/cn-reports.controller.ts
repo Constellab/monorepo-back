@@ -2,8 +2,7 @@ import {Controller, Get, Param, ParseUUIDPipe, Res} from '@nestjs/common';
 import {CnReport} from './cn-reports/cn-report.entity';
 import {Response} from 'express';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
-import {CmRichTextI} from '@monorepo/common-model';
-import {BlResponseHelper} from '@monorepo/back-core-lib';
+import {BlResponseHelper, BlRichTextI} from '@monorepo/back-core-lib';
 
 @Controller('reports')
 export class CnReportsController {
@@ -12,7 +11,7 @@ export class CnReportsController {
   }
 
   @Get(':id/content')
-  async getReportContent(@Param('id', new ParseUUIDPipe()) id: string): Promise<CmRichTextI> {
+  async getReportContent(@Param('id', new ParseUUIDPipe()) id: string): Promise<BlRichTextI> {
     const report = await this.findById(id);
     return report.content;
   }
@@ -50,7 +49,7 @@ export class CnReportsController {
 
   /**
    * Return a view of the report
-    * Use filename(*) to catch all the filename (including slashes)
+   * Use filename(*) to catch all the filename (including slashes)
    */
   @Get(':id/view/:filename(*)')
   public async getView(@Param('id', new ParseUUIDPipe()) id: string,

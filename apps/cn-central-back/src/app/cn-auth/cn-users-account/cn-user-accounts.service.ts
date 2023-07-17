@@ -8,14 +8,15 @@ import {CnUsersService} from '../../cn-users/cn-users.service';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
 import {TokenExpiredError} from 'jsonwebtoken';
 import {hash} from 'argon2';
-import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
 import {
   BlAbstractPaginatedService,
   BlBadRequestException,
   BlCaptchaService,
   BlMailService,
   BlTokenHelper,
-  BlUnauthorizedException
+  BlUnauthorizedException,
+  BlUserCategory,
+  BlUserStatus
 } from '@monorepo/back-core-lib';
 import {CnUserTokenPayload} from '../../cn-core/model/config/cn-config.class';
 import {CnFrontService} from '../../cn-core/services/cn-front.service';
@@ -66,7 +67,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
       user.category = createUser.category;
       user.phone = createUser.phone;
 
-      const newUser: CnUser = await this.createAccount(user, CmUserStatus.WAITING_FOR_EMAIL, entityManager);
+      const newUser: CnUser = await this.createAccount(user, BlUserStatus.WAITING_FOR_EMAIL, entityManager);
 
       // await mail send to include it in transaction
       await this.sendSignupEmail(newUser);
@@ -74,8 +75,8 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     });
   }
 
-  public async createAccount(user: CnUser, status: CmUserStatus, entityManager: EntityManager): Promise<CnUser> {
-    if (user.category === CmUserCategory.ADMIN) {
+  public async createAccount(user: CnUser, status: BlUserStatus, entityManager: EntityManager): Promise<CnUser> {
+    if (user.category === BlUserCategory.ADMIN) {
       throw new BlUnauthorizedException();
     }
 
@@ -121,12 +122,12 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
   async activateAccount(token: string): Promise<void> {
     const user: CnUser = await this.decodeUserToken(token);
 
-    if (user.status !== CmUserStatus.WAITING_FOR_EMAIL) {
+    if (user.status !== BlUserStatus.WAITING_FOR_EMAIL) {
       throw new BlBadRequestException(CnErrorText.ACCOUNT_ALREADY_ACTIVATED);
     }
 
     // update the user status
-    user.status = CmUserStatus.INCOMPLETE;
+    user.status = BlUserStatus.INCOMPLETE;
     await this.usersService.update(user);
 
     this.onAccountActivated(user);
@@ -258,17 +259,17 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
   public async adminActivation(userId: string): Promise<CnUser> {
     const user: CnUser = await this.usersService.findByIdAndCheck(userId);
 
-    if (user.status !== CmUserStatus.WAITING_FOR_ADMIN) {
+    if (user.status !== BlUserStatus.WAITING_FOR_ADMIN) {
       throw new BlBadRequestException(CnErrorText.ACCOUNT_ALREADY_ACTIVATED);
     }
 
-    user.status = CmUserStatus.INCOMPLETE;
+    user.status = BlUserStatus.INCOMPLETE;
     return this.usersService.update(user);
   }
 
   findUsersToAdminActivate(page: number, size: number): Promise<ClPage<CnUser>> {
     return this.findPaginated(page, size, {
-      where: {status: CmUserStatus.WAITING_FOR_ADMIN},
+      where: {status: BlUserStatus.WAITING_FOR_ADMIN},
       order: {createdAt: 'DESC' as any}
     });
   }
@@ -281,7 +282,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
     return await this.datasource.transaction(async (transaction) => {
       // create the user with an active but incomplete profile
-      const userDb = await this.createAccount(user, CmUserStatus.INCOMPLETE, transaction);
+      const userDb = await this.createAccount(user, BlUserStatus.INCOMPLETE, transaction);
 
       await this.spaceAggregateService.acceptInvitation(invitation, userDb, transaction);
 

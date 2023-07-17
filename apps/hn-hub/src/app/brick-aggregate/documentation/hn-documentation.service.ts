@@ -2,40 +2,30 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, Repository} from 'typeorm';
 import {HnDocumentation, HnDocumentationSearchDTO} from './hn-documentation.entity';
-import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
-import {HnUser} from '../../users/hn-user.entity';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 import {
   BlBucketConfig,
   BlFile,
   BlImageHelper,
   BlObjectStorageService,
-  BlUnauthorizedException
+  BlRichText,
+  BlRichTextHeader,
+  BlRichTextI,
+  BlRichTextLink,
+  BlRichTextUploadedImage
 } from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../../core/modules/core-config/hn-core-config.service';
 import {IncomingMessage} from 'http';
-import imageSize from 'image-size';
 import {HnNodeDTO} from '../folder/hn-folder.dto';
-import {
-  CmRichText,
-  CmRichTextHeader,
-  CmRichTextI,
-  CmRichTextImageCP,
-  CmRichTextLink,
-  CmRichTextUploadedImage
-} from '@monorepo/common-model';
 import {HnFolder} from '../folder/hn-folder.entity';
-import {ISizeCalculationResult} from 'image-size/dist/types/interface';
 import {ClStringHelper} from '@monorepo/core-lib';
 
 @Injectable()
 export class HnDocumentationService {
-  constructor(
-    @InjectRepository(HnDocumentation)
-    private documentationsRepository: Repository<HnDocumentation>,
-    private objectStorageService: BlObjectStorageService,
-    private configService: HnCoreConfigService,
-  ) {
+  constructor(@InjectRepository(HnDocumentation)
+              private documentationsRepository: Repository<HnDocumentation>,
+              private objectStorageService: BlObjectStorageService,
+              private configService: HnCoreConfigService,) {
   }
 
   async create(documentation: HnDocumentation, entityManager?: EntityManager): Promise<HnDocumentation> {
@@ -62,9 +52,8 @@ export class HnDocumentationService {
   async update(updatedDocumentation: HnNodeDTO): Promise<HnDocumentation> {
     const doc: HnDocumentation = await this.documentationsRepository.findOne(
       {where: {id: updatedDocumentation.id}, relations: {folder: true}});
-    doc.path = updatedDocumentation.title.toLowerCase().trim();
-    doc.path = doc.path.replace(/ /gi, '-');
-    doc.path = doc.path.replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '');
+
+    doc.path = ClStringHelper.generateUrlPathFromString(updatedDocumentation.title);
     doc.title = updatedDocumentation.title;
     doc.completePath = doc.folder.completePath ? doc.folder.completePath + doc.path + '/' : doc.path + '/';
     return this.documentationsRepository.save(doc);
@@ -87,7 +76,7 @@ export class HnDocumentationService {
 
 
     if (documentation && documentation.content && documentation.content.ops) {
-      const links: CmRichTextLink[] = CmRichText.getLinks(documentation.content as CmRichTextI);
+      const links: BlRichTextLink[] = BlRichText.getLinks(documentation.content as BlRichTextI);
 
       for (const l of links) {
         if (l.attributes.id) {
@@ -108,7 +97,7 @@ export class HnDocumentationService {
             l.attributes.link = this.configService.getFrontDocUrl(linkDoc);
 
             documentation.content.ops.find(
-              (o: CmRichTextLink) => o.attributes && o.attributes.id && o.attributes.id === l.attributes.id)
+              (o: BlRichTextLink) => o.attributes && o.attributes.id && o.attributes.id === l.attributes.id)
               .attributes.link = l.attributes.link;
           }
         }
@@ -117,7 +106,7 @@ export class HnDocumentationService {
     return documentation;
   }
 
-  async updateContent(id: string, updateContentDoc: CmRichTextI): Promise<HnDocumentation> {
+  async updateContent(id: string, updateContentDoc: BlRichTextI): Promise<HnDocumentation> {
     const doc: HnDocumentation = await this.documentationsRepository.findOneBy({id: id});
     if (doc) {
       doc.content = await this.transformContent(updateContentDoc);
@@ -125,9 +114,9 @@ export class HnDocumentationService {
     return this.documentationsRepository.save(doc);
   }
 
-  async transformContent(content: CmRichTextI): Promise<CmRichTextI> {
+  async transformContent(content: BlRichTextI): Promise<BlRichTextI> {
     // Transform intern link with updated url
-    const links: CmRichTextLink[] = CmRichText.getLinks(content);
+    const links: BlRichTextLink[] = BlRichText.getLinks(content);
     for (const l of links) {
       if (l.attributes.link.startsWith(this.configService.getFrontRootUrl())) {
         const link: string[] = l.attributes.link.substring(this.configService.getFrontRootUrl().length).split('/');
@@ -142,11 +131,11 @@ export class HnDocumentationService {
     }
 
     // Add id to header
-    const headers: CmRichTextHeader[] = CmRichText.getHeaders(content);
+    const headers: BlRichTextHeader[] = BlRichText.getHeaders(content);
     const listId: string[] = [];
     for (const h of headers) {
       if (h.attributes.header.id) {
-        h.attributes.header.id = ClStringHelper.toIdForUrl(h.attributes.header.id);
+        h.attributes.header.id = ClStringHelper.generateUrlPathFromString(h.attributes.header.id);
         if (h.attributes.header.id.length > 0) {
           const sameTitleNumber: number = listId.filter(value => value == h.attributes.header.id).length;
           listId.push(h.attributes.header.id);
@@ -204,7 +193,7 @@ export class HnDocumentationService {
     return [documentation.id, anchor ? completePath.slice(0, -1) + '#' + anchor : completePath];
   }
 
-  async saveImage(file: BlFile): Promise<CmRichTextUploadedImage> {
+  async saveImage(file: BlFile): Promise<BlRichTextUploadedImage> {
     const imSize = BlImageHelper.getImageSize(file);
     const filename = await this.objectStorageService.uploadObject(
       this.getBucketConfig(), file, {generateRandomObjectName: true});

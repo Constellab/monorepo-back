@@ -1,7 +1,6 @@
 import {BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany, OneToMany} from 'typeorm';
-import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 import {HnTopic} from '../topic/hn-topic.entity';
-import {BlEntityWithId, BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
+import {BlEntityWithId, BlLuxonDateTimeColumn, BlRichText, BlRichTextI} from '@monorepo/back-core-lib';
 import {DateTime} from 'luxon';
 import {HnUser} from '../users/hn-user.entity';
 import {ClDateHelper} from '@monorepo/core-lib';
@@ -20,12 +19,12 @@ export enum HnStoryCategory {
 }
 
 @Entity('Story')
-export class HnStory extends BlEntityWithId{
+export class HnStory extends BlEntityWithId {
   @Column()
   title: string;
 
   @Column({name: 'content', type: 'simple-json'})
-  content: Record<string, any> = CmRichText.newRichText();
+  content: Record<string, any> = BlRichText.newRichText();
 
   @Column({nullable: true, type: 'varchar'})
   firstParagraph?: string;
@@ -70,7 +69,7 @@ export class HnStory extends BlEntityWithId{
     return this.storyAuthors[0].user;
   }
 
-  init(title: string, content: CmRichTextI, labels: HnTopic[]): void {
+  init(title: string, content: BlRichTextI, labels: HnTopic[]): void {
     this.content = content;
     this.title = title;
     this.topics = labels;

@@ -5,8 +5,14 @@ import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-con
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {CnUserAccountsService} from './cn-users-account/cn-user-accounts.service';
 import {ClDateHelper} from '@monorepo/core-lib';
-import {CmCredentials, CmCredentials2Fa, CmUserStatus} from '@monorepo/common-model';
-import {BlCaptchaService, BlJwtService, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {
+  BlCaptchaService,
+  BlCredentials,
+  BlCredentials2Fa,
+  BlJwtService,
+  BlUnauthorizedException,
+  BlUserStatus
+} from '@monorepo/back-core-lib';
 import {CnUser2FAService} from './cn-user-2-f-a/cn-user-2-f-a.service';
 
 export interface CnAuthResponse {
@@ -38,7 +44,7 @@ export class CnAuthService {
     this.failedLoginLock = configService.getFailedLoginLock();
   }
 
-  async login(credentials: CmCredentials): Promise<CnAuthResponse> {
+  async login(credentials: BlCredentials): Promise<CnAuthResponse> {
     const captchaCheck = await this.captchaService.validateCaptcha(credentials.captcha);
 
     if (!captchaCheck) {
@@ -60,7 +66,7 @@ export class CnAuthService {
     }
   }
 
-  async loginWith2FA(credentials: CmCredentials2Fa): Promise<string> {
+  async loginWith2FA(credentials: BlCredentials2Fa): Promise<string> {
     const user = await this.user2FaService.checkIsValidCode(credentials.twoFACode, credentials.twoFAUrlCode);
 
     return this.jwtService.generateToken(user.id, user.email);
@@ -72,7 +78,7 @@ export class CnAuthService {
    * @param requiresAdmin if true the user needs to be an admin
    * TODO to remove once all lab are on v0.5.4
    */
-  async externalCheckCredentialsWithRole(credentials: CmCredentials, requiresAdmin: boolean): Promise<CnExternalCheckCredentialResponse> {
+  async externalCheckCredentialsWithRole(credentials: BlCredentials, requiresAdmin: boolean): Promise<CnExternalCheckCredentialResponse> {
     const user = await this.checkCredentialsAndUser(credentials);
 
     if (requiresAdmin && user.category !== 'ADMIN') {
@@ -93,7 +99,7 @@ export class CnAuthService {
     }
   }
 
-  async externalCheckCredentials(credentials: CmCredentials, checkCaptcha: boolean,
+  async externalCheckCredentials(credentials: BlCredentials, checkCaptcha: boolean,
                                  ignore2Fa: boolean = false): Promise<CnExternalCheckCredentialResponse> {
     if (checkCaptcha) {
       const captchaCheck = await this.captchaService.validateCaptcha(credentials.captcha);
@@ -123,11 +129,11 @@ export class CnAuthService {
    * 2FA login call by external services
    * @param credentials
    */
-  async externalCheck2FA(credentials: CmCredentials2Fa): Promise<CnUser> {
+  async externalCheck2FA(credentials: BlCredentials2Fa): Promise<CnUser> {
     return await this.user2FaService.checkIsValidCode(credentials.twoFACode, credentials.twoFAUrlCode);
   }
 
-  private async checkCredentialsAndUser(credentials: CmCredentials): Promise<CnUser> {
+  private async checkCredentialsAndUser(credentials: BlCredentials): Promise<CnUser> {
     const user = await this.usersService.findByEmail(credentials.email);
 
     // if the email is wrong
@@ -135,11 +141,11 @@ export class CnAuthService {
       throw new BlUnauthorizedException(CnErrorText.WRONG_CREDENTIALS);
     }
 
-    if (user.status === CmUserStatus.WAITING_FOR_EMAIL) {
+    if (user.status === BlUserStatus.WAITING_FOR_EMAIL) {
       throw new BlUnauthorizedException(CnErrorText.ACCOUNT_NOT_ACTIVATED);
     }
 
-    if (user.status === CmUserStatus.WAITING_FOR_ADMIN) {
+    if (user.status === BlUserStatus.WAITING_FOR_ADMIN) {
       throw new BlUnauthorizedException(CnErrorText.ACCOUNT_NOT_ADMIN_ACTIVATED);
     }
 

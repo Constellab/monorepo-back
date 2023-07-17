@@ -1,6 +1,6 @@
 import {BlRequestContextHelper} from '../bl-request-context/bl-request-context.helper';
 import {clDefaultLang, clLangCookie, clLangIsSupported, ClSupportedLanguage} from '@monorepo/core-lib';
-import {BlUser} from '../../models/bl-user.class';
+import {BlUser} from '../../models/bl-user/bl-user.class';
 import {BlUnauthorizedException} from '../../exceptions/bl-unauthorized.exception';
 
 /**

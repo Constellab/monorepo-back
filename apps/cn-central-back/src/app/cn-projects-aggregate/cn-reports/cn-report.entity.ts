@@ -2,10 +2,9 @@ import {Column, Entity, JoinTable, ManyToMany, ManyToOne} from 'typeorm';
 import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
 import {Exclude, Type} from 'class-transformer';
 import {CnProject} from '../cn-projects/cn-project.entity';
-import {CmRichTextI} from '@monorepo/common-model';
 import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
 import {CnUser} from '../../cn-users/cn-user.entity';
-import {BlLuxonDateTimeColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
+import {BlLuxonDateTimeColumn, BlNotUpdatable, BlRichTextI} from '@monorepo/back-core-lib';
 import {DateTime} from 'luxon';
 import {CnEntity} from '../../cn-core/model/entities/cn.entity';
 import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
@@ -18,7 +17,7 @@ export class CnReport extends CnEntity {
 
   @Exclude()
   @Column({type: 'simple-json', nullable: true})
-  content: CmRichTextI;
+  content: BlRichTextI;
 
   @Type(() => CnProject)
   @ManyToOne(() => CnProject, {nullable: false})

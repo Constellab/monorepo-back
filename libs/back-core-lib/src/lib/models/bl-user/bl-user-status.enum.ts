@@ -1,7 +1,7 @@
 /**
  * Different status of a user account
  */
-export enum CmUserStatus{
+export enum BlUserStatus{
   // Just after subscription, the user need to validate his email
   WAITING_FOR_EMAIL = 'WAITING_FOR_EMAIL',
 

@@ -2,8 +2,7 @@ import {CanActivate, ExecutionContext, Injectable} from '@nestjs/common';
 import {Reflector} from '@nestjs/core';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {cnUserCategoriesMetadata} from '../decorators/cn-user-category.decorator';
-import {CmUserCategory} from '@monorepo/common-model';
-import {BlReflectorHelper} from '@monorepo/back-core-lib';
+import {BlReflectorHelper, BlUserCategory} from '@monorepo/back-core-lib';
 
 /**
  * Guard that work with the decorator @UserCategories to guard route based
@@ -16,7 +15,7 @@ export class CnUserCategoryGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     // verify that the route is annotated with @UserCategory
-    const userCategories: CmUserCategory[] = BlReflectorHelper.getClassOrMethodMetadata(this.reflector, context, cnUserCategoriesMetadata);
+    const userCategories: BlUserCategory[] = BlReflectorHelper.getClassOrMethodMetadata(this.reflector, context, cnUserCategoriesMetadata);
     // if not annotated, grant access
     if (!userCategories || userCategories.length === 0) {
       return true;
@@ -26,7 +25,7 @@ export class CnUserCategoryGuard implements CanActivate {
     const user: CnUser = request.user;
 
     // grant all access to admin
-    if (user.category === CmUserCategory.ADMIN) {
+    if (user.category === BlUserCategory.ADMIN) {
       return true;
     }
 

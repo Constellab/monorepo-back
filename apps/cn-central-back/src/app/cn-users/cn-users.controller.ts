@@ -3,7 +3,6 @@ import {CnUsersService} from './cn-users.service';
 import {CnUser, CnUserEditDTO} from './cn-user.entity';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
 import {ClPage, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
-import {CmUserCategory} from '@monorepo/common-model';
 import {
   BlFile,
   BlParseEnumPipe,
@@ -12,7 +11,8 @@ import {
   BlResponseHelper,
   BlSearchParams,
   BlUnauthorizedException,
-  BlUploadedFile
+  BlUploadedFile,
+  BlUserCategory
 } from '@monorepo/back-core-lib';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
@@ -41,7 +41,7 @@ export class CnUsersController {
   }
 
 
-  @CnUserCategories(CmUserCategory.ADMIN)
+  @CnUserCategories(BlUserCategory.ADMIN)
   @Get()
   findAll(@Query('page', new ParseIntPipe()) page: number,
           @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnUser>> {

@@ -2,7 +2,7 @@
 /**
  * Object to send to log in
  */
-export interface CmCredentials {
+export interface BlCredentials {
   email: string;
   password: string;
   captcha?: string;
@@ -11,7 +11,7 @@ export interface CmCredentials {
 /**
  * Object to send to log in
  */
-export interface CmCredentials2Fa {
+export interface BlCredentials2Fa {
   twoFAUrlCode: string;
   twoFACode: string;
 }

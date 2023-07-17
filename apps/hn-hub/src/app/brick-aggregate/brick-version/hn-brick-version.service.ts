@@ -7,12 +7,12 @@ import {
   BlAbstractService,
   BlNotFoundException,
   BlTransportService,
-  BlUnauthorizedException
+  BlUnauthorizedException,
+  BlVersion
 } from '@monorepo/back-core-lib';
 import {HnBrickTransportDto} from '../brick/hn-brick.dto';
 import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 import {ClPageI, ClStringHelper} from '@monorepo/core-lib';
-import {CmVersion} from '@monorepo/common-model';
 import {HnBrickVersionReferenceService} from '../../brick-version-reference/hn-brick-version-reference.service';
 import {
   HnBrickVersionReference,
@@ -49,7 +49,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
         entityManager2 = entityManager;
       }
       const newBrickVersion: HnBrickVersion = new HnBrickVersion();
-      const version: CmVersion = CmVersion.fromString(newVersion.version);
+      const version: BlVersion = BlVersion.fromString(newVersion.version);
 
       const bv: HnBrickVersion = await this.brickVersionsRepository.findOne({
         where: {
@@ -79,7 +79,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
           if (refs.find(r => r.brickVersion.brickMajorVersion.brick.name == ref.name)) {
             throw new BlUnauthorizedException(`There is more than one reference of the brick ${ref.name}`);
           }
-          const cmV: CmVersion = CmVersion.fromString(ref.version);
+          const cmV: BlVersion = BlVersion.fromString(ref.version);
           const brickVersion: HnBrickVersion = await this.brickVersionsRepository.findOne({
             where: {
               brickMajorVersion: {
@@ -210,7 +210,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
   }
 
   async checkIfVersionExist(brickMajorVersion: HnBrickMajorVersion, version: string): Promise<[boolean, boolean]> {
-    const v: CmVersion = CmVersion.fromString(version);
+    const v: BlVersion = BlVersion.fromString(version);
     const bv: HnBrickVersion = await this.brickVersionsRepository.findOne({
       where: {
         brickMajorVersion: {
@@ -264,7 +264,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
       let t = true;
       for (const e of array) {
         if (e.name == value.name && array.indexOf(e) != index) {
-          t = CmVersion.fromString(e.version) < CmVersion.fromString(value.version);
+          t = BlVersion.fromString(e.version) < BlVersion.fromString(value.version);
         }
       }
       return t;
@@ -306,7 +306,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
   }
 
   public async findByVersionStringAndCheck(brickName: string, versionStr: string): Promise<HnBrickVersion> {
-    const version = CmVersion.fromString(versionStr);
+    const version = BlVersion.fromString(versionStr);
     const brickVersion = await this.brickVersionsRepository.findOne({
       where: {
         brickMajorVersion: {
@@ -321,9 +321,9 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
       }
     });
 
-    if(!brickVersion) {
+    if (!brickVersion) {
       throw new BlNotFoundException(HnErrorText.BRICK_VERSION_NOT_FOUND,
-        {detailArgs: {name: brickName, version: version} });
+        {detailArgs: {name: brickName, version: version}});
     }
     return brickVersion;
   }
