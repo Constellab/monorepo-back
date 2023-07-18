@@ -2,7 +2,10 @@ import {ArgumentsHost, ExceptionFilter, HttpException, HttpStatus, Logger} from 
 import {QueryFailedError} from 'typeorm';
 import {Response} from 'express';
 import {ClStringHelper} from '@monorepo/core-lib';
-import {BlApiError, BlHttpException, BlTranslateOptions, BlTranslateService} from '@monorepo/back-core-lib';
+import {BlTranslateService} from '../modules/bl-translate/bl-translate.service';
+import {BlApiError} from '../models/bl-nest-api-error.class';
+import {BlHttpException} from './bl-http.exception';
+import {BlTranslateOptions} from '../modules/bl-translate/bl-translate-options.class';
 
 
 export interface BlCoreExceptionHandlerFilterOptions {

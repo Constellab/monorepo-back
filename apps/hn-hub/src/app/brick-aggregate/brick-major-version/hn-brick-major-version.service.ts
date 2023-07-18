@@ -162,10 +162,10 @@ export class HnBrickMajorVersionService {
     for (const brickMajorVersion of brickMajorVersions) {
       brickMap.push(`${brick.name}/v${brickMajorVersion.major}`);
       brickMap.push(`${brick.name}/v${brickMajorVersion.major}/version`);
-      brickMap = brickMap.concat(await
-        this.folderService.findBrickMajorVersionMap(brickMajorVersion, `${brick.name}/v${brickMajorVersion.major}`));
-      brickMap = brickMap.concat(await
-        this.technicalFolderService.findBrickMajorVersionMap(brickMajorVersion, `${brick.name}/v${brickMajorVersion.major}`));
+      brickMap = brickMap.concat(await this.folderService.findBrickMajorVersionMap(brickMajorVersion,
+        `${brick.name}/v${brickMajorVersion.major}`));
+      brickMap = brickMap.concat(await this.technicalFolderService.findBrickMajorVersionMap(brickMajorVersion,
+        `${brick.name}/v${brickMajorVersion.major}`));
     }
     return brickMap;
   }

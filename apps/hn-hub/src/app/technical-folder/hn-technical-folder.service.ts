@@ -125,7 +125,7 @@ export class HnTechnicalFolderService {
     const nodes: HnNode[] = [];
     let i: number = 0;
     for (const d of docs) {
-      const n: HnNode = new HnNode(d.id, d.humanName, d.uniqueName, parentCompletePath + d.uniqueName + '/', i, parentId)
+      const n: HnNode = new HnNode(d.id, d.humanName, d.uniqueName, parentCompletePath + d.uniqueName + '/', i, parentId);
       nodes.push(n);
       i++;
     }
@@ -142,7 +142,7 @@ export class HnTechnicalFolderService {
     });
     switch (input.techDocType) {
       case 'resource':
-        return this.resourceService.findCurrentTecDoc(techFolder, input.techDocUniqueName)
+        return this.resourceService.findCurrentTecDoc(techFolder, input.techDocUniqueName);
       case 'task':
         return this.taskService.findCurrentTecDoc(techFolder, input.techDocUniqueName);
       case 'protocol':
@@ -153,14 +153,14 @@ export class HnTechnicalFolderService {
   }
 
   async getTechDocsByBrickNameMajor(brickMajorVersion: HnBrickMajorVersion,
-                                    major: string, brickName: string): Promise<HnDocumentationSearchDTO[]>{
+                                    major: string, brickName: string): Promise<HnDocumentationSearchDTO[]> {
 
     const parentNode: HnNode = await this.findTechnicalDoc(brickMajorVersion);
 
     let res: HnDocumentationSearchDTO[] = [];
 
-    if(parentNode && parentNode.children.length > 0){
-      for(const c of parentNode.children){
+    if (parentNode && parentNode.children.length > 0) {
+      for (const c of parentNode.children) {
         res = res.concat(this.getTechDocsForSearch(c, major, brickName));
       }
     }
@@ -169,7 +169,7 @@ export class HnTechnicalFolderService {
 
   }
 
-  private getTechDocsForSearch(folder: HnNode, major: string, brickName: string): HnDocumentationSearchDTO[]{
+  private getTechDocsForSearch(folder: HnNode, major: string, brickName: string): HnDocumentationSearchDTO[] {
     return folder.children.map(doc => {
       return {
         id: doc.id,
@@ -178,11 +178,11 @@ export class HnTechnicalFolderService {
         brickName: brickName,
         completePath: doc.completePath,
         name: doc.name
-      }
+      };
     });
   }
 
-  async getTechDocByLink(brickMajorVersion: HnBrickMajorVersion, completePath: string, anchor: string): Promise<HnDocumentationSearchDTO>{
+  async getTechDocByLink(brickMajorVersion: HnBrickMajorVersion, completePath: string, anchor: string): Promise<HnDocumentationSearchDTO> {
     const techFolder: HnTechnicalFolder = await this.technicalFolderRepository.findOne({
       where: {
         brickMajorVersion: {
@@ -194,7 +194,7 @@ export class HnTechnicalFolderService {
     const linkBroken: string[] = completePath.split('/');
     let techDoc: HnGeneratedDocEntity;
 
-    switch (linkBroken[1]){
+    switch (linkBroken[1]) {
       case 'resource':
         techDoc = await this.resourceService.findCurrentTecDoc(techFolder, linkBroken[2]);
         break;
@@ -217,16 +217,17 @@ export class HnTechnicalFolderService {
     };
   }
 
-  async findBrickMajorVersionMap(brickMajorVersion: HnBrickMajorVersion, baseMapString: string): Promise<string[]>{
+  async findBrickMajorVersionMap(brickMajorVersion: HnBrickMajorVersion, baseMapString: string): Promise<string[]> {
     const brickMajorVersionMap: string[] = [];
     const techDocs: HnDocumentationSearchDTO[] =
       await this.getTechDocsByBrickNameMajor(brickMajorVersion, brickMajorVersion.major.toString(), brickMajorVersion.brick.name);
     for (const techDoc of techDocs) {
-      if(brickMajorVersion.versionState == HnVersionState.LATEST){
+      if (brickMajorVersion.versionState == HnVersionState.LATEST) {
         const latestBaseMapString: string = baseMapString.split('/')[0] + '/latest/doc/';
         brickMajorVersionMap.push(latestBaseMapString + techDoc.completePath.slice(0, -1));
+      } else {
+        brickMajorVersionMap.push(baseMapString + '/doc/' + techDoc.completePath.slice(0, -1));
       }
-      brickMajorVersionMap.push(baseMapString + '/doc/' + techDoc.completePath.slice(0, -1));
     }
     return brickMajorVersionMap;
   }

@@ -109,8 +109,8 @@ export class HnCoreConfigService {
   }
 
   public getFrontDocUrl(documentation: HnDocumentation): string {
-    return `${this.getFrontRootUrl()}bricks/${documentation.folder.brickMajorVersion.brick.name}
-    /v${documentation.folder.brickMajorVersion.major}/doc/${documentation.completePath}`;
+    // eslint-disable-next-line max-len
+    return `${this.getFrontRootUrl()}bricks/${documentation.folder.brickMajorVersion.brick.name}/v${documentation.folder.brickMajorVersion.major}/doc/${documentation.completePath}`;
   }
 
   public getConstellabFrontRootUrl(): string {

@@ -12,10 +12,10 @@ import {ClStringHelper} from '@monorepo/core-lib';
 @Injectable()
 export class HnFolderService {
   constructor(@InjectRepository(HnFolder)
-    private foldersRepository: Repository<HnFolder>,
-    @InjectRepository(HnFolder)
-    private foldersTreeRepository: TreeRepository<HnFolder>,
-    private documentationService: HnDocumentationService,) {
+              private foldersRepository: Repository<HnFolder>,
+              @InjectRepository(HnFolder)
+              private foldersTreeRepository: TreeRepository<HnFolder>,
+              private documentationService: HnDocumentationService,) {
   }
 
 
@@ -56,31 +56,7 @@ export class HnFolderService {
     gettingStartedDoc.path = 'getting-started';
     gettingStartedDoc.title = 'Getting Started';
     gettingStartedDoc.isFolder = false;
-    await this.createDoc(gettingStartedDoc, entityManager);
-  }
-
-  async createDoc(createDocumentationRes: HnNodeDTO, entityManager?: EntityManager): Promise<HnDocumentation> {
-
-    if (createDocumentationRes.folder == null) {
-      createDocumentationRes.folder =
-        await this.foldersRepository.findOne({
-          where: {id: createDocumentationRes.folderId},
-          relations: {documentations: true, folders: true}
-        });
-    }
-
-    createDocumentationRes.path = ClStringHelper.generateUrlPathFromString(createDocumentationRes.title);
-
-    const createDocumentation = new HnDocumentation();
-
-    createDocumentation.title = createDocumentationRes.title;
-    createDocumentation.path = createDocumentationRes.path;
-    createDocumentation.completePath = createDocumentationRes.folder.completePath != null ?
-      createDocumentationRes.folder.completePath + createDocumentationRes.path + '/' : createDocumentationRes.path + '/';
-    createDocumentation.folder = createDocumentationRes.folder;
-    createDocumentation.order = createDocumentationRes.folder.nextOrder();
-
-    return await this.documentationService.create(createDocumentation, entityManager);
+    await this.documentationService.create(gettingStartedDoc, mainFolder, entityManager);
   }
 
   async findAll(): Promise<HnFolder[]> {
@@ -296,8 +272,9 @@ export class HnFolderService {
       if (brickMajorVersion.versionState == HnVersionState.LATEST) {
         const latestBaseMapString: string = baseMapString.split('/')[0] + '/latest/doc/';
         brickMajorVersionMap.push(latestBaseMapString + doc.completePath.slice(0, -1));
+      } else {
+        brickMajorVersionMap.push(baseMapString + '/doc/' + doc.completePath.slice(0, -1));
       }
-      brickMajorVersionMap.push(baseMapString + '/doc/' + doc.completePath.slice(0, -1));
     }
     return brickMajorVersionMap;
   }

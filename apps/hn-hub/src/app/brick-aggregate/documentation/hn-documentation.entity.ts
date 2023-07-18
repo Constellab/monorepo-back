@@ -30,19 +30,17 @@ export class HnDocumentation extends HnBaseEntity {
   @Column()
   order: number;
 
-  @ManyToOne(() => HnFolder, {eager: true, onDelete: "CASCADE"})
+  @ManyToOne(() => HnFolder, {eager: true, onDelete: 'CASCADE'})
   folder: HnFolder;
 
-  static newDoc(pId: string, pTitle: string, pPath: string
-    , pCompletePath: string, pOrder: number, pFolder: HnFolder): HnDocumentation {
-    const newDoc: HnDocumentation = new HnDocumentation();
-    newDoc.id = pId;
-    newDoc.title = pTitle;
-    newDoc.path = pPath;
-    newDoc.completePath = pCompletePath;
-    newDoc.order = pOrder;
-    newDoc.folder = pFolder;
-    return newDoc;
+  public setPath(path: string, folderCompletePath: string): void {
+    this.path = path;
+
+    if (folderCompletePath != null) {
+      this.completePath = folderCompletePath + path + '/';
+    } else {
+      this.completePath = path + '/';
+    }
   }
 
 }

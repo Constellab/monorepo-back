@@ -200,7 +200,9 @@ export class HnBrickAggregateService {
 
   async createDoc(createDocumentation: HnNodeDTO): Promise<HnDocumentation> {
     await this.checkIfUserHasRightsOnFolder(createDocumentation.folderId);
-    return this.folderService.createDoc(createDocumentation);
+
+    const folder = await this.folderService.findById(createDocumentation.folderId);
+    return this.documentationService.create(createDocumentation, folder);
   }
 
   async findAllDocs(): Promise<HnDocumentationDTO[]> {

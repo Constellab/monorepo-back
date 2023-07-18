@@ -116,12 +116,14 @@ export class ClStringHelper {
     if (str == null) return '';
 
     // replace all white spaces with dash
+    return ClStringHelper.trimAndRemoveDuplicateSpaces(str).toLowerCase()
     // remove all special characters
-    // remove all double dashes
-    // remove all dashes at the beginning and at the end
-    return ClStringHelper.trimAndRemoveDuplicateSpaces(str)
       .replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '')
-      .replace(/--/g, '-')
-      .replace(/^-|-$/g, '');
+      // replace all spaces with dashes
+      .replace(/\s+/g, '-')
+      // remove all double or more dashes with one dash
+      .replace(/-+/g, '-')
+      // remove all dashes at the beginning and at the end
+      .replace(/^[- ]+|[- ]+$/g, '');
   }
 }

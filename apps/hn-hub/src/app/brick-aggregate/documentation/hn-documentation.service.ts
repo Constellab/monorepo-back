@@ -25,12 +25,23 @@ export class HnDocumentationService {
   constructor(@InjectRepository(HnDocumentation)
               private documentationsRepository: Repository<HnDocumentation>,
               private objectStorageService: BlObjectStorageService,
-              private configService: HnCoreConfigService,) {
+              private configService: HnCoreConfigService) {
   }
 
-  async create(documentation: HnDocumentation, entityManager?: EntityManager): Promise<HnDocumentation> {
+  async create(createDocumentation: HnNodeDTO, folder: HnFolder,
+               entityManager?: EntityManager): Promise<HnDocumentation> {
+    const path = ClStringHelper.generateUrlPathFromString(createDocumentation.title);
+
+    const documentation = new HnDocumentation();
+
+    documentation.title = createDocumentation.title;
+    documentation.setPath(path, folder.completePath);
+    documentation.folder = folder;
+    documentation.order = folder.nextOrder();
+
     return entityManager ? await entityManager.save(documentation) : await this.documentationsRepository.save(documentation);
   }
+
 
   async findAll(): Promise<Array<HnDocumentation>> {
     return await this.documentationsRepository.find({
@@ -53,9 +64,8 @@ export class HnDocumentationService {
     const doc: HnDocumentation = await this.documentationsRepository.findOne(
       {where: {id: updatedDocumentation.id}, relations: {folder: true}});
 
-    doc.path = ClStringHelper.generateUrlPathFromString(updatedDocumentation.title);
+    doc.setPath(ClStringHelper.generateUrlPathFromString(updatedDocumentation.title), doc.folder.completePath);
     doc.title = updatedDocumentation.title;
-    doc.completePath = doc.folder.completePath ? doc.folder.completePath + doc.path + '/' : doc.path + '/';
     return this.documentationsRepository.save(doc);
   }
 
@@ -67,6 +77,7 @@ export class HnDocumentationService {
     await this.documentationsRepository.delete(id);
   }
 
+  // TODO : to clean
   async findCurrentDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<HnDocumentation> {
 
     const documentation: HnDocumentation = await this.documentationsRepository.findOneBy({
@@ -114,6 +125,7 @@ export class HnDocumentationService {
     return this.documentationsRepository.save(doc);
   }
 
+  // TODO to clean
   async transformContent(content: BlRichTextI): Promise<BlRichTextI> {
     // Transform intern link with updated url
     const links: BlRichTextLink[] = BlRichText.getLinks(content);
@@ -151,7 +163,8 @@ export class HnDocumentationService {
     return content;
   }
 
-  async getDocumentationIdAndCPByUrl(link: string[]): Promise<[string, string]> {
+  // TODO to clean and document
+  private async getDocumentationIdAndCPByUrl(link: string[]): Promise<[string, string]> {
     const brickName: string = link[1];
     const majorVersion: number = link[2] != 'latest' ? +(link[2].slice(1)) : null;
     link.splice(0, 4);
@@ -180,6 +193,8 @@ export class HnDocumentationService {
       },
       relations: ['folder']
     });
+    if (documentations.length == 0) return [null, null];
+
     let documentation: HnDocumentation;
     if (documentations.length > 1) {
       //sort by major version
