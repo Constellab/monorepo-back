@@ -5,7 +5,7 @@ import {CnCloudProviderRegion} from './cn-cloud-provider-regions/cn-cloud-provid
 import {ClPage} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnCloudProviderSecurity} from './cn-cloud-provider.security';
-import {CnCloudProvider} from './cn-cloud-provider.entity';
+import {CnCloudProvider, CnCloudProviderName} from './cn-cloud-provider.entity';
 
 
 @Injectable()
@@ -82,6 +82,11 @@ export class CnCloudProviderAggregateService {
   public async getS3Regions(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
     this.checkAuthorizationToGetEntity();
     return this.cloudProviderRegionService.findS3Regions(page, size);
+  }
+
+  public findRegionByCloudProviderNameAndTechnicalName(cloudProviderName: CnCloudProviderName,
+                                                       technicalName: string): Promise<CnCloudProviderRegion> {
+    return this.cloudProviderRegionService.findByCloudProviderNameAndTechnicalNameAndCheck(cloudProviderName, technicalName);
   }
 
   public async getDefaultRegion(): Promise<CnCloudProviderRegion> {

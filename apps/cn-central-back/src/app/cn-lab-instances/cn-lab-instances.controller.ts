@@ -30,12 +30,14 @@ import {Response} from 'express';
 import * as AdmZip from 'adm-zip';
 import {CnLabGreenOption} from './green-option/cn-lab-green-option.entity';
 import {CnLabGreenOptionFormDto} from './green-option/cn-lab-green-option.dto';
+import {CnLabFreeTrialService} from './free-trial/cn-lab-free-trial.service';
 
 
 @Controller('lab-instances')
 export class CnLabInstancesController {
 
-  constructor(private aggregateService: CnLabInstanceAggregateService) {
+  constructor(private aggregateService: CnLabInstanceAggregateService,
+              private labFreeTrialService: CnLabFreeTrialService) {
   }
 
 
@@ -428,6 +430,18 @@ export class CnLabInstancesController {
   async getGreenOptions(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabGreenOption[]> {
     return await this.aggregateService.getGreenOptions(id);
   }
+
+  /////////////////////////// FREE TRIAL //////////////////////////////
+  @Post('free-trial/user/:id')
+  async createFreeTrial(@Param('id', new ParseUUIDPipe()) userId: string): Promise<CnLabInstance> {
+    return await this.labFreeTrialService.createFreeTrialLabInstanceForUser(userId);
+  }
+
+  @Post('free-trial/current')
+  async createFreeTrialForCurrentUser(): Promise<CnLabInstance> {
+    return await this.labFreeTrialService.createFreeTrialLabInstanceCurrentUser();
+  }
+
 
   /////////////////////////// DESKTOP //////////////////////////////
   @Post(':id/desktop/generate-config')

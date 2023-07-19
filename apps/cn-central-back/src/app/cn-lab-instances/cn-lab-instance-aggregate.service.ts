@@ -75,7 +75,7 @@ export class CnLabInstanceAggregateService {
 
 
   constructor(private labInstancesService: CnLabInstancesService,
-              private labInstanceGroupService: CnLabInstanceUserService,
+              private labInstanceUserService: CnLabInstanceUserService,
               private labInstanceProjectService: CnLabInstanceProjectService,
               private labManagerService: CnLabManagerService,
               private security: CnLabInstancesSecurity,
@@ -137,7 +137,7 @@ export class CnLabInstanceAggregateService {
       const labInstanceDb = await this.labInstancesService.create(labInstance, entityManager);
 
       // add the user as OWNER of his lab
-      await this.labInstanceGroupService.createLabInstanceGroup(labInstance, userInfo.user, CnLabInstanceUserRole.OWNER, entityManager);
+      await this.labInstanceUserService.createLabInstanceUser(labInstance, userInfo.user, CnLabInstanceUserRole.OWNER, entityManager);
       return labInstanceDb;
     });
   }
@@ -347,7 +347,7 @@ export class CnLabInstanceAggregateService {
    */
   private async addUserAndConnect(labInstance: CnLabInstance, user: CnUser): Promise<CnLabInstanceToken | null> {
     // Check if the user is listed in the lab user
-    const group = await this.labInstanceGroupService.findByLabInstanceIdAndUserId(labInstance.id,
+    const group = await this.labInstanceUserService.findByLabInstanceIdAndUserId(labInstance.id,
       user.id);
     if (!group) return null;
 
@@ -397,7 +397,7 @@ export class CnLabInstanceAggregateService {
     return await this.dataSource.transaction(async entityManager => {
       // create the relation between the group and the lab
       // use group if we share team latter
-      const labInstanceGroup = await this.labInstanceGroupService.createLabInstanceGroup(labInstance, user, role, entityManager);
+      const labInstanceGroup = await this.labInstanceUserService.createLabInstanceUser(labInstance, user, role, entityManager);
 
       if (labInstance.isCloud()) {
         // add the user to the lab is the lab is running
@@ -415,14 +415,14 @@ export class CnLabInstanceAggregateService {
   public async updateUserLabRole(labInstanceId: string, groupId: string, role: CnLabInstanceUserRole): Promise<CnLabInstanceUser> {
     await this.getAndCheckAuthorizationToManageLab(labInstanceId, false);
 
-    return this.labInstanceGroupService.updateLabInstanceGroupRole(labInstanceId, groupId, role);
+    return this.labInstanceUserService.updateLabInstanceUserRole(labInstanceId, groupId, role);
   }
 
   public async removeUserFromLab(labInstanceId: string, userId: string): Promise<void> {
     const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId, false);
 
     return await this.dataSource.transaction(async entityManager => {
-      await this.labInstanceGroupService.deleteLabInstanceGroup(labInstanceId, userId, entityManager);
+      await this.labInstanceUserService.deleteLabInstanceUser(labInstanceId, userId, entityManager);
 
       if (labInstance.isCloud()) {
         // add the user to the lab is the lab is running
@@ -442,7 +442,7 @@ export class CnLabInstanceAggregateService {
   public async getLabInstanceSharedUsers(labInstanceId: string): Promise<CnLabInstanceUser[]> {
     const labInstance = await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
-    return this.labInstanceGroupService.findByLabInstanceId(labInstance.id);
+    return this.labInstanceUserService.findByLabInstanceId(labInstance.id);
   }
 
   //////////////////////////// PROJECT ////////////////////////////////
@@ -621,7 +621,7 @@ export class CnLabInstanceAggregateService {
   }
 
   public async getCurrentLabInstanceSharedUsers(): Promise<CnExternalLabUser[]> {
-    const labUsers = await this.labInstanceGroupService.findByLabInstanceId(CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
+    const labUsers = await this.labInstanceUserService.findByLabInstanceId(CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
     return labUsers.map(labUsers => {
       const externalRole: CnExternalLabUserRole = labUsers.role === CnLabInstanceUserRole.OWNER ? 'ADMIN' : 'USER';
       return {

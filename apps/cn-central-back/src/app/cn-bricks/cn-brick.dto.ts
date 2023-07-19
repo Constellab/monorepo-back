@@ -12,6 +12,7 @@ export interface CnBrickVersionDTO {
 export enum CnBrickGWS {
   GWS_CORE = 'gws_core',
   GWS_BIOTA = 'gws_biota',
+  GWS_ACADEMY = 'gws_academy',
 }
 
 /**

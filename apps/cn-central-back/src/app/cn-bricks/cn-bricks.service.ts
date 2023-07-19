@@ -109,4 +109,23 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
       relations: ['brick']
     })).brick;
   }
+
+  public async getBrickLatestVersion(brickName: string): Promise<CnBrickVersion | null> {
+    const brickVersion = await this.brickVersionRepo.findOne({
+      where: {
+        brick: {name: brickName},
+        versionType: CnVersionType.NORMAL,
+      },
+      order: {
+        major: 'DESC',
+        minor: 'DESC',
+        patch: 'DESC'
+      },
+      relations: ['brick']
+    });
+
+    if(brickVersion) return brickVersion;
+    // return the last version including beta
+    return this.getBrickVersions(brickName).then(brickVersions => brickVersions[0]);
+  }
 }

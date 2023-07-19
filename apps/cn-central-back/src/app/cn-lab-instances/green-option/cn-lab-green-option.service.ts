@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import {EntityManager, Repository} from 'typeorm';
 import {CnLabGreenOption, CnLabGreenOptionType} from './cn-lab-green-option.entity';
 import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnLabGreenOptionFormDto} from './cn-lab-green-option.dto';
@@ -14,13 +14,13 @@ export class CnLabGreenOptionService extends BlAbstractService<CnLabGreenOption>
     super(repository, CnLabGreenOption);
   }
 
-  async createFromDTO(dto: CnLabGreenOptionFormDto, labInstance: CnLabInstance): Promise<CnLabGreenOption> {
+  async createFromDTO(dto: CnLabGreenOptionFormDto, labInstance: CnLabInstance, entityManager?: EntityManager): Promise<CnLabGreenOption> {
     if(labInstance.isDesktop()){
       throw new BlBadRequestException('Desktop lab instance cannot have green computing options')
     }
     const entity = this.checkBeforeSave(dto);
     entity.labInstance = labInstance;
-    return this.create(entity);
+    return this.create(entity, entityManager);
   }
 
   async updateFromDTO(id: string, dto: CnLabGreenOptionFormDto): Promise<CnLabGreenOption> {

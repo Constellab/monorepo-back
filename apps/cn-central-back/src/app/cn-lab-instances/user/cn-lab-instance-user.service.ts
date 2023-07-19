@@ -14,8 +14,8 @@ export class CnLabInstanceUserService {
   constructor(@InjectRepository(CnLabInstanceUser) private repository: Repository<CnLabInstanceUser>) {
   }
 
-  public async createLabInstanceGroup(labInstance: CnLabInstance, user: CnUser,
-                                      role: CnLabInstanceUserRole, entityManager: EntityManager): Promise<CnLabInstanceUser> {
+  public async createLabInstanceUser(labInstance: CnLabInstance, user: CnUser,
+                                     role: CnLabInstanceUserRole, entityManager: EntityManager): Promise<CnLabInstanceUser> {
     const labInstanceGroupDb = await this.findByLabInstanceIdAndUserId(labInstance.id, user.id);
 
     if (labInstanceGroupDb != null) {
@@ -31,8 +31,8 @@ export class CnLabInstanceUserService {
     return entityManager.save(labInstanceGroup);
   }
 
-  public async updateLabInstanceGroupRole(labInstanceId: string, userId: string,
-                                          role: CnLabInstanceUserRole): Promise<CnLabInstanceUser> {
+  public async updateLabInstanceUserRole(labInstanceId: string, userId: string,
+                                         role: CnLabInstanceUserRole): Promise<CnLabInstanceUser> {
 
     const labInstanceGroup = await this.findByLabInstanceIdAndUserId(labInstanceId, userId);
 
@@ -49,7 +49,7 @@ export class CnLabInstanceUserService {
     return this.repository.save(labInstanceGroup);
   }
 
-  public async deleteLabInstanceGroup(labInstanceId: string, userId: string, entityManager: EntityManager): Promise<void> {
+  public async deleteLabInstanceUser(labInstanceId: string, userId: string, entityManager: EntityManager): Promise<void> {
     const labInstanceGroup = await this.findByLabInstanceIdAndUserId(labInstanceId, userId);
 
     if (labInstanceGroup == null) {

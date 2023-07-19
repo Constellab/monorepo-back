@@ -36,6 +36,10 @@ import {CnCloudProviderFactory} from './server/cn-cloud-provider.factory';
 import {CnLabGreenOption} from './green-option/cn-lab-green-option.entity';
 import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.service';
 import {CnAuthModule} from '../cn-auth/cn-auth.module';
+import {CnLabFreeTrialService} from './free-trial/cn-lab-free-trial.service';
+import {CnCloudProvidersModule} from '../cn-cloud-providers/cn-cloud-providers.module';
+import {CnServersInfoModule} from '../cn-servers-info/cn-servers-info.module';
+import {CnSpacesModule} from '../cn-spaces/cn-spaces.module';
 
 @Module({
   imports: [
@@ -61,6 +65,11 @@ import {CnAuthModule} from '../cn-auth/cn-auth.module';
     CnReportsModule,
     CnObjectStoragesModule,
 
+    // Next modules are imported for the trial service
+    CnCloudProvidersModule,
+    CnServersInfoModule,
+    CnSpacesModule,
+
     HttpModule,
   ],
   providers: [
@@ -81,7 +90,8 @@ import {CnAuthModule} from '../cn-auth/cn-auth.module';
     CnLabSshService,
     CnCloudProviderFactory,
     CnLabInstancesCron,
-    CnLabGreenOptionService
+    CnLabGreenOptionService,
+    CnLabFreeTrialService,
   ],
   exports: [
     CnLabInstancesService,

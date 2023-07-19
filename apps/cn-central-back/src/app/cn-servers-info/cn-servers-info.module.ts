@@ -12,6 +12,7 @@ import {CnServersInfoController} from './cn-servers-info.controller';
     CnCoreModule,
   ],
   providers: [CnServersInfoService],
+  exports: [CnServersInfoService],
   controllers: [CnServersInfoController]
 })
 export class CnServersInfoModule {

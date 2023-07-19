@@ -6,6 +6,7 @@ import {BlAbstractService} from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
 import {CnConfigEntitySecurity} from '../cn-core/security/cn-config-entity.security';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
+import {CnCloudProviderName} from '../cn-cloud-providers/cn-cloud-provider.entity';
 
 @Injectable()
 export class CnServersInfoService extends BlAbstractService<CnServerInfo> {
@@ -34,6 +35,17 @@ export class CnServersInfoService extends BlAbstractService<CnServerInfo> {
     await this.checkAuthorizationToReadEntity();
     return this.findPaginated(page, size, {
       order: {name: 'ASC'}
+    });
+  }
+
+  public async findByCloudProviderAndName(cloudProviderName: CnCloudProviderName, name: string): Promise<CnServerInfo | null> {
+    return this.repository.findOne({
+      where: {
+        name: name,
+        cloudProvider: {
+          name: cloudProviderName
+        }
+      }
     });
   }
 
