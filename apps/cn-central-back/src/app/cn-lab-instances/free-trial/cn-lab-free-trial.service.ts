@@ -94,19 +94,14 @@ export class CnLabFreeTrialService {
     labInstance.billingMode = this.BILLING_MODE;
 
     return this.datasource.transaction(async (entityManager) => {
-      console.log('Creating lab instance')
       labInstance = await this.labInstanceService.create(labInstance, entityManager);
 
-      console.log('Adding user to lab instance')
       await this.addUserToLabInstance(labInstance, user, entityManager);
 
-      console.log('Creating green options')
       await this.createGreenOptions(labInstance, entityManager);
 
-      console.log('Marking free trial as started')
       await this.markFreeTrialAsStarted(user, entityManager);
 
-      console.log('Lab instance created')
       return labInstance;
     });
 
