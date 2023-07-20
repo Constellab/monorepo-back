@@ -27,8 +27,8 @@ export class HnFrontService {
     return `${this.getBaseWebsiteURL()}/stories`;
   }
 
-  public getStoryUrl(storyId: string): string {
-    return `${this.getStoriesUrl()}/${storyId}`;
+  public getStoryUrl(storyId: string, storyTitlePath: string): string {
+    return `${this.getStoriesUrl()}/${storyId}/${storyTitlePath}`;
   }
 
   /////////////////////////////// BRICKS/ //////////////////////////////////////////

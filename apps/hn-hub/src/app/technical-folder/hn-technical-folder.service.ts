@@ -196,6 +196,7 @@ export class HnTechnicalFolderService {
 
   async findTechDocsByBrickMajor(brickMajorVersionId: string): Promise<HnGeneratedDocEntity[]>{
     const techFolder: HnTechnicalFolder = await this.findTechnicalFolder(brickMajorVersionId);
+    if(techFolder == null) return [];
 
     const resources: HnResource[] = await this.resourceService.findResources(techFolder.id);
     const tasks: HnTask[] = await this.taskService.findTasks(techFolder.id);

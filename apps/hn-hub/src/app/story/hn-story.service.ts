@@ -287,7 +287,7 @@ export class HnStoryService {
   async getAllStoriesMap(): Promise<HnSitemapItemBase[]> {
     const stories: HnStory[] = await this.storyRepository.find({where: {status: HnStoryStatus.PUBLISHED}});
     return stories.map((story: HnStory) => ({
-      url: this.frontService.getStoryUrl(story.id),
+      url: this.frontService.getStoryUrl(story.id, story.titlePath),
       priority: 0.8,
       changefreq: HnSiteMapEnumChangefreq.MONTHLY,
       lastmod: story.lastModifiedAt.toFormat('yyyy-MM-dd'),

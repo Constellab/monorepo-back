@@ -76,6 +76,9 @@ export class HnStory extends BlEntityWithId {
     this.topics = labels;
   }
 
+  /**
+   * Path use in the url to have an explicit url (this is not mandatory to find the story)
+   */
   @Expose()
   get titlePath(): string{
     return ClStringHelper.generateUrlPathFromString(this.title)
