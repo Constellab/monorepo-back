@@ -27,4 +27,18 @@ export class HnBrickMajorVersion extends HnBaseEntity {
     this.versionState = HnVersionState.LATEST;
     this.major = major;
   }
+
+  get isLatest(): boolean {
+    return this.versionState === HnVersionState.LATEST;
+  }
+
+  /**
+   * Get the version as a string
+   * If the version is the latest, return 'latest'
+   * Else return 'v' + major
+   */
+  getStrVersion(): string {
+    if(this.isLatest) return 'latest';
+    return `v${this.major}`;
+  }
 }

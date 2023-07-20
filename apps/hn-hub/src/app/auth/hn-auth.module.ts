@@ -7,7 +7,6 @@ import {HnUserService} from '../users/hn-user.service';
 import {BlExternalApiModule, BlExternalApiService} from '@monorepo/back-core-lib';
 import {HttpModule} from '@nestjs/axios';
 import {HnCentralAuthService} from './hn-central-auth.service';
-import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 
 
 @Module({
@@ -17,8 +16,12 @@ import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.se
     HttpModule,
     BlExternalApiModule
   ],
-  providers: [HnAuthService, HnUserService, BlExternalApiService,
-    HnCentralAuthService, HnCoreConfigService],
+  providers: [
+    HnAuthService,
+    HnUserService,
+    BlExternalApiService,
+    HnCentralAuthService
+  ],
   exports: [HnAuthService],
   controllers: [HnAuthController]
 })

@@ -15,4 +15,9 @@ export class HnTask extends HnGeneratedDocEntity {
 
   @Column({name: 'additionalInfo', type: 'simple-json', nullable: true})
   additionalInfo?: Record<string, any>;
+
+  getFolderName(): string {
+    return 'task';
+  }
+
 }

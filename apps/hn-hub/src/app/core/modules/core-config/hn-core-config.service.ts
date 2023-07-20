@@ -16,7 +16,6 @@ import {
   blTransportQueueHub
 } from '@monorepo/back-core-lib';
 import {HnDatabaseConfig} from '../../model/config/hn-database-config.class';
-import {HnDocumentation} from '../../../brick-aggregate/documentation/hn-documentation.entity';
 
 @Injectable()
 export class HnCoreConfigService {
@@ -93,27 +92,22 @@ export class HnCoreConfigService {
     return this.isProduction() ? 'community-stories-prod' : 'community-stories-pre-prod';
   }
 
-  public getFrontRootUrl(): string {
+  public getFrontBaseUrl(): string {
     let res: string;
     switch (this.getEnvironmentProfile()) {
       case 'prod':
-        res = 'https://constellab.community/';
+        res = 'https://constellab.community';
         break;
       case 'preprod':
-        res = 'https://hub-pre-prod.gencovery.com/';
+        res = 'https://hub-pre-prod.gencovery.com';
         break;
       case 'dev':
-        res = 'http://localhost:4200/';
+        res = 'http://localhost:4200';
     }
     return res;
   }
 
-  public getFrontDocUrl(documentation: HnDocumentation): string {
-    // eslint-disable-next-line max-len
-    return `${this.getFrontRootUrl()}bricks/${documentation.folder.brickMajorVersion.brick.name}/v${documentation.folder.brickMajorVersion.major}/doc/${documentation.completePath}`;
-  }
-
-  public getConstellabFrontRootUrl(): string {
+  public getConstellabFrontBaseUrl(): string {
     let res: string;
     switch (this.getEnvironmentProfile()) {
       case 'prod':

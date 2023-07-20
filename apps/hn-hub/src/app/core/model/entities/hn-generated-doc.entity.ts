@@ -54,4 +54,10 @@ export abstract class HnGeneratedDocEntity extends BlEntityWithId {
   objectSubType: string;
 
   objectType: string;
+
+  abstract getFolderName(): string;
+
+  getCompletePath(): string{
+    return `${this.getFolderName()}/${this.uniqueName}`;
+  }
 }

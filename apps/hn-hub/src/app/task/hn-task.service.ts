@@ -84,11 +84,11 @@ export class HnTaskService {
     return true;
   }
 
-  async findTasks(technicalFolder: HnTechnicalFolder): Promise<HnTask[]> {
+  async findTasks(technicalFolderId: string): Promise<HnTask[]> {
     return this.tasksRepository.find({
       where: {
         technicalFolder: {
-          id: technicalFolder.id
+          id: technicalFolderId
         }
       },
       order: {

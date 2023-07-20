@@ -3,8 +3,9 @@ import {HnTopic} from '../topic/hn-topic.entity';
 import {BlEntityWithId, BlLuxonDateTimeColumn, BlRichText, BlRichTextI} from '@monorepo/back-core-lib';
 import {DateTime} from 'luxon';
 import {HnUser} from '../users/hn-user.entity';
-import {ClDateHelper} from '@monorepo/core-lib';
+import {ClDateHelper, ClStringHelper} from '@monorepo/core-lib';
 import {HnStoryAuthor} from '../story-author/hn-story-author.entity';
+import {Expose} from 'class-transformer';
 
 export enum HnStoryStatus {
   DRAFT = 'DRAFT',
@@ -73,5 +74,10 @@ export class HnStory extends BlEntityWithId {
     this.content = content;
     this.title = title;
     this.topics = labels;
+  }
+
+  @Expose()
+  get titlePath(): string{
+    return ClStringHelper.generateUrlPathFromString(this.title)
   }
 }

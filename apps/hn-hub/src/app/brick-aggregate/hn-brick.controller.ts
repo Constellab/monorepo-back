@@ -20,6 +20,7 @@ import {Request} from 'express';
 import {HnBrickAggregateService} from './hn-brick-aggregate.service';
 import {HnBrickUser} from './brick-user/hn-brick-user.entity';
 import {HnBrickUserInvite} from './brick-user-invite/hn-brick-user-invite.entity';
+import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
 
 @Controller('brick')
 @UseGuards(HnIsAdminGuard)
@@ -35,7 +36,7 @@ export class HnBrickController {
 
   @BlPublic()
   @Get('all-map')
-  findAllMap(): Promise<string[]> {
+  findAllMap(): Promise<HnSitemapItemBase[]> {
     return this.brickAggregateService.findAllMap();
   }
 
@@ -53,7 +54,7 @@ export class HnBrickController {
   @BlPublic()
   @Get('central/name/:name/:version')
   findOneByNameCentral(@Param('name') name: string,
-                        @Param('version') version: string,
+                       @Param('version') version: string,
                        @Req() request: Request): Promise<HnBrickVersionDownloadDTO> {
     return this.brickAggregateService.findBrickByNameCentral(name, version, request.header('X-Api-Key'));
   }

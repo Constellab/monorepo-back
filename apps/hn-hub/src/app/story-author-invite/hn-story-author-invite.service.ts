@@ -7,9 +7,9 @@ import {ClStringHelper, ClSupportedLanguage} from '@monorepo/core-lib';
 import {HnStory} from '../story/hn-story.entity';
 import {HnUser} from '../users/hn-user.entity';
 import {BlMailService} from '@monorepo/back-core-lib';
-import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {HnMailTemplate} from '../core/model/config/hn-mail-template.class';
 import {HnInviteStatus} from '../core/model/config/hn-invite-status.enum';
+import {HnFrontService} from '../core/service/hn-front.service';
 
 @Injectable()
 export class HnStoryAuthorInviteService {
@@ -17,9 +17,8 @@ export class HnStoryAuthorInviteService {
   constructor(@InjectRepository(HnStoryAuthorInvite)
               private readonly storyAuthorInviteRepository: Repository<HnStoryAuthorInvite>,
               private readonly userService: HnUserService,
-              private readonly coreConfigService: HnCoreConfigService,
-              private readonly mailService: BlMailService
-  ) {
+              private readonly frontService: HnFrontService,
+              private readonly mailService: BlMailService) {
   }
 
   async createStoryAuthorMail(story: HnStory, coAuthorMail: string): Promise<boolean> {
@@ -36,7 +35,7 @@ export class HnStoryAuthorInviteService {
 
     const data = {
       storyTitle: story.title,
-      url: this.coreConfigService.getFrontRootUrl() + 'stories/invite/' + storyAuthorMail.token,
+      url: this.frontService.getStoryInviteUrl(storyAuthorMail.token),
       invitUser: inviteMail.createdBy,
       user: null as HnUser,
       subscribeUrl: ''
@@ -49,7 +48,7 @@ export class HnStoryAuthorInviteService {
     } else {
       template = HnMailTemplate.story_invit_new_user;
       lang = inviteMail.createdBy.lang;
-      data.subscribeUrl = this.coreConfigService.getConstellabFrontRootUrl() + 'login';
+      data.subscribeUrl = this.frontService.getConstellabLoginUrl();
     }
     return this.mailService.sendMail(template, coAuthorMail, lang, data);
   }

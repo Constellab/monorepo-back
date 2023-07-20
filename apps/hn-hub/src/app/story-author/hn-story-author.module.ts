@@ -9,10 +9,23 @@ import {HnStoryAuthorInviteModule} from '../story-author-invite/hn-story-author-
 import {HnCoreModule} from '../core/hn-core.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([HnStoryAuthor]), HnCoreModule, HnUserModule, HnStoryAuthorInviteModule],
-  exports: [TypeOrmModule],
-  controllers: [HnStoryAuthorController],
-  providers: [HnStoryAuthorService, HnStoryAuthorInviteService],
+  imports: [
+    TypeOrmModule.forFeature([HnStoryAuthor]),
+
+    HnCoreModule,
+    HnUserModule,
+    HnStoryAuthorInviteModule
+  ],
+  exports: [
+    TypeOrmModule
+  ],
+  controllers: [
+    HnStoryAuthorController
+  ],
+  providers: [
+    HnStoryAuthorService,
+    HnStoryAuthorInviteService
+  ],
 })
 export class HnStoryAuthorModule {
 }

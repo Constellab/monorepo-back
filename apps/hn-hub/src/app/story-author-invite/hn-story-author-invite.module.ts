@@ -5,13 +5,24 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import {HnStoryAuthorInvite} from './hn-story-author-invite.entity';
 import {HnUserService} from '../users/hn-user.service';
 import {HnUserModule} from '../users/hn-user.module';
-import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
+import {HnCoreModule} from '../core/hn-core.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([HnStoryAuthorInvite]), HnUserModule],
-  exports: [TypeOrmModule],
-  controllers: [HnStoryAuthorInviteController],
-  providers: [HnStoryAuthorInviteService, HnUserService, HnCoreConfigService]
+  imports: [
+    TypeOrmModule.forFeature([HnStoryAuthorInvite]),
+    HnUserModule,
+    HnCoreModule,
+  ],
+  exports: [
+    TypeOrmModule
+  ],
+  controllers: [
+    HnStoryAuthorInviteController
+  ],
+  providers: [
+    HnStoryAuthorInviteService,
+    HnUserService
+  ]
 })
 export class HnStoryAuthorInviteModule {
 }

@@ -263,19 +263,7 @@ export class HnFolderService {
     return documentations;
   }
 
-  async findBrickMajorVersionMap(brickMajorVersion: HnBrickMajorVersion, baseMapString: string): Promise<string[]> {
-    const brickMajorVersionMap: string[] = [];
-    const mainFolder: HnFolder = await this.findFolderByBrickMajorVersion(brickMajorVersion);
-    const docs: HnDocumentationSearchDTO[] =
-      this.getDocsByFolder(mainFolder, brickMajorVersion.major.toString(), brickMajorVersion.brick.name);
-    for (const doc of docs) {
-      if (brickMajorVersion.versionState == HnVersionState.LATEST) {
-        const latestBaseMapString: string = baseMapString.split('/')[0] + '/latest/doc/';
-        brickMajorVersionMap.push(latestBaseMapString + doc.completePath.slice(0, -1));
-      } else {
-        brickMajorVersionMap.push(baseMapString + '/doc/' + doc.completePath.slice(0, -1));
-      }
-    }
-    return brickMajorVersionMap;
+  async getDocsByBrickMajorVersion(brickMajorVersionId: string): Promise<HnDocumentation[]> {
+    return this.documentationService.getDocsByBrickVersion(brickMajorVersionId);
   }
 }

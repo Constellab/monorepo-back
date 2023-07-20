@@ -248,7 +248,7 @@ export class HnBrickService {
   async findTechnicalDoc(brick: HnBrick, version: string): Promise<HnNode> {
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
-    return this.brickMajorVersionService.findTechnicalDoc(brickMajorVersion);
+    return this.brickMajorVersionService.findTechnicalDoc(brickMajorVersion.id);
   }
 
   async editBrick(editedBrick: HnEditBrickDTO): Promise<HnBrick> {
@@ -299,7 +299,7 @@ export class HnBrickService {
   }
 
   async getDocByLink(link: string): Promise<HnDocumentationSearchDTO> {
-    const linkArray: string[] = link.substring(this.configService.getFrontRootUrl().length).split('/');
+    const linkArray: string[] = link.substring(this.configService.getFrontBaseUrl().length).split('/');
     try {
       const brick: HnBrick = await this.findByName(linkArray[1]);
       const majorString: string = linkArray[2] != 'latest' ? linkArray[2].substring(1) : linkArray[2];

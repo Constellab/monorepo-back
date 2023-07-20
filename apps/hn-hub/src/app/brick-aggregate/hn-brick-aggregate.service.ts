@@ -35,6 +35,7 @@ import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnBrickUserInviteService} from './brick-user-invite/hn-brick-user-invite.service';
 import {HnBrickUserInvite} from './brick-user-invite/hn-brick-user-invite.entity';
 import {HnBrickUser} from './brick-user/hn-brick-user.entity';
+import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
 
 @Injectable()
 export class HnBrickAggregateService {
@@ -56,13 +57,13 @@ export class HnBrickAggregateService {
     return this.brickService.findBrickList();
   }
 
-  async findAllMap(): Promise<string[]> {
+  async findAllMap(): Promise<HnSitemapItemBase[]> {
     const bricks: HnBrick[] = await this.brickService.find();
-    let map: string[] = [];
+    const map: HnSitemapItemBase[] = [];
     for (const brick of bricks) {
       if (brick.visibility === HnBrickVisibility.PUBLIC) {
-        const brickMap: string[] = await this.brickMajorVersionService.findBrickMap(brick);
-        map = map.concat(brickMap);
+        const brickMap: HnSitemapItemBase[] = await this.brickMajorVersionService.findBrickMap(brick);
+        map.push(...brickMap);
       }
     }
     return map;

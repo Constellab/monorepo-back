@@ -19,13 +19,15 @@ import {IncomingMessage} from 'http';
 import {HnNodeDTO} from '../folder/hn-folder.dto';
 import {HnFolder} from '../folder/hn-folder.entity';
 import {ClStringHelper} from '@monorepo/core-lib';
+import {HnFrontService} from '../../core/service/hn-front.service';
 
 @Injectable()
 export class HnDocumentationService {
   constructor(@InjectRepository(HnDocumentation)
               private documentationsRepository: Repository<HnDocumentation>,
               private objectStorageService: BlObjectStorageService,
-              private configService: HnCoreConfigService) {
+              private configService: HnCoreConfigService,
+              private frontService: HnFrontService) {
   }
 
   async create(createDocumentation: HnNodeDTO, folder: HnFolder,
@@ -105,7 +107,8 @@ export class HnDocumentationService {
             linkDoc.completePath = path;
 
             // eslint-disable-next-line max-len
-            l.attributes.link = this.configService.getFrontDocUrl(linkDoc);
+            l.attributes.link = this.frontService.getBrickDocUrl(linkDoc.folder.brickMajorVersion.brick.name,
+              linkDoc.folder.brickMajorVersion.getStrVersion(), linkDoc.completePath);
 
             documentation.content.ops.find(
               (o: BlRichTextLink) => o.attributes && o.attributes.id && o.attributes.id === l.attributes.id)
@@ -130,8 +133,8 @@ export class HnDocumentationService {
     // Transform intern link with updated url
     const links: BlRichTextLink[] = BlRichText.getLinks(content);
     for (const l of links) {
-      if (l.attributes.link.startsWith(this.configService.getFrontRootUrl())) {
-        const link: string[] = l.attributes.link.substring(this.configService.getFrontRootUrl().length).split('/');
+      if (l.attributes.link.startsWith(this.configService.getFrontBaseUrl())) {
+        const link: string[] = l.attributes.link.substring(this.configService.getFrontBaseUrl().length).split('/');
         if (link[0] === 'bricks' && link[3] === 'doc' && link[4] !== 'technical-folder') {
           const [id, cp] = await this.getDocumentationIdAndCPByUrl(link);
           if (id != null && cp != null) {
@@ -261,5 +264,17 @@ export class HnDocumentationService {
       bucket: this.configService.getDocImageObjectStorageBucket(),
       credentials: this.configService.getDefaultObjectStorageCredentials()
     };
+  }
+
+  public getDocsByBrickVersion(brickMajorVersionId: string): Promise<HnDocumentation[]>{
+    return this.documentationsRepository.find({
+      where: {
+        folder: {
+          brickMajorVersion: {
+            id: brickMajorVersionId
+          }
+        }
+      }
+    });
   }
 }

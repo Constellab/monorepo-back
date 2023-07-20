@@ -6,12 +6,25 @@ import {HnBrickVersionReferenceModule} from '../../brick-version-reference/hn-br
 import {HnBrickVersionReferenceService} from '../../brick-version-reference/hn-brick-version-reference.service';
 import {HnUserService} from '../../users/hn-user.service';
 import {HnUserModule} from '../../users/hn-user.module';
-import {HnCoreConfigService} from '../../core/modules/core-config/hn-core-config.service';
+import {HnCoreModule} from '../../core/hn-core.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([HnBrickVersion]), HnBrickVersionReferenceModule, HnUserModule],
-  exports: [TypeOrmModule, HnBrickVersionService],
-  providers: [HnBrickVersionService, HnBrickVersionReferenceService, HnUserService, HnCoreConfigService]
+  imports: [
+    TypeOrmModule.forFeature([HnBrickVersion]),
+
+    HnCoreModule,
+    HnBrickVersionReferenceModule,
+    HnUserModule
+  ],
+  exports: [
+    TypeOrmModule,
+    HnBrickVersionService
+  ],
+  providers: [
+    HnBrickVersionService,
+    HnBrickVersionReferenceService,
+    HnUserService,
+  ]
 })
 export class HnBrickVersionModule {
 }

@@ -1,7 +1,8 @@
 import {Module} from '@nestjs/common';
 import {HnCoreConfigModule} from './modules/core-config/hn-core-config.module';
-import {BlRequestContextModule, BlTranslateModule} from '@monorepo/back-core-lib';
+import {BlExternalApiModule, BlRequestContextModule, BlTranslateModule} from '@monorepo/back-core-lib';
 import {HttpModule} from '@nestjs/axios';
+import {HnFrontService} from './service/hn-front.service';
 
 /**
  * Core module of the app, export all modules
@@ -9,17 +10,26 @@ import {HttpModule} from '@nestjs/axios';
  */
 @Module({
   imports: [
-    HnCoreConfigModule,
     HttpModule,
+
     BlTranslateModule,
-    BlRequestContextModule
+    BlRequestContextModule,
+    BlExternalApiModule,
+
+    HnCoreConfigModule,
   ],
-  providers: [],
+  providers: [
+    HnFrontService,
+  ],
   exports: [
     HnCoreConfigModule,
+
     BlRequestContextModule,
-    BlTranslateModule
+    BlTranslateModule,
+    BlExternalApiModule,
+
     // Providers
+    HnFrontService,
   ]
 })
 export class HnCoreModule {

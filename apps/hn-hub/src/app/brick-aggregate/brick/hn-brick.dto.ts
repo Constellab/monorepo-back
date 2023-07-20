@@ -137,3 +137,4 @@ export class HnCreateBrickDTO {
   credentialUsername?: string;
   credentialPassword?: string;
 }
+

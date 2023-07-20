@@ -75,11 +75,11 @@ export class HnProtocolService {
     return true;
   }
 
-  async findProtocols(technicalFolder: HnTechnicalFolder): Promise<HnProtocol[]> {
+  async findProtocols(technicalFolderId: string): Promise<HnProtocol[]> {
     return this.protocolsRepository.find({
       where: {
         technicalFolder: {
-          id: technicalFolder.id
+          id: technicalFolderId
         }
       },
       order: {

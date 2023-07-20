@@ -26,6 +26,8 @@ import {HnStoryAuthorService} from '../story-author/hn-story-author.service';
 import {HnStoryAuthor, HnStoryAuthorStatus} from '../story-author/hn-story-author.entity';
 import {HnStoryAuthorInvite} from '../story-author-invite/hn-story-author-invite.entity';
 import {HnInviteStatus} from '../core/model/config/hn-invite-status.enum';
+import {HnSiteMapEnumChangefreq, HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
+import {HnFrontService} from '../core/service/hn-front.service';
 
 
 @Injectable()
@@ -37,6 +39,7 @@ export class HnStoryService {
               private readonly topicService: HnTopicService,
               private objectStorageService: BlObjectStorageService,
               private configService: HnCoreConfigService,
+              private frontService: HnFrontService,
               private storyAuthorService: HnStoryAuthorService
   ) {
   }
@@ -281,8 +284,13 @@ export class HnStoryService {
     throw new Error('Invalid invite');
   }
 
-  async getAllStoriesMap(): Promise<string[]> {
+  async getAllStoriesMap(): Promise<HnSitemapItemBase[]> {
     const stories: HnStory[] = await this.storyRepository.find({where: {status: HnStoryStatus.PUBLISHED}});
-    return stories.map((s: HnStory) => s.id);
+    return stories.map((story: HnStory) => ({
+      url: this.frontService.getStoryUrl(story.id),
+      priority: 0.8,
+      changefreq: HnSiteMapEnumChangefreq.MONTHLY,
+      lastmod: story.lastModifiedAt.toFormat('yyyy-MM-dd'),
+    }));
   }
 }

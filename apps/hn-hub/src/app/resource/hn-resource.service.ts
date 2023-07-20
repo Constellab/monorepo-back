@@ -8,10 +8,8 @@ import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.enti
 
 @Injectable()
 export class HnResourceService {
-  constructor(
-    @InjectRepository(HnResource)
-    private readonly resourceRepository: Repository<HnResource>,
-  ) {
+  constructor(@InjectRepository(HnResource)
+              private readonly resourceRepository: Repository<HnResource>,) {
   }
 
   async createTechnicalDocResources(technicalFolder: HnTechnicalFolder, resources: HnImportResourceDTO[]): Promise<boolean> {
@@ -61,11 +59,11 @@ export class HnResourceService {
   }
 
 
-  async findResources(technicalFolder: HnTechnicalFolder): Promise<HnResource[]> {
+  async findResources(technicalFolderId: string): Promise<HnResource[]> {
     return this.resourceRepository.find({
       where: {
         technicalFolder: {
-          id: technicalFolder.id
+          id: technicalFolderId
         }
       },
       order: {
@@ -82,8 +80,8 @@ export class HnResourceService {
       },
       uniqueName: uniqueName
     });
-    if(resource != null){
-      resource.objectType = 'RESOURCE'
+    if (resource != null) {
+      resource.objectType = 'RESOURCE';
     }
     return resource;
   }

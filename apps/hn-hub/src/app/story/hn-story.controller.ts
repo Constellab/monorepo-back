@@ -29,6 +29,7 @@ import {Response} from 'express';
 import {HnTopicDto} from '../topic/hn-topic.dto';
 import {HnTopic} from '../topic/hn-topic.entity';
 import {HnStoryAuthorInvite} from '../story-author-invite/hn-story-author-invite.entity';
+import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
 
 @Controller('story')
 export class HnStoryController {
@@ -44,7 +45,7 @@ export class HnStoryController {
 
   @BlPublic()
   @Get('all-map')
-  async getAllStoriesMap(): Promise<string[]> {
+  async getAllStoriesMap(): Promise<HnSitemapItemBase[]> {
     return this.storyService.getAllStoriesMap();
   }
 

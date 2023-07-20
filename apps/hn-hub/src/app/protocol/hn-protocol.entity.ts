@@ -16,4 +16,10 @@ export class HnProtocol extends HnGeneratedDocEntity {
 
   @Column()
   status?: string;
+
+  getFolderName(): string {
+    return 'protocol';
+  }
+
+
 }
