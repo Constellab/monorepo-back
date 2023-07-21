@@ -36,7 +36,7 @@ export class CnLabGreenOption extends CnBaseEntity {
 
   @BlNotUpdatable()
   @Type(() => CnLabInstance)
-  @ManyToOne(() => CnLabInstance, {nullable: false})
+  @ManyToOne(() => CnLabInstance, {nullable: false, onDelete: 'CASCADE'})
   labInstance: CnLabInstance;
 
   @Column()

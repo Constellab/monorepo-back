@@ -36,7 +36,7 @@ export class CnLabInstancesCron {
    * Refresh the status of the lab instances and stop waiting lab instances
    */
   // '0 */10 * * * *' = every 10 minutes
-  @Cron('0 */1 * * * *')
+  @Cron('0 */10 * * * *')
   async refreshLabInstanceStatus(): Promise<void> {
     this.logger.debug('[Cron] Start of refresh lab instance status');
 
@@ -130,7 +130,7 @@ export class CnLabInstancesCron {
 
         // check if differences in minutes between last activity and now is greater than inactivity time
         // diffNow is negative if last activity is in the past
-        if ((lastActivityDate.diffNow('minutes').minutes * -1) >= value.inactivityDuration) continue;
+        if ((lastActivityDate.diffNow('minutes').minutes * -1) < value.inactivityDuration) continue;
 
         await this.stopLab(lab, option, `${value.inactivityDuration} minutes`);
       }
