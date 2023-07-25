@@ -35,7 +35,7 @@ export class CnExternalLabManagerApiService {
 
   public async healthCheck(labUrl: string): Promise<boolean> {
     return lastValueFrom(this.apiService.get(this.constructRoute(labUrl, `health-check`),
-      null, {logError: false, timeout: 5000}))
+      null, {logError: false, timeout: 2500}))
       .then(() => true)
       .catch(() => false);
   }

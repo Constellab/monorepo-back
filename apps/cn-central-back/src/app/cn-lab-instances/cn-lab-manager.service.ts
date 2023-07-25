@@ -58,13 +58,13 @@ export class CnLabManagerService {
     return this.labManagerApiService.getLogs(labInstance.getLabManagerApiInfo(), containerName);
   }
 
-  public async initAll(labInstance: CnLabInstance, space: CnSpace): Promise<void> {
+  public async initAll(labInstance: CnLabInstance, spaceDomain: string): Promise<void> {
     // send the keys to configure the lab manager
     const initConfig: CnLabManagerInitConfig = {
       centralApiKey: labInstance.glabApiKey,
       codelabToken: labInstance.codelabToken,
       centralApiUrl: this.configService.getApiUrl(),
-      centralFrontUrl: `https://${space.domain}.${this.configService.getCentralFrontDomain()}`,
+      centralFrontUrl: `https://${spaceDomain}.${this.configService.getCentralFrontDomain()}`,
       communityFrontUrl: this.configService.getCommunityFrontUrl(),
       communityApiUrl: this.configService.getCommunityApiUrl(),
       communityApiKey: this.configService.getCommunityApiKey(),

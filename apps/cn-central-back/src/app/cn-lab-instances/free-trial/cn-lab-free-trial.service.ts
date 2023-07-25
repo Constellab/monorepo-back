@@ -35,6 +35,7 @@ import {CnLabInstanceUserService} from '../user/cn-lab-instance-user.service';
 import {CnLabInstanceUserRole} from '../user/cn-lab-instance-user.entity';
 import {CnUsersService} from '../../cn-users/cn-users.service';
 import {CnCloudProviderAggregateService} from '../../cn-cloud-providers/cn-cloud-provider-aggregate.service';
+import {CnLabInstanceAggregateService} from '../cn-lab-instance-aggregate.service';
 
 /**
  * Service to configure and manage the free trial lab instance for users
@@ -59,7 +60,8 @@ export class CnLabFreeTrialService {
               private datasource: DataSource,
               private greenOptions: CnLabGreenOptionService,
               private labUserService: CnLabInstanceUserService,
-              private userService: CnUsersService) {
+              private userService: CnUsersService,
+              private labInstanceAggregateService: CnLabInstanceAggregateService) {
   }
 
   public async createFreeTrialLabInstanceCurrentUser(): Promise<CnLabInstance> {
@@ -77,9 +79,9 @@ export class CnLabFreeTrialService {
 
   private async createFreeTrialLabInstance(user: CnUser): Promise<CnLabInstance> {
 
-    if (user.labTrialStatDate != null) {
-      throw new BlBadRequestException('You already used your free trial lab. Please contact us to get more information.');
-    }
+    // if (user.labTrialStatDate != null) {
+    //   throw new BlBadRequestException('You already used your free trial lab. Please contact us to get more information.');
+    // }
 
     let labInstance: CnLabInstance = new CnLabInstance();
     labInstance.name = ClStringHelper.generateUUID();
@@ -93,7 +95,7 @@ export class CnLabFreeTrialService {
     labInstance.volumeType = this.VOLUME_TYPE;
     labInstance.billingMode = this.BILLING_MODE;
 
-    return this.datasource.transaction(async (entityManager) => {
+    const labInstanceDb = await this.datasource.transaction(async (entityManager) => {
       labInstance = await this.labInstanceService.create(labInstance, entityManager);
 
       await this.addUserToLabInstance(labInstance, user, entityManager);
@@ -104,6 +106,10 @@ export class CnLabFreeTrialService {
 
       return labInstance;
     });
+
+    await this.labInstanceAggregateService.initServer(labInstance.id);
+
+    return labInstanceDb;
 
   }
 

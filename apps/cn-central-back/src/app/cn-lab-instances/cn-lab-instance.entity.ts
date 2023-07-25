@@ -9,9 +9,10 @@ import {randomBytes} from 'crypto';
 import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {CnLabInstanceUser} from './user/cn-lab-instance-user.entity';
-import {BlBadRequestException} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnCloudProviderName} from '../cn-cloud-providers/cn-cloud-provider.entity';
+import {DateTime} from 'luxon';
 
 export enum CnLabInstanceType {
   CLOUD = 'CLOUD',
@@ -129,6 +130,10 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Column({type: 'enum', enum: CnLabInstanceServerTaskStatus, nullable: false,
     default: CnLabInstanceServerTaskStatus.NONE})
   serverTaskStatus: CnLabInstanceServerTaskStatus;
+
+  @Exclude()
+  @BlLuxonDateTimeColumn({nullable: true})
+  serverTaskDatetime: DateTime;
 
   @Column({
     type: 'enum', enum: CnLabInstanceBillingMode, nullable: true,

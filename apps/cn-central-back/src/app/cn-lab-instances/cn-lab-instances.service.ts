@@ -9,7 +9,7 @@ import {
 } from './status/cn-lab-instance-status.enum';
 import {CnAbstractWithStatusService} from '../cn-core/class/cn-abstract-with-status.service';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
-import {ClHelpService, ClPage, ClPageI} from '@monorepo/core-lib';
+import {ClDateHelper, ClHelpService, ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnExperiment} from '../cn-projects-aggregate/cn-experiments/cn-experiment.entity';
 import {CnExperimentsService} from '../cn-projects-aggregate/cn-experiments/cn-experiments.service';
@@ -35,9 +35,9 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     await this.checkLabInstanceBeforeSave(entity);
 
     if (entityManager) {
-      return super.createWithStatusTransaction(entity, CnLabInstanceStatus.SERVER_STOPPED, entityManager);
+      return super.createWithStatusTransaction(entity, CnLabInstanceStatus.SERVER_NOT_CONFIGURED, entityManager);
     } else {
-      return super.createWithStatus(entity, CnLabInstanceStatus.SERVER_STOPPED);
+      return super.createWithStatus(entity, CnLabInstanceStatus.SERVER_NOT_CONFIGURED);
     }
   }
 
@@ -220,6 +220,10 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_STOPPING, id);
   }
 
+  public markInstanceAsServerNotConfigured(id: string): Promise<CnLabInstance> {
+    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_NOT_CONFIGURED, id);
+  }
+
 
   public findLabByApiKey(apiKey: string): Promise<CnLabInstance> {
     return this.repository.findOne({
@@ -270,6 +274,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     const labInstance = await this.findByIdAndCheck(labInstanceId);
     labInstance.serverTaskText = text;
     labInstance.serverTaskStatus = status;
+    labInstance.serverTaskDatetime = ClDateHelper.getDate();
     return this.repository.save(labInstance);
   }
 

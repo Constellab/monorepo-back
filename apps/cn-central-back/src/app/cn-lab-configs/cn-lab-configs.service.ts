@@ -84,7 +84,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
   }
 
   public async getCompleteConfig(labConfigId: string): Promise<CnLabConfig> {
-    return await this.findById(labConfigId, {
+    return await this.findByIdAndCheck(labConfigId, {
       brickVersions: {brick: true}
     });
   }

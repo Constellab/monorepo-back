@@ -4,6 +4,7 @@ export enum CnLabInstanceStatus {
   SERVER_RUNNING = 'SERVER_RUNNING', // server running but lab not yet
   SERVER_STOPPED = 'SERVER_STOPPED', // server stopped
   LAB_RUNNING = 'LAB_RUNNING', // server and lab running
+  SERVER_NOT_CONFIGURED = 'SERVER_NOT_CONFIGURED', // has no labInstanceId nor volumeId
 }
 
 // list of statuses that are considered as temporary

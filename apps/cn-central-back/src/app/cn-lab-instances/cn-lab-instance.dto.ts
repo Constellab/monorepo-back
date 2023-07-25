@@ -17,6 +17,8 @@ import {
 } from './cn-lab-instance.entity';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnLabInstanceServerTaskStatus, CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
+import {DateTime} from 'luxon';
+import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 
 
 /**
@@ -74,7 +76,7 @@ export type CnGlabTag = 'latest' | 'beta' | string;
 
 export interface CnLabInstanceConfigDTO {
   brickVersions: CnBrickVersionDTO[];
-  glabTag: CnGlabTag;
+  glabTag: CnGlabTag | null;
 }
 
 
@@ -116,7 +118,7 @@ export class CnLabInstanceDesktopConfig {
   glabTag: CnGlabTag;
 }
 
-export interface CnLabInstanceStatusDTO {
+export class CnLabInstanceStatusDTO {
   labStatus: CnLabInstanceStatus;
   labManagerIsRunning: boolean;
   labIsRunning: boolean;
@@ -124,6 +126,9 @@ export interface CnLabInstanceStatusDTO {
   hasServerVolumeId: boolean;
   serverTaskText: string;
   serverTaskStatus: CnLabInstanceServerTaskStatus;
+
+  @ClLuxonDateTimeTransform()
+  serverTaskDatetime: DateTime;
 }
 
 /**

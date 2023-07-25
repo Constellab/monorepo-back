@@ -280,10 +280,7 @@ export class CnLabServerService {
     this.logger.log(`Deleting domain record ${labInstance.virtualHost} for lab ${labInstance.id}`);
     await this.ovhCloudProviderService.deleteDomainRecord(labInstance.getMainDomain(), labInstance.getSubDomainName());
 
-    if (labInstance.currentStatus.status !== CnLabInstanceStatus.SERVER_STOPPED) {
-      // update lab instance status
-      await this.labInstanceService.updateCurrentStatus(CnLabInstanceStatus.SERVER_STOPPED, labInstance.id);
-    }
+    await this.refreshLabStatus(labInstance.id);
   }
 
   public async startLab(labInstance: CnLabInstance): Promise<CnLabInstance> {
@@ -313,10 +310,19 @@ export class CnLabServerService {
     // if the server is stopped
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
     this.logger.log(`Starting server instance ${labInstance.serverInstanceId} for lab ${labInstance.id} by ${user.email}`);
+    await this.labInstanceService.updateServerTask(labInstance.id, 'Starting server instance', CnLabInstanceServerTaskStatus.RUNNING);
     await cloudProviderService.startInstance(labInstance.serverInstanceId);
     labInstance = await this.labInstanceService.markInstanceAsServerStarting(labInstance.id);
 
     this.checkServerNotBusyAsync(labInstance);
+
+    labInstance = await this.labInstanceService.findByIdAndCheck(labInstance.id);
+    if (labInstance.currentStatus.status === CnLabInstanceStatus.SERVER_RUNNING) {
+      await this.labInstanceService.updateServerTask(labInstance.id, 'Lab server started', CnLabInstanceServerTaskStatus.SUCCESS);
+    } else {
+      await this.labInstanceService.updateServerTask(labInstance.id,
+        'Lab server not started, please refresh status later', CnLabInstanceServerTaskStatus.ERROR);
+    }
     return labInstance;
   }
 
@@ -347,10 +353,20 @@ export class CnLabServerService {
     // if the server is running
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
     this.logger.log(`Stopping server instance ${labInstance.serverInstanceId} for lab ${labInstance.id} by ${user.email}`);
+    await this.labInstanceService.updateServerTask(labInstance.id, 'Stopping server instance', CnLabInstanceServerTaskStatus.RUNNING);
     await cloudProviderService.stopInstance(labInstance.serverInstanceId);
     labInstance = await this.labInstanceService.markInstanceAsServerStopping(labInstance.id);
 
     this.checkServerNotBusyAsync(labInstance);
+
+    labInstance = await this.labInstanceService.findByIdAndCheck(labInstance.id);
+    if (labInstance.currentStatus.status === CnLabInstanceStatus.SERVER_STOPPED) {
+      await this.labInstanceService.updateServerTask(labInstance.id, 'Lab server stopped', CnLabInstanceServerTaskStatus.SUCCESS);
+    } else {
+      await this.labInstanceService.updateServerTask(labInstance.id,
+        'Lab server not stopped, please refresh status later', CnLabInstanceServerTaskStatus.ERROR);
+
+    }
     return labInstance;
   }
 
@@ -404,10 +420,14 @@ export class CnLabServerService {
   public async refreshLabStatus(labInstanceId: string): Promise<CnLabInstance> {
     const labInstance = await this.labInstanceService.findByIdAndCheck(labInstanceId);
 
-    // // if the lab is running, don't check server status, mark it as running
+    // if the lab is running, don't check server status, mark it as running
     const healthCheck = await this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo());
     if (healthCheck) {
       return await this.labInstanceService.markInstanceAsLabRunning(labInstanceId);
+    }
+
+    if (!labInstance.serverInstanceId && !labInstance.serverVolumeId) {
+      return await this.labInstanceService.markInstanceAsServerNotConfigured(labInstanceId);
     }
 
     // if the server instance id is not set, mark the lab as stopped

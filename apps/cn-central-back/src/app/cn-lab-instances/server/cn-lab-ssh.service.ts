@@ -73,12 +73,7 @@ export class CnLabSshService {
   public async checkSshConnection(virtualHost: string): Promise<boolean> {
 
     // option to add host to fingerprint
-    // use a cat because sometimes the ssh never finishes, and it blocks the process.
-    // it requires to kill the process manually, it happens less with cat
-    // TODO TO improve check
-    const command = `ssh -o StrictHostKeyChecking=no ubuntu@lab.${virtualHost} "ls"`;
-    // use ping because it does not block
-    // const command = `ping lab.${virtualHost}`;
+    const command = `ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=3 ubuntu@lab.${virtualHost} exit`
     this.logger.log(`Checking ssh connection for ${virtualHost}`);
     try {
       await this.commandService.execCommand(command, {errorMode: CnExecCommandMode.STDERR_AS_WARNING, timeout: 10000});
