@@ -148,7 +148,8 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     const spaceUser = await this.repository.findOne({
       where: {
         userId: userId,
-        space: {type: CnSpaceType.PERSONAL}
+        space: {type: CnSpaceType.PERSONAL},
+        role: CnSpaceUserRole.ADMIN
       },
       relations: {space: true}
     });

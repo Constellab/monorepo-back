@@ -10,7 +10,6 @@ import {CnExternalLabManagerApiService} from '../cn-external-lab-api/cn-external
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstanceConfigDTO} from './cn-lab-instance.dto';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {
   CnExternalLabBackup,
   CnExternalLabBackupHistory,
