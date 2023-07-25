@@ -37,6 +37,7 @@ export interface CnLabGlobalActivity {
   last_activity: {
     created_at: string;
   };
+  dev_env_running: boolean;
 }
 
 

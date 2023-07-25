@@ -370,7 +370,7 @@ export class CnLabServerService {
     return labInstance;
   }
 
-  public async checkLabRunningExperiment(labInstance: CnLabInstance): Promise<void> {
+  public async checkLabActivity(labInstance: CnLabInstance): Promise<void> {
     // check if there are any running containers
     const labActivity = await this.externalLabApiService.getLabGlobalActivity(labInstance.getGlabApiInfo())
       .catch(error => {
@@ -378,12 +378,18 @@ export class CnLabServerService {
         return null;
       });
 
-    if (labActivity?.running_experiments > 0) {
+    if(labActivity == null) return ;
+
+    if (labActivity.running_experiments > 0) {
       throw new BlBadRequestException(`Lab has ${labActivity.running_experiments} running experiments. Please stop them first`);
     }
 
-    if (labActivity?.queued_experiments > 0) {
+    if (labActivity.queued_experiments > 0) {
       throw new BlBadRequestException(`Lab has ${labActivity.queued_experiments} queued experiments. Please remove them form queue first`);
+    }
+
+    if(labActivity.dev_env_running){
+      throw new BlBadRequestException(`The dev environment is running. Please stop it first`);
     }
   }
 

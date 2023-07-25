@@ -935,7 +935,7 @@ export class CnLabInstanceAggregateService {
     // if the lab is not running, no need to check if an experiment is running
     if (!labInstance.isRunning()) return labInstance;
 
-    await this.labServerService.checkLabRunningExperiment(labInstance);
+    await this.labServerService.checkLabActivity(labInstance);
 
     return labInstance;
   }
