@@ -1,8 +1,8 @@
 import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query} from '@nestjs/common';
 import {CnServerInfo} from './cn-server-info.entity';
 import {CnServersInfoService} from './cn-servers-info.service';
-import {BlParsePipe} from '@monorepo/back-core-lib';
-import {ClPage} from '@monorepo/core-lib';
+import {BlParsePipe, BlSearchParams} from '@monorepo/back-core-lib';
+import {ClPage, ClPageI} from '@monorepo/core-lib';
 
 @Controller('servers-info')
 export class CnServersInfoController {
@@ -29,6 +29,13 @@ export class CnServersInfoController {
   getAll(@Query('page', ParseIntPipe) page: number,
          @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnServerInfo>> {
     return this.serverInfoService.findAllSecure(page, size);
+  }
+
+  @Post('search')
+  search(@Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
+         @Query('page', ParseIntPipe) page: number,
+         @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnServerInfo>> {
+    return this.serverInfoService.search(searchParam, page, size);
   }
 
 }

@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {Repository} from 'typeorm';
 import {CnServerInfo} from './cn-server-info.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {BlAbstractService} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlSearchBuilder, BlSearchParams} from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
 import {CnConfigEntitySecurity} from '../cn-core/security/cn-config-entity.security';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
@@ -32,7 +32,7 @@ export class CnServersInfoService extends BlAbstractService<CnServerInfo> {
   }
 
   public async findAllSecure(page: number, size: number): Promise<ClPage<CnServerInfo>> {
-    await this.checkAuthorizationToReadEntity();
+    await this.checkAuthorizationToReadEntities();
     return this.findPaginated(page, size, {
       order: {name: 'ASC'}
     });
@@ -49,13 +49,21 @@ export class CnServersInfoService extends BlAbstractService<CnServerInfo> {
     });
   }
 
+  public async search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnServerInfo>> {
+    await this.checkAuthorizationToReadEntities();
+    const searchBuilder = new BlSearchBuilder<CnServerInfo>({name: 'ASC'});
+    searchBuilder.addSearchParams(searchParams);
+
+    return this.findPaginated(page, size, searchBuilder.build());
+  }
+
   ////////////////////////////// AUTHORIZATION //////////////////////////////
 
   public async checkAuthorizationToModifyEntity(): Promise<void> {
     return this.securityService.checkAuthorizationToModifyEntity(CnCurrentUserHelper.getAndCheckCurrentUser());
   }
 
-  public async checkAuthorizationToReadEntity(): Promise<void> {
+  public async checkAuthorizationToReadEntities(): Promise<void> {
     return this.securityService.checkAuthorizationToReadEntity();
   }
 
