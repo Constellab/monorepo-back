@@ -161,8 +161,15 @@ export class CnLabConfigurerService {
   public async updateLabManager(labInstance: CnLabInstance, labManagerVersion: string): Promise<void> {
     await this.labInstanceService.updateServerTask(labInstance.id, `Updating lab manager to version ${labManagerVersion}`,
       CnLabInstanceServerTaskStatus.RUNNING);
-    await this.labSshService.execSshCommand(labInstance,
-      [`cd ${CnLabSshService.DOCKERLAB_FOLDER}`, `. update_lab_manager.sh ${labManagerVersion}`]);
+
+    try {
+      await this.labSshService.execSshCommand(labInstance,
+        [`cd ${CnLabSshService.DOCKERLAB_FOLDER}`, `. update_lab_manager.sh ${labManagerVersion}`]);
+    } catch (e) {
+      await this.labInstanceService.updateServerTask(labInstance.id, `Error while updating lab manager. Error : ${e}`,
+        CnLabInstanceServerTaskStatus.ERROR);
+      throw e;
+    }
     await this.labInstanceService.updateServerTask(labInstance.id, `Lab manager updated`, CnLabInstanceServerTaskStatus.SUCCESS);
   }
 
