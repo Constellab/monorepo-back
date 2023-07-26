@@ -127,8 +127,10 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   serverTaskText: string;
 
   @Exclude()
-  @Column({type: 'enum', enum: CnLabInstanceServerTaskStatus, nullable: false,
-    default: CnLabInstanceServerTaskStatus.NONE})
+  @Column({
+    type: 'enum', enum: CnLabInstanceServerTaskStatus, nullable: false,
+    default: CnLabInstanceServerTaskStatus.NONE
+  })
   serverTaskStatus: CnLabInstanceServerTaskStatus;
 
   @Exclude()
@@ -190,6 +192,11 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
 
   isRunning(): boolean {
     return this.currentStatus?.status === CnLabInstanceStatus.LAB_RUNNING ?? false;
+  }
+
+  serverIsStopped(): boolean {
+    return (this.currentStatus?.status === CnLabInstanceStatus.SERVER_STOPPED ?? false) ||
+      (this.currentStatus?.status === CnLabInstanceStatus.SERVER_NOT_CONFIGURED ?? false);
   }
 
   getGlabApiInfo(): CnExternalApiInfo {

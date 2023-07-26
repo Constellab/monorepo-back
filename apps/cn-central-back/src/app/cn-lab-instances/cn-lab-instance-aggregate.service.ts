@@ -507,46 +507,55 @@ export class CnLabInstanceAggregateService {
 
   public async initAll(labId: string): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckServerStatusBeforeAction(labId);
+    this.checkServerIsRunning(labInstance);
     return this.labManagerService.initAll(labInstance, labInstance.space.domain);
   }
 
   public async upContainers(labId: string, options?: CnLabComposeUpOptions): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckServerStatusBeforeAction(labId);
+    this.checkServerIsRunning(labInstance);
     return this.labManagerService.upContainers(labInstance, options);
   }
 
   public async restartContainers(labId: string, options?: CnLabComposeRestartOptions): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckServerStatusBeforeAction(labId);
+    this.checkServerIsRunning(labInstance);
     return this.labManagerService.restartContainers(labInstance, options);
   }
 
   public async downContainers(labId: string): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckServerStatusBeforeAction(labId);
+    this.checkServerIsRunning(labInstance);
     return this.labManagerService.downContainers(labInstance);
   }
 
   public async pullContainers(labId: string): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
+    this.checkServerIsRunning(labInstance);
     return this.labManagerService.pullContainers(labInstance);
   }
 
   public async pullBiota(labId: string, options: CnLabPullBiotaOptions): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
+    this.checkServerIsRunning(labInstance);
     return this.labManagerService.pullBiota(labInstance, options);
   }
 
   public async registryLogin(labId: string): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
+    this.checkServerIsRunning(labInstance);
     return this.labManagerService.registryLogin(labInstance);
   }
 
   public async stopCurrentTask(labId: string): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
+    this.checkServerIsRunning(labInstance);
     return this.labManagerService.stopCurrentTask(labInstance);
   }
 
   public async systemPrune(labId: string): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
+    this.checkServerIsRunning(labInstance);
     return this.labManagerService.systemPrune(labInstance);
   }
 
@@ -557,11 +566,13 @@ export class CnLabInstanceAggregateService {
 
   public async startAdminer(labId: string): Promise<boolean> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
+    this.checkServerIsRunning(labInstance);
     return this.labManagerService.startAdminer(labInstance);
   }
 
   public async stopAdminer(labId: string): Promise<boolean> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
+    this.checkServerIsRunning(labInstance);
     return this.labManagerService.stopAdminer(labInstance);
   }
 
@@ -828,6 +839,7 @@ export class CnLabInstanceAggregateService {
 
   async updateLabManager(labInstanceId: string, labManagerVersion: string): Promise<CnLabInstanceStatusDTO> {
     const labInstance = await this.getAndCheckServerStatusBeforeAction(labInstanceId);
+    this.checkServerIsRunning(labInstance);
 
     await this.labConfigurerService.updateLabManager(labInstance, labManagerVersion);
     return this.getStatus(labInstance);
@@ -835,6 +847,8 @@ export class CnLabInstanceAggregateService {
 
   async updateDockerlab(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
     const labInstance = await this.getAndCheckServerStatusBeforeAction(labInstanceId);
+    this.checkServerIsRunning(labInstance);
+
 
     await this.labConfigurerService.updateDockerlabRepo(labInstance);
     return this.getStatus(labInstance);
@@ -938,6 +952,12 @@ export class CnLabInstanceAggregateService {
     await this.labServerService.checkLabActivity(labInstance);
 
     return labInstance;
+  }
+
+  private checkServerIsRunning(labInstance: CnLabInstance): void{
+    if(labInstance.serverIsStopped()){
+      throw new BlBadRequestException('Server is stopped, please start the server first');
+    }
   }
 
 
