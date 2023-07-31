@@ -103,7 +103,7 @@ export class CnLabInstanceAggregateService {
     const labInstance = BlDtoHelper.fromDto(CnLabInstance, createLabInstance);
 
     const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-    await this.security.checkAuthorizationToCreateAdmin(labInstance, userInfo);
+    this.security.checkAuthorizationToCreateAdmin(labInstance, userInfo);
 
     return this.labInstancesService.create(labInstance);
   }
@@ -131,7 +131,7 @@ export class CnLabInstanceAggregateService {
     const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     labInstance.setSpace(userInfo.space);
 
-    await this.security.checkAuthorizationCreateDesktopLabInstance(labInstance);
+    this.security.checkAuthorizationCreateDesktopLabInstance(labInstance);
 
     return this.dataSource.transaction(async entityManager => {
       const labInstanceDb = await this.labInstancesService.create(labInstance, entityManager);
@@ -177,7 +177,7 @@ export class CnLabInstanceAggregateService {
   }
 
   async getByCurrentSpace(page: number, size: number): Promise<ClPageI<CnLabInstance>> {
-    await this.security.checkAuthorizationToFindAllBySpace(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    this.security.checkAuthorizationToFindAllBySpace(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return this.labInstancesService.findBySpace(CnCurrentUserHelper.getCurrentSpace().id, page, size);
   }
 
@@ -192,13 +192,13 @@ export class CnLabInstanceAggregateService {
   }
 
   async searchAll(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnLabInstance>> {
-    await this.security.checkAuthorizationToFindAll(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    this.security.checkAuthorizationToFindAll(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
 
     return this.labInstancesService.searchAll(searchParams, page, size);
   }
 
   async searchInCurrentSpace(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnLabInstance>> {
-    await this.security.checkAuthorizationToFindAllBySpace(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    this.security.checkAuthorizationToFindAllBySpace(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
 
     return this.labInstancesService.searchInSpace(CnCurrentUserHelper.getAndCheckUserSpaceInfo().spaceId,
       searchParams, page, size);
@@ -300,7 +300,7 @@ export class CnLabInstanceAggregateService {
   /////////////////////////////////////// EXTERNAL LAB SERVICE //////////////////////////////////
 
   async login(id: string): Promise<CnLabInstanceToken> {
-    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToFindById(id);
+    let labInstance: CnLabInstance = await this.getAndCheckAuthorizationToFindById(id);
 
     if (labInstance.isDesktop()) {
       throw new BlBadRequestException(CnErrorText.CANT_MANAGE_DESKTOP_LAB);
@@ -308,7 +308,12 @@ export class CnLabInstanceAggregateService {
 
     // check that the lab is running
     if (!labInstance.isRunning()) {
-      throw new BlBadRequestException(CnErrorText.LAB_STOPPED);
+      // if not, try to refresh the status
+      await this.labServerService.refreshLabStatus(labInstance.id);
+      labInstance = await this.getAndCheckAuthorizationToFindById(id);
+      if (!labInstance.isRunning()) {
+        throw new BlBadRequestException(CnErrorText.LAB_STOPPED);
+      }
     }
 
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
@@ -954,8 +959,8 @@ export class CnLabInstanceAggregateService {
     return labInstance;
   }
 
-  private checkServerIsRunning(labInstance: CnLabInstance): void{
-    if(labInstance.serverIsStopped()){
+  private checkServerIsRunning(labInstance: CnLabInstance): void {
+    if (labInstance.serverIsStopped()) {
       throw new BlBadRequestException('Server is stopped, please start the server first');
     }
   }

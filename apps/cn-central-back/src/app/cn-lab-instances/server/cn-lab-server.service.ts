@@ -314,16 +314,28 @@ export class CnLabServerService {
     await cloudProviderService.startInstance(labInstance.serverInstanceId);
     labInstance = await this.labInstanceService.markInstanceAsServerStarting(labInstance.id);
 
-    this.checkServerNotBusyAsync(labInstance);
+    this.checkServerStartedAsync(labInstance.id).catch(
+      error => Logger.error(`Error during lab status check, lab server not started, please refresh status later. Error ${error}`)
+    )
+    return labInstance;
+  }
 
-    labInstance = await this.labInstanceService.findByIdAndCheck(labInstance.id);
+  private async checkServerStartedAsync(labInstanceId: string): Promise<void> {
+    await this.checkForServerToBeNotBusy(labInstanceId).catch(
+      async error => {
+        this.logger.error(`Lab ${labInstanceId} is busy. Cannot update lab. Error: ${error}`);
+        await this.labInstanceService.updateServerTask(labInstanceId,
+          'Error during lab status check, lab server not stopped, please refresh status later', CnLabInstanceServerTaskStatus.ERROR)
+      }
+    );
+
+    const labInstance = await this.labInstanceService.findByIdAndCheck(labInstanceId);
     if (labInstance.currentStatus.status === CnLabInstanceStatus.SERVER_RUNNING) {
       await this.labInstanceService.updateServerTask(labInstance.id, 'Lab server started', CnLabInstanceServerTaskStatus.SUCCESS);
     } else {
       await this.labInstanceService.updateServerTask(labInstance.id,
         'Lab server not started, please refresh status later', CnLabInstanceServerTaskStatus.ERROR);
     }
-    return labInstance;
   }
 
   public async stopLab(labInstance: CnLabInstance): Promise<CnLabInstance> {
@@ -357,17 +369,28 @@ export class CnLabServerService {
     await cloudProviderService.stopInstance(labInstance.serverInstanceId);
     labInstance = await this.labInstanceService.markInstanceAsServerStopping(labInstance.id);
 
-    this.checkServerNotBusyAsync(labInstance);
+    this.checkServerStoppedAsync(labInstance.id).catch(
+      error => Logger.error(`Error during lab status check, lab server not stopped, please refresh status later. Error ${error}`)
+    )
+    return labInstance;
+  }
 
-    labInstance = await this.labInstanceService.findByIdAndCheck(labInstance.id);
+  private async checkServerStoppedAsync(labInstanceId: string): Promise<void> {
+    await this.checkForServerToBeNotBusy(labInstanceId).catch(
+      async error => {
+        this.logger.error(`Lab ${labInstanceId} is busy. Cannot update lab. Error: ${error}`);
+        await this.labInstanceService.updateServerTask(labInstanceId,
+          'Error during lab status check, lab server not stopped, please refresh status later', CnLabInstanceServerTaskStatus.ERROR)
+      }
+    );
+
+    const labInstance = await this.labInstanceService.findByIdAndCheck(labInstanceId);
     if (labInstance.currentStatus.status === CnLabInstanceStatus.SERVER_STOPPED) {
       await this.labInstanceService.updateServerTask(labInstance.id, 'Lab server stopped', CnLabInstanceServerTaskStatus.SUCCESS);
     } else {
       await this.labInstanceService.updateServerTask(labInstance.id,
         'Lab server not stopped, please refresh status later', CnLabInstanceServerTaskStatus.ERROR);
-
     }
-    return labInstance;
   }
 
   public async checkLabActivity(labInstance: CnLabInstance): Promise<void> {
@@ -394,25 +417,19 @@ export class CnLabServerService {
   }
 
 
-  private checkServerNotBusyAsync(labInstance: CnLabInstance): void {
-    this.checkForServerToBeNotBusy(labInstance.id).catch(
-      error => this.logger.error(`Lab ${labInstance.id} is busy. Cannot update lab. Error: ${error}`)
-    );
-  }
-
   private async checkForServerToBeNotBusy(labInstanceId: string): Promise<void> {
 
     // Waiting for the server and the volume to be ready
     let count = 0;
-    while (count <= 40) {
-      // wait for 60 seconds because start and stop can take a while
+    while (count <= 60) {
+      // wait for 30 seconds because start and stop can take a while
       await new Promise(r => setTimeout(r, 30000));
 
       this.logger.log(`Checking if server of lab ${labInstanceId} is ready`);
       const labInstance = await this.refreshLabStatus(labInstanceId);
 
-
-      if (cnLabInstanceTemporaryStatuses.includes(labInstance.currentStatus.status)) {
+      // once the status is not temporary, we can stop waiting
+      if (!cnLabInstanceTemporaryStatuses.includes(labInstance.currentStatus.status)) {
         return;
       }
       count++;
