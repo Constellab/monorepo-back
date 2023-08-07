@@ -145,8 +145,8 @@ export class CnAuthService {
       throw new BlUnauthorizedException(CnErrorText.ACCOUNT_NOT_ACTIVATED);
     }
 
-    if (user.status === BlUserStatus.WAITING_FOR_ADMIN) {
-      throw new BlUnauthorizedException(CnErrorText.ACCOUNT_NOT_ADMIN_ACTIVATED);
+    if (user.status === BlUserStatus.LOCKED_BY_ADMIN) {
+      throw new BlUnauthorizedException(CnErrorText.ACCOUNT_LOCKED_BY_ADMIN);
     }
 
     // check if user is locked

@@ -163,6 +163,8 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
   }
 
   public async sendAllUsersToQueue(): Promise<void> {
+    if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) throw new BlUnauthorizedException();
+
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
 
     if (!user.isAdmin()) {

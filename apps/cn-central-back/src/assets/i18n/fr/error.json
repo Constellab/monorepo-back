@@ -15,7 +15,7 @@
   "wrong_token": "Le token est incorrect",
   "lab_stopped": "Le lab n'est pas démarré",
   "lab_auth_error": "Erreur pendant l'authentification au lab",
-  "account_not_admin_activated": "Votre compte doit être validé par un admin",
+  "account_locked_by_admin": "Votre compte a été bloqué par un administrateur",
   "language_not_supported": "La langue n'est pas supportée",
   "user_already_exist_in_lab": "L'utilisateur est déjà présent dans le lab",
   "lab_user_not_activated": "L'utilisateur dans le lab n'est pas activé",

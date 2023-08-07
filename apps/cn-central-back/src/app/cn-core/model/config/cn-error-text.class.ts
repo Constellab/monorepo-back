@@ -17,7 +17,7 @@ export enum CnErrorText {
   WRONG_TOKEN = 'error.wrong_token',
   LAB_STOPPED = 'error.lab_stopped',
   LAB_AUTH_ERROR = 'error.lab_auth_error',
-  ACCOUNT_NOT_ADMIN_ACTIVATED = 'error.account_not_admin_activated',
+  ACCOUNT_LOCKED_BY_ADMIN = 'error.account_locked_by_admin',
   LANGUAGE_NOT_SUPPORTED = 'error.language_not_supported',
   USER_ALREADY_EXIST_IN_LAB = 'error.user_already_exist_in_lab',
   LAB_USER_NOT_ACTIVATED = 'error.lab_user_not_activated',

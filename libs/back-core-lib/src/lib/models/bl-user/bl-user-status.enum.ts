@@ -5,12 +5,9 @@ export enum BlUserStatus{
   // Just after subscription, the user need to validate his email
   WAITING_FOR_EMAIL = 'WAITING_FOR_EMAIL',
 
-  // After email validation, an admin must validate the account
-  WAITING_FOR_ADMIN = 'WAITING_FOR_ADMIN',
+  // Lock by an admin, the user can't log on
+  LOCKED_BY_ADMIN = 'LOCKED_BY_ADMIN',
 
-  // The user can log on but he will need to fill more information
-  INCOMPLETE = 'INCOMPLETE',
-
-  // The user account is ready to user
-  READY = 'READY'
+  // The user account is ready
+  READY = 'READY',
 }

@@ -25,6 +25,7 @@ import {CnSpaceAggregateService} from '../../cn-spaces/cn-space-aggregate.servic
 import {CnGroupsService} from '../../cn-groups/cn-groups.service';
 import {CnNotificationService, CnNotificationType} from '../../cn-notification/cn-notification.service';
 import {CnCreateUserDto} from '../../cn-users/cn-user.dto';
+import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 
 /**
  * Service to handle users' account (signup, mail validation, password forgotten, reset password...)
@@ -127,7 +128,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     }
 
     // update the user status
-    user.status = BlUserStatus.INCOMPLETE;
+    user.status = BlUserStatus.READY;
     await this.usersService.update(user);
 
     this.onAccountActivated(user);
@@ -256,24 +257,6 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     return hash(password);
   }
 
-  public async adminActivation(userId: string): Promise<CnUser> {
-    const user: CnUser = await this.usersService.findByIdAndCheck(userId);
-
-    if (user.status !== BlUserStatus.WAITING_FOR_ADMIN) {
-      throw new BlBadRequestException(CnErrorText.ACCOUNT_ALREADY_ACTIVATED);
-    }
-
-    user.status = BlUserStatus.INCOMPLETE;
-    return this.usersService.update(user);
-  }
-
-  findUsersToAdminActivate(page: number, size: number): Promise<ClPage<CnUser>> {
-    return this.findPaginated(page, size, {
-      where: {status: BlUserStatus.WAITING_FOR_ADMIN},
-      order: {createdAt: 'DESC' as any}
-    });
-  }
-
   /**
    * Method called when a user accepted an invitation and created an account
    */
@@ -282,7 +265,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
     return await this.datasource.transaction(async (transaction) => {
       // create the user with an active but incomplete profile
-      const userDb = await this.createAccount(user, BlUserStatus.INCOMPLETE, transaction);
+      const userDb = await this.createAccount(user, BlUserStatus.READY, transaction);
 
       await this.spaceAggregateService.acceptInvitation(invitation, userDb, transaction);
 
@@ -314,6 +297,34 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
         link: CnFrontService.getAdminUsersRoute()
       });
     }
+  }
+
+  public async lockUser(userId: string): Promise<CnUser> {
+    if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) throw new BlUnauthorizedException();
+    const user: CnUser = await this.usersService.findByIdAndCheck(userId);
+
+    if(user.status === BlUserStatus.LOCKED_BY_ADMIN) {
+      throw new BlBadRequestException('User is already locked')
+    }
+
+    if(user.status === BlUserStatus.WAITING_FOR_EMAIL) {
+      throw new BlBadRequestException('User is not validated')
+    }
+
+    user.status = BlUserStatus.LOCKED_BY_ADMIN;
+    return this.repository.save(user);
+  }
+
+  public async unlockUser(userId: string): Promise<CnUser> {
+    if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) throw new BlUnauthorizedException();
+    const user: CnUser = await this.usersService.findByIdAndCheck(userId);
+
+    if(user.status !== BlUserStatus.LOCKED_BY_ADMIN) {
+      throw new BlBadRequestException('User is not locked')
+    }
+
+    user.status = BlUserStatus.READY;
+    return this.repository.save(user);
   }
 
 
