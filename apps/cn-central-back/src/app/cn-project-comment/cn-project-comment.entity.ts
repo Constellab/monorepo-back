@@ -6,9 +6,6 @@ import {CnComment, CnNewComment} from '../cn-core/model/entities/cn-comment.enti
 @Entity('project_comment')
 export class CnProjectComment extends CnComment {
 
-  constructor() {
-    super();
-  }
 
   @Type(() => CnProject)
   @ManyToOne(() => CnProject, {eager: true, nullable: false, onDelete: 'CASCADE'})

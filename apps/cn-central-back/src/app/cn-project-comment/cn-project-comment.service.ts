@@ -25,12 +25,11 @@ import {CnProjectBucketService} from '../cn-projects-aggregate/cn-project-bucket
 @Injectable()
 export class CnProjectCommentService extends CnCommentService<CnProjectComment> {
 
-  constructor(@InjectRepository(CnProjectComment)
-              private projectCommentRepository: Repository<CnProjectComment>,
+  constructor(@InjectRepository(CnProjectComment) private repository: Repository<CnProjectComment>,
               private notificationService: CnNotificationService,
               objectStorageService: BlObjectStorageService,
-              dataSource: DataSource) {
-    super(dataSource, objectStorageService);
+              private dataSource: DataSource) {
+    super(objectStorageService, repository, CnProjectComment);
   }
 
   async saveProjectCommentImage(file: BlFile, bucketConfig: BlBucketConfig, projectId: string): Promise<BlRichTextUploadedImage> {
@@ -38,17 +37,18 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
     return this.saveImage(file, bucketConfig, prefix);
   }
 
-  async create(newComment: CnNewComment, project: CnProject, userMentions: CnUser[]): Promise<CnProjectComment> {
+  async createComment(newComment: CnNewComment, project: CnProject, projectUsers: CnUser[]): Promise<CnProjectComment> {
     const projectComment: CnProjectComment = CnProjectComment.create(newComment, project);
     if (projectComment.isResponse) {
-      projectComment.parentComment = await this.projectCommentRepository.findOneBy({id: newComment.parentCommentId});
+      projectComment.parentComment = await this.repository.findOneBy({id: newComment.parentCommentId});
     }
-    const comment: CnProjectComment = await this.createComment(projectComment);
+    const comment: CnProjectComment = await this.create(projectComment);
 
-    for (const uM of userMentions) {
+    const userMentions = await this.getUserMentions(newComment.content, projectUsers)
+    for (const userMention of userMentions) {
       const newNotification: CnNotificationCreateDTO = {
         createdBy: comment.createdBy,
-        user: uM,
+        user: userMention,
         link: CnFrontService.getProjectCommentRoute(project.id),
         text: 'project_comment_mention_notification_text',
         text2: comment.project.title,
@@ -86,12 +86,12 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
       order: {
         createdAt: 'DESC' as any
       }
-    }, this.projectCommentRepository.manager, CnProjectComment);
+    }, this.repository.manager, CnProjectComment);
   }
 
   async delete(commentId: string, projectId: string): Promise<void> {
     await this.dataSource.transaction(async () => {
-      const comment: CnProjectComment = await this.projectCommentRepository.findOneBy({
+      const comment: CnProjectComment = await this.repository.findOneBy({
         id: commentId, project: {
           id: projectId
         }
@@ -100,13 +100,13 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
       if (comment.createdBy.id != CnCurrentUserHelper.getCurrentUser().id) {
         throw new UnauthorizedException();
       }
-      await this.deleteComment(comment);
+      await this.deleteById(comment.id);
     });
   }
 
   async updateComment(projectId: string, commentId: string, content: BlRichTextI): Promise<CnProjectComment> {
     return await this.dataSource.transaction(async () => {
-      const comment: CnProjectComment = await this.projectCommentRepository.findOneBy({
+      const comment: CnProjectComment = await this.repository.findOneBy({
         id: commentId,
         project: {
           id: projectId
@@ -117,7 +117,28 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
         throw new UnauthorizedException();
       }
       comment.content = BlRichText.getOptimisedContent(content);
-      return await this.projectCommentRepository.save(comment);
+      return await this.repository.save(comment);
     });
+  }
+
+  private async getUserMentions(content: BlRichTextI, projectUsers: CnUser[]): Promise<CnUser[]> {
+    const userMentions: CnUser[] = [];
+    const mentions: string[] = BlRichText.getMentions(content);
+    if (mentions.length > 0) {
+      for (const m of mentions) {
+        // TODO what it is ? valentin
+        if (m == '0') {
+          for (const u of projectUsers) {
+            if (!userMentions.find(um => um.id == u.id) && u.id != CnCurrentUserHelper.getCurrentUser().id) // avoid duplicate
+              userMentions.push(u);
+          }
+        } else {
+          const user = projectUsers.find(u => u.id == m);
+          if (!userMentions.find(um => um.id == user.id) && user.id != CnCurrentUserHelper.getCurrentUser().id) // avoid duplicate
+            userMentions.push(user);
+        }
+      }
+    }
+    return userMentions;
   }
 }

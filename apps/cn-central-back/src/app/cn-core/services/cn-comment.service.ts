@@ -1,7 +1,9 @@
 import {Injectable} from '@nestjs/common';
-import {DataSource} from 'typeorm';
+import {Repository} from 'typeorm';
 import {
+  BlAbstractService,
   BlBucketConfig,
+  BlEntityWithId,
   BlFile,
   BlImageHelper,
   BlObjectStorageService,
@@ -10,10 +12,12 @@ import {
 import {IncomingMessage} from 'http';
 
 @Injectable()
-export class CnCommentService<T> {
+export class CnCommentService<T extends BlEntityWithId> extends BlAbstractService<T> {
 
-  protected constructor(protected dataSource: DataSource,
-                        private objectStorageService: BlObjectStorageService) {
+  protected constructor(private objectStorageService: BlObjectStorageService,
+                        repository: Repository<T>,
+                        entityClass: new() => T) {
+    super(repository, entityClass);
   }
 
   async saveImage(file: BlFile, bucketConfig: BlBucketConfig, prefix?: string): Promise<BlRichTextUploadedImage> {
@@ -33,11 +37,4 @@ export class CnCommentService<T> {
     return await this.objectStorageService.getObject(bucketConfig, filename);
   }
 
-  async createComment(comment: T): Promise<T> {
-    return this.dataSource.manager.save(comment);
-  }
-
-  async deleteComment(comment: T): Promise<T> {
-    return this.dataSource.manager.remove(comment);
-  }
 }

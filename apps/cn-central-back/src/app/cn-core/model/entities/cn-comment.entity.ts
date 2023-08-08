@@ -16,11 +16,6 @@ export class CnComment extends CnBaseEntity {
   @Column({default: false})
   isResponse: boolean;
 
-  constructor() {
-    super();
-
-  }
-
   init(newComment: CnNewComment): void {
     this.content = newComment ? BlRichText.getOptimisedContent(newComment.content) : null;
     if (newComment?.parentCommentId) {
