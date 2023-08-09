@@ -2,9 +2,9 @@ import {Injectable} from '@nestjs/common';
 import {CnProject} from './cn-projects/cn-project.entity';
 import {CnProjectsService} from './cn-projects/cn-projects.service';
 import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
-import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
 import {BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
+import {CnProjectUserService} from './cn-project-user/cn-project-user.service';
 
 
 /**
@@ -13,24 +13,24 @@ import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 @Injectable()
 export class CnProjectsAggregateSecurity {
 
-  constructor(private groupAggregateService: CnGroupsAggregateService,
-              private projectsService: CnProjectsService) {
+  constructor(private projectsService: CnProjectsService,
+              private projectUserService: CnProjectUserService) {
   }
 
   public async checkFindOneAndGetRootProject(project: CnProject, userInfo: CnUserSpaceInfo): Promise<CnProject> {
     // check the space context
-    if (project.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException("Wrong space");
+    if (project.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException('Wrong space');
 
     // the authorization are handle at the projet level
-    const rootProject = await this.projectsService.getRootProjectWithSharedGroup(project);
+    const rootProject = await this.projectsService.getRootProject(project);
 
     if (userInfo.isSpaceAdmin()) return rootProject;
 
     // enable always the leader to have access to the project
-    if(rootProject.leader.id === userInfo.userId) return rootProject;
+    if (rootProject.leader.id === userInfo.userId) return rootProject;
 
     // check if the user is a member of one of the groups that were shared with the project
-    if (!await this.groupAggregateService.userIsInAnyGroup(userInfo.userId, rootProject.getSharedGroupIds())) {
+    if (!await this.projectUserService.userIsInProject(rootProject.id, userInfo.userId)) {
       throw new BlUnauthorizedException(CnErrorText.NO_ACCESS_TO_PROJECT);
     }
 
@@ -44,7 +44,7 @@ export class CnProjectsAggregateSecurity {
 
   public async checkUpdate(project: CnProject, userInfo: CnUserSpaceInfo): Promise<void> {
     // check the space context
-    if (project.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException("Wrong space");
+    if (project.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException('Wrong space');
 
     if (userInfo.isSpaceAdmin()) return;
 
@@ -58,7 +58,7 @@ export class CnProjectsAggregateSecurity {
    */
   public async checkUpdateProjectLeader(project: CnProject, userInfo: CnUserSpaceInfo): Promise<void> {
     // check the space context
-    if (project.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException("Wrong space");
+    if (project.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException('Wrong space');
 
     if (userInfo.isSpaceAdmin()) return;
 
@@ -73,6 +73,6 @@ export class CnProjectsAggregateSecurity {
 
   public async checkFindAllBySpace(userInfo: CnUserSpaceInfo): Promise<void> {
     // check the space context
-    if (!userInfo.isSpaceAdmin()) throw new BlUnauthorizedException("Only space admin can list all projects");
+    if (!userInfo.isSpaceAdmin()) throw new BlUnauthorizedException('Only space admin can list all projects');
   }
 }

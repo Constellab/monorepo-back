@@ -28,7 +28,7 @@ export class BlMailService {
   }
 
   /**
-   * Send an email to one user
+   * Email one user
    * @param template name of the .hbs template email
    * and name of the subject key in mail-subject i18n file
    * The .hbs filename and translation key in mail-subject must be the same

@@ -37,7 +37,8 @@ import {
   BlMailModule,
   BlMailModuleConfig,
   BlObjectStorageModule,
-  BlPersistenceLogger,
+  BlPersistenceEventModule,
+  BlPersistenceEventService,
   BlRequestContextMiddleware,
   BlTransportModule,
   BlTransportModuleConfig,
@@ -59,9 +60,10 @@ import {CnCloudProvidersModule} from './app/cn-cloud-providers/cn-cloud-provider
 import {I18nAbstractLoaderOptions} from 'nestjs-i18n/dist/loaders/i18n.abstract.loader';
 import {ScheduleModule} from '@nestjs/schedule';
 import {ThrottlerModule} from '@nestjs/throttler';
-import {MulterModule} from '@nestjs/platform-express';
+import {EventEmitterModule} from '@nestjs/event-emitter';
+import {CnActivityModule} from './app/cn-activity/cn-activity.module';
 
-function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions {
+function typeOrmConfig(configService: CnCoreConfigService, persistenceEventService: BlPersistenceEventService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();
   return {
     type: 'mysql',
@@ -73,7 +75,7 @@ function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions
     synchronize: configService.isDev(), // only activate synchronization in local
     autoLoadEntities: true,
     maxQueryExecutionTime: 1000, // log query longer than 1s,
-    logger: BlPersistenceLogger.getInstance(),
+    logger: persistenceEventService,
     // logging: true // use to enable query logging, the logger must be disabled
   };
 }
@@ -132,7 +134,7 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     TypeOrmModule.forRootAsync({
       useFactory: typeOrmConfig,
       inject: [CnCoreConfigService],
-      imports: [],
+      imports: [BlPersistenceEventModule],
     }),
 
     I18nModule.forRoot({
@@ -149,6 +151,8 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
       ],
     }),
     ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
+    BlPersistenceEventModule,
 
     // Custom module
     CnCoreModule,
@@ -212,6 +216,7 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     CnNotificationModule,
     CnProjectCommentModule,
     CnCloudProvidersModule,
+    CnActivityModule,
   ],
   controllers: [],
   providers: [

@@ -12,8 +12,7 @@ import {
   BlObjectStorageService
 } from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
-import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-config.service';
-import {CnCreateReportWithConfigDto, CnSaveReportDto} from './cn-report.dto';
+import {CnSaveReportResultDTO, CnCreateReportWithConfigDto, CnSaveReportDto} from './cn-report.dto';
 import {CnExternalLabApiService} from '../../cn-external-lab-api/cn-external-lab-api.service';
 import {AxiosResponse} from 'axios';
 import {CnReportContent, CnReportViewConfig} from './cn-report-content.class';
@@ -26,7 +25,6 @@ export class CnReportsService extends BlAbstractService<CnReport> {
 
   constructor(@InjectRepository(CnReport) private repository: Repository<CnReport>,
               private objectStorageService: BlObjectStorageService,
-              private configService: CnCoreConfigService,
               private externalLabService: CnExternalLabApiService,
               private labConfigService: CnLabConfigsService,
               private projectBucketService: CnProjectBucketService) {
@@ -52,8 +50,8 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     });
   }
 
-  async createReport(createReportDto: CnCreateReportWithConfigDto, experiments: CnExperiment[],
-                     project: CnProject, bucket: BlBucketConfig, files: BlFile[]): Promise<CnReport> {
+  async saveReport(createReportDto: CnCreateReportWithConfigDto, experiments: CnExperiment[],
+                   project: CnProject, bucket: BlBucketConfig, files: BlFile[]): Promise<CnSaveReportResultDTO> {
 
     const reportDb: CnReport = await this.findById(createReportDto.report.id);
     if (reportDb && reportDb.projectId !== project.id) {
@@ -102,25 +100,35 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     report.lastSyncBy = reportDto.last_sync_by;
 
     if (reportDb) {
-      return await this.updateWithCompare(report, reportDb);
+      const rep = await this.updateWithCompare(report, reportDb);
+      return {
+        mode: 'update',
+        report: rep
+      };
     } else {
       report.labInstance = CnCurrentUserHelper.getCurrentLabInstance();
-      return this.create(report);
+      const rep = await this.create(report);
+      return {
+        mode: 'create',
+        report: rep
+      }
     }
   }
 
-  public async deleteReport(id: string): Promise<void> {
+  public async deleteReport(id: string): Promise<CnReport> {
     const report = await this.findById(id);
 
     // no error if report not found for more resilience
     if (!report) {
-      return;
+      return null;
     }
 
     if (report.isValidated) {
       throw new BlBadRequestException('Can\'t delete a validated report');
     }
     await this.deleteById(id);
+
+    return report;
   }
 
   findByIdAndCheckWithExperiments(id: string): Promise<CnReport> {

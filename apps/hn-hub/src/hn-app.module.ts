@@ -17,7 +17,7 @@ import {
   BlLoggerConfig,
   BlMailModule,
   BlMailModuleConfig,
-  BlObjectStorageModule,
+  BlObjectStorageModule, BlPersistenceEventModule, BlPersistenceEventService,
   BlRequestContextMiddleware,
   BlTransportModule,
   BlTransportModuleConfig,
@@ -50,9 +50,11 @@ import {HnBrickUserModule} from './app/brick-aggregate/brick-user/hn-brick-user.
 import {HnBrickUserInviteModule} from './app/brick-aggregate/brick-user-invite/hn-brick-user-invite.module';
 import {HnBrickAggregateModule} from './app/brick-aggregate/hn-brick-aggregate.module';
 import {ThrottlerModule} from '@nestjs/throttler';
+import {EventEmitterModule} from '@nestjs/event-emitter';
 
 function typeOrmConfig(
-  configService: HnCoreConfigService
+  configService: HnCoreConfigService,
+  persistenceEventService: BlPersistenceEventService
 ): TypeOrmModuleOptions {
   const dbConfig: HnDatabaseConfig = configService.getDatabaseConfig();
   return {
@@ -65,6 +67,7 @@ function typeOrmConfig(
     synchronize: configService.isLocal(), // only activate synchronization in local
     autoLoadEntities: true,
     maxQueryExecutionTime: 1000, // log query longer than 1s,
+    logger: persistenceEventService,
   };
 }
 
@@ -123,7 +126,7 @@ function configureMailModule(
     TypeOrmModule.forRootAsync({
       useFactory: typeOrmConfig,
       inject: [HnCoreConfigService],
-      imports: [HnCoreConfigModule],
+      imports: [HnCoreConfigModule, BlObjectStorageModule],
     }),
 
     I18nModule.forRoot({
@@ -168,8 +171,10 @@ function configureMailModule(
       ttl: 60,
       limit: 10,
     }),
+    EventEmitterModule.forRoot(),
 
     HnCoreModule,
+    BlPersistenceEventModule,
     BlObjectStorageModule,
 
     BlExternalApiModule,

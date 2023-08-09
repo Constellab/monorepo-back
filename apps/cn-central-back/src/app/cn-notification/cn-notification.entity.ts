@@ -1,14 +1,15 @@
 import {BeforeInsert, Column, Entity, ManyToOne} from 'typeorm';
 import {BlEntityWithId, BlLuxonDateTimeColumn, BlNotification} from '@monorepo/back-core-lib';
-import {Type} from 'class-transformer';
+import {Exclude, Type} from 'class-transformer';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
-import {CnNotificationType} from './cn-notification.service';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
+import {CnActivityEntityType} from '../cn-activity/cn-activity.entity';
+
 
 @Entity('notification')
-export class CnNotification extends BlEntityWithId implements BlNotification{
+export class CnNotification extends BlEntityWithId implements BlNotification {
 
   @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;
@@ -26,8 +27,8 @@ export class CnNotification extends BlEntityWithId implements BlNotification{
   @Column()
   objectId: string;
 
-  @Column()
-  objectType: string;
+  @Column({type: 'enum', enum: CnActivityEntityType, update: false})
+  objectType: CnActivityEntityType;
 
   @Column()
   text: string;
@@ -36,15 +37,22 @@ export class CnNotification extends BlEntityWithId implements BlNotification{
   text2: string;
 
   @Type(() => CnSpace)
-  @ManyToOne(() => CnSpace, {eager: true, nullable: false})
+  @ManyToOne(() => CnSpace, {eager: true, nullable: true})
   space: CnSpace;
 
   @Column({nullable: true, update: false})
   spaceId: string;
 
+  @Exclude()
   @Type(() => CnUser)
   @ManyToOne(() => CnUser, {eager: true, nullable: false})
   user: CnUser;
+
+  // list of object ids that are associated with the object id
+  // use to associate this notification with multiple objects
+  @Column({nullable: true, update: false, type: 'simple-json'})
+  associatedObjectIds: string[];
+
 
   @BeforeInsert()
   setCreatedInfo(): void {
@@ -60,19 +68,18 @@ export class CnNotification extends BlEntityWithId implements BlNotification{
     this.text = notificationData.text;
     this.text2 = notificationData.text2;
     this.createdBy = notificationData.createdBy;
+    this.associatedObjectIds = notificationData.associatedObjectIds ?? []
   }
 }
 
-export interface CnNotificationNumber{
-  number: number;
-}
-export interface CnNotificationCreateDTO{
+export interface CnNotificationCreateDTO {
   createdBy: CnUser;
-  objectType: CnNotificationType;
+  objectType: CnActivityEntityType;
   objectId: string;
   user: CnUser;
   text: string;
   text2: string;
   spaceId?: string;
   link: string;
+  associatedObjectIds?: string[];
 }

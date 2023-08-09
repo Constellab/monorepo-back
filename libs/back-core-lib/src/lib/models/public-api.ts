@@ -1,3 +1,6 @@
+export * from './bl-search/bl-search.builder';
+export * from './bl-search/bl-search.class';
+
 export * from './bl-user/bl-credentials.class';
 export * from './bl-user/bl-user.class';
 export * from './bl-user/bl-user-category.enum';

@@ -1,27 +1,16 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {CnNotification, CnNotificationCreateDTO, CnNotificationNumber} from './cn-notification.entity';
-import {Raw, Repository} from 'typeorm';
-import {BlAbstractService, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {CnNotification, CnNotificationCreateDTO} from './cn-notification.entity';
+import {In, IsNull, Not, Raw, Repository} from 'typeorm';
+import {BlAbstractService} from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {CnSpaceUserService} from '../cn-spaces/cn-space-user.service';
-import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
-
-export enum CnNotificationType {
-  EXPERIMENT_COMMENT = 'EXPERIMENT_COMMENT',
-  PROJECT_COMMENT = 'PROJECT_COMMENT',
-  REPORT_COMMENT = 'REPORT_COMMENT',
-  COMMENT_MENTION = 'COMMENT_MENTION',
-  COMMENT_RESPONSE = 'COMMENT_RESPONSE',
-  NEW_USER = 'NEW_USER',
-}
+import {CnNotificationCountBySpace} from './cn-notification.dto';
 
 @Injectable()
 export class CnNotificationService extends BlAbstractService<CnNotification> {
 
-  constructor(@InjectRepository(CnNotification) private notificationRepository: Repository<CnNotification>,
-              private spaceUserService: CnSpaceUserService) {
+  constructor(@InjectRepository(CnNotification) private notificationRepository: Repository<CnNotification>) {
     super(notificationRepository, CnNotification);
   }
 
@@ -33,22 +22,14 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
   }
 
 
-  async getUserNotifications(onlyNotRead: boolean, page: number, size: number): Promise<ClPage<CnNotification>> {
+  async getUserNotifications(page: number, size: number): Promise<ClPage<CnNotification>> {
     return this.findPaginated(page, size, {
-      where: onlyNotRead ? {
-        isRead: false,
+      where: {
         user: {
           id: CnCurrentUserHelper.getAndCheckCurrentUser().id
         },
         space: {id: Raw((id) => `(${id} = :spaceId OR ${id} IS NULL)`, {spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id})}
-      }
-        :
-        {
-          user: {
-            id: CnCurrentUserHelper.getAndCheckCurrentUser().id
-          },
-          space: {id: Raw((id) => `(${id} = :spaceId OR ${id} IS NULL)`, {spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id})}
-        },
+      },
       order: {
         createdAt: 'DESC' as any
       }
@@ -58,33 +39,35 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
   async readAllNotification(): Promise<void> {
     const notifications: CnNotification[] = await this.notificationRepository.find(
       {
-        where: [{
-          user: {
-            id: CnCurrentUserHelper.getAndCheckCurrentUser().id
-          },
-          space: {
-            id: null
-          },
-          isRead: false
-        }, {
-          user: {
-            id: CnCurrentUserHelper.getAndCheckCurrentUser().id
-          },
-          space: {
-            id: CnCurrentUserHelper.getAndCheckCurrentSpace().id
-          },
-          isRead: false
-        }]
+        where:
+          [{
+            user: {
+              id: CnCurrentUserHelper.getAndCheckCurrentUser().id
+            },
+            space: {
+              id: null
+            },
+            isRead: false
+          }, {
+            user: {
+              id: CnCurrentUserHelper.getAndCheckCurrentUser().id
+            },
+            space: {
+              id: CnCurrentUserHelper.getAndCheckCurrentSpace().id
+            },
+            isRead: false
+          }]
       }
     );
     for (const notif of notifications) {
-      await this.readNotification(notif);
+      notif.isRead = true;
     }
+    await this.notificationRepository.save(notifications);
   }
 
-  async read(notifId: string): Promise<void>{
+  async read(notifId: string): Promise<void> {
     const notification: CnNotification = await this.notificationRepository.findOneBy({id: notifId});
-    if(notification.isRead){
+    if (notification.isRead) {
       return;
     }
     await this.readNotification(notification);
@@ -95,88 +78,37 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
     await this.notificationRepository.save(notification);
   }
 
-  async getCurrentNotificationsNumber(): Promise<CnNotificationNumber> {
-    return {
-      number: (await this.notificationRepository.findBy({
-        user: {id: CnCurrentUserHelper.getAndCheckCurrentUser().id},
-        isRead: false,
-        space: {id: Raw((id) => `(${id} = :spaceId OR ${id} IS NULL)`, {spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id})}
-      })).length
-    };
+  async readNotifications(notificationIds: string[]): Promise<void> {
+    await this.notificationRepository.update({
+      id: In(notificationIds),
+      user: {id: CnCurrentUserHelper.getAndCheckCurrentUser().id},
+    }, {isRead: true});
   }
 
-  async getSpaceUserNotificationsNumber(spaceId: string): Promise<CnNotificationNumber> {
-    if (!(await this.spaceUserService.userIsSpaceMember(spaceId, CnCurrentUserHelper.getAndCheckCurrentUser().id))) {
-      throw new BlUnauthorizedException();
-    }
 
-    return {
-      number: (await this.notificationRepository.findBy({
-        space: {
-          id: spaceId
-        },
+  async countNotReadBySpace(): Promise<CnNotificationCountBySpace[]> {
+    const notRead = await this.notificationRepository.find({
+      where: {
         user: {
           id: CnCurrentUserHelper.getAndCheckCurrentUser().id
         },
+        space: Not(IsNull()),
         isRead: false
-      })).length
-    };
-  }
+      }
+    });
 
-  async getEntityNotificationByLink(notifType: CnNotificationType, link: string): Promise<CnNotificationNumber> {
-    if(link == null){
-      return {
-        number: 0
+    // group by space
+    const notReadBySpace: CnNotificationCountBySpace[] = [];
+    for (const notif of notRead) {
+      const notifSpace = notReadBySpace.find(space => space.spaceId === notif.space.id);
+      if (notifSpace) {
+        notifSpace.notReadCount++;
+      } else {
+        notReadBySpace.push({spaceId: notif.space.id, notReadCount: 1});
       }
     }
 
-    return {
-      number: (await this.notificationRepository.findBy({
-        user: {
-          id: CnCurrentUserHelper.getAndCheckCurrentUser().id
-        },
-        isRead: false,
-        objectType: notifType,
-        link: link
-      })).length
-    };
-  }
-
-  async getOtherSpacesNotificationsNumber(): Promise<CnNotificationNumber> {
-    return {
-      number: (await this.notificationRepository.findBy({
-        user: {
-          id: CnCurrentUserHelper.getAndCheckCurrentUser().id
-        },
-        isRead: false,
-        space: {
-          id: Raw((id) => `(${id} != :spaceId AND ${id} IS NOT NULL)`, {spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id})
-        },
-      })).length
-    };
-  }
-
-  async readEntityNotificationsByLink(notifType: CnNotificationType, link: string): Promise<void>{
-    const notifications: CnNotification[] = await this.notificationRepository.findBy({
-      user: {
-        id: CnCurrentUserHelper.getAndCheckCurrentUser().id
-      },
-      isRead: false,
-      objectType: notifType,
-      link: link
-    });
-    for (const notif of notifications) {
-      await this.readNotification(notif);
-    }
-  }
-
-  async getNotReadNotifications(): Promise<CnNotification[]> {
-    return this.notificationRepository.findBy({
-      user: {
-        id: CnCurrentUserHelper.getAndCheckCurrentUser().id
-      },
-      isRead: false
-    });
+    return notReadBySpace;
   }
 
 }

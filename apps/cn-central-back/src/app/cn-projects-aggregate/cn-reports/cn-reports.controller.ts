@@ -1,7 +1,7 @@
 import {Controller, Get, Param, ParseUUIDPipe, Res} from '@nestjs/common';
-import {CnReport} from './cn-reports/cn-report.entity';
+import {CnReport} from './cn-report.entity';
 import {Response} from 'express';
-import {CnProjectAggregateService} from './cn-project-aggregate.service';
+import {CnProjectAggregateService} from '../cn-project-aggregate.service';
 import {BlResponseHelper, BlRichTextI} from '@monorepo/back-core-lib';
 
 @Controller('reports')

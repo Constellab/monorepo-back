@@ -1,10 +1,9 @@
-import {Injectable, Logger} from '@nestjs/common';
+import {Injectable, Logger, UnauthorizedException} from '@nestjs/common';
 import {CnProjectsService} from './cn-projects/cn-projects.service';
 import {CnProjectsAggregateSecurity} from './cn-projects-aggregate.security';
 import {CnProject} from './cn-projects/cn-project.entity';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
-import {CnGroup, CnGroupSingleUser} from '../cn-groups/cn-group.entity';
 import {CnProjectStatusHistory} from './cn-projects/cn-project-status-history.entity';
 import {CnProjectStatus} from './cn-projects/cn-project-status.enum';
 import {CnExperimentsService} from './cn-experiments/cn-experiments.service';
@@ -28,23 +27,28 @@ import {CnUser} from '../cn-users/cn-user.entity';
 import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
 import {CnProjectCommentService} from '../cn-project-comment/cn-project-comment.service';
 import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
-import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
 import {
   BlBadRequestException,
   BlFile,
-  BlRichText,
   BlRichTextI,
   BlRichTextUploadedImage,
   BlSearchParams,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
-import {DataSource} from 'typeorm';
+import {DataSource, Repository} from 'typeorm';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnDocumentsService} from './cn-documents/cn-documents.service';
 import {CnDocument} from './cn-documents/cn-document.entity';
 import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
 import {CnProjectBucketService} from './cn-project-bucket/cn-project-bucket.service';
+import {CnProjectUserService} from './cn-project-user/cn-project-user.service';
+import {CnUsersService} from '../cn-users/cn-users.service';
+import {InjectRepository} from '@nestjs/typeorm';
+import {CnProjectGroup} from './cn-project-group.entity';
+import {CnProjectUser} from './cn-project-user/cn-project-user.entity';
+import {CnProjectEvent, cnProjectEventName, CnProjectEventType} from './cn-project.event';
+import {EventEmitter2} from '@nestjs/event-emitter';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -55,34 +59,44 @@ export class CnProjectAggregateService {
               private projectSecurity: CnProjectsAggregateSecurity,
               private experimentService: CnExperimentsService,
               private reportService: CnReportsService,
-              private groupAggregateService: CnGroupsAggregateService,
               private projectCommentService: CnProjectCommentService,
               private datasource: DataSource,
               private projectBucketService: CnProjectBucketService,
-              private documentService: CnDocumentsService) {
+              private documentService: CnDocumentsService,
+              private projectUserService: CnProjectUserService,
+              private userService: CnUsersService,
+              private eventEmitter: EventEmitter2,
+              @InjectRepository(CnProjectGroup) private projectGroupRepo: Repository<CnProjectGroup>) {
   }
 
   /////////////////////////////////////// PROJECT //////////////////////////////////
 
   async createProject(projectDto: CnSaveProjectDTO): Promise<CnProject> {
-    return this.datasource.transaction(async manager => {
+    const newProject = await this.datasource.transaction(async manager => {
       const entity = this.createProjectFromDTO(projectDto);
 
       entity.parent = null;
       entity.currentLevel = CnProjectLevel.PROJECT;
-      entity.leader = CnCurrentUserHelper.getCurrentUser();
+      entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
       const dbProject = await this.projectService.create(entity, manager);
 
       if (projectDto.storageRegion) {
         await this.projectBucketService.createProjectBucket(dbProject, projectDto.storageRegion, manager);
       }
+
+      // share the project with the leader
+      await this.projectUserService.shareProjectToUserIfNot(dbProject.id, dbProject.leader.id, manager);
+
       return dbProject;
     });
+
+    this.emitProjectEvent('CREATE_PROJECT', newProject, newProject);
+    return newProject;
   }
 
   async createSubProject(projectDto: CnSaveProjectDTO, projectId: string): Promise<CnProject> {
     const entity = this.createProjectFromDTO(projectDto);
-    entity.leader = CnCurrentUserHelper.getCurrentUser();
+    entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
 
     const parentProject = await this.getAndCheckAuthorizationForUpdate(projectId);
 
@@ -109,7 +123,9 @@ export class CnProjectAggregateService {
     }
     entity.rootParentId = parentProject.currentLevel === CnProjectLevel.PROJECT ? parentProject.id : parentProject.rootParentId;
 
-    return await this.projectService.create(entity);
+    const newProject =  await this.projectService.create(entity);
+    this.emitProjectEvent('CREATE_SUB_PROJECT', parentProject, newProject);
+    return newProject;
   }
 
   private createProjectFromDTO(projectDto: CnSaveProjectDTO): CnProject {
@@ -138,7 +154,9 @@ export class CnProjectAggregateService {
     dbProject.startingDate = entity.startingDate;
     dbProject.endingDate = entity.endingDate;
 
-    return this.projectService.update(dbProject);
+    const newProject = await this.projectService.update(dbProject);
+    this.emitProjectEvent('UPDATE_PROJECT', newProject, newProject);
+    return newProject;
   }
 
   async deleteProject(id: string): Promise<void> {
@@ -171,6 +189,8 @@ export class CnProjectAggregateService {
       await this.projectService.deleteById(id, entityManager);
       await this.projectBucketService.deleteProjectBucket(id, entityManager);
     });
+
+    this.emitProjectEvent('DELETE_PROJECT', project, project);
   }
 
   async findProject(id: string): Promise<CnProject> {
@@ -191,13 +211,6 @@ export class CnProjectAggregateService {
     const info = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     await this.projectSecurity.checkFindAllBySpace(info);
     return this.projectService.searchInSpace(info.spaceId, searchParams, page, size);
-  }
-
-  public async getProjectOfTeam(teamId: string, page: number, size: number): Promise<ClPageI<CnProject>> {
-    // check if the user can view the group
-    await this.groupAggregateService.getAndCheckTeamById(teamId);
-
-    return this.projectService.getProjectsOfGroup(teamId, page, size);
   }
 
   public async getProjectTree(projectId: string): Promise<CnProject> {
@@ -280,26 +293,26 @@ export class CnProjectAggregateService {
   }
 
   public async updateProjectLeader(projectId: string, userId: string): Promise<CnProject> {
-    const project = await this.projectService.findByIdAndCheck(projectId, {sharedGroups: true});
-    const rootProject = await this.projectService.getRootProjectWithSharedGroup(project);
+    const project = await this.projectService.findByIdAndCheck(projectId);
+    const rootProject = await this.projectService.getRootProject(project);
 
     // check if the current user has the authorization to update the leader
     await this.projectSecurity.checkUpdateProjectLeader(project, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
 
-    const leaderSingleGroup = await this.groupAggregateService.getUserSingleGroup(userId);
-
-    return this.datasource.transaction(async (entityManager) => {
+    const newLeader = await this.userService.findByIdAndCheck(userId);
+    const newProject = await this.datasource.transaction(async (entityManager) => {
 
       // the group must be shared with the new leader single group
       // so if it is not shared, we add it
-      if (!rootProject.isSharedToGroup(leaderSingleGroup.id)) {
-        await this.projectService.shareProject(rootProject, leaderSingleGroup.id, entityManager);
-      }
+      await this.projectUserService.shareProjectToUserIfNot(rootProject.id, userId, entityManager);
 
       // update the leader
-      project.leader = leaderSingleGroup.user;
+      project.leader = newLeader;
       return this.projectService.update(project, entityManager);
     });
+
+    this.emitProjectEvent('UPDATE_PROJECT_LEADER', newProject, newProject);
+    return newProject;
   }
 
   /////////////////////////////////////// PROJECT DESCRIPTION //////////////////////////////////
@@ -312,7 +325,10 @@ export class CnProjectAggregateService {
   public async updateDescription(projectId: string, description: BlRichTextI): Promise<CnProject> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
     project.description = description;
-    return this.projectService.update(project);
+    const newProject = await this.projectService.update(project);
+
+    this.emitProjectEvent('UPDATE_PROJECT_DESCRIPTION', newProject, newProject);
+    return newProject;
   }
 
   public async saveDescriptionImage(projectId: string, file: BlFile): Promise<BlRichTextUploadedImage> {
@@ -332,7 +348,9 @@ export class CnProjectAggregateService {
   async updateProjectCurrentStatus(status: CnProjectStatus, id: string): Promise<CnProject> {
     const project = await this.getAndCheckAuthorizationForUpdate(id);
 
-    return this.projectService.updateCurrentStatusWithDbEntity(status, project);
+    const newProject = await this.projectService.updateCurrentStatusWithDbEntity(status, project);
+    this.emitProjectEvent('UPDATE_PROJECT_STATUS', newProject, newProject);
+    return newProject;
   }
 
   public async getProjectStatusHistory(projectId: string): Promise<CnProjectStatusHistory[]> {
@@ -372,14 +390,23 @@ export class CnProjectAggregateService {
       throw new BlBadRequestException(CnErrorText.EXP_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT);
     }
 
-    await this.experimentService.saveLabExperiment(project, createLabExperimentDto);
+    const result = await this.experimentService.saveLabExperiment(project, createLabExperimentDto);
+
+    if (result.mode === 'create') {
+      this.emitProjectEvent('CREATE_EXPERIMENT', project, result.experiment);
+    } else {
+      this.emitProjectEvent('UPDATE_EXPERIMENT', project, result.experiment);
+    }
   }
 
   async deleteLabExperiment(projectId: string, experimentId: string): Promise<void> {
     // check that the user can get the project
     await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    await this.experimentService.deleteExperiment(experimentId);
+    const experiment = await this.experimentService.deleteExperiment(experimentId);
+    if (experiment) {
+      this.emitProjectEvent('DELETE_EXPERIMENT', experiment.project, experiment);
+    }
   }
 
   async getCurrentUserLastExperiments(): Promise<CnExperiment[]> {
@@ -428,14 +455,24 @@ export class CnProjectAggregateService {
 
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
-    await this.reportService.createReport(createReportDto, experiments, project, bucketConfig, files);
+    const reportResult = await this.reportService.saveReport(createReportDto, experiments, project, bucketConfig, files);
+
+    if (reportResult.mode === 'create') {
+      this.emitProjectEvent('CREATE_REPORT', project, reportResult.report);
+    } else {
+      this.emitProjectEvent('UPDATE_REPORT', project, reportResult.report);
+    }
   }
 
   async deleteLabReport(projectId: string, reportId: string): Promise<void> {
     // check that the user can get the project
-    await this.getAndCheckAuthorizationForFindOne(projectId);
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    await this.reportService.deleteReport(reportId);
+    const report = await this.reportService.deleteReport(reportId);
+
+    if (report) {
+      this.emitProjectEvent('DELETE_REPORT', project, report);
+    }
   }
 
   async getReportAssociatedToExperiment(experimentId: string): Promise<CnReport[]> {
@@ -479,40 +516,34 @@ export class CnProjectAggregateService {
 
   /////////////////////////////////////// GROUPS //////////////////////////////////
 
-  public async shareProject(projectId: string, groupId: string): Promise<CnGroup> {
+  public async shareProject(projectId: string, groupId: string): Promise<CnUser[]> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
     if (project.currentLevel !== CnProjectLevel.PROJECT) {
       throw new BlBadRequestException('Only root projects can be shared');
     }
 
-    return this.projectService.shareProject(project, groupId);
+    const newUsers = await this.projectUserService.shareProjectToGroup(project.id, groupId);
+
+    this.emitProjectEvent('SHARE_PROJECT', project, newUsers);
+
+    return this.projectUserService.findUsersByProjectId(projectId);
   }
 
-  public async unshareProject(projectId: string, groupId: string): Promise<void> {
+  public async unshareProject(projectId: string, userId: string): Promise<void> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
-    if (project.sharedGroups.length <= 1) {
-      throw new BlBadRequestException(CnErrorText.PROJECT_MUST_HAVE_A_GROUP);
-    }
 
     // forbid to unshare the single user group of the leader
     // this is to unsure the leader will always have access to the project
-    const group = await this.groupAggregateService.findByIdAndCheck(groupId);
-    if (group instanceof CnGroupSingleUser && group.userId === project.leader.id) {
+    if (userId === project.leader.id) {
       throw new BlBadRequestException(CnErrorText.CANT_UNSHARED_PROJECT_LEADER_GROUP);
     }
 
-    return this.projectService.unshareProject(project, groupId);
-  }
+    const user = await this.userService.findByIdAndCheck(userId);
+    await this.projectUserService.unshareProjectFromUser(project.id, userId);
 
-  /**
-   * Return the list of shared group for tha root project
-   * @param projectId
-   */
-  public async getProjectSharedGroups(projectId: string): Promise<CnGroup[]> {
-    const rootProject = await this.checkFindOneAndGetRootProject(projectId);
-    return rootProject.sharedGroups;
+    this.emitProjectEvent('UNSHARE_PROJECT', project, user);
   }
 
   /**
@@ -520,33 +551,51 @@ export class CnProjectAggregateService {
    * @param id
    */
   public async getUsersOfProject(id: string): Promise<CnUser[]> {
-    const groups = await this.getProjectSharedGroups(id);
+    const rootProject = await this.checkFindOneAndGetRootProject(id);
 
-    // get the group of the root project then the user
-    const groupIds = groups.map(group => group.id);
-    return this.groupAggregateService.getUsersOfGroups(groupIds);
+    return this.projectUserService.findUsersByProjectId(rootProject.id);
   }
 
   /////////////////////////////////////// PROJECT COMMENT //////////////////////////////////
 
-  public async updateProjectComment(projectId: string, comment: string, content: BlRichTextI): Promise<CnProjectComment> {
-    return this.projectCommentService.updateComment(projectId, comment, content);
-  }
-
   public async createProjectComment(newComment: CnNewComment, projectId: string): Promise<CnProjectComment> {
-    const project = await this.projectService.findById(projectId);
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    const userMentions: CnUser[] = await this.getUserMentions(projectId, newComment.content);
+    const comment = await this.projectCommentService.createComment(newComment, project);
 
-    return this.projectCommentService.create(newComment, project, userMentions);
+    this.emitProjectEvent('CREATE_PROJECT_COMMENT', project, comment);
+    return comment;
   }
 
-  public async getProjectComments(projectId: string, page: number, size: number): Promise<ClPage<CnProjectComment>> {
-    return this.projectCommentService.getProjectComments(projectId, page, size);
+  public async updateProjectComment(projectId: string, commentId: string, content: BlRichTextI): Promise<CnProjectComment> {
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    const comment = await this.projectCommentService.findByIdAndCheck(commentId);
+    if (comment.createdBy.id != CnCurrentUserHelper.getCurrentUser().id) {
+      throw new UnauthorizedException();
+    }
+
+    const newComment = await this.projectCommentService.updateComment(comment, content);
+    this.emitProjectEvent('UPDATE_PROJECT_COMMENT', project, comment);
+    return newComment;
   }
 
   public async deleteProjectComment(projectId: string, commentId: string): Promise<void> {
-    return this.projectCommentService.delete(commentId, projectId);
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    const comment = await this.projectCommentService.findByIdAndCheck(commentId);
+    if (comment.createdBy.id != CnCurrentUserHelper.getCurrentUser().id) {
+      throw new UnauthorizedException();
+    }
+
+    await this.projectCommentService.deleteById(commentId);
+    this.emitProjectEvent('CREATE_PROJECT_COMMENT', project, comment);
+
+  }
+
+  public async getProjectComments(projectId: string, page: number, size: number): Promise<ClPage<CnProjectComment>> {
+    await this.getAndCheckAuthorizationForFindOne(projectId);
+    return this.projectCommentService.getProjectComments(projectId, page, size);
   }
 
   public async saveCommentImage(file: BlFile, projectId: string): Promise<BlRichTextUploadedImage> {
@@ -568,7 +617,11 @@ export class CnProjectAggregateService {
   public async uploadDocument(projectId: string, file: BlFile): Promise<CnDocument> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    return this.documentService.uploadDocument(file, project);
+    const doc = await this.documentService.uploadDocument(file, project);
+
+    this.emitProjectEvent('UPLOAD_PROJECT_DOCUMENT', project, doc);
+
+    return doc;
   }
 
   public async getDocument(projectId: string, filename: string): Promise<IncomingMessage> {
@@ -591,7 +644,9 @@ export class CnProjectAggregateService {
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
 
-    return this.documentService.deleteDocument(documentId, project);
+    await this.documentService.deleteDocument(documentId, project);
+
+    this.emitProjectEvent('DELETE_PROJECT_DOCUMENT', project, document);
   }
 
   public async getDocumentsByProject(projectId: string, page: number, size: number): Promise<ClPage<CnDocument>> {
@@ -612,7 +667,9 @@ export class CnProjectAggregateService {
   public async createConstellabDocument(projectId: string, filename: string): Promise<CnConstellabDocument> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    return this.documentService.createConstellabDocument(project, filename);
+    const doc = await this.documentService.createConstellabDocument(project, filename);
+    this.emitProjectEvent('CREATE_CONSTELLAB_DOCUMENT', project, doc.document);
+    return doc;
   }
 
   public async updateConstellabDocument(documentId: string, content: BlRichTextI): Promise<CnConstellabDocument> {
@@ -620,7 +677,10 @@ export class CnProjectAggregateService {
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
 
-    return this.documentService.updateConstellabDocument(project, document, content);
+    const newDoc =  await this.documentService.updateConstellabDocument(project, document, content);
+
+    this.emitProjectEvent('UPDATE_CONSTELLAB_DOCUMENT', project, newDoc);
+    return newDoc;
   }
 
   public async getConstellabDocument(documentId: string): Promise<CnConstellabDocument> {
@@ -669,48 +729,65 @@ export class CnProjectAggregateService {
     return this.projectBucketService.getProjectBucket(projectId);
   }
 
+  /////////////////////////////////////// PROJECT USER //////////////////////////////////
+  public async getCurrentProjectUserConfig(projectId: string): Promise<CnProjectUser> {
+    await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    return this.projectUserService.findByProjectIdAndUserId(projectId, CnCurrentUserHelper.getAndCheckCurrentUser().id);
+  }
+
+  public async updateCurrentProjectUserConfig(projectId: string, options: CnProjectUser): Promise<CnProjectUser> {
+    await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    options.projectId = projectId;
+    options.userId = CnCurrentUserHelper.getAndCheckCurrentUser().id;
+
+    return this.projectUserService.updateProjectUser(options);
+  }
+
   /////////////////////////////////////// SECURITY //////////////////////////////////
 
 
   private async getAndCheckAuthorizationForFindOne(projectId: string): Promise<CnProject> {
-    const dbProject = await this.projectService.findWithSharedGroups(projectId);
+    const dbProject = await this.projectService.findByIdAndCheck(projectId);
 
     await this.projectSecurity.checkFindOne(dbProject, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return dbProject;
   }
 
   private async getAndCheckAuthorizationForUpdate(projectId: string): Promise<CnProject> {
-    const dbProject = await this.projectService.findWithSharedGroups(projectId);
+    const dbProject = await this.projectService.findByIdAndCheck(projectId);
 
     await this.projectSecurity.checkUpdate(dbProject, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return dbProject;
   }
 
   private async checkFindOneAndGetRootProject(projectId: string): Promise<CnProject> {
-    const project = await this.projectService.findWithSharedGroups(projectId);
+    const project = await this.projectService.findByIdAndCheck(projectId);
 
     return await this.projectSecurity.checkFindOneAndGetRootProject(project, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
   }
 
-  private async getUserMentions(projectId: string, content: BlRichTextI): Promise<CnUser[]> {
-    const userMentions: CnUser[] = [];
-    const mentions: string[] = BlRichText.getMentions(content);
-    if (mentions.length > 0) {
-      for (const m of mentions) {
-        if (m == '0') {
-          const users = await this.getUsersOfProject(projectId);
-          for (const u of users) {
-            if (!userMentions.find(um => um.id == u.id) && u.id != CnCurrentUserHelper.getCurrentUser().id) // avoid duplicate
-              userMentions.push(u);
-          }
-        } else {
-          const user = (await this.getUsersOfProject(projectId)).find(u => u.id == m);
-          if (!userMentions.find(um => um.id == user.id) && user.id != CnCurrentUserHelper.getCurrentUser().id) // avoid duplicate
-            userMentions.push(user);
-        }
-      }
+  // TODO FOR MIGRATION
+  public async migrateProjectUsers(): Promise<void> {
+    if (!CnCurrentUserHelper.isAdmin()) {
+      throw new BlUnauthorizedException();
     }
-    return userMentions;
+    const projectGroups = await this.projectGroupRepo.find();
+    for (const projectGroup of projectGroups) {
+      await this.projectUserService.shareProjectToGroup(projectGroup.projectId, projectGroup.groupId);
+    }
+  }
+
+  //////////////////////////////// EVENT ///////////////////////////////////////
+  private emitProjectEvent(eventType: CnProjectEventType, project: CnProject, entity: any): void {
+    const event: CnProjectEvent = {
+      type: eventType,
+      parentProject: project,
+      entity,
+      userInfo: CnCurrentUserHelper.getAndCheckUserSpaceInfo()
+    };
+    this.eventEmitter.emit(cnProjectEventName, event);
   }
 
 }

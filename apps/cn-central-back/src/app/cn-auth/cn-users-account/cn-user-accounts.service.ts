@@ -20,12 +20,12 @@ import {
 } from '@monorepo/back-core-lib';
 import {CnUserTokenPayload} from '../../cn-core/model/config/cn-config.class';
 import {CnFrontService} from '../../cn-core/services/cn-front.service';
-import {ClPage} from '@monorepo/core-lib';
 import {CnSpaceAggregateService} from '../../cn-spaces/cn-space-aggregate.service';
 import {CnGroupsService} from '../../cn-groups/cn-groups.service';
-import {CnNotificationService, CnNotificationType} from '../../cn-notification/cn-notification.service';
+import {CnNotificationService} from '../../cn-notification/cn-notification.service';
 import {CnCreateUserDto} from '../../cn-users/cn-user.dto';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
+import {CnActivityEntityType} from '../../cn-activity/cn-activity.entity';
 
 /**
  * Service to handle users' account (signup, mail validation, password forgotten, reset password...)
@@ -289,7 +289,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
       if (adminUser == null) continue;
       await this.notificationService.createNotification({
         createdBy: user,
-        objectType: CnNotificationType.NEW_USER,
+        objectType: CnActivityEntityType.USER,
         objectId: user.id,
         user: adminUser,
         text: `New user : ${user.firstname} ${user.lastname}`,
@@ -303,12 +303,12 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) throw new BlUnauthorizedException();
     const user: CnUser = await this.usersService.findByIdAndCheck(userId);
 
-    if(user.status === BlUserStatus.LOCKED_BY_ADMIN) {
-      throw new BlBadRequestException('User is already locked')
+    if (user.status === BlUserStatus.LOCKED_BY_ADMIN) {
+      throw new BlBadRequestException('User is already locked');
     }
 
-    if(user.status === BlUserStatus.WAITING_FOR_EMAIL) {
-      throw new BlBadRequestException('User is not validated')
+    if (user.status === BlUserStatus.WAITING_FOR_EMAIL) {
+      throw new BlBadRequestException('User is not validated');
     }
 
     user.status = BlUserStatus.LOCKED_BY_ADMIN;
@@ -319,8 +319,8 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) throw new BlUnauthorizedException();
     const user: CnUser = await this.usersService.findByIdAndCheck(userId);
 
-    if(user.status !== BlUserStatus.LOCKED_BY_ADMIN) {
-      throw new BlBadRequestException('User is not locked')
+    if (user.status !== BlUserStatus.LOCKED_BY_ADMIN) {
+      throw new BlBadRequestException('User is not locked');
     }
 
     user.status = BlUserStatus.READY;

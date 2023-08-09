@@ -14,9 +14,26 @@ export class CnFrontService {
     return 'app/admin/users';
   }
 
-  public static getProjectCommentRoute(projectId: string): string{
-    return 'app/project/' + projectId + '?type=comments'
+  public static getProjectRoute(projectId: string): string{
+    return 'app/project/' + projectId
   }
+
+  public static getProjectCommentRoute(projectId: string): string{
+    return `${CnFrontService.getProjectRoute(projectId)}?type=comments`
+  }
+
+  public static getReportRoute(projectId: string): string{
+    return `app/project/report/${projectId}`
+  }
+
+  public static getExperimentRoute(projectId: string): string{
+    return `app/project/experiment/${projectId}`
+  }
+
+  public static getConstellabDocRoute(docId: string): string{
+    return `app/project/document/${docId}`
+  }
+
 
   public getLoginUrl(): string {
     return this.getBaseWebsiteURL() + '/login';

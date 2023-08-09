@@ -4,6 +4,7 @@ import {DateTime} from 'luxon';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {BlRichTextI} from '@monorepo/back-core-lib';
+import {CnReport} from './cn-report.entity';
 
 
 export class CnSaveReportDto {
@@ -46,4 +47,9 @@ export class CnCreateReportWithConfigDto {
   // contains all the json view of the report
   // key = view id, value = json view
   resource_views: Record<string, any>;
+}
+
+export interface CnSaveReportResultDTO {
+  mode: 'create' | 'update';
+  report: CnReport;
 }

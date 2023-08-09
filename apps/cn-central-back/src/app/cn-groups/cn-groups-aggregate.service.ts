@@ -6,7 +6,6 @@ import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {DeleteResult} from 'typeorm';
 import {ClHelpService, ClPageI} from '@monorepo/core-lib';
 import {CnUserTeamService} from './cn-user-team.service';
-import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnSpaceUserService} from '../cn-spaces/cn-space-user.service';
 import {CnGroupsSecurity} from './cn-groups.security';
 import {CnGroupsService} from './cn-groups.service';
@@ -18,7 +17,6 @@ export class CnGroupsAggregateService {
 
   constructor(private groupsService: CnGroupsService,
               private userGroupService: CnUserTeamService,
-              private usersService: CnUsersService,
               private spaceUserService: CnSpaceUserService,
               private groupSecurity: CnGroupsSecurity) {
   }
@@ -28,14 +26,10 @@ export class CnGroupsAggregateService {
 
   public async searchCurrentGroupByLabel(label: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
     const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-    await this.groupSecurity.checkAuthorizationToFindAllTeamBySpace(userInfo);
+    this.groupSecurity.checkAuthorizationToFindAllTeamBySpace(userInfo);
 
     const spaceUserIds = await this.spaceUserService.findAllSpaceUserIds(userInfo.spaceId);
     return await this.groupsService.searchGroupsByLabelInSpace(userInfo.spaceId, spaceUserIds, label, page, size);
-  }
-
-  public async findByIdAndCheck(id: string): Promise<CnGroup> {
-    return this.groupsService.findByIdAndCheck(id);
   }
 
   public async getGroupById(id: string): Promise<CnGroup> {
@@ -88,7 +82,7 @@ export class CnGroupsAggregateService {
 
   public async findTeamsByCurrentSpace(page: number, size: number): Promise<ClPageI<CnGroup>> {
     const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-    await this.groupSecurity.checkAuthorizationToFindAllTeamBySpace(userInfo);
+    this.groupSecurity.checkAuthorizationToFindAllTeamBySpace(userInfo);
     return this.groupsService.getTeamBySpace(userInfo.spaceId, page, size);
   }
 
@@ -105,7 +99,7 @@ export class CnGroupsAggregateService {
   public async searchTeamsInCurrentSpace(searchParam: BlSearchParams,
                                          page: number, size: number): Promise<ClPageI<CnGroupTeam>> {
     const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-    await this.groupSecurity.checkAuthorizationToFindAllTeamBySpace(userInfo);
+    this.groupSecurity.checkAuthorizationToFindAllTeamBySpace(userInfo);
     return this.groupsService.searchTeamInSpace(userInfo.spaceId, searchParam, page, size);
   }
 

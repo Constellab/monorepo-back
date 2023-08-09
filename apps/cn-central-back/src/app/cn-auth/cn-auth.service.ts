@@ -30,7 +30,6 @@ export interface CnExternalCheckCredentialResponse {
 @Injectable()
 export class CnAuthService {
 
-  private readonly failedLoginLock: number;
 
   private readonly activationLinkValidity: number = 86400 * 7;
 
@@ -41,7 +40,6 @@ export class CnAuthService {
               private userAccountsService: CnUserAccountsService,
               private user2FaService: CnUser2FAService,
               private captchaService: BlCaptchaService) {
-    this.failedLoginLock = configService.getFailedLoginLock();
   }
 
   async login(credentials: BlCredentials): Promise<CnAuthResponse> {
@@ -149,8 +147,9 @@ export class CnAuthService {
       throw new BlUnauthorizedException(CnErrorText.ACCOUNT_LOCKED_BY_ADMIN);
     }
 
+    const failedLoginLock = this.configService.getFailedLoginLock();
     // check if user is locked
-    if (user.failedLoginCount >= this.failedLoginLock) {
+    if (user.failedLoginCount >= failedLoginLock) {
       throw new BlUnauthorizedException(CnErrorText.USER_LOCKED);
     }
 
@@ -159,8 +158,8 @@ export class CnAuthService {
       await this.incrementFailedLoginCount(user);
 
       // check if user is locked
-      if (user.failedLoginCount >= this.failedLoginLock) {
-        this.userAccountsService.sendAccountLockedMail(user, this.activationLinkValidity, this.failedLoginLock);
+      if (user.failedLoginCount >= failedLoginLock) {
+        this.userAccountsService.sendAccountLockedMail(user, this.activationLinkValidity, failedLoginLock);
         throw new BlUnauthorizedException(CnErrorText.USER_LOCKED);
       } else {
         throw new BlUnauthorizedException(CnErrorText.WRONG_CREDENTIALS);

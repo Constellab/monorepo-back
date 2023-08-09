@@ -27,7 +27,6 @@ import {
   BlUploadedFile
 } from '@monorepo/back-core-lib';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
-import {CnGroup} from '../cn-groups/cn-group.entity';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
 import {
   CnProjectAncestorTreeDTO,
@@ -45,6 +44,7 @@ import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-reg
 import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnDocument} from './cn-documents/cn-document.entity';
 import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
+import {CnProjectUser} from './cn-project-user/cn-project-user.entity';
 
 
 @Controller('projects')
@@ -97,37 +97,22 @@ export class CnProjectsController {
     return await this.projectAggregate.searchInCurrentSpace(searchParam, page, size);
   }
 
-  @Get('group/:groupId')
-  public getByTeam(@Param('groupId', new ParseUUIDPipe()) groupId: string,
-                   @Query('page', ParseIntPipe) page: number,
-                   @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProject>> {
-    return this.projectAggregate.getProjectOfTeam(groupId, page, size);
-  }
-
   @Put(':id/status/:status')
   updateStatus(@Param('id', new ParseUUIDPipe()) id: string,
                @Param('status', new BlParseEnumPipe(CnProjectStatus)) status: CnProjectStatus): Promise<CnProject> {
     return this.projectAggregate.updateProjectCurrentStatus(status, id);
   }
 
-  /**
-   * Get the list of group the project is shared with
-   */
-  @Get(':id/shared-groups')
-  getProjectSharedGroups(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnGroup[]> {
-    return this.projectAggregate.getProjectSharedGroups(id);
-  }
-
   @Put(':id/share/:groupId')
   shareProject(@Param('id', new ParseUUIDPipe()) id: string,
-               @Param('groupId', new ParseUUIDPipe()) groupId: string): Promise<CnGroup> {
+               @Param('groupId', new ParseUUIDPipe()) groupId: string): Promise<CnUser[]> {
     return this.projectAggregate.shareProject(id, groupId);
   }
 
-  @Delete(':id/unshare/:groupId')
+  @Delete(':id/unshare/:userId')
   unshareProject(@Param('id', new ParseUUIDPipe()) id: string,
-                 @Param('groupId', new ParseUUIDPipe()) groupId: string): Promise<void> {
-    return this.projectAggregate.unshareProject(id, groupId);
+                 @Param('userId', new ParseUUIDPipe()) userId: string): Promise<void> {
+    return this.projectAggregate.unshareProject(id, userId);
   }
 
   /**
@@ -352,5 +337,22 @@ export class CnProjectsController {
     return this.projectAggregate.getProjectBucket(projectId);
   }
 
+  /////////////////////////////// Project user ///////////////////////////////////////////
 
+  @Get(':projectId/user-config')
+  getProjectUserConfig(@Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnProjectUser> {
+    return this.projectAggregate.getCurrentProjectUserConfig(projectId);
+  }
+
+  @Put(':projectId/user-config')
+  updateProjectUserConfig(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+                          @Body() body: CnProjectUser): Promise<CnProjectUser> {
+    return this.projectAggregate.updateCurrentProjectUserConfig(projectId, body);
+  }
+
+
+  @Post('migrate')
+  migrate(): Promise<void> {
+    return this.projectAggregate.migrateProjectUsers();
+  }
 }

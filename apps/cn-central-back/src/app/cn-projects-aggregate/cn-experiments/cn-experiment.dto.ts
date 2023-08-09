@@ -81,3 +81,8 @@ export class CnExperimentDTO extends CnEntityDTO {
     return this;
   }
 }
+
+export interface CnSaveExperimentResultDTO {
+  mode: 'create' | 'update';
+  experiment: CnExperiment;
+}

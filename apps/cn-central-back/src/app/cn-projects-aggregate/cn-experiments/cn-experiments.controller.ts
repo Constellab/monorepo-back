@@ -1,8 +1,8 @@
 import {Controller, Get, Param, ParseUUIDPipe} from '@nestjs/common';
-import {CnExperiment, CnExperimentProtocol} from './cn-experiments/cn-experiment.entity';
-import {CnExperimentDTO} from './cn-experiments/cn-experiment.dto';
-import {CnProjectAggregateService} from './cn-project-aggregate.service';
-import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
+import {CnExperiment, CnExperimentProtocol} from './cn-experiment.entity';
+import {CnExperimentDTO} from './cn-experiment.dto';
+import {CnProjectAggregateService} from '../cn-project-aggregate.service';
+import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
 
 @Controller('experiments')
 export class CnExperimentsController {

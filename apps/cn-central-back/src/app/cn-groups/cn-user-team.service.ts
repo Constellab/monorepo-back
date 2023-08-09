@@ -79,6 +79,15 @@ export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
     });
   }
 
+  public async getAllUsersOfTeam(groupId: string): Promise<CnUserGroup[]> {
+    return await this.repo.find({
+      where: {
+        groupId: groupId
+      },
+      relations: ['user'],
+    });
+  }
+
   public async getByUserAndGroup(userId: string, groupId: string): Promise<CnUserGroup> {
     return this.repo.findOne({
       where: {

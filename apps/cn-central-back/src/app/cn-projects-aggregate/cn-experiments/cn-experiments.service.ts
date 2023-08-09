@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {CnExperiment} from './cn-experiment.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
-import {CnCreateLabExperimentDto} from './cn-experiment.dto';
+import {CnCreateLabExperimentDto, CnSaveExperimentResultDTO} from './cn-experiment.dto';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
@@ -35,7 +35,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     });
   }
 
-  public async saveLabExperiment(project: CnProject, createLabExperimentDto: CnCreateLabExperimentDto): Promise<CnExperiment> {
+  public async saveLabExperiment(project: CnProject, createLabExperimentDto: CnCreateLabExperimentDto): Promise<CnSaveExperimentResultDTO> {
 
     const experimentDB: CnExperiment = await this.findById(createLabExperimentDto.experiment.id);
     if (experimentDB && experimentDB.projectId !== project.id) {
@@ -70,25 +70,28 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     experiment.lastSyncBy = labExperimentDto.last_sync_by;
 
     if (experimentDB) {
-      return await this.updateWithCompare(experiment, experimentDB);
+      const exp = await this.updateWithCompare(experiment, experimentDB);
+      return {experiment: exp, mode: 'update'};
     } else {
       experiment.labInstance = CnCurrentUserHelper.getCurrentLabInstance();
-      return this.create(experiment);
+      const exp = await this.create(experiment);
+      return {experiment: exp, mode: 'create'};
     }
   }
 
-  public async deleteExperiment(id: string): Promise<void> {
+  public async deleteExperiment(id: string): Promise<CnExperiment> {
     const experiment = await this.findById(id);
 
     // no error if experiment not found for more resilience
     if (!experiment) {
-      return;
+      return null;
     }
 
     if (experiment.isValidated) {
       throw new BlBadRequestException('Can\'t delete a validated experiment');
     }
     await this.deleteById(id);
+    return experiment;
   }
 
   findByIdAndCheckWithReports(id: string): Promise<CnExperiment> {

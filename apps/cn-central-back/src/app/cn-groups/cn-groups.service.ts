@@ -89,7 +89,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
       }
     }
 
-    const currentUser = CnCurrentUserHelper.getCurrentUser();
+    const currentUser = CnCurrentUserHelper.getAndCheckCurrentUser();
     // set the current user in first pos, and sort the rest by fullname
     return Object.values(users).sort((a: CnUser, b: CnUser) => {
       if (a.id === currentUser.id) return -1;

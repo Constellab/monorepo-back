@@ -1,18 +1,21 @@
 import {DeleteResult, EntityManager, Repository} from 'typeorm';
 import {FindOneOptions} from 'typeorm/find-options/FindOneOptions';
 import {BlEntityWithId} from '../models/bl-entity-with-id.entity';
-import {BlPersistenceAction, BlPersistenceLogger} from './bl-persistence-logger';
 import {blPropertyIsNotUpdatable} from '../decorators/bl-not-updatable.decorator';
 import {BlAbstractPaginatedService} from './bl-abstract-paginated.service';
 import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
 import {BlBadRequestException} from '../exceptions/bl-bad-request.exception';
 import {BlNotFoundException} from '../exceptions/bl-not-found.exception';
+import {Inject} from '@nestjs/common';
+import {
+  BlPersistenceAction,
+  BlPersistenceEventService
+} from '../modules/bl-persistence-event/bl-persistence-event.service';
 
 export abstract class BlAbstractService<T extends BlEntityWithId>
   extends BlAbstractPaginatedService<T> {
 
-  private readonly persistenceLogger = BlPersistenceLogger.getInstance();
-
+  @Inject() private readonly persistenceEventService: BlPersistenceEventService;
 
   protected constructor(repo: Repository<T>,
                         entityClass: new() => T) {
@@ -59,12 +62,14 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
 
     }
 
-    // log before update, otherwise the commit is done before the log
     const newEntity2 = await this.getEntityManager(entityManager).save(newEntity);
     this.logAction('UPDATE', newEntity2.id, entityManager == null);
     return newEntity2;
   }
 
+  async delete(entity: T, entityManager?: EntityManager): Promise<DeleteResult> {
+    return this.getEntityManager(entityManager).delete(this.entityClass, entity.id)
+  }
 
   async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
     const deleteResult: DeleteResult = await this.getEntityManager(entityManager).delete(this.entityClass, id);
@@ -104,6 +109,6 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
    * @private
    */
   private logAction(actionName: BlPersistenceAction, entityId: string, directLog: boolean): void {
-    this.persistenceLogger.logPersistence(actionName, entityId, this.entityClass.name, directLog);
+    this.persistenceEventService.logPersistence(actionName, entityId, this.entityClass.name, directLog);
   }
 }
