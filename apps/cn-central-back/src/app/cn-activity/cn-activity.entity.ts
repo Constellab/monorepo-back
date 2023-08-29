@@ -1,6 +1,6 @@
 import {Column, Entity, ManyToOne, Relation} from 'typeorm';
 import {BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
-import {Type} from 'class-transformer';
+import {Exclude, Expose, Type} from 'class-transformer';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {DateTime} from 'luxon';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
@@ -36,6 +36,7 @@ export class CnActivity extends BlEntityWithId {
   @Column({type: 'enum', enum: CnActivityType, update: false})
   actionType: CnActivityType;
 
+  @Exclude()
   @Column({update: false})
   title: string;
 
@@ -61,7 +62,8 @@ export class CnActivity extends BlEntityWithId {
   @Column({update: false, nullable: true})
   parentEntityId: string | null;
 
-  getTitle(): string {
+  @Expose({name: 'title'})
+  get cleanTitle(): string {
     // replace {{user.name}} with user.fullname
     // replace {{entityName}} with entityName
     return this.title.replace('{{user.name}}', this.user.fullname)

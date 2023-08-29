@@ -81,7 +81,7 @@ export class CnProjectListener {
 
     for (const projectUser of projectUsers) {
       await this.sendNotification(projectUser,
-        activity.user, activity.space.id, activity.entityType, activity.title,
+        activity.user, activity.space.id, activity.entityType, activity.cleanTitle,
         activity.entityId, notifInfo.link, parentProject, ancestorIds);
     }
   }
@@ -411,7 +411,7 @@ export class CnProjectListener {
       if (projectUser.user.id === activity.user.id || userMentions.find(um => um.user.id == projectUser.user.id)) continue;
 
       await this.sendNotification(projectUser,
-        activity.user, activity.space.id, activity.entityType, activity.entityId, activity.title,
+        activity.user, activity.space.id, activity.entityType, activity.entityId, activity.cleanTitle,
         link, parentProject, ancestorIds);
     }
   }

@@ -40,6 +40,10 @@ export class BlSearchBuilder<T> {
     };
   }
 
+  public hasWhereOptions(key: keyof T): boolean {
+    return this.whereOptions[key] !== undefined;
+  }
+
   public mergeOrderOptions(order: FindOptionsOrder<T>): void {
     this.orderOptions = {
       ...this.orderOptions,

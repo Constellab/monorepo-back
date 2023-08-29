@@ -45,7 +45,7 @@ export class HnFrontService {
     if (docCompletePath.endsWith('/')) {
       docCompletePath = docCompletePath.slice(0, -1);
     }
-    return `${this.getBrickVersionUrl(brickName,majorStrVersion)}/technical-doc/${docCompletePath}`;
+    return `${this.getBrickVersionUrl(brickName,majorStrVersion)}/doc/technical-folder/${docCompletePath}`;
   }
 
   public getBrickInviteUrl(token: string): string {

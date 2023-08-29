@@ -32,10 +32,11 @@ import {
   BlFile,
   BlRichTextI,
   BlRichTextUploadedImage,
+  BlSearchBuilder,
   BlSearchParams,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
-import {DataSource, Repository} from 'typeorm';
+import {DataSource, In, Repository} from 'typeorm';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnDocumentsService} from './cn-documents/cn-documents.service';
@@ -49,6 +50,8 @@ import {CnProjectGroup} from './cn-project-group.entity';
 import {CnProjectUser} from './cn-project-user/cn-project-user.entity';
 import {CnProjectEvent, cnProjectEventName, CnProjectEventType} from './cn-project.event';
 import {EventEmitter2} from '@nestjs/event-emitter';
+import {CnActivity, CnActivityEntityType} from '../cn-activity/cn-activity.entity';
+import {CnActivityService} from '../cn-activity/cn-activity.service';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -66,6 +69,7 @@ export class CnProjectAggregateService {
               private projectUserService: CnProjectUserService,
               private userService: CnUsersService,
               private eventEmitter: EventEmitter2,
+              private activityService: CnActivityService,
               @InjectRepository(CnProjectGroup) private projectGroupRepo: Repository<CnProjectGroup>) {
   }
 
@@ -123,7 +127,7 @@ export class CnProjectAggregateService {
     }
     entity.rootParentId = parentProject.currentLevel === CnProjectLevel.PROJECT ? parentProject.id : parentProject.rootParentId;
 
-    const newProject =  await this.projectService.create(entity);
+    const newProject = await this.projectService.create(entity);
     this.emitProjectEvent('CREATE_SUB_PROJECT', parentProject, newProject);
     return newProject;
   }
@@ -677,7 +681,7 @@ export class CnProjectAggregateService {
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
 
-    const newDoc =  await this.documentService.updateConstellabDocument(project, document, content);
+    const newDoc = await this.documentService.updateConstellabDocument(project, document, content);
 
     this.emitProjectEvent('UPDATE_CONSTELLAB_DOCUMENT', project, newDoc);
     return newDoc;
@@ -743,6 +747,42 @@ export class CnProjectAggregateService {
     options.userId = CnCurrentUserHelper.getAndCheckCurrentUser().id;
 
     return this.projectUserService.updateProjectUser(options);
+  }
+
+  /////////////////////////////////////// ACTIVITY //////////////////////////////////
+
+  public async searchProjectActivity(projectId: string, searchParam: BlSearchParams,
+                                     page: number, size: number): Promise<ClPage<CnActivity>> {
+    // check that the user can view the project
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    const searchBuilder = new BlSearchBuilder<CnActivity>({createdAt: 'DESC' as any});
+
+    if (searchParam.hasFilter('includeSubProjects')) {
+      const allProjects = await this.projectService.getProjectTreeAsList(project);
+      const allProjectIds = allProjects.map(project => project.id);
+      searchBuilder.mergeWhereOptions({
+        parentEntityId: In(allProjectIds),
+      });
+      searchParam.removeFilter('includeSubProjects');
+    } else {
+      searchBuilder.mergeWhereOptions({
+        parentEntityId: projectId,
+      });
+    }
+
+    searchBuilder.addSearchParams(searchParam);
+
+    // add filter on entity type if not already present
+    if (!searchBuilder.hasWhereOptions('entityType')) {
+      searchBuilder.mergeWhereOptions({
+        entityType: In([CnActivityEntityType.PROJECT, CnActivityEntityType.PROJECT_COMMENT,
+          CnActivityEntityType.REPORT, CnActivityEntityType.EXPERIMENT, CnActivityEntityType.PROJECT_DOCUMENT])
+      });
+    }
+
+
+    return await this.activityService.search(searchBuilder.build(), page, size);
   }
 
   /////////////////////////////////////// SECURITY //////////////////////////////////

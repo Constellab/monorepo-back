@@ -3,11 +3,12 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {CnActivity, CnActivityEntityType, CnActivityType} from './cn-activity.entity';
 import {Repository} from 'typeorm';
 import {EventEmitter2} from '@nestjs/event-emitter';
-import {BlEntityWithId} from '@monorepo/back-core-lib';
+import {BlAbstractPaginatedService, BlEntityWithId} from '@monorepo/back-core-lib';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {ClDateHelper} from '@monorepo/core-lib';
+import {ClDateHelper, ClPage} from '@monorepo/core-lib';
+import {FindOneOptions} from 'typeorm/find-options/FindOneOptions';
 
 
 export interface CnActivityCreateDTO {
@@ -22,7 +23,7 @@ export interface CnActivityCreateDTO {
   additionalData?: any;
 }
 
-export const cnActivityEvent = 'activity'
+export const cnActivityEvent = 'activity';
 
 export interface CnActivityEventDTO<T extends BlEntityWithId = BlEntityWithId> {
   activity: CnActivity;
@@ -31,10 +32,11 @@ export interface CnActivityEventDTO<T extends BlEntityWithId = BlEntityWithId> {
 }
 
 @Injectable()
-export class CnActivityService {
+export class CnActivityService extends BlAbstractPaginatedService<CnActivity> {
 
   constructor(@InjectRepository(CnActivity) private repository: Repository<CnActivity>,
               private eventEmitter: EventEmitter2) {
+    super(repository, CnActivity);
   }
 
   async create(activityDTO: CnActivityCreateDTO): Promise<CnActivity> {
@@ -55,10 +57,20 @@ export class CnActivityService {
       activity: dbActivity,
       entity: activityDTO.entity,
       additionalData: activityDTO.additionalData,
-    }
+    };
     this.eventEmitter.emit(cnActivityEvent, event);
-    console.log('CnActivityService.create ', `activity.${activity.entityType}`)
+    console.log('CnActivityService.create ', `activity.${activity.entityType}`);
     return dbActivity;
+  }
+
+  public async search(findOptions: FindOneOptions<CnActivity>,
+                      page: number, size: number): Promise<ClPage<CnActivity>> {
+    findOptions.relations = {
+      user: true,
+      space: true,
+    };
+    findOptions.order = {createdAt: 'DESC' as any};
+    return this.findPaginated(page, size, findOptions);
   }
 
 }

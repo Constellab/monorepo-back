@@ -45,6 +45,7 @@ import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnDocument} from './cn-documents/cn-document.entity';
 import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
 import {CnProjectUser} from './cn-project-user/cn-project-user.entity';
+import {CnActivity} from '../cn-activity/cn-activity.entity';
 
 
 @Controller('projects')
@@ -350,6 +351,15 @@ export class CnProjectsController {
     return this.projectAggregate.updateCurrentProjectUserConfig(projectId, body);
   }
 
+  /////////////////////////////// Activity ///////////////////////////////////////////
+
+  @Post(':projectId/activity')
+  async searchActivity(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+                       @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
+                       @Query('page', ParseIntPipe) page: number,
+                       @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnActivity>> {
+    return await this.projectAggregate.searchProjectActivity(projectId, searchParam, page, size);
+  }
 
   @Post('migrate')
   migrate(): Promise<void> {
