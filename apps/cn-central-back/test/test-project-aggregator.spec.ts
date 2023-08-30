@@ -46,7 +46,7 @@ describe('ProjectAggregatorE2E', () => {
     const workPackageRequest = helper.post(`${newProject.id}/sub-project`, workPackage);
     workPackageRequest.expect(201);
     const newWorkPackage: CnProject = await workPackageRequest.getResponseBody();
-    expect(newWorkPackage.currentLevel).toEqual(CnProjectLevel.WORK_PACKAGE);
+    expect(newWorkPackage.currentLevel).toEqual(2);
     expect(newWorkPackage.rootParentId).toEqual(newProject.id);
     expect(newWorkPackage.levelStatus).toEqual(CnProjectLevelStatus.PARENT);
 
@@ -60,7 +60,7 @@ describe('ProjectAggregatorE2E', () => {
     const taskRequest = helper.post(`${newWorkPackage.id}/sub-project`, task);
     taskRequest.expect(201);
     const newTask: CnProject = await taskRequest.getResponseBody();
-    expect(newTask.currentLevel).toEqual(CnProjectLevel.TASK);
+    expect(newTask.currentLevel).toEqual(3);
     expect(newTask.rootParentId).toEqual(newProject.id);
     // the task level status should be a leaf
     expect(newTask.levelStatus).toEqual(CnProjectLevelStatus.LEAF);

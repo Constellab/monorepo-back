@@ -55,11 +55,9 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
 
   // level of this project, work package or task
   @Column({
-    nullable: false, default: CnProjectLevel.PROJECT,
-    type: 'enum', enum: CnProjectLevel,
-    name: 'currentLevel', update: false
+    nullable: false, default: CnProjectLevel.PROJECT, update: false
   })
-  currentLevel: CnProjectLevel;
+  currentLevel: number;
 
   @Column({
     nullable: false, update: false,

@@ -109,8 +109,8 @@ export class CnProjectAggregateService {
       throw new BlBadRequestException('Cannot create a sub project to a leaf project');
     }
 
-    if (parentProject.currentLevel >= CnProjectLevel.TASK) {
-      throw new BlBadRequestException('Cannot create project with a hierarchy level more than 3');
+    if (parentProject.currentLevel >= CnProjectLevel.MAX_LEVEL) {
+      throw new BlBadRequestException(`Cannot create project with a hierarchy level more than ${CnProjectLevel.MAX_LEVEL}`);
     }
 
     if (entity.endingDate && parentProject.endingDate && entity.endingDate > parentProject.endingDate) {
@@ -121,8 +121,8 @@ export class CnProjectAggregateService {
     entity.parent = parentProject;
     entity.parentId = parentProject.id;
     entity.currentLevel = parentProject.currentLevel + 1;
-    // if the project is level 3 force the status to leaf, otherwise set to undefined
-    if (entity.currentLevel === CnProjectLevel.TASK) {
+    // if the project is level max force the status to leaf
+    if (entity.currentLevel === CnProjectLevel.MAX_LEVEL) {
       entity.levelStatus = CnProjectLevelStatus.LEAF;
     }
     entity.rootParentId = parentProject.currentLevel === CnProjectLevel.PROJECT ? parentProject.id : parentProject.rootParentId;
