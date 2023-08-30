@@ -81,8 +81,8 @@ export class CnProjectListener {
 
     for (const projectUser of projectUsers) {
       await this.sendNotification(projectUser,
-        activity.user, activity.space.id, activity.entityType, activity.cleanTitle,
-        activity.entityId, notifInfo.link, parentProject, ancestorIds);
+        activity.user, activity.space.id, activity.entityType, activity.entityId,
+        activity.cleanTitle, notifInfo.link, parentProject, ancestorIds);
     }
   }
 
