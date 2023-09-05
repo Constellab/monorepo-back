@@ -13,6 +13,14 @@ export const cnLabInstanceTemporaryStatuses = [
   CnLabInstanceStatus.SERVER_STOPPING,
 ];
 
+// list of statuses that are considered as running
+export const cnLabInstanceRunningStatuses = [
+  CnLabInstanceStatus.SERVER_STARTING,
+  CnLabInstanceStatus.SERVER_STOPPING,
+  CnLabInstanceStatus.SERVER_RUNNING,
+  CnLabInstanceStatus.LAB_RUNNING,
+];
+
 export enum CnLabInstanceServerTaskStatus {
   RUNNING = 'RUNNING',
   SUCCESS = 'SUCCESS',

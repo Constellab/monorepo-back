@@ -18,7 +18,7 @@ import {
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnLabInstanceServerTaskStatus, CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 import {DateTime} from 'luxon';
-import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
+import {ClLuxonDateTimeTransform, ClLuxonDateTransform} from '@monorepo/core-lib';
 
 
 /**
@@ -141,4 +141,22 @@ export interface CnRequestLabInstance {
   storageSize?: string;
   labNeed?: string;
   additionalInfo?: string;
+}
+
+
+export interface CnLabInstanceStatusRunRequest{
+  period: 'LAST_WEEK' | 'LAST_MONTH' | 'LAST_YEAR' | 'ALL' | 'CUSTOM';
+  customStartDate?: string;
+  customEndDate?: string;
+}
+
+export class CnLabInstanceStatusRunResponse{
+  period: 'LAST_WEEK' | 'LAST_MONTH' | 'LAST_YEAR' | 'ALL' | 'CUSTOM';
+
+  @ClLuxonDateTransform()
+  fromDate: DateTime;
+  @ClLuxonDateTransform()
+  toDate: DateTime;
+
+  runDuration: number;
 }

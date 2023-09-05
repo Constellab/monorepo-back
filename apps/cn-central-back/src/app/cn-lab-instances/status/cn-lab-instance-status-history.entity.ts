@@ -19,5 +19,7 @@ export class CnLabInstanceStatusHistory extends CnStatusHistory<CnLabInstanceSta
   @Type(() => CnLabInstance)
   @ManyToOne(() => CnLabInstance, {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
   entity: CnLabInstance;
+
+
 }
 

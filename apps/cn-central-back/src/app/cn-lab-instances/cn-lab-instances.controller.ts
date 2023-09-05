@@ -13,6 +13,8 @@ import {
   CnLabInstanceDesktopConfig,
   CnLabInstanceDto,
   CnLabInstanceStatusDTO,
+  CnLabInstanceStatusRunRequest,
+  CnLabInstanceStatusRunResponse,
   CnRequestLabInstance,
 } from './cn-lab-instance.dto';
 import {
@@ -442,6 +444,14 @@ export class CnLabInstancesController {
     return await this.labFreeTrialService.createFreeTrialLabInstanceCurrentUser();
   }
 
+
+  /////////////////////////// KPI  //////////////////////////////
+
+  @Post(':id/kpi/running')
+  async getLabInstanceRunningKpis(@Param('id', new ParseUUIDPipe()) id: string,
+                                  @Body() request: CnLabInstanceStatusRunRequest): Promise<CnLabInstanceStatusRunResponse> {
+    return await this.aggregateService.getLabInstanceRunningKpis(id, request);
+  }
 
   /////////////////////////// DESKTOP //////////////////////////////
   @Post(':id/desktop/generate-config')

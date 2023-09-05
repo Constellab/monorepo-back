@@ -28,6 +28,8 @@ import {
   CnLabInstanceDesktopConfig,
   CnLabInstanceStartDTO,
   CnLabInstanceStatusDTO,
+  CnLabInstanceStatusRunRequest,
+  CnLabInstanceStatusRunResponse,
   CnRequestLabInstance
 } from './cn-lab-instance.dto';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
@@ -893,6 +895,14 @@ export class CnLabInstanceAggregateService {
   public async getGreenOptions(labInstanceId: string): Promise<CnLabGreenOption[]> {
     await this.getAndCheckAuthorizationToManageLab(labInstanceId);
     return this.labGreenOptionService.findRulesByLabInstanceId(labInstanceId);
+  }
+
+  ////////////////////////// KPI //////////////////////////////
+
+  public async getLabInstanceRunningKpis(labInstanceId: string, request: CnLabInstanceStatusRunRequest):
+    Promise<CnLabInstanceStatusRunResponse> {
+    const labInstance = await this.getAndCheckAuthorizationToFindById(labInstanceId);
+    return this.labInstancesService.getLabInstanceRunningKpis(labInstance.id, request);
   }
 
   ////////////////////////// DESKTOP //////////////////////////////

@@ -3,6 +3,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {CnLabInstance, CnLabInstanceType} from './cn-lab-instance.entity';
 import {DataSource, DeleteResult, EntityManager, In, Not, Repository} from 'typeorm';
 import {
+  cnLabInstanceRunningStatuses,
   CnLabInstanceServerTaskStatus,
   CnLabInstanceStatus,
   cnLabInstanceTemporaryStatuses
@@ -16,6 +17,8 @@ import {CnExperimentsService} from '../cn-projects-aggregate/cn-experiments/cn-e
 import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
 import {CnReportsService} from '../cn-projects-aggregate/cn-reports/cn-reports.service';
 import {BlBadRequestException, BlSearchBuilder, BlSearchParams} from '@monorepo/back-core-lib';
+import {CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse} from './cn-lab-instance.dto';
+import {DateTime} from 'luxon';
 
 @Injectable()
 export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInstance, CnLabInstanceStatus> {
@@ -23,11 +26,11 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   public static readonly SUPPORTED_MAIN_DOMAINS = ['gencovery.io', 'constellab.app'];
 
   constructor(@InjectRepository(CnLabInstance) private repository: Repository<CnLabInstance>,
-              @InjectRepository(CnLabInstanceStatusHistory) statusHistoRepo: Repository<CnLabInstanceStatusHistory>,
+              @InjectRepository(CnLabInstanceStatusHistory) private statusRepo: Repository<CnLabInstanceStatusHistory>,
               private experimentService: CnExperimentsService,
               private reportService: CnReportsService,
               datasource: DataSource) {
-    super(repository, CnLabInstance, statusHistoRepo, CnLabInstanceStatusHistory, datasource);
+    super(repository, CnLabInstance, statusRepo, CnLabInstanceStatusHistory, datasource);
   }
 
 
@@ -150,7 +153,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
 
   async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
     const labInstance = await this.findByIdAndCheck(id);
-    if(!ClHelpService.isNullOrEmpty(labInstance.serverInstanceId) || !ClHelpService.isNullOrEmpty(labInstance.serverVolumeId)) {
+    if (!ClHelpService.isNullOrEmpty(labInstance.serverInstanceId) || !ClHelpService.isNullOrEmpty(labInstance.serverVolumeId)) {
       throw new BlBadRequestException('Can\'t delete the lab instance because the server or volume still exist. Please delete them first');
     }
     const experiments: CnExperiment[] = await this.experimentService.getExperimentsByLabInstance(id);
@@ -291,4 +294,105 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       }
     });
   }
+
+  /**
+   * Return the duration of the lab instance running during a period in seconds
+   * @param labInstanceId
+   * @param request
+   */
+  public async getLabInstanceRunningKpis(labInstanceId: string,
+                                         request: CnLabInstanceStatusRunRequest): Promise<CnLabInstanceStatusRunResponse> {
+    const periodDates = this.getLabRunPeriod(request);
+
+    const statusHistory = await this.statusRepo.find({
+      where: {
+        entity: {id: labInstanceId},
+      },
+      order: {
+        createdAt: 'ASC' as any
+      }
+    });
+
+    const runDuration = this.calculateCumulativeDuration(statusHistory, cnLabInstanceRunningStatuses,
+      periodDates.startDate, periodDates.endDate);
+
+    const response = new CnLabInstanceStatusRunResponse();
+    response.period = request.period;
+    response.fromDate = periodDates.startDate;
+    response.toDate = periodDates.endDate;
+    response.runDuration = runDuration;
+
+    return response;
+  }
+
+  private getLabRunPeriod(request: CnLabInstanceStatusRunRequest): { startDate: DateTime, endDate: DateTime } {
+    const now = ClDateHelper.getDate();
+    let startDate: DateTime;
+    let endDate: DateTime;
+    switch (request.period) {
+      case 'LAST_WEEK':
+        startDate = ClDateHelper.getDate().minus({days: 7}).endOf('day');
+        endDate = now;
+        break;
+      case 'LAST_MONTH':
+        startDate = ClDateHelper.getDate().minus({months: 1}).endOf('day');
+        endDate = now;
+        break;
+      case 'LAST_YEAR':
+        startDate = ClDateHelper.getDate().minus({years: 1}).endOf('day');
+        endDate = now;
+        break;
+      case 'ALL':
+        startDate = ClDateHelper.getDate('1900-01-01').startOf('day');
+        endDate = now;
+        break;
+      case 'CUSTOM':
+        startDate = request.customStartDate ? ClDateHelper.getDate(request.customStartDate).startOf('day') :
+          ClDateHelper.getDate('1900-01-01').startOf('day');
+        endDate = request.customEndDate ? ClDateHelper.getDate(request.customEndDate).endOf('day') : now;
+        break;
+    }
+    return {startDate, endDate};
+  }
+
+  /**
+   * Calculate the cumulative duration of a list of statuses between two dates in seconds
+   * @param statusList full list of status history
+   * @param targetStatuses list of statuses to calculate duration
+   * @param startDate start date
+   * @param endDate end date
+   * @private
+   */
+  private calculateCumulativeDuration(statusList: CnLabInstanceStatusHistory[], targetStatuses: CnLabInstanceStatus[],
+                                      startDate: DateTime, endDate: DateTime): number {
+    let cumulativeDuration = 0;
+
+    for (const status of statusList) {
+      if (!targetStatuses.includes(status.status)) continue;
+
+      // if the status has started before date and finish during dates
+      if (status.createdAt < startDate && status.endDate >= startDate && status.endDate <= endDate) {
+        // add duration between startDate and end of status
+        cumulativeDuration += status.endDate.diff(startDate, 'seconds').seconds;
+        // if the status has started before date and finish after end date
+      } else if (status.createdAt < startDate && (status.endDate > endDate || status.endDate == null)) {
+        // add duration between startDate and endDate
+        cumulativeDuration += endDate.diff(startDate, 'seconds').seconds;
+        break;
+        // if the status has started during dates and finish during dates
+      } else if (status.createdAt >= startDate && status.createdAt <= endDate && status.endDate <= endDate) {
+        // add duration between status start and end
+        cumulativeDuration += status.getDurationInSeconds();
+        // if the status has started during dates and finish after end date
+      } else if (status.createdAt >= startDate && status.createdAt <= endDate && (status.endDate > endDate || status.endDate == null)) {
+        // add duration between status start and endDate
+        cumulativeDuration += endDate.diff(status.createdAt, 'seconds').seconds;
+        break;
+      }
+    }
+
+    return cumulativeDuration;
+  }
+
+
 }

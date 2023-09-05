@@ -15,4 +15,11 @@ export abstract class CnStatusHistory<S> extends CnBaseEntity {
 
   // entity link that has the status
   entity: BlEntityWithId;
+
+  public getDurationInSeconds(): number {
+    if (this.endDate) {
+      return this.endDate.diff(this.createdAt, 'seconds').seconds;
+    }
+    return -1;
+  }
 }
