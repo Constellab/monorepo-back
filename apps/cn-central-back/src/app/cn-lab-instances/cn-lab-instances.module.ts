@@ -40,6 +40,7 @@ import {CnLabFreeTrialService} from './free-trial/cn-lab-free-trial.service';
 import {CnCloudProvidersModule} from '../cn-cloud-providers/cn-cloud-providers.module';
 import {CnServersInfoModule} from '../cn-servers-info/cn-servers-info.module';
 import {CnSpacesModule} from '../cn-spaces/cn-spaces.module';
+import {CnLabInstanceStatusService} from './status/cn-lab-instance-status.service';
 
 @Module({
   imports: [
@@ -92,6 +93,7 @@ import {CnSpacesModule} from '../cn-spaces/cn-spaces.module';
     CnLabInstancesCron,
     CnLabGreenOptionService,
     CnLabFreeTrialService,
+    CnLabInstanceStatusService,
   ],
   exports: [
     CnLabInstancesService,

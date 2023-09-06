@@ -28,8 +28,6 @@ import {
   CnLabInstanceDesktopConfig,
   CnLabInstanceStartDTO,
   CnLabInstanceStatusDTO,
-  CnLabInstanceStatusRunRequest,
-  CnLabInstanceStatusRunResponse,
   CnRequestLabInstance
 } from './cn-lab-instance.dto';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
@@ -68,6 +66,8 @@ import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.servic
 import {CnLabGreenOptionFormDto} from './green-option/cn-lab-green-option.dto';
 import {CnAuthService, CnExternalCheckCredentialResponse} from '../cn-auth/cn-auth.service';
 import {CnLabInstanceServerTaskStatus} from './status/cn-lab-instance-status.enum';
+import {CnLabInstanceStatusService} from './status/cn-lab-instance-status.service';
+import {CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse} from './status/cn-lab-instance-status.dto';
 
 
 @Injectable()
@@ -95,7 +95,8 @@ export class CnLabInstanceAggregateService {
               private labInstanceDesktopService: CnLabInstanceDesktopService,
               private labMailService: CnLabInstanceMailService,
               private labGreenOptionService: CnLabGreenOptionService,
-              private authService: CnAuthService) {
+              private authService: CnAuthService,
+              private labStatusService: CnLabInstanceStatusService) {
   }
 
   /**
@@ -828,6 +829,7 @@ export class CnLabInstanceAggregateService {
 
     labInstance = await this.labServerService.startLab(labInstance);
 
+    // TODO fix because when the await start lab finihsed, the lab is not really started
     // start the lab if the lab is configured
     this.configureAndStartLabBricksAfterInit(labInstance.id).catch(
       // if an error occurred we just refresh the lab status
@@ -902,7 +904,7 @@ export class CnLabInstanceAggregateService {
   public async getLabInstanceRunningKpis(labInstanceId: string, request: CnLabInstanceStatusRunRequest):
     Promise<CnLabInstanceStatusRunResponse> {
     const labInstance = await this.getAndCheckAuthorizationToFindById(labInstanceId);
-    return this.labInstancesService.getLabInstanceRunningKpis(labInstance.id, request);
+    return this.labStatusService.getLabInstanceRunningKpis(labInstance.id, request);
   }
 
   ////////////////////////// DESKTOP //////////////////////////////

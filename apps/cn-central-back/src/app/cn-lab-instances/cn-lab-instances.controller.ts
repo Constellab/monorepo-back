@@ -13,8 +13,6 @@ import {
   CnLabInstanceDesktopConfig,
   CnLabInstanceDto,
   CnLabInstanceStatusDTO,
-  CnLabInstanceStatusRunRequest,
-  CnLabInstanceStatusRunResponse,
   CnRequestLabInstance,
 } from './cn-lab-instance.dto';
 import {
@@ -33,6 +31,7 @@ import * as AdmZip from 'adm-zip';
 import {CnLabGreenOption} from './green-option/cn-lab-green-option.entity';
 import {CnLabGreenOptionFormDto} from './green-option/cn-lab-green-option.dto';
 import {CnLabFreeTrialService} from './free-trial/cn-lab-free-trial.service';
+import {CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse} from './status/cn-lab-instance-status.dto';
 
 
 @Controller('lab-instances')

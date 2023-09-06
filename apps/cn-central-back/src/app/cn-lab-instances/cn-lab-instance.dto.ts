@@ -143,20 +143,3 @@ export interface CnRequestLabInstance {
   additionalInfo?: string;
 }
 
-
-export interface CnLabInstanceStatusRunRequest{
-  period: 'LAST_WEEK' | 'LAST_MONTH' | 'LAST_YEAR' | 'ALL' | 'CUSTOM';
-  customStartDate?: string;
-  customEndDate?: string;
-}
-
-export class CnLabInstanceStatusRunResponse{
-  period: 'LAST_WEEK' | 'LAST_MONTH' | 'LAST_YEAR' | 'ALL' | 'CUSTOM';
-
-  @ClLuxonDateTransform()
-  fromDate: DateTime;
-  @ClLuxonDateTransform()
-  toDate: DateTime;
-
-  runDuration: number;
-}

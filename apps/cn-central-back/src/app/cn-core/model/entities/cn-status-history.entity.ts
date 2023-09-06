@@ -22,4 +22,20 @@ export abstract class CnStatusHistory<S> extends CnBaseEntity {
     }
     return -1;
   }
+
+  public startedBefore(date: DateTime): boolean {
+    return this.createdAt < date;
+  }
+
+  public startedBetween(fromDate: DateTime, toDate: DateTime): boolean {
+    return this.createdAt >= fromDate && this.createdAt < toDate;
+  }
+
+  /**
+   * Return true if the status is still active at the given date
+   * @param date
+   */
+  public endsAfter(date: DateTime): boolean {
+    return this.endDate == null || this.endDate > date;
+  }
 }
