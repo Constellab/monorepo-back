@@ -3,7 +3,6 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {CnLabInstance, CnLabInstanceType} from './cn-lab-instance.entity';
 import {DataSource, DeleteResult, EntityManager, In, Not, Repository} from 'typeorm';
 import {
-  cnLabInstanceRunningStatuses,
   CnLabInstanceServerTaskStatus,
   CnLabInstanceStatus,
   cnLabInstanceTemporaryStatuses
@@ -17,8 +16,8 @@ import {CnExperimentsService} from '../cn-projects-aggregate/cn-experiments/cn-e
 import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
 import {CnReportsService} from '../cn-projects-aggregate/cn-reports/cn-reports.service';
 import {BlBadRequestException, BlSearchBuilder, BlSearchParams} from '@monorepo/back-core-lib';
-import {CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse} from './cn-lab-instance.dto';
-import {DateTime} from 'luxon';
+import {EventEmitter2} from '@nestjs/event-emitter';
+import {cnLabInstanceEventName, CnLabInstanceStatusChangedEvent} from './cn-lab-instance.event';
 
 @Injectable()
 export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInstance, CnLabInstanceStatus> {
@@ -26,9 +25,10 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   public static readonly SUPPORTED_MAIN_DOMAINS = ['gencovery.io', 'constellab.app'];
 
   constructor(@InjectRepository(CnLabInstance) private repository: Repository<CnLabInstance>,
-              @InjectRepository(CnLabInstanceStatusHistory) private statusRepo: Repository<CnLabInstanceStatusHistory>,
+              @InjectRepository(CnLabInstanceStatusHistory) statusRepo: Repository<CnLabInstanceStatusHistory>,
               private experimentService: CnExperimentsService,
               private reportService: CnReportsService,
+              private eventEmitter: EventEmitter2,
               datasource: DataSource) {
     super(repository, CnLabInstance, statusRepo, CnLabInstanceStatusHistory, datasource);
   }
@@ -38,9 +38,9 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     await this.checkLabInstanceBeforeSave(entity);
 
     if (entityManager) {
-      return super.createWithStatusTransaction(entity, CnLabInstanceStatus.SERVER_NOT_CONFIGURED, entityManager);
+      return super.createWithStatusTransaction(entity, CnLabInstanceStatus.NO_SERVER, entityManager);
     } else {
-      return super.createWithStatus(entity, CnLabInstanceStatus.SERVER_NOT_CONFIGURED);
+      return super.createWithStatus(entity, CnLabInstanceStatus.NO_SERVER);
     }
   }
 
@@ -151,7 +151,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return virtualHost.toLowerCase();
   }
 
-  async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
+  async deleteById(id: string, entityManager: EntityManager): Promise<DeleteResult> {
     const labInstance = await this.findByIdAndCheck(id);
     if (!ClHelpService.isNullOrEmpty(labInstance.serverInstanceId) || !ClHelpService.isNullOrEmpty(labInstance.serverVolumeId)) {
       throw new BlBadRequestException('Can\'t delete the lab instance because the server or volume still exist. Please delete them first');
@@ -203,7 +203,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     });
   }
 
-  public markInstanceAsServerRunning(id: string): Promise<CnLabInstance> {
+  public async markInstanceAsServerRunning(id: string): Promise<CnLabInstance> {
     return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_RUNNING, id);
   }
 
@@ -223,8 +223,34 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_STOPPING, id);
   }
 
-  public markInstanceAsServerNotConfigured(id: string): Promise<CnLabInstance> {
-    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_NOT_CONFIGURED, id);
+  public markInstanceAsNoServer(id: string): Promise<CnLabInstance> {
+    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.NO_SERVER, id);
+  }
+
+  // public markInstanceAsServerConfiguring(id: string): Promise<CnLabInstance> {
+  //   return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_CONFIGURING, id);
+  // }
+
+  public markInstanceAsServerConfigured(id: string): Promise<CnLabInstance> {
+    return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_CONFIGURED, id);
+  }
+
+  // override the status change event to emit a lab instance event
+  async updateCurrentStatusIfChangedWithDbEntity(status: CnLabInstanceStatus, dbEntity: CnLabInstance): Promise<CnLabInstance> {
+    if (dbEntity.currentStatus.status === status) {
+      return dbEntity;
+    }
+
+    const oldStatus = dbEntity.currentStatus.status;
+    const newLab = await this.updateCurrentStatusWithDbEntity(status, dbEntity);
+    const event: CnLabInstanceStatusChangedEvent = {
+      labInstanceId: newLab.id,
+      newStatus: newLab.currentStatus.status,
+      oldStatus: oldStatus,
+      type: 'LAB_STATUS_CHANGED',
+    };
+    this.eventEmitter.emit(cnLabInstanceEventName, event);
+    return newLab;
   }
 
 
@@ -273,6 +299,13 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return this.findPaginated(page, size, searchBuilder.build());
   }
 
+  /**
+   * Update the server task text and status
+   * A running server task must always be updated to SUCCESS or ERROR after the task is finished
+   * @param labInstanceId
+   * @param text
+   * @param status
+   */
   public async updateServerTask(labInstanceId: string, text: string, status: CnLabInstanceServerTaskStatus): Promise<CnLabInstance> {
     const labInstance = await this.findByIdAndCheck(labInstanceId);
     labInstance.serverTaskText = text;

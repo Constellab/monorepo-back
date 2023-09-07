@@ -360,9 +360,4 @@ export class CnProjectsController {
                        @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnActivity>> {
     return await this.projectAggregate.searchProjectActivity(projectId, searchParam, page, size);
   }
-
-  @Post('migrate')
-  migrate(): Promise<void> {
-    return this.projectAggregate.migrateProjectUsers();
-  }
 }

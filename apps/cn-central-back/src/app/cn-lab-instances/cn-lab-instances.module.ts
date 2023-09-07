@@ -41,6 +41,7 @@ import {CnCloudProvidersModule} from '../cn-cloud-providers/cn-cloud-providers.m
 import {CnServersInfoModule} from '../cn-servers-info/cn-servers-info.module';
 import {CnSpacesModule} from '../cn-spaces/cn-spaces.module';
 import {CnLabInstanceStatusService} from './status/cn-lab-instance-status.service';
+import {CnLabListener} from './cn-lab.listener';
 
 @Module({
   imports: [
@@ -94,6 +95,7 @@ import {CnLabInstanceStatusService} from './status/cn-lab-instance-status.servic
     CnLabGreenOptionService,
     CnLabFreeTrialService,
     CnLabInstanceStatusService,
+    CnLabListener,
   ],
   exports: [
     CnLabInstancesService,

@@ -42,34 +42,36 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
     return this.updateWithCompare(entity, await this.findByIdAndCheck(entity.id), entityManager);
   }
 
+  async updatePartial(id: string, entity: Partial<T>, entityManager?: EntityManager): Promise<T> {
+    entity.id = id;
+    return this.updateWithCompare(entity, await this.findByIdAndCheck(id), entityManager);
+  }
+
   /**
    * Compare the DB entity and update it
    * Use to check property metadata including {@link BlNotUpdatable}
    * @protected
    */
-  protected async updateWithCompare(newEntity: T, dbEntity: T, entityManager?: EntityManager): Promise<T> {
-    for (const property in dbEntity) {
+  protected async updateWithCompare(newEntity: Partial<T>, dbEntity: T, entityManager?: EntityManager): Promise<T> {
+    for (const property in newEntity) {
       // eslint-disable-next-line no-prototype-builtins
       if (!dbEntity.hasOwnProperty(property)) {
         continue;
       }
 
       // check if the property is updatable or is undefined
-      if (blPropertyIsNotUpdatable(newEntity, property) || newEntity[property] === undefined) {
+      if (!blPropertyIsNotUpdatable(dbEntity, property) && newEntity[property] !== undefined) {
         // if not set the value of the db (if undefined it won't be updated)
-        newEntity[property] = dbEntity[property];
+        dbEntity[property] = newEntity[property];
       }
 
     }
 
-    const newEntity2 = await this.getEntityManager(entityManager).save(newEntity);
-    this.logAction('UPDATE', newEntity2.id, entityManager == null);
+    const newEntity2 = await this.getEntityManager(entityManager).save(dbEntity);
+    this.logAction('UPDATE', dbEntity.id, entityManager == null);
     return newEntity2;
   }
 
-  async delete(entity: T, entityManager?: EntityManager): Promise<DeleteResult> {
-    return this.getEntityManager(entityManager).delete(this.entityClass, entity.id)
-  }
 
   async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
     const deleteResult: DeleteResult = await this.getEntityManager(entityManager).delete(this.entityClass, id);

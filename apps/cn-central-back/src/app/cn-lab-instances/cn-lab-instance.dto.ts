@@ -9,16 +9,16 @@ import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {Type} from 'class-transformer';
 import {CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
 import {
+  CnLabDesktopPlatform,
   CnLabInstance,
   CnLabInstanceBillingMode,
   CnLabInstanceType,
-  CnLabInstanceVolumeType,
-  CnLabDesktopPlatform
+  CnLabInstanceVolumeType
 } from './cn-lab-instance.entity';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnLabInstanceServerTaskStatus, CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 import {DateTime} from 'luxon';
-import {ClLuxonDateTimeTransform, ClLuxonDateTransform} from '@monorepo/core-lib';
+import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 
 
 /**
@@ -124,6 +124,7 @@ export class CnLabInstanceStatusDTO {
   labIsRunning: boolean;
   hasServerInstanceId: boolean;
   hasServerVolumeId: boolean;
+  dnsConfigured: boolean;
   serverTaskText: string;
   serverTaskStatus: CnLabInstanceServerTaskStatus;
 

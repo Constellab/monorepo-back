@@ -209,7 +209,7 @@ export class CnLabInstancesController {
    */
   @Put(':id/status/refresh')
   public refreshStatus(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusDTO> {
-    return this.aggregateService.refreshStatus(id);
+    return this.aggregateService.checkAndRefreshStatus(id);
   }
 
   //////////////////////////// USERS ////////////////////////////////

@@ -7,6 +7,7 @@ import {CnLabManagerService} from '../cn-lab-manager.service';
 import {CnLabSshService} from './cn-lab-ssh.service';
 import {CnCloudProviderFactory} from './cn-cloud-provider.factory';
 import {CnLabInstanceServerTaskStatus} from '../status/cn-lab-instance-status.enum';
+import {BlBadRequestException} from '@monorepo/back-core-lib';
 
 /**
  * Service to configure the lab server.
@@ -25,26 +26,32 @@ export class CnLabConfigurerService {
   }
 
   public async configureServer(labInstance: CnLabInstance): Promise<CnLabInstance> {
-    // get Dockerlab repository
-    await this.refreshDockerlabRepo(labInstance);
+    try {
+      // get Dockerlab repository
+      await this.refreshDockerlabRepo(labInstance);
 
-    // mount volume
-    await this.mountVolume(labInstance);
+      // mount volume
+      await this.mountVolume(labInstance);
 
-    // Execute prepare_server.sh
-    await this.callPrepareServer(labInstance);
+      // Execute prepare_server.sh
+      await this.callPrepareServer(labInstance);
 
-    await this.rebootAndWaitForServer(labInstance);
+      await this.rebootAndWaitForServer(labInstance);
 
-    // Execute init.sh
-    await this.callInitScript(labInstance);
+      // Execute init.sh
+      await this.callInitScript(labInstance);
 
-    // execute docker compose up
-    await this.callDockerComposeUp(labInstance);
+      // execute docker compose up
+      await this.callDockerComposeUp(labInstance);
 
-    // wait for lab manager
-    await this.labManagerService.waitForHealthCheck(labInstance.getLabManagerApiInfo().apiUrl);
+      // wait for lab manager
+      await this.labManagerService.waitForHealthCheck(labInstance.getLabManagerApiInfo().apiUrl);
 
+    } catch (e) {
+      await this.labInstanceService.updateServerTask(labInstance.id, `Error during server configuration. Error : ${e}`,
+        CnLabInstanceServerTaskStatus.ERROR);
+      throw e;
+    }
     return labInstance;
   }
 
@@ -53,9 +60,7 @@ export class CnLabConfigurerService {
     try {
       await this.refreshDockerlabRepo(labInstance);
     } catch (e) {
-      await this.labInstanceService.updateServerTask(labInstance.id, `Error while updating dockerlab repository. Error : ${e}`,
-        CnLabInstanceServerTaskStatus.ERROR);
-      throw e;
+      throw new Error(`Error while updating dockerlab repository. Error : ${e}`);
     }
     await this.labInstanceService.updateServerTask(labInstance.id, `Dockerlab repository updated`, CnLabInstanceServerTaskStatus.SUCCESS);
   }
@@ -70,7 +75,6 @@ export class CnLabConfigurerService {
       [`cd ${CnLabSshService.DOCKERLAB_FOLDER}`],
       {errorMode: CnExecCommandMode.STDERR_AS_SUCCESS, ignoreError: true, timeout: 10000});
 
-    console.log('Cd result : ' + cdResult);
     // todo does not work if this is the first time the ssh connection is made
     // if the repo does exist, delete it to re-clone it
     if (cdResult === '') {
@@ -94,9 +98,7 @@ export class CnLabConfigurerService {
       const cloudProvider = this.cloudProviderFactory.getCloudProviderService(labInstance.getCloudProviderName());
       await cloudProvider.mountVolume(labInstance);
     } catch (e) {
-      await this.labInstanceService.updateServerTask(labInstance.id, `Error while mounting volume. Error : ${e}`,
-        CnLabInstanceServerTaskStatus.ERROR);
-      throw e;
+      throw new Error(`Error while mounting volume. Error : ${e}`);
     }
   }
 
@@ -106,9 +108,7 @@ export class CnLabConfigurerService {
       await this.labSshService.execSshCommand(labInstance, [`cd ${this.labSshService.getUtilsFolder()}`,
         `bash prepare_server.sh`]);
     } catch (e) {
-      await this.labInstanceService.updateServerTask(labInstance.id, `Error while preparing server. Error : ${e}`,
-        CnLabInstanceServerTaskStatus.ERROR);
-      throw e;
+      throw new Error(`Error while preparing server. Error : ${e}`);
     }
   }
 
@@ -122,9 +122,7 @@ export class CnLabConfigurerService {
 
       await this.labSshService.waitForSshConnection(labInstance, 2);
     } catch (e) {
-      await this.labInstanceService.updateServerTask(labInstance.id, `Error while rebooting server. Error : ${e}`,
-        CnLabInstanceServerTaskStatus.ERROR);
-      throw e;
+      throw new Error(`Error while rebooting server. Error : ${e}`);
     }
   }
 
@@ -153,8 +151,7 @@ export class CnLabConfigurerService {
       await this.labSshService.execSshCommand(labInstance,
         [`cd ${CnLabSshService.DOCKERLAB_FOLDER}`, 'docker-compose up -d']);
     } catch (e) {
-      await this.labInstanceService.updateServerTask(labInstance.id, `Error while starting lab manager. Error : ${e}`,
-        CnLabInstanceServerTaskStatus.ERROR);
+      throw new Error(`Error while starting lab manager. Error : ${e}`);
     }
   }
 
@@ -166,9 +163,9 @@ export class CnLabConfigurerService {
       await this.labSshService.execSshCommand(labInstance,
         [`cd ${CnLabSshService.DOCKERLAB_FOLDER}`, `. update_lab_manager.sh ${labManagerVersion}`]);
     } catch (e) {
-      await this.labInstanceService.updateServerTask(labInstance.id, `Error while updating lab manager. Error : ${e}`,
-        CnLabInstanceServerTaskStatus.ERROR);
-      throw e;
+      const error = `Error while updating lab manager. Error : ${e}`;
+      await this.labInstanceService.updateServerTask(labInstance.id, error, CnLabInstanceServerTaskStatus.ERROR);
+      throw new BlBadRequestException(error);
     }
     await this.labInstanceService.updateServerTask(labInstance.id, `Lab manager updated`, CnLabInstanceServerTaskStatus.SUCCESS);
   }

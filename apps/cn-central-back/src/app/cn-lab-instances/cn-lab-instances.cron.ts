@@ -2,7 +2,6 @@ import {Injectable, Logger} from '@nestjs/common';
 import {Cron} from '@nestjs/schedule';
 import {CnLabInstancesService} from './cn-lab-instances.service';
 import {CnLabServerService} from './server/cn-lab-server.service';
-import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.service';
 import {
   CnLabGreenOption,
@@ -15,6 +14,8 @@ import {CnExternalLabApiService} from '../cn-external-lab-api/cn-external-lab-ap
 import {ClDateHelper} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {CnLabInstance} from './cn-lab-instance.entity';
+import {CnLabInstanceAggregateService} from './cn-lab-instance-aggregate.service';
+import {CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 
 /**
  * Service that gather all the cron jobs for the lab instances
@@ -26,21 +27,32 @@ export class CnLabInstancesCron {
 
   constructor(private labServerService: CnLabServerService,
               private labInstanceService: CnLabInstancesService,
-              private userService: CnUsersService,
               private labRuleService: CnLabGreenOptionService,
               private labManagerService: CnExternalLabManagerApiService,
-              private externalLabApiService: CnExternalLabApiService) {
+              private externalLabApiService: CnExternalLabApiService,
+              private labAggregateService: CnLabInstanceAggregateService) {
   }
 
   /**
-   * Refresh the status of the lab instances and stop waiting lab instances
+   * Refresh temp the status of the lab instances every minute
+   */
+  @Cron('0 */1 * * * *')
+  async refreshLabInstanceTempStatus(): Promise<void> {
+    this.logger.debug('[Cron] Start of refresh lab instance temp status');
+
+    await this.refreshLabTempStatus();
+
+    this.logger.debug('[Cron] End of refresh lab instance temp status');
+  }
+
+  /**
+   * Manager Green options to stop the lab instances
    */
   // '0 */10 * * * *' = every 10 minutes
   @Cron('0 */10 * * * *')
   async refreshLabInstanceStatus(): Promise<void> {
     this.logger.debug('[Cron] Start of refresh lab instance status');
 
-    await this.refreshLabTempStatus();
     await this.checkStopAfterBackup();
     await this.checkStopAfterExperiment();
     await this.checkStopAfterTime();
@@ -53,7 +65,15 @@ export class CnLabInstancesCron {
     const labInstances = await this.labInstanceService.getLabInstancesWithTempStatus();
 
     for (const labInstance of labInstances) {
-      await this.labServerService.refreshLabStatus(labInstance.id).catch();
+
+      // for status SERVER_RUNNING and SERVER_CONFIGURED, that are considered as half temp, we stop checking after 30 minutes
+      if([CnLabInstanceStatus.SERVER_RUNNING, CnLabInstanceStatus.SERVER_CONFIGURED].includes(labInstance.currentStatus.status)) {
+        if(labInstance.currentStatus.createdAt.diffNow('minutes').minutes > 30) {
+          continue;
+        }
+      }
+
+      await this.labAggregateService.refreshLabStatus(labInstance.id).catch();
     }
   }
 

@@ -12,11 +12,7 @@ import {
 } from './cn-cloud-provider.class';
 import {CnLabInstance} from '../cn-lab-instance.entity';
 import {CnLabInstancesService} from '../cn-lab-instances.service';
-import {
-  CnLabInstanceServerTaskStatus,
-  CnLabInstanceStatus,
-  cnLabInstanceTemporaryStatuses
-} from '../status/cn-lab-instance-status.enum';
+import {CnLabInstanceServerTaskStatus} from '../status/cn-lab-instance-status.enum';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnExternalLabApiService} from '../../cn-external-lab-api/cn-external-lab-api.service';
 import {CnCloudProviderFactory} from './cn-cloud-provider.factory';
@@ -75,6 +71,8 @@ export class CnLabServerService {
    * It creates the volume if it doesn't exist
    * It attaches the volume to the instance if not attached
    * It creates the domain record if it doesn't exist
+   *
+   * When calling this method it must be wrapped around a try catch to mark serverTask as error if needed
    */
   public async initInstance(labInstance: CnLabInstance): Promise<CnLabInstance> {
 
@@ -86,8 +84,7 @@ export class CnLabServerService {
     if (!labInstance.serverInstanceId) {
       // Creating the server instance
       serverInstance = await this.createLabInstance(cloudProviderService, labInstance);
-      labInstance.serverInstanceId = serverInstance.id;
-      labInstance = await this.labInstanceService.update(labInstance);
+      labInstance = await this.labInstanceService.updatePartial(labInstance.id, {serverInstanceId: serverInstance.id});
     } else {
       serverInstance = await cloudProviderService.getInstance(labInstance.serverInstanceId);
       if (serverInstance == null) {
@@ -101,8 +98,7 @@ export class CnLabServerService {
     if (!labInstance.serverVolumeId) {
       // Creating the volume
       volume = await this.createVolume(cloudProviderService, labInstance);
-      labInstance.serverVolumeId = volume.id;
-      labInstance = await this.labInstanceService.update(labInstance);
+      labInstance = await this.labInstanceService.updatePartial(labInstance.id, {serverVolumeId: volume.id});
     } else {
       volume = await cloudProviderService.getVolume(labInstance.serverVolumeId);
       if (volume == null) {
@@ -140,16 +136,12 @@ export class CnLabServerService {
     }
 
     if (serverInstance.status === 'CREATING') {
-      await this.labInstanceService.updateServerTask(labInstance.id,
-        'Server instance not ready, please refresh the status if few minutes and then contact the support if the problem persists',
-        CnLabInstanceServerTaskStatus.ERROR);
-      throw new BlBadRequestException('Instance not ready');
+      throw new BlBadRequestException(
+        'Server instance not ready, please refresh the status if few minutes and then contact the support if the problem persists');
     }
     if (volume.status === 'CREATING') {
-      await this.labInstanceService.updateServerTask(labInstance.id,
-        'Volume not ready, please refresh the status if few minutes and then contact the support if the problem persists',
-        CnLabInstanceServerTaskStatus.ERROR);
-      throw new BlBadRequestException('Volume not ready');
+      throw new BlBadRequestException(
+        'Volume not ready, please refresh the status if few minutes and then contact the support if the problem persists');
     }
 
     // Attaching the volume to the server
@@ -222,21 +214,26 @@ export class CnLabServerService {
     // check if the domain record already exists
     if (domainExists) {
       this.logger.log(`Domain record ${subDomainName} for lab ${labInstance.id} already exists, skipping creation`);
+      if (!labInstance.dnsConfigured) {
+        await this.labInstanceService.updatePartial(labInstance.id, {dnsConfigured: true});
+      }
       return;
     }
 
     if (!ipv4) {
-      await this.labInstanceService.updateServerTask(labInstance.id,
-        'The ip adresse of the server is not available, please retry in few minutes and contact the support if the problem persists',
-        CnLabInstanceServerTaskStatus.ERROR);
-      throw new BlBadRequestException(`No IP address for lab ${labInstance.id} with server id ${labInstance.serverInstanceId}`);
+      throw new BlBadRequestException(
+        'The ip adresse of the server is not available, please retry in few minutes and contact the support if the problem persists');
     }
-
     await this.labInstanceService.updateServerTask(labInstance.id, 'Creating DNS record for the lab',
       CnLabInstanceServerTaskStatus.RUNNING);
     this.logger.log(`Creating domain record for lab ${labInstance.id} with subdomain ${subDomainName}`);
-    await this.ovhCloudProviderService.createDomainForLab(ipv4, mainDomain, subDomainName);
+    try {
+      await this.ovhCloudProviderService.createDomainForLab(ipv4, mainDomain, subDomainName);
+    } catch (e) {
+      throw new Error(`Error while creating domain record for lab. Error: ${e}`);
+    }
     this.logger.log(`Domain record created for lab ${labInstance.id} with subdomain ${subDomainName}`);
+    await this.labInstanceService.updatePartial(labInstance.id, {dnsConfigured: true});
   }
 
   private async attachVolumeToInstance(service: CnCloudProviderService, serverInstanceId: string, volumeId: string,
@@ -259,8 +256,7 @@ export class CnLabServerService {
       this.logger.log(`Deleting server instance ${labInstance.serverInstanceId} for lab ${labInstance.id}`);
       await cloudProviderService.deleteInstance(labInstance.serverInstanceId);
       const serverInstanceId = labInstance.serverInstanceId;
-      labInstance.serverInstanceId = null;
-      await this.labInstanceService.update(labInstance);
+      await this.labInstanceService.updatePartial(labInstance.id, {serverInstanceId: null});
       this.logger.log(`Server instance ${serverInstanceId} deleted for lab ${labInstance.id}`);
     } else {
       this.logger.log(`No server instance for lab ${labInstance.id}`);
@@ -270,17 +266,28 @@ export class CnLabServerService {
       this.logger.log(`Deleting volume ${labInstance.serverVolumeId} for lab ${labInstance.id}`);
       await cloudProviderService.deleteVolume(labInstance.serverVolumeId);
       const volumeId = labInstance.serverVolumeId;
-      labInstance.serverVolumeId = null;
-      await this.labInstanceService.update(labInstance);
+      await this.labInstanceService.updatePartial(labInstance.id, {serverVolumeId: null});
       this.logger.log(`Volume ${volumeId} deleted for lab ${labInstance.id}`);
     } else {
       this.logger.log(`No volume for lab ${labInstance.id}. Skipping deletion`);
     }
 
-    this.logger.log(`Deleting domain record ${labInstance.virtualHost} for lab ${labInstance.id}`);
-    await this.ovhCloudProviderService.deleteDomainRecord(labInstance.getMainDomain(), labInstance.getSubDomainName());
-
-    await this.refreshLabStatus(labInstance.id);
+    // delete domain record
+    const mainDomain = labInstance.getMainDomain();
+    const subDomainName = labInstance.getSubDomainName();
+    const domainExists = await this.ovhCloudProviderService.labDomainRecordExists(mainDomain, subDomainName);
+    // check if the domain record already exists
+    if (domainExists) {
+      this.logger.log(`Deleting domain record ${labInstance.virtualHost} for lab ${labInstance.id}`);
+      await this.ovhCloudProviderService.deleteDomainRecord(labInstance.getMainDomain(), labInstance.getSubDomainName());
+      await this.labInstanceService.updatePartial(labInstance.id, {dnsConfigured: false});
+      this.logger.log(`Domain record ${labInstance.virtualHost} deleted for lab ${labInstance.id}`);
+    } else {
+      if (labInstance.dnsConfigured) {
+        await this.labInstanceService.updatePartial(labInstance.id, {dnsConfigured: false});
+      }
+      this.logger.log(`No domain record for lab ${labInstance.id}. Skipping deletion`);
+    }
   }
 
   public async startLab(labInstance: CnLabInstance): Promise<CnLabInstance> {
@@ -292,51 +299,17 @@ export class CnLabServerService {
 
     const serverInstance = await cloudProviderService.getInstance(labInstance.serverInstanceId);
 
-    // if the server is running
-    if (serverInstance.status === 'RUNNING') {
-      //set lab instance to running if it is not already
-      if (labInstance.currentStatus.status !== CnLabInstanceStatus.SERVER_RUNNING) {
-        this.logger.log(`Refreshing lab ${labInstance.id} status to server running`);
-        return await this.labInstanceService.markInstanceAsServerRunning(labInstance.id);
-      } else {
-        throw new BlBadRequestException(`Lab is already running`);
-      }
-    }
-
     if (serverInstance.status === 'CREATING' || serverInstance.status === 'RESTARTING' || serverInstance.status === 'STOPPING') {
-      throw new BlBadRequestException(`Lab is currently ${serverInstance.status}`);
+      throw new BlBadRequestException(`Server is currently ${serverInstance.status}`);
     }
 
     // if the server is stopped
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
     this.logger.log(`Starting server instance ${labInstance.serverInstanceId} for lab ${labInstance.id} by ${user.email}`);
-    await this.labInstanceService.updateServerTask(labInstance.id, 'Starting server instance', CnLabInstanceServerTaskStatus.RUNNING);
     await cloudProviderService.startInstance(labInstance.serverInstanceId);
-    labInstance = await this.labInstanceService.markInstanceAsServerStarting(labInstance.id);
-
-    this.checkServerStartedAsync(labInstance.id).catch(
-      error => Logger.error(`Error during lab status check, lab server not started, please refresh status later. Error ${error}`)
-    )
-    return labInstance;
+    return await this.labInstanceService.markInstanceAsServerStarting(labInstance.id);
   }
 
-  private async checkServerStartedAsync(labInstanceId: string): Promise<void> {
-    await this.checkForServerToBeNotBusy(labInstanceId).catch(
-      async error => {
-        this.logger.error(`Lab ${labInstanceId} is busy. Cannot update lab. Error: ${error}`);
-        await this.labInstanceService.updateServerTask(labInstanceId,
-          'Error during lab status check, lab server not stopped, please refresh status later', CnLabInstanceServerTaskStatus.ERROR)
-      }
-    );
-
-    const labInstance = await this.labInstanceService.findByIdAndCheck(labInstanceId);
-    if (labInstance.currentStatus.status === CnLabInstanceStatus.SERVER_RUNNING) {
-      await this.labInstanceService.updateServerTask(labInstance.id, 'Lab server started', CnLabInstanceServerTaskStatus.SUCCESS);
-    } else {
-      await this.labInstanceService.updateServerTask(labInstance.id,
-        'Lab server not started, please refresh status later', CnLabInstanceServerTaskStatus.ERROR);
-    }
-  }
 
   public async stopLab(labInstance: CnLabInstance): Promise<CnLabInstance> {
     if (!labInstance.serverInstanceId) {
@@ -347,51 +320,17 @@ export class CnLabServerService {
 
     const serverInstance = await cloudProviderService.getInstance(labInstance.serverInstanceId);
 
-    // if the server is stopped
-    if (serverInstance.status === 'STOPPED') {
-      //set lab instance to stopped if it is not already
-      if (labInstance.currentStatus.status !== CnLabInstanceStatus.SERVER_STOPPED) {
-        this.logger.log(`Refreshing lab ${labInstance.id} status to stopped`);
-        return await this.labInstanceService.markInstanceAsServerStopped(labInstance.id);
-      } else {
-        throw new BlBadRequestException(`Lab is already stopped`);
-      }
-    }
-
     if (serverInstance.status !== 'RUNNING') {
-      throw new BlBadRequestException(`Lab is currently ${serverInstance.status}`);
+      throw new BlBadRequestException(`Server is currently ${serverInstance.status}`);
     }
 
     // if the server is running
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
     this.logger.log(`Stopping server instance ${labInstance.serverInstanceId} for lab ${labInstance.id} by ${user.email}`);
-    await this.labInstanceService.updateServerTask(labInstance.id, 'Stopping server instance', CnLabInstanceServerTaskStatus.RUNNING);
     await cloudProviderService.stopInstance(labInstance.serverInstanceId);
-    labInstance = await this.labInstanceService.markInstanceAsServerStopping(labInstance.id);
-
-    this.checkServerStoppedAsync(labInstance.id).catch(
-      error => Logger.error(`Error during lab status check, lab server not stopped, please refresh status later. Error ${error}`)
-    )
-    return labInstance;
+    return await this.labInstanceService.markInstanceAsServerStopping(labInstance.id);
   }
 
-  private async checkServerStoppedAsync(labInstanceId: string): Promise<void> {
-    await this.checkForServerToBeNotBusy(labInstanceId).catch(
-      async error => {
-        this.logger.error(`Lab ${labInstanceId} is busy. Cannot update lab. Error: ${error}`);
-        await this.labInstanceService.updateServerTask(labInstanceId,
-          'Error during lab status check, lab server not stopped, please refresh status later', CnLabInstanceServerTaskStatus.ERROR)
-      }
-    );
-
-    const labInstance = await this.labInstanceService.findByIdAndCheck(labInstanceId);
-    if (labInstance.currentStatus.status === CnLabInstanceStatus.SERVER_STOPPED) {
-      await this.labInstanceService.updateServerTask(labInstance.id, 'Lab server stopped', CnLabInstanceServerTaskStatus.SUCCESS);
-    } else {
-      await this.labInstanceService.updateServerTask(labInstance.id,
-        'Lab server not stopped, please refresh status later', CnLabInstanceServerTaskStatus.ERROR);
-    }
-  }
 
   public async checkLabActivity(labInstance: CnLabInstance): Promise<void> {
     // check if there are any running containers
@@ -401,7 +340,7 @@ export class CnLabServerService {
         return null;
       });
 
-    if(labActivity == null) return ;
+    if (labActivity == null) return;
 
     if (labActivity.running_experiments > 0) {
       throw new BlBadRequestException(`Lab has ${labActivity.running_experiments} running experiments. Please stop them first`);
@@ -411,78 +350,14 @@ export class CnLabServerService {
       throw new BlBadRequestException(`Lab has ${labActivity.queued_experiments} queued experiments. Please remove them form queue first`);
     }
 
-    if(labActivity.dev_env_running){
+    if (labActivity.dev_env_running) {
       throw new BlBadRequestException(`The dev environment is running. Please stop it first`);
     }
   }
 
-
-  private async checkForServerToBeNotBusy(labInstanceId: string): Promise<void> {
-
-    // Waiting for the server and the volume to be ready
-    let count = 0;
-    while (count <= 60) {
-      // wait for 30 seconds because start and stop can take a while
-      await new Promise(r => setTimeout(r, 30000));
-
-      this.logger.log(`Checking if server of lab ${labInstanceId} is ready`);
-      const labInstance = await this.refreshLabStatus(labInstanceId);
-
-      // once the status is not temporary, we can stop waiting
-      if (!cnLabInstanceTemporaryStatuses.includes(labInstance.currentStatus.status)) {
-        return;
-      }
-      count++;
-    }
-  }
-
-  /**
-   * Refresh the status of the lab instance based on the status of the server instance
-   * @param labInstanceId
-   */
-  public async refreshLabStatus(labInstanceId: string): Promise<CnLabInstance> {
-    const labInstance = await this.labInstanceService.findByIdAndCheck(labInstanceId);
-
-    // if the lab is running, don't check server status, mark it as running
-    const healthCheck = await this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo());
-    if (healthCheck) {
-      return await this.labInstanceService.markInstanceAsLabRunning(labInstanceId);
-    }
-
-    if (!labInstance.serverInstanceId && !labInstance.serverVolumeId) {
-      return await this.labInstanceService.markInstanceAsServerNotConfigured(labInstanceId);
-    }
-
-    // if the server instance id is not set, mark the lab as stopped
-    if (!labInstance.serverInstanceId) {
-      return await this.labInstanceService.markInstanceAsServerStopped(labInstanceId);
-    }
-
-    // check server status
+  public async getLabServerStatus(labInstance: CnLabInstance): Promise<CnCpInstanceStatus> {
     const cloudProviderService = this.cloudProviderFactory.getCloudProviderService(labInstance.getCloudProviderName());
     const serverInstance = await cloudProviderService.getInstance(labInstance.serverInstanceId);
-    return await this.updateLabStatusFromServerStatus(labInstance, serverInstance.status);
+    return serverInstance.status;
   }
-
-
-  /**
-   * Update the lab status based on the server instance status
-   * @private
-   */
-  private updateLabStatusFromServerStatus(labInstance: CnLabInstance, serverInstanceStatus: CnCpInstanceStatus): Promise<CnLabInstance> {
-    const statusMapping: Record<CnCpInstanceStatus, CnLabInstanceStatus> = {
-      'RUNNING': CnLabInstanceStatus.SERVER_RUNNING,
-      'STOPPED': CnLabInstanceStatus.SERVER_STOPPED,
-      'CREATING': CnLabInstanceStatus.SERVER_STARTING,
-      'RESTARTING': CnLabInstanceStatus.SERVER_STARTING,
-      'STOPPING': CnLabInstanceStatus.SERVER_STOPPING,
-    };
-
-    const labStatus: CnLabInstanceStatus = statusMapping[serverInstanceStatus];
-    if (!labStatus) {
-      throw new BlBadRequestException(`Unknown server status ${serverInstanceStatus}`);
-    }
-    return this.labInstanceService.updateCurrentStatusIfChangedWithDbEntity(labStatus, labInstance);
-  }
-
 }

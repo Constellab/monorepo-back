@@ -59,7 +59,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Type(() => CnLabInstanceStatusHistory)
   @OneToOne(() => CnLabInstanceStatusHistory, {
     nullable: true, eager: true,
-    onUpdate: 'CASCADE', onDelete: 'CASCADE'
+    onUpdate: 'RESTRICT', onDelete: 'RESTRICT'
   })
   @JoinColumn()
   currentStatus: CnLabInstanceStatusHistory;
@@ -120,6 +120,10 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Exclude()
   @Column({nullable: true, length: 255})
   serverVolumeId: string;
+
+  @Exclude()
+  @Column({nullable: false, default: false})
+  dnsConfigured: boolean;
 
   // text about the current or last server task status
   @Exclude()
@@ -196,7 +200,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
 
   serverIsStopped(): boolean {
     return (this.currentStatus?.status === CnLabInstanceStatus.SERVER_STOPPED ?? false) ||
-      (this.currentStatus?.status === CnLabInstanceStatus.SERVER_NOT_CONFIGURED ?? false);
+      (this.currentStatus?.status === CnLabInstanceStatus.NO_SERVER ?? false);
   }
 
   getGlabApiInfo(): CnExternalApiInfo {
@@ -254,6 +258,10 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   public serverIsBusy(): boolean {
     return this.currentStatus.status === CnLabInstanceStatus.SERVER_STARTING ||
       this.currentStatus.status === CnLabInstanceStatus.SERVER_STOPPING;
+  }
+
+  public serverTaskIsRunning(): boolean {
+    return this.serverTaskStatus === CnLabInstanceServerTaskStatus.RUNNING;
   }
 
   public setSpace(space: CnSpace): void {

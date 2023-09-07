@@ -808,17 +808,6 @@ export class CnProjectAggregateService {
     return await this.projectSecurity.checkFindOneAndGetRootProject(project, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
   }
 
-  // TODO FOR MIGRATION
-  public async migrateProjectUsers(): Promise<void> {
-    if (!CnCurrentUserHelper.isAdmin()) {
-      throw new BlUnauthorizedException();
-    }
-    const projectGroups = await this.projectGroupRepo.find();
-    for (const projectGroup of projectGroups) {
-      await this.projectUserService.shareProjectToGroup(projectGroup.projectId, projectGroup.groupId);
-    }
-  }
-
   //////////////////////////////// EVENT ///////////////////////////////////////
   private emitProjectEvent(eventType: CnProjectEventType, project: CnProject, entity: any): void {
     const event: CnProjectEvent = {

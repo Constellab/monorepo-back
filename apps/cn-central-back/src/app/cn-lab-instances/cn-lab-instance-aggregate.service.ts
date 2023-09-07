@@ -164,7 +164,9 @@ export class CnLabInstanceAggregateService {
 
   async delete(id: string): Promise<void> {
     await this.getAndCheckAuthorizationToUpdateAdmin(id);
-    await this.labInstancesService.deleteById(id);
+    await this.dataSource.transaction(async entityManager => {
+      await this.labInstancesService.deleteById(id, entityManager);
+    });
   }
 
   async requestLabInstance(request: CnRequestLabInstance): Promise<void> {
@@ -266,13 +268,19 @@ export class CnLabInstanceAggregateService {
       this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo())
     ];
 
-    return Promise.all(promises).then(([labManagerStatus, glabStatus]) => {
+    return Promise.all(promises).then(async ([labManagerStatus, glabStatus]) => {
+      // if the lab is marked as stopped but the glab is accessible for refresh status
+      if (labInstance.isCloud() && glabStatus && labInstance.currentStatus.status === 'SERVER_STOPPED') {
+        labInstance = await this.refreshLabStatus(labInstance.id);
+      }
+
       const labStatus = new CnLabInstanceStatusDTO();
       labStatus.labStatus = labInstance.currentStatus.status;
       labStatus.labManagerIsRunning = labManagerStatus;
       labStatus.labIsRunning = glabStatus;
       labStatus.hasServerInstanceId = !!labInstance.serverInstanceId;
       labStatus.hasServerVolumeId = !!labInstance.serverVolumeId;
+      labStatus.dnsConfigured = labInstance.dnsConfigured;
       labStatus.serverTaskText = labInstance.serverTaskText;
       labStatus.serverTaskStatus = labInstance.serverTaskStatus;
       labStatus.serverTaskDatetime = labInstance.serverTaskDatetime;
@@ -280,7 +288,6 @@ export class CnLabInstanceAggregateService {
     });
 
   }
-
 
   async getStatusHistory(id: string): Promise<CnLabInstanceStatusHistory[]> {
     // check that the user can get experiment
@@ -293,11 +300,59 @@ export class CnLabInstanceAggregateService {
    * Refresh the lab status based on server status
    * @param id
    */
-  async refreshStatus(id: string): Promise<CnLabInstanceStatusDTO> {
+  async checkAndRefreshStatus(id: string): Promise<CnLabInstanceStatusDTO> {
     let labInstance = await this.getAndCheckAuthorizationToFindById(id);
 
-    labInstance = await this.labServerService.refreshLabStatus(labInstance.id);
+    labInstance = await this.refreshLabStatus(labInstance.id);
     return this.getStatus(labInstance);
+  }
+
+  /**
+   * Refresh the status of the lab instance based on the status of the server instance
+   * @param labInstanceId
+   */
+  public async refreshLabStatus(labInstanceId: string): Promise<CnLabInstance> {
+    const labInstance = await this.labInstancesService.findByIdAndCheck(labInstanceId);
+
+    if (!labInstance.isCloud()) {
+      throw new BlBadRequestException(`Cannot refresh status of a lab that is not in the cloud`);
+    }
+
+    if (!labInstance.serverInstanceId && !labInstance.serverTaskIsRunning()) {
+      return await this.labInstancesService.markInstanceAsNoServer(labInstanceId);
+    }
+
+    // manage all the server status, except running
+    const serverStatus = await this.labServerService.getLabServerStatus(labInstance);
+    if (serverStatus === 'CREATING' || serverStatus === 'RESTARTING') {
+      return await this.labInstancesService.markInstanceAsServerStarting(labInstanceId);
+    }
+    if (serverStatus === 'STOPPING') {
+      return await this.labInstancesService.markInstanceAsServerStopping(labInstanceId);
+    }
+    if (serverStatus === 'STOPPED') {
+      return await this.labInstancesService.markInstanceAsServerStopped(labInstanceId);
+    }
+
+    // if there is a task running, the server is configuring
+    // if (labInstance.serverTaskIsRunning()) {
+    //   return await this.labInstancesService.markInstanceAsServerConfiguring(labInstanceId);
+    // }
+
+    // if the lab is running
+    const healthCheck = await this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo());
+    if (healthCheck) {
+      return await this.labInstancesService.markInstanceAsLabRunning(labInstanceId);
+    }
+
+    // if the lab manager is running, mark the lab as configured
+    const labManagerHealthCheck = await this.labManagerService.healthCheck(labInstance.getLabManagerApiInfo().apiUrl);
+    if (labManagerHealthCheck) {
+      return await this.labInstancesService.markInstanceAsServerConfigured(labInstanceId);
+    }
+
+    // otherwise the server is started but not configured
+    return await this.labInstancesService.markInstanceAsServerRunning(labInstanceId);
   }
 
   /////////////////////////////////////// EXTERNAL LAB SERVICE //////////////////////////////////
@@ -312,7 +367,7 @@ export class CnLabInstanceAggregateService {
     // check that the lab is running
     if (!labInstance.isRunning()) {
       // if not, try to refresh the status
-      await this.labServerService.refreshLabStatus(labInstance.id);
+      await this.refreshLabStatus(labInstance.id);
       labInstance = await this.getAndCheckAuthorizationToFindById(id);
       if (!labInstance.isRunning()) {
         throw new BlBadRequestException(CnErrorText.LAB_STOPPED);
@@ -516,25 +571,29 @@ export class CnLabInstanceAggregateService {
   public async initAll(labId: string): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckServerStatusBeforeAction(labId);
     this.checkServerIsRunning(labInstance);
-    return this.labManagerService.initAll(labInstance, labInstance.space.domain);
+    await this.labManagerService.initAll(labInstance, labInstance.space.domain);
+    await this.refreshLabStatus(labInstance.id);
   }
 
   public async upContainers(labId: string, options?: CnLabComposeUpOptions): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckServerStatusBeforeAction(labId);
     this.checkServerIsRunning(labInstance);
-    return this.labManagerService.upContainers(labInstance, options);
+    await this.labManagerService.upContainers(labInstance, options);
+    await this.refreshLabStatus(labInstance.id);
   }
 
   public async restartContainers(labId: string, options?: CnLabComposeRestartOptions): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckServerStatusBeforeAction(labId);
     this.checkServerIsRunning(labInstance);
-    return this.labManagerService.restartContainers(labInstance, options);
+    await this.labManagerService.restartContainers(labInstance, options);
+    await this.refreshLabStatus(labInstance.id);
   }
 
   public async downContainers(labId: string): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckServerStatusBeforeAction(labId);
     this.checkServerIsRunning(labInstance);
-    return this.labManagerService.downContainers(labInstance);
+    await this.labManagerService.downContainers(labInstance);
+    await this.refreshLabStatus(labInstance.id);
   }
 
   public async pullContainers(labId: string): Promise<void> {
@@ -706,8 +765,6 @@ export class CnLabInstanceAggregateService {
     await this.configureServerAsync(labInstance, false);
 
     await this.refreshStatusAndServerText(labInstance.id);
-
-    await this.configureAndStartLabBricksAfterInit(labInstance.id);
   }
 
   public async createServer(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
@@ -763,38 +820,8 @@ export class CnLabInstanceAggregateService {
     return labInstance;
   }
 
-  /**
-   * Method called after the lab server init or lab start is done to start the lab if the lab is configured
-   * If the lab manager is not configured but the lab has a configuration, it updates the lab manager config
-   * @private
-   */
-  private async configureAndStartLabBricksAfterInit(id: string): Promise<CnLabInstance> {
-    const labInstance = await this.labInstancesService.findByIdAndCheck(id, {space: true});
-
-    await this.labManagerService.waitForHealthCheck(labInstance.getLabManagerApiInfo().apiUrl);
-
-
-    // if the lab is already configured, we don't update its config
-    const managerConfig = await this.labManagerService.getConfig(labInstance);
-    if (managerConfig == null || managerConfig.brickVersions == null || managerConfig.brickVersions.length === 0) {
-
-      // if the lab doesn't have a lab config, do nothing
-      if (labInstance.labConfigId == null) return labInstance;
-
-      // get the lab bricks config
-      const labConfig = await this.labConfigService.getCompleteConfig(labInstance.labConfigId);
-
-      const configDto = labConfig.toLabInstanceConfigDTO();
-      await this.labManagerService.updateConfig(labInstance, configDto);
-    }
-
-    await this.labManagerService.initAll(labInstance, labInstance.space.domain);
-
-    return labInstance;
-  }
-
   private async refreshStatusAndServerText(labInstanceId: string): Promise<CnLabInstance> {
-    const status = await this.refreshStatus(labInstanceId);
+    const status = await this.checkAndRefreshStatus(labInstanceId);
     let text: string;
 
     if (!status.hasServerInstanceId || !status.hasServerVolumeId) {
@@ -814,7 +841,7 @@ export class CnLabInstanceAggregateService {
     this.logger.error(message);
     await this.labInstancesService.updateServerTask(labInstanceId, message, CnLabInstanceServerTaskStatus.ERROR)
       .catch(err => this.logger.error(err));
-    this.labServerService.refreshLabStatus(labInstanceId).catch(err => this.logger.error(err));
+    this.refreshLabStatus(labInstanceId).catch(err => this.logger.error(err));
   }
 
   public async deleteServerInstance(labInstanceId: string): Promise<void> {
@@ -822,21 +849,14 @@ export class CnLabInstanceAggregateService {
 
     this.security.checkAuthorizationToDeleteServer(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     await this.labServerService.deleteLabInstanceServerAndVolume(labInstance);
+
+    await this.refreshLabStatus(labInstanceId);
   }
 
   async startInstance(id: string): Promise<CnLabInstance> {
-    let labInstance = await this.getAndCheckServerStatusBeforeAction(id);
+    const labInstance = await this.getAndCheckServerStatusBeforeAction(id);
 
-    labInstance = await this.labServerService.startLab(labInstance);
-
-    // TODO fix because when the await start lab finihsed, the lab is not really started
-    // start the lab if the lab is configured
-    this.configureAndStartLabBricksAfterInit(labInstance.id).catch(
-      // if an error occurred we just refresh the lab status
-      (error: Error) => this.onError(labInstance.id, `Error during lab start : ${error.message}`)
-    );
-
-    return labInstance;
+    return await this.labServerService.startLab(labInstance);
   }
 
 
@@ -951,7 +971,7 @@ export class CnLabInstanceAggregateService {
    * @private
    */
   private async getAndCheckServerStatusBeforeAction(id: string): Promise<CnLabInstance> {
-    await this.labServerService.refreshLabStatus(id);
+    await this.refreshLabStatus(id);
 
     const labInstance = await this.getAndCheckAuthorizationToManageLab(id, true);
 
@@ -959,8 +979,8 @@ export class CnLabInstanceAggregateService {
       throw new BlBadRequestException(`Server is ${labInstance.currentStatus.status} and cannot configured`);
     }
 
-    if (labInstance.serverTaskStatus === CnLabInstanceServerTaskStatus.RUNNING) {
-      throw new BlBadRequestException('A task is running on the lab, it can\'t be configured');
+    if (labInstance.serverTaskIsRunning()) {
+      throw new BlBadRequestException(`The task '${labInstance.serverTaskText}' is running on the lab, it can't be configured`);
     }
 
     // if the lab is not running, no need to check if an experiment is running

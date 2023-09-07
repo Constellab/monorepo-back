@@ -33,5 +33,4 @@ export interface CnProjectEvent {
   parentProject: CnProject;
   entity: any;
   userInfo: CnUserSpaceInfo;
-
 }
