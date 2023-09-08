@@ -3,4 +3,5 @@ export enum CnExperimentStatus {
   SUCCESS = 'SUCCESS',
   ERROR = 'ERROR',
   ARCHIVED = 'ARCHIVED',
+  PARTIALLY_RUN = "PARTIALLY_RUN"
 }
