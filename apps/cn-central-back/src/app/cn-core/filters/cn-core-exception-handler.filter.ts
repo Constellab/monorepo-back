@@ -26,10 +26,11 @@ export class CnCoreExceptionHandlerFilter extends BlCoreExceptionHandlerFilter {
 
   protected logUnknownError(error: Error, instanceId: string): void {
     const request: Request = CnCurrentUserHelper.getCurrentRequest();
+    const requestString = request ? `Error during request ${request.url} | Method ${request.method} | ` : 'Error without request';
     const userString = CnCurrentUserHelper.getCurrentUser()?.getUserInfo() ?? 'No user';
     const spaceString = CnCurrentUserHelper.getCurrentSpace()?.id ?? 'No space';
     // eslint-disable-next-line max-len
-    this.logger.error(`Error during request ${request.url} | Method ${request.method} | User : ${userString} | Space : ${spaceString} | InstanceId ${instanceId} | Error : ${error.message}`);
+    this.logger.error(`${requestString} | User : ${userString} | Space : ${spaceString} | InstanceId ${instanceId} | Error : ${error.message}`);
     if (error.stack) {
       this.logger.error(error.stack);
     }
