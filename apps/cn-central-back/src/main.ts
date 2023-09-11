@@ -13,6 +13,7 @@ import {
 import {Transport} from '@nestjs/microservices';
 import {CN_LOCAL_SPACE_COOKIE} from './app/cn-core/middleware/cn-space-middleware.service';
 import {NestExpressApplication} from '@nestjs/platform-express';
+import {json, urlencoded} from 'body-parser';
 
 async function bootstrap(): Promise<void> {
 
@@ -24,6 +25,10 @@ async function bootstrap(): Promise<void> {
   // allow the local-space header only for local env
   const additionalHeader = isLocal ? [CN_LOCAL_SPACE_COOKIE] : [];
   app.enableCors(blGetCorsConfig(['constellab.space', 'preconstellab.com'], isLocal, additionalHeader));
+
+  // increase body limit to 10mb
+  app.use(json({limit: '10mb'}));
+  app.use(urlencoded({limit: '10mb', extended: true}));
 
   // enable proxy, tell express to trust the first proxy
   // https://docs.nestjs.com/security/rate-limiting#proxies
