@@ -35,11 +35,14 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
       const error: BlApiError = await this.handleError(exception as any);
 
       response.status(error.status).json(error);
-    } catch (e) {
+    } catch (e: any) {
       const instanceId: string = ClStringHelper.generateUUID();
       // use catch error if an error is raised in handleError method
       // because it would break the app
-      this.logger.error('Unexpected error thrown in CustomExceptionHandlerFilter | InstanceId ' + instanceId);
+      this.logger.error(`Unexpected error thrown in CustomExceptionHandlerFilter | InstanceId ${instanceId} | Error : ${e}`);
+      if (e.stack) {
+        this.logger.error(e.stack);
+      }
       const error: BlApiError = {
         status: HttpStatus.INTERNAL_SERVER_ERROR,
         detail: 'Server error',
