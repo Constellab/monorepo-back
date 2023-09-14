@@ -12,7 +12,7 @@ import {
   BlObjectStorageService
 } from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
-import {CnSaveReportResultDTO, CnCreateReportWithConfigDto, CnSaveReportDto} from './cn-report.dto';
+import {CnCreateReportWithConfigDto, CnSaveReportDto, CnSaveReportResultDTO} from './cn-report.dto';
 import {CnExternalLabApiService} from '../../cn-external-lab-api/cn-external-lab-api.service';
 import {AxiosResponse} from 'axios';
 import {CnReportContent, CnReportViewConfig} from './cn-report-content.class';
@@ -67,7 +67,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     const prefix = CnProjectBucketService.getPrefix('REPORTS', reportDto.id);
 
     // use v2
-    if (files != null && createReportDto.resource_views != null) {
+    if (files != null || createReportDto.resource_views != null) {
       await this.loadReportImagesV2(richText, bucket, files, prefix);
       await this.loadReportViewsV2(richText, bucket, createReportDto.resource_views, prefix);
     } else {
@@ -181,6 +181,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
    */
   private async loadReportImagesV2(richText: CnReportContent, bucket: BlBucketConfig,
                                    files: BlFile[], prefix: string): Promise<void> {
+    if(!files) return ;
     for (const file of files) {
       let filename = prefix + file.originalname;
       filename = await this.objectStorageService.uploadObject(bucket, file, {filename: filename});
