@@ -31,7 +31,7 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
   @Column({nullable: false, length: 20})
   code: string;
 
-  @Column({nullable: false, length: 50})
+  @Column({nullable: false, length: 100})
   title: string;
 
   @Exclude()

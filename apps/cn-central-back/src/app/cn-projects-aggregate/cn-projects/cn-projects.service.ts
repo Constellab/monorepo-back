@@ -46,7 +46,7 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
    * @param projectId
    */
   public getChildren(projectId: string): Promise<CnProject[]> {
-    return this.repository.find({where: {parentId: projectId}});
+    return this.repository.find({where: {parentId: projectId}, order: {code: 'ASC'}});
   }
 
   /**

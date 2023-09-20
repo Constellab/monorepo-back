@@ -36,7 +36,7 @@ import {
   BlSearchParams,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
-import {DataSource, In, Repository} from 'typeorm';
+import {DataSource, In} from 'typeorm';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnDocumentsService} from './cn-documents/cn-documents.service';
@@ -45,8 +45,6 @@ import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
 import {CnProjectBucketService} from './cn-project-bucket/cn-project-bucket.service';
 import {CnProjectUserService} from './cn-project-user/cn-project-user.service';
 import {CnUsersService} from '../cn-users/cn-users.service';
-import {InjectRepository} from '@nestjs/typeorm';
-import {CnProjectGroup} from './cn-project-group.entity';
 import {CnProjectUser} from './cn-project-user/cn-project-user.entity';
 import {CnProjectEvent, cnProjectEventName, CnProjectEventType} from './cn-project.event';
 import {EventEmitter2} from '@nestjs/event-emitter';
@@ -69,8 +67,7 @@ export class CnProjectAggregateService {
               private projectUserService: CnProjectUserService,
               private userService: CnUsersService,
               private eventEmitter: EventEmitter2,
-              private activityService: CnActivityService,
-              @InjectRepository(CnProjectGroup) private projectGroupRepo: Repository<CnProjectGroup>) {
+              private activityService: CnActivityService) {
   }
 
   /////////////////////////////////////// PROJECT //////////////////////////////////

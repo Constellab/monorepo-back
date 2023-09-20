@@ -14,16 +14,12 @@ import {CnDocumentsModule} from './cn-documents/cn-documents.module';
 import {CnProjectBucketModule} from './cn-project-bucket/cn-project-bucket.module';
 import {CnProjectListener} from './cn-project.listener';
 import {CnProjectUserModule} from './cn-project-user/cn-project-user.module';
-import {TypeOrmModule} from '@nestjs/typeorm';
-import {CnProjectGroup} from './cn-project-group.entity';
 import {CnNotificationModule} from '../cn-notification/cn-notification.module';
 import {CnActivityModule} from '../cn-activity/cn-activity.module';
 import {EventEmitterModule} from '@nestjs/event-emitter';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([CnProjectGroup]),
-
     CnCoreModule,
 
     CnProjectsModule,
