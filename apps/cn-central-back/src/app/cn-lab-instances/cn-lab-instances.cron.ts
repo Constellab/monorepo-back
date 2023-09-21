@@ -16,6 +16,8 @@ import {DateTime} from 'luxon';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstanceAggregateService} from './cn-lab-instance-aggregate.service';
 import {CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
+import {CnLabFreeTrialService} from './free-trial/cn-lab-free-trial.service';
+import {CnLabFreeTrial} from './free-trial/cn-lab-free-trial.entity';
 
 /**
  * Service that gather all the cron jobs for the lab instances
@@ -30,7 +32,8 @@ export class CnLabInstancesCron {
               private labRuleService: CnLabGreenOptionService,
               private labManagerService: CnExternalLabManagerApiService,
               private externalLabApiService: CnExternalLabApiService,
-              private labAggregateService: CnLabInstanceAggregateService) {
+              private labAggregateService: CnLabInstanceAggregateService,
+              private freeTrialService: CnLabFreeTrialService) {
   }
 
   /**
@@ -59,6 +62,12 @@ export class CnLabInstancesCron {
     await this.checkStopAfterInactivity();
 
     this.logger.debug('[Cron] End of refresh lab instance status');
+
+    this.logger.debug('[Cron] Start checking free trials labs');
+    await this.checkFreeTrialLabs();
+    await this.checkFreeTrialLabsToDelete();
+    this.logger.debug('[Cron] ENd checking free trials labs');
+
   }
 
   private async refreshLabTempStatus(): Promise<void> {
@@ -67,8 +76,8 @@ export class CnLabInstancesCron {
     for (const labInstance of labInstances) {
 
       // for status SERVER_RUNNING and SERVER_CONFIGURED, that are considered as half temp, we stop checking after 30 minutes
-      if([CnLabInstanceStatus.SERVER_RUNNING, CnLabInstanceStatus.SERVER_CONFIGURED].includes(labInstance.currentStatus.status)) {
-        if(labInstance.currentStatus.createdAt.diffNow('minutes').minutes > 30) {
+      if ([CnLabInstanceStatus.SERVER_RUNNING, CnLabInstanceStatus.SERVER_CONFIGURED].includes(labInstance.currentStatus.status)) {
+        if (labInstance.currentStatus.createdAt.diffNow('minutes').minutes > 30) {
           continue;
         }
       }
@@ -172,5 +181,41 @@ export class CnLabInstancesCron {
     if (!option.isPersistent) {
       await this.labRuleService.deleteById(option.id);
     }
+  }
+
+  private async checkFreeTrialLabs(): Promise<void> {
+    const runningFreeTrials = await this.freeTrialService.getRunningFreeTrias();
+
+    for (const freeTrial of runningFreeTrials) {
+      // if the lab is starting or stopping, we do nothing, it will be checked later
+      if ([CnLabInstanceStatus.SERVER_STARTING, CnLabInstanceStatus.SERVER_STOPPING].includes(freeTrial.labInstance.currentStatus.status)) {
+        continue;
+      }
+
+      // for each lab, check if the free trial is still valid
+      const value = await this.freeTrialService.trialLabStillValid(freeTrial.labInstance.id);
+
+      // is not, stop the lab
+      if (!value) {
+        this.logger.log(`[Cron] Stopping free trial lab :${freeTrial.labInstance.id}`);
+        await this.labServerService.stopLab(freeTrial.labInstance);
+      }
+    }
+  }
+
+  private async checkFreeTrialLabsToDelete(): Promise<void> {
+    const labsToDelete = await this.getFreeTrialsLabsToDelete();
+
+    for (const lab of labsToDelete) {
+      this.logger.log(`[Cron] Deleting free trial lab :${lab.labInstance.id}`);
+      await this.labServerService.deleteLabInstanceServerAndVolume(lab.labInstance);
+      await this.labAggregateService.refreshLabStatus(lab.labInstance.id);
+    }
+  }
+
+  private async getFreeTrialsLabsToDelete(): Promise<CnLabFreeTrial[]> {
+    const expiredLabs = await this.freeTrialService.getExpiredFreeTrials();
+
+    return expiredLabs.filter(lab => lab.toDelete());
   }
 }

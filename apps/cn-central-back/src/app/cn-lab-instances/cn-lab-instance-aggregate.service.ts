@@ -68,6 +68,7 @@ import {CnAuthService, CnExternalCheckCredentialResponse} from '../cn-auth/cn-au
 import {CnLabInstanceServerTaskStatus} from './status/cn-lab-instance-status.enum';
 import {CnLabInstanceStatusService} from './status/cn-lab-instance-status.service';
 import {CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse} from './status/cn-lab-instance-status.dto';
+import {CnLabFreeTrialService} from './free-trial/cn-lab-free-trial.service';
 
 
 @Injectable()
@@ -96,7 +97,8 @@ export class CnLabInstanceAggregateService {
               private labMailService: CnLabInstanceMailService,
               private labGreenOptionService: CnLabGreenOptionService,
               private authService: CnAuthService,
-              private labStatusService: CnLabInstanceStatusService) {
+              private labStatusService: CnLabInstanceStatusService,
+              private freeTrialService: CnLabFreeTrialService) {
   }
 
   /**
@@ -855,6 +857,14 @@ export class CnLabInstanceAggregateService {
 
   async startInstance(id: string): Promise<CnLabInstance> {
     const labInstance = await this.getAndCheckServerStatusBeforeAction(id);
+
+    if(labInstance.isFreeTrial){
+      const available = await this.freeTrialService.trialLabStillValid(labInstance.id);
+
+      if(!available){
+        throw new BlBadRequestException(CnErrorText.FREE_TRIAL_LAB_EXPIRED)
+      }
+    }
 
     return await this.labServerService.startLab(labInstance);
   }

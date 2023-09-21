@@ -41,6 +41,7 @@ export class CnLabInstanceDto extends BlBaseEntityDto {
   volumeType: CnLabInstanceVolumeType = undefined;
   volumeSize: number = undefined;
   desktopPlatform?: CnLabDesktopPlatform = undefined;
+  isFreeTrial: boolean = undefined;
 }
 
 /**

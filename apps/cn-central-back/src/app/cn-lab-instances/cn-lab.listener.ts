@@ -20,7 +20,6 @@ export class CnLabListener {
 
   @OnEvent(cnLabInstanceEventName)
   async handleLabInstanceEvent(event: CnLabInstanceStatusChangedEvent): Promise<void> {
-    console.log('handleLabInstanceEvent', event.oldStatus, event.newStatus);
     if (event.type === 'LAB_STATUS_CHANGED') {
       // if the lab server switched from a stopped state to a running state
       if (event.newStatus === CnLabInstanceStatus.SERVER_CONFIGURED &&

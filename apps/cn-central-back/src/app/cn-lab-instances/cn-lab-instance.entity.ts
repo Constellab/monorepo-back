@@ -41,6 +41,8 @@ export enum CnLabDesktopPlatform {
 @Entity('lab_instance')
 export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory> {
 
+  public static readonly SUPPORTED_MAIN_DOMAINS = ['constellab.app', 'gencovery.io'];
+
   @Column({nullable: false, length: 50})
   name: string;
 
@@ -158,6 +160,9 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     type: 'enum', enum: CnLabDesktopPlatform, nullable: true,
   })
   desktopPlatform: CnLabDesktopPlatform;
+
+  @Column({nullable: false, default: false})
+  isFreeTrial: boolean;
 
   // url of the api server
   @Expose()

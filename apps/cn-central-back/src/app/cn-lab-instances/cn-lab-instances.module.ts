@@ -42,6 +42,8 @@ import {CnServersInfoModule} from '../cn-servers-info/cn-servers-info.module';
 import {CnSpacesModule} from '../cn-spaces/cn-spaces.module';
 import {CnLabInstanceStatusService} from './status/cn-lab-instance-status.service';
 import {CnLabListener} from './cn-lab.listener';
+import {CnLabFreeTrialAggregateService} from './free-trial/cn-lab-free-trial-aggregate.service';
+import {CnLabFreeTrial} from './free-trial/cn-lab-free-trial.entity';
 
 @Module({
   imports: [
@@ -51,6 +53,7 @@ import {CnLabListener} from './cn-lab.listener';
       CnLabInstanceUser,
       CnLabInstanceProject,
       CnLabGreenOption,
+      CnLabFreeTrial
     ]),
 
     CnCoreModule,
@@ -94,6 +97,7 @@ import {CnLabListener} from './cn-lab.listener';
     CnLabInstancesCron,
     CnLabGreenOptionService,
     CnLabFreeTrialService,
+    CnLabFreeTrialAggregateService,
     CnLabInstanceStatusService,
     CnLabListener,
   ],

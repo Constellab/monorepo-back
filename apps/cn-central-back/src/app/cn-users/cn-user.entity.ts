@@ -76,11 +76,6 @@ export class CnUser extends BlEntityWithId implements BlUser {
 
   @Column({nullable: true, length: 50})
   phone: string;
-
-  @Exclude()
-  @BlLuxonDateTimeColumn({nullable: true})
-  labTrialStatDate: DateTime;
-
   //////////////////// TRANSIENT METHODS //////////////////
 
   @BeforeInsert()

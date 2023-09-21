@@ -19,11 +19,8 @@ export enum CnErrorText {
   LAB_AUTH_ERROR = 'error.lab_auth_error',
   ACCOUNT_LOCKED_BY_ADMIN = 'error.account_locked_by_admin',
   LANGUAGE_NOT_SUPPORTED = 'error.language_not_supported',
-  USER_ALREADY_EXIST_IN_LAB = 'error.user_already_exist_in_lab',
   LAB_USER_NOT_ACTIVATED = 'error.lab_user_not_activated',
   LAB_USER_NOT_FOUND = 'error.lab_user_not_found',
-  PROJECT_ALREADY_SHARED_WITH_GROUP = 'error.project_already_shared_with_group',
-  PROJECT_NOT_SHARED_WITH_GROUP = 'error.project_not_shared_with_group',
   USER_ALREADY_IN_GROUP = 'error.user_already_in_group',
   USER_NOT_IN_GROUP = 'error.user_not_in_group',
   USER_ALREADY_IN_SPACE = 'error.user_already_in_space',
@@ -60,4 +57,5 @@ export enum CnErrorText {
   INVALID_CAPTCHA = 'error.invalid_captcha',
   NO_ACCESS_TO_PROJECT = 'error.no_access_to_project',
   NO_PROJECT_LEADER = 'error.no_project_leader',
+  FREE_TRIAL_LAB_EXPIRED = 'error.free_trial_lab_expired',
 }

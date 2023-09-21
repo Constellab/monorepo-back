@@ -22,8 +22,6 @@ import {cnLabInstanceEventName, CnLabInstanceStatusChangedEvent} from './cn-lab-
 @Injectable()
 export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInstance, CnLabInstanceStatus> {
 
-  public static readonly SUPPORTED_MAIN_DOMAINS = ['gencovery.io', 'constellab.app'];
-
   constructor(@InjectRepository(CnLabInstance) private repository: Repository<CnLabInstance>,
               @InjectRepository(CnLabInstanceStatusHistory) statusRepo: Repository<CnLabInstanceStatusHistory>,
               private experimentService: CnExperimentsService,
@@ -136,9 +134,9 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     }
 
     // check domain name
-    if (!CnLabInstancesService.SUPPORTED_MAIN_DOMAINS.includes(entity.getMainDomain())) {
+    if (!CnLabInstance.SUPPORTED_MAIN_DOMAINS.includes(entity.getMainDomain())) {
       throw new BlBadRequestException(
-        `Virtual host must be a valid domain name : ${CnLabInstancesService.SUPPORTED_MAIN_DOMAINS.join(', ')}`);
+        `Virtual host must be a valid domain name : ${CnLabInstance.SUPPORTED_MAIN_DOMAINS.join(', ')}`);
     }
 
     const domainPart = entity.getSubDomainName();

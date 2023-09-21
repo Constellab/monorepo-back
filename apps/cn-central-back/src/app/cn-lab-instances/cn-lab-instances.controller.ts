@@ -30,15 +30,16 @@ import {Response} from 'express';
 import * as AdmZip from 'adm-zip';
 import {CnLabGreenOption} from './green-option/cn-lab-green-option.entity';
 import {CnLabGreenOptionFormDto} from './green-option/cn-lab-green-option.dto';
-import {CnLabFreeTrialService} from './free-trial/cn-lab-free-trial.service';
 import {CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse} from './status/cn-lab-instance-status.dto';
+import {CnFreeTrialUpdateDto, CnLabFreeTrialGetDto} from './free-trial/cn-lab-free-trial.dto';
+import {CnLabFreeTrialAggregateService} from './free-trial/cn-lab-free-trial-aggregate.service';
 
 
 @Controller('lab-instances')
 export class CnLabInstancesController {
 
   constructor(private aggregateService: CnLabInstanceAggregateService,
-              private labFreeTrialService: CnLabFreeTrialService) {
+              private labFreeTrialAggregateService: CnLabFreeTrialAggregateService) {
   }
 
 
@@ -433,16 +434,37 @@ export class CnLabInstancesController {
   }
 
   /////////////////////////// FREE TRIAL //////////////////////////////
-  @Post('free-trial/user/:id')
-  async createFreeTrial(@Param('id', new ParseUUIDPipe()) userId: string): Promise<CnLabInstance> {
-    return await this.labFreeTrialService.createFreeTrialLabInstanceForUser(userId);
-  }
 
   @Post('free-trial/current')
   async createFreeTrialForCurrentUser(): Promise<CnLabInstance> {
-    return await this.labFreeTrialService.createFreeTrialLabInstanceCurrentUser();
+    return await this.labFreeTrialAggregateService.createFreeTrialLabInstanceCurrentUser();
   }
 
+  @Get('free-trial/current')
+  async getCurrentUserFreeTrial(): Promise<CnLabFreeTrialGetDto> {
+    return await this.labFreeTrialAggregateService.findFreeTrialUsageForCurrentUser();
+  }
+
+  @Get('free-trial/user/:userId')
+  async getUserFreeTrialByUser(@Param('userId', new ParseUUIDPipe()) userId: string): Promise<CnLabFreeTrialGetDto> {
+    return await this.labFreeTrialAggregateService.findFreeTrialUsageForUserAndCheck(userId);
+  }
+
+  @Get('free-trial/lab/:labId')
+  async getUserFreeTrialByLab(@Param('labId', new ParseUUIDPipe()) userId: string): Promise<CnLabFreeTrialGetDto> {
+    return await this.labFreeTrialAggregateService.findFreeTrialUsageForLabInstanceAndCheck(userId);
+  }
+
+  @Put('free-trial/:id')
+  async updateFreeTrial(@Param('id', new ParseUUIDPipe()) id: string,
+                        @Body(new BlParsePipe(CnFreeTrialUpdateDto)) updateDto: CnFreeTrialUpdateDto): Promise<CnLabFreeTrialGetDto> {
+    return await this.labFreeTrialAggregateService.updateFreeTrials(id, updateDto);
+  }
+
+  @Delete('free-trial/:id')
+  async deleteFreeTrial(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabFreeTrialGetDto> {
+    return await this.labFreeTrialAggregateService.deleteFreeTrial(id);
+  }
 
   /////////////////////////// KPI  //////////////////////////////
 
