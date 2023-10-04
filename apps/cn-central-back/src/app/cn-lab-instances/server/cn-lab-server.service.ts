@@ -2,7 +2,6 @@ import {Injectable, Logger} from '@nestjs/common';
 import {CnCloudProviderOvhService} from './ovh/cn-cloud-provider-ovh.service';
 import {CnCloudProviderService} from './cn-cloud-provider.service';
 import {
-  CnCpBackupFrequency,
   CnCpCompleteInfo,
   CnCpCreateInstanceRequest,
   CnCpCreateVolumeRequest,
@@ -23,9 +22,6 @@ import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
  */
 @Injectable()
 export class CnLabServerService {
-
-  private static readonly BACKUP_ROTATION = 7;
-  private static readonly BACKUP_FREQUENCY: CnCpBackupFrequency = 'DAILY';
 
   private readonly logger = new Logger(CnLabServerService.name);
 
@@ -178,8 +174,6 @@ export class CnLabServerService {
       region: regionName,
       serverName: labInstance.serverInfo.name,
       billing: labInstance.billingMode,
-      backupFrequency: CnLabServerService.BACKUP_FREQUENCY,
-      backupRotation: CnLabServerService.BACKUP_ROTATION
     };
     const serverInstance = await service.createInstance(instanceRequest);
     this.logger.log(`Instance ${serverInstance.id} created in for lab ${labInstance.id} in cloud provider ${service.getName()}`);

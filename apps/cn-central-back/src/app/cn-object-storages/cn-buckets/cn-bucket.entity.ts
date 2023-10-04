@@ -7,6 +7,7 @@ import {CnBucketCredentials} from '../cn-bucket-credential/cn-bucket-credential.
 import {CnSpace} from '../../cn-spaces/cn-space.entity';
 import {BlBucketConfig, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {Type} from 'class-transformer';
+import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
 
 export enum CnBucketContentType {
   LAB_BACKUP = 'LAB_BACKUP',
@@ -20,8 +21,12 @@ export enum CnBucketContentType {
  * Represent a bucket in an object storage
  */
 @Entity('bucket')
-@Unique(['contentType', 'objectId'])
+@Unique(['region', 'name'])
 export class CnBucket extends CnBaseEntity {
+
+  // relation options to load required information for the bucket
+  public static configRelation: FindOptionsRelations<CnBucket> = {region: true, credentials: true};
+  public static completeRelation: FindOptionsRelations<CnBucket> = {region: true, credentials: true, space: true};
 
   @Type(() => CnCloudProviderRegion)
   @ManyToOne(() => CnCloudProviderRegion, {nullable: false})

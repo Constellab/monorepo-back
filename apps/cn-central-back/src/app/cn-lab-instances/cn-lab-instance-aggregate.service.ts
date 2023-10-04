@@ -5,8 +5,7 @@ import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-histor
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {
   CnExternalLabBackup,
-  CnExternalLabBackupHistory,
-  CnExternalLabBackupInfoDto,
+  CnExternalLabBackupInfoDTO,
   CnExternalLabUser,
   CnExternalLabUserRole
 } from '../cn-external-lab-api/model/cn-external-lab-api.class';
@@ -28,6 +27,7 @@ import {
   CnLabInstanceDesktopConfig,
   CnLabInstanceStartDTO,
   CnLabInstanceStatusDTO,
+  CnLabInstanceUpdateAdminDTO,
   CnRequestLabInstance
 } from './cn-lab-instance.dto';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
@@ -44,7 +44,7 @@ import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-u
 import {CnExternalLabUserService} from '../cn-external-lab-api/cn-external-lab-user.service';
 import {CnExternalLabApiService} from '../cn-external-lab-api/cn-external-lab-api.service';
 import {CnLabInstanceUserService} from './user/cn-lab-instance-user.service';
-import {DataSource} from 'typeorm';
+import {DataSource, EntityManager} from 'typeorm';
 import {CnLabInstanceProject} from './project/cn-lab-instance-project.entity';
 import {CnLabInstanceProjectService} from './project/cn-lab-instance-project.service';
 import {CnProjectAggregateService} from '../cn-projects-aggregate/cn-project-aggregate.service';
@@ -69,6 +69,12 @@ import {CnLabInstanceServerTaskStatus} from './status/cn-lab-instance-status.enu
 import {CnLabInstanceStatusService} from './status/cn-lab-instance-status.service';
 import {CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse} from './status/cn-lab-instance-status.dto';
 import {CnLabFreeTrialService} from './free-trial/cn-lab-free-trial.service';
+import {CnLabBackupHistoryService} from './backup/cn-lab-backup-history.service';
+import {CnLabBackupOptionService} from './backup/cn-lab-backup-option.service';
+import {CnLabBackupBucket} from './backup/cn-lab-backup.dto';
+import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
+import {CnLabBackupOption} from './backup/cn-lab-backup-option.entity';
+import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 
 
 @Injectable()
@@ -98,7 +104,9 @@ export class CnLabInstanceAggregateService {
               private labGreenOptionService: CnLabGreenOptionService,
               private authService: CnAuthService,
               private labStatusService: CnLabInstanceStatusService,
-              private freeTrialService: CnLabFreeTrialService) {
+              private freeTrialService: CnLabFreeTrialService,
+              private backupHistoryService: CnLabBackupHistoryService,
+              private backupOptionService: CnLabBackupOptionService) {
   }
 
   /**
@@ -110,13 +118,27 @@ export class CnLabInstanceAggregateService {
     const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     this.security.checkAuthorizationToCreateAdmin(labInstance, userInfo);
 
-    return this.labInstancesService.create(labInstance);
+    return this.dataSource.transaction(async entityManager => {
+      return this.createLabNotSecure(labInstance, createLabInstance.dailyBackupRegion, createLabInstance.weeklyBackupRegion, entityManager);
+    });
+  }
+
+  public async createLabNotSecure(labInstance: CnLabInstance,
+                                  dailyBackupRegion: CnCloudProviderRegion,
+                                  weeklyBackupRegion: CnCloudProviderRegion,
+                                  entityManager: EntityManager): Promise<CnLabInstance> {
+    const labInstanceDb: CnLabInstance = await this.labInstancesService.create(labInstance, entityManager);
+
+    await this.backupOptionService.createBackupOptions(labInstanceDb,
+      dailyBackupRegion, weeklyBackupRegion, entityManager);
+
+    return labInstanceDb;
   }
 
   /**
    * Update a lab instance with all information (only for admin)
    */
-  async updateAdmin(updateLabInstance: CnLabInstanceCreateAdminDTO): Promise<CnLabInstance> {
+  async updateAdmin(updateLabInstance: CnLabInstanceUpdateAdminDTO): Promise<CnLabInstance> {
     await this.getAndCheckAuthorizationToUpdateAdmin(updateLabInstance.id);
     const labInstance = BlDtoHelper.fromDto(CnLabInstance, updateLabInstance);
 
@@ -167,6 +189,7 @@ export class CnLabInstanceAggregateService {
   async delete(id: string): Promise<void> {
     await this.getAndCheckAuthorizationToUpdateAdmin(id);
     await this.dataSource.transaction(async entityManager => {
+      await this.backupOptionService.deleteBackupOptions(id, entityManager);
       await this.labInstancesService.deleteById(id, entityManager);
     });
   }
@@ -651,18 +674,21 @@ export class CnLabInstanceAggregateService {
 
   /////////////////////////// BACKUP ////////////////////////////////
 
-  public async createProdBackup(labId: string): Promise<CnExternalLabBackup> {
+  public async createProdBackup(labId: string): Promise<CnLabBackupHistory[]> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
 
     // get or create the bucket associated with this lab instance
-    const backupInfo = await this.getLabBackupInfo(labInstance.id, labInstance.spaceId);
+    const backupInfo = await this.getLabBackupInfo(labInstance.id);
 
-    return this.labManagerService.createProdBackup(labInstance, backupInfo);
+    const backups = await this.labManagerService.createProdBackup(labInstance, backupInfo);
+
+    return this.backupHistoryService.saveHistories(backups, labInstance);
   }
 
-  public async stopCurrentBackup(labId: string): Promise<boolean> {
+  public async stopCurrentBackup(labId: string): Promise<CnLabBackupHistory[]> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
-    return this.labManagerService.stopCurrentBackup(labInstance);
+    const backup = await this.labManagerService.stopCurrentBackup(labInstance);
+    return this.backupHistoryService.saveHistories(backup, labInstance);
   }
 
 
@@ -671,18 +697,43 @@ export class CnLabInstanceAggregateService {
     return this.labManagerService.getBackupLastStatus(labInstance);
   }
 
-  public async getBackupHistory(labId: string): Promise<CnExternalLabBackupHistory> {
-    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
-    return this.labManagerService.getBackupHistory(labInstance);
+  public async syncBackupHistory(labId: string): Promise<void> {
+    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToFindById(labId);
+    const backups = await this.labManagerService.getBackupHistory(labInstance);
+    await this.backupHistoryService.saveHistories(backups.backups, labInstance);
   }
 
-  private async getLabBackupInfo(labInstanceId: string, labInstanceSpaceId: string): Promise<CnExternalLabBackupInfoDto> {
+  private async getLabBackupInfo(labInstanceId: string): Promise<CnExternalLabBackupInfoDTO> {
     // get or create the bucket associated with this lab instance
-    const bucket = await this.objectStorageService.getOrCreateLabBackupBucket(labInstanceId, labInstanceSpaceId);
+    const options = await this.backupOptionService.findByLabId(labInstanceId);
+
+    if (options == null) {
+      throw new BlBadRequestException('No backup options found for this lab');
+    }
 
     return {
-      buckets: [bucket.getBucketConfig()],
+      version: 1,
+      backupBuckets: [
+        {
+          backupFrequency: options.frequency1,
+          bucketConfig: options.bucket1.getBucketConfig(),
+        },
+        {
+          backupFrequency: options.frequency2,
+          bucketConfig: options.bucket2.getBucketConfig(),
+        }
+      ],
     };
+  }
+
+  public async getLabBackupOptions(labInstanceId: string): Promise<CnLabBackupOption> {
+    await this.getAndCheckAuthorizationToFindById(labInstanceId);
+    return this.backupOptionService.findByLabId(labInstanceId);
+  }
+
+  public async getLabBackupHistory(labInstanceId: string, page: number, size: number): Promise<ClPageI<CnLabBackupHistory>> {
+    await this.getAndCheckAuthorizationToFindById(labInstanceId);
+    return this.backupHistoryService.getBackupHistory(labInstanceId, page, size);
   }
 
   /////////////////////////// EXTERNAL LAB //////////////////////////////
@@ -730,10 +781,16 @@ export class CnLabInstanceAggregateService {
   }
 
   /////////////////////////// EXTERNAL LAB MANAGER //////////////////////////////
-  public async getCurrentLabInstanceBackupInfo(): Promise<CnExternalLabBackupInfoDto> {
+  public async getCurrentLabInstanceBackupInfo(): Promise<CnExternalLabBackupInfoDTO> {
     const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
-    return this.getLabBackupInfo(labInstance.id, labInstance.spaceId);
+    return this.getLabBackupInfo(labInstance.id);
   }
+
+  public async saveCurrentLabBackupHistory(backups: CnLabBackupBucket[]): Promise<CnLabBackupHistory[]> {
+    const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
+    return this.backupHistoryService.saveHistories(backups, labInstance);
+  }
+
 
   /////////////////////////// SERVER //////////////////////////////
 
@@ -858,11 +915,11 @@ export class CnLabInstanceAggregateService {
   async startInstance(id: string): Promise<CnLabInstance> {
     const labInstance = await this.getAndCheckServerStatusBeforeAction(id);
 
-    if(labInstance.isFreeTrial){
+    if (labInstance.isFreeTrial) {
       const available = await this.freeTrialService.trialLabStillValid(labInstance.id);
 
-      if(!available){
-        throw new BlBadRequestException(CnErrorText.FREE_TRIAL_LAB_EXPIRED)
+      if (!available) {
+        throw new BlBadRequestException(CnErrorText.FREE_TRIAL_LAB_EXPIRED);
       }
     }
 

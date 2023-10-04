@@ -44,7 +44,8 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
 
   async update(entity: CnLabInstance, entityManager?: EntityManager): Promise<CnLabInstance> {
     await this.checkLabInstanceBeforeSave(entity);
-    return super.update(entity, entityManager);
+    await super.update(entity, entityManager);
+    return this.findById(entity.id, {space: true});
   }
 
   private async checkLabInstanceBeforeSave(entity: CnLabInstance): Promise<void> {

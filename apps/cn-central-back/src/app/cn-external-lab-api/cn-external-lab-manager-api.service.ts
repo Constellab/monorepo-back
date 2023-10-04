@@ -14,12 +14,9 @@ import {
   CnLabManagerInitConfig,
   CnLabPullBiotaOptions
 } from './model/cn-lab-manager.class';
-import {
-  CnExternalLabBackup,
-  CnExternalLabBackupHistory,
-  CnExternalLabBackupInfoDto
-} from './model/cn-external-lab-api.class';
+import {CnExternalLabBackup, CnExternalLabBackupInfoDTO} from './model/cn-external-lab-api.class';
 import {CnLabConfigFile} from '../cn-lab-configs/cn-lab-config-file.class';
+import {CnLabBackupBucket, CnLabBackupHistory} from '../cn-lab-instances/backup/cn-lab-backup.dto';
 
 /**
  * Service to call the api of the lab manager
@@ -107,12 +104,12 @@ export class CnExternalLabManagerApiService {
 
   ///////////////////////////////////// BACKUP /////////////////////////////////////
 
-  createProdBackup(apiInfo: CnExternalApiInfo, createBackup: CnExternalLabBackupInfoDto): Promise<CnExternalLabBackup> {
-    return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/prod`, createBackup));
+  createProdBackup(apiInfo: CnExternalApiInfo, createBackup: CnExternalLabBackupInfoDTO): Promise<CnLabBackupBucket[]> {
+    return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/prod`, createBackup, CnLabBackupBucket));
   }
 
-  stopCurrentBackup(apiInfo: CnExternalApiInfo): Promise<boolean> {
-    return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/stop-current`, null));
+  stopCurrentBackup(apiInfo: CnExternalApiInfo): Promise<CnLabBackupBucket[]> {
+    return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/stop-current`, null, CnLabBackupBucket));
   }
 
   getLastBackupStatus(apiInfo: CnExternalApiInfo): Promise<CnExternalLabBackup> {
@@ -120,8 +117,8 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/current-status`));
   }
 
-  getBackupHistory(apiInfo: CnExternalApiInfo): Promise<CnExternalLabBackupHistory> {
-    return lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/history`));
+  getBackupHistory(apiInfo: CnExternalApiInfo): Promise<CnLabBackupHistory> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/history`, CnLabBackupHistory));
   }
 
 

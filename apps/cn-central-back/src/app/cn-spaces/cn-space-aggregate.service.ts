@@ -348,7 +348,7 @@ export class CnSpaceAggregateService {
   }
 
   public async createPersonalSpace(user: CnUser, entityManager: EntityManager): Promise<CnSpace> {
-    const defaultRegion = await this.cloudProviderAggregateService.getDefaultRegion();
+    const defaultRegion = await this.cloudProviderAggregateService.getDefaultS3Region1();
     const personalSpace = await this.spaceService.createPersonalSpace(user, defaultRegion, entityManager);
 
     await this.spaceUserService.addUserToSpace(personalSpace, user, CnSpaceUserRole.ADMIN,

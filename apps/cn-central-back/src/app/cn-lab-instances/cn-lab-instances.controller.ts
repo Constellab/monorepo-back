@@ -13,6 +13,7 @@ import {
   CnLabInstanceDesktopConfig,
   CnLabInstanceDto,
   CnLabInstanceStatusDTO,
+  CnLabInstanceUpdateAdminDTO,
   CnRequestLabInstance,
 } from './cn-lab-instance.dto';
 import {
@@ -24,7 +25,7 @@ import {
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
 import {CnLabInstanceProject} from './project/cn-lab-instance-project.entity';
-import {CnExternalLabBackup, CnExternalLabBackupHistory} from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import {CnExternalLabBackup} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {CnCpCompleteInfo} from './server/cn-cloud-provider.class';
 import {Response} from 'express';
 import * as AdmZip from 'adm-zip';
@@ -33,6 +34,8 @@ import {CnLabGreenOptionFormDto} from './green-option/cn-lab-green-option.dto';
 import {CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse} from './status/cn-lab-instance-status.dto';
 import {CnFreeTrialUpdateDto, CnLabFreeTrialGetDto} from './free-trial/cn-lab-free-trial.dto';
 import {CnLabFreeTrialAggregateService} from './free-trial/cn-lab-free-trial-aggregate.service';
+import {CnLabBackupOption} from './backup/cn-lab-backup-option.entity';
+import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
 
 
 @Controller('lab-instances')
@@ -52,7 +55,7 @@ export class CnLabInstancesController {
 
   // use the DTO to get the apiKey (which is excluded)
   @Put('admin')
-  async updateAdmin(@Body(new BlParsePipe(CnLabInstanceCreateAdminDTO)) labInstanceDto: CnLabInstanceCreateAdminDTO):
+  async updateAdmin(@Body(new BlParsePipe(CnLabInstanceUpdateAdminDTO)) labInstanceDto: CnLabInstanceUpdateAdminDTO):
     Promise<CnLabInstanceAdminDto> {
     const labInstance = await this.aggregateService.updateAdmin(labInstanceDto);
     return BlDtoHelper.toDto(CnLabInstanceAdminDto, labInstance);
@@ -359,12 +362,12 @@ export class CnLabInstancesController {
 
   //////////////////////////// BACKUP ////////////////////////////////
   @Post(':id/backup/prod')
-  async backupProd(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnExternalLabBackup> {
+  async backupProd(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabBackupHistory[]> {
     return await this.aggregateService.createProdBackup(id);
   }
 
   @Post(':id/backup/stop-current')
-  async stopCurrentBackup(@Param('id', new ParseUUIDPipe()) id: string): Promise<boolean> {
+  async stopCurrentBackup(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabBackupHistory[]> {
     return await this.aggregateService.stopCurrentBackup(id);
   }
 
@@ -373,9 +376,21 @@ export class CnLabInstancesController {
     return await this.aggregateService.getBackupLastStatus(id);
   }
 
-  @Get(':id/backup/history')
-  async getBackups(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnExternalLabBackupHistory> {
-    return await this.aggregateService.getBackupHistory(id);
+  @Post(':id/backup/sync')
+  async syncBackupHistory(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    await this.aggregateService.syncBackupHistory(id);
+  }
+
+  @Get(':id/backup-options')
+  async getBackupOptions(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabBackupOption> {
+    return await this.aggregateService.getLabBackupOptions(id);
+  }
+
+  @Get(':id/backup-history')
+  public getLabBackupHistory(@Param('id', new ParseUUIDPipe()) id: string,
+                             @Query('page', ParseIntPipe) page: number,
+                             @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnLabBackupHistory>> {
+    return this.aggregateService.getLabBackupHistory(id, page, size);
   }
 
   /////////////////////////// SERVER //////////////////////////////

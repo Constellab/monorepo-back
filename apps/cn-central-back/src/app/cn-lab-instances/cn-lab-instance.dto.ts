@@ -85,7 +85,7 @@ export interface CnLabInstanceStartDTO {
   lab_config: CnLabConfigDto;
 }
 
-export class CnLabInstanceCreateAdminDTO {
+export class CnLabInstanceUpdateAdminDTO {
   id: string;
   name: string;
   type: CnLabInstanceType;
@@ -107,6 +107,14 @@ export class CnLabInstanceCreateAdminDTO {
   serverInstanceId: string;
   serverVolumeId: string;
   desktopPlatform?: CnLabDesktopPlatform;
+}
+
+export class CnLabInstanceCreateAdminDTO extends CnLabInstanceUpdateAdminDTO{
+  @Type(() => CnCloudProviderRegion)
+  dailyBackupRegion: CnCloudProviderRegion;
+
+  @Type(() => CnCloudProviderRegion)
+  weeklyBackupRegion: CnCloudProviderRegion;
 }
 
 export class CnLabInstanceCreateDesktopDTO {

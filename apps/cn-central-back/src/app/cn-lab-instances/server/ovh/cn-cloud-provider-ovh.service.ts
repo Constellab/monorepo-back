@@ -45,9 +45,6 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
 
 
   public async createInstance(instance: CnCpCreateInstanceRequest): Promise<CnCpInstance> {
-    if (instance.backupFrequency !== 'DAILY') {
-      throw new BlBadRequestException(`The backup mode ${instance.backupFrequency} is not supported`);
-    }
 
     // const flavorName = 'd2-2';
     const flavor = await this.ovhService.getServerInfoByRegionAndName(instance.region, instance.serverName);
@@ -68,11 +65,6 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
       imageId: image.id,
       sshKeyId: this.configService.getOvhSshKey(),
       monthlyBilling: instance.billing === 'MONTHLY',
-      autobackup: {
-        rotation: instance.backupRotation,
-        cron: CnCloudProviderOvhService.DAILY_BACKUP_CRON,
-      }
-
     };
 
     const ovhInstance = await this.ovhService.createInstance(request);

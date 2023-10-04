@@ -71,7 +71,7 @@ export class CnProjectBucketService {
   public async createProjectBucket(rootProject: CnProject, region: CnCloudProviderRegion,
                                    entityManager?: EntityManager): Promise<CnBucket> {
     return this.objectStorageAggregateService.createObjectBucket(CnObjectStoragesAggregateService.LabBackupCredentialName,
-      region, rootProject.id, rootProject.spaceId, CnBucketContentType.PROJECT,
+      region, 'project-' + rootProject.id, rootProject.spaceId, CnBucketContentType.PROJECT,
       rootProject.id, entityManager);
   }
 
@@ -97,7 +97,7 @@ export class CnProjectBucketService {
     if (bucket == null) {
       return;
     }
-    await this.objectStorageAggregateService.deleteBucketNotSecure(bucket.id, entityManager);
+    await this.objectStorageAggregateService.deleteBucketNotSecure(bucket, entityManager);
   }
 
   /////////////////////////////////////////// DESCRIPTION ///////////////////////////////////////////

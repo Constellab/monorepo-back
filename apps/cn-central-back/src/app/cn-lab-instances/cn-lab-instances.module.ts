@@ -44,6 +44,10 @@ import {CnLabInstanceStatusService} from './status/cn-lab-instance-status.servic
 import {CnLabListener} from './cn-lab.listener';
 import {CnLabFreeTrialAggregateService} from './free-trial/cn-lab-free-trial-aggregate.service';
 import {CnLabFreeTrial} from './free-trial/cn-lab-free-trial.entity';
+import {CnLabBackupOption} from './backup/cn-lab-backup-option.entity';
+import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
+import {CnLabBackupOptionService} from './backup/cn-lab-backup-option.service';
+import {CnLabBackupHistoryService} from './backup/cn-lab-backup-history.service';
 
 @Module({
   imports: [
@@ -53,7 +57,9 @@ import {CnLabFreeTrial} from './free-trial/cn-lab-free-trial.entity';
       CnLabInstanceUser,
       CnLabInstanceProject,
       CnLabGreenOption,
-      CnLabFreeTrial
+      CnLabFreeTrial,
+      CnLabBackupOption,
+      CnLabBackupHistory,
     ]),
 
     CnCoreModule,
@@ -100,6 +106,8 @@ import {CnLabFreeTrial} from './free-trial/cn-lab-free-trial.entity';
     CnLabFreeTrialAggregateService,
     CnLabInstanceStatusService,
     CnLabListener,
+    CnLabBackupOptionService,
+    CnLabBackupHistoryService,
   ],
   exports: [
     CnLabInstancesService,

@@ -10,14 +10,11 @@ import {CnExternalLabManagerApiService} from '../cn-external-lab-api/cn-external
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstanceConfigDTO} from './cn-lab-instance.dto';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import {
-  CnExternalLabBackup,
-  CnExternalLabBackupHistory,
-  CnExternalLabBackupInfoDto
-} from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import {CnExternalLabBackup, CnExternalLabBackupInfoDTO} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnLabConfigFile} from '../cn-lab-configs/cn-lab-config-file.class';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
+import {CnLabBackupBucket, CnLabBackupHistory} from './backup/cn-lab-backup.dto';
 
 /**
  * Service to call the api of the lab manager
@@ -159,11 +156,11 @@ export class CnLabManagerService {
 
   /////////////////////////////////////////////// BACKUP /////////////////////////////////////////////////////
 
-  public async createProdBackup(labInstance: CnLabInstance, backup: CnExternalLabBackupInfoDto): Promise<CnExternalLabBackup> {
+  public async createProdBackup(labInstance: CnLabInstance, backup: CnExternalLabBackupInfoDTO): Promise<CnLabBackupBucket[]> {
     return this.labManagerApiService.createProdBackup(labInstance.getLabManagerApiInfo(), backup);
   }
 
-  public async stopCurrentBackup(labInstance: CnLabInstance): Promise<boolean> {
+  public async stopCurrentBackup(labInstance: CnLabInstance): Promise<CnLabBackupBucket[]> {
     return this.labManagerApiService.stopCurrentBackup(labInstance.getLabManagerApiInfo());
   }
 
@@ -171,7 +168,7 @@ export class CnLabManagerService {
     return this.labManagerApiService.getLastBackupStatus(labInstance.getLabManagerApiInfo());
   }
 
-  public async getBackupHistory(labInstance: CnLabInstance): Promise<CnExternalLabBackupHistory> {
+  public async getBackupHistory(labInstance: CnLabInstance): Promise<CnLabBackupHistory> {
     return this.labManagerApiService.getBackupHistory(labInstance.getLabManagerApiInfo());
   }
 }

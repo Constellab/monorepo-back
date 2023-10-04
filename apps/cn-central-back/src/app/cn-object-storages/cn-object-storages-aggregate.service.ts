@@ -27,7 +27,7 @@ export class CnObjectStoragesAggregateService {
 
 
   public async getOrCreateLabBackupBucket(labInstanceId: string, labInstanceSpaceId: string): Promise<CnBucket> {
-    const region = await this.cloudProviderService.getDefaultRegion();
+    const region = await this.cloudProviderService.getDefaultS3Region1();
 
     return this.getOrCreateObjectBucket(CnObjectStoragesAggregateService.LabBackupCredentialName, region,
       labInstanceId, labInstanceSpaceId,
@@ -92,9 +92,10 @@ export class CnObjectStoragesAggregateService {
     return this.bucketService.createBucket(bucket, entityManager);
   }
 
-  public async deleteBucketNotSecure(id: string, entityManager?: EntityManager): Promise<void> {
-    await this.bucketService.deleteById(id, entityManager);
+  public async deleteBucketNotSecure(completeBucket: CnBucket, entityManager?: EntityManager): Promise<void> {
+    await this.bucketService.deleteBucket(completeBucket, entityManager);
   }
+
 
 
   /////////////////////////// BUCKETS ///////////////////////////
@@ -111,11 +112,12 @@ export class CnObjectStoragesAggregateService {
 
   public async deleteBucket(id: string): Promise<void> {
     this.checkAuthorizationToModifyEntity();
-    await this.bucketService.deleteById(id);
+    const bucket = await this.bucketService.findCompleteById(id);
+    await this.bucketService.deleteBucket(bucket);
   }
 
   public async searchBuckets(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnBucket>> {
-    await this.securityService.checkAuthorizationToGetAllBuckets(CnCurrentUserHelper.getAndCheckCurrentUser());
+    this.securityService.checkAuthorizationToGetAllBuckets(CnCurrentUserHelper.getAndCheckCurrentUser());
     return this.bucketService.search(searchParams, page, size);
   }
 

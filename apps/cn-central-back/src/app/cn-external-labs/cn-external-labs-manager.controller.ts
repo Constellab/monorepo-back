@@ -1,8 +1,11 @@
-import {Controller, Get} from '@nestjs/common';
+import {Body, Controller, Get, Post} from '@nestjs/common';
 import {CnLabInstanceAggregateService} from '../cn-lab-instances/cn-lab-instance-aggregate.service';
-import {CnExternalLabBackupInfoDto} from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import {CnExternalLabBackupInfoDTO} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {CnLabManagerGuard} from '../cn-core/decorators/cn-lab-manager-guard.decorator';
 import {CnLabRobotAuthentication} from '../cn-core/decorators/cn-lab-guard.decorator';
+import {BlParsePipe} from '@monorepo/back-core-lib';
+import {CnLabBackupBucket} from '../cn-lab-instances/backup/cn-lab-backup.dto';
+import {CnLabBackupHistory} from '../cn-lab-instances/backup/cn-lab-backup-history.entity';
 
 /**
  * Specific controller for route called by the lab manager. These routes are not called by a user
@@ -16,7 +19,13 @@ export class CnExternalLabsManagerController {
 
   @CnLabRobotAuthentication()
   @Get('lab/backup-info')
-  async getLabBackupInfo(): Promise<CnExternalLabBackupInfoDto> {
+  async getLabBackupInfo(): Promise<CnExternalLabBackupInfoDTO> {
     return this.labInstanceAggregator.getCurrentLabInstanceBackupInfo();
+  }
+
+  @CnLabRobotAuthentication()
+  @Post('lab/backup-history')
+  async saveBackupHistory(@Body(new BlParsePipe(CnLabBackupBucket)) backups: CnLabBackupBucket[]): Promise<CnLabBackupHistory[]> {
+    return this.labInstanceAggregator.saveCurrentLabBackupHistory(backups);
   }
 }

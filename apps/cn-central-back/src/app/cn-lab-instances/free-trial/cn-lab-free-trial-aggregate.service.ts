@@ -73,8 +73,12 @@ export class CnLabFreeTrialAggregateService {
     labInstance.billingMode = CnLabFreeTrial.BILLING_MODE;
     labInstance.isFreeTrial = true;
 
+    const dailyBackupRegion = await this.cloudProviderAggregateService.getDefaultS3Region1();
+    const weeklyBackupRegion = await this.cloudProviderAggregateService.getDefaultS3Region2();
+
     const labInstanceDb = await this.datasource.transaction(async (entityManager) => {
-      labInstance = await this.labInstanceService.create(labInstance, entityManager);
+      labInstance = await this.labInstanceAggregateService.createLabNotSecure(labInstance,
+        dailyBackupRegion, weeklyBackupRegion, entityManager);
 
       await this.addUserToLabInstance(labInstance, user, entityManager);
 

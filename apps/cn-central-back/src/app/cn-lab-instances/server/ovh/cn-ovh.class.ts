@@ -5,7 +5,7 @@ export interface CnOvhCreateInstanceRequest {
   flavorId: string;
   sshKeyId: string;
   monthlyBilling?: boolean;
-  autobackup: {
+  autobackup?: {
     cron: string;
     rotation: number; // number of backups to keep
   },

@@ -33,15 +33,25 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     return bucketDb;
   }
 
+  public async deleteBucket(bucket: CnBucket, entityManager?: EntityManager): Promise<void> {
+    entityManager = this.getEntityManager(entityManager);
+
+    await this.objectStorageService.deleteBucket(bucket.getBucketConfig());
+    // delete the bucket in DB and then in the object storage
+    await entityManager.delete(CnBucket, bucket.id);
+
+  }
+
   public async update(bucket: CnBucket, entityManager?: EntityManager): Promise<CnBucket> {
     bucket = await this.checkBucketBeforeSave(bucket);
-    return await super.update(bucket, entityManager);
+    await super.update(bucket, entityManager);
+    return this.findById(bucket.id, CnBucket.completeRelation);
   }
 
   /**
    * Get the bucket before create or update.
    * Check if a similar bucket already exists.
-   * Check if the bucket type requires an space and the space is the same as the credentials
+   * Check if the bucket type requires a space and the space is the same as the credentials
    * @param bucket
    * @private
    */
@@ -76,10 +86,14 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
         contentType: contentType,
         objectId: objectId
       },
-      relations: {
-        region: true,
-        credentials: true
-      }
+      relations: CnBucket.configRelation
+    });
+  }
+
+  public async findCompleteById(id: string): Promise<CnBucket> {
+    return await this.repository.findOne({
+      where: {id: id},
+      relations: CnBucket.configRelation
     });
   }
 
@@ -91,16 +105,30 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     });
   }
 
+  public async findByNameAndRegionAndCheck(name: string, regionName: string): Promise<CnBucket> {
+    const bucket = await this.repository.findOne({
+      where: {
+        name: name,
+        region: {
+          technicalName: regionName
+        }
+      },
+      relations: {
+        region: true,
+      }
+    });
+    if (bucket == null) {
+      throw new BlBadRequestException(`Bucket ${name} in region ${regionName} not found`);
+    }
+    return bucket;
+  }
+
 
   public search(searchParam: BlSearchParams,
                 page: number, size: number): Promise<ClPage<CnBucket>> {
     const searchBuilder = new BlSearchBuilder<CnBucket>({name: 'ASC'});
     searchBuilder.addSearchParams(searchParam);
-    searchBuilder.setRelations({
-      region: true,
-      space: true,
-      credentials: {cloudProvider: true, space: true}
-    });
+    searchBuilder.setRelations(CnBucket.completeRelation);
 
     return this.findPaginated(page, size, searchBuilder.build());
   }

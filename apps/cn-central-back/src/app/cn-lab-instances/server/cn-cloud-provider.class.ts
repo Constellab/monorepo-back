@@ -8,8 +8,6 @@ export interface CnCpCreateInstanceRequest {
   region: string;
   serverName: string;
   billing: CnLabInstanceBillingMode;
-  backupRotation: number;
-  backupFrequency: CnCpBackupFrequency;
 }
 
 export type CnCpInstanceStatus = 'CREATING' | 'RUNNING' | 'RESTARTING' | 'STOPPED' | 'STOPPING';

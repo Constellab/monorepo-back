@@ -187,8 +187,8 @@ export class CnProjectAggregateService {
     }
 
     await this.datasource.transaction(async entityManager => {
-      await this.projectService.deleteById(id, entityManager);
       await this.projectBucketService.deleteProjectBucket(id, entityManager);
+      await this.projectService.deleteById(id, entityManager);
     });
 
     this.emitProjectEvent('DELETE_PROJECT', project, project);

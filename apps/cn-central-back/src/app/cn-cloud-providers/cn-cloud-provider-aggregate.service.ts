@@ -11,7 +11,8 @@ import {CnCloudProvider, CnCloudProviderName} from './cn-cloud-provider.entity';
 @Injectable()
 export class CnCloudProviderAggregateService {
 
-  private static readonly DefaultRegion = 'gra';
+  private static readonly defaultS3Region1 = 'gra';
+  private static readonly defaultS3Region2 = 'sbg';
 
 
   constructor(private securityService: CnCloudProviderSecurity,
@@ -23,22 +24,22 @@ export class CnCloudProviderAggregateService {
 
   /////////////////////////// Cloud Provider ///////////////////////////
   public async createCloudProvider(cloudProvider: CnCloudProvider): Promise<CnCloudProvider> {
-    await this.checkAuthorizationToModifyEntity();
+    this.checkAuthorizationToModifyEntity();
     return this.cloudProviderService.create(cloudProvider);
   }
 
   public async updateCloudProvider(cloudProvider: CnCloudProvider): Promise<CnCloudProvider> {
-    await this.checkAuthorizationToModifyEntity();
+    this.checkAuthorizationToModifyEntity();
     return this.cloudProviderService.update(cloudProvider);
   }
 
   public async deleteCloudProvider(id: string): Promise<void> {
-    await this.checkAuthorizationToModifyEntity();
+    this.checkAuthorizationToModifyEntity();
     await this.cloudProviderService.deleteById(id);
   }
 
   public async findAllCloudProviders(page: number, size: number): Promise<ClPage<CnCloudProvider>> {
-    await this.checkAuthorizationToGetEntity();
+    this.checkAuthorizationToGetEntity();
     return this.cloudProviderService.findAll(page, size);
   }
 
@@ -52,8 +53,8 @@ export class CnCloudProviderAggregateService {
   public async updateRegion(region: CnCloudProviderRegion): Promise<CnCloudProviderRegion> {
     this.checkAuthorizationToModifyEntity();
     const regionDb = await this.cloudProviderRegionService.findByIdAndCheck(region.id);
-    if (regionDb.technicalName === CnCloudProviderAggregateService.DefaultRegion &&
-      region.technicalName !== CnCloudProviderAggregateService.DefaultRegion) {
+    if (regionDb.technicalName === CnCloudProviderAggregateService.defaultS3Region1 &&
+      region.technicalName !== CnCloudProviderAggregateService.defaultS3Region1) {
       throw new Error('You cannot modify the name of the default region : ' + regionDb.technicalName);
     }
     return this.cloudProviderRegionService.update(region);
@@ -63,7 +64,7 @@ export class CnCloudProviderAggregateService {
     this.checkAuthorizationToModifyEntity();
 
     const bucket = await this.cloudProviderRegionService.findByIdAndCheck(id);
-    if (bucket.technicalName === CnCloudProviderAggregateService.DefaultRegion) {
+    if (bucket.technicalName === CnCloudProviderAggregateService.defaultS3Region1) {
       throw new Error(`You cannot delete the default region: ${bucket.technicalName}`);
     }
     await this.cloudProviderRegionService.deleteById(id);
@@ -89,9 +90,14 @@ export class CnCloudProviderAggregateService {
     return this.cloudProviderRegionService.findByCloudProviderNameAndTechnicalNameAndCheck(cloudProviderName, technicalName);
   }
 
-  public async getDefaultRegion(): Promise<CnCloudProviderRegion> {
+  public async getDefaultS3Region1(): Promise<CnCloudProviderRegion> {
     return await this.cloudProviderRegionService.findByCloudProviderNameAndTechnicalNameAndCheck(
-      'OVH', CnCloudProviderAggregateService.DefaultRegion);
+      'OVH', CnCloudProviderAggregateService.defaultS3Region1);
+  }
+
+  public async getDefaultS3Region2(): Promise<CnCloudProviderRegion> {
+    return await this.cloudProviderRegionService.findByCloudProviderNameAndTechnicalNameAndCheck(
+      'OVH', CnCloudProviderAggregateService.defaultS3Region2);
   }
 
   //////////////////////////// AUTHORIZATION ////////////////////////////

@@ -2,6 +2,8 @@
  * Response when logged in a user to the lab instance
  */
 import {ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import {CnLabBackupFrequency} from '../../cn-lab-instances/backup/cn-lab-backup.dto';
+import {BlBucketConfig} from '@monorepo/back-core-lib';
 
 export interface CnExternalLabLoginResponse {
   temp_token: string;
@@ -42,20 +44,15 @@ export interface CnLabGlobalActivity {
 
 
 ////////////////////////// BACKUP //////////////////////////
-export interface CnExternalLabBackupInfoDto {
-  buckets: CnExternalLabBackupBucketDto[];
+export interface CnExternalLabBackupInfoDTO {
+  version: number;
+  backupBuckets: CnExternalLabBackupBucketDTO[];
 }
 
-export interface CnExternalLabBackupBucketDto {
-  credentials: {
-    accessKeyId: string;
-    secretAccessKey: string;
-  };
-  bucket: string;
-  endpoint: string;
-  region: string;
+export interface CnExternalLabBackupBucketDTO {
+  backupFrequency: CnLabBackupFrequency;
+  bucketConfig: BlBucketConfig;
 }
-
 
 export interface CnExternalLabBackup {
   status: 'IN_PROGRESS' | 'DONE' | 'ERROR';

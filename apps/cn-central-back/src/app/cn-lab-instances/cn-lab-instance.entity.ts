@@ -68,12 +68,12 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
 
   // api key shared with the glab instance API
   @Exclude()
-  @Column({nullable: false, length: 255})
+  @Column({nullable: false, length: 255, unique: true})
   glabApiKey: string;
 
   // api key shared with the lab manager APImi
   @Exclude()
-  @Column({nullable: true, length: 255})
+  @Column({nullable: true, length: 255, unique: true})
   labManagerApiKey: string;
 
   @Column({nullable: true, length: 255, unique: true})
@@ -222,15 +222,16 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
 
 
   getLabManagerApiInfo(): CnExternalApiInfo {
-    return {
-      apiKey: this.labManagerApiKey,
-      apiUrl: this.labManagerUrl
-    };
-    // only for local dev
     // return {
-    //   apiKey: '123456',
-    //   apiUrl: 'http://localhost:3080'
+    //   apiKey: this.labManagerApiKey,
+    //   apiUrl: this.labManagerUrl
     // };
+    // only for local dev
+    // TODO to remove
+    return {
+      apiKey: '123456',
+      apiUrl: 'http://localhost:3080'
+    };
   }
 
   // get the subdomain name
