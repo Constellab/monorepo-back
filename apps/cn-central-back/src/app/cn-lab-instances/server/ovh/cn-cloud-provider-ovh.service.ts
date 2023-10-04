@@ -28,7 +28,6 @@ import {CnLabSshService} from '../cn-lab-ssh.service';
 export class CnCloudProviderOvhService extends CnCloudProviderService {
 
   private static IMAGE_NAME = 'Ubuntu 20.04';
-  private static DAILY_BACKUP_CRON = '50 0 * * *'; // every day at 00:50
 
   private static MOUNT_FILE = 'mount_ovh.sh';
   private static MOUNT_DISK_NAME = 'sdb';

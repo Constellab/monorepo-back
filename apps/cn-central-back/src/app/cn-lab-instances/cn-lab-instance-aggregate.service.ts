@@ -4,7 +4,6 @@ import {CnLabInstancesService} from './cn-lab-instances.service';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {
-  CnExternalLabBackup,
   CnExternalLabBackupInfoDTO,
   CnExternalLabUser,
   CnExternalLabUserRole
@@ -689,12 +688,6 @@ export class CnLabInstanceAggregateService {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
     const backup = await this.labManagerService.stopCurrentBackup(labInstance);
     return this.backupHistoryService.saveHistories(backup, labInstance);
-  }
-
-
-  public async getBackupLastStatus(labId: string): Promise<CnExternalLabBackup> {
-    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
-    return this.labManagerService.getBackupLastStatus(labInstance);
   }
 
   public async syncBackupHistory(labId: string): Promise<void> {

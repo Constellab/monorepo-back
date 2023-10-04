@@ -10,7 +10,7 @@ import {CnExternalLabManagerApiService} from '../cn-external-lab-api/cn-external
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstanceConfigDTO} from './cn-lab-instance.dto';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import {CnExternalLabBackup, CnExternalLabBackupInfoDTO} from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import {CnExternalLabBackupInfoDTO} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnLabConfigFile} from '../cn-lab-configs/cn-lab-config-file.class';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
@@ -162,10 +162,6 @@ export class CnLabManagerService {
 
   public async stopCurrentBackup(labInstance: CnLabInstance): Promise<CnLabBackupBucket[]> {
     return this.labManagerApiService.stopCurrentBackup(labInstance.getLabManagerApiInfo());
-  }
-
-  public async getBackupLastStatus(labInstance: CnLabInstance): Promise<CnExternalLabBackup> {
-    return this.labManagerApiService.getLastBackupStatus(labInstance.getLabManagerApiInfo());
   }
 
   public async getBackupHistory(labInstance: CnLabInstance): Promise<CnLabBackupHistory> {

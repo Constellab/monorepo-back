@@ -54,23 +54,3 @@ export interface CnExternalLabBackupBucketDTO {
   bucketConfig: BlBucketConfig;
 }
 
-export interface CnExternalLabBackup {
-  status: 'IN_PROGRESS' | 'DONE' | 'ERROR';
-  storages: CnExternalLabBackupStorage[];
-  message?: string;
-}
-
-export interface CnExternalLabBackupStorage {
-  region: string;
-  bucket: string;
-  endpoint: string;
-  startUploadAt: Date;
-  endUploadAt?: Date;
-  status: 'IN_PROGRESS' | 'DONE' | 'ERROR';
-  message?: string;
-}
-
-export interface CnExternalLabBackupHistory {
-  version: number;
-  backups: CnExternalLabBackup[];
-}

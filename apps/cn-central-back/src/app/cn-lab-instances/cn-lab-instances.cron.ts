@@ -18,6 +18,7 @@ import {CnLabInstanceAggregateService} from './cn-lab-instance-aggregate.service
 import {CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 import {CnLabFreeTrialService} from './free-trial/cn-lab-free-trial.service';
 import {CnLabFreeTrial} from './free-trial/cn-lab-free-trial.entity';
+import {CnLabBackupBucket} from './backup/cn-lab-backup.dto';
 
 /**
  * Service that gather all the cron jobs for the lab instances
@@ -92,10 +93,10 @@ export class CnLabInstancesCron {
     for (const option of options) {
       const lab = await this.labInstanceService.findByIdAndCheck(option.labInstanceId);
       if (lab.isRunning()) {
-        const backup = await this.labManagerService.getLastBackupStatus(lab.getLabManagerApiInfo()).catch(() => null);
+        const backup: CnLabBackupBucket[] = await this.labManagerService.getLastBackupStatus(lab.getLabManagerApiInfo()).catch(() => null);
 
-        // if the backup is in progress, we do nothing
-        if (backup == null || backup.status === 'IN_PROGRESS') {
+        // if a backup is in progress, we do nothing
+        if (backup == null || backup.some(b => b.status === 'IN_PROGRESS')) {
           continue;
         }
 

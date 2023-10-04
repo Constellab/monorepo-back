@@ -25,7 +25,6 @@ import {
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
 import {CnLabInstanceProject} from './project/cn-lab-instance-project.entity';
-import {CnExternalLabBackup} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {CnCpCompleteInfo} from './server/cn-cloud-provider.class';
 import {Response} from 'express';
 import * as AdmZip from 'adm-zip';
@@ -369,11 +368,6 @@ export class CnLabInstancesController {
   @Post(':id/backup/stop-current')
   async stopCurrentBackup(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabBackupHistory[]> {
     return await this.aggregateService.stopCurrentBackup(id);
-  }
-
-  @Get(':id/backup/last-status')
-  async getCurrentBackup(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnExternalLabBackup> {
-    return await this.aggregateService.getBackupLastStatus(id);
   }
 
   @Post(':id/backup/sync')

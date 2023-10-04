@@ -14,7 +14,7 @@ import {
   CnLabManagerInitConfig,
   CnLabPullBiotaOptions
 } from './model/cn-lab-manager.class';
-import {CnExternalLabBackup, CnExternalLabBackupInfoDTO} from './model/cn-external-lab-api.class';
+import {CnExternalLabBackupInfoDTO} from './model/cn-external-lab-api.class';
 import {CnLabConfigFile} from '../cn-lab-configs/cn-lab-config-file.class';
 import {CnLabBackupBucket, CnLabBackupHistory} from '../cn-lab-instances/backup/cn-lab-backup.dto';
 
@@ -112,10 +112,6 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/stop-current`, null, CnLabBackupBucket));
   }
 
-  getLastBackupStatus(apiInfo: CnExternalApiInfo): Promise<CnExternalLabBackup> {
-    // TODO change to last-status once all lab manager are updated to v1.2.0
-    return lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/current-status`));
-  }
 
   getBackupHistory(apiInfo: CnExternalApiInfo): Promise<CnLabBackupHistory> {
     return lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/history`, CnLabBackupHistory));
