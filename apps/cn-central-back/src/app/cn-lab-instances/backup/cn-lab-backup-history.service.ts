@@ -27,13 +27,19 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
 
   public async saveHistory(historyDto: CnLabBackupBucket, labInstance: CnLabInstance): Promise<CnLabBackupHistory> {
     let history: CnLabBackupHistory = await this.repo.findOne({
-      where: {backupId: historyDto.id}
+      where: {backupId: historyDto.id},
+      relations: {labInstance: true}
     });
+
 
     if (history == null) {
       history = new CnLabBackupHistory();
       history.backupId = historyDto.id;
       history.labInstance = labInstance;
+    } else {
+      if (history.labInstance.id !== labInstance.id) {
+        throw new Error(`The backup history ${historyDto.id} does not belong to the lab instance ${labInstance.id}`);
+      }
     }
 
     history.bucket = await this.bucketService.findByNameAndRegionAndCheck(historyDto.bucket, historyDto.region);

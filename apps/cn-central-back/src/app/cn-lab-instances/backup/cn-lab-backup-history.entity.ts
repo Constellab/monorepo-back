@@ -43,7 +43,7 @@ export class CnLabBackupHistory extends CnBaseEntity {
   @Column({nullable: false, type: 'enum', enum: CnLabBackupStatus})
   dataStatus: CnLabBackupStatus;
 
-  @Column({nullable: false, length: 255})
+  @Column({nullable: false, type: 'text'})
   dataMessage: string;
 
   @Column({nullable: false, default: 0})
@@ -53,7 +53,7 @@ export class CnLabBackupHistory extends CnBaseEntity {
   @Column({nullable: false, type: 'enum', enum: CnLabBackupStatus})
   dbStatus: CnLabBackupStatus;
 
-  @Column({nullable: false, length: 255})
+  @Column({nullable: false, type: 'text'})
   dbMessage: string;
 
   @Column({nullable: false, default: 0})
