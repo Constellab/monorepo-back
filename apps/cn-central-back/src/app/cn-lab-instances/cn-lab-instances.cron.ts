@@ -9,7 +9,6 @@ import {
   CnLabGreenOptionStopAfterTimeValue,
   CnLabGreenOptionType
 } from './green-option/cn-lab-green-option.entity';
-import {CnExternalLabManagerApiService} from '../cn-external-lab-api/cn-external-lab-manager-api.service';
 import {CnExternalLabApiService} from '../cn-external-lab-api/cn-external-lab-api.service';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
@@ -19,6 +18,7 @@ import {CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 import {CnLabFreeTrialService} from './free-trial/cn-lab-free-trial.service';
 import {CnLabFreeTrial} from './free-trial/cn-lab-free-trial.entity';
 import {CnLabBackupBucket} from './backup/cn-lab-backup.dto';
+import {CnLabManagerService} from './cn-lab-manager.service';
 
 /**
  * Service that gather all the cron jobs for the lab instances
@@ -31,7 +31,7 @@ export class CnLabInstancesCron {
   constructor(private labServerService: CnLabServerService,
               private labInstanceService: CnLabInstancesService,
               private labRuleService: CnLabGreenOptionService,
-              private labManagerService: CnExternalLabManagerApiService,
+              private labManagerService: CnLabManagerService,
               private externalLabApiService: CnExternalLabApiService,
               private labAggregateService: CnLabInstanceAggregateService,
               private freeTrialService: CnLabFreeTrialService) {
@@ -93,7 +93,7 @@ export class CnLabInstancesCron {
     for (const option of options) {
       const lab = await this.labInstanceService.findByIdAndCheck(option.labInstanceId);
       if (lab.isRunning()) {
-        const backup: CnLabBackupBucket[] = await this.labManagerService.getLastBackupStatus(lab.getLabManagerApiInfo()).catch(() => null);
+        const backup: CnLabBackupBucket[] = await this.labManagerService.getLastBackupsStatus(lab).catch(() => null);
 
         // if a backup is in progress, we do nothing
         if (backup == null || backup.some(b => b.status === 'IN_PROGRESS')) {

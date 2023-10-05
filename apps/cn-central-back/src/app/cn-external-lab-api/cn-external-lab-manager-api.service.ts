@@ -112,6 +112,9 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/stop-current`, null, CnLabBackupBucket));
   }
 
+  getLastBackupsStatus(apiInfo: CnExternalApiInfo): Promise<CnLabBackupBucket[]> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/last-status`));
+  }
 
   getBackupHistory(apiInfo: CnExternalApiInfo): Promise<CnLabBackupHistory> {
     return lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/history`, CnLabBackupHistory));
@@ -122,7 +125,7 @@ export class CnExternalLabManagerApiService {
 
 
   /**
-   * Make an http post with the ip of the lab and the API key of the lab in header
+   * Make a http post with the ip of the lab and the API key of the lab in header
    */
   private post(apiInfo: CnExternalApiInfo, route: string, body: any, classReference?: ClDeserializationRef,
                options: BlExternalApiHttpOption = {}): Observable<any> {
@@ -131,7 +134,7 @@ export class CnExternalLabManagerApiService {
   }
 
   /**
-   * Make an http put with the ip of the lab and the API key of the lab in header
+   * Make a http put with the ip of the lab and the API key of the lab in header
    */
   private put(apiInfo: CnExternalApiInfo, route: string, body: any, classReference?: ClDeserializationRef,
               options: BlExternalApiHttpOption = {}): Observable<any> {
@@ -140,7 +143,7 @@ export class CnExternalLabManagerApiService {
   }
 
   /**
-   * Make an http GET with the ip of the lab and the API key of the lab in header
+   * Make a http GET with the ip of the lab and the API key of the lab in header
    */
   private get(apiInfo: CnExternalApiInfo, route: string, classReference?: ClDeserializationRef,
               options: BlExternalApiHttpOption = {}): Observable<any> {

@@ -387,6 +387,11 @@ export class CnLabInstancesController {
     return this.aggregateService.getLabBackupHistory(id, page, size);
   }
 
+  @Post('backup-migrate')
+  public migrate(): Promise<void> {
+    return this.aggregateService.migrateBackupOptions();
+  }
+
   /////////////////////////// SERVER //////////////////////////////
   @Get(':id/server/info')
   async getServerInfo(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnCpCompleteInfo> {

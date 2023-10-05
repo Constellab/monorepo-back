@@ -326,4 +326,13 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       }
     });
   }
+
+  public findExistingCloudLabInstance(): Promise<CnLabInstance[]>{
+    return this.repository.find({
+      where: {
+        type: CnLabInstanceType.CLOUD,
+        currentStatus: {status: Not(CnLabInstanceStatus.NO_SERVER)}
+      }
+    });
+  }
 }

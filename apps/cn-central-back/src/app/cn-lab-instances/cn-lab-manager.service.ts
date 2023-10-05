@@ -167,4 +167,8 @@ export class CnLabManagerService {
   public async getBackupHistory(labInstance: CnLabInstance): Promise<CnLabBackupHistory> {
     return this.labManagerApiService.getBackupHistory(labInstance.getLabManagerApiInfo());
   }
+
+  public async getLastBackupsStatus(labInstance: CnLabInstance): Promise<CnLabBackupBucket[]> {
+    return this.labManagerApiService.getLastBackupsStatus(labInstance.getLabManagerApiInfo());
+  }
 }

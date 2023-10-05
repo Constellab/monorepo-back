@@ -44,11 +44,6 @@ export class CnObjectStoragesAggregateService {
                                   bucketName: string, spaceId: string,
                                   contentType: CnBucketContentType, objectId: string,
                                   entityManager?: EntityManager): Promise<CnBucket> {
-    const bucket = await this.findByContentTypeAndObjectId(contentType, objectId);
-
-    if (bucket) {
-      throw new BlBadRequestException(`Bucket for this object already exists`);
-    }
 
     return this.createObjectBucketPrivate(credentialsName, region, bucketName, spaceId,
       contentType, objectId, entityManager);

@@ -46,7 +46,6 @@ export class CnLabBackupOptionService extends BlAbstractService<CnLabBackupOptio
       labInstance.id, entityManager);
     option.frequency2 = CnLabBackupFrequency.WEEKLY;
 
-
     return entityManager.save(option);
   }
 

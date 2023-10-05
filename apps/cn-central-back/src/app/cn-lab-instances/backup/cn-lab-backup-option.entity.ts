@@ -1,4 +1,4 @@
-import {Column, Entity, ManyToOne} from 'typeorm';
+import {Column, Entity, ManyToOne, Unique} from 'typeorm';
 import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
 import {Type} from 'class-transformer';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
@@ -7,6 +7,9 @@ import {CnLabBackupFrequency} from './cn-lab-backup.dto';
 import {CnBucket} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 @Entity('lab_backup_option')
+@Unique(['labInstance'])
+@Unique(['bucket1'])
+@Unique(['bucket2'])
 export class CnLabBackupOption extends CnBaseEntity {
 
   @Type(() => CnLabInstance)
