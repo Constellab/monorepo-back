@@ -12,7 +12,7 @@ import {DateTime} from 'luxon';
 export class CnLabBackupHistory extends CnBaseEntity {
 
   @Type(() => CnLabInstance)
-  @ManyToOne(() => CnLabInstance, {onDelete: 'CASCADE'})
+  @ManyToOne(() => CnLabInstance, {onDelete: 'CASCADE', nullable: false})
   @BlNotUpdatable()
   labInstance: CnLabInstance;
 
@@ -20,7 +20,7 @@ export class CnLabBackupHistory extends CnBaseEntity {
   frequency: CnLabBackupFrequency;
 
   @Type(() => CnBucket)
-  @ManyToOne(() => CnBucket)
+  @ManyToOne(() => CnBucket, {nullable: false})
   @BlNotUpdatable()
   bucket: CnBucket;
 

@@ -13,7 +13,7 @@ import {CnBucket} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 export class CnLabBackupOption extends CnBaseEntity {
 
   @Type(() => CnLabInstance)
-  @ManyToOne(() => CnLabInstance)
+  @ManyToOne(() => CnLabInstance, {nullable: false})
   @BlNotUpdatable()
   labInstance: CnLabInstance;
 
@@ -21,7 +21,7 @@ export class CnLabBackupOption extends CnBaseEntity {
   frequency1: CnLabBackupFrequency;
 
   @Type(() => CnBucket)
-  @ManyToOne(() => CnBucket)
+  @ManyToOne(() => CnBucket, {nullable: false})
   @BlNotUpdatable()
   bucket1: CnBucket;
 
@@ -29,7 +29,7 @@ export class CnLabBackupOption extends CnBaseEntity {
   frequency2: CnLabBackupFrequency;
 
   @Type(() => CnBucket)
-  @ManyToOne(() => CnBucket)
+  @ManyToOne(() => CnBucket, {nullable: false})
   @BlNotUpdatable()
   bucket2: CnBucket;
 

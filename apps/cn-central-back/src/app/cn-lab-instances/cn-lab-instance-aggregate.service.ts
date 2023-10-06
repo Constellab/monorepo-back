@@ -108,7 +108,7 @@ export class CnLabInstanceAggregateService {
               private freeTrialService: CnLabFreeTrialService,
               private backupHistoryService: CnLabBackupHistoryService,
               private backupOptionService: CnLabBackupOptionService,
-              private cloudProviderAggregateService : CnCloudProviderAggregateService) {
+              private cloudProviderAggregateService: CnCloudProviderAggregateService) {
   }
 
   /**
@@ -735,18 +735,17 @@ export class CnLabInstanceAggregateService {
   /**
    * Admin method to deleted all the unused lab backup bucket
    */
-  public async deleteUnusedLabBackupBucket(): Promise<CnBucket[]>{
-    if(!CnCurrentUserHelper.isAdmin()){
+  public async deleteUnusedLabBackupBucket(): Promise<CnBucket[]> {
+    if (!CnCurrentUserHelper.isAdmin()) {
       throw new BlUnauthorizedException();
     }
 
     const deletedBuckets = [];
     const labBuckets = await this.objectStorageService.getBucketByContentTypeNotSecure(CnBucketContentType.LAB_BACKUP);
 
-    for(const labBucket of labBuckets){
+    for (const labBucket of labBuckets) {
       const lab = await this.labInstancesService.findById(labBucket.objectId);
-      if(lab == null){
-        // TODO manage when the s3 bucket does not exist
+      if (lab == null) {
         await this.objectStorageService.deleteBucket(labBucket.id);
         deletedBuckets.push(labBucket);
       }
@@ -757,7 +756,7 @@ export class CnLabInstanceAggregateService {
 
   // TODO MIGRATION TO REMOVE
   public async migrateBackupOptions(): Promise<void> {
-    if(!CnCurrentUserHelper.isAdmin()){
+    if (!CnCurrentUserHelper.isAdmin()) {
       throw new BlUnauthorizedException();
     }
     // retrieve all cloud lab instances existing
@@ -779,6 +778,14 @@ export class CnLabInstanceAggregateService {
         const option = new CnLabBackupOption();
         option.labInstance = labInstance;
         option.bucket1 = bucket;
+
+        if (option.bucket1 == null) {
+          const region = await this.cloudProviderAggregateService.getDefaultS3Region1();
+          option.bucket1 = await this.objectStorageService.createObjectBucket(
+            CnObjectStoragesAggregateService.LabBackupCredentialName,
+            region, 'lab-backup-daily-' + labInstance.id, labInstance.spaceId, CnBucketContentType.LAB_BACKUP,
+            labInstance.id, entityManager);
+        }
         option.frequency1 = CnLabBackupFrequency.DAILY;
 
         // create the weekly bucket backup
