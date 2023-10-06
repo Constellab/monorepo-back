@@ -10,6 +10,7 @@ import {CnBucketsService} from './cn-buckets/cn-buckets.service';
 import {CnObjectStoragesAggregateService} from './cn-object-storages-aggregate.service';
 import {CnObjectStoragesSecurity} from './cn-object-storages.security';
 import {CnCloudProvidersModule} from '../cn-cloud-providers/cn-cloud-providers.module';
+import {CnAuthModule} from '../cn-auth/cn-auth.module';
 
 
 @Module({
@@ -22,6 +23,7 @@ import {CnCloudProvidersModule} from '../cn-cloud-providers/cn-cloud-providers.m
 
     CnCoreModule,
     CnCloudProvidersModule,
+    CnAuthModule,
   ],
   providers: [
     CnObjectStoragesAggregateService,

@@ -31,11 +31,12 @@ export class CnBucketCredentialsService extends BlAbstractService<CnBucketCreden
 
   public findAll(page: number, size: number): Promise<ClPage<CnBucketCredentials>> {
     return this.findPaginated(page, size, {
-      relations: {
-        space: true,
-        cloudProvider: true
-      }
+      relations: CnBucketCredentials.completeRelations
     });
+  }
+
+  public async findCompleteByIdAndCheck(id: string): Promise<CnBucketCredentials> {
+    return this.findByIdAndCheck(id,  CnBucketCredentials.completeRelations);
   }
 
   public findByName(name: string): Promise<CnBucketCredentials | null> {

@@ -42,13 +42,8 @@ export class CnAuthService {
               private captchaService: BlCaptchaService) {
   }
 
-  async login(credentials: BlCredentials): Promise<CnAuthResponse> {
-    const captchaCheck = await this.captchaService.validateCaptcha(credentials.captcha);
-
-    if (!captchaCheck) {
-      throw new BlUnauthorizedException(CnErrorText.INVALID_CAPTCHA);
-    }
-    const user = await this.checkCredentialsAndUser(credentials);
+  public async login(credentials: BlCredentials): Promise<CnAuthResponse> {
+    const user = await this.checkCredentialsAndUser(credentials, true);
 
     if (user.has2FA) {
       const user2FA = await this.user2FaService.generateCode(user);
@@ -64,50 +59,15 @@ export class CnAuthService {
     }
   }
 
-  async loginWith2FA(credentials: BlCredentials2Fa): Promise<string> {
+  public async loginWith2FA(credentials: BlCredentials2Fa): Promise<string> {
     const user = await this.user2FaService.checkIsValidCode(credentials.twoFACode, credentials.twoFAUrlCode);
 
     return this.jwtService.generateToken(user.id, user.email);
   }
 
-  /**
-   * Called by external services to check credentials of a user
-   * @param credentials
-   * @param requiresAdmin if true the user needs to be an admin
-   * TODO to remove once all lab are on v0.5.4
-   */
-  async externalCheckCredentialsWithRole(credentials: BlCredentials, requiresAdmin: boolean): Promise<CnExternalCheckCredentialResponse> {
-    const user = await this.checkCredentialsAndUser(credentials);
-
-    if (requiresAdmin && user.category !== 'ADMIN') {
-      throw new BlUnauthorizedException(CnErrorText.WRONG_CREDENTIALS);
-    }
-
-    if (user.has2FA) {
-      const user2FA = await this.user2FaService.generateCode(user);
-      return {
-        status: '2FA_REQUIRED',
-        twoFAUrlCode: user2FA.urlCode
-      };
-    } else {
-      return {
-        status: 'OK',
-        user
-      };
-    }
-  }
-
-  async externalCheckCredentials(credentials: BlCredentials, checkCaptcha: boolean,
-                                 ignore2Fa: boolean = false): Promise<CnExternalCheckCredentialResponse> {
-    if (checkCaptcha) {
-      const captchaCheck = await this.captchaService.validateCaptcha(credentials.captcha);
-
-      if (!captchaCheck) {
-        throw new BlUnauthorizedException(CnErrorText.INVALID_CAPTCHA);
-      }
-    }
-
-    const user = await this.checkCredentialsAndUser(credentials);
+  public async externalCheckCredentials(credentials: BlCredentials, checkCaptcha: boolean,
+                                        ignore2Fa: boolean = false): Promise<CnExternalCheckCredentialResponse> {
+    const user = await this.checkCredentialsAndUser(credentials, checkCaptcha);
 
     if (user.has2FA && !ignore2Fa) {
       const user2FA = await this.user2FaService.generateCode(user);
@@ -127,11 +87,19 @@ export class CnAuthService {
    * 2FA login call by external services
    * @param credentials
    */
-  async externalCheck2FA(credentials: BlCredentials2Fa): Promise<CnUser> {
+  public async externalCheck2FA(credentials: BlCredentials2Fa): Promise<CnUser> {
     return await this.user2FaService.checkIsValidCode(credentials.twoFACode, credentials.twoFAUrlCode);
   }
 
-  private async checkCredentialsAndUser(credentials: BlCredentials): Promise<CnUser> {
+  public async checkCredentialsAndUser(credentials: BlCredentials, checkCaptcha: boolean): Promise<CnUser> {
+    if (checkCaptcha) {
+      const captchaCheck = await this.captchaService.validateCaptcha(credentials.captcha);
+
+      if (!captchaCheck) {
+        throw new BlUnauthorizedException(CnErrorText.INVALID_CAPTCHA);
+      }
+    }
+
     const user = await this.usersService.findByEmail(credentials.email);
 
     // if the email is wrong

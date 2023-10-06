@@ -4,7 +4,7 @@ import {CnBucket} from './cn-buckets/cn-bucket.entity';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnBucketCredentials} from './cn-bucket-credential/cn-bucket-credential.entity';
 import {CnBucketCredentialsFull} from './cn-object-storage.dto';
-import {BlDtoHelper, BlParsePipe, BlSearchParams} from '@monorepo/back-core-lib';
+import {BlCredentials, BlParsePipe, BlSearchParams} from '@monorepo/back-core-lib';
 
 
 @Controller('object-storages')
@@ -40,16 +40,14 @@ export class CnObjectStoragesController {
 
   @Post('credentials')
   public async createBucketCredentials(@Body(new BlParsePipe(CnBucketCredentials)) credentials: CnBucketCredentials)
-    : Promise<CnBucketCredentialsFull> {
-    const result = await this.service.createBucketCredentials(credentials);
-    return BlDtoHelper.toDto(CnBucketCredentialsFull, result);
+    : Promise<CnBucketCredentials> {
+    return await this.service.createBucketCredentials(credentials);
   }
 
   @Put('credentials')
   public async updateBucketCredentials(@Body(new BlParsePipe(CnBucketCredentials)) credentials: CnBucketCredentials)
-    : Promise<CnBucketCredentialsFull> {
-    const result = await this.service.updateBucketCredentials(credentials);
-    return BlDtoHelper.toDto(CnBucketCredentialsFull, result);
+    : Promise<CnBucketCredentials> {
+    return await this.service.updateBucketCredentials(credentials);
   }
 
   @Delete('credentials/:id')
@@ -59,9 +57,14 @@ export class CnObjectStoragesController {
 
   @Get('credentials')
   public async getBucketCredentialsList(@Query('page', ParseIntPipe) page: number,
-                                        @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnBucketCredentialsFull>> {
-    const credentials = await this.service.getAllBucketCredentials(page, size);
-    return BlDtoHelper.pageToDto(CnBucketCredentialsFull, credentials);
+                                        @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnBucketCredentials>> {
+    return await this.service.getAllBucketCredentials(page, size);
+  }
+
+  @Post('credentials/:id/data')
+  public async getCredentialsData(@Param('id', new ParseUUIDPipe()) id: string,
+                                  @Body() credentials: BlCredentials): Promise<CnBucketCredentialsFull> {
+    return await this.service.getCredentialsData(id, credentials);
   }
 
 }

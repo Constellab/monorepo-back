@@ -1,4 +1,4 @@
-import {Body, Controller, Param, ParseBoolPipe, Post, Res} from '@nestjs/common';
+import {Body, Controller, Post, Res} from '@nestjs/common';
 import {CnAuthResponse, CnAuthService, CnExternalCheckCredentialResponse} from './cn-auth.service';
 import {Response} from 'express';
 import {cnJwtConfig} from './cn-jwt.config';
@@ -44,17 +44,6 @@ export class CnAuthController {
 
     this.setTokenInCookie(token, response);
     response.send({status: 'LOGGED_IN', expiresIn: cnJwtConfig.tokenDurationInMilliseconds});
-  }
-
-
-  /**
-   * Check if a user can login with the credential and check that the user have the right role
-   */
-  @BlPublicSecure()
-  @Post('external/check-credentials/:requiresAdmin')
-  checkCredentialsWithRole(@Param('requiresAdmin', new ParseBoolPipe) requiresAdmin: boolean,
-                           @Body() credentials: BlCredentials): Promise<CnExternalCheckCredentialResponse> {
-    return this.authService.externalCheckCredentialsWithRole(credentials, requiresAdmin);
   }
 
   @BlPublicSecure()

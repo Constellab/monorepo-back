@@ -7,9 +7,18 @@ import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {ClPage} from '@monorepo/core-lib';
 import {CnBucket, CnBucketContentType} from './cn-buckets/cn-bucket.entity';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {BlBadRequestException, BlSearchParams} from '@monorepo/back-core-lib';
+import {
+  BlBadRequestException,
+  BlCredentials,
+  BlDtoHelper,
+  BlSearchParams,
+  BlUnauthorizedException
+} from '@monorepo/back-core-lib';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {EntityManager} from 'typeorm';
+import {CnAuthService} from '../cn-auth/cn-auth.service';
+import {CnBucketCredentialsFull} from './cn-object-storage.dto';
+import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 
 
 @Injectable()
@@ -20,7 +29,8 @@ export class CnObjectStoragesAggregateService {
 
   constructor(private securityService: CnObjectStoragesSecurity,
               private bucketService: CnBucketsService,
-              private bucketCredentialsService: CnBucketCredentialsService) {
+              private bucketCredentialsService: CnBucketCredentialsService,
+              private authService: CnAuthService) {
   }
 
   //////////////////////////// OBJECT BUCKET ///////////////////////////
@@ -118,7 +128,8 @@ export class CnObjectStoragesAggregateService {
 
   public async updateBucketCredentials(credentials: CnBucketCredentials): Promise<CnBucketCredentials> {
     this.checkAuthorizationToModifyEntity();
-    return this.bucketCredentialsService.update(credentials);
+    await this.bucketCredentialsService.update(credentials);
+    return this.bucketCredentialsService.findCompleteByIdAndCheck(credentials.id);
   }
 
   public async deleteBucketCredentials(id: string): Promise<void> {
@@ -136,9 +147,26 @@ export class CnObjectStoragesAggregateService {
     return this.bucketCredentialsService.findAll(page, size);
   }
 
+  /**
+   * Get the credentials with the keys, this requires the user password and the user need to be an admin
+   */
+  public async getCredentialsData(credentialsId: string, userCredentials: BlCredentials): Promise<CnBucketCredentialsFull> {
+    this.checkAuthorizationToGetCredentials();
+
+    const user = await this.authService.checkCredentialsAndUser(userCredentials, false);
+
+    if(user.id !== CnCurrentUserHelper.getAndCheckCurrentUser().id){
+      throw new BlUnauthorizedException(CnErrorText.WRONG_CREDENTIALS);
+    }
+
+    const credentials = await this.bucketCredentialsService.findCompleteByIdAndCheck(credentialsId);
+    return BlDtoHelper.toDto(CnBucketCredentialsFull, credentials);
+  }
+
   public checkAuthorizationToGetCredentials(): void {
     this.securityService.checkAuthorizationToGetCredentials(CnCurrentUserHelper.getAndCheckCurrentUser());
   }
+
 
   //////////////////////////// AUTHORIZATION ////////////////////////////
 

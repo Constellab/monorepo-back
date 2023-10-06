@@ -3,9 +3,13 @@ import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
 import {CnCloudProvider} from '../../cn-cloud-providers/cn-cloud-provider.entity';
 import {CnSpace} from '../../cn-spaces/cn-space.entity';
 import {Exclude} from 'class-transformer';
+import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
 
 @Entity('bucket_credentials')
 export class CnBucketCredentials extends CnBaseEntity {
+
+  public static completeRelations: FindOptionsRelations<CnBucketCredentials> = {cloudProvider: true, space: true};
+
 
   @Column({nullable: false, length: 50})
   name: string;
