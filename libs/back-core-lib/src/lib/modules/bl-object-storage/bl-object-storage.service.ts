@@ -7,6 +7,7 @@ import {
   DeleteObjectCommand,
   DeleteObjectsCommand,
   GetObjectCommand,
+  HeadBucketCommand,
   HeadObjectCommand,
   HeadObjectCommandOutput,
   ListObjectsCommand,
@@ -132,6 +133,11 @@ export class BlObjectStorageService {
     }));
   }
 
+  public async deleteAllObjects(config: BlBucketConfig): Promise<void> {
+    const objects = await this.getObjectsByPrefix(config, '');
+    await this.deleteMultipleObjects(config, objects.map((obj) => obj.Key));
+  }
+
   public async getObjectsByPrefix(config: BlBucketConfig, prefix: string): Promise<_Object[]> {
     const s3Client = this.getClient(config);
 
@@ -171,11 +177,34 @@ export class BlObjectStorageService {
     await s3Client.send(new CreateBucketCommand({Bucket: config.bucket}));
   }
 
-  public async deleteBucket(config: BlBucketConfig): Promise<void> {
+  public async deleteBucket(config: BlBucketConfig, errorIfNotExist: boolean = true): Promise<void> {
+
+    if (!await this.bucketExist(config)) {
+      if (errorIfNotExist) {
+        throw new Error(`The bucket ${config.bucket} does not exist`);
+      } else {
+        return;
+      }
+    }
+    // to be deleted we need to delete all objects first
+    await this.deleteAllObjects(config);
     const s3Client = this.getClient(config);
 
     await s3Client.send(new DeleteBucketCommand({Bucket: config.bucket}));
   }
+
+  public async bucketExist(config: BlBucketConfig): Promise<boolean> {
+    const s3Client = this.getClient(config);
+
+    try {
+      await s3Client.send(new HeadBucketCommand({Bucket: config.bucket}));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /////////////////////////////////// OTHER ///////////////////////////////////
 
 
   private getClient(config: BlBucketConfig): S3Client {

@@ -17,6 +17,7 @@ import {CnProjectUserModule} from './cn-project-user/cn-project-user.module';
 import {CnNotificationModule} from '../cn-notification/cn-notification.module';
 import {CnActivityModule} from '../cn-activity/cn-activity.module';
 import {EventEmitterModule} from '@nestjs/event-emitter';
+import {CnObjectStoragesModule} from '../cn-object-storages/cn-object-storages.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import {EventEmitterModule} from '@nestjs/event-emitter';
     CnUsersModule,
     CnNotificationModule,
     CnActivityModule,
+    CnObjectStoragesModule,
 
     EventEmitterModule,
   ],

@@ -13,13 +13,48 @@ import {ClPage} from '@monorepo/core-lib';
 
 
 @Injectable()
-export class CnBucketsService extends BlAbstractService<CnBucket> {
+export class CnBucketsService extends BlAbstractService<CnBucket>{
 
 
   constructor(@InjectRepository(CnBucket) private repository: Repository<CnBucket>,
               private objectStorageService: BlObjectStorageService) {
     super(repository, CnBucket);
   }
+
+  // async onModuleInit(): Promise<void> {
+  //   const toDelete: string[] = [
+  //     '0b1eee15-59f4-4a0d-b072-2809571c23c5',
+  //     // '230aee98-8d1f-48d3-8bf3-6e333a67fe92',
+  //     // '2f29615d-d78c-4971-8d2b-5c6a99d62670',
+  //     // '3247ac1b-d2cd-4869-946a-2ee4c1e01694',
+  //     // '3aa33a55-02e6-4be9-bf3f-e66a95c6f15d',
+  //     // '7f7183bb-4109-4c31-8a89-b9c57ac1e2f9',
+  //     // '865d32f8-925e-4856-b8ac-712e3af56afa',
+  //     // '9ba78366-1485-4405-bdb3-9c381a10e223',
+  //     // 'b6e5c8cb-e499-4640-9905-6073ecc0f3cf',
+  //     // 'bfe711cd-7405-4d8b-bdc5-6f6882d7fe38',
+  //     // 'f3ad96de-7195-4262-a013-19dffe4e5427'
+  //   ];
+  //
+  //
+  //   for(const bucketToDelete of toDelete){
+  //     const bucket = await this.repository.findOneBy({name: bucketToDelete});
+  //     if(bucket){
+  //       await this.deleteBucket(bucket);
+  //     }else{
+  //       await this.objectStorageService.deleteBucket({
+  //         bucket: bucketToDelete,
+  //         region: 'gra',
+  //         credentials: {
+  //           accessKeyId: 'ce7e6d93a1f6400fb4c19b3aebaf2547',
+  //           secretAccessKey: '04c55d337299410c9858043ede58b717',
+  //         },
+  //         endpoint: 'https://s3.gra.io.cloud.ovh.net/'
+  //       })
+  //     }
+  //   }
+  // }
+
 
   public async createBucket(bucket: CnBucket, entityManager?: EntityManager): Promise<CnBucket> {
     bucket = await this.checkBucketBeforeSave(bucket);
@@ -36,10 +71,9 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
   public async deleteBucket(bucket: CnBucket, entityManager?: EntityManager): Promise<void> {
     entityManager = this.getEntityManager(entityManager);
 
-    await this.objectStorageService.deleteBucket(bucket.getBucketConfig());
+    await this.objectStorageService.deleteBucket(bucket.getBucketConfig(), false);
     // delete the bucket in DB and then in the object storage
     await entityManager.delete(CnBucket, bucket.id);
-
   }
 
   public async update(bucket: CnBucket, entityManager?: EntityManager): Promise<CnBucket> {
@@ -109,7 +143,8 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     return await this.repository.find({
       where: {
         contentType: contentType
-      }
+      },
+      relations: CnBucket.configRelation
     });
   }
 

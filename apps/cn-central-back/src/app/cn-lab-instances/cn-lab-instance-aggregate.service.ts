@@ -74,7 +74,7 @@ import {CnLabBackupBucket, CnLabBackupFrequency} from './backup/cn-lab-backup.dt
 import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
 import {CnLabBackupOption} from './backup/cn-lab-backup-option.entity';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {CnBucketContentType} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import {CnBucket, CnBucketContentType} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnCloudProviderAggregateService} from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
 
 
@@ -730,6 +730,29 @@ export class CnLabInstanceAggregateService {
   public async getLabBackupHistory(labInstanceId: string, page: number, size: number): Promise<ClPageI<CnLabBackupHistory>> {
     await this.getAndCheckAuthorizationToFindById(labInstanceId);
     return this.backupHistoryService.getBackupHistory(labInstanceId, page, size);
+  }
+
+  /**
+   * Admin method to deleted all the unused lab backup bucket
+   */
+  public async deleteUnusedLabBackupBucket(): Promise<CnBucket[]>{
+    if(!CnCurrentUserHelper.isAdmin()){
+      throw new BlUnauthorizedException();
+    }
+
+    const deletedBuckets = [];
+    const labBuckets = await this.objectStorageService.getBucketByContentTypeNotSecure(CnBucketContentType.LAB_BACKUP);
+
+    for(const labBucket of labBuckets){
+      const lab = await this.labInstancesService.findById(labBucket.objectId);
+      if(lab == null){
+        // TODO manage when the s3 bucket does not exist
+        await this.objectStorageService.deleteBucket(labBucket.id);
+        deletedBuckets.push(labBucket);
+      }
+    }
+
+    return deletedBuckets;
   }
 
   // TODO MIGRATION TO REMOVE

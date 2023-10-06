@@ -6,7 +6,6 @@ import {CnBucketCredentials} from './cn-bucket-credential/cn-bucket-credential.e
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {ClPage} from '@monorepo/core-lib';
 import {CnBucket, CnBucketContentType} from './cn-buckets/cn-bucket.entity';
-import {CnCloudProviderAggregateService} from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {BlBadRequestException, BlSearchParams} from '@monorepo/back-core-lib';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
@@ -21,17 +20,7 @@ export class CnObjectStoragesAggregateService {
 
   constructor(private securityService: CnObjectStoragesSecurity,
               private bucketService: CnBucketsService,
-              private bucketCredentialsService: CnBucketCredentialsService,
-              private cloudProviderService: CnCloudProviderAggregateService) {
-  }
-
-
-  public async getOrCreateLabBackupBucket(labInstanceId: string, labInstanceSpaceId: string): Promise<CnBucket> {
-    const region = await this.cloudProviderService.getDefaultS3Region1();
-
-    return this.getOrCreateObjectBucket(CnObjectStoragesAggregateService.LabBackupCredentialName, region,
-      labInstanceId, labInstanceSpaceId,
-      CnBucketContentType.LAB_BACKUP, labInstanceId);
+              private bucketCredentialsService: CnBucketCredentialsService) {
   }
 
   //////////////////////////// OBJECT BUCKET ///////////////////////////
@@ -114,6 +103,10 @@ export class CnObjectStoragesAggregateService {
   public async searchBuckets(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnBucket>> {
     this.securityService.checkAuthorizationToGetAllBuckets(CnCurrentUserHelper.getAndCheckCurrentUser());
     return this.bucketService.search(searchParams, page, size);
+  }
+
+  public async getBucketByContentTypeNotSecure(contentType: CnBucketContentType): Promise<CnBucket[]> {
+    return this.bucketService.findByContentType(contentType);
   }
 
   /////////////////////////// CREDENTIALS ///////////////////////////

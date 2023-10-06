@@ -35,6 +35,7 @@ import {CnFreeTrialUpdateDto, CnLabFreeTrialGetDto} from './free-trial/cn-lab-fr
 import {CnLabFreeTrialAggregateService} from './free-trial/cn-lab-free-trial-aggregate.service';
 import {CnLabBackupOption} from './backup/cn-lab-backup-option.entity';
 import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
+import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 
 @Controller('lab-instances')
@@ -385,6 +386,11 @@ export class CnLabInstancesController {
                              @Query('page', ParseIntPipe) page: number,
                              @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnLabBackupHistory>> {
     return this.aggregateService.getLabBackupHistory(id, page, size);
+  }
+
+  @Post('delete-unused-bucket')
+  public deleteUnusedLabBackupBucket(): Promise<CnBucket[]> {
+    return this.aggregateService.deleteUnusedLabBackupBucket();
   }
 
   @Post('backup-migrate')

@@ -338,6 +338,11 @@ export class CnProjectsController {
     return this.projectAggregate.getProjectBucket(projectId);
   }
 
+  @Post('delete-unused-bucket')
+  public deleteUnusedLabBackupBucket(): Promise<CnBucket[]> {
+    return this.projectAggregate.deleteUnusedProjectBuckets();
+  }
+
   /////////////////////////////// Project user ///////////////////////////////////////////
 
   @Get(':projectId/user-config')
