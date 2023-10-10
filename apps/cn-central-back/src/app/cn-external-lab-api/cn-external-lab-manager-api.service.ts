@@ -105,7 +105,7 @@ export class CnExternalLabManagerApiService {
   ///////////////////////////////////// BACKUP /////////////////////////////////////
 
   createProdBackup(apiInfo: CnExternalApiInfo, createBackup: CnExternalLabBackupInfoDTO): Promise<CnLabBackupBucket[]> {
-    return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/prod`, createBackup, CnLabBackupBucket));
+    return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/prod/MANUAL`, createBackup, CnLabBackupBucket));
   }
 
   stopCurrentBackup(apiInfo: CnExternalApiInfo): Promise<CnLabBackupBucket[]> {
