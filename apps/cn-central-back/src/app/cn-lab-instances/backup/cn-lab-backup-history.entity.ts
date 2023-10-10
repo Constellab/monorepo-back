@@ -20,7 +20,7 @@ export class CnLabBackupHistory extends CnBaseEntity {
   frequency: CnLabBackupFrequency;
 
   @Type(() => CnBucket)
-  @ManyToOne(() => CnBucket, {nullable: false})
+  @ManyToOne(() => CnBucket, {onDelete: 'CASCADE', nullable: false})
   @BlNotUpdatable()
   bucket: CnBucket;
 

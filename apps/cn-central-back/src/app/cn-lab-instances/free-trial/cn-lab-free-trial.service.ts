@@ -63,6 +63,10 @@ export class CnLabFreeTrialService extends BlAbstractService<CnLabFreeTrial> {
       trialDto.trialStatus = 'NOT_USED';
       return trialDto;
     }
+    if(freeTrials.labInstance == null){
+      trialDto.trialStatus = 'EXPIRED_AND_DELETED';
+      return trialDto;
+    }
     // retrieve for how long the lab was running
     const runStatus = await this.labStatusService.getLabInstanceRunningKpis(freeTrials.labInstance.id, {
       period: 'ALL'
