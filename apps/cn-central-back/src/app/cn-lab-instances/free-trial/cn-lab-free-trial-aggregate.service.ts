@@ -190,7 +190,7 @@ export class CnLabFreeTrialAggregateService {
 
     const user = freeTrial.user;
 
-    if (freeTrial.labInstance.currentStatus.status !== CnLabInstanceStatus.NO_SERVER) {
+    if (freeTrial.labInstance && freeTrial.labInstance.currentStatus.status !== CnLabInstanceStatus.NO_SERVER) {
       throw new BlBadRequestException('The lab must be deleted before deleting the free trial');
     }
 

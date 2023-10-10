@@ -49,7 +49,7 @@ export class CnLabFreeTrial extends CnBaseEntity {
   @ManyToOne(() => CnLabInstance, {eager: true, nullable: true, onDelete: 'SET NULL'})
   @BlNotUpdatable()
   @Exclude()
-  labInstance: CnLabInstance;
+  labInstance?: CnLabInstance;
 
   @Column({nullable: true})
   labInstanceId?: string;

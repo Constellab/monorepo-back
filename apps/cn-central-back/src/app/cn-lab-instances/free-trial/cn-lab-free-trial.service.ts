@@ -58,6 +58,7 @@ export class CnLabFreeTrialService extends BlAbstractService<CnLabFreeTrial> {
       expirationDays: CnLabFreeTrial.EXPIRATION_DAYS,
       greenOptionInactivityDuration: CnLabFreeTrial.GREEN_OPTION_INACTIVITY_DURATION,
     };
+    trialDto.freeTrial = freeTrials;
 
     if (freeTrials == null) {
       trialDto.trialStatus = 'NOT_USED';
@@ -84,7 +85,6 @@ export class CnLabFreeTrialService extends BlAbstractService<CnLabFreeTrial> {
       trialDto.trialStatus = 'IN_PROGRESS';
     }
 
-    trialDto.freeTrial = freeTrials;
     trialDto.currentUsageInSeconds = runStatus.runningDuration;
     trialDto.deletionDate = freeTrials.getDeletionDate();
 
