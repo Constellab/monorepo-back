@@ -70,11 +70,10 @@ import {CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse} from './s
 import {CnLabFreeTrialService} from './free-trial/cn-lab-free-trial.service';
 import {CnLabBackupHistoryService} from './backup/cn-lab-backup-history.service';
 import {CnLabBackupOptionService} from './backup/cn-lab-backup-option.service';
-import {CnLabBackupBucket, CnLabBackupFrequency} from './backup/cn-lab-backup.dto';
+import {CnLabBackupBucket} from './backup/cn-lab-backup.dto';
 import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
 import {CnLabBackupOption} from './backup/cn-lab-backup-option.entity';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {CnBucket, CnBucketContentType} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnCloudProviderAggregateService} from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
 
 
@@ -730,76 +729,6 @@ export class CnLabInstanceAggregateService {
   public async getLabBackupHistory(labInstanceId: string, page: number, size: number): Promise<ClPageI<CnLabBackupHistory>> {
     await this.getAndCheckAuthorizationToFindById(labInstanceId);
     return this.backupHistoryService.getBackupHistory(labInstanceId, page, size);
-  }
-
-  /**
-   * Admin method to deleted all the unused lab backup bucket
-   */
-  public async deleteUnusedLabBackupBucket(): Promise<CnBucket[]> {
-    if (!CnCurrentUserHelper.isAdmin()) {
-      throw new BlUnauthorizedException();
-    }
-
-    const deletedBuckets = [];
-    const labBuckets = await this.objectStorageService.getBucketByContentTypeNotSecure(CnBucketContentType.LAB_BACKUP);
-
-    for (const labBucket of labBuckets) {
-      const lab = await this.labInstancesService.findById(labBucket.objectId);
-      if (lab == null) {
-        await this.objectStorageService.deleteBucket(labBucket.id);
-        deletedBuckets.push(labBucket);
-      }
-    }
-
-    return deletedBuckets;
-  }
-
-  // TODO MIGRATION TO REMOVE
-  public async migrateBackupOptions(): Promise<void> {
-    if (!CnCurrentUserHelper.isAdmin()) {
-      throw new BlUnauthorizedException();
-    }
-    // retrieve all cloud lab instances existing
-    const labInstances = await this.labInstancesService.findExistingCloudLabInstance();
-
-    for (const labInstance of labInstances) {
-      const options = await this.backupOptionService.findByLabId(labInstance.id);
-      if (options != null) {
-        continue;
-      }
-
-      const bucket = await this.objectStorageService.findByContentTypeAndObjectId(CnBucketContentType.LAB_BACKUP, labInstance.id);
-
-      if (bucket == null) {
-        this.logger.log(`No bucket found for lab ${labInstance.id}`);
-      }
-
-      await this.dataSource.transaction(async entityManager => {
-        const option = new CnLabBackupOption();
-        option.labInstance = labInstance;
-        option.bucket1 = bucket;
-
-        if (option.bucket1 == null) {
-          const region = await this.cloudProviderAggregateService.getDefaultS3Region1();
-          option.bucket1 = await this.objectStorageService.createObjectBucket(
-            CnObjectStoragesAggregateService.LabBackupCredentialName,
-            region, 'lab-backup-daily-' + labInstance.id, labInstance.spaceId, CnBucketContentType.LAB_BACKUP,
-            labInstance.id, entityManager);
-        }
-        option.frequency1 = CnLabBackupFrequency.DAILY;
-
-        // create the weekly bucket backup
-        const region = await this.cloudProviderAggregateService.getDefaultS3Region2();
-        option.bucket2 = await this.objectStorageService.createObjectBucket(
-          CnObjectStoragesAggregateService.LabBackupCredentialName,
-          region, 'lab-backup-weekly-' + labInstance.id, labInstance.spaceId, CnBucketContentType.LAB_BACKUP,
-          labInstance.id, entityManager);
-        option.frequency2 = CnLabBackupFrequency.WEEKLY;
-
-        await this.backupOptionService.create(option, entityManager);
-      });
-
-    }
   }
 
   /////////////////////////// EXTERNAL LAB //////////////////////////////

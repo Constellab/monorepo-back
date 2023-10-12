@@ -38,7 +38,7 @@ import {
 } from '@monorepo/back-core-lib';
 import {DataSource, In} from 'typeorm';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {CnBucket, CnBucketContentType} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnDocumentsService} from './cn-documents/cn-documents.service';
 import {CnDocument} from './cn-documents/cn-document.entity';
 import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
@@ -50,7 +50,6 @@ import {CnProjectEvent, cnProjectEventName, CnProjectEventType} from './cn-proje
 import {EventEmitter2} from '@nestjs/event-emitter';
 import {CnActivity, CnActivityEntityType} from '../cn-activity/cn-activity.entity';
 import {CnActivityService} from '../cn-activity/cn-activity.service';
-import {CnObjectStoragesAggregateService} from '../cn-object-storages/cn-object-storages-aggregate.service';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -68,8 +67,7 @@ export class CnProjectAggregateService {
               private projectUserService: CnProjectUserService,
               private userService: CnUsersService,
               private eventEmitter: EventEmitter2,
-              private activityService: CnActivityService,
-              private objectStorageAggregateService: CnObjectStoragesAggregateService) {
+              private activityService: CnActivityService) {
   }
 
   /////////////////////////////////////// PROJECT //////////////////////////////////
@@ -730,25 +728,6 @@ export class CnProjectAggregateService {
     }
 
     return this.projectBucketService.getProjectBucket(projectId);
-  }
-
-  public async deleteUnusedProjectBuckets(): Promise<CnBucket[]> {
-    if(!CnCurrentUserHelper.isAdmin()){
-      throw new BlUnauthorizedException();
-    }
-
-    const deletedBuckets: CnBucket[] = [];
-    const buckets = await this.objectStorageAggregateService.getBucketByContentTypeNotSecure(CnBucketContentType.PROJECT);
-
-    for(const bucket of buckets){
-      const project = await this.projectCommentService.findById(bucket.objectId);
-      if(project == null){
-        await this.objectStorageAggregateService.deleteBucket(bucket.id);
-        deletedBuckets.push(bucket);
-      }
-    }
-
-    return deletedBuckets;
   }
 
   /////////////////////////////////////// PROJECT USER //////////////////////////////////
