@@ -67,8 +67,9 @@ export interface HnImportEntity {
   status: string;
 }
 
-export type HnImportResourceDTO = HnImportEntity;
-
+export interface HnImportResourceDTO extends HnImportEntity{
+  methods: HnResourceMethodList;
+}
 
 export interface HnImportTaskDTO extends HnImportEntity {
   input_specs: any;
@@ -138,3 +139,32 @@ export class HnCreateBrickDTO {
   credentialPassword?: string;
 }
 
+
+// Resource Methods
+export interface HnResourceMethodList {
+  funcs: HnResourceFunction[];
+  views: HnResourceView[];
+}
+
+export interface HnResourceFunction {
+  name: string;
+  doc?: string;
+  args: HnResourceFunctionArg[];
+  return_type?: string;
+}
+
+export interface HnResourceFunctionArg {
+  arg_name: string;
+  arg_type: string;
+  arg_default_value?: string;
+}
+
+export interface HnResourceView{
+  method_name: string;
+  view_type: string;
+  human_name: string;
+  short_description: string;
+  default_view: boolean;
+  has_config_specs: boolean;
+  config_specs: Record<string, any>;
+}

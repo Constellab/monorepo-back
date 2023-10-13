@@ -96,6 +96,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     // create the user own group
     await this.groupService.createOwnGroup(user, entityManager);
 
+
     // send notification to gencovery user to warn him that a new user has been created
     this.sendCreateAccountNotification(dbUser).catch(
       error => this.logger.error('Error while sending create account notification: ' + error)
@@ -281,7 +282,11 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
    * @private
    */
   private async sendCreateAccountNotification(user: CnUser): Promise<void> {
-    const adminUserMails = this.configService.newUserNotifReceiver();
+    let adminUserMails = this.configService.newUserNotifReceiver();
+
+    if (this.configService.isLocal()) {
+      adminUserMails = [];
+    }
 
     for (const adminUserMail of adminUserMails) {
       const adminUser = await this.usersService.findByEmail(adminUserMail);
