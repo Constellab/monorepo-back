@@ -18,6 +18,7 @@ import {DataSource, EntityManager} from 'typeorm';
 import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
 import {CnSpacesMailService} from './cn-spaces-mail.service';
 import {CnCloudProviderAggregateService} from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
+import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 
 @Injectable()
 export class CnSpaceAggregateService {
@@ -29,7 +30,8 @@ export class CnSpaceAggregateService {
               private userService: CnUsersService,
               private datasource: DataSource,
               private spacesMailService: CnSpacesMailService,
-              private cloudProviderAggregateService: CnCloudProviderAggregateService) {
+              private cloudProviderAggregateService: CnCloudProviderAggregateService,
+              private configService: CnCoreConfigService) {
   }
 
   public async getCurrentInfo(): Promise<CnUserSpaceInfo> {
@@ -348,7 +350,11 @@ export class CnSpaceAggregateService {
   }
 
   public async createPersonalSpace(user: CnUser, entityManager: EntityManager): Promise<CnSpace> {
-    const defaultRegion = await this.cloudProviderAggregateService.getDefaultRegion();
+    let defaultRegion = null;
+    if(!this.configService.isLocal()){
+      defaultRegion = await this.cloudProviderAggregateService.getDefaultRegion();
+    }
+
     const personalSpace = await this.spaceService.createPersonalSpace(user, defaultRegion, entityManager);
 
     await this.spaceUserService.addUserToSpace(personalSpace, user, CnSpaceUserRole.ADMIN,

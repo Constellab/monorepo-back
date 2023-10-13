@@ -23,7 +23,7 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
 
 
   async getUserNotifications(page: number, size: number): Promise<ClPage<CnNotification>> {
-    return this.findPaginated(page, size, {
+    return (await this.findPaginated(page, size, {
       where: {
         user: {
           id: CnCurrentUserHelper.getAndCheckCurrentUser().id
@@ -33,6 +33,11 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
       order: {
         createdAt: 'DESC' as any
       }
+    })).map((notif: CnNotification) => {
+      if(notif.text2.length > 36){
+        notif.text2 = notif.text2.substring(0, 35) + '...';
+      }
+      return notif;
     });
   }
 

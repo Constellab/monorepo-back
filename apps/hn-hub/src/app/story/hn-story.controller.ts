@@ -22,7 +22,7 @@ import {
   BlUploadedFile
 } from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
-import {HnStory} from './hn-story.entity';
+import {HnStory, HnStoryCategory} from './hn-story.entity';
 import {HnCreateStoryDto, HnStoryFilter} from './hn-story.dto';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
@@ -91,6 +91,12 @@ export class HnStoryController {
   async updateStoryTitle(@Param('id', new ParseUUIDPipe()) id: string,
                          @Body('title') title: string): Promise<HnStory> {
     return this.storyService.updateStoryTitle(id, title);
+  }
+
+  @Put(':id/category')
+  async updateStoryCategory(@Param('id', new ParseUUIDPipe()) id: string,
+                            @Body('category') category: HnStoryCategory): Promise<HnStory> {
+    return this.storyService.updateStoryCategory(id, category);
   }
 
   @Put(':id/add-topic')

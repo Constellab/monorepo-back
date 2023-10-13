@@ -36,8 +36,8 @@ export class HnResourceService {
       resource.brickMajor = technicalFolder.brickMajorVersion.major;
       resource.uniqueName = r.unique_name;
       resource.typingName = r.typing_name;
-
       resource.humanName = r.human_name;
+      resource.methods = r.methods;
 
       //TODO A MODIFIER pour le parent et deprecatedSince
 

@@ -84,9 +84,10 @@ export class CnProjectAggregateService {
       entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
       const dbProject = await this.projectService.create(entity, manager);
 
-      if (projectDto.storageRegion) {
+      if (projectDto.storageRegion ) {
         await this.projectBucketService.createProjectBucket(dbProject, projectDto.storageRegion, manager);
       }
+
 
       // share the project with the leader
       await this.projectUserService.shareProjectToUserIfNot(dbProject.id, dbProject.leader.id, manager);
