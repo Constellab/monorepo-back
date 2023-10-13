@@ -50,7 +50,6 @@ import {CnProjectAggregateService} from '../cn-projects-aggregate/cn-project-agg
 import {CnExternalLabProjectService} from '../cn-external-lab-api/cn-external-lab-project.service';
 import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
-import {CnObjectStoragesAggregateService} from '../cn-object-storages/cn-object-storages-aggregate.service';
 import {CnCpCompleteInfo} from './server/cn-cloud-provider.class';
 import {CnLabServerService} from './server/cn-lab-server.service';
 import {CnLabConfigurerService} from './server/cn-lab-configurer.service';
@@ -93,7 +92,6 @@ export class CnLabInstanceAggregateService {
               private externalLabProjectService: CnExternalLabProjectService,
               private externalLabApiService: CnExternalLabApiService,
               private dataSource: DataSource,
-              private objectStorageService: CnObjectStoragesAggregateService,
               private labServerService: CnLabServerService,
               private labConfigurerService: CnLabConfigurerService,
               private labSshService: CnLabSshService,

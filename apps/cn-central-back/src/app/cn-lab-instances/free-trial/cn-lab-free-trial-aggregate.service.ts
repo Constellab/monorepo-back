@@ -9,7 +9,6 @@ import {CnBricksService} from '../../cn-bricks/cn-bricks.service';
 import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
 import {CnLabInstance, CnLabInstanceType} from '../cn-lab-instance.entity';
 import {ClStringHelper} from '@monorepo/core-lib';
-import {CnLabInstancesService} from '../cn-lab-instances.service';
 import {
   CnCloudProviderRegion
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
@@ -39,7 +38,6 @@ export class CnLabFreeTrialAggregateService {
   constructor(private labFreeTrialService: CnLabFreeTrialService,
               private brickService: CnBricksService,
               private labConfigService: CnLabConfigsService,
-              private labInstanceService: CnLabInstancesService,
               private cloudProviderAggregateService: CnCloudProviderAggregateService,
               private serversInfoService: CnServersInfoService,
               private datasource: DataSource,

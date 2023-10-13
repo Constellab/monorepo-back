@@ -120,7 +120,17 @@ export class CnOvhService {
   public async createDomainRecord(domain: string, request: CnOvhCreateDomainRecordRequest): Promise<CnOvhDomainRecord> {
     const response = await this.requestPromised('POST', `/domain/zone/${domain}/record`, request);
 
-    await this.refreshDns(domain);
+    try {
+      await this.refreshDns(domain);
+
+    } catch (e: any) {
+      // if the error contains an error attribute between 200 and 300, we consider
+      // that the error is not blocking (it happens during creation sometimes)
+      if (!e.error || e.error < 200 || e.error >= 300) {
+        throw e;
+      }
+      this.logger.log('Skipping error while refreshing DNS after record creation');
+    }
 
     return response;
   }
@@ -155,7 +165,14 @@ export class CnOvhService {
   //////////////////////////// OTHER ////////////////////////////
   private requestPromised(method: 'GET' | 'POST' | 'PUT' | 'DELETE', route: string, body?: any): Promise<any> {
     return this.ovh.requestPromised(method, route, body).catch((e) => {
-      const strError = e.message ?? e.toString();
+      let strError: string;
+      if (e.message) {
+        strError = e.message;
+      } else if (typeof e === 'object') {
+        strError = JSON.stringify(e);
+      } else {
+        strError = e.toString();
+      }
       this.logger.error(`Error while calling OVH API route : ${route} | Method : ${method} | Error : ${strError}`);
       throw new BlBadRequestException(strError);
     });
