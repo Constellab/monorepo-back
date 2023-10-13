@@ -20,7 +20,7 @@ export class CnCommentService<T extends BlEntityWithId> extends BlAbstractServic
     super(repository, entityClass);
   }
 
-  async saveImage(file: BlFile, bucketConfig: BlBucketConfig, prefix?: string): Promise<BlRichTextUploadedImage> {
+  async saveImage(file: BlFile, bucketConfig: BlBucketConfig | BlBucketConfig[], prefix?: string): Promise<BlRichTextUploadedImage> {
     const imSize = BlImageHelper.getImageSize(file);
     const filename = await this.objectStorageService.uploadObject(bucketConfig, file,
       {generateRandomObjectName: true, prefix: prefix});

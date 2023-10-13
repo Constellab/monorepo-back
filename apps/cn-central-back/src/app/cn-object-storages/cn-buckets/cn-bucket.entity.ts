@@ -52,6 +52,10 @@ export class CnBucket extends CnBaseEntity {
   @Column({nullable: true, length: 36})
   objectId: string;
 
+  // can be used info to describe the bucket
+  @Column({nullable: true, length: 50})
+  additionalInfo: string;
+
   public getBucketConfig(): BlBucketConfig {
     return {
       endpoint: this.region.s3Endpoint,

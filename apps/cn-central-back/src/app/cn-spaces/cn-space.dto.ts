@@ -30,13 +30,17 @@ export class CnSpaceSettingsDto {
   @Type(() => CnSpace)
   space: CnSpace;
   nbLicenses: number;
+  @Type(() => CnCloudProviderRegion)
   defaultStorageRegion: CnCloudProviderRegion;
+  @Type(() => CnCloudProviderRegion)
+  defaultBackupStorageRegion: CnCloudProviderRegion;
 
   static fromSpace(space: CnSpace): CnSpaceSettingsDto {
     const spaceSettings = new CnSpaceSettingsDto();
     spaceSettings.space = space;
     spaceSettings.nbLicenses = space.nbLicenses;
     spaceSettings.defaultStorageRegion = space.defaultStorageRegion;
+    spaceSettings.defaultBackupStorageRegion = space.defaultBackupStorageRegion;
     return spaceSettings;
   }
 }

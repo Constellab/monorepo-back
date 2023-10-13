@@ -11,13 +11,16 @@ import {
   BlFileHelper,
   BlImageHelper,
   BlObjectStorageService,
+  BlObjectStorageSyncResult,
   BlRichTextUploadedImage
 } from '@monorepo/back-core-lib';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
 import {EntityManager} from 'typeorm';
 import {CnObjectStoragesAggregateService} from '../../cn-object-storages/cn-object-storages-aggregate.service';
 import {IncomingMessage} from 'http';
+import {CnProjectBucketsDTO} from '../cn-projects/cn-project.dto';
 
+export type CnProjectBucketType = 'MAIN' | 'BACKUP';
 
 /**
  * Class to handle project bucket.
@@ -68,28 +71,61 @@ export class CnProjectBucketService {
 
   /////////////////////////////// METHODS ///////////////////////////////
 
-  public async createProjectBucket(rootProject: CnProject, region: CnCloudProviderRegion,
-                                   entityManager?: EntityManager): Promise<CnBucket> {
-    return this.objectStorageAggregateService.createObjectBucket(CnObjectStoragesAggregateService.LabBackupCredentialName,
-      region, 'project-' + rootProject.id, rootProject.spaceId, CnBucketContentType.PROJECT,
-      rootProject.id, entityManager);
+  public async createProjectBuckets(rootProject: CnProject,
+                                    mainRegion: CnCloudProviderRegion,
+                                    backupRegion: CnCloudProviderRegion,
+                                    entityManager?: EntityManager): Promise<CnProjectBucketsDTO> {
+    const mainBucket = await this.objectStorageAggregateService.createObjectBucket(
+      CnObjectStoragesAggregateService.LabBackupCredentialName,
+      mainRegion, 'project-' + rootProject.id, rootProject.spaceId, CnBucketContentType.PROJECT,
+      rootProject.id, 'MAIN' as CnProjectBucketType, entityManager);
+
+    const backupBucket = await this.createProjectBackupBucket(rootProject, backupRegion, entityManager);
+
+    return {
+      mainBucket,
+      backupBucket
+    };
   }
 
-  public async getProjectBucket(projectId: string): Promise<CnBucket> {
-    return this.objectStorageAggregateService.findByContentTypeAndObjectId(CnBucketContentType.PROJECT, projectId);
+  public async createProjectBackupBucket(rootProject: CnProject,
+                                         backupRegion: CnCloudProviderRegion,
+                                         entityManager?: EntityManager): Promise<CnBucket> {
+
+    return await this.objectStorageAggregateService.createObjectBucket(
+      CnObjectStoragesAggregateService.LabBackupCredentialName,
+      backupRegion, 'project-backup-' + rootProject.id, rootProject.spaceId, CnBucketContentType.PROJECT,
+      rootProject.id, 'BACKUP' as CnProjectBucketType, entityManager);
+
   }
 
-  public async getAndCheckProjectBucket(rootProjectId: string): Promise<CnBucket> {
-    const bucket = await this.getProjectBucket(rootProjectId);
-    if (bucket == null) {
+
+  public async getProjectBucket(projectId: string): Promise<CnProjectBucketsDTO> {
+    const buckets = await this.objectStorageAggregateService.findByContentTypeAndObjectId(CnBucketContentType.PROJECT, projectId);
+
+    return {
+      mainBucket: buckets.find(b => b.additionalInfo === 'MAIN' as CnProjectBucketType),
+      backupBucket: buckets.find(b => b.additionalInfo === 'BACKUP' as CnProjectBucketType)
+    };
+
+  }
+
+  public async getAndCheckProjectBucket(rootProjectId: string): Promise<CnProjectBucketsDTO> {
+    const buckets = await this.getProjectBucket(rootProjectId);
+    if (buckets.mainBucket == null || buckets.backupBucket == null) {
       throw new BlBadRequestException(CnErrorText.PROJECT_BUCKET_NOT_FOUND);
     }
-    return bucket;
+    return buckets;
   }
 
-  public async getAndCheckProjectBucketConfig(rootProjectId: string): Promise<BlBucketConfig> {
+  public async getAndCheckProjectBucketConfig(rootProjectId: string): Promise<BlBucketConfig[]> {
     const bucket = await this.getAndCheckProjectBucket(rootProjectId);
-    return bucket.getBucketConfig();
+    return [bucket.mainBucket.getBucketConfig(), bucket.backupBucket.getBucketConfig()];
+  }
+
+  public async getAndCheckProjectMainBucketConfig(rootProjectId: string): Promise<BlBucketConfig> {
+    const bucket = await this.getAndCheckProjectBucket(rootProjectId);
+    return bucket.mainBucket.getBucketConfig();
   }
 
   public async deleteProjectBucket(rootProjectId: string, entityManager: EntityManager): Promise<void> {
@@ -97,7 +133,8 @@ export class CnProjectBucketService {
     if (bucket == null) {
       return;
     }
-    await this.objectStorageAggregateService.deleteBucketNotSecure(bucket, entityManager);
+    await this.objectStorageAggregateService.deleteBucketNotSecure(bucket.mainBucket, entityManager);
+    await this.objectStorageAggregateService.deleteBucketNotSecure(bucket.backupBucket, entityManager);
   }
 
   /////////////////////////////////////////// DESCRIPTION ///////////////////////////////////////////
@@ -121,8 +158,15 @@ export class CnProjectBucketService {
   }
 
   public async getObject(rootProjectId: string, filePath: string): Promise<IncomingMessage> {
-    const bucketConfig = await this.getAndCheckProjectBucketConfig(rootProjectId);
+    const bucketConfig = await this.getAndCheckProjectMainBucketConfig(rootProjectId);
     return this.objectStorageService.getObject(bucketConfig, filePath);
+  }
+
+  //////////////////////////////////////////////// OTHER ////////////////////////////////////////////////
+
+  public async synchroniseBackupBucket(rootProjectId: string): Promise<BlObjectStorageSyncResult> {
+    const buckets = await this.getAndCheckProjectBucket(rootProjectId);
+    return await this.objectStorageService.synchroniseBuckets(buckets.mainBucket.getBucketConfig(), buckets.backupBucket.getBucketConfig());
   }
 
 }

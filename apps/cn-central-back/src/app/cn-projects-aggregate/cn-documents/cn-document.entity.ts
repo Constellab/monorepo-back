@@ -32,4 +32,7 @@ export class CnDocument extends CnBaseEntity {
 
   @Column({nullable: false, default: false})
   isConstellabDocument: boolean;
+
+  @Column({nullable: false, default: false})
+  inTrash: boolean;
 }

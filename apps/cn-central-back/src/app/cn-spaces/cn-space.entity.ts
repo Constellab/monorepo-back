@@ -36,8 +36,15 @@ export class CnSpace extends CnBaseEntity {
   @Exclude({toPlainOnly: true})
   // use by default for project bucket
   @Type(() => CnCloudProviderRegion)
-  @ManyToOne(() => CnCloudProviderRegion)
+  @ManyToOne(() => CnCloudProviderRegion, {nullable: false})
   defaultStorageRegion: CnCloudProviderRegion;
+
+  // default bucket region for this space
+  @Exclude({toPlainOnly: true})
+  // use by default for project bucket
+  @Type(() => CnCloudProviderRegion)
+  @ManyToOne(() => CnCloudProviderRegion, {nullable: false})
+  defaultBackupStorageRegion: CnCloudProviderRegion;
 
   // don't set the createdBy and lastModifiedBy automatically
   // because this group it can be created on user signup (so no current user)

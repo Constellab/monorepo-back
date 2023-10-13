@@ -18,8 +18,10 @@ import {CnReportContent} from './cn-reports/cn-report-content.class';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-projects/cn-project-level.enum';
 import {
+  CnCreateProjectBucketDTO,
   CnProjectAncestorTreeDTO,
   CnProjectAncestorType,
+  CnProjectBucketsDTO,
   CnProjectDtoHelper,
   CnSaveProjectDTO
 } from './cn-projects/cn-project.dto';
@@ -30,6 +32,7 @@ import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {
   BlBadRequestException,
   BlFile,
+  BlObjectStorageSyncResult,
   BlRichTextI,
   BlRichTextUploadedImage,
   BlSearchBuilder,
@@ -37,8 +40,6 @@ import {
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
 import {DataSource, In} from 'typeorm';
-import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnDocumentsService} from './cn-documents/cn-documents.service';
 import {CnDocument} from './cn-documents/cn-document.entity';
 import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
@@ -50,6 +51,7 @@ import {CnProjectEvent, cnProjectEventName, CnProjectEventType} from './cn-proje
 import {EventEmitter2} from '@nestjs/event-emitter';
 import {CnActivity, CnActivityEntityType} from '../cn-activity/cn-activity.entity';
 import {CnActivityService} from '../cn-activity/cn-activity.service';
+import {CnCloudProviderAggregateService} from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -67,7 +69,8 @@ export class CnProjectAggregateService {
               private projectUserService: CnProjectUserService,
               private userService: CnUsersService,
               private eventEmitter: EventEmitter2,
-              private activityService: CnActivityService) {
+              private activityService: CnActivityService,
+              private cloudProviderService: CnCloudProviderAggregateService) {
   }
 
   /////////////////////////////////////// PROJECT //////////////////////////////////
@@ -81,8 +84,9 @@ export class CnProjectAggregateService {
       entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
       const dbProject = await this.projectService.create(entity, manager);
 
-      if (projectDto.storageRegion) {
-        await this.projectBucketService.createProjectBucket(dbProject, projectDto.storageRegion, manager);
+      if (projectDto.mainRegion && projectDto.backupRegion) {
+        await this.projectBucketService.createProjectBuckets(dbProject, projectDto.mainRegion,
+          projectDto.backupRegion, manager);
       }
 
       // share the project with the leader
@@ -177,6 +181,11 @@ export class CnProjectAggregateService {
     const reports = await this.reportService.getReportsByProject(project.id);
     if (reports.length > 0) {
       throw new BlBadRequestException(CnErrorText.DELETE_PROJECT_WITH_REPORTS);
+    }
+
+    const documents = await this.documentService.getDocumentsByProject(project.id, false, 0, 1);
+    if (documents.totalElements > 0) {
+      throw new BlBadRequestException(CnErrorText.DELETE_PROJECT_WITH_DOCUMENTS);
     }
 
     const projectWithLab = await this.projectService.findByIdAndCheck(id, {labInstances: {labInstance: true}});
@@ -609,7 +618,7 @@ export class CnProjectAggregateService {
   public async getCommentImage(filename: string, projectId: string): Promise<IncomingMessage> {
     const rootProject = await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(rootProject.id);
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(rootProject.id);
     return await this.projectCommentService.getImage(filename, bucketConfig);
   }
 
@@ -650,10 +659,34 @@ export class CnProjectAggregateService {
     this.emitProjectEvent('DELETE_PROJECT_DOCUMENT', project, document);
   }
 
-  public async getDocumentsByProject(projectId: string, page: number, size: number): Promise<ClPage<CnDocument>> {
+  public async moveDocumentToTrash(documentId: string): Promise<CnDocument> {
+    const document = await this.documentService.findByIdAndCheck(documentId);
+
+    const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
+
+    const doc  = await this.documentService.moveToTrash(document);
+
+    this.emitProjectEvent('MOVE_PROJECT_DOCUMENT_TO_TRASH', project, document);
+
+    return doc;
+  }
+
+  public async restoreDocumentFromTrash(documentId: string): Promise<CnDocument> {
+    const document = await this.documentService.findByIdAndCheck(documentId);
+
+    const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
+
+    const doc = await this.documentService.restoreFromTrash(document);
+
+    this.emitProjectEvent('RESTORE_PROJECT_DOCUMENT_FROM_TRASH', project, document);
+
+    return doc;
+  }
+
+  public async getDocumentsByProject(projectId: string, inTrash: boolean, page: number, size: number): Promise<ClPage<CnDocument>> {
     await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    return this.documentService.getDocumentsByProject(projectId, page, size);
+    return this.documentService.getDocumentsByProject(projectId, inTrash, page, size);
   }
 
   public async renameDocument(documentId: string, newName: string): Promise<CnDocument> {
@@ -710,24 +743,59 @@ export class CnProjectAggregateService {
 
 
   /////////////////////////////////////// PROJECT BUCKET //////////////////////////////////
-  public async createProjectBucket(projectId: string, region: CnCloudProviderRegion): Promise<CnBucket> {
-    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+  public async createProjectBucket(projectId: string, createProjectBucketDto: CnCreateProjectBucketDTO): Promise<CnProjectBucketsDTO> {
+    const project = await this.getProjectAndCheckForBucketUpdate(projectId);
 
-    if (project.currentLevel !== CnProjectLevel.PROJECT) {
-      throw new BlBadRequestException('Only root projects can have a bucket');
-    }
-
-    return this.projectBucketService.createProjectBucket(project, region);
+    return this.projectBucketService.createProjectBuckets(project, createProjectBucketDto.mainRegion, createProjectBucketDto.backupRegion);
   }
 
-  public async getProjectBucket(projectId: string): Promise<CnBucket> {
+  public async getProjectBucket(projectId: string): Promise<CnProjectBucketsDTO> {
+    await this.getProjectAndCheckForBucketUpdate(projectId);
+
+    return this.projectBucketService.getProjectBucket(projectId);
+  }
+
+  public async synchroniseBackupBucket(projectId: string): Promise<BlObjectStorageSyncResult> {
+    await this.getProjectAndCheckForBucketUpdate(projectId);
+
+    return this.projectBucketService.synchroniseBackupBucket(projectId);
+  }
+
+  private async getProjectAndCheckForBucketUpdate(projectId: string): Promise<CnProject> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
     if (project.currentLevel !== CnProjectLevel.PROJECT) {
       throw new BlBadRequestException('Only root projects can have a bucket');
     }
 
-    return this.projectBucketService.getProjectBucket(projectId);
+    return project;
+  }
+
+  public async migrateProjectsBuckets(forceSynchro: boolean): Promise<void> {
+    if (!CnCurrentUserHelper.isAdmin()) {
+      throw new BlUnauthorizedException();
+    }
+
+    const rootProjects = await this.projectService.getRootProjects();
+    const region1 = await this.cloudProviderService.getDefaultS3Region1();
+    const region2 = await this.cloudProviderService.getDefaultS3Region2();
+
+    for (const rootProject of rootProjects) {
+      const bucket = await this.projectBucketService.getProjectBucket(rootProject.id);
+
+      if (bucket == null || (bucket.mainBucket == null && bucket.backupBucket == null)) {
+        await this.projectBucketService.createProjectBuckets(rootProject, region1, region2);
+      } else if (bucket.backupBucket == null) {
+        await this.projectBucketService.createProjectBackupBucket(rootProject, region2);
+
+        await this.projectBucketService.synchroniseBackupBucket(rootProject.id);
+      }else{
+        if (forceSynchro) {
+          await this.projectBucketService.synchroniseBackupBucket(rootProject.id);
+        }
+      }
+
+    }
   }
 
   /////////////////////////////////////// PROJECT USER //////////////////////////////////

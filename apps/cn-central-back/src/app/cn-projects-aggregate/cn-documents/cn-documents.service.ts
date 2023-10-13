@@ -58,7 +58,7 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
   }
 
   public async getDocument(project: CnProject, filePath: string): Promise<IncomingMessage> {
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(project.getRootParentId());
 
     return this.objectStorageService.getObject(bucketConfig, filePath);
   }
@@ -67,6 +67,10 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
     const document = await this.findByIdAndCheck(id);
+
+    if(!document.inTrash){
+      throw new BlBadRequestException("Document is not in trash, please move it to trash first");
+    }
 
     return this.datasource.transaction(async (entityManager) => {
       await entityManager.remove(document);
@@ -80,10 +84,11 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
     });
   }
 
-  public getDocumentsByProject(projectId: string, page: number, size: number): Promise<ClPage<CnDocument>> {
+  public getDocumentsByProject(projectId: string, inTrash: boolean, page: number, size: number): Promise<ClPage<CnDocument>> {
     return this.findPaginated(page, size, {
       where: {
-        project: {id: projectId}
+        project: {id: projectId},
+        inTrash: inTrash
       },
       order: {
         lastModifiedAt: 'DESC' as any
@@ -127,10 +132,11 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
   async updateConstellabDocument(project: CnProject, document: CnDocument, content: BlRichTextI): Promise<CnConstellabDocument> {
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
-    await this.objectStorageService.uploadJson(bucketConfig, content, {filename: document.filePath});
+    await this.objectStorageService.uploadJson(bucketConfig[0], content, {filename: document.filePath});
 
-    const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig, document.filePath);
+    const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig[0], document.filePath);
 
+    console.log('super', objectInfo)
     // update the document size and last modification info
     document.size = objectInfo.ContentLength;
     document = await this.repository.save(document);
@@ -140,7 +146,7 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
 
   async getConstellabDocument(project: CnProject, document: CnDocument): Promise<CnConstellabDocument> {
     if (!document.isConstellabDocument) throw new BlBadRequestException('The document is not a constellab document');
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(project.getRootParentId());
 
     const content = await this.objectStorageService.getObjectAsJson(bucketConfig, document.filePath);
 
@@ -164,12 +170,23 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
   }
 
   async getImageFromConstellabDocument(project: CnProject, filePath: string): Promise<IncomingMessage> {
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(project.getRootParentId());
 
     return this.objectStorageService.getObject(bucketConfig, filePath);
   }
 
   private generateDocumentFilePath(projectId: string, extension: string): string {
     return `${CnProjectBucketService.getPrefix('DOCUMENTS', projectId)}/${this.objectStorageService.generateRandomFileName(extension)}`;
+  }
+
+  /////////////////// TRASH ///////////////////
+  public async moveToTrash(document: CnDocument): Promise<CnDocument> {
+    document.inTrash = true;
+    return await this.repo.save(document);
+  }
+
+  public async restoreFromTrash(document: CnDocument): Promise<CnDocument> {
+    document.inTrash = false;
+    return await this.repo.save(document);
   }
 }

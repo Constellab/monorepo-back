@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, EntityManager, Repository, TreeRepository} from 'typeorm';
+import {DataSource, EntityManager, IsNull, Repository, TreeRepository} from 'typeorm';
 import {CnProject} from './cn-project.entity';
 import {CnAbstractWithStatusService} from '../../cn-core/class/cn-abstract-with-status.service';
 import {CnProjectStatus} from './cn-project-status.enum';
@@ -126,6 +126,10 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
     searchBuilder.mergeWhereOptions({spaceId: spaceId});
 
     return await this.findPaginated(page, size, searchBuilder.build());
+  }
+
+  public async getRootProjects(): Promise<CnProject[]>{
+    return this.repository.find({where: {parentId: IsNull()}});
   }
 
 }

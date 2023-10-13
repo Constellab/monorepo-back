@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseBoolPipe,
   ParseIntPipe,
   ParseUUIDPipe,
   Post,
@@ -18,6 +19,7 @@ import {CnProjectStatus} from './cn-projects/cn-project-status.enum';
 import {CnProjectStatusHistory} from './cn-projects/cn-project-status-history.entity';
 import {
   BlFile,
+  BlObjectStorageSyncResult,
   BlParseEnumPipe,
   BlParsePipe,
   BlResponseHelper,
@@ -29,10 +31,12 @@ import {
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
 import {
+  CnCreateProjectBucketDTO,
   CnProjectAncestorTreeDTO,
   CnProjectAncestorType,
+  CnProjectBucketsDTO,
   CnProjectDtoHelper,
-  CnProjectTreeDto,
+  CnProjectTreeDTO,
   CnSaveProjectDTO
 } from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
@@ -40,8 +44,6 @@ import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity'
 import {CnComment, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
-import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnDocument} from './cn-documents/cn-document.entity';
 import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
 import {CnProjectUser} from './cn-project-user/cn-project-user.entity';
@@ -129,7 +131,7 @@ export class CnProjectsController {
    */
   @Get('tree/:objectType/:id')
   async getProjectTree(@Param('objectType') objectType: CnProjectAncestorType,
-                       @Param('id', new ParseUUIDPipe()) id: string): Promise<CnProjectTreeDto> {
+                       @Param('id', new ParseUUIDPipe()) id: string): Promise<CnProjectTreeDTO> {
     const project = await this.projectAggregate.getProjectObjectTree(objectType, id);
     return CnProjectDtoHelper.convertToProjectTreeDto(project);
   }
@@ -280,12 +282,30 @@ export class CnProjectsController {
     return this.projectAggregate.deleteDocument(documentId);
   }
 
+  @Put('document/:documentId/move-to-trash')
+  moveToTrash(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<CnDocument> {
+    return this.projectAggregate.moveDocumentToTrash(documentId);
+  }
+
+  @Put('document/:documentId/restore-from-trash')
+  restoreDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<CnDocument> {
+    return this.projectAggregate.restoreDocumentFromTrash(documentId);
+  }
+
   @Get(':projectId/document')
   public getDocumentsByProject(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                                @Query('page', ParseIntPipe) page: number,
                                @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnDocument>> {
-    return this.projectAggregate.getDocumentsByProject(projectId, page, size);
+    return this.projectAggregate.getDocumentsByProject(projectId, false, page, size);
   }
+
+  @Get(':projectId/document/trashed')
+  public getTrashedDocumentByProject(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+                                     @Query('page', ParseIntPipe) page: number,
+                                     @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnDocument>> {
+    return this.projectAggregate.getDocumentsByProject(projectId, true, page, size);
+  }
+
 
   @Put('document/:documentId/rename')
   public renameDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string,
@@ -327,15 +347,25 @@ export class CnProjectsController {
   }
 
   /////////////////////////////// Project Bucket ///////////////////////////////////////////
-  @Post(':projectId/bucket')
-  createProjectBucket(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                      @Body() region: CnCloudProviderRegion): Promise<CnBucket> {
-    return this.projectAggregate.createProjectBucket(projectId, region);
+  @Post(':projectId/buckets')
+  createProjectBucket(@Body(new BlParsePipe(CnCreateProjectBucketDTO)) createProjectBucketDto: CnCreateProjectBucketDTO,
+                      @Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnProjectBucketsDTO> {
+    return this.projectAggregate.createProjectBucket(projectId, createProjectBucketDto);
   }
 
-  @Get(':projectId/bucket')
-  getProjectBucket(@Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnBucket> {
+  @Get(':projectId/buckets')
+  getProjectBuckets(@Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnProjectBucketsDTO> {
     return this.projectAggregate.getProjectBucket(projectId);
+  }
+
+  @Post(':projectId/buckets/sync')
+  syncProjectBucket(@Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<BlObjectStorageSyncResult> {
+    return this.projectAggregate.synchroniseBackupBucket(projectId);
+  }
+
+  @Post('buckets/migrate/:forceSynchro')
+  migrateProjectBucket(@Param('forceSynchro', new ParseBoolPipe()) forceSynchro: boolean): Promise<void> {
+    return this.projectAggregate.migrateProjectsBuckets(forceSynchro);
   }
 
   /////////////////////////////// Project user ///////////////////////////////////////////

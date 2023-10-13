@@ -6,6 +6,7 @@ import {
   CnCloudProviderRegion
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {Type} from 'class-transformer';
+import {CnBucket} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 
 export class CnSaveProjectDTO {
@@ -20,7 +21,11 @@ export class CnSaveProjectDTO {
 
   // only for project level in creation
   @Type(() => CnCloudProviderRegion)
-  storageRegion?: CnCloudProviderRegion;
+  mainRegion?: CnCloudProviderRegion;
+
+  @Type(() => CnCloudProviderRegion)
+  backupRegion?: CnCloudProviderRegion;
+
 }
 
 export type CnProjectAncestorType = 'project' | 'experiment' | 'report' | 'document';
@@ -31,17 +36,33 @@ export interface CnProjectAncestorTreeDTO {
   type: CnProjectAncestorType;
 }
 
-export interface CnProjectTreeDto {
+export interface CnProjectTreeDTO {
   id: string;
   code: string;
   title: string;
-  children: CnProjectTreeDto[];
+  children: CnProjectTreeDTO[];
   levelStatus: CnProjectLevelStatus;
+}
+
+export class CnCreateProjectBucketDTO {
+  @Type(() => CnCloudProviderRegion)
+  mainRegion: CnCloudProviderRegion;
+
+  @Type(() => CnCloudProviderRegion)
+  backupRegion: CnCloudProviderRegion;
+}
+
+export class CnProjectBucketsDTO {
+  @Type(() => CnBucket)
+  mainBucket: CnBucket;
+
+  @Type(() => CnBucket)
+  backupBucket: CnBucket;
 }
 
 export class CnProjectDtoHelper {
 
-  public static convertToProjectTreeDto(project: CnProject): CnProjectTreeDto {
+  public static convertToProjectTreeDto(project: CnProject): CnProjectTreeDTO {
     return {
       id: project.id,
       code: project.code,
@@ -51,7 +72,7 @@ export class CnProjectDtoHelper {
     };
   }
 
-  public static convertToProjectTreeDtoList(projects: CnProject[]): CnProjectTreeDto[] {
+  public static convertToProjectTreeDtoList(projects: CnProject[]): CnProjectTreeDTO[] {
     return projects.map(project => CnProjectDtoHelper.convertToProjectTreeDto(project));
   }
 

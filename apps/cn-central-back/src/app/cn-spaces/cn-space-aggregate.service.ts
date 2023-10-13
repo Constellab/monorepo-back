@@ -54,7 +54,8 @@ export class CnSpaceAggregateService {
 
   public async getSpaceSettings(spaceId: string): Promise<CnSpaceSettingsDto> {
     const space = await this.spaceService.findByIdAndCheck(spaceId, {
-      defaultStorageRegion: {cloudProvider: true}
+      defaultStorageRegion: {cloudProvider: true},
+      defaultBackupStorageRegion: {cloudProvider: true}
     });
 
     return CnSpaceSettingsDto.fromSpace(space);
@@ -349,7 +350,8 @@ export class CnSpaceAggregateService {
 
   public async createPersonalSpace(user: CnUser, entityManager: EntityManager): Promise<CnSpace> {
     const defaultRegion = await this.cloudProviderAggregateService.getDefaultS3Region1();
-    const personalSpace = await this.spaceService.createPersonalSpace(user, defaultRegion, entityManager);
+    const backupRegion = await this.cloudProviderAggregateService.getDefaultS3Region2();
+    const personalSpace = await this.spaceService.createPersonalSpace(user, defaultRegion, backupRegion, entityManager);
 
     await this.spaceUserService.addUserToSpace(personalSpace, user, CnSpaceUserRole.ADMIN,
       user, entityManager);
@@ -365,7 +367,7 @@ export class CnSpaceAggregateService {
   }
 
   private async checkSpaceAdmin(spaceId: string): Promise<void> {
-    await this.spaceAggregateSecurity.checkIsSpaceAdmin(spaceId, CnCurrentUserHelper.getCurrentUser());
+    this.spaceAggregateSecurity.checkIsSpaceAdmin(spaceId, CnCurrentUserHelper.getCurrentUser());
   }
 
   private checkAdmin(): void {

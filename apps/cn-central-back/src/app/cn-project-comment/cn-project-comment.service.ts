@@ -24,7 +24,7 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
     super(objectStorageService, repository, CnProjectComment);
   }
 
-  async saveProjectCommentImage(file: BlFile, bucketConfig: BlBucketConfig, projectId: string): Promise<BlRichTextUploadedImage> {
+  async saveProjectCommentImage(file: BlFile, bucketConfig: BlBucketConfig[], projectId: string): Promise<BlRichTextUploadedImage> {
     const prefix = CnProjectBucketService.getPrefix('COMMENTS', projectId);
     return this.saveImage(file, bucketConfig, prefix);
   }

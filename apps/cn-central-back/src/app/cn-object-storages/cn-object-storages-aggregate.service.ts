@@ -34,7 +34,7 @@ export class CnObjectStoragesAggregateService {
   }
 
   //////////////////////////// OBJECT BUCKET ///////////////////////////
-  public findByContentTypeAndObjectId(contentType: CnBucketContentType, objectId: string): Promise<CnBucket> {
+  public findByContentTypeAndObjectId(contentType: CnBucketContentType, objectId: string): Promise<CnBucket[]> {
     return this.bucketService.findByContentTypeAndObjectId(contentType, objectId);
   }
 
@@ -42,29 +42,18 @@ export class CnObjectStoragesAggregateService {
   public async createObjectBucket(credentialsName: string, region: CnCloudProviderRegion,
                                   bucketName: string, spaceId: string,
                                   contentType: CnBucketContentType, objectId: string,
+                                  additionalInfo?: string,
                                   entityManager?: EntityManager): Promise<CnBucket> {
 
     return this.createObjectBucketPrivate(credentialsName, region, bucketName, spaceId,
-      contentType, objectId, entityManager);
+      contentType, objectId, additionalInfo, entityManager);
   }
 
-  public async getOrCreateObjectBucket(credentialsName: string, region: CnCloudProviderRegion,
-                                       bucketName: string, spaceId: string,
-                                       contentType: CnBucketContentType, objectId: string,
-                                       entityManager?: EntityManager): Promise<CnBucket> {
-    const bucket = await this.bucketService.findByContentTypeAndObjectId(contentType, objectId);
-
-    if (bucket) {
-      return bucket;
-    }
-
-    return this.createObjectBucketPrivate(credentialsName, region, bucketName, spaceId,
-      contentType, objectId, entityManager);
-  }
 
   private async createObjectBucketPrivate(credentialsName: string, region: CnCloudProviderRegion,
                                           bucketName: string, spaceId: string,
                                           contentType: CnBucketContentType, objectId: string,
+                                          additionalInfo?: string,
                                           entityManager?: EntityManager): Promise<CnBucket> {
 
     const credentials = await this.bucketCredentialsService.findByName(credentialsName);
@@ -78,6 +67,7 @@ export class CnObjectStoragesAggregateService {
     bucket.region = region;
     bucket.credentials = credentials;
     bucket.contentType = contentType;
+    bucket.additionalInfo = additionalInfo;
     const space = new CnSpace();
     space.id = spaceId;
     bucket.space = space;

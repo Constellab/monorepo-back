@@ -47,6 +47,7 @@
   "delete_project_with_children": "You can't delete a project with children",
   "delete_project_with_experiments": "You can't delete a project with experiments",
   "delete_project_with_reports": "You can't delete a project with reports",
+  "delete_project_with_documents": "You can't delete a project with documents",
   "delete_project_used_in_lab": "This project is used in the following labs [{labNames}], you can't delete it",
   "document_already_exist" : "A document with the same name already exists",
   "project_bucket_not_found" : "Storage for project not found. Please ask the project manager to configure the storage for this project (in the settings)",

@@ -11,6 +11,7 @@ import {
   CnCloudProviderRegion
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 
+export type CnLabBackupBucketType = 'DAILY' | 'WEEKLY';
 
 @Injectable()
 export class CnLabBackupOptionService extends BlAbstractService<CnLabBackupOption> {
@@ -36,14 +37,14 @@ export class CnLabBackupOptionService extends BlAbstractService<CnLabBackupOptio
     option.bucket1 = await this.objectStorageAggregateService.createObjectBucket(
       CnObjectStoragesAggregateService.LabBackupCredentialName,
       dailyBackupRegion, 'lab-backup-daily-' + labInstance.id, labInstance.spaceId, CnBucketContentType.LAB_BACKUP,
-      labInstance.id, entityManager);
+      labInstance.id, 'DAILY' as CnLabBackupBucketType, entityManager);
     option.frequency1 = CnLabBackupFrequency.DAILY;
 
     // configure the weekly backup
     option.bucket2 = await this.objectStorageAggregateService.createObjectBucket(
       CnObjectStoragesAggregateService.LabBackupCredentialName,
       weeklyBackupRegion, 'lab-backup-weekly-' + labInstance.id, labInstance.spaceId, CnBucketContentType.LAB_BACKUP,
-      labInstance.id, entityManager);
+      labInstance.id, 'WEEKLY' as CnLabBackupBucketType, entityManager);
     option.frequency2 = CnLabBackupFrequency.WEEKLY;
 
     return entityManager.save(option);

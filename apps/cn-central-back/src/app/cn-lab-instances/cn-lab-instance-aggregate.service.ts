@@ -74,7 +74,6 @@ import {CnLabBackupBucket} from './backup/cn-lab-backup.dto';
 import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
 import {CnLabBackupOption} from './backup/cn-lab-backup-option.entity';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {CnCloudProviderAggregateService} from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
 
 
 @Injectable()
@@ -106,8 +105,7 @@ export class CnLabInstanceAggregateService {
               private labStatusService: CnLabInstanceStatusService,
               private freeTrialService: CnLabFreeTrialService,
               private backupHistoryService: CnLabBackupHistoryService,
-              private backupOptionService: CnLabBackupOptionService,
-              private cloudProviderAggregateService: CnCloudProviderAggregateService) {
+              private backupOptionService: CnLabBackupOptionService) {
   }
 
   /**

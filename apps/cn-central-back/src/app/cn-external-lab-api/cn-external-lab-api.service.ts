@@ -8,7 +8,7 @@ import {
   cnExternalLabApiKeySchema,
   cnExternalLabUserHeader
 } from '../cn-core/model/config/cn-config.class';
-import {CnExternalLabCallView, CnLabGlobalActivity} from './model/cn-external-lab-api.class';
+import {CnLabGlobalActivity} from './model/cn-external-lab-api.class';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 
 /**
@@ -31,15 +31,6 @@ export class CnExternalLabApiService {
     return lastValueFrom(this.get(labInfo, `settings`));
   }
 
-  public async callResourceView(labInfo: CnExternalApiInfo, resourceId: string, viewName: string,
-                                callViewDTO: CnExternalLabCallView): Promise<any> {
-    return lastValueFrom(this.post(labInfo, `resource/${resourceId}/views/${viewName}`, callViewDTO));
-  }
-
-  public async getReportImage(labInfo: CnExternalApiInfo, filename: string): Promise<any> {
-    return lastValueFrom(this.get(labInfo, `report/image/${filename}`, null,
-      {observe: 'response', responseType: 'stream'}));
-  }
 
   public async getLabGlobalActivity(labInfo: CnExternalApiInfo): Promise<CnLabGlobalActivity> {
     return lastValueFrom(this.get(labInfo, `lab/global-activity`));

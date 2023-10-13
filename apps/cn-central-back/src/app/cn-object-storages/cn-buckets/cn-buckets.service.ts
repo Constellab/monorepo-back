@@ -108,22 +108,14 @@ export class CnBucketsService extends BlAbstractService<CnBucket>{
       } else if (bucket.contentType === CnBucketContentType.PROJECT && bucket.objectId == null) {
         throw new BlBadRequestException(`The bucket must be associated to a project`);
       }
-
-      // for project, check if a bucket already exist
-      if(bucket.contentType === CnBucketContentType.PROJECT){
-        const existingBucket = await this.findByContentTypeAndObjectId(bucket.contentType, bucket.objectId);
-        if (existingBucket) {
-          throw new BlBadRequestException(`There is already a bucket of type ${bucket.contentType} for the project ${bucket.objectId}`);
-        }
-      }
     }
 
     return bucket;
   }
 
-  public findByContentTypeAndObjectId(contentType: CnBucketContentType, objectId: string): Promise<CnBucket> {
+  public findByContentTypeAndObjectId(contentType: CnBucketContentType, objectId: string): Promise<CnBucket[]> {
     if (objectId == null) throw new BlBadRequestException(`The objectId must be defined`);
-    return this.repository.findOne({
+    return this.repository.find({
       where: {
         contentType: contentType,
         objectId: objectId

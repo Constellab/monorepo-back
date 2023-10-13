@@ -12,7 +12,7 @@ import {CnLabInstanceAggregateService} from '../cn-lab-instances/cn-lab-instance
 import {FilesInterceptor} from '@nestjs/platform-express';
 import {ClCoreJsonConvert} from '@monorepo/core-lib';
 import {CnExternalLabUser} from '../cn-external-lab-api/model/cn-external-lab-api.class';
-import {CnProjectDtoHelper, CnProjectTreeDto} from '../cn-projects-aggregate/cn-projects/cn-project.dto';
+import {CnProjectDtoHelper, CnProjectTreeDTO} from '../cn-projects-aggregate/cn-projects/cn-project.dto';
 import {CnExternalCheckCredentialResponse} from '../cn-auth/cn-auth.service';
 
 /**
@@ -107,7 +107,7 @@ export class CnExternalLabsController {
   // those routes does not require user authentication because they are called by the lab server and are just get
   @CnLabRobotAuthentication()
   @Get('project/all-trees')
-  async getAllProjectTrees(): Promise<CnProjectTreeDto[]> {
+  async getAllProjectTrees(): Promise<CnProjectTreeDTO[]> {
     const projects = await this.labInstanceAggregator.getCurrentLabInstanceProjects();
     return CnProjectDtoHelper.convertToProjectTreeDtoList(projects);
   }

@@ -33,7 +33,8 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     return this.create(space, entityManager);
   }
 
-  public async createPersonalSpace(user: CnUser, region: CnCloudProviderRegion, entityManager: EntityManager): Promise<CnSpace> {
+  public async createPersonalSpace(user: CnUser, region: CnCloudProviderRegion,
+                                   backupRegion: CnCloudProviderRegion, entityManager: EntityManager): Promise<CnSpace> {
     const space = new CnSpace();
     space.name = user.fullname;
     space.nbLicenses = 0;
@@ -41,6 +42,7 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     space.createdBy = user;
     space.lastModifiedBy = user;
     space.defaultStorageRegion = region;
+    space.defaultBackupStorageRegion = backupRegion;
     return entityManager.save(space);
   }
 

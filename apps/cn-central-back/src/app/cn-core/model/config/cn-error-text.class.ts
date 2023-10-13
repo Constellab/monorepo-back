@@ -49,6 +49,7 @@ export enum CnErrorText {
   DELETE_PROJECT_WITH_CHILDREN = 'error.delete_project_with_children',
   DELETE_PROJECT_WITH_EXPERIMENTS = 'error.delete_project_with_experiments',
   DELETE_PROJECT_WITH_REPORTS = 'error.delete_project_with_reports',
+  DELETE_PROJECT_WITH_DOCUMENTS = 'error.delete_project_with_documents',
   DELETE_PROJECT_USED_IN_LAB = 'error.delete_project_used_in_lab',
   DOCUMENT_ALREADY_EXIST = 'error.document_already_exist',
   PROJECT_BUCKET_NOT_FOUND = 'error.project_bucket_not_found',

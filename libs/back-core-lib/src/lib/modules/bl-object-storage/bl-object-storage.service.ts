@@ -17,6 +17,7 @@ import {
 import {BlFile} from '../../models/bl-file.class';
 import {IncomingMessage} from 'http';
 import {_Object} from '@aws-sdk/client-s3/dist-types/models/models_0';
+import {BlObjectStorageSyncResult} from './bl-object-storage.class';
 
 export interface BlBucketConfig {
   endpoint: string;
@@ -52,41 +53,51 @@ export class BlObjectStorageService {
     return ClStringHelper.generateUUID() + '_' + new Date().getTime() + '.' + extension;
   }
 
-  public async uploadObject(config: BlBucketConfig, obj: BlFile,
-                            options: BlObjectStorageUploadOptions = {}): Promise<string> {
-    const s3Client = this.getClient(config);
+  //////////////////////////////////////////// UPLOAD OBJECT /////////////////////////////////////////
 
+  public async uploadObject(config: BlBucketConfig | BlBucketConfig[], obj: BlFile,
+                            options: BlObjectStorageUploadOptions = {}): Promise<string> {
     const filename = this.getFilename(options, BlFileHelper.getFileExtension(obj.originalname), obj.originalname);
 
-    await s3Client.send(new PutObjectCommand({
-      Bucket: config.bucket, Key: filename, Body: obj.buffer, ContentType: obj.mimetype
-    }));
-
-    return filename;
+    return this.uploadObjectToBuckets(config, obj.buffer, filename, obj.mimetype);
   }
 
-  public async uploadIncomingMessage(config: BlBucketConfig, message: IncomingMessage,
+
+  public async uploadIncomingMessage(config: BlBucketConfig | BlBucketConfig[], message: IncomingMessage,
                                      filename: string, contentType: string): Promise<string> {
-    const s3Client = this.getClient(config);
-
-    await s3Client.send(new PutObjectCommand({
-      Bucket: config.bucket, Key: filename, Body: message, ContentType: contentType
-    }));
-
-    return filename;
+    return this.uploadObjectToBuckets(config, message, filename, contentType);
   }
 
-  public async uploadJson(config: BlBucketConfig, json: any, options: BlObjectStorageUploadOptions = {}): Promise<string> {
-    const s3Client = this.getClient(config);
 
+  public async uploadJson(config: BlBucketConfig | BlBucketConfig[], json: any,
+                          options: BlObjectStorageUploadOptions = {}): Promise<string> {
     const filename = this.getFilename(options, 'json');
+    return this.uploadObjectToBuckets(config, JSON.stringify(json), filename, 'application/json');
+  }
+
+  private async uploadObjectToBuckets(bucketConfigs: BlBucketConfig | BlBucketConfig[], obj: any, filename: string,
+                                      contentType: string): Promise<string> {
+    const configs: BlBucketConfig[] = ClHelpService.convertObjectOrArrayToArray(bucketConfigs);
+
+    const promises = configs.map((conf) =>
+      this.uploadObjectToBucket(conf, obj, filename, contentType));
+    await Promise.all(promises);
+
+    return filename;
+  }
+
+  private async uploadObjectToBucket(config: BlBucketConfig, obj: any, filename: string,
+                                     contentType: string): Promise<string> {
+    const s3Client = this.getClient(config);
 
     await s3Client.send(new PutObjectCommand({
-      Bucket: config.bucket, Key: filename, Body: JSON.stringify(json), ContentType: 'application/json'
+      Bucket: config.bucket, Key: filename, Body: obj, ContentType: contentType
     }));
 
     return filename;
   }
+
+  //////////////////////////////////////////// DOWNLOAD OBJECT /////////////////////////////////////////
 
   public async getObject(config: BlBucketConfig, objectName: string): Promise<IncomingMessage> {
     const s3Client = this.getClient(config);
@@ -94,48 +105,6 @@ export class BlObjectStorageService {
     const result = await s3Client.send(new GetObjectCommand({Bucket: config.bucket, Key: objectName}));
 
     return result.Body as any as IncomingMessage;
-  }
-
-  /**
-   * Delete an object from the bucket.
-   * @param config
-   * @param objectName
-   * @returns true if object deleted, false if object not found
-   */
-  public async deleteObjectIfExist(config: BlBucketConfig, objectName: string): Promise<boolean> {
-    const s3Client = this.getClient(config);
-
-    try {
-      // use to check if the object exist
-      // because if we call delete on a none existing object, the request never ends
-      await this.getObjectInfo(config, objectName);
-    } catch (e) {
-      return false;
-    }
-
-    await s3Client.send(new DeleteObjectCommand({Bucket: config.bucket, Key: objectName}));
-    return true;
-  }
-
-  public async deleteObjectsByPrefix(config: BlBucketConfig, prefix: string): Promise<void> {
-    const objects = await this.getObjectsByPrefix(config, prefix);
-
-    await this.deleteMultipleObjects(config, objects.map((obj) => obj.Key));
-  }
-
-  public async deleteMultipleObjects(config: BlBucketConfig, objectNames: string[]): Promise<void> {
-    if (ClHelpService.isNullOrEmpty(objectNames)) return;
-    const s3Client = this.getClient(config);
-
-    await s3Client.send(new DeleteObjectsCommand({
-      Bucket: config.bucket,
-      Delete: {Objects: objectNames.map((name) => ({Key: name}))}
-    }));
-  }
-
-  public async deleteAllObjects(config: BlBucketConfig): Promise<void> {
-    const objects = await this.getObjectsByPrefix(config, '');
-    await this.deleteMultipleObjects(config, objects.map((obj) => obj.Key));
   }
 
   public async getObjectsByPrefix(config: BlBucketConfig, prefix: string): Promise<_Object[]> {
@@ -168,6 +137,93 @@ export class BlObjectStorageService {
         });
     });
   }
+
+  //////////////////////////////////////////// DELETE OBJECT /////////////////////////////////////////
+
+  /**
+   * Delete an object from the bucket.
+   * @param config
+   * @param objectName
+   * @returns true if object deleted, false if object not found
+   */
+  public async deleteObjectIfExist(config: BlBucketConfig | BlBucketConfig[], objectName: string): Promise<boolean> {
+    const bucketConfigs = ClHelpService.convertObjectOrArrayToArray(config);
+
+    const promises: Promise<boolean>[] = [];
+
+    for (const bucketConfig of bucketConfigs) {
+      promises.push(this.deleteObjectIfExistFromBucket(bucketConfig, objectName));
+    }
+
+    const results = await Promise.all(promises);
+    return results.some((res) => res);
+  }
+
+  /**
+   * Delete an object from the bucket.
+   * @param config
+   * @param objectName
+   * @returns true if object deleted, false if object not found
+   */
+  private async deleteObjectIfExistFromBucket(config: BlBucketConfig, objectName: string): Promise<boolean> {
+    const s3Client = this.getClient(config);
+
+    try {
+      // use to check if the object exist
+      // because if we call delete on a none existing object, the request never ends
+      await this.getObjectInfo(config, objectName);
+    } catch (e) {
+      return false;
+    }
+
+    await s3Client.send(new DeleteObjectCommand({Bucket: config.bucket, Key: objectName}));
+    return true;
+  }
+
+  public async deleteObjectsByPrefix(config: BlBucketConfig | BlBucketConfig[], prefix: string): Promise<void> {
+    const bucketConfigs = ClHelpService.convertObjectOrArrayToArray(config);
+
+    const promises: Promise<void>[] = [];
+
+    for (const bucketConfig of bucketConfigs) {
+      const objects = await this.getObjectsByPrefix(bucketConfig, prefix);
+      promises.push(this.deleteMultipleObjects(config, objects.map((obj) => obj.Key)));
+    }
+
+    await Promise.all(promises);
+  }
+
+  public async deleteAllObjects(config: BlBucketConfig | BlBucketConfig[]): Promise<void> {
+    const bucketConfigs = ClHelpService.convertObjectOrArrayToArray(config);
+
+    const promises: Promise<void>[] = [];
+    for (const bucketConfig of bucketConfigs) {
+      const objects = await this.getObjectsByPrefix(bucketConfig, '');
+      promises.push(this.deleteMultipleObjects(config, objects.map((obj) => obj.Key)));
+    }
+
+    await Promise.all(promises);
+  }
+
+  public async deleteMultipleObjects(config: BlBucketConfig | BlBucketConfig[], objectNames: string[]): Promise<void> {
+    if (ClHelpService.isNullOrEmpty(objectNames)) return;
+
+    const bucketConfigs = ClHelpService.convertObjectOrArrayToArray(config);
+
+    const promises: Promise<void>[] = [];
+
+    for (const bucketConfig of bucketConfigs) {
+      const s3Client = this.getClient(bucketConfig);
+
+      await s3Client.send(new DeleteObjectsCommand({
+        Bucket: bucketConfig.bucket,
+        Delete: {Objects: objectNames.map((name) => ({Key: name}))}
+      }));
+    }
+
+    await Promise.all(promises);
+  }
+
 
   ////////////////////////////////////////// BUCKET //////////////////////////////////////////
 
@@ -202,6 +258,58 @@ export class BlObjectStorageService {
     } catch (e) {
       return false;
     }
+  }
+
+  /////////////////////////////////// SYNC ///////////////////////////////////
+  /**
+   * Synchronise the content of two buckets. The destination bucket will have the same content as the source bucket.
+   * /!\ It deletes the object from the destination bucket that are not present in the source bucket
+   * @param source
+   * @param destination
+   */
+  public async synchroniseBuckets(source: BlBucketConfig, destination: BlBucketConfig): Promise<BlObjectStorageSyncResult> {
+
+    const result: BlObjectStorageSyncResult = {
+      copiedObjectsFromSource: [], deletedObjectsFromDestination: [],
+      modifiedObjectsFromSource: []
+    };
+    const sourceObjects = await this.getObjectsByPrefix(source, '');
+    const destinationObjects = await this.getObjectsByPrefix(destination, '');
+
+    // add the missing objects on the destination
+    for (const sourceObject of sourceObjects) {
+      const destinationObject = destinationObjects.find((obj) => obj.Key === sourceObject.Key);
+      if (destinationObject == null) {
+        await this.copyObject(source, destination, sourceObject.Key);
+        result.copiedObjectsFromSource.push(sourceObject.Key);
+      } else if (sourceObject.Size !== destinationObject.Size) {
+        await this.copyObject(source, destination, sourceObject.Key);
+        result.modifiedObjectsFromSource.push(sourceObject.Key);
+      }
+    }
+
+    // remove the missing objects from the destination
+    for (const destinationObject of destinationObjects) {
+      const sourceObject = sourceObjects.find((obj) => obj.Key === destinationObject.Key);
+      if (sourceObject == null) {
+        await this.deleteObjectIfExistFromBucket(destination, '/' + destinationObject.Key);
+        result.deletedObjectsFromDestination.push(destinationObject.Key);
+      }
+    }
+
+    if (result.deletedObjectsFromDestination.length > 0) {
+      await this.deleteMultipleObjects(destination, result.deletedObjectsFromDestination);
+    }
+
+    return result;
+  }
+
+  private async copyObject(source: BlBucketConfig, destination: BlBucketConfig, objectName: string): Promise<void> {
+    const s3Client = this.getClient(source);
+
+    const result = await s3Client.send(new GetObjectCommand({Bucket: source.bucket, Key: objectName}));
+
+    await this.uploadIncomingMessage(destination, result.Body as any, objectName, result.ContentType);
   }
 
   /////////////////////////////////// OTHER ///////////////////////////////////
