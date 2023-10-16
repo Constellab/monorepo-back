@@ -112,7 +112,9 @@ export class CnProjectBucketService {
 
   public async getAndCheckProjectBucket(rootProjectId: string): Promise<CnProjectBucketsDTO> {
     const buckets = await this.getProjectBucket(rootProjectId);
-    if (buckets.mainBucket == null || buckets.backupBucket == null) {
+    if (buckets.mainBucket == null) {
+      // For now the backup bucket is not mandatory, because of the bucket number limitation
+      // if (buckets.mainBucket == null || buckets.backupBucket == null) {
       throw new BlBadRequestException(CnErrorText.PROJECT_BUCKET_NOT_FOUND);
     }
     return buckets;
@@ -120,7 +122,11 @@ export class CnProjectBucketService {
 
   public async getAndCheckProjectBucketConfig(rootProjectId: string): Promise<BlBucketConfig[]> {
     const bucket = await this.getAndCheckProjectBucket(rootProjectId);
-    return [bucket.mainBucket.getBucketConfig(), bucket.backupBucket.getBucketConfig()];
+    const configs = [bucket.mainBucket.getBucketConfig()];
+    if (bucket.backupBucket) {
+      configs.push(bucket.backupBucket.getBucketConfig());
+    }
+    return configs;
   }
 
   public async getAndCheckProjectMainBucketConfig(rootProjectId: string): Promise<BlBucketConfig> {
@@ -133,8 +139,11 @@ export class CnProjectBucketService {
     if (bucket == null) {
       return;
     }
+
     await this.objectStorageAggregateService.deleteBucketNotSecure(bucket.mainBucket, entityManager);
-    await this.objectStorageAggregateService.deleteBucketNotSecure(bucket.backupBucket, entityManager);
+    if (bucket.backupBucket) {
+      await this.objectStorageAggregateService.deleteBucketNotSecure(bucket.backupBucket, entityManager);
+    }
   }
 
   /////////////////////////////////////////// DESCRIPTION ///////////////////////////////////////////

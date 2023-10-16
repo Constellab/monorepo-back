@@ -292,7 +292,6 @@ export class BlObjectStorageService {
     for (const destinationObject of destinationObjects) {
       const sourceObject = sourceObjects.find((obj) => obj.Key === destinationObject.Key);
       if (sourceObject == null) {
-        await this.deleteObjectIfExistFromBucket(destination, '/' + destinationObject.Key);
         result.deletedObjectsFromDestination.push(destinationObject.Key);
       }
     }
