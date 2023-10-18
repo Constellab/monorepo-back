@@ -118,6 +118,8 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
   async migrateDocument(document: CnDocument, rootProject: CnProject): Promise<void>{
     const oldBucketConfig = await this.projectBucketService.getOldProjectMainBucket(rootProject.getRootParentId());
 
+    if(oldBucketConfig == null) return;
+
     const prefix = `${CnProjectBucketService.getPrefix(document.project, 'DOCUMENTS')}`;
 
     document.filename = document.filePath.split('/').pop();
