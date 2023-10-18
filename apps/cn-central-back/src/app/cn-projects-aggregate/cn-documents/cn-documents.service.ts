@@ -110,6 +110,8 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
   async docExistInBucket(document: CnDocument, project: CnProject): Promise<boolean> {
     const bucketConfig = await this.projectBucketService.getOldProjectMainBucket(project.getRootParentId());
 
+    if(bucketConfig == null) return false;
+
     return this.objectStorageService.objectExist(bucketConfig.getBucketConfig(), document.filePath);
   }
 

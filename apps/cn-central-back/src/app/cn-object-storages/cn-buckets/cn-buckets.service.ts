@@ -117,15 +117,6 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     });
   }
 
-  public async findByContentTypeAndRegionAndCheck(contentType: CnBucketContentType, regionName: string): Promise<CnBucket> {
-    const bucket = await this.findByNameAndRegionAndCheck(contentType, regionName);
-
-    if (bucket == null) {
-      throw new BlBadRequestException(`Bucket ${contentType} in region ${regionName} not found`);
-    }
-    return bucket;
-  }
-
   public async findByNameAndRegionAndCheck(name: string, regionName: string): Promise<CnBucket> {
     const bucket = await this.repository.findOne({
       where: {

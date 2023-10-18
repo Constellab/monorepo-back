@@ -783,6 +783,7 @@ export class CnProjectAggregateService {
     return project;
   }
 
+  // TODO to remove
   public async migrateProjectsBuckets(document: boolean, report: boolean, project: boolean): Promise<void> {
     if (!CnCurrentUserHelper.isAdmin()) {
       throw new BlUnauthorizedException();
