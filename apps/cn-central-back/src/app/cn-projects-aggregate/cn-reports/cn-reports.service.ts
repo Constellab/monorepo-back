@@ -125,12 +125,16 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     return this.findByIdAndCheck(id, {experiments: true});
   }
 
-  async getImage(filename: string, projectId: string): Promise<IncomingMessage> {
-    return await this.objectStorageService.getObject(await this.getBucketConfig(projectId), filename);
+  async getImage(filename: string, project: CnProject, reportId: string): Promise<IncomingMessage> {
+    const prefix = CnProjectBucketService.getPrefix(project, 'REPORT_CONTENTS', reportId);
+    const filePath = `${prefix}/${filename}`;
+    return await this.objectStorageService.getObject(await this.getBucketConfig(project.getRootParentId()), filePath);
   }
 
-  async getView(filename: string, projectId: string): Promise<IncomingMessage> {
-    return await this.objectStorageService.getObject(await this.getBucketConfig(projectId), filename);
+  async getView(filename: string, project: CnProject, reportId: string): Promise<IncomingMessage> {
+    const prefix = CnProjectBucketService.getPrefix(project, 'REPORT_CONTENTS', reportId);
+    const filePath = `${prefix}/${filename}`;
+    return await this.objectStorageService.getObject(await this.getBucketConfig(project.getRootParentId()), filePath);
   }
 
   public async getCurrentUserVCreatedReport(): Promise<CnReport[]> {

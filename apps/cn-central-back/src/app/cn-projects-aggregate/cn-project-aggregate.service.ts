@@ -496,27 +496,27 @@ export class CnProjectAggregateService {
   async getReportImage(reportId: string, filename: string): Promise<IncomingMessage> {
     const report = await this.reportService.findByIdAndCheck(reportId);
 
-    const project = await this.checkFindOneAndGetRootProject(report.projectId);
+    const project = await this.getAndCheckAuthorizationForFindOne(report.projectId);
 
     // check that the filename is in the report
     const content = new CnReportContent(report.content);
     if (content.getFigureOp(filename) == null) {
       throw new BlUnauthorizedException();
     }
-    return this.reportService.getImage(filename, project.getRootParentId());
+    return this.reportService.getImage(filename, project, reportId);
   }
 
   async getReportView(reportId: string, filename: string): Promise<IncomingMessage> {
     const report = await this.reportService.findByIdAndCheck(reportId);
 
-    const project = await this.checkFindOneAndGetRootProject(report.projectId);
+    const project = await this.getAndCheckAuthorizationForFindOne(report.projectId);
 
     // check that the filename is in the report
     const content = new CnReportContent(report.content);
     if (content.getViewsOp(filename) == null) {
       throw new BlUnauthorizedException('The view is not in the report');
     }
-    return this.reportService.getView(filename, project.getRootParentId());
+    return this.reportService.getView(filename, project, reportId);
   }
 
   /////////////////////////////////////// GROUPS //////////////////////////////////
@@ -867,6 +867,22 @@ export class CnProjectAggregateService {
           const oldPrefix = `reports/${report.id}`;
           const newPrefix = CnProjectBucketService.getPrefix(report.project, 'REPORT_CONTENTS', report.id);
           await this.projectBucketService.migrateObjects(rootProject, oldPrefix, newPrefix);
+
+          const content = new CnReportContent(report.content);
+          for(const view of content.getViewsOps()){
+            if(view.insert.resource_view.filename.includes('/')){
+              view.insert.resource_view.filename = view.insert.resource_view.filename.split('/').pop();
+            }
+          }
+
+          for(const view of content.getFiguresOps()){
+            if(view.insert.figure.filename.includes('/')){
+              view.insert.figure.filename = view.insert.figure.filename.split('/').pop();
+            }
+          }
+
+          report.content = content.getContent();
+          await this.reportService.update(report);
         }
       }
     }
