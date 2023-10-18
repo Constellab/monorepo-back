@@ -1,5 +1,5 @@
 import {Injectable} from '@nestjs/common';
-import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlBadRequestException, BlObjectStorageService} from '@monorepo/back-core-lib';
 import {CnLabBackupOption} from './cn-lab-backup-option.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, Repository} from 'typeorm';
@@ -15,8 +15,13 @@ import {
 export class CnLabBackupOptionService extends BlAbstractService<CnLabBackupOption> {
 
   constructor(@InjectRepository(CnLabBackupOption) repository: Repository<CnLabBackupOption>,
-              private objectStorageAggregateService: CnObjectStoragesAggregateService) {
+              private objectStorageAggregateService: CnObjectStoragesAggregateService,
+              private objectStorageService: BlObjectStorageService) {
     super(repository, CnLabBackupOption);
+  }
+
+  public getBackupS3Prefix(labInstance: CnLabInstance): string{
+    return `/${labInstance.spaceId}/${labInstance.id}`;
   }
 
   /**
@@ -44,13 +49,33 @@ export class CnLabBackupOptionService extends BlAbstractService<CnLabBackupOptio
     return entityManager.save(option);
   }
 
+  /**
+   * When deleting the backup options, we clear the backup from the buckets
+   * @param labInstanceId
+   * @param entityManager
+   */
+  public async deleteBackupOptions(labInstanceId: string, entityManager: EntityManager): Promise<void> {
+    const option = await this.findByLabId(labInstanceId);
+    if (option) {
+      await entityManager.delete(CnLabBackupOption, option.id);
+
+      const prefix = this.getBackupS3Prefix(option.labInstance);
+      if(!prefix){
+        throw new BlBadRequestException('The lab instance does not have a backup prefix');
+      }
+      await this.objectStorageService.deleteObjectsByPrefix(option.bucket1.getBucketConfig(), prefix);
+      await this.objectStorageService.deleteObjectsByPrefix(option.bucket2.getBucketConfig(), prefix);
+    }
+  }
+
   public async findByLabId(labInstanceId: string): Promise<CnLabBackupOption> {
     return this.repo.findOne(
       {
         where: {labInstance: {id: labInstanceId}},
         relations: {
           bucket1: CnBucket.configRelation,
-          bucket2: CnBucket.configRelation
+          bucket2: CnBucket.configRelation,
+          labInstance: true
         }
       });
   }

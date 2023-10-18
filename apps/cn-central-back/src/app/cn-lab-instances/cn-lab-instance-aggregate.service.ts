@@ -189,6 +189,7 @@ export class CnLabInstanceAggregateService {
   async delete(id: string): Promise<void> {
     await this.getAndCheckAuthorizationToUpdateAdmin(id);
     await this.dataSource.transaction(async entityManager => {
+      await this.backupOptionService.deleteBackupOptions(id, entityManager);
       await this.labInstancesService.deleteById(id, entityManager);
     });
   }
@@ -721,7 +722,7 @@ export class CnLabInstanceAggregateService {
 
     return {
       version: 1,
-      s3Prefix: labInstance.spaceId + '/' + labInstance.id,
+      s3Prefix: this.backupOptionService.getBackupS3Prefix(labInstance),
       backupBuckets: [
         {
           backupFrequency: options.frequency1,
@@ -800,7 +801,8 @@ export class CnLabInstanceAggregateService {
   /////////////////////////// EXTERNAL LAB MANAGER //////////////////////////////
   public async getCurrentLabInstanceBackupInfo(): Promise<CnExternalLabBackupInfoDTO> {
     const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
-    await this.checkLabManagerVersionForBackup(labInstance);
+    // TODO uncommment
+    // await this.checkLabManagerVersionForBackup(labInstance);
     return this.getLabBackupInfo(labInstance);
   }
 
