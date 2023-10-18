@@ -55,6 +55,7 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
     history.dbStatus = historyDto.dbStatus.status;
     history.dbMessage = historyDto.dbStatus.message;
     history.dbSize = historyDto.dbSize;
+    history.s3Prefix = historyDto.s3Prefix;
     return await this.repo.save(history);
   }
 

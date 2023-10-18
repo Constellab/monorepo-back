@@ -57,6 +57,9 @@ export class BlVersion {
     return this.getDif(other) === 0;
   }
 
+  public isLower(other: BlVersion): boolean {
+    return this.getDif(other) < 0;
+  }
   /**
    * Returns the difference between this version and another version
    * === 0 if equal

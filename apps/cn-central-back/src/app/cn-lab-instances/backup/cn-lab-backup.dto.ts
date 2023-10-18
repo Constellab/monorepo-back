@@ -47,4 +47,5 @@ export class CnLabBackupBucket {
   dbSize: number;
   frequency: CnLabBackupFrequency;
   triggerMode: CnLabBackupTriggerMode;
+  s3Prefix: string;
 }

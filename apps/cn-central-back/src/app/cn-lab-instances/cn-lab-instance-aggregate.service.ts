@@ -38,7 +38,8 @@ import {
   BlDtoHelper,
   BlExternalApiError,
   BlSearchParams,
-  BlUnauthorizedException
+  BlUnauthorizedException,
+  BlVersion
 } from '@monorepo/back-core-lib';
 import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
 import {CnExternalLabUserService} from '../cn-external-lab-api/cn-external-lab-user.service';
@@ -675,12 +676,27 @@ export class CnLabInstanceAggregateService {
   public async createProdBackup(labId: string): Promise<CnLabBackupHistory[]> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
 
+    await this.checkLabManagerVersionForBackup(labInstance);
     // get or create the bucket associated with this lab instance
-    const backupInfo = await this.getLabBackupInfo(labInstance.id);
+    const backupInfo = await this.getLabBackupInfo(labInstance);
 
     const backups = await this.labManagerService.createProdBackup(labInstance, backupInfo);
 
     return this.backupHistoryService.saveHistories(backups, labInstance);
+  }
+
+  // remove once all lab manager are version 1.3.4 or more
+  private async checkLabManagerVersionForBackup(labInstance: CnLabInstance): Promise<void> {
+    // allow backup only for lab manager version bigger than 1.3.4
+    const labStatus = await this.labManagerService.getLabStatus(labInstance);
+
+    const expectedVersion = BlVersion.fromString('1.3.4');
+    const labManagerVersion = BlVersion.fromString(labStatus.version);
+
+    if (labManagerVersion.isLower(expectedVersion)) {
+      throw new BlBadRequestException(`The lab manager version must be greater or equal than ${expectedVersion.toString()}`);
+    }
+
   }
 
   public async stopCurrentBackup(labId: string): Promise<CnLabBackupHistory[]> {
@@ -695,9 +711,9 @@ export class CnLabInstanceAggregateService {
     await this.backupHistoryService.saveHistories(backups.backups, labInstance);
   }
 
-  private async getLabBackupInfo(labInstanceId: string): Promise<CnExternalLabBackupInfoDTO> {
+  private async getLabBackupInfo(labInstance: CnLabInstance): Promise<CnExternalLabBackupInfoDTO> {
     // get or create the bucket associated with this lab instance
-    const options = await this.backupOptionService.findByLabId(labInstanceId);
+    const options = await this.backupOptionService.findByLabId(labInstance.id);
 
     if (options == null) {
       throw new BlBadRequestException('No backup options found for this lab');
@@ -705,6 +721,7 @@ export class CnLabInstanceAggregateService {
 
     return {
       version: 1,
+      s3Prefix: labInstance.spaceId + '/' + labInstance.id,
       backupBuckets: [
         {
           backupFrequency: options.frequency1,
@@ -721,7 +738,7 @@ export class CnLabInstanceAggregateService {
   public async getLabBackupOptions(labInstanceId: string): Promise<CnLabBackupOptionDTO> {
     await this.getAndCheckAuthorizationToFindById(labInstanceId);
     const labOptions = await this.backupOptionService.findByLabId(labInstanceId);
-    if(labOptions == null) return null;
+    if (labOptions == null) return null;
 
     const optionDTO = new CnLabBackupOptionDTO();
     optionDTO.frequency1 = labOptions.frequency1;
@@ -783,7 +800,8 @@ export class CnLabInstanceAggregateService {
   /////////////////////////// EXTERNAL LAB MANAGER //////////////////////////////
   public async getCurrentLabInstanceBackupInfo(): Promise<CnExternalLabBackupInfoDTO> {
     const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
-    return this.getLabBackupInfo(labInstance.id);
+    await this.checkLabManagerVersionForBackup(labInstance);
+    return this.getLabBackupInfo(labInstance);
   }
 
   public async saveCurrentLabBackupHistory(backups: CnLabBackupBucket[]): Promise<CnLabBackupHistory[]> {

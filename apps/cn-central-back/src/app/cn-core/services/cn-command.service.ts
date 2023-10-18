@@ -108,8 +108,6 @@ export class CnCommandService {
       });
 
       spawnCommand.on('exit', (code: number, signal: NodeJS.Signals | null) => {
-        console.log('EXIT ' + code, +' ' + signal);
-
         if (code === 0) {
           subscriber.complete();
         } else {

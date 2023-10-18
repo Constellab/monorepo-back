@@ -24,12 +24,6 @@ export interface CnExternalLabUser {
 }
 
 
-export interface CnExternalLabCallView {
-  values: Record<string, any>;
-  transformers: any[];
-  save_view_config: boolean;
-}
-
 /**
  * Object that represent the current global activity of a lab
  */
@@ -47,6 +41,7 @@ export interface CnLabGlobalActivity {
 export interface CnExternalLabBackupInfoDTO {
   version: number;
   backupBuckets: CnExternalLabBackupBucketDTO[];
+  s3Prefix: string;
 }
 
 export interface CnExternalLabBackupBucketDTO {

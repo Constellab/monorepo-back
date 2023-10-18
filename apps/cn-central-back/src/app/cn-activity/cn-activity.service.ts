@@ -59,7 +59,6 @@ export class CnActivityService extends BlAbstractPaginatedService<CnActivity> {
       additionalData: activityDTO.additionalData,
     };
     this.eventEmitter.emit(cnActivityEvent, event);
-    console.log('CnActivityService.create ', `activity.${activity.entityType}`);
     return dbActivity;
   }
 

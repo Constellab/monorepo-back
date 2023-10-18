@@ -25,7 +25,6 @@ export class CnLabListener {
       if (event.newStatus === CnLabInstanceStatus.SERVER_CONFIGURED &&
         [CnLabInstanceStatus.SERVER_STARTING, CnLabInstanceStatus.NO_SERVER,
           CnLabInstanceStatus.SERVER_STOPPED, CnLabInstanceStatus.SERVER_RUNNING].includes(event.oldStatus)) {
-        console.log('Config lab manager')
         await this.configureAndStartLabBricksAfterInit(event.labInstanceId).catch(
           // if an error occurred we just refresh the lab status
           (error: Error) => this.onError(event.labInstanceId, `Error during lab manager start : ${error.message}`)

@@ -63,6 +63,9 @@ export class CnLabBackupHistory extends CnBaseEntity {
   @Column({nullable: false, default: 0})
   dbSize: number;
 
+  @Column({nullable: false})
+  s3Prefix: string;
+
   // expose only the region, not the bucket
   @Type(() => CnCloudProviderRegion)
   @Expose()

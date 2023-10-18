@@ -8,7 +8,7 @@ import {
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnExternalLabManagerApiService} from '../cn-external-lab-api/cn-external-lab-manager-api.service';
 import {CnLabInstance} from './cn-lab-instance.entity';
-import {CnLabInstanceConfigDTO} from './cn-lab-instance.dto';
+import {CnLabInstanceConfigDTO, CnLabManagerStatus} from './cn-lab-instance.dto';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CnExternalLabBackupInfoDTO} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
@@ -33,7 +33,7 @@ export class CnLabManagerService {
     return this.labManagerApiService.healthCheck(labManagerUrl);
   }
 
-  public async getLabStatus(labInstance: CnLabInstance): Promise<any> {
+  public async getLabStatus(labInstance: CnLabInstance): Promise<CnLabManagerStatus> {
     const isRunning = await this.healthCheck(labInstance.getLabManagerApiInfo().apiUrl);
     if (!isRunning) {
       throw new BlBadRequestException('The lab manager is not running');
