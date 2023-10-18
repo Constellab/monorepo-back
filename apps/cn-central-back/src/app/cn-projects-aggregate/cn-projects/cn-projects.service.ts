@@ -128,8 +128,19 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
     return await this.findPaginated(page, size, searchBuilder.build());
   }
 
+
+  // TODO TO REMOVE
   public async getRootProjects(): Promise<CnProject[]>{
     return this.repository.find({where: {parentId: IsNull()}});
+  }
+
+  public async getAllProjects(): Promise<CnProject[]>{
+    return this.repository.find({
+      relations: {
+        backupStorage: true,
+        mainStorage: true,
+      }
+    });
   }
 
 }

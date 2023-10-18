@@ -12,9 +12,13 @@ export class CnDocument extends CnBaseEntity {
   @Column({nullable: false})
   name: string;
 
+  // TODO TO REMOVE
   @Exclude()
-  @Column({nullable: false, length: 1024})
+  @Column({nullable: true, length: 1024})
   filePath: string;
+
+  @Column({nullable: false})
+  filename: string;
 
   @Column({nullable: false})
   size: number;

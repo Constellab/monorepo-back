@@ -11,7 +11,6 @@ import {CnProjectsModule} from './cn-projects/cn-projects.module';
 import {CnUsersModule} from '../cn-users/cn-users.module';
 import {CnProjectCommentModule} from '../cn-project-comment/cn-project-comment.module';
 import {CnDocumentsModule} from './cn-documents/cn-documents.module';
-import {CnProjectBucketModule} from './cn-project-bucket/cn-project-bucket.module';
 import {CnProjectListener} from './cn-project.listener';
 import {CnProjectUserModule} from './cn-project-user/cn-project-user.module';
 import {CnNotificationModule} from '../cn-notification/cn-notification.module';
@@ -25,7 +24,6 @@ import {CnCloudProvidersModule} from '../cn-cloud-providers/cn-cloud-providers.m
 
     CnProjectsModule,
     CnProjectCommentModule,
-    CnProjectBucketModule,
     CnProjectUserModule,
 
     CnExperimentsModule,

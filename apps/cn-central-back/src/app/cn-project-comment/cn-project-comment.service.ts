@@ -14,7 +14,7 @@ import {
   BlRichTextI,
   BlRichTextUploadedImage
 } from '@monorepo/back-core-lib';
-import {CnProjectBucketService} from '../cn-projects-aggregate/cn-project-bucket/cn-project-bucket.service';
+import {CnProjectBucketService} from '../cn-projects-aggregate/cn-projects/cn-project-bucket.service';
 
 @Injectable()
 export class CnProjectCommentService extends CnCommentService<CnProjectComment> {
@@ -24,8 +24,9 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
     super(objectStorageService, repository, CnProjectComment);
   }
 
-  async saveProjectCommentImage(file: BlFile, bucketConfig: BlBucketConfig[], projectId: string): Promise<BlRichTextUploadedImage> {
-    const prefix = CnProjectBucketService.getPrefix('COMMENTS', projectId);
+  async saveProjectCommentImage(file: BlFile, bucketConfig: BlBucketConfig[],
+                                project: CnProject): Promise<BlRichTextUploadedImage> {
+    const prefix = CnProjectBucketService.getPrefix(project, 'COMMENTS');
     return this.saveImage(file, bucketConfig, prefix);
   }
 

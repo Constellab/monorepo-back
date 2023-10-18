@@ -1,11 +1,14 @@
 import {Column, Entity, ManyToOne} from 'typeorm';
 import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
-import {Type} from 'class-transformer';
+import {Exclude, Expose, Type} from 'class-transformer';
 import {CnLabInstance} from '../cn-lab-instance.entity';
 import {BlLuxonDateTimeColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnLabBackupFrequency, CnLabBackupStatus, CnLabBackupTriggerMode} from './cn-lab-backup.dto';
 import {CnBucket} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {DateTime} from 'luxon';
+import {
+  CnCloudProviderRegion
+} from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 
 
 @Entity('lab_backup_history')
@@ -19,6 +22,7 @@ export class CnLabBackupHistory extends CnBaseEntity {
   @Column({nullable: false, type: 'enum', enum: CnLabBackupFrequency})
   frequency: CnLabBackupFrequency;
 
+  @Exclude()
   @Type(() => CnBucket)
   @ManyToOne(() => CnBucket, {onDelete: 'CASCADE', nullable: false})
   @BlNotUpdatable()
@@ -58,4 +62,11 @@ export class CnLabBackupHistory extends CnBaseEntity {
 
   @Column({nullable: false, default: 0})
   dbSize: number;
+
+  // expose only the region, not the bucket
+  @Type(() => CnCloudProviderRegion)
+  @Expose()
+  get region(): CnCloudProviderRegion{
+    return this.bucket.region;
+  }
 }

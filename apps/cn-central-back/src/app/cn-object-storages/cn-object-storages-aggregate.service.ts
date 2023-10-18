@@ -6,7 +6,6 @@ import {CnBucketCredentials} from './cn-bucket-credential/cn-bucket-credential.e
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {ClPage} from '@monorepo/core-lib';
 import {CnBucket, CnBucketContentType} from './cn-buckets/cn-bucket.entity';
-import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {
   BlBadRequestException,
   BlCredentials,
@@ -14,8 +13,6 @@ import {
   BlSearchParams,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
-import {CnSpace} from '../cn-spaces/cn-space.entity';
-import {EntityManager} from 'typeorm';
 import {CnAuthService} from '../cn-auth/cn-auth.service';
 import {CnBucketCredentialsFull} from './cn-object-storage.dto';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
@@ -23,9 +20,6 @@ import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 
 @Injectable()
 export class CnObjectStoragesAggregateService {
-
-  public static LabBackupCredentialName = 'LAB_BACKUP';
-
 
   constructor(private securityService: CnObjectStoragesSecurity,
               private bucketService: CnBucketsService,
@@ -38,54 +32,11 @@ export class CnObjectStoragesAggregateService {
     return this.bucketService.findByContentTypeAndObjectId(contentType, objectId);
   }
 
-
-  public async createObjectBucket(credentialsName: string, region: CnCloudProviderRegion,
-                                  bucketName: string, spaceId: string,
-                                  contentType: CnBucketContentType, objectId: string,
-                                  additionalInfo?: string,
-                                  entityManager?: EntityManager): Promise<CnBucket> {
-
-    return this.createObjectBucketPrivate(credentialsName, region, bucketName, spaceId,
-      contentType, objectId, additionalInfo, entityManager);
-  }
-
-
-  private async createObjectBucketPrivate(credentialsName: string, region: CnCloudProviderRegion,
-                                          bucketName: string, spaceId: string,
-                                          contentType: CnBucketContentType, objectId: string,
-                                          additionalInfo?: string,
-                                          entityManager?: EntityManager): Promise<CnBucket> {
-
-    const credentials = await this.bucketCredentialsService.findByName(credentialsName);
-
-    if (credentials == null) {
-      throw new BlBadRequestException(`Credentials named ${credentialsName} not found`);
-    }
-
-    const bucket = new CnBucket();
-    bucket.name = bucketName;
-    bucket.region = region;
-    bucket.credentials = credentials;
-    bucket.contentType = contentType;
-    bucket.additionalInfo = additionalInfo;
-    const space = new CnSpace();
-    space.id = spaceId;
-    bucket.space = space;
-    bucket.objectId = objectId;
-
-    return this.bucketService.createBucket(bucket, entityManager);
-  }
-
-  public async deleteBucketNotSecure(completeBucket: CnBucket, entityManager?: EntityManager): Promise<void> {
-    await this.bucketService.deleteBucket(completeBucket, entityManager);
-  }
-
-
-
   /////////////////////////// BUCKETS ///////////////////////////
 
   public async createBucket(bucket: CnBucket): Promise<CnBucket> {
     this.checkAuthorizationToModifyEntity();
+    bucket.credentials = await this.bucketCredentialsService.findByIdAndCheck(bucket.credentials.id);
     return this.bucketService.createBucket(bucket);
   }
 
@@ -105,8 +56,14 @@ export class CnObjectStoragesAggregateService {
     return this.bucketService.search(searchParams, page, size);
   }
 
-  public async getBucketByContentTypeNotSecure(contentType: CnBucketContentType): Promise<CnBucket[]> {
-    return this.bucketService.findByContentType(contentType);
+  public async getBucketByContentTypeAndRegionNotSecure(contentType: CnBucketContentType, regionId: string): Promise<CnBucket> {
+    const bucket = await this.bucketService.findByContentTypeAndRegion(contentType, regionId);
+
+    if (bucket == null) {
+      throw new BlBadRequestException(`No bucket found for content type ${contentType} and region ${regionId}`);
+    }
+
+    return bucket;
   }
 
   /////////////////////////// CREDENTIALS ///////////////////////////
@@ -145,7 +102,7 @@ export class CnObjectStoragesAggregateService {
 
     const user = await this.authService.checkCredentialsAndUser(userCredentials, false);
 
-    if(user.id !== CnCurrentUserHelper.getAndCheckCurrentUser().id){
+    if (user.id !== CnCurrentUserHelper.getAndCheckCurrentUser().id) {
       throw new BlUnauthorizedException(CnErrorText.WRONG_CREDENTIALS);
     }
 
@@ -166,5 +123,31 @@ export class CnObjectStoragesAggregateService {
 
   public checkAuthorizationToGetEntity(): void {
     this.securityService.checkAuthorizationToGetEntity();
+  }
+
+  // TODO TO REMOVE
+  public async deleteOldProjectBuckets(): Promise<void> {
+    if (!CnCurrentUserHelper.isAdmin()) {
+      throw new BlUnauthorizedException('Only admin can delete old project buckets');
+    }
+    const buckets = await this.bucketService.findByContentType(CnBucketContentType.PROJECT);
+
+    for (const bucket of buckets) {
+      if (bucket.objectId != null && bucket.objectId.length > 0) {
+        await this.bucketService.deleteBucket(bucket);
+      }
+    }
+  }
+
+  public async deleteOldLabBuckets(): Promise<void> {
+    if (!CnCurrentUserHelper.isAdmin()) {
+      throw new BlUnauthorizedException('Only admin can delete old project buckets');
+    }
+    const buckets = await this.bucketService.findByContentType(CnBucketContentType.LAB_BACKUP);
+    for (const bucket of buckets) {
+      if (bucket.objectId != null && bucket.objectId.length > 0) {
+        await this.bucketService.deleteBucket(bucket);
+      }
+    }
   }
 }

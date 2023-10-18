@@ -18,11 +18,10 @@ import {CnReportContent} from './cn-reports/cn-report-content.class';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-projects/cn-project-level.enum';
 import {
-  CnCreateProjectBucketDTO,
   CnProjectAncestorTreeDTO,
   CnProjectAncestorType,
-  CnProjectBucketsDTO,
   CnProjectDtoHelper,
+  CnProjectStorageRegionDTO,
   CnSaveProjectDTO
 } from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
@@ -32,7 +31,7 @@ import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {
   BlBadRequestException,
   BlFile,
-  BlObjectStorageSyncResult,
+  BlRichText,
   BlRichTextI,
   BlRichTextUploadedImage,
   BlSearchBuilder,
@@ -43,7 +42,7 @@ import {DataSource, In} from 'typeorm';
 import {CnDocumentsService} from './cn-documents/cn-documents.service';
 import {CnDocument} from './cn-documents/cn-document.entity';
 import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
-import {CnProjectBucketService} from './cn-project-bucket/cn-project-bucket.service';
+import {CnProjectBucketService} from './cn-projects/cn-project-bucket.service';
 import {CnProjectUserService} from './cn-project-user/cn-project-user.service';
 import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnProjectUser} from './cn-project-user/cn-project-user.entity';
@@ -82,12 +81,9 @@ export class CnProjectAggregateService {
       entity.parent = null;
       entity.currentLevel = CnProjectLevel.PROJECT;
       entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
+      entity.mainStorage = await this.projectBucketService.getBucketByRegion(projectDto.mainRegion.id);
+      entity.backupStorage = await this.projectBucketService.getBucketByRegion(projectDto.backupRegion.id);
       const dbProject = await this.projectService.create(entity, manager);
-
-      if (projectDto.mainRegion && projectDto.backupRegion) {
-        await this.projectBucketService.createProjectBuckets(dbProject, projectDto.mainRegion,
-          projectDto.backupRegion, manager);
-      }
 
       // share the project with the leader
       await this.projectUserService.shareProjectToUserIfNot(dbProject.id, dbProject.leader.id, manager);
@@ -196,7 +192,6 @@ export class CnProjectAggregateService {
     }
 
     await this.datasource.transaction(async entityManager => {
-      await this.projectBucketService.deleteProjectBucket(id, entityManager);
       await this.projectService.deleteById(id, entityManager);
     });
 
@@ -609,16 +604,16 @@ export class CnProjectAggregateService {
   }
 
   public async saveCommentImage(file: BlFile, projectId: string): Promise<BlRichTextUploadedImage> {
-    const rootProject = await this.getAndCheckAuthorizationForFindOne(projectId);
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(rootProject.id);
-    return this.projectCommentService.saveProjectCommentImage(file, bucketConfig, projectId);
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
+    return this.projectCommentService.saveProjectCommentImage(file, bucketConfig, project);
   }
 
   public async getCommentImage(filename: string, projectId: string): Promise<IncomingMessage> {
-    const rootProject = await this.getAndCheckAuthorizationForFindOne(projectId);
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(rootProject.id);
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(project.getRootParentId());
     return await this.projectCommentService.getImage(filename, bucketConfig);
   }
 
@@ -646,7 +641,7 @@ export class CnProjectAggregateService {
       throw new BlUnauthorizedException();
     }
 
-    return this.documentService.getDocument(project, document.filePath);
+    return this.documentService.getDocument(project, document);
   }
 
   public async deleteDocument(documentId: string): Promise<void> {
@@ -664,7 +659,7 @@ export class CnProjectAggregateService {
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
 
-    const doc  = await this.documentService.moveToTrash(document);
+    const doc = await this.documentService.moveToTrash(document);
 
     this.emitProjectEvent('MOVE_PROJECT_DOCUMENT_TO_TRASH', project, document);
 
@@ -738,27 +733,44 @@ export class CnProjectAggregateService {
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
 
-    return this.documentService.getImageFromConstellabDocument(project, filepath);
+    return this.documentService.getImageFromConstellabDocument(project, document, filepath);
   }
 
 
   /////////////////////////////////////// PROJECT BUCKET //////////////////////////////////
-  public async createProjectBucket(projectId: string, createProjectBucketDto: CnCreateProjectBucketDTO): Promise<CnProjectBucketsDTO> {
-    const project = await this.getProjectAndCheckForBucketUpdate(projectId);
 
-    return this.projectBucketService.createProjectBuckets(project, createProjectBucketDto.mainRegion, createProjectBucketDto.backupRegion);
-  }
-
-  public async getProjectBucket(projectId: string): Promise<CnProjectBucketsDTO> {
+  public async createProjectBucket(projectId: string, projectStorageDTO: CnProjectStorageRegionDTO)
+    : Promise<CnProjectStorageRegionDTO> {
     await this.getProjectAndCheckForBucketUpdate(projectId);
 
-    return this.projectBucketService.getProjectBucket(projectId);
+    const projectWithRegions = await this.projectBucketService.findProjectWithStorageById(projectId);
+
+    if (projectWithRegions.mainStorage && projectWithRegions.backupStorage) {
+      throw new BlBadRequestException('The project storage regions are already defined');
+    }
+
+    if (projectWithRegions.mainStorage == null) {
+      projectWithRegions.mainStorage = await this.projectBucketService.getBucketByRegion(projectStorageDTO.backupRegion.id);
+    }
+
+    if (projectWithRegions.backupStorage == null) {
+      projectWithRegions.backupStorage = await this.projectBucketService.getBucketByRegion(projectStorageDTO.backupRegion.id);
+    }
+
+    // TODO TO improve
+    await this.projectService.updateWithCompare(projectWithRegions, projectWithRegions);
+
+    return new CnProjectStorageRegionDTO(projectWithRegions.mainStorage.region, projectWithRegions.backupStorage.region);
   }
 
-  public async synchroniseBackupBucket(projectId: string): Promise<BlObjectStorageSyncResult> {
+  public async getProjectStorage(projectId: string): Promise<CnProjectStorageRegionDTO> {
     await this.getProjectAndCheckForBucketUpdate(projectId);
 
-    return this.projectBucketService.synchroniseBackupBucket(projectId);
+    const buckets = await this.projectBucketService.getProjectBucket(projectId);
+
+    // return only region to the user, he doesn't need the bucket name
+    return new CnProjectStorageRegionDTO(
+      buckets.mainStorage?.region ?? null, buckets.backupStorage?.region ?? null);
   }
 
   private async getProjectAndCheckForBucketUpdate(projectId: string): Promise<CnProject> {
@@ -771,31 +783,114 @@ export class CnProjectAggregateService {
     return project;
   }
 
-  public async migrateProjectsBuckets(forceSynchro: boolean): Promise<void> {
+  public async migrateProjectsBuckets(document: boolean, report: boolean, project: boolean): Promise<void> {
     if (!CnCurrentUserHelper.isAdmin()) {
       throw new BlUnauthorizedException();
     }
 
-    const rootProjects = await this.projectService.getRootProjects();
+    this.logger.log('[PROJECT BUCKET] Migration started');
+    const rootProject = await this.projectService.getRootProjects();
+
     const region1 = await this.cloudProviderService.getDefaultS3Region1();
     const region2 = await this.cloudProviderService.getDefaultS3Region2();
 
-    for (const rootProject of rootProjects) {
-      const bucket = await this.projectBucketService.getProjectBucket(rootProject.id);
+    const bucket1 = await this.projectBucketService.getBucketByRegion(region1.id);
+    const bucket2 = await this.projectBucketService.getBucketByRegion(region2.id);
 
-      if (bucket == null || (bucket.mainBucket == null && bucket.backupBucket == null)) {
-        await this.projectBucketService.createProjectBuckets(rootProject, region1, region2);
-      } else if (bucket.backupBucket == null) {
-        await this.projectBucketService.createProjectBackupBucket(rootProject, region2);
 
-        await this.projectBucketService.synchroniseBackupBucket(rootProject.id);
-      }else{
-        if (forceSynchro) {
-          await this.projectBucketService.synchroniseBackupBucket(rootProject.id);
+    for (const project of rootProject) {
+      const projectWithStorage = await this.projectBucketService.findProjectWithStorageById(project.id);
+
+      if (projectWithStorage.mainStorage == null || projectWithStorage.backupStorage == null) {
+        this.logger.log(`[PROJECT BUCKET] Migrating full project ${projectWithStorage.id}`);
+        projectWithStorage.mainStorage = bucket1;
+        projectWithStorage.backupStorage = bucket2;
+        await this.projectService.updateWithCompare(projectWithStorage, projectWithStorage);
+      }
+    }
+
+
+    if (document) {
+
+      const documents = await this.documentService.getDocuments();
+
+      for (const document of documents) {
+        if (!document.filename) {
+          const rootProject = await this.projectBucketService.findProjectWithStorageById(document.project.getRootParentId());
+
+          const docExist = await this.documentService.docExistInBucket(document, rootProject);
+
+          if (docExist) {
+            this.logger.log(`[PROJECT BUCKET] Migrating document ${document.id}`);
+            await this.documentService.migrateDocument(document, rootProject);
+
+            if (document.isConstellabDocument) {
+              this.logger.log(`[PROJECT BUCKET] Migrating constellab document ${document.id}`);
+              const oldPrefix = `constellab_doc_images/${document.id}`;
+              const newPrefix = CnProjectBucketService.getPrefix(document.project, 'CONSTELLAB_DOC_IMAGE', document.id);
+              await this.projectBucketService.migrateObjects(rootProject, oldPrefix, newPrefix);
+
+              const doc = await this.documentService.getConstellabDocument(document.project, document);
+
+              const content = new BlRichText(doc.content);
+
+              for (const image of content.getFiguresOps()) {
+                if(image.insert.figure.filename.includes('/')){
+                  const filename = image.insert.figure.filename.split('/').pop();
+                  content.updateFigure(image.insert.figure.filename, {filename});
+                }
+                await this.documentService.updateConstellabDocument(document.project, document, content.getContent());
+              }
+
+            }
+          }
+
         }
+
       }
 
     }
+
+    if (report) {
+
+      // migrate others s3 objects
+      const reports = await this.reportService.getAllReports();
+
+      for (const report of reports) {
+        this.logger.log(`[PROJECT BUCKET] Migrating report ${report.id}`);
+
+        // reports
+        const rootProject = await this.projectBucketService.findProjectWithStorageById(report.project.getRootParentId());
+
+        for (const report of reports) {
+          const oldPrefix = `reports/${report.id}`;
+          const newPrefix = CnProjectBucketService.getPrefix(report.project, 'REPORT_CONTENTS', report.id);
+          await this.projectBucketService.migrateObjects(rootProject, oldPrefix, newPrefix);
+        }
+      }
+    }
+
+    if (project) {
+      const projects = await this.projectService.getAllProjects();
+
+      for (const project of projects) {
+        this.logger.log(`[PROJECT BUCKET] Migrating project ${project.id}`);
+        // comments
+        const rootProject = await this.projectBucketService.findProjectWithStorageById(project.getRootParentId());
+
+        const oldPrefix = `comments/${project.id}`;
+        const newPrefix = CnProjectBucketService.getPrefix(project, 'COMMENTS');
+        await this.projectBucketService.migrateObjects(rootProject, oldPrefix, newPrefix);
+
+        const oldPrefix2 = `description/${project.id}`;
+        const newPrefix2 = CnProjectBucketService.getPrefix(project, 'DESCRIPTION');
+        await this.projectBucketService.migrateObjects(rootProject, oldPrefix2, newPrefix2);
+      }
+
+    }
+
+    this.logger.log('[PROJECT BUCKET] Migration done');
+
   }
 
   /////////////////////////////////////// PROJECT USER //////////////////////////////////

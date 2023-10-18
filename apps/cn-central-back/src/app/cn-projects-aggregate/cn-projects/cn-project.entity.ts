@@ -20,6 +20,7 @@ import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnSpace} from '../../cn-spaces/cn-space.entity';
 import {CnLabInstanceProject} from '../../cn-lab-instances/project/cn-lab-instance-project.entity';
 import {CnProjectUser} from '../cn-project-user/cn-project-user.entity';
+import {CnBucket} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 /**
  * A project is an ensemble of experiments
@@ -87,7 +88,7 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
   @Exclude()
   @BlNotUpdatable()
   @ManyToOne(() => CnSpace, {nullable: false})
-  space?: CnSpace;
+  space: CnSpace;
 
   @Column({nullable: false, update: false})
   spaceId: string;
@@ -100,6 +101,14 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
   @Exclude()
   @OneToMany(() => CnProjectUser, projectUser => projectUser.project)
   users: CnProjectUser[];
+
+  @Exclude()
+  @ManyToOne(() => CnBucket, {nullable: true})
+  mainStorage: CnBucket;
+
+  @Exclude()
+  @ManyToOne(() => CnBucket, {nullable: true})
+  backupStorage: CnBucket;
 
   public getRootParentId(): string {
     if (this.currentLevel === CnProjectLevel.PROJECT) {

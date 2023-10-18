@@ -13,18 +13,16 @@ import {
 } from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
 import {CnCreateReportWithConfigDto, CnSaveReportDto, CnSaveReportResultDTO} from './cn-report.dto';
-import {CnExternalLabApiService} from '../../cn-external-lab-api/cn-external-lab-api.service';
 import {CnReportContent, CnReportViewConfig} from './cn-report-content.class';
 import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
-import {CnProjectBucketService} from '../cn-project-bucket/cn-project-bucket.service';
+import {CnProjectBucketService} from '../cn-projects/cn-project-bucket.service';
 
 @Injectable()
 export class CnReportsService extends BlAbstractService<CnReport> {
 
   constructor(@InjectRepository(CnReport) private repository: Repository<CnReport>,
               private objectStorageService: BlObjectStorageService,
-              private externalLabService: CnExternalLabApiService,
               private labConfigService: CnLabConfigsService,
               private projectBucketService: CnProjectBucketService) {
     super(repository, CnReport);
@@ -63,7 +61,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     const reportDto: CnSaveReportDto = createReportDto.report;
     const richText = new CnReportContent(reportDto.content);
 
-    const prefix = CnProjectBucketService.getPrefix('REPORTS', reportDto.id);
+    const prefix = CnProjectBucketService.getPrefix(project, 'REPORT_CONTENTS', reportDto.id);
 
     if (files != null || createReportDto.resource_views != null) {
       await this.loadReportImages(richText, buckets, files, prefix);
@@ -185,5 +183,15 @@ export class CnReportsService extends BlAbstractService<CnReport> {
 
   private async getBucketConfig(projectId: string): Promise<BlBucketConfig> {
     return await this.projectBucketService.getAndCheckProjectMainBucketConfig(projectId);
+  }
+
+
+  // TODO REMOVE
+  public async getAllReports(): Promise<CnReport[]>{
+    return await this.repository.find({
+      relations: {
+        project: true
+      }
+    });
   }
 }

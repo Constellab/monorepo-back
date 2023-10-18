@@ -7,67 +7,36 @@ import {
   BlSearchParams
 } from '@monorepo/back-core-lib';
 import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, Repository} from 'typeorm';
+import {DataSource, EntityManager, IsNull, Repository} from 'typeorm';
 import {CnBucket, CnBucketContentType} from './cn-bucket.entity';
 import {ClPage} from '@monorepo/core-lib';
 
 
 @Injectable()
-export class CnBucketsService extends BlAbstractService<CnBucket>{
+export class CnBucketsService extends BlAbstractService<CnBucket> {
 
 
   constructor(@InjectRepository(CnBucket) private repository: Repository<CnBucket>,
-              private objectStorageService: BlObjectStorageService) {
+              private objectStorageService: BlObjectStorageService,
+              private datasource: DataSource) {
     super(repository, CnBucket);
   }
 
-  // async onModuleInit(): Promise<void> {
-  //   const toDelete: string[] = [
-  //     '0b1eee15-59f4-4a0d-b072-2809571c23c5',
-  //     // '230aee98-8d1f-48d3-8bf3-6e333a67fe92',
-  //     // '2f29615d-d78c-4971-8d2b-5c6a99d62670',
-  //     // '3247ac1b-d2cd-4869-946a-2ee4c1e01694',
-  //     // '3aa33a55-02e6-4be9-bf3f-e66a95c6f15d',
-  //     // '7f7183bb-4109-4c31-8a89-b9c57ac1e2f9',
-  //     // '865d32f8-925e-4856-b8ac-712e3af56afa',
-  //     // '9ba78366-1485-4405-bdb3-9c381a10e223',
-  //     // 'b6e5c8cb-e499-4640-9905-6073ecc0f3cf',
-  //     // 'bfe711cd-7405-4d8b-bdc5-6f6882d7fe38',
-  //     // 'f3ad96de-7195-4262-a013-19dffe4e5427'
-  //   ];
-  //
-  //
-  //   for(const bucketToDelete of toDelete){
-  //     const bucket = await this.repository.findOneBy({name: bucketToDelete});
-  //     if(bucket){
-  //       await this.deleteBucket(bucket);
-  //     }else{
-  //       await this.objectStorageService.deleteBucket({
-  //         bucket: bucketToDelete,
-  //         region: 'gra',
-  //         credentials: {
-  //           accessKeyId: 'ce7e6d93a1f6400fb4c19b3aebaf2547',
-  //           secretAccessKey: '04c55d337299410c9858043ede58b717',
-  //         },
-  //         endpoint: 'https://s3.gra.io.cloud.ovh.net/'
-  //       })
-  //     }
-  //   }
-  // }
 
-
-  public async createBucket(bucket: CnBucket, entityManager?: EntityManager): Promise<CnBucket> {
+  public async createBucket(bucket: CnBucket): Promise<CnBucket> {
     bucket = await this.checkBucketBeforeSave(bucket);
 
-    entityManager = this.getEntityManager(entityManager);
-    // create the bucket in DB and then in the object storage
-    const bucketDb = await super.create(bucket, entityManager);
+    return this.datasource.transaction(async entityManager => {
+      // create the bucket in DB and then in the object storage
+      const bucketDb = await super.create(bucket, entityManager);
+      console.log(bucket.getBucketConfig());
+      await this.objectStorageService.createBucket(bucketDb.getBucketConfig());
 
-    await this.objectStorageService.createBucket(bucketDb.getBucketConfig());
-
-    return bucketDb;
+      return bucketDb;
+    });
   }
 
+  // TODO add security to delete bucket
   public async deleteBucket(bucket: CnBucket, entityManager?: EntityManager): Promise<void> {
     entityManager = this.getEntityManager(entityManager);
 
@@ -79,7 +48,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket>{
   public async update(bucket: CnBucket, entityManager?: EntityManager): Promise<CnBucket> {
     bucket = await this.checkBucketBeforeSave(bucket);
     await super.update(bucket, entityManager);
-    return this.findById(bucket.id, CnBucket.completeRelation);
+    return this.findById(bucket.id, CnBucket.configRelation);
   }
 
   /**
@@ -96,18 +65,14 @@ export class CnBucketsService extends BlAbstractService<CnBucket>{
       if (existingBucket.length > 0) {
         throw new BlBadRequestException(`There is already a bucket of type ${bucket.contentType}`);
       }
-      bucket.space = null;
     } else {
-      // all the other type must be associated to a space
-      if (!bucket.space) {
-        throw new BlBadRequestException(`The bucket must be associated to an space`);
-      }
+      // there can be only one bucket of type by region
+      // TODO to uncomment after migration
+      // const existingBucket = await this.findByContentTypeAndRegion(bucket.contentType, bucket.region.technicalName);
 
-      if (bucket.contentType === CnBucketContentType.LAB_BACKUP && bucket.objectId == null) {
-        throw new BlBadRequestException(`The bucket must be associated to a lab`);
-      } else if (bucket.contentType === CnBucketContentType.PROJECT && bucket.objectId == null) {
-        throw new BlBadRequestException(`The bucket must be associated to a project`);
-      }
+      // if (existingBucket != null && existingBucket.id !== bucket.id) {
+      //   throw new BlBadRequestException(`There is already a bucket of type ${bucket.contentType} in region ${bucket.region.technicalName}`);
+      // }
     }
 
     return bucket;
@@ -140,6 +105,28 @@ export class CnBucketsService extends BlAbstractService<CnBucket>{
     });
   }
 
+  public async findByContentTypeAndRegion(contentType: CnBucketContentType, regionId: string): Promise<CnBucket> {
+    return await this.repository.findOne({
+      where: {
+        contentType: contentType,
+        region: {
+          id: regionId
+        },
+        objectId: IsNull(),
+      },
+      relations: CnBucket.configRelation
+    });
+  }
+
+  public async findByContentTypeAndRegionAndCheck(contentType: CnBucketContentType, regionName: string): Promise<CnBucket> {
+    const bucket = await this.findByNameAndRegionAndCheck(contentType, regionName);
+
+    if (bucket == null) {
+      throw new BlBadRequestException(`Bucket ${contentType} in region ${regionName} not found`);
+    }
+    return bucket;
+  }
+
   public async findByNameAndRegionAndCheck(name: string, regionName: string): Promise<CnBucket> {
     const bucket = await this.repository.findOne({
       where: {
@@ -163,7 +150,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket>{
                 page: number, size: number): Promise<ClPage<CnBucket>> {
     const searchBuilder = new BlSearchBuilder<CnBucket>({name: 'ASC'});
     searchBuilder.addSearchParams(searchParam);
-    searchBuilder.setRelations(CnBucket.completeRelation);
+    searchBuilder.setRelations(CnBucket.configRelation);
 
     return this.findPaginated(page, size, searchBuilder.build());
   }

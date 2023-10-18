@@ -8,8 +8,6 @@ import {CnBucket} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 @Entity('lab_backup_option')
 @Unique(['labInstance'])
-@Unique(['bucket1'])
-@Unique(['bucket2'])
 export class CnLabBackupOption extends CnBaseEntity {
 
   @Type(() => CnLabInstance)

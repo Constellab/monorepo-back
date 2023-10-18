@@ -19,6 +19,7 @@ import {
 import {CnLabManagerService} from './cn-lab-manager.service';
 import {CnLabInstanceToken} from './user/cn-lab-instance-token.class';
 import {
+  CnLabBackupOptionDTO,
   CnLabFindOneDto,
   CnLabInstanceConfigDTO,
   CnLabInstanceCreateAdminDTO,
@@ -71,8 +72,8 @@ import {CnLabBackupHistoryService} from './backup/cn-lab-backup-history.service'
 import {CnLabBackupOptionService} from './backup/cn-lab-backup-option.service';
 import {CnLabBackupBucket} from './backup/cn-lab-backup.dto';
 import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
-import {CnLabBackupOption} from './backup/cn-lab-backup-option.entity';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import {CnCloudProviderAggregateService} from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
 
 
 @Injectable()
@@ -103,7 +104,8 @@ export class CnLabInstanceAggregateService {
               private labStatusService: CnLabInstanceStatusService,
               private freeTrialService: CnLabFreeTrialService,
               private backupHistoryService: CnLabBackupHistoryService,
-              private backupOptionService: CnLabBackupOptionService) {
+              private backupOptionService: CnLabBackupOptionService,
+              private cloudProviderService: CnCloudProviderAggregateService) {
   }
 
   /**
@@ -186,7 +188,6 @@ export class CnLabInstanceAggregateService {
   async delete(id: string): Promise<void> {
     await this.getAndCheckAuthorizationToUpdateAdmin(id);
     await this.dataSource.transaction(async entityManager => {
-      await this.backupOptionService.deleteBackupOptions(id, entityManager);
       await this.labInstancesService.deleteById(id, entityManager);
     });
   }
@@ -717,9 +718,17 @@ export class CnLabInstanceAggregateService {
     };
   }
 
-  public async getLabBackupOptions(labInstanceId: string): Promise<CnLabBackupOption> {
+  public async getLabBackupOptions(labInstanceId: string): Promise<CnLabBackupOptionDTO> {
     await this.getAndCheckAuthorizationToFindById(labInstanceId);
-    return this.backupOptionService.findByLabId(labInstanceId);
+    const labOptions = await this.backupOptionService.findByLabId(labInstanceId);
+    if(labOptions == null) return null;
+
+    const optionDTO = new CnLabBackupOptionDTO();
+    optionDTO.frequency1 = labOptions.frequency1;
+    optionDTO.region1 = labOptions.bucket1.region;
+    optionDTO.frequency2 = labOptions.frequency2;
+    optionDTO.region2 = labOptions.bucket2.region;
+    return optionDTO;
   }
 
   public async getLabBackupHistory(labInstanceId: string, page: number, size: number): Promise<ClPageI<CnLabBackupHistory>> {
@@ -1053,6 +1062,26 @@ export class CnLabInstanceAggregateService {
     if (labInstance.serverIsStopped()) {
       throw new BlBadRequestException('Server is stopped, please start the server first');
     }
+  }
+
+  // TODO TO REMOVE
+  public async migrationBackupBuckets(): Promise<void> {
+    if (!CnCurrentUserHelper.isAdmin()) {
+      throw new BlUnauthorizedException();
+    }
+    const cloudLabs = await this.labInstancesService.findExistingCloudLabInstance();
+
+    const region1 = await this.cloudProviderService.getDefaultS3Region1();
+    const region2 = await this.cloudProviderService.getDefaultS3Region2();
+
+    for (const lab of cloudLabs) {
+      await this.backupOptionService.deleteOldBackupOptions(lab.id);
+
+      await this.dataSource.transaction(async entityManager => {
+        await this.backupOptionService.createBackupOptions(lab, region1, region2, entityManager);
+      });
+    }
+
   }
 
 

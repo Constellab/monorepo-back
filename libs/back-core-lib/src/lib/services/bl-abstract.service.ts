@@ -51,6 +51,7 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
    * Compare the DB entity and update it
    * Use to check property metadata including {@link BlNotUpdatable}
    * @protected
+   * TODO it doesn't work if the foreign key is not loaded by the find by id
    */
   protected async updateWithCompare(newEntity: Partial<T>, dbEntity: T, entityManager?: EntityManager): Promise<T> {
     for (const property in newEntity) {

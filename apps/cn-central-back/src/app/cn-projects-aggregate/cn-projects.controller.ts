@@ -19,7 +19,6 @@ import {CnProjectStatus} from './cn-projects/cn-project-status.enum';
 import {CnProjectStatusHistory} from './cn-projects/cn-project-status-history.entity';
 import {
   BlFile,
-  BlObjectStorageSyncResult,
   BlParseEnumPipe,
   BlParsePipe,
   BlResponseHelper,
@@ -31,11 +30,10 @@ import {
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
 import {
-  CnCreateProjectBucketDTO,
   CnProjectAncestorTreeDTO,
   CnProjectAncestorType,
-  CnProjectBucketsDTO,
   CnProjectDtoHelper,
+  CnProjectStorageRegionDTO,
   CnProjectTreeDTO,
   CnSaveProjectDTO
 } from './cn-projects/cn-project.dto';
@@ -347,25 +345,22 @@ export class CnProjectsController {
   }
 
   /////////////////////////////// Project Bucket ///////////////////////////////////////////
-  @Post(':projectId/buckets')
-  createProjectBucket(@Body(new BlParsePipe(CnCreateProjectBucketDTO)) createProjectBucketDto: CnCreateProjectBucketDTO,
-                      @Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnProjectBucketsDTO> {
+  @Post(':projectId/storage')
+  createProjectBucket(@Body(new BlParsePipe(CnProjectStorageRegionDTO)) createProjectBucketDto: CnProjectStorageRegionDTO,
+                      @Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnProjectStorageRegionDTO> {
     return this.projectAggregate.createProjectBucket(projectId, createProjectBucketDto);
   }
 
-  @Get(':projectId/buckets')
-  getProjectBuckets(@Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnProjectBucketsDTO> {
-    return this.projectAggregate.getProjectBucket(projectId);
+  @Get(':projectId/storage')
+  getProjectStorage(@Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnProjectStorageRegionDTO> {
+    return this.projectAggregate.getProjectStorage(projectId);
   }
 
-  @Post(':projectId/buckets/sync')
-  syncProjectBucket(@Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<BlObjectStorageSyncResult> {
-    return this.projectAggregate.synchroniseBackupBucket(projectId);
-  }
-
-  @Post('buckets/migrate/:forceSynchro')
-  migrateProjectBucket(@Param('forceSynchro', new ParseBoolPipe()) forceSynchro: boolean): Promise<void> {
-    return this.projectAggregate.migrateProjectsBuckets(forceSynchro);
+  @Post('buckets/migrate/:document/:report/:project')
+  migrateProjectBucket(@Param('document', new ParseBoolPipe()) document: boolean,
+                       @Param('report', new ParseBoolPipe()) report: boolean,
+                       @Param('project', new ParseBoolPipe()) project: boolean): Promise<void> {
+    return this.projectAggregate.migrateProjectsBuckets(document, report, project);
   }
 
   /////////////////////////////// Project user ///////////////////////////////////////////

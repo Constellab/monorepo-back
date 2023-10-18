@@ -44,20 +44,25 @@ export interface CnProjectTreeDTO {
   levelStatus: CnProjectLevelStatus;
 }
 
-export class CnCreateProjectBucketDTO {
+export class CnProjectStorageRegionDTO {
   @Type(() => CnCloudProviderRegion)
   mainRegion: CnCloudProviderRegion;
 
   @Type(() => CnCloudProviderRegion)
   backupRegion: CnCloudProviderRegion;
+
+  constructor(mainRegion?: CnCloudProviderRegion, backupRegion?: CnCloudProviderRegion) {
+    this.mainRegion = mainRegion;
+    this.backupRegion = backupRegion;
+  }
 }
 
 export class CnProjectBucketsDTO {
   @Type(() => CnBucket)
-  mainBucket: CnBucket;
+  mainStorage: CnBucket;
 
   @Type(() => CnBucket)
-  backupBucket: CnBucket;
+  backupStorage: CnBucket;
 }
 
 export class CnProjectDtoHelper {

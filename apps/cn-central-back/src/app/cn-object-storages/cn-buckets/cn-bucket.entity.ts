@@ -4,8 +4,7 @@ import {
   CnCloudProviderRegion
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnBucketCredentials} from '../cn-bucket-credential/cn-bucket-credential.entity';
-import {CnSpace} from '../../cn-spaces/cn-space.entity';
-import {BlBucketConfig, BlNotUpdatable} from '@monorepo/back-core-lib';
+import {BlBucketConfig} from '@monorepo/back-core-lib';
 import {Type} from 'class-transformer';
 import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
 
@@ -26,7 +25,6 @@ export class CnBucket extends CnBaseEntity {
 
   // relation options to load required information for the bucket
   public static configRelation: FindOptionsRelations<CnBucket> = {region: true, credentials: true};
-  public static completeRelation: FindOptionsRelations<CnBucket> = {region: true, credentials: true, space: true};
 
   @Type(() => CnCloudProviderRegion)
   @ManyToOne(() => CnCloudProviderRegion, {nullable: false})
@@ -38,12 +36,6 @@ export class CnBucket extends CnBaseEntity {
 
   @Column({nullable: false, length: 100, update: false})
   name: string;
-
-  // might be associated to a space
-  @Type(() => CnSpace)
-  @ManyToOne(() => CnSpace, {nullable: true})
-  @BlNotUpdatable()
-  space: CnSpace;
 
   @Column({nullable: false, length: 50})
   contentType: CnBucketContentType;

@@ -107,7 +107,7 @@ export class BlObjectStorageService {
     return result.Body as any as IncomingMessage;
   }
 
-  public async getObjectsByPrefix(config: BlBucketConfig, prefix: string): Promise<_Object[]> {
+  public async getObjectsByPrefix(config: BlBucketConfig, prefix: string = ''): Promise<_Object[]> {
     const s3Client = this.getClient(config);
 
     const result = await s3Client.send(new ListObjectsCommand({Bucket: config.bucket, Prefix: prefix}));
@@ -118,6 +118,15 @@ export class BlObjectStorageService {
     const s3Client = this.getClient(config);
 
     return s3Client.send(new HeadObjectCommand({Bucket: config.bucket, Key: objectName}));
+  }
+
+  public async objectExist(config: BlBucketConfig, objectName: string): Promise<boolean> {
+    try {
+      await this.getObjectInfo(config, objectName);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   public getObjectAsJson(config: BlBucketConfig, objectName: string): Promise<any> {
@@ -168,13 +177,7 @@ export class BlObjectStorageService {
   private async deleteObjectIfExistFromBucket(config: BlBucketConfig, objectName: string): Promise<boolean> {
     const s3Client = this.getClient(config);
 
-    try {
-      // use to check if the object exist
-      // because if we call delete on a none existing object, the request never ends
-      await this.getObjectInfo(config, objectName);
-    } catch (e) {
-      return false;
-    }
+    if (!(await this.objectExist(config, objectName))) return false;
 
     await s3Client.send(new DeleteObjectCommand({Bucket: config.bucket, Key: objectName}));
     return true;
@@ -303,12 +306,16 @@ export class BlObjectStorageService {
     return result;
   }
 
-  private async copyObject(source: BlBucketConfig, destination: BlBucketConfig, objectName: string): Promise<void> {
+  public async copyObject(source: BlBucketConfig, destination: BlBucketConfig,
+                          sourceName: string, destinationName?: string): Promise<void> {
+    if (destinationName == null) {
+      destinationName = sourceName;
+    }
     const s3Client = this.getClient(source);
 
-    const result = await s3Client.send(new GetObjectCommand({Bucket: source.bucket, Key: objectName}));
+    const result = await s3Client.send(new GetObjectCommand({Bucket: source.bucket, Key: sourceName}));
 
-    await this.uploadIncomingMessage(destination, result.Body as any, objectName, result.ContentType);
+    await this.uploadIncomingMessage(destination, result.Body as any, destinationName, result.ContentType);
   }
 
   /////////////////////////////////// OTHER ///////////////////////////////////

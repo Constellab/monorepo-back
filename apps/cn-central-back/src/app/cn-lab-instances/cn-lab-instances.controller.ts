@@ -5,6 +5,7 @@ import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-histor
 import {BlDtoHelper, BlParseEnumPipe, BlParsePipe, BlSearchParams} from '@monorepo/back-core-lib';
 import {ClPageI} from '@monorepo/core-lib';
 import {
+  CnLabBackupOptionDTO,
   CnLabFindOneDto,
   CnLabInstanceAdminDto,
   CnLabInstanceConfigDTO,
@@ -33,7 +34,6 @@ import {CnLabGreenOptionFormDto} from './green-option/cn-lab-green-option.dto';
 import {CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse} from './status/cn-lab-instance-status.dto';
 import {CnFreeTrialUpdateDto, CnLabFreeTrialGetDto} from './free-trial/cn-lab-free-trial.dto';
 import {CnLabFreeTrialAggregateService} from './free-trial/cn-lab-free-trial-aggregate.service';
-import {CnLabBackupOption} from './backup/cn-lab-backup-option.entity';
 import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
 
 
@@ -376,7 +376,7 @@ export class CnLabInstancesController {
   }
 
   @Get(':id/backup-options')
-  async getBackupOptions(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabBackupOption> {
+  async getBackupOptions(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabBackupOptionDTO> {
     return await this.aggregateService.getLabBackupOptions(id);
   }
 
@@ -501,5 +501,10 @@ export class CnLabInstancesController {
     });
     const data = zip.toBuffer();
     response.send(data);
+  }
+
+  @Post('migrate')
+  async migrate(): Promise<void> {
+    return await this.aggregateService.migrationBackupBuckets();
   }
 }

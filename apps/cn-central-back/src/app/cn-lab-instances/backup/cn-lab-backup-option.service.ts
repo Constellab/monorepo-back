@@ -11,8 +11,6 @@ import {
   CnCloudProviderRegion
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 
-export type CnLabBackupBucketType = 'DAILY' | 'WEEKLY';
-
 @Injectable()
 export class CnLabBackupOptionService extends BlAbstractService<CnLabBackupOption> {
 
@@ -34,17 +32,13 @@ export class CnLabBackupOptionService extends BlAbstractService<CnLabBackupOptio
     option.labInstance = labInstance;
 
     // configure the daily backup
-    option.bucket1 = await this.objectStorageAggregateService.createObjectBucket(
-      CnObjectStoragesAggregateService.LabBackupCredentialName,
-      dailyBackupRegion, 'lab-backup-daily-' + labInstance.id, labInstance.spaceId, CnBucketContentType.LAB_BACKUP,
-      labInstance.id, 'DAILY' as CnLabBackupBucketType, entityManager);
+    option.bucket1 = await this.objectStorageAggregateService.getBucketByContentTypeAndRegionNotSecure(CnBucketContentType.LAB_BACKUP,
+      dailyBackupRegion.id);
     option.frequency1 = CnLabBackupFrequency.DAILY;
 
     // configure the weekly backup
-    option.bucket2 = await this.objectStorageAggregateService.createObjectBucket(
-      CnObjectStoragesAggregateService.LabBackupCredentialName,
-      weeklyBackupRegion, 'lab-backup-weekly-' + labInstance.id, labInstance.spaceId, CnBucketContentType.LAB_BACKUP,
-      labInstance.id, 'WEEKLY' as CnLabBackupBucketType, entityManager);
+    option.bucket2 = await this.objectStorageAggregateService.getBucketByContentTypeAndRegionNotSecure(CnBucketContentType.LAB_BACKUP,
+      weeklyBackupRegion.id);
     option.frequency2 = CnLabBackupFrequency.WEEKLY;
 
     return entityManager.save(option);
@@ -61,14 +55,12 @@ export class CnLabBackupOptionService extends BlAbstractService<CnLabBackupOptio
       });
   }
 
-  public async deleteBackupOptions(labInstanceId: string, entityManager: EntityManager): Promise<void> {
-    const option = await this.findByLabId(labInstanceId);
-    if (option) {
-      await entityManager.delete(CnLabBackupOption, option.id);
-
-      await this.objectStorageAggregateService.deleteBucketNotSecure(option.bucket1, entityManager);
-      await this.objectStorageAggregateService.deleteBucketNotSecure(option.bucket2, entityManager);
+  // TODO TO REMOVE
+  public async deleteOldBackupOptions(labInstanceId: string): Promise<void> {
+    const options = await this.findByLabId(labInstanceId);
+    if (options) {
+      await this.repo.delete(options.id);
     }
-
   }
+
 }
