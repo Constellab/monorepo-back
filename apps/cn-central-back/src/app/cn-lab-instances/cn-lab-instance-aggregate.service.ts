@@ -801,8 +801,7 @@ export class CnLabInstanceAggregateService {
   /////////////////////////// EXTERNAL LAB MANAGER //////////////////////////////
   public async getCurrentLabInstanceBackupInfo(): Promise<CnExternalLabBackupInfoDTO> {
     const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
-    // TODO uncommment
-    // await this.checkLabManagerVersionForBackup(labInstance);
+    await this.checkLabManagerVersionForBackup(labInstance);
     return this.getLabBackupInfo(labInstance);
   }
 
