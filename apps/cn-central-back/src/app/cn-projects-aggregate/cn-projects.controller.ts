@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseBoolPipe,
   ParseIntPipe,
   ParseUUIDPipe,
   Post,
@@ -354,13 +353,6 @@ export class CnProjectsController {
   @Get(':projectId/storage')
   getProjectStorage(@Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnProjectStorageRegionDTO> {
     return this.projectAggregate.getProjectStorage(projectId);
-  }
-
-  @Post('buckets/migrate/:document/:report/:project')
-  migrateProjectBucket(@Param('document', new ParseBoolPipe()) document: boolean,
-                       @Param('report', new ParseBoolPipe()) report: boolean,
-                       @Param('project', new ParseBoolPipe()) project: boolean): Promise<void> {
-    return this.projectAggregate.migrateProjectsBuckets(document, report, project);
   }
 
   /////////////////////////////// Project user ///////////////////////////////////////////

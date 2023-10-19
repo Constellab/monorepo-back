@@ -107,10 +107,13 @@ export class BlObjectStorageService {
     return result.Body as any as IncomingMessage;
   }
 
-  public async getObjectsByPrefix(config: BlBucketConfig, prefix: string = ''): Promise<_Object[]> {
+  public async getObjectsByPrefix(config: BlBucketConfig, prefix: string = '', pageSize: number = 1000): Promise<_Object[]> {
     const s3Client = this.getClient(config);
 
-    const result = await s3Client.send(new ListObjectsCommand({Bucket: config.bucket, Prefix: prefix}));
+    const result = await s3Client.send(new ListObjectsCommand({
+      Bucket: config.bucket, Prefix: prefix,
+      MaxKeys: pageSize
+    }));
     return result.Contents ?? [];
   }
 
@@ -236,7 +239,14 @@ export class BlObjectStorageService {
     await s3Client.send(new CreateBucketCommand({Bucket: config.bucket}));
   }
 
-  public async deleteBucket(config: BlBucketConfig, errorIfNotExist: boolean = true): Promise<void> {
+  /**
+   *
+   * @param config bucket config
+   * @param errorIfNotExist if true throw an error if the bucket does not exist
+   * @param force if true delete the bucket even if it is not empty
+   */
+  public async deleteBucket(config: BlBucketConfig, errorIfNotExist: boolean = true,
+                            force: boolean = false): Promise<void> {
 
     if (!await this.bucketExist(config)) {
       if (errorIfNotExist) {
@@ -245,8 +255,15 @@ export class BlObjectStorageService {
         return;
       }
     }
-    // to be deleted we need to delete all objects first
-    await this.deleteAllObjects(config);
+
+    if (!(await this.bucketIsEmpty(config))) {
+      if (!force) {
+        throw new Error(`The bucket ${config.bucket} is not empty`);
+      } else {
+        // to be deleted we need to delete all objects first
+        await this.deleteAllObjects(config);
+      }
+    }
     const s3Client = this.getClient(config);
 
     await s3Client.send(new DeleteBucketCommand({Bucket: config.bucket}));
@@ -261,6 +278,11 @@ export class BlObjectStorageService {
     } catch (e) {
       return false;
     }
+  }
+
+  public async bucketIsEmpty(config: BlBucketConfig): Promise<boolean> {
+    const objects = await this.getObjectsByPrefix(config, '', 1);
+    return objects.length === 0;
   }
 
   /////////////////////////////////// SYNC ///////////////////////////////////

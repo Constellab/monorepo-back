@@ -21,10 +21,6 @@ export class BlCaptchaService {
     const response: { success: boolean, 'error-codes': string[] } =
       await lastValueFrom(this.externalApiService.post(route, null));
 
-    if (!response.success) {
-      // TODO remove logger once captcha is ok
-      this.logger.error(`Invalid captcha : ${response['error-codes'].join(',')}`);
-    }
     return response.success;
 
   }

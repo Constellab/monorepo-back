@@ -502,9 +502,4 @@ export class CnLabInstancesController {
     const data = zip.toBuffer();
     response.send(data);
   }
-
-  @Post('migrate')
-  async migrate(): Promise<void> {
-    return await this.aggregateService.migrationBackupBuckets();
-  }
 }

@@ -69,13 +69,6 @@ export class CnExternalLabsController {
     return this.projectAggregator.deleteLabExperiment(projectId, experimentId);
   }
 
-  // Todo to remove once all the lab are updated (v 0.4.6)
-  @Put('project/:projectId/report')
-  saveReport(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-             @Body(new BlParsePipe(CnCreateReportWithConfigDto)) createReportDto: CnCreateReportWithConfigDto): Promise<void> {
-    return this.projectAggregator.createLabReport(createReportDto, projectId, null);
-  }
-
   @UseInterceptors(FilesInterceptor('files'))
   @Put('project/:projectId/report/v2')
   saveReport2(@Param('projectId', new ParseUUIDPipe()) projectId: string,

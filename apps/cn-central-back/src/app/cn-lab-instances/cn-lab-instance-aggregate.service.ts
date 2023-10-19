@@ -74,7 +74,6 @@ import {CnLabBackupOptionService} from './backup/cn-lab-backup-option.service';
 import {CnLabBackupBucket} from './backup/cn-lab-backup.dto';
 import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {CnCloudProviderAggregateService} from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
 
 
 @Injectable()
@@ -105,8 +104,7 @@ export class CnLabInstanceAggregateService {
               private labStatusService: CnLabInstanceStatusService,
               private freeTrialService: CnLabFreeTrialService,
               private backupHistoryService: CnLabBackupHistoryService,
-              private backupOptionService: CnLabBackupOptionService,
-              private cloudProviderService: CnCloudProviderAggregateService) {
+              private backupOptionService: CnLabBackupOptionService) {
   }
 
   /**
@@ -1082,26 +1080,5 @@ export class CnLabInstanceAggregateService {
       throw new BlBadRequestException('Server is stopped, please start the server first');
     }
   }
-
-  // TODO TO REMOVE
-  public async migrationBackupBuckets(): Promise<void> {
-    if (!CnCurrentUserHelper.isAdmin()) {
-      throw new BlUnauthorizedException();
-    }
-    const cloudLabs = await this.labInstancesService.findExistingCloudLabInstance();
-
-    const region1 = await this.cloudProviderService.getDefaultS3Region1();
-    const region2 = await this.cloudProviderService.getDefaultS3Region2();
-
-    for (const lab of cloudLabs) {
-      await this.backupOptionService.deleteOldBackupOptions(lab.id);
-
-      await this.dataSource.transaction(async entityManager => {
-        await this.backupOptionService.createBackupOptions(lab, region1, region2, entityManager);
-      });
-    }
-
-  }
-
 
 }

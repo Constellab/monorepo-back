@@ -27,10 +27,6 @@ export class CnObjectStoragesAggregateService {
               private authService: CnAuthService) {
   }
 
-  //////////////////////////// OBJECT BUCKET ///////////////////////////
-  public findByContentTypeAndObjectId(contentType: CnBucketContentType, objectId: string): Promise<CnBucket[]> {
-    return this.bucketService.findByContentTypeAndObjectId(contentType, objectId);
-  }
 
   /////////////////////////// BUCKETS ///////////////////////////
 
@@ -123,31 +119,5 @@ export class CnObjectStoragesAggregateService {
 
   public checkAuthorizationToGetEntity(): void {
     this.securityService.checkAuthorizationToGetEntity();
-  }
-
-  // TODO TO REMOVE
-  public async deleteOldProjectBuckets(): Promise<void> {
-    if (!CnCurrentUserHelper.isAdmin()) {
-      throw new BlUnauthorizedException('Only admin can delete old project buckets');
-    }
-    const buckets = await this.bucketService.findByContentType(CnBucketContentType.PROJECT);
-
-    for (const bucket of buckets) {
-      if (bucket.objectId != null && bucket.objectId.length > 0) {
-        await this.bucketService.deleteBucket(bucket);
-      }
-    }
-  }
-
-  public async deleteOldLabBuckets(): Promise<void> {
-    if (!CnCurrentUserHelper.isAdmin()) {
-      throw new BlUnauthorizedException('Only admin can delete old project buckets');
-    }
-    const buckets = await this.bucketService.findByContentType(CnBucketContentType.LAB_BACKUP);
-    for (const bucket of buckets) {
-      if (bucket.objectId != null && bucket.objectId.length > 0) {
-        await this.bucketService.deleteBucket(bucket);
-      }
-    }
   }
 }

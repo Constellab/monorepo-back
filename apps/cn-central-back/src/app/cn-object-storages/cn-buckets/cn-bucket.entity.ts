@@ -40,10 +40,6 @@ export class CnBucket extends CnBaseEntity {
   @Column({nullable: false, length: 50})
   contentType: CnBucketContentType;
 
-  // if the bucket is associated to an object (like lab backup)
-  @Column({nullable: true, length: 36})
-  objectId: string;
-
   // can be used info to describe the bucket
   @Column({nullable: true, length: 50})
   additionalInfo: string;

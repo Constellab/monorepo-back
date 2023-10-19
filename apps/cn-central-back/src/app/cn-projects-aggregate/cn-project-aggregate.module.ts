@@ -16,7 +16,6 @@ import {CnProjectUserModule} from './cn-project-user/cn-project-user.module';
 import {CnNotificationModule} from '../cn-notification/cn-notification.module';
 import {CnActivityModule} from '../cn-activity/cn-activity.module';
 import {EventEmitterModule} from '@nestjs/event-emitter';
-import {CnCloudProvidersModule} from '../cn-cloud-providers/cn-cloud-providers.module';
 
 @Module({
   imports: [
@@ -33,7 +32,6 @@ import {CnCloudProvidersModule} from '../cn-cloud-providers/cn-cloud-providers.m
     CnUsersModule,
     CnNotificationModule,
     CnActivityModule,
-    CnCloudProvidersModule,
 
     EventEmitterModule,
   ],

@@ -147,30 +147,4 @@ export class CnProjectBucketService {
     return this.objectStorageService.getObject(bucketConfig, filePath);
   }
 
-  //////////////////////////////////////////////// OTHER ////////////////////////////////////////////////
-
-
-
-  public async migrateObjects(project: CnProject, oldPrefix: string, newPrefix: string): Promise<void> {
-    const oldBucket = await this.getOldProjectMainBucket(project.getRootParentId());
-
-    if (oldBucket == null) {
-      this.logger.error(`No main bucket found for project ${project.id}`);
-      return ;
-    }
-    const mainObjects = await this.objectStorageService.getObjectsByPrefix(oldBucket.getBucketConfig(), oldPrefix);
-
-    for (const object of mainObjects) {
-      const filename = object.Key.split('/').pop();
-      const newPath = `${newPrefix}/${filename}`;
-      await this.objectStorageService.copyObject(oldBucket.getBucketConfig(), project.mainStorage.getBucketConfig(), object.Key, newPath);
-      await this.objectStorageService.copyObject(oldBucket.getBucketConfig(), project.backupStorage.getBucketConfig(), object.Key, newPath);
-    }
-  }
-
-  public async getOldProjectMainBucket(projectId: string): Promise<CnBucket> {
-    const buckets = await this.objectStorageAggregateService.findByContentTypeAndObjectId(CnBucketContentType.PROJECT, projectId);
-
-    return buckets.find(b => b.additionalInfo === 'MAIN');
-  }
 }

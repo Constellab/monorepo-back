@@ -31,7 +31,6 @@ import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {
   BlBadRequestException,
   BlFile,
-  BlRichText,
   BlRichTextI,
   BlRichTextUploadedImage,
   BlSearchBuilder,
@@ -50,7 +49,6 @@ import {CnProjectEvent, cnProjectEventName, CnProjectEventType} from './cn-proje
 import {EventEmitter2} from '@nestjs/event-emitter';
 import {CnActivity, CnActivityEntityType} from '../cn-activity/cn-activity.entity';
 import {CnActivityService} from '../cn-activity/cn-activity.service';
-import {CnCloudProviderAggregateService} from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -68,8 +66,7 @@ export class CnProjectAggregateService {
               private projectUserService: CnProjectUserService,
               private userService: CnUsersService,
               private eventEmitter: EventEmitter2,
-              private activityService: CnActivityService,
-              private cloudProviderService: CnCloudProviderAggregateService) {
+              private activityService: CnActivityService) {
   }
 
   /////////////////////////////////////// PROJECT //////////////////////////////////
@@ -781,133 +778,6 @@ export class CnProjectAggregateService {
     }
 
     return project;
-  }
-
-  // TODO to remove
-  public async migrateProjectsBuckets(document: boolean, report: boolean, project: boolean): Promise<void> {
-    if (!CnCurrentUserHelper.isAdmin()) {
-      throw new BlUnauthorizedException();
-    }
-
-    this.logger.log('[PROJECT BUCKET] Migration started');
-    const rootProject = await this.projectService.getRootProjects();
-
-    const region1 = await this.cloudProviderService.getDefaultS3Region1();
-    const region2 = await this.cloudProviderService.getDefaultS3Region2();
-
-    const bucket1 = await this.projectBucketService.getBucketByRegion(region1.id);
-    const bucket2 = await this.projectBucketService.getBucketByRegion(region2.id);
-
-
-    for (const project of rootProject) {
-      const projectWithStorage = await this.projectBucketService.findProjectWithStorageById(project.id);
-
-      if (projectWithStorage.mainStorage == null || projectWithStorage.backupStorage == null) {
-        this.logger.log(`[PROJECT BUCKET] Migrating full project ${projectWithStorage.id}`);
-        projectWithStorage.mainStorage = bucket1;
-        projectWithStorage.backupStorage = bucket2;
-        await this.projectService.updateWithCompare(projectWithStorage, projectWithStorage);
-      }
-    }
-
-
-    if (document) {
-
-      const documents = await this.documentService.getDocuments();
-
-      for (const document of documents) {
-        if (!document.filename) {
-          const rootProject = await this.projectBucketService.findProjectWithStorageById(document.project.getRootParentId());
-
-          const docExist = await this.documentService.docExistInBucket(document, rootProject);
-
-          if (docExist) {
-            this.logger.log(`[PROJECT BUCKET] Migrating document ${document.id}`);
-            await this.documentService.migrateDocument(document, rootProject);
-
-            if (document.isConstellabDocument) {
-              this.logger.log(`[PROJECT BUCKET] Migrating constellab document ${document.id}`);
-              const oldPrefix = `constellab_doc_images/${document.id}`;
-              const newPrefix = CnProjectBucketService.getPrefix(document.project, 'CONSTELLAB_DOC_IMAGE', document.id);
-              await this.projectBucketService.migrateObjects(rootProject, oldPrefix, newPrefix);
-
-              const doc = await this.documentService.getConstellabDocument(document.project, document);
-
-              const content = new BlRichText(doc.content);
-
-              for (const image of content.getFiguresOps()) {
-                if(image.insert.figure.filename.includes('/')){
-                  const filename = image.insert.figure.filename.split('/').pop();
-                  content.updateFigure(image.insert.figure.filename, {filename});
-                }
-                await this.documentService.updateConstellabDocument(document.project, document, content.getContent());
-              }
-
-            }
-          }
-
-        }
-
-      }
-
-    }
-
-    if (report) {
-
-      // migrate others s3 objects
-      const reports = await this.reportService.getAllReports();
-
-      for (const report of reports) {
-        this.logger.log(`[PROJECT BUCKET] Migrating report ${report.id}`);
-
-        // reports
-        const rootProject = await this.projectBucketService.findProjectWithStorageById(report.project.getRootParentId());
-
-        for (const report of reports) {
-          const oldPrefix = `reports/${report.id}`;
-          const newPrefix = CnProjectBucketService.getPrefix(report.project, 'REPORT_CONTENTS', report.id);
-          await this.projectBucketService.migrateObjects(rootProject, oldPrefix, newPrefix);
-
-          const content = new CnReportContent(report.content);
-          for(const view of content.getViewsOps()){
-            if(view.insert.resource_view.filename.includes('/')){
-              view.insert.resource_view.filename = view.insert.resource_view.filename.split('/').pop();
-            }
-          }
-
-          for(const view of content.getFiguresOps()){
-            if(view.insert.figure.filename.includes('/')){
-              view.insert.figure.filename = view.insert.figure.filename.split('/').pop();
-            }
-          }
-
-          report.content = content.getContent();
-          await this.reportService.update(report);
-        }
-      }
-    }
-
-    if (project) {
-      const projects = await this.projectService.getAllProjects();
-
-      for (const project of projects) {
-        this.logger.log(`[PROJECT BUCKET] Migrating project ${project.id}`);
-        // comments
-        const rootProject = await this.projectBucketService.findProjectWithStorageById(project.getRootParentId());
-
-        const oldPrefix = `comments/${project.id}`;
-        const newPrefix = CnProjectBucketService.getPrefix(project, 'COMMENTS');
-        await this.projectBucketService.migrateObjects(rootProject, oldPrefix, newPrefix);
-
-        const oldPrefix2 = `description/${project.id}`;
-        const newPrefix2 = CnProjectBucketService.getPrefix(project, 'DESCRIPTION');
-        await this.projectBucketService.migrateObjects(rootProject, oldPrefix2, newPrefix2);
-      }
-
-    }
-
-    this.logger.log('[PROJECT BUCKET] Migration done');
-
   }
 
   /////////////////////////////////////// PROJECT USER //////////////////////////////////

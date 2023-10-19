@@ -80,12 +80,4 @@ export class CnLabBackupOptionService extends BlAbstractService<CnLabBackupOptio
       });
   }
 
-  // TODO TO REMOVE
-  public async deleteOldBackupOptions(labInstanceId: string): Promise<void> {
-    const options = await this.findByLabId(labInstanceId);
-    if (options) {
-      await this.repo.delete(options.id);
-    }
-  }
-
 }

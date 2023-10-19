@@ -64,7 +64,6 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
     return this.objectStorageService.getObject(bucketConfig, documentPath);
   }
 
-  // TODO TO check
   public async deleteDocument(id: string, project: CnProject): Promise<void> {
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
@@ -98,39 +97,6 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
         lastModifiedAt: 'DESC' as any
       }
     });
-  }
-
-  // TODO TO REMOVE
-  public getDocuments(): Promise<CnDocument[]>{
-    return this.repository.find({
-      relations: {project: true}
-    });
-  }
-
-  async docExistInBucket(document: CnDocument, project: CnProject): Promise<boolean> {
-    const bucketConfig = await this.projectBucketService.getOldProjectMainBucket(project.getRootParentId());
-
-    if(bucketConfig == null) return false;
-
-    return this.objectStorageService.objectExist(bucketConfig.getBucketConfig(), document.filePath);
-  }
-
-  async migrateDocument(document: CnDocument, rootProject: CnProject): Promise<void>{
-    const oldBucketConfig = await this.projectBucketService.getOldProjectMainBucket(rootProject.getRootParentId());
-
-    if(oldBucketConfig == null) return;
-
-    const prefix = `${CnProjectBucketService.getPrefix(document.project, 'DOCUMENTS')}`;
-
-    document.filename = document.filePath.split('/').pop();
-    const newDocPath = prefix + '/' + document.filename;
-
-    await this.objectStorageService.copyObject(oldBucketConfig.getBucketConfig(), rootProject.mainStorage.getBucketConfig(),
-      document.filePath, newDocPath);
-    await this.objectStorageService.copyObject(oldBucketConfig.getBucketConfig(), rootProject.backupStorage.getBucketConfig(),
-      document.filePath, newDocPath);
-
-    await this.repository.save(document);
   }
 
   async findDocumentByProjectAndName(projectId: string, name: string): Promise<CnDocument> {

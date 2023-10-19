@@ -66,14 +66,4 @@ export class CnObjectStoragesController {
                                   @Body() credentials: BlCredentials): Promise<CnBucketCredentialsFull> {
     return await this.service.getCredentialsData(id, credentials);
   }
-
-  @Post('projects/delete')
-  public async deleteOldProjectBuckets(): Promise<void>{
-    return this.service.deleteOldProjectBuckets();
-  }
-
-  @Post('labs/delete')
-  public async deleteOldLabBuckets(): Promise<void> {
-    return this.service.deleteOldLabBuckets();
-  }
 }

@@ -1,5 +1,5 @@
 import {Column, Entity, ManyToOne, Unique} from 'typeorm';
-import {Exclude, Type} from 'class-transformer';
+import {Type} from 'class-transformer';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
@@ -11,11 +11,6 @@ export class CnDocument extends CnBaseEntity {
 
   @Column({nullable: false})
   name: string;
-
-  // TODO TO REMOVE
-  @Exclude()
-  @Column({nullable: true, length: 1024})
-  filePath: string;
 
   @Column({nullable: false})
   filename: string;

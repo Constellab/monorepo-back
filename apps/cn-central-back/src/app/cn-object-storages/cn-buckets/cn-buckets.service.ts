@@ -7,7 +7,7 @@ import {
   BlSearchParams
 } from '@monorepo/back-core-lib';
 import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, EntityManager, IsNull, Repository} from 'typeorm';
+import {DataSource, EntityManager, Repository} from 'typeorm';
 import {CnBucket, CnBucketContentType} from './cn-bucket.entity';
 import {ClPage} from '@monorepo/core-lib';
 
@@ -35,7 +35,6 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     });
   }
 
-  // TODO add security to delete bucket
   public async deleteBucket(bucket: CnBucket, entityManager?: EntityManager): Promise<void> {
     entityManager = this.getEntityManager(entityManager);
 
@@ -66,26 +65,14 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       }
     } else {
       // there can be only one bucket of type by region
-      // TODO to uncomment after migration
-      // const existingBucket = await this.findByContentTypeAndRegion(bucket.contentType, bucket.region.technicalName);
+      const existingBucket = await this.findByContentTypeAndRegion(bucket.contentType, bucket.region.technicalName);
 
-      // if (existingBucket != null && existingBucket.id !== bucket.id) {
-      //   throw new BlBadRequestException(`There is already a bucket of type ${bucket.contentType} in region ${bucket.region.technicalName}`);
-      // }
+      if (existingBucket != null && existingBucket.id !== bucket.id) {
+        throw new BlBadRequestException(`There is already a bucket of type ${bucket.contentType} in region ${bucket.region.technicalName}`);
+      }
     }
 
     return bucket;
-  }
-
-  public findByContentTypeAndObjectId(contentType: CnBucketContentType, objectId: string): Promise<CnBucket[]> {
-    if (objectId == null) throw new BlBadRequestException(`The objectId must be defined`);
-    return this.repository.find({
-      where: {
-        contentType: contentType,
-        objectId: objectId
-      },
-      relations: CnBucket.configRelation
-    });
   }
 
   public async findCompleteById(id: string): Promise<CnBucket> {
@@ -111,7 +98,6 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
         region: {
           id: regionId
         },
-        objectId: IsNull(),
       },
       relations: CnBucket.configRelation
     });
