@@ -16,7 +16,8 @@ import {DateTime} from 'luxon';
 
 export enum CnLabInstanceType {
   CLOUD = 'CLOUD',
-  DESKTOP = 'DESKTOP'
+  DESKTOP = 'DESKTOP',
+  ON_PREMISE = 'ON_PREMISE' // hosted and managed by the client
 }
 
 export enum CnLabInstanceBillingMode {
@@ -189,7 +190,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     if (!this.gwsCoreProdDbPassword) this.gwsCoreProdDbPassword = this.generateRandomPassword();
     if (!this.gwsCoreDevDbPassword) this.gwsCoreDevDbPassword = this.generateRandomPassword();
 
-    if (this.type === CnLabInstanceType.CLOUD) {
+    if (this.isOnServer()) {
       if (!this.labManagerApiKey) this.labManagerApiKey = this.generateRandomPassword();
       if (!this.codelabToken) this.codelabToken = this.generateRandomPassword();
     }
@@ -253,9 +254,27 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     return this.type === CnLabInstanceType.CLOUD;
   }
 
+  public isOnPremise(): boolean {
+    return this.type === CnLabInstanceType.ON_PREMISE;
+  }
+
+  /**
+   * Return true if the lab is hosted on a server (cloud or on premise)
+   */
+  public isOnServer(): boolean {
+    return this.isCloud() || this.isOnPremise();
+  }
+
+  /**
+   * Return true if the lab is accessible through http (for cloud and public on premise)
+   */
+  public isHttpAccessible(): boolean {
+    return this.isOnServer();
+  }
+
   public getCloudProviderName(): CnCloudProviderName {
-    if (this.isDesktop()) {
-      throw new BlBadRequestException('Cannot get cloud provider name for desktop lab');
+    if (!this.isCloud()) {
+      throw new BlBadRequestException('Cannot get cloud provider name for none cloud lab');
     }
     return this.serverInfo.cloudProvider.name;
   }

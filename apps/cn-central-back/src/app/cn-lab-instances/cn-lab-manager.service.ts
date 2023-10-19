@@ -72,6 +72,9 @@ export class CnLabManagerService {
         password: this.configService.getDockerRegistryPassword(),
       },
       captchaSiteKey: this.configService.getCaptchaSiteKey(),
+      labConfig: {
+        enableBackup: labInstance.isCloud()
+      }
     };
     return this.labManagerApiService.initAll(labInstance.getLabManagerApiInfo(), initConfig);
   }

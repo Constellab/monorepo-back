@@ -28,7 +28,7 @@ export class CnLabInstancesSecurity {
   }
 
   /**
-   * Anyone can create an desktopn  lab instance
+   * Anyone can create a desktop  lab instance
    * @param labInstance
    */
   public checkAuthorizationCreateDesktopLabInstance(labInstance: CnLabInstance): void {

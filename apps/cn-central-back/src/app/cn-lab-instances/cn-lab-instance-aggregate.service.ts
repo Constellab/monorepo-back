@@ -127,8 +127,10 @@ export class CnLabInstanceAggregateService {
                                   entityManager: EntityManager): Promise<CnLabInstance> {
     const labInstanceDb: CnLabInstance = await this.labInstancesService.create(labInstance, entityManager);
 
-    await this.backupOptionService.createBackupOptions(labInstanceDb,
-      dailyBackupRegion, weeklyBackupRegion, entityManager);
+    if (labInstance.isCloud()) {
+      await this.backupOptionService.createBackupOptions(labInstanceDb,
+        dailyBackupRegion, weeklyBackupRegion, entityManager);
+    }
 
     return labInstanceDb;
   }
@@ -260,7 +262,7 @@ export class CnLabInstanceAggregateService {
 
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId, false);
 
-    if (labInstance.isCloud()) {
+    if (labInstance.isHttpAccessible()) {
       await this.labManagerService.updateConfig(labInstance, config);
     } else {
       // for on desktop, we need to update the lab config directly (there is no lab manager)
@@ -293,7 +295,7 @@ export class CnLabInstanceAggregateService {
 
     return Promise.all(promises).then(async ([labManagerStatus, glabStatus]) => {
       // if the lab is marked as stopped but the glab is accessible for refresh status
-      if (labInstance.isCloud() && glabStatus && labInstance.currentStatus.status === 'SERVER_STOPPED') {
+      if (labInstance.isHttpAccessible() && glabStatus && labInstance.currentStatus.status === 'SERVER_STOPPED') {
         labInstance = await this.refreshLabStatus(labInstance.id);
       }
 
@@ -337,8 +339,8 @@ export class CnLabInstanceAggregateService {
   public async refreshLabStatus(labInstanceId: string): Promise<CnLabInstance> {
     const labInstance = await this.labInstancesService.findByIdAndCheck(labInstanceId);
 
-    if (!labInstance.isCloud()) {
-      throw new BlBadRequestException(`Cannot refresh status of a lab that is not in the cloud`);
+    if (!labInstance.isHttpAccessible()) {
+      throw new BlBadRequestException(`Cannot refresh status of a lab that is not on a server`);
     }
 
     if (!labInstance.serverInstanceId && !labInstance.serverTaskIsRunning()) {
@@ -486,7 +488,7 @@ export class CnLabInstanceAggregateService {
       // use group if we share team latter
       const labInstanceGroup = await this.labInstanceUserService.createLabInstanceUser(labInstance, user, role, entityManager);
 
-      if (labInstance.isCloud()) {
+      if (labInstance.isHttpAccessible()) {
         // add the user to the lab is the lab is running
         const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo());
         if (labIsRunning) {
@@ -511,7 +513,7 @@ export class CnLabInstanceAggregateService {
     return await this.dataSource.transaction(async entityManager => {
       await this.labInstanceUserService.deleteLabInstanceUser(labInstanceId, userId, entityManager);
 
-      if (labInstance.isCloud()) {
+      if (labInstance.isHttpAccessible()) {
         // add the user to the lab is the lab is running
         const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo());
 
@@ -793,7 +795,7 @@ export class CnLabInstanceAggregateService {
 
     // check the credentials, if the lab is cloud, it needs a valid captcha
     // for desktop lab, no captcha is needed as this is local
-    return this.authService.externalCheckCredentials(credentials, lab.isCloud() && !ignoreCaptcha, ignore2Fa);
+    return this.authService.externalCheckCredentials(credentials, lab.isHttpAccessible() && !ignoreCaptcha, ignore2Fa);
   }
 
   /////////////////////////// EXTERNAL LAB MANAGER //////////////////////////////
@@ -817,7 +819,7 @@ export class CnLabInstanceAggregateService {
   }
 
   public async initServer(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
-    let labInstance = await this.getAndCheckServerStatusBeforeAction(labInstanceId);
+    let labInstance = await this.getAndCheckServerStatusBeforeAction(labInstanceId, true);
 
     labInstance = await this.labInstancesService.markInstanceAsServerStarting(labInstance.id);
 
@@ -844,7 +846,7 @@ export class CnLabInstanceAggregateService {
   }
 
   public async createServer(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
-    let labInstance = await this.getAndCheckServerStatusBeforeAction(labInstanceId);
+    let labInstance = await this.getAndCheckServerStatusBeforeAction(labInstanceId, true);
 
     labInstance = await this.labInstancesService.markInstanceAsServerStarting(labInstance.id);
 
@@ -921,7 +923,7 @@ export class CnLabInstanceAggregateService {
   }
 
   public async deleteServerInstance(labInstanceId: string): Promise<void> {
-    const labInstance = await this.getAndCheckServerStatusBeforeAction(labInstanceId);
+    const labInstance = await this.getAndCheckServerStatusBeforeAction(labInstanceId, true);
 
     this.security.checkAuthorizationToDeleteServer(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     await this.labServerService.deleteLabInstanceServerAndVolume(labInstance);
@@ -930,7 +932,7 @@ export class CnLabInstanceAggregateService {
   }
 
   async startInstance(id: string): Promise<CnLabInstance> {
-    const labInstance = await this.getAndCheckServerStatusBeforeAction(id);
+    const labInstance = await this.getAndCheckServerStatusBeforeAction(id, true);
 
     if (labInstance.isFreeTrial) {
       const available = await this.freeTrialService.trialLabStillValid(labInstance.id);
@@ -945,7 +947,7 @@ export class CnLabInstanceAggregateService {
 
 
   async stopInstance(id: string): Promise<CnLabInstance> {
-    const labInstance = await this.getAndCheckServerStatusBeforeAction(id);
+    const labInstance = await this.getAndCheckServerStatusBeforeAction(id, true);
 
     return this.labServerService.stopLab(labInstance);
   }
@@ -1054,10 +1056,14 @@ export class CnLabInstanceAggregateService {
    * It checks if no experiment or task on the lab is running
    * @private
    */
-  private async getAndCheckServerStatusBeforeAction(id: string): Promise<CnLabInstance> {
+  private async getAndCheckServerStatusBeforeAction(id: string, requiresCloudLab: boolean = false): Promise<CnLabInstance> {
     await this.refreshLabStatus(id);
 
     const labInstance = await this.getAndCheckAuthorizationToManageLab(id, true);
+
+    if (requiresCloudLab && !labInstance.isCloud()) {
+      throw new BlBadRequestException('This action is only available for cloud lab');
+    }
 
     if (labInstance.serverIsBusy()) {
       throw new BlBadRequestException(`Server is ${labInstance.currentStatus.status} and cannot configured`);

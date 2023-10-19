@@ -52,7 +52,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     entity.name = await this.checkLabInstanceName(entity);
     if (entity.isCloud()) {
       // check virtual host
-      entity.virtualHost = await this.checkLabInstanceVirtualHost(entity);
+      entity.virtualHost = await this.checkLabInstanceVirtualHost(entity, true);
 
       if (ClHelpService.isNullOrEmpty(entity.serverInfo) ||
         ClHelpService.isNullOrEmpty(entity.region) ||
@@ -67,7 +67,12 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       }
 
       entity.desktopPlatform = null;
-    } else {
+    } else if(entity.isOnPremise()) {
+      // check virtual host
+      entity.virtualHost = await this.checkLabInstanceVirtualHost(entity, false);
+      entity.desktopPlatform = null;
+
+    } else if(entity.isDesktop()) {
       if (ClHelpService.isNullOrEmpty(entity.desktopPlatform)) {
         throw new BlBadRequestException('Missing parameters platform for desktop instance');
       }
@@ -98,13 +103,13 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       throw new BlBadRequestException('Name can only contain alphanumeric characters and \'-\'. It cannot start or end with a \'-\'.');
     }
 
-    // check that the name is not already used for cloud lab
-    if (entity.isCloud()) {
+    // check that the name is not already used for server lab
+    if (entity.isOnServer()) {
       const lab = await this.repository.findOne({
         where: {
           name: name,
           id: entity.id ? Not(entity.id) : undefined,
-          type: CnLabInstanceType.CLOUD
+          type: In([CnLabInstanceType.CLOUD, CnLabInstanceType.ON_PREMISE])
         }
       });
       if (lab) {
@@ -115,7 +120,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return name;
   }
 
-  private async checkLabInstanceVirtualHost(entity: CnLabInstance): Promise<string> {
+  private async checkLabInstanceVirtualHost(entity: CnLabInstance, checkSupportedDomains: boolean): Promise<string> {
 
     const virtualHost = entity.virtualHost;
     // check domain name
@@ -135,7 +140,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     }
 
     // check domain name
-    if (!CnLabInstance.SUPPORTED_MAIN_DOMAINS.includes(entity.getMainDomain())) {
+    if (checkSupportedDomains && !CnLabInstance.SUPPORTED_MAIN_DOMAINS.includes(entity.getMainDomain())) {
       throw new BlBadRequestException(
         `Virtual host must be a valid domain name : ${CnLabInstance.SUPPORTED_MAIN_DOMAINS.join(', ')}`);
     }
@@ -323,15 +328,6 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
         currentStatus: {
           status: In(cnLabInstanceTemporaryStatuses)
         }
-      }
-    });
-  }
-
-  public findExistingCloudLabInstance(): Promise<CnLabInstance[]>{
-    return this.repository.find({
-      where: {
-        type: CnLabInstanceType.CLOUD,
-        currentStatus: {status: Not(CnLabInstanceStatus.NO_SERVER)}
       }
     });
   }
