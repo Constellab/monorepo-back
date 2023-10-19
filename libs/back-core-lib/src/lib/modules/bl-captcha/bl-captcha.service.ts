@@ -1,4 +1,4 @@
-import {Inject, Injectable, Logger} from '@nestjs/common';
+import {Inject, Injectable} from '@nestjs/common';
 import {BL_CAPTCHA_CONFIG_PROVIDER, BlCaptchaModuleConfig} from './bl-captcha.class';
 import {lastValueFrom} from 'rxjs';
 import {BlExternalApiService} from '../bl-external-api/bl-external-api.service';
@@ -6,7 +6,6 @@ import {BlExternalApiService} from '../bl-external-api/bl-external-api.service';
 
 @Injectable()
 export class BlCaptchaService {
-  private readonly logger = new Logger(BlCaptchaService.name);
 
   constructor(@Inject(BL_CAPTCHA_CONFIG_PROVIDER) private moduleConfig: BlCaptchaModuleConfig,
               private externalApiService: BlExternalApiService) {

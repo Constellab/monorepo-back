@@ -754,8 +754,7 @@ export class CnProjectAggregateService {
       projectWithRegions.backupStorage = await this.projectBucketService.getBucketByRegion(projectStorageDTO.backupRegion.id);
     }
 
-    // TODO TO improve
-    await this.projectService.updateWithCompare(projectWithRegions, projectWithRegions);
+    await this.projectService.update(projectWithRegions);
 
     return new CnProjectStorageRegionDTO(projectWithRegions.mainStorage.region, projectWithRegions.backupStorage.region);
   }
