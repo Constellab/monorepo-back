@@ -74,7 +74,8 @@ export class CnLabManagerService {
       captchaSiteKey: this.configService.getCaptchaSiteKey(),
       labConfig: {
         enableBackup: labInstance.isCloud()
-      }
+      },
+      openaiApiKey: this.configService.getOpenaiAPIKey(),
     };
     return this.labManagerApiService.initAll(labInstance.getLabManagerApiInfo(), initConfig);
   }

@@ -71,6 +71,10 @@ export class CnCoreConfigService {
     return this.configService.get('GENCOVERY_CONTACT_MAIL');
   }
 
+  public getOpenaiAPIKey(): string {
+    return this.configService.get('OPENAI_API_KEY');
+  }
+
   public getDatabaseConfig(): CnDatabaseConfig {
     return {
       host: this.configService.get('DATABASE_HOST'),

@@ -51,4 +51,5 @@ export interface CnLabManagerInitConfig {
     enableBackup: boolean;
   }
   captchaSiteKey: string;
+  openaiApiKey: string;
 }
