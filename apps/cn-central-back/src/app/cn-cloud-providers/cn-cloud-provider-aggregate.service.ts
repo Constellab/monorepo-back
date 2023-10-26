@@ -70,19 +70,19 @@ export class CnCloudProviderAggregateService {
     await this.cloudProviderRegionService.deleteById(id);
   }
 
-  public async getRegion(id: string): Promise<CnCloudProviderRegion> {
-    this.checkAuthorizationToGetEntity();
-    return this.cloudProviderRegionService.findByIdAndCheck(id);
+
+  public async getRegionUnsecure(id: string): Promise<CnCloudProviderRegion> {
+    return await this.cloudProviderRegionService.findByIdAndCheck(id);
   }
 
   public async getRegions(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
     this.checkAuthorizationToGetEntity();
-    return this.cloudProviderRegionService.findAll(page, size);
+    return this.cloudProviderRegionService.findAll(page, size, CnCurrentUserHelper.getAndCheckUserSpaceInfo().spaceId);
   }
 
   public async getS3Regions(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
     this.checkAuthorizationToGetEntity();
-    return this.cloudProviderRegionService.findS3Regions(page, size);
+    return this.cloudProviderRegionService.findS3Regions(page, size, CnCurrentUserHelper.getAndCheckUserSpaceInfo().spaceId);
   }
 
   public findRegionByCloudProviderNameAndTechnicalName(cloudProviderName: CnCloudProviderName,

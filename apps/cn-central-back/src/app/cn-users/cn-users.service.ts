@@ -8,6 +8,7 @@ import {
   BlAbstractService,
   BlBadRequestException,
   BlBucketConfig,
+  BlBucketType,
   BlCsvHelper,
   BlCurrentUserHelper,
   BlFile,
@@ -126,7 +127,8 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
       endpoint: this.configService.getDefaultObjectStorageEndPoint(),
       region: this.configService.getDefaultObjectStorageRegion(),
       bucket: this.configService.getUserProfilePictureObjectStorageBucket(),
-      credentials: this.configService.getDefaultObjectStorageCredentials()
+      credentials: this.configService.getDefaultObjectStorageCredentials(),
+      bucketType: BlBucketType.NORMAL,
     };
   }
 

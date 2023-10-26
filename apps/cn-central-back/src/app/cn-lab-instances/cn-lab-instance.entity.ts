@@ -210,28 +210,33 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   }
 
   getGlabApiInfo(): CnExternalApiInfo {
+    // specific rule for local development
+    if (this.name == 'localhost') {
+      return {
+        apiKey: '123456',
+        apiUrl: 'http://localhost:3000'
+      };
+    }
     return {
       apiKey: this.glabApiKey,
       apiUrl: this.glabUrl
     };
-    // only for local dev
-    // return {
-    //   apiKey: '123456',
-    //   apiUrl: 'http://localhost:3000'
-    // };
   }
 
 
   getLabManagerApiInfo(): CnExternalApiInfo {
+    if (this.name == 'localhost') {
+      // only for local dev
+      return {
+        apiKey: '123456',
+        apiUrl: 'http://localhost:3080'
+      };
+    }
+
     return {
       apiKey: this.labManagerApiKey,
       apiUrl: this.labManagerUrl
     };
-    // only for local dev
-    // return {
-    //   apiKey: '123456',
-    //   apiUrl: 'http://localhost:3080'
-    // };
   }
 
   // get the subdomain name

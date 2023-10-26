@@ -4,7 +4,7 @@ import {
   CnCloudProviderRegion
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnBucketCredentials} from '../cn-bucket-credential/cn-bucket-credential.entity';
-import {BlBucketConfig} from '@monorepo/back-core-lib';
+import {BlBucketConfig, BlBucketType} from '@monorepo/back-core-lib';
 import {Type} from 'class-transformer';
 import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
 
@@ -25,6 +25,8 @@ export class CnBucket extends CnBaseEntity {
 
   // relation options to load required information for the bucket
   public static configRelation: FindOptionsRelations<CnBucket> = {region: true, credentials: true};
+  // default name for the lab bucket
+  public static LAB_BUCKET_NAME = 'projects-storage';
 
   @Type(() => CnCloudProviderRegion)
   @ManyToOne(() => CnCloudProviderRegion, {nullable: false})
@@ -40,11 +42,16 @@ export class CnBucket extends CnBaseEntity {
   @Column({nullable: false, length: 50})
   contentType: CnBucketContentType;
 
-  // can be used info to describe the bucket
-  @Column({nullable: true, length: 50})
-  additionalInfo: string;
+  @Column({
+    type: 'enum', enum: BlBucketType, nullable: false,
+    default: BlBucketType.NORMAL,
+  })
+  bucketType: BlBucketType;
 
   public getBucketConfig(): BlBucketConfig {
+    if (this.region == null) {
+      throw new Error('The region was not loaded');
+    }
     return {
       endpoint: this.region.s3Endpoint,
       region: this.region.technicalName,
@@ -52,7 +59,8 @@ export class CnBucket extends CnBaseEntity {
       credentials: {
         accessKeyId: this.credentials.accessKeyId,
         secretAccessKey: this.credentials.secretAccessKey,
-      }
+      },
+      bucketType: this.bucketType,
     };
   }
 }

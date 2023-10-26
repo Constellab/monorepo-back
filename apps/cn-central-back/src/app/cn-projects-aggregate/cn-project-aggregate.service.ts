@@ -79,7 +79,10 @@ export class CnProjectAggregateService {
       entity.currentLevel = CnProjectLevel.PROJECT;
       entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
       entity.mainStorage = await this.projectBucketService.getBucketByRegion(projectDto.mainRegion.id);
-      entity.backupStorage = await this.projectBucketService.getBucketByRegion(projectDto.backupRegion.id);
+
+      if (projectDto.backupRegion) {
+        entity.backupStorage = await this.projectBucketService.getBucketByRegion(projectDto.backupRegion.id);
+      }
       const dbProject = await this.projectService.create(entity, manager);
 
       // share the project with the leader
@@ -746,17 +749,17 @@ export class CnProjectAggregateService {
       throw new BlBadRequestException('The project storage regions are already defined');
     }
 
-    if (projectWithRegions.mainStorage == null) {
-      projectWithRegions.mainStorage = await this.projectBucketService.getBucketByRegion(projectStorageDTO.backupRegion.id);
+    if (projectWithRegions.mainStorage == null && projectStorageDTO.mainRegion) {
+      projectWithRegions.mainStorage = await this.projectBucketService.getBucketByRegion(projectStorageDTO.mainRegion.id);
     }
 
-    if (projectWithRegions.backupStorage == null) {
+    if (projectWithRegions.backupStorage == null && projectStorageDTO.backupRegion) {
       projectWithRegions.backupStorage = await this.projectBucketService.getBucketByRegion(projectStorageDTO.backupRegion.id);
     }
 
     await this.projectService.update(projectWithRegions);
 
-    return new CnProjectStorageRegionDTO(projectWithRegions.mainStorage.region, projectWithRegions.backupStorage.region);
+    return new CnProjectStorageRegionDTO(projectWithRegions.mainStorage.region, projectWithRegions.backupStorage?.region ?? null);
   }
 
   public async getProjectStorage(projectId: string): Promise<CnProjectStorageRegionDTO> {

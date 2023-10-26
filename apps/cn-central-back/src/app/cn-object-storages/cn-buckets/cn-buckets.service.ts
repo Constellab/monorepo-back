@@ -2,6 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {
   BlAbstractService,
   BlBadRequestException,
+  BlBucketType,
   BlObjectStorageService,
   BlSearchBuilder,
   BlSearchParams
@@ -35,6 +36,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     });
   }
 
+  // TODO add security to avoid deleting important buckets
   public async deleteBucket(bucket: CnBucket, entityManager?: EntityManager): Promise<void> {
     entityManager = this.getEntityManager(entityManager);
 
@@ -70,6 +72,15 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       if (existingBucket != null && existingBucket.id !== bucket.id) {
         throw new BlBadRequestException(`There is already a bucket of type ${bucket.contentType} in region ${bucket.region.technicalName}`);
       }
+    }
+
+    // on cloud region there are only normal buckets
+    if (bucket.bucketType === BlBucketType.LAB) {
+      if (bucket.region.isCloud()) {
+        throw new BlBadRequestException(`Lab bucket can't use a cloud region`);
+      }
+      // force the name of the lab bucket
+      bucket.name = CnBucket.LAB_BUCKET_NAME;
     }
 
     return bucket;

@@ -5,6 +5,7 @@ import {DeleteResult, EntityManager, Like, Repository} from 'typeorm';
 import {
   BlAbstractService,
   BlBucketConfig,
+  BlBucketType,
   BlFile,
   BlObjectStorageService,
   BlSearchBuilder,
@@ -94,7 +95,8 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
       endpoint: this.configService.getDefaultObjectStorageEndPoint(),
       region: this.configService.getDefaultObjectStorageRegion(),
       bucket: this.configService.getSpaceImageBucket(),
-      credentials: this.configService.getDefaultObjectStorageCredentials()
+      credentials: this.configService.getDefaultObjectStorageCredentials(),
+      bucketType: BlBucketType.NORMAL,
     };
   }
 

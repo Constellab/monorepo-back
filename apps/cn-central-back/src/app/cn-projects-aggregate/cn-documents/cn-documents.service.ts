@@ -46,7 +46,13 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
       document.size = file.size;
       document.mimeType = file.mimetype;
       document.isConstellabDocument = false;
-      document.filename = this.objectStorageService.generateRandomFileName(BlFileHelper.getFileExtension(file.originalname));
+      // for lab as bucket type, keep the original name
+      if (bucketConfig.some(b => b.bucketType === 'LAB')) {
+        document.filename = file.originalname;
+      } else {
+        // otherwise this is a cloud bucket where every file is so we need to generate a random name
+        document.filename = this.objectStorageService.generateRandomFileName(BlFileHelper.getFileExtension(file.originalname));
+      }
 
       const dbDocument = await entityManager.save(document);
 
@@ -164,9 +170,9 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
 
     // get the extension from the file or from the image type
     let extension: string;
-    if(file.originalname.includes('.')){
+    if (file.originalname.includes('.')) {
       extension = BlFileHelper.getFileExtension(file.originalname);
-    }else{
+    } else {
       extension = imSize.type;
     }
     const filename = this.objectStorageService.generateRandomFileName(extension);

@@ -49,7 +49,7 @@ export class CnProjectStorageRegionDTO {
   mainRegion: CnCloudProviderRegion;
 
   @Type(() => CnCloudProviderRegion)
-  backupRegion: CnCloudProviderRegion;
+  backupRegion?: CnCloudProviderRegion;
 
   constructor(mainRegion?: CnCloudProviderRegion, backupRegion?: CnCloudProviderRegion) {
     this.mainRegion = mainRegion;

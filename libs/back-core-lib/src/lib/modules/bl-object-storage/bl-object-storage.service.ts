@@ -19,11 +19,17 @@ import {IncomingMessage} from 'http';
 import {_Object} from '@aws-sdk/client-s3/dist-types/models/models_0';
 import {BlObjectStorageSyncResult} from './bl-object-storage.class';
 
+export enum BlBucketType {
+  NORMAL = 'NORMAL',
+  LAB = 'LAB' // bucket hosted on a lab
+}
+
 export interface BlBucketConfig {
   endpoint: string;
   region: string;
   bucket: string;
   credentials: BlObjectStorageCredentials;
+  bucketType: BlBucketType; // true if the bucket is hosted on a lab, false if this is a class S3 bucket
 }
 
 export interface BlObjectStorageCredentials {
@@ -91,7 +97,7 @@ export class BlObjectStorageService {
     const s3Client = this.getClient(config);
 
     await s3Client.send(new PutObjectCommand({
-      Bucket: config.bucket, Key: filename, Body: obj, ContentType: contentType
+      Bucket: config.bucket, Key: filename, Body: obj, ContentType: contentType,
     }));
 
     return filename;
@@ -202,13 +208,26 @@ export class BlObjectStorageService {
   public async deleteAllObjects(config: BlBucketConfig | BlBucketConfig[]): Promise<void> {
     const bucketConfigs = ClHelpService.convertObjectOrArrayToArray(config);
 
-    const promises: Promise<void>[] = [];
-    for (const bucketConfig of bucketConfigs) {
-      const objects = await this.getObjectsByPrefix(bucketConfig, '');
-      promises.push(this.deleteMultipleObjects(config, objects.map((obj) => obj.Key)));
+    let count = 0;
+    while (count < 100) {
+      const promises: Promise<void>[] = [];
+      let objectTotal = 0;
+      for (const bucketConfig of bucketConfigs) {
+        const objects = await this.getObjectsByPrefix(bucketConfig, '', 1000);
+        if (objects.length === 0) continue;
+        objectTotal += objects.length;
+        promises.push(this.deleteMultipleObjects(config, objects.map((obj) => obj.Key)));
+      }
+
+      if (objectTotal === 0) break;
+
+      await Promise.all(promises);
+      count++;
     }
 
-    await Promise.all(promises);
+    if (count >= 1000) {
+      throw new Error('Too many objects to delete');
+    }
   }
 
   public async deleteMultipleObjects(config: BlBucketConfig | BlBucketConfig[], objectNames: string[]): Promise<void> {
@@ -347,7 +366,8 @@ export class BlObjectStorageService {
     return new S3Client({
       endpoint: config.endpoint,
       region: config.region,
-      credentials: config.credentials
+      credentials: config.credentials,
+      // forcePathStyle: true // this is to enable localhost
     });
   }
 

@@ -33,7 +33,7 @@ export class CnSpaceAggregateService {
   }
 
   public async getCurrentInfo(): Promise<CnUserSpaceInfo> {
-    const user = await this.userService.getCurrent();
+    const user = this.userService.getCurrent();
     let space: CnSpace = CnCurrentUserHelper.getCurrentSpace();
     let role: CnSpaceUserRole = CnCurrentUserHelper.getCurrentRoleInSpace();
     if (!space) {
@@ -62,10 +62,7 @@ export class CnSpaceAggregateService {
   }
 
   public async createBasicSpace(entity: CnSpace): Promise<CnSpaceSettingsDto> {
-    // if the user is not admin, he can't set the nb of licenses
-    if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) {
-      entity.nbLicenses = 0;
-    }
+    await this.checkSpaceSave(entity);
 
     let space: CnSpace = null;
     await this.datasource.transaction(async (entityManager: EntityManager) => {
@@ -81,12 +78,30 @@ export class CnSpaceAggregateService {
 
   public async update(entity: CnSpace): Promise<CnSpaceSettingsDto> {
     await this.checkSpaceAdmin(entity.id);
+    await this.checkSpaceSave(entity);
+    const dbSpace = await this.spaceService.update(entity);
+    return this.getSpaceSettings(dbSpace.id);
+  }
+
+  private async checkSpaceSave(entity: CnSpace): Promise<void> {
     // if the user is not admin, he can't set the nb of licenses
     if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) {
       entity.nbLicenses = undefined;
     }
-    const dbSpace = await this.spaceService.update(entity);
-    return this.getSpaceSettings(dbSpace.id);
+
+    if (entity.defaultStorageRegion) {
+      const region = await this.cloudProviderAggregateService.getRegionUnsecure(entity.defaultStorageRegion.id);
+      if (region.spaceId && region.spaceId !== entity.id) {
+        throw new BlBadRequestException(`The region ${region.technicalName} can't be used in this space`);
+      }
+    }
+
+    if (entity.defaultBackupStorageRegion) {
+      const region = await this.cloudProviderAggregateService.getRegionUnsecure(entity.defaultBackupStorageRegion.id);
+      if (region.spaceId && region.spaceId !== entity.id) {
+        throw new BlBadRequestException(`The region ${region.technicalName} can't be used in this space`);
+      }
+    }
   }
 
   public async delete(id: string): Promise<void> {
@@ -181,7 +196,7 @@ export class CnSpaceAggregateService {
    * Directly add a user to an space. Only accessible by G admins.
    */
   public async addUserToSpace(spaceID: string, userId: string): Promise<CnSpaceUser> {
-    await this.checkAdmin();
+    this.checkAdmin();
 
     spaceID = this.getSpaceId(spaceID);
     const user = await this.userService.findByIdAndCheck(userId);

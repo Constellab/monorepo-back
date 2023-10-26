@@ -10,12 +10,11 @@ export class CnBucketCredentials extends CnBaseEntity {
 
   public static completeRelations: FindOptionsRelations<CnBucketCredentials> = {cloudProvider: true, space: true};
 
-
   @Column({nullable: false, length: 50})
   name: string;
 
-  @ManyToOne(() => CnCloudProvider, {nullable: false})
-  cloudProvider: CnCloudProvider;
+  @ManyToOne(() => CnCloudProvider, {nullable: true})
+  cloudProvider?: CnCloudProvider;
 
   @Exclude({toPlainOnly: true})
   @Column({nullable: false, length: 100})

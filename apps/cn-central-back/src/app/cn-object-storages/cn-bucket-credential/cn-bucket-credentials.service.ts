@@ -9,24 +9,25 @@ import {ClPage} from '@monorepo/core-lib';
 export class CnBucketCredentialsService extends BlAbstractService<CnBucketCredentials> {
 
 
-  constructor(@InjectRepository(CnBucketCredentials) private repository: Repository<CnBucketCredentials>) {
+  constructor(@InjectRepository(CnBucketCredentials) repository: Repository<CnBucketCredentials>) {
     super(repository, CnBucketCredentials);
   }
 
-  public async create(credentials: CnBucketCredentials, entityManager?: EntityManager): Promise<CnBucketCredentials> {
 
-    if (credentials.space) {
-      const existingCredentials = await this.findBySpaceId(credentials.space.id);
-      if (existingCredentials) {
-        throw new BlBadRequestException(`There is already a bucket credential for the space ${credentials.space.name}`);
-      }
-    }
-
-    return super.create(credentials, entityManager);
+  async create(entity: CnBucketCredentials, entityManager?: EntityManager): Promise<CnBucketCredentials> {
+    await this.checkBucketBeforeSave(entity);
+    return super.create(entity, entityManager);
   }
 
-  public async findBySpaceId(spaceId: string): Promise<CnBucketCredentials | null> {
-    return this.repository.findOneBy({space: {id: spaceId}});
+  async update(entity: CnBucketCredentials, entityManager?: EntityManager): Promise<CnBucketCredentials> {
+    await this.checkBucketBeforeSave(entity);
+    return super.update(entity, entityManager);
+  }
+
+  private async checkBucketBeforeSave(credentials: CnBucketCredentials): Promise<void> {
+    if (credentials.cloudProvider == null && credentials.space == null) {
+      throw new BlBadRequestException('Cloud provider or space must be defined');
+    }
   }
 
   public findAll(page: number, size: number): Promise<ClPage<CnBucketCredentials>> {
@@ -36,10 +37,6 @@ export class CnBucketCredentialsService extends BlAbstractService<CnBucketCreden
   }
 
   public async findCompleteByIdAndCheck(id: string): Promise<CnBucketCredentials> {
-    return this.findByIdAndCheck(id,  CnBucketCredentials.completeRelations);
-  }
-
-  public findByName(name: string): Promise<CnBucketCredentials | null> {
-    return this.repository.findOneBy({name: name});
+    return this.findByIdAndCheck(id, CnBucketCredentials.completeRelations);
   }
 }

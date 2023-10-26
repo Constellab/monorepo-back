@@ -80,11 +80,6 @@ export class CnObjectStoragesAggregateService {
     await this.bucketCredentialsService.deleteById(id);
   }
 
-  public async getBucketCredentials(id: string): Promise<CnBucketCredentials> {
-    this.checkAuthorizationToGetCredentials();
-    return this.bucketCredentialsService.findByIdAndCheck(id);
-  }
-
   public async getAllBucketCredentials(page: number, size: number): Promise<ClPage<CnBucketCredentials>> {
     this.checkAuthorizationToGetCredentials();
     return this.bucketCredentialsService.findAll(page, size);

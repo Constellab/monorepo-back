@@ -62,6 +62,10 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
         throw new BlBadRequestException('Missing parameters for cloud instance');
       }
 
+      if(!entity.region.isCloud()){
+        throw new BlBadRequestException('Region must be a cloud region');
+      }
+
       if (entity.region.cloudProvider.id !== entity.serverInfo.cloudProvider.id) {
         throw new BlBadRequestException('Cloud Provider and Region must be the same');
       }

@@ -5,6 +5,7 @@ import {HnDocumentation, HnDocumentationSearchDTO} from './hn-documentation.enti
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 import {
   BlBucketConfig,
+  BlBucketType,
   BlFile,
   BlImageHelper,
   BlObjectStorageService,
@@ -262,7 +263,8 @@ export class HnDocumentationService {
       endpoint: this.configService.getDefaultObjectStorageEndPoint(),
       region: this.configService.getDefaultObjectStorageRegion(),
       bucket: this.configService.getDocImageObjectStorageBucket(),
-      credentials: this.configService.getDefaultObjectStorageCredentials()
+      credentials: this.configService.getDefaultObjectStorageCredentials(),
+      bucketType: BlBucketType.NORMAL,
     };
   }
 

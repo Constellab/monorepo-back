@@ -30,11 +30,17 @@ export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProvi
    * @private
    */
   private async checkRegionBeforeSave(region: CnCloudProviderRegion): Promise<CnCloudProviderRegion> {
-    const existingRegion = await this.findByCloudProviderAndTechnicalName(region.cloudProvider.id, region.technicalName);
+    if (region.isCloud()) {
 
-    if (existingRegion && existingRegion.id !== region.id) {
-      // eslint-disable-next-line max-len
-      throw new BlBadRequestException(`There is already a region ${region.technicalName} for the cloud provider ${region.cloudProvider.name}`);
+      const existingRegion = await this.findByCloudProviderAndTechnicalName(region.cloudProvider.id, region.technicalName);
+      if (existingRegion && existingRegion.id !== region.id) {
+        // eslint-disable-next-line max-len
+        throw new BlBadRequestException(`There is already a region ${region.technicalName} for the cloud provider ${region.cloudProvider.name}`);
+      }
+    }else{
+      if(region.space == null){
+        throw new BlBadRequestException(`The space is required for on premise region`);
+      }
     }
     return region;
   }
@@ -59,15 +65,31 @@ export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProvi
     return region;
   }
 
-  public findAll(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
-    return this.findPaginated(page, size);
+  public findAll(page: number, size: number, spaceId: string): Promise<ClPage<CnCloudProviderRegion>> {
+    return this.findPaginated(page, size, {
+      where: [
+        {
+          space: {id: spaceId}
+        },
+        {
+          space: IsNull()
+        }
+      ]
+    });
   }
 
-  public findS3Regions(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
+  public findS3Regions(page: number, size: number, spaceId: string): Promise<ClPage<CnCloudProviderRegion>> {
     return this.findPaginated(page, size, {
-      where: {
-        s3Endpoint: And(Not(IsNull()), Not(''))
-      }
+      where: [
+        {
+          space: {id: spaceId},
+          s3Endpoint: And(Not(IsNull()), Not(''))
+        },
+        {
+          space: IsNull(),
+          s3Endpoint: And(Not(IsNull()), Not(''))
+        }
+      ]
     });
   }
 
