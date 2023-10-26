@@ -36,7 +36,6 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     });
   }
 
-  // TODO add security to avoid deleting important buckets
   public async deleteBucket(bucket: CnBucket, entityManager?: EntityManager): Promise<void> {
     entityManager = this.getEntityManager(entityManager);
 
@@ -78,6 +77,10 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     if (bucket.bucketType === BlBucketType.LAB) {
       if (bucket.region.isCloud()) {
         throw new BlBadRequestException(`Lab bucket can't use a cloud region`);
+      }
+
+      if(bucket.contentType !== CnBucketContentType.PROJECT) {
+        throw new BlBadRequestException(`Lab bucket can only be used for projects`);
       }
       // force the name of the lab bucket
       bucket.name = CnBucket.LAB_BUCKET_NAME;
