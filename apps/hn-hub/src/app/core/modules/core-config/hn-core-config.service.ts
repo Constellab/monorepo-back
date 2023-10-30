@@ -1,6 +1,8 @@
 import {Injectable, LogLevel} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import {
+  HN_BUCKET_DOCUMENTATION_BACKUP_KEY,
+  HN_BUCKET_DOCUMENTATION_KEY, HN_BUCKET_STORIES_BACKUP_KEY, HN_BUCKET_STORIES_KEY,
   HN_ENVIRONMENT_PROFILE_KEY,
   HN_ENVIRONMENT_PROFILE_PROD_VALUE,
   HN_RABBITMQ_PASSWORD_KEY,
@@ -73,8 +75,16 @@ export class HnCoreConfigService {
     return this.configService.get('OBJECT_STORAGE_DEFAULT_ENDPOINT');
   }
 
+  public getBackupObjectStorageEndPoint(): string {
+    return this.configService.get('OBJECT_STORAGE_BACKUP_ENDPOINT');
+  }
+
   public getDefaultObjectStorageRegion(): string {
     return this.configService.get('OBJECT_STORAGE_DEFAULT_REGION');
+  }
+
+  public getBackupObjectStorageRegion(): string {
+    return this.configService.get('OBJECT_STORAGE_BACKUP_REGION');
   }
 
   public getDefaultObjectStorageCredentials(): BlObjectStorageCredentials {
@@ -85,11 +95,19 @@ export class HnCoreConfigService {
   }
 
   public getDocImageObjectStorageBucket(): string {
-    return this.isProduction() ? 'hub-documentation-prod' : 'hub-documentation-pre-prod';
+    return this.configService.get(HN_BUCKET_DOCUMENTATION_KEY);
+  }
+
+  public getDocImageObjectStorageBackupBucket(): string {
+    return this.configService.get(HN_BUCKET_DOCUMENTATION_BACKUP_KEY);
   }
 
   public getStoryImageObjectStorageBucket(): string {
-    return this.isProduction() ? 'community-stories-prod' : 'community-stories-pre-prod';
+    return this.configService.get(HN_BUCKET_STORIES_KEY);
+  }
+
+  public getStoryImageObjectStorageBackupBucket(): string {
+    return this.configService.get(HN_BUCKET_STORIES_BACKUP_KEY);
   }
 
   public getFrontBaseUrl(): string {

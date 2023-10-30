@@ -270,6 +270,7 @@ export class CnProjectsController {
   public async downloadDocument(@Param('projectId') projectId: string,
                                 @Param('filename') filename: string): Promise<StreamableFile> {
     const file = await this.projectAggregate.getDocument(projectId, filename);
+
     return BlResponseHelper.getFileResponse(file);
   }
 

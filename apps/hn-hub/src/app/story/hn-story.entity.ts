@@ -6,6 +6,7 @@ import {HnUser} from '../users/hn-user.entity';
 import {ClDateHelper, ClStringHelper} from '@monorepo/core-lib';
 import {HnStoryAuthor} from '../story-author/hn-story-author.entity';
 import {Expose} from 'class-transformer';
+import {HnStoryFile} from '../story-file/hn-story-file.entity';
 
 export enum HnStoryStatus {
   DRAFT = 'DRAFT',
@@ -54,6 +55,9 @@ export class HnStory extends BlEntityWithId {
 
   @BlLuxonDateTimeColumn({nullable: true})
   lastModifiedAt: DateTime;
+
+  @OneToMany(() => HnStoryFile, storyFile => storyFile.story, {nullable: true, eager: true})
+  storyFiles: HnStoryFile[];
 
   @BeforeInsert()
   setCreatedDate(): void {

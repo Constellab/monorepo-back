@@ -359,6 +359,13 @@ export class BlObjectStorageService {
     await this.uploadIncomingMessage(destination, result.Body as any, destinationName, result.ContentType);
   }
 
+  public async copyObjectIfExist(source: BlBucketConfig, destination: BlBucketConfig,
+                                 sourceName: string, destinationName?: string): Promise<boolean> {
+    if (!(await this.objectExist(source, sourceName))) return false;
+    await this.copyObject(source, destination, sourceName, destinationName);
+    return true;
+  }
+
   /////////////////////////////////// OTHER ///////////////////////////////////
 
 

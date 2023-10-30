@@ -282,6 +282,10 @@ export class HnBrickAggregateService {
     return this.brickService.getDocByLink(link);
   }
 
+  async structureDocumentationBuckets(): Promise<void> {
+    return await this.documentationService.structureDocumentationBuckets();
+  }
+
   //------------------------------------- TECHNICAL DOCS -------------------------------------
 
   async createTechnicalDoc(content: HnCreateTechnicalDocContent): Promise<boolean> {

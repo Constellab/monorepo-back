@@ -10,10 +10,13 @@ import {
   BlImageHelper,
   BlObjectStorageService,
   BlRichText,
+  BlRichTextFigure,
+  BlRichTextFigureOp,
   BlRichTextHeader,
   BlRichTextI,
   BlRichTextLink,
-  BlRichTextUploadedImage
+  BlRichTextUploadedImage,
+  BlUnauthorizedException
 } from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../../core/modules/core-config/hn-core-config.service';
 import {IncomingMessage} from 'http';
@@ -21,6 +24,7 @@ import {HnNodeDTO} from '../folder/hn-folder.dto';
 import {HnFolder} from '../folder/hn-folder.entity';
 import {ClStringHelper} from '@monorepo/core-lib';
 import {HnFrontService} from '../../core/service/hn-front.service';
+import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 
 @Injectable()
 export class HnDocumentationService {
@@ -212,10 +216,10 @@ export class HnDocumentationService {
     return [documentation.id, anchor ? completePath.slice(0, -1) + '#' + anchor : completePath];
   }
 
-  async saveImage(file: BlFile): Promise<BlRichTextUploadedImage> {
+  async saveImage(file: BlFile, generateRandomObjectName: boolean = true): Promise<BlRichTextUploadedImage> {
     const imSize = BlImageHelper.getImageSize(file);
     const filename = await this.objectStorageService.uploadObject(
-      this.getBucketConfig(), file, {generateRandomObjectName: true});
+      [this.getBucketConfig(), this.getBackupBucketConfig()], file, {generateRandomObjectName: generateRandomObjectName});
 
     return {
       filename: filename,
@@ -268,6 +272,59 @@ export class HnDocumentationService {
     };
   }
 
+  // TODO : A retirer après utilisation
+  public async structureDocumentationBuckets(): Promise<void> {
+    // check if user is admin for authorization
+    if (!HnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) {
+      throw new BlUnauthorizedException();
+    }
+
+    const docs = await this.documentationsRepository.find();
+    for (const doc of docs) {
+      if (doc.content == null) continue;
+      const richText: BlRichText = new BlRichText(doc.content as BlRichTextI);
+      const figures: BlRichTextFigure[] = richText.getFiguresOps().map((f: BlRichTextFigureOp) => f.insert.figure);
+      for (const figure of figures) {
+        if (figure.filename.includes(doc.id + '/images/')  || ClStringHelper.isHttpLink(figure.filename)) continue;
+        let newFilename = '';
+        if(figure.filename.includes(doc.id + '/')){
+          newFilename = figure.filename.replace(doc.id + '/', doc.id + '/images/');
+        } else {
+          newFilename = doc.id + '/images/' + figure.filename;
+        }
+        await this.copyDocImage(figure.filename, newFilename);
+        await this.deleteDocImage(figure.filename);
+        await this.modifyDocImageInContent(doc, figure.filename, newFilename);
+      }
+    }
+  }
+
+  async copyDocImage(filename: string, newFilename?: string): Promise<void> {
+    if (!newFilename) {
+      newFilename = filename;
+    }
+    await this.objectStorageService.copyObjectIfExist(
+      this.getBucketConfig(),
+      this.getBucketConfig(),
+      filename,
+      newFilename
+    );
+    await this.objectStorageService.copyObjectIfExist(
+      this.getBucketConfig(),
+      this.getBackupBucketConfig(),
+      newFilename,
+    );
+  }
+
+  async modifyDocImageInContent(doc: HnDocumentation, filename: string, newFilename: string): Promise<void> {
+    doc.content = BlRichText.modifyFigureInContent(doc.content as BlRichTextI, filename, newFilename);
+    await this.documentationsRepository.save(doc);
+  }
+
+  async deleteDocImage(filename: string): Promise<void> {
+    await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], filename);
+  }
+
   public getDocsByBrickVersion(brickMajorVersionId: string): Promise<HnDocumentation[]>{
     return this.documentationsRepository.find({
       where: {
@@ -279,4 +336,14 @@ export class HnDocumentationService {
       }
     });
   }
+
+  private getBackupBucketConfig(): BlBucketConfig {
+    return {
+      endpoint: this.configService.getBackupObjectStorageEndPoint(),
+      region: this.configService.getBackupObjectStorageRegion(),
+      bucket: this.configService.getDocImageObjectStorageBackupBucket(),
+      credentials: this.configService.getDefaultObjectStorageCredentials()
+    };
+  }
+
 }

@@ -160,6 +160,20 @@ export class BlRichText {
     return mentions;
   }
 
+  public static modifyFigureInContent(content: BlRichTextI, filename: string, newFilename: string): BlRichTextI {
+    const contentData: any[] = content.ops;
+
+    if (contentData != null) {
+      contentData.forEach((c) => {
+        if (c.insert && c.insert.figure && c.insert.figure.filename === filename) {
+          c.insert.figure.filename = newFilename;
+        }
+      });
+    }
+
+    return content;
+  }
+
   public getContent(): BlRichTextI {
     return this.richText;
   }

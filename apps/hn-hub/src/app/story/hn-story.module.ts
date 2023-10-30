@@ -11,6 +11,8 @@ import {HnStoryAuthorService} from '../story-author/hn-story-author.service';
 import {HnStoryAuthorInviteModule} from '../story-author-invite/hn-story-author-invite.module';
 import {HnStoryAuthorInviteService} from '../story-author-invite/hn-story-author-invite.service';
 import {HnCoreModule} from '../core/hn-core.module';
+import {HnStoryFileModule} from '../story-file/hn-story-file.module';
+import {HnStoryFileService} from '../story-file/hn-story-file.service';
 
 @Module({
   imports: [
@@ -20,7 +22,8 @@ import {HnCoreModule} from '../core/hn-core.module';
     HnTopicModule,
     HnStoryAuthorModule,
     HnUserModule,
-    HnStoryAuthorInviteModule
+    HnStoryAuthorInviteModule,
+    HnStoryFileModule
   ],
   exports: [
     TypeOrmModule
@@ -33,7 +36,8 @@ import {HnCoreModule} from '../core/hn-core.module';
     HnTopicService,
     HnStoryAuthorService,
     HnStoryService,
-    HnStoryAuthorInviteService
+    HnStoryAuthorInviteService,
+    HnStoryFileService
   ],
 })
 export class HnStoryModule {

@@ -5,12 +5,14 @@ import {FindOptionsOrder, FindOptionsWhere, In, Like, Repository} from 'typeorm'
 import {HnTopicService} from '../topic/hn-topic.service';
 import {ClPage, ClStringHelper} from '@monorepo/core-lib';
 import {
-  BlAbstractPaginatedService,
+  BlAbstractPaginatedService, BlBadRequestException,
   BlBucketConfig,
   BlFile,
   BlImageHelper,
   BlObjectStorageService,
   BlRichText,
+  BlRichTextFigure,
+  BlRichTextFigureOp,
   BlRichTextI,
   BlRichTextUploadedImage,
   BlUnauthorizedException
@@ -28,6 +30,8 @@ import {HnStoryAuthorInvite} from '../story-author-invite/hn-story-author-invite
 import {HnInviteStatus} from '../core/model/config/hn-invite-status.enum';
 import {HnSiteMapEnumChangefreq, HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
 import {HnFrontService} from '../core/service/hn-front.service';
+import {HnStoryFile} from '../story-file/hn-story-file.entity';
+import { HnStoryFileService } from '../story-file/hn-story-file.service';
 
 
 @Injectable()
@@ -40,7 +44,8 @@ export class HnStoryService {
               private objectStorageService: BlObjectStorageService,
               private configService: HnCoreConfigService,
               private frontService: HnFrontService,
-              private storyAuthorService: HnStoryAuthorService
+              private storyAuthorService: HnStoryAuthorService,
+              private storyFileService: HnStoryFileService
   ) {
   }
 
@@ -199,7 +204,7 @@ export class HnStoryService {
   async saveImage(file: BlFile, storyId: string): Promise<BlRichTextUploadedImage> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId);
     const imSize = BlImageHelper.getImageSize(file);
-    const filename = await this.objectStorageService.uploadObject(this.getBucketConfig(), file,
+    const filename = await this.objectStorageService.uploadObject([this.getBucketConfig(), this.getBackupBucketConfig()], file,
       {generateRandomObjectName: true});
 
     return {
@@ -209,9 +214,60 @@ export class HnStoryService {
     };
   }
 
-  async getImage(filename: string): Promise<IncomingMessage> {
-    return await this.objectStorageService.getObject(this.getBucketConfig(), filename);
+
+  async saveFile(file: BlFile, storyId: string): Promise<HnStoryFile> {
+    await this.checkAndValidateOwnerOrCoAuthor(storyId);
+
+    const originalname = file.originalname;
+    const ext = originalname.split('.').pop();
+    file.originalname = storyId + '/files/' + ClStringHelper.generateUUID() + '.' + ext;
+    const fileName: string = await this.objectStorageService.uploadObject([this.getBucketConfig(), this.getBackupBucketConfig()], file,
+      {generateRandomObjectName: false});
+
+    const story: HnStory = await this.getStory(storyId);
+
+    const storyFile: HnStoryFile = new HnStoryFile();
+    storyFile.initFile(story, originalname, fileName);
+
+    return await this.storyFileService.saveStoryFile(storyFile);
   }
+
+  async getStoryImage(fileName: string): Promise<IncomingMessage> {
+    return await this.objectStorageService.getObject(this.getBucketConfig(), fileName);
+  }
+
+  async getStoryFile(storyFileId: string): Promise<IncomingMessage> {
+    const storyFile: HnStoryFile = await this.storyFileService.getStoryFile(storyFileId);
+    if (storyFile == null) {
+      throw new BlBadRequestException('Document not found');
+    }
+    return await this.objectStorageService.getObject(this.getBucketConfig(), storyFile.fileName);
+  }
+
+  async getStoryFileName(storyFileId: string): Promise<string> {
+    const storyFile: HnStoryFile = await this.storyFileService.getStoryFile(storyFileId);
+    if (storyFile == null) {
+      throw new BlBadRequestException('Document not found');
+    }
+    return storyFile.humanName;
+  }
+
+  async renameStoryFile(storyFileId: string, newFileName: string): Promise<HnStoryFile> {
+    const storyFile: HnStoryFile = await this.storyFileService.getStoryFile(storyFileId);
+    if (storyFile == null) {
+      throw new BlBadRequestException('Document not found');
+    }
+    storyFile.humanName = newFileName;
+    return await this.storyFileService.saveStoryFile(storyFile);
+  }
+
+  async deleteStoryFile(storyFileId: string): Promise<void> {
+    const storyFile: HnStoryFile = await this.storyFileService.getStoryFile(storyFileId);
+    if(await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], storyFile.fileName)){
+      await this.storyFileService.deleteStoryFile(storyFile);
+    }
+  }
+
 
   private getBucketConfig(): BlBucketConfig {
     return {
@@ -220,6 +276,41 @@ export class HnStoryService {
       bucket: this.configService.getStoryImageObjectStorageBucket(),
       credentials: this.configService.getDefaultObjectStorageCredentials()
     };
+  }
+
+  // TODO: A retirer après utilisation en prod
+  async structureStoriesBucket(): Promise<void> {
+    // check if user is admin for authorization
+    if (!HnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) {
+      throw new BlUnauthorizedException();
+    }
+
+    const stories: HnStory[] = await this.storyRepository.find();
+
+    for (const story of stories) {
+      // Change story content
+      const richText: BlRichText = new BlRichText(story.content as BlRichTextI);
+      const figures: BlRichTextFigure[] = richText.getFiguresOps().map((f: BlRichTextFigureOp) => f.insert.figure);
+      for (const figure of figures) {
+        if (figure.filename.includes(story.id + '/images/')  || ClStringHelper.isHttpLink(figure.filename)) continue;
+        let newFilename = '';
+        if(figure.filename.includes(story.id + '/')){
+          newFilename = figure.filename.replace(story.id + '/', story.id + '/images/');
+        } else {
+          newFilename = story.id + '/images/' + figure.filename;
+        }
+        await this.copyStoryImage(figure.filename, newFilename);
+        await this.deleteStoryImage(figure.filename);
+        await this.modifyStoryImageInContent(story, figure.filename, newFilename);
+      }
+
+      // Change story main picture
+      if (story.mainPicture && story.mainPicture.length > 0 &&
+        !story.mainPicture.includes(story.id + '/images/')  && !ClStringHelper.isHttpLink(story.mainPicture)) {
+        story.mainPicture = story.id + '/images/' + story.mainPicture;
+        await this.storyRepository.save(story);
+      }
+    }
   }
 
   async publishStory(id: string): Promise<HnStory> {
@@ -282,5 +373,40 @@ export class HnStoryService {
       changefreq: HnSiteMapEnumChangefreq.MONTHLY,
       lastmod: story.lastModifiedAt.toFormat('yyyy-MM-dd'),
     }));
+  }
+
+  async copyStoryImage(filename: string, newFilename?: string): Promise<void> {
+    if (!newFilename) {
+      newFilename = filename;
+    }
+    await this.objectStorageService.copyObjectIfExist(
+      this.getBucketConfig(),
+      this.getBucketConfig(),
+      filename,
+      newFilename
+    );
+    await this.objectStorageService.copyObjectIfExist(
+      this.getBucketConfig(),
+      this.getBackupBucketConfig(),
+      newFilename,
+    );
+  }
+
+  async deleteStoryImage(filename: string): Promise<void> {
+    await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], filename);
+  }
+
+  async modifyStoryImageInContent(story: HnStory, filename: string, newFilename: string): Promise<void> {
+    story.content = BlRichText.modifyFigureInContent(story.content as BlRichTextI, filename, newFilename);
+    await this.storyRepository.save(story);
+  }
+
+  private getBackupBucketConfig(): BlBucketConfig {
+    return {
+      endpoint: this.configService.getBackupObjectStorageEndPoint(),
+      region: this.configService.getBackupObjectStorageRegion(),
+      bucket: this.configService.getStoryImageObjectStorageBackupBucket(),
+      credentials: this.configService.getDefaultObjectStorageCredentials()
+    };
   }
 }

@@ -1,14 +1,14 @@
 import {
   Body,
-  Controller,
+  Controller, Delete,
   Get,
   Param,
   ParseIntPipe,
   ParseUUIDPipe,
   Post,
   Put,
-  Query,
-  Res,
+  Query, Req,
+  Res, StreamableFile,
   UseInterceptors
 } from '@nestjs/common';
 import {HnStoryService} from './hn-story.service';
@@ -30,6 +30,7 @@ import {HnTopicDto} from '../topic/hn-topic.dto';
 import {HnTopic} from '../topic/hn-topic.entity';
 import {HnStoryAuthorInvite} from '../story-author-invite/hn-story-author-invite.entity';
 import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
+import {HnStoryFile} from '../story-file/hn-story-file.entity';
 
 @Controller('story')
 export class HnStoryController {
@@ -124,12 +125,55 @@ export class HnStoryController {
     return this.storyService.saveImage(file, storyId);
   }
 
+
+  /***
+    * Get story image
+   * @param request
+   * @param response
+   */
   @BlPublic()
-  @Get('image/:filename')
-  async getImage(@Param('filename') filename: string,
+  @Get('image/*')
+  async getImage(@Req() request: Request,
                  @Res() response: Response): Promise<any> {
-    const file = await this.storyService.getImage(filename);
+    const filename = request.url.split('image/')[1];
+    const file = await this.storyService.getStoryImage(filename);
     BlResponseHelper.setMessageAndCache(response, file);
+  }
+
+
+  /***
+   * Get story file
+   * @param storyFileId
+   * @param res
+   */
+  @BlPublic()
+  @Get('get-file/:storyFileId')
+  public async getFile(@Param('storyFileId') storyFileId: string,
+                       @Res({ passthrough: true }) res: Response): Promise<StreamableFile> {
+    const file = await this.storyService.getStoryFile(storyFileId);
+    const fileName: string = await this.storyService.getStoryFileName(storyFileId);
+    res.set({
+      'Content-Disposition': `attachment; filename="${fileName}"`,
+    });
+    return BlResponseHelper.getFileResponse(file);
+  }
+
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('file/:storyId')
+  async saveFile(@BlUploadedFile() file: BlFile,
+                 @Param('storyId', new ParseUUIDPipe()) storyId: string): Promise<HnStoryFile> {
+    return this.storyService.saveFile(file, storyId);
+  }
+
+  @Put('file/:storyFileId/rename')
+  async updateStoryFile(@Param('storyFileId', new ParseUUIDPipe()) storyFileId: string,
+                        @Body('humanName') humanName: string): Promise<HnStoryFile> {
+    return this.storyService.renameStoryFile(storyFileId, humanName);
+  }
+
+  @Delete('file/:storyFileId')
+  async deleteStoryFile(@Param('storyFileId', new ParseUUIDPipe()) storyFileId: string): Promise<void> {
+    return this.storyService.deleteStoryFile(storyFileId);
   }
 
   /***
@@ -182,5 +226,11 @@ export class HnStoryController {
   @Put('invite/:token/accept')
   acceptInvite(@Param('token') token: string): Promise<HnStory> {
     return this.storyService.acceptInvite(token);
+  }
+
+
+  @Post('structure-stories-bucket')
+  structureStoriesBucket(): Promise<void> {
+    return this.storyService.structureStoriesBucket();
   }
 }

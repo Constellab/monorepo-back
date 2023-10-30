@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Param, Put, Res, UseGuards, UseInterceptors} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Put, Req, Res, UseGuards, UseInterceptors} from '@nestjs/common';
 import {HnDocumentation, HnDocumentationDTO} from './documentation/hn-documentation.entity';
 import {
   BlFile,
@@ -60,10 +60,16 @@ export class HnDocumentationController {
    * Return an image of the report
    */
   @BlPublic()
-  @Get('image/:filename')
-  public async get(@Param('filename') filename: string,
+  @Get('image/*')
+  public async get(@Req() request: Request,
                    @Res() response: Response): Promise<any> {
+    const filename = request.url.split('image/')[1];
     const file = await this.brickAggregateService.getDocImage(filename);
     BlResponseHelper.setMessageAndCache(response, file);
+  }
+
+  @Post('structure-doc-bucket')
+  public async structureDocumentationBuckets(): Promise<void> {
+    return await this.brickAggregateService.structureDocumentationBuckets();
   }
 }
