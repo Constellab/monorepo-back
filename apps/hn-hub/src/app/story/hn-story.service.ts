@@ -302,6 +302,7 @@ export class HnStoryService {
         } else {
           newFilename = story.id + '/images/' + figure.filename;
         }
+        console.log('Copy ' + figure.filename + ' to ' + newFilename)
         await this.copyStoryImage(figure.filename, newFilename);
         await this.deleteStoryImage(figure.filename);
         await this.modifyStoryImageInContent(story, figure.filename, newFilename);
