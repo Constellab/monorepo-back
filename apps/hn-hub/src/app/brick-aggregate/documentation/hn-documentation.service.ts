@@ -292,6 +292,7 @@ export class HnDocumentationService {
         } else {
           newFilename = doc.id + '/images/' + figure.filename;
         }
+        console.log('Copy ' + figure.filename + ' to ' + newFilename);
         await this.copyDocImage(figure.filename, newFilename);
         await this.deleteDocImage(figure.filename);
         await this.modifyDocImageInContent(doc, figure.filename, newFilename);
