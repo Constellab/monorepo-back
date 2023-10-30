@@ -5,6 +5,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {And, EntityManager, IsNull, Not, Repository} from 'typeorm';
 import {ClPage} from '@monorepo/core-lib';
 import {CnCloudProviderName} from '../cn-cloud-provider.entity';
+import {FindOptionsWhere} from 'typeorm/find-options/FindOptionsWhere';
 
 
 @Injectable()
@@ -37,8 +38,8 @@ export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProvi
         // eslint-disable-next-line max-len
         throw new BlBadRequestException(`There is already a region ${region.technicalName} for the cloud provider ${region.cloudProvider.name}`);
       }
-    }else{
-      if(region.space == null){
+    } else {
+      if (region.space == null) {
         throw new BlBadRequestException(`The space is required for on premise region`);
       }
     }
@@ -65,22 +66,26 @@ export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProvi
     return region;
   }
 
-  public findAll(page: number, size: number, spaceId: string): Promise<ClPage<CnCloudProviderRegion>> {
-    return this.findPaginated(page, size, {
-      where: [
-        {
-          space: {id: spaceId}
-        },
-        {
-          space: IsNull()
-        }
-      ]
-    });
+  public findAll(page: number, size: number, spaceId?: string): Promise<ClPage<CnCloudProviderRegion>> {
+    let where: FindOptionsWhere<CnCloudProviderRegion>[];
+
+    if (spaceId) {
+      where = [
+        {space: {id: spaceId}},
+        {space: IsNull()}
+      ];
+    } else {
+      where = [];
+    }
+
+    return this.findPaginated(page, size, {where});
   }
 
-  public findS3Regions(page: number, size: number, spaceId: string): Promise<ClPage<CnCloudProviderRegion>> {
-    return this.findPaginated(page, size, {
-      where: [
+  public findS3Regions(page: number, size: number, spaceId?: string): Promise<ClPage<CnCloudProviderRegion>> {
+    let where: FindOptionsWhere<CnCloudProviderRegion>[];
+
+    if (spaceId) {
+      where = [
         {
           space: {id: spaceId},
           s3Endpoint: And(Not(IsNull()), Not(''))
@@ -89,7 +94,13 @@ export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProvi
           space: IsNull(),
           s3Endpoint: And(Not(IsNull()), Not(''))
         }
-      ]
+      ];
+    } else {
+      where = [{s3Endpoint: And(Not(IsNull()), Not(''))}];
+    }
+
+    return this.findPaginated(page, size, {
+      where: where
     });
   }
 

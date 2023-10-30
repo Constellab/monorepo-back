@@ -75,15 +75,27 @@ export class CnCloudProviderAggregateService {
     return await this.cloudProviderRegionService.findByIdAndCheck(id);
   }
 
-  public async getRegions(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
+  public async getRegionsInCurrentSpace(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
     this.checkAuthorizationToGetEntity();
     return this.cloudProviderRegionService.findAll(page, size, CnCurrentUserHelper.getAndCheckUserSpaceInfo().spaceId);
   }
 
-  public async getS3Regions(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
+  public async getS3RegionInCurrentSpace(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
     this.checkAuthorizationToGetEntity();
     return this.cloudProviderRegionService.findS3Regions(page, size, CnCurrentUserHelper.getAndCheckUserSpaceInfo().spaceId);
   }
+
+  // route to get all regions, whatever the space, only accessible for admin
+  public async getAllRegions(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
+    this.checkAuthorizationToModifyEntity();
+    return this.cloudProviderRegionService.findAll(page, size);
+  }
+
+  public async getAllS3Regions(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
+    this.checkAuthorizationToModifyEntity();
+    return this.cloudProviderRegionService.findS3Regions(page, size);
+  }
+
 
   public findRegionByCloudProviderNameAndTechnicalName(cloudProviderName: CnCloudProviderName,
                                                        technicalName: string): Promise<CnCloudProviderRegion> {
