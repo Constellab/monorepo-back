@@ -342,7 +342,8 @@ export class HnDocumentationService {
       endpoint: this.configService.getBackupObjectStorageEndPoint(),
       region: this.configService.getBackupObjectStorageRegion(),
       bucket: this.configService.getDocImageObjectStorageBackupBucket(),
-      credentials: this.configService.getDefaultObjectStorageCredentials()
+      credentials: this.configService.getDefaultObjectStorageCredentials(),
+      bucketType: BlBucketType.NORMAL
     };
   }
 

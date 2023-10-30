@@ -5,8 +5,10 @@ import {FindOptionsOrder, FindOptionsWhere, In, Like, Repository} from 'typeorm'
 import {HnTopicService} from '../topic/hn-topic.service';
 import {ClPage, ClStringHelper} from '@monorepo/core-lib';
 import {
-  BlAbstractPaginatedService, BlBadRequestException,
+  BlAbstractPaginatedService,
+  BlBadRequestException,
   BlBucketConfig,
+  BlBucketType,
   BlFile,
   BlImageHelper,
   BlObjectStorageService,
@@ -31,7 +33,7 @@ import {HnInviteStatus} from '../core/model/config/hn-invite-status.enum';
 import {HnSiteMapEnumChangefreq, HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
 import {HnFrontService} from '../core/service/hn-front.service';
 import {HnStoryFile} from '../story-file/hn-story-file.entity';
-import { HnStoryFileService } from '../story-file/hn-story-file.service';
+import {HnStoryFileService} from '../story-file/hn-story-file.service';
 
 
 @Injectable()
@@ -274,7 +276,8 @@ export class HnStoryService {
       endpoint: this.configService.getDefaultObjectStorageEndPoint(),
       region: this.configService.getDefaultObjectStorageRegion(),
       bucket: this.configService.getStoryImageObjectStorageBucket(),
-      credentials: this.configService.getDefaultObjectStorageCredentials()
+      credentials: this.configService.getDefaultObjectStorageCredentials(),
+      bucketType: BlBucketType.NORMAL
     };
   }
 
@@ -406,7 +409,8 @@ export class HnStoryService {
       endpoint: this.configService.getBackupObjectStorageEndPoint(),
       region: this.configService.getBackupObjectStorageRegion(),
       bucket: this.configService.getStoryImageObjectStorageBackupBucket(),
-      credentials: this.configService.getDefaultObjectStorageCredentials()
+      credentials: this.configService.getDefaultObjectStorageCredentials(),
+      bucketType: BlBucketType.NORMAL
     };
   }
 }
