@@ -253,6 +253,7 @@ export class BlObjectStorageService {
   ////////////////////////////////////////// BUCKET //////////////////////////////////////////
 
   public async createBucket(config: BlBucketConfig): Promise<void> {
+    console.log(config);
     const s3Client = this.getClient(config);
 
     await s3Client.send(new CreateBucketCommand({Bucket: config.bucket}));
@@ -374,7 +375,7 @@ export class BlObjectStorageService {
       endpoint: config.endpoint,
       region: config.region,
       credentials: config.credentials,
-      // forcePathStyle: true // this is to enable localhost
+      forcePathStyle: true // set the bucket name in the url (not in the domain)
     });
   }
 
