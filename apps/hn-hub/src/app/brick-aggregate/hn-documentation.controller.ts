@@ -1,4 +1,17 @@
-import {Body, Controller, Delete, Get, Param, Post, Put, Req, Res, UseGuards, UseInterceptors} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Req,
+  Res,
+  UseGuards,
+  UseInterceptors
+} from '@nestjs/common';
 import {HnDocumentation, HnDocumentationDTO} from './documentation/hn-documentation.entity';
 import {
   BlFile,
@@ -50,10 +63,11 @@ export class HnDocumentationController {
   }
 
   @UseInterceptors(FileInterceptor('file'))
-  @Put('/image')
-  saveImage(@BlUploadedFile() file: BlFile): Promise<BlRichTextUploadedImage> {
+  @Put('/image/:docId')
+  saveImage(@BlUploadedFile() file: BlFile,
+            @Param('docId', new ParseUUIDPipe()) docId: string): Promise<BlRichTextUploadedImage> {
     //TODO: Check how to secure this root
-    return this.brickAggregateService.saveDocImage(file);
+    return this.brickAggregateService.saveDocImage(file, docId);
   }
 
   /**

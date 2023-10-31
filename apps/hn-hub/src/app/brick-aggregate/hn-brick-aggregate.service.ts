@@ -231,8 +231,8 @@ export class HnBrickAggregateService {
     return this.documentationService.update(updatedDoc);
   }
 
-  async saveDocImage(file: BlFile): Promise<BlRichTextUploadedImage> {
-    return this.documentationService.saveImage(file);
+  async saveDocImage(file: BlFile, docId: string): Promise<BlRichTextUploadedImage> {
+    return this.documentationService.saveImage(docId, file, false);
   }
 
   async getDocImage(id: string): Promise<IncomingMessage> {

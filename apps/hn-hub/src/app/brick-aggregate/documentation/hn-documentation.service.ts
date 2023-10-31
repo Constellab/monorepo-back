@@ -216,8 +216,11 @@ export class HnDocumentationService {
     return [documentation.id, anchor ? completePath.slice(0, -1) + '#' + anchor : completePath];
   }
 
-  async saveImage(file: BlFile, generateRandomObjectName: boolean = true): Promise<BlRichTextUploadedImage> {
+  async saveImage(docId: string, file: BlFile, generateRandomObjectName: boolean = true): Promise<BlRichTextUploadedImage> {
     const imSize = BlImageHelper.getImageSize(file);
+    const fileExt = file.originalname.split('.').pop();
+    file.originalname = docId + '/images/' + ClStringHelper.generateUUID() + '.' + fileExt;
+
     const filename = await this.objectStorageService.uploadObject(
       [this.getBucketConfig(), this.getBackupBucketConfig()], file, {generateRandomObjectName: generateRandomObjectName});
 

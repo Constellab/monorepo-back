@@ -206,8 +206,10 @@ export class HnStoryService {
   async saveImage(file: BlFile, storyId: string): Promise<BlRichTextUploadedImage> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId);
     const imSize = BlImageHelper.getImageSize(file);
+    const fileExt = file.originalname.split('.').pop();
+    file.originalname = storyId + '/images/' + ClStringHelper.generateUUID() + '.' + fileExt;
     const filename = await this.objectStorageService.uploadObject([this.getBucketConfig(), this.getBackupBucketConfig()], file,
-      {generateRandomObjectName: true});
+      {generateRandomObjectName: false});
 
     return {
       filename: filename,
