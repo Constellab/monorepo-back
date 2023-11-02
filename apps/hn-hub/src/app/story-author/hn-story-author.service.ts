@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {HnStoryAuthor} from './hn-story-author.entity';
+import {HnStoryAuthor, HnStoryAuthorStatus} from './hn-story-author.entity';
 import {Repository} from 'typeorm';
 import {HnUserService} from '../users/hn-user.service';
 import {HnUser} from '../users/hn-user.entity';
@@ -29,8 +29,14 @@ export class HnStoryAuthorService {
     }
   }
 
-  async removeStoryCoAuthor(storyAuthorUserId: string): Promise<void> {
-    const storyAuthor: HnStoryAuthor = await this.storyAuthorRepository.findOneBy({user: {id: storyAuthorUserId}});
+  async removeStoryCoAuthor(storyId: string, storyAuthorUserId: string): Promise<void> {
+    const storyAuthor: HnStoryAuthor = await this.storyAuthorRepository.findOneBy(
+      {
+        story: {id: storyId},
+        user: {id: storyAuthorUserId},
+        status: HnStoryAuthorStatus.COAUTHOR
+      }
+    );
     if (storyAuthor) {
       await this.storyAuthorRepository.remove(storyAuthor);
     }

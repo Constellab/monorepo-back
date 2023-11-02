@@ -353,7 +353,7 @@ export class HnStoryService {
 
   async removeStoryCoAuthor(id: string, storyAuthorUserId: string): Promise<void> {
     await this.checkAndValidateOwnerOrCoAuthor(id);
-    return this.storyAuthorService.removeStoryCoAuthor(storyAuthorUserId);
+    return this.storyAuthorService.removeStoryCoAuthor(id, storyAuthorUserId);
   }
 
   async inviteStoryCoAuthor(storyId: string, coAuthorMail: string): Promise<boolean>{
