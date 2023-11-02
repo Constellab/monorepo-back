@@ -62,4 +62,21 @@ export class HnStoryAuthorInviteService {
     return (await this.storyAuthorInviteRepository.save(storyAuthorInvite)) != null;
   }
 
+  async getStoryCoAuthorsPendingInvites(storyId: string): Promise<HnStoryAuthorInvite[]>{
+    return this.storyAuthorInviteRepository.findBy({
+      story: {
+        id: storyId
+      },
+      status: HnInviteStatus.PENDING
+    });
+  }
+
+  async deleteCoAuthorInvite(inviteId: string): Promise<boolean>{
+    const invite = await this.storyAuthorInviteRepository.findOneBy({id: inviteId});
+    if(invite == null){
+      return false;
+    }
+    return await this.storyAuthorInviteRepository.remove(invite) != null;
+  }
+
 }

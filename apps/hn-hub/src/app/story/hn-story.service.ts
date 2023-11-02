@@ -346,9 +346,22 @@ export class HnStoryService {
     return this.storyRepository.save(story);
   }
 
-  async removeStoryCoAuthor(id: string, storyAuthorId: string): Promise<void> {
+  async getStoryCoAuthorsPendingInvites(id: string): Promise<HnStoryAuthorInvite[]> {
     await this.checkAndValidateOwnerOrCoAuthor(id);
-    return this.storyAuthorService.removeStoryCoAuthor(storyAuthorId);
+    return this.storyAuthorService.getStoryCoAuthorsPendingInvites(id);
+  }
+
+  async removeStoryCoAuthor(id: string, storyAuthorUserId: string): Promise<void> {
+    await this.checkAndValidateOwnerOrCoAuthor(id);
+    return this.storyAuthorService.removeStoryCoAuthor(storyAuthorUserId);
+  }
+
+  async inviteStoryCoAuthor(storyId: string, coAuthorMail: string): Promise<boolean>{
+    await this.checkAndValidateOwnerOrCoAuthor(storyId);
+    const story: HnStory = await this.getStory(storyId);
+    if (story == null)
+      throw new BlBadRequestException('Story not found');
+    return this.storyAuthorService.inviteStoryCoAuthor(story, coAuthorMail);
   }
 
   async isInviteValid(token: string): Promise<HnStoryAuthorInvite> {
@@ -415,5 +428,10 @@ export class HnStoryService {
       credentials: this.configService.getDefaultObjectStorageCredentials(),
       bucketType: BlBucketType.NORMAL
     };
+  }
+
+
+  async deleteCoAuthorInvite(inviteId: string): Promise<boolean> {
+    return this.storyAuthorService.deleteCoAuthorInvite(inviteId);
   }
 }

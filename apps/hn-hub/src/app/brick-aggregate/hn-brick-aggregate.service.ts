@@ -325,5 +325,4 @@ export class HnBrickAggregateService {
   async getBrickVersionDirectReferences(brickVersionId: string): Promise<HnReferenceDTO[]> {
     return this.brickVersionService.getDirectReferences(brickVersionId);
   }
-
 }

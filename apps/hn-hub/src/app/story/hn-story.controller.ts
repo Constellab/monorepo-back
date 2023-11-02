@@ -193,6 +193,12 @@ export class HnStoryController {
     return this.storyService.isStoryOwnerOrCoAuthor(id);
   }
 
+  @Post(':id/invite-co-author')
+  async inviteStoryCoAuthor(@Param('id', new ParseUUIDPipe()) id: string,
+                            @Body('coAuthorMail') coAuthorMail: string): Promise<boolean> {
+    return this.storyService.inviteStoryCoAuthor(id, coAuthorMail);
+  }
+
   /***
    * Update Story Co Authors
    */
@@ -202,13 +208,18 @@ export class HnStoryController {
     return this.storyService.updateStoryCoAuthors(id, coAuthors);
   }
 
+  @Get(':id/co-authors-pending-invites')
+  async getStoryCoAuthorsPendingInvites(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnStoryAuthorInvite[]> {
+    return this.storyService.getStoryCoAuthorsPendingInvites(id);
+  }
+
   /***
    * Remove story co-author
    */
-  @Put(':id/remove-co-author/:storyAuthorId')
+  @Put(':id/remove-co-author/:storyAuthorUserId')
   async removeStoryCoAuthor(@Param('id', new ParseUUIDPipe()) id: string,
-                            @Param('storyAuthorId', new ParseUUIDPipe()) storyAuthorId: string): Promise<void> {
-    return this.storyService.removeStoryCoAuthor(id, storyAuthorId);
+                            @Param('storyAuthorUserId', new ParseUUIDPipe()) storyAuthorUserId: string): Promise<void> {
+    return this.storyService.removeStoryCoAuthor(id, storyAuthorUserId);
   }
 
 
@@ -232,5 +243,10 @@ export class HnStoryController {
   @Post('structure-stories-bucket')
   structureStoriesBucket(): Promise<void> {
     return this.storyService.structureStoriesBucket();
+  }
+
+  @Delete('invite/:inviteId')
+  async deleteCoAuthorInvite(@Param('inviteId', new ParseUUIDPipe()) inviteId: string): Promise<boolean> {
+    return this.storyService.deleteCoAuthorInvite(inviteId);
   }
 }

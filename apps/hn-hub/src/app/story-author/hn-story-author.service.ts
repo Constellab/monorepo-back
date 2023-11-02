@@ -29,8 +29,8 @@ export class HnStoryAuthorService {
     }
   }
 
-  async removeStoryCoAuthor(storyAuthorId: string): Promise<void> {
-    const storyAuthor: HnStoryAuthor = await this.storyAuthorRepository.findOneBy({id: storyAuthorId});
+  async removeStoryCoAuthor(storyAuthorUserId: string): Promise<void> {
+    const storyAuthor: HnStoryAuthor = await this.storyAuthorRepository.findOneBy({user: {id: storyAuthorUserId}});
     if (storyAuthor) {
       await this.storyAuthorRepository.remove(storyAuthor);
     }
@@ -43,5 +43,17 @@ export class HnStoryAuthorService {
   async acceptInvite(storyAuthor: HnStoryAuthor, storyAuthorInvite: HnStoryAuthorInvite): Promise<boolean> {
     return (await this.storyAuthorInviteService.acceptInvite(storyAuthorInvite)) != null
       && (await this.storyAuthorRepository.save(storyAuthor)) != null;
+  }
+
+  async getStoryCoAuthorsPendingInvites(storyId: string): Promise<HnStoryAuthorInvite[]> {
+    return this.storyAuthorInviteService.getStoryCoAuthorsPendingInvites(storyId);
+  }
+
+  async inviteStoryCoAuthor(story: HnStory, coAuthorMail: string): Promise<boolean> {
+    return this.storyAuthorInviteService.createStoryAuthorMail(story, coAuthorMail);
+  }
+
+  async deleteCoAuthorInvite(inviteId: string): Promise<boolean> {
+    return this.storyAuthorInviteService.deleteCoAuthorInvite(inviteId);
   }
 }
