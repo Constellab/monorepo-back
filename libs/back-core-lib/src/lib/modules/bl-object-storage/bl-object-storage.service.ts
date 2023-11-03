@@ -261,7 +261,6 @@ export class BlObjectStorageService {
   ////////////////////////////////////////// BUCKET //////////////////////////////////////////
 
   public async createBucket(config: BlBucketConfig): Promise<void> {
-    console.log(config);
     const s3Client = this.getClient(config);
 
     await s3Client.send(new CreateBucketCommand({Bucket: config.bucket}));

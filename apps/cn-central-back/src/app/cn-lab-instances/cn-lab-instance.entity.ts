@@ -44,7 +44,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
 
   public static readonly SUPPORTED_MAIN_DOMAINS = ['constellab.app', 'gencovery.io'];
   public static readonly SPACE_API_ROUTE = 'central-api';
-  public static readonly S3_API_ROUTE = 's3-server';
+  public static readonly S3_API_ROUTE = 's3-server/v1';
   public static readonly CORE_API_ROUTE = 'core-api';
 
   @Column({nullable: false, length: 50})
@@ -242,6 +242,9 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   }
 
   getS3ApiUrl(): string {
+    if(this.name == 'localhost') {
+      return 'http://localhost:3000/' + CnLabInstance.S3_API_ROUTE;
+    }
     return this.glabUrl + '/' + CnLabInstance.S3_API_ROUTE;
   }
 
