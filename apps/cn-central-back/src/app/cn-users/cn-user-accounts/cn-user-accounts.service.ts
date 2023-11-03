@@ -1,10 +1,10 @@
 import {Injectable, Logger} from '@nestjs/common';
-import {CnUser} from '../../cn-users/cn-user.entity';
+import {CnUser} from '../cn-user.entity';
 import {CnMailTemplate} from '../../cn-core/model/config/cn-mail-template.class';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DataSource, EntityManager, Repository} from 'typeorm';
 import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-config.service';
-import {CnUsersService} from '../../cn-users/cn-users.service';
+import {CnUsersService} from '../cn-users.service';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
 import {TokenExpiredError} from 'jsonwebtoken';
 import {hash} from 'argon2';
@@ -23,7 +23,7 @@ import {CnFrontService} from '../../cn-core/services/cn-front.service';
 import {CnSpaceAggregateService} from '../../cn-spaces/cn-space-aggregate.service';
 import {CnGroupsService} from '../../cn-groups/cn-groups.service';
 import {CnNotificationService} from '../../cn-notification/cn-notification.service';
-import {CnCreateUserDto} from '../../cn-users/cn-user.dto';
+import {CnCreateUserDto} from '../cn-user.dto';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 import {CnActivityEntityType} from '../../cn-activity/cn-activity.entity';
 
@@ -37,6 +37,8 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
   private readonly controllerRoute: string = '/accounts';
 
   private readonly logger = new Logger(CnUserAccountsService.name);
+
+  private readonly userLockMailActivation: number = 86400 * 7;
 
   constructor(@InjectRepository(CnUser) private repository: Repository<CnUser>,
               private configService: CnCoreConfigService,
@@ -204,9 +206,9 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     await this.usersService.update(user);
   }
 
-  sendAccountLockedMail(user: CnUser, expireIn: number, failedLoginLock: number): void {
+  sendAccountLockedMail(user: CnUser, failedLoginLock: number): void {
     // generate the activation token
-    const token: string = this.encodeUserToken(user.id, expireIn);
+    const token: string = this.encodeUserToken(user.id, this.userLockMailActivation);
 
     // get unlock API url with the token
     const unlockUrl: string = this.configService.getApiUrl() + this.controllerRoute + '/unlock/' + token;

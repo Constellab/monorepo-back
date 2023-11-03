@@ -32,7 +32,7 @@ import {
   CnProjectAncestorTreeDTO,
   CnProjectAncestorType,
   CnProjectDtoHelper,
-  CnProjectStorageRegionDTO,
+  CnProjectStorageLocationDTO,
   CnProjectTreeDTO,
   CnSaveProjectDTO
 } from './cn-projects/cn-project.dto';
@@ -45,12 +45,19 @@ import {CnDocument} from './cn-documents/cn-document.entity';
 import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
 import {CnProjectUser} from './cn-project-user/cn-project-user.entity';
 import {CnActivity} from '../cn-activity/cn-activity.entity';
+import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import {CnProjectBucketService} from './cn-projects/cn-project-bucket.service';
+import {CnReportsService} from './cn-reports/cn-reports.service';
+import {CnProjectCommentService} from '../cn-project-comment/cn-project-comment.service';
 
 
 @Controller('projects')
 export class CnProjectsController {
 
-  constructor(private projectAggregate: CnProjectAggregateService) {
+  constructor(private projectAggregate: CnProjectAggregateService,
+              private projectBucketService: CnProjectBucketService,
+              private reportService: CnReportsService,
+              private projectCommentService: CnProjectCommentService) {
   }
 
   @Post()
@@ -195,6 +202,21 @@ export class CnProjectsController {
                                    @Res() response: Response): Promise<any> {
     const file = await this.projectAggregate.getDescriptionImage(projectId, filename);
     BlResponseHelper.setMessageAndCache(response, file);
+  }
+
+  @Post('description-migrate')
+  public async migrateDescriptionImages(): Promise<void> {
+    await this.projectBucketService.migrateDescriptionImages();
+  }
+
+  @Post('report-migrate')
+  public async migrateReport(): Promise<void> {
+    await this.reportService.migrateReports();
+  }
+
+  @Post('comment-migrate')
+  public async migrateComment(): Promise<void> {
+    await this.projectCommentService.migrateComment();
   }
 
   /////////////////////////////// COMMENTS ///////////////////////////////////////////
@@ -346,14 +368,20 @@ export class CnProjectsController {
 
   /////////////////////////////// Project Bucket ///////////////////////////////////////////
   @Post(':projectId/storage')
-  createProjectBucket(@Body(new BlParsePipe(CnProjectStorageRegionDTO)) createProjectBucketDto: CnProjectStorageRegionDTO,
-                      @Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnProjectStorageRegionDTO> {
+  createProjectBucket(@Body() createProjectBucketDto: CnProjectStorageLocationDTO,
+                      @Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnProjectStorageLocationDTO> {
     return this.projectAggregate.createProjectBucket(projectId, createProjectBucketDto);
   }
 
   @Get(':projectId/storage')
-  getProjectStorage(@Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnProjectStorageRegionDTO> {
+  getProjectStorage(@Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnProjectStorageLocationDTO> {
     return this.projectAggregate.getProjectStorage(projectId);
+  }
+
+  @Get('storage/buckets')
+  findAccessibleProjectBucketLocation(@Query('page', ParseIntPipe) page: number,
+                                      @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnBucketLocationDTO>> {
+    return this.projectAggregate.findAccessibleProjectBucketLocation(page, size);
   }
 
   /////////////////////////////// Project user ///////////////////////////////////////////

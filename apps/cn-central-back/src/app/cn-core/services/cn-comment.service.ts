@@ -20,11 +20,11 @@ export class CnCommentService<T extends BlEntityWithId> extends BlAbstractServic
     super(repository, entityClass);
   }
 
-  async saveImage(file: BlFile, bucketConfig: BlBucketConfig | BlBucketConfig[], prefix?: string): Promise<BlRichTextUploadedImage> {
+  async saveImage(file: BlFile, bucketConfig: BlBucketConfig | BlBucketConfig[], prefix: string): Promise<BlRichTextUploadedImage> {
     const imSize = BlImageHelper.getImageSize(file);
-    const filename = await this.objectStorageService.uploadObject(bucketConfig, file,
-      {generateRandomObjectName: true, prefix: prefix});
-
+    const filename = this.objectStorageService.generateRandomFileName(imSize.type);
+    await this.objectStorageService.uploadObject(bucketConfig, file,
+      {filename: filename, prefix: prefix});
 
     return {
       filename: filename,
@@ -33,8 +33,8 @@ export class CnCommentService<T extends BlEntityWithId> extends BlAbstractServic
     };
   }
 
-  async getImage(filename: string, bucketConfig: BlBucketConfig): Promise<IncomingMessage> {
-    return await this.objectStorageService.getObject(bucketConfig, filename);
+  async getImage(filename: string, bucketConfig: BlBucketConfig, prefix: string): Promise<IncomingMessage> {
+    return await this.objectStorageService.getObject(bucketConfig, prefix + '/' + filename);
   }
 
 }

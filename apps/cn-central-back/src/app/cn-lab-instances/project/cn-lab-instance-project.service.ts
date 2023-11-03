@@ -54,4 +54,15 @@ export class CnLabInstanceProjectService {
       }
     });
   }
+
+  public async findByProjectId(projectId: string): Promise<CnLabInstanceProject[]> {
+    return this.repository.find({
+      where: {
+        projectId: projectId
+      },
+      relations: {
+        labInstance: true
+      }
+    });
+  }
 }

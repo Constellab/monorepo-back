@@ -28,6 +28,9 @@ export class CnBucketCredentials extends CnBaseEntity {
   @ManyToOne(() => CnSpace, {nullable: true})
   space: CnSpace;
 
+  @Column({nullable: true})
+  spaceId: string;
+
   @Column({nullable: true, length: 50})
   s3Username: string;
 

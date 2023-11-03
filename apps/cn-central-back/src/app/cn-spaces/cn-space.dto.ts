@@ -1,10 +1,19 @@
 import {CnSpaceUserRole} from './cn-space-user.entity';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnSpaceInvit} from './cn-space-invit.entity';
-import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnSpace} from './cn-space.entity';
 import {Type} from 'class-transformer';
+import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 
+
+export class CnSaveSpaceDTO {
+  id: string;
+  name: string;
+  nbLicenses: number;
+
+  defaultProjectStorageLocation: CnBucketLocationDTO;
+  defaultProjectBackupStorageLocation?: CnBucketLocationDTO;
+}
 
 export interface CnSpaceInvitCreateDto {
   userMail: string;
@@ -30,17 +39,17 @@ export class CnSpaceSettingsDto {
   @Type(() => CnSpace)
   space: CnSpace;
   nbLicenses: number;
-  @Type(() => CnCloudProviderRegion)
-  defaultStorageRegion: CnCloudProviderRegion;
-  @Type(() => CnCloudProviderRegion)
-  defaultBackupStorageRegion: CnCloudProviderRegion;
+
+  defaultProjectStorageLocation: CnBucketLocationDTO;
+  defaultBackupProjectStorageLocation ?: CnBucketLocationDTO;
 
   static fromSpace(space: CnSpace): CnSpaceSettingsDto {
     const spaceSettings = new CnSpaceSettingsDto();
     spaceSettings.space = space;
     spaceSettings.nbLicenses = space.nbLicenses;
-    spaceSettings.defaultStorageRegion = space.defaultStorageRegion;
-    spaceSettings.defaultBackupStorageRegion = space.defaultBackupStorageRegion;
+    spaceSettings.defaultProjectStorageLocation = space.defaultProjectBucket.getBucketLocation();
+
+    spaceSettings.defaultBackupProjectStorageLocation = space.defaultProjectBackupBucket?.getBucketLocation() ?? null;
     return spaceSettings;
   }
 }

@@ -7,6 +7,7 @@ import {CnLabBackupBucket} from './cn-lab-backup.dto';
 import {CnLabInstance} from '../cn-lab-instance.entity';
 import {CnBucketsService} from '../../cn-object-storages/cn-buckets/cn-buckets.service';
 import {ClPageI} from '@monorepo/core-lib';
+import {CnBucket} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 
 @Injectable()
@@ -63,7 +64,7 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
     return this.findPaginated(page, size, {
       where: {labInstance: {id: labInstanceId}},
       relations: {
-        bucket: {region: true}
+        bucket: CnBucket.configRelation
       },
       order: {startedAt: 'DESC' as any},
     });

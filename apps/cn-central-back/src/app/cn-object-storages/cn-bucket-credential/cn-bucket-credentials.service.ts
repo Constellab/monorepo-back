@@ -36,6 +36,15 @@ export class CnBucketCredentialsService extends BlAbstractService<CnBucketCreden
     });
   }
 
+  public findAllBySpaceId(spaceId: string, page: number, size: number): Promise<ClPage<CnBucketCredentials>> {
+    return this.findPaginated(page, size, {
+      relations: CnBucketCredentials.completeRelations,
+      where: {
+        space: {id: spaceId}
+      }
+    });
+  }
+
   public async findCompleteByIdAndCheck(id: string): Promise<CnBucketCredentials> {
     return this.findByIdAndCheck(id, CnBucketCredentials.completeRelations);
   }

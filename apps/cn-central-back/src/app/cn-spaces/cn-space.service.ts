@@ -16,7 +16,7 @@ import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-con
 import {IncomingMessage} from 'http';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 @Injectable()
 export class CnSpaceService extends BlAbstractService<CnSpace> {
@@ -34,16 +34,17 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     return this.create(space, entityManager);
   }
 
-  public async createPersonalSpace(user: CnUser, region: CnCloudProviderRegion,
-                                   backupRegion: CnCloudProviderRegion, entityManager: EntityManager): Promise<CnSpace> {
+  public async createPersonalSpace(user: CnUser, defaultProjectStorageBucket: CnBucket,
+                                   defaultBackupProjectStorageBucket: CnBucket,
+                                   entityManager: EntityManager): Promise<CnSpace> {
     const space = new CnSpace();
     space.name = user.fullname;
     space.nbLicenses = 0;
     space.type = CnSpaceType.PERSONAL;
     space.createdBy = user;
     space.lastModifiedBy = user;
-    space.defaultStorageRegion = region;
-    space.defaultBackupStorageRegion = backupRegion;
+    space.defaultProjectBucket = defaultProjectStorageBucket;
+    space.defaultProjectBackupBucket = defaultBackupProjectStorageBucket;
     return entityManager.save(space);
   }
 
@@ -52,16 +53,13 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     return super.update(entity, entityManager);
   }
 
-
   public async getAll(page: number, size: number): Promise<ClPage<CnSpace>> {
     return this.findPaginated(page, size, {order: {name: 'ASC'}});
   }
 
-
   public findByDomain(domain: string): Promise<CnSpace | null> {
     return this.repository.findOneBy({domain});
   }
-
 
   async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
     const space = await this.findByIdAndCheck(id, null, entityManager);

@@ -2,6 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
 import {BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {CnBucketCredentials} from './cn-bucket-credential/cn-bucket-credential.entity';
 
 
 @Injectable()
@@ -20,11 +21,32 @@ export class CnObjectStoragesSecurity {
   }
 
   /**
-   * Only a G admin can retrieve credentials
+   * Only a G admin can retrieve generic credentials (not associated to a space)
    * @param user
    */
-  public checkAuthorizationToGetCredentials(user: CnUser): void {
+  public checkAuthorizationForGenericCredentials(user: CnUser): void {
     if (!user.isAdmin()) throw new BlUnauthorizedException();
+  }
+
+  /**
+   * Only a space admin can retrieve space credentials
+   */
+  public checkAuthorizationForSpaceCredentials(spaceId: string, userInfo: CnUserSpaceInfo): void {
+    if (spaceId !== userInfo.spaceId) throw new BlUnauthorizedException();
+    if (!userInfo.isSpaceAdmin()) throw new BlUnauthorizedException();
+  }
+
+  /**
+   * For a given credentials, check if the user is authorized to retrieve it
+   * @param credentials
+   * @param userInfo
+   */
+  public checkAuthorizationForCredentials(credentials: CnBucketCredentials, userInfo: CnUserSpaceInfo): void {
+    if (credentials.spaceId != null || credentials.space != null) {
+      this.checkAuthorizationForSpaceCredentials(credentials.spaceId ?? credentials.space.id, userInfo);
+    } else {
+      this.checkAuthorizationForGenericCredentials(userInfo.user);
+    }
   }
 
   /**

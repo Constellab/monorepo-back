@@ -2,11 +2,8 @@ import {CnProject} from './cn-project.entity';
 import {CnProjectLevelStatus} from './cn-project-level.enum';
 import {DateTime} from 'luxon';
 import {ClLuxonDateTransform} from '@monorepo/core-lib';
-import {
-  CnCloudProviderRegion
-} from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {Type} from 'class-transformer';
-import {CnBucket} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
+import {CnBucket, CnBucketLocationDTO} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 
 export class CnSaveProjectDTO {
@@ -19,12 +16,9 @@ export class CnSaveProjectDTO {
   @ClLuxonDateTransform()
   endingDate: DateTime;
 
-  // only for project level in creation
-  @Type(() => CnCloudProviderRegion)
-  mainRegion?: CnCloudProviderRegion;
+  mainStorage?: CnBucketLocationDTO;
 
-  @Type(() => CnCloudProviderRegion)
-  backupRegion?: CnCloudProviderRegion;
+  backupStorage?: CnBucketLocationDTO;
 
 }
 
@@ -44,17 +38,10 @@ export interface CnProjectTreeDTO {
   levelStatus: CnProjectLevelStatus;
 }
 
-export class CnProjectStorageRegionDTO {
-  @Type(() => CnCloudProviderRegion)
-  mainRegion: CnCloudProviderRegion;
+export interface CnProjectStorageLocationDTO {
+  mainStorage: CnBucketLocationDTO;
 
-  @Type(() => CnCloudProviderRegion)
-  backupRegion?: CnCloudProviderRegion;
-
-  constructor(mainRegion?: CnCloudProviderRegion, backupRegion?: CnCloudProviderRegion) {
-    this.mainRegion = mainRegion;
-    this.backupRegion = backupRegion;
-  }
+  backupStorage?: CnBucketLocationDTO;
 }
 
 export class CnProjectBucketsDTO {

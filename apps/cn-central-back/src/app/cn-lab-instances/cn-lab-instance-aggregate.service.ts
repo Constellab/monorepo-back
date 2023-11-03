@@ -290,7 +290,7 @@ export class CnLabInstanceAggregateService {
   private async getStatus(labInstance: CnLabInstance): Promise<CnLabInstanceStatusDTO> {
     const promises: [Promise<boolean>, Promise<boolean>] = [
       this.labManagerService.healthCheck(labInstance.getLabManagerApiInfo().apiUrl),
-      this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo())
+      this.externalLabApiService.healthCheck(labInstance.getGlabSpaceApiInfo())
     ];
 
     return Promise.all(promises).then(async ([labManagerStatus, glabStatus]) => {
@@ -365,7 +365,7 @@ export class CnLabInstanceAggregateService {
     // }
 
     // if the lab is running
-    const healthCheck = await this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo());
+    const healthCheck = await this.externalLabApiService.healthCheck(labInstance.getGlabSpaceApiInfo());
     if (healthCheck) {
       return await this.labInstancesService.markInstanceAsLabRunning(labInstanceId);
     }
@@ -402,7 +402,7 @@ export class CnLabInstanceAggregateService {
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
     try {
       const token =
-        await this.externalLabUserService.generateTempAccess(labInstance.getGlabApiInfo(),
+        await this.externalLabUserService.generateTempAccess(labInstance.getGlabSpaceApiInfo(),
           user, labInstance.space);
 
       return new CnLabInstanceToken(labInstance, token.temp_token);
@@ -442,10 +442,10 @@ export class CnLabInstanceAggregateService {
 
     try {
       const externalRole: CnExternalLabUserRole = group.role === CnLabInstanceUserRole.OWNER ? 'ADMIN' : 'USER';
-      await this.externalLabUserService.addUser(labInstance.getGlabApiInfo(), user, externalRole);
+      await this.externalLabUserService.addUser(labInstance.getGlabSpaceApiInfo(), user, externalRole);
 
       const token =
-        await this.externalLabUserService.generateTempAccess(labInstance.getGlabApiInfo(),
+        await this.externalLabUserService.generateTempAccess(labInstance.getGlabSpaceApiInfo(),
           CnCurrentUserHelper.getAndCheckCurrentUser(), labInstance.space);
 
       return new CnLabInstanceToken(labInstance, token.temp_token);
@@ -463,14 +463,14 @@ export class CnLabInstanceAggregateService {
       throw new BlBadRequestException(CnErrorText.CANT_MANAGE_DESKTOP_LAB);
     }
 
-    const isRunning = await this.externalLabApiService.healthCheck(lab.getGlabApiInfo());
+    const isRunning = await this.externalLabApiService.healthCheck(lab.getGlabSpaceApiInfo());
     this.logger.log('Lab ' + labInstanceId + ' is running : ' + isRunning);
     if (!isRunning) {
       throw new BlBadRequestException('The lab is not running');
     }
 
     try {
-      return await this.externalLabApiService.getSettings(lab.getGlabApiInfo());
+      return await this.externalLabApiService.getSettings(lab.getGlabSpaceApiInfo());
     } catch {
       throw new BlBadRequestException('Can\'t retrieve the settings');
     }
@@ -490,10 +490,10 @@ export class CnLabInstanceAggregateService {
 
       if (labInstance.isHttpAccessible()) {
         // add the user to the lab is the lab is running
-        const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo());
+        const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabSpaceApiInfo());
         if (labIsRunning) {
           const externalRole: CnExternalLabUserRole = role === CnLabInstanceUserRole.OWNER ? 'ADMIN' : 'USER';
-          await this.externalLabUserService.addUser(labInstance.getGlabApiInfo(), user, externalRole);
+          await this.externalLabUserService.addUser(labInstance.getGlabSpaceApiInfo(), user, externalRole);
         }
       }
 
@@ -515,11 +515,11 @@ export class CnLabInstanceAggregateService {
 
       if (labInstance.isHttpAccessible()) {
         // add the user to the lab is the lab is running
-        const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo());
+        const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabSpaceApiInfo());
 
         if (labIsRunning) {
           // deactivate the user in the lab
-          await this.externalLabUserService.deactivateUser(labInstance.getGlabApiInfo(), userId);
+          await this.externalLabUserService.deactivateUser(labInstance.getGlabSpaceApiInfo(), userId);
         }
       }
     });
@@ -547,10 +547,10 @@ export class CnLabInstanceAggregateService {
       const labProject = await this.labInstanceProjectService.createLabInstanceProject(labInstance, projectTree, entityManager);
 
       // add the user to the lab is the lab is running
-      const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabApiInfo());
+      const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabSpaceApiInfo());
       if (labIsRunning) {
         // add the project to the lab
-        await this.externalLabProjectService.addProjectInLab(labInstance.getGlabApiInfo(), projectTree);
+        await this.externalLabProjectService.addProjectInLab(labInstance.getGlabSpaceApiInfo(), projectTree);
       }
 
       return labProject;
@@ -565,7 +565,7 @@ export class CnLabInstanceAggregateService {
       await this.labInstanceProjectService.deleteLabInstanceProject(labInstanceId, projectId, entityManager);
 
       // remove the project from the lab
-      await this.externalLabProjectService.deleteProjectInLab(labInstance.getGlabApiInfo(), projectId);
+      await this.externalLabProjectService.deleteProjectInLab(labInstance.getGlabSpaceApiInfo(), projectId);
     });
   }
 

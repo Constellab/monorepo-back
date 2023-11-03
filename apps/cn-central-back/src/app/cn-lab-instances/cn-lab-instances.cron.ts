@@ -111,7 +111,7 @@ export class CnLabInstancesCron {
     for (const option of options) {
       const lab = await this.labInstanceService.findByIdAndCheck(option.labInstanceId);
       if (lab.isRunning()) {
-        const labGlobalActivity = await this.externalLabApiService.getLabGlobalActivity(lab.getGlabApiInfo()).catch(() => null);
+        const labGlobalActivity = await this.externalLabApiService.getLabGlobalActivity(lab.getGlabSpaceApiInfo()).catch(() => null);
 
         if (labGlobalActivity == null || labGlobalActivity.running_experiments > 0 || labGlobalActivity.queued_experiments > 0) {
           continue;
@@ -153,7 +153,7 @@ export class CnLabInstancesCron {
       if (lab.isRunning()) {
         const value: CnLabGreenOptionStopAfterInactivityValue = option.value as CnLabGreenOptionStopAfterInactivityValue;
 
-        const labGlobalActivity = await this.externalLabApiService.getLabGlobalActivity(lab.getGlabApiInfo()).catch(() => null);
+        const labGlobalActivity = await this.externalLabApiService.getLabGlobalActivity(lab.getGlabSpaceApiInfo()).catch(() => null);
         if (labGlobalActivity.last_activity == null) continue;
 
         const lastActivityDate = ClDateHelper.getDate(labGlobalActivity.last_activity.created_at);

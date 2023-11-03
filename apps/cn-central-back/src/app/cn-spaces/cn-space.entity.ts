@@ -1,8 +1,8 @@
 import {BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne} from 'typeorm';
 import {CnBaseEntity} from '../cn-core/model/entities/cn-base.entity';
 import {ClDateHelper, ClStringHelper} from '@monorepo/core-lib';
-import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {Exclude, Type} from 'class-transformer';
+import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 export enum CnSpaceType {
   // personal space create on the user creation (he cas invite other users in his space)
@@ -35,16 +35,16 @@ export class CnSpace extends CnBaseEntity {
   // default bucket region for this space
   @Exclude({toPlainOnly: true})
   // use by default for project bucket
-  @Type(() => CnCloudProviderRegion)
-  @ManyToOne(() => CnCloudProviderRegion, {nullable: false})
-  defaultStorageRegion: CnCloudProviderRegion;
+  @Type(() => CnBucket)
+  @ManyToOne(() => CnBucket, {nullable: false})
+  defaultProjectBucket: CnBucket;
 
   // default bucket region for this space
   @Exclude({toPlainOnly: true})
   // use by default for project bucket
-  @Type(() => CnCloudProviderRegion)
-  @ManyToOne(() => CnCloudProviderRegion, {nullable: true})
-  defaultBackupStorageRegion?: CnCloudProviderRegion;
+  @Type(() => CnBucket)
+  @ManyToOne(() => CnBucket, {nullable: true})
+  defaultProjectBackupBucket?: CnBucket;
 
   // don't set the createdBy and lastModifiedBy automatically
   // because this group it can be created on user signup (so no current user)

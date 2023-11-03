@@ -55,8 +55,16 @@ export class BlObjectStorageService {
   constructor() {
   }
 
-  public generateRandomFileName(extension: string): string {
+  public generateRandomFileNameFromExtension(extension: string): string {
     return ClStringHelper.generateUUID() + '_' + new Date().getTime() + '.' + extension;
+  }
+
+  /**
+   * Retrieve the extension of the file name then generate a random name with this extension
+   * @param filename
+   */
+  public generateRandomFileName(filename: string): string {
+    return this.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(filename));
   }
 
   //////////////////////////////////////////// UPLOAD OBJECT /////////////////////////////////////////
@@ -384,12 +392,12 @@ export class BlObjectStorageService {
     if (options.filename) {
       filename = options.filename;
     } else if (options.generateRandomObjectName) {
-      filename = this.generateRandomFileName(extension);
+      filename = this.generateRandomFileNameFromExtension(extension);
     } else {
       if (defaultName) {
         filename = defaultName;
       } else {
-        filename = this.generateRandomFileName(extension);
+        filename = this.generateRandomFileNameFromExtension(extension);
       }
     }
 

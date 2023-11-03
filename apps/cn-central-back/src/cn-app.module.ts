@@ -62,6 +62,7 @@ import {ScheduleModule} from '@nestjs/schedule';
 import {ThrottlerModule} from '@nestjs/throttler';
 import {EventEmitterModule} from '@nestjs/event-emitter';
 import {CnActivityModule} from './app/cn-activity/cn-activity.module';
+import {CnUserAccountModule} from './app/cn-users/cn-user-accounts/cn-user-account.module';
 
 function typeOrmConfig(configService: CnCoreConfigService, persistenceEventService: BlPersistenceEventService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();
@@ -197,6 +198,7 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     // Entities module
     CnUsersModule,
     CnAuthModule,
+    CnUserAccountModule,
     CnLabConfigsModule,
     CnProjectsAggregateModule,
     CnExperimentsModule,

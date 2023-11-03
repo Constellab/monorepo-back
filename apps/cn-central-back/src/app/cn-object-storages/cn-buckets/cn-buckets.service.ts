@@ -8,7 +8,7 @@ import {
   BlSearchParams
 } from '@monorepo/back-core-lib';
 import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, EntityManager, Repository} from 'typeorm';
+import {DataSource, EntityManager, Not, Repository} from 'typeorm';
 import {CnBucket, CnBucketContentType} from './cn-bucket.entity';
 import {ClPage} from '@monorepo/core-lib';
 
@@ -30,7 +30,8 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     return this.datasource.transaction(async entityManager => {
       // create the bucket in DB and then in the object storage
       const bucketDb = await super.create(bucket, entityManager);
-      await this.objectStorageService.createBucket(bucketDb.getBucketConfig());
+      // TODO : uncomment when the object storage is ready
+      // await this.objectStorageService.createBucket(bucketDb.getBucketConfig());
 
       return bucketDb;
     });
@@ -64,26 +65,47 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       if (existingBucket.length > 0) {
         throw new BlBadRequestException(`There is already a bucket of type ${bucket.contentType}`);
       }
-    } else {
+    }
+
+    // on cloud region there are only normal buckets
+    if (bucket.bucketType === BlBucketType.LAB) {
+      if (bucket.labInstance == null) {
+        throw new BlBadRequestException(`Lab must be defined for lab bucket`);
+      }
+
+      if (bucket.contentType !== CnBucketContentType.PROJECT) {
+        throw new BlBadRequestException(`Lab bucket can only be used for projects`);
+      }
+      // force the name of the lab bucket
+      bucket.name = CnBucket.LAB_BUCKET_NAME;
+      bucket.region = null;
+
+      const existingBucket = await this.repository.findOne({
+        where: {
+          labInstance: {
+            id: bucket.labInstance.id
+          },
+          id: bucket.id ? Not(bucket.id) : undefined,
+        }
+      });
+
+      if (existingBucket != null) {
+        throw new BlBadRequestException(`There is already a lab bucket for lab ${bucket.labInstance.name}`);
+      }
+    }
+
+    if (bucket.bucketType === BlBucketType.NORMAL) {
+      if (bucket.region == null) {
+        throw new BlBadRequestException(`Region must be defined for normal bucket`);
+      }
+      bucket.labInstance = null;
+
       // there can be only one bucket of type by region
       const existingBucket = await this.findByContentTypeAndRegion(bucket.contentType, bucket.region.technicalName);
 
       if (existingBucket != null && existingBucket.id !== bucket.id) {
         throw new BlBadRequestException(`There is already a bucket of type ${bucket.contentType} in region ${bucket.region.technicalName}`);
       }
-    }
-
-    // on cloud region there are only normal buckets
-    if (bucket.bucketType === BlBucketType.LAB) {
-      if (bucket.region.isCloud()) {
-        throw new BlBadRequestException(`Lab bucket can't use a cloud region`);
-      }
-
-      if(bucket.contentType !== CnBucketContentType.PROJECT) {
-        throw new BlBadRequestException(`Lab bucket can only be used for projects`);
-      }
-      // force the name of the lab bucket
-      bucket.name = CnBucket.LAB_BUCKET_NAME;
     }
 
     return bucket;
@@ -133,6 +155,31 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       throw new BlBadRequestException(`Bucket ${name} in region ${regionName} not found`);
     }
     return bucket;
+  }
+
+  /**
+   * Return bucket accessible for a space and a type
+   * @param contentType
+   * @param spaceId filter bucket of type lab by space
+   * @param page
+   * @param size
+   */
+  public async searchByContentTypeAndSpace(contentType: CnBucketContentType, spaceId: string,
+                                           page: number, size: number): Promise<ClPage<CnBucket>> {
+    return await this.findPaginated(page, size, {
+      where: [
+        {
+          contentType: contentType,
+          bucketType: BlBucketType.NORMAL,
+        }, {
+          contentType: contentType,
+          bucketType: BlBucketType.LAB,
+          labInstance: {
+            spaceId: spaceId
+          }
+        }],
+      relations: CnBucket.configRelation
+    });
   }
 
 

@@ -17,8 +17,6 @@ import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 @Injectable()
 export class CnExternalLabApiService {
 
-  private readonly baseApiRoute: string = 'central-api';
-
   constructor(private apiService: BlExternalApiService) {
   }
 
@@ -73,7 +71,7 @@ export class CnExternalLabApiService {
   }
 
   private constructRoute(labUrl: string, route: string): string {
-    return `${labUrl}/${this.baseApiRoute}/${route}`;
+    return `${labUrl}/${route}`;
   }
 
 

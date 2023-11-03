@@ -21,7 +21,7 @@ import {
   CnProjectAncestorTreeDTO,
   CnProjectAncestorType,
   CnProjectDtoHelper,
-  CnProjectStorageRegionDTO,
+  CnProjectStorageLocationDTO,
   CnSaveProjectDTO
 } from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
@@ -49,6 +49,7 @@ import {CnProjectEvent, cnProjectEventName, CnProjectEventType} from './cn-proje
 import {EventEmitter2} from '@nestjs/event-emitter';
 import {CnActivity, CnActivityEntityType} from '../cn-activity/cn-activity.entity';
 import {CnActivityService} from '../cn-activity/cn-activity.service';
+import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -78,10 +79,10 @@ export class CnProjectAggregateService {
       entity.parent = null;
       entity.currentLevel = CnProjectLevel.PROJECT;
       entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
-      entity.mainStorage = await this.projectBucketService.getBucketByRegion(projectDto.mainRegion.id);
+      entity.mainStorage = await this.projectBucketService.getBucketById(projectDto.mainStorage.bucketId);
 
-      if (projectDto.backupRegion) {
-        entity.backupStorage = await this.projectBucketService.getBucketByRegion(projectDto.backupRegion.id);
+      if (projectDto.backupStorage) {
+        entity.backupStorage = await this.projectBucketService.getBucketById(projectDto.backupStorage.bucketId);
       }
       const dbProject = await this.projectService.create(entity, manager);
 
@@ -344,7 +345,7 @@ export class CnProjectAggregateService {
   public async getDescriptionImage(projectId: string, filename: string): Promise<IncomingMessage> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    return this.projectBucketService.getObject(project.getRootParentId(), filename);
+    return this.projectBucketService.getDescriptionImage(project, filename);
   }
 
   /////////////////////////////////////// PROJECT STATUS //////////////////////////////////
@@ -614,7 +615,7 @@ export class CnProjectAggregateService {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
     const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(project.getRootParentId());
-    return await this.projectCommentService.getImage(filename, bucketConfig);
+    return await this.projectCommentService.getCommentImage(project, bucketConfig, filename);
   }
 
   /////////////////////////////////////// DOCUMENT //////////////////////////////////
@@ -739,37 +740,47 @@ export class CnProjectAggregateService {
 
   /////////////////////////////////////// PROJECT BUCKET //////////////////////////////////
 
-  public async createProjectBucket(projectId: string, projectStorageDTO: CnProjectStorageRegionDTO)
-    : Promise<CnProjectStorageRegionDTO> {
+  public async createProjectBucket(projectId: string, projectStorageDTO: CnProjectStorageLocationDTO)
+    : Promise<CnProjectStorageLocationDTO> {
     await this.getProjectAndCheckForBucketUpdate(projectId);
 
-    const projectWithRegions = await this.projectBucketService.findProjectWithStorageById(projectId);
+    const projectWithStorage = await this.projectBucketService.findProjectWithStorageById(projectId);
 
-    if (projectWithRegions.mainStorage && projectWithRegions.backupStorage) {
+    if (projectWithStorage.mainStorage && projectWithStorage.backupStorage) {
       throw new BlBadRequestException('The project storage regions are already defined');
     }
 
-    if (projectWithRegions.mainStorage == null && projectStorageDTO.mainRegion) {
-      projectWithRegions.mainStorage = await this.projectBucketService.getBucketByRegion(projectStorageDTO.mainRegion.id);
+    if (projectWithStorage.mainStorage == null && projectStorageDTO.mainStorage) {
+      projectWithStorage.mainStorage = await this.projectBucketService.getBucketById(projectStorageDTO.mainStorage.bucketId);
     }
 
-    if (projectWithRegions.backupStorage == null && projectStorageDTO.backupRegion) {
-      projectWithRegions.backupStorage = await this.projectBucketService.getBucketByRegion(projectStorageDTO.backupRegion.id);
+    if (projectWithStorage.backupStorage == null && projectStorageDTO.backupStorage) {
+      projectWithStorage.backupStorage = await this.projectBucketService.getBucketById(projectStorageDTO.backupStorage.bucketId);
     }
 
-    await this.projectService.update(projectWithRegions);
+    await this.projectService.update(projectWithStorage);
 
-    return new CnProjectStorageRegionDTO(projectWithRegions.mainStorage.region, projectWithRegions.backupStorage?.region ?? null);
+    return {
+      mainStorage: projectWithStorage.mainStorage?.getBucketLocation() ?? null,
+      backupStorage: projectWithStorage.backupStorage?.getBucketLocation() ?? null
+    };
   }
 
-  public async getProjectStorage(projectId: string): Promise<CnProjectStorageRegionDTO> {
+  public async getProjectStorage(projectId: string): Promise<CnProjectStorageLocationDTO> {
     await this.getProjectAndCheckForBucketUpdate(projectId);
 
     const buckets = await this.projectBucketService.getProjectBucket(projectId);
 
     // return only region to the user, he doesn't need the bucket name
-    return new CnProjectStorageRegionDTO(
-      buckets.mainStorage?.region ?? null, buckets.backupStorage?.region ?? null);
+    return {
+      mainStorage: buckets.mainStorage?.getBucketLocation() ?? null,
+      backupStorage: buckets.backupStorage?.getBucketLocation() ?? null
+    };
+  }
+
+  public async findAccessibleProjectBucketLocation(page: number, size: number): Promise<ClPage<CnBucketLocationDTO>> {
+    const info = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+    return this.projectBucketService.findAccessibleProjectBucketLocation(info.spaceId, page, size);
   }
 
   private async getProjectAndCheckForBucketUpdate(projectId: string): Promise<CnProject> {

@@ -16,6 +16,8 @@ import {
 import {CnAuthService} from '../cn-auth/cn-auth.service';
 import {CnBucketCredentialsFull} from './cn-object-storage.dto';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
+import {CnCloudProviderAggregateService} from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
+import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 
 
 @Injectable()
@@ -24,7 +26,8 @@ export class CnObjectStoragesAggregateService {
   constructor(private securityService: CnObjectStoragesSecurity,
               private bucketService: CnBucketsService,
               private bucketCredentialsService: CnBucketCredentialsService,
-              private authService: CnAuthService) {
+              private authService: CnAuthService,
+              private cloudProviderService: CnCloudProviderAggregateService) {
   }
 
 
@@ -52,6 +55,11 @@ export class CnObjectStoragesAggregateService {
     return this.bucketService.search(searchParams, page, size);
   }
 
+  public async searchByContentTypeAndSpaceNotSecure(contentType: CnBucketContentType, spaceId: string,
+                                                    page: number, size: number): Promise<ClPage<CnBucket>> {
+    return this.bucketService.searchByContentTypeAndSpace(contentType, spaceId, page, size);
+  }
+
   public async getBucketByContentTypeAndRegionNotSecure(contentType: CnBucketContentType, regionId: string): Promise<CnBucket> {
     const bucket = await this.bucketService.findByContentTypeAndRegion(contentType, regionId);
 
@@ -62,34 +70,72 @@ export class CnObjectStoragesAggregateService {
     return bucket;
   }
 
+  public async getBucketByIdNotSecure(id: string): Promise<CnBucket> {
+    return await this.bucketService.findByIdAndCheck(id, CnBucket.configRelation);
+  }
+
+  public async getDefaultProjectBucketStorage1(): Promise<CnBucket> {
+    const defaultRegion = await this.cloudProviderService.getDefaultS3Region1();
+
+    return await this.getAndCheckProjectBucketForRegion(defaultRegion);
+  }
+
+  public async getDefaultProjectBucketStorage2(): Promise<CnBucket> {
+    const defaultRegion = await this.cloudProviderService.getDefaultS3Region2();
+
+    return await this.getAndCheckProjectBucketForRegion(defaultRegion);
+  }
+
+  private async getAndCheckProjectBucketForRegion(region: CnCloudProviderRegion): Promise<CnBucket> {
+    const bucket = await this.bucketService.findByContentTypeAndRegion(CnBucketContentType.PROJECT, region.id);
+
+    if (bucket == null) {
+      // eslint-disable-next-line max-len
+      throw new BlBadRequestException(`No bucket found for content type ${CnBucketContentType.PROJECT} and region ${region.technicalName}`);
+    }
+
+    return bucket;
+  }
+
+
   /////////////////////////// CREDENTIALS ///////////////////////////
 
   public async createBucketCredentials(credentials: CnBucketCredentials): Promise<CnBucketCredentials> {
-    this.checkAuthorizationToModifyEntity();
+    this.checkAuthorizationForCredentials(credentials);
     return this.bucketCredentialsService.create(credentials);
   }
 
   public async updateBucketCredentials(credentials: CnBucketCredentials): Promise<CnBucketCredentials> {
-    this.checkAuthorizationToModifyEntity();
+    const credentialsDb = await this.bucketCredentialsService.findCompleteByIdAndCheck(credentials.id);
+    this.checkAuthorizationForCredentials(credentialsDb);
     await this.bucketCredentialsService.update(credentials);
     return this.bucketCredentialsService.findCompleteByIdAndCheck(credentials.id);
   }
 
   public async deleteBucketCredentials(id: string): Promise<void> {
-    this.checkAuthorizationToModifyEntity();
+    const credentials = await this.bucketCredentialsService.findCompleteByIdAndCheck(id);
+    this.checkAuthorizationForCredentials(credentials);
     await this.bucketCredentialsService.deleteById(id);
   }
 
   public async getAllBucketCredentials(page: number, size: number): Promise<ClPage<CnBucketCredentials>> {
-    this.checkAuthorizationToGetCredentials();
+    this.securityService.checkAuthorizationForGenericCredentials(CnCurrentUserHelper.getAndCheckCurrentUser());
     return this.bucketCredentialsService.findAll(page, size);
+  }
+
+  public async getAllBucketCredentialsByCurrentSpace(page: number, size: number): Promise<ClPage<CnBucketCredentials>> {
+    this.securityService.checkAuthorizationForSpaceCredentials(CnCurrentUserHelper.getAndCheckUserSpaceInfo().spaceId,
+      CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    return this.bucketCredentialsService.findAllBySpaceId(CnCurrentUserHelper.getAndCheckUserSpaceInfo().spaceId, page, size);
   }
 
   /**
    * Get the credentials with the keys, this requires the user password and the user need to be an admin
    */
   public async getCredentialsData(credentialsId: string, userCredentials: BlCredentials): Promise<CnBucketCredentialsFull> {
-    this.checkAuthorizationToGetCredentials();
+
+    const credentials = await this.bucketCredentialsService.findCompleteByIdAndCheck(credentialsId);
+    this.checkAuthorizationForCredentials(credentials);
 
     const user = await this.authService.checkCredentialsAndUser(userCredentials, false);
 
@@ -97,12 +143,11 @@ export class CnObjectStoragesAggregateService {
       throw new BlUnauthorizedException(CnErrorText.WRONG_CREDENTIALS);
     }
 
-    const credentials = await this.bucketCredentialsService.findCompleteByIdAndCheck(credentialsId);
     return BlDtoHelper.toDto(CnBucketCredentialsFull, credentials);
   }
 
-  public checkAuthorizationToGetCredentials(): void {
-    this.securityService.checkAuthorizationToGetCredentials(CnCurrentUserHelper.getAndCheckCurrentUser());
+  public checkAuthorizationForCredentials(credentials: CnBucketCredentials): void {
+    this.securityService.checkAuthorizationForCredentials(credentials, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
   }
 
 

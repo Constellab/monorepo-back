@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {CnReport} from './cn-report.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
@@ -9,6 +9,7 @@ import {
   BlBadRequestException,
   BlBucketConfig,
   BlFile,
+  BlFileHelper,
   BlObjectStorageService
 } from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
@@ -20,6 +21,7 @@ import {CnProjectBucketService} from '../cn-projects/cn-project-bucket.service';
 
 @Injectable()
 export class CnReportsService extends BlAbstractService<CnReport> {
+  protected readonly logger = new Logger(CnReportsService.name);
 
   constructor(@InjectRepository(CnReport) private repository: Repository<CnReport>,
               private objectStorageService: BlObjectStorageService,
@@ -160,8 +162,8 @@ export class CnReportsService extends BlAbstractService<CnReport> {
                                  files: BlFile[], prefix: string): Promise<void> {
     if (!files) return;
     for (const file of files) {
-      let filename = prefix + file.originalname;
-      filename = await this.objectStorageService.uploadObject(buckets, file, {filename: filename});
+      const filename = this.objectStorageService.generateRandomFileName(file.originalname);
+      await this.objectStorageService.uploadObject(buckets, file, {filename: filename, prefix: prefix});
 
       richText.updateFigure(file.originalname, {filename: filename});
     }
@@ -179,9 +181,12 @@ export class CnReportsService extends BlAbstractService<CnReport> {
 
       const viewData = resourceViews[viewConfig.id];
 
-      // upload the json and save the filename in the content
-      specialOp.insert.resource_view.filename = await this.objectStorageService.uploadJson(
+      // upload the json
+      const filePath = await this.objectStorageService.uploadJson(
         buckets, viewData, {prefix});
+
+      // and save the filename in the content
+      specialOp.insert.resource_view.filename = BlFileHelper.extractFilenameFromFullPath(filePath);
     }
   }
 
@@ -189,13 +194,38 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     return await this.projectBucketService.getAndCheckProjectMainBucketConfig(projectId);
   }
 
+  public async migrateReports(): Promise<void> {
+    this.logger.log('Start migration of reports');
 
-  // TODO REMOVE
-  public async getAllReports(): Promise<CnReport[]>{
-    return await this.repository.find({
-      relations: {
-        project: true
+    const reports = await this.repository.find();
+
+    for (const report of reports) {
+      let hasImage: boolean = false;
+      const richText = new CnReportContent(report.content);
+
+
+      for(const image of richText.getFiguresOps()){
+        if(image.insert.figure.filename.includes('/')){
+          image.insert.figure.filename = image.insert.figure.filename.split('/').pop();
+          hasImage = true;
+        }
       }
-    });
+
+      for(const image of richText.getViewsOps()){
+        if(image.insert.resource_view.filename.includes('/')){
+          image.insert.resource_view.filename = image.insert.resource_view.filename.split('/').pop();
+          hasImage = true;
+        }
+      }
+
+      if (hasImage) {
+        this.logger.log('Migrate report image for report ' + report.id);
+        report.content = richText.getContent();
+
+        await this.repository.save(report);
+      }
+    }
+
+    this.logger.log('End migration of reports');
   }
 }

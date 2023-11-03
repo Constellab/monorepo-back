@@ -43,6 +43,8 @@ export enum CnLabDesktopPlatform {
 export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory> {
 
   public static readonly SUPPORTED_MAIN_DOMAINS = ['constellab.app', 'gencovery.io'];
+  public static readonly SPACE_API_ROUTE = 'central-api';
+  public static readonly S3_API_ROUTE = 's3-server';
 
   @Column({nullable: false, length: 50})
   name: string;
@@ -209,20 +211,19 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
       (this.currentStatus?.status === CnLabInstanceStatus.NO_SERVER ?? false);
   }
 
-  getGlabApiInfo(): CnExternalApiInfo {
+  getGlabSpaceApiInfo(): CnExternalApiInfo {
     // specific rule for local development
     if (this.name == 'localhost') {
       return {
         apiKey: '123456',
-        apiUrl: 'http://localhost:3000'
+        apiUrl: 'http://localhost:3000/' + CnLabInstance.SPACE_API_ROUTE
       };
     }
     return {
       apiKey: this.glabApiKey,
-      apiUrl: this.glabUrl
+      apiUrl: this.glabUrl + '/' + CnLabInstance.SPACE_API_ROUTE
     };
   }
-
 
   getLabManagerApiInfo(): CnExternalApiInfo {
     if (this.name == 'localhost') {
@@ -237,6 +238,10 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
       apiKey: this.labManagerApiKey,
       apiUrl: this.labManagerUrl
     };
+  }
+
+  getS3ApiUrl(): string {
+    return this.glabUrl + '/' + CnLabInstance.S3_API_ROUTE;
   }
 
   // get the subdomain name

@@ -328,7 +328,7 @@ export class CnLabServerService {
 
   public async checkLabActivity(labInstance: CnLabInstance): Promise<void> {
     // check if there are any running containers
-    const labActivity = await this.externalLabApiService.getLabGlobalActivity(labInstance.getGlabApiInfo())
+    const labActivity = await this.externalLabApiService.getLabGlobalActivity(labInstance.getGlabSpaceApiInfo())
       .catch(error => {
         this.logger.error(`Could not get lab activity for lab ${labInstance.id}. Error: ${error}`);
         return null;

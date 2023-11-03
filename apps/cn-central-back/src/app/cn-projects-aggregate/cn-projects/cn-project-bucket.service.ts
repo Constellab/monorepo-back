@@ -1,13 +1,13 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {CnProject} from './cn-project.entity';
-import {CnBucket, CnBucketContentType} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
+import {CnBucket, CnBucketContentType, CnBucketLocationDTO} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {
   BlBadRequestException,
   BlBucketConfig,
   BlFile,
-  BlFileHelper,
   BlImageHelper,
   BlObjectStorageService,
+  BlRichText,
   BlRichTextUploadedImage
 } from '@monorepo/back-core-lib';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
@@ -15,6 +15,7 @@ import {CnObjectStoragesAggregateService} from '../../cn-object-storages/cn-obje
 import {IncomingMessage} from 'http';
 import {CnProjectBucketsDTO} from './cn-project.dto';
 import {CnProjectsService} from './cn-projects.service';
+import {ClPage} from '@monorepo/core-lib';
 
 /**
  * Class to handle project bucket.
@@ -79,8 +80,8 @@ export class CnProjectBucketService {
 
   /////////////////////////////// METHODS ///////////////////////////////
 
-  public async getBucketByRegion(regionId: string): Promise<CnBucket> {
-    return this.objectStorageAggregateService.getBucketByContentTypeAndRegionNotSecure(CnBucketContentType.PROJECT, regionId);
+  public async getBucketById(id: string): Promise<CnBucket> {
+    return this.objectStorageAggregateService.getBucketByIdNotSecure(id);
   }
 
   public async getProjectBucket(projectId: string): Promise<CnProjectBucketsDTO> {
@@ -122,29 +123,68 @@ export class CnProjectBucketService {
     });
   }
 
+  public async findAccessibleProjectBucketLocation(spaceId: string, page: number, size: number)
+    : Promise<ClPage<CnBucketLocationDTO>> {
+    const buckets = await this.objectStorageAggregateService.searchByContentTypeAndSpaceNotSecure(
+      CnBucketContentType.PROJECT, spaceId, page, size);
+
+    return buckets.map((bucket) => bucket.getBucketLocation());
+  }
+
   /////////////////////////////////////////// DESCRIPTION ///////////////////////////////////////////
   public async saveDescriptionImage(project: CnProject, file: BlFile): Promise<BlRichTextUploadedImage> {
     const bucketConfig = await this.getAndCheckProjectBucketConfig(project.getRootParentId());
 
-    const size = BlImageHelper.getImageSize(file);
+    const imSize = BlImageHelper.getImageSize(file);
 
     const prefix = CnProjectBucketService.getPrefix(project, 'DESCRIPTION');
-    const extension = BlFileHelper.getFileExtension(file.originalname);
-    const filePath = `${prefix}/${this.objectStorageService.generateRandomFileName(extension)}`;
+    const filename = this.objectStorageService.generateRandomFileNameFromExtension(imSize.type);
 
     await this.objectStorageService.uploadObject(bucketConfig, file,
-      {filename: filePath});
+      {filename: filename, prefix: prefix});
 
     return {
-      filename: filePath,
-      width: size.width,
-      height: size.height
+      filename: filename,
+      width: imSize.width,
+      height: imSize.height
     };
   }
 
-  public async getObject(rootProjectId: string, filePath: string): Promise<IncomingMessage> {
-    const bucketConfig = await this.getAndCheckProjectMainBucketConfig(rootProjectId);
-    return this.objectStorageService.getObject(bucketConfig, filePath);
+  public async getDescriptionImage(project: CnProject, filename: string): Promise<IncomingMessage> {
+    const bucketConfig = await this.getAndCheckProjectMainBucketConfig(project.getRootParentId());
+    const prefix = CnProjectBucketService.getPrefix(project, 'DESCRIPTION');
+    return this.objectStorageService.getObject(bucketConfig, prefix + '/' + filename);
+  }
+
+  // TODO TO REMOVE
+  public async migrateDescriptionImages(): Promise<void>{
+    this.logger.log('Start migration of description images');
+
+    const projects = await this.projectService.findAll();
+
+    for (const project of projects) {
+      let hasImage: boolean = false;
+      const description = project.description;
+      if (description == null) continue;
+
+      const content = new BlRichText(description);
+
+      for(const image of content.getFiguresOps()){
+        if(image.insert.figure.filename.includes('/')){
+          image.insert.figure.filename = image.insert.figure.filename.split('/').pop();
+          hasImage = true;
+        }
+      }
+
+
+      if(hasImage){
+        this.logger.log('Migrate description image for project ' + project.id)
+        project.description = content.getContent();
+        await this.projectService.update(project);
+      }
+    }
+
+    this.logger.log('End migration of description images');
   }
 
 }

@@ -12,12 +12,19 @@ import {BlBadRequestException, BlFile, BlSearchParams} from '@monorepo/back-core
 import {IncomingMessage} from 'http';
 import {CnSpaceInvit} from './cn-space-invit.entity';
 import {CnSpaceInvitService} from './cn-space-invit.service';
-import {CnRequestNewLicensesDto, CnSpaceInvitCreateDto, CnSpaceInvitReadDto, CnSpaceSettingsDto} from './cn-space.dto';
+import {
+  CnRequestNewLicensesDto,
+  CnSaveSpaceDTO,
+  CnSpaceInvitCreateDto,
+  CnSpaceInvitReadDto,
+  CnSpaceSettingsDto
+} from './cn-space.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {DataSource, EntityManager} from 'typeorm';
 import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
 import {CnSpacesMailService} from './cn-spaces-mail.service';
-import {CnCloudProviderAggregateService} from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
+import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import {CnObjectStoragesAggregateService} from '../cn-object-storages/cn-object-storages-aggregate.service';
 
 @Injectable()
 export class CnSpaceAggregateService {
@@ -29,7 +36,7 @@ export class CnSpaceAggregateService {
               private userService: CnUsersService,
               private datasource: DataSource,
               private spacesMailService: CnSpacesMailService,
-              private cloudProviderAggregateService: CnCloudProviderAggregateService) {
+              private objectStorageAggregateService: CnObjectStoragesAggregateService) {
   }
 
   public async getCurrentInfo(): Promise<CnUserSpaceInfo> {
@@ -54,20 +61,19 @@ export class CnSpaceAggregateService {
 
   public async getSpaceSettings(spaceId: string): Promise<CnSpaceSettingsDto> {
     const space = await this.spaceService.findByIdAndCheck(spaceId, {
-      defaultStorageRegion: {cloudProvider: true},
-      defaultBackupStorageRegion: {cloudProvider: true}
+      defaultProjectBucket: CnBucket.configRelation,
+      defaultProjectBackupBucket: CnBucket.configRelation
     });
 
     return CnSpaceSettingsDto.fromSpace(space);
   }
 
-  public async createBasicSpace(entity: CnSpace): Promise<CnSpaceSettingsDto> {
-    await this.checkSpaceSave(entity);
+  public async createBasicSpace(entity: CnSaveSpaceDTO): Promise<CnSpaceSettingsDto> {
+    let space = await this.checkSpaceSave(entity);
 
-    let space: CnSpace = null;
     await this.datasource.transaction(async (entityManager: EntityManager) => {
 
-      space = await this.spaceService.createBasicSpace(entity, entityManager);
+      space = await this.spaceService.createBasicSpace(space, entityManager);
 
       const user = CnCurrentUserHelper.getAndCheckCurrentUser();
       await this.spaceUserService.addUserToSpace(space, user, CnSpaceUserRole.ADMIN, user, entityManager);
@@ -76,32 +82,55 @@ export class CnSpaceAggregateService {
     return this.getSpaceSettings(space.id);
   }
 
-  public async update(entity: CnSpace): Promise<CnSpaceSettingsDto> {
+  public async update(entity: CnSaveSpaceDTO): Promise<CnSpaceSettingsDto> {
     await this.checkSpaceAdmin(entity.id);
-    await this.checkSpaceSave(entity);
-    const dbSpace = await this.spaceService.update(entity);
+    const space = await this.checkSpaceSave(entity);
+    const dbSpace = await this.spaceService.update(space);
     return this.getSpaceSettings(dbSpace.id);
   }
 
-  private async checkSpaceSave(entity: CnSpace): Promise<void> {
+  private async checkSpaceSave(spaceDTO: CnSaveSpaceDTO): Promise<CnSpace> {
+
+    const space = new CnSpace();
+    space.id = spaceDTO.id;
+    space.name = spaceDTO.name;
+
     // if the user is not admin, he can't set the nb of licenses
-    if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) {
-      entity.nbLicenses = undefined;
+    if (CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) {
+      space.nbLicenses = spaceDTO.nbLicenses;
     }
 
-    if (entity.defaultStorageRegion) {
-      const region = await this.cloudProviderAggregateService.getRegionUnsecure(entity.defaultStorageRegion.id);
-      if (region.spaceId && region.spaceId !== entity.id) {
-        throw new BlBadRequestException(`The region ${region.technicalName} can't be used in this space`);
+    if (!spaceDTO.defaultProjectStorageLocation) {
+      throw new BlBadRequestException('The default project storage is required for space');
+    }
+
+
+    if (spaceDTO.defaultProjectStorageLocation) {
+      space.defaultProjectBucket = await this.objectStorageAggregateService.getBucketByIdNotSecure(
+        spaceDTO.defaultProjectStorageLocation.bucketId);
+    }
+
+    if (spaceDTO.defaultProjectBackupStorageLocation) {
+      space.defaultProjectBackupBucket = await this.objectStorageAggregateService.getBucketByIdNotSecure(
+        spaceDTO.defaultProjectBackupStorageLocation.bucketId);
+    }
+
+    // if this is created mode
+    if(space.id == null){
+      if(space.defaultProjectBucket.isLabBucket() || space.defaultProjectBackupBucket?.isLabBucket()){
+        throw new BlBadRequestException('The default project storage and backup storage can\'t be a lab bucket during creation');
+      }
+    }else{
+      if (space.defaultProjectBucket.isLabBucket() && space.defaultProjectBackupBucket.labInstance.spaceId !== space.id) {
+        throw new BlBadRequestException('The default project backup storage lab must be in the same space');
+      }
+
+      if (space.defaultProjectBackupBucket?.isLabBucket() && space.defaultProjectBackupBucket.labInstance.spaceId !== space.id) {
+        throw new BlBadRequestException('The default project backup storage lab must be in the same space');
       }
     }
 
-    if (entity.defaultBackupStorageRegion) {
-      const region = await this.cloudProviderAggregateService.getRegionUnsecure(entity.defaultBackupStorageRegion.id);
-      if (region.spaceId && region.spaceId !== entity.id) {
-        throw new BlBadRequestException(`The region ${region.technicalName} can't be used in this space`);
-      }
-    }
+    return space;
   }
 
   public async delete(id: string): Promise<void> {
@@ -364,9 +393,10 @@ export class CnSpaceAggregateService {
   }
 
   public async createPersonalSpace(user: CnUser, entityManager: EntityManager): Promise<CnSpace> {
-    const defaultRegion = await this.cloudProviderAggregateService.getDefaultS3Region1();
-    const backupRegion = await this.cloudProviderAggregateService.getDefaultS3Region2();
-    const personalSpace = await this.spaceService.createPersonalSpace(user, defaultRegion, backupRegion, entityManager);
+    const defaultProjectBucket = await this.objectStorageAggregateService.getDefaultProjectBucketStorage1();
+    const defaultProjectBackupBucket = await this.objectStorageAggregateService.getDefaultProjectBucketStorage2();
+    const personalSpace = await this.spaceService.createPersonalSpace(user, defaultProjectBucket,
+      defaultProjectBackupBucket, entityManager);
 
     await this.spaceUserService.addUserToSpace(personalSpace, user, CnSpaceUserRole.ADMIN,
       user, entityManager);

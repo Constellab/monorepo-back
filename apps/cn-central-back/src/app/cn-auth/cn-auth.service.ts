@@ -3,7 +3,6 @@ import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {CnUserAccountsService} from './cn-users-account/cn-user-accounts.service';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {
   BlCaptchaService,
@@ -14,6 +13,8 @@ import {
   BlUserStatus
 } from '@monorepo/back-core-lib';
 import {CnUser2FAService} from './cn-user-2-f-a/cn-user-2-f-a.service';
+import {EventEmitter2} from '@nestjs/event-emitter';
+import {CnAuthEvent, cnAuthEventName} from './cn-auth-event.class';
 
 export interface CnAuthResponse {
   status: 'LOGGED_IN' | '2FA_REQUIRED';
@@ -30,16 +31,12 @@ export interface CnExternalCheckCredentialResponse {
 @Injectable()
 export class CnAuthService {
 
-
-  private readonly activationLinkValidity: number = 86400 * 7;
-
-
   constructor(private usersService: CnUsersService,
               private jwtService: BlJwtService,
               private configService: CnCoreConfigService,
-              private userAccountsService: CnUserAccountsService,
               private user2FaService: CnUser2FAService,
-              private captchaService: BlCaptchaService) {
+              private captchaService: BlCaptchaService,
+              private eventEmitter: EventEmitter2) {
   }
 
   public async login(credentials: BlCredentials): Promise<CnAuthResponse> {
@@ -127,7 +124,12 @@ export class CnAuthService {
 
       // check if user is locked
       if (user.failedLoginCount >= failedLoginLock) {
-        this.userAccountsService.sendAccountLockedMail(user, this.activationLinkValidity, failedLoginLock);
+        const lockEvent: CnAuthEvent = {
+          type: 'ACCOUNT_LOCKED',
+          user: user,
+          failedLoginLock
+        };
+        this.eventEmitter.emit(cnAuthEventName, lockEvent);
         throw new BlUnauthorizedException(CnErrorText.USER_LOCKED);
       } else {
         throw new BlUnauthorizedException(CnErrorText.WRONG_CREDENTIALS);

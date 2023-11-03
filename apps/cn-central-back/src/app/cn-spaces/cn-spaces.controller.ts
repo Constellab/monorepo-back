@@ -30,7 +30,7 @@ import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
 import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
-import {CnRequestNewLicensesDto, CnSpaceSettingsDto} from './cn-space.dto';
+import {CnRequestNewLicensesDto, CnSaveSpaceDTO, CnSpaceSettingsDto} from './cn-space.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
 
 @Controller('spaces')
@@ -61,12 +61,12 @@ export class CnSpacesController {
 
 
   @Post()
-  create(@Body(new BlParsePipe(CnSpace)) entity: CnSpace): Promise<CnSpaceSettingsDto> {
+  create(@Body(new BlParsePipe(CnSaveSpaceDTO)) entity: CnSaveSpaceDTO): Promise<CnSpaceSettingsDto> {
     return this.spaceAggregateService.createBasicSpace(entity);
   }
 
   @Put()
-  update(@Body(new BlParsePipe(CnSpace)) entity: CnSpace): Promise<CnSpaceSettingsDto> {
+  update(@Body(new BlParsePipe(CnSaveSpaceDTO)) entity: CnSaveSpaceDTO): Promise<CnSpaceSettingsDto> {
     return this.spaceAggregateService.update(entity);
   }
 

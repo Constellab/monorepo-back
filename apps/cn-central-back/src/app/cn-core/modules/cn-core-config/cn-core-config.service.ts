@@ -122,15 +122,6 @@ export class CnCoreConfigService {
     };
   }
 
-  public getReportImageObjectStorageBucket(): string {
-    return this.isProduction() ? 'constellab-report-prod' : 'constellab-report-pre-prod';
-  }
-
-  public getReportViewObjectStorageBucket(): string {
-    return this.isProduction() ? 'constellab-report-view-prod' : 'constellab-report-view-pre-prod';
-  }
-
-
   public getFailedLoginLock(): number {
     return this.getConfigNumber('FAILED_LOGIN_LOCK');
   }

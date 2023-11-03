@@ -7,6 +7,7 @@ import {CnBucketCredentials} from '../cn-bucket-credential/cn-bucket-credential.
 import {BlBucketConfig, BlBucketType} from '@monorepo/back-core-lib';
 import {Type} from 'class-transformer';
 import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
+import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
 
 export enum CnBucketContentType {
   LAB_BACKUP = 'LAB_BACKUP',
@@ -17,6 +18,15 @@ export enum CnBucketContentType {
 }
 
 /**
+ * DTO to show the location of a bucket without telling the bucket name for security reason
+ */
+export interface CnBucketLocationDTO{
+  bucketId: string;
+  locationName: string;
+  bucketType: BlBucketType;
+}
+
+/**
  * Represent a bucket in an object storage
  */
 @Entity('bucket')
@@ -24,13 +34,17 @@ export enum CnBucketContentType {
 export class CnBucket extends CnBaseEntity {
 
   // relation options to load required information for the bucket
-  public static configRelation: FindOptionsRelations<CnBucket> = {region: true, credentials: true};
+  public static configRelation: FindOptionsRelations<CnBucket> = {region: true, labInstance: true, credentials: true};
   // default name for the lab bucket
   public static LAB_BUCKET_NAME = 'projects-storage';
 
   @Type(() => CnCloudProviderRegion)
-  @ManyToOne(() => CnCloudProviderRegion, {nullable: false})
-  region: CnCloudProviderRegion;
+  @ManyToOne(() => CnCloudProviderRegion, {nullable: true})
+  region?: CnCloudProviderRegion;
+
+  @Type(() => CnLabInstance)
+  @ManyToOne(() => CnLabInstance, {nullable: true})
+  labInstance?: CnLabInstance;
 
   @Type(() => CnBucketCredentials)
   @ManyToOne(() => CnBucketCredentials, {nullable: false})
@@ -49,18 +63,62 @@ export class CnBucket extends CnBaseEntity {
   bucketType: BlBucketType;
 
   public getBucketConfig(): BlBucketConfig {
-    if (this.region == null) {
-      throw new Error('The region was not loaded');
+    if (this.region == null && this.labInstance == null) {
+      throw new Error('Nor the region or the lab instance was loaded');
     }
+
+    if (this.isCloudBucket()) {
+      if (this.region == null) {
+        throw new Error('The region was not loaded');
+      }
+      return {
+        endpoint: this.region.s3Endpoint,
+        region: this.region.technicalName,
+        bucket: this.name,
+        credentials: {
+          accessKeyId: this.credentials.accessKeyId,
+          secretAccessKey: this.credentials.secretAccessKey,
+        },
+        bucketType: this.bucketType,
+      };
+    } else {
+      if (this.labInstance == null) {
+        throw new Error('The lab instance was not loaded');
+      }
+      return {
+        endpoint: this.labInstance.getS3ApiUrl(),
+        region: 'lab',
+        bucket: this.name,
+        credentials: {
+          accessKeyId: this.credentials.accessKeyId,
+          secretAccessKey: this.credentials.secretAccessKey,
+        },
+        bucketType: this.bucketType,
+      };
+    }
+  }
+
+  getLocationName(): string {
+    if (this.isCloudBucket()) {
+      return this.region.technicalName;
+    } else {
+      return this.labInstance.name;
+    }
+  }
+
+  getBucketLocation(): CnBucketLocationDTO{
     return {
-      endpoint: this.region.s3Endpoint,
-      region: this.region.technicalName,
-      bucket: this.name,
-      credentials: {
-        accessKeyId: this.credentials.accessKeyId,
-        secretAccessKey: this.credentials.secretAccessKey,
-      },
+      bucketId: this.id,
+      locationName: this.getLocationName(),
       bucketType: this.bucketType,
     };
+  }
+
+  isCloudBucket(): boolean {
+    return this.bucketType === BlBucketType.NORMAL;
+  }
+
+  isLabBucket(): boolean {
+    return this.bucketType === BlBucketType.LAB;
   }
 }

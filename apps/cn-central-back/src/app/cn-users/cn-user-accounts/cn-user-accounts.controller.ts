@@ -1,6 +1,6 @@
 import {Body, Controller, Get, HttpException, Param, Post, Put, Res} from '@nestjs/common';
 import {Response} from 'express';
-import {CnUser} from '../../cn-users/cn-user.entity';
+import {CnUser} from '../cn-user.entity';
 import {CnUserAccountsService} from './cn-user-accounts.service';
 import {CnFrontService} from '../../cn-core/services/cn-front.service';
 import {BlParsePipe, BlPublicSecure} from '@monorepo/back-core-lib';

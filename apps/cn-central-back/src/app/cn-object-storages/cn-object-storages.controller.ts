@@ -56,9 +56,15 @@ export class CnObjectStoragesController {
   }
 
   @Get('credentials')
-  public async getBucketCredentialsList(@Query('page', ParseIntPipe) page: number,
-                                        @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnBucketCredentials>> {
+  public async getAllBucketCredentials(@Query('page', ParseIntPipe) page: number,
+                                       @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnBucketCredentials>> {
     return await this.service.getAllBucketCredentials(page, size);
+  }
+
+  @Get('credentials/current-space')
+  public async getBucketCredentialsBySpace(@Query('page', ParseIntPipe) page: number,
+                                           @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnBucketCredentials>> {
+    return await this.service.getAllBucketCredentialsByCurrentSpace(page, size);
   }
 
   @Post('credentials/:id/data')

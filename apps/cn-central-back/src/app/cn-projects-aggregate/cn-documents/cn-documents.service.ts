@@ -51,7 +51,7 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
         document.filename = file.originalname;
       } else {
         // otherwise this is a cloud bucket where every file is so we need to generate a random name
-        document.filename = this.objectStorageService.generateRandomFileName(BlFileHelper.getFileExtension(file.originalname));
+        document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(file.originalname));
       }
 
       const dbDocument = await entityManager.save(document);
@@ -128,7 +128,7 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
       document.size = 0;
       document.mimeType = 'application/json';
       document.isConstellabDocument = true;
-      document.filename = this.objectStorageService.generateRandomFileName(BlFileHelper.getFileExtension('json'));
+      document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension('json'));
 
       const dbDocument = await entityManager.save(document);
 
@@ -168,18 +168,10 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
 
     const imSize = BlImageHelper.getImageSize(file);
 
-    // get the extension from the file or from the image type
-    let extension: string;
-    if (file.originalname.includes('.')) {
-      extension = BlFileHelper.getFileExtension(file.originalname);
-    } else {
-      extension = imSize.type;
-    }
-    const filename = this.objectStorageService.generateRandomFileName(extension);
+    const filename = this.objectStorageService.generateRandomFileNameFromExtension(imSize.type);
     const prefix = CnProjectBucketService.getPrefix(project, 'CONSTELLAB_DOC_IMAGE', document.id);
-    const filePath = `${prefix}/${filename}`;
 
-    await this.objectStorageService.uploadObject(bucketConfig, file, {filename: filePath});
+    await this.objectStorageService.uploadObject(bucketConfig, file, {filename: filename, prefix: prefix});
 
     return {
       filename: filename,
