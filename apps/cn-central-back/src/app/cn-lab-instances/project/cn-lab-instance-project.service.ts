@@ -17,6 +17,10 @@ export class CnLabInstanceProjectService {
 
   public async createLabInstanceProject(labInstance: CnLabInstance, project: CnProject,
                                         entityManager: EntityManager): Promise<CnLabInstanceProject> {
+    if (!project.isRootProject()) {
+      throw new BlBadRequestException('Only root project can be shared with a lab');
+    }
+
     const labInstanceProjectDb = await this.findByLabInstanceIdAndProjectId(labInstance.id, project.id);
 
     if (labInstanceProjectDb) {
@@ -40,7 +44,9 @@ export class CnLabInstanceProjectService {
     await entityManager.remove(labInstanceProject);
   }
 
-  private async findByLabInstanceIdAndProjectId(labInstanceId: string, projectId: string): Promise<CnLabInstanceProject> {
+
+
+  public async findByLabInstanceIdAndProjectId(labInstanceId: string, projectId: string): Promise<CnLabInstanceProject> {
     return this.repository.findOneBy({labInstanceId, projectId});
   }
 

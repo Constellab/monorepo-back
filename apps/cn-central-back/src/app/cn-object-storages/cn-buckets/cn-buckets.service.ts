@@ -30,8 +30,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     return this.datasource.transaction(async entityManager => {
       // create the bucket in DB and then in the object storage
       const bucketDb = await super.create(bucket, entityManager);
-      // TODO : uncomment when the object storage is ready
-      // await this.objectStorageService.createBucket(bucketDb.getBucketConfig());
+      await this.objectStorageService.createBucket(bucketDb.getBucketConfig());
 
       return bucketDb;
     });

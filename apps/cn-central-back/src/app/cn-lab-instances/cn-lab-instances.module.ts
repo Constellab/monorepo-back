@@ -48,6 +48,7 @@ import {CnLabBackupOption} from './backup/cn-lab-backup-option.entity';
 import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
 import {CnLabBackupOptionService} from './backup/cn-lab-backup-option.service';
 import {CnLabBackupHistoryService} from './backup/cn-lab-backup-history.service';
+import {CnLabInstanceListener} from './cn-lab-instance.listener';
 
 @Module({
   imports: [
@@ -108,6 +109,7 @@ import {CnLabBackupHistoryService} from './backup/cn-lab-backup-history.service'
     CnLabListener,
     CnLabBackupOptionService,
     CnLabBackupHistoryService,
+    CnLabInstanceListener,
   ],
   exports: [
     CnLabInstancesService,

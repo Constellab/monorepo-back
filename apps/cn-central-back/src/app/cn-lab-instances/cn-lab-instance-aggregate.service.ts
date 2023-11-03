@@ -539,22 +539,39 @@ export class CnLabInstanceAggregateService {
   public async addProjectInLab(labInstanceId: string, projectId: string): Promise<CnLabInstanceProject> {
     // get and check if the user can manage the lab
     const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId, false);
+
+    return this.addRootProjectInLabInsecure(labInstance, projectId);
+  }
+
+  public async addRootProjectInLabInsecure(labInstance: CnLabInstance, projectId: string): Promise<CnLabInstanceProject> {
     // get and check if the user can see the project
     const projectTree = await this.projectAggregateService.getProjectTree(projectId);
 
     return await this.dataSource.transaction(async entityManager => {
-
       const labProject = await this.labInstanceProjectService.createLabInstanceProject(labInstance, projectTree, entityManager);
-
-      // add the user to the lab is the lab is running
-      const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabSpaceApiInfo());
-      if (labIsRunning) {
-        // add the project to the lab
-        await this.externalLabProjectService.addProjectInLab(labInstance.getGlabSpaceApiInfo(), projectTree);
-      }
+      await this.syncProjectInLab(labInstance, projectTree);
 
       return labProject;
     });
+  }
+
+  public async forceProjectSyncInLab(labInstanceId: string, projectId: string): Promise<void> {
+    const labProject = await this.labInstanceProjectService.findByProjectId(projectId);
+    if(labProject == null) throw new BlUnauthorizedException();
+
+    const labManager = await this.getAndCheckAuthorizationToFindById(labInstanceId);
+
+    const projectTree = await this.projectAggregateService.getProjectTree(projectId);
+    await this.syncProjectInLab(labManager, projectTree);
+  }
+
+  public async syncProjectInLab(labInstance: CnLabInstance, projectTree: CnProject): Promise<void> {
+    // add the user to the lab is the lab is running
+    const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabSpaceApiInfo());
+    if (labIsRunning) {
+      // add the project to the lab
+      await this.externalLabProjectService.addProjectInLab(labInstance.getGlabSpaceApiInfo(), projectTree);
+    }
   }
 
   public async removeProjectInLab(labInstanceId: string, projectId: string): Promise<void> {
@@ -568,6 +585,7 @@ export class CnLabInstanceAggregateService {
       await this.externalLabProjectService.deleteProjectInLab(labInstance.getGlabSpaceApiInfo(), projectId);
     });
   }
+
 
   public async getLabInstanceProjects(labInstanceId: string): Promise<CnLabInstanceProject[]> {
     // get and check if the user can manage the lab

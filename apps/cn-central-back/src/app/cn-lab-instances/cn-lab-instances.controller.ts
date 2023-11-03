@@ -263,6 +263,12 @@ export class CnLabInstancesController {
     return this.aggregateService.getLabInstanceProjects(id);
   }
 
+  @Put(':id/project/:projectId/sync')
+  public forceSync(@Param('id', new ParseUUIDPipe()) id: string,
+                   @Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<void> {
+    return this.aggregateService.forceProjectSyncInLab(id, projectId);
+  }
+
   //////////////////////////// LAB MANAGER ////////////////////////////////
 
   /**

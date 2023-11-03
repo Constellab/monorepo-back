@@ -117,5 +117,9 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
     return this.rootParentId;
   }
 
+  public isRootProject(): boolean {
+    return this.currentLevel === CnProjectLevel.PROJECT;
+  }
+
 }
 
