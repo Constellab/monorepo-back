@@ -165,7 +165,7 @@ export class CnLabInstancesController {
   public async login(@Param('id', new ParseUUIDPipe()) id: string): Promise<any> {
     const result = await this.aggregateService.login(id);
     // redirect to lab auto login page
-    return {url: result.labInstance.glabUrl + '/core-api/login-temp-access/' + result.token};
+    return {url: `${result.labInstance.glabUrl}/${CnLabInstance.CORE_API_ROUTE}/login-temp-access/${result.token}`};
   }
 
   /**

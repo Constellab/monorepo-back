@@ -45,6 +45,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   public static readonly SUPPORTED_MAIN_DOMAINS = ['constellab.app', 'gencovery.io'];
   public static readonly SPACE_API_ROUTE = 'central-api';
   public static readonly S3_API_ROUTE = 's3-server';
+  public static readonly CORE_API_ROUTE = 'core-api';
 
   @Column({nullable: false, length: 50})
   name: string;
