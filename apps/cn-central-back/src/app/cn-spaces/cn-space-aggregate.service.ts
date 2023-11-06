@@ -113,19 +113,22 @@ export class CnSpaceAggregateService {
     if (spaceDTO.defaultProjectBackupStorageLocation) {
       space.defaultProjectBackupBucket = await this.objectStorageAggregateService.getBucketByIdNotSecure(
         spaceDTO.defaultProjectBackupStorageLocation.bucketId);
+    } else {
+      space.defaultProjectBackupBucket = null;
     }
 
     // if this is created mode
-    if(space.id == null){
-      if(space.defaultProjectBucket.isLabBucket() || space.defaultProjectBackupBucket?.isLabBucket()){
+    if (space.id == null) {
+      if (space.defaultProjectBucket.isLabBucket() || space.defaultProjectBackupBucket?.isLabBucket()) {
         throw new BlBadRequestException('The default project storage and backup storage can\'t be a lab bucket during creation');
       }
-    }else{
-      if (space.defaultProjectBucket.isLabBucket() && space.defaultProjectBackupBucket.labInstance.spaceId !== space.id) {
+    } else {
+      if (space.defaultProjectBucket.isLabBucket() && space.defaultProjectBucket.labInstance.spaceId !== space.id) {
         throw new BlBadRequestException('The default project backup storage lab must be in the same space');
       }
 
-      if (space.defaultProjectBackupBucket?.isLabBucket() && space.defaultProjectBackupBucket.labInstance.spaceId !== space.id) {
+      if (space.defaultProjectBackupBucket?.isLabBucket() && space.defaultProjectBackupBucket
+        && space.defaultProjectBackupBucket.labInstance.spaceId !== space.id) {
         throw new BlBadRequestException('The default project backup storage lab must be in the same space');
       }
     }
