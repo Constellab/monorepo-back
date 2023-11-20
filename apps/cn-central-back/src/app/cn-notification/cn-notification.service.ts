@@ -45,15 +45,7 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
     const notifications: CnNotification[] = await this.notificationRepository.find(
       {
         where:
-          [{
-            user: {
-              id: CnCurrentUserHelper.getAndCheckCurrentUser().id
-            },
-            space: {
-              id: null
-            },
-            isRead: false
-          }, {
+          {
             user: {
               id: CnCurrentUserHelper.getAndCheckCurrentUser().id
             },
@@ -61,7 +53,7 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
               id: CnCurrentUserHelper.getAndCheckCurrentSpace().id
             },
             isRead: false
-          }]
+          }
       }
     );
     for (const notif of notifications) {
