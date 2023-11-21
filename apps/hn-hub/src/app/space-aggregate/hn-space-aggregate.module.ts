@@ -5,11 +5,13 @@ import {HnSpaceController} from './hn-space.controller';
 import {HnSpaceModule} from './space/hn-space.module';
 import {HnUserService} from '../users/hn-user.service';
 import {HnUserModule} from '../users/hn-user.module';
+import {HnSpaceLiveTaskModule} from './space-live-task/hn-space-live-task.module';
 
 @Module({
   imports: [
     HnSpaceModule,
     HnSpaceUserModule,
+    HnSpaceLiveTaskModule,
     HnUserModule
   ],
   controllers: [HnSpaceController],
