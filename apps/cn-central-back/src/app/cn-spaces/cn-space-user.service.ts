@@ -10,13 +10,23 @@ import {
   BlAbstractPaginatedService,
   BlBadRequestException,
   BlSearchBuilder,
-  BlSearchParams
+  BlSearchParams,
+  BlTransportService
 } from '@monorepo/back-core-lib';
+
+export enum CnSpaceUserAction {
+  CREATE = 'createSpaceUser',
+  REMOVE = 'removeSpaceUser',
+  UPDATE = 'updateSpaceUser'
+}
 
 @Injectable()
 export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> {
 
-  constructor(@InjectRepository(CnSpaceUser) private repository: Repository<CnSpaceUser>) {
+  constructor(
+    @InjectRepository(CnSpaceUser) private repository: Repository<CnSpaceUser>,
+    private transportService: BlTransportService
+  ) {
     super(repository, CnSpaceUser);
   }
 
@@ -54,7 +64,11 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     spaceUser.role = role;
     spaceUser.active = true;
     spaceUser.addedBy = addedBy;
-    return await this.getEntityManager(entityManager).save(spaceUser);
+    const spaceUserSaved = await this.getEntityManager(entityManager).save(spaceUser);
+
+    this.sendSpaceUserToTransport(spaceUserSaved);
+
+    return spaceUserSaved;
   }
 
   public async removeUserFromSpace(spaceId: string, userId: string): Promise<void> {
@@ -62,16 +76,25 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
       throw new BlBadRequestException(CnErrorText.USER_NOT_IN_SPACE);
     }
     await this.repository.delete({userId: userId, spaceId: spaceId});
+
+    const spaceUserDeleted = {
+      userId: userId,
+      spaceId: spaceId
+    }
+
+    this.sendActionOnSpaceUserToTransport(spaceUserDeleted, CnSpaceUserAction.REMOVE);
   }
 
   public async activateUser(spaceId: string, userId: string): Promise<CnSpaceUser> {
-    const spaceUSer = await this.findOneBySpaceIdAndUserId(spaceId, userId);
+    const spaceUser = await this.findOneBySpaceIdAndUserId(spaceId, userId);
 
-    if (spaceUSer.active) {
+    if (spaceUser.active) {
       throw new BlBadRequestException('The user is already active');
     }
-    spaceUSer.active = true;
-    return this.repository.save(spaceUSer);
+    spaceUser.active = true;
+    const spaceUserSave = await this.repository.save(spaceUser);
+    this.sendActionOnSpaceUserToTransport(spaceUserSave, CnSpaceUserAction.UPDATE);
+    return spaceUserSave;
   }
 
   public async deactivateUser(spaceId: string, userId: string): Promise<CnSpaceUser> {
@@ -81,18 +104,22 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
       throw new BlBadRequestException('The user is already inactive');
     }
     spaceUser.active = false;
-    return this.repository.save(spaceUser);
+    const spaceUserSave = await this.repository.save(spaceUser);
+    this.sendActionOnSpaceUserToTransport(spaceUserSave, CnSpaceUserAction.UPDATE);
+    return spaceUserSave;
   }
 
   public async updateUserRole(spaceId: string, userId: string, role: CnSpaceUserRole): Promise<CnSpaceUser> {
-    const spaceUSer = await this.findOneBySpaceIdAndUserId(spaceId, userId);
+    const spaceUser = await this.findOneBySpaceIdAndUserId(spaceId, userId);
 
-    if (spaceUSer.role === role) {
+    if (spaceUser.role === role) {
       throw new BlBadRequestException('The user already has the role ' + role);
     }
 
-    spaceUSer.role = role;
-    return this.repository.save(spaceUSer);
+    spaceUser.role = role;
+    const spaceUserSave = await this.repository.save(spaceUser);
+    this.sendActionOnSpaceUserToTransport(spaceUserSave, CnSpaceUserAction.UPDATE);
+    return spaceUserSave;
   }
 
   public async getSpaceAdmins(spaceId: string): Promise<CnSpaceUser[]> {
@@ -128,6 +155,39 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
       where: {spaceId: spaceId},
     });
     return spaceUsers.map((spaceUser) => spaceUser.userId);
+  }
+
+  public async sendAllSpaceUsersToQueue(): Promise<void> {
+    const spaceUsers = await this.repository.find({relations: {user: true, space: true}});
+
+    spaceUsers.forEach((spaceUser) => {
+      this.sendSpaceUserToTransport(spaceUser);
+    });
+  }
+
+  public async sendAllSpaceUsersFromASpaceToQueue(spaceId: string): Promise<void> {
+    const spaceUsers = await this.repository.find({where: {spaceId: spaceId}, relations: {user: true, space: true}});
+    spaceUsers.forEach((spaceUser) => {
+      this.sendSpaceUserToTransport(spaceUser);
+    });
+  }
+
+  public sendSpaceUserToTransport(spaceUser: CnSpaceUser): void {
+    const sU: Partial<CnSpaceUser> = {
+      userId: spaceUser.userId,
+      spaceId: spaceUser.spaceId,
+      role: spaceUser.role,
+      active: spaceUser.active,
+      user: spaceUser.user,
+      space: spaceUser.space,
+      addedBy: spaceUser.addedBy,
+      createdAt: spaceUser.createdAt
+    };
+    this.transportService.emit(CnSpaceUserAction.CREATE, sU);
+  }
+
+  public sendActionOnSpaceUserToTransport(spaceUser: Partial<CnSpaceUser>, spaceUserAction: CnSpaceUserAction): void {
+    this.transportService.emit(spaceUserAction, spaceUser);
   }
 
   public async getSpacesOfUser(userId: string): Promise<CnSpace[]> {

@@ -184,6 +184,21 @@ export class CnSpacesController {
     return spaceUsers.map(spaceUser => spaceUser.user);
   }
 
+
+  ////////////////////////////////////// SPACE USER QUEUE //////////////////////////////////////
+  @Put('send-all-space-user-to-queue')
+  public async sendAllSpaceUsersToQueue(): Promise<void> {
+    return this.spaceAggregateService.sendAllSpaceUsersToQueue();
+  }
+
+  @Put('send-all-space-user-to-queue/:spaceId')
+  public async sendAllSpaceUsersFromASpaceToQueue(
+    @Param('spaceId') spaceId: string
+  ): Promise<void> {
+    return this.spaceAggregateService.sendAllSpaceUsersFromASpaceToQueue(spaceId);
+  }
+
+
   ////////////////////////////////////// OTHERS //////////////////////////////////////
 
 

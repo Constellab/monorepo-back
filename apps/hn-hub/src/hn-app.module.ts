@@ -51,6 +51,9 @@ import {HnBrickUserInviteModule} from './app/brick-aggregate/brick-user-invite/h
 import {HnBrickAggregateModule} from './app/brick-aggregate/hn-brick-aggregate.module';
 import {ThrottlerModule} from '@nestjs/throttler';
 import {EventEmitterModule} from '@nestjs/event-emitter';
+import {HnSpaceAggregateModule} from './app/space-aggregate/hn-space-aggregate.module';
+import {HnSpaceModule} from './app/space-aggregate/space/hn-space.module';
+import {HnSpaceUserModule} from './app/space-aggregate/space-user/hn-space-user.module';
 
 function typeOrmConfig(
   configService: HnCoreConfigService,
@@ -197,7 +200,10 @@ function configureMailModule(
     HnStoryAuthorInviteModule,
     HnBrickUserModule,
     HnBrickUserInviteModule,
-    HnBrickAggregateModule
+    HnBrickAggregateModule,
+    HnSpaceModule,
+    HnSpaceUserModule,
+    HnSpaceAggregateModule
   ],
   controllers: [],
   providers: [

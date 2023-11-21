@@ -181,6 +181,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
 
   public sendUserToTransport(user: CnUser): void {
+
     const u: CnUserTransportDto = {
       id: user.id,
       firstname: user.firstname,
