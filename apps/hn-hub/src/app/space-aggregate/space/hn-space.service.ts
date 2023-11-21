@@ -12,6 +12,10 @@ export class HnSpaceService {
   ) {
   }
 
+  public async find(): Promise<HnSpace[]> {
+    return this.spaceRepository.find();
+  }
+
   public async findOne(id: string): Promise<HnSpace> {
     return this.spaceRepository.findOneBy({id: id});
   }

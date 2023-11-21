@@ -17,6 +17,10 @@ export class HnSpaceAggregateService {
   }
 
   ////////////////////////// SPACE ////////////////////////////
+  public async findSpaces(): Promise<HnSpace[]> {
+    return this.spaceService.find();
+  }
+
   public async checkOrCreateSpace(space: HnSpace): Promise<void>{
     const spaceObj = await this.spaceService.findOne(space.id);
     if(!spaceObj){

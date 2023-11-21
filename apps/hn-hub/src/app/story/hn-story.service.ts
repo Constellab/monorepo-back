@@ -331,12 +331,12 @@ export class HnStoryService {
   }
 
   async isStoryOwnerOrCoAuthor(id: string, onlyOwner: boolean = false): Promise<boolean> {
+    if(HnCurrentUserHelper.getCurrentUser().isAdmin()) return true;
     const story = await this.getStory(id);
-    return story.getAuthor().id === HnCurrentUserHelper.getCurrentUser().id ||
-      story.storyAuthors.some((sA: HnStoryAuthor) =>
-        sA.user.id === HnCurrentUserHelper.getCurrentUser().id && onlyOwner ?
-          sA.status === HnStoryAuthorStatus.AUTHOR :
-          (sA.status === HnStoryAuthorStatus.COAUTHOR || sA.status === HnStoryAuthorStatus.AUTHOR));
+    const currentUserId = HnCurrentUserHelper.getCurrentUser().id;
+    return story.storyAuthors.some((storyAuthor: HnStoryAuthor) => storyAuthor.user.id === currentUserId &&
+      (!onlyOwner || storyAuthor.status === HnStoryAuthorStatus.AUTHOR)
+    );
   }
 
   async updateStoryCoAuthors(id: string, newCoAuthorsMail: string[]): Promise<HnStory> {
