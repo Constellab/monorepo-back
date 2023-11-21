@@ -224,6 +224,19 @@ export class CnSpaceAggregateService {
 
   /////////////////////////////////////// USERS //////////////////////////////////
 
+  public async sendAllSpaceUsersToQueue(): Promise<void>{
+    this.checkAdmin();
+
+    await this.spaceUserService.sendAllSpaceUsersToQueue();
+  }
+
+  public async sendAllSpaceUsersFromASpaceToQueue(spaceId: string): Promise<void>{
+    await this.checkSpaceAdmin(spaceId);
+
+    await this.spaceUserService.sendAllSpaceUsersFromASpaceToQueue(spaceId);
+  }
+
+
   /**
    * Directly add a user to an space. Only accessible by G admins.
    */
@@ -234,8 +247,7 @@ export class CnSpaceAggregateService {
     const user = await this.userService.findByIdAndCheck(userId);
     const space = await this.spaceService.findByIdAndCheck(spaceID);
 
-    return await this.spaceUserService.addUserToSpace(space, user,
-      CnSpaceUserRole.USER, CnCurrentUserHelper.getAndCheckCurrentUser());
+    return await this.spaceUserService.addUserToSpace(space, user, CnSpaceUserRole.USER, CnCurrentUserHelper.getAndCheckCurrentUser());
   }
 
   public async removeUserFromSpace(spaceId: string, userId: string): Promise<void> {
@@ -285,6 +297,7 @@ export class CnSpaceAggregateService {
 
     await this.spaceUserService.updateUserRole(spaceId, userId, role);
   }
+
 
   /////////////////////////////////////// INVITATION //////////////////////////////////
 

@@ -5,6 +5,8 @@ import * as argon2 from 'argon2';
 import {ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {BlEntityWithId, BlLuxonDateTimeColumn, BlUser, BlUserCategory, BlUserStatus} from '@monorepo/back-core-lib';
+import {CnSpace} from '../cn-spaces/cn-space.entity';
+import {CnSpaceUser} from '../cn-spaces/cn-space-user.entity';
 
 
 @Entity('user')
@@ -128,4 +130,6 @@ export interface CnUserTransportDto {
   activity: string;
   company: string;
   biography: string;
+
+  spaceUsers?: CnSpaceUser[];
 }
