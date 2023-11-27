@@ -25,6 +25,7 @@ export class HnStory extends BlEntityWithId {
   @Column()
   title: string;
 
+  // the database was modified to use a long text instead of a json
   @Column({name: 'content', type: 'simple-json'})
   content: Record<string, any> = BlRichText.newRichText();
 

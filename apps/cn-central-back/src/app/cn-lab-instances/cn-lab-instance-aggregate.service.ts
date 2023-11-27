@@ -14,6 +14,7 @@ import {
   CnLabComposeRestartOptions,
   CnLabComposeUpOptions,
   CnLabDockerPs,
+  CnLabDockerPsFull,
   CnLabPullBiotaOptions
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnLabManagerService} from './cn-lab-manager.service';
@@ -604,6 +605,11 @@ export class CnLabInstanceAggregateService {
   public async listContainers(labId: string): Promise<CnLabDockerPs[]> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.listContainers(labInstance);
+  }
+
+  public async getContainerDetails(labId: string, containerName: string): Promise<CnLabDockerPsFull> {
+    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.getContainerDetails(labInstance, containerName);
   }
 
   public async getLogs(labId: string, containerName: string): Promise<string> {

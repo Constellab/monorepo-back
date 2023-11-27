@@ -1,5 +1,11 @@
 
 export interface CnLabDockerPs {
+  names: string;
+  state: 'running' | 'exited';
+}
+
+
+export interface CnLabDockerPsFull extends CnLabDockerPs{
   command: string;
   createdAt: string;
   id: string;
@@ -13,6 +19,7 @@ export interface CnLabDockerPs {
   state: 'running' | 'exited';
   status: string;
 }
+
 
 
 export interface CnLabComposeUpOptions {

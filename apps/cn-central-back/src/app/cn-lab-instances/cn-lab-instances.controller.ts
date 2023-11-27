@@ -21,6 +21,7 @@ import {
   CnLabComposeRestartOptions,
   CnLabComposeUpOptions,
   CnLabDockerPs,
+  CnLabDockerPsFull,
   CnLabPullBiotaOptions
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
@@ -290,7 +291,13 @@ export class CnLabInstancesController {
     return await this.aggregateService.listContainers(id);
   }
 
-  @Get(':id/lab-manager/:containerName/logs')
+  @Get(':id/lab-manager/containers/:containerName')
+  async getContainerDetails(@Param('id', new ParseUUIDPipe()) id: string,
+                            @Param('containerName') containerName: string): Promise<CnLabDockerPsFull> {
+    return await this.aggregateService.getContainerDetails(id, containerName);
+  }
+
+  @Get(':id/lab-manager/containers/:containerName/logs')
   async getLogs(@Param('id', new ParseUUIDPipe()) id: string, @Param('containerName') containerName: string): Promise<string> {
     return await this.aggregateService.getLogs(id, containerName);
   }

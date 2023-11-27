@@ -3,6 +3,7 @@ import {
   CnLabComposeRestartOptions,
   CnLabComposeUpOptions,
   CnLabDockerPs,
+  CnLabDockerPsFull,
   CnLabManagerInitConfig,
   CnLabPullBiotaOptions
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
@@ -48,6 +49,10 @@ export class CnLabManagerService {
 
   public async listContainers(labInstance: CnLabInstance): Promise<CnLabDockerPs[]> {
     return this.labManagerApiService.listContainers(labInstance.getLabManagerApiInfo());
+  }
+
+  public async getContainerDetails(labInstance: CnLabInstance, containerName: string): Promise<CnLabDockerPsFull> {
+    return this.labManagerApiService.getContainerDetails(labInstance.getLabManagerApiInfo(), containerName);
   }
 
   public async getLogs(labInstance: CnLabInstance, containerName: string): Promise<string> {

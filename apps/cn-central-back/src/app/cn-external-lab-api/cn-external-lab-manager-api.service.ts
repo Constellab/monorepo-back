@@ -10,7 +10,7 @@ import {
 import {
   CnLabComposeRestartOptions,
   CnLabComposeUpOptions,
-  CnLabDockerPs,
+  CnLabDockerPsFull,
   CnLabManagerInitConfig,
   CnLabPullBiotaOptions
 } from './model/cn-lab-manager.class';
@@ -41,12 +41,16 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/status`));
   }
 
-  public async listContainers(apiInfo: CnExternalApiInfo): Promise<CnLabDockerPs[]> {
+  public async listContainers(apiInfo: CnExternalApiInfo): Promise<CnLabDockerPsFull[]> {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers`));
   }
 
+  public async getContainerDetails(apiInfo: CnExternalApiInfo, containerName: string): Promise<CnLabDockerPsFull> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers/${containerName}`));
+  }
+
   public async getLogs(apiInfo: CnExternalApiInfo, containerName: string): Promise<string> {
-    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/${containerName}/logs`));
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers/${containerName}/logs`));
   }
 
   public async initAll(apiInfo: CnExternalApiInfo, initConfig: CnLabManagerInitConfig): Promise<void> {
