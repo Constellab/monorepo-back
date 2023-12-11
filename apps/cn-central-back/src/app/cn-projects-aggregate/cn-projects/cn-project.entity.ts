@@ -121,5 +121,11 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
     return this.currentLevel === CnProjectLevel.PROJECT;
   }
 
+  public sortChildrenTree(): this {
+    this.children.sort((a, b) => a.code.localeCompare(b.code));
+    this.children.forEach(child => child.sortChildrenTree());
+    return this;
+  }
+
 }
 

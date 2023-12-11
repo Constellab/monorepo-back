@@ -34,7 +34,9 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
   }
 
   public async getProjectTree(project: CnProject): Promise<CnProject> {
-    return this.repository.findDescendantsTree(project);
+    const projectTree = await this.repository.findDescendantsTree(project);
+
+    return projectTree.sortChildrenTree();
   }
 
   public async getProjectTreeAsList(project: CnProject): Promise<CnProject[]> {
@@ -126,10 +128,5 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
     searchBuilder.mergeWhereOptions({spaceId: spaceId});
 
     return await this.findPaginated(page, size, searchBuilder.build());
-  }
-
-  // TODO TO REMOVE
-  public async findAll(): Promise<CnProject[]> {
-    return this.repository.find();
   }
 }
