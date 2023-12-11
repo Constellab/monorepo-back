@@ -132,7 +132,8 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
 
       const dbDocument = await entityManager.save(document);
 
-      await this.objectStorageService.uploadJson(bucketConfig, content, {filename: document.filename});
+      const documentPath = this.generateDocumentFilePath(project, document.filename);
+      await this.objectStorageService.uploadJson(bucketConfig, content, {filename: documentPath});
 
       return new CnConstellabDocument(dbDocument, content);
     });
