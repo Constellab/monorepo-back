@@ -193,39 +193,4 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   private async getBucketConfig(projectId: string): Promise<BlBucketConfig> {
     return await this.projectBucketService.getAndCheckProjectMainBucketConfig(projectId);
   }
-
-  public async migrateReports(): Promise<void> {
-    this.logger.log('Start migration of reports');
-
-    const reports = await this.repository.find();
-
-    for (const report of reports) {
-      let hasImage: boolean = false;
-      const richText = new CnReportContent(report.content);
-
-
-      for(const image of richText.getFiguresOps()){
-        if(image.insert.figure.filename.includes('/')){
-          image.insert.figure.filename = image.insert.figure.filename.split('/').pop();
-          hasImage = true;
-        }
-      }
-
-      for(const image of richText.getViewsOps()){
-        if(image.insert.resource_view.filename.includes('/')){
-          image.insert.resource_view.filename = image.insert.resource_view.filename.split('/').pop();
-          hasImage = true;
-        }
-      }
-
-      if (hasImage) {
-        this.logger.log('Migrate report image for report ' + report.id);
-        report.content = richText.getContent();
-
-        await this.repository.save(report);
-      }
-    }
-
-    this.logger.log('End migration of reports');
-  }
 }

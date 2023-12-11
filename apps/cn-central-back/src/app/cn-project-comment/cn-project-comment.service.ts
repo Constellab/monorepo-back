@@ -66,35 +66,4 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
     return await this.update(comment);
   }
 
-  // TODO TO REMOVE
-  public async migrateComment(): Promise<void> {
-    this.logger.log('Start migration of description images');
-
-    const comments = await this.repository.find();
-
-    for (const comment of comments) {
-      let hasImage: boolean = false;
-      const description = comment.content;
-      if (description == null) continue;
-
-      const content = new BlRichText(description);
-
-      for (const image of content.getFiguresOps()) {
-        if (image.insert.figure.filename.includes('/')) {
-          image.insert.figure.filename = image.insert.figure.filename.split('/').pop();
-          hasImage = true;
-        }
-      }
-
-
-      if (hasImage) {
-        this.logger.log('Migrate description image for project ' + comment.id);
-        comment.content = content.getContent();
-        await this.repository.save(comment);
-      }
-    }
-
-    this.logger.log('End migration of description images');
-  }
-
 }
