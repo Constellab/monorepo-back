@@ -7,7 +7,6 @@ import {
   BlFile,
   BlImageHelper,
   BlObjectStorageService,
-  BlRichText,
   BlRichTextUploadedImage
 } from '@monorepo/back-core-lib';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
@@ -155,36 +154,4 @@ export class CnProjectBucketService {
     const prefix = CnProjectBucketService.getPrefix(project, 'DESCRIPTION');
     return this.objectStorageService.getObject(bucketConfig, prefix + '/' + filename);
   }
-
-  // TODO TO REMOVE
-  public async migrateDescriptionImages(): Promise<void>{
-    this.logger.log('Start migration of description images');
-
-    const projects = await this.projectService.findAll();
-
-    for (const project of projects) {
-      let hasImage: boolean = false;
-      const description = project.description;
-      if (description == null) continue;
-
-      const content = new BlRichText(description);
-
-      for(const image of content.getFiguresOps()){
-        if(image.insert.figure.filename.includes('/')){
-          image.insert.figure.filename = image.insert.figure.filename.split('/').pop();
-          hasImage = true;
-        }
-      }
-
-
-      if(hasImage){
-        this.logger.log('Migrate description image for project ' + project.id)
-        project.description = content.getContent();
-        await this.projectService.update(project);
-      }
-    }
-
-    this.logger.log('End migration of description images');
-  }
-
 }

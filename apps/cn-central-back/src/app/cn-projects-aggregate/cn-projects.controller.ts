@@ -204,21 +204,6 @@ export class CnProjectsController {
     BlResponseHelper.setMessageAndCache(response, file);
   }
 
-  @Post('description-migrate')
-  public async migrateDescriptionImages(): Promise<void> {
-    await this.projectBucketService.migrateDescriptionImages();
-  }
-
-  @Post('report-migrate')
-  public async migrateReport(): Promise<void> {
-    await this.reportService.migrateReports();
-  }
-
-  @Post('comment-migrate')
-  public async migrateComment(): Promise<void> {
-    await this.projectCommentService.migrateComment();
-  }
-
   /////////////////////////////// COMMENTS ///////////////////////////////////////////
 
   @UseInterceptors(FileInterceptor('file'))
