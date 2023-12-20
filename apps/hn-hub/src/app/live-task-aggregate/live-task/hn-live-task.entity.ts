@@ -1,20 +1,28 @@
-import {Column, Entity} from 'typeorm';
+import {Column, Entity, ManyToOne} from 'typeorm';
 import {HnBaseEntity} from '../../core/model/entities/hn-base.entity';
-
-export enum HnLiveTaskType {
-  PUBLIC = 'PUBLIC',
-  PRIVATE = 'PRIVATE',
-  SPACE = 'SPACE'
-}
+import {HnCreateLiveTaskDto} from './hn-live-task.dto';
+import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
 
 @Entity('LiveTask')
 export class HnLiveTask extends HnBaseEntity {
   @Column()
   title: string;
 
-  @Column()
-  description: string;
+  @Column({name: 'description', type: 'simple-json', nullable: true})
+  description?: Record<string, any>;
 
-  @Column({type: 'enum', enum: HnLiveTaskType, default: HnLiveTaskType.PUBLIC})
-  type: HnLiveTaskType;
+  @Column({name: 'latest_publish_version', nullable: true})
+  latestPublishVersion?: number;
+
+  @ManyToOne(() => HnSpace, {eager: true})
+  space?: HnSpace;
+
+  isPublic(): boolean {
+    return this.space == null;
+  }
+
+  init(liveTaskDto: HnCreateLiveTaskDto): void {
+    this.title = liveTaskDto.title;
+    this.space = liveTaskDto.space;
+  }
 }

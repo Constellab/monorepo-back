@@ -328,4 +328,26 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     return brickVersion;
   }
 
+  public async getAndCheckBrickVersion(brickName: string, versionStr: string): Promise<HnBrickVersion> {
+    const version = BlVersion.fromString(versionStr);
+    const brickVersion = await this.brickVersionsRepository.findOne({
+      where: {
+        brickMajorVersion: {
+          brick: {
+            name: brickName
+          },
+          major: version.major
+        },
+        minor: version.minor,
+        patch: version.patch,
+        subPatch: version.isBeta() ? version.subPatch : IsNull()
+      }
+    });
+
+    if (!brickVersion) {
+      throw new BlUnauthorizedException(HnErrorText.BRICK_VERSION_NOT_FOUND,
+        {detailArgs: {name: brickName, version: version}});
+    }
+    return brickVersion;
+  }
 }

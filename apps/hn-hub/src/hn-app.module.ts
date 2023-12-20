@@ -54,10 +54,12 @@ import {EventEmitterModule} from '@nestjs/event-emitter';
 import {HnSpaceAggregateModule} from './app/space-aggregate/hn-space-aggregate.module';
 import {HnSpaceModule} from './app/space-aggregate/space/hn-space.module';
 import {HnSpaceUserModule} from './app/space-aggregate/space-user/hn-space-user.module';
-import {HnSpaceLiveTaskModule} from './app/space-aggregate/space-live-task/hn-space-live-task.module';
 import {HnLiveTaskModule} from './app/live-task-aggregate/live-task/hn-live-task.module';
 import {HnLiveTaskVersionModule} from './app/live-task-aggregate/live-task-version/hn-live-task-version.module';
 import {HnLiveTaskAggregateModule} from './app/live-task-aggregate/hn-live-task-aggregate.module';
+import {
+  HnLiveTaskVersionBrickDependenciesModule
+} from './app/live-task-aggregate/live-task-version-brick-dependencies/hn-live-task-version-brick-dependencies.module';
 
 function typeOrmConfig(
   configService: HnCoreConfigService,
@@ -206,14 +208,14 @@ function configureMailModule(
     HnBrickUserInviteModule,
     HnBrickAggregateModule,
 
-    HnLiveTaskModule,
-    HnLiveTaskVersionModule,
-    HnLiveTaskAggregateModule,
-
     HnSpaceModule,
     HnSpaceUserModule,
-    HnSpaceLiveTaskModule,
-    HnSpaceAggregateModule
+    HnSpaceAggregateModule,
+
+    HnLiveTaskModule,
+    HnLiveTaskVersionModule,
+    HnLiveTaskVersionBrickDependenciesModule,
+    HnLiveTaskAggregateModule
   ],
   controllers: [],
   providers: [

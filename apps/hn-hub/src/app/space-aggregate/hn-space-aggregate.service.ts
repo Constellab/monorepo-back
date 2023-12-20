@@ -5,6 +5,9 @@ import {HnSpaceService} from './space/hn-space.service';
 import {HnUserService} from '../users/hn-user.service';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
 import {HnSpace} from './space/hn-space.entity';
+import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
+import {HnLiveTask} from '../live-task-aggregate/live-task/hn-live-task.entity';
+import {EntityManager} from 'typeorm';
 
 @Injectable()
 export class HnSpaceAggregateService {
@@ -19,6 +22,15 @@ export class HnSpaceAggregateService {
   ////////////////////////// SPACE ////////////////////////////
   public async findSpaces(): Promise<HnSpace[]> {
     return this.spaceService.find();
+  }
+
+  public async findSpaceById(spaceId: string): Promise<HnSpace> {
+    return this.spaceService.findOne(spaceId);
+  }
+
+  public async findSpacesOfCurrentUser(): Promise<HnSpace[]> {
+    const spaceUsers = await this.spaceUserService.findActiveSpaceUsersByUserId(HnCurrentUserHelper.getAndCheckCurrentUser().id);
+    return spaceUsers.map(spaceUser => spaceUser.space);
   }
 
   public async checkOrCreateSpace(space: HnSpace): Promise<void>{
@@ -82,9 +94,15 @@ export class HnSpaceAggregateService {
   }
 
 
+  public async checkSpaceUser(spaceId: string, userId: string): Promise<void> {
+    await this.checkIfSpaceExists(spaceId);
+    await this.checkIfUserExists(userId);
+    await this.spaceUserService.checkSpaceUser(spaceId, userId);
+  }
+
+
   //////////////////////////// USER ////////////////////////////
   public async checkIfUserExists(userId: string): Promise<boolean> {
     return (await this.userService.findOne(userId)) != null
   }
-
 }

@@ -18,10 +18,18 @@ export class HnSpaceController {
   }
 
   /////////////////////////////////// Space ///////////////////////////////////
-  @BlPublic()
   @Get()
   find(): Promise<HnSpace[]> {
     return this.spaceAggregateService.findSpaces();
+  }
+
+  /**
+   * Get spaces by user id
+   * @return a list of spaces
+   */
+  @Get('current-user')
+  findSpacesOfCurrentUser(): Promise<HnSpace[]> {
+    return this.spaceAggregateService.findSpacesOfCurrentUser();
   }
 
 

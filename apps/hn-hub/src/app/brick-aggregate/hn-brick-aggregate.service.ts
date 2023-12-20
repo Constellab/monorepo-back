@@ -156,6 +156,10 @@ export class HnBrickAggregateService {
     return this.brickService.isActualBrickAndNewVersion(body);
   }
 
+  async getAndCheckBrickVersion(name: string, version: string): Promise<HnBrickVersion> {
+    return this.brickVersionService.getAndCheckBrickVersion(name, version);
+  }
+
   //------------------------------------- FOLDERS -------------------------------------
 
   async checkIfUserHasRightsOnFolder(id: string): Promise<void> {

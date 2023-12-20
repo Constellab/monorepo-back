@@ -7,8 +7,8 @@ import {HnSpaceService} from './hn-space.service';
   imports: [
     TypeOrmModule.forFeature([HnSpace])
   ],
-  exports: [TypeOrmModule, HnSpaceService],
-  providers: [HnSpaceService]
+  providers: [HnSpaceService],
+  exports: [TypeOrmModule, HnSpaceService]
 })
 export class HnSpaceModule {
 
