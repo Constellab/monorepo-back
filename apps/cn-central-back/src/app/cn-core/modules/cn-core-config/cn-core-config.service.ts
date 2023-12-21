@@ -222,6 +222,25 @@ export class CnCoreConfigService {
   public getAzureNetworkSubnet(): string {
     return this.configService.get('AZURE_NETWORK_SUBNET');
   }
+
+  ////////////////////////////// OUTSCALE //////////////////////////////
+
+  public getOutscaleAccessKey(): string {
+    return this.configService.get('OUTSCALE_ACCESS_KEY_ID');
+  }
+
+  public getOutscaleSecretKey(): string {
+    return this.configService.get('OUTSCALE_SECRET_KEY');
+  }
+
+  public getOutscaleSshKeyName(): string {
+    return this.configService.get('OUTSCALE_SSH_KEY');
+  }
+
+  public getOutscaleSecurityGroup(): string {
+    return this.configService.get('OUTSCALE_SECURITY_GROUP');
+  }
+
   /////////////////////////////// LAB CONFIG ///////////////////////////////
 
   public getDockerRegistryUrl(): string {

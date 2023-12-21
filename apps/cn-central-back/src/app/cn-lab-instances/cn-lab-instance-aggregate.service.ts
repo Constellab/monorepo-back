@@ -61,7 +61,6 @@ import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
 import {CnLabDesktopConfig, CnLabInstanceDesktopService} from './desktop/cn-lab-instance-desktop.service';
 import {CnBrickGWS} from '../cn-bricks/cn-brick.dto';
 import {CnLabInstanceMailService} from './mail/cn-lab-instance-mail.service';
-import {CnLabSshService} from './server/cn-lab-ssh.service';
 import {CnLabGreenOption} from './green-option/cn-lab-green-option.entity';
 import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.service';
 import {CnLabGreenOptionFormDto} from './green-option/cn-lab-green-option.dto';
@@ -75,6 +74,7 @@ import {CnLabBackupOptionService} from './backup/cn-lab-backup-option.service';
 import {CnLabBackupBucket} from './backup/cn-lab-backup.dto';
 import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import {CnCloudProviderFactory} from './server/cn-cloud-provider.factory';
 
 
 @Injectable()
@@ -96,7 +96,7 @@ export class CnLabInstanceAggregateService {
               private dataSource: DataSource,
               private labServerService: CnLabServerService,
               private labConfigurerService: CnLabConfigurerService,
-              private labSshService: CnLabSshService,
+              private cloudProviderFactory: CnCloudProviderFactory,
               private labConfigService: CnLabConfigsService,
               private labInstanceDesktopService: CnLabInstanceDesktopService,
               private labMailService: CnLabInstanceMailService,
@@ -558,7 +558,7 @@ export class CnLabInstanceAggregateService {
 
   public async forceProjectSyncInLab(labInstanceId: string, projectId: string): Promise<void> {
     const labProject = await this.labInstanceProjectService.findByProjectId(projectId);
-    if(labProject == null) throw new BlUnauthorizedException();
+    if (labProject == null) throw new BlUnauthorizedException();
 
     const labManager = await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
@@ -862,7 +862,8 @@ export class CnLabInstanceAggregateService {
 
     // wait for the DNS to be ready
     // wait for 2 consecutive success because DNS propagation can take some time
-    await this.labSshService.waitForSshConnection(labInstance, 2);
+    const labSshService = this.cloudProviderFactory.getSshLabService(labInstance);
+    await labSshService.waitForSshConnection(2);
 
     await this.configureServerAsync(labInstance, false);
 
@@ -897,7 +898,8 @@ export class CnLabInstanceAggregateService {
   public async configureServer(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
     let labInstance = await this.getAndCheckServerStatusBeforeAction(labInstanceId);
 
-    const sshTest = await this.labSshService.checkSshConnection(labInstance.virtualHost);
+    const labSshService = this.cloudProviderFactory.getSshLabService(labInstance);
+    const sshTest = await labSshService.checkSshConnection();
     if (!sshTest) {
       throw new BlBadRequestException(`SSH connection to ${labInstance.virtualHost} failed`);
     }

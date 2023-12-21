@@ -22,7 +22,7 @@ import {CnCoreConfigService} from '../../../cn-core/modules/cn-core-config/cn-co
 import {CnCloudProviderName} from '../../../cn-cloud-providers/cn-cloud-provider.entity';
 import {CnLabInstance, CnLabInstanceBillingMode, CnLabInstanceVolumeType} from '../../cn-lab-instance.entity';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
-import {CnLabSshService} from '../cn-lab-ssh.service';
+import {CnCommandService} from '../../../cn-core/services/cn-command.service';
 
 @Injectable()
 export class CnCloudProviderOvhService extends CnCloudProviderService {
@@ -31,17 +31,26 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
 
   private static MOUNT_FILE = 'mount_ovh.sh';
   private static MOUNT_DISK_NAME = 'sdb';
+  private static SSH_KEY_FILE_NAME = 'id_rsa';
 
-  constructor(private configService: CnCoreConfigService,
-              private ovhService: CnOvhService,
-              private sshService: CnLabSshService) {
-    super();
+
+  constructor(private ovhService: CnOvhService,
+              configService: CnCoreConfigService,
+              commandService: CnCommandService,) {
+    super(commandService, configService);
   }
 
   getName(): CnCloudProviderName {
     return 'OVH';
   }
 
+  getSshUserName(): string {
+    return 'ubuntu';
+  }
+
+  getSshKeyFileName(): string {
+    return CnCloudProviderOvhService.SSH_KEY_FILE_NAME;
+  }
 
   public async createInstance(instance: CnCpCreateInstanceRequest): Promise<CnCpInstance> {
 
@@ -80,7 +89,6 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
   private convertOvhInstance(instance: CnOvhInstance): CnCpInstance {
     return {
       id: instance.id,
-      name: instance.name,
       status: this.ovhStatusToCpStatus(instance.status),
       originalObject: instance,
       region: instance.region,
@@ -198,7 +206,6 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
 
     return {
       id: volume.id,
-      name: volume.name,
       region: volume.region,
       size: volume.size,
       status: volumeStatus,
@@ -226,9 +233,11 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
   }
 
   async mountVolume(labInstance: CnLabInstance): Promise<void> {
-    const mountScript = this.sshService.getMountFolder() + '/' + CnCloudProviderOvhService.MOUNT_FILE;
+    const sshService = this.instantiateLabSshService(labInstance);
 
-    await this.sshService.execSshCommand(labInstance, [`bash ${mountScript} ${CnCloudProviderOvhService.MOUNT_DISK_NAME}`]);
+    const mountScript = sshService.getMountFolder() + '/' + CnCloudProviderOvhService.MOUNT_FILE;
+
+    await sshService.execSshCommand([`bash ${mountScript} ${CnCloudProviderOvhService.MOUNT_DISK_NAME}`]);
   }
 
   /////////////////////////////// DNS ///////////////////////////////

@@ -14,13 +14,14 @@ import {CnAzureService} from './cn-azure.service';
 import {CnLabInstance, CnLabInstanceBillingMode, CnLabInstanceVolumeType} from '../../cn-lab-instance.entity';
 import {CnAzureInstance, CnAzureInstanceStatus, CnAzureVolumeStatus} from './cn-azure.class';
 import {Disk, ImageReference, SshPublicKey} from '@azure/arm-compute';
-import {CnLabSshService} from '../cn-lab-ssh.service';
 import {CnCoreConfigService} from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
+import {CnCommandService} from '../../../cn-core/services/cn-command.service';
 
 @Injectable()
 export class CnCloudProviderAzureService extends CnCloudProviderService {
 
   private static MOUNT_FILE = 'mount_azure.sh';
+  private static SSH_KEY_FILE_NAME = 'id_rsa';
 
   // ubuntu 20.04 LTS
   private static IMAGE_REF: ImageReference = {
@@ -31,14 +32,25 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
   };
 
   constructor(private azureService: CnAzureService,
-              private labSshService: CnLabSshService,
-              private configService: CnCoreConfigService) {
-    super();
+              configService: CnCoreConfigService,
+              commandService: CnCommandService) {
+    super(commandService, configService);
   }
 
   getName(): CnCloudProviderName {
     return 'AZURE';
   }
+
+  getSshKeyFileName(): string {
+    return CnCloudProviderAzureService.SSH_KEY_FILE_NAME;
+  }
+
+
+
+  getSshUserName(): string {
+    return 'ubuntu';
+  }
+
 
   /////////////////////// INSTANCE ///////////////////////
   async createInstance(request: CnCpCreateInstanceRequest): Promise<CnCpInstance> {
@@ -100,7 +112,6 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
   private convertAzureInstance(instance: CnAzureInstance): CnCpInstance {
     return {
       id: instance.id,
-      name: instance.name,
       status: this.azureInstanceStatusToCpStatus(instance.getStatus(), instance.name),
       originalObject: instance,
       region: instance.location,
@@ -170,15 +181,16 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
       throw new Error(`No volume attached to instance ${labInstance.serverInstanceId}`);
     }
 
-    const mountScript = this.labSshService.getMountFolder() + '/' + CnCloudProviderAzureService.MOUNT_FILE;
+    const labSshService = this.instantiateLabSshService(labInstance);
+    const mountScript = labSshService.getMountFolder() + '/' + CnCloudProviderAzureService.MOUNT_FILE;
+
     // call the mount script with the LUN disk number
-    await this.labSshService.execSshCommand(labInstance, [`bash ${mountScript} ${volume.lun}`]);
+    await labSshService.execSshCommand([`bash ${mountScript} ${volume.lun}`]);
   }
 
 
   private convertAzureVolume(disk: Disk): CnCpVolume {
     return {
-      name: disk.name,
       region: disk.location,
       status: this.azureVolumeStatusToCpStatus(disk.diskState as any, disk.name),
       type: CnLabInstanceVolumeType.HIGH_SPEED,

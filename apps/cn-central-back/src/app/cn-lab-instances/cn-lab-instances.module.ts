@@ -31,7 +31,6 @@ import {HttpModule} from '@nestjs/axios';
 import {CnLabInstancesCron} from './cn-lab-instances.cron';
 import {CnAzureService} from './server/azure/cn-azure.service';
 import {CnCloudProviderAzureService} from './server/azure/cn-cloud-provider-azure.service';
-import {CnLabSshService} from './server/cn-lab-ssh.service';
 import {CnCloudProviderFactory} from './server/cn-cloud-provider.factory';
 import {CnLabGreenOption} from './green-option/cn-lab-green-option.entity';
 import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.service';
@@ -49,6 +48,7 @@ import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
 import {CnLabBackupOptionService} from './backup/cn-lab-backup-option.service';
 import {CnLabBackupHistoryService} from './backup/cn-lab-backup-history.service';
 import {CnLabInstanceListener} from './cn-lab-instance.listener';
+import {CnCloudProviderOutscaleService} from './server/outscale/cn-cloud-provider-outscale.service';
 
 @Module({
   imports: [
@@ -99,7 +99,6 @@ import {CnLabInstanceListener} from './cn-lab-instance.listener';
     CnLabInstanceDesktopService,
     CnAzureService,
     CnCloudProviderAzureService,
-    CnLabSshService,
     CnCloudProviderFactory,
     CnLabInstancesCron,
     CnLabGreenOptionService,
@@ -110,6 +109,7 @@ import {CnLabInstanceListener} from './cn-lab-instance.listener';
     CnLabBackupOptionService,
     CnLabBackupHistoryService,
     CnLabInstanceListener,
+    CnCloudProviderOutscaleService,
   ],
   exports: [
     CnLabInstancesService,

@@ -69,22 +69,6 @@ export class CnAzureService {
       name, vmParameters);
   }
 
-  // Create a volume
-  async createVolume(name: string, region: string, size: number): Promise<Disk> {
-    const computeClient = this.getComputeClient();
-
-    return computeClient.disks.beginCreateOrUpdateAndWait(this.getResourceGroup(), name, {
-      name: name,
-      sku: {
-        name: 'Premium_LRS',
-      },
-      diskSizeGB: size,
-      location: region,
-      creationData: {
-        createOption: 'empty',
-      },
-    });
-  }
 
   public async getInstance(name: string): Promise<VirtualMachine> {
     const computeClient = this.getComputeClient();
@@ -122,6 +106,23 @@ export class CnAzureService {
 
 
   //////////////////////////// VOLUME ////////////////////////////
+
+  // Create a volume
+  async createVolume(name: string, region: string, size: number): Promise<Disk> {
+    const computeClient = this.getComputeClient();
+
+    return computeClient.disks.beginCreateOrUpdateAndWait(this.getResourceGroup(), name, {
+      name: name,
+      sku: {
+        name: 'Premium_LRS',
+      },
+      diskSizeGB: size,
+      location: region,
+      creationData: {
+        createOption: 'empty',
+      },
+    });
+  }
 
   async getVolume(name: string): Promise<Disk> {
     const computeClient = this.getComputeClient();

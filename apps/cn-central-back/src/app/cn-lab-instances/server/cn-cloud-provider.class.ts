@@ -14,9 +14,7 @@ export type CnCpInstanceStatus = 'CREATING' | 'RUNNING' | 'RESTARTING' | 'STOPPE
 
 export interface CnCpInstance {
   id: string;
-  name: string;
   status: CnCpInstanceStatus;
-  ipv4?: string;
   // complete object of the cloud provider
   originalObject: any;
   region: string;
@@ -35,7 +33,6 @@ export interface CnCpCreateVolumeRequest {
 
 export interface CnCpVolume {
   id: string;
-  name: string;
   status: CnCpVolumeStatus;
   region: string;
   size: number; // In GB
