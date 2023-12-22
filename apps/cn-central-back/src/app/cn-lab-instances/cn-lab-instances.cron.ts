@@ -67,7 +67,7 @@ export class CnLabInstancesCron {
     this.logger.debug('[Cron] Start checking free trials labs');
     await this.checkFreeTrialLabs();
     await this.checkFreeTrialLabsToDelete();
-    this.logger.debug('[Cron] ENd checking free trials labs');
+    this.logger.debug('[Cron] End checking free trials labs');
 
   }
 

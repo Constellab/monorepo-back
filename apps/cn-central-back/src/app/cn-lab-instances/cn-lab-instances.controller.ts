@@ -1,5 +1,5 @@
 import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query, Res} from '@nestjs/common';
-import {CnLabInstance, CnLabInstanceBillingMode} from './cn-lab-instance.entity';
+import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstanceAggregateService} from './cn-lab-instance-aggregate.service';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
 import {BlDtoHelper, BlParseEnumPipe, BlParsePipe, BlSearchParams} from '@monorepo/back-core-lib';
@@ -36,43 +36,14 @@ import {CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse} from './s
 import {CnFreeTrialUpdateDto, CnLabFreeTrialGetDto} from './free-trial/cn-lab-free-trial.dto';
 import {CnLabFreeTrialAggregateService} from './free-trial/cn-lab-free-trial-aggregate.service';
 import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
-import {CnCloudProviderOutscaleService} from './server/outscale/cn-cloud-provider-outscale.service';
 
 
 @Controller('lab-instances')
 export class CnLabInstancesController {
 
   constructor(private aggregateService: CnLabInstanceAggregateService,
-              private labFreeTrialAggregateService: CnLabFreeTrialAggregateService,
-              private cloudOutscale: CnCloudProviderOutscaleService) {
+              private labFreeTrialAggregateService: CnLabFreeTrialAggregateService) {
   }
-
-  @Get('admin-test')
-  async test(): Promise<any> {
-    // return this.outscaleService.attachPublicIpToInstance('i-8f99c40c', 'eipalloc-de01b887')
-    // return await this.outscaleService.createInstance('', '', '');
-    // return this.outscaleService.createVolume(110);
-    // return this.outscaleService.attachVolumeToInstance('i-35d98c93', 'vol-cd911e53');
-    // return this.outscaleService.getVolume('vol-20fafd6a');
-    // return this.outscaleService.stopInstance('i-35d98c93');
-    // return this.outscaleService.startInstance('i-35d98c93');
-    return this.cloudOutscale.createInstance({
-      region: 'eu-west-2',
-      billing: CnLabInstanceBillingMode.HOURLY,
-      name: 'super-name',
-      serverName: 'tinav4.c2r4p2'
-    });
-  }
-
-  // @Get('admin-test/:id')
-  // async testkk(@Param('id') id: string): Promise<any> {
-  //   return await this.outscaleService.getVm(id);
-  // }
-  //
-  // @Delete('admin-test/:id')
-  // async testk(@Param('id') id: string): Promise<any> {
-  //   return await this.outscaleService.deleteInstance(id);
-  // }
 
 
   @Post('admin')

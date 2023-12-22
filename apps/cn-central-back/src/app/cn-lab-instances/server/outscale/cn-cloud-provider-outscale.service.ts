@@ -85,6 +85,7 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
   async deleteInstance(id: string): Promise<void> {
     const ip = await this.outscaleService.getPublicIpByInstance(id);
     if (ip) {
+      this.logger.log(`Deleting public ip ${ip.publicIpId} for instance ${id}`)
       await this.outscaleService.deletePublicIp(ip.publicIpId);
     } else {
       this.logger.error(`No public ip found for instance ${id}, skipping deletion`);

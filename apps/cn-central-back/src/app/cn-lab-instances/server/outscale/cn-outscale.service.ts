@@ -214,7 +214,7 @@ export class CnOutscaleService {
   public async deletePublicIp(id: string): Promise<void> {
     const api = this.getIpApi();
 
-    await api.deletePublicIp({deletePublicIpRequest: {publicIp: id}})
+    await api.deletePublicIp({deletePublicIpRequest: {publicIpId: id}})
       .catch((error) => {
         this.logger.error(error);
         throw new BlBadRequestException('Can\'t delete the public IP');

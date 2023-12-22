@@ -64,6 +64,8 @@ export class CnLabConfigurerService {
     try {
       await this.refreshDockerlabRepo(sshService, labInstance.id);
     } catch (e) {
+      await this.labInstanceService.updateServerTask(labInstance.id, `Error while updating dockerlab repository. Error : ${e}`,
+        CnLabInstanceServerTaskStatus.ERROR);
       throw new Error(`Error while updating dockerlab repository. Error : ${e}`);
     }
     await this.labInstanceService.updateServerTask(labInstance.id, `Dockerlab repository updated`, CnLabInstanceServerTaskStatus.SUCCESS);

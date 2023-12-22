@@ -33,10 +33,15 @@ export class CnLabSshService {
     return this.commandService.execCommand(command, options);
   }
 
-  private getSshCommand(commands: string[]): string {
+  private getSshCommand(commands: string[], options: string[] = []): string {
     // in pre-prod and prod env, set the path to the ssh key
-    const option = this.isLocal ? '' : `-i ${this.sshKeyFilePath}`;
-    return `ssh ${option} -o StrictHostKeyChecking=no ${this.sshUserName}@lab.${this.labVirtualHost} "${commands.join(';')}"`;
+    if (this.isLocal) {
+      this.logger.debug('Running ssh command locally.');
+    } else {
+      this.logger.debug(`Running ssh command with rsa file : ${this.sshKeyFilePath}.`);
+      options.push(`-i ${this.sshKeyFilePath}`);
+    }
+    return `ssh ${options.join(' ')} -o StrictHostKeyChecking=no ${this.sshUserName}@lab.${this.labVirtualHost} "${commands.join(';')}"`;
   }
 
 
@@ -77,7 +82,7 @@ export class CnLabSshService {
   public async checkSshConnection(): Promise<boolean> {
 
     // option to add host to fingerprint
-    const command = `ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=3 ${this.sshUserName}@lab.${this.labVirtualHost} exit`;
+    const command = this.getSshCommand(['exit'], ['-q', '-o ConnectTimeout=3']);
     this.logger.log(`Checking ssh connection for ${this.labVirtualHost} lab ${this.labId}`);
     try {
       await this.commandService.execCommand(command, {errorMode: CnExecCommandMode.STDERR_AS_WARNING, timeout: 10000});

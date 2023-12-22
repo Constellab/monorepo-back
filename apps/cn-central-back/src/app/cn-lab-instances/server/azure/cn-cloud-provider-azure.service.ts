@@ -45,12 +45,9 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
     return CnCloudProviderAzureService.SSH_KEY_FILE_NAME;
   }
 
-
-
   getSshUserName(): string {
     return 'ubuntu';
   }
-
 
   /////////////////////// INSTANCE ///////////////////////
   async createInstance(request: CnCpCreateInstanceRequest): Promise<CnCpInstance> {
