@@ -20,10 +20,13 @@ export enum CnBucketContentType {
 /**
  * DTO to show the location of a bucket without telling the bucket name for security reason
  */
-export interface CnBucketLocationDTO{
+export interface CnBucketLocationDTO {
   bucketId: string;
   locationName: string;
   bucketType: BlBucketType;
+  cityName?: string;
+  countryName?: string;
+  cloudProviderName?: string;
 }
 
 /**
@@ -34,7 +37,11 @@ export interface CnBucketLocationDTO{
 export class CnBucket extends CnBaseEntity {
 
   // relation options to load required information for the bucket
-  public static configRelation: FindOptionsRelations<CnBucket> = {region: true, labInstance: true, credentials: true};
+  public static configRelation: FindOptionsRelations<CnBucket> = {
+    region: {city: {country: true}},
+    labInstance: true,
+    credentials: true
+  };
   // default name for the lab bucket
   public static LAB_BUCKET_NAME = 'projects-storage';
 
@@ -100,17 +107,44 @@ export class CnBucket extends CnBaseEntity {
 
   getLocationName(): string {
     if (this.isCloudBucket()) {
-      return this.region.technicalName;
+      return this.region.name;
     } else {
       return this.labInstance.name;
     }
   }
 
-  getBucketLocation(): CnBucketLocationDTO{
+  getLocationCountryName(): string {
+    if (this.isCloudBucket()) {
+      return this.region.city.country.name;
+    } else {
+      return null;
+    }
+  }
+
+  getLocationCityName(): string{
+    if (this.isCloudBucket()) {
+      return this.region.city.name;
+    } else {
+      return null;
+    }
+  }
+
+  getLocationCloudProviderName(): string{
+    if (this.isCloudBucket()) {
+      return this.region.cloudProvider.name;
+    } else {
+      return null;
+    }
+  }
+
+  getBucketLocation(): CnBucketLocationDTO {
     return {
       bucketId: this.id,
       locationName: this.getLocationName(),
       bucketType: this.bucketType,
+      countryName: this.getLocationCountryName(),
+      cityName: this.getLocationCityName(),
+      cloudProviderName: this.getLocationCloudProviderName()
     };
   }
 

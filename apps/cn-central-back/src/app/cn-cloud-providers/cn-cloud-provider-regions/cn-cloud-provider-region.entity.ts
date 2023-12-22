@@ -7,7 +7,7 @@ import {CnSpace} from '../../cn-spaces/cn-space.entity';
 /**
  * Available regions for an object storage
  */
-@Unique(['technicalName', 'cloudProvider'])
+@Unique(['technicalName', 'cloudProvider', 'name'])
 @Entity('cloud_provider_region')
 export class CnCloudProviderRegion extends CnBaseEntity {
 
@@ -19,6 +19,9 @@ export class CnCloudProviderRegion extends CnBaseEntity {
 
   @Column({nullable: false, length: 20})
   technicalName: string;
+
+  @Column({nullable: false, length: 100})
+  name: string;
 
   @Column({nullable: true, length: 255})
   s3Endpoint: string;
