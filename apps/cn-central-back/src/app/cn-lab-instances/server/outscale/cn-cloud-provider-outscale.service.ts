@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {CnCloudProviderService} from '../cn-cloud-provider.service';
 import {CnLabInstance, CnLabInstanceBillingMode, CnLabInstanceVolumeType} from '../../cn-lab-instance.entity';
 import {
@@ -31,6 +31,8 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
   private static readonly MOUNT_FILE = 'mount_outscale.sh';
   private static readonly MOUNT_DISK_NAME = '/dev/sda';
   private static SSH_KEY_FILE_NAME = 'outscale_rsa';
+
+  private readonly logger = new Logger(CnLabSshService.name);
 
 
   constructor(configService: CnCoreConfigService,
@@ -84,6 +86,8 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
     const ip = await this.outscaleService.getPublicIpByInstance(id);
     if (ip) {
       await this.outscaleService.deletePublicIp(ip.publicIpId);
+    } else {
+      this.logger.error(`No public ip found for instance ${id}, skipping deletion`);
     }
     await this.outscaleService.deleteInstance(id);
   }
