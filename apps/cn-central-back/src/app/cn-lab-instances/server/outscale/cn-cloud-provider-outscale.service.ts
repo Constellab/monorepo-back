@@ -32,7 +32,7 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
   private static readonly MOUNT_DISK_NAME = '/dev/sda';
   private static SSH_KEY_FILE_NAME = 'outscale_rsa';
 
-  private readonly logger = new Logger(CnLabSshService.name);
+  private readonly logger = new Logger(CnCloudProviderOutscaleService.name);
 
 
   constructor(configService: CnCoreConfigService,
