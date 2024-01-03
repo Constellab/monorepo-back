@@ -160,7 +160,7 @@ export class HnBrickService {
     }
 
     // get the version
-    const brickVersion: HnBrickVersion = await this.brickVersionService.findByVersionStringAndCheck(name, version);
+    const brickVersion: HnBrickVersion = await this.brickVersionService.getAndCheckBrickVersion(name, version);
 
     return {
       brickName: brick.name,

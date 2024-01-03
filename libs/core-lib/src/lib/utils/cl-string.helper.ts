@@ -61,7 +61,6 @@ export class ClStringHelper {
    * Return true if the input string is a valid UUID v4
    */
   public static isUUID(str: string): boolean {
-    // see https://stackoverflow.com/questions/7905929/how-to-test-valid-uuid-guid
     const regex = new RegExp(/^[a-f\d]{8}(-[a-f\d]{4}){4}[a-f\d]{8}$/i);
     return regex.test(str);
   }

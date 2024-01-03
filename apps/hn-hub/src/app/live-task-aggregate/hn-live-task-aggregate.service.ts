@@ -68,14 +68,9 @@ export class HnLiveTaskAggregateService {
     let publicSelected = false;
     let myLiveTasksSelected = false;
     for (const spaceId of spacesFilter) {
-      if (!ClStringHelper.isUUID(spaceId)) {
-        if (spaceId === 'public')
-          publicSelected = true;
-        if (spaceId === 'my-live-tasks')
-          myLiveTasksSelected = true;
-      } else {
-        await this.spaceAggregateService.checkSpaceUser(spaceId, currentUser.id);
-      }
+      if (spaceId === 'public') publicSelected = true;
+      else if (spaceId === 'my-live-tasks') myLiveTasksSelected = true;
+      else await this.spaceAggregateService.checkSpaceUser(spaceId, currentUser.id);
     }
 
     return await this.liveTaskService.findAllWithSpacesFilter(spacesFilter, publicSelected, myLiveTasksSelected, page, size);
@@ -90,6 +85,15 @@ export class HnLiveTaskAggregateService {
     const userSpaces: HnSpace[] = await this.spaceAggregateService.findSpacesOfCurrentUser();
     return await this.liveTaskService.findLiveTaskByIdWithUserSpaces(id, userSpaces);
   }
+
+  public async getBrickDependencies(liveTaskId: string): Promise<HnBrickVersion[]> {
+    const liveTask = await this.liveTaskService.findOne(liveTaskId);
+    const liveTaskVersion = await this.liveTaskVersionService.findLatestByLiveTask(liveTask);
+    const liveTaskVersionBrickDependencies: HnLiveTaskVersionBrickDependencies[] =
+      await this.liveTaskVersionBrickDependenciesService.getBrickVersionDependencies(liveTaskVersion.id);
+    return liveTaskVersionBrickDependencies.map(liveTaskVersionBrickDependency => liveTaskVersionBrickDependency.brickVersion);
+  }
+
 
   //////////////////////////////////////////// Live Task Version ////////////////////////////////////////////
   public async findLiveTaskVersionById(id: string): Promise<HnLiveTaskVersion> {
@@ -155,7 +159,7 @@ export class HnLiveTaskAggregateService {
     return this.liveTaskVersionService.updateVersionInfos(liveTaskVersionId, versionInfos);
   }
 
-  public async getBrickVersionDependencies(liveTaskVersionId: string): Promise<HnBrickVersion[]> {
+  public async getLiveTaskVersionBrickDependencies(liveTaskVersionId: string): Promise<HnBrickVersion[]> {
     const liveTaskVersionBrickDependencies: HnLiveTaskVersionBrickDependencies[] =
       await this.liveTaskVersionBrickDependenciesService.getBrickVersionDependencies(liveTaskVersionId);
     return liveTaskVersionBrickDependencies.map(liveTaskVersionBrickDependency => liveTaskVersionBrickDependency.brickVersion);

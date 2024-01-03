@@ -60,9 +60,26 @@ export class HnLiveTaskController {
     return this.liveTaskAggregateService.findLiveTaskById(id);
   }
 
+  /**
+   * Update a live task description
+   * @param id
+   * @param description
+   * @return the updated live task
+   */
   @Put('description/:id')
   updateDescription(@Param('id', ParseUUIDPipe) id: string, @Body() description: Record<string, any>): Promise<HnLiveTask> {
     return this.liveTaskAggregateService.updateDescription(id, description);
+  }
+
+  /**
+   * Get live task brick dependencies (last live task version)
+   * @param id
+   * @return a list of brick versions
+   */
+  @BlPublic()
+  @Get(':id/brick-dependencies')
+  getBrickDependencies(@Param('id', ParseUUIDPipe) id: string): Promise<HnBrickVersion[]> {
+    return this.liveTaskAggregateService.getBrickDependencies(id);
   }
 
 
@@ -147,15 +164,27 @@ export class HnLiveTaskController {
     return this.liveTaskAggregateService.createNewDraftVersion(liveTaskId, newLiveTaskVersionFile);
   }
 
+  /**
+   * Update a live task version infos
+   * @param versionId
+   * @param infos
+   * @return the updated live task version
+   */
   @Put('version/:versionId/infos')
   updateLiveTaskVersionInfos(@Param('versionId', ParseUUIDPipe) versionId: string,
                              @Body() infos: Record<string, any>): Promise<HnLiveTaskVersion> {
     return this.liveTaskAggregateService.updateLiveTaskVersionInfos(versionId, infos);
   }
 
+  /**
+   * Get live task version brick dependencies
+   * @param liveTaskVersionId
+   * @return a list of brick versions
+   */
   @BlPublic()
-  @Get('version/:versionId/brick-dependencies')
-  getBrickDependencies(@Param('versionId', ParseUUIDPipe) versionId: string): Promise<HnBrickVersion[]> {
-    return this.liveTaskAggregateService.getBrickVersionDependencies(versionId);
+  @Get('version/:liveTaskVersionId/brick-dependencies')
+  getLiveTaskVersionBrickDependencies(@Param('liveTaskVersionId', ParseUUIDPipe) liveTaskVersionId: string): Promise<HnBrickVersion[]> {
+    return this.liveTaskAggregateService.getLiveTaskVersionBrickDependencies(liveTaskVersionId);
   }
+
 }

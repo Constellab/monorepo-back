@@ -21,8 +21,10 @@ export class HnLiveTask extends HnBaseEntity {
     return this.space == null;
   }
 
-  init(liveTaskDto: HnCreateLiveTaskDto): void {
-    this.title = liveTaskDto.title;
-    this.space = liveTaskDto.space;
+  static init(liveTaskDto: HnCreateLiveTaskDto): HnLiveTask {
+    const liveTask = new HnLiveTask();
+    liveTask.title = liveTaskDto.title;
+    liveTask.space = liveTaskDto.space;
+    return liveTask;
   }
 }

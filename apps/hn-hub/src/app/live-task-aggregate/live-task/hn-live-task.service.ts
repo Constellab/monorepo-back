@@ -149,8 +149,7 @@ export class HnLiveTaskService {
   }
 
   public async create(liveTaskDto: HnCreateLiveTaskDto, entityManager: EntityManager): Promise<HnLiveTask> {
-    const liveTask = new HnLiveTask();
-    liveTask.init(liveTaskDto);
+    const liveTask = HnLiveTask.init(liveTaskDto);
     return entityManager.save(liveTask);
   }
 

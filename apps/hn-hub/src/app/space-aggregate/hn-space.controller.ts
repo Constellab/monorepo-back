@@ -18,6 +18,11 @@ export class HnSpaceController {
   }
 
   /////////////////////////////////// Space ///////////////////////////////////
+
+  /**
+   * Get all spaces
+   * @return a list of spaces
+   */
   @Get()
   find(): Promise<HnSpace[]> {
     return this.spaceAggregateService.findSpaces();
@@ -35,11 +40,19 @@ export class HnSpaceController {
 
   /////////////////////////////////// Space User Queue ///////////////////////////////////
 
+  /**
+   * Handle space user created or updated
+   * @param spaceUserDto
+   */
   @EventPattern(HnSpaceUserAction.CREATE || HnSpaceUserAction.UPDATE)
   handleSpaceUserCreatedOrUpdated(spaceUserDto: HnSpaceUser): Promise<void> {
     return this.spaceAggregateService.createOrUpdateSpaceUser(spaceUserDto);
   }
 
+  /**
+   * Handle space user deleted
+   * @param spaceUserDto
+   */
   @EventPattern(HnSpaceUserAction.REMOVE)
   handleSpaceUserDeleted(spaceUserDto: HnSpaceUser): Promise<void> {
     return this.spaceAggregateService.deleteSpaceUser(spaceUserDto);
