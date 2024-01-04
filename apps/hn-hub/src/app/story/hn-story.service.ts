@@ -107,7 +107,7 @@ export class HnStoryService {
         status: HnStoryStatus.PUBLISHED
       },
       relations: ['topics'],
-      order: {createdAt: 'DESC' as any}
+      order: {publishedAt: 'DESC' as any}
     }, this.storyRepository.manager, HnStory);
   }
 
