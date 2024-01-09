@@ -129,4 +129,8 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
       relations: {labConfig: {brickVersions: {brick: true}}},
     })).labConfig;
   }
+
+  public findAll(): Promise<CnExperiment[]> {
+    return this.repository.find();
+  }
 }

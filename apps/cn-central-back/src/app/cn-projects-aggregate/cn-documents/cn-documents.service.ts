@@ -203,4 +203,8 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
     document.inTrash = false;
     return await this.repo.save(document);
   }
+
+  public findAllConstellabDocuments(): Promise<CnDocument[]> {
+    return this.repo.find({where: {isConstellabDocument: true}});
+  }
 }

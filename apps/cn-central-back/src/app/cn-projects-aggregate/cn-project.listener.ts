@@ -422,7 +422,8 @@ export class CnProjectListener {
     if (mentions.length > 0) {
       for (const m of mentions) {
         // TODO what it is ? valentin
-        if (m == '0') {
+        // mention for everyone
+        if (m == 'everyone') {
           for (const projectUser of projectUsers) {
             if (!userMentions.find(um => um.user.id == projectUser.user.id)
               && projectUser.user.id != CnCurrentUserHelper.getCurrentUser().id) // avoid duplicate

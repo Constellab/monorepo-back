@@ -19,6 +19,10 @@ export class CnReport extends CnEntity {
   @Column({type: 'simple-json', nullable: true})
   content: BlRichTextI;
 
+  @Exclude()
+  @Column({type: 'simple-json', nullable: true})
+  contentOld: BlRichTextI;
+
   @Type(() => CnProject)
   @ManyToOne(() => CnProject, {nullable: false})
   project: CnProject;

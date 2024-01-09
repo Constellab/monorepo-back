@@ -31,6 +31,7 @@ import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {
   BlBadRequestException,
   BlFile,
+  BlQuillMigrator,
   BlRichTextI,
   BlRichTextUploadedImage,
   BlSearchBuilder,
@@ -877,6 +878,50 @@ export class CnProjectAggregateService {
       userInfo: CnCurrentUserHelper.getAndCheckUserSpaceInfo()
     };
     this.eventEmitter.emit(cnProjectEventName, event);
+  }
+
+  // TODO MIGRATION TO DELETE
+  public async migrateTextEditors(): Promise<void> {
+    // migrate project descriptions
+    const projects = await this.projectService.findAll();
+    for (const project of projects) {
+      if (project.description && project.description.ops) {
+        project.description = new BlQuillMigrator(project.description.ops).migrate();
+        await this.projectService.update(project);
+      }
+    }
+
+    // migrate experiment descriptions
+    const experiments = await this.experimentService.findAll();
+    for (const experiment of experiments) {
+      if (experiment.description && experiment.description.ops) {
+        experiment.description = new BlQuillMigrator(experiment.description.ops).migrate();
+        await this.experimentService.update(experiment);
+      }
+    }
+
+    // migrate reports
+    const reports = await this.reportService.findAll();
+    for (const report of reports) {
+      if (report.content && report.content.ops) {
+        report.content = new BlQuillMigrator(report.content.ops).migrate();
+        await this.reportService.update(report);
+      }
+    }
+  }
+
+  public async migrateConstellabDocumentTextEditors(): Promise<void> {
+    const documents = await this.documentService.findAllConstellabDocuments();
+    for (const document of documents) {
+      const doc = await  this.documentService.getConstellabDocument(document.project, document);
+
+      if (doc.content && doc.content.ops) {
+        document.oldContent = doc.content;
+        await this.documentService.update(document);
+        doc.content = new BlQuillMigrator(doc.content.ops).migrate();
+        await this.documentService.updateConstellabDocument(document.project, document, doc.content);
+      }
+    }
   }
 
 }

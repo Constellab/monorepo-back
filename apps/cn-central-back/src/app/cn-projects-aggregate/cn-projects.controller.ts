@@ -24,7 +24,8 @@ import {
   BlRichTextI,
   BlRichTextUploadedImage,
   BlSearchParams,
-  BlUploadedFile
+  BlUploadedFile,
+  BlUserCategory
 } from '@monorepo/back-core-lib';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
@@ -46,18 +47,13 @@ import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
 import {CnProjectUser} from './cn-project-user/cn-project-user.entity';
 import {CnActivity} from '../cn-activity/cn-activity.entity';
 import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
-import {CnProjectBucketService} from './cn-projects/cn-project-bucket.service';
-import {CnReportsService} from './cn-reports/cn-reports.service';
-import {CnProjectCommentService} from '../cn-project-comment/cn-project-comment.service';
+import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
 
 
 @Controller('projects')
 export class CnProjectsController {
 
-  constructor(private projectAggregate: CnProjectAggregateService,
-              private projectBucketService: CnProjectBucketService,
-              private reportService: CnReportsService,
-              private projectCommentService: CnProjectCommentService) {
+  constructor(private projectAggregate: CnProjectAggregateService) {
   }
 
   @Post()
@@ -390,5 +386,18 @@ export class CnProjectsController {
                        @Query('page', ParseIntPipe) page: number,
                        @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnActivity>> {
     return await this.projectAggregate.searchProjectActivity(projectId, searchParam, page, size);
+  }
+
+  // TODO TO DELETE
+  @CnUserCategories(BlUserCategory.ADMIN)
+  @Post('text-editor-migrate')
+  async migrateTextEditor(): Promise<void> {
+    return await this.projectAggregate.migrateTextEditors();
+  }
+
+  @CnUserCategories(BlUserCategory.ADMIN)
+  @Post('doc-migrate')
+  async migrateDocTextEditor(): Promise<void> {
+    return await this.projectAggregate.migrateTextEditors();
   }
 }

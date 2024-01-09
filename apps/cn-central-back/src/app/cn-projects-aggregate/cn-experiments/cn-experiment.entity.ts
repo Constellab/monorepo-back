@@ -30,6 +30,10 @@ export class CnExperiment extends CnEntity {
   @Column({type: 'simple-json', array: false, nullable: true})
   description: BlRichTextI;
 
+  @Exclude()
+  @Column({type: 'simple-json', nullable: true})
+  descriptionOld: BlRichTextI;
+
   @Column({type: 'enum', enum: CnExperimentStatus, nullable: false})
   status: CnExperimentStatus;
 

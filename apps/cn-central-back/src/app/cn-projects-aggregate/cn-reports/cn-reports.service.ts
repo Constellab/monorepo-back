@@ -193,4 +193,8 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   private async getBucketConfig(projectId: string): Promise<BlBucketConfig> {
     return await this.projectBucketService.getAndCheckProjectMainBucketConfig(projectId);
   }
+
+  public findAll(): Promise<CnReport[]> {
+    return this.repository.find();
+  }
 }
