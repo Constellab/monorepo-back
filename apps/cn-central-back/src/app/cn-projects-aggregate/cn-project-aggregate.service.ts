@@ -32,6 +32,7 @@ import {
   BlBadRequestException,
   BlFile,
   BlQuillMigrator,
+  BlRichTextContent,
   BlRichTextI,
   BlRichTextUploadedImage,
   BlSearchBuilder,
@@ -324,12 +325,12 @@ export class CnProjectAggregateService {
 
   /////////////////////////////////////// PROJECT DESCRIPTION //////////////////////////////////
 
-  public async getDescription(projectId: string): Promise<BlRichTextI> {
+  public async getDescription(projectId: string): Promise<BlRichTextContent> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
     return project.description;
   }
 
-  public async updateDescription(projectId: string, description: BlRichTextI): Promise<CnProject> {
+  public async updateDescription(projectId: string, description: BlRichTextContent): Promise<CnProject> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
     project.description = description;
     const newProject = await this.projectService.update(project);
@@ -502,7 +503,7 @@ export class CnProjectAggregateService {
 
     // check that the filename is in the report
     const content = new CnReportContent(report.content);
-    if (content.getFigureOp(filename) == null) {
+    if (content.getFiguresBlock(filename) == null) {
       throw new BlUnauthorizedException();
     }
     return this.reportService.getImage(filename, project, reportId);
@@ -515,7 +516,7 @@ export class CnProjectAggregateService {
 
     // check that the filename is in the report
     const content = new CnReportContent(report.content);
-    if (content.getViewsOp(filename) == null) {
+    if (content.getViewsBlock(filename) == null) {
       throw new BlUnauthorizedException('The view is not in the report');
     }
     return this.reportService.getView(filename, project, reportId);
@@ -703,7 +704,7 @@ export class CnProjectAggregateService {
     return doc;
   }
 
-  public async updateConstellabDocument(documentId: string, content: BlRichTextI): Promise<CnConstellabDocument> {
+  public async updateConstellabDocument(documentId: string, content: BlRichTextContent): Promise<CnConstellabDocument> {
     const document = await this.documentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
@@ -885,8 +886,9 @@ export class CnProjectAggregateService {
     // migrate project descriptions
     const projects = await this.projectService.findAll();
     for (const project of projects) {
-      if (project.description && project.description.ops) {
-        project.description = new BlQuillMigrator(project.description.ops).migrate();
+      const description: any = project.description;
+      if (description && description.ops) {
+        project.description = new BlQuillMigrator(description.ops).migrate();
         await this.projectService.update(project);
       }
     }
@@ -894,8 +896,9 @@ export class CnProjectAggregateService {
     // migrate experiment descriptions
     const experiments = await this.experimentService.findAll();
     for (const experiment of experiments) {
-      if (experiment.description && experiment.description.ops) {
-        experiment.description = new BlQuillMigrator(experiment.description.ops).migrate();
+      const description: any = experiment.description;
+      if (description && description.ops) {
+        experiment.description = new BlQuillMigrator(description.ops).migrate();
         await this.experimentService.update(experiment);
       }
     }
@@ -903,8 +906,9 @@ export class CnProjectAggregateService {
     // migrate reports
     const reports = await this.reportService.findAll();
     for (const report of reports) {
-      if (report.content && report.content.ops) {
-        report.content = new BlQuillMigrator(report.content.ops).migrate();
+      const content: any = report.content;
+      if (content && content.ops) {
+        report.content = new BlQuillMigrator(content).migrate();
         await this.reportService.update(report);
       }
     }
@@ -913,12 +917,12 @@ export class CnProjectAggregateService {
   public async migrateConstellabDocumentTextEditors(): Promise<void> {
     const documents = await this.documentService.findAllConstellabDocuments();
     for (const document of documents) {
-      const doc = await  this.documentService.getConstellabDocument(document.project, document);
+      const doc = await this.documentService.getConstellabDocument(document.project, document);
 
-      if (doc.content && doc.content.ops) {
-        document.oldContent = doc.content;
+      if (doc.content && (doc.content as any).ops) {
+        document.oldContent = doc.content as any;
         await this.documentService.update(document);
-        doc.content = new BlQuillMigrator(doc.content.ops).migrate();
+        doc.content = new BlQuillMigrator(doc.content as any).migrate();
         await this.documentService.updateConstellabDocument(document.project, document, doc.content);
       }
     }

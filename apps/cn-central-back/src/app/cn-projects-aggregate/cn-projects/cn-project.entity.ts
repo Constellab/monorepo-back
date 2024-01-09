@@ -14,7 +14,7 @@ import {Exclude, Type} from 'class-transformer';
 import {CnProjectStatusHistory} from './cn-project-status-history.entity';
 import {CnEntityWithStatus} from '../../cn-core/model/entities/cn-entity-with-status.entity';
 import {DateTime} from 'luxon';
-import {BlLuxonDateColumn, BlNotUpdatable, BlRichTextI} from '@monorepo/back-core-lib';
+import {BlLuxonDateColumn, BlNotUpdatable, BlRichTextContent, BlRichTextI} from '@monorepo/back-core-lib';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-project-level.enum';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnSpace} from '../../cn-spaces/cn-space.entity';
@@ -37,7 +37,7 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
 
   @Exclude()
   @Column({type: 'simple-json', nullable: true})
-  description: BlRichTextI;
+  description: BlRichTextContent;
 
   @Exclude()
   @Column({type: 'simple-json', nullable: true})

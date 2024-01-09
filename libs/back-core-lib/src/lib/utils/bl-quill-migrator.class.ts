@@ -1,4 +1,6 @@
 import {Logger} from '@nestjs/common';
+import {BlRichTextI} from '../models/bl-rich-text.class';
+import {BlRichTextContent} from '../models/bl-new-rich-text.class';
 
 
 export class BlQuillMigrator {
@@ -7,14 +9,20 @@ export class BlQuillMigrator {
   private editorJsContent: any;
 
 
-  constructor(private richText: any) {
+  constructor(private richText: BlRichTextI) {
 
     this.editorJsContent = {
       time: new Date().getTime(),
       blocks: [],
       version: '2.28.2'
     };
+  }
 
+  public static migrateOptional(richText: any): BlRichTextContent {
+    if (richText && richText.ops) {
+      return new BlQuillMigrator(richText).migrate();
+    }
+    return richText;
   }
 
   public migrate(): any {

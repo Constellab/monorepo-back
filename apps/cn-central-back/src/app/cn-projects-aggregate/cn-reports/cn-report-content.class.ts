@@ -1,4 +1,4 @@
-import {BlRichText, BlRichTextOp} from '@monorepo/back-core-lib';
+import {BlBlockType, BlNewRichText, BlOutputBlockData} from '@monorepo/back-core-lib';
 
 export interface CnReportViewConfig {
   id: string;
@@ -11,21 +11,16 @@ export interface CnReportViewConfig {
   caption: string;
 }
 
-export interface CnReportViewOp extends BlRichTextOp {
-  insert: {
-    resource_view: CnReportViewConfig
-  };
-}
 
-
-export class CnReportContent extends BlRichText {
+export class CnReportContent extends BlNewRichText {
   public static readonly viewOps = 'resource_view';
 
-  public getViewsOps(): CnReportViewOp[] {
-    return this.getSpecialOps(CnReportContent.viewOps);
+
+  public getViewsBlocks(): BlOutputBlockData<CnReportViewConfig>[] {
+    return this.getBlocksByType(BlBlockType.RESOURCE_VIEW);
   }
 
-  public getViewsOp(filename: string): CnReportViewOp | undefined {
-    return this.findSpecialOp(CnReportContent.viewOps, (viewOp: CnReportViewOp) => viewOp.insert.resource_view.filename === filename);
+  public getViewsBlock(filename: string): CnReportViewConfig | undefined {
+    return this.getViewsBlocks().find(op => op.data.filename === filename)?.data ?? null;
   }
 }

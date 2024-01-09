@@ -6,7 +6,7 @@ import {CnLabConfigDto} from '../../cn-lab-configs/cn-lab-config.dto';
 import {Type} from 'class-transformer';
 import {CnEntityDTO} from '../../cn-core/model/entities/cn.entity';
 import {CnUser} from '../../cn-users/cn-user.entity';
-import {BlRichTextI} from '@monorepo/back-core-lib';
+import {BlRichTextContent, BlRichTextI} from '@monorepo/back-core-lib';
 
 
 /**
@@ -15,7 +15,7 @@ import {BlRichTextI} from '@monorepo/back-core-lib';
 export class CnSaveExperimentDto {
   id: string;
   title: string;
-  description: BlRichTextI;
+  description: BlRichTextContent | BlRichTextI;
   status: CnExperimentStatus;
 
   is_validated: boolean;

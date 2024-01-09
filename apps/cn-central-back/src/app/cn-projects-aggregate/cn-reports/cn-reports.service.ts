@@ -10,7 +10,8 @@ import {
   BlBucketConfig,
   BlFile,
   BlFileHelper,
-  BlObjectStorageService
+  BlObjectStorageService,
+  BlQuillMigrator
 } from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
 import {CnCreateReportWithConfigDto, CnSaveReportDto, CnSaveReportResultDTO} from './cn-report.dto';
@@ -61,7 +62,8 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     const labConfig = await this.labConfigService.getOrCreateLabConfig(createReportDto.lab_config);
 
     const reportDto: CnSaveReportDto = createReportDto.report;
-    const richText = new CnReportContent(reportDto.content);
+    const content = BlQuillMigrator.migrateOptional(reportDto.content);
+    const richText = new CnReportContent(content);
 
     const prefix = CnProjectBucketService.getPrefix(project, 'REPORT_CONTENTS', reportDto.id);
 
@@ -165,7 +167,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
       const filename = this.objectStorageService.generateRandomFileName(file.originalname);
       await this.objectStorageService.uploadObject(buckets, file, {filename: filename, prefix: prefix});
 
-      richText.updateFigure(file.originalname, {filename: filename});
+      richText.updateFigureBlock(file.originalname, {filename: filename});
     }
   }
 
@@ -176,8 +178,8 @@ export class CnReportsService extends BlAbstractService<CnReport> {
                                 resourceViews: Record<string, any>,
                                 prefix: string): Promise<void> {
 
-    for (const specialOp of richText.getViewsOps()) {
-      const viewConfig: CnReportViewConfig = specialOp.insert.resource_view;
+    for (const specialOp of richText.getViewsBlocks()) {
+      const viewConfig: CnReportViewConfig = specialOp.data;
 
       const viewData = resourceViews[viewConfig.id];
 
@@ -186,7 +188,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
         buckets, viewData, {prefix});
 
       // and save the filename in the content
-      specialOp.insert.resource_view.filename = BlFileHelper.extractFilenameFromFullPath(filePath);
+      specialOp.data.filename = BlFileHelper.extractFilenameFromFullPath(filePath);
     }
   }
 

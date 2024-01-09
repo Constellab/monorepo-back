@@ -21,7 +21,7 @@ import {
   BlParseEnumPipe,
   BlParsePipe,
   BlResponseHelper,
-  BlRichTextI,
+  BlRichTextContent,
   BlRichTextUploadedImage,
   BlSearchParams,
   BlUploadedFile,
@@ -171,13 +171,13 @@ export class CnProjectsController {
   /////////////////////////////////// DESCRIPTION //////////////////////////////////////
 
   @Get(':id/description')
-  getDescription(@Param('id', ParseUUIDPipe) id: string): Promise<BlRichTextI> {
+  getDescription(@Param('id', ParseUUIDPipe) id: string): Promise<BlRichTextContent> {
     return this.projectAggregate.getDescription(id);
   }
 
   @Put(':id/description')
   updateDescription(@Param('id', new ParseUUIDPipe()) id: string,
-                    @Body() description: BlRichTextI): Promise<CnProject> {
+                    @Body() description: BlRichTextContent): Promise<CnProject> {
     return this.projectAggregate.updateDescription(id, description);
   }
 
@@ -323,7 +323,7 @@ export class CnProjectsController {
 
   @Put('constellab-document/:documentId')
   public updateConstellabDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string,
-                                  @Body() body: BlRichTextI): Promise<CnConstellabDocument> {
+                                  @Body() body: BlRichTextContent): Promise<CnConstellabDocument> {
     return this.projectAggregate.updateConstellabDocument(documentId, body);
   }
 
@@ -398,6 +398,6 @@ export class CnProjectsController {
   @CnUserCategories(BlUserCategory.ADMIN)
   @Post('doc-migrate')
   async migrateDocTextEditor(): Promise<void> {
-    return await this.projectAggregate.migrateTextEditors();
+    return await this.projectAggregate.migrateConstellabDocumentTextEditors();
   }
 }

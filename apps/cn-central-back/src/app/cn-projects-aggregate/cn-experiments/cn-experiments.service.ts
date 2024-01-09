@@ -6,7 +6,12 @@ import {CnCreateLabExperimentDto, CnSaveExperimentResultDTO} from './cn-experime
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
-import {BlAbstractService, BlBadRequestException, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {
+  BlAbstractService,
+  BlBadRequestException,
+  BlQuillMigrator,
+  BlUnauthorizedException
+} from '@monorepo/back-core-lib';
 import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
 
 @Injectable()
@@ -49,7 +54,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     experiment.id = labExperimentDto.id;
     experiment.projectId = project.id;
     experiment.title = labExperimentDto.title;
-    experiment.description = labExperimentDto.description;
+    experiment.description = BlQuillMigrator.migrateOptional(labExperimentDto.description);
     experiment.status = labExperimentDto.status;
     experiment.labConfig = labConfig;
     experiment.protocol = createLabExperimentDto.protocol;

@@ -1,7 +1,7 @@
 import {Column, Entity, ManyToMany, ManyToOne} from 'typeorm';
 import {Exclude, Type} from 'class-transformer';
 import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
-import {BlLuxonDateTimeColumn, BlNotUpdatable, BlRichTextI} from '@monorepo/back-core-lib';
+import {BlLuxonDateTimeColumn, BlNotUpdatable, BlRichTextContent, BlRichTextI} from '@monorepo/back-core-lib';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnReport} from '../cn-reports/cn-report.entity';
 import {CnExperimentStatus} from './cn-experiment-status.enum';
@@ -28,7 +28,7 @@ export class CnExperiment extends CnEntity {
   title: string;
 
   @Column({type: 'simple-json', array: false, nullable: true})
-  description: BlRichTextI;
+  description: BlRichTextContent;
 
   @Exclude()
   @Column({type: 'simple-json', nullable: true})

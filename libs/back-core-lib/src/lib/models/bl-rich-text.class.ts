@@ -29,14 +29,6 @@ export interface BlRichTextFigure {
   naturalHeight: number;
 }
 
-/**
- * Object representing the value stored to create a video
- */
-export interface BlRichTextVideo {
-  url: string;
-  title?: string;
-  caption?: string;
-}
 
 export interface BlRichTextFigureOp extends BlRichTextOp {
   insert: {
@@ -50,14 +42,6 @@ export interface BlRichTextLink {
   insert: string;
 }
 
-/**
- * Object representing the value stored to create a formula
- */
-export interface BlRichTextFormula {
-  formula: string;
-  title?: string;
-  caption?: string;
-}
 
 export interface BlRichTextHeader {
   attributes: BlRichTextHeaderAttribute;
@@ -73,17 +57,6 @@ export interface BlRichTextHeaderConfig {
   id?: string;
 }
 
-export interface BlRichTextImageCP {
-  insert: BlRichTextInsertImage | BlRichTextInsertFigure;
-}
-
-export interface BlRichTextInsertImage {
-  image: string;
-}
-
-export interface BlRichTextInsertFigure {
-  figure: BlRichTextFigure;
-}
 
 export interface BlRichTextTitleAttribute {
   link: string;
@@ -217,44 +190,12 @@ export class BlRichText {
 
   ///////////////////////////////////// FIGURE ///////////////////////////////////////////////
 
-
-  /**
-   * Update the figure with the name
-   * @param filename
-   * @param figure
-   */
-  public updateFigure(filename: string, figure: Partial<BlRichTextFigure>): void {
-    const opsFigure: BlRichTextFigureOp = this.getFigureOp(filename);
-
-    if (opsFigure == null) return;
-
-    opsFigure.insert.figure = Object.assign(opsFigure.insert.figure, figure);
-  }
-
-
-  public getFigureOp(filename: string): BlRichTextFigureOp | undefined {
-    return this.findSpecialOp(BlRichText.figureOps, (figureOp: BlRichTextFigureOp) => figureOp.insert.figure.filename === filename);
-  }
-
   public getFiguresOps(): BlRichTextFigureOp[] {
     return this.getSpecialOps(BlRichText.figureOps);
   }
 
   ///////////////////////////////////// SPECIAL OPS ///////////////////////////////////////////////
-  /**
-   * Override a spacial ops value
-   * @param opsType
-   * @param findPredicate
-   * @param newValue
-   */
-  public setSpecialOps(opsType: string, findPredicate: (ops: any, index: number) => boolean, newValue: any): void {
-    const specialOps: BlRichTextOp = this.findSpecialOp(opsType, findPredicate);
 
-    if (specialOps == null) return;
-
-    // update inset param
-    specialOps.insert[opsType] = newValue;
-  }
 
   public getSpecialOps(opsType: string): BlRichTextOp[] {
     return this.richText.ops.filter(

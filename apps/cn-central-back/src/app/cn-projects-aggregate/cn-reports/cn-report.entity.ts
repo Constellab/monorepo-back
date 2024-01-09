@@ -4,7 +4,7 @@ import {Exclude, Type} from 'class-transformer';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
 import {CnUser} from '../../cn-users/cn-user.entity';
-import {BlLuxonDateTimeColumn, BlNotUpdatable, BlRichTextI} from '@monorepo/back-core-lib';
+import {BlLuxonDateTimeColumn, BlNotUpdatable, BlRichTextContent, BlRichTextI} from '@monorepo/back-core-lib';
 import {DateTime} from 'luxon';
 import {CnEntity} from '../../cn-core/model/entities/cn.entity';
 import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
@@ -17,7 +17,7 @@ export class CnReport extends CnEntity {
 
   @Exclude()
   @Column({type: 'simple-json', nullable: true})
-  content: BlRichTextI;
+  content: BlRichTextContent;
 
   @Exclude()
   @Column({type: 'simple-json', nullable: true})

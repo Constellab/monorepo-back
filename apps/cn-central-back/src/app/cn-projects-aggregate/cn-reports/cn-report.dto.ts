@@ -3,14 +3,14 @@ import {Type} from 'class-transformer';
 import {DateTime} from 'luxon';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
-import {BlRichTextI} from '@monorepo/back-core-lib';
+import {BlRichTextContent, BlRichTextI} from '@monorepo/back-core-lib';
 import {CnReport} from './cn-report.entity';
 
 
 export class CnSaveReportDto {
   id: string;
   title: string;
-  content: BlRichTextI;
+  content: BlRichTextI | BlRichTextContent;
 
   is_validated: boolean;
 

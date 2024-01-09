@@ -2,7 +2,7 @@ import {Controller, Get, Param, ParseUUIDPipe, Res} from '@nestjs/common';
 import {CnReport} from './cn-report.entity';
 import {Response} from 'express';
 import {CnProjectAggregateService} from '../cn-project-aggregate.service';
-import {BlResponseHelper, BlRichTextI} from '@monorepo/back-core-lib';
+import {BlResponseHelper, BlRichTextContent} from '@monorepo/back-core-lib';
 
 @Controller('reports')
 export class CnReportsController {
@@ -11,7 +11,7 @@ export class CnReportsController {
   }
 
   @Get(':id/content')
-  async getReportContent(@Param('id', new ParseUUIDPipe()) id: string): Promise<BlRichTextI> {
+  async getReportContent(@Param('id', new ParseUUIDPipe()) id: string): Promise<BlRichTextContent> {
     const report = await this.findById(id);
     return report.content;
   }

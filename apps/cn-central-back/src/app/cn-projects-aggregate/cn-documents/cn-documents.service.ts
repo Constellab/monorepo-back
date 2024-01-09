@@ -4,9 +4,9 @@ import {
   BlBadRequestException,
   BlFile,
   BlFileHelper,
-  BlImageHelper,
+  BlImageHelper, BlNewRichText,
   BlObjectStorageService,
-  BlRichText,
+  BlRichText, BlRichTextContent,
   BlRichTextI,
   BlRichTextUploadedImage
 } from '@monorepo/back-core-lib';
@@ -118,7 +118,7 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
 
   async createConstellabDocument(project: CnProject, filename: string): Promise<CnConstellabDocument> {
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
-    const content = BlRichText.newRichText();
+    const content = BlNewRichText.emptyContent();
 
     return this.datasource.transaction(async (entityManager) => {
 
@@ -139,7 +139,7 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
     });
   }
 
-  async updateConstellabDocument(project: CnProject, document: CnDocument, content: BlRichTextI): Promise<CnConstellabDocument> {
+  async updateConstellabDocument(project: CnProject, document: CnDocument, content: BlRichTextContent): Promise<CnConstellabDocument> {
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
     const documentPath = this.generateDocumentFilePath(project, document.filename);
