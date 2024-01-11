@@ -888,8 +888,12 @@ export class CnProjectAggregateService {
     for (const project of projects) {
       const description: any = project.description;
       if (description && description.ops) {
-        project.description = new BlQuillMigrator(description.ops).migrate();
-        await this.projectService.update(project);
+        try {
+          project.description = new BlQuillMigrator(description).migrate();
+          await this.projectService.update(project);
+        } catch (e) {
+          this.logger.error(`Error migrating project description ${project.id}`, e);
+        }
       }
     }
 
@@ -898,8 +902,12 @@ export class CnProjectAggregateService {
     for (const experiment of experiments) {
       const description: any = experiment.description;
       if (description && description.ops) {
-        experiment.description = new BlQuillMigrator(description.ops).migrate();
-        await this.experimentService.update(experiment);
+        try {
+          experiment.description = new BlQuillMigrator(description).migrate();
+          await this.experimentService.update(experiment);
+        } catch (e) {
+          this.logger.error(`Error migrating experiment description ${experiment.id}`, e);
+        }
       }
     }
 
@@ -908,8 +916,12 @@ export class CnProjectAggregateService {
     for (const report of reports) {
       const content: any = report.content;
       if (content && content.ops) {
-        report.content = new BlQuillMigrator(content).migrate();
-        await this.reportService.update(report);
+        try {
+          report.content = new BlQuillMigrator(content).migrate();
+          await this.reportService.update(report);
+        } catch (e) {
+          this.logger.error(`Error migrating report ${report.id}`, e);
+        }
       }
     }
   }
@@ -920,10 +932,14 @@ export class CnProjectAggregateService {
       const doc = await this.documentService.getConstellabDocument(document.project, document);
 
       if (doc.content && (doc.content as any).ops) {
-        document.oldContent = doc.content as any;
-        await this.documentService.update(document);
-        doc.content = new BlQuillMigrator(doc.content as any).migrate();
-        await this.documentService.updateConstellabDocument(document.project, document, doc.content);
+        try {
+          document.oldContent = doc.content as any;
+          await this.documentService.update(document);
+          doc.content = new BlQuillMigrator(doc.content as any).migrate();
+          await this.documentService.updateConstellabDocument(document.project, document, doc.content);
+        } catch (e) {
+          this.logger.error(`Error migrating document ${document.id}`, e);
+        }
       }
     }
   }
