@@ -4,10 +4,10 @@ import {
   BlBadRequestException,
   BlFile,
   BlFileHelper,
-  BlImageHelper, BlNewRichText,
+  BlImageHelper,
+  BlNewRichText,
   BlObjectStorageService,
-  BlRichText, BlRichTextContent,
-  BlRichTextI,
+  BlRichTextContent,
   BlRichTextUploadedImage
 } from '@monorepo/back-core-lib';
 import {CnProject} from '../cn-projects/cn-project.entity';
@@ -205,6 +205,6 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
   }
 
   public findAllConstellabDocuments(): Promise<CnDocument[]> {
-    return this.repo.find({where: {isConstellabDocument: true}});
+    return this.repo.find({where: {isConstellabDocument: true}, relations: {project: true}});
   }
 }
