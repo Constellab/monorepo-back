@@ -929,17 +929,17 @@ export class CnProjectAggregateService {
   public async migrateConstellabDocumentTextEditors(): Promise<void> {
     const documents = await this.documentService.findAllConstellabDocuments();
     for (const document of documents) {
-      const doc = await this.documentService.getConstellabDocument(document.project, document);
+      try {
+        const doc = await this.documentService.getConstellabDocument(document.project, document);
 
-      if (doc.content && (doc.content as any).ops) {
-        try {
+        if (doc.content && (doc.content as any).ops) {
           document.oldContent = doc.content as any;
           await this.documentService.update(document);
           doc.content = new BlQuillMigrator(doc.content as any).migrate();
           await this.documentService.updateConstellabDocument(document.project, document, doc.content);
-        } catch (e) {
-          this.logger.error(`Error migrating document ${document.id}`, e);
         }
+      } catch (e) {
+        this.logger.error(`Error migrating document ${document.id}`, e);
       }
     }
   }
