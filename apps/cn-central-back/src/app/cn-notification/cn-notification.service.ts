@@ -34,7 +34,7 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
         createdAt: 'DESC' as any
       }
     })).map((notif: CnNotification) => {
-      if(notif.text2.length > 36){
+      if (notif.text2.length > 36) {
         notif.text2 = notif.text2.substring(0, 35) + '...';
       }
       return notif;
@@ -45,15 +45,19 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
     const notifications: CnNotification[] = await this.notificationRepository.find(
       {
         where:
-          {
-            user: {
-              id: CnCurrentUserHelper.getAndCheckCurrentUser().id
+          [
+            {
+              user: {id: CnCurrentUserHelper.getAndCheckCurrentUser().id},
+              space: {id: CnCurrentUserHelper.getAndCheckCurrentSpace().id},
+              isRead: false
             },
-            space: {
-              id: CnCurrentUserHelper.getAndCheckCurrentSpace().id
+            // also include the notif that are not attached to a space
+            {
+              user: {id: CnCurrentUserHelper.getAndCheckCurrentUser().id},
+              space: IsNull(),
+              isRead: false
             },
-            isRead: false
-          }
+          ]
       }
     );
     for (const notif of notifications) {
