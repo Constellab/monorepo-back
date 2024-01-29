@@ -17,6 +17,9 @@ import {CnProject} from './cn-projects/cn-project.entity';
 import {CnProjectStatus} from './cn-projects/cn-project-status.enum';
 import {CnProjectStatusHistory} from './cn-projects/cn-project-status-history.entity';
 import {
+  BlBucketConfig,
+  BlBucketType,
+  BlDbBackupService,
   BlFile,
   BlParseEnumPipe,
   BlParsePipe,
@@ -48,12 +51,15 @@ import {CnProjectUser} from './cn-project-user/cn-project-user.entity';
 import {CnActivity} from '../cn-activity/cn-activity.entity';
 import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
+import {DataSource} from 'typeorm';
 
 
 @Controller('projects')
 export class CnProjectsController {
 
-  constructor(private projectAggregate: CnProjectAggregateService) {
+  constructor(private projectAggregate: CnProjectAggregateService,
+              private datasource: DataSource,
+              private dbBackupService: BlDbBackupService) {
   }
 
   @Post()
@@ -379,6 +385,26 @@ export class CnProjectsController {
   }
 
   /////////////////////////////// Activity ///////////////////////////////////////////
+
+  @Post('TTT')
+  async ttt(@Body() request: any): Promise<any> {
+    const bucketConfig: BlBucketConfig = {
+      bucket: 'constellab-db-backup-pre-prod',
+      bucketType: BlBucketType.NORMAL,
+      region: 'sbg',
+      credentials: {
+        accessKeyId: 'ce7e6d93a1f6400fb4c19b3aebaf2547',
+        secretAccessKey: '04c55d337299410c9858043ede58b717',
+      },
+      endpoint: 'https://s3.sbg.io.cloud.ovh.net/'
+    }
+    await this.dbBackupService.backupDb(this.datasource.manager, bucketConfig, 'test.json');
+  }
+
+  @Post('TTT2')
+  async ttt2(@Body() request: any): Promise<any> {
+    return await this.datasource.manager.query(request.query);
+  }
 
   @Post(':projectId/activity')
   async searchActivity(@Param('projectId', new ParseUUIDPipe()) projectId: string,

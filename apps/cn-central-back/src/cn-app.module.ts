@@ -31,6 +31,7 @@ import {
   BlCaptchaModuleConfig,
   blConfigureLogger,
   BlCookieHelper,
+  BlDbBackupModule,
   BlJwtConfig,
   BlJwtModule,
   BlLoggerConfig,
@@ -158,6 +159,7 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     // Custom module
     CnCoreModule,
     BlObjectStorageModule,
+    BlDbBackupModule,
 
     // set up the logging module
     WinstonModule.forRootAsync({

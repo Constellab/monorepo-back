@@ -2,7 +2,9 @@ import {Injectable, LogLevel} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import {
   HN_BUCKET_DOCUMENTATION_BACKUP_KEY,
-  HN_BUCKET_DOCUMENTATION_KEY, HN_BUCKET_STORIES_BACKUP_KEY, HN_BUCKET_STORIES_KEY,
+  HN_BUCKET_DOCUMENTATION_KEY,
+  HN_BUCKET_STORIES_BACKUP_KEY,
+  HN_BUCKET_STORIES_KEY,
   HN_ENVIRONMENT_PROFILE_KEY,
   HN_ENVIRONMENT_PROFILE_PROD_VALUE,
   HN_RABBITMQ_PASSWORD_KEY,
@@ -192,5 +194,17 @@ export class HnCoreConfigService {
   //     throw error;
   //   }
   // }
+
+  public getDbBackupBucket(): string {
+    return this.isProduction() ? 'constellab-db-backup-prod' : 'constellab-db-backup-pre-prod';
+  }
+
+  public getDbBackupEndpoint(): string {
+    return this.configService.get('OBJECT_STORAGE_DB_BACKUP_ENDPOINT');
+  }
+
+  public getDbBackupRegion(): string {
+    return this.configService.get('OBJECT_STORAGE_DB_BACKUP_REGION');
+  }
 }
 

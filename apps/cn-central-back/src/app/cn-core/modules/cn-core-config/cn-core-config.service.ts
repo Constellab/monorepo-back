@@ -179,6 +179,18 @@ export class CnCoreConfigService {
     return this.isProduction() ? 'constellab-space-image-prod' : 'constellab-space-image-pre-prod';
   }
 
+  public getDbBackupBucket(): string {
+    return this.isProduction() ? 'constellab-db-backup-prod' : 'constellab-db-backup-pre-prod';
+  }
+
+  public getDbBackupEndpoint(): string {
+    return this.configService.get('OBJECT_STORAGE_DB_BACKUP_ENDPOINT');
+  }
+
+  public getDbBackupRegion(): string {
+    return this.configService.get('OBJECT_STORAGE_DB_BACKUP_REGION');
+  }
+
   /////////////////////////////// OVH ///////////////////////////////
 
   public getOvhServiceName(): string {

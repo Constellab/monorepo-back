@@ -5,6 +5,7 @@ import {HttpModule} from '@nestjs/axios';
 import {CnConfigEntitySecurity} from './security/cn-config-entity.security';
 import {CnCommandService} from './services/cn-command.service';
 import {MulterModule} from '@nestjs/platform-express';
+import {CnDbBackupCron} from './cron/cn-db-backup.cron';
 
 /**
  * Core module of the app, export all modules
@@ -27,6 +28,7 @@ import {MulterModule} from '@nestjs/platform-express';
     CnFrontService,
     CnConfigEntitySecurity,
     CnCommandService,
+    CnDbBackupCron,
   ],
   exports: [
     BlRequestContextModule,
