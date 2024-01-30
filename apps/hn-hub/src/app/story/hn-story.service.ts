@@ -11,7 +11,7 @@ import {
   BlBucketType,
   BlFile,
   BlImageHelper,
-  BlObjectStorageService,
+  BlObjectStorageService, BlQuillMigrator,
   BlRichText,
   BlRichTextFigure,
   BlRichTextFigureOp,
@@ -433,5 +433,16 @@ export class HnStoryService {
 
   async deleteCoAuthorInvite(inviteId: string): Promise<boolean> {
     return this.storyAuthorService.deleteCoAuthorInvite(inviteId);
+  }
+
+  async migrateStories(): Promise<void> {
+    const stories: HnStory[] = await this.storyRepository.find();
+    for (const story of stories) {
+      if (story.content && story.content.ops) {
+        story.contentBackup = story.content;
+        story.content = new BlQuillMigrator(story.content as BlRichTextI).migrate();
+        await this.storyRepository.save(story);
+      }
+    }
   }
 }

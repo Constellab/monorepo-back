@@ -1,11 +1,16 @@
 import {Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
 import {HnLiveTaskAggregateService} from './hn-live-task-aggregate.service';
 import {HnLiveTaskVersion} from './live-task-version/hn-live-task-version.entity';
-import {HnCreateLiveTaskDto, HnLiveTaskVersionFileInput} from './live-task/hn-live-task.dto';
+import {
+  HnCreateLiveTaskDto,
+  HnLiveTaskVersionFileInput,
+  HnLiveTaskVersionForLabDto
+} from './live-task/hn-live-task.dto';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {HnLiveTask} from './live-task/hn-live-task.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {HnBrickVersion} from '../brick-aggregate/brick-version/hn-brick-version.entity';
+import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 
 @Controller('live-task')
 export class HnLiveTaskController {
@@ -23,6 +28,12 @@ export class HnLiveTaskController {
   @Post()
   create(@Body(new BlParsePipe(HnCreateLiveTaskDto)) createLiveTaskDto: HnCreateLiveTaskDto): Promise<HnLiveTaskVersion> {
     return this.liveTaskAggregateService.create(createLiveTaskDto);
+  }
+
+  @BlPublic()
+  @Get('public')
+  async getPublicLiveTasks(): Promise<HnLiveTask[]> {
+    return this.liveTaskAggregateService.findPublic();
   }
 
   /**
@@ -94,6 +105,12 @@ export class HnLiveTaskController {
   @Get('version/:id')
   getLiveTaskVersionById(@Param('id', ParseUUIDPipe) id: string): Promise<HnLiveTaskVersion> {
     return this.liveTaskAggregateService.findLiveTaskVersionById(id);
+  }
+
+  @BlPublic()
+  @Get('version/:id/for-lab')
+  getLiveTaskVersionForLabById(@Param('id', ParseUUIDPipe) id: string): Promise<HnLiveTaskVersionForLabDto> {
+    return this.liveTaskAggregateService.findLiveTaskVersionForLab(id);
   }
 
   /**
@@ -185,6 +202,12 @@ export class HnLiveTaskController {
   @Get('version/:liveTaskVersionId/brick-dependencies')
   getLiveTaskVersionBrickDependencies(@Param('liveTaskVersionId', ParseUUIDPipe) liveTaskVersionId: string): Promise<HnBrickVersion[]> {
     return this.liveTaskAggregateService.getLiveTaskVersionBrickDependencies(liveTaskVersionId);
+  }
+
+  @IsAdmin()
+  @Post('migrate-live-tasks')
+  migrateLiveTasks(): Promise<void> {
+    return this.liveTaskAggregateService.migrateLiveTasks();
   }
 
 }

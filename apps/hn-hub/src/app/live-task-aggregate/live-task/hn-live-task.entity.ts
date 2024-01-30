@@ -11,6 +11,9 @@ export class HnLiveTask extends HnBaseEntity {
   @Column({name: 'description', type: 'simple-json', nullable: true})
   description?: Record<string, any>;
 
+  @Column({name: 'description_backup', type: 'simple-json', nullable: true})
+  descriptionBackup?: Record<string, any>;
+
   @Column({name: 'latest_publish_version', nullable: true})
   latestPublishVersion?: number;
 

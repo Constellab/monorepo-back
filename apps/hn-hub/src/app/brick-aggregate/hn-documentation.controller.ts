@@ -27,6 +27,7 @@ import {Response} from 'express';
 import {HnNodeDTO} from './folder/hn-folder.dto';
 import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
 import {HnBrickAggregateService} from './hn-brick-aggregate.service';
+import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 
 @Controller('documentation')
 @UseGuards(HnIsAdminGuard)
@@ -85,5 +86,11 @@ export class HnDocumentationController {
   @Post('structure-doc-bucket')
   public async structureDocumentationBuckets(): Promise<void> {
     return await this.brickAggregateService.structureDocumentationBuckets();
+  }
+
+  @IsAdmin()
+  @Post('migrate-docs')
+  public async migrateDocumentations(): Promise<void> {
+    return await this.brickAggregateService.migrateDocumentations();
   }
 }

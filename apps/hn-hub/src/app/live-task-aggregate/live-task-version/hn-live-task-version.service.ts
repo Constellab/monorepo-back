@@ -4,6 +4,7 @@ import {EntityManager, Repository} from 'typeorm';
 import {HnLiveTaskVersion, HnLiveTaskVersionState} from './hn-live-task-version.entity';
 import {HnLiveTask} from '../live-task/hn-live-task.entity';
 import {HnLiveTaskVersionFileInput} from '../live-task/hn-live-task.dto';
+import {BlQuillMigrator, BlRichTextI} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class HnLiveTaskVersionService {
@@ -30,6 +31,15 @@ export class HnLiveTaskVersionService {
 
   public async findOne(id: string): Promise<HnLiveTaskVersion> {
     return this.liveTaskVersionRepository.findOneBy({id: id});
+  }
+
+  public async findByLiveTaskAndVersionNumber(liveTask: HnLiveTask, version: number): Promise<HnLiveTaskVersion> {
+    return this.liveTaskVersionRepository.findOneBy({
+      liveTask: {
+        id: liveTask.id
+      },
+      version: version
+    });
   }
 
   public async findLatestByLiveTask(liveTask: HnLiveTask): Promise<HnLiveTaskVersion> {
@@ -110,5 +120,11 @@ export class HnLiveTaskVersionService {
     const liveTaskVersion = await this.liveTaskVersionRepository.findOneBy({id: liveTaskVersionId});
     liveTaskVersion.versionInfos = versionInfos;
     return this.liveTaskVersionRepository.save(liveTaskVersion);
+  }
+
+  public async migrateLiveTaskVersion(liveTaskVersion: HnLiveTaskVersion): Promise<void> {
+    liveTaskVersion.versionInfosBackup = liveTaskVersion.versionInfos;
+    liveTaskVersion.versionInfos = new BlQuillMigrator(liveTaskVersion.versionInfos as BlRichTextI).migrate();
+    await this.liveTaskVersionRepository.save(liveTaskVersion);
   }
 }

@@ -2,14 +2,18 @@ import {Injectable} from '@nestjs/common';
 import {HnLiveTaskService} from './live-task/hn-live-task.service';
 import {HnLiveTaskVersionService} from './live-task-version/hn-live-task-version.service';
 import {HnLiveTaskVersion} from './live-task-version/hn-live-task-version.entity';
-import {HnCreateLiveTaskDto, HnLiveTaskVersionFileInput} from './live-task/hn-live-task.dto';
+import {
+  HnCreateLiveTaskDto,
+  HnLiveTaskVersionFileInput,
+  HnLiveTaskVersionForLabDto
+} from './live-task/hn-live-task.dto';
 import {HnSpaceAggregateService} from '../space-aggregate/hn-space-aggregate.service';
 import {HnLiveTask} from './live-task/hn-live-task.entity';
 import {DataSource} from 'typeorm';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnSpace} from '../space-aggregate/space/hn-space.entity';
 import {ClPage, ClStringHelper} from '@monorepo/core-lib';
-import {BlBadRequestException, BlCurrentUserHelper} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlCurrentUserHelper, BlQuillMigrator, BlRichTextI} from '@monorepo/back-core-lib';
 import {HnBrickAggregateService} from '../brick-aggregate/hn-brick-aggregate.service';
 import {HnBrickVersion} from '../brick-aggregate/brick-version/hn-brick-version.entity';
 import {
@@ -52,6 +56,10 @@ export class HnLiveTaskAggregateService {
 
   public async updateDescription(id: string, description: Record<string, any>): Promise<HnLiveTask> {
     return this.liveTaskService.updateDescription(id, description);
+  }
+
+  public async findPublic(): Promise<HnLiveTask[]> {
+    return this.liveTaskService.findPublic();
   }
 
   public async findAll(page: number, size: number): Promise<ClPage<HnLiveTask>> {
@@ -97,7 +105,13 @@ export class HnLiveTaskAggregateService {
 
   //////////////////////////////////////////// Live Task Version ////////////////////////////////////////////
   public async findLiveTaskVersionById(id: string): Promise<HnLiveTaskVersion> {
+    //TODO: secure
     return this.liveTaskVersionService.findOne(id);
+  }
+
+  public async findLiveTaskVersionForLab(id: string): Promise<HnLiveTaskVersionForLabDto>{
+    const liveTaskVersion: HnLiveTaskVersion = await this.liveTaskVersionService.findOne(id);
+    return HnLiveTaskVersionForLabDto.fromLiveTaskVersion(liveTaskVersion);
   }
 
   public async findLatestPublishedLiveTaskVersionByLiveTaskId(id: string): Promise<HnLiveTaskVersion> {
@@ -165,4 +179,18 @@ export class HnLiveTaskAggregateService {
     return liveTaskVersionBrickDependencies.map(liveTaskVersionBrickDependency => liveTaskVersionBrickDependency.brickVersion);
   }
 
+  public async migrateLiveTasks(): Promise<void>{
+    const liveTasks: HnLiveTask[] = await this.liveTaskService.findAll();
+    for(const liveTask of liveTasks){
+      if (liveTask.description && liveTask.description.ops) {
+        await this.liveTaskService.migrateLiveTask(liveTask);
+      }
+      const liveTaskVersions: HnLiveTaskVersion[] = await this.liveTaskVersionService.findAllByLiveTaskId(liveTask.id);
+      for (const liveTaskVersion of liveTaskVersions){
+        if (liveTaskVersion.versionInfos && liveTaskVersion.versionInfos.ops) {
+          await this.liveTaskVersionService.migrateLiveTaskVersion(liveTaskVersion);
+        }
+      }
+    }
+  }
 }

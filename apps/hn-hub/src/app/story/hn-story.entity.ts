@@ -29,6 +29,9 @@ export class HnStory extends BlEntityWithId {
   @Column({name: 'content', type: 'simple-json'})
   content: Record<string, any> = BlRichText.newRichText();
 
+  @Column({name: 'content_backup', type: 'simple-json', nullable: true})
+  contentBackup?: Record<string, any>;
+
   @Column({nullable: true, type: 'varchar'})
   firstParagraph?: string;
 

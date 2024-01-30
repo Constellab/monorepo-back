@@ -8,7 +8,7 @@ import {
   BlBucketType,
   BlFile,
   BlImageHelper,
-  BlObjectStorageService,
+  BlObjectStorageService, BlQuillMigrator,
   BlRichText,
   BlRichTextFigure,
   BlRichTextFigureOp,
@@ -351,4 +351,16 @@ export class HnDocumentationService {
     };
   }
 
+
+  async migrateDocumentations(): Promise<void> {
+    const docs = await this.documentationsRepository.find();
+    for (const doc of docs) {
+      const content: any = doc.content;
+      if (content && content.ops) {
+        doc.contentBackup = content;
+        doc.content = new BlQuillMigrator(content).migrate();
+        await this.documentationsRepository.save(doc);
+      }
+    }
+  }
 }

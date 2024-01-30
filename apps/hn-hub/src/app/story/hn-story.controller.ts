@@ -31,6 +31,7 @@ import {HnTopic} from '../topic/hn-topic.entity';
 import {HnStoryAuthorInvite} from '../story-author-invite/hn-story-author-invite.entity';
 import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
 import {HnStoryFile} from '../story-file/hn-story-file.entity';
+import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 
 @Controller('story')
 export class HnStoryController {
@@ -248,5 +249,11 @@ export class HnStoryController {
   @Delete('invite/:inviteId')
   async deleteCoAuthorInvite(@Param('inviteId', new ParseUUIDPipe()) inviteId: string): Promise<boolean> {
     return this.storyService.deleteCoAuthorInvite(inviteId);
+  }
+
+  @IsAdmin()
+  @Post('migrate-stories')
+  public async migrateStories(): Promise<void> {
+    return await this.storyService.migrateStories();
   }
 }

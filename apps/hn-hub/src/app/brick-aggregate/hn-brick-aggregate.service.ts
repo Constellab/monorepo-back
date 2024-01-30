@@ -290,6 +290,10 @@ export class HnBrickAggregateService {
     return await this.documentationService.structureDocumentationBuckets();
   }
 
+  async migrateDocumentations(): Promise<void>{
+    return await this.documentationService.migrateDocumentations();
+  }
+
   //------------------------------------- TECHNICAL DOCS -------------------------------------
 
   async createTechnicalDoc(content: HnCreateTechnicalDocContent): Promise<boolean> {
