@@ -11,13 +11,16 @@ import {HnAuthModule} from './app/auth/hn-auth.module';
 import {
   blConfigureLogger,
   BlCookieHelper,
+  BlDbBackupModule,
   BlExternalApiModule,
   BlJwtConfig,
   BlJwtModule,
   BlLoggerConfig,
   BlMailModule,
   BlMailModuleConfig,
-  BlObjectStorageModule, BlPersistenceEventModule, BlPersistenceEventService,
+  BlObjectStorageModule,
+  BlPersistenceEventModule,
+  BlPersistenceEventService,
   BlRequestContextMiddleware,
   BlTransportModule,
   BlTransportModuleConfig,
@@ -185,6 +188,7 @@ function configureMailModule(
     HnCoreModule,
     BlPersistenceEventModule,
     BlObjectStorageModule,
+    BlDbBackupModule,
 
     BlExternalApiModule,
 
