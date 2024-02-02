@@ -3,7 +3,7 @@ import {HnLiveTaskService} from './live-task/hn-live-task.service';
 import {HnLiveTaskVersionService} from './live-task-version/hn-live-task-version.service';
 import {HnLiveTaskVersion} from './live-task-version/hn-live-task-version.entity';
 import {
-  HnCreateLiveTaskDto,
+  HnCreateLiveTaskDto, HnLiveTaskForLabDto,
   HnLiveTaskVersionFileInput,
   HnLiveTaskVersionForLabDto
 } from './live-task/hn-live-task.dto';
@@ -12,8 +12,13 @@ import {HnLiveTask} from './live-task/hn-live-task.entity';
 import {DataSource} from 'typeorm';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnSpace} from '../space-aggregate/space/hn-space.entity';
-import {ClPage, ClStringHelper} from '@monorepo/core-lib';
-import {BlBadRequestException, BlCurrentUserHelper, BlQuillMigrator, BlRichTextI} from '@monorepo/back-core-lib';
+import {ClPage} from '@monorepo/core-lib';
+import {
+  BlBadRequestException,
+  BlCurrentUserHelper,
+  BlExternalApiService,
+  BlUnauthorizedException
+} from '@monorepo/back-core-lib';
 import {HnBrickAggregateService} from '../brick-aggregate/hn-brick-aggregate.service';
 import {HnBrickVersion} from '../brick-aggregate/brick-version/hn-brick-version.entity';
 import {
@@ -22,6 +27,10 @@ import {
 import {
   HnLiveTaskVersionBrickDependencies
 } from './live-task-version-brick-dependencies/hn-live-task-version-brick-dependencies.entity';
+import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
+import {HnUser} from '../users/hn-user.entity';
+import {HnUserService} from '../users/hn-user.service';
+import {lastValueFrom} from 'rxjs';
 
 @Injectable()
 export class HnLiveTaskAggregateService {
@@ -32,6 +41,9 @@ export class HnLiveTaskAggregateService {
     private readonly liveTaskVersionBrickDependenciesService: HnLiveTaskVersionBrickDependenciesService,
     private readonly spaceAggregateService: HnSpaceAggregateService,
     private readonly brickAggregateService: HnBrickAggregateService,
+    private readonly blExternalApiService: BlExternalApiService,
+    private readonly coreConfigService: HnCoreConfigService,
+    private readonly userService: HnUserService,
     private dataSource: DataSource
   ) {
   }
@@ -62,13 +74,26 @@ export class HnLiveTaskAggregateService {
     return this.liveTaskService.findPublic();
   }
 
+  /**
+   * Find liv task list for lab user
+   * @param req
+   */
+  public async findForLab(req: Request): Promise<HnLiveTaskForLabDto[]> {
+    await this.checkApiKeyAndUserIdInCentral(req);
+    const currentUser = await this.userService.findOne(req.headers['user'])
+    if (!currentUser)
+      throw new BlUnauthorizedException();
+    const userSpaces: HnSpace[] = await this.spaceAggregateService.findSpacesOfUser(currentUser.id);
+    return (await this.liveTaskService.findAllWithUserSpaces(userSpaces)).map(liveTask => HnLiveTaskForLabDto.fromLiveTask(liveTask));
+  }
+
   public async findAll(page: number, size: number): Promise<ClPage<HnLiveTask>> {
     const currentUser = HnCurrentUserHelper.getCurrentUser();
     if (!currentUser)
       return await this.liveTaskService.findPublicLiveTask(page, size);
 
     const userSpaces: HnSpace[] = await this.spaceAggregateService.findSpacesOfCurrentUser();
-    return await this.liveTaskService.findAllWithUserSpaces(userSpaces, page, size);
+    return await this.liveTaskService.findAllWithUserSpacesPaginated(userSpaces, page, size);
   }
 
   public async findAllWithSpacesFilter(spacesFilter: string[], page: number, size: number): Promise<ClPage<HnLiveTask>> {
@@ -109,9 +134,19 @@ export class HnLiveTaskAggregateService {
     return this.liveTaskVersionService.findOne(id);
   }
 
-  public async findLiveTaskVersionForLab(id: string): Promise<HnLiveTaskVersionForLabDto>{
-    const liveTaskVersion: HnLiveTaskVersion = await this.liveTaskVersionService.findOne(id);
-    return HnLiveTaskVersionForLabDto.fromLiveTaskVersion(liveTaskVersion);
+  /**
+   * Find the latest version of a live task for lab user
+   * @param id
+   * @param req
+   */
+  public async findLatestPublishedLiveTaskVersionForLabByLiveTaskId(id: string, req: Request): Promise<HnLiveTaskVersionForLabDto> {
+    await this.checkApiKeyAndUserIdInCentral(req);
+    const user: HnUser = await this.userService.findOne(req.headers['user']);
+    const liveTask: HnLiveTask = await this.liveTaskService.findOne(id);
+    if (liveTask.space != null) {
+      await this.spaceAggregateService.checkSpaceUser(liveTask.space.id, user.id);
+    }
+    return HnLiveTaskVersionForLabDto.fromLiveTaskVersion(await this.liveTaskVersionService.findLatestPublishedByLiveTask(liveTask));
   }
 
   public async findLatestPublishedLiveTaskVersionByLiveTaskId(id: string): Promise<HnLiveTaskVersion> {
@@ -191,6 +226,23 @@ export class HnLiveTaskAggregateService {
           await this.liveTaskVersionService.migrateLiveTaskVersion(liveTaskVersion);
         }
       }
+    }
+  }
+
+  /**
+   * Verify if the lab user is a good one by calling central
+   * @param req
+   * @private
+   */
+  private async checkApiKeyAndUserIdInCentral(req: Request): Promise<void> {
+    if (req.headers['user'] == null || req.headers['authorization'] == null) {
+      throw new BlUnauthorizedException();
+    }
+    const checkApiKeyUser: boolean = await lastValueFrom(this.blExternalApiService.get(
+      this.coreConfigService.getCentralApiUrl() + 'external-labs/check-test', null,
+      {headers: {user: req.headers['user'], authorization: req.headers['authorization']}}))
+    if(checkApiKeyUser != true){
+      throw new BlUnauthorizedException();
     }
   }
 }

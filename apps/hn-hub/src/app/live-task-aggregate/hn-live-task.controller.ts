@@ -1,8 +1,8 @@
-import {Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
+import {Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query, Req} from '@nestjs/common';
 import {HnLiveTaskAggregateService} from './hn-live-task-aggregate.service';
 import {HnLiveTaskVersion} from './live-task-version/hn-live-task-version.entity';
 import {
-  HnCreateLiveTaskDto,
+  HnCreateLiveTaskDto, HnLiveTaskForLabDto,
   HnLiveTaskVersionFileInput,
   HnLiveTaskVersionForLabDto
 } from './live-task/hn-live-task.dto';
@@ -34,6 +34,16 @@ export class HnLiveTaskController {
   @Get('public')
   async getPublicLiveTasks(): Promise<HnLiveTask[]> {
     return this.liveTaskAggregateService.findPublic();
+  }
+
+  /**
+   * Get live tasks for lab
+   * @param req
+   */
+  @BlPublic()
+  @Get('available/for-lab')
+  async getLiveTasksForLab(@Req() req: Request): Promise<HnLiveTaskForLabDto[]> {
+    return this.liveTaskAggregateService.findForLab(req);
   }
 
   /**
@@ -107,12 +117,6 @@ export class HnLiveTaskController {
     return this.liveTaskAggregateService.findLiveTaskVersionById(id);
   }
 
-  @BlPublic()
-  @Get('version/:id/for-lab')
-  getLiveTaskVersionForLabById(@Param('id', ParseUUIDPipe) id: string): Promise<HnLiveTaskVersionForLabDto> {
-    return this.liveTaskAggregateService.findLiveTaskVersionForLab(id);
-  }
-
   /**
    * Get latest published live task version by live task id
    * @param liveTaskId
@@ -123,6 +127,20 @@ export class HnLiveTaskController {
   getLatestPublishedLiveTaskVersionByLiveTaskId(@Param('liveTaskId', ParseUUIDPipe) liveTaskId: string): Promise<HnLiveTaskVersion> {
     return this.liveTaskAggregateService.findLatestPublishedLiveTaskVersionByLiveTaskId(liveTaskId);
   }
+
+  /**
+   * Get latest published live task version by live task id for lab
+   * @param liveTaskId
+   * @param req
+   * @return a live task version code
+   */
+  @BlPublic()
+  @Get(':liveTaskId/version/latest/for-lab')
+  getLatestPublishedLiveTaskVersionForLabByLiveTaskId(@Param('liveTaskId', ParseUUIDPipe) liveTaskId: string,
+                                                      @Req() req: Request): Promise<HnLiveTaskVersionForLabDto> {
+    return this.liveTaskAggregateService.findLatestPublishedLiveTaskVersionForLabByLiveTaskId(liveTaskId, req);
+  }
+
 
   /**
    * Update a live task version code

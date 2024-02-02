@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, UseInterceptors} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, Req, UseInterceptors} from '@nestjs/common';
 import {CnLabGuard, CnLabRobotAuthentication} from '../cn-core/decorators/cn-lab-guard.decorator';
 import {BlCredentials, BlFile, BlParsePipe, BlUploadedFiles} from '@monorepo/back-core-lib';
 import {CnCreateLabExperimentDto} from '../cn-projects-aggregate/cn-experiments/cn-experiment.dto';
@@ -42,6 +42,17 @@ export class CnExternalLabsController {
   @Post('check-credentials')
   async checkUserCredentials(@Body() credentials: BlCredentials): Promise<CnExternalCheckCredentialResponse> {
     return this.labInstanceAggregator.checkUserCredentials(credentials, false, false);
+  }
+
+  /**
+   * Check if the guard pass
+   * @param req
+   * return true if the guard pass
+   */
+  @CnLabGuard()
+  @Get('check-test')
+  async checkTest(@Req() req: Request): Promise<boolean> {
+    return true;
   }
 
   /**

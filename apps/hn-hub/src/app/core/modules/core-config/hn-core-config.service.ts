@@ -43,7 +43,7 @@ export class HnCoreConfigService {
   }
 
   public getCentralApiUrl(): string {
-    return this.configService.get('CENTRAL_API_URL');
+    return this.isLocal() ? 'http://localhost:3001/' : this.configService.get('CENTRAL_API_URL');
   }
 
   // api key to communicate with central api

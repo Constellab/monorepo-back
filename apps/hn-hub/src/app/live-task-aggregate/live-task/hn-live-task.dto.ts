@@ -1,5 +1,7 @@
 import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
 import {HnLiveTaskVersion, HnLiveTaskVersionType} from '../live-task-version/hn-live-task-version.entity';
+import {HnLiveTask} from './hn-live-task.entity';
+import {DateTime} from 'luxon';
 
 export class HnCreateLiveTaskDto {
   title: string;
@@ -23,9 +25,37 @@ export class HnLiveTaskVersionFileInput{
   task_type: HnLiveTaskVersionType;
 }
 
-export interface HnLiveTaskForLabDto{
+export interface HnLiveTaskLabSpaceDto{
+  id: string;
+  name: string;
+}
+
+export class HnLiveTaskForLabDto{
   id: string;
   title: string;
+  space?: HnLiveTaskLabSpaceDto;
+  created_at?: string;
+  last_modified_at?: string;
+  created_by?: any;
+  description?: Record<string, any>;
+  latest_publish_version: number;
+
+  static fromLiveTask(liveTask: HnLiveTask): HnLiveTaskForLabDto{
+    const dto = new HnLiveTaskForLabDto();
+    dto.id = liveTask.id;
+    dto.title = liveTask.title;
+    dto.created_at = liveTask.createdAt.toISO();
+    dto.last_modified_at = liveTask.lastModifiedAt.toISO();
+    dto.created_by = liveTask.createdBy;
+    dto.description = liveTask.description;
+    dto.latest_publish_version = liveTask.latestPublishVersion;
+    if (liveTask.space == null) return dto;
+    dto.space = {
+      id: liveTask.space.id,
+      name: liveTask.space.name
+    };
+    return dto;
+  }
 }
 
 export class HnLiveTaskVersionForLabDto{
@@ -70,7 +100,8 @@ export class HnLiveTaskVersionForLabDto{
     dto.config_specs = liveTaskVersion.configSpecs;
     dto.live_task = {
       id: liveTaskVersion.liveTask.id,
-      title: liveTaskVersion.liveTask.title
+      title: liveTaskVersion.liveTask.title,
+      latest_publish_version: liveTaskVersion.liveTask.latestPublishVersion
     };
     return dto;
   }
