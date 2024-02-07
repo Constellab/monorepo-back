@@ -69,10 +69,31 @@ export class BlNewRichText {
     return this.richText;
   }
 
+  ////////////////////////////////////// PARAGRAPH ///////////////////////////////////////////////
+  public getParagraphsBlocks(): BlOutputBlockData[] {
+    return this.getBlocksByType(BlBlockType.PARAGRAPH);
+  }
+
+  public getFirstParagraphText(): string {
+    const paragraph = this.getParagraphsBlocks()[0];
+    if (paragraph == null) return null;
+    return this.removeBaliseFromText(paragraph.data.text);
+  }
+
+  private removeBaliseFromText(text: string): string {
+    return text.replace(/<[^>]*>/g, '');
+  }
+
   ///////////////////////////////////// FIGURE ///////////////////////////////////////////////
 
   public getFiguresBlocks(): BlOutputBlockData[] {
     return this.getBlocksByType(BlBlockType.FIGURE);
+  }
+
+  public getFirstFigureLink(): string {
+    const figure = this.getFiguresBlocks()[0];
+    if (figure == null) return null;
+    return figure.data.filename;
   }
 
   public getFiguresBlock(filename: string): BlOutputBlockData | undefined {

@@ -10,9 +10,9 @@ import {
   BlBucketConfig,
   BlBucketType,
   BlFile,
-  BlImageHelper,
+  BlImageHelper, BlNewRichText,
   BlObjectStorageService, BlQuillMigrator,
-  BlRichText,
+  BlRichText, BlRichTextContent,
   BlRichTextFigure,
   BlRichTextFigureOp,
   BlRichTextI,
@@ -55,7 +55,7 @@ export class HnStoryService {
     const story = new HnStory();
     story.title = data.title;
     story.category = data.category;
-    story.content = BlRichText.newRichText();
+    story.content = BlNewRichText.emptyContent();
 
     const dbStory: HnStory = await this.storyRepository.save(story);
     await this.storyAuthorService.createStoryAuthor(dbStory, HnCurrentUserHelper.getCurrentUser());
@@ -193,12 +193,12 @@ export class HnStoryService {
     return this.storyRepository.save(story);
   }
 
-  async updateStoryContent(id: string, content: BlRichTextI): Promise<HnStory> {
+  async updateStoryContent(id: string, content: BlRichTextContent): Promise<HnStory> {
     await this.checkAndValidateOwnerOrCoAuthor(id);
     const story = await this.getStory(id);
     story.content = content;
-    const richText = new BlRichText(content);
-    story.firstParagraph = ClStringHelper.replaceLineBreaksBySpace(richText.getFirstParagraph());
+    const richText = new BlNewRichText(content);
+    story.firstParagraph = ClStringHelper.replaceLineBreaksBySpace(richText.getFirstParagraphText());
     story.mainPicture = richText.getFirstFigureLink();
     return this.storyRepository.save(story);
   }
@@ -283,46 +283,10 @@ export class HnStoryService {
     };
   }
 
-  // TODO: A retirer après utilisation en prod
-  async structureStoriesBucket(): Promise<void> {
-    // check if user is admin for authorization
-    if (!HnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) {
-      throw new BlUnauthorizedException();
-    }
-
-    const stories: HnStory[] = await this.storyRepository.find();
-
-    for (const story of stories) {
-      // Change story content
-      const richText: BlRichText = new BlRichText(story.content as BlRichTextI);
-      const figures: BlRichTextFigure[] = richText.getFiguresOps().map((f: BlRichTextFigureOp) => f.insert.figure);
-      for (const figure of figures) {
-        if (figure.filename.includes(story.id + '/images/')  || ClStringHelper.isHttpLink(figure.filename)) continue;
-        let newFilename = '';
-        if(figure.filename.includes(story.id + '/')){
-          newFilename = figure.filename.replace(story.id + '/', story.id + '/images/');
-        } else {
-          newFilename = story.id + '/images/' + figure.filename;
-        }
-        console.log('Copy ' + figure.filename + ' to ' + newFilename)
-        await this.copyStoryImage(figure.filename, newFilename);
-        await this.deleteStoryImage(figure.filename);
-        await this.modifyStoryImageInContent(story, figure.filename, newFilename);
-      }
-
-      // Change story main picture
-      if (story.mainPicture && story.mainPicture.length > 0 &&
-        !story.mainPicture.includes(story.id + '/images/')  && !ClStringHelper.isHttpLink(story.mainPicture)) {
-        story.mainPicture = story.id + '/images/' + story.mainPicture;
-        await this.storyRepository.save(story);
-      }
-    }
-  }
-
   async publishStory(id: string): Promise<HnStory> {
     await this.checkAndValidateOwnerOrCoAuthor(id);
     const story: HnStory = await this.getStory(id);
-    if (new BlRichText(story.content as BlRichTextI).getFirstFigureLink().length <= 0) {
+    if (new BlNewRichText(story.content as BlRichTextContent).getFirstFigureLink().length <= 0) {
       throw new Error('Story must have a main picture');
     }
     story.status = HnStoryStatus.PUBLISHED;
@@ -409,15 +373,6 @@ export class HnStoryService {
       this.getBackupBucketConfig(),
       newFilename,
     );
-  }
-
-  async deleteStoryImage(filename: string): Promise<void> {
-    await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], filename);
-  }
-
-  async modifyStoryImageInContent(story: HnStory, filename: string, newFilename: string): Promise<void> {
-    story.content = BlRichText.modifyFigureInContent(story.content as BlRichTextI, filename, newFilename);
-    await this.storyRepository.save(story);
   }
 
   private getBackupBucketConfig(): BlBucketConfig {

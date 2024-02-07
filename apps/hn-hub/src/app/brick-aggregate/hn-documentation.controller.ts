@@ -18,7 +18,7 @@ import {
   BlParsePipe,
   BlPublic,
   BlResponseHelper,
-  BlRichTextI,
+  BlRichTextContent,
   BlRichTextUploadedImage,
   BlUploadedFile
 } from '@monorepo/back-core-lib';
@@ -43,7 +43,7 @@ export class HnDocumentationController {
 
   @Put('content/:id')
   updateContent(@Param('id') id: string,
-                @Body() updateContentDoc: BlRichTextI): Promise<HnDocumentation> {
+                @Body() updateContentDoc: BlRichTextContent): Promise<HnDocumentation> {
     return this.brickAggregateService.updateDocContent(id, updateContentDoc);
   }
 
@@ -81,11 +81,6 @@ export class HnDocumentationController {
     const filename = request.url.split('image/')[1];
     const file = await this.brickAggregateService.getDocImage(filename);
     BlResponseHelper.setMessageAndCache(response, file);
-  }
-
-  @Post('structure-doc-bucket')
-  public async structureDocumentationBuckets(): Promise<void> {
-    return await this.brickAggregateService.structureDocumentationBuckets();
   }
 
   @IsAdmin()

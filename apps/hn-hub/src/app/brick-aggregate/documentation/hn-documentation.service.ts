@@ -8,15 +8,10 @@ import {
   BlBucketType,
   BlFile,
   BlImageHelper,
-  BlObjectStorageService, BlQuillMigrator,
-  BlRichText,
-  BlRichTextFigure,
-  BlRichTextFigureOp,
-  BlRichTextHeader,
-  BlRichTextI,
-  BlRichTextLink,
-  BlRichTextUploadedImage,
-  BlUnauthorizedException
+  BlObjectStorageService,
+  BlQuillMigrator,
+  BlRichTextContent,
+  BlRichTextUploadedImage
 } from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../../core/modules/core-config/hn-core-config.service';
 import {IncomingMessage} from 'http';
@@ -24,7 +19,6 @@ import {HnNodeDTO} from '../folder/hn-folder.dto';
 import {HnFolder} from '../folder/hn-folder.entity';
 import {ClStringHelper} from '@monorepo/core-lib';
 import {HnFrontService} from '../../core/service/hn-front.service';
-import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 
 @Injectable()
 export class HnDocumentationService {
@@ -87,89 +81,58 @@ export class HnDocumentationService {
   // TODO : to clean
   async findCurrentDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<HnDocumentation> {
 
-    const documentation: HnDocumentation = await this.documentationsRepository.findOneBy({
+    return await this.documentationsRepository.findOneBy({
       completePath: path,
       folder: {brickMajorVersion: {id: brickMajorVersion.id}}
     });
-
-
-    if (documentation && documentation.content && documentation.content.ops) {
-      const links: BlRichTextLink[] = BlRichText.getLinks(documentation.content as BlRichTextI);
-
-      for (const l of links) {
-        if (l.attributes.id) {
-          const linkDoc: HnDocumentation = await this.documentationsRepository.findOneBy({id: l.attributes.id});
-
-          if (linkDoc) {
-            const insert: string[] = l.insert.split('> ');
-            let path: string = linkDoc.completePath.slice(0, -1);
-            if (insert.length > 1) {
-              l.insert = linkDoc.title + ' > ' + insert[1];
-              path += '#' + insert[1];
-            } else {
-              l.insert = linkDoc.title;
-            }
-            linkDoc.completePath = path;
-
-            // eslint-disable-next-line max-len
-            l.attributes.link = this.frontService.getBrickDocUrl(linkDoc.folder.brickMajorVersion.brick.name,
-              linkDoc.folder.brickMajorVersion.getStrVersion(), linkDoc.completePath);
-
-            documentation.content.ops.find(
-              (o: BlRichTextLink) => o.attributes && o.attributes.id && o.attributes.id === l.attributes.id)
-              .attributes.link = l.attributes.link;
-          }
-        }
-      }
-    }
-    return documentation;
   }
 
-  async updateContent(id: string, updateContentDoc: BlRichTextI): Promise<HnDocumentation> {
+  async updateContent(id: string, updateContentDoc: BlRichTextContent): Promise<HnDocumentation> {
     const doc: HnDocumentation = await this.documentationsRepository.findOneBy({id: id});
     if (doc) {
-      doc.content = await this.transformContent(updateContentDoc);
+      doc.content = updateContentDoc;
     }
     return this.documentationsRepository.save(doc);
   }
 
   // TODO to clean
-  async transformContent(content: BlRichTextI): Promise<BlRichTextI> {
-    // Transform intern link with updated url
-    const links: BlRichTextLink[] = BlRichText.getLinks(content);
-    for (const l of links) {
-      if (l.attributes.link.startsWith(this.configService.getFrontBaseUrl())) {
-        const link: string[] = l.attributes.link.substring(this.configService.getFrontBaseUrl().length).split('/');
-        if (link[0] === 'bricks' && link[3] === 'doc' && link[4] !== 'technical-folder') {
-          const [id, cp] = await this.getDocumentationIdAndCPByUrl(link);
-          if (id != null && cp != null) {
-            l.attributes.id = id;
-            l.attributes.link = cp;
-          }
-        }
-      }
-    }
-
-    // Add id to header
-    const headers: BlRichTextHeader[] = BlRichText.getHeaders(content);
-    const listId: string[] = [];
-    for (const h of headers) {
-      if (h.attributes.header.id) {
-        h.attributes.header.id = ClStringHelper.generateUrlPathFromString(h.attributes.header.id);
-        if (h.attributes.header.id.length > 0) {
-          const sameTitleNumber: number = listId.filter(value => value == h.attributes.header.id).length;
-          listId.push(h.attributes.header.id);
-          if (sameTitleNumber > 0) {
-            h.attributes.header.id = h.attributes.header.id + sameTitleNumber;
-          }
-        } else {
-          delete h.attributes.header.id;
-        }
-      }
-    }
-
-    return content;
-  }
+  // async transformContent(c: BlRichTextContent): Promise<BlRichTextContent> {
+  //   // Transform intern link with updated url
+  //   const content = new BlNewRichText(c);
+  //   const links: BlRichTextLink[] = content.getLinks();
+  //   for (const l of links) {
+  //     if (l.attributes.link.startsWith(this.configService.getFrontBaseUrl())) {
+  //       const link: string[] = l.attributes.link.substring(this.configService.getFrontBaseUrl().length).split('/');
+  //       if (link[0] === 'bricks' && link[3] === 'doc' && link[4] !== 'technical-folder') {
+  //         const [id, cp] = await this.getDocumentationIdAndCPByUrl(link);
+  //         if (id != null && cp != null) {
+  //           l.attributes.id = id;
+  //           l.attributes.link = cp;
+  //         }
+  //       }
+  //     }
+  //   }
+  //
+  //   // Add id to header
+  //   const headers: BlRichTextHeader[] = BlRichText.getHeaders(content);
+  //   const listId: string[] = [];
+  //   for (const h of headers) {
+  //     if (h.attributes.header.id) {
+  //       h.attributes.header.id = ClStringHelper.generateUrlPathFromString(h.attributes.header.id);
+  //       if (h.attributes.header.id.length > 0) {
+  //         const sameTitleNumber: number = listId.filter(value => value == h.attributes.header.id).length;
+  //         listId.push(h.attributes.header.id);
+  //         if (sameTitleNumber > 0) {
+  //           h.attributes.header.id = h.attributes.header.id + sameTitleNumber;
+  //         }
+  //       } else {
+  //         delete h.attributes.header.id;
+  //       }
+  //     }
+  //   }
+  //
+  //   return content;
+  // }
 
   // TODO to clean and document
   private async getDocumentationIdAndCPByUrl(link: string[]): Promise<[string, string]> {
@@ -273,60 +236,6 @@ export class HnDocumentationService {
       credentials: this.configService.getDefaultObjectStorageCredentials(),
       bucketType: BlBucketType.NORMAL,
     };
-  }
-
-  // TODO : A retirer après utilisation
-  public async structureDocumentationBuckets(): Promise<void> {
-    // check if user is admin for authorization
-    if (!HnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) {
-      throw new BlUnauthorizedException();
-    }
-
-    const docs = await this.documentationsRepository.find();
-    for (const doc of docs) {
-      if (doc.content == null) continue;
-      const richText: BlRichText = new BlRichText(doc.content as BlRichTextI);
-      const figures: BlRichTextFigure[] = richText.getFiguresOps().map((f: BlRichTextFigureOp) => f.insert.figure);
-      for (const figure of figures) {
-        if (figure.filename.includes(doc.id + '/images/')  || ClStringHelper.isHttpLink(figure.filename)) continue;
-        let newFilename = '';
-        if(figure.filename.includes(doc.id + '/')){
-          newFilename = figure.filename.replace(doc.id + '/', doc.id + '/images/');
-        } else {
-          newFilename = doc.id + '/images/' + figure.filename;
-        }
-        console.log('Copy ' + figure.filename + ' to ' + newFilename);
-        await this.copyDocImage(figure.filename, newFilename);
-        await this.deleteDocImage(figure.filename);
-        await this.modifyDocImageInContent(doc, figure.filename, newFilename);
-      }
-    }
-  }
-
-  async copyDocImage(filename: string, newFilename?: string): Promise<void> {
-    if (!newFilename) {
-      newFilename = filename;
-    }
-    await this.objectStorageService.copyObjectIfExist(
-      this.getBucketConfig(),
-      this.getBucketConfig(),
-      filename,
-      newFilename
-    );
-    await this.objectStorageService.copyObjectIfExist(
-      this.getBucketConfig(),
-      this.getBackupBucketConfig(),
-      newFilename,
-    );
-  }
-
-  async modifyDocImageInContent(doc: HnDocumentation, filename: string, newFilename: string): Promise<void> {
-    doc.content = BlRichText.modifyFigureInContent(doc.content as BlRichTextI, filename, newFilename);
-    await this.documentationsRepository.save(doc);
-  }
-
-  async deleteDocImage(filename: string): Promise<void> {
-    await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], filename);
   }
 
   public getDocsByBrickVersion(brickMajorVersionId: string): Promise<HnDocumentation[]>{

@@ -23,7 +23,7 @@ import {HnFolderService} from './folder/hn-folder.service';
 import {HnFolder} from './folder/hn-folder.entity';
 import {HnDocumentationService} from './documentation/hn-documentation.service';
 import {
-  BlFile,
+  BlFile, BlRichTextContent,
   BlRichTextI,
   BlRichTextUploadedImage,
   BlUnauthorizedException,
@@ -243,7 +243,7 @@ export class HnBrickAggregateService {
     return this.documentationService.getImage(id);
   }
 
-  async updateDocContent(id: string, updateContentDoc: BlRichTextI): Promise<HnDocumentation> {
+  async updateDocContent(id: string, updateContentDoc: BlRichTextContent): Promise<HnDocumentation> {
     await this.checkIfUserHasRightsOnDoc(id);
     return this.documentationService.updateContent(id, updateContentDoc);
   }

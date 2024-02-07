@@ -16,7 +16,7 @@ import {
   BlFile,
   BlParsePipe,
   BlPublic,
-  BlResponseHelper,
+  BlResponseHelper, BlRichTextContent,
   BlRichTextI,
   BlRichTextUploadedImage,
   BlUploadedFile
@@ -115,7 +115,7 @@ export class HnStoryController {
 
   @Put(':id/content')
   async updateStoryContent(@Param('id', new ParseUUIDPipe()) id: string,
-                           @Body('content') content: BlRichTextI): Promise<HnStory> {
+                           @Body('content') content: BlRichTextContent): Promise<HnStory> {
     return this.storyService.updateStoryContent(id, content);
   }
 
@@ -238,12 +238,6 @@ export class HnStoryController {
   @Put('invite/:token/accept')
   acceptInvite(@Param('token') token: string): Promise<HnStory> {
     return this.storyService.acceptInvite(token);
-  }
-
-
-  @Post('structure-stories-bucket')
-  structureStoriesBucket(): Promise<void> {
-    return this.storyService.structureStoriesBucket();
   }
 
   @Delete('invite/:inviteId')
