@@ -286,10 +286,6 @@ export class HnBrickAggregateService {
     return this.brickService.getDocByLink(link);
   }
 
-  async structureDocumentationBuckets(): Promise<void> {
-    return await this.documentationService.structureDocumentationBuckets();
-  }
-
   async migrateDocumentations(): Promise<void>{
     return await this.documentationService.migrateDocumentations();
   }
