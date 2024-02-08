@@ -393,7 +393,9 @@ export class HnStoryService {
   async migrateStories(): Promise<void> {
     const stories: HnStory[] = await this.storyRepository.find();
     for (const story of stories) {
+      console.log('Update Story: ' + story.id);
       if (story.content && story.content.ops) {
+        console.log('Update Story: ' + story.id);
         story.contentBackup = story.content;
         story.content = new BlQuillMigrator(story.content as BlRichTextI).migrate();
         await this.storyRepository.save(story);
