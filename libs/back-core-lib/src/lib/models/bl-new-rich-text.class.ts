@@ -1,4 +1,5 @@
 import {BlRichTextFigure} from './bl-rich-text.class';
+import {ClHelpService} from '@monorepo/core-lib';
 
 /**
  * Types taken from @editorjs/editorjs
@@ -54,6 +55,19 @@ export class BlNewRichText {
     };
   }
 
+  public static isEmpty(content: BlRichTextContent): boolean {
+    if (ClHelpService.isNullOrEmpty(content) || ClHelpService.isNullOrEmpty(content.blocks)) return true;
+
+    // check if all block are paragraph and contain only spaces or empty string
+    const allParagraph = content.blocks.every(block => block.type === BlBlockType.PARAGRAPH);
+    if (!allParagraph) return false;
+
+    return content.blocks.every(block => {
+      return ClHelpService.isNullOrEmpty(block.data) || ClHelpService.isNullOrEmpty(block.data.text) ||
+        ClHelpService.isNullOrEmpty(block.data.text.trim());
+    });
+  }
+
   constructor(private richText: BlRichTextContent) {
   }
 
@@ -74,14 +88,22 @@ export class BlNewRichText {
     return this.getBlocksByType(BlBlockType.PARAGRAPH);
   }
 
-  public getFirstParagraphText(): string {
-    const paragraph = this.getParagraphsBlocks()[0];
-    if (paragraph == null) return null;
-    return this.removeBaliseFromText(paragraph.data.text);
-  }
+  public getFirstParagraphsText(): string {
+    if (BlNewRichText.isEmpty(this.getContent())) return null;
+    let result = '';
+    const paragraphBlocks = this.getContent().blocks.filter(block => block.type === BlBlockType.PARAGRAPH);
+    if (paragraphBlocks.length === 0) return null;
+    for (const block of paragraphBlocks) {
 
-  private removeBaliseFromText(text: string): string {
-    return text.replace(/<[^>]*>/g, '');
+      if (block.data && block.data.text && block.data.text.trim() !== ''){
+        if (result.length + block.data.text.trim().length > 200){
+          result += block.data.text.trim().substring(0, 200 - result.length) + '...';
+          break;
+        }
+        result += block.data.text.trim() + ' ';
+      }
+    }
+    return result.replace(/<[^>]*>/g, '');
   }
 
   ///////////////////////////////////// FIGURE ///////////////////////////////////////////////

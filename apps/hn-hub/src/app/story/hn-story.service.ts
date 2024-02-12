@@ -198,7 +198,7 @@ export class HnStoryService {
     const story = await this.getStory(id);
     story.content = content;
     const richText = new BlNewRichText(content);
-    story.firstParagraph = ClStringHelper.replaceLineBreaksBySpace(richText.getFirstParagraphText());
+    story.firstParagraph = ClStringHelper.replaceLineBreaksBySpace(richText.getFirstParagraphsText());
     story.mainPicture = richText.getFirstFigureLink();
     return this.storyRepository.save(story);
   }
