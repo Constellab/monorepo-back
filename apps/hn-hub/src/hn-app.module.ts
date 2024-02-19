@@ -63,6 +63,7 @@ import {HnLiveTaskAggregateModule} from './app/live-task-aggregate/hn-live-task-
 import {
   HnLiveTaskVersionBrickDependenciesModule
 } from './app/live-task-aggregate/live-task-version-brick-dependencies/hn-live-task-version-brick-dependencies.module';
+import {ScheduleModule} from '@nestjs/schedule';
 
 function typeOrmConfig(
   configService: HnCoreConfigService,
@@ -184,6 +185,7 @@ function configureMailModule(
       limit: 10,
     }),
     EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot(),
 
     HnCoreModule,
     BlPersistenceEventModule,

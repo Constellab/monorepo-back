@@ -17,7 +17,7 @@ export class CnDbBackupCron {
   // cron every day at 00:00 to backup the DB in the object storage
   @Cron('0 0 0 * * *')
   async backupDb(): Promise<void> {
-    Logger.log('[Cron] Start of backup db');
+    this.logger.log('[Cron] Start of backup db');
     const bucketConfig: BlBucketConfig = {
       bucket: this.configService.getDbBackupBucket(),
       bucketType: BlBucketType.NORMAL,
@@ -28,7 +28,7 @@ export class CnDbBackupCron {
 
     await this.backupService.backupDb(this.datasource.manager, bucketConfig, 'cn-space.json');
 
-    Logger.log('[Cron] End of backup db');
+    this.logger.log('[Cron] End of backup db');
   }
 
 }
