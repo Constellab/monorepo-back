@@ -88,4 +88,21 @@ export class HnDocumentationController {
   public async migrateDocumentations(): Promise<void> {
     return await this.brickAggregateService.migrateDocumentations();
   }
+
+  ////////////////////////////////// DOC RESOURCE VIEW //////////////////////////////////
+  @UseInterceptors(FileInterceptor('file'))
+  @Post(':docId/upload-view')
+  public async uploadStoryResourceViewFile(@BlUploadedFile() file: BlFile,
+                                           @Param('docId', new ParseUUIDPipe()) docId: string): Promise<any> {
+    return {filename: await this.brickAggregateService.uploadDocResourceViewFile(docId, file)};
+  }
+
+  @BlPublic()
+  @Get('view/*')
+  public async getView(@Req() request: Request,
+                       @Res() response: Response): Promise<any> {
+    const filename = request.url.split('view/')[1];
+    const file = await this.brickAggregateService.getView(filename);
+    BlResponseHelper.setMessageAndCache(response, file);
+  }
 }

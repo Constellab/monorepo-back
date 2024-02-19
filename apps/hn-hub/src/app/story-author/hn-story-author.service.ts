@@ -23,6 +23,10 @@ export class HnStoryAuthorService {
     return this.storyAuthorRepository.save(storyAuthor);
   }
 
+  async getStoryCoAuthorsByStoryId(storyId: string): Promise<HnStoryAuthor[]> {
+    return this.storyAuthorRepository.find({where: {story: {id: storyId}}});
+  }
+
   async updateStoryCoAuthors(story: HnStory, coAuthorsMail: string[]): Promise<void> {
     for (const coAuthorMail of coAuthorsMail) {
       await this.storyAuthorInviteService.createStoryAuthorMail(story, coAuthorMail);
@@ -49,6 +53,10 @@ export class HnStoryAuthorService {
   async acceptInvite(storyAuthor: HnStoryAuthor, storyAuthorInvite: HnStoryAuthorInvite): Promise<boolean> {
     return (await this.storyAuthorInviteService.acceptInvite(storyAuthorInvite)) != null
       && (await this.storyAuthorRepository.save(storyAuthor)) != null;
+  }
+
+  async getStoryCoAuthorsInvites(storyId: string): Promise<HnStoryAuthorInvite[]> {
+    return this.storyAuthorInviteService.getStoryCoAuthorsInvites(storyId);
   }
 
   async getStoryCoAuthorsPendingInvites(storyId: string): Promise<HnStoryAuthorInvite[]> {

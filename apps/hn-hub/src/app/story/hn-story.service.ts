@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {HnStory, HnStoryCategory, HnStoryStatus} from './hn-story.entity';
-import {FindOptionsOrder, FindOptionsWhere, In, Like, Repository} from 'typeorm';
+import {DataSource, EntityManager, FindOptionsOrder, FindOptionsWhere, In, Like, Repository} from 'typeorm';
 import {HnTopicService} from '../topic/hn-topic.service';
 import {ClPage, ClStringHelper} from '@monorepo/core-lib';
 import {
@@ -47,7 +47,8 @@ export class HnStoryService {
               private configService: HnCoreConfigService,
               private frontService: HnFrontService,
               private storyAuthorService: HnStoryAuthorService,
-              private storyFileService: HnStoryFileService
+              private storyFileService: HnStoryFileService,
+              private dataSource: DataSource
   ) {
   }
 
@@ -69,6 +70,43 @@ export class HnStoryService {
       },
       relations: ['topics']
     });
+  }
+
+  async deleteStory(id: string): Promise<void> {
+    await this.checkAndValidateOwnerOrCoAuthor(id);
+    const deleteRes = await this.dataSource.transaction(async entityManager => {
+      await this.deleteAllStoryFiles(id, entityManager);
+      await this.deleteAllStoryCoAuthorsInvites(id, entityManager);
+      await this.deleteAllStoryCoAuthors(id, entityManager);
+      const res = await entityManager.delete(HnStory, {id: id});
+      console.log(res);
+      return res.affected > 0;
+    });
+    if (!deleteRes){
+      throw new BlBadRequestException('Error during the deletion, the story is not deleted');
+    }
+  }
+
+  async deleteAllStoryCoAuthorsInvites(storyId: string, entityManager: EntityManager): Promise<void>{
+    const storyCoAuthorsInvites = await this.storyAuthorService.getStoryCoAuthorsInvites(storyId);
+    for (const storyCoAuthorsInvite of storyCoAuthorsInvites) {
+      try {
+        await entityManager.delete(HnStoryAuthorInvite, storyCoAuthorsInvite.id);
+      } catch (e){
+        throw new BlBadRequestException('Error during the deletion of a story co-author invite');
+      }
+    }
+  }
+
+  async deleteAllStoryCoAuthors(storyId: string, entityManager: EntityManager): Promise<void>{
+    const storyCoAuthors = await this.storyAuthorService.getStoryCoAuthorsByStoryId(storyId);
+    for (const storyCoAuthor of storyCoAuthors) {
+      try {
+        await entityManager.delete(HnStoryAuthor, storyCoAuthor.id);
+      } catch (e){
+        throw new BlBadRequestException('Error during the deletion of a story co-author');
+      }
+    }
   }
 
   async getMyStories(page: number, size: number): Promise<ClPage<HnStory>> {
@@ -193,13 +231,21 @@ export class HnStoryService {
     return this.storyRepository.save(story);
   }
 
-  async updateStoryContent(id: string, content: BlRichTextContent): Promise<HnStory> {
+  async updateStoryContent(id: string): Promise<HnStory> {
     await this.checkAndValidateOwnerOrCoAuthor(id);
     const story = await this.getStory(id);
-    story.content = content;
-    const richText = new BlNewRichText(content);
+    story.content = story.contentEdition;
+    const richText = new BlNewRichText(story.contentEdition as BlRichTextContent);
     story.firstParagraph = ClStringHelper.replaceLineBreaksBySpace(richText.getFirstParagraphsText());
-    story.mainPicture = richText.getFirstFigureLink();
+    if (richText.isUsedFigure(story.mainPicture))
+      story.mainPicture = richText.getFirstFigureLink();
+    return this.storyRepository.save(story);
+  }
+
+  async updateStoryContentEdition(id: string, contentEdition: BlRichTextContent): Promise<HnStory> {
+    await this.checkAndValidateOwnerOrCoAuthor(id);
+    const story = await this.getStory(id);
+    story.contentEdition = contentEdition;
     return this.storyRepository.save(story);
   }
 
@@ -216,6 +262,24 @@ export class HnStoryService {
       width: imSize.width,
       height: imSize.height,
     };
+  }
+
+  async updateStoryMainImage(file: BlFile, storyId: string): Promise<HnStory>{
+    await this.checkAndValidateOwnerOrCoAuthor(storyId);
+    const story: HnStory = await this.getStory(storyId);
+    const fileExt = file.originalname.split('.').pop();
+    file.originalname = storyId + '/images/' + ClStringHelper.generateUUID() + '.' + fileExt;
+    story.mainPicture = await this.objectStorageService.uploadObject([this.getBucketConfig(), this.getBackupBucketConfig()], file,
+      {generateRandomObjectName: false});
+    return await this.storyRepository.save(story);
+  }
+
+  async deleteStoryMainImage(storyId: string): Promise<HnStory>{
+    await this.checkAndValidateOwnerOrCoAuthor(storyId);
+    const story: HnStory = await this.getStory(storyId);
+    await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], story.mainPicture);
+    story.mainPicture = new BlNewRichText(story.content as BlRichTextContent).getFirstFigureLink();
+    return await this.storyRepository.save(story);
   }
 
 
@@ -272,6 +336,18 @@ export class HnStoryService {
     }
   }
 
+  async deleteAllStoryFiles(storyId: string, entityManager: EntityManager): Promise<void>{
+    const storyFiles: HnStoryFile[] = await this.storyFileService.getStoryFilesByStoryId(storyId);
+    for (const storyFile of storyFiles) {
+      try {
+        if(await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], storyFile.fileName)){
+          await this.storyFileService.deleteStoryFileWithEntityManager(storyFile.id, entityManager);
+        }
+      } catch (e) {
+        throw new BlBadRequestException('Error during the deletion of a story document');
+      }
+    }
+  }
 
   private getBucketConfig(): BlBucketConfig {
     return {
@@ -289,6 +365,7 @@ export class HnStoryService {
     if (new BlNewRichText(story.content as BlRichTextContent).getFirstFigureLink().length <= 0) {
       throw new Error('Story must have a main picture');
     }
+    story.content = story.contentEdition;
     story.status = HnStoryStatus.PUBLISHED;
     story.publishedAt = DateTime.now();
     return this.storyRepository.save(story);
@@ -401,5 +478,18 @@ export class HnStoryService {
         await this.storyRepository.save(story);
       }
     }
+  }
+
+
+  /////////////////////////////////// RESOURCE VIEW ///////////////////////////////////
+  async uploadStoryResourceViewFile(storyId: string, file: BlFile): Promise<string>{
+    await this.checkAndValidateOwnerOrCoAuthor(storyId);
+    file.originalname = storyId + '/views/' + ClStringHelper.generateUUID() + '.json';
+    return await this.objectStorageService.uploadObject([this.getBucketConfig(), this.getBackupBucketConfig()], file,
+      {generateRandomObjectName: false});
+  }
+
+  async getView(filename: string): Promise<any>{
+    return await this.objectStorageService.getObject(this.getBucketConfig(), filename);
   }
 }

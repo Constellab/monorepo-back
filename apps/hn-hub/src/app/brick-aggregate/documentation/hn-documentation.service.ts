@@ -274,4 +274,15 @@ export class HnDocumentationService {
       }
     }
   }
+
+  //------------------------------------- RESOURCE VIEW -------------------------------------
+  async uploadDocResourceViewFile(docId: string, file: BlFile): Promise<string>{
+    file.originalname = docId + '/views/' + ClStringHelper.generateUUID() + '.json';
+    return await this.objectStorageService.uploadObject([this.getBucketConfig(), this.getBackupBucketConfig()], file,
+      {generateRandomObjectName: false});
+  }
+
+  async getView(filename: string): Promise<any>{
+    return await this.objectStorageService.getObject(this.getBucketConfig(), filename);
+  }
 }

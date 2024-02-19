@@ -1,14 +1,17 @@
 import {
   Body,
-  Controller, Delete,
+  Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
   ParseUUIDPipe,
   Post,
   Put,
-  Query, Req,
-  Res, StreamableFile,
+  Query,
+  Req,
+  Res,
+  StreamableFile,
   UseInterceptors
 } from '@nestjs/common';
 import {HnStoryService} from './hn-story.service';
@@ -16,8 +19,8 @@ import {
   BlFile,
   BlParsePipe,
   BlPublic,
-  BlResponseHelper, BlRichTextContent,
-  BlRichTextI,
+  BlResponseHelper,
+  BlRichTextContent,
   BlRichTextUploadedImage,
   BlUploadedFile
 } from '@monorepo/back-core-lib';
@@ -84,6 +87,11 @@ export class HnStoryController {
     return this.storyService.getStory(id);
   }
 
+  @Delete(':id')
+  async deleteStory(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return this.storyService.deleteStory(id);
+  }
+
   @Post()
   async createStory(@Body(new BlParsePipe(HnCreateStoryDto)) createStoryDto: HnCreateStoryDto): Promise<HnStory> {
     return this.storyService.createStory(createStoryDto);
@@ -107,6 +115,18 @@ export class HnStoryController {
     return this.storyService.addStoryTopic(id, topic);
   }
 
+  @UseInterceptors(FileInterceptor('file'))
+  @Post(':id/main-image')
+  async updateStoryMainImage(@BlUploadedFile() file: BlFile,
+                             @Param('id', new ParseUUIDPipe()) id: string): Promise<HnStory> {
+    return this.storyService.updateStoryMainImage(file, id);
+  }
+
+  @Delete(':id/main-image')
+  async deleteStoryMainImage(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnStory> {
+    return this.storyService.deleteStoryMainImage(id);
+  }
+
   @Put(':id/remove-topic/:topicId')
   async updateRemoveStoryTopic(@Param('id', new ParseUUIDPipe()) id: string,
                                @Param('topicId', new ParseUUIDPipe()) topicId: string): Promise<HnStory> {
@@ -114,9 +134,14 @@ export class HnStoryController {
   }
 
   @Put(':id/content')
-  async updateStoryContent(@Param('id', new ParseUUIDPipe()) id: string,
-                           @Body('content') content: BlRichTextContent): Promise<HnStory> {
-    return this.storyService.updateStoryContent(id, content);
+  async updateStoryContent(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnStory> {
+    return this.storyService.updateStoryContent(id);
+  }
+
+  @Put(':id/content-edition')
+  async updateStoryContentEdition(@Param('id', new ParseUUIDPipe()) id: string,
+                                  @Body('contentEdition') contentEdition: BlRichTextContent): Promise<HnStory> {
+    return this.storyService.updateStoryContentEdition(id, contentEdition);
   }
 
   @UseInterceptors(FileInterceptor('file'))
@@ -128,7 +153,7 @@ export class HnStoryController {
 
 
   /***
-    * Get story image
+   * Get story image
    * @param request
    * @param response
    */
@@ -249,5 +274,22 @@ export class HnStoryController {
   @Post('migrate-stories')
   public async migrateStories(): Promise<void> {
     return await this.storyService.migrateStories();
+  }
+
+  ////////////////////////////////// STORY RESOURCE VIEW //////////////////////////////////
+  @UseInterceptors(FileInterceptor('file'))
+  @Post(':storyId/upload-view')
+  public async uploadStoryResourceViewFile(@BlUploadedFile() file: BlFile,
+                                          @Param('storyId', new ParseUUIDPipe()) storyId: string): Promise<any> {
+    return {filename: await this.storyService.uploadStoryResourceViewFile(storyId, file)};
+  }
+
+  @BlPublic()
+  @Get('view/*')
+  public async getView(@Req() request: Request,
+                       @Res() response: Response): Promise<any> {
+    const filename = request.url.split('view/')[1];
+    const file = await this.storyService.getView(filename);
+    BlResponseHelper.setMessageAndCache(response, file);
   }
 }

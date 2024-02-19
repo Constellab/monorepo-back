@@ -112,6 +112,10 @@ export class BlNewRichText {
     return this.getBlocksByType(BlBlockType.FIGURE);
   }
 
+  public isUsedFigure(filename: string): boolean {
+    return this.getFiguresBlocks().some(op => op.data.filename === filename);
+  }
+
   public getFirstFigureLink(): string {
     const figure = this.getFiguresBlocks()[0];
     if (figure == null) return null;

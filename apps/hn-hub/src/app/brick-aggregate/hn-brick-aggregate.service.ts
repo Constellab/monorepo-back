@@ -329,4 +329,14 @@ export class HnBrickAggregateService {
   async getBrickVersionDirectReferences(brickVersionId: string): Promise<HnReferenceDTO[]> {
     return this.brickVersionService.getDirectReferences(brickVersionId);
   }
+
+  //------------------------------------- RESOURCE VIEW -------------------------------------
+  async uploadDocResourceViewFile(docId: string, file: BlFile): Promise<string>{
+    await this.checkIfUserHasRightsOnDoc(docId);
+    return this.documentationService.uploadDocResourceViewFile(docId, file);
+  }
+
+  async getView(filename: string): Promise<any>{
+    return this.documentationService.getView(filename);
+  }
 }

@@ -7,4 +7,5 @@ export interface BlFile {
   mimetype: string;
   buffer: Buffer;
   size: number;
+  name?: string;
 }
