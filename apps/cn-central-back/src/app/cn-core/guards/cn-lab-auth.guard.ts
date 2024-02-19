@@ -16,8 +16,8 @@ import {CnCurrentUserHelper} from '../utils/cn-current-user.helper';
 import {CnSpaceUserService} from '../../cn-spaces/cn-space-user.service';
 import {CnSpaceUserRole} from '../../cn-spaces/cn-space-user.entity';
 import {cnIsLabRobotAuth} from '../decorators/cn-lab-guard.decorator';
-import {CnSpace} from '../../cn-spaces/cn-space.entity';
 import {BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {CnLabInstanceUserService} from '../../cn-lab-instances/user/cn-lab-instance-user.service';
 
 
 export abstract class CnLabAuthGuardBase implements CanActivate {
@@ -26,7 +26,8 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
   protected constructor(private reflector: Reflector,
                         private usersService: CnUsersService,
                         private configService: CnCoreConfigService,
-                        private spaceUserService: CnSpaceUserService) {
+                        private spaceUserService: CnSpaceUserService,
+                        private labUserService: CnLabInstanceUserService) {
   }
 
   abstract getLabFromApiKey(apiKey: string): Promise<CnLabInstance>;
@@ -56,7 +57,7 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
     CnCurrentUserHelper.setCurrentSpace(labInstance.space);
 
     // set the user in the context as the connected user
-    await this.setUserInContext(request, labInstance.space, context);
+    await this.setUserInContext(request, labInstance, context);
 
     return true;
   }
@@ -67,26 +68,25 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
    * Otherwise the user from the request is set in the request context
    * @private
    */
-  private async setUserInContext(request: Request, space: CnSpace, context: ExecutionContext): Promise<void> {
+  private async setUserInContext(request: Request, labInstance: CnLabInstance, context: ExecutionContext): Promise<void> {
 
     // if the route is annotated with ClLabRobotAuthentication, set the robot user in the context
     if (cnIsLabRobotAuth(this.reflector, context)) {
       await this.setRobotUserInContext(request);
-
     } else {
 
       const userId: string = this.getLabUserIdFromRequest(request);
 
       if (userId == null) {
         throw new BlUnauthorizedException(CnErrorText.LAB_REQ_NO_USER_IN_CONTEXT);
-      } else {
-        await this.setRealUserInContext(request, space, userId);
       }
+
+      await this.setRealUserInContext(request, labInstance, userId);
     }
 
   }
 
-  private async setRealUserInContext(request: Request, space: CnSpace, userId: string): Promise<void> {
+  private async setRealUserInContext(request: Request, labInstance: CnLabInstance, userId: string): Promise<void> {
     const user: CnUser = await this.usersService.findById(userId);
 
     if (user == null) {
@@ -99,8 +99,13 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
     if (user.isAdmin()) {
       CnCurrentUserHelper.setCurrentRoleInSpace(CnSpaceUserRole.ADMIN);
     } else {
-      const spaceUser = await this.spaceUserService.findOneBySpaceIdAndUserId(space.id, user.id);
+      // check if the user has access to the lab
+      const labUser = await this.labUserService.findByLabInstanceIdAndUserId(labInstance.id, userId);
+      if (labUser == null) {
+        throw new BlUnauthorizedException(CnErrorText.USER_NOT_IN_LAB);
+      }
 
+      const spaceUser = await this.spaceUserService.findOneBySpaceIdAndUserId(labInstance.spaceId, user.id);
       // if the user is not part of the space of his account is not active for this space
       // don't allow the user to access the route
       if (spaceUser == null || !spaceUser.active) {
@@ -120,7 +125,7 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
 
     if (user == null) {
       this.logger.error(`The robot user with mail ${robotMail} does not exist`);
-      throw  new BlUnauthorizedException();
+      throw new BlUnauthorizedException();
     }
 
     request.user = user;
@@ -153,8 +158,9 @@ export class CnLabAuthGuard extends CnLabAuthGuardBase {
               reflector: Reflector,
               usersService: CnUsersService,
               configService: CnCoreConfigService,
-              spaceUserService: CnSpaceUserService) {
-    super(reflector, usersService, configService, spaceUserService);
+              spaceUserService: CnSpaceUserService,
+              labUserService: CnLabInstanceUserService) {
+    super(reflector, usersService, configService, spaceUserService, labUserService);
   }
 
   getLabFromApiKey(apiKey: string): Promise<CnLabInstance> {
@@ -175,8 +181,9 @@ export class CnLabManagerAuthGuard extends CnLabAuthGuardBase {
               reflector: Reflector,
               usersService: CnUsersService,
               configService: CnCoreConfigService,
-              spaceUserService: CnSpaceUserService) {
-    super(reflector, usersService, configService, spaceUserService);
+              spaceUserService: CnSpaceUserService,
+              labUserService: CnLabInstanceUserService) {
+    super(reflector, usersService, configService, spaceUserService, labUserService);
   }
 
   getLabFromApiKey(apiKey: string): Promise<CnLabInstance> {

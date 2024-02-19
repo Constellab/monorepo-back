@@ -115,6 +115,7 @@ import {CnCloudProviderOutscaleService} from './server/outscale/cn-cloud-provide
     CnLabInstancesService,
     CnLabInstanceAggregateService,
     CnLabInstanceMailService,
+    CnLabInstanceUserService,
   ],
   controllers: [CnLabInstancesController],
 })

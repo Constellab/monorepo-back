@@ -94,15 +94,4 @@ export class CnLabInstanceUserService {
       userId: userId
     });
   }
-
-  public async findByLabInstanceIdAndUserIdAndCheck(labInstanceId: string, userId: string): Promise<CnLabInstanceUser> {
-    const group = this.findByLabInstanceIdAndUserId(labInstanceId, userId);
-
-    if (group == null) {
-      throw new BlBadRequestException(CnErrorText.LAB_NOT_SHARED_WITH_USER);
-    }
-
-    return group;
-  }
-
 }

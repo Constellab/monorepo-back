@@ -1,17 +1,16 @@
 import {Injectable} from '@nestjs/common';
 import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
 import {CnLabInstance} from './cn-lab-instance.entity';
-import {CnGroupsAggregateService} from '../cn-groups/cn-groups-aggregate.service';
 import {CnLabInstanceUserService} from './user/cn-lab-instance-user.service';
 import {CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
 import {BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 
 
 @Injectable()
 export class CnLabInstancesSecurity {
 
-  constructor(private groupAggregateService: CnGroupsAggregateService,
-              private labInstanceGroupService: CnLabInstanceUserService) {
+  constructor(private labInstanceGroupService: CnLabInstanceUserService) {
   }
 
   public checkAuthorizationToCreateAdmin(labInstance: CnLabInstance, userInfo: CnUserSpaceInfo): void {
@@ -63,14 +62,13 @@ export class CnLabInstancesSecurity {
     // space admin is considered as owner
     if (userInfo.isSpaceAdmin()) return CnLabInstanceUserRole.OWNER;
 
-    const group = await this.labInstanceGroupService.findByLabInstanceIdAndUserId(labInstance.id, userInfo.userId);
-
-    // check if the user is a member of one of the groups that were shared with the project
-    if (group == null) {
-      throw new BlUnauthorizedException();
+    // check if the user has access to the lab
+    const labUser = await this.labInstanceGroupService.findByLabInstanceIdAndUserId(labInstance.id, userInfo.userId);
+    if (labUser == null) {
+      throw new BlUnauthorizedException(CnErrorText.USER_NOT_IN_LAB);
     }
 
-    return group.role;
+    return labUser.role;
   }
 
   public checkAuthorizationToFindAll(userInfo: CnUserSpaceInfo): void {

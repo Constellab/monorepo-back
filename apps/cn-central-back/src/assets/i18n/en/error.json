@@ -23,6 +23,7 @@
   "user_not_in_group": "The user is not in the group",
   "user_already_in_space": "The user already is in this space",
   "user_not_in_space": "The user is not in this space",
+  "user_not_in_lab": "The user does not have access to this lab",
   "remove_group_last_user": "You can't remove the last user of the group",
   "project_must_have_a_group": "The project must be shared with at least one group",
   "cant_unshared_project_leader_group": "You can't unshare the group of the project leader",
