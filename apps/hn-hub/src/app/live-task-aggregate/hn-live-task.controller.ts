@@ -141,6 +141,16 @@ export class HnLiveTaskController {
     return this.liveTaskAggregateService.findLatestPublishedLiveTaskVersionForLabByLiveTaskId(liveTaskId, req);
   }
 
+  /**
+   * Update a live task version params
+   * @param id
+   * @param params
+   * @return the updated live task version
+   */
+  @Put('version/:id/params')
+  updateLiveTaskVersionParams(@Param('id', ParseUUIDPipe) id: string, @Body('params') params: string[]): Promise<HnLiveTaskVersion> {
+    return this.liveTaskAggregateService.updateLiveTaskVersionParams(id, params);
+  }
 
   /**
    * Update a live task version code

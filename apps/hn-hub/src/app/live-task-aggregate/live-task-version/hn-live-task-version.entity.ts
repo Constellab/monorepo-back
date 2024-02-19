@@ -1,10 +1,9 @@
-import {BeforeInsert, Column, Entity, ManyToMany, ManyToOne, OneToMany, Unique} from 'typeorm';
+import {BeforeInsert, Column, Entity, ManyToOne, Unique} from 'typeorm';
 import {BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {HnLiveTask} from '../live-task/hn-live-task.entity';
 import {DateTime} from 'luxon';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {HnLiveTaskVersionFileInput} from '../live-task/hn-live-task.dto';
-import {HnBrickVersion} from '../../brick-aggregate/brick-version/hn-brick-version.entity';
 
 export enum HnLiveTaskVersionState {
   PUBLISHED = 'PUBLISHED',
@@ -43,6 +42,9 @@ export class HnLiveTaskVersion extends BlEntityWithId {
   @Column({name: 'versionInfos_backup', type: 'simple-json', nullable: true})
   versionInfosBackup?: Record<string, any>;
 
+  @Column({type: 'simple-array', nullable: true})
+  params: string[] = [];
+
   @Column({type: 'text', nullable: true})
   environment: string;
 
@@ -77,6 +79,7 @@ export class HnLiveTaskVersion extends BlEntityWithId {
 
   private initVersionFile(versionFile: HnLiveTaskVersionFileInput): void {
     this.code = versionFile.code;
+    this.params = versionFile.params;
     this.inputSpecs = versionFile.input_specs;
     this.outputSpecs = versionFile.output_specs;
     this.configSpecs = versionFile.config_specs;

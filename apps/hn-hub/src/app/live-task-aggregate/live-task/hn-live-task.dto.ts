@@ -1,7 +1,6 @@
 import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
 import {HnLiveTaskVersion, HnLiveTaskVersionType} from '../live-task-version/hn-live-task-version.entity';
 import {HnLiveTask} from './hn-live-task.entity';
-import {DateTime} from 'luxon';
 
 export class HnCreateLiveTaskDto {
   title: string;
@@ -16,6 +15,7 @@ export class HnLiveTaskVersionFileInputBrick{
 
 export class HnLiveTaskVersionFileInput{
   json_version: number;
+  params: string[];
   code: string;
   environment: string;
   input_specs: Record<string, any>;
@@ -63,6 +63,7 @@ export class HnLiveTaskVersionForLabDto{
   version: number;
   type: string;
   environment: string;
+  params: string[];
   code: string;
   input_specs: Record<string, any>;
   output_specs: Record<string, any>;
@@ -95,6 +96,7 @@ export class HnLiveTaskVersionForLabDto{
     }
     dto.environment = liveTaskVersion.environment? liveTaskVersion.environment : null;
     dto.code = liveTaskVersion.code;
+    dto.params = liveTaskVersion.params;
     dto.input_specs = liveTaskVersion.inputSpecs;
     dto.output_specs = liveTaskVersion.outputSpecs;
     dto.config_specs = liveTaskVersion.configSpecs;

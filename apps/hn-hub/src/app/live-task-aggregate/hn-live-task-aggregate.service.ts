@@ -157,6 +157,10 @@ export class HnLiveTaskAggregateService {
     return await this.liveTaskVersionService.findLatestPublishedByLiveTask(liveTask);
   }
 
+  public async updateLiveTaskVersionParams(id: string, params: string[]): Promise<HnLiveTaskVersion> {
+    await this.liveTaskService.checkIfCreatorAndGetLiveTask((await this.liveTaskVersionService.findOne(id)).liveTask.id);
+    return this.liveTaskVersionService.updateParams(id, params);
+  }
   public async updateLiveTaskVersionCode(id: string, code: string): Promise<HnLiveTaskVersion> {
     await this.liveTaskService.checkIfCreatorAndGetLiveTask((await this.liveTaskVersionService.findOne(id)).liveTask.id);
     return this.liveTaskVersionService.updateCode(id, code);

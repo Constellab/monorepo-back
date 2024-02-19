@@ -92,6 +92,12 @@ export class HnLiveTaskVersionService {
     });
   }
 
+  public async updateParams(id: string, params: string[]): Promise<HnLiveTaskVersion> {
+    const liveTaskVersion = await this.liveTaskVersionRepository.findOneBy({id: id});
+    liveTaskVersion.params = params;
+    return this.liveTaskVersionRepository.save(liveTaskVersion);
+  }
+
   public async updateCode(id: string, code: string): Promise<HnLiveTaskVersion> {
     const liveTaskVersion = await this.liveTaskVersionRepository.findOneBy({id: id});
     liveTaskVersion.code = code;
