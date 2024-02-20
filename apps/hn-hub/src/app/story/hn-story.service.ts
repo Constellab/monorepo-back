@@ -79,7 +79,6 @@ export class HnStoryService {
       await this.deleteAllStoryCoAuthorsInvites(id, entityManager);
       await this.deleteAllStoryCoAuthors(id, entityManager);
       const res = await entityManager.delete(HnStory, {id: id});
-      console.log(res);
       return res.affected > 0;
     });
     if (!deleteRes){
@@ -234,11 +233,15 @@ export class HnStoryService {
   async updateStoryContent(id: string): Promise<HnStory> {
     await this.checkAndValidateOwnerOrCoAuthor(id);
     const story = await this.getStory(id);
-    story.content = story.contentEdition;
     const richText = new BlNewRichText(story.contentEdition as BlRichTextContent);
+    if (story.mainPicture == null) {
+      const firstFigureLink = richText.getFirstFigureLink();
+      if (firstFigureLink == null)
+        throw new BlBadRequestException('Story must have a main picture');
+      story.mainPicture = firstFigureLink;
+    }
+    story.content = story.contentEdition;
     story.firstParagraph = ClStringHelper.replaceLineBreaksBySpace(richText.getFirstParagraphsText());
-    if (richText.isUsedFigure(story.mainPicture))
-      story.mainPicture = richText.getFirstFigureLink();
     return this.storyRepository.save(story);
   }
 
@@ -246,6 +249,13 @@ export class HnStoryService {
     await this.checkAndValidateOwnerOrCoAuthor(id);
     const story = await this.getStory(id);
     story.contentEdition = contentEdition;
+    const richText = new BlNewRichText(story.contentEdition as BlRichTextContent);
+    const firstFigureLink = richText.getFirstFigureLink();
+    if (story.mainPicture == null) {
+      story.mainPicture = firstFigureLink;
+    } else if (firstFigureLink != null && story.mainPicture !== firstFigureLink && richText.isUsedFigure(story.mainPicture)) {
+      story.mainPicture = firstFigureLink;
+    }
     return this.storyRepository.save(story);
   }
 
@@ -277,8 +287,12 @@ export class HnStoryService {
   async deleteStoryMainImage(storyId: string): Promise<HnStory>{
     await this.checkAndValidateOwnerOrCoAuthor(storyId);
     const story: HnStory = await this.getStory(storyId);
+    const content = new BlNewRichText(story.contentEdition as BlRichTextContent);
+    if (content.getFirstFigureLink() == null && story.publishedAt != null)
+      throw new BlBadRequestException('A published story must have a main picture. \n ' +
+        'Add a picture to the story content before deleting the main picture');
     await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], story.mainPicture);
-    story.mainPicture = new BlNewRichText(story.content as BlRichTextContent).getFirstFigureLink();
+    story.mainPicture = new BlNewRichText(story.contentEdition  as BlRichTextContent).getFirstFigureLink();
     return await this.storyRepository.save(story);
   }
 
@@ -361,11 +375,10 @@ export class HnStoryService {
 
   async publishStory(id: string): Promise<HnStory> {
     await this.checkAndValidateOwnerOrCoAuthor(id);
-    const story: HnStory = await this.getStory(id);
-    if (new BlNewRichText(story.content as BlRichTextContent).getFirstFigureLink().length <= 0) {
+    const story: HnStory = await this.updateStoryContent(id);
+    if (story.mainPicture == null) {
       throw new Error('Story must have a main picture');
     }
-    story.content = story.contentEdition;
     story.status = HnStoryStatus.PUBLISHED;
     story.publishedAt = DateTime.now();
     return this.storyRepository.save(story);
