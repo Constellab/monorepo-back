@@ -154,7 +154,7 @@ export class CnLabInstancesCron {
         const value: CnLabGreenOptionStopAfterInactivityValue = option.value as CnLabGreenOptionStopAfterInactivityValue;
 
         const labGlobalActivity = await this.externalLabApiService.getLabGlobalActivity(lab.getGlabSpaceApiInfo()).catch(() => null);
-        if (labGlobalActivity.last_activity == null) continue;
+        if (labGlobalActivity == null || labGlobalActivity.last_activity == null) continue;
 
         const lastActivityDate = ClDateHelper.getDate(labGlobalActivity.last_activity.created_at);
 
