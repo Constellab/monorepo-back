@@ -169,7 +169,7 @@ export class CnLabInstancesCron {
 
   private async stopLab(lab: CnLabInstance, option: CnLabGreenOption, ruleDetail?: string): Promise<void> {
     // check if there are running experiments
-    const check = await this.labServerService.checkLabActivity(lab).then(() => true)
+    const check = await this.labServerService.checkLabActivity(lab, true).then(() => true)
       .catch((error: Error) => {
         this.logger.debug(`Not stopping lab : ${lab.id}, option : ${option.type}, because error: ${error.message}`);
         return false;
