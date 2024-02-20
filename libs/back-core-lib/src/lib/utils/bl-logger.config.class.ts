@@ -19,15 +19,14 @@ export function blConfigureLogger(config: BlLoggerConfig): WinstonModuleOptions 
 
   const transportsList: any[] = [];
 
-  const dataFormat: string = 'DD/MM/YY HH:mm:ss';
-  const logFormat = (info: TransformableInfo): string => `${info.timestamp} ${info.level}: ${info.message}`;
+  const logFormat = (info: TransformableInfo): string => `${info.timestamp} - ${info.level} - ${info.message}`;
 
 
   // Add the console transport to log into the console
   transportsList.push(new transports.Console({
     level: config.logLevel,
     format: format.combine(
-      format.timestamp({format: dataFormat}),
+      format.timestamp(), // default date to ISO
       format.colorize(),
       format.printf(logFormat)
     )
@@ -35,14 +34,14 @@ export function blConfigureLogger(config: BlLoggerConfig): WinstonModuleOptions 
 
   // add the file transport to log into a file with rotation
   if (config.logFilePath) {
-    // by default it create a new log file each day
+    // by default, it creates a new log file each day
     transportsList.push(new transports.DailyRotateFile({
       level: config.logLevel,
       dirname: config.logFilePath,
       filename: `%DATE%`, // filename is the current date YYYY-MM-DD
       extension: '.log',
       format: format.combine(
-        format.timestamp({format: dataFormat}),
+        format.timestamp(), // default date to ISO
         format.printf(logFormat)
       ),
     }));
