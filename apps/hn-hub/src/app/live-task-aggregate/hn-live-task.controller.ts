@@ -63,11 +63,12 @@ export class HnLiveTaskController {
    * @return live tasks
    */
   @BlPublic()
-  @Post('spaces')
+  @Post('filters')
   getAllWithSpacesFilter(@Body('spacesFilter') spacesFilter: string[],
+                         @Body('titleFilter') titleFilter: string,
                          @Query('page', new ParseIntPipe()) page: number,
                          @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnLiveTask>> {
-    return this.liveTaskAggregateService.findAllWithSpacesFilter(spacesFilter, page, size);
+    return this.liveTaskAggregateService.findAllWithFilters(spacesFilter, titleFilter, page, size);
   }
 
   /**

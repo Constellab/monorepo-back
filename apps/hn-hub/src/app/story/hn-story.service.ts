@@ -10,11 +10,11 @@ import {
   BlBucketConfig,
   BlBucketType,
   BlFile,
-  BlImageHelper, BlNewRichText,
-  BlObjectStorageService, BlQuillMigrator,
-  BlRichText, BlRichTextContent,
-  BlRichTextFigure,
-  BlRichTextFigureOp,
+  BlImageHelper,
+  BlNewRichText,
+  BlObjectStorageService,
+  BlQuillMigrator,
+  BlRichTextContent,
   BlRichTextI,
   BlRichTextUploadedImage,
   BlUnauthorizedException
@@ -27,7 +27,7 @@ import {HnTopicDto} from '../topic/hn-topic.dto';
 import {HnTopic} from '../topic/hn-topic.entity';
 import {DateTime} from 'luxon';
 import {HnStoryAuthorService} from '../story-author/hn-story-author.service';
-import {HnStoryAuthor, HnStoryAuthorStatus} from '../story-author/hn-story-author.entity';
+import {HnStoryAuthor} from '../story-author/hn-story-author.entity';
 import {HnStoryAuthorInvite} from '../story-author-invite/hn-story-author-invite.entity';
 import {HnInviteStatus} from '../core/model/config/hn-invite-status.enum';
 import {HnSiteMapEnumChangefreq, HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
@@ -58,9 +58,7 @@ export class HnStoryService {
     story.category = data.category;
     story.content = BlNewRichText.emptyContent();
 
-    const dbStory: HnStory = await this.storyRepository.save(story);
-    await this.storyAuthorService.createStoryAuthor(dbStory, HnCurrentUserHelper.getCurrentUser());
-    return dbStory;
+    return await this.storyRepository.save(story);
   }
 
   async getStory(id: string): Promise<HnStory> {
@@ -73,7 +71,7 @@ export class HnStoryService {
   }
 
   async deleteStory(id: string): Promise<void> {
-    await this.checkAndValidateOwnerOrCoAuthor(id);
+    await this.checkAndValidateOwnerOrCoAuthor(id, true);
     const deleteRes = await this.dataSource.transaction(async entityManager => {
       await this.deleteAllStoryFiles(id, entityManager);
       await this.deleteAllStoryCoAuthorsInvites(id, entityManager);
@@ -87,6 +85,7 @@ export class HnStoryService {
   }
 
   async deleteAllStoryCoAuthorsInvites(storyId: string, entityManager: EntityManager): Promise<void>{
+    await this.checkAndValidateOwnerOrCoAuthor(storyId, true);
     const storyCoAuthorsInvites = await this.storyAuthorService.getStoryCoAuthorsInvites(storyId);
     for (const storyCoAuthorsInvite of storyCoAuthorsInvites) {
       try {
@@ -98,6 +97,7 @@ export class HnStoryService {
   }
 
   async deleteAllStoryCoAuthors(storyId: string, entityManager: EntityManager): Promise<void>{
+    await this.checkAndValidateOwnerOrCoAuthor(storyId, true);
     const storyCoAuthors = await this.storyAuthorService.getStoryCoAuthorsByStoryId(storyId);
     for (const storyCoAuthor of storyCoAuthors) {
       try {
@@ -108,24 +108,56 @@ export class HnStoryService {
     }
   }
 
+  async getMyStoriesFiltered(page: number, size: number, filters: HnStoryFilter): Promise<ClPage<HnStory>> {
+    const where: FindOptionsWhere<HnStory>[] = [
+      {
+        createdBy: {
+          id: HnCurrentUserHelper.getCurrentUser().id
+        }
+      },
+      {
+        storyAuthors: {
+          user: {
+            id: HnCurrentUserHelper.getCurrentUser().id
+          }
+        }
+      }];
+    const order: FindOptionsOrder<HnStory> = {createdAt: 'DESC' as any};
+    if (filters.categories && filters.categories.length > 0) {
+      where.map(w => w.category = In(filters.categories));
+    }
+
+    if (filters.topics && filters.topics.length > 0) {
+      where.map(w => w.topics = {
+        id: In(filters.topics)
+      });
+    }
+
+    if (filters.title && filters.title.length > 0) {
+      where.map(w => w.title = Like(`%${filters.title}%`));
+    }
+
+    return await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+      where: where,
+      relations: ['topics', 'storyAuthors'],
+      order: order
+    }, this.storyRepository.manager, HnStory);
+  }
+
   async getMyStories(page: number, size: number): Promise<ClPage<HnStory>> {
     return BlAbstractPaginatedService.findPaginatedStatic(page, size,
       {
         where: [
           {
-            storyAuthors: {
-              user: {
-                id: HnCurrentUserHelper.getCurrentUser().id
-              },
-              status: HnStoryAuthorStatus.AUTHOR
+            createdBy: {
+              id: HnCurrentUserHelper.getCurrentUser().id
             }
           },
           {
             storyAuthors: {
               user: {
                 id: HnCurrentUserHelper.getCurrentUser().id
-              },
-              status: HnStoryAuthorStatus.COAUTHOR
+              }
             }
           }
         ],
@@ -187,8 +219,8 @@ export class HnStoryService {
     }, this.storyRepository.manager, HnStory);
   }
 
-  async checkAndValidateOwnerOrCoAuthor(id: string): Promise<void> {
-    const isAuthor: boolean = await this.isStoryOwnerOrCoAuthor(id);
+  async checkAndValidateOwnerOrCoAuthor(id: string, onlyOwner = false): Promise<void> {
+    const isAuthor: boolean = await this.isStoryOwnerOrCoAuthor(id, onlyOwner);
     if (!isAuthor) {
       throw new BlUnauthorizedException('You are not authorized to update this story');
     }
@@ -387,31 +419,38 @@ export class HnStoryService {
   async isStoryOwnerOrCoAuthor(id: string, onlyOwner: boolean = false): Promise<boolean> {
     if(HnCurrentUserHelper.getCurrentUser().isAdmin()) return true;
     const story = await this.getStory(id);
+    const storyAuthors = await this.getStoryCoAuthors(id);
     const currentUserId = HnCurrentUserHelper.getCurrentUser().id;
-    return story.storyAuthors.some((storyAuthor: HnStoryAuthor) => storyAuthor.user.id === currentUserId &&
-      (!onlyOwner || storyAuthor.status === HnStoryAuthorStatus.AUTHOR)
-    );
+    if (story.createdBy.id == currentUserId)
+      return true;
+    if (onlyOwner)
+      return false;
+    return storyAuthors?.some((storyAuthor: HnStoryAuthor) => storyAuthor.user.id === currentUserId);
+  }
+
+  async getStoryCoAuthors(storyId: string): Promise<HnStoryAuthor[]> {
+    return this.storyAuthorService.getStoryCoAuthorsByStoryId(storyId);
   }
 
   async updateStoryCoAuthors(id: string, newCoAuthorsMail: string[]): Promise<HnStory> {
-    await this.checkAndValidateOwnerOrCoAuthor(id);
+    await this.checkAndValidateOwnerOrCoAuthor(id, true);
     const story: HnStory = await this.getStory(id);
     await this.storyAuthorService.updateStoryCoAuthors(story, newCoAuthorsMail);
     return this.storyRepository.save(story);
   }
 
   async getStoryCoAuthorsPendingInvites(id: string): Promise<HnStoryAuthorInvite[]> {
-    await this.checkAndValidateOwnerOrCoAuthor(id);
+    await this.checkAndValidateOwnerOrCoAuthor(id, true);
     return this.storyAuthorService.getStoryCoAuthorsPendingInvites(id);
   }
 
   async removeStoryCoAuthor(id: string, storyAuthorUserId: string): Promise<void> {
-    await this.checkAndValidateOwnerOrCoAuthor(id);
+    await this.checkAndValidateOwnerOrCoAuthor(id, true);
     return this.storyAuthorService.removeStoryCoAuthor(id, storyAuthorUserId);
   }
 
   async inviteStoryCoAuthor(storyId: string, coAuthorMail: string): Promise<boolean>{
-    await this.checkAndValidateOwnerOrCoAuthor(storyId);
+    await this.checkAndValidateOwnerOrCoAuthor(storyId, true);
     const story: HnStory = await this.getStory(storyId);
     if (story == null)
       throw new BlBadRequestException('Story not found');
@@ -429,7 +468,6 @@ export class HnStoryService {
     if (storyAuthorInvite) {
       const story: HnStory = await this.getStory(storyAuthorInvite.story.id);
       const storyAuthor: HnStoryAuthor = new HnStoryAuthor();
-      storyAuthor.status = HnStoryAuthorStatus.COAUTHOR;
       storyAuthor.user = HnCurrentUserHelper.getCurrentUser();
       storyAuthor.story = story;
       const acceptStoryInvite: boolean = await this.storyAuthorService.acceptInvite(storyAuthor, storyAuthorInvite);
@@ -504,5 +542,14 @@ export class HnStoryService {
 
   async getView(filename: string): Promise<any>{
     return await this.objectStorageService.getObject(this.getBucketConfig(), filename);
+  }
+
+
+  async setCreatedBy(): Promise<void> {
+    const stories: HnStory[] = await this.storyRepository.find({relations: ['storyAuthors']});
+    for (const story of stories) {
+      story.createdBy = HnCurrentUserHelper.getCurrentUser();
+      await this.storyRepository.save(story);
+    }
   }
 }

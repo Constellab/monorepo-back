@@ -35,6 +35,7 @@ import {HnStoryAuthorInvite} from '../story-author-invite/hn-story-author-invite
 import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
 import {HnStoryFile} from '../story-file/hn-story-file.entity';
 import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
+import {HnUser} from '../users/hn-user.entity';
 
 @Controller('story')
 export class HnStoryController {
@@ -79,6 +80,17 @@ export class HnStoryController {
   async getMyStories(@Query('page', new ParseIntPipe()) page: number,
                      @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStory>> {
     return this.storyService.getMyStories(page, size);
+  }
+
+  /***
+   * Get my stories paginated
+   */
+  @Post('my-filtered')
+  async getMyStoriesFilterd(
+    @Body() filters: HnStoryFilter,
+    @Query('page', new ParseIntPipe()) page: number,
+    @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStory>> {
+    return await this.storyService.getMyStoriesFiltered(page, size, filters);
   }
 
   @BlPublic()
@@ -216,13 +228,19 @@ export class HnStoryController {
    */
   @Get(':id/is-owner-or-co-author')
   async isStoryOwnerOrCoAuthor(@Param('id', new ParseUUIDPipe()) id: string): Promise<boolean> {
-    return this.storyService.isStoryOwnerOrCoAuthor(id);
+    return await this.storyService.isStoryOwnerOrCoAuthor(id);
   }
 
   @Post(':id/invite-co-author')
   async inviteStoryCoAuthor(@Param('id', new ParseUUIDPipe()) id: string,
                             @Body('coAuthorMail') coAuthorMail: string): Promise<boolean> {
     return this.storyService.inviteStoryCoAuthor(id, coAuthorMail);
+  }
+
+  @BlPublic()
+  @Get(':id/co-authors')
+  async getStoryCoAuthors(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUser[]> {
+    return (await this.storyService.getStoryCoAuthors(id)).map(storyAuthor => storyAuthor.user);
   }
 
   /***
@@ -291,5 +309,14 @@ export class HnStoryController {
     const filename = request.url.split('view/')[1];
     const file = await this.storyService.getView(filename);
     BlResponseHelper.setMessageAndCache(response, file);
+  }
+
+
+
+
+  @IsAdmin()
+  @Post('set-created-by')
+  public async setCreatedBy(): Promise<void> {
+    return this.storyService.setCreatedBy();
   }
 }

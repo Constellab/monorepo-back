@@ -76,7 +76,7 @@ export class BlNewRichText {
   }
 
   public getBlocksByType(type: BlBlockType): BlOutputBlockData[] {
-    return this.richText.blocks.filter(block => block.type === type);
+    return this.richText?.blocks?.filter(block => block.type === type);
   }
 
   public getContent(): BlRichTextContent {

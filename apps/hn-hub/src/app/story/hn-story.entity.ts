@@ -1,12 +1,13 @@
-import {BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany, OneToMany} from 'typeorm';
+import {BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany} from 'typeorm';
 import {HnTopic} from '../topic/hn-topic.entity';
 import {BlEntityWithId, BlLuxonDateTimeColumn, BlRichText, BlRichTextI} from '@monorepo/back-core-lib';
 import {DateTime} from 'luxon';
 import {HnUser} from '../users/hn-user.entity';
 import {ClDateHelper, ClStringHelper} from '@monorepo/core-lib';
 import {HnStoryAuthor} from '../story-author/hn-story-author.entity';
-import {Expose} from 'class-transformer';
+import {Expose, Type} from 'class-transformer';
 import {HnStoryFile} from '../story-file/hn-story-file.entity';
+import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 
 export enum HnStoryStatus {
   DRAFT = 'DRAFT',
@@ -54,7 +55,7 @@ export class HnStory extends BlEntityWithId {
   @BlLuxonDateTimeColumn({nullable: true})
   publishedAt: DateTime;
 
-  @OneToMany(() => HnStoryAuthor, storyAuthor => storyAuthor.story, {nullable: true, eager: true})
+  @OneToMany(() => HnStoryAuthor, storyAuthor => storyAuthor.story, {nullable: true})
   storyAuthors: HnStoryAuthor[];
 
   @BlLuxonDateTimeColumn({nullable: true, update: false})
@@ -66,8 +67,13 @@ export class HnStory extends BlEntityWithId {
   @OneToMany(() => HnStoryFile, storyFile => storyFile.story, {nullable: true, eager: true})
   storyFiles: HnStoryFile[];
 
+  @Type(() => HnUser)
+  @ManyToOne(() => HnUser, {eager: true, nullable: true})
+  createdBy: HnUser;
+
   @BeforeInsert()
   setCreatedDate(): void {
+    this.createdBy = HnCurrentUserHelper.getCurrentUser();
     this.createdAt = ClDateHelper.getDate();
   }
 

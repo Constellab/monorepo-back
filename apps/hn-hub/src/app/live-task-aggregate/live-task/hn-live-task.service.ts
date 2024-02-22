@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, In, IsNull, Not, Repository} from 'typeorm';
+import {EntityManager, FindOptionsWhere, In, IsNull, Like, Not, Repository} from 'typeorm';
 import {HnLiveTask} from './hn-live-task.entity';
 import {HnCreateLiveTaskDto} from './hn-live-task.dto';
 import {
@@ -98,81 +98,87 @@ export class HnLiveTaskService {
     });
   }
 
-  public async findAllWithSpacesFilter(spacesFilter: string[], publicSelected: boolean,
-                                       myLiveTasksSelected: boolean, page: number, size: number): Promise<ClPage<HnLiveTask>> {
-    let res: ClPage<HnLiveTask>;
+  public async findAllWithFilters(spacesFilter: string[], titleFilter: string, publicSelected: boolean,
+                                  myLiveTasksSelected: boolean, page: number, size: number): Promise<ClPage<HnLiveTask>> {
+    let where: FindOptionsWhere<HnLiveTask>[];
 
     if (publicSelected && myLiveTasksSelected) {
-      res = await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
-        where: [
-          {
-            space: {
-              id: In(spacesFilter)
-            },
-            latestPublishVersion: Not(IsNull())
+      where = [
+        {
+          space: {
+            id: In(spacesFilter)
           },
-          {
-            space: {
-              id: IsNull()
-            },
-            latestPublishVersion: Not(IsNull())
-          }, {
-            createdBy: {
-              id: HnCurrentUserHelper.getAndCheckCurrentUser().id
-            }
+          latestPublishVersion: Not(IsNull())
+        },
+        {
+          space: {
+            id: IsNull()
+          },
+          latestPublishVersion: Not(IsNull())
+        }, {
+          createdBy: {
+            id: HnCurrentUserHelper.getAndCheckCurrentUser().id
           }
-        ],
-        order: {createdAt: 'DESC' as any}
-      }, this.liveTaskRepository.manager, HnLiveTask);
+        }
+      ];
     } else if (publicSelected && !myLiveTasksSelected) {
-      res = await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
-        where: [
-          {
-            space: {
-              id: In(spacesFilter)
-            },
-            latestPublishVersion: Not(IsNull())
+      where = [
+        {
+          space: {
+            id: In(spacesFilter)
           },
-          {
-            space: {
-              id: IsNull()
-            },
-            latestPublishVersion: Not(IsNull())
-          }
-        ],
-        order: {createdAt: 'DESC' as any}
-      }, this.liveTaskRepository.manager, HnLiveTask);
+          latestPublishVersion: Not(IsNull())
+        },
+        {
+          space: {
+            id: IsNull()
+          },
+          latestPublishVersion: Not(IsNull())
+        }
+      ];
     } else if (!publicSelected && myLiveTasksSelected) {
-      res = await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
-        where: [
-          {
-            space: {
-              id: In(spacesFilter)
-            },
-            latestPublishVersion: Not(IsNull())
+      where = [
+        {
+          space: {
+            id: In(spacesFilter)
           },
-          {
-            createdBy: {
-              id: HnCurrentUserHelper.getAndCheckCurrentUser().id
-            }
+          latestPublishVersion: Not(IsNull())
+        },
+        {
+          createdBy: {
+            id: HnCurrentUserHelper.getAndCheckCurrentUser().id
           }
-        ],
-        order: {createdAt: 'DESC' as any}
-      }, this.liveTaskRepository.manager, HnLiveTask);
+        }
+      ];
+    } else if (spacesFilter && spacesFilter.length > 0) {
+      where = [
+        {
+          space: {
+            id: In(spacesFilter)
+          },
+          latestPublishVersion: Not(IsNull())
+        }
+      ];
     } else {
-      res = await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
-        where: [
-          {
-            space: {
-              id: In(spacesFilter)
-            },
-            latestPublishVersion: Not(IsNull())
-          }
-        ],
-        order: {createdAt: 'DESC' as any}
-      }, this.liveTaskRepository.manager, HnLiveTask);
+      where = [
+        {
+          latestPublishVersion: Not(IsNull())
+        }
+      ];
     }
-    return res;
+
+    if (titleFilter && titleFilter.length > 0) {
+      where = where.map(w => {
+        w.title = Like(`%${titleFilter}%`);
+        return w;
+      });
+    }
+
+    return await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+      where: where,
+      order: {createdAt: 'DESC' as any}
+    }, this.liveTaskRepository.manager, HnLiveTask);
+
   }
 
   public async findPublicLiveTaskById(id: string): Promise<HnLiveTask> {

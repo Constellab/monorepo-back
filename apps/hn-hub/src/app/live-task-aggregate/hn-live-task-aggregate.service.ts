@@ -96,7 +96,7 @@ export class HnLiveTaskAggregateService {
     return await this.liveTaskService.findAllWithUserSpacesPaginated(userSpaces, page, size);
   }
 
-  public async findAllWithSpacesFilter(spacesFilter: string[], page: number, size: number): Promise<ClPage<HnLiveTask>> {
+  public async findAllWithFilters(spacesFilter: string[], titleFilter: string, page: number, size: number): Promise<ClPage<HnLiveTask>> {
     const currentUser = HnCurrentUserHelper.getCurrentUser();
     let publicSelected = false;
     let myLiveTasksSelected = false;
@@ -106,7 +106,7 @@ export class HnLiveTaskAggregateService {
       else await this.spaceAggregateService.checkSpaceUser(spaceId, currentUser.id);
     }
 
-    return await this.liveTaskService.findAllWithSpacesFilter(spacesFilter, publicSelected, myLiveTasksSelected, page, size);
+    return await this.liveTaskService.findAllWithFilters(spacesFilter, titleFilter, publicSelected, myLiveTasksSelected, page, size);
   }
 
   public async findLiveTaskById(id: string): Promise<HnLiveTask> {
