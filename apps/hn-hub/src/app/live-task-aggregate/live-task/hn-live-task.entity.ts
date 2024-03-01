@@ -1,10 +1,16 @@
-import {Column, Entity, ManyToOne} from 'typeorm';
-import {HnBaseEntity} from '../../core/model/entities/hn-base.entity';
+import {BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne} from 'typeorm';
 import {HnCreateLiveTaskDto} from './hn-live-task.dto';
 import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
+import {HnUser} from '../../users/hn-user.entity';
+import {BlEntityWithId, BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
+import {DateTime} from 'luxon';
+import {Type} from 'class-transformer';
+import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
+import {ClDateHelper} from '@monorepo/core-lib';
+import {HnLiveTaskVersion} from '../live-task-version/hn-live-task-version.entity';
 
 @Entity('LiveTask')
-export class HnLiveTask extends HnBaseEntity {
+export class HnLiveTask extends BlEntityWithId {
   @Column()
   title: string;
 
@@ -20,14 +26,46 @@ export class HnLiveTask extends HnBaseEntity {
   @ManyToOne(() => HnSpace, {eager: true})
   space?: HnSpace;
 
-  isPublic(): boolean {
-    return this.space == null;
-  }
+  @BlLuxonDateTimeColumn({nullable: true, update: false})
+  createdAt: DateTime;
 
-  static init(liveTaskDto: HnCreateLiveTaskDto): HnLiveTask {
+  @Type(() => HnUser)
+  @ManyToOne(() => HnUser, {eager: true, nullable: true})
+  createdBy?: HnUser;
+
+  @BlLuxonDateTimeColumn({nullable: true})
+  lastModifiedAt: DateTime;
+
+  @Type(() => HnUser)
+  @ManyToOne(() => HnUser, {eager: true, nullable: true})
+  lastModifiedBy: HnUser;
+
+  @Column({nullable: true})
+  parentLiveTaskVersionId?: string;
+
+  static init(liveTaskDto: HnCreateLiveTaskDto, parentLiveTaskVersionId?: string, user?: HnUser): HnLiveTask {
     const liveTask = new HnLiveTask();
     liveTask.title = liveTaskDto.title;
     liveTask.space = liveTaskDto.space;
+    liveTask.parentLiveTaskVersionId = parentLiveTaskVersionId;
+    liveTask.createdBy = user;
+    liveTask.lastModifiedBy = user;
     return liveTask;
+  }
+
+  @BeforeInsert()
+  setCreatedByUser(): void {
+    if (this.createdBy == null){
+      this.createdBy = HnCurrentUserHelper.getCurrentUser();
+      this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser();
+    }
+    this.createdAt = ClDateHelper.getDate();
+    this.lastModifiedAt = ClDateHelper.getDate();
+  }
+
+  @BeforeUpdate()
+  setLastModifiedByUser(): void {
+    this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser();
+    this.lastModifiedAt = ClDateHelper.getDate();
   }
 }

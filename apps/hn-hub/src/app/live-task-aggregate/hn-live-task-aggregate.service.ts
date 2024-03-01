@@ -3,7 +3,9 @@ import {HnLiveTaskService} from './live-task/hn-live-task.service';
 import {HnLiveTaskVersionService} from './live-task-version/hn-live-task-version.service';
 import {HnLiveTaskVersion} from './live-task-version/hn-live-task-version.entity';
 import {
-  HnCreateLiveTaskDto, HnLiveTaskForLabDto,
+  HaCreateLiveTaskVersionFromLabResponseDto,
+  HnCreateLiveTaskDto,
+  HnLiveTaskForLabDto,
   HnLiveTaskVersionFileInput,
   HnLiveTaskVersionForLabDto
 } from './live-task/hn-live-task.dto';
@@ -13,12 +15,7 @@ import {DataSource} from 'typeorm';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnSpace} from '../space-aggregate/space/hn-space.entity';
 import {ClPage} from '@monorepo/core-lib';
-import {
-  BlBadRequestException,
-  BlCurrentUserHelper,
-  BlExternalApiService,
-  BlUnauthorizedException
-} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlCurrentUserHelper, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {HnBrickAggregateService} from '../brick-aggregate/hn-brick-aggregate.service';
 import {HnBrickVersion} from '../brick-aggregate/brick-version/hn-brick-version.entity';
 import {
@@ -27,10 +24,9 @@ import {
 import {
   HnLiveTaskVersionBrickDependencies
 } from './live-task-version-brick-dependencies/hn-live-task-version-brick-dependencies.entity';
-import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {HnUser} from '../users/hn-user.entity';
 import {HnUserService} from '../users/hn-user.service';
-import {lastValueFrom} from 'rxjs';
+import {HnLabConstellabApiService} from '../core/service/hn-lab-constellab-api.service';
 
 @Injectable()
 export class HnLiveTaskAggregateService {
@@ -41,19 +37,20 @@ export class HnLiveTaskAggregateService {
     private readonly liveTaskVersionBrickDependenciesService: HnLiveTaskVersionBrickDependenciesService,
     private readonly spaceAggregateService: HnSpaceAggregateService,
     private readonly brickAggregateService: HnBrickAggregateService,
-    private readonly blExternalApiService: BlExternalApiService,
-    private readonly coreConfigService: HnCoreConfigService,
+    private readonly labConstellabApiService: HnLabConstellabApiService,
     private readonly userService: HnUserService,
     private dataSource: DataSource
   ) {
   }
 
-  public async create(createLiveTaskDto: HnCreateLiveTaskDto): Promise<HnLiveTaskVersion> {
+  public async create(createLiveTaskDto: HnCreateLiveTaskDto, parentLiveTaskVersionId: string = null,
+                      user: HnUser = null): Promise<HnLiveTaskVersion> {
+    const currentUser = user ? user : HnCurrentUserHelper.getCurrentUser();
     return await this.dataSource.transaction(async entityManager => {
       if (createLiveTaskDto.space != null) {
-        await this.spaceAggregateService.checkSpaceUser(createLiveTaskDto.space.id, HnCurrentUserHelper.getCurrentUser().id);
+        await this.spaceAggregateService.checkSpaceUser(createLiveTaskDto.space.id, currentUser.id);
       }
-      const liveTask: HnLiveTask = await this.liveTaskService.create(createLiveTaskDto, entityManager);
+      const liveTask: HnLiveTask = await this.liveTaskService.create(createLiveTaskDto, entityManager, parentLiveTaskVersionId, user);
       const newLiveTaskVersion =
         await this.liveTaskVersionService.createFirstVersion(liveTask, createLiveTaskDto.versionFile, entityManager);
 
@@ -64,6 +61,40 @@ export class HnLiveTaskAggregateService {
 
       return newLiveTaskVersion;
     });
+  }
+
+  public async createForLab(createLiveTaskDto: HnCreateLiveTaskDto, req: Request): Promise<HaCreateLiveTaskVersionFromLabResponseDto> {
+    const user = await this.checkIfLabUserAndReturnUser(req);
+    const liveTaskVersion: HnLiveTaskVersion = await this.create(createLiveTaskDto, null, user);
+    return {
+      id: liveTaskVersion.id,
+      live_task_id: liveTaskVersion.liveTask.id
+    }
+  }
+
+  public async forkForLab(parentLiveTaskVersionId: string, createLiveTaskDto: HnCreateLiveTaskDto,
+                          req: Request): Promise<HaCreateLiveTaskVersionFromLabResponseDto> {
+    const user = await this.checkIfLabUserAndReturnUser(req);
+    if (parentLiveTaskVersionId == null) throw new BlBadRequestException('The parent live task version id is required')
+    const liveTaskVersion: HnLiveTaskVersion = await this.create(createLiveTaskDto, parentLiveTaskVersionId, user);
+    return {
+      id: liveTaskVersion.id,
+      live_task_id: liveTaskVersion.liveTask.id
+    }
+  }
+
+  public async createNewVersionForLab(liveTaskId: string, newLiveTaskVersionFile: HnLiveTaskVersionFileInput,
+                                      req: Request): Promise<HaCreateLiveTaskVersionFromLabResponseDto> {
+    const user = await this.checkIfLabUserAndReturnUser(req);
+    const liveTask: HnLiveTask = await this.liveTaskService.findOne(liveTaskId);
+    if (liveTask.createdBy.id != user.id) throw new BlUnauthorizedException();
+    if ((await this.liveTaskVersionService.findLatestByLiveTask(liveTask)).versionState == 'DRAFT')
+      throw new BlBadRequestException('The live task has already a draft version');
+    const newLiveTaskVersion = await this.createNewDraftVersion(liveTaskId, newLiveTaskVersionFile, true);
+    return {
+      id: newLiveTaskVersion.id,
+      live_task_id: newLiveTaskVersion.liveTask.id
+    }
   }
 
   public async updateDescription(id: string, description: Record<string, any>): Promise<HnLiveTask> {
@@ -77,15 +108,40 @@ export class HnLiveTaskAggregateService {
   /**
    * Find liv task list for lab user
    * @param req
+   * @param spacesFilter
+   * @param titleFilter
+   * @param personalOnly
+   * @param page
+   * @param size
    */
-  public async findForLab(req: Request): Promise<HnLiveTaskForLabDto[]> {
-    await this.checkApiKeyAndUserIdInCentral(req);
-    const currentUser = await this.userService.findOne(req.headers['user'])
-    if (!currentUser)
-      throw new BlUnauthorizedException();
-    const userSpaces: HnSpace[] = await this.spaceAggregateService.findSpacesOfUser(currentUser.id);
-    return (await this.liveTaskService.findAllWithUserSpaces(userSpaces)).map(liveTask => HnLiveTaskForLabDto.fromLiveTask(liveTask));
+  public async getLiveTasksForLab(req: Request, spacesFilter: string[], titleFilter: string, personalOnly: boolean,
+                                  page: number, size: number): Promise<ClPage<HnLiveTaskForLabDto>> {
+    const user = await this.checkIfLabUserAndReturnUser(req);
+    return (await this.findAllWithFilters(spacesFilter, titleFilter, page, size, user, personalOnly))
+      .map(liveTask => HnLiveTaskForLabDto.fromLiveTask(liveTask));
   }
+
+
+  public async getLiveTaskForLabByVersionId(req: Request, versionId: string): Promise<HnLiveTaskForLabDto> {
+    await this.checkIfLabUserAndReturnUser(req);
+    const liveTaskVersion: HnLiveTaskVersion = await this.findLiveTaskVersionById(versionId);
+    return HnLiveTaskForLabDto.fromLiveTask(liveTaskVersion?.liveTask);
+  }
+
+  public async findAllWithFilters(spacesFilter: string[], titleFilter: string, page: number,
+                                  size: number, user: HnUser = null, personalOnly: boolean = false): Promise<ClPage<HnLiveTask>> {
+    const currentUser = user ? user : HnCurrentUserHelper.getCurrentUser();
+    let publicSelected = false;
+    let myLiveTasksSelected = false;
+    for (const spaceId of spacesFilter) {
+      if (spaceId === 'public') publicSelected = true;
+      else if (spaceId === 'my-live-tasks') myLiveTasksSelected = true
+      else await this.spaceAggregateService.checkSpaceUser(spaceId, currentUser.id);
+    }
+    return await this.liveTaskService.findAllWithFilters(spacesFilter, titleFilter, publicSelected,
+      myLiveTasksSelected, personalOnly, page, size, user);
+  }
+
 
   public async findAll(page: number, size: number): Promise<ClPage<HnLiveTask>> {
     const currentUser = HnCurrentUserHelper.getCurrentUser();
@@ -96,17 +152,16 @@ export class HnLiveTaskAggregateService {
     return await this.liveTaskService.findAllWithUserSpacesPaginated(userSpaces, page, size);
   }
 
-  public async findAllWithFilters(spacesFilter: string[], titleFilter: string, page: number, size: number): Promise<ClPage<HnLiveTask>> {
-    const currentUser = HnCurrentUserHelper.getCurrentUser();
-    let publicSelected = false;
-    let myLiveTasksSelected = false;
-    for (const spaceId of spacesFilter) {
-      if (spaceId === 'public') publicSelected = true;
-      else if (spaceId === 'my-live-tasks') myLiveTasksSelected = true;
-      else await this.spaceAggregateService.checkSpaceUser(spaceId, currentUser.id);
-    }
-
-    return await this.liveTaskService.findAllWithFilters(spacesFilter, titleFilter, publicSelected, myLiveTasksSelected, page, size);
+  /**
+   * Check if the user is a lab user and return the user
+   * @param req
+   */
+  private async checkIfLabUserAndReturnUser(req: Request): Promise<HnUser> {
+    await this.labConstellabApiService.checkApiKeyAndUserIdInCentral(req);
+    const currentUser = await this.userService.findOne(req.headers['user'])
+    if (!currentUser)
+      throw new BlUnauthorizedException();
+    return currentUser;
   }
 
   public async findLiveTaskById(id: string): Promise<HnLiveTask> {
@@ -140,7 +195,7 @@ export class HnLiveTaskAggregateService {
    * @param req
    */
   public async findLatestPublishedLiveTaskVersionForLabByLiveTaskId(id: string, req: Request): Promise<HnLiveTaskVersionForLabDto> {
-    await this.checkApiKeyAndUserIdInCentral(req);
+    await this.labConstellabApiService.checkApiKeyAndUserIdInCentral(req);
     const user: HnUser = await this.userService.findOne(req.headers['user']);
     const liveTask: HnLiveTask = await this.liveTaskService.findOne(id);
     if (liveTask.space != null) {
@@ -180,8 +235,10 @@ export class HnLiveTaskAggregateService {
     });
   }
 
-  public async createNewDraftVersion(liveTaskId: string, newLiveTaskVersionFile: HnLiveTaskVersionFileInput): Promise<HnLiveTaskVersion> {
-    await this.liveTaskService.checkIfCreatorAndGetLiveTask(liveTaskId);
+  public async createNewDraftVersion(liveTaskId: string, newLiveTaskVersionFile: HnLiveTaskVersionFileInput,
+                                     fromLab: boolean = false): Promise<HnLiveTaskVersion> {
+    if (!fromLab)
+      await this.liveTaskService.checkIfCreatorAndGetLiveTask(liveTaskId);
     const liveTask = await this.liveTaskService.findOne(liveTaskId);
     const latestLiveTaskVersion = await this.liveTaskVersionService.findLatestByLiveTask(liveTask);
 
@@ -230,23 +287,6 @@ export class HnLiveTaskAggregateService {
           await this.liveTaskVersionService.migrateLiveTaskVersion(liveTaskVersion);
         }
       }
-    }
-  }
-
-  /**
-   * Verify if the lab user is a good one by calling central
-   * @param req
-   * @private
-   */
-  private async checkApiKeyAndUserIdInCentral(req: Request): Promise<void> {
-    if (req.headers['user'] == null || req.headers['authorization'] == null) {
-      throw new BlUnauthorizedException();
-    }
-    const checkApiKeyUser: boolean = await lastValueFrom(this.blExternalApiService.get(
-      this.coreConfigService.getCentralApiUrl() + 'external-labs/check-test', null,
-      {headers: {user: req.headers['user'], authorization: req.headers['authorization']}}))
-    if(checkApiKeyUser != true){
-      throw new BlUnauthorizedException();
     }
   }
 }

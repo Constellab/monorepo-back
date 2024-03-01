@@ -22,6 +22,7 @@ import {HnBrickUserModule} from '../brick-aggregate/brick-user/hn-brick-user.mod
 import {HnBrickUserInviteModule} from '../brick-aggregate/brick-user-invite/hn-brick-user-invite.module';
 import {BlExternalApiModule} from '@monorepo/back-core-lib';
 import {HnCoreConfigModule} from '../core/modules/core-config/hn-core-config.module';
+import {HnCoreModule} from '../core/hn-core.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import {HnCoreConfigModule} from '../core/modules/core-config/hn-core-config.mod
 
     BlExternalApiModule,
     HnCoreConfigModule,
+    HnCoreModule,
 
     HnUserModule
   ],

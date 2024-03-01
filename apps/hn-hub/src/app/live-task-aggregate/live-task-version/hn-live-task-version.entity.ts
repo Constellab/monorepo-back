@@ -16,7 +16,8 @@ export enum HnLiveTaskVersionType{
   MAMBA_PYTHON = 'MAMBA_PYTHON',
   PIP_PYTHON = 'PIP_PYTHON',
   CONDA_R = 'CONDA_R',
-  MAMBA_R = 'MAMBA_R'
+  MAMBA_R = 'MAMBA_R',
+  STREAMLIT = 'STREAMLIT',
 }
 
 @Unique(['version', 'liveTask'])

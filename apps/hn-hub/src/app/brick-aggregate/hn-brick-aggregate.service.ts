@@ -23,6 +23,7 @@ import {HnFolderService} from './folder/hn-folder.service';
 import {HnFolder} from './folder/hn-folder.entity';
 import {HnDocumentationService} from './documentation/hn-documentation.service';
 import {
+  BlBadRequestException,
   BlFile, BlRichTextContent,
   BlRichTextI,
   BlRichTextUploadedImage,
@@ -36,6 +37,7 @@ import {HnBrickUserInviteService} from './brick-user-invite/hn-brick-user-invite
 import {HnBrickUserInvite} from './brick-user-invite/hn-brick-user-invite.entity';
 import {HnBrickUser} from './brick-user/hn-brick-user.entity';
 import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
+import {HnDocumentationFile} from './documentation-file/hn-documentation-file.entity';
 
 @Injectable()
 export class HnBrickAggregateService {
@@ -338,5 +340,32 @@ export class HnBrickAggregateService {
 
   async getView(filename: string): Promise<any>{
     return this.documentationService.getView(filename);
+  }
+
+
+  //------------------------------------- DOCUMENTATION FILE -------------------------------------
+  async getDocFile(docFileId: string): Promise<IncomingMessage> {
+    return await this.documentationService.getDocFile(docFileId)
+  }
+
+  async saveFile(file: BlFile, docId: string): Promise<HnDocumentationFile> {
+    await this.checkIfUserHasRightsOnDoc(docId);
+    return this.documentationService.saveFile(file, docId);
+  }
+
+  async getDocFileName(docFileId: string): Promise<string> {
+    return this.documentationService.getDocFileName(docFileId);
+  }
+
+  async renameDocFile(docFileId: string, newFileName: string): Promise<HnDocumentationFile> {
+    return await this.documentationService.renameDocFile(docFileId, newFileName);
+  }
+
+  async deleteDocFile(docFileId: string): Promise<void> {
+    try {
+      await this.documentationService.deleteDocFile(docFileId);
+    } catch (e) {
+      throw new BlBadRequestException('File could not be deleted');
+    }
   }
 }

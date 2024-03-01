@@ -4,6 +4,7 @@ import {BlExternalApiModule, BlRequestContextModule, BlTranslateModule} from '@m
 import {HttpModule} from '@nestjs/axios';
 import {HnFrontService} from './service/hn-front.service';
 import {HnDbBackupCron} from './cron/hn-db-backup.cron';
+import {HnLabConstellabApiService} from './service/hn-lab-constellab-api.service';
 
 /**
  * Core module of the app, export all modules
@@ -22,6 +23,7 @@ import {HnDbBackupCron} from './cron/hn-db-backup.cron';
   providers: [
     HnFrontService,
     HnDbBackupCron,
+    HnLabConstellabApiService
   ],
   exports: [
     HnCoreConfigModule,
@@ -32,6 +34,7 @@ import {HnDbBackupCron} from './cron/hn-db-backup.cron';
 
     // Providers
     HnFrontService,
+    HnLabConstellabApiService
   ]
 })
 export class HnCoreModule {

@@ -12,6 +12,8 @@ import {
 import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
 import {ClPage} from '@monorepo/core-lib';
+import {HnUser} from '../../users/hn-user.entity';
+import {HnLiveTaskVersion} from '../live-task-version/hn-live-task-version.entity';
 
 @Injectable()
 export class HnLiveTaskService {
@@ -98,9 +100,10 @@ export class HnLiveTaskService {
     });
   }
 
-  public async findAllWithFilters(spacesFilter: string[], titleFilter: string, publicSelected: boolean,
-                                  myLiveTasksSelected: boolean, page: number, size: number): Promise<ClPage<HnLiveTask>> {
+  public async findAllWithFilters(spacesFilter: string[], titleFilter: string, publicSelected: boolean, myLiveTasksSelected: boolean,
+                                  personalOnly: boolean, page: number, size: number, user: HnUser = null): Promise<ClPage<HnLiveTask>> {
     let where: FindOptionsWhere<HnLiveTask>[];
+    const currentUser = user ? user : HnCurrentUserHelper.getAndCheckCurrentUser();
 
     if (publicSelected && myLiveTasksSelected) {
       where = [
@@ -117,7 +120,7 @@ export class HnLiveTaskService {
           latestPublishVersion: Not(IsNull())
         }, {
           createdBy: {
-            id: HnCurrentUserHelper.getAndCheckCurrentUser().id
+            id: currentUser.id
           }
         }
       ];
@@ -146,7 +149,7 @@ export class HnLiveTaskService {
         },
         {
           createdBy: {
-            id: HnCurrentUserHelper.getAndCheckCurrentUser().id
+            id: currentUser.id
           }
         }
       ];
@@ -174,6 +177,15 @@ export class HnLiveTaskService {
       });
     }
 
+    if (personalOnly){
+      where = where.map(w => {
+        w.createdBy = {
+          id: currentUser.id
+        };
+        return w;
+      });
+    }
+
     return await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
       where: where,
       order: {createdAt: 'DESC' as any}
@@ -189,8 +201,9 @@ export class HnLiveTaskService {
     });
   }
 
-  public async create(liveTaskDto: HnCreateLiveTaskDto, entityManager: EntityManager): Promise<HnLiveTask> {
-    const liveTask = HnLiveTask.init(liveTaskDto);
+  public async create(liveTaskDto: HnCreateLiveTaskDto, entityManager: EntityManager,
+                      parentLiveTaskVersionId?: string, user?: HnUser): Promise<HnLiveTask> {
+    const liveTask = HnLiveTask.init(liveTaskDto, parentLiveTaskVersionId, user);
     return entityManager.save(liveTask);
   }
 

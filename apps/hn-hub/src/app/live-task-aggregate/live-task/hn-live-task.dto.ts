@@ -40,6 +40,7 @@ export class HnLiveTaskForLabDto{
   description?: Record<string, any>;
   latest_publish_version: number;
 
+
   static fromLiveTask(liveTask: HnLiveTask): HnLiveTaskForLabDto{
     const dto = new HnLiveTaskForLabDto();
     dto.id = liveTask.id;
@@ -93,6 +94,9 @@ export class HnLiveTaskVersionForLabDto{
       case 'PYTHON':
         dto.type = 'TASK.gws_core.PyLiveTask';
         break;
+      case 'STREAMLIT':
+        dto.type = 'TASK.gws_core.StreamlitLiveTask';
+        break;
     }
     dto.environment = liveTaskVersion.environment? liveTaskVersion.environment : null;
     dto.code = liveTaskVersion.code;
@@ -107,4 +111,9 @@ export class HnLiveTaskVersionForLabDto{
     };
     return dto;
   }
+}
+
+export class HaCreateLiveTaskVersionFromLabResponseDto{
+  live_task_id: string;
+  id: string;
 }

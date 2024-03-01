@@ -1,8 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {HnStoryAuthor, HnStoryAuthorStatus} from './hn-story-author.entity';
+import {HnStoryAuthor} from './hn-story-author.entity';
 import {Repository} from 'typeorm';
-import {HnUserService} from '../users/hn-user.service';
 import {HnUser} from '../users/hn-user.entity';
 import {HnStory} from '../story/hn-story.entity';
 import {HnStoryAuthorInviteService} from '../story-author-invite/hn-story-author-invite.service';
@@ -12,7 +11,6 @@ import {HnStoryAuthorInvite} from '../story-author-invite/hn-story-author-invite
 export class HnStoryAuthorService {
   constructor(@InjectRepository(HnStoryAuthor)
               private readonly storyAuthorRepository: Repository<HnStoryAuthor>,
-              private readonly userService: HnUserService,
               private readonly storyAuthorInviteService: HnStoryAuthorInviteService
   ) {
   }
@@ -37,8 +35,7 @@ export class HnStoryAuthorService {
     const storyAuthor: HnStoryAuthor = await this.storyAuthorRepository.findOneBy(
       {
         story: {id: storyId},
-        user: {id: storyAuthorUserId},
-        status: HnStoryAuthorStatus.COAUTHOR
+        user: {id: storyAuthorUserId}
       }
     );
     if (storyAuthor) {

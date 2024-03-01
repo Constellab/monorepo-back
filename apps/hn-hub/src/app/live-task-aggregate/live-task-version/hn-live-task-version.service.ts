@@ -5,6 +5,7 @@ import {HnLiveTaskVersion, HnLiveTaskVersionState} from './hn-live-task-version.
 import {HnLiveTask} from '../live-task/hn-live-task.entity';
 import {HnLiveTaskVersionFileInput} from '../live-task/hn-live-task.dto';
 import {BlQuillMigrator, BlRichTextI} from '@monorepo/back-core-lib';
+import {HnUser} from '../../users/hn-user.entity';
 
 @Injectable()
 export class HnLiveTaskVersionService {

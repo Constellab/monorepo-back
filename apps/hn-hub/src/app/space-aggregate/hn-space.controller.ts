@@ -1,4 +1,4 @@
-import {Controller, Get} from '@nestjs/common';
+import {Controller, Get, Req} from '@nestjs/common';
 import {EventPattern} from '@nestjs/microservices';
 import {HnSpaceAggregateService} from './hn-space-aggregate.service';
 import {HnSpaceUser} from './space-user/hn-space-user.entity';
@@ -35,6 +35,12 @@ export class HnSpaceController {
   @Get('current-user')
   findSpacesOfCurrentUser(): Promise<HnSpace[]> {
     return this.spaceAggregateService.findSpacesOfCurrentUser();
+  }
+
+  @BlPublic()
+  @Get('available/for-lab')
+  async getSpacesForLab(@Req() req: Request): Promise<HnSpace[]> {
+    return this.spaceAggregateService.getSpacesForLab(req);
   }
 
 

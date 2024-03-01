@@ -6,8 +6,7 @@ import {HnUserService} from '../users/hn-user.service';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
 import {HnSpace} from './space/hn-space.entity';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
-import {HnLiveTask} from '../live-task-aggregate/live-task/hn-live-task.entity';
-import {EntityManager} from 'typeorm';
+import {HnLabConstellabApiService} from '../core/service/hn-lab-constellab-api.service';
 
 @Injectable()
 export class HnSpaceAggregateService {
@@ -15,7 +14,8 @@ export class HnSpaceAggregateService {
   constructor(
     private readonly spaceService: HnSpaceService,
     private readonly spaceUserService: HnSpaceUserService,
-    private readonly userService: HnUserService
+    private readonly userService: HnUserService,
+    private readonly labConstellabApiService: HnLabConstellabApiService
   ) {
   }
 
@@ -49,6 +49,11 @@ export class HnSpaceAggregateService {
     if((await this.spaceService.findOne(spaceId)) == null){
       throw new BlBadRequestException("Space does not exist");
     }
+  }
+
+  public async getSpacesForLab(req: Request): Promise<HnSpace[]> {
+    await this.labConstellabApiService.checkApiKeyAndUserIdInCentral(req);
+    return this.findSpacesOfUser(req.headers['user']);
   }
 
 

@@ -2,7 +2,9 @@ import {Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Qu
 import {HnLiveTaskAggregateService} from './hn-live-task-aggregate.service';
 import {HnLiveTaskVersion} from './live-task-version/hn-live-task-version.entity';
 import {
-  HnCreateLiveTaskDto, HnLiveTaskForLabDto,
+  HaCreateLiveTaskVersionFromLabResponseDto,
+  HnCreateLiveTaskDto,
+  HnLiveTaskForLabDto,
   HnLiveTaskVersionFileInput,
   HnLiveTaskVersionForLabDto
 } from './live-task/hn-live-task.dto';
@@ -31,6 +33,29 @@ export class HnLiveTaskController {
   }
 
   @BlPublic()
+  @Post('/for-lab')
+  async createForLab(@Body(new BlParsePipe(HnCreateLiveTaskDto)) createLiveTaskDto: HnCreateLiveTaskDto,
+                     @Req() req: Request): Promise<HaCreateLiveTaskVersionFromLabResponseDto> {
+    return this.liveTaskAggregateService.createForLab(createLiveTaskDto, req)
+  }
+
+  @BlPublic()
+  @Post('/for-lab/fork/:id')
+  async forkForLab(@Param('id') liveTaskVersionId: string,
+                     @Body(new BlParsePipe(HnCreateLiveTaskDto)) createLiveTaskDto: HnCreateLiveTaskDto,
+                     @Req() req: Request): Promise<HaCreateLiveTaskVersionFromLabResponseDto> {
+    return this.liveTaskAggregateService.forkForLab(liveTaskVersionId, createLiveTaskDto, req)
+  }
+
+  @BlPublic()
+  @Post('/for-lab/version/:id')
+  async createNewVersionForLab(@Param('id', ParseUUIDPipe) liveTaskId: string,
+                               @Body('versionFile') versionFile: HnLiveTaskVersionFileInput,
+                               @Req() req: Request): Promise<HaCreateLiveTaskVersionFromLabResponseDto> {
+    return this.liveTaskAggregateService.createNewVersionForLab(liveTaskId, versionFile, req)
+  }
+
+  @BlPublic()
   @Get('public')
   async getPublicLiveTasks(): Promise<HnLiveTask[]> {
     return this.liveTaskAggregateService.findPublic();
@@ -39,11 +64,29 @@ export class HnLiveTaskController {
   /**
    * Get live tasks for lab
    * @param req
+   * @param spacesFilter
+   * @param titleFilter
+   * @param personalOnly
+   * @param page
+   * @param size
+   * @return live tasks
    */
   @BlPublic()
-  @Get('available/for-lab')
-  async getLiveTasksForLab(@Req() req: Request): Promise<HnLiveTaskForLabDto[]> {
-    return this.liveTaskAggregateService.findForLab(req);
+  @Post('available/for-lab')
+  async getLiveTasksForLab(@Req() req: Request,
+                           @Body('spacesFilter') spacesFilter: string[],
+                           @Body('titleFilter') titleFilter: string,
+                           @Body('personalOnly') personalOnly: boolean,
+                           @Query('page', new ParseIntPipe()) page: number,
+                           @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnLiveTaskForLabDto>> {
+    return this.liveTaskAggregateService.getLiveTasksForLab(req, spacesFilter, titleFilter, personalOnly, page, size);
+  }
+
+  @BlPublic()
+  @Get('for-lab/version/:id')
+  async getLiveTaskVersionForLab(@Req() req: Request,
+                                 @Param('id', ParseUUIDPipe) versionId: string): Promise<HnLiveTaskForLabDto> {
+    return this.liveTaskAggregateService.getLiveTaskForLabByVersionId(req, versionId);
   }
 
   /**

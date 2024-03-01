@@ -9,6 +9,7 @@ import {
   Put,
   Req,
   Res,
+  StreamableFile,
   UseGuards,
   UseInterceptors
 } from '@nestjs/common';
@@ -28,6 +29,7 @@ import {HnNodeDTO} from './folder/hn-folder.dto';
 import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
 import {HnBrickAggregateService} from './hn-brick-aggregate.service';
 import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
+import {HnDocumentationFile} from './documentation-file/hn-documentation-file.entity';
 
 @Controller('documentation')
 @UseGuards(HnIsAdminGuard)
@@ -104,5 +106,42 @@ export class HnDocumentationController {
     const filename = request.url.split('view/')[1];
     const file = await this.brickAggregateService.getView(filename);
     BlResponseHelper.setMessageAndCache(response, file);
+  }
+
+
+  /////////////////////////////////// DOC FILE //////////////////////////////////////////
+  /***
+   * Get doc file
+   * @param docFileId
+   * @param res
+   */
+  @BlPublic()
+  @Get('get-file/:docFileId')
+  public async getFile(@Param('docFileId') docFileId: string,
+                       @Res({passthrough: true}) res: Response): Promise<StreamableFile> {
+    const file = await this.brickAggregateService.getDocFile(docFileId);
+    const fileName: string = await this.brickAggregateService.getDocFileName(docFileId);
+    res.set({
+      'Content-Disposition': `attachment; filename="${fileName}"`,
+    });
+    return BlResponseHelper.getFileResponse(file);
+  }
+
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('file/:docId')
+  async saveFile(@BlUploadedFile() file: BlFile,
+                 @Param('docId', new ParseUUIDPipe()) docId: string): Promise<HnDocumentationFile> {
+    return this.brickAggregateService.saveFile(file, docId);
+  }
+
+  @Put('file/:docFileId/rename')
+  async updateStoryFile(@Param('docFileId', new ParseUUIDPipe()) docFileId: string,
+                        @Body('humanName') humanName: string): Promise<HnDocumentationFile> {
+    return this.brickAggregateService.renameDocFile(docFileId, humanName);
+  }
+
+  @Delete('file/:docFileId')
+  async deleteStoryFile(@Param('docFileId', new ParseUUIDPipe()) docFileId: string): Promise<void> {
+    return this.brickAggregateService.deleteDocFile(docFileId);
   }
 }

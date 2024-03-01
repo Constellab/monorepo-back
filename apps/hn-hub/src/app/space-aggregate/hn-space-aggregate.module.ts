@@ -5,12 +5,14 @@ import {HnSpaceController} from './hn-space.controller';
 import {HnSpaceModule} from './space/hn-space.module';
 import {HnUserService} from '../users/hn-user.service';
 import {HnUserModule} from '../users/hn-user.module';
+import {HnCoreModule} from '../core/hn-core.module';
 
 @Module({
   imports: [
     HnSpaceModule,
     HnSpaceUserModule,
-    HnUserModule
+    HnUserModule,
+    HnCoreModule
   ],
   controllers: [HnSpaceController],
   providers: [HnSpaceAggregateService, HnUserService],
