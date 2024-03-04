@@ -164,29 +164,76 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
       return protocol;
     }
 
-    return this.migrateProcessFromV1ToV2Recur(protocol.data);
+    const newProtocolData = this.migrateProcessFromV1ToV2Recur(protocol.data);
+    return {
+      version: 2,
+      data: newProtocolData
+    };
   }
 
   private migrateProcessFromV1ToV2Recur(protocol: any): any {
-    for (const key in protocol.nodes) {
-      const process = protocol.graph.nodes[key];
-      if (!process.name) {
-        process.name = process.human_name;
-      }
-
-      process.process_type = {
-        human_name: process.human_name,
-        short_description: process.short_description
-      };
-
-      delete process.human_name;
-      delete process.short_description;
-
-      if (process.graph && process.graph.nodes) {
-        this.migrateProcessFromV1ToV2Recur(process.graph);
-      }
+    if (!protocol.name) {
+      protocol.name = protocol.human_name;
     }
 
-    return process;
+    protocol.process_type = {
+      human_name: protocol.human_name,
+      short_description: protocol.short_description
+    };
+
+    delete protocol.human_name;
+    delete protocol.short_description;
+
+
+    if (protocol.graph) {
+
+      for (const key in protocol.graph.nodes) {
+        const process = protocol.graph.nodes[key];
+        if (!process.name) {
+          process.name = process.human_name;
+        }
+
+        process.process_type = {
+          human_name: process.human_name,
+          short_description: process.short_description
+        };
+
+        delete process.human_name;
+        delete process.short_description;
+
+        if (process.graph) {
+          this.migrateProcessFromV1ToV2Recur(process);
+        }
+      }
+
+      if (protocol.graph.interfaces) {
+        for (const key in protocol.graph.interfaces) {
+          const inter = protocol.graph.interfaces[key];
+          if (inter.to) {
+            inter.process_instance_name = inter.to.node;
+            inter.port_name = inter.to.port;
+            delete inter.to;
+          }
+          if (inter.from) {
+            delete inter.from;
+          }
+        }
+      }
+
+      if (protocol.graph.outerfaces) {
+        for (const key in protocol.graph.outerfaces) {
+          const outerface = protocol.graph.outerfaces[key];
+          if (outerface.from) {
+            outerface.process_instance_name = outerface.from.node;
+            outerface.port_name = outerface.from.port;
+            delete outerface.from;
+          }
+          if (outerface.to) {
+            delete outerface.to;
+          }
+        }
+      }
+    }
+    return protocol;
   }
 }
