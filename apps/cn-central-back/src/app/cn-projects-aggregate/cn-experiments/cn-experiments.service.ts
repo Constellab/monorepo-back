@@ -145,9 +145,14 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
 
     const experiments = await this.repository.find();
 
+
     for (const experiment of experiments) {
-      experiment.protocol = this.migrateProtocolFromV1ToV2(experiment.protocol);
-      await this.repository.save(experiment);
+      try {
+        experiment.protocol = this.migrateProtocolFromV1ToV2(experiment.protocol);
+        await this.repository.save(experiment);
+      } catch (error) {
+        this.logger.error(`Error while migrating protocol of experiment '${experiment.id}'. Error : ${error}`);
+      }
     }
 
     this.logger.log('[END] Migrating all protocols from V1 to V2');
