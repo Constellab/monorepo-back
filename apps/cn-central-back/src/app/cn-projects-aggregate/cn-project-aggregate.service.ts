@@ -880,4 +880,8 @@ export class CnProjectAggregateService {
     this.eventEmitter.emit(cnProjectEventName, event);
   }
 
+  public migrateExperimentProtocols(): Promise<void> {
+    return this.experimentService.migrateAllProtocolsFromV1ToV2();
+  }
+
 }

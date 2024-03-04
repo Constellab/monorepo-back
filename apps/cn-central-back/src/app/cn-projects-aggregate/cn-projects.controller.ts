@@ -24,7 +24,8 @@ import {
   BlRichTextContent,
   BlRichTextUploadedImage,
   BlSearchParams,
-  BlUploadedFile
+  BlUploadedFile,
+  BlUserCategory
 } from '@monorepo/back-core-lib';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
@@ -46,6 +47,7 @@ import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
 import {CnProjectUser} from './cn-project-user/cn-project-user.entity';
 import {CnActivity} from '../cn-activity/cn-activity.entity';
 import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
 
 
 @Controller('projects')
@@ -384,5 +386,11 @@ export class CnProjectsController {
                        @Query('page', ParseIntPipe) page: number,
                        @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnActivity>> {
     return await this.projectAggregate.searchProjectActivity(projectId, searchParam, page, size);
+  }
+
+  @CnUserCategories(BlUserCategory.ADMIN)
+  @Post('experiment-migrate')
+  async migrateDocTextEditor(): Promise<void> {
+    return await this.projectAggregate.migrateExperimentProtocols();
   }
 }
