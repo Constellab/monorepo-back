@@ -51,6 +51,9 @@ export class HnIconService {
     const icon: HnIcon = new HnIcon();
     icon.init(_icon);
 
+    if (file.size > 50000)
+      throw new BlNotFoundException('Icon file size is too big');
+
     const fileExt = file.originalname.split('.').pop();
     file.originalname = icon.technicalName + '.' + fileExt;
 
