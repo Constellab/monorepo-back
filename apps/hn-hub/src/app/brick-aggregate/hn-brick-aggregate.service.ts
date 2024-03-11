@@ -24,8 +24,8 @@ import {HnFolder} from './folder/hn-folder.entity';
 import {HnDocumentationService} from './documentation/hn-documentation.service';
 import {
   BlBadRequestException,
-  BlFile, BlRichTextContent,
-  BlRichTextI,
+  BlFile,
+  BlRichTextContent,
   BlRichTextUploadedImage,
   BlUnauthorizedException,
   BlVersion
@@ -75,9 +75,6 @@ export class HnBrickAggregateService {
     let brick: HnBrick;
     const brickVersion: HnBrickVersion = await this.dataSource.transaction(async entityManager => {
       brick = await this.brickService.create(body, entityManager);
-      if (!HnCurrentUserHelper.getCurrentUser().isAdmin()) {
-        await this.brickUserService.createCreatorBrickUser(brick, HnCurrentUserHelper.getCurrentUser(), entityManager);
-      }
       if (body.isBeta) body.version.subPatch = body.subPatch;
       const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionService.create(brick, body, entityManager);
       const version: BlVersion = body.version.subPatch != null ?
@@ -100,25 +97,6 @@ export class HnBrickAggregateService {
     return brick;
   }
 
-  async updateBrickUsers(brickId: string, email: string): Promise<HnBrick> {
-    const brick: HnBrick = await this.brickService.findById(brickId);
-
-    if (!brick || (!HnCurrentUserHelper.getCurrentUser().isAdmin() && brick.createdBy.id !== HnCurrentUserHelper.getCurrentUser().id)) {
-      throw new BlUnauthorizedException('You are not authorized to update this brick');
-    }
-
-
-    if (ClStringHelper.isEmail(email)) {
-      await this.brickUserInviteService.createBrickUserMail(brick, email);
-    }
-
-
-    return brick;
-  }
-
-  async removeBrickUser(brickUserId: string): Promise<boolean> {
-    return await this.brickUserService.checkAndRemoveBrickUser(brickUserId);
-  }
 
   async acceptBrickUserInvite(token: string): Promise<HnBrick> {
     const brickUserInvite: HnBrickUserInvite = await this.brickUserInviteService.getAndCheckInvite(token);
@@ -126,16 +104,8 @@ export class HnBrickAggregateService {
       throw new BlUnauthorizedException('This invite is not valid');
     const brick: HnBrick = await this.brickService.findBrickForInviteById(brickUserInvite.brick.id);
     await this.brickUserInviteService.acceptBrickUserInvite(brickUserInvite);
-    await this.brickUserService.createSimpleBrickUser(brick, HnCurrentUserHelper.getCurrentUser());
+    await this.brickUserService.createBrickUser(brick, HnCurrentUserHelper.getCurrentUser());
     return brick;
-  }
-
-  async getBrickUsers(brickId: string): Promise<HnBrickUser[]> {
-    const brick: HnBrick = await this.brickService.findById(brickId);
-    if (!brick || (!HnCurrentUserHelper.getCurrentUser().isAdmin() && brick.createdBy.id !== HnCurrentUserHelper.getCurrentUser().id)) {
-      throw new BlUnauthorizedException('You are not authorized to get users of this brick');
-    }
-    return this.brickUserService.getBrickUsers(brick);
   }
 
   async isBrickUserInviteValid(token: string): Promise<HnBrickUserInvite> {
@@ -321,7 +291,8 @@ export class HnBrickAggregateService {
   }
 
   async getCurrentBrickVersion(page: number, size: number, brickId: string): Promise<ClPageI<HnBrickVersion>> {
-    return this.brickVersionService.getCurrentBrickVersion(page, size, brickId);
+    const brick: HnBrick = await this.brickService.findById(brickId);
+    return this.brickVersionService.getCurrentBrickVersion(page, size, brickId, this.brickService.userHasRightOnBrick(brick));
   }
 
   async getAllBrickVersionReferences(brickVersionId: string): Promise<HnReferenceDTO[]> {
@@ -368,4 +339,45 @@ export class HnBrickAggregateService {
       throw new BlBadRequestException('File could not be deleted');
     }
   }
+
+  //------------------------------------- BRICK CO AUTHOR -------------------------------------
+  async getBrickCoAuthorsPendingInvites(brickId: string): Promise<HnBrickUserInvite[]> {
+    await this.assertUserIsBrickCreator(brickId);
+    return this.brickUserInviteService.getBrickCoAuthorsPendingInvites(brickId);
+  }
+
+  async inviteBrickCoAuthor(brickId: string, email: string): Promise<HnBrick> {
+    await this.assertUserIsBrickCreator(brickId);
+    const brick: HnBrick = await this.brickService.findById(brickId);
+    if (ClStringHelper.isEmail(email)) {
+      await this.brickUserInviteService.createBrickUserMail(brick, email);
+    }
+    return brick;
+  }
+
+  async deleteCoAuthorInvite(inviteId: string): Promise<boolean> {
+    return await this.brickUserInviteService.deleteCoAuthorInvite(inviteId);
+  }
+
+  async removeBrickCoAuthor(brickId: string, brickAuthorUserId: string): Promise<void> {
+    await this.assertUserIsBrickCreator(brickId);
+    await this.brickUserService.checkAndRemoveBrickUser(brickId, brickAuthorUserId);
+  }
+
+  async getBrickCoAuthors(brickId: string): Promise<HnBrickUser[]> {
+    return this.brickUserService.getBrickUsers(await this.brickService.findById(brickId));
+  }
+
+  async checkIfUserIsBrickCreator(brickId: string): Promise<boolean> {
+    const brick = await this.brickService.findById(brickId);
+    return brick.createdBy.id === HnCurrentUserHelper.getCurrentUser()?.id;
+  }
+
+  async assertUserIsBrickCreator(brickId: string): Promise<void> {
+    if (!await this.checkIfUserIsBrickCreator(brickId)) {
+      throw new BlUnauthorizedException('You are not authorized to perform this action');
+    }
+  }
+
+
 }

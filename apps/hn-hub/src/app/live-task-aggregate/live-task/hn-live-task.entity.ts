@@ -7,7 +7,6 @@ import {DateTime} from 'luxon';
 import {Type} from 'class-transformer';
 import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 import {ClDateHelper} from '@monorepo/core-lib';
-import {HnLiveTaskVersion} from '../live-task-version/hn-live-task-version.entity';
 
 @Entity('LiveTask')
 export class HnLiveTask extends BlEntityWithId {

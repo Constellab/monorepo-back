@@ -141,7 +141,7 @@ export class HnDocumentationController {
   }
 
   @Delete('file/:docFileId')
-  async deleteStoryFile(@Param('docFileId', new ParseUUIDPipe()) docFileId: string): Promise<void> {
+  async deleteDocFile(@Param('docFileId', new ParseUUIDPipe()) docFileId: string): Promise<void> {
     return this.brickAggregateService.deleteDocFile(docFileId);
   }
 }

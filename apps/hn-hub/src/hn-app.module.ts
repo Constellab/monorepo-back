@@ -64,6 +64,7 @@ import {
   HnLiveTaskVersionBrickDependenciesModule
 } from './app/live-task-aggregate/live-task-version-brick-dependencies/hn-live-task-version-brick-dependencies.module';
 import {ScheduleModule} from '@nestjs/schedule';
+import {HnIconModule} from './app/icon/hn-icon.module';
 
 function typeOrmConfig(
   configService: HnCoreConfigService,
@@ -221,7 +222,9 @@ function configureMailModule(
     HnLiveTaskModule,
     HnLiveTaskVersionModule,
     HnLiveTaskVersionBrickDependenciesModule,
-    HnLiveTaskAggregateModule
+    HnLiveTaskAggregateModule,
+
+    HnIconModule
   ],
   controllers: [],
   providers: [

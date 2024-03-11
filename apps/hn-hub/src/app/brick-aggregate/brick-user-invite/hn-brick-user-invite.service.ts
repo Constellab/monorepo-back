@@ -66,4 +66,16 @@ export class HnBrickUserInviteService {
     brickUserInvite.status = HnInviteStatus.ACCEPTED;
     return (await this.brickUserInviteRepository.save(brickUserInvite)) != null;
   }
+
+  async getBrickCoAuthorsPendingInvites(brickId: string): Promise<HnBrickUserInvite[]> {
+    return this.brickUserInviteRepository.find({where: {brick: {id: brickId}, status: HnInviteStatus.PENDING}});
+  }
+
+  async deleteCoAuthorInvite(inviteId: string): Promise<boolean> {
+    const invite: HnBrickUserInvite = await this.brickUserInviteRepository.findOneBy({id: inviteId});
+    if (invite == null) {
+      return false;
+    }
+    return await this.brickUserInviteRepository.remove(invite) != null;
+  }
 }

@@ -15,12 +15,12 @@ import {
 } from './brick/hn-brick.dto';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
 import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
-import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 import {Request} from 'express';
 import {HnBrickAggregateService} from './hn-brick-aggregate.service';
 import {HnBrickUser} from './brick-user/hn-brick-user.entity';
 import {HnBrickUserInvite} from './brick-user-invite/hn-brick-user-invite.entity';
 import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
+import {HnUser} from '../users/hn-user.entity';
 
 @Controller('brick')
 @UseGuards(HnIsAdminGuard)
@@ -87,8 +87,6 @@ export class HnBrickController {
                      @Param('version') version: string): Promise<HnDocumentation> {
     return this.brickAggregateService.findFirstDoc(brickName, version);
   }
-
-  @IsAdmin()
   @Post()
   create(@Body(new BlParsePipe(HnCreateBrickDTO)) createBrick: HnCreateBrickDTO): Promise<HnBrick> {
     return this.brickAggregateService.createBrick(createBrick);
@@ -148,28 +146,20 @@ export class HnBrickController {
   }
 
   /***
-   * Update brick users
-   */
-  @Put(':id/invite-user')
-  async updateStoryCoAuthors(@Param('id', new ParseUUIDPipe()) id: string,
-                             @Body() body: any): Promise<HnBrick> {
-    return this.brickAggregateService.updateBrickUsers(id, body.email);
-  }
-
-  /***
-   * Remove brick user
-   */
-  @Delete('remove-brick-user/:brickUserId')
-  async removeBrickUser(@Param('brickUserId', new ParseUUIDPipe()) brickUserId: string): Promise<boolean> {
-    return this.brickAggregateService.removeBrickUser(brickUserId);
-  }
-
-  /***
    * Is brick user invite valid
    */
   @Get('invite/:token/is-valid')
   isBrickUserInviteValid(@Param('token') token: string): Promise<HnBrickUserInvite> {
     return this.brickAggregateService.isBrickUserInviteValid(token);
+  }
+
+  /***
+   * Update brick users
+   */
+  @Post(':id/invite-co-author')
+  async inviteBrickCoAuthor(@Param('id', new ParseUUIDPipe()) id: string,
+                            @Body('coAuthorMail') coAuthorMail: string): Promise<HnBrick> {
+    return this.brickAggregateService.inviteBrickCoAuthor(id, coAuthorMail);
   }
 
   /***
@@ -180,13 +170,27 @@ export class HnBrickController {
     return this.brickAggregateService.acceptBrickUserInvite(token);
   }
 
-  /***
-   * Get brick users
-   */
-  @Get(':id/users')
-  async getBrickUsers(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnBrickUser[]> {
-    return this.brickAggregateService.getBrickUsers(id);
+  @Delete('invite/:inviteId')
+  async deleteCoAuthorInvite(@Param('inviteId', new ParseUUIDPipe()) inviteId: string): Promise<boolean> {
+    return this.brickAggregateService.deleteCoAuthorInvite(inviteId);
+  }
+
+  @BlPublic()
+  @Get(':id/co-authors')
+  async getBrickCoAuthors(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUser[]> {
+    return (await this.brickAggregateService.getBrickCoAuthors(id)).map(brickCoAuthor => brickCoAuthor.user);
   }
 
 
+  @Get(':id/co-authors-pending-invites')
+  async getBrickCoAuthorsPendingInvites(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnBrickUserInvite[]> {
+    return this.brickAggregateService.getBrickCoAuthorsPendingInvites(id);
+  }
+
+
+  @Put(':id/remove-co-author/:brickAuthorUserId')
+  async removeBrickCoAuthor(@Param('id', new ParseUUIDPipe()) id: string,
+                            @Param('brickAuthorUserId', new ParseUUIDPipe()) brickAuthorUserId: string): Promise<void> {
+    return this.brickAggregateService.removeBrickCoAuthor(id, brickAuthorUserId);
+  }
 }

@@ -4,7 +4,7 @@ import {HnBrickVersion, HnNewVersionDTO, HnReferenceDTO, HnVersionType} from './
 import {DataSource, EntityManager, IsNull, Repository} from 'typeorm';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 import {
-  BlAbstractService,
+  BlAbstractService, BlCurrentUserHelper,
   BlNotFoundException,
   BlTransportService,
   BlUnauthorizedException,
@@ -20,6 +20,7 @@ import {
 } from '../../brick-version-reference/hn-brick-version-reference.entity';
 import {HnUserService} from '../../users/hn-user.service';
 import {HnErrorText} from '../../core/model/config/hn-error-text.class';
+import {HnUser} from '../../users/hn-user.entity';
 
 @Injectable()
 export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
@@ -158,9 +159,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     this.sendBrickVersionToTransport(brickVersion);
   }
 
-  async getCurrentBrickVersion(page: number, size: number, brickId: string): Promise<ClPageI<HnBrickVersion>> {
-    const isAdmin: boolean = (await this.userService.getCurrent())?.isAdmin();
-
+  async getCurrentBrickVersion(page: number, size: number, brickId: string, hasRight: boolean = false): Promise<ClPageI<HnBrickVersion>> {
     const pageBrickVersion: ClPageI<HnBrickVersion> = await this.findPaginated(page, size,
       {
         where: {
@@ -179,7 +178,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
         relations: ['brickMajorVersion']
       }
     );
-    if (!isAdmin) {
+    if (!hasRight && !(BlCurrentUserHelper.getCurrentUser() as HnUser).isAdmin()) {
       for (const bV of pageBrickVersion.objects) {
         if (bV.technicalInfo) {
           for (const tInfoKey of Object.keys(bV.technicalInfo)) {

@@ -103,9 +103,18 @@ export class HnLiveTaskService {
   public async findAllWithFilters(spacesFilter: string[], titleFilter: string, publicSelected: boolean, myLiveTasksSelected: boolean,
                                   personalOnly: boolean, page: number, size: number, user: HnUser = null): Promise<ClPage<HnLiveTask>> {
     let where: FindOptionsWhere<HnLiveTask>[];
-    const currentUser = user ? user : HnCurrentUserHelper.getAndCheckCurrentUser();
+    const currentUser = user ? user : HnCurrentUserHelper.getCurrentUser();
 
-    if (publicSelected && myLiveTasksSelected) {
+    if (currentUser == null) {
+      where = [
+        {
+          space: {
+            id: IsNull()
+          },
+          latestPublishVersion: Not(IsNull())
+        }
+      ]
+    } else if (publicSelected && myLiveTasksSelected) {
       where = [
         {
           space: {

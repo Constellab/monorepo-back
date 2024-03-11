@@ -243,15 +243,6 @@ export class HnStoryController {
     return (await this.storyService.getStoryCoAuthors(id)).map(storyAuthor => storyAuthor.user);
   }
 
-  /***
-   * Update Story Co Authors
-   */
-  @Put(':id/co-authors')
-  async updateStoryCoAuthors(@Param('id', new ParseUUIDPipe()) id: string,
-                             @Body() coAuthors: string[]): Promise<HnStory> {
-    return this.storyService.updateStoryCoAuthors(id, coAuthors);
-  }
-
   @Get(':id/co-authors-pending-invites')
   async getStoryCoAuthorsPendingInvites(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnStoryAuthorInvite[]> {
     return this.storyService.getStoryCoAuthorsPendingInvites(id);

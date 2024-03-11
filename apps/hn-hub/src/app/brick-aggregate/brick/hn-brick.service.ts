@@ -117,6 +117,11 @@ export class HnBrickService {
           visibility: HnBrickVisibility.PUBLIC
         }, {
           name: name,
+          createdBy: {
+            id: HnCurrentUserHelper.getCurrentUser().id
+          }
+        }, {
+          name: name,
           brickUsers: {
             user: {
               id: HnCurrentUserHelper.getCurrentUser().id
@@ -180,6 +185,11 @@ export class HnBrickService {
       this.bricksRepository.findOneBy([{
         id: i,
         visibility: HnBrickVisibility.PUBLIC
+      }, {
+        id: i,
+        createdBy: {
+          id: HnCurrentUserHelper.getCurrentUser().id
+        }
       }, {
         id: i,
         brickUsers: {
@@ -328,14 +338,21 @@ export class HnBrickService {
   }
 
   private isCurrentAdmin(): boolean {
-    return HnCurrentUserHelper.getCurrentUser() && HnCurrentUserHelper.getCurrentUser().isAdmin();
+    return HnCurrentUserHelper.getCurrentUser()?.isAdmin();
   }
 
   checkIfUserHasRightOnTheBrick(brick: HnBrick): void {
-    const res: any = brick?.brickUsers.find(bu => bu.user.id === HnCurrentUserHelper.getCurrentUser()?.id);
-    if (!this.isCurrentAdmin() && res == null) {
+    const currentUser = HnCurrentUserHelper.getCurrentUser();
+    if (currentUser.id != brick.createdBy.id &&
+      !brick?.brickUsers.some(bu => bu.user.id === HnCurrentUserHelper.getCurrentUser()?.id)) {
       throw new BlUnauthorizedException('You are not authorized to edit this brick');
     }
+  }
+
+  userHasRightOnBrick(brick: HnBrick): boolean {
+    const currentUser = HnCurrentUserHelper.getCurrentUser();
+    return currentUser.id === brick.createdBy.id ||
+      brick?.brickUsers.some(bu => bu.user.id === HnCurrentUserHelper.getCurrentUser()?.id);
   }
 }
 

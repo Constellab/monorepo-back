@@ -2,7 +2,7 @@ import {Injectable, LogLevel} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import {
   HN_BUCKET_DOCUMENTATION_BACKUP_KEY,
-  HN_BUCKET_DOCUMENTATION_KEY,
+  HN_BUCKET_DOCUMENTATION_KEY, HN_BUCKET_ICON_BACKUP_KEY, HN_BUCKET_ICON_KEY,
   HN_BUCKET_STORIES_BACKUP_KEY,
   HN_BUCKET_STORIES_KEY,
   HN_ENVIRONMENT_PROFILE_KEY,
@@ -94,6 +94,14 @@ export class HnCoreConfigService {
       accessKeyId: this.configService.get('OBJECT_STORAGE_DEFAULT_ACCESS_KEY_ID'),
       secretAccessKey: this.configService.get('OBJECT_STORAGE_DEFAULT_SECRET_KEY'),
     };
+  }
+
+  public getIconObjectStorageBucket(): string {
+    return this.configService.get(HN_BUCKET_ICON_KEY);
+  }
+
+  public getIconObjectStorageBackupBucket(): string {
+    return this.configService.get(HN_BUCKET_ICON_BACKUP_KEY);
   }
 
   public getDocImageObjectStorageBucket(): string {

@@ -4,7 +4,6 @@ import {HnFolder} from './folder/hn-folder.entity';
 import {HnDocumentation} from './documentation/hn-documentation.entity';
 import {HnNode, HnNodeDTO} from './folder/hn-folder.dto';
 import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
-import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 import {HnBrickAggregateService} from './hn-brick-aggregate.service';
 
 @Controller('folder')
