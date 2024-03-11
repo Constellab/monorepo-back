@@ -1,5 +1,5 @@
-import {Injectable} from '@nestjs/common';
-import {CnExperiment} from './cn-experiment.entity';
+import {Injectable, Logger} from '@nestjs/common';
+import {CnExperiment, CnExperimentProtocol} from './cn-experiment.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {CnCreateLabExperimentDto, CnSaveExperimentResultDTO} from './cn-experiment.dto';
@@ -16,6 +16,7 @@ import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
 
 @Injectable()
 export class CnExperimentsService extends BlAbstractService<CnExperiment> {
+  private readonly logger = new Logger(CnExperimentsService.name);
 
   constructor(@InjectRepository(CnExperiment) private repository: Repository<CnExperiment>,
               private labConfigService: CnLabConfigsService) {
@@ -57,7 +58,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     experiment.description = BlQuillMigrator.migrateOptional(labExperimentDto.description);
     experiment.status = labExperimentDto.status;
     experiment.labConfig = labConfig;
-    experiment.protocol = createLabExperimentDto.protocol;
+    experiment.protocol = this.migrateProtocolFromV1ToV2(createLabExperimentDto.protocol);
 
     experiment.createdBy = labExperimentDto.created_by;
     experiment.createdAt = labExperimentDto.created_at;
@@ -137,5 +138,102 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
 
   public findAll(): Promise<CnExperiment[]> {
     return this.repository.find();
+  }
+
+  public async migrateAllProtocolsFromV1ToV2(): Promise<void> {
+    this.logger.log('[START] Migrating all protocols from V1 to V2');
+
+    const experiments = await this.repository.find();
+
+
+    for (const experiment of experiments) {
+      try {
+        experiment.protocol = this.migrateProtocolFromV1ToV2(experiment.protocol);
+        await this.repository.save(experiment);
+      } catch (error) {
+        this.logger.error(`Error while migrating protocol of experiment '${experiment.id}'. Error : ${error}`);
+      }
+    }
+
+    this.logger.log('[END] Migrating all protocols from V1 to V2');
+  }
+
+  // to keep until all labs are V 0.7.5 or higher
+  public migrateProtocolFromV1ToV2(protocol: CnExperimentProtocol): CnExperimentProtocol {
+    if (protocol.version >= 2) {
+      return protocol;
+    }
+
+    const newProtocolData = this.migrateProcessFromV1ToV2Recur(protocol.data);
+    return {
+      version: 2,
+      data: newProtocolData
+    };
+  }
+
+  private migrateProcessFromV1ToV2Recur(protocol: any): any {
+    if (!protocol.name) {
+      protocol.name = protocol.human_name;
+    }
+
+    protocol.process_type = {
+      human_name: protocol.human_name,
+      short_description: protocol.short_description
+    };
+
+    delete protocol.human_name;
+    delete protocol.short_description;
+
+
+    if (protocol.graph) {
+
+      for (const key in protocol.graph.nodes) {
+        const process = protocol.graph.nodes[key];
+        if (!process.name) {
+          process.name = process.human_name;
+        }
+
+        process.process_type = {
+          human_name: process.human_name,
+          short_description: process.short_description
+        };
+
+        delete process.human_name;
+        delete process.short_description;
+
+        if (process.graph) {
+          this.migrateProcessFromV1ToV2Recur(process);
+        }
+      }
+
+      if (protocol.graph.interfaces) {
+        for (const key in protocol.graph.interfaces) {
+          const inter = protocol.graph.interfaces[key];
+          if (inter.to) {
+            inter.process_instance_name = inter.to.node;
+            inter.port_name = inter.to.port;
+            delete inter.to;
+          }
+          if (inter.from) {
+            delete inter.from;
+          }
+        }
+      }
+
+      if (protocol.graph.outerfaces) {
+        for (const key in protocol.graph.outerfaces) {
+          const outerface = protocol.graph.outerfaces[key];
+          if (outerface.from) {
+            outerface.process_instance_name = outerface.from.node;
+            outerface.port_name = outerface.from.port;
+            delete outerface.from;
+          }
+          if (outerface.to) {
+            delete outerface.to;
+          }
+        }
+      }
+    }
+    return protocol;
   }
 }

@@ -31,7 +31,6 @@ import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {
   BlBadRequestException,
   BlFile,
-  BlQuillMigrator,
   BlRichTextContent,
   BlRichTextI,
   BlRichTextUploadedImage,
@@ -881,67 +880,8 @@ export class CnProjectAggregateService {
     this.eventEmitter.emit(cnProjectEventName, event);
   }
 
-  // TODO MIGRATION TO DELETE
-  public async migrateTextEditors(): Promise<void> {
-    // migrate project descriptions
-    const projects = await this.projectService.findAll();
-    for (const project of projects) {
-      const description: any = project.description;
-      if (description && description.ops) {
-        try {
-          project.description = new BlQuillMigrator(description).migrate();
-          await this.projectService.update(project);
-        } catch (e) {
-          this.logger.error(`Error migrating project description ${project.id}`, e);
-        }
-      }
-    }
-
-    // migrate experiment descriptions
-    const experiments = await this.experimentService.findAll();
-    for (const experiment of experiments) {
-      const description: any = experiment.description;
-      if (description && description.ops) {
-        try {
-          experiment.description = new BlQuillMigrator(description).migrate();
-          await this.experimentService.update(experiment);
-        } catch (e) {
-          this.logger.error(`Error migrating experiment description ${experiment.id}`, e);
-        }
-      }
-    }
-
-    // migrate reports
-    const reports = await this.reportService.findAll();
-    for (const report of reports) {
-      const content: any = report.content;
-      if (content && content.ops) {
-        try {
-          report.content = new BlQuillMigrator(content).migrate();
-          await this.reportService.update(report);
-        } catch (e) {
-          this.logger.error(`Error migrating report ${report.id}`, e);
-        }
-      }
-    }
-  }
-
-  public async migrateConstellabDocumentTextEditors(): Promise<void> {
-    const documents = await this.documentService.findAllConstellabDocuments();
-    for (const document of documents) {
-      try {
-        const doc = await this.documentService.getConstellabDocument(document.project, document);
-
-        if (doc.content && (doc.content as any).ops) {
-          document.oldContent = doc.content as any;
-          await this.documentService.update(document);
-          doc.content = new BlQuillMigrator(doc.content as any).migrate();
-          await this.documentService.updateConstellabDocument(document.project, document, doc.content);
-        }
-      } catch (e) {
-        this.logger.error(`Error migrating document ${document.id}`, e);
-      }
-    }
+  public migrateExperimentProtocols(): Promise<void> {
+    return this.experimentService.migrateAllProtocolsFromV1ToV2();
   }
 
 }
