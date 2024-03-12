@@ -63,6 +63,38 @@ export class HnIconService {
     return this.iconRepository.save(icon);
   }
 
+  async updateIcon(_icon: HnIconCreateDto, file: BlFile): Promise<HnIcon> {
+    if(_icon.id == null)
+      throw new BlNotFoundException('Icon id is missing');
+    const icon: HnIcon = await this.iconRepository.findOneBy({id: _icon.id});
+    if (!icon) {
+      throw new BlNotFoundException('Icon not found');
+    }
+    if (file?.size > 50000)
+      throw new BlNotFoundException('Icon file size is too big');
+
+    icon.subNames = _icon.subNames.split(',');
+    icon.name = _icon.name;
+    icon.technicalName = _icon.technicalName;
+    icon.type = _icon.type;
+
+    if (file == null)
+      return this.iconRepository.save(icon);
+
+    const fileExt = file.originalname.split('.').pop();
+    file.originalname = icon.technicalName + '.' + fileExt;
+
+    const newFileName = await this.objectStorageService.uploadObject([this.getBucketConfig(), this.getBackupBucketConfig()],
+      file, {generateRandomObjectName: false});
+
+    if (newFileName != null) {
+      await this.deleteIconFile(icon.fileName);
+      icon.fileName = newFileName;
+    }
+
+    return this.iconRepository.save(icon);
+  }
+
   async filterIcons(subNameFilter: string, page: number, size: number): Promise<ClPage<HnIcon>> {
     return await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
       where: {
@@ -79,8 +111,12 @@ export class HnIconService {
     if (!icon) {
       throw new BlNotFoundException('Icon not found');
     }
-    await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], icon.fileName);
+    await this.deleteIconFile(icon.fileName);
     return (await this.iconRepository.delete({id: id})) != null;
+  }
+
+  async deleteIconFile(fileName: string): Promise<void>{
+    await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], fileName);
   }
 
 

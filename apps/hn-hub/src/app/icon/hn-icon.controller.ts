@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   Req,
   Res,
@@ -69,6 +70,15 @@ export class HnIconController {
                     @Query('page', new ParseIntPipe()) page: number,
                     @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnIcon>> {
     return await this.iconService.filterIcons(subNameFilter, page, size);
+  }
+
+  @IsAdmin()
+  @UseInterceptors(FileInterceptor('file'))
+  @Put()
+  async updateIcon(@BlUploadedFile() file: BlFile,
+                   @Body('icon') iconStr: string): Promise<HnIcon> {
+    const icon: HnIconCreateDto = JSON.parse(iconStr);
+    return await this.iconService.updateIcon(icon, file);
   }
 
   @IsAdmin()
