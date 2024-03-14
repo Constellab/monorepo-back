@@ -108,22 +108,55 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
       spaceId: spaceId,
     };
 
-    const userWhere: FindOptionsWhere<CnGroupSingleUser> = {
-      userId: In(userIds),
-    };
-
+    let userWheres: FindOptionsWhere<CnGroupSingleUser>[] = [];
     if(!ClHelpService.isNullOrEmpty(label)){
       teamWhere.label = Like(`%${label}%`);
-      userWhere.label = Like(`%${label}%`);
+
+      // search user by name in the list of provided user
+      const userNameFilters = this.getSmartSearchNameFilters(label);
+      userWheres = userNameFilters.map((filter) => {
+        return {
+          userId: In(userIds),
+          user: filter
+        };
+      });
+    }else{
+      userWheres = [{userId: In(userIds)}];
     }
 
     return this.findPaginated(page, size, {
-      where: [teamWhere, userWhere],
+      where: [teamWhere, ...userWheres],
       order: {
         type: 'DESC', // have TEAM before SINGLE_USER
         label: 'ASC',
       }
     });
+  }
+
+  private getSmartSearchNameFilters(name: string): FindOptionsWhere<CnUser>[] {
+    const findByFirstNameOrLastName: FindOptionsWhere<CnUser>[] = [
+      {lastname: Like(`%${name}%`)},
+      {firstname: Like(`%${name}%`)}
+    ];
+
+    if (!name.includes(' ')) {
+      return findByFirstNameOrLastName;
+    }
+
+    // if there are 2 words, search by lastname and firstname
+    // if nothing is found, search by lastname or firstname
+    const names = name.split(' ');
+    if (names.length === 2) {
+      return [{
+        lastname: Like(`%${names[0]}%`),
+        firstname: Like(`%${names[1]}%`)
+      }, {
+        lastname: Like(`%${names[1]}%`),
+        firstname: Like(`%${names[0]}%`)
+      }];
+    }
+
+    return findByFirstNameOrLastName;
   }
 
   ////////////////////////////////// TEAMS /////////////////////////
