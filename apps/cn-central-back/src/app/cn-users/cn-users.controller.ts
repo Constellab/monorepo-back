@@ -56,20 +56,11 @@ export class CnUsersController {
     return this.usersService.saveNewPhoto(file, userId);
   }
 
-  // TODO remove when community is not using it anymore
-  @BlPublic()
-  @Get('photo/:userId')
-  public async getUserPhoto(@Param('userId') userId: string,
-                            @Res() response: Response): Promise<any> {
-    const file = await this.usersService.getUserPhoto(userId);
-    BlResponseHelper.setMessage(response, file);
-  }
-
   @BlPublic()
   @Get('photo-v2/:photoId')
-  public async getUserPhotoV2(@Param('photoId') photoId: string,
-                              @Res() response: Response): Promise<any> {
-    const file = await this.usersService.getUserPhotoV2(photoId);
+  public async getUserPhoto(@Param('photoId') photoId: string,
+                            @Res() response: Response): Promise<any> {
+    const file = await this.usersService.getUserPhoto(photoId);
     BlResponseHelper.setMessageAndCache(response, file);
   }
 

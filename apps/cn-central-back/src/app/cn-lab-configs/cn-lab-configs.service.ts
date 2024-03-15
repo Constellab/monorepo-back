@@ -193,19 +193,6 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
         version: brick.version,
       });
     }
-
-    // TODO TO REMOVE ONCE LABS ARE UPDATED
-    for (const env of [...configFile.environment?.pip ?? [], ...configFile.environment?.git ?? []]) {
-      for (const brick of env.packages) {
-        if (brick.is_brick) {
-          config.brickVersions.push({
-            name: brick.name,
-            version: brick.version,
-          });
-        }
-      }
-    }
-
     return config;
   }
 

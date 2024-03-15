@@ -113,12 +113,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     }
   }
 
-  async getUserPhoto(userId: string): Promise<IncomingMessage> {
-    const user: CnUser = await this.findByIdAndCheck(userId);
-    return this.objectStorageService.getObject(this.getUserProfilePhotoBucketConfig(), user.photo);
-  }
-
-  async getUserPhotoV2(photoId: string): Promise<IncomingMessage> {
+  async getUserPhoto(photoId: string): Promise<IncomingMessage> {
     return this.objectStorageService.getObject(this.getUserProfilePhotoBucketConfig(), photoId);
   }
 

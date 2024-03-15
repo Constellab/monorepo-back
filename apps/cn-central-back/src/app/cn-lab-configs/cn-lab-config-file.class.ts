@@ -31,6 +31,5 @@ export interface CnConfigFileEnvRepository {
 export interface CnConfigFileEnvPackage {
   name: string;
   version: string; // version supported by pip, can be empty, ==2.0 or >=2.1
-  is_brick: boolean;
 }
 
