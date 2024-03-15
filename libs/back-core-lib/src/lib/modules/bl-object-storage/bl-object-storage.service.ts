@@ -52,9 +52,6 @@ export interface BlObjectStorageUploadOptions {
 @Injectable()
 export class BlObjectStorageService {
 
-  constructor() {
-  }
-
   public generateRandomFileNameFromExtension(extension: string): string {
     return ClStringHelper.generateUUID() + '_' + new Date().getTime() + '.' + extension;
   }

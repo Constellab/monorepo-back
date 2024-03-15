@@ -1,17 +1,9 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {CnProject} from './cn-project.entity';
 import {CnBucket, CnBucketContentType, CnBucketLocationDTO} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
-import {
-  BlBadRequestException,
-  BlBucketConfig,
-  BlFile,
-  BlImageHelper,
-  BlObjectStorageService,
-  BlRichTextUploadedImage
-} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlBucketConfig} from '@monorepo/back-core-lib';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
 import {CnObjectStoragesAggregateService} from '../../cn-object-storages/cn-object-storages-aggregate.service';
-import {IncomingMessage} from 'http';
 import {CnProjectBucketsDTO} from './cn-project.dto';
 import {CnProjectsService} from './cn-projects.service';
 import {ClPage} from '@monorepo/core-lib';
@@ -39,7 +31,6 @@ export class CnProjectBucketService {
   private static readonly REPORT_BUCKET_PREFIX = 'report_contents';
 
   constructor(private objectStorageAggregateService: CnObjectStoragesAggregateService,
-              private objectStorageService: BlObjectStorageService,
               private projectService: CnProjectsService) {
   }
 
@@ -130,28 +121,4 @@ export class CnProjectBucketService {
     return buckets.map((bucket) => bucket.getBucketLocation());
   }
 
-  /////////////////////////////////////////// DESCRIPTION ///////////////////////////////////////////
-  public async saveDescriptionImage(project: CnProject, file: BlFile): Promise<BlRichTextUploadedImage> {
-    const bucketConfig = await this.getAndCheckProjectBucketConfig(project.getRootParentId());
-
-    const imSize = BlImageHelper.getImageSize(file);
-
-    const prefix = CnProjectBucketService.getPrefix(project, 'DESCRIPTION');
-    const filename = this.objectStorageService.generateRandomFileNameFromExtension(imSize.type);
-
-    await this.objectStorageService.uploadObject(bucketConfig, file,
-      {filename: filename, prefix: prefix});
-
-    return {
-      filename: filename,
-      width: imSize.width,
-      height: imSize.height
-    };
-  }
-
-  public async getDescriptionImage(project: CnProject, filename: string): Promise<IncomingMessage> {
-    const bucketConfig = await this.getAndCheckProjectMainBucketConfig(project.getRootParentId());
-    const prefix = CnProjectBucketService.getPrefix(project, 'DESCRIPTION');
-    return this.objectStorageService.getObject(bucketConfig, prefix + '/' + filename);
-  }
 }

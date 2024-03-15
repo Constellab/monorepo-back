@@ -1,33 +1,32 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {CnReport} from './cn-report.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import {DataSource, Repository} from 'typeorm';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
 import {
   BlAbstractService,
   BlBadRequestException,
-  BlBucketConfig,
   BlFile,
-  BlFileHelper,
-  BlObjectStorageService,
-  BlQuillMigrator
+  BlQuillMigrator,
+  BlRichTextContent
 } from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
 import {CnCreateReportWithConfigDto, CnSaveReportDto, CnSaveReportResultDTO} from './cn-report.dto';
 import {CnReportContent, CnReportViewConfig} from './cn-report-content.class';
 import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
-import {CnProjectBucketService} from '../cn-projects/cn-project-bucket.service';
+import {CnProjectDocumentService} from '../cn-project-documents/cn-project-document.service';
+import {CnProjectDocument, CnProjectDocumentType} from '../cn-project-documents/cn-project-document.entity';
 
 @Injectable()
 export class CnReportsService extends BlAbstractService<CnReport> {
   protected readonly logger = new Logger(CnReportsService.name);
 
   constructor(@InjectRepository(CnReport) private repository: Repository<CnReport>,
-              private objectStorageService: BlObjectStorageService,
               private labConfigService: CnLabConfigsService,
-              private projectBucketService: CnProjectBucketService) {
+              private projectDocumentService: CnProjectDocumentService,
+              private datasource: DataSource) {
     super(repository, CnReport);
   }
 
@@ -50,10 +49,27 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     });
   }
 
-  async saveReport(createReportDto: CnCreateReportWithConfigDto, experiments: CnExperiment[],
-                   project: CnProject, buckets: BlBucketConfig[], files: BlFile[]): Promise<CnSaveReportResultDTO> {
+  public async getReportContent(project: CnProject, id: string): Promise<BlRichTextContent> {
+    const report = await this.findById(id, {document: true});
+    return this.projectDocumentService.getJSONDocumentContent(project, report.document);
+  }
 
-    const reportDb: CnReport = await this.findById(createReportDto.report.id);
+
+  async getImage(filename: string, project: CnProject): Promise<IncomingMessage> {
+    return await this.projectDocumentService.getDocumentContentByTypeAndName(project,
+      CnProjectDocumentType.REPORT_CONTENT, filename);
+  }
+
+  async getView(viewId: string, project: CnProject): Promise<IncomingMessage> {
+    return await this.projectDocumentService.getDocumentContentByTypeAndName(project,
+      CnProjectDocumentType.REPORT_CONTENT, viewId + '.json');
+  }
+
+
+  async saveReport(createReportDto: CnCreateReportWithConfigDto, experiments: CnExperiment[],
+                   project: CnProject, files: BlFile[]): Promise<CnSaveReportResultDTO> {
+
+    let reportDb: CnReport = await this.findById(createReportDto.report.id, {document: true});
     if (reportDb && reportDb.projectId !== project.id) {
       throw new BlBadRequestException('Can\'t change the project of a synced report');
     }
@@ -61,17 +77,8 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     // retrieve the lab config
     const labConfig = await this.labConfigService.getOrCreateLabConfig(createReportDto.lab_config);
 
+    // copy fields of the report DTO to report
     const reportDto: CnSaveReportDto = createReportDto.report;
-    const content = BlQuillMigrator.migrateOptional(reportDto.content);
-    const richText = new CnReportContent(content);
-
-    const prefix = CnProjectBucketService.getPrefix(project, 'REPORT_CONTENTS', reportDto.id);
-
-    if (files != null || createReportDto.resource_views != null) {
-      await this.loadReportImages(richText, buckets, files, prefix);
-      await this.loadReportViews(richText, buckets, createReportDto.resource_views, prefix);
-    }
-
     const report = new CnReport();
     report.id = reportDto.id;
     report.createdAt = reportDto.created_at;
@@ -79,7 +86,6 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     report.lastModifiedAt = reportDto.last_modified_at;
     report.lastModifiedBy = reportDto.last_modified_by;
     report.title = reportDto.title;
-    report.content = richText.getContent();
     report.project = project;
     report.experiments = experiments;
     report.labConfig = labConfig;
@@ -93,24 +99,105 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     report.lastSyncAt = reportDto.last_sync_at;
     report.lastSyncBy = reportDto.last_sync_by;
 
+    let mode: 'create' | 'update';
     if (reportDb) {
-      const rep = await this.updateWithCompare(report, reportDb);
-      return {
-        mode: 'update',
-        report: rep
-      };
+      reportDb = await this.updateWithCompare(report, reportDb);
+      mode = 'update';
     } else {
       report.labInstance = CnCurrentUserHelper.getCurrentLabInstance();
-      const rep = await this.create(report);
-      return {
-        mode: 'create',
-        report: rep
-      };
+      reportDb = await this.create(report);
+      mode = 'create';
+    }
+
+    // update the content of the report
+    reportDb = await this.saveReportContent(reportDb, project, createReportDto, files);
+    return {
+      mode: mode,
+      report: reportDb
+    };
+  }
+
+  /**
+   * Method to store the report content in the object storage. Then manage the images and the views
+   */
+  private async saveReportContent(report: CnReport, project: CnProject,
+                                  createReportDto: CnCreateReportWithConfigDto, files: BlFile[]): Promise<CnReport> {
+    const content = BlQuillMigrator.migrateOptional(createReportDto.report.content);
+    const richText = new CnReportContent(content);
+
+    let reportDocument: CnProjectDocument;
+    // if the document already exists, we update it
+    if (report.document) {
+      reportDocument = await this.projectDocumentService.updateJSONDocument(project, report.document,
+        richText.getContent());
+    } else {
+      // TODO check if a report with the same name exists
+      // or use the id as doc Name
+      reportDocument = await this.projectDocumentService.createJSONDocument(project,
+        CnProjectDocumentType.REPORT, report.title, report.id, richText.getContent());
+    }
+
+    // store document reference in the report
+    report.document = reportDocument;
+    report = await this.updatePartial(report.id, {document: reportDocument});
+
+    // manage the images and views of the report
+    if (files != null || createReportDto.resource_views != null) {
+      await this.uploadReportImages(files, report.id, reportDocument, project);
+      await this.uploadReportViews(richText, createReportDto.resource_views, report.id, reportDocument, project);
+    }
+
+    return report;
+  }
+
+  /**
+   * Methode to store the images of the report in the object storage
+   */
+  private async uploadReportImages(files: BlFile[], reportId: string, parentDocument: CnProjectDocument,
+                                   project: CnProject): Promise<void> {
+    if (!files) return;
+    for (const file of files) {
+      await this.uploadReportImage(file, reportId, parentDocument, project);
+    }
+  }
+
+  private async uploadReportImage(file: BlFile, reportId: string, parentDocument: CnProjectDocument,
+                                  project: CnProject): Promise<void> {
+    const filename = file.originalname;
+    const document =
+      this.projectDocumentService.findDocumentByProjectAndTypeAndName(project.id, CnProjectDocumentType.REPORT_CONTENT, filename);
+
+    // upload the image only if it does not exist
+    if (!document) {
+      await this.projectDocumentService.uploadImageDocument(file, project, CnProjectDocumentType.REPORT_CONTENT,
+        reportId, filename, parentDocument);
+    }
+  }
+
+  /**
+   * Method to load the resource view of the report and store them in the object storage
+   */
+  private async uploadReportViews(richText: CnReportContent,
+                                  resourceViews: Record<string, any>,
+                                  reportId: string,
+                                  parentDocument: CnProjectDocument,
+                                  project: CnProject): Promise<void> {
+
+    for (const specialOp of richText.getViewsBlocks()) {
+      const viewConfig: CnReportViewConfig = specialOp.data;
+
+      const viewData = resourceViews[viewConfig.id];
+
+      if (!viewData) continue;
+
+      const docName = `${viewConfig.id}.json`;
+      await this.projectDocumentService.createOrUpdateJSONDocument(project, CnProjectDocumentType.REPORT_CONTENT,
+        docName, reportId, viewData, parentDocument);
     }
   }
 
   public async deleteReport(id: string): Promise<CnReport> {
-    const report = await this.findById(id);
+    const report = await this.findById(id, {document: true});
 
     // no error if report not found for more resilience
     if (!report) {
@@ -120,7 +207,14 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     if (report.isValidated) {
       throw new BlBadRequestException('Can\'t delete a validated report');
     }
-    await this.deleteById(id);
+
+    await this.datasource.transaction(async (entityManager) => {
+      await this.deleteById(id, entityManager);
+
+      if (report.document) {
+        await this.projectDocumentService.deleteDocument(report.document.id, entityManager);
+      }
+    });
 
     return report;
   }
@@ -129,19 +223,10 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     return this.findByIdAndCheck(id, {experiments: true});
   }
 
-  async getImage(filename: string, project: CnProject, reportId: string): Promise<IncomingMessage> {
-    const prefix = CnProjectBucketService.getPrefix(project, 'REPORT_CONTENTS', reportId);
-    const filePath = `${prefix}/${filename}`;
-    return await this.objectStorageService.getObject(await this.getBucketConfig(project.getRootParentId()), filePath);
-  }
-
-  async getView(filename: string, project: CnProject, reportId: string): Promise<IncomingMessage> {
-    const prefix = CnProjectBucketService.getPrefix(project, 'REPORT_CONTENTS', reportId);
-    const filePath = `${prefix}/${filename}`;
-    return await this.objectStorageService.getObject(await this.getBucketConfig(project.getRootParentId()), filePath);
-  }
-
-  public async getCurrentUserVCreatedReport(): Promise<CnReport[]> {
+  /**
+   * Get all the reports created by the current user
+   */
+  public async getCurrentUserCreatedReport(): Promise<CnReport[]> {
     const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
 
     return this.repository.find({
@@ -156,47 +241,72 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     });
   }
 
+  // TODO TO REMOVE
+  public async findAll(): Promise<CnReport[]> {
+    return this.repository.find({
+      relations: {
+        project: true,
+        document: true
+      }
+    });
+  }
 
-  /**
-   * Methode to store the images of the report in the object storage
-   */
-  private async loadReportImages(richText: CnReportContent, buckets: BlBucketConfig[],
-                                 files: BlFile[], prefix: string): Promise<void> {
-    if (!files) return;
-    for (const file of files) {
-      const filename = this.objectStorageService.generateRandomFileName(file.originalname);
-      await this.objectStorageService.uploadObject(buckets, file, {filename: filename, prefix: prefix});
+  public async migrateReport(report: CnReport): Promise<void> {
+    let reportDocument: CnProjectDocument;
+    // if the document already exists, we update it
+    if (!report.document) {
+      // TODO check if a report with the same name exists
+      // or use the id as doc Name
+      reportDocument = await this.projectDocumentService.createJSONDocument(report.project,
+        CnProjectDocumentType.REPORT, report.title, report.id, report.content);
 
-      richText.updateFigureBlock(file.originalname, {filename: filename});
+      // store document reference in the report
+      report.document = reportDocument;
+      report = await this.updatePartial(report.id, {document: reportDocument});
+    } else {
+      reportDocument = report.document;
     }
-  }
 
-  /**
-   * Method to load the resource view of the report and store them in the object storage
-   */
-  private async loadReportViews(richText: CnReportContent, buckets: BlBucketConfig[],
-                                resourceViews: Record<string, any>,
-                                prefix: string): Promise<void> {
+    if (report.content) {
+      const richText = new CnReportContent(report.content);
 
-    for (const specialOp of richText.getViewsBlocks()) {
-      const viewConfig: CnReportViewConfig = specialOp.data;
+      // migrate views
+      for (const viewBlock of richText.getViewsBlocks()) {
+        try {
 
-      const viewData = resourceViews[viewConfig.id];
+          const viewDocument = await this.projectDocumentService.findDocumentByProjectAndTypeAndName(report.project.id,
+            CnProjectDocumentType.REPORT_CONTENT,
+            viewBlock.data.id + '.json');
 
-      // upload the json
-      const filePath = await this.objectStorageService.uploadJson(
-        buckets, viewData, {prefix});
+          if (!viewDocument) {
+            const document = new CnProjectDocument();
+            document.name = viewBlock.data.id + '.json';
+            document.filename = viewBlock.data.filename;
+            document.mimeType = 'application/json';
+            document.project = report.project;
+            document.projectId = report.project.id;
+            document.type = CnProjectDocumentType.REPORT_CONTENT;
+            document.entityId = report.id;
+            document.inTrash = false;
+            document.parentDocument = reportDocument;
+            document.size = await this.projectDocumentService.getFileSize(report.project, document);
 
-      // and save the filename in the content
-      specialOp.data.filename = BlFileHelper.extractFilenameFromFullPath(filePath);
+            await this.repository.save(document);
+          }
+        } catch (e) {
+          this.logger.error(`Error while migrating view ${viewBlock.data.id} of report ${report.id} `, e);
+        }
+      }
+
+      // migrate images
+      for (const imageBlock of richText.getFiguresBlocks()) {
+        try {
+          await this.projectDocumentService.migrateImageContent(imageBlock.data.filename,
+            report.project, CnProjectDocumentType.REPORT_CONTENT, report.id, reportDocument);
+        } catch (e) {
+          this.logger.error(`Error while migrating image ${imageBlock.data.filename} of report ${report.id} `, e);
+        }
+      }
     }
-  }
-
-  private async getBucketConfig(projectId: string): Promise<BlBucketConfig> {
-    return await this.projectBucketService.getAndCheckProjectMainBucketConfig(projectId);
-  }
-
-  public findAll(): Promise<CnReport[]> {
-    return this.repository.find();
   }
 }

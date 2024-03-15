@@ -12,8 +12,7 @@ export class CnReportsController {
 
   @Get(':id/content')
   async getReportContent(@Param('id', new ParseUUIDPipe()) id: string): Promise<BlRichTextContent> {
-    const report = await this.findById(id);
-    return report.content;
+    return await this.projectAggregator.findReportContent(id);
   }
 
   @Get(':id')

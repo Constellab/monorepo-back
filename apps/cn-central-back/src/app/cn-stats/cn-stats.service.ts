@@ -25,7 +25,7 @@ export class CnStatsService {
     stats.teamsNumber = (await this.groupService.getAllTeamsByUserAndSpace(currentUserInfo.userId, currentUserInfo.spaceId)).length;
     stats.runningLabNumber = (await this.labInstanceService.getCurrentRunningLabInstances()).length;
     stats.validatedExperimentNumber = (await this.experimentService.getCurrentUserCreatedExperiment()).length;
-    stats.validatedReportNumber = (await this.reportService.getCurrentUserVCreatedReport()).length;
+    stats.validatedReportNumber = (await this.reportService.getCurrentUserCreatedReport()).length;
 
     return stats;
   }

@@ -20,6 +20,7 @@ import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
 import {CnConstellabDocument} from './cn-document-dto.class';
 import {CnProjectBucketService} from '../cn-projects/cn-project-bucket.service';
 
+// TODO TO REMOVE ONCE MIGRATION IS DONE
 @Injectable()
 export class CnDocumentsService extends BlAbstractService<CnDocument> {
 
@@ -204,7 +205,7 @@ export class CnDocumentsService extends BlAbstractService<CnDocument> {
     return await this.repo.save(document);
   }
 
-  public findAllConstellabDocuments(): Promise<CnDocument[]> {
-    return this.repo.find({where: {isConstellabDocument: true}, relations: {project: true}});
+  public findAll(): Promise<CnDocument[]> {
+    return this.repo.find({relations: {project: true}});
   }
 }
