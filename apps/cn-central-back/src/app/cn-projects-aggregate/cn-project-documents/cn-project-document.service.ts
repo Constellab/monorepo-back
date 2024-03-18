@@ -52,7 +52,8 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
     if (documentName) {
 
-      const existingDocument = await this.findDocumentByProjectAndTypeAndName(project.id, documentType, documentName);
+      const existingDocument = await this.findDocumentByProjectAndTypeAndName(project.id, documentType,
+        documentName, entityId);
       if (existingDocument) {
         throw new BlBadRequestException(CnErrorText.DOCUMENT_ALREADY_EXIST);
       }
@@ -74,9 +75,8 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       if (bucketConfig.some(b => b.bucketType === 'LAB')) {
         document.filename = file.originalname;
       } else {
-        // TODO tester l'extension des images et capture d'écran
         // otherwise this is a cloud bucket where every file is so we need to generate a random name
-        document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(file.originalname));
+        document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(documentName));
       }
 
       const dbDocument = await entityManager.save(document);
@@ -93,15 +93,16 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
                                    entityId: string,
                                    documentName?: string,
                                    parentDocument?: CnProjectDocument): Promise<BlRichTextUploadedImage> {
+    const imSize = BlImageHelper.getImageSize(file);
+    if (!documentName) {
+      documentName = this.objectStorageService.generateRandomFileNameFromExtension(imSize.type);
+    }
     const imageDoc = await this.uploadDocument(file, project,
       documentType, entityId, documentName, parentDocument);
 
-    // TODO TO CHECK IF USEFULE
-    const imSize = BlImageHelper.getImageSize(file);
-    // const filename = this.objectStorageService.generateRandomFileNameFromExtension(imSize.type);
 
     return {
-      filename: imageDoc.filename,
+      filename: imageDoc.name,
       height: imSize.height,
       width: imSize.width,
     };
@@ -109,8 +110,9 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
 
   async getDocumentContentByTypeAndName(project: CnProject, documentType: CnProjectDocumentType,
-                                        documentName: string): Promise<IncomingMessage> {
-    const document = await this.findDocumentByProjectAndTypeAndName(project.id, documentType, documentName);
+                                        documentName: string, entityId: string): Promise<IncomingMessage> {
+    const document = await this.findDocumentByProjectAndTypeAndName(project.id, documentType,
+      documentName, entityId);
 
     if (document == null) {
       throw new BlBadRequestException('Document not found');
@@ -125,7 +127,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     const document = await this.findByIdAndCheck(id, {project: true});
 
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(document.project.getRootParentId());
-    if (!document.inTrash) {
+    if (document.documentTypeSupportsTrash() && !document.inTrash) {
       throw new BlBadRequestException('Document is not in trash, please move it to trash first');
     }
 
@@ -157,9 +159,18 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     return this.repo.save(document);
   }
 
+  /**
+   * Find the document based on its type, project and name.
+   * Using the entityId make sure that the requested document is associated to the entity and so
+   * this prevents access to a document of another entity
+   * @param projectId
+   * @param type
+   * @param name
+   * @param entityId
+   */
   async findDocumentByProjectAndTypeAndName(projectId: string, type: CnProjectDocumentType,
-                                            name: string): Promise<CnProjectDocument | null> {
-    return this.repo.findOne({where: {projectId: projectId, type: type, name: name}});
+                                            name: string, entityId: string): Promise<CnProjectDocument | null> {
+    return this.repo.findOne({where: {projectId: projectId, type: type, name: name, entityId: entityId}});
   }
 
   public findDocumentsByProject(projectId: string): Promise<CnProjectDocument[]> {
@@ -243,7 +254,8 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   public async createOrUpdateJSONDocument(project: CnProject, type: CnProjectDocumentType,
                                           documentName: string, entityId: string, content: any,
                                           parentDocument?: CnProjectDocument): Promise<CnProjectDocument> {
-    const document = await this.findDocumentByProjectAndTypeAndName(project.id, type, documentName);
+    const document = await this.findDocumentByProjectAndTypeAndName(project.id, type,
+      documentName, entityId);
 
     if (document) {
       return this.updateJSONDocument(project, document, content);
@@ -346,7 +358,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
                                    entityId: string,
                                    parentDocument?: CnProjectDocument): Promise<CnProjectDocument> {
     const imageDocument = await this.findDocumentByProjectAndTypeAndName(project.id,
-      CnProjectDocumentType.REPORT_CONTENT, filename);
+      documentType, filename, entityId);
 
     if (!imageDocument) {
       const document = new CnProjectDocument();

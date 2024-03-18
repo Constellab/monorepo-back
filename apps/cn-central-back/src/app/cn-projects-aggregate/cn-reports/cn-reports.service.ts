@@ -55,14 +55,14 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   }
 
 
-  async getImage(filename: string, project: CnProject): Promise<IncomingMessage> {
+  async getImage(filename: string, project: CnProject, reportId: string): Promise<IncomingMessage> {
     return await this.projectDocumentService.getDocumentContentByTypeAndName(project,
-      CnProjectDocumentType.REPORT_CONTENT, filename);
+      CnProjectDocumentType.REPORT_CONTENT, filename, reportId);
   }
 
-  async getView(viewId: string, project: CnProject): Promise<IncomingMessage> {
+  async getView(viewId: string, project: CnProject, reportId: string): Promise<IncomingMessage> {
     return await this.projectDocumentService.getDocumentContentByTypeAndName(project,
-      CnProjectDocumentType.REPORT_CONTENT, viewId + '.json');
+      CnProjectDocumentType.REPORT_CONTENT, viewId + '.json', reportId);
   }
 
 
@@ -131,7 +131,6 @@ export class CnReportsService extends BlAbstractService<CnReport> {
       reportDocument = await this.projectDocumentService.updateJSONDocument(project, report.document,
         richText.getContent());
     } else {
-      // TODO check if a report with the same name exists
       // or use the id as doc Name
       reportDocument = await this.projectDocumentService.createJSONDocument(project,
         CnProjectDocumentType.REPORT, report.title, report.id, richText.getContent());
@@ -165,7 +164,8 @@ export class CnReportsService extends BlAbstractService<CnReport> {
                                   project: CnProject): Promise<void> {
     const filename = file.originalname;
     const document =
-      this.projectDocumentService.findDocumentByProjectAndTypeAndName(project.id, CnProjectDocumentType.REPORT_CONTENT, filename);
+      this.projectDocumentService.findDocumentByProjectAndTypeAndName(project.id, CnProjectDocumentType.REPORT_CONTENT,
+        filename, reportId);
 
     // upload the image only if it does not exist
     if (!document) {
@@ -255,7 +255,6 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     let reportDocument: CnProjectDocument;
     // if the document already exists, we update it
     if (!report.document) {
-      // TODO check if a report with the same name exists
       // or use the id as doc Name
       reportDocument = await this.projectDocumentService.createJSONDocument(report.project,
         CnProjectDocumentType.REPORT, report.title, report.id, report.content);
@@ -274,9 +273,11 @@ export class CnReportsService extends BlAbstractService<CnReport> {
       for (const viewBlock of richText.getViewsBlocks()) {
         try {
 
-          const viewDocument = await this.projectDocumentService.findDocumentByProjectAndTypeAndName(report.project.id,
+          const viewDocument = await this.projectDocumentService.findDocumentByProjectAndTypeAndName(
+            report.project.id,
             CnProjectDocumentType.REPORT_CONTENT,
-            viewBlock.data.id + '.json');
+            viewBlock.data.id + '.json',
+            report.id);
 
           if (!viewDocument) {
             const document = new CnProjectDocument();
@@ -291,10 +292,10 @@ export class CnReportsService extends BlAbstractService<CnReport> {
             document.parentDocument = reportDocument;
             document.size = await this.projectDocumentService.getFileSize(report.project, document);
 
-            await this.repository.save(document);
+            await this.projectDocumentService.save(document);
           }
         } catch (e) {
-          this.logger.error(`Error while migrating view ${viewBlock.data.id} of report ${report.id} `, e);
+          this.logger.error(`Error while migrating view ${viewBlock.data.id} of report ${report.id}. ${e}`);
         }
       }
 
@@ -304,7 +305,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
           await this.projectDocumentService.migrateImageContent(imageBlock.data.filename,
             report.project, CnProjectDocumentType.REPORT_CONTENT, report.id, reportDocument);
         } catch (e) {
-          this.logger.error(`Error while migrating image ${imageBlock.data.filename} of report ${report.id} `, e);
+          this.logger.error(`Error while migrating image ${imageBlock.data.filename} of report ${report.id}. ${e}`);
         }
       }
     }
