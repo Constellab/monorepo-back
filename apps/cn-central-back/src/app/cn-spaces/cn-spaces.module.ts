@@ -15,6 +15,7 @@ import {CnCoreModule} from '../cn-core/cn-core.module';
 import {CnSpacesMailService} from './cn-spaces-mail.service';
 import {CnObjectStoragesModule} from '../cn-object-storages/cn-object-storages.module';
 import {CnProjectDocumentModule} from '../cn-projects-aggregate/cn-project-documents/cn-project-document.module';
+import {CnSpaceListener} from './cn-space.listener';
 
 /**
  * Module to manage spaces
@@ -39,6 +40,7 @@ import {CnProjectDocumentModule} from '../cn-projects-aggregate/cn-project-docum
     CnSpaceUserService,
     CnSpaceInvitService,
     CnSpacesMailService,
+    CnSpaceListener,
   ],
   exports: [
     CnSpaceAggregateService,

@@ -85,11 +85,11 @@ export class CnSpaceAggregateService {
     space.name = entity.name;
     space.nbLicenses = CnSpaceAggregateService.DEFAULT_NB_LICENSES;
     space.storageLimit = CnSpaceAggregateService.DEFAULT_STORAGE_LIMIT;
+    space.storageUsage = 0;
     space.defaultProjectBucket = bucketStorage.defaultProjectBucket;
     space.defaultProjectBackupBucket = bucketStorage.defaultProjectBackupBucket;
 
     await this.datasource.transaction(async (entityManager: EntityManager) => {
-
       space = await this.spaceService.createBasicSpace(space, entityManager);
 
       const user = CnCurrentUserHelper.getAndCheckCurrentUser();
@@ -187,10 +187,13 @@ export class CnSpaceAggregateService {
       defaultProjectBackupBucket: CnBucket.configRelation
     });
 
-    const usage = await this.projectDocumentService.getSpaceStorageSize(space.id);
-
-    return new CnSpaceStorage(space.storageLimit, usage, space.defaultProjectBucket.getBucketLocation(),
+    return new CnSpaceStorage(space.storageLimit, space.storageUsage, space.defaultProjectBucket.getBucketLocation(),
       space.defaultProjectBackupBucket?.getBucketLocation() ?? null);
+  }
+
+  public async refreshSpaceStorageUsage(spaceId: string): Promise<void> {
+    const storageUsage = await this.projectDocumentService.getSpaceStorageSize(spaceId);
+    await this.spaceService.updatePartial(spaceId, {storageUsage: storageUsage});
   }
 
   public async getCurrentSpaceStorageUsageDetail(): Promise<CnProjectStorageUsageDTO> {
@@ -513,6 +516,14 @@ export class CnSpaceAggregateService {
     }
 
     throw new BlBadRequestException(CnErrorText.USER_NOT_IN_SPACE);
+  }
+
+  // TODO TO REMOVE, MIGRATION
+  public async refreshSpacesStorage(): Promise<void> {
+    const spaces = await this.spaceService.getAll(0, 1000);
+    for (const space of spaces.objects) {
+      await this.refreshSpaceStorageUsage(space.id);
+    }
   }
 
 }

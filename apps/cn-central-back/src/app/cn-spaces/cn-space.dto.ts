@@ -4,7 +4,6 @@ import {CnSpaceInvit} from './cn-space-invit.entity';
 import {CnSpace} from './cn-space.entity';
 import {Type} from 'class-transformer';
 import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
-import {CnProjectStorageUsageDTO} from '../cn-projects-aggregate/cn-project-documents/cn-project-document-dto.class';
 
 
 export class CnCreateSpaceDTO {
@@ -66,16 +65,5 @@ export class CnSpaceStorage {
     this.storageUsage = storageUsage;
     this.defaultProjectStorageLocation = defaultProjectStorageLocation;
     this.defaultBackupProjectStorageLocation = defaultBackupProjectStorageLocation;
-  }
-}
-
-export class CnSpaceStorageUsageDetail {
-  storageLimit: number;
-
-  detail: CnProjectStorageUsageDTO;
-
-  constructor(diskLimit: number, detail: CnProjectStorageUsageDTO) {
-    this.storageLimit = diskLimit;
-    this.detail = detail;
   }
 }

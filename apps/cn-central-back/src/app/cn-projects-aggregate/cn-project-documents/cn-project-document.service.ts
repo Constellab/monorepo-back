@@ -24,6 +24,13 @@ import {
   CnProjectStorageUsageDTO
 } from './cn-project-document-dto.class';
 import {CnDocument} from '../cn-documents/cn-document.entity';
+import {EventEmitter2} from '@nestjs/event-emitter';
+import {
+  CnProjectDocumentEvent,
+  cnProjectDocumentEventName,
+  CnProjectDocumentEventType
+} from './cn-project-document.event';
+import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 
 @Injectable()
 export class CnProjectDocumentService extends BlAbstractService<CnProjectDocument> {
@@ -31,7 +38,8 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   constructor(@InjectRepository(CnProjectDocument) private repository: Repository<CnProjectDocument>,
               private objectStorageService: BlObjectStorageService,
               private projectBucketService: CnProjectBucketService,
-              private datasource: DataSource) {
+              private datasource: DataSource,
+              private eventEmitter: EventEmitter2) {
     super(repository, CnProjectDocument);
   }
 
@@ -52,6 +60,9 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
                               entityId: string,
                               documentName?: string,
                               parentDocument?: CnProjectDocument): Promise<CnProjectDocument> {
+    // check if the space storage is not full, consider si of this document as 0
+    this.checkIfStorageIsFull(file.size);
+
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
     if (documentName) {
@@ -65,7 +76,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       documentName = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(file.originalname));
     }
 
-    return this.datasource.transaction(async (entityManager) => {
+    const document = await this.datasource.transaction(async (entityManager) => {
 
       const document = new CnProjectDocument();
       document.name = documentName;
@@ -90,6 +101,9 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
         {filename: filePath});
       return dbDocument;
     });
+
+    this.emitEvent('CREATE_DOCUMENT', document);
+    return document;
   }
 
   public async uploadImageDocument(file: BlFile, project: CnProject,
@@ -156,6 +170,16 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     // delete all object in the store
     const documentPaths = documentsToDelete.map(d => this.generateDocumentFilePath(document.project, d));
     await this.objectStorageService.deleteMultipleObjects(bucketConfig, documentPaths);
+
+    this.emitEvent('DELETE_DOCUMENT', document);
+  }
+
+  public async emptyProjectTrash(projectId: string): Promise<void> {
+    const documentToDelete = await this.repo.find({where: {projectId: projectId, inTrash: true}});
+
+    for(const doc of documentToDelete){
+      await this.deleteDocument(doc.id, this.datasource.manager);
+    }
   }
 
   async renameDocument(document: CnProjectDocument, newName: string): Promise<CnProjectDocument> {
@@ -217,8 +241,11 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   public async createJSONDocument(project: CnProject, type: CnProjectDocumentType,
                                   documentName: string, entityId: string, content: any,
                                   parentDocument?: CnProjectDocument): Promise<CnProjectDocument> {
+    // check if the space storage is not full, consider si of this document as 0
+    this.checkIfStorageIsFull(0);
+
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
-    return this.datasource.transaction(async (entityManager) => {
+    const document = await this.datasource.transaction(async (entityManager) => {
 
       const document = new CnProjectDocument();
       document.name = documentName;
@@ -237,10 +264,16 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
       return await entityManager.save(document);
     });
+
+    this.emitEvent('CREATE_DOCUMENT', document);
+    return document;
   }
 
   public async updateJSONDocument(project: CnProject, document: CnProjectDocument,
                                   content: any): Promise<CnProjectDocument> {
+    // check if the space storage is not full, consider si of this document as 0
+    this.checkIfStorageIsFull(0);
+
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
     const documentPath = this.generateDocumentFilePath(project, document);
@@ -252,6 +285,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     document.size = objectInfo.ContentLength;
     document = await this.repository.save(document);
 
+    this.emitEvent('UPDATE_DOCUMENT', document);
     return document;
   }
 
@@ -344,7 +378,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       [CnProjectDocumentType.COMMENT_CONTENT]: CnProjectDocumentStorageType.COMMENT
     };
 
-    for(const doc of documents){
+    for (const doc of documents) {
       const type = mappings[doc.type];
       const detail = aggregationDTO.details[type];
       detail.totalSize += doc.size;
@@ -359,10 +393,32 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     const result = await this.repository.manager.query(`
       SELECT SUM(size) as totalSize
       FROM project_document
-      JOIN project ON project_document.projectId = project.id
+             JOIN project ON project_document.projectId = project.id
       WHERE project.spaceId = ?
     `, [spaceId]);
     return result[0].totalSize ?? 0;
+  }
+
+  public checkIfStorageIsFull(documentSize: number): void {
+    const space = CnCurrentUserHelper.getCurrentSpace();
+    if (!space.hasEnoughStorageForNewFile(documentSize)) {
+      if (documentSize === 0) {
+        throw new BlBadRequestException('Space storage is full, please contact your space administrator to increase the storage limit, delete some documents or empty the trash.');
+      } else {
+        throw new BlBadRequestException('There is not enough remaining free storage in your space to upload this document. Please contact your space administrator to increase the storage limit, delete some documents or empty the trash.');
+      }
+    }
+  }
+
+  ////////////////////////////////////////////// OTHERS /////////////////////////////////////////////
+
+  private emitEvent(eventType: CnProjectDocumentEventType, document: CnProjectDocument): void {
+    const event: CnProjectDocumentEvent = {
+      type: eventType,
+      entity: document,
+      spaceId: CnCurrentUserHelper.getCurrentSpace().id
+    };
+    this.eventEmitter.emit(cnProjectDocumentEventName, event);
   }
 
   ////////////////////////////////////////////// MIGRATION /////////////////////////////////////////////
