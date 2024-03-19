@@ -675,6 +675,12 @@ export class CnProjectAggregateService {
     return doc;
   }
 
+  public async emptyTrash(projectId: string): Promise<void> {
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    await this.projectDocumentService.emptyProjectTrash(project.id);
+  }
+
   public async getDocumentsByProject(projectId: string, inTrash: boolean, page: number, size: number): Promise<ClPage<CnProjectDocument>> {
     await this.getAndCheckAuthorizationForFindOne(projectId);
 

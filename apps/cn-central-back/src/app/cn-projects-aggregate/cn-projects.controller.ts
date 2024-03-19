@@ -293,6 +293,11 @@ export class CnProjectsController {
     return this.projectAggregate.restoreDocumentFromTrash(documentId);
   }
 
+  @Put(':projectId/empty-trash')
+  emptyTrash(@Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<void> {
+    return this.projectAggregate.emptyTrash(projectId);
+  }
+
   @Get(':projectId/document')
   public getDocumentsByProject(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                                @Query('page', ParseIntPipe) page: number,
