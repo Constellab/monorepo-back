@@ -18,7 +18,11 @@ import {ClPage} from '@monorepo/core-lib';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
 import {CnProjectBucketService} from '../cn-projects/cn-project-bucket.service';
 import {CnProjectDocument, CnProjectDocumentType} from './cn-project-document.entity';
-import {CnConstellabDocument2} from './cn-project-document-dto.class';
+import {
+  CnConstellabDocumentDTO,
+  CnProjectDocumentStorageType,
+  CnProjectStorageUsageDTO
+} from './cn-project-document-dto.class';
 import {CnDocument} from '../cn-documents/cn-document.entity';
 
 @Injectable()
@@ -273,27 +277,27 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
 
-  public async createConstellabDocument(project: CnProject, documentName: string): Promise<CnConstellabDocument2> {
+  public async createConstellabDocument(project: CnProject, documentName: string): Promise<CnConstellabDocumentDTO> {
     const content = BlNewRichText.emptyContent();
     const doc = await this.createJSONDocument(project, CnProjectDocumentType.CONSTELLAB_DOCUMENT,
       documentName, project.id, BlNewRichText.emptyContent());
-    return new CnConstellabDocument2(doc, content);
+    return new CnConstellabDocumentDTO(doc, content);
   }
 
 
   async updateConstellabDocument(project: CnProject, document: CnProjectDocument,
-                                 content: BlRichTextContent): Promise<CnConstellabDocument2> {
+                                 content: BlRichTextContent): Promise<CnConstellabDocumentDTO> {
     const newDoc = await this.updateJSONDocument(project, document, content);
-    return new CnConstellabDocument2(newDoc, content);
+    return new CnConstellabDocumentDTO(newDoc, content);
   }
 
 
-  async getConstellabDocument(project: CnProject, document: CnProjectDocument): Promise<CnConstellabDocument2> {
+  async getConstellabDocument(project: CnProject, document: CnProjectDocument): Promise<CnConstellabDocumentDTO> {
     if (document.type !== CnProjectDocumentType.CONSTELLAB_DOCUMENT) {
       throw new BlBadRequestException('The document is not a constellab document');
     }
     const content = await this.getJSONDocumentContent(project, document);
-    return new CnConstellabDocument2(document, content);
+    return new CnConstellabDocumentDTO(document, content);
   }
 
   async uploadImageToConstellabDocument(project: CnProject, document: CnProjectDocument, file: BlFile): Promise<BlRichTextUploadedImage> {
@@ -314,14 +318,55 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
   ////////////////////////////////////////////// SIZE /////////////////////////////////////////////
 
-  public async aggregateProjectsDocumentsSize(projectIds: string[]): Promise<number> {
-    const result = await this.repo.createQueryBuilder('document')
-      .select('SUM(size)', 'size')
-      .where('document.projectId IN (:...projectIds)', {projectIds: projectIds})
-      .getRawOne();
-
-    return result.size || 0;
+  public async getStorageSizeDetailByProjects(projectIds: string[]): Promise<CnProjectStorageUsageDTO> {
+    const documents = await this.repository.findBy({projectId: In(projectIds)});
+    return this.documentsToAggregateDTO(documents);
   }
+
+  public async getStorageSizeDetailBySpace(spaceId: string): Promise<CnProjectStorageUsageDTO> {
+    const documents = await this.repository.findBy({project: {spaceId: spaceId}});
+    return this.documentsToAggregateDTO(documents);
+  }
+
+  private documentsToAggregateDTO(documents: CnProjectDocument[]): CnProjectStorageUsageDTO {
+    const totalSize = documents.reduce((acc, doc) => acc + doc.size, 0);
+    const totalDocuments = documents.length;
+
+    const aggregationDTO: CnProjectStorageUsageDTO = new CnProjectStorageUsageDTO(totalSize, totalDocuments);
+
+    const mappings: Record<CnProjectDocumentType, CnProjectDocumentStorageType> = {
+      [CnProjectDocumentType.UPLOADED_DOCUMENT]: CnProjectDocumentStorageType.UPLOADED_DOCUMENT,
+      [CnProjectDocumentType.CONSTELLAB_DOCUMENT]: CnProjectDocumentStorageType.CONSTELLAB_DOCUMENT,
+      [CnProjectDocumentType.DESCRIPTION_CONTENT]: CnProjectDocumentStorageType.DESCRIPTION,
+      [CnProjectDocumentType.REPORT]: CnProjectDocumentStorageType.REPORT,
+      [CnProjectDocumentType.REPORT_CONTENT]: CnProjectDocumentStorageType.REPORT,
+      [CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT]: CnProjectDocumentStorageType.CONSTELLAB_DOCUMENT,
+      [CnProjectDocumentType.COMMENT_CONTENT]: CnProjectDocumentStorageType.COMMENT
+    };
+
+    for(const doc of documents){
+      const type = mappings[doc.type];
+      const detail = aggregationDTO.details[type];
+      detail.totalSize += doc.size;
+      detail.totalDocuments++;
+    }
+
+    return aggregationDTO;
+  }
+
+  public async getSpaceStorageSize(spaceId: string): Promise<number> {
+    // calculate with sql sum query, join project table with document.projectId = project.id
+    const result = await this.repository.manager.query(`
+      SELECT SUM(size) as totalSize
+      FROM project_document
+      JOIN project ON project_document.projectId = project.id
+      WHERE project.spaceId = ?
+    `, [spaceId]);
+    return result[0].totalSize ?? 0;
+  }
+
+  ////////////////////////////////////////////// MIGRATION /////////////////////////////////////////////
+
 
   // TODO TO REMOVE AFTER MIGRATION
   public async fromDocument(document: CnDocument): Promise<CnProjectDocument> {
