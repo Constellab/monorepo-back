@@ -19,6 +19,7 @@ import {HnBrickVersionReferenceModule} from '../../brick-version-reference/hn-br
 import {HnBrickVersionReferenceService} from '../../brick-version-reference/hn-brick-version-reference.service';
 import {HnUserService} from '../../users/hn-user.service';
 import {HnUserModule} from '../../users/hn-user.module';
+import {HnSpaceUserModule} from '../../space-aggregate/space-user/hn-space-user.module';
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import {HnUserModule} from '../../users/hn-user.module';
     HnTaskModule,
     HnProtocolModule,
     HnBrickVersionReferenceModule,
-    HnUserModule
+    HnUserModule,
+    HnSpaceUserModule
   ],
   exports: [TypeOrmModule, HnBrickService],
   providers: [HnBrickService, HnTechnicalFolderService, HnResourceService,

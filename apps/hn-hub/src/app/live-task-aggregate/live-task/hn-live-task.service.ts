@@ -40,22 +40,6 @@ export class HnLiveTaskService {
     return this.liveTaskRepository.findOneBy({id: id});
   }
 
-  public async findAllWithUserSpaces(userSpaces: HnSpace[]): Promise<HnLiveTask[]> {
-    return this.liveTaskRepository.find({
-      where: [
-        {
-          space: {
-            id: In(userSpaces.map(space => space.id))
-          },
-          latestPublishVersion: Not(IsNull())
-        }, {
-          space: IsNull(),
-          latestPublishVersion: Not(IsNull())
-        }
-      ],
-      order: {createdAt: 'DESC' as any}
-    });
-  }
 
   public async findAllWithUserSpacesPaginated(userSpaces: HnSpace[], page: number, size: number): Promise<ClPage<HnLiveTask>> {
     return BlAbstractPaginatedService.findPaginatedStatic(page, size, {

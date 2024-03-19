@@ -36,7 +36,7 @@ export class HnProtocolService {
       proto.brickMajor = technicalFolder.brickMajorVersion.major;
       proto.typingName = p.typing_name;
       proto.uniqueName = p.unique_name;
-
+      proto.style = p.style;
       proto.humanName = p.human_name;
 
       //TODO A MODIFIER pour le deprecatedSince

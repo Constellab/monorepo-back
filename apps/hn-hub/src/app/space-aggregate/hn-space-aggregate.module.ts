@@ -9,10 +9,10 @@ import {HnCoreModule} from '../core/hn-core.module';
 
 @Module({
   imports: [
+    HnUserModule,
+    HnCoreModule,
     HnSpaceModule,
     HnSpaceUserModule,
-    HnUserModule,
-    HnCoreModule
   ],
   controllers: [HnSpaceController],
   providers: [HnSpaceAggregateService, HnUserService],

@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {HnBrick, HnBrickVisibility} from './hn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, Repository} from 'typeorm';
+import {EntityManager, In, Repository} from 'typeorm';
 import {HnDocumentation, HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
 import {HnDocumentationService} from '../documentation/hn-documentation.service';
 import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
@@ -23,9 +23,10 @@ import {
 import {HnGeneratedDocEntity} from '../../core/model/entities/hn-generated-doc.entity';
 import {HnCoreConfigService} from '../../core/modules/core-config/hn-core-config.service';
 import {HnTechnicalFolderService} from '../../technical-folder/hn-technical-folder.service';
-import {HnUserService} from '../../users/hn-user.service';
 import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 import {BlBadRequestException, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {HnUser} from '../../users/hn-user.entity';
+import {HnSpaceUserService} from '../../space-aggregate/space-user/hn-space-user.service';
 
 @Injectable()
 export class HnBrickService {
@@ -38,8 +39,8 @@ export class HnBrickService {
     private folderService: HnFolderService,
     private brickVersionService: HnBrickVersionService,
     private technicalFolderService: HnTechnicalFolderService,
-    private userService: HnUserService,
-    private configService: HnCoreConfigService) {
+    private configService: HnCoreConfigService,
+    private spaceUserService: HnSpaceUserService) {
   }
 
   async create(createdBrick: HnCreateBrickDTO, entityManager: EntityManager): Promise<HnBrick> {
@@ -53,9 +54,7 @@ export class HnBrickService {
       throw new BlBadRequestException(HnErrorText.BRICK_ALREADY_EXIST);
     }
     const brick: HnBrick = new HnBrick();
-    brick.initialize(createdBrick.name, createdBrick.description, false,
-      createdBrick.visibility, createdBrick.repoPip, createdBrick.repoGit,
-      createdBrick.credentialUsername, createdBrick.credentialPassword);
+    brick.initialize(createdBrick);
 
     return entityManager.save(brick);
   }
@@ -66,7 +65,10 @@ export class HnBrickService {
 
   async findBrickList(): Promise<HnBrickListDTO[]> {
     let bricks: HnBrick[];
-    if (HnCurrentUserHelper.getCurrentUser() != null) {
+    const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
+    if (currentUser != null) {
+      const userSpacesIds: string[] = (await this.spaceUserService.findActiveSpaceUsersByUserId(currentUser?.id)).map(su => su.spaceId);
+
       bricks = this.isCurrentAdmin() ? await this.bricksRepository.find({order: {name: 'ASC'}}) :
         await this.bricksRepository.find({
           where: [{
@@ -77,6 +79,9 @@ export class HnBrickService {
             }
           }, {
             visibility: HnBrickVisibility.PUBLIC
+          },
+          {
+            space: In(userSpacesIds)
           }
           ],
           order: {name: 'ASC'}
@@ -98,6 +103,7 @@ export class HnBrickService {
       resBrick.isCertified = brick.isCertified;
       resBrick.visibility = brick.visibility;
       resBrick.lastVersion = (await this.brickMajorVersionService.getLatestBrickVersion(brick.name)).version;
+      resBrick.space = brick.space;
       res.push(resBrick);
     }
     return res;
@@ -105,8 +111,10 @@ export class HnBrickService {
 
   async findByName(name: string): Promise<HnBrick | null> {
     const isAdmin: boolean = this.isCurrentAdmin();
+    const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
     let brick: HnBrick;
-    if (HnCurrentUserHelper.getCurrentUser() != null) {
+    if (currentUser != null) {
+      const userSpacesIds: string[] = (await this.spaceUserService.findActiveSpaceUsersByUserId(currentUser?.id)).map(su => su.spaceId);
       brick = isAdmin ? await this.bricksRepository.findOne({
         where: {
           name: name
@@ -127,6 +135,9 @@ export class HnBrickService {
               id: HnCurrentUserHelper.getCurrentUser().id
             }
           }
+        }, {
+          name: name,
+          space: In(userSpacesIds)
         }]
       });
     } else {
@@ -180,7 +191,8 @@ export class HnBrickService {
     if (HnCurrentUserHelper.getCurrentUser() == null) {
       return this.bricksRepository.findOneBy({id: i, visibility: HnBrickVisibility.PUBLIC});
     }
-
+    const userSpacesIds: string[] =
+      (await this.spaceUserService.findActiveSpaceUsersByUserId(HnCurrentUserHelper.getCurrentUser()?.id)).map(su => su.spaceId);
     return this.isCurrentAdmin() ? this.bricksRepository.findOneBy({id: i}) :
       this.bricksRepository.findOneBy([{
         id: i,
@@ -196,7 +208,11 @@ export class HnBrickService {
           user: {
             id: HnCurrentUserHelper.getCurrentUser().id
           }
-        }
+        },
+      },
+      {
+        id: i,
+        space: In(userSpacesIds)
       }]);
   }
 

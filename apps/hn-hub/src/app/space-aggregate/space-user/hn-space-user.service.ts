@@ -51,4 +51,9 @@ export class HnSpaceUserService {
     }
   }
 
+  public async currentUserHasRightOnSpace(spaceId: string, userId: string): Promise<boolean> {
+    const spaceUser = await this.findSpaceUserByIds(spaceId, userId);
+    return spaceUser != null && spaceUser.active;
+  }
+
 }

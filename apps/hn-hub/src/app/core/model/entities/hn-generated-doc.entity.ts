@@ -50,6 +50,9 @@ export abstract class HnGeneratedDocEntity extends BlEntityWithId {
   @ManyToOne(() => HnTechnicalFolder, {eager: true, nullable: false})
   technicalFolder: HnTechnicalFolder;
 
+  @Column({name: 'style', type: 'simple-json', nullable: true})
+  style?: Record<string, any>;
+
   @Column({nullable: true})
   objectSubType: string;
 

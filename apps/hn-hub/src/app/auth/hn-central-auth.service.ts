@@ -30,7 +30,10 @@ export class HnCentralAuthService {
       if (e.status >= 500 && e.status < 600) {
         throw new BlUnauthorizedException('Central disconnected');
       }
-      throw e;
+      return {
+        status: '2FA_REQUIRED',
+        user: null
+      }
     }
   }
 

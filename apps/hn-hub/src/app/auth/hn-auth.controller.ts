@@ -66,7 +66,10 @@ export class HnAuthController {
    */
   private configureTokenCookie(token: string, expiresInMilliseconds: number, response: Response): void {
     response.cookie(hnJwtConfig.authorizationCookie, token,
-      {
+      this.configService.getSameSite() && this.configService.getDomain() ? {
+        path: '/', maxAge: expiresInMilliseconds, sameSite: this.configService.getSameSite(), domain: this.configService.getDomain(),
+        httpOnly: true, secure: !this.configService.isLocal(),
+      } : {
         path: '/', maxAge: expiresInMilliseconds, sameSite: 'strict',
         httpOnly: true, secure: !this.configService.isLocal(),
       });

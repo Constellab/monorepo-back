@@ -6,6 +6,8 @@ import {Type} from 'class-transformer';
 import {HnUser} from '../../users/hn-user.entity';
 import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 import {ClDateHelper} from '@monorepo/core-lib';
+import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
+import {HnCreateBrickDTO} from './hn-brick.dto';
 
 export enum HnBrickVisibility {
   PRIVATE = 'private',
@@ -61,6 +63,9 @@ export class HnBrick extends BlEntityWithId {
   @ManyToOne(() => HnUser, {eager: true, nullable: true})
   lastModifiedBy: HnUser;
 
+  @ManyToOne(() => HnSpace, {eager: true})
+  space?: HnSpace;
+
   @BeforeInsert()
   setCreatedByUser(): void {
     this.createdBy = HnCurrentUserHelper.getCurrentUser();
@@ -74,17 +79,16 @@ export class HnBrick extends BlEntityWithId {
     this.lastModifiedAt = ClDateHelper.getDate();
   }
 
-  initialize(name: string, description: string, isCertified: boolean,
-             visibility: HnBrickVisibility, repoPip?: string, repoGit?: string,
-             credentialUsername?: string, credentialPassword?: string): void {
-    this.name = name;
-    this.description = description;
-    this.isCertified = isCertified;
-    this.gitRepo = repoGit;
-    this.pipRepo = repoPip;
-    this.visibility = visibility;
-    this.credentialUsername = credentialUsername;
-    this.credentialPassword = credentialPassword;
+  initialize(createdBrick: HnCreateBrickDTO): void {
+    this.name = createdBrick.name;
+    this.description = createdBrick.description;
+    this.isCertified = false;
+    this.gitRepo = createdBrick.repoGit;
+    this.pipRepo = createdBrick.repoPip;
+    this.visibility = createdBrick.visibility;
+    this.credentialUsername = createdBrick.credentialUsername;
+    this.credentialPassword = createdBrick.credentialPassword;
+    this.space = createdBrick.visibility == HnBrickVisibility.PRIVATE ? createdBrick.space : null;
   }
 
 

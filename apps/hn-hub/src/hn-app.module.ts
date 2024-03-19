@@ -195,11 +195,15 @@ function configureMailModule(
 
     BlExternalApiModule,
 
+    HnUserModule,
+    HnSpaceModule,
+    HnSpaceUserModule,
+    HnSpaceAggregateModule,
+
     HnDocumentationModule,
     HnBrickModule,
     HnBrickVersionModule,
     HnBrickMajorVersionModule,
-    HnUserModule,
     HnAuthModule,
     HnFolderModule,
     HnTechnicalFolderModule,
@@ -214,10 +218,6 @@ function configureMailModule(
     HnBrickUserModule,
     HnBrickUserInviteModule,
     HnBrickAggregateModule,
-
-    HnSpaceModule,
-    HnSpaceUserModule,
-    HnSpaceAggregateModule,
 
     HnLiveTaskModule,
     HnLiveTaskVersionModule,

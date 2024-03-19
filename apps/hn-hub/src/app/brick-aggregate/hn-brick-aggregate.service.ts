@@ -38,6 +38,7 @@ import {HnBrickUserInvite} from './brick-user-invite/hn-brick-user-invite.entity
 import {HnBrickUser} from './brick-user/hn-brick-user.entity';
 import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
 import {HnDocumentationFile} from './documentation-file/hn-documentation-file.entity';
+import {HnUser} from '../users/hn-user.entity';
 
 @Injectable()
 export class HnBrickAggregateService {
@@ -366,6 +367,15 @@ export class HnBrickAggregateService {
 
   async getBrickCoAuthors(brickId: string): Promise<HnBrickUser[]> {
     return this.brickUserService.getBrickUsers(await this.brickService.findById(brickId));
+  }
+
+  async assertUserCanReadBrick(brickId: string): Promise<void> {
+    const brick = await this.brickService.findById(brickId);
+    if(brick == null)
+      throw new BlUnauthorizedException('You are not authorized to perform this action');
+    const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
+    if (brick.visibility === HnBrickVisibility.PRIVATE && currentUser == null)
+      throw new BlUnauthorizedException('You are not authorized to see this brick');
   }
 
   async checkIfUserIsBrickCreator(brickId: string): Promise<boolean> {

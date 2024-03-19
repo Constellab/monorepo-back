@@ -45,7 +45,7 @@ export class HnTaskService {
       task.brickMajor = technicalFolder.brickMajorVersion.major;
       task.uniqueName = t.unique_name;
       task.typingName = t.typing_name;
-
+      task.style = t.style;
       task.humanName = t.human_name;
 
       //TODO A MODIFIER pour le deprecatedSince

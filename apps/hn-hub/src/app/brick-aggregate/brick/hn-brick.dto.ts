@@ -2,6 +2,7 @@ import {HnReferenceDTO, HnRepoType, HnVersionType} from '../brick-version/hn-bri
 import {HnVersionState} from '../brick-major-version/hn-brick-major-version.entity';
 import {HnBrickVisibility} from './hn-brick.entity';
 import {BlVersion} from '@monorepo/back-core-lib';
+import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
 
 export interface HnBrickTransportDto {
   id: string;
@@ -65,6 +66,14 @@ export interface HnImportEntity {
   deprecated_message: string;
   object_sub_type: string;
   status: string;
+  style: HnImportEntityStyle;
+}
+
+export interface HnImportEntityStyle {
+  icon: string;
+  icon_type: string;
+  background_color: string;
+  icon_color: string;
 }
 
 export interface HnImportResourceDTO extends HnImportEntity{
@@ -93,6 +102,7 @@ export class HnBrickListDTO {
   isCertified?: boolean;
   imageLink?: string;
   visibility: HnBrickVisibility;
+  space?: HnSpace;
 }
 
 export class HnEditBrickDTO {
@@ -103,6 +113,7 @@ export class HnEditBrickDTO {
   visibility: HnBrickVisibility;
   credentialUsername?: string;
   credentialPassword?: string;
+  space?: HnSpace;
 }
 
 export class HnTechnicalDocInputDTO {
@@ -137,6 +148,7 @@ export class HnCreateBrickDTO {
   visibility: HnBrickVisibility;
   credentialUsername?: string;
   credentialPassword?: string;
+  space?: HnSpace;
 }
 
 
