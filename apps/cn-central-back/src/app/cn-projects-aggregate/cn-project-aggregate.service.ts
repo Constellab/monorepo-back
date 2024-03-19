@@ -50,7 +50,7 @@ import {CnActivityService} from '../cn-activity/cn-activity.service';
 import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnProjectDocumentService} from './cn-project-documents/cn-project-document.service';
 import {CnProjectDocument, CnProjectDocumentType} from './cn-project-documents/cn-project-document.entity';
-import {CnConstellabDocument2} from './cn-project-documents/cn-project-document-dto.class';
+import {CnConstellabDocumentDTO, CnProjectStorageUsageDTO} from './cn-project-documents/cn-project-document-dto.class';
 import {CnDocumentsService} from './cn-documents/cn-documents.service';
 
 @Injectable()
@@ -690,7 +690,7 @@ export class CnProjectAggregateService {
   }
 
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
-  public async createConstellabDocument(projectId: string, filename: string): Promise<CnConstellabDocument2> {
+  public async createConstellabDocument(projectId: string, filename: string): Promise<CnConstellabDocumentDTO> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
     const doc = await this.projectDocumentService.createConstellabDocument(project, filename);
@@ -698,7 +698,7 @@ export class CnProjectAggregateService {
     return doc;
   }
 
-  public async updateConstellabDocument(documentId: string, content: BlRichTextContent): Promise<CnConstellabDocument2> {
+  public async updateConstellabDocument(documentId: string, content: BlRichTextContent): Promise<CnConstellabDocumentDTO> {
     const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
@@ -709,7 +709,7 @@ export class CnProjectAggregateService {
     return newDoc;
   }
 
-  public async getConstellabDocument(documentId: string): Promise<CnConstellabDocument2> {
+  public async getConstellabDocument(documentId: string): Promise<CnConstellabDocumentDTO> {
     const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
@@ -788,6 +788,15 @@ export class CnProjectAggregateService {
     }
 
     return project;
+  }
+
+  public async getStorageSizeByProjects(projectId: string): Promise<CnProjectStorageUsageDTO> {
+    await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    const children = await this.getChildren(projectId);
+
+    return this.projectDocumentService.getStorageSizeDetailByProjects([projectId, ...children.map(project => project.id)]);
+
   }
 
   /////////////////////////////////////// PROJECT USER //////////////////////////////////

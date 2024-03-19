@@ -14,6 +14,7 @@ import {CnSpaceInvitService} from './cn-space-invit.service';
 import {CnCoreModule} from '../cn-core/cn-core.module';
 import {CnSpacesMailService} from './cn-spaces-mail.service';
 import {CnObjectStoragesModule} from '../cn-object-storages/cn-object-storages.module';
+import {CnProjectDocumentModule} from '../cn-projects-aggregate/cn-project-documents/cn-project-document.module';
 
 /**
  * Module to manage spaces
@@ -25,6 +26,7 @@ import {CnObjectStoragesModule} from '../cn-object-storages/cn-object-storages.m
     CnUsersModule,
     CnCoreModule,
     CnObjectStoragesModule,
+    CnProjectDocumentModule,
   ],
   controllers: [
     CnSpacesController,
