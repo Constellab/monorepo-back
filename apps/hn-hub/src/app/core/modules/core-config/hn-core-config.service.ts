@@ -215,10 +215,6 @@ export class HnCoreConfigService {
     return this.configService.get('OBJECT_STORAGE_DB_BACKUP_REGION');
   }
 
-  public getSameSite(): boolean | "lax" | "strict" | "none" {
-    return this.configService.get('SAME_SITE');
-  }
-
   public getDomain(): string {
     return this.configService.get('DOMAIN');
   }

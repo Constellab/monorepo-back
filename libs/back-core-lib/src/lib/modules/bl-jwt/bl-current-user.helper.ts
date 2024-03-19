@@ -15,7 +15,6 @@ export class BlCurrentUserHelper extends BlRequestContextHelper {
    */
   static getCurrentUser(): BlUser | null {
     const request: Express.Request = this.getCurrentRequest();
-
     // if there is no request and a manual user is set, return it
     // this is used for cron jobs
     if(request == null && this.robotUser != null) {
