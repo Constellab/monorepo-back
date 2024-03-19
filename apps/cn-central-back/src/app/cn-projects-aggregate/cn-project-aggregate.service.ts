@@ -31,6 +31,8 @@ import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {
   BlBadRequestException,
   BlFile,
+  BlNewRichText,
+  BlRichText,
   BlRichTextContent,
   BlRichTextI,
   BlRichTextUploadedImage,
@@ -39,9 +41,6 @@ import {
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
 import {DataSource, In} from 'typeorm';
-import {CnDocumentsService} from './cn-documents/cn-documents.service';
-import {CnDocument} from './cn-documents/cn-document.entity';
-import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
 import {CnProjectBucketService} from './cn-projects/cn-project-bucket.service';
 import {CnProjectUserService} from './cn-project-user/cn-project-user.service';
 import {CnUsersService} from '../cn-users/cn-users.service';
@@ -51,6 +50,10 @@ import {EventEmitter2} from '@nestjs/event-emitter';
 import {CnActivity, CnActivityEntityType} from '../cn-activity/cn-activity.entity';
 import {CnActivityService} from '../cn-activity/cn-activity.service';
 import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import {CnProjectDocumentService} from './cn-project-documents/cn-project-document.service';
+import {CnProjectDocument, CnProjectDocumentType} from './cn-project-documents/cn-project-document.entity';
+import {CnConstellabDocument2} from './cn-project-documents/cn-project-document-dto.class';
+import {CnDocumentsService} from './cn-documents/cn-documents.service';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -64,11 +67,12 @@ export class CnProjectAggregateService {
               private projectCommentService: CnProjectCommentService,
               private datasource: DataSource,
               private projectBucketService: CnProjectBucketService,
-              private documentService: CnDocumentsService,
+              private projectDocumentService: CnProjectDocumentService,
               private projectUserService: CnProjectUserService,
               private userService: CnUsersService,
               private eventEmitter: EventEmitter2,
-              private activityService: CnActivityService) {
+              private activityService: CnActivityService,
+              private documentService: CnDocumentsService) {
   }
 
   /////////////////////////////////////// PROJECT //////////////////////////////////
@@ -181,7 +185,7 @@ export class CnProjectAggregateService {
       throw new BlBadRequestException(CnErrorText.DELETE_PROJECT_WITH_REPORTS);
     }
 
-    const documents = await this.documentService.getDocumentsByProject(project.id, false, 0, 1);
+    const documents = await this.projectDocumentService.getProjectDocuments(project.id, false, 0, 1);
     if (documents.totalElements > 0) {
       throw new BlBadRequestException(CnErrorText.DELETE_PROJECT_WITH_DOCUMENTS);
     }
@@ -193,7 +197,14 @@ export class CnProjectAggregateService {
         {detailArgs: {labNames: names}});
     }
 
+
     await this.datasource.transaction(async entityManager => {
+      // TODO test that remaining doc are deleted
+      const documents = await this.projectDocumentService.findDocumentsByProject(project.id);
+      for (const document of documents) {
+        await this.projectDocumentService.deleteDocument(document.id, entityManager);
+      }
+
       await this.projectService.deleteById(id, entityManager);
     });
 
@@ -240,7 +251,7 @@ export class CnProjectAggregateService {
         projectId = report.projectId;
         break;
       case 'document':
-        const document = await this.documentService.findByIdAndCheck(objectId);
+        const document = await this.projectDocumentService.findByIdAndCheck(objectId);
         projectId = document.projectId;
         break;
     }
@@ -284,7 +295,7 @@ export class CnProjectAggregateService {
         ancestors.push({type: 'report', id: report.id, title: report.title});
         break;
       case 'document':
-        const doc = await this.documentService.findByIdAndCheck(objectId);
+        const doc = await this.projectDocumentService.findByIdAndCheck(objectId);
         projectId = doc.projectId;
         ancestors.push({type: 'document', id: doc.id, title: doc.name});
     }
@@ -340,13 +351,16 @@ export class CnProjectAggregateService {
 
   public async saveDescriptionImage(projectId: string, file: BlFile): Promise<BlRichTextUploadedImage> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
-    return this.projectBucketService.saveDescriptionImage(project, file);
+
+    return this.projectDocumentService.uploadImageDocument(file, project, CnProjectDocumentType.DESCRIPTION_CONTENT,
+      project.id);
   }
 
   public async getDescriptionImage(projectId: string, filename: string): Promise<IncomingMessage> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    return this.projectBucketService.getDescriptionImage(project, filename);
+    return this.projectDocumentService.getDocumentContentByTypeAndName(project, CnProjectDocumentType.DESCRIPTION_CONTENT,
+      filename);
   }
 
   /////////////////////////////////////// PROJECT STATUS //////////////////////////////////
@@ -437,6 +451,13 @@ export class CnProjectAggregateService {
     return report;
   }
 
+  public async findReportContent(id: string): Promise<BlRichTextContent> {
+    const report = await this.reportService.findByIdAndCheck(id);
+
+    const project = await this.getAndCheckAuthorizationForFindOne(report.projectId);
+    return this.reportService.getReportContent(project, report.id);
+  }
+
   async createLabReport(createReportDto: CnCreateReportWithConfigDto, projectId: string,
                         files: BlFile[]): Promise<void> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
@@ -460,9 +481,7 @@ export class CnProjectAggregateService {
       experiments.push(experiment);
     }
 
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
-
-    const reportResult = await this.reportService.saveReport(createReportDto, experiments, project, bucketConfig, files);
+    const reportResult = await this.reportService.saveReport(createReportDto, experiments, project, files);
 
     if (reportResult.mode === 'create') {
       this.emitProjectEvent('CREATE_REPORT', project, reportResult.report);
@@ -505,20 +524,20 @@ export class CnProjectAggregateService {
     if (content.getFiguresBlock(filename) == null) {
       throw new BlUnauthorizedException();
     }
-    return this.reportService.getImage(filename, project, reportId);
+    return this.reportService.getImage(filename, project);
   }
 
-  async getReportView(reportId: string, filename: string): Promise<IncomingMessage> {
+  async getReportView(reportId: string, viewId: string): Promise<IncomingMessage> {
     const report = await this.reportService.findByIdAndCheck(reportId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(report.projectId);
 
     // check that the filename is in the report
     const content = new CnReportContent(report.content);
-    if (content.getViewsBlock(filename) == null) {
+    if (content.getViewsBlock(viewId) == null) {
       throw new BlUnauthorizedException('The view is not in the report');
     }
-    return this.reportService.getView(filename, project, reportId);
+    return this.reportService.getView(viewId, project);
   }
 
   /////////////////////////////////////// GROUPS //////////////////////////////////
@@ -595,8 +614,9 @@ export class CnProjectAggregateService {
       throw new UnauthorizedException();
     }
 
+    // TODO DELETE COMMENT IMAGE
     await this.projectCommentService.deleteById(commentId);
-    this.emitProjectEvent('CREATE_PROJECT_COMMENT', project, comment);
+    this.emitProjectEvent('DELETE_PROJECT_COMMENT', project, comment);
 
   }
 
@@ -607,135 +627,127 @@ export class CnProjectAggregateService {
 
   public async saveCommentImage(file: BlFile, projectId: string): Promise<BlRichTextUploadedImage> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
-
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
-    return this.projectCommentService.saveProjectCommentImage(file, bucketConfig, project);
+    return this.projectCommentService.saveProjectCommentImage(file, project);
   }
 
   public async getCommentImage(filename: string, projectId: string): Promise<IncomingMessage> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
-
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(project.getRootParentId());
-    return await this.projectCommentService.getCommentImage(project, bucketConfig, filename);
+    return await this.projectCommentService.getCommentImage(project, filename);
   }
 
   /////////////////////////////////////// DOCUMENT //////////////////////////////////
 
-  public async uploadDocument(projectId: string, file: BlFile): Promise<CnDocument> {
+  public async uploadDocument(projectId: string, file: BlFile): Promise<CnProjectDocument> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    const doc = await this.documentService.uploadDocument(file, project);
+    const doc = await this.projectDocumentService.uploadDocument(file, project,
+      CnProjectDocumentType.UPLOADED_DOCUMENT, project.id, file.originalname);
 
     this.emitProjectEvent('UPLOAD_PROJECT_DOCUMENT', project, doc);
 
     return doc;
   }
 
-  public async getDocument(projectId: string, filename: string): Promise<IncomingMessage> {
+  public async getUploadedDocument(projectId: string, documentName: string): Promise<IncomingMessage> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    const document = await this.documentService.findDocumentByProjectAndName(projectId, filename);
-
-    if (document == null) {
-      throw new BlBadRequestException('Document not found');
-    }
-    if (document.projectId != projectId) {
-      throw new BlUnauthorizedException();
-    }
-
-    return this.documentService.getDocument(project, document);
+    return await this.projectDocumentService.getDocumentContentByTypeAndName(project,
+      CnProjectDocumentType.UPLOADED_DOCUMENT, documentName);
   }
 
   public async deleteDocument(documentId: string): Promise<void> {
-    const document = await this.documentService.findByIdAndCheck(documentId);
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
 
-    await this.documentService.deleteDocument(documentId, project);
+    await this.datasource.transaction(async entityManager => {
+      await this.projectDocumentService.deleteDocument(documentId, entityManager);
+    });
 
     this.emitProjectEvent('DELETE_PROJECT_DOCUMENT', project, document);
   }
 
-  public async moveDocumentToTrash(documentId: string): Promise<CnDocument> {
-    const document = await this.documentService.findByIdAndCheck(documentId);
+  public async moveDocumentToTrash(documentId: string): Promise<CnProjectDocument> {
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
 
-    const doc = await this.documentService.moveToTrash(document);
+    const doc = await this.projectDocumentService.moveToTrash(document);
 
     this.emitProjectEvent('MOVE_PROJECT_DOCUMENT_TO_TRASH', project, document);
 
     return doc;
   }
 
-  public async restoreDocumentFromTrash(documentId: string): Promise<CnDocument> {
-    const document = await this.documentService.findByIdAndCheck(documentId);
+  public async restoreDocumentFromTrash(documentId: string): Promise<CnProjectDocument> {
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
 
-    const doc = await this.documentService.restoreFromTrash(document);
+    const doc = await this.projectDocumentService.restoreFromTrash(document);
 
     this.emitProjectEvent('RESTORE_PROJECT_DOCUMENT_FROM_TRASH', project, document);
 
     return doc;
   }
 
-  public async getDocumentsByProject(projectId: string, inTrash: boolean, page: number, size: number): Promise<ClPage<CnDocument>> {
+  public async getDocumentsByProject(projectId: string, inTrash: boolean, page: number, size: number): Promise<ClPage<CnProjectDocument>> {
     await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    return this.documentService.getDocumentsByProject(projectId, inTrash, page, size);
+    return this.projectDocumentService.getProjectDocuments(projectId, inTrash, page, size);
   }
 
-  public async renameDocument(documentId: string, newName: string): Promise<CnDocument> {
-    const document = await this.documentService.findByIdAndCheck(documentId);
+  public async renameDocument(documentId: string, newName: string): Promise<CnProjectDocument> {
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     await this.getAndCheckAuthorizationForFindOne(document.projectId);
 
-    return this.documentService.renameDocument(document, newName);
+    return this.projectDocumentService.renameDocument(document, newName);
   }
 
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
-  public async createConstellabDocument(projectId: string, filename: string): Promise<CnConstellabDocument> {
+  public async createConstellabDocument(projectId: string, filename: string): Promise<CnConstellabDocument2> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    const doc = await this.documentService.createConstellabDocument(project, filename);
+    const doc = await this.projectDocumentService.createConstellabDocument(project, filename);
     this.emitProjectEvent('CREATE_CONSTELLAB_DOCUMENT', project, doc.document);
     return doc;
   }
 
-  public async updateConstellabDocument(documentId: string, content: BlRichTextContent): Promise<CnConstellabDocument> {
-    const document = await this.documentService.findByIdAndCheck(documentId);
+  public async updateConstellabDocument(documentId: string, content: BlRichTextContent): Promise<CnConstellabDocument2> {
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
 
-    const newDoc = await this.documentService.updateConstellabDocument(project, document, content);
+    const newDoc = await this.projectDocumentService.updateConstellabDocument(project, document, content);
 
     this.emitProjectEvent('UPDATE_CONSTELLAB_DOCUMENT', project, newDoc);
     return newDoc;
   }
 
-  public async getConstellabDocument(documentId: string): Promise<CnConstellabDocument> {
-    const document = await this.documentService.findByIdAndCheck(documentId);
+  public async getConstellabDocument(documentId: string): Promise<CnConstellabDocument2> {
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
 
-    return this.documentService.getConstellabDocument(project, document);
+    return this.projectDocumentService.getConstellabDocument(project, document);
   }
 
   public async uploadImageToConstellabDocument(documentId: string, file: BlFile): Promise<BlRichTextUploadedImage> {
-    const document = await this.documentService.findByIdAndCheck(documentId);
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
 
-    return this.documentService.uploadImageToConstellabDocument(project, document, file);
+    return this.projectDocumentService.uploadImageToConstellabDocument(project, document, file);
   }
 
-  public async getConstellabDocumentImage(documentId: string, filepath: string): Promise<IncomingMessage> {
-    const document = await this.documentService.findByIdAndCheck(documentId);
+  public async getConstellabDocumentImage(documentId: string, documentName: string): Promise<IncomingMessage> {
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
 
-    return this.documentService.getImageFromConstellabDocument(project, document, filepath);
+    return this.projectDocumentService.getDocumentContentByTypeAndName(project,
+      CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT, documentName);
   }
 
 
@@ -884,4 +896,115 @@ export class CnProjectAggregateService {
     return this.experimentService.migrateAllProtocolsFromV1ToV2();
   }
 
+  public async migrateProjectDocuments(): Promise<void> {
+    this.logger.log('[MIGRATE PROJECT DOCUMENT] Start');
+
+    await this.migrateDocuments();
+    await this.migrateReports();
+    await this.migrateProjectDescriptionImage();
+    await this.migrateProjectCommentImage();
+
+    this.logger.log('[MIGRATE PROJECT DOCUMENT] End');
+  }
+
+
+  // TODO TO REMOVE ONCE MIGRATION IS DONE
+  public async migrateDocuments(): Promise<void> {
+    this.logger.log('[MIGRATE DOCUMENT] Start');
+    const document = await this.documentService.findAll();
+
+    for (const doc of document) {
+      try {
+        const projectDoc = await this.projectDocumentService.fromDocument(doc);
+
+        if (projectDoc.type === CnProjectDocumentType.CONSTELLAB_DOCUMENT) {
+          const content = await this.projectDocumentService.getJSONDocumentContent(doc.project, projectDoc);
+
+          const richText = new BlNewRichText(content);
+
+          for (const imageBlock of richText.getFiguresBlocks()) {
+            try {
+              await this.projectDocumentService.migrateImageContent(imageBlock.data.filename,
+                projectDoc.project, CnProjectDocumentType.REPORT_CONTENT, projectDoc.id, projectDoc);
+            } catch (e) {
+              this.logger.error(`Error while migrating image ${imageBlock.data.filename} of constellab doc ${projectDoc.id} `, e);
+            }
+          }
+        }
+      } catch (e) {
+        this.logger.error(`[MIGRATE DOCUMENT] Error on document ${doc.id}. `, e);
+      }
+    }
+
+    this.logger.log('[MIGRATE DOCUMENT] End');
+  }
+
+  public async migrateReports(): Promise<void> {
+    this.logger.log('[MIGRATE REPORT] Start');
+    const reports = await this.reportService.findAll();
+
+    for (const report of reports) {
+      try {
+        await this.reportService.migrateReport(report);
+      } catch (e) {
+        this.logger.error(`[MIGRATE REPORT] Error on report ${report.id}. `, e);
+      }
+    }
+
+    this.logger.log('[MIGRATE REPORT] End');
+  }
+
+  public async migrateProjectDescriptionImage(): Promise<void> {
+    this.logger.log('[MIGRATE PROJECT DESCRIPTION] Start');
+    const projects = await this.projectService.findAll();
+
+    for (const project of projects) {
+      try {
+        if (project.description) {
+          const description = new BlNewRichText(project.description);
+
+          for (const imageBlock of description.getFiguresBlocks()) {
+            try {
+              await this.projectDocumentService.migrateImageContent(imageBlock.data.filename,
+                project, CnProjectDocumentType.REPORT_CONTENT, project.id);
+            } catch (e) {
+              this.logger.error(`Error while migrating image ${imageBlock.data.filename} of project description ${project.id} `, e);
+            }
+          }
+        }
+
+      } catch (e) {
+        this.logger.error(`[MIGRATE PROJECT DESCRIPTION] Error on report ${project.id}. `, e);
+      }
+    }
+
+    this.logger.log('[MIGRATE PROJECT DESCRIPTION] End');
+  }
+
+  public async migrateProjectCommentImage(): Promise<void> {
+    this.logger.log('[MIGRATE PROJECT COMMENT] Start');
+    const comments = await this.projectCommentService.findAll();
+
+    for (const comment of comments) {
+      try {
+        if (comment.content) {
+          const description = new BlRichText(comment.content);
+
+          for (const imageBlock of description.getFiguresOps()) {
+            try {
+              await this.projectDocumentService.migrateImageContent(imageBlock.insert.figure.filename,
+                comment.project, CnProjectDocumentType.COMMENT_CONTENT, comment.project.id);
+            } catch (e) {
+              this.logger.error(`Error while migrating image ${imageBlock.insert.figure.filename} of project comment ${comment.id} `, e);
+            }
+          }
+        }
+
+      } catch (e) {
+        this.logger.error(`[MIGRATE PROJECT COMMENT] Error on report ${comment.id}. `, e);
+      }
+    }
+
+    this.logger.log('[MIGRATE PROJECT COMMENT] End');
+  }
 }

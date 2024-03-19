@@ -2,41 +2,33 @@ import {Injectable, Logger} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnProjectComment} from './cn-project-comment.entity';
 import {Repository} from 'typeorm';
-import {CnCommentService} from '../cn-core/services/cn-comment.service';
 import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {ClPage} from '@monorepo/core-lib';
-import {
-  BlBucketConfig,
-  BlFile,
-  BlObjectStorageService,
-  BlRichText,
-  BlRichTextI,
-  BlRichTextUploadedImage
-} from '@monorepo/back-core-lib';
-import {CnProjectBucketService} from '../cn-projects-aggregate/cn-projects/cn-project-bucket.service';
+import {BlAbstractService, BlFile, BlRichText, BlRichTextI, BlRichTextUploadedImage} from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
+import {CnProjectDocumentService} from '../cn-projects-aggregate/cn-project-documents/cn-project-document.service';
+import {CnProjectDocumentType} from '../cn-projects-aggregate/cn-project-documents/cn-project-document.entity';
 
 @Injectable()
-export class CnProjectCommentService extends CnCommentService<CnProjectComment> {
+export class CnProjectCommentService extends BlAbstractService<CnProjectComment>{
 
   protected readonly logger = new Logger(CnProjectCommentService.name);
 
 
   constructor(@InjectRepository(CnProjectComment) private repository: Repository<CnProjectComment>,
-              objectStorageService: BlObjectStorageService) {
-    super(objectStorageService, repository, CnProjectComment);
+              private projectDocumentService: CnProjectDocumentService) {
+    super(repository, CnProjectComment);
   }
 
-  async saveProjectCommentImage(file: BlFile, bucketConfig: BlBucketConfig[],
-                                project: CnProject): Promise<BlRichTextUploadedImage> {
-    const prefix = CnProjectBucketService.getPrefix(project, 'COMMENTS');
-    return this.saveImage(file, bucketConfig, prefix);
+  async saveProjectCommentImage(file: BlFile, project: CnProject): Promise<BlRichTextUploadedImage> {
+    // TODO a voir si le entityId peut être le commentaire
+    return this.projectDocumentService.uploadImageDocument(file, project,
+      CnProjectDocumentType.COMMENT_CONTENT, project.id);
   }
 
-  async getCommentImage(project: CnProject, bucketConfig: BlBucketConfig, filename: string): Promise<IncomingMessage> {
-    const prefix = CnProjectBucketService.getPrefix(project, 'COMMENTS');
-    return this.getImage(filename, bucketConfig, prefix);
+  async getCommentImage(project: CnProject, documentName: string): Promise<IncomingMessage> {
+    return this.projectDocumentService.getDocumentContentByTypeAndName(project, CnProjectDocumentType.COMMENT_CONTENT, documentName);
   }
 
   async createComment(newComment: CnNewComment, project: CnProject): Promise<CnProjectComment> {
@@ -64,6 +56,10 @@ export class CnProjectCommentService extends CnCommentService<CnProjectComment> 
   async updateComment(comment: CnProjectComment, content: BlRichTextI): Promise<CnProjectComment> {
     comment.content = BlRichText.getOptimisedContent(content);
     return await this.update(comment);
+  }
+
+  public async findAll(): Promise<CnProjectComment[]> {
+    return this.repository.find({relations: {project: true}});
   }
 
 }

@@ -42,12 +42,12 @@ import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity'
 import {CnComment, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
-import {CnDocument} from './cn-documents/cn-document.entity';
-import {CnConstellabDocument} from './cn-documents/cn-document-dto.class';
 import {CnProjectUser} from './cn-project-user/cn-project-user.entity';
 import {CnActivity} from '../cn-activity/cn-activity.entity';
 import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
+import {CnProjectDocument} from './cn-project-documents/cn-project-document.entity';
+import {CnConstellabDocument2} from './cn-project-documents/cn-project-document-dto.class';
 
 
 @Controller('projects')
@@ -190,13 +190,13 @@ export class CnProjectsController {
 
   /**
    * Return an image of a comment
-   * Use filename(*) to catch all the filename (including slashes)
+   * Use documentName(*) to catch all the documentName (including slashes)
    */
-  @Get(':projectId/description/image/:filename(*)')
+  @Get(':projectId/description/image/:documentName(*)')
   public async getDescriptionImage(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                                   @Param('filename') filename: string,
+                                   @Param('documentName') documentName: string,
                                    @Res() response: Response): Promise<any> {
-    const file = await this.projectAggregate.getDescriptionImage(projectId, filename);
+    const file = await this.projectAggregate.getDescriptionImage(projectId, documentName);
     BlResponseHelper.setMessageAndCache(response, file);
   }
 
@@ -211,13 +211,13 @@ export class CnProjectsController {
 
   /**
    * Return an image of a comment
-   * Use filename(*) to catch all the filename (including slashes)
+   * Use documentName(*) to catch all the documentName (including slashes)
    */
-  @Get(':projectId/comment/image/:filename(*)')
+  @Get(':projectId/comment/image/:documentName(*)')
   public async getCommentImage(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                               @Param('filename') filename: string,
+                               @Param('documentName') documentName: string,
                                @Res() response: Response): Promise<any> {
-    const file = await this.projectAggregate.getCommentImage(filename, projectId);
+    const file = await this.projectAggregate.getCommentImage(documentName, projectId);
     BlResponseHelper.setMessageAndCache(response, file);
   }
 
@@ -253,7 +253,7 @@ export class CnProjectsController {
   @UseInterceptors(FileInterceptor('file'))
   @Post(':projectId/document')
   async uploadDocument(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                       @BlUploadedFile() file: BlFile): Promise<CnDocument> {
+                       @BlUploadedFile() file: BlFile): Promise<CnProjectDocument> {
     return this.projectAggregate.uploadDocument(projectId, file);
   }
 
@@ -265,14 +265,14 @@ export class CnProjectsController {
   public async previewDocument(@Param('projectId') projectId: string,
                                @Param('filename') filename: string,
                                @Res() response: Response): Promise<any> {
-    const file = await this.projectAggregate.getDocument(projectId, filename);
+    const file = await this.projectAggregate.getUploadedDocument(projectId, filename);
     BlResponseHelper.setMessage(response, file);
   }
 
   @Get(':projectId/document/download/:filename(*)')
   public async downloadDocument(@Param('projectId') projectId: string,
                                 @Param('filename') filename: string): Promise<StreamableFile> {
-    const file = await this.projectAggregate.getDocument(projectId, filename);
+    const file = await this.projectAggregate.getUploadedDocument(projectId, filename);
 
     return BlResponseHelper.getFileResponse(file);
   }
@@ -284,51 +284,51 @@ export class CnProjectsController {
   }
 
   @Put('document/:documentId/move-to-trash')
-  moveToTrash(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<CnDocument> {
+  moveToTrash(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<CnProjectDocument> {
     return this.projectAggregate.moveDocumentToTrash(documentId);
   }
 
   @Put('document/:documentId/restore-from-trash')
-  restoreDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<CnDocument> {
+  restoreDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<CnProjectDocument> {
     return this.projectAggregate.restoreDocumentFromTrash(documentId);
   }
 
   @Get(':projectId/document')
   public getDocumentsByProject(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                                @Query('page', ParseIntPipe) page: number,
-                               @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnDocument>> {
+                               @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProjectDocument>> {
     return this.projectAggregate.getDocumentsByProject(projectId, false, page, size);
   }
 
   @Get(':projectId/document/trashed')
   public getTrashedDocumentByProject(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                                      @Query('page', ParseIntPipe) page: number,
-                                     @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnDocument>> {
+                                     @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProjectDocument>> {
     return this.projectAggregate.getDocumentsByProject(projectId, true, page, size);
   }
 
 
   @Put('document/:documentId/rename')
   public renameDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string,
-                        @Body() name: { name: string }): Promise<CnDocument> {
+                        @Body() name: { name: string }): Promise<CnProjectDocument> {
     return this.projectAggregate.renameDocument(documentId, name.name);
   }
 
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
   @Post(':projectId/constellab-document')
   public createConstellabDocument(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                                  @Body() name: { name: string }): Promise<CnConstellabDocument> {
+                                  @Body() name: { name: string }): Promise<CnConstellabDocument2> {
     return this.projectAggregate.createConstellabDocument(projectId, name.name);
   }
 
   @Put('constellab-document/:documentId')
   public updateConstellabDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string,
-                                  @Body() body: BlRichTextContent): Promise<CnConstellabDocument> {
+                                  @Body() body: BlRichTextContent): Promise<CnConstellabDocument2> {
     return this.projectAggregate.updateConstellabDocument(documentId, body);
   }
 
   @Get('constellab-document/:documentId')
-  public getConstellabDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<CnConstellabDocument> {
+  public getConstellabDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<CnConstellabDocument2> {
     return this.projectAggregate.getConstellabDocument(documentId);
   }
 
@@ -339,11 +339,11 @@ export class CnProjectsController {
     return this.projectAggregate.uploadImageToConstellabDocument(documentId, file);
   }
 
-  @Get('constellab-document/:documentId/image/:filename(*)')
+  @Get('constellab-document/:documentId/image/:documentName(*)')
   public async getConstellabDocumentImage(@Param('documentId') documentId: string,
-                                          @Param('filename') filename: string,
+                                          @Param('documentName') documentName: string,
                                           @Res() response: Response): Promise<any> {
-    const file = await this.projectAggregate.getConstellabDocumentImage(documentId, filename);
+    const file = await this.projectAggregate.getConstellabDocumentImage(documentId, documentName);
     BlResponseHelper.setMessage(response, file);
   }
 
@@ -392,5 +392,11 @@ export class CnProjectsController {
   @Post('experiment-migrate')
   async migrateDocTextEditor(): Promise<void> {
     return await this.projectAggregate.migrateExperimentProtocols();
+  }
+
+  @CnUserCategories(BlUserCategory.ADMIN)
+  @Post('project-document-migrate')
+  async projectDocumentMigrate(): Promise<void> {
+    return await this.projectAggregate.migrateProjectDocuments();
   }
 }

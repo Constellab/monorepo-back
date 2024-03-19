@@ -7,6 +7,7 @@ import {CnExternalLabApiModule} from '../../cn-external-lab-api/cn-external-lab-
 import {CnLabConfigsModule} from '../../cn-lab-configs/cn-lab-configs.module';
 import {CnUsersModule} from '../../cn-users/cn-users.module';
 import {CnProjectsModule} from '../cn-projects/cn-projects.module';
+import {CnProjectDocumentModule} from '../cn-project-documents/cn-project-document.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import {CnProjectsModule} from '../cn-projects/cn-projects.module';
     CnLabConfigsModule,
     CnUsersModule,
     CnProjectsModule,
+    CnProjectDocumentModule,
   ],
   providers: [CnReportsService],
   exports: [CnReportsService]

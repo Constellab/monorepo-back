@@ -2,14 +2,7 @@ import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post,
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstanceAggregateService} from './cn-lab-instance-aggregate.service';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
-import {
-  BlDtoHelper,
-  BlParseEnumPipe,
-  BlParsePipe,
-  BlPublic,
-  BlQuillMigrator,
-  BlSearchParams
-} from '@monorepo/back-core-lib';
+import {BlDtoHelper, BlParseEnumPipe, BlParsePipe, BlSearchParams} from '@monorepo/back-core-lib';
 import {ClPageI} from '@monorepo/core-lib';
 import {
   CnLabBackupOptionDTO,
@@ -521,14 +514,5 @@ export class CnLabInstancesController {
     });
     const data = zip.toBuffer();
     response.send(data);
-  }
-
-  // TODO TO DELETe
-  @BlPublic()
-  @Post('migrate-quill-json')
-  migrateQuillJson(@Body() body: any): any {
-    const migrator = new BlQuillMigrator(body);
-
-    return migrator.migrate();
   }
 }

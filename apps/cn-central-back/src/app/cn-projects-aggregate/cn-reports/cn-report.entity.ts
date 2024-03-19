@@ -4,10 +4,11 @@ import {Exclude, Type} from 'class-transformer';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
 import {CnUser} from '../../cn-users/cn-user.entity';
-import {BlLuxonDateTimeColumn, BlNotUpdatable, BlRichTextContent, BlRichTextI} from '@monorepo/back-core-lib';
+import {BlLuxonDateTimeColumn, BlNotUpdatable, BlRichTextContent} from '@monorepo/back-core-lib';
 import {DateTime} from 'luxon';
 import {CnEntity} from '../../cn-core/model/entities/cn.entity';
 import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
+import {CnProjectDocument} from '../cn-project-documents/cn-project-document.entity';
 
 @Entity('report')
 export class CnReport extends CnEntity {
@@ -18,10 +19,6 @@ export class CnReport extends CnEntity {
   @Exclude()
   @Column({type: 'simple-json', nullable: true})
   content: BlRichTextContent;
-
-  @Exclude()
-  @Column({type: 'simple-json', nullable: true})
-  contentOld: BlRichTextI;
 
   @Type(() => CnProject)
   @ManyToOne(() => CnProject, {nullable: false})
@@ -59,4 +56,8 @@ export class CnReport extends CnEntity {
 
   @BlLuxonDateTimeColumn({nullable: false})
   lastSyncAt: DateTime;
+
+  @Type(() => CnProjectDocument)
+  @ManyToOne(() => CnProjectDocument, {nullable: true})
+  document?: CnProjectDocument;
 }
