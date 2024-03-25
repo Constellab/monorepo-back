@@ -1,7 +1,6 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, ParseIntPipe, Query} from '@nestjs/common';
 import {HnBrickService} from './brick/hn-brick.service';
 import {
-  HnBrickListDTO,
   HnBrickVersionDownloadDTO,
   HnCreateBrickDTO,
   HnCreateTechnicalDocContent,
@@ -16,7 +15,7 @@ import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.enti
 import {HnBrickVersion, HnNewVersionDTO, HnReferenceDTO} from './brick-version/hn-brick-version.entity';
 import {HnBrickMajorVersionService} from './brick-major-version/hn-brick-major-version.service';
 import {HnBrickVersionService} from './brick-version/hn-brick-version.service';
-import {ClPageI, ClStringHelper} from '@monorepo/core-lib';
+import {ClPage, ClPageI, ClStringHelper} from '@monorepo/core-lib';
 import {DataSource} from 'typeorm';
 import {HnBrickMajorVersion} from './brick-major-version/hn-brick-major-version.entity';
 import {HnFolderService} from './folder/hn-folder.service';
@@ -56,8 +55,13 @@ export class HnBrickAggregateService {
 
   //------------------------------------- BRICKS -------------------------------------
 
-  async findBricks(): Promise<HnBrickListDTO[]> {
-    return this.brickService.findBrickList();
+  async findBricks(@Query('page', new ParseIntPipe()) page: number,
+                   @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnBrick>> {
+    return this.brickService.findBrickList(page, size);
+  }
+
+  async findBricksWithFilter(spacesFilter: string[], titleFilter: string, page: number, size: number): Promise<ClPage<HnBrick>> {
+    return this.brickService.findBrickListWithFilter(spacesFilter, titleFilter, page, size);
   }
 
   async findAllMap(): Promise<HnSitemapItemBase[]> {

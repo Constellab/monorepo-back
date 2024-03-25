@@ -26,7 +26,8 @@ import {HnStoryFileService} from '../story-file/hn-story-file.service';
     HnStoryFileModule
   ],
   exports: [
-    TypeOrmModule
+    TypeOrmModule,
+    HnStoryService
   ],
   controllers: [
     HnStoryController
@@ -35,7 +36,6 @@ import {HnStoryFileService} from '../story-file/hn-story-file.service';
     HnStoryService,
     HnTopicService,
     HnStoryAuthorService,
-    HnStoryService,
     HnStoryAuthorInviteService,
     HnStoryFileService
   ],

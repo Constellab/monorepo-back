@@ -65,6 +65,10 @@ import {
 } from './app/live-task-aggregate/live-task-version-brick-dependencies/hn-live-task-version-brick-dependencies.module';
 import {ScheduleModule} from '@nestjs/schedule';
 import {HnIconModule} from './app/icon/hn-icon.module';
+import {HnLikeAggregateModule} from './app/like-aggregate/hn-like-aggregate.module';
+import {HnLikeStoryModule} from './app/like-aggregate/like-story/hn-like-story.module';
+import {HnCommentAggregateModule} from './app/comment-aggregate/hn-comment-aggregate.module';
+import {HnCommentStoryModule} from './app/comment-aggregate/comment-story/hn-comment-story.module';
 
 function typeOrmConfig(
   configService: HnCoreConfigService,
@@ -224,7 +228,13 @@ function configureMailModule(
     HnLiveTaskVersionBrickDependenciesModule,
     HnLiveTaskAggregateModule,
 
-    HnIconModule
+    HnIconModule,
+
+    HnLikeAggregateModule,
+    HnLikeStoryModule,
+
+    HnCommentAggregateModule,
+    HnCommentStoryModule
   ],
   controllers: [],
   providers: [

@@ -1,11 +1,23 @@
-import {Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, Req, UseGuards} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Query,
+  Req,
+  UseGuards
+} from '@nestjs/common';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {HnBrick} from './brick/hn-brick.entity';
 import {HnBrickVersion, HnNewVersionDTO} from './brick-version/hn-brick-version.entity';
 import {HnDocumentation, HnDocumentationSearchDTO} from './documentation/hn-documentation.entity';
 import {HnNode} from './folder/hn-folder.dto';
 import {
-  HnBrickListDTO,
   HnBrickVersionDownloadDTO,
   HnCreateBrickDTO,
   HnCreateTechnicalDocContent,
@@ -17,10 +29,10 @@ import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.enti
 import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
 import {Request} from 'express';
 import {HnBrickAggregateService} from './hn-brick-aggregate.service';
-import {HnBrickUser} from './brick-user/hn-brick-user.entity';
 import {HnBrickUserInvite} from './brick-user-invite/hn-brick-user-invite.entity';
 import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
 import {HnUser} from '../users/hn-user.entity';
+import {ClPage} from '@monorepo/core-lib';
 
 @Controller('brick')
 @UseGuards(HnIsAdminGuard)
@@ -30,8 +42,9 @@ export class HnBrickController {
 
   @BlPublic()
   @Get()
-  find(): Promise<HnBrickListDTO[]> {
-    return this.brickAggregateService.findBricks();
+  find(@Query('page', new ParseIntPipe()) page: number,
+       @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnBrick>> {
+    return this.brickAggregateService.findBricks(page, size);
   }
 
   @BlPublic()
@@ -71,6 +84,15 @@ export class HnBrickController {
     id: string
   }> {
     return this.brickAggregateService.findRootFolderId(brickId, version);
+  }
+
+  @BlPublic()
+  @Post('filters')
+  async getBricksByFilter(@Body('spacesFilter') spacesFilter: string[],
+                          @Body('titleFilter') titleFilter: string,
+                          @Query('page', new ParseIntPipe()) page: number,
+                          @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnBrick>> {
+    return this.brickAggregateService.findBricksWithFilter(spacesFilter, titleFilter, page, size);
   }
 
   @BlPublic()

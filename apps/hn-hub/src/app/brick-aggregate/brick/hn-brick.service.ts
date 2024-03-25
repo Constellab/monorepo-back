@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {HnBrick, HnBrickVisibility} from './hn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, In, Repository} from 'typeorm';
+import {EntityManager, FindOptionsWhere, In, Like, Repository} from 'typeorm';
 import {HnDocumentation, HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
 import {HnDocumentationService} from '../documentation/hn-documentation.service';
 import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
@@ -24,9 +24,11 @@ import {HnGeneratedDocEntity} from '../../core/model/entities/hn-generated-doc.e
 import {HnCoreConfigService} from '../../core/modules/core-config/hn-core-config.service';
 import {HnTechnicalFolderService} from '../../technical-folder/hn-technical-folder.service';
 import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
-import {BlBadRequestException, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {BlAbstractPaginatedService, BlBadRequestException, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {HnUser} from '../../users/hn-user.entity';
 import {HnSpaceUserService} from '../../space-aggregate/space-user/hn-space-user.service';
+import {ClPage} from '@monorepo/core-lib';
+import {HnStory, HnStoryStatus} from '../../story/hn-story.entity';
 
 @Injectable()
 export class HnBrickService {
@@ -63,50 +65,77 @@ export class HnBrickService {
     return this.bricksRepository.find();
   }
 
-  async findBrickList(): Promise<HnBrickListDTO[]> {
-    let bricks: HnBrick[];
+  async findBrickList(page: number, size: number): Promise<ClPage<HnBrick>> {
     const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
+    let whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>;
     if (currentUser != null) {
       const userSpacesIds: string[] = (await this.spaceUserService.findActiveSpaceUsersByUserId(currentUser?.id)).map(su => su.spaceId);
-
-      bricks = this.isCurrentAdmin() ? await this.bricksRepository.find({order: {name: 'ASC'}}) :
-        await this.bricksRepository.find({
-          where: [{
-            brickUsers: {
-              user: {
-                id: HnCurrentUserHelper.getCurrentUser().id
-              }
-            }
-          }, {
-            visibility: HnBrickVisibility.PUBLIC
-          },
-          {
-            space: In(userSpacesIds)
+      whereConditions = this.isCurrentAdmin() ? {} : [{
+        brickUsers: {
+          user: {
+            id: HnCurrentUserHelper.getCurrentUser().id
           }
-          ],
-          order: {name: 'ASC'}
-        });
-    } else {
-      bricks = await this.bricksRepository.find({
-        where: {
-          visibility: HnBrickVisibility.PUBLIC
         }
-      });
+      }, {
+        visibility: HnBrickVisibility.PUBLIC
+      }, {
+        space: In(userSpacesIds)
+      }];
+    } else {
+      whereConditions = {
+        visibility: HnBrickVisibility.PUBLIC
+      };
     }
-    const res: HnBrickListDTO[] = [];
-    for (const brick of bricks) {
-      const resBrick = new HnBrickListDTO();
-      resBrick.id = brick.id;
-      resBrick.name = brick.name;
-      resBrick.description = brick.description;
-      resBrick.imageLink = brick.imageLink;
-      resBrick.isCertified = brick.isCertified;
-      resBrick.visibility = brick.visibility;
-      resBrick.lastVersion = (await this.brickMajorVersionService.getLatestBrickVersion(brick.name)).version;
-      resBrick.space = brick.space;
-      res.push(resBrick);
+    return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+      where: whereConditions
+    }, this.bricksRepository.manager, HnBrick);
+  }
+
+  async findBrickListWithFilter(spacesFilter: string[], titleFilter: string, page: number, size: number): Promise<ClPage<HnBrick>> {
+    const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
+    let whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>;
+    if (currentUser != null) {
+      const userSpacesIds: string[] = (await this.spaceUserService.findActiveSpaceUsersByUserId(currentUser?.id)).map(su => su.spaceId);
+      whereConditions = this.isCurrentAdmin() ? {} : [{
+        brickUsers: {
+          user: {
+            id: HnCurrentUserHelper.getCurrentUser().id
+          }
+        }
+      }, {
+        visibility: HnBrickVisibility.PUBLIC
+      }, {
+        space: In(userSpacesIds)
+      }];
+    } else {
+      whereConditions = {
+        visibility: HnBrickVisibility.PUBLIC
+      };
     }
-    return res;
+
+    if (titleFilter) {
+      if (whereConditions instanceof Array) {
+        whereConditions.map(wc => wc.name = Like(`%${titleFilter}%`));
+      } else {
+        whereConditions.name = Like(`%${titleFilter}%`);
+      }
+    }
+
+    if (spacesFilter?.length > 0 && currentUser) {
+      if (whereConditions instanceof Array) {
+        whereConditions.map(wc => wc.space = {
+          id: In(spacesFilter)
+        });
+      } else {
+        whereConditions.space = {
+          id: In(spacesFilter)
+        };
+      }
+    }
+
+    return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+      where: whereConditions
+    }, this.bricksRepository.manager, HnBrick);
   }
 
   async findByName(name: string): Promise<HnBrick | null> {

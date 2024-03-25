@@ -3,6 +3,8 @@ import {HnVersionState} from '../brick-major-version/hn-brick-major-version.enti
 import {HnBrickVisibility} from './hn-brick.entity';
 import {BlVersion} from '@monorepo/back-core-lib';
 import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
+import {HnUser} from '../../users/hn-user.entity';
+import {DateTime} from 'luxon';
 
 export interface HnBrickTransportDto {
   id: string;
@@ -98,11 +100,12 @@ export class HnBrickListDTO {
   id: string;
   name: string;
   description: string;
-  lastVersion: BlVersion;
   isCertified?: boolean;
   imageLink?: string;
   visibility: HnBrickVisibility;
   space?: HnSpace;
+  createdBy: HnUser;
+  createdAt: DateTime;
 }
 
 export class HnEditBrickDTO {

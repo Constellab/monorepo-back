@@ -14,6 +14,12 @@ export enum HnBrickVisibility {
   PUBLIC = 'public'
 }
 
+export class HnBrickFilter {
+  categories: string[];
+  topics: string[];
+  title: string;
+}
+
 @Unique(['name'])
 @Entity('Brick')
 export class HnBrick extends BlEntityWithId {

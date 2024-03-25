@@ -57,8 +57,12 @@ export class HnStoryService {
     story.title = data.title;
     story.category = data.category;
     story.content = BlNewRichText.emptyContent();
-
+    story.setLastModifiedDate()
     return await this.storyRepository.save(story);
+  }
+
+  async findById(id: string): Promise<HnStory> {
+    return await this.storyRepository.findOneBy({id: id})
   }
 
   async getStory(id: string): Promise<HnStory> {
@@ -230,6 +234,7 @@ export class HnStoryService {
     await this.checkAndValidateOwnerOrCoAuthor(id);
     const story = await this.getStory(id);
     story.title = title;
+    story.setLastModifiedDate();
     return this.storyRepository.save(story);
   }
 
@@ -237,6 +242,7 @@ export class HnStoryService {
     await this.checkAndValidateOwnerOrCoAuthor(id);
     const story = await this.getStory(id);
     story.category = category;
+    story.setLastModifiedDate();
     return this.storyRepository.save(story);
   }
 
@@ -247,6 +253,7 @@ export class HnStoryService {
     story.topics.push(t);
     await this.storyRepository.save(story);
     t.popularityIndex++;
+    story.setLastModifiedDate();
     return this.topicService.saveTopic(t);
   }
 
@@ -259,6 +266,7 @@ export class HnStoryService {
       topic.popularityIndex--;
       await this.topicService.saveTopic(topic);
     }
+    story.setLastModifiedDate();
     return this.storyRepository.save(story);
   }
 
@@ -274,6 +282,7 @@ export class HnStoryService {
     }
     story.content = story.contentEdition;
     story.firstParagraph = ClStringHelper.replaceLineBreaksBySpace(richText.getFirstParagraphsText());
+    story.setLastModifiedDate();
     return this.storyRepository.save(story);
   }
 
@@ -288,6 +297,7 @@ export class HnStoryService {
     } else if (firstFigureLink != null && story.mainPicture !== firstFigureLink && richText.isUsedFigure(story.mainPicture)) {
       story.mainPicture = firstFigureLink;
     }
+    story.setLastModifiedDate();
     return this.storyRepository.save(story);
   }
 
@@ -313,6 +323,7 @@ export class HnStoryService {
     file.originalname = storyId + '/images/' + ClStringHelper.generateUUID() + '.' + fileExt;
     story.mainPicture = await this.objectStorageService.uploadObject([this.getBucketConfig(), this.getBackupBucketConfig()], file,
       {generateRandomObjectName: false});
+    story.setLastModifiedDate();
     return await this.storyRepository.save(story);
   }
 
@@ -325,6 +336,7 @@ export class HnStoryService {
         'Add a picture to the story content before deleting the main picture');
     await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], story.mainPicture);
     story.mainPicture = new BlNewRichText(story.contentEdition  as BlRichTextContent).getFirstFigureLink();
+    story.setLastModifiedDate();
     return await this.storyRepository.save(story);
   }
 
@@ -430,13 +442,6 @@ export class HnStoryService {
 
   async getStoryCoAuthors(storyId: string): Promise<HnStoryAuthor[]> {
     return this.storyAuthorService.getStoryCoAuthorsByStoryId(storyId);
-  }
-
-  async updateStoryCoAuthors(id: string, newCoAuthorsMail: string[]): Promise<HnStory> {
-    await this.checkAndValidateOwnerOrCoAuthor(id, true);
-    const story: HnStory = await this.getStory(id);
-    await this.storyAuthorService.updateStoryCoAuthors(story, newCoAuthorsMail);
-    return this.storyRepository.save(story);
   }
 
   async getStoryCoAuthorsPendingInvites(id: string): Promise<HnStoryAuthorInvite[]> {
@@ -552,4 +557,26 @@ export class HnStoryService {
       await this.storyRepository.save(story);
     }
   }
+
+
+  ////////////////////////////////////// LIKES ////////////////////////////////////////
+  async addLike(story: HnStory, entityManager: EntityManager): Promise<HnStory> {
+    story.likes++;
+    const update = await entityManager.save(HnStory, story);
+    if(update == null){
+      throw new BlBadRequestException('Error during the like of the story');
+    }
+    return story;
+  }
+
+  async removeLike(story: HnStory, entityManager: EntityManager): Promise<HnStory> {
+    story.likes--;
+    const update = await entityManager.save(HnStory, story);
+    if(update == null){
+      throw new BlBadRequestException('Error during the unlike of the story');
+    }
+    return update;
+  }
+
+
 }

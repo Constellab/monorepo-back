@@ -42,7 +42,7 @@ export class HnStory extends BlEntityWithId {
   @Column({nullable: true})
   mainPicture?: string;
 
-  @ManyToMany(() => HnTopic, topic => topic.stories, {nullable: true, eager: true})
+  @ManyToMany(() => HnTopic, topic => topic.stories, {nullable: true})
   @JoinTable()
   topics?: HnTopic[];
 
@@ -71,6 +71,9 @@ export class HnStory extends BlEntityWithId {
   @ManyToOne(() => HnUser, {eager: true, nullable: true})
   createdBy: HnUser;
 
+  @Column({default: 0})
+  likes: number;
+
   @BeforeInsert()
   setCreatedDate(): void {
     this.createdBy = HnCurrentUserHelper.getCurrentUser();
@@ -78,19 +81,8 @@ export class HnStory extends BlEntityWithId {
   }
 
   @BeforeInsert()
-  @BeforeUpdate()
   setLastModifiedDate(): void {
     this.lastModifiedAt = ClDateHelper.getDate();
-  }
-
-  getAuthor(): HnUser {
-    return this.storyAuthors[0].user;
-  }
-
-  init(title: string, content: BlRichTextI, labels: HnTopic[]): void {
-    this.content = content;
-    this.title = title;
-    this.topics = labels;
   }
 
   /**
