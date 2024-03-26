@@ -579,4 +579,22 @@ export class HnStoryService {
   }
 
 
+  ////////////////////////////////////// COMMENTS ////////////////////////////////////////
+  async addComment(story: HnStory, entityManager: EntityManager): Promise<HnStory> {
+    story.comments++;
+    const update = await entityManager.save(HnStory, story);
+    if(update == null){
+      throw new BlBadRequestException('Error during the process of adding a comment to the story');
+    }
+    return story;
+  }
+
+  async removeComment(story: HnStory, entityManager: EntityManager): Promise<HnStory> {
+    story.comments--;
+    const update = await entityManager.save(HnStory, story);
+    if(update == null){
+      throw new BlBadRequestException('Error during the process of removing a comment from the story');
+    }
+    return story;
+  }
 }

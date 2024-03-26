@@ -11,7 +11,7 @@ import {
 } from './live-task/hn-live-task.dto';
 import {HnSpaceAggregateService} from '../space-aggregate/hn-space-aggregate.service';
 import {HnLiveTask} from './live-task/hn-live-task.entity';
-import {DataSource} from 'typeorm';
+import {DataSource, EntityManager} from 'typeorm';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnSpace} from '../space-aggregate/space/hn-space.entity';
 import {ClPage} from '@monorepo/core-lib';
@@ -288,5 +288,29 @@ export class HnLiveTaskAggregateService {
         }
       }
     }
+  }
+
+
+  ////////////////////////////////////////// LIKES /////////////////////////////////
+  public async addLike(liveTask: HnLiveTask, entityManager: EntityManager): Promise<HnLiveTask> {
+    liveTask.likes++;
+    return entityManager.save(liveTask, {listeners: false});
+  }
+
+  public async removeLike(liveTask: HnLiveTask, entityManager: EntityManager): Promise<HnLiveTask> {
+    liveTask.likes--;
+    return entityManager.save(liveTask, {listeners: false});
+  }
+
+
+  ///////////////////////////////////////// COMMENTS ///////////////////////////////
+  public async addComment(liveTask: HnLiveTask, entityManager: EntityManager): Promise<HnLiveTask> {
+    liveTask.comments++;
+    return entityManager.save(liveTask, {listeners: false});
+  }
+
+  public async removeComment(liveTask: HnLiveTask, entityManager: EntityManager): Promise<HnLiveTask> {
+    liveTask.comments--;
+    return entityManager.save(liveTask, {listeners: false});
   }
 }

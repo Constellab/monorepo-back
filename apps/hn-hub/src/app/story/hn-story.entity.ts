@@ -74,6 +74,9 @@ export class HnStory extends BlEntityWithId {
   @Column({default: 0})
   likes: number;
 
+  @Column({default: 0})
+  comments: number;
+
   @BeforeInsert()
   setCreatedDate(): void {
     this.createdBy = HnCurrentUserHelper.getCurrentUser();

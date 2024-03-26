@@ -16,7 +16,7 @@ import {HnBrickVersion, HnNewVersionDTO, HnReferenceDTO} from './brick-version/h
 import {HnBrickMajorVersionService} from './brick-major-version/hn-brick-major-version.service';
 import {HnBrickVersionService} from './brick-version/hn-brick-version.service';
 import {ClPage, ClPageI, ClStringHelper} from '@monorepo/core-lib';
-import {DataSource} from 'typeorm';
+import {DataSource, EntityManager} from 'typeorm';
 import {HnBrickMajorVersion} from './brick-major-version/hn-brick-major-version.entity';
 import {HnFolderService} from './folder/hn-folder.service';
 import {HnFolder} from './folder/hn-folder.entity';
@@ -119,6 +119,10 @@ export class HnBrickAggregateService {
 
   async editBrick(editedBrick: HnEditBrickDTO): Promise<HnBrick> {
     return this.brickService.editBrick(editedBrick);
+  }
+
+  async findBrickById(id: string): Promise<HnBrick> {
+    return this.brickService.findById(id);
   }
 
   async findBrickByName(name: string): Promise<HnBrick> {
@@ -393,5 +397,28 @@ export class HnBrickAggregateService {
     }
   }
 
+
+  ////////////////////////////////////////// LIKES /////////////////////////////////
+  public async addLike(brick: HnBrick, entityManager: EntityManager): Promise<HnBrick> {
+    brick.likes++;
+    return entityManager.save(brick, {listeners: false});
+  }
+
+  public async removeLike(brick: HnBrick, entityManager: EntityManager): Promise<HnBrick> {
+    brick.likes--;
+    return entityManager.save(brick, {listeners: false});
+  }
+
+
+  ///////////////////////////////////////// COMMENTS ///////////////////////////////
+  public async addComment(brick: HnBrick, entityManager: EntityManager): Promise<HnBrick> {
+    brick.comments++;
+    return entityManager.save(brick, {listeners: false});
+  }
+
+  public async removeComment(brick: HnBrick, entityManager: EntityManager): Promise<HnBrick> {
+    brick.comments--;
+    return entityManager.save(brick, {listeners: false});
+  }
 
 }

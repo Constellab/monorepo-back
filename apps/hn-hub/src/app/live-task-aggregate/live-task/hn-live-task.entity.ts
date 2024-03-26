@@ -42,6 +42,12 @@ export class HnLiveTask extends BlEntityWithId {
   @Column({nullable: true})
   parentLiveTaskVersionId?: string;
 
+  @Column({default: 0})
+  likes: number;
+
+  @Column({default: 0})
+  comments: number;
+
   static init(liveTaskDto: HnCreateLiveTaskDto, parentLiveTaskVersionId?: string, user?: HnUser): HnLiveTask {
     const liveTask = new HnLiveTask();
     liveTask.title = liveTaskDto.title;

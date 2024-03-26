@@ -23,6 +23,11 @@ export class HnLikeStoryService extends HnAbstractLikeService<HnStory> {
       throw new Error('Story already liked');
     }
     const story = await this.storyService.findById(storyId);
+
+    if (!story) {
+      throw new Error('Story not found');
+    }
+
     const like = new HnLikeStory();
     like.story = story;
 

@@ -69,6 +69,10 @@ import {HnLikeAggregateModule} from './app/like-aggregate/hn-like-aggregate.modu
 import {HnLikeStoryModule} from './app/like-aggregate/like-story/hn-like-story.module';
 import {HnCommentAggregateModule} from './app/comment-aggregate/hn-comment-aggregate.module';
 import {HnCommentStoryModule} from './app/comment-aggregate/comment-story/hn-comment-story.module';
+import {HnLikeLiveTaskModule} from './app/like-aggregate/like-live-task/hn-like-live-task.module';
+import {HnCommentLiveTaskModule} from './app/comment-aggregate/comment-live-task/hn-comment-live-task.module';
+import {HnCommentBrickModule} from './app/comment-aggregate/comment-brick/hn-comment-brick.module';
+import {HnLikeBrickModule} from './app/like-aggregate/like-brick/hn-like-brick.module';
 
 function typeOrmConfig(
   configService: HnCoreConfigService,
@@ -232,9 +236,13 @@ function configureMailModule(
 
     HnLikeAggregateModule,
     HnLikeStoryModule,
+    HnLikeLiveTaskModule,
+    HnLikeBrickModule,
 
     HnCommentAggregateModule,
-    HnCommentStoryModule
+    HnCommentStoryModule,
+    HnCommentLiveTaskModule,
+    HnCommentBrickModule
   ],
   controllers: [],
   providers: [

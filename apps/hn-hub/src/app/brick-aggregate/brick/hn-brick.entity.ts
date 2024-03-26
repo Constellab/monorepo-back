@@ -72,6 +72,12 @@ export class HnBrick extends BlEntityWithId {
   @ManyToOne(() => HnSpace, {eager: true})
   space?: HnSpace;
 
+  @Column({default: 0})
+  likes: number;
+
+  @Column({default: 0})
+  comments: number;
+
   @BeforeInsert()
   setCreatedByUser(): void {
     this.createdBy = HnCurrentUserHelper.getCurrentUser();
