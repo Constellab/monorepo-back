@@ -178,7 +178,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
         relations: ['brickMajorVersion']
       }
     );
-    if (!hasRight && !(BlCurrentUserHelper.getCurrentUser() as HnUser).isAdmin()) {
+    if (!hasRight && HnCurrentUserHelper.getCurrentUser()?.isAdmin()) {
       for (const bV of pageBrickVersion.objects) {
         if (bV.technicalInfo) {
           for (const tInfoKey of Object.keys(bV.technicalInfo)) {

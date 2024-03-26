@@ -395,8 +395,7 @@ export class HnBrickService {
   }
 
   userHasRightOnBrick(brick: HnBrick): boolean {
-    const currentUser = HnCurrentUserHelper.getCurrentUser();
-    return currentUser.id === brick.createdBy.id ||
+    return HnCurrentUserHelper.getCurrentUser()?.id === brick.createdBy?.id ||
       brick?.brickUsers.some(bu => bu.user.id === HnCurrentUserHelper.getCurrentUser()?.id);
   }
 }
