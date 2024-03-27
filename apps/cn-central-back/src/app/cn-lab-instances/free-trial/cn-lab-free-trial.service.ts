@@ -68,10 +68,9 @@ export class CnLabFreeTrialService extends BlAbstractService<CnLabFreeTrial> {
       trialDto.trialStatus = 'EXPIRED_AND_DELETED';
       return trialDto;
     }
+
     // retrieve for how long the lab was running
-    const runStatus = await this.labStatusService.getLabInstanceRunningKpis(freeTrials.labInstance.id, {
-      period: 'ALL'
-    });
+    const totalRunningDuration = await this.labStatusService.getLabTotalRunningDuration(freeTrials.labInstance.id);
 
     if (freeTrials.isExpired()) {
       if (freeTrials.labInstance.currentStatus.status === CnLabInstanceStatus.NO_SERVER) {
@@ -79,13 +78,13 @@ export class CnLabFreeTrialService extends BlAbstractService<CnLabFreeTrial> {
       } else {
         trialDto.trialStatus = 'EXPIRED';
       }
-    } else if (runStatus.runningDuration > freeTrials.usageLimitInHours * 3600) {
+    } else if (totalRunningDuration > freeTrials.usageLimitInHours * 3600) {
       trialDto.trialStatus = 'EXPIRED';
     } else {
       trialDto.trialStatus = 'IN_PROGRESS';
     }
 
-    trialDto.currentUsageInSeconds = runStatus.runningDuration;
+    trialDto.currentUsageInSeconds = totalRunningDuration;
     trialDto.deletionDate = freeTrials.getDeletionDate();
 
     return trialDto;

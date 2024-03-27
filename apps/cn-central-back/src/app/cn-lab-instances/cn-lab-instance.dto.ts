@@ -1,7 +1,7 @@
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
-import {CnServerInfo} from '../cn-servers-info/cn-server-info.entity';
+import {CnServerInfo} from '../cn-servers-info/server-info/cn-server-info.entity';
 import {BlBaseEntityDto, BlDtoHelper} from '@monorepo/back-core-lib';
 import {CnBrickVersionDTO} from '../cn-bricks/cn-brick.dto';
 import {CnLabConfigDto} from '../cn-lab-configs/cn-lab-config.dto';
@@ -105,17 +105,40 @@ export class CnLabInstanceUpdateAdminDTO {
   @Type(() => CnSpace)
   space: CnSpace;
 
+  volumeSize: number;
+  volumeType: CnLabInstanceVolumeType;
+
   serverInstanceId: string;
   serverVolumeId: string;
   desktopPlatform?: CnLabDesktopPlatform;
 }
 
-export class CnLabInstanceCreateAdminDTO extends CnLabInstanceUpdateAdminDTO{
+export class CnLabInstanceCreateAdminDTO extends CnLabInstanceUpdateAdminDTO {
   @Type(() => CnCloudProviderRegion)
   dailyBackupRegion: CnCloudProviderRegion;
 
   @Type(() => CnCloudProviderRegion)
   weeklyBackupRegion: CnCloudProviderRegion;
+}
+
+export class CnLabCloudCreateDTO {
+  name: string;
+
+  @Type(() => CnServerInfo)
+  serverInfo: CnServerInfo;
+
+  @Type(() => CnCloudProviderRegion)
+  region: CnCloudProviderRegion;
+
+  volumeSize: number;
+
+  @Type(() => CnCloudProviderRegion)
+  dailyBackupRegion: CnCloudProviderRegion;
+
+  @Type(() => CnCloudProviderRegion)
+  weeklyBackupRegion: CnCloudProviderRegion;
+
+  labConfig: CnLabInstanceConfigDTO;
 }
 
 export class CnLabInstanceCreateDesktopDTO {
@@ -158,7 +181,7 @@ export interface CnRequestLabInstance {
  * Only return the region for the user and not the bucket,
  * the user does not need the bucket name (as it is the same for all the lab instances)
  */
-export class CnLabBackupOptionDTO{
+export class CnLabBackupOptionDTO {
   frequency1: CnLabBackupFrequency;
   @Type(() => CnCloudProviderRegion)
   region1: CnCloudProviderRegion;
@@ -178,7 +201,7 @@ export class CnLabManagerStatus {
   version: string;
   biota: {
     exists: boolean;
-    dbUrl ?: string;
+    dbUrl?: string;
   };
   isConfigured: boolean;
   isInitialized: boolean;

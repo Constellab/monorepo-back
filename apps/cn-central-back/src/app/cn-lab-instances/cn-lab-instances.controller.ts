@@ -6,6 +6,7 @@ import {BlDtoHelper, BlParseEnumPipe, BlParsePipe, BlSearchParams} from '@monore
 import {ClPageI} from '@monorepo/core-lib';
 import {
   CnLabBackupOptionDTO,
+  CnLabCloudCreateDTO,
   CnLabFindOneDto,
   CnLabInstanceAdminDto,
   CnLabInstanceConfigDTO,
@@ -51,6 +52,13 @@ export class CnLabInstancesController {
     Promise<CnLabInstanceAdminDto> {
     const labInstance = await this.aggregateService.createAdmin(createLabInstance);
     return BlDtoHelper.toDto(CnLabInstanceAdminDto, labInstance);
+  }
+
+  @Post('cloud')
+  async createCloudLab(@Body(new BlParsePipe(CnLabCloudCreateDTO)) createLabInstance: CnLabCloudCreateDTO):
+    Promise<CnLabInstanceDto> {
+    const labInstance = await this.aggregateService.createCloudLab(createLabInstance);
+    return BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
   }
 
   // use the DTO to get the apiKey (which is excluded)

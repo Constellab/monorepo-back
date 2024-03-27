@@ -18,12 +18,15 @@ import {CnReportsService} from '../cn-projects-aggregate/cn-reports/cn-reports.s
 import {BlBadRequestException, BlSearchBuilder, BlSearchParams} from '@monorepo/back-core-lib';
 import {EventEmitter2} from '@nestjs/event-emitter';
 import {cnLabInstanceEventName, CnLabInstanceStatusChangedEvent} from './cn-lab-instance.event';
+import {
+  CnCloudProviderRegionType
+} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 
 @Injectable()
 export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInstance, CnLabInstanceStatus> {
 
   constructor(@InjectRepository(CnLabInstance) private repository: Repository<CnLabInstance>,
-              @InjectRepository(CnLabInstanceStatusHistory) statusRepo: Repository<CnLabInstanceStatusHistory>,
+              @InjectRepository(CnLabInstanceStatusHistory) private statusRepo: Repository<CnLabInstanceStatusHistory>,
               private experimentService: CnExperimentsService,
               private reportService: CnReportsService,
               private eventEmitter: EventEmitter2,
@@ -62,12 +65,12 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
         throw new BlBadRequestException('Missing parameters for cloud instance');
       }
 
-      if(!entity.region.isCloud()){
-        throw new BlBadRequestException('Region must be a cloud region');
-      }
-
       if (entity.region.cloudProvider.id !== entity.serverInfo.cloudProvider.id) {
         throw new BlBadRequestException('Cloud Provider and Region must be the same');
+      }
+
+      if(entity.region.type !== CnCloudProviderRegionType.SERVER){
+        throw new BlBadRequestException('Region must be a server region');
       }
 
       entity.desktopPlatform = null;
@@ -241,6 +244,21 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
 
   public markInstanceAsServerConfigured(id: string): Promise<CnLabInstance> {
     return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_CONFIGURED, id);
+  }
+
+  /**
+   * Return true if the lab was started once
+   * @param id
+   */
+  public async labHasBeenRunning(id: string): Promise<boolean> {
+    const runningStatus = await this.statusRepo.findOne({
+      where: {
+        entity: {id: id},
+        status: CnLabInstanceStatus.LAB_RUNNING
+      }
+    });
+
+    return !!runningStatus;
   }
 
   // override the status change event to emit a lab instance event

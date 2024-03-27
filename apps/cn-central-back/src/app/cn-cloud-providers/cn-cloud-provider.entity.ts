@@ -12,4 +12,10 @@ export class CnCloudProvider extends CnBaseEntity {
 
   @Column({nullable: false, length: 50})
   name: CnCloudProviderName;
+
+  @Column({nullable: true})
+  description: string;
+
+  @Column({nullable: true})
+  logo: string;
 }

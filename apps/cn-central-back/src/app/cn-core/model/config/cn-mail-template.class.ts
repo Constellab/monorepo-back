@@ -12,6 +12,7 @@ export enum CnMailTemplate {
   two_factor_authentication = 'cn-two-factor-authentication',
   request_lab_instance = 'cn-request-lab-instance',
   project_notification = 'cn-project-notification',
+  lab_started = 'cn-lab-started',
 
   // Mail send by the lab
   experiment_finished = 'cn-experiment-finished',

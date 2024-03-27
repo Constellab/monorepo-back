@@ -12,8 +12,8 @@ import {ClStringHelper} from '@monorepo/core-lib';
 import {
   CnCloudProviderRegion
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {CnServersInfoService} from '../../cn-servers-info/cn-servers-info.service';
-import {CnServerInfo} from '../../cn-servers-info/cn-server-info.entity';
+import {CnServersInfoService} from '../../cn-servers-info/server-info/cn-servers-info.service';
+import {CnServerInfo} from '../../cn-servers-info/server-info/cn-server-info.entity';
 import {DataSource, EntityManager} from 'typeorm';
 import {CnLabGreenOptionService} from '../green-option/cn-lab-green-option.service';
 import {CnLabGreenOptionFormDto} from '../green-option/cn-lab-green-option.dto';
@@ -94,7 +94,7 @@ export class CnLabFreeTrialAggregateService {
   }
 
   private async getRegion(): Promise<CnCloudProviderRegion> {
-    return await this.cloudProviderAggregateService.findRegionByCloudProviderNameAndTechnicalName(
+    return await this.cloudProviderAggregateService.findServerRegionByCloudProviderNameAndTechnicalName(
       CnLabFreeTrial.CLOUD_PROVIDER, CnLabFreeTrial.CLOUD_PROVIDER_REGION);
   }
 

@@ -19,6 +19,7 @@ import {CnLabFreeTrialService} from './free-trial/cn-lab-free-trial.service';
 import {CnLabFreeTrial} from './free-trial/cn-lab-free-trial.entity';
 import {CnLabBackupBucket} from './backup/cn-lab-backup.dto';
 import {CnLabManagerService} from './cn-lab-manager.service';
+import {CnLabInstanceMailService} from './mail/cn-lab-instance-mail.service';
 
 /**
  * Service that gather all the cron jobs for the lab instances
@@ -34,7 +35,8 @@ export class CnLabInstancesCron {
               private labManagerService: CnLabManagerService,
               private externalLabApiService: CnExternalLabApiService,
               private labAggregateService: CnLabInstanceAggregateService,
-              private freeTrialService: CnLabFreeTrialService) {
+              private freeTrialService: CnLabFreeTrialService,
+              private labMailService: CnLabInstanceMailService) {
   }
 
   /**

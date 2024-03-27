@@ -1,11 +1,11 @@
 import {Column, Entity, ManyToOne, OneToMany, Unique} from 'typeorm';
 import {CnDiskType} from './cn-disk-type.enum';
-import {CnLabInstance} from '../cn-lab-instances/cn-lab-instance.entity';
+import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
 import {BlEntityWithId} from '@monorepo/back-core-lib';
-import {CnCloudProvider} from '../cn-cloud-providers/cn-cloud-provider.entity';
+import {CnCloudProvider} from '../../cn-cloud-providers/cn-cloud-provider.entity';
 
 // unique key on Name/Host
-@Unique('UQ_NAME', ['name', 'cloudProvider'])
+@Unique('UQ_NAME', ['technicalName', 'cloudProvider'])
 @Entity('server_info')
 export class CnServerInfo extends BlEntityWithId {
 
@@ -13,8 +13,12 @@ export class CnServerInfo extends BlEntityWithId {
   cloudProvider: CnCloudProvider;
 
   // the ram of the server in MB
-  @Column({nullable: false, length: 30})
+  @Column({nullable: false, length: 50})
   name: string;
+
+  // name of the server in the cloud provider
+  @Column({nullable: false, length: 50})
+  technicalName: string;
 
   // the ram of the server in MB
   @Column({nullable: false, type: 'int'})

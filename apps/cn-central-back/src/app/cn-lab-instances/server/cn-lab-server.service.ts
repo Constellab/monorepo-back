@@ -164,15 +164,15 @@ export class CnLabServerService {
     const regionName = labInstance.region.technicalName;
 
     await this.labInstanceService.updateServerTask(labInstance.id,
-      `Creating server instance ${labInstance.serverInfo.name} in cloud provider ${service.getName()}`,
+      `Creating server instance ${labInstance.serverInfo.technicalName} in cloud provider ${service.getName()}`,
       CnLabInstanceServerTaskStatus.RUNNING
     );
     // eslint-disable-next-line max-len
-    this.logger.log(`Creating server instance ${labInstance.name} ${labInstance.serverInfo.name} for lab ${labInstance.id} in cloud provider ${service.getName()}`);
+    this.logger.log(`Creating server instance ${labInstance.name} ${labInstance.serverInfo.technicalName} for lab ${labInstance.id} in cloud provider ${service.getName()}`);
     const instanceRequest: CnCpCreateInstanceRequest = {
       name: labInstance.name,
       region: regionName,
-      serverName: labInstance.serverInfo.name,
+      serverName: labInstance.serverInfo.technicalName,
       billing: labInstance.billingMode,
     };
     const serverInstance = await service.createInstance(instanceRequest);

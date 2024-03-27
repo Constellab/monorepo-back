@@ -3,7 +3,7 @@ import {Exclude, Expose, Type} from 'class-transformer';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnEntityWithStatus} from '../cn-core/model/entities/cn-entity-with-status.entity';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
-import {CnServerInfo} from '../cn-servers-info/cn-server-info.entity';
+import {CnServerInfo} from '../cn-servers-info/server-info/cn-server-info.entity';
 import {CnLabInstanceServerTaskStatus, CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 import {randomBytes} from 'crypto';
 import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
@@ -36,13 +36,18 @@ export enum CnLabDesktopPlatform {
   MAC = 'MAC'
 }
 
+export enum CnLabDomain{
+  CONSTELLAB_APP = 'constellab.app',
+  GENCOVERY_IO = 'gencovery.io'
+}
+
 /**
  * A lab instance is a running lab
  */
 @Entity('lab_instance')
 export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory> {
 
-  public static readonly SUPPORTED_MAIN_DOMAINS = ['constellab.app', 'gencovery.io'];
+  public static readonly SUPPORTED_MAIN_DOMAINS: string[] = [CnLabDomain.CONSTELLAB_APP, CnLabDomain.GENCOVERY_IO];
   public static readonly SPACE_API_ROUTE = 'space-api';
   public static readonly S3_API_ROUTE = 's3-server/v1';
   public static readonly CORE_API_ROUTE = 'core-api';

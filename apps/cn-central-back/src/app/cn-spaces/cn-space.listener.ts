@@ -14,7 +14,7 @@ export class CnSpaceListener {
   }
 
   @OnEvent(cnProjectDocumentEventName)
-  async handleProjectEvent(event: CnProjectDocumentEvent) {
+  async handleProjectEvent(event: CnProjectDocumentEvent): Promise<void> {
     // When a document is uploaded in a space, we need to refresh the space storage usage
     await this.spaceAggregatorService.refreshSpaceStorageUsage(event.spaceId);
   }

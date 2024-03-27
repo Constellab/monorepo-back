@@ -1,9 +1,12 @@
 import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
 import {CnCloudProvider} from './cn-cloud-provider.entity';
 import {ClPage} from '@monorepo/core-lib';
-import {BlParsePipe} from '@monorepo/back-core-lib';
+import {BlParseEnumPipe, BlParsePipe} from '@monorepo/back-core-lib';
 import {CnCloudProviderAggregateService} from './cn-cloud-provider-aggregate.service';
-import {CnCloudProviderRegion} from './cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import {
+  CnCloudProviderRegion,
+  CnCloudProviderRegionType
+} from './cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 
 @Controller('cloud-providers')
 export class CnCloudProvidersController {
@@ -17,14 +20,13 @@ export class CnCloudProvidersController {
     return this.service.createCloudProvider(cloudProvider);
   }
 
-
   @Put()
   public async update(@Body(new BlParsePipe(CnCloudProvider)) cloudProvider: CnCloudProvider): Promise<CnCloudProvider> {
     return this.service.updateCloudProvider(cloudProvider);
   }
 
   @Delete(':id')
-  public async delete(@Param('id') id: string): Promise<void> {
+  public async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.service.deleteCloudProvider(id);
   }
 
@@ -55,27 +57,16 @@ export class CnCloudProvidersController {
 
   @Get('regions')
   public async getAllRegions(@Query('page', ParseIntPipe) page: number,
-                          @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnCloudProviderRegion>> {
+                             @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnCloudProviderRegion>> {
     return this.service.getAllRegions(page, size);
   }
 
-  @Get('regions/s3')
-  public async getAllS3Regions(@Query('page', ParseIntPipe) page: number,
-                          @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnCloudProviderRegion>> {
-    return this.service.getAllS3Regions(page, size);
+  @Get('regions/type/:type')
+  public async getAllS3Regions(@Param('type', new BlParseEnumPipe(CnCloudProviderRegionType)) type: CnCloudProviderRegionType,
+                               @Query('page', ParseIntPipe) page: number,
+                               @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnCloudProviderRegion>> {
+    return this.service.findRegionByType(type, page, size);
   }
 
-
-  @Get('regions/current-space')
-  public async getRegionsInCurrentSpace(@Query('page', ParseIntPipe) page: number,
-                                        @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnCloudProviderRegion>> {
-    return this.service.getRegionsInCurrentSpace(page, size);
-  }
-
-  @Get('regions/current-space/s3')
-  public async getS3RegionInCurrentSpace(@Query('page', ParseIntPipe) page: number,
-                                         @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnCloudProviderRegion>> {
-    return this.service.getS3RegionInCurrentSpace(page, size);
-  }
 
 }

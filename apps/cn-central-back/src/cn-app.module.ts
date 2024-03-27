@@ -20,7 +20,6 @@ import {CnLabInstancesModule} from './app/cn-lab-instances/cn-lab-instances.modu
 import {CnJwtAuthGuard} from './app/cn-core/guards/cn-jwt-auth.guard';
 import {CnUserCategoryGuard} from './app/cn-core/guards/cn-user-category-guard.service';
 import {CnExternalLabsModule} from './app/cn-external-labs/cn-external-labs.module';
-import {CnServersInfoModule} from './app/cn-servers-info/cn-servers-info.module';
 import {CnCoreExceptionHandlerFilter} from './app/cn-core/filters/cn-core-exception-handler.filter';
 import {CnReportsModule} from './app/cn-projects-aggregate/cn-reports/cn-reports.module';
 import {clDefaultLang} from '@monorepo/core-lib';
@@ -64,6 +63,7 @@ import {ThrottlerModule} from '@nestjs/throttler';
 import {EventEmitterModule} from '@nestjs/event-emitter';
 import {CnActivityModule} from './app/cn-activity/cn-activity.module';
 import {CnUserAccountModule} from './app/cn-users/cn-user-accounts/cn-user-account.module';
+import {CnServerInfoAggregateModule} from './app/cn-servers-info/cn-server-info-aggregate.module';
 
 function typeOrmConfig(configService: CnCoreConfigService, persistenceEventService: BlPersistenceEventService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();
@@ -211,7 +211,7 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     CnSpacesModule,
     CnLabInstancesModule,
     CnExternalLabsModule,
-    CnServersInfoModule,
+    CnServerInfoAggregateModule,
     CnFrontErrorsModule,
     SnSmartDbModule,
     CnStatsModule,

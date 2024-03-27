@@ -37,7 +37,7 @@ import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.servic
 import {CnAuthModule} from '../cn-auth/cn-auth.module';
 import {CnLabFreeTrialService} from './free-trial/cn-lab-free-trial.service';
 import {CnCloudProvidersModule} from '../cn-cloud-providers/cn-cloud-providers.module';
-import {CnServersInfoModule} from '../cn-servers-info/cn-servers-info.module';
+import {CnServersInfoModule} from '../cn-servers-info/server-info/cn-servers-info.module';
 import {CnSpacesModule} from '../cn-spaces/cn-spaces.module';
 import {CnLabInstanceStatusService} from './status/cn-lab-instance-status.service';
 import {CnLabListener} from './cn-lab.listener';
@@ -49,6 +49,7 @@ import {CnLabBackupOptionService} from './backup/cn-lab-backup-option.service';
 import {CnLabBackupHistoryService} from './backup/cn-lab-backup-history.service';
 import {CnLabInstanceListener} from './cn-lab-instance.listener';
 import {CnCloudProviderOutscaleService} from './server/outscale/cn-cloud-provider-outscale.service';
+import {CnServerInfoPriceModule} from '../cn-servers-info/price/cn-server-info-price.module';
 
 @Module({
   imports: [
@@ -76,6 +77,7 @@ import {CnCloudProviderOutscaleService} from './server/outscale/cn-cloud-provide
     CnExperimentsModule,
     CnReportsModule,
     CnObjectStoragesModule,
+    CnServerInfoPriceModule,
 
     // Next modules are imported for the trial service
     CnCloudProvidersModule,

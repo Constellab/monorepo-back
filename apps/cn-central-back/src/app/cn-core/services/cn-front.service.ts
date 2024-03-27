@@ -43,6 +43,10 @@ export class CnFrontService {
     return this.getSpaceWebsiteURL(spaceDomain) + '/signup-space/' + invitationCode;
   }
 
+  public getLabInstanceUrl(spaceDomain: string, labInstanceId: string): string {
+    return this.getSpaceWebsiteURL(spaceDomain) + '/lab/' + labInstanceId;
+  }
+
   /**
    * Get the base url of the website (without the url of the space)
    */
