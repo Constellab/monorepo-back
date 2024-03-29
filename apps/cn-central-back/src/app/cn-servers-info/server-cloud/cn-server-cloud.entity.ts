@@ -1,20 +1,21 @@
-import {Column, Entity, ManyToOne, OneToMany, Unique} from 'typeorm';
+import {Column, Entity, ManyToOne, Unique} from 'typeorm';
 import {CnDiskType} from './cn-disk-type.enum';
-import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
-import {BlEntityWithId} from '@monorepo/back-core-lib';
 import {CnCloudProvider} from '../../cn-cloud-providers/cn-cloud-provider.entity';
+import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
+import {CnServerStandard} from '../server-standard/cn-server-standard.entity';
 
-// unique key on Name/Host
+/**
+ * Contains the servers available for the cloud providers
+ */
 @Unique('UQ_NAME', ['technicalName', 'cloudProvider'])
-@Entity('server_info')
-export class CnServerInfo extends BlEntityWithId {
+@Entity('server_cloud')
+export class CnServerCloud extends CnBaseEntity {
 
-  @ManyToOne(() => CnCloudProvider, {nullable: true, eager: true})
+  @ManyToOne(() => CnCloudProvider, {nullable: false, eager: true})
   cloudProvider: CnCloudProvider;
 
-  // the ram of the server in MB
-  @Column({nullable: false, length: 50})
-  name: string;
+  @ManyToOne(() => CnServerStandard, {nullable: false, eager: true})
+  serverStandard: CnServerStandard;
 
   // name of the server in the cloud provider
   @Column({nullable: false, length: 50})
@@ -47,8 +48,4 @@ export class CnServerInfo extends BlEntityWithId {
   // info about the GPU
   @Column({nullable: true, length: 30})
   gpuType: string;
-
-  @OneToMany(() => CnLabInstance,
-    (labInstance: CnLabInstance) => labInstance.serverInfo)
-  labInstances: CnLabInstance[];
 }

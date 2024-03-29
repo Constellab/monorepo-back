@@ -11,7 +11,7 @@ import {
   CnLabInstanceStatusRunRequest,
   CnLabInstanceStatusRunResponse
 } from './cn-lab-instance-status.dto';
-import {CnServerPrices} from '../../cn-servers-info/price/cn-server-prices.class';
+import {CnServerPrices} from '../../cn-servers-info/server-price/cn-server-price.dto';
 
 
 @Injectable()

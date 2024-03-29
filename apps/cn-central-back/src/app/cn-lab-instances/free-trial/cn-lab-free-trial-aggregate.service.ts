@@ -12,8 +12,8 @@ import {ClStringHelper} from '@monorepo/core-lib';
 import {
   CnCloudProviderRegion
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {CnServersInfoService} from '../../cn-servers-info/server-info/cn-servers-info.service';
-import {CnServerInfo} from '../../cn-servers-info/server-info/cn-server-info.entity';
+import {CnServerCloudService} from '../../cn-servers-info/server-cloud/cn-server-cloud.service';
+import {CnServerCloud} from '../../cn-servers-info/server-cloud/cn-server-cloud.entity';
 import {DataSource, EntityManager} from 'typeorm';
 import {CnLabGreenOptionService} from '../green-option/cn-lab-green-option.service';
 import {CnLabGreenOptionFormDto} from '../green-option/cn-lab-green-option.dto';
@@ -39,7 +39,7 @@ export class CnLabFreeTrialAggregateService {
               private brickService: CnBricksService,
               private labConfigService: CnLabConfigsService,
               private cloudProviderAggregateService: CnCloudProviderAggregateService,
-              private serversInfoService: CnServersInfoService,
+              private serversInfoService: CnServerCloudService,
               private datasource: DataSource,
               private greenOptions: CnLabGreenOptionService,
               private labUserService: CnLabInstanceUserService,
@@ -65,7 +65,7 @@ export class CnLabFreeTrialAggregateService {
     labInstance.type = CnLabInstanceType.CLOUD;
     labInstance.labConfig = await this.getLabConfig();
     labInstance.region = await this.getRegion();
-    labInstance.serverInfo = await this.getServerInfo();
+    labInstance.serverCloud = await this.getServerCloud();
     labInstance.volumeSize = CnLabFreeTrial.VOLUME_SIZE;
     labInstance.volumeType = CnLabFreeTrial.VOLUME_TYPE;
     labInstance.billingMode = CnLabFreeTrial.BILLING_MODE;
@@ -98,7 +98,7 @@ export class CnLabFreeTrialAggregateService {
       CnLabFreeTrial.CLOUD_PROVIDER, CnLabFreeTrial.CLOUD_PROVIDER_REGION);
   }
 
-  private async getServerInfo(): Promise<CnServerInfo> {
+  private async getServerCloud(): Promise<CnServerCloud> {
     return await this.serversInfoService.findByCloudProviderAndName(CnLabFreeTrial.CLOUD_PROVIDER,
       CnLabFreeTrial.CLOUD_PROVIDER_INSTANCE_TYPE);
   }

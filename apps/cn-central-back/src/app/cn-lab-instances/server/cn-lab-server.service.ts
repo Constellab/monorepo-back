@@ -163,16 +163,22 @@ export class CnLabServerService {
 
     const regionName = labInstance.region.technicalName;
 
+    const labServer = await this.labInstanceService.getLabServerCloud(labInstance.id);
+
+    if(!labServer) {
+      throw new BlBadRequestException(`Server cloud not found for lab ${labInstance.id}`);
+    }
+
     await this.labInstanceService.updateServerTask(labInstance.id,
-      `Creating server instance ${labInstance.serverInfo.technicalName} in cloud provider ${service.getName()}`,
+      `Creating server instance ${labServer.technicalName} in cloud provider ${service.getName()}`,
       CnLabInstanceServerTaskStatus.RUNNING
     );
     // eslint-disable-next-line max-len
-    this.logger.log(`Creating server instance ${labInstance.name} ${labInstance.serverInfo.technicalName} for lab ${labInstance.id} in cloud provider ${service.getName()}`);
+    this.logger.log(`Creating server instance ${labInstance.name} ${labServer.technicalName} for lab ${labInstance.id} in cloud provider ${service.getName()}`);
     const instanceRequest: CnCpCreateInstanceRequest = {
       name: labInstance.name,
       region: regionName,
-      serverName: labInstance.serverInfo.technicalName,
+      serverName: labServer.technicalName,
       billing: labInstance.billingMode,
     };
     const serverInstance = await service.createInstance(instanceRequest);
