@@ -49,7 +49,7 @@ import {CnLabBackupOptionService} from './backup/cn-lab-backup-option.service';
 import {CnLabBackupHistoryService} from './backup/cn-lab-backup-history.service';
 import {CnLabInstanceListener} from './cn-lab-instance.listener';
 import {CnCloudProviderOutscaleService} from './server/outscale/cn-cloud-provider-outscale.service';
-import {CnServerPriceModule} from '../cn-servers-info/price/cn-server-price.module';
+import {CnServerPriceModule} from '../cn-servers-info/server-price/cn-server-price.module';
 
 @Module({
   imports: [
