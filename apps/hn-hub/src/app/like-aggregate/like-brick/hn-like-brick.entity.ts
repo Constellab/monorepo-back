@@ -5,8 +5,8 @@ import {HnBrick} from '../../brick-aggregate/brick/hn-brick.entity';
 
 
 @Entity('like_brick')
-export class HnLikeBrick extends HnAbstractLikeEntity {
+export class HnLikeBrick extends HnAbstractLikeEntity<HnBrick> {
   @Type(() => HnBrick)
   @ManyToOne(() => HnBrick, {eager: true})
-  brick: HnBrick;
+  entity: HnBrick;
 }

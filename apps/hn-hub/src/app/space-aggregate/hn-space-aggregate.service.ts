@@ -42,7 +42,9 @@ export class HnSpaceAggregateService {
     const spaceObj = await this.spaceService.findOne(space.id);
     if(!spaceObj){
       await this.spaceService.create(space);
+      return;
     }
+    await this.spaceService.update(space);
   }
 
   public async checkIfSpaceExists(spaceId: string): Promise<void> {

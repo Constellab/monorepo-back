@@ -3,79 +3,39 @@ import {HnAbstractLikeService} from '../like-core/hn-abstract-like.service';
 import {HnLikeStory} from './hn-like-story.entity';
 import {HnStoryService} from '../../story/hn-story.service';
 import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, Repository} from 'typeorm';
-import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
+import {DataSource, EntityManager, Repository} from 'typeorm';
 import {HnStory} from '../../story/hn-story.entity';
+import {HnLikeBrick} from '../like-brick/hn-like-brick.entity';
 
 @Injectable()
 export class HnLikeStoryService extends HnAbstractLikeService<HnStory> {
   constructor(
-    @InjectRepository(HnLikeStory)
-    private likeStoryRepository: Repository<HnLikeStory>,
     private storyService: HnStoryService,
-    private dataSource: DataSource
+    @InjectRepository(HnLikeStory) likeStoryRepository: Repository<HnLikeStory>,
+    dataSource: DataSource
   ) {
-    super();
+    super(likeStoryRepository, dataSource);
   }
 
-  async like(storyId: string): Promise<HnStory> {
-    if (await this.checkIfLiked(storyId)) {
-      throw new Error('Story already liked');
-    }
-    const story = await this.storyService.findById(storyId);
-
-    if (!story) {
-      throw new Error('Story not found');
-    }
-
-    const like = new HnLikeStory();
-    like.story = story;
-
-    return await this.dataSource.transaction(async entityManager => {
-      const newLike = await entityManager.save(like);
-      if (!newLike) {
-        throw new Error('Error while liking the story');
-      }
-      return this.storyService.addLike(newLike.story, entityManager);
-    });
+  async getEntityById(entityId: string): Promise<HnStory> {
+    return this.storyService.findById(entityId);
   }
 
-  async unlike(storyId: string): Promise<HnStory> {
-    if (!await this.checkIfLiked(storyId)) {
-      throw new Error('Story not liked');
-    }
-    const like = await this.likeStoryRepository.findOne({
-      where: {
-        story: {
-          id: storyId
-        },
-        likedBy: {
-          id: HnCurrentUserHelper.getCurrentUser().id
-        }
-      }
-    });
-
-    return await this.dataSource.transaction(async entityManager => {
-      const removedLike = await entityManager.remove(like);
-      if (!removedLike) {
-        throw new Error('Error while liking the story');
-      }
-      return await this.storyService.removeLike(removedLike.story, entityManager);
-    });
+  async addLike(entityManager: EntityManager, entity: HnStory): Promise<HnStory> {
+    return this.storyService.addLike(entity, entityManager);
   }
 
-  async checkIfLiked(storyId: string): Promise<boolean> {
-    const like = await this.likeStoryRepository.findOne({
-      where: {
-        story: {
-          id: storyId
-        },
-        likedBy: {
-          id: HnCurrentUserHelper.getCurrentUser().id
-        }
-      }
-    });
-    return like != null;
+  async removeLike(entityManager: EntityManager, entity: HnStory): Promise<HnStory> {
+    return this.storyService.removeLike(entity, entityManager);
   }
 
+  async saveLike(entityManager: EntityManager, like: HnLikeStory): Promise<HnLikeStory> {
+    return entityManager.save(like);
+  }
+
+  createLike(entity: HnStory): HnLikeStory {
+    const like: HnLikeStory = new HnLikeStory();
+    like.entity = entity;
+    return like;
+  }
 }

@@ -6,7 +6,7 @@ import {BeforeInsert, ManyToOne} from 'typeorm';
 import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 import {ClDateHelper} from '@monorepo/core-lib';
 
-export abstract class HnAbstractLikeEntity extends BlEntityWithId{
+export abstract class HnAbstractLikeEntity<T extends BlEntityWithId> extends BlEntityWithId{
 
   @BlLuxonDateTimeColumn({update: false})
   likedAt: DateTime;
@@ -14,6 +14,8 @@ export abstract class HnAbstractLikeEntity extends BlEntityWithId{
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, {eager: true})
   likedBy?: HnUser;
+
+  abstract entity: T;
 
   @BeforeInsert()
   setLikedByUser(): void {

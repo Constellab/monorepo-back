@@ -213,8 +213,9 @@ export class CnSpaceAggregateService {
     await this.checkSpaceAdmin(spaceId);
 
     const space = await this.spaceService.findByIdAndCheck(spaceId);
-
-    return this.spaceService.uploadPhoto(space, file);
+    const updatedSpace = await this.spaceService.uploadPhoto(space, file);
+    await this.sendAllSpaceUsersFromASpaceToQueue(spaceId);
+    return updatedSpace;
   }
 
   public async getPhoto(filename: string): Promise<IncomingMessage> {

@@ -1,6 +1,6 @@
 import {BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany} from 'typeorm';
 import {HnTopic} from '../topic/hn-topic.entity';
-import {BlEntityWithId, BlLuxonDateTimeColumn, BlRichText, BlRichTextI} from '@monorepo/back-core-lib';
+import {BlEntityWithId, BlLuxonDateTimeColumn, BlRichText} from '@monorepo/back-core-lib';
 import {DateTime} from 'luxon';
 import {HnUser} from '../users/hn-user.entity';
 import {ClDateHelper, ClStringHelper} from '@monorepo/core-lib';
@@ -84,6 +84,7 @@ export class HnStory extends BlEntityWithId {
   }
 
   @BeforeInsert()
+  @BeforeUpdate()
   setLastModifiedDate(): void {
     this.lastModifiedAt = ClDateHelper.getDate();
   }

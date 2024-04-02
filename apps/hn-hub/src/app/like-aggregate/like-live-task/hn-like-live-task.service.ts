@@ -1,80 +1,42 @@
 import {Injectable} from '@nestjs/common';
 import {HnAbstractLikeService} from '../like-core/hn-abstract-like.service';
 import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, Repository} from 'typeorm';
-import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
+import {DataSource, EntityManager, Repository} from 'typeorm';
 import {HnLikeLiveTask} from './hn-like-live-task.entity';
 import {HnLiveTask} from '../../live-task-aggregate/live-task/hn-live-task.entity';
 import {HnLiveTaskAggregateService} from '../../live-task-aggregate/hn-live-task-aggregate.service';
+import {BlEntityWithId} from '@monorepo/back-core-lib';
+import {HnLikeStory} from '../like-story/hn-like-story.entity';
 
 @Injectable()
 export class HnLikeLiveTaskService extends HnAbstractLikeService<HnLiveTask> {
   constructor(
-    @InjectRepository(HnLikeLiveTask)
-    private likeLiveTaskRepository: Repository<HnLikeLiveTask>,
     private liveTaskAggregateService: HnLiveTaskAggregateService,
-    private dataSource: DataSource
+    @InjectRepository(HnLikeLiveTask) likeLiveTaskRepository: Repository<HnLikeLiveTask>,
+    dataSource: DataSource
   ) {
-    super();
+    super(likeLiveTaskRepository, dataSource);
   }
 
-  async like(storyId: string): Promise<HnLiveTask> {
-    if (await this.checkIfLiked(storyId)) {
-      throw new Error('Live task already liked');
-    }
-    const liveTask = await this.liveTaskAggregateService.findLiveTaskById(storyId);
-    if (!liveTask) {
-      throw new Error('Live task not found');
-    }
-
-    const like = new HnLikeLiveTask();
-    like.liveTask = liveTask;
-
-    return await this.dataSource.transaction(async entityManager => {
-      const newLike = await entityManager.save(like);
-      if (!newLike) {
-        throw new Error('Error while liking the live task');
-      }
-      return this.liveTaskAggregateService.addLike(newLike.liveTask, entityManager);
-    });
+  async addLike(entityManager: EntityManager, entity: BlEntityWithId): Promise<HnLiveTask> {
+    return this.liveTaskAggregateService.addLike(entity as HnLiveTask, entityManager);
   }
 
-  async unlike(liveTaskId: string): Promise<HnLiveTask> {
-    if (!await this.checkIfLiked(liveTaskId)) {
-      throw new Error('Live task not liked');
-    }
-    const like = await this.likeLiveTaskRepository.findOne({
-      where: {
-        liveTask: {
-          id: liveTaskId
-        },
-        likedBy: {
-          id: HnCurrentUserHelper.getCurrentUser().id
-        }
-      }
-    });
-
-    return await this.dataSource.transaction(async entityManager => {
-      const removedLike = await entityManager.remove(like);
-      if (!removedLike) {
-        throw new Error('Error while liking the live task');
-      }
-      return await this.liveTaskAggregateService.removeLike(removedLike.liveTask, entityManager);
-    });
+  getEntityById(entityId: string): Promise<HnLiveTask> {
+    return this.liveTaskAggregateService.findLiveTaskById(entityId);
   }
 
-  async checkIfLiked(liveTaskId: string): Promise<boolean> {
-    const like = await this.likeLiveTaskRepository.findOne({
-      where: {
-        liveTask: {
-          id: liveTaskId
-        },
-        likedBy: {
-          id: HnCurrentUserHelper.getCurrentUser().id
-        }
-      }
-    });
-    return like != null;
+  async removeLike(entityManager: EntityManager, entity: BlEntityWithId): Promise<HnLiveTask> {
+    return this.liveTaskAggregateService.removeLike(entity as HnLiveTask, entityManager);
   }
 
+  async saveLike(entityManager: EntityManager, like: HnLikeLiveTask): Promise<HnLikeLiveTask> {
+    return entityManager.save(like);
+  }
+
+  createLike(entity: HnLiveTask): HnLikeLiveTask {
+    const like: HnLikeLiveTask = new HnLikeLiveTask();
+    like.entity = entity;
+    return like;
+  }
 }

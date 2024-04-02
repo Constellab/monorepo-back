@@ -2,80 +2,40 @@ import {Injectable} from '@nestjs/common';
 import {HnAbstractLikeService} from '../like-core/hn-abstract-like.service';
 import {HnLikeBrick} from './hn-like-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, Repository} from 'typeorm';
-import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
+import {DataSource, EntityManager, Repository} from 'typeorm';
 import {HnBrick} from '../../brick-aggregate/brick/hn-brick.entity';
 import {HnBrickAggregateService} from '../../brick-aggregate/hn-brick-aggregate.service';
 
 @Injectable()
 export class HnLikeBrickService extends HnAbstractLikeService<HnBrick> {
+
   constructor(
-    @InjectRepository(HnLikeBrick)
-    private likeBrickRepository: Repository<HnLikeBrick>,
     private brickAggregateService: HnBrickAggregateService,
-    private dataSource: DataSource
+    @InjectRepository(HnLikeBrick) likeBrickRepository: Repository<HnLikeBrick>,
+    dataSource: DataSource
   ) {
-    super();
+    super(likeBrickRepository, dataSource);
   }
 
-  async like(brickId: string): Promise<HnBrick> {
-    if (await this.checkIfLiked(brickId)) {
-      throw new Error('Brick already liked');
-    }
-    const brick = await this.brickAggregateService.findBrickById(brickId);
-
-    if (!brick) {
-      throw new Error('Brick not found');
-    }
-
-    const like = new HnLikeBrick();
-    like.brick = brick;
-
-    return await this.dataSource.transaction(async entityManager => {
-      const newLike = await entityManager.save(like);
-      if (!newLike) {
-        throw new Error('Error while liking the brick');
-      }
-      return this.brickAggregateService.addLike(newLike.brick, entityManager);
-    });
+  async getEntityById(entityId: string): Promise<HnBrick> {
+    return this.brickAggregateService.findBrickById(entityId);
   }
 
-  async unlike(brickId: string): Promise<HnBrick> {
-    if (!await this.checkIfLiked(brickId)) {
-      throw new Error('Brick not liked');
-    }
-    const like = await this.likeBrickRepository.findOne({
-      where: {
-        brick: {
-          id: brickId
-        },
-        likedBy: {
-          id: HnCurrentUserHelper.getCurrentUser().id
-        }
-      }
-    });
-
-    return await this.dataSource.transaction(async entityManager => {
-      const removedLike = await entityManager.remove(like);
-      if (!removedLike) {
-        throw new Error('Error while liking the brick');
-      }
-      return await this.brickAggregateService.removeLike(removedLike.brick, entityManager);
-    });
+  async addLike(entityManager: EntityManager, entity: HnBrick): Promise<HnBrick> {
+    return this.brickAggregateService.addLike(entity, entityManager);
   }
 
-  async checkIfLiked(brickId: string): Promise<boolean> {
-    const like = await this.likeBrickRepository.findOne({
-      where: {
-        brick: {
-          id: brickId
-        },
-        likedBy: {
-          id: HnCurrentUserHelper.getCurrentUser().id
-        }
-      }
-    });
-    return like != null;
+  async removeLike(entityManager: EntityManager, entity: HnBrick): Promise<HnBrick> {
+    return this.brickAggregateService.removeLike(entity, entityManager);
   }
 
+  async saveLike(entityManager: EntityManager, like: HnLikeBrick): Promise<HnLikeBrick> {
+    return entityManager.save(like);
+  }
+
+  createLike(entity: HnBrick): HnLikeBrick {
+    const like: HnLikeBrick = new HnLikeBrick();
+    like.entity = entity;
+    return like;
+  }
 }

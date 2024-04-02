@@ -1,9 +1,10 @@
-import {Controller, Get, Req} from '@nestjs/common';
+import {Controller, Get, Param, Req, Res} from '@nestjs/common';
 import {EventPattern} from '@nestjs/microservices';
 import {HnSpaceAggregateService} from './hn-space-aggregate.service';
 import {HnSpaceUser} from './space-user/hn-space-user.entity';
-import {BlPublic} from '@monorepo/back-core-lib';
+import {BlPublic, BlResponseHelper} from '@monorepo/back-core-lib';
 import {HnSpace} from './space/hn-space.entity';
+import {Response} from 'express';
 
 export enum HnSpaceUserAction {
   CREATE = 'createSpaceUser',
@@ -42,7 +43,6 @@ export class HnSpaceController {
   async getSpacesForLab(@Req() req: Request): Promise<HnSpace[]> {
     return this.spaceAggregateService.getSpacesForLab(req);
   }
-
 
   /////////////////////////////////// Space User Queue ///////////////////////////////////
 

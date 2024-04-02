@@ -24,4 +24,8 @@ export class HnSpaceService {
     return this.spaceRepository.save(space);
   }
 
+  public async update(space: HnSpace): Promise<HnSpace> {
+    return this.spaceRepository.save(space);
+  }
+
 }

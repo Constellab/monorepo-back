@@ -4,8 +4,8 @@ import {Entity, ManyToOne} from 'typeorm';
 import {HnStory} from '../../story/hn-story.entity';
 
 @Entity('comment_story')
-export class HnCommentStory extends HnAbstractCommentEntity {
+export class HnCommentStory extends HnAbstractCommentEntity<HnStory> {
   @Type(() => HnStory)
   @ManyToOne(() => HnStory, {eager: true})
-  story: HnStory;
+  entity: HnStory;
 }

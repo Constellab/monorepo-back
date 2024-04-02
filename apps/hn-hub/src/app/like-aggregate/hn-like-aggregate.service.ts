@@ -1,11 +1,11 @@
 import {Injectable} from '@nestjs/common';
 import {HnLikeStoryService} from './like-story/hn-like-story.service';
-import {HnStory} from '../story/hn-story.entity';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnLikeLiveTaskService} from './like-live-task/hn-like-live-task.service';
-import {HnLiveTask} from '../live-task-aggregate/live-task/hn-live-task.entity';
 import {HnLikeBrickService} from './like-brick/hn-like-brick.service';
-import {HnBrick} from '../brick-aggregate/brick/hn-brick.entity';
+import {BlEntityWithId} from '@monorepo/back-core-lib';
+import {HnAbstractLikeService} from './like-core/hn-abstract-like.service';
+import {HnEntityType} from '../core/model/entities/hn-entity-type.enum';
 
 @Injectable()
 export class HnLikeAggregateService {
@@ -14,51 +14,29 @@ export class HnLikeAggregateService {
               private readonly likeBrickService: HnLikeBrickService) {
   }
 
-  ///////////////////////// LIKE STORY /////////////////////////////
-  async checkIfStoryIsLiked(storyId: string): Promise<boolean> {
+  async checkIfIsLiked(entityId: string, likeType: HnEntityType): Promise<boolean> {
     if (HnCurrentUserHelper.getCurrentUser() == null) {
       return false;
     }
-    return this.likeStoryService.checkIfLiked(storyId);
+    return this.getService(likeType).checkIfLiked(entityId);
   }
 
-  async likeStory(storyId: string): Promise<HnStory> {
-    return this.likeStoryService.like(storyId);
+  async like(entityId: string, likeType: HnEntityType): Promise<BlEntityWithId> {
+    return this.getService(likeType).like(entityId);
   }
 
-  async unlikeStory(storyId: string): Promise<HnStory> {
-    return this.likeStoryService.unlike(storyId);
+  async unlike(entityId: string, likeType: HnEntityType): Promise<BlEntityWithId> {
+    return this.getService(likeType).unlike(entityId);
   }
 
-  ///////////////////////// LIKE LIVE TASK /////////////////////////////
-  async checkIfLiveTaskIsLiked(liveTaskId: string): Promise<boolean> {
-    if (HnCurrentUserHelper.getCurrentUser() == null) {
-      return false;
+  private getService(likeType: HnEntityType): HnAbstractLikeService<BlEntityWithId> {
+    switch (likeType) {
+      case HnEntityType.STORY_LIKE:
+        return this.likeStoryService;
+      case HnEntityType.LIVE_TASK_LIKE:
+        return this.likeLiveTaskService;
+      case HnEntityType.BRICK_LIKE:
+        return this.likeBrickService;
     }
-    return this.likeLiveTaskService.checkIfLiked(liveTaskId);
-  }
-
-  async likeLiveTask(liveTaskId: string): Promise<HnLiveTask> {
-    return this.likeLiveTaskService.like(liveTaskId);
-  }
-
-  async unlikeLiveTask(liveTaskId: string): Promise<HnLiveTask> {
-    return this.likeLiveTaskService.unlike(liveTaskId);
-  }
-
-  ///////////////////////// LIKE BRICK /////////////////////////////
-  async checkIfBrickIsLiked(brickId: string): Promise<boolean> {
-    if (HnCurrentUserHelper.getCurrentUser() == null) {
-      return false;
-    }
-    return this.likeBrickService.checkIfLiked(brickId);
-  }
-
-  async likeBrick(brickId: string): Promise<HnBrick> {
-    return this.likeBrickService.like(brickId);
-  }
-
-  async unlikeBrick(brickId: string): Promise<HnBrick> {
-    return this.likeBrickService.unlike(brickId);
   }
 }
