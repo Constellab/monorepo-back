@@ -19,17 +19,23 @@ import {HnFrontService} from '../../core/service/hn-front.service';
 export class HnBrickMajorVersionService {
 
   constructor(@InjectRepository(HnBrickMajorVersion)
-              private brickMajorVersionsRepository: Repository<HnBrickMajorVersion>,
-              private folderService: HnFolderService,
-              private brickVersionService: HnBrickVersionService,
-              private technicalFolderService: HnTechnicalFolderService,
-              private frontService: HnFrontService,) {
+              private brickMajorVersionsRepository: Repository<HnBrickMajorVersion>) {
   }
 
   async create(brick: HnBrick, createdBrick: HnCreateBrickDTO, entityManager: EntityManager): Promise<HnBrickMajorVersion> {
     const brickMajorVersion: HnBrickMajorVersion = new HnBrickMajorVersion();
     brickMajorVersion.initialize(brick, createdBrick.version.major);
     return entityManager.save(brickMajorVersion);
+  }
+
+  async findBrickMajorVersionsByBrick(brick: HnBrick): Promise<HnBrickMajorVersion[]> {
+    return this.brickMajorVersionsRepository.find({
+      where: {
+        brick: {
+          id: brick.id
+        }
+      }
+    });
   }
 
   async findBrickMajorVersionByBrickAndVersion(brick: HnBrick, version: string): Promise<HnBrickMajorVersion> {
@@ -51,89 +57,26 @@ export class HnBrickMajorVersionService {
     });
   }
 
-  async findBrickDocsTree(brickMajorVersion: HnBrickMajorVersion): Promise<HnNode> {
-    const mainFolder = await this.folderService.findFolderByBrickMajorVersion(brickMajorVersion);
-    return await this.folderService.findBrickDocsTree(mainFolder);
-  }
-
-
-  async findRootFolderId(brickMajorVersion: HnBrickMajorVersion): Promise<string> {
-    const mainFolder = await this.folderService.findFolderByBrickMajorVersion(brickMajorVersion);
-    return mainFolder.id;
-  }
-
-  async createNewVersion(brick: HnBrick, newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
-    const newMajor = parseInt(newVersion.version.split('.')[0]);
-    const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionsRepository.findOne({
-      where: {
-        brick: {id: brick.id},
-        major: newMajor
-      }
-    });
-    if (brickMajorVersion == null) {
-      throw new BlBadRequestException('Impossible to create a new major version');
-      //let brickMajorVersion: HnBrickMajorVersion = await this.createNewBrickMajorVersion(+newMajor, brick);
-    }
-    await this.brickVersionService.createNewBrickVersion(brickMajorVersion, newVersion);
-    return newVersion;
-  }
-
-  async getLatestBrickVersion(brickName: string): Promise<HnBrickVersion> {
-    const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionsRepository.findOne({
+  async getLatestBrickMajorVersion(brickId: string): Promise<HnBrickMajorVersion> {
+    return await this.brickMajorVersionsRepository.findOne({
       where: {
         brick: {
-          name: brickName
+          id: brickId
         },
         versionState: HnVersionState.LATEST
       }, relations: ['brick']
     });
-    return this.brickVersionService.getLatestBrickVersion(brickMajorVersion.id);
   }
 
-  async createTechnicalDoc(brick: HnBrick, importFile: HnImportTechnicalDocDTO): Promise<boolean> {
-    const importVersion: BlVersion = BlVersion.fromString(importFile.brick_version);
-    const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionsRepository.findOne({
+  async findOneByBrickIdAndMajor(brickId: string, major: number): Promise<HnBrickMajorVersion> {
+    return this.brickMajorVersionsRepository.findOne({
       where: {
         brick: {
-          id: brick.id
+          id: brickId
         },
-        major: importVersion.major
+        major: major
       }
     });
-
-    if (brickMajorVersion == null) {
-      return false;
-    }
-
-    return this.technicalFolderService.createTechnicalDoc(brickMajorVersion, importFile);
-  }
-
-  async findTechnicalDoc(brickMajorVersionId: string): Promise<HnNode> {
-    return this.technicalFolderService.findTechnicalDoc(brickMajorVersionId);
-  }
-
-  async findCurrentTecDoc(brickMajorVersion: HnBrickMajorVersion, input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocEntity> {
-    return await this.technicalFolderService.findCurrentTecDoc(brickMajorVersion, input);
-  }
-
-  async getDocsByBrickNameMajor(brick: HnBrick, major: number): Promise<HnDocumentationSearchDTO[]> {
-    let res: HnDocumentationSearchDTO[] = [];
-    const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionsRepository.findOneBy({
-      brick: {
-        id: brick.id
-      },
-      major: major
-    });
-    res = res.concat(await this.folderService.getDocsByBrickNameMajor(brickMajorVersion, major.toString(), brick.name));
-
-    res = res.concat(await this.technicalFolderService.getTechDocsByBrickNameMajor(brickMajorVersion.id, major.toString(), brick.name));
-
-    return res.sort((a, b) => {
-      if (a.name < b.name) return -1;
-      if (b.name < a.name) return 1;
-      return 0;
-    });
-
   }
 
   async findBrickMajorVersionByBrickAndMajor(brick: HnBrick, major: number): Promise<HnBrickMajorVersion> {
@@ -146,53 +89,5 @@ export class HnBrickMajorVersionService {
       },
       relations: ['brick']
     });
-  }
-
-  async findBrickMap(brick: HnBrick): Promise<HnSitemapItemBase[]> {
-    const siteMap: HnSitemapItemBase[] = [];
-    const brickMajorVersions: HnBrickMajorVersion[] = await this.brickMajorVersionsRepository.find({
-      where: {
-        brick: {
-          id: brick.id
-        }
-      },
-      relations: ['brick']
-    });
-    for (const brickMajorVersion of brickMajorVersions) {
-      // add normal docs
-      const docs = await this.folderService.getDocsByBrickMajorVersion(brickMajorVersion.id);
-
-      for (const doc of docs) {
-        siteMap.push(
-          {
-            url: this.frontService.getBrickDocUrl(brickMajorVersion.brick.name,
-              brickMajorVersion.getStrVersion(), doc.completePath),
-            // last mode with format YYYY-MM-DD
-            lastmod: doc.lastModifiedAt.toFormat('yyyy-MM-dd'),
-            changefreq: HnSiteMapEnumChangefreq.MONTHLY,
-            priority: brickMajorVersion.isLatest ? 0.8 : 0.3
-          }
-        );
-      }
-
-      // add technical docs
-      const technicalFolder = await this.technicalFolderService.findTechnicalFolder(brickMajorVersion.id);
-      const technicalDocs = await this.technicalFolderService.findTechDocsByBrickMajor(brickMajorVersion.id);
-
-      for (const doc of technicalDocs) {
-        siteMap.push(
-          {
-            url: this.frontService.getBrickTechnicalDocUrl(brickMajorVersion.brick.name,
-              brickMajorVersion.getStrVersion(), doc.getCompletePath()),
-            // last mode with format YYYY-MM-DD
-            lastmod: technicalFolder.lastModifiedAt.toFormat('yyyy-MM-dd'),
-            changefreq: HnSiteMapEnumChangefreq.MONTHLY,
-            priority: brickMajorVersion.isLatest ? 0.5 : 0.1
-          }
-        );
-      }
-
-    }
-    return siteMap;
   }
 }

@@ -31,8 +31,16 @@ export class HnDocumentationService {
               private documentationsRepository: Repository<HnDocumentation>,
               private objectStorageService: BlObjectStorageService,
               private configService: HnCoreConfigService,
-              private frontService: HnFrontService,
               private docFileService: HnDocumentationFileService) {
+  }
+
+  async createMainDoc(mainFolder: HnFolder, entityManager: EntityManager){
+    const gettingStartedDoc: HnNodeDTO = new HnNodeDTO();
+    gettingStartedDoc.folder = mainFolder;
+    gettingStartedDoc.path = 'getting-started';
+    gettingStartedDoc.title = 'Getting Started';
+    gettingStartedDoc.isFolder = false;
+    await this.create(gettingStartedDoc, mainFolder, entityManager);
   }
 
   async create(createDocumentation: HnNodeDTO, folder: HnFolder,
@@ -84,9 +92,7 @@ export class HnDocumentationService {
     await this.documentationsRepository.delete(id);
   }
 
-  // TODO : to clean
   async findCurrentDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<HnDocumentation> {
-
     return await this.documentationsRepository.findOneBy({
       completePath: path,
       folder: {brickMajorVersion: {id: brickMajorVersion.id}}

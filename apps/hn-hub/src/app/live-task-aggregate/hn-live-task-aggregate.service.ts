@@ -97,6 +97,11 @@ export class HnLiveTaskAggregateService {
     }
   }
 
+  public async updateTitle(id: string, title: string): Promise<HnLiveTask> {
+    await this.liveTaskService.checkIfCreatorAndGetLiveTask(id);
+    return this.liveTaskService.updateTitle(id, title);
+  }
+
   public async updateDescription(id: string, description: Record<string, any>): Promise<HnLiveTask> {
     return this.liveTaskService.updateDescription(id, description);
   }
@@ -174,12 +179,30 @@ export class HnLiveTaskAggregateService {
     return await this.liveTaskService.findLiveTaskByIdWithUserSpaces(id, userSpaces);
   }
 
+  public async findLiveTaskTitleById(id: string): Promise<string>{
+    const liveTask = await this.liveTaskService.findOne(id);
+    return liveTask?.title;
+  }
+
   public async getBrickDependencies(liveTaskId: string): Promise<HnBrickVersion[]> {
     const liveTask = await this.liveTaskService.findOne(liveTaskId);
     const liveTaskVersion = await this.liveTaskVersionService.findLatestByLiveTask(liveTask);
     const liveTaskVersionBrickDependencies: HnLiveTaskVersionBrickDependencies[] =
       await this.liveTaskVersionBrickDependenciesService.getBrickVersionDependencies(liveTaskVersion.id);
     return liveTaskVersionBrickDependencies.map(liveTaskVersionBrickDependency => liveTaskVersionBrickDependency.brickVersion);
+  }
+
+  public async deleteLiveTask(id: string): Promise<void> {
+    await this.liveTaskService.checkIfCreatorAndGetLiveTask(id);
+    await this.dataSource.transaction(async entityManager => {
+      const liveTaskVersions: HnLiveTaskVersion[] = await this.liveTaskVersionService.findAllByLiveTaskId(id);
+      for (const liveTaskVersion of liveTaskVersions) {
+        await this.liveTaskVersionBrickDependenciesService.deleteByLiveTaskVersionId(entityManager, liveTaskVersion.id);
+      }
+      await this.liveTaskVersionService.deleteByLiveTaskId(entityManager, id);
+      await this.liveTaskService.delete(entityManager, id);
+    });
+
   }
 
 

@@ -200,6 +200,12 @@ export class HnLiveTaskService {
     return entityManager.save(liveTask);
   }
 
+  public async updateTitle(id: string, title: string): Promise<HnLiveTask> {
+    const liveTask = await this.checkIfCreatorAndGetLiveTask(id);
+    liveTask.title = title;
+    return this.liveTaskRepository.save(liveTask);
+  }
+
   public async updateDescription(id: string, description: Record<string, any>): Promise<HnLiveTask> {
     const liveTask = await this.checkIfCreatorAndGetLiveTask(id);
     liveTask.description = description;
@@ -228,5 +234,9 @@ export class HnLiveTaskService {
     liveTask.descriptionBackup = liveTask.description;
     liveTask.description = new BlQuillMigrator(liveTask.description as BlRichTextI).migrate();
     await this.liveTaskRepository.save(liveTask);
+  }
+
+  public async delete(entityManager: EntityManager, id: string): Promise<void> {
+    await entityManager.delete(HnLiveTask, {id: id});
   }
 }

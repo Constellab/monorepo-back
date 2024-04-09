@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query, Req} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query, Req} from '@nestjs/common';
 import {HnLiveTaskAggregateService} from './hn-live-task-aggregate.service';
 import {HnLiveTaskVersion} from './live-task-version/hn-live-task-version.entity';
 import {
@@ -123,6 +123,22 @@ export class HnLiveTaskController {
   @Get(':id')
   getLiveTaskById(@Param('id', ParseUUIDPipe) id: string): Promise<HnLiveTask> {
     return this.liveTaskAggregateService.findLiveTaskById(id);
+  }
+
+  /**
+   * Get a live task title by id
+   * @param id
+   * @return the live task title
+   */
+  @BlPublic()
+  @Get(':id/title')
+  getLiveTaskTitleById(@Param('id', ParseUUIDPipe) id: string): Promise<string> {
+    return this.liveTaskAggregateService.findLiveTaskTitleById(id);
+  }
+
+  @Put(':id/title')
+  updateTitle(@Param('id', ParseUUIDPipe) id: string, @Body('title') title: string): Promise<HnLiveTask> {
+    return this.liveTaskAggregateService.updateTitle(id, title);
   }
 
   /**
@@ -280,6 +296,11 @@ export class HnLiveTaskController {
   @Post('migrate-live-tasks')
   migrateLiveTasks(): Promise<void> {
     return this.liveTaskAggregateService.migrateLiveTasks();
+  }
+
+  @Delete(':id')
+  deleteLiveTask(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    return this.liveTaskAggregateService.deleteLiveTask(id);
   }
 
 }

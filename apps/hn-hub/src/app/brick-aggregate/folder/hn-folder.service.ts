@@ -14,8 +14,7 @@ export class HnFolderService {
   constructor(@InjectRepository(HnFolder)
               private foldersRepository: Repository<HnFolder>,
               @InjectRepository(HnFolder)
-              private foldersTreeRepository: TreeRepository<HnFolder>,
-              private documentationService: HnDocumentationService,) {
+              private foldersTreeRepository: TreeRepository<HnFolder>) {
   }
 
 
@@ -41,22 +40,13 @@ export class HnFolderService {
     return entityManager ? await entityManager.save(createFolder) : await this.foldersRepository.save(createFolder);
   }
 
-  async createMainFolders(brickMajorVersion: HnBrickMajorVersion, entityManager: EntityManager): Promise<void> {
-
+  async createMainFolders(brickMajorVersion: HnBrickMajorVersion, entityManager: EntityManager): Promise<HnFolder> {
     const createMainFolder: HnNodeDTO = new HnNodeDTO();
     createMainFolder.isFolder = true;
     createMainFolder.path = null;
     createMainFolder.title = null;
     createMainFolder.order = 0;
-
-    const mainFolder = await this.create(createMainFolder, entityManager, brickMajorVersion);
-
-    const gettingStartedDoc: HnNodeDTO = new HnNodeDTO();
-    gettingStartedDoc.folder = mainFolder;
-    gettingStartedDoc.path = 'getting-started';
-    gettingStartedDoc.title = 'Getting Started';
-    gettingStartedDoc.isFolder = false;
-    await this.documentationService.create(gettingStartedDoc, mainFolder, entityManager);
+    return await this.create(createMainFolder, entityManager, brickMajorVersion);
   }
 
   async findAll(): Promise<HnFolder[]> {
@@ -77,11 +67,10 @@ export class HnFolderService {
     return this.createTree(brickDocs);
   }
 
-  async findFirstDoc(brickMajorVersion: HnBrickMajorVersion): Promise<HnDocumentation> {
+  async findFirstDocNode(brickMajorVersion: HnBrickMajorVersion): Promise<HnNode> {
     const mainFolder: HnFolder = await this.findFolderByBrickMajorVersion(brickMajorVersion);
     const tree: HnNode = await this.findBrickDocsTree(mainFolder);
-    const firstDocNode = this.findFirstDocNodeInTree(tree);
-    return this.documentationService.findById(firstDocNode.id);
+    return this.findFirstDocNodeInTree(tree);
   }
 
   private findFirstDocNodeInTree(tree: HnNode): HnNode {
@@ -151,68 +140,12 @@ export class HnFolderService {
     return parent.documentations;
   }
 
-  async update(updatedFolder: HnNodeDTO): Promise<HnFolder> {
-    let folder: HnFolder = await this.foldersRepository.findOne({
-      where: {id: updatedFolder.id},
-      relations: {folder: true, documentations: true, folders: true}
-    });
-
-    folder.path = ClStringHelper.generateUrlPathFromString(updatedFolder.title);
-    folder.title = updatedFolder.title;
-    folder.completePath = folder.folder.completePath ? folder.folder.completePath + folder.path + '/' : folder.path + '/';
-
-    folder = await this.foldersRepository.save(folder);
-
-    await this.updateChildCompletePath(folder);
-
-    return folder;
+  async save(folder: HnFolder): Promise<HnFolder> {
+    return this.foldersRepository.save(folder);
   }
 
-  async updateChildCompletePath(folder: HnFolder): Promise<void> {
-    if (folder.documentations.length > 0) {
-      for (const d of folder.documentations) {
-        await this.documentationService.updateCompletePath(d, folder);
-      }
-    }
-    if (folder.folders.length > 0) {
-      for (const f of folder.folders) {
-        const fDTO = new HnNodeDTO();
-        fDTO.isFolder = true;
-        fDTO.title = f.title;
-        fDTO.id = f.id;
-        await this.update(fDTO);
-      }
-    }
-  }
-
-  async updateTree(updatedTree: HnNode[]): Promise<HnNode[]> {
-    for (const node of updatedTree) {
-      let isUpdated = false;
-      if (node.children) {
-        const f: HnFolder = await this.foldersRepository.findOne({where: {id: node.id}, relations: {folder: true}});
-        if (f.order != node.order || f.folder.id != node.parentId) {
-          isUpdated = true;
-          f.order = node.order;
-          f.folder.id = node.parentId;
-        }
-        if (isUpdated) {
-          await this.foldersRepository.save(f);
-        }
-        await this.updateTree(node.children);
-      } else {
-        const d: HnDocumentation = await this.documentationService.findById(node.id);
-        if (d.order != node.order || d.folder.id != node.parentId) {
-          isUpdated = true;
-          d.order = node.order;
-          d.folder.id = node.parentId;
-        }
-        if (isUpdated) {
-          await this.documentationService.updatePosition(d);
-        }
-      }
-    }
-
-    return updatedTree;
+  async findWithRelationById(id: string): Promise<HnFolder> {
+    return this.foldersRepository.findOne({where: {id: id}, relations: {folder: true, folders: true, documentations: true}});
   }
 
   async remove(id: string): Promise<void> {
@@ -261,9 +194,5 @@ export class HnFolderService {
       }
     }
     return documentations;
-  }
-
-  async getDocsByBrickMajorVersion(brickMajorVersionId: string): Promise<HnDocumentation[]> {
-    return this.documentationService.getDocsByBrickVersion(brickMajorVersionId);
   }
 }

@@ -64,6 +64,11 @@ export class HnStoryService {
     return await this.storyRepository.findOneBy({id: id})
   }
 
+  async getStoryTitle(id: string): Promise<string>{
+    const story = await this.getStory(id);
+    return story.title;
+  }
+
   async getStory(id: string): Promise<HnStory> {
     return await this.storyRepository.findOne({
       where: {
@@ -334,7 +339,9 @@ export class HnStoryService {
 
   async saveFile(file: BlFile, storyId: string): Promise<HnStoryFile> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId);
-
+    if(file.size > 20000000){
+      throw new BlBadRequestException('File too large');
+    }
     const originalname = file.originalname;
     const ext = originalname.split('.').pop();
     file.originalname = storyId + '/files/' + ClStringHelper.generateUUID() + '.' + ext;
@@ -420,15 +427,24 @@ export class HnStoryService {
   }
 
   async isStoryOwnerOrCoAuthor(id: string, onlyOwner: boolean = false): Promise<boolean> {
+    if(HnCurrentUserHelper.getCurrentUser() == null) return false;
+
     if(HnCurrentUserHelper.getCurrentUser().isAdmin()) return true;
+
     const story = await this.getStory(id);
-    const storyAuthors = await this.getStoryCoAuthors(id);
-    const currentUserId = HnCurrentUserHelper.getCurrentUser().id;
-    if (story.createdBy.id == currentUserId)
+
+    // True if createdBy
+    if (story.createdBy.id == HnCurrentUserHelper.getCurrentUser().id) {
       return true;
+    }
+
+    // False if onlyOwner and current user is not the owner
     if (onlyOwner)
       return false;
-    return storyAuthors?.some((storyAuthor: HnStoryAuthor) => storyAuthor.user.id === currentUserId);
+
+    // True if coAuthor of the story otherwise false
+    const storyAuthors = await this.getStoryCoAuthors(id);
+    return storyAuthors?.some((storyAuthor: HnStoryAuthor) => storyAuthor.user.id === HnCurrentUserHelper.getCurrentUser().id);
   }
 
   async getStoryCoAuthors(storyId: string): Promise<HnStoryAuthor[]> {

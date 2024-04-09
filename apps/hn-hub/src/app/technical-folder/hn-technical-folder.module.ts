@@ -9,12 +9,14 @@ import {HnTaskModule} from '../task/hn-task.module';
 import {HnTaskService} from '../task/hn-task.service';
 import {HnProtocolService} from '../protocol/hn-protocol.service';
 import {HnProtocolModule} from '../protocol/hn-protocol.module';
+import {HnCoreModule} from '../core/hn-core.module';
+import {HnCoreConfigModule} from '../core/modules/core-config/hn-core-config.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([HnTechnicalFolder]), HnResourceModule, HnTaskModule, HnProtocolModule],
   controllers: [HnTechnicalFolderController],
-  exports: [TypeOrmModule],
   providers: [HnTechnicalFolderService, HnResourceService, HnTaskService, HnProtocolService],
+  exports: [TypeOrmModule, HnTechnicalFolderService],
 })
 export class HnTechnicalFolderModule {
 }

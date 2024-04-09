@@ -94,7 +94,7 @@ export class HnDocumentationController {
   ////////////////////////////////// DOC RESOURCE VIEW //////////////////////////////////
   @UseInterceptors(FileInterceptor('file'))
   @Post(':docId/upload-view')
-  public async uploadStoryResourceViewFile(@BlUploadedFile() file: BlFile,
+  public async uploadDocResourceViewFile(@BlUploadedFile() file: BlFile,
                                            @Param('docId', new ParseUUIDPipe()) docId: string): Promise<any> {
     return {filename: await this.brickAggregateService.uploadDocResourceViewFile(docId, file)};
   }

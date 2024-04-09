@@ -109,7 +109,7 @@ export class HnSpaceAggregateService {
   public async checkSpaceUser(spaceId: string, userId: string): Promise<void> {
     await this.checkIfSpaceExists(spaceId);
     await this.checkIfUserExists(userId);
-    await this.spaceUserService.checkSpaceUser(spaceId, userId);
+    await this.spaceUserService.assertUserIsSpaceUser(spaceId, userId);
   }
 
 

@@ -6,6 +6,6 @@ import {HnLiveTask} from '../../live-task-aggregate/live-task/hn-live-task.entit
 @Entity('like_live_task')
 export class HnLikeLiveTask extends HnAbstractLikeEntity<HnLiveTask> {
   @Type(() => HnLiveTask)
-  @ManyToOne(() => HnLiveTask, {eager: true})
+  @ManyToOne(() => HnLiveTask, {eager: true, onDelete: 'CASCADE'})
   entity: HnLiveTask;
 }

@@ -19,6 +19,8 @@ export class BlResponseHelper {
    * Set an incoming message (like and image) in an HTTP response and cache it for a week
    */
   public static setMessage(response: Response, incomingMessage: IncomingMessage): void {
+    response.setHeader('Content-Type', incomingMessage.headers['content-type']);
+    response.setHeader('Content-Length', incomingMessage.headers['content-length']);
     incomingMessage.pipe(response);
   }
 

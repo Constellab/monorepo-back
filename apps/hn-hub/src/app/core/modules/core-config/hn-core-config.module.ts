@@ -5,9 +5,9 @@ import { HnCoreConfigController } from './hn-core-config.controller';
 
 @Module({
   imports: [ConfigModule],
+  controllers: [HnCoreConfigController],
   providers: [HnCoreConfigService],
-  exports: [HnCoreConfigService],
-  controllers: [HnCoreConfigController]
+  exports: [HnCoreConfigService]
 })
 export class HnCoreConfigModule {
 }

@@ -26,4 +26,8 @@ export class HnLiveTaskVersionBrickDependenciesService {
       liveTaskVersionId: liveTaskVersionId
     });
   }
+
+  public async deleteByLiveTaskVersionId(entityManager: EntityManager, liveTaskVersionId: string): Promise<void> {
+    await entityManager.delete(HnLiveTaskVersionBrickDependencies, {liveTaskVersionId: liveTaskVersionId});
+  }
 }

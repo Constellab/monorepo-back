@@ -11,16 +11,26 @@ import {HnDocumentationController} from './hn-documentation.controller';
 import {HnDocumentationModule} from './documentation/hn-documentation.module';
 import {HnBrickUserModule} from './brick-user/hn-brick-user.module';
 import {HnBrickUserInviteModule} from './brick-user-invite/hn-brick-user-invite.module';
+import {HnTechnicalFolderModule} from '../technical-folder/hn-technical-folder.module';
+import {HnCoreConfigModule} from '../core/modules/core-config/hn-core-config.module';
+import {HnSpaceUserModule} from '../space-aggregate/space-user/hn-space-user.module';
+import {HnCoreModule} from '../core/hn-core.module';
+import {HnSpaceAggregateModule} from '../space-aggregate/hn-space-aggregate.module';
 
 @Module({
   imports: [
+    HnCoreModule,
+    HnCoreConfigModule,
     HnBrickModule,
     HnBrickMajorVersionModule,
     HnBrickVersionModule,
     HnFolderModule,
     HnDocumentationModule,
     HnBrickUserModule,
-    HnBrickUserInviteModule
+    HnBrickUserInviteModule,
+    HnTechnicalFolderModule,
+    HnSpaceUserModule,
+    HnSpaceAggregateModule
   ],
   controllers: [
     HnBrickController,

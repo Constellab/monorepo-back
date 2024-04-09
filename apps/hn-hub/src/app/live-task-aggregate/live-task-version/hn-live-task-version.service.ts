@@ -134,4 +134,8 @@ export class HnLiveTaskVersionService {
     liveTaskVersion.versionInfos = new BlQuillMigrator(liveTaskVersion.versionInfos as BlRichTextI).migrate();
     await this.liveTaskVersionRepository.save(liveTaskVersion);
   }
+
+  public async deleteByLiveTaskId(entityManager: EntityManager, liveTaskId: string): Promise<void> {
+    await entityManager.delete(HnLiveTaskVersion, {liveTask: {id: liveTaskId}});
+  }
 }

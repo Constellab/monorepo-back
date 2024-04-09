@@ -39,6 +39,15 @@ export class ClStringHelper {
   }
 
   /**
+   * Convert Test hello --> test-hello
+   * @param str
+   */
+  public static toKebabCase(str: string): string {
+    if (str == null) return null;
+    return str.trim().replace(/\s+/g, '-').toLowerCase();
+  }
+
+  /**
    * Return true if the input string is an email
    * It checks if the string contains a @ and a .
    * @param str

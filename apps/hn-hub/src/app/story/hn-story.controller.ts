@@ -43,13 +43,6 @@ export class HnStoryController {
   }
 
   @BlPublic()
-  @Get()
-  async getStories(@Query('page', new ParseIntPipe()) page: number,
-                   @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStory>> {
-    return this.storyService.getStories(page, size);
-  }
-
-  @BlPublic()
   @Get('all-map')
   async getAllStoriesMap(): Promise<HnSitemapItemBase[]> {
     return this.storyService.getAllStoriesMap();
@@ -91,6 +84,12 @@ export class HnStoryController {
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStory>> {
     return await this.storyService.getMyStoriesFiltered(page, size, filters);
+  }
+
+  @BlPublic()
+  @Get('title/:id')
+  async getStoryTitle(@Param('id', new ParseUUIDPipe()) id: string): Promise<string> {
+    return this.storyService.getStoryTitle(id);
   }
 
   @BlPublic()

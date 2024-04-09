@@ -10,9 +10,9 @@ import {
   Put,
   Query,
   Req,
-  UseGuards
+  UseGuards, UseInterceptors
 } from '@nestjs/common';
-import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
+import {BlFile, BlParsePipe, BlPublic, BlUploadedFile} from '@monorepo/back-core-lib';
 import {HnBrick} from './brick/hn-brick.entity';
 import {HnBrickVersion, HnNewVersionDTO} from './brick-version/hn-brick-version.entity';
 import {HnDocumentation, HnDocumentationSearchDTO} from './documentation/hn-documentation.entity';
@@ -33,18 +33,12 @@ import {HnBrickUserInvite} from './brick-user-invite/hn-brick-user-invite.entity
 import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
 import {HnUser} from '../users/hn-user.entity';
 import {ClPage} from '@monorepo/core-lib';
+import {FileInterceptor} from '@nestjs/platform-express';
 
 @Controller('brick')
 @UseGuards(HnIsAdminGuard)
 export class HnBrickController {
   constructor(private readonly brickAggregateService: HnBrickAggregateService) {
-  }
-
-  @BlPublic()
-  @Get()
-  find(@Query('page', new ParseIntPipe()) page: number,
-       @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnBrick>> {
-    return this.brickAggregateService.findBricks(page, size);
   }
 
   @BlPublic()
@@ -142,9 +136,23 @@ export class HnBrickController {
     return this.brickAggregateService.getLatestBrickVersion(brickName);
   }
 
+  @UseInterceptors(FileInterceptor('file'))
+  @Put('edit-image')
+  async editImage(@Body('brickId', new ParseUUIDPipe()) brickId: string,
+                  @BlUploadedFile() file: BlFile): Promise<HnBrick> {
+    return this.brickAggregateService.editBrickImage(brickId, file);
+  }
+
   @Put('edit')
   public editBrick(@Body(new BlParsePipe(HnEditBrickDTO)) editedBrick: HnEditBrickDTO): Promise<HnBrick> {
     return this.brickAggregateService.editBrick(editedBrick);
+  }
+
+  @BlPublic()
+  @Post('check-user-rights')
+  public checkUserRights(@Body('brickId', new ParseUUIDPipe()) brickId: string,
+                         @Body('fullRight') fullRight: boolean = true): Promise<boolean> {
+    return this.brickAggregateService.checkIfUserCanEditBrick(brickId, fullRight);
   }
 
   @Post('is-actual-brick-and-new-version')

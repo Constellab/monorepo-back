@@ -3,13 +3,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {HnBrickVersion, HnNewVersionDTO, HnReferenceDTO, HnVersionType} from './hn-brick-version.entity';
 import {DataSource, EntityManager, IsNull, Repository} from 'typeorm';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
-import {
-  BlAbstractService, BlCurrentUserHelper,
-  BlNotFoundException,
-  BlTransportService,
-  BlUnauthorizedException,
-  BlVersion
-} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlTransportService, BlUnauthorizedException, BlVersion} from '@monorepo/back-core-lib';
 import {HnBrickTransportDto} from '../brick/hn-brick.dto';
 import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 import {ClPageI, ClStringHelper} from '@monorepo/core-lib';
@@ -18,9 +12,7 @@ import {
   HnBrickVersionReference,
   HnBrickVersionRefState
 } from '../../brick-version-reference/hn-brick-version-reference.entity';
-import {HnUserService} from '../../users/hn-user.service';
 import {HnErrorText} from '../../core/model/config/hn-error-text.class';
-import {HnUser} from '../../users/hn-user.entity';
 
 @Injectable()
 export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
@@ -30,7 +22,6 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     private brickVersionsRepository: Repository<HnBrickVersion>,
     private transportService: BlTransportService,
     private brickVersionReferenceService: HnBrickVersionReferenceService,
-    private userService: HnUserService,
     private dataSource: DataSource) {
     super(brickVersionsRepository, HnBrickVersion);
   }
