@@ -13,11 +13,15 @@ import {
 } from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {HnIconCreateDto} from './hn-icon.dto';
+import {HnSpaceService} from '../space-aggregate/space/hn-space.service';
+import {HnSpaceUserService} from '../space-aggregate/space-user/hn-space-user.service';
+import {HnSpaceAggregateService} from '../space-aggregate/hn-space-aggregate.service';
 
 @Injectable()
 export class HnIconService {
   constructor(@InjectRepository(HnIcon)
               private readonly iconRepository: Repository<HnIcon>,
+              private readonly spaceAggregateService: HnSpaceAggregateService,
               private readonly objectStorageService: BlObjectStorageService,
               private readonly configService: HnCoreConfigService) {
   }
@@ -48,6 +52,8 @@ export class HnIconService {
   }
 
   async createIcon(_icon: HnIconCreateDto, file: BlFile): Promise<HnIcon> {
+    await this.spaceAggregateService.assertCurrentUserIsInGencoverySpace();
+
     const icon: HnIcon = new HnIcon();
     icon.init(_icon);
 
@@ -64,6 +70,8 @@ export class HnIconService {
   }
 
   async updateIcon(_icon: HnIconCreateDto, file: BlFile): Promise<HnIcon> {
+    await this.spaceAggregateService.assertCurrentUserIsInGencoverySpace();
+
     if(_icon.id == null)
       throw new BlNotFoundException('Icon id is missing');
     const icon: HnIcon = await this.iconRepository.findOneBy({id: _icon.id});
@@ -107,6 +115,8 @@ export class HnIconService {
   }
 
   async deleteIcon(id: string): Promise<boolean> {
+    await this.spaceAggregateService.assertCurrentUserIsInGencoverySpace();
+
     const icon: HnIcon = await this.iconRepository.findOneBy({id: id});
     if (!icon) {
       throw new BlNotFoundException('Icon not found');

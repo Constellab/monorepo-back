@@ -74,7 +74,7 @@ export class HnBrickAggregateService {
       // Verify user right on spaces
       else {
         if (HnCurrentUserHelper.getCurrentUser() != null) {
-          await this.spaceAggregateService.checkSpaceUser(spaceId, HnCurrentUserHelper.getCurrentUser().id);
+          await this.spaceAggregateService.assertCheckSpaceUser(spaceId, HnCurrentUserHelper.getCurrentUser().id);
         }
       }
     }

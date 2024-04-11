@@ -42,11 +42,11 @@ export class HnStoryAuthorInviteService {
     };
 
     if (user) {
-      template = HnMailTemplate.story_invit_existing_user;
+      template = HnMailTemplate.story_invite_existing_user;
       lang = user.lang;
       data.user = user;
     } else {
-      template = HnMailTemplate.story_invit_new_user;
+      template = HnMailTemplate.story_invite_new_user;
       lang = inviteMail.createdBy.lang;
       data.subscribeUrl = this.frontService.getConstellabLoginUrl();
     }

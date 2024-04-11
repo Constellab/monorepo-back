@@ -4,6 +4,7 @@ import {DateTime} from 'luxon';
 import {ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {HnStoryAuthor} from '../story-author/hn-story-author.entity';
 import {HnBrickUser} from '../brick-aggregate/brick-user/hn-brick-user.entity';
+import {HnLiveTaskCoAuthor} from '../live-task-aggregate/live-task-co-author/hn-live-task-co-author.entity';
 
 @Entity('User')
 export class HnUser {
@@ -37,6 +38,9 @@ export class HnUser {
 
   @OneToMany(() => HnStoryAuthor, storyAuthor => storyAuthor.user, {nullable: true})
   storyAuthors: HnStoryAuthor[];
+
+  @OneToMany(() => HnLiveTaskCoAuthor, liveTaskCoAuthor => liveTaskCoAuthor.user, {nullable: true, onDelete: 'CASCADE'})
+  liveTaskCoAuthors: HnLiveTaskCoAuthor[];
 
   @OneToMany(() => HnBrickUser, brickUser => brickUser.user, {nullable: true})
   brickUsers: HnBrickUser[];

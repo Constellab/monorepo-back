@@ -3,7 +3,7 @@ import {HnSpaceUser} from './space-user/hn-space-user.entity';
 import {HnSpaceUserService} from './space-user/hn-space-user.service';
 import {HnSpaceService} from './space/hn-space.service';
 import {HnUserService} from '../users/hn-user.service';
-import {BlBadRequestException} from '@monorepo/back-core-lib';
+import {BlBadRequestException, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {HnSpace} from './space/hn-space.entity';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnLabConstellabApiService} from '../core/service/hn-lab-constellab-api.service';
@@ -105,11 +105,37 @@ export class HnSpaceAggregateService {
     }
   }
 
+  public checkSpaceUser(spaceId: string, userId: string): Promise<boolean>{
+    return this.spaceUserService.checkSpaceUser(spaceId, userId)
+  }
 
-  public async checkSpaceUser(spaceId: string, userId: string): Promise<void> {
+  public async assertCheckSpaceUser(spaceId: string, userId: string): Promise<void> {
     await this.checkIfSpaceExists(spaceId);
     await this.checkIfUserExists(userId);
     await this.spaceUserService.assertUserIsSpaceUser(spaceId, userId);
+  }
+
+  public async checkCurrentUserIsInGencoverySpace(): Promise<boolean> {
+    const user = HnCurrentUserHelper.getCurrentUser();
+    if (!user) {
+      return false;
+    }
+
+    if (user.isAdmin())
+      return true;
+
+    const gencoverySpace = await this.spaceService.getGencoverySpace();
+    if (!gencoverySpace) {
+      return false;
+    }
+
+    return this.spaceUserService.checkSpaceUser(gencoverySpace.id, user.id);
+  }
+
+  public async assertCurrentUserIsInGencoverySpace(): Promise<void> {
+    if(!(await this.checkCurrentUserIsInGencoverySpace())) {
+      throw new BlUnauthorizedException();
+    }
   }
 
 

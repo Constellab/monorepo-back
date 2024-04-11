@@ -55,7 +55,6 @@ export class HnIconController {
   }
 
 
-  @IsAdmin()
   @UseInterceptors(FileInterceptor('file'))
   @Post()
   async createIcon(@BlUploadedFile() file: BlFile,
@@ -72,7 +71,6 @@ export class HnIconController {
     return await this.iconService.filterIcons(subNameFilter, page, size);
   }
 
-  @IsAdmin()
   @UseInterceptors(FileInterceptor('file'))
   @Put()
   async updateIcon(@BlUploadedFile() file: BlFile,
@@ -81,7 +79,6 @@ export class HnIconController {
     return await this.iconService.updateIcon(icon, file);
   }
 
-  @IsAdmin()
   @Delete(':id')
   async deleteIcon(@Param('id') id: string): Promise<boolean> {
     return await this.iconService.deleteIcon(id);

@@ -120,6 +120,10 @@ export class HnCoreConfigService {
     return this.configService.get(HN_BUCKET_STORIES_BACKUP_KEY);
   }
 
+  public getGencoverySpaceId(): string {
+    return this.configService.get('GENCOVERY_SPACE_ID');
+  }
+
   public getFrontBaseUrl(): string {
     let res: string;
     switch (this.getEnvironmentProfile()) {

@@ -88,5 +88,4 @@ export class HnSpaceUserService {
       throw new BlUnauthorizedException('Current user is not space admin');
     }
   }
-
 }

@@ -24,12 +24,17 @@ import {BlExternalApiModule} from '@monorepo/back-core-lib';
 import {HnCoreConfigModule} from '../core/modules/core-config/hn-core-config.module';
 import {HnCoreModule} from '../core/hn-core.module';
 import {HnTechnicalFolderModule} from '../technical-folder/hn-technical-folder.module';
+import {HnLiveTaskCoAuthorModule} from './live-task-co-author/hn-live-task-co-author.module';
+import {HnLiveTaskCoAuthorInviteModule} from './live-task-co-author-invite/hn-live-task-co-author-invite.module';
 
 @Module({
   imports: [
     HnLiveTaskModule,
     HnLiveTaskVersionModule,
+    HnLiveTaskCoAuthorInviteModule,
     HnLiveTaskVersionBrickDependenciesModule,
+    HnLiveTaskCoAuthorModule,
+
     HnSpaceAggregateModule,
     HnSpaceModule,
     HnSpaceUserModule,

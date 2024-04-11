@@ -1,6 +1,8 @@
 {
-  "hn-story-invit-existing-user": "Constellab Community - Invitation pour être co-auteur d'une story",
-  "hn-story-invit-new-user": "Constellab Community - Invitation pour être co-auteur d'une story",
-  "hn-brick-invit-existing-user": "Constellab Community - Invitation pour être co-auteur d'une brick",
-  "hn-brick-invit-new-user": "Constellab Community - Invitation pour être co-auteur d'une brick"
+  "hn-story-invite-existing-user": "Constellab Community - Invitation pour être co-auteur d'une story",
+  "hn-story-invite-new-user": "Constellab Community - Invitation pour être co-auteur d'une story",
+  "hn-brick-invite-existing-user": "Constellab Community - Invitation pour être co-auteur d'une brick",
+  "hn-brick-invite-new-user": "Constellab Community - Invitation pour être co-auteur d'une brick",
+  "hn-live-task-invite-existing-user": "Constellab Community - Invitation pour être co-auteur d'une live task",
+  "hn-live-task-invite-new-user": "Constellab Community - Invitation pour être co-auteur d'une live task"
 }

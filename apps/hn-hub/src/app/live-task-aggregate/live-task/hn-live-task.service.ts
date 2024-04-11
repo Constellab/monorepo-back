@@ -13,13 +13,14 @@ import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {HnUser} from '../../users/hn-user.entity';
-import {HnLiveTaskVersion} from '../live-task-version/hn-live-task-version.entity';
+import {HnLiveTaskCoAuthorService} from '../live-task-co-author/hn-live-task-co-author.service';
 
 @Injectable()
 export class HnLiveTaskService {
   constructor(
     @InjectRepository(HnLiveTask)
-    private liveTaskRepository: Repository<HnLiveTask>
+    private liveTaskRepository: Repository<HnLiveTask>,
+    private liveTaskCoAuthorService: HnLiveTaskCoAuthorService,
   ) {
   }
 
@@ -201,23 +202,35 @@ export class HnLiveTaskService {
   }
 
   public async updateTitle(id: string, title: string): Promise<HnLiveTask> {
-    const liveTask = await this.checkIfCreatorAndGetLiveTask(id);
+    const liveTask = await this.checkIfCreatorOrCoAuthorAndGetLiveTask(id);
     liveTask.title = title;
     return this.liveTaskRepository.save(liveTask);
   }
 
   public async updateDescription(id: string, description: Record<string, any>): Promise<HnLiveTask> {
-    const liveTask = await this.checkIfCreatorAndGetLiveTask(id);
+    const liveTask = await this.checkIfCreatorOrCoAuthorAndGetLiveTask(id);
     liveTask.description = description;
     return this.liveTaskRepository.save(liveTask);
   }
 
   public async updateLiveTaskLatestPublishVersion(id: string, latestPublishVersion: number,
                                                   entityManager: EntityManager): Promise<HnLiveTask> {
-    const liveTask = await this.checkIfCreatorAndGetLiveTask(id);
+    const liveTask = await this.checkIfCreatorOrCoAuthorAndGetLiveTask(id);
     liveTask.latestPublishVersion = liveTask.latestPublishVersion > latestPublishVersion ?
       liveTask.latestPublishVersion : latestPublishVersion;
     return entityManager.save(liveTask);
+  }
+
+  public async checkIfCreatorOrCoAuthorAndGetLiveTask(liveTaskId: string): Promise<HnLiveTask> {
+    const liveTask = await this.liveTaskRepository.findOneBy({id: liveTaskId});
+    if (!liveTask || liveTask.createdBy.id != HnCurrentUserHelper.getAndCheckCurrentUser().id) {
+      const coAuthors = await this.liveTaskCoAuthorService.getLiveTaskCoAuthorsByLiveTaskId(liveTaskId);
+      if (!coAuthors.some(coAuthor => coAuthor.user.id === HnCurrentUserHelper.getAndCheckCurrentUser().id)) {
+        throw new BlUnauthorizedException(
+          `User ${HnCurrentUserHelper.getAndCheckCurrentUser().id} is not the creator or co-author of live task ${liveTask.id}`);
+      }
+    }
+    return liveTask;
   }
 
   public async checkIfCreatorAndGetLiveTask(liveTaskId: string): Promise<HnLiveTask> {

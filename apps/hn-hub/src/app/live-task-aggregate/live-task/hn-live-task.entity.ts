@@ -1,4 +1,4 @@
-import {BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne} from 'typeorm';
+import {BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany} from 'typeorm';
 import {HnCreateLiveTaskDto} from './hn-live-task.dto';
 import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
 import {HnUser} from '../../users/hn-user.entity';
@@ -7,6 +7,7 @@ import {DateTime} from 'luxon';
 import {Type} from 'class-transformer';
 import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 import {ClDateHelper} from '@monorepo/core-lib';
+import {HnLiveTaskCoAuthor} from '../live-task-co-author/hn-live-task-co-author.entity';
 
 @Entity('LiveTask')
 export class HnLiveTask extends BlEntityWithId {
@@ -47,6 +48,9 @@ export class HnLiveTask extends BlEntityWithId {
 
   @Column({default: 0})
   comments: number;
+
+  @OneToMany(() => HnLiveTaskCoAuthor, liveTaskCoAuthor => liveTaskCoAuthor.user, {nullable: true, onDelete: 'CASCADE'})
+  liveTaskCoAuthors: HnLiveTaskCoAuthor[];
 
   static init(liveTaskDto: HnCreateLiveTaskDto, parentLiveTaskVersionId?: string, user?: HnUser): HnLiveTask {
     const liveTask = new HnLiveTask();

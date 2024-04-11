@@ -60,6 +60,16 @@ export class HnFrontService {
     return `${this.getBricksUrl()}/${brickName}/${majorStrVersion}`;
   }
 
+  ///////////////////////////// LIVE TASKS ///////////////////////////////////////////
+
+  public getLiveTaskInviteUrl(token: string): string {
+    return `${this.getLiveTaskUrl()}/invite/${token}`;
+  }
+
+  public getLiveTaskUrl(): string {
+    return `${this.getBaseWebsiteURL()}/live-tasks`;
+  }
+
   //////////////////////////////// CONSTELLAB URLS ///////////////////////////////////////
   public getConstellabBaseWebsiteUrl(): string {
     return this.configService.getConstellabFrontBaseUrl();

@@ -2,7 +2,6 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {HnStoryAuthor} from './hn-story-author.entity';
 import {Repository} from 'typeorm';
-import {HnUser} from '../users/hn-user.entity';
 import {HnStory} from '../story/hn-story.entity';
 import {HnStoryAuthorInviteService} from '../story-author-invite/hn-story-author-invite.service';
 import {HnStoryAuthorInvite} from '../story-author-invite/hn-story-author-invite.entity';
@@ -15,20 +14,9 @@ export class HnStoryAuthorService {
   ) {
   }
 
-  createStoryAuthor(story: HnStory, author: HnUser): Promise<HnStoryAuthor> {
-    const storyAuthor = new HnStoryAuthor();
-    storyAuthor.initAuthor(story, author);
-    return this.storyAuthorRepository.save(storyAuthor);
-  }
 
   async getStoryCoAuthorsByStoryId(storyId: string): Promise<HnStoryAuthor[]> {
     return this.storyAuthorRepository.find({where: {story: {id: storyId}}});
-  }
-
-  async updateStoryCoAuthors(story: HnStory, coAuthorsMail: string[]): Promise<void> {
-    for (const coAuthorMail of coAuthorsMail) {
-      await this.storyAuthorInviteService.createStoryAuthorMail(story, coAuthorMail);
-    }
   }
 
   async removeStoryCoAuthor(storyId: string, storyAuthorUserId: string): Promise<void> {

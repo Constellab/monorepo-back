@@ -2,6 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {HnSpace} from './hn-space.entity';
+import {HnCoreConfigService} from '../../core/modules/core-config/hn-core-config.service';
 
 @Injectable()
 export class HnSpaceService {
@@ -9,6 +10,7 @@ export class HnSpaceService {
   constructor(
     @InjectRepository(HnSpace)
     private spaceRepository: Repository<HnSpace>,
+    private coreConfigService: HnCoreConfigService
   ) {
   }
 
@@ -26,6 +28,10 @@ export class HnSpaceService {
 
   public async update(space: HnSpace): Promise<HnSpace> {
     return this.spaceRepository.save(space);
+  }
+
+  public async getGencoverySpace(): Promise<HnSpace> {
+    return this.spaceRepository.findOneBy({id: this.coreConfigService.getGencoverySpaceId()});
   }
 
 }

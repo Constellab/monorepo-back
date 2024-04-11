@@ -44,6 +44,12 @@ export class HnSpaceController {
     return this.spaceAggregateService.getSpacesForLab(req);
   }
 
+  @BlPublic()
+  @Get('is-gencovery-member')
+  async isGencoveryMember(): Promise<boolean> {
+    return this.spaceAggregateService.checkCurrentUserIsInGencoverySpace();
+  }
+
   /////////////////////////////////// Space User Queue ///////////////////////////////////
 
   /**

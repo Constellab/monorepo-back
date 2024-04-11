@@ -4,11 +4,13 @@ import {HnIcon} from './hn-icon.entity';
 import {HnIconController} from './hn-icon.controller';
 import {HnIconService} from './hn-icon.service';
 import {HnCoreModule} from '../core/hn-core.module';
+import {HnSpaceAggregateModule} from '../space-aggregate/hn-space-aggregate.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([HnIcon]),
-    HnCoreModule
+    HnCoreModule,
+    HnSpaceAggregateModule
   ],
   exports: [TypeOrmModule],
   controllers: [HnIconController],

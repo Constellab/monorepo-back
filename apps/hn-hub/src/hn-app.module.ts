@@ -72,6 +72,10 @@ import {HnCommentStoryModule} from './app/comment-aggregate/comment-story/hn-com
 import {HnLikeLiveTaskModule} from './app/like-aggregate/like-live-task/hn-like-live-task.module';
 import {HnCommentLiveTaskModule} from './app/comment-aggregate/comment-live-task/hn-comment-live-task.module';
 import {HnLikeBrickModule} from './app/like-aggregate/like-brick/hn-like-brick.module';
+import {HnLiveTaskCoAuthorModule} from './app/live-task-aggregate/live-task-co-author/hn-live-task-co-author.module';
+import {
+  HnLiveTaskCoAuthorInviteModule
+} from './app/live-task-aggregate/live-task-co-author-invite/hn-live-task-co-author-invite.module';
 
 function typeOrmConfig(
   configService: HnCoreConfigService,
@@ -229,6 +233,8 @@ function configureMailModule(
     HnLiveTaskModule,
     HnLiveTaskVersionModule,
     HnLiveTaskVersionBrickDependenciesModule,
+    HnLiveTaskCoAuthorInviteModule,
+    HnLiveTaskCoAuthorModule,
     HnLiveTaskAggregateModule,
 
     HnIconModule,

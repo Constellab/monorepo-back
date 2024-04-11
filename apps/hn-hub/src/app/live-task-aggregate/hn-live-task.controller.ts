@@ -13,6 +13,8 @@ import {HnLiveTask} from './live-task/hn-live-task.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {HnBrickVersion} from '../brick-aggregate/brick-version/hn-brick-version.entity';
 import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
+import {HnUser} from '../users/hn-user.entity';
+import {HnLiveTaskCoAuthorInvite} from './live-task-co-author-invite/hn-live-task-co-author-invite.entity';
 
 @Controller('live-task')
 export class HnLiveTaskController {
@@ -301,6 +303,55 @@ export class HnLiveTaskController {
   @Delete(':id')
   deleteLiveTask(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.liveTaskAggregateService.deleteLiveTask(id);
+  }
+
+  ////////////////////////////////////////// CO AUTHORS //////////////////////////////////////////
+  @Post(':id/invite-co-author')
+  async inviteLiveTaskCoAuthor(@Param('id', new ParseUUIDPipe()) id: string,
+                            @Body('coAuthorMail') coAuthorMail: string): Promise<boolean> {
+    return this.liveTaskAggregateService.inviteLiveTaskCoAuthor(id, coAuthorMail);
+  }
+
+  @BlPublic()
+  @Get(':id/co-authors')
+  async getLiveTaskCoAuthors(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUser[]> {
+    return this.liveTaskAggregateService.getLiveTaskCoAuthors(id);
+  }
+
+  @Get(':id/co-authors-pending-invites')
+  async getLiveTaskCoAuthorsPendingInvites(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnLiveTaskCoAuthorInvite[]> {
+    return this.liveTaskAggregateService.getLiveTaskCoAuthorsPendingInvites(id);
+  }
+
+  /***
+   * Remove liveTask co-author
+   */
+  @Put(':id/remove-co-author/:liveTaskAuthorUserId')
+  async removeLiveTaskCoAuthor(@Param('id', new ParseUUIDPipe()) id: string,
+                            @Param('liveTaskAuthorUserId', new ParseUUIDPipe()) liveTaskAuthorUserId: string): Promise<void> {
+    return this.liveTaskAggregateService.removeLiveTaskCoAuthor(id, liveTaskAuthorUserId);
+  }
+
+
+  /***
+   * Is invite valid
+   */
+  @Get('invite/:token/is-valid')
+  isInviteValid(@Param('token') token: string): Promise<HnLiveTaskCoAuthorInvite> {
+    return this.liveTaskAggregateService.isInviteValid(token);
+  }
+
+  /***
+   * Accept invite
+   */
+  @Put('invite/:token/accept')
+  acceptInvite(@Param('token') token: string): Promise<HnLiveTask> {
+    return this.liveTaskAggregateService.acceptInvite(token);
+  }
+
+  @Delete('invite/:inviteId')
+  async deleteCoAuthorInvite(@Param('inviteId', new ParseUUIDPipe()) inviteId: string): Promise<boolean> {
+    return this.liveTaskAggregateService.deleteCoAuthorInvite(inviteId);
   }
 
 }
