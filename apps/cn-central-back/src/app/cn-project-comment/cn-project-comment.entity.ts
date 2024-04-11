@@ -8,7 +8,7 @@ export class CnProjectComment extends CnComment {
 
 
   @Type(() => CnProject)
-  @ManyToOne(() => CnProject, {nullable: false, onDelete: 'CASCADE'})
+  @ManyToOne(() => CnProject, {eager: true,nullable: false, onDelete: 'CASCADE'})
   project: CnProject;
 
   static create(newComment: CnNewComment, project: CnProject): CnProjectComment {
