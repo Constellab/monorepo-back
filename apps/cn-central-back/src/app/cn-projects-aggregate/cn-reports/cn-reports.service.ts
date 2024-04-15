@@ -294,8 +294,10 @@ export class CnReportsService extends BlAbstractService<CnReport> {
 
             await this.projectDocumentService.save(document);
           }
-        } catch (e) {
+        } catch (e: any) {
           this.logger.error(`Error while migrating view ${viewBlock.data.id} of report ${report.id}. ${e}`);
+          // print stack trace
+          this.logger.error(e.stack);
         }
       }
 
@@ -304,8 +306,10 @@ export class CnReportsService extends BlAbstractService<CnReport> {
         try {
           await this.projectDocumentService.migrateImageContent(imageBlock.data.filename,
             report.project, CnProjectDocumentType.REPORT_CONTENT, report.id, reportDocument);
-        } catch (e) {
+        } catch (e: any) {
           this.logger.error(`Error while migrating image ${imageBlock.data.filename} of report ${report.id}. ${e}`);
+          // print stack trace
+          this.logger.error(e.stack);
         }
       }
     }
