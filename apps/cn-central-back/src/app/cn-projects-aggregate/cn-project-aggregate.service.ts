@@ -921,7 +921,7 @@ export class CnProjectAggregateService {
 
           if (content) {
             // c'est pour mettre a jour le backup des constellab documents qui ne se mettais pas a jour
-            await this.projectDocumentService.updateJSONDocument(doc.project, projectDoc, content);
+            await this.projectDocumentService.updateJSONDocument(doc.project, projectDoc, content, true);
           }
 
           const richText = new BlNewRichText(content);

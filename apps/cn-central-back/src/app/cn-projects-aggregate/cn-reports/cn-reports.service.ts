@@ -257,7 +257,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     if (!report.document) {
       // or use the id as doc Name
       reportDocument = await this.projectDocumentService.createJSONDocument(report.project,
-        CnProjectDocumentType.REPORT, report.title, report.id, report.content);
+        CnProjectDocumentType.REPORT, report.title, report.id, report.content, null, true);
 
       // store document reference in the report
       report.document = reportDocument;

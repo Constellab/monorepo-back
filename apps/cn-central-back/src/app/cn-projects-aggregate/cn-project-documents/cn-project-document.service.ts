@@ -177,7 +177,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   public async emptyProjectTrash(projectId: string): Promise<void> {
     const documentToDelete = await this.repo.find({where: {projectId: projectId, inTrash: true}});
 
-    for(const doc of documentToDelete){
+    for (const doc of documentToDelete) {
       await this.deleteDocument(doc.id, this.datasource.manager);
     }
   }
@@ -238,12 +238,16 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
 
   ////////////////////////////////////////////// JSON  DOCUMENTS //////////////////////////////////////////////
+  //. TODO REMOVE skipSizeCheck
+
   public async createJSONDocument(project: CnProject, type: CnProjectDocumentType,
                                   documentName: string, entityId: string, content: any,
-                                  parentDocument?: CnProjectDocument): Promise<CnProjectDocument> {
+                                  parentDocument?: CnProjectDocument, skipSizeCheck: boolean = false): Promise<CnProjectDocument> {
     // check if the space storage is not full, consider si of this document as 0
-    this.checkIfStorageIsFull(0);
-
+    if (!skipSizeCheck) {
+      // check if the space storage is not full, consider si of this document as 0
+      this.checkIfStorageIsFull(0);
+    }
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
     const document = await this.datasource.transaction(async (entityManager) => {
 
@@ -269,10 +273,13 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     return document;
   }
 
+  //. TODO REMOVE skipSizeCheck
   public async updateJSONDocument(project: CnProject, document: CnProjectDocument,
-                                  content: any): Promise<CnProjectDocument> {
-    // check if the space storage is not full, consider si of this document as 0
-    this.checkIfStorageIsFull(0);
+                                  content: any, skipSizeCheck: boolean = false): Promise<CnProjectDocument> {
+    if (!skipSizeCheck) {
+      // check if the space storage is not full, consider si of this document as 0
+      this.checkIfStorageIsFull(0);
+    }
 
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
@@ -400,7 +407,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   }
 
   public checkIfStorageIsFull(documentSize: number): void {
-    const space = CnCurrentUserHelper.getCurrentSpace();
+    const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
     if (!space.hasEnoughStorageForNewFile(documentSize)) {
       if (documentSize === 0) {
         throw new BlBadRequestException('Space storage is full, please contact your space administrator to increase the storage limit, delete some documents or empty the trash.');
