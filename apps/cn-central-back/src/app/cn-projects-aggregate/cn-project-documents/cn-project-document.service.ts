@@ -269,7 +269,9 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       return await entityManager.save(document);
     });
 
-    this.emitEvent('CREATE_DOCUMENT', document);
+    if (!skipSizeCheck) {
+      this.emitEvent('CREATE_DOCUMENT', document);
+    }
     return document;
   }
 
@@ -292,7 +294,9 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     document.size = objectInfo.ContentLength;
     document = await this.repository.save(document);
 
-    this.emitEvent('UPDATE_DOCUMENT', document);
+    if (!skipSizeCheck) {
+      this.emitEvent('UPDATE_DOCUMENT', document);
+    }
     return document;
   }
 
