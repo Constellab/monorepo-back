@@ -141,10 +141,8 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     report = await this.updatePartial(report.id, {document: reportDocument});
 
     // manage the images and views of the report
-    if (files != null || createReportDto.resource_views != null) {
-      await this.uploadReportImages(files, report.id, reportDocument, project);
-      await this.uploadReportViews(richText, createReportDto.resource_views, report.id, reportDocument, project);
-    }
+    await this.uploadReportImages(files, report.id, reportDocument, project);
+    await this.uploadReportViews(richText, createReportDto.resource_views, report.id, reportDocument, project);
 
     return report;
   }
@@ -164,7 +162,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
                                   project: CnProject): Promise<void> {
     const filename = file.originalname;
     const document =
-      this.projectDocumentService.findDocumentByProjectAndTypeAndName(project.id, CnProjectDocumentType.REPORT_CONTENT,
+      await this.projectDocumentService.findDocumentByProjectAndTypeAndName(project.id, CnProjectDocumentType.REPORT_CONTENT,
         filename, reportId);
 
     // upload the image only if it does not exist
@@ -182,6 +180,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
                                   reportId: string,
                                   parentDocument: CnProjectDocument,
                                   project: CnProject): Promise<void> {
+    if (!resourceViews) return;
 
     for (const specialOp of richText.getViewsBlocks()) {
       const viewConfig: CnReportViewConfig = specialOp.data;
