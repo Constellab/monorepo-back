@@ -203,6 +203,7 @@ export class CnLabInstanceAggregateService {
 
   async findByIdAndCheck(id: string): Promise<CnLabFindOneDto> {
     const labInstance = await this.labInstancesService.findByIdAndCheck(id);
+    console.log('Is constellab domain', labInstance.isConstellabDomain());
     const userRole = await this.security.checkAuthorizationToFindById(labInstance, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return CnLabFindOneDto.create(labInstance, userRole);
   }
@@ -818,8 +819,8 @@ export class CnLabInstanceAggregateService {
     const lab = await this.getAndCheckAuthorizationToFindById(CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
 
     // check the credentials, if the lab is cloud, it needs a valid captcha
-    // for desktop lab, no captcha is needed as this is local
-    return this.authService.externalCheckCredentials(credentials, lab.isHttpAccessible() && !ignoreCaptcha, ignore2Fa);
+    // only check the captcha for constellab standard domain (because this is the only domain defined in google
+    return this.authService.externalCheckCredentials(credentials, lab.isConstellabDomain() && !ignoreCaptcha, ignore2Fa);
   }
 
   /////////////////////////// EXTERNAL LAB MANAGER //////////////////////////////

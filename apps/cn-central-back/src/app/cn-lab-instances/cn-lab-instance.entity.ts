@@ -286,6 +286,14 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     return this.isOnServer();
   }
 
+  /**
+   * return true if the lab is on a constellab standard domain
+   */
+  public isConstellabDomain(): boolean{
+    if(this.isDesktop()) return false;
+    return CnLabInstance.SUPPORTED_MAIN_DOMAINS.includes(this.getMainDomain())
+  }
+
   public getCloudProviderName(): CnCloudProviderName {
     if (!this.isCloud()) {
       throw new BlBadRequestException('Cannot get cloud provider name for none cloud lab');
