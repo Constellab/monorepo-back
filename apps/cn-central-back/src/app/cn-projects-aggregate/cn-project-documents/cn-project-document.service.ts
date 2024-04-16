@@ -23,7 +23,6 @@ import {
   CnProjectDocumentStorageType,
   CnProjectStorageUsageDTO
 } from './cn-project-document-dto.class';
-import {CnDocument} from '../cn-documents/cn-document.entity';
 import {EventEmitter2} from '@nestjs/event-emitter';
 import {
   CnProjectDocumentEvent,
@@ -238,16 +237,12 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
 
   ////////////////////////////////////////////// JSON  DOCUMENTS //////////////////////////////////////////////
-  //. TODO REMOVE skipSizeCheck
-
   public async createJSONDocument(project: CnProject, type: CnProjectDocumentType,
                                   documentName: string, entityId: string, content: any,
-                                  parentDocument?: CnProjectDocument, skipSizeCheck: boolean = false): Promise<CnProjectDocument> {
-    // check if the space storage is not full, consider si of this document as 0
-    if (!skipSizeCheck) {
-      // check if the space storage is not full, consider si of this document as 0
-      this.checkIfStorageIsFull(0);
-    }
+                                  parentDocument?: CnProjectDocument): Promise<CnProjectDocument> {
+    // check if the space storage is not full, consider size of this document as 0
+    this.checkIfStorageIsFull(0);
+
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
     const document = await this.datasource.transaction(async (entityManager) => {
 
@@ -269,19 +264,14 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       return await entityManager.save(document);
     });
 
-    if (!skipSizeCheck) {
-      this.emitEvent('CREATE_DOCUMENT', document);
-    }
+    this.emitEvent('CREATE_DOCUMENT', document);
     return document;
   }
 
-  //. TODO REMOVE skipSizeCheck
   public async updateJSONDocument(project: CnProject, document: CnProjectDocument,
-                                  content: any, skipSizeCheck: boolean = false): Promise<CnProjectDocument> {
-    if (!skipSizeCheck) {
-      // check if the space storage is not full, consider si of this document as 0
-      this.checkIfStorageIsFull(0);
-    }
+                                  content: any): Promise<CnProjectDocument> {
+    // check if the space storage is not full, consider si of this document as 0
+    this.checkIfStorageIsFull(0);
 
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
@@ -294,9 +284,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     document.size = objectInfo.ContentLength;
     document = await this.repository.save(document);
 
-    if (!skipSizeCheck) {
-      this.emitEvent('UPDATE_DOCUMENT', document);
-    }
+    this.emitEvent('UPDATE_DOCUMENT', document);
     return document;
   }
 
@@ -430,73 +418,5 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       spaceId: CnCurrentUserHelper.getCurrentSpace().id
     };
     this.eventEmitter.emit(cnProjectDocumentEventName, event);
-  }
-
-  ////////////////////////////////////////////// MIGRATION /////////////////////////////////////////////
-
-
-  // TODO TO REMOVE AFTER MIGRATION
-  public async fromDocument(document: CnDocument): Promise<CnProjectDocument> {
-    const doc = new CnProjectDocument();
-    doc.id = document.id;
-    doc.name = document.name;
-    doc.filename = document.filename;
-    doc.size = document.size;
-    doc.mimeType = document.mimeType;
-    doc.project = document.project;
-    doc.projectId = document.projectId;
-    doc.type = document.isConstellabDocument ? CnProjectDocumentType.CONSTELLAB_DOCUMENT : CnProjectDocumentType.UPLOADED_DOCUMENT;
-    doc.entityId = document.projectId;
-    doc.inTrash = document.inTrash;
-    return this.repository.save(doc);
-  }
-
-  public save(document: CnProjectDocument): Promise<CnProjectDocument> {
-    return this.repository.save(document);
-  }
-
-  public async getFileSize(project: CnProject, document: CnProjectDocument): Promise<number> {
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
-
-    const documentPath = this.generateDocumentFilePath(project, document);
-    const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig[0], documentPath);
-
-    // update the document size and last modification info
-    return objectInfo.ContentLength;
-  }
-
-  public async migrateImageContent(filename: string, project: CnProject,
-                                   documentType: CnProjectDocumentType,
-                                   entityId: string,
-                                   parentDocument?: CnProjectDocument): Promise<CnProjectDocument> {
-    const imageDocument = await this.findDocumentByProjectAndTypeAndName(project.id,
-      documentType, filename, entityId);
-
-    if (!imageDocument) {
-      const document = new CnProjectDocument();
-      document.name = filename;
-      document.filename = filename;
-
-      const extension = BlFileHelper.getFileExtension(filename);
-      if (extension === 'png') {
-        document.mimeType = 'image/png';
-      } else if (extension === 'jpg' || extension === 'jpeg') {
-        document.mimeType = 'image/jpeg';
-      } else if (extension === 'gif') {
-        document.mimeType = 'image/gif';
-      } else {
-        document.mimeType = 'image/*';
-      }
-      document.project = project;
-      document.projectId = project.id;
-      document.type = documentType;
-      document.entityId = entityId;
-      document.inTrash = false;
-      document.parentDocument = parentDocument;
-      document.size = await this.getFileSize(project, document);
-
-      return await this.repository.save(document);
-    }
-    return imageDocument;
   }
 }

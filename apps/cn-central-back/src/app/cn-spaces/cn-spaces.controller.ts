@@ -245,9 +245,4 @@ export class CnSpacesController {
   public async getAndCheckUser(@Param('userId') userId: string): Promise<CnUser> {
     return this.spaceAggregateService.getAndCheckUser(userId);
   }
-
-  @Post('space-storage-migrate')
-  public async migrateSpaceStorage(): Promise<void> {
-    return this.spaceAggregateService.refreshSpacesStorage();
-  }
 }

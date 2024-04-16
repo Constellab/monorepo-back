@@ -7,7 +7,6 @@ import {CnActivity, CnActivityEntityType, CnActivityType} from '../cn-activity/c
 import {CnNotificationService} from '../cn-notification/cn-notification.service';
 import {CnFrontService} from '../cn-core/services/cn-front.service';
 import {CnProjectEvent, cnProjectEventName} from './cn-project.event';
-import {CnDocument} from './cn-documents/cn-document.entity';
 import {CnProject} from './cn-projects/cn-project.entity';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnExperiment} from './cn-experiments/cn-experiment.entity';
@@ -17,6 +16,7 @@ import {BlMailService, BlRichText, BlRichTextI} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnProjectsService} from './cn-projects/cn-projects.service';
 import {CnMailTemplate} from '../cn-core/model/config/cn-mail-template.class';
+import {CnProjectDocument} from './cn-project-documents/cn-project-document.entity';
 
 export interface CnNotifInfo {
   link: string;
@@ -318,7 +318,7 @@ export class CnProjectListener {
     };
   }
 
-  private constellabDocCreated(document: CnDocument): CnActivityAndNotif {
+  private constellabDocCreated(document: CnProjectDocument): CnActivityAndNotif {
     return {
       activity: {
         entityType: CnActivityEntityType.PROJECT_DOCUMENT,
@@ -331,7 +331,7 @@ export class CnProjectListener {
   }
 
 
-  private documentCreated(document: CnDocument, parentProject: CnProject): CnActivityAndNotif {
+  private documentCreated(document: CnProjectDocument, parentProject: CnProject): CnActivityAndNotif {
     return {
       activity: {
         entityType: CnActivityEntityType.PROJECT_DOCUMENT,
@@ -343,7 +343,7 @@ export class CnProjectListener {
     };
   }
 
-  private documentDeleted(document: CnDocument, parentProject: CnProject): CnActivityAndNotif {
+  private documentDeleted(document: CnProjectDocument, parentProject: CnProject): CnActivityAndNotif {
     return {
       activity: {
         entityType: CnActivityEntityType.PROJECT_DOCUMENT,

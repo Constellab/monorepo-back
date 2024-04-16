@@ -30,8 +30,6 @@ import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {
   BlBadRequestException,
   BlFile,
-  BlNewRichText,
-  BlRichText,
   BlRichTextContent,
   BlRichTextI,
   BlRichTextUploadedImage,
@@ -51,7 +49,6 @@ import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.en
 import {CnProjectDocumentService} from './cn-project-documents/cn-project-document.service';
 import {CnProjectDocument, CnProjectDocumentType} from './cn-project-documents/cn-project-document.entity';
 import {CnConstellabDocumentDTO, CnProjectStorageUsageDTO} from './cn-project-documents/cn-project-document-dto.class';
-import {CnDocumentsService} from './cn-documents/cn-documents.service';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -69,8 +66,7 @@ export class CnProjectAggregateService {
               private projectUserService: CnProjectUserService,
               private userService: CnUsersService,
               private eventEmitter: EventEmitter2,
-              private activityService: CnActivityService,
-              private documentService: CnDocumentsService) {
+              private activityService: CnActivityService) {
   }
 
   /////////////////////////////////////// PROJECT //////////////////////////////////
@@ -889,126 +885,5 @@ export class CnProjectAggregateService {
       userInfo: CnCurrentUserHelper.getAndCheckUserSpaceInfo()
     };
     this.eventEmitter.emit(cnProjectEventName, event);
-  }
-
-  public migrateExperimentProtocols(): Promise<void> {
-    return this.experimentService.migrateAllProtocolsFromV1ToV2();
-  }
-
-  public async migrateProjectDocuments(): Promise<void> {
-    this.logger.log('[MIGRATE PROJECT DOCUMENT] Start');
-
-    await this.migrateDocuments();
-    await this.migrateReports();
-    await this.migrateProjectDescriptionImage();
-    await this.migrateProjectCommentImage();
-
-    this.logger.log('[MIGRATE PROJECT DOCUMENT] End');
-  }
-
-
-  // TODO TO REMOVE ONCE MIGRATION IS DONE
-  public async migrateDocuments(): Promise<void> {
-    this.logger.log('[MIGRATE DOCUMENT] Start');
-    const document = await this.documentService.findAll();
-
-    for (const doc of document) {
-      try {
-        const projectDoc = await this.projectDocumentService.fromDocument(doc);
-
-        if (projectDoc.type === CnProjectDocumentType.CONSTELLAB_DOCUMENT) {
-          const content = await this.projectDocumentService.getJSONDocumentContent(doc.project, projectDoc);
-
-          if (content) {
-            // c'est pour mettre a jour le backup des constellab documents qui ne se mettais pas a jour
-            await this.projectDocumentService.updateJSONDocument(doc.project, projectDoc, content, true);
-          }
-
-          const richText = new BlNewRichText(content);
-
-          for (const imageBlock of richText.getFiguresBlocks()) {
-            try {
-              await this.projectDocumentService.migrateImageContent(imageBlock.data.filename,
-                projectDoc.project, CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT, projectDoc.id, projectDoc);
-            } catch (e) {
-              this.logger.error(`Error while migrating image ${imageBlock.data.filename} of constellab doc ${projectDoc.id}. ${e}`);
-            }
-          }
-        }
-      } catch (e) {
-        this.logger.error(`[MIGRATE DOCUMENT] Error on document ${doc.id}. ${e}`);
-      }
-    }
-
-    this.logger.log('[MIGRATE DOCUMENT] End');
-  }
-
-  public async migrateReports(): Promise<void> {
-    this.logger.log('[MIGRATE REPORT] Start');
-    const reports = await this.reportService.findAll();
-
-    for (const report of reports) {
-      try {
-        await this.reportService.migrateReport(report);
-      } catch (e) {
-        this.logger.error(`[MIGRATE REPORT] Error on report ${report.id}. ${e}`);
-      }
-    }
-
-    this.logger.log('[MIGRATE REPORT] End');
-  }
-
-  public async migrateProjectDescriptionImage(): Promise<void> {
-    this.logger.log('[MIGRATE PROJECT DESCRIPTION] Start');
-    const projects = await this.projectService.findAll();
-
-    for (const project of projects) {
-      try {
-        if (project.description) {
-          const description = new BlNewRichText(project.description);
-
-          for (const imageBlock of description.getFiguresBlocks()) {
-            try {
-              await this.projectDocumentService.migrateImageContent(imageBlock.data.filename,
-                project, CnProjectDocumentType.DESCRIPTION_CONTENT, project.id);
-            } catch (e) {
-              this.logger.error(`Error while migrating image ${imageBlock.data.filename} of project description ${project.id} ${e}`);
-            }
-          }
-        }
-
-      } catch (e) {
-        this.logger.error(`[MIGRATE PROJECT DESCRIPTION] Error on report ${project.id}. ${e}`);
-      }
-    }
-
-    this.logger.log('[MIGRATE PROJECT DESCRIPTION] End');
-  }
-
-  public async migrateProjectCommentImage(): Promise<void> {
-    this.logger.log('[MIGRATE PROJECT COMMENT] Start');
-    const comments = await this.projectCommentService.findAll();
-
-    for (const comment of comments) {
-      try {
-        if (comment.content) {
-          const description = new BlRichText(comment.content);
-
-          for (const imageBlock of description.getFiguresOps()) {
-            try {
-              await this.projectDocumentService.migrateImageContent(imageBlock.insert.figure.filename,
-                comment.project, CnProjectDocumentType.COMMENT_CONTENT, comment.project.id);
-            } catch (e) {
-              this.logger.error(`Error while migrating image ${imageBlock.insert.figure.filename} of project comment ${comment.id} ${e}`);
-            }
-          }
-        }
-
-      } catch (e) {
-        this.logger.error(`[MIGRATE PROJECT COMMENT] Error on report ${comment.id}. ${e}`);
-      }
-    }
-
-    this.logger.log('[MIGRATE PROJECT COMMENT] End');
   }
 }

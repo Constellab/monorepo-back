@@ -129,8 +129,4 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
 
     return await this.findPaginated(page, size, searchBuilder.build());
   }
-
-  public async findAll(): Promise<CnProject[]> {
-    return await this.repository.find();
-  }
 }

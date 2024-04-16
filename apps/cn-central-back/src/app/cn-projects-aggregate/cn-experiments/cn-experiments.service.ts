@@ -136,27 +136,6 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     })).labConfig;
   }
 
-  public findAll(): Promise<CnExperiment[]> {
-    return this.repository.find();
-  }
-
-  public async migrateAllProtocolsFromV1ToV2(): Promise<void> {
-    this.logger.log('[START] Migrating all protocols from V1 to V2');
-
-    const experiments = await this.repository.find();
-
-
-    for (const experiment of experiments) {
-      try {
-        experiment.protocol = this.migrateProtocolFromV1ToV2(experiment.protocol);
-        await this.repository.save(experiment);
-      } catch (error) {
-        this.logger.error(`Error while migrating protocol of experiment '${experiment.id}'. Error : ${error}`);
-      }
-    }
-
-    this.logger.log('[END] Migrating all protocols from V1 to V2');
-  }
 
   // to keep until all labs are V 0.7.5 or higher
   public migrateProtocolFromV1ToV2(protocol: CnExperimentProtocol): CnExperimentProtocol {

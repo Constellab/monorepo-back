@@ -24,8 +24,7 @@ import {
   BlRichTextContent,
   BlRichTextUploadedImage,
   BlSearchParams,
-  BlUploadedFile,
-  BlUserCategory
+  BlUploadedFile
 } from '@monorepo/back-core-lib';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
@@ -45,7 +44,6 @@ import {Response} from 'express';
 import {CnProjectUser} from './cn-project-user/cn-project-user.entity';
 import {CnActivity} from '../cn-activity/cn-activity.entity';
 import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
-import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
 import {CnProjectDocument} from './cn-project-documents/cn-project-document.entity';
 import {CnConstellabDocumentDTO, CnProjectStorageUsageDTO} from './cn-project-documents/cn-project-document-dto.class';
 
@@ -396,17 +394,5 @@ export class CnProjectsController {
                        @Query('page', ParseIntPipe) page: number,
                        @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnActivity>> {
     return await this.projectAggregate.searchProjectActivity(projectId, searchParam, page, size);
-  }
-
-  @CnUserCategories(BlUserCategory.ADMIN)
-  @Post('experiment-migrate')
-  async migrateDocTextEditor(): Promise<void> {
-    return await this.projectAggregate.migrateExperimentProtocols();
-  }
-
-  @CnUserCategories(BlUserCategory.ADMIN)
-  @Post('project-document-migrate')
-  async projectDocumentMigrate(): Promise<void> {
-    return await this.projectAggregate.migrateProjectDocuments();
   }
 }

@@ -2,8 +2,6 @@ import {BlBlockType, BlNewRichText, BlOutputBlockData} from '@monorepo/back-core
 
 export interface CnReportViewConfig {
   id: string;
-  // TODO TO REMOVE ONCE MIGRATED
-  filename?: string; // provided if the view file was uploaded to the object storage
   resource_id: string;
   view_method_name: string;
   view_config: any;

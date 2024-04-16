@@ -75,9 +75,4 @@ export class CnProjectCommentService extends BlAbstractService<CnProjectComment>
     comment.content = BlRichText.getOptimisedContent(content);
     return await this.update(comment);
   }
-
-  public async findAll(): Promise<CnProjectComment[]> {
-    return this.repository.find({relations: {project: true}});
-  }
-
 }
