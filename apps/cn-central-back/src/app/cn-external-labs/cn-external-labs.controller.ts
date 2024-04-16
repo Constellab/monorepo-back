@@ -94,7 +94,7 @@ export class CnExternalLabsController {
   deleteReport(
     @Param('projectId', new ParseUUIDPipe()) projectId: string,
     @Param('reportId', new ParseUUIDPipe()) reportId: string): Promise<void> {
-    return this.projectAggregator.deleteLabReport(projectId, reportId);
+    return this.projectAggregator.deleteReportFromLab(projectId, reportId);
   }
 
   /**

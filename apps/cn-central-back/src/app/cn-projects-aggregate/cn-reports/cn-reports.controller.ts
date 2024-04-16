@@ -1,4 +1,4 @@
-import {Controller, Get, Param, ParseUUIDPipe, Res} from '@nestjs/common';
+import {Controller, Delete, Get, Param, ParseUUIDPipe, Res} from '@nestjs/common';
 import {CnReport} from './cn-report.entity';
 import {Response} from 'express';
 import {CnProjectAggregateService} from '../cn-project-aggregate.service';
@@ -58,5 +58,9 @@ export class CnReportsController {
     BlResponseHelper.setMessageAndCache(response, file);
   }
 
+  @Delete(':id')
+  public async deleteReport(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    await this.projectAggregator.deleteReport(id);
+  }
 
 }

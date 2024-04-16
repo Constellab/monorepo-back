@@ -150,16 +150,14 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
     const documentsToDelete: CnProjectDocument[] = [document];
     // delete the children document as well
-    if (document.type === CnProjectDocumentType.CONSTELLAB_DOCUMENT) {
-      const children = await this.repo.find({
-        where: {
-          projectId: document.projectId,
-          parentDocument: {id: document.id},
-        }
-      });
+    const children = await this.repo.find({
+      where: {
+        projectId: document.projectId,
+        parentDocument: {id: document.id},
+      }
+    });
 
-      documentsToDelete.push(...children);
-    }
+    documentsToDelete.unshift(...children);
 
 
     for (const doc of documentsToDelete) {

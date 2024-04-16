@@ -483,7 +483,7 @@ export class CnProjectAggregateService {
     }
   }
 
-  async deleteLabReport(projectId: string, reportId: string): Promise<void> {
+  async deleteReportFromLab(projectId: string, reportId: string): Promise<void> {
     // check that the user can get the project
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
@@ -492,6 +492,18 @@ export class CnProjectAggregateService {
     if (report) {
       this.emitProjectEvent('DELETE_REPORT', project, report);
     }
+  }
+
+  async deleteReport(reportId: string): Promise<void> {
+    // for now, only admin can delete report directly
+    if (!CnCurrentUserHelper.isAdmin()) {
+      throw new UnauthorizedException();
+    }
+    const report = await this.reportService.findByIdAndCheck(reportId);
+    const project = await this.getAndCheckAuthorizationForFindOne(report.projectId);
+
+    await this.reportService.deleteReport(reportId);
+    this.emitProjectEvent('DELETE_REPORT', project, report);
   }
 
   async getReportAssociatedToExperiment(experimentId: string): Promise<CnReport[]> {
