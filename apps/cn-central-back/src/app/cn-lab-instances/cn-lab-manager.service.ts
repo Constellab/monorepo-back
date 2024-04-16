@@ -76,7 +76,8 @@ export class CnLabManagerService {
         username: this.configService.getDockerRegistryUsername(),
         password: this.configService.getDockerRegistryPassword(),
       },
-      captchaSiteKey: this.configService.getCaptchaSiteKey(),
+      // enable the captcha only on constellab standard domain
+      captchaSiteKey: labInstance.isConstellabDomain() ? this.configService.getCaptchaSiteKey(): null,
       labConfig: {
         enableBackup: labInstance.isCloud()
       },

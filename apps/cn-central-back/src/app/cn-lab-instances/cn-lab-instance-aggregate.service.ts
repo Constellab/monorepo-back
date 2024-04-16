@@ -203,7 +203,6 @@ export class CnLabInstanceAggregateService {
 
   async findByIdAndCheck(id: string): Promise<CnLabFindOneDto> {
     const labInstance = await this.labInstancesService.findByIdAndCheck(id);
-    console.log('Is constellab domain', labInstance.isConstellabDomain());
     const userRole = await this.security.checkAuthorizationToFindById(labInstance, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return CnLabFindOneDto.create(labInstance, userRole);
   }
