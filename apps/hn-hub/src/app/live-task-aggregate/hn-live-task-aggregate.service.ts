@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {HnLiveTaskService} from './live-task/hn-live-task.service';
 import {HnLiveTaskVersionService} from './live-task-version/hn-live-task-version.service';
-import {HnLiveTaskVersion} from './live-task-version/hn-live-task-version.entity';
+import {HnLiveTaskVersion, HnLiveTaskVersionState} from './live-task-version/hn-live-task-version.entity';
 import {
   HaCreateLiveTaskVersionFromLabResponseDto,
   HnCreateLiveTaskDto,
@@ -219,6 +219,16 @@ export class HnLiveTaskAggregateService {
   public async findLiveTaskVersionById(id: string): Promise<HnLiveTaskVersion> {
     //TODO: secure
     return this.liveTaskVersionService.findOne(id);
+  }
+
+  public async findLiveTaskVersionByLiveTaskIdAndVersionNumber(liveTaskId: string, versionNumber: number): Promise<HnLiveTaskVersion> {
+    const version = await this.liveTaskVersionService.findByLiveTaskIdAndVersionNumber(liveTaskId, versionNumber);
+    if (version.versionState == HnLiveTaskVersionState.PUBLISHED) {
+      return version;
+    }
+
+    await this.liveTaskService.checkIfCreatorOrCoAuthorAndGetLiveTask(liveTaskId);
+    return version;
   }
 
   /**

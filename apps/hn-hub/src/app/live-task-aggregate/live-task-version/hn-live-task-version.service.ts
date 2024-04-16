@@ -34,6 +34,15 @@ export class HnLiveTaskVersionService {
     return this.liveTaskVersionRepository.findOneBy({id: id});
   }
 
+  public async findByLiveTaskIdAndVersionNumber(liveTaskId: string, version: number): Promise<HnLiveTaskVersion> {
+    return this.liveTaskVersionRepository.findOneBy({
+      liveTask: {
+        id: liveTaskId
+      },
+      version: version
+    });
+  }
+
   public async findByLiveTaskAndVersionNumber(liveTask: HnLiveTask, version: number): Promise<HnLiveTaskVersion> {
     return this.liveTaskVersionRepository.findOneBy({
       liveTask: {
