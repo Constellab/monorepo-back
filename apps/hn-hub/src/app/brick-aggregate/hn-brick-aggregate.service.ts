@@ -216,9 +216,19 @@ export class HnBrickAggregateService {
     return brick;
   }
 
-  async editBrickImage(id: string, file: BlFile): Promise<HnBrick> {
+  async editBrickImage(id: string, file: BlFile): Promise<BlRichTextUploadedImage> {
     await this.assertUserCanEditBrick(id, true);
     return this.brickService.editBrickImage(id, file);
+  }
+
+  async getBrickImage(filename: string): Promise<IncomingMessage> {
+    return this.brickService.getBrickImage(filename);
+  }
+
+  async deleteBrickImage(filename: string): Promise<void> {
+    const brickId = filename.split('/')[0];
+    await this.assertUserCanEditBrick(brickId, true);
+    return this.brickService.deleteBrickImage(filename);
   }
 
 
@@ -241,8 +251,14 @@ export class HnBrickAggregateService {
     let brick: HnBrick = await this.findBrickById(editedBrick.id);
     brick = await this.brickService.editBrick(brick, editedBrick);
 
-    const lastBrickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionService.getLatestBrickMajorVersion(brick.id);
-    await this.brickVersionService.sendBrickVersionIdToTransport(lastBrickMajorVersion.id);
+
+    try {
+      const lastBrickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionService.getLatestBrickMajorVersion(brick.id);
+      const brickVersion = await this.brickVersionService.getLatestBrickVersion(lastBrickMajorVersion.id);
+      await this.brickVersionService.sendBrickVersionIdToTransport(brickVersion.id);
+    } catch (e: any){
+      console.log(e)
+    }
 
     return brick;
   }

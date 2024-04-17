@@ -9,10 +9,17 @@ import {
   Post,
   Put,
   Query,
-  Req,
+  Req, Res,
   UseGuards, UseInterceptors
 } from '@nestjs/common';
-import {BlFile, BlParsePipe, BlPublic, BlUploadedFile} from '@monorepo/back-core-lib';
+import {
+  BlFile,
+  BlParsePipe,
+  BlPublic,
+  BlResponseHelper,
+  BlRichTextUploadedImage,
+  BlUploadedFile
+} from '@monorepo/back-core-lib';
 import {HnBrick} from './brick/hn-brick.entity';
 import {HnBrickVersion, HnNewVersionDTO} from './brick-version/hn-brick-version.entity';
 import {HnDocumentation, HnDocumentationSearchDTO} from './documentation/hn-documentation.entity';
@@ -27,7 +34,7 @@ import {
 } from './brick/hn-brick.dto';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
 import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
-import {Request} from 'express';
+import {Request, Response} from 'express';
 import {HnBrickAggregateService} from './hn-brick-aggregate.service';
 import {HnBrickUserInvite} from './brick-user-invite/hn-brick-user-invite.entity';
 import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
@@ -137,10 +144,27 @@ export class HnBrickController {
   }
 
   @UseInterceptors(FileInterceptor('file'))
-  @Put('edit-image')
-  async editImage(@Body('brickId', new ParseUUIDPipe()) brickId: string,
-                  @BlUploadedFile() file: BlFile): Promise<HnBrick> {
+  @Put('edit-image/:brickId')
+  async editImage(@Param('brickId', new ParseUUIDPipe()) brickId: string,
+                  @BlUploadedFile() file: BlFile): Promise<BlRichTextUploadedImage> {
     return this.brickAggregateService.editBrickImage(brickId, file);
+  }
+
+  @BlPublic()
+  @Get('image/*')
+  public async getImage(@Req() request: Request,
+                   @Res() response: Response): Promise<any> {
+    const splitIndex = request.url.indexOf('image/');
+    const filename = request.url.slice(splitIndex+6);
+    const file = await this.brickAggregateService.getBrickImage(filename);
+    BlResponseHelper.setMessageAndCache(response, file);
+  }
+
+  @Delete('image/*')
+  public async deleteImage(@Req() request: Request): Promise<void> {
+    const splitIndex = request.url.indexOf('image/');
+    const filename = request.url.slice(splitIndex+6);
+    await this.brickAggregateService.deleteBrickImage(filename);
   }
 
   @Put('edit')

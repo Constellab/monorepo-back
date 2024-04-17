@@ -19,11 +19,8 @@ import {IncomingMessage} from 'http';
 import {HnNodeDTO} from '../folder/hn-folder.dto';
 import {HnFolder} from '../folder/hn-folder.entity';
 import {ClStringHelper} from '@monorepo/core-lib';
-import {HnFrontService} from '../../core/service/hn-front.service';
 import {HnDocumentationFileService} from '../documentation-file/hn-documentation-file.service';
 import {HnDocumentationFile} from '../documentation-file/hn-documentation-file.entity';
-import {HnStoryFile} from '../../story-file/hn-story-file.entity';
-import {HnStory} from '../../story/hn-story.entity';
 
 @Injectable()
 export class HnDocumentationService {
@@ -34,7 +31,7 @@ export class HnDocumentationService {
               private docFileService: HnDocumentationFileService) {
   }
 
-  async createMainDoc(mainFolder: HnFolder, entityManager: EntityManager){
+  async createMainDoc(mainFolder: HnFolder, entityManager: EntityManager): Promise<void> {
     const gettingStartedDoc: HnNodeDTO = new HnNodeDTO();
     gettingStartedDoc.folder = mainFolder;
     gettingStartedDoc.path = 'getting-started';
@@ -107,89 +104,6 @@ export class HnDocumentationService {
     return this.documentationsRepository.save(doc);
   }
 
-  // TODO to clean
-  // async transformContent(c: BlRichTextContent): Promise<BlRichTextContent> {
-  //   // Transform intern link with updated url
-  //   const content = new BlNewRichText(c);
-  //   const links: BlRichTextLink[] = content.getLinks();
-  //   for (const l of links) {
-  //     if (l.attributes.link.startsWith(this.configService.getFrontBaseUrl())) {
-  //       const link: string[] = l.attributes.link.substring(this.configService.getFrontBaseUrl().length).split('/');
-  //       if (link[0] === 'bricks' && link[3] === 'doc' && link[4] !== 'technical-folder') {
-  //         const [id, cp] = await this.getDocumentationIdAndCPByUrl(link);
-  //         if (id != null && cp != null) {
-  //           l.attributes.id = id;
-  //           l.attributes.link = cp;
-  //         }
-  //       }
-  //     }
-  //   }
-  //
-  //   // Add id to header
-  //   const headers: BlRichTextHeader[] = BlRichText.getHeaders(content);
-  //   const listId: string[] = [];
-  //   for (const h of headers) {
-  //     if (h.attributes.header.id) {
-  //       h.attributes.header.id = ClStringHelper.generateUrlPathFromString(h.attributes.header.id);
-  //       if (h.attributes.header.id.length > 0) {
-  //         const sameTitleNumber: number = listId.filter(value => value == h.attributes.header.id).length;
-  //         listId.push(h.attributes.header.id);
-  //         if (sameTitleNumber > 0) {
-  //           h.attributes.header.id = h.attributes.header.id + sameTitleNumber;
-  //         }
-  //       } else {
-  //         delete h.attributes.header.id;
-  //       }
-  //     }
-  //   }
-  //
-  //   return content;
-  // }
-
-  // TODO to clean and document
-  private async getDocumentationIdAndCPByUrl(link: string[]): Promise<[string, string]> {
-    const brickName: string = link[1];
-    const majorVersion: number = link[2] != 'latest' ? +(link[2].slice(1)) : null;
-    link.splice(0, 4);
-    if (link[link.length - 1] == '') {
-      link.pop();
-    }
-    let completePath: string = link.join('/');
-    let anchor: string;
-    if (completePath.includes('#')) {
-      anchor = completePath.split('#')[1];
-      completePath = completePath.split('#')[0];
-    }
-    completePath = completePath + '/';
-
-    const documentations: HnDocumentation[] = await this.documentationsRepository.find({
-      where: {
-        completePath: completePath,
-        folder: {
-          brickMajorVersion: {
-            major: majorVersion,
-            brick: {
-              name: brickName
-            }
-          }
-        }
-      },
-      relations: ['folder']
-    });
-    if (documentations.length == 0) return [null, null];
-
-    let documentation: HnDocumentation;
-    if (documentations.length > 1) {
-      //sort by major version
-      documentation = documentations.sort((a, b) => a.folder.brickMajorVersion.major - b.folder.brickMajorVersion.major)[0];
-    } else {
-      if (documentations.length == 1) {
-        documentation = documentations[0];
-      }
-    }
-
-    return [documentation.id, anchor ? completePath.slice(0, -1) + '#' + anchor : completePath];
-  }
 
   async saveImage(docId: string, file: BlFile, generateRandomObjectName: boolean = true): Promise<BlRichTextUploadedImage> {
     const imSize = BlImageHelper.getImageSize(file);
@@ -250,6 +164,16 @@ export class HnDocumentationService {
     };
   }
 
+  private getBackupBucketConfig(): BlBucketConfig {
+    return {
+      endpoint: this.configService.getBackupObjectStorageEndPoint(),
+      region: this.configService.getBackupObjectStorageRegion(),
+      bucket: this.configService.getDocImageObjectStorageBackupBucket(),
+      credentials: this.configService.getDefaultObjectStorageCredentials(),
+      bucketType: BlBucketType.NORMAL
+    };
+  }
+
   public getDocsByBrickVersion(brickMajorVersionId: string): Promise<HnDocumentation[]>{
     return this.documentationsRepository.find({
       where: {
@@ -260,16 +184,6 @@ export class HnDocumentationService {
         }
       }
     });
-  }
-
-  private getBackupBucketConfig(): BlBucketConfig {
-    return {
-      endpoint: this.configService.getBackupObjectStorageEndPoint(),
-      region: this.configService.getBackupObjectStorageRegion(),
-      bucket: this.configService.getDocImageObjectStorageBackupBucket(),
-      credentials: this.configService.getDefaultObjectStorageCredentials(),
-      bucketType: BlBucketType.NORMAL
-    };
   }
 
 

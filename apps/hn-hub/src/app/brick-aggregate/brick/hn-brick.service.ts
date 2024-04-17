@@ -8,17 +8,23 @@ import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 import {
   BlAbstractPaginatedService,
   BlBadRequestException,
-  BlFile,
+  BlBucketConfig,
+  BlBucketType,
+  BlFile, BlImageHelper, BlObjectStorageService, BlRichTextUploadedImage,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
-import {ClPage} from '@monorepo/core-lib';
+import {ClPage, ClStringHelper} from '@monorepo/core-lib';
+import {HnCoreConfigService} from '../../core/modules/core-config/hn-core-config.service';
+import {IncomingMessage} from 'http';
 
 @Injectable()
 export class HnBrickService {
 
   constructor(
     @InjectRepository(HnBrick)
-    private bricksRepository: Repository<HnBrick>) {
+    private bricksRepository: Repository<HnBrick>,
+    private configService: HnCoreConfigService,
+    private objectStorageService: BlObjectStorageService) {
   }
 
   async create(createdBrick: HnCreateBrickDTO, entityManager: EntityManager): Promise<HnBrick> {
@@ -62,10 +68,32 @@ export class HnBrickService {
     return this.bricksRepository.findOneBy({id: id});
   }
 
-  async editBrickImage(id: string, image: BlFile): Promise<HnBrick> {
+  async editBrickImage(id: string, image: BlFile): Promise<BlRichTextUploadedImage> {
+    const imSize = BlImageHelper.getImageSize(image);
+    const fileExt = image.originalname.split('.').pop();
+    image.originalname = id + '/brick-image/' + ClStringHelper.generateUUID() + '.' + fileExt;
+
+    const filename = await this.objectStorageService.uploadObject(
+      [this.getBucketConfig(), this.getBackupBucketConfig()], image);
+
     const brick = await this.bricksRepository.findOneBy({id: id});
-    //brick.image = image.path;
-    return this.bricksRepository.save(brick);
+    brick.imageLink = filename;
+    await this.bricksRepository.save(brick);
+
+
+    return {
+      filename: filename,
+      width: imSize.width,
+      height: imSize.height
+    };
+  }
+
+  async getBrickImage(filename: string): Promise<IncomingMessage> {
+    return await this.objectStorageService.getObject(this.getBucketConfig(), filename);
+  }
+
+  async deleteBrickImage(filename: string): Promise<void> {
+    await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], filename);
   }
 
   async editBrick(brick: HnBrick, editedBrick: HnEditBrickDTO): Promise<HnBrick> {
@@ -90,6 +118,26 @@ export class HnBrickService {
   userHasRightOnBrick(brick: HnBrick): boolean {
     return HnCurrentUserHelper.getCurrentUser()?.id === brick.createdBy?.id ||
       brick?.brickUsers.some(bu => bu.user.id === HnCurrentUserHelper.getCurrentUser()?.id);
+  }
+
+  private getBucketConfig(): BlBucketConfig {
+    return {
+      endpoint: this.configService.getDefaultObjectStorageEndPoint(),
+      region: this.configService.getDefaultObjectStorageRegion(),
+      bucket: this.configService.getDocImageObjectStorageBucket(),
+      credentials: this.configService.getDefaultObjectStorageCredentials(),
+      bucketType: BlBucketType.NORMAL,
+    };
+  }
+
+  private getBackupBucketConfig(): BlBucketConfig {
+    return {
+      endpoint: this.configService.getBackupObjectStorageEndPoint(),
+      region: this.configService.getBackupObjectStorageRegion(),
+      bucket: this.configService.getDocImageObjectStorageBackupBucket(),
+      credentials: this.configService.getDefaultObjectStorageCredentials(),
+      bucketType: BlBucketType.NORMAL
+    };
   }
 }
 
