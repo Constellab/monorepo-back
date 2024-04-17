@@ -6,24 +6,14 @@ import {Type} from 'class-transformer';
 import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 
-export class CnSaveSpaceDTO {
-  id: string;
+export class CnCreateSpaceDTO {
   name: string;
-  nbLicenses: number;
-
-  defaultProjectStorageLocation: CnBucketLocationDTO;
-  defaultProjectBackupStorageLocation?: CnBucketLocationDTO;
+  defaultStorageLocations: CnSpaceUpdateStorageLocationDTO;
 }
 
 export interface CnSpaceInvitCreateDto {
   userMail: string;
   role: CnSpaceUserRole;
-}
-
-
-export interface CnRequestNewLicensesDto {
-  nbLicenses: number;
-  text?: string;
 }
 
 export interface CnSpaceInvitReadDto {
@@ -40,16 +30,40 @@ export class CnSpaceSettingsDto {
   space: CnSpace;
   nbLicenses: number;
 
-  defaultProjectStorageLocation: CnBucketLocationDTO;
-  defaultBackupProjectStorageLocation ?: CnBucketLocationDTO;
-
   static fromSpace(space: CnSpace): CnSpaceSettingsDto {
     const spaceSettings = new CnSpaceSettingsDto();
     spaceSettings.space = space;
     spaceSettings.nbLicenses = space.nbLicenses;
-    spaceSettings.defaultProjectStorageLocation = space.defaultProjectBucket.getBucketLocation();
 
-    spaceSettings.defaultBackupProjectStorageLocation = space.defaultProjectBackupBucket?.getBucketLocation() ?? null;
     return spaceSettings;
+  }
+}
+
+/////////////////////////////////// LICENSE //////////////////////////////////////
+export interface CnRequestNewLicensesDto {
+  nbLicenses: number;
+  text?: string;
+}
+
+/////////////////////////////////// STORAGE //////////////////////////////////////
+export class CnSpaceUpdateStorageLocationDTO {
+  defaultProjectStorageLocation: CnBucketLocationDTO;
+  defaultProjectBackupStorageLocation?: CnBucketLocationDTO;
+}
+
+export class CnSpaceStorage {
+  storageLimit: number;
+  storageUsage: number;
+
+  defaultProjectStorageLocation: CnBucketLocationDTO;
+  defaultBackupProjectStorageLocation ?: CnBucketLocationDTO;
+
+  constructor(storageLimit: number, storageUsage: number,
+              defaultProjectStorageLocation: CnBucketLocationDTO,
+              defaultBackupProjectStorageLocation?: CnBucketLocationDTO) {
+    this.storageLimit = storageLimit;
+    this.storageUsage = storageUsage;
+    this.defaultProjectStorageLocation = defaultProjectStorageLocation;
+    this.defaultBackupProjectStorageLocation = defaultBackupProjectStorageLocation;
   }
 }

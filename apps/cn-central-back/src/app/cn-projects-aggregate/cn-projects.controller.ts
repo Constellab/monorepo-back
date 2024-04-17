@@ -47,7 +47,7 @@ import {CnActivity} from '../cn-activity/cn-activity.entity';
 import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
 import {CnProjectDocument} from './cn-project-documents/cn-project-document.entity';
-import {CnConstellabDocument2} from './cn-project-documents/cn-project-document-dto.class';
+import {CnConstellabDocumentDTO, CnProjectStorageUsageDTO} from './cn-project-documents/cn-project-document-dto.class';
 
 
 @Controller('projects')
@@ -293,6 +293,11 @@ export class CnProjectsController {
     return this.projectAggregate.restoreDocumentFromTrash(documentId);
   }
 
+  @Put(':projectId/empty-trash')
+  emptyTrash(@Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<void> {
+    return this.projectAggregate.emptyTrash(projectId);
+  }
+
   @Get(':projectId/document')
   public getDocumentsByProject(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                                @Query('page', ParseIntPipe) page: number,
@@ -317,18 +322,18 @@ export class CnProjectsController {
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
   @Post(':projectId/constellab-document')
   public createConstellabDocument(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                                  @Body() name: { name: string }): Promise<CnConstellabDocument2> {
+                                  @Body() name: { name: string }): Promise<CnConstellabDocumentDTO> {
     return this.projectAggregate.createConstellabDocument(projectId, name.name);
   }
 
   @Put('constellab-document/:documentId')
   public updateConstellabDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string,
-                                  @Body() body: BlRichTextContent): Promise<CnConstellabDocument2> {
+                                  @Body() body: BlRichTextContent): Promise<CnConstellabDocumentDTO> {
     return this.projectAggregate.updateConstellabDocument(documentId, body);
   }
 
   @Get('constellab-document/:documentId')
-  public getConstellabDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<CnConstellabDocument2> {
+  public getConstellabDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<CnConstellabDocumentDTO> {
     return this.projectAggregate.getConstellabDocument(documentId);
   }
 
@@ -363,6 +368,11 @@ export class CnProjectsController {
   findAccessibleProjectBucketLocation(@Query('page', ParseIntPipe) page: number,
                                       @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnBucketLocationDTO>> {
     return this.projectAggregate.findAccessibleProjectBucketLocation(page, size);
+  }
+
+  @Get(':projectId/storage/size')
+  getStorageSizeByProjects(@Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnProjectStorageUsageDTO> {
+    return this.projectAggregate.getStorageSizeByProjects(projectId);
   }
 
   /////////////////////////////// Project user ///////////////////////////////////////////

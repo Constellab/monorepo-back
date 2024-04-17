@@ -29,6 +29,14 @@ export class CnSpace extends CnBaseEntity {
   @Column({default: 0})
   nbLicenses: number;
 
+  @Exclude({toPlainOnly: true})
+  @Column({default: 0})
+  storageLimit: number;
+
+  @Exclude({toPlainOnly: true})
+  @Column({default: 0})
+  storageUsage: number;
+
   @Column({type: 'enum', enum: CnSpaceType, nullable: false, update: false})
   type: CnSpaceType;
 
@@ -58,5 +66,9 @@ export class CnSpace extends CnBaseEntity {
   @BeforeUpdate()
   setLastModifiedInfo(): void {
     this.lastModifiedAt = ClDateHelper.getDate();
+  }
+
+  public hasEnoughStorageForNewFile(fileSize: number): boolean {
+    return this.storageUsage + fileSize <= this.storageLimit;
   }
 }

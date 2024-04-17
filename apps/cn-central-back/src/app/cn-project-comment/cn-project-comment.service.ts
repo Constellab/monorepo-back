@@ -1,7 +1,7 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnProjectComment} from './cn-project-comment.entity';
-import {Repository} from 'typeorm';
+import {DataSource, Repository} from 'typeorm';
 import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
 import {ClPage} from '@monorepo/core-lib';
@@ -11,24 +11,42 @@ import {CnProjectDocumentService} from '../cn-projects-aggregate/cn-project-docu
 import {CnProjectDocumentType} from '../cn-projects-aggregate/cn-project-documents/cn-project-document.entity';
 
 @Injectable()
-export class CnProjectCommentService extends BlAbstractService<CnProjectComment>{
+export class CnProjectCommentService extends BlAbstractService<CnProjectComment> {
 
   protected readonly logger = new Logger(CnProjectCommentService.name);
 
 
   constructor(@InjectRepository(CnProjectComment) private repository: Repository<CnProjectComment>,
-              private projectDocumentService: CnProjectDocumentService) {
+              private projectDocumentService: CnProjectDocumentService,
+              private datasource: DataSource) {
     super(repository, CnProjectComment);
   }
 
   async saveProjectCommentImage(file: BlFile, project: CnProject): Promise<BlRichTextUploadedImage> {
-    // TODO a voir si le entityId peut être le commentaire
     return this.projectDocumentService.uploadImageDocument(file, project,
       CnProjectDocumentType.COMMENT_CONTENT, project.id);
   }
 
+  async deleteComment(comment: CnProjectComment, projectId: string): Promise<void> {
+    return this.datasource.transaction(async entityManager => {
+      await this.deleteById(comment.id, entityManager);
+
+      // delete all the images of the comment
+      const richText= new BlRichText(comment.content);
+      for(const image of richText.getFiguresOps()){
+        const document = await this.projectDocumentService.findDocumentByProjectAndTypeAndName(
+          projectId, CnProjectDocumentType.COMMENT_CONTENT, image.insert.figure.filename, projectId);
+
+        if(document){
+          await this.projectDocumentService.deleteDocument(document.id, entityManager);
+        }
+      }
+    });
+  }
+
   async getCommentImage(project: CnProject, documentName: string): Promise<IncomingMessage> {
-    return this.projectDocumentService.getDocumentContentByTypeAndName(project, CnProjectDocumentType.COMMENT_CONTENT, documentName);
+    return this.projectDocumentService.getDocumentContentByTypeAndName(project, CnProjectDocumentType.COMMENT_CONTENT,
+      documentName, project.id);
   }
 
   async createComment(newComment: CnNewComment, project: CnProject): Promise<CnProjectComment> {

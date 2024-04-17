@@ -21,7 +21,7 @@ export class CnReportContent extends BlNewRichText {
     return this.getBlocksByType(BlBlockType.RESOURCE_VIEW);
   }
 
-  public getViewsBlock(filename: string): CnReportViewConfig | undefined {
-    return this.getViewsBlocks().find(op => op.data.filename === filename)?.data ?? null;
+  public getViewsBlock(viewId: string): CnReportViewConfig | undefined {
+    return this.getViewsBlocks().find(op => op.data.id === viewId)?.data ?? null;
   }
 }

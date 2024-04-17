@@ -30,8 +30,15 @@ import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
 import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
-import {CnRequestNewLicensesDto, CnSaveSpaceDTO, CnSpaceSettingsDto} from './cn-space.dto';
+import {
+  CnCreateSpaceDTO,
+  CnRequestNewLicensesDto,
+  CnSpaceSettingsDto,
+  CnSpaceStorage,
+  CnSpaceUpdateStorageLocationDTO
+} from './cn-space.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
+import {CnProjectStorageUsageDTO} from '../cn-projects-aggregate/cn-project-documents/cn-project-document-dto.class';
 
 @Controller('spaces')
 export class CnSpacesController {
@@ -61,13 +68,14 @@ export class CnSpacesController {
 
 
   @Post()
-  create(@Body(new BlParsePipe(CnSaveSpaceDTO)) entity: CnSaveSpaceDTO): Promise<CnSpaceSettingsDto> {
+  create(@Body(new BlParsePipe(CnCreateSpaceDTO)) entity: CnCreateSpaceDTO): Promise<CnSpaceSettingsDto> {
     return this.spaceAggregateService.createBasicSpace(entity);
   }
 
-  @Put()
-  update(@Body(new BlParsePipe(CnSaveSpaceDTO)) entity: CnSaveSpaceDTO): Promise<CnSpaceSettingsDto> {
-    return this.spaceAggregateService.update(entity);
+
+  @Put('current-space/name/:name')
+  updateCurrentSpaceName(@Param('name') name: string): Promise<CnSpace> {
+    return this.spaceAggregateService.updateCurrentSpaceName(name);
   }
 
   @Delete(':id')
@@ -117,6 +125,36 @@ export class CnSpacesController {
     const file = await this.spaceAggregateService.getPhoto(filename);
     BlResponseHelper.setMessageAndCache(response, file);
   }
+
+  //////////////////////////////////////// LICENCE  ////////////////////////////////////////
+  @Put('current-space/licenses/:nbLicenses')
+  updateCurrentSpaceLicences(@Param('nbLicenses', new ParseIntPipe()) nbLicenses: number): Promise<CnSpaceSettingsDto> {
+    return this.spaceAggregateService.updateCurrentSpaceNbLicenses(nbLicenses);
+  }
+
+  @Post('current-space/licenses/request-new-licenses')
+  public async requestNewLicences(@Body() request: CnRequestNewLicensesDto): Promise<void> {
+    return this.spaceAggregateService.requestNewLicenses(request);
+  }
+
+  //////////////////////////////////////// STORAGE  ////////////////////////////////////////
+
+  @Put('current-space/storage/location')
+  updateCurrentSpaceStorageLocation(@Body(new BlParsePipe(CnSpaceUpdateStorageLocationDTO)) location: CnSpaceUpdateStorageLocationDTO):
+    Promise<CnSpaceStorage> {
+    return this.spaceAggregateService.updateCurrentSpaceStorageLocation(location);
+  }
+
+  @Get('current-space/storage')
+  getCurrentSpaceStorage(): Promise<CnSpaceStorage> {
+    return this.spaceAggregateService.getCurrentSpaceStorage();
+  }
+
+  @Get('current-space/storage/usage-detail')
+  getCurrentSpaceStorageUsageDetail(): Promise<CnProjectStorageUsageDTO> {
+    return this.spaceAggregateService.getCurrentSpaceStorageUsageDetail();
+  }
+
 
   //////////////////////////////////////// USER ////////////////////////////////////////
 
@@ -201,13 +239,6 @@ export class CnSpacesController {
 
   ////////////////////////////////////// OTHERS //////////////////////////////////////
 
-
-  @Post(':id/request-new-licenses')
-  public async requestNewLicences(@Param('id') id: string,
-                                  @Body() request: CnRequestNewLicensesDto): Promise<void> {
-    return this.spaceAggregateService.requestNewLicenses(id, request);
-  }
-
   // get user from a normal user,
   // this is not the best location for this route
   @Get('find-user/:userId')
@@ -215,9 +246,8 @@ export class CnSpacesController {
     return this.spaceAggregateService.getAndCheckUser(userId);
   }
 
-
-  @Post('generate-all-user-personal-space')
-  public async generateAllUserPersonalSpace(): Promise<void> {
-    return this.spaceAggregateService.generateAllUserPersonalSpace();
+  @Post('space-storage-migrate')
+  public async migrateSpaceStorage(): Promise<void> {
+    return this.spaceAggregateService.refreshSpacesStorage();
   }
 }

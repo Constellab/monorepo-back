@@ -13,21 +13,28 @@ import {IncomingMessage} from 'http';
 import {CnSpaceInvit} from './cn-space-invit.entity';
 import {CnSpaceInvitService} from './cn-space-invit.service';
 import {
+  CnCreateSpaceDTO,
   CnRequestNewLicensesDto,
-  CnSaveSpaceDTO,
   CnSpaceInvitCreateDto,
   CnSpaceInvitReadDto,
-  CnSpaceSettingsDto
+  CnSpaceSettingsDto,
+  CnSpaceStorage,
+  CnSpaceUpdateStorageLocationDTO
 } from './cn-space.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {DataSource, EntityManager} from 'typeorm';
 import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
 import {CnSpacesMailService} from './cn-spaces-mail.service';
-import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import {CnBucket, CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnObjectStoragesAggregateService} from '../cn-object-storages/cn-object-storages-aggregate.service';
+import {CnProjectDocumentService} from '../cn-projects-aggregate/cn-project-documents/cn-project-document.service';
+import {CnProjectStorageUsageDTO} from '../cn-projects-aggregate/cn-project-documents/cn-project-document-dto.class';
 
 @Injectable()
 export class CnSpaceAggregateService {
+
+  private static readonly DEFAULT_NB_LICENSES = 1;
+  private static readonly DEFAULT_STORAGE_LIMIT = 1024 * 1024 * 1024; // 1GB
 
   constructor(private spaceService: CnSpaceService,
               private spaceUserService: CnSpaceUserService,
@@ -36,7 +43,8 @@ export class CnSpaceAggregateService {
               private userService: CnUsersService,
               private datasource: DataSource,
               private spacesMailService: CnSpacesMailService,
-              private objectStorageAggregateService: CnObjectStoragesAggregateService) {
+              private objectStorageAggregateService: CnObjectStoragesAggregateService,
+              private projectDocumentService: CnProjectDocumentService) {
   }
 
   public async getCurrentInfo(): Promise<CnUserSpaceInfo> {
@@ -60,19 +68,28 @@ export class CnSpaceAggregateService {
   }
 
   public async getSpaceSettings(spaceId: string): Promise<CnSpaceSettingsDto> {
-    const space = await this.spaceService.findByIdAndCheck(spaceId, {
-      defaultProjectBucket: CnBucket.configRelation,
-      defaultProjectBackupBucket: CnBucket.configRelation
-    });
-
+    const space = await this.spaceService.findByIdAndCheck(spaceId);
     return CnSpaceSettingsDto.fromSpace(space);
   }
 
-  public async createBasicSpace(entity: CnSaveSpaceDTO): Promise<CnSpaceSettingsDto> {
-    let space = await this.checkSpaceSave(entity);
+  public async createBasicSpace(entity: CnCreateSpaceDTO): Promise<CnSpaceSettingsDto> {
+    const bucketStorage = await this.checkSpaceStorage(
+      entity.defaultStorageLocations.defaultProjectStorageLocation, entity.defaultStorageLocations.defaultProjectBackupStorageLocation);
+
+    if (bucketStorage.defaultProjectBucket.isLabBucket() || bucketStorage.defaultProjectBackupBucket?.isLabBucket()) {
+      throw new BlBadRequestException('The default project storage and backup storage can\'t be a lab bucket during creation');
+    }
+
+
+    let space = new CnSpace();
+    space.name = entity.name;
+    space.nbLicenses = CnSpaceAggregateService.DEFAULT_NB_LICENSES;
+    space.storageLimit = CnSpaceAggregateService.DEFAULT_STORAGE_LIMIT;
+    space.storageUsage = 0;
+    space.defaultProjectBucket = bucketStorage.defaultProjectBucket;
+    space.defaultProjectBackupBucket = bucketStorage.defaultProjectBackupBucket;
 
     await this.datasource.transaction(async (entityManager: EntityManager) => {
-
       space = await this.spaceService.createBasicSpace(space, entityManager);
 
       const user = CnCurrentUserHelper.getAndCheckCurrentUser();
@@ -82,58 +99,11 @@ export class CnSpaceAggregateService {
     return this.getSpaceSettings(space.id);
   }
 
-  public async update(entity: CnSaveSpaceDTO): Promise<CnSpaceSettingsDto> {
-    await this.checkSpaceAdmin(entity.id);
-    const space = await this.checkSpaceSave(entity);
-    const dbSpace = await this.spaceService.update(space);
-    return this.getSpaceSettings(dbSpace.id);
-  }
-
-  private async checkSpaceSave(spaceDTO: CnSaveSpaceDTO): Promise<CnSpace> {
-
-    const space = new CnSpace();
-    space.id = spaceDTO.id;
-    space.name = spaceDTO.name;
-
-    // if the user is not admin, he can't set the nb of licenses
-    if (CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) {
-      space.nbLicenses = spaceDTO.nbLicenses;
-    }
-
-    if (!spaceDTO.defaultProjectStorageLocation) {
-      throw new BlBadRequestException('The default project storage is required for space');
-    }
-
-
-    if (spaceDTO.defaultProjectStorageLocation) {
-      space.defaultProjectBucket = await this.objectStorageAggregateService.getBucketByIdNotSecure(
-        spaceDTO.defaultProjectStorageLocation.bucketId);
-    }
-
-    if (spaceDTO.defaultProjectBackupStorageLocation) {
-      space.defaultProjectBackupBucket = await this.objectStorageAggregateService.getBucketByIdNotSecure(
-        spaceDTO.defaultProjectBackupStorageLocation.bucketId);
-    } else {
-      space.defaultProjectBackupBucket = null;
-    }
-
-    // if this is created mode
-    if (space.id == null) {
-      if (space.defaultProjectBucket.isLabBucket() || space.defaultProjectBackupBucket?.isLabBucket()) {
-        throw new BlBadRequestException('The default project storage and backup storage can\'t be a lab bucket during creation');
-      }
-    } else {
-      if (space.defaultProjectBucket.isLabBucket() && space.defaultProjectBucket.labInstance.spaceId !== space.id) {
-        throw new BlBadRequestException('The default project backup storage lab must be in the same space');
-      }
-
-      if (space.defaultProjectBackupBucket?.isLabBucket() && space.defaultProjectBackupBucket
-        && space.defaultProjectBackupBucket.labInstance.spaceId !== space.id) {
-        throw new BlBadRequestException('The default project backup storage lab must be in the same space');
-      }
-    }
-
-    return space;
+  public async updateCurrentSpaceName(name: string): Promise<CnSpace> {
+    const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
+    await this.checkSpaceAdmin(space.id);
+    space.name = name;
+    return await this.spaceService.update(space);
   }
 
   public async delete(id: string): Promise<void> {
@@ -147,19 +117,10 @@ export class CnSpaceAggregateService {
 
     const users = await this.getUsersOfSpace(id, 0, 1);
 
-    if (users.totalElements > 0) {
+    if (users.totalElements > 1) {
       throw new BlBadRequestException('Can\'t delete the space because there are users in the space');
     }
     await this.spaceService.deleteById(id);
-  }
-
-  public async getSpacesOfUser(userId: string): Promise<CnSpace[]> {
-    this.checkAdmin();
-    return await this.spaceUserService.getSpacesOfUser(userId);
-  }
-
-  public async findCurrentUserSpaces(): Promise<CnSpace[]> {
-    return await this.spaceUserService.getSpacesOfUser(CnCurrentUserHelper.getCurrentUser().id);
   }
 
   public async findOne(id: string): Promise<CnSpace> {
@@ -168,27 +129,6 @@ export class CnSpaceAggregateService {
     return this.spaceService.findByIdAndCheck(id);
   }
 
-
-  public async getUsersOfSpace(id: string, page: number, size: number): Promise<ClPage<CnSpaceUser>> {
-    id = this.getSpaceId(id);
-    await this.checkSpaceMember(id);
-    return this.spaceUserService.findBySpace(id, page, size);
-  }
-
-  public async searchUserInSpace(id: string, searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnSpaceUser>> {
-    id = this.getSpaceId(id);
-    await this.checkSpaceMember(id);
-
-    return this.spaceUserService.searchUser(id, searchParams, page, size);
-  }
-
-  public async searchUserInSpaceByName(id: string, name: string, page: number, size: number): Promise<ClPage<CnUser>> {
-    id = this.getSpaceId(id);
-    await this.checkSpaceMember(id);
-
-    const result = await this.spaceUserService.smartSearchByName(id, name, page, size);
-    return result.map((spaceUser: CnSpaceUser) => spaceUser.user);
-  }
 
   public async getAll(page: number, size: number): Promise<ClPage<CnSpace>> {
     this.checkAdmin();
@@ -222,16 +162,145 @@ export class CnSpaceAggregateService {
     return await this.spaceService.getPhoto(filename);
   }
 
+  //////////////////////////////////////// LICENCE  ////////////////////////////////////////
+  public async requestNewLicenses(request: CnRequestNewLicensesDto): Promise<void> {
+    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+    await this.checkSpaceAdmin(userInfo.spaceId);
 
-  /////////////////////////////////////// USERS //////////////////////////////////
+    await this.spacesMailService.requestNewLicenses(request, userInfo);
+  }
 
-  public async sendAllSpaceUsersToQueue(): Promise<void>{
+  public async updateCurrentSpaceNbLicenses(nbLicenses: number): Promise<CnSpaceSettingsDto> {
+    const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
+    this.checkAdmin();
+    space.nbLicenses = nbLicenses;
+    const dbSpace = await this.spaceService.update(space);
+    return this.getSpaceSettings(dbSpace.id);
+  }
+
+  /////////////////////////////////////// STORAGE ///////////////////////////////////////
+  public async getCurrentSpaceStorage(): Promise<CnSpaceStorage> {
+    const spaceId = CnCurrentUserHelper.getAndCheckCurrentSpace().id;
+    await this.checkSpaceAdmin(spaceId);
+
+    const space = await this.spaceService.findByIdAndCheck(spaceId, {
+      defaultProjectBucket: CnBucket.configRelation,
+      defaultProjectBackupBucket: CnBucket.configRelation
+    });
+
+    return new CnSpaceStorage(space.storageLimit, space.storageUsage, space.defaultProjectBucket.getBucketLocation(),
+      space.defaultProjectBackupBucket?.getBucketLocation() ?? null);
+  }
+
+  public async refreshSpaceStorageUsage(spaceId: string): Promise<void> {
+    const storageUsage = await this.projectDocumentService.getSpaceStorageSize(spaceId);
+    await this.spaceService.updatePartial(spaceId, {storageUsage: storageUsage});
+  }
+
+  public async getCurrentSpaceStorageUsageDetail(): Promise<CnProjectStorageUsageDTO> {
+    const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
+    await this.checkSpaceAdmin(space.id);
+
+    return await this.projectDocumentService.getStorageSizeDetailBySpace(space.id);
+  }
+
+  public async updateCurrentSpaceStorageLocation(locationDTO: CnSpaceUpdateStorageLocationDTO): Promise<CnSpaceStorage> {
+    const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
+    await this.checkSpaceAdmin(space.id);
+
+    const buckets = await this.checkSpaceStorage(locationDTO.defaultProjectStorageLocation,
+      locationDTO.defaultProjectBackupStorageLocation);
+
+    // if this is created mode
+    if (buckets.defaultProjectBucket.isLabBucket() && buckets.defaultProjectBucket.labInstance.spaceId !== space.id) {
+      throw new BlBadRequestException('The default project backup storage lab must be in the same space');
+    }
+
+    if (buckets.defaultProjectBackupBucket && buckets.defaultProjectBackupBucket.isLabBucket()
+      && buckets.defaultProjectBackupBucket.labInstance.spaceId !== space.id) {
+      throw new BlBadRequestException('The default project backup storage lab must be in the same space');
+    }
+
+    space.defaultProjectBucket = buckets.defaultProjectBucket;
+    space.defaultProjectBackupBucket = buckets.defaultProjectBackupBucket;
+    await this.spaceService.update(space);
+
+    return this.getCurrentSpaceStorage();
+  }
+
+  private async checkSpaceStorage(defaultProjectStorageLocation: CnBucketLocationDTO,
+                                  defaultProjectBackupStorageLocation?: CnBucketLocationDTO): Promise<{
+    defaultProjectBucket: CnBucket,
+    defaultProjectBackupBucket: CnBucket | null
+  }> {
+
+    if (defaultProjectStorageLocation.bucketId === defaultProjectBackupStorageLocation?.bucketId) {
+      throw new BlBadRequestException('The default project storage and backup storage can\'t in the same location');
+    }
+
+    let defaultBucket: CnBucket;
+    let defaultBackupBucket: CnBucket | null;
+
+    if (!defaultProjectStorageLocation) {
+      throw new BlBadRequestException('The default project storage is required for space');
+    }
+
+
+    if (defaultProjectStorageLocation) {
+      defaultBucket = await this.objectStorageAggregateService.getBucketByIdNotSecure(defaultProjectStorageLocation.bucketId);
+    }
+
+    if (defaultProjectBackupStorageLocation) {
+      defaultBackupBucket = await this.objectStorageAggregateService.getBucketByIdNotSecure(
+        defaultProjectBackupStorageLocation.bucketId);
+    } else {
+      defaultBackupBucket = null;
+    }
+
+    return {defaultProjectBucket: defaultBucket, defaultProjectBackupBucket: defaultBackupBucket};
+  }
+
+
+  /////////////////////////////////////// USERS ///////////////////////////////////////
+
+  public async findCurrentUserSpaces(): Promise<CnSpace[]> {
+    return await this.spaceUserService.getSpacesOfUser(CnCurrentUserHelper.getCurrentUser().id);
+  }
+
+  public async getSpacesOfUser(userId: string): Promise<CnSpace[]> {
+    this.checkAdmin();
+    return await this.spaceUserService.getSpacesOfUser(userId);
+  }
+
+  public async getUsersOfSpace(id: string, page: number, size: number): Promise<ClPage<CnSpaceUser>> {
+    id = this.getSpaceId(id);
+    await this.checkSpaceMember(id);
+    return this.spaceUserService.findBySpace(id, page, size);
+  }
+
+  public async searchUserInSpace(id: string, searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnSpaceUser>> {
+    id = this.getSpaceId(id);
+    await this.checkSpaceMember(id);
+
+    return this.spaceUserService.searchUser(id, searchParams, page, size);
+  }
+
+  public async searchUserInSpaceByName(id: string, name: string, page: number, size: number): Promise<ClPage<CnUser>> {
+    id = this.getSpaceId(id);
+    await this.checkSpaceMember(id);
+
+    const result = await this.spaceUserService.smartSearchByName(id, name, page, size);
+    return result.map((spaceUser: CnSpaceUser) => spaceUser.user);
+  }
+
+
+  public async sendAllSpaceUsersToQueue(): Promise<void> {
     this.checkAdmin();
 
     await this.spaceUserService.sendAllSpaceUsersToQueue();
   }
 
-  public async sendAllSpaceUsersFromASpaceToQueue(spaceId: string): Promise<void>{
+  public async sendAllSpaceUsersFromASpaceToQueue(spaceId: string): Promise<void> {
     await this.checkSpaceAdmin(spaceId);
 
     await this.spaceUserService.sendAllSpaceUsersFromASpaceToQueue(spaceId);
@@ -402,13 +471,6 @@ export class CnSpaceAggregateService {
 
   /////////////////////////////////////// OTHERS //////////////////////////////////
 
-  public async requestNewLicenses(spaceId: string, request: CnRequestNewLicensesDto): Promise<void> {
-    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-    await this.checkSpaceAdmin(userInfo.spaceId);
-
-    await this.spacesMailService.requestNewLicenses(request, userInfo);
-  }
-
   public async createPersonalSpace(user: CnUser, entityManager: EntityManager): Promise<CnSpace> {
     const defaultProjectBucket = await this.objectStorageAggregateService.getDefaultProjectBucketStorage1();
     const defaultProjectBackupBucket = await this.objectStorageAggregateService.getDefaultProjectBucketStorage2();
@@ -448,20 +510,6 @@ export class CnSpaceAggregateService {
 
   /////////////////////////////////////// ADMIN MANAGEMENT ROUTES //////////////////////////////////
 
-  public async generateAllUserPersonalSpace(): Promise<void> {
-    this.checkAdmin();
-
-    const users = await this.userService.findAll();
-    for (const user of users) {
-      // create the user personal space if it does not exist
-      const space = await this.spaceUserService.getUserDefaultSpace(user.id);
-      if (space == null) {
-        await this.createPersonalSpace(user, this.datasource.manager);
-      }
-    }
-
-  }
-
   public async getAndCheckUser(userId: string): Promise<CnUser> {
     if (CnCurrentUserHelper.isAdmin() ||
       await this.spaceUserService.usersHaveCommonSpace(userId, this.userService.getCurrent().id)) {
@@ -469,6 +517,14 @@ export class CnSpaceAggregateService {
     }
 
     throw new BlBadRequestException(CnErrorText.USER_NOT_IN_SPACE);
+  }
+
+  // TODO TO REMOVE, MIGRATION
+  public async refreshSpacesStorage(): Promise<void> {
+    const spaces = await this.spaceService.getAll(0, 1000);
+    for (const space of spaces.objects) {
+      await this.refreshSpaceStorageUsage(space.id);
+    }
   }
 
 }

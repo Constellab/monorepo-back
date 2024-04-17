@@ -26,7 +26,7 @@ export enum CnProjectDocumentType {
  * This table stores every document uploaded to the S3 server for a project
  */
 @Entity('project_document')
-@Unique(['projectId', 'type', 'name'])
+@Unique(['projectId', 'type', 'name', 'entityId'])
 export class CnProjectDocument extends CnBaseEntity {
 
   // name of the document show in the interface
@@ -85,5 +85,11 @@ export class CnProjectDocument extends CnBaseEntity {
       case CnProjectDocumentType.COMMENT_CONTENT:
         return 'comments';
     }
+  }
+
+  documentTypeSupportsTrash(): boolean {
+    // the trash is only supported for uploaded documents and constellab documents
+    return this.type === CnProjectDocumentType.UPLOADED_DOCUMENT
+      || this.type === CnProjectDocumentType.CONSTELLAB_DOCUMENT;
   }
 }

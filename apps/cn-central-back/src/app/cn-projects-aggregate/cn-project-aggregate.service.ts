@@ -14,7 +14,6 @@ import {CnCreateReportWithConfigDto} from './cn-reports/cn-report.dto';
 import {CnReport} from './cn-reports/cn-report.entity';
 import {IncomingMessage} from 'http';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {CnReportContent} from './cn-reports/cn-report-content.class';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnProjectLevel, CnProjectLevelStatus} from './cn-projects/cn-project-level.enum';
 import {
@@ -37,8 +36,7 @@ import {
   BlRichTextI,
   BlRichTextUploadedImage,
   BlSearchBuilder,
-  BlSearchParams,
-  BlUnauthorizedException
+  BlSearchParams
 } from '@monorepo/back-core-lib';
 import {DataSource, In} from 'typeorm';
 import {CnProjectBucketService} from './cn-projects/cn-project-bucket.service';
@@ -52,7 +50,7 @@ import {CnActivityService} from '../cn-activity/cn-activity.service';
 import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {CnProjectDocumentService} from './cn-project-documents/cn-project-document.service';
 import {CnProjectDocument, CnProjectDocumentType} from './cn-project-documents/cn-project-document.entity';
-import {CnConstellabDocument2} from './cn-project-documents/cn-project-document-dto.class';
+import {CnConstellabDocumentDTO, CnProjectStorageUsageDTO} from './cn-project-documents/cn-project-document-dto.class';
 import {CnDocumentsService} from './cn-documents/cn-documents.service';
 
 @Injectable()
@@ -199,7 +197,6 @@ export class CnProjectAggregateService {
 
 
     await this.datasource.transaction(async entityManager => {
-      // TODO test that remaining doc are deleted
       const documents = await this.projectDocumentService.findDocumentsByProject(project.id);
       for (const document of documents) {
         await this.projectDocumentService.deleteDocument(document.id, entityManager);
@@ -360,7 +357,7 @@ export class CnProjectAggregateService {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
     return this.projectDocumentService.getDocumentContentByTypeAndName(project, CnProjectDocumentType.DESCRIPTION_CONTENT,
-      filename);
+      filename, projectId);
   }
 
   /////////////////////////////////////// PROJECT STATUS //////////////////////////////////
@@ -518,26 +515,14 @@ export class CnProjectAggregateService {
     const report = await this.reportService.findByIdAndCheck(reportId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(report.projectId);
-
-    // check that the filename is in the report
-    const content = new CnReportContent(report.content);
-    if (content.getFiguresBlock(filename) == null) {
-      throw new BlUnauthorizedException();
-    }
-    return this.reportService.getImage(filename, project);
+    return this.reportService.getImage(filename, project, reportId);
   }
 
   async getReportView(reportId: string, viewId: string): Promise<IncomingMessage> {
     const report = await this.reportService.findByIdAndCheck(reportId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(report.projectId);
-
-    // check that the filename is in the report
-    const content = new CnReportContent(report.content);
-    if (content.getViewsBlock(viewId) == null) {
-      throw new BlUnauthorizedException('The view is not in the report');
-    }
-    return this.reportService.getView(viewId, project);
+    return this.reportService.getView(viewId, project, reportId);
   }
 
   /////////////////////////////////////// GROUPS //////////////////////////////////
@@ -614,8 +599,7 @@ export class CnProjectAggregateService {
       throw new UnauthorizedException();
     }
 
-    // TODO DELETE COMMENT IMAGE
-    await this.projectCommentService.deleteById(commentId);
+    await this.projectCommentService.deleteComment(comment, projectId);
     this.emitProjectEvent('DELETE_PROJECT_COMMENT', project, comment);
 
   }
@@ -652,7 +636,7 @@ export class CnProjectAggregateService {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
     return await this.projectDocumentService.getDocumentContentByTypeAndName(project,
-      CnProjectDocumentType.UPLOADED_DOCUMENT, documentName);
+      CnProjectDocumentType.UPLOADED_DOCUMENT, documentName, projectId);
   }
 
   public async deleteDocument(documentId: string): Promise<void> {
@@ -691,6 +675,12 @@ export class CnProjectAggregateService {
     return doc;
   }
 
+  public async emptyTrash(projectId: string): Promise<void> {
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    await this.projectDocumentService.emptyProjectTrash(project.id);
+  }
+
   public async getDocumentsByProject(projectId: string, inTrash: boolean, page: number, size: number): Promise<ClPage<CnProjectDocument>> {
     await this.getAndCheckAuthorizationForFindOne(projectId);
 
@@ -706,7 +696,7 @@ export class CnProjectAggregateService {
   }
 
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
-  public async createConstellabDocument(projectId: string, filename: string): Promise<CnConstellabDocument2> {
+  public async createConstellabDocument(projectId: string, filename: string): Promise<CnConstellabDocumentDTO> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
     const doc = await this.projectDocumentService.createConstellabDocument(project, filename);
@@ -714,7 +704,7 @@ export class CnProjectAggregateService {
     return doc;
   }
 
-  public async updateConstellabDocument(documentId: string, content: BlRichTextContent): Promise<CnConstellabDocument2> {
+  public async updateConstellabDocument(documentId: string, content: BlRichTextContent): Promise<CnConstellabDocumentDTO> {
     const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
@@ -725,7 +715,7 @@ export class CnProjectAggregateService {
     return newDoc;
   }
 
-  public async getConstellabDocument(documentId: string): Promise<CnConstellabDocument2> {
+  public async getConstellabDocument(documentId: string): Promise<CnConstellabDocumentDTO> {
     const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
@@ -747,7 +737,7 @@ export class CnProjectAggregateService {
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
 
     return this.projectDocumentService.getDocumentContentByTypeAndName(project,
-      CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT, documentName);
+      CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT, documentName, project.id);
   }
 
 
@@ -804,6 +794,15 @@ export class CnProjectAggregateService {
     }
 
     return project;
+  }
+
+  public async getStorageSizeByProjects(projectId: string): Promise<CnProjectStorageUsageDTO> {
+    await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    const children = await this.getChildren(projectId);
+
+    return this.projectDocumentService.getStorageSizeDetailByProjects([projectId, ...children.map(project => project.id)]);
+
   }
 
   /////////////////////////////////////// PROJECT USER //////////////////////////////////
@@ -920,19 +919,24 @@ export class CnProjectAggregateService {
         if (projectDoc.type === CnProjectDocumentType.CONSTELLAB_DOCUMENT) {
           const content = await this.projectDocumentService.getJSONDocumentContent(doc.project, projectDoc);
 
+          if (content) {
+            // c'est pour mettre a jour le backup des constellab documents qui ne se mettais pas a jour
+            await this.projectDocumentService.updateJSONDocument(doc.project, projectDoc, content, true);
+          }
+
           const richText = new BlNewRichText(content);
 
           for (const imageBlock of richText.getFiguresBlocks()) {
             try {
               await this.projectDocumentService.migrateImageContent(imageBlock.data.filename,
-                projectDoc.project, CnProjectDocumentType.REPORT_CONTENT, projectDoc.id, projectDoc);
+                projectDoc.project, CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT, projectDoc.id, projectDoc);
             } catch (e) {
-              this.logger.error(`Error while migrating image ${imageBlock.data.filename} of constellab doc ${projectDoc.id} `, e);
+              this.logger.error(`Error while migrating image ${imageBlock.data.filename} of constellab doc ${projectDoc.id}. ${e}`);
             }
           }
         }
       } catch (e) {
-        this.logger.error(`[MIGRATE DOCUMENT] Error on document ${doc.id}. `, e);
+        this.logger.error(`[MIGRATE DOCUMENT] Error on document ${doc.id}. ${e}`);
       }
     }
 
@@ -947,7 +951,7 @@ export class CnProjectAggregateService {
       try {
         await this.reportService.migrateReport(report);
       } catch (e) {
-        this.logger.error(`[MIGRATE REPORT] Error on report ${report.id}. `, e);
+        this.logger.error(`[MIGRATE REPORT] Error on report ${report.id}. ${e}`);
       }
     }
 
@@ -966,15 +970,15 @@ export class CnProjectAggregateService {
           for (const imageBlock of description.getFiguresBlocks()) {
             try {
               await this.projectDocumentService.migrateImageContent(imageBlock.data.filename,
-                project, CnProjectDocumentType.REPORT_CONTENT, project.id);
+                project, CnProjectDocumentType.DESCRIPTION_CONTENT, project.id);
             } catch (e) {
-              this.logger.error(`Error while migrating image ${imageBlock.data.filename} of project description ${project.id} `, e);
+              this.logger.error(`Error while migrating image ${imageBlock.data.filename} of project description ${project.id} ${e}`);
             }
           }
         }
 
       } catch (e) {
-        this.logger.error(`[MIGRATE PROJECT DESCRIPTION] Error on report ${project.id}. `, e);
+        this.logger.error(`[MIGRATE PROJECT DESCRIPTION] Error on report ${project.id}. ${e}`);
       }
     }
 
@@ -995,13 +999,13 @@ export class CnProjectAggregateService {
               await this.projectDocumentService.migrateImageContent(imageBlock.insert.figure.filename,
                 comment.project, CnProjectDocumentType.COMMENT_CONTENT, comment.project.id);
             } catch (e) {
-              this.logger.error(`Error while migrating image ${imageBlock.insert.figure.filename} of project comment ${comment.id} `, e);
+              this.logger.error(`Error while migrating image ${imageBlock.insert.figure.filename} of project comment ${comment.id} ${e}`);
             }
           }
         }
 
       } catch (e) {
-        this.logger.error(`[MIGRATE PROJECT COMMENT] Error on report ${comment.id}. `, e);
+        this.logger.error(`[MIGRATE PROJECT COMMENT] Error on report ${comment.id}. ${e}`);
       }
     }
 

@@ -18,8 +18,19 @@ import {ClPage} from '@monorepo/core-lib';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
 import {CnProjectBucketService} from '../cn-projects/cn-project-bucket.service';
 import {CnProjectDocument, CnProjectDocumentType} from './cn-project-document.entity';
-import {CnConstellabDocument2} from './cn-project-document-dto.class';
+import {
+  CnConstellabDocumentDTO,
+  CnProjectDocumentStorageType,
+  CnProjectStorageUsageDTO
+} from './cn-project-document-dto.class';
 import {CnDocument} from '../cn-documents/cn-document.entity';
+import {EventEmitter2} from '@nestjs/event-emitter';
+import {
+  CnProjectDocumentEvent,
+  cnProjectDocumentEventName,
+  CnProjectDocumentEventType
+} from './cn-project-document.event';
+import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 
 @Injectable()
 export class CnProjectDocumentService extends BlAbstractService<CnProjectDocument> {
@@ -27,7 +38,8 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   constructor(@InjectRepository(CnProjectDocument) private repository: Repository<CnProjectDocument>,
               private objectStorageService: BlObjectStorageService,
               private projectBucketService: CnProjectBucketService,
-              private datasource: DataSource) {
+              private datasource: DataSource,
+              private eventEmitter: EventEmitter2) {
     super(repository, CnProjectDocument);
   }
 
@@ -48,11 +60,15 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
                               entityId: string,
                               documentName?: string,
                               parentDocument?: CnProjectDocument): Promise<CnProjectDocument> {
+    // check if the space storage is not full, consider si of this document as 0
+    this.checkIfStorageIsFull(file.size);
+
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
     if (documentName) {
 
-      const existingDocument = await this.findDocumentByProjectAndTypeAndName(project.id, documentType, documentName);
+      const existingDocument = await this.findDocumentByProjectAndTypeAndName(project.id, documentType,
+        documentName, entityId);
       if (existingDocument) {
         throw new BlBadRequestException(CnErrorText.DOCUMENT_ALREADY_EXIST);
       }
@@ -60,7 +76,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       documentName = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(file.originalname));
     }
 
-    return this.datasource.transaction(async (entityManager) => {
+    const document = await this.datasource.transaction(async (entityManager) => {
 
       const document = new CnProjectDocument();
       document.name = documentName;
@@ -74,9 +90,8 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       if (bucketConfig.some(b => b.bucketType === 'LAB')) {
         document.filename = file.originalname;
       } else {
-        // TODO tester l'extension des images et capture d'écran
         // otherwise this is a cloud bucket where every file is so we need to generate a random name
-        document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(file.originalname));
+        document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(documentName));
       }
 
       const dbDocument = await entityManager.save(document);
@@ -86,6 +101,9 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
         {filename: filePath});
       return dbDocument;
     });
+
+    this.emitEvent('CREATE_DOCUMENT', document);
+    return document;
   }
 
   public async uploadImageDocument(file: BlFile, project: CnProject,
@@ -93,15 +111,16 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
                                    entityId: string,
                                    documentName?: string,
                                    parentDocument?: CnProjectDocument): Promise<BlRichTextUploadedImage> {
+    const imSize = BlImageHelper.getImageSize(file);
+    if (!documentName) {
+      documentName = this.objectStorageService.generateRandomFileNameFromExtension(imSize.type);
+    }
     const imageDoc = await this.uploadDocument(file, project,
       documentType, entityId, documentName, parentDocument);
 
-    // TODO TO CHECK IF USEFULE
-    const imSize = BlImageHelper.getImageSize(file);
-    // const filename = this.objectStorageService.generateRandomFileNameFromExtension(imSize.type);
 
     return {
-      filename: imageDoc.filename,
+      filename: imageDoc.name,
       height: imSize.height,
       width: imSize.width,
     };
@@ -109,8 +128,9 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
 
   async getDocumentContentByTypeAndName(project: CnProject, documentType: CnProjectDocumentType,
-                                        documentName: string): Promise<IncomingMessage> {
-    const document = await this.findDocumentByProjectAndTypeAndName(project.id, documentType, documentName);
+                                        documentName: string, entityId: string): Promise<IncomingMessage> {
+    const document = await this.findDocumentByProjectAndTypeAndName(project.id, documentType,
+      documentName, entityId);
 
     if (document == null) {
       throw new BlBadRequestException('Document not found');
@@ -125,7 +145,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     const document = await this.findByIdAndCheck(id, {project: true});
 
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(document.project.getRootParentId());
-    if (!document.inTrash) {
+    if (document.documentTypeSupportsTrash() && !document.inTrash) {
       throw new BlBadRequestException('Document is not in trash, please move it to trash first');
     }
 
@@ -150,6 +170,16 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     // delete all object in the store
     const documentPaths = documentsToDelete.map(d => this.generateDocumentFilePath(document.project, d));
     await this.objectStorageService.deleteMultipleObjects(bucketConfig, documentPaths);
+
+    this.emitEvent('DELETE_DOCUMENT', document);
+  }
+
+  public async emptyProjectTrash(projectId: string): Promise<void> {
+    const documentToDelete = await this.repo.find({where: {projectId: projectId, inTrash: true}});
+
+    for (const doc of documentToDelete) {
+      await this.deleteDocument(doc.id, this.datasource.manager);
+    }
   }
 
   async renameDocument(document: CnProjectDocument, newName: string): Promise<CnProjectDocument> {
@@ -157,9 +187,18 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     return this.repo.save(document);
   }
 
+  /**
+   * Find the document based on its type, project and name.
+   * Using the entityId make sure that the requested document is associated to the entity and so
+   * this prevents access to a document of another entity
+   * @param projectId
+   * @param type
+   * @param name
+   * @param entityId
+   */
   async findDocumentByProjectAndTypeAndName(projectId: string, type: CnProjectDocumentType,
-                                            name: string): Promise<CnProjectDocument | null> {
-    return this.repo.findOne({where: {projectId: projectId, type: type, name: name}});
+                                            name: string, entityId: string): Promise<CnProjectDocument | null> {
+    return this.repo.findOne({where: {projectId: projectId, type: type, name: name, entityId: entityId}});
   }
 
   public findDocumentsByProject(projectId: string): Promise<CnProjectDocument[]> {
@@ -199,11 +238,18 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
 
   ////////////////////////////////////////////// JSON  DOCUMENTS //////////////////////////////////////////////
+  //. TODO REMOVE skipSizeCheck
+
   public async createJSONDocument(project: CnProject, type: CnProjectDocumentType,
                                   documentName: string, entityId: string, content: any,
-                                  parentDocument?: CnProjectDocument): Promise<CnProjectDocument> {
+                                  parentDocument?: CnProjectDocument, skipSizeCheck: boolean = false): Promise<CnProjectDocument> {
+    // check if the space storage is not full, consider si of this document as 0
+    if (!skipSizeCheck) {
+      // check if the space storage is not full, consider si of this document as 0
+      this.checkIfStorageIsFull(0);
+    }
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
-    return this.datasource.transaction(async (entityManager) => {
+    const document = await this.datasource.transaction(async (entityManager) => {
 
       const document = new CnProjectDocument();
       document.name = documentName;
@@ -222,10 +268,21 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
       return await entityManager.save(document);
     });
+
+    if (!skipSizeCheck) {
+      this.emitEvent('CREATE_DOCUMENT', document);
+    }
+    return document;
   }
 
+  //. TODO REMOVE skipSizeCheck
   public async updateJSONDocument(project: CnProject, document: CnProjectDocument,
-                                  content: any): Promise<CnProjectDocument> {
+                                  content: any, skipSizeCheck: boolean = false): Promise<CnProjectDocument> {
+    if (!skipSizeCheck) {
+      // check if the space storage is not full, consider si of this document as 0
+      this.checkIfStorageIsFull(0);
+    }
+
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
     const documentPath = this.generateDocumentFilePath(project, document);
@@ -237,13 +294,17 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     document.size = objectInfo.ContentLength;
     document = await this.repository.save(document);
 
+    if (!skipSizeCheck) {
+      this.emitEvent('UPDATE_DOCUMENT', document);
+    }
     return document;
   }
 
   public async createOrUpdateJSONDocument(project: CnProject, type: CnProjectDocumentType,
                                           documentName: string, entityId: string, content: any,
                                           parentDocument?: CnProjectDocument): Promise<CnProjectDocument> {
-    const document = await this.findDocumentByProjectAndTypeAndName(project.id, type, documentName);
+    const document = await this.findDocumentByProjectAndTypeAndName(project.id, type,
+      documentName, entityId);
 
     if (document) {
       return this.updateJSONDocument(project, document, content);
@@ -261,27 +322,27 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
 
-  public async createConstellabDocument(project: CnProject, documentName: string): Promise<CnConstellabDocument2> {
+  public async createConstellabDocument(project: CnProject, documentName: string): Promise<CnConstellabDocumentDTO> {
     const content = BlNewRichText.emptyContent();
     const doc = await this.createJSONDocument(project, CnProjectDocumentType.CONSTELLAB_DOCUMENT,
       documentName, project.id, BlNewRichText.emptyContent());
-    return new CnConstellabDocument2(doc, content);
+    return new CnConstellabDocumentDTO(doc, content);
   }
 
 
   async updateConstellabDocument(project: CnProject, document: CnProjectDocument,
-                                 content: BlRichTextContent): Promise<CnConstellabDocument2> {
+                                 content: BlRichTextContent): Promise<CnConstellabDocumentDTO> {
     const newDoc = await this.updateJSONDocument(project, document, content);
-    return new CnConstellabDocument2(newDoc, content);
+    return new CnConstellabDocumentDTO(newDoc, content);
   }
 
 
-  async getConstellabDocument(project: CnProject, document: CnProjectDocument): Promise<CnConstellabDocument2> {
+  async getConstellabDocument(project: CnProject, document: CnProjectDocument): Promise<CnConstellabDocumentDTO> {
     if (document.type !== CnProjectDocumentType.CONSTELLAB_DOCUMENT) {
       throw new BlBadRequestException('The document is not a constellab document');
     }
     const content = await this.getJSONDocumentContent(project, document);
-    return new CnConstellabDocument2(document, content);
+    return new CnConstellabDocumentDTO(document, content);
   }
 
   async uploadImageToConstellabDocument(project: CnProject, document: CnProjectDocument, file: BlFile): Promise<BlRichTextUploadedImage> {
@@ -302,14 +363,77 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
   ////////////////////////////////////////////// SIZE /////////////////////////////////////////////
 
-  public async aggregateProjectsDocumentsSize(projectIds: string[]): Promise<number> {
-    const result = await this.repo.createQueryBuilder('document')
-      .select('SUM(size)', 'size')
-      .where('document.projectId IN (:...projectIds)', {projectIds: projectIds})
-      .getRawOne();
-
-    return result.size || 0;
+  public async getStorageSizeDetailByProjects(projectIds: string[]): Promise<CnProjectStorageUsageDTO> {
+    const documents = await this.repository.findBy({projectId: In(projectIds)});
+    return this.documentsToAggregateDTO(documents);
   }
+
+  public async getStorageSizeDetailBySpace(spaceId: string): Promise<CnProjectStorageUsageDTO> {
+    const documents = await this.repository.findBy({project: {spaceId: spaceId}});
+    return this.documentsToAggregateDTO(documents);
+  }
+
+  private documentsToAggregateDTO(documents: CnProjectDocument[]): CnProjectStorageUsageDTO {
+    const totalSize = documents.reduce((acc, doc) => acc + doc.size, 0);
+    const totalDocuments = documents.length;
+
+    const aggregationDTO: CnProjectStorageUsageDTO = new CnProjectStorageUsageDTO(totalSize, totalDocuments);
+
+    const mappings: Record<CnProjectDocumentType, CnProjectDocumentStorageType> = {
+      [CnProjectDocumentType.UPLOADED_DOCUMENT]: CnProjectDocumentStorageType.UPLOADED_DOCUMENT,
+      [CnProjectDocumentType.CONSTELLAB_DOCUMENT]: CnProjectDocumentStorageType.CONSTELLAB_DOCUMENT,
+      [CnProjectDocumentType.DESCRIPTION_CONTENT]: CnProjectDocumentStorageType.DESCRIPTION,
+      [CnProjectDocumentType.REPORT]: CnProjectDocumentStorageType.REPORT,
+      [CnProjectDocumentType.REPORT_CONTENT]: CnProjectDocumentStorageType.REPORT,
+      [CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT]: CnProjectDocumentStorageType.CONSTELLAB_DOCUMENT,
+      [CnProjectDocumentType.COMMENT_CONTENT]: CnProjectDocumentStorageType.COMMENT
+    };
+
+    for (const doc of documents) {
+      const type = mappings[doc.type];
+      const detail = aggregationDTO.details[type];
+      detail.totalSize += doc.size;
+      detail.totalDocuments++;
+    }
+
+    return aggregationDTO;
+  }
+
+  public async getSpaceStorageSize(spaceId: string): Promise<number> {
+    // calculate with sql sum query, join project table with document.projectId = project.id
+    const result = await this.repository.manager.query(`
+      SELECT SUM(size) as totalSize
+      FROM project_document
+             JOIN project ON project_document.projectId = project.id
+      WHERE project.spaceId = ?
+    `, [spaceId]);
+    return result[0].totalSize ?? 0;
+  }
+
+  public checkIfStorageIsFull(documentSize: number): void {
+    const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
+    if (!space.hasEnoughStorageForNewFile(documentSize)) {
+      if (documentSize === 0) {
+        throw new BlBadRequestException('Space storage is full, please contact your space administrator to increase the storage limit, delete some documents or empty the trash.');
+      } else {
+        throw new BlBadRequestException('There is not enough remaining free storage in your space to upload this document. Please contact your space administrator to increase the storage limit, delete some documents or empty the trash.');
+      }
+    }
+  }
+
+  ////////////////////////////////////////////// OTHERS /////////////////////////////////////////////
+
+  private emitEvent(eventType: CnProjectDocumentEventType, document: CnProjectDocument): void {
+    const event: CnProjectDocumentEvent = {
+      type: eventType,
+      entity: document,
+      spaceId: CnCurrentUserHelper.getCurrentSpace().id
+    };
+    this.eventEmitter.emit(cnProjectDocumentEventName, event);
+  }
+
+  ////////////////////////////////////////////// MIGRATION /////////////////////////////////////////////
+
 
   // TODO TO REMOVE AFTER MIGRATION
   public async fromDocument(document: CnDocument): Promise<CnProjectDocument> {
@@ -346,7 +470,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
                                    entityId: string,
                                    parentDocument?: CnProjectDocument): Promise<CnProjectDocument> {
     const imageDocument = await this.findDocumentByProjectAndTypeAndName(project.id,
-      CnProjectDocumentType.REPORT_CONTENT, filename);
+      documentType, filename, entityId);
 
     if (!imageDocument) {
       const document = new CnProjectDocument();
