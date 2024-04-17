@@ -149,6 +149,11 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
         `Virtual host must be a valid domain name : ${CnLabInstance.SUPPORTED_MAIN_DOMAINS.join(', ')}`);
     }
 
+    // check that the domain is valid including possibility of subdomain and port, only 1 ':' is allowed followed by a port number
+    if(!/^(?:[a-z0-9-]+\.)*[a-z0-9-]+(?::\d+)?$/.test(virtualHost)){
+      throw new BlBadRequestException('Virtual host is not a valid domain name');
+    }
+
     const domainPart = entity.getSubDomainName();
     // check that the virtual host does not contain character other than a-z, 0-9 and -
     if (!/^[a-z0-9-]+$/.test(domainPart)) {

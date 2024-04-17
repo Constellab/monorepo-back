@@ -344,20 +344,22 @@ export class CnLabInstanceAggregateService {
       throw new BlBadRequestException(`Cannot refresh status of a lab that is not on a server`);
     }
 
-    if (!labInstance.serverInstanceId && !labInstance.serverTaskIsRunning()) {
-      return await this.labInstancesService.markInstanceAsNoServer(labInstanceId);
-    }
+    if (labInstance.isCloud()) {
+      if (!labInstance.serverInstanceId && !labInstance.serverTaskIsRunning()) {
+        return await this.labInstancesService.markInstanceAsNoServer(labInstanceId);
+      }
 
-    // manage all the server status, except running
-    const serverStatus = await this.labServerService.getLabServerStatus(labInstance);
-    if (serverStatus === 'CREATING' || serverStatus === 'RESTARTING') {
-      return await this.labInstancesService.markInstanceAsServerStarting(labInstanceId);
-    }
-    if (serverStatus === 'STOPPING') {
-      return await this.labInstancesService.markInstanceAsServerStopping(labInstanceId);
-    }
-    if (serverStatus === 'STOPPED') {
-      return await this.labInstancesService.markInstanceAsServerStopped(labInstanceId);
+      // manage all the server status, except running
+      const serverStatus = await this.labServerService.getLabServerStatus(labInstance);
+      if (serverStatus === 'CREATING' || serverStatus === 'RESTARTING') {
+        return await this.labInstancesService.markInstanceAsServerStarting(labInstanceId);
+      }
+      if (serverStatus === 'STOPPING') {
+        return await this.labInstancesService.markInstanceAsServerStopping(labInstanceId);
+      }
+      if (serverStatus === 'STOPPED') {
+        return await this.labInstancesService.markInstanceAsServerStopped(labInstanceId);
+      }
     }
 
     // if there is a task running, the server is configuring

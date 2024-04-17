@@ -249,15 +249,24 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   }
 
   // get the subdomain name
-  // ex: if the virtual host is 'rio.gencovery.io', the subdomain record is 'rio'
+  // ex: if the virtual host is 'rio.gencovery.io', the subdomain is 'rio'
   public getSubDomainName(): string {
     return this.virtualHost.split('.')[0];
   }
 
   // get the main domain name
-  // ex: if the virtual host is 'rio.gencovery.io', the subdomain record is 'gencovery.io'
+  // ex: if the virtual host is 'rio.gencovery.io', the main domain is 'gencovery.io'
   public getMainDomain(): string {
-    return this.virtualHost.split('.').slice(1).join('.');
+    const virtualHost = this.getVirtualHostWithoutPort();
+    return virtualHost.split('.').slice(1).join('.');
+  }
+
+  private getVirtualHostWithoutPort(): string {
+    return this.virtualHost.split(':')[0];
+  }
+
+  public domainIncludesPort(): boolean {
+    return this.virtualHost.includes(':');
   }
 
   public isDesktop(): boolean {
