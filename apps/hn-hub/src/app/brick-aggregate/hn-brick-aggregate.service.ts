@@ -69,9 +69,11 @@ export class HnBrickAggregateService {
   async findBricksWithFilter(spacesFilter: string[], titleFilter: string, page: number, size: number): Promise<ClPage<HnBrick>> {
 
     let publicSelected = false;
+    let myBricks = false;
     for (const spaceId of spacesFilter) {
       if (spaceId === 'public') publicSelected = true;
       // Verify user right on spaces
+      else if (spaceId === 'my-bricks') myBricks = true;
       else {
         if (HnCurrentUserHelper.getCurrentUser() != null) {
           await this.spaceAggregateService.assertCheckSpaceUser(spaceId, HnCurrentUserHelper.getCurrentUser().id);
@@ -79,8 +81,12 @@ export class HnBrickAggregateService {
       }
     }
 
+    if (publicSelected) spacesFilter = spacesFilter.filter(s => s !== 'public');
+    if (myBricks) spacesFilter = spacesFilter.filter(s => s !== 'my-bricks');
+
     const whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> =
-      await this.getUserBasedWhereBrickConditions(publicSelected, spacesFilter);
+      myBricks ? await this.getMyBricksWhereBrickConditions(publicSelected, spacesFilter) :
+        await this.getUserBasedWhereBrickConditions(publicSelected, spacesFilter);
 
     // Add where conditions based on filters
     if (titleFilter) {
@@ -400,7 +406,8 @@ export class HnBrickAggregateService {
       return null;
     }
 
-    const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
+    const brickMajorVersion: HnBrickMajorVersion =
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
     const mainFolder: HnFolder = await this.folderService.findFolderByBrickMajorVersion(brickMajorVersion);
     return await this.folderService.findBrickDocsTree(mainFolder);
   }
@@ -487,7 +494,8 @@ export class HnBrickAggregateService {
       return {id: null};
     }
 
-    const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
+    const brickMajorVersion: HnBrickMajorVersion =
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
     const mainFolder = await this.folderService.findFolderByBrickMajorVersion(brickMajorVersion);
     return {id: mainFolder.id};
   }
@@ -579,7 +587,8 @@ export class HnBrickAggregateService {
 
     // Get brick major version
     const importVersion: BlVersion = BlVersion.fromString(content.importFile.brick_version);
-    const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionService.findOneByBrickIdAndMajor(brick.id, importVersion.major);
+    const brickMajorVersion: HnBrickMajorVersion =
+      await this.brickMajorVersionService.findOneByBrickIdAndMajor(brick.id, importVersion.major);
     if (brickMajorVersion == null) {
       return false;
     }
@@ -596,7 +605,8 @@ export class HnBrickAggregateService {
 
   async findTechnicalDoc(brickId: string, version: string): Promise<HnNode> {
     const brick: HnBrick = await this.findBrickById(brickId);
-    const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
+    const brickMajorVersion: HnBrickMajorVersion =
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
     return this.technicalFolderService.findTechnicalDoc(brickMajorVersion.id);
   }
 
@@ -802,6 +812,7 @@ export class HnBrickAggregateService {
       ];
     } else {
       const userSpacesIds: string[] = (await this.spaceUserService.findActiveSpaceUsersByUserId(currentUser?.id)).map(su => su.spaceId);
+
       whereConditions = [{
         visibility: HnBrickVisibility.PUBLIC
       }, {
@@ -810,6 +821,58 @@ export class HnBrickAggregateService {
     }
 
     return whereConditions;
+  }
+
+  public async getMyBricksWhereBrickConditions(publicSelected: boolean,
+                                               spacesFilter: string[]): Promise<FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>> {
+    const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
+
+    if(currentUser == null) {
+      throw new BlUnauthorizedException('You are not authorized to perform this action');
+    }
+
+    let whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>;
+
+    if (publicSelected) {
+      whereConditions = [
+        {
+          space: {
+            id: In(spacesFilter)
+          },
+          createdBy: {
+            id: currentUser.id
+          }
+        },
+        {
+          space: {
+            id: IsNull()
+          },
+          createdBy: {
+            id: currentUser.id
+          }
+        }
+      ];
+    } else if (spacesFilter && spacesFilter.length > 0) {
+      whereConditions = [
+        {
+          space: {
+            id: In(spacesFilter)
+          },
+          createdBy: {
+            id: currentUser.id
+          }
+        }
+      ];
+    } else {
+      whereConditions = [{
+        createdBy: {
+          id: currentUser.id
+        }
+      }];
+    }
+
+    return whereConditions;
+
   }
 
 

@@ -69,13 +69,13 @@ export class HnLiveTaskService {
     }, this.liveTaskRepository.manager, HnLiveTask);
   }
 
-  public async findLiveTaskByIdWithUserSpaces(id: string, userSpaces: HnSpace[]): Promise<HnLiveTask> {
+  public async findLiveTaskByIdWithUserSpaces(id: string, userSpacesId: string[]): Promise<HnLiveTask> {
     return this.liveTaskRepository.findOne({
       where: [
         {
           id: id,
           space: {
-            id: In(userSpaces.map(space => space.id))
+            id: In(userSpacesId)
           },
         }, {
           id: id,
@@ -86,7 +86,8 @@ export class HnLiveTaskService {
   }
 
   public async findAllWithFilters(spacesFilter: string[], titleFilter: string, publicSelected: boolean, myLiveTasksSelected: boolean,
-                                  personalOnly: boolean, page: number, size: number, user: HnUser = null): Promise<ClPage<HnLiveTask>> {
+                                  personalOnly: boolean, page: number, size: number, user: HnUser = null,
+                                  userSpacesIds: string[] = null): Promise<ClPage<HnLiveTask>> {
     let where: FindOptionsWhere<HnLiveTask>[];
     const currentUser = user ? user : HnCurrentUserHelper.getCurrentUser();
 
@@ -157,9 +158,21 @@ export class HnLiveTaskService {
         }
       ];
     } else {
+      if (!userSpacesIds) {
+        throw new BlUnauthorizedException('User has no space');
+      }
       where = [
         {
-          latestPublishVersion: Not(IsNull())
+          latestPublishVersion: Not(IsNull()),
+          space: {
+            id: IsNull()
+          }
+        },
+        {
+          latestPublishVersion: Not(IsNull()),
+          space: {
+            id: In(userSpacesIds)
+          }
         }
       ];
     }

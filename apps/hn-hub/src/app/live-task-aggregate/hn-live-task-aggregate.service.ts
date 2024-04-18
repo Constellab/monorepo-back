@@ -15,7 +15,12 @@ import {DataSource, EntityManager} from 'typeorm';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnSpace} from '../space-aggregate/space/hn-space.entity';
 import {ClPage} from '@monorepo/core-lib';
-import {BlBadRequestException, BlCurrentUserHelper, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import {
+  BlBadRequestException,
+  BlCurrentUserHelper,
+  BlNotFoundException,
+  BlUnauthorizedException
+} from '@monorepo/back-core-lib';
 import {HnBrickAggregateService} from '../brick-aggregate/hn-brick-aggregate.service';
 import {HnBrickVersion} from '../brick-aggregate/brick-version/hn-brick-version.entity';
 import {
@@ -137,8 +142,12 @@ export class HnLiveTaskAggregateService {
 
 
   public async getLiveTaskForLabByVersionId(req: Request, versionId: string): Promise<HnLiveTaskForLabDto> {
-    await this.checkIfLabUserAndReturnUser(req);
+    const user = await this.checkIfLabUserAndReturnUser(req);
     const liveTaskVersion: HnLiveTaskVersion = await this.findLiveTaskVersionById(versionId);
+    const liveTask = liveTaskVersion.liveTask;
+    if (liveTask.space != null) {
+      await this.spaceAggregateService.assertCheckSpaceUser(liveTask.space.id, user.id);
+    }
     return HnLiveTaskForLabDto.fromLiveTask(liveTaskVersion?.liveTask);
   }
 
@@ -152,8 +161,11 @@ export class HnLiveTaskAggregateService {
       else if (spaceId === 'my-live-tasks') myLiveTasksSelected = true
       else await this.spaceAggregateService.assertCheckSpaceUser(spaceId, currentUser.id);
     }
+    let userSpacesIds: string[] = null;
+    if (currentUser)
+      userSpacesIds = (await this.spaceAggregateService.findSpacesOfUser(currentUser?.id)).map(space => space.id);
     return await this.liveTaskService.findAllWithFilters(spacesFilter, titleFilter, publicSelected,
-      myLiveTasksSelected, personalOnly, page, size, user);
+      myLiveTasksSelected, personalOnly, page, size, user, userSpacesIds);
   }
 
 
@@ -184,12 +196,15 @@ export class HnLiveTaskAggregateService {
     if (!currentUser)
       return await this.liveTaskService.findPublicLiveTaskById(id);
 
-    const userSpaces: HnSpace[] = await this.spaceAggregateService.findSpacesOfCurrentUser();
-    return await this.liveTaskService.findLiveTaskByIdWithUserSpaces(id, userSpaces);
+    const userSpacesId: string[] = (await this.spaceAggregateService.findSpacesOfCurrentUser()).map(space => space.id);
+    const liveTask = await this.liveTaskService.findLiveTaskByIdWithUserSpaces(id, userSpacesId);
+    if (!liveTask)
+      throw new BlNotFoundException('Live task not found');
+    return liveTask
   }
 
   public async findLiveTaskTitleById(id: string): Promise<string>{
-    const liveTask = await this.liveTaskService.findOne(id);
+    const liveTask = await this.findLiveTaskById(id);
     return liveTask?.title;
   }
 
