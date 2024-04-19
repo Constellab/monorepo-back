@@ -1,4 +1,4 @@
-import {Column, Entity, ManyToOne, Unique} from 'typeorm';
+import {Column, Entity, ManyToOne} from 'typeorm';
 import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
 import {
   CnCloudProviderRegion
@@ -33,7 +33,6 @@ export interface CnBucketLocationDTO {
  * Represent a bucket in an object storage
  */
 @Entity('bucket')
-@Unique(['region', 'name', 'bucketType'])
 export class CnBucket extends CnBaseEntity {
 
   // relation options to load required information for the bucket
