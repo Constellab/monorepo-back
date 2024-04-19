@@ -68,7 +68,7 @@ export class CnSpaceAggregateService {
   }
 
   public async getSpaceSettings(spaceId: string): Promise<CnSpaceSettingsDto> {
-    const space = await this.spaceService.findByIdAndCheck(spaceId);
+    const space = await this.spaceService.findByIdAndCheck(spaceId, CnSpace.buckets);
     return CnSpaceSettingsDto.fromSpace(space);
   }
 
@@ -183,10 +183,7 @@ export class CnSpaceAggregateService {
     const spaceId = CnCurrentUserHelper.getAndCheckCurrentSpace().id;
     await this.checkSpaceAdmin(spaceId);
 
-    const space = await this.spaceService.findByIdAndCheck(spaceId, {
-      defaultProjectBucket: CnBucket.configRelation,
-      defaultProjectBackupBucket: CnBucket.configRelation
-    });
+    const space = await this.spaceService.findByIdAndCheck(spaceId, CnSpace.buckets);
 
     return new CnSpaceStorage(space.storageLimit, space.storageUsage, space.defaultProjectBucket.getBucketLocation(),
       space.defaultProjectBackupBucket?.getBucketLocation() ?? null);

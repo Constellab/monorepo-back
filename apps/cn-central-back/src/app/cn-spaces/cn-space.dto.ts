@@ -30,10 +30,15 @@ export class CnSpaceSettingsDto {
   space: CnSpace;
   nbLicenses: number;
 
+  defaultProjectStorageLocation: CnBucketLocationDTO;
+  defaultProjectBackupStorageLocation?: CnBucketLocationDTO;
+
   static fromSpace(space: CnSpace): CnSpaceSettingsDto {
     const spaceSettings = new CnSpaceSettingsDto();
     spaceSettings.space = space;
     spaceSettings.nbLicenses = space.nbLicenses;
+    spaceSettings.defaultProjectStorageLocation = space.defaultProjectBucket.getBucketLocation();
+    spaceSettings.defaultProjectBackupStorageLocation = space.defaultProjectBackupBucket?.getBucketLocation() ?? null;
 
     return spaceSettings;
   }

@@ -3,6 +3,7 @@ import {CnBaseEntity} from '../cn-core/model/entities/cn-base.entity';
 import {ClDateHelper, ClStringHelper} from '@monorepo/core-lib';
 import {Exclude, Type} from 'class-transformer';
 import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
 
 export enum CnSpaceType {
   // personal space create on the user creation (he cas invite other users in his space)
@@ -14,6 +15,12 @@ export enum CnSpaceType {
 
 @Entity('space')
 export class CnSpace extends CnBaseEntity {
+
+  // relation options to load required information for the bucket
+  public static buckets: FindOptionsRelations<CnSpace> = {
+    defaultProjectBucket: CnBucket.configRelation,
+    defaultProjectBackupBucket: CnBucket.configRelation
+  };
 
   @Column({nullable: false})
   name: string;
