@@ -745,7 +745,7 @@ export class CnProjectAggregateService {
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
 
     return this.projectDocumentService.getDocumentContentByTypeAndName(project,
-      CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT, documentName, project.id);
+      CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT, documentName, documentId);
   }
 
 

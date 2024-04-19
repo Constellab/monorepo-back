@@ -86,7 +86,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       document.entityId = entityId;
       document.parentDocument = parentDocument;
       // for lab as bucket type, keep the original name
-      if (bucketConfig.some(b => b.bucketType === 'LAB')) {
+      if (bucketConfig.some(b => b.bucketType === 'LAB') && documentType === CnProjectDocumentType.UPLOADED_DOCUMENT) {
         document.filename = file.originalname;
       } else {
         // otherwise this is a cloud bucket where every file is so we need to generate a random name
