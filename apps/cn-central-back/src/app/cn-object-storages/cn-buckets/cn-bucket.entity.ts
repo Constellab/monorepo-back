@@ -33,7 +33,7 @@ export interface CnBucketLocationDTO {
  * Represent a bucket in an object storage
  */
 @Entity('bucket')
-@Unique(['region', 'name'])
+@Unique(['region', 'name', 'bucketType'])
 export class CnBucket extends CnBaseEntity {
 
   // relation options to load required information for the bucket
