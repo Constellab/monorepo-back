@@ -36,13 +36,15 @@ import {CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse} from './s
 import {CnFreeTrialUpdateDto, CnLabFreeTrialGetDto} from './free-trial/cn-lab-free-trial.dto';
 import {CnLabFreeTrialAggregateService} from './free-trial/cn-lab-free-trial-aggregate.service';
 import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
+import {CnCreateLabContestDto, CnLabContestService} from './cn-lab-contest.service';
 
 
 @Controller('lab-instances')
 export class CnLabInstancesController {
 
   constructor(private aggregateService: CnLabInstanceAggregateService,
-              private labFreeTrialAggregateService: CnLabFreeTrialAggregateService) {
+              private labFreeTrialAggregateService: CnLabFreeTrialAggregateService,
+              private labContestService: CnLabContestService) {
   }
 
 
@@ -486,6 +488,14 @@ export class CnLabInstancesController {
   @Delete('free-trial/:id')
   async deleteFreeTrial(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabFreeTrialGetDto> {
     return await this.labFreeTrialAggregateService.deleteFreeTrial(id);
+  }
+
+  /////////////////////////// CONTEST //////////////////////////////
+
+  @Post('contest')
+  async createContest(@Body(new BlParsePipe(CnCreateLabContestDto)) request: CnCreateLabContestDto): Promise<CnLabInstanceAdminDto> {
+    const labInstance = await this.labContestService.createLabContest(request);
+    return BlDtoHelper.toDto(CnLabInstanceAdminDto, labInstance);
   }
 
   /////////////////////////// KPI  //////////////////////////////
