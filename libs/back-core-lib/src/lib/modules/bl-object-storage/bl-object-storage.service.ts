@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {ClHelpService, ClStringHelper} from '@monorepo/core-lib';
 import {BlFileHelper} from '../../utils/bl-file-helper';
 import {
@@ -11,6 +11,7 @@ import {
   HeadObjectCommand,
   HeadObjectCommandOutput,
   ListObjectsCommand,
+  NoSuchKey,
   PutObjectCommand,
   S3Client
 } from '@aws-sdk/client-s3';
@@ -18,6 +19,8 @@ import {BlFile} from '../../models/bl-file.class';
 import {IncomingMessage} from 'http';
 import {_Object} from '@aws-sdk/client-s3/dist-types/models/models_0';
 import {BlObjectStorageSyncResult} from './bl-object-storage.class';
+import {BlBadRequestException} from '../../exceptions/bl-bad-request.exception';
+import {BlNotFoundException} from '../../exceptions/bl-not-found.exception';
 
 export enum BlBucketType {
   NORMAL = 'NORMAL',
@@ -51,6 +54,7 @@ export interface BlObjectStorageUploadOptions {
  */
 @Injectable()
 export class BlObjectStorageService {
+  private readonly logger = new Logger(BlObjectStorageService.name);
 
   public generateRandomFileNameFromExtension(extension: string): string {
     return ClStringHelper.generateUUID() + '_' + new Date().getTime() + '.' + extension;
@@ -113,9 +117,17 @@ export class BlObjectStorageService {
   public async getObject(config: BlBucketConfig, objectName: string): Promise<IncomingMessage> {
     const s3Client = this.getClient(config);
 
-    const result = await s3Client.send(new GetObjectCommand({Bucket: config.bucket, Key: objectName}));
+    try {
+      const result = await s3Client.send(new GetObjectCommand({Bucket: config.bucket, Key: objectName}));
+      return result.Body as any as IncomingMessage;
+    } catch (e) {
+      if (e instanceof NoSuchKey) {
+        throw new BlNotFoundException('Object not found');
+      }
+      this.logger.error(`Error while getting object ${objectName} from bucket ${config.bucket}. Error ${e}`);
+      throw new BlBadRequestException('Error while getting object');
+    }
 
-    return result.Body as any as IncomingMessage;
   }
 
   public async getObjectsByPrefix(config: BlBucketConfig, prefix: string = '', pageSize: number = 1000): Promise<_Object[]> {
