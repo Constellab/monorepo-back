@@ -63,20 +63,26 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
 
   async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
     const space = await this.findByIdAndCheck(id, null, entityManager);
-    await this.deletePhoto(space);
+    await this.deletePhotoInObjectStorage(space);
     return super.deleteById(id, entityManager);
   }
 
   public async uploadPhoto(space: CnSpace, file: BlFile): Promise<CnSpace> {
 
-    await this.deletePhoto(space);
+    await this.deletePhotoInObjectStorage(space);
 
     space.photo = await this.objectStorageService.uploadObject(this.getBucketConfig(), file,
       {generateRandomObjectName: true});
     return this.update(space);
   }
 
-  private async deletePhoto(space: CnSpace): Promise<void> {
+  public async deletePhoto(space: CnSpace): Promise<CnSpace> {
+    await this.deletePhotoInObjectStorage(space);
+    space.photo = null;
+    return this.repository.save(space);
+  }
+
+  private async deletePhotoInObjectStorage(space: CnSpace): Promise<void> {
     if (space.photo) {
       // use the same filename to overwrite the previous file
       await this.objectStorageService.deleteObjectIfExist(this.getBucketConfig(), space.photo);

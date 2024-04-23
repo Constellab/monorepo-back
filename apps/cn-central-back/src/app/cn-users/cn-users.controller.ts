@@ -1,4 +1,16 @@
-import {Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, Res, UseInterceptors} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  Res,
+  UseInterceptors
+} from '@nestjs/common';
 import {CnUsersService} from './cn-users.service';
 import {CnUser, CnUserEditDTO} from './cn-user.entity';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
@@ -46,14 +58,19 @@ export class CnUsersController {
   }
 
   @Put('current/edit')
-  editUser(@Body(new BlParsePipe(CnUserEditDTO)) userEdit: CnUserEditDTO): Promise<CnUser> {
-    return this.usersService.editUser(userEdit);
+  updateUser(@Body(new BlParsePipe(CnUserEditDTO)) userEdit: CnUserEditDTO): Promise<CnUser> {
+    return this.usersService.updateUser(userEdit);
   }
 
   @UseInterceptors(FileInterceptor('photo'))
-  @Put('current/photo/:userId')
-  saveNewPhoto(@Param('userId') userId: string, @BlUploadedFile() file: BlFile): Promise<CnUser> {
-    return this.usersService.saveNewPhoto(file, userId);
+  @Put('current/photo')
+  updatePhoto(@BlUploadedFile() file: BlFile): Promise<CnUser> {
+    return this.usersService.uploadCurrentUserPhoto(file);
+  }
+
+  @Delete('current/photo')
+  deletePhoto(): Promise<CnUser> {
+    return this.usersService.deleteCurrentPhoto();
   }
 
   @BlPublic()

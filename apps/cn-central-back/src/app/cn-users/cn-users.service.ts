@@ -92,8 +92,8 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     await this.update(user);
   }
 
-  async saveNewPhoto(file: BlFile, userId: string): Promise<CnUser> {
-    const user: CnUser = await this.repository.findOneBy({id: userId});
+  async uploadCurrentUserPhoto(file: BlFile): Promise<CnUser> {
+    const user: CnUser = CnCurrentUserHelper.getAndCheckCurrentUser();
 
     if (user.photo) {
       await this.objectStorageService.deleteObjectIfExist(this.getUserProfilePhotoBucketConfig(), user.photo);
@@ -104,13 +104,14 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     return await this.repository.save(user);
   }
 
-  async deleteCurrentPhoto(userId: string): Promise<void> {
-    const user: CnUser = await this.repository.findOneBy({id: userId});
+  async deleteCurrentPhoto(): Promise<CnUser> {
+    const user: CnUser = CnCurrentUserHelper.getAndCheckCurrentUser();
     if (user.photo) {
       await this.objectStorageService.deleteObjectIfExist(this.getUserProfilePhotoBucketConfig(), user.photo);
       user.photo = null;
-      await this.repository.save(user);
+      return await this.repository.save(user);
     }
+    return user;
   }
 
   async getUserPhoto(photoId: string): Promise<IncomingMessage> {
@@ -127,21 +128,17 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     };
   }
 
-  async editUser(userEdit: CnUserEditDTO): Promise<CnUser> {
-    const user: CnUser = await this.repository.findOneBy({id: userEdit.id});
-    if (userEdit) {
-      user.firstname = userEdit.firstname;
-      user.lastname = userEdit.lastname;
-      user.activity = userEdit.activity;
-      user.company = userEdit.company;
-      user.biography = userEdit.biography;
-      user.phone = userEdit.phone;
-      const dbUser: CnUser = await this.repository.save(user);
-      this.sendUserToTransport(dbUser);
-      return dbUser;
-    } else {
-      return user;
-    }
+  async updateUser(userEdit: CnUserEditDTO): Promise<CnUser> {
+    const user: CnUser = CnCurrentUserHelper.getAndCheckCurrentUser();
+    user.firstname = userEdit.firstname.trim();
+    user.lastname = userEdit.lastname.trim();
+    user.activity = userEdit.activity?.trim() ?? null;
+    user.company = userEdit.company?.trim() ?? null;
+    user.biography = userEdit.biography?.trim() ?? null;
+    user.phone = userEdit.phone?.trim() ?? null;
+    const dbUser: CnUser = await this.repository.save(user);
+    this.sendUserToTransport(dbUser);
+    return dbUser;
   }
 
   async set2FA(enable: boolean): Promise<boolean> {

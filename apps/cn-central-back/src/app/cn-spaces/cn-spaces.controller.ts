@@ -115,6 +115,11 @@ export class CnSpacesController {
     return this.spaceAggregateService.uploadSpacePhoto(id, file);
   }
 
+  @Delete(':id/photo')
+  async deleteSpacePhoto(@Param('id') id: string): Promise<CnSpace> {
+    return this.spaceAggregateService.deleteSpacePhoto(id);
+  }
+
   /**
    * Return the image of a space
    */

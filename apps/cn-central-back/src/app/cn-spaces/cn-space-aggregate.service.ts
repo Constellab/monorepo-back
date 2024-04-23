@@ -158,6 +158,16 @@ export class CnSpaceAggregateService {
     return updatedSpace;
   }
 
+  public async deleteSpacePhoto(spaceId: string): Promise<CnSpace> {
+    spaceId = this.getSpaceId(spaceId);
+    await this.checkSpaceAdmin(spaceId);
+
+    const space = await this.spaceService.findByIdAndCheck(spaceId);
+    const updatedSpace = await this.spaceService.deletePhoto(space);
+    await this.sendAllSpaceUsersFromASpaceToQueue(spaceId);
+    return updatedSpace;
+  }
+
   public async getPhoto(filename: string): Promise<IncomingMessage> {
     return await this.spaceService.getPhoto(filename);
   }

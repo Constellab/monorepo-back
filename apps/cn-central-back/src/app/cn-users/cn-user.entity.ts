@@ -5,7 +5,6 @@ import * as argon2 from 'argon2';
 import {ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {BlEntityWithId, BlLuxonDateTimeColumn, BlUser, BlUserCategory, BlUserStatus} from '@monorepo/back-core-lib';
-import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {CnSpaceUser} from '../cn-spaces/cn-space-user.entity';
 
 
@@ -78,6 +77,7 @@ export class CnUser extends BlEntityWithId implements BlUser {
 
   @Column({nullable: true, length: 50})
   phone: string;
+
   //////////////////// TRANSIENT METHODS //////////////////
 
   @BeforeInsert()
@@ -109,7 +109,6 @@ export class CnUser extends BlEntityWithId implements BlUser {
 }
 
 export class CnUserEditDTO {
-  id: string;
   firstname: string;
   lastname: string;
   activity: string;
