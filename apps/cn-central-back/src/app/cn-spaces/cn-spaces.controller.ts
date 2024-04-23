@@ -160,6 +160,11 @@ export class CnSpacesController {
     return this.spaceAggregateService.getCurrentSpaceStorageUsageDetail();
   }
 
+  @Put('current-space/storage/limit/:limit')
+  updateCurrentSpaceStorageLimit(@Param('limit', new ParseIntPipe()) limit: number): Promise<CnSpaceStorage> {
+    return this.spaceAggregateService.updateCurrentSpaceStorageLimit(limit);
+  }
+
 
   //////////////////////////////////////// USER ////////////////////////////////////////
 

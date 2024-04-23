@@ -37,11 +37,11 @@ export class CnSpace extends CnBaseEntity {
   nbLicenses: number;
 
   @Exclude({toPlainOnly: true})
-  @Column({default: 0})
+  @Column({default: 0, type: 'bigint'})
   storageLimit: number;
 
   @Exclude({toPlainOnly: true})
-  @Column({default: 0})
+  @Column({default: 0, type: 'bigint'})
   storageUsage: number;
 
   @Column({type: 'enum', enum: CnSpaceType, nullable: false, update: false})

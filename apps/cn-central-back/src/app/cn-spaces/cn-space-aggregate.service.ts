@@ -267,6 +267,14 @@ export class CnSpaceAggregateService {
     return {defaultProjectBucket: defaultBucket, defaultProjectBackupBucket: defaultBackupBucket};
   }
 
+  public async updateCurrentSpaceStorageLimit(storageLimit: number): Promise<CnSpaceStorage> {
+    this.checkAdmin();
+
+    const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
+    await this.spaceService.updateStorageLimit(space, storageLimit);
+    return this.getCurrentSpaceStorage();
+  }
+
 
   /////////////////////////////////////// USERS ///////////////////////////////////////
 

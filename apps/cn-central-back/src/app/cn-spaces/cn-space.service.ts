@@ -4,6 +4,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {DeleteResult, EntityManager, Like, Repository} from 'typeorm';
 import {
   BlAbstractService,
+  BlBadRequestException,
   BlBucketConfig,
   BlBucketType,
   BlFile,
@@ -114,5 +115,14 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
 
   public searchByName(name: string, page: number, size: number): Promise<ClPage<CnSpace>> {
     return this.findPaginated(page, size, {where: {name: Like(`%${name}%`)}, order: {name: 'ASC'}});
+  }
+
+  public updateStorageLimit(space: CnSpace, storageLimit: number): Promise<CnSpace> {
+    if (space.storageUsage > storageLimit) {
+      throw new BlBadRequestException('The storage limit must be greater than the current storage usage');
+    }
+
+    space.storageLimit = storageLimit;
+    return this.update(space);
   }
 }
