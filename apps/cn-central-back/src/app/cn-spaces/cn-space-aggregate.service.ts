@@ -84,8 +84,8 @@ export class CnSpaceAggregateService {
     let space = new CnSpace();
     space.name = entity.name;
     space.nbLicenses = CnSpaceAggregateService.DEFAULT_NB_LICENSES;
-    space.storageLimit = CnSpaceAggregateService.DEFAULT_STORAGE_LIMIT;
-    space.storageUsage = 0;
+    space.cloudStorageLimit = CnSpaceAggregateService.DEFAULT_STORAGE_LIMIT;
+    space.cloudStorageUsage = 0;
     space.defaultProjectBucket = bucketStorage.defaultProjectBucket;
     space.defaultProjectBackupBucket = bucketStorage.defaultProjectBackupBucket;
 
@@ -195,13 +195,13 @@ export class CnSpaceAggregateService {
 
     const space = await this.spaceService.findByIdAndCheck(spaceId, CnSpace.buckets);
 
-    return new CnSpaceStorage(space.storageLimit, space.storageUsage, space.defaultProjectBucket.getBucketLocation(),
+    return new CnSpaceStorage(space.cloudStorageLimit, space.cloudStorageUsage, space.defaultProjectBucket.getBucketLocation(),
       space.defaultProjectBackupBucket?.getBucketLocation() ?? null);
   }
 
   public async refreshSpaceStorageUsage(spaceId: string): Promise<void> {
-    const storageUsage = await this.projectDocumentService.getSpaceStorageSize(spaceId);
-    await this.spaceService.updatePartial(spaceId, {storageUsage: storageUsage});
+    const storageUsage = await this.projectDocumentService.getSpaceCloudStorageSize(spaceId);
+    await this.spaceService.updatePartial(spaceId, {cloudStorageUsage: storageUsage});
   }
 
   public async getCurrentSpaceStorageUsageDetail(): Promise<CnProjectStorageUsageDTO> {

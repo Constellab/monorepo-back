@@ -118,11 +118,11 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
   }
 
   public updateStorageLimit(space: CnSpace, storageLimit: number): Promise<CnSpace> {
-    if (space.storageUsage > storageLimit) {
+    if (space.cloudStorageUsage > storageLimit) {
       throw new BlBadRequestException('The storage limit must be greater than the current storage usage');
     }
 
-    space.storageLimit = storageLimit;
+    space.cloudStorageLimit = storageLimit;
     return this.update(space);
   }
 }

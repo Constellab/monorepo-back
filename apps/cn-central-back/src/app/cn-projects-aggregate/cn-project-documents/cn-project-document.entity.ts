@@ -1,6 +1,6 @@
 import {Column, Entity, ManyToOne, Unique} from 'typeorm';
 import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
-import {BlNotUpdatable} from '@monorepo/back-core-lib';
+import {BlBucketType, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {Type} from 'class-transformer';
 import {CnProject} from '../cn-projects/cn-project.entity';
 
@@ -37,7 +37,7 @@ export class CnProjectDocument extends CnBaseEntity {
   @Column({nullable: false})
   filename: string;
 
-  @Column({nullable: false})
+  @Column({nullable: false, type: 'bigint'})
   size: number;
 
   @Column({nullable: false})
@@ -69,6 +69,11 @@ export class CnProjectDocument extends CnBaseEntity {
 
   @Column({nullable: false, default: false})
   inTrash: boolean;
+
+  @Column({
+    type: 'enum', enum: BlBucketType, nullable: false,
+  })
+  bucketType: BlBucketType;
 
   getTypePrefix(): string {
     switch (this.type) {

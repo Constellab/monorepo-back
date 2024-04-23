@@ -38,11 +38,11 @@ export class CnSpace extends CnBaseEntity {
 
   @Exclude({toPlainOnly: true})
   @Column({default: 0, type: 'bigint'})
-  storageLimit: number;
+  cloudStorageLimit: number;
 
   @Exclude({toPlainOnly: true})
   @Column({default: 0, type: 'bigint'})
-  storageUsage: number;
+  cloudStorageUsage: number;
 
   @Column({type: 'enum', enum: CnSpaceType, nullable: false, update: false})
   type: CnSpaceType;
@@ -76,6 +76,6 @@ export class CnSpace extends CnBaseEntity {
   }
 
   public hasEnoughStorageForNewFile(fileSize: number): boolean {
-    return this.storageUsage + fileSize <= this.storageLimit;
+    return this.cloudStorageUsage + fileSize <= this.cloudStorageLimit;
   }
 }

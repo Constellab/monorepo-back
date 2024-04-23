@@ -93,6 +93,7 @@ function typeOrmConfig(
     autoLoadEntities: true,
     maxQueryExecutionTime: 1000, // log query longer than 1s,
     logger: persistenceEventService,
+    bigNumberStrings: false,
   };
 }
 

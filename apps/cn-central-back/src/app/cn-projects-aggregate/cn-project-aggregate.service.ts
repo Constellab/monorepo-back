@@ -82,6 +82,10 @@ export class CnProjectAggregateService {
 
       if (projectDto.backupStorage) {
         entity.backupStorage = await this.projectBucketService.getBucketById(projectDto.backupStorage.bucketId);
+
+        if(entity.mainStorage.bucketType !== entity.backupStorage.bucketType) {
+          throw new BlBadRequestException("Main and backup storage must have the same type (cloud or lab)");
+        }
       }
       const dbProject = await this.projectService.create(entity, manager);
 

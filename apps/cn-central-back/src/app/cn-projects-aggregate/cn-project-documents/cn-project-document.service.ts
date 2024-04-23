@@ -2,6 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {
   BlAbstractService,
   BlBadRequestException,
+  BlBucketType,
   BlFile,
   BlFileHelper,
   BlImageHelper,
@@ -360,10 +361,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   }
 
   private documentsToAggregateDTO(documents: CnProjectDocument[]): CnProjectStorageUsageDTO {
-    const totalSize = documents.reduce((acc, doc) => acc + doc.size, 0);
-    const totalDocuments = documents.length;
-
-    const aggregationDTO: CnProjectStorageUsageDTO = new CnProjectStorageUsageDTO(totalSize, totalDocuments);
+    const aggregationDTO: CnProjectStorageUsageDTO = new CnProjectStorageUsageDTO();
 
     const mappings: Record<CnProjectDocumentType, CnProjectDocumentStorageType> = {
       [CnProjectDocumentType.UPLOADED_DOCUMENT]: CnProjectDocumentStorageType.UPLOADED_DOCUMENT,
@@ -377,22 +375,21 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
     for (const doc of documents) {
       const type = mappings[doc.type];
-      const detail = aggregationDTO.details[type];
-      detail.totalSize += doc.size;
-      detail.totalDocuments++;
+      aggregationDTO.addDocumentSize(type, doc.size, doc.bucketType);
     }
 
     return aggregationDTO;
   }
 
-  public async getSpaceStorageSize(spaceId: string): Promise<number> {
+  public async getSpaceCloudStorageSize(spaceId: string): Promise<number> {
     // calculate with sql sum query, join project table with document.projectId = project.id
     const result = await this.repository.manager.query(`
       SELECT SUM(size) as totalSize
       FROM project_document
              JOIN project ON project_document.projectId = project.id
       WHERE project.spaceId = ?
-    `, [spaceId]);
+        and project_document.bucketType = ?
+    `, [spaceId, BlBucketType.NORMAL]);
     return result[0].totalSize ?? 0;
   }
 

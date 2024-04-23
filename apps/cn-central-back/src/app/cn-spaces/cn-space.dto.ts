@@ -57,17 +57,17 @@ export class CnSpaceUpdateStorageLocationDTO {
 }
 
 export class CnSpaceStorage {
-  storageLimit: number;
-  storageUsage: number;
+  cloudStorageLimit: number;
+  cloudStorageUsage: number;
 
   defaultProjectStorageLocation: CnBucketLocationDTO;
   defaultBackupProjectStorageLocation ?: CnBucketLocationDTO;
 
-  constructor(storageLimit: number, storageUsage: number,
+  constructor(cloudStorageLimit: number, cloudStorageUsage: number,
               defaultProjectStorageLocation: CnBucketLocationDTO,
               defaultBackupProjectStorageLocation?: CnBucketLocationDTO) {
-    this.storageLimit = storageLimit;
-    this.storageUsage = storageUsage;
+    this.cloudStorageLimit = cloudStorageLimit;
+    this.cloudStorageUsage = cloudStorageUsage;
     this.defaultProjectStorageLocation = defaultProjectStorageLocation;
     this.defaultBackupProjectStorageLocation = defaultBackupProjectStorageLocation;
   }
