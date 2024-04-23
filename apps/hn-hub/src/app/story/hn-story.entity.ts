@@ -4,7 +4,7 @@ import {BlEntityWithId, BlLuxonDateTimeColumn, BlRichText} from '@monorepo/back-
 import {DateTime} from 'luxon';
 import {HnUser} from '../users/hn-user.entity';
 import {ClDateHelper, ClStringHelper} from '@monorepo/core-lib';
-import {HnStoryAuthor} from '../story-author/hn-story-author.entity';
+import {HnStoryCoAuthor} from '../story-author/hn-story-author.entity';
 import {Expose, Type} from 'class-transformer';
 import {HnStoryFile} from '../story-file/hn-story-file.entity';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
@@ -21,7 +21,7 @@ export enum HnStoryCategory {
   ARTICLE = 'ARTICLE'
 }
 
-@Entity('Story')
+@Entity('story')
 export class HnStory extends BlEntityWithId {
   @Column()
   title: string;
@@ -55,8 +55,8 @@ export class HnStory extends BlEntityWithId {
   @BlLuxonDateTimeColumn({nullable: true})
   publishedAt: DateTime;
 
-  @OneToMany(() => HnStoryAuthor, storyAuthor => storyAuthor.story, {nullable: true})
-  storyAuthors: HnStoryAuthor[];
+  @OneToMany(() => HnStoryCoAuthor, storyAuthor => storyAuthor.story, {nullable: true})
+  storyAuthors: HnStoryCoAuthor[];
 
   @BlLuxonDateTimeColumn({nullable: true, update: false})
   createdAt: DateTime;

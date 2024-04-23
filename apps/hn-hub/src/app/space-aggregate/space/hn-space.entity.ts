@@ -13,7 +13,7 @@ export enum HnSpaceType {
   BASIC = 'BASIC',
 }
 
-@Entity('Space')
+@Entity('space')
 export class HnSpace extends BlEntityWithId {
   @Column({nullable: false})
   name: string;

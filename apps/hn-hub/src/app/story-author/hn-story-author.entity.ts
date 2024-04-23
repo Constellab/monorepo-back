@@ -4,8 +4,8 @@ import {HnStory} from '../story/hn-story.entity';
 import {HnUser} from '../users/hn-user.entity';
 
 
-@Entity('StoryAuthor')
-export class HnStoryAuthor extends BlEntityWithId {
+@Entity('story_co_author')
+export class HnStoryCoAuthor extends BlEntityWithId {
 
   @ManyToOne(() => HnStory, story => story.storyAuthors)
   story: HnStory;

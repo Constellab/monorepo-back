@@ -87,7 +87,7 @@ export class HnLiveTaskService {
 
   public async findAllWithFilters(spacesFilter: string[], titleFilter: string, publicSelected: boolean, myLiveTasksSelected: boolean,
                                   personalOnly: boolean, page: number, size: number, user: HnUser = null,
-                                  userSpacesIds: string[] = null): Promise<ClPage<HnLiveTask>> {
+                                  userSpacesIds: string[] = null, coAuthorLiveTasksIds: string[] = null): Promise<ClPage<HnLiveTask>> {
     let where: FindOptionsWhere<HnLiveTask>[];
     const currentUser = user ? user : HnCurrentUserHelper.getCurrentUser();
 
@@ -106,17 +106,29 @@ export class HnLiveTaskService {
           space: {
             id: In(spacesFilter)
           },
-          latestPublishVersion: Not(IsNull())
+          createdBy: {
+            id: currentUser.id
+          }
         },
         {
           space: {
             id: IsNull()
           },
-          latestPublishVersion: Not(IsNull())
-        }, {
           createdBy: {
             id: currentUser.id
           }
+        },
+        {
+          space: {
+            id: In(spacesFilter)
+          },
+          id: In(coAuthorLiveTasksIds)
+        },
+        {
+          space: {
+            id: IsNull()
+          },
+          id: In(coAuthorLiveTasksIds)
         }
       ];
     } else if (publicSelected && !myLiveTasksSelected) {
@@ -135,19 +147,35 @@ export class HnLiveTaskService {
         }
       ];
     } else if (!publicSelected && myLiveTasksSelected) {
-      where = [
-        {
-          space: {
-            id: In(spacesFilter)
+      if (spacesFilter && spacesFilter.length > 0) {
+        where = [
+          {
+            space: {
+              id: In(spacesFilter)
+            },
+            createdBy: {
+              id: currentUser.id
+            }
           },
-          latestPublishVersion: Not(IsNull())
-        },
-        {
-          createdBy: {
-            id: currentUser.id
+          {
+            space: {
+              id: In(spacesFilter)
+            },
+            id: In(coAuthorLiveTasksIds)
           }
-        }
-      ];
+        ];
+      } else {
+        where = [
+          {
+            createdBy: {
+              id: currentUser.id
+            }
+          },
+          {
+            id: In(coAuthorLiveTasksIds)
+          }
+        ];
+      }
     } else if (spacesFilter && spacesFilter.length > 0) {
       where = [
         {

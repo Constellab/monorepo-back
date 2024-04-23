@@ -19,6 +19,10 @@ export class HnLiveTaskCoAuthorService {
     return this.liveTaskCoAuthorRepository.find({where: {liveTask: {id: liveTaskId}}});
   }
 
+  async getLiveTaskCoAuthorsByUserId(userId: string): Promise<HnLiveTaskCoAuthor[]> {
+    return this.liveTaskCoAuthorRepository.find({where: {user: {id: userId}}, relations: ['liveTask']});
+  }
+
   async removeLiveTaskCoAuthor(liveTaskId: string, liveTaskCoAuthorUserId: string): Promise<void> {
     const liveTaskCoAuthor: HnLiveTaskCoAuthor = await this.liveTaskCoAuthorRepository.findOneBy(
       {

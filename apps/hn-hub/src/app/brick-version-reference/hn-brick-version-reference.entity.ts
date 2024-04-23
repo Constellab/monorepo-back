@@ -8,7 +8,7 @@ export enum HnBrickVersionRefState {
 }
 
 @Unique(['brickVersionId', 'referenceId'])
-@Entity('BrickVersionReference')
+@Entity('brick_version_reference')
 export class HnBrickVersionReference extends BlEntityWithId {
 
   @Column({type: 'enum', enum: HnBrickVersionRefState, nullable: false })

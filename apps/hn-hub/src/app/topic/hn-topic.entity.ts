@@ -4,7 +4,7 @@ import {HnStory} from '../story/hn-story.entity';
 
 
 //TODO: Rename to HnStoryTopic
-@Entity('Topic')
+@Entity('topic')
 export class HnTopic extends BlEntityWithId {
   @Column()
   name: string;

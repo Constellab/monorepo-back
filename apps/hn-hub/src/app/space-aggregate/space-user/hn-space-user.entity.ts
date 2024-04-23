@@ -11,7 +11,7 @@ export enum HnSpaceUserRole {
 }
 
 
-@Entity('SpaceUser')
+@Entity('space_user')
 export class HnSpaceUser {
 
   @PrimaryColumn({type: 'varchar', length: 36})

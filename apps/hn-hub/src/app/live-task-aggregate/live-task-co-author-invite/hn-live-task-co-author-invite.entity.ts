@@ -6,7 +6,7 @@ import {HnBaseEntity} from '../../core/model/entities/hn-base.entity';
 
 ;
 
-@Entity('LiveTaskCoAuthorInvite')
+@Entity('live_task_co_author_invite')
 export class HnLiveTaskCoAuthorInvite extends HnBaseEntity {
 
   @Column()

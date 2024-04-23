@@ -2,7 +2,7 @@ import {Entity, ManyToOne, PrimaryColumn} from 'typeorm';
 import {HnLiveTaskVersion} from '../live-task-version/hn-live-task-version.entity';
 import {HnBrickVersion} from '../../brick-aggregate/brick-version/hn-brick-version.entity';
 
-@Entity('LiveTaskVersionBrickDependencies')
+@Entity('live_task_version_brick_dependencies')
 export class HnLiveTaskVersionBrickDependencies {
   @PrimaryColumn({type: 'varchar', length: 36})
   liveTaskVersionId: string;

@@ -83,13 +83,15 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
     const user: CnUser = this.getCurrent();
     user.lang = lang;
-    await this.update(user);
+    const updatedUser = await this.update(user);
+    this.sendUserToTransport(updatedUser);
   }
 
   async updateTheme(theme: ClTheme): Promise<void> {
     const user: CnUser = this.getCurrent();
     user.theme = theme;
-    await this.update(user);
+    const updatedUser = await this.update(user);
+    this.sendUserToTransport(updatedUser);
   }
 
   async uploadCurrentUserPhoto(file: BlFile): Promise<CnUser> {
@@ -101,7 +103,9 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
     user.photo = await this.objectStorageService.uploadObject(
       this.getUserProfilePhotoBucketConfig(), file, {generateRandomObjectName: true});
-    return await this.repository.save(user);
+    const updatedUser =  await this.repository.save(user);
+    this.sendUserToTransport(updatedUser);
+    return updatedUser;
   }
 
   async deleteCurrentPhoto(): Promise<CnUser> {
@@ -109,6 +113,8 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     if (user.photo) {
       await this.objectStorageService.deleteObjectIfExist(this.getUserProfilePhotoBucketConfig(), user.photo);
       user.photo = null;
+      const updatedUser = await this.repository.save(user);
+      this.sendUserToTransport(updatedUser);
       return await this.repository.save(user);
     }
     return user;
@@ -184,7 +190,8 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
       activity: user.activity,
       company: user.company,
       lang: user.lang,
-      biography: user.biography
+      biography: user.biography,
+      photo: user.photo
     };
     this.transportService.emit('user', u);
   }

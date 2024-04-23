@@ -4,7 +4,7 @@ import {HnInviteStatus} from '../../core/model/config/hn-invite-status.enum';
 import {HnBrick} from '../brick/hn-brick.entity';
 import {Expose} from 'class-transformer';
 
-@Entity('BrickUserInvite')
+@Entity('brick_user_invite')
 export class HnBrickUserInvite extends HnBaseEntity{
   @Column()
   email: string;

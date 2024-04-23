@@ -7,7 +7,7 @@ export enum HnIconType {
   COMMUNITY_IMAGE = 'COMMUNITY_IMAGE'
 }
 
-@Entity('Icon')
+@Entity('icon')
 export class HnIcon extends BlEntityWithId{
   @Column({length: 30, name: 'technical_name', unique: true})
   technicalName: string;

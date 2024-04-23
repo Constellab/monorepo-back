@@ -4,8 +4,8 @@ import {Expose} from 'class-transformer';
 import {HnStory} from '../story/hn-story.entity';
 import {HnInviteStatus} from '../core/model/config/hn-invite-status.enum';
 
-@Entity('StoryAuthorInvite')
-export class HnStoryAuthorInvite extends HnBaseEntity {
+@Entity('story_co_author_invite')
+export class HnStoryCoAuthorInvite extends HnBaseEntity {
 
   @Column()
   email: string;

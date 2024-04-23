@@ -2,7 +2,7 @@ import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.enti
 import {Column, Entity, Unique} from 'typeorm';
 
 @Unique(['uniqueName', 'technicalFolder'])
-@Entity('Task')
+@Entity('task')
 export class HnTask extends HnGeneratedDocEntity {
   @Column({name: 'inputSpecs', type: 'simple-json', nullable: true})
   inputSpecs?: Record<string, any>;

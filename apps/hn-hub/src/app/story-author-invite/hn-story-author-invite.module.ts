@@ -2,14 +2,14 @@ import {Module} from '@nestjs/common';
 import {HnStoryAuthorInviteService} from './hn-story-author-invite.service';
 import {HnStoryAuthorInviteController} from './hn-story-author-invite.controller';
 import {TypeOrmModule} from '@nestjs/typeorm';
-import {HnStoryAuthorInvite} from './hn-story-author-invite.entity';
+import {HnStoryCoAuthorInvite} from './hn-story-author-invite.entity';
 import {HnUserService} from '../users/hn-user.service';
 import {HnUserModule} from '../users/hn-user.module';
 import {HnCoreModule} from '../core/hn-core.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([HnStoryAuthorInvite]),
+    TypeOrmModule.forFeature([HnStoryCoAuthorInvite]),
     HnUserModule,
     HnCoreModule,
   ],

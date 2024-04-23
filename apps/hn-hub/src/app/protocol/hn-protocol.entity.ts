@@ -2,7 +2,7 @@ import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.enti
 import {Column, Entity, Unique} from 'typeorm';
 
 @Unique(['uniqueName', 'technicalFolder'])
-@Entity('Protocol')
+@Entity('protocol')
 export class HnProtocol extends HnGeneratedDocEntity {
 
   @Column({name: 'inputSpecs', type: 'simple-json', nullable: true})

@@ -4,7 +4,7 @@ import {HnBaseEntity} from '../../core/model/entities/hn-base.entity';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 
-@Entity('Folder')
+@Entity('folder')
 @Tree('materialized-path')
 export class HnFolder extends HnBaseEntity {
 

@@ -2,7 +2,7 @@ import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.enti
 import {Column, Entity, Unique} from 'typeorm';
 
 @Unique(['uniqueName', 'technicalFolder'])
-@Entity('Resource')
+@Entity('resource')
 export class HnResource extends HnGeneratedDocEntity {
 
   @Column({name: 'methods', type: 'simple-json', nullable: true})

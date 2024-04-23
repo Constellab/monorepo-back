@@ -27,8 +27,8 @@ import {HnTopicDto} from '../topic/hn-topic.dto';
 import {HnTopic} from '../topic/hn-topic.entity';
 import {DateTime} from 'luxon';
 import {HnStoryAuthorService} from '../story-author/hn-story-author.service';
-import {HnStoryAuthor} from '../story-author/hn-story-author.entity';
-import {HnStoryAuthorInvite} from '../story-author-invite/hn-story-author-invite.entity';
+import {HnStoryCoAuthor} from '../story-author/hn-story-author.entity';
+import {HnStoryCoAuthorInvite} from '../story-author-invite/hn-story-author-invite.entity';
 import {HnInviteStatus} from '../core/model/config/hn-invite-status.enum';
 import {HnSiteMapEnumChangefreq, HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
 import {HnFrontService} from '../core/service/hn-front.service';
@@ -66,16 +66,20 @@ export class HnStoryService {
 
   async getStoryTitle(id: string): Promise<string>{
     const story = await this.getStory(id);
-    return story.title;
+    return story?.title;
   }
 
   async getStory(id: string): Promise<HnStory> {
-    return await this.storyRepository.findOne({
+    const story = await this.storyRepository.findOne({
       where: {
         id: id
       },
       relations: ['topics']
     });
+    if (story == null) {
+      throw new BlBadRequestException('Story not found');
+    }
+    return story;
   }
 
   async deleteStory(id: string): Promise<void> {
@@ -97,7 +101,7 @@ export class HnStoryService {
     const storyCoAuthorsInvites = await this.storyAuthorService.getStoryCoAuthorsInvites(storyId);
     for (const storyCoAuthorsInvite of storyCoAuthorsInvites) {
       try {
-        await entityManager.delete(HnStoryAuthorInvite, storyCoAuthorsInvite.id);
+        await entityManager.delete(HnStoryCoAuthorInvite, storyCoAuthorsInvite.id);
       } catch (e){
         throw new BlBadRequestException('Error during the deletion of a story co-author invite');
       }
@@ -109,7 +113,7 @@ export class HnStoryService {
     const storyCoAuthors = await this.storyAuthorService.getStoryCoAuthorsByStoryId(storyId);
     for (const storyCoAuthor of storyCoAuthors) {
       try {
-        await entityManager.delete(HnStoryAuthor, storyCoAuthor.id);
+        await entityManager.delete(HnStoryCoAuthor, storyCoAuthor.id);
       } catch (e){
         throw new BlBadRequestException('Error during the deletion of a story co-author');
       }
@@ -444,14 +448,14 @@ export class HnStoryService {
 
     // True if coAuthor of the story otherwise false
     const storyAuthors = await this.getStoryCoAuthors(id);
-    return storyAuthors?.some((storyAuthor: HnStoryAuthor) => storyAuthor.user.id === HnCurrentUserHelper.getCurrentUser().id);
+    return storyAuthors?.some((storyAuthor: HnStoryCoAuthor) => storyAuthor.user.id === HnCurrentUserHelper.getCurrentUser().id);
   }
 
-  async getStoryCoAuthors(storyId: string): Promise<HnStoryAuthor[]> {
+  async getStoryCoAuthors(storyId: string): Promise<HnStoryCoAuthor[]> {
     return this.storyAuthorService.getStoryCoAuthorsByStoryId(storyId);
   }
 
-  async getStoryCoAuthorsPendingInvites(id: string): Promise<HnStoryAuthorInvite[]> {
+  async getStoryCoAuthorsPendingInvites(id: string): Promise<HnStoryCoAuthorInvite[]> {
     await this.checkAndValidateOwnerOrCoAuthor(id, true);
     return this.storyAuthorService.getStoryCoAuthorsPendingInvites(id);
   }
@@ -469,17 +473,17 @@ export class HnStoryService {
     return this.storyAuthorService.inviteStoryCoAuthor(story, coAuthorMail);
   }
 
-  async isInviteValid(token: string): Promise<HnStoryAuthorInvite> {
-    const storyAuthorInvite: HnStoryAuthorInvite = await this.storyAuthorService.getStoryAuthorInviteByToken(token);
+  async isInviteValid(token: string): Promise<HnStoryCoAuthorInvite> {
+    const storyAuthorInvite: HnStoryCoAuthorInvite = await this.storyAuthorService.getStoryAuthorInviteByToken(token);
     return (storyAuthorInvite && storyAuthorInvite.status === HnInviteStatus.PENDING &&
       storyAuthorInvite.email === HnCurrentUserHelper.getCurrentUser().email) ? storyAuthorInvite : null;
   }
 
   async acceptInvite(token: string): Promise<HnStory> {
-    const storyAuthorInvite: HnStoryAuthorInvite = await this.isInviteValid(token);
+    const storyAuthorInvite: HnStoryCoAuthorInvite = await this.isInviteValid(token);
     if (storyAuthorInvite) {
       const story: HnStory = await this.getStory(storyAuthorInvite.story.id);
-      const storyAuthor: HnStoryAuthor = new HnStoryAuthor();
+      const storyAuthor: HnStoryCoAuthor = new HnStoryCoAuthor();
       storyAuthor.user = HnCurrentUserHelper.getCurrentUser();
       storyAuthor.story = story;
       const acceptStoryInvite: boolean = await this.storyAuthorService.acceptInvite(storyAuthor, storyAuthorInvite);

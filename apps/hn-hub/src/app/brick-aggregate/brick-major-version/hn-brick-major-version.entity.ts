@@ -9,7 +9,7 @@ export enum HnVersionState {
 }
 
 @Unique(['brick', 'major'])
-@Entity('BrickMajorVersion')
+@Entity('brick_major_version')
 export class HnBrickMajorVersion extends HnBaseEntity {
 
   @BlNotUpdatable()

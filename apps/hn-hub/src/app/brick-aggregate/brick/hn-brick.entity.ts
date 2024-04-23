@@ -21,7 +21,7 @@ export class HnBrickFilter {
 }
 
 @Unique(['name'])
-@Entity('Brick')
+@Entity('brick')
 export class HnBrick extends BlEntityWithId {
 
   @BlNotUpdatable()

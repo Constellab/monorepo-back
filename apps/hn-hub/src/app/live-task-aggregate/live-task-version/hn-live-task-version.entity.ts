@@ -21,7 +21,7 @@ export enum HnLiveTaskVersionType{
 }
 
 @Unique(['version', 'liveTask'])
-@Entity('LiveTaskVersion')
+@Entity('live_task_version')
 export class HnLiveTaskVersion extends BlEntityWithId {
 
   @Column({default: 1})

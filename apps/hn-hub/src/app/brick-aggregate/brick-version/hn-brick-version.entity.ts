@@ -33,7 +33,7 @@ export interface HnReferenceDTO {
 }
 
 @Unique(['brickMajorVersion', 'minor', 'patch', 'subPatch'])
-@Entity('BrickVersion')
+@Entity('brick_version')
 export class HnBrickVersion extends HnBaseEntity {
 
   @Column({default: 0})

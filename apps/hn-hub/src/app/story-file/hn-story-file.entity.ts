@@ -2,7 +2,7 @@ import {Column, Entity, ManyToOne} from 'typeorm';
 import {BlEntityWithId} from '@monorepo/back-core-lib';
 import {HnStory} from '../story/hn-story.entity';
 
-@Entity('StoryFile')
+@Entity('story_file')
 export class HnStoryFile extends BlEntityWithId {
 
   @Column()

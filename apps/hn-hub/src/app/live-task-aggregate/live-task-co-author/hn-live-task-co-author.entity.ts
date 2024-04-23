@@ -3,7 +3,7 @@ import {BlEntityWithId} from '@monorepo/back-core-lib';
 import {HnUser} from '../../users/hn-user.entity';
 import {HnLiveTask} from '../live-task/hn-live-task.entity';
 
-@Entity('LiveTaskCoAuthor')
+@Entity('live_task_co_author')
 export class HnLiveTaskCoAuthor extends BlEntityWithId {
 
   @ManyToOne(() => HnLiveTask, liveTask => liveTask.liveTaskCoAuthors)

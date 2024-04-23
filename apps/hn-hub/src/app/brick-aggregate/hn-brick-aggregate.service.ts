@@ -833,6 +833,9 @@ export class HnBrickAggregateService {
 
     let whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>;
 
+    const brickCoAuthor: HnBrickUser[] = await this.brickUserService.getBrickUsersByUser(currentUser);
+    const brickCoAuthorBricksId: string[] = brickCoAuthor.map(bu => bu.brick.id);
+
     if (publicSelected) {
       whereConditions = [
         {
@@ -850,6 +853,18 @@ export class HnBrickAggregateService {
           createdBy: {
             id: currentUser.id
           }
+        },
+        {
+          space: {
+            id: In(spacesFilter)
+          },
+          id: In(brickCoAuthorBricksId)
+        },
+        {
+          space: {
+            id: IsNull()
+          },
+          id: In(brickCoAuthorBricksId)
         }
       ];
     } else if (spacesFilter && spacesFilter.length > 0) {
@@ -861,6 +876,12 @@ export class HnBrickAggregateService {
           createdBy: {
             id: currentUser.id
           }
+        },
+        {
+          space: {
+            id: In(spacesFilter)
+          },
+          id: In(brickCoAuthorBricksId)
         }
       ];
     } else {
@@ -868,6 +889,8 @@ export class HnBrickAggregateService {
         createdBy: {
           id: currentUser.id
         }
+      }, {
+        id: In(brickCoAuthorBricksId)
       }];
     }
 

@@ -162,10 +162,23 @@ export class HnLiveTaskAggregateService {
       else await this.spaceAggregateService.assertCheckSpaceUser(spaceId, currentUser.id);
     }
     let userSpacesIds: string[] = null;
-    if (currentUser)
+    let coAuthorLiveTasksIds: string[] = [];
+    if (currentUser){
       userSpacesIds = (await this.spaceAggregateService.findSpacesOfUser(currentUser?.id)).map(space => space.id);
+      if(myLiveTasksSelected){
+        coAuthorLiveTasksIds = (await this.liveTaskCoAuthorService.getLiveTaskCoAuthorsByUserId(currentUser.id))
+          .map(coAuthor => coAuthor.liveTask.id);
+      }
+    }
+
+    if(publicSelected){
+      spacesFilter = spacesFilter.filter(spaceId => spaceId !== 'public');
+    }
+    if(myLiveTasksSelected){
+      spacesFilter = spacesFilter.filter(spaceId => spaceId !== 'my-live-tasks');
+    }
     return await this.liveTaskService.findAllWithFilters(spacesFilter, titleFilter, publicSelected,
-      myLiveTasksSelected, personalOnly, page, size, user, userSpacesIds);
+      myLiveTasksSelected, personalOnly, page, size, user, userSpacesIds, coAuthorLiveTasksIds);
   }
 
 
@@ -197,15 +210,15 @@ export class HnLiveTaskAggregateService {
       return await this.liveTaskService.findPublicLiveTaskById(id);
 
     const userSpacesId: string[] = (await this.spaceAggregateService.findSpacesOfCurrentUser()).map(space => space.id);
-    const liveTask = await this.liveTaskService.findLiveTaskByIdWithUserSpaces(id, userSpacesId);
-    if (!liveTask)
+    const liveTask =  await this.liveTaskService.findLiveTaskByIdWithUserSpaces(id, userSpacesId);
+    if(!liveTask){
       throw new BlNotFoundException('Live task not found');
-    return liveTask
+    }
+    return liveTask;
   }
 
   public async findLiveTaskTitleById(id: string): Promise<string>{
-    const liveTask = await this.findLiveTaskById(id);
-    return liveTask?.title;
+    return (await this.findLiveTaskById(id))?.title;
   }
 
   public async getBrickDependencies(liveTaskId: string): Promise<HnBrickVersion[]> {
@@ -328,7 +341,8 @@ export class HnLiveTaskAggregateService {
   }
 
   public async updateLiveTaskVersionInfos(liveTaskVersionId: string, versionInfos: Record<string, any>): Promise<HnLiveTaskVersion> {
-    await this.liveTaskService.checkIfCreatorOrCoAuthorAndGetLiveTask((await this.liveTaskVersionService.findOne(liveTaskVersionId)).liveTask.id);
+    await this.liveTaskService.checkIfCreatorOrCoAuthorAndGetLiveTask(
+      (await this.liveTaskVersionService.findOne(liveTaskVersionId)).liveTask.id);
     return this.liveTaskVersionService.updateVersionInfos(liveTaskVersionId, versionInfos);
   }
 

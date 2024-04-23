@@ -2,11 +2,11 @@ import {BlLuxonDateTimeColumn, BlUserCategory} from '@monorepo/back-core-lib';
 import {BeforeInsert, Column, Entity, OneToMany, PrimaryColumn} from 'typeorm';
 import {DateTime} from 'luxon';
 import {ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
-import {HnStoryAuthor} from '../story-author/hn-story-author.entity';
+import {HnStoryCoAuthor} from '../story-author/hn-story-author.entity';
 import {HnBrickUser} from '../brick-aggregate/brick-user/hn-brick-user.entity';
 import {HnLiveTaskCoAuthor} from '../live-task-aggregate/live-task-co-author/hn-live-task-co-author.entity';
 
-@Entity('User')
+@Entity('user')
 export class HnUser {
 
   @PrimaryColumn('uuid')
@@ -36,8 +36,8 @@ export class HnUser {
   @Column({nullable: false, type: 'enum', enum: ClTheme, default: clDefaultTheme})
   theme: ClTheme;
 
-  @OneToMany(() => HnStoryAuthor, storyAuthor => storyAuthor.user, {nullable: true})
-  storyAuthors: HnStoryAuthor[];
+  @OneToMany(() => HnStoryCoAuthor, storyAuthor => storyAuthor.user, {nullable: true})
+  storyAuthors: HnStoryCoAuthor[];
 
   @OneToMany(() => HnLiveTaskCoAuthor, liveTaskCoAuthor => liveTaskCoAuthor.user, {nullable: true, onDelete: 'CASCADE'})
   liveTaskCoAuthors: HnLiveTaskCoAuthor[];

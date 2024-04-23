@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {HnStoryAuthorInvite} from './hn-story-author-invite.entity';
+import {HnStoryCoAuthorInvite} from './hn-story-author-invite.entity';
 import {Repository} from 'typeorm';
 import {HnUserService} from '../users/hn-user.service';
 import {ClStringHelper, ClSupportedLanguage} from '@monorepo/core-lib';
@@ -14,15 +14,15 @@ import {HnFrontService} from '../core/service/hn-front.service';
 @Injectable()
 export class HnStoryAuthorInviteService {
 
-  constructor(@InjectRepository(HnStoryAuthorInvite)
-              private readonly storyAuthorInviteRepository: Repository<HnStoryAuthorInvite>,
+  constructor(@InjectRepository(HnStoryCoAuthorInvite)
+              private readonly storyAuthorInviteRepository: Repository<HnStoryCoAuthorInvite>,
               private readonly userService: HnUserService,
               private readonly frontService: HnFrontService,
               private readonly mailService: BlMailService) {
   }
 
   async createStoryAuthorMail(story: HnStory, coAuthorMail: string): Promise<boolean> {
-    const storyAuthorMail = new HnStoryAuthorInvite();
+    const storyAuthorMail = new HnStoryCoAuthorInvite();
     storyAuthorMail.story = story;
     storyAuthorMail.token = ClStringHelper.generateUUID();
     storyAuthorMail.email = coAuthorMail;
@@ -53,16 +53,16 @@ export class HnStoryAuthorInviteService {
     return this.mailService.sendMail(template, coAuthorMail, lang, data);
   }
 
-  async getStoryAuthorInviteByToken(token: string): Promise<HnStoryAuthorInvite> {
+  async getStoryAuthorInviteByToken(token: string): Promise<HnStoryCoAuthorInvite> {
     return this.storyAuthorInviteRepository.findOneBy({token: token});
   }
 
-  async acceptInvite(storyAuthorInvite: HnStoryAuthorInvite): Promise<boolean> {
+  async acceptInvite(storyAuthorInvite: HnStoryCoAuthorInvite): Promise<boolean> {
     storyAuthorInvite.status = HnInviteStatus.ACCEPTED;
     return (await this.storyAuthorInviteRepository.save(storyAuthorInvite)) != null;
   }
 
-  async getStoryCoAuthorsInvites(storyId: string): Promise<HnStoryAuthorInvite[]> {
+  async getStoryCoAuthorsInvites(storyId: string): Promise<HnStoryCoAuthorInvite[]> {
     return this.storyAuthorInviteRepository.findBy({
       story: {
         id: storyId
@@ -70,7 +70,7 @@ export class HnStoryAuthorInviteService {
     });
   }
 
-  async getStoryCoAuthorsPendingInvites(storyId: string): Promise<HnStoryAuthorInvite[]>{
+  async getStoryCoAuthorsPendingInvites(storyId: string): Promise<HnStoryCoAuthorInvite[]>{
     return this.storyAuthorInviteRepository.findBy({
       story: {
         id: storyId

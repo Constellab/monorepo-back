@@ -1,7 +1,6 @@
 import {Column, Entity, ManyToOne, OneToMany} from 'typeorm';
 import {HnFolder} from '../folder/hn-folder.entity';
 import {HnBaseEntity} from '../../core/model/entities/hn-base.entity';
-import {HnStoryFile} from '../../story-file/hn-story-file.entity';
 import {HnDocumentationFile} from '../documentation-file/hn-documentation-file.entity';
 
 export interface HnDocumentationSearchDTO {
@@ -14,7 +13,7 @@ export interface HnDocumentationSearchDTO {
   isTechnical?: boolean;
 }
 
-@Entity('Documentation')
+@Entity('documentation')
 export class HnDocumentation extends HnBaseEntity {
 
   @Column()

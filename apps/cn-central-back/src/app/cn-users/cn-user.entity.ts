@@ -129,6 +129,7 @@ export interface CnUserTransportDto {
   activity: string;
   company: string;
   biography: string;
+  photo?: string;
 
   spaceUsers?: CnSpaceUser[];
 }

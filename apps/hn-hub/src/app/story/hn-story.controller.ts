@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   ParseIntPipe,
   ParseUUIDPipe,
@@ -31,7 +32,7 @@ import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {HnTopicDto} from '../topic/hn-topic.dto';
 import {HnTopic} from '../topic/hn-topic.entity';
-import {HnStoryAuthorInvite} from '../story-author-invite/hn-story-author-invite.entity';
+import {HnStoryCoAuthorInvite} from '../story-author-invite/hn-story-author-invite.entity';
 import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
 import {HnStoryFile} from '../story-file/hn-story-file.entity';
 import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
@@ -243,7 +244,7 @@ export class HnStoryController {
   }
 
   @Get(':id/co-authors-pending-invites')
-  async getStoryCoAuthorsPendingInvites(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnStoryAuthorInvite[]> {
+  async getStoryCoAuthorsPendingInvites(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnStoryCoAuthorInvite[]> {
     return this.storyService.getStoryCoAuthorsPendingInvites(id);
   }
 
@@ -261,7 +262,7 @@ export class HnStoryController {
    * Is invite valid
    */
   @Get('invite/:token/is-valid')
-  isInviteValid(@Param('token') token: string): Promise<HnStoryAuthorInvite> {
+  isInviteValid(@Param('token') token: string): Promise<HnStoryCoAuthorInvite> {
     return this.storyService.isInviteValid(token);
   }
 

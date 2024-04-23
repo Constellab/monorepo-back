@@ -28,6 +28,17 @@ export class HnBrickUserService {
     }
   }
 
+  async getBrickUsersByUser(user: HnUser): Promise<HnBrickUser[]> {
+    return this.brickUserRepository.find({
+      where: {
+        user: {
+          id: user.id
+        }
+      },
+      relations: ['brick']
+    });
+  }
+
   async getBrickUsers(brick: HnBrick): Promise<HnBrickUser[]> {
     return this.brickUserRepository.find({
       where: {

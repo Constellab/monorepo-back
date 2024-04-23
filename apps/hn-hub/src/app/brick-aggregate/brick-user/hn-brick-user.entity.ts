@@ -4,7 +4,7 @@ import {HnUser} from '../../users/hn-user.entity';
 import {BlEntityWithId} from '@monorepo/back-core-lib';
 
 
-@Entity('BrickUser')
+@Entity('brick_user')
 export class HnBrickUser extends BlEntityWithId {
   @ManyToOne(() => HnBrick, brick => brick.brickUsers)
   brick: HnBrick;

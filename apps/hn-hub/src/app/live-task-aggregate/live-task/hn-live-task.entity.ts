@@ -9,7 +9,7 @@ import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {HnLiveTaskCoAuthor} from '../live-task-co-author/hn-live-task-co-author.entity';
 
-@Entity('LiveTask')
+@Entity('live_task')
 export class HnLiveTask extends BlEntityWithId {
   @Column()
   title: string;
