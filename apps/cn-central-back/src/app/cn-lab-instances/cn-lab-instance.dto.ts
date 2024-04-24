@@ -19,7 +19,6 @@ import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-reg
 import {CnLabInstanceServerTaskStatus, CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 import {DateTime} from 'luxon';
 import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
-import {CnLabBackupFrequency} from './backup/cn-lab-backup.dto';
 
 
 /**
@@ -110,7 +109,7 @@ export class CnLabInstanceUpdateAdminDTO {
   desktopPlatform?: CnLabDesktopPlatform;
 }
 
-export class CnLabInstanceCreateAdminDTO extends CnLabInstanceUpdateAdminDTO{
+export class CnLabInstanceCreateAdminDTO extends CnLabInstanceUpdateAdminDTO {
   @Type(() => CnCloudProviderRegion)
   dailyBackupRegion: CnCloudProviderRegion;
 
@@ -154,20 +153,6 @@ export interface CnRequestLabInstance {
   additionalInfo?: string;
 }
 
-/**
- * Only return the region for the user and not the bucket,
- * the user does not need the bucket name (as it is the same for all the lab instances)
- */
-export class CnLabBackupOptionDTO{
-  frequency1: CnLabBackupFrequency;
-  @Type(() => CnCloudProviderRegion)
-  region1: CnCloudProviderRegion;
-
-  frequency2: CnLabBackupFrequency;
-  @Type(() => CnCloudProviderRegion)
-  region2: CnCloudProviderRegion;
-}
-
 export class CnLabManagerStatus {
   containersStatus: any;
 
@@ -178,7 +163,7 @@ export class CnLabManagerStatus {
   version: string;
   biota: {
     exists: boolean;
-    dbUrl ?: string;
+    dbUrl?: string;
   };
   isConfigured: boolean;
   isInitialized: boolean;

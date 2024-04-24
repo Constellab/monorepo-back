@@ -5,7 +5,6 @@ import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-histor
 import {BlDtoHelper, BlParseEnumPipe, BlParsePipe, BlSearchParams} from '@monorepo/back-core-lib';
 import {ClPageI} from '@monorepo/core-lib';
 import {
-  CnLabBackupOptionDTO,
   CnLabFindOneDto,
   CnLabInstanceAdminDto,
   CnLabInstanceConfigDTO,
@@ -37,6 +36,7 @@ import {CnFreeTrialUpdateDto, CnLabFreeTrialGetDto} from './free-trial/cn-lab-fr
 import {CnLabFreeTrialAggregateService} from './free-trial/cn-lab-free-trial-aggregate.service';
 import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
 import {CnCreateLabContestDto, CnLabContestService} from './cn-lab-contest.service';
+import {CnLabBackupStatusDTO, CnLabCheckBackupSizeDTO} from './backup/cn-lab-backup.dto';
 
 
 @Controller('lab-instances')
@@ -390,9 +390,9 @@ export class CnLabInstancesController {
     await this.aggregateService.syncBackupHistory(id);
   }
 
-  @Get(':id/backup-options')
-  async getBackupOptions(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabBackupOptionDTO> {
-    return await this.aggregateService.getLabBackupOptions(id);
+  @Get(':id/backup/statuses')
+  async getBackupsStatus(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabBackupStatusDTO[]> {
+    return await this.aggregateService.getBackupsStatus(id);
   }
 
   @Get(':id/backup-history')
@@ -400,6 +400,16 @@ export class CnLabInstancesController {
                              @Query('page', ParseIntPipe) page: number,
                              @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnLabBackupHistory>> {
     return this.aggregateService.getLabBackupHistory(id, page, size);
+  }
+
+  @Get(':id/backup/statuses/admin')
+  public getBackupStatusAdmin(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabCheckBackupSizeDTO[]> {
+    return this.aggregateService.getBackupStatusAdmin(id);
+  }
+
+  @Delete(':id/backup')
+  public deleteLabBackup(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return this.aggregateService.deleteLabBackups(id);
   }
 
   /////////////////////////// SERVER //////////////////////////////

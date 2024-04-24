@@ -1,6 +1,9 @@
 import {DateTime} from 'luxon';
 import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {Type} from 'class-transformer';
+import {
+  CnCloudProviderRegion
+} from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 
 export enum CnLabBackupFrequency {
   DAILY = 'DAILY',
@@ -19,7 +22,7 @@ export enum CnLabBackupStatus {
 }
 
 export interface BackupStatusObject {
-  status: CnLabBackupStatus
+  status: CnLabBackupStatus;
   message: string;
 }
 
@@ -48,4 +51,54 @@ export class CnLabBackupBucket {
   frequency: CnLabBackupFrequency;
   triggerMode: CnLabBackupTriggerMode;
   s3Prefix: string;
+}
+
+export class CnLabBackupStatusDTO {
+  frequency: CnLabBackupFrequency;
+
+  /**
+   * Only return the region for the user and not the bucket
+   * the user does not need the bucket name (as it is the same for all the lab instances)
+   */
+  @Type(() => CnCloudProviderRegion)
+  region: CnCloudProviderRegion;
+
+  labVolumeSize: number;
+
+  /**
+   * The status of the backup
+   * SUCCESS: the backup was successful
+   * NONE: no backup was done
+   */
+  status: 'SUCCESS' | 'NONE';
+
+  @ClLuxonDateTimeTransform()
+  lastSuccessBackupAt?: DateTime;
+
+  lastSuccessBackupSize?: number;
+}
+
+
+/**
+ * DTO to verify the size of the backup
+ */
+export class CnLabCheckBackupSizeDTO extends CnLabBackupStatusDTO {
+
+  sizeInBucket: number;
+
+  nbDocumentsInBucket: number;
+
+  public static fromBackupStatusDTO(backupStatusDTO: CnLabBackupStatusDTO,
+                                    sizeInBucket: number, nbDocumentsInBucket: number): CnLabCheckBackupSizeDTO {
+    const dto = new CnLabCheckBackupSizeDTO();
+    dto.frequency = backupStatusDTO.frequency;
+    dto.region = backupStatusDTO.region;
+    dto.labVolumeSize = backupStatusDTO.labVolumeSize;
+    dto.status = backupStatusDTO.status;
+    dto.lastSuccessBackupAt = backupStatusDTO.lastSuccessBackupAt;
+    dto.lastSuccessBackupSize = backupStatusDTO.lastSuccessBackupSize;
+    dto.sizeInBucket = sizeInBucket;
+    dto.nbDocumentsInBucket = nbDocumentsInBucket;
+    return dto;
+  }
 }

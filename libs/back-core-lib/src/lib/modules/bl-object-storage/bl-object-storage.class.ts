@@ -4,3 +4,8 @@ export interface BlObjectStorageSyncResult{
   modifiedObjectsFromSource: string[];
   deletedObjectsFromDestination: string[];
 }
+
+export interface BlObjectStorageObjectsInfo{
+  totalSize: number;
+  nbObjects: number;
+}

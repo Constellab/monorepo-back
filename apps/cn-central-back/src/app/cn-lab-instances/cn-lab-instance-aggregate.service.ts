@@ -20,7 +20,6 @@ import {
 import {CnLabManagerService} from './cn-lab-manager.service';
 import {CnLabInstanceToken} from './user/cn-lab-instance-token.class';
 import {
-  CnLabBackupOptionDTO,
   CnLabFindOneDto,
   CnLabInstanceConfigDTO,
   CnLabInstanceCreateAdminDTO,
@@ -39,8 +38,7 @@ import {
   BlDtoHelper,
   BlExternalApiError,
   BlSearchParams,
-  BlUnauthorizedException,
-  BlVersion
+  BlUnauthorizedException
 } from '@monorepo/back-core-lib';
 import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
 import {CnExternalLabUserService} from '../cn-external-lab-api/cn-external-lab-user.service';
@@ -65,16 +63,15 @@ import {CnLabGreenOption} from './green-option/cn-lab-green-option.entity';
 import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.service';
 import {CnLabGreenOptionFormDto} from './green-option/cn-lab-green-option.dto';
 import {CnAuthService, CnExternalCheckCredentialResponse} from '../cn-auth/cn-auth.service';
-import {CnLabInstanceServerTaskStatus} from './status/cn-lab-instance-status.enum';
+import {CnLabInstanceServerTaskStatus, CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 import {CnLabInstanceStatusService} from './status/cn-lab-instance-status.service';
 import {CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse} from './status/cn-lab-instance-status.dto';
 import {CnLabFreeTrialService} from './free-trial/cn-lab-free-trial.service';
-import {CnLabBackupHistoryService} from './backup/cn-lab-backup-history.service';
-import {CnLabBackupOptionService} from './backup/cn-lab-backup-option.service';
-import {CnLabBackupBucket} from './backup/cn-lab-backup.dto';
+import {CnLabBackupBucket, CnLabBackupStatusDTO} from './backup/cn-lab-backup.dto';
 import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnCloudProviderFactory} from './server/cn-cloud-provider.factory';
+import {CnLabBackupAggregateService} from './backup/cn-lab-backup-aggregate.service';
 
 
 @Injectable()
@@ -104,8 +101,7 @@ export class CnLabInstanceAggregateService {
               private authService: CnAuthService,
               private labStatusService: CnLabInstanceStatusService,
               private freeTrialService: CnLabFreeTrialService,
-              private backupHistoryService: CnLabBackupHistoryService,
-              private backupOptionService: CnLabBackupOptionService) {
+              private backupService: CnLabBackupAggregateService) {
   }
 
   /**
@@ -129,7 +125,7 @@ export class CnLabInstanceAggregateService {
     const labInstanceDb: CnLabInstance = await this.labInstancesService.create(labInstance, entityManager);
 
     if (labInstance.isCloud()) {
-      await this.backupOptionService.createBackupOptions(labInstanceDb,
+      await this.backupService.createBackupOptions(labInstanceDb,
         dailyBackupRegion, weeklyBackupRegion, entityManager);
     }
 
@@ -188,9 +184,10 @@ export class CnLabInstanceAggregateService {
   }
 
   async delete(id: string): Promise<void> {
-    await this.getAndCheckAuthorizationToUpdateAdmin(id);
+    const labInstance = await this.getAndCheckAuthorizationToUpdateAdmin(id);
+
     await this.dataSource.transaction(async entityManager => {
-      await this.backupOptionService.deleteBackupOptions(id, entityManager);
+      await this.backupService.deleteBackupOptions(labInstance, entityManager);
       await this.labInstancesService.deleteById(id, entityManager);
     });
   }
@@ -703,81 +700,47 @@ export class CnLabInstanceAggregateService {
   public async createProdBackup(labId: string): Promise<CnLabBackupHistory[]> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
 
-    await this.checkLabManagerVersionForBackup(labInstance);
-    // get or create the bucket associated with this lab instance
-    const backupInfo = await this.getLabBackupInfo(labInstance);
-
-    const backups = await this.labManagerService.createProdBackup(labInstance, backupInfo);
-
-    return this.backupHistoryService.saveHistories(backups, labInstance);
-  }
-
-  // remove once all lab manager are version 1.3.4 or more
-  private async checkLabManagerVersionForBackup(labInstance: CnLabInstance): Promise<void> {
-    // allow backup only for lab manager version bigger than 1.3.4
-    const labStatus = await this.labManagerService.getLabStatus(labInstance);
-
-    const expectedVersion = BlVersion.fromString('1.3.4');
-    const labManagerVersion = BlVersion.fromString(labStatus.version);
-
-    if (labManagerVersion.isLower(expectedVersion)) {
-      throw new BlBadRequestException(`The lab manager version must be greater or equal than ${expectedVersion.toString()}`);
-    }
-
+    return this.backupService.createProdBackup(labInstance);
   }
 
   public async stopCurrentBackup(labId: string): Promise<CnLabBackupHistory[]> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
-    const backup = await this.labManagerService.stopCurrentBackup(labInstance);
-    return this.backupHistoryService.saveHistories(backup, labInstance);
+    return this.backupService.stopCurrentBackup(labInstance);
   }
 
   public async syncBackupHistory(labId: string): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToFindById(labId);
-    const backups = await this.labManagerService.getBackupHistory(labInstance);
-    await this.backupHistoryService.saveHistories(backups.backups, labInstance);
+    return this.backupService.syncBackupHistory(labInstance);
   }
 
-  private async getLabBackupInfo(labInstance: CnLabInstance): Promise<CnExternalLabBackupInfoDTO> {
-    // get or create the bucket associated with this lab instance
-    const options = await this.backupOptionService.findByLabId(labInstance.id);
-
-    if (options == null) {
-      throw new BlBadRequestException('No backup options found for this lab');
-    }
-
-    return {
-      version: 1,
-      s3Prefix: this.backupOptionService.getBackupS3Prefix(labInstance),
-      backupBuckets: [
-        {
-          backupFrequency: options.frequency1,
-          bucketConfig: options.bucket1.getBucketConfig(),
-        },
-        {
-          backupFrequency: options.frequency2,
-          bucketConfig: options.bucket2.getBucketConfig(),
-        }
-      ],
-    };
-  }
-
-  public async getLabBackupOptions(labInstanceId: string): Promise<CnLabBackupOptionDTO> {
-    await this.getAndCheckAuthorizationToFindById(labInstanceId);
-    const labOptions = await this.backupOptionService.findByLabId(labInstanceId);
-    if (labOptions == null) return null;
-
-    const optionDTO = new CnLabBackupOptionDTO();
-    optionDTO.frequency1 = labOptions.frequency1;
-    optionDTO.region1 = labOptions.bucket1.region;
-    optionDTO.frequency2 = labOptions.frequency2;
-    optionDTO.region2 = labOptions.bucket2.region;
-    return optionDTO;
+  public async getBackupsStatus(labInstanceId: string): Promise<CnLabBackupStatusDTO[]> {
+    const labInstance = await this.getAndCheckAuthorizationToFindById(labInstanceId);
+    return this.backupService.getBackupsStatus(labInstance);
   }
 
   public async getLabBackupHistory(labInstanceId: string, page: number, size: number): Promise<ClPageI<CnLabBackupHistory>> {
     await this.getAndCheckAuthorizationToFindById(labInstanceId);
-    return this.backupHistoryService.getBackupHistory(labInstanceId, page, size);
+    return this.backupService.getBackupHistory(labInstanceId, page, size);
+  }
+
+  public async getBackupStatusAdmin(labInstanceId: string): Promise<any> {
+    const labInstance = await this.getAndCheckAuthorizationToFindById(labInstanceId);
+    // for now this route is only for admin
+    if (!CnCurrentUserHelper.isAdmin()) {
+      throw new BlUnauthorizedException();
+    }
+    return this.backupService.checkBackupsSize(labInstance);
+  }
+
+  public async deleteLabBackups(labInstanceId: string): Promise<void> {
+    const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId);
+
+    if(labInstance.currentStatus.status !== CnLabInstanceStatus.NO_SERVER){
+      throw new BlBadRequestException("The backup can't be deleted as long as the " +
+        "server for the lab exists. Please delete the lab server first.");
+    }
+
+    return this.backupService.deleteLabAllBackups(labInstance);
   }
 
   /////////////////////////// EXTERNAL LAB //////////////////////////////
@@ -827,13 +790,11 @@ export class CnLabInstanceAggregateService {
   /////////////////////////// EXTERNAL LAB MANAGER //////////////////////////////
   public async getCurrentLabInstanceBackupInfo(): Promise<CnExternalLabBackupInfoDTO> {
     const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
-    await this.checkLabManagerVersionForBackup(labInstance);
-    return this.getLabBackupInfo(labInstance);
+    return this.backupService.getBackupInfo(labInstance);
   }
 
   public async saveCurrentLabBackupHistory(backups: CnLabBackupBucket[]): Promise<CnLabBackupHistory[]> {
-    const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
-    return this.backupHistoryService.saveHistories(backups, labInstance);
+    return this.backupService.saveBackupHistory(CnCurrentUserHelper.getAndCheckCurrentLabInstance(), backups);
   }
 
 

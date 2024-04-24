@@ -1,13 +1,14 @@
 import {Injectable} from '@nestjs/common';
 import {BlAbstractService} from '@monorepo/back-core-lib';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import {EntityManager, Repository} from 'typeorm';
 import {CnLabBackupHistory} from './cn-lab-backup-history.entity';
-import {CnLabBackupBucket} from './cn-lab-backup.dto';
+import {CnLabBackupBucket, CnLabBackupFrequency, CnLabBackupStatus} from './cn-lab-backup.dto';
 import {CnLabInstance} from '../cn-lab-instance.entity';
 import {CnBucketsService} from '../../cn-object-storages/cn-buckets/cn-buckets.service';
 import {ClPageI} from '@monorepo/core-lib';
 import {CnBucket} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
+import {FindOptionsWhere} from 'typeorm/find-options/FindOptionsWhere';
 
 
 @Injectable()
@@ -68,5 +69,24 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
       },
       order: {startedAt: 'DESC' as any},
     });
+  }
+
+  public findLastSuccessBackupByType(labInstanceId: string, frequency: CnLabBackupFrequency): Promise<CnLabBackupHistory | null> {
+    return this.repo.findOne({
+      where: {labInstance: {id: labInstanceId}, frequency, status: CnLabBackupStatus.SUCCESS},
+      relations: {
+        bucket: CnBucket.configRelation
+      },
+      order: {startedAt: 'DESC' as any},
+    });
+  }
+
+  public async deleteLabBackupHistoryByBucket(labInstanceId: string,
+                                              bucketId: string,
+                                              entityManager: EntityManager): Promise<void> {
+    await entityManager.delete(CnLabBackupHistory, {
+      labInstance: {id: labInstanceId},
+      bucket: {id: bucketId}
+    } as FindOptionsWhere<CnLabBackupHistory>);
   }
 }

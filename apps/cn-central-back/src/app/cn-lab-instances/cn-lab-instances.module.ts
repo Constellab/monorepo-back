@@ -51,6 +51,7 @@ import {CnLabInstanceListener} from './cn-lab-instance.listener';
 import {CnCloudProviderOutscaleService} from './server/outscale/cn-cloud-provider-outscale.service';
 import {CnLabContestService} from './cn-lab-contest.service';
 import {CnLabFactoryService} from './cn-lab-factory.service';
+import {CnLabBackupAggregateService} from './backup/cn-lab-backup-aggregate.service';
 
 @Module({
   imports: [
@@ -110,6 +111,7 @@ import {CnLabFactoryService} from './cn-lab-factory.service';
     CnLabListener,
     CnLabBackupOptionService,
     CnLabBackupHistoryService,
+    CnLabBackupAggregateService,
     CnLabInstanceListener,
     CnCloudProviderOutscaleService,
     CnLabContestService,

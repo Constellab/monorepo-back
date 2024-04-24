@@ -11,6 +11,7 @@ import {
   HeadObjectCommand,
   HeadObjectCommandOutput,
   ListObjectsCommand,
+  ListObjectsCommandOutput,
   NoSuchKey,
   PutObjectCommand,
   S3Client
@@ -18,7 +19,7 @@ import {
 import {BlFile} from '../../models/bl-file.class';
 import {IncomingMessage} from 'http';
 import {_Object} from '@aws-sdk/client-s3/dist-types/models/models_0';
-import {BlObjectStorageSyncResult} from './bl-object-storage.class';
+import {BlObjectStorageObjectsInfo, BlObjectStorageSyncResult} from './bl-object-storage.class';
 import {BlBadRequestException} from '../../exceptions/bl-bad-request.exception';
 import {BlNotFoundException} from '../../exceptions/bl-not-found.exception';
 
@@ -130,14 +131,44 @@ export class BlObjectStorageService {
 
   }
 
-  public async getObjectsByPrefix(config: BlBucketConfig, prefix: string = '', pageSize: number = 1000): Promise<_Object[]> {
+  //////////////////////////////////////////// GET OBJECT /////////////////////////////////////////
+
+  public async getObjectsByPrefixPaginated(config: BlBucketConfig, prefix: string = '',
+                                           pageSize: number = 1000, startFromKey: string = undefined): Promise<_Object[]> {
     const s3Client = this.getClient(config);
 
     const result = await s3Client.send(new ListObjectsCommand({
       Bucket: config.bucket, Prefix: prefix,
-      MaxKeys: pageSize
+      MaxKeys: pageSize, Marker: startFromKey
     }));
     return result.Contents ?? [];
+  }
+
+  public async getAllObjectsByPrefix(config: BlBucketConfig, prefix: string = ''): Promise<_Object[]> {
+    const s3Client = this.getClient(config);
+
+    const pageSize = 1000;
+    let pageCount = 0;
+    const objects: _Object[] = [];
+    let nextToken: string | undefined = undefined;
+    while (pageCount < 1000){
+      const result: ListObjectsCommandOutput = await s3Client.send(new ListObjectsCommand({
+        Bucket: config.bucket, Prefix: prefix,
+        MaxKeys: pageSize,
+        Marker: nextToken,
+      }));
+      objects.push(...(result.Contents ?? []));
+
+      // stop when the page is not full
+      if(!result.Contents || result.Contents.length < pageSize){
+        break;
+      }
+      // get the last key to start from the next page
+      nextToken = result.Contents[result.Contents.length - 1].Key;
+      pageCount++;
+    }
+
+    return objects;
   }
 
   public getObjectInfo(config: BlBucketConfig, objectName: string): Promise<HeadObjectCommandOutput> {
@@ -171,6 +202,17 @@ export class BlObjectStorageService {
           reject(e);
         });
     });
+  }
+
+  public async getObjectsSizeByPrefix(config: BlBucketConfig, prefix: string = ''): Promise<BlObjectStorageObjectsInfo> {
+    const objects = await this.getAllObjectsByPrefix(config, prefix);
+    const result: BlObjectStorageObjectsInfo = {totalSize: 0, nbObjects: objects.length};
+
+    for (const object of objects) {
+      result.totalSize += object.Size;
+    }
+
+    return result;
   }
 
   //////////////////////////////////////////// DELETE OBJECT /////////////////////////////////////////
@@ -215,7 +257,7 @@ export class BlObjectStorageService {
     const promises: Promise<void>[] = [];
 
     for (const bucketConfig of bucketConfigs) {
-      const objects = await this.getObjectsByPrefix(bucketConfig, prefix);
+      const objects = await this.getAllObjectsByPrefix(bucketConfig, prefix);
       promises.push(this.deleteMultipleObjects(config, objects.map((obj) => obj.Key)));
     }
 
@@ -230,7 +272,7 @@ export class BlObjectStorageService {
       const promises: Promise<void>[] = [];
       let objectTotal = 0;
       for (const bucketConfig of bucketConfigs) {
-        const objects = await this.getObjectsByPrefix(bucketConfig, '', 1000);
+        const objects = await this.getObjectsByPrefixPaginated(bucketConfig, '', 1000);
         if (objects.length === 0) continue;
         objectTotal += objects.length;
         promises.push(this.deleteMultipleObjects(config, objects.map((obj) => obj.Key)));
@@ -317,7 +359,7 @@ export class BlObjectStorageService {
   }
 
   public async bucketIsEmpty(config: BlBucketConfig): Promise<boolean> {
-    const objects = await this.getObjectsByPrefix(config, '', 1);
+    const objects = await this.getObjectsByPrefixPaginated(config, '', 1);
     return objects.length === 0;
   }
 
@@ -334,8 +376,8 @@ export class BlObjectStorageService {
       copiedObjectsFromSource: [], deletedObjectsFromDestination: [],
       modifiedObjectsFromSource: []
     };
-    const sourceObjects = await this.getObjectsByPrefix(source, '');
-    const destinationObjects = await this.getObjectsByPrefix(destination, '');
+    const sourceObjects = await this.getAllObjectsByPrefix(source, '');
+    const destinationObjects = await this.getAllObjectsByPrefix(destination, '');
 
     // add the missing objects on the destination
     for (const sourceObject of sourceObjects) {
