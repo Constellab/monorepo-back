@@ -1,9 +1,8 @@
 import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
 import {CnServerCloud} from './server-cloud/cn-server-cloud.entity';
-import {BlParsePipe, BlSearchParams, BlUserCategory} from '@monorepo/back-core-lib';
+import {BlParsePipe, BlSearchParams} from '@monorepo/back-core-lib';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnServerAggregateService} from './cn-server-aggregate.service';
-import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnServerStandard} from './server-standard/cn-server-standard.entity';
 import {CnServerStandardSaveDTO} from './server-standard/cn-server-standard.dto';
@@ -134,11 +133,4 @@ export class CnServerController {
   deleteStoragePrice(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.aggregateService.deleteStoragePrice(id);
   }
-
-  @CnUserCategories(BlUserCategory.ADMIN)
-  @Post('price/migration')
-  createDefaultPrices(): Promise<void> {
-    return this.aggregateService.createDefaultPrices();
-  }
-
 }

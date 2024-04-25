@@ -151,15 +151,13 @@ export class CnServerPriceService extends BlAbstractService<CnServerPrice> {
     });
   }
 
-  // TODO TO REMOVE
-  public createDefaultPrice(serverStandard: CnServerStandard): Promise<CnServerPrice> {
-    const newServerPrice = new CnServerPrice();
-    newServerPrice.price = 3.14;
-    newServerPrice.startDate = ClDateHelper.getDate('1900-01-01');
-    newServerPrice.serverStandard = serverStandard;
 
-    return this.create(newServerPrice);
+  public async deleteByServerStandard(serverStandardId: string, entityManager: EntityManager): Promise<void> {
+    await entityManager.delete(CnServerPrice, {
+      serverStandard: {
+        id: serverStandardId
+      }
+    });
   }
-
 
 }

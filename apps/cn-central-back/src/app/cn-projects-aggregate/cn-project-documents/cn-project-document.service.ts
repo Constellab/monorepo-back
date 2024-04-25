@@ -355,41 +355,6 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     return this.documentsToAggregateDTO(documents);
   }
 
-  public async getSpaceStorageSize(spaceId: string): Promise<number> {
-    // calculate with sql sum query, join project table with document.projectId = project.id
-    const result = await this.repository.manager.query(`
-      SELECT SUM(size) as totalSize
-      FROM project_document
-             JOIN project ON project_document.projectId = project.id
-      WHERE project.spaceId = ?
-    `, [spaceId]);
-    return result[0].totalSize ?? 0;
-  }
-
-  public checkIfStorageIsFull(documentSize: number): void {
-    const space = CnCurrentUserHelper.getCurrentSpace();
-    if (!space.hasEnoughStorageForNewFile(documentSize)) {
-      if (documentSize === 0) {
-        throw new BlBadRequestException('Space storage is full, please contact your space administrator to increase the storage limit, delete some documents or empty the trash.');
-      } else {
-        throw new BlBadRequestException('There is not enough remaining free storage in your space to upload this document. Please contact your space administrator to increase the storage limit, delete some documents or empty the trash.');
-      }
-    }
-  }
-
-  ////////////////////////////////////////////// OTHERS /////////////////////////////////////////////
-
-  private emitEvent(eventType: CnProjectDocumentEventType, document: CnProjectDocument): void {
-    const event: CnProjectDocumentEvent = {
-      type: eventType,
-      entity: document,
-      spaceId: CnCurrentUserHelper.getCurrentSpace().id
-    };
-    this.eventEmitter.emit(cnProjectDocumentEventName, event);
-  }
-
-  ////////////////////////////////////////////// MIGRATION /////////////////////////////////////////////
-
 
   public async getStorageSizeDetailBySpace(spaceId: string): Promise<CnProjectStorageUsageDTO> {
     const documents = await this.repository.findBy({project: {spaceId: spaceId}});

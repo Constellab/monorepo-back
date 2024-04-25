@@ -62,7 +62,17 @@ export class CnServerAggregateService {
 
   public async deleteServerStandard(id: string): Promise<void> {
     await this.checkAuthorizationToModifyEntity();
-    await this.serverStandardService.deleteById(id);
+
+    // check if a server uses this standard
+    const serversCloud = await this.serversCloudService.findByServerStandardId(id);
+    if (serversCloud.length > 0) {
+      throw new Error('Cannot delete this server standard because it is used by cloud servers.');
+    }
+
+    await this.datasource.transaction(async (manager) => {
+      await this.serverPriceService.deleteByServerStandard(id, manager);
+      await this.serverStandardService.deleteById(id, manager);
+    });
   }
 
   public async findAllServerStandard(page: number, size: number): Promise<ClPage<CnServerStandard>> {
@@ -161,17 +171,6 @@ export class CnServerAggregateService {
   public async deleteStoragePrice(priceId: string): Promise<void> {
     await this.checkAuthorizationToModifyEntity();
     await this.storagePriceService.deletePrice(priceId);
-  }
-
-
-  // TODO Migration
-  public async createDefaultPrices(): Promise<void> {
-    await this.checkAuthorizationToModifyEntity();
-    const servers = await this.serverStandardService.findAll(0, 1000);
-
-    for (const serverCloud of servers.objects) {
-      await this.serverPriceService.createDefaultPrice(serverCloud);
-    }
   }
 
   ////////////////////////////// AUTHORIZATION //////////////////////////////
