@@ -9,9 +9,8 @@ import {randomBytes} from 'crypto';
 import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
 import {CnLabInstanceUser} from './user/cn-lab-instance-user.entity';
-import {BlBadRequestException, BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
+import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {CnCloudProviderName} from '../cn-cloud-providers/cn-cloud-provider.entity';
 import {DateTime} from 'luxon';
 
 export enum CnLabInstanceType {
@@ -302,16 +301,9 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   /**
    * return true if the lab is on a constellab standard domain
    */
-  public isConstellabDomain(): boolean{
-    if(this.isDesktop()) return false;
-    return CnLabInstance.SUPPORTED_MAIN_DOMAINS.includes(this.getMainDomain())
-  }
-
-  public getCloudProviderName(): CnCloudProviderName {
-    if (!this.isCloud()) {
-      throw new BlBadRequestException('Cannot get cloud provider name for none cloud lab');
-    }
-    return this.serverCloud.cloudProvider.name;
+  public isConstellabDomain(): boolean {
+    if (this.isDesktop()) return false;
+    return CnLabInstance.SUPPORTED_MAIN_DOMAINS.includes(this.getMainDomain());
   }
 
   public serverIsBusy(): boolean {

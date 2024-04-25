@@ -27,7 +27,7 @@ export class CnLabConfigurerService {
   public async configureServer(labInstance: CnLabInstance): Promise<CnLabInstance> {
     try {
 
-      const sshService = this.cloudProviderFactory.getSshLabService(labInstance);
+      const sshService = await this.cloudProviderFactory.getSshLabService(labInstance);
 
       // get Dockerlab repository
       await this.refreshDockerlabRepo(sshService, labInstance.id);
@@ -59,7 +59,7 @@ export class CnLabConfigurerService {
 
   // pull the dockerlab repo and update the lab instance status
   public async updateDockerlabRepo(labInstance: CnLabInstance): Promise<void> {
-    const sshService = this.cloudProviderFactory.getSshLabService(labInstance);
+    const sshService = await this.cloudProviderFactory.getSshLabService(labInstance);
 
     try {
       await this.refreshDockerlabRepo(sshService, labInstance.id);
@@ -99,7 +99,7 @@ export class CnLabConfigurerService {
     await this.labInstanceService.updateServerTask(labInstance.id, `Mounting volume`, CnLabInstanceServerTaskStatus.RUNNING);
 
     try {
-      const cloudProvider = this.cloudProviderFactory.getCloudProviderService(labInstance.getCloudProviderName());
+      const cloudProvider = await this.cloudProviderFactory.getCloudProviderServiceFromLab(labInstance.id);
       await cloudProvider.mountVolume(labInstance);
     } catch (e) {
       throw new Error(`Error while mounting volume. Error : ${e}`);
@@ -159,7 +159,7 @@ export class CnLabConfigurerService {
   }
 
   public async updateLabManager(labInstance: CnLabInstance, labManagerVersion: string): Promise<void> {
-    const labSshService = this.cloudProviderFactory.getSshLabService(labInstance);
+    const labSshService = await this.cloudProviderFactory.getSshLabService(labInstance);
 
     await this.labInstanceService.updateServerTask(labInstance.id, `Updating lab manager to version ${labManagerVersion}`,
       CnLabInstanceServerTaskStatus.RUNNING);

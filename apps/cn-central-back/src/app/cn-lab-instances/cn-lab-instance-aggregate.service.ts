@@ -164,9 +164,8 @@ export class CnLabInstanceAggregateService {
       return labInstanceDb;
     });
 
-    // TODO UNCOMMENT
     // init the server asynchronously
-    // await this.initServer(labInstance.id);
+    await this.initServer(labInstance.id);
 
     return labInstanceDb;
   }
@@ -819,9 +818,9 @@ export class CnLabInstanceAggregateService {
   public async deleteLabBackups(labInstanceId: string): Promise<void> {
     const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId);
 
-    if(labInstance.currentStatus.status !== CnLabInstanceStatus.NO_SERVER){
-      throw new BlBadRequestException("The backup can't be deleted as long as the " +
-        "server for the lab exists. Please delete the lab server first.");
+    if (labInstance.currentStatus.status !== CnLabInstanceStatus.NO_SERVER) {
+      throw new BlBadRequestException('The backup can\'t be deleted as long as the ' +
+        'server for the lab exists. Please delete the lab server first.');
     }
 
     return this.backupService.deleteLabAllBackups(labInstance);
@@ -897,7 +896,7 @@ export class CnLabInstanceAggregateService {
     // call the init async (return the server response immediately)
     this.initServerAsync(labInstance).catch(
       // if an error occurred we just refresh the lab status
-      (error: Error) => this.onError(labInstance.id, `Error during server initialization : ${error.message}`)
+      (error: Error) => this.onError(labInstance.id, `Error during server initialization : ${error.message}`, error)
     );
 
     return this.getStatus(labInstance);
@@ -909,7 +908,7 @@ export class CnLabInstanceAggregateService {
 
     // wait for the DNS to be ready
     // wait for 2 consecutive success because DNS propagation can take some time
-    const labSshService = this.cloudProviderFactory.getSshLabService(labInstance);
+    const labSshService = await this.cloudProviderFactory.getSshLabService(labInstance);
     await labSshService.waitForSshConnection(2);
 
     await this.configureServerAsync(labInstance, false);
@@ -925,7 +924,7 @@ export class CnLabInstanceAggregateService {
     // call the init async (return the server response immediately)
     this.createServerAsync(labInstance, true).catch(
       // if an error occurred we just refresh the lab status
-      (error: Error) => this.onError(labInstance.id, `Error during server creation: ${error.message}`)
+      (error: Error) => this.onError(labInstance.id, `Error during server creation: ${error.message}`, error)
     );
 
     return this.getStatus(labInstance);
@@ -945,7 +944,7 @@ export class CnLabInstanceAggregateService {
   public async configureServer(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
     let labInstance = await this.getAndCheckServerStatusBeforeAction(labInstanceId);
 
-    const labSshService = this.cloudProviderFactory.getSshLabService(labInstance);
+    const labSshService = await this.cloudProviderFactory.getSshLabService(labInstance);
     const sshTest = await labSshService.checkSshConnection();
     if (!sshTest) {
       throw new BlBadRequestException(`SSH connection to ${labInstance.virtualHost} failed`);
@@ -956,7 +955,7 @@ export class CnLabInstanceAggregateService {
     // call the init async (return the server response immediately)
     this.configureServerAsync(labInstance, true).catch(
       // if an error occurred we just refresh the lab status
-      (error: Error) => this.onError(labInstance.id, `Error during server configuration: ${error.message}`)
+      (error: Error) => this.onError(labInstance.id, `Error during server configuration: ${error.message}`, error)
     );
 
     return this.getStatus(labInstance);
@@ -988,11 +987,16 @@ export class CnLabInstanceAggregateService {
     return this.labInstancesService.updateServerTask(labInstanceId, text, CnLabInstanceServerTaskStatus.SUCCESS);
   }
 
-  private async onError(labInstanceId: string, message: string): Promise<void> {
+  private async onError(labInstanceId: string, message: string, error: Error): Promise<void> {
     this.logger.error(message);
     await this.labInstancesService.updateServerTask(labInstanceId, message, CnLabInstanceServerTaskStatus.ERROR)
       .catch(err => this.logger.error(err));
     this.refreshLabStatus(labInstanceId).catch(err => this.logger.error(err));
+
+    // log stack trace of error
+    if (error.stack) {
+      this.logger.error(error.stack);
+    }
   }
 
   public async deleteServerInstance(labInstanceId: string): Promise<void> {

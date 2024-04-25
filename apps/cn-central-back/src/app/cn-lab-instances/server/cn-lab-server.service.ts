@@ -33,7 +33,7 @@ export class CnLabServerService {
   }
 
   public async getCompleteInfo(labInstance: CnLabInstance): Promise<CnCpCompleteInfo> {
-    const cloudProviderService = this.cloudProviderFactory.getCloudProviderService(labInstance.getCloudProviderName());
+    const cloudProviderService = await this.cloudProviderFactory.getCloudProviderServiceFromLab(labInstance.id);
 
     const info: CnCpCompleteInfo = {
       instance: null,
@@ -72,7 +72,8 @@ export class CnLabServerService {
    */
   public async initInstance(labInstance: CnLabInstance): Promise<CnLabInstance> {
 
-    const cloudProviderName = labInstance.getCloudProviderName();
+    const serverCloud = await this.labInstanceService.getLabServerCloud(labInstance.id);
+    const cloudProviderName = serverCloud.cloudProvider.name;
     const cloudProviderService = this.cloudProviderFactory.getCloudProviderService(cloudProviderName);
 
     let serverInstance: CnCpInstance;
@@ -117,7 +118,6 @@ export class CnLabServerService {
       this.logger.log(`Waiting for instance ${serverInstance.id} and volume ${volume.id} to be ready for lab ${labInstance.id} in cloud provider ${cloudProviderName}. Count: ${count}`);
       await new Promise(r => setTimeout(r, 30000));
 
-      const cloudProviderService = this.cloudProviderFactory.getCloudProviderService(cloudProviderName);
       // refresh lab instance if needed
       if (serverInstance.status !== 'RUNNING') {
         serverInstance = await cloudProviderService.getInstance(serverInstance.id);
@@ -165,7 +165,7 @@ export class CnLabServerService {
 
     const labServer = await this.labInstanceService.getLabServerCloud(labInstance.id);
 
-    if(!labServer) {
+    if (!labServer) {
       throw new BlBadRequestException(`Server cloud not found for lab ${labInstance.id}`);
     }
 
@@ -250,7 +250,7 @@ export class CnLabServerService {
 
 
   public async deleteLabInstanceServerAndVolume(labInstance: CnLabInstance): Promise<void> {
-    const cloudProviderService = this.cloudProviderFactory.getCloudProviderService(labInstance.getCloudProviderName());
+    const cloudProviderService = await this.cloudProviderFactory.getCloudProviderServiceFromLab(labInstance.id);
 
     if (labInstance.serverInstanceId) {
       this.logger.log(`Deleting server instance ${labInstance.serverInstanceId} for lab ${labInstance.id}`);
@@ -295,7 +295,7 @@ export class CnLabServerService {
       throw new BlBadRequestException(`Lab has no server instance was it correctly initialized?`);
     }
 
-    const cloudProviderService = this.cloudProviderFactory.getCloudProviderService(labInstance.getCloudProviderName());
+    const cloudProviderService = await this.cloudProviderFactory.getCloudProviderServiceFromLab(labInstance.id);
 
     const serverInstance = await cloudProviderService.getInstance(labInstance.serverInstanceId);
 
@@ -316,7 +316,7 @@ export class CnLabServerService {
       throw new BlBadRequestException(`Lab has no server instance was it correctly initialized?`);
     }
 
-    const cloudProviderService = this.cloudProviderFactory.getCloudProviderService(labInstance.getCloudProviderName());
+    const cloudProviderService = await this.cloudProviderFactory.getCloudProviderServiceFromLab(labInstance.id);
 
     const serverInstance = await cloudProviderService.getInstance(labInstance.serverInstanceId);
 
@@ -364,7 +364,7 @@ export class CnLabServerService {
   }
 
   public async getLabServerStatus(labInstance: CnLabInstance): Promise<CnCpInstanceStatus> {
-    const cloudProviderService = this.cloudProviderFactory.getCloudProviderService(labInstance.getCloudProviderName());
+    const cloudProviderService = await this.cloudProviderFactory.getCloudProviderServiceFromLab(labInstance.id);
     const serverInstance = await cloudProviderService.getInstance(labInstance.serverInstanceId);
     return serverInstance.status;
   }
