@@ -1,5 +1,11 @@
 import {Injectable, Logger} from '@nestjs/common';
-import {CnLabInstance, CnLabInstanceType} from './cn-lab-instance.entity';
+import {
+  CnLabDomain,
+  CnLabInstance,
+  CnLabInstanceBillingMode,
+  CnLabInstanceType,
+  CnLabInstanceVolumeType
+} from './cn-lab-instance.entity';
 import {CnLabInstancesService} from './cn-lab-instances.service';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
@@ -8,7 +14,7 @@ import {
   CnExternalLabUser,
   CnExternalLabUserRole
 } from '../cn-external-lab-api/model/cn-external-lab-api.class';
-import {ClPage, ClPageI} from '@monorepo/core-lib';
+import {ClPage, ClPageI, ClStringHelper} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {
   CnLabComposeRestartOptions,
@@ -20,6 +26,7 @@ import {
 import {CnLabManagerService} from './cn-lab-manager.service';
 import {CnLabInstanceToken} from './user/cn-lab-instance-token.class';
 import {
+  CnLabCloudCreateDTO,
   CnLabFindOneDto,
   CnLabInstanceConfigDTO,
   CnLabInstanceCreateAdminDTO,
@@ -28,6 +35,7 @@ import {
   CnLabInstanceStartDTO,
   CnLabInstanceStatusDTO,
   CnLabInstanceUpdateAdminDTO,
+  CnLabServerInfoDTO,
   CnRequestLabInstance
 } from './cn-lab-instance.dto';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
@@ -71,6 +79,9 @@ import {CnLabBackupBucket, CnLabBackupStatusDTO} from './backup/cn-lab-backup.dt
 import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnCloudProviderFactory} from './server/cn-cloud-provider.factory';
+import {CnServerPriceService} from '../cn-servers-info/server-price/cn-server-price.service';
+import {CnServerPrices} from '../cn-servers-info/server-price/cn-server-price.dto';
+import {CnLabConfigDto} from '../cn-lab-configs/cn-lab-config.dto';
 import {CnLabBackupAggregateService} from './backup/cn-lab-backup-aggregate.service';
 
 
@@ -101,7 +112,8 @@ export class CnLabInstanceAggregateService {
               private authService: CnAuthService,
               private labStatusService: CnLabInstanceStatusService,
               private freeTrialService: CnLabFreeTrialService,
-              private backupService: CnLabBackupAggregateService) {
+              private backupService: CnLabBackupAggregateService,
+              private serverPriceService: CnServerPriceService) {
   }
 
   /**
@@ -116,6 +128,47 @@ export class CnLabInstanceAggregateService {
     return this.dataSource.transaction(async entityManager => {
       return this.createLabNotSecure(labInstance, createLabInstance.dailyBackupRegion, createLabInstance.weeklyBackupRegion, entityManager);
     });
+  }
+
+  /**
+   * Route accessible by users to create a cloud lab instance
+   * @param cloudCreateDTO
+   */
+  public async createCloudLab(cloudCreateDTO: CnLabCloudCreateDTO): Promise<CnLabInstance> {
+    const labInstance = new CnLabInstance();
+    labInstance.name = cloudCreateDTO.name;
+    labInstance.type = CnLabInstanceType.CLOUD;
+    labInstance.serverCloud = cloudCreateDTO.serverCloud;
+    labInstance.region = cloudCreateDTO.region;
+    labInstance.billingMode = CnLabInstanceBillingMode.HOURLY;
+    labInstance.volumeSize = cloudCreateDTO.volumeSize;
+    labInstance.volumeType = CnLabInstanceVolumeType.HIGH_SPEED;
+    labInstance.isFreeTrial = false;
+    labInstance.space = CnCurrentUserHelper.getCurrentSpace();
+    labInstance.virtualHost = ClStringHelper.generateUUID() + '.' + CnLabDomain.CONSTELLAB_APP;
+
+    // handle lab config
+    const configDto: CnLabConfigDto = {
+      version: 1,
+      brick_versions: cloudCreateDTO.labConfig.brickVersions
+    };
+    labInstance.labConfig = await this.labConfigService.getOrCreateLabConfig(configDto);
+
+    const labInstanceDb = await this.dataSource.transaction(async entityManager => {
+      const labInstanceDb = await this.createLabNotSecure(labInstance, cloudCreateDTO.dailyBackupRegion,
+        cloudCreateDTO.weeklyBackupRegion, entityManager);
+
+      await this.labInstanceUserService.createLabInstanceUser(labInstance, CnCurrentUserHelper.getAndCheckCurrentUser(),
+        CnLabInstanceUserRole.OWNER, entityManager);
+
+      return labInstanceDb;
+    });
+
+    // TODO UNCOMMENT
+    // init the server asynchronously
+    // await this.initServer(labInstance.id);
+
+    return labInstanceDb;
   }
 
   public async createLabNotSecure(labInstance: CnLabInstance,
@@ -278,6 +331,28 @@ export class CnLabInstanceAggregateService {
     return this.labInstancesService.update(labInstance);
   }
 
+  public async getLabServerInfo(labInstanceId: string): Promise<CnLabServerInfoDTO> {
+    const lab = await this.getAndCheckAuthorizationToFindById(labInstanceId);
+    if (!lab.isCloud()) {
+      throw new BlBadRequestException('The lab is not on a cloud server');
+    }
+
+    const fullLab = await this.labInstancesService.findByIdAndCheck(labInstanceId,
+      {serverCloud: true});
+
+    const serverInfo = new CnLabServerInfoDTO();
+    serverInfo.name = fullLab.serverCloud.serverStandard.name;
+    serverInfo.cloudProvider = fullLab.serverCloud.cloudProvider;
+    serverInfo.cpuType = fullLab.serverCloud.cpuType;
+    serverInfo.cpuCount = fullLab.serverCloud.cpuCount;
+    serverInfo.gpuType = fullLab.serverCloud.gpuType;
+    serverInfo.gpuCount = fullLab.serverCloud.gpuCount;
+    serverInfo.ram = fullLab.serverCloud.ram;
+    serverInfo.volumeSize = fullLab.volumeSize;
+    serverInfo.volumeType = fullLab.volumeType;
+    return serverInfo;
+  }
+
   /////////////////////////////////////// STATUS  //////////////////////////////////
 
   public async getLabStatus(id: string): Promise<CnLabInstanceStatusDTO> {
@@ -367,7 +442,16 @@ export class CnLabInstanceAggregateService {
     // if the lab is running
     const healthCheck = await this.externalLabApiService.healthCheck(labInstance.getGlabSpaceApiInfo());
     if (healthCheck) {
-      return await this.labInstancesService.markInstanceAsLabRunning(labInstanceId);
+      const labWasRunning = await this.labInstancesService.labHasBeenRunning(labInstanceId);
+
+      const lab = await this.labInstancesService.markInstanceAsLabRunning(labInstanceId);
+
+      // if this is the first start of the lab, email the user
+      if (!labWasRunning) {
+        await this.labMailService.sendLabStartedMail(lab);
+      }
+
+      return lab;
     }
 
     // if the lab manager is running, mark the lab as configured
@@ -800,7 +884,7 @@ export class CnLabInstanceAggregateService {
 
   /////////////////////////// SERVER //////////////////////////////
 
-  public async getServerInfo(labInstanceId: string): Promise<CnCpCompleteInfo> {
+  public async getServerCompleteInfo(labInstanceId: string): Promise<CnCpCompleteInfo> {
     const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId);
     return this.labServerService.getCompleteInfo(labInstance);
   }
@@ -999,7 +1083,14 @@ export class CnLabInstanceAggregateService {
   public async getLabInstanceRunningKpis(labInstanceId: string, request: CnLabInstanceStatusRunRequest):
     Promise<CnLabInstanceStatusRunResponse> {
     const labInstance = await this.getAndCheckAuthorizationToFindById(labInstanceId);
-    return this.labStatusService.getLabInstanceRunningKpis(labInstance.id, request);
+
+    let serverPrices: CnServerPrices;
+
+    if (labInstance.isCloud() && labInstance.billingMode === CnLabInstanceBillingMode.HOURLY) {
+      const labServerStandard = await this.labInstancesService.getLabServerStandard(labInstance.id);
+      serverPrices = await this.serverPriceService.getServerAllPrices(labServerStandard.id, 'ASC');
+    }
+    return this.labStatusService.getLabInstanceRunningKpisWithBilling(labInstance.id, request, serverPrices);
   }
 
   ////////////////////////// DESKTOP //////////////////////////////

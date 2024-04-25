@@ -5,6 +5,7 @@ import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-histor
 import {BlDtoHelper, BlParseEnumPipe, BlParsePipe, BlSearchParams} from '@monorepo/back-core-lib';
 import {ClPageI} from '@monorepo/core-lib';
 import {
+  CnLabCloudCreateDTO,
   CnLabFindOneDto,
   CnLabInstanceAdminDto,
   CnLabInstanceConfigDTO,
@@ -14,6 +15,7 @@ import {
   CnLabInstanceDto,
   CnLabInstanceStatusDTO,
   CnLabInstanceUpdateAdminDTO,
+  CnLabServerInfoDTO,
   CnRequestLabInstance,
 } from './cn-lab-instance.dto';
 import {
@@ -53,6 +55,13 @@ export class CnLabInstancesController {
     Promise<CnLabInstanceAdminDto> {
     const labInstance = await this.aggregateService.createAdmin(createLabInstance);
     return BlDtoHelper.toDto(CnLabInstanceAdminDto, labInstance);
+  }
+
+  @Post('cloud')
+  async createCloudLab(@Body(new BlParsePipe(CnLabCloudCreateDTO)) createLabInstance: CnLabCloudCreateDTO):
+    Promise<CnLabInstanceDto> {
+    const labInstance = await this.aggregateService.createCloudLab(createLabInstance);
+    return BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
   }
 
   // use the DTO to get the apiKey (which is excluded)
@@ -191,6 +200,11 @@ export class CnLabInstancesController {
   async updateConfig(@Param('id', new ParseUUIDPipe()) id: string,
                      @Body() config: CnLabInstanceConfigDTO): Promise<void> {
     return await this.aggregateService.updateConfig(id, config);
+  }
+
+  @Get(':id/server-info')
+  async getLabServerInfo(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabServerInfoDTO> {
+    return await this.aggregateService.getLabServerInfo(id);
   }
 
   //////////////////////////// STATUS ////////////////////////////////
@@ -415,7 +429,7 @@ export class CnLabInstancesController {
   /////////////////////////// SERVER //////////////////////////////
   @Get(':id/server/info')
   async getServerInfo(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnCpCompleteInfo> {
-    return await this.aggregateService.getServerInfo(id);
+    return await this.aggregateService.getServerCompleteInfo(id);
   }
 
   @Post(':id/server/init')

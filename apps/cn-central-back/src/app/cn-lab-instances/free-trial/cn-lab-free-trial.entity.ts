@@ -4,7 +4,7 @@ import {DateTime} from 'luxon';
 import {Exclude, Type} from 'class-transformer';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {Column, Entity, ManyToOne} from 'typeorm';
-import {CnLabInstance, CnLabInstanceBillingMode, CnLabInstanceVolumeType} from '../cn-lab-instance.entity';
+import {CnLabDomain, CnLabInstance, CnLabInstanceBillingMode, CnLabInstanceVolumeType} from '../cn-lab-instance.entity';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {CnCloudProviderName} from '../../cn-cloud-providers/cn-cloud-provider.entity';
 import {CnBrickGWS} from '../../cn-bricks/cn-brick.dto';
@@ -23,7 +23,7 @@ export class CnLabFreeTrial extends CnBaseEntity {
   public static readonly VOLUME_SIZE = 100;
   public static readonly VOLUME_TYPE = CnLabInstanceVolumeType.HIGH_SPEED;
   public static readonly BILLING_MODE = CnLabInstanceBillingMode.HOURLY;
-  public static readonly DOMAIN = CnLabInstance.SUPPORTED_MAIN_DOMAINS[0];
+  public static readonly DOMAIN = CnLabDomain.CONSTELLAB_APP;
 
   // CONFIG
   public static readonly BRICKS = [CnBrickGWS.GWS_CORE, CnBrickGWS.GWS_ACADEMY];

@@ -18,12 +18,17 @@ import {CnReportsService} from '../cn-projects-aggregate/cn-reports/cn-reports.s
 import {BlBadRequestException, BlSearchBuilder, BlSearchParams} from '@monorepo/back-core-lib';
 import {EventEmitter2} from '@nestjs/event-emitter';
 import {cnLabInstanceEventName, CnLabInstanceStatusChangedEvent} from './cn-lab-instance.event';
+import {
+  CnCloudProviderRegionType
+} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import {CnServerStandard} from '../cn-servers-info/server-standard/cn-server-standard.entity';
+import {CnServerCloud} from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
 
 @Injectable()
 export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInstance, CnLabInstanceStatus> {
 
   constructor(@InjectRepository(CnLabInstance) private repository: Repository<CnLabInstance>,
-              @InjectRepository(CnLabInstanceStatusHistory) statusRepo: Repository<CnLabInstanceStatusHistory>,
+              @InjectRepository(CnLabInstanceStatusHistory) private statusRepo: Repository<CnLabInstanceStatusHistory>,
               private experimentService: CnExperimentsService,
               private reportService: CnReportsService,
               private eventEmitter: EventEmitter2,
@@ -54,7 +59,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       // check virtual host
       entity.virtualHost = await this.checkLabInstanceVirtualHost(entity, true);
 
-      if (ClHelpService.isNullOrEmpty(entity.serverInfo) ||
+      if (ClHelpService.isNullOrEmpty(entity.serverCloud) ||
         ClHelpService.isNullOrEmpty(entity.region) ||
         ClHelpService.isNullOrEmpty(entity.billingMode) ||
         ClHelpService.isNullOrEmpty(entity.volumeType) ||
@@ -62,27 +67,27 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
         throw new BlBadRequestException('Missing parameters for cloud instance');
       }
 
-      if(!entity.region.isCloud()){
-        throw new BlBadRequestException('Region must be a cloud region');
-      }
-
-      if (entity.region.cloudProvider.id !== entity.serverInfo.cloudProvider.id) {
+      if (entity.region.cloudProvider.id !== entity.serverCloud.cloudProvider.id) {
         throw new BlBadRequestException('Cloud Provider and Region must be the same');
       }
 
+      if (entity.region.type !== CnCloudProviderRegionType.SERVER) {
+        throw new BlBadRequestException('Region must be a server region');
+      }
+
       entity.desktopPlatform = null;
-    } else if(entity.isOnPremise()) {
+    } else if (entity.isOnPremise()) {
       // check virtual host
       entity.virtualHost = await this.checkLabInstanceVirtualHost(entity, false);
       entity.desktopPlatform = null;
 
-    } else if(entity.isDesktop()) {
+    } else if (entity.isDesktop()) {
       if (ClHelpService.isNullOrEmpty(entity.desktopPlatform)) {
         throw new BlBadRequestException('Missing parameters platform for desktop instance');
       }
 
       entity.virtualHost = null;
-      entity.serverInfo = null;
+      entity.serverCloud = null;
       entity.region = null;
       entity.billingMode = null;
       entity.volumeType = null;
@@ -248,6 +253,21 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_CONFIGURED, id);
   }
 
+  /**
+   * Return true if the lab was started once
+   * @param id
+   */
+  public async labHasBeenRunning(id: string): Promise<boolean> {
+    const runningStatus = await this.statusRepo.findOne({
+      where: {
+        entity: {id: id},
+        status: CnLabInstanceStatus.LAB_RUNNING
+      }
+    });
+
+    return !!runningStatus;
+  }
+
   // override the status change event to emit a lab instance event
   async updateCurrentStatusIfChangedWithDbEntity(status: CnLabInstanceStatus, dbEntity: CnLabInstance): Promise<CnLabInstance> {
     if (dbEntity.currentStatus.status === status) {
@@ -307,7 +327,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   public async searchAll(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnLabInstance>> {
     const searchBuilder = new BlSearchBuilder<CnLabInstance>();
     searchBuilder.addSearchParams(searchParams);
-    searchBuilder.setRelations({space: true});
+    searchBuilder.setRelations({space: true, serverCloud: true});
 
     return this.findPaginated(page, size, searchBuilder.build());
   }
@@ -339,5 +359,15 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
         }
       }
     });
+  }
+
+  public async getLabServerCloud(labId: string): Promise<CnServerCloud> {
+    const lab = await this.findByIdAndCheck(labId, {serverCloud: true});
+    return lab.serverCloud;
+  }
+
+  public async getLabServerStandard(labId: string): Promise<CnServerStandard> {
+    const lab = await this.findByIdAndCheck(labId, {serverCloud: true});
+    return lab.serverCloud?.serverStandard;
   }
 }

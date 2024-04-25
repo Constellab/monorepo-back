@@ -94,4 +94,14 @@ export class CnLabInstanceUserService {
       userId: userId
     });
   }
+
+  public async findLabOwner(labInstanceId: string): Promise<CnLabInstanceUser[]> {
+    return this.repository.find({
+      where: {
+        labInstanceId: labInstanceId,
+        role: CnLabInstanceUserRole.OWNER
+      },
+      relations: {user: true}
+    });
+  }
 }

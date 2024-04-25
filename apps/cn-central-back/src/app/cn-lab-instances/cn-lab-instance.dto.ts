@@ -1,7 +1,7 @@
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
-import {CnServerInfo} from '../cn-servers-info/cn-server-info.entity';
+import {CnServerCloud} from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
 import {BlBaseEntityDto, BlDtoHelper} from '@monorepo/back-core-lib';
 import {CnBrickVersionDTO} from '../cn-bricks/cn-brick.dto';
 import {CnLabConfigDto} from '../cn-lab-configs/cn-lab-config.dto';
@@ -19,6 +19,7 @@ import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-reg
 import {CnLabInstanceServerTaskStatus, CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
 import {DateTime} from 'luxon';
 import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
+import {CnCloudProvider} from '../cn-cloud-providers/cn-cloud-provider.entity';
 
 
 /**
@@ -34,7 +35,7 @@ export class CnLabInstanceDto extends BlBaseEntityDto {
   apiUrl: string = undefined;
   codelabToken: string = undefined;
   frontUrl: string = undefined;
-  serverInfo: CnServerInfo = undefined;
+  serverCloud: CnServerCloud = undefined;
   region: CnCloudProviderRegion = undefined;
   space: CnSpace = undefined;
   billingMode: CnLabInstanceBillingMode = undefined;
@@ -91,8 +92,8 @@ export class CnLabInstanceUpdateAdminDTO {
   type: CnLabInstanceType;
   virtualHost: string;
 
-  @Type(() => CnServerInfo)
-  serverInfo: CnServerInfo;
+  @Type(() => CnServerCloud)
+  serverCloud: CnServerCloud;
 
   glabApiKey: string;
   labManagerApiKey: string;
@@ -103,6 +104,9 @@ export class CnLabInstanceUpdateAdminDTO {
 
   @Type(() => CnSpace)
   space: CnSpace;
+
+  volumeSize: number;
+  volumeType: CnLabInstanceVolumeType;
 
   serverInstanceId: string;
   serverVolumeId: string;
@@ -115,6 +119,26 @@ export class CnLabInstanceCreateAdminDTO extends CnLabInstanceUpdateAdminDTO {
 
   @Type(() => CnCloudProviderRegion)
   weeklyBackupRegion: CnCloudProviderRegion;
+}
+
+export class CnLabCloudCreateDTO {
+  name: string;
+
+  @Type(() => CnServerCloud)
+  serverCloud: CnServerCloud;
+
+  @Type(() => CnCloudProviderRegion)
+  region: CnCloudProviderRegion;
+
+  volumeSize: number;
+
+  @Type(() => CnCloudProviderRegion)
+  dailyBackupRegion: CnCloudProviderRegion;
+
+  @Type(() => CnCloudProviderRegion)
+  weeklyBackupRegion: CnCloudProviderRegion;
+
+  labConfig: CnLabInstanceConfigDTO;
 }
 
 export class CnLabInstanceCreateDesktopDTO {
@@ -169,4 +193,24 @@ export class CnLabManagerStatus {
   isInitialized: boolean;
   // version of the lab manager that has been used to init the lab
   lastInitVersion: string;
+}
+
+
+export class CnLabServerInfoDTO {
+
+  name: string;
+
+  @Type(() => CnCloudProvider)
+  cloudProvider: CnCloudProvider
+
+  cpuType: string;
+  cpuCount: number;
+
+  ram: number;
+
+  gpuType: string;
+  gpuCount: number;
+
+  volumeSize: number;
+  volumeType: CnLabInstanceVolumeType;
 }

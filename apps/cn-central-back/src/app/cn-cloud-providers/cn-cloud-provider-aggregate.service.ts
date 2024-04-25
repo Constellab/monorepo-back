@@ -1,7 +1,10 @@
 import {Injectable} from '@nestjs/common';
 import {CnCloudProvidersService} from './cn-cloud-providers.service';
 import {CnCloudProviderRegionService} from './cn-cloud-provider-regions/cn-cloud-provider-regions.service';
-import {CnCloudProviderRegion} from './cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import {
+  CnCloudProviderRegion,
+  CnCloudProviderRegionType
+} from './cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnCloudProviderSecurity} from './cn-cloud-provider.security';
@@ -70,46 +73,37 @@ export class CnCloudProviderAggregateService {
     await this.cloudProviderRegionService.deleteById(id);
   }
 
-
-  public async getRegionUnsecure(id: string): Promise<CnCloudProviderRegion> {
-    return await this.cloudProviderRegionService.findByIdAndCheck(id);
-  }
-
-  public async getRegionsInCurrentSpace(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
-    this.checkAuthorizationToGetEntity();
-    return this.cloudProviderRegionService.findAll(page, size, CnCurrentUserHelper.getAndCheckUserSpaceInfo().spaceId);
-  }
-
-  public async getS3RegionInCurrentSpace(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
-    this.checkAuthorizationToGetEntity();
-    return this.cloudProviderRegionService.findS3Regions(page, size, CnCurrentUserHelper.getAndCheckUserSpaceInfo().spaceId);
-  }
-
   // route to get all regions, whatever the space, only accessible for admin
   public async getAllRegions(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
     this.checkAuthorizationToModifyEntity();
     return this.cloudProviderRegionService.findAll(page, size);
   }
 
-  public async getAllS3Regions(page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
-    this.checkAuthorizationToModifyEntity();
-    return this.cloudProviderRegionService.findS3Regions(page, size);
+  public async findRegionByType(type: CnCloudProviderRegionType,
+                                page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
+    this.checkAuthorizationToGetEntity();
+    return this.cloudProviderRegionService.findRegionsByType(type, page, size);
   }
 
+  public async findServerRegionByCloudProvider(cloudProviderId: string): Promise<CnCloudProviderRegion[]> {
+    this.checkAuthorizationToGetEntity();
+    return this.cloudProviderRegionService.findServerRegionByCloudProvider(cloudProviderId);
+  }
 
-  public findRegionByCloudProviderNameAndTechnicalName(cloudProviderName: CnCloudProviderName,
-                                                       technicalName: string): Promise<CnCloudProviderRegion> {
-    return this.cloudProviderRegionService.findByCloudProviderNameAndTechnicalNameAndCheck(cloudProviderName, technicalName);
+  public findServerRegionByCloudProviderNameAndTechnicalName(cloudProviderName: CnCloudProviderName,
+                                                             technicalName: string): Promise<CnCloudProviderRegion> {
+    return this.cloudProviderRegionService.findByCloudProviderNameAndTechnicalNameAndTypeAndCheck(
+      cloudProviderName, technicalName, CnCloudProviderRegionType.SERVER);
   }
 
   public async getDefaultS3Region1(): Promise<CnCloudProviderRegion> {
-    return await this.cloudProviderRegionService.findByCloudProviderNameAndTechnicalNameAndCheck(
-      'OVH', CnCloudProviderAggregateService.defaultS3Region1);
+    return await this.cloudProviderRegionService.findByCloudProviderNameAndTechnicalNameAndTypeAndCheck(
+      'OVH', CnCloudProviderAggregateService.defaultS3Region1, CnCloudProviderRegionType.S3);
   }
 
   public async getDefaultS3Region2(): Promise<CnCloudProviderRegion> {
-    return await this.cloudProviderRegionService.findByCloudProviderNameAndTechnicalNameAndCheck(
-      'OVH', CnCloudProviderAggregateService.defaultS3Region2);
+    return await this.cloudProviderRegionService.findByCloudProviderNameAndTechnicalNameAndTypeAndCheck(
+      'OVH', CnCloudProviderAggregateService.defaultS3Region2, CnCloudProviderRegionType.S3);
   }
 
   //////////////////////////// AUTHORIZATION ////////////////////////////

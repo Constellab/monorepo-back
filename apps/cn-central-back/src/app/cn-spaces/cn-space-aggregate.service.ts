@@ -534,4 +534,12 @@ export class CnSpaceAggregateService {
     throw new BlBadRequestException(CnErrorText.USER_NOT_IN_SPACE);
   }
 
+  // TODO TO REMOVE, MIGRATION
+  public async refreshSpacesStorage(): Promise<void> {
+    const spaces = await this.spaceService.getAll(0, 1000);
+    for (const space of spaces.objects) {
+      await this.refreshSpaceStorageUsage(space.id);
+    }
+  }
+
 }

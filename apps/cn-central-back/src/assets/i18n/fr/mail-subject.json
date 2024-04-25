@@ -9,5 +9,6 @@
   "cn-request-new-licenses": "Constellab - Demande de nouvelles licences",
   "cn-two-factor-authentication": "Constellab - Authentification à deux facteurs",
   "cn-request-lab-instance": "Constellab - Demande d'une instance de lab",
-  "cn-generic": "Constellab - Notification"
+  "cn-generic": "Constellab - Notification",
+  "cn-lab-started": "Constellab - Votre lab est prêt"
 }

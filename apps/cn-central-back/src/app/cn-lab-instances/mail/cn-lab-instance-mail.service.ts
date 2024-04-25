@@ -9,6 +9,9 @@ import {CnRequestLabInstance} from '../cn-lab-instance.dto';
 import {CnSpace} from '../../cn-spaces/cn-space.entity';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {ClSupportedLanguage} from '@monorepo/core-lib';
+import {CnFrontService} from '../../cn-core/services/cn-front.service';
+import {CnSpaceService} from '../../cn-spaces/cn-space.service';
+import {CnLabInstanceUserService} from '../user/cn-lab-instance-user.service';
 
 
 /**
@@ -19,7 +22,10 @@ export class CnLabInstanceMailService {
 
   constructor(private mailService: BlMailService,
               private userService: CnUsersService,
-              private configService: CnCoreConfigService) {
+              private configService: CnCoreConfigService,
+              private frontService: CnFrontService,
+              private spaceService: CnSpaceService,
+              private labUserService: CnLabInstanceUserService) {
   }
 
   public async sendMailFromLab(labInstance: CnLabInstance, sendMailDTO: CnLabInstanceSendMailDto): Promise<void> {
@@ -52,6 +58,22 @@ export class CnLabInstanceMailService {
         return CnMailTemplate.experiment_finished;
       default:
         return CnMailTemplate.generic;
+    }
+  }
+
+  public async sendLabStartedMail(labInstance: CnLabInstance): Promise<void> {
+    const space = await this.spaceService.findByIdAndCheck(labInstance.spaceId);
+
+    const owners = await this.labUserService.findLabOwner(labInstance.id);
+
+    const labUrl = this.frontService.getLabInstanceUrl(space.domain, labInstance.id);
+
+    for (const owner of owners) {
+      await this.mailService.sendMailToUser(CnMailTemplate.lab_started, owner.user, {
+        user: owner.user,
+        lab: labInstance,
+        labUrl: labUrl,
+      });
     }
   }
 

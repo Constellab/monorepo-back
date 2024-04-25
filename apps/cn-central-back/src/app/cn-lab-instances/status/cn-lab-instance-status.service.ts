@@ -7,15 +7,56 @@ import {DateTime} from 'luxon';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {
   CnLabInstanceRunningStatus,
+  CnLabInstanceRunningStatusBilling,
   CnLabInstanceStatusRunRequest,
   CnLabInstanceStatusRunResponse
 } from './cn-lab-instance-status.dto';
+import {CnServerPrices} from '../../cn-servers-info/server-price/cn-server-price.dto';
 
 
 @Injectable()
 export class CnLabInstanceStatusService {
 
   constructor(@InjectRepository(CnLabInstanceStatusHistory) private repo: Repository<CnLabInstanceStatusHistory>) {
+  }
+
+  public async getLabTotalRunningDuration(labInstanceId: string): Promise<number> {
+    const runStatus = await this.getLabInstanceRunningKpis(labInstanceId, {
+      period: 'ALL'
+    });
+
+    return runStatus.runningDuration;
+  }
+
+  public async getLabInstanceRunningKpisWithBilling(labInstanceId: string,
+                                                    request: CnLabInstanceStatusRunRequest,
+                                                    serverPrices?: CnServerPrices): Promise<CnLabInstanceStatusRunResponse> {
+    const runStatus = await this.getLabInstanceRunningKpis(labInstanceId, request);
+
+    if (serverPrices) {
+
+      const totalBillInfo = new CnLabInstanceRunningStatusBilling();
+      totalBillInfo.nbOfHours = 0;
+      totalBillInfo.pricePerHour = 0;
+      totalBillInfo.totalPrice = 0;
+
+      for (const status of runStatus.statuses) {
+        const billInfo = new CnLabInstanceRunningStatusBilling();
+        // round status.duration to the next hour
+        billInfo.nbOfHours = Math.ceil(status.duration / 3600);
+        billInfo.pricePerHour = serverPrices.getPriceAt(status.fromDate);
+        billInfo.totalPrice = billInfo.pricePerHour * billInfo.nbOfHours;
+
+        status.billInfo = billInfo;
+
+        totalBillInfo.totalPrice += billInfo.totalPrice;
+        totalBillInfo.nbOfHours += billInfo.nbOfHours;
+      }
+
+      runStatus.billInfo = totalBillInfo;
+    }
+
+    return runStatus;
   }
 
   /**
@@ -42,6 +83,14 @@ export class CnLabInstanceStatusService {
     let startDate: DateTime;
     let endDate: DateTime;
     switch (request.period) {
+      case 'CURRENT_MONTH':
+        startDate = ClDateHelper.getDate().startOf('month');
+        endDate = now;
+        break;
+      case 'CURRENT_YEAR':
+        startDate = ClDateHelper.getDate().startOf('year');
+        endDate = now;
+        break;
       case 'LAST_WEEK':
         startDate = ClDateHelper.getDate().minus({days: 7}).endOf('day');
         endDate = now;
@@ -63,6 +112,9 @@ export class CnLabInstanceStatusService {
           ClDateHelper.getDate('1900-01-01').startOf('day');
         endDate = request.customEndDate ? ClDateHelper.getDate(request.customEndDate).endOf('day') : now;
         break;
+    }
+    if (endDate > now) {
+      endDate = now;
     }
     return {startDate, endDate};
   }
@@ -139,7 +191,7 @@ export class CnLabInstanceStatusService {
     response.fromDate = startDate;
     response.toDate = endDate;
     response.runningDuration = cumulativeDuration;
-    response.statuses = runningStatuses;
+    response.statuses = runningStatuses.reverse();
 
     return response;
   }
