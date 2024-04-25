@@ -159,7 +159,12 @@ export class CnServerAggregateService {
   public async getStorageCurrentPrice(): Promise<number> {
     await this.checkAuthorizationToReadEntities();
     const price = await this.storagePriceService.getAndCheckCurrentStoragePrice();
-    return price.price;
+    return price.totalPrice;
+  }
+
+  public async getStorageCurrentPriceDetail(): Promise<CnStoragePrice> {
+    await this.checkAuthorizationToModifyEntity();
+    return await this.storagePriceService.getAndCheckCurrentStoragePrice();
   }
 
 

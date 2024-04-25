@@ -119,6 +119,11 @@ export class CnServerController {
     return this.aggregateService.getStorageCurrentPrice();
   }
 
+  @Get('storage/price/current/detail')
+  getStorageCurrentPriceDetail(): Promise<CnStoragePrice> {
+    return this.aggregateService.getStorageCurrentPriceDetail();
+  }
+
   @Get('storage/price/all')
   getStorageAllPrices(): Promise<CnStoragePrice[]> {
     return this.aggregateService.getAllStoragePrices();

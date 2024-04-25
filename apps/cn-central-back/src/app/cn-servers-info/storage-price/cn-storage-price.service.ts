@@ -59,8 +59,10 @@ export class CnStoragePriceService extends BlAbstractService<CnStoragePrice> {
       throw new BlBadRequestException('No price found.');
     }
 
-    if (newPrice.price === lastPrice.price) {
-      throw new BlBadRequestException('The new price is the same as the last price.');
+    if (newPrice.volumeStoragePrice === lastPrice.volumeStoragePrice &&
+    newPrice.backupStoragePrice === lastPrice.backupStoragePrice &&
+    newPrice.backupTransfertPrice === lastPrice.backupTransfertPrice) {
+      throw new BlBadRequestException('The prices are the same as last price.');
     }
 
     if (newPrice.startDate < lastPrice.startDate) {
@@ -68,7 +70,9 @@ export class CnStoragePriceService extends BlAbstractService<CnStoragePrice> {
     }
 
     const newStoragePrice = new CnStoragePrice();
-    newStoragePrice.price = newPrice.price;
+    newStoragePrice.volumeStoragePrice = newPrice.volumeStoragePrice;
+    newStoragePrice.backupStoragePrice = newPrice.backupStoragePrice;
+    newStoragePrice.backupTransfertPrice = newPrice.backupTransfertPrice;
     newStoragePrice.startDate = newPrice.startDate;
 
     return this.datasource.transaction(async entityManager => {
