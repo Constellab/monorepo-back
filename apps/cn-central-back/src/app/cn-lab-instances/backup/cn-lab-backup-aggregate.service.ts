@@ -45,8 +45,7 @@ export class CnLabBackupAggregateService {
   }
 
   /**
-   * BEfore deleting the backup options, we check that no backup exists
-   * @param entityManager
+   * Before deleting the backup options, we check that no backup exists
    */
   public async deleteBackupOptions(labInstance: CnLabInstance, entityManager: EntityManager): Promise<void> {
     // check if some backup exists
@@ -58,7 +57,7 @@ export class CnLabBackupAggregateService {
           'in the history. Please delete the lab backup first.');
       }
 
-      if (status.labVolumeSize > 0 || status.sizeInBucket > 0) {
+      if (status.nbDocumentsInBucket > 0 || status.sizeInBucket > 0) {
         throw new BlBadRequestException('Cannot delete the backup options because some backups ' +
           'file still exists. Please delete the lab backup first.');
       }
