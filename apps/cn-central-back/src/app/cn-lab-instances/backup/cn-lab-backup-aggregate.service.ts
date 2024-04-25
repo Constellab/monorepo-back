@@ -72,7 +72,7 @@ export class CnLabBackupAggregateService {
    */
   public async getBackupsStatus(labInstance: CnLabInstance): Promise<CnLabBackupStatusDTO[]> {
     const labOptions = await this.backupOptionService.findByLabId(labInstance.id);
-    if (labOptions == null) return null;
+    if (labOptions == null) return [];
 
     const backupStatus1 = await this.getBackupStatus(labInstance, labOptions.frequency1, labOptions.bucket1.region);
     const backupStatus2 = await this.getBackupStatus(labInstance, labOptions.frequency2, labOptions.bucket2.region);
@@ -162,10 +162,8 @@ export class CnLabBackupAggregateService {
    * @param labInstance
    */
   public async checkBackupsSize(labInstance: CnLabInstance): Promise<CnLabCheckBackupSizeDTO[]> {
-
-
     const labOptions = await this.backupOptionService.findByLabId(labInstance.id);
-    if (labOptions == null) return null;
+    if (labOptions == null) return [];
 
     const backupSizes: CnLabCheckBackupSizeDTO[] = [];
     backupSizes.push(await this.checkBackupSize(labInstance, labOptions.frequency1, labOptions.bucket1));
