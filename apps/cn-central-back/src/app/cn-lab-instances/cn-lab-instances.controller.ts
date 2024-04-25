@@ -72,17 +72,11 @@ export class CnLabInstancesController {
     return BlDtoHelper.toDto(CnLabInstanceAdminDto, labInstance);
   }
 
-  @Post('desktop')
-  async createDesktop(@Body(new BlParsePipe(CnLabInstanceCreateDesktopDTO)) createLabInstance: CnLabInstanceCreateDesktopDTO):
-    Promise<CnLabInstanceDto> {
-    const labInstance = await this.aggregateService.createDesktop(createLabInstance);
-    return BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
-  }
 
-  @Put()
-  async update(@Body(new BlParsePipe(CnLabInstanceCreateDesktopDTO)) labInstanceDto: CnLabInstanceCreateDesktopDTO):
-    Promise<CnLabInstanceDto> {
-    const labInstance = await this.aggregateService.updateLab(labInstanceDto);
+  @Put(':id/name/:name')
+  async updateLabName(@Param('id', new ParseUUIDPipe()) id: string,
+                      @Param('name') name: string): Promise<CnLabInstanceDto> {
+    const labInstance = await this.aggregateService.updateLabName(id, name);
     return BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
   }
 
@@ -531,6 +525,14 @@ export class CnLabInstancesController {
   }
 
   /////////////////////////// DESKTOP //////////////////////////////
+  @Post('desktop')
+  async createDesktop(@Body(new BlParsePipe(CnLabInstanceCreateDesktopDTO)) createLabInstance: CnLabInstanceCreateDesktopDTO):
+    Promise<CnLabInstanceDto> {
+    const labInstance = await this.aggregateService.createDesktop(createLabInstance);
+    return BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
+  }
+
+
   @Post(':id/desktop/generate-config')
   async generateDesktopConfig(@Param('id', new ParseUUIDPipe()) id: string,
                               @Body() desktopConfig: CnLabInstanceDesktopConfig,
@@ -548,5 +550,13 @@ export class CnLabInstancesController {
     });
     const data = zip.toBuffer();
     response.send(data);
+  }
+
+  @Put(':id/desktop')
+  async updateDesktopLab(@Param('id', new ParseUUIDPipe()) id: string,
+                         @Body(new BlParsePipe(CnLabInstanceCreateDesktopDTO)) labInstanceDto: CnLabInstanceCreateDesktopDTO):
+    Promise<CnLabInstanceDto> {
+    const labInstance = await this.aggregateService.updateDesktopLab(id, labInstanceDto);
+    return BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
   }
 }

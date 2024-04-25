@@ -49,6 +49,7 @@ export class CnLabInstanceDto extends BlBaseEntityDto {
  * DTO for the lab instance only for G admin
  */
 export class CnLabInstanceAdminDto extends CnLabInstanceDto {
+  cloudName: string = undefined;
   glabApiKey: string = undefined;
   labManagerApiKey: string = undefined;
   serverInstanceId: string = undefined;
@@ -201,7 +202,7 @@ export class CnLabServerInfoDTO {
   name: string;
 
   @Type(() => CnCloudProvider)
-  cloudProvider: CnCloudProvider
+  cloudProvider: CnCloudProvider;
 
   cpuType: string;
   cpuCount: number;

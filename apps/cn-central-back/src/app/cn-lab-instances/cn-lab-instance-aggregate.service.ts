@@ -220,19 +220,25 @@ export class CnLabInstanceAggregateService {
 
   /**
    * Update accessible for any owner of the lab, he can update only few parameters
-   * @param updateLabInstance
    */
-  async updateLab(updateLabInstance: CnLabInstanceCreateDesktopDTO): Promise<CnLabInstance> {
-    const labInstanceDb: CnLabInstance = await this.labInstancesService.findByIdAndCheck(updateLabInstance.id);
-    labInstanceDb.name = updateLabInstance.name;
+  async updateDesktopLab(id: string, updateLabInstance: CnLabInstanceCreateDesktopDTO): Promise<CnLabInstance> {
+    const labInstanceDb: CnLabInstance = await this.labInstancesService.findByIdAndCheck(id);
 
-    if (updateLabInstance.desktopPlatform && labInstanceDb.isDesktop()) {
-      labInstanceDb.desktopPlatform = updateLabInstance.desktopPlatform;
+    if (!labInstanceDb.isDesktop()) {
+      throw new BlUnauthorizedException();
     }
-
     await this.security.checkAuthorizationToManageLab(labInstanceDb, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
 
-    return this.labInstancesService.update(labInstanceDb);
+    return this.labInstancesService.updatePartial(id, {
+      name: updateLabInstance.name,
+      desktopPlatform: updateLabInstance.desktopPlatform
+    });
+  }
+
+  async updateLabName(id: string, name: string): Promise<CnLabInstance> {
+    const labInstanceDb: CnLabInstance = await this.labInstancesService.findByIdAndCheck(id);
+    await this.security.checkAuthorizationToManageLab(labInstanceDb, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    return this.labInstancesService.updateLabName(id, name);
   }
 
   async delete(id: string): Promise<void> {
@@ -326,8 +332,7 @@ export class CnLabInstanceAggregateService {
   }
 
   private async updateLabInstanceConfig(labInstance: CnLabInstance, labConfig: CnLabConfig): Promise<CnLabInstance> {
-    labInstance.labConfig = labConfig;
-    return this.labInstancesService.update(labInstance);
+    return this.labInstancesService.updateLabConfig(labInstance.id, labConfig);
   }
 
   public async getLabServerInfo(labInstanceId: string): Promise<CnLabServerInfoDTO> {

@@ -174,9 +174,9 @@ export class CnLabServerService {
       CnLabInstanceServerTaskStatus.RUNNING
     );
     // eslint-disable-next-line max-len
-    this.logger.log(`Creating server instance ${labInstance.name} ${labServer.technicalName} for lab ${labInstance.id} in cloud provider ${service.getName()}`);
+    this.logger.log(`Creating server instance ${labInstance.cloudName} ${labServer.technicalName} for lab ${labInstance.id} in cloud provider ${service.getName()}`);
     const instanceRequest: CnCpCreateInstanceRequest = {
-      name: labInstance.name,
+      name: labInstance.cloudName,
       region: regionName,
       serverName: labServer.technicalName,
       billing: labInstance.billingMode,
@@ -189,7 +189,7 @@ export class CnLabServerService {
   private async createVolume(service: CnCloudProviderService, labInstance: CnLabInstance): Promise<CnCpVolume> {
 
     const volumeRequest: CnCpCreateVolumeRequest = {
-      name: labInstance.name,
+      name: labInstance.cloudName,
       description: 'Volume for lab ' + labInstance.name,
       size: labInstance.volumeSize,
       type: labInstance.volumeType,

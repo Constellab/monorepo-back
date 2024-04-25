@@ -54,7 +54,6 @@ export class CnLabInstancesSecurity {
     return group.role;
   }
 
-
   public async checkAuthorizationToFindById(labInstance: CnLabInstance, userInfo: CnUserSpaceInfo): Promise<CnLabInstanceUserRole> {
     // check the space context
     if (labInstance.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException();

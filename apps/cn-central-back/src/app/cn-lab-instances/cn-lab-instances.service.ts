@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {CnLabInstance, CnLabInstanceType} from './cn-lab-instance.entity';
+import {CnLabInstance} from './cn-lab-instance.entity';
 import {DataSource, DeleteResult, EntityManager, In, Not, Repository} from 'typeorm';
 import {
   CnLabInstanceServerTaskStatus,
@@ -23,6 +23,7 @@ import {
 } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {CnServerStandard} from '../cn-servers-info/server-standard/cn-server-standard.entity';
 import {CnServerCloud} from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
+import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 
 @Injectable()
 export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInstance, CnLabInstanceStatus> {
@@ -38,6 +39,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
 
 
   async create(entity: CnLabInstance, entityManager?: EntityManager): Promise<CnLabInstance> {
+
     await this.checkLabInstanceBeforeSave(entity);
 
     if (entityManager) {
@@ -54,7 +56,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   }
 
   private async checkLabInstanceBeforeSave(entity: CnLabInstance): Promise<void> {
-    entity.name = await this.checkLabInstanceName(entity);
+    this.checkLabInstanceName(entity.name);
     if (entity.isCloud()) {
       // check virtual host
       entity.virtualHost = await this.checkLabInstanceVirtualHost(entity, true);
@@ -99,34 +101,10 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     }
   }
 
-  private async checkLabInstanceName(entity: CnLabInstance): Promise<string> {
-
-    const name = entity.name;
-    if (ClHelpService.isNullOrEmpty(name)) {
+  private checkLabInstanceName(labName: string): void {
+    if (ClHelpService.isNullOrEmpty(labName)) {
       throw new BlBadRequestException('Name is required');
     }
-
-    // check that the name does not contain character other than a-Z, 0-9.
-    // And that it does not start or end with a -.
-    if (!/^[a-zA-Z0-9-]+$/.test(name) || /^-|-$/.test(name)) {
-      throw new BlBadRequestException('Name can only contain alphanumeric characters and \'-\'. It cannot start or end with a \'-\'.');
-    }
-
-    // check that the name is not already used for server lab
-    if (entity.isOnServer()) {
-      const lab = await this.repository.findOne({
-        where: {
-          name: name,
-          id: entity.id ? Not(entity.id) : undefined,
-          type: In([CnLabInstanceType.CLOUD, CnLabInstanceType.ON_PREMISE])
-        }
-      });
-      if (lab) {
-        throw new BlBadRequestException(`A cloud lab with name ${name} already exist.`);
-      }
-    }
-
-    return name;
   }
 
   private async checkLabInstanceVirtualHost(entity: CnLabInstance, checkSupportedDomains: boolean): Promise<string> {
@@ -155,7 +133,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     }
 
     // check that the domain is valid including possibility of subdomain and port, only 1 ':' is allowed followed by a port number
-    if(!/^(?:[a-z0-9-]+\.)*[a-z0-9-]+(?::\d+)?$/.test(virtualHost)){
+    if (!/^(?:[a-z0-9-]+\.)*[a-z0-9-]+(?::\d+)?$/.test(virtualHost)) {
       throw new BlBadRequestException('Virtual host is not a valid domain name');
     }
 
@@ -167,6 +145,15 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
 
     // force the virtual host to be lower case
     return virtualHost.toLowerCase();
+  }
+
+  public async updateLabConfig(labInstanceId: string, labConfig: CnLabConfig): Promise<CnLabInstance> {
+    return this.updatePartial(labInstanceId, {labConfig: labConfig});
+  }
+
+  public async updateLabName(labInstanceId: string, name: string): Promise<CnLabInstance> {
+    this.checkLabInstanceName(name);
+    return this.updatePartial(labInstanceId, {name: name});
   }
 
   async deleteById(id: string, entityManager: EntityManager): Promise<DeleteResult> {

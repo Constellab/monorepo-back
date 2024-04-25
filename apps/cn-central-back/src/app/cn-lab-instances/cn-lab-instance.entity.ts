@@ -12,6 +12,7 @@ import {CnLabInstanceUser} from './user/cn-lab-instance-user.entity';
 import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {DateTime} from 'luxon';
+import {ClStringHelper} from '@monorepo/core-lib';
 
 export enum CnLabInstanceType {
   CLOUD = 'CLOUD',
@@ -53,6 +54,10 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
 
   @Column({nullable: false, length: 50})
   name: string;
+
+  // name of the lab used in the cloud provider if the lab is hosted on a cloud
+  @Column({nullable: true, length: 36})
+  cloudName: string;
 
   @Column({
     type: 'enum', enum: CnLabInstanceType, nullable: false,
@@ -200,6 +205,10 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
       if (!this.labManagerApiKey) this.labManagerApiKey = this.generateRandomPassword();
       if (!this.codelabToken) this.codelabToken = this.generateRandomPassword();
     }
+
+    if(this.isCloud()){
+      if (!this.cloudName) this.cloudName = ClStringHelper.generateUUID();
+    }
   }
 
   private generateRandomPassword(): string {
@@ -217,7 +226,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
 
   getGlabSpaceApiInfo(): CnExternalApiInfo {
     // specific rule for local development
-    if (this.name == 'localhost') {
+    if (this.cloudName == 'localhost') {
       return {
         apiKey: '123456',
         apiUrl: 'http://localhost:3000/' + CnLabInstance.SPACE_API_ROUTE
@@ -230,7 +239,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   }
 
   getLabManagerApiInfo(): CnExternalApiInfo {
-    if (this.name == 'localhost') {
+    if (this.cloudName == 'localhost') {
       // only for local dev
       return {
         apiKey: '123456',
@@ -245,7 +254,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   }
 
   getS3ApiUrl(): string {
-    if (this.name == 'localhost') {
+    if (this.cloudName == 'localhost') {
       return 'http://localhost:3000/' + CnLabInstance.S3_API_ROUTE;
     }
     return this.glabUrl + '/' + CnLabInstance.S3_API_ROUTE;
