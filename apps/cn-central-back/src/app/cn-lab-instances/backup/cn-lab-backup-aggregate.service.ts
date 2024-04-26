@@ -143,7 +143,9 @@ export class CnLabBackupAggregateService {
 
     return {
       version: 1,
-      s3Prefix: this.backupOptionService.getBackupS3Prefix(labInstance),
+      // set the '/' prefix to avoid the bucket name to be added to the prefix
+      // once all lab manager are on v1.7.0, we can remove this prefix
+      s3Prefix: '/' + this.backupOptionService.getBackupS3Prefix(labInstance),
       backupBuckets: [
         {
           backupFrequency: options.frequency1,
