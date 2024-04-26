@@ -20,7 +20,7 @@ export class CnLabBackupOptionService extends BlAbstractService<CnLabBackupOptio
   }
 
   public getBackupS3Prefix(labInstance: CnLabInstance): string {
-    return `/${labInstance.spaceId}/${labInstance.id}`;
+    return `${labInstance.spaceId}/${labInstance.id}`;
   }
 
   /**
