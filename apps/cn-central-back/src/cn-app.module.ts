@@ -80,6 +80,7 @@ function typeOrmConfig(configService: CnCoreConfigService, persistenceEventServi
     maxQueryExecutionTime: 1000, // log query longer than 1s,
     logger: persistenceEventService,
     bigNumberStrings: false,
+    charset: 'utf8mb4',
     // logging: true // use to enable query logging, the logger must be disabled
   };
 }

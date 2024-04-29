@@ -6,7 +6,7 @@ import {BlRichText, BlRichTextI} from '@monorepo/back-core-lib';
 
 export class CnComment extends CnBaseEntity {
 
-  @Column({type: 'simple-json', nullable: true, collation: 'utf8mb4_unicode_ci'})
+  @Column({type: 'simple-json', nullable: true})
   content: BlRichTextI;
 
   @Type(() => CnComment)

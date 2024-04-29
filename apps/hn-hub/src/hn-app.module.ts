@@ -94,6 +94,7 @@ function typeOrmConfig(
     maxQueryExecutionTime: 1000, // log query longer than 1s,
     logger: persistenceEventService,
     bigNumberStrings: false,
+    charset: 'utf8mb4',
   };
 }
 
