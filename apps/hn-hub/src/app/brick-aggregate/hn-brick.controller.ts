@@ -96,13 +96,6 @@ export class HnBrickController {
     return this.brickAggregateService.findBricksWithFilter(spacesFilter, titleFilter, page, size);
   }
 
-  @BlPublic()
-  @Post('doc/:brickName/:version')
-  async findCurrentDoc(@Param('brickName') brickName: string,
-                       @Param('version') version: string,
-                       @Body() body: any): Promise<HnDocumentation | any> {
-    return this.brickAggregateService.findCurrentDoc(brickName, version, body);
-  }
 
   @BlPublic()
   @Get('first-doc/:brickName/:version')

@@ -77,6 +77,7 @@ export class HnBrickService {
       [this.getBucketConfig(), this.getBackupBucketConfig()], image);
 
     const brick = await this.bricksRepository.findOneBy({id: id});
+    await this.deleteBrickImage(brick.imageLink);
     brick.imageLink = filename;
     await this.bricksRepository.save(brick);
 

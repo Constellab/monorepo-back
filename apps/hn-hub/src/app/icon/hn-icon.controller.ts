@@ -17,7 +17,6 @@ import {ClPage} from '@monorepo/core-lib';
 import {HnIcon} from './hn-icon.entity';
 import {BlFile, BlPublic, BlResponseHelper, BlUploadedFile} from '@monorepo/back-core-lib';
 import {Response} from 'express';
-import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {HnIconCreateDto} from './hn-icon.dto';
 

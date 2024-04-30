@@ -76,6 +76,7 @@ import {HnLiveTaskCoAuthorModule} from './app/live-task-aggregate/live-task-co-a
 import {
   HnLiveTaskCoAuthorInviteModule
 } from './app/live-task-aggregate/live-task-co-author-invite/hn-live-task-co-author-invite.module';
+import {HnPublicModule} from './app/public/hn-public.module';
 
 function typeOrmConfig(
   configService: HnCoreConfigService,
@@ -249,6 +250,8 @@ function configureMailModule(
     HnCommentAggregateModule,
     HnCommentStoryModule,
     HnCommentLiveTaskModule,
+
+    HnPublicModule
   ],
   controllers: [],
   providers: [

@@ -12,7 +12,7 @@ import {HnSpaceAggregateModule} from '../space-aggregate/hn-space-aggregate.modu
     HnCoreModule,
     HnSpaceAggregateModule
   ],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, HnIconService],
   controllers: [HnIconController],
   providers: [HnIconService],
 })

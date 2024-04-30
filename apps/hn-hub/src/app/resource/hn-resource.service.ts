@@ -39,6 +39,7 @@ export class HnResourceService {
       resource.humanName = r.human_name;
       resource.style = r.style;
       resource.methods = r.methods;
+      resource.variables = r.variables.variables;
 
       //TODO A MODIFIER pour le parent et deprecatedSince
 

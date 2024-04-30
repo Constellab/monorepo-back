@@ -80,6 +80,7 @@ export interface HnImportEntityStyle {
 
 export interface HnImportResourceDTO extends HnImportEntity{
   methods: HnResourceMethodList;
+  variables?: HnResourceVariableList;
 }
 
 export interface HnImportTaskDTO extends HnImportEntity {
@@ -154,6 +155,9 @@ export class HnCreateBrickDTO {
   space?: HnSpace;
 }
 
+export interface HnResourceVariableList{
+  variables: Record<string, any>
+}
 
 // Resource Methods
 export interface HnResourceMethodList {

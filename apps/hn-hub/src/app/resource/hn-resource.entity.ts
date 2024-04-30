@@ -5,6 +5,9 @@ import {Column, Entity, Unique} from 'typeorm';
 @Entity('resource')
 export class HnResource extends HnGeneratedDocEntity {
 
+  @Column({name: 'variables', type: 'simple-json', nullable: true})
+  variables?: Record<string, any>;
+
   @Column({name: 'methods', type: 'simple-json', nullable: true})
   methods?: Record<string, any>;
 
