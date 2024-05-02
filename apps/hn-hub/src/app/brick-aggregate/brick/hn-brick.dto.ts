@@ -156,7 +156,7 @@ export class HnCreateBrickDTO {
 }
 
 export interface HnResourceVariableList{
-  variables: Record<string, any>
+  variables?: Record<string, any>
 }
 
 // Resource Methods
