@@ -143,4 +143,30 @@ export class ClStringHelper {
       // remove all dashes at the beginning and at the end
       .replace(/^[- ]+|[- ]+$/g, '');
   }
+
+  public static toIdForUrl(str: string): string{
+    if (str == null) return null;
+    if (typeof str !== 'string') {
+      str = (str as any).toString();
+    }
+    str = str.replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '');
+    str.replace('--', '-');
+    while(str[0] == '-'){
+      str = str.slice();
+    }
+
+    while (str[str.length-1] == '-'){
+      str = str.slice(0, -1);
+    }
+
+    return str;
+  }
+
+  public static getCleanUrlPath(str: string): string {
+    if (str == null) return null;
+    if (typeof str !== 'string') {
+      str = (str as any).toString();
+    }
+    return this.toKebabCase(this.toIdForUrl(this.removeAccentFromString(str)));
+  }
 }

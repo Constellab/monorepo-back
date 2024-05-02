@@ -94,6 +94,6 @@ export class HnStory extends BlEntityWithId {
    */
   @Expose()
   get titlePath(): string{
-    return ClStringHelper.generateUrlPathFromString(this.title)
+    return ClStringHelper.getCleanUrlPath(this.title)
   }
 }

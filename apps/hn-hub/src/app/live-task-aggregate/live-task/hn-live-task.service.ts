@@ -85,9 +85,9 @@ export class HnLiveTaskService {
     });
   }
 
-  public async findAllWithFilters(spacesFilter: string[], titleFilter: string, publicSelected: boolean, myLiveTasksSelected: boolean,
-                                  personalOnly: boolean, page: number, size: number, user: HnUser = null,
-                                  userSpacesIds: string[] = null, coAuthorLiveTasksIds: string[] = null): Promise<ClPage<HnLiveTask>> {
+  public buildFindWhereWithFilters(spacesFilter: string[], titleFilter: string, publicSelected: boolean,
+                                   myLiveTasksSelected: boolean, personalOnly: boolean, user: HnUser,
+                                   userSpacesIds: string[], coAuthorLiveTasksIds: string[]): FindOptionsWhere<HnLiveTask>[] {
     let where: FindOptionsWhere<HnLiveTask>[];
     const currentUser = user ? user : HnCurrentUserHelper.getCurrentUser();
 
@@ -220,6 +220,31 @@ export class HnLiveTaskService {
         return w;
       });
     }
+    return where;
+  }
+
+  public async findAllWithFilters(spacesFilter: string[], titleFilter: string, publicSelected: boolean, myLiveTasksSelected: boolean,
+                                  personalOnly: boolean, user: HnUser = null, userSpacesIds: string[] = null,
+                                  coAuthorLiveTasksIds: string[] = null): Promise<HnLiveTask[]> {
+    const where =
+      this.buildFindWhereWithFilters(spacesFilter, titleFilter, publicSelected, myLiveTasksSelected,
+        personalOnly, user, userSpacesIds, coAuthorLiveTasksIds);
+
+    return this.liveTaskRepository.find({
+      where: where,
+      order: {createdAt: 'DESC' as any}
+    });
+  }
+
+
+  public async findAllWithFiltersPaginated(
+    spacesFilter: string[], titleFilter: string, publicSelected: boolean, myLiveTasksSelected: boolean,
+    personalOnly: boolean, page: number, size: number, user: HnUser = null,
+    userSpacesIds: string[] = null, coAuthorLiveTasksIds: string[] = null): Promise<ClPage<HnLiveTask>> {
+
+    const where =
+      this.buildFindWhereWithFilters(spacesFilter, titleFilter, publicSelected, myLiveTasksSelected,
+        personalOnly, user, userSpacesIds, coAuthorLiveTasksIds);
 
     return await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
       where: where,

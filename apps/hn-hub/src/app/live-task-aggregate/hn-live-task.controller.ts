@@ -15,6 +15,7 @@ import {HnBrickVersion} from '../brick-aggregate/brick-version/hn-brick-version.
 import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 import {HnUser} from '../users/hn-user.entity';
 import {HnLiveTaskCoAuthorInvite} from './live-task-co-author-invite/hn-live-task-co-author-invite.entity';
+import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
 
 @Controller('live-task')
 export class HnLiveTaskController {
@@ -23,6 +24,12 @@ export class HnLiveTaskController {
   }
 
   //////////////////////////////////////////// Live Task ////////////////////////////////////////////
+
+  @BlPublic()
+  @Get('all-map')
+  async getAllLiveTasksMap(): Promise<HnSitemapItemBase[]> {
+    return this.liveTaskAggregateService.getAllLiveTasksMap();
+  }
 
   /**
    * Create a live task
@@ -115,6 +122,7 @@ export class HnLiveTaskController {
                          @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnLiveTask>> {
     return this.liveTaskAggregateService.findAllWithFilters(spacesFilter, titleFilter, page, size);
   }
+
 
   /**
    * Get a live task by id

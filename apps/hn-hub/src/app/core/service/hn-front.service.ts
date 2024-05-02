@@ -32,10 +32,12 @@ export class HnFrontService {
   }
 
   /////////////////////////////// BRICKS/ //////////////////////////////////////////
-  public getBrickDocUrl(brickName: string, majorStrVersion: string, docCompletePath: string): string {
+  public getBrickDocUrl(brickName: string, majorStrVersion: string, docId: string, docCompletePath: string): string {
     // if complete path ends with /, remove it
     if (docCompletePath.endsWith('/')) {
-      docCompletePath = docCompletePath.slice(0, -1);
+      docCompletePath += docId;
+    } else {
+      docCompletePath += `/${docId}`;
     }
     return `${this.getBrickVersionUrl(brickName,majorStrVersion)}/doc/${docCompletePath}`;
   }
@@ -63,11 +65,15 @@ export class HnFrontService {
   ///////////////////////////// LIVE TASKS ///////////////////////////////////////////
 
   public getLiveTaskInviteUrl(token: string): string {
-    return `${this.getLiveTaskUrl()}/invite/${token}`;
+    return `${this.getLiveTasksUrl()}/invite/${token}`;
   }
 
-  public getLiveTaskUrl(): string {
+  public getLiveTasksUrl(): string {
     return `${this.getBaseWebsiteURL()}/live-tasks`;
+  }
+
+  public getLiveTaskUrl(liveTaskId: string, liveTaskTitlePath: string): string {
+    return `${this.getLiveTasksUrl()}/${liveTaskId}/${liveTaskTitlePath}`;
   }
 
   //////////////////////////////// CONSTELLAB URLS ///////////////////////////////////////

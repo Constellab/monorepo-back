@@ -14,7 +14,7 @@ import {HnLiveTask} from './live-task/hn-live-task.entity';
 import {DataSource, EntityManager} from 'typeorm';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnSpace} from '../space-aggregate/space/hn-space.entity';
-import {ClPage} from '@monorepo/core-lib';
+import {ClPage, ClStringHelper} from '@monorepo/core-lib';
 import {
   BlBadRequestException,
   BlCurrentUserHelper,
@@ -36,6 +36,8 @@ import {HnLiveTaskCoAuthorService} from './live-task-co-author/hn-live-task-co-a
 import {HnLiveTaskCoAuthorInvite} from './live-task-co-author-invite/hn-live-task-co-author-invite.entity';
 import {HnInviteStatus} from '../core/model/config/hn-invite-status.enum';
 import {HnLiveTaskCoAuthor} from './live-task-co-author/hn-live-task-co-author.entity';
+import {HnSiteMapEnumChangefreq, HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
+import {HnFrontService} from '../core/service/hn-front.service';
 
 @Injectable()
 export class HnLiveTaskAggregateService {
@@ -49,6 +51,7 @@ export class HnLiveTaskAggregateService {
     private readonly labConstellabApiService: HnLabConstellabApiService,
     private readonly userService: HnUserService,
     private readonly liveTaskCoAuthorService: HnLiveTaskCoAuthorService,
+    private readonly frontService: HnFrontService,
     private dataSource: DataSource
   ) {
   }
@@ -177,8 +180,19 @@ export class HnLiveTaskAggregateService {
     if(myLiveTasksSelected){
       spacesFilter = spacesFilter.filter(spaceId => spaceId !== 'my-live-tasks');
     }
-    return await this.liveTaskService.findAllWithFilters(spacesFilter, titleFilter, publicSelected,
+    return await this.liveTaskService.findAllWithFiltersPaginated(spacesFilter, titleFilter, publicSelected,
       myLiveTasksSelected, personalOnly, page, size, user, userSpacesIds, coAuthorLiveTasksIds);
+  }
+
+  public async getAllLiveTasksMap(): Promise<HnSitemapItemBase[]> {
+    const liveTasks =
+      await this.liveTaskService.findAllWithFilters([], '', true, false, false);
+    return liveTasks.map((liveTask: HnLiveTask) => ({
+      url: this.frontService.getLiveTaskUrl(liveTask.id, ClStringHelper.getCleanUrlPath(liveTask.title)),
+      priority: 0.8,
+      changefreq: HnSiteMapEnumChangefreq.MONTHLY,
+      lastmod: liveTask.lastModifiedAt.toFormat('yyyy-MM-dd'),
+    }));
   }
 
 

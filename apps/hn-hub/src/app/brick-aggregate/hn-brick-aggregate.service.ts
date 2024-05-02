@@ -146,8 +146,8 @@ export class HnBrickAggregateService {
           for (const doc of docs) {
             brickMap.push(
               {
-                url: this.frontService.getBrickDocUrl(brickMajorVersion.brick.name,
-                  brickMajorVersion.getStrVersion(), doc.completePath),
+                url: this.frontService.getBrickDocUrl(brickMajorVersion.brick.name, brickMajorVersion.getStrVersion(),
+                  doc.id, doc.completePath),
                 // last mode with format YYYY-MM-DD
                 lastmod: doc.lastModifiedAt.toFormat('yyyy-MM-dd'),
                 changefreq: HnSiteMapEnumChangefreq.MONTHLY,
