@@ -16,6 +16,10 @@ export enum CnSpaceType {
 @Entity('space')
 export class CnSpace extends CnBaseEntity {
 
+  public static readonly DEFAULT_NB_LICENSES = 1;
+  private static readonly DEFAULT_STORAGE_LIMIT = 1024 * 1024 * 1024; // 1GB
+
+
   // relation options to load required information for the bucket
   public static buckets: FindOptionsRelations<CnSpace> = {
     defaultProjectBucket: CnBucket.configRelation,
@@ -37,11 +41,11 @@ export class CnSpace extends CnBaseEntity {
   nbLicenses: number;
 
   @Exclude({toPlainOnly: true})
-  @Column({default: 0, type: 'bigint'})
+  @Column({type: 'bigint'})
   cloudStorageLimit: number;
 
   @Exclude({toPlainOnly: true})
-  @Column({default: 0, type: 'bigint'})
+  @Column({type: 'bigint'})
   cloudStorageUsage: number;
 
   @Column({type: 'enum', enum: CnSpaceType, nullable: false, update: false})
@@ -67,6 +71,9 @@ export class CnSpace extends CnBaseEntity {
   setCreatedInfo(): void {
     this.createdAt = ClDateHelper.getDate();
     this.domain = ClStringHelper.generateUUID();
+    this.cloudStorageLimit = CnSpace.DEFAULT_STORAGE_LIMIT;
+    this.cloudStorageUsage = 0;
+    this.nbLicenses = CnSpace.DEFAULT_NB_LICENSES;
   }
 
   @BeforeInsert()

@@ -28,8 +28,14 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     super(repository, CnSpace);
   }
 
-  public async createBasicSpace(space: CnSpace, entityManager: EntityManager): Promise<CnSpace> {
+  public async createBasicSpace(name: string,defaultProjectBucket: CnBucket,
+                                defaultProjectBackupBucket: CnBucket | null, entityManager: EntityManager): Promise<CnSpace> {
+    const space = new CnSpace();
+
+    space.name = name;
     space.type = CnSpaceType.BASIC;
+    space.defaultProjectBucket = defaultProjectBucket;
+    space.defaultProjectBackupBucket = defaultProjectBackupBucket;
     space.createdBy = CnCurrentUserHelper.getAndCheckCurrentUser();
     space.lastModifiedBy = CnCurrentUserHelper.getAndCheckCurrentUser();
     return this.create(space, entityManager);
@@ -40,7 +46,6 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
                                    entityManager: EntityManager): Promise<CnSpace> {
     const space = new CnSpace();
     space.name = user.fullname;
-    space.nbLicenses = 0;
     space.type = CnSpaceType.PERSONAL;
     space.createdBy = user;
     space.lastModifiedBy = user;

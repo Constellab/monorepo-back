@@ -33,9 +33,6 @@ import {CnProjectStorageUsageDTO} from '../cn-projects-aggregate/cn-project-docu
 @Injectable()
 export class CnSpaceAggregateService {
 
-  private static readonly DEFAULT_NB_LICENSES = 1;
-  private static readonly DEFAULT_STORAGE_LIMIT = 1024 * 1024 * 1024; // 1GB
-
   constructor(private spaceService: CnSpaceService,
               private spaceUserService: CnSpaceUserService,
               private spaceAggregateSecurity: CnSpaceAggregateSecurity,
@@ -80,23 +77,16 @@ export class CnSpaceAggregateService {
       throw new BlBadRequestException('The default project storage and backup storage can\'t be a lab bucket during creation');
     }
 
-
-    let space = new CnSpace();
-    space.name = entity.name;
-    space.nbLicenses = CnSpaceAggregateService.DEFAULT_NB_LICENSES;
-    space.cloudStorageLimit = CnSpaceAggregateService.DEFAULT_STORAGE_LIMIT;
-    space.cloudStorageUsage = 0;
-    space.defaultProjectBucket = bucketStorage.defaultProjectBucket;
-    space.defaultProjectBackupBucket = bucketStorage.defaultProjectBackupBucket;
-
-    await this.datasource.transaction(async (entityManager: EntityManager) => {
-      space = await this.spaceService.createBasicSpace(space, entityManager);
+    const spaceDB = await this.datasource.transaction(async (entityManager: EntityManager) => {
+      const space = await this.spaceService.createBasicSpace(entity.name, bucketStorage.defaultProjectBucket,
+        bucketStorage.defaultProjectBackupBucket, entityManager);
 
       const user = CnCurrentUserHelper.getAndCheckCurrentUser();
       await this.spaceUserService.addUserToSpace(space, user, CnSpaceUserRole.ADMIN, user, entityManager);
 
+      return space;
     });
-    return this.getSpaceSettings(space.id);
+    return this.getSpaceSettings(spaceDB.id);
   }
 
   public async updateCurrentSpaceName(name: string): Promise<CnSpace> {
