@@ -458,6 +458,17 @@ export class HnBrickAggregateService {
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
     const mainFolder: HnFolder = await this.folderService.findFolderByBrickMajorVersion(brickMajorVersion);
+    const pathSplited = completePath.split('/');
+    let currentFolder: HnFolder = mainFolder;
+    for (const path of [...pathSplited.slice(0, pathSplited.length - 1)]) {
+      const currentFolderChildren = await this.folderService.findFoldersByParentId(currentFolder.id);
+      for (const folder of currentFolderChildren) {
+        if (folder.title === path) {
+          currentFolder = folder;
+          break;
+        }
+      }
+    }
     if(!completePath.endsWith('/')) {
       completePath += '/';
     }
@@ -511,13 +522,17 @@ export class HnBrickAggregateService {
     return {id: mainFolder.id};
   }
 
-  async findCurrentDoc(brickName: string, version: string, body: any): Promise<HnNode | any> {
+  async findCurrentDoc(brickName: string, version: string, completePath: string): Promise<HnNode | any> {
     const brick: HnBrick = await this.findBrickByName(brickName);
 
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
 
-    return await this.documentationService.findCurrentDoc(brickMajorVersion, body.path);
+    if (!completePath.endsWith('/')) {
+      completePath += '/';
+    }
+
+    return await this.documentationService.findCurrentDoc(brickMajorVersion, completePath);
   }
 
   async findFirstDoc(brickName: string, version: string): Promise<HnDocumentation> {

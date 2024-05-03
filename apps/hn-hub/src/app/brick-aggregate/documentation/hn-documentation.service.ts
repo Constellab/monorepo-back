@@ -73,7 +73,7 @@ export class HnDocumentationService {
   }
 
   async findDocByCompletePath(folder: HnFolder, completePath: string): Promise<HnDocumentation>{
-    return this.documentationsRepository.findOne({
+    const doc = await this.documentationsRepository.findOne({
       where: {
         completePath: completePath,
         folder: {
@@ -81,6 +81,7 @@ export class HnDocumentationService {
         }
       }
     });
+    return doc;
   }
 
   async update(updatedDocumentation: HnNodeDTO): Promise<HnDocumentation> {

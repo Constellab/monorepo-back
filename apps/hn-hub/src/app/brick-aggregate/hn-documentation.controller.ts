@@ -52,7 +52,7 @@ export class HnDocumentationController {
   @BlPublic()
   @Post('complete-path')
   findByCompletePath(@Body() body: any): Promise<HnDocumentation> {
-    return this.brickAggregateService.findDocByCompletePath(body.brickName, body.version, body.completePath);
+    return this.brickAggregateService.findCurrentDoc(body.brickName, body.version, body.completePath);
   }
 
   @BlPublic()
