@@ -453,6 +453,17 @@ export class HnBrickAggregateService {
     return this.documentationService.findById(id);
   }
 
+  async findDocByCompletePath(brickName: string, version: string, completePath: string): Promise<HnDocumentation> {
+    const brick: HnBrick = await this.findBrickByName(brickName);
+    const brickMajorVersion: HnBrickMajorVersion =
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
+    const mainFolder: HnFolder = await this.folderService.findFolderByBrickMajorVersion(brickMajorVersion);
+    if(!completePath.endsWith('/')) {
+      completePath += '/';
+    }
+    return this.documentationService.findDocByCompletePath(mainFolder, completePath);
+  }
+
   async removeDoc(id: string): Promise<void> {
     await this.checkIfUserHasRightsOnDoc(id);
     return this.documentationService.remove(id);

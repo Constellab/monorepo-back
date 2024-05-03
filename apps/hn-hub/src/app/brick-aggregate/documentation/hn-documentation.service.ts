@@ -72,6 +72,17 @@ export class HnDocumentationService {
     });
   }
 
+  async findDocByCompletePath(folder: HnFolder, completePath: string): Promise<HnDocumentation>{
+    return this.documentationsRepository.findOne({
+      where: {
+        completePath: completePath,
+        folder: {
+          id: folder.id
+        }
+      }
+    });
+  }
+
   async update(updatedDocumentation: HnNodeDTO): Promise<HnDocumentation> {
     const doc: HnDocumentation = await this.documentationsRepository.findOne(
       {where: {id: updatedDocumentation.id}, relations: {folder: true}});

@@ -50,6 +50,12 @@ export class HnDocumentationController {
   }
 
   @BlPublic()
+  @Post('complete-path')
+  findByCompletePath(@Body() body: any): Promise<HnDocumentation> {
+    return this.brickAggregateService.findDocByCompletePath(body.brickName, body.version, body.completePath);
+  }
+
+  @BlPublic()
   @Get(':id')
   findById(@Param('id') id: string): Promise<HnDocumentation> {
     return this.brickAggregateService.findDocById(id);
