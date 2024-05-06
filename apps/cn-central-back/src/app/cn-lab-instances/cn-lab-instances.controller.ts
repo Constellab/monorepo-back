@@ -19,11 +19,11 @@ import {
   CnRequestLabInstance,
 } from './cn-lab-instance.dto';
 import {
-  CnLabComposeRestartOptions,
-  CnLabComposeUpOptions,
-  CnLabDockerPs,
-  CnLabDockerPsFull,
-  CnLabPullBiotaOptions
+  CnLabManagerComposeUpOptions,
+  CnLabManagerDockerPs,
+  CnLabManagerDockerPsFull,
+  CnManagerLabComposeRestartOptions,
+  CnManagerLabPullBiotaOptions
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
@@ -297,13 +297,13 @@ export class CnLabInstancesController {
   }
 
   @Get(':id/lab-manager/containers')
-  async listContainers(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabDockerPs[]> {
+  async listContainers(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabManagerDockerPs[]> {
     return await this.aggregateService.listContainers(id);
   }
 
   @Get(':id/lab-manager/containers/:containerName')
   async getContainerDetails(@Param('id', new ParseUUIDPipe()) id: string,
-                            @Param('containerName') containerName: string): Promise<CnLabDockerPsFull> {
+                            @Param('containerName') containerName: string): Promise<CnLabManagerDockerPsFull> {
     return await this.aggregateService.getContainerDetails(id, containerName);
   }
 
@@ -319,13 +319,13 @@ export class CnLabInstancesController {
 
   @Post(':id/lab-manager/up-containers')
   async upContainers(@Param('id', new ParseUUIDPipe()) id: string,
-                     @Body() options: CnLabComposeUpOptions): Promise<void> {
+                     @Body() options: CnLabManagerComposeUpOptions): Promise<void> {
     return await this.aggregateService.upContainers(id, options);
   }
 
   @Post(':id/lab-manager/restart-containers')
   async restartContainers(@Param('id', new ParseUUIDPipe()) id: string,
-                          @Body() options: CnLabComposeRestartOptions): Promise<void> {
+                          @Body() options: CnManagerLabComposeRestartOptions): Promise<void> {
     return await this.aggregateService.restartContainers(id, options);
   }
 
@@ -341,7 +341,7 @@ export class CnLabInstancesController {
 
   @Post(':id/lab-manager/pull-biota-db')
   async pullBiotaDb(@Param('id', new ParseUUIDPipe()) id: string,
-                    @Body() options: CnLabPullBiotaOptions): Promise<void> {
+                    @Body() options: CnManagerLabPullBiotaOptions): Promise<void> {
     return this.aggregateService.pullBiota(id, options);
   }
 

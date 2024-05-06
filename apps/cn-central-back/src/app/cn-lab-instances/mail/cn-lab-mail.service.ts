@@ -12,20 +12,22 @@ import {ClSupportedLanguage} from '@monorepo/core-lib';
 import {CnFrontService} from '../../cn-core/services/cn-front.service';
 import {CnSpaceService} from '../../cn-spaces/cn-space.service';
 import {CnLabInstanceUserService} from '../user/cn-lab-instance-user.service';
+import {CnSupportService} from '../../cn-support/cn-support.service';
 
 
 /**
  * Service to send mail from the lab
  */
 @Injectable()
-export class CnLabInstanceMailService {
+export class CnLabMailService {
 
   constructor(private mailService: BlMailService,
               private userService: CnUsersService,
               private configService: CnCoreConfigService,
               private frontService: CnFrontService,
               private spaceService: CnSpaceService,
-              private labUserService: CnLabInstanceUserService) {
+              private labUserService: CnLabInstanceUserService,
+              private supportService: CnSupportService) {
   }
 
   public async sendMailFromLab(labInstance: CnLabInstance, sendMailDTO: CnLabInstanceSendMailDto): Promise<void> {
@@ -40,7 +42,7 @@ export class CnLabInstanceMailService {
   }
 
   public async sendRequestLabInstanceMail(request: CnRequestLabInstance, user: CnUser, space: CnSpace): Promise<void> {
-    await this.mailService.sendMail(CnMailTemplate.request_lab_instance, this.configService.getGencoveryContactMail(),
+    await this.mailService.sendMail(CnMailTemplate.request_lab_instance, this.configService.getSalesMail(),
       ClSupportedLanguage.en, {
         user: user,
         space: space,
@@ -70,11 +72,34 @@ export class CnLabInstanceMailService {
 
     for (const owner of owners) {
       await this.mailService.sendMailToUser(CnMailTemplate.lab_started, owner.user, {
-        user: owner.user,
-        lab: labInstance,
+        user: {
+          firstname: owner.user.firstname,
+          lastname: owner.user.lastname,
+        },
+        lab: {
+          name: labInstance.name,
+        },
         labUrl: labUrl,
       });
     }
+  }
+
+  public async sendLabStartErrorMail(labInstance: CnLabInstance): Promise<void> {
+    const space = await this.spaceService.findByIdAndCheck(labInstance.spaceId);
+    const labUrl = this.frontService.getLabInstanceUrl(space.domain, labInstance.id);
+    await this.supportService.sendMailToSupport(CnMailTemplate.support_lab_start_error, {
+      lab: {
+        id: labInstance.id,
+        name: labInstance.name
+      },
+      space: {
+        id: space.id,
+        name: space.name
+      },
+      error: labInstance.serverTaskText,
+      labUrl: labUrl,
+    });
+
   }
 
 }

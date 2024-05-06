@@ -5,9 +5,8 @@ import {ClHelpService, ClSupportedLanguage} from '@monorepo/core-lib';
 import {BL_MAIL_CONFIG_PROVIDER, BlMailModuleConfig} from './bl-mail.class';
 import {BlTranslateService} from '../bl-translate/bl-translate.service';
 import {BlUser} from '../../models/bl-user/bl-user.class';
-import nodemailer = require('nodemailer');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const hbs = require('nodemailer-express-handlebars');
+import * as hbs from 'nodemailer-express-handlebars';
+import * as nodemailer from 'nodemailer';
 
 /**
  * Service to send mail using .hbs template in assets/template

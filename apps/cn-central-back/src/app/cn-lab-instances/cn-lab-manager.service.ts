@@ -1,15 +1,16 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {
-  CnLabComposeRestartOptions,
-  CnLabComposeUpOptions,
-  CnLabDockerPs,
-  CnLabDockerPsFull,
+  CnLabManagerComposeUpOptions,
+  CnLabManagerDockerPs,
+  CnLabManagerDockerPsFull,
   CnLabManagerInitConfig,
-  CnLabPullBiotaOptions
+  CnLabManagerStatus,
+  CnManagerLabComposeRestartOptions,
+  CnManagerLabPullBiotaOptions
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnExternalLabManagerApiService} from '../cn-external-lab-api/cn-external-lab-manager-api.service';
 import {CnLabInstance} from './cn-lab-instance.entity';
-import {CnLabInstanceConfigDTO, CnLabManagerStatus} from './cn-lab-instance.dto';
+import {CnLabInstanceConfigDTO} from './cn-lab-instance.dto';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CnExternalLabBackupInfoDTO} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
@@ -47,11 +48,11 @@ export class CnLabManagerService {
     return this.configService.getLabManagerRecommendedVersion();
   }
 
-  public async listContainers(labInstance: CnLabInstance): Promise<CnLabDockerPs[]> {
+  public async listContainers(labInstance: CnLabInstance): Promise<CnLabManagerDockerPs[]> {
     return this.labManagerApiService.listContainers(labInstance.getLabManagerApiInfo());
   }
 
-  public async getContainerDetails(labInstance: CnLabInstance, containerName: string): Promise<CnLabDockerPsFull> {
+  public async getContainerDetails(labInstance: CnLabInstance, containerName: string): Promise<CnLabManagerDockerPsFull> {
     return this.labManagerApiService.getContainerDetails(labInstance.getLabManagerApiInfo(), containerName);
   }
 
@@ -86,11 +87,11 @@ export class CnLabManagerService {
     return this.labManagerApiService.initAll(labInstance.getLabManagerApiInfo(), initConfig);
   }
 
-  public async upContainers(labInstance: CnLabInstance, options?: CnLabComposeUpOptions): Promise<void> {
+  public async upContainers(labInstance: CnLabInstance, options?: CnLabManagerComposeUpOptions): Promise<void> {
     return this.labManagerApiService.upContainers(labInstance.getLabManagerApiInfo(), options);
   }
 
-  public async restartContainers(labInstance: CnLabInstance, options?: CnLabComposeRestartOptions): Promise<void> {
+  public async restartContainers(labInstance: CnLabInstance, options?: CnManagerLabComposeRestartOptions): Promise<void> {
     return this.labManagerApiService.restartContainers(labInstance.getLabManagerApiInfo(), options);
   }
 
@@ -102,7 +103,7 @@ export class CnLabManagerService {
     return this.labManagerApiService.pullContainers(labInstance.getLabManagerApiInfo());
   }
 
-  public async pullBiota(labInstance: CnLabInstance, options: CnLabPullBiotaOptions): Promise<void> {
+  public async pullBiota(labInstance: CnLabInstance, options: CnManagerLabPullBiotaOptions): Promise<void> {
     return this.labManagerApiService.pullBiota(labInstance.getLabManagerApiInfo(), options);
   }
 

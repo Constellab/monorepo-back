@@ -8,11 +8,11 @@ import {
   cnExternalLabApiKeySchema
 } from '../cn-core/model/config/cn-config.class';
 import {
-  CnLabComposeRestartOptions,
-  CnLabComposeUpOptions,
-  CnLabDockerPsFull,
+  CnLabManagerComposeUpOptions,
+  CnLabManagerDockerPsFull,
   CnLabManagerInitConfig,
-  CnLabPullBiotaOptions
+  CnManagerLabComposeRestartOptions,
+  CnManagerLabPullBiotaOptions
 } from './model/cn-lab-manager.class';
 import {CnExternalLabBackupInfoDTO} from './model/cn-external-lab-api.class';
 import {CnLabConfigFile} from '../cn-lab-configs/cn-lab-config-file.class';
@@ -41,11 +41,11 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/status`));
   }
 
-  public async listContainers(apiInfo: CnExternalApiInfo): Promise<CnLabDockerPsFull[]> {
+  public async listContainers(apiInfo: CnExternalApiInfo): Promise<CnLabManagerDockerPsFull[]> {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers`));
   }
 
-  public async getContainerDetails(apiInfo: CnExternalApiInfo, containerName: string): Promise<CnLabDockerPsFull> {
+  public async getContainerDetails(apiInfo: CnExternalApiInfo, containerName: string): Promise<CnLabManagerDockerPsFull> {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers/${containerName}`));
   }
 
@@ -57,11 +57,11 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/init-all`, initConfig));
   }
 
-  public async upContainers(apiInfo: CnExternalApiInfo, options?: CnLabComposeUpOptions): Promise<void> {
+  public async upContainers(apiInfo: CnExternalApiInfo, options?: CnLabManagerComposeUpOptions): Promise<void> {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/up-containers`, options));
   }
 
-  public async restartContainers(apiInfo: CnExternalApiInfo, options?: CnLabComposeRestartOptions): Promise<void> {
+  public async restartContainers(apiInfo: CnExternalApiInfo, options?: CnManagerLabComposeRestartOptions): Promise<void> {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/restart-containers`, options));
   }
 
@@ -73,7 +73,7 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/pull-containers`, null));
   }
 
-  public async pullBiota(apiInfo: CnExternalApiInfo, options: CnLabPullBiotaOptions): Promise<void> {
+  public async pullBiota(apiInfo: CnExternalApiInfo, options: CnManagerLabPullBiotaOptions): Promise<void> {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/pull-biota-db`, options));
   }
 

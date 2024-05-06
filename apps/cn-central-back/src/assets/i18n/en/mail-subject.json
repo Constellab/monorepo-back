@@ -10,5 +10,6 @@
   "cn-two-factor-authentication": "Constellab - Two factor authentication",
   "cn-request-lab-instance": "Constellab - Request lab instance",
   "cn-generic": "Constellab - Notification",
-  "cn-lab-started": "Constellab - Lab started"
+  "cn-lab-started": "Constellab - Lab started",
+  "cn-support-lab-start-error": "[SUPPORT] Constellab - Error during lab start"
 }

@@ -159,7 +159,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
       user: user,
       documentationLink: this.frontService.getCommunityProductDocUrl(),
       communityLink: this.configService.getCommunityFrontUrl(),
-      contactMail: this.configService.getGencoveryContactMail()
+      contactMail: this.configService.getCustomerSuccessMail()
     });
   }
 

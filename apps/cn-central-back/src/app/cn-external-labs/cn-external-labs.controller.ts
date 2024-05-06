@@ -6,7 +6,7 @@ import {CnCreateReportWithConfigDto} from '../cn-projects-aggregate/cn-reports/c
 import {CnLabInstanceStartDTO} from '../cn-lab-instances/cn-lab-instance.dto';
 import {CnProjectAggregateService} from '../cn-projects-aggregate/cn-project-aggregate.service';
 import {CnLabInstanceSendMailDto} from '../cn-lab-instances/mail/cn-lab-instance-mail.dto';
-import {CnLabInstanceMailService} from '../cn-lab-instances/mail/cn-lab-instance-mail.service';
+import {CnLabMailService} from '../cn-lab-instances/mail/cn-lab-mail.service';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnLabInstanceAggregateService} from '../cn-lab-instances/cn-lab-instance-aggregate.service';
 import {FilesInterceptor} from '@nestjs/platform-express';
@@ -24,7 +24,7 @@ export class CnExternalLabsController {
 
   constructor(private labInstanceAggregator: CnLabInstanceAggregateService,
               private projectAggregator: CnProjectAggregateService,
-              private labInstanceMailService: CnLabInstanceMailService) {
+              private labInstanceMailService: CnLabMailService) {
   }
 
   // route called on the lab start

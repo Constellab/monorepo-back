@@ -17,7 +17,12 @@ import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
 import {CnReportsService} from '../cn-projects-aggregate/cn-reports/cn-reports.service';
 import {BlBadRequestException, BlSearchBuilder, BlSearchParams} from '@monorepo/back-core-lib';
 import {EventEmitter2} from '@nestjs/event-emitter';
-import {cnLabInstanceEventName, CnLabInstanceStatusChangedEvent} from './cn-lab-instance.event';
+import {
+  CnLabEvent,
+  cnLabInstanceEventName,
+  CnLabServerTaskStatusChangedEvent,
+  CnLabStatusChangedEvent
+} from './cn-lab-instance.event';
 import {
   CnCloudProviderRegionType
 } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
@@ -242,17 +247,14 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
 
   /**
    * Return true if the lab was started once
-   * @param id
    */
-  public async labHasBeenRunning(id: string): Promise<boolean> {
-    const runningStatus = await this.statusRepo.findOne({
+  public async findByStatus(id: string, status: CnLabInstanceStatus): Promise<CnLabInstanceStatusHistory[]> {
+    return await this.statusRepo.find({
       where: {
         entity: {id: id},
-        status: CnLabInstanceStatus.LAB_RUNNING
-      }
+        status: status
+      },
     });
-
-    return !!runningStatus;
   }
 
   // override the status change event to emit a lab instance event
@@ -263,13 +265,13 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
 
     const oldStatus = dbEntity.currentStatus.status;
     const newLab = await this.updateCurrentStatusWithDbEntity(status, dbEntity);
-    const event: CnLabInstanceStatusChangedEvent = {
+    const event: CnLabStatusChangedEvent = {
       labInstanceId: newLab.id,
       newStatus: newLab.currentStatus.status,
       oldStatus: oldStatus,
       type: 'LAB_STATUS_CHANGED',
     };
-    this.eventEmitter.emit(cnLabInstanceEventName, event);
+    this.emitLabEvent(event);
     return newLab;
   }
 
@@ -328,10 +330,21 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
    */
   public async updateServerTask(labInstanceId: string, text: string, status: CnLabInstanceServerTaskStatus): Promise<CnLabInstance> {
     const labInstance = await this.findByIdAndCheck(labInstanceId);
+    const event: CnLabServerTaskStatusChangedEvent = {
+      labInstanceId: labInstanceId,
+      newStatus: status,
+      oldStatus: labInstance.serverTaskStatus,
+      type: 'LAB_SERVER_TASK_STATUS_CHANGED',
+    };
+
     labInstance.serverTaskText = text;
     labInstance.serverTaskStatus = status;
     labInstance.serverTaskDatetime = ClDateHelper.getDate();
-    return this.repository.save(labInstance);
+    const labInstanceDb = await this.repository.save(labInstance);
+
+    this.emitLabEvent(event);
+
+    return labInstanceDb;
   }
 
   /**
@@ -356,5 +369,9 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   public async getLabServerStandard(labId: string): Promise<CnServerStandard> {
     const lab = await this.findByIdAndCheck(labId, {serverCloud: true});
     return lab.serverCloud?.serverStandard;
+  }
+
+  private emitLabEvent(labEvent: CnLabEvent): void {
+    this.eventEmitter.emit(cnLabInstanceEventName, labEvent);
   }
 }

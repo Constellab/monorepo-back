@@ -12,7 +12,7 @@ import {CnExperimentsModule} from '../cn-projects-aggregate/cn-experiments/cn-ex
 import {CnLabManagerService} from './cn-lab-manager.service';
 import {CnBricksModule} from '../cn-bricks/cn-bricks.module';
 import {CnLabConfigsModule} from '../cn-lab-configs/cn-lab-configs.module';
-import {CnLabInstanceMailService} from './mail/cn-lab-instance-mail.service';
+import {CnLabMailService} from './mail/cn-lab-mail.service';
 import {CnLabInstancesSecurity} from './cn-lab-instances.security';
 import {CnLabInstanceUser} from './user/cn-lab-instance-user.entity';
 import {CnGroupsModule} from '../cn-groups/cn-groups.module';
@@ -53,6 +53,7 @@ import {CnServerPriceModule} from '../cn-servers-info/server-price/cn-server-pri
 import {CnLabContestService} from './cn-lab-contest.service';
 import {CnLabFactoryService} from './cn-lab-factory.service';
 import {CnLabBackupAggregateService} from './backup/cn-lab-backup-aggregate.service';
+import {CnSupportModule} from '../cn-support/cn-support.module';
 
 @Module({
   imports: [
@@ -81,8 +82,9 @@ import {CnLabBackupAggregateService} from './backup/cn-lab-backup-aggregate.serv
     CnReportsModule,
     CnObjectStoragesModule,
     CnServerPriceModule,
+    CnSupportModule,
 
-    // Next modules are imported for the trial service
+    // Next modules are imported create lab automatically (trial,contest)
     CnCloudProvidersModule,
     CnServerCloudModule,
     CnSpacesModule,
@@ -93,7 +95,7 @@ import {CnLabBackupAggregateService} from './backup/cn-lab-backup-aggregate.serv
     CnLabInstancesService,
     CnLabInstanceAggregateService,
     CnLabManagerService,
-    CnLabInstanceMailService,
+    CnLabMailService,
     CnLabInstancesSecurity,
     CnLabInstanceUserService,
     CnLabInstanceProjectService,
@@ -122,7 +124,7 @@ import {CnLabBackupAggregateService} from './backup/cn-lab-backup-aggregate.serv
   exports: [
     CnLabInstancesService,
     CnLabInstanceAggregateService,
-    CnLabInstanceMailService,
+    CnLabMailService,
     CnLabInstanceUserService,
   ],
   controllers: [CnLabInstancesController],

@@ -111,7 +111,7 @@ function configureMailModule(configService: CnCoreConfigService): BlMailModuleCo
     mailConfig: configService.getMailConfig(),
     templateFolder: join(__dirname, 'assets/templates/'),
     defaultLayout: 'main-',
-    defaultData: {contactMail: configService.getGencoveryContactMail()}
+    defaultData: {contactMail: configService.getCustomerSuccessMail()}
   };
 }
 

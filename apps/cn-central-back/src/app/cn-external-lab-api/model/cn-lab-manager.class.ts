@@ -1,11 +1,13 @@
-
-export interface CnLabDockerPs {
+/**
+ * File that contains all the DTO to communicate with the lab manager
+ */
+export interface CnLabManagerDockerPs {
   names: string;
   state: 'running' | 'exited';
 }
 
 
-export interface CnLabDockerPsFull extends CnLabDockerPs{
+export interface CnLabManagerDockerPsFull extends CnLabManagerDockerPs{
   command: string;
   createdAt: string;
   id: string;
@@ -22,16 +24,16 @@ export interface CnLabDockerPsFull extends CnLabDockerPs{
 
 
 
-export interface CnLabComposeUpOptions {
+export interface CnLabManagerComposeUpOptions {
   updateContainers?: boolean;
   pruneSystem?: string;
 }
 
-export interface CnLabComposeRestartOptions extends CnLabComposeUpOptions{
+export interface CnManagerLabComposeRestartOptions extends CnLabManagerComposeUpOptions{
   destroyContainers?: boolean; // if true container will be destroyed and recreated
 }
 
-export interface CnLabPullBiotaOptions {
+export interface CnManagerLabPullBiotaOptions {
   forceUpdate?: boolean;
 }
 
@@ -59,4 +61,32 @@ export interface CnLabManagerInitConfig {
   }
   captchaSiteKey: string;
   openaiApiKey: string;
+}
+
+
+export interface CnLabManagerTaskStatusInfo {
+  name: string;
+  status: 'RUNNING' | 'SUCCESS' | 'ERROR';
+  info?: string;
+}
+
+/**
+ * Complete status of the lab manager
+ */
+export class CnLabManagerStatus {
+  containersStatus: any;
+
+  currentTask?: CnLabManagerTaskStatusInfo;
+
+  adminerIsRunning: boolean;
+
+  version: string;
+  biota: {
+    exists: boolean;
+    dbUrl?: string;
+  };
+  isConfigured: boolean;
+  isInitialized: boolean;
+  // version of the lab manager that has been used to init the lab
+  lastInitVersion: string;
 }

@@ -67,8 +67,12 @@ export class CnCoreConfigService {
     return this.configService.get('ROBOT_USER_MAIL');
   }
 
-  public getGencoveryContactMail(): string {
-    return this.configService.get('GENCOVERY_CONTACT_MAIL');
+  public getCustomerSuccessMail(): string {
+    return this.configService.get('CUSTOMER_SUCCESS_MAIL');
+  }
+
+  public getSalesMail(): string {
+    return this.configService.get('SALES_MAIL');
   }
 
   public getOpenaiAPIKey(): string {

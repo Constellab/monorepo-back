@@ -17,11 +17,11 @@ import {
 import {ClPage, ClPageI, ClStringHelper} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {
-  CnLabComposeRestartOptions,
-  CnLabComposeUpOptions,
-  CnLabDockerPs,
-  CnLabDockerPsFull,
-  CnLabPullBiotaOptions
+  CnLabManagerComposeUpOptions,
+  CnLabManagerDockerPs,
+  CnLabManagerDockerPsFull,
+  CnManagerLabComposeRestartOptions,
+  CnManagerLabPullBiotaOptions
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnLabManagerService} from './cn-lab-manager.service';
 import {CnLabInstanceToken} from './user/cn-lab-instance-token.class';
@@ -66,7 +66,7 @@ import {CnUser} from '../cn-users/cn-user.entity';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
 import {CnLabDesktopConfig, CnLabInstanceDesktopService} from './desktop/cn-lab-instance-desktop.service';
 import {CnBrickGWS} from '../cn-bricks/cn-brick.dto';
-import {CnLabInstanceMailService} from './mail/cn-lab-instance-mail.service';
+import {CnLabMailService} from './mail/cn-lab-mail.service';
 import {CnLabGreenOption} from './green-option/cn-lab-green-option.entity';
 import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.service';
 import {CnLabGreenOptionFormDto} from './green-option/cn-lab-green-option.dto';
@@ -107,7 +107,7 @@ export class CnLabInstanceAggregateService {
               private cloudProviderFactory: CnCloudProviderFactory,
               private labConfigService: CnLabConfigsService,
               private labInstanceDesktopService: CnLabInstanceDesktopService,
-              private labMailService: CnLabInstanceMailService,
+              private labMailService: CnLabMailService,
               private labGreenOptionService: CnLabGreenOptionService,
               private authService: CnAuthService,
               private labStatusService: CnLabInstanceStatusService,
@@ -415,7 +415,6 @@ export class CnLabInstanceAggregateService {
    */
   public async refreshLabStatus(labInstanceId: string): Promise<CnLabInstance> {
     const labInstance = await this.labInstancesService.findByIdAndCheck(labInstanceId);
-
     if (!labInstance.isHttpAccessible()) {
       throw new BlBadRequestException(`Cannot refresh status of a lab that is not on a server`);
     }
@@ -446,16 +445,7 @@ export class CnLabInstanceAggregateService {
     // if the lab is running
     const healthCheck = await this.externalLabApiService.healthCheck(labInstance.getGlabSpaceApiInfo());
     if (healthCheck) {
-      const labWasRunning = await this.labInstancesService.labHasBeenRunning(labInstanceId);
-
-      const lab = await this.labInstancesService.markInstanceAsLabRunning(labInstanceId);
-
-      // if this is the first start of the lab, email the user
-      if (!labWasRunning) {
-        await this.labMailService.sendLabStartedMail(lab);
-      }
-
-      return lab;
+      return await this.labInstancesService.markInstanceAsLabRunning(labInstanceId);
     }
 
     // if the lab manager is running, mark the lab as configured
@@ -689,12 +679,12 @@ export class CnLabInstanceAggregateService {
     return this.labManagerService.getLabStatus(labInstance);
   }
 
-  public async listContainers(labId: string): Promise<CnLabDockerPs[]> {
+  public async listContainers(labId: string): Promise<CnLabManagerDockerPs[]> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.listContainers(labInstance);
   }
 
-  public async getContainerDetails(labId: string, containerName: string): Promise<CnLabDockerPsFull> {
+  public async getContainerDetails(labId: string, containerName: string): Promise<CnLabManagerDockerPsFull> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.getContainerDetails(labInstance, containerName);
   }
@@ -711,14 +701,14 @@ export class CnLabInstanceAggregateService {
     await this.refreshLabStatus(labInstance.id);
   }
 
-  public async upContainers(labId: string, options?: CnLabComposeUpOptions): Promise<void> {
+  public async upContainers(labId: string, options?: CnLabManagerComposeUpOptions): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckServerStatusBeforeAction(labId);
     this.checkServerIsRunning(labInstance);
     await this.labManagerService.upContainers(labInstance, options);
     await this.refreshLabStatus(labInstance.id);
   }
 
-  public async restartContainers(labId: string, options?: CnLabComposeRestartOptions): Promise<void> {
+  public async restartContainers(labId: string, options?: CnManagerLabComposeRestartOptions): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckServerStatusBeforeAction(labId);
     this.checkServerIsRunning(labInstance);
     await this.labManagerService.restartContainers(labInstance, options);
@@ -738,7 +728,7 @@ export class CnLabInstanceAggregateService {
     return this.labManagerService.pullContainers(labInstance);
   }
 
-  public async pullBiota(labId: string, options: CnLabPullBiotaOptions): Promise<void> {
+  public async pullBiota(labId: string, options: CnManagerLabPullBiotaOptions): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
     this.checkServerIsRunning(labInstance);
     return this.labManagerService.pullBiota(labInstance, options);

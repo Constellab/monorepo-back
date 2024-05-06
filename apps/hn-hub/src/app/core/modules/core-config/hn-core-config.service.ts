@@ -2,7 +2,9 @@ import {Injectable, LogLevel} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import {
   HN_BUCKET_DOCUMENTATION_BACKUP_KEY,
-  HN_BUCKET_DOCUMENTATION_KEY, HN_BUCKET_ICON_BACKUP_KEY, HN_BUCKET_ICON_KEY,
+  HN_BUCKET_DOCUMENTATION_KEY,
+  HN_BUCKET_ICON_BACKUP_KEY,
+  HN_BUCKET_ICON_KEY,
   HN_BUCKET_STORIES_BACKUP_KEY,
   HN_BUCKET_STORIES_KEY,
   HN_ENVIRONMENT_PROFILE_KEY,
@@ -194,8 +196,8 @@ export class HnCoreConfigService {
     }
   }
 
-  public getGencoveryContactMail(): string {
-    return this.configService.get('GENCOVERY_CONTACT_MAIL');
+  public getCustomerSuccessMail(): string {
+    return this.configService.get('CUSTOMER_SUCCESS_MAIL');
   }
 
   // protected getConfigNumber(configName: string): number {

@@ -178,24 +178,6 @@ export interface CnRequestLabInstance {
   additionalInfo?: string;
 }
 
-export class CnLabManagerStatus {
-  containersStatus: any;
-
-  currentTask?: any;
-
-  adminerIsRunning: boolean;
-
-  version: string;
-  biota: {
-    exists: boolean;
-    dbUrl?: string;
-  };
-  isConfigured: boolean;
-  isInitialized: boolean;
-  // version of the lab manager that has been used to init the lab
-  lastInitVersion: string;
-}
-
 
 export class CnLabServerInfoDTO {
 

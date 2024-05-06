@@ -29,7 +29,7 @@ export class CnSpacesMailService {
       text: request.text,
     };
 
-    const receiver = this.configService.getGencoveryContactMail();
+    const receiver = this.configService.getSalesMail();
     await this.mailService.sendMail(CnMailTemplate.request_new_licenses, receiver,
       userInfo.user.lang, data);
   }
