@@ -5,7 +5,7 @@ import {EntityManager, Like, Repository} from 'typeorm';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnSpace, CnSpaceType} from './cn-space.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {ClPage} from '@monorepo/core-lib';
+import {ClHelpService, ClPage} from '@monorepo/core-lib';
 import {
   BlAbstractPaginatedService,
   BlBadRequestException,
@@ -30,21 +30,6 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     super(repository, CnSpaceUser);
   }
 
-  public async findOneBySpaceIdAndUserId(spaceId: string, userId: string): Promise<CnSpaceUser | null> {
-    return this.repository.findOne({where: {userId, spaceId: spaceId}});
-  }
-
-  public async findOneBySpaceIdAndUserEmail(spaceId: string, email: string): Promise<CnSpaceUser | null> {
-    return this.repository.findOne(
-      {
-        where: {
-          spaceId: spaceId,
-          user: {email: email}
-        },
-        relations: {user: true}
-      }
-    );
-  }
 
   public async userIsSpaceMember(spaceId: string, userId: string): Promise<boolean> {
     return await this.findOneBySpaceIdAndUserId(spaceId, userId) != null;
@@ -80,7 +65,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     const spaceUserDeleted = {
       userId: userId,
       spaceId: spaceId
-    }
+    };
 
     this.sendActionOnSpaceUserToTransport(spaceUserDeleted, CnSpaceUserAction.REMOVE);
   }
@@ -134,6 +119,33 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     return admins.length === 1 && admins[0].userId === userId;
   }
 
+
+  public async usersHaveCommonSpace(userAId: string, userBId: string): Promise<boolean> {
+    const userASpaces: CnSpace[] = await this.getSpacesOfUser(userAId);
+    const userBSpaces: CnSpace[] = await this.getSpacesOfUser(userBId);
+
+    //Check common space
+    return userASpaces.find((space) => userBSpaces.find((spaceB) => spaceB.id === space.id)) != null;
+
+  }
+
+  ///////////////////////////////// FIND  /////////////////////////////////////////
+  public async findOneBySpaceIdAndUserId(spaceId: string, userId: string): Promise<CnSpaceUser | null> {
+    return this.repository.findOne({where: {userId, spaceId: spaceId}});
+  }
+
+  public async findOneBySpaceIdAndUserEmail(spaceId: string, email: string): Promise<CnSpaceUser | null> {
+    return this.repository.findOne(
+      {
+        where: {
+          spaceId: spaceId,
+          user: {email: email}
+        },
+        relations: {user: true}
+      }
+    );
+  }
+
   public async findBySpace(spaceId: string, page: number, size: number): Promise<ClPage<CnSpaceUser>> {
     return await this.findPaginated(page, size, {
       where: {spaceId: spaceId},
@@ -157,38 +169,6 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     return spaceUsers.map((spaceUser) => spaceUser.userId);
   }
 
-  public async sendAllSpaceUsersToQueue(): Promise<void> {
-    const spaceUsers = await this.repository.find({relations: {user: true, space: true}});
-
-    spaceUsers.forEach((spaceUser) => {
-      this.sendSpaceUserToTransport(spaceUser);
-    });
-  }
-
-  public async sendAllSpaceUsersFromASpaceToQueue(spaceId: string): Promise<void> {
-    const spaceUsers = await this.repository.find({where: {spaceId: spaceId}, relations: {user: true, space: true}});
-    spaceUsers.forEach((spaceUser) => {
-      this.sendSpaceUserToTransport(spaceUser);
-    });
-  }
-
-  public sendSpaceUserToTransport(spaceUser: CnSpaceUser): void {
-    const sU: Partial<CnSpaceUser> = {
-      userId: spaceUser.userId,
-      spaceId: spaceUser.spaceId,
-      role: spaceUser.role,
-      active: spaceUser.active,
-      user: spaceUser.user,
-      space: spaceUser.space,
-      addedBy: spaceUser.addedBy,
-      createdAt: spaceUser.createdAt
-    };
-    this.transportService.emit(CnSpaceUserAction.CREATE, sU);
-  }
-
-  public sendActionOnSpaceUserToTransport(spaceUser: Partial<CnSpaceUser>, spaceUserAction: CnSpaceUserAction): void {
-    this.transportService.emit(spaceUserAction, spaceUser);
-  }
 
   public async getSpacesOfUser(userId: string): Promise<CnSpace[]> {
     const spaceUsers = await this.repository.find({where: {userId}, relations: {space: true}});
@@ -218,17 +198,13 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     return spaceUser.space;
   }
 
-  public async usersHaveCommonSpace(userAId: string, userBId: string): Promise<boolean> {
-    const userASpaces: CnSpace[] = await this.getSpacesOfUser(userAId);
-    const userBSpaces: CnSpace[] = await this.getSpacesOfUser(userBId);
-
-    //Check common space
-    return userASpaces.find((space) => userBSpaces.find((spaceB) => spaceB.id === space.id)) != null;
-
-  }
+  ///////////////////////////////// SEARCH BY NAME /////////////////////////////////////////
 
   // Search by name
   public async smartSearchByName(spaceId: string, name: string, page: number, size: number): Promise<ClPage<CnSpaceUser>> {
+    if (ClHelpService.isNullOrEmpty(name)) {
+      return this.findBySpace(spaceId, page, size);
+    }
 
     if (!name.includes(' ')) {
       return this.searchByLastnameOrFirstname(spaceId, name, page, size);
@@ -277,5 +253,40 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
       relations: {user: true},
       order: {user: {firstname: 'ASC', lastname: 'ASC'}}
     });
+  }
+
+
+  ///////////////////////////////// QUEUE /////////////////////////////////////////
+  public async sendAllSpaceUsersToQueue(): Promise<void> {
+    const spaceUsers = await this.repository.find({relations: {user: true, space: true}});
+
+    spaceUsers.forEach((spaceUser) => {
+      this.sendSpaceUserToTransport(spaceUser);
+    });
+  }
+
+  public async sendAllSpaceUsersFromASpaceToQueue(spaceId: string): Promise<void> {
+    const spaceUsers = await this.repository.find({where: {spaceId: spaceId}, relations: {user: true, space: true}});
+    spaceUsers.forEach((spaceUser) => {
+      this.sendSpaceUserToTransport(spaceUser);
+    });
+  }
+
+  public sendSpaceUserToTransport(spaceUser: CnSpaceUser): void {
+    const sU: Partial<CnSpaceUser> = {
+      userId: spaceUser.userId,
+      spaceId: spaceUser.spaceId,
+      role: spaceUser.role,
+      active: spaceUser.active,
+      user: spaceUser.user,
+      space: spaceUser.space,
+      addedBy: spaceUser.addedBy,
+      createdAt: spaceUser.createdAt
+    };
+    this.transportService.emit(CnSpaceUserAction.CREATE, sU);
+  }
+
+  public sendActionOnSpaceUserToTransport(spaceUser: Partial<CnSpaceUser>, spaceUserAction: CnSpaceUserAction): void {
+    this.transportService.emit(spaceUserAction, spaceUser);
   }
 }
