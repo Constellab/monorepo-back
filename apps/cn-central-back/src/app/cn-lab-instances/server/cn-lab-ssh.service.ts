@@ -55,7 +55,8 @@ export class CnLabSshService {
     // wait for server to reboot
     let count = 0;
     let successCount = 0;
-    const countLimit = 20;
+    const countLimit = 30;
+    const waitTime = 15000;
     while (count < countLimit) {
 
       const result = await this.checkSshConnection();
@@ -72,7 +73,7 @@ export class CnLabSshService {
       // eslint-disable-next-line max-len
       this.logger.log(`Waiting for server to be available for lab ${this.labId}. Attempt ${count + 1} of ${countLimit}. Success ${successCount} of ${consecutiveRequiredSuccess}`);
       // wait 15 seconds
-      await new Promise(r => setTimeout(r, 15000));
+      await new Promise(r => setTimeout(r, waitTime));
       count++;
     }
 

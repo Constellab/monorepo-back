@@ -914,7 +914,7 @@ export class CnLabInstanceAggregateService {
     // wait for the DNS to be ready
     // wait for 2 consecutive success because DNS propagation can take some time
     const labSshService = await this.cloudProviderFactory.getSshLabService(labInstance);
-    await labSshService.waitForSshConnection(2);
+    await labSshService.waitForSshConnection(3);
 
     await this.configureServerAsync(labInstance, false);
 

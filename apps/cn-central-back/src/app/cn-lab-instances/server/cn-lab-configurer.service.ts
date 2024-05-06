@@ -124,7 +124,7 @@ export class CnLabConfigurerService {
       await labSshService.execSshCommand(['sudo reboot'],
         {errorMode: CnExecCommandMode.STDERR_AS_SUCCESS, ignoreError: true});
 
-      await labSshService.waitForSshConnection(2);
+      await labSshService.waitForSshConnection(3);
     } catch (e) {
       throw new Error(`Error while rebooting server. Error : ${e}`);
     }
