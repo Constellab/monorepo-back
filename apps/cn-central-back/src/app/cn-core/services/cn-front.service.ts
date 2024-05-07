@@ -10,28 +10,34 @@ export class CnFrontService {
   constructor(private configService: CnCoreConfigService) {
   }
 
-  public static getAdminUsersRoute(): string{
-    return 'app/admin/users';
+  private static appRoute = 'app';
+
+  public static getAdminUsersRoute(): string {
+    return `${CnFrontService.appRoute}/admin/users`;
   }
 
-  public static getProjectRoute(projectId: string): string{
-    return 'app/project/' + projectId
+  public static getProjectRoute(projectId: string): string {
+    return `${CnFrontService.appRoute}/project/${projectId}`;
   }
 
-  public static getProjectCommentRoute(projectId: string): string{
-    return `${CnFrontService.getProjectRoute(projectId)}?type=comments`
+  public static getProjectCommentRoute(projectId: string): string {
+    return `${CnFrontService.getProjectRoute(projectId)}?type=comments`;
   }
 
-  public static getReportRoute(projectId: string): string{
-    return `app/project/report/${projectId}`
+  public static getReportRoute(projectId: string): string {
+    return `${CnFrontService.appRoute}/project/report/${projectId}`;
   }
 
-  public static getExperimentRoute(projectId: string): string{
-    return `app/project/experiment/${projectId}`
+  public static getExperimentRoute(projectId: string): string {
+    return `${CnFrontService.appRoute}/project/experiment/${projectId}`;
   }
 
-  public static getConstellabDocRoute(docId: string): string{
-    return `app/project/document/${docId}`
+  public static getConstellabDocRoute(docId: string): string {
+    return `${CnFrontService.appRoute}/project/document/${docId}`;
+  }
+
+  public static getLabUrl(labId: string): string {
+    return `${CnFrontService.appRoute}/labs/${labId}`;
   }
 
 
@@ -44,7 +50,7 @@ export class CnFrontService {
   }
 
   public getLabInstanceUrl(spaceDomain: string, labInstanceId: string): string {
-    return this.getSpaceWebsiteURL(spaceDomain) + '/lab/' + labInstanceId;
+    return this.getSpaceWebsiteURL(spaceDomain) + '/' + CnFrontService.getLabUrl(labInstanceId);
   }
 
   /**
