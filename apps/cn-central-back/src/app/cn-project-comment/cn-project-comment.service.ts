@@ -1,11 +1,17 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnProjectComment} from './cn-project-comment.entity';
-import {DataSource, Repository} from 'typeorm';
+import {DataSource, IsNull, Repository} from 'typeorm';
 import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
-import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
+import {CnNewCommentDTO} from '../cn-core/model/entities/cn-comment.entity';
 import {ClPage} from '@monorepo/core-lib';
-import {BlAbstractService, BlFile, BlRichText, BlRichTextI, BlRichTextUploadedImage} from '@monorepo/back-core-lib';
+import {
+  BlAbstractService,
+  BlFile,
+  BlNewRichText,
+  BlRichTextContent,
+  BlRichTextUploadedImage
+} from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
 import {CnProjectDocumentService} from '../cn-projects-aggregate/cn-project-documents/cn-project-document.service';
 import {CnProjectDocumentType} from '../cn-projects-aggregate/cn-project-documents/cn-project-document.entity';
@@ -32,12 +38,12 @@ export class CnProjectCommentService extends BlAbstractService<CnProjectComment>
       await this.deleteById(comment.id, entityManager);
 
       // delete all the images of the comment
-      const richText= new BlRichText(comment.content);
-      for(const image of richText.getFiguresOps()){
+      const richText = new BlNewRichText(comment.content);
+      for (const image of richText.getFiguresBlocks()) {
         const document = await this.projectDocumentService.findDocumentByProjectAndTypeAndName(
-          projectId, CnProjectDocumentType.COMMENT_CONTENT, image.insert.figure.filename, projectId);
+          projectId, CnProjectDocumentType.COMMENT_CONTENT, image.data.filename, projectId);
 
-        if(document){
+        if (document) {
           await this.projectDocumentService.deleteDocument(document.id, entityManager);
         }
       }
@@ -49,9 +55,9 @@ export class CnProjectCommentService extends BlAbstractService<CnProjectComment>
       documentName, project.id);
   }
 
-  async createComment(newComment: CnNewComment, project: CnProject): Promise<CnProjectComment> {
+  async createComment(newComment: CnNewCommentDTO, project: CnProject): Promise<CnProjectComment> {
     const projectComment: CnProjectComment = CnProjectComment.create(newComment, project);
-    if (projectComment.isResponse) {
+    if (newComment.parentCommentId) {
       projectComment.parentComment = await this.repository.findOneBy({id: newComment.parentCommentId});
     }
     return await this.create(projectComment);
@@ -63,7 +69,7 @@ export class CnProjectCommentService extends BlAbstractService<CnProjectComment>
         project: {
           id: projectId
         },
-        isResponse: false
+        parentComment: IsNull()
       },
       order: {
         createdAt: 'DESC' as any
@@ -71,8 +77,16 @@ export class CnProjectCommentService extends BlAbstractService<CnProjectComment>
     }, this.repository.manager);
   }
 
-  async updateComment(comment: CnProjectComment, content: BlRichTextI): Promise<CnProjectComment> {
-    comment.content = BlRichText.getOptimisedContent(content);
+  async updateComment(comment: CnProjectComment, content: BlRichTextContent): Promise<CnProjectComment> {
+    comment.content = content;
     return await this.update(comment);
+  }
+
+  public async findAll(): Promise<CnProjectComment[]> {
+    return this.repository.find();
+  }
+
+  public async migrateComment(comment: CnProjectComment): Promise<CnProjectComment> {
+    return this.repository.save(comment, {listeners: false});
   }
 }

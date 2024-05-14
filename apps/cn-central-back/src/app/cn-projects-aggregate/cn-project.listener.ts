@@ -11,8 +11,8 @@ import {CnProject} from './cn-projects/cn-project.entity';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnExperiment} from './cn-experiments/cn-experiment.entity';
 import {CnReport} from './cn-reports/cn-report.entity';
-import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
-import {BlMailService, BlRichText, BlRichTextI} from '@monorepo/back-core-lib';
+import {CnProjectComment, getFakeUserEveryoneMention} from '../cn-project-comment/cn-project-comment.entity';
+import {BlMailService, BlMentionUser, BlNewRichText, BlRichTextContent} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnProjectsService} from './cn-projects/cn-projects.service';
 import {CnMailTemplate} from '../cn-core/model/config/cn-mail-template.class';
@@ -416,27 +416,30 @@ export class CnProjectListener {
     }
   }
 
-  private getUserMentions(content: BlRichTextI, projectUsers: CnProjectUser[]): CnProjectUser[] {
+  private getUserMentions(content: BlRichTextContent, projectUsers: CnProjectUser[]): CnProjectUser[] {
+
+    const richText = new BlNewRichText(content);
+    const mentions: BlMentionUser[] = richText.getMentions();
+
+    // exclude current user
+    const otherUsers = projectUsers.filter(
+      pu => pu.user.id != CnCurrentUserHelper.getCurrentUser().id);
+
+    // if the user selected the special 'Everyone' fake user
+    const everyoneUser = getFakeUserEveryoneMention();
+    if (mentions.find(mention => mention.id == everyoneUser.id)) {
+      return otherUsers;
+    }
+
     const userMentions: CnProjectUser[] = [];
-    const mentions: string[] = BlRichText.getMentions(content);
-    if (mentions.length > 0) {
-      for (const m of mentions) {
-        // TODO what it is ? valentin
-        // mention for everyone
-        if (m == 'everyone') {
-          for (const projectUser of projectUsers) {
-            if (!userMentions.find(um => um.user.id == projectUser.user.id)
-              && projectUser.user.id != CnCurrentUserHelper.getCurrentUser().id) // avoid duplicate
-              userMentions.push(projectUser);
-          }
-        } else {
-          const projectUser = projectUsers.find(pu => pu.user.id == m);
-          if (!userMentions.find(um => um.user.id == projectUser.user.id)
-            && projectUser.user.id != CnCurrentUserHelper.getCurrentUser().id) // avoid duplicate
-            userMentions.push(projectUser);
-        }
+    for (const mention of mentions) {
+      const projectUser = projectUsers.find(pu => pu.user.id == mention.id);
+      // avoid duplicate
+      if (!userMentions.find(um => um.user.id == projectUser.user.id)) {
+        userMentions.push(projectUser);
       }
     }
+
     return userMentions;
   }
 

@@ -1,4 +1,4 @@
-import {BlBlockType, BlNewRichText, BlOutputBlockData} from '@monorepo/back-core-lib';
+import {BlBlockType, BlNewRichText, BlRichTextBlock} from '@monorepo/back-core-lib';
 
 export interface CnReportViewConfig {
   id: string;
@@ -15,7 +15,7 @@ export class CnReportContent extends BlNewRichText {
   public static readonly viewOps = 'resource_view';
 
 
-  public getViewsBlocks(): BlOutputBlockData<CnReportViewConfig>[] {
+  public getViewsBlocks(): BlRichTextBlock<CnReportViewConfig>[] {
     return this.getBlocksByType(BlBlockType.RESOURCE_VIEW);
   }
 

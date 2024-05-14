@@ -38,7 +38,7 @@ import {
 } from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
-import {CnComment, CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
+import {CnComment, CnNewCommentDTO} from '../cn-core/model/entities/cn-comment.entity';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {CnProjectUser} from './cn-project-user/cn-project-user.entity';
@@ -155,6 +155,14 @@ export class CnProjectsController {
     return this.projectAggregate.getUsersOfProject(id);
   }
 
+  @Get(':id/users/search/name/:name?')
+  searchProjectUsersByName(@Param('id', ParseUUIDPipe) id: string,
+                           @Param('name') name: string,
+                           @Query('page', new ParseIntPipe()) page: number,
+                           @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnUser>> {
+    return this.projectAggregate.searchProjectUsersByName(id, name, page, size);
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string): Promise<CnProject> {
     return this.projectAggregate.findProject(id);
@@ -221,11 +229,10 @@ export class CnProjectsController {
 
   @Post(':projectId/comment/')
   createProjectComment(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                       @Body(new BlParsePipe(CnNewComment)) newComment: CnNewComment): Promise<CnProjectComment> {
+                       @Body(new BlParsePipe(CnNewCommentDTO)) newComment: CnNewCommentDTO): Promise<CnProjectComment> {
     return this.projectAggregate.createProjectComment(newComment, projectId);
   }
 
-  //Edit comment content
   @Put(':projectId/comment/:commentId')
   updateProjectComment(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                        @Param('commentId', new ParseUUIDPipe()) commentId: string,
@@ -394,5 +401,10 @@ export class CnProjectsController {
                        @Query('page', ParseIntPipe) page: number,
                        @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnActivity>> {
     return await this.projectAggregate.searchProjectActivity(projectId, searchParam, page, size);
+  }
+
+  @Post('comment/migrate')
+  async migrateComment(): Promise<void> {
+    return this.projectAggregate.migrateProjectComments();
   }
 }

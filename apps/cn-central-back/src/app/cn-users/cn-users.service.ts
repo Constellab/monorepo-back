@@ -1,7 +1,7 @@
 import {Injectable, OnModuleInit} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnUser, CnUserEditDTO, CnUserTransportDto} from './cn-user.entity';
-import {Like, Repository} from 'typeorm';
+import {Repository} from 'typeorm';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {
@@ -22,6 +22,7 @@ import {
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {IncomingMessage} from 'http';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
+import {CnUserSearch} from './cn-user-search.class';
 
 @Injectable()
 export class CnUsersService extends BlAbstractService<CnUser> implements BlUserService, OnModuleInit {
@@ -200,47 +201,8 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
   public async smartSearchByName(name: string, page: number, size: number): Promise<ClPage<CnUser>> {
     if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) throw new BlUnauthorizedException();
 
-    if (!name.includes(' ')) {
-      return this.searchByLastnameOrFirstname(name, page, size);
-    }
-
-    // if there are 2 words, search by lastname and firstname
-    // if nothing is found, search by lastname or firstname
-    const names = name.split(' ');
-    if (names.length === 2) {
-      const result = await this.searchByLastnameAndFirstname(names[0], names[1], page, size);
-
-      if (result.totalElements > 0) {
-        return result;
-      }
-    }
-
-    return this.searchByLastnameOrFirstname(name, page, size);
-  }
-
-  public searchByLastnameOrFirstname(name: string,
-                                     page: number, size: number): Promise<ClPage<CnUser>> {
-    return this.findPaginated(page, size, {
-      where: [
-        {lastname: Like(`%${name}%`)},
-        {firstname: Like(`%${name}%`)},
-      ],
-      order: {firstname: 'ASC', lastname: 'ASC'}
-    });
-  }
-
-  public async searchByLastnameAndFirstname(name1: string, name2: string,
-                                            page: number, size: number): Promise<ClPage<CnUser>> {
-    return this.findPaginated(page, size, {
-      where: [{
-        lastname: Like(`%${name1}%`),
-        firstname: Like(`%${name2}%`)
-      }, {
-        lastname: Like(`%${name2}%`),
-        firstname: Like(`%${name1}%`)
-      }],
-      order: {firstname: 'ASC', lastname: 'ASC'}
-    });
+    const userSearch = new CnUserSearch(this);
+    return userSearch.smartSearchByName(name, page, size);
   }
 
   public getRobotUser(): Promise<CnUser> {

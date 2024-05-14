@@ -1,6 +1,6 @@
 import {Logger} from '@nestjs/common';
 import {BlRichTextI} from '../models/bl-rich-text.class';
-import {BlRichTextContent} from '../models/bl-new-rich-text.class';
+import {BlMentionUser, BlRichTextContent} from '../models/bl-new-rich-text.class';
 
 
 export class BlQuillMigrator {
@@ -61,33 +61,42 @@ export class BlQuillMigrator {
         // if a text was saved before
         if (currentText.length > 0) {
           // handle header
-          if (op.attributes.header) {
+          if (op.attributes?.header) {
             this.addBlock('header', {
               text: currentText,
               level: op.attributes.header.level
             });
-          } else if (op.attributes.blockquote) {
+          } else if (op.attributes?.blockquote) {
             this.addBlock('quote', {
               text: currentText,
               caption: '',
               alignment: 'left'
             });
-          } else if (op.attributes.hint) {
+          } else if (op.attributes?.hint) {
             this.addBlock('hint', {
               hintType: op.attributes.hint,
               content: currentText
             });
             // specific case for old hint warning
-          } else if (op.attributes.background === '#eec0d6') {
+          } else if (op.attributes?.background === '#eec0d6') {
             this.addBlock('hint', {
               hintType: 'warnings',
               content: currentText
             });
-          } else if (op.attributes['code-block']) {
+          } else if (op.attributes && op.attributes['code-block']) {
             i = this.handleCodeBlock(i, currentText);
-          } else if (op.attributes.list) {
+          } else if (op.attributes?.list) {
             i = this.handleList(i, currentText);
-          } else {
+          } else if(op.attributes?.mention){
+            const oldMention: {id: string, value: string } = op.attributes.mention;
+            const user: BlMentionUser = {
+              id: oldMention.id,
+              firstname: oldMention.value.split(' ')[0],
+              lastname: oldMention.value.split(' ')[1]
+            }
+            currentText += `<te-mention-inline data-jsondata="${JSON.stringify(user)}"></te-mention-inline>`;
+          }
+          else {
             this.addBlock('paragraph', {
               text: currentText,
             });

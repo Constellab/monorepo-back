@@ -4,6 +4,7 @@ export * from './bl-search/bl-search.class';
 export * from './bl-user/bl-credentials.class';
 export * from './bl-user/bl-user.class';
 export * from './bl-user/bl-user-category.enum';
+export * from './bl-user/bl-user-search.class';
 export * from './bl-user/bl-user-status.enum';
 
 export * from './bl-entity.dto';

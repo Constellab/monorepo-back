@@ -1,12 +1,14 @@
 import {BlRichTextFigure} from './bl-rich-text.class';
 import {ClHelpService} from '@monorepo/core-lib';
+import {JSDOM} from 'jsdom';
+import {Logger} from '@nestjs/common';
 
 /**
  * Types taken from @editorjs/editorjs
  */
-export interface BlOutputBlockData<Data extends object = any> {
+export interface BlRichTextBlock<Data extends object = any> {
   /**
-   * Unique Id of the block
+   * Unique id of the block
    */
   id?: string;
   /**
@@ -20,7 +22,7 @@ export interface BlOutputBlockData<Data extends object = any> {
 
 }
 
-export interface BlOutputData {
+export interface BlRichTextContent {
   /**
    * Editor's version
    */
@@ -34,10 +36,8 @@ export interface BlOutputData {
   /**
    * Saved Blocks
    */
-  blocks: BlOutputBlockData[];
+  blocks: BlRichTextBlock[];
 }
-
-export type BlRichTextContent = BlOutputData;
 
 export enum BlBlockType {
   PARAGRAPH = 'paragraph',
@@ -45,7 +45,30 @@ export enum BlBlockType {
   RESOURCE_VIEW = 'resourceView'
 }
 
+export enum BlInlineToolType {
+  MENTION = 'te-mention-inline'
+}
+
+export interface BlMentionUser {
+  id: string;
+  firstname: string;
+  lastname: string;
+}
+
+export interface BlFigureBlockData {
+  caption: string;
+  filename: string;
+  title: string;
+  height: number;
+  width: number;
+  naturalHeight: number;
+  naturalWidth: number;
+}
+
 export class BlNewRichText {
+
+  private readonly logger = new Logger(BlNewRichText.name);
+
 
   public static emptyContent(): BlRichTextContent {
     return {
@@ -71,11 +94,11 @@ export class BlNewRichText {
   constructor(private richText: BlRichTextContent) {
   }
 
-  public getBlocks(): BlOutputBlockData[] {
+  public getBlocks(): BlRichTextBlock[] {
     return this.richText.blocks;
   }
 
-  public getBlocksByType(type: BlBlockType): BlOutputBlockData[] {
+  public getBlocksByType(type: BlBlockType): BlRichTextBlock[] {
     return this.richText?.blocks?.filter(block => block.type === type);
   }
 
@@ -84,7 +107,7 @@ export class BlNewRichText {
   }
 
   ////////////////////////////////////// PARAGRAPH ///////////////////////////////////////////////
-  public getParagraphsBlocks(): BlOutputBlockData[] {
+  public getParagraphsBlocks(): BlRichTextBlock[] {
     return this.getBlocksByType(BlBlockType.PARAGRAPH);
   }
 
@@ -95,8 +118,8 @@ export class BlNewRichText {
     if (paragraphBlocks.length === 0) return null;
     for (const block of paragraphBlocks) {
 
-      if (block.data && block.data.text && block.data.text.trim() !== ''){
-        if (result.length + block.data.text.trim().length > 200){
+      if (block.data && block.data.text && block.data.text.trim() !== '') {
+        if (result.length + block.data.text.trim().length > 200) {
           result += block.data.text.trim().substring(0, 200 - result.length) + '...';
           break;
         }
@@ -108,7 +131,7 @@ export class BlNewRichText {
 
   ///////////////////////////////////// FIGURE ///////////////////////////////////////////////
 
-  public getFiguresBlocks(): BlOutputBlockData[] {
+  public getFiguresBlocks(): BlRichTextBlock<BlFigureBlockData>[] {
     return this.getBlocksByType(BlBlockType.FIGURE);
   }
 
@@ -122,7 +145,7 @@ export class BlNewRichText {
     return figure.data.filename;
   }
 
-  public getFiguresBlock(filename: string): BlOutputBlockData | undefined {
+  public getFiguresBlock(filename: string): BlRichTextBlock | undefined {
     return this.getFiguresBlocks().find(op => op.data.filename === filename) ?? null;
   }
 
@@ -132,7 +155,32 @@ export class BlNewRichText {
     if (figureBlock == null) return;
 
     figureBlock.data = Object.assign(figureBlock.data, figure);
-
   }
 
+  ///////////////////////////////////// MENTION ///////////////////////////////////////////////
+
+
+  public getMentions(): BlMentionUser[] {
+    const mentions: BlMentionUser[] = [];
+    for (const block of this.getBlocks()) {
+      const htmlData = JSON.stringify(block.data);
+
+      // retrieve all the element te-mention-inline inside htmlData then read the data-jsondata attribute as json
+      // using jsdom
+      const mentionElement = new JSDOM(`<!DOCTYPE html>${htmlData}`);
+      const mentionElements = mentionElement.window.document.querySelectorAll(BlInlineToolType.MENTION);
+      for (const element of mentionElements) {
+        const attribute = element.getAttribute('data-jsondata');
+        try {
+          // replace all '"/' by '' to avoid parsing error
+          const json = JSON.parse(attribute.replace(/\\"/g, ''));
+          mentions.push(json);
+        } catch (e) {
+          this.logger.error(`Error parsing mention: ${attribute}. Error message: ${e}`);
+        }
+      }
+    }
+
+    return mentions;
+  }
 }

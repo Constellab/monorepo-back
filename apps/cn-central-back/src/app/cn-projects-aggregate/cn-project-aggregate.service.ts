@@ -3,7 +3,7 @@ import {CnProjectsService} from './cn-projects/cn-projects.service';
 import {CnProjectsAggregateSecurity} from './cn-projects-aggregate.security';
 import {CnProject} from './cn-projects/cn-project.entity';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {ClPage, ClPageI} from '@monorepo/core-lib';
+import {ClHelpService, ClPage, ClPageI} from '@monorepo/core-lib';
 import {CnProjectStatusHistory} from './cn-projects/cn-project-status-history.entity';
 import {CnProjectStatus} from './cn-projects/cn-project-status.enum';
 import {CnExperimentsService} from './cn-experiments/cn-experiments.service';
@@ -24,17 +24,18 @@ import {
   CnSaveProjectDTO
 } from './cn-projects/cn-project.dto';
 import {CnUser} from '../cn-users/cn-user.entity';
-import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
+import {CnProjectComment, getFakeUserEveryoneMention} from '../cn-project-comment/cn-project-comment.entity';
 import {CnProjectCommentService} from '../cn-project-comment/cn-project-comment.service';
-import {CnNewComment} from '../cn-core/model/entities/cn-comment.entity';
+import {CnNewCommentDTO} from '../cn-core/model/entities/cn-comment.entity';
 import {
   BlBadRequestException,
   BlFile,
+  BlQuillMigrator,
   BlRichTextContent,
-  BlRichTextI,
   BlRichTextUploadedImage,
   BlSearchBuilder,
-  BlSearchParams
+  BlSearchParams,
+  BlUnauthorizedException
 } from '@monorepo/back-core-lib';
 import {DataSource, In} from 'typeorm';
 import {CnProjectBucketService} from './cn-projects/cn-project-bucket.service';
@@ -83,8 +84,8 @@ export class CnProjectAggregateService {
       if (projectDto.backupStorage) {
         entity.backupStorage = await this.projectBucketService.getBucketById(projectDto.backupStorage.bucketId);
 
-        if(entity.mainStorage.bucketType !== entity.backupStorage.bucketType) {
-          throw new BlBadRequestException("Main and backup storage must have the same type (cloud or lab)");
+        if (entity.mainStorage.bucketType !== entity.backupStorage.bucketType) {
+          throw new BlBadRequestException('Main and backup storage must have the same type (cloud or lab)');
         }
       }
       const dbProject = await this.projectService.create(entity, manager);
@@ -579,9 +580,23 @@ export class CnProjectAggregateService {
     return this.projectUserService.findUsersByProjectId(rootProject.id);
   }
 
+  public async searchProjectUsersByName(projectId: string, name: string, page: number, size: number): Promise<ClPage<CnUser>> {
+    const rootProject = await this.checkFindOneAndGetRootProject(projectId);
+
+    const result = await this.projectUserService.smartSearchByName(rootProject.id, name, page, size);
+    const users = result.map(user => user.user);
+
+    if (ClHelpService.isNullOrEmpty(name)) {
+      users.objects.unshift(getFakeUserEveryoneMention());
+    }
+
+    return users;
+  }
+
+
   /////////////////////////////////////// PROJECT COMMENT //////////////////////////////////
 
-  public async createProjectComment(newComment: CnNewComment, projectId: string): Promise<CnProjectComment> {
+  public async createProjectComment(newComment: CnNewCommentDTO, projectId: string): Promise<CnProjectComment> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
     const comment = await this.projectCommentService.createComment(newComment, project);
@@ -590,7 +605,7 @@ export class CnProjectAggregateService {
     return comment;
   }
 
-  public async updateProjectComment(projectId: string, commentId: string, content: BlRichTextI): Promise<CnProjectComment> {
+  public async updateProjectComment(projectId: string, commentId: string, content: BlRichTextContent): Promise<CnProjectComment> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
     const comment = await this.projectCommentService.findByIdAndCheck(commentId);
@@ -901,5 +916,27 @@ export class CnProjectAggregateService {
       userInfo: CnCurrentUserHelper.getAndCheckUserSpaceInfo()
     };
     this.eventEmitter.emit(cnProjectEventName, event);
+  }
+
+  // TODO remove
+  public async migrateProjectComments(): Promise<void> {
+    if (!CnCurrentUserHelper.isAdmin()) {
+      throw new BlUnauthorizedException();
+    }
+    const comments = await this.projectCommentService.findAll();
+
+    this.logger.log(`Migrating ${comments.length} comments`);
+    for (const comment of comments) {
+      try {
+        const newContent = BlQuillMigrator.migrateOptional(comment.content);
+        comment.content = newContent;
+        await this.projectCommentService.migrateComment(comment);
+      } catch (e) {
+        this.logger.error(`Error while updating comment ${comment.id}`, e);
+      }
+    }
+
+    this.logger.log(`End Migrating ${comments.length} comments`);
+
   }
 }

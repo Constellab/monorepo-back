@@ -3,7 +3,6 @@
  *
  * T is the type of paginated object
  */
-import {Observable} from 'rxjs';
 
 export interface ClPageI<T> {
   objects: T[];
@@ -34,26 +33,4 @@ export class ClPage<T> implements ClPageI<T> {
     return new ClPage(this.first, this.last, this.totalElements, this.currentPage, this.pageSize,
       this.objects.map(fn));
   }
-}
-
-/**
- * Function used by  to retrieve element that are paginated
- * @param page number of the page to get
- * @param pageSize size of the page
- * @param data any data passed to the function
- */
-export type ClGetPageFunction<T> = (page: number, pageSize: number, requestData?: any) => Observable<ClPageI<T>>;
-
-/**
- * Return an empty page
- */
-export function clGetEmptyPage(): ClPageI<any> {
-  return {
-    first: true,
-    last: true,
-    currentPage: 0,
-    pageSize: 0,
-    totalElements: 0,
-    objects: [],
-  };
 }
