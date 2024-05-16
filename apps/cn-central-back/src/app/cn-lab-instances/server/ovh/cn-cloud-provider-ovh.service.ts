@@ -8,7 +8,7 @@ import {
   CnCpVolume,
   CnCpVolumeStatus
 } from '../cn-cloud-provider.class';
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {
   CnOvhCreateDomainRecordRequest,
   CnOvhCreateInstanceRequest,
@@ -26,6 +26,7 @@ import {CnCommandService} from '../../../cn-core/services/cn-command.service';
 
 @Injectable()
 export class CnCloudProviderOvhService extends CnCloudProviderService {
+  private readonly logger = new Logger(CnCloudProviderOvhService.name);
 
   private static IMAGE_NAME = 'Ubuntu 20.04';
 
@@ -89,7 +90,10 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
   private convertOvhInstance(instance: CnOvhInstance): CnCpInstance {
     return {
       id: instance.id,
-      status: this.ovhStatusToCpStatus(instance.status),
+      status: {
+        status: this.ovhStatusToCpStatus(instance.status, instance.id),
+        message: null
+      },
       originalObject: instance,
       region: instance.region,
       billing: instance.monthlyBilling ? CnLabInstanceBillingMode.MONTHLY : CnLabInstanceBillingMode.HOURLY,
@@ -97,7 +101,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
   }
 
 
-  private ovhStatusToCpStatus(status: CnOvhInstanceStatus): CnCpInstanceStatus {
+  private ovhStatusToCpStatus(status: CnOvhInstanceStatus, id: string): CnCpInstanceStatus {
     switch (status) {
       case 'ACTIVE':
         return 'RUNNING';
@@ -118,11 +122,9 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
       case 'PASSWORD':
       case 'SHUTOFF':
       case 'SUSPENDED':
-      case 'UNKNOWN':
       case 'SHELVED':
       case 'SHELVED_OFFLOADED':
       case 'PAUSED':
-      case 'ERROR':
       case 'RESCUED':
       case 'UNRESCUING':
       case 'DELETED':
@@ -135,6 +137,12 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
       case 'UNSHELVING':
       case 'BUILD':
         return 'CREATING';
+      case 'ERROR':
+      case 'UNKNOWN':
+        return 'ERROR';
+      default:
+        this.logger.error(`Unknown status ${status} for ovh instance ${id}`);
+        return 'ERROR';
     }
   }
 

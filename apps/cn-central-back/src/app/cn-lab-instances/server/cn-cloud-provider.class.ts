@@ -1,8 +1,6 @@
 import {CnOvhDomainRecord} from './ovh/cn-ovh.class';
 import {CnLabInstanceBillingMode, CnLabInstanceVolumeType} from '../cn-lab-instance.entity';
 
-export type CnCpBackupFrequency = 'DAILY';
-
 export interface CnCpCreateInstanceRequest {
   name: string;
   region: string;
@@ -10,11 +8,17 @@ export interface CnCpCreateInstanceRequest {
   billing: CnLabInstanceBillingMode;
 }
 
-export type CnCpInstanceStatus = 'CREATING' | 'RUNNING' | 'RESTARTING' | 'STOPPED' | 'STOPPING';
+export type CnCpInstanceStatus = 'CREATING' | 'RUNNING' | 'RESTARTING' | 'STOPPED' | 'STOPPING' | 'ERROR';
+
+export interface CnCpInstanceStatusObject {
+  status: CnCpInstanceStatus;
+  message?: string;
+
+}
 
 export interface CnCpInstance {
   id: string;
-  status: CnCpInstanceStatus;
+  status: CnCpInstanceStatusObject;
   // complete object of the cloud provider
   originalObject: any;
   region: string;

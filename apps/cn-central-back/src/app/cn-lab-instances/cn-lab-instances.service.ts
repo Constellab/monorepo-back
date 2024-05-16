@@ -75,7 +75,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       }
 
       if (entity.region.cloudProvider.id !== entity.serverCloud.cloudProvider.id) {
-        throw new BlBadRequestException('Cloud Provider and Region must be the same');
+        throw new BlBadRequestException('The server and region have different cloud provider');
       }
 
       if (entity.region.type !== CnCloudProviderRegionType.SERVER) {

@@ -6,7 +6,7 @@ import {
   CnCpCreateInstanceRequest,
   CnCpCreateVolumeRequest,
   CnCpInstance,
-  CnCpInstanceStatus,
+  CnCpInstanceStatusObject,
   CnCpVolume
 } from './cn-cloud-provider.class';
 import {CnLabInstance} from '../cn-lab-instance.entity';
@@ -107,7 +107,7 @@ export class CnLabServerService {
 
     // Waiting for the server and the volume to be ready
     let count = 0;
-    while ((serverInstance.status === 'CREATING' || volume.status === 'CREATING') && count < 10) {
+    while ((serverInstance.status.status === 'CREATING' || volume.status === 'CREATING') && count < 10) {
 
       if (count === 0) {
         await this.labInstanceService.updateServerTask(labInstance.id, 'Waiting for server and volume to be ready',
@@ -119,7 +119,7 @@ export class CnLabServerService {
       await new Promise(r => setTimeout(r, 30000));
 
       // refresh lab instance if needed
-      if (serverInstance.status !== 'RUNNING') {
+      if (serverInstance.status.status !== 'RUNNING') {
         serverInstance = await cloudProviderService.getInstance(serverInstance.id);
       }
 
@@ -131,7 +131,7 @@ export class CnLabServerService {
       count++;
     }
 
-    if (serverInstance.status === 'CREATING') {
+    if (serverInstance.status.status === 'CREATING') {
       throw new BlBadRequestException(
         'Server instance not ready, please refresh the status if few minutes and then contact the support if the problem persists');
     }
@@ -299,8 +299,9 @@ export class CnLabServerService {
 
     const serverInstance = await cloudProviderService.getInstance(labInstance.serverInstanceId);
 
-    if (serverInstance.status === 'CREATING' || serverInstance.status === 'RESTARTING' || serverInstance.status === 'STOPPING') {
-      throw new BlBadRequestException(`Server is currently ${serverInstance.status}`);
+    if (serverInstance.status.status === 'CREATING' || serverInstance.status.status === 'RESTARTING'
+      || serverInstance.status.status === 'STOPPING') {
+      throw new BlBadRequestException(`Server is currently ${serverInstance.status.status}`);
     }
 
     // if the server is stopped
@@ -320,8 +321,8 @@ export class CnLabServerService {
 
     const serverInstance = await cloudProviderService.getInstance(labInstance.serverInstanceId);
 
-    if (serverInstance.status !== 'RUNNING') {
-      throw new BlBadRequestException(`Server is currently ${serverInstance.status}`);
+    if (serverInstance.status.status !== 'RUNNING') {
+      throw new BlBadRequestException(`Server is currently ${serverInstance.status.status}`);
     }
 
     // if the server is running
@@ -363,7 +364,7 @@ export class CnLabServerService {
     }
   }
 
-  public async getLabServerStatus(labInstance: CnLabInstance): Promise<CnCpInstanceStatus> {
+  public async getLabServerStatus(labInstance: CnLabInstance): Promise<CnCpInstanceStatusObject> {
     const cloudProviderService = await this.cloudProviderFactory.getCloudProviderServiceFromLab(labInstance.id);
     const serverInstance = await cloudProviderService.getInstance(labInstance.serverInstanceId);
     return serverInstance.status;

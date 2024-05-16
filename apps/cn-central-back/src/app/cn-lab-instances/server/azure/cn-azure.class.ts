@@ -1,5 +1,8 @@
-import {DataDisk, VirtualMachine} from '@azure/arm-compute';
+import {DataDisk, InstanceViewStatus, VirtualMachine} from '@azure/arm-compute';
 import {ClHelpService} from '@monorepo/core-lib';
+import {CnCpInstance, CnCpInstanceStatus, CnCpInstanceStatusObject} from '../cn-cloud-provider.class';
+import {Logger} from '@nestjs/common';
+import {CnLabInstanceBillingMode} from '../../cn-lab-instance.entity';
 
 export type CnAzureInstanceStatus =
   'ProvisioningState/succeeded'
@@ -16,6 +19,9 @@ export type CnAzureInstanceStatus =
 
 export class CnAzureInstance {
 
+  private readonly logger = new Logger(CnAzureInstance.name);
+
+
   constructor(public instance: VirtualMachine) {
   }
 
@@ -31,14 +37,62 @@ export class CnAzureInstance {
     return this.instance.location;
   }
 
-  getStatus(): CnAzureInstanceStatus {
+  public toStandardInstance(): CnCpInstance {
+    return {
+      id: this.id,
+      status: this.getStandardStatus(),
+      originalObject: this.instance,
+      region: this.location,
+      billing: CnLabInstanceBillingMode.HOURLY,
+    };
+  }
+
+  getLastStatus(): InstanceViewStatus {
     const statuses = this.instance.instanceView.statuses;
     if (ClHelpService.isNullOrEmpty(statuses)) {
       throw new Error('No status found for the azure instance');
     }
-    const lastStatus = statuses[statuses.length - 1];
+    return statuses[statuses.length - 1];
+  }
 
-    return lastStatus.code as CnAzureInstanceStatus;
+  getStandardStatus(): CnCpInstanceStatusObject {
+    const lastStatus = this.getLastStatus();
+
+    if (lastStatus.level === 'Error') {
+      return {
+        status: 'ERROR',
+        message: ((lastStatus.displayStatus ?? '') + ' ' + (lastStatus.message ?? '')).trim()
+      };
+    }
+
+    const status = this.azureInstanceStatusToCpStatus(lastStatus.code as CnAzureInstanceStatus);
+    return {
+      status,
+      message: lastStatus.displayStatus + ' ' + lastStatus.message
+    };
+  }
+
+  private azureInstanceStatusToCpStatus(status: CnAzureInstanceStatus): CnCpInstanceStatus {
+    switch (status) {
+      case 'ProvisioningState/succeeded':
+      case 'ProvisioningState/creating':
+      case 'ProvisioningState/failed':
+      case 'ProvisioningState/updating':
+      case 'PowerState/starting':
+        return 'CREATING';
+      case 'PowerState/running':
+        return 'RUNNING';
+      case 'PowerState/stopped':
+      case 'PowerState/deallocated':
+        return 'STOPPED';
+      case 'PowerState/stopping':
+      case 'PowerState/deallocating':
+      case 'ProvisioningState/deleting':
+        return 'STOPPING';
+      default:
+        this.logger.error(`Unknown status ${status} for azure instance ${this.name}`);
+        return 'ERROR';
+    }
   }
 
   getNetworkId(): string {
@@ -67,4 +121,5 @@ export class CnAzureInstance {
   }
 }
 
-export type CnAzureVolumeStatus = 'Unattached' | 'Attached' | 'Detached';
+export type CnAzureVolumeStatus = 'Unattached' | 'Attached' | 'Reserved' |
+  'Frozen' | 'Detached';

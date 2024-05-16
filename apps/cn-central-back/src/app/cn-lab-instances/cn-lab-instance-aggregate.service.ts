@@ -426,14 +426,20 @@ export class CnLabInstanceAggregateService {
 
       // manage all the server status, except running
       const serverStatus = await this.labServerService.getLabServerStatus(labInstance);
-      if (serverStatus === 'CREATING' || serverStatus === 'RESTARTING') {
+      if (serverStatus.status === 'CREATING' || serverStatus.status === 'RESTARTING') {
         return await this.labInstancesService.markInstanceAsServerStarting(labInstanceId);
       }
-      if (serverStatus === 'STOPPING') {
+      if (serverStatus.status === 'STOPPING') {
         return await this.labInstancesService.markInstanceAsServerStopping(labInstanceId);
       }
-      if (serverStatus === 'STOPPED') {
+      if (serverStatus.status === 'STOPPED') {
         return await this.labInstancesService.markInstanceAsServerStopped(labInstanceId);
+      }
+      // Specific case to handle error, we don't update the server status because we don't know which status to use
+      // just set the error in the server task
+      if (serverStatus.status === 'ERROR') {
+        const text = serverStatus.message?.length > 0 ? serverStatus.message : 'No information about the error';
+        return await this.labInstancesService.updateServerTask(labInstanceId, text, CnLabInstanceServerTaskStatus.ERROR);
       }
     }
 

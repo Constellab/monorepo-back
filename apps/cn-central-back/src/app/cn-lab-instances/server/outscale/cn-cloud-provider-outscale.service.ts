@@ -85,7 +85,7 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
   async deleteInstance(id: string): Promise<void> {
     const ip = await this.outscaleService.getPublicIpByInstance(id);
     if (ip) {
-      this.logger.log(`Deleting public ip ${ip.publicIpId} for instance ${id}`)
+      this.logger.log(`Deleting public ip ${ip.publicIpId} for instance ${id}`);
       await this.outscaleService.deletePublicIp(ip.publicIpId);
     } else {
       this.logger.error(`No public ip found for instance ${id}, skipping deletion`);
@@ -114,14 +114,17 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
   private convertInstance(vm: Vm): CnCpInstance {
     return {
       id: vm.vmId,
-      status: this.convertVmStatus(vm.state),
+      status: {
+        status: this.convertVmStatus(vm.state, vm.vmId),
+        message: vm.stateReason
+      },
       originalObject: vm,
       region: CnCloudProviderOutscaleService.REGION,
       billing: CnLabInstanceBillingMode.HOURLY,
     };
   }
 
-  private convertVmStatus(status: string): CnCpInstanceStatus {
+  private convertVmStatus(status: string, id: string): CnCpInstanceStatus {
     // (pending | running | stopping | stopped | shutting-down | terminated | quarantine).
     switch (status) {
       // TODO check if restart = pending ?
@@ -137,7 +140,8 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
       case 'stopped':
         return 'STOPPED';
       default:
-        throw new Error(`Unknown status ${status} for outscale instance`);
+        this.logger.error(`Unknown status ${status} for outscale instance ${id}`);
+        return 'ERROR';
     }
   }
 

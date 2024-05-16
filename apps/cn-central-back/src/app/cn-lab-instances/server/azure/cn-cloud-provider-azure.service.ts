@@ -5,14 +5,13 @@ import {
   CnCpCreateInstanceRequest,
   CnCpCreateVolumeRequest,
   CnCpInstance,
-  CnCpInstanceStatus,
   CnCpVolume,
   CnCpVolumeStatus,
   cnServerSshAuthorizedKeyPath
 } from '../cn-cloud-provider.class';
 import {CnAzureService} from './cn-azure.service';
-import {CnLabInstance, CnLabInstanceBillingMode, CnLabInstanceVolumeType} from '../../cn-lab-instance.entity';
-import {CnAzureInstance, CnAzureInstanceStatus, CnAzureVolumeStatus} from './cn-azure.class';
+import {CnLabInstance, CnLabInstanceVolumeType} from '../../cn-lab-instance.entity';
+import {CnAzureInstance, CnAzureVolumeStatus} from './cn-azure.class';
 import {Disk, ImageReference, SshPublicKey} from '@azure/arm-compute';
 import {CnCoreConfigService} from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CnCommandService} from '../../../cn-core/services/cn-command.service';
@@ -84,7 +83,7 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
   async getInstance(id: string): Promise<CnCpInstance> {
     const instance = await this.getAzureInstance(id);
 
-    return this.convertAzureInstance(instance);
+    return instance.toStandardInstance();
   }
 
   private async getAzureInstance(id: string): Promise<CnAzureInstance> {
@@ -106,37 +105,6 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
     return (await this.azureService.getIpAddresses(instance.getNetworkId())).ipAddress;
   }
 
-  private convertAzureInstance(instance: CnAzureInstance): CnCpInstance {
-    return {
-      id: instance.id,
-      status: this.azureInstanceStatusToCpStatus(instance.getStatus(), instance.name),
-      originalObject: instance,
-      region: instance.location,
-      billing: CnLabInstanceBillingMode.HOURLY,
-    };
-  }
-
-  private azureInstanceStatusToCpStatus(status: CnAzureInstanceStatus, name: string): CnCpInstanceStatus {
-    switch (status) {
-      case 'ProvisioningState/succeeded':
-      case 'ProvisioningState/creating':
-      case 'ProvisioningState/failed':
-      case 'ProvisioningState/updating':
-      case 'PowerState/starting':
-        return 'CREATING';
-      case 'PowerState/running':
-        return 'RUNNING';
-      case 'PowerState/stopped':
-      case 'PowerState/deallocated':
-        return 'STOPPED';
-      case 'PowerState/stopping':
-      case 'PowerState/deallocating':
-      case 'ProvisioningState/deleting':
-        return 'STOPPING';
-      default:
-        throw new Error(`Unknown status ${status} for azure instance ${name}`);
-    }
-  }
 
   /////////////////////// VOLUME ///////////////////////
 
@@ -204,6 +172,8 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
       case 'Unattached':
         return 'AVAILABLE';
       case 'Attached':
+      case 'Reserved':
+      case 'Frozen':
         return 'IN_USE';
       default:
         throw new Error(`Unknown status ${status} for azure disk ${name}`);
