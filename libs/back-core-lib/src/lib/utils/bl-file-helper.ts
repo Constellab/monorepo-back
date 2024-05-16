@@ -68,4 +68,9 @@ export class BlFileHelper{
       extension === 'gif' || extension === 'webp' || extension === 'svg';
   }
 
+  public static addIndexToFileName(file: string, index: number): string {
+    const filename = BlFileHelper.getFilenameWithoutExtension(file);
+    const extension = BlFileHelper.getFileExtension(file);
+    return `${filename}_${index}.${extension}`;
+  }
 }

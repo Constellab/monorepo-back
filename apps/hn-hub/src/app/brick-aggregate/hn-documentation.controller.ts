@@ -20,7 +20,7 @@ import {
   BlPublic,
   BlResponseHelper,
   BlRichTextContent,
-  BlRichTextUploadedImage,
+  BlRichTextUploadedImageResponse,
   BlUploadedFile
 } from '@monorepo/back-core-lib';
 import {FileInterceptor} from '@nestjs/platform-express';
@@ -74,7 +74,7 @@ export class HnDocumentationController {
   @UseInterceptors(FileInterceptor('file'))
   @Put('/image/:docId')
   saveImage(@BlUploadedFile() file: BlFile,
-            @Param('docId', new ParseUUIDPipe()) docId: string): Promise<BlRichTextUploadedImage> {
+            @Param('docId', new ParseUUIDPipe()) docId: string): Promise<BlRichTextUploadedImageResponse> {
     //TODO: Check how to secure this root
     return this.brickAggregateService.saveDocImage(file, docId);
   }

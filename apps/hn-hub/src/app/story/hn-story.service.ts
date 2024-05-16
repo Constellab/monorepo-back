@@ -13,10 +13,8 @@ import {
   BlImageHelper,
   BlNewRichText,
   BlObjectStorageService,
-  BlQuillMigrator,
   BlRichTextContent,
-  BlRichTextI,
-  BlRichTextUploadedImage,
+  BlRichTextUploadedImageResponse,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
@@ -61,10 +59,10 @@ export class HnStoryService {
   }
 
   async findById(id: string): Promise<HnStory> {
-    return await this.storyRepository.findOneBy({id: id})
+    return await this.storyRepository.findOneBy({id: id});
   }
 
-  async getStoryTitle(id: string): Promise<string>{
+  async getStoryTitle(id: string): Promise<string> {
     const story = await this.getStory(id);
     return story?.title;
   }
@@ -91,30 +89,30 @@ export class HnStoryService {
       const res = await entityManager.delete(HnStory, {id: id});
       return res.affected > 0;
     });
-    if (!deleteRes){
+    if (!deleteRes) {
       throw new BlBadRequestException('Error during the deletion, the story is not deleted');
     }
   }
 
-  async deleteAllStoryCoAuthorsInvites(storyId: string, entityManager: EntityManager): Promise<void>{
+  async deleteAllStoryCoAuthorsInvites(storyId: string, entityManager: EntityManager): Promise<void> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId, true);
     const storyCoAuthorsInvites = await this.storyAuthorService.getStoryCoAuthorsInvites(storyId);
     for (const storyCoAuthorsInvite of storyCoAuthorsInvites) {
       try {
         await entityManager.delete(HnStoryCoAuthorInvite, storyCoAuthorsInvite.id);
-      } catch (e){
+      } catch (e) {
         throw new BlBadRequestException('Error during the deletion of a story co-author invite');
       }
     }
   }
 
-  async deleteAllStoryCoAuthors(storyId: string, entityManager: EntityManager): Promise<void>{
+  async deleteAllStoryCoAuthors(storyId: string, entityManager: EntityManager): Promise<void> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId, true);
     const storyCoAuthors = await this.storyAuthorService.getStoryCoAuthorsByStoryId(storyId);
     for (const storyCoAuthor of storyCoAuthors) {
       try {
         await entityManager.delete(HnStoryCoAuthor, storyCoAuthor.id);
-      } catch (e){
+      } catch (e) {
         throw new BlBadRequestException('Error during the deletion of a story co-author');
       }
     }
@@ -245,7 +243,7 @@ export class HnStoryService {
     return this.storyRepository.save(story);
   }
 
-  async updateStoryCategory(id: string, category: HnStoryCategory): Promise<HnStory>{
+  async updateStoryCategory(id: string, category: HnStoryCategory): Promise<HnStory> {
     await this.checkAndValidateOwnerOrCoAuthor(id);
     const story = await this.getStory(id);
     story.category = category;
@@ -303,7 +301,7 @@ export class HnStoryService {
     return this.storyRepository.save(story);
   }
 
-  async saveImage(file: BlFile, storyId: string): Promise<BlRichTextUploadedImage> {
+  async saveImage(file: BlFile, storyId: string): Promise<BlRichTextUploadedImageResponse> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId);
     const imSize = BlImageHelper.getImageSize(file);
     const fileExt = file.originalname.split('.').pop();
@@ -318,7 +316,7 @@ export class HnStoryService {
     };
   }
 
-  async updateStoryMainImage(file: BlFile, storyId: string): Promise<HnStory>{
+  async updateStoryMainImage(file: BlFile, storyId: string): Promise<HnStory> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId);
     const story: HnStory = await this.getStory(storyId);
     const fileExt = file.originalname.split('.').pop();
@@ -328,7 +326,7 @@ export class HnStoryService {
     return await this.storyRepository.save(story);
   }
 
-  async deleteStoryMainImage(storyId: string): Promise<HnStory>{
+  async deleteStoryMainImage(storyId: string): Promise<HnStory> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId);
     const story: HnStory = await this.getStory(storyId);
     const content = new BlNewRichText(story.contentEdition as BlRichTextContent);
@@ -336,14 +334,14 @@ export class HnStoryService {
       throw new BlBadRequestException('A published story must have a main picture. \n ' +
         'Add a picture to the story content before deleting the main picture');
     await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], story.mainPicture);
-    story.mainPicture = new BlNewRichText(story.contentEdition  as BlRichTextContent).getFirstFigureLink();
+    story.mainPicture = new BlNewRichText(story.contentEdition as BlRichTextContent).getFirstFigureLink();
     return await this.storyRepository.save(story);
   }
 
 
   async saveFile(file: BlFile, storyId: string): Promise<HnStoryFile> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId);
-    if(file.size > 20000000){
+    if (file.size > 20000000) {
       throw new BlBadRequestException('File too large');
     }
     const originalname = file.originalname;
@@ -391,16 +389,16 @@ export class HnStoryService {
 
   async deleteStoryFile(storyFileId: string): Promise<void> {
     const storyFile: HnStoryFile = await this.storyFileService.getStoryFile(storyFileId);
-    if(await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], storyFile.fileName)){
+    if (await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], storyFile.fileName)) {
       await this.storyFileService.deleteStoryFile(storyFile);
     }
   }
 
-  async deleteAllStoryFiles(storyId: string, entityManager: EntityManager): Promise<void>{
+  async deleteAllStoryFiles(storyId: string, entityManager: EntityManager): Promise<void> {
     const storyFiles: HnStoryFile[] = await this.storyFileService.getStoryFilesByStoryId(storyId);
     for (const storyFile of storyFiles) {
       try {
-        if(await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], storyFile.fileName)){
+        if (await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], storyFile.fileName)) {
           await this.storyFileService.deleteStoryFileWithEntityManager(storyFile.id, entityManager);
         }
       } catch (e) {
@@ -431,9 +429,9 @@ export class HnStoryService {
   }
 
   async isStoryOwnerOrCoAuthor(id: string, onlyOwner: boolean = false): Promise<boolean> {
-    if(HnCurrentUserHelper.getCurrentUser() == null) return false;
+    if (HnCurrentUserHelper.getCurrentUser() == null) return false;
 
-    if(HnCurrentUserHelper.getCurrentUser().isAdmin()) return true;
+    if (HnCurrentUserHelper.getCurrentUser().isAdmin()) return true;
 
     const story = await this.getStory(id);
 
@@ -465,7 +463,7 @@ export class HnStoryService {
     return this.storyAuthorService.removeStoryCoAuthor(id, storyAuthorUserId);
   }
 
-  async inviteStoryCoAuthor(storyId: string, coAuthorMail: string): Promise<boolean>{
+  async inviteStoryCoAuthor(storyId: string, coAuthorMail: string): Promise<boolean> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId, true);
     const story: HnStory = await this.getStory(storyId);
     if (story == null)
@@ -534,29 +532,15 @@ export class HnStoryService {
     return this.storyAuthorService.deleteCoAuthorInvite(inviteId);
   }
 
-  async migrateStories(): Promise<void> {
-    const stories: HnStory[] = await this.storyRepository.find();
-    for (const story of stories) {
-      console.log('Update Story: ' + story.id);
-      if (story.content && story.content.ops) {
-        console.log('Update Story: ' + story.id);
-        story.contentBackup = story.content;
-        story.content = new BlQuillMigrator(story.content as BlRichTextI).migrate();
-        await this.storyRepository.save(story);
-      }
-    }
-  }
-
-
   /////////////////////////////////// RESOURCE VIEW ///////////////////////////////////
-  async uploadStoryResourceViewFile(storyId: string, file: BlFile): Promise<string>{
+  async uploadStoryResourceViewFile(storyId: string, file: BlFile): Promise<string> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId);
     file.originalname = storyId + '/views/' + ClStringHelper.generateUUID() + '.json';
     return await this.objectStorageService.uploadObject([this.getBucketConfig(), this.getBackupBucketConfig()], file,
       {generateRandomObjectName: false});
   }
 
-  async getView(filename: string): Promise<any>{
+  async getView(filename: string): Promise<any> {
     return await this.objectStorageService.getObject(this.getBucketConfig(), filename);
   }
 

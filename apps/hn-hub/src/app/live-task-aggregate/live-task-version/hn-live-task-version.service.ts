@@ -4,8 +4,6 @@ import {EntityManager, Repository} from 'typeorm';
 import {HnLiveTaskVersion, HnLiveTaskVersionState} from './hn-live-task-version.entity';
 import {HnLiveTask} from '../live-task/hn-live-task.entity';
 import {HnLiveTaskVersionFileInput} from '../live-task/hn-live-task.dto';
-import {BlQuillMigrator, BlRichTextI} from '@monorepo/back-core-lib';
-import {HnUser} from '../../users/hn-user.entity';
 
 @Injectable()
 export class HnLiveTaskVersionService {
@@ -125,7 +123,7 @@ export class HnLiveTaskVersionService {
     if (liveTaskVersion.versionState === HnLiveTaskVersionState.PUBLISHED) {
       throw new Error('Cannot publish a live task version already published');
     }
-    if(liveTaskVersion.code == null || liveTaskVersion.code.trim() === '') {
+    if (liveTaskVersion.code == null || liveTaskVersion.code.trim() === '') {
       throw new Error('Cannot publish a live task version without code');
     }
     liveTaskVersion.versionState = HnLiveTaskVersionState.PUBLISHED;
@@ -136,12 +134,6 @@ export class HnLiveTaskVersionService {
     const liveTaskVersion = await this.liveTaskVersionRepository.findOneBy({id: liveTaskVersionId});
     liveTaskVersion.versionInfos = versionInfos;
     return this.liveTaskVersionRepository.save(liveTaskVersion);
-  }
-
-  public async migrateLiveTaskVersion(liveTaskVersion: HnLiveTaskVersion): Promise<void> {
-    liveTaskVersion.versionInfosBackup = liveTaskVersion.versionInfos;
-    liveTaskVersion.versionInfos = new BlQuillMigrator(liveTaskVersion.versionInfos as BlRichTextI).migrate();
-    await this.liveTaskVersionRepository.save(liveTaskVersion);
   }
 
   public async deleteByLiveTaskId(entityManager: EntityManager, liveTaskId: string): Promise<void> {

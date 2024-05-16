@@ -12,7 +12,7 @@ import {
   BlObjectStorageService,
   BlQuillMigrator,
   BlRichTextContent,
-  BlRichTextUploadedImage
+  BlRichTextUploadedImageResponse
 } from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../../core/modules/core-config/hn-core-config.service';
 import {IncomingMessage} from 'http';
@@ -117,7 +117,7 @@ export class HnDocumentationService {
   }
 
 
-  async saveImage(docId: string, file: BlFile, generateRandomObjectName: boolean = true): Promise<BlRichTextUploadedImage> {
+  async saveImage(docId: string, file: BlFile, generateRandomObjectName: boolean = true): Promise<BlRichTextUploadedImageResponse> {
     const imSize = BlImageHelper.getImageSize(file);
     const fileExt = file.originalname.split('.').pop();
     file.originalname = docId + '/images/' + ClStringHelper.generateUUID() + '.' + fileExt;

@@ -10,7 +10,7 @@ import {
   BlFile,
   BlNewRichText,
   BlRichTextContent,
-  BlRichTextUploadedImage
+  BlRichTextUploadedImageResponse
 } from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
 import {CnProjectDocumentService} from '../cn-projects-aggregate/cn-project-documents/cn-project-document.service';
@@ -28,7 +28,7 @@ export class CnProjectCommentService extends BlAbstractService<CnProjectComment>
     super(repository, CnProjectComment);
   }
 
-  async saveProjectCommentImage(file: BlFile, project: CnProject): Promise<BlRichTextUploadedImage> {
+  async saveProjectCommentImage(file: BlFile, project: CnProject): Promise<BlRichTextUploadedImageResponse> {
     return this.projectDocumentService.uploadImageDocument(file, project,
       CnProjectDocumentType.COMMENT_CONTENT, project.id);
   }

@@ -1,4 +1,3 @@
-import {BlRichTextFigure} from './bl-rich-text.class';
 import {ClHelpService} from '@monorepo/core-lib';
 import {JSDOM} from 'jsdom';
 import {Logger} from '@nestjs/common';
@@ -63,6 +62,20 @@ export interface BlFigureBlockData {
   width: number;
   naturalHeight: number;
   naturalWidth: number;
+}
+
+/**
+ * Required information for a new upload image
+ */
+export interface BlRichTextUploadedImageResponse {
+  filename: string;
+  width: number;
+  height: number;
+}
+
+export interface BlRichTextUploadFileResponse {
+  name: string;
+  size: number; // in bytes
 }
 
 export class BlNewRichText {
@@ -147,14 +160,6 @@ export class BlNewRichText {
 
   public getFiguresBlock(filename: string): BlRichTextBlock | undefined {
     return this.getFiguresBlocks().find(op => op.data.filename === filename) ?? null;
-  }
-
-  public updateFigureBlock(filename: string, figure: Partial<BlRichTextFigure>): void {
-    const figureBlock = this.getFiguresBlock(filename);
-
-    if (figureBlock == null) return;
-
-    figureBlock.data = Object.assign(figureBlock.data, figure);
   }
 
   ///////////////////////////////////// MENTION ///////////////////////////////////////////////

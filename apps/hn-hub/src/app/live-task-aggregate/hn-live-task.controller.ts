@@ -12,7 +12,6 @@ import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {HnLiveTask} from './live-task/hn-live-task.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {HnBrickVersion} from '../brick-aggregate/brick-version/hn-brick-version.entity';
-import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 import {HnUser} from '../users/hn-user.entity';
 import {HnLiveTaskCoAuthorInvite} from './live-task-co-author-invite/hn-live-task-co-author-invite.entity';
 import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
@@ -45,15 +44,15 @@ export class HnLiveTaskController {
   @Post('/for-lab')
   async createForLab(@Body(new BlParsePipe(HnCreateLiveTaskDto)) createLiveTaskDto: HnCreateLiveTaskDto,
                      @Req() req: Request): Promise<HaCreateLiveTaskVersionFromLabResponseDto> {
-    return this.liveTaskAggregateService.createForLab(createLiveTaskDto, req)
+    return this.liveTaskAggregateService.createForLab(createLiveTaskDto, req);
   }
 
   @BlPublic()
   @Post('/for-lab/fork/:id')
   async forkForLab(@Param('id') liveTaskVersionId: string,
-                     @Body(new BlParsePipe(HnCreateLiveTaskDto)) createLiveTaskDto: HnCreateLiveTaskDto,
-                     @Req() req: Request): Promise<HaCreateLiveTaskVersionFromLabResponseDto> {
-    return this.liveTaskAggregateService.forkForLab(liveTaskVersionId, createLiveTaskDto, req)
+                   @Body(new BlParsePipe(HnCreateLiveTaskDto)) createLiveTaskDto: HnCreateLiveTaskDto,
+                   @Req() req: Request): Promise<HaCreateLiveTaskVersionFromLabResponseDto> {
+    return this.liveTaskAggregateService.forkForLab(liveTaskVersionId, createLiveTaskDto, req);
   }
 
   @BlPublic()
@@ -61,7 +60,7 @@ export class HnLiveTaskController {
   async createNewVersionForLab(@Param('id', ParseUUIDPipe) liveTaskId: string,
                                @Body('versionFile') versionFile: HnLiveTaskVersionFileInput,
                                @Req() req: Request): Promise<HaCreateLiveTaskVersionFromLabResponseDto> {
-    return this.liveTaskAggregateService.createNewVersionForLab(liveTaskId, versionFile, req)
+    return this.liveTaskAggregateService.createNewVersionForLab(liveTaskId, versionFile, req);
   }
 
   @BlPublic()
@@ -309,12 +308,6 @@ export class HnLiveTaskController {
     return this.liveTaskAggregateService.getLiveTaskVersionBrickDependencies(liveTaskVersionId);
   }
 
-  @IsAdmin()
-  @Post('migrate-live-tasks')
-  migrateLiveTasks(): Promise<void> {
-    return this.liveTaskAggregateService.migrateLiveTasks();
-  }
-
   @Delete(':id')
   deleteLiveTask(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.liveTaskAggregateService.deleteLiveTask(id);
@@ -323,7 +316,7 @@ export class HnLiveTaskController {
   ////////////////////////////////////////// CO AUTHORS //////////////////////////////////////////
   @Post(':id/invite-co-author')
   async inviteLiveTaskCoAuthor(@Param('id', new ParseUUIDPipe()) id: string,
-                            @Body('coAuthorMail') coAuthorMail: string): Promise<boolean> {
+                               @Body('coAuthorMail') coAuthorMail: string): Promise<boolean> {
     return this.liveTaskAggregateService.inviteLiveTaskCoAuthor(id, coAuthorMail);
   }
 
@@ -343,7 +336,7 @@ export class HnLiveTaskController {
    */
   @Put(':id/remove-co-author/:liveTaskAuthorUserId')
   async removeLiveTaskCoAuthor(@Param('id', new ParseUUIDPipe()) id: string,
-                            @Param('liveTaskAuthorUserId', new ParseUUIDPipe()) liveTaskAuthorUserId: string): Promise<void> {
+                               @Param('liveTaskAuthorUserId', new ParseUUIDPipe()) liveTaskAuthorUserId: string): Promise<void> {
     return this.liveTaskAggregateService.removeLiveTaskCoAuthor(id, liveTaskAuthorUserId);
   }
 

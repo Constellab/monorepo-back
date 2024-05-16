@@ -3,12 +3,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, FindOptionsWhere, In, IsNull, Like, Not, Repository} from 'typeorm';
 import {HnLiveTask} from './hn-live-task.entity';
 import {HnCreateLiveTaskDto} from './hn-live-task.dto';
-import {
-  BlAbstractPaginatedService,
-  BlQuillMigrator,
-  BlRichTextI,
-  BlUnauthorizedException
-} from '@monorepo/back-core-lib';
+import {BlAbstractPaginatedService, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
 import {ClPage} from '@monorepo/core-lib';
@@ -99,7 +94,7 @@ export class HnLiveTaskService {
           },
           latestPublishVersion: Not(IsNull())
         }
-      ]
+      ];
     } else if (publicSelected && myLiveTasksSelected) {
       where = [
         {
@@ -212,7 +207,7 @@ export class HnLiveTaskService {
       });
     }
 
-    if (personalOnly){
+    if (personalOnly) {
       where = where.map(w => {
         w.createdBy = {
           id: currentUser.id
@@ -307,12 +302,6 @@ export class HnLiveTaskService {
     }
 
     return liveTask;
-  }
-
-  public async migrateLiveTask(liveTask: HnLiveTask): Promise<void> {
-    liveTask.descriptionBackup = liveTask.description;
-    liveTask.description = new BlQuillMigrator(liveTask.description as BlRichTextI).migrate();
-    await this.liveTaskRepository.save(liveTask);
   }
 
   public async delete(entityManager: EntityManager, id: string): Promise<void> {

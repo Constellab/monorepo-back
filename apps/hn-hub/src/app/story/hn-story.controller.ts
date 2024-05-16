@@ -21,7 +21,7 @@ import {
   BlPublic,
   BlResponseHelper,
   BlRichTextContent,
-  BlRichTextUploadedImage,
+  BlRichTextUploadedImageResponse,
   BlUploadedFile
 } from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
@@ -158,7 +158,7 @@ export class HnStoryController {
   @UseInterceptors(FileInterceptor('file'))
   @Put('image/:storyId')
   saveImage(@BlUploadedFile() file: BlFile,
-            @Param('storyId', new ParseUUIDPipe()) storyId: string): Promise<BlRichTextUploadedImage> {
+            @Param('storyId', new ParseUUIDPipe()) storyId: string): Promise<BlRichTextUploadedImageResponse> {
     return this.storyService.saveImage(file, storyId);
   }
 
@@ -186,7 +186,7 @@ export class HnStoryController {
   @BlPublic()
   @Get('get-file/:storyFileId')
   public async getFile(@Param('storyFileId') storyFileId: string,
-                       @Res({ passthrough: true }) res: Response): Promise<StreamableFile> {
+                       @Res({passthrough: true}) res: Response): Promise<StreamableFile> {
     const file = await this.storyService.getStoryFile(storyFileId);
     const fileName: string = await this.storyService.getStoryFileName(storyFileId);
     res.set({
@@ -278,17 +278,11 @@ export class HnStoryController {
     return this.storyService.deleteCoAuthorInvite(inviteId);
   }
 
-  @IsAdmin()
-  @Post('migrate-stories')
-  public async migrateStories(): Promise<void> {
-    return await this.storyService.migrateStories();
-  }
-
   ////////////////////////////////// STORY RESOURCE VIEW //////////////////////////////////
   @UseInterceptors(FileInterceptor('file'))
   @Post(':storyId/upload-view')
   public async uploadStoryResourceViewFile(@BlUploadedFile() file: BlFile,
-                                          @Param('storyId', new ParseUUIDPipe()) storyId: string): Promise<any> {
+                                           @Param('storyId', new ParseUUIDPipe()) storyId: string): Promise<any> {
     return {filename: await this.storyService.uploadStoryResourceViewFile(storyId, file)};
   }
 
@@ -300,8 +294,6 @@ export class HnStoryController {
     const file = await this.storyService.getView(filename);
     BlResponseHelper.setMessageAndCache(response, file);
   }
-
-
 
 
   @IsAdmin()

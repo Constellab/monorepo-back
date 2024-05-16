@@ -9,15 +9,17 @@ import {
   Post,
   Put,
   Query,
-  Req, Res,
-  UseGuards, UseInterceptors
+  Req,
+  Res,
+  UseGuards,
+  UseInterceptors
 } from '@nestjs/common';
 import {
   BlFile,
   BlParsePipe,
   BlPublic,
   BlResponseHelper,
-  BlRichTextUploadedImage,
+  BlRichTextUploadedImageResponse,
   BlUploadedFile
 } from '@monorepo/back-core-lib';
 import {HnBrick} from './brick/hn-brick.entity';
@@ -139,7 +141,7 @@ export class HnBrickController {
   @UseInterceptors(FileInterceptor('file'))
   @Put('edit-image/:brickId')
   async editImage(@Param('brickId', new ParseUUIDPipe()) brickId: string,
-                  @BlUploadedFile() file: BlFile): Promise<BlRichTextUploadedImage> {
+                  @BlUploadedFile() file: BlFile): Promise<BlRichTextUploadedImageResponse> {
     return this.brickAggregateService.editBrickImage(brickId, file);
   }
 

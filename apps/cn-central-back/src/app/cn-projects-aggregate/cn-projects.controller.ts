@@ -22,7 +22,8 @@ import {
   BlParsePipe,
   BlResponseHelper,
   BlRichTextContent,
-  BlRichTextUploadedImage,
+  BlRichTextUploadedImageResponse,
+  BlRichTextUploadFileResponse,
   BlSearchParams,
   BlUploadedFile
 } from '@monorepo/back-core-lib';
@@ -190,7 +191,7 @@ export class CnProjectsController {
   @UseInterceptors(FileInterceptor('file'))
   @Put(':projectId/description/image')
   saveDescriptionImage(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                       @BlUploadedFile() file: BlFile): Promise<BlRichTextUploadedImage> {
+                       @BlUploadedFile() file: BlFile): Promise<BlRichTextUploadedImageResponse> {
     return this.projectAggregate.saveDescriptionImage(projectId, file);
   }
 
@@ -211,7 +212,7 @@ export class CnProjectsController {
   @UseInterceptors(FileInterceptor('file'))
   @Put(':projectId/comment/image')
   saveCommentImage(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                   @BlUploadedFile() file: BlFile): Promise<BlRichTextUploadedImage> {
+                   @BlUploadedFile() file: BlFile): Promise<BlRichTextUploadedImageResponse> {
     return this.projectAggregate.saveCommentImage(file, projectId);
   }
 
@@ -345,15 +346,22 @@ export class CnProjectsController {
   @UseInterceptors(FileInterceptor('file'))
   @Post('constellab-document/:documentId/image')
   async uploadImageToConstellabDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string,
-                                        @BlUploadedFile() file: BlFile): Promise<BlRichTextUploadedImage> {
+                                        @BlUploadedFile() file: BlFile): Promise<BlRichTextUploadedImageResponse> {
     return this.projectAggregate.uploadImageToConstellabDocument(documentId, file);
   }
 
-  @Get('constellab-document/:documentId/image/:documentName(*)')
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('constellab-document/:documentId/file')
+  async uploadFileToConstellabDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string,
+                                        @BlUploadedFile() file: BlFile): Promise<BlRichTextUploadFileResponse> {
+    return this.projectAggregate.uploadFileToConstellabDocument(documentId, file);
+  }
+
+  @Get('constellab-document/:documentId/file/:documentName(*)')
   public async getConstellabDocumentImage(@Param('documentId') documentId: string,
                                           @Param('documentName') documentName: string,
                                           @Res() response: Response): Promise<any> {
-    const file = await this.projectAggregate.getConstellabDocumentImage(documentId, documentName);
+    const file = await this.projectAggregate.getConstellabDocumentContentDocument(documentId, documentName);
     BlResponseHelper.setMessage(response, file);
   }
 

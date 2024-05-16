@@ -32,7 +32,8 @@ import {
   BlFile,
   BlQuillMigrator,
   BlRichTextContent,
-  BlRichTextUploadedImage,
+  BlRichTextUploadedImageResponse,
+  BlRichTextUploadFileResponse,
   BlSearchBuilder,
   BlSearchParams,
   BlUnauthorizedException
@@ -347,7 +348,7 @@ export class CnProjectAggregateService {
     return newProject;
   }
 
-  public async saveDescriptionImage(projectId: string, file: BlFile): Promise<BlRichTextUploadedImage> {
+  public async saveDescriptionImage(projectId: string, file: BlFile): Promise<BlRichTextUploadedImageResponse> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
     return this.projectDocumentService.uploadImageDocument(file, project, CnProjectDocumentType.DESCRIPTION_CONTENT,
@@ -636,7 +637,7 @@ export class CnProjectAggregateService {
     return this.projectCommentService.getProjectComments(projectId, page, size);
   }
 
-  public async saveCommentImage(file: BlFile, projectId: string): Promise<BlRichTextUploadedImage> {
+  public async saveCommentImage(file: BlFile, projectId: string): Promise<BlRichTextUploadedImageResponse> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
     return this.projectCommentService.saveProjectCommentImage(file, project);
   }
@@ -750,7 +751,7 @@ export class CnProjectAggregateService {
     return this.projectDocumentService.getConstellabDocument(project, document);
   }
 
-  public async uploadImageToConstellabDocument(documentId: string, file: BlFile): Promise<BlRichTextUploadedImage> {
+  public async uploadImageToConstellabDocument(documentId: string, file: BlFile): Promise<BlRichTextUploadedImageResponse> {
     const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
@@ -758,7 +759,20 @@ export class CnProjectAggregateService {
     return this.projectDocumentService.uploadImageToConstellabDocument(project, document, file);
   }
 
-  public async getConstellabDocumentImage(documentId: string, documentName: string): Promise<IncomingMessage> {
+  public async uploadFileToConstellabDocument(documentId: string, file: BlFile): Promise<BlRichTextUploadFileResponse> {
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
+
+    const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
+
+    return this.projectDocumentService.uploadFileToConstellabDocument(project, document, file);
+  }
+
+  /**
+   * Get the document (image or file) of a constellab document
+   * @param documentId
+   * @param documentName
+   */
+  public async getConstellabDocumentContentDocument(documentId: string, documentName: string): Promise<IncomingMessage> {
     const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);

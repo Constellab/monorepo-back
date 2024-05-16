@@ -9,7 +9,8 @@ import {
   BlNewRichText,
   BlObjectStorageService,
   BlRichTextContent,
-  BlRichTextUploadedImage
+  BlRichTextUploadedImageResponse,
+  BlRichTextUploadFileResponse
 } from '@monorepo/back-core-lib';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {IncomingMessage} from 'http';
@@ -110,7 +111,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
                                    documentType: CnProjectDocumentType,
                                    entityId: string,
                                    documentName?: string,
-                                   parentDocument?: CnProjectDocument): Promise<BlRichTextUploadedImage> {
+                                   parentDocument?: CnProjectDocument): Promise<BlRichTextUploadedImageResponse> {
     const imSize = BlImageHelper.getImageSize(file);
     if (!documentName) {
       documentName = this.objectStorageService.generateRandomFileNameFromExtension(imSize.type);
@@ -332,9 +333,26 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     return new CnConstellabDocumentDTO(document, content);
   }
 
-  async uploadImageToConstellabDocument(project: CnProject, document: CnProjectDocument, file: BlFile): Promise<BlRichTextUploadedImage> {
+  async uploadImageToConstellabDocument(project: CnProject, document: CnProjectDocument,
+                                        file: BlFile): Promise<BlRichTextUploadedImageResponse> {
     return this.uploadImageDocument(file, project, CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT,
       document.id, null, document);
+  }
+
+  async uploadFileToConstellabDocument(project: CnProject, document: CnProjectDocument,
+                                       file: BlFile): Promise<BlRichTextUploadFileResponse> {
+
+    const fileName = await this.checkNewDocumentName(project.id,
+      CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT, file.originalname, document.id);
+
+    const newDocument = await this.uploadDocument(file, project,
+      CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT,
+      document.id, fileName, document);
+
+    return {
+      name: newDocument.name,
+      size: newDocument.size
+    };
   }
 
   ////////////////////////////////////////////// TRASH ///////////////////////////////////////////////
@@ -398,9 +416,12 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
     if (!space.hasEnoughStorageForNewFile(documentSize)) {
       if (documentSize === 0) {
-        throw new BlBadRequestException('Space storage is full, please contact your space administrator to increase the storage limit, delete some documents or empty the trash.');
+        throw new BlBadRequestException('Space storage is full, please contact your ' +
+          'space administrator to increase the storage limit, delete some documents or empty the trash.');
       } else {
-        throw new BlBadRequestException('There is not enough remaining free storage in your space to upload this document. Please contact your space administrator to increase the storage limit, delete some documents or empty the trash.');
+        throw new BlBadRequestException('There is not enough remaining free storage in ' +
+          'your space to upload this document. Please contact your space administrator to increase the storage limit, ' +
+          'delete some documents or empty the trash.');
       }
     }
   }
@@ -414,5 +435,27 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       spaceId: CnCurrentUserHelper.getCurrentSpace().id
     };
     this.eventEmitter.emit(cnProjectDocumentEventName, event);
+  }
+
+  /**
+   * Method to check if a document with same name exists and if so, add an index to the name
+   * @private
+   */
+  private async checkNewDocumentName(projectId: string, documentType: CnProjectDocumentType, documentName: string,
+                                     entityId: string): Promise<string> {
+    let i = 0;
+    while (i < 10) {
+      const name = i === 0 ? documentName : BlFileHelper.addIndexToFileName(documentName, i);
+
+      const existingDocument = await this.findDocumentByProjectAndTypeAndName(projectId, documentType,
+        name, entityId);
+      if (!existingDocument) {
+        return name;
+      }
+      i++;
+    }
+
+    throw new BlBadRequestException('Document with this name already exists');
+
   }
 }

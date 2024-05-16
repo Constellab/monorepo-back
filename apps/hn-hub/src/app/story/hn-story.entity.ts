@@ -1,6 +1,6 @@
 import {BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany} from 'typeorm';
 import {HnTopic} from '../topic/hn-topic.entity';
-import {BlEntityWithId, BlLuxonDateTimeColumn, BlRichText} from '@monorepo/back-core-lib';
+import {BlEntityWithId, BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
 import {DateTime} from 'luxon';
 import {HnUser} from '../users/hn-user.entity';
 import {ClDateHelper, ClStringHelper} from '@monorepo/core-lib';
@@ -28,7 +28,7 @@ export class HnStory extends BlEntityWithId {
 
   // the database was modified to use a long text instead of a json
   @Column({name: 'content', type: 'simple-json'})
-  content: Record<string, any> = BlRichText.newRichText();
+  content: Record<string, any>;
 
   @Column({name: 'content_edition', type: 'simple-json', nullable: true})
   contentEdition?: Record<string, any>;
@@ -93,7 +93,7 @@ export class HnStory extends BlEntityWithId {
    * Path use in the url to have an explicit url (this is not mandatory to find the story)
    */
   @Expose()
-  get titlePath(): string{
-    return ClStringHelper.getCleanUrlPath(this.title)
+  get titlePath(): string {
+    return ClStringHelper.getCleanUrlPath(this.title);
   }
 }

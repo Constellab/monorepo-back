@@ -10,7 +10,10 @@ import {
   BlBadRequestException,
   BlBucketConfig,
   BlBucketType,
-  BlFile, BlImageHelper, BlObjectStorageService, BlRichTextUploadedImage,
+  BlFile,
+  BlImageHelper,
+  BlObjectStorageService,
+  BlRichTextUploadedImageResponse,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
 import {ClPage, ClStringHelper} from '@monorepo/core-lib';
@@ -68,7 +71,7 @@ export class HnBrickService {
     return this.bricksRepository.findOneBy({id: id});
   }
 
-  async editBrickImage(id: string, image: BlFile): Promise<BlRichTextUploadedImage> {
+  async editBrickImage(id: string, image: BlFile): Promise<BlRichTextUploadedImageResponse> {
     const imSize = BlImageHelper.getImageSize(image);
     const fileExt = image.originalname.split('.').pop();
     image.originalname = id + '/brick-image/' + ClStringHelper.generateUUID() + '.' + fileExt;

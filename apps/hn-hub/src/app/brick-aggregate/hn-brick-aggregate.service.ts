@@ -25,7 +25,7 @@ import {
   BlBadRequestException,
   BlFile,
   BlRichTextContent,
-  BlRichTextUploadedImage,
+  BlRichTextUploadedImageResponse,
   BlUnauthorizedException,
   BlVersion
 } from '@monorepo/back-core-lib';
@@ -222,7 +222,7 @@ export class HnBrickAggregateService {
     return brick;
   }
 
-  async editBrickImage(id: string, file: BlFile): Promise<BlRichTextUploadedImage> {
+  async editBrickImage(id: string, file: BlFile): Promise<BlRichTextUploadedImageResponse> {
     await this.assertUserCanEditBrick(id, true);
     return this.brickService.editBrickImage(id, file);
   }
@@ -485,7 +485,7 @@ export class HnBrickAggregateService {
     return this.documentationService.update(updatedDoc);
   }
 
-  async saveDocImage(file: BlFile, docId: string): Promise<BlRichTextUploadedImage> {
+  async saveDocImage(file: BlFile, docId: string): Promise<BlRichTextUploadedImageResponse> {
     return this.documentationService.saveImage(docId, file, false);
   }
 

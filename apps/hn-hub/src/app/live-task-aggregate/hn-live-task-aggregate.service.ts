@@ -67,7 +67,7 @@ export class HnLiveTaskAggregateService {
       const newLiveTaskVersion =
         await this.liveTaskVersionService.createFirstVersion(liveTask, createLiveTaskDto.versionFile, entityManager);
 
-      for(const brick of createLiveTaskDto.versionFile.bricks) {
+      for (const brick of createLiveTaskDto.versionFile.bricks) {
         const brickVersion: HnBrickVersion = await this.brickAggregateService.getAndCheckBrickVersion(brick.name, brick.version);
         await this.liveTaskVersionBrickDependenciesService.create(newLiveTaskVersion, brickVersion, entityManager);
       }
@@ -82,18 +82,18 @@ export class HnLiveTaskAggregateService {
     return {
       id: liveTaskVersion.id,
       live_task_id: liveTaskVersion.liveTask.id
-    }
+    };
   }
 
   public async forkForLab(parentLiveTaskVersionId: string, createLiveTaskDto: HnCreateLiveTaskDto,
                           req: Request): Promise<HaCreateLiveTaskVersionFromLabResponseDto> {
     const user = await this.checkIfLabUserAndReturnUser(req);
-    if (parentLiveTaskVersionId == null) throw new BlBadRequestException('The parent live task version id is required')
+    if (parentLiveTaskVersionId == null) throw new BlBadRequestException('The parent live task version id is required');
     const liveTaskVersion: HnLiveTaskVersion = await this.create(createLiveTaskDto, parentLiveTaskVersionId, user);
     return {
       id: liveTaskVersion.id,
       live_task_id: liveTaskVersion.liveTask.id
-    }
+    };
   }
 
   public async createNewVersionForLab(liveTaskId: string, newLiveTaskVersionFile: HnLiveTaskVersionFileInput,
@@ -101,9 +101,9 @@ export class HnLiveTaskAggregateService {
     const user = await this.checkIfLabUserAndReturnUser(req);
     const liveTask: HnLiveTask = await this.liveTaskService.findOne(liveTaskId);
 
-    if (liveTask.createdBy.id != user.id){
+    if (liveTask.createdBy.id != user.id) {
       const coAuthors = await this.liveTaskCoAuthorService.getLiveTaskCoAuthorsByLiveTaskId(liveTaskId);
-      if (!coAuthors.some(coAuthor => coAuthor.id ==user.id))
+      if (!coAuthors.some(coAuthor => coAuthor.id == user.id))
         throw new BlUnauthorizedException();
     }
     if ((await this.liveTaskVersionService.findLatestByLiveTask(liveTask)).versionState == 'DRAFT')
@@ -112,7 +112,7 @@ export class HnLiveTaskAggregateService {
     return {
       id: newLiveTaskVersion.id,
       live_task_id: newLiveTaskVersion.liveTask.id
-    }
+    };
   }
 
   public async updateTitle(id: string, title: string): Promise<HnLiveTask> {
@@ -161,23 +161,23 @@ export class HnLiveTaskAggregateService {
     let myLiveTasksSelected = false;
     for (const spaceId of spacesFilter) {
       if (spaceId === 'public') publicSelected = true;
-      else if (spaceId === 'my-live-tasks') myLiveTasksSelected = true
+      else if (spaceId === 'my-live-tasks') myLiveTasksSelected = true;
       else await this.spaceAggregateService.assertCheckSpaceUser(spaceId, currentUser.id);
     }
     let userSpacesIds: string[] = null;
     let coAuthorLiveTasksIds: string[] = [];
-    if (currentUser){
+    if (currentUser) {
       userSpacesIds = (await this.spaceAggregateService.findSpacesOfUser(currentUser?.id)).map(space => space.id);
-      if(myLiveTasksSelected){
+      if (myLiveTasksSelected) {
         coAuthorLiveTasksIds = (await this.liveTaskCoAuthorService.getLiveTaskCoAuthorsByUserId(currentUser.id))
           .map(coAuthor => coAuthor.liveTask.id);
       }
     }
 
-    if(publicSelected){
+    if (publicSelected) {
       spacesFilter = spacesFilter.filter(spaceId => spaceId !== 'public');
     }
-    if(myLiveTasksSelected){
+    if (myLiveTasksSelected) {
       spacesFilter = spacesFilter.filter(spaceId => spaceId !== 'my-live-tasks');
     }
     return await this.liveTaskService.findAllWithFiltersPaginated(spacesFilter, titleFilter, publicSelected,
@@ -211,7 +211,7 @@ export class HnLiveTaskAggregateService {
    */
   private async checkIfLabUserAndReturnUser(req: Request): Promise<HnUser> {
     await this.labConstellabApiService.checkApiKeyAndUserIdInCentral(req);
-    const currentUser = await this.userService.findOne(req.headers['user'])
+    const currentUser = await this.userService.findOne(req.headers['user']);
     if (!currentUser)
       throw new BlUnauthorizedException();
     return currentUser;
@@ -224,14 +224,14 @@ export class HnLiveTaskAggregateService {
       return await this.liveTaskService.findPublicLiveTaskById(id);
 
     const userSpacesId: string[] = (await this.spaceAggregateService.findSpacesOfCurrentUser()).map(space => space.id);
-    const liveTask =  await this.liveTaskService.findLiveTaskByIdWithUserSpaces(id, userSpacesId);
-    if(!liveTask){
+    const liveTask = await this.liveTaskService.findLiveTaskByIdWithUserSpaces(id, userSpacesId);
+    if (!liveTask) {
       throw new BlNotFoundException('Live task not found');
     }
     return liveTask;
   }
 
-  public async findLiveTaskTitleById(id: string): Promise<string>{
+  public async findLiveTaskTitleById(id: string): Promise<string> {
     return (await this.findLiveTaskById(id))?.title;
   }
 
@@ -300,6 +300,7 @@ export class HnLiveTaskAggregateService {
     await this.liveTaskService.checkIfCreatorOrCoAuthorAndGetLiveTask((await this.liveTaskVersionService.findOne(id)).liveTask.id);
     return this.liveTaskVersionService.updateParams(id, params);
   }
+
   public async updateLiveTaskVersionCode(id: string, code: string): Promise<HnLiveTaskVersion> {
     await this.liveTaskService.checkIfCreatorOrCoAuthorAndGetLiveTask((await this.liveTaskVersionService.findOne(id)).liveTask.id);
     return this.liveTaskVersionService.updateCode(id, code);
@@ -332,7 +333,7 @@ export class HnLiveTaskAggregateService {
       const newLiveTaskVersion =
         await this.liveTaskVersionService.createNewDraftVersion(latestLiveTaskVersion, newLiveTaskVersionFile, entityManager);
 
-      for(const brick of newLiveTaskVersionFile.bricks) {
+      for (const brick of newLiveTaskVersionFile.bricks) {
         const brickVersion: HnBrickVersion = await this.brickAggregateService.getAndCheckBrickVersion(brick.name, brick.version);
         await this.liveTaskVersionBrickDependenciesService.create(newLiveTaskVersion, brickVersion, entityManager);
       }
@@ -366,22 +367,6 @@ export class HnLiveTaskAggregateService {
     return liveTaskVersionBrickDependencies.map(liveTaskVersionBrickDependency => liveTaskVersionBrickDependency.brickVersion);
   }
 
-  public async migrateLiveTasks(): Promise<void>{
-    const liveTasks: HnLiveTask[] = await this.liveTaskService.findAll();
-    for(const liveTask of liveTasks){
-      if (liveTask.description && liveTask.description.ops) {
-        await this.liveTaskService.migrateLiveTask(liveTask);
-      }
-      const liveTaskVersions: HnLiveTaskVersion[] = await this.liveTaskVersionService.findAllByLiveTaskId(liveTask.id);
-      for (const liveTaskVersion of liveTaskVersions){
-        if (liveTaskVersion.versionInfos && liveTaskVersion.versionInfos.ops) {
-          await this.liveTaskVersionService.migrateLiveTaskVersion(liveTaskVersion);
-        }
-      }
-    }
-  }
-
-
   ////////////////////////////////////////// LIVE TASKS CO AUTHORS //////////////////////////////////////////
   public async inviteLiveTaskCoAuthor(liveTaskId: string, coAuthorMail: string): Promise<boolean> {
     const liveTask = await this.liveTaskService.checkIfCreatorAndGetLiveTask(liveTaskId);
@@ -413,7 +398,7 @@ export class HnLiveTaskAggregateService {
     const liveTaskCoAuthorInvite: HnLiveTaskCoAuthorInvite = await this.isInviteValid(token);
     if (!liveTaskCoAuthorInvite) throw new Error('Invalid invite');
     const liveTask = await this.liveTaskService.findOne(liveTaskCoAuthorInvite.liveTask.id);
-    if(liveTask.space && !(await this.spaceAggregateService.checkSpaceUser(liveTask.space.id, HnCurrentUserHelper.getCurrentUser().id))){
+    if (liveTask.space && !(await this.spaceAggregateService.checkSpaceUser(liveTask.space.id, HnCurrentUserHelper.getCurrentUser().id))) {
       throw new BlUnauthorizedException('User is not in the space of the live task');
     }
     const liveTaskCoAuthor: HnLiveTaskCoAuthor = new HnLiveTaskCoAuthor();
