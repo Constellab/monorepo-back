@@ -1,5 +1,5 @@
 import {Injectable} from '@nestjs/common';
-import {Repository} from 'typeorm';
+import {Like, Repository} from 'typeorm';
 import {CnServerCloud} from './cn-server-cloud.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {BlAbstractService, BlSearchBuilder, BlSearchParams} from '@monorepo/back-core-lib';
@@ -46,5 +46,14 @@ export class CnServerCloudService extends BlAbstractService<CnServerCloud> {
     searchBuilder.addSearchParams(searchParams);
 
     return this.findPaginated(page, size, searchBuilder.build());
+  }
+
+  public async searchByName(name: string, page: number, size: number): Promise<ClPage<CnServerCloud>> {
+    return this.findPaginated(page, size, {
+      where: {
+        technicalName: Like(`%${name}%`)
+      },
+      order: {technicalName: 'ASC'}
+    });
   }
 }

@@ -102,16 +102,26 @@ export class CnServerAggregateService {
     await this.serversCloudService.deleteById(id);
   }
 
+  public async findServerCloudById(id: string): Promise<CnServerCloud> {
+    await this.checkAuthorizationToReadEntities();
+    return this.serversCloudService.findByIdAndCheck(id);
+  }
+
   public async findAllServerCloud(page: number, size: number): Promise<ClPage<CnServerCloud>> {
     await this.checkAuthorizationToReadEntities();
     return this.serversCloudService.findAll(page, size);
   }
 
-
   public async searchServerCloud(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnServerCloud>> {
     await this.checkAuthorizationToReadEntities();
     return this.serversCloudService.search(searchParams, page, size);
   }
+
+  public async searchServerCloudByName(name: string, page: number, size: number): Promise<ClPage<CnServerCloud>> {
+    await this.checkAuthorizationToReadEntities();
+    return this.serversCloudService.searchByName(name, page, size);
+  }
+
 
   public async findAvailableRegionsForServerCloud(serverCloudId: string): Promise<CnCloudProviderRegion[]> {
     const serverCloud = await this.serversCloudService.findByIdAndCheck(serverCloudId);

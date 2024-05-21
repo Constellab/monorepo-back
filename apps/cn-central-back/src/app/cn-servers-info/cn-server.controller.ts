@@ -75,11 +75,23 @@ export class CnServerController {
     return this.aggregateService.findAllServerCloud(page, size);
   }
 
+  @Get('cloud/:id')
+  findServerCloudById(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnServerCloud> {
+    return this.aggregateService.findServerCloudById(id);
+  }
+
   @Post('cloud/search')
   searchServerCloud(@Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
                     @Query('page', ParseIntPipe) page: number,
                     @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnServerCloud>> {
     return this.aggregateService.searchServerCloud(searchParam, page, size);
+  }
+
+  @Get('cloud/search-name/:name')
+  searchServerCloudByName(@Param('name') name: string,
+                          @Query('page', ParseIntPipe) page: number,
+                          @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnServerCloud>> {
+    return this.aggregateService.searchServerCloudByName(name, page, size);
   }
 
   @Get('cloud/:id/regions')
