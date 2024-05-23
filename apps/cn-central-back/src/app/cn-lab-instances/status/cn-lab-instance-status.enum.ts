@@ -6,6 +6,7 @@ export enum CnLabInstanceStatus {
   SERVER_CONFIGURED = 'SERVER_CONFIGURED', // server is started and lab manager is running
   LAB_RUNNING = 'LAB_RUNNING', // server and lab running
   NO_SERVER = 'NO_SERVER', // has no labInstanceId nor volumeId, no billing
+  ERROR = 'ERROR', // error occurred
 }
 
 // list of statuses that are considered as temporary
@@ -23,6 +24,13 @@ export const cnLabInstanceRunningStatuses = [
   CnLabInstanceStatus.SERVER_RUNNING,
   CnLabInstanceStatus.SERVER_CONFIGURED,
   CnLabInstanceStatus.LAB_RUNNING,
+];
+
+// list of statuses that are considered as stopped
+export const cnLabInstanceStoppedStatuses = [
+  CnLabInstanceStatus.SERVER_STOPPED,
+  CnLabInstanceStatus.NO_SERVER,
+  CnLabInstanceStatus.ERROR,
 ];
 
 export enum CnLabInstanceServerTaskStatus {

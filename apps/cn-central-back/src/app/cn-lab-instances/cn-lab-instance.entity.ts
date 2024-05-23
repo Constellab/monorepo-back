@@ -4,7 +4,11 @@ import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnEntityWithStatus} from '../cn-core/model/entities/cn-entity-with-status.entity';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
 import {CnServerCloud} from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
-import {CnLabInstanceServerTaskStatus, CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
+import {
+  CnLabInstanceServerTaskStatus,
+  CnLabInstanceStatus,
+  cnLabInstanceStoppedStatuses
+} from './status/cn-lab-instance-status.enum';
 import {randomBytes} from 'crypto';
 import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
 import {CnSpace} from '../cn-spaces/cn-space.entity';
@@ -206,7 +210,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
       if (!this.codelabToken) this.codelabToken = this.generateRandomPassword();
     }
 
-    if(this.isCloud()){
+    if (this.isCloud()) {
       if (!this.cloudName) this.cloudName = ClStringHelper.generateUUID();
     }
   }
@@ -220,8 +224,8 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   }
 
   serverIsStopped(): boolean {
-    return (this.currentStatus?.status === CnLabInstanceStatus.SERVER_STOPPED ?? false) ||
-      (this.currentStatus?.status === CnLabInstanceStatus.NO_SERVER ?? false);
+    if(this.currentStatus == null) return false;
+    return cnLabInstanceStoppedStatuses.includes(this.currentStatus?.status);
   }
 
   getGlabSpaceApiInfo(): CnExternalApiInfo {

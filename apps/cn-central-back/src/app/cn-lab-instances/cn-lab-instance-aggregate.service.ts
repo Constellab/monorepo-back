@@ -435,11 +435,10 @@ export class CnLabInstanceAggregateService {
       if (serverStatus.status === 'STOPPED') {
         return await this.labInstancesService.markInstanceAsServerStopped(labInstanceId);
       }
-      // Specific case to handle error, we don't update the server status because we don't know which status to use
-      // just set the error in the server task
+      // Specific case to handle error, mark as stopped and set the error in the server task
       if (serverStatus.status === 'ERROR') {
         const text = serverStatus.message?.length > 0 ? serverStatus.message : 'No information about the error';
-        return await this.labInstancesService.updateServerTask(labInstanceId, text, CnLabInstanceServerTaskStatus.ERROR);
+        return await this.labInstancesService.markInstanceAsError(labInstanceId, text);
       }
     }
 

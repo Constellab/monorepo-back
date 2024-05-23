@@ -245,6 +245,11 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_CONFIGURED, id);
   }
 
+  public async markInstanceAsError(id: string, text: string,): Promise<CnLabInstance> {
+    await this.updateCurrentStatusIfChanged(CnLabInstanceStatus.ERROR, id);
+    return this.updateServerTask(id, text, CnLabInstanceServerTaskStatus.ERROR);
+  }
+
   /**
    * Return true if the lab was started once
    */
