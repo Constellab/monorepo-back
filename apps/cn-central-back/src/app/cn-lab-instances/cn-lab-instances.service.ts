@@ -217,11 +217,13 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_RUNNING, id);
   }
 
-  public markInstanceAsLabRunning(id: string): Promise<CnLabInstance> {
+  public async markInstanceAsLabRunning(id: string): Promise<CnLabInstance> {
+    await this.clearServerTask(id);
     return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.LAB_RUNNING, id);
   }
 
-  public markInstanceAsServerStopped(id: string): Promise<CnLabInstance> {
+  public async markInstanceAsServerStopped(id: string): Promise<CnLabInstance> {
+    await this.clearServerTask(id);
     return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_STOPPED, id);
   }
 
@@ -233,7 +235,8 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_STOPPING, id);
   }
 
-  public markInstanceAsNoServer(id: string): Promise<CnLabInstance> {
+  public async markInstanceAsNoServer(id: string): Promise<CnLabInstance> {
+    await this.clearServerTask(id);
     return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.NO_SERVER, id);
   }
 
@@ -245,7 +248,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return this.updateCurrentStatusIfChanged(CnLabInstanceStatus.SERVER_CONFIGURED, id);
   }
 
-  public async markInstanceAsError(id: string, text: string,): Promise<CnLabInstance> {
+  public async markInstanceAsError(id: string, text: string): Promise<CnLabInstance> {
     await this.updateCurrentStatusIfChanged(CnLabInstanceStatus.ERROR, id);
     return this.updateServerTask(id, text, CnLabInstanceServerTaskStatus.ERROR);
   }
@@ -324,6 +327,10 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     searchBuilder.setRelations({space: true, serverCloud: true});
 
     return this.findPaginated(page, size, searchBuilder.build());
+  }
+
+  public clearServerTask(labInstanceId: string): Promise<CnLabInstance> {
+    return this.updateServerTask(labInstanceId, '', CnLabInstanceServerTaskStatus.NONE);
   }
 
   /**
