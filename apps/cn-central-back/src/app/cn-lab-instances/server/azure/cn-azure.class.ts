@@ -10,6 +10,7 @@ export type CnAzureInstanceStatus =
   | 'ProvisioningState/deleting'
   | 'ProvisioningState/failed'
   | 'ProvisioningState/updating'
+  | 'ProvisioningState/failed/AllocationFailed'
   | 'PowerState/deallocated'
   | 'PowerState/deallocating'
   | 'PowerState/running'
@@ -89,6 +90,8 @@ export class CnAzureInstance {
       case 'PowerState/deallocating':
       case 'ProvisioningState/deleting':
         return 'STOPPING';
+      case 'ProvisioningState/failed/AllocationFailed':
+        return 'ERROR';
       default:
         this.logger.error(`Unknown status ${status} for azure instance ${this.name}`);
         return 'ERROR';

@@ -52,8 +52,8 @@ export class CnLabInstancesCron {
   /**
    * Manager Green options to stop the lab instances
    */
-  // '0 */10 * * * *' = every 10 minutes
-  @Cron('0 */1 * * * *')
+  // '0 */5 * * * *' = every 5 minutes
+  @Cron('0 */5 * * * *')
   async refreshLabInstanceStatus(): Promise<void> {
     this.logger.debug('[Cron] Start of refresh lab instance status');
 
@@ -83,7 +83,9 @@ export class CnLabInstancesCron {
         }
       }
 
-      await this.labAggregateService.refreshLabStatus(labInstance.id).catch();
+      await this.labAggregateService.refreshLabStatus(labInstance.id).catch(
+        (error: Error) => this.logger.error(`Error during lab ${labInstance.id} status refresh : ${error.message}`)
+      );
     }
   }
 
