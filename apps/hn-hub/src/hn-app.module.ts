@@ -77,6 +77,7 @@ import {
   HnLiveTaskCoAuthorInviteModule
 } from './app/live-task-aggregate/live-task-co-author-invite/hn-live-task-co-author-invite.module';
 import {HnPublicModule} from './app/public/hn-public.module';
+import {HnTechnicalDocOtherClassModule} from './app/technical-doc-other-class/hn-technical-doc-other-class.module';
 
 function typeOrmConfig(
   configService: HnCoreConfigService,
@@ -232,6 +233,7 @@ function configureMailModule(
     HnBrickUserModule,
     HnBrickUserInviteModule,
     HnBrickAggregateModule,
+    HnTechnicalDocOtherClassModule,
 
     HnLiveTaskModule,
     HnLiveTaskVersionModule,

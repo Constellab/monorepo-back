@@ -2,18 +2,8 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {HnBrickMajorVersion, HnVersionState} from './hn-brick-major-version.entity';
 import {EntityManager, Repository} from 'typeorm';
-import {HnFolderService} from '../folder/hn-folder.service';
 import {HnBrick} from '../brick/hn-brick.entity';
-import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
-import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
-import {HnNode} from '../folder/hn-folder.dto';
-import {HnCreateBrickDTO, HnImportTechnicalDocDTO, HnTechnicalDocInputDTO} from '../brick/hn-brick.dto';
-import {HnTechnicalFolderService} from '../../technical-folder/hn-technical-folder.service';
-import {HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
-import {HnGeneratedDocEntity} from '../../core/model/entities/hn-generated-doc.entity';
-import {BlBadRequestException, BlVersion} from '@monorepo/back-core-lib';
-import {HnSiteMapEnumChangefreq, HnSitemapItemBase} from '../../core/model/config/hn-site-map.class';
-import {HnFrontService} from '../../core/service/hn-front.service';
+import {HnCreateBrickDTO} from '../brick/hn-brick.dto';
 
 @Injectable()
 export class HnBrickMajorVersionService {

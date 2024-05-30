@@ -50,9 +50,10 @@ export interface HnImportTechnicalDocDTO {
   json_version: string;
   brick_name: string;
   brick_version: string;
-  resources: HnImportResourceDTO[],
-  tasks: HnImportTaskDTO[],
-  protocols: HnImportProtocolDTO[]
+  resources: HnImportResourceDTO[];
+  tasks: HnImportTaskDTO[];
+  protocols: HnImportProtocolDTO[];
+  other_classes: HnImportTechDocOtherClassesDTO[];
 }
 
 export interface HnImportEntity {
@@ -80,7 +81,7 @@ export interface HnImportEntityStyle {
 
 export interface HnImportResourceDTO extends HnImportEntity{
   methods: HnResourceMethodList;
-  variables?: HnResourceVariableList;
+  variables?: Record<string, any>;
 }
 
 export interface HnImportTaskDTO extends HnImportEntity {
@@ -155,24 +156,26 @@ export class HnCreateBrickDTO {
   space?: HnSpace;
 }
 
-export interface HnResourceVariableList{
-  variables?: Record<string, any>
-}
-
 // Resource Methods
 export interface HnResourceMethodList {
-  funcs: HnResourceFunction[];
+  funcs: HnTechDocFunction[];
   views: HnResourceView[];
 }
 
-export interface HnResourceFunction {
+export interface HnTechDocFunction {
   name: string;
   doc?: string;
-  args: HnResourceFunctionArg[];
+  args: HnTechDocFunctionArg[];
   return_type?: string;
+  method_type?: HnTechDocFunctionType;
 }
 
-export interface HnResourceFunctionArg {
+export enum HnTechDocFunctionType {
+  CLASSMETHOD = 'classmethod',
+  STATICMETHOD = 'staticmethod'
+}
+
+export interface HnTechDocFunctionArg {
   arg_name: string;
   arg_type: string;
   arg_default_value?: string;
@@ -186,4 +189,11 @@ export interface HnResourceView{
   default_view: boolean;
   has_config_specs: boolean;
   config_specs: Record<string, any>;
+}
+
+export interface HnImportTechDocOtherClassesDTO{
+  name: string;
+  doc?: string;
+  methods: HnTechDocFunction[];
+  variables: Record<string, any>;
 }

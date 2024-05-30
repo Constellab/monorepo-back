@@ -34,7 +34,7 @@ import {
   HnIsActualBrickAndNewVersionDTO,
   HnTechnicalDocInputDTO
 } from './brick/hn-brick.dto';
-import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
+import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc-typing.entity';
 import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
 import {Request, Response} from 'express';
 import {HnBrickAggregateService} from './hn-brick-aggregate.service';

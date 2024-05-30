@@ -96,8 +96,13 @@ export class HnBrickService {
     return await this.objectStorageService.getObject(this.getBucketConfig(), filename);
   }
 
-  async deleteBrickImage(filename: string): Promise<void> {
+  async deleteBrickImage(filename: string, brickId: string = null): Promise<void> {
     await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], filename);
+    if(brickId){
+      const brick = await this.bricksRepository.findOneBy({id: brickId});
+      brick.imageLink = null;
+      await this.bricksRepository.save(brick);
+    }
   }
 
   async editBrick(brick: HnBrick, editedBrick: HnEditBrickDTO): Promise<HnBrick> {

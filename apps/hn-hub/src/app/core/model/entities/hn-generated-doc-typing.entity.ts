@@ -16,11 +16,24 @@ export abstract class HnGeneratedDocEntity extends BlEntityWithId {
   @Column()
   humanName: string;
 
-  @Column({nullable: true})
-  shortDescription?: string;
-
   @Column({type: 'text', nullable: true})
   doc: string;
+
+  @Type(() => HnTechnicalFolder)
+  @ManyToOne(() => HnTechnicalFolder, {eager: true, nullable: false})
+  technicalFolder: HnTechnicalFolder;
+
+  abstract getFolderName(): string;
+
+  getCompletePath(): string{
+    return `${this.getFolderName()}/${this.uniqueName}`;
+  }
+}
+
+export abstract class HnGeneratedDocTypingEntity extends HnGeneratedDocEntity {
+
+  @Column({nullable: true})
+  shortDescription?: string;
 
   @Column()
   typingName: string;
@@ -46,10 +59,6 @@ export abstract class HnGeneratedDocEntity extends BlEntityWithId {
   @Column({nullable: true})
   deprecatedMessage?: string;
 
-  @Type(() => HnTechnicalFolder)
-  @ManyToOne(() => HnTechnicalFolder, {eager: true, nullable: false})
-  technicalFolder: HnTechnicalFolder;
-
   @Column({name: 'style', type: 'simple-json', nullable: true})
   style?: Record<string, any>;
 
@@ -57,10 +66,4 @@ export abstract class HnGeneratedDocEntity extends BlEntityWithId {
   objectSubType: string;
 
   objectType: string;
-
-  abstract getFolderName(): string;
-
-  getCompletePath(): string{
-    return `${this.getFolderName()}/${this.uniqueName}`;
-  }
 }

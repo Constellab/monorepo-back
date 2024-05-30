@@ -4,7 +4,7 @@ import {Repository} from 'typeorm';
 import {HnTask} from './hn-task.entity';
 import {HnTechnicalFolder} from '../technical-folder/hn-technical-folder.entity';
 import {HnImportTaskDTO} from '../brick-aggregate/brick/hn-brick.dto';
-import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
+import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc-typing.entity';
 import * as TASKS_OF_THE_DAY from '../../assets/data/tasks-of-the-day.json';
 
 @Injectable()

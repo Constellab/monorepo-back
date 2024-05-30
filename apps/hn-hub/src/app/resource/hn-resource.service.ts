@@ -4,7 +4,7 @@ import {HnResource} from './hn-resource.entity';
 import {Repository} from 'typeorm';
 import {HnTechnicalFolder} from '../technical-folder/hn-technical-folder.entity';
 import {HnImportResourceDTO} from '../brick-aggregate/brick/hn-brick.dto';
-import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
+import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc-typing.entity';
 
 @Injectable()
 export class HnResourceService {
@@ -39,7 +39,7 @@ export class HnResourceService {
       resource.humanName = r.human_name;
       resource.style = r.style;
       resource.methods = r.methods;
-      resource.variables = r.variables?.variables;
+      resource.variables = r.variables;
 
       //TODO A MODIFIER pour le parent et deprecatedSince
 

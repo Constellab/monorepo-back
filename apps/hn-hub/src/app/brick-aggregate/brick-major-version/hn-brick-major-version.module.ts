@@ -18,10 +18,11 @@ import {HnBrickVersionReferenceModule} from '../../brick-version-reference/hn-br
 import {HnBrickVersionReferenceService} from '../../brick-version-reference/hn-brick-version-reference.service';
 import {HnUserService} from '../../users/hn-user.service';
 import {HnUserModule} from '../../users/hn-user.module';
+import {HnTechnicalDocOtherClassModule} from '../../technical-doc-other-class/hn-technical-doc-other-class.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([HnBrickMajorVersion]),
-    HnBrickVersionModule, HnFolderModule, HnDocumentationModule,
+    HnBrickVersionModule, HnFolderModule, HnDocumentationModule, HnTechnicalDocOtherClassModule,
     HnCoreModule, HnTechnicalFolderModule, HnResourceModule, HnTaskModule, HnProtocolModule,
     HnBrickVersionReferenceModule, HnUserModule],
   exports: [TypeOrmModule, HnBrickMajorVersionService],

@@ -9,11 +9,10 @@ import {HnTaskModule} from '../task/hn-task.module';
 import {HnTaskService} from '../task/hn-task.service';
 import {HnProtocolService} from '../protocol/hn-protocol.service';
 import {HnProtocolModule} from '../protocol/hn-protocol.module';
-import {HnCoreModule} from '../core/hn-core.module';
-import {HnCoreConfigModule} from '../core/modules/core-config/hn-core-config.module';
+import {HnTechnicalDocOtherClassModule} from '../technical-doc-other-class/hn-technical-doc-other-class.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([HnTechnicalFolder]), HnResourceModule, HnTaskModule, HnProtocolModule],
+  imports: [TypeOrmModule.forFeature([HnTechnicalFolder]), HnTechnicalDocOtherClassModule, HnResourceModule, HnTaskModule, HnProtocolModule],
   controllers: [HnTechnicalFolderController],
   providers: [HnTechnicalFolderService, HnResourceService, HnTaskService, HnProtocolService],
   exports: [TypeOrmModule, HnTechnicalFolderService],

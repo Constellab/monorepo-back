@@ -1,9 +1,9 @@
-import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
+import {HnGeneratedDocTypingEntity} from '../core/model/entities/hn-generated-doc-typing.entity';
 import {Column, Entity, Unique} from 'typeorm';
 
 @Unique(['uniqueName', 'technicalFolder'])
 @Entity('task')
-export class HnTask extends HnGeneratedDocEntity {
+export class HnTask extends HnGeneratedDocTypingEntity {
   @Column({name: 'inputSpecs', type: 'simple-json', nullable: true})
   inputSpecs?: Record<string, any>;
 

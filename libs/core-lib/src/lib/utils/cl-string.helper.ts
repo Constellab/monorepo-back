@@ -144,6 +144,10 @@ export class ClStringHelper {
       .replace(/^[- ]+|[- ]+$/g, '');
   }
 
+  /**
+   * Return the first letter of each word in uppercase
+   * @param str
+   */
   public static toIdForUrl(str: string): string{
     if (str == null) return null;
     if (typeof str !== 'string') {
@@ -162,6 +166,11 @@ export class ClStringHelper {
     return str;
   }
 
+  /**
+   * Return a clean url path from a string
+   * It removes all accents, special characters, and replace spaces with dashes
+   * @param str
+   */
   public static getCleanUrlPath(str: string): string {
     if (str == null) return null;
     if (typeof str !== 'string') {

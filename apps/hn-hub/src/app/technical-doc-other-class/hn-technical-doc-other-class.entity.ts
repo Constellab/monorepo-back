@@ -1,9 +1,9 @@
-import {HnGeneratedDocTypingEntity} from '../core/model/entities/hn-generated-doc-typing.entity';
 import {Column, Entity, Unique} from 'typeorm';
+import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc-typing.entity';
 
 @Unique(['uniqueName', 'technicalFolder'])
-@Entity('resource')
-export class HnResource extends HnGeneratedDocTypingEntity {
+@Entity('technical_doc_other_class')
+export class HnTechnicalDocOtherClass extends HnGeneratedDocEntity {
 
   @Column({name: 'variables', type: 'simple-json', nullable: true})
   variables?: Record<string, any>;
@@ -11,7 +11,9 @@ export class HnResource extends HnGeneratedDocTypingEntity {
   @Column({name: 'methods', type: 'simple-json', nullable: true})
   methods?: Record<string, any>;
 
+  objectType: string;
+
   getFolderName(): string {
-    return 'resource';
+    return 'other-classes';
   }
 }

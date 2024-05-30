@@ -11,7 +11,7 @@ import {
 import {HnBrick, HnBrickVisibility} from './brick/hn-brick.entity';
 import {HnNode, HnNodeDTO} from './folder/hn-folder.dto';
 import {HnDocumentation, HnDocumentationDTO, HnDocumentationSearchDTO} from './documentation/hn-documentation.entity';
-import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
+import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc-typing.entity';
 import {HnBrickVersion, HnNewVersionDTO, HnReferenceDTO} from './brick-version/hn-brick-version.entity';
 import {HnBrickMajorVersionService} from './brick-major-version/hn-brick-major-version.service';
 import {HnBrickVersionService} from './brick-version/hn-brick-version.service';
@@ -234,7 +234,7 @@ export class HnBrickAggregateService {
   async deleteBrickImage(filename: string): Promise<void> {
     const brickId = filename.split('/')[0];
     await this.assertUserCanEditBrick(brickId, true);
-    return this.brickService.deleteBrickImage(filename);
+    return this.brickService.deleteBrickImage(filename, brickId);
   }
 
 
