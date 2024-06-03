@@ -18,8 +18,17 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
 
   public async saveBrick(brickSaveDTO: CnBrickSaveDTO): Promise<void> {
     // create or update the brick
-    let brick: CnBrick = new CnBrick();
-    brick.id = brickSaveDTO.id;
+    let brick: CnBrick = (await this.brickRepo.findOneBy({id: brickSaveDTO.id})) ??
+      (await this.brickRepo.findOneBy({name: brickSaveDTO.name}));
+    if (brick == null){
+      brick = new CnBrick();
+      brick.id = brickSaveDTO.id;
+    }
+    if (brick.id != brickSaveDTO.id) {
+      await this.brickRepo.remove(brick)
+      brick = new CnBrick();
+      brick.id = brickSaveDTO.id;
+    }
     brick.name = brickSaveDTO.name;
     brick.pipRepo = brickSaveDTO.pipRepo;
     brick.gitRepo = brickSaveDTO.gitRepo;

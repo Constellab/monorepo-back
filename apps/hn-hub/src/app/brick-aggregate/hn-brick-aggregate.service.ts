@@ -44,6 +44,7 @@ import {HnSpaceUserService} from '../space-aggregate/space-user/hn-space-user.se
 import {HnErrorText} from '../core/model/config/hn-error-text.class';
 import {HnFrontService} from '../core/service/hn-front.service';
 import {HnSpaceAggregateService} from '../space-aggregate/hn-space-aggregate.service';
+import {HnUserService} from '../users/hn-user.service';
 
 @Injectable()
 export class HnBrickAggregateService {
@@ -57,6 +58,7 @@ export class HnBrickAggregateService {
     private brickUserInviteService: HnBrickUserInviteService,
     private technicalFolderService: HnTechnicalFolderService,
     private spaceUserService: HnSpaceUserService,
+    private userService: HnUserService,
     private dataSource: DataSource,
     private configService: HnCoreConfigService,
     private frontService: HnFrontService,
@@ -66,17 +68,26 @@ export class HnBrickAggregateService {
 
   //------------------------------------- BRICKS -------------------------------------
 
-  async findBricksWithFilter(spacesFilter: string[], titleFilter: string, page: number, size: number): Promise<ClPage<HnBrick>> {
+  async findBricksWithFilter(spacesFilter: string[], titleFilter: string,
+                             page: number, size: number, userId: string = null): Promise<ClPage<HnBrick>> {
 
     let publicSelected = false;
     let myBricks = false;
+    let user: HnUser;
+
+    if (userId){
+      user = await this.userService.findOne(userId);
+      if (user == null)
+        throw new BlBadRequestException('User not found');
+    }
+
     for (const spaceId of spacesFilter) {
       if (spaceId === 'public') publicSelected = true;
       // Verify user right on spaces
       else if (spaceId === 'my-bricks') myBricks = true;
       else {
-        if (HnCurrentUserHelper.getCurrentUser() != null) {
-          await this.spaceAggregateService.assertCheckSpaceUser(spaceId, HnCurrentUserHelper.getCurrentUser().id);
+        if (HnCurrentUserHelper.getCurrentUser() != null || user != null) {
+          await this.spaceAggregateService.assertCheckSpaceUser(spaceId, user != null ? user.id : HnCurrentUserHelper.getCurrentUser().id);
         }
       }
     }
@@ -85,8 +96,8 @@ export class HnBrickAggregateService {
     if (myBricks) spacesFilter = spacesFilter.filter(s => s !== 'my-bricks');
 
     const whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> =
-      myBricks ? await this.getMyBricksWhereBrickConditions(publicSelected, spacesFilter) :
-        await this.getUserBasedWhereBrickConditions(publicSelected, spacesFilter);
+      myBricks ? await this.getMyBricksWhereBrickConditions(publicSelected, spacesFilter, user) :
+        await this.getUserBasedWhereBrickConditions(publicSelected, spacesFilter, user);
 
     // Add where conditions based on filters
     if (titleFilter) {
@@ -684,6 +695,10 @@ export class HnBrickAggregateService {
     return this.brickVersionService.getCurrentBrickVersion(page, size, brickId, this.brickService.userHasRightOnBrick(brick));
   }
 
+  async getVersionsList(brickId: string): Promise<string[]>{
+    return this.brickVersionService.getVersionsList(brickId);
+  }
+
   async sendAllBrickVersionToQueue(): Promise<void> {
     return this.brickVersionService.sendAllBrickVersionToQueue();
   }
@@ -800,10 +815,11 @@ export class HnBrickAggregateService {
 
   private async getUserBasedWhereBrickConditions(
     publicSelected: boolean = null,
-    spacesFilter: string[] = null
+    spacesFilter: string[] = null,
+    user: HnUser = null
   ): Promise<FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>> {
 
-    const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
+    const currentUser: HnUser = user ?? HnCurrentUserHelper.getCurrentUser();
     let whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>;
 
     if (currentUser == null) {
@@ -850,8 +866,9 @@ export class HnBrickAggregateService {
   }
 
   public async getMyBricksWhereBrickConditions(publicSelected: boolean,
-                                               spacesFilter: string[]): Promise<FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>> {
-    const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
+                                               spacesFilter: string[],
+                                               user: HnUser = null): Promise<FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>> {
+    const currentUser: HnUser = user ?? HnCurrentUserHelper.getCurrentUser();
 
     if(currentUser == null) {
       throw new BlUnauthorizedException('You are not authorized to perform this action');

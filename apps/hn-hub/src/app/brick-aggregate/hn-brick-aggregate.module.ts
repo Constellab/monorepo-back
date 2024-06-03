@@ -16,6 +16,7 @@ import {HnCoreConfigModule} from '../core/modules/core-config/hn-core-config.mod
 import {HnSpaceUserModule} from '../space-aggregate/space-user/hn-space-user.module';
 import {HnCoreModule} from '../core/hn-core.module';
 import {HnSpaceAggregateModule} from '../space-aggregate/hn-space-aggregate.module';
+import {HnUserModule} from '../users/hn-user.module';
 
 @Module({
   imports: [
@@ -30,7 +31,8 @@ import {HnSpaceAggregateModule} from '../space-aggregate/hn-space-aggregate.modu
     HnBrickUserInviteModule,
     HnTechnicalFolderModule,
     HnSpaceUserModule,
-    HnSpaceAggregateModule
+    HnSpaceAggregateModule,
+    HnUserModule
   ],
   controllers: [
     HnBrickController,

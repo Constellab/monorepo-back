@@ -94,8 +94,9 @@ export class HnBrickController {
   async getBricksByFilter(@Body('spacesFilter') spacesFilter: string[],
                           @Body('titleFilter') titleFilter: string,
                           @Query('page', new ParseIntPipe()) page: number,
-                          @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnBrick>> {
-    return this.brickAggregateService.findBricksWithFilter(spacesFilter, titleFilter, page, size);
+                          @Query('size', new ParseIntPipe()) size: number,
+                          @Body('userId') userId?: string): Promise<ClPage<HnBrick>> {
+    return this.brickAggregateService.findBricksWithFilter(spacesFilter, titleFilter, page, size, userId);
   }
 
 
@@ -130,6 +131,12 @@ export class HnBrickController {
   @Post('new-version')
   createNewVersion(@Body(new BlParsePipe(HnNewVersionDTO)) newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
     return this.brickAggregateService.createNewVersion(newVersion);
+  }
+
+  @BlPublic()
+  @Get('versions-list/:brickId')
+  public getVersionsList(@Param('brickId') brickId: string): Promise<string[]> {
+    return this.brickAggregateService.getVersionsList(brickId);
   }
 
   @BlPublic()

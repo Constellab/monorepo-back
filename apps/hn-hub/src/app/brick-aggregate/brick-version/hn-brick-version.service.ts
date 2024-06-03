@@ -317,4 +317,27 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     }
     return brickVersion;
   }
+
+  public async getVersionsList(brickId: string): Promise<string[]> {
+    const brickVersions = await this.brickVersionsRepository.find({
+      where: {
+        brickMajorVersion: {
+          brick: {
+            id: brickId
+          }
+        }
+      },
+      order: {
+        brickMajorVersion :{
+          major: 'DESC'
+        },
+        minor: 'DESC',
+        patch: 'DESC',
+        versionType: 'ASC',
+        subPatch: 'DESC'
+
+      }
+    });
+    return brickVersions.map(bv => bv.version.toString());
+  }
 }
