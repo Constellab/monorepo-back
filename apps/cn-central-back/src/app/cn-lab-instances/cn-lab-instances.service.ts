@@ -57,7 +57,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   async update(entity: CnLabInstance, entityManager?: EntityManager): Promise<CnLabInstance> {
     await this.checkLabInstanceBeforeSave(entity);
     await super.update(entity, entityManager);
-    return this.findById(entity.id, {space: true});
+    return this.findById(entity.id, CnLabInstance.relationSpace);
   }
 
   private async checkLabInstanceBeforeSave(entity: CnLabInstance): Promise<void> {
@@ -289,7 +289,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       where: {
         glabApiKey: apiKey
       },
-      relations: {space: true}
+      relations: CnLabInstance.relationSpace
     });
   }
 
@@ -298,7 +298,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       where: {
         labManagerApiKey: managerApiKey
       },
-      relations: {space: true}
+      relations: CnLabInstance.relationSpace
     });
   }
 
@@ -324,7 +324,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   public async searchAll(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnLabInstance>> {
     const searchBuilder = new BlSearchBuilder<CnLabInstance>();
     searchBuilder.addSearchParams(searchParams);
-    searchBuilder.setRelations({space: true, serverCloud: true});
+    searchBuilder.setRelations(CnLabInstance.relationFull);
 
     return this.findPaginated(page, size, searchBuilder.build());
   }

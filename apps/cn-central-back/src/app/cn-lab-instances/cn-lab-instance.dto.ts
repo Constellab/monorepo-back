@@ -33,11 +33,8 @@ export class CnLabInstanceDto extends BlBaseEntityDto {
   currentStatus: CnLabInstanceStatusHistory = undefined;
   virtualHost: string = undefined;
   apiUrl: string = undefined;
-  codelabToken: string = undefined;
   frontUrl: string = undefined;
-  serverCloud: CnServerCloud = undefined;
   region: CnCloudProviderRegion = undefined;
-  space: CnSpace = undefined;
   billingMode: CnLabInstanceBillingMode = undefined;
   volumeType: CnLabInstanceVolumeType = undefined;
   volumeSize: number = undefined;
@@ -45,10 +42,16 @@ export class CnLabInstanceDto extends BlBaseEntityDto {
   isFreeTrial: boolean = undefined;
 }
 
+export class CnLabInstanceWithSpaceDto extends CnLabInstanceDto {
+  space: CnSpace = undefined;
+  serverCloud: CnServerCloud = undefined;
+}
+
+
 /**
  * DTO for the lab instance only for G admin
  */
-export class CnLabInstanceAdminDto extends CnLabInstanceDto {
+export class CnLabInstanceAdminDto extends CnLabInstanceWithSpaceDto {
   cloudName: string = undefined;
   glabApiKey: string = undefined;
   labManagerApiKey: string = undefined;
@@ -73,6 +76,12 @@ export class CnLabFindOneDto {
     dto.userRole = userRole;
     return dto;
   }
+}
+
+export class CnLabCodelabDTO{
+  username: string;
+  token: string;
+  url: string;
 }
 
 export type CnGlabTag = 'latest' | 'beta' | string;

@@ -27,6 +27,7 @@ import {CnLabManagerService} from './cn-lab-manager.service';
 import {CnLabInstanceToken} from './user/cn-lab-instance-token.class';
 import {
   CnLabCloudCreateDTO,
+  CnLabCodelabDTO,
   CnLabFindOneDto,
   CnLabInstanceConfigDTO,
   CnLabInstanceCreateAdminDTO,
@@ -262,6 +263,16 @@ export class CnLabInstanceAggregateService {
     return CnLabFindOneDto.create(labInstance, userRole);
   }
 
+  async findCodelabInfo(id: string): Promise<CnLabCodelabDTO> {
+    const labInstance = await this.labInstancesService.findByIdAndCheck(id);
+    await this.security.checkAuthorizationToFindById(labInstance, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    return {
+      username: labInstance.getCodelabUsername(),
+      token: labInstance.codelabToken,
+      url: labInstance.getCodelabUrl()
+    };
+  }
+
   async getByCurrentSpace(page: number, size: number): Promise<ClPageI<CnLabInstance>> {
     this.security.checkAuthorizationToFindAllBySpace(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return this.labInstancesService.findBySpace(CnCurrentUserHelper.getCurrentSpace().id, page, size);
@@ -355,6 +366,11 @@ export class CnLabInstanceAggregateService {
     serverInfo.volumeSize = fullLab.volumeSize;
     serverInfo.volumeType = fullLab.volumeType;
     return serverInfo;
+  }
+
+  public async findByIdAdmin(id: string): Promise<CnLabInstance> {
+    this.security.checkAuthorizationToFindByIdAdmin(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    return this.labInstancesService.findByIdAndCheck(id, CnLabInstance.relationFull);
   }
 
   /////////////////////////////////////// STATUS  //////////////////////////////////

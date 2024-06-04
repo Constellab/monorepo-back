@@ -26,6 +26,10 @@ export class CnLabInstancesSecurity {
     if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
   }
 
+  public checkAuthorizationToFindByIdAdmin(userInfo: CnUserSpaceInfo): void {
+    if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
+  }
+
   /**
    * Anyone can create a desktop  lab instance
    * @param labInstance

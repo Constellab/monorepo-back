@@ -6,6 +6,7 @@ import {BlDtoHelper, BlParseEnumPipe, BlParsePipe, BlSearchParams} from '@monore
 import {ClPageI} from '@monorepo/core-lib';
 import {
   CnLabCloudCreateDTO,
+  CnLabCodelabDTO,
   CnLabFindOneDto,
   CnLabInstanceAdminDto,
   CnLabInstanceConfigDTO,
@@ -15,6 +16,7 @@ import {
   CnLabInstanceDto,
   CnLabInstanceStatusDTO,
   CnLabInstanceUpdateAdminDTO,
+  CnLabInstanceWithSpaceDto,
   CnLabServerInfoDTO,
   CnRequestLabInstance,
 } from './cn-lab-instance.dto';
@@ -50,26 +52,11 @@ export class CnLabInstancesController {
   }
 
 
-  @Post('admin')
-  async createAdmin(@Body(new BlParsePipe(CnLabInstanceCreateAdminDTO)) createLabInstance: CnLabInstanceCreateAdminDTO):
-    Promise<CnLabInstanceAdminDto> {
-    const labInstance = await this.aggregateService.createAdmin(createLabInstance);
-    return BlDtoHelper.toDto(CnLabInstanceAdminDto, labInstance);
-  }
-
   @Post('cloud')
   async createCloudLab(@Body(new BlParsePipe(CnLabCloudCreateDTO)) createLabInstance: CnLabCloudCreateDTO):
     Promise<CnLabInstanceDto> {
     const labInstance = await this.aggregateService.createCloudLab(createLabInstance);
     return BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
-  }
-
-  // use the DTO to get the apiKey (which is excluded)
-  @Put('admin')
-  async updateAdmin(@Body(new BlParsePipe(CnLabInstanceUpdateAdminDTO)) labInstanceDto: CnLabInstanceUpdateAdminDTO):
-    Promise<CnLabInstanceAdminDto> {
-    const labInstance = await this.aggregateService.updateAdmin(labInstanceDto);
-    return BlDtoHelper.toDto(CnLabInstanceAdminDto, labInstance);
   }
 
 
@@ -80,10 +67,6 @@ export class CnLabInstancesController {
     return BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
   }
 
-  @Delete(':id')
-  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    await this.aggregateService.delete(id);
-  }
 
   @Post('request-lab-instance')
   async requestLabInstance(@Body() request: CnRequestLabInstance): Promise<void> {
@@ -120,15 +103,6 @@ export class CnLabInstancesController {
     return await this.aggregateService.searchInCurrentSpace(searchParam, page, size);
   }
 
-  @Post('search')
-  async searchAll(@Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
-                  @Query('page', ParseIntPipe) page: number,
-                  @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnLabInstanceAdminDto>> {
-    // use a DTO to return all the field including the apiKey
-    const labInstances = await this.aggregateService.searchAll(searchParam, page, size);
-    return BlDtoHelper.pageToDto(CnLabInstanceAdminDto, labInstances);
-  }
-
   /**
    * Get the lab instance with user role for this lab
    * Keep this route after the current otherwise the current routes will not work
@@ -136,6 +110,11 @@ export class CnLabInstancesController {
   @Get(':id')
   async findById(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabFindOneDto> {
     return await this.aggregateService.findByIdAndCheck(id);
+  }
+
+  @Get(':id/codelab')
+  async findCodelabInfoById(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabCodelabDTO> {
+    return await this.aggregateService.findCodelabInfo(id);
   }
 
 
@@ -558,5 +537,41 @@ export class CnLabInstancesController {
     Promise<CnLabInstanceDto> {
     const labInstance = await this.aggregateService.updateDesktopLab(id, labInstanceDto);
     return BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
+  }
+
+  /////////////////////////// ADMIN ROUTE //////////////////////////////
+  @Post('admin')
+  async createAdmin(@Body(new BlParsePipe(CnLabInstanceCreateAdminDTO)) createLabInstance: CnLabInstanceCreateAdminDTO):
+    Promise<CnLabInstanceWithSpaceDto> {
+    const labInstance = await this.aggregateService.createAdmin(createLabInstance);
+    return BlDtoHelper.toDto(CnLabInstanceWithSpaceDto, labInstance);
+  }
+
+  // use the DTO to get the apiKey (which is excluded)
+  @Put('admin')
+  async updateAdmin(@Body(new BlParsePipe(CnLabInstanceUpdateAdminDTO)) labInstanceDto: CnLabInstanceUpdateAdminDTO):
+    Promise<CnLabInstanceWithSpaceDto> {
+    const labInstance = await this.aggregateService.updateAdmin(labInstanceDto);
+    return BlDtoHelper.toDto(CnLabInstanceWithSpaceDto, labInstance);
+  }
+
+  @Get('admin/:id')
+  async findByIdAdmin(@Param('id', ParseUUIDPipe) id: string): Promise<CnLabInstanceAdminDto> {
+    const labInstance = await this.aggregateService.findByIdAdmin(id);
+    return BlDtoHelper.toDto(CnLabInstanceAdminDto, labInstance);
+  }
+
+  @Delete('admin/:id')
+  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    await this.aggregateService.delete(id);
+  }
+
+  @Post('admin/search')
+  async searchAll(@Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
+                  @Query('page', ParseIntPipe) page: number,
+                  @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnLabInstanceWithSpaceDto>> {
+    // use a DTO to return all the field including the apiKey
+    const labInstances = await this.aggregateService.searchAll(searchParam, page, size);
+    return BlDtoHelper.pageToDto(CnLabInstanceWithSpaceDto, labInstances);
   }
 }

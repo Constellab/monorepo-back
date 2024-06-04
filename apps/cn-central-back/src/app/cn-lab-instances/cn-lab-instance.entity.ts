@@ -17,6 +17,7 @@ import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
 import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {DateTime} from 'luxon';
 import {ClStringHelper} from '@monorepo/core-lib';
+import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
 
 export enum CnLabInstanceType {
   CLOUD = 'CLOUD',
@@ -55,6 +56,17 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   public static readonly SPACE_API_ROUTE = 'space-api';
   public static readonly S3_API_ROUTE = 's3-server/v1';
   public static readonly CORE_API_ROUTE = 'core-api';
+
+  // relation options to load required information for the bucket
+  public static relationFull: FindOptionsRelations<CnLabInstance> = {
+    space: true,
+    serverCloud: true,
+  };
+
+  // relation options to load required information for the bucket
+  public static relationSpace: FindOptionsRelations<CnLabInstance> = {
+    space: true,
+  };
 
   @Column({nullable: false, length: 50})
   name: string;
@@ -194,6 +206,14 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Expose()
   get labManagerUrl(): string {
     return `https://lab-manager.${this.virtualHost}`;
+  }
+
+  getCodelabUrl(): string {
+    return `https://codelab.${this.virtualHost}/?folder=/lab/user`;
+  }
+
+  getCodelabUsername(): string{
+    return 'codelab';
   }
 
 
