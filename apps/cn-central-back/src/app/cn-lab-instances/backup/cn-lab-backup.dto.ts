@@ -76,6 +76,8 @@ export class CnLabBackupStatusDTO {
   lastSuccessBackupAt?: DateTime;
 
   lastSuccessBackupSize?: number;
+
+  lastSuccessBackupId: string;
 }
 
 
@@ -97,6 +99,7 @@ export class CnLabCheckBackupSizeDTO extends CnLabBackupStatusDTO {
     dto.status = backupStatusDTO.status;
     dto.lastSuccessBackupAt = backupStatusDTO.lastSuccessBackupAt;
     dto.lastSuccessBackupSize = backupStatusDTO.lastSuccessBackupSize;
+    dto.lastSuccessBackupId = backupStatusDTO.lastSuccessBackupId;
     dto.sizeInBucket = sizeInBucket;
     dto.nbDocumentsInBucket = nbDocumentsInBucket;
     return dto;

@@ -24,6 +24,7 @@ import {
   CnLabManagerComposeUpOptions,
   CnLabManagerDockerPs,
   CnLabManagerDockerPsFull,
+  CnLabManagerRestoreBackupConfigDTO,
   CnManagerLabComposeRestartOptions,
   CnManagerLabPullBiotaOptions
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
@@ -296,6 +297,11 @@ export class CnLabInstancesController {
     return await this.aggregateService.initAll(id);
   }
 
+  @Post(':id/lab-manager/configure-lab-manager')
+  async configureLabManager(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return await this.aggregateService.configureLabManager(id);
+  }
+
   @Post(':id/lab-manager/up-containers')
   async upContainers(@Param('id', new ParseUUIDPipe()) id: string,
                      @Body() options: CnLabManagerComposeUpOptions): Promise<void> {
@@ -308,9 +314,14 @@ export class CnLabInstancesController {
     return await this.aggregateService.restartContainers(id, options);
   }
 
-  @Post(':id/lab-manager/down-containers')
+  @Post(':id/lab-manager/stop-containers')
+  async stopContainers(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return await this.aggregateService.stopContainers(id);
+  }
+
+  @Post(':id/lab-manager/delete-containers')
   async downContainers(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return await this.aggregateService.downContainers(id);
+    return await this.aggregateService.deleteContainers(id);
   }
 
   @Post(':id/lab-manager/pull-containers')
@@ -397,6 +408,13 @@ export class CnLabInstancesController {
   @Delete(':id/backup')
   public deleteLabBackup(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.aggregateService.deleteLabBackups(id);
+  }
+
+  @Post(':id/backup-history/:backupHistoryId/restore')
+  public restoreBackup(@Param('id', new ParseUUIDPipe()) id: string,
+                       @Param('backupHistoryId', new ParseUUIDPipe()) backupHistoryId: string,
+                       @Body() restoreBackupDTO: CnLabManagerRestoreBackupConfigDTO): Promise<CnLabInstance> {
+    return this.aggregateService.restoreBackup(id, backupHistoryId, restoreBackupDTO);
   }
 
   /////////////////////////// SERVER //////////////////////////////

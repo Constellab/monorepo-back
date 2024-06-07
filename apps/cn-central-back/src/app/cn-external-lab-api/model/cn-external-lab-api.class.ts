@@ -1,10 +1,8 @@
+import {ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+
 /**
  * Response when logged in a user to the lab instance
  */
-import {ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
-import {CnLabBackupFrequency} from '../../cn-lab-instances/backup/cn-lab-backup.dto';
-import {BlBucketConfig} from '@monorepo/back-core-lib';
-
 export interface CnExternalLabLoginResponse {
   temp_token: string;
 }
@@ -35,17 +33,3 @@ export interface CnLabGlobalActivity {
   };
   dev_env_running: boolean;
 }
-
-
-////////////////////////// BACKUP //////////////////////////
-export interface CnExternalLabBackupInfoDTO {
-  version: number;
-  backupBuckets: CnExternalLabBackupBucketDTO[];
-  s3Prefix: string;
-}
-
-export interface CnExternalLabBackupBucketDTO {
-  backupFrequency: CnLabBackupFrequency;
-  bucketConfig: BlBucketConfig;
-}
-

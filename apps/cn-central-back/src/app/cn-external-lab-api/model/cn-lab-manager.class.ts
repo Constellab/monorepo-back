@@ -1,3 +1,6 @@
+import {CnLabBackupFrequency} from '../../cn-lab-instances/backup/cn-lab-backup.dto';
+import {BlBucketConfig} from '@monorepo/back-core-lib';
+
 /**
  * File that contains all the DTO to communicate with the lab manager
  */
@@ -89,4 +92,32 @@ export class CnLabManagerStatus {
   isInitialized: boolean;
   // version of the lab manager that has been used to init the lab
   lastInitVersion: string;
+}
+
+////////////////////////// BACKUP //////////////////////////
+export interface CnLabManagerBackupInfoDTO {
+  version: number;
+  backupBuckets: CnLabManagerBackupBucketDTO[];
+  s3Prefix: string;
+}
+
+export interface CnLabManagerBackupBucketDTO {
+  backupFrequency: CnLabBackupFrequency;
+  bucketConfig: BlBucketConfig;
+}
+
+export interface CnLabManagerRestoreBackupConfigDTO {
+  restoreDb: boolean;
+  restoreData: boolean;
+  destinationLabId: string;
+}
+
+export interface CnLabManagerRestoreBackupDTO {
+  version: number;
+  bucketConfig: BlBucketConfig;
+  s3Prefix: string;
+  options: {
+    restoreDb: boolean;
+    restoreData: boolean;
+  };
 }

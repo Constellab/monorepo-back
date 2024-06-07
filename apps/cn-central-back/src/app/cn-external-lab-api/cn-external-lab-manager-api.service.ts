@@ -8,13 +8,14 @@ import {
   cnExternalLabApiKeySchema
 } from '../cn-core/model/config/cn-config.class';
 import {
+  CnLabManagerBackupInfoDTO,
   CnLabManagerComposeUpOptions,
   CnLabManagerDockerPsFull,
   CnLabManagerInitConfig,
+  CnLabManagerRestoreBackupDTO,
   CnManagerLabComposeRestartOptions,
   CnManagerLabPullBiotaOptions
 } from './model/cn-lab-manager.class';
-import {CnExternalLabBackupInfoDTO} from './model/cn-external-lab-api.class';
 import {CnLabConfigFile} from '../cn-lab-configs/cn-lab-config-file.class';
 import {CnLabBackupBucket, CnLabBackupHistory} from '../cn-lab-instances/backup/cn-lab-backup.dto';
 
@@ -57,6 +58,10 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/init-all`, initConfig));
   }
 
+  public async configureLabManager(apiInfo: CnExternalApiInfo, initConfig: CnLabManagerInitConfig): Promise<void> {
+    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/configure-lab-manager`, initConfig));
+  }
+
   public async upContainers(apiInfo: CnExternalApiInfo, options?: CnLabManagerComposeUpOptions): Promise<void> {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/up-containers`, options));
   }
@@ -65,7 +70,11 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/restart-containers`, options));
   }
 
-  public async downContainers(apiInfo: CnExternalApiInfo): Promise<void> {
+  public async stopContainers(apiInfo: CnExternalApiInfo): Promise<void> {
+    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/stop-containers`, null));
+  }
+
+  public async deleteContainers(apiInfo: CnExternalApiInfo): Promise<void> {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/delete-containers`, null));
   }
 
@@ -108,7 +117,7 @@ export class CnExternalLabManagerApiService {
 
   ///////////////////////////////////// BACKUP /////////////////////////////////////
 
-  createProdBackup(apiInfo: CnExternalApiInfo, createBackup: CnExternalLabBackupInfoDTO): Promise<CnLabBackupBucket[]> {
+  createProdBackup(apiInfo: CnExternalApiInfo, createBackup: CnLabManagerBackupInfoDTO): Promise<CnLabBackupBucket[]> {
     return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/prod/MANUAL`, createBackup, CnLabBackupBucket));
   }
 
@@ -122,6 +131,10 @@ export class CnExternalLabManagerApiService {
 
   getBackupHistory(apiInfo: CnExternalApiInfo): Promise<CnLabBackupHistory> {
     return lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/history`, CnLabBackupHistory));
+  }
+
+  restoreBackup(apiInfo: CnExternalApiInfo, restoreBackupDTO: CnLabManagerRestoreBackupDTO): Promise<void> {
+    return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/restore`, restoreBackupDTO));
   }
 
 

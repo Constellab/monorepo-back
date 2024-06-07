@@ -250,7 +250,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
 
   getGlabSpaceApiInfo(): CnExternalApiInfo {
     // specific rule for local development
-    if (this.cloudName == 'localhost') {
+    if (this.name == 'localhost') {
       return {
         apiKey: '123456',
         apiUrl: 'http://localhost:3000/' + CnLabInstance.SPACE_API_ROUTE
@@ -263,7 +263,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   }
 
   getLabManagerApiInfo(): CnExternalApiInfo {
-    if (this.cloudName == 'localhost') {
+    if (this.name == 'localhost') {
       // only for local dev
       return {
         apiKey: '123456',
@@ -278,7 +278,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   }
 
   getS3ApiUrl(): string {
-    if (this.cloudName == 'localhost') {
+    if (this.name == 'localhost') {
       return 'http://localhost:3000/' + CnLabInstance.S3_API_ROUTE;
     }
     return this.glabUrl + '/' + CnLabInstance.S3_API_ROUTE;

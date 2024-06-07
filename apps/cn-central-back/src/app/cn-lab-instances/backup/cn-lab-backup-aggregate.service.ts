@@ -9,7 +9,6 @@ import {
 import {CnLabBackupOption} from './cn-lab-backup-option.entity';
 import {CnLabBackupHistory} from './cn-lab-backup-history.entity';
 import {BlBadRequestException, BlObjectStorageService} from '@monorepo/back-core-lib';
-import {CnExternalLabBackupInfoDTO} from '../../cn-external-lab-api/model/cn-external-lab-api.class';
 import {ClPageI} from '@monorepo/core-lib';
 import {CnLabManagerService} from '../cn-lab-manager.service';
 import {
@@ -19,6 +18,11 @@ import {
   CnLabCheckBackupSizeDTO
 } from './cn-lab-backup.dto';
 import {CnBucket} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
+import {
+  CnLabManagerBackupInfoDTO,
+  CnLabManagerRestoreBackupConfigDTO,
+  CnLabManagerRestoreBackupDTO
+} from '../../cn-external-lab-api/model/cn-lab-manager.class';
 
 
 @Injectable()
@@ -91,6 +95,7 @@ export class CnLabBackupAggregateService {
     if (lastBackup) {
       backupStatus.lastSuccessBackupSize = lastBackup.dataSize + lastBackup.dbSize;
       backupStatus.lastSuccessBackupAt = lastBackup.endedAt;
+      backupStatus.lastSuccessBackupId = lastBackup.id;
       backupStatus.status = 'SUCCESS';
     } else {
       backupStatus.status = 'NONE';
@@ -115,8 +120,7 @@ export class CnLabBackupAggregateService {
     return this.backupHistoryService.saveHistories(backups, labInstance);
   }
 
-
-  /////////////////////////////// OTHER ///////////////////////////////
+  /////////////////////////////// BACKUP ///////////////////////////////
 
   public async stopCurrentBackup(labInstance: CnLabInstance): Promise<CnLabBackupHistory[]> {
     const backup = await this.labManagerService.stopCurrentBackup(labInstance);
@@ -132,7 +136,7 @@ export class CnLabBackupAggregateService {
     return this.backupHistoryService.saveHistories(backups, labInstance);
   }
 
-  public async getBackupInfo(labInstance: CnLabInstance): Promise<CnExternalLabBackupInfoDTO> {
+  public async getBackupInfo(labInstance: CnLabInstance): Promise<CnLabManagerBackupInfoDTO> {
 
     // get or create the bucket associated with this lab instance
     const options = await this.backupOptionService.findByLabId(labInstance.id);
@@ -176,7 +180,7 @@ export class CnLabBackupAggregateService {
 
   private async checkBackupSize(labInstance: CnLabInstance, frequency: CnLabBackupFrequency,
                                 bucket: CnBucket): Promise<CnLabCheckBackupSizeDTO> {
-    const prefix = this.backupOptionService.getBackupS3Prefix(labInstance)
+    const prefix = this.backupOptionService.getBackupS3Prefix(labInstance);
     const objectsInfo = await this.objectStorageService.getObjectsSizeByPrefix(
       bucket.getBucketConfig(), prefix);
     const backup1Status = await this.getBackupStatus(labInstance, frequency, bucket.region);
@@ -195,7 +199,7 @@ export class CnLabBackupAggregateService {
       throw new BlBadRequestException('No backup options found for this lab');
     }
 
-    const prefix = this.backupOptionService.getBackupS3Prefix(labInstance)
+    const prefix = this.backupOptionService.getBackupS3Prefix(labInstance);
     await this.deleteLabBackupInBucket(labOptions.bucket1, prefix, labInstance.id, labOptions.frequency1);
     await this.deleteLabBackupInBucket(labOptions.bucket2, prefix, labInstance.id, labOptions.frequency2);
   }
@@ -219,4 +223,30 @@ export class CnLabBackupAggregateService {
 
     this.logger.log(`Backup deleted for lab instance ${labInstanceId}, bucket : ${bucket.id}`);
   }
+
+  /////////////////////////////// RESTORE BACKUP ///////////////////////////////
+
+  public async restoreBackup(sourceLab: CnLabInstance,
+                             destinationLab: CnLabInstance,
+                             backupHistoryId: string,
+                             options: CnLabManagerRestoreBackupConfigDTO): Promise<void> {
+
+    // get or create the bucket associated with this lab instance
+    const backupHistory = await this.backupHistoryService.findByIdAndCheck(backupHistoryId,
+      {bucket: CnBucket.configRelation});
+
+
+    const restoreDTO: CnLabManagerRestoreBackupDTO = {
+      version: 1,
+      bucketConfig: backupHistory.bucket.getBucketConfig(),
+      s3Prefix: '/' + this.backupOptionService.getBackupS3Prefix(sourceLab),
+      options: {
+        restoreDb: options.restoreDb,
+        restoreData: options.restoreData,
+      },
+    };
+
+    return this.labManagerService.restoreBackup(destinationLab, restoreDTO);
+  }
+
 }

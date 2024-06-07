@@ -1,9 +1,11 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {
+  CnLabManagerBackupInfoDTO,
   CnLabManagerComposeUpOptions,
   CnLabManagerDockerPs,
   CnLabManagerDockerPsFull,
   CnLabManagerInitConfig,
+  CnLabManagerRestoreBackupDTO,
   CnLabManagerStatus,
   CnManagerLabComposeRestartOptions,
   CnManagerLabPullBiotaOptions
@@ -12,7 +14,6 @@ import {CnExternalLabManagerApiService} from '../cn-external-lab-api/cn-external
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstanceConfigDTO} from './cn-lab-instance.dto';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import {CnExternalLabBackupInfoDTO} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {BlBadRequestException} from '@monorepo/back-core-lib';
 import {CnLabConfigFile} from '../cn-lab-configs/cn-lab-config-file.class';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
@@ -61,8 +62,17 @@ export class CnLabManagerService {
   }
 
   public async initAll(labInstance: CnLabInstance, spaceDomain: string): Promise<void> {
-    // send the keys to configure the lab manager
-    const initConfig: CnLabManagerInitConfig = {
+    const initConfig: CnLabManagerInitConfig = this.getLabManagerInitConfig(labInstance, spaceDomain);
+    return this.labManagerApiService.initAll(labInstance.getLabManagerApiInfo(), initConfig);
+  }
+
+  public configureLabManager(labInstance: CnLabInstance, spaceDomain: string): Promise<void> {
+    const initConfig: CnLabManagerInitConfig = this.getLabManagerInitConfig(labInstance, spaceDomain);
+    return this.labManagerApiService.configureLabManager(labInstance.getLabManagerApiInfo(), initConfig);
+  }
+
+  private getLabManagerInitConfig(labInstance: CnLabInstance, spaceDomain: string): CnLabManagerInitConfig {
+    return {
       centralApiKey: labInstance.glabApiKey,
       codelabToken: labInstance.codelabToken,
       centralApiUrl: this.configService.getApiUrl(),
@@ -84,7 +94,6 @@ export class CnLabManagerService {
       },
       openaiApiKey: this.configService.getOpenaiAPIKey(),
     };
-    return this.labManagerApiService.initAll(labInstance.getLabManagerApiInfo(), initConfig);
   }
 
   public async upContainers(labInstance: CnLabInstance, options?: CnLabManagerComposeUpOptions): Promise<void> {
@@ -95,8 +104,12 @@ export class CnLabManagerService {
     return this.labManagerApiService.restartContainers(labInstance.getLabManagerApiInfo(), options);
   }
 
-  public async downContainers(labInstance: CnLabInstance): Promise<void> {
-    return this.labManagerApiService.downContainers(labInstance.getLabManagerApiInfo());
+  public async stopContainers(labInstance: CnLabInstance): Promise<void> {
+    return this.labManagerApiService.stopContainers(labInstance.getLabManagerApiInfo());
+  }
+
+  public async deleteContainers(labInstance: CnLabInstance): Promise<void> {
+    return this.labManagerApiService.deleteContainers(labInstance.getLabManagerApiInfo());
   }
 
   public async pullContainers(labInstance: CnLabInstance): Promise<void> {
@@ -167,7 +180,7 @@ export class CnLabManagerService {
 
   /////////////////////////////////////////////// BACKUP /////////////////////////////////////////////////////
 
-  public async createProdBackup(labInstance: CnLabInstance, backup: CnExternalLabBackupInfoDTO): Promise<CnLabBackupBucket[]> {
+  public async createProdBackup(labInstance: CnLabInstance, backup: CnLabManagerBackupInfoDTO): Promise<CnLabBackupBucket[]> {
     return this.labManagerApiService.createProdBackup(labInstance.getLabManagerApiInfo(), backup);
   }
 
@@ -181,5 +194,9 @@ export class CnLabManagerService {
 
   public async getLastBackupsStatus(labInstance: CnLabInstance): Promise<CnLabBackupBucket[]> {
     return this.labManagerApiService.getLastBackupsStatus(labInstance.getLabManagerApiInfo());
+  }
+
+  public async restoreBackup(labInstance: CnLabInstance, restoreBackupDTO: CnLabManagerRestoreBackupDTO): Promise<void> {
+    return this.labManagerApiService.restoreBackup(labInstance.getLabManagerApiInfo(), restoreBackupDTO);
   }
 }

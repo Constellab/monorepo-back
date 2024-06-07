@@ -9,17 +9,15 @@ import {
 import {CnLabInstancesService} from './cn-lab-instances.service';
 import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {
-  CnExternalLabBackupInfoDTO,
-  CnExternalLabUser,
-  CnExternalLabUserRole
-} from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import {CnExternalLabUser, CnExternalLabUserRole} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {ClPage, ClPageI, ClStringHelper} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {
+  CnLabManagerBackupInfoDTO,
   CnLabManagerComposeUpOptions,
   CnLabManagerDockerPs,
   CnLabManagerDockerPsFull,
+  CnLabManagerRestoreBackupConfigDTO,
   CnManagerLabComposeRestartOptions,
   CnManagerLabPullBiotaOptions
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
@@ -722,6 +720,12 @@ export class CnLabInstanceAggregateService {
     await this.refreshLabStatus(labInstance.id);
   }
 
+  public async configureLabManager(labId: string): Promise<void> {
+    const labInstance: CnLabInstance = await this.getAndCheckServerStatusBeforeAction(labId);
+    this.checkServerIsRunning(labInstance);
+    return this.labManagerService.configureLabManager(labInstance, labInstance.space.domain);
+  }
+
   public async upContainers(labId: string, options?: CnLabManagerComposeUpOptions): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckServerStatusBeforeAction(labId);
     this.checkServerIsRunning(labInstance);
@@ -736,10 +740,17 @@ export class CnLabInstanceAggregateService {
     await this.refreshLabStatus(labInstance.id);
   }
 
-  public async downContainers(labId: string): Promise<void> {
+  public async stopContainers(labId: string): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckServerStatusBeforeAction(labId);
     this.checkServerIsRunning(labInstance);
-    await this.labManagerService.downContainers(labInstance);
+    await this.labManagerService.stopContainers(labInstance);
+    await this.refreshLabStatus(labInstance.id);
+  }
+
+  public async deleteContainers(labId: string): Promise<void> {
+    const labInstance: CnLabInstance = await this.getAndCheckServerStatusBeforeAction(labId);
+    this.checkServerIsRunning(labInstance);
+    await this.labManagerService.deleteContainers(labInstance);
     await this.refreshLabStatus(labInstance.id);
   }
 
@@ -842,6 +853,15 @@ export class CnLabInstanceAggregateService {
     return this.backupService.deleteLabAllBackups(labInstance);
   }
 
+  public async restoreBackup(sourceLabId: string, backupHistoryId: string,
+                             restoreConfig: CnLabManagerRestoreBackupConfigDTO): Promise<CnLabInstance> {
+    const sourceLab = await this.getAndCheckAuthorizationToManageLab(sourceLabId);
+    const destinationLab = await this.getAndCheckAuthorizationToManageLab(restoreConfig.destinationLabId);
+    await this.backupService.restoreBackup(sourceLab, destinationLab, backupHistoryId, restoreConfig);
+    return destinationLab;
+  }
+
+
   /////////////////////////// EXTERNAL LAB //////////////////////////////
   public async registerLabConfig(labStart: CnLabInstanceStartDTO): Promise<void> {
     const labConfig = await this.labConfigService.getOrCreateLabConfig(labStart.lab_config);
@@ -887,7 +907,7 @@ export class CnLabInstanceAggregateService {
   }
 
   /////////////////////////// EXTERNAL LAB MANAGER //////////////////////////////
-  public async getCurrentLabInstanceBackupInfo(): Promise<CnExternalLabBackupInfoDTO> {
+  public async getCurrentLabInstanceBackupInfo(): Promise<CnLabManagerBackupInfoDTO> {
     const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
     return this.backupService.getBackupInfo(labInstance);
   }
