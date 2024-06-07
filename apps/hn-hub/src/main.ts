@@ -23,7 +23,9 @@ async function bootstrap(): Promise<void> {
   const env: HnEnvironmentProfile = process.env[HN_ENVIRONMENT_PROFILE_KEY] as HnEnvironmentProfile;
   const isLocal = env === 'dev' || env === 'docker' || env === 'test';
 
-  app.enableCors(blGetCorsConfig(['constellab.community', 'constellab.space', 'gencovery.io', 'constellab.app'], isLocal));
+  app.enableCors(blGetCorsConfig(['constellab.community',
+    'constellab.space', 'preconstellab.com',
+    'gencovery.io', 'constellab.app'], isLocal));
 
   app.use(json({limit: '50mb'}));
   app.use(urlencoded({limit: '50mb', extended: true}));
