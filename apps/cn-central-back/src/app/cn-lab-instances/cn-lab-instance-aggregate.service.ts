@@ -855,8 +855,9 @@ export class CnLabInstanceAggregateService {
 
   public async restoreBackup(sourceLabId: string, backupHistoryId: string,
                              restoreConfig: CnLabManagerRestoreBackupConfigDTO): Promise<CnLabInstance> {
-    const sourceLab = await this.getAndCheckAuthorizationToManageLab(sourceLabId);
-    const destinationLab = await this.getAndCheckAuthorizationToManageLab(restoreConfig.destinationLabId);
+    this.security.checkAuthorizationToRestoreBackup(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    const sourceLab = await this.labInstancesService.findByIdAndCheck(sourceLabId, {sharedGroups: true, space: true});
+    const destinationLab = await this.labInstancesService.findByIdAndCheck(restoreConfig.destinationLabId, {sharedGroups: true, space: true});
     await this.backupService.restoreBackup(sourceLab, destinationLab, backupHistoryId, restoreConfig);
     return destinationLab;
   }

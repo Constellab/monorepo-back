@@ -90,4 +90,8 @@ export class CnLabInstancesSecurity {
     if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
   }
 
+  public checkAuthorizationToRestoreBackup(userInfo: CnUserSpaceInfo): void {
+    if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
+  }
+
 }
