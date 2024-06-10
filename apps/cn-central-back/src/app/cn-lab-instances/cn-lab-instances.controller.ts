@@ -1,7 +1,9 @@
 import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query, Res} from '@nestjs/common';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstanceAggregateService} from './cn-lab-instance-aggregate.service';
-import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
+import {
+  CnLabInstanceStatusHistory
+} from './status/cn-lab-instance-status-history.entity';
 import {BlDtoHelper, BlParseEnumPipe, BlParsePipe, BlSearchParams} from '@monorepo/back-core-lib';
 import {ClPageI} from '@monorepo/core-lib';
 import {
@@ -197,6 +199,19 @@ export class CnLabInstancesController {
   getStatusHistory(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusHistory[]> {
     return this.aggregateService.getStatusHistory(id);
   }
+
+  /**
+   * return the history of the status
+   */
+  @Post(':id/status/history-datasource')
+  public getStatusHistoryDatasource(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number,
+    @Body(new BlParsePipe(BlSearchParams)) searchParams: BlSearchParams): Promise<ClPageI<CnLabInstanceStatusHistory>> {
+    return this.aggregateService.getLabStatusHistory(id, page, size, searchParams);
+  }
+
 
   /**
    * stop a lab instance

@@ -93,6 +93,7 @@ export class CnLabInstanceAggregateService {
   constructor(private labInstancesService: CnLabInstancesService,
               private labInstanceUserService: CnLabInstanceUserService,
               private labInstanceProjectService: CnLabInstanceProjectService,
+              private labInstanceStatusService: CnLabInstanceStatusService,
               private labManagerService: CnLabManagerService,
               private security: CnLabInstancesSecurity,
               private usersService: CnUsersService,
@@ -410,6 +411,12 @@ export class CnLabInstanceAggregateService {
     await this.getAndCheckAuthorizationToFindById(id);
 
     return await this.labInstancesService.getStatusHistory(id) as CnLabInstanceStatusHistory[];
+  }
+
+  public async getLabStatusHistory(labInstanceId: string, page: number, size: number,
+                                   searchParams: BlSearchParams): Promise<ClPageI<CnLabInstanceStatusHistory>> {
+    await this.getAndCheckAuthorizationToFindById(labInstanceId);
+    return this.labInstanceStatusService.getStatusHistoryPaginated(page, size, labInstanceId, searchParams);
   }
 
   /**

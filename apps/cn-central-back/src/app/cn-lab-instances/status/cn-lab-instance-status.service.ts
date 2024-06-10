@@ -4,7 +4,7 @@ import {Repository} from 'typeorm';
 import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
 import {cnLabInstanceRunningStatuses} from './cn-lab-instance-status.enum';
 import {DateTime} from 'luxon';
-import {ClDateHelper} from '@monorepo/core-lib';
+import {ClDateHelper, ClPageI} from '@monorepo/core-lib';
 import {
   CnLabInstanceRunningStatus,
   CnLabInstanceRunningStatusBilling,
@@ -12,12 +12,14 @@ import {
   CnLabInstanceStatusRunResponse
 } from './cn-lab-instance-status.dto';
 import {CnServerPrices} from '../../cn-servers-info/server-price/cn-server-price.dto';
+import {BlAbstractPaginatedService, BlSearchBuilder, BlSearchParams} from '@monorepo/back-core-lib';
 
 
 @Injectable()
-export class CnLabInstanceStatusService {
+export class CnLabInstanceStatusService extends BlAbstractPaginatedService<CnLabInstanceStatusHistory> {
 
-  constructor(@InjectRepository(CnLabInstanceStatusHistory) private repo: Repository<CnLabInstanceStatusHistory>) {
+  constructor(@InjectRepository(CnLabInstanceStatusHistory) repo: Repository<CnLabInstanceStatusHistory>) {
+    super(repo, CnLabInstanceStatusHistory);
   }
 
   public async getLabTotalRunningDuration(labInstanceId: string): Promise<number> {
@@ -194,5 +196,29 @@ export class CnLabInstanceStatusService {
     response.statuses = runningStatuses.reverse();
 
     return response;
+  }
+
+  /**
+   * Get the histories of status paginated for an entity
+   * @param page page number
+   * @param size size of the page
+   * @param id id of the entity
+   * @param searchParams
+   * @return the list of status history
+   */
+  public getStatusHistoryPaginated(
+    page: number,
+    size: number,
+    id: string,
+    searchParams: BlSearchParams): Promise<ClPageI<CnLabInstanceStatusHistory>> {
+
+    const searchBuilder = new BlSearchBuilder<CnLabInstanceStatusHistory>({
+      createdAt: 'DESC' as any
+    });
+    searchBuilder.addSearchParams(searchParams);
+    searchBuilder.mergeWhereOptions({entity: {id}});
+
+
+    return this.findPaginated(page, size, searchBuilder.build() as any) as any;
   }
 }

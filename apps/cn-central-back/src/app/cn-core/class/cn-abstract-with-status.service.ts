@@ -2,7 +2,7 @@ import {CnStatusHistory} from '../model/entities/cn-status-history.entity';
 import {DataSource, DeleteResult, EntityManager, Repository} from 'typeorm';
 import {CnEntityWithStatus} from '../model/entities/cn-entity-with-status.entity';
 import {CnErrorText} from '../model/config/cn-error-text.class';
-import {ClDateHelper} from '@monorepo/core-lib';
+import {ClDateHelper, ClPageI} from '@monorepo/core-lib';
 import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
 
 /**
@@ -123,7 +123,6 @@ export abstract class CnAbstractWithStatusService<T extends CnEntityWithStatus<C
       }
     });
   }
-
 
   async deleteById(id: string, entityManager: EntityManager): Promise<DeleteResult> {
     await entityManager.update(this.entityClass, id, {currentStatus: null} as any);
