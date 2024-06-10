@@ -24,7 +24,7 @@ async function bootstrap(): Promise<void> {
   const isLocal = env === 'dev' || env === 'docker' || env === 'test';
 
   app.enableCors(blGetCorsConfig(['constellab.community',
-    'constellab.space', 'preconstellab.com',
+    'constellab.space', 'preconstellab.com', 'gencovery.com',
     'gencovery.io', 'constellab.app'], isLocal));
 
   app.use(json({limit: '50mb'}));
