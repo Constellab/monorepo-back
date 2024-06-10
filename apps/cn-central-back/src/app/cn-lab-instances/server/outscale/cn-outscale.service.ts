@@ -5,7 +5,11 @@ import {BlBadRequestException} from '@monorepo/back-core-lib';
 import {Logger} from '@nestjs/common';
 
 // for the outscale api
-(global as any).crypto = webcrypto as any;
+Object.defineProperty(global, 'crypto', {
+  value: webcrypto,
+  writable: true,
+  configurable: true
+});
 
 export class CnOutscaleService {
 
