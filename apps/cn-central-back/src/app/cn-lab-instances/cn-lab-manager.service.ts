@@ -57,6 +57,18 @@ export class CnLabManagerService {
     return this.labManagerApiService.getContainerDetails(labInstance.getLabManagerApiInfo(), containerName);
   }
 
+  public async startComposeContainer(labInstance: CnLabInstance, serviceName: string): Promise<void> {
+    return this.labManagerApiService.startComposeContainer(labInstance.getLabManagerApiInfo(), serviceName);
+  }
+
+  public async stopContainer(labInstance: CnLabInstance, containerName: string): Promise<boolean> {
+    return this.labManagerApiService.stopContainer(labInstance.getLabManagerApiInfo(), containerName);
+  }
+
+  public async deleteContainer(labInstance: CnLabInstance, containerName: string): Promise<boolean> {
+    return this.labManagerApiService.deleteContainer(labInstance.getLabManagerApiInfo(), containerName);
+  }
+
   public async getLogs(labInstance: CnLabInstance, containerName: string): Promise<string> {
     return this.labManagerApiService.getLogs(labInstance.getLabManagerApiInfo(), containerName);
   }

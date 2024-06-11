@@ -50,6 +50,18 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers/${containerName}`));
   }
 
+  public async startComposeContainer(apiInfo: CnExternalApiInfo, serviceName: string): Promise<void> {
+    return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/containers/${serviceName}/start`, null));
+  }
+
+  public async stopContainer(apiInfo: CnExternalApiInfo, containerName: string): Promise<boolean> {
+    return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/containers/${containerName}/stop`, null));
+  }
+
+  public async deleteContainer(apiInfo: CnExternalApiInfo, containerName: string): Promise<boolean> {
+    return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/containers/${containerName}/delete`, null));
+  }
+
   public async getLogs(apiInfo: CnExternalApiInfo, containerName: string): Promise<string> {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers/${containerName}/logs`));
   }

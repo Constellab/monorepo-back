@@ -715,6 +715,21 @@ export class CnLabInstanceAggregateService {
     return this.labManagerService.getContainerDetails(labInstance, containerName);
   }
 
+  public async startComposeContainer(labId: string, serviceName: string): Promise<void> {
+    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.startComposeContainer(labInstance, serviceName);
+  }
+
+  public async stopContainer(labId: string, containerName: string): Promise<boolean> {
+    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.stopContainer(labInstance, containerName);
+  }
+
+  public async deleteContainer(labId: string, containerName: string): Promise<boolean> {
+    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.deleteContainer(labInstance, containerName);
+  }
+
   public async getLogs(labId: string, containerName: string): Promise<string> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.getLogs(labInstance, containerName);

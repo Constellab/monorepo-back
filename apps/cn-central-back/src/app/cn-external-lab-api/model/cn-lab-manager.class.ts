@@ -109,6 +109,7 @@ export interface CnLabManagerBackupBucketDTO {
 export interface CnLabManagerRestoreBackupConfigDTO {
   restoreDb: boolean;
   restoreData: boolean;
+  force: boolean;
   destinationLabId: string;
 }
 
@@ -119,5 +120,6 @@ export interface CnLabManagerRestoreBackupDTO {
   options: {
     restoreDb: boolean;
     restoreData: boolean;
+    force: boolean;
   };
 }

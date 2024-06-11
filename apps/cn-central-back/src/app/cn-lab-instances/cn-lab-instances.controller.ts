@@ -302,6 +302,24 @@ export class CnLabInstancesController {
     return await this.aggregateService.getContainerDetails(id, containerName);
   }
 
+  @Put(':id/lab-manager/containers/:serviceName/start')
+  async startContainer(@Param('id', new ParseUUIDPipe()) id: string,
+                       @Param('serviceName') serviceName: string): Promise<void> {
+    return await this.aggregateService.startComposeContainer(id, serviceName);
+  }
+
+  @Put(':id/lab-manager/containers/:containerName/stop')
+  async stopContainer(@Param('id', new ParseUUIDPipe()) id: string,
+                       @Param('containerName') containerName: string): Promise<boolean> {
+    return await this.aggregateService.stopContainer(id, containerName);
+  }
+
+  @Put(':id/lab-manager/containers/:containerName/delete')
+  async deleteContainer(@Param('id', new ParseUUIDPipe()) id: string,
+                      @Param('containerName') containerName: string): Promise<boolean> {
+    return await this.aggregateService.deleteContainer(id, containerName);
+  }
+
   @Get(':id/lab-manager/containers/:containerName/logs')
   async getLogs(@Param('id', new ParseUUIDPipe()) id: string, @Param('containerName') containerName: string): Promise<string> {
     return await this.aggregateService.getLogs(id, containerName);
