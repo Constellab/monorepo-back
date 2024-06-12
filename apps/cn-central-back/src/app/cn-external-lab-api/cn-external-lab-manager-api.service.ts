@@ -1,7 +1,7 @@
-import {Injectable} from '@nestjs/common';
-import {BlExternalApiHttpOption, BlExternalApiService} from '@monorepo/back-core-lib';
-import {ClDeserializationRef} from '@monorepo/core-lib';
-import {lastValueFrom, Observable} from 'rxjs';
+import { Injectable } from '@nestjs/common';
+import { BlExternalApiHttpOption, BlExternalApiService } from '@monorepo/back-core-lib';
+import { ClDeserializationRef } from '@monorepo/core-lib';
+import { lastValueFrom, Observable } from 'rxjs';
 import {
   CnExternalApiInfo,
   cnExternalLabApiKeyHeader,
@@ -16,8 +16,8 @@ import {
   CnManagerLabComposeRestartOptions,
   CnManagerLabPullBiotaOptions
 } from './model/cn-lab-manager.class';
-import {CnLabConfigFile} from '../cn-lab-configs/cn-lab-config-file.class';
-import {CnLabBackupBucket, CnLabBackupHistory} from '../cn-lab-instances/backup/cn-lab-backup.dto';
+import { CnLabConfigFile } from '../cn-lab-configs/cn-lab-config-file.class';
+import { CnLabBackupBucket, CnLabBackupHistory } from '../cn-lab-instances/backup/cn-lab-backup.dto';
 
 /**
  * Service to call the api of the lab manager
@@ -33,7 +33,7 @@ export class CnExternalLabManagerApiService {
 
   public async healthCheck(labUrl: string): Promise<boolean> {
     return lastValueFrom(this.apiService.get(this.constructRoute(labUrl, `health-check`),
-      null, {logError: false, timeout: 2500}))
+      null, { logError: false, timeout: 2500 }))
       .then(() => true)
       .catch(() => false);
   }
@@ -64,6 +64,12 @@ export class CnExternalLabManagerApiService {
 
   public async getLogs(apiInfo: CnExternalApiInfo, containerName: string): Promise<string> {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers/${containerName}/logs`));
+  }
+
+  public async exportLogs(apiInfo: CnExternalApiInfo, containerName: string): Promise<string> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers/${containerName}/logs/export`, null, {
+      timeout: 20000
+    }));
   }
 
   public async initAll(apiInfo: CnExternalApiInfo, initConfig: CnLabManagerInitConfig): Promise<void> {
@@ -189,7 +195,7 @@ export class CnExternalLabManagerApiService {
 
   // get the axios request config with the api key in the header
   private getRequestOptions(apiKey: string, options: BlExternalApiHttpOption): BlExternalApiHttpOption {
-    return Object.assign(options, {headers: this.getHeader(apiKey)});
+    return Object.assign(options, { headers: this.getHeader(apiKey) });
   }
 
   // get the header with api key

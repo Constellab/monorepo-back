@@ -1,6 +1,7 @@
 import {Response} from 'express';
 import {IncomingMessage} from 'http';
 import {StreamableFile} from '@nestjs/common';
+import { Readable } from 'stream';
 
 /**
  * Class to simplify HTTP response management
@@ -38,5 +39,17 @@ export class BlResponseHelper {
    */
   public static getFileResponse(incomingMessage: IncomingMessage) : StreamableFile{
     return new StreamableFile(incomingMessage);
+  }
+
+  /**
+   * Return a StreamableFile from a string, useful to be downloaded by the client
+   */
+  public static fileResponseFromString(fileContent: string) : StreamableFile{
+    const readableStream = new Readable();
+    readableStream.push(fileContent);
+    readableStream.push(null); // indicates end of file
+
+    // create a StreamableFile from the Readable Stream
+    return new StreamableFile(readableStream);
   }
 }

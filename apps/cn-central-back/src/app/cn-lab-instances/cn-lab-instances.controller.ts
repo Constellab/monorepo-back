@@ -1,11 +1,22 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query, Res} from '@nestjs/common';
-import {CnLabInstance} from './cn-lab-instance.entity';
-import {CnLabInstanceAggregateService} from './cn-lab-instance-aggregate.service';
 import {
-  CnLabInstanceStatusHistory
-} from './status/cn-lab-instance-status-history.entity';
-import {BlDtoHelper, BlParseEnumPipe, BlParsePipe, BlSearchParams} from '@monorepo/back-core-lib';
-import {ClPageI} from '@monorepo/core-lib';
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Query,
+  Res,
+  StreamableFile
+} from '@nestjs/common';
+import { CnLabInstance } from './cn-lab-instance.entity';
+import { CnLabInstanceAggregateService } from './cn-lab-instance-aggregate.service';
+import { CnLabInstanceStatusHistory } from './status/cn-lab-instance-status-history.entity';
+import { BlDtoHelper, BlParseEnumPipe, BlParsePipe, BlResponseHelper, BlSearchParams } from '@monorepo/back-core-lib';
+import { ClPageI } from '@monorepo/core-lib';
 import {
   CnLabCloudCreateDTO,
   CnLabCodelabDTO,
@@ -20,7 +31,7 @@ import {
   CnLabInstanceUpdateAdminDTO,
   CnLabInstanceWithSpaceDto,
   CnLabServerInfoDTO,
-  CnRequestLabInstance,
+  CnRequestLabInstance
 } from './cn-lab-instance.dto';
 import {
   CnLabManagerComposeUpOptions,
@@ -30,20 +41,20 @@ import {
   CnManagerLabComposeRestartOptions,
   CnManagerLabPullBiotaOptions
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
-import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
-import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
-import {CnLabInstanceProject} from './project/cn-lab-instance-project.entity';
-import {CnCpCompleteInfo} from './server/cn-cloud-provider.class';
-import {Response} from 'express';
+import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
+import { CnLabInstanceUser, CnLabInstanceUserRole } from './user/cn-lab-instance-user.entity';
+import { CnLabInstanceProject } from './project/cn-lab-instance-project.entity';
+import { CnCpCompleteInfo } from './server/cn-cloud-provider.class';
+import { Response } from 'express';
 import * as AdmZip from 'adm-zip';
-import {CnLabGreenOption} from './green-option/cn-lab-green-option.entity';
-import {CnLabGreenOptionFormDto} from './green-option/cn-lab-green-option.dto';
-import {CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse} from './status/cn-lab-instance-status.dto';
-import {CnFreeTrialUpdateDto, CnLabFreeTrialGetDto} from './free-trial/cn-lab-free-trial.dto';
-import {CnLabFreeTrialAggregateService} from './free-trial/cn-lab-free-trial-aggregate.service';
-import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
-import {CnCreateLabContestDto, CnLabContestService} from './cn-lab-contest.service';
-import {CnLabBackupStatusDTO, CnLabCheckBackupSizeDTO} from './backup/cn-lab-backup.dto';
+import { CnLabGreenOption } from './green-option/cn-lab-green-option.entity';
+import { CnLabGreenOptionFormDto } from './green-option/cn-lab-green-option.dto';
+import { CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse } from './status/cn-lab-instance-status.dto';
+import { CnFreeTrialUpdateDto, CnLabFreeTrialGetDto } from './free-trial/cn-lab-free-trial.dto';
+import { CnLabFreeTrialAggregateService } from './free-trial/cn-lab-free-trial-aggregate.service';
+import { CnLabBackupHistory } from './backup/cn-lab-backup-history.entity';
+import { CnCreateLabContestDto, CnLabContestService } from './cn-lab-contest.service';
+import { CnLabBackupStatusDTO, CnLabCheckBackupSizeDTO } from './backup/cn-lab-backup.dto';
 
 
 @Controller('lab-instances')
@@ -153,7 +164,7 @@ export class CnLabInstancesController {
   public async login(@Param('id', new ParseUUIDPipe()) id: string): Promise<any> {
     const result = await this.aggregateService.login(id);
     // redirect to lab auto login page
-    return {url: `${result.labInstance.glabUrl}/${CnLabInstance.CORE_API_ROUTE}/login-temp-access/${result.token}`};
+    return { url: `${result.labInstance.glabUrl}/${CnLabInstance.CORE_API_ROUTE}/login-temp-access/${result.token}` };
   }
 
   /**
@@ -310,19 +321,25 @@ export class CnLabInstancesController {
 
   @Put(':id/lab-manager/containers/:containerName/stop')
   async stopContainer(@Param('id', new ParseUUIDPipe()) id: string,
-                       @Param('containerName') containerName: string): Promise<boolean> {
+                      @Param('containerName') containerName: string): Promise<boolean> {
     return await this.aggregateService.stopContainer(id, containerName);
   }
 
   @Put(':id/lab-manager/containers/:containerName/delete')
   async deleteContainer(@Param('id', new ParseUUIDPipe()) id: string,
-                      @Param('containerName') containerName: string): Promise<boolean> {
+                        @Param('containerName') containerName: string): Promise<boolean> {
     return await this.aggregateService.deleteContainer(id, containerName);
   }
 
   @Get(':id/lab-manager/containers/:containerName/logs')
   async getLogs(@Param('id', new ParseUUIDPipe()) id: string, @Param('containerName') containerName: string): Promise<string> {
     return await this.aggregateService.getLogs(id, containerName);
+  }
+
+  @Get(':id/lab-manager/containers/:containerName/logs/export')
+  async exportLogs(@Param('id', new ParseUUIDPipe()) id: string, @Param('containerName') containerName: string): Promise<StreamableFile> {
+    const fileContent = await this.aggregateService.exportLogs(id, containerName);
+    return BlResponseHelper.fileResponseFromString(fileContent);
   }
 
   @Post(':id/lab-manager/init-all')

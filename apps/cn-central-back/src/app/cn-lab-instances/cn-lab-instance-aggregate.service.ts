@@ -1,4 +1,4 @@
-import {Injectable, Logger} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   CnLabDomain,
   CnLabInstance,
@@ -6,12 +6,12 @@ import {
   CnLabInstanceType,
   CnLabInstanceVolumeType
 } from './cn-lab-instance.entity';
-import {CnLabInstancesService} from './cn-lab-instances.service';
-import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
-import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {CnExternalLabUser, CnExternalLabUserRole} from '../cn-external-lab-api/model/cn-external-lab-api.class';
-import {ClPage, ClPageI, ClStringHelper} from '@monorepo/core-lib';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
+import { CnLabInstancesService } from './cn-lab-instances.service';
+import { CnLabInstanceStatusHistory } from './status/cn-lab-instance-status-history.entity';
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { CnExternalLabUser, CnExternalLabUserRole } from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import { ClPage, ClPageI, ClStringHelper } from '@monorepo/core-lib';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import {
   CnLabManagerBackupInfoDTO,
   CnLabManagerComposeUpOptions,
@@ -21,8 +21,8 @@ import {
   CnManagerLabComposeRestartOptions,
   CnManagerLabPullBiotaOptions
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
-import {CnLabManagerService} from './cn-lab-manager.service';
-import {CnLabInstanceToken} from './user/cn-lab-instance-token.class';
+import { CnLabManagerService } from './cn-lab-manager.service';
+import { CnLabInstanceToken } from './user/cn-lab-instance-token.class';
 import {
   CnLabCloudCreateDTO,
   CnLabCodelabDTO,
@@ -37,8 +37,8 @@ import {
   CnLabServerInfoDTO,
   CnRequestLabInstance
 } from './cn-lab-instance.dto';
-import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
-import {CnLabInstancesSecurity} from './cn-lab-instances.security';
+import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
+import { CnLabInstancesSecurity } from './cn-lab-instances.security';
 import {
   BlBadRequestException,
   BlCredentials,
@@ -47,41 +47,41 @@ import {
   BlSearchParams,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
-import {CnLabInstanceUser, CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
-import {CnExternalLabUserService} from '../cn-external-lab-api/cn-external-lab-user.service';
-import {CnExternalLabApiService} from '../cn-external-lab-api/cn-external-lab-api.service';
-import {CnLabInstanceUserService} from './user/cn-lab-instance-user.service';
-import {DataSource, EntityManager} from 'typeorm';
-import {CnLabInstanceProject} from './project/cn-lab-instance-project.entity';
-import {CnLabInstanceProjectService} from './project/cn-lab-instance-project.service';
-import {CnProjectAggregateService} from '../cn-projects-aggregate/cn-project-aggregate.service';
-import {CnExternalLabProjectService} from '../cn-external-lab-api/cn-external-lab-project.service';
-import {CnUsersService} from '../cn-users/cn-users.service';
-import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
-import {CnCpCompleteInfo} from './server/cn-cloud-provider.class';
-import {CnLabServerService} from './server/cn-lab-server.service';
-import {CnLabConfigurerService} from './server/cn-lab-configurer.service';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
-import {CnLabDesktopConfig, CnLabInstanceDesktopService} from './desktop/cn-lab-instance-desktop.service';
-import {CnBrickGWS} from '../cn-bricks/cn-brick.dto';
-import {CnLabMailService} from './mail/cn-lab-mail.service';
-import {CnLabGreenOption} from './green-option/cn-lab-green-option.entity';
-import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.service';
-import {CnLabGreenOptionFormDto} from './green-option/cn-lab-green-option.dto';
-import {CnAuthService, CnExternalCheckCredentialResponse} from '../cn-auth/cn-auth.service';
-import {CnLabInstanceServerTaskStatus, CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
-import {CnLabInstanceStatusService} from './status/cn-lab-instance-status.service';
-import {CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse} from './status/cn-lab-instance-status.dto';
-import {CnLabFreeTrialService} from './free-trial/cn-lab-free-trial.service';
-import {CnLabBackupBucket, CnLabBackupStatusDTO} from './backup/cn-lab-backup.dto';
-import {CnLabBackupHistory} from './backup/cn-lab-backup-history.entity';
-import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {CnCloudProviderFactory} from './server/cn-cloud-provider.factory';
-import {CnServerPriceService} from '../cn-servers-info/server-price/cn-server-price.service';
-import {CnServerPrices} from '../cn-servers-info/server-price/cn-server-price.dto';
-import {CnLabConfigDto} from '../cn-lab-configs/cn-lab-config.dto';
-import {CnLabBackupAggregateService} from './backup/cn-lab-backup-aggregate.service';
+import { CnLabInstanceUser, CnLabInstanceUserRole } from './user/cn-lab-instance-user.entity';
+import { CnExternalLabUserService } from '../cn-external-lab-api/cn-external-lab-user.service';
+import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
+import { CnLabInstanceUserService } from './user/cn-lab-instance-user.service';
+import { DataSource, EntityManager } from 'typeorm';
+import { CnLabInstanceProject } from './project/cn-lab-instance-project.entity';
+import { CnLabInstanceProjectService } from './project/cn-lab-instance-project.service';
+import { CnProjectAggregateService } from '../cn-projects-aggregate/cn-project-aggregate.service';
+import { CnExternalLabProjectService } from '../cn-external-lab-api/cn-external-lab-project.service';
+import { CnUsersService } from '../cn-users/cn-users.service';
+import { CnProject } from '../cn-projects-aggregate/cn-projects/cn-project.entity';
+import { CnCpCompleteInfo } from './server/cn-cloud-provider.class';
+import { CnLabServerService } from './server/cn-lab-server.service';
+import { CnLabConfigurerService } from './server/cn-lab-configurer.service';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnLabConfigsService } from '../cn-lab-configs/cn-lab-configs.service';
+import { CnLabDesktopConfig, CnLabInstanceDesktopService } from './desktop/cn-lab-instance-desktop.service';
+import { CnBrickGWS } from '../cn-bricks/cn-brick.dto';
+import { CnLabMailService } from './mail/cn-lab-mail.service';
+import { CnLabGreenOption } from './green-option/cn-lab-green-option.entity';
+import { CnLabGreenOptionService } from './green-option/cn-lab-green-option.service';
+import { CnLabGreenOptionFormDto } from './green-option/cn-lab-green-option.dto';
+import { CnAuthService, CnExternalCheckCredentialResponse } from '../cn-auth/cn-auth.service';
+import { CnLabInstanceServerTaskStatus, CnLabInstanceStatus } from './status/cn-lab-instance-status.enum';
+import { CnLabInstanceStatusService } from './status/cn-lab-instance-status.service';
+import { CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse } from './status/cn-lab-instance-status.dto';
+import { CnLabFreeTrialService } from './free-trial/cn-lab-free-trial.service';
+import { CnLabBackupBucket, CnLabBackupStatusDTO } from './backup/cn-lab-backup.dto';
+import { CnLabBackupHistory } from './backup/cn-lab-backup-history.entity';
+import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import { CnCloudProviderFactory } from './server/cn-cloud-provider.factory';
+import { CnServerPriceService } from '../cn-servers-info/server-price/cn-server-price.service';
+import { CnServerPrices } from '../cn-servers-info/server-price/cn-server-price.dto';
+import { CnLabConfigDto } from '../cn-lab-configs/cn-lab-config.dto';
+import { CnLabBackupAggregateService } from './backup/cn-lab-backup-aggregate.service';
 
 
 @Injectable()
@@ -334,7 +334,7 @@ export class CnLabInstanceAggregateService {
       // for on desktop, we need to update the lab config directly (there is no lab manager)
       const labConfig = await this.labConfigService.getOrCreateLabConfig({
         version: 1,
-        brick_versions: config.brickVersions,
+        brick_versions: config.brickVersions
       });
 
       await this.updateLabInstanceConfig(labInstance, labConfig);
@@ -352,7 +352,7 @@ export class CnLabInstanceAggregateService {
     }
 
     const fullLab = await this.labInstancesService.findByIdAndCheck(labInstanceId,
-      {serverCloud: true});
+      { serverCloud: true });
 
     const serverInfo = new CnLabServerInfoDTO();
     serverInfo.name = fullLab.serverCloud.serverStandard.name;
@@ -735,6 +735,11 @@ export class CnLabInstanceAggregateService {
     return this.labManagerService.getLogs(labInstance, containerName);
   }
 
+  public async exportLogs(labId: string, containerName: string): Promise<string> {
+    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.exportLogs(labInstance, containerName);
+  }
+
   public async initAll(labId: string): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckServerStatusBeforeAction(labId);
     this.checkServerIsRunning(labInstance);
@@ -878,8 +883,11 @@ export class CnLabInstanceAggregateService {
   public async restoreBackup(sourceLabId: string, backupHistoryId: string,
                              restoreConfig: CnLabManagerRestoreBackupConfigDTO): Promise<CnLabInstance> {
     this.security.checkAuthorizationToRestoreBackup(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
-    const sourceLab = await this.labInstancesService.findByIdAndCheck(sourceLabId, {sharedGroups: true, space: true});
-    const destinationLab = await this.labInstancesService.findByIdAndCheck(restoreConfig.destinationLabId, {sharedGroups: true, space: true});
+    const sourceLab = await this.labInstancesService.findByIdAndCheck(sourceLabId, { sharedGroups: true, space: true });
+    const destinationLab = await this.labInstancesService.findByIdAndCheck(restoreConfig.destinationLabId, {
+      sharedGroups: true,
+      space: true
+    });
     await this.backupService.restoreBackup(sourceLab, destinationLab, backupHistoryId, restoreConfig);
     return destinationLab;
   }
@@ -914,7 +922,7 @@ export class CnLabInstanceAggregateService {
         is_active: true,
         theme: labUsers.user.theme,
         lang: labUsers.user.lang,
-        photo: labUsers.user.photo,
+        photo: labUsers.user.photo
       };
     });
   }
@@ -1171,20 +1179,20 @@ export class CnLabInstanceAggregateService {
 
   //////////////////////////// AUTHORIZATION ////////////////////////////////
   private async getAndCheckAuthorizationToFindById(id: string): Promise<CnLabInstance> {
-    const labInstance = await this.labInstancesService.findByIdAndCheck(id, {space: true});
+    const labInstance = await this.labInstancesService.findByIdAndCheck(id, { space: true });
     await this.security.checkAuthorizationToFindById(labInstance, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return labInstance;
   }
 
 
   private async getAndCheckAuthorizationToUpdateAdmin(id: string): Promise<CnLabInstance> {
-    const labInstance = await this.labInstancesService.findByIdAndCheck(id, {sharedGroups: true, space: true});
+    const labInstance = await this.labInstancesService.findByIdAndCheck(id, { sharedGroups: true, space: true });
     this.security.checkAuthorizationToUpdateAdmin(labInstance, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return labInstance;
   }
 
   private async getAndCheckAuthorizationToManageLab(id: string, refuseDesktop: boolean = true): Promise<CnLabInstance> {
-    const labInstance = await this.labInstancesService.findByIdAndCheck(id, {sharedGroups: true, space: true});
+    const labInstance = await this.labInstancesService.findByIdAndCheck(id, { sharedGroups: true, space: true });
 
     if (refuseDesktop && labInstance.isDesktop()) {
       throw new BlBadRequestException(CnErrorText.CANT_MANAGE_DESKTOP_LAB);

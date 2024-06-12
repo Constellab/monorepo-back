@@ -1,4 +1,4 @@
-import {Injectable, Logger} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   CnLabManagerBackupInfoDTO,
   CnLabManagerComposeUpOptions,
@@ -10,14 +10,14 @@ import {
   CnManagerLabComposeRestartOptions,
   CnManagerLabPullBiotaOptions
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
-import {CnExternalLabManagerApiService} from '../cn-external-lab-api/cn-external-lab-manager-api.service';
-import {CnLabInstance} from './cn-lab-instance.entity';
-import {CnLabInstanceConfigDTO} from './cn-lab-instance.dto';
-import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import {BlBadRequestException} from '@monorepo/back-core-lib';
-import {CnLabConfigFile} from '../cn-lab-configs/cn-lab-config-file.class';
-import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
-import {CnLabBackupBucket, CnLabBackupHistory} from './backup/cn-lab-backup.dto';
+import { CnExternalLabManagerApiService } from '../cn-external-lab-api/cn-external-lab-manager-api.service';
+import { CnLabInstance } from './cn-lab-instance.entity';
+import { CnLabInstanceConfigDTO } from './cn-lab-instance.dto';
+import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
+import { BlBadRequestException } from '@monorepo/back-core-lib';
+import { CnLabConfigFile } from '../cn-lab-configs/cn-lab-config-file.class';
+import { CnLabConfigsService } from '../cn-lab-configs/cn-lab-configs.service';
+import { CnLabBackupBucket, CnLabBackupHistory } from './backup/cn-lab-backup.dto';
 
 /**
  * Service to call the api of the lab manager
@@ -73,6 +73,10 @@ export class CnLabManagerService {
     return this.labManagerApiService.getLogs(labInstance.getLabManagerApiInfo(), containerName);
   }
 
+  public async exportLogs(labInstance: CnLabInstance, containerName: string): Promise<string> {
+    return this.labManagerApiService.exportLogs(labInstance.getLabManagerApiInfo(), containerName);
+  }
+
   public async initAll(labInstance: CnLabInstance, spaceDomain: string): Promise<void> {
     const initConfig: CnLabManagerInitConfig = this.getLabManagerInitConfig(labInstance, spaceDomain);
     return this.labManagerApiService.initAll(labInstance.getLabManagerApiInfo(), initConfig);
@@ -97,14 +101,14 @@ export class CnLabManagerService {
       dockerRegistry: {
         url: this.configService.getDockerRegistryUrl(),
         username: this.configService.getDockerRegistryUsername(),
-        password: this.configService.getDockerRegistryPassword(),
+        password: this.configService.getDockerRegistryPassword()
       },
       // enable the captcha only on constellab standard domain
-      captchaSiteKey: labInstance.isConstellabDomain() ? this.configService.getCaptchaSiteKey(): null,
+      captchaSiteKey: labInstance.isConstellabDomain() ? this.configService.getCaptchaSiteKey() : null,
       labConfig: {
         enableBackup: labInstance.isCloud()
       },
-      openaiApiKey: this.configService.getOpenaiAPIKey(),
+      openaiApiKey: this.configService.getOpenaiAPIKey()
     };
   }
 
