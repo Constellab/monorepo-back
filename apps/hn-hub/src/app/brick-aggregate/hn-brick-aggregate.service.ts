@@ -800,7 +800,8 @@ export class HnBrickAggregateService {
     }
 
     if (await this.spaceUserService.checkCurrentUserIsSpaceUser(brick.space.id)) {
-      return brick.createdBy.id === HnCurrentUserHelper.getCurrentUser()?.id;
+      return (brick.createdBy.id === HnCurrentUserHelper.getCurrentUser()?.id) ||
+        (brick.brickUsers.some(bu => bu.user.id === HnCurrentUserHelper.getCurrentUser().id));
     }
 
     // if not fullRight, check if the user is a brickAuthor

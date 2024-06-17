@@ -110,6 +110,11 @@ export class HnBrickService {
     brick.gitRepo = editedBrick.gitRepo;
     brick.pipRepo = editedBrick.pipRepo;
     brick.visibility = editedBrick.visibility;
+    if(brick.visibility == 'public'){
+      brick.space = null;
+    } else {
+      brick.space = editedBrick.space;
+    }
     brick.credentialUsername = editedBrick.credentialUsername;
     brick.credentialPassword = editedBrick.credentialPassword;
 
