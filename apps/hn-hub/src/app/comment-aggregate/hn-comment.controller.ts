@@ -3,7 +3,7 @@ import {HnCommentAggregateService} from './hn-comment-aggregate.service';
 import {BlEntityWithId, BlPublic, BlRichTextContent} from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
 import {HnEntityType} from '../core/model/entities/hn-entity-type.enum';
-import {HnAbstractCommentEntity} from './comment-core/hn-abstract-comment.entity';
+import {HnAbstractCommentDto} from './comment-core/hn-abstract-comment.dto';
 
 @Controller('comment')
 export class HnCommentController {
@@ -17,7 +17,7 @@ export class HnCommentController {
     @Query('size') size: number,
     @Param('commentType') commentType: HnEntityType,
     @Param('entityId', new ParseUUIDPipe()) entityId: string,
-  ): Promise<ClPage<HnAbstractCommentEntity<BlEntityWithId>>> {
+  ): Promise<ClPage<HnAbstractCommentDto<BlEntityWithId>>> {
     return this.commentAggregateService.getComments(commentType, entityId, page, size);
   }
 
@@ -26,7 +26,7 @@ export class HnCommentController {
     @Param('commentType') commentType: HnEntityType,
     @Param('entityId', new ParseUUIDPipe()) entityId: string,
     @Body() comment: BlRichTextContent,
-  ): Promise<HnAbstractCommentEntity<BlEntityWithId>> {
+  ): Promise<HnAbstractCommentDto<BlEntityWithId>> {
     return this.commentAggregateService.createComment(commentType, entityId, comment);
   }
 }

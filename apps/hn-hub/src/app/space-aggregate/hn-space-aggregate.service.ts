@@ -7,6 +7,7 @@ import {BlBadRequestException, BlUnauthorizedException} from '@monorepo/back-cor
 import {HnSpace} from './space/hn-space.entity';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnLabConstellabApiService} from '../core/service/hn-lab-constellab-api.service';
+import {HnSpaceDto} from './space/hn-space.dto';
 
 @Injectable()
 export class HnSpaceAggregateService {
@@ -20,12 +21,8 @@ export class HnSpaceAggregateService {
   }
 
   ////////////////////////// SPACE ////////////////////////////
-  public async findSpaces(): Promise<HnSpace[]> {
-    return this.spaceService.find();
-  }
-
-  public async findSpaceById(spaceId: string): Promise<HnSpace> {
-    return this.spaceService.findOne(spaceId);
+  public async findSpaces(): Promise<HnSpaceDto[]> {
+    return (await this.spaceService.find()).map(space => new HnSpaceDto(space));
   }
 
   public async findSpacesOfUser(userId: string): Promise<HnSpace[]> {
@@ -33,9 +30,9 @@ export class HnSpaceAggregateService {
     return spaceUsers.map(spaceUser => spaceUser.space);
   }
 
-  public async findSpacesOfCurrentUser(): Promise<HnSpace[]> {
+  public async findSpacesOfCurrentUser(): Promise<HnSpaceDto[]> {
     const spaceUsers = await this.spaceUserService.findActiveSpaceUsersByUserId(HnCurrentUserHelper.getAndCheckCurrentUser().id);
-    return spaceUsers.map(spaceUser => spaceUser.space);
+    return spaceUsers.map(spaceUser => new HnSpaceDto(spaceUser.space));
   }
 
   public async checkOrCreateSpace(space: HnSpace): Promise<void>{
@@ -53,9 +50,9 @@ export class HnSpaceAggregateService {
     }
   }
 
-  public async getSpacesForLab(req: Request): Promise<HnSpace[]> {
+  public async getSpacesForLab(req: Request): Promise<HnSpaceDto[]> {
     await this.labConstellabApiService.checkApiKeyAndUserIdInCentral(req);
-    return this.findSpacesOfUser(req.headers['user']);
+    return (await this.findSpacesOfUser(req.headers['user'])).map(space => new HnSpaceDto(space));
   }
 
 

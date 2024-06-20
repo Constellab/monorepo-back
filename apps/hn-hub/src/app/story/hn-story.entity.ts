@@ -33,9 +33,6 @@ export class HnStory extends BlEntityWithId {
   @Column({name: 'content_edition', type: 'simple-json', nullable: true})
   contentEdition?: Record<string, any>;
 
-  @Column({name: 'content_backup', type: 'simple-json', nullable: true})
-  contentBackup?: Record<string, any>;
-
   @Column({nullable: true, type: 'varchar'})
   firstParagraph?: string;
 

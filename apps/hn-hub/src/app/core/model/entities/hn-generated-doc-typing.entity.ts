@@ -2,6 +2,8 @@ import {BlEntityWithId} from '@monorepo/back-core-lib';
 import {Column, ManyToOne} from 'typeorm';
 import {Type} from 'class-transformer';
 import {HnTechnicalFolder} from '../../../technical-folder/hn-technical-folder.entity';
+import {HnGeneratedDocDto} from './hn-generated-doc.dto';
+import {HnTechnicalFolderDto} from '../../../technical-folder/hn-technical-folder.dto';
 
 export abstract class HnGeneratedDocEntity extends BlEntityWithId {
   @Column()
@@ -27,6 +29,12 @@ export abstract class HnGeneratedDocEntity extends BlEntityWithId {
 
   getCompletePath(): string{
     return `${this.getFolderName()}/${this.uniqueName}`;
+  }
+
+  toDto(): HnGeneratedDocDto {
+    const dto: HnGeneratedDocDto = (({technicalFolder, ...o}) => o)(this);
+    dto.technicalFolder = new HnTechnicalFolderDto(this.technicalFolder);
+    return dto;
   }
 }
 

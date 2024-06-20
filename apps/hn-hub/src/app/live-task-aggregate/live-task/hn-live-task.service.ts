@@ -2,13 +2,14 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, FindOptionsWhere, In, IsNull, Like, Not, Repository} from 'typeorm';
 import {HnLiveTask} from './hn-live-task.entity';
-import {HnCreateLiveTaskDto} from './hn-live-task.dto';
+import {HnCreateLiveTaskDto, HnLiveTaskDto} from './hn-live-task.dto';
 import {BlAbstractPaginatedService, BlUnauthorizedException} from '@monorepo/back-core-lib';
 import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {HnUser} from '../../users/hn-user.entity';
 import {HnLiveTaskCoAuthorService} from '../live-task-co-author/hn-live-task-co-author.service';
+import {HnSpaceDto} from '../../space-aggregate/space/hn-space.dto';
 
 @Injectable()
 export class HnLiveTaskService {
@@ -23,13 +24,13 @@ export class HnLiveTaskService {
     return this.liveTaskRepository.find();
   }
 
-  public async findPublic(): Promise<HnLiveTask[]> {
-    return this.liveTaskRepository.find({
+  public async findPublic(): Promise<HnLiveTaskDto[]> {
+    return (await this.liveTaskRepository.find({
       where: {
         space: IsNull(),
         latestPublishVersion: Not(IsNull())
       }
-    });
+    })).map(liveTask => new HnLiveTaskDto(liveTask));
   }
 
   public async findOne(id: string): Promise<HnLiveTask> {
@@ -37,8 +38,8 @@ export class HnLiveTaskService {
   }
 
 
-  public async findAllWithUserSpacesPaginated(userSpaces: HnSpace[], page: number, size: number): Promise<ClPage<HnLiveTask>> {
-    return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+  public async findAllWithUserSpacesPaginated(userSpaces: HnSpaceDto[], page: number, size: number): Promise<ClPage<HnLiveTaskDto>> {
+    return (await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
       where: [
         {
           space: {
@@ -51,17 +52,17 @@ export class HnLiveTaskService {
         }
       ],
       order: {createdAt: 'DESC' as any}
-    }, this.liveTaskRepository.manager, HnLiveTask);
+    }, this.liveTaskRepository.manager, HnLiveTask)).map((liveTask: HnLiveTask) => new HnLiveTaskDto(liveTask));
   }
 
-  public async findPublicLiveTask(page: number, size: number): Promise<ClPage<HnLiveTask>> {
-    return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+  public async findPublicLiveTask(page: number, size: number): Promise<ClPage<HnLiveTaskDto>> {
+    return (await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
       where: [{
         space: IsNull(),
         latestPublishVersion: Not(IsNull())
       }],
       order: {createdAt: 'DESC' as any}
-    }, this.liveTaskRepository.manager, HnLiveTask);
+    }, this.liveTaskRepository.manager, HnLiveTask)).map(liveTask => new HnLiveTaskDto(liveTask));
   }
 
   public async findLiveTaskByIdWithUserSpaces(id: string, userSpacesId: string[]): Promise<HnLiveTask> {
@@ -235,16 +236,16 @@ export class HnLiveTaskService {
   public async findAllWithFiltersPaginated(
     spacesFilter: string[], titleFilter: string, publicSelected: boolean, myLiveTasksSelected: boolean,
     personalOnly: boolean, page: number, size: number, user: HnUser = null,
-    userSpacesIds: string[] = null, coAuthorLiveTasksIds: string[] = null): Promise<ClPage<HnLiveTask>> {
+    userSpacesIds: string[] = null, coAuthorLiveTasksIds: string[] = null): Promise<ClPage<HnLiveTaskDto>> {
 
     const where =
       this.buildFindWhereWithFilters(spacesFilter, titleFilter, publicSelected, myLiveTasksSelected,
         personalOnly, user, userSpacesIds, coAuthorLiveTasksIds);
 
-    return await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+    return (await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
       where: where,
       order: {createdAt: 'DESC' as any}
-    }, this.liveTaskRepository.manager, HnLiveTask);
+    }, this.liveTaskRepository.manager, HnLiveTask)).map(liveTask => new HnLiveTaskDto(liveTask));
 
   }
 

@@ -40,7 +40,7 @@ export class HnBrickMajorVersionService {
     return this.brickMajorVersionsRepository.findOne({
       where: {
         brick: {
-          id: brick.id
+          id: brick?.id
         },
         versionState: HnVersionState.LATEST
       }

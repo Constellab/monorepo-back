@@ -6,7 +6,7 @@ import {HnLikeLiveTask} from './hn-like-live-task.entity';
 import {HnLiveTask} from '../../live-task-aggregate/live-task/hn-live-task.entity';
 import {HnLiveTaskAggregateService} from '../../live-task-aggregate/hn-live-task-aggregate.service';
 import {BlEntityWithId} from '@monorepo/back-core-lib';
-import {HnLikeStory} from '../like-story/hn-like-story.entity';
+import {HnLiveTaskDto} from '../../live-task-aggregate/live-task/hn-live-task.dto';
 
 @Injectable()
 export class HnLikeLiveTaskService extends HnAbstractLikeService<HnLiveTask> {
@@ -18,16 +18,16 @@ export class HnLikeLiveTaskService extends HnAbstractLikeService<HnLiveTask> {
     super(likeLiveTaskRepository, dataSource);
   }
 
-  async addLike(entityManager: EntityManager, entity: BlEntityWithId): Promise<HnLiveTask> {
-    return this.liveTaskAggregateService.addLike(entity as HnLiveTask, entityManager);
+  async addLike(entityManager: EntityManager, entity: BlEntityWithId): Promise<HnLiveTaskDto> {
+    return new HnLiveTaskDto(await this.liveTaskAggregateService.addLike(entity as HnLiveTask, entityManager));
   }
 
   getEntityById(entityId: string): Promise<HnLiveTask> {
     return this.liveTaskAggregateService.findLiveTaskById(entityId);
   }
 
-  async removeLike(entityManager: EntityManager, entity: BlEntityWithId): Promise<HnLiveTask> {
-    return this.liveTaskAggregateService.removeLike(entity as HnLiveTask, entityManager);
+  async removeLike(entityManager: EntityManager, entity: BlEntityWithId): Promise<HnLiveTaskDto> {
+    return new HnLiveTaskDto(await this.liveTaskAggregateService.removeLike(entity as HnLiveTask, entityManager));
   }
 
   async saveLike(entityManager: EntityManager, like: HnLikeLiveTask): Promise<HnLikeLiveTask> {

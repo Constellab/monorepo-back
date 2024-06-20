@@ -20,7 +20,7 @@ import {
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {IncomingMessage} from 'http';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
-import {HnCreateStoryDto, HnStoryFilter} from './hn-story.dto';
+import {HnCreateStoryDto, HnStoryDto, HnStoryFilter} from './hn-story.dto';
 import {HnTopicDto} from '../topic/hn-topic.dto';
 import {HnTopic} from '../topic/hn-topic.entity';
 import {DateTime} from 'luxon';
@@ -118,7 +118,7 @@ export class HnStoryService {
     }
   }
 
-  async getMyStoriesFiltered(page: number, size: number, filters: HnStoryFilter): Promise<ClPage<HnStory>> {
+  async getMyStoriesFiltered(page: number, size: number, filters: HnStoryFilter): Promise<ClPage<HnStoryDto>> {
     const where: FindOptionsWhere<HnStory>[] = [
       {
         createdBy: {
@@ -147,15 +147,15 @@ export class HnStoryService {
       where.map(w => w.title = Like(`%${filters.title}%`));
     }
 
-    return await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+    return (await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
       where: where,
       relations: ['topics', 'storyAuthors'],
       order: order
-    }, this.storyRepository.manager, HnStory);
+    }, this.storyRepository.manager, HnStory)).map(story => new HnStoryDto(story));
   }
 
-  async getMyStories(page: number, size: number): Promise<ClPage<HnStory>> {
-    return BlAbstractPaginatedService.findPaginatedStatic(page, size,
+  async getMyStories(page: number, size: number): Promise<ClPage<HnStoryDto>> {
+    return (await BlAbstractPaginatedService.findPaginatedStatic(page, size,
       {
         where: [
           {
@@ -177,7 +177,7 @@ export class HnStoryService {
         }
       },
       this.storyRepository.manager, HnStory
-    );
+    )).map(story => new HnStoryDto(story));
   }
 
   async getStories(page: number, size: number): Promise<ClPage<HnStory>> {
@@ -190,7 +190,7 @@ export class HnStoryService {
     }, this.storyRepository.manager, HnStory);
   }
 
-  async getStoriesByFilter(filters: HnStoryFilter, page: number, size: number): Promise<ClPage<HnStory>> {
+  async getStoriesByFilter(filters: HnStoryFilter, page: number, size: number): Promise<ClPage<HnStoryDto>> {
     const where: FindOptionsWhere<HnStory> = {};
     const order: FindOptionsOrder<HnStory> = {createdAt: 'DESC' as any};
     if (filters.categories && filters.categories.length > 0) {
@@ -211,11 +211,11 @@ export class HnStoryService {
       where: where,
       relations: ['topics'],
       order: order
-    }, this.storyRepository.manager, HnStory));
+    }, this.storyRepository.manager, HnStory)).map(story => new HnStoryDto(story));
   }
 
-  async getStoriesByTopicId(topicId: string, page: number, size: number): Promise<ClPage<HnStory>> {
-    return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+  async getStoriesByTopicId(topicId: string, page: number, size: number): Promise<ClPage<HnStoryDto>> {
+    return (await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
       where: [
         {
           topics: {
@@ -226,7 +226,7 @@ export class HnStoryService {
       ],
       relations: ['topics'],
       order: {createdAt: 'DESC' as any}
-    }, this.storyRepository.manager, HnStory);
+    }, this.storyRepository.manager, HnStory)).map(story => new HnStoryDto(story));
   }
 
   async checkAndValidateOwnerOrCoAuthor(id: string, onlyOwner = false): Promise<void> {
@@ -398,7 +398,8 @@ export class HnStoryService {
     const storyFiles: HnStoryFile[] = await this.storyFileService.getStoryFilesByStoryId(storyId);
     for (const storyFile of storyFiles) {
       try {
-        if (await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], storyFile.fileName)) {
+        if (await this.objectStorageService.deleteObjectIfExist(
+          [this.getBucketConfig(), this.getBackupBucketConfig()], storyFile.fileName)) {
           await this.storyFileService.deleteStoryFileWithEntityManager(storyFile.id, entityManager);
         }
       } catch (e) {

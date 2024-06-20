@@ -28,8 +28,9 @@ import {Response} from 'express';
 import {HnNodeDTO} from './folder/hn-folder.dto';
 import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
 import {HnBrickAggregateService} from './hn-brick-aggregate.service';
-import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 import {HnDocumentationFile} from './documentation-file/hn-documentation-file.entity';
+import {HnDocumentationDto} from './documentation/hn-documentation.dto';
+import {HnDocumentationFileDto} from './documentation-file/hn-documentation-file.dto';
 
 @Controller('documentation')
 @UseGuards(HnIsAdminGuard)
@@ -51,13 +52,13 @@ export class HnDocumentationController {
 
   @BlPublic()
   @Post('complete-path')
-  findByCompletePath(@Body() body: any): Promise<HnDocumentation> {
+  findByCompletePath(@Body() body: any): Promise<HnDocumentationDto> {
     return this.brickAggregateService.findCurrentDoc(body.brickName, body.version, body.completePath);
   }
 
   @BlPublic()
   @Get(':id')
-  findById(@Param('id') id: string): Promise<HnDocumentation> {
+  findById(@Param('id') id: string): Promise<HnDocumentationDto> {
     return this.brickAggregateService.findDocById(id);
   }
 
@@ -89,12 +90,6 @@ export class HnDocumentationController {
     const filename = request.url.split('image/')[1];
     const file = await this.brickAggregateService.getDocImage(filename);
     BlResponseHelper.setMessageAndCache(response, file);
-  }
-
-  @IsAdmin()
-  @Post('migrate-docs')
-  public async migrateDocumentations(): Promise<void> {
-    return await this.brickAggregateService.migrateDocumentations();
   }
 
   ////////////////////////////////// DOC RESOURCE VIEW //////////////////////////////////
@@ -136,13 +131,13 @@ export class HnDocumentationController {
   @UseInterceptors(FileInterceptor('file'))
   @Post('file/:docId')
   async saveFile(@BlUploadedFile() file: BlFile,
-                 @Param('docId', new ParseUUIDPipe()) docId: string): Promise<HnDocumentationFile> {
+                 @Param('docId', new ParseUUIDPipe()) docId: string): Promise<HnDocumentationFileDto> {
     return this.brickAggregateService.saveFile(file, docId);
   }
 
   @Put('file/:docFileId/rename')
   async updateStoryFile(@Param('docFileId', new ParseUUIDPipe()) docFileId: string,
-                        @Body('humanName') humanName: string): Promise<HnDocumentationFile> {
+                        @Body('humanName') humanName: string): Promise<HnDocumentationFileDto> {
     return this.brickAggregateService.renameDocFile(docFileId, humanName);
   }
 

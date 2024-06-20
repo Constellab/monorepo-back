@@ -2,9 +2,10 @@ import {Body, Controller, Delete, Get, Param, Post, Put, UseGuards} from '@nestj
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {HnFolder} from './folder/hn-folder.entity';
 import {HnDocumentation} from './documentation/hn-documentation.entity';
-import {HnNode, HnNodeDTO} from './folder/hn-folder.dto';
+import {HnFolderDto, HnNode, HnNodeDTO} from './folder/hn-folder.dto';
 import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
 import {HnBrickAggregateService} from './hn-brick-aggregate.service';
+import {HnDocumentationDto} from './documentation/hn-documentation.dto';
 
 @Controller('folder')
 @UseGuards(HnIsAdminGuard)
@@ -36,25 +37,25 @@ export class HnFolderController {
 
   @BlPublic()
   @Get()
-  findAll(): Promise<HnFolder[]> {
+  findAll(): Promise<HnFolderDto[]> {
     return this.brickAggregateService.findAllFolders();
   }
 
   @BlPublic()
   @Get(':id')
-  findById(@Param('id') id: string): Promise<HnFolder> {
+  findById(@Param('id') id: string): Promise<HnFolderDto> {
     return this.brickAggregateService.findFolderById(id);
   }
 
   @BlPublic()
   @Get('folders/:id')
-  findFoldersByParentId(@Param('id') id: string): Promise<HnFolder[]> {
+  findFoldersByParentId(@Param('id') id: string): Promise<HnFolderDto[]> {
     return this.brickAggregateService.findFoldersByParentId(id);
   }
 
   @BlPublic()
   @Get('docs/:id')
-  findDocsByParentId(@Param('id') id: string): Promise<HnDocumentation[]> {
+  findDocsByParentId(@Param('id') id: string): Promise<HnDocumentationDto[]> {
     return this.brickAggregateService.findDocsByParentId(id);
   }
 

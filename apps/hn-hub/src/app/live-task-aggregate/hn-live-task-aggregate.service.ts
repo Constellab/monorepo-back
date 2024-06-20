@@ -4,7 +4,7 @@ import {HnLiveTaskVersionService} from './live-task-version/hn-live-task-version
 import {HnLiveTaskVersion, HnLiveTaskVersionState} from './live-task-version/hn-live-task-version.entity';
 import {
   HaCreateLiveTaskVersionFromLabResponseDto,
-  HnCreateLiveTaskDto,
+  HnCreateLiveTaskDto, HnLiveTaskDto,
   HnLiveTaskForLabDto,
   HnLiveTaskVersionFileInput,
   HnLiveTaskVersionForLabDto
@@ -38,6 +38,10 @@ import {HnInviteStatus} from '../core/model/config/hn-invite-status.enum';
 import {HnLiveTaskCoAuthor} from './live-task-co-author/hn-live-task-co-author.entity';
 import {HnSiteMapEnumChangefreq, HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
 import {HnFrontService} from '../core/service/hn-front.service';
+import {HnBrickVersionDto} from '../brick-aggregate/brick-version/hn-brick-version.dto';
+import {HnLiveTaskVersionDto} from './live-task-version/hn-live-task-version.dto';
+import {HnUserDto} from '../users/hn-user.dto';
+import {HnSpaceDto} from '../space-aggregate/space/hn-space.dto';
 
 @Injectable()
 export class HnLiveTaskAggregateService {
@@ -123,7 +127,7 @@ export class HnLiveTaskAggregateService {
     return this.liveTaskService.updateDescription(id, description);
   }
 
-  public async findPublic(): Promise<HnLiveTask[]> {
+  public async findPublic(): Promise<HnLiveTaskDto[]> {
     return this.liveTaskService.findPublic();
   }
 
@@ -146,7 +150,7 @@ export class HnLiveTaskAggregateService {
 
   public async getLiveTaskForLabByVersionId(req: Request, versionId: string): Promise<HnLiveTaskForLabDto> {
     const user = await this.checkIfLabUserAndReturnUser(req);
-    const liveTaskVersion: HnLiveTaskVersion = await this.findLiveTaskVersionById(versionId);
+    const liveTaskVersion: HnLiveTaskVersion = await this.liveTaskVersionService.findOne(versionId);
     const liveTask = liveTaskVersion.liveTask;
     if (liveTask.space != null) {
       await this.spaceAggregateService.assertCheckSpaceUser(liveTask.space.id, user.id);
@@ -155,7 +159,7 @@ export class HnLiveTaskAggregateService {
   }
 
   public async findAllWithFilters(spacesFilter: string[], titleFilter: string, page: number,
-                                  size: number, user: HnUser = null, personalOnly: boolean = false): Promise<ClPage<HnLiveTask>> {
+                                  size: number, user: HnUser = null, personalOnly: boolean = false): Promise<ClPage<HnLiveTaskDto>> {
     const currentUser = user ? user : HnCurrentUserHelper.getCurrentUser();
     let publicSelected = false;
     let myLiveTasksSelected = false;
@@ -196,12 +200,12 @@ export class HnLiveTaskAggregateService {
   }
 
 
-  public async findAll(page: number, size: number): Promise<ClPage<HnLiveTask>> {
+  public async findAll(page: number, size: number): Promise<ClPage<HnLiveTaskDto>> {
     const currentUser = HnCurrentUserHelper.getCurrentUser();
     if (!currentUser)
       return await this.liveTaskService.findPublicLiveTask(page, size);
 
-    const userSpaces: HnSpace[] = await this.spaceAggregateService.findSpacesOfCurrentUser();
+    const userSpaces: HnSpaceDto[] = await this.spaceAggregateService.findSpacesOfCurrentUser();
     return await this.liveTaskService.findAllWithUserSpacesPaginated(userSpaces, page, size);
   }
 
@@ -235,12 +239,13 @@ export class HnLiveTaskAggregateService {
     return (await this.findLiveTaskById(id))?.title;
   }
 
-  public async getBrickDependencies(liveTaskId: string): Promise<HnBrickVersion[]> {
+  public async getBrickDependencies(liveTaskId: string): Promise<HnBrickVersionDto[]> {
     const liveTask = await this.liveTaskService.findOne(liveTaskId);
     const liveTaskVersion = await this.liveTaskVersionService.findLatestByLiveTask(liveTask);
     const liveTaskVersionBrickDependencies: HnLiveTaskVersionBrickDependencies[] =
       await this.liveTaskVersionBrickDependenciesService.getBrickVersionDependencies(liveTaskVersion.id);
-    return liveTaskVersionBrickDependencies.map(liveTaskVersionBrickDependency => liveTaskVersionBrickDependency.brickVersion);
+    return liveTaskVersionBrickDependencies.map(liveTaskVersionBrickDependency =>
+      new HnBrickVersionDto(liveTaskVersionBrickDependency.brickVersion));
   }
 
   public async deleteLiveTask(id: string): Promise<void> {
@@ -258,19 +263,18 @@ export class HnLiveTaskAggregateService {
 
 
   //////////////////////////////////////////// Live Task Version ////////////////////////////////////////////
-  public async findLiveTaskVersionById(id: string): Promise<HnLiveTaskVersion> {
-    //TODO: secure
-    return this.liveTaskVersionService.findOne(id);
+  public async findLiveTaskVersionById(id: string): Promise<HnLiveTaskVersionDto> {
+    return new HnLiveTaskVersionDto(await this.liveTaskVersionService.findOne(id));
   }
 
-  public async findLiveTaskVersionByLiveTaskIdAndVersionNumber(liveTaskId: string, versionNumber: number): Promise<HnLiveTaskVersion> {
+  public async findLiveTaskVersionByLiveTaskIdAndVersionNumber(liveTaskId: string, versionNumber: number): Promise<HnLiveTaskVersionDto> {
     const version = await this.liveTaskVersionService.findByLiveTaskIdAndVersionNumber(liveTaskId, versionNumber);
     if (version.versionState == HnLiveTaskVersionState.PUBLISHED) {
       return version;
     }
 
     await this.liveTaskService.checkIfCreatorOrCoAuthorAndGetLiveTask(liveTaskId);
-    return version;
+    return new HnLiveTaskVersionDto(version);
   }
 
   /**
@@ -288,12 +292,12 @@ export class HnLiveTaskAggregateService {
     return HnLiveTaskVersionForLabDto.fromLiveTaskVersion(await this.liveTaskVersionService.findLatestPublishedByLiveTask(liveTask));
   }
 
-  public async findLatestPublishedLiveTaskVersionByLiveTaskId(id: string): Promise<HnLiveTaskVersion> {
+  public async findLatestPublishedLiveTaskVersionByLiveTaskId(id: string): Promise<HnLiveTaskVersionDto> {
     const liveTask: HnLiveTask = await this.liveTaskService.findOne(id);
     if (liveTask.space != null) {
       await this.spaceAggregateService.assertCheckSpaceUser(liveTask.space.id, HnCurrentUserHelper.getCurrentUser().id);
     }
-    return await this.liveTaskVersionService.findLatestPublishedByLiveTask(liveTask);
+    return new HnLiveTaskVersionDto(await this.liveTaskVersionService.findLatestPublishedByLiveTask(liveTask));
   }
 
   public async updateLiveTaskVersionParams(id: string, params: string[]): Promise<HnLiveTaskVersion> {
@@ -342,10 +346,10 @@ export class HnLiveTaskAggregateService {
     });
   }
 
-  public async getPublishedLiveTaskVersions(liveTaskId: string): Promise<HnLiveTaskVersion[]> {
+  public async getPublishedLiveTaskVersions(liveTaskId: string): Promise<HnLiveTaskVersionDto[]> {
     const liveTask: HnLiveTask = await this.liveTaskService.findOne(liveTaskId);
     if (BlCurrentUserHelper.getCurrentUser()?.id == liveTask?.createdBy.id) {
-      return await this.liveTaskVersionService.findAllByLiveTaskId(liveTaskId);
+      return (await this.liveTaskVersionService.findAllByLiveTaskId(liveTaskId)).map(liveTaskVersion => new HnLiveTaskVersionDto(liveTaskVersion));
     }
 
     const coAuthors = await this.liveTaskCoAuthorService.getLiveTaskCoAuthorsByLiveTaskId(liveTaskId);
@@ -361,10 +365,11 @@ export class HnLiveTaskAggregateService {
     return this.liveTaskVersionService.updateVersionInfos(liveTaskVersionId, versionInfos);
   }
 
-  public async getLiveTaskVersionBrickDependencies(liveTaskVersionId: string): Promise<HnBrickVersion[]> {
+  public async getLiveTaskVersionBrickDependencies(liveTaskVersionId: string): Promise<HnBrickVersionDto[]> {
     const liveTaskVersionBrickDependencies: HnLiveTaskVersionBrickDependencies[] =
       await this.liveTaskVersionBrickDependenciesService.getBrickVersionDependencies(liveTaskVersionId);
-    return liveTaskVersionBrickDependencies.map(liveTaskVersionBrickDependency => liveTaskVersionBrickDependency.brickVersion);
+    return liveTaskVersionBrickDependencies.map(liveTaskVersionBrickDependency =>
+      new HnBrickVersionDto(liveTaskVersionBrickDependency.brickVersion));
   }
 
   ////////////////////////////////////////// LIVE TASKS CO AUTHORS //////////////////////////////////////////
@@ -373,9 +378,9 @@ export class HnLiveTaskAggregateService {
     return this.liveTaskCoAuthorService.inviteLiveTaskCoAuthor(liveTask, coAuthorMail);
   }
 
-  public async getLiveTaskCoAuthors(liveTaskId: string): Promise<HnUser[]> {
+  public async getLiveTaskCoAuthors(liveTaskId: string): Promise<HnUserDto[]> {
     return (await this.liveTaskCoAuthorService.getLiveTaskCoAuthorsByLiveTaskId(liveTaskId))
-      .map(liveTaskCoAuthor => liveTaskCoAuthor.user);
+      .map(liveTaskCoAuthor => new HnUserDto(liveTaskCoAuthor.user));
   }
 
   public async getLiveTaskCoAuthorsPendingInvites(liveTaskId: string): Promise<HnLiveTaskCoAuthorInvite[]> {

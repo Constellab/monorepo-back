@@ -3,16 +3,24 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {HnBrickVersion, HnNewVersionDTO, HnReferenceDTO, HnVersionType} from './hn-brick-version.entity';
 import {DataSource, EntityManager, IsNull, Repository} from 'typeorm';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
-import {BlAbstractService, BlTransportService, BlUnauthorizedException, BlVersion} from '@monorepo/back-core-lib';
+import {
+  BlAbstractPaginatedService,
+  BlAbstractService,
+  BlTransportService,
+  BlUnauthorizedException,
+  BlVersion
+} from '@monorepo/back-core-lib';
 import {HnBrickTransportDto} from '../brick/hn-brick.dto';
 import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
-import {ClPageI, ClStringHelper} from '@monorepo/core-lib';
+import {ClPage, ClPageI, ClStringHelper} from '@monorepo/core-lib';
 import {HnBrickVersionReferenceService} from '../../brick-version-reference/hn-brick-version-reference.service';
 import {
   HnBrickVersionReference,
   HnBrickVersionRefState
 } from '../../brick-version-reference/hn-brick-version-reference.entity';
 import {HnErrorText} from '../../core/model/config/hn-error-text.class';
+import {HnBrickVersionDto} from './hn-brick-version.dto';
+import {HnBrick} from '../brick/hn-brick.entity';
 
 @Injectable()
 export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
@@ -150,37 +158,34 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     this.sendBrickVersionToTransport(brickVersion);
   }
 
-  async getCurrentBrickVersion(page: number, size: number, brickId: string, hasRight: boolean = false): Promise<ClPageI<HnBrickVersion>> {
-    const pageBrickVersion: ClPageI<HnBrickVersion> = await this.findPaginated(page, size,
-      {
-        where: {
-          brickMajorVersion: {
-            brick: {
-              id: brickId
-            },
-          }
-        },
-        order: {
-          minor: 'DESC',
-          patch: 'DESC',
-          versionType: 'ASC',
-          subPatch: 'DESC'
-        },
-        relations: ['brickMajorVersion']
-      }
-    );
-    if (!hasRight && HnCurrentUserHelper.getCurrentUser()?.isAdmin()) {
-      for (const bV of pageBrickVersion.objects) {
-        if (bV.technicalInfo) {
-          for (const tInfoKey of Object.keys(bV.technicalInfo)) {
-            if (ClStringHelper.isHttpLink(bV.technicalInfo[tInfoKey])) {
-              bV.technicalInfo[tInfoKey] = null;
+  async getCurrentBrickVersion(page: number, size: number, brickId: string, hasRight: boolean = false): Promise<ClPage<HnBrickVersionDto>> {
+    return (await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+      where: {
+        brickMajorVersion: {
+          brick: {
+            id: brickId
+          },
+        }
+      },
+      order: {
+        minor: 'DESC',
+        patch: 'DESC',
+        versionType: 'ASC',
+        subPatch: 'DESC'
+      },
+      relations: ['brickMajorVersion']
+    }, this.brickVersionsRepository.manager, HnBrickVersion)).map(b => {
+      if (!hasRight && HnCurrentUserHelper.getCurrentUser()?.isAdmin()) {
+        if (b.technicalInfo) {
+          for (const tInfoKey of Object.keys(b.technicalInfo)) {
+            if (ClStringHelper.isHttpLink(b.technicalInfo[tInfoKey])) {
+              b.technicalInfo[tInfoKey] = null;
             }
           }
         }
       }
-    }
-    return pageBrickVersion;
+      return new HnBrickVersionDto(b)
+    });
   }
 
   async getLatestBrickVersion(brickMajorVersionId: string): Promise<HnBrickVersion> {

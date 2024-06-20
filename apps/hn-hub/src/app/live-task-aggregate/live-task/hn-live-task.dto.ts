@@ -1,6 +1,42 @@
-import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
 import {HnLiveTaskVersion, HnLiveTaskVersionType} from '../live-task-version/hn-live-task-version.entity';
 import {HnLiveTask} from './hn-live-task.entity';
+import {HnUserDto} from '../../users/hn-user.dto';
+import {HnSpaceDto} from '../../space-aggregate/space/hn-space.dto';
+import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
+import {HnLiveTaskCoAuthorDto} from '../live-task-co-author/hn-live-task-co-author.dto';
+import {BlEntityWithId} from '@monorepo/back-core-lib';
+
+export class HnLiveTaskDto extends BlEntityWithId {
+  title: string;
+  description?: Record<string, any>;
+  latestPublishVersion?: number;
+  space?: HnSpaceDto;
+  createdAt?: string;
+  createdBy?: HnUserDto;
+  lastModifiedAt?: string;
+  lastModifiedBy?: HnUserDto;
+  parentLiveTaskVersionId?: string;
+  likes?: number;
+  comments?: number;
+  liveTaskCoAuthors?: HnLiveTaskCoAuthorDto[];
+
+  constructor(liveTask: HnLiveTask) {
+    super();
+    this.id = liveTask.id;
+    this.title = liveTask.title;
+    this.description = liveTask.description;
+    this.latestPublishVersion = liveTask.latestPublishVersion;
+    this.space = liveTask.space ? new HnSpaceDto(liveTask.space) : null;
+    this.createdAt = liveTask.createdAt.toISO();
+    this.createdBy = new HnUserDto(liveTask.createdBy);
+    this.lastModifiedAt = liveTask.lastModifiedAt.toISO();
+    this.lastModifiedBy = new HnUserDto(liveTask.lastModifiedBy);
+    this.parentLiveTaskVersionId = liveTask.parentLiveTaskVersionId;
+    this.likes = liveTask.likes;
+    this.comments = liveTask.comments;
+    this.liveTaskCoAuthors = liveTask.liveTaskCoAuthors?.map(liveTaskCoAuthor => new HnLiveTaskCoAuthorDto(liveTaskCoAuthor));
+  }
+}
 
 export class HnCreateLiveTaskDto {
   title: string;
@@ -36,17 +72,17 @@ export class HnLiveTaskForLabDto{
   space?: HnLiveTaskLabSpaceDto;
   created_at?: string;
   last_modified_at?: string;
-  created_by?: any;
+  created_by?: HnUserDto;
   description?: Record<string, any>;
   latest_publish_version: number;
 
 
-  static fromLiveTask(liveTask: HnLiveTask): HnLiveTaskForLabDto{
+  static fromLiveTask(liveTask: HnLiveTaskDto): HnLiveTaskForLabDto {
     const dto = new HnLiveTaskForLabDto();
     dto.id = liveTask.id;
     dto.title = liveTask.title;
-    dto.created_at = liveTask.createdAt.toISO();
-    dto.last_modified_at = liveTask.lastModifiedAt.toISO();
+    dto.created_at = liveTask.createdAt;
+    dto.last_modified_at = liveTask.lastModifiedAt;
     dto.created_by = liveTask.createdBy;
     dto.description = liveTask.description;
     dto.latest_publish_version = liveTask.latestPublishVersion;

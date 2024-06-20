@@ -5,7 +5,7 @@ import {HnStoryService} from '../../story/hn-story.service';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DataSource, EntityManager, Repository} from 'typeorm';
 import {HnStory} from '../../story/hn-story.entity';
-import {HnLikeBrick} from '../like-brick/hn-like-brick.entity';
+import {HnStoryDto} from '../../story/hn-story.dto';
 
 @Injectable()
 export class HnLikeStoryService extends HnAbstractLikeService<HnStory> {
@@ -21,12 +21,12 @@ export class HnLikeStoryService extends HnAbstractLikeService<HnStory> {
     return this.storyService.findById(entityId);
   }
 
-  async addLike(entityManager: EntityManager, entity: HnStory): Promise<HnStory> {
-    return this.storyService.addLike(entity, entityManager);
+  async addLike(entityManager: EntityManager, entity: HnStory): Promise<HnStoryDto> {
+    return new HnStoryDto(await this.storyService.addLike(entity, entityManager) as HnStory);
   }
 
-  async removeLike(entityManager: EntityManager, entity: HnStory): Promise<HnStory> {
-    return this.storyService.removeLike(entity, entityManager);
+  async removeLike(entityManager: EntityManager, entity: HnStory): Promise<HnStoryDto> {
+    return new HnStoryDto(await this.storyService.removeLike(entity, entityManager) as HnStory);
   }
 
   async saveLike(entityManager: EntityManager, like: HnLikeStory): Promise<HnLikeStory> {

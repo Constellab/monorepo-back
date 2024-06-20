@@ -8,6 +8,7 @@ import {HnStory} from '../../story/hn-story.entity';
 import {HnAbstractCommentEntity} from '../comment-core/hn-abstract-comment.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {BlAbstractPaginatedService, BlRichTextContent} from '@monorepo/back-core-lib';
+import {HnCommentStoryDto} from './hn-comment-story.dto';
 
 @Injectable()
 export class HnCommentStoryService extends HnAbstractCommentService<HnStory> {
@@ -42,8 +43,8 @@ export class HnCommentStoryService extends HnAbstractCommentService<HnStory> {
     return entityManager.save(comment);
   }
 
-  async getComments(page: number, size: number, entityId: string): Promise<ClPage<HnCommentStory>> {
-    return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+  async getComments(page: number, size: number, entityId: string): Promise<ClPage<HnCommentStoryDto>> {
+    return (await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
       where: {
         entity: {
           id: entityId
@@ -52,7 +53,7 @@ export class HnCommentStoryService extends HnAbstractCommentService<HnStory> {
       order: {
         createdAt: 'DESC' as any
       }
-    }, this.repository.manager, HnCommentStory);
+    }, this.repository.manager, HnCommentStory)).map(commentStory => new HnCommentStoryDto(commentStory));
   }
 
 }

@@ -18,13 +18,13 @@ export class HnLikeController {
   }
 
   @Post(':likeType/:entityId/like')
-  async likeStory(@Param('likeType') likeType: HnEntityType,
+  async like(@Param('likeType') likeType: HnEntityType,
                   @Param('entityId', new ParseUUIDPipe()) entityId: string): Promise<BlEntityWithId> {
     return this.likeAggregateService.like(entityId, likeType);
   }
 
   @Post(':likeType/:entityId/unlike')
-  async unlikeStory(@Param('likeType') likeType: HnEntityType,
+  async unlike(@Param('likeType') likeType: HnEntityType,
                     @Param('entityId', new ParseUUIDPipe()) entityId: string): Promise<BlEntityWithId> {
     return this.likeAggregateService.unlike(entityId, likeType);
   }

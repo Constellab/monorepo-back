@@ -22,9 +22,6 @@ export class HnDocumentation extends HnBaseEntity {
   @Column({name: 'content', type: 'simple-json', nullable: true})
   content?: Record<string, any>;
 
-  @Column({name: 'content_backup', type: 'simple-json', nullable: true})
-  contentBackup?: Record<string, any>;
-
   @Column()
   path: string;
 

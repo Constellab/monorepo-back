@@ -8,6 +8,7 @@ import {HnLiveTask} from '../../live-task-aggregate/live-task/hn-live-task.entit
 import {HnAbstractCommentEntity} from '../comment-core/hn-abstract-comment.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {BlAbstractPaginatedService, BlRichTextContent} from '@monorepo/back-core-lib';
+import {HnCommentLiveTaskDto} from './hn-comment-live-task.dto';
 
 @Injectable()
 export class HnCommentLiveTaskService extends HnAbstractCommentService<HnLiveTask> {
@@ -43,8 +44,8 @@ export class HnCommentLiveTaskService extends HnAbstractCommentService<HnLiveTas
     return entityManager.save(comment);
   }
 
-  async getComments(page: number, size: number, entityId: string): Promise<ClPage<HnCommentLiveTask>> {
-    return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+  async getComments(page: number, size: number, entityId: string): Promise<ClPage<HnCommentLiveTaskDto>> {
+    return (await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
       where: {
         entity: {
           id: entityId
@@ -53,7 +54,7 @@ export class HnCommentLiveTaskService extends HnAbstractCommentService<HnLiveTas
       order: {
         createdAt: 'DESC' as any
       }
-    }, this.repository.manager, HnCommentLiveTask);
+    }, this.repository.manager, HnCommentLiveTask)).map(commentLiveTask => new HnCommentLiveTaskDto(commentLiveTask));
   }
 
 }

@@ -3,7 +3,7 @@ import {HnBrick} from './hn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, FindOptionsWhere, Repository} from 'typeorm';
 import {HnErrorText} from '../../core/model/config/hn-error-text.class';
-import {HnCreateBrickDTO, HnEditBrickDTO} from './hn-brick.dto';
+import {HnBrickDto, HnCreateBrickDTO, HnEditBrickDTO} from './hn-brick.dto';
 import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 import {
   BlAbstractPaginatedService,
@@ -51,10 +51,10 @@ export class HnBrickService {
   }
 
   async findBrickList(whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>,
-                      page: number, size: number): Promise<ClPage<HnBrick>> {
-    return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+                      page: number, size: number): Promise<ClPage<HnBrickDto>> {
+    return (await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
       where: whereConditions
-    }, this.bricksRepository.manager, HnBrick);
+    }, this.bricksRepository.manager, HnBrick)).map(b => new HnBrickDto(b));
   }
 
   async findOne(whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>): Promise<HnBrick> {

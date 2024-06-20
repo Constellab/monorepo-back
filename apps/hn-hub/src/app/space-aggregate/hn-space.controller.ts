@@ -5,6 +5,7 @@ import {HnSpaceUser} from './space-user/hn-space-user.entity';
 import {BlPublic, BlResponseHelper} from '@monorepo/back-core-lib';
 import {HnSpace} from './space/hn-space.entity';
 import {Response} from 'express';
+import {HnSpaceDto} from './space/hn-space.dto';
 
 export enum HnSpaceUserAction {
   CREATE = 'createSpaceUser',
@@ -25,7 +26,7 @@ export class HnSpaceController {
    * @return a list of spaces
    */
   @Get()
-  find(): Promise<HnSpace[]> {
+  find(): Promise<HnSpaceDto[]> {
     return this.spaceAggregateService.findSpaces();
   }
 
@@ -34,13 +35,13 @@ export class HnSpaceController {
    * @return a list of spaces
    */
   @Get('current-user')
-  findSpacesOfCurrentUser(): Promise<HnSpace[]> {
+  findSpacesOfCurrentUser(): Promise<HnSpaceDto[]> {
     return this.spaceAggregateService.findSpacesOfCurrentUser();
   }
 
   @BlPublic()
   @Get('available/for-lab')
-  async getSpacesForLab(@Req() req: Request): Promise<HnSpace[]> {
+  async getSpacesForLab(@Req() req: Request): Promise<HnSpaceDto[]> {
     return this.spaceAggregateService.getSpacesForLab(req);
   }
 

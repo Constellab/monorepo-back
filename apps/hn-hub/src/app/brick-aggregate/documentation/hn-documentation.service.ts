@@ -199,20 +199,6 @@ export class HnDocumentationService {
   }
 
 
-  async migrateDocumentations(): Promise<void> {
-    const docs = await this.documentationsRepository.find();
-    for (const doc of docs) {
-      console.log('Migrating doc ' + doc.id)
-      const content: any = doc.content;
-      if (content && content.ops) {
-        console.log('Migrating doc ' + doc.id)
-        doc.contentBackup = content;
-        doc.content = new BlQuillMigrator(content).migrate();
-        await this.documentationsRepository.save(doc);
-      }
-    }
-  }
-
   //------------------------------------- RESOURCE VIEW -------------------------------------
   async uploadDocResourceViewFile(docId: string, file: BlFile): Promise<string>{
     file.originalname = docId + '/views/' + ClStringHelper.generateUUID() + '.json';

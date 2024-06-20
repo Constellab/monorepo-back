@@ -1,6 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {HnBrickService} from './brick/hn-brick.service';
 import {
+  HnBrickDto,
   HnBrickVersionDownloadDTO,
   HnCreateBrickDTO,
   HnCreateTechnicalDocContent,
@@ -9,7 +10,7 @@ import {
   HnTechnicalDocInputDTO
 } from './brick/hn-brick.dto';
 import {HnBrick, HnBrickVisibility} from './brick/hn-brick.entity';
-import {HnNode, HnNodeDTO} from './folder/hn-folder.dto';
+import {HnFolderDto, HnNode, HnNodeDTO} from './folder/hn-folder.dto';
 import {HnDocumentation, HnDocumentationDTO, HnDocumentationSearchDTO} from './documentation/hn-documentation.entity';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc-typing.entity';
 import {HnBrickVersion, HnNewVersionDTO, HnReferenceDTO} from './brick-version/hn-brick-version.entity';
@@ -45,6 +46,11 @@ import {HnErrorText} from '../core/model/config/hn-error-text.class';
 import {HnFrontService} from '../core/service/hn-front.service';
 import {HnSpaceAggregateService} from '../space-aggregate/hn-space-aggregate.service';
 import {HnUserService} from '../users/hn-user.service';
+import {HnDocumentationDto} from './documentation/hn-documentation.dto';
+import {HnGeneratedDocDto} from '../core/model/entities/hn-generated-doc.dto';
+import {HnBrickUserInviteDto} from './brick-user-invite/hn-brick-user-invite.dto';
+import {HnBrickVersionDto} from './brick-version/hn-brick-version.dto';
+import {HnDocumentationFileDto} from './documentation-file/hn-documentation-file.dto';
 
 @Injectable()
 export class HnBrickAggregateService {
@@ -69,7 +75,7 @@ export class HnBrickAggregateService {
   //------------------------------------- BRICKS -------------------------------------
 
   async findBricksWithFilter(spacesFilter: string[], titleFilter: string,
-                             page: number, size: number, userId: string = null): Promise<ClPage<HnBrick>> {
+                             page: number, size: number, userId: string = null): Promise<ClPage<HnBrickDto>> {
 
     let publicSelected = false;
     let myBricks = false;
@@ -130,11 +136,18 @@ export class HnBrickAggregateService {
     }
 
     const brick = await this.brickService.findOne(whereConditions);
-    if (brick != null && (!HnCurrentUserHelper.getCurrentUser()?.isAdmin()
+
+    if(brick == null){
+      throw new BlBadRequestException(HnErrorText.BRICK_NOT_FOUND, {detailArgs: {name: name}});
+    }
+
+    // TODO : voir si c'est a modif
+    if ((!HnCurrentUserHelper.getCurrentUser()?.isAdmin()
       && brick?.createdBy?.id === HnCurrentUserHelper?.getCurrentUser()?.id)) {
       brick.gitRepo = null;
       brick.pipRepo = null;
     }
+
     return brick;
   }
 
@@ -259,8 +272,11 @@ export class HnBrickAggregateService {
     return brick;
   }
 
-  async isBrickUserInviteValid(token: string): Promise<HnBrickUserInvite> {
-    return await this.brickUserInviteService.getAndCheckInvite(token);
+  async isBrickUserInviteValid(token: string): Promise<HnBrickUserInviteDto> {
+    const brickUserInvite =  await this.brickUserInviteService.getAndCheckInvite(token);
+    if (!brickUserInvite)
+      throw new BlUnauthorizedException('This invite is not valid');
+    return new HnBrickUserInviteDto(brickUserInvite);
   }
 
   async editBrick(editedBrick: HnEditBrickDTO): Promise<HnBrick> {
@@ -423,16 +439,16 @@ export class HnBrickAggregateService {
     return await this.folderService.findBrickDocsTree(mainFolder);
   }
 
-  async findAllFolders(): Promise<HnFolder[]> {
-    return this.folderService.findAll();
+  async findAllFolders(): Promise<HnFolderDto[]> {
+    return (await this.folderService.findAll())?.map(f => new HnFolderDto(f));
   }
 
-  async findFolderById(id: string): Promise<HnFolder> {
-    return this.folderService.findById(id);
+  async findFolderById(id: string): Promise<HnFolderDto> {
+    return new HnFolderDto(await this.folderService.findById(id));
   }
 
-  async findFoldersByParentId(id: string): Promise<HnFolder[]> {
-    return this.folderService.findFoldersByParentId(id);
+  async findFoldersByParentId(id: string): Promise<HnFolderDto[]> {
+    return (await this.folderService.findFoldersByParentId(id))?.map(f => new HnFolderDto(f));
   }
 
   async removeFolder(id: string): Promise<void> {
@@ -460,30 +476,12 @@ export class HnBrickAggregateService {
     return docsDto;
   }
 
-  async findDocById(id: string): Promise<HnDocumentation> {
-    return this.documentationService.findById(id);
-  }
-
-  async findDocByCompletePath(brickName: string, version: string, completePath: string): Promise<HnDocumentation> {
-    const brick: HnBrick = await this.findBrickByName(brickName);
-    const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
-    const mainFolder: HnFolder = await this.folderService.findFolderByBrickMajorVersion(brickMajorVersion);
-    const pathSplited = completePath.split('/');
-    let currentFolder: HnFolder = mainFolder;
-    for (const path of [...pathSplited.slice(0, pathSplited.length - 1)]) {
-      const currentFolderChildren = await this.folderService.findFoldersByParentId(currentFolder.id);
-      for (const folder of currentFolderChildren) {
-        if (folder.title === path) {
-          currentFolder = folder;
-          break;
-        }
-      }
+  async findDocById(id: string): Promise<HnDocumentationDto> {
+    const doc = await this.documentationService.findById(id);
+    if (doc == null){
+      throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, {detailArgs: {id: id}});
     }
-    if(!completePath.endsWith('/')) {
-      completePath += '/';
-    }
-    return this.documentationService.findDocByCompletePath(mainFolder, completePath);
+    return new HnDocumentationDto(doc);
   }
 
   async removeDoc(id: string): Promise<void> {
@@ -517,8 +515,8 @@ export class HnBrickAggregateService {
     this.brickService.checkIfUserHasRightOnTheBrick(brick);
   }
 
-  async findDocsByParentId(id: string): Promise<HnDocumentation[]> {
-    return this.folderService.findDocsByParentId(id);
+  async findDocsByParentId(id: string): Promise<HnDocumentationDto[]> {
+    return (await this.folderService.findDocsByParentId(id))?.map(d => new HnDocumentationDto(d));
   }
 
   async findRootFolderId(brickId: string, version: string): Promise<{ id: string }> {
@@ -533,7 +531,7 @@ export class HnBrickAggregateService {
     return {id: mainFolder.id};
   }
 
-  async findCurrentDoc(brickName: string, version: string, completePath: string): Promise<HnNode | any> {
+  async findCurrentDoc(brickName: string, version: string, completePath: string): Promise<HnDocumentationDto> {
     const brick: HnBrick = await this.findBrickByName(brickName);
 
     const brickMajorVersion: HnBrickMajorVersion =
@@ -543,15 +541,20 @@ export class HnBrickAggregateService {
       completePath += '/';
     }
 
-    return await this.documentationService.findCurrentDoc(brickMajorVersion, completePath);
+    const doc = await this.documentationService.findCurrentDoc(brickMajorVersion, completePath);
+    if (doc == null) {
+      throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, {detailArgs: {completePath: completePath}});
+    }
+
+    return new HnDocumentationDto(doc);
   }
 
-  async findFirstDoc(brickName: string, version: string): Promise<HnDocumentation> {
+  async findFirstDoc(brickName: string, version: string): Promise<HnDocumentationDto> {
     const brick: HnBrick = await this.findBrickByName(brickName);
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
     const findFirstDocNode: HnNode = await this.folderService.findFirstDocNode(brickMajorVersion);
-    return this.documentationService.findById(findFirstDocNode.id);
+    return new HnDocumentationDto(await this.documentationService.findById(findFirstDocNode.id));
   }
 
   async getDocsByBrickNameMajor(brickName: string, major: string): Promise<HnDocumentationSearchDTO[]> {
@@ -634,10 +637,6 @@ export class HnBrickAggregateService {
     return this.technicalFolderService.createTechnicalDoc(brickMajorVersion, content.importFile);
   }
 
-  async migrateDocumentations(): Promise<void>{
-    return await this.documentationService.migrateDocumentations();
-  }
-
   //------------------------------------- TECHNICAL DOCS -------------------------------------
 
   async findTechnicalDoc(brickId: string, version: string): Promise<HnNode> {
@@ -647,14 +646,14 @@ export class HnBrickAggregateService {
     return this.technicalFolderService.findTechnicalDoc(brickMajorVersion.id);
   }
 
-  async findTechDocByPath(input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocEntity> {
+  async findTechDocByPath(input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocDto> {
     const brick: HnBrick = await this.findBrickByName(input.brickName);
     if (brick == null) {
       return null;
     }
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, input.brickVersion);
-    return await this.technicalFolderService.findCurrentTecDoc(brickMajorVersion, input);
+    return (await this.technicalFolderService.findCurrentTecDoc(brickMajorVersion, input)).toDto();
   }
 
   async createNewVersion(newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
@@ -690,7 +689,7 @@ export class HnBrickAggregateService {
     return this.brickVersionService.getLatestBrickVersion(brickMajorVersion.id);
   }
 
-  async getCurrentBrickVersion(page: number, size: number, brickId: string): Promise<ClPageI<HnBrickVersion>> {
+  async getCurrentBrickVersion(page: number, size: number, brickId: string): Promise<ClPage<HnBrickVersionDto>> {
     const brick: HnBrick = await this.findBrickById(brickId);
     return this.brickVersionService.getCurrentBrickVersion(page, size, brickId, this.brickService.userHasRightOnBrick(brick));
   }
@@ -721,9 +720,9 @@ export class HnBrickAggregateService {
   }
 
   //------------------------------------- BRICK CO AUTHOR -------------------------------------
-  async getBrickCoAuthorsPendingInvites(brickId: string): Promise<HnBrickUserInvite[]> {
+  async getBrickCoAuthorsPendingInvites(brickId: string): Promise<HnBrickUserInviteDto[]> {
     await this.assertUserCanEditBrick(brickId);
-    return this.brickUserInviteService.getBrickCoAuthorsPendingInvites(brickId);
+    return (await this.brickUserInviteService.getBrickCoAuthorsPendingInvites(brickId))?.map(bu => new HnBrickUserInviteDto(bu));
   }
 
   async getView(filename: string): Promise<any>{
@@ -736,17 +735,17 @@ export class HnBrickAggregateService {
     return await this.documentationService.getDocFile(docFileId)
   }
 
-  async saveFile(file: BlFile, docId: string): Promise<HnDocumentationFile> {
+  async saveFile(file: BlFile, docId: string): Promise<HnDocumentationFileDto> {
     await this.checkIfUserHasRightsOnDoc(docId);
-    return this.documentationService.saveFile(file, docId);
+    return new HnDocumentationFileDto(await this.documentationService.saveFile(file, docId));
   }
 
   async getDocFileName(docFileId: string): Promise<string> {
     return this.documentationService.getDocFileName(docFileId);
   }
 
-  async renameDocFile(docFileId: string, newFileName: string): Promise<HnDocumentationFile> {
-    return await this.documentationService.renameDocFile(docFileId, newFileName);
+  async renameDocFile(docFileId: string, newFileName: string): Promise<HnDocumentationFileDto> {
+    return new HnDocumentationFileDto(await this.documentationService.renameDocFile(docFileId, newFileName));
   }
 
   async deleteDocFile(docFileId: string): Promise<void> {

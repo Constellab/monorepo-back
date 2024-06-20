@@ -3,7 +3,7 @@ import {HnLiveTaskAggregateService} from './hn-live-task-aggregate.service';
 import {HnLiveTaskVersion} from './live-task-version/hn-live-task-version.entity';
 import {
   HaCreateLiveTaskVersionFromLabResponseDto,
-  HnCreateLiveTaskDto,
+  HnCreateLiveTaskDto, HnLiveTaskDto,
   HnLiveTaskForLabDto,
   HnLiveTaskVersionFileInput,
   HnLiveTaskVersionForLabDto
@@ -15,6 +15,9 @@ import {HnBrickVersion} from '../brick-aggregate/brick-version/hn-brick-version.
 import {HnUser} from '../users/hn-user.entity';
 import {HnLiveTaskCoAuthorInvite} from './live-task-co-author-invite/hn-live-task-co-author-invite.entity';
 import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
+import {HnBrickVersionDto} from '../brick-aggregate/brick-version/hn-brick-version.dto';
+import {HnLiveTaskVersionDto} from './live-task-version/hn-live-task-version.dto';
+import {HnUserDto} from '../users/hn-user.dto';
 
 @Controller('live-task')
 export class HnLiveTaskController {
@@ -65,7 +68,7 @@ export class HnLiveTaskController {
 
   @BlPublic()
   @Get('public')
-  async getPublicLiveTasks(): Promise<HnLiveTask[]> {
+  async getPublicLiveTasks(): Promise<HnLiveTaskDto[]> {
     return this.liveTaskAggregateService.findPublic();
   }
 
@@ -104,7 +107,7 @@ export class HnLiveTaskController {
   @BlPublic()
   @Get()
   async getAll(@Query('page', new ParseIntPipe()) page: number,
-               @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnLiveTask>> {
+               @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnLiveTaskDto>> {
     return this.liveTaskAggregateService.findAll(page, size);
   }
 
@@ -118,7 +121,7 @@ export class HnLiveTaskController {
   getAllWithSpacesFilter(@Body('spacesFilter') spacesFilter: string[],
                          @Body('titleFilter') titleFilter: string,
                          @Query('page', new ParseIntPipe()) page: number,
-                         @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnLiveTask>> {
+                         @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnLiveTaskDto>> {
     return this.liveTaskAggregateService.findAllWithFilters(spacesFilter, titleFilter, page, size);
   }
 
@@ -130,8 +133,8 @@ export class HnLiveTaskController {
    */
   @BlPublic()
   @Get(':id')
-  getLiveTaskById(@Param('id', ParseUUIDPipe) id: string): Promise<HnLiveTask> {
-    return this.liveTaskAggregateService.findLiveTaskById(id);
+  async getLiveTaskById(@Param('id', ParseUUIDPipe) id: string): Promise<HnLiveTaskDto> {
+    return new HnLiveTaskDto(await this.liveTaskAggregateService.findLiveTaskById(id));
   }
 
   /**
@@ -168,7 +171,7 @@ export class HnLiveTaskController {
    */
   @BlPublic()
   @Get(':id/brick-dependencies')
-  getBrickDependencies(@Param('id', ParseUUIDPipe) id: string): Promise<HnBrickVersion[]> {
+  getBrickDependencies(@Param('id', ParseUUIDPipe) id: string): Promise<HnBrickVersionDto[]> {
     return this.liveTaskAggregateService.getBrickDependencies(id);
   }
 
@@ -182,7 +185,7 @@ export class HnLiveTaskController {
    */
   @BlPublic()
   @Get('version/:id')
-  getLiveTaskVersionById(@Param('id', ParseUUIDPipe) id: string): Promise<HnLiveTaskVersion> {
+  getLiveTaskVersionById(@Param('id', ParseUUIDPipe) id: string): Promise<HnLiveTaskVersionDto> {
     return this.liveTaskAggregateService.findLiveTaskVersionById(id);
   }
 
@@ -193,7 +196,7 @@ export class HnLiveTaskController {
    */
   @BlPublic()
   @Get(':liveTaskId/version/latest')
-  getLatestPublishedLiveTaskVersionByLiveTaskId(@Param('liveTaskId', ParseUUIDPipe) liveTaskId: string): Promise<HnLiveTaskVersion> {
+  getLatestPublishedLiveTaskVersionByLiveTaskId(@Param('liveTaskId', ParseUUIDPipe) liveTaskId: string): Promise<HnLiveTaskVersionDto> {
     return this.liveTaskAggregateService.findLatestPublishedLiveTaskVersionByLiveTaskId(liveTaskId);
   }
 
@@ -213,7 +216,7 @@ export class HnLiveTaskController {
   @BlPublic()
   @Get(':liveTaskId/version/:versionNumber')
   getLiveTaskVersionByLiveTaskIdAndVersionNumber(@Param('liveTaskId', ParseUUIDPipe) liveTaskId: string,
-                                                 @Param('versionNumber') versionNumber: string): Promise<HnLiveTaskVersion> {
+                                                 @Param('versionNumber') versionNumber: string): Promise<HnLiveTaskVersionDto> {
     return this.liveTaskAggregateService.findLiveTaskVersionByLiveTaskIdAndVersionNumber(liveTaskId, +versionNumber);
   }
 
@@ -268,7 +271,7 @@ export class HnLiveTaskController {
    */
   @BlPublic()
   @Get(':liveTaskId/versions/published')
-  getPublishedLiveTaskVersions(@Param('liveTaskId', ParseUUIDPipe) liveTaskId: string): Promise<HnLiveTaskVersion[]> {
+  getPublishedLiveTaskVersions(@Param('liveTaskId', ParseUUIDPipe) liveTaskId: string): Promise<HnLiveTaskVersionDto[]> {
     return this.liveTaskAggregateService.getPublishedLiveTaskVersions(liveTaskId);
   }
 
@@ -304,7 +307,7 @@ export class HnLiveTaskController {
    */
   @BlPublic()
   @Get('version/:liveTaskVersionId/brick-dependencies')
-  getLiveTaskVersionBrickDependencies(@Param('liveTaskVersionId', ParseUUIDPipe) liveTaskVersionId: string): Promise<HnBrickVersion[]> {
+  getLiveTaskVersionBrickDependencies(@Param('liveTaskVersionId', ParseUUIDPipe) liveTaskVersionId: string): Promise<HnBrickVersionDto[]> {
     return this.liveTaskAggregateService.getLiveTaskVersionBrickDependencies(liveTaskVersionId);
   }
 
@@ -322,7 +325,7 @@ export class HnLiveTaskController {
 
   @BlPublic()
   @Get(':id/co-authors')
-  async getLiveTaskCoAuthors(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUser[]> {
+  async getLiveTaskCoAuthors(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUserDto[]> {
     return this.liveTaskAggregateService.getLiveTaskCoAuthors(id);
   }
 

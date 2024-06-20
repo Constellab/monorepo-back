@@ -27,6 +27,7 @@ import {HnBrickVersion, HnNewVersionDTO} from './brick-version/hn-brick-version.
 import {HnDocumentation, HnDocumentationSearchDTO} from './documentation/hn-documentation.entity';
 import {HnNode} from './folder/hn-folder.dto';
 import {
+  HnBrickDto,
   HnBrickVersionDownloadDTO,
   HnCreateBrickDTO,
   HnCreateTechnicalDocContent,
@@ -43,6 +44,11 @@ import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
 import {HnUser} from '../users/hn-user.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {FileInterceptor} from '@nestjs/platform-express';
+import {HnDocumentationDto} from './documentation/hn-documentation.dto';
+import {HnGeneratedDocDto} from '../core/model/entities/hn-generated-doc.dto';
+import {HnBrickVersionDto} from './brick-version/hn-brick-version.dto';
+import {HnBrickUserInviteDto} from './brick-user-invite/hn-brick-user-invite.dto';
+import {HnUserDto} from '../users/hn-user.dto';
 
 @Controller('brick')
 @UseGuards(HnIsAdminGuard)
@@ -59,8 +65,8 @@ export class HnBrickController {
 
   @BlPublic()
   @Get('name/:name')
-  findOneByName(@Param('name') name: string): Promise<HnBrick> {
-    return this.brickAggregateService.findBrickByName(name);
+  async findOneByName(@Param('name') name: string): Promise<HnBrickDto> {
+    return new HnBrickDto(await this.brickAggregateService.findBrickByName(name));
   }
 
   /**
@@ -95,15 +101,14 @@ export class HnBrickController {
                           @Body('titleFilter') titleFilter: string,
                           @Query('page', new ParseIntPipe()) page: number,
                           @Query('size', new ParseIntPipe()) size: number,
-                          @Body('userId') userId?: string): Promise<ClPage<HnBrick>> {
+                          @Body('userId') userId?: string): Promise<ClPage<HnBrickDto>> {
     return this.brickAggregateService.findBricksWithFilter(spacesFilter, titleFilter, page, size, userId);
   }
-
 
   @BlPublic()
   @Get('first-doc/:brickName/:version')
   async findFirstDoc(@Param('brickName') brickName: string,
-                     @Param('version') version: string): Promise<HnDocumentation> {
+                     @Param('version') version: string): Promise<HnDocumentationDto> {
     return this.brickAggregateService.findFirstDoc(brickName, version);
   }
   @Post()
@@ -124,7 +129,7 @@ export class HnBrickController {
 
   @BlPublic()
   @Post('technical-doc-by-path')
-  async findTechDocByPath(@Body(new BlParsePipe(HnTechnicalDocInputDTO)) input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocEntity> {
+  async findTechDocByPath(@Body(new BlParsePipe(HnTechnicalDocInputDTO)) input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocDto> {
     return this.brickAggregateService.findTechDocByPath(input);
   }
 
@@ -141,8 +146,8 @@ export class HnBrickController {
 
   @BlPublic()
   @Get('latest/:brickName')
-  public getLatestBrickVersion(@Param('brickName') brickName: string): Promise<HnBrickVersion> {
-    return this.brickAggregateService.getLatestBrickVersion(brickName);
+  public async getLatestBrickVersion(@Param('brickName') brickName: string): Promise<HnBrickVersionDto> {
+    return new HnBrickVersionDto(await this.brickAggregateService.getLatestBrickVersion(brickName));
   }
 
   @UseInterceptors(FileInterceptor('file'))
@@ -205,7 +210,7 @@ export class HnBrickController {
    * Is brick user invite valid
    */
   @Get('invite/:token/is-valid')
-  isBrickUserInviteValid(@Param('token') token: string): Promise<HnBrickUserInvite> {
+  isBrickUserInviteValid(@Param('token') token: string): Promise<HnBrickUserInviteDto> {
     return this.brickAggregateService.isBrickUserInviteValid(token);
   }
 
@@ -233,13 +238,13 @@ export class HnBrickController {
 
   @BlPublic()
   @Get(':id/co-authors')
-  async getBrickCoAuthors(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUser[]> {
-    return (await this.brickAggregateService.getBrickCoAuthors(id)).map(brickCoAuthor => brickCoAuthor.user);
+  async getBrickCoAuthors(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUserDto[]> {
+    return (await this.brickAggregateService.getBrickCoAuthors(id)).map(brickCoAuthor => new HnUserDto(brickCoAuthor.user));
   }
 
 
   @Get(':id/co-authors-pending-invites')
-  async getBrickCoAuthorsPendingInvites(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnBrickUserInvite[]> {
+  async getBrickCoAuthorsPendingInvites(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnBrickUserInviteDto[]> {
     return this.brickAggregateService.getBrickCoAuthorsPendingInvites(id);
   }
 

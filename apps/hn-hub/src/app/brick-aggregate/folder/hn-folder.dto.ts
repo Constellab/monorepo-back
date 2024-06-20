@@ -1,8 +1,39 @@
-import {HnBaseEntity} from '../../core/model/entities/hn-base.entity';
 import {BlEntityWithId} from '@monorepo/back-core-lib';
 import {HnFolder} from './hn-folder.entity';
+import {HnBaseDto} from '../../core/model/entities/hn-base.dto';
+import {HnBrickMajorVersionDTO} from '../brick-major-version/hn-brick-major-version.dto';
+import {HnDocumentationDto} from '../documentation/hn-documentation.dto';
 
-export class HnNode extends HnBaseEntity {
+export class HnFolderDto extends HnBaseDto{
+  title: string;
+  brickMajorVersion: HnBrickMajorVersionDTO;
+  path: string;
+  completePath: string;
+  order: number;
+  folder?: HnFolderDto;
+  folders?: HnFolderDto[];
+  documentations?: HnDocumentationDto[];
+
+  constructor(folder: HnFolder) {
+    super(folder);
+    this.title = folder.title;
+    this.brickMajorVersion = new HnBrickMajorVersionDTO(folder.brickMajorVersion);
+    this.path = folder.path;
+    this.completePath = folder.completePath;
+    this.order = folder.order;
+    if (folder.folder) {
+      this.folder = new HnFolderDto(folder.folder);
+    }
+    if (folder.folders) {
+      this.folders = folder.folders.map(f => new HnFolderDto(f));
+    }
+    if (folder.documentations) {
+      this.documentations = folder.documentations.map(d => new HnDocumentationDto(d));
+    }
+  }
+}
+
+export class HnNode extends BlEntityWithId {
   name: string;
 
   order: number;

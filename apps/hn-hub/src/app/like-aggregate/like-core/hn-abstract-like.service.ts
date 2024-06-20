@@ -17,10 +17,10 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
   abstract getEntityById(entityId: string): Promise<T>;
 
   abstract addLike(entityManager: EntityManager,
-                   entity: T): Promise<T>;
+                   entity: T): Promise<BlEntityWithId>;
 
   abstract removeLike(entityManager: EntityManager,
-                      entity: T): Promise<T>;
+                      entity: T): Promise<BlEntityWithId>;
 
   abstract saveLike(entityManager: EntityManager,
                     like: HnAbstractLikeEntity<T>): Promise<HnAbstractLikeEntity<T>>;
@@ -45,7 +45,7 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
     return like != null;
   }
 
-  async like(entityId: string): Promise<T> {
+  async like(entityId: string): Promise<BlEntityWithId> {
     if (await this.checkIfLiked(entityId)) {
       throw new Error('Entity already liked')
     }
@@ -68,7 +68,7 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
     });
   }
 
-  async unlike(entityId: string): Promise<T> {
+  async unlike(entityId: string): Promise<BlEntityWithId> {
     if (!await this.checkIfLiked(entityId)) {
       throw new Error('Entity not liked');
     }

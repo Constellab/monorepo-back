@@ -26,7 +26,7 @@ import {
 } from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
 import {HnStory, HnStoryCategory} from './hn-story.entity';
-import {HnCreateStoryDto, HnStoryFilter} from './hn-story.dto';
+import {HnCreateStoryDto, HnStoryDto, HnStoryFilter} from './hn-story.dto';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
 import {HnTopicDto} from '../topic/hn-topic.dto';
@@ -35,7 +35,7 @@ import {HnStoryCoAuthorInvite} from '../story-author-invite/hn-story-author-invi
 import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
 import {HnStoryFile} from '../story-file/hn-story-file.entity';
 import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
-import {HnUser} from '../users/hn-user.entity';
+import {HnUserDto} from '../users/hn-user.dto';
 
 @Controller('story')
 export class HnStoryController {
@@ -53,7 +53,7 @@ export class HnStoryController {
   @Post('filter')
   async getStoriesByFilter(@Body() filter: HnStoryFilter,
                            @Query('page', new ParseIntPipe()) page: number,
-                           @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStory>> {
+                           @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStoryDto>> {
     return this.storyService.getStoriesByFilter(filter, page, size);
   }
 
@@ -62,7 +62,7 @@ export class HnStoryController {
   @Get('topic/:topicId')
   async getStoriesByTopicId(@Param('topicId', new ParseUUIDPipe()) topicId: string,
                             @Query('page', new ParseIntPipe()) page: number,
-                            @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStory>> {
+                            @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStoryDto>> {
     return this.storyService.getStoriesByTopicId(topicId, page, size);
   }
 
@@ -71,7 +71,7 @@ export class HnStoryController {
    */
   @Get('my')
   async getMyStories(@Query('page', new ParseIntPipe()) page: number,
-                     @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStory>> {
+                     @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStoryDto>> {
     return this.storyService.getMyStories(page, size);
   }
 
@@ -82,7 +82,7 @@ export class HnStoryController {
   async getMyStoriesFilterd(
     @Body() filters: HnStoryFilter,
     @Query('page', new ParseIntPipe()) page: number,
-    @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStory>> {
+    @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStoryDto>> {
     return await this.storyService.getMyStoriesFiltered(page, size, filters);
   }
 
@@ -94,8 +94,8 @@ export class HnStoryController {
 
   @BlPublic()
   @Get(':id')
-  async getStory(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnStory> {
-    return this.storyService.getStory(id);
+  async getStory(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnStoryDto> {
+    return new HnStoryDto(await this.storyService.getStory(id));
   }
 
   @Delete(':id')
@@ -238,8 +238,8 @@ export class HnStoryController {
 
   @BlPublic()
   @Get(':id/co-authors')
-  async getStoryCoAuthors(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUser[]> {
-    return (await this.storyService.getStoryCoAuthors(id)).map(storyAuthor => storyAuthor.user);
+  async getStoryCoAuthors(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUserDto[]> {
+    return (await this.storyService.getStoryCoAuthors(id)).map(storyAuthor => new HnUserDto(storyAuthor.user));
   }
 
   @Get(':id/co-authors-pending-invites')
