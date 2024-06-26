@@ -1,21 +1,21 @@
-import {Injectable, Logger, UnauthorizedException} from '@nestjs/common';
-import {CnProjectsService} from './cn-projects/cn-projects.service';
-import {CnProjectsAggregateSecurity} from './cn-projects-aggregate.security';
-import {CnProject} from './cn-projects/cn-project.entity';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {ClHelpService, ClPage, ClPageI} from '@monorepo/core-lib';
-import {CnProjectStatusHistory} from './cn-projects/cn-project-status-history.entity';
-import {CnProjectStatus} from './cn-projects/cn-project-status.enum';
-import {CnExperimentsService} from './cn-experiments/cn-experiments.service';
-import {CnReportsService} from './cn-reports/cn-reports.service';
-import {CnExperiment, CnExperimentProtocol} from './cn-experiments/cn-experiment.entity';
-import {CnCreateLabExperimentDto} from './cn-experiments/cn-experiment.dto';
-import {CnCreateReportWithConfigDto} from './cn-reports/cn-report.dto';
-import {CnReport} from './cn-reports/cn-report.entity';
-import {IncomingMessage} from 'http';
-import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
-import {CnProjectLevel, CnProjectLevelStatus} from './cn-projects/cn-project-level.enum';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { CnProjectsService } from './cn-projects/cn-projects.service';
+import { CnProjectsAggregateSecurity } from './cn-projects-aggregate.security';
+import { CnProject } from './cn-projects/cn-project.entity';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
+import { CnProjectStatusHistory } from './cn-projects/cn-project-status-history.entity';
+import { CnProjectStatus } from './cn-projects/cn-project-status.enum';
+import { CnExperimentsService } from './cn-experiments/cn-experiments.service';
+import { CnReportsService } from './cn-reports/cn-reports.service';
+import { CnExperiment, CnExperimentProtocol } from './cn-experiments/cn-experiment.entity';
+import { CnCreateLabExperimentDto } from './cn-experiments/cn-experiment.dto';
+import { CnCreateReportWithConfigDto } from './cn-reports/cn-report.dto';
+import { CnReport } from './cn-reports/cn-report.entity';
+import { IncomingMessage } from 'http';
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
+import { CnProjectLevel, CnProjectLevelStatus } from './cn-projects/cn-project-level.enum';
 import {
   CnProjectAncestorTreeDTO,
   CnProjectAncestorType,
@@ -23,10 +23,10 @@ import {
   CnProjectStorageLocationDTO,
   CnSaveProjectDTO
 } from './cn-projects/cn-project.dto';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnProjectComment, getFakeUserEveryoneMention} from '../cn-project-comment/cn-project-comment.entity';
-import {CnProjectCommentService} from '../cn-project-comment/cn-project-comment.service';
-import {CnNewCommentDTO} from '../cn-core/model/entities/cn-comment.entity';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnProjectComment, getFakeUserEveryoneMention } from '../cn-project-comment/cn-project-comment.entity';
+import { CnProjectCommentService } from '../cn-project-comment/cn-project-comment.service';
+import { CnNewCommentDTO } from '../cn-core/model/entities/cn-comment.entity';
 import {
   BlBadRequestException,
   BlFile,
@@ -38,19 +38,22 @@ import {
   BlSearchParams,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
-import {DataSource, In} from 'typeorm';
-import {CnProjectBucketService} from './cn-projects/cn-project-bucket.service';
-import {CnProjectUserService} from './cn-project-user/cn-project-user.service';
-import {CnUsersService} from '../cn-users/cn-users.service';
-import {CnProjectUser} from './cn-project-user/cn-project-user.entity';
-import {CnProjectEvent, cnProjectEventName, CnProjectEventType} from './cn-project.event';
-import {EventEmitter2} from '@nestjs/event-emitter';
-import {CnActivity, CnActivityEntityType} from '../cn-activity/cn-activity.entity';
-import {CnActivityService} from '../cn-activity/cn-activity.service';
-import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
-import {CnProjectDocumentService} from './cn-project-documents/cn-project-document.service';
-import {CnProjectDocument, CnProjectDocumentType} from './cn-project-documents/cn-project-document.entity';
-import {CnConstellabDocumentDTO, CnProjectStorageUsageDTO} from './cn-project-documents/cn-project-document-dto.class';
+import { DataSource, In } from 'typeorm';
+import { CnProjectBucketService } from './cn-projects/cn-project-bucket.service';
+import { CnProjectUserService } from './cn-project-user/cn-project-user.service';
+import { CnUsersService } from '../cn-users/cn-users.service';
+import { CnProjectUser } from './cn-project-user/cn-project-user.entity';
+import { CnProjectEvent, cnProjectEventName, CnProjectEventType } from './cn-project.event';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { CnActivity, CnActivityEntityType } from '../cn-activity/cn-activity.entity';
+import { CnActivityService } from '../cn-activity/cn-activity.service';
+import { CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { CnProjectDocumentService } from './cn-project-documents/cn-project-document.service';
+import { CnProjectDocument, CnProjectDocumentType } from './cn-project-documents/cn-project-document.entity';
+import {
+  CnConstellabDocumentDTO,
+  CnProjectStorageUsageDTO
+} from './cn-project-documents/cn-project-document-dto.class';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -422,6 +425,13 @@ export class CnProjectAggregateService {
   async deleteLabExperiment(projectId: string, experimentId: string): Promise<void> {
     // check that the user can get the project
     await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    // check if the experiment has associated reports
+    const expWithReports = await this.experimentService.findByIdAndCheckWithReports(experimentId);
+    if (expWithReports.reports.length > 0) {
+      throw new BlBadRequestException("The experiment has associated reports in the space, please delete the report first.");
+    }
+
 
     const experiment = await this.experimentService.deleteExperiment(experimentId);
     if (experiment) {
