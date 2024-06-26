@@ -13,9 +13,9 @@ import {
   StreamableFile,
   UseInterceptors
 } from '@nestjs/common';
-import {CnProject} from './cn-projects/cn-project.entity';
-import {CnProjectStatus} from './cn-projects/cn-project-status.enum';
-import {CnProjectStatusHistory} from './cn-projects/cn-project-status-history.entity';
+import { CnProject } from './cn-projects/cn-project.entity';
+import { CnProjectStatus } from './cn-projects/cn-project-status.enum';
+import { CnProjectStatusHistory } from './cn-projects/cn-project-status-history.entity';
 import {
   BlFile,
   BlParseEnumPipe,
@@ -27,8 +27,8 @@ import {
   BlSearchParams,
   BlUploadedFile
 } from '@monorepo/back-core-lib';
-import {ClPage, ClPageI} from '@monorepo/core-lib';
-import {CnProjectAggregateService} from './cn-project-aggregate.service';
+import { ClPage, ClPageI } from '@monorepo/core-lib';
+import { CnProjectAggregateService } from './cn-project-aggregate.service';
 import {
   CnProjectAncestorTreeDTO,
   CnProjectAncestorType,
@@ -37,16 +37,19 @@ import {
   CnProjectTreeDTO,
   CnSaveProjectDTO
 } from './cn-projects/cn-project.dto';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnProjectComment} from '../cn-project-comment/cn-project-comment.entity';
-import {CnComment, CnNewCommentDTO} from '../cn-core/model/entities/cn-comment.entity';
-import {FileInterceptor} from '@nestjs/platform-express';
-import {Response} from 'express';
-import {CnProjectUser} from './cn-project-user/cn-project-user.entity';
-import {CnActivity} from '../cn-activity/cn-activity.entity';
-import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
-import {CnProjectDocument} from './cn-project-documents/cn-project-document.entity';
-import {CnConstellabDocumentDTO, CnProjectStorageUsageDTO} from './cn-project-documents/cn-project-document-dto.class';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnProjectComment } from '../cn-project-comment/cn-project-comment.entity';
+import { CnComment, CnNewCommentDTO } from '../cn-core/model/entities/cn-comment.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
+import { CnProjectUser } from './cn-project-user/cn-project-user.entity';
+import { CnActivity } from '../cn-activity/cn-activity.entity';
+import { CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { CnProjectDocument } from './cn-project-documents/cn-project-document.entity';
+import {
+  CnConstellabDocumentDTO,
+  CnProjectStorageUsageDTO
+} from './cn-project-documents/cn-project-document-dto.class';
 
 
 @Controller('projects')
@@ -353,7 +356,7 @@ export class CnProjectsController {
   @UseInterceptors(FileInterceptor('file'))
   @Post('constellab-document/:documentId/file')
   async uploadFileToConstellabDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string,
-                                        @BlUploadedFile() file: BlFile): Promise<BlRichTextUploadFileResponse> {
+                                       @BlUploadedFile() file: BlFile): Promise<BlRichTextUploadFileResponse> {
     return this.projectAggregate.uploadFileToConstellabDocument(documentId, file);
   }
 
@@ -409,10 +412,5 @@ export class CnProjectsController {
                        @Query('page', ParseIntPipe) page: number,
                        @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnActivity>> {
     return await this.projectAggregate.searchProjectActivity(projectId, searchParam, page, size);
-  }
-
-  @Post('comment/migrate')
-  async migrateComment(): Promise<void> {
-    return this.projectAggregate.migrateProjectComments();
   }
 }

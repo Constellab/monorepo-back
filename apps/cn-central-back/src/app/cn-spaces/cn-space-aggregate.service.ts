@@ -1,17 +1,17 @@
-import {Injectable} from '@nestjs/common';
-import {CnSpaceService} from './cn-space.service';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {CnSpace, CnSpaceType} from './cn-space.entity';
-import {CnSpaceAggregateSecurity} from './cn-space-aggregate-security.service';
-import {ClPage} from '@monorepo/core-lib';
-import {CnUsersService} from '../cn-users/cn-users.service';
-import {CnSpaceUserService} from './cn-space-user.service';
-import {CnSpaceUser, CnSpaceUserRole} from './cn-space-user.entity';
-import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {BlBadRequestException, BlFile, BlSearchParams} from '@monorepo/back-core-lib';
-import {IncomingMessage} from 'http';
-import {CnSpaceInvit} from './cn-space-invit.entity';
-import {CnSpaceInvitService} from './cn-space-invit.service';
+import { Injectable } from '@nestjs/common';
+import { CnSpaceService } from './cn-space.service';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnSpace, CnSpaceType } from './cn-space.entity';
+import { CnSpaceAggregateSecurity } from './cn-space-aggregate-security.service';
+import { ClPage } from '@monorepo/core-lib';
+import { CnUsersService } from '../cn-users/cn-users.service';
+import { CnSpaceUserService } from './cn-space-user.service';
+import { CnSpaceUser, CnSpaceUserRole } from './cn-space-user.entity';
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { BlBadRequestException, BlFile, BlSearchParams } from '@monorepo/back-core-lib';
+import { IncomingMessage } from 'http';
+import { CnSpaceInvit } from './cn-space-invit.entity';
+import { CnSpaceInvitService } from './cn-space-invit.service';
 import {
   CnCreateSpaceDTO,
   CnRequestNewLicensesDto,
@@ -21,14 +21,14 @@ import {
   CnSpaceStorage,
   CnSpaceUpdateStorageLocationDTO
 } from './cn-space.dto';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {DataSource, EntityManager} from 'typeorm';
-import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
-import {CnSpacesMailService} from './cn-spaces-mail.service';
-import {CnBucket, CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
-import {CnObjectStoragesAggregateService} from '../cn-object-storages/cn-object-storages-aggregate.service';
-import {CnProjectDocumentService} from '../cn-projects-aggregate/cn-project-documents/cn-project-document.service';
-import {CnProjectStorageUsageDTO} from '../cn-projects-aggregate/cn-project-documents/cn-project-document-dto.class';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { DataSource, EntityManager } from 'typeorm';
+import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
+import { CnSpacesMailService } from './cn-spaces-mail.service';
+import { CnBucket, CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { CnObjectStoragesAggregateService } from '../cn-object-storages/cn-object-storages-aggregate.service';
+import { CnProjectDocumentService } from '../cn-projects-aggregate/cn-project-documents/cn-project-document.service';
+import { CnProjectStorageUsageDTO } from '../cn-projects-aggregate/cn-project-documents/cn-project-document-dto.class';
 
 @Injectable()
 export class CnSpaceAggregateService {
@@ -191,7 +191,7 @@ export class CnSpaceAggregateService {
 
   public async refreshSpaceStorageUsage(spaceId: string): Promise<void> {
     const storageUsage = await this.projectDocumentService.getSpaceCloudStorageSize(spaceId);
-    await this.spaceService.updatePartial(spaceId, {cloudStorageUsage: storageUsage});
+    await this.spaceService.updatePartial(spaceId, { cloudStorageUsage: storageUsage });
   }
 
   public async getCurrentSpaceStorageUsageDetail(): Promise<CnProjectStorageUsageDTO> {
@@ -254,7 +254,7 @@ export class CnSpaceAggregateService {
       defaultBackupBucket = null;
     }
 
-    return {defaultProjectBucket: defaultBucket, defaultProjectBackupBucket: defaultBackupBucket};
+    return { defaultProjectBucket: defaultBucket, defaultProjectBackupBucket: defaultBackupBucket };
   }
 
   public async updateCurrentSpaceStorageLimit(storageLimit: number): Promise<CnSpaceStorage> {
@@ -403,14 +403,14 @@ export class CnSpaceAggregateService {
   }
 
   public async resendInvitation(invitationId: string): Promise<void> {
-    const invitation = await this.invitationService.findByIdAndCheck(invitationId, {space: true});
+    const invitation = await this.invitationService.findByIdAndCheck(invitationId, { space: true });
     await this.checkSpaceAdmin(invitation.spaceId);
 
     return this.invitationService.resendInvitation(invitation);
   }
 
   public async refreshInvitationValidUntil(invitationId: string): Promise<CnSpaceInvit> {
-    const invitation = await this.invitationService.findByIdAndCheck(invitationId, {space: true});
+    const invitation = await this.invitationService.findByIdAndCheck(invitationId, { space: true });
     await this.checkSpaceAdmin(invitation.spaceId);
 
     return this.invitationService.refreshValidUntil(invitation);
@@ -523,13 +523,4 @@ export class CnSpaceAggregateService {
 
     throw new BlBadRequestException(CnErrorText.USER_NOT_IN_SPACE);
   }
-
-  // TODO TO REMOVE, MIGRATION
-  public async refreshSpacesStorage(): Promise<void> {
-    const spaces = await this.spaceService.getAll(0, 1000);
-    for (const space of spaces.objects) {
-      await this.refreshSpaceStorageUsage(space.id);
-    }
-  }
-
 }

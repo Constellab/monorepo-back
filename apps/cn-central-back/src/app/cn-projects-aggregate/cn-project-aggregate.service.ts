@@ -30,13 +30,11 @@ import { CnNewCommentDTO } from '../cn-core/model/entities/cn-comment.entity';
 import {
   BlBadRequestException,
   BlFile,
-  BlQuillMigrator,
   BlRichTextContent,
   BlRichTextUploadedImageResponse,
   BlRichTextUploadFileResponse,
   BlSearchBuilder,
-  BlSearchParams,
-  BlUnauthorizedException
+  BlSearchParams
 } from '@monorepo/back-core-lib';
 import { DataSource, In } from 'typeorm';
 import { CnProjectBucketService } from './cn-projects/cn-project-bucket.service';
@@ -940,27 +938,5 @@ export class CnProjectAggregateService {
       userInfo: CnCurrentUserHelper.getAndCheckUserSpaceInfo()
     };
     this.eventEmitter.emit(cnProjectEventName, event);
-  }
-
-  // TODO remove
-  public async migrateProjectComments(): Promise<void> {
-    if (!CnCurrentUserHelper.isAdmin()) {
-      throw new BlUnauthorizedException();
-    }
-    const comments = await this.projectCommentService.findAll();
-
-    this.logger.log(`Migrating ${comments.length} comments`);
-    for (const comment of comments) {
-      try {
-        const newContent = BlQuillMigrator.migrateOptional(comment.content);
-        comment.content = newContent;
-        await this.projectCommentService.migrateComment(comment);
-      } catch (e) {
-        this.logger.error(`Error while updating comment ${comment.id}`, e);
-      }
-    }
-
-    this.logger.log(`End Migrating ${comments.length} comments`);
-
   }
 }

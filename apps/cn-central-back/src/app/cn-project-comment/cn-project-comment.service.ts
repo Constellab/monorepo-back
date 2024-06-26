@@ -1,10 +1,10 @@
-import {Injectable, Logger} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {CnProjectComment} from './cn-project-comment.entity';
-import {DataSource, IsNull, Repository} from 'typeorm';
-import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
-import {CnNewCommentDTO} from '../cn-core/model/entities/cn-comment.entity';
-import {ClPage} from '@monorepo/core-lib';
+import { Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CnProjectComment } from './cn-project-comment.entity';
+import { DataSource, IsNull, Repository } from 'typeorm';
+import { CnProject } from '../cn-projects-aggregate/cn-projects/cn-project.entity';
+import { CnNewCommentDTO } from '../cn-core/model/entities/cn-comment.entity';
+import { ClPage } from '@monorepo/core-lib';
 import {
   BlAbstractService,
   BlFile,
@@ -12,9 +12,9 @@ import {
   BlRichTextContent,
   BlRichTextUploadedImageResponse
 } from '@monorepo/back-core-lib';
-import {IncomingMessage} from 'http';
-import {CnProjectDocumentService} from '../cn-projects-aggregate/cn-project-documents/cn-project-document.service';
-import {CnProjectDocumentType} from '../cn-projects-aggregate/cn-project-documents/cn-project-document.entity';
+import { IncomingMessage } from 'http';
+import { CnProjectDocumentService } from '../cn-projects-aggregate/cn-project-documents/cn-project-document.service';
+import { CnProjectDocumentType } from '../cn-projects-aggregate/cn-project-documents/cn-project-document.entity';
 
 @Injectable()
 export class CnProjectCommentService extends BlAbstractService<CnProjectComment> {
@@ -58,7 +58,7 @@ export class CnProjectCommentService extends BlAbstractService<CnProjectComment>
   async createComment(newComment: CnNewCommentDTO, project: CnProject): Promise<CnProjectComment> {
     const projectComment: CnProjectComment = CnProjectComment.create(newComment, project);
     if (newComment.parentCommentId) {
-      projectComment.parentComment = await this.repository.findOneBy({id: newComment.parentCommentId});
+      projectComment.parentComment = await this.repository.findOneBy({ id: newComment.parentCommentId });
     }
     return await this.create(projectComment);
   }
@@ -80,13 +80,5 @@ export class CnProjectCommentService extends BlAbstractService<CnProjectComment>
   async updateComment(comment: CnProjectComment, content: BlRichTextContent): Promise<CnProjectComment> {
     comment.content = content;
     return await this.update(comment);
-  }
-
-  public async findAll(): Promise<CnProjectComment[]> {
-    return this.repository.find();
-  }
-
-  public async migrateComment(comment: CnProjectComment): Promise<CnProjectComment> {
-    return this.repository.save(comment, {listeners: false});
   }
 }
