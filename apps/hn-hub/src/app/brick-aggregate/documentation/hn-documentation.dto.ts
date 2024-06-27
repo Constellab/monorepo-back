@@ -1,7 +1,7 @@
 import {HnBaseDto} from '../../core/model/entities/hn-base.dto';
 import {HnFolderDto} from '../folder/hn-folder.dto';
-import {HnDocumentationFile} from '../documentation-file/hn-documentation-file.entity';
 import {HnDocumentation} from './hn-documentation.entity';
+import {HnFileDocumentation} from '../../file-aggregate/file-documentation/hn-file-documentation.entity';
 
 export class HnDocumentationDto extends HnBaseDto{
   title: string;
@@ -10,7 +10,7 @@ export class HnDocumentationDto extends HnBaseDto{
   completePath: string;
   order: number;
   folder: HnFolderDto;
-  docFiles: HnDocumentationFile[];
+  docFiles: HnFileDocumentation[];
 
   constructor(documentation: HnDocumentation) {
     super(documentation);

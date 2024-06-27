@@ -1,9 +1,9 @@
-import {BlEntityWithId} from '@monorepo/back-core-lib';
+import {BlEntityWithIdDTO} from '@monorepo/back-core-lib';
 import {HnBrickDto} from '../brick/hn-brick.dto';
 import {HnUserDto} from '../../users/hn-user.dto';
 import {HnBrickUser} from './hn-brick-user.entity';
 
-export class HnBrickUserDto extends BlEntityWithId{
+export class HnBrickUserDto extends BlEntityWithIdDTO {
   brick: HnBrickDto;
   user: HnUserDto;
 

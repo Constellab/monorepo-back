@@ -12,11 +12,10 @@ import {
 import {HnBrick, HnBrickVisibility} from './brick/hn-brick.entity';
 import {HnFolderDto, HnNode, HnNodeDTO} from './folder/hn-folder.dto';
 import {HnDocumentation, HnDocumentationDTO, HnDocumentationSearchDTO} from './documentation/hn-documentation.entity';
-import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc-typing.entity';
 import {HnBrickVersion, HnNewVersionDTO, HnReferenceDTO} from './brick-version/hn-brick-version.entity';
 import {HnBrickMajorVersionService} from './brick-major-version/hn-brick-major-version.service';
 import {HnBrickVersionService} from './brick-version/hn-brick-version.service';
-import {ClPage, ClPageI, ClStringHelper} from '@monorepo/core-lib';
+import {ClPage, ClStringHelper} from '@monorepo/core-lib';
 import {DataSource, EntityManager, FindOptionsWhere, In, IsNull, Like} from 'typeorm';
 import {HnBrickMajorVersion} from './brick-major-version/hn-brick-major-version.entity';
 import {HnFolderService} from './folder/hn-folder.service';
@@ -37,7 +36,6 @@ import {HnBrickUserInviteService} from './brick-user-invite/hn-brick-user-invite
 import {HnBrickUserInvite} from './brick-user-invite/hn-brick-user-invite.entity';
 import {HnBrickUser} from './brick-user/hn-brick-user.entity';
 import {HnSiteMapEnumChangefreq, HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
-import {HnDocumentationFile} from './documentation-file/hn-documentation-file.entity';
 import {HnUser} from '../users/hn-user.entity';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {HnTechnicalFolderService} from '../technical-folder/hn-technical-folder.service';
@@ -50,7 +48,10 @@ import {HnDocumentationDto} from './documentation/hn-documentation.dto';
 import {HnGeneratedDocDto} from '../core/model/entities/hn-generated-doc.dto';
 import {HnBrickUserInviteDto} from './brick-user-invite/hn-brick-user-invite.dto';
 import {HnBrickVersionDto} from './brick-version/hn-brick-version.dto';
-import {HnDocumentationFileDto} from './documentation-file/hn-documentation-file.dto';
+import {HnFileDocumentationService} from '../file-aggregate/file-documentation/hn-file-documentation.service';
+import {HnUploadFileResponseDto} from '../file-aggregate/file-core/hn-abstract-file.dto';
+import {HnFileDocumentation} from '../file-aggregate/file-documentation/hn-file-documentation.entity';
+import {HnFileType} from '../file-aggregate/file-core/hn-abstract-file.entity';
 
 @Injectable()
 export class HnBrickAggregateService {
@@ -68,7 +69,9 @@ export class HnBrickAggregateService {
     private dataSource: DataSource,
     private configService: HnCoreConfigService,
     private frontService: HnFrontService,
-    private readonly spaceAggregateService: HnSpaceAggregateService
+    private fileDocumentationService: HnFileDocumentationService,
+    private readonly spaceAggregateService: HnSpaceAggregateService,
+    private datasource: DataSource
   ) {
   }
 
@@ -495,11 +498,9 @@ export class HnBrickAggregateService {
   }
 
   async saveDocImage(file: BlFile, docId: string): Promise<BlRichTextUploadedImageResponse> {
-    return this.documentationService.saveImage(docId, file, false);
-  }
-
-  async getDocImage(id: string): Promise<IncomingMessage> {
-    return this.documentationService.getImage(id);
+    await this.checkIfUserHasRightsOnDoc(docId);
+    const documentation: HnDocumentation = await this.documentationService.findById(docId);
+    return this.fileDocumentationService.saveImage(documentation, file);
   }
 
   async updateDocContent(id: string, updateContentDoc: BlRichTextContent): Promise<HnDocumentation> {
@@ -703,12 +704,10 @@ export class HnBrickAggregateService {
   }
 
   //------------------------------------- RESOURCE VIEW -------------------------------------
-  async uploadDocResourceViewFile(docId: string, file: BlFile): Promise<string>{
+  async saveDocResourceViewFile(docId: string, file: BlFile): Promise<string>{
     await this.checkIfUserHasRightsOnDoc(docId);
-    if (file.size > 20000000) {
-      throw new BlBadRequestException('File size is too big');
-    }
-    return this.documentationService.uploadDocResourceViewFile(docId, file);
+    const doc = await this.documentationService.findById(docId);
+    return this.fileDocumentationService.saveResourceView(doc, file);
   }
 
   async getAllBrickVersionReferences(brickVersionId: string): Promise<HnReferenceDTO[]> {
@@ -725,35 +724,12 @@ export class HnBrickAggregateService {
     return (await this.brickUserInviteService.getBrickCoAuthorsPendingInvites(brickId))?.map(bu => new HnBrickUserInviteDto(bu));
   }
 
-  async getView(filename: string): Promise<any>{
-    return this.documentationService.getView(filename);
-  }
-
 
   //------------------------------------- DOCUMENTATION FILE -------------------------------------
-  async getDocFile(docFileId: string): Promise<IncomingMessage> {
-    return await this.documentationService.getDocFile(docFileId)
-  }
-
-  async saveFile(file: BlFile, docId: string): Promise<HnDocumentationFileDto> {
+  async saveFile(file: BlFile, docId: string): Promise<HnUploadFileResponseDto> {
     await this.checkIfUserHasRightsOnDoc(docId);
-    return new HnDocumentationFileDto(await this.documentationService.saveFile(file, docId));
-  }
-
-  async getDocFileName(docFileId: string): Promise<string> {
-    return this.documentationService.getDocFileName(docFileId);
-  }
-
-  async renameDocFile(docFileId: string, newFileName: string): Promise<HnDocumentationFileDto> {
-    return new HnDocumentationFileDto(await this.documentationService.renameDocFile(docFileId, newFileName));
-  }
-
-  async deleteDocFile(docFileId: string): Promise<void> {
-    try {
-      await this.documentationService.deleteDocFile(docFileId);
-    } catch (e) {
-      throw new BlBadRequestException('File could not be deleted');
-    }
+    const doc = await this.documentationService.findById(docId);
+    return await this.fileDocumentationService.saveFile(doc, file);
   }
 
   async inviteBrickCoAuthor(brickId: string, email: string): Promise<HnBrick> {
@@ -951,5 +927,48 @@ export class HnBrickAggregateService {
   public async removeLike(brick: HnBrick, entityManager: EntityManager): Promise<HnBrick> {
     brick.likes--;
     return entityManager.save(brick, {listeners: false});
+  }
+
+
+  ////////////////////////////////////////// ADMIN /////////////////////////////////
+  public async migrateDocBucketItemsName(): Promise<any>{
+    const items: any[] = (await this.fileDocumentationService.getAllBucketItemsName()).map(i => [i.Key, i.Size]);
+    let modif = 0;
+    for(const [fileName, size] of items){
+      if(fileName.includes('brick'))
+        continue
+
+      const docId = fileName.split('/')[0];
+
+      const doc = await this.documentationService.findById(docId, false)
+      if (doc && fileName.split('/').length == 3){
+        const entityFile = await this.fileDocumentationService.getEntityFileByFileName(fileName);
+        if (!entityFile){
+          const docFile = await this.documentationService.getDocFile(fileName);
+          const newDocFileEntity: HnFileDocumentation = new HnFileDocumentation();
+          let type: HnFileType;
+          switch (fileName.split('/')[1]){
+            case 'files':
+              type = HnFileType.FILE;
+              break;
+            case 'images':
+              type = HnFileType.IMAGE;
+              break;
+            case 'views':
+              type = HnFileType.RESOURCE_VIEW;
+              break;
+          }
+          const name = (docFile != null && docFile.humanName != null) ? docFile.humanName : type.toString() + '.' + fileName.split('.')[1];
+          newDocFileEntity.init(doc, fileName, type, name, size);
+
+          await this.datasource.transaction(async entityManager => {
+            const savedDocFileEntity = await this.fileDocumentationService.saveFileEntity(docId, newDocFileEntity, entityManager);
+            await this.documentationService.updateDocImageFileName(doc, savedDocFileEntity, entityManager);
+            modif++;
+          });
+        }
+      }
+    }
+    return modif;
   }
 }

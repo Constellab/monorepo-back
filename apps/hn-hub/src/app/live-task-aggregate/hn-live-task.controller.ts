@@ -1,28 +1,51 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query, Req} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Query,
+  Req,
+  UseInterceptors
+} from '@nestjs/common';
 import {HnLiveTaskAggregateService} from './hn-live-task-aggregate.service';
 import {HnLiveTaskVersion} from './live-task-version/hn-live-task-version.entity';
 import {
   HaCreateLiveTaskVersionFromLabResponseDto,
-  HnCreateLiveTaskDto, HnLiveTaskDto,
+  HnCreateLiveTaskDto,
+  HnLiveTaskDto,
   HnLiveTaskForLabDto,
   HnLiveTaskVersionFileInput,
   HnLiveTaskVersionForLabDto
 } from './live-task/hn-live-task.dto';
-import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
+import {
+  BlFile,
+  BlParsePipe,
+  BlPublic,
+  BlRichTextUploadedImageResponse,
+  BlRichTextUploadFileResponse, BlUploadedFile
+} from '@monorepo/back-core-lib';
 import {HnLiveTask} from './live-task/hn-live-task.entity';
 import {ClPage} from '@monorepo/core-lib';
-import {HnBrickVersion} from '../brick-aggregate/brick-version/hn-brick-version.entity';
-import {HnUser} from '../users/hn-user.entity';
 import {HnLiveTaskCoAuthorInvite} from './live-task-co-author-invite/hn-live-task-co-author-invite.entity';
 import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
 import {HnBrickVersionDto} from '../brick-aggregate/brick-version/hn-brick-version.dto';
 import {HnLiveTaskVersionDto} from './live-task-version/hn-live-task-version.dto';
 import {HnUserDto} from '../users/hn-user.dto';
+import {HnAbstractFileController} from '../file-aggregate/file-core/hn-abstract-file.controller';
+import {HnFileLiveTaskService} from '../file-aggregate/file-live-task/hn-file-live-task.service';
+import {FileInterceptor} from '@nestjs/platform-express';
 
 @Controller('live-task')
-export class HnLiveTaskController {
+export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
 
-  constructor(private readonly liveTaskAggregateService: HnLiveTaskAggregateService) {
+  constructor(private readonly liveTaskAggregateService: HnLiveTaskAggregateService,
+              private readonly liveTaskFileService: HnFileLiveTaskService) {
+    super(liveTaskFileService);
   }
 
   //////////////////////////////////////////// Live Task ////////////////////////////////////////////
@@ -365,4 +388,24 @@ export class HnLiveTaskController {
     return this.liveTaskAggregateService.deleteCoAuthorInvite(inviteId);
   }
 
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('file/:liveTaskId')
+  async saveFile(@BlUploadedFile() file: BlFile,
+           @Param('liveTaskId', new ParseUUIDPipe()) liveTaskId: string): Promise<BlRichTextUploadFileResponse> {
+    return this.liveTaskAggregateService.saveFile(file, liveTaskId);
+  }
+
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('image/:liveTaskId')
+  async saveImage(@BlUploadedFile() file: BlFile,
+            @Param('liveTaskId', new ParseUUIDPipe()) liveTaskId: string): Promise<BlRichTextUploadedImageResponse> {
+    return this.liveTaskAggregateService.saveImage(file, liveTaskId);
+  }
+
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('view/:liveTaskId')
+  async saveResourceViewFile(@BlUploadedFile() file: BlFile,
+                       @Param('liveTaskId', new ParseUUIDPipe()) liveTaskId: string): Promise<any> {
+    return {filename: await this.liveTaskAggregateService.saveView(file, liveTaskId)};
+  }
 }

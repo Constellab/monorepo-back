@@ -8,6 +8,7 @@ import {Type} from 'class-transformer';
 import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {HnLiveTaskCoAuthor} from '../live-task-co-author/hn-live-task-co-author.entity';
+import {HnFileLiveTask} from '../../file-aggregate/file-live-task/hn-file-live-task.entity';
 
 @Entity('live_task')
 export class HnLiveTask extends BlEntityWithId {
@@ -48,6 +49,9 @@ export class HnLiveTask extends BlEntityWithId {
 
   @OneToMany(() => HnLiveTaskCoAuthor, liveTaskCoAuthor => liveTaskCoAuthor.user, {nullable: true, onDelete: 'CASCADE'})
   liveTaskCoAuthors: HnLiveTaskCoAuthor[];
+
+  @OneToMany(() => HnFileLiveTask, liveTaskFile => liveTaskFile.entity, {nullable: true})
+  liveTaskFiles: HnFileLiveTask[];
 
   static init(liveTaskDto: HnCreateLiveTaskDto, parentLiveTaskVersionId?: string, user?: HnUser): HnLiveTask {
     const liveTask = new HnLiveTask();

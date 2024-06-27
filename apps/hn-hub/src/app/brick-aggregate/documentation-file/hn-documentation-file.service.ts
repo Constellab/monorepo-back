@@ -30,4 +30,7 @@ export class HnDocumentationFileService {
     return this.docAuthorRepository.findOneBy({id});
   }
 
+  async getDocumentationFileByFileName(fileName: string): Promise<HnDocumentationFile> {
+    return this.docAuthorRepository.findOneBy({fileName: fileName});
+  }
 }

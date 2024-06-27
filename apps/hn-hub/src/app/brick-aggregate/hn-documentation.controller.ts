@@ -7,9 +7,6 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-  Req,
-  Res,
-  StreamableFile,
   UseGuards,
   UseInterceptors
 } from '@nestjs/common';
@@ -18,24 +15,32 @@ import {
   BlFile,
   BlParsePipe,
   BlPublic,
-  BlResponseHelper,
   BlRichTextContent,
   BlRichTextUploadedImageResponse,
   BlUploadedFile
 } from '@monorepo/back-core-lib';
 import {FileInterceptor} from '@nestjs/platform-express';
-import {Response} from 'express';
 import {HnNodeDTO} from './folder/hn-folder.dto';
 import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
 import {HnBrickAggregateService} from './hn-brick-aggregate.service';
-import {HnDocumentationFile} from './documentation-file/hn-documentation-file.entity';
 import {HnDocumentationDto} from './documentation/hn-documentation.dto';
-import {HnDocumentationFileDto} from './documentation-file/hn-documentation-file.dto';
+import {HnAbstractFileController} from '../file-aggregate/file-core/hn-abstract-file.controller';
+import {HnFileDocumentationService} from '../file-aggregate/file-documentation/hn-file-documentation.service';
+import {HnUploadFileResponseDto} from '../file-aggregate/file-core/hn-abstract-file.dto';
+import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 
 @Controller('documentation')
 @UseGuards(HnIsAdminGuard)
-export class HnDocumentationController {
-  constructor(private readonly brickAggregateService: HnBrickAggregateService) {
+export class HnDocumentationController extends HnAbstractFileController<HnDocumentation> {
+  constructor(private readonly brickAggregateService: HnBrickAggregateService,
+              private readonly fileDocumentationService: HnFileDocumentationService) {
+    super(fileDocumentationService);
+  }
+
+  @IsAdmin()
+  @Get('bucket-items')
+  async getAllBucketItemsName(): Promise<any> {
+    return this.brickAggregateService.migrateDocBucketItemsName();
   }
 
   @BlPublic()
@@ -76,73 +81,26 @@ export class HnDocumentationController {
   @Put('/image/:docId')
   saveImage(@BlUploadedFile() file: BlFile,
             @Param('docId', new ParseUUIDPipe()) docId: string): Promise<BlRichTextUploadedImageResponse> {
-    //TODO: Check how to secure this root
     return this.brickAggregateService.saveDocImage(file, docId);
   }
 
-  /**
-   * Return an image of the report
-   */
-  @BlPublic()
-  @Get('image/*')
-  public async get(@Req() request: Request,
-                   @Res() response: Response): Promise<any> {
-    const filename = request.url.split('image/')[1];
-    const file = await this.brickAggregateService.getDocImage(filename);
-    BlResponseHelper.setMessageAndCache(response, file);
-  }
 
   ////////////////////////////////// DOC RESOURCE VIEW //////////////////////////////////
   @UseInterceptors(FileInterceptor('file'))
   @Post(':docId/upload-view')
-  public async uploadDocResourceViewFile(@BlUploadedFile() file: BlFile,
+  public async saveResourceViewFile(@BlUploadedFile() file: BlFile,
                                            @Param('docId', new ParseUUIDPipe()) docId: string): Promise<any> {
-    return {filename: await this.brickAggregateService.uploadDocResourceViewFile(docId, file)};
+    return {filename: await this.brickAggregateService.saveDocResourceViewFile(docId, file)};
   }
 
-  @BlPublic()
-  @Get('view/*')
-  public async getView(@Req() request: Request,
-                       @Res() response: Response): Promise<any> {
-    const filename = request.url.split('view/')[1];
-    const file = await this.brickAggregateService.getView(filename);
-    BlResponseHelper.setMessageAndCache(response, file);
-  }
 
 
   /////////////////////////////////// DOC FILE //////////////////////////////////////////
-  /***
-   * Get doc file
-   * @param docFileId
-   * @param res
-   */
-  @BlPublic()
-  @Get('get-file/:docFileId')
-  public async getFile(@Param('docFileId') docFileId: string,
-                       @Res({passthrough: true}) res: Response): Promise<StreamableFile> {
-    const file = await this.brickAggregateService.getDocFile(docFileId);
-    const fileName: string = await this.brickAggregateService.getDocFileName(docFileId);
-    res.set({
-      'Content-Disposition': `attachment; filename="${fileName}"`,
-    });
-    return BlResponseHelper.getFileResponse(file);
-  }
-
   @UseInterceptors(FileInterceptor('file'))
   @Post('file/:docId')
   async saveFile(@BlUploadedFile() file: BlFile,
-                 @Param('docId', new ParseUUIDPipe()) docId: string): Promise<HnDocumentationFileDto> {
+                 @Param('docId', new ParseUUIDPipe()) docId: string): Promise<HnUploadFileResponseDto> {
     return this.brickAggregateService.saveFile(file, docId);
   }
 
-  @Put('file/:docFileId/rename')
-  async updateStoryFile(@Param('docFileId', new ParseUUIDPipe()) docFileId: string,
-                        @Body('humanName') humanName: string): Promise<HnDocumentationFileDto> {
-    return this.brickAggregateService.renameDocFile(docFileId, humanName);
-  }
-
-  @Delete('file/:docFileId')
-  async deleteDocFile(@Param('docFileId', new ParseUUIDPipe()) docFileId: string): Promise<void> {
-    return this.brickAggregateService.deleteDocFile(docFileId);
-  }
 }

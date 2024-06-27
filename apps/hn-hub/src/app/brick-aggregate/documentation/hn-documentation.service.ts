@@ -5,21 +5,18 @@ import {HnDocumentation, HnDocumentationSearchDTO} from './hn-documentation.enti
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 import {
   BlBadRequestException,
-  BlBucketConfig,
-  BlBucketType,
-  BlFile,
-  BlImageHelper,
+  BlBlockType,
+  BlNewRichText,
   BlObjectStorageService,
-  BlQuillMigrator,
-  BlRichTextContent,
-  BlRichTextUploadedImageResponse
+  BlRichTextContent
 } from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../../core/modules/core-config/hn-core-config.service';
-import {IncomingMessage} from 'http';
 import {HnNodeDTO} from '../folder/hn-folder.dto';
 import {HnFolder} from '../folder/hn-folder.entity';
 import {ClStringHelper} from '@monorepo/core-lib';
 import {HnDocumentationFileService} from '../documentation-file/hn-documentation-file.service';
+import {HnFileDocumentation} from '../../file-aggregate/file-documentation/hn-file-documentation.entity';
+import {HnFileType} from '../../file-aggregate/file-core/hn-abstract-file.entity';
 import {HnDocumentationFile} from '../documentation-file/hn-documentation-file.entity';
 
 @Injectable()
@@ -63,24 +60,16 @@ export class HnDocumentationService {
     });
   }
 
-  findById(id: string): Promise<HnDocumentation> {
-    return this.documentationsRepository.findOne({
+  async findById(id: string, strict: boolean = true): Promise<HnDocumentation> {
+    const doc = await this.documentationsRepository.findOne({
       where: {id},
       relations: {
         folder: true
       }
     });
-  }
-
-  async findDocByCompletePath(folder: HnFolder, completePath: string): Promise<HnDocumentation>{
-    const doc = await this.documentationsRepository.findOne({
-      where: {
-        completePath: completePath,
-        folder: {
-          id: folder.id
-        }
-      }
-    });
+    if (doc == null && strict) {
+      throw new BlBadRequestException('Doc not found');
+    }
     return doc;
   }
 
@@ -116,27 +105,6 @@ export class HnDocumentationService {
     return this.documentationsRepository.save(doc);
   }
 
-
-  async saveImage(docId: string, file: BlFile, generateRandomObjectName: boolean = true): Promise<BlRichTextUploadedImageResponse> {
-    const imSize = BlImageHelper.getImageSize(file);
-    const fileExt = file.originalname.split('.').pop();
-    file.originalname = docId + '/images/' + ClStringHelper.generateUUID() + '.' + fileExt;
-
-    const filename = await this.objectStorageService.uploadObject(
-      [this.getBucketConfig(), this.getBackupBucketConfig()], file, {generateRandomObjectName: generateRandomObjectName});
-
-    return {
-      filename: filename,
-      width: imSize.width,
-      height: imSize.height
-    };
-  }
-
-  async getImage(filename: string): Promise<IncomingMessage> {
-    return await this.objectStorageService.getObject(this.getBucketConfig(), filename);
-  }
-
-
   async updateCompletePath(doc: HnDocumentation, folder: HnFolder): Promise<void> {
     doc.completePath = folder.completePath ? folder.completePath + doc.path + '/' : doc.path + '/';
     await this.documentationsRepository.save(doc);
@@ -166,26 +134,6 @@ export class HnDocumentationService {
     } : null;
   }
 
-  private getBucketConfig(): BlBucketConfig {
-    return {
-      endpoint: this.configService.getDefaultObjectStorageEndPoint(),
-      region: this.configService.getDefaultObjectStorageRegion(),
-      bucket: this.configService.getDocImageObjectStorageBucket(),
-      credentials: this.configService.getDefaultObjectStorageCredentials(),
-      bucketType: BlBucketType.NORMAL,
-    };
-  }
-
-  private getBackupBucketConfig(): BlBucketConfig {
-    return {
-      endpoint: this.configService.getBackupObjectStorageEndPoint(),
-      region: this.configService.getBackupObjectStorageRegion(),
-      bucket: this.configService.getDocImageObjectStorageBackupBucket(),
-      credentials: this.configService.getDefaultObjectStorageCredentials(),
-      bucketType: BlBucketType.NORMAL
-    };
-  }
-
   public getDocsByBrickVersion(brickMajorVersionId: string): Promise<HnDocumentation[]>{
     return this.documentationsRepository.find({
       where: {
@@ -198,64 +146,47 @@ export class HnDocumentationService {
     });
   }
 
-
-  //------------------------------------- RESOURCE VIEW -------------------------------------
-  async uploadDocResourceViewFile(docId: string, file: BlFile): Promise<string>{
-    file.originalname = docId + '/views/' + ClStringHelper.generateUUID() + '.json';
-    return await this.objectStorageService.uploadObject([this.getBucketConfig(), this.getBackupBucketConfig()], file,
-      {generateRandomObjectName: false});
-  }
-
-  async getView(filename: string): Promise<any>{
-    return await this.objectStorageService.getObject(this.getBucketConfig(), filename);
-  }
-
-  //------------------------------------- DOCUMENTATION FILE -------------------------------------
-
-  async saveFile(file: BlFile, docId: string): Promise<HnDocumentationFile> {
-    const originalname = file.originalname;
-    const ext = originalname.split('.').pop();
-    file.originalname = docId + '/files/' + ClStringHelper.generateUUID() + '.' + ext;
-    const fileName: string = await this.objectStorageService.uploadObject([this.getBucketConfig(), this.getBackupBucketConfig()], file,
-      {generateRandomObjectName: false});
-
-    const documentation: HnDocumentation = await this.findById(docId);
-
-    const documentationFile: HnDocumentationFile = new HnDocumentationFile();
-    documentationFile.initFile(documentation, originalname, fileName);
-
-    return await this.docFileService.saveDocumentationFile(documentationFile);
-  }
-
-  async getDocFile(docFileId: string): Promise<IncomingMessage> {
-    const docFile: HnDocumentationFile = await this.docFileService.getDocumentationFile(docFileId);
-    if (docFile == null) {
-      throw new BlBadRequestException('Document not found');
+  public async updateDocImageFileName(doc: HnDocumentation, newDocFileEntity: HnFileDocumentation,
+                                      entityManager: EntityManager): Promise<void> {
+    let modified = false;
+    doc.content.blocks.forEach((block: any) => {
+      if (block.type == 'figure' && newDocFileEntity.type == HnFileType.IMAGE && block.data.filename == newDocFileEntity.fileName) {
+        block.data.filename = newDocFileEntity.name;
+        modified = true;
+      }
+      if (block.type == 'file' && newDocFileEntity.type == HnFileType.FILE && block.data.name == newDocFileEntity.fileName) {
+        block.data.name = newDocFileEntity.name;
+        modified = true;
+      }
+      if (block.type == 'resourceView' && newDocFileEntity.type == HnFileType.RESOURCE_VIEW
+        && block.data.filename == newDocFileEntity.fileName) {
+        block.data.filename = newDocFileEntity.name;
+        modified = true;
+      }
+    });
+    if (modified) {
+      await entityManager.save(doc, {listeners: false});
     }
-    return await this.objectStorageService.getObject(this.getBucketConfig(), docFile.fileName);
+
+    // File added to the doc but not in the content
+    if (newDocFileEntity.type == HnFileType.FILE) {
+      (doc.content as BlRichTextContent).blocks.push({
+        id: BlNewRichText.generateRandomBlockId(),
+        type: 'file' as any,
+        data: {
+          id: newDocFileEntity.id,
+          name: newDocFileEntity.name,
+          size: newDocFileEntity.size,
+        }
+      });
+    }
+
+
+    await entityManager.save(doc, {listeners: false});
+
   }
 
-  async getDocFileName(docFileId: string): Promise<string> {
-    const docFile: HnDocumentationFile = await this.docFileService.getDocumentationFile(docFileId);
-    if (docFile == null) {
-      throw new BlBadRequestException('Document not found');
-    }
-    return docFile.humanName;
-  }
-
-  async renameDocFile(docFileId: string, newFileName: string): Promise<HnDocumentationFile> {
-    const docFile: HnDocumentationFile = await this.docFileService.getDocumentationFile(docFileId);
-    if (docFile == null) {
-      throw new BlBadRequestException('Document not found');
-    }
-    docFile.humanName = newFileName;
-    return await this.docFileService.saveDocumentationFile(docFile);
-  }
-
-  async deleteDocFile(docFileId: string): Promise<void> {
-    const docFile: HnDocumentationFile = await this.docFileService.getDocumentationFile(docFileId);
-    if(await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], docFile.fileName)){
-      await this.docFileService.deleteDocumentationFile(docFile);
-    }
+  async getDocFile(fileName: string): Promise<HnDocumentationFile>{
+    return this.docFileService.getDocumentationFileByFileName(fileName);
   }
 }

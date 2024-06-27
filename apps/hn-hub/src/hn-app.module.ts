@@ -78,6 +78,9 @@ import {
 } from './app/live-task-aggregate/live-task-co-author-invite/hn-live-task-co-author-invite.module';
 import {HnPublicModule} from './app/public/hn-public.module';
 import {HnTechnicalDocOtherClassModule} from './app/technical-doc-other-class/hn-technical-doc-other-class.module';
+import {HnFileAggregateModule} from './app/file-aggregate/hn-file-aggregate.module';
+import {HnFileStoryModule} from './app/file-aggregate/file-story/hn-file-story.module';
+import {HnFileDocumentationModule} from './app/file-aggregate/file-documentation/hn-file-documentation.module';
 
 function typeOrmConfig(
   configService: HnCoreConfigService,
@@ -252,6 +255,10 @@ function configureMailModule(
     HnCommentAggregateModule,
     HnCommentStoryModule,
     HnCommentLiveTaskModule,
+
+    HnFileAggregateModule,
+    HnFileStoryModule,
+    HnFileDocumentationModule,
 
     HnPublicModule
   ],

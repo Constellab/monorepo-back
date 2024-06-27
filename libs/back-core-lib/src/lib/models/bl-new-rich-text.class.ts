@@ -104,6 +104,11 @@ export class BlNewRichText {
     });
   }
 
+  public static generateRandomBlockId(): string {
+    // return a random string of 10 characters containing only letters and numbers and underscore
+    return Math.random().toString(36).substring(2, 12);
+  }
+
   constructor(private richText: BlRichTextContent) {
   }
 

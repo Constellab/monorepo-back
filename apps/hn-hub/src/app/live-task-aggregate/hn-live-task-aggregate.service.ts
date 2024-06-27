@@ -4,7 +4,8 @@ import {HnLiveTaskVersionService} from './live-task-version/hn-live-task-version
 import {HnLiveTaskVersion, HnLiveTaskVersionState} from './live-task-version/hn-live-task-version.entity';
 import {
   HaCreateLiveTaskVersionFromLabResponseDto,
-  HnCreateLiveTaskDto, HnLiveTaskDto,
+  HnCreateLiveTaskDto,
+  HnLiveTaskDto,
   HnLiveTaskForLabDto,
   HnLiveTaskVersionFileInput,
   HnLiveTaskVersionForLabDto
@@ -13,12 +14,12 @@ import {HnSpaceAggregateService} from '../space-aggregate/hn-space-aggregate.ser
 import {HnLiveTask} from './live-task/hn-live-task.entity';
 import {DataSource, EntityManager} from 'typeorm';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
-import {HnSpace} from '../space-aggregate/space/hn-space.entity';
 import {ClPage, ClStringHelper} from '@monorepo/core-lib';
 import {
   BlBadRequestException,
   BlCurrentUserHelper,
-  BlNotFoundException,
+  BlFile,
+  BlNotFoundException, BlRichTextUploadedImageResponse,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
 import {HnBrickAggregateService} from '../brick-aggregate/hn-brick-aggregate.service';
@@ -42,6 +43,8 @@ import {HnBrickVersionDto} from '../brick-aggregate/brick-version/hn-brick-versi
 import {HnLiveTaskVersionDto} from './live-task-version/hn-live-task-version.dto';
 import {HnUserDto} from '../users/hn-user.dto';
 import {HnSpaceDto} from '../space-aggregate/space/hn-space.dto';
+import {HnUploadFileResponseDto} from '../file-aggregate/file-core/hn-abstract-file.dto';
+import {HnFileLiveTaskService} from '../file-aggregate/file-live-task/hn-file-live-task.service';
 
 @Injectable()
 export class HnLiveTaskAggregateService {
@@ -56,6 +59,7 @@ export class HnLiveTaskAggregateService {
     private readonly userService: HnUserService,
     private readonly liveTaskCoAuthorService: HnLiveTaskCoAuthorService,
     private readonly frontService: HnFrontService,
+    private readonly liveTaskFileService: HnFileLiveTaskService,
     private dataSource: DataSource
   ) {
   }
@@ -155,7 +159,10 @@ export class HnLiveTaskAggregateService {
     if (liveTask.space != null) {
       await this.spaceAggregateService.assertCheckSpaceUser(liveTask.space.id, user.id);
     }
-    return HnLiveTaskForLabDto.fromLiveTask(liveTaskVersion?.liveTask);
+    if (liveTaskVersion?.liveTask == null) {
+      throw new BlNotFoundException('Live task not found');
+    }
+    return HnLiveTaskForLabDto.fromLiveTask(new HnLiveTaskDto(liveTaskVersion.liveTask));
   }
 
   public async findAllWithFilters(spacesFilter: string[], titleFilter: string, page: number,
@@ -270,7 +277,7 @@ export class HnLiveTaskAggregateService {
   public async findLiveTaskVersionByLiveTaskIdAndVersionNumber(liveTaskId: string, versionNumber: number): Promise<HnLiveTaskVersionDto> {
     const version = await this.liveTaskVersionService.findByLiveTaskIdAndVersionNumber(liveTaskId, versionNumber);
     if (version.versionState == HnLiveTaskVersionState.PUBLISHED) {
-      return version;
+      return new HnLiveTaskVersionDto(version);
     }
 
     await this.liveTaskService.checkIfCreatorOrCoAuthorAndGetLiveTask(liveTaskId);
@@ -349,14 +356,17 @@ export class HnLiveTaskAggregateService {
   public async getPublishedLiveTaskVersions(liveTaskId: string): Promise<HnLiveTaskVersionDto[]> {
     const liveTask: HnLiveTask = await this.liveTaskService.findOne(liveTaskId);
     if (BlCurrentUserHelper.getCurrentUser()?.id == liveTask?.createdBy.id) {
-      return (await this.liveTaskVersionService.findAllByLiveTaskId(liveTaskId)).map(liveTaskVersion => new HnLiveTaskVersionDto(liveTaskVersion));
+      return (await this.liveTaskVersionService.findAllByLiveTaskId(liveTaskId))
+        .map(liveTaskVersion => new HnLiveTaskVersionDto(liveTaskVersion));
     }
 
     const coAuthors = await this.liveTaskCoAuthorService.getLiveTaskCoAuthorsByLiveTaskId(liveTaskId);
     if (coAuthors.some(coAuthor => coAuthor.user.id == BlCurrentUserHelper.getCurrentUser()?.id))
-      return await this.liveTaskVersionService.findAllByLiveTaskId(liveTaskId);
+      return (await this.liveTaskVersionService.findAllByLiveTaskId(liveTaskId))
+        .map(liveTaskVersion => new HnLiveTaskVersionDto(liveTaskVersion));
 
-    return await this.liveTaskVersionService.findPublishedByLiveTaskId(liveTaskId);
+    return (await this.liveTaskVersionService.findPublishedByLiveTaskId(liveTaskId))
+      .map(liveTaskVersion => new HnLiveTaskVersionDto(liveTaskVersion));
   }
 
   public async updateLiveTaskVersionInfos(liveTaskVersionId: string, versionInfos: Record<string, any>): Promise<HnLiveTaskVersion> {
@@ -438,5 +448,22 @@ export class HnLiveTaskAggregateService {
   public async removeComment(liveTask: HnLiveTask, entityManager: EntityManager): Promise<HnLiveTask> {
     liveTask.comments--;
     return entityManager.save(liveTask, {listeners: false});
+  }
+
+
+  /////////////////////////////////////// FILES  ////////////////////////////////////
+  public async saveFile(file: BlFile, liveTaskId: string): Promise<HnUploadFileResponseDto> {
+    const liveTask = await this.liveTaskService.checkIfCreatorOrCoAuthorAndGetLiveTask(liveTaskId);
+    return await this.liveTaskFileService.saveFile(liveTask, file);
+  }
+
+  public async saveImage(file: BlFile, liveTaskId: string): Promise<BlRichTextUploadedImageResponse> {
+    const liveTask = await this.liveTaskService.checkIfCreatorOrCoAuthorAndGetLiveTask(liveTaskId);
+    return await this.liveTaskFileService.saveImage(liveTask, file);
+  }
+
+  public async saveView(file: BlFile, liveTaskId: string): Promise<string>{
+    const liveTask = await this.liveTaskService.checkIfCreatorOrCoAuthorAndGetLiveTask(liveTaskId);
+    return await this.liveTaskFileService.saveResourceView(liveTask, file);
   }
 }

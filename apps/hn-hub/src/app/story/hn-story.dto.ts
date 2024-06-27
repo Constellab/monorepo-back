@@ -1,10 +1,9 @@
 import {HnStory, HnStoryCategory, HnStoryStatus} from "./hn-story.entity";
-import {DateTime} from 'luxon';
 import {HnStoryCoAuthorDto} from '../story-author/hn-story-author.dto';
-import {HnStoryFile} from '../story-file/hn-story-file.entity';
 import {HnUserDto} from '../users/hn-user.dto';
 import {HnTopic} from '../topic/hn-topic.entity';
-import {BlEntityWithId} from '@monorepo/back-core-lib';
+import {BlEntityWithId, BlEntityWithIdDTO} from '@monorepo/back-core-lib';
+import {HnFileStory} from '../file-aggregate/file-story/hn-file-story.entity';
 
 export class HnCreateStoryDto {
   title: string;
@@ -18,7 +17,7 @@ export class HnStoryFilter {
   title: string;
 }
 
-export class HnStoryDto extends BlEntityWithId{
+export class HnStoryDto extends BlEntityWithIdDTO{
   title: string;
   content: Record<string, any>;
   contentEdition?: Record<string, any>;
@@ -30,7 +29,7 @@ export class HnStoryDto extends BlEntityWithId{
   storyAuthors: HnStoryCoAuthorDto[];
   createdAt: string;
   lastModifiedAt: string;
-  storyFiles: HnStoryFile[];
+  storyFiles: HnFileStory[];
   createdBy: HnUserDto;
   topics?: HnTopic[];
   likes: number
@@ -46,9 +45,9 @@ export class HnStoryDto extends BlEntityWithId{
     this.mainPicture = story.mainPicture;
     this.status = story.status;
     this.category = story.category;
-    this.publishedAt = story.publishedAt.toISO();
-    this.createdAt = story.createdAt.toISO();
-    this.lastModifiedAt = story.lastModifiedAt.toISO();
+    this.publishedAt = story.publishedAt?.toISO();
+    this.createdAt = story.createdAt?.toISO();
+    this.lastModifiedAt = story.lastModifiedAt?.toISO();
     this.storyFiles = story.storyFiles;
     this.createdBy = new HnUserDto(story.createdBy);
     this.likes = story.likes;

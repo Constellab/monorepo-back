@@ -1,8 +1,8 @@
-import {BlEntityWithId} from '@monorepo/back-core-lib';
+import {BlEntityWithIdDTO} from '@monorepo/back-core-lib';
 import {HnLiveTaskDto} from '../live-task/hn-live-task.dto';
 import {HnLiveTaskVersion, HnLiveTaskVersionState, HnLiveTaskVersionType} from './hn-live-task-version.entity';
 
-export class HnLiveTaskVersionDto extends BlEntityWithId {
+export class HnLiveTaskVersionDto extends BlEntityWithIdDTO {
   version: number;
   liveTask: HnLiveTaskDto;
   versionState: HnLiveTaskVersionState;

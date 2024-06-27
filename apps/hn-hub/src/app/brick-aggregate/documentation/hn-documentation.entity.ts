@@ -1,7 +1,7 @@
 import {Column, Entity, ManyToOne, OneToMany} from 'typeorm';
 import {HnFolder} from '../folder/hn-folder.entity';
 import {HnBaseEntity} from '../../core/model/entities/hn-base.entity';
-import {HnDocumentationFile} from '../documentation-file/hn-documentation-file.entity';
+import {HnFileDocumentation} from '../../file-aggregate/file-documentation/hn-file-documentation.entity';
 
 export interface HnDocumentationSearchDTO {
   id: string;
@@ -34,8 +34,8 @@ export class HnDocumentation extends HnBaseEntity {
   @ManyToOne(() => HnFolder, {eager: true, onDelete: 'CASCADE'})
   folder: HnFolder;
 
-  @OneToMany(() => HnDocumentationFile, docFile => docFile.documentation, {nullable: true, eager: true})
-  docFiles: HnDocumentationFile[];
+  @OneToMany(() => HnFileDocumentation, docFile => docFile.entity, {nullable: true})
+  docFiles: HnFileDocumentation[];
 
   public setPath(path: string, folderCompletePath: string): void {
     this.path = path;

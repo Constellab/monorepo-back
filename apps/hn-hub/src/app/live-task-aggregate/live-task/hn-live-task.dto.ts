@@ -4,9 +4,9 @@ import {HnUserDto} from '../../users/hn-user.dto';
 import {HnSpaceDto} from '../../space-aggregate/space/hn-space.dto';
 import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
 import {HnLiveTaskCoAuthorDto} from '../live-task-co-author/hn-live-task-co-author.dto';
-import {BlEntityWithId} from '@monorepo/back-core-lib';
+import {BlEntityWithIdDTO} from '@monorepo/back-core-lib';
 
-export class HnLiveTaskDto extends BlEntityWithId {
+export class HnLiveTaskDto extends BlEntityWithIdDTO {
   title: string;
   description?: Record<string, any>;
   latestPublishVersion?: number;

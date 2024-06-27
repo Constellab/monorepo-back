@@ -26,6 +26,8 @@ import {HnCoreModule} from '../core/hn-core.module';
 import {HnTechnicalFolderModule} from '../technical-folder/hn-technical-folder.module';
 import {HnLiveTaskCoAuthorModule} from './live-task-co-author/hn-live-task-co-author.module';
 import {HnLiveTaskCoAuthorInviteModule} from './live-task-co-author-invite/hn-live-task-co-author-invite.module';
+import {HnFileDocumentationModule} from '../file-aggregate/file-documentation/hn-file-documentation.module';
+import {HnFileLiveTaskModule} from '../file-aggregate/file-live-task/hn-file-live-task.module';
 
 @Module({
   imports: [
@@ -48,6 +50,8 @@ import {HnLiveTaskCoAuthorInviteModule} from './live-task-co-author-invite/hn-li
     HnDocumentationModule,
     HnBrickUserModule,
     HnBrickUserInviteModule,
+    HnFileDocumentationModule,
+    HnFileLiveTaskModule,
 
     BlExternalApiModule,
     HnCoreConfigModule,

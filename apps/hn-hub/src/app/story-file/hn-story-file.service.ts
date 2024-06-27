@@ -30,4 +30,8 @@ export class HnStoryFileService {
     return this.storyAuthorRepository.findOneBy({id});
   }
 
+  async getStoryFileByFileName(fileName: string): Promise<HnStoryFile> {
+    return this.storyAuthorRepository.findOneBy({fileName: fileName});
+  }
+
 }

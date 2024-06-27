@@ -4,7 +4,7 @@ import {
   HN_BUCKET_DOCUMENTATION_BACKUP_KEY,
   HN_BUCKET_DOCUMENTATION_KEY,
   HN_BUCKET_ICON_BACKUP_KEY,
-  HN_BUCKET_ICON_KEY,
+  HN_BUCKET_ICON_KEY, HN_BUCKET_LIVE_TASKS_BACKUP_KEY, HN_BUCKET_LIVE_TASKS_KEY,
   HN_BUCKET_STORIES_BACKUP_KEY,
   HN_BUCKET_STORIES_KEY,
   HN_ENVIRONMENT_PROFILE_KEY,
@@ -114,12 +114,20 @@ export class HnCoreConfigService {
     return this.configService.get(HN_BUCKET_DOCUMENTATION_BACKUP_KEY);
   }
 
-  public getStoryImageObjectStorageBucket(): string {
+  public getStoryFilesObjectStorageBucket(): string {
     return this.configService.get(HN_BUCKET_STORIES_KEY);
   }
 
-  public getStoryImageObjectStorageBackupBucket(): string {
+  public getStoryFilesObjectStorageBackupBucket(): string {
     return this.configService.get(HN_BUCKET_STORIES_BACKUP_KEY);
+  }
+
+  public getLiveTaskFilesObjectStorageBucket(): string {
+    return this.configService.get(HN_BUCKET_LIVE_TASKS_KEY);
+  }
+
+  public getLiveTaskFilesObjectStorageBackupBucket(): string {
+    return this.configService.get(HN_BUCKET_LIVE_TASKS_BACKUP_KEY);
   }
 
   public getGencoverySpaceId(): string {
