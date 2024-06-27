@@ -34,7 +34,7 @@ export class HnDocumentation extends HnBaseEntity {
   @ManyToOne(() => HnFolder, {eager: true, onDelete: 'CASCADE'})
   folder: HnFolder;
 
-  @OneToMany(() => HnFileDocumentation, docFile => docFile.entity, {nullable: true})
+  @OneToMany(() => HnFileDocumentation, docFile => docFile.entity, {nullable: true, eager: true})
   docFiles: HnFileDocumentation[];
 
   public setPath(path: string, folderCompletePath: string): void {
