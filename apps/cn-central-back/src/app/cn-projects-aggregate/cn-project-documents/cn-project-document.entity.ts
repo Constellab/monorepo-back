@@ -109,9 +109,14 @@ export class CnProjectDocument extends CnBaseEntity {
 
   @Expose()
   get canTokenPreview(): boolean {
-    return this.type === CnProjectDocumentType.UPLOADED_DOCUMENT &&
-      //   only word (doc, docx), excel (xls, xlsx), powerpoint (ppt, pptx) can be previewed
-      (this.mimeType.includes('word') || this.mimeType.includes('excel') || this.mimeType.includes('powerpoint'));
-
+    const officesMimeTypes = [
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // xlsx
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation', // pptx
+      'application/msword', // doc
+      'application/vnd.ms-excel', // xls
+      'application/vnd.ms-powerpoint' // ppt
+    ];
+    return this.type === CnProjectDocumentType.UPLOADED_DOCUMENT && officesMimeTypes.includes(this.mimeType);
   }
 }
