@@ -1,8 +1,9 @@
-import {Column, Entity, ManyToOne, Unique} from 'typeorm';
-import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
-import {BlBucketType, BlNotUpdatable} from '@monorepo/back-core-lib';
-import {Type} from 'class-transformer';
-import {CnProject} from '../cn-projects/cn-project.entity';
+import { Column, Entity, ManyToOne, Unique } from 'typeorm';
+import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
+import { BlBucketType, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
+import { Exclude, Expose, Type } from 'class-transformer';
+import { CnProject } from '../cn-projects/cn-project.entity';
+import { DateTime } from 'luxon';
 
 
 export enum CnProjectDocumentType {
@@ -15,7 +16,7 @@ export enum CnProjectDocumentType {
   // attached image to a project description
   DESCRIPTION_CONTENT = 'DESCRIPTION_CONTENT',
   // contains the report
-  REPORT = "REPORT",
+  REPORT = 'REPORT',
   // attached image and view to a report
   REPORT_CONTENT = 'REPORT_CONTENT',
   // attached images to a comment
@@ -30,50 +31,58 @@ export enum CnProjectDocumentType {
 export class CnProjectDocument extends CnBaseEntity {
 
   // name of the document show in the interface
-  @Column({nullable: false})
+  @Column({ nullable: false })
   name: string;
 
   // name of the file in the S3 server
-  @Column({nullable: false})
+  @Column({ nullable: false })
   filename: string;
 
-  @Column({nullable: false, type: 'bigint'})
+  @Column({ nullable: false, type: 'bigint' })
   size: number;
 
-  @Column({nullable: false})
+  @Column({ nullable: false })
   mimeType: string;
 
   @BlNotUpdatable()
   @Type(() => CnProject)
-  @ManyToOne(() => CnProject, {nullable: false})
+  @ManyToOne(() => CnProject, { nullable: false })
   project: CnProject;
 
   @Column()
   projectId: string;
 
-  @Column({nullable: false, update: false, type: 'enum', enum: CnProjectDocumentType})
+  @Column({ nullable: false, update: false, type: 'enum', enum: CnProjectDocumentType })
   type: CnProjectDocumentType;
 
   // The id of the entity associated with this document
   // IF type is UPLOADED_DOCUMENT,CONSTELLAB_DOCUMENT, DESCRIPTION_CONTENT or COMMENT_CONTENT, entityId is the id of the project
   // IF type is CONSTELLAB_DOCUMENT_CONTENT, entityId is the id of the constellab document
   // IF type is REPORT or REPORT_CONTENT, entityId is the id of the report
-  @Column({nullable: false, update: false, length: 36})
+  @Column({ nullable: false, update: false, length: 36 })
   entityId: string;
 
   // useful for RichText stored in documents.
   // In this case images of document has the document as parent
   @BlNotUpdatable()
-  @ManyToOne(() => CnProjectDocument, {nullable: true})
+  @ManyToOne(() => CnProjectDocument, { nullable: true })
   parentDocument?: CnProjectDocument;
 
-  @Column({nullable: false, default: false})
+  @Column({ nullable: false, default: false })
   inTrash: boolean;
 
   @Column({
-    type: 'enum', enum: BlBucketType, nullable: false,
+    type: 'enum', enum: BlBucketType, nullable: false
   })
   bucketType: BlBucketType;
+
+  @Exclude()
+  @Column({ nullable: true, length: 36 })
+  previewToken?: string;
+
+  @Exclude()
+  @BlLuxonDateTimeColumn({ nullable: true })
+  previewTokenExpiration: DateTime;
 
   getTypePrefix(): string {
     switch (this.type) {
@@ -96,5 +105,13 @@ export class CnProjectDocument extends CnBaseEntity {
     // the trash is only supported for uploaded documents and constellab documents
     return this.type === CnProjectDocumentType.UPLOADED_DOCUMENT
       || this.type === CnProjectDocumentType.CONSTELLAB_DOCUMENT;
+  }
+
+  @Expose()
+  get canTokenPreview(): boolean {
+    return this.type === CnProjectDocumentType.UPLOADED_DOCUMENT &&
+      //   only word (doc, docx), excel (xls, xlsx), powerpoint (ppt, pptx) can be previewed
+      (this.mimeType.includes('word') || this.mimeType.includes('excel') || this.mimeType.includes('powerpoint'));
+
   }
 }

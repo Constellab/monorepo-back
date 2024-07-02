@@ -20,6 +20,7 @@ import {
   BlFile,
   BlParseEnumPipe,
   BlParsePipe,
+  BlPublic,
   BlResponseHelper,
   BlRichTextContent,
   BlRichTextUploadedImageResponse,
@@ -48,6 +49,7 @@ import { CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.
 import { CnProjectDocument } from './cn-project-documents/cn-project-document.entity';
 import {
   CnConstellabDocumentDTO,
+  CnProjectDocumentPreviewDTO,
   CnProjectStorageUsageDTO
 } from './cn-project-documents/cn-project-document-dto.class';
 
@@ -367,6 +369,22 @@ export class CnProjectsController {
     const file = await this.projectAggregate.getConstellabDocumentContentDocument(documentId, documentName);
     BlResponseHelper.setMessage(response, file);
   }
+
+  ////////////////////////////////////////////// DOCUMENT PREVIEW  /////////////////////////////////////////////
+
+  @Post('document/:documentId/preview-token')
+  public async generatePreviewToken(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<CnProjectDocumentPreviewDTO> {
+    return this.projectAggregate.generatePreviewToken(documentId);
+  }
+
+  @BlPublic()
+  @Get('document/preview/:token')
+  public async getDocumentPreview(@Param('token') token: string,
+                                  @Res() response: Response): Promise<any> {
+    const file = await this.projectAggregate.getDocumentByPreviewToken(token);
+    BlResponseHelper.setMessage(response, file);
+  }
+
 
   /////////////////////////////// Project Bucket ///////////////////////////////////////////
   @Post(':projectId/storage')

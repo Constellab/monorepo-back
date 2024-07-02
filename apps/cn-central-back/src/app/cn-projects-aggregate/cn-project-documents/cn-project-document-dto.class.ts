@@ -1,6 +1,6 @@
-import {Type} from 'class-transformer';
-import {BlBucketType, BlRichTextContent} from '@monorepo/back-core-lib';
-import {CnProjectDocument} from './cn-project-document.entity';
+import { Type } from 'class-transformer';
+import { BlBucketType, BlRichTextContent } from '@monorepo/back-core-lib';
+import { CnProjectDocument } from './cn-project-document.entity';
 
 export class CnConstellabDocumentDTO {
   @Type(() => CnProjectDocument)
@@ -84,4 +84,12 @@ export class CnProjectStorageUsageDTO {
     this.totalDocuments++;
   }
 
+}
+
+export class CnProjectDocumentPreviewDTO {
+  previewUrl: string;
+
+  constructor(previewUrl: string) {
+    this.previewUrl = previewUrl;
+  }
 }

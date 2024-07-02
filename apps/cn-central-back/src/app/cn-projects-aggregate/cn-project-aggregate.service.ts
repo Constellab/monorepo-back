@@ -50,8 +50,10 @@ import { CnProjectDocumentService } from './cn-project-documents/cn-project-docu
 import { CnProjectDocument, CnProjectDocumentType } from './cn-project-documents/cn-project-document.entity';
 import {
   CnConstellabDocumentDTO,
+  CnProjectDocumentPreviewDTO,
   CnProjectStorageUsageDTO
 } from './cn-project-documents/cn-project-document-dto.class';
+import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -69,7 +71,8 @@ export class CnProjectAggregateService {
               private projectUserService: CnProjectUserService,
               private userService: CnUsersService,
               private eventEmitter: EventEmitter2,
-              private activityService: CnActivityService) {
+              private activityService: CnActivityService,
+              private configService: CnCoreConfigService) {
   }
 
   /////////////////////////////////////// PROJECT //////////////////////////////////
@@ -191,11 +194,11 @@ export class CnProjectAggregateService {
       throw new BlBadRequestException(CnErrorText.DELETE_PROJECT_WITH_DOCUMENTS);
     }
 
-    const projectWithLab = await this.projectService.findByIdAndCheck(id, {labInstances: {labInstance: true}});
+    const projectWithLab = await this.projectService.findByIdAndCheck(id, { labInstances: { labInstance: true } });
     if (projectWithLab.labInstances.length > 0) {
       const names = projectWithLab.labInstances.map(labProject => labProject.labInstance.name).join(', ');
       throw new BlBadRequestException(CnErrorText.DELETE_PROJECT_USED_IN_LAB,
-        {detailArgs: {labNames: names}});
+        { detailArgs: { labNames: names } });
     }
 
 
@@ -287,17 +290,17 @@ export class CnProjectAggregateService {
       case 'experiment':
         const experiment = await this.experimentService.findByIdAndCheck(objectId);
         projectId = experiment.projectId;
-        ancestors.push({type: 'experiment', id: experiment.id, title: experiment.title});
+        ancestors.push({ type: 'experiment', id: experiment.id, title: experiment.title });
         break;
       case 'report':
         const report = await this.reportService.findByIdAndCheck(objectId);
         projectId = report.projectId;
-        ancestors.push({type: 'report', id: report.id, title: report.title});
+        ancestors.push({ type: 'report', id: report.id, title: report.title });
         break;
       case 'document':
         const doc = await this.projectDocumentService.findByIdAndCheck(objectId);
         projectId = doc.projectId;
-        ancestors.push({type: 'document', id: doc.id, title: doc.name});
+        ancestors.push({ type: 'document', id: doc.id, title: doc.name });
     }
 
     // retrieve the project ancestors
@@ -427,7 +430,7 @@ export class CnProjectAggregateService {
     // check if the experiment has associated reports
     const expWithReports = await this.experimentService.findByIdAndCheckWithReports(experimentId);
     if (expWithReports.reports.length > 0) {
-      throw new BlBadRequestException("The experiment has associated reports in the space, please delete the report first.");
+      throw new BlBadRequestException('The experiment has associated reports in the space, please delete the report first.');
     }
 
 
@@ -731,6 +734,7 @@ export class CnProjectAggregateService {
     return this.projectDocumentService.renameDocument(document, newName);
   }
 
+
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
   public async createConstellabDocument(projectId: string, filename: string): Promise<CnConstellabDocumentDTO> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
@@ -789,6 +793,26 @@ export class CnProjectAggregateService {
       CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT, documentName, documentId);
   }
 
+  ////////////////////////////////////////////// DOCUMENT PREVIEW  /////////////////////////////////////////////
+
+  public async generatePreviewToken(documentId: string): Promise<CnProjectDocumentPreviewDTO> {
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
+
+    await this.getAndCheckAuthorizationForFindOne(document.projectId);
+
+    const token = await this.projectDocumentService.generatePreviewToken(document);
+
+    const officePreviewUrl = 'https://view.officeapps.live.com/op/embed.aspx?src=';
+    const constellabPreviewUrl = `${this.configService.getApiUrl()}/projects/document/preview/${token}`;
+    return new CnProjectDocumentPreviewDTO(`${officePreviewUrl}${constellabPreviewUrl}`);
+  }
+
+  public async getDocumentByPreviewToken(token: string): Promise<IncomingMessage> {
+    const projectDocument = await this.projectDocumentService.getAndCheckByPreviewToken(token);
+    const project = await this.projectService.findByIdAndCheck(projectDocument.projectId);
+
+    return this.projectDocumentService.getDocumentContentByDocument(project, projectDocument);
+  }
 
   /////////////////////////////////////// PROJECT BUCKET //////////////////////////////////
 
@@ -877,18 +901,18 @@ export class CnProjectAggregateService {
     // check that the user can view the project
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
-    const searchBuilder = new BlSearchBuilder<CnActivity>({createdAt: 'DESC' as any});
+    const searchBuilder = new BlSearchBuilder<CnActivity>({ createdAt: 'DESC' as any });
 
     if (searchParam.hasFilter('includeSubProjects')) {
       const allProjects = await this.projectService.getProjectTreeAsList(project);
       const allProjectIds = allProjects.map(project => project.id);
       searchBuilder.mergeWhereOptions({
-        parentEntityId: In(allProjectIds),
+        parentEntityId: In(allProjectIds)
       });
       searchParam.removeFilter('includeSubProjects');
     } else {
       searchBuilder.mergeWhereOptions({
-        parentEntityId: projectId,
+        parentEntityId: projectId
       });
     }
 

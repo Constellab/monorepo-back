@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   BlAbstractService,
   BlBadRequestException,
@@ -12,26 +12,26 @@ import {
   BlRichTextUploadedImageResponse,
   BlRichTextUploadFileResponse
 } from '@monorepo/back-core-lib';
-import {CnProject} from '../cn-projects/cn-project.entity';
-import {IncomingMessage} from 'http';
-import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, EntityManager, In, Repository} from 'typeorm';
-import {ClPage} from '@monorepo/core-lib';
-import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
-import {CnProjectBucketService} from '../cn-projects/cn-project-bucket.service';
-import {CnProjectDocument, CnProjectDocumentType} from './cn-project-document.entity';
+import { CnProject } from '../cn-projects/cn-project.entity';
+import { IncomingMessage } from 'http';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, EntityManager, In, Repository } from 'typeorm';
+import { ClDateHelper, ClPage, ClStringHelper } from '@monorepo/core-lib';
+import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
+import { CnProjectBucketService } from '../cn-projects/cn-project-bucket.service';
+import { CnProjectDocument, CnProjectDocumentType } from './cn-project-document.entity';
 import {
   CnConstellabDocumentDTO,
   CnProjectDocumentStorageType,
   CnProjectStorageUsageDTO
 } from './cn-project-document-dto.class';
-import {EventEmitter2} from '@nestjs/event-emitter';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   CnProjectDocumentEvent,
   cnProjectDocumentEventName,
   CnProjectDocumentEventType
 } from './cn-project-document.event';
-import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 
 @Injectable()
 export class CnProjectDocumentService extends BlAbstractService<CnProjectDocument> {
@@ -137,6 +137,10 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       throw new BlBadRequestException('Document not found');
     }
 
+    return this.getDocumentContentByDocument(project, document);
+  }
+
+  public async getDocumentContentByDocument(project: CnProject, document: CnProjectDocument): Promise<IncomingMessage> {
     const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(project.getRootParentId());
     return this.objectStorageService.getObject(bucketConfig, this.generateDocumentFilePath(project, document));
   }
@@ -424,6 +428,38 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
           'delete some documents or empty the trash.');
       }
     }
+  }
+
+  ////////////////////////////////////////////// PREVIEW  /////////////////////////////////////////////
+
+  public async generatePreviewToken(document: CnProjectDocument): Promise<string> {
+    if(!document.canTokenPreview){
+      throw new BlBadRequestException('This document cannot be previewed');
+    }
+    // don't generate the token if the last token is still valid with 10 minutes margin
+    if (document.previewTokenExpiration > ClDateHelper.getDate().plus({minutes: 10})) {
+      return document.previewToken;
+    }
+
+    const token = ClStringHelper.generateUUID();
+    document.previewToken = token;
+    // set expiration in 1 hour
+    document.previewTokenExpiration = ClDateHelper.getDate().plus({hours: 1});
+    await this.repo.save(document);
+    return token;
+  }
+
+  public async getAndCheckByPreviewToken(token: string): Promise<CnProjectDocument> {
+    const document = await this.repo.findOne({where: {previewToken: token}});
+    if (!document) {
+      throw new BlBadRequestException('Document not found');
+    }
+
+    if (document.previewTokenExpiration < ClDateHelper.getDate()) {
+      throw new BlBadRequestException('Preview token has expired');
+    }
+
+    return document;
   }
 
   ////////////////////////////////////////////// OTHERS /////////////////////////////////////////////
