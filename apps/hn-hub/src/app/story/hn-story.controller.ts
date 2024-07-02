@@ -91,6 +91,17 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
     return await this.storyService.getMyStoriesFiltered(page, size, filters);
   }
 
+  /***
+    * Get user stories paginated
+    */
+  @BlPublic()
+  @Get('user/:userId')
+  async getUserStories(@Param('userId', new ParseUUIDPipe()) userId: string,
+                       @Query('page', new ParseIntPipe()) page: number,
+                       @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnStoryDto>> {
+    return this.storyService.getUserStories(userId, page, size);
+  }
+
   @BlPublic()
   @Get('title/:id')
   async getStoryTitle(@Param('id', new ParseUUIDPipe()) id: string): Promise<string> {

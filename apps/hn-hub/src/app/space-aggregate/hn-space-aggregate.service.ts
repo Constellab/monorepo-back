@@ -135,6 +135,13 @@ export class HnSpaceAggregateService {
     }
   }
 
+  public async getUserCommonSpace(userId: string): Promise<HnSpaceDto[]> {
+    const currentUser = HnCurrentUserHelper.getAndCheckCurrentUser();
+    const currentUserSpaces = await this.findSpacesOfUser(currentUser.id);
+    const userSpaces = await this.findSpacesOfUser(userId);
+
+    return currentUserSpaces.filter(space => userSpaces.some(userSpace => userSpace.id === space.id)).map(space => new HnSpaceDto(space));
+  }
 
   //////////////////////////// USER ////////////////////////////
   public async checkIfUserExists(userId: string): Promise<boolean> {

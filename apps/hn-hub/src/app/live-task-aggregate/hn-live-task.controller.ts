@@ -148,6 +148,21 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
     return this.liveTaskAggregateService.findAllWithFilters(spacesFilter, titleFilter, page, size);
   }
 
+  /**
+   * Get user live tasks
+   * @param userId
+   * @param page
+   * @param size
+   * @return live tasks
+   */
+  @BlPublic()
+  @Get('user/:userId')
+  getUserLiveTasks(@Param('userId', ParseUUIDPipe) userId: string,
+                   @Query('page', new ParseIntPipe()) page: number,
+                   @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnLiveTaskDto>> {
+    return this.liveTaskAggregateService.findUserLiveTasks(userId, page, size);
+  }
+
 
   /**
    * Get a live task by id

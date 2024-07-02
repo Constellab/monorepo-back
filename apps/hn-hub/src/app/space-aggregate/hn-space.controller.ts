@@ -1,10 +1,8 @@
-import {Controller, Get, Param, Req, Res} from '@nestjs/common';
+import {Controller, Get, Param, ParseUUIDPipe, Req} from '@nestjs/common';
 import {EventPattern} from '@nestjs/microservices';
 import {HnSpaceAggregateService} from './hn-space-aggregate.service';
 import {HnSpaceUser} from './space-user/hn-space-user.entity';
-import {BlPublic, BlResponseHelper} from '@monorepo/back-core-lib';
-import {HnSpace} from './space/hn-space.entity';
-import {Response} from 'express';
+import {BlPublic} from '@monorepo/back-core-lib';
 import {HnSpaceDto} from './space/hn-space.dto';
 
 export enum HnSpaceUserAction {
@@ -49,6 +47,11 @@ export class HnSpaceController {
   @Get('is-gencovery-member')
   async isGencoveryMember(): Promise<boolean> {
     return this.spaceAggregateService.checkCurrentUserIsInGencoverySpace();
+  }
+
+  @Get('common-space/:userId')
+  async getUserCommonSpace(@Param('userId', new ParseUUIDPipe) userId: string): Promise<HnSpaceDto[]>{
+    return this.spaceAggregateService.getUserCommonSpace(userId);
   }
 
   /////////////////////////////////// Space User Queue ///////////////////////////////////

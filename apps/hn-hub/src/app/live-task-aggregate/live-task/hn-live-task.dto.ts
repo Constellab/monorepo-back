@@ -22,6 +22,7 @@ export class HnLiveTaskDto extends BlEntityWithIdDTO {
 
   constructor(liveTask: HnLiveTask) {
     super();
+    if (!liveTask) return;
     this.id = liveTask.id;
     this.title = liveTask.title;
     this.description = liveTask.description;

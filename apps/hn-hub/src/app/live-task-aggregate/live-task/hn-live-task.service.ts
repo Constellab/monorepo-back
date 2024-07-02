@@ -249,6 +249,56 @@ export class HnLiveTaskService {
 
   }
 
+  public async findUserLiveTasks(user: HnUser, commonSpacesIds: string[], page: number, size: number): Promise<ClPage<HnLiveTaskDto>> {
+    const whereOpts: FindOptionsWhere<HnLiveTask>[] = [];
+
+
+    const coAuthorLiveTasksIds = (await this.liveTaskCoAuthorService.getLiveTaskCoAuthorsByUserId(user.id))
+      .map(coAuthor => coAuthor.liveTask.id);
+
+
+    // TODO: Add coauthor gestion
+    if(commonSpacesIds?.length > 0){
+      whereOpts.push({
+        space: {
+          id: In(commonSpacesIds)
+        },
+        createdBy: {
+          id: user.id
+        }
+      });
+
+      whereOpts.push({
+        space: {
+          id: In(commonSpacesIds)
+        },
+        id: In(coAuthorLiveTasksIds)
+      });
+    }
+
+    whereOpts.push({
+      space: IsNull(),
+      createdBy: {
+        id: user.id
+      }
+    });
+
+    whereOpts.push({
+      space: IsNull(),
+      id: In(coAuthorLiveTasksIds)
+    });
+
+    whereOpts.map(w => {
+      w.latestPublishVersion = Not(IsNull());
+      return w;
+    })
+
+    return (await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+      where: whereOpts,
+      order: {createdAt: 'DESC' as any}
+    }, this.liveTaskRepository.manager, HnLiveTask)).map(liveTask => new HnLiveTaskDto(liveTask));
+  }
+
   public async findPublicLiveTaskById(id: string): Promise<HnLiveTask> {
     return this.liveTaskRepository.findOneBy({
       id: id,

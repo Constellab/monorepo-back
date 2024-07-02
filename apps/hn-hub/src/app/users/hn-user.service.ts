@@ -2,10 +2,11 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {HnUser, HnUserConstellabDTO} from './hn-user.entity';
-import {BlCredentials, BlUserService} from '@monorepo/back-core-lib';
+import {BlCredentials, BlUnauthorizedException, BlUserService} from '@monorepo/back-core-lib';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnExternalCheckCredentialResponse} from '../auth/hn-central-auth.service';
-import {ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import {ClStringHelper, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import {HnUserDetailDto, HnUserEditDetailDto} from './hn-user.dto';
 
 @Injectable()
 export class HnUserService implements BlUserService {
@@ -75,5 +76,26 @@ export class HnUserService implements BlUserService {
       user.theme = theme;
       await this.userRepository.save(user);
     }
+  }
+
+  async getUserById(id: string): Promise<HnUserDetailDto> {
+    const user = await this.userRepository.findOneBy({id: id});
+    return new HnUserDetailDto(user);
+  }
+
+  async editUser(data: HnUserEditDetailDto): Promise<HnUserDetailDto> {
+    const user = await this.getCurrent();
+
+    if (!user || user.id !== data.id) {
+      throw new BlUnauthorizedException();
+    }
+
+    user.alias = data.alias;
+    user.githubLink = data.githubLink;
+    user.linkedinLink = data.linkedinLink;
+    user.xLink = data.xLink;
+    user.interests = data.interests;
+    await this.userRepository.save(user);
+    return new HnUserDetailDto(user);
   }
 }

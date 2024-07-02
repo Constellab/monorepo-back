@@ -43,28 +43,29 @@ import {
   BlTransportModule,
   BlTransportModuleConfig
 } from '@monorepo/back-core-lib';
-import { cnJwtConfig } from './app/cn-auth/cn-jwt.config';
-import { Request } from 'express';
-import { CnUsersService } from './app/cn-users/cn-users.service';
-import { CnDatabaseConfig } from './app/cn-core/model/config/cn-config.class';
-import { SnSmartDbModule } from './app/sn-smart-db/sn-smart-db.module';
-import { CnProjectsAggregateModule } from './app/cn-projects-aggregate/cn-project-aggregate.module';
-import { CnStatsModule } from './app/cn-stats/cn-stats.module';
-import { CnCountryModule } from './app/cn-country/cn-country.module';
-import { CnCityModule } from './app/cn-city/cn-city.module';
-import { AppService } from './app.service';
-import { CnSpaceMiddleware } from './app/cn-core/middleware/cn-space-middleware.service';
-import { CnNotificationModule } from './app/cn-notification/cn-notification.module';
-import { CnProjectCommentModule } from './app/cn-project-comment/cn-project-comment.module';
-import { CnCloudProvidersModule } from './app/cn-cloud-providers/cn-cloud-providers.module';
-import { I18nAbstractLoaderOptions } from 'nestjs-i18n/dist/loaders/i18n.abstract.loader';
-import { ScheduleModule } from '@nestjs/schedule';
-import { ThrottlerModule } from '@nestjs/throttler';
-import { EventEmitterModule } from '@nestjs/event-emitter';
-import { CnActivityModule } from './app/cn-activity/cn-activity.module';
-import { CnUserAccountModule } from './app/cn-users/cn-user-accounts/cn-user-account.module';
-import { CnServerAggregateModule } from './app/cn-servers-info/cn-server-aggregate.module';
-import { CnSettingsModule } from './app/cn-settings/cn-settings.module';
+import {cnJwtConfig} from './app/cn-auth/cn-jwt.config';
+import {Request} from 'express';
+import {CnUsersService} from './app/cn-users/cn-users.service';
+import {CnDatabaseConfig} from './app/cn-core/model/config/cn-config.class';
+import {SnSmartDbModule} from './app/sn-smart-db/sn-smart-db.module';
+import {CnProjectsAggregateModule} from './app/cn-projects-aggregate/cn-project-aggregate.module';
+import {CnStatsModule} from './app/cn-stats/cn-stats.module';
+import {CnCountryModule} from './app/cn-country/cn-country.module';
+import {CnCityModule} from './app/cn-city/cn-city.module';
+import {AppService} from './app.service';
+import {CnSpaceMiddleware} from './app/cn-core/middleware/cn-space-middleware.service';
+import {CnNotificationModule} from './app/cn-notification/cn-notification.module';
+import {CnProjectCommentModule} from './app/cn-project-comment/cn-project-comment.module';
+import {CnCloudProvidersModule} from './app/cn-cloud-providers/cn-cloud-providers.module';
+import {I18nAbstractLoaderOptions} from 'nestjs-i18n/dist/loaders/i18n.abstract.loader';
+import {ScheduleModule} from '@nestjs/schedule';
+import {ThrottlerModule} from '@nestjs/throttler';
+import {EventEmitterModule} from '@nestjs/event-emitter';
+import {CnActivityModule} from './app/cn-activity/cn-activity.module';
+import {CnUserAccountModule} from './app/cn-users/cn-user-accounts/cn-user-account.module';
+import {CnServerAggregateModule} from './app/cn-servers-info/cn-server-aggregate.module';
+import {CnSettingsModule} from './app/cn-settings/cn-settings.module';
+import {CnCommunityModule} from './app/cn-community/cn-community.module';
 
 function typeOrmConfig(configService: CnCoreConfigService, persistenceEventService: BlPersistenceEventService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();
@@ -226,6 +227,7 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     CnCloudProvidersModule,
     CnActivityModule,
     CnSettingsModule,
+    CnCommunityModule
   ],
   controllers: [],
   providers: [

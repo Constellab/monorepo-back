@@ -147,6 +147,28 @@ export class HnStoryService {
       where: where,
       relations: ['topics', 'storyAuthors'],
       order: order
+    }, this.storyRepository.manager, HnStory)).map(story => {
+      return new HnStoryDto(story)
+    });
+  }
+
+  async getUserStories(userId: string, page: number, size: number): Promise<ClPage<HnStoryDto>>{
+    return (await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+      where: [{
+        createdBy: {
+          id: userId
+        },
+        status: HnStoryStatus.PUBLISHED
+      },{
+        storyAuthors: {
+          user:{
+            id: userId
+          }
+        },
+        status: HnStoryStatus.PUBLISHED
+      }],
+      relations: ['topics'],
+      order: {publishedAt: 'DESC' as any}
     }, this.storyRepository.manager, HnStory)).map(story => new HnStoryDto(story));
   }
 
@@ -174,16 +196,6 @@ export class HnStoryService {
       },
       this.storyRepository.manager, HnStory
     )).map(story => new HnStoryDto(story));
-  }
-
-  async getStories(page: number, size: number): Promise<ClPage<HnStory>> {
-    return BlAbstractPaginatedService.findPaginatedStatic(page, size, {
-      where: {
-        status: HnStoryStatus.PUBLISHED
-      },
-      relations: ['topics'],
-      order: {publishedAt: 'DESC' as any}
-    }, this.storyRepository.manager, HnStory);
   }
 
   async getStoriesByFilter(filters: HnStoryFilter, page: number, size: number): Promise<ClPage<HnStoryDto>> {
@@ -487,7 +499,8 @@ export class HnStoryService {
               type = HnFileType.RESOURCE_VIEW;
               break;
           }
-          const name = (storyFile != null && storyFile.humanName != null) ? storyFile.humanName : type.toString() + '.' + fileName.split('.')[1];
+          const name = (storyFile != null && storyFile.humanName != null) ?
+            storyFile.humanName : type.toString() + '.' + fileName.split('.')[1];
           newStoryFileEntity.init(story, fileName, type, name, size);
 
           await this.dataSource.transaction(async entityManager => {

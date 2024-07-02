@@ -195,6 +195,18 @@ export class HnLiveTaskAggregateService {
       myLiveTasksSelected, personalOnly, page, size, user, userSpacesIds, coAuthorLiveTasksIds);
   }
 
+  public async findUserLiveTasks(userId: string, page: number, size: number): Promise<ClPage<HnLiveTaskDto>>{
+    const user = await this.userService.findOne(userId);
+    if (!user) throw new BlNotFoundException('User not found');
+    const currentUser = HnCurrentUserHelper.getCurrentUser();
+    let commonSpacesIds: string[] = [];
+    if(currentUser){
+      commonSpacesIds = (await this.spaceAggregateService.getUserCommonSpace(userId)).map(space => space.id);
+    }
+    return await this.liveTaskService.findUserLiveTasks(user, commonSpacesIds, page, size);
+
+  }
+
   public async getAllLiveTasksMap(): Promise<HnSitemapItemBase[]> {
     const liveTasks =
       await this.liveTaskService.findAllWithFilters([], '', true, false, false);
@@ -348,7 +360,6 @@ export class HnLiveTaskAggregateService {
         const brickVersion: HnBrickVersion = await this.brickAggregateService.getAndCheckBrickVersion(brick.name, brick.version);
         await this.liveTaskVersionBrickDependenciesService.create(newLiveTaskVersion, brickVersion, entityManager);
       }
-
       return newLiveTaskVersion;
     });
   }

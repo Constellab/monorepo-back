@@ -55,6 +55,7 @@ export class HnStoryDto extends BlEntityWithIdDTO{
     this.topics = story.topics;
 
     if (story.storyAuthors?.length > 0) {
+      this.storyAuthors = [];
       for (const storyAuthor of story.storyAuthors) {
         this.storyAuthors.push(new HnStoryCoAuthorDto(storyAuthor));
       }

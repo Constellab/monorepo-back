@@ -20,12 +20,13 @@ import {
   BlPublic,
   BlResponseHelper,
   BlRichTextUploadedImageResponse,
+  BlUnauthorizedException,
   BlUploadedFile
 } from '@monorepo/back-core-lib';
-import { HnBrick } from './brick/hn-brick.entity';
-import { HnNewVersionDTO } from './brick-version/hn-brick-version.entity';
-import { HnDocumentationSearchDTO } from './documentation/hn-documentation.entity';
-import { HnNode } from './folder/hn-folder.dto';
+import {HnBrick} from './brick/hn-brick.entity';
+import {HnNewVersionDTO} from './brick-version/hn-brick-version.entity';
+import {HnDocumentationSearchDTO} from './documentation/hn-documentation.entity';
+import {HnNode} from './folder/hn-folder.dto';
 import {
   HnBrickDto,
   HnBrickVersionDownloadDTO,
@@ -35,22 +36,24 @@ import {
   HnIsActualBrickAndNewVersionDTO,
   HnTechnicalDocInputDTO
 } from './brick/hn-brick.dto';
-import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
-import { Request, Response } from 'express';
-import { HnBrickAggregateService } from './hn-brick-aggregate.service';
-import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
-import { ClPage } from '@monorepo/core-lib';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { HnDocumentationDto } from './documentation/hn-documentation.dto';
-import { HnGeneratedDocDto } from '../core/model/entities/hn-generated-doc.dto';
-import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
-import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.dto';
-import { HnUserDto } from '../users/hn-user.dto';
+import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
+import {Request, Response} from 'express';
+import {HnBrickAggregateService} from './hn-brick-aggregate.service';
+import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
+import {ClPage} from '@monorepo/core-lib';
+import {FileInterceptor} from '@nestjs/platform-express';
+import {HnDocumentationDto} from './documentation/hn-documentation.dto';
+import {HnGeneratedDocDto} from '../core/model/entities/hn-generated-doc.dto';
+import {HnBrickVersionDto} from './brick-version/hn-brick-version.dto';
+import {HnBrickUserInviteDto} from './brick-user-invite/hn-brick-user-invite.dto';
+import {HnUserDto} from '../users/hn-user.dto';
+import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 
 @Controller('brick')
 @UseGuards(HnIsAdminGuard)
 export class HnBrickController {
-  constructor(private readonly brickAggregateService: HnBrickAggregateService) {
+  constructor(private readonly brickAggregateService: HnBrickAggregateService,
+              private readonly configService: HnCoreConfigService) {
   }
 
   @BlPublic()
@@ -97,8 +100,37 @@ export class HnBrickController {
   async getBricksByFilter(@Body('spacesFilter') spacesFilter: string[],
                           @Body('titleFilter') titleFilter: string,
                           @Query('page', new ParseIntPipe()) page: number,
-                          @Query('size', new ParseIntPipe()) size: number,
-                          @Body('userId') userId?: string): Promise<ClPage<HnBrickDto>> {
+                          @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnBrickDto>> {
+    return this.brickAggregateService.findBricksWithFilter(spacesFilter, titleFilter, page, size);
+  }
+
+  /**
+   * Get user live tasks
+   * @param userId
+   * @param page
+   * @param size
+   * @return live tasks
+   */
+  @BlPublic()
+  @Get('user/:userId')
+  getUserBricks(@Param('userId', ParseUUIDPipe) userId: string,
+                   @Query('page', new ParseIntPipe()) page: number,
+                   @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnBrickDto>> {
+    return this.brickAggregateService.findUserBricks(userId, page, size);
+  }
+
+  @BlPublic()
+  @Post('central-filters')
+  async getBricksByFilterFromCentral(@Body('spacesFilter') spacesFilter: string[],
+                                     @Body('titleFilter') titleFilter: string,
+                                     @Query('page', new ParseIntPipe()) page: number,
+                                     @Query('size', new ParseIntPipe()) size: number,
+                                     @Body('userId') userId: string,
+                                     @Req() request: Request): Promise<ClPage<HnBrickDto>> {
+    const centralApiKey = request.header('X-Api-Key');
+    if (centralApiKey == null || this.configService.getCentralApiKey() !== centralApiKey) {
+      throw new BlUnauthorizedException();
+    }
     return this.brickAggregateService.findBricksWithFilter(spacesFilter, titleFilter, page, size, userId);
   }
 
@@ -140,6 +172,18 @@ export class HnBrickController {
   @Get('versions-list/:brickId')
   public getVersionsList(@Param('brickId') brickId: string): Promise<string[]> {
     return this.brickAggregateService.getVersionsList(brickId);
+  }
+
+  @BlPublic()
+  @Post('central-versions-list/:brickId')
+  public getVersionsListForCentral(@Param('brickId') brickId: string,
+                                   @Body('userId') userId: string,
+                                   @Req() request: Request): Promise<string[]> {
+    const centralApiKey = request.header('X-Api-Key');
+    if (centralApiKey == null || this.configService.getCentralApiKey() !== centralApiKey) {
+      throw new BlUnauthorizedException();
+    }
+    return this.brickAggregateService.getVersionsList(brickId, userId);
   }
 
   @BlPublic()
@@ -251,5 +295,17 @@ export class HnBrickController {
   async removeBrickCoAuthor(@Param('id', new ParseUUIDPipe()) id: string,
                             @Param('brickAuthorUserId', new ParseUUIDPipe()) brickAuthorUserId: string): Promise<void> {
     return this.brickAggregateService.removeBrickCoAuthor(id, brickAuthorUserId);
+  }
+
+  @BlPublic()
+  @Post('central-name/:name')
+  async findOneByNameCentralClean(@Param('name') name: string,
+                             @Body('userId') userId: string,
+                             @Req() request: Request): Promise<HnBrickDto> {
+    const centralApiKey = request.header('X-Api-Key');
+    if (centralApiKey == null || this.configService.getCentralApiKey() !== centralApiKey) {
+      throw new BlUnauthorizedException();
+    }
+    return new HnBrickDto(await this.brickAggregateService.findBrickByName(name, userId));
   }
 }
