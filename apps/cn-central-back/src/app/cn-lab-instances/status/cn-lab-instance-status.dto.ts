@@ -1,6 +1,7 @@
-import {ClLuxonDateTimeTransform, ClLuxonDateTransform} from '@monorepo/core-lib';
-import {DateTime} from 'luxon';
-import {Type} from 'class-transformer';
+import { ClLuxonDateTimeTransform, ClLuxonDateTransform } from '@monorepo/core-lib';
+import { DateTime } from 'luxon';
+import { Type } from 'class-transformer';
+import { CnUser } from '../../cn-users/cn-user.entity';
 
 export interface CnLabInstanceStatusRunRequest {
   period: 'CURRENT_MONTH' | 'CURRENT_YEAR' | 'LAST_WEEK' | 'LAST_MONTH' | 'LAST_YEAR' | 'ALL' | 'CUSTOM';
@@ -42,6 +43,9 @@ export class CnLabInstanceRunningStatus {
   toDate: DateTime;
 
   duration: number;
+
+  @Type(() => CnUser)
+  user: CnUser
 
   @Type(() => CnLabInstanceRunningStatusBilling)
   billInfo?: CnLabInstanceRunningStatusBilling;

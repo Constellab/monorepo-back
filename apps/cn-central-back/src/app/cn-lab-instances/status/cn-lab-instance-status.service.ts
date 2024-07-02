@@ -1,18 +1,18 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
-import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
-import {cnLabInstanceRunningStatuses} from './cn-lab-instance-status.enum';
-import {DateTime} from 'luxon';
-import {ClDateHelper, ClPageI} from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CnLabInstanceStatusHistory } from './cn-lab-instance-status-history.entity';
+import { cnLabInstanceRunningStatuses } from './cn-lab-instance-status.enum';
+import { DateTime } from 'luxon';
+import { ClDateHelper, ClPageI } from '@monorepo/core-lib';
 import {
   CnLabInstanceRunningStatus,
   CnLabInstanceRunningStatusBilling,
   CnLabInstanceStatusRunRequest,
   CnLabInstanceStatusRunResponse
 } from './cn-lab-instance-status.dto';
-import {CnServerPrices} from '../../cn-servers-info/server-price/cn-server-price.dto';
-import {BlAbstractPaginatedService, BlSearchBuilder, BlSearchParams} from '@monorepo/back-core-lib';
+import { CnServerPrices } from '../../cn-servers-info/server-price/cn-server-price.dto';
+import { BlAbstractPaginatedService, BlSearchBuilder, BlSearchParams } from '@monorepo/back-core-lib';
 
 
 @Injectable()
@@ -175,6 +175,7 @@ export class CnLabInstanceStatusService extends BlAbstractPaginatedService<CnLab
       if (!currentRunningStatus && newRunningDate) {
         currentRunningStatus = new CnLabInstanceRunningStatus();
         currentRunningStatus.fromDate = newRunningDate;
+        currentRunningStatus.user = status.createdBy;
       }
 
       // if the status ends after endDate, no need to continue
