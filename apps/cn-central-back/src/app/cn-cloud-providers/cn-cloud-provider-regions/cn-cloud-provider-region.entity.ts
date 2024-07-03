@@ -1,9 +1,10 @@
-import {Column, Entity, ManyToOne, Unique} from 'typeorm';
-import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
-import {CnCloudProvider} from '../cn-cloud-provider.entity';
-import {CnCity} from '../../cn-city/cn-city.entity';
+import { Column, Entity, ManyToOne, Unique } from 'typeorm';
+import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
+import { CnCloudProvider } from '../cn-cloud-provider.entity';
+import { CnCity } from '../../cn-city/cn-city.entity';
 
 export enum CnCloudProviderRegionType {
+  ALL = 'ALL', // server and s3
   SERVER = 'SERVER',
   S3 = 'S3',
 }
@@ -32,4 +33,12 @@ export class CnCloudProviderRegion extends CnBaseEntity {
 
   @Column({nullable: true, length: 255})
   s3Endpoint: string;
+
+  supportsServer(): boolean {
+    return this.type === CnCloudProviderRegionType.ALL || this.type === CnCloudProviderRegionType.SERVER;
+  }
+
+  supportsS3(): boolean {
+    return this.type === CnCloudProviderRegionType.ALL || this.type === CnCloudProviderRegionType.S3;
+  }
 }

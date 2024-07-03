@@ -102,6 +102,10 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       if (bucket.region == null) {
         throw new BlBadRequestException(`Region must be defined for normal or azure bucket`);
       }
+
+      if(!bucket.region.supportsS3()){
+        throw new BlBadRequestException(`Region ${bucket.region.technicalName} does not support S3`);
+      }
       bucket.labInstance = null;
 
       // there can be only one bucket of type by region

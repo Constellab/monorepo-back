@@ -99,17 +99,17 @@ export class CnCloudProviderAggregateService {
   public findServerRegionByCloudProviderNameAndTechnicalName(cloudProviderName: CnCloudProviderName,
                                                              technicalName: string): Promise<CnCloudProviderRegion> {
     return this.cloudProviderRegionService.findByCloudProviderNameAndTechnicalNameAndTypeAndCheck(
-      cloudProviderName, technicalName, CnCloudProviderRegionType.SERVER);
+      cloudProviderName, technicalName, [CnCloudProviderRegionType.SERVER, CnCloudProviderRegionType.ALL]);
   }
 
   public async getDefaultS3Region1(): Promise<CnCloudProviderRegion> {
     return await this.cloudProviderRegionService.findByCloudProviderNameAndTechnicalNameAndTypeAndCheck(
-      'OVH', CnCloudProviderAggregateService.defaultS3Region1, CnCloudProviderRegionType.S3);
+      'OVH', CnCloudProviderAggregateService.defaultS3Region1, [CnCloudProviderRegionType.S3, CnCloudProviderRegionType.ALL]);
   }
 
   public async getDefaultS3Region2(): Promise<CnCloudProviderRegion> {
     return await this.cloudProviderRegionService.findByCloudProviderNameAndTechnicalNameAndTypeAndCheck(
-      'OVH', CnCloudProviderAggregateService.defaultS3Region2, CnCloudProviderRegionType.S3);
+      'OVH', CnCloudProviderAggregateService.defaultS3Region2, [CnCloudProviderRegionType.S3, CnCloudProviderRegionType.ALL]);
   }
 
   //////////////////////////// AUTHORIZATION ////////////////////////////

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BlAbstractService, BlBadRequestException } from '@monorepo/back-core-lib';
 import { CnCloudProviderRegion, CnCloudProviderRegionType } from './cn-cloud-provider-region.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
 import { ClPage } from '@monorepo/core-lib';
 import { CnCloudProviderName } from '../cn-cloud-provider.entity';
 
@@ -41,7 +41,6 @@ export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProvi
       throw new BlBadRequestException(`There is already a ${region.type} region ${region.technicalName} for the cloud provider ${region.cloudProvider.name}`);
     }
 
-
     if (region.type === CnCloudProviderRegionType.S3) {
       if (!region.s3Endpoint) {
         throw new BlBadRequestException(`The S3 endpoint is required for S3 region ${region.technicalName}`);
@@ -56,7 +55,7 @@ export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProvi
   public findByCloudProviderAndTechnicalNameAndType(cloudProviderId: string, technicalName: string,
                                                     type: CnCloudProviderRegionType): Promise<CnCloudProviderRegion> {
     return this.repository.findOneBy({
-      cloudProvider: {id: cloudProviderId},
+      cloudProvider: { id: cloudProviderId },
       technicalName: technicalName,
       type: type
     });
@@ -64,11 +63,11 @@ export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProvi
 
   public async findByCloudProviderNameAndTechnicalNameAndTypeAndCheck(cloudProviderName: CnCloudProviderName,
                                                                       technicalName: string,
-                                                                      type: CnCloudProviderRegionType): Promise<CnCloudProviderRegion> {
+                                                                      types: CnCloudProviderRegionType[]): Promise<CnCloudProviderRegion> {
     const region = await this.repository.findOneBy({
-      cloudProvider: {name: cloudProviderName},
+      cloudProvider: { name: cloudProviderName },
       technicalName: technicalName,
-      type: type
+      type: In(types)
     });
     if (!region) {
       throw new BlBadRequestException(`The region ${technicalName} does not exist for the cloud provider ${cloudProviderName}`);
@@ -83,13 +82,13 @@ export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProvi
 
   public findRegionsByType(type: CnCloudProviderRegionType, page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
     return this.findPaginated(page, size, {
-      where: {type: type}
+      where: { type: In([type, CnCloudProviderRegionType.ALL]) }
     });
   }
 
   public findRegionsByCloudProvider(cloudProviderName: CnCloudProviderName, page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
     return this.findPaginated(page, size, {
-      where: {cloudProvider: {name: cloudProviderName}}
+      where: { cloudProvider: { name: cloudProviderName } }
     });
   }
 
@@ -97,8 +96,8 @@ export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProvi
   public findServerRegionByCloudProvider(cloudProviderId: string): Promise<CnCloudProviderRegion[]> {
     return this.repository.find({
       where: {
-        cloudProvider: {id: cloudProviderId},
-        type: CnCloudProviderRegionType.SERVER
+        cloudProvider: { id: cloudProviderId },
+        type: In([CnCloudProviderRegionType.SERVER, CnCloudProviderRegionType.ALL])
       }
     });
   }

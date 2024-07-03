@@ -1,34 +1,31 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {CnLabInstance} from './cn-lab-instance.entity';
-import {DataSource, DeleteResult, EntityManager, In, Not, Repository} from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CnLabInstance } from './cn-lab-instance.entity';
+import { DataSource, DeleteResult, EntityManager, In, Not, Repository } from 'typeorm';
 import {
   CnLabInstanceServerTaskStatus,
   CnLabInstanceStatus,
   cnLabInstanceTemporaryStatuses
 } from './status/cn-lab-instance-status.enum';
-import {CnAbstractWithStatusService} from '../cn-core/class/cn-abstract-with-status.service';
-import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
-import {ClDateHelper, ClHelpService, ClPage, ClPageI} from '@monorepo/core-lib';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {CnExperiment} from '../cn-projects-aggregate/cn-experiments/cn-experiment.entity';
-import {CnExperimentsService} from '../cn-projects-aggregate/cn-experiments/cn-experiments.service';
-import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
-import {CnReportsService} from '../cn-projects-aggregate/cn-reports/cn-reports.service';
-import {BlBadRequestException, BlSearchBuilder, BlSearchParams} from '@monorepo/back-core-lib';
-import {EventEmitter2} from '@nestjs/event-emitter';
+import { CnAbstractWithStatusService } from '../cn-core/class/cn-abstract-with-status.service';
+import { CnLabInstanceStatusHistory } from './status/cn-lab-instance-status-history.entity';
+import { ClDateHelper, ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnExperiment } from '../cn-projects-aggregate/cn-experiments/cn-experiment.entity';
+import { CnExperimentsService } from '../cn-projects-aggregate/cn-experiments/cn-experiments.service';
+import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
+import { CnReportsService } from '../cn-projects-aggregate/cn-reports/cn-reports.service';
+import { BlBadRequestException, BlSearchBuilder, BlSearchParams } from '@monorepo/back-core-lib';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   CnLabEvent,
   cnLabInstanceEventName,
   CnLabServerTaskStatusChangedEvent,
   CnLabStatusChangedEvent
 } from './cn-lab-instance.event';
-import {
-  CnCloudProviderRegionType
-} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {CnServerStandard} from '../cn-servers-info/server-standard/cn-server-standard.entity';
-import {CnServerCloud} from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
-import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
+import { CnServerStandard } from '../cn-servers-info/server-standard/cn-server-standard.entity';
+import { CnServerCloud } from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
+import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
 
 @Injectable()
 export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInstance, CnLabInstanceStatus> {
@@ -78,7 +75,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
         throw new BlBadRequestException('The server and region have different cloud provider');
       }
 
-      if (entity.region.type !== CnCloudProviderRegionType.SERVER) {
+      if (!entity.region.supportsServer()) {
         throw new BlBadRequestException('Region must be a server region');
       }
 
