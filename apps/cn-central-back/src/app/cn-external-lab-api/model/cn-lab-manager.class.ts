@@ -1,5 +1,6 @@
-import {CnLabBackupFrequency} from '../../cn-lab-instances/backup/cn-lab-backup.dto';
-import {BlBucketConfig} from '@monorepo/back-core-lib';
+import { CnLabBackupFrequency } from '../../cn-lab-instances/backup/cn-lab-backup.dto';
+import { BlBucketConfig } from '@monorepo/back-core-lib';
+
 
 /**
  * File that contains all the DTO to communicate with the lab manager
@@ -10,7 +11,7 @@ export interface CnLabManagerDockerPs {
 }
 
 
-export interface CnLabManagerDockerPsFull extends CnLabManagerDockerPs{
+export interface CnLabManagerDockerPsFull extends CnLabManagerDockerPs {
   command: string;
   createdAt: string;
   id: string;
@@ -26,13 +27,12 @@ export interface CnLabManagerDockerPsFull extends CnLabManagerDockerPs{
 }
 
 
-
 export interface CnLabManagerComposeUpOptions {
   updateContainers?: boolean;
   pruneSystem?: string;
 }
 
-export interface CnManagerLabComposeRestartOptions extends CnLabManagerComposeUpOptions{
+export interface CnManagerLabComposeRestartOptions extends CnLabManagerComposeUpOptions {
   destroyContainers?: boolean; // if true container will be destroyed and recreated
 }
 
@@ -45,23 +45,37 @@ export interface CnManagerLabPullBiotaOptions {
  * Object to config the lab manager required on init
  */
 export interface CnLabManagerInitConfig {
+  // TODO To remove once all lab manager are on v 1.9.0
   centralApiKey: string;
-  codelabToken: string;
   centralFrontUrl: string;
   centralApiUrl: string;
+  // end remove
+  space: {
+    apiKey: string;
+    frontUrl: string;
+    apiUrl: string;
+  };
+  community: {
+    frontUrl: string;
+    apiUrl: string;
+    apiKey: string;
+  };
+  codelabToken: string;
+  // TODO To remove once all lab manager are on v 1.9.0
   communityFrontUrl: string;
   communityApiUrl: string;
   communityApiKey: string;
+  // end remove
   gwsCoreProdPassword: string;
   gwsCoreDevPassword: string;
   dockerRegistry: {
     url: string;
     username: string;
     password: string;
-  }
+  };
   labConfig: {
     enableBackup: boolean;
-  }
+  };
   captchaSiteKey: string;
   openaiApiKey: string;
 }
@@ -103,7 +117,25 @@ export interface CnLabManagerBackupInfoDTO {
 
 export interface CnLabManagerBackupBucketDTO {
   backupFrequency: CnLabBackupFrequency;
-  bucketConfig: BlBucketConfig;
+  bucketConfig: CnLabManagerBucketConfig;
+}
+
+export interface CnAzureBlobConfigDTO {
+  accountName: string;
+  containerName: string;
+  accountKey: string;
+  region: string;
+}
+
+/**
+ * Object that represent a S3 or Azure bucket config
+ */
+export type CnLabManagerBucketConfig = {
+  type: 's3';
+  config: BlBucketConfig;
+} | {
+  type: 'azureBlob';
+  config: CnAzureBlobConfigDTO;
 }
 
 export interface CnLabManagerRestoreBackupConfigDTO {
@@ -123,3 +155,4 @@ export interface CnLabManagerRestoreBackupDTO {
     force: boolean;
   };
 }
+

@@ -1,9 +1,10 @@
-import {BlCurrentUserHelper, BlUnauthorizedException} from '@monorepo/back-core-lib';
-import {CnUser} from '../../cn-users/cn-user.entity';
-import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
-import {CnSpace} from '../../cn-spaces/cn-space.entity';
-import {CnSpaceUserRole} from '../../cn-spaces/cn-space-user.entity';
-import {CnUserSpaceInfo} from '../../cn-users/cn-user.dto';
+import { BlCurrentUserHelper, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { CnUser } from '../../cn-users/cn-user.entity';
+import { CnLabInstance } from '../../cn-lab-instances/cn-lab-instance.entity';
+import { CnSpace } from '../../cn-spaces/cn-space.entity';
+import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
+import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
+import { cnExternalLabManagerVersionHeader } from '../model/config/cn-config.class';
 
 export interface CnRequestAuthInfo {
   labInstance?: CnLabInstance;
@@ -122,5 +123,13 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
 
   static getAdditionalInfo(): CnRequestAuthInfo | null {
     return this.getCurrentAdditionalData();
+  }
+
+  /**
+   * Only for request coming from the lab manager
+   * Use to access the version of the lab manager that made the request
+   */
+  static getLabManagerVersion(): string {
+    return this.getHeaderFromContext(cnExternalLabManagerVersionHeader)
   }
 }

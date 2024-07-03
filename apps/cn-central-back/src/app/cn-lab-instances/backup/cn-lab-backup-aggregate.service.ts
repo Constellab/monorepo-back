@@ -20,6 +20,7 @@ import {
 import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {
   CnLabManagerBackupInfoDTO,
+  CnLabManagerBucketConfig,
   CnLabManagerRestoreBackupConfigDTO,
   CnLabManagerRestoreBackupDTO
 } from '../../cn-external-lab-api/model/cn-lab-manager.class';
@@ -153,14 +154,28 @@ export class CnLabBackupAggregateService {
       backupBuckets: [
         {
           backupFrequency: options.frequency1,
-          bucketConfig: options.bucket1.getBucketConfig()
+          bucketConfig: this.bucketToBackupInfo(options.bucket1)
         },
         {
           backupFrequency: options.frequency2,
-          bucketConfig: options.bucket2.getBucketConfig()
+          bucketConfig: this.bucketToBackupInfo(options.bucket2)
         }
       ]
     };
+  }
+
+  private bucketToBackupInfo(bucket: CnBucket): CnLabManagerBucketConfig {
+    if (bucket.isS3Bucket()) {
+      return {
+        type: 's3',
+        config: bucket.getS3BucketConfig()
+      };
+    } else {
+      return {
+        type: 'azureBlob',
+        config: bucket.getAzureBlobConfig()
+      };
+    }
   }
 
   /**
@@ -182,7 +197,7 @@ export class CnLabBackupAggregateService {
                                 bucket: CnBucket): Promise<CnLabCheckBackupSizeDTO> {
     const prefix = this.backupOptionService.getBackupS3Prefix(labInstance);
     const objectsInfo = await this.objectStorageService.getObjectsSizeByPrefix(
-      bucket.getBucketConfig(), prefix);
+      bucket.getS3BucketConfig(), prefix);
     const backup1Status = await this.getBackupStatus(labInstance, frequency, bucket.region);
 
     return CnLabCheckBackupSizeDTO.fromBackupStatusDTO(backup1Status, objectsInfo.totalSize, objectsInfo.nbObjects);
@@ -213,7 +228,7 @@ export class CnLabBackupAggregateService {
     await this.datasource.transaction(async entityManager => {
       await this.backupHistoryService.deleteLabBackupHistoryByBucket(labInstanceId, bucket.id, entityManager);
       try {
-        await this.objectStorageService.deleteObjectsByPrefix(bucket.getBucketConfig(), prefix);
+        await this.objectStorageService.deleteObjectsByPrefix(bucket.getS3BucketConfig(), prefix);
       } catch (e) {
         Logger.error(`Error while deleting the backup file in bucket ${bucket.id} for lab instance ${labInstanceId}. Error ${e}`);
         // eslint-disable-next-line max-len
@@ -238,7 +253,7 @@ export class CnLabBackupAggregateService {
 
     const restoreDTO: CnLabManagerRestoreBackupDTO = {
       version: 1,
-      bucketConfig: backupHistory.bucket.getBucketConfig(),
+      bucketConfig: backupHistory.bucket.getS3BucketConfig(),
       s3Prefix: '/' + this.backupOptionService.getBackupS3Prefix(sourceLab),
       options: {
         restoreDb: options.restoreDb,

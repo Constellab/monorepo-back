@@ -1,10 +1,10 @@
-import {Injectable} from '@nestjs/common';
-import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
-import {CnCloudProviderRegion, CnCloudProviderRegionType} from './cn-cloud-provider-region.entity';
-import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, Repository} from 'typeorm';
-import {ClPage} from '@monorepo/core-lib';
-import {CnCloudProviderName} from '../cn-cloud-provider.entity';
+import { Injectable } from '@nestjs/common';
+import { BlAbstractService, BlBadRequestException } from '@monorepo/back-core-lib';
+import { CnCloudProviderRegion, CnCloudProviderRegionType } from './cn-cloud-provider-region.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, Repository } from 'typeorm';
+import { ClPage } from '@monorepo/core-lib';
+import { CnCloudProviderName } from '../cn-cloud-provider.entity';
 
 
 @Injectable()
@@ -84,6 +84,12 @@ export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProvi
   public findRegionsByType(type: CnCloudProviderRegionType, page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
     return this.findPaginated(page, size, {
       where: {type: type}
+    });
+  }
+
+  public findRegionsByCloudProvider(cloudProviderName: CnCloudProviderName, page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
+    return this.findPaginated(page, size, {
+      where: {cloudProvider: {name: cloudProviderName}}
     });
   }
 

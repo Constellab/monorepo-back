@@ -29,6 +29,7 @@ export interface CnDatabaseConfig {
 export const cnExternalLabApiKeyHeader: string = 'Authorization';
 export const cnExternalLabApiKeySchema: string = 'api-key';
 export const cnExternalLabUserHeader: string = 'User';
+export const cnExternalLabManagerVersionHeader: string = 'lab-manager-version';
 
 /**
  *  Content of the activation token

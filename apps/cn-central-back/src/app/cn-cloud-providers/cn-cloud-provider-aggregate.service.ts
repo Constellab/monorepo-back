@@ -1,14 +1,14 @@
-import {Injectable} from '@nestjs/common';
-import {CnCloudProvidersService} from './cn-cloud-providers.service';
-import {CnCloudProviderRegionService} from './cn-cloud-provider-regions/cn-cloud-provider-regions.service';
+import { Injectable } from '@nestjs/common';
+import { CnCloudProvidersService } from './cn-cloud-providers.service';
+import { CnCloudProviderRegionService } from './cn-cloud-provider-regions/cn-cloud-provider-regions.service';
 import {
   CnCloudProviderRegion,
   CnCloudProviderRegionType
 } from './cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {ClPage} from '@monorepo/core-lib';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {CnCloudProviderSecurity} from './cn-cloud-provider.security';
-import {CnCloudProvider, CnCloudProviderName} from './cn-cloud-provider.entity';
+import { ClPage } from '@monorepo/core-lib';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnCloudProviderSecurity } from './cn-cloud-provider.security';
+import { CnCloudProvider, CnCloudProviderName } from './cn-cloud-provider.entity';
 
 
 @Injectable()
@@ -83,6 +83,12 @@ export class CnCloudProviderAggregateService {
                                 page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
     this.checkAuthorizationToGetEntity();
     return this.cloudProviderRegionService.findRegionsByType(type, page, size);
+  }
+
+  public async findRegionsByCloudProvider(cloudProviderName: CnCloudProviderName,
+                                          page: number, size: number): Promise<ClPage<CnCloudProviderRegion>> {
+    this.checkAuthorizationToGetEntity();
+    return this.cloudProviderRegionService.findRegionsByCloudProvider(cloudProviderName, page, size);
   }
 
   public async findServerRegionByCloudProvider(cloudProviderId: string): Promise<CnCloudProviderRegion[]> {

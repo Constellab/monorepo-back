@@ -1,6 +1,6 @@
-import {Injectable, Logger} from '@nestjs/common';
-import {ClHelpService, ClStringHelper} from '@monorepo/core-lib';
-import {BlFileHelper} from '../../utils/bl-file-helper';
+import { Injectable, Logger } from '@nestjs/common';
+import { ClHelpService, ClStringHelper } from '@monorepo/core-lib';
+import { BlFileHelper } from '../../utils/bl-file-helper';
 import {
   CreateBucketCommand,
   DeleteBucketCommand,
@@ -16,16 +16,17 @@ import {
   PutObjectCommand,
   S3Client
 } from '@aws-sdk/client-s3';
-import {BlFile} from '../../models/bl-file.class';
-import {IncomingMessage} from 'http';
-import {_Object} from '@aws-sdk/client-s3/dist-types/models/models_0';
-import {BlObjectStorageObjectsInfo, BlObjectStorageSyncResult} from './bl-object-storage.class';
-import {BlBadRequestException} from '../../exceptions/bl-bad-request.exception';
-import {BlNotFoundException} from '../../exceptions/bl-not-found.exception';
+import { BlFile } from '../../models/bl-file.class';
+import { IncomingMessage } from 'http';
+import { _Object } from '@aws-sdk/client-s3/dist-types/models/models_0';
+import { BlObjectStorageObjectsInfo, BlObjectStorageSyncResult } from './bl-object-storage.class';
+import { BlBadRequestException } from '../../exceptions/bl-bad-request.exception';
+import { BlNotFoundException } from '../../exceptions/bl-not-found.exception';
 
 export enum BlBucketType {
   NORMAL = 'NORMAL',
-  LAB = 'LAB' // bucket hosted on a lab
+  LAB = 'LAB', // bucket hosted on a lab
+  AZURE = 'AZURE' // azure blob storage
 }
 
 export interface BlBucketConfig {

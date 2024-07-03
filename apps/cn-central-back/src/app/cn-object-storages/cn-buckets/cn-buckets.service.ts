@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   BlAbstractService,
   BlBadRequestException,
@@ -7,10 +7,10 @@ import {
   BlSearchBuilder,
   BlSearchParams
 } from '@monorepo/back-core-lib';
-import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, EntityManager, Not, Repository} from 'typeorm';
-import {CnBucket, CnBucketContentType} from './cn-bucket.entity';
-import {ClPage} from '@monorepo/core-lib';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, EntityManager, Not, Repository } from 'typeorm';
+import { CnBucket, CnBucketContentType } from './cn-bucket.entity';
+import { ClPage } from '@monorepo/core-lib';
 
 
 @Injectable()
@@ -30,7 +30,10 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     return this.datasource.transaction(async entityManager => {
       // create the bucket in DB and then in the object storage
       const bucketDb = await super.create(bucket, entityManager);
-      await this.objectStorageService.createBucket(bucketDb.getBucketConfig());
+
+      if (bucketDb.isS3Bucket()) {
+        await this.objectStorageService.createBucket(bucketDb.getS3BucketConfig());
+      }
 
       return bucketDb;
     });
@@ -39,7 +42,9 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
   public async deleteBucket(bucket: CnBucket, entityManager?: EntityManager): Promise<void> {
     entityManager = this.getEntityManager(entityManager);
 
-    await this.objectStorageService.deleteBucket(bucket.getBucketConfig(), false);
+    if (bucket.isS3Bucket()) {
+      await this.objectStorageService.deleteBucket(bucket.getS3BucketConfig(), false);
+    }
     // delete the bucket in DB and then in the object storage
     await entityManager.delete(CnBucket, bucket.id);
   }
@@ -84,7 +89,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
           labInstance: {
             id: bucket.labInstance.id
           },
-          id: bucket.id ? Not(bucket.id) : undefined,
+          id: bucket.id ? Not(bucket.id) : undefined
         }
       });
 
@@ -93,9 +98,9 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       }
     }
 
-    if (bucket.bucketType === BlBucketType.NORMAL) {
+    if (bucket.bucketType === BlBucketType.NORMAL || bucket.bucketType === BlBucketType.AZURE) {
       if (bucket.region == null) {
-        throw new BlBadRequestException(`Region must be defined for normal bucket`);
+        throw new BlBadRequestException(`Region must be defined for normal or azure bucket`);
       }
       bucket.labInstance = null;
 
@@ -107,12 +112,22 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       }
     }
 
+    if(bucket.bucketType === BlBucketType.AZURE){
+      if(bucket.contentType !== CnBucketContentType.LAB_BACKUP){
+        throw new BlBadRequestException(`Azure bucket can only be used for lab backup`);
+      }
+
+      if(bucket.region.cloudProvider.name !== 'AZURE'){
+        throw new BlBadRequestException(`Azure bucket must be linked to an Azure region`);
+      }
+    }
+
     return bucket;
   }
 
   public async findCompleteById(id: string): Promise<CnBucket> {
     return await this.repository.findOne({
-      where: {id: id},
+      where: { id: id },
       relations: CnBucket.configRelation
     });
   }
@@ -132,7 +147,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
         contentType: contentType,
         region: {
           id: regionId
-        },
+        }
       },
       relations: CnBucket.configRelation
     });
@@ -147,7 +162,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
         }
       },
       relations: {
-        region: true,
+        region: true
       }
     });
     if (bucket == null) {
@@ -169,7 +184,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       where: [
         {
           contentType: contentType,
-          bucketType: BlBucketType.NORMAL,
+          bucketType: BlBucketType.NORMAL
         }, {
           contentType: contentType,
           bucketType: BlBucketType.LAB,
@@ -184,7 +199,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
 
   public search(searchParam: BlSearchParams,
                 page: number, size: number): Promise<ClPage<CnBucket>> {
-    const searchBuilder = new BlSearchBuilder<CnBucket>({name: 'ASC'});
+    const searchBuilder = new BlSearchBuilder<CnBucket>({ name: 'ASC' });
     searchBuilder.addSearchParams(searchParam);
     searchBuilder.setRelations(CnBucket.configRelation);
 

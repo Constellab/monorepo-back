@@ -90,9 +90,19 @@ export class CnLabManagerService {
   private getLabManagerInitConfig(labInstance: CnLabInstance, spaceDomain: string): CnLabManagerInitConfig {
     return {
       centralApiKey: labInstance.glabApiKey,
-      codelabToken: labInstance.codelabToken,
       centralApiUrl: this.configService.getApiUrl(),
       centralFrontUrl: `https://${spaceDomain}.${this.configService.getCentralFrontDomain()}`,
+      space: {
+        apiKey: labInstance.glabApiKey,
+        apiUrl: this.configService.getApiUrl(),
+        frontUrl: `https://${spaceDomain}.${this.configService.getCentralFrontDomain()}`
+      },
+      community: {
+        frontUrl: this.configService.getCommunityFrontUrl(),
+        apiUrl: this.configService.getCommunityApiUrl(),
+        apiKey: this.configService.getCommunityApiKey()
+      },
+      codelabToken: labInstance.codelabToken,
       communityFrontUrl: this.configService.getCommunityFrontUrl(),
       communityApiUrl: this.configService.getCommunityApiUrl(),
       communityApiKey: this.configService.getCommunityApiKey(),

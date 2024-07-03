@@ -1,6 +1,6 @@
-import {DateTime} from 'luxon';
-import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
-import {Type} from 'class-transformer';
+import { DateTime } from 'luxon';
+import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
+import { Type } from 'class-transformer';
 import {
   CnCloudProviderRegion
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
@@ -37,7 +37,7 @@ export class CnLabBackupBucket {
   id: string;
   region: string;
   bucket: string;
-  endpoint: string;
+  endpoint?: string;
 
   @ClLuxonDateTimeTransform()
   startUploadAt: DateTime;

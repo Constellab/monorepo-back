@@ -1,13 +1,14 @@
-import {Column, Entity, ManyToOne} from 'typeorm';
-import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 import {
   CnCloudProviderRegion
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {CnBucketCredentials} from '../cn-bucket-credential/cn-bucket-credential.entity';
-import {BlBucketConfig, BlBucketType} from '@monorepo/back-core-lib';
-import {Type} from 'class-transformer';
-import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
-import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
+import { CnBucketCredentials } from '../cn-bucket-credential/cn-bucket-credential.entity';
+import { BlBucketConfig, BlBucketType } from '@monorepo/back-core-lib';
+import { Type } from 'class-transformer';
+import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+import { CnLabInstance } from '../../cn-lab-instances/cn-lab-instance.entity';
+import { CnAzureBlobConfigDTO } from '../../cn-external-lab-api/model/cn-lab-manager.class';
 
 export enum CnBucketContentType {
   LAB_BACKUP = 'LAB_BACKUP',
@@ -68,7 +69,11 @@ export class CnBucket extends CnBaseEntity {
   })
   bucketType: BlBucketType;
 
-  public getBucketConfig(): BlBucketConfig {
+  public getS3BucketConfig(): BlBucketConfig {
+    if(!this.isS3Bucket()){
+      throw new Error('The bucket is not a S3 bucket');
+    }
+
     if (this.region == null && this.labInstance == null) {
       throw new Error('Nor the region or the lab instance was loaded');
     }
@@ -101,6 +106,24 @@ export class CnBucket extends CnBaseEntity {
         },
         bucketType: this.bucketType,
       };
+    }
+  }
+
+  public getAzureBlobConfig(): CnAzureBlobConfigDTO {
+    if(this.bucketType !== BlBucketType.AZURE){
+      throw new Error('The bucket is not an azure blob');
+    }
+
+    if (this.region == null) {
+      throw new Error('The region was not loaded');
+    }
+
+    return {
+      // for azure, we consider the access key id as the account name
+      accountName: this.credentials.accessKeyId,
+      containerName: this.name, // container name = bucket name
+      accountKey: this.credentials.secretAccessKey,
+      region: this.region.technicalName
     }
   }
 
@@ -153,5 +176,12 @@ export class CnBucket extends CnBaseEntity {
 
   isLabBucket(): boolean {
     return this.bucketType === BlBucketType.LAB;
+  }
+
+  /**
+   * Return true if the bucket supports the S3 protocol
+   */
+  isS3Bucket(): boolean {
+    return this.bucketType !== BlBucketType.AZURE;
   }
 }

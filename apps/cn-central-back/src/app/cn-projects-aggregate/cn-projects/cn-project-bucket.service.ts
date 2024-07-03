@@ -1,12 +1,16 @@
-import {Injectable, Logger} from '@nestjs/common';
-import {CnProject} from './cn-project.entity';
-import {CnBucket, CnBucketContentType, CnBucketLocationDTO} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
-import {BlBadRequestException, BlBucketConfig} from '@monorepo/back-core-lib';
-import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
-import {CnObjectStoragesAggregateService} from '../../cn-object-storages/cn-object-storages-aggregate.service';
-import {CnProjectBucketsDTO} from './cn-project.dto';
-import {CnProjectsService} from './cn-projects.service';
-import {ClPage} from '@monorepo/core-lib';
+import { Injectable, Logger } from '@nestjs/common';
+import { CnProject } from './cn-project.entity';
+import {
+  CnBucket,
+  CnBucketContentType,
+  CnBucketLocationDTO
+} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { BlBadRequestException, BlBucketConfig } from '@monorepo/back-core-lib';
+import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
+import { CnObjectStoragesAggregateService } from '../../cn-object-storages/cn-object-storages-aggregate.service';
+import { CnProjectBucketsDTO } from './cn-project.dto';
+import { CnProjectsService } from './cn-projects.service';
+import { ClPage } from '@monorepo/core-lib';
 
 /**
  * Class to handle project bucket.
@@ -17,54 +21,8 @@ export class CnProjectBucketService {
 
   protected readonly logger = new Logger(CnProjectBucketService.name);
 
-  private static readonly DOCUMENT_BUCKET_PREFIX = 'documents';
-
-  // prefix for images in constellab documents
-  private static readonly CONSTELLAB_DOC_IMAGE_BUCKET_PREFIX = 'constellab_doc_images';
-
-  private static readonly COMMENT_BUCKET_PREFIX = 'comments';
-
-  // prefix for images in project description
-  private static readonly DESCRIPTION_BUCKET_PREFIX = 'description';
-
-  // prefix for reports content
-  private static readonly REPORT_BUCKET_PREFIX = 'report_contents';
-
   constructor(private objectStorageAggregateService: CnObjectStoragesAggregateService,
               private projectService: CnProjectsService) {
-  }
-
-
-  public static getPrefix(project: CnProject, type: 'DOCUMENTS' | 'COMMENTS' | 'DESCRIPTION'): string;
-  public static getPrefix(project: CnProject, type: 'CONSTELLAB_DOC_IMAGE' | 'REPORT_CONTENTS', parentObjectId: string): string;
-  public static getPrefix(project: CnProject,
-                          type: 'DOCUMENTS' | 'COMMENTS' | 'DESCRIPTION' | 'CONSTELLAB_DOC_IMAGE' | 'REPORT_CONTENTS',
-                          parentObjectId?: string): string {
-    let typePrefix: string;
-    switch (type) {
-      case 'DOCUMENTS':
-        typePrefix = CnProjectBucketService.DOCUMENT_BUCKET_PREFIX;
-        break;
-      case 'COMMENTS':
-        typePrefix = CnProjectBucketService.COMMENT_BUCKET_PREFIX;
-        break;
-      case 'DESCRIPTION':
-        typePrefix = CnProjectBucketService.DESCRIPTION_BUCKET_PREFIX;
-        break;
-      // no project needed for constellab doc images
-      case 'CONSTELLAB_DOC_IMAGE':
-        typePrefix = CnProjectBucketService.CONSTELLAB_DOC_IMAGE_BUCKET_PREFIX;
-        break;
-      case 'REPORT_CONTENTS':
-        typePrefix = CnProjectBucketService.REPORT_BUCKET_PREFIX;
-        break;
-    }
-
-    let prefix = `${project.spaceId}/${project.getRootParentId()}/${project.id}/${typePrefix}`;
-    if (parentObjectId != null) {
-      prefix += `/${parentObjectId}`;
-    }
-    return prefix;
   }
 
 
@@ -94,16 +52,16 @@ export class CnProjectBucketService {
 
   public async getAndCheckProjectBucketConfig(rootProjectId: string): Promise<BlBucketConfig[]> {
     const bucket = await this.getAndCheckProjectBucket(rootProjectId);
-    const configs = [bucket.mainStorage.getBucketConfig()];
+    const configs = [bucket.mainStorage.getS3BucketConfig()];
     if (bucket.backupStorage) {
-      configs.push(bucket.backupStorage.getBucketConfig());
+      configs.push(bucket.backupStorage.getS3BucketConfig());
     }
     return configs;
   }
 
   public async getAndCheckProjectMainBucketConfig(rootProjectId: string): Promise<BlBucketConfig> {
     const bucket = await this.getAndCheckProjectBucket(rootProjectId);
-    return bucket.mainStorage.getBucketConfig();
+    return bucket.mainStorage.getS3BucketConfig();
   }
 
   public async findProjectWithStorageById(projectId: string): Promise<CnProject> {

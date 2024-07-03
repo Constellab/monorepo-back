@@ -1,8 +1,8 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
-import {CnCloudProvider} from './cn-cloud-provider.entity';
-import {ClPage} from '@monorepo/core-lib';
-import {BlParseEnumPipe, BlParsePipe} from '@monorepo/back-core-lib';
-import {CnCloudProviderAggregateService} from './cn-cloud-provider-aggregate.service';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
+import { CnCloudProvider, CnCloudProviderName } from './cn-cloud-provider.entity';
+import { ClPage } from '@monorepo/core-lib';
+import { BlParseEnumPipe, BlParsePipe } from '@monorepo/back-core-lib';
+import { CnCloudProviderAggregateService } from './cn-cloud-provider-aggregate.service';
 import {
   CnCloudProviderRegion,
   CnCloudProviderRegionType
@@ -66,6 +66,13 @@ export class CnCloudProvidersController {
                                @Query('page', ParseIntPipe) page: number,
                                @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnCloudProviderRegion>> {
     return this.service.findRegionByType(type, page, size);
+  }
+
+  @Get('regions/cloud-provider/:cloudProviderName')
+  public async getRegionsByCloudProvider(@Param('cloudProviderName') cloudProviderName: CnCloudProviderName,
+                                         @Query('page', ParseIntPipe) page: number,
+                                         @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnCloudProviderRegion>> {
+    return this.service.findRegionsByCloudProvider(cloudProviderName, page, size);
   }
 
 
