@@ -53,7 +53,6 @@ import {
   CnProjectDocumentPreviewDTO,
   CnProjectStorageUsageDTO
 } from './cn-project-documents/cn-project-document-dto.class';
-import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -71,8 +70,7 @@ export class CnProjectAggregateService {
               private projectUserService: CnProjectUserService,
               private userService: CnUsersService,
               private eventEmitter: EventEmitter2,
-              private activityService: CnActivityService,
-              private configService: CnCoreConfigService) {
+              private activityService: CnActivityService) {
   }
 
   /////////////////////////////////////// PROJECT //////////////////////////////////
@@ -800,13 +798,13 @@ export class CnProjectAggregateService {
 
     await this.getAndCheckAuthorizationForFindOne(document.projectId);
 
-    const token = await this.projectDocumentService.generatePreviewToken(document);
-
-    const officePreviewUrl = 'https://view.officeapps.live.com/op/embed.aspx?src=';
-    const constellabPreviewUrl = `${this.configService.getApiUrl()}/projects/document/preview/${token}`;
-    return new CnProjectDocumentPreviewDTO(`${officePreviewUrl}${constellabPreviewUrl}`);
+    return await this.projectDocumentService.generatePreviewToken(document);
   }
 
+  /**
+   * Public route to access document from the generated token
+   * @param token
+   */
   public async getDocumentByPreviewToken(token: string): Promise<IncomingMessage> {
     const projectDocument = await this.projectDocumentService.getAndCheckByPreviewToken(token);
     const project = await this.projectService.findByIdAndCheck(projectDocument.projectId);

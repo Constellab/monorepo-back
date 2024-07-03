@@ -76,6 +76,9 @@ export class CnProjectDocument extends CnBaseEntity {
   })
   bucketType: BlBucketType;
 
+  /**
+   * Preview token can be generated for a document to make it available in public route
+   */
   @Exclude()
   @Column({ nullable: true, length: 36 })
   previewToken?: string;
@@ -107,6 +110,9 @@ export class CnProjectDocument extends CnBaseEntity {
       || this.type === CnProjectDocumentType.CONSTELLAB_DOCUMENT;
   }
 
+  /**
+   * Return true if this document supports preview in the Iframe
+   */
   @Expose()
   get canTokenPreview(): boolean {
     const officesMimeTypes = [

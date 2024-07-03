@@ -22,6 +22,7 @@ import { CnProjectBucketService } from '../cn-projects/cn-project-bucket.service
 import { CnProjectDocument, CnProjectDocumentType } from './cn-project-document.entity';
 import {
   CnConstellabDocumentDTO,
+  CnProjectDocumentPreviewDTO,
   CnProjectDocumentStorageType,
   CnProjectStorageUsageDTO
 } from './cn-project-document-dto.class';
@@ -32,6 +33,7 @@ import {
   CnProjectDocumentEventType
 } from './cn-project-document.event';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 
 @Injectable()
 export class CnProjectDocumentService extends BlAbstractService<CnProjectDocument> {
@@ -40,7 +42,8 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
               private objectStorageService: BlObjectStorageService,
               private projectBucketService: CnProjectBucketService,
               private datasource: DataSource,
-              private eventEmitter: EventEmitter2) {
+              private eventEmitter: EventEmitter2,
+              private configService: CnCoreConfigService) {
     super(repository, CnProjectDocument);
   }
 
@@ -99,7 +102,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
       const filePath = this.generateDocumentFilePath(project, document);
       await this.objectStorageService.uploadObject(bucketConfig, file,
-        {filename: filePath});
+        { filename: filePath });
       return dbDocument;
     });
 
@@ -123,7 +126,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     return {
       filename: imageDoc.name,
       height: imSize.height,
-      width: imSize.width,
+      width: imSize.width
     };
   }
 
@@ -147,7 +150,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
 
   public async deleteDocument(id: string, entityManager: EntityManager): Promise<void> {
-    const document = await this.findByIdAndCheck(id, {project: true});
+    const document = await this.findByIdAndCheck(id, { project: true });
 
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(document.project.getRootParentId());
     if (document.documentTypeSupportsTrash() && !document.inTrash) {
@@ -159,7 +162,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     const children = await this.repo.find({
       where: {
         projectId: document.projectId,
-        parentDocument: {id: document.id},
+        parentDocument: { id: document.id }
       }
     });
 
@@ -178,7 +181,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   }
 
   public async emptyProjectTrash(projectId: string): Promise<void> {
-    const documentToDelete = await this.repo.find({where: {projectId: projectId, inTrash: true}});
+    const documentToDelete = await this.repo.find({ where: { projectId: projectId, inTrash: true } });
 
     for (const doc of documentToDelete) {
       await this.deleteDocument(doc.id, this.datasource.manager);
@@ -201,11 +204,11 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
    */
   async findDocumentByProjectAndTypeAndName(projectId: string, type: CnProjectDocumentType,
                                             name: string, entityId: string): Promise<CnProjectDocument | null> {
-    return this.repo.findOne({where: {projectId: projectId, type: type, name: name, entityId: entityId}});
+    return this.repo.findOne({ where: { projectId: projectId, type: type, name: name, entityId: entityId } });
   }
 
   public findDocumentsByProject(projectId: string): Promise<CnProjectDocument[]> {
-    return this.repo.find({where: {projectId: projectId}});
+    return this.repo.find({ where: { projectId: projectId } });
   }
 
   public generateDocumentFilePath(project: CnProject, document: CnProjectDocument): string {
@@ -229,7 +232,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   public getProjectDocuments(projectId: string, inTrash: boolean, page: number, size: number): Promise<ClPage<CnProjectDocument>> {
     return this.findPaginated(page, size, {
       where: {
-        project: {id: projectId},
+        project: { id: projectId },
         inTrash: inTrash,
         type: In([CnProjectDocumentType.UPLOADED_DOCUMENT, CnProjectDocumentType.CONSTELLAB_DOCUMENT])
       },
@@ -260,7 +263,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       document.parentDocument = parentDocument;
 
       const documentPath = this.generateDocumentFilePath(project, document);
-      await this.objectStorageService.uploadJson(bucketConfig, content, {filename: documentPath});
+      await this.objectStorageService.uploadJson(bucketConfig, content, { filename: documentPath });
 
       const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig[0], documentPath);
       document.size = objectInfo.ContentLength;
@@ -280,7 +283,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
     const documentPath = this.generateDocumentFilePath(project, document);
-    await this.objectStorageService.uploadJson(bucketConfig, content, {filename: documentPath});
+    await this.objectStorageService.uploadJson(bucketConfig, content, { filename: documentPath });
 
     const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig[0], documentPath);
 
@@ -373,13 +376,13 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   ////////////////////////////////////////////// SIZE /////////////////////////////////////////////
 
   public async getStorageSizeDetailByProjects(projectIds: string[]): Promise<CnProjectStorageUsageDTO> {
-    const documents = await this.repository.findBy({projectId: In(projectIds)});
+    const documents = await this.repository.findBy({ projectId: In(projectIds) });
     return this.documentsToAggregateDTO(documents);
   }
 
 
   public async getStorageSizeDetailBySpace(spaceId: string): Promise<CnProjectStorageUsageDTO> {
-    const documents = await this.repository.findBy({project: {spaceId: spaceId}});
+    const documents = await this.repository.findBy({ project: { spaceId: spaceId } });
     return this.documentsToAggregateDTO(documents);
   }
 
@@ -432,25 +435,27 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
   ////////////////////////////////////////////// PREVIEW  /////////////////////////////////////////////
 
-  public async generatePreviewToken(document: CnProjectDocument): Promise<string> {
-    if(!document.canTokenPreview){
+  public async generatePreviewToken(document: CnProjectDocument): Promise<CnProjectDocumentPreviewDTO> {
+    if (!document.canTokenPreview) {
       throw new BlBadRequestException('This document cannot be previewed');
     }
     // don't generate the token if the last token is still valid with 10 minutes margin
-    if (document.previewTokenExpiration > ClDateHelper.getDate().plus({minutes: 10})) {
-      return document.previewToken;
+    if (document.previewTokenExpiration < ClDateHelper.getDate().plus({ minutes: 10 })) {
+      const token = ClStringHelper.generateUUID();
+      document.previewToken = ClStringHelper.generateUUID();
+      // set expiration in 1 hour
+      document.previewTokenExpiration = ClDateHelper.getDate().plus({ hours: 1 });
+      document = await this.repo.save(document);
     }
 
-    const token = ClStringHelper.generateUUID();
-    document.previewToken = token;
-    // set expiration in 1 hour
-    document.previewTokenExpiration = ClDateHelper.getDate().plus({hours: 1});
-    await this.repo.save(document);
-    return token;
+    // Generate the preview URL that use office online viewer with public api route
+    const officePreviewUrl = 'https://view.officeapps.live.com/op/embed.aspx?src=';
+    const constellabPreviewUrl = `${this.configService.getApiUrl()}/projects/document/preview/${document.previewTokenExpiration}`;
+    return new CnProjectDocumentPreviewDTO(`${officePreviewUrl}${constellabPreviewUrl}`);
   }
 
   public async getAndCheckByPreviewToken(token: string): Promise<CnProjectDocument> {
-    const document = await this.repo.findOne({where: {previewToken: token}});
+    const document = await this.repo.findOne({ where: { previewToken: token } });
     if (!document) {
       throw new BlBadRequestException('Document not found');
     }
