@@ -441,7 +441,6 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     }
     // don't generate the token if the last token is still valid with 10 minutes margin
     if (document.previewTokenExpiration < ClDateHelper.getDate().plus({ minutes: 10 })) {
-      const token = ClStringHelper.generateUUID();
       document.previewToken = ClStringHelper.generateUUID();
       // set expiration in 1 hour
       document.previewTokenExpiration = ClDateHelper.getDate().plus({ hours: 1 });

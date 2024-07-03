@@ -75,7 +75,7 @@ function typeOrmConfig(configService: CnCoreConfigService, persistenceEventServi
     username: dbConfig.username,
     password: dbConfig.password,
     database: dbConfig.database,
-    // TODO TO see
+    // disable for start speed, can be enable to synchronize the database
     synchronize: configService.isDev() && false, // only activate synchronization in local
     autoLoadEntities: true,
     maxQueryExecutionTime: 1000, // log query longer than 1s,
