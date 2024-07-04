@@ -1,8 +1,8 @@
-import {Controller, Delete, Get, Param, ParseUUIDPipe, Res} from '@nestjs/common';
-import {CnReport} from './cn-report.entity';
-import {Response} from 'express';
-import {CnProjectAggregateService} from '../cn-project-aggregate.service';
-import {BlResponseHelper, BlRichTextContent} from '@monorepo/back-core-lib';
+import { Controller, Delete, Get, Param, ParseUUIDPipe, Res } from '@nestjs/common';
+import { CnReport } from './cn-report.entity';
+import { Response } from 'express';
+import { CnProjectAggregateService } from '../cn-project-aggregate.service';
+import { BlResponseHelper, BlRichTextContent } from '@monorepo/back-core-lib';
 
 @Controller('reports')
 export class CnReportsController {
@@ -43,7 +43,7 @@ export class CnReportsController {
                         @Param('filename') filename: string,
                         @Res() response: Response): Promise<any> {
     const file = await this.projectAggregator.getReportImage(id, filename);
-    BlResponseHelper.setMessageAndCache(response, file);
+    BlResponseHelper.setFileResponseAndCache(response, file);
   }
 
   /**
@@ -55,7 +55,7 @@ export class CnReportsController {
                        @Param('filename') filename: string,
                        @Res() response: Response): Promise<any> {
     const file = await this.projectAggregator.getReportView(id, filename);
-    BlResponseHelper.setMessageAndCache(response, file);
+    BlResponseHelper.setFileResponseAndCache(response, file);
   }
 
   @Delete(':id')

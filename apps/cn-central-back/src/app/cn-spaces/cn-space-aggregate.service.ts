@@ -8,8 +8,7 @@ import { CnUsersService } from '../cn-users/cn-users.service';
 import { CnSpaceUserService } from './cn-space-user.service';
 import { CnSpaceUser, CnSpaceUserRole } from './cn-space-user.entity';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
-import { BlBadRequestException, BlFile, BlSearchParams } from '@monorepo/back-core-lib';
-import { IncomingMessage } from 'http';
+import { BlBadRequestException, BlFile, BlFileResponse, BlSearchParams } from '@monorepo/back-core-lib';
 import { CnSpaceInvit } from './cn-space-invit.entity';
 import { CnSpaceInvitService } from './cn-space-invit.service';
 import {
@@ -158,7 +157,7 @@ export class CnSpaceAggregateService {
     return updatedSpace;
   }
 
-  public async getPhoto(filename: string): Promise<IncomingMessage> {
+  public async getPhoto(filename: string): Promise<BlFileResponse> {
     return await this.spaceService.getPhoto(filename);
   }
 

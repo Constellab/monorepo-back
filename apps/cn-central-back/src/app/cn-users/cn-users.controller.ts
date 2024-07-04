@@ -11,10 +11,10 @@ import {
   Res,
   UseInterceptors
 } from '@nestjs/common';
-import {CnUsersService} from './cn-users.service';
-import {CnUser, CnUserEditDTO} from './cn-user.entity';
-import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
-import {ClPage, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import { CnUsersService } from './cn-users.service';
+import { CnUser, CnUserEditDTO } from './cn-user.entity';
+import { CnUserCategories } from '../cn-core/decorators/cn-user-category.decorator';
+import { ClPage, ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import {
   BlFile,
   BlParseEnumPipe,
@@ -25,9 +25,9 @@ import {
   BlUploadedFile,
   BlUserCategory
 } from '@monorepo/back-core-lib';
-import {FileInterceptor} from '@nestjs/platform-express';
-import {Response} from 'express';
-import {IsAdmin} from '../../../../hn-hub/src/app/core/decorators/hn-is-admin.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
+import { IsAdmin } from '../../../../hn-hub/src/app/core/decorators/hn-is-admin.decorator';
 
 @Controller('users')
 export class CnUsersController {
@@ -37,6 +37,7 @@ export class CnUsersController {
 
   @Get('current')
   async current(): Promise<CnUser> {
+    console.log('WAOW>>>');
     return this.usersService.getCurrent();
   }
 
@@ -79,18 +80,18 @@ export class CnUsersController {
   public async getUserPhoto(@Param('photoId') photoId: string,
                             @Res() response: Response): Promise<any> {
     const file = await this.usersService.getUserPhoto(photoId);
-    BlResponseHelper.setMessageAndCache(response, file);
+    BlResponseHelper.setFileResponseAndCache(response, file);
   }
 
   @Get('current/2-fa')
   public async get2FA(): Promise<{ enabled: boolean }> {
-    return {enabled: this.usersService.getCurrent().has2FA};
+    return { enabled: this.usersService.getCurrent().has2FA };
   }
 
   @Put('current/2-fa')
   public async set2FA(@Body('enabled') enabled: boolean): Promise<{ enabled: boolean }> {
     const enable = await this.usersService.set2FA(enabled);
-    return {enabled: enable};
+    return { enabled: enable };
   }
 
   @Post('search')

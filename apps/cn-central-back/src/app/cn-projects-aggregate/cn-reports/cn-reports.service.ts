@@ -1,23 +1,23 @@
-import {Injectable, Logger} from '@nestjs/common';
-import {CnReport} from './cn-report.entity';
-import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, Repository} from 'typeorm';
-import {CnProject} from '../cn-projects/cn-project.entity';
-import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
+import { Injectable, Logger } from '@nestjs/common';
+import { CnReport } from './cn-report.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { CnProject } from '../cn-projects/cn-project.entity';
+import { CnExperiment } from '../cn-experiments/cn-experiment.entity';
 import {
   BlAbstractService,
   BlBadRequestException,
   BlFile,
+  BlFileResponse,
   BlQuillMigrator,
   BlRichTextContent
 } from '@monorepo/back-core-lib';
-import {IncomingMessage} from 'http';
-import {CnCreateReportWithConfigDto, CnSaveReportDto, CnSaveReportResultDTO} from './cn-report.dto';
-import {CnReportContent, CnReportViewConfig} from './cn-report-content.class';
-import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
-import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
-import {CnProjectDocumentService} from '../cn-project-documents/cn-project-document.service';
-import {CnProjectDocument, CnProjectDocumentType} from '../cn-project-documents/cn-project-document.entity';
+import { CnCreateReportWithConfigDto, CnSaveReportDto, CnSaveReportResultDTO } from './cn-report.dto';
+import { CnReportContent, CnReportViewConfig } from './cn-report-content.class';
+import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnProjectDocumentService } from '../cn-project-documents/cn-project-document.service';
+import { CnProjectDocument, CnProjectDocumentType } from '../cn-project-documents/cn-project-document.entity';
 
 @Injectable()
 export class CnReportsService extends BlAbstractService<CnReport> {
@@ -35,7 +35,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
       where: {
         projectId: projectId
       },
-      order: {lastModifiedAt: 'DESC' as any}
+      order: { lastModifiedAt: 'DESC' as any }
     });
   }
 
@@ -50,17 +50,17 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   }
 
   public async getReportContent(project: CnProject, id: string): Promise<BlRichTextContent> {
-    const report = await this.findById(id, {document: true});
+    const report = await this.findById(id, { document: true });
     return this.projectDocumentService.getJSONDocumentContent(project, report.document);
   }
 
 
-  async getImage(filename: string, project: CnProject, reportId: string): Promise<IncomingMessage> {
+  async getImage(filename: string, project: CnProject, reportId: string): Promise<BlFileResponse> {
     return await this.projectDocumentService.getDocumentContentByTypeAndName(project,
       CnProjectDocumentType.REPORT_CONTENT, filename, reportId);
   }
 
-  async getView(viewId: string, project: CnProject, reportId: string): Promise<IncomingMessage> {
+  async getView(viewId: string, project: CnProject, reportId: string): Promise<BlFileResponse> {
     return await this.projectDocumentService.getDocumentContentByTypeAndName(project,
       CnProjectDocumentType.REPORT_CONTENT, viewId + '.json', reportId);
   }
@@ -69,7 +69,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   async saveReport(createReportDto: CnCreateReportWithConfigDto, experiments: CnExperiment[],
                    project: CnProject, files: BlFile[]): Promise<CnSaveReportResultDTO> {
 
-    let reportDb: CnReport = await this.findById(createReportDto.report.id, {document: true});
+    let reportDb: CnReport = await this.findById(createReportDto.report.id, { document: true });
     if (reportDb && reportDb.projectId !== project.id) {
       throw new BlBadRequestException('Can\'t change the project of a synced report');
     }
@@ -138,7 +138,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
 
     // store document reference in the report
     report.document = reportDocument;
-    report = await this.updatePartial(report.id, {document: reportDocument});
+    report = await this.updatePartial(report.id, { document: reportDocument });
 
     // manage the images and views of the report
     await this.uploadReportImages(files, report.id, reportDocument, project);
@@ -196,7 +196,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   }
 
   public async deleteReport(id: string): Promise<CnReport> {
-    const report = await this.findById(id, {document: true});
+    const report = await this.findById(id, { document: true });
 
     // no error if report not found for more resilience
     if (!report) {
@@ -219,7 +219,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   }
 
   findByIdAndCheckWithExperiments(id: string): Promise<CnReport> {
-    return this.findByIdAndCheck(id, {experiments: true});
+    return this.findByIdAndCheck(id, { experiments: true });
   }
 
   /**

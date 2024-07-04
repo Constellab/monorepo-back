@@ -1,7 +1,8 @@
-import {Response} from 'express';
-import {IncomingMessage} from 'http';
-import {StreamableFile} from '@nestjs/common';
+import { Response } from 'express';
+import { IncomingMessage } from 'http';
+import { StreamableFile } from '@nestjs/common';
 import { Readable } from 'stream';
+import { BlFileResponse } from '../modules/bl-object-storage/bl-object-storage.class';
 
 /**
  * Class to simplify HTTP response management
@@ -14,6 +15,18 @@ export class BlResponseHelper {
   public static setMessageAndCache(response: Response, incomingMessage: IncomingMessage): void {
     this.setCacheHeaderFor1Week(response);
     this.setMessage(response, incomingMessage);
+  }
+
+  public static setFileResponseAndCache(response: Response, file: BlFileResponse): void {
+    this.setCacheHeaderFor1Week(response);
+    this.setFileResponse(response, file);
+  }
+
+
+  public static setFileResponse(response: Response, file: BlFileResponse): void {
+    response.setHeader('Content-Type', file.contentType);
+    response.setHeader('Content-Length', file.contentLength);
+    file.file.pipe(response);
   }
 
   /**
@@ -37,14 +50,14 @@ export class BlResponseHelper {
    * Return a StreamableFile from an incoming message, useful to be downloaded by the client
    * @param incomingMessage
    */
-  public static getFileResponse(incomingMessage: IncomingMessage) : StreamableFile{
+  public static getFileResponse(incomingMessage: Readable): StreamableFile {
     return new StreamableFile(incomingMessage);
   }
 
   /**
    * Return a StreamableFile from a string, useful to be downloaded by the client
    */
-  public static fileResponseFromString(fileContent: string) : StreamableFile{
+  public static fileResponseFromString(fileContent: string): StreamableFile {
     const readableStream = new Readable();
     readableStream.push(fileContent);
     readableStream.push(null); // indicates end of file

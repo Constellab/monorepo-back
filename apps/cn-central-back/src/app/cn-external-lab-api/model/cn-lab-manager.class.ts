@@ -1,5 +1,5 @@
 import { CnLabBackupFrequency } from '../../cn-lab-instances/backup/cn-lab-backup.dto';
-import { BlBucketConfig } from '@monorepo/back-core-lib';
+import { BlBucketConfig, BlS3BucketConfig } from '@monorepo/back-core-lib';
 
 
 /**
@@ -117,25 +117,7 @@ export interface CnLabManagerBackupInfoDTO {
 
 export interface CnLabManagerBackupBucketDTO {
   backupFrequency: CnLabBackupFrequency;
-  bucketConfig: CnLabManagerBucketConfig;
-}
-
-export interface CnAzureBlobConfigDTO {
-  accountName: string;
-  containerName: string;
-  accountKey: string;
-  region: string;
-}
-
-/**
- * Object that represent a S3 or Azure bucket config
- */
-export type CnLabManagerBucketConfig = {
-  type: 's3';
-  config: BlBucketConfig;
-} | {
-  type: 'azureBlob';
-  config: CnAzureBlobConfigDTO;
+  bucketConfig: BlBucketConfig;
 }
 
 export interface CnLabManagerRestoreBackupConfigDTO {
@@ -147,7 +129,7 @@ export interface CnLabManagerRestoreBackupConfigDTO {
 
 export interface CnLabManagerRestoreBackupDTO {
   version: number;
-  bucketConfig: BlBucketConfig;
+  bucketConfig: BlS3BucketConfig;
   s3Prefix: string;
   options: {
     restoreDb: boolean;

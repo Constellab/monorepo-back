@@ -22,10 +22,10 @@ import {
   BlRichTextUploadedImageResponse,
   BlUploadedFile
 } from '@monorepo/back-core-lib';
-import {HnBrick} from './brick/hn-brick.entity';
-import {HnBrickVersion, HnNewVersionDTO} from './brick-version/hn-brick-version.entity';
-import {HnDocumentation, HnDocumentationSearchDTO} from './documentation/hn-documentation.entity';
-import {HnNode} from './folder/hn-folder.dto';
+import { HnBrick } from './brick/hn-brick.entity';
+import { HnNewVersionDTO } from './brick-version/hn-brick-version.entity';
+import { HnDocumentationSearchDTO } from './documentation/hn-documentation.entity';
+import { HnNode } from './folder/hn-folder.dto';
 import {
   HnBrickDto,
   HnBrickVersionDownloadDTO,
@@ -35,20 +35,17 @@ import {
   HnIsActualBrickAndNewVersionDTO,
   HnTechnicalDocInputDTO
 } from './brick/hn-brick.dto';
-import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc-typing.entity';
-import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
-import {Request, Response} from 'express';
-import {HnBrickAggregateService} from './hn-brick-aggregate.service';
-import {HnBrickUserInvite} from './brick-user-invite/hn-brick-user-invite.entity';
-import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
-import {HnUser} from '../users/hn-user.entity';
-import {ClPage} from '@monorepo/core-lib';
-import {FileInterceptor} from '@nestjs/platform-express';
-import {HnDocumentationDto} from './documentation/hn-documentation.dto';
-import {HnGeneratedDocDto} from '../core/model/entities/hn-generated-doc.dto';
-import {HnBrickVersionDto} from './brick-version/hn-brick-version.dto';
-import {HnBrickUserInviteDto} from './brick-user-invite/hn-brick-user-invite.dto';
-import {HnUserDto} from '../users/hn-user.dto';
+import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
+import { Request, Response } from 'express';
+import { HnBrickAggregateService } from './hn-brick-aggregate.service';
+import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
+import { ClPage } from '@monorepo/core-lib';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { HnDocumentationDto } from './documentation/hn-documentation.dto';
+import { HnGeneratedDocDto } from '../core/model/entities/hn-generated-doc.dto';
+import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
+import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.dto';
+import { HnUserDto } from '../users/hn-user.dto';
 
 @Controller('brick')
 @UseGuards(HnIsAdminGuard)
@@ -111,6 +108,7 @@ export class HnBrickController {
                      @Param('version') version: string): Promise<HnDocumentationDto> {
     return this.brickAggregateService.findFirstDoc(brickName, version);
   }
+
   @Post()
   create(@Body(new BlParsePipe(HnCreateBrickDTO)) createBrick: HnCreateBrickDTO): Promise<HnBrick> {
     return this.brickAggregateService.createBrick(createBrick);
@@ -160,17 +158,17 @@ export class HnBrickController {
   @BlPublic()
   @Get('image/*')
   public async getImage(@Req() request: Request,
-                   @Res() response: Response): Promise<any> {
+                        @Res() response: Response): Promise<any> {
     const splitIndex = request.url.indexOf('image/');
-    const filename = request.url.slice(splitIndex+6);
+    const filename = request.url.slice(splitIndex + 6);
     const file = await this.brickAggregateService.getBrickImage(filename);
-    BlResponseHelper.setMessageAndCache(response, file);
+    BlResponseHelper.setFileResponseAndCache(response, file);
   }
 
   @Delete('image/*')
   public async deleteImage(@Req() request: Request): Promise<void> {
     const splitIndex = request.url.indexOf('image/');
-    const filename = request.url.slice(splitIndex+6);
+    const filename = request.url.slice(splitIndex + 6);
     await this.brickAggregateService.deleteBrickImage(filename);
   }
 

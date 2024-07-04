@@ -6,10 +6,10 @@ import {
   BlRichTextUploadedImageResponse,
   BlRichTextUploadFileResponse
 } from '@monorepo/back-core-lib';
-import {HnAbstractFileService} from './hn-abstract-file.service';
-import {Body, Delete, Get, Param, ParseUUIDPipe, Put, Res} from '@nestjs/common';
-import {Response} from 'express';
-import {HnAbstractFileEntityDTO} from './hn-abstract-file.dto';
+import { HnAbstractFileService } from './hn-abstract-file.service';
+import { Body, Delete, Get, Param, ParseUUIDPipe, Put, Res } from '@nestjs/common';
+import { Response } from 'express';
+import { HnAbstractFileEntityDTO } from './hn-abstract-file.dto';
 
 export abstract class HnAbstractFileController<T extends BlEntityWithId> {
 
@@ -34,9 +34,9 @@ export abstract class HnAbstractFileController<T extends BlEntityWithId> {
     @Res() res: Response): Promise<any> {
     const file = await this.fileService.getFile(entityId, fileName);
     res.set({
-      'Content-Disposition': `attachment; filename="${fileName}"`,
+      'Content-Disposition': `attachment; filename="${fileName}"`
     });
-    BlResponseHelper.setMessage(res, file);
+    BlResponseHelper.setFileResponse(res, file);
   }
 
   //-------------------------------------------- FILE --------------------------------------------

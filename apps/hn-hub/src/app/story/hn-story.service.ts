@@ -1,9 +1,9 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {HnStory, HnStoryCategory, HnStoryStatus} from './hn-story.entity';
-import {DataSource, EntityManager, FindOptionsOrder, FindOptionsWhere, In, Like, Repository} from 'typeorm';
-import {HnTopicService} from '../topic/hn-topic.service';
-import {ClPage, ClStringHelper} from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { HnStory, HnStoryCategory, HnStoryStatus } from './hn-story.entity';
+import { DataSource, EntityManager, FindOptionsOrder, FindOptionsWhere, In, Like, Repository } from 'typeorm';
+import { HnTopicService } from '../topic/hn-topic.service';
+import { ClPage, ClStringHelper } from '@monorepo/core-lib';
 import {
   BlAbstractPaginatedService,
   BlBadRequestException,
@@ -13,22 +13,22 @@ import {
   BlRichTextUploadedImageResponse,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
-import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
-import {HnCreateStoryDto, HnStoryDto, HnStoryFilter} from './hn-story.dto';
-import {HnTopicDto} from '../topic/hn-topic.dto';
-import {HnTopic} from '../topic/hn-topic.entity';
-import {DateTime} from 'luxon';
-import {HnStoryAuthorService} from '../story-author/hn-story-author.service';
-import {HnStoryCoAuthor} from '../story-author/hn-story-author.entity';
-import {HnStoryCoAuthorInvite} from '../story-author-invite/hn-story-author-invite.entity';
-import {HnInviteStatus} from '../core/model/config/hn-invite-status.enum';
-import {HnSiteMapEnumChangefreq, HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
-import {HnFrontService} from '../core/service/hn-front.service';
-import {HnFileStoryService} from '../file-aggregate/file-story/hn-file-story.service';
-import {HnUploadFileResponseDto} from '../file-aggregate/file-core/hn-abstract-file.dto';
-import {HnFileStory} from '../file-aggregate/file-story/hn-file-story.entity';
-import {HnFileType} from '../file-aggregate/file-core/hn-abstract-file.entity';
-import {HnStoryFileService} from '../story-file/hn-story-file.service';
+import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
+import { HnCreateStoryDto, HnStoryDto, HnStoryFilter } from './hn-story.dto';
+import { HnTopicDto } from '../topic/hn-topic.dto';
+import { HnTopic } from '../topic/hn-topic.entity';
+import { DateTime } from 'luxon';
+import { HnStoryAuthorService } from '../story-author/hn-story-author.service';
+import { HnStoryCoAuthor } from '../story-author/hn-story-author.entity';
+import { HnStoryCoAuthorInvite } from '../story-author-invite/hn-story-author-invite.entity';
+import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
+import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
+import { HnFrontService } from '../core/service/hn-front.service';
+import { HnFileStoryService } from '../file-aggregate/file-story/hn-file-story.service';
+import { HnUploadFileResponseDto } from '../file-aggregate/file-core/hn-abstract-file.dto';
+import { HnFileStory } from '../file-aggregate/file-story/hn-file-story.entity';
+import { HnFileType } from '../file-aggregate/file-core/hn-abstract-file.entity';
+import { HnStoryFileService } from '../story-file/hn-story-file.service';
 
 
 @Injectable()
@@ -464,7 +464,7 @@ export class HnStoryService {
 
   //////////////////////////////////// ADMIN //////////////////////////////////////////
   async migrateStoryBucketItemsNames(): Promise<any> {
-    const items: any[] = (await this.storyFileService.getAllBucketItemsName()).map(i => [i.Key, i.Size]);
+    const items: any[] = (await this.storyFileService.getAllBucketItemsName()).map(i => [i.name, i.size]);
     let modif = 0;
     for (const [fileName, size] of items) {
       const storyId = fileName.split('/')[0];

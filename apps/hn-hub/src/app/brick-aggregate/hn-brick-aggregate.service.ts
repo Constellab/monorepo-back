@@ -1,5 +1,5 @@
-import {Injectable} from '@nestjs/common';
-import {HnBrickService} from './brick/hn-brick.service';
+import { Injectable } from '@nestjs/common';
+import { HnBrickService } from './brick/hn-brick.service';
 import {
   HnBrickDto,
   HnBrickVersionDownloadDTO,
@@ -9,49 +9,49 @@ import {
   HnIsActualBrickAndNewVersionDTO,
   HnTechnicalDocInputDTO
 } from './brick/hn-brick.dto';
-import {HnBrick, HnBrickVisibility} from './brick/hn-brick.entity';
-import {HnFolderDto, HnNode, HnNodeDTO} from './folder/hn-folder.dto';
-import {HnDocumentation, HnDocumentationDTO, HnDocumentationSearchDTO} from './documentation/hn-documentation.entity';
-import {HnBrickVersion, HnNewVersionDTO, HnReferenceDTO} from './brick-version/hn-brick-version.entity';
-import {HnBrickMajorVersionService} from './brick-major-version/hn-brick-major-version.service';
-import {HnBrickVersionService} from './brick-version/hn-brick-version.service';
-import {ClPage, ClStringHelper} from '@monorepo/core-lib';
-import {DataSource, EntityManager, FindOptionsWhere, In, IsNull, Like} from 'typeorm';
-import {HnBrickMajorVersion} from './brick-major-version/hn-brick-major-version.entity';
-import {HnFolderService} from './folder/hn-folder.service';
-import {HnFolder} from './folder/hn-folder.entity';
-import {HnDocumentationService} from './documentation/hn-documentation.service';
+import { HnBrick, HnBrickVisibility } from './brick/hn-brick.entity';
+import { HnFolderDto, HnNode, HnNodeDTO } from './folder/hn-folder.dto';
+import { HnDocumentation, HnDocumentationDTO, HnDocumentationSearchDTO } from './documentation/hn-documentation.entity';
+import { HnBrickVersion, HnNewVersionDTO, HnReferenceDTO } from './brick-version/hn-brick-version.entity';
+import { HnBrickMajorVersionService } from './brick-major-version/hn-brick-major-version.service';
+import { HnBrickVersionService } from './brick-version/hn-brick-version.service';
+import { ClPage, ClStringHelper } from '@monorepo/core-lib';
+import { DataSource, EntityManager, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
+import { HnBrickMajorVersion } from './brick-major-version/hn-brick-major-version.entity';
+import { HnFolderService } from './folder/hn-folder.service';
+import { HnFolder } from './folder/hn-folder.entity';
+import { HnDocumentationService } from './documentation/hn-documentation.service';
 import {
   BlBadRequestException,
   BlFile,
+  BlFileResponse,
   BlRichTextContent,
   BlRichTextUploadedImageResponse,
   BlUnauthorizedException,
   BlVersion
 } from '@monorepo/back-core-lib';
-import {IncomingMessage} from 'http';
-import {HnBrickUserService} from './brick-user/hn-brick-user.service';
-import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
-import {HnBrickUserInviteService} from './brick-user-invite/hn-brick-user-invite.service';
-import {HnBrickUserInvite} from './brick-user-invite/hn-brick-user-invite.entity';
-import {HnBrickUser} from './brick-user/hn-brick-user.entity';
-import {HnSiteMapEnumChangefreq, HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
-import {HnUser} from '../users/hn-user.entity';
-import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
-import {HnTechnicalFolderService} from '../technical-folder/hn-technical-folder.service';
-import {HnSpaceUserService} from '../space-aggregate/space-user/hn-space-user.service';
-import {HnErrorText} from '../core/model/config/hn-error-text.class';
-import {HnFrontService} from '../core/service/hn-front.service';
-import {HnSpaceAggregateService} from '../space-aggregate/hn-space-aggregate.service';
-import {HnUserService} from '../users/hn-user.service';
-import {HnDocumentationDto} from './documentation/hn-documentation.dto';
-import {HnGeneratedDocDto} from '../core/model/entities/hn-generated-doc.dto';
-import {HnBrickUserInviteDto} from './brick-user-invite/hn-brick-user-invite.dto';
-import {HnBrickVersionDto} from './brick-version/hn-brick-version.dto';
-import {HnFileDocumentationService} from '../file-aggregate/file-documentation/hn-file-documentation.service';
-import {HnUploadFileResponseDto} from '../file-aggregate/file-core/hn-abstract-file.dto';
-import {HnFileDocumentation} from '../file-aggregate/file-documentation/hn-file-documentation.entity';
-import {HnFileType} from '../file-aggregate/file-core/hn-abstract-file.entity';
+import { HnBrickUserService } from './brick-user/hn-brick-user.service';
+import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
+import { HnBrickUserInviteService } from './brick-user-invite/hn-brick-user-invite.service';
+import { HnBrickUserInvite } from './brick-user-invite/hn-brick-user-invite.entity';
+import { HnBrickUser } from './brick-user/hn-brick-user.entity';
+import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
+import { HnUser } from '../users/hn-user.entity';
+import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
+import { HnTechnicalFolderService } from '../technical-folder/hn-technical-folder.service';
+import { HnSpaceUserService } from '../space-aggregate/space-user/hn-space-user.service';
+import { HnErrorText } from '../core/model/config/hn-error-text.class';
+import { HnFrontService } from '../core/service/hn-front.service';
+import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
+import { HnUserService } from '../users/hn-user.service';
+import { HnDocumentationDto } from './documentation/hn-documentation.dto';
+import { HnGeneratedDocDto } from '../core/model/entities/hn-generated-doc.dto';
+import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.dto';
+import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
+import { HnFileDocumentationService } from '../file-aggregate/file-documentation/hn-file-documentation.service';
+import { HnUploadFileResponseDto } from '../file-aggregate/file-core/hn-abstract-file.dto';
+import { HnFileDocumentation } from '../file-aggregate/file-documentation/hn-file-documentation.entity';
+import { HnFileType } from '../file-aggregate/file-core/hn-abstract-file.entity';
 
 @Injectable()
 export class HnBrickAggregateService {
@@ -254,7 +254,7 @@ export class HnBrickAggregateService {
     return this.brickService.editBrickImage(id, file);
   }
 
-  async getBrickImage(filename: string): Promise<IncomingMessage> {
+  async getBrickImage(filename: string): Promise<BlFileResponse> {
     return this.brickService.getBrickImage(filename);
   }
 
@@ -932,7 +932,7 @@ export class HnBrickAggregateService {
 
   ////////////////////////////////////////// ADMIN /////////////////////////////////
   public async migrateDocBucketItemsName(): Promise<any>{
-    const items: any[] = (await this.fileDocumentationService.getAllBucketItemsName()).map(i => [i.Key, i.Size]);
+    const items: any[] = (await this.fileDocumentationService.getAllBucketItemsName()).map(i => [i.name, i.size]);
     let modif = 0;
     for(const [fileName, size] of items){
       if(fileName.includes('brick'))

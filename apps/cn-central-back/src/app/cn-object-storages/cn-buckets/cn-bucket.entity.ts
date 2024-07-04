@@ -4,11 +4,16 @@ import {
   CnCloudProviderRegion
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnBucketCredentials } from '../cn-bucket-credential/cn-bucket-credential.entity';
-import { BlBucketConfig, BlBucketType } from '@monorepo/back-core-lib';
+import {
+  BlAzureBlobContainerConfig,
+  BlBucketConfig,
+  BlBucketType,
+  BlS3BucketConfig,
+  BLTrim
+} from '@monorepo/back-core-lib';
 import { Type } from 'class-transformer';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
 import { CnLabInstance } from '../../cn-lab-instances/cn-lab-instance.entity';
-import { CnAzureBlobConfigDTO } from '../../cn-external-lab-api/model/cn-lab-manager.class';
 
 export enum CnBucketContentType {
   LAB_BACKUP = 'LAB_BACKUP',
@@ -38,7 +43,7 @@ export class CnBucket extends CnBaseEntity {
 
   // relation options to load required information for the bucket
   public static configRelation: FindOptionsRelations<CnBucket> = {
-    region: {city: {country: true}},
+    region: { city: { country: true } },
     labInstance: true,
     credentials: true
   };
@@ -46,31 +51,46 @@ export class CnBucket extends CnBaseEntity {
   public static LAB_BUCKET_NAME = 'projects-storage';
 
   @Type(() => CnCloudProviderRegion)
-  @ManyToOne(() => CnCloudProviderRegion, {nullable: true})
+  @ManyToOne(() => CnCloudProviderRegion, { nullable: true })
   region?: CnCloudProviderRegion;
 
   @Type(() => CnLabInstance)
-  @ManyToOne(() => CnLabInstance, {nullable: true})
+  @ManyToOne(() => CnLabInstance, { nullable: true })
   labInstance?: CnLabInstance;
 
   @Type(() => CnBucketCredentials)
-  @ManyToOne(() => CnBucketCredentials, {nullable: false})
+  @ManyToOne(() => CnBucketCredentials, { nullable: false })
   credentials: CnBucketCredentials;
 
-  @Column({nullable: false, length: 100, update: false})
+  @BLTrim()
+  @Column({ nullable: false, length: 100, update: false })
   name: string;
 
-  @Column({nullable: false, length: 50})
+  @Column({ nullable: false, length: 50 })
   contentType: CnBucketContentType;
 
   @Column({
     type: 'enum', enum: BlBucketType, nullable: false,
-    default: BlBucketType.NORMAL,
+    default: BlBucketType.NORMAL
   })
   bucketType: BlBucketType;
 
-  public getS3BucketConfig(): BlBucketConfig {
-    if(!this.isS3Bucket()){
+  public getBucketConfig(): BlBucketConfig {
+    if (this.bucketType === BlBucketType.AZURE) {
+      return {
+        type: 'azureBlob',
+        config: this.getAzureBlobConfig()
+      };
+    } else {
+      return {
+        type: 's3',
+        config: this.getS3BucketConfig()
+      };
+    }
+  }
+
+  public getS3BucketConfig(): BlS3BucketConfig {
+    if (!this.isS3Bucket()) {
       throw new Error('The bucket is not a S3 bucket');
     }
 
@@ -88,9 +108,9 @@ export class CnBucket extends CnBaseEntity {
         bucket: this.name,
         credentials: {
           accessKeyId: this.credentials.accessKeyId,
-          secretAccessKey: this.credentials.secretAccessKey,
+          secretAccessKey: this.credentials.secretAccessKey
         },
-        bucketType: this.bucketType,
+        bucketType: this.bucketType
       };
     } else {
       if (this.labInstance == null) {
@@ -102,15 +122,15 @@ export class CnBucket extends CnBaseEntity {
         bucket: this.name,
         credentials: {
           accessKeyId: this.credentials.accessKeyId,
-          secretAccessKey: this.credentials.secretAccessKey,
+          secretAccessKey: this.credentials.secretAccessKey
         },
-        bucketType: this.bucketType,
+        bucketType: this.bucketType
       };
     }
   }
 
-  public getAzureBlobConfig(): CnAzureBlobConfigDTO {
-    if(this.bucketType !== BlBucketType.AZURE){
+  public getAzureBlobConfig(): BlAzureBlobContainerConfig {
+    if (this.bucketType !== BlBucketType.AZURE) {
       throw new Error('The bucket is not an azure blob');
     }
 
@@ -124,7 +144,7 @@ export class CnBucket extends CnBaseEntity {
       containerName: this.name, // container name = bucket name
       accountKey: this.credentials.secretAccessKey,
       region: this.region.technicalName
-    }
+    };
   }
 
   getLocationName(): string {
@@ -143,7 +163,7 @@ export class CnBucket extends CnBaseEntity {
     }
   }
 
-  getLocationCityName(): string{
+  getLocationCityName(): string {
     if (this.isCloudBucket()) {
       return this.region.city.name;
     } else {
@@ -151,7 +171,7 @@ export class CnBucket extends CnBaseEntity {
     }
   }
 
-  getLocationCloudProviderName(): string{
+  getLocationCloudProviderName(): string {
     if (this.isCloudBucket()) {
       return this.region.cloudProvider.name;
     } else {
@@ -171,7 +191,7 @@ export class CnBucket extends CnBaseEntity {
   }
 
   isCloudBucket(): boolean {
-    return this.bucketType === BlBucketType.NORMAL;
+    return [BlBucketType.NORMAL, BlBucketType.AZURE].includes(this.bucketType);
   }
 
   isLabBucket(): boolean {

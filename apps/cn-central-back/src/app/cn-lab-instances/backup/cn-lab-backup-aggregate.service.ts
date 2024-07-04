@@ -8,7 +8,7 @@ import {
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnLabBackupOption } from './cn-lab-backup-option.entity';
 import { CnLabBackupHistory } from './cn-lab-backup-history.entity';
-import { BlBadRequestException, BlObjectStorageService } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlBucketConfig, BlObjectStorageService } from '@monorepo/back-core-lib';
 import { ClPageI } from '@monorepo/core-lib';
 import { CnLabManagerService } from '../cn-lab-manager.service';
 import {
@@ -20,7 +20,6 @@ import {
 import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {
   CnLabManagerBackupInfoDTO,
-  CnLabManagerBucketConfig,
   CnLabManagerRestoreBackupConfigDTO,
   CnLabManagerRestoreBackupDTO
 } from '../../cn-external-lab-api/model/cn-lab-manager.class';
@@ -164,7 +163,7 @@ export class CnLabBackupAggregateService {
     };
   }
 
-  private bucketToBackupInfo(bucket: CnBucket): CnLabManagerBucketConfig {
+  private bucketToBackupInfo(bucket: CnBucket): BlBucketConfig {
     if (bucket.isS3Bucket()) {
       return {
         type: 's3',
@@ -197,7 +196,7 @@ export class CnLabBackupAggregateService {
                                 bucket: CnBucket): Promise<CnLabCheckBackupSizeDTO> {
     const prefix = this.backupOptionService.getBackupS3Prefix(labInstance);
     const objectsInfo = await this.objectStorageService.getObjectsSizeByPrefix(
-      bucket.getS3BucketConfig(), prefix);
+      bucket.getBucketConfig(), prefix);
     const backup1Status = await this.getBackupStatus(labInstance, frequency, bucket.region);
 
     return CnLabCheckBackupSizeDTO.fromBackupStatusDTO(backup1Status, objectsInfo.totalSize, objectsInfo.nbObjects);
@@ -228,7 +227,7 @@ export class CnLabBackupAggregateService {
     await this.datasource.transaction(async entityManager => {
       await this.backupHistoryService.deleteLabBackupHistoryByBucket(labInstanceId, bucket.id, entityManager);
       try {
-        await this.objectStorageService.deleteObjectsByPrefix(bucket.getS3BucketConfig(), prefix);
+        await this.objectStorageService.deleteObjectsByPrefix(bucket.getBucketConfig(), prefix);
       } catch (e) {
         Logger.error(`Error while deleting the backup file in bucket ${bucket.id} for lab instance ${labInstanceId}. Error ${e}`);
         // eslint-disable-next-line max-len

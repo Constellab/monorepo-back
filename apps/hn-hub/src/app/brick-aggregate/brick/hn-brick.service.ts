@@ -1,24 +1,24 @@
-import {Injectable} from '@nestjs/common';
-import {HnBrick} from './hn-brick.entity';
-import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, FindOptionsWhere, Repository} from 'typeorm';
-import {HnErrorText} from '../../core/model/config/hn-error-text.class';
-import {HnBrickDto, HnCreateBrickDTO, HnEditBrickDTO} from './hn-brick.dto';
-import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
+import { Injectable } from '@nestjs/common';
+import { HnBrick } from './hn-brick.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, FindOptionsWhere, Repository } from 'typeorm';
+import { HnErrorText } from '../../core/model/config/hn-error-text.class';
+import { HnBrickDto, HnCreateBrickDTO, HnEditBrickDTO } from './hn-brick.dto';
+import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import {
   BlAbstractPaginatedService,
   BlBadRequestException,
   BlBucketConfig,
   BlBucketType,
   BlFile,
+  BlFileResponse,
   BlImageHelper,
   BlObjectStorageService,
   BlRichTextUploadedImageResponse,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
-import {ClPage, ClStringHelper} from '@monorepo/core-lib';
-import {HnCoreConfigService} from '../../core/modules/core-config/hn-core-config.service';
-import {IncomingMessage} from 'http';
+import { ClPage, ClStringHelper } from '@monorepo/core-lib';
+import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
 
 @Injectable()
 export class HnBrickService {
@@ -35,7 +35,7 @@ export class HnBrickService {
       throw new BlBadRequestException(HnErrorText.BRICK_NAME_INVALID);
     }
 
-    const brickExist: HnBrick = await this.bricksRepository.findOne({where: {name: createdBrick.name}});
+    const brickExist: HnBrick = await this.bricksRepository.findOne({ where: { name: createdBrick.name } });
 
     if (brickExist != null) {
       throw new BlBadRequestException(HnErrorText.BRICK_ALREADY_EXIST);
@@ -58,17 +58,17 @@ export class HnBrickService {
   }
 
   async findOne(whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>): Promise<HnBrick> {
-    return this.bricksRepository.findOne({where: whereConditions});
+    return this.bricksRepository.findOne({ where: whereConditions });
   }
 
   async findByNameCentral(name: string): Promise<HnBrick> {
     return await this.bricksRepository.findOne({
-      where: {name: name}
+      where: { name: name }
     });
   }
 
   async findBrickForInviteById(id: string): Promise<HnBrick> {
-    return this.bricksRepository.findOneBy({id: id});
+    return this.bricksRepository.findOneBy({ id: id });
   }
 
   async editBrickImage(id: string, image: BlFile): Promise<BlRichTextUploadedImageResponse> {
@@ -79,7 +79,7 @@ export class HnBrickService {
     const filename = await this.objectStorageService.uploadObject(
       [this.getBucketConfig(), this.getBackupBucketConfig()], image);
 
-    const brick = await this.bricksRepository.findOneBy({id: id});
+    const brick = await this.bricksRepository.findOneBy({ id: id });
     await this.deleteBrickImage(brick.imageLink);
     brick.imageLink = filename;
     await this.bricksRepository.save(brick);
@@ -92,14 +92,14 @@ export class HnBrickService {
     };
   }
 
-  async getBrickImage(filename: string): Promise<IncomingMessage> {
-    return await this.objectStorageService.getObject(this.getBucketConfig(), filename);
+  async getBrickImage(filename: string): Promise<BlFileResponse> {
+    return await this.objectStorageService.downloadObject(this.getBucketConfig(), filename);
   }
 
   async deleteBrickImage(filename: string, brickId: string = null): Promise<void> {
     await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], filename);
-    if(brickId){
-      const brick = await this.bricksRepository.findOneBy({id: brickId});
+    if (brickId) {
+      const brick = await this.bricksRepository.findOneBy({ id: brickId });
       brick.imageLink = null;
       await this.bricksRepository.save(brick);
     }
@@ -110,7 +110,7 @@ export class HnBrickService {
     brick.gitRepo = editedBrick.gitRepo;
     brick.pipRepo = editedBrick.pipRepo;
     brick.visibility = editedBrick.visibility;
-    if(brick.visibility == 'public'){
+    if (brick.visibility == 'public') {
       brick.space = null;
     } else {
       brick.space = editedBrick.space;
@@ -136,21 +136,27 @@ export class HnBrickService {
 
   private getBucketConfig(): BlBucketConfig {
     return {
-      endpoint: this.configService.getDefaultObjectStorageEndPoint(),
-      region: this.configService.getDefaultObjectStorageRegion(),
-      bucket: this.configService.getDocImageObjectStorageBucket(),
-      credentials: this.configService.getDefaultObjectStorageCredentials(),
-      bucketType: BlBucketType.NORMAL,
+      type: 's3',
+      config: {
+        endpoint: this.configService.getDefaultObjectStorageEndPoint(),
+        region: this.configService.getDefaultObjectStorageRegion(),
+        bucket: this.configService.getDocImageObjectStorageBucket(),
+        credentials: this.configService.getDefaultObjectStorageCredentials(),
+        bucketType: BlBucketType.NORMAL
+      }
     };
   }
 
   private getBackupBucketConfig(): BlBucketConfig {
     return {
-      endpoint: this.configService.getBackupObjectStorageEndPoint(),
-      region: this.configService.getBackupObjectStorageRegion(),
-      bucket: this.configService.getDocImageObjectStorageBackupBucket(),
-      credentials: this.configService.getDefaultObjectStorageCredentials(),
-      bucketType: BlBucketType.NORMAL
+      type: 's3',
+      config: {
+        endpoint: this.configService.getBackupObjectStorageEndPoint(),
+        region: this.configService.getBackupObjectStorageRegion(),
+        bucket: this.configService.getDocImageObjectStorageBackupBucket(),
+        credentials: this.configService.getDefaultObjectStorageCredentials(),
+        bucketType: BlBucketType.NORMAL
+      }
     };
   }
 }

@@ -1,6 +1,7 @@
-import {Injectable} from '@nestjs/common';
-import {BlBucketConfig, BlObjectStorageService} from '../bl-object-storage/bl-object-storage.service';
-import {EntityManager} from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
+import { BlBucketConfig } from '../bl-object-storage/bl-object-storage.class';
+import { BlObjectStorageService } from '../bl-object-storage/bl-object-storage.service';
 
 @Injectable()
 export class BlDbBackupService {
@@ -13,7 +14,7 @@ export class BlDbBackupService {
                         filename: string): Promise<void> {
     const dbJson = await this.exportDbAsJson(entityManager);
 
-    await this.objectStorageService.uploadJson(bucketConfig, dbJson, {filename: filename});
+    await this.objectStorageService.uploadJson(bucketConfig, dbJson, { filename: filename });
   }
 
   private async exportDbAsJson(entityManager: EntityManager): Promise<any> {

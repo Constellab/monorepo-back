@@ -209,7 +209,7 @@ export class CnProjectsController {
                                    @Param('documentName') documentName: string,
                                    @Res() response: Response): Promise<any> {
     const file = await this.projectAggregate.getDescriptionImage(projectId, documentName);
-    BlResponseHelper.setMessageAndCache(response, file);
+    BlResponseHelper.setFileResponseAndCache(response, file);
   }
 
   /////////////////////////////// COMMENTS ///////////////////////////////////////////
@@ -230,7 +230,7 @@ export class CnProjectsController {
                                @Param('documentName') documentName: string,
                                @Res() response: Response): Promise<any> {
     const file = await this.projectAggregate.getCommentImage(documentName, projectId);
-    BlResponseHelper.setMessageAndCache(response, file);
+    BlResponseHelper.setFileResponseAndCache(response, file);
   }
 
   @Post(':projectId/comment/')
@@ -277,15 +277,17 @@ export class CnProjectsController {
                                @Param('filename') filename: string,
                                @Res() response: Response): Promise<any> {
     const file = await this.projectAggregate.getUploadedDocument(projectId, filename);
-    BlResponseHelper.setMessage(response, file);
+    BlResponseHelper.setFileResponse(response, file);
   }
 
   @Get(':projectId/document/download/:filename(*)')
   public async downloadDocument(@Param('projectId') projectId: string,
-                                @Param('filename') filename: string): Promise<StreamableFile> {
+                                @Param('filename') filename: string,
+                                @Res() response: Response): Promise<StreamableFile> {
     const file = await this.projectAggregate.getUploadedDocument(projectId, filename);
 
-    return BlResponseHelper.getFileResponse(file);
+    // use as any as this still works
+    return BlResponseHelper.getFileResponse(file.file as any);
   }
 
 
@@ -367,7 +369,7 @@ export class CnProjectsController {
                                           @Param('documentName') documentName: string,
                                           @Res() response: Response): Promise<any> {
     const file = await this.projectAggregate.getConstellabDocumentContentDocument(documentId, documentName);
-    BlResponseHelper.setMessage(response, file);
+    BlResponseHelper.setFileResponse(response, file);
   }
 
   ////////////////////////////////////////////// DOCUMENT PREVIEW  /////////////////////////////////////////////
@@ -382,7 +384,7 @@ export class CnProjectsController {
   public async getDocumentPreview(@Param('token') token: string,
                                   @Res() response: Response): Promise<any> {
     const file = await this.projectAggregate.getDocumentByPreviewToken(token);
-    BlResponseHelper.setMessage(response, file);
+    BlResponseHelper.setFileResponse(response, file);
   }
 
 

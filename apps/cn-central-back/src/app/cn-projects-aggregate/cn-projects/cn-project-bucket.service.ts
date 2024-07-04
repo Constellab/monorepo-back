@@ -52,16 +52,17 @@ export class CnProjectBucketService {
 
   public async getAndCheckProjectBucketConfig(rootProjectId: string): Promise<BlBucketConfig[]> {
     const bucket = await this.getAndCheckProjectBucket(rootProjectId);
-    const configs = [bucket.mainStorage.getS3BucketConfig()];
+    const configs = [bucket.mainStorage.getBucketConfig()];
     if (bucket.backupStorage) {
-      configs.push(bucket.backupStorage.getS3BucketConfig());
+      configs.push(bucket.backupStorage.getBucketConfig());
     }
     return configs;
   }
 
+
   public async getAndCheckProjectMainBucketConfig(rootProjectId: string): Promise<BlBucketConfig> {
     const bucket = await this.getAndCheckProjectBucket(rootProjectId);
-    return bucket.mainStorage.getS3BucketConfig();
+    return bucket.mainStorage.getBucketConfig();
   }
 
   public async findProjectWithStorageById(projectId: string): Promise<CnProject> {

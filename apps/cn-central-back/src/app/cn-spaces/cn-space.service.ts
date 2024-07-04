@@ -1,23 +1,23 @@
-import {Injectable} from '@nestjs/common';
-import {CnSpace, CnSpaceType} from './cn-space.entity';
-import {InjectRepository} from '@nestjs/typeorm';
-import {DeleteResult, EntityManager, Like, Repository} from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { CnSpace, CnSpaceType } from './cn-space.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DeleteResult, EntityManager, Like, Repository } from 'typeorm';
 import {
   BlAbstractService,
   BlBadRequestException,
   BlBucketConfig,
   BlBucketType,
   BlFile,
+  BlFileResponse,
   BlObjectStorageService,
   BlSearchBuilder,
   BlSearchParams
 } from '@monorepo/back-core-lib';
-import {ClPage} from '@monorepo/core-lib';
-import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import {IncomingMessage} from 'http';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { ClPage } from '@monorepo/core-lib';
+import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnBucket } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 @Injectable()
 export class CnSpaceService extends BlAbstractService<CnSpace> {
@@ -28,7 +28,7 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     super(repository, CnSpace);
   }
 
-  public async createBasicSpace(name: string,defaultProjectBucket: CnBucket,
+  public async createBasicSpace(name: string, defaultProjectBucket: CnBucket,
                                 defaultProjectBackupBucket: CnBucket | null, entityManager: EntityManager): Promise<CnSpace> {
     const space = new CnSpace();
 
@@ -60,11 +60,11 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
   }
 
   public async getAll(page: number, size: number): Promise<ClPage<CnSpace>> {
-    return this.findPaginated(page, size, {order: {name: 'ASC'}});
+    return this.findPaginated(page, size, { order: { name: 'ASC' } });
   }
 
   public findByDomain(domain: string): Promise<CnSpace | null> {
-    return this.repository.findOneBy({domain});
+    return this.repository.findOneBy({ domain });
   }
 
   async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
@@ -78,7 +78,7 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     await this.deletePhotoInObjectStorage(space);
 
     space.photo = await this.objectStorageService.uploadObject(this.getBucketConfig(), file,
-      {generateRandomObjectName: true});
+      { generateRandomObjectName: true });
     return this.update(space);
   }
 
@@ -95,18 +95,21 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     }
   }
 
-  async getPhoto(filename: string): Promise<IncomingMessage> {
-    return await this.objectStorageService.getObject(this.getBucketConfig(), filename);
+  async getPhoto(filename: string): Promise<BlFileResponse> {
+    return await this.objectStorageService.downloadObject(this.getBucketConfig(), filename);
   }
 
 
   private getBucketConfig(): BlBucketConfig {
     return {
-      endpoint: this.configService.getDefaultObjectStorageEndPoint(),
-      region: this.configService.getDefaultObjectStorageRegion(),
-      bucket: this.configService.getSpaceImageBucket(),
-      credentials: this.configService.getDefaultObjectStorageCredentials(),
-      bucketType: BlBucketType.NORMAL,
+      type: 's3',
+      config: {
+        endpoint: this.configService.getDefaultObjectStorageEndPoint(),
+        region: this.configService.getDefaultObjectStorageRegion(),
+        bucket: this.configService.getSpaceImageBucket(),
+        credentials: this.configService.getDefaultObjectStorageCredentials(),
+        bucketType: BlBucketType.NORMAL
+      }
     };
   }
 
@@ -119,7 +122,7 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
   }
 
   public searchByName(name: string, page: number, size: number): Promise<ClPage<CnSpace>> {
-    return this.findPaginated(page, size, {where: {name: Like(`%${name}%`)}, order: {name: 'ASC'}});
+    return this.findPaginated(page, size, { where: { name: Like(`%${name}%`) }, order: { name: 'ASC' } });
   }
 
   public updateStorageLimit(space: CnSpace, storageLimit: number): Promise<CnSpace> {

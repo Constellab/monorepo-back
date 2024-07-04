@@ -1,23 +1,23 @@
-import {BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne} from 'typeorm';
-import {Exclude, Expose, Type} from 'class-transformer';
-import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
-import {CnEntityWithStatus} from '../cn-core/model/entities/cn-entity-with-status.entity';
-import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
-import {CnServerCloud} from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import { Exclude, Expose, Type } from 'class-transformer';
+import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
+import { CnEntityWithStatus } from '../cn-core/model/entities/cn-entity-with-status.entity';
+import { CnLabInstanceStatusHistory } from './status/cn-lab-instance-status-history.entity';
+import { CnServerCloud } from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
 import {
   CnLabInstanceServerTaskStatus,
   CnLabInstanceStatus,
   cnLabInstanceStoppedStatuses
 } from './status/cn-lab-instance-status.enum';
-import {randomBytes} from 'crypto';
-import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
-import {CnSpace} from '../cn-spaces/cn-space.entity';
-import {CnLabInstanceUser} from './user/cn-lab-instance-user.entity';
-import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
-import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {DateTime} from 'luxon';
-import {ClStringHelper} from '@monorepo/core-lib';
-import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
+import { randomBytes } from 'crypto';
+import { CnExternalApiInfo } from '../cn-core/model/config/cn-config.class';
+import { CnSpace } from '../cn-spaces/cn-space.entity';
+import { CnLabInstanceUser } from './user/cn-lab-instance-user.entity';
+import { BlLuxonDateTimeColumn, BLTrim } from '@monorepo/back-core-lib';
+import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import { DateTime } from 'luxon';
+import { ClStringHelper } from '@monorepo/core-lib';
+import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
 
 export enum CnLabInstanceType {
   CLOUD = 'CLOUD',
@@ -68,10 +68,12 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     space: true,
   };
 
+  @BLTrim()
   @Column({nullable: false, length: 50})
   name: string;
 
   // name of the lab used in the cloud provider if the lab is hosted on a cloud
+  @BLTrim()
   @Column({nullable: true, length: 36})
   cloudName: string;
 

@@ -5,6 +5,7 @@ import {
   BlBucketType,
   BlFile,
   BlFileHelper,
+  BlFileResponse,
   BlImageHelper,
   BlNewRichText,
   BlObjectStorageService,
@@ -13,7 +14,6 @@ import {
   BlRichTextUploadFileResponse
 } from '@monorepo/back-core-lib';
 import { CnProject } from '../cn-projects/cn-project.entity';
-import { IncomingMessage } from 'http';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, In, Repository } from 'typeorm';
 import { ClDateHelper, ClPage, ClStringHelper } from '@monorepo/core-lib';
@@ -39,7 +39,7 @@ import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-cor
 export class CnProjectDocumentService extends BlAbstractService<CnProjectDocument> {
 
   constructor(@InjectRepository(CnProjectDocument) private repository: Repository<CnProjectDocument>,
-              private objectStorageService: BlObjectStorageService,
+              private objectStorageService2: BlObjectStorageService,
               private projectBucketService: CnProjectBucketService,
               private datasource: DataSource,
               private eventEmitter: EventEmitter2,
@@ -77,7 +77,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
         throw new BlBadRequestException(CnErrorText.DOCUMENT_ALREADY_EXIST);
       }
     } else {
-      documentName = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(file.originalname));
+      documentName = this.objectStorageService2.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(file.originalname));
     }
 
     const document = await this.datasource.transaction(async (entityManager) => {
@@ -91,17 +91,17 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       document.entityId = entityId;
       document.parentDocument = parentDocument;
       // for lab as bucket type, keep the original name
-      if (bucketConfig.some(b => b.bucketType === 'LAB') && documentType === CnProjectDocumentType.UPLOADED_DOCUMENT) {
+      if (bucketConfig.some(b => b.type === 'lab') && documentType === CnProjectDocumentType.UPLOADED_DOCUMENT) {
         document.filename = file.originalname;
       } else {
         // otherwise this is a cloud bucket where every file is so we need to generate a random name
-        document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(documentName));
+        document.filename = this.objectStorageService2.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(documentName));
       }
 
       const dbDocument = await entityManager.save(document);
 
       const filePath = this.generateDocumentFilePath(project, document);
-      await this.objectStorageService.uploadObject(bucketConfig, file,
+      await this.objectStorageService2.uploadObject(bucketConfig, file,
         { filename: filePath });
       return dbDocument;
     });
@@ -117,7 +117,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
                                    parentDocument?: CnProjectDocument): Promise<BlRichTextUploadedImageResponse> {
     const imSize = BlImageHelper.getImageSize(file);
     if (!documentName) {
-      documentName = this.objectStorageService.generateRandomFileNameFromExtension(imSize.type);
+      documentName = this.objectStorageService2.generateRandomFileNameFromExtension(imSize.type);
     }
     const imageDoc = await this.uploadDocument(file, project,
       documentType, entityId, documentName, parentDocument);
@@ -132,7 +132,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
 
   async getDocumentContentByTypeAndName(project: CnProject, documentType: CnProjectDocumentType,
-                                        documentName: string, entityId: string): Promise<IncomingMessage> {
+                                        documentName: string, entityId: string): Promise<BlFileResponse> {
     const document = await this.findDocumentByProjectAndTypeAndName(project.id, documentType,
       documentName, entityId);
 
@@ -143,9 +143,9 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     return this.getDocumentContentByDocument(project, document);
   }
 
-  public async getDocumentContentByDocument(project: CnProject, document: CnProjectDocument): Promise<IncomingMessage> {
+  public async getDocumentContentByDocument(project: CnProject, document: CnProjectDocument): Promise<BlFileResponse> {
     const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(project.getRootParentId());
-    return this.objectStorageService.getObject(bucketConfig, this.generateDocumentFilePath(project, document));
+    return this.objectStorageService2.downloadObject(bucketConfig, this.generateDocumentFilePath(project, document));
   }
 
 
@@ -175,7 +175,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
     // delete all object in the store
     const documentPaths = documentsToDelete.map(d => this.generateDocumentFilePath(document.project, d));
-    await this.objectStorageService.deleteMultipleObjects(bucketConfig, documentPaths);
+    await this.objectStorageService2.deleteMultipleObjects(bucketConfig, documentPaths);
 
     this.emitEvent('DELETE_DOCUMENT', document);
   }
@@ -258,15 +258,15 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       document.project = project;
       document.mimeType = 'application/json';
       document.type = type;
-      document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension('json'));
+      document.filename = this.objectStorageService2.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension('json'));
       document.entityId = entityId;
       document.parentDocument = parentDocument;
 
       const documentPath = this.generateDocumentFilePath(project, document);
-      await this.objectStorageService.uploadJson(bucketConfig, content, { filename: documentPath });
+      await this.objectStorageService2.uploadJson(bucketConfig, content, { filename: documentPath });
 
-      const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig[0], documentPath);
-      document.size = objectInfo.ContentLength;
+      const objectInfo = await this.objectStorageService2.getObjectInfo(bucketConfig[0], documentPath);
+      document.size = objectInfo.size;
 
       return await entityManager.save(document);
     });
@@ -283,12 +283,12 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
 
     const documentPath = this.generateDocumentFilePath(project, document);
-    await this.objectStorageService.uploadJson(bucketConfig, content, { filename: documentPath });
+    await this.objectStorageService2.uploadJson(bucketConfig, content, { filename: documentPath });
 
-    const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig[0], documentPath);
+    const objectInfo = await this.objectStorageService2.getObjectInfo(bucketConfig[0], documentPath);
 
     // update the document size and last modification info
-    document.size = objectInfo.ContentLength;
+    document.size = objectInfo.size;
     document = await this.repository.save(document);
 
     this.emitEvent('UPDATE_DOCUMENT', document);
@@ -312,7 +312,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(project.getRootParentId());
 
     const documentPath = this.generateDocumentFilePath(project, document);
-    return await this.objectStorageService.getObjectAsJson(bucketConfig, documentPath);
+    return await this.objectStorageService2.getObjectAsJson(bucketConfig, documentPath);
   }
 
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////

@@ -2,6 +2,7 @@ import { Column, Entity, ManyToOne, Unique } from 'typeorm';
 import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 import { CnCloudProvider } from '../cn-cloud-provider.entity';
 import { CnCity } from '../../cn-city/cn-city.entity';
+import { BLTrim } from '@monorepo/back-core-lib';
 
 export enum CnCloudProviderRegionType {
   ALL = 'ALL', // server and s3
@@ -25,6 +26,7 @@ export class CnCloudProviderRegion extends CnBaseEntity {
   @Column({nullable: false, type: 'enum', enum: CnCloudProviderRegionType})
   type: CnCloudProviderRegionType;
 
+  @BLTrim()
   @Column({nullable: false, length: 20})
   technicalName: string;
 

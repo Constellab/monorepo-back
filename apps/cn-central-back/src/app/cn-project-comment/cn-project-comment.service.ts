@@ -8,11 +8,11 @@ import { ClPage } from '@monorepo/core-lib';
 import {
   BlAbstractService,
   BlFile,
+  BlFileResponse,
   BlNewRichText,
   BlRichTextContent,
   BlRichTextUploadedImageResponse
 } from '@monorepo/back-core-lib';
-import { IncomingMessage } from 'http';
 import { CnProjectDocumentService } from '../cn-projects-aggregate/cn-project-documents/cn-project-document.service';
 import { CnProjectDocumentType } from '../cn-projects-aggregate/cn-project-documents/cn-project-document.entity';
 
@@ -50,7 +50,7 @@ export class CnProjectCommentService extends BlAbstractService<CnProjectComment>
     });
   }
 
-  async getCommentImage(project: CnProject, documentName: string): Promise<IncomingMessage> {
+  async getCommentImage(project: CnProject, documentName: string): Promise<BlFileResponse> {
     return this.projectDocumentService.getDocumentContentByTypeAndName(project, CnProjectDocumentType.COMMENT_CONTENT,
       documentName, project.id);
   }

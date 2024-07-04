@@ -47,6 +47,7 @@
     "@azure/arm-network": "^30.2.0",
     "@azure/arm-storage": "^18.1.0",
     "@azure/identity": "^3.2.2",
+    "@azure/storage-blob": "^12.23.0",
     "@elastic/elasticsearch": "^7.16.0",
     "@nestjs/axios": "^0.1.0",
     "@nestjs/common": "9.1.4",

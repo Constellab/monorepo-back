@@ -8,7 +8,7 @@ import {
   BlSearchParams
 } from '@monorepo/back-core-lib';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Not, Repository } from 'typeorm';
+import { DataSource, EntityManager, In, Not, Repository } from 'typeorm';
 import { CnBucket, CnBucketContentType } from './cn-bucket.entity';
 import { ClPage } from '@monorepo/core-lib';
 
@@ -31,9 +31,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       // create the bucket in DB and then in the object storage
       const bucketDb = await super.create(bucket, entityManager);
 
-      if (bucketDb.isS3Bucket()) {
-        await this.objectStorageService.createBucket(bucketDb.getS3BucketConfig());
-      }
+      await this.objectStorageService.createBucket(bucketDb.getBucketConfig());
 
       return bucketDb;
     });
@@ -42,9 +40,8 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
   public async deleteBucket(bucket: CnBucket, entityManager?: EntityManager): Promise<void> {
     entityManager = this.getEntityManager(entityManager);
 
-    if (bucket.isS3Bucket()) {
-      await this.objectStorageService.deleteBucket(bucket.getS3BucketConfig(), false);
-    }
+    await this.objectStorageService.deleteBucket(bucket.getBucketConfig(), false);
+
     // delete the bucket in DB and then in the object storage
     await entityManager.delete(CnBucket, bucket.id);
   }
@@ -103,7 +100,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
         throw new BlBadRequestException(`Region must be defined for normal or azure bucket`);
       }
 
-      if(!bucket.region.supportsS3()){
+      if (!bucket.region.supportsS3()) {
         throw new BlBadRequestException(`Region ${bucket.region.technicalName} does not support S3`);
       }
       bucket.labInstance = null;
@@ -116,12 +113,8 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       }
     }
 
-    if(bucket.bucketType === BlBucketType.AZURE){
-      if(bucket.contentType !== CnBucketContentType.LAB_BACKUP){
-        throw new BlBadRequestException(`Azure bucket can only be used for lab backup`);
-      }
-
-      if(bucket.region.cloudProvider.name !== 'AZURE'){
+    if (bucket.bucketType === BlBucketType.AZURE) {
+      if (bucket.region.cloudProvider.name !== 'AZURE') {
         throw new BlBadRequestException(`Azure bucket must be linked to an Azure region`);
       }
     }
@@ -188,7 +181,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       where: [
         {
           contentType: contentType,
-          bucketType: BlBucketType.NORMAL
+          bucketType: In([BlBucketType.NORMAL, BlBucketType.AZURE])
         }, {
           contentType: contentType,
           bucketType: BlBucketType.LAB,

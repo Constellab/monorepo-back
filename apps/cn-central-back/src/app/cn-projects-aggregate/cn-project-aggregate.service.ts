@@ -12,7 +12,6 @@ import { CnExperiment, CnExperimentProtocol } from './cn-experiments/cn-experime
 import { CnCreateLabExperimentDto } from './cn-experiments/cn-experiment.dto';
 import { CnCreateReportWithConfigDto } from './cn-reports/cn-report.dto';
 import { CnReport } from './cn-reports/cn-report.entity';
-import { IncomingMessage } from 'http';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
 import { CnProjectLevel, CnProjectLevelStatus } from './cn-projects/cn-project-level.enum';
@@ -30,6 +29,7 @@ import { CnNewCommentDTO } from '../cn-core/model/entities/cn-comment.entity';
 import {
   BlBadRequestException,
   BlFile,
+  BlFileResponse,
   BlRichTextContent,
   BlRichTextUploadedImageResponse,
   BlRichTextUploadFileResponse,
@@ -357,7 +357,7 @@ export class CnProjectAggregateService {
       project.id);
   }
 
-  public async getDescriptionImage(projectId: string, filename: string): Promise<IncomingMessage> {
+  public async getDescriptionImage(projectId: string, filename: string): Promise<BlFileResponse> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
     return this.projectDocumentService.getDocumentContentByTypeAndName(project, CnProjectDocumentType.DESCRIPTION_CONTENT,
@@ -534,14 +534,14 @@ export class CnProjectAggregateService {
     return this.reportService.getReportsByProject(projectId);
   }
 
-  async getReportImage(reportId: string, filename: string): Promise<IncomingMessage> {
+  async getReportImage(reportId: string, filename: string): Promise<BlFileResponse> {
     const report = await this.reportService.findByIdAndCheck(reportId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(report.projectId);
     return this.reportService.getImage(filename, project, reportId);
   }
 
-  async getReportView(reportId: string, viewId: string): Promise<IncomingMessage> {
+  async getReportView(reportId: string, viewId: string): Promise<BlFileResponse> {
     const report = await this.reportService.findByIdAndCheck(reportId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(report.projectId);
@@ -651,7 +651,7 @@ export class CnProjectAggregateService {
     return this.projectCommentService.saveProjectCommentImage(file, project);
   }
 
-  public async getCommentImage(filename: string, projectId: string): Promise<IncomingMessage> {
+  public async getCommentImage(filename: string, projectId: string): Promise<BlFileResponse> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
     return await this.projectCommentService.getCommentImage(project, filename);
   }
@@ -669,7 +669,7 @@ export class CnProjectAggregateService {
     return doc;
   }
 
-  public async getUploadedDocument(projectId: string, documentName: string): Promise<IncomingMessage> {
+  public async getUploadedDocument(projectId: string, documentName: string): Promise<BlFileResponse> {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
     return await this.projectDocumentService.getDocumentContentByTypeAndName(project,
@@ -782,7 +782,7 @@ export class CnProjectAggregateService {
    * @param documentId
    * @param documentName
    */
-  public async getConstellabDocumentContentDocument(documentId: string, documentName: string): Promise<IncomingMessage> {
+  public async getConstellabDocumentContentDocument(documentId: string, documentName: string): Promise<BlFileResponse> {
     const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
@@ -805,7 +805,7 @@ export class CnProjectAggregateService {
    * Public route to access document from the generated token
    * @param token
    */
-  public async getDocumentByPreviewToken(token: string): Promise<IncomingMessage> {
+  public async getDocumentByPreviewToken(token: string): Promise<BlFileResponse> {
     const projectDocument = await this.projectDocumentService.getAndCheckByPreviewToken(token);
     const project = await this.projectService.findByIdAndCheck(projectDocument.projectId);
 

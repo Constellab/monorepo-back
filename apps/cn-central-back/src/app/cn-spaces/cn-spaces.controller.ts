@@ -13,9 +13,9 @@ import {
   Res,
   UseInterceptors
 } from '@nestjs/common';
-import {CnSpace} from './cn-space.entity';
-import {ClPage} from '@monorepo/core-lib';
-import {CnSpaceAggregateService} from './cn-space-aggregate.service';
+import { CnSpace } from './cn-space.entity';
+import { ClPage } from '@monorepo/core-lib';
+import { CnSpaceAggregateService } from './cn-space-aggregate.service';
 import {
   BlFile,
   BlParsePipe,
@@ -25,11 +25,11 @@ import {
   BlUploadedFile,
   BlUserCategory
 } from '@monorepo/back-core-lib';
-import {CnSpaceUser, CnSpaceUserRole} from './cn-space-user.entity';
-import {FileInterceptor} from '@nestjs/platform-express';
-import {Response} from 'express';
-import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
-import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
+import { CnSpaceUser, CnSpaceUserRole } from './cn-space-user.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
+import { CnUserCategories } from '../cn-core/decorators/cn-user-category.decorator';
+import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 import {
   CnCreateSpaceDTO,
   CnRequestNewLicensesDto,
@@ -37,8 +37,8 @@ import {
   CnSpaceStorage,
   CnSpaceUpdateStorageLocationDTO
 } from './cn-space.dto';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnProjectStorageUsageDTO} from '../cn-projects-aggregate/cn-project-documents/cn-project-document-dto.class';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnProjectStorageUsageDTO } from '../cn-projects-aggregate/cn-project-documents/cn-project-document-dto.class';
 
 @Controller('spaces')
 export class CnSpacesController {
@@ -128,7 +128,7 @@ export class CnSpacesController {
   public async getImage(@Param('filename') filename: string,
                         @Res() response: Response): Promise<any> {
     const file = await this.spaceAggregateService.getPhoto(filename);
-    BlResponseHelper.setMessageAndCache(response, file);
+    BlResponseHelper.setFileResponseAndCache(response, file);
   }
 
   //////////////////////////////////////// LICENCE  ////////////////////////////////////////

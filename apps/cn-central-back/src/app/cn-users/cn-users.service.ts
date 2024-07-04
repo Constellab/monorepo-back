@@ -1,9 +1,9 @@
-import {Injectable, OnModuleInit} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {CnUser, CnUserEditDTO, CnUserTransportDto} from './cn-user.entity';
-import {Repository} from 'typeorm';
-import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CnUser, CnUserEditDTO, CnUserTransportDto } from './cn-user.entity';
+import { Repository } from 'typeorm';
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import {
   BlAbstractService,
   BlBadRequestException,
@@ -12,6 +12,7 @@ import {
   BlCsvHelper,
   BlCurrentUserHelper,
   BlFile,
+  BlFileResponse,
   BlObjectStorageService,
   BlSearchBuilder,
   BlSearchParams,
@@ -19,10 +20,9 @@ import {
   BlUnauthorizedException,
   BlUserService
 } from '@monorepo/back-core-lib';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {IncomingMessage} from 'http';
-import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import {CnUserSearch} from './cn-user-search.class';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnUserSearch } from './cn-user-search.class';
 
 @Injectable()
 export class CnUsersService extends BlAbstractService<CnUser> implements BlUserService, OnModuleInit {
@@ -48,7 +48,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     }
 
     return this.findPaginated(page, size, {
-      order: {lastname: 'ASC', firstname: 'ASC'}
+      order: { lastname: 'ASC', firstname: 'ASC' }
     });
   }
 
@@ -58,13 +58,13 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
 
   findOne(id: string): Promise<CnUser> {
-    return this.repository.findOneBy({id: id});
+    return this.repository.findOneBy({ id: id });
   }
 
   findByEmail(email: string): Promise<CnUser> {
     return this.repository.findOne({
       where: {
-        email: email,
+        email: email
       }
     });
   }
@@ -103,8 +103,8 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     }
 
     user.photo = await this.objectStorageService.uploadObject(
-      this.getUserProfilePhotoBucketConfig(), file, {generateRandomObjectName: true});
-    const updatedUser =  await this.repository.save(user);
+      this.getUserProfilePhotoBucketConfig(), file, { generateRandomObjectName: true });
+    const updatedUser = await this.repository.save(user);
     this.sendUserToTransport(updatedUser);
     return updatedUser;
   }
@@ -121,17 +121,20 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     return user;
   }
 
-  async getUserPhoto(photoId: string): Promise<IncomingMessage> {
-    return this.objectStorageService.getObject(this.getUserProfilePhotoBucketConfig(), photoId);
+  async getUserPhoto(photoId: string): Promise<BlFileResponse> {
+    return this.objectStorageService.downloadObject(this.getUserProfilePhotoBucketConfig(), photoId);
   }
 
   private getUserProfilePhotoBucketConfig(): BlBucketConfig {
     return {
-      endpoint: this.configService.getDefaultObjectStorageEndPoint(),
-      region: this.configService.getDefaultObjectStorageRegion(),
-      bucket: this.configService.getUserProfilePictureObjectStorageBucket(),
-      credentials: this.configService.getDefaultObjectStorageCredentials(),
-      bucketType: BlBucketType.NORMAL,
+      type: 's3',
+      config: {
+        endpoint: this.configService.getDefaultObjectStorageEndPoint(),
+        region: this.configService.getDefaultObjectStorageRegion(),
+        bucket: this.configService.getUserProfilePictureObjectStorageBucket(),
+        credentials: this.configService.getDefaultObjectStorageCredentials(),
+        bucketType: BlBucketType.NORMAL
+      }
     };
   }
 
@@ -206,7 +209,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
   }
 
   public getRobotUser(): Promise<CnUser> {
-    return this.repository.findOneBy({email: this.configService.getRobotUserMail()});
+    return this.repository.findOneBy({ email: this.configService.getRobotUserMail() });
   }
 
   /**

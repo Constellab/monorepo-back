@@ -1,30 +1,21 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, Repository} from 'typeorm';
-import {HnDocumentation, HnDocumentationSearchDTO} from './hn-documentation.entity';
-import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
-import {
-  BlBadRequestException,
-  BlBlockType,
-  BlNewRichText,
-  BlObjectStorageService,
-  BlRichTextContent
-} from '@monorepo/back-core-lib';
-import {HnCoreConfigService} from '../../core/modules/core-config/hn-core-config.service';
-import {HnNodeDTO} from '../folder/hn-folder.dto';
-import {HnFolder} from '../folder/hn-folder.entity';
-import {ClStringHelper} from '@monorepo/core-lib';
-import {HnDocumentationFileService} from '../documentation-file/hn-documentation-file.service';
-import {HnFileDocumentation} from '../../file-aggregate/file-documentation/hn-file-documentation.entity';
-import {HnFileType} from '../../file-aggregate/file-core/hn-abstract-file.entity';
-import {HnDocumentationFile} from '../documentation-file/hn-documentation-file.entity';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, Repository } from 'typeorm';
+import { HnDocumentation, HnDocumentationSearchDTO } from './hn-documentation.entity';
+import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-version.entity';
+import { BlBadRequestException, BlNewRichText, BlRichTextContent } from '@monorepo/back-core-lib';
+import { HnNodeDTO } from '../folder/hn-folder.dto';
+import { HnFolder } from '../folder/hn-folder.entity';
+import { ClStringHelper } from '@monorepo/core-lib';
+import { HnDocumentationFileService } from '../documentation-file/hn-documentation-file.service';
+import { HnFileDocumentation } from '../../file-aggregate/file-documentation/hn-file-documentation.entity';
+import { HnFileType } from '../../file-aggregate/file-core/hn-abstract-file.entity';
+import { HnDocumentationFile } from '../documentation-file/hn-documentation-file.entity';
 
 @Injectable()
 export class HnDocumentationService {
   constructor(@InjectRepository(HnDocumentation)
               private documentationsRepository: Repository<HnDocumentation>,
-              private objectStorageService: BlObjectStorageService,
-              private configService: HnCoreConfigService,
               private docFileService: HnDocumentationFileService) {
   }
 
@@ -62,7 +53,7 @@ export class HnDocumentationService {
 
   async findById(id: string, strict: boolean = true): Promise<HnDocumentation> {
     const doc = await this.documentationsRepository.findOne({
-      where: {id},
+      where: { id },
       relations: {
         folder: true
       }
@@ -75,7 +66,7 @@ export class HnDocumentationService {
 
   async update(updatedDocumentation: HnNodeDTO): Promise<HnDocumentation> {
     const doc: HnDocumentation = await this.documentationsRepository.findOne(
-      {where: {id: updatedDocumentation.id}, relations: {folder: true}});
+      { where: { id: updatedDocumentation.id }, relations: { folder: true } });
 
     doc.setPath(ClStringHelper.generateUrlPathFromString(updatedDocumentation.title), doc.folder.completePath);
     doc.title = updatedDocumentation.title;
@@ -93,12 +84,12 @@ export class HnDocumentationService {
   async findCurrentDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<HnDocumentation> {
     return await this.documentationsRepository.findOneBy({
       completePath: path,
-      folder: {brickMajorVersion: {id: brickMajorVersion.id}}
+      folder: { brickMajorVersion: { id: brickMajorVersion.id } }
     });
   }
 
   async updateContent(id: string, updateContentDoc: BlRichTextContent): Promise<HnDocumentation> {
-    const doc: HnDocumentation = await this.documentationsRepository.findOneBy({id: id});
+    const doc: HnDocumentation = await this.documentationsRepository.findOneBy({ id: id });
     if (doc) {
       doc.content = updateContentDoc;
     }
@@ -134,7 +125,7 @@ export class HnDocumentationService {
     } : null;
   }
 
-  public getDocsByBrickVersion(brickMajorVersionId: string): Promise<HnDocumentation[]>{
+  public getDocsByBrickVersion(brickMajorVersionId: string): Promise<HnDocumentation[]> {
     return this.documentationsRepository.find({
       where: {
         folder: {
@@ -165,7 +156,7 @@ export class HnDocumentationService {
       }
     });
     if (modified) {
-      await entityManager.save(doc, {listeners: false});
+      await entityManager.save(doc, { listeners: false });
     }
 
     // File added to the doc but not in the content
@@ -176,17 +167,17 @@ export class HnDocumentationService {
         data: {
           id: newDocFileEntity.id,
           name: newDocFileEntity.name,
-          size: newDocFileEntity.size,
+          size: newDocFileEntity.size
         }
       });
     }
 
 
-    await entityManager.save(doc, {listeners: false});
+    await entityManager.save(doc, { listeners: false });
 
   }
 
-  async getDocFile(fileName: string): Promise<HnDocumentationFile>{
+  async getDocFile(fileName: string): Promise<HnDocumentationFile> {
     return this.docFileService.getDocumentationFileByFileName(fileName);
   }
 }

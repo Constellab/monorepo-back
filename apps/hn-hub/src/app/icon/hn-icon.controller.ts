@@ -12,13 +12,13 @@ import {
   Res,
   UseInterceptors
 } from '@nestjs/common';
-import {HnIconService} from './hn-icon.service';
-import {ClPage} from '@monorepo/core-lib';
-import {HnIcon} from './hn-icon.entity';
-import {BlFile, BlPublic, BlResponseHelper, BlUploadedFile} from '@monorepo/back-core-lib';
-import {Response} from 'express';
-import {FileInterceptor} from '@nestjs/platform-express';
-import {HnIconCreateDto} from './hn-icon.dto';
+import { HnIconService } from './hn-icon.service';
+import { ClPage } from '@monorepo/core-lib';
+import { HnIcon } from './hn-icon.entity';
+import { BlFile, BlPublic, BlResponseHelper, BlUploadedFile } from '@monorepo/back-core-lib';
+import { Response } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { HnIconCreateDto } from './hn-icon.dto';
 
 @Controller('icon')
 export class HnIconController {
@@ -38,7 +38,7 @@ export class HnIconController {
                    @Res() response: Response): Promise<any> {
     const technicalName = request.url.split('file/')[1];
     const file = await this.iconService.getIconFile(technicalName);
-    BlResponseHelper.setMessageAndCache(response, file);
+    BlResponseHelper.setFileResponseAndCache(response, file);
   }
 
   @BlPublic()

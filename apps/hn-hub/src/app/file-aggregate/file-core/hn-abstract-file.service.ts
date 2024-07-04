@@ -3,15 +3,16 @@ import {
   BlBucketConfig,
   BlEntityWithId,
   BlFile,
+  BlFileResponse,
   BlImageHelper,
+  BlObject,
   BlObjectStorageService,
   BlRichTextUploadedImageResponse
 } from '@monorepo/back-core-lib';
-import {HnAbstractFileEntity, HnFileType} from './hn-abstract-file.entity';
-import {EntityManager, FindOptionsWhere, Repository} from 'typeorm';
-import {IncomingMessage} from 'http';
-import {ClStringHelper} from '@monorepo/core-lib';
-import {HnAbstractFileEntityDTO, HnUploadFileResponseDto} from './hn-abstract-file.dto';
+import { HnAbstractFileEntity, HnFileType } from './hn-abstract-file.entity';
+import { EntityManager, FindOptionsWhere, Repository } from 'typeorm';
+import { ClStringHelper } from '@monorepo/core-lib';
+import { HnAbstractFileEntityDTO, HnUploadFileResponseDto } from './hn-abstract-file.dto';
 
 export abstract class HnAbstractFileService<T extends BlEntityWithId> {
 
@@ -45,7 +46,7 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
   }
 
   async getEntityFile(id: string): Promise<HnAbstractFileEntity<T>> {
-    return this.repository.findOneBy({id: id});
+    return this.repository.findOneBy({ id: id });
   }
 
   async getEntityFileByEntityIdAndName(entityId: string, name: string): Promise<HnAbstractFileEntity<T>> {
@@ -58,15 +59,15 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
   }
 
   async getEntityFileByFileName(fileName: string): Promise<HnAbstractFileEntity<T>> {
-    return this.repository.findOneBy({fileName: fileName});
+    return this.repository.findOneBy({ fileName: fileName });
   }
 
-  async getFile(entityId: string, name: string): Promise<IncomingMessage> {
+  async getFile(entityId: string, name: string): Promise<BlFileResponse> {
     const entityFile: HnAbstractFileEntity<T> = await this.getEntityFileByEntityIdAndName(entityId, name);
     if (entityFile == null) {
       return null;
     }
-    return await this.objectStorageService.getObject(this.getBucketConfig(), entityFile.fileName);
+    return await this.objectStorageService.downloadObject(this.getBucketConfig(), entityFile.fileName);
   }
 
   async renameFile(id: string, newName: string): Promise<HnAbstractFileEntityDTO> {
@@ -128,7 +129,7 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
     const ext = originalname.split('.').pop();
     file.originalname = entity.id + '/files/' + ClStringHelper.generateUUID() + '.' + ext;
     const fileName: string = await this.objectStorageService.uploadObject([this.getBucketConfig(), this.getBackupBucketConfig()], file,
-      {generateRandomObjectName: false});
+      { generateRandomObjectName: false });
     const entityFile = this.constructEntityFile();
     entityFile.init(entity, fileName, HnFileType.FILE, originalname, file.size);
     entityFile.name = await this.checkAndUpdateName(entity.id, entityFile);
@@ -148,7 +149,7 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
     const originalname = file.originalname;
     file.originalname = entity.id + '/images/' + ClStringHelper.generateUUID() + '.' + fileExt;
     const filename = await this.objectStorageService.uploadObject([this.getBucketConfig(), this.getBackupBucketConfig()], file,
-      {generateRandomObjectName: false});
+      { generateRandomObjectName: false });
 
     const entityFile: HnAbstractFileEntity<T> = this.constructEntityFile();
     entityFile.init(entity, filename, HnFileType.IMAGE, originalname, file.size);
@@ -160,7 +161,7 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
     return {
       filename: savedEntityFile.name,
       width: imSize.width,
-      height: imSize.height,
+      height: imSize.height
     };
   }
 
@@ -168,7 +169,7 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
   async saveResourceView(entity: T, file: BlFile): Promise<string> {
     file.originalname = entity.id + '/views/' + ClStringHelper.generateUUID() + '.json';
     const filename = await this.objectStorageService.uploadObject([this.getBucketConfig(), this.getBackupBucketConfig()], file,
-      {generateRandomObjectName: false});
+      { generateRandomObjectName: false });
 
     const entityFile = this.constructEntityFile();
     entityFile.init(entity, filename, HnFileType.RESOURCE_VIEW, ClStringHelper.generateUUID() + '.json', file.size);
@@ -177,10 +178,10 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
     return savedEntityFile.name;
   }
 
-  private async checkAndUpdateName(entityId: string, entityFile: HnAbstractFileEntity<T>): Promise<string>{
+  private async checkAndUpdateName(entityId: string, entityFile: HnAbstractFileEntity<T>): Promise<string> {
     let i = 1;
     const baseName = entityFile.name;
-    while(await this.getEntityFileByEntityIdAndName(entityId, entityFile.name) != null){
+    while (await this.getEntityFileByEntityIdAndName(entityId, entityFile.name) != null) {
       const nameArray = baseName.split('.');
       entityFile.name = nameArray[0] + '_' + i + '.' + nameArray[1];
       i++;
@@ -188,7 +189,7 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
     return entityFile.name;
   }
 
-  async getAllBucketItemsName(): Promise<any[]> {
+  async getAllBucketItemsName(): Promise<BlObject[]> {
     return await this.objectStorageService.getAllObjectsByPrefix(this.getBucketConfig());
   }
 }
