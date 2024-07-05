@@ -172,6 +172,19 @@ export class HnStoryService {
     }, this.storyRepository.manager, HnStory)).map(story => new HnStoryDto(story));
   }
 
+  async getUserStories(userId: string, page: number, size: number): Promise<ClPage<HnStoryDto>>{
+    return (await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
+      where: {
+        createdBy: {
+          id: userId
+        },
+        status: HnStoryStatus.PUBLISHED
+      },
+      relations: ['topics'],
+      order: {publishedAt: 'DESC' as any}
+    }, this.storyRepository.manager, HnStory)).map(story => new HnStoryDto(story));
+  }
+
   async getMyStories(page: number, size: number): Promise<ClPage<HnStoryDto>> {
     return (await BlAbstractPaginatedService.findPaginatedStatic(page, size,
       {
