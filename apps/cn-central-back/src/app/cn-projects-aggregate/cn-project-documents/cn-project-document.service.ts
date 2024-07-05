@@ -449,7 +449,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
     // Generate the preview URL that use office online viewer with public api route
     const officePreviewUrl = 'https://view.officeapps.live.com/op/embed.aspx?src=';
-    const constellabPreviewUrl = `${this.configService.getApiUrl()}/projects/document/preview/${document.previewTokenExpiration}`;
+    const constellabPreviewUrl = `${this.configService.getApiUrl()}/projects/document/preview/${document.previewToken}`;
     return new CnProjectDocumentPreviewDTO(`${officePreviewUrl}${constellabPreviewUrl}`);
   }
 
