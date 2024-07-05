@@ -31,7 +31,7 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
     });
 
     if (uploadBlobResponse.errorCode) {
-      this.logger.error(`Error while uploading object ${objectName} to bucket ${this.containerName}. Error ${uploadBlobResponse.errorCode}`);
+      this.logger.error(`Error while uploading object ${objectName} to bucket ${this.getBucketName()}. Error ${uploadBlobResponse.errorCode}`);
       throw new BlBadRequestException('Error while uploading object');
     }
 
@@ -48,11 +48,12 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
     const downloadResponse = await blobClient.download();
 
     if (downloadResponse.errorCode) {
-      this.logger.error(`Error while getting object ${objectName} from bucket ${this.containerName}. Error ${downloadResponse.errorCode}`);
+      this.logger.error(`Error while getting object ${objectName} from bucket ${this.getBucketName()}. Error ${downloadResponse.errorCode}`);
       throw new BlBadRequestException('Error while getting object');
     }
 
     if (!downloadResponse.readableStreamBody) {
+      this.logger.error(`Error while getting object ${objectName} from bucket ${this.getBucketName()}. No readable stream`);
       throw new BlBadRequestException('Error while getting object');
     }
 
@@ -119,7 +120,7 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
 
     for (const objectName of objectNames) {
       const blobClient = containerClient.getBlobClient(objectName);
-      await blobClient.delete();
+      await blobClient.deleteIfExists();
     }
   }
 
@@ -166,11 +167,10 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
       sharedKeyCredential
     );
 
-    return blobServiceClient.getContainerClient(this.containerName);
+    return blobServiceClient.getContainerClient(this.getBucketName());
   }
 
-  private get containerName(): string {
+  getBucketName(): string {
     return this.config.containerName;
   }
-
 }

@@ -34,7 +34,7 @@ export class BlS3BucketService implements BlObjectStorageInterface {
     const s3Client = this.getClient();
 
     await s3Client.send(new PutObjectCommand({
-      Bucket: this.bucket, Key: filename, Body: obj, ContentType: contentType
+      Bucket: this.getBucketName(), Key: filename, Body: obj, ContentType: contentType
     }));
 
     return filename;
@@ -46,7 +46,7 @@ export class BlS3BucketService implements BlObjectStorageInterface {
     const s3Client = this.getClient();
 
     try {
-      const result = await s3Client.send(new GetObjectCommand({ Bucket: this.bucket, Key: objectName }));
+      const result = await s3Client.send(new GetObjectCommand({ Bucket: this.getBucketName(), Key: objectName }));
 
       return {
         name: objectName,
@@ -58,7 +58,7 @@ export class BlS3BucketService implements BlObjectStorageInterface {
       if (e instanceof NoSuchKey) {
         throw new BlNotFoundException('Object not found');
       }
-      this.logger.error(`Error while getting object ${objectName} from bucket ${this.bucket}. Error ${e}`);
+      this.logger.error(`Error while getting object ${objectName} from bucket ${this.getBucketName()}. Error ${e}`);
       throw new BlBadRequestException('Error while getting object');
     }
 
@@ -78,7 +78,7 @@ export class BlS3BucketService implements BlObjectStorageInterface {
   public async getObjectInfo(objectName: string): Promise<BlObject> {
     const s3Client = this.getClient();
 
-    const result = await s3Client.send(new HeadObjectCommand({ Bucket: this.bucket, Key: objectName }));
+    const result = await s3Client.send(new HeadObjectCommand({ Bucket: this.getBucketName(), Key: objectName }));
 
     return {
       name: objectName,
@@ -95,7 +95,7 @@ export class BlS3BucketService implements BlObjectStorageInterface {
     let nextToken: string | undefined = undefined;
     while (pageCount < 1000) {
       const result: ListObjectsCommandOutput = await s3Client.send(new ListObjectsCommand({
-        Bucket: this.bucket, Prefix: prefix,
+        Bucket: this.getBucketName(), Prefix: prefix,
         MaxKeys: pageSize,
         Marker: nextToken
       }));
@@ -122,7 +122,7 @@ export class BlS3BucketService implements BlObjectStorageInterface {
     const s3Client = this.getClient();
 
     const result = await s3Client.send(new ListObjectsCommand({
-      Bucket: this.bucket, Prefix: prefix,
+      Bucket: this.getBucketName(), Prefix: prefix,
       MaxKeys: pageSize, Marker: startFromKey
     }));
     return result.Contents ?? [];
@@ -138,7 +138,7 @@ export class BlS3BucketService implements BlObjectStorageInterface {
 
     if (!(await this.objectExist(objectName))) return false;
 
-    await s3Client.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: objectName }));
+    await s3Client.send(new DeleteObjectCommand({ Bucket: this.getBucketName(), Key: objectName }));
     return true;
   }
 
@@ -147,7 +147,7 @@ export class BlS3BucketService implements BlObjectStorageInterface {
     const s3Client = this.getClient();
 
     await s3Client.send(new DeleteObjectsCommand({
-      Bucket: this.bucket,
+      Bucket: this.getBucketName(),
       Delete: { Objects: objectNames.map((name) => ({ Key: name })) }
     }));
 
@@ -177,7 +177,7 @@ export class BlS3BucketService implements BlObjectStorageInterface {
   public async createBucket(): Promise<void> {
     const s3Client = this.getClient();
 
-    await s3Client.send(new CreateBucketCommand({ Bucket: this.bucket }));
+    await s3Client.send(new CreateBucketCommand({ Bucket: this.getBucketName() }));
   }
 
 
@@ -187,14 +187,14 @@ export class BlS3BucketService implements BlObjectStorageInterface {
     }
     const s3Client = this.getClient();
 
-    await s3Client.send(new DeleteBucketCommand({ Bucket: this.bucket }));
+    await s3Client.send(new DeleteBucketCommand({ Bucket: this.getBucketName() }));
   }
 
   public async bucketExists(): Promise<boolean> {
     const s3Client = this.getClient();
 
     try {
-      await s3Client.send(new HeadBucketCommand({ Bucket: this.bucket }));
+      await s3Client.send(new HeadBucketCommand({ Bucket: this.getBucketName() }));
       return true;
     } catch (e) {
       return false;
@@ -219,9 +219,11 @@ export class BlS3BucketService implements BlObjectStorageInterface {
     });
   }
 
-  private get bucket(): string {
+
+  getBucketName(): string {
     return this.config.bucket;
   }
+
 
 
 }

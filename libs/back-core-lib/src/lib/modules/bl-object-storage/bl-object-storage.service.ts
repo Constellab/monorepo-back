@@ -187,22 +187,20 @@ export class BlObjectStorageService {
    */
   public async deleteBucket(config: BlBucketConfig, errorIfNotExist: boolean = true,
                             force: boolean = false): Promise<void> {
+    const service = this.getService(config);
 
-    if (!await this.bucketExist(config)) {
+    if (!await service.bucketExists()) {
       if (errorIfNotExist) {
-        // TODO set name in error
-        throw new Error(`The bucket does not exist`);
+        throw new Error(`The bucket '${service.getBucketName()}' does not exist`);
       } else {
         return;
       }
     }
 
-    if (!(await this.bucketIsEmpty(config)) && !force) {
-      // TODO set name in error
-      throw new Error(`The bucket is not empty`);
+    if (!(await service.bucketIsEmpty()) && !force) {
+      throw new Error(`The bucket '${service.getBucketName()}' is not empty`);
     }
 
-    const service = this.getService(config);
     return service.deleteBucket();
   }
 

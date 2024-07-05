@@ -32,4 +32,7 @@ export interface BlObjectStorageInterface {
 
   bucketIsEmpty(): Promise<boolean>;
 
+  //////////////////////////////////////////// OTHERS /////////////////////////////////////////
+  getBucketName(): string;
+
 }
