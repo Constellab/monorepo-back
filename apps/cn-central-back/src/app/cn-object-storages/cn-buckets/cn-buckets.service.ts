@@ -113,6 +113,12 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       }
     }
 
+    if(bucket.bucketType === BlBucketType.NORMAL){
+      if(bucket.region.cloudProvider.name === 'AZURE'){
+        throw new BlBadRequestException(`Normal bucket cannot be linked to an Azure region`);
+      }
+    }
+
     if (bucket.bucketType === BlBucketType.AZURE) {
       if (bucket.region.cloudProvider.name !== 'AZURE') {
         throw new BlBadRequestException(`Azure bucket must be linked to an Azure region`);
