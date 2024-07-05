@@ -30,9 +30,8 @@ export interface CnBucketLocationDTO {
   bucketId: string;
   locationName: string;
   bucketType: BlBucketType;
-  cityName?: string;
-  countryName?: string;
-  cloudProviderName?: string;
+  // only for cloud bucket
+  cloudRegion?: CnCloudProviderRegion;
 }
 
 /**
@@ -155,38 +154,13 @@ export class CnBucket extends CnBaseEntity {
     }
   }
 
-  getLocationCountryName(): string {
-    if (this.isCloudBucket()) {
-      return this.region.city.country.name;
-    } else {
-      return null;
-    }
-  }
-
-  getLocationCityName(): string {
-    if (this.isCloudBucket()) {
-      return this.region.city.name;
-    } else {
-      return null;
-    }
-  }
-
-  getLocationCloudProviderName(): string {
-    if (this.isCloudBucket()) {
-      return this.region.cloudProvider.name;
-    } else {
-      return null;
-    }
-  }
 
   getBucketLocation(): CnBucketLocationDTO {
     return {
       bucketId: this.id,
       locationName: this.getLocationName(),
       bucketType: this.bucketType,
-      countryName: this.getLocationCountryName(),
-      cityName: this.getLocationCityName(),
-      cloudProviderName: this.getLocationCloudProviderName()
+      cloudRegion: this.isCloudBucket() ? this.region : null
     };
   }
 
