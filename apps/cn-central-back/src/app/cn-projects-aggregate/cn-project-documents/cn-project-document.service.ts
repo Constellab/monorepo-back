@@ -237,7 +237,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
         type: In([CnProjectDocumentType.UPLOADED_DOCUMENT, CnProjectDocumentType.CONSTELLAB_DOCUMENT])
       },
       order: {
-        lastModifiedAt: 'DESC' as any
+        createdAt: 'DESC' as any
       }
     });
   }
