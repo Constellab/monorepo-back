@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HnStory, HnStoryCategory, HnStoryStatus } from './hn-story.entity';
 import { DataSource, EntityManager, FindOptionsOrder, FindOptionsWhere, In, Like, Repository } from 'typeorm';
@@ -34,6 +34,7 @@ import { HnStoryFileService } from '../story-file/hn-story-file.service';
 @Injectable()
 export class HnStoryService {
 
+  private logger = new Logger(HnStoryService.name);
 
   constructor(@InjectRepository(HnStory)
               private readonly storyRepository: Repository<HnStory>,
@@ -478,39 +479,48 @@ export class HnStoryService {
   async migrateStoryBucketItemsNames(): Promise<any> {
     const items: any[] = (await this.storyFileService.getAllBucketItemsName()).map(i => [i.name, i.size]);
     let modif = 0;
+    console.log('MMM')
+    this.logger.log('Migrating ' + items.length + ' files');
     for (const [fileName, size] of items) {
       const storyId = fileName.split('/')[0];
       const story: HnStory = await this.getStory(storyId, false);
+      try{
+        if (story && fileName.split('/').length == 3) {
+          this.logger.log('Migrating file ' + fileName + ' for story ' + storyId)
+          const entityFile = await this.storyFileService.getEntityFileByFileName(fileName);
+          if (!entityFile) {
+            const storyFile = await this.oldStoryFileService.getStoryFileByFileName(fileName);
+            const newStoryFileEntity: HnFileStory = new HnFileStory();
+            let type = HnFileType.FILE;
+            switch (fileName.split('/')[1]) {
+              case 'files':
+                type = HnFileType.FILE;
+                break;
+              case 'images':
+                type = HnFileType.IMAGE;
+                break;
+              case 'views':
+                type = HnFileType.RESOURCE_VIEW;
+                break;
+            }
+            const name = (storyFile != null && storyFile.humanName != null) ?
+              storyFile.humanName : type.toString() + '.' + fileName.split('.')[1];
+            newStoryFileEntity.init(story, fileName, type, name, size);
 
-      if (story && fileName.split('/').length == 3) {
-        const entityFile = await this.storyFileService.getEntityFileByFileName(fileName);
-        if (!entityFile) {
-          const storyFile = await this.oldStoryFileService.getStoryFileByFileName(fileName);
-          const newStoryFileEntity: HnFileStory = new HnFileStory();
-          let type = HnFileType.FILE;
-          switch (fileName.split('/')[1]) {
-            case 'files':
-              type = HnFileType.FILE;
-              break;
-            case 'images':
-              type = HnFileType.IMAGE;
-              break;
-            case 'views':
-              type = HnFileType.RESOURCE_VIEW;
-              break;
+            await this.dataSource.transaction(async entityManager => {
+              const savedDocFileEntity = await this.storyFileService.saveFileEntity(storyId, newStoryFileEntity, entityManager);
+              await this.updateStoryFilesName(story, savedDocFileEntity, entityManager);
+              modif++;
+            });
+            this.logger.log('Migration done for file ' + fileName + ' for story ' + storyId)
           }
-          const name = (storyFile != null && storyFile.humanName != null) ?
-            storyFile.humanName : type.toString() + '.' + fileName.split('.')[1];
-          newStoryFileEntity.init(story, fileName, type, name, size);
-
-          await this.dataSource.transaction(async entityManager => {
-            const savedDocFileEntity = await this.storyFileService.saveFileEntity(storyId, newStoryFileEntity, entityManager);
-            await this.updateStoryFilesName(story, savedDocFileEntity, entityManager);
-            modif++;
-          });
         }
+      } catch (e){
+        this.logger.log('Error during migration for file ' + fileName + ' for story ' + storyId + ' : ' + e)
       }
+
     }
+    this.logger.log('Migration done, ' + modif + ' files modified');
     return modif
   }
 
