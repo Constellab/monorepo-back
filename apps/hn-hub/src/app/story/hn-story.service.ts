@@ -488,6 +488,7 @@ export class HnStoryService {
         if (story && fileName.split('/').length == 3) {
           this.logger.log('Migrating file ' + fileName + ' for story ' + storyId)
           const entityFile = await this.storyFileService.getEntityFileByFileName(fileName);
+          this.logger.log('EntityFile getted, ' + entityFile);
           if (!entityFile) {
             const storyFile = await this.oldStoryFileService.getStoryFileByFileName(fileName);
             const newStoryFileEntity: HnFileStory = new HnFileStory();
@@ -506,10 +507,13 @@ export class HnStoryService {
             const name = (storyFile != null && storyFile.humanName != null) ?
               storyFile.humanName : type.toString() + '.' + fileName.split('.')[1];
             newStoryFileEntity.init(story, fileName, type, name, size);
-
+            this.logger.log('Entity not initialized ' + story + ' ' + fileName + ', the story file entity id is '
+              + newStoryFileEntity.entity?.id)
             await this.dataSource.transaction(async entityManager => {
-              const savedDocFileEntity = await this.storyFileService.saveFileEntity(storyId, newStoryFileEntity, entityManager);
-              await this.updateStoryFilesName(story, savedDocFileEntity, entityManager);
+              const savedStoryFileEntity = await this.storyFileService.saveFileEntity(storyId, newStoryFileEntity, entityManager);
+              this.logger.log('Migration in progress, StoryFileEntity saved')
+              await this.updateStoryFilesName(story, savedStoryFileEntity, entityManager);
+              this.logger.log('Migration in progress, updateStoryFilesName done')
               modif++;
             });
             this.logger.log('Migration done for file ' + fileName + ' for story ' + storyId)
@@ -526,6 +530,7 @@ export class HnStoryService {
 
   private async updateStoryFilesName(story: HnStory, newStoryFileEntity: HnFileStory, entityManager: EntityManager): Promise<void> {
     let modified = false;
+    this.logger.log('Migration in progress, start updateStoryFilesName for' + story.id + ' and ' + newStoryFileEntity.id);
 
     if (newStoryFileEntity.type == HnFileType.IMAGE && newStoryFileEntity.fileName == story.mainPicture) {
       story.mainPicture = newStoryFileEntity.name;
@@ -584,5 +589,6 @@ export class HnStoryService {
     }
 
     await entityManager.save(story, {listeners: false});
+    this.logger.log('Migration in progress, end updateStoryFilesName for' + story.id + ' and ' + newStoryFileEntity.id);
   }
 }

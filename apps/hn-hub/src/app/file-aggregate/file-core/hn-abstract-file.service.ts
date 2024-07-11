@@ -13,8 +13,11 @@ import { HnAbstractFileEntity, HnFileType } from './hn-abstract-file.entity';
 import { EntityManager, FindOptionsWhere, Repository } from 'typeorm';
 import { ClStringHelper } from '@monorepo/core-lib';
 import { HnAbstractFileEntityDTO, HnUploadFileResponseDto } from './hn-abstract-file.dto';
+import {Logger} from '@nestjs/common';
 
 export abstract class HnAbstractFileService<T extends BlEntityWithId> {
+
+  private logger = new Logger(HnAbstractFileService.name);
 
   repository: Repository<HnAbstractFileEntity<T>>;
   objectStorageService: BlObjectStorageService;
@@ -120,6 +123,7 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
   async saveFileEntity(entityId: string, entityFile: HnAbstractFileEntity<T>,
                        entityManager: EntityManager): Promise<HnAbstractFileEntity<T>> {
     entityFile.name = await this.checkAndUpdateName(entityId, entityFile);
+    this.logger.log('entityFile to save', entityFile)
     return await entityManager.save(entityFile);
   }
 
