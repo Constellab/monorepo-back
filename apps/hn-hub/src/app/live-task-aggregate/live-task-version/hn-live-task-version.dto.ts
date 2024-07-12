@@ -18,18 +18,19 @@ export class HnLiveTaskVersionDto extends BlEntityWithIdDTO {
 
   constructor(liveTaskVersion: HnLiveTaskVersion) {
     super();
-    this.id = liveTaskVersion.id;
-    this.version = liveTaskVersion.version;
-    this.liveTask = new HnLiveTaskDto(liveTaskVersion.liveTask);
-    this.versionState = liveTaskVersion.versionState;
-    this.type = liveTaskVersion.type;
-    this.versionInfos = liveTaskVersion.versionInfos;
-    this.params = liveTaskVersion.params;
-    this.environment = liveTaskVersion.environment;
-    this.code = liveTaskVersion.code;
-    this.createdAt = liveTaskVersion.createdAt.toISO();
-    this.inputSpecs = liveTaskVersion.inputSpecs;
-    this.outputSpecs = liveTaskVersion.outputSpecs;
-    this.configSpecs = liveTaskVersion.configSpecs;
+    this.id = liveTaskVersion?.id;
+    this.version = liveTaskVersion?.version;
+    if (liveTaskVersion?.liveTask)
+      this.liveTask = new HnLiveTaskDto(liveTaskVersion.liveTask);
+    this.versionState = liveTaskVersion?.versionState;
+    this.type = liveTaskVersion?.type;
+    this.versionInfos = liveTaskVersion?.versionInfos;
+    this.params = liveTaskVersion?.params;
+    this.environment = liveTaskVersion?.environment;
+    this.code = liveTaskVersion?.code;
+    this.createdAt = liveTaskVersion?.createdAt?.toISO();
+    this.inputSpecs = liveTaskVersion?.inputSpecs;
+    this.outputSpecs = liveTaskVersion?.outputSpecs;
+    this.configSpecs = liveTaskVersion?.configSpecs;
   }
 }
