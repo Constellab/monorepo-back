@@ -1,18 +1,18 @@
-import {Injectable, Logger} from '@nestjs/common';
-import {CnExperiment, CnExperimentProtocol} from './cn-experiment.entity';
-import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
-import {CnCreateLabExperimentDto, CnSaveExperimentResultDTO} from './cn-experiment.dto';
-import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
-import {CnProject} from '../cn-projects/cn-project.entity';
-import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
+import { Injectable, Logger } from '@nestjs/common';
+import { CnExperiment, CnExperimentProtocol } from './cn-experiment.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CnCreateLabExperimentDto, CnSaveExperimentResultDTO } from './cn-experiment.dto';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnProject } from '../cn-projects/cn-project.entity';
+import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service';
 import {
   BlAbstractService,
   BlBadRequestException,
   BlQuillMigrator,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
-import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
+import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 
 @Injectable()
 export class CnExperimentsService extends BlAbstractService<CnExperiment> {
@@ -28,16 +28,16 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
       where: {
         projectId: projectId
       },
-      order: {lastModifiedAt: 'DESC' as any}
+      order: { lastModifiedAt: 'DESC' as any }
     });
   }
 
   getExperimentsByLabInstance(labInstanceId: string): Promise<CnExperiment[]> {
     return this.repository.find({
       where: {
-        labInstance: {id: labInstanceId}
+        labInstance: { id: labInstanceId }
       },
-      order: {lastModifiedAt: 'DESC' as any}
+      order: { lastModifiedAt: 'DESC' as any }
     });
   }
 
@@ -58,7 +58,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     experiment.description = BlQuillMigrator.migrateOptional(labExperimentDto.description);
     experiment.status = labExperimentDto.status;
     experiment.labConfig = labConfig;
-    experiment.protocol = this.migrateProtocolFromV1ToV2(createLabExperimentDto.protocol);
+    experiment.protocol = this.migrateProtocol(createLabExperimentDto.protocol);
 
     experiment.createdBy = labExperimentDto.created_by;
     experiment.createdAt = labExperimentDto.created_at;
@@ -77,11 +77,11 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
 
     if (experimentDB) {
       const exp = await this.updateWithCompare(experiment, experimentDB);
-      return {experiment: exp, mode: 'update'};
+      return { experiment: exp, mode: 'update' };
     } else {
       experiment.labInstance = CnCurrentUserHelper.getCurrentLabInstance();
       const exp = await this.create(experiment);
-      return {experiment: exp, mode: 'create'};
+      return { experiment: exp, mode: 'create' };
     }
   }
 
@@ -101,7 +101,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
   }
 
   findByIdAndCheckWithReports(id: string): Promise<CnExperiment> {
-    return this.findByIdAndCheck(id, {reports: true});
+    return this.findByIdAndCheck(id, { reports: true });
   }
 
 
@@ -119,7 +119,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
       order: {
         lastModifiedAt: 'DESC' as any
       },
-      relations: ['project'],
+      relations: ['project']
 
     });
   }
@@ -131,18 +131,45 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
 
   public async getExperimentLabConfig(experimentId: string): Promise<CnLabConfig> {
     return (await this.repository.findOne({
-      where: {id: experimentId},
-      relations: {labConfig: {brickVersions: {brick: true}}},
+      where: { id: experimentId },
+      relations: { labConfig: { brickVersions: { brick: true } } }
     })).labConfig;
   }
 
+  public async migrateAllExperimentProtocol(): Promise<void> {
+    this.logger.log('[PROTOCOL MIGRATION] Migrate all experiment protocol');
+    const experiments = await this.repository.find();
+    for (const experiment of experiments) {
+      try {
+        experiment.protocol = this.migrateProtocol(experiment.protocol);
+        await this.repository.save(experiment);
+      } catch (e) {
+        this.logger.error(`[PROTOCOL MIGRATION] Error while migrating protocol for experiment ${experiment.id}`);
+        this.logger.error(e);
+      }
+    }
 
-  // to keep until all labs are V 0.7.5 or higher
-  public migrateProtocolFromV1ToV2(protocol: CnExperimentProtocol): CnExperimentProtocol {
-    if (protocol.version >= 2) {
+    this.logger.log('[PROTOCOL MIGRATION] All experiment protocol migrated');
+  }
+
+  public migrateProtocol(protocol: CnExperimentProtocol): CnExperimentProtocol {
+    if (protocol.version === 3) {
       return protocol;
     }
 
+    if (protocol.version === 1) {
+      protocol = this.migrateProtocolFromV1ToV2(protocol);
+    }
+
+    if (protocol.version === 2) {
+      protocol = this.migrateProtocolFromV2ToV3(protocol);
+    }
+
+    return protocol;
+  }
+
+  // to keep until all labs are V 0.7.5 or higher
+  private migrateProtocolFromV1ToV2(protocol: CnExperimentProtocol): CnExperimentProtocol {
     const newProtocolData = this.migrateProcessFromV1ToV2Recur(protocol.data);
     return {
       version: 2,
@@ -215,4 +242,37 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     }
     return protocol;
   }
+
+  // to keep until all labs are V 0.7.5 or higher
+  private migrateProtocolFromV2ToV3(protocol: CnExperimentProtocol): CnExperimentProtocol {
+    const newProtocolData = this.migrateProcessFromV2ToV3Recur(protocol.data);
+    return {
+      version: 3,
+      data: newProtocolData
+    };
+  }
+
+  // V3 version was declare on gws_core v 0.8.2
+  // update version to brick_version_on_create and brick_version_on_run
+  private migrateProcessFromV2ToV3Recur(protocol: any): any {
+    if (protocol.graph) {
+
+      for (const key in protocol.graph.nodes) {
+        const process = protocol.graph.nodes[key];
+
+        if (process.brick_version) {
+          process.brick_version_on_create = process.brick_version;
+          process.brick_version_on_run = process.brick_version;
+          delete process.brick_version;
+        }
+
+        if (process.graph) {
+          this.migrateProcessFromV2ToV3Recur(process);
+        }
+      }
+    }
+
+    return protocol;
+  }
 }
+

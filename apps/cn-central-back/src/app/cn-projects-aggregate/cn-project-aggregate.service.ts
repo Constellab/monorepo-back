@@ -450,6 +450,13 @@ export class CnProjectAggregateService {
     return this.experimentService.getExperimentLabConfig(experimentId);
   }
 
+  async migrateAllExperimentsProtocol(): Promise<void> {
+    if (!CnCurrentUserHelper.isAdmin()) {
+      throw new UnauthorizedException();
+    }
+    await this.experimentService.migrateAllExperimentProtocol();
+  }
+
   /////////////////////////////////////// REPORT //////////////////////////////////
 
   public async findReport(id: string): Promise<CnReport> {
