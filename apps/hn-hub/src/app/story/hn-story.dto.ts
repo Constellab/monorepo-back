@@ -2,7 +2,7 @@ import {HnStory, HnStoryCategory, HnStoryStatus} from "./hn-story.entity";
 import {HnStoryCoAuthorDto} from '../story-author/hn-story-author.dto';
 import {HnUserDto} from '../users/hn-user.dto';
 import {HnTopic} from '../topic/hn-topic.entity';
-import {BlEntityWithId, BlEntityWithIdDTO} from '@monorepo/back-core-lib';
+import {BlEntityWithIdDTO} from '@monorepo/back-core-lib';
 import {HnFileStory} from '../file-aggregate/file-story/hn-file-story.entity';
 
 export class HnCreateStoryDto {
@@ -48,7 +48,6 @@ export class HnStoryDto extends BlEntityWithIdDTO{
     this.publishedAt = story.publishedAt?.toISO();
     this.createdAt = story.createdAt?.toISO();
     this.lastModifiedAt = story.lastModifiedAt?.toISO();
-    this.storyFiles = story.storyFiles;
     this.createdBy = new HnUserDto(story.createdBy);
     this.likes = story.likes;
     this.comments = story.comments;

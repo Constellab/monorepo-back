@@ -50,7 +50,7 @@ import { HnGeneratedDocDto } from '../core/model/entities/hn-generated-doc.dto';
 import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.dto';
 import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
 import { HnFileDocumentationService } from '../file-aggregate/file-documentation/hn-file-documentation.service';
-import { HnUploadFileResponseDto } from '../file-aggregate/file-core/hn-abstract-file.dto';
+import {HnAbstractFileEntityDTO, HnUploadFileResponseDto} from '../file-aggregate/file-core/hn-abstract-file.dto';
 import { HnFileDocumentation } from '../file-aggregate/file-documentation/hn-file-documentation.entity';
 import { HnFileType } from '../file-aggregate/file-core/hn-abstract-file.entity';
 
@@ -692,6 +692,11 @@ export class HnBrickAggregateService {
 
     // TODO: improve here to avoid resource task and protocols services in technicalForlderService
     return this.technicalFolderService.createTechnicalDoc(brickMajorVersion, content.importFile);
+  }
+
+  async getDocFiles(docId: string): Promise<HnAbstractFileEntityDTO[]> {
+    const documentation: HnDocumentation = await this.documentationService.findById(docId);
+    return this.fileDocumentationService.getDocFiles(documentation);
   }
 
   //------------------------------------- TECHNICAL DOCS -------------------------------------

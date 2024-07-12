@@ -32,7 +32,7 @@ import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 import {HnUserDto} from '../users/hn-user.dto';
 import {HnFileStoryService} from '../file-aggregate/file-story/hn-file-story.service';
 import {HnAbstractFileController} from '../file-aggregate/file-core/hn-abstract-file.controller';
-import {HnUploadFileResponseDto} from '../file-aggregate/file-core/hn-abstract-file.dto';
+import {HnAbstractFileEntityDTO, HnUploadFileResponseDto} from '../file-aggregate/file-core/hn-abstract-file.dto';
 
 @Controller('story')
 export class HnStoryController extends HnAbstractFileController<HnStory> {
@@ -248,6 +248,12 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
   @Delete('invite/:inviteId')
   async deleteCoAuthorInvite(@Param('inviteId', new ParseUUIDPipe()) inviteId: string): Promise<boolean> {
     return this.storyService.deleteCoAuthorInvite(inviteId);
+  }
+
+  @BlPublic()
+  @Get('story-files/:storyId')
+  async getStoryFiles(@Param('storyId', new ParseUUIDPipe()) storyId: string): Promise<HnAbstractFileEntityDTO[]> {
+    return this.storyService.getStoryFiles(storyId);
   }
 
   ////////////////////////////////// STORY RESOURCE VIEW //////////////////////////////////

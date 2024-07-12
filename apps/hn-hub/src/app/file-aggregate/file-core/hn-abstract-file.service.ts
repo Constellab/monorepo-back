@@ -123,7 +123,13 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
   async saveFileEntity(entityId: string, entityFile: HnAbstractFileEntity<T>,
                        entityManager: EntityManager): Promise<HnAbstractFileEntity<T>> {
     entityFile.name = await this.checkAndUpdateName(entityId, entityFile);
-    this.logger.log('entityFile to save', entityFile)
+    this.logger.log('EntityFile is to save : ' + entityFile.fileName + ", "  + entityFile.entity.id)
+
+    const saved = await entityManager.save(entityFile);
+    return saved;
+  }
+
+  async save(entityFile: HnAbstractFileEntity<T>, entityManager: EntityManager): Promise<HnAbstractFileEntity<T>>{
     return await entityManager.save(entityFile);
   }
 

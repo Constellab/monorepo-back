@@ -11,7 +11,7 @@ export class HnDocumentationFile extends BlEntityWithId {
   @Column()
   fileName: string;
 
-  @ManyToOne(() => HnDocumentation, documentation => documentation.docFiles, {nullable: false})
+  @ManyToOne(() => HnDocumentation, {nullable: false})
   documentation: HnDocumentation;
 
   initFile(documentation: HnDocumentation, humanName: string, fileName: string): void {

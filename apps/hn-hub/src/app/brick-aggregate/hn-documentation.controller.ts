@@ -26,7 +26,7 @@ import {HnBrickAggregateService} from './hn-brick-aggregate.service';
 import {HnDocumentationDto} from './documentation/hn-documentation.dto';
 import {HnAbstractFileController} from '../file-aggregate/file-core/hn-abstract-file.controller';
 import {HnFileDocumentationService} from '../file-aggregate/file-documentation/hn-file-documentation.service';
-import {HnUploadFileResponseDto} from '../file-aggregate/file-core/hn-abstract-file.dto';
+import {HnAbstractFileEntityDTO, HnUploadFileResponseDto} from '../file-aggregate/file-core/hn-abstract-file.dto';
 import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 
 @Controller('documentation')
@@ -96,6 +96,14 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
 
 
   /////////////////////////////////// DOC FILE //////////////////////////////////////////
+
+  @BlPublic()
+  @Get('doc-files/:docId')
+  async getDocFiles(@Param('docId', new ParseUUIDPipe()) docId: string): Promise<HnAbstractFileEntityDTO[]> {
+    return this.brickAggregateService.getDocFiles(docId);
+  }
+
+
   @UseInterceptors(FileInterceptor('file'))
   @Post('file/:docId')
   async saveFile(@BlUploadedFile() file: BlFile,

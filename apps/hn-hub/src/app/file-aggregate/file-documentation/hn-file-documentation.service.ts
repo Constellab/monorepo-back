@@ -6,14 +6,20 @@ import { BlBucketConfig, BlBucketType, BlObjectStorageService } from '@monorepo/
 import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
 import { HnFileDocumentation } from './hn-file-documentation.entity';
 import { HnDocumentation } from '../../brick-aggregate/documentation/hn-documentation.entity';
+import {HnAbstractFileEntityDTO} from '../file-core/hn-abstract-file.dto';
 
 @Injectable()
 export class HnFileDocumentationService extends HnAbstractFileService<HnDocumentation> {
-  constructor(@InjectRepository(HnFileDocumentation) fileDocumentationRepository: Repository<HnFileDocumentation>,
+  constructor(@InjectRepository(HnFileDocumentation) private fileDocumentationRepository: Repository<HnFileDocumentation>,
               objectStorageService: BlObjectStorageService,
               private configService: HnCoreConfigService
   ) {
     super(fileDocumentationRepository, objectStorageService);
+  }
+
+  async getDocFiles(documentation: HnDocumentation): Promise<HnAbstractFileEntityDTO[]> {
+    return this.fileDocumentationRepository.findBy({entity: {id: documentation.id}})
+      .then(files => files.map(file => new HnAbstractFileEntityDTO(file)));
   }
 
   constructEntityFile(): HnFileDocumentation {

@@ -1,9 +1,9 @@
 import {Injectable, Logger} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { HnStory, HnStoryCategory, HnStoryStatus } from './hn-story.entity';
-import { DataSource, EntityManager, FindOptionsOrder, FindOptionsWhere, In, Like, Repository } from 'typeorm';
-import { HnTopicService } from '../topic/hn-topic.service';
-import { ClPage, ClStringHelper } from '@monorepo/core-lib';
+import {InjectRepository} from '@nestjs/typeorm';
+import {HnStory, HnStoryCategory, HnStoryStatus} from './hn-story.entity';
+import {DataSource, EntityManager, FindOptionsOrder, FindOptionsWhere, In, Like, Repository} from 'typeorm';
+import {HnTopicService} from '../topic/hn-topic.service';
+import {ClPage, ClStringHelper} from '@monorepo/core-lib';
 import {
   BlAbstractPaginatedService,
   BlBadRequestException,
@@ -13,22 +13,22 @@ import {
   BlRichTextUploadedImageResponse,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
-import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
-import { HnCreateStoryDto, HnStoryDto, HnStoryFilter } from './hn-story.dto';
-import { HnTopicDto } from '../topic/hn-topic.dto';
-import { HnTopic } from '../topic/hn-topic.entity';
-import { DateTime } from 'luxon';
-import { HnStoryAuthorService } from '../story-author/hn-story-author.service';
-import { HnStoryCoAuthor } from '../story-author/hn-story-author.entity';
-import { HnStoryCoAuthorInvite } from '../story-author-invite/hn-story-author-invite.entity';
-import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
-import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
-import { HnFrontService } from '../core/service/hn-front.service';
-import { HnFileStoryService } from '../file-aggregate/file-story/hn-file-story.service';
-import { HnUploadFileResponseDto } from '../file-aggregate/file-core/hn-abstract-file.dto';
-import { HnFileStory } from '../file-aggregate/file-story/hn-file-story.entity';
-import { HnFileType } from '../file-aggregate/file-core/hn-abstract-file.entity';
-import { HnStoryFileService } from '../story-file/hn-story-file.service';
+import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
+import {HnCreateStoryDto, HnStoryDto, HnStoryFilter} from './hn-story.dto';
+import {HnTopicDto} from '../topic/hn-topic.dto';
+import {HnTopic} from '../topic/hn-topic.entity';
+import {DateTime} from 'luxon';
+import {HnStoryAuthorService} from '../story-author/hn-story-author.service';
+import {HnStoryCoAuthor} from '../story-author/hn-story-author.entity';
+import {HnStoryCoAuthorInvite} from '../story-author-invite/hn-story-author-invite.entity';
+import {HnInviteStatus} from '../core/model/config/hn-invite-status.enum';
+import {HnSiteMapEnumChangefreq, HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
+import {HnFrontService} from '../core/service/hn-front.service';
+import {HnFileStoryService} from '../file-aggregate/file-story/hn-file-story.service';
+import {HnAbstractFileEntityDTO, HnUploadFileResponseDto} from '../file-aggregate/file-core/hn-abstract-file.dto';
+import {HnFileStory} from '../file-aggregate/file-story/hn-file-story.entity';
+import {HnFileType} from '../file-aggregate/file-core/hn-abstract-file.entity';
+import {HnStoryFileService} from '../story-file/hn-story-file.service';
 
 
 @Injectable()
@@ -475,6 +475,13 @@ export class HnStoryService {
     return await entityManager.save(HnStory, story, {listeners: false});
   }
 
+
+  //////////////////////////////////// STORY FILES /////////////////////////////////////
+  async getStoryFiles(storyId: string): Promise<HnAbstractFileEntityDTO[]> {
+    const story = await this.getStory(storyId);
+    return this.storyFileService.getStoryFiles(story);
+  }
+
   //////////////////////////////////// ADMIN //////////////////////////////////////////
   async migrateStoryBucketItemsNames(): Promise<any> {
     const items: any[] = (await this.storyFileService.getAllBucketItemsName()).map(i => [i.name, i.size]);
@@ -488,7 +495,6 @@ export class HnStoryService {
         if (story && fileName.split('/').length == 3) {
           this.logger.log('Migrating file ' + fileName + ' for story ' + storyId)
           const entityFile = await this.storyFileService.getEntityFileByFileName(fileName);
-          this.logger.log('EntityFile getted, ' + entityFile);
           if (!entityFile) {
             const storyFile = await this.oldStoryFileService.getStoryFileByFileName(fileName);
             const newStoryFileEntity: HnFileStory = new HnFileStory();
@@ -507,12 +513,18 @@ export class HnStoryService {
             const name = (storyFile != null && storyFile.humanName != null) ?
               storyFile.humanName : type.toString() + '.' + fileName.split('.')[1];
             newStoryFileEntity.init(story, fileName, type, name, size);
-            this.logger.log('Entity not initialized ' + story + ' ' + fileName + ', the story file entity id is '
-              + newStoryFileEntity.entity?.id)
+            this.logger.log('Entity initialized ' + newStoryFileEntity.fileName + ', the story file entity id is ' + newStoryFileEntity.entity?.id)
+
             await this.dataSource.transaction(async entityManager => {
+
               const savedStoryFileEntity = await this.storyFileService.saveFileEntity(storyId, newStoryFileEntity, entityManager);
-              this.logger.log('Migration in progress, StoryFileEntity saved')
+
+
+              this.logger.log('Migration in progress, StoryFileEntity saved : ' + savedStoryFileEntity.id + ' '
+                + savedStoryFileEntity.fileName + ' ' + savedStoryFileEntity.name)
+
               await this.updateStoryFilesName(story, savedStoryFileEntity, entityManager);
+
               this.logger.log('Migration in progress, updateStoryFilesName done')
               modif++;
             });
@@ -529,49 +541,37 @@ export class HnStoryService {
   }
 
   private async updateStoryFilesName(story: HnStory, newStoryFileEntity: HnFileStory, entityManager: EntityManager): Promise<void> {
-    let modified = false;
     this.logger.log('Migration in progress, start updateStoryFilesName for' + story.id + ' and ' + newStoryFileEntity.id);
 
     if (newStoryFileEntity.type == HnFileType.IMAGE && newStoryFileEntity.fileName == story.mainPicture) {
       story.mainPicture = newStoryFileEntity.name;
-      modified = true;
     }
 
     story.content.blocks.forEach((block: any) => {
       if (block.type == 'figure' && newStoryFileEntity.type == HnFileType.IMAGE && block.data.filename == newStoryFileEntity.fileName) {
         block.data.filename = newStoryFileEntity.name;
-        modified = true;
       }
       if (block.type == 'file' && newStoryFileEntity.type == HnFileType.FILE && block.data.name == newStoryFileEntity.fileName) {
         block.data.name = newStoryFileEntity.name;
-        modified = true;
       }
       if (block.type == 'resourceView' && newStoryFileEntity.type == HnFileType.RESOURCE_VIEW
         && block.data.filename == newStoryFileEntity.fileName) {
         block.data.filename = newStoryFileEntity.name;
-        modified = true;
       }
     });
 
     story.contentEdition.blocks.forEach((block: any) => {
       if (block.type == 'figure' && newStoryFileEntity.type == HnFileType.IMAGE && block.data.filename == newStoryFileEntity.fileName) {
         block.data.filename = newStoryFileEntity.name;
-        modified = true;
       }
       if (block.type == 'file' && newStoryFileEntity.type == HnFileType.FILE && block.data.name == newStoryFileEntity.fileName) {
         block.data.name = newStoryFileEntity.name;
-        modified = true;
       }
       if (block.type == 'resourceView' && newStoryFileEntity.type == HnFileType.RESOURCE_VIEW
         && block.data.filename == newStoryFileEntity.fileName) {
         block.data.filename = newStoryFileEntity.name;
-        modified = true;
       }
     });
-
-    if (modified) {
-      await entityManager.save(story, {listeners: false});
-    }
 
     if (newStoryFileEntity.type == HnFileType.FILE &&
       story.contentEdition.blocks.filter((b: any) => b.type == 'file' && b.data.name == newStoryFileEntity.name).length == 0){
@@ -587,7 +587,7 @@ export class HnStoryService {
       (story.contentEdition as BlRichTextContent).blocks.push(block);
       (story.content as BlRichTextContent).blocks.push(block);
     }
-
+    this.logger.log('Migration in progress, save story changes');
     await entityManager.save(story, {listeners: false});
     this.logger.log('Migration in progress, end updateStoryFilesName for' + story.id + ' and ' + newStoryFileEntity.id);
   }

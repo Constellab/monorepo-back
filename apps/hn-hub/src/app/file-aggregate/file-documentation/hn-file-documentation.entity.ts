@@ -5,7 +5,7 @@ import {HnDocumentation} from '../../brick-aggregate/documentation/hn-documentat
 @Entity('file_documentation')
 export class HnFileDocumentation extends HnAbstractFileEntity<HnDocumentation> {
 
-  @ManyToOne(() => HnDocumentation, doc => doc.docFiles, {nullable: false, onDelete: 'CASCADE'})
+  @ManyToOne(() => HnDocumentation, {nullable: false, onDelete: 'CASCADE'})
   entity: HnDocumentation;
 
 }

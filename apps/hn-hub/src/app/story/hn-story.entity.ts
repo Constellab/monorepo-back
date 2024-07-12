@@ -61,9 +61,6 @@ export class HnStory extends BlEntityWithId {
   @BlLuxonDateTimeColumn({nullable: true})
   lastModifiedAt: DateTime;
 
-  @OneToMany(() => HnFileStory, storyFile => storyFile.entity, {nullable: true, eager: true})
-  storyFiles: HnFileStory[];
-
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, {eager: true, nullable: true})
   createdBy: HnUser;
