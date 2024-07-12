@@ -1,5 +1,4 @@
 import {HnBaseDto} from '../../core/model/entities/hn-base.dto';
-import {HnFolderDto} from '../folder/hn-folder.dto';
 import {HnDocumentation} from './hn-documentation.entity';
 
 export class HnDocumentationDto extends HnBaseDto{
@@ -8,7 +7,6 @@ export class HnDocumentationDto extends HnBaseDto{
   path: string;
   completePath: string;
   order: number;
-  folder: HnFolderDto;
 
   constructor(documentation: HnDocumentation) {
     super(documentation);
@@ -17,6 +15,5 @@ export class HnDocumentationDto extends HnBaseDto{
     this.path = documentation.path;
     this.completePath = documentation.completePath;
     this.order = documentation.order;
-    this.folder = new HnFolderDto(documentation.folder);
   }
 }
