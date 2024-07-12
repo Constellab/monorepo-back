@@ -37,7 +37,6 @@ export class CnUsersController {
 
   @Get('current')
   async current(): Promise<CnUser> {
-    console.log('WAOW>>>');
     return this.usersService.getCurrent();
   }
 
