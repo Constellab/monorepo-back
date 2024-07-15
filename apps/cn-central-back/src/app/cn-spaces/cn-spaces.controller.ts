@@ -67,9 +67,9 @@ export class CnSpacesController {
   }
 
 
-  @Post()
+  @Post('entreprise')
   create(@Body(new BlParsePipe(CnCreateSpaceDTO)) entity: CnCreateSpaceDTO): Promise<CnSpaceSettingsDto> {
-    return this.spaceAggregateService.createBasicSpace(entity);
+    return this.spaceAggregateService.createEntrepriseSpace(entity);
   }
 
 
@@ -132,11 +132,6 @@ export class CnSpacesController {
   }
 
   //////////////////////////////////////// LICENCE  ////////////////////////////////////////
-  @Put('current-space/licenses/:nbLicenses')
-  updateCurrentSpaceLicences(@Param('nbLicenses', new ParseIntPipe()) nbLicenses: number): Promise<CnSpaceSettingsDto> {
-    return this.spaceAggregateService.updateCurrentSpaceNbLicenses(nbLicenses);
-  }
-
   @Post('current-space/licenses/request-new-licenses')
   public async requestNewLicences(@Body() request: CnRequestNewLicensesDto): Promise<void> {
     return this.spaceAggregateService.requestNewLicenses(request);

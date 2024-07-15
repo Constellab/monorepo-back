@@ -1,24 +1,23 @@
-import {BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne} from 'typeorm';
-import {CnBaseEntity} from '../cn-core/model/entities/cn-base.entity';
-import {ClDateHelper, ClStringHelper} from '@monorepo/core-lib';
-import {Exclude, Type} from 'class-transformer';
-import {CnBucket} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
-import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne } from 'typeorm';
+import { CnBaseEntity } from '../cn-core/model/entities/cn-base.entity';
+import { ClDateHelper, ClStringHelper } from '@monorepo/core-lib';
+import { Exclude, Type } from 'class-transformer';
+import { CnBucket } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
 
 export enum CnSpaceType {
   // personal space create on the user creation (he cas invite other users in his space)
   PERSONAL = 'PERSONAL',
-  // basic space created by a user
-  BASIC = 'BASIC',
+  // entreprise space created by a user
+  ENTREPRISE = 'ENTREPRISE',
 }
 
 
 @Entity('space')
 export class CnSpace extends CnBaseEntity {
 
-  public static readonly DEFAULT_NB_LICENSES = 1;
   private static readonly DEFAULT_STORAGE_LIMIT = 1024 * 1024 * 1024; // 1GB
-
+  public static readonly PERSONAL_SPACE_USER_LIMIT = 3;
 
   // relation options to load required information for the bucket
   public static buckets: FindOptionsRelations<CnSpace> = {
@@ -26,43 +25,40 @@ export class CnSpace extends CnBaseEntity {
     defaultProjectBackupBucket: CnBucket.configRelation
   };
 
-  @Column({nullable: false})
+
+  @Column({ nullable: false })
   name: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   photo: string;
 
   // front domain for this space
-  @Column({length: 50, unique: true})
+  @Column({ length: 50, unique: true })
   domain: string;
 
-  @Exclude({toPlainOnly: true})
-  @Column({default: 0})
-  nbLicenses: number;
-
-  @Exclude({toPlainOnly: true})
-  @Column({type: 'bigint'})
+  @Exclude({ toPlainOnly: true })
+  @Column({ type: 'bigint' })
   cloudStorageLimit: number;
 
-  @Exclude({toPlainOnly: true})
-  @Column({type: 'bigint'})
+  @Exclude({ toPlainOnly: true })
+  @Column({ type: 'bigint' })
   cloudStorageUsage: number;
 
-  @Column({type: 'enum', enum: CnSpaceType, nullable: false, update: false})
+  @Column({ type: 'enum', enum: CnSpaceType, nullable: false, update: false })
   type: CnSpaceType;
 
   // default bucket region for this space
-  @Exclude({toPlainOnly: true})
+  @Exclude({ toPlainOnly: true })
   // use by default for project bucket
   @Type(() => CnBucket)
-  @ManyToOne(() => CnBucket, {nullable: false})
+  @ManyToOne(() => CnBucket, { nullable: false })
   defaultProjectBucket: CnBucket;
 
   // default bucket region for this space
-  @Exclude({toPlainOnly: true})
+  @Exclude({ toPlainOnly: true })
   // use by default for project bucket
   @Type(() => CnBucket)
-  @ManyToOne(() => CnBucket, {nullable: true})
+  @ManyToOne(() => CnBucket, { nullable: true })
   defaultProjectBackupBucket?: CnBucket;
 
   // don't set the createdBy and lastModifiedBy automatically
@@ -73,7 +69,6 @@ export class CnSpace extends CnBaseEntity {
     this.domain = ClStringHelper.generateUUID();
     this.cloudStorageLimit = CnSpace.DEFAULT_STORAGE_LIMIT;
     this.cloudStorageUsage = 0;
-    this.nbLicenses = CnSpace.DEFAULT_NB_LICENSES;
   }
 
   @BeforeInsert()
@@ -84,5 +79,13 @@ export class CnSpace extends CnBaseEntity {
 
   public hasEnoughStorageForNewFile(fileSize: number): boolean {
     return this.cloudStorageUsage + fileSize <= this.cloudStorageLimit;
+  }
+
+  public isEntrepriseSpace(): boolean {
+    return this.type === CnSpaceType.ENTREPRISE;
+  }
+
+  public isPersonalSpace(): boolean {
+    return this.type === CnSpaceType.PERSONAL;
   }
 }

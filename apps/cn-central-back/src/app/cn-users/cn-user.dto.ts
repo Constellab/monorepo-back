@@ -1,7 +1,7 @@
-import {CnSpace} from '../cn-spaces/cn-space.entity';
-import {CnUser} from './cn-user.entity';
-import {CnSpaceUserRole} from '../cn-spaces/cn-space-user.entity';
-import {BlUserCategory} from '@monorepo/back-core-lib';
+import { CnSpace } from '../cn-spaces/cn-space.entity';
+import { CnUser, CnUserLicense } from './cn-user.entity';
+import { CnSpaceUserRole } from '../cn-spaces/cn-space-user.entity';
+import { BlUserCategory } from '@monorepo/back-core-lib';
 
 
 export interface CnCreateUserDto {
@@ -38,4 +38,8 @@ export class CnUserSpaceInfo {
   isSpaceAdmin(): boolean {
     return this.isAdmin() || this.roleInSpace === CnSpaceUserRole.ADMIN;
   }
+}
+
+export interface CnUserUpdateLicenseDTO {
+  license: CnUserLicense;
 }

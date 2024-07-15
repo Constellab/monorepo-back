@@ -1,9 +1,10 @@
-import {Body, Controller, Get, HttpException, Param, Post, Put, Res} from '@nestjs/common';
-import {Response} from 'express';
-import {CnUser} from '../cn-user.entity';
-import {CnUserAccountsService} from './cn-user-accounts.service';
-import {CnFrontService} from '../../cn-core/services/cn-front.service';
-import {BlParsePipe, BlPublicSecure} from '@monorepo/back-core-lib';
+import { Body, Controller, Get, HttpException, Param, ParseUUIDPipe, Post, Put, Res } from '@nestjs/common';
+import { Response } from 'express';
+import { CnUser } from '../cn-user.entity';
+import { CnUserAccountsService } from './cn-user-accounts.service';
+import { CnFrontService } from '../../cn-core/services/cn-front.service';
+import { BlParsePipe, BlPublicSecure } from '@monorepo/back-core-lib';
+import { CnUserUpdateLicenseDTO } from '../cn-user.dto';
 
 /**
  * Open routes to manage users' accounts
@@ -84,14 +85,20 @@ export class CnUserAccountsController {
     await this.userAccountsService.resetPassword(token, body.password);
   }
 
-  @Put('lock/:userId')
-  lockUser(@Param('userId') userId: string): Promise<CnUser> {
+  @Put(':userId/lock')
+  lockUser(@Param('userId', new ParseUUIDPipe()) userId: string): Promise<CnUser> {
     return this.userAccountsService.lockUser(userId);
   }
 
-  @Put('unlock/:userId')
-  unlockUser(@Param('userId') userId: string): Promise<CnUser> {
+  @Put(':userId/unlock')
+  unlockUser(@Param('userId', new ParseUUIDPipe()) userId: string): Promise<CnUser> {
     return this.userAccountsService.unlockUser(userId);
+  }
+
+  @Put(':userId/license')
+  updateLicense(@Param('userId', new ParseUUIDPipe()) userId: string,
+                @Body() licenseDTO: CnUserUpdateLicenseDTO): Promise<CnUser> {
+    return this.userAccountsService.updateUserLicense(userId, licenseDTO);
   }
 
   ///////////////////////// SPACE INVITATION /////////////////////////

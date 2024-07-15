@@ -1,18 +1,18 @@
-import {Injectable} from '@nestjs/common';
-import {CnLabInstance} from '../cn-lab-instance.entity';
-import {CnLabInstanceMailTemplate, CnLabInstanceSendMailDto} from './cn-lab-instance-mail.dto';
-import {BlMailService} from '@monorepo/back-core-lib';
-import {CnMailTemplate} from '../../cn-core/model/config/cn-mail-template.class';
-import {CnUsersService} from '../../cn-users/cn-users.service';
-import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-config.service';
-import {CnRequestLabInstance} from '../cn-lab-instance.dto';
-import {CnSpace} from '../../cn-spaces/cn-space.entity';
-import {CnUser} from '../../cn-users/cn-user.entity';
-import {ClSupportedLanguage} from '@monorepo/core-lib';
-import {CnFrontService} from '../../cn-core/services/cn-front.service';
-import {CnSpaceService} from '../../cn-spaces/cn-space.service';
-import {CnLabInstanceUserService} from '../user/cn-lab-instance-user.service';
-import {CnSupportService} from '../../cn-support/cn-support.service';
+import { Injectable } from '@nestjs/common';
+import { CnLabInstance } from '../cn-lab-instance.entity';
+import { CnLabInstanceMailTemplate, CnLabInstanceSendMailDto } from './cn-lab-instance-mail.dto';
+import { BlMailService } from '@monorepo/back-core-lib';
+import { CnMailTemplate } from '../../cn-core/model/config/cn-mail-template.class';
+import { CnUsersService } from '../../cn-users/cn-users.service';
+import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnRequestLabInstance } from '../cn-lab-instance.dto';
+import { CnSpace } from '../../cn-spaces/cn-space.entity';
+import { CnUser } from '../../cn-users/cn-user.entity';
+import { ClSupportedLanguage } from '@monorepo/core-lib';
+import { CnFrontService } from '../../cn-core/services/cn-front.service';
+import { CnSpaceService } from '../../cn-spaces/cn-space.service';
+import { CnLabInstanceUserService } from '../user/cn-lab-instance-user.service';
+import { CnSupportService } from '../../cn-support/cn-support.service';
 
 
 /**
@@ -42,7 +42,7 @@ export class CnLabMailService {
   }
 
   public async sendRequestLabInstanceMail(request: CnRequestLabInstance, user: CnUser, space: CnSpace): Promise<void> {
-    await this.mailService.sendMail(CnMailTemplate.request_lab_instance, this.configService.getSalesMail(),
+    await this.mailService.sendMail(CnMailTemplate.request_lab_instance, this.configService.getCustomerSuccessMail(),
       ClSupportedLanguage.en, {
         user: user,
         space: space,

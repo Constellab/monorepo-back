@@ -1,13 +1,13 @@
-import {Injectable} from '@nestjs/common';
-import {BlMailService} from '@monorepo/back-core-lib';
-import {CnRequestNewLicensesDto} from './cn-space.dto';
-import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
-import {CnMailTemplate} from '../cn-core/model/config/cn-mail-template.class';
-import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import {CnSpaceInvit} from './cn-space-invit.entity';
-import {ClSupportedLanguage} from '@monorepo/core-lib';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnFrontService} from '../cn-core/services/cn-front.service';
+import { Injectable } from '@nestjs/common';
+import { BlMailService } from '@monorepo/back-core-lib';
+import { CnRequestNewLicensesDto } from './cn-space.dto';
+import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
+import { CnMailTemplate } from '../cn-core/model/config/cn-mail-template.class';
+import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnSpaceInvit } from './cn-space-invit.entity';
+import { ClSupportedLanguage } from '@monorepo/core-lib';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnFrontService } from '../cn-core/services/cn-front.service';
 
 /**
  * Service that handle mail for spaces
@@ -29,7 +29,7 @@ export class CnSpacesMailService {
       text: request.text,
     };
 
-    const receiver = this.configService.getSalesMail();
+    const receiver = this.configService.getCustomerSuccessMail();
     await this.mailService.sendMail(CnMailTemplate.request_new_licenses, receiver,
       userInfo.user.lang, data);
   }

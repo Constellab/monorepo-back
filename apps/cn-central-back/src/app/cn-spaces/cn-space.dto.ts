@@ -1,9 +1,9 @@
-import {CnSpaceUserRole} from './cn-space-user.entity';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnSpaceInvit} from './cn-space-invit.entity';
-import {CnSpace} from './cn-space.entity';
-import {Type} from 'class-transformer';
-import {CnBucketLocationDTO} from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { CnSpaceUserRole } from './cn-space-user.entity';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnSpaceInvit } from './cn-space-invit.entity';
+import { CnSpace } from './cn-space.entity';
+import { Type } from 'class-transformer';
+import { CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 
 export class CnCreateSpaceDTO {
@@ -28,7 +28,6 @@ export interface CnSpaceInvitReadDto {
 export class CnSpaceSettingsDto {
   @Type(() => CnSpace)
   space: CnSpace;
-  nbLicenses: number;
 
   defaultProjectStorageLocation: CnBucketLocationDTO;
   defaultProjectBackupStorageLocation?: CnBucketLocationDTO;
@@ -36,7 +35,6 @@ export class CnSpaceSettingsDto {
   static fromSpace(space: CnSpace): CnSpaceSettingsDto {
     const spaceSettings = new CnSpaceSettingsDto();
     spaceSettings.space = space;
-    spaceSettings.nbLicenses = space.nbLicenses;
     spaceSettings.defaultProjectStorageLocation = space.defaultProjectBucket.getBucketLocation();
     spaceSettings.defaultProjectBackupStorageLocation = space.defaultProjectBackupBucket?.getBucketLocation() ?? null;
 

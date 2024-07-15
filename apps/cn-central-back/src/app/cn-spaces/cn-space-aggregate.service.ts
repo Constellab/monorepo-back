@@ -68,7 +68,12 @@ export class CnSpaceAggregateService {
     return CnSpaceSettingsDto.fromSpace(space);
   }
 
-  public async createBasicSpace(entity: CnCreateSpaceDTO): Promise<CnSpaceSettingsDto> {
+  public async createEntrepriseSpace(entity: CnCreateSpaceDTO): Promise<CnSpaceSettingsDto> {
+    // free licenced users can't create a space
+    if (CnCurrentUserHelper.getAndCheckCurrentUser().isFreeLicence()) {
+      throw new BlBadRequestException('Free licenced users can\'t create an entreprise space');
+    }
+
     const bucketStorage = await this.checkSpaceStorage(
       entity.defaultStorageLocations.defaultProjectStorageLocation, entity.defaultStorageLocations.defaultProjectBackupStorageLocation);
 
@@ -77,7 +82,7 @@ export class CnSpaceAggregateService {
     }
 
     const spaceDB = await this.datasource.transaction(async (entityManager: EntityManager) => {
-      const space = await this.spaceService.createBasicSpace(entity.name, bucketStorage.defaultProjectBucket,
+      const space = await this.spaceService.createEntrepriseSpace(entity.name, bucketStorage.defaultProjectBucket,
         bucketStorage.defaultProjectBackupBucket, entityManager);
 
       const user = CnCurrentUserHelper.getAndCheckCurrentUser();
@@ -167,14 +172,6 @@ export class CnSpaceAggregateService {
     await this.checkSpaceAdmin(userInfo.spaceId);
 
     await this.spacesMailService.requestNewLicenses(request, userInfo);
-  }
-
-  public async updateCurrentSpaceNbLicenses(nbLicenses: number): Promise<CnSpaceSettingsDto> {
-    const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
-    this.checkAdmin();
-    space.nbLicenses = nbLicenses;
-    const dbSpace = await this.spaceService.update(space);
-    return this.getSpaceSettings(dbSpace.id);
   }
 
   /////////////////////////////////////// STORAGE ///////////////////////////////////////
@@ -398,6 +395,22 @@ export class CnSpaceAggregateService {
       throw new BlBadRequestException(CnErrorText.USER_ALREADY_IN_SPACE);
     }
 
+    // for entreprise space, only user with entreprise licence can be invited
+    if (space.isEntrepriseSpace()) {
+      const user = await this.userService.findByEmail(invitDto.userMail);
+
+      if (user == null) {
+        throw new BlBadRequestException(CnErrorText.INVIT_NONE_EXISTING_USER_TO_ENTREPRISE_SPACE_ERROR);
+      }
+      if (user.isFreeLicence()) {
+        throw new BlBadRequestException(CnErrorText.INVIT_FREE_USER_TO_ENTREPRISE_SPACE_ERROR);
+      }
+    }
+
+    if(space.isPersonalSpace()){
+      await this.spaceUserService.checkPersonalSpaceUserLimit(spaceId);
+    }
+
     return this.invitationService.createInvitation(space, invitDto);
   }
 
@@ -454,6 +467,10 @@ export class CnSpaceAggregateService {
                                 entityManager: EntityManager): Promise<CnUser> {
     if (invitation.userMail !== user.email) {
       throw new BlBadRequestException('The invitation email does not match the user email');
+    }
+
+    if (invitation.space.isEntrepriseSpace() && user.isFreeLicence()) {
+      throw new BlBadRequestException(CnErrorText.INVIT_ACCEPT_USER_FREE_LICENCE_ENTREPRISE_SPACE);
     }
 
     await this.spaceUserService.addUserToSpace(invitation.space, user, invitation.role, invitation.createdBy,

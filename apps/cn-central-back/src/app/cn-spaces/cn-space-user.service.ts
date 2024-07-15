@@ -1,11 +1,11 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {CnSpaceUser, CnSpaceUserRole} from './cn-space-user.entity';
-import {EntityManager, Repository} from 'typeorm';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnSpace, CnSpaceType} from './cn-space.entity';
-import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {ClHelpService, ClPage} from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CnSpaceUser, CnSpaceUserRole } from './cn-space-user.entity';
+import { EntityManager, Repository } from 'typeorm';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnSpace, CnSpaceType } from './cn-space.entity';
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { ClHelpService, ClPage } from '@monorepo/core-lib';
 import {
   BlAbstractPaginatedService,
   BlBadRequestException,
@@ -13,7 +13,7 @@ import {
   BlSearchParams,
   BlTransportService
 } from '@monorepo/back-core-lib';
-import {CnSpaceUserSearch} from './cn-space-user-search.class';
+import { CnSpaceUserSearch } from './cn-space-user-search.class';
 
 export enum CnSpaceUserAction {
   CREATE = 'createSpaceUser',
@@ -44,6 +44,15 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
       throw new BlBadRequestException(CnErrorText.USER_ALREADY_IN_SPACE);
     }
 
+    if (space.isEntrepriseSpace() && user.isFreeLicence()) {
+      throw new BlBadRequestException(CnErrorText.USER_FREE_LICENCE_ENTREPRISE_SPACE_ERROR);
+    }
+
+    // for personal space check if the space already has 3 users
+    if (space.isPersonalSpace()) {
+      await this.checkPersonalSpaceUserLimit(space.id);
+    }
+
     const spaceUser = new CnSpaceUser();
     spaceUser.user = user;
     spaceUser.space = space;
@@ -57,11 +66,20 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     return spaceUserSaved;
   }
 
+  public async checkPersonalSpaceUserLimit(spaceId: string): Promise<void> {
+    const spaceUsers = await this.repository.find({ where: { spaceId: spaceId } });
+    if (spaceUsers.length >= CnSpace.PERSONAL_SPACE_USER_LIMIT) {
+      throw new BlBadRequestException(CnErrorText.PERSONAL_SPACE_USER_LIMIT, {
+        detailArgs: { limit: CnSpace.PERSONAL_SPACE_USER_LIMIT }
+      });
+    }
+  }
+
   public async removeUserFromSpace(spaceId: string, userId: string): Promise<void> {
     if (!(await this.userIsSpaceMember(spaceId, userId))) {
       throw new BlBadRequestException(CnErrorText.USER_NOT_IN_SPACE);
     }
-    await this.repository.delete({userId: userId, spaceId: spaceId});
+    await this.repository.delete({ userId: userId, spaceId: spaceId });
 
     const spaceUserDeleted = {
       userId: userId,
@@ -109,7 +127,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
   }
 
   public async getSpaceAdmins(spaceId: string): Promise<CnSpaceUser[]> {
-    return this.repository.find({where: {spaceId: spaceId, role: CnSpaceUserRole.ADMIN}});
+    return this.repository.find({ where: { spaceId: spaceId, role: CnSpaceUserRole.ADMIN } });
   }
 
   /**
@@ -132,7 +150,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
 
   ///////////////////////////////// FIND  /////////////////////////////////////////
   public async findOneBySpaceIdAndUserId(spaceId: string, userId: string): Promise<CnSpaceUser | null> {
-    return this.repository.findOne({where: {userId, spaceId: spaceId}});
+    return this.repository.findOne({ where: { userId, spaceId: spaceId } });
   }
 
   public async findOneBySpaceIdAndUserEmail(spaceId: string, email: string): Promise<CnSpaceUser | null> {
@@ -140,39 +158,39 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
       {
         where: {
           spaceId: spaceId,
-          user: {email: email}
+          user: { email: email }
         },
-        relations: {user: true}
+        relations: { user: true }
       }
     );
   }
 
   public async findBySpace(spaceId: string, page: number, size: number): Promise<ClPage<CnSpaceUser>> {
     return await this.findPaginated(page, size, {
-      where: {spaceId: spaceId},
-      relations: {user: true}
+      where: { spaceId: spaceId },
+      relations: { user: true }
     });
   }
 
   public async searchUser(spaceId: string, searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnSpaceUser>> {
     const searchBuilder = new BlSearchBuilder<CnSpaceUser>();
     searchBuilder.addSearchParams(searchParams);
-    searchBuilder.mergeWhereOptions({spaceId: spaceId});
-    searchBuilder.setRelations({user: true});
+    searchBuilder.mergeWhereOptions({ spaceId: spaceId });
+    searchBuilder.setRelations({ user: true });
 
     return await this.findPaginated(page, size, searchBuilder.build());
   }
 
   public async findAllSpaceUserIds(spaceId: string): Promise<string[]> {
     const spaceUsers = await this.repository.find({
-      where: {spaceId: spaceId},
+      where: { spaceId: spaceId }
     });
     return spaceUsers.map((spaceUser) => spaceUser.userId);
   }
 
 
   public async getSpacesOfUser(userId: string): Promise<CnSpace[]> {
-    const spaceUsers = await this.repository.find({where: {userId}, relations: {space: true}});
+    const spaceUsers = await this.repository.find({ where: { userId }, relations: { space: true } });
     return spaceUsers.map((spaceUser) => spaceUser.space);
   }
 
@@ -189,10 +207,10 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     const spaceUser = await this.repository.findOne({
       where: {
         userId: userId,
-        space: {type: CnSpaceType.PERSONAL},
+        space: { type: CnSpaceType.PERSONAL },
         role: CnSpaceUserRole.ADMIN
       },
-      relations: {space: true}
+      relations: { space: true }
     });
 
     if (spaceUser == null) return null;
@@ -213,7 +231,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
 
   ///////////////////////////////// QUEUE /////////////////////////////////////////
   public async sendAllSpaceUsersToQueue(): Promise<void> {
-    const spaceUsers = await this.repository.find({relations: {user: true, space: true}});
+    const spaceUsers = await this.repository.find({ relations: { user: true, space: true } });
 
     spaceUsers.forEach((spaceUser) => {
       this.sendSpaceUserToTransport(spaceUser);
@@ -221,7 +239,10 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
   }
 
   public async sendAllSpaceUsersFromASpaceToQueue(spaceId: string): Promise<void> {
-    const spaceUsers = await this.repository.find({where: {spaceId: spaceId}, relations: {user: true, space: true}});
+    const spaceUsers = await this.repository.find({
+      where: { spaceId: spaceId },
+      relations: { user: true, space: true }
+    });
     spaceUsers.forEach((spaceUser) => {
       this.sendSpaceUserToTransport(spaceUser);
     });
