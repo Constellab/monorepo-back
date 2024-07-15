@@ -99,13 +99,18 @@ export class BlS3BucketService implements BlObjectStorageInterface {
         MaxKeys: pageSize,
         Marker: nextToken
       }));
+
+      if(!result.Contents){
+        break;
+      }
+
       objects.push(...(result.Contents.map(object => ({
         name: object.Key,
         size: object.Size
       })) ?? []));
 
       // stop when the page is not full
-      if (!result.Contents || result.Contents.length < pageSize) {
+      if (result.Contents.length < pageSize) {
         break;
       }
       // get the last key to start from the next page
@@ -156,14 +161,10 @@ export class BlS3BucketService implements BlObjectStorageInterface {
   public async deleteAllObjects(): Promise<void> {
     let count = 0;
     while (count < 100) {
-      let objectTotal = 0;
       const objects = await this.getObjectsByPrefixPaginated('', 1000);
-      if (objects.length === 0) continue;
-      objectTotal += objects.length;
+      if (objects.length === 0) break;
+
       await this.deleteMultipleObjects(objects.map((obj) => obj.Key));
-
-
-      if (objectTotal === 0) break;
       count++;
     }
 
