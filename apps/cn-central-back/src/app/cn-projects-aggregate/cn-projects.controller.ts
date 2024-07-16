@@ -282,9 +282,10 @@ export class CnProjectsController {
 
   @Get(':projectId/document/download/:filename(*)')
   public async downloadDocument(@Param('projectId') projectId: string,
-                                @Param('filename') filename: string,
-                                @Res() response: Response): Promise<StreamableFile> {
+                                @Param('filename') filename: string): Promise<StreamableFile> {
+    console.log('Before file');
     const file = await this.projectAggregate.getUploadedDocument(projectId, filename);
+    console.log('After file');
 
     // use as any as this still works
     return BlResponseHelper.getFileResponse(file.file as any);
