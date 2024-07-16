@@ -1,17 +1,17 @@
-import {Injectable} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
-import {CnCloudProviderName} from '../cn-cloud-providers/cn-cloud-provider.entity';
-import {CnLabInstance, CnLabInstanceBillingMode, CnLabInstanceVolumeType} from './cn-lab-instance.entity';
-import {CnBrickGWS} from '../cn-bricks/cn-brick.dto';
-import {CnLabGreenOptionType} from './green-option/cn-lab-green-option.entity';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnLabFactoryBrick, CnLabFactoryData, CnLabFactoryService} from './cn-lab-factory.service';
-import {DataSource} from 'typeorm';
-import {CnLabInstanceAggregateService} from './cn-lab-instance-aggregate.service';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {BlUnauthorizedException} from '@monorepo/back-core-lib';
-import {CnSpace} from '../cn-spaces/cn-space.entity';
-import {Type} from 'class-transformer';
+import { CnCloudProviderName } from '../cn-cloud-providers/cn-cloud-provider.entity';
+import { CnLabInstance, CnLabInstanceBillingMode, CnLabInstanceVolumeType } from './cn-lab-instance.entity';
+import { CnBrickGWS } from '../cn-bricks/cn-brick.dto';
+import { CnLabGreenOptionType } from './green-option/cn-lab-green-option.entity';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnLabFactoryBrick, CnLabFactoryData, CnLabFactoryService } from './cn-lab-factory.service';
+import { DataSource } from 'typeorm';
+import { CnLabInstanceAggregateService } from './cn-lab-instance-aggregate.service';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { CnSpace } from '../cn-spaces/cn-space.entity';
+import { Type } from 'class-transformer';
 
 export class CnCreateLabContestDto {
   @Type(() => CnUser)
@@ -72,7 +72,7 @@ export class CnLabContestService {
         type: CnLabContestService.GREEN_OPTION_TYPE,
         inactivityDuration: CnLabContestService.GREEN_OPTION_INACTIVITY_DURATION
       },
-      isFreeTrial: false
+      isFreeLab: false
     };
 
     const labInstance = await this.datasource.transaction(async entityManager => {

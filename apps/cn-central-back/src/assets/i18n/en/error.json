@@ -62,5 +62,5 @@
   "invalid_captcha": "Invalid captcha",
   "no_access_to_project": "You don't have access to this project",
   "no_project_leader": "You must be the project leader to perform this action",
-  "free_trial_lab_expired": "Your free trial for the lab is expired. The lab cannot be started, please contact the support"
+  "lab_free_expired": "Your free credits for this month have expired. The lab cannot be started, please contact the support to get more credits."
 }

@@ -192,7 +192,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   desktopPlatform: CnLabDesktopPlatform;
 
   @Column({nullable: false, default: false})
-  isFreeTrial: boolean;
+  isFreeLab: boolean;
 
   // url of the api server
   @Expose()

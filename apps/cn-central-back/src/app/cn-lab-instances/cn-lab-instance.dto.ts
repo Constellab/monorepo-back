@@ -1,13 +1,13 @@
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
-import {CnLabInstanceStatusHistory} from './status/cn-lab-instance-status-history.entity';
-import {CnServerCloud} from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
-import {BlBaseEntityDto, BlDtoHelper} from '@monorepo/back-core-lib';
-import {CnBrickVersionDTO} from '../cn-bricks/cn-brick.dto';
-import {CnLabConfigDto} from '../cn-lab-configs/cn-lab-config.dto';
-import {CnSpace} from '../cn-spaces/cn-space.entity';
-import {Type} from 'class-transformer';
-import {CnLabInstanceUserRole} from './user/cn-lab-instance-user.entity';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
+import { CnLabInstanceStatusHistory } from './status/cn-lab-instance-status-history.entity';
+import { CnServerCloud } from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
+import { BlBaseEntityDto, BlDtoHelper } from '@monorepo/back-core-lib';
+import { CnBrickVersionDTO } from '../cn-bricks/cn-brick.dto';
+import { CnLabConfigDto } from '../cn-lab-configs/cn-lab-config.dto';
+import { CnSpace } from '../cn-spaces/cn-space.entity';
+import { Type } from 'class-transformer';
+import { CnLabInstanceUserRole } from './user/cn-lab-instance-user.entity';
 import {
   CnLabDesktopPlatform,
   CnLabInstance,
@@ -15,11 +15,11 @@ import {
   CnLabInstanceType,
   CnLabInstanceVolumeType
 } from './cn-lab-instance.entity';
-import {CnCloudProviderRegion} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import {CnLabInstanceServerTaskStatus, CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
-import {DateTime} from 'luxon';
-import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
-import {CnCloudProvider} from '../cn-cloud-providers/cn-cloud-provider.entity';
+import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import { CnLabInstanceServerTaskStatus, CnLabInstanceStatus } from './status/cn-lab-instance-status.enum';
+import { DateTime } from 'luxon';
+import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
+import { CnCloudProvider } from '../cn-cloud-providers/cn-cloud-provider.entity';
 
 
 /**
@@ -39,7 +39,7 @@ export class CnLabInstanceDto extends BlBaseEntityDto {
   volumeType: CnLabInstanceVolumeType = undefined;
   volumeSize: number = undefined;
   desktopPlatform?: CnLabDesktopPlatform = undefined;
-  isFreeTrial: boolean = undefined;
+  isFreeLab: boolean = undefined;
 }
 
 export class CnLabInstanceWithSpaceDto extends CnLabInstanceDto {

@@ -1,24 +1,24 @@
-import {Injectable, Logger} from '@nestjs/common';
-import {Cron} from '@nestjs/schedule';
-import {CnLabInstancesService} from './cn-lab-instances.service';
-import {CnLabServerService} from './server/cn-lab-server.service';
-import {CnLabGreenOptionService} from './green-option/cn-lab-green-option.service';
+import { Injectable, Logger } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
+import { CnLabInstancesService } from './cn-lab-instances.service';
+import { CnLabServerService } from './server/cn-lab-server.service';
+import { CnLabGreenOptionService } from './green-option/cn-lab-green-option.service';
 import {
   CnLabGreenOption,
   CnLabGreenOptionStopAfterInactivityValue,
   CnLabGreenOptionStopAfterTimeValue,
   CnLabGreenOptionType
 } from './green-option/cn-lab-green-option.entity';
-import {CnExternalLabApiService} from '../cn-external-lab-api/cn-external-lab-api.service';
-import {ClDateHelper} from '@monorepo/core-lib';
-import {DateTime} from 'luxon';
-import {CnLabInstance} from './cn-lab-instance.entity';
-import {CnLabInstanceAggregateService} from './cn-lab-instance-aggregate.service';
-import {CnLabInstanceStatus} from './status/cn-lab-instance-status.enum';
-import {CnLabFreeTrialService} from './free-trial/cn-lab-free-trial.service';
-import {CnLabFreeTrial} from './free-trial/cn-lab-free-trial.entity';
-import {CnLabBackupBucket} from './backup/cn-lab-backup.dto';
-import {CnLabManagerService} from './cn-lab-manager.service';
+import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { DateTime } from 'luxon';
+import { CnLabInstance } from './cn-lab-instance.entity';
+import { CnLabInstanceAggregateService } from './cn-lab-instance-aggregate.service';
+import { CnLabInstanceStatus } from './status/cn-lab-instance-status.enum';
+import { CnLabFreeService } from './lab-free/cn-lab-free.service';
+import { CnLabFree } from './lab-free/cn-lab-free.entity';
+import { CnLabBackupBucket } from './backup/cn-lab-backup.dto';
+import { CnLabManagerService } from './cn-lab-manager.service';
 
 /**
  * Service that gather all the cron jobs for the lab instances
@@ -34,7 +34,7 @@ export class CnLabInstancesCron {
               private labManagerService: CnLabManagerService,
               private externalLabApiService: CnExternalLabApiService,
               private labAggregateService: CnLabInstanceAggregateService,
-              private freeTrialService: CnLabFreeTrialService) {
+              private labFreeService: CnLabFreeService) {
   }
 
   /**
@@ -64,10 +64,10 @@ export class CnLabInstancesCron {
 
     this.logger.debug('[Cron] End of refresh lab instance status');
 
-    this.logger.debug('[Cron] Start checking free trials labs');
-    await this.checkFreeTrialLabs();
-    await this.checkFreeTrialLabsToDelete();
-    this.logger.debug('[Cron] End checking free trials labs');
+    this.logger.debug('[Cron] Start checking free labs');
+    await this.checkFreeLabs();
+    await this.checkFreeLabsToDelete();
+    this.logger.debug('[Cron] End checking free labs');
 
   }
 
@@ -192,38 +192,38 @@ export class CnLabInstancesCron {
     }
   }
 
-  private async checkFreeTrialLabs(): Promise<void> {
-    const runningFreeTrials = await this.freeTrialService.getRunningFreeTrias();
+  private async checkFreeLabs(): Promise<void> {
+    const runningFreeLab = await this.labFreeService.getRunningFreeTrias();
 
-    for (const freeTrial of runningFreeTrials) {
+    for (const labFree of runningFreeLab) {
       // if the lab is starting or stopping, we do nothing, it will be checked later
-      if ([CnLabInstanceStatus.SERVER_STARTING, CnLabInstanceStatus.SERVER_STOPPING].includes(freeTrial.labInstance.currentStatus.status)) {
+      if ([CnLabInstanceStatus.SERVER_STARTING, CnLabInstanceStatus.SERVER_STOPPING].includes(labFree.labInstance.currentStatus.status)) {
         continue;
       }
 
-      // for each lab, check if the free trial is still valid
-      const value = await this.freeTrialService.trialLabStillValid(freeTrial.labInstance.id);
+      // for each lab, check if the free lab is still valid
+      const value = await this.labFreeService.freeLabStillValid(labFree.labInstance.id);
 
       // is not, stop the lab
       if (!value) {
-        this.logger.log(`[Cron] Stopping free trial lab :${freeTrial.labInstance.id}`);
-        await this.labServerService.stopLab(freeTrial.labInstance);
+        this.logger.log(`[Cron] Stopping free lab :${labFree.labInstance.id}`);
+        await this.labServerService.stopLab(labFree.labInstance);
       }
     }
   }
 
-  private async checkFreeTrialLabsToDelete(): Promise<void> {
-    const labsToDelete = await this.getFreeTrialsLabsToDelete();
+  private async checkFreeLabsToDelete(): Promise<void> {
+    const labsToDelete = await this.getFreeLabsToDelete();
 
     for (const lab of labsToDelete) {
-      this.logger.log(`[Cron] Deleting free trial lab :${lab.labInstance.id}`);
+      this.logger.log(`[Cron] Deleting free lab :${lab.labInstance.id}`);
       await this.labServerService.deleteLabInstanceServerAndVolume(lab.labInstance);
       await this.labAggregateService.refreshLabStatus(lab.labInstance.id);
     }
   }
 
-  private async getFreeTrialsLabsToDelete(): Promise<CnLabFreeTrial[]> {
-    const expiredLabs = await this.freeTrialService.getExpiredFreeTrials();
+  private async getFreeLabsToDelete(): Promise<CnLabFree[]> {
+    const expiredLabs = await this.labFreeService.getExpiredFreeLab();
 
     return expiredLabs.filter(lab => lab.toDelete());
   }

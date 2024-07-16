@@ -73,7 +73,7 @@ import { CnAuthService, CnExternalCheckCredentialResponse } from '../cn-auth/cn-
 import { CnLabInstanceServerTaskStatus, CnLabInstanceStatus } from './status/cn-lab-instance-status.enum';
 import { CnLabInstanceStatusService } from './status/cn-lab-instance-status.service';
 import { CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse } from './status/cn-lab-instance-status.dto';
-import { CnLabFreeTrialService } from './free-trial/cn-lab-free-trial.service';
+import { CnLabFreeService } from './lab-free/cn-lab-free.service';
 import { CnLabBackupBucket, CnLabBackupStatusDTO } from './backup/cn-lab-backup.dto';
 import { CnLabBackupHistory } from './backup/cn-lab-backup-history.entity';
 import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
@@ -111,7 +111,7 @@ export class CnLabInstanceAggregateService {
               private labGreenOptionService: CnLabGreenOptionService,
               private authService: CnAuthService,
               private labStatusService: CnLabInstanceStatusService,
-              private freeTrialService: CnLabFreeTrialService,
+              private labFreeService: CnLabFreeService,
               private backupService: CnLabBackupAggregateService,
               private serverPriceService: CnServerPriceService) {
   }
@@ -143,7 +143,7 @@ export class CnLabInstanceAggregateService {
     labInstance.billingMode = CnLabInstanceBillingMode.HOURLY;
     labInstance.volumeSize = cloudCreateDTO.volumeSize;
     labInstance.volumeType = CnLabInstanceVolumeType.HIGH_SPEED;
-    labInstance.isFreeTrial = false;
+    labInstance.isFreeLab = false;
     labInstance.space = CnCurrentUserHelper.getCurrentSpace();
     labInstance.virtualHost = ClStringHelper.generateUUID() + '.' + CnLabDomain.CONSTELLAB_APP;
 
@@ -176,7 +176,11 @@ export class CnLabInstanceAggregateService {
                                   entityManager: EntityManager): Promise<CnLabInstance> {
     const labInstanceDb: CnLabInstance = await this.labInstancesService.create(labInstance, entityManager);
 
-    if (labInstance.isCloud()) {
+    if (labInstance.isCloud() && !labInstance.isFreeLab) {
+      if(dailyBackupRegion == null || weeklyBackupRegion == null){
+        throw new BlBadRequestException('Backup regions are required for a cloud lab');
+      }
+
       await this.backupService.createBackupOptions(labInstanceDb,
         dailyBackupRegion, weeklyBackupRegion, entityManager);
     }
@@ -1078,11 +1082,11 @@ export class CnLabInstanceAggregateService {
   async startInstance(id: string): Promise<CnLabInstance> {
     const labInstance = await this.getAndCheckServerStatusBeforeAction(id, true);
 
-    if (labInstance.isFreeTrial) {
-      const available = await this.freeTrialService.trialLabStillValid(labInstance.id);
+    if (labInstance.isFreeLab) {
+      const available = await this.labFreeService.freeLabStillValid(labInstance.id);
 
       if (!available) {
-        throw new BlBadRequestException(CnErrorText.FREE_TRIAL_LAB_EXPIRED);
+        throw new BlBadRequestException(CnErrorText.LAB_FREE_EXPIRED);
       }
     }
 

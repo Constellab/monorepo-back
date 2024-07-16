@@ -64,5 +64,5 @@ export enum CnErrorText {
   INVALID_CAPTCHA = 'error.invalid_captcha',
   NO_ACCESS_TO_PROJECT = 'error.no_access_to_project',
   NO_PROJECT_LEADER = 'error.no_project_leader',
-  FREE_TRIAL_LAB_EXPIRED = 'error.free_trial_lab_expired',
+  LAB_FREE_EXPIRED = 'error.lab_free_expired',
 }
