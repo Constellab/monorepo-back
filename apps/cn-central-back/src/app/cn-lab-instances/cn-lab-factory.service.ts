@@ -43,6 +43,7 @@ export interface CnLabFactoryGreenOption {
 
 
 export interface CnLabFactoryData {
+  name?: string;
   user: CnUser;
   space: CnSpace;
   domain: string;
@@ -77,8 +78,8 @@ export class CnLabFactoryService {
   public async createLab(data: CnLabFactoryData, entityManager: EntityManager): Promise<CnLabInstance> {
 
     const labInstance: CnLabInstance = new CnLabInstance();
-    labInstance.name = ClStringHelper.generateUUID();
-    labInstance.virtualHost = `${labInstance.name}.${data.domain}`;
+    labInstance.name = data.name ?? ClStringHelper.generateUUID();
+    labInstance.virtualHost = `${ClStringHelper.generateUUID()}.${data.domain}`;
     labInstance.space = data.space;
     labInstance.type = CnLabInstanceType.CLOUD;
     labInstance.labConfig = await this.getLabConfig(data.bricks);
