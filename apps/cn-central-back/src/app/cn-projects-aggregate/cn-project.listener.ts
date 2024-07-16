@@ -1,22 +1,22 @@
-import {Injectable} from '@nestjs/common';
-import {CnProjectUserService} from './cn-project-user/cn-project-user.service';
-import {OnEvent} from '@nestjs/event-emitter';
-import {CnActivityCreateDTO, CnActivityService} from '../cn-activity/cn-activity.service';
-import {CnProjectNotifOptions, CnProjectUser} from './cn-project-user/cn-project-user.entity';
-import {CnActivity, CnActivityEntityType, CnActivityType} from '../cn-activity/cn-activity.entity';
-import {CnNotificationService} from '../cn-notification/cn-notification.service';
-import {CnFrontService} from '../cn-core/services/cn-front.service';
-import {CnProjectEvent, cnProjectEventName} from './cn-project.event';
-import {CnProject} from './cn-projects/cn-project.entity';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnExperiment} from './cn-experiments/cn-experiment.entity';
-import {CnReport} from './cn-reports/cn-report.entity';
-import {CnProjectComment, getFakeUserEveryoneMention} from '../cn-project-comment/cn-project-comment.entity';
-import {BlMailService, BlMentionUser, BlNewRichText, BlRichTextContent} from '@monorepo/back-core-lib';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {CnProjectsService} from './cn-projects/cn-projects.service';
-import {CnMailTemplate} from '../cn-core/model/config/cn-mail-template.class';
-import {CnProjectDocument} from './cn-project-documents/cn-project-document.entity';
+import { Injectable } from '@nestjs/common';
+import { CnProjectUserService } from './cn-project-user/cn-project-user.service';
+import { OnEvent } from '@nestjs/event-emitter';
+import { CnActivityCreateDTO, CnActivityService } from '../cn-activity/cn-activity.service';
+import { CnProjectNotifOptions, CnProjectUser } from './cn-project-user/cn-project-user.entity';
+import { CnActivity, CnActivityEntityType, CnActivityType } from '../cn-activity/cn-activity.entity';
+import { CnNotificationService } from '../cn-notification/cn-notification.service';
+import { CnFrontService } from '../cn-core/services/cn-front.service';
+import { CnProjectEvent, cnProjectEventName } from './cn-project.event';
+import { CnProject } from './cn-projects/cn-project.entity';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnExperiment } from './cn-experiments/cn-experiment.entity';
+import { CnReport } from './cn-reports/cn-report.entity';
+import { CnProjectComment, getFakeUserEveryoneMention } from '../cn-project-comment/cn-project-comment.entity';
+import { BlMailService, BlMentionUser, BlNewRichText, BlRichTextContent } from '@monorepo/back-core-lib';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnProjectsService } from './cn-projects/cn-projects.service';
+import { CnMailTemplate } from '../cn-core/model/config/cn-mail-template.class';
+import { CnProjectDocument } from './cn-project-documents/cn-project-document.entity';
 
 export interface CnNotifInfo {
   link: string;
@@ -50,6 +50,8 @@ export class CnProjectListener {
     // specific case for comment to handle mentions
     if (event.type === 'CREATE_PROJECT_COMMENT') {
       await this.handleCommentCreated(activity, event.entity, event.parentProject);
+    }else if(event.type === 'DELETE_PROJECT_COMMENT'){
+        await this.handleCommentDeleted(activity, event.entity);
     } else if (activityAndNotif.notif) {
       await this.createNotification(activity, activityAndNotif.notif, event.parentProject);
     }
@@ -441,6 +443,17 @@ export class CnProjectListener {
     }
 
     return userMentions;
+  }
+
+  /**
+   * On comment delete, delete the notification
+   * @param activity
+   * @param comment
+   * @param parentProject
+   * @private
+   */
+  private async handleCommentDeleted(activity: CnActivity, comment: CnProjectComment): Promise<void> {
+    await this.notificationService.deleteNotificationByObject(activity.entityType, comment.id);
   }
 
   private getNotifMode(projectUser: CnProjectUser, entityType: CnActivityEntityType): CnProjectNotifOptions {

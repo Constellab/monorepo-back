@@ -1,11 +1,12 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {CnNotification, CnNotificationCreateDTO} from './cn-notification.entity';
-import {In, IsNull, Not, Raw, Repository} from 'typeorm';
-import {BlAbstractService} from '@monorepo/back-core-lib';
-import {ClPage} from '@monorepo/core-lib';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {CnNotificationCountBySpace} from './cn-notification.dto';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CnNotification, CnNotificationCreateDTO } from './cn-notification.entity';
+import { DeleteResult, In, IsNull, Not, Raw, Repository } from 'typeorm';
+import { BlAbstractService } from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnNotificationCountBySpace } from './cn-notification.dto';
+import { CnActivityEntityType } from '../cn-activity/cn-activity.entity';
 
 @Injectable()
 export class CnNotificationService extends BlAbstractService<CnNotification> {
@@ -28,7 +29,7 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
         user: {
           id: CnCurrentUserHelper.getAndCheckCurrentUser().id
         },
-        space: {id: Raw((id) => `(${id} = :spaceId OR ${id} IS NULL)`, {spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id})}
+        space: { id: Raw((id) => `(${id} = :spaceId OR ${id} IS NULL)`, { spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id }) }
       },
       order: {
         createdAt: 'DESC' as any
@@ -47,16 +48,16 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
         where:
           [
             {
-              user: {id: CnCurrentUserHelper.getAndCheckCurrentUser().id},
-              space: {id: CnCurrentUserHelper.getAndCheckCurrentSpace().id},
+              user: { id: CnCurrentUserHelper.getAndCheckCurrentUser().id },
+              space: { id: CnCurrentUserHelper.getAndCheckCurrentSpace().id },
               isRead: false
             },
             // also include the notif that are not attached to a space
             {
-              user: {id: CnCurrentUserHelper.getAndCheckCurrentUser().id},
+              user: { id: CnCurrentUserHelper.getAndCheckCurrentUser().id },
               space: IsNull(),
               isRead: false
-            },
+            }
           ]
       }
     );
@@ -67,7 +68,7 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
   }
 
   async read(notifId: string): Promise<void> {
-    const notification: CnNotification = await this.notificationRepository.findOneBy({id: notifId});
+    const notification: CnNotification = await this.notificationRepository.findOneBy({ id: notifId });
     if (notification.isRead) {
       return;
     }
@@ -82,8 +83,8 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
   async readNotifications(notificationIds: string[]): Promise<void> {
     await this.notificationRepository.update({
       id: In(notificationIds),
-      user: {id: CnCurrentUserHelper.getAndCheckCurrentUser().id},
-    }, {isRead: true});
+      user: { id: CnCurrentUserHelper.getAndCheckCurrentUser().id }
+    }, { isRead: true });
   }
 
 
@@ -105,11 +106,16 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
       if (notifSpace) {
         notifSpace.notReadCount++;
       } else {
-        notReadBySpace.push({spaceId: notif.space.id, notReadCount: 1});
+        notReadBySpace.push({ spaceId: notif.space.id, notReadCount: 1 });
       }
     }
 
     return notReadBySpace;
+  }
+
+  public deleteNotificationByObject(objectType: CnActivityEntityType, objectId: string): Promise<DeleteResult> {
+    return this.notificationRepository.delete({ objectType, objectId });
+
   }
 
 }
