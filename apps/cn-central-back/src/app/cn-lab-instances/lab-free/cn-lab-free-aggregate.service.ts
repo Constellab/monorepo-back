@@ -5,11 +5,12 @@ import { CnLabInstance } from '../cn-lab-instance.entity';
 import { DataSource, EntityManager } from 'typeorm';
 import { CnUser } from '../../cn-users/cn-user.entity';
 import { CnLabInstanceAggregateService } from '../cn-lab-instance-aggregate.service';
-import { CnLabFreeGetDto, CnLabFreeUpdateDto } from './cn-lab-free.dto';
+import { CnLabFreeCreateDto, CnLabFreeGetDto, CnLabFreeUpdateDto } from './cn-lab-free.dto';
 import { CnLabFreeService } from './cn-lab-free.service';
 import { CnLabFree } from './cn-lab-free.entity';
 import { CnLabInstanceStatus } from '../status/cn-lab-instance-status.enum';
 import { CnLabFactoryData, CnLabFactoryService } from '../cn-lab-factory.service';
+import { CnSpace } from '../../cn-spaces/cn-space.entity';
 
 /**
  * Service to configure and manage the free lab instance for users
@@ -25,20 +26,26 @@ export class CnLabFreeAggregateService {
   }
 
   public async createFreeLabInstanceCurrentUser(): Promise<CnLabInstance> {
-    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
-    return await this.createFreeLabInstance(user);
+    return await this.createFreeLabInstance(CnCurrentUserHelper.getAndCheckCurrentUser(),
+      CnCurrentUserHelper.getAndCheckCurrentSpace());
   }
 
-  private async createFreeLabInstance(user: CnUser): Promise<CnLabInstance> {
+  public async createFreeLab(labFreeCreateDto: CnLabFreeCreateDto): Promise<CnLabInstance> {
+    if(!CnCurrentUserHelper.isAdmin()){
+      throw new BlUnauthorizedException();
+    }
+
+    return await this.createFreeLabInstance(labFreeCreateDto.user, labFreeCreateDto.space);
+  }
+
+  private async createFreeLabInstance(user: CnUser, space: CnSpace): Promise<CnLabInstance> {
     const labFree = await this.labFreeService.findFreeLabForUser(user.id);
     if (labFree != null) {
       throw new BlBadRequestException(
         'You already have a free lab, you can\'t create another free lab.');
     }
 
-    const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
-
-    if(space.isEntrepriseSpace()){
+    if (space.isEntrepriseSpace()) {
       throw new BlBadRequestException('You cannot create a free lab in an entreprise space');
     }
 
@@ -55,7 +62,7 @@ export class CnLabFreeAggregateService {
         region: CnLabFree.CLOUD_PROVIDER_REGION,
         instanceType: CnLabFree.CLOUD_PROVIDER_INSTANCE_TYPE
       },
-      bricks: CnLabFree.BRICKS.map(brick => ({name: brick})),
+      bricks: CnLabFree.BRICKS.map(brick => ({ name: brick })),
       isFreeLab: true
     };
 

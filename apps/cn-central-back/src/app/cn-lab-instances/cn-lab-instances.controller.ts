@@ -50,10 +50,9 @@ import * as AdmZip from 'adm-zip';
 import { CnLabGreenOption } from './green-option/cn-lab-green-option.entity';
 import { CnLabGreenOptionFormDto } from './green-option/cn-lab-green-option.dto';
 import { CnLabInstanceStatusRunRequest, CnLabInstanceStatusRunResponse } from './status/cn-lab-instance-status.dto';
-import { CnLabFreeGetDto, CnLabFreeUpdateDto } from './lab-free/cn-lab-free.dto';
+import { CnLabFreeCreateDto, CnLabFreeGetDto, CnLabFreeUpdateDto } from './lab-free/cn-lab-free.dto';
 import { CnLabFreeAggregateService } from './lab-free/cn-lab-free-aggregate.service';
 import { CnLabBackupHistory } from './backup/cn-lab-backup-history.entity';
-import { CnCreateLabContestDto, CnLabContestService } from './cn-lab-contest.service';
 import { CnLabBackupStatusDTO, CnLabCheckBackupSizeDTO } from './backup/cn-lab-backup.dto';
 
 
@@ -61,8 +60,7 @@ import { CnLabBackupStatusDTO, CnLabCheckBackupSizeDTO } from './backup/cn-lab-b
 export class CnLabInstancesController {
 
   constructor(private aggregateService: CnLabInstanceAggregateService,
-              private labFreeAggregateService: CnLabFreeAggregateService,
-              private labContestService: CnLabContestService) {
+              private labFreeAggregateService: CnLabFreeAggregateService) {
   }
 
 
@@ -529,6 +527,12 @@ export class CnLabInstancesController {
     return await this.labFreeAggregateService.createFreeLabInstanceCurrentUser();
   }
 
+  @Post('free-lab')
+  async createFreeLab(@Body(new BlParsePipe(CnLabFreeCreateDto)) request: CnLabFreeCreateDto): Promise<CnLabInstanceAdminDto> {
+    const labInstance = await this.labFreeAggregateService.createFreeLab(request);
+    return BlDtoHelper.toDto(CnLabInstanceAdminDto, labInstance);
+  }
+
   @Get('free-lab/current')
   async getCurrentUserFreeLab(): Promise<CnLabFreeGetDto> {
     return await this.labFreeAggregateService.findFreeLabUsageForCurrentUser();
@@ -546,21 +550,13 @@ export class CnLabInstancesController {
 
   @Put('free-lab/:id')
   async updateFreeLab(@Param('id', new ParseUUIDPipe()) id: string,
-                        @Body(new BlParsePipe(CnLabFreeUpdateDto)) updateDto: CnLabFreeUpdateDto): Promise<CnLabFreeGetDto> {
+                      @Body(new BlParsePipe(CnLabFreeUpdateDto)) updateDto: CnLabFreeUpdateDto): Promise<CnLabFreeGetDto> {
     return await this.labFreeAggregateService.updateFreeLab(id, updateDto);
   }
 
   @Delete('free-lab/:id')
   async deleteFreeLab(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabFreeGetDto> {
     return await this.labFreeAggregateService.deleteFreeLab(id);
-  }
-
-  /////////////////////////// CONTEST //////////////////////////////
-
-  @Post('contest')
-  async createContest(@Body(new BlParsePipe(CnCreateLabContestDto)) request: CnCreateLabContestDto): Promise<CnLabInstanceAdminDto> {
-    const labInstance = await this.labContestService.createLabContest(request);
-    return BlDtoHelper.toDto(CnLabInstanceAdminDto, labInstance);
   }
 
   /////////////////////////// KPI  //////////////////////////////

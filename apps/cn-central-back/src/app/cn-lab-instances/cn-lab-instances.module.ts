@@ -50,7 +50,6 @@ import { CnLabBackupHistoryService } from './backup/cn-lab-backup-history.servic
 import { CnLabInstanceListener } from './cn-lab-instance.listener';
 import { CnCloudProviderOutscaleService } from './server/outscale/cn-cloud-provider-outscale.service';
 import { CnServerPriceModule } from '../cn-servers-info/server-price/cn-server-price.module';
-import { CnLabContestService } from './cn-lab-contest.service';
 import { CnLabFactoryService } from './cn-lab-factory.service';
 import { CnLabBackupAggregateService } from './backup/cn-lab-backup-aggregate.service';
 import { CnSupportModule } from '../cn-support/cn-support.module';
@@ -65,7 +64,7 @@ import { CnSupportModule } from '../cn-support/cn-support.module';
       CnLabGreenOption,
       CnLabFree,
       CnLabBackupOption,
-      CnLabBackupHistory,
+      CnLabBackupHistory
     ]),
 
     CnCoreModule,
@@ -89,7 +88,7 @@ import { CnSupportModule } from '../cn-support/cn-support.module';
     CnServerCloudModule,
     CnSpacesModule,
 
-    HttpModule,
+    HttpModule
   ],
   providers: [
     CnLabInstancesService,
@@ -118,16 +117,15 @@ import { CnSupportModule } from '../cn-support/cn-support.module';
     CnLabBackupAggregateService,
     CnLabInstanceListener,
     CnCloudProviderOutscaleService,
-    CnLabContestService,
-    CnLabFactoryService,
+    CnLabFactoryService
   ],
   exports: [
     CnLabInstancesService,
     CnLabInstanceAggregateService,
     CnLabMailService,
-    CnLabInstanceUserService,
+    CnLabInstanceUserService
   ],
-  controllers: [CnLabInstancesController],
+  controllers: [CnLabInstancesController]
 })
 export class CnLabInstancesModule {
 }
