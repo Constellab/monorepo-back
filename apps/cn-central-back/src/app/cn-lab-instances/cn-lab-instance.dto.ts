@@ -40,7 +40,6 @@ export class CnLabInstanceDto extends BlBaseEntityDto {
   volumeSize: number = undefined;
   desktopPlatform?: CnLabDesktopPlatform = undefined;
   isFreeLab: boolean = undefined;
-  additionalDomain: string = undefined;
 }
 
 export class CnLabInstanceWithSpaceDto extends CnLabInstanceDto {

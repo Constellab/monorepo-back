@@ -78,11 +78,6 @@ export interface CnLabManagerInitConfig {
   };
   captchaSiteKey: string;
   openaiApiKey: string;
-  /**
-   * Provided for on premise installations. Can be used to add additional hosts to the lab manager
-   * to enable access to apps from other domains.
-   */
-  additionalDomains?: string[];
 }
 
 

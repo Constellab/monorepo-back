@@ -198,10 +198,6 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Column({nullable: false, default: false})
   isFreeLab: boolean;
 
-  @BLTrim()
-  @Column({nullable: true})
-  additionalDomain: string;
-
   // url of the api server
   @Expose()
   get glabUrl(): string {
