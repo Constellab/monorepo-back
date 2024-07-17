@@ -36,7 +36,7 @@ export class CnLabMailService {
     for (const receiver of sendMailDTO.receiver_ids) {
       const user = await this.userService.findByIdAndCheck(receiver);
       // add the user info to data
-      const data = Object.assign({}, sendMailDTO.data, {user: user});
+      const data = Object.assign({}, sendMailDTO.data, { user: user });
       await this.mailService.sendMailToUser(template, user, data, sendMailDTO.subject);
     }
   }
@@ -50,7 +50,7 @@ export class CnLabMailService {
         cpuCount: request.cpuCount,
         storageSize: request.storageSize,
         labNeed: request.labNeed,
-        additionalInfo: request.additionalInfo,
+        additionalInfo: request.additionalInfo
       });
   }
 
@@ -74,12 +74,12 @@ export class CnLabMailService {
       await this.mailService.sendMailToUser(CnMailTemplate.lab_started, owner.user, {
         user: {
           firstname: owner.user.firstname,
-          lastname: owner.user.lastname,
+          lastname: owner.user.lastname
         },
         lab: {
-          name: labInstance.name,
+          name: labInstance.name
         },
-        labUrl: labUrl,
+        labUrl: labUrl
       });
     }
   }
@@ -96,8 +96,7 @@ export class CnLabMailService {
         id: space.id,
         name: space.name
       },
-      error: labInstance.serverTaskText,
-      labUrl: labUrl,
+      labUrl: labUrl
     });
 
   }
