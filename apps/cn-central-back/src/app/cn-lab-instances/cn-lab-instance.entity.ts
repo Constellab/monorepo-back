@@ -107,18 +107,22 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Column({nullable: true, length: 255, unique: true})
   labManagerApiKey: string;
 
+  @BLTrim()
   @Column({nullable: true, length: 255, unique: true})
   virtualHost: string;
 
   // api key shared with the lab manager API
+  @BLTrim()
   @Exclude()
   @Column({nullable: true, length: 255})
   codelabToken: string;
 
+  @BLTrim()
   @Exclude()
   @Column({nullable: false, length: 255})
   gwsCoreProdDbPassword: string;
 
+  @BLTrim()
   @Exclude()
   @Column({nullable: false, length: 255})
   gwsCoreDevDbPassword: string;
@@ -193,6 +197,10 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
 
   @Column({nullable: false, default: false})
   isFreeLab: boolean;
+
+  @BLTrim()
+  @Column({nullable: true})
+  additionalDomain: string;
 
   // url of the api server
   @Expose()

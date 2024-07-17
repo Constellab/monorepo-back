@@ -118,7 +118,8 @@ export class CnLabManagerService {
       labConfig: {
         enableBackup: labInstance.isCloud()
       },
-      openaiApiKey: this.configService.getOpenaiAPIKey()
+      openaiApiKey: this.configService.getOpenaiAPIKey(),
+      additionalDomains: labInstance.additionalDomain ? [labInstance.additionalDomain] : []
     };
   }
 
