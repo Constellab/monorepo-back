@@ -60,6 +60,7 @@ export class CnLabInstanceAdminDto extends CnLabInstanceWithSpaceDto {
   serverVolumeId: string = undefined;
   gwsCoreProdDbPassword: string = undefined;
   gwsCoreDevDbPassword: string = undefined;
+  codelabToken: string = undefined;
 }
 
 export class CnLabFindOneDto {

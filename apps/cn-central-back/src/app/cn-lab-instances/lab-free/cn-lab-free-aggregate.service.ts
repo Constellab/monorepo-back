@@ -50,7 +50,7 @@ export class CnLabFreeAggregateService {
     }
 
     const data: CnLabFactoryData = {
-      name: user.firstname + ' free lab',
+      name: user.firstname + ' lab',
       user: user,
       space: space,
       domain: CnLabFree.DOMAIN,
