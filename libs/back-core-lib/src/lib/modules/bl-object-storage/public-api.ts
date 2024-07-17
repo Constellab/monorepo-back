@@ -1,5 +1,7 @@
 export * from './bl-azure-bucket.service';
+export * from './bl-lab-s3-bucket.service';
 export * from './bl-object-storage.class';
+export * from './bl-object-storage.exception';
 export * from './bl-object-storage.interface';
 export * from './bl-object-storage.module';
 export * from './bl-object-storage.service';

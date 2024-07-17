@@ -6,6 +6,8 @@ import { BlBucketConfig, BlFileResponse, BlObject, BlObjectStorageObjectsInfo } 
 import { BlAzureBucketService } from './bl-azure-bucket.service';
 import { BlObjectStorageInterface } from './bl-object-storage.interface';
 import { BlS3BucketService } from './bl-s3-bucket.service';
+import { BlExternalApiService } from '../bl-external-api/bl-external-api.service';
+import { BlLabS3BucketService } from './bl-lab-s3-bucket.service';
 
 
 export interface BlObjectStorageUploadOptions {
@@ -22,6 +24,9 @@ export interface BlObjectStorageUploadOptions {
  */
 @Injectable()
 export class BlObjectStorageService {
+
+  constructor(private apiService: BlExternalApiService) {
+  }
 
   //////////////////////////////////////////// UPLOAD OBJECT /////////////////////////////////////////
 
@@ -220,6 +225,8 @@ export class BlObjectStorageService {
   private getService(config: BlBucketConfig): BlObjectStorageInterface {
     if (config.type === 'azureBlob') {
       return new BlAzureBucketService(config.config);
+    } else if (config.type === 'lab') {
+      return new BlLabS3BucketService(config.config, this.apiService);
     } else {
       return new BlS3BucketService(config.config);
     }

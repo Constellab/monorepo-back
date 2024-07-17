@@ -75,16 +75,22 @@ export class CnBucket extends CnBaseEntity {
   bucketType: BlBucketType;
 
   public getBucketConfig(): BlBucketConfig {
-    if (this.bucketType === BlBucketType.AZURE) {
-      return {
-        type: 'azureBlob',
-        config: this.getAzureBlobConfig()
-      };
-    } else {
-      return {
-        type: 's3',
-        config: this.getS3BucketConfig()
-      };
+    switch (this.bucketType) {
+      case BlBucketType.NORMAL:
+        return {
+          type: 's3',
+          config: this.getS3BucketConfig()
+        };
+      case BlBucketType.LAB:
+        return {
+          type: 'lab',
+          config: this.getS3BucketConfig()
+        };
+      case BlBucketType.AZURE:
+        return {
+          type: 'azureBlob',
+          config: this.getAzureBlobConfig()
+        };
     }
   }
 
