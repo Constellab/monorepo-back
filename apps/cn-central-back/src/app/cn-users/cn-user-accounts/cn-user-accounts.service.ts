@@ -86,6 +86,11 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
     const sameEmailUser: CnUser = await this.usersService.findByEmail(user.email);
     if (sameEmailUser != null) {
+      // if a user not validated with the same email exist, no error, return the user
+      if (sameEmailUser.status === BlUserStatus.WAITING_FOR_EMAIL) {
+        return sameEmailUser;
+      }
+
       throw new BlBadRequestException(CnErrorText.EMAIL_ALREADY_EXIST);
     }
 
@@ -95,6 +100,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
     // create the user and his group
     const dbUser = await entityManager.save(user);
+
 
     // create the user own group
     await this.groupService.createOwnGroup(user, entityManager);
@@ -108,9 +114,22 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     // create the user personal space
     await this.spaceAggregateService.createPersonalSpace(dbUser, entityManager);
 
+
     this.usersService.sendUserToTransport(dbUser);
 
     return dbUser;
+  }
+
+  public async resendSignupEmail(id: string): Promise<void> {
+    if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) throw new BlUnauthorizedException();
+
+    const user = await this.usersService.findByIdAndCheck(id);
+
+    if (user.status !== BlUserStatus.WAITING_FOR_EMAIL) {
+      throw new BlBadRequestException(CnErrorText.ACCOUNT_ALREADY_ACTIVATED);
+    }
+
+    await this.sendSignupEmail(user);
   }
 
   private sendSignupEmail(user: CnUser): Promise<boolean> {
@@ -121,7 +140,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     const activationUrl: string = this.configService.getApiUrl() + this.controllerRoute + '/activation/' + token;
 
     return this.mailService.sendMailToUser(CnMailTemplate.signup, user,
-      {user: user, activationUrl: activationUrl});
+      { user: user, activationUrl: activationUrl });
   }
 
   async activateAccount(token: string): Promise<void> {
@@ -190,7 +209,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
     // send mail asynchronously
     this.mailService.sendMailToUser(CnMailTemplate.password_forgotten, user,
-      {user: user, passwordForgottenLink: passwordForgottenLink}).then().catch(
+      { user: user, passwordForgottenLink: passwordForgottenLink }).then().catch(
       error => this.logger.error('Error while sending password forgotten mail: ' + error)
     );
   }
@@ -216,7 +235,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
     // send mail asynchronously
     this.mailService.sendMailToUser(CnMailTemplate.account_locked, user,
-      {user: user, failedLoginLocked: failedLoginLock, unlockUrl: unlockUrl}).then().catch(
+      { user: user, failedLoginLocked: failedLoginLock, unlockUrl: unlockUrl }).then().catch(
       error => this.logger.error('Error while sending account locked mail to : ' + error)
     );
   }
@@ -226,7 +245,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
    */
   private encodeUserToken(userId: string, expiresIn: number): string {
     // generate the activation token
-    const payload: CnUserTokenPayload = {id: userId};
+    const payload: CnUserTokenPayload = { id: userId };
     return BlTokenHelper.encodeToken(this.configService.getOtherJwtSecret(), payload, expiresIn);
   }
 
@@ -335,7 +354,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     return this.repository.save(user);
   }
 
-  public async updateUserLicense(userId: string, licenseDTO: CnUserUpdateLicenseDTO): Promise<CnUser>{
+  public async updateUserLicense(userId: string, licenseDTO: CnUserUpdateLicenseDTO): Promise<CnUser> {
     if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) throw new BlUnauthorizedException();
 
     const user: CnUser = await this.usersService.findByIdAndCheck(userId);

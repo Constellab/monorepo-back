@@ -95,6 +95,11 @@ export class CnUserAccountsController {
     return this.userAccountsService.unlockUser(userId);
   }
 
+  @Put(':userId/resend-activation-mail')
+  resendSignupEmail(@Param('userId', new ParseUUIDPipe()) userId: string): Promise<void> {
+    return this.userAccountsService.resendSignupEmail(userId);
+  }
+
   @Put(':userId/license')
   updateLicense(@Param('userId', new ParseUUIDPipe()) userId: string,
                 @Body() licenseDTO: CnUserUpdateLicenseDTO): Promise<CnUser> {
