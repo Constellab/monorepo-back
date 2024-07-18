@@ -52,9 +52,6 @@ import { CnExternalLabUserService } from '../cn-external-lab-api/cn-external-lab
 import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
 import { CnLabInstanceUserService } from './user/cn-lab-instance-user.service';
 import { DataSource, EntityManager } from 'typeorm';
-import { CnLabInstanceProject } from './project/cn-lab-instance-project.entity';
-import { CnLabInstanceProjectService } from './project/cn-lab-instance-project.service';
-import { CnProjectAggregateService } from '../cn-projects-aggregate/cn-project-aggregate.service';
 import { CnExternalLabProjectService } from '../cn-external-lab-api/cn-external-lab-project.service';
 import { CnUsersService } from '../cn-users/cn-users.service';
 import { CnProject } from '../cn-projects-aggregate/cn-projects/cn-project.entity';
@@ -92,12 +89,10 @@ export class CnLabInstanceAggregateService {
 
   constructor(private labInstancesService: CnLabInstancesService,
               private labInstanceUserService: CnLabInstanceUserService,
-              private labInstanceProjectService: CnLabInstanceProjectService,
               private labInstanceStatusService: CnLabInstanceStatusService,
               private labManagerService: CnLabManagerService,
               private security: CnLabInstancesSecurity,
               private usersService: CnUsersService,
-              private projectAggregateService: CnProjectAggregateService,
               private externalLabUserService: CnExternalLabUserService,
               private externalLabProjectService: CnExternalLabProjectService,
               private externalLabApiService: CnExternalLabApiService,
@@ -177,7 +172,7 @@ export class CnLabInstanceAggregateService {
     const labInstanceDb: CnLabInstance = await this.labInstancesService.create(labInstance, entityManager);
 
     if (labInstance.isCloud() && !labInstance.isFreeLab) {
-      if(dailyBackupRegion == null || weeklyBackupRegion == null){
+      if (dailyBackupRegion == null || weeklyBackupRegion == null) {
         throw new BlBadRequestException('Backup regions are required for a cloud lab');
       }
 
@@ -644,34 +639,6 @@ export class CnLabInstanceAggregateService {
 
   //////////////////////////// PROJECT ////////////////////////////////
 
-  public async addProjectInLab(labInstanceId: string, projectId: string): Promise<CnLabInstanceProject> {
-    // get and check if the user can manage the lab
-    const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId, false);
-
-    return this.addRootProjectInLabInsecure(labInstance, projectId);
-  }
-
-  public async addRootProjectInLabInsecure(labInstance: CnLabInstance, projectId: string): Promise<CnLabInstanceProject> {
-    // get and check if the user can see the project
-    const projectTree = await this.projectAggregateService.getProjectTree(projectId);
-
-    return await this.dataSource.transaction(async entityManager => {
-      const labProject = await this.labInstanceProjectService.createLabInstanceProject(labInstance, projectTree, entityManager);
-      await this.syncProjectInLab(labInstance, projectTree);
-
-      return labProject;
-    });
-  }
-
-  public async forceProjectSyncInLab(labInstanceId: string, projectId: string): Promise<void> {
-    const labProject = await this.labInstanceProjectService.findByProjectId(projectId);
-    if (labProject == null) throw new BlUnauthorizedException();
-
-    const labManager = await this.getAndCheckAuthorizationToFindById(labInstanceId);
-
-    const projectTree = await this.projectAggregateService.getProjectTree(projectId);
-    await this.syncProjectInLab(labManager, projectTree);
-  }
 
   public async syncProjectInLab(labInstance: CnLabInstance, projectTree: CnProject): Promise<void> {
     // add the user to the lab is the lab is running
@@ -682,25 +649,6 @@ export class CnLabInstanceAggregateService {
     }
   }
 
-  public async removeProjectInLab(labInstanceId: string, projectId: string): Promise<void> {
-    // get and check if the user can manage the lab
-    const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId);
-
-    return await this.dataSource.transaction(async entityManager => {
-      await this.labInstanceProjectService.deleteLabInstanceProject(labInstanceId, projectId, entityManager);
-
-      // remove the project from the lab
-      await this.externalLabProjectService.deleteProjectInLab(labInstance.getGlabSpaceApiInfo(), projectId);
-    });
-  }
-
-
-  public async getLabInstanceProjects(labInstanceId: string): Promise<CnLabInstanceProject[]> {
-    // get and check if the user can manage the lab
-    await this.getAndCheckAuthorizationToFindById(labInstanceId);
-
-    return this.labInstanceProjectService.findByLabInstanceId(labInstanceId);
-  }
 
   //////////////////////////// LAB MANAGER ////////////////////////////////
 
@@ -905,12 +853,6 @@ export class CnLabInstanceAggregateService {
 
     labInstance = await this.labInstancesService.markInstanceAsLabRunning(labInstance.id);
     await this.updateLabInstanceConfig(labInstance, labConfig);
-  }
-
-  public async getCurrentLabInstanceProjects(): Promise<CnProject[]> {
-    const labProjects = await this.labInstanceProjectService.findByLabInstanceId(CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
-    const projects = labProjects.map(labProject => labProject.project);
-    return this.projectAggregateService.getProjectTrees(projects);
   }
 
   public async getCurrentLabInstanceSharedUsers(): Promise<CnExternalLabUser[]> {
@@ -1195,7 +1137,7 @@ export class CnLabInstanceAggregateService {
     return labInstance;
   }
 
-  private async getAndCheckAuthorizationToManageLab(id: string, refuseDesktop: boolean = true): Promise<CnLabInstance> {
+  public async getAndCheckAuthorizationToManageLab(id: string, refuseDesktop: boolean = true): Promise<CnLabInstance> {
     const labInstance = await this.labInstancesService.findByIdAndCheck(id, { sharedGroups: true, space: true });
 
     if (refuseDesktop && labInstance.isDesktop()) {

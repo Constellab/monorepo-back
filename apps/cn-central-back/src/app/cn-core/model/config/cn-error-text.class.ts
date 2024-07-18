@@ -65,4 +65,7 @@ export enum CnErrorText {
   NO_ACCESS_TO_PROJECT = 'error.no_access_to_project',
   NO_PROJECT_LEADER = 'error.no_project_leader',
   LAB_FREE_EXPIRED = 'error.lab_free_expired',
+  REMOVE_PROJECT_USE_LAB_AS_STORAGE_ERROR = 'error.remove_project_use_as_storage_from_lab_error',
+  REMOVE_PROJECT_SYNC_EXPERIMENT_ERROR = 'error.remove_project_sync_experiment_error',
+  REMOVE_PROJECT_SYNC_REPORT_ERROR = 'error.remove_project_sync_report_error',
 }

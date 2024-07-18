@@ -62,5 +62,8 @@
   "invalid_captcha": "Invalid captcha",
   "no_access_to_project": "You don't have access to this project",
   "no_project_leader": "You must be the project leader to perform this action",
-  "lab_free_expired": "Your free credits for this month have expired. The lab cannot be started, please contact the support to get more credits."
+  "lab_free_expired": "Your free credits for this month have expired. The lab cannot be started, please contact the support to get more credits.",
+  "remove_project_use_as_storage_from_lab_error": "The project uses this lab as storage, you can't remove it from the lab.",
+  "remove_project_sync_experiment_error": "The project and its sub projects have {count} synced experiments from this lab, you can't remove it from the lab.",
+  "remove_project_sync_report_error": "The project and its sub projects have {count} synced reports from this lab, you can't remove it from the lab."
 }

@@ -1,19 +1,20 @@
-import {Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, Req, UseInterceptors} from '@nestjs/common';
-import {CnLabGuard, CnLabRobotAuthentication} from '../cn-core/decorators/cn-lab-guard.decorator';
-import {BlCredentials, BlFile, BlParsePipe, BlUploadedFiles} from '@monorepo/back-core-lib';
-import {CnCreateLabExperimentDto} from '../cn-projects-aggregate/cn-experiments/cn-experiment.dto';
-import {CnCreateReportWithConfigDto} from '../cn-projects-aggregate/cn-reports/cn-report.dto';
-import {CnLabInstanceStartDTO} from '../cn-lab-instances/cn-lab-instance.dto';
-import {CnProjectAggregateService} from '../cn-projects-aggregate/cn-project-aggregate.service';
-import {CnLabInstanceSendMailDto} from '../cn-lab-instances/mail/cn-lab-instance-mail.dto';
-import {CnLabMailService} from '../cn-lab-instances/mail/cn-lab-mail.service';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {CnLabInstanceAggregateService} from '../cn-lab-instances/cn-lab-instance-aggregate.service';
-import {FilesInterceptor} from '@nestjs/platform-express';
-import {ClCoreJsonConvert} from '@monorepo/core-lib';
-import {CnExternalLabUser} from '../cn-external-lab-api/model/cn-external-lab-api.class';
-import {CnProjectDtoHelper, CnProjectTreeDTO} from '../cn-projects-aggregate/cn-projects/cn-project.dto';
-import {CnExternalCheckCredentialResponse} from '../cn-auth/cn-auth.service';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, Req, UseInterceptors } from '@nestjs/common';
+import { CnLabGuard, CnLabRobotAuthentication } from '../cn-core/decorators/cn-lab-guard.decorator';
+import { BlCredentials, BlFile, BlParsePipe, BlUploadedFiles } from '@monorepo/back-core-lib';
+import { CnCreateLabExperimentDto } from '../cn-projects-aggregate/cn-experiments/cn-experiment.dto';
+import { CnCreateReportWithConfigDto } from '../cn-projects-aggregate/cn-reports/cn-report.dto';
+import { CnLabInstanceStartDTO } from '../cn-lab-instances/cn-lab-instance.dto';
+import { CnProjectAggregateService } from '../cn-projects-aggregate/cn-project-aggregate.service';
+import { CnLabInstanceSendMailDto } from '../cn-lab-instances/mail/cn-lab-instance-mail.dto';
+import { CnLabMailService } from '../cn-lab-instances/mail/cn-lab-mail.service';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnLabInstanceAggregateService } from '../cn-lab-instances/cn-lab-instance-aggregate.service';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { ClCoreJsonConvert } from '@monorepo/core-lib';
+import { CnExternalLabUser } from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import { CnProjectDtoHelper, CnProjectTreeDTO } from '../cn-projects-aggregate/cn-projects/cn-project.dto';
+import { CnExternalCheckCredentialResponse } from '../cn-auth/cn-auth.service';
+import { CnLabProjectAggregateService } from '../cn-lab-project-aggregate/cn-lab-project-aggregate.service';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -24,6 +25,7 @@ export class CnExternalLabsController {
 
   constructor(private labInstanceAggregator: CnLabInstanceAggregateService,
               private projectAggregator: CnProjectAggregateService,
+              private labProjectAggregateService: CnLabProjectAggregateService,
               private labInstanceMailService: CnLabMailService) {
   }
 
@@ -112,7 +114,7 @@ export class CnExternalLabsController {
   @CnLabRobotAuthentication()
   @Get('project/all-trees')
   async getAllProjectTrees(): Promise<CnProjectTreeDTO[]> {
-    const projects = await this.labInstanceAggregator.getCurrentLabInstanceProjects();
+    const projects = await this.labProjectAggregateService.getCurrentLabInstanceProjects();
     return CnProjectDtoHelper.convertToProjectTreeDtoList(projects);
   }
 

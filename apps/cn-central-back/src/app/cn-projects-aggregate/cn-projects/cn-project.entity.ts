@@ -10,17 +10,16 @@ import {
   TreeChildren,
   TreeParent
 } from 'typeorm';
-import {Exclude, Type} from 'class-transformer';
-import {CnProjectStatusHistory} from './cn-project-status-history.entity';
-import {CnEntityWithStatus} from '../../cn-core/model/entities/cn-entity-with-status.entity';
-import {DateTime} from 'luxon';
-import {BlLuxonDateColumn, BlNotUpdatable, BlRichTextContent} from '@monorepo/back-core-lib';
-import {CnProjectLevel, CnProjectLevelStatus} from './cn-project-level.enum';
-import {CnUser} from '../../cn-users/cn-user.entity';
-import {CnSpace} from '../../cn-spaces/cn-space.entity';
-import {CnLabInstanceProject} from '../../cn-lab-instances/project/cn-lab-instance-project.entity';
-import {CnProjectUser} from '../cn-project-user/cn-project-user.entity';
-import {CnBucket} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { Exclude, Type } from 'class-transformer';
+import { CnProjectStatusHistory } from './cn-project-status-history.entity';
+import { CnEntityWithStatus } from '../../cn-core/model/entities/cn-entity-with-status.entity';
+import { DateTime } from 'luxon';
+import { BlLuxonDateColumn, BlNotUpdatable, BlRichTextContent } from '@monorepo/back-core-lib';
+import { CnProjectLevel, CnProjectLevelStatus } from './cn-project-level.enum';
+import { CnUser } from '../../cn-users/cn-user.entity';
+import { CnSpace } from '../../cn-spaces/cn-space.entity';
+import { CnProjectUser } from '../cn-project-user/cn-project-user.entity';
+import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 /**
  * A project is an ensemble of experiments
@@ -93,11 +92,8 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
   @Column({nullable: false, update: false})
   spaceId: string;
 
-  // N to N labs to uses this project
-  @OneToMany(() => CnLabInstanceProject,
-    (labInstanceProject: CnLabInstanceProject) => labInstanceProject.project)
-  labInstances: CnLabInstanceProject[];
 
+  // TODO TO REMOVE
   @Exclude()
   @OneToMany(() => CnProjectUser, projectUser => projectUser.project)
   users: CnProjectUser[];

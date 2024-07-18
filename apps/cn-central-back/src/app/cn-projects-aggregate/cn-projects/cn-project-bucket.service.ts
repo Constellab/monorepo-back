@@ -80,4 +80,11 @@ export class CnProjectBucketService {
     return buckets.map((bucket) => bucket.getBucketLocation());
   }
 
+
+  public async projectUsesLabStorage(rootProjectId: string, labId: string): Promise<boolean> {
+    const project = await this.findProjectWithStorageById(rootProjectId);
+    return project.mainStorage?.labInstance?.id === labId ||
+      project.backupStorage?.labInstance?.id === labId;
+  }
+
 }

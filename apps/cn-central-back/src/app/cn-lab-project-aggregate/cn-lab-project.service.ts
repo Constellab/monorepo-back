@@ -1,22 +1,22 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {CnLabInstanceProject} from './cn-lab-instance-project.entity';
-import {EntityManager, Repository} from 'typeorm';
-import {CnLabInstance} from '../cn-lab-instance.entity';
-import {CnProject} from '../../cn-projects-aggregate/cn-projects/cn-project.entity';
-import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
-import {BlBadRequestException} from '@monorepo/back-core-lib';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CnLabProject } from './cn-lab-project.entity';
+import { EntityManager, Repository } from 'typeorm';
+import { CnLabInstance } from '../cn-lab-instances/cn-lab-instance.entity';
+import { CnProject } from '../cn-projects-aggregate/cn-projects/cn-project.entity';
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { BlBadRequestException } from '@monorepo/back-core-lib';
 
 
 @Injectable()
-export class CnLabInstanceProjectService {
+export class CnLabProjectService {
 
-  constructor(@InjectRepository(CnLabInstanceProject) private repository: Repository<CnLabInstanceProject>) {
+  constructor(@InjectRepository(CnLabProject) private repository: Repository<CnLabProject>) {
   }
 
 
   public async createLabInstanceProject(labInstance: CnLabInstance, project: CnProject,
-                                        entityManager: EntityManager): Promise<CnLabInstanceProject> {
+                                        entityManager: EntityManager): Promise<CnLabProject> {
     if (!project.isRootProject()) {
       throw new BlBadRequestException('Only root project can be shared with a lab');
     }
@@ -27,7 +27,7 @@ export class CnLabInstanceProjectService {
       throw new BlBadRequestException(CnErrorText.PROJECT_ALREADY_SHARED_WITH_LAB);
     }
 
-    const labInstanceProject = new CnLabInstanceProject();
+    const labInstanceProject = new CnLabProject();
     labInstanceProject.labInstance = labInstance;
     labInstanceProject.project = project;
 
@@ -46,11 +46,11 @@ export class CnLabInstanceProjectService {
 
 
 
-  public async findByLabInstanceIdAndProjectId(labInstanceId: string, projectId: string): Promise<CnLabInstanceProject> {
+  public async findByLabInstanceIdAndProjectId(labInstanceId: string, projectId: string): Promise<CnLabProject> {
     return this.repository.findOneBy({labInstanceId, projectId});
   }
 
-  public async findByLabInstanceId(labInstanceId: string): Promise<CnLabInstanceProject[]> {
+  public async findByLabInstanceId(labInstanceId: string): Promise<CnLabProject[]> {
     return this.repository.find({
       where: {
         labInstanceId: labInstanceId
@@ -61,7 +61,7 @@ export class CnLabInstanceProjectService {
     });
   }
 
-  public async findByProjectId(projectId: string): Promise<CnLabInstanceProject[]> {
+  public async findByProjectId(projectId: string): Promise<CnLabProject[]> {
     return this.repository.find({
       where: {
         projectId: projectId

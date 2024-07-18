@@ -1,7 +1,10 @@
-import {CnProject} from './cn-projects/cn-project.entity';
-import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
+import { CnProject } from './cn-projects/cn-project.entity';
+import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 
 export const cnProjectEventName = 'cn-project-event';
+
+// special event call before a project is deleted to remove it from labs that uses it, to avoid circular dependencies
+export const cnRemoveProjectFromAllLabsEventName = 'cn-remove-project-from-all-labs-event';
 
 export type CnProjectEventType =
   'CREATE_PROJECT'
@@ -27,7 +30,7 @@ export type CnProjectEventType =
   | 'DELETE_PROJECT_DOCUMENT'
   | 'CREATE_PROJECT_COMMENT'
   | 'UPDATE_PROJECT_COMMENT'
-  | 'DELETE_PROJECT_COMMENT'
+  | 'DELETE_PROJECT_COMMENT';
 
 
 export interface CnProjectEvent {

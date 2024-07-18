@@ -149,8 +149,9 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   }
 
 
-  public async deleteDocument(id: string, entityManager: EntityManager): Promise<void> {
-    const document = await this.findByIdAndCheck(id, { project: true });
+  public async deleteDocument(id: string, entityManager?: EntityManager): Promise<void> {
+    entityManager = this.getEntityManager(entityManager);
+    const document = await this.findByIdAndCheck(id, { project: true }, entityManager);
 
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(document.project.getRootParentId());
     if (document.documentTypeSupportsTrash() && !document.inTrash) {

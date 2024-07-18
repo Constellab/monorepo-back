@@ -49,6 +49,31 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     });
   }
 
+  getReportsByRootProjectAndLabInstance(rootProjectId: string, labInstanceId: string): Promise<CnReport[]> {
+    return this.repository.find({
+      where: [
+        // find by project parent root id (if report is link to leaf project)
+        {
+          project: {
+            rootParentId: rootProjectId
+          },
+          labInstance: {
+            id: labInstanceId
+          }
+        },
+        // find by project (if report is linked to root project)
+        {
+          project: {
+            id: rootProjectId
+          },
+          labInstance: {
+            id: labInstanceId
+          }
+        }
+      ]
+    });
+  }
+
   public async getReportContent(project: CnProject, id: string): Promise<BlRichTextContent> {
     const report = await this.findById(id, { document: true });
     return this.projectDocumentService.getJSONDocumentContent(project, report.document);

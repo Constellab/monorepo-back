@@ -41,7 +41,12 @@ import { CnProjectBucketService } from './cn-projects/cn-project-bucket.service'
 import { CnProjectUserService } from './cn-project-user/cn-project-user.service';
 import { CnUsersService } from '../cn-users/cn-users.service';
 import { CnProjectUser } from './cn-project-user/cn-project-user.entity';
-import { CnProjectEvent, cnProjectEventName, CnProjectEventType } from './cn-project.event';
+import {
+  CnProjectEvent,
+  cnProjectEventName,
+  CnProjectEventType,
+  cnRemoveProjectFromAllLabsEventName
+} from './cn-project.event';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CnActivity, CnActivityEntityType } from '../cn-activity/cn-activity.entity';
 import { CnActivityService } from '../cn-activity/cn-activity.service';
@@ -192,20 +197,25 @@ export class CnProjectAggregateService {
       throw new BlBadRequestException(CnErrorText.DELETE_PROJECT_WITH_DOCUMENTS);
     }
 
-    const projectWithLab = await this.projectService.findByIdAndCheck(id, { labInstances: { labInstance: true } });
-    if (projectWithLab.labInstances.length > 0) {
-      const names = projectWithLab.labInstances.map(labProject => labProject.labInstance.name).join(', ');
-      throw new BlBadRequestException(CnErrorText.DELETE_PROJECT_USED_IN_LAB,
-        { detailArgs: { labNames: names } });
+    // delete all the trashed documents, no transaction because we can't revert between 2 docs
+    const trashedDocuments = await this.projectDocumentService.findDocumentsByProject(project.id);
+    for (const document of trashedDocuments) {
+      await this.projectDocumentService.deleteDocument(document.id);
     }
 
+    // remove project from all lab using event to avoid circular dependencies.
+    // If the user can delete the project, we consider he can remove it from labs
+    if (project.isRootProject()) {
+      const results: string[] = await this.eventEmitter.emitAsync(cnRemoveProjectFromAllLabsEventName, project);
+      // if a text is returned, it means an error occurred
+      for (const res of results) {
+        if (res) {
+          throw new BlBadRequestException(res);
+        }
+      }
+    }
 
     await this.datasource.transaction(async entityManager => {
-      const documents = await this.projectDocumentService.findDocumentsByProject(project.id);
-      for (const document of documents) {
-        await this.projectDocumentService.deleteDocument(document.id, entityManager);
-      }
-
       await this.projectService.deleteById(id, entityManager);
     });
 
@@ -457,6 +467,10 @@ export class CnProjectAggregateService {
     await this.experimentService.migrateAllExperimentProtocol();
   }
 
+  public async getExperimentsByRootProjectAndLabInstance(rootProjectId: string, labInstanceId: string): Promise<CnExperiment[]> {
+    return this.experimentService.getExperimentsByRootProjectAndLabInstance(rootProjectId, labInstanceId);
+  }
+
   /////////////////////////////////////// REPORT //////////////////////////////////
 
   public async findReport(id: string): Promise<CnReport> {
@@ -553,6 +567,10 @@ export class CnProjectAggregateService {
 
     const project = await this.getAndCheckAuthorizationForFindOne(report.projectId);
     return this.reportService.getView(viewId, project, reportId);
+  }
+
+  public getReportsByRootProjectAndLabInstance(rootProjectId: string, labInstanceId: string): Promise<CnReport[]> {
+    return this.reportService.getReportsByRootProjectAndLabInstance(rootProjectId, labInstanceId);
   }
 
   /////////////////////////////////////// GROUPS //////////////////////////////////
@@ -880,7 +898,15 @@ export class CnProjectAggregateService {
     const children = await this.getChildren(projectId);
 
     return this.projectDocumentService.getStorageSizeDetailByProjects([projectId, ...children.map(project => project.id)]);
+  }
 
+  /**
+   * return true if the root project id used the lab as storage (datahub)
+   * @param rootProjectId
+   * @param labId
+   */
+  public async projectUsesLabStorage(rootProjectId: string, labId: string): Promise<boolean> {
+    return this.projectBucketService.projectUsesLabStorage(rootProjectId, labId);
   }
 
   /////////////////////////////////////// PROJECT USER //////////////////////////////////

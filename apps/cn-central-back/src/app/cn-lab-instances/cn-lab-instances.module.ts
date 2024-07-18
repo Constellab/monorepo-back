@@ -17,9 +17,6 @@ import { CnLabInstancesSecurity } from './cn-lab-instances.security';
 import { CnLabInstanceUser } from './user/cn-lab-instance-user.entity';
 import { CnGroupsModule } from '../cn-groups/cn-groups.module';
 import { CnLabInstanceUserService } from './user/cn-lab-instance-user.service';
-import { CnLabInstanceProject } from './project/cn-lab-instance-project.entity';
-import { CnLabInstanceProjectService } from './project/cn-lab-instance-project.service';
-import { CnProjectsAggregateModule } from '../cn-projects-aggregate/cn-project-aggregate.module';
 import { CnReportsModule } from '../cn-projects-aggregate/cn-reports/cn-reports.module';
 import { CnObjectStoragesModule } from '../cn-object-storages/cn-object-storages.module';
 import { CnOvhService } from './server/ovh/cn-ovh.service';
@@ -47,7 +44,6 @@ import { CnLabBackupOption } from './backup/cn-lab-backup-option.entity';
 import { CnLabBackupHistory } from './backup/cn-lab-backup-history.entity';
 import { CnLabBackupOptionService } from './backup/cn-lab-backup-option.service';
 import { CnLabBackupHistoryService } from './backup/cn-lab-backup-history.service';
-import { CnLabInstanceListener } from './cn-lab-instance.listener';
 import { CnCloudProviderOutscaleService } from './server/outscale/cn-cloud-provider-outscale.service';
 import { CnServerPriceModule } from '../cn-servers-info/server-price/cn-server-price.module';
 import { CnLabFactoryService } from './cn-lab-factory.service';
@@ -60,7 +56,6 @@ import { CnSupportModule } from '../cn-support/cn-support.module';
       CnLabInstance,
       CnLabInstanceStatusHistory,
       CnLabInstanceUser,
-      CnLabInstanceProject,
       CnLabGreenOption,
       CnLabFree,
       CnLabBackupOption,
@@ -76,7 +71,6 @@ import { CnSupportModule } from '../cn-support/cn-support.module';
     CnGroupsModule,
     CnAuthModule,
 
-    CnProjectsAggregateModule,
     CnExperimentsModule,
     CnReportsModule,
     CnObjectStoragesModule,
@@ -97,7 +91,6 @@ import { CnSupportModule } from '../cn-support/cn-support.module';
     CnLabMailService,
     CnLabInstancesSecurity,
     CnLabInstanceUserService,
-    CnLabInstanceProjectService,
     CnLabServerService,
     CnOvhService,
     CnCloudProviderOvhService,
@@ -115,7 +108,6 @@ import { CnSupportModule } from '../cn-support/cn-support.module';
     CnLabBackupOptionService,
     CnLabBackupHistoryService,
     CnLabBackupAggregateService,
-    CnLabInstanceListener,
     CnCloudProviderOutscaleService,
     CnLabFactoryService
   ],
