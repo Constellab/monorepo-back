@@ -97,23 +97,32 @@ export class CnLabProjectAggregateService {
     });
   }
 
-  public removeProjectFromAllLabs(rootProjectId: string): Promise<void> {
-    return this.dataSource.transaction(async entityManager => {
-      const labProjects = await this.labProjectService.findByProjectId(rootProjectId);
-      for (const labProject of labProjects) {
-        try {
-          await this.removeProjectFromLab(labProject.labInstance, rootProjectId);
-        } catch (e) {
-          throw new Error(`Error while removing project from lab '${labProject.labInstance.name}' : ${e}`);
-        }
+  public async removeProjectFromAllLabs(rootProjectId: string): Promise<void> {
+    const labProjects = await this.labProjectService.findByProjectId(rootProjectId);
+    for (const labProject of labProjects) {
+      try {
+        await this.removeProjectFromLab(labProject.labInstance, rootProjectId);
+      } catch (e) {
+        throw new Error(`Error while removing project from lab '${labProject.labInstance.name}' : ${e}`);
       }
-    });
+    }
   }
 
   public async getCurrentLabInstanceProjects(): Promise<CnProject[]> {
     const labProjects = await this.labProjectService.findByLabInstanceId(CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
     const projects = labProjects.map(labProject => labProject.project);
     return this.projectAggregateService.getProjectTrees(projects);
+  }
+
+  public async getCurrentLabInstanceRootProjectById(projectId: string): Promise<CnProject> {
+    const project = await this.projectAggregateService.findProjectNotSecure(projectId);
+    const labProject = await this.labProjectService.findByProjectIdAndLabInstanceId(project.getRootParentId(),
+      CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
+    if (labProject == null) {
+      throw new BlBadRequestException(CnErrorText.PROJECT_NOT_SHARED_WITH_LAB);
+    }
+
+    return this.projectAggregateService.getProjectTree(labProject.projectId);
   }
 
   public async findLabProjectByProjectId(projectId: string): Promise<CnLabProject[]> {

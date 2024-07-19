@@ -45,9 +45,8 @@ export class CnLabProjectService {
   }
 
 
-
   public async findByLabInstanceIdAndProjectId(labInstanceId: string, projectId: string): Promise<CnLabProject> {
-    return this.repository.findOneBy({labInstanceId, projectId});
+    return this.repository.findOneBy({ labInstanceId, projectId });
   }
 
   public async findByLabInstanceId(labInstanceId: string): Promise<CnLabProject[]> {
@@ -70,5 +69,13 @@ export class CnLabProjectService {
         labInstance: true
       }
     });
+  }
+
+  public async findByProjectIdAndLabInstanceId(projectId: string, labInstanceId: string): Promise<CnLabProject | null> {
+    return this.repository.findOne(
+      {
+        where: { projectId, labInstanceId },
+      }
+    );
   }
 }

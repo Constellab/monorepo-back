@@ -226,6 +226,10 @@ export class CnProjectAggregateService {
     return this.getAndCheckAuthorizationForFindOne(id);
   }
 
+  async findProjectNotSecure(id: string): Promise<CnProject> {
+    return this.projectService.findByIdAndCheck(id);
+  }
+
   public async getCurrentProjects(page: number, size: number): Promise<ClPageI<CnProject>> {
     return this.projectService.getCurrentProjects(page, size);
   }

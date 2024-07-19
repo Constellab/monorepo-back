@@ -119,6 +119,13 @@ export class CnExternalLabsController {
   }
 
   @CnLabRobotAuthentication()
+  @Get('project/:id/root-tree')
+  async getRootProject(@Param('id', new ParseUUIDPipe()) projectId: string): Promise<CnProjectTreeDTO> {
+    const project = await this.labProjectAggregateService.getCurrentLabInstanceRootProjectById(projectId);
+    return CnProjectDtoHelper.convertToProjectTreeDto(project);
+  }
+
+  @CnLabRobotAuthentication()
   @Get('user')
   getAllLabUsers(): Promise<CnExternalLabUser[]> {
     return this.labInstanceAggregator.getCurrentLabInstanceSharedUsers();
