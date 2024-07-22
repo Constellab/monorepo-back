@@ -1,5 +1,5 @@
 import { CnLabBackupFrequency } from '../../cn-lab-instances/backup/cn-lab-backup.dto';
-import { BlBucketConfig, BlS3BucketConfig } from '@monorepo/back-core-lib';
+import { BlBucketConfig } from '@monorepo/back-core-lib';
 
 
 /**
@@ -129,7 +129,7 @@ export interface CnLabManagerRestoreBackupConfigDTO {
 
 export interface CnLabManagerRestoreBackupDTO {
   version: number;
-  bucketConfig: BlS3BucketConfig;
+  bucketConfig: BlBucketConfig;
   s3Prefix: string;
   options: {
     restoreDb: boolean;

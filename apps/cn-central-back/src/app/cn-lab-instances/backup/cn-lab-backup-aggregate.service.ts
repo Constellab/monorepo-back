@@ -8,7 +8,7 @@ import {
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnLabBackupOption } from './cn-lab-backup-option.entity';
 import { CnLabBackupHistory } from './cn-lab-backup-history.entity';
-import { BlBadRequestException, BlBucketConfig, BlObjectStorageService } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlObjectStorageService } from '@monorepo/back-core-lib';
 import { ClPageI } from '@monorepo/core-lib';
 import { CnLabManagerService } from '../cn-lab-manager.service';
 import {
@@ -153,28 +153,14 @@ export class CnLabBackupAggregateService {
       backupBuckets: [
         {
           backupFrequency: options.frequency1,
-          bucketConfig: this.bucketToBackupInfo(options.bucket1)
+          bucketConfig: options.bucket1.getBucketConfig()
         },
         {
           backupFrequency: options.frequency2,
-          bucketConfig: this.bucketToBackupInfo(options.bucket2)
+          bucketConfig: options.bucket2.getBucketConfig()
         }
       ]
     };
-  }
-
-  private bucketToBackupInfo(bucket: CnBucket): BlBucketConfig {
-    if (bucket.isS3Bucket()) {
-      return {
-        type: 's3',
-        config: bucket.getS3BucketConfig()
-      };
-    } else {
-      return {
-        type: 'azureBlob',
-        config: bucket.getAzureBlobConfig()
-      };
-    }
   }
 
   /**
@@ -252,7 +238,7 @@ export class CnLabBackupAggregateService {
 
     const restoreDTO: CnLabManagerRestoreBackupDTO = {
       version: 1,
-      bucketConfig: backupHistory.bucket.getS3BucketConfig(),
+      bucketConfig: backupHistory.bucket.getBucketConfig(),
       s3Prefix: '/' + this.backupOptionService.getBackupS3Prefix(sourceLab),
       options: {
         restoreDb: options.restoreDb,
