@@ -1,6 +1,11 @@
 import {ClHelpService} from '@monorepo/core-lib';
 import {JSDOM} from 'jsdom';
 import {Logger} from '@nestjs/common';
+import {
+  BlRichTextBlockModification,
+  BlRichTextModifications,
+  BlRichTextModificationType
+} from './bl-rich-text-modif.class';
 
 /**
  * Types taken from @editorjs/editorjs
@@ -122,6 +127,161 @@ export class BlNewRichText {
 
   public getContent(): BlRichTextContent {
     return this.richText;
+  }
+
+
+  ////////////////////////////////////////// MODIFICATIONS ///////////////////////////////////////////
+
+  // Get the rich text modification has a string of the BlRichTextModifications object
+  public getRichTextModification(newContent: BlRichTextContent,
+                                 userId: string,
+                                 modifications: BlRichTextModifications = new BlRichTextModifications()): string {
+    const differences: BlRichTextBlockModification[] = [];
+    const oldBlocks = this.getBlocks();
+    const oldBlockMap = new Map(oldBlocks.map(block => [block.id, block]));
+    newContent.blocks.forEach((block, index) => {
+      const oldBlock = oldBlockMap.get(block.id);
+      const oldBlockIndex = oldBlocks.indexOf(oldBlock);
+      if (oldBlock == null) {
+        const modif = new BlRichTextBlockModification(
+          newContent.version,
+          block.id,
+          block.type,
+          BlRichTextModificationType.CREATED,
+          index,
+          userId
+        );
+        modif.blockValue = block.data;
+        differences.push(modif);
+      } else if (JSON.stringify(oldBlock) !== JSON.stringify(block)) {
+        const modif = new BlRichTextBlockModification(
+          newContent.version,
+          block.id,
+          block.type,
+          BlRichTextModificationType.UPDATED,
+          index,
+          userId
+        );
+        modif.blockValue = block.data;
+        modif.differences = BlRichTextModifications.getValuesDifferences(JSON.stringify(oldBlock.data), JSON.stringify(block.data));
+        differences.push(modif);
+        oldBlockMap.delete(block.id);
+      } else if (oldBlockIndex != index && oldBlockMap.has(block.id)) {
+        const modif = new BlRichTextBlockModification(
+          newContent.version,
+          block.id,
+          block.type,
+          BlRichTextModificationType.MOVED,
+          index,
+          userId
+        );
+        modif.oldIndex = oldBlockIndex;
+        modif.blockValue = block.data;
+        differences.push(modif);
+        oldBlockMap.delete(block.id);
+      } else {
+        oldBlockMap.delete(block.id);
+      }
+    });
+    oldBlocks.forEach((oldBlock, index) => {
+      if (oldBlockMap.has(oldBlock.id)) {
+        const modif = new BlRichTextBlockModification(
+          newContent.version,
+          oldBlock.id,
+          oldBlock.type,
+          BlRichTextModificationType.DELETED,
+          index,
+          userId
+        );
+        modif.blockValue = oldBlock.data;
+        differences.push(modif);
+      }
+    });
+    modifications.fusion(differences);
+    return JSON.stringify(modifications.toJsonObject());
+  }
+
+  // Undo the modifications in the modificationsList
+  public undoModifications(modificationsList: BlRichTextBlockModification[]): BlRichTextContent {
+    const content = this.getContent();
+    const blocks = this.getBlocks();
+    const reversedModifications = modificationsList.slice().reverse();
+
+    reversedModifications.forEach(modification => {
+      switch (modification.type) {
+        case BlRichTextModificationType.MOVED:
+          const movedBlock: BlRichTextBlock = {
+            id: modification.blockId,
+            data: modification.blockValue,
+            type: modification.blockType as any
+          };
+          blocks.splice(modification.index, 1);
+          blocks.splice(modification.oldIndex, 0, movedBlock);
+          break;
+        case BlRichTextModificationType.CREATED:
+          blocks.splice(modification.index, 1);
+          break;
+        case BlRichTextModificationType.UPDATED:
+          const diff = BlRichTextModifications.undoDifferences(
+            JSON.stringify(blocks[modification.index].data), modification.differences).replace(/"/g, "\"");
+          // replace \ by \\ in diff
+          // diff = diff.replace(/\\/g, '\\\\');
+          if (diff?.length > 0) {
+            blocks[modification.index].data = JSON.parse(diff);
+          }
+          break;
+        case BlRichTextModificationType.DELETED:
+          const block: BlRichTextBlock = {
+            id: modification.blockId,
+            data: modification.blockValue,
+            type: modification.blockType as any
+          }
+          blocks.splice(modification.index, 0, block);
+          break;
+      }
+    });
+    content.blocks = blocks;
+    return content;
+  }
+
+
+  // Redo the modifications in the modificationsList
+  public redoModifications(modificationsList: BlRichTextBlockModification[]): BlRichTextContent {
+    const content = this.getContent();
+    const blocks = this.getBlocks();
+    modificationsList.forEach(modification => {
+      switch (modification.type) {
+        case BlRichTextModificationType.MOVED:
+          const movedBlock: BlRichTextBlock = {
+            id: modification.blockId,
+            data: modification.blockValue,
+            type: modification.blockType as any
+          };
+          blocks.splice(modification.oldIndex, 1);
+          blocks.splice(modification.index, 0, movedBlock);
+          break;
+        case BlRichTextModificationType.CREATED:
+          const block: BlRichTextBlock = {
+            id: modification.blockId,
+            data: modification.blockValue,
+            type: modification.blockType as any
+          }
+          blocks.splice(modification.index, 0, block);
+          break;
+        case BlRichTextModificationType.UPDATED:
+          const diff = BlRichTextModifications.redoDifferences(
+            JSON.stringify(blocks[modification.index].data), modification.differences).replace(/"/g, "\"");
+          if (diff?.length > 0) {
+            blocks[modification.index].data = JSON.parse(diff);
+          }
+          break;
+        case BlRichTextModificationType.DELETED:
+          blocks.splice(modification.index, 1);
+          break;
+      }
+    });
+    content.blocks = blocks;
+    return content;
   }
 
   ////////////////////////////////////// PARAGRAPH ///////////////////////////////////////////////

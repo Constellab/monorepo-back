@@ -21,7 +21,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
 
   public createOwnGroup(user: CnUser, entityManager: EntityManager): Promise<CnGroup> {
     const group: CnGroupSingleUser = new CnGroupSingleUser();
-    group.label = user.fullname;
+    group.label = user.alias;
     group.type = CnGroupType.SINGLE_USER;
     group.user = user;
     group.createdBy = user;
@@ -90,10 +90,10 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     }
 
     const currentUser = CnCurrentUserHelper.getAndCheckCurrentUser();
-    // set the current user in first pos, and sort the rest by fullname
+    // set the current user in first pos, and sort the rest by alias
     return Object.values(users).sort((a: CnUser, b: CnUser) => {
       if (a.id === currentUser.id) return -1;
-      return ClHelpService.sortAlphabeticalFunction(a.fullname, b.fullname);
+      return ClHelpService.sortAlphabeticalFunction(a.alias, b.alias);
     });
   }
 

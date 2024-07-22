@@ -25,7 +25,7 @@ import {HnStoryFileModule} from '../story-file/hn-story-file.module';
     HnUserModule,
     HnStoryAuthorInviteModule,
     HnFileStoryModule,
-    HnStoryFileModule
+    HnStoryFileModule,
   ],
   exports: [
     TypeOrmModule,

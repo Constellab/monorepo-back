@@ -3,7 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { HnDocumentation, HnDocumentationSearchDTO } from './hn-documentation.entity';
 import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-version.entity';
-import { BlBadRequestException, BlNewRichText, BlRichTextContent } from '@monorepo/back-core-lib';
+import {
+  BlBadRequestException,
+  BlNewRichText,
+  BlRichTextContent,
+  BlRichTextModifications
+} from '@monorepo/back-core-lib';
 import { HnNodeDTO } from '../folder/hn-folder.dto';
 import { HnFolder } from '../folder/hn-folder.entity';
 import { ClStringHelper } from '@monorepo/core-lib';
@@ -11,6 +16,7 @@ import { HnDocumentationFileService } from '../documentation-file/hn-documentati
 import { HnFileDocumentation } from '../../file-aggregate/file-documentation/hn-file-documentation.entity';
 import { HnFileType } from '../../file-aggregate/file-core/hn-abstract-file.entity';
 import { HnDocumentationFile } from '../documentation-file/hn-documentation-file.entity';
+import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
 
 @Injectable()
 export class HnDocumentationService {
@@ -91,6 +97,10 @@ export class HnDocumentationService {
   async updateContent(id: string, updateContentDoc: BlRichTextContent): Promise<HnDocumentation> {
     const doc: HnDocumentation = await this.documentationsRepository.findOneBy({ id: id });
     if (doc) {
+      doc.modifications =
+        new BlNewRichText(doc.content as BlRichTextContent)
+          .getRichTextModification(updateContentDoc, HnCurrentUserHelper.getAndCheckCurrentUser().id,
+            BlRichTextModifications.fromJsonObjectString(doc.modifications));
       doc.content = updateContentDoc;
     }
     return this.documentationsRepository.save(doc);

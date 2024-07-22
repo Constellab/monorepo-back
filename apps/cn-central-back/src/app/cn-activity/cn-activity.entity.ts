@@ -64,9 +64,9 @@ export class CnActivity extends BlEntityWithId {
 
   @Expose({name: 'title'})
   get cleanTitle(): string {
-    // replace {{user.name}} with user.fullname
+    // replace {{user.name}} with user.alias
     // replace {{entityName}} with entityName
-    return this.title.replace('{{user.name}}', this.user.fullname)
+    return this.title.replace('{{user.name}}', this.user.alias)
       .replace('{{entityName}}', this.entityName);
   }
 }

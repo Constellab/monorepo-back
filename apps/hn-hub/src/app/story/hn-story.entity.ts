@@ -7,7 +7,6 @@ import {ClDateHelper, ClStringHelper} from '@monorepo/core-lib';
 import {HnStoryCoAuthor} from '../story-author/hn-story-author.entity';
 import {Expose, Type} from 'class-transformer';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
-import {HnFileStory} from '../file-aggregate/file-story/hn-file-story.entity';
 
 export enum HnStoryStatus {
   DRAFT = 'DRAFT',
@@ -32,6 +31,9 @@ export class HnStory extends BlEntityWithId {
 
   @Column({name: 'content_edition', type: 'simple-json', nullable: true})
   contentEdition?: Record<string, any>;
+
+  @Column({type: 'longtext', nullable: true,})
+  modifications: string;
 
   @Column({nullable: true, type: 'varchar'})
   firstParagraph?: string;

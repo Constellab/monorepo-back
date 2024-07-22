@@ -15,7 +15,7 @@ import {HnStoryService} from './hn-story.service';
 import {
   BlFile,
   BlParsePipe,
-  BlPublic,
+  BlPublic, BlRichTextBlockModification,
   BlRichTextContent,
   BlRichTextUploadedImageResponse,
   BlUploadedFile
@@ -248,6 +248,34 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
   @Delete('invite/:inviteId')
   async deleteCoAuthorInvite(@Param('inviteId', new ParseUUIDPipe()) inviteId: string): Promise<boolean> {
     return this.storyService.deleteCoAuthorInvite(inviteId);
+  }
+
+  //TODO: Remove BlPublic after test
+  @BlPublic()
+  @Get('history/:storyId')
+  async getStoryModifications(@Param('storyId', new ParseUUIDPipe()) storyId: string): Promise<BlRichTextBlockModification[]> {
+    return this.storyService.getStoryModifications(storyId);
+  }
+
+  @BlPublic()
+  @Get('history/undo-content/:storyId/:modificationId')
+  async testUndo(@Param('storyId', new ParseUUIDPipe()) storyId: string,
+                 @Param('modificationId', new ParseUUIDPipe()) modificationId: string): Promise<Record<string, any>> {
+    return this.storyService.getUndoContent(storyId, modificationId);
+  }
+
+  @Put('history/rollback/:storyId/:modificationId')
+  async rollbackContent(@Param('storyId', new ParseUUIDPipe()) storyId: string,
+                        @Param('modificationId', new ParseUUIDPipe()) modificationId: string): Promise<HnStory> {
+    return this.storyService.rollbackContent(storyId, modificationId);
+  }
+
+  @BlPublic()
+  @Post('test-redo/:storyId/:modificationId')
+  async testRedo(@Param('storyId', new ParseUUIDPipe()) storyId: string,
+                 @Param('modificationId', new ParseUUIDPipe()) modificationId: string,
+                 @Body() content: BlRichTextContent): Promise<Record<string, any>> {
+    return this.storyService.testRedo(storyId, modificationId, content);
   }
 
   @BlPublic()

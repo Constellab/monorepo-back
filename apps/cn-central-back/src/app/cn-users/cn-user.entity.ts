@@ -103,7 +103,7 @@ export class CnUser extends BlEntityWithId implements BlUser {
     return argon2.verify(this.password, attempt);
   }
 
-  get fullname(): string {
+  get alias(): string {
     return this.firstname + ' ' + this.lastname;
   }
 

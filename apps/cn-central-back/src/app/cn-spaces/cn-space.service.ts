@@ -45,7 +45,7 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
                                    defaultBackupProjectStorageBucket: CnBucket,
                                    entityManager: EntityManager): Promise<CnSpace> {
     const space = new CnSpace();
-    space.name = user.fullname;
+    space.name = user.alias;
     space.type = CnSpaceType.PERSONAL;
     space.createdBy = user;
     space.lastModifiedBy = user;

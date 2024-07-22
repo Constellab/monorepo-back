@@ -9,7 +9,10 @@ import {
   BlBadRequestException,
   BlFile,
   BlNewRichText,
+  BlRichTextBlockModification,
   BlRichTextContent,
+  BlRichTextModifications,
+  BlRichTextModificationType,
   BlRichTextUploadedImageResponse,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
@@ -29,6 +32,8 @@ import {HnAbstractFileEntityDTO, HnUploadFileResponseDto} from '../file-aggregat
 import {HnFileStory} from '../file-aggregate/file-story/hn-file-story.entity';
 import {HnFileType} from '../file-aggregate/file-core/hn-abstract-file.entity';
 import {HnStoryFileService} from '../story-file/hn-story-file.service';
+import {HnUserService} from '../users/hn-user.service';
+import {HnUserDto} from '../users/hn-user.dto';
 
 
 @Injectable()
@@ -43,6 +48,7 @@ export class HnStoryService {
               private storyAuthorService: HnStoryAuthorService,
               private storyFileService: HnFileStoryService,
               private oldStoryFileService: HnStoryFileService,
+              private userService: HnUserService,
               private dataSource: DataSource
   ) {
   }
@@ -299,6 +305,9 @@ export class HnStoryService {
   async updateStoryContentEdition(id: string, contentEdition: BlRichTextContent): Promise<HnStory> {
     await this.checkAndValidateOwnerOrCoAuthor(id);
     const story = await this.getStory(id);
+    story.modifications = new BlNewRichText(story.contentEdition as BlRichTextContent)
+      .getRichTextModification(contentEdition, HnCurrentUserHelper.getAndCheckCurrentUser().id,
+        BlRichTextModifications.fromJsonObjectString(story.modifications));
     story.contentEdition = contentEdition;
     const richText = new BlNewRichText(story.contentEdition as BlRichTextContent);
     const firstFigureLink = richText.getFirstFigureLink();
@@ -513,7 +522,8 @@ export class HnStoryService {
             const name = (storyFile != null && storyFile.humanName != null) ?
               storyFile.humanName : type.toString() + '.' + fileName.split('.')[1];
             newStoryFileEntity.init(story, fileName, type, name, size);
-            this.logger.log('Entity initialized ' + newStoryFileEntity.fileName + ', the story file entity id is ' + newStoryFileEntity.entity?.id)
+            this.logger.log('Entity initialized ' + newStoryFileEntity.fileName
+              + ', the story file entity id is ' + newStoryFileEntity.entity?.id)
 
             await this.dataSource.transaction(async entityManager => {
 
@@ -591,4 +601,63 @@ export class HnStoryService {
     await entityManager.save(story, {listeners: false});
     this.logger.log('Migration in progress, end updateStoryFilesName for' + story.id + ' and ' + newStoryFileEntity.id);
   }
+
+  async getUndoContent(storyId: string, modificationId: string): Promise<Record<string, any>> {
+    const story: HnStory = await this.getStory(storyId);
+    const richText = new BlNewRichText(story.contentEdition as BlRichTextContent);
+    const modifications = BlRichTextModifications.fromJsonObjectString((story.modifications));
+    let modificationsBlocks = modifications.getModificationsFromModificationId(modificationId);
+    if (modificationsBlocks?.length == 0){
+      throw new BlBadRequestException('No undo possible');
+    }
+    if (modificationsBlocks.length == 1 && modificationsBlocks[0].type != BlRichTextModificationType.DELETED
+      && modificationsBlocks[0].type != BlRichTextModificationType.MOVED){
+      return story.contentEdition;
+    }
+    if (modificationsBlocks[0].type == BlRichTextModificationType.CREATED ||
+      modificationsBlocks[0].type == BlRichTextModificationType.UPDATED){
+      modificationsBlocks = modificationsBlocks.slice(1);
+    }
+    return richText.undoModifications(modificationsBlocks);
+  }
+
+  async rollbackContent(storyId: string, modificationId: string): Promise<HnStory>{
+    const story: HnStory = await this.getStory(storyId);
+
+    const newContent = await this.getUndoContent(storyId, modificationId);
+
+    const modifications = BlRichTextModifications.fromJsonObjectString((story.modifications));
+    const removeNumber = modifications.removeModificationsFromModificationId(modificationId);
+
+    if (removeNumber == 0){
+      return story;
+    }
+
+    story.contentEdition = newContent;
+    story.modifications = JSON.stringify(modifications.toJsonObject());
+
+    return this.storyRepository.save(story);
+
+  }
+
+  async testRedo(storyId: string, modificationId: string, content: BlRichTextContent): Promise<Record<string, any>> {
+    const story: HnStory = await this.getStory(storyId);
+    const richText = new BlNewRichText(content);
+    const modifications = BlRichTextModifications.fromJsonObjectString((story.modifications));
+    const modificationsBlocks = modifications.getModificationsFromModificationId(modificationId);
+    return richText.redoModifications(modificationsBlocks);
+  }
+
+  async getStoryModifications(storyId: string): Promise<BlRichTextBlockModification[]>{
+    const story: HnStory = await this.getStory(storyId);
+    if (!story.modifications) return [];
+    const res: BlRichTextBlockModification[] = [];
+    const modifications = BlRichTextModifications.fromJsonObjectString(story.modifications);
+    for (const modification of modifications.getModifications()){
+      modification.user = new HnUserDto(await this.userService.findOne(modification.userId));
+      res.push(modification);
+    }
+    return res;
+  }
+
 }

@@ -9,3 +9,7 @@ export interface BlUser {
   lang: ClSupportedLanguage;
 
 }
+
+export interface BlUserDto{
+  id: string;
+}

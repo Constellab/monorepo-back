@@ -21,6 +21,9 @@ export class HnDocumentation extends HnBaseEntity {
   @Column({name: 'content', type: 'simple-json', nullable: true})
   content?: Record<string, any>;
 
+  @Column({type: 'longtext', nullable: true})
+  modifications: string;
+
   @Column()
   path: string;
 

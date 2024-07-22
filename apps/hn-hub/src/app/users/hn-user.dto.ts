@@ -1,6 +1,7 @@
 import {HnUser} from './hn-user.entity';
+import {BlUserDto} from '@monorepo/back-core-lib';
 
-export class HnUserDto {
+export class HnUserDto implements BlUserDto{
   id: string;
   alias: string;
   userCode: string;

@@ -205,7 +205,7 @@ export class CnProjectListener {
         entityType: CnActivityEntityType.PROJECT,
         entity: project,
         actionType: CnActivityType.UPDATE,
-        title: `{{user.name}} has changed leader of project ${project.title} to ${project.leader.fullname}`,
+        title: `{{user.name}} has changed leader of project ${project.title} to ${project.leader.alias}`,
         entityName: project.title,
       }, notif: {link: CnFrontService.getProjectRoute(project.id)}
     };
@@ -224,7 +224,7 @@ export class CnProjectListener {
   }
 
   private projectShared(users: CnUser[], parentProject: CnProject): CnActivityAndNotif {
-    const userText = users.length === 1 ? users[0].fullname : `${users.length} users`;
+    const userText = users.length === 1 ? users[0].alias : `${users.length} users`;
     return {
       activity: {
         entityType: CnActivityEntityType.PROJECT,
@@ -242,7 +242,7 @@ export class CnProjectListener {
         entityType: CnActivityEntityType.PROJECT,
         entity: parentProject,
         actionType: CnActivityType.UPDATE,
-        title: `{{user.name}} removed ${user.fullname} from project ${parentProject.title}`,
+        title: `{{user.name}} removed ${user.alias} from project ${parentProject.title}`,
         entityName: parentProject.title,
       }, notif: {link: CnFrontService.getProjectRoute(parentProject.id)}
     };
@@ -403,7 +403,7 @@ export class CnProjectListener {
 
       await this.sendNotification(userMention,
         activity.user, activity.space.id, activity.entityType, activity.entityId,
-        `${comment.createdBy.fullname} mentioned you in a comment on project ${parentProject.title}`,
+        `${comment.createdBy.alias} mentioned you in a comment on project ${parentProject.title}`,
         link, parentProject, ancestorIds);
     }
 

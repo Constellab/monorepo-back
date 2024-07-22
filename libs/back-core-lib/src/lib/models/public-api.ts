@@ -13,6 +13,7 @@ export * from './bl-event.class';
 export * from './bl-file.class';
 export * from './bl-nest-api-error.class';
 export * from './bl-new-rich-text.class';
+export * from './bl-rich-text-modif.class';
 export * from './bl-rich-text.class';
 export * from './bl-version.class';
 
