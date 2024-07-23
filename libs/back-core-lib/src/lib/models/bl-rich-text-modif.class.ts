@@ -62,6 +62,7 @@ export class BlRichTextModifications {
   private modifications: BlRichTextBlockModification[] = [];
 
 
+
   // Create a BlRichTextModifications object from a json string
   public static fromJsonObjectString(jsonString: string): BlRichTextModifications {
     const modifications = new BlRichTextModifications();
@@ -202,8 +203,8 @@ export class BlRichTextModifications {
         return [];
       }
     }
-
-    modifications = modifications.filter((m) => JSON.stringify(m.blockValue) != '{"text":"/"}');
+    modifications = modifications.filter((m) => JSON.stringify(m.blockValue) != '{"text":"/"}'
+      && m.type !== BlRichTextModificationType.MOVED);
     return modifications;
   }
 
