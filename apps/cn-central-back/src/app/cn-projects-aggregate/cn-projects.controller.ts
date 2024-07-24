@@ -145,15 +145,28 @@ export class CnProjectsController {
     return this.projectAggregate.getChildren(id);
   }
 
+  @Get(':id/children/paginated')
+  getChildrenPaginated(@Param('id', new ParseUUIDPipe()) id: string,
+                       @Query('page', new ParseIntPipe()) page: number,
+                       @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnProject>> {
+    return this.projectAggregate.getChildrenPaginated(id, page, size);
+  }
+
   /**
    * Return a simplified list of ancestor for an object (project, experiment, report) to the main project
-   * @param objectType
-   * @param id
    */
   @Get('ancestors/:objectType/:id')
   getObjectProjectAncestors(@Param('objectType') objectType: CnProjectAncestorType,
                             @Param('id', new ParseUUIDPipe()) id: string): Promise<CnProjectAncestorTreeDTO[]> {
     return this.projectAggregate.getObjectProjectAncestors(objectType, id);
+  }
+
+  /**
+   * Route to get a project with its ancestors
+   */
+  @Get(':id/ancestors')
+  getProjectWithAncestors(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnProject[]> {
+    return this.projectAggregate.getProjectWithAncestors(id);
   }
 
   @Get(':id/users')
@@ -283,9 +296,7 @@ export class CnProjectsController {
   @Get(':projectId/document/download/:filename(*)')
   public async downloadDocument(@Param('projectId') projectId: string,
                                 @Param('filename') filename: string): Promise<StreamableFile> {
-    console.log('Before file');
     const file = await this.projectAggregate.getUploadedDocument(projectId, filename);
-    console.log('After file');
 
     // use as any as this still works
     return BlResponseHelper.getFileResponse(file.file as any);
@@ -331,6 +342,12 @@ export class CnProjectsController {
   public renameDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string,
                         @Body() name: { name: string }): Promise<CnProjectDocument> {
     return this.projectAggregate.renameDocument(documentId, name.name);
+  }
+
+  @Put('document/:documentId/move/:projectId')
+  public moveDocumentToProject(@Param('documentId', new ParseUUIDPipe()) documentId: string,
+                               @Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnProjectDocument> {
+    return this.projectAggregate.moveDocumentToProject(documentId, projectId);
   }
 
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////

@@ -8,6 +8,7 @@ import { BlObjectStorageInterface } from './bl-object-storage.interface';
 import { BlS3BucketService } from './bl-s3-bucket.service';
 import { BlExternalApiService } from '../bl-external-api/bl-external-api.service';
 import { BlLabS3BucketService } from './bl-lab-s3-bucket.service';
+import { Stream } from 'stream';
 
 
 export interface BlObjectStorageUploadOptions {
@@ -221,6 +222,34 @@ export class BlObjectStorageService {
 
   /////////////////////////////////// OTHER ///////////////////////////////////
 
+  public async moveObjectToAnotherBucket(oldConfig: BlBucketConfig | BlBucketConfig[],
+                                         newConfig: BlBucketConfig | BlBucketConfig[],
+                                         oldObjectName: string,
+                                         newObjectName: string): Promise<string> {
+    const oldConfigs = ClHelpService.convertObjectOrArrayToArray(oldConfig);
+
+    // get the object
+    const object = await this.downloadObject(oldConfigs[0], oldObjectName);
+    const buffer = await this.streamToBuffer(object.file);
+
+    // upload object to new bucket
+    const objectName = await this.uploadObjectToBuckets(newConfig, buffer, newObjectName, object.contentType);
+
+    // delete object from old bucket
+    await this.deleteObjectIfExist(oldConfigs, oldObjectName);
+
+    return objectName;
+  }
+
+  private streamToBuffer(stream: Stream): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      const chunks: Buffer[] = [];
+
+      stream.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
+      stream.on('error', (err) => reject(err));
+      stream.on('end', () => resolve(Buffer.concat(chunks)));
+    });
+  }
 
   private getService(config: BlBucketConfig): BlObjectStorageInterface {
     if (config.type === 'azureBlob') {

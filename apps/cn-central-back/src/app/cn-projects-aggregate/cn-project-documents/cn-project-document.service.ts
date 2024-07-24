@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   BlAbstractService,
   BlBadRequestException,
+  BlBucketConfig,
   BlBucketType,
   BlFile,
   BlFileHelper,
@@ -160,13 +161,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
     const documentsToDelete: CnProjectDocument[] = [document];
     // delete the children document as well
-    const children = await this.repo.find({
-      where: {
-        projectId: document.projectId,
-        parentDocument: { id: document.id }
-      }
-    });
-
+    const children = await this.findChildrenDocuments(document.id);
     documentsToDelete.unshift(...children);
 
 
@@ -468,6 +463,53 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   }
 
   ////////////////////////////////////////////// OTHERS /////////////////////////////////////////////
+
+  public async moveDocument(document: CnProjectDocument,
+                            oldProject: CnProject,
+                            newProject: CnProject): Promise<CnProjectDocument> {
+    const oldBuckets = await this.projectBucketService.getAndCheckProjectBucketConfig(oldProject.getRootParentId());
+    const newBuckets = await this.projectBucketService.getAndCheckProjectBucketConfig(newProject.getRootParentId());
+
+    // move the children document as well
+    const children = await this.findChildrenDocuments(document.id);
+    const newDocument = await this.moveDocumentFromBucket(document, oldProject, newProject, oldBuckets, newBuckets);
+
+    // also move the children
+    for (const doc of children) {
+      await this.moveDocumentFromBucket(doc, oldProject, newProject, oldBuckets, newBuckets);
+    }
+
+    return newDocument;
+  }
+
+  private async moveDocumentFromBucket(document: CnProjectDocument,
+                                       oldProject: CnProject, newProject: CnProject,
+                                       oldBuckets: BlBucketConfig[], newBuckets: BlBucketConfig[]): Promise<CnProjectDocument> {
+    return await this.datasource.transaction(async (entityManager) => {
+      // update the project in db
+      document.project = newProject;
+
+      // if the entity id of the object is the project, we also update it
+      if(document.entityIdIsProject()){
+        document.entityId = newProject.id;
+      }
+
+      const dbDocument = await entityManager.save(document);
+
+      // move the object in the storage
+      const oldFilePath = this.generateDocumentFilePath(oldProject, document);
+      const newFilePath = this.generateDocumentFilePath(newProject, document);
+      await this.objectStorageService.moveObjectToAnotherBucket(oldBuckets, newBuckets, oldFilePath, newFilePath);
+      return dbDocument;
+    });
+  }
+
+
+  private findChildrenDocuments(parentDocumentId: string): Promise<CnProjectDocument[]> {
+    return this.repo.find({
+      where: { parentDocument: { id: parentDocumentId } }
+    });
+  }
 
   private emitEvent(eventType: CnProjectDocumentEventType, document: CnProjectDocument): void {
     const event: CnProjectDocumentEvent = {

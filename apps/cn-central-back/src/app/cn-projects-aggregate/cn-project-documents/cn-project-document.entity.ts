@@ -44,7 +44,6 @@ export class CnProjectDocument extends CnBaseEntity {
   @Column({ nullable: false })
   mimeType: string;
 
-  @BlNotUpdatable()
   @Type(() => CnProject)
   @ManyToOne(() => CnProject, { nullable: false })
   project: CnProject;
@@ -59,7 +58,7 @@ export class CnProjectDocument extends CnBaseEntity {
   // IF type is UPLOADED_DOCUMENT,CONSTELLAB_DOCUMENT, DESCRIPTION_CONTENT or COMMENT_CONTENT, entityId is the id of the project
   // IF type is CONSTELLAB_DOCUMENT_CONTENT, entityId is the id of the constellab document
   // IF type is REPORT or REPORT_CONTENT, entityId is the id of the report
-  @Column({ nullable: false, update: false, length: 36 })
+  @Column({ nullable: false, length: 36 })
   entityId: string;
 
   // useful for RichText stored in documents.
@@ -108,6 +107,16 @@ export class CnProjectDocument extends CnBaseEntity {
     // the trash is only supported for uploaded documents and constellab documents
     return this.type === CnProjectDocumentType.UPLOADED_DOCUMENT
       || this.type === CnProjectDocumentType.CONSTELLAB_DOCUMENT;
+  }
+
+  /**
+   * return true if the entityId correspond to the projectId
+   */
+  entityIdIsProject(): boolean{
+    return this.type === CnProjectDocumentType.UPLOADED_DOCUMENT
+      || this.type === CnProjectDocumentType.CONSTELLAB_DOCUMENT
+      || this.type === CnProjectDocumentType.DESCRIPTION_CONTENT
+      || this.type === CnProjectDocumentType.COMMENT_CONTENT;
   }
 
   /**

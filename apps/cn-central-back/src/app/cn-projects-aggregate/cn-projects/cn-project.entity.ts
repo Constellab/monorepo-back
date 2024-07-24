@@ -92,8 +92,6 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
   @Column({nullable: false, update: false})
   spaceId: string;
 
-
-  // TODO TO REMOVE
   @Exclude()
   @OneToMany(() => CnProjectUser, projectUser => projectUser.project)
   users: CnProjectUser[];

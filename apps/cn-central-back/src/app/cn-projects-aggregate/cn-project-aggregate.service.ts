@@ -291,6 +291,12 @@ export class CnProjectAggregateService {
     return this.projectService.getChildren(project.id);
   }
 
+  public async getChildrenPaginated(projectId: string, page: number, size: number): Promise<ClPage<CnProject>> {
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    return this.projectService.getChildrenPaginated(project.id, page, size);
+  }
+
   public async getObjectProjectAncestors(objectType: CnProjectAncestorType, objectId: string): Promise<CnProjectAncestorTreeDTO[]> {
 
     const ancestors: CnProjectAncestorTreeDTO[] = [];
@@ -323,6 +329,11 @@ export class CnProjectAggregateService {
     const projectDto: CnProjectAncestorTreeDTO[] = CnProjectDtoHelper.convertProjectAncestorTreeDtos(projectAncestors);
     ancestors.push(...projectDto);
     return ancestors;
+  }
+
+  public async getProjectWithAncestors(projectId: string): Promise<CnProject[]>{
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+    return await this.projectService.getAncestors(project);
   }
 
   public async updateProjectLeader(projectId: string, userId: string): Promise<CnProject> {
@@ -759,6 +770,20 @@ export class CnProjectAggregateService {
     await this.getAndCheckAuthorizationForFindOne(document.projectId);
 
     return this.projectDocumentService.renameDocument(document, newName);
+  }
+
+  public async moveDocumentToProject(documentId: string, projectId: string): Promise<CnProjectDocument> {
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
+
+    if(document.projectId === projectId){
+      throw new BlBadRequestException('The document is already in the destination project');
+    }
+
+    // check if the user has the authorization to move the document on 2 projects
+    const oldProject = await this.getAndCheckAuthorizationForFindOne(document.projectId);
+    const newProject = await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    return this.projectDocumentService.moveDocument(document, oldProject, newProject);
   }
 
 

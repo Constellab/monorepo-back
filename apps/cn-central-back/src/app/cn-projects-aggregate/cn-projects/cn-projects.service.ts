@@ -1,17 +1,17 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, EntityManager, Repository, TreeRepository} from 'typeorm';
-import {CnProject} from './cn-project.entity';
-import {CnAbstractWithStatusService} from '../../cn-core/class/cn-abstract-with-status.service';
-import {CnProjectStatus} from './cn-project-status.enum';
-import {CnProjectStatusHistory} from './cn-project-status-history.entity';
-import {ClDateHelper, ClPage} from '@monorepo/core-lib';
-import {CnUser} from '../../cn-users/cn-user.entity';
-import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
-import {CnProjectLevel} from './cn-project-level.enum';
-import {CnSpace} from '../../cn-spaces/cn-space.entity';
-import {BlSearchParams} from '@monorepo/back-core-lib';
-import {CnProjectSearchBuilder} from './cn-project-search.builder';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, EntityManager, Like, Repository, TreeRepository } from 'typeorm';
+import { CnProject } from './cn-project.entity';
+import { CnAbstractWithStatusService } from '../../cn-core/class/cn-abstract-with-status.service';
+import { CnProjectStatus } from './cn-project-status.enum';
+import { CnProjectStatusHistory } from './cn-project-status-history.entity';
+import { ClDateHelper, ClPage } from '@monorepo/core-lib';
+import { CnUser } from '../../cn-users/cn-user.entity';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnProjectLevel } from './cn-project-level.enum';
+import { CnSpace } from '../../cn-spaces/cn-space.entity';
+import { BlSearchParams } from '@monorepo/back-core-lib';
+import { CnProjectSearchBuilder } from './cn-project-search.builder';
 
 @Injectable()
 export class CnProjectsService extends CnAbstractWithStatusService<CnProject, CnProjectStatus> {
@@ -48,7 +48,11 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
    * @param projectId
    */
   public getChildren(projectId: string): Promise<CnProject[]> {
-    return this.repository.find({where: {parentId: projectId}, order: {code: 'ASC'}});
+    return this.repository.find({ where: { parentId: projectId }, order: { code: 'ASC' } });
+  }
+
+  public getChildrenPaginated(projectId: string, page: number, size: number): Promise<ClPage<CnProject>> {
+    return this.findPaginated(page, size, { where: { parentId: projectId }, order: { code: 'ASC' } });
   }
 
   /**
@@ -56,7 +60,7 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
    */
   public async getAncestors(project: CnProject): Promise<CnProject[]> {
     const parent = await this.repository.findAncestorsTree(project, {
-      relations: ['createdBy', 'lastModifiedBy', 'leader'],
+      relations: ['createdBy', 'lastModifiedBy', 'leader']
     });
     const projects: CnProject[] = [];
     let currentProject = parent;
@@ -77,9 +81,9 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
     return this.findPaginated(page, size, {
       where: {
         spaceId: spaceId,
-        currentLevel: CnProjectLevel.PROJECT,
+        currentLevel: CnProjectLevel.PROJECT
       },
-      order: {lastModifiedAt: 'DESC' as any}
+      order: { code: 'ASC' }
     });
   }
 
@@ -112,21 +116,42 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
   private async getProjectOfUser(userId: string, spaceId: string, page: number, size: number): Promise<ClPage<CnProject>> {
     return await this.findPaginated(page, size, {
       where: {
-        users: {userId: userId},
+        users: { userId: userId },
         spaceId: spaceId,
         currentLevel: CnProjectLevel.PROJECT
       },
-      order: {lastModifiedAt: 'DESC' as any}
+      order: { lastModifiedAt: 'DESC' as any }
     });
   }
 
 
   public async searchInSpace(spaceId: string, searchParam: BlSearchParams,
                              page: number, size: number): Promise<ClPage<CnProject>> {
-    const searchBuilder = new CnProjectSearchBuilder({lastModifiedAt: 'DESC' as any});
+    const searchBuilder = new CnProjectSearchBuilder({ lastModifiedAt: 'DESC' as any });
     searchBuilder.addSearchParams(searchParam);
-    searchBuilder.mergeWhereOptions({spaceId: spaceId});
+    searchBuilder.mergeWhereOptions({ spaceId: spaceId });
 
     return await this.findPaginated(page, size, searchBuilder.build());
+  }
+
+  public async searchByTitleOrCode(spaceId: string, projectName: string,
+                                   userId: string | null,
+                                   page: number, size: number): Promise<ClPage<CnProject>> {
+    const userFilter = userId ? { userId: userId } : undefined;
+    const nameFilter =  Like(`%${projectName}%`);
+    return await this.findPaginated(page, size, {
+      where: [
+        {
+          spaceId: spaceId,
+          title: nameFilter,
+          users: userFilter
+        },
+        {
+          spaceId: spaceId,
+          code: nameFilter,
+          users: userFilter
+        }],
+      order: { code: 'ASC' }
+    });
   }
 }
