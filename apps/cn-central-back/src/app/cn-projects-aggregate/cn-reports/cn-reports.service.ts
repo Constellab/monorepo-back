@@ -193,7 +193,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
 
     // upload the image only if it does not exist
     if (!document) {
-      await this.projectDocumentService.uploadImageDocument(file, project, CnProjectDocumentType.REPORT_CONTENT,
+      await this.projectDocumentService.uploadDocument(file, project, CnProjectDocumentType.REPORT_CONTENT,
         reportId, filename, parentDocument);
     }
   }
