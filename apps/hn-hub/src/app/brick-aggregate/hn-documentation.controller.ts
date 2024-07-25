@@ -15,6 +15,7 @@ import {
   BlFile,
   BlParsePipe,
   BlPublic,
+  BlRichTextBlockModification, BlRichTextBlockModificationDto,
   BlRichTextContent,
   BlRichTextUploadedImageResponse,
   BlUploadedFile
@@ -27,20 +28,13 @@ import {HnDocumentationDto} from './documentation/hn-documentation.dto';
 import {HnAbstractFileController} from '../file-aggregate/file-core/hn-abstract-file.controller';
 import {HnFileDocumentationService} from '../file-aggregate/file-documentation/hn-file-documentation.service';
 import {HnAbstractFileEntityDTO, HnUploadFileResponseDto} from '../file-aggregate/file-core/hn-abstract-file.dto';
-import {IsAdmin} from '../core/decorators/hn-is-admin.decorator';
 
 @Controller('documentation')
 @UseGuards(HnIsAdminGuard)
 export class HnDocumentationController extends HnAbstractFileController<HnDocumentation> {
   constructor(private readonly brickAggregateService: HnBrickAggregateService,
-              private readonly fileDocumentationService: HnFileDocumentationService) {
+              readonly fileDocumentationService: HnFileDocumentationService) {
     super(fileDocumentationService);
-  }
-
-  @IsAdmin()
-  @Get('bucket-items')
-  async getAllBucketItemsName(): Promise<any> {
-    return this.brickAggregateService.migrateDocBucketItemsName();
   }
 
   @BlPublic()
@@ -82,6 +76,26 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
   saveImage(@BlUploadedFile() file: BlFile,
             @Param('docId', new ParseUUIDPipe()) docId: string): Promise<BlRichTextUploadedImageResponse> {
     return this.brickAggregateService.saveDocImage(file, docId);
+  }
+
+  ///////////////////////////////////////// HISTORY /////////////////////////////////////////
+
+  @Get('history/:docId')
+  async getDocModifications(@Param('docId', new ParseUUIDPipe()) docId: string): Promise<BlRichTextBlockModificationDto[]> {
+    return this.brickAggregateService.getDocModifications(docId);
+  }
+
+
+  @Get('history/undo-content/:docId/:modificationId')
+  async testUndo(@Param('docId', new ParseUUIDPipe()) docId: string,
+                 @Param('modificationId', new ParseUUIDPipe()) modificationId: string): Promise<Record<string, any>> {
+    return this.brickAggregateService.getUndoContent(docId, modificationId);
+  }
+
+  @Put('history/rollback/:docId/:modificationId')
+  async rollbackContent(@Param('docId', new ParseUUIDPipe()) docId: string,
+                        @Param('modificationId', new ParseUUIDPipe()) modificationId: string): Promise<HnDocumentation> {
+    return this.brickAggregateService.rollbackContent(docId, modificationId);
   }
 
 

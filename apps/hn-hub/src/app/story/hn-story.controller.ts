@@ -15,7 +15,7 @@ import {HnStoryService} from './hn-story.service';
 import {
   BlFile,
   BlParsePipe,
-  BlPublic, BlRichTextBlockModification,
+  BlPublic, BlRichTextBlockModification, BlRichTextBlockModificationDto,
   BlRichTextContent,
   BlRichTextUploadedImageResponse,
   BlUploadedFile
@@ -41,11 +41,6 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
     super(fileStoryService);
   }
 
-  @IsAdmin()
-  @Get('bucket-items')
-  async getAllBucketItemsName(): Promise<any> {
-    return this.storyService.migrateStoryBucketItemsNames();
-  }
 
   @BlPublic()
   @Get('all-map')
@@ -250,14 +245,11 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
     return this.storyService.deleteCoAuthorInvite(inviteId);
   }
 
-  //TODO: Remove BlPublic after test
-  @BlPublic()
   @Get('history/:storyId')
-  async getStoryModifications(@Param('storyId', new ParseUUIDPipe()) storyId: string): Promise<BlRichTextBlockModification[]> {
+  async getStoryModifications(@Param('storyId', new ParseUUIDPipe()) storyId: string): Promise<BlRichTextBlockModificationDto[]> {
     return this.storyService.getStoryModifications(storyId);
   }
 
-  @BlPublic()
   @Get('history/undo-content/:storyId/:modificationId')
   async testUndo(@Param('storyId', new ParseUUIDPipe()) storyId: string,
                  @Param('modificationId', new ParseUUIDPipe()) modificationId: string): Promise<Record<string, any>> {
@@ -268,14 +260,6 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
   async rollbackContent(@Param('storyId', new ParseUUIDPipe()) storyId: string,
                         @Param('modificationId', new ParseUUIDPipe()) modificationId: string): Promise<HnStory> {
     return this.storyService.rollbackContent(storyId, modificationId);
-  }
-
-  @BlPublic()
-  @Post('test-redo/:storyId/:modificationId')
-  async testRedo(@Param('storyId', new ParseUUIDPipe()) storyId: string,
-                 @Param('modificationId', new ParseUUIDPipe()) modificationId: string,
-                 @Body() content: BlRichTextContent): Promise<Record<string, any>> {
-    return this.storyService.testRedo(storyId, modificationId, content);
   }
 
   @BlPublic()

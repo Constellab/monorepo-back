@@ -29,7 +29,7 @@ import {
   BlRichTextUploadedImageResponse,
   BlUnauthorizedException,
   BlVersion,
-  BlNotFoundException
+  BlNotFoundException, BlRichTextBlockModification, BlRichTextBlockModificationDto, BlUserDto
 } from '@monorepo/back-core-lib';
 import { HnBrickUserService } from './brick-user/hn-brick-user.service';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
@@ -53,6 +53,7 @@ import { HnFileDocumentationService } from '../file-aggregate/file-documentation
 import {HnAbstractFileEntityDTO, HnUploadFileResponseDto} from '../file-aggregate/file-core/hn-abstract-file.dto';
 import { HnFileDocumentation } from '../file-aggregate/file-documentation/hn-file-documentation.entity';
 import { HnFileType } from '../file-aggregate/file-core/hn-abstract-file.entity';
+import {HnUserDto} from '../users/hn-user.dto';
 
 @Injectable()
 export class HnBrickAggregateService {
@@ -699,6 +700,34 @@ export class HnBrickAggregateService {
     return this.fileDocumentationService.getDocFiles(documentation);
   }
 
+  //------------------------------------- DOC HISTORY -------------------------------------
+  async getDocModifications(docId: string): Promise<BlRichTextBlockModificationDto[]> {
+    const doc: HnDocumentation = await this.documentationService.findById(docId);
+    const modifications = await this.documentationService.getDocModifications(doc);
+    const res: BlRichTextBlockModificationDto[] = [];
+    const userMap = new Map<string, BlUserDto>();
+    for (const modification of modifications){
+      if(!userMap.has(modification.userId)){
+        res.push(new BlRichTextBlockModificationDto(modification,
+          new HnUserDto(await this.userService.findOne(modification.userId))));
+      } else {
+        res.push(new BlRichTextBlockModificationDto(modification, userMap.get(modification.userId)));
+      }
+    }
+    return res;
+  }
+
+  async getUndoContent(docId: string, modificationId: string): Promise<Record<string, any>> {
+    const doc: HnDocumentation = await this.documentationService.findById(docId);
+    return this.documentationService.getUndoContent(doc, modificationId);
+  }
+
+  async rollbackContent(docId: string, modificationId: string): Promise<HnDocumentation> {
+    const doc: HnDocumentation = await this.documentationService.findById(docId);
+    return this.documentationService.rollbackContent(doc, modificationId);
+  }
+
+
   //------------------------------------- TECHNICAL DOCS -------------------------------------
 
   async findTechnicalDoc(brickId: string, version: string): Promise<HnNode> {
@@ -994,46 +1023,4 @@ export class HnBrickAggregateService {
     return entityManager.save(brick, {listeners: false});
   }
 
-
-  ////////////////////////////////////////// ADMIN /////////////////////////////////
-  public async migrateDocBucketItemsName(): Promise<any>{
-    const items: any[] = (await this.fileDocumentationService.getAllBucketItemsName()).map(i => [i.name, i.size]);
-    let modif = 0;
-    for(const [fileName, size] of items){
-      if(fileName.includes('brick'))
-        continue
-
-      const docId = fileName.split('/')[0];
-
-      const doc = await this.documentationService.findById(docId, false)
-      if (doc && fileName.split('/').length == 3){
-        const entityFile = await this.fileDocumentationService.getEntityFileByFileName(fileName);
-        if (!entityFile){
-          const docFile = await this.documentationService.getDocFile(fileName);
-          const newDocFileEntity: HnFileDocumentation = new HnFileDocumentation();
-          let type: HnFileType;
-          switch (fileName.split('/')[1]){
-            case 'files':
-              type = HnFileType.FILE;
-              break;
-            case 'images':
-              type = HnFileType.IMAGE;
-              break;
-            case 'views':
-              type = HnFileType.RESOURCE_VIEW;
-              break;
-          }
-          const name = (docFile != null && docFile.humanName != null) ? docFile.humanName : type.toString() + '.' + fileName.split('.')[1];
-          newDocFileEntity.init(doc, fileName, type, name, size);
-
-          await this.datasource.transaction(async entityManager => {
-            const savedDocFileEntity = await this.fileDocumentationService.saveFileEntity(docId, newDocFileEntity, entityManager);
-            await this.documentationService.updateDocImageFileName(doc, savedDocFileEntity, entityManager);
-            modif++;
-          });
-        }
-      }
-    }
-    return modif;
-  }
 }
