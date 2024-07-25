@@ -35,14 +35,14 @@ export class CnReportsController {
   }
 
   /**
-   * Return an image of the report
+   * Return a file (file or image) of the report
    * Use filename(*) to catch all the filename (including slashes)
    */
-  @Get(':id/image/:filename(*)')
+  @Get(':id/file/:filename(*)')
   public async getImage(@Param('id', new ParseUUIDPipe()) id: string,
                         @Param('filename') filename: string,
                         @Res() response: Response): Promise<any> {
-    const file = await this.projectAggregator.getReportImage(id, filename);
+    const file = await this.projectAggregator.getReportFile(id, filename);
     BlResponseHelper.setFileResponseAndCache(response, file);
   }
 

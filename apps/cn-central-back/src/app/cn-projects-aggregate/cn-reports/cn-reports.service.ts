@@ -80,7 +80,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   }
 
 
-  async getImage(filename: string, project: CnProject, reportId: string): Promise<BlFileResponse> {
+  async getFile(filename: string, project: CnProject, reportId: string): Promise<BlFileResponse> {
     return await this.projectDocumentService.getDocumentContentByTypeAndName(project,
       CnProjectDocumentType.REPORT_CONTENT, filename, reportId);
   }
@@ -165,8 +165,9 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     report.document = reportDocument;
     report = await this.updatePartial(report.id, { document: reportDocument });
 
-    // manage the images and views of the report
-    await this.uploadReportImages(files, report.id, reportDocument, project);
+    // manage the file and image of the report
+    await this.uploadReportFiles(files, report.id, reportDocument, project);
+    // manage views of the report
     await this.uploadReportViews(richText, createReportDto.resource_views, report.id, reportDocument, project);
 
     return report;
@@ -175,15 +176,15 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   /**
    * Methode to store the images of the report in the object storage
    */
-  private async uploadReportImages(files: BlFile[], reportId: string, parentDocument: CnProjectDocument,
+  private async uploadReportFiles(files: BlFile[], reportId: string, parentDocument: CnProjectDocument,
                                    project: CnProject): Promise<void> {
     if (!files) return;
     for (const file of files) {
-      await this.uploadReportImage(file, reportId, parentDocument, project);
+      await this.uploadReportFile(file, reportId, parentDocument, project);
     }
   }
 
-  private async uploadReportImage(file: BlFile, reportId: string, parentDocument: CnProjectDocument,
+  private async uploadReportFile(file: BlFile, reportId: string, parentDocument: CnProjectDocument,
                                   project: CnProject): Promise<void> {
     const filename = file.originalname;
     const document =

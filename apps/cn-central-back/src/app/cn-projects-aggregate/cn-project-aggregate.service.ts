@@ -570,11 +570,11 @@ export class CnProjectAggregateService {
     return this.reportService.getReportsByProject(projectId);
   }
 
-  async getReportImage(reportId: string, filename: string): Promise<BlFileResponse> {
+  async getReportFile(reportId: string, filename: string): Promise<BlFileResponse> {
     const report = await this.reportService.findByIdAndCheck(reportId);
 
     const project = await this.getAndCheckAuthorizationForFindOne(report.projectId);
-    return this.reportService.getImage(filename, project, reportId);
+    return this.reportService.getFile(filename, project, reportId);
   }
 
   async getReportView(reportId: string, viewId: string): Promise<BlFileResponse> {
