@@ -5,9 +5,9 @@ import { HnDocumentation, HnDocumentationSearchDTO } from './hn-documentation.en
 import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-version.entity';
 import {
   BlBadRequestException,
-  BlNewRichText,
+  BlNewRichText, BlRichTextBlockModification,
   BlRichTextContent,
-  BlRichTextModifications
+  BlRichTextModifications, BlRichTextModificationType
 } from '@monorepo/back-core-lib';
 import { HnNodeDTO } from '../folder/hn-folder.dto';
 import { HnFolder } from '../folder/hn-folder.entity';
@@ -17,6 +17,8 @@ import { HnFileDocumentation } from '../../file-aggregate/file-documentation/hn-
 import { HnFileType } from '../../file-aggregate/file-core/hn-abstract-file.entity';
 import { HnDocumentationFile } from '../documentation-file/hn-documentation-file.entity';
 import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
+import {HnStory} from '../../story/hn-story.entity';
+import {HnUserDto} from '../../users/hn-user.dto';
 
 @Injectable()
 export class HnDocumentationService {
@@ -147,47 +149,50 @@ export class HnDocumentationService {
     });
   }
 
-  public async updateDocImageFileName(doc: HnDocumentation, newDocFileEntity: HnFileDocumentation,
-                                      entityManager: EntityManager): Promise<void> {
-    let modified = false;
-    doc.content.blocks.forEach((block: any) => {
-      if (block.type == 'figure' && newDocFileEntity.type == HnFileType.IMAGE && block.data.filename == newDocFileEntity.fileName) {
-        block.data.filename = newDocFileEntity.name;
-        modified = true;
-      }
-      if (block.type == 'file' && newDocFileEntity.type == HnFileType.FILE && block.data.name == newDocFileEntity.fileName) {
-        block.data.name = newDocFileEntity.name;
-        modified = true;
-      }
-      if (block.type == 'resourceView' && newDocFileEntity.type == HnFileType.RESOURCE_VIEW
-        && block.data.filename == newDocFileEntity.fileName) {
-        block.data.filename = newDocFileEntity.name;
-        modified = true;
-      }
-    });
-    if (modified) {
-      await entityManager.save(doc, { listeners: false });
-    }
-
-    // File added to the doc but not in the content
-    if (newDocFileEntity.type == HnFileType.FILE) {
-      (doc.content as BlRichTextContent).blocks.push({
-        id: BlNewRichText.generateRandomBlockId(),
-        type: 'file' as any,
-        data: {
-          id: newDocFileEntity.id,
-          name: newDocFileEntity.name,
-          size: newDocFileEntity.size
-        }
-      });
-    }
-
-
-    await entityManager.save(doc, { listeners: false });
-
-  }
 
   async getDocFile(fileName: string): Promise<HnDocumentationFile> {
     return this.docFileService.getDocumentationFileByFileName(fileName);
+  }
+
+  ///////////////////////////////////////// HISTORY /////////////////////////////////////////
+
+  async getUndoContent(doc: HnDocumentation, modificationId: string): Promise<Record<string, any>> {
+    const richText = new BlNewRichText(doc.content as BlRichTextContent);
+    const modifications = BlRichTextModifications.fromJsonObjectString((doc.modifications));
+    let modificationsBlocks = modifications.getModificationsFromModificationId(modificationId);
+    if (modificationsBlocks?.length == 0){
+      throw new BlBadRequestException('No undo possible');
+    }
+    if (modificationsBlocks.length == 1 && modificationsBlocks[0].type != BlRichTextModificationType.DELETED
+      && modificationsBlocks[0].type != BlRichTextModificationType.MOVED){
+      return doc.content;
+    }
+    if (modificationsBlocks[0].type == BlRichTextModificationType.CREATED ||
+      modificationsBlocks[0].type == BlRichTextModificationType.UPDATED){
+      modificationsBlocks = modificationsBlocks.slice(1);
+    }
+    return richText.undoModifications(modificationsBlocks);
+  }
+
+  async rollbackContent(doc: HnDocumentation, modificationId: string): Promise<HnDocumentation>{
+    const newContent = await this.getUndoContent(doc, modificationId);
+
+    const modifications = BlRichTextModifications.fromJsonObjectString((doc.modifications));
+    const removeNumber = modifications.removeModificationsFromModificationId(modificationId);
+
+    if (removeNumber == 0){
+      return doc;
+    }
+
+    doc.content = newContent;
+    doc.modifications = JSON.stringify(modifications.toJsonObject());
+
+    return this.documentationsRepository.save(doc);
+
+  }
+
+  async getDocModifications(doc: HnDocumentation): Promise<BlRichTextBlockModification[]>{
+    if (!doc.modifications) return [];
+    return BlRichTextModifications.fromJsonObjectString(doc.modifications).getModifications();
   }
 }

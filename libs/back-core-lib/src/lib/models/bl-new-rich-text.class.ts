@@ -5,7 +5,7 @@ import {
   BlRichTextBlockModification,
   BlRichTextModifications,
   BlRichTextModificationType
-} from './bl-rich-text-modif.class';
+} from './bl-rich-text-block-modification.class';
 
 /**
  * Types taken from @editorjs/editorjs
@@ -137,14 +137,16 @@ export class BlNewRichText {
                                  userId: string,
                                  modifications: BlRichTextModifications = new BlRichTextModifications()): string {
     const differences: BlRichTextBlockModification[] = [];
+    if (this.richText == null || this.richText.blocks == null) {
+      return null;
+    }
     const oldBlocks = this.getBlocks();
     const oldBlockMap = new Map(oldBlocks.map(block => [block.id, block]));
     newContent.blocks.forEach((block, index) => {
       const oldBlock = oldBlockMap.get(block.id);
       const oldBlockIndex = oldBlocks.indexOf(oldBlock);
-      if (oldBlock == null) {
+      if (oldBlock == null) { // block is new
         const modif = new BlRichTextBlockModification(
-          newContent.version,
           block.id,
           block.type,
           BlRichTextModificationType.CREATED,
@@ -153,9 +155,8 @@ export class BlNewRichText {
         );
         modif.blockValue = block.data;
         differences.push(modif);
-      } else if (JSON.stringify(oldBlock) !== JSON.stringify(block)) {
+      } else if (JSON.stringify(oldBlock) !== JSON.stringify(block)) { // block is updated
         const modif = new BlRichTextBlockModification(
-          newContent.version,
           block.id,
           block.type,
           BlRichTextModificationType.UPDATED,
@@ -163,19 +164,20 @@ export class BlNewRichText {
           userId
         );
         modif.blockValue = block.data;
-        modif.differences = BlRichTextModifications.getValuesDifferences(JSON.stringify(oldBlock.data), JSON.stringify(block.data));
+        // get the differences between the old block data and the new block data,
+        // we stringify the data to compare them as string with the lib diff
+        modif.setDifferences(JSON.stringify(oldBlock.data));
         differences.push(modif);
         oldBlockMap.delete(block.id);
-      } else if (oldBlockIndex != index && oldBlockMap.has(block.id)) {
+      } else if (oldBlockIndex != index && oldBlockMap.has(block.id)) { // block is moved
         const modif = new BlRichTextBlockModification(
-          newContent.version,
           block.id,
           block.type,
           BlRichTextModificationType.MOVED,
           index,
           userId
         );
-        modif.oldIndex = oldBlockIndex;
+        modif.oldIndex = oldBlockIndex; // old index of the block
         modif.blockValue = block.data;
         differences.push(modif);
         oldBlockMap.delete(block.id);
@@ -184,9 +186,8 @@ export class BlNewRichText {
       }
     });
     oldBlocks.forEach((oldBlock, index) => {
-      if (oldBlockMap.has(oldBlock.id)) {
+      if (oldBlockMap.has(oldBlock.id)) { // block is deleted
         const modif = new BlRichTextBlockModification(
-          newContent.version,
           oldBlock.id,
           oldBlock.type,
           BlRichTextModificationType.DELETED,
@@ -205,8 +206,7 @@ export class BlNewRichText {
   public undoModifications(modificationsList: BlRichTextBlockModification[]): BlRichTextContent {
     const content = this.getContent();
     const blocks = this.getBlocks();
-    const reversedModifications = modificationsList.slice().reverse();
-
+    const reversedModifications = modificationsList.slice().reverse(); // Reverse to undo in the right order
     reversedModifications.forEach(modification => {
       switch (modification.type) {
         case BlRichTextModificationType.MOVED:
@@ -215,17 +215,18 @@ export class BlNewRichText {
             data: modification.blockValue,
             type: modification.blockType as any
           };
+          // remove the block from the old index and add it to the new index
           blocks.splice(modification.index, 1);
           blocks.splice(modification.oldIndex, 0, movedBlock);
           break;
         case BlRichTextModificationType.CREATED:
+          // remove the block from the index
           blocks.splice(modification.index, 1);
           break;
         case BlRichTextModificationType.UPDATED:
-          const diff = BlRichTextModifications.undoDifferences(
-            JSON.stringify(blocks[modification.index].data), modification.differences).replace(/"/g, "\"");
-          // replace \ by \\ in diff
-          // diff = diff.replace(/\\/g, '\\\\');
+          // undo the differences in the block data and add anti-slashes to the double quotes
+          const diff = modification.undoDifferences(JSON.stringify(blocks[modification.index].data))
+            .replace(/"/g, "\"");
           if (diff?.length > 0) {
             blocks[modification.index].data = JSON.parse(diff);
           }
@@ -236,6 +237,7 @@ export class BlNewRichText {
             data: modification.blockValue,
             type: modification.blockType as any
           }
+          // add the block to the index
           blocks.splice(modification.index, 0, block);
           break;
       }
@@ -269,8 +271,8 @@ export class BlNewRichText {
           blocks.splice(modification.index, 0, block);
           break;
         case BlRichTextModificationType.UPDATED:
-          const diff = BlRichTextModifications.redoDifferences(
-            JSON.stringify(blocks[modification.index].data), modification.differences).replace(/"/g, "\"");
+          const diff = modification.redoDifferences(JSON.stringify(blocks[modification.index].data))
+            .replace(/"/g, "\"");
           if (diff?.length > 0) {
             blocks[modification.index].data = JSON.parse(diff);
           }

@@ -18,7 +18,6 @@ export class HnFileStoryService extends HnAbstractFileService<HnStory> {
   }
 
   async getStoryFiles(story: HnStory): Promise<HnAbstractFileEntityDTO[]> {
-    console.log('STORY ID ' + story.id)
     return this.fileStoryRepository.findBy({entity: {id: story.id}})
       .then(files => files.map(file => new HnAbstractFileEntityDTO(file)));
   }

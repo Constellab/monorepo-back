@@ -1,6 +1,5 @@
 import {ClStringHelper} from '@monorepo/core-lib';
 import {diffChars} from 'diff';
-import {BlUserDto} from './bl-user/bl-user.class';
 
 export enum BlRichTextModificationType {
   CREATED = "CREATED",
@@ -16,6 +15,8 @@ export interface BlRichTextModificationDifference {
   removed: boolean;
   value: string;
 }
+
+const MAX_TIME_DIFFERENCE = 3 * 60 * 1000;
 
 export class BlRichTextBlockModification {
 
@@ -39,14 +40,11 @@ export class BlRichTextBlockModification {
 
   userId: string;
 
-  user?: BlUserDto;
-
   oldIndex?: number;
 
-  constructor(version: string, blockId: string, blockType: string, type: BlRichTextModificationType, index: number,
+  constructor(blockId: string, blockType: string, type: BlRichTextModificationType, index: number,
               userId: string, id?: string, time?: number) {
     this.id = id ?? ClStringHelper.generateUUID();
-    this.version = version;
     this.time = time ?? new Date().getTime();
     this.blockId = blockId;
     this.blockType = blockType;
@@ -54,55 +52,12 @@ export class BlRichTextBlockModification {
     this.index = index;
     this.userId = userId;
   }
-}
 
-export class BlRichTextModifications {
-  private version: string = '1.0.0';
-
-  private modifications: BlRichTextBlockModification[] = [];
-
-
-
-  // Create a BlRichTextModifications object from a json string
-  public static fromJsonObjectString(jsonString: string): BlRichTextModifications {
-    const modifications = new BlRichTextModifications();
-    const json = JSON.parse(jsonString);
-    if (!json) {
-      return modifications;
-    }
-    modifications.setVersion(json.version);
-    modifications.setModifications(json.modifications.map((modification: Record<string, any>) => {
-      const modif = new BlRichTextBlockModification(
-        modification.version,
-        modification.blockId,
-        modification.blockType,
-        modification.type,
-        modification.index,
-        modification.userId,
-        modification.id,
-        modification.time
-      );
-      if (modif.type == BlRichTextModificationType.UPDATED) {
-        modif.differences = modification.differences;
-      } else {
-        modif.blockValue = modification.blockValue;
-      }
-      if (modification.user) {
-        modif.user = modification.user;
-      }
-      if (modification.oldIndex) {
-        modif.oldIndex = modification.oldIndex;
-      }
-      return modif;
-    }));
-    return modifications;
-  }
-
-
-  // Get the differences between two strings with the lib diff
-  public static getValuesDifferences(oldValue: string, newValue: string): BlRichTextModificationDifference[] {
+  // Set the differences between the old block data value and the new block data value, using the lib diff
+  public setDifferences(oldValue: string): void {
     const res: BlRichTextModificationDifference[] = []
-    const changes = diffChars(oldValue, newValue);
+    const newValue = this.blockValue;
+    const changes = diffChars(oldValue, JSON.stringify(newValue));
     let i = 0;
     for (const change of changes) {
       if (change.added || change.removed) {
@@ -118,14 +73,16 @@ export class BlRichTextModifications {
         i += change.count;
       }
     }
-    return res;
+    this.differences = res;
   }
 
-
   // Undo the differences found with the lib diff
-  public static undoDifferences(value: string, differences: BlRichTextModificationDifference[]): string {
+  public undoDifferences(value: string): string {
+    if (!this.differences || this.differences.length === 0) {
+      return value;
+    }
     let res = value;
-    const reversedDifferences = differences.slice().reverse();
+    const reversedDifferences = this.differences.slice().reverse();
     if (reversedDifferences.length === 1 && reversedDifferences[0].value == '/') {
       return res;
     }
@@ -144,9 +101,12 @@ export class BlRichTextModifications {
   }
 
   // Redo the differences found with the lib diff
-  public static redoDifferences(value: string, differences: BlRichTextModificationDifference[]): string {
+  public redoDifferences(value: string): string {
+    if (!this.differences || this.differences.length === 0) {
+      return value;
+    }
     let res = value;
-    for (const diff of differences) {
+    for (const diff of this.differences) {
       if (diff.added) {
         const before = res.slice(0, diff.index);
         const after = res.slice(diff.index);
@@ -159,8 +119,45 @@ export class BlRichTextModifications {
     }
     return res;
   }
+}
 
-  public getVersion(): string {
+export class BlRichTextModifications {
+  private version: number = 1;
+
+  private modifications: BlRichTextBlockModification[] = [];
+
+  // Create a BlRichTextModifications object from a json string
+  public static fromJsonObjectString(jsonString: string): BlRichTextModifications {
+    const modifications = new BlRichTextModifications();
+    const json = JSON.parse(jsonString);
+    if (!json) {
+      return modifications;
+    }
+    modifications.setVersion(json.version);
+    modifications.setModifications(json.modifications.map((modification: Record<string, any>) => {
+      const modif = new BlRichTextBlockModification(
+        modification.blockId,
+        modification.blockType,
+        modification.type,
+        modification.index,
+        modification.userId,
+        modification.id,
+        modification.time
+      );
+      if (modif.type == BlRichTextModificationType.UPDATED) {
+        modif.differences = modification.differences;
+      } else {
+        modif.blockValue = modification.blockValue;
+      }
+      if (modification.oldIndex) {
+        modif.oldIndex = modification.oldIndex;
+      }
+      return modif;
+    }));
+    return modifications;
+  }
+
+  public getVersion(): number {
     return this.version;
   }
 
@@ -168,7 +165,7 @@ export class BlRichTextModifications {
     return this.modifications;
   }
 
-  public setVersion(value: string): void {
+  public setVersion(value: number): void {
     this.version = value;
   }
 
@@ -248,9 +245,10 @@ export class BlRichTextModifications {
       }
 
       // if the last modification is a move and the current one is a move on the same block, we keep the fusion of the two moves
-      if (modification.blockId == lastModification?.blockId && lastModification.time + 3 * 60 * 1000 > modification.time) {
+      if (modification.blockId == lastModification?.blockId && lastModification.time + MAX_TIME_DIFFERENCE > modification.time) {
         if (modification.type == BlRichTextModificationType.UPDATED && modification.userId === lastModification.userId) {
-          // if the last modification is a creation and the current one is an update on the same block, otherwise we keep the fusion as a update
+          // if the last modification is a creation and the current one is an update on the same block,
+          // otherwise we keep the fusion as a update
           // we keep the fusion of the two modifications has a creation
           if (lastModification.type === BlRichTextModificationType.CREATED) {
             modification.type = BlRichTextModificationType.CREATED;
@@ -284,7 +282,6 @@ export class BlRichTextModifications {
     return {
       version: this.version,
       modifications: this.modifications.map(modification => ({
-        version: modification.version,
         time: modification.time,
         blockId: modification.blockId,
         blockType: modification.blockType,

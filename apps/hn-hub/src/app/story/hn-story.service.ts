@@ -9,12 +9,12 @@ import {
   BlBadRequestException,
   BlFile,
   BlNewRichText,
-  BlRichTextBlockModification,
+  BlRichTextBlockModification, BlRichTextBlockModificationDto,
   BlRichTextContent,
   BlRichTextModifications,
   BlRichTextModificationType,
   BlRichTextUploadedImageResponse,
-  BlUnauthorizedException
+  BlUnauthorizedException, BlUserDto
 } from '@monorepo/back-core-lib';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnCreateStoryDto, HnStoryDto, HnStoryFilter} from './hn-story.dto';
@@ -75,7 +75,7 @@ export class HnStoryService {
       where: {
         id: id
       },
-      relations: ['topics']
+      relations: ['topics', 'storyAuthors']
     });
     if (story == null && strict) {
       throw new BlBadRequestException('Story not found');
@@ -491,116 +491,8 @@ export class HnStoryService {
     return this.storyFileService.getStoryFiles(story);
   }
 
-  //////////////////////////////////// ADMIN //////////////////////////////////////////
-  async migrateStoryBucketItemsNames(): Promise<any> {
-    const items: any[] = (await this.storyFileService.getAllBucketItemsName()).map(i => [i.name, i.size]);
-    let modif = 0;
-    console.log('MMM')
-    this.logger.log('Migrating ' + items.length + ' files');
-    for (const [fileName, size] of items) {
-      const storyId = fileName.split('/')[0];
-      const story: HnStory = await this.getStory(storyId, false);
-      try{
-        if (story && fileName.split('/').length == 3) {
-          this.logger.log('Migrating file ' + fileName + ' for story ' + storyId)
-          const entityFile = await this.storyFileService.getEntityFileByFileName(fileName);
-          if (!entityFile) {
-            const storyFile = await this.oldStoryFileService.getStoryFileByFileName(fileName);
-            const newStoryFileEntity: HnFileStory = new HnFileStory();
-            let type = HnFileType.FILE;
-            switch (fileName.split('/')[1]) {
-              case 'files':
-                type = HnFileType.FILE;
-                break;
-              case 'images':
-                type = HnFileType.IMAGE;
-                break;
-              case 'views':
-                type = HnFileType.RESOURCE_VIEW;
-                break;
-            }
-            const name = (storyFile != null && storyFile.humanName != null) ?
-              storyFile.humanName : type.toString() + '.' + fileName.split('.')[1];
-            newStoryFileEntity.init(story, fileName, type, name, size);
-            this.logger.log('Entity initialized ' + newStoryFileEntity.fileName
-              + ', the story file entity id is ' + newStoryFileEntity.entity?.id)
 
-            await this.dataSource.transaction(async entityManager => {
-
-              const savedStoryFileEntity = await this.storyFileService.saveFileEntity(storyId, newStoryFileEntity, entityManager);
-
-
-              this.logger.log('Migration in progress, StoryFileEntity saved : ' + savedStoryFileEntity.id + ' '
-                + savedStoryFileEntity.fileName + ' ' + savedStoryFileEntity.name)
-
-              await this.updateStoryFilesName(story, savedStoryFileEntity, entityManager);
-
-              this.logger.log('Migration in progress, updateStoryFilesName done')
-              modif++;
-            });
-            this.logger.log('Migration done for file ' + fileName + ' for story ' + storyId)
-          }
-        }
-      } catch (e){
-        this.logger.log('Error during migration for file ' + fileName + ' for story ' + storyId + ' : ' + e)
-      }
-
-    }
-    this.logger.log('Migration done, ' + modif + ' files modified');
-    return modif
-  }
-
-  private async updateStoryFilesName(story: HnStory, newStoryFileEntity: HnFileStory, entityManager: EntityManager): Promise<void> {
-    this.logger.log('Migration in progress, start updateStoryFilesName for' + story.id + ' and ' + newStoryFileEntity.id);
-
-    if (newStoryFileEntity.type == HnFileType.IMAGE && newStoryFileEntity.fileName == story.mainPicture) {
-      story.mainPicture = newStoryFileEntity.name;
-    }
-
-    story.content.blocks.forEach((block: any) => {
-      if (block.type == 'figure' && newStoryFileEntity.type == HnFileType.IMAGE && block.data.filename == newStoryFileEntity.fileName) {
-        block.data.filename = newStoryFileEntity.name;
-      }
-      if (block.type == 'file' && newStoryFileEntity.type == HnFileType.FILE && block.data.name == newStoryFileEntity.fileName) {
-        block.data.name = newStoryFileEntity.name;
-      }
-      if (block.type == 'resourceView' && newStoryFileEntity.type == HnFileType.RESOURCE_VIEW
-        && block.data.filename == newStoryFileEntity.fileName) {
-        block.data.filename = newStoryFileEntity.name;
-      }
-    });
-
-    story.contentEdition.blocks.forEach((block: any) => {
-      if (block.type == 'figure' && newStoryFileEntity.type == HnFileType.IMAGE && block.data.filename == newStoryFileEntity.fileName) {
-        block.data.filename = newStoryFileEntity.name;
-      }
-      if (block.type == 'file' && newStoryFileEntity.type == HnFileType.FILE && block.data.name == newStoryFileEntity.fileName) {
-        block.data.name = newStoryFileEntity.name;
-      }
-      if (block.type == 'resourceView' && newStoryFileEntity.type == HnFileType.RESOURCE_VIEW
-        && block.data.filename == newStoryFileEntity.fileName) {
-        block.data.filename = newStoryFileEntity.name;
-      }
-    });
-
-    if (newStoryFileEntity.type == HnFileType.FILE &&
-      story.contentEdition.blocks.filter((b: any) => b.type == 'file' && b.data.name == newStoryFileEntity.name).length == 0){
-      const block: any = {
-        id: BlNewRichText.generateRandomBlockId(),
-        type: 'file' as any,
-        data: {
-          id: newStoryFileEntity.id,
-          name: newStoryFileEntity.name,
-          size: newStoryFileEntity.size,
-        }
-      } as any;
-      (story.contentEdition as BlRichTextContent).blocks.push(block);
-      (story.content as BlRichTextContent).blocks.push(block);
-    }
-    this.logger.log('Migration in progress, save story changes');
-    await entityManager.save(story, {listeners: false});
-    this.logger.log('Migration in progress, end updateStoryFilesName for' + story.id + ' and ' + newStoryFileEntity.id);
-  }
+  /////////////////////////////////// HISTORY //////////////////////////////////////////
 
   async getUndoContent(storyId: string, modificationId: string): Promise<Record<string, any>> {
     const story: HnStory = await this.getStory(storyId);
@@ -640,22 +532,19 @@ export class HnStoryService {
 
   }
 
-  async testRedo(storyId: string, modificationId: string, content: BlRichTextContent): Promise<Record<string, any>> {
-    const story: HnStory = await this.getStory(storyId);
-    const richText = new BlNewRichText(content);
-    const modifications = BlRichTextModifications.fromJsonObjectString((story.modifications));
-    const modificationsBlocks = modifications.getModificationsFromModificationId(modificationId);
-    return richText.redoModifications(modificationsBlocks);
-  }
-
-  async getStoryModifications(storyId: string): Promise<BlRichTextBlockModification[]>{
+  async getStoryModifications(storyId: string): Promise<BlRichTextBlockModificationDto[]>{
     const story: HnStory = await this.getStory(storyId);
     if (!story.modifications) return [];
-    const res: BlRichTextBlockModification[] = [];
+    const res: BlRichTextBlockModificationDto[] = [];
     const modifications = BlRichTextModifications.fromJsonObjectString(story.modifications);
+    const userMap = new Map<string, BlUserDto>();
     for (const modification of modifications.getModifications()){
-      modification.user = new HnUserDto(await this.userService.findOne(modification.userId));
-      res.push(modification);
+      if(!userMap.has(modification.userId)){
+        res.push(new BlRichTextBlockModificationDto(modification,
+          new HnUserDto(await this.userService.findOne(modification.userId))));
+      } else {
+        res.push(new BlRichTextBlockModificationDto(modification, userMap.get(modification.userId)));
+      }
     }
     return res;
   }
