@@ -13,7 +13,7 @@ import {
   BlRichTextContent
 } from '@monorepo/back-core-lib';
 import { CnCreateReportWithConfigDto, CnSaveReportDto, CnSaveReportResultDTO } from './cn-report.dto';
-import { CnReportContent, CnReportViewConfig } from './cn-report-content.class';
+import { CnReportContent } from './cn-report-content.class';
 import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnProjectDocumentService } from '../cn-project-documents/cn-project-document.service';
@@ -207,14 +207,15 @@ export class CnReportsService extends BlAbstractService<CnReport> {
                                   project: CnProject): Promise<void> {
     if (!resourceViews) return;
 
-    for (const specialOp of richText.getViewsBlocks()) {
-      const viewConfig: CnReportViewConfig = specialOp.data;
+    const views = [...richText.getResourceViewsBlocks(), ...richText.getFileViewsBlocks()];
+    for (const specialOp of views) {
+      const viewBlockData = specialOp.data;
 
-      const viewData = resourceViews[viewConfig.id];
+      const viewData = resourceViews[viewBlockData.id];
 
       if (!viewData) continue;
 
-      const docName = `${viewConfig.id}.json`;
+      const docName = `${viewBlockData.id}.json`;
       await this.projectDocumentService.createOrUpdateJSONDocument(project, CnProjectDocumentType.REPORT_CONTENT,
         docName, reportId, viewData, parentDocument);
     }

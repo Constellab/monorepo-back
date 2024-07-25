@@ -1,25 +1,30 @@
-import {BlBlockType, BlNewRichText, BlRichTextBlock} from '@monorepo/back-core-lib';
+import { BlBlockType, BlNewRichText, BlRichTextBlock } from '@monorepo/back-core-lib';
 
-export interface CnReportViewConfig {
+export interface CnReportViewBlockData {
   id: string;
-  resource_id: string;
+  view_config_id?: string;
+  resource_id?: string;
+  experiment_id?: string;
   view_method_name: string;
   view_config: any;
-  transformers: any[];
+  title: string;
+  caption: string;
+}
+
+export interface CnReportFileViewBlockData {
+  id: string;
   title: string;
   caption: string;
 }
 
 
 export class CnReportContent extends BlNewRichText {
-  public static readonly viewOps = 'resource_view';
 
-
-  public getViewsBlocks(): BlRichTextBlock<CnReportViewConfig>[] {
+  public getResourceViewsBlocks(): BlRichTextBlock<CnReportViewBlockData>[] {
     return this.getBlocksByType(BlBlockType.RESOURCE_VIEW);
   }
 
-  public getViewsBlock(viewId: string): CnReportViewConfig | undefined {
-    return this.getViewsBlocks().find(op => op.data.id === viewId)?.data ?? null;
+  public getFileViewsBlocks(): BlRichTextBlock<CnReportFileViewBlockData>[] {
+    return this.getBlocksByType(BlBlockType.FILE_VIEW);
   }
 }

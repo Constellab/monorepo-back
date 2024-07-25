@@ -1,6 +1,6 @@
-import {ClHelpService} from '@monorepo/core-lib';
-import {JSDOM} from 'jsdom';
-import {Logger} from '@nestjs/common';
+import { ClHelpService } from '@monorepo/core-lib';
+import { JSDOM } from 'jsdom';
+import { Logger } from '@nestjs/common';
 import {
   BlRichTextBlockModification,
   BlRichTextModifications,
@@ -46,7 +46,8 @@ export interface BlRichTextContent {
 export enum BlBlockType {
   PARAGRAPH = 'paragraph',
   FIGURE = 'figure',
-  RESOURCE_VIEW = 'resourceView'
+  RESOURCE_VIEW = 'resourceView',
+  FILE_VIEW = 'fileView'
 }
 
 export enum BlInlineToolType {

@@ -48,13 +48,12 @@ export class CnReportsController {
 
   /**
    * Return a view of the report
-   * Use filename(*) to catch all the filename (including slashes)
    */
-  @Get(':id/view/:filename(*)')
+  @Get(':id/view/:viewId')
   public async getView(@Param('id', new ParseUUIDPipe()) id: string,
-                       @Param('filename') filename: string,
+                       @Param('viewId') viewId: string,
                        @Res() response: Response): Promise<any> {
-    const file = await this.projectAggregator.getReportView(id, filename);
+    const file = await this.projectAggregator.getReportView(id, viewId);
     BlResponseHelper.setFileResponseAndCache(response, file);
   }
 
