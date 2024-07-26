@@ -70,7 +70,7 @@ export class CnLabInstanceStatusService extends BlAbstractPaginatedService<CnLab
                                          request: CnLabInstanceStatusRunRequest): Promise<CnLabInstanceStatusRunResponse> {
     const statusHistory = await this.repo.find({
       where: {
-        entity: {id: labInstanceId},
+        entity: { id: labInstanceId }
       },
       order: {
         createdAt: 'ASC' as any
@@ -94,15 +94,15 @@ export class CnLabInstanceStatusService extends BlAbstractPaginatedService<CnLab
         endDate = now;
         break;
       case 'LAST_WEEK':
-        startDate = ClDateHelper.getDate().minus({days: 7}).endOf('day');
+        startDate = ClDateHelper.getDate().minus({ days: 7 }).endOf('day');
         endDate = now;
         break;
       case 'LAST_MONTH':
-        startDate = ClDateHelper.getDate().minus({months: 1}).endOf('day');
+        startDate = ClDateHelper.getDate().minus({ months: 1 }).endOf('day');
         endDate = now;
         break;
       case 'LAST_YEAR':
-        startDate = ClDateHelper.getDate().minus({years: 1}).endOf('day');
+        startDate = ClDateHelper.getDate().minus({ years: 1 }).endOf('day');
         endDate = now;
         break;
       case 'ALL':
@@ -118,7 +118,7 @@ export class CnLabInstanceStatusService extends BlAbstractPaginatedService<CnLab
     if (endDate > now) {
       endDate = now;
     }
-    return {startDate, endDate};
+    return { startDate, endDate };
   }
 
   /**
@@ -129,7 +129,7 @@ export class CnLabInstanceStatusService extends BlAbstractPaginatedService<CnLab
    */
   private getRunningStatus(statusList: CnLabInstanceStatusHistory[],
                            request: CnLabInstanceStatusRunRequest): CnLabInstanceStatusRunResponse {
-    const {startDate, endDate} = this.getLabRunPeriod(request);
+    const { startDate, endDate } = this.getLabRunPeriod(request);
 
     let cumulativeDuration = 0;
     const runningStatuses: CnLabInstanceRunningStatus[] = [];
@@ -207,19 +207,17 @@ export class CnLabInstanceStatusService extends BlAbstractPaginatedService<CnLab
    * @param searchParams
    * @return the list of status history
    */
-  public getStatusHistoryPaginated(
-    page: number,
-    size: number,
-    id: string,
-    searchParams: BlSearchParams): Promise<ClPageI<CnLabInstanceStatusHistory>> {
+  public getStatusHistoryPaginated(page: number,
+                                   size: number,
+                                   id: string,
+                                   searchParams: BlSearchParams): Promise<ClPageI<CnLabInstanceStatusHistory>> {
 
     const searchBuilder = new BlSearchBuilder<CnLabInstanceStatusHistory>({
       createdAt: 'DESC' as any
     });
     searchBuilder.addSearchParams(searchParams);
-    searchBuilder.mergeWhereOptions({entity: {id}});
+    searchBuilder.mergeWhereOptions({ entity: { id } });
 
-
-    return this.findPaginated(page, size, searchBuilder.build() as any) as any;
+    return this.findPaginated(page, size, searchBuilder.build());
   }
 }

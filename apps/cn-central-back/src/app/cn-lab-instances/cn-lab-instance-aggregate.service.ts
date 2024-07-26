@@ -405,13 +405,6 @@ export class CnLabInstanceAggregateService {
 
   }
 
-  async getStatusHistory(id: string): Promise<CnLabInstanceStatusHistory[]> {
-    // check that the user can get experiment
-    await this.getAndCheckAuthorizationToFindById(id);
-
-    return await this.labInstancesService.getStatusHistory(id) as CnLabInstanceStatusHistory[];
-  }
-
   public async getLabStatusHistory(labInstanceId: string, page: number, size: number,
                                    searchParams: BlSearchParams): Promise<ClPageI<CnLabInstanceStatusHistory>> {
     await this.getAndCheckAuthorizationToFindById(labInstanceId);

@@ -1,14 +1,14 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {CnActivity, CnActivityEntityType, CnActivityType} from './cn-activity.entity';
-import {Repository} from 'typeorm';
-import {EventEmitter2} from '@nestjs/event-emitter';
-import {BlAbstractPaginatedService, BlEntityWithId} from '@monorepo/back-core-lib';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnSpace} from '../cn-spaces/cn-space.entity';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {ClDateHelper, ClPage} from '@monorepo/core-lib';
-import {FindOneOptions} from 'typeorm/find-options/FindOneOptions';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CnActivity, CnActivityEntityType, CnActivityType } from './cn-activity.entity';
+import { Repository } from 'typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { BlAbstractPaginatedService, BlEntityWithId } from '@monorepo/back-core-lib';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnSpace } from '../cn-spaces/cn-space.entity';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { ClDateHelper, ClPage } from '@monorepo/core-lib';
+import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 
 
 export interface CnActivityCreateDTO {
@@ -68,7 +68,6 @@ export class CnActivityService extends BlAbstractPaginatedService<CnActivity> {
       user: true,
       space: true,
     };
-    findOptions.order = {createdAt: 'DESC' as any};
     return this.findPaginated(page, size, findOptions);
   }
 

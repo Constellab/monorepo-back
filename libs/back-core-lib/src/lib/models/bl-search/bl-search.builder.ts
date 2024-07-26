@@ -1,9 +1,10 @@
-import {BlSearchFilterCriteria, BlSearchOperatorStr, BlSearchParams, BlSearchSortCriteria} from './bl-search.class';
-import {Between, In, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not} from 'typeorm';
-import {FindOptionsOrder, FindOptionsOrderValue} from 'typeorm/find-options/FindOptionsOrder';
-import {FindOneOptions} from 'typeorm/find-options/FindOneOptions';
-import {FindOptionsWhere} from 'typeorm/find-options/FindOptionsWhere';
-import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
+import { BlSearchFilterCriteria, BlSearchOperatorStr, BlSearchParams, BlSearchSortCriteria } from './bl-search.class';
+import { Between, In, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not } from 'typeorm';
+import { FindOptionsOrder, FindOptionsOrderValue } from 'typeorm/find-options/FindOptionsOrder';
+import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
+import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
+import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+import { ClHelpService } from '@monorepo/core-lib';
 
 export class BlSearchBuilder<T> {
 
@@ -58,7 +59,7 @@ export class BlSearchBuilder<T> {
   public build(): FindOneOptions<T> {
     return {
       where: this.whereOptions,
-      order: this.orderOptions ?? this.defaultOrder,
+      order: !ClHelpService.isNullOrEmpty(this.orderOptions) ? this.orderOptions : this.defaultOrder,
       relations: this.relations
     };
   }

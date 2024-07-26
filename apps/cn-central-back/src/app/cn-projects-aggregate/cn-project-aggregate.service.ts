@@ -962,6 +962,8 @@ export class CnProjectAggregateService {
     const project = await this.getAndCheckAuthorizationForFindOne(projectId);
 
     const searchBuilder = new BlSearchBuilder<CnActivity>({ createdAt: 'DESC' as any });
+    console.log(searchBuilder.build());
+
 
     if (searchParam.hasFilter('includeSubProjects')) {
       const allProjects = await this.projectService.getProjectTreeAsList(project);

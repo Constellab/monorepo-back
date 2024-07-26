@@ -203,15 +203,7 @@ export class CnLabInstancesController {
   /**
    * return the history of the status
    */
-  @Get(':id/status/history')
-  getStatusHistory(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusHistory[]> {
-    return this.aggregateService.getStatusHistory(id);
-  }
-
-  /**
-   * return the history of the status
-   */
-  @Post(':id/status/history-datasource')
+  @Post(':id/status/history')
   public getStatusHistoryDatasource(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Query('page', ParseIntPipe) page: number,
