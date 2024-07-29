@@ -198,6 +198,7 @@ export class BlNewRichText {
         differences.push(modif);
       }
     });
+
     modifications.fusion(differences);
     return JSON.stringify(modifications.toJsonObject());
   }
@@ -225,10 +226,11 @@ export class BlNewRichText {
           break;
         case BlRichTextModificationType.UPDATED:
           // undo the differences in the block data and add anti-slashes to the double quotes
-          const diff = modification.undoDifferences(JSON.stringify(blocks[modification.index].data))
+          const b = blocks.find(b => b.id === modification.blockId);
+          const diff = modification.undoDifferences(JSON.stringify(b.data))
             .replace(/"/g, "\"");
           if (diff?.length > 0) {
-            blocks[modification.index].data = JSON.parse(diff);
+            blocks[blocks.indexOf(b)].data = JSON.parse(diff);
           }
           break;
         case BlRichTextModificationType.DELETED:
