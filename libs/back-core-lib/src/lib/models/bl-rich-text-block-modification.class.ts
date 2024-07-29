@@ -262,7 +262,9 @@ export class BlRichTextModifications {
         }
 
         if (modification.type == BlRichTextModificationType.DELETED) {
-          this.modifications.splice(this.modifications.length - 1, 1);
+          if(lastModification.type == BlRichTextModificationType.CREATED){
+            this.modifications.splice(this.modifications.length - 1, 1);
+          }
           if (lastModification.type == BlRichTextModificationType.CREATED ||
             (lastModification.blockType == 'paragraph' &&
               lastModification.blockValue?.text && lastModification.blockValue?.text == '/')) {
