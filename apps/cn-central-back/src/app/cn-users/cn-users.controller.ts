@@ -27,7 +27,6 @@ import {
 } from '@monorepo/back-core-lib';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
-import { IsAdmin } from '../../../../hn-hub/src/app/core/decorators/hn-is-admin.decorator';
 
 @Controller('users')
 export class CnUsersController {
@@ -117,7 +116,6 @@ export class CnUsersController {
     return this.usersService.smartSearchByName(name, page, size);
   }
 
-  @IsAdmin()
   @Put('send-all-to-queue')
   sendAllToQueue(): Promise<void> {
     return this.usersService.sendAllUsersToQueue();

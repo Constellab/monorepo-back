@@ -19,9 +19,10 @@
     "declaration": false,
     "downlevelIteration": true,
     "strictFunctionTypes": false,
-    "suppressImplicitAnyIndexErrors": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
+    "removeComments": true,
+    "allowSyntheticDefaultImports": true,
     "paths": {
       "@monorepo/back-core-lib": ["libs/back-core-lib/src/index.ts"],
       "@monorepo/core-lib": ["libs/core-lib/src/index.ts"],

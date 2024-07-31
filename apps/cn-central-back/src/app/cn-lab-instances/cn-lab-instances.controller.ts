@@ -569,7 +569,7 @@ export class CnLabInstancesController {
     return BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
   }
 
-  /////////////////////////// ADMIN ROUTE //////////////////////////////
+  /////////////////////////// ADMIN ROUTE //////////////////////////////²²²
   @Post('admin')
   async createAdmin(@Body(new BlParsePipe(CnLabInstanceCreateAdminDTO)) createLabInstance: CnLabInstanceCreateAdminDTO):
     Promise<CnLabInstanceWithSpaceDto> {

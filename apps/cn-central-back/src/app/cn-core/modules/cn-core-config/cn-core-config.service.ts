@@ -1,5 +1,5 @@
-import {Inject, Injectable, LogLevel} from '@nestjs/common';
-import {ConfigService} from '@nestjs/config';
+import { Inject, Injectable, LogLevel } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   CN_ENVIRONMENT_PROFILE_KEY,
   CN_ENVIRONMENT_PROFILE_PROD_VALUE,
@@ -16,8 +16,8 @@ import {
   BlTransportModuleConfig,
   blTransportQueueConstellabUser
 } from '@monorepo/back-core-lib';
-import {CN_CORE_MODULE_CONFIG, CnCoreConfigModuleConfig} from './cn-core-module-config.class';
-import {join} from 'path';
+import { CN_CORE_MODULE_CONFIG, CnCoreConfigModuleConfig } from './cn-core-module-config.class';
+import { join } from 'path';
 
 
 @Injectable()
@@ -90,6 +90,7 @@ export class CnCoreConfigService {
   }
 
   public getMailConfig(): BlMailConfig {
+    console.log(this.configService.get('MAIL_HOST'))
     return {
       host: this.configService.get('MAIL_HOST'),
       port: this.getConfigNumber('MAIL_PORT'),
@@ -163,7 +164,7 @@ export class CnCoreConfigService {
     } else if (stringBool === 'true') {
       return true;
     } else {
-      throw Error('Error while parsing config ' + configName + ' to boolean');
+      throw Error(`Error while parsing config ${configName} value '${stringBool}' to boolean`);
     }
   }
 

@@ -20,7 +20,7 @@ export class BlDbBackupService {
   private async exportDbAsJson(entityManager: EntityManager): Promise<any> {
     const tables = await this.getTablesNames(entityManager);
 
-    const result = {};
+    const result: any = {};
     for (const table of tables) {
       result[table] = await entityManager.query('SELECT * FROM `' + table + '`');
     }

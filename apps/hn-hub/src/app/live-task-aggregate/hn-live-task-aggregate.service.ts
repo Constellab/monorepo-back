@@ -1,7 +1,7 @@
-import {Injectable} from '@nestjs/common';
-import {HnLiveTaskService} from './live-task/hn-live-task.service';
-import {HnLiveTaskVersionService} from './live-task-version/hn-live-task-version.service';
-import {HnLiveTaskVersion, HnLiveTaskVersionState} from './live-task-version/hn-live-task-version.entity';
+import { Injectable } from '@nestjs/common';
+import { HnLiveTaskService } from './live-task/hn-live-task.service';
+import { HnLiveTaskVersionService } from './live-task-version/hn-live-task-version.service';
+import { HnLiveTaskVersion, HnLiveTaskVersionState } from './live-task-version/hn-live-task-version.entity';
 import {
   HaCreateLiveTaskVersionFromLabResponseDto,
   HnCreateLiveTaskDto,
@@ -10,41 +10,42 @@ import {
   HnLiveTaskVersionFileInput,
   HnLiveTaskVersionForLabDto
 } from './live-task/hn-live-task.dto';
-import {HnSpaceAggregateService} from '../space-aggregate/hn-space-aggregate.service';
-import {HnLiveTask} from './live-task/hn-live-task.entity';
-import {DataSource, EntityManager} from 'typeorm';
-import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
-import {ClPage, ClStringHelper} from '@monorepo/core-lib';
+import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
+import { HnLiveTask } from './live-task/hn-live-task.entity';
+import { DataSource, EntityManager } from 'typeorm';
+import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
+import { ClPage, ClStringHelper } from '@monorepo/core-lib';
 import {
   BlBadRequestException,
   BlCurrentUserHelper,
   BlFile,
-  BlNotFoundException, BlRichTextUploadedImageResponse,
+  BlNotFoundException,
+  BlRichTextUploadedImageResponse,
   BlUnauthorizedException
 } from '@monorepo/back-core-lib';
-import {HnBrickAggregateService} from '../brick-aggregate/hn-brick-aggregate.service';
-import {HnBrickVersion} from '../brick-aggregate/brick-version/hn-brick-version.entity';
+import { HnBrickAggregateService } from '../brick-aggregate/hn-brick-aggregate.service';
+import { HnBrickVersion } from '../brick-aggregate/brick-version/hn-brick-version.entity';
 import {
   HnLiveTaskVersionBrickDependenciesService
 } from './live-task-version-brick-dependencies/hn-live-task-version-brick-dependencies.service';
 import {
   HnLiveTaskVersionBrickDependencies
 } from './live-task-version-brick-dependencies/hn-live-task-version-brick-dependencies.entity';
-import {HnUser} from '../users/hn-user.entity';
-import {HnUserService} from '../users/hn-user.service';
-import {HnLabConstellabApiService} from '../core/service/hn-lab-constellab-api.service';
-import {HnLiveTaskCoAuthorService} from './live-task-co-author/hn-live-task-co-author.service';
-import {HnLiveTaskCoAuthorInvite} from './live-task-co-author-invite/hn-live-task-co-author-invite.entity';
-import {HnInviteStatus} from '../core/model/config/hn-invite-status.enum';
-import {HnLiveTaskCoAuthor} from './live-task-co-author/hn-live-task-co-author.entity';
-import {HnSiteMapEnumChangefreq, HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
-import {HnFrontService} from '../core/service/hn-front.service';
-import {HnBrickVersionDto} from '../brick-aggregate/brick-version/hn-brick-version.dto';
-import {HnLiveTaskVersionDto} from './live-task-version/hn-live-task-version.dto';
-import {HnUserDto} from '../users/hn-user.dto';
-import {HnSpaceDto} from '../space-aggregate/space/hn-space.dto';
-import {HnUploadFileResponseDto} from '../file-aggregate/file-core/hn-abstract-file.dto';
-import {HnFileLiveTaskService} from '../file-aggregate/file-live-task/hn-file-live-task.service';
+import { HnUser } from '../users/hn-user.entity';
+import { HnUserService } from '../users/hn-user.service';
+import { HnLabConstellabApiService } from '../core/service/hn-lab-constellab-api.service';
+import { HnLiveTaskCoAuthorService } from './live-task-co-author/hn-live-task-co-author.service';
+import { HnLiveTaskCoAuthorInvite } from './live-task-co-author-invite/hn-live-task-co-author-invite.entity';
+import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
+import { HnLiveTaskCoAuthor } from './live-task-co-author/hn-live-task-co-author.entity';
+import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
+import { HnFrontService } from '../core/service/hn-front.service';
+import { HnBrickVersionDto } from '../brick-aggregate/brick-version/hn-brick-version.dto';
+import { HnLiveTaskVersionDto } from './live-task-version/hn-live-task-version.dto';
+import { HnUserDto } from '../users/hn-user.dto';
+import { HnSpaceDto } from '../space-aggregate/space/hn-space.dto';
+import { HnUploadFileResponseDto } from '../file-aggregate/file-core/hn-abstract-file.dto';
+import { HnFileLiveTaskService } from '../file-aggregate/file-live-task/hn-file-live-task.service';
 
 @Injectable()
 export class HnLiveTaskAggregateService {
@@ -234,7 +235,7 @@ export class HnLiveTaskAggregateService {
    */
   private async checkIfLabUserAndReturnUser(req: Request): Promise<HnUser> {
     await this.labConstellabApiService.checkApiKeyAndUserIdInCentral(req);
-    const currentUser = await this.userService.findOne(req.headers['user']);
+    const currentUser = await this.userService.findOne(req.headers.get('user'));
     if (!currentUser)
       throw new BlUnauthorizedException();
     return currentUser;
@@ -303,7 +304,7 @@ export class HnLiveTaskAggregateService {
    */
   public async findLatestPublishedLiveTaskVersionForLabByLiveTaskId(id: string, req: Request): Promise<HnLiveTaskVersionForLabDto> {
     await this.labConstellabApiService.checkApiKeyAndUserIdInCentral(req);
-    const user: HnUser = await this.userService.findOne(req.headers['user']);
+    const user: HnUser = await this.userService.findOne(req.headers.get('user'));
     const liveTask: HnLiveTask = await this.liveTaskService.findOne(id);
     if (liveTask.space != null) {
       await this.spaceAggregateService.assertCheckSpaceUser(liveTask.space.id, user.id);

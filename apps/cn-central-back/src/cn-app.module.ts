@@ -43,29 +43,29 @@ import {
   BlTransportModule,
   BlTransportModuleConfig
 } from '@monorepo/back-core-lib';
-import {cnJwtConfig} from './app/cn-auth/cn-jwt.config';
-import {Request} from 'express';
-import {CnUsersService} from './app/cn-users/cn-users.service';
-import {CnDatabaseConfig} from './app/cn-core/model/config/cn-config.class';
-import {SnSmartDbModule} from './app/sn-smart-db/sn-smart-db.module';
-import {CnProjectsAggregateModule} from './app/cn-projects-aggregate/cn-project-aggregate.module';
-import {CnStatsModule} from './app/cn-stats/cn-stats.module';
-import {CnCountryModule} from './app/cn-country/cn-country.module';
-import {CnCityModule} from './app/cn-city/cn-city.module';
-import {AppService} from './app.service';
-import {CnSpaceMiddleware} from './app/cn-core/middleware/cn-space-middleware.service';
-import {CnNotificationModule} from './app/cn-notification/cn-notification.module';
-import {CnProjectCommentModule} from './app/cn-project-comment/cn-project-comment.module';
-import {CnCloudProvidersModule} from './app/cn-cloud-providers/cn-cloud-providers.module';
-import {I18nAbstractLoaderOptions} from 'nestjs-i18n/dist/loaders/i18n.abstract.loader';
-import {ScheduleModule} from '@nestjs/schedule';
-import {ThrottlerModule} from '@nestjs/throttler';
-import {EventEmitterModule} from '@nestjs/event-emitter';
-import {CnActivityModule} from './app/cn-activity/cn-activity.module';
-import {CnUserAccountModule} from './app/cn-users/cn-user-accounts/cn-user-account.module';
-import {CnServerAggregateModule} from './app/cn-servers-info/cn-server-aggregate.module';
-import {CnSettingsModule} from './app/cn-settings/cn-settings.module';
-import {CnCommunityModule} from './app/cn-community/cn-community.module';
+import { cnJwtConfig } from './app/cn-auth/cn-jwt.config';
+import { Request } from 'express';
+import { CnUsersService } from './app/cn-users/cn-users.service';
+import { CnDatabaseConfig } from './app/cn-core/model/config/cn-config.class';
+import { SnSmartDbModule } from './app/sn-smart-db/sn-smart-db.module';
+import { CnProjectsAggregateModule } from './app/cn-projects-aggregate/cn-project-aggregate.module';
+import { CnStatsModule } from './app/cn-stats/cn-stats.module';
+import { CnCountryModule } from './app/cn-country/cn-country.module';
+import { CnCityModule } from './app/cn-city/cn-city.module';
+import { AppService } from './app.service';
+import { CnSpaceMiddleware } from './app/cn-core/middleware/cn-space-middleware.service';
+import { CnNotificationModule } from './app/cn-notification/cn-notification.module';
+import { CnProjectCommentModule } from './app/cn-project-comment/cn-project-comment.module';
+import { CnCloudProvidersModule } from './app/cn-cloud-providers/cn-cloud-providers.module';
+import { I18nAbstractLoaderOptions } from 'nestjs-i18n/dist/loaders/i18n.abstract.loader';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { CnActivityModule } from './app/cn-activity/cn-activity.module';
+import { CnUserAccountModule } from './app/cn-users/cn-user-accounts/cn-user-account.module';
+import { CnServerAggregateModule } from './app/cn-servers-info/cn-server-aggregate.module';
+import { CnSettingsModule } from './app/cn-settings/cn-settings.module';
+import { CnCommunityModule } from './app/cn-community/cn-community.module';
 
 function typeOrmConfig(configService: CnCoreConfigService, persistenceEventService: BlPersistenceEventService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();
@@ -82,7 +82,7 @@ function typeOrmConfig(configService: CnCoreConfigService, persistenceEventServi
     maxQueryExecutionTime: 1000, // log query longer than 1s,
     logger: persistenceEventService,
     bigNumberStrings: false,
-    charset: 'utf8mb4',
+    charset: 'utf8mb4'
     // logging: true // use to enable query logging, the logger must be disabled
   };
 }
@@ -90,7 +90,7 @@ function typeOrmConfig(configService: CnCoreConfigService, persistenceEventServi
 function configureLogger(configService: CnCoreConfigService): WinstonModuleOptions {
   const logConfig: BlLoggerConfig = {
     logLevel: configService.getLogLevel(),
-    logFilePath: configService.isLocal() ? null : configService.getLogPath(),
+    logFilePath: configService.isLocal() ? null : configService.getLogPath()
   };
   return blConfigureLogger(logConfig);
 }
@@ -104,7 +104,7 @@ function configureJwtModule(configService: CnCoreConfigService, userService: CnU
         cnJwtConfig.authorizationCookie
       ),
     usersService: userService,
-    tokenDurationInSeconds: cnJwtConfig.tokenDurationInSeconds,
+    tokenDurationInSeconds: cnJwtConfig.tokenDurationInSeconds
   };
 }
 
@@ -113,7 +113,7 @@ function configureMailModule(configService: CnCoreConfigService): BlMailModuleCo
     mailConfig: configService.getMailConfig(),
     templateFolder: join(__dirname, 'assets/templates/'),
     defaultLayout: 'main-',
-    defaultData: {contactMail: configService.getCustomerSuccessMail()}
+    defaultData: { contactMail: configService.getCustomerSuccessMail() }
   };
 }
 
@@ -124,7 +124,7 @@ function configureTransportModule(configService: CnCoreConfigService): BlTranspo
 function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaModuleConfig {
   return {
     secretKey: configService.getCaptchaSecretKey(),
-    localEnv: configService.isLocal(),
+    localEnv: configService.isLocal()
   };
 }
 
@@ -133,15 +133,15 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     // let the config module on top of the imports
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: join(__dirname, 'environments', 'dev.env'),
+      envFilePath: join(__dirname, 'environments', 'dev.env')
     }),
 
-    CnCoreConfigModule.forRoot({distFolder: join(__dirname)}),
+    CnCoreConfigModule.forRoot({ distFolder: join(__dirname) }),
 
     TypeOrmModule.forRootAsync({
       useFactory: typeOrmConfig,
       inject: [CnCoreConfigService],
-      imports: [BlPersistenceEventModule],
+      imports: [BlPersistenceEventModule]
     }),
 
     I18nModule.forRoot({
@@ -149,13 +149,13 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
       loader: I18nJsonLoader,
       loaderOptions: {
         path: join(__dirname, 'assets/i18n/'),
-        watch: true, //    // enable live translation
+        watch: true //    // enable live translation
       } as I18nAbstractLoaderOptions,
       resolvers: [
         // retrieve the language from the cookie (define to avoid error but not really used)
-        {use: CookieResolver, options: 'lang'},
+        { use: CookieResolver, options: 'lang' },
         AcceptLanguageResolver
-      ],
+      ]
     }),
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
@@ -170,36 +170,38 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     WinstonModule.forRootAsync({
       imports: [CnCoreModule],
       useFactory: configureLogger,
-      inject: [CnCoreConfigService],
+      inject: [CnCoreConfigService]
     }),
 
     BlJwtModule.forRootAsync({
       imports: [CnCoreModule, CnUsersModule],
       useFactory: configureJwtModule,
-      inject: [CnCoreConfigService, CnUsersService],
+      inject: [CnCoreConfigService, CnUsersService]
     }),
 
     BlMailModule.forRootAsync({
       imports: [CnCoreModule],
       useFactory: configureMailModule,
-      inject: [CnCoreConfigService],
+      inject: [CnCoreConfigService]
     }),
 
 
     BlTransportModule.forRootAsync({
       useFactory: configureTransportModule,
       imports: [CnCoreModule],
-      inject: [CnCoreConfigService],
+      inject: [CnCoreConfigService]
     }),
     ThrottlerModule.forRoot({
-      ttl: 60,
-      limit: 10,
+      throttlers: [{
+        ttl: 60,
+        limit: 10
+      }]
     }),
 
     BlCaptchaModule.forRootAsync({
       useFactory: configureCaptchaModule,
       imports: [CnCoreModule],
-      inject: [CnCoreConfigService],
+      inject: [CnCoreConfigService]
     }),
 
     // Entities module
@@ -235,24 +237,24 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     // set global interceptor
     {
       provide: APP_INTERCEPTOR,
-      useClass: ClassSerializerInterceptor,
+      useClass: ClassSerializerInterceptor
     },
     // set global exception handler
     {
       provide: APP_FILTER,
-      useClass: CnCoreExceptionHandlerFilter,
+      useClass: CnCoreExceptionHandlerFilter
     },
 
     // set global guards
     {
       provide: APP_GUARD,
-      useClass: CnJwtAuthGuard,
+      useClass: CnJwtAuthGuard
     },
     {
       provide: APP_GUARD,
-      useClass: CnUserCategoryGuard,
+      useClass: CnUserCategoryGuard
     }
-  ],
+  ]
 })
 export class CnAppModule implements NestModule {
 
@@ -260,6 +262,6 @@ export class CnAppModule implements NestModule {
     consumer
       // register the RequestContextMiddleware to be able to access the request anywhere
       .apply(BlRequestContextMiddleware, CnSpaceMiddleware)
-      .forRoutes({path: '*', method: RequestMethod.ALL});
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }

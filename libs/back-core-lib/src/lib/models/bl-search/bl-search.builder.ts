@@ -68,7 +68,7 @@ export class BlSearchBuilder<T> {
     // the keys are separated by dot
     const keys = filter.key.split('.');
 
-    let currentCondition = this.whereOptions;
+    let currentCondition: any = this.whereOptions;
     // build the filter object
     for (let i = 0; i < keys.length; i++) {
       if (i === keys.length - 1) {
@@ -121,7 +121,7 @@ export class BlSearchBuilder<T> {
     // the keys are separated by dot
     const keys = sort.key.split('.');
 
-    let currentOrder = this.orderOptions;
+    let currentOrder: any = this.orderOptions;
     // build the filter object
     for (let i = 0; i < keys.length; i++) {
       if (i === keys.length - 1) {
