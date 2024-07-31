@@ -1,4 +1,4 @@
-import {HttpException} from '@nestjs/common';
+import { HttpException } from '@nestjs/common';
 
 export interface BlExceptionOptions {
   /**
@@ -18,10 +18,10 @@ export class BlHttpException extends HttpException {
    * Basic http exception that support translation
    * @param status
    * @param message the message will be translated if possible
-   * @param options
+   * @param customOptions
    */
   constructor(status: number, message: string,
-              public options: BlExceptionOptions = {}) {
+              public customOptions: BlExceptionOptions = {}) {
     super(message, status);
   }
 }

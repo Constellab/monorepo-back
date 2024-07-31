@@ -3,50 +3,28 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/cn-central-back/src",
   "projectType": "application",
+  "tags": [
+    "back"
+  ],
   "targets": {
-    "build": {
-      "executor": "@nrwl/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": [
+        "build"
+      ],
       "options": {
-        "target": "node",
-        "compiler": "tsc",
-        "outputPath": "dist/apps/cn-central-back",
-        "main": "apps/cn-central-back/src/main.ts",
-        "tsConfig": "apps/cn-central-back/tsconfig.app.json",
-        "assets": [
-          "apps/cn-central-back/src/assets",
-          "apps/cn-central-back/src/environments"
-        ]
+        "buildTarget": "cn-central-back:build",
+        "runBuildTargetDependencies": false
       },
       "configurations": {
+        "development": {
+          "buildTarget": "cn-central-back:build:development"
+        },
         "production": {
-          "optimization": true,
-          "extractLicenses": true,
-          "inspect": false
+          "buildTarget": "cn-central-back:build:production"
         }
       }
-    },
-    "serve": {
-      "executor": "@nrwl/js:node",
-      "options": {
-        "buildTarget": "cn-central-back:build"
-      }
-    },
-    "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["apps/cn-central-back/**/*.ts"]
-      }
-    },
-    "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/apps/cn-central-back"],
-      "options": {
-        "jestConfig": "apps/cn-central-back/jest.config.ts",
-        "passWithNoTests": true
-      }
     }
-  },
-  "tags": ["back"]
+  }
 }

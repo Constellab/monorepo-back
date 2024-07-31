@@ -3,53 +3,28 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/hn-hub/src",
   "projectType": "application",
-  "prefix": "hn-hub",
+  "tags": [
+    "back"
+  ],
   "targets": {
-    "build": {
-      "executor": "@nrwl/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": [
+        "build"
+      ],
       "options": {
-        "outputPath": "dist/apps/hn-hub",
-        "main": "apps/hn-hub/src/main.ts",
-        "tsConfig": "apps/hn-hub/tsconfig.app.json",
-        "assets": ["apps/hn-hub/src/assets", "apps/hn-hub/src/environments"],
-        "target": "node",
-        "compiler": "tsc"
+        "buildTarget": "hn-hub:build",
+        "runBuildTargetDependencies": false
       },
       "configurations": {
+        "development": {
+          "buildTarget": "hn-hub:build:development"
+        },
         "production": {
-          "optimization": true,
-          "extractLicenses": true,
-          "inspect": false,
-          "fileReplacements": [
-            {
-              "replace": "apps/hn-hub/src/environments/environment.ts",
-              "with": "apps/hn-hub/src/environments/environment.prod.ts"
-            }
-          ]
+          "buildTarget": "hn-hub:build:production"
         }
       }
-    },
-    "serve": {
-      "executor": "@nrwl/node:node",
-      "options": {
-        "buildTarget": "hn-hub:build"
-      }
-    },
-    "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "options": {
-        "lintFilePatterns": ["apps/hn-hub/**/*.ts"]
-      }
-    },
-    "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/apps/hn-hub"],
-      "options": {
-        "jestConfig": "apps/hn-hub/jest.config.ts",
-        "passWithNoTests": true
-      }
     }
-  },
-  "tags": ["back"]
+  }
 }

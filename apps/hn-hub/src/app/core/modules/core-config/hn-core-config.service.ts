@@ -1,10 +1,12 @@
-import {Injectable, LogLevel} from '@nestjs/common';
-import {ConfigService} from '@nestjs/config';
+import { Injectable, LogLevel } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   HN_BUCKET_DOCUMENTATION_BACKUP_KEY,
   HN_BUCKET_DOCUMENTATION_KEY,
   HN_BUCKET_ICON_BACKUP_KEY,
-  HN_BUCKET_ICON_KEY, HN_BUCKET_LIVE_TASKS_BACKUP_KEY, HN_BUCKET_LIVE_TASKS_KEY,
+  HN_BUCKET_ICON_KEY,
+  HN_BUCKET_LIVE_TASKS_BACKUP_KEY,
+  HN_BUCKET_LIVE_TASKS_KEY,
   HN_BUCKET_STORIES_BACKUP_KEY,
   HN_BUCKET_STORIES_KEY,
   HN_ENVIRONMENT_PROFILE_KEY,
@@ -21,7 +23,7 @@ import {
   BlTransportModuleConfig,
   blTransportQueueHub
 } from '@monorepo/back-core-lib';
-import {HnDatabaseConfig} from '../../model/config/hn-database-config.class';
+import { HnDatabaseConfig } from '../../model/config/hn-database-config.class';
 
 @Injectable()
 export class HnCoreConfigService {
@@ -200,7 +202,7 @@ export class HnCoreConfigService {
     } else if (stringBool === 'true') {
       return true;
     } else {
-      throw Error('Error while parsing config ' + configName + ' to boolean');
+      throw Error(`Error while parsing config ${configName} value '${stringBool}' to boolean`);
     }
   }
 

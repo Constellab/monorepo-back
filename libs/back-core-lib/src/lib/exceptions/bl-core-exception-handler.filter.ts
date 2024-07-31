@@ -1,11 +1,11 @@
-import {ArgumentsHost, ExceptionFilter, HttpException, HttpStatus, Logger} from '@nestjs/common';
-import {QueryFailedError} from 'typeorm';
-import {Response} from 'express';
-import {ClStringHelper} from '@monorepo/core-lib';
-import {BlTranslateService} from '../modules/bl-translate/bl-translate.service';
-import {BlApiError} from '../models/bl-nest-api-error.class';
-import {BlHttpException} from './bl-http.exception';
-import {BlTranslateOptions} from '../modules/bl-translate/bl-translate-options.class';
+import { ArgumentsHost, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { QueryFailedError } from 'typeorm';
+import { Response } from 'express';
+import { ClStringHelper } from '@monorepo/core-lib';
+import { BlTranslateService } from '../modules/bl-translate/bl-translate.service';
+import { BlApiError } from '../models/bl-nest-api-error.class';
+import { BlHttpException } from './bl-http.exception';
+import { BlTranslateOptions } from '../modules/bl-translate/bl-translate-options.class';
 
 
 export interface BlCoreExceptionHandlerFilterOptions {
@@ -69,7 +69,7 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
   private handleKnownException(error: BlHttpException): Promise<BlApiError> {
     // translate the error message and throw the exception with error code and message
     return this.convertToNestError(error.message, error.getStatus(),
-      {args: error.options.detailArgs}, error.options.instanceId);
+      {args: error.customOptions.detailArgs}, error.customOptions.instanceId);
   }
 
   private handleNestHttpException(error: HttpException): Promise<BlApiError> {

@@ -1,13 +1,13 @@
-import {Injectable} from '@nestjs/common';
-import {HnSpaceUser} from './space-user/hn-space-user.entity';
-import {HnSpaceUserService} from './space-user/hn-space-user.service';
-import {HnSpaceService} from './space/hn-space.service';
-import {HnUserService} from '../users/hn-user.service';
-import {BlBadRequestException, BlUnauthorizedException} from '@monorepo/back-core-lib';
-import {HnSpace} from './space/hn-space.entity';
-import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
-import {HnLabConstellabApiService} from '../core/service/hn-lab-constellab-api.service';
-import {HnSpaceDto} from './space/hn-space.dto';
+import { Injectable } from '@nestjs/common';
+import { HnSpaceUser } from './space-user/hn-space-user.entity';
+import { HnSpaceUserService } from './space-user/hn-space-user.service';
+import { HnSpaceService } from './space/hn-space.service';
+import { HnUserService } from '../users/hn-user.service';
+import { BlBadRequestException, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { HnSpace } from './space/hn-space.entity';
+import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
+import { HnLabConstellabApiService } from '../core/service/hn-lab-constellab-api.service';
+import { HnSpaceDto } from './space/hn-space.dto';
 
 @Injectable()
 export class HnSpaceAggregateService {
@@ -52,7 +52,7 @@ export class HnSpaceAggregateService {
 
   public async getSpacesForLab(req: Request): Promise<HnSpaceDto[]> {
     await this.labConstellabApiService.checkApiKeyAndUserIdInCentral(req);
-    return (await this.findSpacesOfUser(req.headers['user'])).map(space => new HnSpaceDto(space));
+    return (await this.findSpacesOfUser(req.headers.get('user'))).map(space => new HnSpaceDto(space));
   }
 
 
