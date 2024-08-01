@@ -22,9 +22,10 @@ export class HnLiveTaskVersionService {
 
   public async createNewDraftVersion(lastLiveTaskVersion: HnLiveTaskVersion,
                                      newLiveTaskVersionFile: HnLiveTaskVersionFileInput,
-                                     entityManager: EntityManager): Promise<HnLiveTaskVersion> {
+                                     entityManager: EntityManager,
+                                     replace = false): Promise<HnLiveTaskVersion> {
     const liveTaskVersion = new HnLiveTaskVersion();
-    liveTaskVersion.initNewDraftVersion(lastLiveTaskVersion, newLiveTaskVersionFile);
+    liveTaskVersion.initNewDraftVersion(lastLiveTaskVersion, newLiveTaskVersionFile, replace);
     return entityManager.save(liveTaskVersion);
   }
 
@@ -134,6 +135,11 @@ export class HnLiveTaskVersionService {
     const liveTaskVersion = await this.liveTaskVersionRepository.findOneBy({id: liveTaskVersionId});
     liveTaskVersion.versionInfos = versionInfos;
     return this.liveTaskVersionRepository.save(liveTaskVersion);
+  }
+
+  public async deleteById(entityManager: EntityManager, id: string): Promise<void> {
+    await entityManager.delete(HnLiveTaskVersion, {id: id});
+
   }
 
   public async deleteByLiveTaskId(entityManager: EntityManager, liveTaskId: string): Promise<void> {

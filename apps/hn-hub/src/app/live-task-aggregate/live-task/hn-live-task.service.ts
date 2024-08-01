@@ -328,8 +328,7 @@ export class HnLiveTaskService {
   public async updateLiveTaskLatestPublishVersion(id: string, latestPublishVersion: number,
                                                   entityManager: EntityManager): Promise<HnLiveTask> {
     const liveTask = await this.checkIfCreatorOrCoAuthorAndGetLiveTask(id);
-    liveTask.latestPublishVersion = liveTask.latestPublishVersion > latestPublishVersion ?
-      liveTask.latestPublishVersion : latestPublishVersion;
+    liveTask.latestPublishVersion = latestPublishVersion;
     return entityManager.save(liveTask);
   }
 

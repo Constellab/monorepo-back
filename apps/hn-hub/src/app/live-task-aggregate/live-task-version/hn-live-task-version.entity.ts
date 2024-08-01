@@ -68,8 +68,8 @@ export class HnLiveTaskVersion extends BlEntityWithId {
     this.initVersionFile(versionFile);
   }
 
-  initNewDraftVersion(lastLiveTaskVersion: HnLiveTaskVersion, versionFile: HnLiveTaskVersionFileInput): void {
-    this.version = lastLiveTaskVersion.version + 1;
+  initNewDraftVersion(lastLiveTaskVersion: HnLiveTaskVersion, versionFile: HnLiveTaskVersionFileInput, replace = false): void {
+    this.version = lastLiveTaskVersion.version + (replace ? 0 : 1);
     this.liveTask = lastLiveTaskVersion.liveTask;
     this.versionState = HnLiveTaskVersionState.DRAFT;
     this.initVersionFile(versionFile);

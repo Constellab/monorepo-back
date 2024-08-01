@@ -327,6 +327,19 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
   }
 
   /**
+   * Replace the current draft version by a new one
+   * @param liveTaskId
+   * @param newLiveTaskVersionFile
+   * @return the created live task version
+   */
+  @Put(':liveTaskId/version/draft/replace')
+  replaceDraftVersion(@Param('liveTaskId', ParseUUIDPipe) liveTaskId: string,
+                        // eslint-disable-next-line max-len
+                        @Body(new BlParsePipe(HnLiveTaskVersionFileInput)) newLiveTaskVersionFile: HnLiveTaskVersionFileInput): Promise<HnLiveTaskVersion> {
+    return this.liveTaskAggregateService.replaceDraftVersion(liveTaskId, newLiveTaskVersionFile);
+  }
+
+  /**
    * Update a live task version infos
    * @param versionId
    * @param infos
@@ -422,5 +435,10 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
   async saveResourceViewFile(@BlUploadedFile() file: BlFile,
                        @Param('liveTaskId', new ParseUUIDPipe()) liveTaskId: string): Promise<any> {
     return {filename: await this.liveTaskAggregateService.saveView(file, liveTaskId)};
+  }
+
+  @Delete('version/:liveTaskVersionId')
+  async deleteLiveTaskVersion(@Param('liveTaskVersionId', new ParseUUIDPipe()) liveTaskVersionId: string): Promise<void> {
+    return this.liveTaskAggregateService.deleteLiveTaskVersion(liveTaskVersionId);
   }
 }

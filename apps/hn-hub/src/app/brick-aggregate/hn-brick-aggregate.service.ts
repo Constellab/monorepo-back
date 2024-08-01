@@ -201,13 +201,6 @@ export class HnBrickAggregateService {
       throw new BlBadRequestException(HnErrorText.BRICK_NOT_FOUND, {detailArgs: {name: name}});
     }
 
-    // TODO : voir si c'est a modif
-    if ((!HnCurrentUserHelper.getCurrentUser()?.isAdmin()
-      && brick?.createdBy?.id === HnCurrentUserHelper?.getCurrentUser()?.id)) {
-      brick.gitRepo = null;
-      brick.pipRepo = null;
-    }
-
     return brick;
   }
 

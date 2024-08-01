@@ -316,7 +316,8 @@ export class HnLiveTaskAggregateService {
     if (liveTask.space != null) {
       await this.spaceAggregateService.assertCheckSpaceUser(liveTask.space.id, HnCurrentUserHelper.getCurrentUser().id);
     }
-    return new HnLiveTaskVersionDto(await this.liveTaskVersionService.findLatestPublishedByLiveTask(liveTask));
+    const res = new HnLiveTaskVersionDto(await this.liveTaskVersionService.findLatestPublishedByLiveTask(liveTask));
+    return res;
   }
 
   public async updateLiveTaskVersionParams(id: string, params: string[]): Promise<HnLiveTaskVersion> {
@@ -355,6 +356,30 @@ export class HnLiveTaskAggregateService {
     return await this.dataSource.transaction(async entityManager => {
       const newLiveTaskVersion =
         await this.liveTaskVersionService.createNewDraftVersion(latestLiveTaskVersion, newLiveTaskVersionFile, entityManager);
+
+      for (const brick of newLiveTaskVersionFile.bricks) {
+        const brickVersion: HnBrickVersion = await this.brickAggregateService.getAndCheckBrickVersion(brick.name, brick.version);
+        await this.liveTaskVersionBrickDependenciesService.create(newLiveTaskVersion, brickVersion, entityManager);
+      }
+      return newLiveTaskVersion;
+    });
+  }
+
+  public async replaceDraftVersion(liveTaskId: string, newLiveTaskVersionFile: HnLiveTaskVersionFileInput,
+                                   fromLab: boolean = false): Promise<HnLiveTaskVersion> {
+    if (!fromLab)
+      await this.liveTaskService.checkIfCreatorOrCoAuthorAndGetLiveTask(liveTaskId);
+    const liveTask = await this.liveTaskService.findOne(liveTaskId);
+    const latestLiveTaskVersion = await this.liveTaskVersionService.findLatestByLiveTask(liveTask);
+
+    if (latestLiveTaskVersion?.versionState != 'DRAFT')
+      throw new BlBadRequestException('The latest live task version could not be replaced');
+
+    return await this.dataSource.transaction(async entityManager => {
+      await this.liveTaskVersionService.deleteById(entityManager, latestLiveTaskVersion.id);
+
+      const newLiveTaskVersion =
+        await this.liveTaskVersionService.createNewDraftVersion(latestLiveTaskVersion, newLiveTaskVersionFile, entityManager, true);
 
       for (const brick of newLiveTaskVersionFile.bricks) {
         const brickVersion: HnBrickVersion = await this.brickAggregateService.getAndCheckBrickVersion(brick.name, brick.version);
@@ -436,6 +461,26 @@ export class HnLiveTaskAggregateService {
 
   public async deleteCoAuthorInvite(inviteId: string): Promise<boolean> {
     return this.liveTaskCoAuthorService.deleteCoAuthorInvite(inviteId);
+  }
+
+  public async deleteLiveTaskVersion(id: string): Promise<void> {
+    const liveTaskVersion = await this.liveTaskVersionService.findOne(id);
+    const liveTask = await this.liveTaskService.checkIfCreatorOrCoAuthorAndGetLiveTask(liveTaskVersion.liveTask.id);
+
+    //Check number of liveTaskVersion
+    const liveTaskVersions = await this.liveTaskVersionService.findAllByLiveTaskId(liveTask.id);
+    if (liveTaskVersions.length == 1) {
+      throw new BlBadRequestException('The live task must have at least one version');
+    }
+
+    await this.dataSource.transaction(async entityManager => {
+      await this.liveTaskVersionBrickDependenciesService.deleteByLiveTaskVersionId(entityManager, id);
+      await this.liveTaskVersionService.deleteById(entityManager, id);
+      if(liveTask.latestPublishVersion == liveTaskVersion.version){
+        const latestVersion = await this.liveTaskVersionService.findLatestByLiveTask(liveTask);
+        await this.liveTaskService.updateLiveTaskLatestPublishVersion(liveTask.id, latestVersion.version, entityManager);
+      }
+    });
   }
 
   ////////////////////////////////////////// LIKES /////////////////////////////////
