@@ -1,9 +1,8 @@
-import {DynamicModule, Module} from '@nestjs/common';
-import {CnCoreConfigService} from './cn-core-config.service';
-import {ConfigModule} from '@nestjs/config';
-import {CnCoreConfigController} from './cn-core-config.controller';
-import {SnCoreConfigService} from './sn-core-config.service';
-import {CN_CORE_MODULE_CONFIG, CnCoreConfigModuleConfig} from './cn-core-module-config.class';
+import { DynamicModule, Module } from '@nestjs/common';
+import { CnCoreConfigService } from './cn-core-config.service';
+import { ConfigModule } from '@nestjs/config';
+import { CnCoreConfigController } from './cn-core-config.controller';
+import { CN_CORE_MODULE_CONFIG, CnCoreConfigModuleConfig } from './cn-core-module-config.class';
 
 @Module({})
 export class CnCoreConfigModule {
@@ -16,14 +15,12 @@ export class CnCoreConfigModule {
       providers: [
         {
           provide: CN_CORE_MODULE_CONFIG,
-          useValue: config,
+          useValue: config
         },
-        CnCoreConfigService,
-        SnCoreConfigService,
+        CnCoreConfigService
       ],
       exports: [
-        CnCoreConfigService,
-        SnCoreConfigService,
+        CnCoreConfigService
       ],
       controllers: [CnCoreConfigController]
     };
