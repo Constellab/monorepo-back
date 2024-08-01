@@ -47,7 +47,6 @@ import { cnJwtConfig } from './app/cn-auth/cn-jwt.config';
 import { Request } from 'express';
 import { CnUsersService } from './app/cn-users/cn-users.service';
 import { CnDatabaseConfig } from './app/cn-core/model/config/cn-config.class';
-import { SnSmartDbModule } from './app/sn-smart-db/sn-smart-db.module';
 import { CnProjectsAggregateModule } from './app/cn-projects-aggregate/cn-project-aggregate.module';
 import { CnStatsModule } from './app/cn-stats/cn-stats.module';
 import { CnCountryModule } from './app/cn-country/cn-country.module';
@@ -220,7 +219,6 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     CnExternalLabsModule,
     CnServerAggregateModule,
     CnFrontErrorsModule,
-    SnSmartDbModule,
     CnStatsModule,
     CnCountryModule,
     CnCityModule,
