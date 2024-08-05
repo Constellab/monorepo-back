@@ -68,6 +68,7 @@ export interface CnLabManagerInitConfig {
   // end remove
   gwsCoreProdPassword: string;
   gwsCoreDevPassword: string;
+  // TODO TO remove once all lab manager are on v 1.10.0
   dockerRegistry: {
     url: string;
     username: string;

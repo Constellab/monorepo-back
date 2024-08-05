@@ -1048,7 +1048,7 @@ export class CnLabInstanceAggregateService {
     this.checkServerIsRunning(labInstance);
 
 
-    await this.labConfigurerService.updateDockerlabRepo(labInstance);
+    await this.labConfigurerService.updateLabConfigurerRepo(labInstance);
     return this.getStatus(labInstance);
   }
 

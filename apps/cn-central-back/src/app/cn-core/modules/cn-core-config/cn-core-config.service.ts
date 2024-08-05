@@ -272,20 +272,12 @@ export class CnCoreConfigService {
     return this.configService.get('DOCKER_REGISTRY_PASSWORD');
   }
 
-  public getDockerlabRepoUrl(): string {
-    return this.configService.get('DOCKERLAB_REPO_URL');
+  public getLabConfigurerRepoUrl(): string {
+    return this.configService.get('LAB_CONFIGURER_REPO_URL');
   }
 
-  public getDockerlabRepoUsername(): string {
-    return this.configService.get('DOCKERLAB_REPO_USERNAME');
-  }
-
-  public getDockerlabRepoPassword(): string {
-    return this.configService.get('DOCKERLAB_REPO_PASSWORD');
-  }
-
-  public getDockerlabRepoBranch(): string {
-    return this.configService.get('DOCKERLAB_REPO_BRANCH');
+  public getLabConfigurerRepoBranch(): string {
+    return this.configService.get('LAB_CONFIGURER_REPO_BRANCH');
   }
 
   /**

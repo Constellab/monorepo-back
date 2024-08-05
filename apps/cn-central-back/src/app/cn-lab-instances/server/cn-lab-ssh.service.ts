@@ -1,6 +1,6 @@
-import {Logger} from '@nestjs/common';
-import {CnCommandService, CnExecCommandMode, CnExecOptions} from '../../cn-core/services/cn-command.service';
-import {BlBadRequestException} from '@monorepo/back-core-lib';
+import { Logger } from '@nestjs/common';
+import { CnCommandService, CnExecCommandMode, CnExecOptions } from '../../cn-core/services/cn-command.service';
+import { BlBadRequestException } from '@monorepo/back-core-lib';
 
 /**
  * Service to execute ssh command to the lab server
@@ -8,7 +8,7 @@ import {BlBadRequestException} from '@monorepo/back-core-lib';
 export class CnLabSshService {
 
   public static readonly SSH_PRIVATE_KEY_LOCATION = '/root/.ssh';
-  public static readonly DOCKERLAB_FOLDER = 'dockerlab';
+  public static readonly LAB_CONFIGURER_FOLDER = 'lab-configurer';
 
 
   private readonly logger = new Logger(CnLabSshService.name);
@@ -95,7 +95,7 @@ export class CnLabSshService {
   }
 
   public getUtilsFolder(): string {
-    return `${CnLabSshService.DOCKERLAB_FOLDER}/utils`;
+    return `${CnLabSshService.LAB_CONFIGURER_FOLDER}/utils`;
   }
 
   public getMountFolder(): string {
