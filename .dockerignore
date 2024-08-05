@@ -13,4 +13,4 @@ e2e
 node_modules
 
 # Ignore dist folder
-#dist
+dist

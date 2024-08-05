@@ -2,7 +2,7 @@
 # https://blog.logrocket.com/containerized-development-nestjs-docker/
 
 # Build step
-FROM node:18-alpine3.17 as builder
+FROM node:20-alpine3.20 as  builder
 WORKDIR /app
 
 # Copy package and package-lock.json file for modules installation
@@ -17,7 +17,7 @@ COPY . .
 RUN npm run cn-central-back:build
 
 ## Second Stage : Setup command to run your app using lightweight node image
-FROM node:18-alpine3.17
+FROM node:20-alpine3.20
 WORKDIR /app
 
 # Set UTC timezone for the docker

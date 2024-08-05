@@ -2,7 +2,7 @@ version: "3"
 services:
 
   glab:
-    image: registry.gitlab.com/constellab/public/docker-registry/glab-cpu:${GLAB_TAG}
+    image: constellab/glab:${GLAB_TAG}
     environment:
       - LAB_ID=${LAB_ID}
       - LAB_NAME=${LAB_NAME}
@@ -52,7 +52,7 @@ services:
 
   # Codelab
   codelab:
-    image: registry.gitlab.com/constellab/public/docker-registry/codelab-cpu:${GLAB_TAG}
+    image: constellab/codelab:${GLAB_TAG}
     environment:
       - LAB_ID=${LAB_ID}
       - LAB_NAME=${LAB_NAME}
@@ -101,7 +101,7 @@ services:
 
   # Front
   front:
-    image: registry.gitlab.com/constellab/public/docker-registry/lab-front:${FRONT_VERSION}
+    image: constellab/lab-front:${FRONT_VERSION}
     environment:
       - API_URL=http://localhost:3100
       - LAB_PROD_API_URL=http://localhost:3100
