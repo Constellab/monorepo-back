@@ -146,11 +146,21 @@ export class CnLabInstancesController {
   }
 
   /**
-   * Route to update the dockerlab repository
+   * Route to update the lab configurer repository
    */
-  @Put(':id/dockerlab/update')
-  public updateDockerlabRepository(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusDTO> {
-    return this.aggregateService.updateDockerlab(id);
+  @Put(':id/lab-configurer/update')
+  public updateLabConfigurerRepository(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusDTO> {
+    return this.aggregateService.updateLabConfigurer(id);
+  }
+
+  @Put(':id/lab-configurer/migrate')
+  public migrateToGithub(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusDTO> {
+    return this.aggregateService.migrateToGithub(id);
+  }
+
+  @Put(':id/lab-configurer/destroy-containers')
+  public destroyLabConfigurerContainers(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceStatusDTO> {
+    return this.aggregateService.destroyLabConfigurerContainers(id);
   }
 
   /**

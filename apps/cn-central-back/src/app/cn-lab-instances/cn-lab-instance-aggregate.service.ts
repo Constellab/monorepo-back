@@ -1037,12 +1037,27 @@ export class CnLabInstanceAggregateService {
     return this.getStatus(labInstance);
   }
 
-  async updateDockerlab(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
+  async updateLabConfigurer(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
     const labInstance = await this.getAndCheckServerStatusBeforeAction(labInstanceId);
     this.checkServerIsRunning(labInstance);
 
-
     await this.labConfigurerService.updateLabConfigurerRepo(labInstance);
+    return this.getStatus(labInstance);
+  }
+
+  public async destroyLabConfigurerContainers(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
+    const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId);
+    this.checkServerIsRunning(labInstance);
+
+    await this.labConfigurerService.composeDown(labInstance);
+    return this.getStatus(labInstance);
+  }
+
+  public async migrateToGithub(labInstanceId: string): Promise<CnLabInstanceStatusDTO> {
+    const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId);
+    this.checkServerIsRunning(labInstance);
+
+    await this.labConfigurerService.migrateToGithub(labInstance);
     return this.getStatus(labInstance);
   }
 

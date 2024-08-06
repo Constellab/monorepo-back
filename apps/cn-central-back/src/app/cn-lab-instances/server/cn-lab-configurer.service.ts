@@ -169,5 +169,42 @@ export class CnLabConfigurerService {
     await this.labInstanceService.updateServerTask(labInstance.id, `Lab manager updated`, CnLabInstanceServerTaskStatus.SUCCESS);
   }
 
+  public async composeDown(labInstance: CnLabInstance): Promise<void> {
+    const labSshService = await this.cloudProviderFactory.getSshLabService(labInstance);
+
+    // execute docker compose down
+    await this.labInstanceService.updateServerTask(labInstance.id, `Destroying containers`, CnLabInstanceServerTaskStatus.RUNNING);
+
+    try {
+      await labSshService.execSshCommand([`cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`, 'docker-compose down']);
+    } catch (e) {
+      const error = `Error while destroying containers. Error : ${e}`;
+      await this.labInstanceService.updateServerTask(labInstance.id, error, CnLabInstanceServerTaskStatus.ERROR);
+      throw new BlBadRequestException(error);
+    }
+    await this.labInstanceService.updateServerTask(labInstance.id, `Container destroyed`, CnLabInstanceServerTaskStatus.SUCCESS);
+  }
+
+  // TODO TO REMOVE ONCE ALL LABS ARE MIGRATED
+  public async migrateToGithub(labInstance: CnLabInstance): Promise<void> {
+    const labSshService = await this.cloudProviderFactory.getSshLabService(labInstance);
+
+    // execute docker compose down
+    await this.labInstanceService.updateServerTask(labInstance.id, `Clearing old image`, CnLabInstanceServerTaskStatus.RUNNING);
+
+    try {
+      await labSshService.execSshCommand([`cd dockerlab`, 'docker-compose down']);
+
+      await labSshService.execSshCommand([`rm -rf dockerlab`]);
+
+    } catch (e) {
+      const error = `Error migrating to github. Error : ${e}`;
+      await this.labInstanceService.updateServerTask(labInstance.id, error, CnLabInstanceServerTaskStatus.ERROR);
+      throw new BlBadRequestException(error);
+    }
+    await this.labInstanceService.updateServerTask(labInstance.id, `Old image cleared`, CnLabInstanceServerTaskStatus.SUCCESS);
+
+    await this.configureServer(labInstance);
+  }
 
 }
