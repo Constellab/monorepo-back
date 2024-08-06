@@ -205,6 +205,8 @@ export class CnLabConfigurerService {
     await this.labInstanceService.updateServerTask(labInstance.id, `Old image cleared`, CnLabInstanceServerTaskStatus.SUCCESS);
 
     await this.configureServer(labInstance);
+
+    await this.labInstanceService.updateServerTask(labInstance.id, `Migrate Success`, CnLabInstanceServerTaskStatus.SUCCESS);
   }
 
 }
