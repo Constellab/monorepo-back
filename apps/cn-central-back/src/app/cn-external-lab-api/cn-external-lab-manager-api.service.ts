@@ -104,10 +104,6 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/pull-biota-db`, options));
   }
 
-  public async registryLogin(apiInfo: CnExternalApiInfo): Promise<void> {
-    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/registry-login`, null));
-  }
-
   public async stopCurrentTask(apiInfo: CnExternalApiInfo): Promise<void> {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/stop-current-task`, null));
   }

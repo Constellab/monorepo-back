@@ -738,12 +738,6 @@ export class CnLabInstanceAggregateService {
     return this.labManagerService.pullBiota(labInstance, options);
   }
 
-  public async registryLogin(labId: string): Promise<void> {
-    const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
-    this.checkServerIsRunning(labInstance);
-    return this.labManagerService.registryLogin(labInstance);
-  }
-
   public async stopCurrentTask(labId: string): Promise<void> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToManageLab(labId);
     this.checkServerIsRunning(labInstance);

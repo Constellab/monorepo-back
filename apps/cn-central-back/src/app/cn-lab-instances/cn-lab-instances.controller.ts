@@ -349,11 +349,6 @@ export class CnLabInstancesController {
     return this.aggregateService.pullBiota(id, options);
   }
 
-  @Post(':id/lab-manager/registry-login')
-  async registryLogin(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return this.aggregateService.registryLogin(id);
-  }
-
   @Post(':id/lab-manager/stop-current-task')
   public stopCurrentTask(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.aggregateService.stopCurrentTask(id);

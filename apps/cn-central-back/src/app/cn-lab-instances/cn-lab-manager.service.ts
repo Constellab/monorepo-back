@@ -146,10 +146,6 @@ export class CnLabManagerService {
     return this.labManagerApiService.pullBiota(labInstance.getLabManagerApiInfo(), options);
   }
 
-  public async registryLogin(labInstance: CnLabInstance): Promise<void> {
-    return this.labManagerApiService.registryLogin(labInstance.getLabManagerApiInfo());
-  }
-
   public async stopCurrentTask(labInstance: CnLabInstance): Promise<void> {
     return this.labManagerApiService.stopCurrentTask(labInstance.getLabManagerApiInfo());
   }
