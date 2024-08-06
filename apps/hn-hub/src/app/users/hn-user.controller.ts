@@ -17,6 +17,12 @@ export class HnUserController {
   }
 
   @BlPublic()
+  @Get('count')
+  async getCount(): Promise<number> {
+    return await this.userService.getCount();
+  }
+
+  @BlPublic()
   @Get(':id')
   async getById(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUserDetailDto> {
     return await this.userService.getUserById(id);

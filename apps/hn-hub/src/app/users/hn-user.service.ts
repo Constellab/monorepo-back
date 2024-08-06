@@ -51,6 +51,10 @@ export class HnUserService implements BlUserService {
     return HnCurrentUserHelper.getCurrentUser();
   }
 
+  async getCount(): Promise<number> {
+    return await this.userRepository.count();
+  }
+
   async getUserCredentialsResponse(credentials: BlCredentials): Promise<HnExternalCheckCredentialResponse> {
     const user: HnUser = await this.userRepository.findOneBy({email: credentials.email});
     if (!user) {
