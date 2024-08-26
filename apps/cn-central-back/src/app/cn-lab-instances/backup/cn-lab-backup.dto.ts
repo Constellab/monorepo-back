@@ -4,6 +4,7 @@ import { Type } from 'class-transformer';
 import {
   CnCloudProviderRegion
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import { CnLabBackupHistory } from './cn-lab-backup-history.entity';
 
 export enum CnLabBackupFrequency {
   DAILY = 'DAILY',
@@ -26,7 +27,7 @@ export interface BackupStatusObject {
   message: string;
 }
 
-export class CnLabBackupHistory {
+export class CnLabBackupsHistory {
   version: number;
 
   @Type(() => CnLabBackupBucket)
@@ -104,4 +105,9 @@ export class CnLabCheckBackupSizeDTO extends CnLabBackupStatusDTO {
     dto.nbDocumentsInBucket = nbDocumentsInBucket;
     return dto;
   }
+}
+
+export interface CnSaveBackupHistoryDTO {
+  isNew: boolean;
+  history: CnLabBackupHistory;
 }

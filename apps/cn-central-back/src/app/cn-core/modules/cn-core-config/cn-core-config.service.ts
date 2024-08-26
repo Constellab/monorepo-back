@@ -75,6 +75,10 @@ export class CnCoreConfigService {
     return this.configService.get('SALES_MAIL');
   }
 
+  public getSupportMail(): string {
+    return this.configService.get('SUPPORT_MAIL');
+  }
+
   public getOpenaiAPIKey(): string {
     return this.configService.get('OPENAI_API_KEY');
   }

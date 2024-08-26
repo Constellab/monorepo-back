@@ -98,7 +98,22 @@ export class CnLabMailService {
       },
       labUrl: labUrl
     });
+  }
 
+  public async sendLabBackupErrorMail(labInstance: CnLabInstance): Promise<void> {
+    const space = await this.spaceService.findByIdAndCheck(labInstance.spaceId);
+    const labUrl = this.frontService.getLabInstanceUrl(space.domain, labInstance.id);
+    await this.supportService.sendMailToSupport(CnMailTemplate.support_lab_backup_error, {
+      lab: {
+        id: labInstance.id,
+        name: labInstance.name
+      },
+      space: {
+        id: space.id,
+        name: space.name
+      },
+      labUrl: labUrl
+    });
   }
 
 }
