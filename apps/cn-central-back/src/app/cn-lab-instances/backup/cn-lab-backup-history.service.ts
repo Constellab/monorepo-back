@@ -1,14 +1,19 @@
-import {Injectable} from '@nestjs/common';
-import {BlAbstractService} from '@monorepo/back-core-lib';
-import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, Repository} from 'typeorm';
-import {CnLabBackupHistory} from './cn-lab-backup-history.entity';
-import {CnLabBackupBucket, CnLabBackupFrequency, CnLabBackupStatus} from './cn-lab-backup.dto';
-import {CnLabInstance} from '../cn-lab-instance.entity';
-import {CnBucketsService} from '../../cn-object-storages/cn-buckets/cn-buckets.service';
-import {ClPageI} from '@monorepo/core-lib';
-import {CnBucket} from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
-import {FindOptionsWhere} from 'typeorm/find-options/FindOptionsWhere';
+import { Injectable } from '@nestjs/common';
+import { BlAbstractService } from '@monorepo/back-core-lib';
+import { InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, Repository } from 'typeorm';
+import { CnLabBackupHistory } from './cn-lab-backup-history.entity';
+import {
+  CnLabBackupBucket,
+  CnLabBackupFrequency,
+  CnLabBackupStatus,
+  CnSaveBackupHistoryDTO
+} from './cn-lab-backup.dto';
+import { CnLabInstance } from '../cn-lab-instance.entity';
+import { CnBucketsService } from '../../cn-object-storages/cn-buckets/cn-buckets.service';
+import { ClPageI } from '@monorepo/core-lib';
+import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
 
 
 @Injectable()
@@ -19,21 +24,22 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
     super(repository, CnLabBackupHistory);
   }
 
-  public async saveHistories(historiesDto: CnLabBackupBucket[], labInstance: CnLabInstance): Promise<CnLabBackupHistory[]> {
-    const histories: CnLabBackupHistory[] = [];
+  public async saveHistories(historiesDto: CnLabBackupBucket[], labInstance: CnLabInstance): Promise<CnSaveBackupHistoryDTO[]> {
+    const histories: CnSaveBackupHistoryDTO[] = [];
     for (const historyDto of historiesDto) {
       histories.push(await this.saveHistory(historyDto, labInstance));
     }
     return histories;
   }
 
-  public async saveHistory(historyDto: CnLabBackupBucket, labInstance: CnLabInstance): Promise<CnLabBackupHistory> {
+  public async saveHistory(historyDto: CnLabBackupBucket, labInstance: CnLabInstance): Promise<CnSaveBackupHistoryDTO> {
     let history: CnLabBackupHistory = await this.repo.findOne({
       where: {backupId: historyDto.id},
       relations: {labInstance: true}
     });
 
 
+    const isHistoryNew = history == null;
     if (history == null) {
       history = new CnLabBackupHistory();
       history.backupId = historyDto.id;
@@ -58,7 +64,10 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
     history.dbMessage = historyDto.dbStatus.message;
     history.dbSize = historyDto.dbSize;
     history.s3Prefix = historyDto.s3Prefix;
-    return await this.repo.save(history);
+    return {
+      isNew: isHistoryNew,
+      history: await this.repo.save(history),
+    }
   }
 
   public getBackupHistory(labInstanceId: string, page: number, size: number): Promise<ClPageI<CnLabBackupHistory>> {

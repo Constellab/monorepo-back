@@ -11,5 +11,6 @@
   "cn-request-lab-instance": "Constellab - Demande d'une instance de lab",
   "cn-generic": "Constellab - Notification",
   "cn-lab-started": "Constellab - Votre lab est prêt",
-  "cn-support-lab-start-error": "[SUPPORT] Constellab - Erreur lors du démarrage d'un lab"
+  "cn-support-lab-start-error": "[SUPPORT] Constellab - Erreur lors du démarrage d'un lab",
+  "cn-support-lab-backup-error": "[SUPPORT] Constellab - Erreur lors du backup d'un lab"
 }

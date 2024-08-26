@@ -15,7 +15,8 @@ import {
   CnLabBackupBucket,
   CnLabBackupFrequency,
   CnLabBackupStatusDTO,
-  CnLabCheckBackupSizeDTO
+  CnLabCheckBackupSizeDTO,
+  CnSaveBackupHistoryDTO
 } from './cn-lab-backup.dto';
 import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {
@@ -23,6 +24,7 @@ import {
   CnLabManagerRestoreBackupConfigDTO,
   CnLabManagerRestoreBackupDTO
 } from '../../cn-external-lab-api/model/cn-lab-manager.class';
+import { CnLabMailService } from '../mail/cn-lab-mail.service';
 
 
 @Injectable()
@@ -33,7 +35,8 @@ export class CnLabBackupAggregateService {
               private backupOptionService: CnLabBackupOptionService,
               private labManagerService: CnLabManagerService,
               private objectStorageService: BlObjectStorageService,
-              private datasource: DataSource) {
+              private datasource: DataSource,
+              private labMailService: CnLabMailService) {
   }
 
   //////////////////////////// BACKUP OPTIONS ////////////////////////////
@@ -108,7 +111,8 @@ export class CnLabBackupAggregateService {
 
   public async syncBackupHistory(labInstance: CnLabInstance): Promise<void> {
     const backups = await this.labManagerService.getBackupHistory(labInstance);
-    await this.backupHistoryService.saveHistories(backups.backups, labInstance);
+    const histories = await this.backupHistoryService.saveHistories(backups.backups, labInstance);
+    await this.checkErrorHistory(histories, labInstance);
   }
 
 
@@ -117,14 +121,33 @@ export class CnLabBackupAggregateService {
   }
 
   public async saveBackupHistory(labInstance: CnLabInstance, backups: CnLabBackupBucket[]): Promise<CnLabBackupHistory[]> {
-    return this.backupHistoryService.saveHistories(backups, labInstance);
+    const histories = await this.backupHistoryService.saveHistories(backups, labInstance);
+    await this.checkErrorHistory(histories, labInstance);
+    return histories.map(h => h.history);
+  }
+
+  /**
+   * Once the backup history is saved, we check if there is an error in 1 of the backup.
+   * If there is an error, we email the support
+   * @param histories
+   * @param labInstance
+   * @private
+   */
+  private async checkErrorHistory(histories: CnSaveBackupHistoryDTO[], labInstance: CnLabInstance): Promise<void> {
+    for (const history of histories) {
+      if (history.isNew && history.history.status === 'ERROR') {
+        await this.labMailService.sendLabBackupErrorMail(labInstance);
+        return;
+      }
+    }
   }
 
   /////////////////////////////// BACKUP ///////////////////////////////
 
   public async stopCurrentBackup(labInstance: CnLabInstance): Promise<CnLabBackupHistory[]> {
     const backup = await this.labManagerService.stopCurrentBackup(labInstance);
-    return this.backupHistoryService.saveHistories(backup, labInstance);
+    const histories = await this.backupHistoryService.saveHistories(backup, labInstance);
+    return histories.map(h => h.history);
   }
 
   public async createProdBackup(labInstance: CnLabInstance): Promise<CnLabBackupHistory[]> {
@@ -133,7 +156,8 @@ export class CnLabBackupAggregateService {
 
     const backups = await this.labManagerService.createProdBackup(labInstance, backupInfo);
 
-    return this.backupHistoryService.saveHistories(backups, labInstance);
+    const histories = await this.backupHistoryService.saveHistories(backups, labInstance);
+    return histories.map(h => h.history);
   }
 
   public async getBackupInfo(labInstance: CnLabInstance): Promise<CnLabManagerBackupInfoDTO> {

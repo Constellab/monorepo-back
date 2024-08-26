@@ -17,7 +17,7 @@ import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-c
 import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { CnLabConfigFile } from '../cn-lab-configs/cn-lab-config-file.class';
 import { CnLabConfigsService } from '../cn-lab-configs/cn-lab-configs.service';
-import { CnLabBackupBucket, CnLabBackupHistory } from './backup/cn-lab-backup.dto';
+import { CnLabBackupBucket, CnLabBackupsHistory } from './backup/cn-lab-backup.dto';
 
 /**
  * Service to call the api of the lab manager
@@ -210,7 +210,7 @@ export class CnLabManagerService {
     return this.labManagerApiService.stopCurrentBackup(labInstance.getLabManagerApiInfo());
   }
 
-  public async getBackupHistory(labInstance: CnLabInstance): Promise<CnLabBackupHistory> {
+  public async getBackupHistory(labInstance: CnLabInstance): Promise<CnLabBackupsHistory> {
     return this.labManagerApiService.getBackupHistory(labInstance.getLabManagerApiInfo());
   }
 
