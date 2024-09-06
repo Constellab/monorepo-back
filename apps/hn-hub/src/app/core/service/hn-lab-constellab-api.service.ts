@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BlExternalApiService, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { lastValueFrom } from 'rxjs';
 import { HnCoreConfigService } from '../modules/core-config/hn-core-config.service';
+import { Request } from 'express';
 
 @Injectable()
 export class HnLabConstellabApiService {
@@ -16,12 +17,12 @@ export class HnLabConstellabApiService {
    * @private
    */
   public async checkApiKeyAndUserIdInCentral(req: Request): Promise<void> {
-    if (req.headers.get('user') == null || req.headers.get('authorization') == null) {
+    if (req.header('user') == null || req.header('authorization') == null) {
       throw new BlUnauthorizedException();
     }
     const checkApiKeyUser: boolean = await lastValueFrom(this.blExternalApiService.get(
       this.coreConfigService.getCentralApiUrl() + 'external-labs/check-test', null,
-      {headers: {user: req.headers.get('user'), authorization: req.headers.get('authorization')}}))
+      {headers: {user: req.header('user'), authorization: req.header('authorization')}}))
     if(checkApiKeyUser != true){
       throw new BlUnauthorizedException();
     }

@@ -1,9 +1,10 @@
-import {Controller, Get, Param, ParseUUIDPipe, Req} from '@nestjs/common';
-import {EventPattern} from '@nestjs/microservices';
-import {HnSpaceAggregateService} from './hn-space-aggregate.service';
-import {HnSpaceUser} from './space-user/hn-space-user.entity';
-import {BlPublic} from '@monorepo/back-core-lib';
-import {HnSpaceDto} from './space/hn-space.dto';
+import { Controller, Get, Param, ParseUUIDPipe, Req } from '@nestjs/common';
+import { EventPattern } from '@nestjs/microservices';
+import { HnSpaceAggregateService } from './hn-space-aggregate.service';
+import { HnSpaceUser } from './space-user/hn-space-user.entity';
+import { BlPublic } from '@monorepo/back-core-lib';
+import { HnSpaceDto } from './space/hn-space.dto';
+import { Request } from 'express';
 
 export enum HnSpaceUserAction {
   CREATE = 'createSpaceUser',

@@ -46,6 +46,7 @@ import { HnUserDto } from '../users/hn-user.dto';
 import { HnSpaceDto } from '../space-aggregate/space/hn-space.dto';
 import { HnUploadFileResponseDto } from '../file-aggregate/file-core/hn-abstract-file.dto';
 import { HnFileLiveTaskService } from '../file-aggregate/file-live-task/hn-file-live-task.service';
+import { Request } from 'express';
 
 @Injectable()
 export class HnLiveTaskAggregateService {
@@ -235,7 +236,7 @@ export class HnLiveTaskAggregateService {
    */
   private async checkIfLabUserAndReturnUser(req: Request): Promise<HnUser> {
     await this.labConstellabApiService.checkApiKeyAndUserIdInCentral(req);
-    const currentUser = await this.userService.findOne(req.headers.get('user'));
+    const currentUser = await this.userService.findOne(req.header('user'));
     if (!currentUser)
       throw new BlUnauthorizedException();
     return currentUser;
@@ -304,7 +305,7 @@ export class HnLiveTaskAggregateService {
    */
   public async findLatestPublishedLiveTaskVersionForLabByLiveTaskId(id: string, req: Request): Promise<HnLiveTaskVersionForLabDto> {
     await this.labConstellabApiService.checkApiKeyAndUserIdInCentral(req);
-    const user: HnUser = await this.userService.findOne(req.headers.get('user'));
+    const user: HnUser = await this.userService.findOne(req.header('user'));
     const liveTask: HnLiveTask = await this.liveTaskService.findOne(id);
     if (liveTask.space != null) {
       await this.spaceAggregateService.assertCheckSpaceUser(liveTask.space.id, user.id);

@@ -12,8 +12,8 @@ import {
   Req,
   UseInterceptors
 } from '@nestjs/common';
-import {HnLiveTaskAggregateService} from './hn-live-task-aggregate.service';
-import {HnLiveTaskVersion} from './live-task-version/hn-live-task-version.entity';
+import { HnLiveTaskAggregateService } from './hn-live-task-aggregate.service';
+import { HnLiveTaskVersion } from './live-task-version/hn-live-task-version.entity';
 import {
   HaCreateLiveTaskVersionFromLabResponseDto,
   HnCreateLiveTaskDto,
@@ -27,18 +27,20 @@ import {
   BlParsePipe,
   BlPublic,
   BlRichTextUploadedImageResponse,
-  BlRichTextUploadFileResponse, BlUploadedFile
+  BlRichTextUploadFileResponse,
+  BlUploadedFile
 } from '@monorepo/back-core-lib';
-import {HnLiveTask} from './live-task/hn-live-task.entity';
-import {ClPage} from '@monorepo/core-lib';
-import {HnLiveTaskCoAuthorInvite} from './live-task-co-author-invite/hn-live-task-co-author-invite.entity';
-import {HnSitemapItemBase} from '../core/model/config/hn-site-map.class';
-import {HnBrickVersionDto} from '../brick-aggregate/brick-version/hn-brick-version.dto';
-import {HnLiveTaskVersionDto} from './live-task-version/hn-live-task-version.dto';
-import {HnUserDto} from '../users/hn-user.dto';
-import {HnAbstractFileController} from '../file-aggregate/file-core/hn-abstract-file.controller';
-import {HnFileLiveTaskService} from '../file-aggregate/file-live-task/hn-file-live-task.service';
-import {FileInterceptor} from '@nestjs/platform-express';
+import { HnLiveTask } from './live-task/hn-live-task.entity';
+import { ClPage } from '@monorepo/core-lib';
+import { HnLiveTaskCoAuthorInvite } from './live-task-co-author-invite/hn-live-task-co-author-invite.entity';
+import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
+import { HnBrickVersionDto } from '../brick-aggregate/brick-version/hn-brick-version.dto';
+import { HnLiveTaskVersionDto } from './live-task-version/hn-live-task-version.dto';
+import { HnUserDto } from '../users/hn-user.dto';
+import { HnAbstractFileController } from '../file-aggregate/file-core/hn-abstract-file.controller';
+import { HnFileLiveTaskService } from '../file-aggregate/file-live-task/hn-file-live-task.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Request } from 'express';
 
 @Controller('live-task')
 export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{

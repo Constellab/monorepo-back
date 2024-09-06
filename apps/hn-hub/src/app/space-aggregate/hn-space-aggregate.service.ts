@@ -8,6 +8,7 @@ import { HnSpace } from './space/hn-space.entity';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnLabConstellabApiService } from '../core/service/hn-lab-constellab-api.service';
 import { HnSpaceDto } from './space/hn-space.dto';
+import { Request } from 'express';
 
 @Injectable()
 export class HnSpaceAggregateService {
@@ -52,7 +53,7 @@ export class HnSpaceAggregateService {
 
   public async getSpacesForLab(req: Request): Promise<HnSpaceDto[]> {
     await this.labConstellabApiService.checkApiKeyAndUserIdInCentral(req);
-    return (await this.findSpacesOfUser(req.headers.get('user'))).map(space => new HnSpaceDto(space));
+    return (await this.findSpacesOfUser(req.header('user'))).map(space => new HnSpaceDto(space));
   }
 
 
