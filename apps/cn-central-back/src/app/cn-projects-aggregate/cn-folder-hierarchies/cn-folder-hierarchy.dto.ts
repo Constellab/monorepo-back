@@ -1,10 +1,9 @@
-import { CnProjectLevelStatus } from '../cn-projects/cn-project-level.enum';
-import { CnFolderHierarchyEntity } from './cn-folder-hierarchy.entity';
+import { CnFolderHierarchyWithChildren } from './cn-folder-hierarchy.entity';
 import { CnUser } from '../../cn-users/cn-user.entity';
 import { DateTime } from 'luxon';
 
 
-export interface CnFolderHierarchyInfo{
+export interface CnFolderHierarchyInfo {
   name: string;
   user: CnUser;
   lastModifiedAt: DateTime;
@@ -12,29 +11,31 @@ export interface CnFolderHierarchyInfo{
   documentSize?: number;
 }
 
-export interface CnFolderTreeDTO {
+/**
+ * Representation of a folder in the lab
+ */
+export class CnLabFolderDTO {
   id: string;
   code: string;
   title: string;
-  children: CnFolderTreeDTO[];
-  levelStatus: CnProjectLevelStatus;
+  children: CnLabFolderDTO[];
+  levelStatus: 'LEAF' | 'PARENT';
 }
 
 export class CnFolderDtoHelper {
 
-  // TODO improve type
-  public static convertToFolderTreeDto(folder: CnFolderHierarchyEntity): CnFolderTreeDTO {
+  public static convertToLabFolderDto(folder: CnFolderHierarchyWithChildren): CnLabFolderDTO {
     return {
       id: folder.id,
-      code: folder.name, // TODO a changer
+      code: folder.name,
       title: folder.name,
-      children: folder.children.map(child => CnFolderDtoHelper.convertToFolderTreeDto(child)),
-      levelStatus: null // TODO a changer
+      children: folder.children.map(child => CnFolderDtoHelper.convertToLabFolderDto(child)),
+      levelStatus: folder.children.length > 0 ? 'PARENT' : 'LEAF'
     };
   }
 
-  public static convertToFolderTreeDtoList(folders: CnFolderHierarchyEntity[]): CnFolderTreeDTO[] {
-    return folders.map(project => CnFolderDtoHelper.convertToFolderTreeDto(project));
+  public static convertToFolderTreeDtoList(folders: CnFolderHierarchyWithChildren[]): CnLabFolderDTO[] {
+    return folders.map(project => CnFolderDtoHelper.convertToLabFolderDto(project));
   }
 
 }
