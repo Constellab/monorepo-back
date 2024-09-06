@@ -1,10 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CnExperiment, CnExperimentProtocol } from './cn-experiment.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CnCreateLabExperimentDto, CnSaveExperimentResultDTO } from './cn-experiment.dto';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
-import { CnProject } from '../cn-projects/cn-project.entity';
 import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service';
 import {
   BlAbstractService,
@@ -14,6 +13,11 @@ import {
 } from '@monorepo/back-core-lib';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnProtocolMigrator } from './cn-protocol-migrator.class';
+import {
+  CnFolderHierarchy,
+  CnFolderHierarchyEntity,
+  CnFolderObjectType
+} from '../cn-folder-hierarchies/cn-folder-hierarchy.entity';
 
 @Injectable()
 export class CnExperimentsService extends BlAbstractService<CnExperiment> {
@@ -24,10 +28,10 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     super(repository, CnExperiment);
   }
 
-  getExperimentsByProject(projectId: string): Promise<CnExperiment[]> {
+  getExperimentsByParentFolder(parentFolderId: string): Promise<CnExperiment[]> {
     return this.repository.find({
       where: {
-        projectId: projectId
+        folderHierarchy: {parentId: parentFolderId}
       },
       order: { lastModifiedAt: 'DESC' as any }
     });
@@ -42,22 +46,22 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     });
   }
 
-  getExperimentsByRootProjectAndLabInstance(rootProjectId: string, labInstanceId: string): Promise<CnExperiment[]> {
+  getExperimentsByRootFolderAndLabInstance(rootFolderId: string, labInstanceId: string): Promise<CnExperiment[]> {
     return this.repository.find({
       where: [
-        // find by project parent root id (if experiment is link to leaf project)
+        // find by folder parent root id (if experiment is link to leaf folder)
         {
-          project: {
-            rootParentId: rootProjectId
+          folderHierarchy: {
+            rootParentId: rootFolderId
           },
           labInstance: {
             id: labInstanceId
           }
         },
-        // find by project (if experiment is linked to root project)
+        // find by folder (if experiment is linked to root folder)
         {
-          project: {
-            id: rootProjectId
+          folderHierarchy: {
+            parentId: rootFolderId
           },
           labInstance: {
             id: labInstanceId
@@ -66,19 +70,29 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     });
   }
 
-  public async saveLabExperiment(project: CnProject, createLabExperimentDto: CnCreateLabExperimentDto): Promise<CnSaveExperimentResultDTO> {
+  public async saveLabExperiment(parentFolder: CnFolderHierarchy, createLabExperimentDto: CnCreateLabExperimentDto): Promise<CnSaveExperimentResultDTO> {
 
-    const experimentDB: CnExperiment = await this.findById(createLabExperimentDto.experiment.id);
-    if (experimentDB && experimentDB.projectId !== project.id) {
-      throw new BlUnauthorizedException('Can\'t change the project of a synced experiment');
+    const experimentDB: CnExperiment = await this.findById(createLabExperimentDto.experiment.id, {folderHierarchy: true});
+    if (experimentDB && experimentDB.folderHierarchy.parentId !== parentFolder.id) {
+      throw new BlUnauthorizedException('Can\'t change the folder of a synced experiment');
     }
 
     const labConfig = await this.labConfigService.getOrCreateLabConfig(createLabExperimentDto.lab_config);
 
     const labExperimentDto = createLabExperimentDto.experiment;
     const experiment = new CnExperiment();
+
+    // if this is a creation
+    if (!experimentDB) {
+      experiment.folderHierarchy = CnFolderHierarchyEntity.newSubFolderHierarchyEntity(
+        CnFolderObjectType.EXPERIMENT, labExperimentDto.title, labExperimentDto.last_modified_by,
+        labExperimentDto.last_modified_at, parentFolder
+      );
+      // also set the id of the folder hierarchy because it should be the same as the experiment id
+      experiment.folderHierarchy.id = labExperimentDto.id;
+    }
+
     experiment.id = labExperimentDto.id;
-    experiment.projectId = project.id;
     experiment.title = labExperimentDto.title;
     experiment.description = BlQuillMigrator.migrateOptional(labExperimentDto.description);
     experiment.status = labExperimentDto.status;
@@ -110,7 +124,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     }
   }
 
-  public async deleteExperiment(id: string): Promise<CnExperiment> {
+  public async deleteExperiment(id: string, entityManager: EntityManager): Promise<CnExperiment> {
     const experiment = await this.findById(id);
 
     // no error if experiment not found for more resilience
@@ -121,7 +135,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     if (experiment.isValidated) {
       throw new BlBadRequestException('Can\'t delete a validated experiment');
     }
-    await this.deleteById(id);
+    await this.deleteById(id, entityManager);
     return experiment;
   }
 
@@ -137,15 +151,13 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
         createdBy: {
           id: userInfo.userId
         },
-        project: {
+        folderHierarchy: {
           spaceId: userInfo.spaceId
         }
       },
       order: {
         lastModifiedAt: 'DESC' as any
-      },
-      relations: ['project']
-
+      }
     });
   }
 
@@ -159,22 +171,6 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
       where: { id: experimentId },
       relations: { labConfig: { brickVersions: { brick: true } } }
     })).labConfig;
-  }
-
-  public async migrateAllExperimentProtocol(): Promise<void> {
-    this.logger.log('[PROTOCOL MIGRATION] Migrate all experiment protocol');
-    const experiments = await this.repository.find();
-    for (const experiment of experiments) {
-      try {
-        experiment.protocol = this.migrateProtocol(experiment.protocol);
-        await this.repository.save(experiment);
-      } catch (e) {
-        this.logger.error(`[PROTOCOL MIGRATION] Error while migrating protocol for experiment ${experiment.id}`);
-        this.logger.error(e);
-      }
-    }
-
-    this.logger.log('[PROTOCOL MIGRATION] All experiment protocol migrated');
   }
 
   public migrateProtocol(protocol: CnExperimentProtocol): CnExperimentProtocol {

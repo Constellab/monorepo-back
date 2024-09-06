@@ -52,9 +52,7 @@ import { CnExternalLabUserService } from '../cn-external-lab-api/cn-external-lab
 import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
 import { CnLabInstanceUserService } from './user/cn-lab-instance-user.service';
 import { DataSource, EntityManager } from 'typeorm';
-import { CnExternalLabProjectService } from '../cn-external-lab-api/cn-external-lab-project.service';
 import { CnUsersService } from '../cn-users/cn-users.service';
-import { CnProject } from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 import { CnCpCompleteInfo } from './server/cn-cloud-provider.class';
 import { CnLabServerService } from './server/cn-lab-server.service';
 import { CnLabConfigurerService } from './server/cn-lab-configurer.service';
@@ -94,7 +92,6 @@ export class CnLabInstanceAggregateService {
               private security: CnLabInstancesSecurity,
               private usersService: CnUsersService,
               private externalLabUserService: CnExternalLabUserService,
-              private externalLabProjectService: CnExternalLabProjectService,
               private externalLabApiService: CnExternalLabApiService,
               private dataSource: DataSource,
               private labServerService: CnLabServerService,
@@ -629,19 +626,6 @@ export class CnLabInstanceAggregateService {
 
     return this.labInstanceUserService.findByLabInstanceId(labInstance.id);
   }
-
-  //////////////////////////// PROJECT ////////////////////////////////
-
-
-  public async syncProjectInLab(labInstance: CnLabInstance, projectTree: CnProject): Promise<void> {
-    // add the user to the lab is the lab is running
-    const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabSpaceApiInfo());
-    if (labIsRunning) {
-      // add the project to the lab
-      await this.externalLabProjectService.addProjectInLab(labInstance.getGlabSpaceApiInfo(), projectTree);
-    }
-  }
-
 
   //////////////////////////// LAB MANAGER ////////////////////////////////
 

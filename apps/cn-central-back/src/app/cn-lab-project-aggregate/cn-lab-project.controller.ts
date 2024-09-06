@@ -14,23 +14,23 @@ export class CnLabProjectController {
   @Post(':id/project/:projectId')
   public addProject(@Param('id', new ParseUUIDPipe()) id: string,
                     @Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnLabProject> {
-    return this.labProjectAggregateService.addProjectToLab(id, projectId);
+    return this.labProjectAggregateService.addFolderToLab(id, projectId);
   }
 
   @Delete(':id/project/:projectId')
   public removeProject(@Param('id', new ParseUUIDPipe()) id: string,
                        @Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<void> {
-    return this.labProjectAggregateService.checkAndRemoveProjectFromLab(id, projectId);
+    return this.labProjectAggregateService.checkAndRemoveFolderFromLab(id, projectId);
   }
 
   @Get(':id/project')
   public getProjects(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabProject[]> {
-    return this.labProjectAggregateService.getLabInstanceProjects(id);
+    return this.labProjectAggregateService.getLabInstanceFolders(id);
   }
 
-  @Put(':id/project/:projectId/sync')
+  @Put(':id/project/:rootFolderId/sync')
   public forceSync(@Param('id', new ParseUUIDPipe()) id: string,
-                   @Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<void> {
-    return this.labProjectAggregateService.forceProjectSyncToLab(id, projectId);
+                   @Param('rootFolderId', new ParseUUIDPipe()) rootFolderId: string): Promise<void> {
+    return this.labProjectAggregateService.forceFolderSyncToLab(id, rootFolderId);
   }
 }

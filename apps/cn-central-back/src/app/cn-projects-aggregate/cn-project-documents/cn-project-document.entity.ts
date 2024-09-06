@@ -1,9 +1,11 @@
-import { Column, Entity, ManyToOne, Unique } from 'typeorm';
-import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne } from 'typeorm';
 import { BlBucketType, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
-import { Exclude, Expose, Type } from 'class-transformer';
-import { CnProject } from '../cn-projects/cn-project.entity';
+import { Exclude, Expose } from 'class-transformer';
 import { DateTime } from 'luxon';
+import { CnFolderObject } from '../cn-folder-hierarchies/cn-folder-object.entity';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { CnFolderHierarchyInfo } from '../cn-folder-hierarchies/cn-folder-hierarchy.dto';
 
 
 export enum CnProjectDocumentType {
@@ -27,8 +29,7 @@ export enum CnProjectDocumentType {
  * This table stores every document uploaded to the S3 server for a project
  */
 @Entity('project_document')
-@Unique(['projectId', 'type', 'name', 'entityId'])
-export class CnProjectDocument extends CnBaseEntity {
+export class CnProjectDocument extends CnFolderObject {
 
   // name of the document show in the interface
   @Column({ nullable: false })
@@ -43,13 +44,6 @@ export class CnProjectDocument extends CnBaseEntity {
 
   @Column({ nullable: false })
   mimeType: string;
-
-  @Type(() => CnProject)
-  @ManyToOne(() => CnProject, { nullable: false })
-  project: CnProject;
-
-  @Column()
-  projectId: string;
 
   @Column({ nullable: false, update: false, type: 'enum', enum: CnProjectDocumentType })
   type: CnProjectDocumentType;
@@ -86,6 +80,15 @@ export class CnProjectDocument extends CnBaseEntity {
   @BlLuxonDateTimeColumn({ nullable: true })
   previewTokenExpiration: DateTime;
 
+  getFolderObjectInfo(): CnFolderHierarchyInfo {
+    return {
+      name: this.name,
+      user: this.lastModifiedBy,
+      lastModifiedAt: this.lastModifiedAt,
+      documentSize: this.size,
+    };
+  }
+
   getTypePrefix(): string {
     switch (this.type) {
       case CnProjectDocumentType.UPLOADED_DOCUMENT:
@@ -112,7 +115,7 @@ export class CnProjectDocument extends CnBaseEntity {
   /**
    * return true if the entityId correspond to the projectId
    */
-  entityIdIsProject(): boolean{
+  entityIdIsProject(): boolean {
     return this.type === CnProjectDocumentType.UPLOADED_DOCUMENT
       || this.type === CnProjectDocumentType.CONSTELLAB_DOCUMENT
       || this.type === CnProjectDocumentType.DESCRIPTION_CONTENT
@@ -133,5 +136,18 @@ export class CnProjectDocument extends CnBaseEntity {
       'application/vnd.ms-powerpoint' // ppt
     ];
     return this.type === CnProjectDocumentType.UPLOADED_DOCUMENT && officesMimeTypes.includes(this.mimeType);
+  }
+
+  @BeforeInsert()
+  setCreatedInfo(): void {
+    this.createdBy = CnCurrentUserHelper.getAndCheckCurrentUser();
+    this.createdAt = ClDateHelper.getDate();
+  }
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  setLastModifiedInfo(): void {
+    this.lastModifiedBy = CnCurrentUserHelper.getAndCheckCurrentUser();
+    this.lastModifiedAt = ClDateHelper.getDate();
   }
 }

@@ -4,9 +4,9 @@ import { DateTime } from 'luxon';
 import { Type } from 'class-transformer';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnLabInstance } from '../cn-lab-instances/cn-lab-instance.entity';
-import { CnProject } from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { ClDateHelper } from '@monorepo/core-lib';
+import { CnFolderHierarchyEntity } from '../cn-projects-aggregate/cn-folder-hierarchies/cn-folder-hierarchy.entity';
 
 /**
  * Entity for N to N relation between lab instance and project shared to lab
@@ -14,20 +14,21 @@ import { ClDateHelper } from '@monorepo/core-lib';
 @Entity('lab_instance_project')
 export class CnLabProject {
 
-  @PrimaryColumn()
-  labInstanceId?: string;
+  @PrimaryColumn({ type: 'varchar', length: 36 })
+  labInstanceId: string;
 
   @JoinColumn({name: 'labInstanceId'})
   @ManyToOne(() => CnLabInstance,
     labInstance => labInstance.sharedGroups, {onDelete: 'CASCADE'})
   labInstance: CnLabInstance;
 
-  @PrimaryColumn()
-  projectId: string;
+  @PrimaryColumn({ type: 'varchar', length: 36 })
+  rootFolderId: string;
 
-  @JoinColumn({name: 'projectId'})
-  @ManyToOne(() => CnProject)
-  project: CnProject;
+  @Type(() => CnFolderHierarchyEntity)
+  @JoinColumn({name: 'rootFolderId'})
+  @ManyToOne(() => CnFolderHierarchyEntity)
+  rootFolder: CnFolderHierarchyEntity;
 
   @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;

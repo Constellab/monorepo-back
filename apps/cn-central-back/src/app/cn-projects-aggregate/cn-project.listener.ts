@@ -6,17 +6,19 @@ import { CnProjectNotifOptions, CnProjectUser } from './cn-project-user/cn-proje
 import { CnActivity, CnActivityEntityType, CnActivityType } from '../cn-activity/cn-activity.entity';
 import { CnNotificationService } from '../cn-notification/cn-notification.service';
 import { CnFrontService } from '../cn-core/services/cn-front.service';
-import { CnProjectEvent, cnProjectEventName } from './cn-project.event';
-import { CnProject } from './cn-projects/cn-project.entity';
+import { CnFolderEvent, cnProjectEventName, CnProjectEventType } from './cn-folder.event';
+import { CnProjectSimple } from './cn-projects/cn-project.entity';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnExperiment } from './cn-experiments/cn-experiment.entity';
 import { CnReport } from './cn-reports/cn-report.entity';
 import { CnProjectComment, getFakeUserEveryoneMention } from '../cn-project-comment/cn-project-comment.entity';
 import { BlMailService, BlMentionUser, BlNewRichText, BlRichTextContent } from '@monorepo/back-core-lib';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnProjectsService } from './cn-projects/cn-projects.service';
 import { CnMailTemplate } from '../cn-core/model/config/cn-mail-template.class';
 import { CnProjectDocument } from './cn-project-documents/cn-project-document.entity';
+import { CnFolderHierarchyService } from './cn-folder-hierarchies/cn-folder-hierarchy.service';
+import { CnFolderHierarchy } from './cn-folder-hierarchies/cn-folder-hierarchy.entity';
+import { CnFolderObject } from './cn-folder-hierarchies/cn-folder-object.entity';
 
 export interface CnNotifInfo {
   link: string;
@@ -31,7 +33,7 @@ export interface CnActivityAndNotif {
 export class CnProjectListener {
 
   constructor(private projectUserService: CnProjectUserService,
-              private projectService: CnProjectsService,
+              private folderHierarchyService: CnFolderHierarchyService,
               private notificationService: CnNotificationService,
               private activityService: CnActivityService,
               private mailService: BlMailService,
@@ -40,27 +42,29 @@ export class CnProjectListener {
 
 
   @OnEvent(cnProjectEventName)
-  async handleProjectEvent(event: CnProjectEvent): Promise<void> {
+  async handleProjectEvent(event: CnFolderEvent): Promise<void> {
 
+    console.log('handleProjectEvent', event.type);
     const activityAndNotif: CnActivityAndNotif = this.getActivityDTO(event);
     if (activityAndNotif == null) return;
+    console.log('handleProjectEven22222', event.type);
 
     const activity = await this.createActivity(activityAndNotif.activity, event);
 
     // specific case for comment to handle mentions
     if (event.type === 'CREATE_PROJECT_COMMENT') {
-      await this.handleCommentCreated(activity, event.entity, event.parentProject);
-    }else if(event.type === 'DELETE_PROJECT_COMMENT'){
-        await this.handleCommentDeleted(activity, event.entity);
+      await this.handleCommentCreated(activity, event.entity, event.parentFolder);
+    } else if (event.type === 'DELETE_PROJECT_COMMENT') {
+      await this.handleCommentDeleted(activity, event.entity);
     } else if (activityAndNotif.notif) {
-      await this.createNotification(activity, activityAndNotif.notif, event.parentProject);
+      await this.createNotification(activity, activityAndNotif.notif, event.parentFolder);
     }
   }
 
-  private async createActivity(activityDTO: CnActivityCreateDTO, event: CnProjectEvent): Promise<CnActivity> {
+  private async createActivity(activityDTO: CnActivityCreateDTO, event: CnFolderEvent): Promise<CnActivity> {
     activityDTO.user = event.userInfo.user;
     activityDTO.space = event.userInfo.space;
-    activityDTO.parentEntityId = event.parentProject.id;
+    activityDTO.parentEntityId = event.parentFolder.id;
 
     return await this.activityService.create(activityDTO);
   }
@@ -69,22 +73,22 @@ export class CnProjectListener {
    * Get all user of project and send notification to user that have notif mode for this entity type
    * @private
    */
-  private async createNotification(activity: CnActivity, notifInfo: CnNotifInfo, parentProject: CnProject): Promise<void> {
-    if (!parentProject) return;
+  private async createNotification(activity: CnActivity, notifInfo: CnNotifInfo, parentFolder: CnFolderHierarchy): Promise<void> {
+    if (!parentFolder) return;
 
-    const projectUsers = await this.projectUserService.findByProjectId(parentProject.getRootParentId());
+    const projectUsers = await this.projectUserService.findByRootFolderId(parentFolder.getRootFolderId());
 
     let ancestorIds: string[] = [];
     // for delete type, don't store the ancestors
     if (activity.actionType !== CnActivityType.DELETE) {
-      const ancestors = await this.projectService.getAncestors(parentProject);
+      const ancestors = await this.folderHierarchyService.getAncestorsByFolderId(parentFolder.id);
       ancestorIds = ancestors.map(a => a.id);
     }
 
     for (const projectUser of projectUsers) {
       await this.sendNotification(projectUser,
         activity.user, activity.space.id, activity.entityType, activity.entityId,
-        activity.cleanTitle, notifInfo.link, parentProject, ancestorIds);
+        activity.cleanTitle, notifInfo.link, parentFolder, ancestorIds);
     }
   }
 
@@ -99,7 +103,7 @@ export class CnProjectListener {
                                  entityId: string,
                                  text: string,
                                  appRoute: string,
-                                 parentProject: CnProject, ancestorProjectIds: string[]): Promise<void> {
+                                 parentFolder: CnFolderHierarchy, ancestorFolderIds: string[]): Promise<void> {
     if (projectUser.userId === activityUser.id) return;
 
     const notifMode = this.getNotifMode(projectUser, entityType);
@@ -114,9 +118,9 @@ export class CnProjectListener {
         createdBy: activityUser,
         objectType: entityType,
         text: text,
-        text2: parentProject.title,
+        text2: parentFolder.name,
         objectId: entityId,
-        associatedObjectIds: ancestorProjectIds
+        associatedObjectIds: ancestorFolderIds
       });
     }
 
@@ -127,196 +131,182 @@ export class CnProjectListener {
         {
           content: text,
           user: projectUser.user,
-          title: parentProject.title,
+          title: parentFolder.name,
           link: fullLink
         }, text);
     }
   }
 
-  private getActivityDTO(event: CnProjectEvent): CnActivityAndNotif {
+  private getActivityDTO(event: CnFolderEvent): CnActivityAndNotif {
     switch (event.type) {
       case 'CREATE_SUB_PROJECT':
-        return this.subProjectCreated(event.entity, event.parentProject);
+        return this.subProjectCreated(event.entity, event.parentFolder);
       case 'UPDATE_PROJECT':
         return this.projectUpdated(event.entity);
       case 'UPDATE_PROJECT_LEADER':
         return this.projectLeaderUpdated(event.entity);
-      case 'UPDATE_PROJECT_STATUS':
-        return this.projectStatusUpdated(event.entity);
       case 'SHARE_PROJECT':
-        return this.projectShared(event.entity, event.parentProject);
+        return this.projectShared(event.entity, event.parentFolder);
       case 'UNSHARE_PROJECT':
-        return this.projectUnshared(event.entity, event.parentProject);
+        return this.projectUnshared(event.entity, event.parentFolder);
       case 'CREATE_EXPERIMENT':
-        return this.experimentCreated(event.entity, event.parentProject);
+        return this.experimentCreated(event.entity, event.parentFolder);
       case 'UPDATE_EXPERIMENT':
-        return this.experimentUpdated(event.entity, event.parentProject);
+        return this.experimentUpdated(event.entity, event.parentFolder);
       case 'DELETE_EXPERIMENT':
-        return this.experimentDeleted(event.entity, event.parentProject);
+        return this.experimentDeleted(event.entity, event.parentFolder);
       case 'CREATE_REPORT':
-        return this.reportCreated(event.entity, event.parentProject);
+        return this.reportCreated(event.entity, event.parentFolder);
       case 'UPDATE_REPORT':
-        return this.reportUpdated(event.entity, event.parentProject);
+        return this.reportUpdated(event.entity, event.parentFolder);
       case 'DELETE_REPORT':
-        return this.reportDeleted(event.entity, event.parentProject);
+        return this.reportDeleted(event.entity, event.parentFolder);
       case 'CREATE_CONSTELLAB_DOCUMENT':
         return this.constellabDocCreated(event.entity);
       case 'UPLOAD_PROJECT_DOCUMENT':
-        return this.documentCreated(event.entity, event.parentProject);
+        return this.documentCreated(event.entity, event.parentFolder);
       case 'DELETE_PROJECT_DOCUMENT':
-        return this.documentDeleted(event.entity, event.parentProject);
+        return this.documentDeleted(event.entity, event.parentFolder);
       case 'CREATE_PROJECT_COMMENT':
-        return this.projectCommentCreated(event.entity, event.parentProject);
+        return this.projectCommentCreated(event.entity, event.parentFolder);
       case 'DELETE_PROJECT_COMMENT':
-        return this.projectCommentDeleted(event.entity, event.parentProject);
+        return this.projectCommentDeleted(event.entity, event.parentFolder);
       default:
         return null;
     }
   }
 
 
-  private subProjectCreated(project: CnProject, parentProject: CnProject): CnActivityAndNotif {
+  private subProjectCreated(project: CnProjectSimple, parentFolder: CnFolderHierarchy): CnActivityAndNotif {
     return {
       activity: {
         entityType: CnActivityEntityType.PROJECT,
         entity: project,
         actionType: CnActivityType.CREATE,
-        title: `{{user.name}} has created sub project ${project.title} under project ${parentProject.title}`,
-        entityName: project.title,
-      }, notif: {link: CnFrontService.getProjectRoute(project.id)}
+        title: `{{user.name}} has created sub project ${project.title} under project ${parentFolder.name}`,
+        entityName: project.title
+      }, notif: { link: CnFrontService.getProjectRoute(project.id) }
     };
   }
 
-  private projectUpdated(project: CnProject): CnActivityAndNotif {
+  private projectUpdated(project: CnProjectSimple): CnActivityAndNotif {
     return {
       activity: {
         entityType: CnActivityEntityType.PROJECT,
         entity: project,
         actionType: CnActivityType.UPDATE,
         title: `{{user.name}} has updated project ${project.title}`,
-        entityName: project.title,
-      }, notif: {link: CnFrontService.getProjectRoute(project.id)}
+        entityName: project.title
+      }, notif: { link: CnFrontService.getProjectRoute(project.id) }
     };
   }
 
-  private projectLeaderUpdated(project: CnProject): CnActivityAndNotif {
+  private projectLeaderUpdated(project: CnProjectSimple): CnActivityAndNotif {
     return {
       activity: {
         entityType: CnActivityEntityType.PROJECT,
         entity: project,
         actionType: CnActivityType.UPDATE,
         title: `{{user.name}} has changed leader of project ${project.title} to ${project.leader.alias}`,
-        entityName: project.title,
-      }, notif: {link: CnFrontService.getProjectRoute(project.id)}
+        entityName: project.title
+      }, notif: { link: CnFrontService.getProjectRoute(project.id) }
     };
   }
 
-  private projectStatusUpdated(project: CnProject): CnActivityAndNotif {
-    return {
-      activity: {
-        entityType: CnActivityEntityType.PROJECT,
-        entity: project,
-        actionType: CnActivityType.UPDATE,
-        title: `{{user.name}} has changed status of project ${project.title} to ${project.currentStatus.status}`,
-        entityName: project.title,
-      }, notif: {link: CnFrontService.getProjectRoute(project.id)}
-    };
-  }
-
-  private projectShared(users: CnUser[], parentProject: CnProject): CnActivityAndNotif {
+  private projectShared(users: CnUser[], parentFolder: CnFolderHierarchy): CnActivityAndNotif {
     const userText = users.length === 1 ? users[0].alias : `${users.length} users`;
     return {
       activity: {
         entityType: CnActivityEntityType.PROJECT,
-        entity: parentProject,
+        entity: parentFolder,
         actionType: CnActivityType.UPDATE,
-        title: `{{user.name}} added ${userText} to project ${parentProject.title}`,
-        entityName: parentProject.title,
-      }, notif: {link: CnFrontService.getProjectRoute(parentProject.id)}
+        title: `{{user.name}} added ${userText} to project ${parentFolder.name}`,
+        entityName: parentFolder.name
+      }, notif: { link: CnFrontService.getProjectRoute(parentFolder.id) }
     };
   }
 
-  private projectUnshared(user: CnUser, parentProject: CnProject): CnActivityAndNotif {
+  private projectUnshared(user: CnUser, parentFolder: CnFolderHierarchy): CnActivityAndNotif {
     return {
       activity: {
         entityType: CnActivityEntityType.PROJECT,
-        entity: parentProject,
+        entity: parentFolder,
         actionType: CnActivityType.UPDATE,
-        title: `{{user.name}} removed ${user.alias} from project ${parentProject.title}`,
-        entityName: parentProject.title,
-      }, notif: {link: CnFrontService.getProjectRoute(parentProject.id)}
+        title: `{{user.name}} removed ${user.alias} from project ${parentFolder.name}`,
+        entityName: parentFolder.name
+      }, notif: { link: CnFrontService.getProjectRoute(parentFolder.id) }
     };
   }
 
-  private experimentCreated(experiment: CnExperiment, parentProject: CnProject): CnActivityAndNotif {
+  private experimentCreated(experiment: CnExperiment, parentFolder: CnFolderHierarchy): CnActivityAndNotif {
     return {
       activity: {
         entityType: CnActivityEntityType.EXPERIMENT,
         entity: experiment,
         actionType: CnActivityType.CREATE,
-        title: `{{user.name}} has created experiment ${experiment.title} under project ${parentProject.title}`,
-        entityName: experiment.title,
-      }, notif: {link: CnFrontService.getExperimentRoute(experiment.id)}
+        title: `{{user.name}} has created experiment ${experiment.title} under project ${parentFolder.name}`,
+        entityName: experiment.title
+      }, notif: { link: CnFrontService.getExperimentRoute(experiment.id) }
     };
   }
 
-  private experimentUpdated(experiment: CnExperiment, parentProject: CnProject): CnActivityAndNotif {
+  private experimentUpdated(experiment: CnExperiment, parentFolder: CnFolderHierarchy): CnActivityAndNotif {
     return {
       activity: {
         entityType: CnActivityEntityType.EXPERIMENT,
         entity: experiment,
         actionType: CnActivityType.UPDATE,
-        title: `{{user.name}} has updated experiment ${experiment.title} under project ${parentProject.title}`,
-        entityName: experiment.title,
-      }, notif: {link: CnFrontService.getExperimentRoute(experiment.id)}
+        title: `{{user.name}} has updated experiment ${experiment.title} under project ${parentFolder.name}`,
+        entityName: experiment.title
+      }, notif: { link: CnFrontService.getExperimentRoute(experiment.id) }
     };
   }
 
-  private experimentDeleted(experiment: CnExperiment, parentProject: CnProject): CnActivityAndNotif {
+  private experimentDeleted(experiment: CnExperiment, parentFolder: CnFolderHierarchy): CnActivityAndNotif {
     return {
       activity: {
         entityType: CnActivityEntityType.EXPERIMENT,
         entity: experiment,
         actionType: CnActivityType.DELETE,
-        title: `{{user.name}} has deleted experiment ${experiment.title} under project ${parentProject.title}`,
-        entityName: experiment.title,
-      }, notif: {link: CnFrontService.getProjectRoute(parentProject.id)}
+        title: `{{user.name}} has deleted experiment ${experiment.title} under project ${parentFolder.name}`,
+        entityName: experiment.title
+      }, notif: { link: CnFrontService.getProjectRoute(parentFolder.id) }
     };
   }
 
-  private reportCreated(report: CnReport, parentProject: CnProject): CnActivityAndNotif {
+  private reportCreated(report: CnReport, parentFolder: CnFolderHierarchy): CnActivityAndNotif {
     return {
       activity: {
         entityType: CnActivityEntityType.REPORT,
         entity: report,
         actionType: CnActivityType.CREATE,
-        title: `{{user.name}} has created report ${report.title} under project ${parentProject.title}`,
-        entityName: report.title,
-      }, notif: {link: CnFrontService.getReportRoute(report.id)}
+        title: `{{user.name}} has created report ${report.title} under project ${parentFolder.name}`,
+        entityName: report.title
+      }, notif: { link: CnFrontService.getReportRoute(report.id) }
     };
   }
 
-  private reportUpdated(report: CnReport, parentProject: CnProject): CnActivityAndNotif {
+  private reportUpdated(report: CnReport, parentFolder: CnFolderHierarchy): CnActivityAndNotif {
     return {
       activity: {
         entityType: CnActivityEntityType.REPORT,
         entity: report,
         actionType: CnActivityType.UPDATE,
-        title: `{{user.name}} has updated report ${report.title} under project ${parentProject.title}`,
-        entityName: report.title,
-      }, notif: {link: CnFrontService.getReportRoute(report.id)}
+        title: `{{user.name}} has updated report ${report.title} under project ${parentFolder.name}`,
+        entityName: report.title
+      }, notif: { link: CnFrontService.getReportRoute(report.id) }
     };
   }
 
-  private reportDeleted(report: CnReport, parentProject: CnProject): CnActivityAndNotif {
+  private reportDeleted(report: CnReport, parentFolder: CnFolderHierarchy): CnActivityAndNotif {
     return {
       activity: {
         entityType: CnActivityEntityType.REPORT,
         entity: report,
         actionType: CnActivityType.DELETE,
-        title: `{{user.name}} has deleted report ${report.title} under project ${parentProject.title}`,
-        entityName: report.title,
-      }, notif: {link: CnFrontService.getProjectRoute(parentProject.id)}
+        title: `{{user.name}} has deleted report ${report.title} under project ${parentFolder.name}`,
+        entityName: report.title
+      }, notif: { link: CnFrontService.getProjectRoute(parentFolder.id) }
     };
   }
 
@@ -327,56 +317,56 @@ export class CnProjectListener {
         entity: document,
         actionType: CnActivityType.CREATE,
         title: `{{user.name}} has created constellab document ${document.name}`,
-        entityName: document.name,
-      }, notif: {link: CnFrontService.getConstellabDocRoute(document.id)}
+        entityName: document.name
+      }, notif: { link: CnFrontService.getConstellabDocRoute(document.id) }
     };
   }
 
 
-  private documentCreated(document: CnProjectDocument, parentProject: CnProject): CnActivityAndNotif {
+  private documentCreated(document: CnProjectDocument, parentFolder: CnFolderHierarchy): CnActivityAndNotif {
     return {
       activity: {
         entityType: CnActivityEntityType.PROJECT_DOCUMENT,
         entity: document,
         actionType: CnActivityType.CREATE,
         title: `{{user.name}} has uploaded document ${document.name}`,
-        entityName: document.name,
-      }, notif: {link: CnFrontService.getProjectRoute(parentProject.id)}
+        entityName: document.name
+      }, notif: { link: CnFrontService.getProjectRoute(parentFolder.id) }
     };
   }
 
-  private documentDeleted(document: CnProjectDocument, parentProject: CnProject): CnActivityAndNotif {
+  private documentDeleted(document: CnProjectDocument, parentFolder: CnFolderHierarchy): CnActivityAndNotif {
     return {
       activity: {
         entityType: CnActivityEntityType.PROJECT_DOCUMENT,
         entity: document,
         actionType: CnActivityType.DELETE,
         title: `{{user.name}} has deleted document ${document.name}`,
-        entityName: document.name,
-      }, notif: {link: CnFrontService.getProjectRoute(parentProject.id)}
+        entityName: document.name
+      }, notif: { link: CnFrontService.getProjectRoute(parentFolder.id) }
     };
   }
 
-  private projectCommentCreated(comment: CnProjectComment, parentProject: CnProject): CnActivityAndNotif {
+  private projectCommentCreated(comment: CnProjectComment, parentFolder: CnFolderHierarchy): CnActivityAndNotif {
     return {
       activity: {
         entityType: CnActivityEntityType.PROJECT_COMMENT,
         entity: comment,
         actionType: CnActivityType.CREATE,
-        title: `{{user.name}} has commented on project ${parentProject.title}`,
-        entityName: parentProject.title,
+        title: `{{user.name}} has commented on project ${parentFolder.name}`,
+        entityName: parentFolder.name
       }
     };
   }
 
-  private projectCommentDeleted(comment: CnProjectComment, parentProject: CnProject): CnActivityAndNotif {
+  private projectCommentDeleted(comment: CnProjectComment, parentFolder: CnFolderHierarchy): CnActivityAndNotif {
     return {
       activity: {
         entityType: CnActivityEntityType.PROJECT_COMMENT,
         entity: comment,
         actionType: CnActivityType.DELETE,
-        title: `{{user.name}} has deleted comment on project ${parentProject.title}`,
-        entityName: parentProject.title,
+        title: `{{user.name}} has deleted comment on project ${parentFolder.name}`,
+        entityName: parentFolder.name
       }
     };
   }
@@ -385,26 +375,28 @@ export class CnProjectListener {
    * Handle notification on comment to send notification to mentioned users
    * @param activity
    * @param comment
-   * @param parentProject
+   * @param parentFolder
    * @private
    */
-  private async handleCommentCreated(activity: CnActivity, comment: CnProjectComment, parentProject: CnProject): Promise<void> {
-    const projectUsers = await this.projectUserService.findByProjectId(parentProject.getRootParentId());
+  private async handleCommentCreated(activity: CnActivity, comment: CnProjectComment, parentFolder: CnFolderHierarchy): Promise<void> {
+    console.log('handle comment')
+    const projectUsers = await this.projectUserService.findByRootFolderId(parentFolder.getRootFolderId());
 
-    const link = CnFrontService.getProjectCommentRoute(parentProject.id);
+    const link = CnFrontService.getProjectCommentRoute(parentFolder.id);
 
-    const ancestors = await this.projectService.getAncestors(parentProject);
+    const ancestors = await this.folderHierarchyService.getAncestorsByFolderId(parentFolder.id);
     const ancestorIds = ancestors.map(a => a.id);
 
     const userMentions = this.getUserMentions(comment.content, projectUsers);
 
     // send notification to mentioned users
     for (const userMention of userMentions) {
+    console.log('userMentions', userMention.user.alias);
 
       await this.sendNotification(userMention,
         activity.user, activity.space.id, activity.entityType, activity.entityId,
-        `${comment.createdBy.alias} mentioned you in a comment on project ${parentProject.title}`,
-        link, parentProject, ancestorIds);
+        `${comment.createdBy.alias} mentioned you in a comment on project ${parentFolder.name}`,
+        link, parentFolder, ancestorIds);
     }
 
     // send notification to project users
@@ -414,7 +406,7 @@ export class CnProjectListener {
 
       await this.sendNotification(projectUser,
         activity.user, activity.space.id, activity.entityType, activity.entityId, activity.cleanTitle,
-        link, parentProject, ancestorIds);
+        link, parentFolder, ancestorIds);
     }
   }
 
@@ -449,7 +441,6 @@ export class CnProjectListener {
    * On comment delete, delete the notification
    * @param activity
    * @param comment
-   * @param parentProject
    * @private
    */
   private async handleCommentDeleted(activity: CnActivity, comment: CnProjectComment): Promise<void> {
@@ -471,6 +462,31 @@ export class CnProjectListener {
       default:
         return CnProjectNotifOptions.NONE;
     }
+  }
+
+  /**
+   * Method to update hierarchy object after the object is updated
+   * @param event
+   * @private
+   */
+  @OnEvent(cnProjectEventName)
+  async updateHierarchyObject(event: CnFolderEvent): Promise<void> {
+    const events: CnProjectEventType[] = ['UPDATE_PROJECT', 'UPDATE_PROJECT_LEADER', 'UPDATE_EXPERIMENT', 'UPDATE_REPORT',
+      'RENAME_DOCUMENT', 'UPDATE_CONSTELLAB_DOCUMENT'];
+
+    if (!events.includes(event.type)) return;
+    if (!(event.entity instanceof CnFolderObject)) return;
+
+    const folderObjectInfo = event.entity.getFolderObjectInfo();
+    const folderObjectDb = await this.folderHierarchyService.findByIdAndCheck(event.entity.id);
+
+    folderObjectDb.name = folderObjectInfo.name;
+    folderObjectDb.lastModifiedAt = folderObjectInfo.lastModifiedAt;
+    folderObjectDb.user = folderObjectInfo.user;
+    folderObjectDb.isValidated = folderObjectInfo.isValidated;
+    folderObjectDb.documentSize = folderObjectInfo.documentSize;
+
+    await this.folderHierarchyService.update(folderObjectDb);
   }
 
 }

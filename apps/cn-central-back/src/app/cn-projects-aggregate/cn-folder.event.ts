@@ -1,5 +1,5 @@
-import { CnProject } from './cn-projects/cn-project.entity';
 import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
+import { CnFolderHierarchy } from './cn-folder-hierarchies/cn-folder-hierarchy.entity';
 
 export const cnProjectEventName = 'cn-project-event';
 
@@ -7,13 +7,12 @@ export const cnProjectEventName = 'cn-project-event';
 export const cnRemoveProjectFromAllLabsEventName = 'cn-remove-project-from-all-labs-event';
 
 export type CnProjectEventType =
-  'CREATE_PROJECT'
+  'CREATE_ROOT_PROJECT'
   | 'CREATE_SUB_PROJECT'
   | 'UPDATE_PROJECT'
   | 'DELETE_PROJECT'
   | 'UPDATE_PROJECT_LEADER'
   | 'UPDATE_PROJECT_DESCRIPTION'
-  | 'UPDATE_PROJECT_STATUS'
   | 'SHARE_PROJECT'
   | 'UNSHARE_PROJECT'
   | 'CREATE_EXPERIMENT'
@@ -22,6 +21,7 @@ export type CnProjectEventType =
   | 'CREATE_REPORT'
   | 'UPDATE_REPORT'
   | 'DELETE_REPORT'
+  | 'RENAME_DOCUMENT'
   | 'CREATE_CONSTELLAB_DOCUMENT'
   | 'UPDATE_CONSTELLAB_DOCUMENT'
   | 'UPLOAD_PROJECT_DOCUMENT'
@@ -33,9 +33,17 @@ export type CnProjectEventType =
   | 'DELETE_PROJECT_COMMENT';
 
 
-export interface CnProjectEvent {
+// TODO peut être splitter en 2 event, un qui n'a pas le parentFolder et un qui l'a
+export interface CnFolderEvent {
   type: CnProjectEventType;
-  parentProject: CnProject;
+  parentFolder?: CnFolderHierarchy;
+  entity: any;
+  userInfo: CnUserSpaceInfo;
+}
+
+export interface CnFolderObjectEvent {
+  type: CnProjectEventType;
+  parentFolder: CnFolderHierarchy;
   entity: any;
   userInfo: CnUserSpaceInfo;
 }

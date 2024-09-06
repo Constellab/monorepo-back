@@ -1,11 +1,9 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { CnProjectsService } from './cn-projects/cn-projects.service';
 import { CnProjectsAggregateSecurity } from './cn-projects-aggregate.security';
-import { CnProject } from './cn-projects/cn-project.entity';
+import { CnProject, CnProjectWithFolder } from './cn-projects/cn-project.entity';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
-import { CnProjectStatusHistory } from './cn-projects/cn-project-status-history.entity';
-import { CnProjectStatus } from './cn-projects/cn-project-status.enum';
+import { ClDateHelper, ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
 import { CnExperimentsService } from './cn-experiments/cn-experiments.service';
 import { CnReportsService } from './cn-reports/cn-reports.service';
 import { CnExperiment, CnExperimentProtocol } from './cn-experiments/cn-experiment.entity';
@@ -14,14 +12,7 @@ import { CnCreateReportWithConfigDto } from './cn-reports/cn-report.dto';
 import { CnReport } from './cn-reports/cn-report.entity';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
-import { CnProjectLevel, CnProjectLevelStatus } from './cn-projects/cn-project-level.enum';
-import {
-  CnProjectAncestorTreeDTO,
-  CnProjectAncestorType,
-  CnProjectDtoHelper,
-  CnProjectStorageLocationDTO,
-  CnSaveProjectDTO
-} from './cn-projects/cn-project.dto';
+import { CnProjectStorageLocationDTO, CnSaveProjectDTO } from './cn-projects/cn-project.dto';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnProjectComment, getFakeUserEveryoneMention } from '../cn-project-comment/cn-project-comment.entity';
 import { CnProjectCommentService } from '../cn-project-comment/cn-project-comment.service';
@@ -30,6 +21,7 @@ import {
   BlBadRequestException,
   BlFile,
   BlFileResponse,
+  BlNewRichText,
   BlRichTextContent,
   BlRichTextUploadedImageResponse,
   BlRichTextUploadFileResponse,
@@ -42,11 +34,11 @@ import { CnProjectUserService } from './cn-project-user/cn-project-user.service'
 import { CnUsersService } from '../cn-users/cn-users.service';
 import { CnProjectUser } from './cn-project-user/cn-project-user.entity';
 import {
-  CnProjectEvent,
+  CnFolderEvent,
   cnProjectEventName,
   CnProjectEventType,
   cnRemoveProjectFromAllLabsEventName
-} from './cn-project.event';
+} from './cn-folder.event';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CnActivity, CnActivityEntityType } from '../cn-activity/cn-activity.entity';
 import { CnActivityService } from '../cn-activity/cn-activity.service';
@@ -58,6 +50,13 @@ import {
   CnProjectDocumentPreviewDTO,
   CnProjectStorageUsageDTO
 } from './cn-project-documents/cn-project-document-dto.class';
+import {
+  CnFolderHierarchy,
+  CnFolderHierarchyEntity,
+  CnFolderHierarchyWithChildren,
+  CnFolderObjectType
+} from './cn-folder-hierarchies/cn-folder-hierarchy.entity';
+import { CnFolderHierarchyService } from './cn-folder-hierarchies/cn-folder-hierarchy.service';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -65,6 +64,7 @@ export class CnProjectAggregateService {
   protected readonly logger = new Logger(CnProjectAggregateService.name);
 
   constructor(private projectService: CnProjectsService,
+              private folderHierarchyService: CnFolderHierarchyService,
               private projectSecurity: CnProjectsAggregateSecurity,
               private experimentService: CnExperimentsService,
               private reportService: CnReportsService,
@@ -80,12 +80,12 @@ export class CnProjectAggregateService {
 
   /////////////////////////////////////// PROJECT //////////////////////////////////
 
-  async createProject(projectDto: CnSaveProjectDTO): Promise<CnProject> {
+  async createRootProject(projectDto: CnSaveProjectDTO): Promise<CnProjectWithFolder> {
     const newProject = await this.datasource.transaction(async manager => {
       const entity = this.createProjectFromDTO(projectDto);
 
-      entity.parent = null;
-      entity.currentLevel = CnProjectLevel.PROJECT;
+      entity.folderHierarchy = CnFolderHierarchyEntity.newRootFolderHierarchyEntity(CnFolderObjectType.FOLDER, projectDto.title,
+        CnCurrentUserHelper.getAndCheckCurrentUser(), ClDateHelper.getDate(), CnCurrentUserHelper.getAndCheckCurrentSpace());
       entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
       entity.mainStorage = await this.projectBucketService.getBucketById(projectDto.mainStorage.bucketId);
 
@@ -99,47 +99,35 @@ export class CnProjectAggregateService {
       const dbProject = await this.projectService.create(entity, manager);
 
       // share the project with the leader
-      await this.projectUserService.shareProjectToUserIfNot(dbProject.id, dbProject.leader.id, manager);
+      await this.projectUserService.shareRootFolderToUserIfNot(dbProject.id, dbProject.leader.id, manager);
 
       return dbProject;
     });
 
-    this.emitProjectEvent('CREATE_PROJECT', newProject, newProject);
-    return newProject;
+    this.emitProjectEvent('CREATE_ROOT_PROJECT', null, newProject);
+    return this.projectService.findByIdAndCheckWithFolder(newProject.id);
   }
 
-  async createSubProject(projectDto: CnSaveProjectDTO, projectId: string): Promise<CnProject> {
+  async createSubProject(projectDto: CnSaveProjectDTO, parentFolderId: string): Promise<CnProjectWithFolder> {
     const entity = this.createProjectFromDTO(projectDto);
     entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
 
-    const parentProject = await this.getAndCheckAuthorizationForUpdate(projectId);
+    const parentFolder = await this.getAndCheckAuthorizationForUpdate(parentFolderId);
+    const parentWithStorage = await this.projectService.findByIfAndCheckWithStorage(parentFolder.id);
 
-    // check if parent can have children
-    if (parentProject.levelStatus === CnProjectLevelStatus.LEAF) {
-      throw new BlBadRequestException('Cannot create a sub project to a leaf project');
-    }
-
-    if (parentProject.currentLevel >= CnProjectLevel.MAX_LEVEL) {
-      throw new BlBadRequestException(`Cannot create project with a hierarchy level more than ${CnProjectLevel.MAX_LEVEL}`);
-    }
-
-    if (entity.endingDate && parentProject.endingDate && entity.endingDate > parentProject.endingDate) {
+    if (entity.endingDate && parentWithStorage.endingDate && entity.endingDate > parentWithStorage.endingDate) {
       throw new BlBadRequestException(CnErrorText.CHILD_PROJECT_END_DATA_AFTER_PARENT);
     }
 
-    // set hierarchy info
-    entity.parent = parentProject;
-    entity.parentId = parentProject.id;
-    entity.currentLevel = parentProject.currentLevel + 1;
-    // if the project is level max force the status to leaf
-    if (entity.currentLevel === CnProjectLevel.MAX_LEVEL) {
-      entity.levelStatus = CnProjectLevelStatus.LEAF;
-    }
-    entity.rootParentId = parentProject.currentLevel === CnProjectLevel.PROJECT ? parentProject.id : parentProject.rootParentId;
+    entity.folderHierarchy = CnFolderHierarchyEntity.newSubFolderHierarchyEntity(CnFolderObjectType.FOLDER, projectDto.title,
+      CnCurrentUserHelper.getAndCheckCurrentUser(), ClDateHelper.getDate(), parentFolder);
+
+    entity.mainStorage = parentWithStorage.mainStorage;
+    entity.backupStorage = parentWithStorage.backupStorage;
 
     const newProject = await this.projectService.create(entity);
-    this.emitProjectEvent('CREATE_SUB_PROJECT', parentProject, newProject);
-    return newProject;
+    this.emitProjectEvent('CREATE_SUB_PROJECT', parentFolder, newProject);
+    return this.projectService.findByIdAndCheckWithFolder(newProject.id);
   }
 
   private createProjectFromDTO(projectDto: CnSaveProjectDTO): CnProject {
@@ -148,16 +136,16 @@ export class CnProjectAggregateService {
     project.code = projectDto.code;
     project.startingDate = projectDto.startingDate;
     project.endingDate = projectDto.endingDate;
-    project.levelStatus = projectDto.levelStatus;
     return project;
   }
 
-  async updateProject(id: string, entity: CnSaveProjectDTO): Promise<CnProject> {
-    const dbProject = await this.getAndCheckAuthorizationForUpdate(id);
+  async updateProject(id: string, entity: CnSaveProjectDTO): Promise<CnProjectWithFolder> {
+    const folder = await this.getAndCheckAuthorizationForUpdate(id);
+    const dbProject = await this.projectService.findByIdAndCheck(id);
 
     // check that the ending date is not after the parent ending date
-    if (entity.endingDate && dbProject.parentId) {
-      const parent = await this.projectService.findByIdAndCheck(dbProject.parentId);
+    if (entity.endingDate && folder.parentId) {
+      const parent = await this.projectService.findByIdAndCheck(folder.parentId);
       if (parent.endingDate && entity.endingDate > parent.endingDate) {
         throw new BlBadRequestException(CnErrorText.CHILD_PROJECT_END_DATA_AFTER_PARENT);
       }
@@ -168,45 +156,43 @@ export class CnProjectAggregateService {
     dbProject.startingDate = entity.startingDate;
     dbProject.endingDate = entity.endingDate;
 
-    const newProject = await this.projectService.update(dbProject);
-    this.emitProjectEvent('UPDATE_PROJECT', newProject, newProject);
-    return newProject;
+    const newProject = await this.projectService.update(dbProject as CnProject);
+    this.emitProjectEvent('UPDATE_PROJECT', null, newProject);
+    return this.projectService.findByIdAndCheckWithFolder(newProject.id);
   }
 
   async deleteProject(id: string): Promise<void> {
-    const project = await this.getAndCheckAuthorizationForUpdate(id);
+    const folder = await this.getAndCheckAuthorizationForUpdate(id);
 
+    const children = await this.folderHierarchyService.getDirectChildren(folder.id);
 
-    const children = await this.projectService.getChildren(project.id);
-    if (children.length > 0) {
+    if (children.find(child => child.objectType === CnFolderObjectType.FOLDER)) {
       throw new BlBadRequestException(CnErrorText.DELETE_PROJECT_WITH_CHILDREN);
     }
 
-    const experiments = await this.experimentService.getExperimentsByProject(project.id);
-    if (experiments.length > 0) {
+    if (children.find(child => child.objectType === CnFolderObjectType.EXPERIMENT)) {
       throw new BlBadRequestException(CnErrorText.DELETE_PROJECT_WITH_EXPERIMENTS);
     }
 
-    const reports = await this.reportService.getReportsByProject(project.id);
-    if (reports.length > 0) {
+    if (children.find(child => child.objectType === CnFolderObjectType.REPORT)) {
       throw new BlBadRequestException(CnErrorText.DELETE_PROJECT_WITH_REPORTS);
     }
 
-    const documents = await this.projectDocumentService.getProjectDocuments(project.id, false, 0, 1);
+    const documents = await this.projectDocumentService.getParentFolderDocuments(folder.id, false, 0, 1);
     if (documents.totalElements > 0) {
       throw new BlBadRequestException(CnErrorText.DELETE_PROJECT_WITH_DOCUMENTS);
     }
 
     // delete all the trashed documents, no transaction because we can't revert between 2 docs
-    const trashedDocuments = await this.projectDocumentService.findDocumentsByProject(project.id);
+    const trashedDocuments = await this.projectDocumentService.findDocumentsByParentFolder(folder.id);
     for (const document of trashedDocuments) {
       await this.projectDocumentService.deleteDocument(document.id);
     }
 
     // remove project from all lab using event to avoid circular dependencies.
     // If the user can delete the project, we consider he can remove it from labs
-    if (project.isRootProject()) {
-      const results: string[] = await this.eventEmitter.emitAsync(cnRemoveProjectFromAllLabsEventName, project);
+    if (folder.isRootFolder()) {
+      const results: string[] = await this.eventEmitter.emitAsync(cnRemoveProjectFromAllLabsEventName, folder);
       // if a text is returned, it means an error occurred
       for (const res of results) {
         if (res) {
@@ -215,211 +201,149 @@ export class CnProjectAggregateService {
       }
     }
 
+    const project = await this.projectService.findByIdAndCheck(id);
     await this.datasource.transaction(async entityManager => {
       await this.projectService.deleteById(id, entityManager);
+      await this.folderHierarchyService.deleteById(id, entityManager);
     });
 
-    this.emitProjectEvent('DELETE_PROJECT', project, project);
+    this.emitProjectEvent('DELETE_PROJECT', null, project);
   }
 
   async findProject(id: string): Promise<CnProject> {
-    return this.getAndCheckAuthorizationForFindOne(id);
-  }
-
-  async findProjectNotSecure(id: string): Promise<CnProject> {
+    await this.getAndCheckAuthorizationForFindOneByFolder(id);
     return this.projectService.findByIdAndCheck(id);
   }
 
-  public async getCurrentProjects(page: number, size: number): Promise<ClPageI<CnProject>> {
-    return this.projectService.getCurrentProjects(page, size);
+  public async getCurrentRootFolders(page: number, size: number): Promise<ClPageI<CnFolderHierarchy>> {
+    const currentUserInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+    return this.folderHierarchyService.getRootFoldersOfUser(currentUserInfo.userId, currentUserInfo.spaceId,
+      page, size);
   }
 
-  public async getByCurrentSpace(page: number, size: number): Promise<ClPageI<CnProject>> {
+  public async getByCurrentSpace(page: number, size: number): Promise<ClPageI<CnFolderHierarchy>> {
     const info = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     await this.projectSecurity.checkFindAllBySpace(info);
-    return this.projectService.getBySpace(info.spaceId, page, size);
+    return this.folderHierarchyService.getRootFoldersBySpace(info.spaceId, page, size);
   }
 
-  public async searchInCurrentSpace(searchParams: BlSearchParams, page: number, size: number): Promise<ClPageI<CnProject>> {
+  public async searchInCurrentSpace(searchParams: BlSearchParams, page: number, size: number): Promise<ClPageI<CnFolderHierarchy>> {
     const info = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     await this.projectSecurity.checkFindAllBySpace(info);
-    return this.projectService.searchInSpace(info.spaceId, searchParams, page, size);
+    return this.folderHierarchyService.searchFolderInSpace(info.spaceId, searchParams, page, size);
   }
 
-  public async getProjectTree(projectId: string): Promise<CnProject> {
-    return this.getProjectObjectTree('project', projectId);
+  public async getFolderObjectTree(folderId: string): Promise<CnFolderHierarchy> {
+    const rootFolder = await this.checkFindOneAndGetRootFolder(folderId);
+
+    return await this.folderHierarchyService.getFolderTree(rootFolder);
   }
 
-  public async getProjectObjectTree(objectType: CnProjectAncestorType, objectId: string): Promise<CnProject> {
-    let projectId: string;
-    // retrieve the project id of the object
-    switch (objectType) {
-      case 'project':
-        projectId = objectId;
-        break;
-      case 'experiment':
-        const experiment = await this.experimentService.findByIdAndCheck(objectId);
-        projectId = experiment.projectId;
-        break;
-      case 'report':
-        const report = await this.reportService.findByIdAndCheck(objectId);
-        projectId = report.projectId;
-        break;
-      case 'document':
-        const document = await this.projectDocumentService.findByIdAndCheck(objectId);
-        projectId = document.projectId;
-        break;
-    }
-
-    const rootProject = await this.checkFindOneAndGetRootProject(projectId);
-
-    return await this.projectService.getProjectTree(rootProject);
+  public async getFolderTree(rootFolderId: string): Promise<CnFolderHierarchyWithChildren> {
+    const folder = await this.folderHierarchyService.findByIdAndCheck(rootFolderId);
+    return this.folderHierarchyService.getFolderTree(folder);
   }
 
   /**
    * Method not secured to get a list of project trees
-   * @param projects
+   * @param rootFolders
    */
-  public async getProjectTrees(projects: CnProject[]): Promise<CnProject[]> {
-    const rootProjects = projects.map(project => this.projectService.getProjectTree(project));
-    return await Promise.all(rootProjects);
+  public async getFolderTrees(rootFolders: CnFolderHierarchy[]): Promise<CnFolderHierarchy[]> {
+    const folderTrees = rootFolders.map(folder => this.folderHierarchyService.getFolderTree(folder));
+    return await Promise.all(folderTrees);
   }
 
-  public async getChildren(projectId: string): Promise<CnProject[]> {
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+  public async getFolderDirectChildren(folderId: string): Promise<CnFolderHierarchy[]> {
+    const project = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
 
-    return this.projectService.getChildren(project.id);
+    return this.folderHierarchyService.getDirectChildren(project.id);
   }
 
-  public async getChildrenPaginated(projectId: string, page: number, size: number): Promise<ClPage<CnProject>> {
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+  public async getChildrenPaginated(folderId: string, searchParam: BlSearchParams, page: number, size: number): Promise<ClPage<CnFolderHierarchy>> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
 
-    return this.projectService.getChildrenPaginated(project.id, page, size);
+    return this.folderHierarchyService.searchVisibleChildren(folder.id, searchParam, page, size);
   }
 
-  public async getObjectProjectAncestors(objectType: CnProjectAncestorType, objectId: string): Promise<CnProjectAncestorTreeDTO[]> {
-
-    const ancestors: CnProjectAncestorTreeDTO[] = [];
-    let projectId: string;
-    switch (objectType) {
-      case 'project':
-        projectId = objectId;
-        break;
-      case 'experiment':
-        const experiment = await this.experimentService.findByIdAndCheck(objectId);
-        projectId = experiment.projectId;
-        ancestors.push({ type: 'experiment', id: experiment.id, title: experiment.title });
-        break;
-      case 'report':
-        const report = await this.reportService.findByIdAndCheck(objectId);
-        projectId = report.projectId;
-        ancestors.push({ type: 'report', id: report.id, title: report.title });
-        break;
-      case 'document':
-        const doc = await this.projectDocumentService.findByIdAndCheck(objectId);
-        projectId = doc.projectId;
-        ancestors.push({ type: 'document', id: doc.id, title: doc.name });
-    }
-
+  public async getFolderAncestors(folderId: string): Promise<CnFolderHierarchy[]> {
     // retrieve the project ancestors
-    const project = await this.findProject(projectId);
-    const projectAncestors = await this.projectService.getAncestors(project);
-
-    // Convert and add the project ancestors
-    const projectDto: CnProjectAncestorTreeDTO[] = CnProjectDtoHelper.convertProjectAncestorTreeDtos(projectAncestors);
-    ancestors.push(...projectDto);
-    return ancestors;
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    return await this.folderHierarchyService.getAncestors(folder);
   }
 
-  public async getProjectWithAncestors(projectId: string): Promise<CnProject[]>{
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
-    return await this.projectService.getAncestors(project);
-  }
 
   public async updateProjectLeader(projectId: string, userId: string): Promise<CnProject> {
-    const project = await this.projectService.findByIdAndCheck(projectId);
-    const rootProject = await this.projectService.getRootProject(project);
+    const folder = await this.folderHierarchyService.findByIdAndCheck(projectId);
 
     // check if the current user has the authorization to update the leader
-    await this.projectSecurity.checkUpdateProjectLeader(project, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    await this.projectSecurity.checkUpdateProjectLeader(folder, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
 
     const newLeader = await this.userService.findByIdAndCheck(userId);
-    const newProject = await this.datasource.transaction(async (entityManager) => {
+    await this.datasource.transaction(async (entityManager) => {
 
       // the group must be shared with the new leader single group
       // so if it is not shared, we add it
-      await this.projectUserService.shareProjectToUserIfNot(rootProject.id, userId, entityManager);
+      await this.projectUserService.shareRootFolderToUserIfNot(folder.getRootFolderId(), userId, entityManager);
 
-      // update the leader
-      project.leader = newLeader;
-      return this.projectService.update(project, entityManager);
+      await this.projectService.updateLeader(folder.id, newLeader, entityManager);
     });
 
-    this.emitProjectEvent('UPDATE_PROJECT_LEADER', newProject, newProject);
-    return newProject;
+    const project = await this.projectService.findByIdAndCheck(projectId);
+    this.emitProjectEvent('UPDATE_PROJECT_LEADER', folder, project);
+    return project;
+  }
+
+  /////////////////////////////////////// FOLDER HIERARCHY //////////////////////////////////
+
+  public async getFolderHierarchyNotSecure(id: string): Promise<CnFolderHierarchy> {
+    return this.folderHierarchyService.findByIdAndCheck(id);
   }
 
   /////////////////////////////////////// PROJECT DESCRIPTION //////////////////////////////////
 
   public async getDescription(projectId: string): Promise<BlRichTextContent> {
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
-    return project.description;
+    await this.getAndCheckAuthorizationForFindOneByFolder(projectId);
+    return this.projectService.getProjectDescription(projectId);
   }
 
-  public async updateDescription(projectId: string, description: BlRichTextContent): Promise<CnProject> {
-    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
-    project.description = description;
-    const newProject = await this.projectService.update(project);
+  public async updateDescription(projectId: string, description: BlRichTextContent): Promise<void> {
+    const folder = await this.getAndCheckAuthorizationForUpdate(projectId);
+    await this.projectService.updateDescription(projectId, description);
 
-    this.emitProjectEvent('UPDATE_PROJECT_DESCRIPTION', newProject, newProject);
-    return newProject;
+    // update the folder object to set the hasDescription flag
+    folder.hasDescription = !BlNewRichText.isEmpty(description);
+    await this.folderHierarchyService.update(folder as CnFolderHierarchyEntity);
+
+    // for this event we send the description
+    this.emitProjectEvent('UPDATE_PROJECT_DESCRIPTION', null, description);
   }
 
   public async saveDescriptionImage(projectId: string, file: BlFile): Promise<BlRichTextUploadedImageResponse> {
-    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+    const folder = await this.getAndCheckAuthorizationForUpdate(projectId);
 
-    return this.projectDocumentService.uploadImageDocument(file, project, CnProjectDocumentType.DESCRIPTION_CONTENT,
-      project.id);
+    return this.projectDocumentService.uploadImageDocument(file, folder, CnProjectDocumentType.DESCRIPTION_CONTENT,
+      folder.id);
   }
 
   public async getDescriptionImage(projectId: string, filename: string): Promise<BlFileResponse> {
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(projectId);
 
-    return this.projectDocumentService.getDocumentContentByTypeAndName(project, CnProjectDocumentType.DESCRIPTION_CONTENT,
+    return this.projectDocumentService.getDocumentContentByTypeAndName(folder, CnProjectDocumentType.DESCRIPTION_CONTENT,
       filename, projectId);
-  }
-
-  /////////////////////////////////////// PROJECT STATUS //////////////////////////////////
-
-
-  async updateProjectCurrentStatus(status: CnProjectStatus, id: string): Promise<CnProject> {
-    const project = await this.getAndCheckAuthorizationForUpdate(id);
-
-    const newProject = await this.projectService.updateCurrentStatusWithDbEntity(status, project);
-    this.emitProjectEvent('UPDATE_PROJECT_STATUS', newProject, newProject);
-    return newProject;
-  }
-
-  public async getProjectStatusHistory(projectId: string): Promise<CnProjectStatusHistory[]> {
-    await this.getAndCheckAuthorizationForFindOne(projectId);
-
-    return await this.projectService.getStatusHistory(projectId) as CnProjectStatusHistory[];
   }
 
   /////////////////////////////////////// EXPERIMENT //////////////////////////////////
 
   public async findExperiment(id: string): Promise<CnExperiment> {
-    const experiment = await this.experimentService.findByIdAndCheck(id);
-
-    await this.getAndCheckAuthorizationForFindOne(experiment.projectId);
-    return experiment;
+    await this.getAndCheckAuthorizationForFindOneByFolder(id);
+    return await this.experimentService.findByIdAndCheck(id);
   }
 
-  async getExperimentsByProject(projectId: string): Promise<CnExperiment[]> {
+  async getExperimentsByFolder(folderId: string): Promise<CnExperiment[]> {
     // check that the user can get the project
-    await this.getAndCheckAuthorizationForFindOne(projectId);
+    const project = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
 
-    return this.experimentService.getExperimentsByProject(projectId);
+    return this.experimentService.getExperimentsByParentFolder(project.id);
   }
 
   async getExperimentsAssociatedToReports(reportId: string): Promise<CnExperiment[]> {
@@ -429,26 +353,22 @@ export class CnProjectAggregateService {
     return (await this.reportService.findByIdAndCheckWithExperiments(reportId)).experiments;
   }
 
-  async createLabExperiment(projectId: string, createLabExperimentDto: CnCreateLabExperimentDto): Promise<void> {
+  async createLabExperiment(parentFolderId: string, createLabExperimentDto: CnCreateLabExperimentDto): Promise<void> {
     // check that the user can get the project
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+    const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
-    if (project.levelStatus === CnProjectLevelStatus.PARENT) {
-      throw new BlBadRequestException(CnErrorText.EXP_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT);
-    }
-
-    const result = await this.experimentService.saveLabExperiment(project, createLabExperimentDto);
+    const result = await this.experimentService.saveLabExperiment(parentFolder, createLabExperimentDto);
 
     if (result.mode === 'create') {
-      this.emitProjectEvent('CREATE_EXPERIMENT', project, result.experiment);
+      this.emitProjectEvent('CREATE_EXPERIMENT', parentFolder, result.experiment);
     } else {
-      this.emitProjectEvent('UPDATE_EXPERIMENT', project, result.experiment);
+      this.emitProjectEvent('UPDATE_EXPERIMENT', parentFolder, result.experiment);
     }
   }
 
-  async deleteLabExperiment(projectId: string, experimentId: string): Promise<void> {
+  async deleteLabExperiment(parentFolderId: string, experimentId: string): Promise<void> {
     // check that the user can get the project
-    await this.getAndCheckAuthorizationForFindOne(projectId);
+    const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
     // check if the experiment has associated reports
     const expWithReports = await this.experimentService.findByIdAndCheckWithReports(experimentId);
@@ -457,9 +377,13 @@ export class CnProjectAggregateService {
     }
 
 
-    const experiment = await this.experimentService.deleteExperiment(experimentId);
+    let experiment: CnExperiment;
+    await this.datasource.transaction(async entityManager => {
+      experiment = await this.experimentService.deleteExperiment(experimentId, entityManager);
+      await this.folderHierarchyService.deleteById(experimentId, entityManager);
+    });
     if (experiment) {
-      this.emitProjectEvent('DELETE_EXPERIMENT', experiment.project, experiment);
+      this.emitProjectEvent('DELETE_EXPERIMENT', parentFolder, experiment);
     }
   }
 
@@ -475,73 +399,64 @@ export class CnProjectAggregateService {
     return this.experimentService.getExperimentLabConfig(experimentId);
   }
 
-  async migrateAllExperimentsProtocol(): Promise<void> {
-    if (!CnCurrentUserHelper.isAdmin()) {
-      throw new UnauthorizedException();
-    }
-    await this.experimentService.migrateAllExperimentProtocol();
-  }
-
-  public async getExperimentsByRootProjectAndLabInstance(rootProjectId: string, labInstanceId: string): Promise<CnExperiment[]> {
-    return this.experimentService.getExperimentsByRootProjectAndLabInstance(rootProjectId, labInstanceId);
+  public async getExperimentsByRootFolderAndLabInstanceNotSecure(rootFolderId: string, labInstanceId: string): Promise<CnExperiment[]> {
+    return this.experimentService.getExperimentsByRootFolderAndLabInstance(rootFolderId, labInstanceId);
   }
 
   /////////////////////////////////////// REPORT //////////////////////////////////
 
   public async findReport(id: string): Promise<CnReport> {
-    const report = await this.reportService.findByIdAndCheck(id);
-
-    await this.getAndCheckAuthorizationForFindOne(report.projectId);
-    return report;
+    await this.getAndCheckAuthorizationForFindOneByFolder(id);
+    return await this.reportService.findByIdAndCheck(id);
   }
 
   public async findReportContent(id: string): Promise<BlRichTextContent> {
-    const report = await this.reportService.findByIdAndCheck(id);
-
-    const project = await this.getAndCheckAuthorizationForFindOne(report.projectId);
-    return this.reportService.getReportContent(project, report.id);
+    const reportFolder = await this.getAndCheckAuthorizationForFindOneByFolder(id);
+    const parentFolder = await this.folderHierarchyService.findByIdAndCheck(reportFolder.parentId);
+    return this.reportService.getReportContent(parentFolder, id);
   }
 
-  async createLabReport(createReportDto: CnCreateReportWithConfigDto, projectId: string,
+  async createLabReport(createReportDto: CnCreateReportWithConfigDto, parentFolderId: string,
                         files: BlFile[]): Promise<void> {
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
-
-    if (project.levelStatus === CnProjectLevelStatus.PARENT) {
-      throw new BlBadRequestException(CnErrorText.REPORT_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT);
-    }
+    const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
     // get and check all experiment
     const experiments: CnExperiment[] = [];
     for (const experimentId of createReportDto.experiment_ids) {
-      const experiment: CnExperiment = await this.experimentService.findById(experimentId);
+      const experiment: CnExperiment = await this.experimentService.findById(experimentId, { folderHierarchy: true });
 
       if (experiment == null) {
         throw new BlBadRequestException('Can\'t create the report because one of the linked experiment could not be found');
       }
 
-      if (experiment.projectId !== project.id) {
-        throw new BlBadRequestException('Can\'t create the report because it is linked to an experiment of another project');
+      if (experiment.folderHierarchy.parentId !== parentFolder.id) {
+        throw new BlBadRequestException('Can\'t create the report because it is linked to an experiment of another folder');
       }
       experiments.push(experiment);
     }
 
-    const reportResult = await this.reportService.saveReport(createReportDto, experiments, project, files);
+    const reportResult = await this.reportService.saveReport(createReportDto, experiments,
+      parentFolder, files);
 
     if (reportResult.mode === 'create') {
-      this.emitProjectEvent('CREATE_REPORT', project, reportResult.report);
+      this.emitProjectEvent('CREATE_REPORT', parentFolder, reportResult.report);
     } else {
-      this.emitProjectEvent('UPDATE_REPORT', project, reportResult.report);
+      this.emitProjectEvent('UPDATE_REPORT', parentFolder, reportResult.report);
     }
   }
 
-  async deleteReportFromLab(projectId: string, reportId: string): Promise<void> {
+  async deleteReportFromLab(parentFolderId: string, reportId: string): Promise<void> {
     // check that the user can get the project
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+    const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
-    const report = await this.reportService.deleteReport(reportId);
+    let report: CnReport;
+    await this.datasource.transaction(async entityManager => {
+      report = await this.reportService.deleteReport(reportId, entityManager);
+      await this.folderHierarchyService.deleteById(reportId, entityManager);
+    });
 
     if (report) {
-      this.emitProjectEvent('DELETE_REPORT', project, report);
+      this.emitProjectEvent('DELETE_REPORT', parentFolder, report);
     }
   }
 
@@ -550,11 +465,9 @@ export class CnProjectAggregateService {
     if (!CnCurrentUserHelper.isAdmin()) {
       throw new UnauthorizedException();
     }
-    const report = await this.reportService.findByIdAndCheck(reportId);
-    const project = await this.getAndCheckAuthorizationForFindOne(report.projectId);
+    const reportFolder = await this.folderHierarchyService.findByIdAndCheck(reportId, { parent: true });
 
-    await this.reportService.deleteReport(reportId);
-    this.emitProjectEvent('DELETE_REPORT', project, report);
+    await this.deleteReportFromLab(reportFolder.parentId, reportId);
   }
 
   async getReportAssociatedToExperiment(experimentId: string): Promise<CnReport[]> {
@@ -563,51 +476,42 @@ export class CnProjectAggregateService {
     return (await this.experimentService.findByIdAndCheckWithReports(experimentId)).reports;
   }
 
-  async getReportsByProject(projectId: string): Promise<CnReport[]> {
-    // check that the user can get the project
-    await this.getAndCheckAuthorizationForFindOne(projectId);
-
-    return this.reportService.getReportsByProject(projectId);
-  }
-
   async getReportFile(reportId: string, filename: string): Promise<BlFileResponse> {
-    const report = await this.reportService.findByIdAndCheck(reportId);
-
-    const project = await this.getAndCheckAuthorizationForFindOne(report.projectId);
-    return this.reportService.getFile(filename, project, reportId);
+    const reportFolder = await this.getAndCheckAuthorizationForFindOneByFolder(reportId);
+    const parentFolder = await this.folderHierarchyService.findByIdAndCheck(reportFolder.parentId);
+    return this.reportService.getFile(filename, parentFolder, reportId);
   }
 
   async getReportView(reportId: string, viewId: string): Promise<BlFileResponse> {
-    const report = await this.reportService.findByIdAndCheck(reportId);
-
-    const project = await this.getAndCheckAuthorizationForFindOne(report.projectId);
-    return this.reportService.getView(viewId, project, reportId);
+    const reportFolder = await this.getAndCheckAuthorizationForFindOneByFolder(reportId);
+    const parentFolder = await this.folderHierarchyService.findByIdAndCheck(reportFolder.parentId);
+    return this.reportService.getView(viewId, parentFolder, reportId);
   }
 
-  public getReportsByRootProjectAndLabInstance(rootProjectId: string, labInstanceId: string): Promise<CnReport[]> {
-    return this.reportService.getReportsByRootProjectAndLabInstance(rootProjectId, labInstanceId);
+  public getReportsByRootFolderAndLabInstance(rootFolderId: string, labInstanceId: string): Promise<CnReport[]> {
+    return this.reportService.getReportsByRootFolderAndLabInstance(rootFolderId, labInstanceId);
   }
 
   /////////////////////////////////////// GROUPS //////////////////////////////////
 
-  public async shareProject(projectId: string, groupId: string): Promise<CnUser[]> {
-    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+  public async shareFolder(rootFolderId: string, groupId: string): Promise<CnUser[]> {
+    const folder = await this.getAndCheckAuthorizationForUpdate(rootFolderId);
 
-    if (project.currentLevel !== CnProjectLevel.PROJECT) {
-      throw new BlBadRequestException('Only root projects can be shared');
+    if (!folder.isRootFolder()) {
+      throw new BlBadRequestException('Only root folders can be shared');
     }
 
-    const newUsers = await this.projectUserService.shareProjectToGroup(project.id, groupId);
+    const newUsers = await this.projectUserService.shareRootFolderToGroup(folder.id, groupId);
 
-    this.emitProjectEvent('SHARE_PROJECT', project, newUsers);
+    this.emitProjectEvent('SHARE_PROJECT', folder, newUsers);
 
-    return this.projectUserService.findUsersByProjectId(projectId);
+    return this.projectUserService.findUsersByRootFolderId(rootFolderId);
   }
 
   public async unshareProject(projectId: string, userId: string): Promise<void> {
-    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+    const folder = await this.getAndCheckAuthorizationForUpdate(projectId);
 
-
+    const project = await this.projectService.findByIdAndCheck(projectId);
     // forbid to unshare the single user group of the leader
     // this is to unsure the leader will always have access to the project
     if (userId === project.leader.id) {
@@ -615,23 +519,23 @@ export class CnProjectAggregateService {
     }
 
     const user = await this.userService.findByIdAndCheck(userId);
-    await this.projectUserService.unshareProjectFromUser(project.id, userId);
+    await this.projectUserService.unshareRootFolderFromUser(folder.id, userId);
 
-    this.emitProjectEvent('UNSHARE_PROJECT', project, user);
+    this.emitProjectEvent('UNSHARE_PROJECT', folder, user);
   }
 
   /**
    * Return the complete list of user that have access to the project
-   * @param id
+   * @param folderId
    */
-  public async getUsersOfProject(id: string): Promise<CnUser[]> {
-    const rootProject = await this.checkFindOneAndGetRootProject(id);
+  public async getUsersOfProject(folderId: string): Promise<CnUser[]> {
+    const rootFolder = await this.checkFindOneAndGetRootFolder(folderId);
 
-    return this.projectUserService.findUsersByProjectId(rootProject.id);
+    return this.projectUserService.findUsersByRootFolderId(rootFolder.id);
   }
 
-  public async searchProjectUsersByName(projectId: string, name: string, page: number, size: number): Promise<ClPage<CnUser>> {
-    const rootProject = await this.checkFindOneAndGetRootProject(projectId);
+  public async searchProjectUsersByName(folderId: string, name: string, page: number, size: number): Promise<ClPage<CnUser>> {
+    const rootProject = await this.checkFindOneAndGetRootFolder(folderId);
 
     const result = await this.projectUserService.smartSearchByName(rootProject.id, name, page, size);
     const users = result.map(user => user.user);
@@ -646,17 +550,41 @@ export class CnProjectAggregateService {
 
   /////////////////////////////////////// PROJECT COMMENT //////////////////////////////////
 
-  public async createProjectComment(newComment: CnNewCommentDTO, projectId: string): Promise<CnProjectComment> {
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+  async activateChat(projectId: string, enable: boolean): Promise<CnProject> {
+    await this.getAndCheckAuthorizationForUpdate(projectId);
 
-    const comment = await this.projectCommentService.createComment(newComment, project);
+    await this.datasource.transaction(async entityManager => {
+      await this.projectService.updatePartial(projectId, { chatEnabled: enable }, entityManager);
+      await this.folderHierarchyService.updatePartial(projectId, { chatEnabled: enable }, entityManager);
+    });
 
-    this.emitProjectEvent('CREATE_PROJECT_COMMENT', project, comment);
+    return this.projectService.findByIdAndCheck(projectId);
+  }
+
+  async getChatFolders(): Promise<CnFolderHierarchyWithChildren[]> {
+    const rootFoldersPage = await this.getCurrentRootFolders(0, 20);
+
+    const rootFolders = rootFoldersPage.objects;
+
+    const rootFoldersWithChildren: CnFolderHierarchyWithChildren[] = [];
+    for (const rootFolder of rootFolders) {
+      rootFoldersWithChildren.push(await this.folderHierarchyService.getFolderTreeForChat(rootFolder));
+    }
+
+    return rootFoldersWithChildren
+  }
+
+  public async createFolderComment(newComment: CnNewCommentDTO, folderId: string): Promise<CnProjectComment> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+
+    const comment = await this.projectCommentService.createComment(newComment, folder);
+
+    this.emitProjectEvent('CREATE_PROJECT_COMMENT', folder, comment);
     return comment;
   }
 
-  public async updateProjectComment(projectId: string, commentId: string, content: BlRichTextContent): Promise<CnProjectComment> {
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+  public async updateFolderComment(folderId: string, commentId: string, content: BlRichTextContent): Promise<CnProjectComment> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
 
     const comment = await this.projectCommentService.findByIdAndCheck(commentId);
     if (comment.createdBy.id != CnCurrentUserHelper.getCurrentUser().id) {
@@ -664,171 +592,190 @@ export class CnProjectAggregateService {
     }
 
     const newComment = await this.projectCommentService.updateComment(comment, content);
-    this.emitProjectEvent('UPDATE_PROJECT_COMMENT', project, comment);
+    this.emitProjectEvent('UPDATE_PROJECT_COMMENT', folder, comment);
     return newComment;
   }
 
-  public async deleteProjectComment(projectId: string, commentId: string): Promise<void> {
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+  public async deleteFolderComment(folderId: string, commentId: string): Promise<void> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
 
     const comment = await this.projectCommentService.findByIdAndCheck(commentId);
     if (comment.createdBy.id != CnCurrentUserHelper.getCurrentUser().id) {
       throw new UnauthorizedException();
     }
 
-    await this.projectCommentService.deleteComment(comment, projectId);
-    this.emitProjectEvent('DELETE_PROJECT_COMMENT', project, comment);
+    await this.projectCommentService.deleteComment(comment, folderId);
+    this.emitProjectEvent('DELETE_PROJECT_COMMENT', folder, comment);
 
   }
 
-  public async getProjectComments(projectId: string, page: number, size: number): Promise<ClPage<CnProjectComment>> {
-    await this.getAndCheckAuthorizationForFindOne(projectId);
-    return this.projectCommentService.getProjectComments(projectId, page, size);
+  public async getFolderComments(folderId: string, page: number, size: number): Promise<ClPage<CnProjectComment>> {
+    await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    return this.projectCommentService.getProjectComments(folderId, page, size);
   }
 
-  public async saveCommentImage(file: BlFile, projectId: string): Promise<BlRichTextUploadedImageResponse> {
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
-    return this.projectCommentService.saveProjectCommentImage(file, project);
+  public async saveCommentImage(file: BlFile, folderId: string): Promise<BlRichTextUploadedImageResponse> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    return this.projectCommentService.saveFolderCommentImage(file, folder);
   }
 
-  public async getCommentImage(filename: string, projectId: string): Promise<BlFileResponse> {
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
-    return await this.projectCommentService.getCommentImage(project, filename);
+  public async getCommentImage(filename: string, folderId: string): Promise<BlFileResponse> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    return await this.projectCommentService.getCommentImage(folder, filename);
   }
 
   /////////////////////////////////////// DOCUMENT //////////////////////////////////
 
-  public async uploadDocument(projectId: string, file: BlFile): Promise<CnProjectDocument> {
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+  public async uploadDocument(parentFolderId: string, file: BlFile): Promise<CnFolderHierarchy> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
-    const doc = await this.projectDocumentService.uploadDocument(file, project,
-      CnProjectDocumentType.UPLOADED_DOCUMENT, project.id, file.originalname);
+    const doc = await this.projectDocumentService.uploadDocument(file, folder,
+      CnProjectDocumentType.UPLOADED_DOCUMENT, folder.id, file.originalname);
 
-    this.emitProjectEvent('UPLOAD_PROJECT_DOCUMENT', project, doc);
+    this.emitProjectEvent('UPLOAD_PROJECT_DOCUMENT', folder, doc);
 
-    return doc;
+    return this.folderHierarchyService.findByIdAndCheck(doc.id);
   }
 
-  public async getUploadedDocument(projectId: string, documentName: string): Promise<BlFileResponse> {
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+  public async getUploadedDocument(documentId: string): Promise<BlFileResponse> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+    const parentFolder = await this.folderHierarchyService.findByIdAndCheck(folder.parentId);
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
-    return await this.projectDocumentService.getDocumentContentByTypeAndName(project,
-      CnProjectDocumentType.UPLOADED_DOCUMENT, documentName, projectId);
+    return await this.projectDocumentService.getDocumentContentByDocument(parentFolder, document);
   }
 
   public async deleteDocument(documentId: string): Promise<void> {
-    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
-    const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     await this.datasource.transaction(async entityManager => {
       await this.projectDocumentService.deleteDocument(documentId, entityManager);
     });
 
-    this.emitProjectEvent('DELETE_PROJECT_DOCUMENT', project, document);
+    this.emitProjectEvent('DELETE_PROJECT_DOCUMENT',
+      await this.folderHierarchyService.findByIdAndCheck(folder.parentId),
+      document);
   }
 
   public async moveDocumentToTrash(documentId: string): Promise<CnProjectDocument> {
-    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
-    const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     const doc = await this.projectDocumentService.moveToTrash(document);
 
-    this.emitProjectEvent('MOVE_PROJECT_DOCUMENT_TO_TRASH', project, document);
+    this.emitProjectEvent('MOVE_PROJECT_DOCUMENT_TO_TRASH',
+      await this.folderHierarchyService.findByIdAndCheck(folder.parentId),
+      document);
 
     return doc;
   }
 
   public async restoreDocumentFromTrash(documentId: string): Promise<CnProjectDocument> {
-    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
-    const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     const doc = await this.projectDocumentService.restoreFromTrash(document);
 
-    this.emitProjectEvent('RESTORE_PROJECT_DOCUMENT_FROM_TRASH', project, document);
+    this.emitProjectEvent('RESTORE_PROJECT_DOCUMENT_FROM_TRASH',
+      await this.folderHierarchyService.findByIdAndCheck(folder.parentId),
+      document);
 
     return doc;
   }
 
-  public async emptyTrash(projectId: string): Promise<void> {
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+  public async emptyTrash(folderId: string): Promise<void> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
 
-    await this.projectDocumentService.emptyProjectTrash(project.id);
+    await this.projectDocumentService.emptyFolderTrash(folder.id);
   }
 
-  public async getDocumentsByProject(projectId: string, inTrash: boolean, page: number, size: number): Promise<ClPage<CnProjectDocument>> {
-    await this.getAndCheckAuthorizationForFindOne(projectId);
+  public async getDocumentsByFolder(parentFolderId: string, inTrash: boolean, page: number, size: number): Promise<ClPage<CnProjectDocument>> {
+    await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
-    return this.projectDocumentService.getProjectDocuments(projectId, inTrash, page, size);
+    return this.projectDocumentService.getParentFolderDocuments(parentFolderId, inTrash, page, size);
   }
 
   public async renameDocument(documentId: string, newName: string): Promise<CnProjectDocument> {
-    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
+    await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
-    await this.getAndCheckAuthorizationForFindOne(document.projectId);
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId, { folderHierarchy: true });
 
-    return this.projectDocumentService.renameDocument(document, newName);
+    const doc = this.projectDocumentService.renameDocument(document, newName);
+
+    this.emitProjectEvent('RENAME_DOCUMENT',
+      await this.folderHierarchyService.findByIdAndCheck(document.folderHierarchy.parentId),
+      document);
+
+    return doc;
   }
 
-  public async moveDocumentToProject(documentId: string, projectId: string): Promise<CnProjectDocument> {
-    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
+  public async moveDocumentToFolder(documentId: string, parentFolderId: string): Promise<CnProjectDocument> {
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId, { folderHierarchy: true });
 
-    if(document.projectId === projectId){
-      throw new BlBadRequestException('The document is already in the destination project');
+    if (document.folderHierarchy.parentId === parentFolderId) {
+      throw new BlBadRequestException('The document is already in the destination folder');
     }
 
     // check if the user has the authorization to move the document on 2 projects
-    const oldProject = await this.getAndCheckAuthorizationForFindOne(document.projectId);
-    const newProject = await this.getAndCheckAuthorizationForFindOne(projectId);
+    const oldFolder = await this.getAndCheckAuthorizationForFindOneByFolder(document.folderHierarchy.parentId);
+    const newFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
-    return this.projectDocumentService.moveDocument(document, oldProject, newProject);
+    return this.projectDocumentService.moveDocument(document, oldFolder, newFolder);
   }
 
 
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
-  public async createConstellabDocument(projectId: string, filename: string): Promise<CnConstellabDocumentDTO> {
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+  public async createConstellabDocument(parentFolderId: string, filename: string): Promise<CnConstellabDocumentDTO> {
+    const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
-    const doc = await this.projectDocumentService.createConstellabDocument(project, filename);
-    this.emitProjectEvent('CREATE_CONSTELLAB_DOCUMENT', project, doc.document);
+    const doc = await this.projectDocumentService.createConstellabDocument(parentFolder, filename);
+    this.emitProjectEvent('CREATE_CONSTELLAB_DOCUMENT', parentFolder, doc.document);
     return doc;
   }
 
   public async updateConstellabDocument(documentId: string, content: BlRichTextContent): Promise<CnConstellabDocumentDTO> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+
     const document = await this.projectDocumentService.findByIdAndCheck(documentId);
+    const parentFolder = await this.folderHierarchyService.findByIdAndCheck(folder.parentId);
 
-    const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
+    const newDoc = await this.projectDocumentService.updateConstellabDocument(parentFolder, document, content);
 
-    const newDoc = await this.projectDocumentService.updateConstellabDocument(project, document, content);
-
-    this.emitProjectEvent('UPDATE_CONSTELLAB_DOCUMENT', project, newDoc);
+    this.emitProjectEvent('UPDATE_CONSTELLAB_DOCUMENT',
+      await this.folderHierarchyService.findByIdAndCheck(folder.parentId),
+      newDoc);
     return newDoc;
   }
 
   public async getConstellabDocument(documentId: string): Promise<CnConstellabDocumentDTO> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+
+    // TODO voir si on peut améliorer et mettre en commun
     const document = await this.projectDocumentService.findByIdAndCheck(documentId);
-
-    const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
-
-    return this.projectDocumentService.getConstellabDocument(project, document);
+    const parentFolder = await this.folderHierarchyService.findByIdAndCheck(folder.parentId);
+    return this.projectDocumentService.getConstellabDocument(parentFolder, document);
   }
 
   public async uploadImageToConstellabDocument(documentId: string, file: BlFile): Promise<BlRichTextUploadedImageResponse> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+
     const document = await this.projectDocumentService.findByIdAndCheck(documentId);
+    const parentFolder = await this.folderHierarchyService.findByIdAndCheck(folder.parentId);
 
-    const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
-
-    return this.projectDocumentService.uploadImageToConstellabDocument(project, document, file);
+    return this.projectDocumentService.uploadImageToConstellabDocument(parentFolder, document, file);
   }
 
   public async uploadFileToConstellabDocument(documentId: string, file: BlFile): Promise<BlRichTextUploadFileResponse> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+
     const document = await this.projectDocumentService.findByIdAndCheck(documentId);
+    const parentFolder = await this.folderHierarchyService.findByIdAndCheck(folder.parentId);
 
-    const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
-
-    return this.projectDocumentService.uploadFileToConstellabDocument(project, document, file);
+    return this.projectDocumentService.uploadFileToConstellabDocument(parentFolder, document, file);
   }
 
   /**
@@ -837,20 +784,20 @@ export class CnProjectAggregateService {
    * @param documentName
    */
   public async getConstellabDocumentContentDocument(documentId: string, documentName: string): Promise<BlFileResponse> {
-    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
-    const project = await this.getAndCheckAuthorizationForFindOne(document.projectId);
+    const parentFolder = await this.folderHierarchyService.findByIdAndCheck(folder.parentId);
 
-    return this.projectDocumentService.getDocumentContentByTypeAndName(project,
+    return this.projectDocumentService.getDocumentContentByTypeAndName(parentFolder,
       CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT, documentName, documentId);
   }
 
   ////////////////////////////////////////////// DOCUMENT PREVIEW  /////////////////////////////////////////////
 
   public async generatePreviewToken(documentId: string): Promise<CnProjectDocumentPreviewDTO> {
-    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
+    await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
-    await this.getAndCheckAuthorizationForFindOne(document.projectId);
+    const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
     return await this.projectDocumentService.generatePreviewToken(document);
   }
@@ -860,17 +807,19 @@ export class CnProjectAggregateService {
    * @param token
    */
   public async getDocumentByPreviewToken(token: string): Promise<BlFileResponse> {
-    const projectDocument = await this.projectDocumentService.getAndCheckByPreviewToken(token);
-    const project = await this.projectService.findByIdAndCheck(projectDocument.projectId);
+    const document = await this.projectDocumentService.getAndCheckByPreviewToken(token);
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(document.id);
 
-    return this.projectDocumentService.getDocumentContentByDocument(project, projectDocument);
+    const parentFolder = await this.folderHierarchyService.findByIdAndCheck(folder.parentId);
+
+    return this.projectDocumentService.getDocumentContentByDocument(parentFolder, document);
   }
 
   /////////////////////////////////////// PROJECT BUCKET //////////////////////////////////
 
   public async createProjectBucket(projectId: string, projectStorageDTO: CnProjectStorageLocationDTO)
     : Promise<CnProjectStorageLocationDTO> {
-    await this.getProjectAndCheckForBucketUpdate(projectId);
+    await this.getAndCheckAuthorizationForUpdate(projectId);
 
     const projectWithStorage = await this.projectBucketService.findProjectWithStorageById(projectId);
 
@@ -886,7 +835,7 @@ export class CnProjectAggregateService {
       projectWithStorage.backupStorage = await this.projectBucketService.getBucketById(projectStorageDTO.backupStorage.bucketId);
     }
 
-    await this.projectService.update(projectWithStorage);
+    await this.projectService.update(projectWithStorage as CnProject);
 
     return {
       mainStorage: projectWithStorage.mainStorage?.getBucketLocation() ?? null,
@@ -895,7 +844,7 @@ export class CnProjectAggregateService {
   }
 
   public async getProjectStorage(projectId: string): Promise<CnProjectStorageLocationDTO> {
-    await this.getProjectAndCheckForBucketUpdate(projectId);
+    await this.getAndCheckAuthorizationForUpdate(projectId);
 
     const buckets = await this.projectBucketService.getProjectBucket(projectId);
 
@@ -911,22 +860,12 @@ export class CnProjectAggregateService {
     return this.projectBucketService.findAccessibleProjectBucketLocation(info.spaceId, page, size);
   }
 
-  private async getProjectAndCheckForBucketUpdate(projectId: string): Promise<CnProject> {
-    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+  public async getStorageSizeByFolder(folderId: string): Promise<CnProjectStorageUsageDTO> {
+    await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
 
-    if (project.currentLevel !== CnProjectLevel.PROJECT) {
-      throw new BlBadRequestException('Only root projects can have a bucket');
-    }
+    const children = await this.getFolderDirectChildren(folderId);
 
-    return project;
-  }
-
-  public async getStorageSizeByProjects(projectId: string): Promise<CnProjectStorageUsageDTO> {
-    await this.getAndCheckAuthorizationForFindOne(projectId);
-
-    const children = await this.getChildren(projectId);
-
-    return this.projectDocumentService.getStorageSizeDetailByProjects([projectId, ...children.map(project => project.id)]);
+    return this.projectDocumentService.getStorageSizeDetailByFolders([folderId, ...children.map(project => project.id)]);
   }
 
   /**
@@ -939,16 +878,20 @@ export class CnProjectAggregateService {
   }
 
   /////////////////////////////////////// PROJECT USER //////////////////////////////////
-  public async getCurrentProjectUserConfig(projectId: string): Promise<CnProjectUser> {
-    await this.getAndCheckAuthorizationForFindOne(projectId);
+  public async getCurrentUserRootFolderConfig(rootFolderId: string): Promise<CnProjectUser> {
+    await this.getAndCheckAuthorizationForFindOneByFolder(rootFolderId);
 
-    return this.projectUserService.findByProjectIdAndUserId(projectId, CnCurrentUserHelper.getAndCheckCurrentUser().id);
+    return this.projectUserService.findByRootFolderIdAndUserId(rootFolderId, CnCurrentUserHelper.getAndCheckCurrentUser().id);
   }
 
-  public async updateCurrentProjectUserConfig(projectId: string, options: CnProjectUser): Promise<CnProjectUser> {
-    await this.getAndCheckAuthorizationForFindOne(projectId);
+  public async updateRootProjectCurrentUserConfig(rootProjectId: string, options: CnProjectUser): Promise<CnProjectUser> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(rootProjectId);
 
-    options.projectId = projectId;
+    if (!folder.isRootFolder()) {
+      throw new BlBadRequestException('The folder is not a root folder');
+    }
+
+    options.rootFolderId = rootProjectId;
     options.userId = CnCurrentUserHelper.getAndCheckCurrentUser().id;
 
     return this.projectUserService.updateProjectUser(options);
@@ -956,17 +899,15 @@ export class CnProjectAggregateService {
 
   /////////////////////////////////////// ACTIVITY //////////////////////////////////
 
-  public async searchProjectActivity(projectId: string, searchParam: BlSearchParams,
-                                     page: number, size: number): Promise<ClPage<CnActivity>> {
+  public async searchFolderActivity(folderId: string, searchParam: BlSearchParams,
+                                    page: number, size: number): Promise<ClPage<CnActivity>> {
     // check that the user can view the project
-    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
 
     const searchBuilder = new BlSearchBuilder<CnActivity>({ createdAt: 'DESC' as any });
-    console.log(searchBuilder.build());
-
 
     if (searchParam.hasFilter('includeSubProjects')) {
-      const allProjects = await this.projectService.getProjectTreeAsList(project);
+      const allProjects = await this.folderHierarchyService.getFolderTreeAsList(folder);
       const allProjectIds = allProjects.map(project => project.id);
       searchBuilder.mergeWhereOptions({
         parentEntityId: In(allProjectIds)
@@ -974,7 +915,7 @@ export class CnProjectAggregateService {
       searchParam.removeFilter('includeSubProjects');
     } else {
       searchBuilder.mergeWhereOptions({
-        parentEntityId: projectId
+        parentEntityId: folderId
       });
     }
 
@@ -994,32 +935,31 @@ export class CnProjectAggregateService {
 
   /////////////////////////////////////// SECURITY //////////////////////////////////
 
+  private async getAndCheckAuthorizationForFindOneByFolder(folderId: string): Promise<CnFolderHierarchy> {
+    const folder = await this.folderHierarchyService.findByIdAndCheck(folderId);
 
-  private async getAndCheckAuthorizationForFindOne(projectId: string): Promise<CnProject> {
-    const dbProject = await this.projectService.findByIdAndCheck(projectId);
-
-    await this.projectSecurity.checkFindOne(dbProject, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
-    return dbProject;
+    await this.projectSecurity.checkFindOne(folder, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    return folder;
   }
 
-  private async getAndCheckAuthorizationForUpdate(projectId: string): Promise<CnProject> {
-    const dbProject = await this.projectService.findByIdAndCheck(projectId);
+  private async getAndCheckAuthorizationForUpdate(folderId: string): Promise<CnFolderHierarchy> {
+    const folder = await this.folderHierarchyService.findByIdAndCheck(folderId);
 
-    await this.projectSecurity.checkUpdate(dbProject, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
-    return dbProject;
+    await this.projectSecurity.checkUpdate(folder, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    return folder;
   }
 
-  private async checkFindOneAndGetRootProject(projectId: string): Promise<CnProject> {
-    const project = await this.projectService.findByIdAndCheck(projectId);
+  private async checkFindOneAndGetRootFolder(folderId: string): Promise<CnFolderHierarchy> {
+    const folder = await this.folderHierarchyService.findByIdAndCheck(folderId);
 
-    return await this.projectSecurity.checkFindOneAndGetRootProject(project, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    return await this.projectSecurity.checkFindOneAndGetRootProject(folder, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
   }
 
   //////////////////////////////// EVENT ///////////////////////////////////////
-  private emitProjectEvent(eventType: CnProjectEventType, project: CnProject, entity: any): void {
-    const event: CnProjectEvent = {
+  private emitProjectEvent(eventType: CnProjectEventType, parentFolder: CnFolderHierarchy, entity: any): void {
+    const event: CnFolderEvent = {
       type: eventType,
-      parentProject: project,
+      parentFolder: parentFolder,
       entity,
       userInfo: CnCurrentUserHelper.getAndCheckUserSpaceInfo()
     };

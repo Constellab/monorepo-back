@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
 import { CnExperiment, CnExperimentProtocol } from './cn-experiment.entity';
 import { CnExperimentDTO } from './cn-experiment.dto';
 import { CnProjectAggregateService } from '../cn-project-aggregate.service';
@@ -27,7 +27,7 @@ export class CnExperimentsController {
    */
   @Get('project/:projectId')
   public async getExperimentsByProject(@Param('projectId', ParseUUIDPipe) projectId: string): Promise<CnExperimentDTO[]> {
-    const experiments = await this.projectAggregate.getExperimentsByProject(projectId);
+    const experiments = await this.projectAggregate.getExperimentsByFolder(projectId);
     return experiments.map(experiment => new CnExperimentDTO().copyEntity(experiment));
   }
 
@@ -51,11 +51,6 @@ export class CnExperimentsController {
   @Get(':experimentId/lab-config')
   async getExperimentLabConfig(@Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<CnLabConfig> {
     return this.projectAggregate.findExperimentLabConfig(experimentId);
-  }
-
-  @Post('migrate-protocol')
-  async migrateProtocol(): Promise<void> {
-    return this.projectAggregate.migrateAllExperimentsProtocol();
   }
 
 }

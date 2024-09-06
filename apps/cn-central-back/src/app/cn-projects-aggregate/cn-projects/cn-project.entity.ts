@@ -1,125 +1,75 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  Relation,
-  Tree,
-  TreeChildren,
-  TreeParent
-} from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, Relation } from 'typeorm';
 import { Exclude, Type } from 'class-transformer';
-import { CnProjectStatusHistory } from './cn-project-status-history.entity';
-import { CnEntityWithStatus } from '../../cn-core/model/entities/cn-entity-with-status.entity';
 import { DateTime } from 'luxon';
-import { BlLuxonDateColumn, BlNotUpdatable, BlRichTextContent } from '@monorepo/back-core-lib';
-import { CnProjectLevel, CnProjectLevelStatus } from './cn-project-level.enum';
+import { BlLuxonDateColumn, BlRichTextContent } from '@monorepo/back-core-lib';
 import { CnUser } from '../../cn-users/cn-user.entity';
-import { CnSpace } from '../../cn-spaces/cn-space.entity';
-import { CnProjectUser } from '../cn-project-user/cn-project-user.entity';
 import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { CnFolderObject } from '../cn-folder-hierarchies/cn-folder-object.entity';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { CnFolderHierarchyInfo } from '../cn-folder-hierarchies/cn-folder-hierarchy.dto';
 
-/**
- * A project is an ensemble of experiments
- */
+
 @Entity('project')
-@Tree('materialized-path')
-export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
+export class CnProject extends CnFolderObject {
 
-  @Column({nullable: false, length: 20})
-  code: string;
-
-  @Column({nullable: false, length: 100})
+  @Column({ nullable: false, length: 100 })
   title: string;
 
+  @Column({ nullable: true, length: 20 })
+  code: string;
+
+  // this column is not selected by default
   @Exclude()
-  @Column({type: 'simple-json', nullable: true})
+  @Column({ type: 'simple-json', nullable: true, select: false })
   description: BlRichTextContent;
 
-  @BlLuxonDateColumn({nullable: false})
+  @BlLuxonDateColumn({ nullable: true })
   startingDate: DateTime;
 
-  @BlLuxonDateColumn({nullable: true})
+  @BlLuxonDateColumn({ nullable: true })
   endingDate: DateTime;
 
+  // TODO A voir si on garde
   @Type(() => CnUser)
-  @ManyToOne(() => CnUser, {eager: true, nullable: false})
+  @ManyToOne(() => CnUser, { eager: true, nullable: false })
   leader: Relation<CnUser>;
 
-  @Type(() => CnProjectStatusHistory)
-  @OneToOne(() => CnProjectStatusHistory, {nullable: true, eager: true, onDelete: 'CASCADE'})
-  @JoinColumn()
-  currentStatus: CnProjectStatusHistory;
-
-  // level of this project, work package or task
-  @Column({
-    nullable: false, default: CnProjectLevel.PROJECT, update: false
-  })
-  currentLevel: number;
-
-  @Column({
-    nullable: false, update: false,
-    type: 'enum', enum: CnProjectLevelStatus,
-  })
-  levelStatus: CnProjectLevelStatus;
-
-  // parent project of this project, can be null if this project is a project
-  @TreeParent()
-  @BlNotUpdatable()
-  parent?: CnProject;
-
-  @Column({nullable: true, update: false})
-  parentId?: string;
-
-  @TreeChildren()
-  children: CnProject[];
-
   @Exclude()
-  @BlNotUpdatable()
-  @ManyToOne(() => CnProject, {nullable: true})
-  rootParent?: CnProject;
-
-  @Column({nullable: true, update: false})
-  rootParentId?: string;
-
-  @Exclude()
-  @BlNotUpdatable()
-  @ManyToOne(() => CnSpace, {nullable: false})
-  space: CnSpace;
-
-  @Column({nullable: false, update: false})
-  spaceId: string;
-
-  @Exclude()
-  @OneToMany(() => CnProjectUser, projectUser => projectUser.project)
-  users: CnProjectUser[];
-
-  @Exclude()
-  @ManyToOne(() => CnBucket, {nullable: true})
+  @ManyToOne(() => CnBucket, { nullable: false })
   mainStorage: CnBucket;
 
   @Exclude()
-  @ManyToOne(() => CnBucket, {nullable: true})
+  @ManyToOne(() => CnBucket, { nullable: false })
   backupStorage: CnBucket;
 
-  public getRootParentId(): string {
-    if (this.currentLevel === CnProjectLevel.PROJECT) {
-      return this.id;
-    }
-    return this.rootParentId;
+  @Column({ nullable: false, default: false })
+  chatEnabled: boolean;
+
+  @BeforeInsert()
+  setCreatedInfo(): void {
+    this.createdBy = CnCurrentUserHelper.getAndCheckCurrentUser();
+    this.createdAt = ClDateHelper.getDate();
   }
 
-  public isRootProject(): boolean {
-    return this.currentLevel === CnProjectLevel.PROJECT;
+  @BeforeInsert()
+  @BeforeUpdate()
+  setLastModifiedInfo(): void {
+    this.lastModifiedBy = CnCurrentUserHelper.getAndCheckCurrentUser();
+    this.lastModifiedAt = ClDateHelper.getDate();
   }
 
-  public sortChildrenTree(): this {
-    this.children.sort((a, b) => a.code.localeCompare(b.code));
-    this.children.forEach(child => child.sortChildrenTree());
-    return this;
+  getFolderObjectInfo(): CnFolderHierarchyInfo {
+    return {
+      name: this.title,
+      user: this.leader,
+      lastModifiedAt: this.lastModifiedAt,
+    };
   }
-
 }
 
+export type CnProjectWithFolder = Omit<CnProject, 'mainStorage' | 'backupStorage' | 'description'>;
+
+export type CnProjectSimple = Omit<CnProjectWithFolder, 'folderHierarchy'>;
+
+export type CnProjectWithStorage = Omit<CnProject, 'folderHierarchy' | 'description'>;

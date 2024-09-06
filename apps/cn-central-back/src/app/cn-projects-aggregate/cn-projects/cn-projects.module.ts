@@ -1,26 +1,25 @@
-import {Module} from '@nestjs/common';
-import {CnProjectsService} from './cn-projects.service';
-import {TypeOrmModule} from '@nestjs/typeorm';
-import {CnCoreModule} from '../../cn-core/cn-core.module';
-import {CnProject} from './cn-project.entity';
-import {CnProjectStatusHistory} from './cn-project-status-history.entity';
-import {CnProjectBucketService} from './cn-project-bucket.service';
-import {CnObjectStoragesModule} from '../../cn-object-storages/cn-object-storages.module';
+import { Module } from '@nestjs/common';
+import { CnProjectsService } from './cn-projects.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CnCoreModule } from '../../cn-core/cn-core.module';
+import { CnProject } from './cn-project.entity';
+import { CnProjectBucketService } from './cn-project-bucket.service';
+import { CnObjectStoragesModule } from '../../cn-object-storages/cn-object-storages.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([CnProject, CnProjectStatusHistory]),
+    TypeOrmModule.forFeature([CnProject]),
 
     CnCoreModule,
-    CnObjectStoragesModule,
+    CnObjectStoragesModule
   ],
   providers: [
     CnProjectsService,
-    CnProjectBucketService,
+    CnProjectBucketService
   ],
   exports: [
     CnProjectsService,
-    CnProjectBucketService,
+    CnProjectBucketService
   ]
 })
 export class CnProjectsModule {
