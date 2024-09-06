@@ -1,4 +1,3 @@
-import { CnProjectLevelStatus } from './cn-project-level.enum';
 import { DateTime } from 'luxon';
 import { ClLuxonDateTransform } from '@monorepo/core-lib';
 import { Type } from 'class-transformer';
@@ -8,7 +7,6 @@ import { CnBucket, CnBucketLocationDTO } from '../../cn-object-storages/cn-bucke
 export class CnSaveProjectDTO {
   code: string;
   title: string;
-  levelStatus: CnProjectLevelStatus;
 
   @ClLuxonDateTransform()
   startingDate: DateTime;

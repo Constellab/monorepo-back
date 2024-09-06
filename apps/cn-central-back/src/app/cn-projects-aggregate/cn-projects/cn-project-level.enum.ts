@@ -1,10 +1,3 @@
-export enum CnProjectLevel {
-  // main level of the project
-  PROJECT = 1,
-
-  // max level of the project hierarchy
-  MAX_LEVEL = 6,
-}
 
 export enum CnProjectLevelStatus{
   /**

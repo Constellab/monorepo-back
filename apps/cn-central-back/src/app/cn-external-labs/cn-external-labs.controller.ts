@@ -16,7 +16,7 @@ import { CnExternalCheckCredentialResponse } from '../cn-auth/cn-auth.service';
 import { CnLabProjectAggregateService } from '../cn-lab-project-aggregate/cn-lab-project-aggregate.service';
 import {
   CnFolderDtoHelper,
-  CnFolderTreeDTO
+  CnLabFolderDTO
 } from '../cn-projects-aggregate/cn-folder-hierarchies/cn-folder-hierarchy.dto';
 import { CnFolderHierarchyEntity } from '../cn-projects-aggregate/cn-folder-hierarchies/cn-folder-hierarchy.entity';
 
@@ -118,16 +118,16 @@ export class CnExternalLabsController {
   // TODO test this root with an old lab project version
   @CnLabRobotAuthentication()
   @Get('project/all-trees')
-  async getAllFolderTrees(): Promise<CnFolderTreeDTO[]> {
+  async getAllFolderTrees(): Promise<CnLabFolderDTO[]> {
     const folders = await this.labProjectAggregateService.getCurrentLabInstanceFolders();
     return CnFolderDtoHelper.convertToFolderTreeDtoList(folders as CnFolderHierarchyEntity[]);
   }
 
   @CnLabRobotAuthentication()
   @Get('project/:id/root-tree')
-  async getRootProject(@Param('id', new ParseUUIDPipe()) folderId: string): Promise<CnFolderTreeDTO> {
+  async getRootProject(@Param('id', new ParseUUIDPipe()) folderId: string): Promise<CnLabFolderDTO> {
     const folder = await this.labProjectAggregateService.getCurrentLabInstanceRootFolderById(folderId);
-    return CnFolderDtoHelper.convertToFolderTreeDto(folder as CnFolderHierarchyEntity);
+    return CnFolderDtoHelper.convertToLabFolderDto(folder as CnFolderHierarchyEntity);
   }
 
   @CnLabRobotAuthentication()
