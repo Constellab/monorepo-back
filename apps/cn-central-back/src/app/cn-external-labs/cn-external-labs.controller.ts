@@ -12,9 +12,13 @@ import { CnLabInstanceAggregateService } from '../cn-lab-instances/cn-lab-instan
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ClCoreJsonConvert } from '@monorepo/core-lib';
 import { CnExternalLabUser } from '../cn-external-lab-api/model/cn-external-lab-api.class';
-import { CnProjectDtoHelper, CnProjectTreeDTO } from '../cn-projects-aggregate/cn-projects/cn-project.dto';
 import { CnExternalCheckCredentialResponse } from '../cn-auth/cn-auth.service';
 import { CnLabProjectAggregateService } from '../cn-lab-project-aggregate/cn-lab-project-aggregate.service';
+import {
+  CnFolderDtoHelper,
+  CnFolderTreeDTO
+} from '../cn-projects-aggregate/cn-folder-hierarchies/cn-folder-hierarchy.dto';
+import { CnFolderHierarchyEntity } from '../cn-projects-aggregate/cn-folder-hierarchies/cn-folder-hierarchy.entity';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -68,35 +72,35 @@ export class CnExternalLabsController {
     return this.labInstanceAggregator.checkUserCredentials(credentials, true, true);
   }
 
-  @Put('project/:projectId/experiment')
+  @Put('project/:parentFolderId/experiment')
   createOrUpdateExperiment(
-    @Param('projectId', new ParseUUIDPipe()) projectId: string,
+    @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Body(new BlParsePipe(CnCreateLabExperimentDto)) createLabExperimentDto: CnCreateLabExperimentDto): Promise<void> {
-    return this.projectAggregator.createLabExperiment(projectId, createLabExperimentDto);
+    return this.projectAggregator.createLabExperiment(parentFolderId, createLabExperimentDto);
   }
 
-  @Delete('project/:projectId/experiment/:experimentId')
+  @Delete('project/:parentFolderId/experiment/:experimentId')
   deleteExperiment(
-    @Param('projectId', new ParseUUIDPipe()) projectId: string,
+    @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<void> {
-    return this.projectAggregator.deleteLabExperiment(projectId, experimentId);
+    return this.projectAggregator.deleteLabExperiment(parentFolderId, experimentId);
   }
 
   @UseInterceptors(FilesInterceptor('files'))
-  @Put('project/:projectId/report/v2')
-  saveReport2(@Param('projectId', new ParseUUIDPipe()) projectId: string,
+  @Put('project/:parentFolderId/report/v2')
+  saveReport2(@Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
               @Body() body: { body: string },
               @BlUploadedFiles() files: BlFile[] = []): Promise<void> {
     const createReportDto: CnCreateReportWithConfigDto
       = ClCoreJsonConvert.deserializeObject(JSON.parse(body.body), CnCreateReportWithConfigDto);
-    return this.projectAggregator.createLabReport(createReportDto, projectId, files);
+    return this.projectAggregator.createLabReport(createReportDto, parentFolderId, files);
   }
 
-  @Delete('project/:projectId/report/:reportId')
+  @Delete('project/:parentFolderId/report/:reportId')
   deleteReport(
-    @Param('projectId', new ParseUUIDPipe()) projectId: string,
+    @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Param('reportId', new ParseUUIDPipe()) reportId: string): Promise<void> {
-    return this.projectAggregator.deleteReportFromLab(projectId, reportId);
+    return this.projectAggregator.deleteReportFromLab(parentFolderId, reportId);
   }
 
   /**
@@ -111,18 +115,19 @@ export class CnExternalLabsController {
 
   /////////////////////////////// SYNCHRONIZATION ///////////////////////////////
   // those routes does not require user authentication because they are called by the lab server and are just get
+  // TODO test this root with an old lab project version
   @CnLabRobotAuthentication()
   @Get('project/all-trees')
-  async getAllProjectTrees(): Promise<CnProjectTreeDTO[]> {
-    const projects = await this.labProjectAggregateService.getCurrentLabInstanceProjects();
-    return CnProjectDtoHelper.convertToProjectTreeDtoList(projects);
+  async getAllFolderTrees(): Promise<CnFolderTreeDTO[]> {
+    const folders = await this.labProjectAggregateService.getCurrentLabInstanceFolders();
+    return CnFolderDtoHelper.convertToFolderTreeDtoList(folders as CnFolderHierarchyEntity[]);
   }
 
   @CnLabRobotAuthentication()
   @Get('project/:id/root-tree')
-  async getRootProject(@Param('id', new ParseUUIDPipe()) projectId: string): Promise<CnProjectTreeDTO> {
-    const project = await this.labProjectAggregateService.getCurrentLabInstanceRootProjectById(projectId);
-    return CnProjectDtoHelper.convertToProjectTreeDto(project);
+  async getRootProject(@Param('id', new ParseUUIDPipe()) folderId: string): Promise<CnFolderTreeDTO> {
+    const folder = await this.labProjectAggregateService.getCurrentLabInstanceRootFolderById(folderId);
+    return CnFolderDtoHelper.convertToFolderTreeDto(folder as CnFolderHierarchyEntity);
   }
 
   @CnLabRobotAuthentication()

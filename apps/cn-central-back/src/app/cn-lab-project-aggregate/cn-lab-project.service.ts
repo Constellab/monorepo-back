@@ -3,9 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CnLabProject } from './cn-lab-project.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { CnLabInstance } from '../cn-lab-instances/cn-lab-instance.entity';
-import { CnProject } from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { BlBadRequestException } from '@monorepo/back-core-lib';
+import {
+  CnFolderHierarchy,
+  CnFolderHierarchyEntity
+} from '../cn-projects-aggregate/cn-folder-hierarchies/cn-folder-hierarchy.entity';
 
 
 @Injectable()
@@ -15,55 +18,56 @@ export class CnLabProjectService {
   }
 
 
-  public async createLabInstanceProject(labInstance: CnLabInstance, project: CnProject,
-                                        entityManager: EntityManager): Promise<CnLabProject> {
-    if (!project.isRootProject()) {
-      throw new BlBadRequestException('Only root project can be shared with a lab');
+  public async createLabInstanceFolder(labInstance: CnLabInstance, rootFolder: CnFolderHierarchy,
+                                       entityManager: EntityManager): Promise<CnLabProject> {
+    if (!rootFolder.isRootFolder()) {
+      throw new BlBadRequestException('Only root folder can be shared with a lab');
     }
 
-    const labInstanceProjectDb = await this.findByLabInstanceIdAndProjectId(labInstance.id, project.id);
+    const labInstanceFolderDb = await this.findByLabInstanceIdAndRootFolderId(labInstance.id, rootFolder.id);
 
-    if (labInstanceProjectDb) {
+    if (labInstanceFolderDb) {
       throw new BlBadRequestException(CnErrorText.PROJECT_ALREADY_SHARED_WITH_LAB);
     }
 
-    const labInstanceProject = new CnLabProject();
-    labInstanceProject.labInstance = labInstance;
-    labInstanceProject.project = project;
+    const labInstanceFolder = new CnLabProject();
+    labInstanceFolder.labInstance = labInstance;
+    labInstanceFolder.rootFolder = rootFolder as CnFolderHierarchyEntity;
 
-    return entityManager.save(labInstanceProject);
+    return entityManager.save(labInstanceFolder);
   }
 
-  public async deleteLabInstanceProject(labInstanceId: string, projectId: string, entityManager: EntityManager): Promise<void> {
-    const labInstanceProject = await this.findByLabInstanceIdAndProjectId(labInstanceId, projectId);
+  public async deleteLabInstanceFolder(labInstanceId: string, rootFolderId: string, entityManager: EntityManager): Promise<void> {
+    const labInstanceFolder = await this.findByLabInstanceIdAndRootFolderId(labInstanceId, rootFolderId);
 
-    if (labInstanceProject == null) {
+    if (labInstanceFolder == null) {
       throw new BlBadRequestException(CnErrorText.PROJECT_NOT_SHARED_WITH_LAB);
     }
 
-    await entityManager.remove(labInstanceProject);
+    await entityManager.remove(labInstanceFolder);
   }
 
 
-  public async findByLabInstanceIdAndProjectId(labInstanceId: string, projectId: string): Promise<CnLabProject> {
-    return this.repository.findOneBy({ labInstanceId, projectId });
+  public async findByLabInstanceIdAndRootFolderId(labInstanceId: string, rootFolderId: string): Promise<CnLabProject> {
+    return this.repository.findOneBy({ labInstanceId, rootFolderId: rootFolderId });
   }
 
+  // TODO créer un sous type
   public async findByLabInstanceId(labInstanceId: string): Promise<CnLabProject[]> {
     return this.repository.find({
       where: {
         labInstanceId: labInstanceId
       },
       relations: {
-        project: true
+        rootFolder: true
       }
     });
   }
 
-  public async findByProjectId(projectId: string): Promise<CnLabProject[]> {
+  public async findByRootFolderId(rootFolderId: string): Promise<CnLabProject[]> {
     return this.repository.find({
       where: {
-        projectId: projectId
+        rootFolderId: rootFolderId
       },
       relations: {
         labInstance: true
@@ -71,10 +75,10 @@ export class CnLabProjectService {
     });
   }
 
-  public async findByProjectIdAndLabInstanceId(projectId: string, labInstanceId: string): Promise<CnLabProject | null> {
+  public async findByRootFolderIdAndLabInstanceId(rootFolderId: string, labInstanceId: string): Promise<CnLabProject | null> {
     return this.repository.findOne(
       {
-        where: { projectId, labInstanceId },
+        where: { rootFolderId, labInstanceId }
       }
     );
   }

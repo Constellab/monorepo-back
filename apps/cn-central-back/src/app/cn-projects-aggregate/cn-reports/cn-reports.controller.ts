@@ -27,14 +27,6 @@ export class CnReportsController {
   }
 
   /**
-   * Return the list of reports of a project
-   */
-  @Get('project/:projectId')
-  public async getReportByProject(@Param('projectId', ParseUUIDPipe) projectId: string): Promise<CnReport[]> {
-    return await this.projectAggregator.getReportsByProject(projectId);
-  }
-
-  /**
    * Return a file (file or image) of the report
    * Use filename(*) to catch all the filename (including slashes)
    */

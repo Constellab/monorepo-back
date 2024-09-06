@@ -1,12 +1,12 @@
-import {DeleteResult, EntityManager, Repository} from 'typeorm';
-import {FindOneOptions} from 'typeorm/find-options/FindOneOptions';
-import {BlEntityWithId} from '../models/bl-entity-with-id.entity';
-import {blPropertyIsNotUpdatable} from '../decorators/bl-not-updatable.decorator';
-import {BlAbstractPaginatedService} from './bl-abstract-paginated.service';
-import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
-import {BlBadRequestException} from '../exceptions/bl-bad-request.exception';
-import {BlNotFoundException} from '../exceptions/bl-not-found.exception';
-import {Inject} from '@nestjs/common';
+import { DeleteResult, EntityManager, Repository } from 'typeorm';
+import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
+import { BlEntityWithId } from '../models/bl-entity-with-id.entity';
+import { blPropertyIsNotUpdatable } from '../decorators/bl-not-updatable.decorator';
+import { BlAbstractPaginatedService } from './bl-abstract-paginated.service';
+import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+import { BlBadRequestException } from '../exceptions/bl-bad-request.exception';
+import { BlNotFoundException } from '../exceptions/bl-not-found.exception';
+import { Inject } from '@nestjs/common';
 import {
   BlPersistenceAction,
   BlPersistenceEventService
@@ -52,7 +52,7 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
    * Use to check property metadata including {@link BlNotUpdatable}
    * @protected
    */
-  protected async updateWithCompare(newEntity: Partial<T>, dbEntity: T, entityManager?: EntityManager): Promise<T> {
+  public async updateWithCompare(newEntity: Partial<T>, dbEntity: T, entityManager?: EntityManager): Promise<T> {
     for (const property in newEntity) {
 
       // check if the property is updatable or is undefined

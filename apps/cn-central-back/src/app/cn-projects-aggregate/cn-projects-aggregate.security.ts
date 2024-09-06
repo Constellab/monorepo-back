@@ -1,10 +1,10 @@
-import {Injectable} from '@nestjs/common';
-import {CnProject} from './cn-projects/cn-project.entity';
-import {CnProjectsService} from './cn-projects/cn-projects.service';
-import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
-import {BlUnauthorizedException} from '@monorepo/back-core-lib';
-import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {CnProjectUserService} from './cn-project-user/cn-project-user.service';
+import { Injectable } from '@nestjs/common';
+import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
+import { BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { CnProjectUserService } from './cn-project-user/cn-project-user.service';
+import { CnFolderHierarchy } from './cn-folder-hierarchies/cn-folder-hierarchy.entity';
+import { CnFolderHierarchyService } from './cn-folder-hierarchies/cn-folder-hierarchy.service';
 
 
 /**
@@ -13,42 +13,43 @@ import {CnProjectUserService} from './cn-project-user/cn-project-user.service';
 @Injectable()
 export class CnProjectsAggregateSecurity {
 
-  constructor(private projectsService: CnProjectsService,
+  constructor(private folderObjectService: CnFolderHierarchyService,
               private projectUserService: CnProjectUserService) {
   }
 
-  public async checkFindOneAndGetRootProject(project: CnProject, userInfo: CnUserSpaceInfo): Promise<CnProject> {
+  public async checkFindOneAndGetRootProject(folder: CnFolderHierarchy, userInfo: CnUserSpaceInfo): Promise<CnFolderHierarchy> {
     // check the space context
-    if (project.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException('Wrong space');
+    if (folder.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException('Wrong space');
 
     // the authorization are handle at the projet level
-    const rootProject = await this.projectsService.getRootProject(project);
+    const rootFolder = await this.folderObjectService.getRootFolder(folder);
 
-    if (userInfo.isSpaceAdmin()) return rootProject;
+    if (userInfo.isSpaceAdmin()) return rootFolder;
 
     // enable always the leader to have access to the project
-    if (rootProject.leader.id === userInfo.userId) return rootProject;
+    if (rootFolder.user.id === userInfo.userId) return rootFolder;
 
     // check if the user is a member of one of the groups that were shared with the project
-    if (!await this.projectUserService.userIsInProject(rootProject.id, userInfo.userId)) {
+    if (!await this.projectUserService.userIsInRootFolder(rootFolder.id, userInfo.userId)) {
       throw new BlUnauthorizedException(CnErrorText.NO_ACCESS_TO_PROJECT);
     }
 
-    return rootProject;
+    return rootFolder;
   }
 
 
-  public async checkFindOne(project: CnProject, userInfo: CnUserSpaceInfo): Promise<void> {
-    await this.checkFindOneAndGetRootProject(project, userInfo);
+  public async checkFindOne(folder: CnFolderHierarchy, userInfo: CnUserSpaceInfo): Promise<void> {
+    await this.checkFindOneAndGetRootProject(folder, userInfo);
   }
 
-  public async checkUpdate(project: CnProject, userInfo: CnUserSpaceInfo): Promise<void> {
+  // TODO check if we keep project object here
+  public async checkUpdate(folder: CnFolderHierarchy, userInfo: CnUserSpaceInfo): Promise<void> {
     // check the space context
-    if (project.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException('Wrong space');
+    if (folder.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException('Wrong space');
 
     if (userInfo.isSpaceAdmin()) return;
 
-    if (project.leader.id !== userInfo.userId) {
+    if (folder.user.id !== userInfo.userId) {
       throw new BlUnauthorizedException(CnErrorText.NO_PROJECT_LEADER);
     }
   }
@@ -56,15 +57,15 @@ export class CnProjectsAggregateSecurity {
   /**
    * Only the leader or leader of a parent project can update the leader of children project
    */
-  public async checkUpdateProjectLeader(project: CnProject, userInfo: CnUserSpaceInfo): Promise<void> {
+  public async checkUpdateProjectLeader(project: CnFolderHierarchy, userInfo: CnUserSpaceInfo): Promise<void> {
     // check the space context
     if (project.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException('Wrong space');
 
     if (userInfo.isSpaceAdmin()) return;
 
-    const ancestors = await this.projectsService.getAncestors(project);
+    const ancestors = await this.folderObjectService.getAncestors(project);
     for (const ancestor of ancestors) {
-      if (ancestor.leader.id === userInfo.userId) {
+      if (ancestor.user.id === userInfo.userId) {
         return;
       }
     }

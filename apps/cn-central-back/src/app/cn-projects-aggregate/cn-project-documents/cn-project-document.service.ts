@@ -14,7 +14,6 @@ import {
   BlRichTextUploadedImageResponse,
   BlRichTextUploadFileResponse
 } from '@monorepo/back-core-lib';
-import { CnProject } from '../cn-projects/cn-project.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, In, Repository } from 'typeorm';
 import { ClDateHelper, ClPage, ClStringHelper } from '@monorepo/core-lib';
@@ -35,16 +34,25 @@ import {
 } from './cn-project-document.event';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
+import {
+  CnFolderHierarchy,
+  CnFolderHierarchyEntity,
+  CnFolderObjectType
+} from '../cn-folder-hierarchies/cn-folder-hierarchy.entity';
+import { CnFolderHierarchyService } from '../cn-folder-hierarchies/cn-folder-hierarchy.service';
 
 @Injectable()
 export class CnProjectDocumentService extends BlAbstractService<CnProjectDocument> {
+
+  public static readonly OFFICE_PREVIEW_URL = 'https://view.officeapps.live.com/op/embed.aspx?src=';
 
   constructor(@InjectRepository(CnProjectDocument) private repository: Repository<CnProjectDocument>,
               private objectStorageService: BlObjectStorageService,
               private projectBucketService: CnProjectBucketService,
               private datasource: DataSource,
               private eventEmitter: EventEmitter2,
-              private configService: CnCoreConfigService) {
+              private configService: CnCoreConfigService,
+              private folderHierarchyService: CnFolderHierarchyService) {
     super(repository, CnProjectDocument);
   }
 
@@ -54,25 +62,25 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   /**
    * Upload a document to a project bucket
    * @param file
-   * @param project
+   * @param parentFolder
    * @param documentType
    * @param entityId
    * @param documentName if not provided, a name is generated with the extension
    * @param parentDocument
    */
-  public async uploadDocument(file: BlFile, project: CnProject,
+  public async uploadDocument(file: BlFile, parentFolder: CnFolderHierarchy,
                               documentType: CnProjectDocumentType,
                               entityId: string,
                               documentName?: string,
                               parentDocument?: CnProjectDocument): Promise<CnProjectDocument> {
-    // check if the space storage is not full, consider si of this document as 0
+    // check if the space storage is not full, consider size of this document as 0
     this.checkIfStorageIsFull(file.size);
 
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(parentFolder.id);
 
     if (documentName) {
 
-      const existingDocument = await this.findDocumentByProjectAndTypeAndName(project.id, documentType,
+      const existingDocument = await this.findDocumentByParentFolderAndTypeAndName(parentFolder.id, documentType,
         documentName, entityId);
       if (existingDocument) {
         throw new BlBadRequestException(CnErrorText.DOCUMENT_ALREADY_EXIST);
@@ -85,7 +93,11 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
       const document = new CnProjectDocument();
       document.name = documentName;
-      document.project = project;
+
+      // document that are not uploaded document are considered as hidden document
+      const objectType: CnFolderObjectType = documentType === CnProjectDocumentType.UPLOADED_DOCUMENT ? CnFolderObjectType.DOCUMENT : CnFolderObjectType.HIDDEN_DOCUMENT;
+      document.folderHierarchy = CnFolderHierarchyEntity.newSubFolderHierarchyEntity(objectType, documentName,
+        CnCurrentUserHelper.getAndCheckCurrentUser(), ClDateHelper.getDate(), parentFolder);
       document.size = file.size;
       document.mimeType = file.mimetype;
       document.type = documentType;
@@ -101,7 +113,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
       const dbDocument = await entityManager.save(document);
 
-      const filePath = this.generateDocumentFilePath(project, document);
+      const filePath = this.generateDocumentFilePath(parentFolder, document);
       await this.objectStorageService.uploadObject(bucketConfig, file,
         { filename: filePath });
       return dbDocument;
@@ -111,7 +123,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     return document;
   }
 
-  public async uploadImageDocument(file: BlFile, project: CnProject,
+  public async uploadImageDocument(file: BlFile, parentFolder: CnFolderHierarchy,
                                    documentType: CnProjectDocumentType,
                                    entityId: string,
                                    documentName?: string,
@@ -120,7 +132,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     if (!documentName) {
       documentName = this.objectStorageService.generateRandomFileNameFromExtension(imSize.type);
     }
-    const imageDoc = await this.uploadDocument(file, project,
+    const imageDoc = await this.uploadDocument(file, parentFolder,
       documentType, entityId, documentName, parentDocument);
 
 
@@ -132,29 +144,29 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   }
 
 
-  async getDocumentContentByTypeAndName(project: CnProject, documentType: CnProjectDocumentType,
+  async getDocumentContentByTypeAndName(parentFolder: CnFolderHierarchy, documentType: CnProjectDocumentType,
                                         documentName: string, entityId: string): Promise<BlFileResponse> {
-    const document = await this.findDocumentByProjectAndTypeAndName(project.id, documentType,
+    const document = await this.findDocumentByParentFolderAndTypeAndName(parentFolder.id, documentType,
       documentName, entityId);
 
     if (document == null) {
       throw new BlBadRequestException('Document not found');
     }
 
-    return this.getDocumentContentByDocument(project, document);
+    return this.getDocumentContentByDocument(parentFolder, document);
   }
 
-  public async getDocumentContentByDocument(project: CnProject, document: CnProjectDocument): Promise<BlFileResponse> {
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(project.getRootParentId());
-    return this.objectStorageService.downloadObject(bucketConfig, this.generateDocumentFilePath(project, document));
+  public async getDocumentContentByDocument(parentFolder: CnFolderHierarchy, document: CnProjectDocument): Promise<BlFileResponse> {
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(parentFolder.id);
+    return this.objectStorageService.downloadObject(bucketConfig, this.generateDocumentFilePath(parentFolder, document));
   }
 
 
   public async deleteDocument(id: string, entityManager?: EntityManager): Promise<void> {
     entityManager = this.getEntityManager(entityManager);
-    const document = await this.findByIdAndCheck(id, { project: true }, entityManager);
+    const document = await this.findByIdAndCheck(id, { folderHierarchy: { parent: true } }, entityManager);
 
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(document.project.getRootParentId());
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(document.folderHierarchy.getRootFolderId());
     if (document.documentTypeSupportsTrash() && !document.inTrash) {
       throw new BlBadRequestException('Document is not in trash, please move it to trash first');
     }
@@ -167,17 +179,23 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
     for (const doc of documentsToDelete) {
       await entityManager.remove(doc);
+      await entityManager.remove(doc.folderHierarchy);
     }
 
     // delete all object in the store
-    const documentPaths = documentsToDelete.map(d => this.generateDocumentFilePath(document.project, d));
+    const documentPaths = documentsToDelete.map(d => this.generateDocumentFilePath(document.folderHierarchy.parent, d));
     await this.objectStorageService.deleteMultipleObjects(bucketConfig, documentPaths);
 
     this.emitEvent('DELETE_DOCUMENT', document);
   }
 
-  public async emptyProjectTrash(projectId: string): Promise<void> {
-    const documentToDelete = await this.repo.find({ where: { projectId: projectId, inTrash: true } });
+  public async emptyFolderTrash(parentFolderId: string): Promise<void> {
+    const documentToDelete = await this.repo.find({
+      where: {
+        folderHierarchy: { parentId: parentFolderId },
+        inTrash: true
+      }
+    });
 
     for (const doc of documentToDelete) {
       await this.deleteDocument(doc.id, this.datasource.manager);
@@ -190,25 +208,35 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   }
 
   /**
-   * Find the document based on its type, project and name.
+   * Find the document based on its type, parentFolder and name.
    * Using the entityId make sure that the requested document is associated to the entity and so
    * this prevents access to a document of another entity
-   * @param projectId
+   * @param parentFolderId
    * @param type
    * @param name
    * @param entityId
    */
-  async findDocumentByProjectAndTypeAndName(projectId: string, type: CnProjectDocumentType,
-                                            name: string, entityId: string): Promise<CnProjectDocument | null> {
-    return this.repo.findOne({ where: { projectId: projectId, type: type, name: name, entityId: entityId } });
+  async findDocumentByParentFolderAndTypeAndName(parentFolderId: string, type: CnProjectDocumentType,
+                                                 name: string, entityId: string): Promise<CnProjectDocument | null> {
+    return this.repo.findOne({
+      where: {
+        folderHierarchy: { parentId: parentFolderId },
+        type: type,
+        name: name,
+        entityId: entityId
+      }
+    });
   }
 
-  public findDocumentsByProject(projectId: string): Promise<CnProjectDocument[]> {
-    return this.repo.find({ where: { projectId: projectId } });
-  }
-
-  public generateDocumentFilePath(project: CnProject, document: CnProjectDocument): string {
-    let prefix = `${project.spaceId}/${project.getRootParentId()}/${project.id}/${document.getTypePrefix()}`;
+  // TODO simplifier la hierarchie dans le s3
+  /**
+   * Generate the path of a document in the object storage
+   * Path : spaceId/rootParentId/projectId/documentType/entityId/filename
+   * @param parentFolder
+   * @param document
+   */
+  public generateDocumentFilePath(parentFolder: CnFolderHierarchy, document: CnProjectDocument): string {
+    let prefix = `${parentFolder.spaceId}/${parentFolder.getRootFolderId()}/${parentFolder.id}/${document.getTypePrefix()}`;
 
     if (document.type === CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT ||
       document.type === CnProjectDocumentType.REPORT_CONTENT) {
@@ -222,13 +250,17 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   ////////////////////////////////////////////// PROJECT DOCUMENTS  //////////////////////////////////////////////
 
 
+  public findDocumentsByParentFolder(parentFolderId: string): Promise<CnProjectDocument[]> {
+    return this.repo.find({ where: { folderHierarchy: { parentId: parentFolderId } } });
+  }
+
   /**
-   * List the Uploaded and Constellab documents of a project
+   * List the Uploaded and Constellab documents of a parentFolder
    */
-  public getProjectDocuments(projectId: string, inTrash: boolean, page: number, size: number): Promise<ClPage<CnProjectDocument>> {
+  public getParentFolderDocuments(parentFolderId: string, inTrash: boolean, page: number, size: number): Promise<ClPage<CnProjectDocument>> {
     return this.findPaginated(page, size, {
       where: {
-        project: { id: projectId },
+        folderHierarchy: { parentId: parentFolderId },
         inTrash: inTrash,
         type: In([CnProjectDocumentType.UPLOADED_DOCUMENT, CnProjectDocumentType.CONSTELLAB_DOCUMENT])
       },
@@ -240,25 +272,29 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
 
   ////////////////////////////////////////////// JSON  DOCUMENTS //////////////////////////////////////////////
-  public async createJSONDocument(project: CnProject, type: CnProjectDocumentType,
+  public async createJSONDocument(parentFolder: CnFolderHierarchy, type: CnProjectDocumentType,
                                   documentName: string, entityId: string, content: any,
                                   parentDocument?: CnProjectDocument): Promise<CnProjectDocument> {
     // check if the space storage is not full, consider size of this document as 0
     this.checkIfStorageIsFull(0);
 
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(parentFolder.id);
     const document = await this.datasource.transaction(async (entityManager) => {
 
       const document = new CnProjectDocument();
       document.name = documentName;
-      document.project = project;
+
+      // document that are not Constellab document are considered as hidden document
+      const objectType: CnFolderObjectType = type === CnProjectDocumentType.CONSTELLAB_DOCUMENT ? CnFolderObjectType.CONSTELLAB_DOCUMENT : CnFolderObjectType.HIDDEN_DOCUMENT;
+      document.folderHierarchy = CnFolderHierarchyEntity.newSubFolderHierarchyEntity(objectType, documentName, CnCurrentUserHelper.getAndCheckCurrentUser(),
+        ClDateHelper.getDate(), parentFolder);
       document.mimeType = 'application/json';
       document.type = type;
       document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension('json'));
       document.entityId = entityId;
       document.parentDocument = parentDocument;
 
-      const documentPath = this.generateDocumentFilePath(project, document);
+      const documentPath = this.generateDocumentFilePath(parentFolder, document);
       await this.objectStorageService.uploadJson(bucketConfig, content, { filename: documentPath });
 
       const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig[0], documentPath);
@@ -271,14 +307,14 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     return document;
   }
 
-  public async updateJSONDocument(project: CnProject, document: CnProjectDocument,
+  public async updateJSONDocument(parentFolder: CnFolderHierarchy, document: CnProjectDocument,
                                   content: any): Promise<CnProjectDocument> {
     // check if the space storage is not full, consider si of this document as 0
     this.checkIfStorageIsFull(0);
 
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(project.getRootParentId());
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(parentFolder.id);
 
-    const documentPath = this.generateDocumentFilePath(project, document);
+    const documentPath = this.generateDocumentFilePath(parentFolder, document);
     await this.objectStorageService.uploadJson(bucketConfig, content, { filename: documentPath });
 
     const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig[0], documentPath);
@@ -291,64 +327,65 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     return document;
   }
 
-  public async createOrUpdateJSONDocument(project: CnProject, type: CnProjectDocumentType,
+  public async createOrUpdateJSONDocument(parentFolder: CnFolderHierarchy, type: CnProjectDocumentType,
                                           documentName: string, entityId: string, content: any,
                                           parentDocument?: CnProjectDocument): Promise<CnProjectDocument> {
-    const document = await this.findDocumentByProjectAndTypeAndName(project.id, type,
+    const document = await this.findDocumentByParentFolderAndTypeAndName(parentFolder.id, type,
       documentName, entityId);
 
     if (document) {
-      return this.updateJSONDocument(project, document, content);
+      return this.updateJSONDocument(parentFolder, document, content);
     } else {
-      return this.createJSONDocument(project, type, documentName, entityId, content, parentDocument);
+      return this.createJSONDocument(parentFolder, type, documentName, entityId, content, parentDocument);
     }
   }
 
-  public async getJSONDocumentContent(project: CnProject, document: CnProjectDocument): Promise<any> {
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(project.getRootParentId());
+  public async getJSONDocumentContent(parentFolder: CnFolderHierarchy, document: CnProjectDocument): Promise<any> {
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(parentFolder.id);
 
-    const documentPath = this.generateDocumentFilePath(project, document);
+    const documentPath = this.generateDocumentFilePath(parentFolder, document);
     return await this.objectStorageService.getObjectAsJson(bucketConfig, documentPath);
   }
 
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
 
-  public async createConstellabDocument(project: CnProject, documentName: string): Promise<CnConstellabDocumentDTO> {
+  public async createConstellabDocument(parentFolder: CnFolderHierarchy, documentName: string): Promise<CnConstellabDocumentDTO> {
     const content = BlNewRichText.emptyContent();
-    const doc = await this.createJSONDocument(project, CnProjectDocumentType.CONSTELLAB_DOCUMENT,
-      documentName, project.id, BlNewRichText.emptyContent());
+    const doc = await this.createJSONDocument(parentFolder, CnProjectDocumentType.CONSTELLAB_DOCUMENT,
+      documentName, parentFolder.id, BlNewRichText.emptyContent());
     return new CnConstellabDocumentDTO(doc, content);
   }
 
 
-  async updateConstellabDocument(project: CnProject, document: CnProjectDocument,
+  async updateConstellabDocument(parentFolder: CnFolderHierarchy, document: CnProjectDocument,
                                  content: BlRichTextContent): Promise<CnConstellabDocumentDTO> {
-    const newDoc = await this.updateJSONDocument(project, document, content);
+    const newDoc = await this.updateJSONDocument(parentFolder, document, content);
     return new CnConstellabDocumentDTO(newDoc, content);
   }
 
 
-  async getConstellabDocument(project: CnProject, document: CnProjectDocument): Promise<CnConstellabDocumentDTO> {
+  async getConstellabDocument(parentFolder: CnFolderHierarchy, document: CnProjectDocument): Promise<CnConstellabDocumentDTO> {
     if (document.type !== CnProjectDocumentType.CONSTELLAB_DOCUMENT) {
       throw new BlBadRequestException('The document is not a constellab document');
     }
-    const content = await this.getJSONDocumentContent(project, document);
+    const content = await this.getJSONDocumentContent(parentFolder, document);
     return new CnConstellabDocumentDTO(document, content);
   }
 
-  async uploadImageToConstellabDocument(project: CnProject, document: CnProjectDocument,
+  async uploadImageToConstellabDocument(parentFolder: CnFolderHierarchy, document: CnProjectDocument,
                                         file: BlFile): Promise<BlRichTextUploadedImageResponse> {
-    return this.uploadImageDocument(file, project, CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT,
+    // TODO to check if we keep the parent folder as the parent folder of the document (not the document itself)
+    return this.uploadImageDocument(file, parentFolder, CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT,
       document.id, null, document);
   }
 
-  async uploadFileToConstellabDocument(project: CnProject, document: CnProjectDocument,
+  async uploadFileToConstellabDocument(parentFolder: CnFolderHierarchy, document: CnProjectDocument,
                                        file: BlFile): Promise<BlRichTextUploadFileResponse> {
 
-    const fileName = await this.checkNewDocumentName(project.id,
+    const fileName = await this.checkNewDocumentName(parentFolder.id,
       CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT, file.originalname, document.id);
 
-    const newDocument = await this.uploadDocument(file, project,
+    const newDocument = await this.uploadDocument(file, parentFolder,
       CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT,
       document.id, fileName, document);
 
@@ -371,14 +408,14 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
   ////////////////////////////////////////////// SIZE /////////////////////////////////////////////
 
-  public async getStorageSizeDetailByProjects(projectIds: string[]): Promise<CnProjectStorageUsageDTO> {
-    const documents = await this.repository.findBy({ projectId: In(projectIds) });
+  public async getStorageSizeDetailByFolders(folderIds: string[]): Promise<CnProjectStorageUsageDTO> {
+    const documents = await this.repository.findBy({ folderHierarchy: { parentId: In(folderIds) } });
     return this.documentsToAggregateDTO(documents);
   }
 
 
   public async getStorageSizeDetailBySpace(spaceId: string): Promise<CnProjectStorageUsageDTO> {
-    const documents = await this.repository.findBy({ project: { spaceId: spaceId } });
+    const documents = await this.repository.findBy({ folderHierarchy: { spaceId: spaceId } });
     return this.documentsToAggregateDTO(documents);
   }
 
@@ -404,12 +441,12 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   }
 
   public async getSpaceCloudStorageSize(spaceId: string): Promise<number> {
-    // calculate with sql sum query, join project table with document.projectId = project.id
+    // calculate with sql sum query, join parentFolder table with document.folderId = folder.id
     const result = await this.repository.manager.query(`
       SELECT SUM(size) as totalSize
       FROM project_document
-             JOIN project ON project_document.projectId = project.id
-      WHERE project.spaceId = ?
+             JOIN folder_hierarchy ON project_document.id = folder_hierarchy.id
+      WHERE folder_hierarchy.spaceId = ?
         and project_document.bucketType = ?
     `, [spaceId, BlBucketType.NORMAL]);
     return result[0].totalSize ?? 0;
@@ -444,9 +481,8 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     }
 
     // Generate the preview URL that use office online viewer with public api route
-    const officePreviewUrl = 'https://view.officeapps.live.com/op/embed.aspx?src=';
     const constellabPreviewUrl = `${this.configService.getApiUrl()}/projects/document/preview/${document.previewToken}`;
-    return new CnProjectDocumentPreviewDTO(`${officePreviewUrl}${constellabPreviewUrl}`);
+    return new CnProjectDocumentPreviewDTO(`${CnProjectDocumentService.OFFICE_PREVIEW_URL}${constellabPreviewUrl}`);
   }
 
   public async getAndCheckByPreviewToken(token: string): Promise<CnProjectDocument> {
@@ -465,49 +501,52 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   ////////////////////////////////////////////// OTHERS /////////////////////////////////////////////
 
   public async moveDocument(document: CnProjectDocument,
-                            oldProject: CnProject,
-                            newProject: CnProject): Promise<CnProjectDocument> {
-    const oldBuckets = await this.projectBucketService.getAndCheckProjectBucketConfig(oldProject.getRootParentId());
-    const newBuckets = await this.projectBucketService.getAndCheckProjectBucketConfig(newProject.getRootParentId());
+                            oldParentFolder: CnFolderHierarchy,
+                            newParentFolder: CnFolderHierarchy): Promise<CnProjectDocument> {
+    const oldBuckets = await this.projectBucketService.getAndCheckProjectBucketConfig(oldParentFolder.id);
+    const newBuckets = await this.projectBucketService.getAndCheckProjectBucketConfig(newParentFolder.id);
 
     // move the children document as well
     const children = await this.findChildrenDocuments(document.id);
-    const newDocument = await this.moveDocumentFromBucket(document, oldProject, newProject, oldBuckets, newBuckets);
+    const newDocument = await this.moveDocumentFromBucket(document, oldParentFolder, newParentFolder, oldBuckets, newBuckets);
 
     // also move the children
     for (const doc of children) {
-      await this.moveDocumentFromBucket(doc, oldProject, newProject, oldBuckets, newBuckets);
+      await this.moveDocumentFromBucket(doc, oldParentFolder, newParentFolder, oldBuckets, newBuckets);
     }
 
     return newDocument;
   }
 
   private async moveDocumentFromBucket(document: CnProjectDocument,
-                                       oldProject: CnProject, newProject: CnProject,
+                                       oldParentFolder: CnFolderHierarchy, newParentFolder: CnFolderHierarchy,
                                        oldBuckets: BlBucketConfig[], newBuckets: BlBucketConfig[]): Promise<CnProjectDocument> {
     return await this.datasource.transaction(async (entityManager) => {
-      // update the project in db
-      document.project = newProject;
-
-      // if the entity id of the object is the project, we also update it
-      if(document.entityIdIsProject()){
-        document.entityId = newProject.id;
+      document.folderHierarchy.parentId = newParentFolder.id;
+      document.folderHierarchy.parent = newParentFolder as CnFolderHierarchyEntity;
+      document.folderHierarchy.rootParentId = newParentFolder.getRootFolderId();
+      await this.folderHierarchyService.update(document.folderHierarchy, entityManager);
+      // if the entity id of the object is the parentFolder, we also update it
+      if (document.entityIdIsProject()) {
+        document.entityId = newParentFolder.id;
+        document = await entityManager.save(document);
       }
 
-      const dbDocument = await entityManager.save(document);
 
       // move the object in the storage
-      const oldFilePath = this.generateDocumentFilePath(oldProject, document);
-      const newFilePath = this.generateDocumentFilePath(newProject, document);
+      const oldFilePath = this.generateDocumentFilePath(oldParentFolder, document);
+      const newFilePath = this.generateDocumentFilePath(newParentFolder, document);
       await this.objectStorageService.moveObjectToAnotherBucket(oldBuckets, newBuckets, oldFilePath, newFilePath);
-      return dbDocument;
+      return document;
     });
   }
 
 
+  // TODO a voir si on retourne un type plus précis car le folder hierarchy est loadé
   private findChildrenDocuments(parentDocumentId: string): Promise<CnProjectDocument[]> {
     return this.repo.find({
-      where: { parentDocument: { id: parentDocumentId } }
+      where: { parentDocument: { id: parentDocumentId } },
+      relations: { folderHierarchy: true }
     });
   }
 
@@ -524,13 +563,13 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
    * Method to check if a document with same name exists and if so, add an index to the name
    * @private
    */
-  private async checkNewDocumentName(projectId: string, documentType: CnProjectDocumentType, documentName: string,
+  private async checkNewDocumentName(parentFolderId: string, documentType: CnProjectDocumentType, documentName: string,
                                      entityId: string): Promise<string> {
     let i = 0;
     while (i < 10) {
       const name = i === 0 ? documentName : BlFileHelper.addIndexToFileName(documentName, i);
 
-      const existingDocument = await this.findDocumentByProjectAndTypeAndName(projectId, documentType,
+      const existingDocument = await this.findDocumentByParentFolderAndTypeAndName(parentFolderId, documentType,
         name, entityId);
       if (!existingDocument) {
         return name;

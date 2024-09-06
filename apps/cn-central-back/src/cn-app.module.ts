@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CnAuthModule } from './app/cn-auth/cn-auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { CnCoreModule } from './app/cn-core/cn-core.module';
-import { CnProjectsModule } from './app/cn-projects-aggregate/cn-projects/cn-projects.module';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { CnCoreConfigService } from './app/cn-core/modules/cn-core-config/cn-core-config.service';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
@@ -210,7 +209,6 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     CnLabConfigsModule,
     CnProjectsAggregateModule,
     CnExperimentsModule,
-    CnProjectsModule,
     CnReportsModule,
     CnBricksModule,
     CnGroupsModule,

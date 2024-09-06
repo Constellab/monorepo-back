@@ -8,8 +8,9 @@ import { CnLabInstancesModule } from '../cn-lab-instances/cn-lab-instances.modul
 import { CnLabProjectListener } from './cn-lab-project.listener';
 import { CnLabProjectService } from './cn-lab-project.service';
 import { CnLabProject } from './cn-lab-project.entity';
-import { CnProjectsModule } from '../cn-projects-aggregate/cn-projects/cn-projects.module';
 import { CnLabProjectController } from './cn-lab-project.controller';
+import { CnFolderHierarchyModule } from '../cn-projects-aggregate/cn-folder-hierarchies/cn-folder-hierarchy.module';
+import { CnProjectsModule } from '../cn-projects-aggregate/cn-projects/cn-projects.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { CnLabProjectController } from './cn-lab-project.controller';
 
     CnProjectsAggregateModule,
     CnLabInstancesModule,
-    CnProjectsModule
+    CnFolderHierarchyModule,
+    CnProjectsModule,
   ],
   providers: [
     CnLabProjectAggregateService,

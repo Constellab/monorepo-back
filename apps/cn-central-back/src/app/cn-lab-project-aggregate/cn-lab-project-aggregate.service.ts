@@ -4,13 +4,16 @@ import { CnLabInstanceAggregateService } from '../cn-lab-instances/cn-lab-instan
 import { CnLabProject } from './cn-lab-project.entity';
 import { CnLabInstance } from '../cn-lab-instances/cn-lab-instance.entity';
 import { BlBadRequestException, BlUnauthorizedException } from '@monorepo/back-core-lib';
-import { CnProject } from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnLabProjectService } from './cn-lab-project.service';
 import { DataSource } from 'typeorm';
 import { CnExternalLabProjectService } from '../cn-external-lab-api/cn-external-lab-project.service';
 import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import {
+  CnFolderHierarchy,
+  CnFolderHierarchyWithChildren
+} from '../cn-projects-aggregate/cn-folder-hierarchies/cn-folder-hierarchy.entity';
 
 @Injectable()
 export class CnLabProjectAggregateService {
@@ -24,113 +27,113 @@ export class CnLabProjectAggregateService {
   }
 
 
-  public async addProjectToLab(labInstanceId: string, rootProjectId: string): Promise<CnLabProject> {
+  public async addFolderToLab(labInstanceId: string, rootFolderId: string): Promise<CnLabProject> {
     // get and check if the user can manage the lab
     const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId, false);
 
-    return this.addRootProjectToLabInsecure(labInstance, rootProjectId);
+    return this.addRootFolderToLabInsecure(labInstance, rootFolderId);
   }
 
-  public async addRootProjectToLabInsecure(labInstance: CnLabInstance, rootProjectId: string): Promise<CnLabProject> {
+  public async addRootFolderToLabInsecure(labInstance: CnLabInstance, rootFolderId: string): Promise<CnLabProject> {
     // get and check if the user can see the project
-    const projectTree = await this.projectAggregateService.getProjectTree(rootProjectId);
+    const folderTree = await this.projectAggregateService.getFolderTree(rootFolderId);
 
     return await this.dataSource.transaction(async entityManager => {
-      const labProject = await this.labProjectService.createLabInstanceProject(labInstance, projectTree, entityManager);
-      await this.syncProjectToLab(labInstance, projectTree);
+      const labFolder = await this.labProjectService.createLabInstanceFolder(labInstance, folderTree, entityManager);
+      await this.syncFolderToLab(labInstance, folderTree);
 
-      return labProject;
+      return labFolder;
     });
   }
 
-  public async forceProjectSyncToLab(labInstanceId: string, rootProjectId: string): Promise<void> {
-    const labProject = await this.labProjectService.findByProjectId(rootProjectId);
-    if (labProject == null) throw new BlUnauthorizedException();
+  public async forceFolderSyncToLab(labInstanceId: string, rootFolderId: string): Promise<void> {
+    const labFolder = await this.labProjectService.findByRootFolderId(rootFolderId);
+    if (labFolder == null) throw new BlUnauthorizedException();
 
     const labManager = await this.getAndCheckAuthorizationToFindLabById(labInstanceId);
 
-    const projectTree = await this.projectAggregateService.getProjectTree(rootProjectId);
-    await this.syncProjectToLab(labManager, projectTree);
+    const folderTree = await this.projectAggregateService.getFolderTree(rootFolderId);
+    await this.syncFolderToLab(labManager, folderTree);
   }
 
-  public async syncProjectToLab(labInstance: CnLabInstance, projectTree: CnProject): Promise<void> {
+  public async syncFolderToLab(labInstance: CnLabInstance, folderTree: CnFolderHierarchyWithChildren): Promise<void> {
     // add the user to the lab is the lab is running
     const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabSpaceApiInfo());
     if (labIsRunning) {
-      // add the project to the lab
-      await this.externalLabProjectService.addProjectInLab(labInstance.getGlabSpaceApiInfo(), projectTree);
+      // add the folder to the lab
+      await this.externalLabProjectService.addFolderInLab(labInstance.getGlabSpaceApiInfo(), folderTree);
     }
   }
 
-  public async checkAndRemoveProjectFromLab(labInstanceId: string, rootProjectId: string): Promise<void> {
+  public async checkAndRemoveFolderFromLab(labInstanceId: string, rootFolderId: string): Promise<void> {
     // get and check if the user can manage the lab
     const labInstance = await this.getAndCheckAuthorizationToManageLab(labInstanceId);
 
     // check if the project  uses the lab as storage (datahub)
-    if (await this.projectAggregateService.projectUsesLabStorage(rootProjectId, labInstanceId)) {
+    if (await this.projectAggregateService.projectUsesLabStorage(rootFolderId, labInstanceId)) {
       throw new BlBadRequestException(CnErrorText.REMOVE_PROJECT_USE_LAB_AS_STORAGE_ERROR);
     }
 
     // Before delete project from lab, check if this project as sync object from this lab
-    const syncExperiments = await this.projectAggregateService.getExperimentsByRootProjectAndLabInstance(rootProjectId, labInstanceId);
+    const syncExperiments = await this.projectAggregateService.getExperimentsByRootFolderAndLabInstanceNotSecure(rootFolderId, labInstanceId);
     if (syncExperiments.length > 0) {
       throw new BlBadRequestException(CnErrorText.REMOVE_PROJECT_SYNC_EXPERIMENT_ERROR, { detailArgs: { count: syncExperiments.length } });
     }
 
-    const syncReports = await this.projectAggregateService.getReportsByRootProjectAndLabInstance(rootProjectId, labInstanceId);
+    const syncReports = await this.projectAggregateService.getReportsByRootFolderAndLabInstance(rootFolderId, labInstanceId);
     if (syncReports.length > 0) {
       throw new BlBadRequestException(CnErrorText.REMOVE_PROJECT_SYNC_REPORT_ERROR, { detailArgs: { count: syncReports.length } });
     }
 
-    await this.removeProjectFromLab(labInstance, rootProjectId);
+    await this.removeFolderFromLab(labInstance, rootFolderId);
   }
 
-  private async removeProjectFromLab(labInstance: CnLabInstance, rootProjectId: string): Promise<void> {
+  private async removeFolderFromLab(labInstance: CnLabInstance, rootFolderId: string): Promise<void> {
     return await this.dataSource.transaction(async entityManager => {
-      await this.labProjectService.deleteLabInstanceProject(labInstance.id, rootProjectId, entityManager);
+      await this.labProjectService.deleteLabInstanceFolder(labInstance.id, rootFolderId, entityManager);
 
       // remove the project from the lab, if it is available
       const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabSpaceApiInfo());
       if (labIsRunning) {
-        await this.externalLabProjectService.deleteProjectInLab(labInstance.getGlabSpaceApiInfo(), rootProjectId);
+        await this.externalLabProjectService.deleteFolderInLab(labInstance.getGlabSpaceApiInfo(), rootFolderId);
       }
     });
   }
 
-  public async removeProjectFromAllLabs(rootProjectId: string): Promise<void> {
-    const labProjects = await this.labProjectService.findByProjectId(rootProjectId);
-    for (const labProject of labProjects) {
+  public async removeFolderFromAllLabs(rootFolderId: string): Promise<void> {
+    const labFolders = await this.labProjectService.findByRootFolderId(rootFolderId);
+    for (const labFolder of labFolders) {
       try {
-        await this.removeProjectFromLab(labProject.labInstance, rootProjectId);
+        await this.removeFolderFromLab(labFolder.labInstance, rootFolderId);
       } catch (e) {
-        throw new Error(`Error while removing project from lab '${labProject.labInstance.name}' : ${e}`);
+        throw new Error(`Error while removing folder from lab '${labFolder.labInstance.name}' : ${e}`);
       }
     }
   }
 
-  public async getCurrentLabInstanceProjects(): Promise<CnProject[]> {
-    const labProjects = await this.labProjectService.findByLabInstanceId(CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
-    const projects = labProjects.map(labProject => labProject.project);
-    return this.projectAggregateService.getProjectTrees(projects);
+  public async getCurrentLabInstanceFolders(): Promise<CnFolderHierarchy[]> {
+    const labFolders = await this.labProjectService.findByLabInstanceId(CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
+    const folders = labFolders.map(labProject => labProject.rootFolder);
+    return this.projectAggregateService.getFolderTrees(folders);
   }
 
-  public async getCurrentLabInstanceRootProjectById(projectId: string): Promise<CnProject> {
-    const project = await this.projectAggregateService.findProjectNotSecure(projectId);
-    const labProject = await this.labProjectService.findByProjectIdAndLabInstanceId(project.getRootParentId(),
+  public async getCurrentLabInstanceRootFolderById(folderId: string): Promise<CnFolderHierarchy> {
+    const folder = await this.projectAggregateService.getFolderHierarchyNotSecure(folderId);
+    const labFolder = await this.labProjectService.findByRootFolderIdAndLabInstanceId(folder.getRootFolderId(),
       CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
-    if (labProject == null) {
+    if (labFolder == null) {
       throw new BlBadRequestException(CnErrorText.PROJECT_NOT_SHARED_WITH_LAB);
     }
 
-    return this.projectAggregateService.getProjectTree(labProject.projectId);
+    return this.projectAggregateService.getFolderTree(labFolder.rootFolderId);
   }
 
-  public async findLabProjectByProjectId(projectId: string): Promise<CnLabProject[]> {
-    return this.labProjectService.findByProjectId(projectId);
+  public async findLabFolderByFolderId(rootFolderId: string): Promise<CnLabProject[]> {
+    return this.labProjectService.findByRootFolderId(rootFolderId);
   }
 
 
-  public async getLabInstanceProjects(labInstanceId: string): Promise<CnLabProject[]> {
+  public async getLabInstanceFolders(labInstanceId: string): Promise<CnLabProject[]> {
     // get and check if the user can manage the lab
     await this.getAndCheckAuthorizationToFindLabById(labInstanceId);
 

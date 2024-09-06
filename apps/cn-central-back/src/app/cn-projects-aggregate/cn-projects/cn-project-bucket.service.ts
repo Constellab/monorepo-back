@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CnProject } from './cn-project.entity';
+import { CnProjectWithStorage } from './cn-project.entity';
 import {
   CnBucket,
   CnBucketContentType,
@@ -40,18 +40,17 @@ export class CnProjectBucketService {
     };
   }
 
-  public async getAndCheckProjectBucket(rootProjectId: string): Promise<CnProjectBucketsDTO> {
-    const buckets = await this.getProjectBucket(rootProjectId);
+  public async getAndCheckProjectBucket(projectId: string): Promise<CnProjectBucketsDTO> {
+    const buckets = await this.getProjectBucket(projectId);
     if (buckets.mainStorage == null) {
-      // For now the backup bucket is not mandatory, because of the bucket number limitation
-      // if (buckets.mainBucket == null || buckets.backupBucket == null) {
+      // For now the backup bucket is not mandatory
       throw new BlBadRequestException(CnErrorText.PROJECT_BUCKET_NOT_FOUND);
     }
     return buckets;
   }
 
-  public async getAndCheckProjectBucketConfig(rootProjectId: string): Promise<BlBucketConfig[]> {
-    const bucket = await this.getAndCheckProjectBucket(rootProjectId);
+  public async getAndCheckProjectBucketConfig(projectId: string): Promise<BlBucketConfig[]> {
+    const bucket = await this.getAndCheckProjectBucket(projectId);
     const configs = [bucket.mainStorage.getBucketConfig()];
     if (bucket.backupStorage) {
       configs.push(bucket.backupStorage.getBucketConfig());
@@ -60,12 +59,12 @@ export class CnProjectBucketService {
   }
 
 
-  public async getAndCheckProjectMainBucketConfig(rootProjectId: string): Promise<BlBucketConfig> {
-    const bucket = await this.getAndCheckProjectBucket(rootProjectId);
+  public async getAndCheckProjectMainBucketConfig(projectId: string): Promise<BlBucketConfig> {
+    const bucket = await this.getAndCheckProjectBucket(projectId);
     return bucket.mainStorage.getBucketConfig();
   }
 
-  public async findProjectWithStorageById(projectId: string): Promise<CnProject> {
+  public async findProjectWithStorageById(projectId: string): Promise<CnProjectWithStorage> {
     return await this.projectService.findById(projectId, {
       mainStorage: CnBucket.configRelation,
       backupStorage: CnBucket.configRelation
@@ -81,8 +80,8 @@ export class CnProjectBucketService {
   }
 
 
-  public async projectUsesLabStorage(rootProjectId: string, labId: string): Promise<boolean> {
-    const project = await this.findProjectWithStorageById(rootProjectId);
+  public async projectUsesLabStorage(projectId: string, labId: string): Promise<boolean> {
+    const project = await this.findProjectWithStorageById(projectId);
     return project.mainStorage?.labInstance?.id === labId ||
       project.backupStorage?.labInstance?.id === labId;
   }

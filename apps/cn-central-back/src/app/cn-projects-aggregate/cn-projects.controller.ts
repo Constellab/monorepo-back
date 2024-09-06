@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseBoolPipe,
   ParseIntPipe,
   ParseUUIDPipe,
   Post,
@@ -13,12 +14,9 @@ import {
   StreamableFile,
   UseInterceptors
 } from '@nestjs/common';
-import { CnProject } from './cn-projects/cn-project.entity';
-import { CnProjectStatus } from './cn-projects/cn-project-status.enum';
-import { CnProjectStatusHistory } from './cn-projects/cn-project-status-history.entity';
+import { CnProject, CnProjectWithFolder } from './cn-projects/cn-project.entity';
 import {
   BlFile,
-  BlParseEnumPipe,
   BlParsePipe,
   BlPublic,
   BlResponseHelper,
@@ -30,14 +28,7 @@ import {
 } from '@monorepo/back-core-lib';
 import { ClPage, ClPageI } from '@monorepo/core-lib';
 import { CnProjectAggregateService } from './cn-project-aggregate.service';
-import {
-  CnProjectAncestorTreeDTO,
-  CnProjectAncestorType,
-  CnProjectDtoHelper,
-  CnProjectStorageLocationDTO,
-  CnProjectTreeDTO,
-  CnSaveProjectDTO
-} from './cn-projects/cn-project.dto';
+import { CnProjectStorageLocationDTO, CnSaveProjectDTO } from './cn-projects/cn-project.dto';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnProjectComment } from '../cn-project-comment/cn-project-comment.entity';
 import { CnComment, CnNewCommentDTO } from '../cn-core/model/entities/cn-comment.entity';
@@ -52,6 +43,7 @@ import {
   CnProjectDocumentPreviewDTO,
   CnProjectStorageUsageDTO
 } from './cn-project-documents/cn-project-document-dto.class';
+import { CnFolderHierarchy, CnFolderHierarchyWithChildren } from './cn-folder-hierarchies/cn-folder-hierarchy.entity';
 
 
 @Controller('projects')
@@ -61,19 +53,19 @@ export class CnProjectsController {
   }
 
   @Post()
-  create(@Body(new BlParsePipe(CnSaveProjectDTO)) project: CnSaveProjectDTO): Promise<CnProject> {
-    return this.projectAggregate.createProject(project);
+  create(@Body(new BlParsePipe(CnSaveProjectDTO)) project: CnSaveProjectDTO): Promise<CnProjectWithFolder> {
+    return this.projectAggregate.createRootProject(project);
   }
 
   @Post(':id/sub-project')
   createSubProject(@Param('id', ParseUUIDPipe) id: string,
-                   @Body(new BlParsePipe(CnSaveProjectDTO)) workPackage: CnSaveProjectDTO): Promise<CnProject> {
+                   @Body(new BlParsePipe(CnSaveProjectDTO)) workPackage: CnSaveProjectDTO): Promise<CnProjectWithFolder> {
     return this.projectAggregate.createSubProject(workPackage, id);
   }
 
   @Put(':id')
   update(@Param('id', ParseUUIDPipe) id: string,
-         @Body(new BlParsePipe(CnSaveProjectDTO)) project: CnSaveProjectDTO): Promise<CnProject> {
+         @Body(new BlParsePipe(CnSaveProjectDTO)) project: CnSaveProjectDTO): Promise<CnProjectWithFolder> {
     return this.projectAggregate.updateProject(id, project);
   }
 
@@ -87,33 +79,29 @@ export class CnProjectsController {
    */
   @Get('current')
   public getCurrentProjects(@Query('page', ParseIntPipe) page: number,
-                            @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProject>> {
-    return this.projectAggregate.getCurrentProjects(page, size);
+                            @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnFolderHierarchy>> {
+    return this.projectAggregate.getCurrentRootFolders(page, size);
   }
 
+  // TODO type de retour a changé
   @Get('current-space')
   async getByCurrentSpace(@Query('page', ParseIntPipe) page: number,
-                          @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProject>> {
+                          @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnFolderHierarchy>> {
     return await this.projectAggregate.getByCurrentSpace(page, size);
   }
 
+  // TODO type de retour a changé
   @Post('current-space/search')
   async searchInCurrentSpace(@Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
                              @Query('page', ParseIntPipe) page: number,
-                             @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProject>> {
+                             @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnFolderHierarchy>> {
     return await this.projectAggregate.searchInCurrentSpace(searchParam, page, size);
-  }
-
-  @Put(':id/status/:status')
-  updateStatus(@Param('id', new ParseUUIDPipe()) id: string,
-               @Param('status', new BlParseEnumPipe(CnProjectStatus)) status: CnProjectStatus): Promise<CnProject> {
-    return this.projectAggregate.updateProjectCurrentStatus(status, id);
   }
 
   @Put(':id/share/:groupId')
   shareProject(@Param('id', new ParseUUIDPipe()) id: string,
                @Param('groupId', new ParseUUIDPipe()) groupId: string): Promise<CnUser[]> {
-    return this.projectAggregate.shareProject(id, groupId);
+    return this.projectAggregate.shareFolder(id, groupId);
   }
 
   @Delete(':id/unshare/:userId')
@@ -123,50 +111,24 @@ export class CnProjectsController {
   }
 
   /**
-   * return the history of the status
-   */
-  @Get(':id/status-history')
-  getStatusHistory(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnProjectStatusHistory[]> {
-    return this.projectAggregate.getProjectStatusHistory(id);
-  }
-
-  /**
    * Return a simplified project tree for an object (project, experiment, report)
    */
-  @Get('tree/:objectType/:id')
-  async getProjectTree(@Param('objectType') objectType: CnProjectAncestorType,
-                       @Param('id', new ParseUUIDPipe()) id: string): Promise<CnProjectTreeDTO> {
-    const project = await this.projectAggregate.getProjectObjectTree(objectType, id);
-    return CnProjectDtoHelper.convertToProjectTreeDto(project);
+  @Get('tree/:id')
+  async getProjectTree(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnFolderHierarchy> {
+    return await this.projectAggregate.getFolderObjectTree(id);
   }
 
-  @Get(':id/children')
-  getChildren(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnProject[]> {
-    return this.projectAggregate.getChildren(id);
-  }
-
-  @Get(':id/children/paginated')
+  @Post(':id/children/paginated')
   getChildrenPaginated(@Param('id', new ParseUUIDPipe()) id: string,
+                       @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
                        @Query('page', new ParseIntPipe()) page: number,
-                       @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnProject>> {
-    return this.projectAggregate.getChildrenPaginated(id, page, size);
+                       @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnFolderHierarchy>> {
+    return this.projectAggregate.getChildrenPaginated(id, searchParam, page, size);
   }
 
-  /**
-   * Return a simplified list of ancestor for an object (project, experiment, report) to the main project
-   */
-  @Get('ancestors/:objectType/:id')
-  getObjectProjectAncestors(@Param('objectType') objectType: CnProjectAncestorType,
-                            @Param('id', new ParseUUIDPipe()) id: string): Promise<CnProjectAncestorTreeDTO[]> {
-    return this.projectAggregate.getObjectProjectAncestors(objectType, id);
-  }
-
-  /**
-   * Route to get a project with its ancestors
-   */
   @Get(':id/ancestors')
-  getProjectWithAncestors(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnProject[]> {
-    return this.projectAggregate.getProjectWithAncestors(id);
+  getProjectWithAncestors(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnFolderHierarchy[]> {
+    return this.projectAggregate.getFolderAncestors(id);
   }
 
   @Get(':id/users')
@@ -193,6 +155,9 @@ export class CnProjectsController {
     return this.projectAggregate.updateProjectLeader(id, leaderId);
   }
 
+  /////////////////////////////////// FOLDER HIERARCHY //////////////////////////////////////
+
+
   /////////////////////////////////// DESCRIPTION //////////////////////////////////////
 
   @Get(':id/description')
@@ -202,7 +167,7 @@ export class CnProjectsController {
 
   @Put(':id/description')
   updateDescription(@Param('id', new ParseUUIDPipe()) id: string,
-                    @Body() description: BlRichTextContent): Promise<CnProject> {
+                    @Body() description: BlRichTextContent): Promise<void> {
     return this.projectAggregate.updateDescription(id, description);
   }
 
@@ -225,7 +190,20 @@ export class CnProjectsController {
     BlResponseHelper.setFileResponseAndCache(response, file);
   }
 
+  /////////////////////////////// CHAT ///////////////////////////////////////////
+  @Get('chat/folder-tree')
+  getChatFolders(): Promise<CnFolderHierarchyWithChildren[]> {
+    return this.projectAggregate.getChatFolders();
+  }
+
   /////////////////////////////// COMMENTS ///////////////////////////////////////////
+
+  @Put(':id/chat/:enabled')
+  activateChat(@Param('id', ParseUUIDPipe) id: string,
+               @Param('enabled', ParseBoolPipe) enabled: boolean): Promise<CnProject> {
+    return this.projectAggregate.activateChat(id, enabled);
+  }
+
 
   @UseInterceptors(FileInterceptor('file'))
   @Put(':projectId/comment/image')
@@ -249,14 +227,14 @@ export class CnProjectsController {
   @Post(':projectId/comment/')
   createProjectComment(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                        @Body(new BlParsePipe(CnNewCommentDTO)) newComment: CnNewCommentDTO): Promise<CnProjectComment> {
-    return this.projectAggregate.createProjectComment(newComment, projectId);
+    return this.projectAggregate.createFolderComment(newComment, projectId);
   }
 
   @Put(':projectId/comment/:commentId')
   updateProjectComment(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                        @Param('commentId', new ParseUUIDPipe()) commentId: string,
                        @Body() body: any): Promise<CnComment> {
-    return this.projectAggregate.updateProjectComment(projectId, commentId, body.content);
+    return this.projectAggregate.updateFolderComment(projectId, commentId, body.content);
   }
 
 
@@ -264,20 +242,20 @@ export class CnProjectsController {
   getProjectComments(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                      @Query('page', new ParseIntPipe()) page: number,
                      @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnProjectComment>> {
-    return this.projectAggregate.getProjectComments(projectId, page, size);
+    return this.projectAggregate.getFolderComments(projectId, page, size);
   }
 
   @Delete(':projectId/comment/:commentId/delete')
   deleteProjectComment(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                        @Param('commentId', new ParseUUIDPipe()) commentId: string): Promise<void> {
-    return this.projectAggregate.deleteProjectComment(projectId, commentId);
+    return this.projectAggregate.deleteFolderComment(projectId, commentId);
   }
 
   /////////////////////////////// DOCUMENT ///////////////////////////////////////////
   @UseInterceptors(FileInterceptor('file'))
   @Post(':projectId/document')
   async uploadDocument(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                       @BlUploadedFile() file: BlFile): Promise<CnProjectDocument> {
+                       @BlUploadedFile() file: BlFile): Promise<CnFolderHierarchy> {
     return this.projectAggregate.uploadDocument(projectId, file);
   }
 
@@ -285,18 +263,18 @@ export class CnProjectsController {
   /**
    * Return a document
    */
-  @Get(':projectId/document/preview/:filename(*)')
-  public async previewDocument(@Param('projectId') projectId: string,
-                               @Param('filename') filename: string,
+  @Get('document/:documentId/preview/:filename(*)')
+  public async previewDocument(@Param('documentId') documentId: string,
+                               @Param('filename') _: string,
                                @Res() response: Response): Promise<any> {
-    const file = await this.projectAggregate.getUploadedDocument(projectId, filename);
+    const file = await this.projectAggregate.getUploadedDocument(documentId);
     BlResponseHelper.setFileResponse(response, file);
   }
 
-  @Get(':projectId/document/download/:filename(*)')
-  public async downloadDocument(@Param('projectId') projectId: string,
-                                @Param('filename') filename: string): Promise<StreamableFile> {
-    const file = await this.projectAggregate.getUploadedDocument(projectId, filename);
+  @Get('document/:documentId/download/:filename(*)')
+  public async downloadDocument(@Param('documentId') documentId: string,
+                                @Param('filename') _: string): Promise<StreamableFile> {
+    const file = await this.projectAggregate.getUploadedDocument(documentId);
 
     // use as any as this still works
     return BlResponseHelper.getFileResponse(file.file as any);
@@ -327,14 +305,14 @@ export class CnProjectsController {
   public getDocumentsByProject(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                                @Query('page', ParseIntPipe) page: number,
                                @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProjectDocument>> {
-    return this.projectAggregate.getDocumentsByProject(projectId, false, page, size);
+    return this.projectAggregate.getDocumentsByFolder(projectId, false, page, size);
   }
 
   @Get(':projectId/document/trashed')
   public getTrashedDocumentByProject(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                                      @Query('page', ParseIntPipe) page: number,
                                      @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProjectDocument>> {
-    return this.projectAggregate.getDocumentsByProject(projectId, true, page, size);
+    return this.projectAggregate.getDocumentsByFolder(projectId, true, page, size);
   }
 
 
@@ -347,7 +325,7 @@ export class CnProjectsController {
   @Put('document/:documentId/move/:projectId')
   public moveDocumentToProject(@Param('documentId', new ParseUUIDPipe()) documentId: string,
                                @Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnProjectDocument> {
-    return this.projectAggregate.moveDocumentToProject(documentId, projectId);
+    return this.projectAggregate.moveDocumentToFolder(documentId, projectId);
   }
 
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
@@ -426,20 +404,20 @@ export class CnProjectsController {
 
   @Get(':projectId/storage/size')
   getStorageSizeByProjects(@Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnProjectStorageUsageDTO> {
-    return this.projectAggregate.getStorageSizeByProjects(projectId);
+    return this.projectAggregate.getStorageSizeByFolder(projectId);
   }
 
   /////////////////////////////// Project user ///////////////////////////////////////////
 
   @Get(':projectId/user-config')
   getProjectUserConfig(@Param('projectId', new ParseUUIDPipe()) projectId: string): Promise<CnProjectUser> {
-    return this.projectAggregate.getCurrentProjectUserConfig(projectId);
+    return this.projectAggregate.getCurrentUserRootFolderConfig(projectId);
   }
 
   @Put(':projectId/user-config')
   updateProjectUserConfig(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                           @Body() body: CnProjectUser): Promise<CnProjectUser> {
-    return this.projectAggregate.updateCurrentProjectUserConfig(projectId, body);
+    return this.projectAggregate.updateRootProjectCurrentUserConfig(projectId, body);
   }
 
   /////////////////////////////// Activity ///////////////////////////////////////////
@@ -449,6 +427,6 @@ export class CnProjectsController {
                        @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
                        @Query('page', ParseIntPipe) page: number,
                        @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnActivity>> {
-    return await this.projectAggregate.searchProjectActivity(projectId, searchParam, page, size);
+    return await this.projectAggregate.searchFolderActivity(projectId, searchParam, page, size);
   }
 }

@@ -94,7 +94,6 @@ export class CnCoreConfigService {
   }
 
   public getMailConfig(): BlMailConfig {
-    console.log(this.configService.get('MAIL_HOST'))
     return {
       host: this.configService.get('MAIL_HOST'),
       port: this.getConfigNumber('MAIL_PORT'),

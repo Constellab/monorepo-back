@@ -1,8 +1,12 @@
-import {Entity, ManyToOne} from 'typeorm';
-import {Type} from 'class-transformer';
-import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
-import {CnComment, CnNewCommentDTO} from '../cn-core/model/entities/cn-comment.entity';
-import {CnUser} from '../cn-users/cn-user.entity';
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { Type } from 'class-transformer';
+import { CnComment, CnNewCommentDTO } from '../cn-core/model/entities/cn-comment.entity';
+import { CnUser } from '../cn-users/cn-user.entity';
+import {
+  CnFolderHierarchy,
+  CnFolderHierarchyEntity
+} from '../cn-projects-aggregate/cn-folder-hierarchies/cn-folder-hierarchy.entity';
+import { BlNotUpdatable } from '@monorepo/back-core-lib';
 
 /**
  * special user for mentioning everyone
@@ -18,15 +22,19 @@ export function getFakeUserEveryoneMention(): CnUser {
 @Entity('project_comment')
 export class CnProjectComment extends CnComment {
 
+  @Type(() => CnFolderHierarchyEntity)
+  @ManyToOne(() => CnFolderHierarchyEntity, {nullable: false})
+  @BlNotUpdatable()
+  folderHierarchy: CnFolderHierarchyEntity;
 
-  @Type(() => CnProject)
-  @ManyToOne(() => CnProject, {eager: true, nullable: false, onDelete: 'CASCADE'})
-  project: CnProject;
+  @Column({nullable: false, update: false})
+  folderHierarchyId: string;
 
-  static create(newComment: CnNewCommentDTO, project: CnProject): CnProjectComment {
+  static create(newComment: CnNewCommentDTO, folderHierarchy: CnFolderHierarchy): CnProjectComment {
     const projectComment: CnProjectComment = new CnProjectComment();
     projectComment.content = newComment.content;
-    projectComment.project = project;
+    projectComment.folderHierarchy = folderHierarchy as CnFolderHierarchyEntity;
+    projectComment.folderHierarchyId = folderHierarchy.id;
     return projectComment;
   }
 
