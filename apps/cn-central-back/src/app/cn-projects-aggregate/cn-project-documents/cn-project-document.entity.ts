@@ -1,4 +1,4 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { BlBucketType, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { Exclude, Expose } from 'class-transformer';
 import { DateTime } from 'luxon';
@@ -6,6 +6,7 @@ import { CnFolderObject } from '../cn-folder-hierarchies/cn-folder-object.entity
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { ClDateHelper } from '@monorepo/core-lib';
 import { CnFolderHierarchyInfo } from '../cn-folder-hierarchies/cn-folder-hierarchy.dto';
+import { CnFolderHierarchyEntity } from '../cn-folder-hierarchies/cn-folder-hierarchy.entity';
 
 
 export enum CnProjectDocumentType {
@@ -31,6 +32,10 @@ export enum CnProjectDocumentType {
 @Entity('project_document')
 export class CnProjectDocument extends CnFolderObject {
 
+  @JoinColumn({ name: 'id' })
+  @OneToOne(() => CnFolderHierarchyEntity, { cascade: ['insert'] })
+  folderHierarchy: CnFolderHierarchyEntity | null;
+
   // name of the document show in the interface
   @Column({ nullable: false })
   name: string;
@@ -49,7 +54,7 @@ export class CnProjectDocument extends CnFolderObject {
   type: CnProjectDocumentType;
 
   // The id of the entity associated with this document
-  // IF type is UPLOADED_DOCUMENT,CONSTELLAB_DOCUMENT, DESCRIPTION_CONTENT or COMMENT_CONTENT, entityId is the id of the project
+  // IF type is UPLOADED_DOCUMENT,CONSTELLAB_DOCUMENT, DESCRIPTION_CONTENT or COMMENT_CONTENT, entityId is the id of the folder
   // IF type is CONSTELLAB_DOCUMENT_CONTENT, entityId is the id of the constellab document
   // IF type is REPORT or REPORT_CONTENT, entityId is the id of the report
   @Column({ nullable: false, length: 36 })
@@ -63,6 +68,10 @@ export class CnProjectDocument extends CnFolderObject {
 
   @Column({ nullable: false, default: false })
   inTrash: boolean;
+
+  // TODO TO REMOVE
+  @Column({ nullable: false, default: false })
+  migrated: boolean;
 
   @Column({
     type: 'enum', enum: BlBucketType, nullable: false
@@ -85,7 +94,7 @@ export class CnProjectDocument extends CnFolderObject {
       name: this.name,
       user: this.lastModifiedBy,
       lastModifiedAt: this.lastModifiedAt,
-      documentSize: this.size,
+      documentSize: this.size
     };
   }
 
@@ -113,9 +122,9 @@ export class CnProjectDocument extends CnFolderObject {
   }
 
   /**
-   * return true if the entityId correspond to the projectId
+   * return true if the entityId correspond to the folderId
    */
-  entityIdIsProject(): boolean {
+  entityIdIsFolder(): boolean {
     return this.type === CnProjectDocumentType.UPLOADED_DOCUMENT
       || this.type === CnProjectDocumentType.CONSTELLAB_DOCUMENT
       || this.type === CnProjectDocumentType.DESCRIPTION_CONTENT

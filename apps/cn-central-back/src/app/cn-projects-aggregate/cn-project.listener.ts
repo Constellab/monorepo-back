@@ -44,10 +44,8 @@ export class CnProjectListener {
   @OnEvent(cnProjectEventName)
   async handleProjectEvent(event: CnFolderEvent): Promise<void> {
 
-    console.log('handleProjectEvent', event.type);
     const activityAndNotif: CnActivityAndNotif = this.getActivityDTO(event);
     if (activityAndNotif == null) return;
-    console.log('handleProjectEven22222', event.type);
 
     const activity = await this.createActivity(activityAndNotif.activity, event);
 
@@ -379,7 +377,6 @@ export class CnProjectListener {
    * @private
    */
   private async handleCommentCreated(activity: CnActivity, comment: CnProjectComment, parentFolder: CnFolderHierarchy): Promise<void> {
-    console.log('handle comment')
     const projectUsers = await this.projectUserService.findByRootFolderId(parentFolder.getRootFolderId());
 
     const link = CnFrontService.getProjectCommentRoute(parentFolder.id);
@@ -391,7 +388,6 @@ export class CnProjectListener {
 
     // send notification to mentioned users
     for (const userMention of userMentions) {
-    console.log('userMentions', userMention.user.alias);
 
       await this.sendNotification(userMention,
         activity.user, activity.space.id, activity.entityType, activity.entityId,

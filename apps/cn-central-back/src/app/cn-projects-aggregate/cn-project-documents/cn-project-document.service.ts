@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   BlAbstractService,
   BlBadRequestException,
@@ -41,8 +41,14 @@ import {
 } from '../cn-folder-hierarchies/cn-folder-hierarchy.entity';
 import { CnFolderHierarchyService } from '../cn-folder-hierarchies/cn-folder-hierarchy.service';
 
+interface CnDocumentS3Tags {
+  name: string;
+  folder: string;
+}
+
 @Injectable()
 export class CnProjectDocumentService extends BlAbstractService<CnProjectDocument> {
+  protected readonly logger = new Logger(CnProjectDocumentService.name);
 
   public static readonly OFFICE_PREVIEW_URL = 'https://view.officeapps.live.com/op/embed.aspx?src=';
 
@@ -76,12 +82,11 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     // check if the space storage is not full, consider size of this document as 0
     this.checkIfStorageIsFull(file.size);
 
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(parentFolder.id);
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(parentFolder.getRootFolderId());
 
     if (documentName) {
 
-      const existingDocument = await this.findDocumentByParentFolderAndTypeAndName(parentFolder.id, documentType,
-        documentName, entityId);
+      const existingDocument = await this.findDocumentByParentFolderAndTypeAndName(documentType, documentName, entityId);
       if (existingDocument) {
         throw new BlBadRequestException(CnErrorText.DOCUMENT_ALREADY_EXIST);
       }
@@ -94,28 +99,24 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       const document = new CnProjectDocument();
       document.name = documentName;
 
-      // document that are not uploaded document are considered as hidden document
-      const objectType: CnFolderObjectType = documentType === CnProjectDocumentType.UPLOADED_DOCUMENT ? CnFolderObjectType.DOCUMENT : CnFolderObjectType.HIDDEN_DOCUMENT;
-      document.folderHierarchy = CnFolderHierarchyEntity.newSubFolderHierarchyEntity(objectType, documentName,
-        CnCurrentUserHelper.getAndCheckCurrentUser(), ClDateHelper.getDate(), parentFolder);
+      if (documentType === CnProjectDocumentType.UPLOADED_DOCUMENT) {
+        // document that are not uploaded document are considered as hidden document
+        document.folderHierarchy = CnFolderHierarchyEntity.newSubFolderHierarchyEntity(CnFolderObjectType.DOCUMENT, documentName,
+          CnCurrentUserHelper.getAndCheckCurrentUser(), ClDateHelper.getDate(), parentFolder);
+      }
       document.size = file.size;
       document.mimeType = file.mimetype;
       document.type = documentType;
       document.entityId = entityId;
       document.parentDocument = parentDocument;
-      // for lab as bucket type, keep the original name
-      if (bucketConfig.some(b => b.type === 'lab') && documentType === CnProjectDocumentType.UPLOADED_DOCUMENT) {
-        document.filename = file.originalname;
-      } else {
-        // otherwise this is a cloud bucket where every file is so we need to generate a random name
-        document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(documentName));
-      }
+      // otherwise this is a cloud bucket where every file is so we need to generate a random name
+      document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(documentName));
+
 
       const dbDocument = await entityManager.save(document);
 
-      const filePath = this.generateDocumentFilePath(parentFolder, document);
       await this.objectStorageService.uploadObject(bucketConfig, file,
-        { filename: filePath });
+        { filename: document.filename, tags: this.getTags(document.name, parentFolder.id) } as any);
       return dbDocument;
     });
 
@@ -144,21 +145,21 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   }
 
 
-  async getDocumentContentByTypeAndName(parentFolder: CnFolderHierarchy, documentType: CnProjectDocumentType,
+  async getDocumentContentByTypeAndName(rootFolderId: string, documentType: CnProjectDocumentType,
                                         documentName: string, entityId: string): Promise<BlFileResponse> {
-    const document = await this.findDocumentByParentFolderAndTypeAndName(parentFolder.id, documentType,
-      documentName, entityId);
+    const document = await this.findDocumentByParentFolderAndTypeAndName(documentType, documentName, entityId);
 
     if (document == null) {
       throw new BlBadRequestException('Document not found');
     }
 
-    return this.getDocumentContentByDocument(parentFolder, document);
+    return this.getDocumentContentByDocument(rootFolderId, document);
   }
 
-  public async getDocumentContentByDocument(parentFolder: CnFolderHierarchy, document: CnProjectDocument): Promise<BlFileResponse> {
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(parentFolder.id);
-    return this.objectStorageService.downloadObject(bucketConfig, this.generateDocumentFilePath(parentFolder, document));
+
+  public async getDocumentContentByDocument(rootFolderId: string, document: CnProjectDocument): Promise<BlFileResponse> {
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(rootFolderId);
+    return this.objectStorageService.downloadObject(bucketConfig, document.filename);
   }
 
 
@@ -183,8 +184,8 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     }
 
     // delete all object in the store
-    const documentPaths = documentsToDelete.map(d => this.generateDocumentFilePath(document.folderHierarchy.parent, d));
-    await this.objectStorageService.deleteMultipleObjects(bucketConfig, documentPaths);
+    const documentFilenames = documentsToDelete.map(d => d.filename);
+    await this.objectStorageService.deleteMultipleObjects(bucketConfig, documentFilenames);
 
     this.emitEvent('DELETE_DOCUMENT', document);
   }
@@ -202,48 +203,39 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     }
   }
 
-  async renameDocument(document: CnProjectDocument, newName: string): Promise<CnProjectDocument> {
-    document.name = newName;
-    return this.repo.save(document);
+  async renameDocument(rootFolderId: string, document: CnProjectDocument, newName: string): Promise<CnProjectDocument> {
+
+    return this.datasource.transaction(async (entityManager) => {
+      document.name = newName;
+      document = await entityManager.save(document);
+
+      const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(rootFolderId);
+      const tags: Partial<CnDocumentS3Tags> = { name: newName };
+      await this.objectStorageService.setObjectTags(bucketConfig, document.filename, tags);
+
+      return document;
+    });
+
+
   }
 
   /**
    * Find the document based on its type, parentFolder and name.
    * Using the entityId make sure that the requested document is associated to the entity and so
    * this prevents access to a document of another entity
-   * @param parentFolderId
    * @param type
    * @param name
    * @param entityId
    */
-  async findDocumentByParentFolderAndTypeAndName(parentFolderId: string, type: CnProjectDocumentType,
+  async findDocumentByParentFolderAndTypeAndName(type: CnProjectDocumentType,
                                                  name: string, entityId: string): Promise<CnProjectDocument | null> {
     return this.repo.findOne({
       where: {
-        folderHierarchy: { parentId: parentFolderId },
         type: type,
         name: name,
         entityId: entityId
       }
     });
-  }
-
-  // TODO simplifier la hierarchie dans le s3
-  /**
-   * Generate the path of a document in the object storage
-   * Path : spaceId/rootParentId/projectId/documentType/entityId/filename
-   * @param parentFolder
-   * @param document
-   */
-  public generateDocumentFilePath(parentFolder: CnFolderHierarchy, document: CnProjectDocument): string {
-    let prefix = `${parentFolder.spaceId}/${parentFolder.getRootFolderId()}/${parentFolder.id}/${document.getTypePrefix()}`;
-
-    if (document.type === CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT ||
-      document.type === CnProjectDocumentType.REPORT_CONTENT) {
-      prefix += `/${document.entityId}`;
-    }
-
-    return `${prefix}/${document.filename}`;
   }
 
 
@@ -278,26 +270,26 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     // check if the space storage is not full, consider size of this document as 0
     this.checkIfStorageIsFull(0);
 
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(parentFolder.id);
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(parentFolder.getRootFolderId());
     const document = await this.datasource.transaction(async (entityManager) => {
 
       const document = new CnProjectDocument();
       document.name = documentName;
 
-      // document that are not Constellab document are considered as hidden document
-      const objectType: CnFolderObjectType = type === CnProjectDocumentType.CONSTELLAB_DOCUMENT ? CnFolderObjectType.CONSTELLAB_DOCUMENT : CnFolderObjectType.HIDDEN_DOCUMENT;
-      document.folderHierarchy = CnFolderHierarchyEntity.newSubFolderHierarchyEntity(objectType, documentName, CnCurrentUserHelper.getAndCheckCurrentUser(),
-        ClDateHelper.getDate(), parentFolder);
+      if (type === CnProjectDocumentType.CONSTELLAB_DOCUMENT) {
+        // document that are not Constellab document are considered as hidden document
+        document.folderHierarchy = CnFolderHierarchyEntity.newSubFolderHierarchyEntity(CnFolderObjectType.CONSTELLAB_DOCUMENT, documentName, CnCurrentUserHelper.getAndCheckCurrentUser(),
+          ClDateHelper.getDate(), parentFolder);
+      }
       document.mimeType = 'application/json';
       document.type = type;
       document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension('json'));
       document.entityId = entityId;
       document.parentDocument = parentDocument;
 
-      const documentPath = this.generateDocumentFilePath(parentFolder, document);
-      await this.objectStorageService.uploadJson(bucketConfig, content, { filename: documentPath });
+      await this.objectStorageService.uploadJson(bucketConfig, content, { filename: document.filename });
 
-      const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig[0], documentPath);
+      const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig[0], document.filename);
       document.size = objectInfo.size;
 
       return await entityManager.save(document);
@@ -307,17 +299,16 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     return document;
   }
 
-  public async updateJSONDocument(parentFolder: CnFolderHierarchy, document: CnProjectDocument,
+  public async updateJSONDocument(rootFolderId: string, document: CnProjectDocument,
                                   content: any): Promise<CnProjectDocument> {
     // check if the space storage is not full, consider si of this document as 0
     this.checkIfStorageIsFull(0);
 
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(parentFolder.id);
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(rootFolderId);
 
-    const documentPath = this.generateDocumentFilePath(parentFolder, document);
-    await this.objectStorageService.uploadJson(bucketConfig, content, { filename: documentPath });
+    await this.objectStorageService.uploadJson(bucketConfig, content, { filename: document.filename });
 
-    const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig[0], documentPath);
+    const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig[0], document.filename);
 
     // update the document size and last modification info
     document.size = objectInfo.size;
@@ -330,21 +321,19 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   public async createOrUpdateJSONDocument(parentFolder: CnFolderHierarchy, type: CnProjectDocumentType,
                                           documentName: string, entityId: string, content: any,
                                           parentDocument?: CnProjectDocument): Promise<CnProjectDocument> {
-    const document = await this.findDocumentByParentFolderAndTypeAndName(parentFolder.id, type,
-      documentName, entityId);
+    const document = await this.findDocumentByParentFolderAndTypeAndName(type, documentName, entityId);
 
     if (document) {
-      return this.updateJSONDocument(parentFolder, document, content);
+      return this.updateJSONDocument(parentFolder.getRootFolderId(), document, content);
     } else {
       return this.createJSONDocument(parentFolder, type, documentName, entityId, content, parentDocument);
     }
   }
 
-  public async getJSONDocumentContent(parentFolder: CnFolderHierarchy, document: CnProjectDocument): Promise<any> {
-    const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(parentFolder.id);
+  public async getJSONDocumentContent(rootFolderId: string, document: CnProjectDocument): Promise<any> {
+    const bucketConfig = await this.projectBucketService.getAndCheckProjectMainBucketConfig(rootFolderId);
 
-    const documentPath = this.generateDocumentFilePath(parentFolder, document);
-    return await this.objectStorageService.getObjectAsJson(bucketConfig, documentPath);
+    return await this.objectStorageService.getObjectAsJson(bucketConfig, document.filename);
   }
 
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
@@ -357,24 +346,23 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   }
 
 
-  async updateConstellabDocument(parentFolder: CnFolderHierarchy, document: CnProjectDocument,
+  async updateConstellabDocument(rootFolderId: string, document: CnProjectDocument,
                                  content: BlRichTextContent): Promise<CnConstellabDocumentDTO> {
-    const newDoc = await this.updateJSONDocument(parentFolder, document, content);
+    const newDoc = await this.updateJSONDocument(rootFolderId, document, content);
     return new CnConstellabDocumentDTO(newDoc, content);
   }
 
 
-  async getConstellabDocument(parentFolder: CnFolderHierarchy, document: CnProjectDocument): Promise<CnConstellabDocumentDTO> {
+  async getConstellabDocument(rootFolderId: string, document: CnProjectDocument): Promise<CnConstellabDocumentDTO> {
     if (document.type !== CnProjectDocumentType.CONSTELLAB_DOCUMENT) {
       throw new BlBadRequestException('The document is not a constellab document');
     }
-    const content = await this.getJSONDocumentContent(parentFolder, document);
+    const content = await this.getJSONDocumentContent(rootFolderId, document);
     return new CnConstellabDocumentDTO(document, content);
   }
 
   async uploadImageToConstellabDocument(parentFolder: CnFolderHierarchy, document: CnProjectDocument,
                                         file: BlFile): Promise<BlRichTextUploadedImageResponse> {
-    // TODO to check if we keep the parent folder as the parent folder of the document (not the document itself)
     return this.uploadImageDocument(file, parentFolder, CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT,
       document.id, null, document);
   }
@@ -382,8 +370,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   async uploadFileToConstellabDocument(parentFolder: CnFolderHierarchy, document: CnProjectDocument,
                                        file: BlFile): Promise<BlRichTextUploadFileResponse> {
 
-    const fileName = await this.checkNewDocumentName(parentFolder.id,
-      CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT, file.originalname, document.id);
+    const fileName = await this.checkNewDocumentName(CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT, file.originalname, document.id);
 
     const newDocument = await this.uploadDocument(file, parentFolder,
       CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT,
@@ -503,40 +490,38 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   public async moveDocument(document: CnProjectDocument,
                             oldParentFolder: CnFolderHierarchy,
                             newParentFolder: CnFolderHierarchy): Promise<CnProjectDocument> {
-    const oldBuckets = await this.projectBucketService.getAndCheckProjectBucketConfig(oldParentFolder.id);
-    const newBuckets = await this.projectBucketService.getAndCheckProjectBucketConfig(newParentFolder.id);
+    const oldBuckets = await this.projectBucketService.getAndCheckProjectBucketConfig(oldParentFolder.getRootFolderId());
+    const newBuckets = await this.projectBucketService.getAndCheckProjectBucketConfig(newParentFolder.getRootFolderId());
 
     // move the children document as well
     const children = await this.findChildrenDocuments(document.id);
-    const newDocument = await this.moveDocumentFromBucket(document, oldParentFolder, newParentFolder, oldBuckets, newBuckets);
+    const newDocument = await this.moveDocumentFromBucket(document, newParentFolder, oldBuckets, newBuckets);
 
     // also move the children
     for (const doc of children) {
-      await this.moveDocumentFromBucket(doc, oldParentFolder, newParentFolder, oldBuckets, newBuckets);
+      await this.moveDocumentFromBucket(doc, newParentFolder, oldBuckets, newBuckets);
     }
 
     return newDocument;
   }
 
   private async moveDocumentFromBucket(document: CnProjectDocument,
-                                       oldParentFolder: CnFolderHierarchy, newParentFolder: CnFolderHierarchy,
+                                       newParentFolder: CnFolderHierarchy,
                                        oldBuckets: BlBucketConfig[], newBuckets: BlBucketConfig[]): Promise<CnProjectDocument> {
     return await this.datasource.transaction(async (entityManager) => {
+      entityManager = this.getEntityManager(entityManager);
       document.folderHierarchy.parentId = newParentFolder.id;
       document.folderHierarchy.parent = newParentFolder as CnFolderHierarchyEntity;
       document.folderHierarchy.rootParentId = newParentFolder.getRootFolderId();
       await this.folderHierarchyService.update(document.folderHierarchy, entityManager);
-      // if the entity id of the object is the parentFolder, we also update it
-      if (document.entityIdIsProject()) {
-        document.entityId = newParentFolder.id;
-        document = await entityManager.save(document);
+
+      // move the object in the storage is needed
+      if (this.objectStorageService.areSameBuckets(oldBuckets, newBuckets)) {
+        // update the project tag
+        await this.objectStorageService.setObjectTags(newBuckets, document.filename, this.getTags(document.name, newParentFolder.id) as any);
+      }else {
+        await this.objectStorageService.moveObjectToAnotherBucket(oldBuckets, newBuckets, document.filename, document.filename);
       }
-
-
-      // move the object in the storage
-      const oldFilePath = this.generateDocumentFilePath(oldParentFolder, document);
-      const newFilePath = this.generateDocumentFilePath(newParentFolder, document);
-      await this.objectStorageService.moveObjectToAnotherBucket(oldBuckets, newBuckets, oldFilePath, newFilePath);
       return document;
     });
   }
@@ -563,14 +548,13 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
    * Method to check if a document with same name exists and if so, add an index to the name
    * @private
    */
-  private async checkNewDocumentName(parentFolderId: string, documentType: CnProjectDocumentType, documentName: string,
+  private async checkNewDocumentName(documentType: CnProjectDocumentType, documentName: string,
                                      entityId: string): Promise<string> {
     let i = 0;
     while (i < 10) {
       const name = i === 0 ? documentName : BlFileHelper.addIndexToFileName(documentName, i);
 
-      const existingDocument = await this.findDocumentByParentFolderAndTypeAndName(parentFolderId, documentType,
-        name, entityId);
+      const existingDocument = await this.findDocumentByParentFolderAndTypeAndName(documentType, name, entityId);
       if (!existingDocument) {
         return name;
       }
@@ -578,6 +562,63 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     }
 
     throw new BlBadRequestException('Document with this name already exists');
+  }
 
+  private getTags(documentName: string, folderId: string): CnDocumentS3Tags {
+    return {
+      name: documentName,
+      folder: folderId
+    };
+  }
+
+  // TODO TO REMOVE
+  public async migrateDocumentInBucket(): Promise<void> {
+    this.logger.log('[START MIGRATION] Migrate bucket objects');
+
+    const documents = await this.repo.find({
+      where: { migrated: false },
+      relations: { folderHierarchy: { parent: true } }
+    });
+    let i = 0;
+    for (const doc of documents) {
+      try {
+        const buckets = await this.projectBucketService.getAndCheckProjectBucketConfig(doc.folderHierarchy.rootParentId);
+        await this.migrateBucketObject(doc, doc.folderHierarchy.parent, buckets);
+
+        i++;
+        this.logger.log(`Migrated document ${i}/${documents.length}`);
+      } catch (e) {
+        this.logger.error(`Error migrating document ${doc.id}. ${e}`);
+      }
+    }
+    this.logger.log('[END MIGRATION] Migrate bucket objects');
+  }
+
+  /**
+   * Generate the path of a document in the object storage
+   * Path : spaceId/rootParentId/projectId/documentType/entityId/filename
+   * @param parentFolder
+   * @param document
+   */
+  public generateDocumentFilePath(parentFolder: CnFolderHierarchy, document: CnProjectDocument): string {
+    let prefix = `${parentFolder.spaceId}/${parentFolder.getRootFolderId()}/${parentFolder.id}/${document.getTypePrefix()}`;
+
+    if (document.type === CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT ||
+      document.type === CnProjectDocumentType.REPORT_CONTENT) {
+      prefix += `/${document.entityId}`;
+    }
+
+    return `${prefix}/${document.filename}`;
+  }
+
+  private async migrateBucketObject(document: CnProjectDocument,
+                                    oldParentFolder: CnFolderHierarchy,
+                                    buckets: BlBucketConfig[]): Promise<CnProjectDocument> {
+    // move the object in the storage
+    const oldFilePath = this.generateDocumentFilePath(oldParentFolder, document);
+    await this.objectStorageService.moveObjectToAnotherBucket(buckets, buckets, oldFilePath, document.filename);
+
+    document.migrated = true;
+    return this.repo.save(document);
   }
 }

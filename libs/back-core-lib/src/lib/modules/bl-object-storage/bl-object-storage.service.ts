@@ -2,7 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { ClHelpService, ClStringHelper } from '@monorepo/core-lib';
 import { BlFileHelper } from '../../utils/bl-file-helper';
 import { BlFile } from '../../models/bl-file.class';
-import { BlBucketConfig, BlFileResponse, BlObject, BlObjectStorageObjectsInfo } from './bl-object-storage.class';
+import {
+  BlAzureBlobContainerConfig,
+  BlBucketConfig,
+  BlFileResponse,
+  BlObject,
+  BlObjectStorageObjectsInfo,
+  BlS3BucketConfig
+} from './bl-object-storage.class';
 import { BlAzureBucketService } from './bl-azure-bucket.service';
 import { BlObjectStorageInterface } from './bl-object-storage.interface';
 import { BlS3BucketService } from './bl-s3-bucket.service';
@@ -18,6 +25,8 @@ export interface BlObjectStorageUploadOptions {
   filename?: string;
   // if provided, the object will be stored in a folder with this prefix
   prefix?: string;
+  // tags to add to the object
+  tags?: Record<string, string>;
 }
 
 /**
@@ -35,7 +44,7 @@ export class BlObjectStorageService {
                             options: BlObjectStorageUploadOptions = {}): Promise<string> {
     const filename = this.getFilename(options, BlFileHelper.getFileExtension(obj.originalname), obj.originalname);
 
-    return this.uploadObjectToBuckets(config, obj.buffer, filename, obj.mimetype);
+    return this.uploadObjectToBuckets(config, obj.buffer, filename, obj.mimetype, options.tags);
   }
 
 
@@ -44,26 +53,26 @@ export class BlObjectStorageService {
     const filename = this.getFilename(options, 'json');
 
     const buffer = Buffer.from(JSON.stringify(json));
-    return this.uploadObjectToBuckets(config, buffer, filename, 'application/json');
+    return this.uploadObjectToBuckets(config, buffer, filename, 'application/json', options.tags);
   }
 
   private async uploadObjectToBuckets(bucketConfigs: BlBucketConfig | BlBucketConfig[], obj: Buffer, filename: string,
-                                      contentType: string): Promise<string> {
+                                      contentType: string, tags?: Record<string, string>): Promise<string> {
     const configs: BlBucketConfig[] = ClHelpService.convertObjectOrArrayToArray(bucketConfigs);
 
     const promises = configs.map((conf) =>
-      this.uploadObjectToBucket(conf, obj, filename, contentType));
+      this.uploadObjectToBucket(conf, obj, filename, contentType, tags));
     await Promise.all(promises);
 
     return filename;
   }
 
   private async uploadObjectToBucket(config: BlBucketConfig, obj: Buffer, filename: string,
-                                     contentType: string): Promise<string> {
+                                     contentType: string, tags?: Record<string, string>): Promise<string> {
 
     const service = this.getService(config);
 
-    return service.uploadObjectToBucket(obj, filename, contentType);
+    return service.uploadObjectToBucket(obj, filename, contentType, tags);
   }
 
   //////////////////////////////////////////// DOWNLOAD OBJECT /////////////////////////////////////////
@@ -220,6 +229,22 @@ export class BlObjectStorageService {
     return service.bucketIsEmpty();
   }
 
+  /////////////////////////////////// TAGS ///////////////////////////////////
+
+  public async getObjectTags(config: BlBucketConfig, objectName: string): Promise<Record<string, string>> {
+    const service = this.getService(config);
+    return service.getObjectTags(objectName);
+  }
+
+  public async setObjectTags(config: BlBucketConfig | BlBucketConfig[], objectName: string, tags: Record<string, string>): Promise<void> {
+    const bucketConfigs = ClHelpService.convertObjectOrArrayToArray(config);
+
+    for (const bucketConfig of bucketConfigs) {
+      const service = this.getService(bucketConfig);
+      await service.setObjectTags(objectName, tags);
+    }
+  }
+
   /////////////////////////////////// OTHER ///////////////////////////////////
 
   public async moveObjectToAnotherBucket(oldConfig: BlBucketConfig | BlBucketConfig[],
@@ -291,5 +316,45 @@ export class BlObjectStorageService {
       filename = options.prefix + '/' + filename;
     }
     return filename;
+  }
+
+  public areSameBuckets(config1: BlBucketConfig | BlBucketConfig[], config2: BlBucketConfig | BlBucketConfig[]): boolean {
+    const configs1 = ClHelpService.convertObjectOrArrayToArray(config1);
+    const configs2 = ClHelpService.convertObjectOrArrayToArray(config2);
+
+    if (configs1.length !== configs2.length) return false;
+
+    for (let i = 0; i < configs1.length; i++) {
+      const find = configs2.find((config) => this.areSameBucket(configs1[i], config));
+      if (!find) return false;
+    }
+
+    return true;
+  }
+
+  public areSameBucket(config1: BlBucketConfig, config2: BlBucketConfig): boolean {
+    if (config1.type !== config2.type) return false;
+    if (config1.type === 'azureBlob') {
+      return this.areSameAzureBlobBucket(config1.config as BlAzureBlobContainerConfig,
+        config2.config as BlAzureBlobContainerConfig);
+    } else {
+      return this.areSameS3Bucket(config1.config as BlS3BucketConfig,
+        config2.config as BlS3BucketConfig);
+    }
+  }
+
+  private areSameAzureBlobBucket(config1: BlAzureBlobContainerConfig, config2: BlAzureBlobContainerConfig): boolean {
+    return config1.accountName === config2.accountName &&
+      config1.containerName === config2.containerName &&
+      config1.region === config2.region;
+  }
+
+  private areSameS3Bucket(config1: BlS3BucketConfig, config2: BlS3BucketConfig): boolean {
+    return config1.region === config2.region &&
+      config1.endpoint === config2.endpoint &&
+      config1.bucket === config2.bucket &&
+      config1.bucketType === config2.bucketType;
+
+
   }
 }

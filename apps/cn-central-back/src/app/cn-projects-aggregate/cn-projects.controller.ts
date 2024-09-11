@@ -301,20 +301,12 @@ export class CnProjectsController {
     return this.projectAggregate.emptyTrash(projectId);
   }
 
-  @Get(':projectId/document')
-  public getDocumentsByProject(@Param('projectId', new ParseUUIDPipe()) projectId: string,
-                               @Query('page', ParseIntPipe) page: number,
-                               @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProjectDocument>> {
-    return this.projectAggregate.getDocumentsByFolder(projectId, false, page, size);
-  }
-
   @Get(':projectId/document/trashed')
   public getTrashedDocumentByProject(@Param('projectId', new ParseUUIDPipe()) projectId: string,
                                      @Query('page', ParseIntPipe) page: number,
                                      @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProjectDocument>> {
     return this.projectAggregate.getDocumentsByFolder(projectId, true, page, size);
   }
-
 
   @Put('document/:documentId/rename')
   public renameDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string,
@@ -366,6 +358,11 @@ export class CnProjectsController {
                                           @Res() response: Response): Promise<any> {
     const file = await this.projectAggregate.getConstellabDocumentContentDocument(documentId, documentName);
     BlResponseHelper.setFileResponse(response, file);
+  }
+
+  @Post('migrate-document')
+  public async migrateDocuments(): Promise<any> {
+    await this.projectAggregate.migrateDocuments();
   }
 
   ////////////////////////////////////////////// DOCUMENT PREVIEW  /////////////////////////////////////////////

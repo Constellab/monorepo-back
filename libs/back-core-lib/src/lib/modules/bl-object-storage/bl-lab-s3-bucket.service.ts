@@ -22,9 +22,9 @@ export class BlLabS3BucketService implements BlObjectStorageInterface {
   }
 
   async uploadObjectToBucket(obj: Buffer, filename: string,
-                             contentType: string): Promise<string> {
+                             contentType: string, tags?: Record<string, string>): Promise<string> {
     try {
-      return await this.s3Service.uploadObjectToBucket(obj, filename, contentType);
+      return await this.s3Service.uploadObjectToBucket(obj, filename, contentType, tags);
     } catch (error) {
       throw await this.handleError(error);
     }
@@ -119,6 +119,28 @@ export class BlLabS3BucketService implements BlObjectStorageInterface {
   getBucketName(): string {
     return this.s3Service.getBucketName();
   }
+
+
+  //////////////////////////////////////////// TAGS /////////////////////////////////////////
+  async getObjectTags(objectName: string): Promise<Record<string, string>> {
+    try{
+      return await this.s3Service.getObjectTags(objectName);
+    } catch (error) {
+      throw await this.handleError(error);
+    }
+  }
+
+  async setObjectTags(objectName: string, tags: Record<string, string>): Promise<void> {
+    try{
+      return await this.s3Service.setObjectTags(objectName, tags);
+    } catch (error) {
+      throw await this.handleError(error);
+    }
+  }
+
+
+  //////////////////////////////////////////// OTHERS /////////////////////////////////////////
+
 
   /**
    * Once an error occurred when check if this is because the lab is not available.

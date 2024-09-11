@@ -80,16 +80,16 @@ export class CnReportsService extends BlAbstractService<CnReport> {
 
   public async getReportContent(parentFolder: CnFolderHierarchy, id: string): Promise<BlRichTextContent> {
     const report = await this.findByIdAndCheck(id, { document: true });
-    return this.projectDocumentService.getJSONDocumentContent(parentFolder, report.document);
+    return this.projectDocumentService.getJSONDocumentContent(parentFolder.getRootFolderId(), report.document);
   }
 
   async getFile(filename: string, parentFolder: CnFolderHierarchy, reportId: string): Promise<BlFileResponse> {
-    return await this.projectDocumentService.getDocumentContentByTypeAndName(parentFolder,
+    return await this.projectDocumentService.getDocumentContentByTypeAndName(parentFolder.getRootFolderId(),
       CnProjectDocumentType.REPORT_CONTENT, filename, reportId);
   }
 
   async getView(viewId: string, parentFolder: CnFolderHierarchy, reportId: string): Promise<BlFileResponse> {
-    return await this.projectDocumentService.getDocumentContentByTypeAndName(parentFolder,
+    return await this.projectDocumentService.getDocumentContentByTypeAndName(parentFolder.getRootFolderId(),
       CnProjectDocumentType.REPORT_CONTENT, viewId + '.json', reportId);
   }
 
@@ -167,7 +167,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     let reportDocument: CnProjectDocument;
     // if the document already exists, we update it
     if (report.document) {
-      reportDocument = await this.projectDocumentService.updateJSONDocument(parentFolder, report.document,
+      reportDocument = await this.projectDocumentService.updateJSONDocument(parentFolder.getRootFolderId(), report.document,
         richText.getContent());
     } else {
       // or use the id as doc Name
@@ -202,7 +202,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
                                  parentFolder: CnFolderHierarchy): Promise<void> {
     const filename = file.originalname;
     const document =
-      await this.projectDocumentService.findDocumentByParentFolderAndTypeAndName(parentFolder.id, CnProjectDocumentType.REPORT_CONTENT,
+      await this.projectDocumentService.findDocumentByParentFolderAndTypeAndName(CnProjectDocumentType.REPORT_CONTENT,
         filename, reportId);
 
     // upload the image only if it does not exist

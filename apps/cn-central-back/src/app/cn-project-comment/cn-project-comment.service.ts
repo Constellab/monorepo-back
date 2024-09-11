@@ -41,7 +41,7 @@ export class CnProjectCommentService extends BlAbstractService<CnProjectComment>
       const richText = new BlNewRichText(comment.content);
       for (const image of richText.getFiguresBlocks()) {
         const document = await this.projectDocumentService.findDocumentByParentFolderAndTypeAndName(
-          folderId, CnProjectDocumentType.COMMENT_CONTENT, image.data.filename, folderId);
+          CnProjectDocumentType.COMMENT_CONTENT, image.data.filename, folderId);
 
         if (document) {
           await this.projectDocumentService.deleteDocument(document.id, entityManager);
@@ -51,7 +51,7 @@ export class CnProjectCommentService extends BlAbstractService<CnProjectComment>
   }
 
   async getCommentImage(folder: CnFolderHierarchy, documentName: string): Promise<BlFileResponse> {
-    return this.projectDocumentService.getDocumentContentByTypeAndName(folder, CnProjectDocumentType.COMMENT_CONTENT,
+    return this.projectDocumentService.getDocumentContentByTypeAndName(folder.getRootFolderId(), CnProjectDocumentType.COMMENT_CONTENT,
       documentName, folder.id);
   }
 

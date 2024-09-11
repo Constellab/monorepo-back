@@ -328,7 +328,7 @@ export class CnProjectAggregateService {
   public async getDescriptionImage(projectId: string, filename: string): Promise<BlFileResponse> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(projectId);
 
-    return this.projectDocumentService.getDocumentContentByTypeAndName(folder, CnProjectDocumentType.DESCRIPTION_CONTENT,
+    return this.projectDocumentService.getDocumentContentByTypeAndName(folder.getRootFolderId(), CnProjectDocumentType.DESCRIPTION_CONTENT,
       filename, projectId);
   }
 
@@ -571,7 +571,7 @@ export class CnProjectAggregateService {
       rootFoldersWithChildren.push(await this.folderHierarchyService.getFolderTreeForChat(rootFolder));
     }
 
-    return rootFoldersWithChildren
+    return rootFoldersWithChildren;
   }
 
   public async createFolderComment(newComment: CnNewCommentDTO, folderId: string): Promise<CnProjectComment> {
@@ -639,10 +639,9 @@ export class CnProjectAggregateService {
 
   public async getUploadedDocument(documentId: string): Promise<BlFileResponse> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
-    const parentFolder = await this.folderHierarchyService.findByIdAndCheck(folder.parentId);
     const document = await this.projectDocumentService.findByIdAndCheck(documentId);
 
-    return await this.projectDocumentService.getDocumentContentByDocument(parentFolder, document);
+    return await this.projectDocumentService.getDocumentContentByDocument(folder.getRootFolderId(), document);
   }
 
   public async deleteDocument(documentId: string): Promise<void> {
@@ -700,11 +699,11 @@ export class CnProjectAggregateService {
   }
 
   public async renameDocument(documentId: string, newName: string): Promise<CnProjectDocument> {
-    await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
     const document = await this.projectDocumentService.findByIdAndCheck(documentId, { folderHierarchy: true });
 
-    const doc = this.projectDocumentService.renameDocument(document, newName);
+    const doc = this.projectDocumentService.renameDocument(folder.getRootFolderId(), document, newName);
 
     this.emitProjectEvent('RENAME_DOCUMENT',
       await this.folderHierarchyService.findByIdAndCheck(document.folderHierarchy.parentId),
@@ -741,9 +740,8 @@ export class CnProjectAggregateService {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
     const document = await this.projectDocumentService.findByIdAndCheck(documentId);
-    const parentFolder = await this.folderHierarchyService.findByIdAndCheck(folder.parentId);
 
-    const newDoc = await this.projectDocumentService.updateConstellabDocument(parentFolder, document, content);
+    const newDoc = await this.projectDocumentService.updateConstellabDocument(folder.getRootFolderId(), document, content);
 
     this.emitProjectEvent('UPDATE_CONSTELLAB_DOCUMENT',
       await this.folderHierarchyService.findByIdAndCheck(folder.parentId),
@@ -756,8 +754,7 @@ export class CnProjectAggregateService {
 
     // TODO voir si on peut améliorer et mettre en commun
     const document = await this.projectDocumentService.findByIdAndCheck(documentId);
-    const parentFolder = await this.folderHierarchyService.findByIdAndCheck(folder.parentId);
-    return this.projectDocumentService.getConstellabDocument(parentFolder, document);
+    return this.projectDocumentService.getConstellabDocument(folder.getRootFolderId(), document);
   }
 
   public async uploadImageToConstellabDocument(documentId: string, file: BlFile): Promise<BlRichTextUploadedImageResponse> {
@@ -786,9 +783,7 @@ export class CnProjectAggregateService {
   public async getConstellabDocumentContentDocument(documentId: string, documentName: string): Promise<BlFileResponse> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
-    const parentFolder = await this.folderHierarchyService.findByIdAndCheck(folder.parentId);
-
-    return this.projectDocumentService.getDocumentContentByTypeAndName(parentFolder,
+    return this.projectDocumentService.getDocumentContentByTypeAndName(folder.getRootFolderId(),
       CnProjectDocumentType.CONSTELLAB_DOCUMENT_CONTENT, documentName, documentId);
   }
 
@@ -810,9 +805,12 @@ export class CnProjectAggregateService {
     const document = await this.projectDocumentService.getAndCheckByPreviewToken(token);
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(document.id);
 
-    const parentFolder = await this.folderHierarchyService.findByIdAndCheck(folder.parentId);
+    return this.projectDocumentService.getDocumentContentByDocument(folder.getRootFolderId(), document);
+  }
 
-    return this.projectDocumentService.getDocumentContentByDocument(parentFolder, document);
+  public async migrateDocuments(): Promise<void> {
+    if(!CnCurrentUserHelper.isAdmin()) throw new UnauthorizedException();
+    await this.projectDocumentService.migrateDocumentInBucket();
   }
 
   /////////////////////////////////////// PROJECT BUCKET //////////////////////////////////
