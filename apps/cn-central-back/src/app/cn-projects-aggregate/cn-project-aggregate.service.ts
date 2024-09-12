@@ -713,7 +713,7 @@ export class CnProjectAggregateService {
   }
 
   public async moveDocumentToFolder(documentId: string, parentFolderId: string): Promise<CnProjectDocument> {
-    const document = await this.projectDocumentService.findByIdAndCheck(documentId, { folderHierarchy: true });
+    const document = await this.projectDocumentService.findWithHierarchyByIdAndCheck(documentId);
 
     if (document.folderHierarchy.parentId === parentFolderId) {
       throw new BlBadRequestException('The document is already in the destination folder');
@@ -809,7 +809,7 @@ export class CnProjectAggregateService {
   }
 
   public async migrateDocuments(): Promise<void> {
-    if(!CnCurrentUserHelper.isAdmin()) throw new UnauthorizedException();
+    if (!CnCurrentUserHelper.isAdmin()) throw new UnauthorizedException();
     await this.projectDocumentService.migrateDocumentInBucket();
   }
 

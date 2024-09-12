@@ -40,7 +40,7 @@ export class CnProjectCommentService extends BlAbstractService<CnProjectComment>
       // delete all the images of the comment
       const richText = new BlNewRichText(comment.content);
       for (const image of richText.getFiguresBlocks()) {
-        const document = await this.projectDocumentService.findDocumentByParentFolderAndTypeAndName(
+        const document = await this.projectDocumentService.findDocumentBYTypeAndNameAndEntity(
           CnProjectDocumentType.COMMENT_CONTENT, image.data.filename, folderId);
 
         if (document) {

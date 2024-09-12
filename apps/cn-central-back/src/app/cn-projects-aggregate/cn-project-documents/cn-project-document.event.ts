@@ -1,4 +1,4 @@
-import {CnProjectDocument} from './cn-project-document.entity';
+import { CnProjectDocument } from './cn-project-document.entity';
 
 export const cnProjectDocumentEventName = 'cn-project-document-event';
 

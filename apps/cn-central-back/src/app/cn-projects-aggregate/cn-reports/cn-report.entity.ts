@@ -6,7 +6,7 @@ import { CnUser } from '../../cn-users/cn-user.entity';
 import { BlLuxonDateTimeColumn, BlNotUpdatable, BlRichTextContent } from '@monorepo/back-core-lib';
 import { DateTime } from 'luxon';
 import { CnLabInstance } from '../../cn-lab-instances/cn-lab-instance.entity';
-import { CnProjectDocument } from '../cn-project-documents/cn-project-document.entity';
+import { CnProjectDocumentEntity } from '../cn-project-documents/cn-project-document.entity';
 import { CnFolderObject } from '../cn-folder-hierarchies/cn-folder-object.entity';
 import { CnFolderHierarchyInfo } from '../cn-folder-hierarchies/cn-folder-hierarchy.dto';
 
@@ -50,9 +50,9 @@ export class CnReport extends CnFolderObject {
   @BlLuxonDateTimeColumn({ nullable: false })
   lastSyncAt: DateTime;
 
-  @Type(() => CnProjectDocument)
-  @ManyToOne(() => CnProjectDocument, { nullable: true })
-  document?: CnProjectDocument;
+  @Type(() => CnProjectDocumentEntity)
+  @ManyToOne(() => CnProjectDocumentEntity, { nullable: true })
+  document?: CnProjectDocumentEntity;
 
   getFolderObjectInfo(): CnFolderHierarchyInfo {
     return {

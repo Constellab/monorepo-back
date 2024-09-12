@@ -1,9 +1,9 @@
 import { Type } from 'class-transformer';
 import { BlBucketType, BlRichTextContent } from '@monorepo/back-core-lib';
-import { CnProjectDocument } from './cn-project-document.entity';
+import { CnProjectDocument, CnProjectDocumentEntity } from './cn-project-document.entity';
 
 export class CnConstellabDocumentDTO {
-  @Type(() => CnProjectDocument)
+  @Type(() => CnProjectDocumentEntity)
   document: CnProjectDocument;
 
   content: BlRichTextContent;

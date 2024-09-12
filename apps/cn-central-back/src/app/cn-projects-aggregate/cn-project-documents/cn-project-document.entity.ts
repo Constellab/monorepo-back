@@ -1,4 +1,4 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne } from 'typeorm';
 import { BlBucketType, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { Exclude, Expose } from 'class-transformer';
 import { DateTime } from 'luxon';
@@ -6,7 +6,6 @@ import { CnFolderObject } from '../cn-folder-hierarchies/cn-folder-object.entity
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { ClDateHelper } from '@monorepo/core-lib';
 import { CnFolderHierarchyInfo } from '../cn-folder-hierarchies/cn-folder-hierarchy.dto';
-import { CnFolderHierarchyEntity } from '../cn-folder-hierarchies/cn-folder-hierarchy.entity';
 
 
 export enum CnProjectDocumentType {
@@ -30,11 +29,7 @@ export enum CnProjectDocumentType {
  * This table stores every document uploaded to the S3 server for a project
  */
 @Entity('project_document')
-export class CnProjectDocument extends CnFolderObject {
-
-  @JoinColumn({ name: 'id' })
-  @OneToOne(() => CnFolderHierarchyEntity, { cascade: ['insert'] })
-  folderHierarchy: CnFolderHierarchyEntity | null;
+export class CnProjectDocumentEntity extends CnFolderObject {
 
   // name of the document show in the interface
   @Column({ nullable: false })
@@ -63,8 +58,8 @@ export class CnProjectDocument extends CnFolderObject {
   // useful for RichText stored in documents.
   // In this case images of document has the document as parent
   @BlNotUpdatable()
-  @ManyToOne(() => CnProjectDocument, { nullable: true })
-  parentDocument?: CnProjectDocument;
+  @ManyToOne(() => CnProjectDocumentEntity, { nullable: true })
+  parentDocument?: CnProjectDocumentEntity;
 
   @Column({ nullable: false, default: false })
   inTrash: boolean;
@@ -122,16 +117,6 @@ export class CnProjectDocument extends CnFolderObject {
   }
 
   /**
-   * return true if the entityId correspond to the folderId
-   */
-  entityIdIsFolder(): boolean {
-    return this.type === CnProjectDocumentType.UPLOADED_DOCUMENT
-      || this.type === CnProjectDocumentType.CONSTELLAB_DOCUMENT
-      || this.type === CnProjectDocumentType.DESCRIPTION_CONTENT
-      || this.type === CnProjectDocumentType.COMMENT_CONTENT;
-  }
-
-  /**
    * Return true if this document supports preview in the Iframe
    */
   @Expose()
@@ -160,3 +145,7 @@ export class CnProjectDocument extends CnFolderObject {
     this.lastModifiedAt = ClDateHelper.getDate();
   }
 }
+
+export type CnProjectDocument = Omit<CnProjectDocumentEntity, 'folderHierarchy' | 'parentDocument'>;
+
+export type CnProjectDocumentWithHierarchy = Omit<CnProjectDocumentEntity, 'parentDocument'>;

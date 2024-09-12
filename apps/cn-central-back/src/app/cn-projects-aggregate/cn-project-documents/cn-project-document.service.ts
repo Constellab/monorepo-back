@@ -19,7 +19,12 @@ import { DataSource, EntityManager, In, Repository } from 'typeorm';
 import { ClDateHelper, ClPage, ClStringHelper } from '@monorepo/core-lib';
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 import { CnProjectBucketService } from '../cn-projects/cn-project-bucket.service';
-import { CnProjectDocument, CnProjectDocumentType } from './cn-project-document.entity';
+import {
+  CnProjectDocument,
+  CnProjectDocumentEntity,
+  CnProjectDocumentType,
+  CnProjectDocumentWithHierarchy
+} from './cn-project-document.entity';
 import {
   CnConstellabDocumentDTO,
   CnProjectDocumentPreviewDTO,
@@ -47,19 +52,19 @@ interface CnDocumentS3Tags {
 }
 
 @Injectable()
-export class CnProjectDocumentService extends BlAbstractService<CnProjectDocument> {
+export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumentEntity> {
   protected readonly logger = new Logger(CnProjectDocumentService.name);
 
   public static readonly OFFICE_PREVIEW_URL = 'https://view.officeapps.live.com/op/embed.aspx?src=';
 
-  constructor(@InjectRepository(CnProjectDocument) private repository: Repository<CnProjectDocument>,
+  constructor(@InjectRepository(CnProjectDocumentEntity) private repository: Repository<CnProjectDocumentEntity>,
               private objectStorageService: BlObjectStorageService,
               private projectBucketService: CnProjectBucketService,
               private datasource: DataSource,
               private eventEmitter: EventEmitter2,
               private configService: CnCoreConfigService,
               private folderHierarchyService: CnFolderHierarchyService) {
-    super(repository, CnProjectDocument);
+    super(repository, CnProjectDocumentEntity);
   }
 
 
@@ -86,7 +91,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
     if (documentName) {
 
-      const existingDocument = await this.findDocumentByParentFolderAndTypeAndName(documentType, documentName, entityId);
+      const existingDocument = await this.findDocumentBYTypeAndNameAndEntity(documentType, documentName, entityId);
       if (existingDocument) {
         throw new BlBadRequestException(CnErrorText.DOCUMENT_ALREADY_EXIST);
       }
@@ -96,7 +101,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
     const document = await this.datasource.transaction(async (entityManager) => {
 
-      const document = new CnProjectDocument();
+      const document = new CnProjectDocumentEntity();
       document.name = documentName;
 
       if (documentType === CnProjectDocumentType.UPLOADED_DOCUMENT) {
@@ -108,7 +113,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       document.mimeType = file.mimetype;
       document.type = documentType;
       document.entityId = entityId;
-      document.parentDocument = parentDocument;
+      document.parentDocument = parentDocument as CnProjectDocumentEntity;
       // otherwise this is a cloud bucket where every file is so we need to generate a random name
       document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(documentName));
 
@@ -147,7 +152,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
   async getDocumentContentByTypeAndName(rootFolderId: string, documentType: CnProjectDocumentType,
                                         documentName: string, entityId: string): Promise<BlFileResponse> {
-    const document = await this.findDocumentByParentFolderAndTypeAndName(documentType, documentName, entityId);
+    const document = await this.findDocumentBYTypeAndNameAndEntity(documentType, documentName, entityId);
 
     if (document == null) {
       throw new BlBadRequestException('Document not found');
@@ -172,7 +177,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       throw new BlBadRequestException('Document is not in trash, please move it to trash first');
     }
 
-    const documentsToDelete: CnProjectDocument[] = [document];
+    const documentsToDelete: CnProjectDocumentWithHierarchy[] = [document];
     // delete the children document as well
     const children = await this.findChildrenDocuments(document.id);
     documentsToDelete.unshift(...children);
@@ -227,8 +232,8 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
    * @param name
    * @param entityId
    */
-  async findDocumentByParentFolderAndTypeAndName(type: CnProjectDocumentType,
-                                                 name: string, entityId: string): Promise<CnProjectDocument | null> {
+  async findDocumentBYTypeAndNameAndEntity(type: CnProjectDocumentType,
+                                           name: string, entityId: string): Promise<CnProjectDocument | null> {
     return this.repo.findOne({
       where: {
         type: type,
@@ -244,6 +249,17 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
   public findDocumentsByParentFolder(parentFolderId: string): Promise<CnProjectDocument[]> {
     return this.repo.find({ where: { folderHierarchy: { parentId: parentFolderId } } });
+  }
+
+  public findWithHierarchyByIdAndCheck(documentId: string): Promise<CnProjectDocumentWithHierarchy> {
+    return this.findByIdAndCheck(documentId, { folderHierarchy: true });
+  }
+
+  private findChildrenDocuments(parentDocumentId: string): Promise<CnProjectDocumentWithHierarchy[]> {
+    return this.repo.find({
+      where: { parentDocument: { id: parentDocumentId } },
+      relations: { folderHierarchy: true }
+    });
   }
 
   /**
@@ -273,7 +289,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     const bucketConfig = await this.projectBucketService.getAndCheckProjectBucketConfig(parentFolder.getRootFolderId());
     const document = await this.datasource.transaction(async (entityManager) => {
 
-      const document = new CnProjectDocument();
+      const document = new CnProjectDocumentEntity();
       document.name = documentName;
 
       if (type === CnProjectDocumentType.CONSTELLAB_DOCUMENT) {
@@ -285,7 +301,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
       document.type = type;
       document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension('json'));
       document.entityId = entityId;
-      document.parentDocument = parentDocument;
+      document.parentDocument = parentDocument as CnProjectDocumentEntity;
 
       await this.objectStorageService.uploadJson(bucketConfig, content, { filename: document.filename });
 
@@ -321,7 +337,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
   public async createOrUpdateJSONDocument(parentFolder: CnFolderHierarchy, type: CnProjectDocumentType,
                                           documentName: string, entityId: string, content: any,
                                           parentDocument?: CnProjectDocument): Promise<CnProjectDocument> {
-    const document = await this.findDocumentByParentFolderAndTypeAndName(type, documentName, entityId);
+    const document = await this.findDocumentBYTypeAndNameAndEntity(type, documentName, entityId);
 
     if (document) {
       return this.updateJSONDocument(parentFolder.getRootFolderId(), document, content);
@@ -487,9 +503,9 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
 
   ////////////////////////////////////////////// OTHERS /////////////////////////////////////////////
 
-  public async moveDocument(document: CnProjectDocument,
+  public async moveDocument(document: CnProjectDocumentWithHierarchy,
                             oldParentFolder: CnFolderHierarchy,
-                            newParentFolder: CnFolderHierarchy): Promise<CnProjectDocument> {
+                            newParentFolder: CnFolderHierarchy): Promise<CnProjectDocumentWithHierarchy> {
     const oldBuckets = await this.projectBucketService.getAndCheckProjectBucketConfig(oldParentFolder.getRootFolderId());
     const newBuckets = await this.projectBucketService.getAndCheckProjectBucketConfig(newParentFolder.getRootFolderId());
 
@@ -505,9 +521,9 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     return newDocument;
   }
 
-  private async moveDocumentFromBucket(document: CnProjectDocument,
+  private async moveDocumentFromBucket(document: CnProjectDocumentWithHierarchy,
                                        newParentFolder: CnFolderHierarchy,
-                                       oldBuckets: BlBucketConfig[], newBuckets: BlBucketConfig[]): Promise<CnProjectDocument> {
+                                       oldBuckets: BlBucketConfig[], newBuckets: BlBucketConfig[]): Promise<CnProjectDocumentWithHierarchy> {
     return await this.datasource.transaction(async (entityManager) => {
       entityManager = this.getEntityManager(entityManager);
       document.folderHierarchy.parentId = newParentFolder.id;
@@ -523,15 +539,6 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
         await this.objectStorageService.moveObjectToAnotherBucket(oldBuckets, newBuckets, document.filename, document.filename);
       }
       return document;
-    });
-  }
-
-
-  // TODO a voir si on retourne un type plus précis car le folder hierarchy est loadé
-  private findChildrenDocuments(parentDocumentId: string): Promise<CnProjectDocument[]> {
-    return this.repo.find({
-      where: { parentDocument: { id: parentDocumentId } },
-      relations: { folderHierarchy: true }
     });
   }
 
@@ -554,7 +561,7 @@ export class CnProjectDocumentService extends BlAbstractService<CnProjectDocumen
     while (i < 10) {
       const name = i === 0 ? documentName : BlFileHelper.addIndexToFileName(documentName, i);
 
-      const existingDocument = await this.findDocumentByParentFolderAndTypeAndName(documentType, name, entityId);
+      const existingDocument = await this.findDocumentBYTypeAndNameAndEntity(documentType, name, entityId);
       if (!existingDocument) {
         return name;
       }

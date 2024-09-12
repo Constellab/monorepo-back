@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CnReport } from './cn-report.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CnExperiment } from '../cn-experiments/cn-experiment.entity';
 import {
   BlAbstractService,
@@ -16,7 +16,11 @@ import { CnReportContent } from './cn-report-content.class';
 import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnProjectDocumentService } from '../cn-project-documents/cn-project-document.service';
-import { CnProjectDocument, CnProjectDocumentType } from '../cn-project-documents/cn-project-document.entity';
+import {
+  CnProjectDocument,
+  CnProjectDocumentEntity,
+  CnProjectDocumentType
+} from '../cn-project-documents/cn-project-document.entity';
 import {
   CnFolderHierarchy,
   CnFolderHierarchyEntity,
@@ -29,18 +33,8 @@ export class CnReportsService extends BlAbstractService<CnReport> {
 
   constructor(@InjectRepository(CnReport) private repository: Repository<CnReport>,
               private labConfigService: CnLabConfigsService,
-              private projectDocumentService: CnProjectDocumentService,
-              private datasource: DataSource) {
+              private projectDocumentService: CnProjectDocumentService) {
     super(repository, CnReport);
-  }
-
-  getReportsByFolder(folderId: string): Promise<CnReport[]> {
-    return this.repository.find({
-      where: {
-        id: folderId
-      },
-      order: { lastModifiedAt: 'DESC' as any }
-    });
   }
 
   getReportsByLabInstance(labInstanceId: string): Promise<CnReport[]> {
@@ -176,8 +170,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     }
 
     // store document reference in the report
-    report.document = reportDocument;
-    report = await this.updatePartial(report.id, { document: reportDocument });
+    report = await this.updatePartial(report.id, { document: reportDocument as CnProjectDocumentEntity });
 
     // manage the file and image of the report
     await this.uploadReportFiles(files, report.id, reportDocument, parentFolder);
@@ -202,7 +195,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
                                  parentFolder: CnFolderHierarchy): Promise<void> {
     const filename = file.originalname;
     const document =
-      await this.projectDocumentService.findDocumentByParentFolderAndTypeAndName(CnProjectDocumentType.REPORT_CONTENT,
+      await this.projectDocumentService.findDocumentBYTypeAndNameAndEntity(CnProjectDocumentType.REPORT_CONTENT,
         filename, reportId);
 
     // upload the image only if it does not exist
