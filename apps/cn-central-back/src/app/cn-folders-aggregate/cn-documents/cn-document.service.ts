@@ -19,12 +19,7 @@ import { DataSource, EntityManager, In, Repository } from 'typeorm';
 import { ClDateHelper, ClPage, ClStringHelper } from '@monorepo/core-lib';
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 import { CnFolderBucketService } from '../cn-folders/cn-folder-bucket.service';
-import {
-  CnDocument,
-  CnDocumentEntity,
-  CnDocumentType,
-  CnDocumentWithHierarchy
-} from './cn-document.entity';
+import { CnDocument, CnDocumentEntity, CnDocumentType, CnDocumentWithHierarchy } from './cn-document.entity';
 import {
   CnConstellabDocumentDTO,
   CnDocumentPreviewDTO,
@@ -32,18 +27,10 @@ import {
   CnFolderStorageUsageDTO
 } from './cn-document-dto.class';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import {
-  CnDocumentEvent,
-  cnDocumentEventName,
-  CnDocumentEventType
-} from './cn-document.event';
+import { CnDocumentEvent, cnDocumentEventName, CnDocumentEventType } from './cn-document.event';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
-import {
-  CnHierarchyObject,
-  CnHierarchyObjectEntity,
-  CnHierarchyObjectType
-} from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnHierarchyObject, CnHierarchyObjectEntity } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from '../cn_hierarchy_objects/cn-hierarchy-object.service';
 
 interface CnDocumentS3Tags {
@@ -104,9 +91,6 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       const document = new CnDocumentEntity();
       document.name = documentName;
 
-      // document that are not uploaded document are considered as hidden document
-      document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(CnHierarchyObjectType.DOCUMENT, documentName,
-        CnCurrentUserHelper.getAndCheckCurrentUser(), ClDateHelper.getDate(), parentFolder);
       document.size = file.size;
       document.mimeType = file.mimetype;
       document.type = documentType;
@@ -114,6 +98,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       document.parentDocument = parentDocument as CnDocumentEntity;
       // otherwise this is a cloud bucket where every file is so we need to generate a random name
       document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(documentName));
+      document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(parentFolder, document.getHierarchyObjectInfo());
 
 
       const dbDocument = await entityManager.save(document);
@@ -289,17 +274,12 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
       const document = new CnDocumentEntity();
       document.name = documentName;
-
-      if (type === CnDocumentType.CONSTELLAB_DOCUMENT) {
-        // document that are not Constellab document are considered as hidden document
-        document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(CnHierarchyObjectType.CONSTELLAB_DOCUMENT, documentName, CnCurrentUserHelper.getAndCheckCurrentUser(),
-          ClDateHelper.getDate(), parentFolder);
-      }
       document.mimeType = 'application/json';
       document.type = type;
       document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension('json'));
       document.entityId = entityId;
       document.parentDocument = parentDocument as CnDocumentEntity;
+      document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(parentFolder, document.getHierarchyObjectInfo());
 
       await this.objectStorageService.uploadJson(bucketConfig, content, { filename: document.filename });
 
@@ -446,8 +426,8 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     const result = await this.repository.manager.query(`
       SELECT SUM(size) as totalSize
       FROM document
-             JOIN folder_hierarchy ON document.id = folder_hierarchy.id
-      WHERE folder_hierarchy.spaceId = ?
+             JOIN hierarchy_object ON document.id = hierarchy_object.id
+      WHERE hierarchy_object.spaceId = ?
         and document.bucketType = ?
     `, [spaceId, BlBucketType.NORMAL]);
     return result[0].totalSize ?? 0;
@@ -533,7 +513,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       if (this.objectStorageService.areSameBuckets(oldBuckets, newBuckets)) {
         // update the folder tag
         await this.objectStorageService.setObjectTags(newBuckets, document.filename, this.getTags(document.name, newParentFolder.id) as any);
-      }else {
+      } else {
         await this.objectStorageService.moveObjectToAnotherBucket(oldBuckets, newBuckets, document.filename, document.filename);
       }
       return document;

@@ -4,10 +4,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
-  CnHierarchyObjectWithChildren,
-  CnHierarchyObjectType
+  CnHierarchyObjectWithChildren
 } from './cn-hierarchy-object.entity';
-import { IsNull, Not, TreeRepository } from 'typeorm';
+import { IsNull, TreeRepository } from 'typeorm';
 import { ClPage } from '@monorepo/core-lib';
 import { CnHierarchyObjectSearch } from './cn-hierarchy-object.search';
 
@@ -95,9 +94,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     searchBuilder.mergeWhereOptions({ parentId: folderId });
 
     // If there is no filter on objectType, we exclude hidden documents
-    if (!searchBuilder.hasWhereOptions('objectType')) {
-      searchBuilder.mergeWhereOptions({ objectType: Not(CnHierarchyObjectType.HIDDEN_DOCUMENT) });
-    }
+    searchBuilder.mergeWhereOptions({ isVisible: true });
 
     return await this.findPaginated(page, size, searchBuilder.build());
   }

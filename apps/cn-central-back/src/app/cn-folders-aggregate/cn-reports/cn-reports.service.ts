@@ -16,16 +16,8 @@ import { CnReportContent } from './cn-report-content.class';
 import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnDocumentService } from '../cn-documents/cn-document.service';
-import {
-  CnDocument,
-  CnDocumentEntity,
-  CnDocumentType
-} from '../cn-documents/cn-document.entity';
-import {
-  CnHierarchyObject,
-  CnHierarchyObjectEntity,
-  CnHierarchyObjectType
-} from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnDocument, CnDocumentEntity, CnDocumentType } from '../cn-documents/cn-document.entity';
+import { CnHierarchyObject, CnHierarchyObjectEntity } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 
 @Injectable()
 export class CnReportsService extends BlAbstractService<CnReport> {
@@ -91,7 +83,10 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   async saveReport(createReportDto: CnCreateReportWithConfigDto, experiments: CnExperiment[],
                    parentFolder: CnHierarchyObject, files: BlFile[]): Promise<CnSaveReportResultDTO> {
 
-    let reportDb: CnReport = await this.findById(createReportDto.report.id, { document: true, hierarchyRepresentation: true });
+    let reportDb: CnReport = await this.findById(createReportDto.report.id, {
+      document: true,
+      hierarchyRepresentation: true
+    });
     if (reportDb && reportDb.hierarchyRepresentation.parentId !== parentFolder.id) {
       throw new BlBadRequestException('Can\'t change the folder of a synced report');
     }
@@ -102,16 +97,6 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     // copy fields of the report DTO to report
     const reportDto: CnSaveReportDto = createReportDto.report;
     const report = new CnReport();
-
-    // if this is a creation
-    if (!reportDb) {
-      report.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
-        CnHierarchyObjectType.REPORT, reportDto.title, reportDto.last_modified_by,
-        reportDto.last_modified_at, parentFolder
-      );
-      // also set the id of the folder hierarchy because it should be the same as the report id
-      report.hierarchyRepresentation.id = reportDto.id;
-    }
 
     report.id = reportDto.id;
     report.createdAt = reportDto.created_at;
@@ -131,6 +116,14 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     // handle last_sync
     report.lastSyncAt = reportDto.last_sync_at;
     report.lastSyncBy = reportDto.last_sync_by;
+
+    // if this is a creation
+    if (!reportDb) {
+      report.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(parentFolder,
+        report.getHierarchyObjectInfo());
+      // also set the id of the folder hierarchy because it should be the same as the report id
+      report.hierarchyRepresentation.id = reportDto.id;
+    }
 
     let mode: 'create' | 'update';
     if (reportDb) {

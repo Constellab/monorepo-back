@@ -9,6 +9,7 @@ import { CnLabInstance } from '../../cn-lab-instances/cn-lab-instance.entity';
 import { CnDocumentEntity } from '../cn-documents/cn-document.entity';
 import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-representation';
 import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
+import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 
 @Entity('report')
 export class CnReport extends CnHierarchyRepresentation {
@@ -54,8 +55,9 @@ export class CnReport extends CnHierarchyRepresentation {
   @ManyToOne(() => CnDocumentEntity, { nullable: true })
   document?: CnDocumentEntity;
 
-  getFolderObjectInfo(): CnHierarchyObjectInfo {
+  getHierarchyObjectInfo(): CnHierarchyObjectInfo {
     return {
+      objectType: CnHierarchyObjectType.REPORT,
       name: this.title,
       user: this.lastModifiedBy,
       lastModifiedAt: this.lastModifiedAt,

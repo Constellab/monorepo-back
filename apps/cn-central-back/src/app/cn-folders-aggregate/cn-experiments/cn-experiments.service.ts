@@ -81,16 +81,6 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     const labExperimentDto = createLabExperimentDto.experiment;
     const experiment = new CnExperiment();
 
-    // if this is a creation
-    if (!experimentDB) {
-      experiment.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
-        CnHierarchyObjectType.EXPERIMENT, labExperimentDto.title, labExperimentDto.last_modified_by,
-        labExperimentDto.last_modified_at, parentFolder
-      );
-      // also set the id of the folder hierarchy because it should be the same as the experiment id
-      experiment.hierarchyRepresentation.id = labExperimentDto.id;
-    }
-
     experiment.id = labExperimentDto.id;
     experiment.title = labExperimentDto.title;
     experiment.description = BlQuillMigrator.migrateOptional(labExperimentDto.description);
@@ -112,6 +102,14 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     // handle last_sync
     experiment.lastSyncAt = labExperimentDto.last_sync_at;
     experiment.lastSyncBy = labExperimentDto.last_sync_by;
+
+    // if this is a creation
+    if (!experimentDB) {
+      experiment.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(parentFolder, experiment.getHierarchyObjectInfo(),
+      );
+      // also set the id of the folder hierarchy because it should be the same as the experiment id
+      experiment.hierarchyRepresentation.id = labExperimentDto.id;
+    }
 
     if (experimentDB) {
       const exp = await this.updateWithCompare(experiment, experimentDB);

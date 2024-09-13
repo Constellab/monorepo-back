@@ -84,9 +84,9 @@ export class CnFolderAggregateService {
     const newFolder = await this.datasource.transaction(async manager => {
       const entity = this.createFolderFromDTO(folderDTO);
 
-      entity.hierarchyRepresentation = CnHierarchyObjectEntity.newRootFolderHierarchy(CnHierarchyObjectType.FOLDER, folderDTO.title,
-        CnCurrentUserHelper.getAndCheckCurrentUser(), ClDateHelper.getDate(), CnCurrentUserHelper.getAndCheckCurrentSpace());
       entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
+      entity.hierarchyRepresentation = CnHierarchyObjectEntity.newRootFolderHierarchy(CnCurrentUserHelper.getAndCheckCurrentSpace(),
+        entity.getHierarchyObjectInfo());
       entity.mainStorage = await this.bucketService.getBucketById(folderDTO.mainStorage.bucketId);
 
       if (folderDTO.backupStorage) {
@@ -119,8 +119,7 @@ export class CnFolderAggregateService {
       throw new BlBadRequestException(CnErrorText.CHILD_FOLDER_END_DATA_AFTER_PARENT);
     }
 
-    entity.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(CnHierarchyObjectType.FOLDER, folderDto.title,
-      CnCurrentUserHelper.getAndCheckCurrentUser(), ClDateHelper.getDate(), parentFolder);
+    entity.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(parentFolder, entity.getHierarchyObjectInfo());
 
     entity.mainStorage = parentWithStorage.mainStorage;
     entity.backupStorage = parentWithStorage.backupStorage;

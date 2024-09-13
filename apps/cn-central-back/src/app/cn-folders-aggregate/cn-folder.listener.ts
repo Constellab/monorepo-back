@@ -473,14 +473,14 @@ export class CnFolderListener {
     if (!events.includes(event.type)) return;
     if (!(event.entity instanceof CnHierarchyRepresentation)) return;
 
-    const folderObjectInfo = event.entity.getFolderObjectInfo();
+    const objectInfo = event.entity.getHierarchyObjectInfo();
     const folderObjectDb = await this.folderHierarchyService.findByIdAndCheck(event.entity.id);
 
-    folderObjectDb.name = folderObjectInfo.name;
-    folderObjectDb.lastModifiedAt = folderObjectInfo.lastModifiedAt;
-    folderObjectDb.user = folderObjectInfo.user;
-    folderObjectDb.isValidated = folderObjectInfo.isValidated;
-    folderObjectDb.documentSize = folderObjectInfo.documentSize;
+    folderObjectDb.name = objectInfo.name;
+    folderObjectDb.lastModifiedAt = objectInfo.lastModifiedAt;
+    folderObjectDb.user = objectInfo.user;
+    folderObjectDb.isValidated = objectInfo.isValidated;
+    folderObjectDb.documentSize = objectInfo.documentSize;
 
     await this.folderHierarchyService.update(folderObjectDb);
   }

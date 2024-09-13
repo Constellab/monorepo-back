@@ -9,6 +9,7 @@ import { CnUser } from '../../cn-users/cn-user.entity';
 import { DateTime } from 'luxon';
 import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-representation';
 import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
+import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 
 export interface CnExperimentProtocol {
   version: number;
@@ -67,8 +68,9 @@ export class CnExperiment extends CnHierarchyRepresentation {
   @BlLuxonDateTimeColumn({ nullable: false })
   lastSyncAt: DateTime;
 
-  getFolderObjectInfo(): CnHierarchyObjectInfo {
+  getHierarchyObjectInfo(): CnHierarchyObjectInfo {
     return {
+      objectType: CnHierarchyObjectType.EXPERIMENT,
       name: this.title,
       user: this.lastModifiedBy,
       lastModifiedAt: this.lastModifiedAt,

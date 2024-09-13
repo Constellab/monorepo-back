@@ -5,6 +5,7 @@ import { CnUser } from '../../cn-users/cn-user.entity';
 import { DateTime } from 'luxon';
 import { CnSpace } from '../../cn-spaces/cn-space.entity';
 import { CnFolderUserEntity } from '../cn-folder-user/cn-folder-user.entity';
+import { CnHierarchyObjectInfo } from './cn-hierarchy-object.dto';
 
 export enum CnHierarchyObjectType {
   FOLDER = 'FOLDER',
@@ -30,7 +31,7 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
   lastModifiedAt: DateTime;
 
   @Column({
-    nullable: false, update: false,
+    nullable: false,
     type: 'enum', enum: CnHierarchyObjectType
   })
   objectType: CnHierarchyObjectType;
@@ -66,6 +67,12 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
   @Exclude()
   @OneToMany(() => CnFolderUserEntity, folderUser => folderUser.rootFolder)
   users: CnFolderUserEntity[];
+
+  /**
+   * If we show the object in the hierarchy
+   */
+  @Column({ nullable: false, default: true })
+  isVisible: boolean;
 
   /**
    * For folder only, if chat is enabled
@@ -119,36 +126,40 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
     return this;
   }
 
-  public static newRootFolderHierarchy(objectType: CnHierarchyObjectType,
-                                       title: string, user: CnUser,
-                                       lastModifiedAt: DateTime,
-                                       space: CnSpace): CnHierarchyObjectEntity {
+  public setObjectInfo(objectInfo: CnHierarchyObjectInfo): void {
+    this.objectType = objectInfo.objectType;
+    this.name = objectInfo.name;
+    this.lastModifiedAt = objectInfo.lastModifiedAt;
+    this.user = objectInfo.user;
+    this.isValidated = objectInfo.isValidated;
+    this.documentSize = objectInfo.documentSize;
+    this.isVisible = objectInfo.isVisible;
+  }
+
+  public static newRootFolderHierarchy(space: CnSpace,
+                                       objectInfo: CnHierarchyObjectInfo): CnHierarchyObjectEntity {
     const folder = new CnHierarchyObjectEntity();
-    folder.objectType = objectType;
-    folder.name = title;
-    folder.user = user;
     folder.space = space;
     folder.spaceId = space.id;
-    folder.lastModifiedAt = lastModifiedAt;
+    folder.chatEnabled = false;
+    folder.hasDescription = false;
+    folder.setObjectInfo(objectInfo);
 
     return folder;
   }
 
-  public static newSubHierarchyObject(objectType: CnHierarchyObjectType,
-                                      title: string, user: CnUser,
-                                      lastModifiedAt: DateTime,
-                                      parentFolder: CnHierarchyObject): CnHierarchyObjectEntity {
-    if(parentFolder.objectType !== CnHierarchyObjectType.FOLDER) {
+  public static newSubHierarchyObject(parentFolder: CnHierarchyObject,
+                                      objectInfo: CnHierarchyObjectInfo): CnHierarchyObjectEntity {
+    if (parentFolder.objectType !== CnHierarchyObjectType.FOLDER) {
       throw new Error('Parent object must be a folder');
     }
     const folder = new CnHierarchyObjectEntity();
-    folder.objectType = objectType;
-    folder.name = title;
-    folder.user = user;
     folder.spaceId = parentFolder.spaceId;
-    folder.lastModifiedAt = lastModifiedAt;
     folder.parent = parentFolder as CnHierarchyObjectEntity;
     folder.rootParentId = parentFolder.getRootFolderId();
+    folder.chatEnabled = false;
+    folder.hasDescription = false;
+    folder.setObjectInfo(objectInfo);
 
     return folder;
   }

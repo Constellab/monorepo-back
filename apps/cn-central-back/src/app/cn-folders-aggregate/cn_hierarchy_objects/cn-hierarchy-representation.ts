@@ -33,5 +33,5 @@ export abstract class CnHierarchyRepresentation extends BlEntityWithId {
   @ManyToOne(() => CnUser, { eager: true })
   lastModifiedBy: Relation<CnUser>;
 
-  abstract getFolderObjectInfo(): CnHierarchyObjectInfo;
+  abstract getHierarchyObjectInfo(): CnHierarchyObjectInfo;
 }

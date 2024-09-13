@@ -1,14 +1,16 @@
-import { CnHierarchyObjectWithChildren } from './cn-hierarchy-object.entity';
+import { CnHierarchyObjectType, CnHierarchyObjectWithChildren } from './cn-hierarchy-object.entity';
 import { CnUser } from '../../cn-users/cn-user.entity';
 import { DateTime } from 'luxon';
 
 
 export interface CnHierarchyObjectInfo {
+  objectType: CnHierarchyObjectType;
   name: string;
   user: CnUser;
   lastModifiedAt: DateTime;
   isValidated?: boolean;
   documentSize?: number;
+  isVisible?: boolean;
 }
 
 /**

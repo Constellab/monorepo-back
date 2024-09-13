@@ -6,6 +6,7 @@ import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { ClDateHelper } from '@monorepo/core-lib';
 import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
+import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 
 
 export enum CnDocumentType {
@@ -84,12 +85,24 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
   @BlLuxonDateTimeColumn({ nullable: true })
   previewTokenExpiration: DateTime;
 
-  getFolderObjectInfo(): CnHierarchyObjectInfo {
+  getHierarchyObjectInfo(): CnHierarchyObjectInfo {
+    let objectType: CnHierarchyObjectType;
+    if (this.type === CnDocumentType.UPLOADED_DOCUMENT) {
+      objectType = CnHierarchyObjectType.DOCUMENT;
+    } else if (this.type === CnDocumentType.CONSTELLAB_DOCUMENT) {
+      objectType = CnHierarchyObjectType.CONSTELLAB_DOCUMENT;
+    } else {
+      objectType = CnHierarchyObjectType.HIDDEN_DOCUMENT;
+    }
     return {
+      objectType: objectType,
       name: this.name,
-      user: this.lastModifiedBy,
-      lastModifiedAt: this.lastModifiedAt,
-      documentSize: this.size
+      user: this.lastModifiedBy ?? CnCurrentUserHelper.getAndCheckCurrentUser(),
+      lastModifiedAt: this.lastModifiedAt ?? ClDateHelper.getDate(),
+      documentSize: this.size,
+      // the object is visible in the hierarchy only if it's an uploaded document or a constellab document
+      // and it is not in the trash
+      isVisible: [CnDocumentType.UPLOADED_DOCUMENT, CnDocumentType.CONSTELLAB_DOCUMENT].includes(this.type) && !this.inTrash
     };
   }
 
