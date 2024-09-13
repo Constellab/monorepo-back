@@ -2,16 +2,16 @@ import { Module } from '@nestjs/common';
 import { CnStatsService } from './cn-stats.service';
 import { CnStatsController } from './cn-stats.controller';
 import { CnCoreModule } from '../cn-core/cn-core.module';
-import { CnExperimentsModule } from '../cn-projects-aggregate/cn-experiments/cn-experiments.module';
-import { CnReportsModule } from '../cn-projects-aggregate/cn-reports/cn-reports.module';
+import { CnExperimentsModule } from '../cn-folders-aggregate/cn-experiments/cn-experiments.module';
+import { CnReportsModule } from '../cn-folders-aggregate/cn-reports/cn-reports.module';
 import { CnGroupsModule } from '../cn-groups/cn-groups.module';
 import { CnLabInstancesModule } from '../cn-lab-instances/cn-lab-instances.module';
-import { CnFolderHierarchyModule } from '../cn-projects-aggregate/cn-folder-hierarchies/cn-folder-hierarchy.module';
+import { CnHierarchyObjectModule } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.module';
 
 @Module({
   imports: [
     CnCoreModule,
-    CnFolderHierarchyModule,
+    CnHierarchyObjectModule,
     CnExperimentsModule,
     CnReportsModule,
     CnGroupsModule,

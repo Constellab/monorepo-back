@@ -619,7 +619,7 @@ export class CnLabInstanceAggregateService {
   }
 
   /**
-   * Return the list of shared group for tha root project
+   * Return the list of shared group for tha root folder
    */
   public async getLabInstanceSharedUsers(labInstanceId: string): Promise<CnLabInstanceUser[]> {
     const labInstance = await this.getAndCheckAuthorizationToFindById(labInstanceId);

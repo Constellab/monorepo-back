@@ -38,7 +38,7 @@ import {
   CnSpaceUpdateStorageLocationDTO
 } from './cn-space.dto';
 import { CnUser } from '../cn-users/cn-user.entity';
-import { CnProjectStorageUsageDTO } from '../cn-projects-aggregate/cn-project-documents/cn-project-document-dto.class';
+import { CnFolderStorageUsageDTO } from '../cn-folders-aggregate/cn-documents/cn-document-dto.class';
 
 @Controller('spaces')
 export class CnSpacesController {
@@ -151,7 +151,7 @@ export class CnSpacesController {
   }
 
   @Get('current-space/storage/usage-detail')
-  getCurrentSpaceStorageUsageDetail(): Promise<CnProjectStorageUsageDTO> {
+  getCurrentSpaceStorageUsageDetail(): Promise<CnFolderStorageUsageDTO> {
     return this.spaceAggregateService.getCurrentSpaceStorageUsageDetail();
   }
 

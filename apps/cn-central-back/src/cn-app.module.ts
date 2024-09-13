@@ -11,7 +11,7 @@ import { CnCoreConfigModule } from './app/cn-core/modules/cn-core-config/cn-core
 import { AcceptLanguageResolver, CookieResolver, I18nJsonLoader, I18nModule } from 'nestjs-i18n';
 import { join } from 'path';
 import { CnLabConfigsModule } from './app/cn-lab-configs/cn-lab-configs.module';
-import { CnExperimentsModule } from './app/cn-projects-aggregate/cn-experiments/cn-experiments.module';
+import { CnExperimentsModule } from './app/cn-folders-aggregate/cn-experiments/cn-experiments.module';
 import { CnBricksModule } from './app/cn-bricks/cn-bricks.module';
 import { CnGroupsModule } from './app/cn-groups/cn-groups.module';
 import { CnSpacesModule } from './app/cn-spaces/cn-spaces.module';
@@ -20,7 +20,7 @@ import { CnJwtAuthGuard } from './app/cn-core/guards/cn-jwt-auth.guard';
 import { CnUserCategoryGuard } from './app/cn-core/guards/cn-user-category-guard.service';
 import { CnExternalLabsModule } from './app/cn-external-labs/cn-external-labs.module';
 import { CnCoreExceptionHandlerFilter } from './app/cn-core/filters/cn-core-exception-handler.filter';
-import { CnReportsModule } from './app/cn-projects-aggregate/cn-reports/cn-reports.module';
+import { CnReportsModule } from './app/cn-folders-aggregate/cn-reports/cn-reports.module';
 import { clDefaultLang } from '@monorepo/core-lib';
 import { CnFrontErrorsModule } from './app/cn-front-errors/cn-front-errors.module';
 import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
@@ -46,14 +46,14 @@ import { cnJwtConfig } from './app/cn-auth/cn-jwt.config';
 import { Request } from 'express';
 import { CnUsersService } from './app/cn-users/cn-users.service';
 import { CnDatabaseConfig } from './app/cn-core/model/config/cn-config.class';
-import { CnProjectsAggregateModule } from './app/cn-projects-aggregate/cn-project-aggregate.module';
+import { CnFoldersAggregateModule } from './app/cn-folders-aggregate/cn-folders-aggregate.module';
 import { CnStatsModule } from './app/cn-stats/cn-stats.module';
 import { CnCountryModule } from './app/cn-country/cn-country.module';
 import { CnCityModule } from './app/cn-city/cn-city.module';
 import { AppService } from './app.service';
 import { CnSpaceMiddleware } from './app/cn-core/middleware/cn-space-middleware.service';
 import { CnNotificationModule } from './app/cn-notification/cn-notification.module';
-import { CnProjectCommentModule } from './app/cn-project-comment/cn-project-comment.module';
+import { CnChatMessageModule } from './app/cn-chat-message/cn-chat-message.module';
 import { CnCloudProvidersModule } from './app/cn-cloud-providers/cn-cloud-providers.module';
 import { I18nAbstractLoaderOptions } from 'nestjs-i18n/dist/loaders/i18n.abstract.loader';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -207,7 +207,7 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     CnAuthModule,
     CnUserAccountModule,
     CnLabConfigsModule,
-    CnProjectsAggregateModule,
+    CnFoldersAggregateModule,
     CnExperimentsModule,
     CnReportsModule,
     CnBricksModule,
@@ -221,7 +221,7 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     CnCountryModule,
     CnCityModule,
     CnNotificationModule,
-    CnProjectCommentModule,
+    CnChatMessageModule,
     CnCloudProvidersModule,
     CnActivityModule,
     CnSettingsModule,

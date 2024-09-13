@@ -19,8 +19,8 @@ export enum CnBucketContentType {
   LAB_BACKUP = 'LAB_BACKUP',
   SPACE_IMAGE = 'SPACE_IMAGE',
   USER_IMAGE = 'USER_IMAGE',
-  // Bucket containing all the file of a project : reports, experiments, comment image, document.
-  PROJECT = 'PROJECT',
+  // Bucket containing all the file of a folder : reports, experiments, message image, document.
+  FOLDER = 'FOLDER',
 }
 
 /**
@@ -65,7 +65,7 @@ export class CnBucket extends CnBaseEntity {
   @Column({ nullable: false, length: 100, update: false })
   name: string;
 
-  @Column({ nullable: false, length: 50 })
+  @Column({ nullable: false, length: 50, enum: CnBucketContentType })
   contentType: CnBucketContentType;
 
   @Column({

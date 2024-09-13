@@ -11,10 +11,10 @@ import { CnAbstractWithStatusService } from '../cn-core/class/cn-abstract-with-s
 import { CnLabInstanceStatusHistory } from './status/cn-lab-instance-status-history.entity';
 import { ClDateHelper, ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnExperiment } from '../cn-projects-aggregate/cn-experiments/cn-experiment.entity';
-import { CnExperimentsService } from '../cn-projects-aggregate/cn-experiments/cn-experiments.service';
+import { CnExperiment } from '../cn-folders-aggregate/cn-experiments/cn-experiment.entity';
+import { CnExperimentsService } from '../cn-folders-aggregate/cn-experiments/cn-experiments.service';
 import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
-import { CnReportsService } from '../cn-projects-aggregate/cn-reports/cn-reports.service';
+import { CnReportsService } from '../cn-folders-aggregate/cn-reports/cn-reports.service';
 import { BlBadRequestException, BlSearchBuilder, BlSearchParams } from '@monorepo/back-core-lib';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {

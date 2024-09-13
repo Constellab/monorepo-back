@@ -16,20 +16,21 @@ export class CnFrontService {
     return `${CnFrontService.appRoute}/admin/users`;
   }
 
-  public static getProjectRoute(projectId: string): string {
-    return `${CnFrontService.appRoute}/project/${projectId}`;
+  public static getFolderRoute(folderId: string): string {
+    return `${CnFrontService.appRoute}/project/${folderId}`;
   }
 
-  public static getProjectCommentRoute(projectId: string): string {
-    return `${CnFrontService.getProjectRoute(projectId)}?type=comments`;
+  // TODO UPDATE TO NEW CHAT ROUTE
+  public static getChatMessageRoute(folderId: string): string {
+    return `${CnFrontService.getFolderRoute(folderId)}?type=comments`;
   }
 
-  public static getReportRoute(projectId: string): string {
-    return `${CnFrontService.appRoute}/project/report/${projectId}`;
+  public static getReportRoute(folderId: string): string {
+    return `${CnFrontService.appRoute}/project/report/${folderId}`;
   }
 
-  public static getExperimentRoute(projectId: string): string {
-    return `${CnFrontService.appRoute}/project/experiment/${projectId}`;
+  public static getExperimentRoute(folderId: string): string {
+    return `${CnFrontService.appRoute}/project/experiment/${folderId}`;
   }
 
   public static getConstellabDocRoute(docId: string): string {

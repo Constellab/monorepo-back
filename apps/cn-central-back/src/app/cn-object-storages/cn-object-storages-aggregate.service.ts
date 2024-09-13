@@ -74,24 +74,24 @@ export class CnObjectStoragesAggregateService {
     return await this.bucketService.findByIdAndCheck(id, CnBucket.configRelation);
   }
 
-  public async getDefaultProjectBucketStorage1(): Promise<CnBucket> {
+  public async getDefaultFolderBucketStorage1(): Promise<CnBucket> {
     const defaultRegion = await this.cloudProviderService.getDefaultS3Region1();
 
-    return await this.getAndCheckProjectBucketForRegion(defaultRegion);
+    return await this.getAndCheckFolderBucketForRegion(defaultRegion);
   }
 
-  public async getDefaultProjectBucketStorage2(): Promise<CnBucket> {
+  public async getDefaultFolderBucketStorage2(): Promise<CnBucket> {
     const defaultRegion = await this.cloudProviderService.getDefaultS3Region2();
 
-    return await this.getAndCheckProjectBucketForRegion(defaultRegion);
+    return await this.getAndCheckFolderBucketForRegion(defaultRegion);
   }
 
-  private async getAndCheckProjectBucketForRegion(region: CnCloudProviderRegion): Promise<CnBucket> {
-    const bucket = await this.bucketService.findByContentTypeAndRegion(CnBucketContentType.PROJECT, region.id);
+  private async getAndCheckFolderBucketForRegion(region: CnCloudProviderRegion): Promise<CnBucket> {
+    const bucket = await this.bucketService.findByContentTypeAndRegion(CnBucketContentType.FOLDER, region.id);
 
     if (bucket == null) {
       // eslint-disable-next-line max-len
-      throw new BlBadRequestException(`No bucket found for content type ${CnBucketContentType.PROJECT} and region ${region.technicalName}`);
+      throw new BlBadRequestException(`No bucket found for content type ${CnBucketContentType.FOLDER} and region ${region.technicalName}`);
     }
 
     return bucket;

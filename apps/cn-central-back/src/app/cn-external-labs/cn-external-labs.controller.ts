@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, Req, UseInterceptors } from '@nestjs/common';
 import { CnLabGuard, CnLabRobotAuthentication } from '../cn-core/decorators/cn-lab-guard.decorator';
 import { BlCredentials, BlFile, BlParsePipe, BlUploadedFiles } from '@monorepo/back-core-lib';
-import { CnCreateLabExperimentDto } from '../cn-projects-aggregate/cn-experiments/cn-experiment.dto';
-import { CnCreateReportWithConfigDto } from '../cn-projects-aggregate/cn-reports/cn-report.dto';
+import { CnCreateLabExperimentDto } from '../cn-folders-aggregate/cn-experiments/cn-experiment.dto';
+import { CnCreateReportWithConfigDto } from '../cn-folders-aggregate/cn-reports/cn-report.dto';
 import { CnLabInstanceStartDTO } from '../cn-lab-instances/cn-lab-instance.dto';
-import { CnProjectAggregateService } from '../cn-projects-aggregate/cn-project-aggregate.service';
+import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
 import { CnLabInstanceSendMailDto } from '../cn-lab-instances/mail/cn-lab-instance-mail.dto';
 import { CnLabMailService } from '../cn-lab-instances/mail/cn-lab-mail.service';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
@@ -13,12 +13,12 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { ClCoreJsonConvert } from '@monorepo/core-lib';
 import { CnExternalLabUser } from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import { CnExternalCheckCredentialResponse } from '../cn-auth/cn-auth.service';
-import { CnLabProjectAggregateService } from '../cn-lab-project-aggregate/cn-lab-project-aggregate.service';
+import { CnLabFolderAggregateService } from '../cn-lab-folder-aggregate/cn-lab-folder-aggregate.service';
 import {
   CnFolderDtoHelper,
   CnLabFolderDTO
-} from '../cn-projects-aggregate/cn-folder-hierarchies/cn-folder-hierarchy.dto';
-import { CnFolderHierarchyEntity } from '../cn-projects-aggregate/cn-folder-hierarchies/cn-folder-hierarchy.entity';
+} from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.dto';
+import { CnHierarchyObjectEntity } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -28,8 +28,8 @@ import { CnFolderHierarchyEntity } from '../cn-projects-aggregate/cn-folder-hier
 export class CnExternalLabsController {
 
   constructor(private labInstanceAggregator: CnLabInstanceAggregateService,
-              private projectAggregator: CnProjectAggregateService,
-              private labProjectAggregateService: CnLabProjectAggregateService,
+              private folderAggregateService: CnFolderAggregateService,
+              private labFolderAggregateService: CnLabFolderAggregateService,
               private labInstanceMailService: CnLabMailService) {
   }
 
@@ -76,14 +76,14 @@ export class CnExternalLabsController {
   createOrUpdateExperiment(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Body(new BlParsePipe(CnCreateLabExperimentDto)) createLabExperimentDto: CnCreateLabExperimentDto): Promise<void> {
-    return this.projectAggregator.createLabExperiment(parentFolderId, createLabExperimentDto);
+    return this.folderAggregateService.createLabExperiment(parentFolderId, createLabExperimentDto);
   }
 
   @Delete('project/:parentFolderId/experiment/:experimentId')
   deleteExperiment(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<void> {
-    return this.projectAggregator.deleteLabExperiment(parentFolderId, experimentId);
+    return this.folderAggregateService.deleteLabExperiment(parentFolderId, experimentId);
   }
 
   @UseInterceptors(FilesInterceptor('files'))
@@ -93,14 +93,14 @@ export class CnExternalLabsController {
               @BlUploadedFiles() files: BlFile[] = []): Promise<void> {
     const createReportDto: CnCreateReportWithConfigDto
       = ClCoreJsonConvert.deserializeObject(JSON.parse(body.body), CnCreateReportWithConfigDto);
-    return this.projectAggregator.createLabReport(createReportDto, parentFolderId, files);
+    return this.folderAggregateService.createLabReport(createReportDto, parentFolderId, files);
   }
 
   @Delete('project/:parentFolderId/report/:reportId')
   deleteReport(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Param('reportId', new ParseUUIDPipe()) reportId: string): Promise<void> {
-    return this.projectAggregator.deleteReportFromLab(parentFolderId, reportId);
+    return this.folderAggregateService.deleteReportFromLab(parentFolderId, reportId);
   }
 
   /**
@@ -115,19 +115,18 @@ export class CnExternalLabsController {
 
   /////////////////////////////// SYNCHRONIZATION ///////////////////////////////
   // those routes does not require user authentication because they are called by the lab server and are just get
-  // TODO test this root with an old lab project version
   @CnLabRobotAuthentication()
   @Get('project/all-trees')
   async getAllFolderTrees(): Promise<CnLabFolderDTO[]> {
-    const folders = await this.labProjectAggregateService.getCurrentLabInstanceFolders();
-    return CnFolderDtoHelper.convertToFolderTreeDtoList(folders as CnFolderHierarchyEntity[]);
+    const folders = await this.labFolderAggregateService.getCurrentLabInstanceFolders();
+    return CnFolderDtoHelper.convertToFolderTreeDtoList(folders as CnHierarchyObjectEntity[]);
   }
 
   @CnLabRobotAuthentication()
   @Get('project/:id/root-tree')
-  async getRootProject(@Param('id', new ParseUUIDPipe()) folderId: string): Promise<CnLabFolderDTO> {
-    const folder = await this.labProjectAggregateService.getCurrentLabInstanceRootFolderById(folderId);
-    return CnFolderDtoHelper.convertToLabFolderDto(folder as CnFolderHierarchyEntity);
+  async getRootFolder(@Param('id', new ParseUUIDPipe()) folderId: string): Promise<CnLabFolderDTO> {
+    const folder = await this.labFolderAggregateService.getCurrentLabInstanceRootFolderById(folderId);
+    return CnFolderDtoHelper.convertToLabFolderDto(folder as CnHierarchyObjectEntity);
   }
 
   @CnLabRobotAuthentication()
