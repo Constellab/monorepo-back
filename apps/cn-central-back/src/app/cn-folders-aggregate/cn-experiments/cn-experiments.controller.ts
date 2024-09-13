@@ -25,7 +25,7 @@ export class CnExperimentsController {
   /**
    * Return the list of experiment of a folder
    */
-  @Get('project/:folderId')
+  @Get('folder/:folderId')
   public async getExperimentsByFolder(@Param('folderId', ParseUUIDPipe) folderId: string): Promise<CnExperimentDTO[]> {
     const experiments = await this.folderAggregateService.getExperimentsByFolder(folderId);
     return experiments.map(experiment => new CnExperimentDTO().copyEntity(experiment));

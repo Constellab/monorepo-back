@@ -72,14 +72,15 @@ export class CnExternalLabsController {
     return this.labInstanceAggregator.checkUserCredentials(credentials, true, true);
   }
 
-  @Put('project/:parentFolderId/experiment')
+  // TODO remove project routes once all lab are on v0.10.0
+  @Put(['project/:parentFolderId/experiment', 'folder/:parentFolderId/experiment'])
   createOrUpdateExperiment(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Body(new BlParsePipe(CnCreateLabExperimentDto)) createLabExperimentDto: CnCreateLabExperimentDto): Promise<void> {
     return this.folderAggregateService.createLabExperiment(parentFolderId, createLabExperimentDto);
   }
 
-  @Delete('project/:parentFolderId/experiment/:experimentId')
+  @Delete(['project/:parentFolderId/experiment/:experimentId', 'folder/:parentFolderId/experiment/:experimentId'])
   deleteExperiment(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<void> {
@@ -87,7 +88,7 @@ export class CnExternalLabsController {
   }
 
   @UseInterceptors(FilesInterceptor('files'))
-  @Put('project/:parentFolderId/report/v2')
+  @Put(['project/:parentFolderId/report/v2', 'folder/:parentFolderId/report/v2'])
   saveReport2(@Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
               @Body() body: { body: string },
               @BlUploadedFiles() files: BlFile[] = []): Promise<void> {
@@ -96,7 +97,7 @@ export class CnExternalLabsController {
     return this.folderAggregateService.createLabReport(createReportDto, parentFolderId, files);
   }
 
-  @Delete('project/:parentFolderId/report/:reportId')
+  @Delete(['project/:parentFolderId/report/:reportId', 'folder/:parentFolderId/report/:reportId'])
   deleteReport(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Param('reportId', new ParseUUIDPipe()) reportId: string): Promise<void> {
@@ -116,14 +117,14 @@ export class CnExternalLabsController {
   /////////////////////////////// SYNCHRONIZATION ///////////////////////////////
   // those routes does not require user authentication because they are called by the lab server and are just get
   @CnLabRobotAuthentication()
-  @Get('project/all-trees')
+  @Get(['project/all-trees', 'folder/all-trees'])
   async getAllFolderTrees(): Promise<CnLabFolderDTO[]> {
     const folders = await this.labFolderAggregateService.getCurrentLabInstanceFolders();
     return CnFolderDtoHelper.convertToFolderTreeDtoList(folders as CnHierarchyObjectEntity[]);
   }
 
   @CnLabRobotAuthentication()
-  @Get('project/:id/root-tree')
+  @Get(['project/:id/root-tree', 'folder/:id/root-tree'])
   async getRootFolder(@Param('id', new ParseUUIDPipe()) folderId: string): Promise<CnLabFolderDTO> {
     const folder = await this.labFolderAggregateService.getCurrentLabInstanceRootFolderById(folderId);
     return CnFolderDtoHelper.convertToLabFolderDto(folder as CnHierarchyObjectEntity);

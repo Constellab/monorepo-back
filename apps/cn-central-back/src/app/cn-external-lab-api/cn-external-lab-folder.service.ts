@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { CnExternalLabApiService } from './cn-external-lab-api.service';
-import { CnExternalApiInfo } from '../cn-core/model/config/cn-config.class';
 import { lastValueFrom } from 'rxjs';
-import {
-  CnHierarchyObjectWithChildren
-} from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnHierarchyObjectWithChildren } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 import {
   CnFolderDtoHelper,
   CnLabFolderDTO
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.dto';
+import { CnLabGlabApiInfo } from '../cn-lab-instances/cn-lab-instance.dto';
+import { BlVersion } from '@monorepo/back-core-lib';
 
 
 /**
@@ -17,18 +16,33 @@ import {
 @Injectable()
 export class CnExternalLabFolderService {
 
+  private readonly newRouteVersion: string = '0.10.0';
+  private readonly oldRoute: string = 'project';
   private readonly route: string = 'project';
 
   constructor(private externalLabApiService: CnExternalLabApiService) {
   }
 
-  public async addFolderInLab(labInfo: CnExternalApiInfo, folderTree: CnHierarchyObjectWithChildren): Promise<void> {
+  public async addFolderInLab(glabApiInfo: CnLabGlabApiInfo, folderTree: CnHierarchyObjectWithChildren): Promise<void> {
     const labInfoDto: CnLabFolderDTO = CnFolderDtoHelper.convertToLabFolderDto(folderTree);
-    return lastValueFrom(this.externalLabApiService.post(labInfo, this.route, labInfoDto));
+    return lastValueFrom(this.externalLabApiService.post(glabApiInfo.apiInfo, this.getRoute(glabApiInfo.gwsCoreVersion), labInfoDto));
   }
 
-  public async deleteFolderInLab(labInfo: CnExternalApiInfo, folderId: string): Promise<void> {
-    return lastValueFrom(this.externalLabApiService.delete(labInfo, `${this.route}/${folderId}`));
+  public async deleteFolderInLab(glabApiInfo: CnLabGlabApiInfo, folderId: string): Promise<void> {
+    return lastValueFrom(this.externalLabApiService.delete(glabApiInfo.apiInfo, `${this.getRoute(glabApiInfo.gwsCoreVersion)}/${folderId}`));
+  }
+
+  /**
+   * Method to retrieve the correct route to call based on gws_core version
+   * @param gwsCoreVersion
+   * @private
+   */
+  private getRoute(gwsCoreVersion: BlVersion): string {
+    const newRouteVersion = BlVersion.fromString(this.newRouteVersion);
+    if (gwsCoreVersion.isEqualOrHigher(newRouteVersion)) {
+      return this.route;
+    }
+    return this.oldRoute;
   }
 }
 

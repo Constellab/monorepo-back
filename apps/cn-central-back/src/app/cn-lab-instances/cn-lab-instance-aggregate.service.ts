@@ -26,7 +26,7 @@ import { CnLabInstanceToken } from './user/cn-lab-instance-token.class';
 import {
   CnLabCloudCreateDTO,
   CnLabCodelabDTO,
-  CnLabFindOneDto,
+  CnLabFindOneDto, CnLabGlabApiInfo,
   CnLabInstanceConfigDTO,
   CnLabInstanceCreateAdminDTO,
   CnLabInstanceCreateDesktopDTO,
@@ -303,8 +303,15 @@ export class CnLabInstanceAggregateService {
       throw new BlBadRequestException(CnErrorText.LAB_CONFIG_NOT_FOUND);
     }
 
-
     return this.labConfigService.getCompleteConfig(lab.labConfigId);
+  }
+
+  public async getGlabConfig(labInstance: CnLabInstance): Promise<CnLabGlabApiInfo> {
+    const gwsCoreVerson = await this.labConfigService.getLabBrickVersion(labInstance.labConfigId, CnBrickGWS.GWS_CORE);
+    return {
+      gwsCoreVersion: gwsCoreVerson.version,
+      apiInfo: labInstance.getGlabSpaceApiInfo()
+    }
   }
 
   /**

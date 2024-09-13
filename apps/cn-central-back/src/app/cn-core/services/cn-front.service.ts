@@ -17,7 +17,7 @@ export class CnFrontService {
   }
 
   public static getFolderRoute(folderId: string): string {
-    return `${CnFrontService.appRoute}/project/${folderId}`;
+    return `${CnFrontService.appRoute}/folder/${folderId}`;
   }
 
   // TODO UPDATE TO NEW CHAT ROUTE
@@ -26,15 +26,15 @@ export class CnFrontService {
   }
 
   public static getReportRoute(folderId: string): string {
-    return `${CnFrontService.appRoute}/project/report/${folderId}`;
+    return `${CnFrontService.appRoute}/folder/report/${folderId}`;
   }
 
   public static getExperimentRoute(folderId: string): string {
-    return `${CnFrontService.appRoute}/project/experiment/${folderId}`;
+    return `${CnFrontService.appRoute}/folder/experiment/${folderId}`;
   }
 
   public static getConstellabDocRoute(docId: string): string {
-    return `${CnFrontService.appRoute}/project/document/${docId}`;
+    return `${CnFrontService.appRoute}/folder/document/${docId}`;
   }
 
   public static getLabUrl(labId: string): string {

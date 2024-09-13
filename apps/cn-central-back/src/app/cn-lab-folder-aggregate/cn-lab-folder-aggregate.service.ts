@@ -60,8 +60,9 @@ export class CnLabFolderAggregateService {
     // add the user to the lab is the lab is running
     const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabSpaceApiInfo());
     if (labIsRunning) {
+      const glabConfig = await this.labAggregateService.getGlabConfig(labInstance);
       // add the folder to the lab
-      await this.externalLabFolderService.addFolderInLab(labInstance.getGlabSpaceApiInfo(), folderTree);
+      await this.externalLabFolderService.addFolderInLab(glabConfig, folderTree);
     }
   }
 
@@ -95,7 +96,8 @@ export class CnLabFolderAggregateService {
       // remove the folder from the lab, if it is available
       const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabSpaceApiInfo());
       if (labIsRunning) {
-        await this.externalLabFolderService.deleteFolderInLab(labInstance.getGlabSpaceApiInfo(), rootFolderId);
+        const glabConfig = await this.labAggregateService.getGlabConfig(labInstance);
+        await this.externalLabFolderService.deleteFolderInLab(glabConfig, rootFolderId);
       }
     });
   }

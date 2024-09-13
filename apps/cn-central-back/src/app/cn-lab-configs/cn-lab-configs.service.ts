@@ -1,16 +1,16 @@
-import {Injectable} from '@nestjs/common';
-import {CnLabConfig} from './cn-lab-config.entity';
-import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, Repository} from 'typeorm';
-import {CnLabConfigDto} from './cn-lab-config.dto';
-import {ClHelpService} from '@monorepo/core-lib';
-import {CnBricksService} from '../cn-bricks/cn-bricks.service';
-import {CnBrickGWS, CnBrickVersionDTO, CnBrickVersionTechnicalKey} from '../cn-bricks/cn-brick.dto';
-import {BlAbstractService, BlBadRequestException, BlVersion} from '@monorepo/back-core-lib';
-import {CnLabInstance} from '../cn-lab-instances/cn-lab-instance.entity';
-import {CnLabInstanceConfigDTO} from '../cn-lab-instances/cn-lab-instance.dto';
-import {CnLabConfigFile, CnLabConfigFileEnv} from './cn-lab-config-file.class';
-import {CnBrickVersion} from '../cn-bricks/cn-brick-version.entity';
+import { Injectable } from '@nestjs/common';
+import { CnLabConfig } from './cn-lab-config.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { CnLabConfigDto } from './cn-lab-config.dto';
+import { ClHelpService } from '@monorepo/core-lib';
+import { CnBricksService } from '../cn-bricks/cn-bricks.service';
+import { CnBrickGWS, CnBrickVersionDTO, CnBrickVersionTechnicalKey } from '../cn-bricks/cn-brick.dto';
+import { BlAbstractService, BlBadRequestException, BlVersion } from '@monorepo/back-core-lib';
+import { CnLabInstance } from '../cn-lab-instances/cn-lab-instance.entity';
+import { CnLabInstanceConfigDTO } from '../cn-lab-instances/cn-lab-instance.dto';
+import { CnLabConfigFile, CnLabConfigFileEnv } from './cn-lab-config-file.class';
+import { CnBrickVersion } from '../cn-bricks/cn-brick-version.entity';
 
 @Injectable()
 export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
@@ -23,7 +23,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
 
   public findAll(): Promise<CnLabConfig[]> {
     return this.repository.find({
-      order: {label: 'ASC'}
+      order: { label: 'ASC' }
     });
   }
 
@@ -58,7 +58,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
 
   private findByBrickVersionHash(brickVersionHash: number): Promise<CnLabConfig | null> {
     return this.repository.findOne({
-      where: {brickVersionsHash: brickVersionHash}
+      where: { brickVersionsHash: brickVersionHash }
     });
   }
 
@@ -85,8 +85,19 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
 
   public async getCompleteConfig(labConfigId: string): Promise<CnLabConfig> {
     return await this.findByIdAndCheck(labConfigId, {
-      brickVersions: {brick: true}
+      brickVersions: { brick: true }
     });
+  }
+
+  public async getLabBrickVersion(labConfigId: string, brick_name: string): Promise<CnBrickVersion | null> {
+    const labConfig = await this.repository.findOne({
+      where: {
+        id: labConfigId,
+        brickVersions: { brick: { name: brick_name } }
+      },
+      relations: { brickVersions: { brick: true } }
+    });
+    return labConfig.brickVersions.find(brickVersion => brickVersion.brick.name === brick_name);
   }
 
   ////////////////////////////////////////////// CONFIG FILE ////////////////////////////////////////////////////
@@ -122,7 +133,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
       glab_tag: glabVersion,
       biota_maria_db_url: biotaMariaDbUrl,
       variables: {},
-      environment: await this.brickConfigToConfigEnv(config.brickVersions),
+      environment: await this.brickConfigToConfigEnv(config.brickVersions)
     };
   }
 
@@ -159,7 +170,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
   }
 
   private async brickConfigToConfigEnv(brickVersions: CnBrickVersionDTO[]): Promise<CnLabConfigFileEnv> {
-    const labConfig: CnLabConfigFileEnv = {bricks: [], git: [], pip: [], variables: {}};
+    const labConfig: CnLabConfigFileEnv = { bricks: [], git: [], pip: [], variables: {} };
 
 
     for (const brick of brickVersions) {
@@ -167,7 +178,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
 
       labConfig.bricks.push({
         name: brick.name,
-        version: brickVersion.version.toString(),
+        version: brickVersion.version.toString()
       });
     }
 
@@ -178,19 +189,19 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     if (configFile == null) {
       return {
         glabTag: 'latest',
-        brickVersions: [],
+        brickVersions: []
       };
     }
 
     const config: CnLabInstanceConfigDTO = {
       glabTag: configFile.glab_tag,
-      brickVersions: [],
+      brickVersions: []
     };
 
     for (const brick of configFile.environment?.bricks ?? []) {
       config.brickVersions.push({
         name: brick.name,
-        version: brick.version,
+        version: brick.version
       });
     }
     return config;

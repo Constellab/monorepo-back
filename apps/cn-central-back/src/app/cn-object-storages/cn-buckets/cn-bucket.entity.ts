@@ -47,7 +47,7 @@ export class CnBucket extends CnBaseEntity {
     credentials: true
   };
   // default name for the lab bucket
-  public static LAB_BUCKET_NAME = 'projects-storage';
+  public static LAB_BUCKET_NAME = 'data-hub-storage';
 
   @Type(() => CnCloudProviderRegion)
   @ManyToOne(() => CnCloudProviderRegion, { nullable: true })
