@@ -113,7 +113,11 @@ export class BlObjectStorageService {
             body += chunk;
           });
           message.file.on('end', () => {
-            resolve(JSON.parse(body));
+            try {
+              resolve(JSON.parse(body));
+            } catch (e) {
+              reject(e);
+            }
           });
         })
         .catch((e) => {

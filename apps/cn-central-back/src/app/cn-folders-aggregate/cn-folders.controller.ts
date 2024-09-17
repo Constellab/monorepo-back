@@ -28,7 +28,7 @@ import {
 } from '@monorepo/back-core-lib';
 import { ClPage, ClPageI } from '@monorepo/core-lib';
 import { CnFolderAggregateService } from './cn-folder-aggregate.service';
-import { CnFolderStorageLocationDTO, CnSaveFolderDTO } from './cn-folders/cn-folder.dto';
+import { CnFolderStorageLocationDTO, CnGetFolderDescriptionDTO, CnSaveFolderDTO } from './cn-folders/cn-folder.dto';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnChatMessage } from '../cn-chat-message/cn-chat-message.entity';
 import { CnMessage, CnNewMessageDTO } from '../cn-core/model/entities/cn-message.entity';
@@ -159,7 +159,7 @@ export class CnFoldersController {
   /////////////////////////////////// DESCRIPTION //////////////////////////////////////
 
   @Get(':id/description')
-  getDescription(@Param('id', ParseUUIDPipe) id: string): Promise<BlRichTextContent> {
+  getDescription(@Param('id', ParseUUIDPipe) id: string): Promise<CnGetFolderDescriptionDTO> {
     return this.folderAggregateService.getDescription(id);
   }
 

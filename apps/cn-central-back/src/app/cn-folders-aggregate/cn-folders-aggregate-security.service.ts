@@ -71,6 +71,19 @@ export class CnFoldersAggregateSecurity {
     throw new BlUnauthorizedException();
   }
 
+  /**
+   * Only the leader or leader of a parent folder can update the leader of children folder
+   */
+  public isFolderLeader(hierarchyObject: CnHierarchyObject, userInfo: CnUserSpaceInfo): boolean {
+    // check the space context
+    if (hierarchyObject.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException('Wrong space');
+
+    if (userInfo.isSpaceAdmin()) return true;
+
+    return hierarchyObject.user.id === userInfo.userId;
+
+  }
+
   public async checkFindAllBySpace(userInfo: CnUserSpaceInfo): Promise<void> {
     // check the space context
     if (!userInfo.isSpaceAdmin()) throw new BlUnauthorizedException('Only space admin can list all folders');

@@ -468,7 +468,7 @@ export class CnFolderListener {
   @OnEvent(cnFolderEventName)
   async updateHierarchyObject(event: CnFolderEvent): Promise<void> {
     const events: CnFolderEventType[] = ['UPDATE_FOLDER', 'UPDATE_FOLDER_LEADER', 'UPDATE_EXPERIMENT', 'UPDATE_REPORT',
-      'RENAME_DOCUMENT', 'UPDATE_CONSTELLAB_DOCUMENT'];
+      'RENAME_DOCUMENT', 'UPDATE_CONSTELLAB_DOCUMENT', 'MOVE_FOLDER_DOCUMENT_TO_TRASH', 'RESTORE_FOLDER_DOCUMENT_FROM_TRASH'];
 
     if (!events.includes(event.type)) return;
     if (!(event.entity instanceof CnHierarchyRepresentation)) return;
@@ -476,12 +476,7 @@ export class CnFolderListener {
     const objectInfo = event.entity.getHierarchyObjectInfo();
     const folderObjectDb = await this.folderHierarchyService.findByIdAndCheck(event.entity.id);
 
-    folderObjectDb.name = objectInfo.name;
-    folderObjectDb.lastModifiedAt = objectInfo.lastModifiedAt;
-    folderObjectDb.user = objectInfo.user;
-    folderObjectDb.isValidated = objectInfo.isValidated;
-    folderObjectDb.documentSize = objectInfo.documentSize;
-
+    folderObjectDb.setObjectInfo(objectInfo);
     await this.folderHierarchyService.update(folderObjectDb);
   }
 

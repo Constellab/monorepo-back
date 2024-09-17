@@ -3,7 +3,7 @@ import { CnFoldersService } from './cn-folders/cn-folders.service';
 import { CnFoldersAggregateSecurity } from './cn-folders-aggregate-security.service';
 import { CnFolder, CnFolderEntity, CnFolderWithHierarchy } from './cn-folders/cn-folder.entity';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { ClDateHelper, ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
+import { ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
 import { CnExperimentsService } from './cn-experiments/cn-experiments.service';
 import { CnReportsService } from './cn-reports/cn-reports.service';
 import { CnExperiment, CnExperimentProtocol } from './cn-experiments/cn-experiment.entity';
@@ -12,7 +12,7 @@ import { CnCreateReportWithConfigDto } from './cn-reports/cn-report.dto';
 import { CnReport } from './cn-reports/cn-report.entity';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
-import { CnFolderStorageLocationDTO, CnSaveFolderDTO } from './cn-folders/cn-folder.dto';
+import { CnFolderStorageLocationDTO, CnGetFolderDescriptionDTO, CnSaveFolderDTO } from './cn-folders/cn-folder.dto';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnChatMessage, getFakeUserEveryoneMention } from '../cn-chat-message/cn-chat-message.entity';
 import { CnChatMessageService } from '../cn-chat-message/cn-chat-message.service';
@@ -300,9 +300,14 @@ export class CnFolderAggregateService {
 
   /////////////////////////////////////// FOLDER DESCRIPTION //////////////////////////////////
 
-  public async getDescription(folderId: string): Promise<BlRichTextContent> {
-    await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
-    return this.foldersService.getDescription(folderId);
+  public async getDescription(folderId: string): Promise<CnGetFolderDescriptionDTO> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    const description = await this.foldersService.getDescription(folderId);
+
+    return {
+      description: description,
+      canEdit: this.foldersAggregateSecurity.isFolderLeader(folder, CnCurrentUserHelper.getAndCheckUserSpaceInfo())
+    };
   }
 
   public async updateDescription(folderId: string, description: BlRichTextContent): Promise<void> {
@@ -751,7 +756,6 @@ export class CnFolderAggregateService {
   public async getConstellabDocument(documentId: string): Promise<CnConstellabDocumentDTO> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
-    // TODO voir si on peut améliorer et mettre en commun
     const document = await this.documentService.findByIdAndCheck(documentId);
     return this.documentService.getConstellabDocument(folder.getRootFolderId(), document);
   }
