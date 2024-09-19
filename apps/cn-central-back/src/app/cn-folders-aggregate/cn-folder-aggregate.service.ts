@@ -131,7 +131,7 @@ export class CnFolderAggregateService {
 
   private createFolderFromDTO(folderDto: CnSaveFolderDTO): CnFolderEntity {
     const folder = new CnFolderEntity();
-    folder.title = folderDto.title;
+    folder.name = folderDto.name;
     folder.code = folderDto.code;
     folder.startingDate = folderDto.startingDate;
     folder.endingDate = folderDto.endingDate;
@@ -150,7 +150,7 @@ export class CnFolderAggregateService {
       }
     }
 
-    dbFolder.title = entity.title;
+    dbFolder.name = entity.name;
     dbFolder.code = entity.code;
     dbFolder.startingDate = entity.startingDate;
     dbFolder.endingDate = entity.endingDate;

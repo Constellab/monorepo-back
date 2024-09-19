@@ -181,8 +181,8 @@ export class CnFolderListener {
         entityType: CnActivityEntityType.FOLDER,
         entity: folder,
         actionType: CnActivityType.CREATE,
-        title: `{{user.name}} has created sub folder ${folder.title} under folder ${parentFolder.name}`,
-        entityName: folder.title
+        title: `{{user.name}} has created sub folder ${folder.name} under folder ${parentFolder.name}`,
+        entityName: folder.name
       }, notif: { link: CnFrontService.getFolderRoute(folder.id) }
     };
   }
@@ -193,8 +193,8 @@ export class CnFolderListener {
         entityType: CnActivityEntityType.FOLDER,
         entity: folder,
         actionType: CnActivityType.UPDATE,
-        title: `{{user.name}} has updated folder ${folder.title}`,
-        entityName: folder.title
+        title: `{{user.name}} has updated folder ${folder.name}`,
+        entityName: folder.name
       }, notif: { link: CnFrontService.getFolderRoute(folder.id) }
     };
   }
@@ -205,8 +205,8 @@ export class CnFolderListener {
         entityType: CnActivityEntityType.FOLDER,
         entity: folder,
         actionType: CnActivityType.UPDATE,
-        title: `{{user.name}} has changed leader of folder ${folder.title} to ${folder.leader.alias}`,
-        entityName: folder.title
+        title: `{{user.name}} has changed leader of folder ${folder.name} to ${folder.leader.alias}`,
+        entityName: folder.name
       }, notif: { link: CnFrontService.getFolderRoute(folder.id) }
     };
   }

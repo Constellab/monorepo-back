@@ -15,7 +15,7 @@ import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-obje
 export class CnFolderEntity extends CnHierarchyRepresentation {
 
   @Column({ nullable: false, length: 100 })
-  title: string;
+  name: string;
 
   @Column({ nullable: true, length: 20 })
   code: string;
@@ -31,7 +31,6 @@ export class CnFolderEntity extends CnHierarchyRepresentation {
   @BlLuxonDateColumn({ nullable: true })
   endingDate: DateTime;
 
-  // TODO A voir si on garde
   @Type(() => CnUser)
   @ManyToOne(() => CnUser, { eager: true, nullable: false })
   leader: Relation<CnUser>;
@@ -63,7 +62,7 @@ export class CnFolderEntity extends CnHierarchyRepresentation {
   getHierarchyObjectInfo(): CnHierarchyObjectInfo {
     return {
       objectType: CnHierarchyObjectType.FOLDER,
-      name: this.title,
+      name: this.name,
       user: this.leader,
       lastModifiedAt: this.lastModifiedAt ?? ClDateHelper.getDate()
     };

@@ -7,7 +7,7 @@ import { BlRichTextContent } from '@monorepo/back-core-lib';
 
 export class CnSaveFolderDTO {
   code: string;
-  title: string;
+  name: string;
 
   @ClLuxonDateTransform()
   startingDate: DateTime;
