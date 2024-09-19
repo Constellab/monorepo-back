@@ -12,6 +12,7 @@ import {
   ListObjectsCommandOutput,
   NoSuchKey,
   PutObjectCommand,
+  PutObjectTaggingCommand,
   S3Client
 } from '@aws-sdk/client-s3';
 import { BlFileResponse, BlObject, BlS3BucketConfig } from './bl-object-storage.class';
@@ -230,10 +231,10 @@ export class BlS3BucketService implements BlObjectStorageInterface {
   public async setObjectTags(objectName: string, tags: Record<string, string>): Promise<void> {
     const s3Client = this.getClient();
 
-    await s3Client.send(new PutObjectCommand({
+    await s3Client.send(new PutObjectTaggingCommand({
       Bucket: this.getBucketName(),
       Key: objectName,
-      Tagging: this.tagsToQueryParams(tags)
+      Tagging: {TagSet: Object.entries(tags).map(([key, value]) => ({Key: key, Value: value}))}
     }));
   }
 
