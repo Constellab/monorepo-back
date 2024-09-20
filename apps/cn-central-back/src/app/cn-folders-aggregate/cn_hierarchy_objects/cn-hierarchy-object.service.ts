@@ -86,10 +86,9 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
 
   public async searchVisibleChildren(folderId: string, searchParam: BlSearchParams,
                                      page: number, size: number): Promise<ClPage<CnHierarchyObject>> {
-    const searchBuilder = new CnHierarchyObjectSearch({
-      objectTypeOrder: 'ASC',
-      lastModifiedAt: 'DESC' as any
-    });
+    const searchBuilder = new CnHierarchyObjectSearch();
+    // force the sort by objectType first
+    searchBuilder.mergeOrderOptions({ objectTypeOrder: 'ASC' });
     searchBuilder.addSearchParams(searchParam);
     searchBuilder.mergeWhereOptions({ parentId: folderId });
 

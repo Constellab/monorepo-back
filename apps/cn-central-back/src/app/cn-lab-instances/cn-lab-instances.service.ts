@@ -313,6 +313,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     const searchBuilder = new BlSearchBuilder<CnLabInstance>();
     searchBuilder.addSearchParams(searchParams);
     searchBuilder.mergeWhereOptions({spaceId: spaceId});
+    searchBuilder.setRelations(CnLabInstance.relationFull);
 
     return this.findPaginated(page, size, searchBuilder.build());
 

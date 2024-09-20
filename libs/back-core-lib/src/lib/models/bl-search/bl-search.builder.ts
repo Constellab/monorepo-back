@@ -5,9 +5,6 @@ import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
 import { ClHelpService } from '@monorepo/core-lib';
-import {
-  CnFolder
-} from '../../../../../../apps/cn-central-back/src/app/cn-folders-aggregate/cn-folders/cn-folder.entity';
 
 export class BlSearchBuilder<T> {
 
@@ -151,7 +148,7 @@ export class BlSearchBuilder<T> {
     }
   }
 
-  protected addSortCriteria(sort: BlSearchSortCriteria): void {
+  public addSortCriteria(sort: BlSearchSortCriteria): void {
     // the keys are separated by dot
     const keys = sort.key.split('.');
 
@@ -159,7 +156,7 @@ export class BlSearchBuilder<T> {
     // build the filter object
     for (let i = 0; i < keys.length; i++) {
       if (i === keys.length - 1) {
-        currentOrder[keys[i]] = sort.order as FindOptionsOrderValue;
+        currentOrder[keys[i]] = sort.direction as FindOptionsOrderValue;
       } else {
         if (currentOrder[keys[i]] == null) {
           currentOrder[keys[i]] = {};
