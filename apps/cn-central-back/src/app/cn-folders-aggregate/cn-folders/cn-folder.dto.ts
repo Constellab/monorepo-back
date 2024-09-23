@@ -2,11 +2,14 @@ import { DateTime } from 'luxon';
 import { ClLuxonDateTransform } from '@monorepo/core-lib';
 import { Type } from 'class-transformer';
 import { CnBucket, CnBucketLocationDTO } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
-import { BlRichTextContent } from '@monorepo/back-core-lib';
+import { BlRichTextContent, BlTrim } from '@monorepo/back-core-lib';
 
 
 export class CnSaveFolderDTO {
+  @BlTrim()
   code: string;
+
+  @BlTrim()
   name: string;
 
   @ClLuxonDateTransform()

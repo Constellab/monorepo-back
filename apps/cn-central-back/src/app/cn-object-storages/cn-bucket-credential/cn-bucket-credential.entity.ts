@@ -4,26 +4,26 @@ import { CnCloudProvider } from '../../cn-cloud-providers/cn-cloud-provider.enti
 import { CnSpace } from '../../cn-spaces/cn-space.entity';
 import { Exclude } from 'class-transformer';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
-import { BLTrim } from '@monorepo/back-core-lib';
+import { BlTrim } from '@monorepo/back-core-lib';
 
 @Entity('bucket_credentials')
 export class CnBucketCredentials extends CnBaseEntity {
 
   public static completeRelations: FindOptionsRelations<CnBucketCredentials> = {cloudProvider: true, space: true};
 
-  @BLTrim()
+  @BlTrim()
   @Column({nullable: false, length: 50})
   name: string;
 
   @ManyToOne(() => CnCloudProvider, {nullable: true})
   cloudProvider?: CnCloudProvider;
 
-  @BLTrim()
+  @BlTrim()
   @Exclude({toPlainOnly: true})
   @Column({nullable: false, length: 100})
   accessKeyId: string;
 
-  @BLTrim()
+  @BlTrim()
   @Exclude({toPlainOnly: true})
   @Column({nullable: false, length: 100})
   secretAccessKey: string;

@@ -13,7 +13,7 @@ import { randomBytes } from 'crypto';
 import { CnExternalApiInfo } from '../cn-core/model/config/cn-config.class';
 import { CnSpace } from '../cn-spaces/cn-space.entity';
 import { CnLabInstanceUser } from './user/cn-lab-instance-user.entity';
-import { BlLuxonDateTimeColumn, BLTrim } from '@monorepo/back-core-lib';
+import { BlLuxonDateTimeColumn, BlTrim } from '@monorepo/back-core-lib';
 import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { DateTime } from 'luxon';
 import { ClStringHelper } from '@monorepo/core-lib';
@@ -68,12 +68,12 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     space: true,
   };
 
-  @BLTrim()
+  @BlTrim()
   @Column({nullable: false, length: 50})
   name: string;
 
   // name of the lab used in the cloud provider if the lab is hosted on a cloud
-  @BLTrim()
+  @BlTrim()
   @Column({nullable: true, length: 36})
   cloudName: string;
 
@@ -107,22 +107,22 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Column({nullable: true, length: 255, unique: true})
   labManagerApiKey: string;
 
-  @BLTrim()
+  @BlTrim()
   @Column({nullable: true, length: 255, unique: true})
   virtualHost: string;
 
   // api key shared with the lab manager API
-  @BLTrim()
+  @BlTrim()
   @Exclude()
   @Column({nullable: true, length: 255})
   codelabToken: string;
 
-  @BLTrim()
+  @BlTrim()
   @Exclude()
   @Column({nullable: false, length: 255})
   gwsCoreProdDbPassword: string;
 
-  @BLTrim()
+  @BlTrim()
   @Exclude()
   @Column({nullable: false, length: 255})
   gwsCoreDevDbPassword: string;

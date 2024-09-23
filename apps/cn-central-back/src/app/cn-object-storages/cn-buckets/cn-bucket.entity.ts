@@ -9,7 +9,7 @@ import {
   BlBucketConfig,
   BlBucketType,
   BlS3BucketConfig,
-  BLTrim
+  BlTrim
 } from '@monorepo/back-core-lib';
 import { Type } from 'class-transformer';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
@@ -61,7 +61,7 @@ export class CnBucket extends CnBaseEntity {
   @ManyToOne(() => CnBucketCredentials, { nullable: false })
   credentials: CnBucketCredentials;
 
-  @BLTrim()
+  @BlTrim()
   @Column({ nullable: false, length: 100, update: false })
   name: string;
 
