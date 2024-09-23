@@ -1,6 +1,6 @@
 import { BlBlockType, BlNewRichText, BlRichTextBlock } from '@monorepo/back-core-lib';
 
-export interface CnReportViewBlockData {
+export interface CnNoteViewBlockData {
   id: string;
   view_config_id?: string;
   resource_id?: string;
@@ -11,20 +11,20 @@ export interface CnReportViewBlockData {
   caption: string;
 }
 
-export interface CnReportFileViewBlockData {
+export interface CnNoteFileViewBlockData {
   id: string;
   title: string;
   caption: string;
 }
 
 
-export class CnReportContent extends BlNewRichText {
+export class CnNoteContent extends BlNewRichText {
 
-  public getResourceViewsBlocks(): BlRichTextBlock<CnReportViewBlockData>[] {
+  public getResourceViewsBlocks(): BlRichTextBlock<CnNoteViewBlockData>[] {
     return this.getBlocksByType(BlBlockType.RESOURCE_VIEW);
   }
 
-  public getFileViewsBlocks(): BlRichTextBlock<CnReportFileViewBlockData>[] {
+  public getFileViewsBlocks(): BlRichTextBlock<CnNoteFileViewBlockData>[] {
     return this.getBlocksByType(BlBlockType.FILE_VIEW);
   }
 }

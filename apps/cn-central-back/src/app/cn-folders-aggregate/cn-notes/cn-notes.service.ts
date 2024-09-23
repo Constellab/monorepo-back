@@ -1,0 +1,267 @@
+import { Injectable, Logger } from '@nestjs/common';
+import { CnNote } from './cn-note.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, Repository } from 'typeorm';
+import { CnExperiment } from '../cn-experiments/cn-experiment.entity';
+import {
+  BlAbstractService,
+  BlBadRequestException,
+  BlFile,
+  BlFileResponse,
+  BlQuillMigrator,
+  BlRichTextContent
+} from '@monorepo/back-core-lib';
+import { CnCreateNoteWithConfigDto, CnSaveNoteDto, CnSaveNoteResultDTO } from './cn-note.dto';
+import { CnNoteContent } from './cn-note-content.class';
+import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnDocumentService } from '../cn-documents/cn-document.service';
+import { CnDocument, CnDocumentEntity, CnDocumentType } from '../cn-documents/cn-document.entity';
+import { CnHierarchyObject, CnHierarchyObjectEntity } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+
+@Injectable()
+export class CnNotesService extends BlAbstractService<CnNote> {
+  protected readonly logger = new Logger(CnNotesService.name);
+
+  constructor(@InjectRepository(CnNote) private repository: Repository<CnNote>,
+              private labConfigService: CnLabConfigsService,
+              private documentService: CnDocumentService) {
+    super(repository, CnNote);
+  }
+
+  getNotesByLabInstance(labInstanceId: string): Promise<CnNote[]> {
+    return this.repository.find({
+      where: {
+        labInstance: {
+          id: labInstanceId
+        }
+      }
+    });
+  }
+
+  getNotesByRootFolderAndLabInstance(rootFolderId: string, labInstanceId: string): Promise<CnNote[]> {
+    return this.repository.find({
+      where: [
+        // find by folder parent root id (if note is link to leaf folder)
+        {
+          hierarchyRepresentation: {
+            rootParentId: rootFolderId
+          },
+          labInstance: {
+            id: labInstanceId
+          }
+        },
+        // find by folder (if note is linked to root folder)
+        {
+          hierarchyRepresentation: {
+            parentId: rootFolderId
+          },
+          labInstance: {
+            id: labInstanceId
+          }
+        }
+      ]
+    });
+  }
+
+  public async getNoteContent(parentFolder: CnHierarchyObject, id: string): Promise<BlRichTextContent> {
+    const note = await this.findByIdAndCheck(id, { document: true });
+    return this.documentService.getJSONDocumentContent(parentFolder.getRootFolderId(), note.document);
+  }
+
+  async getFile(filename: string, parentFolder: CnHierarchyObject, noteId: string): Promise<BlFileResponse> {
+    return await this.documentService.getDocumentContentByTypeAndName(parentFolder.getRootFolderId(),
+      CnDocumentType.NOTE_CONTENT, filename, noteId);
+  }
+
+  async getView(viewId: string, parentFolder: CnHierarchyObject, noteId: string): Promise<BlFileResponse> {
+    return await this.documentService.getDocumentContentByTypeAndName(parentFolder.getRootFolderId(),
+      CnDocumentType.NOTE_CONTENT, viewId + '.json', noteId);
+  }
+
+
+  async saveNote(createNoteDto: CnCreateNoteWithConfigDto, experiments: CnExperiment[],
+                   parentFolder: CnHierarchyObject, files: BlFile[]): Promise<CnSaveNoteResultDTO> {
+
+    let noteDb: CnNote = await this.findById(createNoteDto.note.id, {
+      document: true,
+      hierarchyRepresentation: true
+    });
+    if (noteDb && noteDb.hierarchyRepresentation.parentId !== parentFolder.id) {
+      throw new BlBadRequestException('Can\'t change the folder of a synced note');
+    }
+
+    // retrieve the lab config
+    const labConfig = await this.labConfigService.getOrCreateLabConfig(createNoteDto.lab_config);
+
+    // copy fields of the note DTO to note
+    const noteDto: CnSaveNoteDto = createNoteDto.note;
+    const note = new CnNote();
+
+    note.id = noteDto.id;
+    note.createdAt = noteDto.created_at;
+    note.createdBy = noteDto.created_by;
+    note.lastModifiedAt = noteDto.last_modified_at;
+    note.lastModifiedBy = noteDto.last_modified_by;
+    note.title = noteDto.title;
+
+    note.experiments = experiments;
+    note.labConfig = labConfig;
+
+    // handle validated
+    note.isValidated = noteDto.is_validated;
+    note.validatedAt = noteDto.validated_at;
+    note.validatedBy = noteDto.validated_by;
+
+    // handle last_sync
+    note.lastSyncAt = noteDto.last_sync_at;
+    note.lastSyncBy = noteDto.last_sync_by;
+
+    // if this is a creation
+    if (!noteDb) {
+      note.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(parentFolder,
+        note.getHierarchyObjectInfo());
+      // also set the id of the folder hierarchy because it should be the same as the note id
+      note.hierarchyRepresentation.id = noteDto.id;
+    }
+
+    let mode: 'create' | 'update';
+    if (noteDb) {
+      noteDb = await this.updateWithCompare(note, noteDb);
+      mode = 'update';
+    } else {
+      note.labInstance = CnCurrentUserHelper.getCurrentLabInstance();
+      noteDb = await this.create(note);
+      mode = 'create';
+    }
+
+    // update the content of the note
+    noteDb = await this.saveNoteContent(noteDb, parentFolder, createNoteDto, files);
+    return {
+      mode: mode,
+      note: noteDb
+    };
+  }
+
+  /**
+   * Method to store the note content in the object storage. Then manage the images and the views
+   */
+  private async saveNoteContent(note: CnNote, parentFolder: CnHierarchyObject,
+                                  createNoteDto: CnCreateNoteWithConfigDto, files: BlFile[]): Promise<CnNote> {
+    const content = BlQuillMigrator.migrateOptional(createNoteDto.note.content);
+    const richText = new CnNoteContent(content);
+
+    let noteDocument: CnDocument;
+    // if the document already exists, we update it
+    if (note.document) {
+      noteDocument = await this.documentService.updateJSONDocument(parentFolder.getRootFolderId(), note.document,
+        richText.getContent());
+    } else {
+      // or use the id as doc Name
+      noteDocument = await this.documentService.createJSONDocument(parentFolder,
+        CnDocumentType.NOTE, note.title, note.id, richText.getContent());
+    }
+
+    // store document reference in the note
+    note = await this.updatePartial(note.id, { document: noteDocument as CnDocumentEntity });
+
+    // manage the file and image of the note
+    await this.uploadNoteFiles(files, note.id, noteDocument, parentFolder);
+    // manage views of the note
+    await this.uploadNoteViews(richText, createNoteDto.resource_views, note.id, noteDocument, parentFolder);
+
+    return note;
+  }
+
+  /**
+   * Methode to store the images of the note in the object storage
+   */
+  private async uploadNoteFiles(files: BlFile[], noteId: string, parentDocument: CnDocument,
+                                  parentFolder: CnHierarchyObject): Promise<void> {
+    if (!files) return;
+    for (const file of files) {
+      await this.uploadNoteFile(file, noteId, parentDocument, parentFolder);
+    }
+  }
+
+  private async uploadNoteFile(file: BlFile, noteId: string, parentDocument: CnDocument,
+                                 parentFolder: CnHierarchyObject): Promise<void> {
+    const filename = file.originalname;
+    const document =
+      await this.documentService.findDocumentBYTypeAndNameAndEntity(CnDocumentType.NOTE_CONTENT,
+        filename, noteId);
+
+    // upload the image only if it does not exist
+    if (!document) {
+      await this.documentService.uploadDocument(file, parentFolder, CnDocumentType.NOTE_CONTENT,
+        noteId, filename, parentDocument);
+    }
+  }
+
+  /**
+   * Method to load the resource view of the note and store them in the object storage
+   */
+  private async uploadNoteViews(richText: CnNoteContent,
+                                  resourceViews: Record<string, any>,
+                                  noteId: string,
+                                  parentDocument: CnDocument,
+                                  parentFolder: CnHierarchyObject): Promise<void> {
+    if (!resourceViews) return;
+
+    const views = [...richText.getResourceViewsBlocks(), ...richText.getFileViewsBlocks()];
+    for (const specialOp of views) {
+      const viewBlockData = specialOp.data;
+
+      const viewData = resourceViews[viewBlockData.id];
+
+      if (!viewData) continue;
+
+      const docName = `${viewBlockData.id}.json`;
+      await this.documentService.createOrUpdateJSONDocument(parentFolder, CnDocumentType.NOTE_CONTENT,
+        docName, noteId, viewData, parentDocument);
+    }
+  }
+
+  public async deleteNote(id: string, entityManager: EntityManager): Promise<CnNote> {
+    const note = await this.findById(id, { document: true });
+
+    // no error if note not found for more resilience
+    if (!note) {
+      return null;
+    }
+
+    if (note.isValidated) {
+      throw new BlBadRequestException('Can\'t delete a validated note');
+    }
+
+    await this.deleteById(id, entityManager);
+
+    if (note.document) {
+      await this.documentService.deleteDocument(note.document.id, entityManager);
+    }
+
+    return note;
+  }
+
+  findByIdAndCheckWithExperiments(id: string): Promise<CnNote> {
+    return this.findByIdAndCheck(id, { experiments: true });
+  }
+
+  /**
+   * Get all the notes created by the current user
+   */
+  public async getCurrentUserCreatedNote(): Promise<CnNote[]> {
+    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+
+    return this.repository.find({
+      where: {
+        createdBy: {
+          id: userInfo.userId
+        },
+        hierarchyRepresentation: {
+          spaceId: userInfo.spaceId
+        }
+      }
+    });
+  }
+}

@@ -20,7 +20,7 @@ import { CnJwtAuthGuard } from './app/cn-core/guards/cn-jwt-auth.guard';
 import { CnUserCategoryGuard } from './app/cn-core/guards/cn-user-category-guard.service';
 import { CnExternalLabsModule } from './app/cn-external-labs/cn-external-labs.module';
 import { CnCoreExceptionHandlerFilter } from './app/cn-core/filters/cn-core-exception-handler.filter';
-import { CnReportsModule } from './app/cn-folders-aggregate/cn-reports/cn-reports.module';
+import { CnNotesModule } from './app/cn-folders-aggregate/cn-notes/cn-notes.module';
 import { clDefaultLang } from '@monorepo/core-lib';
 import { CnFrontErrorsModule } from './app/cn-front-errors/cn-front-errors.module';
 import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
@@ -209,7 +209,7 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     CnLabConfigsModule,
     CnFoldersAggregateModule,
     CnExperimentsModule,
-    CnReportsModule,
+    CnNotesModule,
     CnBricksModule,
     CnGroupsModule,
     CnSpacesModule,

@@ -13,11 +13,7 @@ import {
 } from '@monorepo/back-core-lib';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnProtocolMigrator } from './cn-protocol-migrator.class';
-import {
-  CnHierarchyObject,
-  CnHierarchyObjectEntity,
-  CnHierarchyObjectType
-} from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnHierarchyObject, CnHierarchyObjectEntity } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 
 @Injectable()
 export class CnExperimentsService extends BlAbstractService<CnExperiment> {
@@ -136,8 +132,8 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     return experiment;
   }
 
-  findByIdAndCheckWithReports(id: string): Promise<CnExperiment> {
-    return this.findByIdAndCheck(id, { reports: true });
+  findByIdAndCheckWithNotes(id: string): Promise<CnExperiment> {
+    return this.findByIdAndCheck(id, { notes: true });
   }
 
 

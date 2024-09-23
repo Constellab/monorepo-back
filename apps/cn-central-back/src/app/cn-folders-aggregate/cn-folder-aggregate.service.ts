@@ -5,11 +5,11 @@ import { CnFolder, CnFolderEntity, CnFolderWithHierarchy } from './cn-folders/cn
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
 import { CnExperimentsService } from './cn-experiments/cn-experiments.service';
-import { CnReportsService } from './cn-reports/cn-reports.service';
+import { CnNotesService } from './cn-notes/cn-notes.service';
 import { CnExperiment, CnExperimentProtocol } from './cn-experiments/cn-experiment.entity';
 import { CnCreateLabExperimentDto } from './cn-experiments/cn-experiment.dto';
-import { CnCreateReportWithConfigDto } from './cn-reports/cn-report.dto';
-import { CnReport } from './cn-reports/cn-report.entity';
+import { CnCreateNoteWithConfigDto } from './cn-notes/cn-note.dto';
+import { CnNote } from './cn-notes/cn-note.entity';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
 import { CnFolderStorageLocationDTO, CnGetFolderDescriptionDTO, CnSaveFolderDTO } from './cn-folders/cn-folder.dto';
@@ -67,7 +67,7 @@ export class CnFolderAggregateService {
               private hierarchyObjectService: CnHierarchyObjectService,
               private foldersAggregateSecurity: CnFoldersAggregateSecurity,
               private experimentService: CnExperimentsService,
-              private reportService: CnReportsService,
+              private noteService: CnNotesService,
               private chatMessageService: CnChatMessageService,
               private datasource: DataSource,
               private bucketService: CnFolderBucketService,
@@ -173,8 +173,8 @@ export class CnFolderAggregateService {
       throw new BlBadRequestException(CnErrorText.DELETE_FOLDER_WITH_EXPERIMENTS);
     }
 
-    if (children.find(child => child.objectType === CnHierarchyObjectType.REPORT)) {
-      throw new BlBadRequestException(CnErrorText.DELETE_FOLDER_WITH_REPORTS);
+    if (children.find(child => child.objectType === CnHierarchyObjectType.NOTE)) {
+      throw new BlBadRequestException(CnErrorText.DELETE_FOLDER_WITH_NOTES);
     }
 
     const documents = await this.documentService.getParentFolderDocuments(folderHierarchy.id, false, 0, 1);
@@ -350,11 +350,11 @@ export class CnFolderAggregateService {
     return this.experimentService.getExperimentsByParentFolder(folder.id);
   }
 
-  async getExperimentsAssociatedToReports(reportId: string): Promise<CnExperiment[]> {
+  async getExperimentsAssociatedToNotes(noteId: string): Promise<CnExperiment[]> {
     // check that the user can get the folder
-    await this.findReport(reportId);
+    await this.findNote(noteId);
 
-    return (await this.reportService.findByIdAndCheckWithExperiments(reportId)).experiments;
+    return (await this.noteService.findByIdAndCheckWithExperiments(noteId)).experiments;
   }
 
   async createLabExperiment(parentFolderId: string, createLabExperimentDto: CnCreateLabExperimentDto): Promise<void> {
@@ -374,10 +374,10 @@ export class CnFolderAggregateService {
     // check that the user can get the folder
     const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
-    // check if the experiment has associated reports
-    const expWithReports = await this.experimentService.findByIdAndCheckWithReports(experimentId);
-    if (expWithReports.reports.length > 0) {
-      throw new BlBadRequestException('The experiment has associated reports in the space, please delete the report first.');
+    // check if the experiment has associated notes
+    const expWithNotes = await this.experimentService.findByIdAndCheckWithNotes(experimentId);
+    if (expWithNotes.notes.length > 0) {
+      throw new BlBadRequestException('The experiment has associated notes in the space, please delete the note first.');
     }
 
 
@@ -395,7 +395,7 @@ export class CnFolderAggregateService {
     return this.experimentService.getCurrentUserLastExperiments();
   }
 
-  async findExperimentTechnicalReport(experimentId: string): Promise<CnExperimentProtocol> {
+  async findExperimentTechnicalNote(experimentId: string): Promise<CnExperimentProtocol> {
     return (await this.findExperiment(experimentId)).protocol;
   }
 
@@ -407,93 +407,93 @@ export class CnFolderAggregateService {
     return this.experimentService.getExperimentsByRootFolderAndLabInstance(rootFolderId, labInstanceId);
   }
 
-  /////////////////////////////////////// REPORT //////////////////////////////////
+  /////////////////////////////////////// NOTE //////////////////////////////////
 
-  public async findReport(id: string): Promise<CnReport> {
+  public async findNote(id: string): Promise<CnNote> {
     await this.getAndCheckAuthorizationForFindOneByFolder(id);
-    return await this.reportService.findByIdAndCheck(id);
+    return await this.noteService.findByIdAndCheck(id);
   }
 
-  public async findReportContent(id: string): Promise<BlRichTextContent> {
-    const reportFolder = await this.getAndCheckAuthorizationForFindOneByFolder(id);
-    const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(reportFolder.parentId);
-    return this.reportService.getReportContent(parentFolder, id);
+  public async findNoteContent(id: string): Promise<BlRichTextContent> {
+    const noteFolder = await this.getAndCheckAuthorizationForFindOneByFolder(id);
+    const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(noteFolder.parentId);
+    return this.noteService.getNoteContent(parentFolder, id);
   }
 
-  async createLabReport(createReportDto: CnCreateReportWithConfigDto, parentFolderId: string,
+  async createLabNote(createNoteDto: CnCreateNoteWithConfigDto, parentFolderId: string,
                         files: BlFile[]): Promise<void> {
     const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
     // get and check all experiment
     const experiments: CnExperiment[] = [];
-    for (const experimentId of createReportDto.experiment_ids) {
+    for (const experimentId of createNoteDto.experiment_ids) {
       const experiment: CnExperiment = await this.experimentService.findById(experimentId, { hierarchyRepresentation: true });
 
       if (experiment == null) {
-        throw new BlBadRequestException('Can\'t create the report because one of the linked experiment could not be found');
+        throw new BlBadRequestException('Can\'t create the note because one of the linked experiment could not be found');
       }
 
       if (experiment.hierarchyRepresentation.parentId !== parentFolder.id) {
-        throw new BlBadRequestException('Can\'t create the report because it is linked to an experiment of another folder');
+        throw new BlBadRequestException('Can\'t create the note because it is linked to an experiment of another folder');
       }
       experiments.push(experiment);
     }
 
-    const reportResult = await this.reportService.saveReport(createReportDto, experiments,
+    const noteResult = await this.noteService.saveNote(createNoteDto, experiments,
       parentFolder, files);
 
-    if (reportResult.mode === 'create') {
-      this.emitFolderEvent('CREATE_REPORT', parentFolder, reportResult.report);
+    if (noteResult.mode === 'create') {
+      this.emitFolderEvent('CREATE_NOTE', parentFolder, noteResult.note);
     } else {
-      this.emitFolderEvent('UPDATE_REPORT', parentFolder, reportResult.report);
+      this.emitFolderEvent('UPDATE_NOTE', parentFolder, noteResult.note);
     }
   }
 
-  async deleteReportFromLab(parentFolderId: string, reportId: string): Promise<void> {
+  async deleteNoteFromLab(parentFolderId: string, noteId: string): Promise<void> {
     // check that the user can get the folder
     const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
-    let report: CnReport;
+    let note: CnNote;
     await this.datasource.transaction(async entityManager => {
-      report = await this.reportService.deleteReport(reportId, entityManager);
-      await this.hierarchyObjectService.deleteById(reportId, entityManager);
+      note = await this.noteService.deleteNote(noteId, entityManager);
+      await this.hierarchyObjectService.deleteById(noteId, entityManager);
     });
 
-    if (report) {
-      this.emitFolderEvent('DELETE_REPORT', parentFolder, report);
+    if (note) {
+      this.emitFolderEvent('DELETE_NOTE', parentFolder, note);
     }
   }
 
-  async deleteReport(reportId: string): Promise<void> {
-    // for now, only admin can delete report directly
+  async deleteNote(noteId: string): Promise<void> {
+    // for now, only admin can delete note directly
     if (!CnCurrentUserHelper.isAdmin()) {
       throw new UnauthorizedException();
     }
-    const reportFolder = await this.hierarchyObjectService.findByIdAndCheck(reportId, { parent: true });
+    const noteFolder = await this.hierarchyObjectService.findByIdAndCheck(noteId, { parent: true });
 
-    await this.deleteReportFromLab(reportFolder.parentId, reportId);
+    await this.deleteNoteFromLab(noteFolder.parentId, noteId);
   }
 
-  async getReportAssociatedToExperiment(experimentId: string): Promise<CnReport[]> {
+  async getNoteAssociatedToExperiment(experimentId: string): Promise<CnNote[]> {
     await this.findExperiment(experimentId);
 
-    return (await this.experimentService.findByIdAndCheckWithReports(experimentId)).reports;
+    return (await this.experimentService.findByIdAndCheckWithNotes(experimentId)).notes;
   }
 
-  async getReportFile(reportId: string, filename: string): Promise<BlFileResponse> {
-    const reportFolder = await this.getAndCheckAuthorizationForFindOneByFolder(reportId);
-    const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(reportFolder.parentId);
-    return this.reportService.getFile(filename, parentFolder, reportId);
+  async getNoteFile(noteId: string, filename: string): Promise<BlFileResponse> {
+    const noteFolder = await this.getAndCheckAuthorizationForFindOneByFolder(noteId);
+    const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(noteFolder.parentId);
+    return this.noteService.getFile(filename, parentFolder, noteId);
   }
 
-  async getReportView(reportId: string, viewId: string): Promise<BlFileResponse> {
-    const reportFolder = await this.getAndCheckAuthorizationForFindOneByFolder(reportId);
-    const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(reportFolder.parentId);
-    return this.reportService.getView(viewId, parentFolder, reportId);
+  async getNoteView(noteId: string, viewId: string): Promise<BlFileResponse> {
+    const noteFolder = await this.getAndCheckAuthorizationForFindOneByFolder(noteId);
+    const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(noteFolder.parentId);
+    return this.noteService.getView(viewId, parentFolder, noteId);
   }
 
-  public getReportsByRootFolderAndLabInstance(rootFolderId: string, labInstanceId: string): Promise<CnReport[]> {
-    return this.reportService.getReportsByRootFolderAndLabInstance(rootFolderId, labInstanceId);
+  public getNotesByRootFolderAndLabInstance(rootFolderId: string, labInstanceId: string): Promise<CnNote[]> {
+    return this.noteService.getNotesByRootFolderAndLabInstance(rootFolderId, labInstanceId);
   }
 
   /////////////////////////////////////// GROUPS //////////////////////////////////
@@ -931,7 +931,7 @@ export class CnFolderAggregateService {
     if (!searchBuilder.hasWhereOptions('entityType')) {
       searchBuilder.mergeWhereOptions({
         entityType: In([CnActivityEntityType.FOLDER, CnActivityEntityType.MESSAGE,
-          CnActivityEntityType.REPORT, CnActivityEntityType.EXPERIMENT, CnActivityEntityType.DOCUMENT])
+          CnActivityEntityType.NOTE, CnActivityEntityType.EXPERIMENT, CnActivityEntityType.DOCUMENT])
       });
     }
 

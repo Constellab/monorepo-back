@@ -31,18 +31,18 @@ export class CnExperimentsController {
     return experiments.map(experiment => new CnExperimentDTO().copyEntity(experiment));
   }
 
-  @Get('report/:reportId')
-  async getExperimentsByReport(@Param('reportId', new ParseUUIDPipe()) reportId: string): Promise<CnExperimentDTO[]> {
-    const experiments = await this.folderAggregateService.getExperimentsAssociatedToReports(reportId);
+  @Get('note/:noteId')
+  async getExperimentsByNote(@Param('noteId', new ParseUUIDPipe()) noteId: string): Promise<CnExperimentDTO[]> {
+    const experiments = await this.folderAggregateService.getExperimentsAssociatedToNotes(noteId);
     return experiments.map(experiment => new CnExperimentDTO().copyEntity(experiment));
   }
 
   /**
-   * Get experiment's reports
+   * Get experiment's notes
    */
-  @Get(':experimentId/technical-report')
-  async getExperimentTechnicalReport(@Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<CnExperimentProtocol> {
-    return this.folderAggregateService.findExperimentTechnicalReport(experimentId);
+  @Get(':experimentId/technical-note')
+  async getExperimentTechnicalNote(@Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<CnExperimentProtocol> {
+    return this.folderAggregateService.findExperimentTechnicalNote(experimentId);
   }
 
   /**

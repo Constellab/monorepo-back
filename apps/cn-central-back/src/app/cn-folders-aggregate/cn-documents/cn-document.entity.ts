@@ -18,10 +18,10 @@ export enum CnDocumentType {
   CONSTELLAB_DOCUMENT_CONTENT = 'CONSTELLAB_DOCUMENT_CONTENT',
   // attached image to a folder description
   DESCRIPTION_CONTENT = 'DESCRIPTION_CONTENT',
-  // contains the report
-  REPORT = 'REPORT',
-  // attached image and view to a report
-  REPORT_CONTENT = 'REPORT_CONTENT',
+  // contains the note
+  NOTE = 'NOTE',
+  // attached image and view to a note
+  NOTE_CONTENT = 'NOTE_CONTENT',
   // attached images to a message
   MESSAGE_CONTENT = 'MESSAGE_CONTENT'
 }
@@ -52,7 +52,7 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
   // The id of the entity associated with this document
   // IF type is UPLOADED_DOCUMENT,CONSTELLAB_DOCUMENT, DESCRIPTION_CONTENT or MESSAGE_CONTENT, entityId is the id of the folder
   // IF type is CONSTELLAB_DOCUMENT_CONTENT, entityId is the id of the constellab document
-  // IF type is REPORT or REPORT_CONTENT, entityId is the id of the report
+  // IF type is NOTE or NOTE_CONTENT, entityId is the id of the note
   @Column({ nullable: false, length: 36 })
   entityId: string;
 
@@ -115,9 +115,9 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
         return 'constellab_doc_images';
       case CnDocumentType.DESCRIPTION_CONTENT:
         return 'description';
-      case CnDocumentType.REPORT:
-      case CnDocumentType.REPORT_CONTENT:
-        return 'report_contents';
+      case CnDocumentType.NOTE:
+      case CnDocumentType.NOTE_CONTENT:
+        return 'note_contents';
       case CnDocumentType.MESSAGE_CONTENT:
         return 'comments';
     }

@@ -17,7 +17,7 @@ import { CnLabInstancesSecurity } from './cn-lab-instances.security';
 import { CnLabInstanceUser } from './user/cn-lab-instance-user.entity';
 import { CnGroupsModule } from '../cn-groups/cn-groups.module';
 import { CnLabInstanceUserService } from './user/cn-lab-instance-user.service';
-import { CnReportsModule } from '../cn-folders-aggregate/cn-reports/cn-reports.module';
+import { CnNotesModule } from '../cn-folders-aggregate/cn-notes/cn-notes.module';
 import { CnObjectStoragesModule } from '../cn-object-storages/cn-object-storages.module';
 import { CnOvhService } from './server/ovh/cn-ovh.service';
 import { CnLabServerService } from './server/cn-lab-server.service';
@@ -72,7 +72,7 @@ import { CnSupportModule } from '../cn-support/cn-support.module';
     CnAuthModule,
 
     CnExperimentsModule,
-    CnReportsModule,
+    CnNotesModule,
     CnObjectStoragesModule,
     CnServerPriceModule,
     CnSupportModule,

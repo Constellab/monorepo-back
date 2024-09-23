@@ -2,7 +2,7 @@ import { Column, Entity, ManyToMany, ManyToOne } from 'typeorm';
 import { Exclude, Type } from 'class-transformer';
 import { CnLabInstance } from '../../cn-lab-instances/cn-lab-instance.entity';
 import { BlLuxonDateTimeColumn, BlNotUpdatable, BlRichTextContent } from '@monorepo/back-core-lib';
-import { CnReport } from '../cn-reports/cn-report.entity';
+import { CnNote } from '../cn-notes/cn-note.entity';
 import { CnExperimentStatus } from './cn-experiment-status.enum';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnUser } from '../../cn-users/cn-user.entity';
@@ -18,7 +18,7 @@ export interface CnExperimentProtocol {
 
 
 /**
- * An experiment is executed in a lab to produce reports
+ * An experiment is executed in a lab to produce notes
  *
  * It is defined as a succession of jobs
  */
@@ -44,8 +44,8 @@ export class CnExperiment extends CnHierarchyRepresentation {
   @ManyToOne(() => CnLabConfig, { nullable: false })
   labConfig: CnLabConfig;
 
-  @ManyToMany(() => CnReport, report => report.experiments)
-  reports: CnReport[];
+  @ManyToMany(() => CnNote, note => note.experiments)
+  notes: CnNote[];
 
   @Exclude()
   @Column({ type: 'simple-json', nullable: false })

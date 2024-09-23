@@ -19,7 +19,7 @@ export enum CnBucketContentType {
   LAB_BACKUP = 'LAB_BACKUP',
   SPACE_IMAGE = 'SPACE_IMAGE',
   USER_IMAGE = 'USER_IMAGE',
-  // Bucket containing all the file of a folder : reports, experiments, message image, document.
+  // Bucket containing all the file of a folder : notes, experiments, message image, document.
   FOLDER = 'FOLDER',
 }
 

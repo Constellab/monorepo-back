@@ -407,8 +407,8 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       [CnDocumentType.UPLOADED_DOCUMENT]: CnDocumentStorageType.UPLOADED_DOCUMENT,
       [CnDocumentType.CONSTELLAB_DOCUMENT]: CnDocumentStorageType.CONSTELLAB_DOCUMENT,
       [CnDocumentType.DESCRIPTION_CONTENT]: CnDocumentStorageType.DESCRIPTION,
-      [CnDocumentType.REPORT]: CnDocumentStorageType.REPORT,
-      [CnDocumentType.REPORT_CONTENT]: CnDocumentStorageType.REPORT,
+      [CnDocumentType.NOTE]: CnDocumentStorageType.NOTE,
+      [CnDocumentType.NOTE_CONTENT]: CnDocumentStorageType.NOTE,
       [CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT]: CnDocumentStorageType.CONSTELLAB_DOCUMENT,
       [CnDocumentType.MESSAGE_CONTENT]: CnDocumentStorageType.MESSAGE
     };
@@ -589,7 +589,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     let prefix = `${parentFolder.spaceId}/${parentFolder.getRootFolderId()}/${parentFolder.id}/${document.getTypePrefix()}`;
 
     if (document.type === CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT ||
-      document.type === CnDocumentType.REPORT_CONTENT) {
+      document.type === CnDocumentType.NOTE_CONTENT) {
       prefix += `/${document.entityId}`;
     }
 

@@ -50,7 +50,7 @@
   "child_folder_end_data_after_parent": "La date de fin du dossier enfant doit être la même ou avant la date de fin du dossier parent",
   "delete_folder_with_children": "Vous ne pouvez pas supprimer un dossier qui a des sous dossiers",
   "delete_folder_with_exps": "Vous ne pouvez pas supprimer un dossier qui a des expériences",
-  "delete_folder_with_reports": "Vous ne pouvez pas supprimer un dossier qui a des rapports",
+  "delete_folder_with_notes": "Vous ne pouvez pas supprimer un dossier qui a des notes",
   "delete_folder_with_documents": "Vous ne pouvez pas supprimer un dossier qui a des documents",
   "document_already_exist": "Un document avec le même nom existe déjà",
   "folder_bucket_not_found": "Le stockage pour ce dossier n'a pas été trouvé. Veuillez demander au responsable du dossier de configurer le stockage pour ce dossier (dans les paramètres)",
@@ -62,5 +62,5 @@
   "lab_free_expired": "Vos crédits gratuit pour le lab sont expirés. Le lab ne peut pas être démarré, veuillez contacter le support pour obtenir plus de crédits.",
   "remove_folder_use_as_storage_from_lab_error": "Le dossier utilise ce lab comme stockage, vous ne pouvez pas le supprimer du lab.",
   "remove_folder_sync_experiment_error": "Le dossier et ses sous dossiers ont {count} expériences synchronisées de ce lab, vous ne pouvez pas le supprimer du lab.",
-  "remove_folder_sync_report_error": "Le dossier et ses sous dossiers ont {count} rapports synchronisés de ce lab, vous ne pouvez pas le supprimer du lab."
+  "remove_folder_sync_note_error": "Le dossier et ses sous dossiers ont {count} notes synchronisées provenant de ce lab, vous ne pouvez pas le supprimer du lab."
 }

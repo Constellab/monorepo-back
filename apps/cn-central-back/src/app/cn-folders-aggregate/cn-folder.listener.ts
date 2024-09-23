@@ -10,7 +10,7 @@ import { CnFolderEvent, cnFolderEventName, CnFolderEventType } from './cn-folder
 import { CnFolder } from './cn-folders/cn-folder.entity';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnExperiment } from './cn-experiments/cn-experiment.entity';
-import { CnReport } from './cn-reports/cn-report.entity';
+import { CnNote } from './cn-notes/cn-note.entity';
 import { CnChatMessage, getFakeUserEveryoneMention } from '../cn-chat-message/cn-chat-message.entity';
 import { BlMailService, BlMentionUser, BlNewRichText, BlRichTextContent } from '@monorepo/back-core-lib';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
@@ -153,12 +153,12 @@ export class CnFolderListener {
         return this.experimentUpdated(event.entity, event.parentFolder);
       case 'DELETE_EXPERIMENT':
         return this.experimentDeleted(event.entity, event.parentFolder);
-      case 'CREATE_REPORT':
-        return this.reportCreated(event.entity, event.parentFolder);
-      case 'UPDATE_REPORT':
-        return this.reportUpdated(event.entity, event.parentFolder);
-      case 'DELETE_REPORT':
-        return this.reportDeleted(event.entity, event.parentFolder);
+      case 'CREATE_NOTE':
+        return this.noteCreated(event.entity, event.parentFolder);
+      case 'UPDATE_NOTE':
+        return this.noteUpdated(event.entity, event.parentFolder);
+      case 'DELETE_NOTE':
+        return this.noteDeleted(event.entity, event.parentFolder);
       case 'CREATE_CONSTELLAB_DOCUMENT':
         return this.constellabDocCreated(event.entity);
       case 'UPLOAD_FOLDER_DOCUMENT':
@@ -272,38 +272,38 @@ export class CnFolderListener {
     };
   }
 
-  private reportCreated(report: CnReport, parentFolder: CnHierarchyObject): CnActivityAndNotif {
+  private noteCreated(note: CnNote, parentFolder: CnHierarchyObject): CnActivityAndNotif {
     return {
       activity: {
-        entityType: CnActivityEntityType.REPORT,
-        entity: report,
+        entityType: CnActivityEntityType.NOTE,
+        entity: note,
         actionType: CnActivityType.CREATE,
-        title: `{{user.name}} has created report ${report.title} under folder ${parentFolder.name}`,
-        entityName: report.title
-      }, notif: { link: CnFrontService.getReportRoute(report.id) }
+        title: `{{user.name}} has created note ${note.title} under folder ${parentFolder.name}`,
+        entityName: note.title
+      }, notif: { link: CnFrontService.getNoteRoute(note.id) }
     };
   }
 
-  private reportUpdated(report: CnReport, parentFolder: CnHierarchyObject): CnActivityAndNotif {
+  private noteUpdated(note: CnNote, parentFolder: CnHierarchyObject): CnActivityAndNotif {
     return {
       activity: {
-        entityType: CnActivityEntityType.REPORT,
-        entity: report,
+        entityType: CnActivityEntityType.NOTE,
+        entity: note,
         actionType: CnActivityType.UPDATE,
-        title: `{{user.name}} has updated report ${report.title} under folder ${parentFolder.name}`,
-        entityName: report.title
-      }, notif: { link: CnFrontService.getReportRoute(report.id) }
+        title: `{{user.name}} has updated note ${note.title} under folder ${parentFolder.name}`,
+        entityName: note.title
+      }, notif: { link: CnFrontService.getNoteRoute(note.id) }
     };
   }
 
-  private reportDeleted(report: CnReport, parentFolder: CnHierarchyObject): CnActivityAndNotif {
+  private noteDeleted(note: CnNote, parentFolder: CnHierarchyObject): CnActivityAndNotif {
     return {
       activity: {
-        entityType: CnActivityEntityType.REPORT,
-        entity: report,
+        entityType: CnActivityEntityType.NOTE,
+        entity: note,
         actionType: CnActivityType.DELETE,
-        title: `{{user.name}} has deleted report ${report.title} under folder ${parentFolder.name}`,
-        entityName: report.title
+        title: `{{user.name}} has deleted note ${note.title} under folder ${parentFolder.name}`,
+        entityName: note.title
       }, notif: { link: CnFrontService.getFolderRoute(parentFolder.id) }
     };
   }
@@ -449,8 +449,8 @@ export class CnFolderListener {
         return folderUser.folderNotif;
       case CnActivityEntityType.EXPERIMENT:
         return folderUser.experimentNotif;
-      case CnActivityEntityType.REPORT:
-        return folderUser.reportNotif;
+      case CnActivityEntityType.NOTE:
+        return folderUser.noteNotif;
       case CnActivityEntityType.DOCUMENT:
         return folderUser.documentNotif;
       case CnActivityEntityType.MESSAGE:
@@ -467,7 +467,7 @@ export class CnFolderListener {
    */
   @OnEvent(cnFolderEventName)
   async updateHierarchyObject(event: CnFolderEvent): Promise<void> {
-    const events: CnFolderEventType[] = ['UPDATE_FOLDER', 'UPDATE_FOLDER_LEADER', 'UPDATE_EXPERIMENT', 'UPDATE_REPORT',
+    const events: CnFolderEventType[] = ['UPDATE_FOLDER', 'UPDATE_FOLDER_LEADER', 'UPDATE_EXPERIMENT', 'UPDATE_NOTE',
       'RENAME_DOCUMENT', 'UPDATE_CONSTELLAB_DOCUMENT', 'MOVE_FOLDER_DOCUMENT_TO_TRASH', 'RESTORE_FOLDER_DOCUMENT_FROM_TRASH'];
 
     if (!events.includes(event.type)) return;

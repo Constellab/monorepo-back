@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, Req, Us
 import { CnLabGuard, CnLabRobotAuthentication } from '../cn-core/decorators/cn-lab-guard.decorator';
 import { BlCredentials, BlFile, BlParsePipe, BlUploadedFiles } from '@monorepo/back-core-lib';
 import { CnCreateLabExperimentDto } from '../cn-folders-aggregate/cn-experiments/cn-experiment.dto';
-import { CnCreateReportWithConfigDto } from '../cn-folders-aggregate/cn-reports/cn-report.dto';
+import { CnCreateNoteWithConfigDto } from '../cn-folders-aggregate/cn-notes/cn-note.dto';
 import { CnLabInstanceStartDTO } from '../cn-lab-instances/cn-lab-instance.dto';
 import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
 import { CnLabInstanceSendMailDto } from '../cn-lab-instances/mail/cn-lab-instance-mail.dto';
@@ -88,20 +88,20 @@ export class CnExternalLabsController {
   }
 
   @UseInterceptors(FilesInterceptor('files'))
-  @Put(['project/:parentFolderId/report/v2', 'folder/:parentFolderId/report/v2'])
-  saveReport2(@Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
+  @Put(['project/:parentFolderId/report/v2', 'folder/:parentFolderId/note/v2'])
+  saveNote2(@Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
               @Body() body: { body: string },
               @BlUploadedFiles() files: BlFile[] = []): Promise<void> {
-    const createReportDto: CnCreateReportWithConfigDto
-      = ClCoreJsonConvert.deserializeObject(JSON.parse(body.body), CnCreateReportWithConfigDto);
-    return this.folderAggregateService.createLabReport(createReportDto, parentFolderId, files);
+    const createNoteDto: CnCreateNoteWithConfigDto
+      = ClCoreJsonConvert.deserializeObject(JSON.parse(body.body), CnCreateNoteWithConfigDto);
+    return this.folderAggregateService.createLabNote(createNoteDto, parentFolderId, files);
   }
 
-  @Delete(['project/:parentFolderId/report/:reportId', 'folder/:parentFolderId/report/:reportId'])
-  deleteReport(
+  @Delete(['project/:parentFolderId/report/:noteId', 'folder/:parentFolderId/note/:noteId'])
+  deleteNote(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
-    @Param('reportId', new ParseUUIDPipe()) reportId: string): Promise<void> {
-    return this.folderAggregateService.deleteReportFromLab(parentFolderId, reportId);
+    @Param('noteId', new ParseUUIDPipe()) noteId: string): Promise<void> {
+    return this.folderAggregateService.deleteNoteFromLab(parentFolderId, noteId);
   }
 
   /**

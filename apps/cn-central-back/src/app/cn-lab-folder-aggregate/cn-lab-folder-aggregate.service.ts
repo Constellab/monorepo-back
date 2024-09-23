@@ -81,9 +81,9 @@ export class CnLabFolderAggregateService {
       throw new BlBadRequestException(CnErrorText.REMOVE_FOLDER_SYNC_EXPERIMENT_ERROR, { detailArgs: { count: syncExperiments.length } });
     }
 
-    const syncReports = await this.folderAggregateService.getReportsByRootFolderAndLabInstance(rootFolderId, labInstanceId);
-    if (syncReports.length > 0) {
-      throw new BlBadRequestException(CnErrorText.REMOVE_FOLDER_SYNC_REPORT_ERROR, { detailArgs: { count: syncReports.length } });
+    const syncNotes = await this.folderAggregateService.getNotesByRootFolderAndLabInstance(rootFolderId, labInstanceId);
+    if (syncNotes.length > 0) {
+      throw new BlBadRequestException(CnErrorText.REMOVE_FOLDER_SYNC_NOTE_ERROR, { detailArgs: { count: syncNotes.length } });
     }
 
     await this.removeFolderFromLab(labInstance, rootFolderId);

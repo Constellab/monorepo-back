@@ -14,7 +14,7 @@ import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnExperiment } from '../cn-folders-aggregate/cn-experiments/cn-experiment.entity';
 import { CnExperimentsService } from '../cn-folders-aggregate/cn-experiments/cn-experiments.service';
 import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
-import { CnReportsService } from '../cn-folders-aggregate/cn-reports/cn-reports.service';
+import { CnNotesService } from '../cn-folders-aggregate/cn-notes/cn-notes.service';
 import { BlBadRequestException, BlSearchBuilder, BlSearchParams } from '@monorepo/back-core-lib';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
@@ -33,7 +33,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   constructor(@InjectRepository(CnLabInstance) private repository: Repository<CnLabInstance>,
               @InjectRepository(CnLabInstanceStatusHistory) private statusRepo: Repository<CnLabInstanceStatusHistory>,
               private experimentService: CnExperimentsService,
-              private reportService: CnReportsService,
+              private noteService: CnNotesService,
               private eventEmitter: EventEmitter2,
               datasource: DataSource) {
     super(repository, CnLabInstance, statusRepo, CnLabInstanceStatusHistory, datasource);
@@ -168,9 +168,9 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       throw new BlBadRequestException('Can\'t delete the lab instance because some experiment are linked to it');
     }
 
-    const reports = await this.reportService.getReportsByLabInstance(id);
-    if (reports?.length > 0) {
-      throw new BlBadRequestException('Can\'t delete the lab instance because some reports are linked to it');
+    const notes = await this.noteService.getNotesByLabInstance(id);
+    if (notes?.length > 0) {
+      throw new BlBadRequestException('Can\'t delete the lab instance because some notes are linked to it');
     }
 
     return super.deleteById(id, entityManager);

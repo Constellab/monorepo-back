@@ -11,8 +11,8 @@ import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-
 import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
 import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 
-@Entity('report')
-export class CnReport extends CnHierarchyRepresentation {
+@Entity('note')
+export class CnNote extends CnHierarchyRepresentation {
 
   @Column()
   title: string;
@@ -21,8 +21,8 @@ export class CnReport extends CnHierarchyRepresentation {
   @Column({ type: 'simple-json', nullable: true })
   content: BlRichTextContent;
 
-  @ManyToMany(() => CnExperiment, experiment => experiment.reports)
-  @JoinTable({ name: 'report_experiment' })
+  @ManyToMany(() => CnExperiment, experiment => experiment.notes)
+  @JoinTable({ name: 'note_experiment' })
   experiments: CnExperiment[];
 
   @BlNotUpdatable()
@@ -57,7 +57,7 @@ export class CnReport extends CnHierarchyRepresentation {
 
   getHierarchyObjectInfo(): CnHierarchyObjectInfo {
     return {
-      objectType: CnHierarchyObjectType.REPORT,
+      objectType: CnHierarchyObjectType.NOTE,
       name: this.title,
       user: this.lastModifiedBy,
       lastModifiedAt: this.lastModifiedAt,

@@ -18,7 +18,7 @@ export enum CnDocumentStorageType {
   UPLOADED_DOCUMENT = 'UPLOADED_DOCUMENT',
   CONSTELLAB_DOCUMENT = 'CONSTELLAB_DOCUMENT',
   DESCRIPTION = 'DESCRIPTION',
-  REPORT = 'REPORT',
+  NOTE = 'NOTE',
   MESSAGE = 'MESSAGE'
 }
 
@@ -44,7 +44,7 @@ export class CnStorageLocationUsageDetailDTO {
     UPLOADED_DOCUMENT: new CnStorageUsageDTO(0, 0),
     CONSTELLAB_DOCUMENT: new CnStorageUsageDTO(0, 0),
     DESCRIPTION: new CnStorageUsageDTO(0, 0),
-    REPORT: new CnStorageUsageDTO(0, 0),
+    NOTE: new CnStorageUsageDTO(0, 0),
     MESSAGE: new CnStorageUsageDTO(0, 0)
   }
 

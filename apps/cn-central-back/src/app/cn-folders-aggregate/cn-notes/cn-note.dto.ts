@@ -1,13 +1,13 @@
-import {CnLabConfigDto} from '../../cn-lab-configs/cn-lab-config.dto';
-import {Type} from 'class-transformer';
-import {DateTime} from 'luxon';
-import {CnUser} from '../../cn-users/cn-user.entity';
-import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
-import {BlRichTextContent, BlRichTextI} from '@monorepo/back-core-lib';
-import {CnReport} from './cn-report.entity';
+import { CnLabConfigDto } from '../../cn-lab-configs/cn-lab-config.dto';
+import { Type } from 'class-transformer';
+import { DateTime } from 'luxon';
+import { CnUser } from '../../cn-users/cn-user.entity';
+import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
+import { BlRichTextContent, BlRichTextI } from '@monorepo/back-core-lib';
+import { CnNote } from './cn-note.entity';
 
 
-export class CnSaveReportDto {
+export class CnSaveNoteDto {
   id: string;
   title: string;
   content: BlRichTextI | BlRichTextContent;
@@ -39,17 +39,17 @@ export class CnSaveReportDto {
   last_modified_by: CnUser;
 }
 
-export class CnCreateReportWithConfigDto {
-  @Type(() => CnSaveReportDto)
-  report: CnSaveReportDto;
+export class CnCreateNoteWithConfigDto {
+  @Type(() => CnSaveNoteDto)
+  note: CnSaveNoteDto;
   lab_config: CnLabConfigDto;
   experiment_ids: string[];
-  // contains all the json view of the report
+  // contains all the json view of the note
   // key = view id, value = json view
   resource_views: Record<string, any>;
 }
 
-export interface CnSaveReportResultDTO {
+export interface CnSaveNoteResultDTO {
   mode: 'create' | 'update';
-  report: CnReport;
+  note: CnNote;
 }

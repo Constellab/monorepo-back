@@ -52,7 +52,7 @@ export enum CnErrorText {
   CHILD_FOLDER_END_DATA_AFTER_PARENT = 'error.child_folder_end_data_after_parent',
   DELETE_FOLDER_WITH_CHILDREN = 'error.delete_folder_with_children',
   DELETE_FOLDER_WITH_EXPERIMENTS = 'error.delete_folder_with_experiments',
-  DELETE_FOLDER_WITH_REPORTS = 'error.delete_folder_with_reports',
+  DELETE_FOLDER_WITH_NOTES = 'error.delete_folder_with_notes',
   DELETE_FOLDER_WITH_DOCUMENTS = 'error.delete_folder_with_documents',
   DOCUMENT_ALREADY_EXIST = 'error.document_already_exist',
   FOLDER_BUCKET_NOT_FOUND = 'error.folder_bucket_not_found',
@@ -64,5 +64,5 @@ export enum CnErrorText {
   LAB_FREE_EXPIRED = 'error.lab_free_expired',
   REMOVE_FOLDER_USE_LAB_AS_STORAGE_ERROR = 'error.remove_folder_use_as_storage_from_lab_error',
   REMOVE_FOLDER_SYNC_EXPERIMENT_ERROR = 'error.remove_folder_sync_experiment_error',
-  REMOVE_FOLDER_SYNC_REPORT_ERROR = 'error.remove_folder_sync_report_error',
+  REMOVE_FOLDER_SYNC_NOTE_ERROR = 'error.remove_folder_sync_note_error',
 }

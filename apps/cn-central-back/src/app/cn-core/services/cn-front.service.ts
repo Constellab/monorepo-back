@@ -1,5 +1,5 @@
-import {Injectable} from '@nestjs/common';
-import {CnCoreConfigService} from '../modules/cn-core-config/cn-core-config.service';
+import { Injectable } from '@nestjs/common';
+import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.service';
 
 /**
  * Core service to manager front URLs
@@ -25,8 +25,8 @@ export class CnFrontService {
     return `${CnFrontService.getFolderRoute(folderId)}?type=comments`;
   }
 
-  public static getReportRoute(folderId: string): string {
-    return `${CnFrontService.appRoute}/folder/report/${folderId}`;
+  public static getNoteRoute(folderId: string): string {
+    return `${CnFrontService.appRoute}/folder/note/${folderId}`;
   }
 
   public static getExperimentRoute(folderId: string): string {
