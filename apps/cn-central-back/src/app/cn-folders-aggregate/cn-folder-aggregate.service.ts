@@ -748,6 +748,12 @@ export class CnFolderAggregateService {
 
     const document = await this.documentService.findByIdAndCheck(documentId);
 
+    // if the document was modified by another user 1 minute ago, we refuse the update
+    // this is temporary until collaborative editing is implemented
+    if(Math.abs(document.lastModifiedAt.diffNow().toMillis()) < 60000 && document.lastModifiedBy.id !== CnCurrentUserHelper.getCurrentUser().id){
+      throw new BlBadRequestException(`This document is currently being modified by ${document.lastModifiedBy.alias}, please wait for the end of the modification`);
+    }
+
     const newDoc = await this.documentService.updateConstellabDocument(folder.getRootFolderId(), document, content);
 
     this.emitFolderEvent('UPDATE_CONSTELLAB_DOCUMENT',
