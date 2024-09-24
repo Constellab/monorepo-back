@@ -112,10 +112,15 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     });
   }
 
-  public async getFolderTreeForChat(folder: CnHierarchyObject): Promise<CnHierarchyObjectWithChildren> {
+  public async getFolderTreeForChat(folder: CnHierarchyObject): Promise<CnHierarchyObjectWithChildren | null> {
     const folderTree = await this.getFolderTree(folder);
 
     const newFolderTree = this.filterFolderTreeForChat(folderTree, []);
+
+    // if there is no chat enabled in the hierarchy, we return null
+    if(!newFolderTree.chatEnabled && newFolderTree.children.length === 0) {
+      return null;
+    }
     return newFolderTree.sortChildrenTree();
   }
 

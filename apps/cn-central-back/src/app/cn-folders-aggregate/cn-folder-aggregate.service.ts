@@ -572,7 +572,10 @@ export class CnFolderAggregateService {
 
     const rootFoldersWithChildren: CnHierarchyObjectWithChildren[] = [];
     for (const rootFolder of rootFolders) {
-      rootFoldersWithChildren.push(await this.hierarchyObjectService.getFolderTreeForChat(rootFolder));
+      const rootFolderWithChild = await this.hierarchyObjectService.getFolderTreeForChat(rootFolder);
+      if(rootFolderWithChild){
+        rootFoldersWithChildren.push(rootFolderWithChild);
+      }
     }
 
     return rootFoldersWithChildren;
