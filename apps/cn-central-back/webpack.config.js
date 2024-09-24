@@ -14,6 +14,7 @@ module.exports = {
       assets: ['./src/assets', './src/environments'],
       optimization: false,
       outputHashing: 'none',
+      sourceMap: true // useful to make debugger work : https://github.com/nrwl/nx/issues/14708
     }),
   ],
 };
