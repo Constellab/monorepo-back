@@ -36,8 +36,6 @@ import {
   BlMailModule,
   BlMailModuleConfig,
   BlObjectStorageModule,
-  BlPersistenceEventModule,
-  BlPersistenceEventService,
   BlRequestContextMiddleware,
   BlTransportModule,
   BlTransportModuleConfig
@@ -64,8 +62,9 @@ import { CnUserAccountModule } from './app/cn-users/cn-user-accounts/cn-user-acc
 import { CnServerAggregateModule } from './app/cn-servers-info/cn-server-aggregate.module';
 import { CnSettingsModule } from './app/cn-settings/cn-settings.module';
 import { CnCommunityModule } from './app/cn-community/cn-community.module';
+import { CnLogRequestMiddleware } from './app/cn-core/middleware/cn-log-request-middleware.service';
 
-function typeOrmConfig(configService: CnCoreConfigService, persistenceEventService: BlPersistenceEventService): TypeOrmModuleOptions {
+function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();
   return {
     type: 'mysql',
@@ -78,10 +77,9 @@ function typeOrmConfig(configService: CnCoreConfigService, persistenceEventServi
     synchronize: configService.isDev() && false, // only activate synchronization in local
     autoLoadEntities: true,
     maxQueryExecutionTime: 1000, // log query longer than 1s,
-    logger: persistenceEventService,
     bigNumberStrings: false,
-    charset: 'utf8mb4'
-    // logging: true // use to enable query logging, the logger must be disabled
+    charset: 'utf8mb4',
+    logging: false // use to enable query logging, the logger must be disabled
   };
 }
 
@@ -138,8 +136,7 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
 
     TypeOrmModule.forRootAsync({
       useFactory: typeOrmConfig,
-      inject: [CnCoreConfigService],
-      imports: [BlPersistenceEventModule]
+      inject: [CnCoreConfigService]
     }),
 
     I18nModule.forRoot({
@@ -157,7 +154,6 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     }),
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
-    BlPersistenceEventModule,
 
     // Custom module
     CnCoreModule,
@@ -257,7 +253,7 @@ export class CnAppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
     consumer
       // register the RequestContextMiddleware to be able to access the request anywhere
-      .apply(BlRequestContextMiddleware, CnSpaceMiddleware)
+      .apply(BlRequestContextMiddleware, CnLogRequestMiddleware, CnSpaceMiddleware)
       .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }
