@@ -331,6 +331,12 @@ export class CnFoldersController {
     return this.folderAggregateService.updateConstellabDocument(documentId, body);
   }
 
+  // check if the user can edit (is no other user is editing the document)
+  @Get('constellab-document/:documentId/check-edit')
+  public checkEditConstellabDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<void> {
+    return this.folderAggregateService.checkEditConstellabDocument(documentId);
+  }
+
   @Get('constellab-document/:documentId')
   public getConstellabDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<CnConstellabDocumentDTO> {
     return this.folderAggregateService.getConstellabDocument(documentId);

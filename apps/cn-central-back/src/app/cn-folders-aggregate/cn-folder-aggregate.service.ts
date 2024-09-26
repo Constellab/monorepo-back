@@ -421,7 +421,7 @@ export class CnFolderAggregateService {
   }
 
   async createLabNote(createNoteDto: CnCreateNoteWithConfigDto, parentFolderId: string,
-                        files: BlFile[]): Promise<void> {
+                      files: BlFile[]): Promise<void> {
     const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
     // get and check all experiment
@@ -573,7 +573,7 @@ export class CnFolderAggregateService {
     const rootFoldersWithChildren: CnHierarchyObjectWithChildren[] = [];
     for (const rootFolder of rootFolders) {
       const rootFolderWithChild = await this.hierarchyObjectService.getFolderTreeForChat(rootFolder);
-      if(rootFolderWithChild){
+      if (rootFolderWithChild) {
         rootFoldersWithChildren.push(rootFolderWithChild);
       }
     }
@@ -750,7 +750,7 @@ export class CnFolderAggregateService {
 
     // if the document was modified by another user 1 minute ago, we refuse the update
     // this is temporary until collaborative editing is implemented
-    if(Math.abs(document.lastModifiedAt.diffNow().toMillis()) < 60000 && document.lastModifiedBy.id !== CnCurrentUserHelper.getCurrentUser().id){
+    if (Math.abs(document.lastModifiedAt.diffNow().toMillis()) < 60000 && document.lastModifiedBy.id !== CnCurrentUserHelper.getCurrentUser().id) {
       throw new BlBadRequestException(`This document is currently being modified by ${document.lastModifiedBy.alias}, please wait for the end of the modification`);
     }
 
@@ -760,6 +760,18 @@ export class CnFolderAggregateService {
       await this.hierarchyObjectService.findByIdAndCheck(folder.parentId),
       newDoc);
     return newDoc;
+  }
+
+  public async checkEditConstellabDocument(documentId: string): Promise<void> {
+    await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+
+    const document = await this.documentService.findByIdAndCheck(documentId);
+
+    // if the document was modified by another user 1 minute ago, we refuse the update
+    // this is temporary until collaborative editing is implemented
+    if (Math.abs(document.lastModifiedAt.diffNow().toMillis()) < 60000 && document.lastModifiedBy.id !== CnCurrentUserHelper.getCurrentUser().id) {
+      throw new BlBadRequestException(`This document is currently being modified by ${document.lastModifiedBy.alias}, please wait for the end of the modification`);
+    }
   }
 
   public async getConstellabDocument(documentId: string): Promise<CnConstellabDocumentDTO> {
