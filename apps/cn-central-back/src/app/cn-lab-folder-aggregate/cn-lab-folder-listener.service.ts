@@ -45,38 +45,38 @@ export class CnLabFolderListener {
 
   /**
    * When a root folder is created, we check if the storage of the folder is a lab bucket.
-   * If it is the case, we add the folder in the lab instance.
+   * If it is the case, we add the folder in the lab.
    * @param folder
    * @private
    */
   private async handleCreateRootFolder(folder: CnFolderWithStorage): Promise<void> {
     const folderBuckets = await this.folderBucketService.getFolderBucket(folder.id);
     if (folderBuckets.mainStorage?.isLabBucket()) {
-      await this.labFolderAggregateService.addRootFolderToLabInsecure(folderBuckets.mainStorage.labInstance, folder.id);
+      await this.labFolderAggregateService.addRootFolderToLabInsecure(folderBuckets.mainStorage.lab, folder.id);
     }
 
     if (folder.backupStorage?.isLabBucket()) {
-      await this.labFolderAggregateService.addRootFolderToLabInsecure(folder.backupStorage.labInstance, folder.id);
+      await this.labFolderAggregateService.addRootFolderToLabInsecure(folder.backupStorage.lab, folder.id);
     }
   }
 
   /**
    * Method when the root folder is updated or sub folder are CRUD.
-   * It sync the folder with all the lab instances that uses this folder.
+   * It sync the folder with all the labs that uses this folder.
    * @param rootFolderId
    * @private
    */
   private async syncFolderWithLabs(rootFolderId: string): Promise<void> {
     const folderTree = await this.folderAggregateService.getFolderTree(rootFolderId);
 
-    // get all the lab instance where the folder is shared
+    // get all the lab where the folder is shared
     const labFolders = await this.labFolderAggregateService.findLabFolderByFolderId(rootFolderId);
 
-    // sync the folder with the lab instances
+    // sync the folder with the labs
     const promises: Promise<void>[] = [];
     for (const labFolder of labFolders) {
-      if (labFolder.labInstance.isHttpAccessible()) {
-        promises.push(this.labFolderAggregateService.syncFolderToLab(labFolder.labInstance, folderTree));
+      if (labFolder.lab.isHttpAccessible()) {
+        promises.push(this.labFolderAggregateService.syncFolderToLab(labFolder.lab, folderTree));
       }
     }
 

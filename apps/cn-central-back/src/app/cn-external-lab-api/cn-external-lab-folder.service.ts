@@ -6,12 +6,12 @@ import {
   CnFolderDtoHelper,
   CnLabFolderDTO
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.dto';
-import { CnLabGlabApiInfo } from '../cn-lab-instances/cn-lab-instance.dto';
+import { CnLabGlabApiInfo } from '../cn-labs/cn-lab.dto';
 import { BlVersion } from '@monorepo/back-core-lib';
 
 
 /**
- * Service to call route for lab in the lab instance
+ * Service to call route for lab in the lab
  */
 @Injectable()
 export class CnExternalLabFolderService {

@@ -75,7 +75,7 @@ VALUES ('bc97b9f2-3241-47b2-aef5-2321c9e347af', '2023-03-17 12:05:07', '2024-07-
         '964ad825-6b0b-44f2-9825-7129b01a9df7', NULL);
 
 INSERT INTO `bucket` (`id`, `createdAt`, `lastModifiedAt`, `name`, `contentType`, `createdById`, `lastModifiedById`,
-                      `regionId`, `credentialsId`, `bucketType`, `labInstanceId`)
+                      `regionId`, `credentialsId`, `bucketType`, `labId`)
 VALUES ('5a83422b-5604-401b-8c73-ac3bf0d122ef', '2023-10-18 16:08:03', '2023-10-18 16:08:03',
         'constellab-project-local-gra', 'FOLDER', 'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',
         'cc041136-3e20-48e6-bf9d-9aa8ecaad21f', '2f71581d-2882-476a-a6d5-e077dd2724ff',

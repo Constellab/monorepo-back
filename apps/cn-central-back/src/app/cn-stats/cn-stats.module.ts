@@ -5,7 +5,7 @@ import { CnCoreModule } from '../cn-core/cn-core.module';
 import { CnExperimentsModule } from '../cn-folders-aggregate/cn-experiments/cn-experiments.module';
 import { CnNotesModule } from '../cn-folders-aggregate/cn-notes/cn-notes.module';
 import { CnGroupsModule } from '../cn-groups/cn-groups.module';
-import { CnLabInstancesModule } from '../cn-lab-instances/cn-lab-instances.module';
+import { CnLabsModule } from '../cn-labs/cn-labs.module';
 import { CnHierarchyObjectModule } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.module';
 
 @Module({
@@ -15,7 +15,7 @@ import { CnHierarchyObjectModule } from '../cn-folders-aggregate/cn_hierarchy_ob
     CnExperimentsModule,
     CnNotesModule,
     CnGroupsModule,
-    CnLabInstancesModule
+    CnLabsModule
   ],
   controllers: [CnStatsController],
   providers: [

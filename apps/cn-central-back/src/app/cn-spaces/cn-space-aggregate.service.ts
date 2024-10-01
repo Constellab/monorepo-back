@@ -205,12 +205,12 @@ export class CnSpaceAggregateService {
       locationDTO.defaultFolderBackupStorageLocation);
 
     // if this is created mode
-    if (buckets.defaultFolderBucket.isLabBucket() && buckets.defaultFolderBucket.labInstance.spaceId !== space.id) {
+    if (buckets.defaultFolderBucket.isLabBucket() && buckets.defaultFolderBucket.lab.spaceId !== space.id) {
       throw new BlBadRequestException('The default folder backup storage lab must be in the same space');
     }
 
     if (buckets.defaultFolderBackupBucket && buckets.defaultFolderBackupBucket.isLabBucket()
-      && buckets.defaultFolderBackupBucket.labInstance.spaceId !== space.id) {
+      && buckets.defaultFolderBackupBucket.lab.spaceId !== space.id) {
       throw new BlBadRequestException('The default folder backup storage lab must be in the same space');
     }
 

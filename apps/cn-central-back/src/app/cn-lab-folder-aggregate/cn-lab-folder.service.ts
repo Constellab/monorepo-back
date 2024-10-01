@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CnLabFolder, CnLabFolderEntity, CnLabFolderWithLab, CnLabFolderWithRootFolder } from './cn-lab-folder.entity';
 import { EntityManager, Repository } from 'typeorm';
-import { CnLabInstance } from '../cn-lab-instances/cn-lab-instance.entity';
+import { CnLab, CnLabEntity } from '../cn-labs/cn-lab.entity';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { BlBadRequestException } from '@monorepo/back-core-lib';
 import {
@@ -18,44 +18,44 @@ export class CnLabFolderService {
   }
 
 
-  public async createLabInstanceFolder(labInstance: CnLabInstance, rootFolder: CnHierarchyObject,
+  public async createLabFolder(lab: CnLab, rootFolder: CnHierarchyObject,
                                        entityManager: EntityManager): Promise<CnLabFolder> {
     if (!rootFolder.isRootFolder()) {
       throw new BlBadRequestException('Only root folder can be shared with a lab');
     }
 
-    const labInstanceFolderDb = await this.findByLabInstanceIdAndRootFolderId(labInstance.id, rootFolder.id);
+    const labFolderDb = await this.findByLabIdAndRootFolderId(lab.id, rootFolder.id);
 
-    if (labInstanceFolderDb) {
+    if (labFolderDb) {
       throw new BlBadRequestException(CnErrorText.FOLDER_ALREADY_SHARED_WITH_LAB);
     }
 
-    const labInstanceFolder = new CnLabFolderEntity();
-    labInstanceFolder.labInstance = labInstance;
-    labInstanceFolder.rootFolder = rootFolder as CnHierarchyObjectEntity;
+    const labFolder = new CnLabFolderEntity();
+    labFolder.lab = lab as CnLabEntity;
+    labFolder.rootFolder = rootFolder as CnHierarchyObjectEntity;
 
-    return entityManager.save(labInstanceFolder);
+    return entityManager.save(labFolder);
   }
 
-  public async deleteLabInstanceFolder(labInstanceId: string, rootFolderId: string, entityManager: EntityManager): Promise<void> {
-    const labInstanceFolder = await this.findByLabInstanceIdAndRootFolderId(labInstanceId, rootFolderId);
+  public async deleteLabFolder(labId: string, rootFolderId: string, entityManager: EntityManager): Promise<void> {
+    const labFolder = await this.findByLabIdAndRootFolderId(labId, rootFolderId);
 
-    if (labInstanceFolder == null) {
+    if (labFolder == null) {
       throw new BlBadRequestException(CnErrorText.FOLDER_NOT_SHARED_WITH_LAB);
     }
 
-    await entityManager.remove(labInstanceFolder);
+    await entityManager.remove(labFolder);
   }
 
 
-  public async findByLabInstanceIdAndRootFolderId(labInstanceId: string, rootFolderId: string): Promise<CnLabFolder> {
-    return this.repository.findOneBy({ labInstanceId, rootFolderId: rootFolderId });
+  public async findByLabIdAndRootFolderId(labId: string, rootFolderId: string): Promise<CnLabFolder> {
+    return this.repository.findOneBy({ labId, rootFolderId: rootFolderId });
   }
 
-  public async findByLabInstanceId(labInstanceId: string): Promise<CnLabFolderWithRootFolder[]> {
+  public async findByLabId(labId: string): Promise<CnLabFolderWithRootFolder[]> {
     return this.repository.find({
       where: {
-        labInstanceId: labInstanceId
+        labId: labId
       },
       relations: {
         rootFolder: true
@@ -69,15 +69,15 @@ export class CnLabFolderService {
         rootFolderId: rootFolderId
       },
       relations: {
-        labInstance: true
+        lab: true
       }
     });
   }
 
-  public async findByRootFolderIdAndLabInstanceId(rootFolderId: string, labInstanceId: string): Promise<CnLabFolder | null> {
+  public async findByRootFolderIdAndLabId(rootFolderId: string, labId: string): Promise<CnLabFolder | null> {
     return this.repository.findOne(
       {
-        where: { rootFolderId, labInstanceId }
+        where: { rootFolderId, labId }
       }
     );
   }

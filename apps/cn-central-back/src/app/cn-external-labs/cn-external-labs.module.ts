@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CnExternalLabsController } from './cn-external-labs.controller';
-import { CnLabInstancesModule } from '../cn-lab-instances/cn-lab-instances.module';
+import { CnLabsModule } from '../cn-labs/cn-labs.module';
 import { CnUsersModule } from '../cn-users/cn-users.module';
 import { CnCoreModule } from '../cn-core/cn-core.module';
 import { CnFoldersAggregateModule } from '../cn-folders-aggregate/cn-folders-aggregate.module';
@@ -16,7 +16,7 @@ import { CnLabFolderAggregateModule } from '../cn-lab-folder-aggregate/cn-lab-fo
   imports: [
     CnCoreModule,
 
-    CnLabInstancesModule,
+    CnLabsModule,
     CnFoldersAggregateModule,
     CnLabFolderAggregateModule,
 

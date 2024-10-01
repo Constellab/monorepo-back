@@ -403,8 +403,8 @@ export class CnFolderAggregateService {
     return this.experimentService.getExperimentLabConfig(experimentId);
   }
 
-  public async getExperimentsByRootFolderAndLabInstanceNotSecure(rootFolderId: string, labInstanceId: string): Promise<CnExperiment[]> {
-    return this.experimentService.getExperimentsByRootFolderAndLabInstance(rootFolderId, labInstanceId);
+  public async getExperimentsByRootFolderAndLabNotSecure(rootFolderId: string, labId: string): Promise<CnExperiment[]> {
+    return this.experimentService.getExperimentsByRootFolderAndLab(rootFolderId, labId);
   }
 
   /////////////////////////////////////// NOTE //////////////////////////////////
@@ -492,8 +492,8 @@ export class CnFolderAggregateService {
     return this.noteService.getView(viewId, parentFolder, noteId);
   }
 
-  public getNotesByRootFolderAndLabInstance(rootFolderId: string, labInstanceId: string): Promise<CnNote[]> {
-    return this.noteService.getNotesByRootFolderAndLabInstance(rootFolderId, labInstanceId);
+  public getNotesByRootFolderAndLab(rootFolderId: string, labId: string): Promise<CnNote[]> {
+    return this.noteService.getNotesByRootFolderAndLab(rootFolderId, labId);
   }
 
   /////////////////////////////////////// GROUPS //////////////////////////////////

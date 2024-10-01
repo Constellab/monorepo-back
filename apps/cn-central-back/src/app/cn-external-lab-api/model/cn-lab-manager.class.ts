@@ -1,5 +1,5 @@
-import { CnLabBackupFrequency } from '../../cn-lab-instances/backup/cn-lab-backup.dto';
 import { BlBucketConfig } from '@monorepo/back-core-lib';
+import { CnLabBackupFrequency } from '../../cn-labs/backup/cn-lab-backup.dto';
 
 
 /**

@@ -7,8 +7,8 @@ import { ClHelpService } from '@monorepo/core-lib';
 import { CnBricksService } from '../cn-bricks/cn-bricks.service';
 import { CnBrickGWS, CnBrickVersionDTO, CnBrickVersionTechnicalKey } from '../cn-bricks/cn-brick.dto';
 import { BlAbstractService, BlBadRequestException, BlVersion } from '@monorepo/back-core-lib';
-import { CnLabInstance } from '../cn-lab-instances/cn-lab-instance.entity';
-import { CnLabInstanceConfigDTO } from '../cn-lab-instances/cn-lab-instance.dto';
+import { CnLab } from '../cn-labs/cn-lab.entity';
+import { CnLabConfigDTO } from '../cn-labs/cn-lab.dto';
 import { CnLabConfigFile, CnLabConfigFileEnv } from './cn-lab-config-file.class';
 import { CnBrickVersion } from '../cn-bricks/cn-brick-version.entity';
 
@@ -104,10 +104,10 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
 
   /**
    * Generate the json for the config file of a lab
-   * @param labInstance
+   * @param lab
    * @param config
    */
-  public async getLabConfigFile(labInstance: CnLabInstance, config: CnLabInstanceConfigDTO): Promise<CnLabConfigFile> {
+  public async getLabConfigFile(lab: CnLab, config: CnLabConfigDTO): Promise<CnLabConfigFile> {
 
     // get gws_core version
     const gwsCoreBrickVersion = await this.getGwsCoreBrickVersion(config);
@@ -127,8 +127,8 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     const biotaMariaDbUrl = await this.getMariaDbUrl(config);
 
     return {
-      lab_id: labInstance.id,
-      name: labInstance.name,
+      lab_id: lab.id,
+      name: lab.name,
       front_version: frontVersion,
       glab_tag: glabVersion,
       biota_maria_db_url: biotaMariaDbUrl,
@@ -137,7 +137,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     };
   }
 
-  private async getGwsCoreBrickVersion(config: CnLabInstanceConfigDTO): Promise<CnBrickVersion> {
+  private async getGwsCoreBrickVersion(config: CnLabConfigDTO): Promise<CnBrickVersion> {
     // check if the gws core is in the brick list
     const gwsCore = config.brickVersions.find(brickVersion => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_CORE.toLowerCase());
 
@@ -151,7 +151,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     return await this.brickService.getBrickVersion(CnBrickGWS.GWS_CORE, gwsCoreVersion);
   }
 
-  private async getMariaDbUrl(config: CnLabInstanceConfigDTO): Promise<string> {
+  private async getMariaDbUrl(config: CnLabConfigDTO): Promise<string> {
     // get the maria db url
     const gwsBiota = config.brickVersions.find(brickVersion => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_BIOTA.toLowerCase());
     if (gwsBiota == null) {
@@ -185,7 +185,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     return labConfig;
   }
 
-  public configFileToLabInstanceConfig(configFile: CnLabConfigFile): CnLabInstanceConfigDTO {
+  public configFileToLabConfig(configFile: CnLabConfigFile): CnLabConfigDTO {
     if (configFile == null) {
       return {
         glabTag: 'latest',
@@ -193,7 +193,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
       };
     }
 
-    const config: CnLabInstanceConfigDTO = {
+    const config: CnLabConfigDTO = {
       glabTag: configFile.glab_tag,
       brickVersions: []
     };

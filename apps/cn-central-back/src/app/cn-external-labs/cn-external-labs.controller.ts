@@ -3,12 +3,10 @@ import { CnLabGuard, CnLabRobotAuthentication } from '../cn-core/decorators/cn-l
 import { BlCredentials, BlFile, BlParsePipe, BlUploadedFiles } from '@monorepo/back-core-lib';
 import { CnCreateLabExperimentDto } from '../cn-folders-aggregate/cn-experiments/cn-experiment.dto';
 import { CnCreateNoteWithConfigDto } from '../cn-folders-aggregate/cn-notes/cn-note.dto';
-import { CnLabInstanceStartDTO } from '../cn-lab-instances/cn-lab-instance.dto';
+import { CnLabStartDTO } from '../cn-labs/cn-lab.dto';
 import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
-import { CnLabInstanceSendMailDto } from '../cn-lab-instances/mail/cn-lab-instance-mail.dto';
-import { CnLabMailService } from '../cn-lab-instances/mail/cn-lab-mail.service';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnLabInstanceAggregateService } from '../cn-lab-instances/cn-lab-instance-aggregate.service';
+import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ClCoreJsonConvert } from '@monorepo/core-lib';
 import { CnExternalLabUser } from '../cn-external-lab-api/model/cn-external-lab-api.class';
@@ -19,6 +17,8 @@ import {
   CnLabFolderDTO
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.dto';
 import { CnHierarchyObjectEntity } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
+import { CnLabSendMailDto } from '../cn-labs/mail/cn-lab-mail.dto';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -27,17 +27,17 @@ import { CnHierarchyObjectEntity } from '../cn-folders-aggregate/cn_hierarchy_ob
 @Controller('external-labs')
 export class CnExternalLabsController {
 
-  constructor(private labInstanceAggregator: CnLabInstanceAggregateService,
+  constructor(private labAggregator: CnLabAggregateService,
               private folderAggregateService: CnFolderAggregateService,
               private labFolderAggregateService: CnLabFolderAggregateService,
-              private labInstanceMailService: CnLabMailService) {
+              private labMailService: CnLabMailService) {
   }
 
   // route called on the lab start
   @CnLabRobotAuthentication()
   @Put('start')
-  onLabStart(@Body() labStart: CnLabInstanceStartDTO): Promise<void> {
-    return this.labInstanceAggregator.registerLabConfig(labStart);
+  onLabStart(@Body() labStart: CnLabStartDTO): Promise<void> {
+    return this.labAggregator.registerLabConfig(labStart);
   }
 
   /**
@@ -47,7 +47,7 @@ export class CnExternalLabsController {
   @CnLabRobotAuthentication()
   @Post('check-credentials')
   async checkUserCredentials(@Body() credentials: BlCredentials): Promise<CnExternalCheckCredentialResponse> {
-    return this.labInstanceAggregator.checkUserCredentials(credentials, false, false);
+    return this.labAggregator.checkUserCredentials(credentials, false, false);
   }
 
   /**
@@ -69,7 +69,7 @@ export class CnExternalLabsController {
   @CnLabRobotAuthentication()
   @Post('check-credentials-simple')
   async checkUserCredentialsSimple(@Body() credentials: BlCredentials): Promise<CnExternalCheckCredentialResponse> {
-    return this.labInstanceAggregator.checkUserCredentials(credentials, true, true);
+    return this.labAggregator.checkUserCredentials(credentials, true, true);
   }
 
   // TODO remove project routes once all lab are on v0.10.0
@@ -109,8 +109,8 @@ export class CnExternalLabsController {
    * @param body
    */
   @Post('send-mail')
-  sendMail(@Body() body: CnLabInstanceSendMailDto): Promise<void> {
-    return this.labInstanceMailService.sendMailFromLab(CnCurrentUserHelper.getAndCheckCurrentLabInstance(),
+  sendMail(@Body() body: CnLabSendMailDto): Promise<void> {
+    return this.labMailService.sendMailFromLab(CnCurrentUserHelper.getAndCheckCurrentLab(),
       body);
   }
 
@@ -119,20 +119,20 @@ export class CnExternalLabsController {
   @CnLabRobotAuthentication()
   @Get(['project/all-trees', 'folder/all-trees'])
   async getAllFolderTrees(): Promise<CnLabFolderDTO[]> {
-    const folders = await this.labFolderAggregateService.getCurrentLabInstanceFolders();
+    const folders = await this.labFolderAggregateService.getCurrentLabFolders();
     return CnFolderDtoHelper.convertToFolderTreeDtoList(folders as CnHierarchyObjectEntity[]);
   }
 
   @CnLabRobotAuthentication()
   @Get(['project/:id/root-tree', 'folder/:id/root-tree'])
   async getRootFolder(@Param('id', new ParseUUIDPipe()) folderId: string): Promise<CnLabFolderDTO> {
-    const folder = await this.labFolderAggregateService.getCurrentLabInstanceRootFolderById(folderId);
+    const folder = await this.labFolderAggregateService.getCurrentLabRootFolderById(folderId);
     return CnFolderDtoHelper.convertToLabFolderDto(folder as CnHierarchyObjectEntity);
   }
 
   @CnLabRobotAuthentication()
   @Get('user')
   getAllLabUsers(): Promise<CnExternalLabUser[]> {
-    return this.labInstanceAggregator.getCurrentLabInstanceSharedUsers();
+    return this.labAggregator.getCurrentLabSharedUsers();
   }
 }

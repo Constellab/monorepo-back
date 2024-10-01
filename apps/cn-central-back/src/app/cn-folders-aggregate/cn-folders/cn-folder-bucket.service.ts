@@ -82,8 +82,8 @@ export class CnFolderBucketService {
 
   public async folderUsesLabStorage(rootFolderId: string, labId: string): Promise<boolean> {
     const folder = await this.findFolderWithStorageById(rootFolderId);
-    return folder.mainStorage?.labInstance?.id === labId ||
-      folder.backupStorage?.labInstance?.id === labId;
+    return folder.mainStorage?.lab?.id === labId ||
+      folder.backupStorage?.lab?.id === labId;
   }
 
 }

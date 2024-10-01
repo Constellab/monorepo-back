@@ -4,7 +4,7 @@ import { CnCoreModule } from '../cn-core/cn-core.module';
 import { CnExternalLabApiModule } from '../cn-external-lab-api/cn-external-lab-api.module';
 import { CnFoldersAggregateModule } from '../cn-folders-aggregate/cn-folders-aggregate.module';
 import { CnLabFolderAggregateService } from './cn-lab-folder-aggregate.service';
-import { CnLabInstancesModule } from '../cn-lab-instances/cn-lab-instances.module';
+import { CnLabsModule } from '../cn-labs/cn-labs.module';
 import { CnLabFolderListener } from './cn-lab-folder-listener.service';
 import { CnLabFolderService } from './cn-lab-folder.service';
 import { CnLabFolderEntity } from './cn-lab-folder.entity';
@@ -20,7 +20,7 @@ import { CnFoldersModule } from '../cn-folders-aggregate/cn-folders/cn-folders.m
     CnExternalLabApiModule,
 
     CnFoldersAggregateModule,
-    CnLabInstancesModule,
+    CnLabsModule,
     CnHierarchyObjectModule,
     CnFoldersModule,
   ],

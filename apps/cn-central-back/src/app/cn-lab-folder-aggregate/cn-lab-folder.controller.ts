@@ -25,7 +25,7 @@ export class CnLabFolderController {
 
   @Get(':id/folder')
   public getFolders(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabFolderWithRootFolder[]> {
-    return this.folderAggregateService.getLabInstanceFolders(id);
+    return this.folderAggregateService.getLabFolders(id);
   }
 
   @Put(':id/folder/:rootFolderId/sync')

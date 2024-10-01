@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToMany, ManyToOne } from 'typeorm';
 import { Exclude, Type } from 'class-transformer';
-import { CnLabInstance } from '../../cn-lab-instances/cn-lab-instance.entity';
+import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
 import { BlLuxonDateTimeColumn, BlNotUpdatable, BlRichTextContent } from '@monorepo/back-core-lib';
 import { CnNote } from '../cn-notes/cn-note.entity';
 import { CnExperimentStatus } from './cn-experiment-status.enum';
@@ -35,9 +35,9 @@ export class CnExperiment extends CnHierarchyRepresentation {
   status: CnExperimentStatus;
 
   @BlNotUpdatable()
-  @Type(() => CnLabInstance)
-  @ManyToOne(() => CnLabInstance, { nullable: false, eager: true })
-  labInstance: CnLabInstance;
+  @Type(() => CnLabEntity)
+  @ManyToOne(() => CnLabEntity, { nullable: false, eager: true })
+  lab: CnLabEntity;
 
   @BlNotUpdatable()
   @Type(() => CnLabConfig)

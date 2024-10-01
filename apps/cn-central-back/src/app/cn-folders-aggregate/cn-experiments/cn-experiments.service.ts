@@ -14,6 +14,7 @@ import {
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnProtocolMigrator } from './cn-protocol-migrator.class';
 import { CnHierarchyObject, CnHierarchyObjectEntity } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
 
 @Injectable()
 export class CnExperimentsService extends BlAbstractService<CnExperiment> {
@@ -32,16 +33,16 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     });
   }
 
-  getExperimentsByLabInstance(labInstanceId: string): Promise<CnExperiment[]> {
+  getExperimentsByLab(labId: string): Promise<CnExperiment[]> {
     return this.repository.find({
       where: {
-        labInstance: { id: labInstanceId }
+        lab: { id: labId }
       },
       order: { lastModifiedAt: 'DESC' as any }
     });
   }
 
-  getExperimentsByRootFolderAndLabInstance(rootFolderId: string, labInstanceId: string): Promise<CnExperiment[]> {
+  getExperimentsByRootFolderAndLab(rootFolderId: string, labId: string): Promise<CnExperiment[]> {
     return this.repository.find({
       where: [
         // find by folder parent root id (if experiment is link to leaf folder)
@@ -49,8 +50,8 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
           hierarchyRepresentation: {
             rootParentId: rootFolderId
           },
-          labInstance: {
-            id: labInstanceId
+          lab: {
+            id: labId
           }
         },
         // find by folder (if experiment is linked to root folder)
@@ -58,8 +59,8 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
           hierarchyRepresentation: {
             parentId: rootFolderId
           },
-          labInstance: {
-            id: labInstanceId
+          lab: {
+            id: labId
           }
         }]
     });
@@ -101,7 +102,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
 
     // if this is a creation
     if (!experimentDB) {
-      experiment.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(parentFolder, experiment.getHierarchyObjectInfo(),
+      experiment.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(parentFolder, experiment.getHierarchyObjectInfo()
       );
       // also set the id of the folder hierarchy because it should be the same as the experiment id
       experiment.hierarchyRepresentation.id = labExperimentDto.id;
@@ -111,7 +112,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
       const exp = await this.updateWithCompare(experiment, experimentDB);
       return { experiment: exp, mode: 'update' };
     } else {
-      experiment.labInstance = CnCurrentUserHelper.getCurrentLabInstance();
+      experiment.lab = CnCurrentUserHelper.getAndCheckCurrentLab() as CnLabEntity;
       const exp = await this.create(experiment);
       return { experiment: exp, mode: 'create' };
     }

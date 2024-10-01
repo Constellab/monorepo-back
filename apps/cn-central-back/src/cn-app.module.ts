@@ -15,7 +15,7 @@ import { CnExperimentsModule } from './app/cn-folders-aggregate/cn-experiments/c
 import { CnBricksModule } from './app/cn-bricks/cn-bricks.module';
 import { CnGroupsModule } from './app/cn-groups/cn-groups.module';
 import { CnSpacesModule } from './app/cn-spaces/cn-spaces.module';
-import { CnLabInstancesModule } from './app/cn-lab-instances/cn-lab-instances.module';
+import { CnLabsModule } from './app/cn-labs/cn-labs.module';
 import { CnJwtAuthGuard } from './app/cn-core/guards/cn-jwt-auth.guard';
 import { CnUserCategoryGuard } from './app/cn-core/guards/cn-user-category-guard.service';
 import { CnExternalLabsModule } from './app/cn-external-labs/cn-external-labs.module';
@@ -209,7 +209,7 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     CnBricksModule,
     CnGroupsModule,
     CnSpacesModule,
-    CnLabInstancesModule,
+    CnLabsModule,
     CnExternalLabsModule,
     CnServerAggregateModule,
     CnFrontErrorsModule,

@@ -13,7 +13,7 @@ import {
 } from '@monorepo/back-core-lib';
 import { Type } from 'class-transformer';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
-import { CnLabInstance } from '../../cn-lab-instances/cn-lab-instance.entity';
+import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
 
 export enum CnBucketContentType {
   LAB_BACKUP = 'LAB_BACKUP',
@@ -43,7 +43,7 @@ export class CnBucket extends CnBaseEntity {
   // relation options to load required information for the bucket
   public static configRelation: FindOptionsRelations<CnBucket> = {
     region: { city: { country: true } },
-    labInstance: true,
+    lab: true,
     credentials: true
   };
   // default name for the lab bucket
@@ -53,9 +53,9 @@ export class CnBucket extends CnBaseEntity {
   @ManyToOne(() => CnCloudProviderRegion, { nullable: true })
   region?: CnCloudProviderRegion;
 
-  @Type(() => CnLabInstance)
-  @ManyToOne(() => CnLabInstance, { nullable: true })
-  labInstance?: CnLabInstance;
+  @Type(() => CnLabEntity)
+  @ManyToOne(() => CnLabEntity, { nullable: true })
+  lab?: CnLabEntity;
 
   @Type(() => CnBucketCredentials)
   @ManyToOne(() => CnBucketCredentials, { nullable: false })
@@ -99,8 +99,8 @@ export class CnBucket extends CnBaseEntity {
       throw new Error('The bucket is not a S3 bucket');
     }
 
-    if (this.region == null && this.labInstance == null) {
-      throw new Error('Nor the region or the lab instance was loaded');
+    if (this.region == null && this.lab == null) {
+      throw new Error('Nor the region or the lab was loaded');
     }
 
     if (this.isCloudBucket()) {
@@ -118,11 +118,11 @@ export class CnBucket extends CnBaseEntity {
         bucketType: this.bucketType
       };
     } else {
-      if (this.labInstance == null) {
-        throw new Error('The lab instance was not loaded');
+      if (this.lab == null) {
+        throw new Error('The lab was not loaded');
       }
       return {
-        endpoint: this.labInstance.getS3ApiUrl(),
+        endpoint: this.lab.getS3ApiUrl(),
         region: 'lab',
         bucket: this.name,
         credentials: {
@@ -156,7 +156,7 @@ export class CnBucket extends CnBaseEntity {
     if (this.isCloudBucket()) {
       return this.region.name;
     } else {
-      return this.labInstance.name;
+      return this.lab.name;
     }
   }
 

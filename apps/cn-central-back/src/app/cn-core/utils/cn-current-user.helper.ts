@@ -1,13 +1,13 @@
 import { BlCurrentUserHelper, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { CnUser } from '../../cn-users/cn-user.entity';
-import { CnLabInstance } from '../../cn-lab-instances/cn-lab-instance.entity';
+import { CnLabWithSpace } from '../../cn-labs/cn-lab.entity';
 import { CnSpace } from '../../cn-spaces/cn-space.entity';
 import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
 import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
 import { cnExternalLabManagerVersionHeader } from '../model/config/cn-config.class';
 
 export interface CnRequestAuthInfo {
-  labInstance?: CnLabInstance;
+  lab?: CnLabWithSpace;
   space?: CnSpace;
   // role for the current user in this space
   roleInSpace: CnSpaceUserRole;
@@ -32,28 +32,28 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
   }
 
   /**
-   * returns the current authenticated labInstance for routes annotated with @LabAuth
+   * returns the current authenticated lab for routes annotated with @LabAuth
    */
-  static getAndCheckCurrentLabInstance(): CnLabInstance {
-    const labInstance: CnLabInstance = this.getCurrentLabInstance();
+  static getAndCheckCurrentLab(): CnLabWithSpace {
+    const lab: CnLabWithSpace = this.getCurrentLab();
 
-    if (labInstance == null) {
-      throw new BlUnauthorizedException("No labInstance in the context");
+    if (lab == null) {
+      throw new BlUnauthorizedException('No lab in the context');
     }
 
-    return labInstance;
+    return lab;
   }
 
   /**
-   * returns the current authenticated labInstance for routes annotated with @LabAuth
+   * returns the current authenticated lab for routes annotated with @LabAuth
    * or null if not authenticated
    */
-  static getCurrentLabInstance(): CnLabInstance | null {
-    return this.getAdditionalInfo()?.labInstance ?? null;
+  static getCurrentLab(): CnLabWithSpace | null {
+    return this.getAdditionalInfo()?.lab ?? null;
   }
 
-  static setCurrentLabInstance(labInstance: CnLabInstance): void {
-    this.setAdditionalData('labInstance', labInstance);
+  static setCurrentLab(lab: CnLabWithSpace): void {
+    this.setAdditionalData('lab', lab);
   }
 
   /**
@@ -64,7 +64,7 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
     const space: CnSpace = this.getCurrentSpace();
 
     if (space == null) {
-      throw new BlUnauthorizedException("No space in the context");
+      throw new BlUnauthorizedException('No space in the context');
     }
 
     return space;
@@ -88,7 +88,7 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
     const role: CnSpaceUserRole = this.getCurrentRoleInSpace();
 
     if (role == null) {
-      throw new BlUnauthorizedException("No role in the context");
+      throw new BlUnauthorizedException('No role in the context');
     }
 
     return role;
@@ -106,7 +106,7 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
     return this.getAndCheckCurrentRoleInSpace() === CnSpaceUserRole.ADMIN;
   }
 
-  static isAdmin(): boolean{
+  static isAdmin(): boolean {
     return this.getAndCheckCurrentUser().isAdmin();
   }
 
@@ -130,6 +130,6 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
    * Use to access the version of the lab manager that made the request
    */
   static getLabManagerVersion(): string {
-    return this.getHeaderFromContext(cnExternalLabManagerVersionHeader)
+    return this.getHeaderFromContext(cnExternalLabManagerVersionHeader);
   }
 }

@@ -18,6 +18,7 @@ import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper'
 import { CnDocumentService } from '../cn-documents/cn-document.service';
 import { CnDocument, CnDocumentEntity, CnDocumentType } from '../cn-documents/cn-document.entity';
 import { CnHierarchyObject, CnHierarchyObjectEntity } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
 
 @Injectable()
 export class CnNotesService extends BlAbstractService<CnNote> {
@@ -29,17 +30,17 @@ export class CnNotesService extends BlAbstractService<CnNote> {
     super(repository, CnNote);
   }
 
-  getNotesByLabInstance(labInstanceId: string): Promise<CnNote[]> {
+  getNotesByLab(labId: string): Promise<CnNote[]> {
     return this.repository.find({
       where: {
-        labInstance: {
-          id: labInstanceId
+        lab: {
+          id: labId
         }
       }
     });
   }
 
-  getNotesByRootFolderAndLabInstance(rootFolderId: string, labInstanceId: string): Promise<CnNote[]> {
+  getNotesByRootFolderAndLab(rootFolderId: string, labId: string): Promise<CnNote[]> {
     return this.repository.find({
       where: [
         // find by folder parent root id (if note is link to leaf folder)
@@ -47,8 +48,8 @@ export class CnNotesService extends BlAbstractService<CnNote> {
           hierarchyRepresentation: {
             rootParentId: rootFolderId
           },
-          labInstance: {
-            id: labInstanceId
+          lab: {
+            id: labId
           }
         },
         // find by folder (if note is linked to root folder)
@@ -56,8 +57,8 @@ export class CnNotesService extends BlAbstractService<CnNote> {
           hierarchyRepresentation: {
             parentId: rootFolderId
           },
-          labInstance: {
-            id: labInstanceId
+          lab: {
+            id: labId
           }
         }
       ]
@@ -130,7 +131,7 @@ export class CnNotesService extends BlAbstractService<CnNote> {
       noteDb = await this.updateWithCompare(note, noteDb);
       mode = 'update';
     } else {
-      note.labInstance = CnCurrentUserHelper.getCurrentLabInstance();
+      note.lab = CnCurrentUserHelper.getAndCheckCurrentLab() as CnLabEntity;
       noteDb = await this.create(note);
       mode = 'create';
     }

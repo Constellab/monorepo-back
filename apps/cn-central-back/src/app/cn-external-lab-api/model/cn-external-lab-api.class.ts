@@ -1,7 +1,7 @@
-import {ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import { ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 
 /**
- * Response when logged in a user to the lab instance
+ * Response when logged in a user to the lab
  */
 export interface CnExternalLabLoginResponse {
   temp_token: string;

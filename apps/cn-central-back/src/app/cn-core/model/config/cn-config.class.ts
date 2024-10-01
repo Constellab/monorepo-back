@@ -24,7 +24,7 @@ export interface CnDatabaseConfig {
 
 
 /**
- * Header for the ApiKey when communicating with a lab instance
+ * Header for the ApiKey when communicating with a lab
  */
 export const cnExternalLabApiKeyHeader: string = 'Authorization';
 export const cnExternalLabApiKeySchema: string = 'api-key';

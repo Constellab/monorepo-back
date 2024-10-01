@@ -1,13 +1,17 @@
-import {Injectable} from '@nestjs/common';
-import {CnExternalLabApiService} from './cn-external-lab-api.service';
-import {CnExternalLabLoginResponse, CnExternalLabUser, CnExternalLabUserRole} from './model/cn-external-lab-api.class';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
-import {lastValueFrom} from 'rxjs';
-import {CnSpace} from '../cn-spaces/cn-space.entity';
+import { Injectable } from '@nestjs/common';
+import { CnExternalLabApiService } from './cn-external-lab-api.service';
+import {
+  CnExternalLabLoginResponse,
+  CnExternalLabUser,
+  CnExternalLabUserRole
+} from './model/cn-external-lab-api.class';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnExternalApiInfo } from '../cn-core/model/config/cn-config.class';
+import { lastValueFrom } from 'rxjs';
+import { CnSpace } from '../cn-spaces/cn-space.entity';
 
 /**
- * Service to call route for user in the lab instance
+ * Service to call route for user in the lab
  */
 @Injectable()
 export class CnExternalLabUserService {

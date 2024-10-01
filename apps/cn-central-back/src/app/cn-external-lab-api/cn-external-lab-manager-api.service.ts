@@ -17,7 +17,7 @@ import {
   CnManagerLabPullBiotaOptions
 } from './model/cn-lab-manager.class';
 import { CnLabConfigFile } from '../cn-lab-configs/cn-lab-config-file.class';
-import { CnLabBackupBucket, CnLabBackupsHistory } from '../cn-lab-instances/backup/cn-lab-backup.dto';
+import { CnLabBackupBucket, CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
 
 /**
  * Service to call the api of the lab manager

@@ -50,8 +50,8 @@ export class CnFrontService {
     return this.getSpaceWebsiteURL(spaceDomain) + '/signup-space/' + invitationCode;
   }
 
-  public getLabInstanceUrl(spaceDomain: string, labInstanceId: string): string {
-    return this.getSpaceWebsiteURL(spaceDomain) + '/' + CnFrontService.getLabUrl(labInstanceId);
+  public getLabUrl(spaceDomain: string, labId: string): string {
+    return this.getSpaceWebsiteURL(spaceDomain) + '/' + CnFrontService.getLabUrl(labId);
   }
 
   /**

@@ -70,7 +70,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
 
     // on cloud region there are only normal buckets
     if (bucket.bucketType === BlBucketType.LAB) {
-      if (bucket.labInstance == null) {
+      if (bucket.lab == null) {
         throw new BlBadRequestException(`Lab must be defined for lab bucket`);
       }
 
@@ -83,15 +83,15 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
 
       const existingBucket = await this.repository.findOne({
         where: {
-          labInstance: {
-            id: bucket.labInstance.id
+          lab: {
+            id: bucket.lab.id
           },
           id: bucket.id ? Not(bucket.id) : undefined
         }
       });
 
       if (existingBucket != null) {
-        throw new BlBadRequestException(`There is already a lab bucket for lab ${bucket.labInstance.name}`);
+        throw new BlBadRequestException(`There is already a lab bucket for lab ${bucket.lab.name}`);
       }
     }
 
@@ -103,7 +103,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       if (!bucket.region.supportsS3()) {
         throw new BlBadRequestException(`Region ${bucket.region.technicalName} does not support S3`);
       }
-      bucket.labInstance = null;
+      bucket.lab = null;
 
       // there can be only one bucket of type by region
       const existingBucket = await this.findByContentTypeAndRegion(bucket.contentType, bucket.region.technicalName);
@@ -191,7 +191,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
         }, {
           contentType: contentType,
           bucketType: BlBucketType.LAB,
-          labInstance: {
+          lab: {
             spaceId: spaceId
           }
         }],

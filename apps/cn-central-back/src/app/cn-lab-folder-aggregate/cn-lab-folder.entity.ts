@@ -3,24 +3,24 @@ import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { DateTime } from 'luxon';
 import { Type } from 'class-transformer';
 import { CnUser } from '../cn-users/cn-user.entity';
-import { CnLabInstance } from '../cn-lab-instances/cn-lab-instance.entity';
+import { CnLabEntity } from '../cn-labs/cn-lab.entity';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { ClDateHelper } from '@monorepo/core-lib';
 import { CnHierarchyObjectEntity } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 
 /**
- * Entity for N to N relation between lab instance and folder shared to lab
+ * Entity for N to N relation between lab and folder shared to lab
  */
 @Entity('lab_folder')
 export class CnLabFolderEntity {
 
   @PrimaryColumn({ type: 'varchar', length: 36 })
-  labInstanceId: string;
+  labId: string;
 
-  @JoinColumn({name: 'labInstanceId'})
-  @ManyToOne(() => CnLabInstance,
-    labInstance => labInstance.sharedGroups, {onDelete: 'CASCADE'})
-  labInstance: CnLabInstance;
+  @JoinColumn({name: 'labId'})
+  @ManyToOne(() => CnLabEntity,
+    lab => lab.sharedGroups, {onDelete: 'CASCADE'})
+  lab: CnLabEntity;
 
   @PrimaryColumn({ type: 'varchar', length: 36 })
   rootFolderId: string;
@@ -45,8 +45,8 @@ export class CnLabFolderEntity {
   }
 }
 
-export type CnLabFolder = Omit<CnLabFolderEntity, 'labInstance' | 'rootFolder'>;
+export type CnLabFolder = Omit<CnLabFolderEntity, 'lab' | 'rootFolder'>;
 
-export type CnLabFolderWithRootFolder = Omit<CnLabFolderEntity, 'labInstance'>;
+export type CnLabFolderWithRootFolder = Omit<CnLabFolderEntity, 'lab'>;
 
 export type CnLabFolderWithLab = Omit<CnLabFolderEntity, 'rootFolder'>;
