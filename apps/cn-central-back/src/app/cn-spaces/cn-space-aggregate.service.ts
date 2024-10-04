@@ -26,8 +26,8 @@ import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 import { CnSpacesMailService } from './cn-spaces-mail.service';
 import { CnBucket, CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import { CnObjectStoragesAggregateService } from '../cn-object-storages/cn-object-storages-aggregate.service';
-import { CnProjectDocumentService } from '../cn-projects-aggregate/cn-project-documents/cn-project-document.service';
-import { CnProjectStorageUsageDTO } from '../cn-projects-aggregate/cn-project-documents/cn-project-document-dto.class';
+import { CnDocumentService } from '../cn-folders-aggregate/cn-documents/cn-document.service';
+import { CnFolderStorageUsageDTO } from '../cn-folders-aggregate/cn-documents/cn-document-dto.class';
 
 @Injectable()
 export class CnSpaceAggregateService {
@@ -40,7 +40,7 @@ export class CnSpaceAggregateService {
               private datasource: DataSource,
               private spacesMailService: CnSpacesMailService,
               private objectStorageAggregateService: CnObjectStoragesAggregateService,
-              private projectDocumentService: CnProjectDocumentService) {
+              private documentService: CnDocumentService) {
   }
 
   public async getCurrentInfo(): Promise<CnUserSpaceInfo> {
@@ -75,15 +75,15 @@ export class CnSpaceAggregateService {
     }
 
     const bucketStorage = await this.checkSpaceStorage(
-      entity.defaultStorageLocations.defaultProjectStorageLocation, entity.defaultStorageLocations.defaultProjectBackupStorageLocation);
+      entity.defaultStorageLocations.defaultFolderStorageLocation, entity.defaultStorageLocations.defaultFolderBackupStorageLocation);
 
-    if (bucketStorage.defaultProjectBucket.isLabBucket() || bucketStorage.defaultProjectBackupBucket?.isLabBucket()) {
-      throw new BlBadRequestException('The default project storage and backup storage can\'t be a lab bucket during creation');
+    if (bucketStorage.defaultFolderBucket.isLabBucket() || bucketStorage.defaultFolderBackupBucket?.isLabBucket()) {
+      throw new BlBadRequestException('The default folder storage and backup storage can\'t be a lab bucket during creation');
     }
 
     const spaceDB = await this.datasource.transaction(async (entityManager: EntityManager) => {
-      const space = await this.spaceService.createEntrepriseSpace(entity.name, bucketStorage.defaultProjectBucket,
-        bucketStorage.defaultProjectBackupBucket, entityManager);
+      const space = await this.spaceService.createEntrepriseSpace(entity.name, bucketStorage.defaultFolderBucket,
+        bucketStorage.defaultFolderBackupBucket, entityManager);
 
       const user = CnCurrentUserHelper.getAndCheckCurrentUser();
       await this.spaceUserService.addUserToSpace(space, user, CnSpaceUserRole.ADMIN, user, entityManager);
@@ -181,76 +181,76 @@ export class CnSpaceAggregateService {
 
     const space = await this.spaceService.findByIdAndCheck(spaceId, CnSpace.buckets);
 
-    return new CnSpaceStorage(space.cloudStorageLimit, space.cloudStorageUsage, space.defaultProjectBucket.getBucketLocation(),
-      space.defaultProjectBackupBucket?.getBucketLocation() ?? null);
+    return new CnSpaceStorage(space.cloudStorageLimit, space.cloudStorageUsage, space.defaultFolderBucket.getBucketLocation(),
+      space.defaultFolderBackupBucket?.getBucketLocation() ?? null);
   }
 
   public async refreshSpaceStorageUsage(spaceId: string): Promise<void> {
-    const storageUsage = await this.projectDocumentService.getSpaceCloudStorageSize(spaceId);
+    const storageUsage = await this.documentService.getSpaceCloudStorageSize(spaceId);
     await this.spaceService.updatePartial(spaceId, { cloudStorageUsage: storageUsage });
   }
 
-  public async getCurrentSpaceStorageUsageDetail(): Promise<CnProjectStorageUsageDTO> {
+  public async getCurrentSpaceStorageUsageDetail(): Promise<CnFolderStorageUsageDTO> {
     const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
     await this.checkSpaceAdmin(space.id);
 
-    return await this.projectDocumentService.getStorageSizeDetailBySpace(space.id);
+    return await this.documentService.getStorageSizeDetailBySpace(space.id);
   }
 
   public async updateCurrentSpaceStorageLocation(locationDTO: CnSpaceUpdateStorageLocationDTO): Promise<CnSpaceStorage> {
     const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
     await this.checkSpaceAdmin(space.id);
 
-    const buckets = await this.checkSpaceStorage(locationDTO.defaultProjectStorageLocation,
-      locationDTO.defaultProjectBackupStorageLocation);
+    const buckets = await this.checkSpaceStorage(locationDTO.defaultFolderStorageLocation,
+      locationDTO.defaultFolderBackupStorageLocation);
 
     // if this is created mode
-    if (buckets.defaultProjectBucket.isLabBucket() && buckets.defaultProjectBucket.labInstance.spaceId !== space.id) {
-      throw new BlBadRequestException('The default project backup storage lab must be in the same space');
+    if (buckets.defaultFolderBucket.isLabBucket() && buckets.defaultFolderBucket.labInstance.spaceId !== space.id) {
+      throw new BlBadRequestException('The default folder backup storage lab must be in the same space');
     }
 
-    if (buckets.defaultProjectBackupBucket && buckets.defaultProjectBackupBucket.isLabBucket()
-      && buckets.defaultProjectBackupBucket.labInstance.spaceId !== space.id) {
-      throw new BlBadRequestException('The default project backup storage lab must be in the same space');
+    if (buckets.defaultFolderBackupBucket && buckets.defaultFolderBackupBucket.isLabBucket()
+      && buckets.defaultFolderBackupBucket.labInstance.spaceId !== space.id) {
+      throw new BlBadRequestException('The default folder backup storage lab must be in the same space');
     }
 
-    space.defaultProjectBucket = buckets.defaultProjectBucket;
-    space.defaultProjectBackupBucket = buckets.defaultProjectBackupBucket;
+    space.defaultFolderBucket = buckets.defaultFolderBucket;
+    space.defaultFolderBackupBucket = buckets.defaultFolderBackupBucket;
     await this.spaceService.update(space);
 
     return this.getCurrentSpaceStorage();
   }
 
-  private async checkSpaceStorage(defaultProjectStorageLocation: CnBucketLocationDTO,
-                                  defaultProjectBackupStorageLocation?: CnBucketLocationDTO): Promise<{
-    defaultProjectBucket: CnBucket,
-    defaultProjectBackupBucket: CnBucket | null
+  private async checkSpaceStorage(defaultFolderStorageLocation: CnBucketLocationDTO,
+                                  defaultFolderBackupStorageLocation?: CnBucketLocationDTO): Promise<{
+    defaultFolderBucket: CnBucket,
+    defaultFolderBackupBucket: CnBucket | null
   }> {
 
-    if (defaultProjectStorageLocation.bucketId === defaultProjectBackupStorageLocation?.bucketId) {
-      throw new BlBadRequestException('The default project storage and backup storage can\'t in the same location');
+    if (defaultFolderStorageLocation.bucketId === defaultFolderBackupStorageLocation?.bucketId) {
+      throw new BlBadRequestException('The default folder storage and backup storage can\'t in the same location');
     }
 
     let defaultBucket: CnBucket;
     let defaultBackupBucket: CnBucket | null;
 
-    if (!defaultProjectStorageLocation) {
-      throw new BlBadRequestException('The default project storage is required for space');
+    if (!defaultFolderStorageLocation) {
+      throw new BlBadRequestException('The default folder storage is required for space');
     }
 
 
-    if (defaultProjectStorageLocation) {
-      defaultBucket = await this.objectStorageAggregateService.getBucketByIdNotSecure(defaultProjectStorageLocation.bucketId);
+    if (defaultFolderStorageLocation) {
+      defaultBucket = await this.objectStorageAggregateService.getBucketByIdNotSecure(defaultFolderStorageLocation.bucketId);
     }
 
-    if (defaultProjectBackupStorageLocation) {
+    if (defaultFolderBackupStorageLocation) {
       defaultBackupBucket = await this.objectStorageAggregateService.getBucketByIdNotSecure(
-        defaultProjectBackupStorageLocation.bucketId);
+        defaultFolderBackupStorageLocation.bucketId);
     } else {
       defaultBackupBucket = null;
     }
 
-    return { defaultProjectBucket: defaultBucket, defaultProjectBackupBucket: defaultBackupBucket };
+    return { defaultFolderBucket: defaultBucket, defaultFolderBackupBucket: defaultBackupBucket };
   }
 
   public async updateCurrentSpaceStorageLimit(storageLimit: number): Promise<CnSpaceStorage> {
@@ -493,10 +493,10 @@ export class CnSpaceAggregateService {
   /////////////////////////////////////// OTHERS //////////////////////////////////
 
   public async createPersonalSpace(user: CnUser, entityManager: EntityManager): Promise<CnSpace> {
-    const defaultProjectBucket = await this.objectStorageAggregateService.getDefaultProjectBucketStorage1();
-    const defaultProjectBackupBucket = await this.objectStorageAggregateService.getDefaultProjectBucketStorage2();
-    const personalSpace = await this.spaceService.createPersonalSpace(user, defaultProjectBucket,
-      defaultProjectBackupBucket, entityManager);
+    const defaultFolderBucket = await this.objectStorageAggregateService.getDefaultFolderBucketStorage1();
+    const defaultFolderBackupBucket = await this.objectStorageAggregateService.getDefaultFolderBucketStorage2();
+    const personalSpace = await this.spaceService.createPersonalSpace(user, defaultFolderBucket,
+      defaultFolderBackupBucket, entityManager);
 
     await this.spaceUserService.addUserToSpace(personalSpace, user, CnSpaceUserRole.ADMIN,
       user, entityManager);

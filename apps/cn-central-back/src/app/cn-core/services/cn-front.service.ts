@@ -1,5 +1,5 @@
-import {Injectable} from '@nestjs/common';
-import {CnCoreConfigService} from '../modules/cn-core-config/cn-core-config.service';
+import { Injectable } from '@nestjs/common';
+import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.service';
 
 /**
  * Core service to manager front URLs
@@ -16,24 +16,25 @@ export class CnFrontService {
     return `${CnFrontService.appRoute}/admin/users`;
   }
 
-  public static getProjectRoute(projectId: string): string {
-    return `${CnFrontService.appRoute}/project/${projectId}`;
+  public static getFolderRoute(folderId: string): string {
+    return `${CnFrontService.appRoute}/folder/${folderId}`;
   }
 
-  public static getProjectCommentRoute(projectId: string): string {
-    return `${CnFrontService.getProjectRoute(projectId)}?type=comments`;
+  // TODO UPDATE TO NEW CHAT ROUTE
+  public static getChatMessageRoute(folderId: string): string {
+    return `${CnFrontService.getFolderRoute(folderId)}?type=comments`;
   }
 
-  public static getReportRoute(projectId: string): string {
-    return `${CnFrontService.appRoute}/project/report/${projectId}`;
+  public static getNoteRoute(folderId: string): string {
+    return `${CnFrontService.appRoute}/folder/note/${folderId}`;
   }
 
-  public static getExperimentRoute(projectId: string): string {
-    return `${CnFrontService.appRoute}/project/experiment/${projectId}`;
+  public static getExperimentRoute(folderId: string): string {
+    return `${CnFrontService.appRoute}/folder/experiment/${folderId}`;
   }
 
   public static getConstellabDocRoute(docId: string): string {
-    return `${CnFrontService.appRoute}/project/document/${docId}`;
+    return `${CnFrontService.appRoute}/folder/document/${docId}`;
   }
 
   public static getLabUrl(labId: string): string {

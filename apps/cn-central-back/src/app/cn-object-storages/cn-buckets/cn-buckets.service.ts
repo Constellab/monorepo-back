@@ -74,8 +74,8 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
         throw new BlBadRequestException(`Lab must be defined for lab bucket`);
       }
 
-      if (bucket.contentType !== CnBucketContentType.PROJECT) {
-        throw new BlBadRequestException(`Lab bucket can only be used for projects`);
+      if (bucket.contentType !== CnBucketContentType.FOLDER) {
+        throw new BlBadRequestException(`Lab bucket can only be used for folders`);
       }
       // force the name of the lab bucket
       bucket.name = CnBucket.LAB_BUCKET_NAME;

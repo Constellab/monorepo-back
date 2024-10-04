@@ -21,8 +21,8 @@ export class CnSpace extends CnBaseEntity {
 
   // relation options to load required information for the bucket
   public static buckets: FindOptionsRelations<CnSpace> = {
-    defaultProjectBucket: CnBucket.configRelation,
-    defaultProjectBackupBucket: CnBucket.configRelation
+    defaultFolderBucket: CnBucket.configRelation,
+    defaultFolderBackupBucket: CnBucket.configRelation
   };
 
 
@@ -49,17 +49,17 @@ export class CnSpace extends CnBaseEntity {
 
   // default bucket region for this space
   @Exclude({ toPlainOnly: true })
-  // use by default for project bucket
+  // use by default for folder bucket
   @Type(() => CnBucket)
   @ManyToOne(() => CnBucket, { nullable: false })
-  defaultProjectBucket: CnBucket;
+  defaultFolderBucket: CnBucket;
 
   // default bucket region for this space
   @Exclude({ toPlainOnly: true })
-  // use by default for project bucket
+  // use by default for folder bucket
   @Type(() => CnBucket)
   @ManyToOne(() => CnBucket, { nullable: true })
-  defaultProjectBackupBucket?: CnBucket;
+  defaultFolderBackupBucket?: CnBucket;
 
   // don't set the createdBy and lastModifiedBy automatically
   // because this group it can be created on user signup (so no current user)

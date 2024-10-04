@@ -9,7 +9,7 @@ import {
   BlBucketConfig,
   BlBucketType,
   BlS3BucketConfig,
-  BLTrim
+  BlTrim
 } from '@monorepo/back-core-lib';
 import { Type } from 'class-transformer';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
@@ -19,8 +19,8 @@ export enum CnBucketContentType {
   LAB_BACKUP = 'LAB_BACKUP',
   SPACE_IMAGE = 'SPACE_IMAGE',
   USER_IMAGE = 'USER_IMAGE',
-  // Bucket containing all the file of a project : reports, experiments, comment image, document.
-  PROJECT = 'PROJECT',
+  // Bucket containing all the file of a folder : notes, experiments, message image, document.
+  FOLDER = 'FOLDER',
 }
 
 /**
@@ -47,7 +47,7 @@ export class CnBucket extends CnBaseEntity {
     credentials: true
   };
   // default name for the lab bucket
-  public static LAB_BUCKET_NAME = 'projects-storage';
+  public static LAB_BUCKET_NAME = 'data-hub-storage';
 
   @Type(() => CnCloudProviderRegion)
   @ManyToOne(() => CnCloudProviderRegion, { nullable: true })
@@ -61,11 +61,11 @@ export class CnBucket extends CnBaseEntity {
   @ManyToOne(() => CnBucketCredentials, { nullable: false })
   credentials: CnBucketCredentials;
 
-  @BLTrim()
+  @BlTrim()
   @Column({ nullable: false, length: 100, update: false })
   name: string;
 
-  @Column({ nullable: false, length: 50 })
+  @Column({ nullable: false, length: 50, enum: CnBucketContentType })
   contentType: CnBucketContentType;
 
   @Column({

@@ -267,7 +267,7 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
    * @return the updated live task version
    */
   @Put('version/:id/params')
-  updateLiveTaskVersionParams(@Param('id', ParseUUIDPipe) id: string, @Body('params') params: string[]): Promise<HnLiveTaskVersion> {
+  updateLiveTaskVersionParams(@Param('id', ParseUUIDPipe) id: string, @Body('params') params: string): Promise<HnLiveTaskVersion> {
     return this.liveTaskAggregateService.updateLiveTaskVersionParams(id, params);
   }
 

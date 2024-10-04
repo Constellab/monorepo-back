@@ -1,9 +1,9 @@
-import {Column, Entity, ManyToOne, Relation} from 'typeorm';
-import {BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
-import {Exclude, Expose, Type} from 'class-transformer';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {DateTime} from 'luxon';
-import {CnSpace} from '../cn-spaces/cn-space.entity';
+import { Column, Entity, ManyToOne, Relation } from 'typeorm';
+import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
+import { Exclude, Expose, Type } from 'class-transformer';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { DateTime } from 'luxon';
+import { CnSpace } from '../cn-spaces/cn-space.entity';
 
 
 export enum CnActivityType {
@@ -14,11 +14,11 @@ export enum CnActivityType {
 
 export enum CnActivityEntityType {
   USER = 'USER',
-  PROJECT = 'PROJECT',
+  FOLDER = 'FOLDER',
   EXPERIMENT = 'EXPERIMENT',
-  REPORT = 'REPORT',
-  PROJECT_DOCUMENT = 'PROJECT_DOCUMENT',
-  PROJECT_COMMENT = 'PROJECT_COMMENT',
+  NOTE = 'NOTE',
+  DOCUMENT = 'DOCUMENT',
+  MESSAGE = 'MESSAGE',
 }
 
 @Entity('activity')

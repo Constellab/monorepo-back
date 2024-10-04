@@ -1,10 +1,10 @@
-import {Inject, Injectable, Logger} from '@nestjs/common';
-import {join} from 'path';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { join } from 'path';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import {ClHelpService, ClSupportedLanguage} from '@monorepo/core-lib';
-import {BL_MAIL_CONFIG_PROVIDER, BlMailModuleConfig} from './bl-mail.class';
-import {BlTranslateService} from '../bl-translate/bl-translate.service';
-import {BlUser} from '../../models/bl-user/bl-user.class';
+import { ClHelpService, ClSupportedLanguage } from '@monorepo/core-lib';
+import { BL_MAIL_CONFIG_PROVIDER, BlMailModuleConfig } from './bl-mail.class';
+import { BlTranslateService } from '../bl-translate/bl-translate.service';
+import { BlUser } from '../../models/bl-user/bl-user.class';
 import * as hbs from 'nodemailer-express-handlebars';
 import * as nodemailer from 'nodemailer';
 
@@ -87,7 +87,7 @@ export class BlMailService {
 
   // get the translation for the subject form the template name
   private translateSubject(template: string): Promise<string> {
-    return this.translateService.translate(this.subjectI18nBase + template);
+    return this.translateService.translateIfExists(this.subjectI18nBase + template);
   }
 
   // return the config mail for transport

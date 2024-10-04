@@ -8,7 +8,7 @@ import { ClHelpService } from '@monorepo/core-lib';
 
 export class BlSearchBuilder<T> {
 
-  private whereOptions: FindOptionsWhere<T> = {};
+  public whereOptions: FindOptionsWhere<T> = {};
   private orderOptions: FindOptionsOrder<T> = {};
   private relations: FindOptionsRelations<T> = {};
 
@@ -35,10 +35,41 @@ export class BlSearchBuilder<T> {
 
 
   public mergeWhereOptions(where: FindOptionsWhere<T>): void {
-    this.whereOptions = {
-      ...this.whereOptions,
-      ...where
-    };
+    this.whereOptions = this.deepMergeWhereOptions(this.whereOptions, where);
+  }
+
+  /**
+   * Method to merge two objects recursively
+   * @param target
+   * @param source
+   */
+  public deepMergeWhereOptions(target: any, source: any): any {
+    if (typeof target !== 'object' || typeof source !== 'object') {
+      return source;
+    }
+
+    // specific case, if the property is a FindOperator (like IsNull()), we don't merge
+    if(source.hasOwnProperty('@instanceof')) return source;
+
+    for (const key in source) {
+      if (source.hasOwnProperty(key)) {
+        if (source[key] instanceof Array) {
+          if (!target[key]) {
+            target[key] = [];
+          }
+          target[key] = target[key].concat(source[key]);
+        } else if (source[key] instanceof Object) {
+          if (!target[key]) {
+            target[key] = {};
+          }
+          target[key] = this.deepMergeWhereOptions(target[key], source[key]);
+        } else {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
   }
 
   public hasWhereOptions(key: keyof T): boolean {
@@ -117,7 +148,7 @@ export class BlSearchBuilder<T> {
     }
   }
 
-  protected addSortCriteria(sort: BlSearchSortCriteria): void {
+  public addSortCriteria(sort: BlSearchSortCriteria): void {
     // the keys are separated by dot
     const keys = sort.key.split('.');
 
@@ -125,7 +156,7 @@ export class BlSearchBuilder<T> {
     // build the filter object
     for (let i = 0; i < keys.length; i++) {
       if (i === keys.length - 1) {
-        currentOrder[keys[i]] = sort.order as FindOptionsOrderValue;
+        currentOrder[keys[i]] = sort.direction as FindOptionsOrderValue;
       } else {
         if (currentOrder[keys[i]] == null) {
           currentOrder[keys[i]] = {};

@@ -26,7 +26,7 @@ import { CnLabInstanceToken } from './user/cn-lab-instance-token.class';
 import {
   CnLabCloudCreateDTO,
   CnLabCodelabDTO,
-  CnLabFindOneDto,
+  CnLabFindOneDto, CnLabGlabApiInfo,
   CnLabInstanceConfigDTO,
   CnLabInstanceCreateAdminDTO,
   CnLabInstanceCreateDesktopDTO,
@@ -52,9 +52,7 @@ import { CnExternalLabUserService } from '../cn-external-lab-api/cn-external-lab
 import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
 import { CnLabInstanceUserService } from './user/cn-lab-instance-user.service';
 import { DataSource, EntityManager } from 'typeorm';
-import { CnExternalLabProjectService } from '../cn-external-lab-api/cn-external-lab-project.service';
 import { CnUsersService } from '../cn-users/cn-users.service';
-import { CnProject } from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 import { CnCpCompleteInfo } from './server/cn-cloud-provider.class';
 import { CnLabServerService } from './server/cn-lab-server.service';
 import { CnLabConfigurerService } from './server/cn-lab-configurer.service';
@@ -94,7 +92,6 @@ export class CnLabInstanceAggregateService {
               private security: CnLabInstancesSecurity,
               private usersService: CnUsersService,
               private externalLabUserService: CnExternalLabUserService,
-              private externalLabProjectService: CnExternalLabProjectService,
               private externalLabApiService: CnExternalLabApiService,
               private dataSource: DataSource,
               private labServerService: CnLabServerService,
@@ -306,8 +303,15 @@ export class CnLabInstanceAggregateService {
       throw new BlBadRequestException(CnErrorText.LAB_CONFIG_NOT_FOUND);
     }
 
-
     return this.labConfigService.getCompleteConfig(lab.labConfigId);
+  }
+
+  public async getGlabConfig(labInstance: CnLabInstance): Promise<CnLabGlabApiInfo> {
+    const gwsCoreVerson = await this.labConfigService.getLabBrickVersion(labInstance.labConfigId, CnBrickGWS.GWS_CORE);
+    return {
+      gwsCoreVersion: gwsCoreVerson.version,
+      apiInfo: labInstance.getGlabSpaceApiInfo()
+    }
   }
 
   /**
@@ -622,26 +626,13 @@ export class CnLabInstanceAggregateService {
   }
 
   /**
-   * Return the list of shared group for tha root project
+   * Return the list of shared group for tha root folder
    */
   public async getLabInstanceSharedUsers(labInstanceId: string): Promise<CnLabInstanceUser[]> {
     const labInstance = await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
     return this.labInstanceUserService.findByLabInstanceId(labInstance.id);
   }
-
-  //////////////////////////// PROJECT ////////////////////////////////
-
-
-  public async syncProjectInLab(labInstance: CnLabInstance, projectTree: CnProject): Promise<void> {
-    // add the user to the lab is the lab is running
-    const labIsRunning = await this.externalLabApiService.healthCheck(labInstance.getGlabSpaceApiInfo());
-    if (labIsRunning) {
-      // add the project to the lab
-      await this.externalLabProjectService.addProjectInLab(labInstance.getGlabSpaceApiInfo(), projectTree);
-    }
-  }
-
 
   //////////////////////////// LAB MANAGER ////////////////////////////////
 

@@ -122,7 +122,7 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
                                    translateOptions: BlTranslateOptions = {},
                                    instanceId?: string): Promise<BlApiError> {
     // translate the error message and throw the exception with error code and message
-    const translatedMessage: string = await this.translateService.translate(errorCode, translateOptions);
+    const translatedMessage: string = await this.translateService.translateIfExists(errorCode, translateOptions);
 
     return {
       status: status,

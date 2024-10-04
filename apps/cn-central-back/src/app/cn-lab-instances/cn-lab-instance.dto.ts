@@ -2,7 +2,7 @@ import { CnUser } from '../cn-users/cn-user.entity';
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
 import { CnLabInstanceStatusHistory } from './status/cn-lab-instance-status-history.entity';
 import { CnServerCloud } from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
-import { BlBaseEntityDto, BlDtoHelper } from '@monorepo/back-core-lib';
+import { BlBaseEntityDto, BlDtoHelper, BlVersion } from '@monorepo/back-core-lib';
 import { CnBrickVersionDTO } from '../cn-bricks/cn-brick.dto';
 import { CnLabConfigDto } from '../cn-lab-configs/cn-lab-config.dto';
 import { CnSpace } from '../cn-spaces/cn-space.entity';
@@ -20,6 +20,8 @@ import { CnLabInstanceServerTaskStatus, CnLabInstanceStatus } from './status/cn-
 import { DateTime } from 'luxon';
 import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
 import { CnCloudProvider } from '../cn-cloud-providers/cn-cloud-provider.entity';
+import { CnBrickVersion } from '../cn-bricks/cn-brick-version.entity';
+import { CnExternalApiInfo } from '../cn-core/model/config/cn-config.class';
 
 
 /**
@@ -206,4 +208,9 @@ export class CnLabServerInfoDTO {
 
   volumeSize: number;
   volumeType: CnLabInstanceVolumeType;
+}
+
+export class CnLabGlabApiInfo {
+  gwsCoreVersion?: BlVersion;
+  apiInfo: CnExternalApiInfo;
 }

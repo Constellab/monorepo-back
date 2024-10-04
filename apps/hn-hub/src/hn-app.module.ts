@@ -19,8 +19,6 @@ import {
   BlMailModule,
   BlMailModuleConfig,
   BlObjectStorageModule,
-  BlPersistenceEventModule,
-  BlPersistenceEventService,
   BlRequestContextMiddleware,
   BlTransportModule,
   BlTransportModuleConfig
@@ -83,8 +81,7 @@ import { HnFileStoryModule } from './app/file-aggregate/file-story/hn-file-story
 import { HnFileDocumentationModule } from './app/file-aggregate/file-documentation/hn-file-documentation.module';
 
 function typeOrmConfig(
-  configService: HnCoreConfigService,
-  persistenceEventService: BlPersistenceEventService
+  configService: HnCoreConfigService
 ): TypeOrmModuleOptions {
   const dbConfig: HnDatabaseConfig = configService.getDatabaseConfig();
   return {
@@ -97,9 +94,8 @@ function typeOrmConfig(
     synchronize: configService.isLocal(), // only activate synchronization in local
     autoLoadEntities: true,
     maxQueryExecutionTime: 1000, // log query longer than 1s,
-    logger: persistenceEventService,
     bigNumberStrings: false,
-    charset: 'utf8mb4',
+    charset: 'utf8mb4'
   };
 }
 
@@ -108,7 +104,7 @@ function configureLogger(
 ): WinstonModuleOptions {
   const logConfig: BlLoggerConfig = {
     logLevel: configService.getLogLevel(),
-    logFilePath: configService.isLocal() ? null : configService.getLogPath(),
+    logFilePath: configService.isLocal() ? null : configService.getLogPath()
   };
   return blConfigureLogger(logConfig);
 }
@@ -119,14 +115,14 @@ function configureJwtModule(
 ): BlJwtConfig {
   return {
     jwtSecret: configService.getJwtSecret(),
-    jwtFromRequest: (request: Request) =>{
+    jwtFromRequest: (request: Request) => {
       return request.headers.authorization ?? BlCookieHelper.getCookieFromHeader(
         request.headers.cookie,
         hnJwtConfig.authorizationCookie
-      )
+      );
     },
     usersService: userService,
-    tokenDurationInSeconds: hnJwtConfig.tokenDurationInSeconds,
+    tokenDurationInSeconds: hnJwtConfig.tokenDurationInSeconds
   };
 }
 
@@ -143,7 +139,7 @@ function configureMailModule(
     mailConfig: configService.getMailConfig(),
     templateFolder: join(__dirname, 'assets/templates/'),
     defaultLayout: 'main-',
-    defaultData: {contactMail: configService.getCustomerSuccessMail()}
+    defaultData: { contactMail: configService.getCustomerSuccessMail() }
   };
 }
 
@@ -152,13 +148,13 @@ function configureMailModule(
     // let the config module on top of the imports
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: join(__dirname, 'environments', 'dev.env'),
+      envFilePath: join(__dirname, 'environments', 'dev.env')
     }),
 
     TypeOrmModule.forRootAsync({
       useFactory: typeOrmConfig,
       inject: [HnCoreConfigService],
-      imports: [HnCoreConfigModule, BlObjectStorageModule],
+      imports: [HnCoreConfigModule]
     }),
 
     I18nModule.forRoot({
@@ -166,38 +162,38 @@ function configureMailModule(
       loader: I18nJsonLoader,
       loaderOptions: {
         path: join(__dirname, 'assets/i18n/'),
-        watch: true, //    // enable live translation
+        watch: true //    // enable live translation
       },
       resolvers: [
         // retrieve the language from the cookie (define to avoid error but not really used)
-        {use: CookieResolver, options: 'lang'},
+        { use: CookieResolver, options: 'lang' },
         AcceptLanguageResolver
-      ],
+      ]
     }),
 
     // setup the logging module
     WinstonModule.forRootAsync({
       imports: [HnCoreModule],
       useFactory: configureLogger,
-      inject: [HnCoreConfigService],
+      inject: [HnCoreConfigService]
     }),
 
     BlJwtModule.forRootAsync({
       imports: [HnCoreModule, HnUserModule],
       useFactory: configureJwtModule,
-      inject: [HnCoreConfigService, HnUserService],
+      inject: [HnCoreConfigService, HnUserService]
     }),
 
     BlTransportModule.forRootAsync({
       useFactory: configureTransportModule,
       imports: [HnCoreModule],
-      inject: [HnCoreConfigService],
+      inject: [HnCoreConfigService]
     }),
 
     BlMailModule.forRootAsync({
       imports: [HnCoreModule],
       useFactory: configureMailModule,
-      inject: [HnCoreConfigService],
+      inject: [HnCoreConfigService]
     }),
     ThrottlerModule.forRoot({
       throttlers: [{
@@ -209,7 +205,6 @@ function configureMailModule(
     ScheduleModule.forRoot(),
 
     HnCoreModule,
-    BlPersistenceEventModule,
     BlObjectStorageModule,
     BlDbBackupModule,
 
@@ -269,23 +264,23 @@ function configureMailModule(
     // set global interceptor
     {
       provide: APP_INTERCEPTOR,
-      useClass: ClassSerializerInterceptor,
+      useClass: ClassSerializerInterceptor
     },
     // set global exception handler
     {
       provide: APP_FILTER,
-      useClass: HnCoreExceptionHandlerFilter,
+      useClass: HnCoreExceptionHandlerFilter
     },
     // set global guards
     {
       provide: APP_GUARD,
-      useClass: HnJwtAuthGuard,
+      useClass: HnJwtAuthGuard
     },
     {
       provide: APP_GUARD,
-      useClass: HnIsAdminGuard,
+      useClass: HnIsAdminGuard
     }
-  ],
+  ]
 })
 export class HnAppModule {
   configure(consumer: MiddlewareConsumer): any {

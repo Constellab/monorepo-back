@@ -69,6 +69,12 @@ export class HnBrickController {
     return new HnBrickDto(await this.brickAggregateService.findBrickByName(name));
   }
 
+  @BlPublic()
+  @Get('check-brick-existence/:name')
+  async checkBrickExistence(@Param('name') name: string): Promise<boolean> {
+    return this.brickAggregateService.checkIfBrickExistence(name);
+  }
+
   /**
    * Special route that is called by the lab using the central API key to retrieve info about the brick.
    * If the key is present and valid, private bricks can be accessed.

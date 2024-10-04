@@ -15,7 +15,7 @@ export interface BlSearchFilterCriteria {
 
 export interface BlSearchSortCriteria {
   key: string;
-  order: BlSearchOrderStr;
+  direction: BlSearchOrderStr;
   nullOption?: BlSearchOrderNullOption;
 }
 

@@ -64,6 +64,23 @@ export class HnLiveTaskVersionService {
     });
   }
 
+  public async findSecondLastByLiveTask(liveTask: HnLiveTask): Promise<HnLiveTaskVersion> {
+    const liveTaskVersions = await this.liveTaskVersionRepository.find({
+      where: {
+        liveTask: {
+          id: liveTask.id
+        }
+      },
+      order: {
+        version: 'DESC'
+      }
+    });
+    if (liveTaskVersions.length < 2) {
+      return null;
+    }
+    return liveTaskVersions[1];
+  }
+
   public async findLatestPublishedByLiveTask(liveTask: HnLiveTask): Promise<HnLiveTaskVersion> {
     return this.liveTaskVersionRepository.findOneBy({
       liveTask: {
@@ -101,7 +118,7 @@ export class HnLiveTaskVersionService {
     });
   }
 
-  public async updateParams(id: string, params: string[]): Promise<HnLiveTaskVersion> {
+  public async updateParams(id: string, params: string): Promise<HnLiveTaskVersion> {
     const liveTaskVersion = await this.liveTaskVersionRepository.findOneBy({id: id});
     liveTaskVersion.params = params;
     return this.liveTaskVersionRepository.save(liveTaskVersion);

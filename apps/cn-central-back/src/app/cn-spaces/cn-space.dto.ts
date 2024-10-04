@@ -29,14 +29,14 @@ export class CnSpaceSettingsDto {
   @Type(() => CnSpace)
   space: CnSpace;
 
-  defaultProjectStorageLocation: CnBucketLocationDTO;
-  defaultProjectBackupStorageLocation?: CnBucketLocationDTO;
+  defaultFolderStorageLocation: CnBucketLocationDTO;
+  defaultFolderBackupStorageLocation?: CnBucketLocationDTO;
 
   static fromSpace(space: CnSpace): CnSpaceSettingsDto {
     const spaceSettings = new CnSpaceSettingsDto();
     spaceSettings.space = space;
-    spaceSettings.defaultProjectStorageLocation = space.defaultProjectBucket.getBucketLocation();
-    spaceSettings.defaultProjectBackupStorageLocation = space.defaultProjectBackupBucket?.getBucketLocation() ?? null;
+    spaceSettings.defaultFolderStorageLocation = space.defaultFolderBucket.getBucketLocation();
+    spaceSettings.defaultFolderBackupStorageLocation = space.defaultFolderBackupBucket?.getBucketLocation() ?? null;
 
     return spaceSettings;
   }
@@ -50,23 +50,23 @@ export interface CnRequestNewLicensesDto {
 
 /////////////////////////////////// STORAGE //////////////////////////////////////
 export class CnSpaceUpdateStorageLocationDTO {
-  defaultProjectStorageLocation: CnBucketLocationDTO;
-  defaultProjectBackupStorageLocation?: CnBucketLocationDTO;
+  defaultFolderStorageLocation: CnBucketLocationDTO;
+  defaultFolderBackupStorageLocation?: CnBucketLocationDTO;
 }
 
 export class CnSpaceStorage {
   cloudStorageLimit: number;
   cloudStorageUsage: number;
 
-  defaultProjectStorageLocation: CnBucketLocationDTO;
-  defaultBackupProjectStorageLocation ?: CnBucketLocationDTO;
+  defaultFolderStorageLocation: CnBucketLocationDTO;
+  defaultBackupFolderStorageLocation ?: CnBucketLocationDTO;
 
   constructor(cloudStorageLimit: number, cloudStorageUsage: number,
-              defaultProjectStorageLocation: CnBucketLocationDTO,
-              defaultBackupProjectStorageLocation?: CnBucketLocationDTO) {
+              defaultFolderStorageLocation: CnBucketLocationDTO,
+              defaultBackupFolderStorageLocation?: CnBucketLocationDTO) {
     this.cloudStorageLimit = cloudStorageLimit;
     this.cloudStorageUsage = cloudStorageUsage;
-    this.defaultProjectStorageLocation = defaultProjectStorageLocation;
-    this.defaultBackupProjectStorageLocation = defaultBackupProjectStorageLocation;
+    this.defaultFolderStorageLocation = defaultFolderStorageLocation;
+    this.defaultBackupFolderStorageLocation = defaultBackupFolderStorageLocation;
   }
 }

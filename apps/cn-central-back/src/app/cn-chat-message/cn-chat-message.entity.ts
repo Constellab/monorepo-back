@@ -1,0 +1,42 @@
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { Type } from 'class-transformer';
+import { CnMessage, CnNewMessageDTO } from '../cn-core/model/entities/cn-message.entity';
+import { CnUser } from '../cn-users/cn-user.entity';
+import {
+  CnHierarchyObject,
+  CnHierarchyObjectEntity
+} from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { BlNotUpdatable } from '@monorepo/back-core-lib';
+
+/**
+ * special user for mentioning everyone
+ */
+export function getFakeUserEveryoneMention(): CnUser {
+  const user = new CnUser();
+  user.id = 'everyone';
+  user.firstname = 'Everyone';
+  user.lastname = '';
+  return user;
+}
+
+@Entity('chat_message')
+export class CnChatMessageEntity extends CnMessage {
+
+  @Type(() => CnHierarchyObjectEntity)
+  @ManyToOne(() => CnHierarchyObjectEntity, {nullable: false})
+  @BlNotUpdatable()
+  folderHierarchy: CnHierarchyObjectEntity;
+
+  @Column({nullable: false, update: false})
+  folderHierarchyId: string;
+
+  static create(newMessageDTO: CnNewMessageDTO, folderHierarchy: CnHierarchyObject): CnChatMessageEntity {
+    const chatMessage: CnChatMessageEntity = new CnChatMessageEntity();
+    chatMessage.content = newMessageDTO.content;
+    chatMessage.folderHierarchy = folderHierarchy as CnHierarchyObjectEntity;
+    chatMessage.folderHierarchyId = folderHierarchy.id;
+    return chatMessage;
+  }
+}
+
+export type CnChatMessage = Omit<CnChatMessageEntity, 'folderHierarchy'>;

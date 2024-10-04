@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CnAuthModule } from './app/cn-auth/cn-auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { CnCoreModule } from './app/cn-core/cn-core.module';
-import { CnProjectsModule } from './app/cn-projects-aggregate/cn-projects/cn-projects.module';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { CnCoreConfigService } from './app/cn-core/modules/cn-core-config/cn-core-config.service';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
@@ -12,7 +11,7 @@ import { CnCoreConfigModule } from './app/cn-core/modules/cn-core-config/cn-core
 import { AcceptLanguageResolver, CookieResolver, I18nJsonLoader, I18nModule } from 'nestjs-i18n';
 import { join } from 'path';
 import { CnLabConfigsModule } from './app/cn-lab-configs/cn-lab-configs.module';
-import { CnExperimentsModule } from './app/cn-projects-aggregate/cn-experiments/cn-experiments.module';
+import { CnExperimentsModule } from './app/cn-folders-aggregate/cn-experiments/cn-experiments.module';
 import { CnBricksModule } from './app/cn-bricks/cn-bricks.module';
 import { CnGroupsModule } from './app/cn-groups/cn-groups.module';
 import { CnSpacesModule } from './app/cn-spaces/cn-spaces.module';
@@ -21,7 +20,7 @@ import { CnJwtAuthGuard } from './app/cn-core/guards/cn-jwt-auth.guard';
 import { CnUserCategoryGuard } from './app/cn-core/guards/cn-user-category-guard.service';
 import { CnExternalLabsModule } from './app/cn-external-labs/cn-external-labs.module';
 import { CnCoreExceptionHandlerFilter } from './app/cn-core/filters/cn-core-exception-handler.filter';
-import { CnReportsModule } from './app/cn-projects-aggregate/cn-reports/cn-reports.module';
+import { CnNotesModule } from './app/cn-folders-aggregate/cn-notes/cn-notes.module';
 import { clDefaultLang } from '@monorepo/core-lib';
 import { CnFrontErrorsModule } from './app/cn-front-errors/cn-front-errors.module';
 import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
@@ -37,8 +36,6 @@ import {
   BlMailModule,
   BlMailModuleConfig,
   BlObjectStorageModule,
-  BlPersistenceEventModule,
-  BlPersistenceEventService,
   BlRequestContextMiddleware,
   BlTransportModule,
   BlTransportModuleConfig
@@ -47,14 +44,14 @@ import { cnJwtConfig } from './app/cn-auth/cn-jwt.config';
 import { Request } from 'express';
 import { CnUsersService } from './app/cn-users/cn-users.service';
 import { CnDatabaseConfig } from './app/cn-core/model/config/cn-config.class';
-import { CnProjectsAggregateModule } from './app/cn-projects-aggregate/cn-project-aggregate.module';
+import { CnFoldersAggregateModule } from './app/cn-folders-aggregate/cn-folders-aggregate.module';
 import { CnStatsModule } from './app/cn-stats/cn-stats.module';
 import { CnCountryModule } from './app/cn-country/cn-country.module';
 import { CnCityModule } from './app/cn-city/cn-city.module';
 import { AppService } from './app.service';
 import { CnSpaceMiddleware } from './app/cn-core/middleware/cn-space-middleware.service';
 import { CnNotificationModule } from './app/cn-notification/cn-notification.module';
-import { CnProjectCommentModule } from './app/cn-project-comment/cn-project-comment.module';
+import { CnChatMessageModule } from './app/cn-chat-message/cn-chat-message.module';
 import { CnCloudProvidersModule } from './app/cn-cloud-providers/cn-cloud-providers.module';
 import { I18nAbstractLoaderOptions } from 'nestjs-i18n/dist/loaders/i18n.abstract.loader';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -65,8 +62,9 @@ import { CnUserAccountModule } from './app/cn-users/cn-user-accounts/cn-user-acc
 import { CnServerAggregateModule } from './app/cn-servers-info/cn-server-aggregate.module';
 import { CnSettingsModule } from './app/cn-settings/cn-settings.module';
 import { CnCommunityModule } from './app/cn-community/cn-community.module';
+import { CnLogRequestMiddleware } from './app/cn-core/middleware/cn-log-request-middleware.service';
 
-function typeOrmConfig(configService: CnCoreConfigService, persistenceEventService: BlPersistenceEventService): TypeOrmModuleOptions {
+function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();
   return {
     type: 'mysql',
@@ -79,10 +77,9 @@ function typeOrmConfig(configService: CnCoreConfigService, persistenceEventServi
     synchronize: configService.isDev() && false, // only activate synchronization in local
     autoLoadEntities: true,
     maxQueryExecutionTime: 1000, // log query longer than 1s,
-    logger: persistenceEventService,
     bigNumberStrings: false,
-    charset: 'utf8mb4'
-    // logging: true // use to enable query logging, the logger must be disabled
+    charset: 'utf8mb4',
+    logging: false // use to enable query logging, the logger must be disabled
   };
 }
 
@@ -139,8 +136,7 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
 
     TypeOrmModule.forRootAsync({
       useFactory: typeOrmConfig,
-      inject: [CnCoreConfigService],
-      imports: [BlPersistenceEventModule]
+      inject: [CnCoreConfigService]
     }),
 
     I18nModule.forRoot({
@@ -158,7 +154,6 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     }),
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
-    BlPersistenceEventModule,
 
     // Custom module
     CnCoreModule,
@@ -208,10 +203,9 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     CnAuthModule,
     CnUserAccountModule,
     CnLabConfigsModule,
-    CnProjectsAggregateModule,
+    CnFoldersAggregateModule,
     CnExperimentsModule,
-    CnProjectsModule,
-    CnReportsModule,
+    CnNotesModule,
     CnBricksModule,
     CnGroupsModule,
     CnSpacesModule,
@@ -223,7 +217,7 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     CnCountryModule,
     CnCityModule,
     CnNotificationModule,
-    CnProjectCommentModule,
+    CnChatMessageModule,
     CnCloudProvidersModule,
     CnActivityModule,
     CnSettingsModule,
@@ -259,7 +253,7 @@ export class CnAppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
     consumer
       // register the RequestContextMiddleware to be able to access the request anywhere
-      .apply(BlRequestContextMiddleware, CnSpaceMiddleware)
+      .apply(BlRequestContextMiddleware, CnLogRequestMiddleware, CnSpaceMiddleware)
       .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }

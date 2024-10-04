@@ -28,29 +28,29 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     super(repository, CnSpace);
   }
 
-  public async createEntrepriseSpace(name: string, defaultProjectBucket: CnBucket,
-                                     defaultProjectBackupBucket: CnBucket | null, entityManager: EntityManager): Promise<CnSpace> {
+  public async createEntrepriseSpace(name: string, defaultFolderBucket: CnBucket,
+                                     defaultFolderBackupBucket: CnBucket | null, entityManager: EntityManager): Promise<CnSpace> {
     const space = new CnSpace();
 
     space.name = name;
     space.type = CnSpaceType.ENTREPRISE;
-    space.defaultProjectBucket = defaultProjectBucket;
-    space.defaultProjectBackupBucket = defaultProjectBackupBucket;
+    space.defaultFolderBucket = defaultFolderBucket;
+    space.defaultFolderBackupBucket = defaultFolderBackupBucket;
     space.createdBy = CnCurrentUserHelper.getAndCheckCurrentUser();
     space.lastModifiedBy = CnCurrentUserHelper.getAndCheckCurrentUser();
     return this.create(space, entityManager);
   }
 
-  public async createPersonalSpace(user: CnUser, defaultProjectStorageBucket: CnBucket,
-                                   defaultBackupProjectStorageBucket: CnBucket,
+  public async createPersonalSpace(user: CnUser, defaultFolderStorageBucket: CnBucket,
+                                   defaultBackupFolderStorageBucket: CnBucket,
                                    entityManager: EntityManager): Promise<CnSpace> {
     const space = new CnSpace();
     space.name = user.alias;
     space.type = CnSpaceType.PERSONAL;
     space.createdBy = user;
     space.lastModifiedBy = user;
-    space.defaultProjectBucket = defaultProjectStorageBucket;
-    space.defaultProjectBackupBucket = defaultBackupProjectStorageBucket;
+    space.defaultFolderBucket = defaultFolderStorageBucket;
+    space.defaultFolderBackupBucket = defaultBackupFolderStorageBucket;
     return entityManager.save(space);
   }
 

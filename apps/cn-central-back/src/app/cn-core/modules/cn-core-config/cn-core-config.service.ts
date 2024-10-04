@@ -75,6 +75,10 @@ export class CnCoreConfigService {
     return this.configService.get('SALES_MAIL');
   }
 
+  public getSupportMail(): string {
+    return this.configService.get('SUPPORT_MAIL');
+  }
+
   public getOpenaiAPIKey(): string {
     return this.configService.get('OPENAI_API_KEY');
   }
@@ -90,7 +94,6 @@ export class CnCoreConfigService {
   }
 
   public getMailConfig(): BlMailConfig {
-    console.log(this.configService.get('MAIL_HOST'))
     return {
       host: this.configService.get('MAIL_HOST'),
       port: this.getConfigNumber('MAIL_PORT'),

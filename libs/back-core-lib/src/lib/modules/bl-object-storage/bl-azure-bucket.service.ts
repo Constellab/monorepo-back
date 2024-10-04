@@ -19,7 +19,8 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
 
   public async uploadObjectToBucket(obj: Buffer,
                                     objectName: string,
-                                    contentType: string): Promise<string> {
+                                    contentType: string,
+                                    tags?: Record<string, string>): Promise<string> {
     // Get a block blob client
     const blockBlobClient = this.getBlockBlobClient(objectName);
 
@@ -27,7 +28,8 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
     const uploadBlobResponse = await blockBlobClient.uploadData(obj as any, {
       blobHTTPHeaders: {
         blobContentType: contentType
-      }
+      },
+      tags: tags
     });
 
     if (uploadBlobResponse.errorCode) {
@@ -147,6 +149,27 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
 
     return iterable.done;
   }
+
+  public async getObjectTags(objectName: string): Promise<Record<string, string>> {
+    const blobClient = this.getBlobClient(objectName);
+
+    const properties = await blobClient.getProperties();
+
+    return properties.metadata;
+  }
+
+  public async setObjectTags(objectName: string, tags: Record<string, string>): Promise<void> {
+    const blobClient = this.getBlobClient(objectName);
+
+    await blobClient.setMetadata(tags);
+  }
+
+  ////////////////////////////////////////// TAGS //////////////////////////////////////////
+
+
+
+  ////////////////////////////////////////// OTHER //////////////////////////////////////////
+
 
   private getBlockBlobClient(objectName: string): BlockBlobClient {
     const containerClient = this.getContainerClient();

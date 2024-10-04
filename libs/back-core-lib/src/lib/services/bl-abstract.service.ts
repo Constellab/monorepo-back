@@ -1,25 +1,27 @@
-import {DeleteResult, EntityManager, Repository} from 'typeorm';
-import {FindOneOptions} from 'typeorm/find-options/FindOneOptions';
-import {BlEntityWithId} from '../models/bl-entity-with-id.entity';
-import {blPropertyIsNotUpdatable} from '../decorators/bl-not-updatable.decorator';
-import {BlAbstractPaginatedService} from './bl-abstract-paginated.service';
-import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
-import {BlBadRequestException} from '../exceptions/bl-bad-request.exception';
-import {BlNotFoundException} from '../exceptions/bl-not-found.exception';
-import {Inject} from '@nestjs/common';
-import {
-  BlPersistenceAction,
-  BlPersistenceEventService
-} from '../modules/bl-persistence-event/bl-persistence-event.service';
+import { DeleteResult, EntityManager, Repository } from 'typeorm';
+import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
+import { BlEntityWithId } from '../models/bl-entity-with-id.entity';
+import { blPropertyIsNotUpdatable } from '../decorators/bl-not-updatable.decorator';
+import { BlAbstractPaginatedService } from './bl-abstract-paginated.service';
+import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+import { BlBadRequestException } from '../exceptions/bl-bad-request.exception';
+import { BlNotFoundException } from '../exceptions/bl-not-found.exception';
 
 export abstract class BlAbstractService<T extends BlEntityWithId>
   extends BlAbstractPaginatedService<T> {
 
-  @Inject() private readonly persistenceEventService: BlPersistenceEventService;
-
   protected constructor(repo: Repository<T>,
                         entityClass: new() => T) {
     super(repo, entityClass);
+  }
+
+  /**
+   * Override save method to log the action
+   * @param entity
+   * @param entityManager
+   */
+  async save(entity: T, entityManager?: EntityManager): Promise<T> {
+    return await this.getEntityManager(entityManager).save(entity);
   }
 
   async create(entity: T, entityManager?: EntityManager): Promise<T> {
@@ -28,11 +30,7 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
       delete entity.id;
     }
 
-    const newEntity: T = await this.getEntityManager(entityManager).save(entity);
-
-    // if there is no transaction, the log is written after the next commit
-    this.logAction('INSERT', newEntity.id, entityManager == null);
-    return newEntity;
+    return await this.getEntityManager(entityManager).save(entity);
   }
 
   /**
@@ -52,7 +50,7 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
    * Use to check property metadata including {@link BlNotUpdatable}
    * @protected
    */
-  protected async updateWithCompare(newEntity: Partial<T>, dbEntity: T, entityManager?: EntityManager): Promise<T> {
+  public async updateWithCompare(newEntity: Partial<T>, dbEntity: T, entityManager?: EntityManager): Promise<T> {
     for (const property in newEntity) {
 
       // check if the property is updatable or is undefined
@@ -63,19 +61,12 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
 
     }
 
-    const newEntity2 = await this.getEntityManager(entityManager).save(dbEntity);
-    this.logAction('UPDATE', dbEntity.id, entityManager == null);
-    return newEntity2;
+    return await this.getEntityManager(entityManager).save(dbEntity);
   }
 
 
   async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
-    const deleteResult: DeleteResult = await this.getEntityManager(entityManager).delete(this.entityClass, id);
-
-    if (deleteResult.affected > 0) {
-      this.logAction('DELETE', id, entityManager == null);
-    }
-    return deleteResult;
+    return await this.getEntityManager(entityManager).delete(this.entityClass, id);
   }
 
   findById(id: string, relations?: FindOptionsRelations<T>,
@@ -86,7 +77,7 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
 
     // const options: FindOneOptions<T> = {where
     return this.getEntityManager(entityManager).findOne(this.entityClass,
-      {where: {id: id}, relations: relations} as FindOneOptions<T>);
+      { where: { id: id }, relations: relations } as FindOneOptions<T>);
   }
 
   async findByIdAndCheck(id: string,
@@ -99,14 +90,4 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
     return entity;
   }
 
-  /**
-   *  use to log persistence
-   * @param actionName
-   * @param entityId
-   * @param directLog set it to true to directly log when there are on transaction
-   * @private
-   */
-  private logAction(actionName: BlPersistenceAction, entityId: string, directLog: boolean): void {
-    this.persistenceEventService.logPersistence(actionName, entityId, this.entityClass.name, directLog);
-  }
 }

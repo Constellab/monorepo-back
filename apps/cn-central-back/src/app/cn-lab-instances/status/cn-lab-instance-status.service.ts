@@ -22,14 +22,6 @@ export class CnLabInstanceStatusService extends BlAbstractPaginatedService<CnLab
     super(repo, CnLabInstanceStatusHistory);
   }
 
-  public async getLabTotalRunningDuration(labInstanceId: string): Promise<number> {
-    const runStatus = await this.getLabInstanceRunningKpis(labInstanceId, {
-      period: 'ALL'
-    });
-
-    return runStatus.runningDuration;
-  }
-
   public async getLabInstanceRunningKpisWithBilling(labInstanceId: string,
                                                     request: CnLabInstanceStatusRunRequest,
                                                     serverPrices?: CnServerPrices): Promise<CnLabInstanceStatusRunResponse> {
@@ -93,16 +85,16 @@ export class CnLabInstanceStatusService extends BlAbstractPaginatedService<CnLab
         startDate = ClDateHelper.getDate().startOf('year');
         endDate = now;
         break;
-      case 'LAST_WEEK':
+      case 'LAST_7_DAYS':
         startDate = ClDateHelper.getDate().minus({ days: 7 }).endOf('day');
         endDate = now;
         break;
-      case 'LAST_MONTH':
-        startDate = ClDateHelper.getDate().minus({ months: 1 }).endOf('day');
+      case 'LAST_30_DAYS':
+        startDate = ClDateHelper.getDate().minus({ days: 30 }).endOf('day');
         endDate = now;
         break;
-      case 'LAST_YEAR':
-        startDate = ClDateHelper.getDate().minus({ years: 1 }).endOf('day');
+      case 'LAST_365_DAYS':
+        startDate = ClDateHelper.getDate().minus({ days: 365 }).endOf('day');
         endDate = now;
         break;
       case 'ALL':

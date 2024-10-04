@@ -322,7 +322,7 @@ export class HnLiveTaskAggregateService {
     return res;
   }
 
-  public async updateLiveTaskVersionParams(id: string, params: string[]): Promise<HnLiveTaskVersion> {
+  public async updateLiveTaskVersionParams(id: string, params: string): Promise<HnLiveTaskVersion> {
     await this.liveTaskService.checkIfCreatorOrCoAuthorAndGetLiveTask((await this.liveTaskVersionService.findOne(id)).liveTask.id);
     return this.liveTaskVersionService.updateParams(id, params);
   }
@@ -479,7 +479,7 @@ export class HnLiveTaskAggregateService {
       await this.liveTaskVersionBrickDependenciesService.deleteByLiveTaskVersionId(entityManager, id);
       await this.liveTaskVersionService.deleteById(entityManager, id);
       if(liveTask.latestPublishVersion == liveTaskVersion.version){
-        const latestVersion = await this.liveTaskVersionService.findLatestByLiveTask(liveTask);
+        const latestVersion = await this.liveTaskVersionService.findSecondLastByLiveTask(liveTask);
         await this.liveTaskService.updateLiveTaskLatestPublishVersion(liveTask.id, latestVersion.version, entityManager);
       }
     });

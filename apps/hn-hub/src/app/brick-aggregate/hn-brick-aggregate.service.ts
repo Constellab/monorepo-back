@@ -204,6 +204,10 @@ export class HnBrickAggregateService {
     return brick;
   }
 
+  async checkIfBrickExistence(name: string): Promise<boolean>{
+    return (await this.brickService.findOne({name: name})) != null;
+  }
+
   async findAllMap(): Promise<HnSitemapItemBase[]> {
     const bricks: HnBrick[] = await this.brickService.find();
     const map: HnSitemapItemBase[] = [];

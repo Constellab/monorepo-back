@@ -5,12 +5,14 @@ import {
   DeleteObjectCommand,
   DeleteObjectsCommand,
   GetObjectCommand,
+  GetObjectTaggingCommand,
   HeadBucketCommand,
   HeadObjectCommand,
   ListObjectsCommand,
   ListObjectsCommandOutput,
   NoSuchKey,
   PutObjectCommand,
+  PutObjectTaggingCommand,
   S3Client
 } from '@aws-sdk/client-s3';
 import { BlFileResponse, BlObject, BlS3BucketConfig } from './bl-object-storage.class';
@@ -30,11 +32,11 @@ export class BlS3BucketService implements BlObjectStorageInterface {
   }
 
   public async uploadObjectToBucket(obj: Buffer, filename: string,
-                                    contentType: string): Promise<string> {
+                                    contentType: string, tags?: Record<string, string>): Promise<string> {
     const s3Client = this.getClient();
-
     await s3Client.send(new PutObjectCommand({
-      Bucket: this.getBucketName(), Key: filename, Body: obj, ContentType: contentType
+      Bucket: this.getBucketName(), Key: filename, Body: obj, ContentType: contentType,
+      Tagging: this.tagsToQueryParams(tags)
     }));
 
     return filename;
@@ -61,7 +63,6 @@ export class BlS3BucketService implements BlObjectStorageInterface {
       this.logger.error(`Error while getting object ${objectName} from bucket ${this.getBucketName()}. Error ${e}`);
       throw new BlBadRequestException('Error while getting object');
     }
-
   }
 
   //////////////////////////////////////////// GET OBJECT /////////////////////////////////////////
@@ -208,8 +209,40 @@ export class BlS3BucketService implements BlObjectStorageInterface {
   }
 
 
-  /////////////////////////////////// OTHER ///////////////////////////////////
+  /////////////////////////////////// TAGS ///////////////////////////////////
+  public async getObjectTags(objectName: string): Promise<Record<string, string>> {
+    const s3Client = this.getClient();
 
+    const result = await s3Client.send(new GetObjectTaggingCommand({
+      Bucket: this.getBucketName(),
+      Key: objectName
+    }));
+
+    const tags: { [key: string]: string } = {};
+    result.TagSet?.forEach(tag => {
+      if (tag.Key && tag.Value) {
+        tags[tag.Key] = tag.Value;
+      }
+    });
+
+    return tags;
+  }
+
+  public async setObjectTags(objectName: string, tags: Record<string, string>): Promise<void> {
+    const s3Client = this.getClient();
+
+    await s3Client.send(new PutObjectTaggingCommand({
+      Bucket: this.getBucketName(),
+      Key: objectName,
+      Tagging: {TagSet: Object.entries(tags).map(([key, value]) => ({Key: key, Value: value}))}
+    }));
+  }
+
+  private tagsToQueryParams(tags: Record<string, string>): string {
+    if(!tags) return '';
+    return Object.entries(tags).map(([key, value]) => `${key}=${value}`).join('&');
+  }
+  /////////////////////////////////// OTHER ///////////////////////////////////
 
   private getClient(): S3Client {
     return new S3Client({
@@ -224,7 +257,6 @@ export class BlS3BucketService implements BlObjectStorageInterface {
   getBucketName(): string {
     return this.config.bucket;
   }
-
 
 
 }

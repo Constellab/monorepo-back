@@ -11,11 +11,12 @@ export enum CnMailTemplate {
   request_new_licenses = 'cn-request-new-licenses',
   two_factor_authentication = 'cn-two-factor-authentication',
   request_lab_instance = 'cn-request-lab-instance',
-  project_notification = 'cn-project-notification',
+  folder_notification = 'cn-folder-notification',
   lab_started = 'cn-lab-started',
 
   // mail for the support
   support_lab_start_error = 'cn-support-lab-start-error',
+  support_lab_backup_error = 'cn-support-lab-backup-error',
 
   // Mail send by the lab
   experiment_finished = 'cn-experiment-finished',

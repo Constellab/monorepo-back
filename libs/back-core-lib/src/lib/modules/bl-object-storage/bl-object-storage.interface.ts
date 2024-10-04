@@ -3,7 +3,7 @@ import { BlFileResponse, BlObject } from './bl-object-storage.class';
 export interface BlObjectStorageInterface {
 
   uploadObjectToBucket(obj: Buffer, filename: string,
-                       contentType: string): Promise<string>;
+                       contentType: string, tags?: Record<string, string>): Promise<string>;
 
   //////////////////////////////////////////// DOWNLOAD OBJECT /////////////////////////////////////////
 
@@ -31,6 +31,12 @@ export interface BlObjectStorageInterface {
   bucketExists(): Promise<boolean>;
 
   bucketIsEmpty(): Promise<boolean>;
+
+  //////////////////////////////////////////// TAGS /////////////////////////////////////////
+
+  getObjectTags(objectName: string): Promise<Record<string, string>>;
+
+  setObjectTags(objectName: string, tags: Record<string, string>): Promise<void>;
 
   //////////////////////////////////////////// OTHERS /////////////////////////////////////////
   getBucketName(): string;

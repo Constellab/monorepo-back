@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 import { CnUser } from '../../cn-users/cn-user.entity';
 
 export interface CnLabInstanceStatusRunRequest {
-  period: 'CURRENT_MONTH' | 'CURRENT_YEAR' | 'LAST_WEEK' | 'LAST_MONTH' | 'LAST_YEAR' | 'ALL' | 'CUSTOM';
+  period: 'CURRENT_MONTH' | 'CURRENT_YEAR' | 'LAST_7_DAYS' | 'LAST_30_DAYS' | 'LAST_365_DAYS' | 'ALL' | 'CUSTOM';
   customStartDate?: string;
   customEndDate?: string;
 }
@@ -19,7 +19,7 @@ export class CnLabInstanceRunningStatusBilling {
 }
 
 export class CnLabInstanceStatusRunResponse {
-  period: 'CURRENT_MONTH' | 'CURRENT_YEAR' | 'LAST_WEEK' | 'LAST_MONTH' | 'LAST_YEAR' | 'ALL' | 'CUSTOM';
+  period: 'CURRENT_MONTH' | 'CURRENT_YEAR' | 'LAST_7_DAYS' | 'LAST_30_DAYS' | 'LAST_365_DAYS' | 'ALL' | 'CUSTOM';
 
   @ClLuxonDateTransform()
   fromDate: DateTime;
