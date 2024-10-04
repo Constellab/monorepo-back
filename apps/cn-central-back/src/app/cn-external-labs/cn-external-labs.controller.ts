@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, Req, UseInterceptors } from '@nestjs/common';
 import { CnLabGuard, CnLabRobotAuthentication } from '../cn-core/decorators/cn-lab-guard.decorator';
 import { BlCredentials, BlFile, BlParsePipe, BlUploadedFiles } from '@monorepo/back-core-lib';
-import { CnCreateLabExperimentDto } from '../cn-folders-aggregate/cn-experiments/cn-experiment.dto';
+import { CnCreateLabScenarioDto } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.dto';
 import { CnCreateNoteWithConfigDto } from '../cn-folders-aggregate/cn-notes/cn-note.dto';
 import { CnLabStartDTO } from '../cn-labs/cn-lab.dto';
 import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
@@ -73,18 +73,18 @@ export class CnExternalLabsController {
   }
 
   // TODO remove project routes once all lab are on v0.10.0
-  @Put(['project/:parentFolderId/experiment', 'folder/:parentFolderId/experiment'])
-  createOrUpdateExperiment(
+  @Put(['project/:parentFolderId/experiment', 'folder/:parentFolderId/scenario'])
+  createOrUpdateScenario(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
-    @Body(new BlParsePipe(CnCreateLabExperimentDto)) createLabExperimentDto: CnCreateLabExperimentDto): Promise<void> {
-    return this.folderAggregateService.createLabExperiment(parentFolderId, createLabExperimentDto);
+    @Body(new BlParsePipe(CnCreateLabScenarioDto)) createLabScenarioDto: CnCreateLabScenarioDto): Promise<void> {
+    return this.folderAggregateService.createLabScenario(parentFolderId, createLabScenarioDto);
   }
 
-  @Delete(['project/:parentFolderId/experiment/:experimentId', 'folder/:parentFolderId/experiment/:experimentId'])
-  deleteExperiment(
+  @Delete(['project/:parentFolderId/experiment/:scenarioId', 'folder/:parentFolderId/scenario/:scenarioId'])
+  deleteScenario(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
-    @Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<void> {
-    return this.folderAggregateService.deleteLabExperiment(parentFolderId, experimentId);
+    @Param('scenarioId', new ParseUUIDPipe()) scenarioId: string): Promise<void> {
+    return this.folderAggregateService.deleteLabScenario(parentFolderId, scenarioId);
   }
 
   @UseInterceptors(FilesInterceptor('files'))

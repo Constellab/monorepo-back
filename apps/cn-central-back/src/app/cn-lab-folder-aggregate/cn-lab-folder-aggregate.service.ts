@@ -76,9 +76,9 @@ export class CnLabFolderAggregateService {
     }
 
     // Before delete folder from lab, check if this folder as sync object from this lab
-    const syncExperiments = await this.folderAggregateService.getExperimentsByRootFolderAndLabNotSecure(rootFolderId, labId);
-    if (syncExperiments.length > 0) {
-      throw new BlBadRequestException(CnErrorText.REMOVE_FOLDER_SYNC_EXPERIMENT_ERROR, { detailArgs: { count: syncExperiments.length } });
+    const syncScenarios = await this.folderAggregateService.getScenariosByRootFolderAndLabNotSecure(rootFolderId, labId);
+    if (syncScenarios.length > 0) {
+      throw new BlBadRequestException(CnErrorText.REMOVE_FOLDER_SYNC_SCENARIO_ERROR, { detailArgs: { count: syncScenarios.length } });
     }
 
     const syncNotes = await this.folderAggregateService.getNotesByRootFolderAndLab(rootFolderId, labId);

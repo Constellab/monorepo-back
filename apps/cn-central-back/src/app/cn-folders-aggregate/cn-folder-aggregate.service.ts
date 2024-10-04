@@ -4,10 +4,10 @@ import { CnFoldersAggregateSecurity } from './cn-folders-aggregate-security.serv
 import { CnFolder, CnFolderEntity, CnFolderWithHierarchy } from './cn-folders/cn-folder.entity';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
-import { CnExperimentsService } from './cn-experiments/cn-experiments.service';
+import { CnScenariosService } from './cn-scenarios/cn-scenarios.service';
 import { CnNotesService } from './cn-notes/cn-notes.service';
-import { CnExperiment, CnExperimentProtocol } from './cn-experiments/cn-experiment.entity';
-import { CnCreateLabExperimentDto } from './cn-experiments/cn-experiment.dto';
+import { CnScenario, CnScenarioProtocol } from './cn-scenarios/cn-scenario.entity';
+import { CnCreateLabScenarioDto } from './cn-scenarios/cn-scenario.dto';
 import { CnCreateNoteWithConfigDto } from './cn-notes/cn-note.dto';
 import { CnNote } from './cn-notes/cn-note.entity';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
@@ -66,7 +66,7 @@ export class CnFolderAggregateService {
   constructor(private foldersService: CnFoldersService,
               private hierarchyObjectService: CnHierarchyObjectService,
               private foldersAggregateSecurity: CnFoldersAggregateSecurity,
-              private experimentService: CnExperimentsService,
+              private scenarioService: CnScenariosService,
               private noteService: CnNotesService,
               private chatMessageService: CnChatMessageService,
               private datasource: DataSource,
@@ -169,8 +169,8 @@ export class CnFolderAggregateService {
       throw new BlBadRequestException(CnErrorText.DELETE_FOLDER_WITH_CHILDREN);
     }
 
-    if (children.find(child => child.objectType === CnHierarchyObjectType.EXPERIMENT)) {
-      throw new BlBadRequestException(CnErrorText.DELETE_FOLDER_WITH_EXPERIMENTS);
+    if (children.find(child => child.objectType === CnHierarchyObjectType.SCENARIO)) {
+      throw new BlBadRequestException(CnErrorText.DELETE_FOLDER_WITH_SCENARIOS);
     }
 
     if (children.find(child => child.objectType === CnHierarchyObjectType.NOTE)) {
@@ -336,75 +336,75 @@ export class CnFolderAggregateService {
       filename, folderId);
   }
 
-  /////////////////////////////////////// EXPERIMENT //////////////////////////////////
+  /////////////////////////////////////// SCENARIO //////////////////////////////////
 
-  public async findExperiment(id: string): Promise<CnExperiment> {
+  public async findScenario(id: string): Promise<CnScenario> {
     await this.getAndCheckAuthorizationForFindOneByFolder(id);
-    return await this.experimentService.findByIdAndCheck(id);
+    return await this.scenarioService.findByIdAndCheck(id);
   }
 
-  async getExperimentsByFolder(folderId: string): Promise<CnExperiment[]> {
+  async getScenariosByFolder(folderId: string): Promise<CnScenario[]> {
     // check that the user can get the folder
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
 
-    return this.experimentService.getExperimentsByParentFolder(folder.id);
+    return this.scenarioService.getScenariosByParentFolder(folder.id);
   }
 
-  async getExperimentsAssociatedToNotes(noteId: string): Promise<CnExperiment[]> {
+  async getScenariosAssociatedToNotes(noteId: string): Promise<CnScenario[]> {
     // check that the user can get the folder
     await this.findNote(noteId);
 
-    return (await this.noteService.findByIdAndCheckWithExperiments(noteId)).experiments;
+    return (await this.noteService.findByIdAndCheckWithScenarios(noteId)).scenarios;
   }
 
-  async createLabExperiment(parentFolderId: string, createLabExperimentDto: CnCreateLabExperimentDto): Promise<void> {
+  async createLabScenario(parentFolderId: string, createLabScenarioDto: CnCreateLabScenarioDto): Promise<void> {
     // check that the user can get the folder
     const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
-    const result = await this.experimentService.saveLabExperiment(parentFolder, createLabExperimentDto);
+    const result = await this.scenarioService.saveLabScenario(parentFolder, createLabScenarioDto);
 
     if (result.mode === 'create') {
-      this.emitFolderEvent('CREATE_EXPERIMENT', parentFolder, result.experiment);
+      this.emitFolderEvent('CREATE_SCENARIO', parentFolder, result.scenario);
     } else {
-      this.emitFolderEvent('UPDATE_EXPERIMENT', parentFolder, result.experiment);
+      this.emitFolderEvent('UPDATE_SCENARIO', parentFolder, result.scenario);
     }
   }
 
-  async deleteLabExperiment(parentFolderId: string, experimentId: string): Promise<void> {
+  async deleteLabScenario(parentFolderId: string, scenarioId: string): Promise<void> {
     // check that the user can get the folder
     const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
-    // check if the experiment has associated notes
-    const expWithNotes = await this.experimentService.findByIdAndCheckWithNotes(experimentId);
+    // check if the scenario has associated notes
+    const expWithNotes = await this.scenarioService.findByIdAndCheckWithNotes(scenarioId);
     if (expWithNotes.notes.length > 0) {
-      throw new BlBadRequestException('The experiment has associated notes in the space, please delete the note first.');
+      throw new BlBadRequestException('The scenario has associated notes in the space, please delete the note first.');
     }
 
 
-    let experiment: CnExperiment;
+    let scenario: CnScenario;
     await this.datasource.transaction(async entityManager => {
-      experiment = await this.experimentService.deleteExperiment(experimentId, entityManager);
-      await this.hierarchyObjectService.deleteById(experimentId, entityManager);
+      scenario = await this.scenarioService.deleteScenario(scenarioId, entityManager);
+      await this.hierarchyObjectService.deleteById(scenarioId, entityManager);
     });
-    if (experiment) {
-      this.emitFolderEvent('DELETE_EXPERIMENT', parentFolder, experiment);
+    if (scenario) {
+      this.emitFolderEvent('DELETE_SCENARIO', parentFolder, scenario);
     }
   }
 
-  async getCurrentUserLastExperiments(): Promise<CnExperiment[]> {
-    return this.experimentService.getCurrentUserLastExperiments();
+  async getCurrentUserLastScenarios(): Promise<CnScenario[]> {
+    return this.scenarioService.getCurrentUserLastScenarios();
   }
 
-  async findExperimentTechnicalNote(experimentId: string): Promise<CnExperimentProtocol> {
-    return (await this.findExperiment(experimentId)).protocol;
+  async findScenarioTechnicalNote(scenarioId: string): Promise<CnScenarioProtocol> {
+    return (await this.findScenario(scenarioId)).protocol;
   }
 
-  async findExperimentLabConfig(experimentId: string): Promise<CnLabConfig> {
-    return this.experimentService.getExperimentLabConfig(experimentId);
+  async findScenarioLabConfig(scenarioId: string): Promise<CnLabConfig> {
+    return this.scenarioService.getScenarioLabConfig(scenarioId);
   }
 
-  public async getExperimentsByRootFolderAndLabNotSecure(rootFolderId: string, labId: string): Promise<CnExperiment[]> {
-    return this.experimentService.getExperimentsByRootFolderAndLab(rootFolderId, labId);
+  public async getScenariosByRootFolderAndLabNotSecure(rootFolderId: string, labId: string): Promise<CnScenario[]> {
+    return this.scenarioService.getScenariosByRootFolderAndLab(rootFolderId, labId);
   }
 
   /////////////////////////////////////// NOTE //////////////////////////////////
@@ -424,22 +424,22 @@ export class CnFolderAggregateService {
                       files: BlFile[]): Promise<void> {
     const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
-    // get and check all experiment
-    const experiments: CnExperiment[] = [];
-    for (const experimentId of createNoteDto.experiment_ids) {
-      const experiment: CnExperiment = await this.experimentService.findById(experimentId, { hierarchyRepresentation: true });
+    // get and check all scenario
+    const scenarios: CnScenario[] = [];
+    for (const scenarioId of createNoteDto.scenario_ids) {
+      const scenario: CnScenario = await this.scenarioService.findById(scenarioId, { hierarchyRepresentation: true });
 
-      if (experiment == null) {
-        throw new BlBadRequestException('Can\'t create the note because one of the linked experiment could not be found');
+      if (scenario == null) {
+        throw new BlBadRequestException('Can\'t create the note because one of the linked scenario could not be found');
       }
 
-      if (experiment.hierarchyRepresentation.parentId !== parentFolder.id) {
-        throw new BlBadRequestException('Can\'t create the note because it is linked to an experiment of another folder');
+      if (scenario.hierarchyRepresentation.parentId !== parentFolder.id) {
+        throw new BlBadRequestException('Can\'t create the note because it is linked to an scenario of another folder');
       }
-      experiments.push(experiment);
+      scenarios.push(scenario);
     }
 
-    const noteResult = await this.noteService.saveNote(createNoteDto, experiments,
+    const noteResult = await this.noteService.saveNote(createNoteDto, scenarios,
       parentFolder, files);
 
     if (noteResult.mode === 'create') {
@@ -474,10 +474,10 @@ export class CnFolderAggregateService {
     await this.deleteNoteFromLab(noteFolder.parentId, noteId);
   }
 
-  async getNoteAssociatedToExperiment(experimentId: string): Promise<CnNote[]> {
-    await this.findExperiment(experimentId);
+  async getNoteAssociatedToScenario(scenarioId: string): Promise<CnNote[]> {
+    await this.findScenario(scenarioId);
 
-    return (await this.experimentService.findByIdAndCheckWithNotes(experimentId)).notes;
+    return (await this.scenarioService.findByIdAndCheckWithNotes(scenarioId)).notes;
   }
 
   async getNoteFile(noteId: string, filename: string): Promise<BlFileResponse> {
@@ -952,7 +952,7 @@ export class CnFolderAggregateService {
     if (!searchBuilder.hasWhereOptions('entityType')) {
       searchBuilder.mergeWhereOptions({
         entityType: In([CnActivityEntityType.FOLDER, CnActivityEntityType.MESSAGE,
-          CnActivityEntityType.NOTE, CnActivityEntityType.EXPERIMENT, CnActivityEntityType.DOCUMENT])
+          CnActivityEntityType.NOTE, CnActivityEntityType.SCENARIO, CnActivityEntityType.DOCUMENT])
       });
     }
 

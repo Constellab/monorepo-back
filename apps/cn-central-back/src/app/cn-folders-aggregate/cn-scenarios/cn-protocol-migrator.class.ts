@@ -1,9 +1,9 @@
-import { CnExperimentProtocol } from './cn-experiment.entity';
+import { CnScenarioProtocol } from './cn-scenario.entity';
 
 export class CnProtocolMigrator{
 
 
-  public migrateProtocol(protocol: CnExperimentProtocol): CnExperimentProtocol {
+  public migrateProtocol(protocol: CnScenarioProtocol): CnScenarioProtocol {
     if (protocol.version === 3) {
       return protocol;
     }
@@ -20,7 +20,7 @@ export class CnProtocolMigrator{
   }
 
   // to keep until all labs are V 0.7.5 or higher
-  private migrateProtocolFromV1ToV2(protocol: CnExperimentProtocol): CnExperimentProtocol {
+  private migrateProtocolFromV1ToV2(protocol: CnScenarioProtocol): CnScenarioProtocol {
     const newProtocolData = this.migrateProcessFromV1ToV2Recur(protocol.data);
     return {
       version: 2,
@@ -95,7 +95,7 @@ export class CnProtocolMigrator{
   }
 
   // to keep until all labs are V 0.7.5 or higher
-  private migrateProtocolFromV2ToV3(protocol: CnExperimentProtocol): CnExperimentProtocol {
+  private migrateProtocolFromV2ToV3(protocol: CnScenarioProtocol): CnScenarioProtocol {
     const newProtocolData = this.migrateProcessFromV2ToV3Recur(protocol.data);
     return {
       version: 3,

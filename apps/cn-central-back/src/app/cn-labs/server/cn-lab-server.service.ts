@@ -334,7 +334,7 @@ export class CnLabServerService {
 
 
   /**
-   * Check if the lab has any activity (running experiments, queued experiments, dev environment running)
+   * Check if the lab has any activity (running scenarios, queued scenarios, dev environment running)
    * @param lab
    * @param throwErrorOnActivityGetError if true, throw an error if the activity cannot be retrieved
    */
@@ -351,12 +351,12 @@ export class CnLabServerService {
 
     if (labActivity == null) return;
 
-    if (labActivity.running_experiments > 0) {
-      throw new BlBadRequestException(`Lab has ${labActivity.running_experiments} running experiments. Please stop them first`);
+    if (labActivity.running_scenarios > 0) {
+      throw new BlBadRequestException(`Lab has ${labActivity.running_scenarios} running scenarios. Please stop them first`);
     }
 
-    if (labActivity.queued_experiments > 0) {
-      throw new BlBadRequestException(`Lab has ${labActivity.queued_experiments} queued experiments. Please remove them form queue first`);
+    if (labActivity.queued_scenarios > 0) {
+      throw new BlBadRequestException(`Lab has ${labActivity.queued_scenarios} queued scenarios. Please remove them form queue first`);
     }
 
     if (labActivity.dev_env_running) {

@@ -4,7 +4,7 @@ import { BlEntityWithId } from '@monorepo/back-core-lib';
 import { CnLabConfigDTO } from '../cn-labs/cn-lab.dto';
 
 /**
- * A lab defined an environment to execute experiments
+ * A lab defined an environment to execute scenarios
  * It contains a list of brick to defined available functionalities
  */
 @Entity('lab_config')

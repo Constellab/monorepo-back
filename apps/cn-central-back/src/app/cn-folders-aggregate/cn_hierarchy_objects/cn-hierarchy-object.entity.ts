@@ -13,7 +13,7 @@ export enum CnHierarchyObjectType {
   CONSTELLAB_DOCUMENT = 'CONSTELLAB_DOCUMENT',
   HIDDEN_DOCUMENT = 'HIDDEN_DOCUMENT',
   NOTE = 'NOTE',
-  EXPERIMENT = 'EXPERIMENT',
+  SCENARIO = 'SCENARIO',
 }
 
 @Entity('hierarchy_object')
@@ -87,7 +87,7 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
   hasDescription: boolean;
 
   /**
-   * For note or experiment only, if the object is validated
+   * For note or scenario only, if the object is validated
    */
   @Column({ nullable: false, default: false })
   isValidated: boolean;

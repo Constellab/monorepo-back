@@ -3,9 +3,9 @@ import { CnCoreModule } from '../cn-core/cn-core.module';
 import { CnFoldersController } from './cn-folders.controller';
 import { CnFolderAggregateService } from './cn-folder-aggregate.service';
 import { CnFoldersAggregateSecurity } from './cn-folders-aggregate-security.service';
-import { CnExperimentsModule } from './cn-experiments/cn-experiments.module';
+import { CnScenariosModule } from './cn-scenarios/cn-scenarios.module';
 import { CnNotesModule } from './cn-notes/cn-notes.module';
-import { CnExperimentsController } from './cn-experiments/cn-experiments.controller';
+import { CnScenariosController } from './cn-scenarios/cn-scenarios.controller';
 import { CnNotesController } from './cn-notes/cn-notes.controller';
 import { CnFoldersModule } from './cn-folders/cn-folders.module';
 import { CnUsersModule } from '../cn-users/cn-users.module';
@@ -27,7 +27,7 @@ import { CnHierarchyObjectModule } from './cn_hierarchy_objects/cn-hierarchy-obj
     CnFolderUserModule,
     CnHierarchyObjectModule,
 
-    CnExperimentsModule,
+    CnScenariosModule,
     CnNotesModule,
     CnDocumentModule,
 
@@ -39,7 +39,7 @@ import { CnHierarchyObjectModule } from './cn_hierarchy_objects/cn-hierarchy-obj
   ],
   controllers: [
     CnFoldersController,
-    CnExperimentsController,
+    CnScenariosController,
     CnNotesController,
   ],
   providers: [

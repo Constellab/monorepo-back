@@ -1,7 +1,7 @@
-import { CnExperimentStatus } from './cn-experiment-status.enum';
+import { CnScenarioStatus } from './cn-scenario-status.enum';
 import { DateTime } from 'luxon';
 import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
-import { CnExperiment, CnExperimentProtocol } from './cn-experiment.entity';
+import { CnScenario, CnScenarioProtocol } from './cn-scenario.entity';
 import { CnLabConfigDto } from '../../cn-lab-configs/cn-lab-config.dto';
 import { Type } from 'class-transformer';
 import { CnEntityDTO } from '../../cn-core/model/entities/cn.entity';
@@ -10,13 +10,13 @@ import { BlRichTextContent, BlRichTextI } from '@monorepo/back-core-lib';
 
 
 /**
- * Experiment object from the Lab
+ * Scenario object from the Lab
  */
-export class CnSaveExperimentDto {
+export class CnSaveScenarioDto {
   id: string;
   title: string;
   description: BlRichTextContent | BlRichTextI;
-  status: CnExperimentStatus;
+  status: CnScenarioStatus;
 
   is_validated: boolean;
 
@@ -45,20 +45,20 @@ export class CnSaveExperimentDto {
   last_modified_by: CnUser;
 }
 
-export class CnCreateLabExperimentDto {
+export class CnCreateLabScenarioDto {
 
-  @Type(() => CnSaveExperimentDto)
-  experiment: CnSaveExperimentDto;
-  protocol: CnExperimentProtocol;
+  @Type(() => CnSaveScenarioDto)
+  scenario: CnSaveScenarioDto;
+  protocol: CnScenarioProtocol;
   lab_config: CnLabConfigDto;
 }
 
 
-// experiment object smaller
-export class CnExperimentDTO extends CnEntityDTO {
+// scenario object smaller
+export class CnScenarioDto extends CnEntityDTO {
   title: string;
 
-  status: CnExperimentStatus;
+  status: CnScenarioStatus;
 
   isValidated: boolean;
 
@@ -68,7 +68,7 @@ export class CnExperimentDTO extends CnEntityDTO {
   lastSyncAt?: DateTime;
 
 
-  copyEntity(entity: CnExperiment): this {
+  copyEntity(entity: CnScenario): this {
     super.copyEntity(entity);
     this.title = entity.title;
     this.status = entity.status;
@@ -79,7 +79,7 @@ export class CnExperimentDTO extends CnEntityDTO {
   }
 }
 
-export interface CnSaveExperimentResultDTO {
+export interface CnSaveScenarioResultDTO {
   mode: 'create' | 'update';
-  experiment: CnExperiment;
+  scenario: CnScenario;
 }

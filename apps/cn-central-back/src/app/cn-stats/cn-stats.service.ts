@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CnStats } from './cn-stats.class';
 import { CnLabsService } from '../cn-labs/cn-labs.service';
 import { CnGroupsService } from '../cn-groups/cn-groups.service';
-import { CnExperimentsService } from '../cn-folders-aggregate/cn-experiments/cn-experiments.service';
+import { CnScenariosService } from '../cn-folders-aggregate/cn-scenarios/cn-scenarios.service';
 import { CnNotesService } from '../cn-folders-aggregate/cn-notes/cn-notes.service';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnHierarchyObjectService } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.service';
@@ -12,7 +12,7 @@ export class CnStatsService {
   constructor(private folderService: CnHierarchyObjectService,
               private labService: CnLabsService,
               private groupService: CnGroupsService,
-              private experimentService: CnExperimentsService,
+              private scenarioService: CnScenariosService,
               private noteService: CnNotesService) {
   }
 
@@ -25,7 +25,7 @@ export class CnStatsService {
     stats.onGoingFolderNumber = rootFolders.totalElements;
     stats.teamsNumber = (await this.groupService.getAllTeamsByUserAndSpace(currentUserInfo.userId, currentUserInfo.spaceId)).length;
     stats.runningLabNumber = (await this.labService.getCurrentRunningLabs()).length;
-    stats.validatedExperimentNumber = (await this.experimentService.getCurrentUserCreatedExperiment()).length;
+    stats.validatedScenarioNumber = (await this.scenarioService.getCurrentUserCreatedScenario()).length;
     stats.validatedNoteNumber = (await this.noteService.getCurrentUserCreatedNote()).length;
 
     return stats;

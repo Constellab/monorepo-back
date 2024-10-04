@@ -56,8 +56,8 @@ export class CnLabMailService {
 
   private getLabTemplate(type: CnLabMailTemplate): string {
     switch (type) {
-      case 'experiment-finished':
-        return CnMailTemplate.experiment_finished;
+      case 'scenario-finished':
+        return CnMailTemplate.scenario_finished;
       default:
         return CnMailTemplate.generic;
     }

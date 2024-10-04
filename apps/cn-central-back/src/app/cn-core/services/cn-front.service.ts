@@ -29,8 +29,8 @@ export class CnFrontService {
     return `${CnFrontService.appRoute}/folder/note/${folderId}`;
   }
 
-  public static getExperimentRoute(folderId: string): string {
-    return `${CnFrontService.appRoute}/folder/experiment/${folderId}`;
+  public static getScenarioRoute(folderId: string): string {
+    return `${CnFrontService.appRoute}/folder/scenario/${folderId}`;
   }
 
   public static getConstellabDocRoute(docId: string): string {

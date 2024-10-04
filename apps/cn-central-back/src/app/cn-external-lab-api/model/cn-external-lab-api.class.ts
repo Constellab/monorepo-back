@@ -26,8 +26,8 @@ export interface CnExternalLabUser {
  * Object that represent the current global activity of a lab
  */
 export interface CnLabGlobalActivity {
-  running_experiments: number;
-  queued_experiments: number;
+  running_scenarios: number;
+  queued_scenarios: number;
   last_activity: {
     created_at: string;
   };

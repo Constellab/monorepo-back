@@ -1,4 +1,4 @@
-export enum CnExperimentStatus {
+export enum CnScenarioStatus {
   DRAFT = 'DRAFT',
   SUCCESS = 'SUCCESS',
   ERROR = 'ERROR',

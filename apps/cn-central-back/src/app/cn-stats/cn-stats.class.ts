@@ -5,7 +5,7 @@ export class CnStats{
 
   runningLabNumber: number = 0;
 
-  validatedExperimentNumber: number = 0;
+  validatedScenarioNumber: number = 0;
 
   validatedNoteNumber: number = 0;
 }

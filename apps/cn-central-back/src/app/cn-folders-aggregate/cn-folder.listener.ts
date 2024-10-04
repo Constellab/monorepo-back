@@ -9,7 +9,7 @@ import { CnFrontService } from '../cn-core/services/cn-front.service';
 import { CnFolderEvent, cnFolderEventName, CnFolderEventType } from './cn-folder.event';
 import { CnFolder } from './cn-folders/cn-folder.entity';
 import { CnUser } from '../cn-users/cn-user.entity';
-import { CnExperiment } from './cn-experiments/cn-experiment.entity';
+import { CnScenario } from './cn-scenarios/cn-scenario.entity';
 import { CnNote } from './cn-notes/cn-note.entity';
 import { CnChatMessage, getFakeUserEveryoneMention } from '../cn-chat-message/cn-chat-message.entity';
 import { BlMailService, BlMentionUser, BlNewRichText, BlRichTextContent } from '@monorepo/back-core-lib';
@@ -147,12 +147,12 @@ export class CnFolderListener {
         return this.folderShared(event.entity, event.parentFolder);
       case 'UNSHARE_FOLDER':
         return this.folderUnshared(event.entity, event.parentFolder);
-      case 'CREATE_EXPERIMENT':
-        return this.experimentCreated(event.entity, event.parentFolder);
-      case 'UPDATE_EXPERIMENT':
-        return this.experimentUpdated(event.entity, event.parentFolder);
-      case 'DELETE_EXPERIMENT':
-        return this.experimentDeleted(event.entity, event.parentFolder);
+      case 'CREATE_SCENARIO':
+        return this.scenarioCreated(event.entity, event.parentFolder);
+      case 'UPDATE_SCENARIO':
+        return this.scenarioUpdated(event.entity, event.parentFolder);
+      case 'DELETE_SCENARIO':
+        return this.scenarioDeleted(event.entity, event.parentFolder);
       case 'CREATE_NOTE':
         return this.noteCreated(event.entity, event.parentFolder);
       case 'UPDATE_NOTE':
@@ -236,38 +236,38 @@ export class CnFolderListener {
     };
   }
 
-  private experimentCreated(experiment: CnExperiment, parentFolder: CnHierarchyObject): CnActivityAndNotif {
+  private scenarioCreated(scenario: CnScenario, parentFolder: CnHierarchyObject): CnActivityAndNotif {
     return {
       activity: {
-        entityType: CnActivityEntityType.EXPERIMENT,
-        entity: experiment,
+        entityType: CnActivityEntityType.SCENARIO,
+        entity: scenario,
         actionType: CnActivityType.CREATE,
-        title: `{{user.name}} has created experiment ${experiment.title} under folder ${parentFolder.name}`,
-        entityName: experiment.title
-      }, notif: { link: CnFrontService.getExperimentRoute(experiment.id) }
+        title: `{{user.name}} has created scenario ${scenario.title} under folder ${parentFolder.name}`,
+        entityName: scenario.title
+      }, notif: { link: CnFrontService.getScenarioRoute(scenario.id) }
     };
   }
 
-  private experimentUpdated(experiment: CnExperiment, parentFolder: CnHierarchyObject): CnActivityAndNotif {
+  private scenarioUpdated(scenario: CnScenario, parentFolder: CnHierarchyObject): CnActivityAndNotif {
     return {
       activity: {
-        entityType: CnActivityEntityType.EXPERIMENT,
-        entity: experiment,
+        entityType: CnActivityEntityType.SCENARIO,
+        entity: scenario,
         actionType: CnActivityType.UPDATE,
-        title: `{{user.name}} has updated experiment ${experiment.title} under folder ${parentFolder.name}`,
-        entityName: experiment.title
-      }, notif: { link: CnFrontService.getExperimentRoute(experiment.id) }
+        title: `{{user.name}} has updated scenario ${scenario.title} under folder ${parentFolder.name}`,
+        entityName: scenario.title
+      }, notif: { link: CnFrontService.getScenarioRoute(scenario.id) }
     };
   }
 
-  private experimentDeleted(experiment: CnExperiment, parentFolder: CnHierarchyObject): CnActivityAndNotif {
+  private scenarioDeleted(scenario: CnScenario, parentFolder: CnHierarchyObject): CnActivityAndNotif {
     return {
       activity: {
-        entityType: CnActivityEntityType.EXPERIMENT,
-        entity: experiment,
+        entityType: CnActivityEntityType.SCENARIO,
+        entity: scenario,
         actionType: CnActivityType.DELETE,
-        title: `{{user.name}} has deleted experiment ${experiment.title} under folder ${parentFolder.name}`,
-        entityName: experiment.title
+        title: `{{user.name}} has deleted scenario ${scenario.title} under folder ${parentFolder.name}`,
+        entityName: scenario.title
       }, notif: { link: CnFrontService.getFolderRoute(parentFolder.id) }
     };
   }
@@ -447,8 +447,8 @@ export class CnFolderListener {
     switch (entityType) {
       case CnActivityEntityType.FOLDER:
         return folderUser.folderNotif;
-      case CnActivityEntityType.EXPERIMENT:
-        return folderUser.experimentNotif;
+      case CnActivityEntityType.SCENARIO:
+        return folderUser.scenarioNotif;
       case CnActivityEntityType.NOTE:
         return folderUser.noteNotif;
       case CnActivityEntityType.DOCUMENT:
@@ -467,7 +467,7 @@ export class CnFolderListener {
    */
   @OnEvent(cnFolderEventName)
   async updateHierarchyObject(event: CnFolderEvent): Promise<void> {
-    const events: CnFolderEventType[] = ['UPDATE_FOLDER', 'UPDATE_FOLDER_LEADER', 'UPDATE_EXPERIMENT', 'UPDATE_NOTE',
+    const events: CnFolderEventType[] = ['UPDATE_FOLDER', 'UPDATE_FOLDER_LEADER', 'UPDATE_SCENARIO', 'UPDATE_NOTE',
       'RENAME_DOCUMENT', 'UPDATE_CONSTELLAB_DOCUMENT', 'MOVE_FOLDER_DOCUMENT_TO_TRASH', 'RESTORE_FOLDER_DOCUMENT_FROM_TRASH'];
 
     if (!events.includes(event.type)) return;

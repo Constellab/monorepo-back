@@ -8,7 +8,7 @@ import { CnLabStatusHistory } from './status/cn-lab-status-history.entity';
 import { CnLabAggregateService } from './cn-lab-aggregate.service';
 import { CnExternalLabApiModule } from '../cn-external-lab-api/cn-external-lab-api.module';
 import { CnUsersModule } from '../cn-users/cn-users.module';
-import { CnExperimentsModule } from '../cn-folders-aggregate/cn-experiments/cn-experiments.module';
+import { CnScenariosModule } from '../cn-folders-aggregate/cn-scenarios/cn-scenarios.module';
 import { CnLabManagerService } from './cn-lab-manager.service';
 import { CnBricksModule } from '../cn-bricks/cn-bricks.module';
 import { CnLabConfigsModule } from '../cn-lab-configs/cn-lab-configs.module';
@@ -71,7 +71,7 @@ import { CnSupportModule } from '../cn-support/cn-support.module';
     CnGroupsModule,
     CnAuthModule,
 
-    CnExperimentsModule,
+    CnScenariosModule,
     CnNotesModule,
     CnObjectStoragesModule,
     CnServerPriceModule,

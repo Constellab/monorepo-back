@@ -11,7 +11,7 @@ import { CnCoreConfigModule } from './app/cn-core/modules/cn-core-config/cn-core
 import { AcceptLanguageResolver, CookieResolver, I18nJsonLoader, I18nModule } from 'nestjs-i18n';
 import { join } from 'path';
 import { CnLabConfigsModule } from './app/cn-lab-configs/cn-lab-configs.module';
-import { CnExperimentsModule } from './app/cn-folders-aggregate/cn-experiments/cn-experiments.module';
+import { CnScenariosModule } from './app/cn-folders-aggregate/cn-scenarios/cn-scenarios.module';
 import { CnBricksModule } from './app/cn-bricks/cn-bricks.module';
 import { CnGroupsModule } from './app/cn-groups/cn-groups.module';
 import { CnSpacesModule } from './app/cn-spaces/cn-spaces.module';
@@ -204,7 +204,7 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     CnUserAccountModule,
     CnLabConfigsModule,
     CnFoldersAggregateModule,
-    CnExperimentsModule,
+    CnScenariosModule,
     CnNotesModule,
     CnBricksModule,
     CnGroupsModule,

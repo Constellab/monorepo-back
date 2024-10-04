@@ -34,7 +34,7 @@ export class CnLabGreenOptionService extends BlAbstractService<CnLabGreenOption>
     entity.type = dto.type;
     entity.value = dto.value;
     entity.isPersistent = dto.isPersistent;
-    if (entity.type === CnLabGreenOptionType.STOP_AFTER_EXPERIMENT ||
+    if (entity.type === CnLabGreenOptionType.STOP_AFTER_SCENARIO ||
       entity.type === CnLabGreenOptionType.STOP_AFTER_BACKUP) {
       entity.isPersistent = false;
     }

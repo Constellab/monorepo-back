@@ -19,7 +19,7 @@ export enum CnMailTemplate {
   support_lab_backup_error = 'cn-support-lab-backup-error',
 
   // Mail send by the lab
-  experiment_finished = 'cn-experiment-finished',
+  scenario_finished = 'cn-scenario-finished',
 
   // Other
   generic = 'cn-generic'

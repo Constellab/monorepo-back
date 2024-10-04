@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CnNote } from './cn-note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
-import { CnExperiment } from '../cn-experiments/cn-experiment.entity';
+import { CnScenario } from '../cn-scenarios/cn-scenario.entity';
 import {
   BlAbstractService,
   BlBadRequestException,
@@ -81,7 +81,7 @@ export class CnNotesService extends BlAbstractService<CnNote> {
   }
 
 
-  async saveNote(createNoteDto: CnCreateNoteWithConfigDto, experiments: CnExperiment[],
+  async saveNote(createNoteDto: CnCreateNoteWithConfigDto, scenarios: CnScenario[],
                    parentFolder: CnHierarchyObject, files: BlFile[]): Promise<CnSaveNoteResultDTO> {
 
     let noteDb: CnNote = await this.findById(createNoteDto.note.id, {
@@ -106,7 +106,7 @@ export class CnNotesService extends BlAbstractService<CnNote> {
     note.lastModifiedBy = noteDto.last_modified_by;
     note.title = noteDto.title;
 
-    note.experiments = experiments;
+    note.scenarios = scenarios;
     note.labConfig = labConfig;
 
     // handle validated
@@ -244,8 +244,8 @@ export class CnNotesService extends BlAbstractService<CnNote> {
     return note;
   }
 
-  findByIdAndCheckWithExperiments(id: string): Promise<CnNote> {
-    return this.findByIdAndCheck(id, { experiments: true });
+  findByIdAndCheckWithScenarios(id: string): Promise<CnNote> {
+    return this.findByIdAndCheck(id, { scenarios: true });
   }
 
   /**

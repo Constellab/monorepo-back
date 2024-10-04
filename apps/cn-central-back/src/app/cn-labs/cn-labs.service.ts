@@ -7,8 +7,8 @@ import { CnAbstractWithStatusService } from '../cn-core/class/cn-abstract-with-s
 import { CnLabStatusHistory } from './status/cn-lab-status-history.entity';
 import { ClDateHelper, ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnExperiment } from '../cn-folders-aggregate/cn-experiments/cn-experiment.entity';
-import { CnExperimentsService } from '../cn-folders-aggregate/cn-experiments/cn-experiments.service';
+import { CnScenario } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.entity';
+import { CnScenariosService } from '../cn-folders-aggregate/cn-scenarios/cn-scenarios.service';
 import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 import { CnNotesService } from '../cn-folders-aggregate/cn-notes/cn-notes.service';
 import { BlBadRequestException, BlSearchBuilder, BlSearchParams } from '@monorepo/back-core-lib';
@@ -23,7 +23,7 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
 
   constructor(@InjectRepository(CnLabEntity) private repository: Repository<CnLabEntity>,
               @InjectRepository(CnLabStatusHistory) private statusRepo: Repository<CnLabStatusHistory>,
-              private experimentService: CnExperimentsService,
+              private scenarioService: CnScenariosService,
               private noteService: CnNotesService,
               private eventEmitter: EventEmitter2,
               datasource: DataSource) {
@@ -161,9 +161,9 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     if (!ClHelpService.isNullOrEmpty(lab.serverInstanceId) || !ClHelpService.isNullOrEmpty(lab.serverVolumeId)) {
       throw new BlBadRequestException('Can\'t delete the lab because the server or volume still exist. Please delete them first');
     }
-    const experiments: CnExperiment[] = await this.experimentService.getExperimentsByLab(id);
-    if (experiments?.length > 0) {
-      throw new BlBadRequestException('Can\'t delete the lab because some experiment are linked to it');
+    const scenarios: CnScenario[] = await this.scenarioService.getScenariosByLab(id);
+    if (scenarios?.length > 0) {
+      throw new BlBadRequestException('Can\'t delete the lab because some scenario are linked to it');
     }
 
     const notes = await this.noteService.getNotesByLab(id);

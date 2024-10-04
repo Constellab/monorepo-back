@@ -36,7 +36,7 @@ export class CnFolderUserEntity {
   messageNotif: CnFolderNotifOptions;
 
   @Column({ nullable: false, type: 'enum', enum: CnFolderNotifOptions, default: CnFolderNotifOptions.NOTIF_ONLY })
-  experimentNotif: CnFolderNotifOptions;
+  scenarioNotif: CnFolderNotifOptions;
 
   @Column({ nullable: false, type: 'enum', enum: CnFolderNotifOptions, default: CnFolderNotifOptions.NOTIF_ONLY })
   noteNotif: CnFolderNotifOptions;

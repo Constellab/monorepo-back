@@ -3,7 +3,7 @@ import { Exclude, Type } from 'class-transformer';
 import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
 import { BlLuxonDateTimeColumn, BlNotUpdatable, BlRichTextContent } from '@monorepo/back-core-lib';
 import { CnNote } from '../cn-notes/cn-note.entity';
-import { CnExperimentStatus } from './cn-experiment-status.enum';
+import { CnScenarioStatus } from './cn-scenario-status.enum';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnUser } from '../../cn-users/cn-user.entity';
 import { DateTime } from 'luxon';
@@ -11,19 +11,19 @@ import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-
 import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
 import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 
-export interface CnExperimentProtocol {
+export interface CnScenarioProtocol {
   version: number;
   data: any;
 }
 
 
 /**
- * An experiment is executed in a lab to produce notes
+ * An scenario is executed in a lab to produce notes
  *
  * It is defined as a succession of jobs
  */
-@Entity('experiment')
-export class CnExperiment extends CnHierarchyRepresentation {
+@Entity('scenario')
+export class CnScenario extends CnHierarchyRepresentation {
 
   @Column({ nullable: false, length: 50 })
   title: string;
@@ -31,8 +31,8 @@ export class CnExperiment extends CnHierarchyRepresentation {
   @Column({ type: 'simple-json', array: false, nullable: true })
   description: BlRichTextContent;
 
-  @Column({ type: 'enum', enum: CnExperimentStatus, nullable: false })
-  status: CnExperimentStatus;
+  @Column({ type: 'enum', enum: CnScenarioStatus, nullable: false })
+  status: CnScenarioStatus;
 
   @BlNotUpdatable()
   @Type(() => CnLabEntity)
@@ -44,12 +44,12 @@ export class CnExperiment extends CnHierarchyRepresentation {
   @ManyToOne(() => CnLabConfig, { nullable: false })
   labConfig: CnLabConfig;
 
-  @ManyToMany(() => CnNote, note => note.experiments)
+  @ManyToMany(() => CnNote, note => note.scenarios)
   notes: CnNote[];
 
   @Exclude()
   @Column({ type: 'simple-json', nullable: false })
-  protocol: CnExperimentProtocol;
+  protocol: CnScenarioProtocol;
 
   @Column({ nullable: false, default: false })
   isValidated: boolean;
@@ -70,7 +70,7 @@ export class CnExperiment extends CnHierarchyRepresentation {
 
   getHierarchyObjectInfo(): CnHierarchyObjectInfo {
     return {
-      objectType: CnHierarchyObjectType.EXPERIMENT,
+      objectType: CnHierarchyObjectType.SCENARIO,
       name: this.title,
       user: this.lastModifiedBy,
       lastModifiedAt: this.lastModifiedAt,

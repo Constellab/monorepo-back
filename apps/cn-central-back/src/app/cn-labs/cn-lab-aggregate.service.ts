@@ -1143,7 +1143,7 @@ export class CnLabAggregateService {
   /**
    * Check if the user can manage the lab and stop it temporary.
    * It refreshes the lab status and check if the server is not busy
-   * It checks if no experiment or task on the lab is running
+   * It checks if no scenario or task on the lab is running
    * @private
    */
   private async getAndCheckServerStatusBeforeAction(id: string, requiresCloudLab: boolean = false): Promise<CnLabWithSpace> {
@@ -1163,7 +1163,7 @@ export class CnLabAggregateService {
       throw new BlBadRequestException(`The task '${lab.serverTaskText}' is running on the lab, it can't be configured`);
     }
 
-    // if the lab is not running, no need to check if an experiment is running
+    // if the lab is not running, no need to check if an scenario is running
     if (!lab.isRunning()) return lab;
 
     await this.labServerService.checkLabActivity(lab);

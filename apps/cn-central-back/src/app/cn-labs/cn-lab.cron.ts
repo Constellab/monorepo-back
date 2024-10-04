@@ -58,7 +58,7 @@ export class CnLabCron {
     this.logger.debug('[Cron] Start of refresh lab status');
 
     await this.checkStopAfterBackup();
-    await this.checkStopAfterExperiment();
+    await this.checkStopAfterScenario();
     await this.checkStopAfterTime();
     await this.checkStopAfterInactivity();
 
@@ -107,15 +107,15 @@ export class CnLabCron {
     }
   }
 
-  private async checkStopAfterExperiment(): Promise<void> {
-    const options = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_EXPERIMENT);
+  private async checkStopAfterScenario(): Promise<void> {
+    const options = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_SCENARIO);
 
     for (const option of options) {
       const lab = await this.labService.findByIdAndCheck(option.labId);
       if (lab.isRunning()) {
         const labGlobalActivity = await this.externalLabApiService.getLabGlobalActivity(lab.getGlabSpaceApiInfo()).catch(() => null);
 
-        if (labGlobalActivity == null || labGlobalActivity.running_experiments > 0 || labGlobalActivity.queued_experiments > 0) {
+        if (labGlobalActivity == null || labGlobalActivity.running_scenarios > 0 || labGlobalActivity.queued_scenarios > 0) {
           continue;
         }
 
@@ -170,7 +170,7 @@ export class CnLabCron {
   }
 
   private async stopLab(lab: CnLab, option: CnLabGreenOption, ruleDetail?: string): Promise<void> {
-    // check if there are running experiments
+    // check if there are running scenarios
     const check = await this.labServerService.checkLabActivity(lab, true).then(() => true)
       .catch((error: Error) => {
         this.logger.debug(`Not stopping lab : ${lab.id}, option : ${option.type}, because error: ${error.message}`);

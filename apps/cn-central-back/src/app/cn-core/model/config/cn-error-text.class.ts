@@ -51,7 +51,7 @@ export enum CnErrorText {
   LAB_REQ_NO_USER_IN_CONTEXT = 'error.lab_req_no_user_in_context',
   CHILD_FOLDER_END_DATA_AFTER_PARENT = 'error.child_folder_end_data_after_parent',
   DELETE_FOLDER_WITH_CHILDREN = 'error.delete_folder_with_children',
-  DELETE_FOLDER_WITH_EXPERIMENTS = 'error.delete_folder_with_experiments',
+  DELETE_FOLDER_WITH_SCENARIOS = 'error.delete_folder_with_scenarios',
   DELETE_FOLDER_WITH_NOTES = 'error.delete_folder_with_notes',
   DELETE_FOLDER_WITH_DOCUMENTS = 'error.delete_folder_with_documents',
   DOCUMENT_ALREADY_EXIST = 'error.document_already_exist',
@@ -63,6 +63,6 @@ export enum CnErrorText {
   NO_FOLDER_LEADER = 'error.no_folder_leader',
   LAB_FREE_EXPIRED = 'error.lab_free_expired',
   REMOVE_FOLDER_USE_LAB_AS_STORAGE_ERROR = 'error.remove_folder_use_as_storage_from_lab_error',
-  REMOVE_FOLDER_SYNC_EXPERIMENT_ERROR = 'error.remove_folder_sync_experiment_error',
+  REMOVE_FOLDER_SYNC_SCENARIO_ERROR = 'error.remove_folder_sync_scenario_error',
   REMOVE_FOLDER_SYNC_NOTE_ERROR = 'error.remove_folder_sync_note_error',
 }

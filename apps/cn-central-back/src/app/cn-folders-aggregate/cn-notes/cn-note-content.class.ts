@@ -4,7 +4,7 @@ export interface CnNoteViewBlockData {
   id: string;
   view_config_id?: string;
   resource_id?: string;
-  experiment_id?: string;
+  scenario_id?: string;
   view_method_name: string;
   view_config: any;
   title: string;

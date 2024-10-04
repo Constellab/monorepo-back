@@ -21,9 +21,9 @@ export class CnNotesController {
   }
 
 
-  @Get('experiment/:experimentId')
-  async getNotesByExperiment(@Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<CnNote[]> {
-    return await this.folderAggregateService.getNoteAssociatedToExperiment(experimentId);
+  @Get('scenario/:scenarioId')
+  async getNotesByScenario(@Param('scenarioId', new ParseUUIDPipe()) scenarioId: string): Promise<CnNote[]> {
+    return await this.folderAggregateService.getNoteAssociatedToScenario(scenarioId);
   }
 
   /**

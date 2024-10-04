@@ -109,7 +109,7 @@ export class CnFoldersController {
   }
 
   /**
-   * Return a simplified folder tree for an object (folder, experiment, note)
+   * Return a simplified folder tree for an object (folder, scenario, note)
    */
   @Get('tree/:id')
   async getFolderTree(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnHierarchyObject> {

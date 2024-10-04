@@ -15,7 +15,7 @@ export enum CnActivityType {
 export enum CnActivityEntityType {
   USER = 'USER',
   FOLDER = 'FOLDER',
-  EXPERIMENT = 'EXPERIMENT',
+  SCENARIO = 'SCENARIO',
   NOTE = 'NOTE',
   DOCUMENT = 'DOCUMENT',
   MESSAGE = 'MESSAGE',

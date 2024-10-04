@@ -1,5 +1,5 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
-import { CnExperiment } from '../cn-experiments/cn-experiment.entity';
+import { CnScenario } from '../cn-scenarios/cn-scenario.entity';
 import { Exclude, Type } from 'class-transformer';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnUser } from '../../cn-users/cn-user.entity';
@@ -21,9 +21,9 @@ export class CnNote extends CnHierarchyRepresentation {
   @Column({ type: 'simple-json', nullable: true })
   content: BlRichTextContent;
 
-  @ManyToMany(() => CnExperiment, experiment => experiment.notes)
-  @JoinTable({ name: 'note_experiment' })
-  experiments: CnExperiment[];
+  @ManyToMany(() => CnScenario, scenario => scenario.notes)
+  @JoinTable({ name: 'note_scenario' })
+  scenarios: CnScenario[];
 
   @BlNotUpdatable()
   @Type(() => CnLabEntity)
