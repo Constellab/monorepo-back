@@ -40,8 +40,8 @@ export class HnLiveTaskVersion extends BlEntityWithId {
   @Column({name: 'versionInfos', type: 'simple-json', nullable: true})
   versionInfos?: Record<string, any>;
 
-  @Column({type: 'simple-array', nullable: true})
-  params: string[] = [];
+  @Column({type: 'text', nullable: true})
+  params: string;
 
   @Column({type: 'text', nullable: true})
   environment: string;

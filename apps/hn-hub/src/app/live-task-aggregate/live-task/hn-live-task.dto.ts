@@ -52,7 +52,7 @@ export class HnLiveTaskVersionFileInputBrick{
 
 export class HnLiveTaskVersionFileInput{
   json_version: number;
-  params: string[];
+  params: string;
   code: string;
   environment: string;
   input_specs: Record<string, any>;
@@ -101,7 +101,7 @@ export class HnLiveTaskVersionForLabDto{
   version: number;
   type: string;
   environment: string;
-  params: string[];
+  params: string;
   code: string;
   input_specs: Record<string, any>;
   output_specs: Record<string, any>;
