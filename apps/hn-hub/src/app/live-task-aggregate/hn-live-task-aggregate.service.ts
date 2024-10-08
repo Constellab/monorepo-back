@@ -47,6 +47,7 @@ import { HnSpaceDto } from '../space-aggregate/space/hn-space.dto';
 import { HnUploadFileResponseDto } from '../file-aggregate/file-core/hn-abstract-file.dto';
 import { HnFileLiveTaskService } from '../file-aggregate/file-live-task/hn-file-live-task.service';
 import { Request } from 'express';
+import { HnLiveTaskVersionMigrator } from './live-task-version/hn-live-task-version-migrator.class';
 
 @Injectable()
 export class HnLiveTaskAggregateService {
@@ -303,14 +304,20 @@ export class HnLiveTaskAggregateService {
    * @param id
    * @param req
    */
-  public async findLatestPublishedLiveTaskVersionForLabByLiveTaskId(id: string, req: Request): Promise<HnLiveTaskVersionForLabDto> {
+  public async findLatestPublishedLiveTaskVersionForLabByLiveTaskId(id: string,
+                                                                    req: Request,
+                                                                    versionNumber: number): Promise<HnLiveTaskVersionForLabDto> {
     await this.labConstellabApiService.checkApiKeyAndUserIdInCentral(req);
     const user: HnUser = await this.userService.findOne(req.header('user'));
     const liveTask: HnLiveTask = await this.liveTaskService.findOne(id);
     if (liveTask.space != null) {
       await this.spaceAggregateService.assertCheckSpaceUser(liveTask.space.id, user.id);
     }
-    return HnLiveTaskVersionForLabDto.fromLiveTaskVersion(await this.liveTaskVersionService.findLatestPublishedByLiveTask(liveTask));
+    const liveTaskVersion = await this.liveTaskVersionService.findLatestPublishedByLiveTask(liveTask);
+    const liveTaskVersionDto = new HnLiveTaskVersionDto(liveTaskVersion);
+    const migrator = new HnLiveTaskVersionMigrator();
+    return HnLiveTaskVersionForLabDto.fromLiveTaskVersion(
+      migrator.migrateLiveTaskVersionToSpecificVersion(liveTaskVersionDto, versionNumber));
   }
 
   public async findLatestPublishedLiveTaskVersionByLiveTaskId(id: string): Promise<HnLiveTaskVersionDto> {

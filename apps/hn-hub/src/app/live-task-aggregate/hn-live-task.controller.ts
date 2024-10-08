@@ -41,6 +41,7 @@ import { HnAbstractFileController } from '../file-aggregate/file-core/hn-abstrac
 import { HnFileLiveTaskService } from '../file-aggregate/file-live-task/hn-file-live-task.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
+import { HnLiveTaskVersionMigrator } from './live-task-version/hn-live-task-version-migrator.class';
 
 @Controller('live-task')
 export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
@@ -65,6 +66,8 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
    */
   @Post()
   create(@Body(new BlParsePipe(HnCreateLiveTaskDto)) createLiveTaskDto: HnCreateLiveTaskDto): Promise<HnLiveTaskVersion> {
+    const migrator: HnLiveTaskVersionMigrator = new HnLiveTaskVersionMigrator();
+    createLiveTaskDto.versionFile = migrator.migrateLiveTaskVersionFile(createLiveTaskDto.versionFile);
     return this.liveTaskAggregateService.create(createLiveTaskDto);
   }
 
@@ -72,6 +75,8 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
   @Post('/for-lab')
   async createForLab(@Body(new BlParsePipe(HnCreateLiveTaskDto)) createLiveTaskDto: HnCreateLiveTaskDto,
                      @Req() req: Request): Promise<HaCreateLiveTaskVersionFromLabResponseDto> {
+    const migrator: HnLiveTaskVersionMigrator = new HnLiveTaskVersionMigrator();
+    createLiveTaskDto.versionFile = migrator.migrateLiveTaskVersionFile(createLiveTaskDto.versionFile);
     return this.liveTaskAggregateService.createForLab(createLiveTaskDto, req);
   }
 
@@ -80,6 +85,8 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
   async forkForLab(@Param('id') liveTaskVersionId: string,
                    @Body(new BlParsePipe(HnCreateLiveTaskDto)) createLiveTaskDto: HnCreateLiveTaskDto,
                    @Req() req: Request): Promise<HaCreateLiveTaskVersionFromLabResponseDto> {
+    const migrator: HnLiveTaskVersionMigrator = new HnLiveTaskVersionMigrator();
+    createLiveTaskDto.versionFile = migrator.migrateLiveTaskVersionFile(createLiveTaskDto.versionFile);
     return this.liveTaskAggregateService.forkForLab(liveTaskVersionId, createLiveTaskDto, req);
   }
 
@@ -88,6 +95,8 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
   async createNewVersionForLab(@Param('id', ParseUUIDPipe) liveTaskId: string,
                                @Body('versionFile') versionFile: HnLiveTaskVersionFileInput,
                                @Req() req: Request): Promise<HaCreateLiveTaskVersionFromLabResponseDto> {
+    const migrator: HnLiveTaskVersionMigrator = new HnLiveTaskVersionMigrator();
+    versionFile = migrator.migrateLiveTaskVersionFile(versionFile);
     return this.liveTaskAggregateService.createNewVersionForLab(liveTaskId, versionFile, req);
   }
 
@@ -247,10 +256,18 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
    * @return a live task version code
    */
   @BlPublic()
-  @Get(':liveTaskId/version/latest/for-lab')
+  @Get(':liveTaskId/version/latest/for-lab/:jsonVersionNumber?')
   getLatestPublishedLiveTaskVersionForLabByLiveTaskId(@Param('liveTaskId', ParseUUIDPipe) liveTaskId: string,
-                                                      @Req() req: Request): Promise<HnLiveTaskVersionForLabDto> {
-    return this.liveTaskAggregateService.findLatestPublishedLiveTaskVersionForLabByLiveTaskId(liveTaskId, req);
+                                                      @Req() req: Request,
+                                                      @Param('jsonVersionNumber') jsonVersionNumber?: string
+  ): Promise<HnLiveTaskVersionForLabDto> {
+    let versionNumber = null;
+    if (!jsonVersionNumber) {
+      versionNumber = 1;
+    } else {
+      versionNumber = +jsonVersionNumber
+    }
+    return this.liveTaskAggregateService.findLatestPublishedLiveTaskVersionForLabByLiveTaskId(liveTaskId, req, versionNumber);
   }
 
   @BlPublic()
@@ -325,6 +342,8 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
   createNewDraftVersion(@Param('liveTaskId', ParseUUIDPipe) liveTaskId: string,
                         // eslint-disable-next-line max-len
                         @Body(new BlParsePipe(HnLiveTaskVersionFileInput)) newLiveTaskVersionFile: HnLiveTaskVersionFileInput): Promise<HnLiveTaskVersion> {
+    const migrator: HnLiveTaskVersionMigrator = new HnLiveTaskVersionMigrator();
+    newLiveTaskVersionFile = migrator.migrateLiveTaskVersionFile(newLiveTaskVersionFile);
     return this.liveTaskAggregateService.createNewDraftVersion(liveTaskId, newLiveTaskVersionFile);
   }
 
@@ -338,6 +357,8 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
   replaceDraftVersion(@Param('liveTaskId', ParseUUIDPipe) liveTaskId: string,
                         // eslint-disable-next-line max-len
                         @Body(new BlParsePipe(HnLiveTaskVersionFileInput)) newLiveTaskVersionFile: HnLiveTaskVersionFileInput): Promise<HnLiveTaskVersion> {
+    const migrator: HnLiveTaskVersionMigrator = new HnLiveTaskVersionMigrator();
+    newLiveTaskVersionFile = migrator.migrateLiveTaskVersionFile(newLiveTaskVersionFile);
     return this.liveTaskAggregateService.replaceDraftVersion(liveTaskId, newLiveTaskVersionFile);
   }
 
