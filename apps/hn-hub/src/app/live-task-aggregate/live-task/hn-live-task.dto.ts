@@ -152,6 +152,6 @@ export class HnLiveTaskVersionForLabDto{
 }
 
 export class HaCreateLiveTaskVersionFromLabResponseDto{
-  live_task_id: string;
+  live_task_version: string;
   id: string;
 }

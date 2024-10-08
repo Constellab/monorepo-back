@@ -92,7 +92,7 @@ export class HnLiveTaskAggregateService {
     const liveTaskVersion: HnLiveTaskVersion = await this.create(createLiveTaskDto, null, user);
     return {
       id: liveTaskVersion.id,
-      live_task_id: liveTaskVersion.liveTask.id
+      live_task_version: liveTaskVersion.liveTask.id
     };
   }
 
@@ -103,7 +103,7 @@ export class HnLiveTaskAggregateService {
     const liveTaskVersion: HnLiveTaskVersion = await this.create(createLiveTaskDto, parentLiveTaskVersionId, user);
     return {
       id: liveTaskVersion.id,
-      live_task_id: liveTaskVersion.liveTask.id
+      live_task_version: liveTaskVersion.liveTask.id
     };
   }
 
@@ -122,7 +122,7 @@ export class HnLiveTaskAggregateService {
     const newLiveTaskVersion = await this.createNewDraftVersion(liveTaskId, newLiveTaskVersionFile, true);
     return {
       id: newLiveTaskVersion.id,
-      live_task_id: newLiveTaskVersion.liveTask.id
+      live_task_version: newLiveTaskVersion.liveTask.id
     };
   }
 
