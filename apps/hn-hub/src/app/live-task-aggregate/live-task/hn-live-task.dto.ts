@@ -5,6 +5,7 @@ import {HnSpaceDto} from '../../space-aggregate/space/hn-space.dto';
 import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
 import {HnLiveTaskCoAuthorDto} from '../live-task-co-author/hn-live-task-co-author.dto';
 import {BlEntityWithIdDTO} from '@monorepo/back-core-lib';
+import { HnLiveTaskVersionDto } from '../live-task-version/hn-live-task-version.dto';
 
 export class HnLiveTaskDto extends BlEntityWithIdDTO {
   title: string;
@@ -52,7 +53,7 @@ export class HnLiveTaskVersionFileInputBrick{
 
 export class HnLiveTaskVersionFileInput{
   json_version: number;
-  params: string;
+  params: string | string[];
   code: string;
   environment: string;
   input_specs: Record<string, any>;
@@ -101,14 +102,14 @@ export class HnLiveTaskVersionForLabDto{
   version: number;
   type: string;
   environment: string;
-  params: string;
+  params: string | string[];
   code: string;
   input_specs: Record<string, any>;
   output_specs: Record<string, any>;
   config_specs: Record<string, any>;
   live_task: HnLiveTaskForLabDto;
 
-  static fromLiveTaskVersion(liveTaskVersion: HnLiveTaskVersion): HnLiveTaskVersionForLabDto{
+  static fromLiveTaskVersion(liveTaskVersion: HnLiveTaskVersionDto): HnLiveTaskVersionForLabDto{
     const dto = new HnLiveTaskVersionForLabDto();
     dto.id = liveTaskVersion.id;
     dto.version = liveTaskVersion.version;

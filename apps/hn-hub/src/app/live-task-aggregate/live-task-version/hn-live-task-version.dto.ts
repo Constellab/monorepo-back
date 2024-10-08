@@ -8,7 +8,7 @@ export class HnLiveTaskVersionDto extends BlEntityWithIdDTO {
   versionState: HnLiveTaskVersionState;
   type: HnLiveTaskVersionType;
   versionInfos?: Record<string, any>;
-  params: string;
+  params: string | string[];
   environment: string;
   code: string;
   createdAt: string;

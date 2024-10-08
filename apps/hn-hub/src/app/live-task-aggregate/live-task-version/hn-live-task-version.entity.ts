@@ -77,7 +77,7 @@ export class HnLiveTaskVersion extends BlEntityWithId {
 
   private initVersionFile(versionFile: HnLiveTaskVersionFileInput): void {
     this.code = versionFile.code;
-    this.params = versionFile.params;
+    this.params = versionFile.params as string;
     this.inputSpecs = versionFile.input_specs;
     this.outputSpecs = versionFile.output_specs;
     this.configSpecs = versionFile.config_specs;
