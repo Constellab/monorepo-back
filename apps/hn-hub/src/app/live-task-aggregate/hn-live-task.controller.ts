@@ -77,9 +77,7 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
                      @Req() req: Request): Promise<HaCreateLiveTaskVersionFromLabResponseDto> {
     const migrator: HnLiveTaskVersionMigrator = new HnLiveTaskVersionMigrator();
     createLiveTaskDto.versionFile = migrator.migrateLiveTaskVersionFile(createLiveTaskDto.versionFile);
-    console.log(createLiveTaskDto.versionFile);
-    const res = await this.liveTaskAggregateService.createForLab(createLiveTaskDto, req);
-    return res;
+    return this.liveTaskAggregateService.createForLab(createLiveTaskDto, req);;
   }
 
   @BlPublic()
@@ -277,10 +275,7 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
     } else {
       versionNumber = +jsonVersionNumber
     }
-    console.log('JSON NUM', versionNumber)
-    const res = await this.liveTaskAggregateService.findLatestPublishedLiveTaskVersionForLabByLiveTaskId(liveTaskId, req, versionNumber);
-    console.log('res', res)
-    return res;
+    return await this.liveTaskAggregateService.findLatestPublishedLiveTaskVersionForLabByLiveTaskId(liveTaskId, req, versionNumber);
   }
 
   @BlPublic()
