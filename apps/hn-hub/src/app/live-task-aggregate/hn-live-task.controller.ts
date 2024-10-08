@@ -77,7 +77,9 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
                      @Req() req: Request): Promise<HaCreateLiveTaskVersionFromLabResponseDto> {
     const migrator: HnLiveTaskVersionMigrator = new HnLiveTaskVersionMigrator();
     createLiveTaskDto.versionFile = migrator.migrateLiveTaskVersionFile(createLiveTaskDto.versionFile);
-    return this.liveTaskAggregateService.createForLab(createLiveTaskDto, req);
+    console.log(createLiveTaskDto.versionFile);
+    const res = await this.liveTaskAggregateService.createForLab(createLiveTaskDto, req);
+    return res;
   }
 
   @BlPublic()
@@ -138,7 +140,9 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
     } else {
       versionNumber = +jsonVersionNumber
     }
-    return this.liveTaskAggregateService.getLiveTaskForLabByVersionId(req, versionId, versionNumber);
+    const res = await this.liveTaskAggregateService.getLiveTaskForLabByVersionId(req, versionId, versionNumber);
+    console.log(res);
+    return res;
   }
 
   /**
@@ -264,7 +268,7 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
    */
   @BlPublic()
   @Get(':liveTaskId/version/latest/for-lab/:jsonVersionNumber?')
-  getLatestPublishedLiveTaskVersionForLabByLiveTaskId(@Param('liveTaskId', ParseUUIDPipe) liveTaskId: string,
+  async getLatestPublishedLiveTaskVersionForLabByLiveTaskId(@Param('liveTaskId', ParseUUIDPipe) liveTaskId: string,
                                                       @Req() req: Request,
                                                       @Param('jsonVersionNumber') jsonVersionNumber?: string
   ): Promise<HnLiveTaskVersionForLabDto> {
@@ -274,7 +278,10 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
     } else {
       versionNumber = +jsonVersionNumber
     }
-    return this.liveTaskAggregateService.findLatestPublishedLiveTaskVersionForLabByLiveTaskId(liveTaskId, req, versionNumber);
+    console.log('JSON NUM', versionNumber)
+    const res = await this.liveTaskAggregateService.findLatestPublishedLiveTaskVersionForLabByLiveTaskId(liveTaskId, req, versionNumber);
+    console.log('res', res)
+    return res;
   }
 
   @BlPublic()
