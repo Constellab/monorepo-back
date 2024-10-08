@@ -24,51 +24,30 @@ export class HnLiveTaskVersionMigrator {
     return LiveTaskVersionFile;
   }
 
-  public migrateLiveTaskVersion(liveTaskVersion: HnLiveTaskVersionDto): HnLiveTaskVersionDto {
-    if (liveTaskVersion.version === 2) {
-      return liveTaskVersion;
-    }
-
-    if (liveTaskVersion.version === 1) {
-      liveTaskVersion = this.migrateLiveTaskVersionFromV1ToV2(liveTaskVersion);
-    }
-
-    return liveTaskVersion;
-  }
-
 
   public migrateLiveTaskVersionToSpecificVersion(
     liveTaskVersion: HnLiveTaskVersionDto,
     version: number
   ): HnLiveTaskVersionDto {
-    if (liveTaskVersion.version === version) {
-      return liveTaskVersion;
+
+    if (version === 1) {
+      if (liveTaskVersion.params instanceof Array) {
+        return liveTaskVersion;
+      } else {
+        liveTaskVersion.params = (liveTaskVersion.params as string).split('\n');
+        return liveTaskVersion;
+      }
     }
 
-    if (liveTaskVersion.version === 2 && version === 1) {
-      liveTaskVersion = this.migrateLiveTaskVersionFromV2ToV1(liveTaskVersion);
-    }
-
-    if (liveTaskVersion.version === 1 && version === 2) {
-      liveTaskVersion = this.migrateLiveTaskVersionFromV1ToV2(liveTaskVersion);
+    if (version === 2) {
+      if (liveTaskVersion.params instanceof Array) {
+        liveTaskVersion.params = (liveTaskVersion.params as string[]).join('\n');
+        return liveTaskVersion;
+      }
     }
 
     return liveTaskVersion;
   }
 
-  private migrateLiveTaskVersionFromV1ToV2(
-    liveTaskVersion: HnLiveTaskVersionDto
-  ): HnLiveTaskVersionDto {
-    liveTaskVersion.version = 2;
-    liveTaskVersion.params = (liveTaskVersion.params as string[]).join('\n');
-    return liveTaskVersion;
-  }
 
-  private migrateLiveTaskVersionFromV2ToV1(
-    liveTaskVersion: HnLiveTaskVersionDto
-  ): HnLiveTaskVersionDto {
-    liveTaskVersion.version = 1;
-    liveTaskVersion.params = (liveTaskVersion.params as string).split('\n');
-    return liveTaskVersion;
-  }
 }

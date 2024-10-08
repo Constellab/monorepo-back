@@ -141,7 +141,6 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
       versionNumber = +jsonVersionNumber
     }
     const res = await this.liveTaskAggregateService.getLiveTaskForLabByVersionId(req, versionId, versionNumber);
-    console.log(res);
     return res;
   }
 
