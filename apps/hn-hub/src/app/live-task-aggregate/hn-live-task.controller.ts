@@ -77,7 +77,7 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
                      @Req() req: Request): Promise<HaCreateLiveTaskVersionFromLabResponseDto> {
     const migrator: HnLiveTaskVersionMigrator = new HnLiveTaskVersionMigrator();
     createLiveTaskDto.versionFile = migrator.migrateLiveTaskVersionFile(createLiveTaskDto.versionFile);
-    return this.liveTaskAggregateService.createForLab(createLiveTaskDto, req);;
+    return this.liveTaskAggregateService.createForLab(createLiveTaskDto, req);
   }
 
   @BlPublic()
