@@ -155,7 +155,7 @@ export class HnLiveTaskAggregateService {
   }
 
 
-  public async getLiveTaskForLabByVersionId(req: Request, versionId: string): Promise<HnLiveTaskForLabDto> {
+  public async getLiveTaskForLabByVersionId(req: Request, versionId: string, versionNumber: number): Promise<HnLiveTaskForLabDto> {
     const user = await this.checkIfLabUserAndReturnUser(req);
     const liveTaskVersion: HnLiveTaskVersion = await this.liveTaskVersionService.findOne(versionId);
     const liveTask = liveTaskVersion.liveTask;
@@ -165,7 +165,9 @@ export class HnLiveTaskAggregateService {
     if (liveTaskVersion?.liveTask == null) {
       throw new BlNotFoundException('Live task not found');
     }
-    return HnLiveTaskForLabDto.fromLiveTask(new HnLiveTaskDto(liveTaskVersion.liveTask));
+    const liveTaskVersionDto = new HnLiveTaskVersionDto(liveTaskVersion);
+    const migrator = new HnLiveTaskVersionMigrator();
+    return HnLiveTaskForLabDto.fromLiveTask(migrator.migrateLiveTaskVersionToSpecificVersion(liveTaskVersionDto, versionNumber).liveTask);
   }
 
   public async findAllWithFilters(spacesFilter: string[], titleFilter: string, page: number,
@@ -303,6 +305,7 @@ export class HnLiveTaskAggregateService {
    * Find the latest version of a live task for lab user
    * @param id
    * @param req
+   * @param versionNumber
    */
   public async findLatestPublishedLiveTaskVersionForLabByLiveTaskId(id: string,
                                                                     req: Request,
