@@ -51,7 +51,7 @@ import { CnLabGreenOptionFormDto } from './green-option/cn-lab-green-option.dto'
 import { CnLabStatusRunRequest, CnLabStatusRunResponse } from './status/cn-lab-status.dto';
 import { CnLabFreeCreateDto, CnLabFreeGetDto, CnLabFreeUpdateDto } from './lab-free/cn-lab-free.dto';
 import { CnLabFreeAggregateService } from './lab-free/cn-lab-free-aggregate.service';
-import { CnLabBackupHistory } from './backup/cn-lab-backup-history.entity';
+import { CnLabBucketHistory } from './backup/cn-lab-backup-history.entity';
 import { CnLabBackupStatusDTO, CnLabCheckBackupSizeDTO } from './backup/cn-lab-backup.dto';
 
 
@@ -89,7 +89,7 @@ export class CnLabsController {
    */
   @Get('current')
   public getCurrentLabs(@Query('page', ParseIntPipe) page: number,
-                                @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnLab>> {
+                        @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnLab>> {
     return this.aggregateService.getCurrentLabs(page, size);
   }
 
@@ -393,12 +393,12 @@ export class CnLabsController {
 
   //////////////////////////// BACKUP ////////////////////////////////
   @Post(':id/backup/prod')
-  async backupProd(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabBackupHistory[]> {
+  async backupProd(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabBucketHistory[]> {
     return await this.aggregateService.createProdBackup(id);
   }
 
   @Post(':id/backup/stop-current')
-  async stopCurrentBackup(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabBackupHistory[]> {
+  async stopCurrentBackup(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabBucketHistory[]> {
     return await this.aggregateService.stopCurrentBackup(id);
   }
 
@@ -415,7 +415,7 @@ export class CnLabsController {
   @Get(':id/backup-history')
   public getLabBackupHistory(@Param('id', new ParseUUIDPipe()) id: string,
                              @Query('page', ParseIntPipe) page: number,
-                             @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnLabBackupHistory>> {
+                             @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnLabBucketHistory>> {
     return this.aggregateService.getLabBackupHistory(id, page, size);
   }
 
@@ -534,7 +534,7 @@ export class CnLabsController {
 
   @Post(':id/kpi/running')
   async getLabRunningKpis(@Param('id', new ParseUUIDPipe()) id: string,
-                                  @Body() request: CnLabStatusRunRequest): Promise<CnLabStatusRunResponse> {
+                          @Body() request: CnLabStatusRunRequest): Promise<CnLabStatusRunResponse> {
     return await this.aggregateService.getLabRunningKpis(id, request);
   }
 
@@ -608,5 +608,11 @@ export class CnLabsController {
     // use a DTO to return all the field including the apiKey
     const labs = await this.aggregateService.searchAll(searchParam, page, size);
     return BlDtoHelper.pageToDto(CnLabWithSpaceDto, labs);
+  }
+
+  // TODO TO REMOVE
+  @Post('backup/migrate')
+  async migrateBackup(): Promise<void> {
+    await this.aggregateService.migrateBackup();
   }
 }

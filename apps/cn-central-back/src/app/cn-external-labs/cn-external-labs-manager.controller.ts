@@ -4,8 +4,8 @@ import { CnLabManagerGuard } from '../cn-core/decorators/cn-lab-manager-guard.de
 import { CnLabRobotAuthentication } from '../cn-core/decorators/cn-lab-guard.decorator';
 import { BlParsePipe } from '@monorepo/back-core-lib';
 import { CnLabManagerBackupInfoDTO } from '../cn-external-lab-api/model/cn-lab-manager.class';
-import { CnLabBackupBucket } from '../cn-labs/backup/cn-lab-backup.dto';
-import { CnLabBackupHistory } from '../cn-labs/backup/cn-lab-backup-history.entity';
+import { CnLabBackupBucket, CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
+import { CnLabBucketHistory } from '../cn-labs/backup/cn-lab-backup-history.entity';
 
 /**
  * Specific controller for route called by the lab manager. These routes are not called by a user
@@ -23,9 +23,17 @@ export class CnExternalLabsManagerController {
     return this.labAggregator.getCurrentLabBackupInfo();
   }
 
+  // TODO @lab-manager-v1.12.0 : remove once the lab manager is updated
   @CnLabRobotAuthentication()
   @Post('lab/backup-history')
-  async saveBackupHistory(@Body(new BlParsePipe(CnLabBackupBucket)) backups: CnLabBackupBucket[]): Promise<CnLabBackupHistory[]> {
-    return this.labAggregator.saveCurrentLabBackupHistory(backups);
+  async saveBackupHistory(@Body() backups: CnLabBackupBucket[]): Promise<CnLabBucketHistory[]> {
+    const history = CnLabBackupsHistory.fromV2Backups(backups);
+    return this.labAggregator.saveCurrentLabBackupHistory(history);
+  }
+
+  @CnLabRobotAuthentication()
+  @Post('lab/backup-history-v2')
+  async saveBackupHistoryV2(@Body(new BlParsePipe(CnLabBackupsHistory)) backupsHistory: CnLabBackupsHistory): Promise<CnLabBucketHistory[]> {
+    return this.labAggregator.saveCurrentLabBackupHistory(backupsHistory);
   }
 }

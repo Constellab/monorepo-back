@@ -1,10 +1,10 @@
 import { DateTime } from 'luxon';
-import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
+import { ClCoreJsonConvert, ClLuxonDateTimeTransform } from '@monorepo/core-lib';
 import { Type } from 'class-transformer';
 import {
   CnCloudProviderRegion
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import { CnLabBackupHistory } from './cn-lab-backup-history.entity';
+import { CnLabBucketHistory } from './cn-lab-backup-history.entity';
 
 export enum CnLabBackupFrequency {
   DAILY = 'DAILY',
@@ -22,17 +22,28 @@ export enum CnLabBackupStatus {
   ERROR = 'ERROR',
 }
 
-export interface BackupStatusObject {
+export interface CnLabBackupStatusObject {
   status: CnLabBackupStatus;
   message: string;
 }
 
-export class CnLabBackupsHistory {
-  version: number;
-
-  @Type(() => CnLabBackupBucket)
-  backups: CnLabBackupBucket[];
+export interface CnLabBackupTransferStats {
+  sizeInBytes: number;
+  durationInSeconds: number;
+  speedInBytesPerSecond: number;
+  nbErrors: number;
+  nbChecks: number;
+  nbFile: number;
+  nbDeleted: number;
+  nbRenamed: number;
 }
+
+export interface CnLabBackupInfo {
+  status: CnLabBackupStatusObject;
+  totalSize: number;
+  transfer?: CnLabBackupTransferStats;
+}
+
 
 export class CnLabBackupBucket {
   id: string;
@@ -45,14 +56,71 @@ export class CnLabBackupBucket {
   @ClLuxonDateTimeTransform()
   endUploadAt?: DateTime;
   status: CnLabBackupStatus;
-  dataStatus: BackupStatusObject;
-  dbStatus: BackupStatusObject;
-  dataSize: number;
-  dbSize: number;
+
+  data: CnLabBackupInfo;
+  db: CnLabBackupInfo;
+
   frequency: CnLabBackupFrequency;
   triggerMode: CnLabBackupTriggerMode;
   s3Prefix: string;
 }
+
+export class CnLabBackupsHistory {
+
+  private static readonly CURRENT_VERSION = 3;
+
+  version: number;
+
+  @Type(() => CnLabBackupBucket)
+  backups: CnLabBackupBucket[];
+
+  public static fromV2Backups(backups: CnLabBackupBucket[]): CnLabBackupsHistory {
+    const history = new CnLabBackupsHistory();
+    history.version = 2;
+    history.backups = ClCoreJsonConvert.deserialize(backups, CnLabBackupBucket) as CnLabBackupBucket[];
+    return history;
+  }
+
+  // TODO @lab-manager-v1.12.0 : remove once the lab manager is updated
+  public static fromLabManagerResponse(backups: CnLabBackupsHistory | CnLabBackupBucket[]): CnLabBackupsHistory {
+    let backupsHistory: CnLabBackupsHistory;
+    if (Array.isArray(backups)) {
+      backupsHistory = CnLabBackupsHistory.fromV2Backups(backups);
+    } else {
+      backupsHistory = ClCoreJsonConvert.deserialize(backups, CnLabBackupsHistory) as CnLabBackupsHistory;
+    }
+    return backupsHistory.migrateToV3();
+  }
+
+  public migrateToV3(): this {
+    if (this.version === 3) return this;
+
+    for (const backup of this.backups as any) {
+      if (!backup.data) {
+        backup.data = {
+          totalSize: backup.dataSize,
+          status: backup.dataStatus,
+          transfer: null
+        } as CnLabBackupInfo;
+        delete backup.dataSize;
+        delete backup.dataStatus;
+      }
+      if (!backup.db) {
+        backup.db = {
+          totalSize: backup.dbSize,
+          status: backup.dbStatus,
+          transfer: null
+        } as CnLabBackupInfo;
+        delete backup.dbSize;
+        delete backup.dbStatus;
+      }
+
+    }
+    this.version = CnLabBackupsHistory.CURRENT_VERSION;
+    return this;
+  }
+}
+
 
 export class CnLabBackupStatusDTO {
   frequency: CnLabBackupFrequency;
@@ -109,5 +177,5 @@ export class CnLabCheckBackupSizeDTO extends CnLabBackupStatusDTO {
 
 export interface CnSaveBackupHistoryDTO {
   isNew: boolean;
-  history: CnLabBackupHistory;
+  history: CnLabBucketHistory;
 }

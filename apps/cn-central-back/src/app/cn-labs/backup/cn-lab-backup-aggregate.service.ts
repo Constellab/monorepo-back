@@ -7,13 +7,13 @@ import {
   CnCloudProviderRegion
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnLabBackupOption } from './cn-lab-backup-option.entity';
-import { CnLabBackupHistory } from './cn-lab-backup-history.entity';
-import { BlBadRequestException, BlObjectStorageService } from '@monorepo/back-core-lib';
+import { CnLabBucketHistory } from './cn-lab-backup-history.entity';
+import { BlBadRequestException, BlObjectStorageService, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { ClPageI } from '@monorepo/core-lib';
 import { CnLabManagerService } from '../cn-lab-manager.service';
 import {
-  CnLabBackupBucket,
   CnLabBackupFrequency,
+  CnLabBackupsHistory,
   CnLabBackupStatusDTO,
   CnLabCheckBackupSizeDTO,
   CnSaveBackupHistoryDTO
@@ -25,6 +25,7 @@ import {
   CnLabManagerRestoreBackupDTO
 } from '../../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLabMailService } from '../mail/cn-lab-mail.service';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 
 
 @Injectable()
@@ -96,7 +97,7 @@ export class CnLabBackupAggregateService {
 
     const lastBackup = await this.backupHistoryService.findLastSuccessBackupByType(lab.id, frequency);
     if (lastBackup) {
-      backupStatus.lastSuccessBackupSize = lastBackup.dataSize + lastBackup.dbSize;
+      backupStatus.lastSuccessBackupSize = lastBackup.dataDetails.totalSize + lastBackup.dbDetails.totalSize;
       backupStatus.lastSuccessBackupAt = lastBackup.endedAt;
       backupStatus.lastSuccessBackupId = lastBackup.id;
       backupStatus.status = 'SUCCESS';
@@ -111,17 +112,17 @@ export class CnLabBackupAggregateService {
 
   public async syncBackupHistory(lab: CnLab): Promise<void> {
     const backups = await this.labManagerService.getBackupHistory(lab);
-    const histories = await this.backupHistoryService.saveHistories(backups.backups, lab);
+    const histories = await this.backupHistoryService.saveHistories(backups, lab);
     await this.checkErrorHistory(histories, lab);
   }
 
 
-  public async getBackupHistory(labId: string, page: number, size: number): Promise<ClPageI<CnLabBackupHistory>> {
+  public async getBackupHistory(labId: string, page: number, size: number): Promise<ClPageI<CnLabBucketHistory>> {
     return this.backupHistoryService.getBackupHistory(labId, page, size);
   }
 
-  public async saveBackupHistory(lab: CnLab, backups: CnLabBackupBucket[]): Promise<CnLabBackupHistory[]> {
-    const histories = await this.backupHistoryService.saveHistories(backups, lab);
+  public async saveBackupHistory(lab: CnLab, backupsHistory: CnLabBackupsHistory): Promise<CnLabBucketHistory[]> {
+    const histories = await this.backupHistoryService.saveHistories(backupsHistory, lab);
     await this.checkErrorHistory(histories, lab);
     return histories.map(h => h.history);
   }
@@ -144,13 +145,13 @@ export class CnLabBackupAggregateService {
 
   /////////////////////////////// BACKUP ///////////////////////////////
 
-  public async stopCurrentBackup(lab: CnLab): Promise<CnLabBackupHistory[]> {
+  public async stopCurrentBackup(lab: CnLab): Promise<CnLabBucketHistory[]> {
     const backup = await this.labManagerService.stopCurrentBackup(lab);
     const histories = await this.backupHistoryService.saveHistories(backup, lab);
     return histories.map(h => h.history);
   }
 
-  public async createProdBackup(lab: CnLab): Promise<CnLabBackupHistory[]> {
+  public async createProdBackup(lab: CnLab): Promise<CnLabBucketHistory[]> {
     // get or create the bucket associated with this lab
     const backupInfo = await this.getBackupInfo(lab);
 
@@ -272,6 +273,12 @@ export class CnLabBackupAggregateService {
     };
 
     return this.labManagerService.restoreBackup(destinationLab, restoreDTO);
+  }
+
+  // TODO TO REMOVE
+  public migrate(): Promise<void> {
+    if (!CnCurrentUserHelper.isAdmin()) throw new BlUnauthorizedException();
+    return this.backupHistoryService.migrateBackups();
   }
 
 }

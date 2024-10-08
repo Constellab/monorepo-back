@@ -41,7 +41,7 @@ import { CnLabListener } from './cn-lab.listener';
 import { CnLabFreeAggregateService } from './lab-free/cn-lab-free-aggregate.service';
 import { CnLabFree } from './lab-free/cn-lab-free.entity';
 import { CnLabBackupOption } from './backup/cn-lab-backup-option.entity';
-import { CnLabBackupHistory } from './backup/cn-lab-backup-history.entity';
+import { CnLabBackupHistoryEntity } from './backup/cn-lab-backup-history.entity';
 import { CnLabBackupOptionService } from './backup/cn-lab-backup-option.service';
 import { CnLabBackupHistoryService } from './backup/cn-lab-backup-history.service';
 import { CnCloudProviderOutscaleService } from './server/outscale/cn-cloud-provider-outscale.service';
@@ -49,6 +49,7 @@ import { CnServerPriceModule } from '../cn-servers-info/server-price/cn-server-p
 import { CnLabFactoryService } from './cn-lab-factory.service';
 import { CnLabBackupAggregateService } from './backup/cn-lab-backup-aggregate.service';
 import { CnSupportModule } from '../cn-support/cn-support.module';
+import { CnLabBackupHistoryDetail } from './backup/cn-lab-backup-history-detail.entity';
 
 @Module({
   imports: [
@@ -59,7 +60,8 @@ import { CnSupportModule } from '../cn-support/cn-support.module';
       CnLabGreenOption,
       CnLabFree,
       CnLabBackupOption,
-      CnLabBackupHistory
+      CnLabBackupHistoryEntity,
+      CnLabBackupHistoryDetail,
     ]),
 
     CnCoreModule,

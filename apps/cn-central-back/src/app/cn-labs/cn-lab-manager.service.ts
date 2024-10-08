@@ -17,7 +17,7 @@ import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-c
 import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { CnLabConfigFile } from '../cn-lab-configs/cn-lab-config-file.class';
 import { CnLabConfigsService } from '../cn-lab-configs/cn-lab-configs.service';
-import { CnLabBackupBucket, CnLabBackupsHistory } from './backup/cn-lab-backup.dto';
+import { CnLabBackupsHistory } from './backup/cn-lab-backup.dto';
 
 /**
  * Service to call the api of the lab manager
@@ -108,6 +108,7 @@ export class CnLabManagerService {
       communityApiKey: this.configService.getCommunityApiKey(),
       gwsCoreProdPassword: lab.gwsCoreProdDbPassword,
       gwsCoreDevPassword: lab.gwsCoreDevDbPassword,
+      // TODO TO REMOVE ONCE ALL LAB MANAGERS ARE MIGRATED TO 1.10.0
       dockerRegistry: {
         url: this.configService.getDockerRegistryUrl(),
         username: this.configService.getDockerRegistryUsername(),
@@ -202,11 +203,11 @@ export class CnLabManagerService {
 
   /////////////////////////////////////////////// BACKUP /////////////////////////////////////////////////////
 
-  public async createProdBackup(lab: CnLab, backup: CnLabManagerBackupInfoDTO): Promise<CnLabBackupBucket[]> {
+  public async createProdBackup(lab: CnLab, backup: CnLabManagerBackupInfoDTO): Promise<CnLabBackupsHistory> {
     return this.labManagerApiService.createProdBackup(lab.getLabManagerApiInfo(), backup);
   }
 
-  public async stopCurrentBackup(lab: CnLab): Promise<CnLabBackupBucket[]> {
+  public async stopCurrentBackup(lab: CnLab): Promise<CnLabBackupsHistory> {
     return this.labManagerApiService.stopCurrentBackup(lab.getLabManagerApiInfo());
   }
 
@@ -214,7 +215,7 @@ export class CnLabManagerService {
     return this.labManagerApiService.getBackupHistory(lab.getLabManagerApiInfo());
   }
 
-  public async getLastBackupsStatus(lab: CnLab): Promise<CnLabBackupBucket[]> {
+  public async getLastBackupsStatus(lab: CnLab): Promise<CnLabBackupsHistory> {
     return this.labManagerApiService.getLastBackupsStatus(lab.getLabManagerApiInfo());
   }
 

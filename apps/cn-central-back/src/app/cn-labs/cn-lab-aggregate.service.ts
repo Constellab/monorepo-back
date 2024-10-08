@@ -73,8 +73,8 @@ import { CnLabServerTaskStatus, CnLabStatus } from './status/cn-lab-status.enum'
 import { CnLabStatusService } from './status/cn-lab-status.service';
 import { CnLabStatusRunRequest, CnLabStatusRunResponse } from './status/cn-lab-status.dto';
 import { CnLabFreeService } from './lab-free/cn-lab-free.service';
-import { CnLabBackupBucket, CnLabBackupStatusDTO } from './backup/cn-lab-backup.dto';
-import { CnLabBackupHistory } from './backup/cn-lab-backup-history.entity';
+import { CnLabBackupsHistory, CnLabBackupStatusDTO } from './backup/cn-lab-backup.dto';
+import { CnLabBucketHistory } from './backup/cn-lab-backup-history.entity';
 import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnCloudProviderFactory } from './server/cn-cloud-provider.factory';
 import { CnServerPriceService } from '../cn-servers-info/server-price/cn-server-price.service';
@@ -767,13 +767,13 @@ export class CnLabAggregateService {
 
   /////////////////////////// BACKUP ////////////////////////////////
 
-  public async createProdBackup(labId: string): Promise<CnLabBackupHistory[]> {
+  public async createProdBackup(labId: string): Promise<CnLabBucketHistory[]> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
 
     return this.backupService.createProdBackup(lab);
   }
 
-  public async stopCurrentBackup(labId: string): Promise<CnLabBackupHistory[]> {
+  public async stopCurrentBackup(labId: string): Promise<CnLabBucketHistory[]> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.backupService.stopCurrentBackup(lab);
   }
@@ -788,7 +788,7 @@ export class CnLabAggregateService {
     return this.backupService.getBackupsStatus(lab);
   }
 
-  public async getLabBackupHistory(labId: string, page: number, size: number): Promise<ClPageI<CnLabBackupHistory>> {
+  public async getLabBackupHistory(labId: string, page: number, size: number): Promise<ClPageI<CnLabBucketHistory>> {
     await this.getAndCheckAuthorizationToFindById(labId);
     return this.backupService.getBackupHistory(labId, page, size);
   }
@@ -867,8 +867,8 @@ export class CnLabAggregateService {
     return this.backupService.getBackupInfo(lab);
   }
 
-  public async saveCurrentLabBackupHistory(backups: CnLabBackupBucket[]): Promise<CnLabBackupHistory[]> {
-    return this.backupService.saveBackupHistory(CnCurrentUserHelper.getAndCheckCurrentLab(), backups);
+  public async saveCurrentLabBackupHistory(backupHistory: CnLabBackupsHistory): Promise<CnLabBucketHistory[]> {
+    return this.backupService.saveBackupHistory(CnCurrentUserHelper.getAndCheckCurrentLab(), backupHistory);
   }
 
 
@@ -1175,6 +1175,11 @@ export class CnLabAggregateService {
     if (lab.serverIsStopped()) {
       throw new BlBadRequestException('Server is stopped, please start the server first');
     }
+  }
+
+  // TODO TO REMOVE
+  public migrateBackup(): Promise<void> {
+    return this.backupService.migrate();
   }
 
 }

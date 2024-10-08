@@ -17,7 +17,7 @@ import {
   CnManagerLabPullBiotaOptions
 } from './model/cn-lab-manager.class';
 import { CnLabConfigFile } from '../cn-lab-configs/cn-lab-config-file.class';
-import { CnLabBackupBucket, CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
+import { CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
 
 /**
  * Service to call the api of the lab manager
@@ -131,20 +131,26 @@ export class CnExternalLabManagerApiService {
 
   ///////////////////////////////////// BACKUP /////////////////////////////////////
 
-  createProdBackup(apiInfo: CnExternalApiInfo, createBackup: CnLabManagerBackupInfoDTO): Promise<CnLabBackupBucket[]> {
-    return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/prod/MANUAL`, createBackup, CnLabBackupBucket));
+  async createProdBackup(apiInfo: CnExternalApiInfo, createBackup: CnLabManagerBackupInfoDTO): Promise<CnLabBackupsHistory> {
+    const response = await lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/prod/MANUAL`,
+      createBackup));
+
+    return CnLabBackupsHistory.fromLabManagerResponse(response);
   }
 
-  stopCurrentBackup(apiInfo: CnExternalApiInfo): Promise<CnLabBackupBucket[]> {
-    return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/stop-current`, null, CnLabBackupBucket));
+  async stopCurrentBackup(apiInfo: CnExternalApiInfo): Promise<CnLabBackupsHistory> {
+    const response = await lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/stop-current`, null));
+    return CnLabBackupsHistory.fromLabManagerResponse(response);
   }
 
-  getLastBackupsStatus(apiInfo: CnExternalApiInfo): Promise<CnLabBackupBucket[]> {
-    return lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/last-status`));
+  async getLastBackupsStatus(apiInfo: CnExternalApiInfo): Promise<CnLabBackupsHistory> {
+    const response = await lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/last-status`));
+    return CnLabBackupsHistory.fromLabManagerResponse(response);
   }
 
-  getBackupHistory(apiInfo: CnExternalApiInfo): Promise<CnLabBackupsHistory> {
-    return lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/history`, CnLabBackupsHistory));
+  async getBackupHistory(apiInfo: CnExternalApiInfo): Promise<CnLabBackupsHistory> {
+    const response = await lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/history`));
+    return CnLabBackupsHistory.fromLabManagerResponse(response);
   }
 
   restoreBackup(apiInfo: CnExternalApiInfo, restoreBackupDTO: CnLabManagerRestoreBackupDTO): Promise<void> {
@@ -184,8 +190,6 @@ export class CnExternalLabManagerApiService {
 
   private constructRoute(labUrl: string, route: string): string {
     return `${labUrl}/${route}`;
-    // uncomment for local host tests
-    // return `http://localhost:3080/${route}`;
   }
 
 

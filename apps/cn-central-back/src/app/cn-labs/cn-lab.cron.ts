@@ -17,7 +17,7 @@ import { CnLabAggregateService } from './cn-lab-aggregate.service';
 import { CnLabStatus } from './status/cn-lab-status.enum';
 import { CnLabFreeService } from './lab-free/cn-lab-free.service';
 import { CnLabFree } from './lab-free/cn-lab-free.entity';
-import { CnLabBackupBucket } from './backup/cn-lab-backup.dto';
+import { CnLabBackupsHistory } from './backup/cn-lab-backup.dto';
 import { CnLabManagerService } from './cn-lab-manager.service';
 
 /**
@@ -95,10 +95,10 @@ export class CnLabCron {
     for (const option of options) {
       const lab = await this.labService.findByIdAndCheck(option.labId);
       if (lab.isRunning()) {
-        const backup: CnLabBackupBucket[] = await this.labManagerService.getLastBackupsStatus(lab).catch(() => null);
+        const backup: CnLabBackupsHistory = await this.labManagerService.getLastBackupsStatus(lab).catch(() => null);
 
         // if a backup is in progress, we do nothing
-        if (backup == null || backup.some(b => b.status === 'IN_PROGRESS')) {
+        if (backup == null || backup.backups.some(b => b.status === 'IN_PROGRESS')) {
           continue;
         }
 
