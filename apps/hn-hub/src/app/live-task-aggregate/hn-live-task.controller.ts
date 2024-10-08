@@ -128,10 +128,17 @@ export class HnLiveTaskController extends HnAbstractFileController<HnLiveTask>{
   }
 
   @BlPublic()
-  @Get('for-lab/version/:id')
+  @Get('for-lab/version/:id/:jsonVersionNumber?')
   async getLiveTaskVersionForLab(@Req() req: Request,
-                                 @Param('id', ParseUUIDPipe) versionId: string): Promise<HnLiveTaskForLabDto> {
-    return this.liveTaskAggregateService.getLiveTaskForLabByVersionId(req, versionId);
+                                 @Param('id', ParseUUIDPipe) versionId: string,
+                                 @Param('jsonVersionNumber') jsonVersionNumber?: string): Promise<HnLiveTaskForLabDto> {
+    let versionNumber = null;
+    if (!jsonVersionNumber) {
+      versionNumber = 1;
+    } else {
+      versionNumber = +jsonVersionNumber
+    }
+    return this.liveTaskAggregateService.getLiveTaskForLabByVersionId(req, versionId, versionNumber);
   }
 
   /**
