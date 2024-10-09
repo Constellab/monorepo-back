@@ -8,13 +8,14 @@ import { CnLabConfigDto } from '../cn-lab-configs/cn-lab-config.dto';
 import { CnSpace } from '../cn-spaces/cn-space.entity';
 import { Type } from 'class-transformer';
 import { CnLabUserRole } from './user/cn-lab-user.entity';
-import { CnLab, CnLabBillingMode, CnLabDesktopPlatform, CnLabType, CnLabVolumeType } from './cn-lab.entity';
+import { CnLab, CnLabBillingMode, CnLabDesktopPlatform, CnLabType } from './cn-lab.entity';
 import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnLabServerTaskStatus, CnLabStatus } from './status/cn-lab-status.enum';
 import { DateTime } from 'luxon';
 import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
 import { CnCloudProvider } from '../cn-cloud-providers/cn-cloud-provider.entity';
 import { CnExternalApiInfo } from '../cn-core/model/config/cn-config.class';
+import { CnLabVolumeType } from './volume/cn-lab-volume-entity';
 
 
 /**

@@ -2,19 +2,20 @@ import { Injectable, Logger } from '@nestjs/common';
 import { BlAbstractService } from '@monorepo/back-core-lib';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
-import { CnLabBackupHistoryEntity, CnLabBucketHistory } from './cn-lab-backup-history.entity';
+import { CnLabBackupHistory, CnLabBackupHistoryEntity } from './cn-lab-backup-history.entity';
 import {
   CnLabBackupBucket,
   CnLabBackupFrequency,
   CnLabBackupsHistory,
   CnLabBackupStatus,
+  CnLabBackupTriggerMode,
   CnSaveBackupHistoryDTO
 } from './cn-lab-backup.dto';
 import { CnLab, CnLabEntity } from '../cn-lab.entity';
 import { CnBucketsService } from '../../cn-object-storages/cn-buckets/cn-buckets.service';
-import { ClPageI } from '@monorepo/core-lib';
-import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
+import { ClDateHelper, ClPageI, ClStringHelper } from '@monorepo/core-lib';
 import { CnLabBackupHistoryDetail, CnLabBackupType } from './cn-lab-backup-history-detail.entity';
+import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 
 @Injectable()
@@ -97,29 +98,43 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
     };
   }
 
-  public getBackupHistory(labId: string, page: number, size: number): Promise<ClPageI<CnLabBucketHistory>> {
+  public markBackupAsDeleted(lab: CnLab, bucket: CnBucket, frequency: CnLabBackupFrequency,
+                             entityManager: EntityManager): Promise<CnLabBackupHistory> {
+    const history = new CnLabBackupHistoryEntity();
+    history.id = ClStringHelper.generateUUID();
+    history.lab = lab as CnLabEntity;
+    history.bucket = bucket;
+    history.triggerMode = CnLabBackupTriggerMode.MANUAL;
+    history.frequency = frequency;
+    history.startedAt = ClDateHelper.getDate();
+    history.endedAt = ClDateHelper.getDate();
+    history.status = CnLabBackupStatus.DELETED;
+
+    return this.save(history, entityManager);
+  }
+
+  public getBackupHistory(labId: string, page: number, size: number): Promise<ClPageI<CnLabBackupHistory>> {
     return this.findPaginated(page, size, {
       where: { lab: { id: labId } },
       relations: CnLabBackupHistoryEntity.defaultRelation,
-      order: { startedAt: 'DESC' as any }
+      order: { startedAt: 'DESC' }
     });
   }
 
-  public findLastSuccessBackupByType(labId: string, frequency: CnLabBackupFrequency): Promise<CnLabBucketHistory | null> {
+  public findLastSuccessBackupByType(labId: string, frequency: CnLabBackupFrequency): Promise<CnLabBackupHistory | null> {
     return this.repo.findOne({
       where: { lab: { id: labId }, frequency, status: CnLabBackupStatus.SUCCESS },
       relations: CnLabBackupHistoryEntity.defaultRelation,
-      order: { startedAt: 'DESC' as any }
+      order: { startedAt: 'DESC' }
     });
   }
 
-  public async deleteLabBackupHistoryByBucket(labId: string,
-                                              bucketId: string,
-                                              entityManager: EntityManager): Promise<void> {
-    await entityManager.delete(CnLabBackupHistoryEntity, {
-      lab: { id: labId },
-      bucket: { id: bucketId }
-    } as FindOptionsWhere<CnLabBackupHistoryEntity>);
+  public getAllBackupHistory(labId: string): Promise<CnLabBackupHistory[]> {
+    return this.repo.find({
+      where: { lab: { id: labId } },
+      relations: CnLabBackupHistoryEntity.defaultRelation,
+      order: { startedAt: 'ASC' }
+    });
   }
 
   // TODO : remove once migrated
@@ -135,6 +150,7 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
           dbDetails.totalSize = backup.dbSize;
           dbDetails.status = backup.dbStatus;
           dbDetails.message = backup.dbMessage;
+          dbDetails.transferSize = backup.dbSize;
           await this.detailRepository.save(dbDetails);
         }
         if (!backup.dataDetails) {

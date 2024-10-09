@@ -4,10 +4,11 @@ import { DateTime } from 'luxon';
 import { Exclude, Type } from 'class-transformer';
 import { CnUser } from '../../cn-users/cn-user.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
-import { CnLabBillingMode, CnLabDomain, CnLabEntity, CnLabVolumeType } from '../cn-lab.entity';
+import { CnLabBillingMode, CnLabDomain, CnLabEntity } from '../cn-lab.entity';
 import { ClDateHelper } from '@monorepo/core-lib';
 import { CnCloudProviderName } from '../../cn-cloud-providers/cn-cloud-provider.entity';
 import { CnBrickGWS } from '../../cn-bricks/cn-brick.dto';
+import { CnLabVolumeType } from '../volume/cn-lab-volume-entity';
 
 /**
  * Entity to store the free lab info for a lab for a user

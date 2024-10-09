@@ -7,7 +7,7 @@ import {
   CnCloudProviderRegion
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnLabBackupOption } from './cn-lab-backup-option.entity';
-import { CnLabBucketHistory } from './cn-lab-backup-history.entity';
+import { CnLabBackupHistory } from './cn-lab-backup-history.entity';
 import { BlBadRequestException, BlObjectStorageService, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { ClPageI } from '@monorepo/core-lib';
 import { CnLabManagerService } from '../cn-lab-manager.service';
@@ -93,7 +93,6 @@ export class CnLabBackupAggregateService {
     const backupStatus = new CnLabBackupStatusDTO();
     backupStatus.frequency = frequency;
     backupStatus.region = region;
-    backupStatus.labVolumeSize = lab.volumeSize;
 
     const lastBackup = await this.backupHistoryService.findLastSuccessBackupByType(lab.id, frequency);
     if (lastBackup) {
@@ -117,11 +116,15 @@ export class CnLabBackupAggregateService {
   }
 
 
-  public async getBackupHistory(labId: string, page: number, size: number): Promise<ClPageI<CnLabBucketHistory>> {
+  public async getBackupHistory(labId: string, page: number, size: number): Promise<ClPageI<CnLabBackupHistory>> {
     return this.backupHistoryService.getBackupHistory(labId, page, size);
   }
 
-  public async saveBackupHistory(lab: CnLab, backupsHistory: CnLabBackupsHistory): Promise<CnLabBucketHistory[]> {
+  public async getAllBackupHistory(labId: string): Promise<CnLabBackupHistory[]> {
+    return this.backupHistoryService.getAllBackupHistory(labId);
+  }
+
+  public async saveBackupHistory(lab: CnLab, backupsHistory: CnLabBackupsHistory): Promise<CnLabBackupHistory[]> {
     const histories = await this.backupHistoryService.saveHistories(backupsHistory, lab);
     await this.checkErrorHistory(histories, lab);
     return histories.map(h => h.history);
@@ -145,13 +148,13 @@ export class CnLabBackupAggregateService {
 
   /////////////////////////////// BACKUP ///////////////////////////////
 
-  public async stopCurrentBackup(lab: CnLab): Promise<CnLabBucketHistory[]> {
+  public async stopCurrentBackup(lab: CnLab): Promise<CnLabBackupHistory[]> {
     const backup = await this.labManagerService.stopCurrentBackup(lab);
     const histories = await this.backupHistoryService.saveHistories(backup, lab);
     return histories.map(h => h.history);
   }
 
-  public async createProdBackup(lab: CnLab): Promise<CnLabBucketHistory[]> {
+  public async createProdBackup(lab: CnLab): Promise<CnLabBackupHistory[]> {
     // get or create the bucket associated with this lab
     const backupInfo = await this.getBackupInfo(lab);
 
@@ -225,28 +228,28 @@ export class CnLabBackupAggregateService {
     }
 
     const prefix = this.backupOptionService.getBackupS3Prefix(lab);
-    await this.deleteLabBackupInBucket(labOptions.bucket1, prefix, lab.id, labOptions.frequency1);
-    await this.deleteLabBackupInBucket(labOptions.bucket2, prefix, lab.id, labOptions.frequency2);
+    await this.deleteLabBackupInBucket(labOptions.bucket1, prefix, lab, labOptions.frequency1);
+    await this.deleteLabBackupInBucket(labOptions.bucket2, prefix, lab, labOptions.frequency2);
   }
 
   /**
    * Delete a lab backup for a bucket
    */
   private async deleteLabBackupInBucket(bucket: CnBucket, prefix: string,
-                                        labId: string, frequency: CnLabBackupFrequency): Promise<void> {
-    this.logger.log(`Deleting backup for lab ${labId}, bucket : ${bucket.id}`);
+                                        lab: CnLab, frequency: CnLabBackupFrequency): Promise<void> {
+    this.logger.log(`Deleting backup for lab ${lab.id}, bucket : ${bucket.id}`);
     await this.datasource.transaction(async entityManager => {
-      await this.backupHistoryService.deleteLabBackupHistoryByBucket(labId, bucket.id, entityManager);
+      await this.backupHistoryService.markBackupAsDeleted(lab, bucket, frequency, entityManager);
       try {
         await this.objectStorageService.deleteObjectsByPrefix(bucket.getBucketConfig(), prefix);
       } catch (e) {
-        Logger.error(`Error while deleting the backup file in bucket ${bucket.id} for lab ${labId}. Error ${e}`);
+        Logger.error(`Error while deleting the backup file in bucket ${bucket.id} for lab ${lab.id}. Error ${e}`);
         // eslint-disable-next-line max-len
         throw new BlBadRequestException(`Error while deleting the backup file for region ${bucket.region.name} and frequency ${frequency}.`);
       }
     });
 
-    this.logger.log(`Backup deleted for lab ${labId}, bucket : ${bucket.id}`);
+    this.logger.log(`Backup deleted for lab ${lab.id}, bucket : ${bucket.id}`);
   }
 
   /////////////////////////////// RESTORE BACKUP ///////////////////////////////

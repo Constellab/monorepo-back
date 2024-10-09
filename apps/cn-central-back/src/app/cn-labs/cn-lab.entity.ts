@@ -14,6 +14,7 @@ import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-r
 import { DateTime } from 'luxon';
 import { ClStringHelper } from '@monorepo/core-lib';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+import { CnLabVolumeType } from './volume/cn-lab-volume-entity';
 
 export enum CnLabType {
   CLOUD = 'CLOUD',
@@ -24,11 +25,6 @@ export enum CnLabType {
 export enum CnLabBillingMode {
   HOURLY = 'HOURLY',
   MONTHLY = 'MONTHLY'
-}
-
-export enum CnLabVolumeType {
-  CLASSIC = 'CLASSIC',
-  HIGH_SPEED = 'HIGH_SPEED'
 }
 
 export enum CnLabDesktopPlatform {

@@ -1,11 +1,11 @@
-import {Injectable} from '@nestjs/common';
-import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
-import {CnServerPrice} from './cn-server-price.entity';
-import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, EntityManager, IsNull, LessThanOrEqual, MoreThan, Repository} from 'typeorm';
-import {ClDateHelper} from '@monorepo/core-lib';
-import {CnCreateServerPriceDTO, CnServerPrices} from './cn-server-price.dto';
-import {CnServerStandard} from '../server-standard/cn-server-standard.entity';
+import { Injectable } from '@nestjs/common';
+import { BlAbstractService, BlBadRequestException } from '@monorepo/back-core-lib';
+import { CnServerPrice } from './cn-server-price.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, EntityManager, IsNull, LessThanOrEqual, MoreThan, Repository } from 'typeorm';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { CnCreateServerPriceDTO, CnServerPrices } from './cn-server-price.dto';
+import { CnServerStandard } from '../server-standard/cn-server-standard.entity';
 
 
 @Injectable()
@@ -130,7 +130,6 @@ export class CnServerPriceService extends BlAbstractService<CnServerPrice> {
     }
 
     const priceIndex = serverPrices.prices.findIndex(p => p.id === priceId);
-
 
     if (priceIndex === 0) {
       const nextPrice = serverPrices.prices[priceIndex + 1];

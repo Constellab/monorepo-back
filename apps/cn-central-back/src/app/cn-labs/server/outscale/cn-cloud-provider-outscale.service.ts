@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CnCloudProviderService } from '../cn-cloud-provider.service';
-import { CnLab, CnLabBillingMode, CnLabVolumeType } from '../../cn-lab.entity';
+import { CnLab, CnLabBillingMode } from '../../cn-lab.entity';
 import {
   CnCpCreateInstanceRequest,
   CnCpCreateVolumeRequest,
@@ -15,6 +15,7 @@ import { Vm } from 'outscale-api/dist/esm/models/Vm';
 import { Volume } from 'outscale-api';
 import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnCommandService } from '../../../cn-core/services/cn-command.service';
+import { CnLabVolumeType } from '../../volume/cn-lab-volume-entity';
 
 
 @Injectable()

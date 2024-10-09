@@ -1,9 +1,4 @@
-import {
-  CnLabEntity,
-  CnLabBillingMode,
-  CnLabType,
-  CnLabVolumeType
-} from './cn-lab.entity';
+import { CnLabBillingMode, CnLabEntity, CnLabType } from './cn-lab.entity';
 import { CnBrickGWS, CnBrickVersionDTO } from '../cn-bricks/cn-brick.dto';
 import {
   CnLabGreenOptionStopAfterInactivityValue,
@@ -30,6 +25,7 @@ import { CnCloudProviderName } from '../cn-cloud-providers/cn-cloud-provider.ent
 import { CnSpace } from '../cn-spaces/cn-space.entity';
 import { CnServerCloudService } from '../cn-servers-info/server-cloud/cn-server-cloud.service';
 import { CnServerCloud } from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
+import { CnLabVolumeType } from './volume/cn-lab-volume-entity';
 
 export interface CnLabFactoryBrick {
   name: CnBrickGWS;
@@ -85,12 +81,11 @@ export class CnLabFactoryService {
     lab.labConfig = await this.getLabConfig(data.bricks);
     lab.region = await this.getRegion(data.cloudProvider.name, data.cloudProvider.region);
     lab.serverCloud = await this.getServerCloud(data.cloudProvider.name, data.cloudProvider.instanceType);
-    lab.volumeSize = data.volumeSize;
-    lab.volumeType = data.volumeType;
     lab.billingMode = data.billingMode;
     lab.isFreeLab = data.isFreeLab;
 
     const labDb = await this.labAggregateService.createLabNotSecure(lab,
+      data.volumeSize, data.volumeType,
       null, null, entityManager);
 
     await this.addUserToLab(labDb, data.user, entityManager);

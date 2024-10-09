@@ -10,11 +10,12 @@ import {
   cnServerSshAuthorizedKeyPath
 } from '../cn-cloud-provider.class';
 import { CnAzureService } from './cn-azure.service';
-import { CnLab, CnLabVolumeType } from '../../cn-lab.entity';
+import { CnLab } from '../../cn-lab.entity';
 import { CnAzureInstance, CnAzureVolumeStatus } from './cn-azure.class';
 import { Disk, ImageReference, SshPublicKey } from '@azure/arm-compute';
 import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnCommandService } from '../../../cn-core/services/cn-command.service';
+import { CnLabVolumeType } from '../../volume/cn-lab-volume-entity';
 
 @Injectable()
 export class CnCloudProviderAzureService extends CnCloudProviderService {

@@ -1,11 +1,16 @@
-import {Column, Entity} from 'typeorm';
-import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
-import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
-import {DateTime} from 'luxon';
-import {Expose} from 'class-transformer';
+import { Column, Entity } from 'typeorm';
+import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
+import { BlLuxonDateTimeColumn } from '@monorepo/back-core-lib';
+import { DateTime } from 'luxon';
+import { Expose } from 'class-transformer';
+import { ClDateHelper } from '@monorepo/core-lib';
 
 @Entity('storage_price')
 export class CnStoragePrice extends CnBaseEntity {
+
+  // number of hour in a month (30 days)
+  private static HOURS_IN_MONTH = 30 * 24;
+
 
   /**
    * Price of the volume per month per GB
@@ -30,7 +35,7 @@ export class CnStoragePrice extends CnBaseEntity {
   startDate: DateTime;
 
   @BlLuxonDateTimeColumn({nullable: true})
-  endDate: DateTime;
+  endDate?: DateTime;
 
   /**
    * Get the total price for the storage. this includes volume storage and 2 full backups.
@@ -47,5 +52,21 @@ export class CnStoragePrice extends CnBaseEntity {
   @Expose()
   get totalPriceDescription(): string{
     return 'This price includes volume storage and 2 full backups. For transfert, we consider that, each GB is transfert 1 time per month for each backup.';
+  }
+
+  get volumePricePerHour(): number {
+    return this.volumeStoragePrice / CnStoragePrice.HOURS_IN_MONTH;
+  }
+
+  get backupPricePerHour(): number {
+    return this.backupStoragePrice / CnStoragePrice.HOURS_IN_MONTH;
+  }
+
+  getEndDateWithDefault(): DateTime {
+    return this.endDate ?? ClDateHelper.getDate("9999-12-31");
+  }
+
+  dateIsBetween(date: DateTime): boolean {
+    return this.startDate <= date && this.getEndDateWithDefault() > date;
   }
 }

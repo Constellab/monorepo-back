@@ -6,14 +6,13 @@ import {
   CnLabEntity,
   CnLabFull,
   CnLabType,
-  CnLabVolumeType,
   CnLabWithSpace
 } from './cn-lab.entity';
 import { CnLabsService } from './cn-labs.service';
 import { CnLabStatusHistory } from './status/cn-lab-status-history.entity';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnExternalLabUser, CnExternalLabUserRole } from '../cn-external-lab-api/model/cn-external-lab-api.class';
-import { ClPage, ClPageI, ClStringHelper } from '@monorepo/core-lib';
+import { ClDateHelper, ClPage, ClPageI, ClStringHelper } from '@monorepo/core-lib';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import {
   CnLabManagerBackupInfoDTO,
@@ -70,17 +69,23 @@ import { CnLabGreenOptionService } from './green-option/cn-lab-green-option.serv
 import { CnLabGreenOptionFormDto } from './green-option/cn-lab-green-option.dto';
 import { CnAuthService, CnExternalCheckCredentialResponse } from '../cn-auth/cn-auth.service';
 import { CnLabServerTaskStatus, CnLabStatus } from './status/cn-lab-status.enum';
-import { CnLabStatusService } from './status/cn-lab-status.service';
-import { CnLabStatusRunRequest, CnLabStatusRunResponse } from './status/cn-lab-status.dto';
+import { CnLabStatsRequestDTO } from './stats/cn-lab-stats.dto';
 import { CnLabFreeService } from './lab-free/cn-lab-free.service';
-import { CnLabBackupsHistory, CnLabBackupStatusDTO } from './backup/cn-lab-backup.dto';
-import { CnLabBucketHistory } from './backup/cn-lab-backup-history.entity';
+import { CnLabBackupsHistory, CnLabBackupStatusDTO, CnLabCheckBackupSizeDTO } from './backup/cn-lab-backup.dto';
+import { CnLabBackupHistory } from './backup/cn-lab-backup-history.entity';
 import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnCloudProviderFactory } from './server/cn-cloud-provider.factory';
 import { CnServerPriceService } from '../cn-servers-info/server-price/cn-server-price.service';
-import { CnServerPrices } from '../cn-servers-info/server-price/cn-server-price.dto';
 import { CnLabConfigDto } from '../cn-lab-configs/cn-lab-config.dto';
 import { CnLabBackupAggregateService } from './backup/cn-lab-backup-aggregate.service';
+import { CnLabVolumeService } from './volume/cn-lab-volume.service';
+import { CnLabVolume, CnLabVolumeType } from './volume/cn-lab-volume-entity';
+import { CnLabUpdateVolumeDTO } from './volume/cn-lab-volume.dto';
+import { CnStoragePriceService } from '../cn-servers-info/storage-price/cn-storage-price.service';
+import { CnLabStatsStorageResponseDTO } from './stats/cn-lab-storage-stats.dto';
+import { CnLabStatsRunningResponseDTO } from './stats/cn-lab-running-stats.dto';
+import { CnLabStatusHistoryService } from './status/cn-lab-status-history.service';
+import { CnLabStatsAggregateService } from './stats/cn-lab-stats-aggregate.service';
 
 
 @Injectable()
@@ -91,7 +96,6 @@ export class CnLabAggregateService {
 
   constructor(private labsService: CnLabsService,
               private labUserService: CnLabUserService,
-              private labStatusService: CnLabStatusService,
               private labManagerService: CnLabManagerService,
               private security: CnLabsSecurity,
               private usersService: CnUsersService,
@@ -108,7 +112,11 @@ export class CnLabAggregateService {
               private authService: CnAuthService,
               private labFreeService: CnLabFreeService,
               private backupService: CnLabBackupAggregateService,
-              private serverPriceService: CnServerPriceService) {
+              private serverPriceService: CnServerPriceService,
+              private storagePriceService: CnStoragePriceService,
+              private labVolumeService: CnLabVolumeService,
+              private labStatusHistoryService: CnLabStatusHistoryService,
+              private labStatsAggregateService: CnLabStatsAggregateService) {
   }
 
   /**
@@ -121,7 +129,9 @@ export class CnLabAggregateService {
     this.security.checkAuthorizationToCreateAdmin(lab, userInfo);
 
     return this.dataSource.transaction(async entityManager => {
-      return this.createLabNotSecure(lab, createLab.dailyBackupRegion, createLab.weeklyBackupRegion, entityManager);
+      return this.createLabNotSecure(lab,
+        createLab.volumeSize, createLab.volumeType,
+        createLab.dailyBackupRegion, createLab.weeklyBackupRegion, entityManager);
     });
   }
 
@@ -136,8 +146,6 @@ export class CnLabAggregateService {
     lab.serverCloud = cloudCreateDTO.serverCloud;
     lab.region = cloudCreateDTO.region;
     lab.billingMode = CnLabBillingMode.HOURLY;
-    lab.volumeSize = cloudCreateDTO.volumeSize;
-    lab.volumeType = CnLabVolumeType.HIGH_SPEED;
     lab.isFreeLab = false;
     lab.space = CnCurrentUserHelper.getCurrentSpace();
     lab.virtualHost = ClStringHelper.generateUUID() + '.' + CnLabDomain.CONSTELLAB_APP;
@@ -150,7 +158,9 @@ export class CnLabAggregateService {
     lab.labConfig = await this.labConfigService.getOrCreateLabConfig(configDto);
 
     const labDb = await this.dataSource.transaction(async entityManager => {
-      const labDb = await this.createLabNotSecure(lab, cloudCreateDTO.dailyBackupRegion,
+      const labDb = await this.createLabNotSecure(lab,
+        cloudCreateDTO.volumeSize, CnLabVolumeType.HIGH_SPEED,
+        cloudCreateDTO.dailyBackupRegion,
         cloudCreateDTO.weeklyBackupRegion, entityManager);
 
       await this.labUserService.createLabUser(lab, CnCurrentUserHelper.getAndCheckCurrentUser(),
@@ -166,19 +176,30 @@ export class CnLabAggregateService {
   }
 
   public async createLabNotSecure(lab: CnLabEntity,
+                                  volumeSize: number,
+                                  volumeType: CnLabVolumeType,
                                   dailyBackupRegion: CnCloudProviderRegion,
                                   weeklyBackupRegion: CnCloudProviderRegion,
                                   entityManager: EntityManager): Promise<CnLabEntity> {
-    const labDb: CnLabEntity = await this.labsService.create(lab, entityManager);
+    const labDb: CnLabEntity = await this.labsService.createLab(lab, entityManager);
 
-    if (lab.isCloud() && !lab.isFreeLab) {
-      if (dailyBackupRegion == null || weeklyBackupRegion == null) {
-        throw new BlBadRequestException('Backup regions are required for a cloud lab');
+    if (lab.isCloud()) {
+      if (!volumeSize || volumeSize <= 0) {
+        throw new BlBadRequestException('Volume size is required for a cloud lab');
       }
 
-      await this.backupService.createBackupOptions(labDb,
-        dailyBackupRegion, weeklyBackupRegion, entityManager);
+      if (!lab.isFreeLab) {
+        if (dailyBackupRegion == null || weeklyBackupRegion == null) {
+          throw new BlBadRequestException('Backup regions are required for a cloud lab');
+        }
+
+        await this.backupService.createBackupOptions(labDb,
+          dailyBackupRegion, weeklyBackupRegion, entityManager);
+      }
     }
+
+    await this.labVolumeService.createVolume(labDb, labDb.createdAt,
+      volumeSize, volumeType, entityManager);
 
     return labDb;
   }
@@ -209,7 +230,7 @@ export class CnLabAggregateService {
     this.security.checkAuthorizationCreateDesktopLab(lab);
 
     return this.dataSource.transaction(async entityManager => {
-      const labDb = await this.labsService.create(lab, entityManager);
+      const labDb = await this.labsService.createLab(lab, entityManager);
 
       // add the user as OWNER of his lab
       await this.labUserService.createLabUser(lab, userInfo.user, CnLabUserRole.OWNER, entityManager);
@@ -368,8 +389,12 @@ export class CnLabAggregateService {
     serverInfo.gpuType = fullLab.serverCloud.gpuType;
     serverInfo.gpuCount = fullLab.serverCloud.gpuCount;
     serverInfo.ram = fullLab.serverCloud.ram;
-    serverInfo.volumeSize = fullLab.volumeSize;
-    serverInfo.volumeType = fullLab.volumeType;
+
+    const volume = await this.labVolumeService.getCurrentVolume(labId);
+    if (volume) {
+      serverInfo.volumeSize = volume.size;
+      serverInfo.volumeType = volume.type;
+    }
     return serverInfo;
   }
 
@@ -415,7 +440,7 @@ export class CnLabAggregateService {
   public async getLabStatusHistory(labId: string, page: number, size: number,
                                    searchParams: BlSearchParams): Promise<ClPageI<CnLabStatusHistory>> {
     await this.getAndCheckAuthorizationToFindById(labId);
-    return this.labStatusService.getStatusHistoryPaginated(page, size, labId, searchParams);
+    return this.labStatusHistoryService.getStatusHistoryPaginated(page, size, labId, searchParams);
   }
 
   /**
@@ -440,6 +465,10 @@ export class CnLabAggregateService {
     }
 
     if (lab.isCloud()) {
+      if (!lab.serverVolumeId) {
+        await this.labVolumeService.markLabVolumeAs0(lab, ClDateHelper.getDate());
+      }
+
       if (!lab.serverInstanceId && !lab.serverTaskIsRunning()) {
         return await this.labsService.markInstanceAsNoServer(labId);
       }
@@ -482,6 +511,47 @@ export class CnLabAggregateService {
     // otherwise the server is started but not configured
     return await this.labsService.markInstanceAsServerRunning(labId);
   }
+
+  /////////////////////////////////////// VOLUME //////////////////////////////////
+
+  public async updateLabVolume(id: string, updateVolume: CnLabUpdateVolumeDTO): Promise<CnLabVolume> {
+    const lab = await this.getAndCheckAuthorizationToUpdateAdmin(id);
+
+    return this.labVolumeService.updateLabVolume(lab, updateVolume);
+  }
+
+  public async getLabCurrentVolume(id: string): Promise<CnLabVolume> {
+    await this.getAndCheckAuthorizationToFindById(id);
+
+    return this.labVolumeService.getCurrentVolume(id);
+  }
+
+  public async getLabVolumeHistory(labId: string, page: number, size: number): Promise<ClPage<CnLabVolume>> {
+    await this.getAndCheckAuthorizationToFindById(labId);
+
+    return this.labVolumeService.getVolumeHistory(labId, page, size);
+  }
+
+  public async deleteLabVolumeHistory(id: string, volumeId: string): Promise<void> {
+    await this.getAndCheckAuthorizationToUpdateAdmin(id);
+    await this.labVolumeService.deleteLabVolume(id, volumeId);
+  }
+
+  // TODO : remove after migration
+  public async migrateLabVolume(): Promise<void> {
+    if (!CnCurrentUserHelper.isAdmin()) throw new BlUnauthorizedException();
+    const labs = await this.labsService.getAllLabs();
+    for (const lab of labs) {
+      if (lab.isCloud() && lab.volumeSize && lab.volumeType) {
+        const currentVolume = await this.labVolumeService.getCurrentVolume(lab.id);
+        if (!currentVolume) {
+          await this.labVolumeService.createVolume(lab, lab.createdAt, lab.volumeSize, lab.volumeType,
+            this.dataSource.manager);
+        }
+      }
+    }
+  }
+
 
   /////////////////////////////////////// EXTERNAL LAB SERVICE //////////////////////////////////
 
@@ -767,13 +837,13 @@ export class CnLabAggregateService {
 
   /////////////////////////// BACKUP ////////////////////////////////
 
-  public async createProdBackup(labId: string): Promise<CnLabBucketHistory[]> {
+  public async createProdBackup(labId: string): Promise<CnLabBackupHistory[]> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
 
     return this.backupService.createProdBackup(lab);
   }
 
-  public async stopCurrentBackup(labId: string): Promise<CnLabBucketHistory[]> {
+  public async stopCurrentBackup(labId: string): Promise<CnLabBackupHistory[]> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.backupService.stopCurrentBackup(lab);
   }
@@ -788,18 +858,18 @@ export class CnLabAggregateService {
     return this.backupService.getBackupsStatus(lab);
   }
 
-  public async getLabBackupHistory(labId: string, page: number, size: number): Promise<ClPageI<CnLabBucketHistory>> {
+  public async getLabBackupHistory(labId: string, page: number, size: number): Promise<ClPageI<CnLabBackupHistory>> {
     await this.getAndCheckAuthorizationToFindById(labId);
     return this.backupService.getBackupHistory(labId, page, size);
   }
 
-  public async getBackupStatusAdmin(labId: string): Promise<any> {
+  public async getBackupStatusAdmin(labId: string): Promise<CnLabCheckBackupSizeDTO[]> {
     const lab = await this.getAndCheckAuthorizationToFindById(labId);
     // for now this route is only for admin
     if (!CnCurrentUserHelper.isAdmin()) {
       throw new BlUnauthorizedException();
     }
-    return this.backupService.checkBackupsSize(lab);
+    return await this.backupService.checkBackupsSize(lab);
   }
 
   public async deleteLabBackups(labId: string): Promise<void> {
@@ -867,7 +937,7 @@ export class CnLabAggregateService {
     return this.backupService.getBackupInfo(lab);
   }
 
-  public async saveCurrentLabBackupHistory(backupHistory: CnLabBackupsHistory): Promise<CnLabBucketHistory[]> {
+  public async saveCurrentLabBackupHistory(backupHistory: CnLabBackupsHistory): Promise<CnLabBackupHistory[]> {
     return this.backupService.saveBackupHistory(CnCurrentUserHelper.getAndCheckCurrentLab(), backupHistory);
   }
 
@@ -922,7 +992,8 @@ export class CnLabAggregateService {
   }
 
   private async createServerAsync(lab: CnLab, refreshStatus: boolean): Promise<CnLab> {
-    lab = await this.labServerService.initInstance(lab);
+    lab = await this.labServerService.initInstance(lab,
+      await this.labVolumeService.getCurrentVolume(lab.id));
 
     if (refreshStatus) {
       lab = await this.refreshStatusAndServerText(lab.id);
@@ -1088,19 +1159,17 @@ export class CnLabAggregateService {
     return this.labGreenOptionService.findRulesByLabId(labId);
   }
 
-  ////////////////////////// KPI //////////////////////////////
+  ////////////////////////// STATS //////////////////////////////
 
-  public async getLabRunningKpis(labId: string, request: CnLabStatusRunRequest):
-    Promise<CnLabStatusRunResponse> {
+  public async getLabRunningStats(labId: string, request: CnLabStatsRequestDTO):
+    Promise<CnLabStatsRunningResponseDTO> {
     const lab = await this.getAndCheckAuthorizationToFindById(labId);
+    return this.labStatsAggregateService.getLabRunningStats(lab, request);
+  }
 
-    let serverPrices: CnServerPrices;
-
-    if (lab.isCloud() && lab.billingMode === CnLabBillingMode.HOURLY) {
-      const labServerStandard = await this.labsService.getLabServerStandard(lab.id);
-      serverPrices = await this.serverPriceService.getServerAllPrices(labServerStandard.id, 'ASC');
-    }
-    return this.labStatusService.getLabRunningKpisWithBilling(lab.id, request, serverPrices);
+  public async getLabStorageStats(labId: string, request: CnLabStatsRequestDTO): Promise<CnLabStatsStorageResponseDTO> {
+    const lab = await this.getAndCheckAuthorizationToFindById(labId);
+    return this.labStatsAggregateService.getLabStorageStats(lab, request);
   }
 
   ////////////////////////// DESKTOP //////////////////////////////
@@ -1163,7 +1232,7 @@ export class CnLabAggregateService {
       throw new BlBadRequestException(`The task '${lab.serverTaskText}' is running on the lab, it can't be configured`);
     }
 
-    // if the lab is not running, no need to check if an scenario is running
+    // if the lab is not running, no need to check if a scenario is running
     if (!lab.isRunning()) return lab;
 
     await this.labServerService.checkLabActivity(lab);

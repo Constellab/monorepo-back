@@ -36,7 +36,6 @@ import { CnLabFreeService } from './lab-free/cn-lab-free.service';
 import { CnCloudProvidersModule } from '../cn-cloud-providers/cn-cloud-providers.module';
 import { CnServerCloudModule } from '../cn-servers-info/server-cloud/cn-server-cloud.module';
 import { CnSpacesModule } from '../cn-spaces/cn-spaces.module';
-import { CnLabStatusService } from './status/cn-lab-status.service';
 import { CnLabListener } from './cn-lab.listener';
 import { CnLabFreeAggregateService } from './lab-free/cn-lab-free-aggregate.service';
 import { CnLabFree } from './lab-free/cn-lab-free.entity';
@@ -50,6 +49,11 @@ import { CnLabFactoryService } from './cn-lab-factory.service';
 import { CnLabBackupAggregateService } from './backup/cn-lab-backup-aggregate.service';
 import { CnSupportModule } from '../cn-support/cn-support.module';
 import { CnLabBackupHistoryDetail } from './backup/cn-lab-backup-history-detail.entity';
+import { CnLabVolumeEntity } from './volume/cn-lab-volume-entity';
+import { CnLabVolumeService } from './volume/cn-lab-volume.service';
+import { CnStoragePriceModule } from '../cn-servers-info/storage-price/cn-storage-price.module';
+import { CnLabStatusHistoryService } from './status/cn-lab-status-history.service';
+import { CnLabStatsAggregateService } from './stats/cn-lab-stats-aggregate.service';
 
 @Module({
   imports: [
@@ -62,6 +66,7 @@ import { CnLabBackupHistoryDetail } from './backup/cn-lab-backup-history-detail.
       CnLabBackupOption,
       CnLabBackupHistoryEntity,
       CnLabBackupHistoryDetail,
+      CnLabVolumeEntity
     ]),
 
     CnCoreModule,
@@ -78,6 +83,7 @@ import { CnLabBackupHistoryDetail } from './backup/cn-lab-backup-history-detail.
     CnObjectStoragesModule,
     CnServerPriceModule,
     CnSupportModule,
+    CnStoragePriceModule,
 
     // Next modules are imported create lab automatically (lab free)
     CnCloudProvidersModule,
@@ -105,13 +111,15 @@ import { CnLabBackupHistoryDetail } from './backup/cn-lab-backup-history-detail.
     CnLabGreenOptionService,
     CnLabFreeService,
     CnLabFreeAggregateService,
-    CnLabStatusService,
     CnLabListener,
     CnLabBackupOptionService,
     CnLabBackupHistoryService,
     CnLabBackupAggregateService,
     CnCloudProviderOutscaleService,
-    CnLabFactoryService
+    CnLabFactoryService,
+    CnLabVolumeService,
+    CnLabStatusHistoryService,
+    CnLabStatsAggregateService,
   ],
   exports: [
     CnLabsService,

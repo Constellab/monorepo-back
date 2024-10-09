@@ -38,15 +38,11 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     return super.findByIdAndCheck(id, CnLabEntity.relationFull);
   }
 
-  async create(entity: CnLabEntity, entityManager?: EntityManager): Promise<CnLabEntity> {
+  async createLab(entity: CnLabEntity, entityManager: EntityManager): Promise<CnLabEntity> {
 
     await this.checkLabBeforeSave(entity);
 
-    if (entityManager) {
-      return super.createWithStatusTransaction(entity, CnLabStatus.NO_SERVER, entityManager);
-    } else {
-      return super.createWithStatus(entity, CnLabStatus.NO_SERVER);
-    }
+    return super.createWithStatusTransaction(entity, CnLabStatus.NO_SERVER, entityManager);
   }
 
   async updateLab(entity: CnLabFull, entityManager?: EntityManager): Promise<CnLabWithSpace> {
@@ -63,9 +59,7 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
 
       if (ClHelpService.isNullOrEmpty(entity.serverCloud) ||
         ClHelpService.isNullOrEmpty(entity.region) ||
-        ClHelpService.isNullOrEmpty(entity.billingMode) ||
-        ClHelpService.isNullOrEmpty(entity.volumeType) ||
-        ClHelpService.isNullOrEmpty(entity.volumeSize)) {
+        ClHelpService.isNullOrEmpty(entity.billingMode)) {
         throw new BlBadRequestException('Missing parameters for cloud instance');
       }
 
@@ -92,8 +86,6 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
       entity.serverCloud = null;
       entity.region = null;
       entity.billingMode = null;
-      entity.volumeType = null;
-      entity.volumeSize = null;
       entity.labManagerApiKey = null;
       entity.codelabToken = null;
       entity.serverInstanceId = null;
@@ -380,5 +372,9 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
 
   private emitLabEvent(labEvent: CnLabEvent): void {
     this.eventEmitter.emit(cnLabEventName, labEvent);
+  }
+
+  public getAllLabs(): Promise<CnLab[]> {
+    return this.repository.find();
   }
 }

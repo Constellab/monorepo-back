@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 import {
   CnCloudProviderRegion
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import { CnLabBucketHistory } from './cn-lab-backup-history.entity';
+import { CnLabBackupHistory } from './cn-lab-backup-history.entity';
 
 export enum CnLabBackupFrequency {
   DAILY = 'DAILY',
@@ -20,6 +20,7 @@ export enum CnLabBackupStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   SUCCESS = 'SUCCESS',
   ERROR = 'ERROR',
+  DELETED = 'DELETED',
 }
 
 export interface CnLabBackupStatusObject {
@@ -132,8 +133,6 @@ export class CnLabBackupStatusDTO {
   @Type(() => CnCloudProviderRegion)
   region: CnCloudProviderRegion;
 
-  labVolumeSize: number;
-
   /**
    * The status of the backup
    * SUCCESS: the backup was successful
@@ -164,7 +163,6 @@ export class CnLabCheckBackupSizeDTO extends CnLabBackupStatusDTO {
     const dto = new CnLabCheckBackupSizeDTO();
     dto.frequency = backupStatusDTO.frequency;
     dto.region = backupStatusDTO.region;
-    dto.labVolumeSize = backupStatusDTO.labVolumeSize;
     dto.status = backupStatusDTO.status;
     dto.lastSuccessBackupAt = backupStatusDTO.lastSuccessBackupAt;
     dto.lastSuccessBackupSize = backupStatusDTO.lastSuccessBackupSize;
@@ -177,5 +175,5 @@ export class CnLabCheckBackupSizeDTO extends CnLabBackupStatusDTO {
 
 export interface CnSaveBackupHistoryDTO {
   isNew: boolean;
-  history: CnLabBucketHistory;
+  history: CnLabBackupHistory;
 }

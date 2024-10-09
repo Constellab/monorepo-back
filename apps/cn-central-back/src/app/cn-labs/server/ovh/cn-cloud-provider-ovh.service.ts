@@ -20,9 +20,10 @@ import {
 } from './cn-ovh.class';
 import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnCloudProviderName } from '../../../cn-cloud-providers/cn-cloud-provider.entity';
-import { CnLab, CnLabBillingMode, CnLabVolumeType } from '../../cn-lab.entity';
+import { CnLab, CnLabBillingMode } from '../../cn-lab.entity';
 import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { CnCommandService } from '../../../cn-core/services/cn-command.service';
+import { CnLabVolumeType } from '../../volume/cn-lab-volume-entity';
 
 @Injectable()
 export class CnCloudProviderOvhService extends CnCloudProviderService {

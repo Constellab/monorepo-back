@@ -31,6 +31,9 @@ export class CnLabBackupHistoryDetail extends BlEntityWithId {
   @Column({ nullable: false, default: 0 })
   totalSize: number;
 
+  /**
+   * Transfer size in bytes
+   */
   @Column({ nullable: false, default: 0 })
   transferSize: number;
 

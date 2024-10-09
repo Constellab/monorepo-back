@@ -16,6 +16,7 @@ import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { CnExternalLabApiService } from '../../cn-external-lab-api/cn-external-lab-api.service';
 import { CnCloudProviderFactory } from './cn-cloud-provider.factory';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnLabVolume } from '../volume/cn-lab-volume-entity';
 
 /**
  * Service to manage the lab server via the cloud provider
@@ -70,7 +71,7 @@ export class CnLabServerService {
    *
    * When calling this method it must be wrapped around a try catch to mark serverTask as error if needed
    */
-  public async initInstance(lab: CnLab): Promise<CnLab> {
+  public async initInstance(lab: CnLab, labVolume: CnLabVolume): Promise<CnLab> {
 
     const serverCloud = await this.labService.getLabServerCloud(lab.id);
     const cloudProviderName = serverCloud.cloudProvider.name;
@@ -90,15 +91,15 @@ export class CnLabServerService {
       this.logger.log(`Server instance ${lab.serverInstanceId} already exists for lab ${lab.id}. Skipping creation`);
     }
 
-    let volume: CnCpVolume;
+    let serverVolume: CnCpVolume;
 
     if (!lab.serverVolumeId) {
       // Creating the volume
-      volume = await this.createVolume(cloudProviderService, lab);
-      lab = await this.labService.updatePartial(lab.id, { serverVolumeId: volume.id });
+      serverVolume = await this.createVolume(cloudProviderService, lab, labVolume);
+      lab = await this.labService.updatePartial(lab.id, { serverVolumeId: serverVolume.id });
     } else {
-      volume = await cloudProviderService.getVolume(lab.serverVolumeId);
-      if (volume == null) {
+      serverVolume = await cloudProviderService.getVolume(lab.serverVolumeId);
+      if (serverVolume == null) {
         throw new BlBadRequestException(`Volume ${lab.serverVolumeId} not found in cloud provider ${cloudProviderName}`);
       }
       this.logger.log(`Volume ${lab.serverVolumeId} already exists for lab ${lab.id}. Skipping creation`);
@@ -107,7 +108,7 @@ export class CnLabServerService {
 
     // Waiting for the server and the volume to be ready
     let count = 0;
-    while ((serverInstance.status.status === 'CREATING' || volume.status === 'CREATING') && count < 10) {
+    while ((serverInstance.status.status === 'CREATING' || serverVolume.status === 'CREATING') && count < 10) {
 
       if (count === 0) {
         await this.labService.updateServerTask(lab.id, 'Waiting for server and volume to be ready',
@@ -115,7 +116,7 @@ export class CnLabServerService {
       }
       // wait 30 seconds
       // eslint-disable-next-line max-len
-      this.logger.log(`Waiting for instance ${serverInstance.id} and volume ${volume.id} to be ready for lab ${lab.id} in cloud provider ${cloudProviderName}. Count: ${count}`);
+      this.logger.log(`Waiting for instance ${serverInstance.id} and volume ${serverVolume.id} to be ready for lab ${lab.id} in cloud provider ${cloudProviderName}. Count: ${count}`);
       await new Promise(r => setTimeout(r, 30000));
 
       // refresh lab if needed
@@ -124,8 +125,8 @@ export class CnLabServerService {
       }
 
       // refresh volume if needed
-      if (volume.status !== 'AVAILABLE') {
-        volume = await cloudProviderService.getVolume(volume.id);
+      if (serverVolume.status !== 'AVAILABLE') {
+        serverVolume = await cloudProviderService.getVolume(serverVolume.id);
       }
 
       count++;
@@ -135,21 +136,21 @@ export class CnLabServerService {
       throw new BlBadRequestException(
         'Server instance not ready, please refresh the status if few minutes and then contact the support if the problem persists');
     }
-    if (volume.status === 'CREATING') {
+    if (serverVolume.status === 'CREATING') {
       throw new BlBadRequestException(
         'Volume not ready, please refresh the status if few minutes and then contact the support if the problem persists');
     }
 
     // Attaching the volume to the server
-    if (volume.status === 'AVAILABLE') {
-      await this.attachVolumeToInstance(cloudProviderService, serverInstance.id, volume.id, lab.id);
+    if (serverVolume.status === 'AVAILABLE') {
+      await this.attachVolumeToInstance(cloudProviderService, serverInstance.id, serverVolume.id, lab.id);
     } else {
       // check that the volume is attached to the instance
-      if (!await cloudProviderService.volumeIsAttachedToInstance(serverInstance.id, volume.id)) {
+      if (!await cloudProviderService.volumeIsAttachedToInstance(serverInstance.id, serverVolume.id)) {
         // eslint-disable-next-line max-len
-        throw new BlBadRequestException(`For lab ${lab.id}, volume ${volume.id} is not attached to instance ${serverInstance.id}.'`);
+        throw new BlBadRequestException(`For lab ${lab.id}, volume ${serverVolume.id} is not attached to instance ${serverInstance.id}.'`);
       }
-      this.logger.log(`Volume ${volume.id} was already attached to lab ${lab.id}. Skipping attachment`);
+      this.logger.log(`Volume ${serverVolume.id} was already attached to lab ${lab.id}. Skipping attachment`);
     }
 
     // create domain record
@@ -186,13 +187,13 @@ export class CnLabServerService {
     return serverInstance;
   }
 
-  private async createVolume(service: CnCloudProviderService, lab: CnLab): Promise<CnCpVolume> {
+  private async createVolume(service: CnCloudProviderService, lab: CnLab, labVolume: CnLabVolume): Promise<CnCpVolume> {
 
     const volumeRequest: CnCpCreateVolumeRequest = {
       name: lab.cloudName,
       description: 'Volume for lab ' + lab.name,
-      size: lab.volumeSize,
-      type: lab.volumeType,
+      size: labVolume.size,
+      type: labVolume.type,
       region: lab.region.technicalName
     };
 
