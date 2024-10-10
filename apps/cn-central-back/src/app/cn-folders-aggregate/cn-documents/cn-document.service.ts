@@ -405,11 +405,11 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
     const mappings: Record<CnDocumentType, CnDocumentStorageType> = {
       [CnDocumentType.UPLOADED_DOCUMENT]: CnDocumentStorageType.UPLOADED_DOCUMENT,
-      [CnDocumentType.CONSTELLAB_DOCUMENT]: CnDocumentStorageType.CONSTELLAB_DOCUMENT,
       [CnDocumentType.DESCRIPTION_CONTENT]: CnDocumentStorageType.DESCRIPTION,
+      [CnDocumentType.CONSTELLAB_DOCUMENT]: CnDocumentStorageType.NOTE,
       [CnDocumentType.NOTE]: CnDocumentStorageType.NOTE,
       [CnDocumentType.NOTE_CONTENT]: CnDocumentStorageType.NOTE,
-      [CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT]: CnDocumentStorageType.CONSTELLAB_DOCUMENT,
+      [CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT]: CnDocumentStorageType.NOTE,
       [CnDocumentType.MESSAGE_CONTENT]: CnDocumentStorageType.MESSAGE
     };
 
