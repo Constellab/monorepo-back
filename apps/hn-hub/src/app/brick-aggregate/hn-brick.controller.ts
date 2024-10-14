@@ -111,11 +111,11 @@ export class HnBrickController {
   }
 
   /**
-   * Get user live tasks
+   * Get user bricks
    * @param userId
    * @param page
    * @param size
-   * @return live tasks
+   * @return bricks
    */
   @BlPublic()
   @Get('user/:userId')

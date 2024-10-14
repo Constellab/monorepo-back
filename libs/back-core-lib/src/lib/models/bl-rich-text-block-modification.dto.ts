@@ -8,7 +8,7 @@ import {BlUserDto} from './bl-user/bl-user.class';
 export class BlRichTextBlockModificationDto {
   id: string;
 
-  time: number;
+  time: string;
 
   blockId: string;
 
@@ -30,7 +30,7 @@ export class BlRichTextBlockModificationDto {
 
   constructor(blockModification: BlRichTextBlockModification, user: BlUserDto) {
     this.id = blockModification.id;
-    this.time = blockModification.time;
+    this.time = blockModification.time.toISO();
     this.blockId = blockModification.blockId;
     this.blockType = blockModification.blockType;
     this.type = blockModification.type;

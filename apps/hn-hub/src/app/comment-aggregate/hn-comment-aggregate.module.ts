@@ -3,13 +3,13 @@ import {HnCoreModule} from '../core/hn-core.module';
 import {HnCommentController} from './hn-comment.controller';
 import {HnCommentAggregateService} from './hn-comment-aggregate.service';
 import {HnCommentStoryModule} from './comment-story/hn-comment-story.module';
-import {HnCommentLiveTaskModule} from './comment-live-task/hn-comment-live-task.module';
+import {HnCommentAgentModule} from './comment-agent/hn-comment-agent.module';
 
 @Module({
   imports: [
     HnCoreModule,
     HnCommentStoryModule,
-    HnCommentLiveTaskModule
+    HnCommentAgentModule
   ],
   controllers: [HnCommentController],
   providers: [HnCommentAggregateService],

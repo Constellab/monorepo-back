@@ -15,7 +15,18 @@ export class HnCurrentUserHelper extends BlCurrentUserHelper {
    * if the user is not authenticated
    */
   static getAndCheckCurrentUser(): HnUser {
-
     return super.getAndCheckCurrentUser() as HnUser;
+  }
+
+  static setLabInstanceCurrentUser(user: HnUser): void {
+    this.setAdditionalData('labInstanceUser', user);
+  }
+
+  static getAndCheckLabInstanceCurrentUser(): HnUser {
+    const user = this.getCurrentAdditionalData()['labInstanceUser'] as HnUser;
+    if (!user) {
+      throw new Error('No lab instance user found');
+    }
+    return user;
   }
 }

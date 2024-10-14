@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {HnCommentStoryService} from './comment-story/hn-comment-story.service';
 import {ClPage} from '@monorepo/core-lib';
-import {HnCommentLiveTaskService} from './comment-live-task/hn-comment-live-task.service';
+import {HnCommentAgentService} from './comment-agent/hn-comment-agent.service';
 import {HnEntityType} from '../core/model/entities/hn-entity-type.enum';
 import {BlEntityWithId, BlRichTextContent} from '@monorepo/back-core-lib';
 import {HnAbstractCommentService} from './comment-core/hn-abstract-comment.service';
@@ -10,7 +10,7 @@ import {HnAbstractCommentDto} from './comment-core/hn-abstract-comment.dto';
 @Injectable()
 export class HnCommentAggregateService {
   constructor(private readonly commentStoryService: HnCommentStoryService,
-              private readonly commentLiveTaskService: HnCommentLiveTaskService) {
+              private readonly commentAgentService: HnCommentAgentService) {
   }
 
   async getComments(commentType: HnEntityType, entityId: string,
@@ -27,8 +27,8 @@ export class HnCommentAggregateService {
     switch (likeType) {
       case HnEntityType.STORY_LIKE:
         return this.commentStoryService;
-      case HnEntityType.LIVE_TASK_LIKE:
-        return this.commentLiveTaskService;
+      case HnEntityType.AGENT_LIKE:
+        return this.commentAgentService;
       default:
         throw new Error('Unknown comment type')
     }

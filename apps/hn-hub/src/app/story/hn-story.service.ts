@@ -549,4 +549,24 @@ export class HnStoryService {
     return res;
   }
 
+
+  async migrateStoryModificationsTimeFormat(): Promise<void>{
+    const stories: HnStory[] = await this.storyRepository.find();
+    for (const story of stories){
+      story.modificationsBackup = story.modifications;
+      await this.storyRepository.save(story);
+      const json = JSON.parse(story.modifications);
+      if (!json) {
+        return;
+      }
+      json.modifications.map((modification: Record<string, any>) => {
+        modification.time = DateTime.fromMillis(modification.time)
+        console.log(modification.time);
+        console.log(DateTime.now())
+      });
+      story.modifications = JSON.stringify(json);
+      await this.storyRepository.save(story);
+    }
+  }
+
 }

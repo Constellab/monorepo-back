@@ -4,7 +4,7 @@ import { DateTime } from 'luxon';
 import { ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import { HnStoryCoAuthor } from '../story-author/hn-story-author.entity';
 import { HnBrickUser } from '../brick-aggregate/brick-user/hn-brick-user.entity';
-import { HnLiveTaskCoAuthor } from '../live-task-aggregate/live-task-co-author/hn-live-task-co-author.entity';
+import { HnAgentCoAuthor } from '../agent-aggregate/agent-co-author/hn-agent-co-author.entity';
 
 @Unique(['userCode'])
 @Entity('user')
@@ -58,11 +58,11 @@ export class HnUser {
   @OneToMany(() => HnStoryCoAuthor, storyAuthor => storyAuthor.user, { nullable: true })
   storyAuthors: HnStoryCoAuthor[];
 
-  @OneToMany(() => HnLiveTaskCoAuthor, liveTaskCoAuthor => liveTaskCoAuthor.user, {
+  @OneToMany(() => HnAgentCoAuthor, agentCoAuthor => agentCoAuthor.user, {
     nullable: true,
     onDelete: 'CASCADE'
   })
-  liveTaskCoAuthors: HnLiveTaskCoAuthor[];
+  agentCoAuthors: HnAgentCoAuthor[];
 
   @OneToMany(() => HnBrickUser, brickUser => brickUser.user, { nullable: true })
   brickUsers: HnBrickUser[];

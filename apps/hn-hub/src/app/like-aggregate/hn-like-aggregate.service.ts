@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {HnLikeStoryService} from './like-story/hn-like-story.service';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
-import {HnLikeLiveTaskService} from './like-live-task/hn-like-live-task.service';
+import {HnLikeAgentService} from './like-agent/hn-like-agent.service';
 import {HnLikeBrickService} from './like-brick/hn-like-brick.service';
 import {BlEntityWithId} from '@monorepo/back-core-lib';
 import {HnAbstractLikeService} from './like-core/hn-abstract-like.service';
@@ -10,7 +10,7 @@ import {HnEntityType} from '../core/model/entities/hn-entity-type.enum';
 @Injectable()
 export class HnLikeAggregateService {
   constructor(private readonly likeStoryService: HnLikeStoryService,
-              private readonly likeLiveTaskService: HnLikeLiveTaskService,
+              private readonly likeAgentService: HnLikeAgentService,
               private readonly likeBrickService: HnLikeBrickService) {
   }
 
@@ -33,8 +33,8 @@ export class HnLikeAggregateService {
     switch (likeType) {
       case HnEntityType.STORY_LIKE:
         return this.likeStoryService;
-      case HnEntityType.LIVE_TASK_LIKE:
-        return this.likeLiveTaskService;
+      case HnEntityType.AGENT_LIKE:
+        return this.likeAgentService;
       case HnEntityType.BRICK_LIKE:
         return this.likeBrickService;
     }

@@ -35,6 +35,9 @@ export class HnStory extends BlEntityWithId {
   @Column({type: 'longtext', nullable: true,})
   modifications: string;
 
+  @Column({type: 'longtext', nullable: true, name: 'modifications_backup'})
+  modificationsBackup: string;
+
   @Column({nullable: true, type: 'varchar'})
   firstParagraph?: string;
 

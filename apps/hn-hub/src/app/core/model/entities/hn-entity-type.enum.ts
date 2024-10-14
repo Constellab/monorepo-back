@@ -1,5 +1,5 @@
 export enum HnEntityType {
   BRICK_LIKE = 'brick',
-  LIVE_TASK_LIKE = 'live-task',
+  AGENT_LIKE = 'agent',
   STORY_LIKE = 'story',
 }

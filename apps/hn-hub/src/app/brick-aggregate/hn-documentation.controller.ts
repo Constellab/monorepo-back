@@ -8,33 +8,48 @@ import {
   Post,
   Put,
   UseGuards,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
-import {HnDocumentation, HnDocumentationDTO} from './documentation/hn-documentation.entity';
+import {
+  HnDocumentation,
+  HnDocumentationDTO,
+} from './documentation/hn-documentation.entity';
 import {
   BlFile,
   BlParsePipe,
   BlPublic,
-  BlRichTextBlockModification, BlRichTextBlockModificationDto,
+  BlRichTextBlockModificationDto,
   BlRichTextContent,
   BlRichTextUploadedImageResponse,
-  BlUploadedFile
+  BlUploadedFile,
 } from '@monorepo/back-core-lib';
-import {FileInterceptor} from '@nestjs/platform-express';
-import {HnNodeDTO} from './folder/hn-folder.dto';
-import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
-import {HnBrickAggregateService} from './hn-brick-aggregate.service';
-import {HnDocumentationDto} from './documentation/hn-documentation.dto';
-import {HnAbstractFileController} from '../file-aggregate/file-core/hn-abstract-file.controller';
-import {HnFileDocumentationService} from '../file-aggregate/file-documentation/hn-file-documentation.service';
-import {HnAbstractFileEntityDTO, HnUploadFileResponseDto} from '../file-aggregate/file-core/hn-abstract-file.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { HnNodeDTO } from './folder/hn-folder.dto';
+import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
+import { HnBrickAggregateService } from './hn-brick-aggregate.service';
+import { HnDocumentationDto } from './documentation/hn-documentation.dto';
+import { HnAbstractFileController } from '../file-aggregate/file-core/hn-abstract-file.controller';
+import { HnFileDocumentationService } from '../file-aggregate/file-documentation/hn-file-documentation.service';
+import {
+  HnAbstractFileEntityDTO,
+  HnUploadFileResponseDto,
+} from '../file-aggregate/file-core/hn-abstract-file.dto';
+import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 
 @Controller('documentation')
 @UseGuards(HnIsAdminGuard)
 export class HnDocumentationController extends HnAbstractFileController<HnDocumentation> {
-  constructor(private readonly brickAggregateService: HnBrickAggregateService,
-              readonly fileDocumentationService: HnFileDocumentationService) {
+  constructor(
+    private readonly brickAggregateService: HnBrickAggregateService,
+    readonly fileDocumentationService: HnFileDocumentationService
+  ) {
     super(fileDocumentationService);
+  }
+
+  @IsAdmin()
+  @Get('migrate-modifications')
+  async migrateModifications(): Promise<void> {
+    return this.brickAggregateService.migrateDocumentationModificationsTimeFormat();
   }
 
   @BlPublic()
@@ -44,15 +59,21 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
   }
 
   @Put('content/:id')
-  updateContent(@Param('id') id: string,
-                @Body() updateContentDoc: BlRichTextContent): Promise<HnDocumentation> {
+  updateContent(
+    @Param('id') id: string,
+    @Body() updateContentDoc: BlRichTextContent
+  ): Promise<HnDocumentation> {
     return this.brickAggregateService.updateDocContent(id, updateContentDoc);
   }
 
   @BlPublic()
   @Post('complete-path')
   findByCompletePath(@Body() body: any): Promise<HnDocumentationDto> {
-    return this.brickAggregateService.findCurrentDoc(body.brickName, body.version, body.completePath);
+    return this.brickAggregateService.findCurrentDoc(
+      body.brickName,
+      body.version,
+      body.completePath
+    );
   }
 
   @BlPublic()
@@ -67,62 +88,77 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
   }
 
   @Put()
-  update(@Body(new BlParsePipe(HnNodeDTO)) updatedDoc: HnNodeDTO): Promise<HnDocumentation> {
+  update(
+    @Body(new BlParsePipe(HnNodeDTO)) updatedDoc: HnNodeDTO
+  ): Promise<HnDocumentation> {
     return this.brickAggregateService.updateDoc(updatedDoc);
   }
 
   @UseInterceptors(FileInterceptor('file'))
   @Put('/image/:docId')
-  saveImage(@BlUploadedFile() file: BlFile,
-            @Param('docId', new ParseUUIDPipe()) docId: string): Promise<BlRichTextUploadedImageResponse> {
+  saveImage(
+    @BlUploadedFile() file: BlFile,
+    @Param('docId', new ParseUUIDPipe()) docId: string
+  ): Promise<BlRichTextUploadedImageResponse> {
     return this.brickAggregateService.saveDocImage(file, docId);
   }
 
   ///////////////////////////////////////// HISTORY /////////////////////////////////////////
 
   @Get('history/:docId')
-  async getDocModifications(@Param('docId', new ParseUUIDPipe()) docId: string): Promise<BlRichTextBlockModificationDto[]> {
+  async getDocModifications(
+    @Param('docId', new ParseUUIDPipe()) docId: string
+  ): Promise<BlRichTextBlockModificationDto[]> {
     return this.brickAggregateService.getDocModifications(docId);
   }
 
-
   @Get('history/undo-content/:docId/:modificationId')
-  async testUndo(@Param('docId', new ParseUUIDPipe()) docId: string,
-                 @Param('modificationId', new ParseUUIDPipe()) modificationId: string): Promise<Record<string, any>> {
+  async testUndo(
+    @Param('docId', new ParseUUIDPipe()) docId: string,
+    @Param('modificationId', new ParseUUIDPipe()) modificationId: string
+  ): Promise<Record<string, any>> {
     return this.brickAggregateService.getUndoContent(docId, modificationId);
   }
 
   @Put('history/rollback/:docId/:modificationId')
-  async rollbackContent(@Param('docId', new ParseUUIDPipe()) docId: string,
-                        @Param('modificationId', new ParseUUIDPipe()) modificationId: string): Promise<HnDocumentation> {
+  async rollbackContent(
+    @Param('docId', new ParseUUIDPipe()) docId: string,
+    @Param('modificationId', new ParseUUIDPipe()) modificationId: string
+  ): Promise<HnDocumentation> {
     return this.brickAggregateService.rollbackContent(docId, modificationId);
   }
-
 
   ////////////////////////////////// DOC RESOURCE VIEW //////////////////////////////////
   @UseInterceptors(FileInterceptor('file'))
   @Post(':docId/upload-view')
-  public async saveResourceViewFile(@BlUploadedFile() file: BlFile,
-                                           @Param('docId', new ParseUUIDPipe()) docId: string): Promise<any> {
-    return {filename: await this.brickAggregateService.saveDocResourceViewFile(docId, file)};
+  public async saveResourceViewFile(
+    @BlUploadedFile() file: BlFile,
+    @Param('docId', new ParseUUIDPipe()) docId: string
+  ): Promise<any> {
+    return {
+      filename: await this.brickAggregateService.saveDocResourceViewFile(
+        docId,
+        file
+      ),
+    };
   }
-
-
 
   /////////////////////////////////// DOC FILE //////////////////////////////////////////
 
   @BlPublic()
   @Get('doc-files/:docId')
-  async getDocFiles(@Param('docId', new ParseUUIDPipe()) docId: string): Promise<HnAbstractFileEntityDTO[]> {
+  async getDocFiles(
+    @Param('docId', new ParseUUIDPipe()) docId: string
+  ): Promise<HnAbstractFileEntityDTO[]> {
     return this.brickAggregateService.getDocFiles(docId);
   }
 
-
   @UseInterceptors(FileInterceptor('file'))
   @Post('file/:docId')
-  async saveFile(@BlUploadedFile() file: BlFile,
-                 @Param('docId', new ParseUUIDPipe()) docId: string): Promise<HnUploadFileResponseDto> {
+  async saveFile(
+    @BlUploadedFile() file: BlFile,
+    @Param('docId', new ParseUUIDPipe()) docId: string
+  ): Promise<HnUploadFileResponseDto> {
     return this.brickAggregateService.saveFile(file, docId);
   }
-
 }

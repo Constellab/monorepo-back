@@ -1,5 +1,6 @@
 import {ClStringHelper} from '@monorepo/core-lib';
 import {diffChars} from 'diff';
+import { DateTime, Duration } from 'luxon';
 
 export enum BlRichTextModificationType {
   CREATED = "CREATED",
@@ -16,7 +17,7 @@ export interface BlRichTextModificationDifference {
   value: string;
 }
 
-const MAX_TIME_DIFFERENCE = 3 * 60 * 1000;
+const MAX_TIME_DIFFERENCE = Duration.fromObject({ minutes: 3 });
 
 export class BlRichTextBlockModification {
 
@@ -24,7 +25,7 @@ export class BlRichTextBlockModification {
 
   version: string;
 
-  time: number;
+  time: DateTime;
 
   blockId: string;
 
@@ -43,9 +44,9 @@ export class BlRichTextBlockModification {
   oldIndex?: number;
 
   constructor(blockId: string, blockType: string, type: BlRichTextModificationType, index: number,
-              userId: string, id?: string, time?: number) {
+              userId: string, id?: string, time?: string) {
     this.id = id ?? ClStringHelper.generateUUID();
-    this.time = time ?? new Date().getTime();
+    this.time = time ? DateTime.fromISO(time) : DateTime.now();
     this.blockId = blockId;
     this.blockType = blockType;
     this.type = type;
@@ -245,7 +246,7 @@ export class BlRichTextModifications {
       }
 
       // if the last modification is a move and the current one is a move on the same block, we keep the fusion of the two moves
-      if (modification.blockId == lastModification?.blockId && lastModification.time + MAX_TIME_DIFFERENCE > modification.time) {
+      if (modification.blockId == lastModification?.blockId && lastModification.time.plus(MAX_TIME_DIFFERENCE) > modification.time) {
         if (modification.type == BlRichTextModificationType.UPDATED && modification.userId === lastModification.userId) {
           // if the last modification is a creation and the current one is an update on the same block,
           // otherwise we keep the fusion as a update

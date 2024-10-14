@@ -62,18 +62,18 @@ export class HnFrontService {
     return `${this.getBricksUrl()}/${brickName}/${majorStrVersion}`;
   }
 
-  ///////////////////////////// LIVE TASKS ///////////////////////////////////////////
+  ///////////////////////////// AGENTS ///////////////////////////////////////////
 
-  public getLiveTaskInviteUrl(token: string): string {
-    return `${this.getLiveTasksUrl()}/invite/${token}`;
+  public getAgentInviteUrl(token: string): string {
+    return `${this.getAgentsUrl()}/invite/${token}`;
   }
 
-  public getLiveTasksUrl(): string {
-    return `${this.getBaseWebsiteURL()}/live-tasks`;
+  public getAgentsUrl(): string {
+    return `${this.getBaseWebsiteURL()}/agents`;
   }
 
-  public getLiveTaskUrl(liveTaskId: string, liveTaskTitlePath: string): string {
-    return `${this.getLiveTasksUrl()}/${liveTaskId}/${liveTaskTitlePath}`;
+  public getAgentUrl(agentId: string, agentTitlePath: string): string {
+    return `${this.getAgentsUrl()}/${agentId}/${agentTitlePath}`;
   }
 
   //////////////////////////////// CONSTELLAB URLS ///////////////////////////////////////

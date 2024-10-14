@@ -1,4 +1,9 @@
-import { ClassSerializerInterceptor, MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  MiddlewareConsumer,
+  Module,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
@@ -21,7 +26,7 @@ import {
   BlObjectStorageModule,
   BlRequestContextMiddleware,
   BlTransportModule,
-  BlTransportModuleConfig
+  BlTransportModuleConfig,
 } from '@monorepo/back-core-lib';
 import { HnCoreModule } from './app/core/hn-core.module';
 import { HnUserService } from './app/users/hn-user.service';
@@ -30,7 +35,12 @@ import { hnJwtConfig } from './app/auth/hn-jwt.config';
 import { HnJwtAuthGuard } from './app/core/guards/hn-jwt-auth.guard';
 import { HnFolderModule } from './app/brick-aggregate/folder/hn-folder.module';
 import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
-import { AcceptLanguageResolver, CookieResolver, I18nJsonLoader, I18nModule } from 'nestjs-i18n';
+import {
+  AcceptLanguageResolver,
+  CookieResolver,
+  I18nJsonLoader,
+  I18nModule,
+} from 'nestjs-i18n';
 import { clDefaultLang } from '@monorepo/core-lib';
 import { HnBrickModule } from './app/brick-aggregate/brick/hn-brick.module';
 import { HnBrickVersionModule } from './app/brick-aggregate/brick-version/hn-brick-version.module';
@@ -55,30 +65,27 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { HnSpaceAggregateModule } from './app/space-aggregate/hn-space-aggregate.module';
 import { HnSpaceModule } from './app/space-aggregate/space/hn-space.module';
 import { HnSpaceUserModule } from './app/space-aggregate/space-user/hn-space-user.module';
-import { HnLiveTaskModule } from './app/live-task-aggregate/live-task/hn-live-task.module';
-import { HnLiveTaskVersionModule } from './app/live-task-aggregate/live-task-version/hn-live-task-version.module';
-import { HnLiveTaskAggregateModule } from './app/live-task-aggregate/hn-live-task-aggregate.module';
-import {
-  HnLiveTaskVersionBrickDependenciesModule
-} from './app/live-task-aggregate/live-task-version-brick-dependencies/hn-live-task-version-brick-dependencies.module';
+import { HnAgentModule } from './app/agent-aggregate/agent/hn-agent.module';
+import { HnAgentVersionModule } from './app/agent-aggregate/agent-version/hn-agent-version.module';
+import { HnAgentAggregateModule } from './app/agent-aggregate/hn-agent-aggregate.module';
+import { HnAgentVersionBrickDependenciesModule } from './app/agent-aggregate/agent-version-brick-dependencies/hn-agent-version-brick-dependencies.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HnIconModule } from './app/icon/hn-icon.module';
 import { HnLikeAggregateModule } from './app/like-aggregate/hn-like-aggregate.module';
 import { HnLikeStoryModule } from './app/like-aggregate/like-story/hn-like-story.module';
 import { HnCommentAggregateModule } from './app/comment-aggregate/hn-comment-aggregate.module';
 import { HnCommentStoryModule } from './app/comment-aggregate/comment-story/hn-comment-story.module';
-import { HnLikeLiveTaskModule } from './app/like-aggregate/like-live-task/hn-like-live-task.module';
-import { HnCommentLiveTaskModule } from './app/comment-aggregate/comment-live-task/hn-comment-live-task.module';
+import { HnLikeAgentModule } from './app/like-aggregate/like-agent/hn-like-agent.module';
+import { HnCommentAgentModule } from './app/comment-aggregate/comment-agent/hn-comment-agent.module';
 import { HnLikeBrickModule } from './app/like-aggregate/like-brick/hn-like-brick.module';
-import { HnLiveTaskCoAuthorModule } from './app/live-task-aggregate/live-task-co-author/hn-live-task-co-author.module';
-import {
-  HnLiveTaskCoAuthorInviteModule
-} from './app/live-task-aggregate/live-task-co-author-invite/hn-live-task-co-author-invite.module';
+import { HnAgentCoAuthorModule } from './app/agent-aggregate/agent-co-author/hn-agent-co-author.module';
+import { HnAgentCoAuthorInviteModule } from './app/agent-aggregate/agent-co-author-invite/hn-agent-co-author-invite.module';
 import { HnPublicModule } from './app/public/hn-public.module';
 import { HnTechnicalDocOtherClassModule } from './app/technical-doc-other-class/hn-technical-doc-other-class.module';
 import { HnFileAggregateModule } from './app/file-aggregate/hn-file-aggregate.module';
 import { HnFileStoryModule } from './app/file-aggregate/file-story/hn-file-story.module';
 import { HnFileDocumentationModule } from './app/file-aggregate/file-documentation/hn-file-documentation.module';
+import { HnLogRequestMiddleware } from './app/core/middleware/hn-log-request-middleware.service';
 
 function typeOrmConfig(
   configService: HnCoreConfigService
@@ -95,7 +102,7 @@ function typeOrmConfig(
     autoLoadEntities: true,
     maxQueryExecutionTime: 1000, // log query longer than 1s,
     bigNumberStrings: false,
-    charset: 'utf8mb4'
+    charset: 'utf8mb4',
   };
 }
 
@@ -104,7 +111,7 @@ function configureLogger(
 ): WinstonModuleOptions {
   const logConfig: BlLoggerConfig = {
     logLevel: configService.getLogLevel(),
-    logFilePath: configService.isLocal() ? null : configService.getLogPath()
+    logFilePath: configService.isLocal() ? null : configService.getLogPath(),
   };
   return blConfigureLogger(logConfig);
 }
@@ -116,13 +123,16 @@ function configureJwtModule(
   return {
     jwtSecret: configService.getJwtSecret(),
     jwtFromRequest: (request: Request) => {
-      return request.headers.authorization ?? BlCookieHelper.getCookieFromHeader(
-        request.headers.cookie,
-        hnJwtConfig.authorizationCookie
+      return (
+        request.headers.authorization ??
+        BlCookieHelper.getCookieFromHeader(
+          request.headers.cookie,
+          hnJwtConfig.authorizationCookie
+        )
       );
     },
     usersService: userService,
-    tokenDurationInSeconds: hnJwtConfig.tokenDurationInSeconds
+    tokenDurationInSeconds: hnJwtConfig.tokenDurationInSeconds,
   };
 }
 
@@ -139,7 +149,7 @@ function configureMailModule(
     mailConfig: configService.getMailConfig(),
     templateFolder: join(__dirname, 'assets/templates/'),
     defaultLayout: 'main-',
-    defaultData: { contactMail: configService.getCustomerSuccessMail() }
+    defaultData: { contactMail: configService.getCustomerSuccessMail() },
   };
 }
 
@@ -148,13 +158,13 @@ function configureMailModule(
     // let the config module on top of the imports
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: join(__dirname, 'environments', 'dev.env')
+      envFilePath: join(__dirname, 'environments', 'dev.env'),
     }),
 
     TypeOrmModule.forRootAsync({
       useFactory: typeOrmConfig,
       inject: [HnCoreConfigService],
-      imports: [HnCoreConfigModule]
+      imports: [HnCoreConfigModule],
     }),
 
     I18nModule.forRoot({
@@ -162,44 +172,46 @@ function configureMailModule(
       loader: I18nJsonLoader,
       loaderOptions: {
         path: join(__dirname, 'assets/i18n/'),
-        watch: true //    // enable live translation
+        watch: true, //    // enable live translation
       },
       resolvers: [
         // retrieve the language from the cookie (define to avoid error but not really used)
         { use: CookieResolver, options: 'lang' },
-        AcceptLanguageResolver
-      ]
+        AcceptLanguageResolver,
+      ],
     }),
 
     // setup the logging module
     WinstonModule.forRootAsync({
       imports: [HnCoreModule],
       useFactory: configureLogger,
-      inject: [HnCoreConfigService]
+      inject: [HnCoreConfigService],
     }),
 
     BlJwtModule.forRootAsync({
       imports: [HnCoreModule, HnUserModule],
       useFactory: configureJwtModule,
-      inject: [HnCoreConfigService, HnUserService]
+      inject: [HnCoreConfigService, HnUserService],
     }),
 
     BlTransportModule.forRootAsync({
       useFactory: configureTransportModule,
       imports: [HnCoreModule],
-      inject: [HnCoreConfigService]
+      inject: [HnCoreConfigService],
     }),
 
     BlMailModule.forRootAsync({
       imports: [HnCoreModule],
       useFactory: configureMailModule,
-      inject: [HnCoreConfigService]
+      inject: [HnCoreConfigService],
     }),
     ThrottlerModule.forRoot({
-      throttlers: [{
-        ttl: 60,
-        limit: 10
-      }]
+      throttlers: [
+        {
+          ttl: 60,
+          limit: 10,
+        },
+      ],
     }),
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
@@ -235,58 +247,58 @@ function configureMailModule(
     HnBrickAggregateModule,
     HnTechnicalDocOtherClassModule,
 
-    HnLiveTaskModule,
-    HnLiveTaskVersionModule,
-    HnLiveTaskVersionBrickDependenciesModule,
-    HnLiveTaskCoAuthorInviteModule,
-    HnLiveTaskCoAuthorModule,
-    HnLiveTaskAggregateModule,
+    HnAgentModule,
+    HnAgentVersionModule,
+    HnAgentVersionBrickDependenciesModule,
+    HnAgentCoAuthorInviteModule,
+    HnAgentCoAuthorModule,
+    HnAgentAggregateModule,
 
     HnIconModule,
 
     HnLikeAggregateModule,
     HnLikeStoryModule,
-    HnLikeLiveTaskModule,
+    HnLikeAgentModule,
     HnLikeBrickModule,
 
     HnCommentAggregateModule,
     HnCommentStoryModule,
-    HnCommentLiveTaskModule,
+    HnCommentAgentModule,
 
     HnFileAggregateModule,
     HnFileStoryModule,
     HnFileDocumentationModule,
 
-    HnPublicModule
+    HnPublicModule,
   ],
   controllers: [],
   providers: [
     // set global interceptor
     {
       provide: APP_INTERCEPTOR,
-      useClass: ClassSerializerInterceptor
+      useClass: ClassSerializerInterceptor,
     },
     // set global exception handler
     {
       provide: APP_FILTER,
-      useClass: HnCoreExceptionHandlerFilter
+      useClass: HnCoreExceptionHandlerFilter,
     },
     // set global guards
     {
       provide: APP_GUARD,
-      useClass: HnJwtAuthGuard
+      useClass: HnJwtAuthGuard,
     },
     {
       provide: APP_GUARD,
-      useClass: HnIsAdminGuard
-    }
-  ]
+      useClass: HnIsAdminGuard,
+    },
+  ],
 })
 export class HnAppModule {
   configure(consumer: MiddlewareConsumer): any {
     consumer
       // register the RequestContextMiddleware to be able to access the request anywhere
-      .apply(BlRequestContextMiddleware)
+      .apply(BlRequestContextMiddleware, HnLogRequestMiddleware)
       .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }
