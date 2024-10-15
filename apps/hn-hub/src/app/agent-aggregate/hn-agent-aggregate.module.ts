@@ -28,6 +28,7 @@ import {HnAgentCoAuthorModule} from './agent-co-author/hn-agent-co-author.module
 import {HnAgentCoAuthorInviteModule} from './agent-co-author-invite/hn-agent-co-author-invite.module';
 import {HnFileDocumentationModule} from '../file-aggregate/file-documentation/hn-file-documentation.module';
 import {HnFileAgentModule} from '../file-aggregate/file-agent/hn-file-agent.module';
+import { HnTempLiveTaskController } from './hn-temp-live-task.controller';
 
 @Module({
   imports: [
@@ -59,7 +60,7 @@ import {HnFileAgentModule} from '../file-aggregate/file-agent/hn-file-agent.modu
 
     HnUserModule
   ],
-  controllers: [HnAgentController],
+  controllers: [HnAgentController, HnTempLiveTaskController],
   providers: [HnAgentAggregateService, HnSpaceAggregateService, HnBrickAggregateService],
   exports: [HnAgentAggregateService]
 })

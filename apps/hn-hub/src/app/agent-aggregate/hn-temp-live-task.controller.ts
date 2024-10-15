@@ -8,17 +8,17 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { HnAgentAggregateService } from '../hn-agent-aggregate.service';
+import { HnAgentAggregateService } from './hn-agent-aggregate.service';
 import { BlParsePipe, BlPublic } from '@monorepo/back-core-lib';
-import { HnLabGuard } from '../../core/decorators/hn-lab-auth-guard.decorator';
+import { HnLabGuard } from '../core/decorators/hn-lab-auth-guard.decorator';
 import {
   HaCreateAgentVersionFromLabResponseDtoOldFormat,
   HnAgentForLabDto,
   HnAgentVersionFileInput,
   HnAgentVersionForLabDto,
   HnCreateAgentDto,
-} from '../agent/hn-agent.dto';
-import { HnAgentVersionMigrator } from '../agent-version/hn-agent-version-migrator.class';
+} from './agent/hn-agent.dto';
+import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
 import { ClPage } from '@monorepo/core-lib';
 
 @Controller('live-task')
