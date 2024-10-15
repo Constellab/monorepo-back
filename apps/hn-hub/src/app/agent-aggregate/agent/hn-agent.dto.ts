@@ -171,3 +171,15 @@ export class HaCreateAgentVersionFromLabResponseDto {
   title: string;
   id: string;
 }
+
+export class HaCreateAgentVersionFromLabResponseDtoOldFormat{
+  live_task_version: string;
+  title: string;
+  id: string;
+
+  constructor(createAgentVersionResponse: HaCreateAgentVersionFromLabResponseDto) {
+    this.live_task_version = createAgentVersionResponse.agent_version;
+    this.title = createAgentVersionResponse.title;
+    this.id = createAgentVersionResponse.id;
+  }
+}
