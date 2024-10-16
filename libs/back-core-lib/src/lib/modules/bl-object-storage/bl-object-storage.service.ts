@@ -72,7 +72,7 @@ export class BlObjectStorageService {
 
     const service = this.getService(config);
 
-    return service.uploadObjectToBucket(obj, filename, contentType, tags);
+    return service.uploadObjectToBucket(obj, filename, contentType, this.cleanTags(tags));
   }
 
   //////////////////////////////////////////// DOWNLOAD OBJECT /////////////////////////////////////////
@@ -247,10 +247,27 @@ export class BlObjectStorageService {
   public async setObjectTags(config: BlBucketConfig | BlBucketConfig[], objectName: string, tags: Record<string, string>): Promise<void> {
     const bucketConfigs = ClHelpService.convertObjectOrArrayToArray(config);
 
+    tags = this.cleanTags(tags);
+
     for (const bucketConfig of bucketConfigs) {
       const service = this.getService(bucketConfig);
       await service.setObjectTags(objectName, tags);
     }
+  }
+
+  private cleanTags(tags: Record<string, string>): Record<string, string> {
+    const newTags: Record<string, string> = {};
+    for (const key in tags) {
+      if (tags[key] != null) {
+        newTags[this.cleanTagString(key)] = this.cleanTagString(tags[key]);
+      }
+    }
+    return newTags;
+  }
+
+  private cleanTagString(tag: string): string {
+    // Replace unwanted characters with a space
+    return tag.replace(/[^a-zA-Z0-9 +\-._:=\/]/g, ' ');
   }
 
   /////////////////////////////////// OTHER ///////////////////////////////////
@@ -267,7 +284,8 @@ export class BlObjectStorageService {
     const buffer = await this.streamToBuffer(object.file);
 
     // upload object to new bucket
-    const objectName = await this.uploadObjectToBuckets(newConfig, buffer, newObjectName, object.contentType, tags);
+    const objectName = await this.uploadObjectToBuckets(newConfig, buffer, newObjectName, object.contentType,
+      this.cleanTags(tags));
 
     // delete object from old bucket
     await this.deleteObjectIfExist(oldConfigs, oldObjectName);
