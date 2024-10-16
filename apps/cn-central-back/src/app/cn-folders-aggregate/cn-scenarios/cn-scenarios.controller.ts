@@ -40,9 +40,9 @@ export class CnScenariosController {
   /**
    * Get scenario's notes
    */
-  @Get(':scenarioId/technical-note')
-  async getScenarioTechnicalNote(@Param('scenarioId', new ParseUUIDPipe()) scenarioId: string): Promise<CnScenarioProtocol> {
-    return this.folderAggregateService.findScenarioTechnicalNote(scenarioId);
+  @Get(':scenarioId/technical-report')
+  async getScenarioTechnicalReport(@Param('scenarioId', new ParseUUIDPipe()) scenarioId: string): Promise<CnScenarioProtocol> {
+    return this.folderAggregateService.findScenarioTechnicalReport(scenarioId);
   }
 
   /**
