@@ -15,8 +15,8 @@ import {
   HaCreateAgentVersionFromLabResponseDtoOldFormat,
   HnAgentForLabDto,
   HnAgentVersionFileInput,
-  HnAgentVersionForLabDto,
-  HnCreateAgentDto,
+  HnAgentVersionForLabDto, HnAgentVersionForLabDtoOldFormat,
+  HnCreateAgentDto
 } from './agent/hn-agent.dto';
 import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
 import { ClPage } from '@monorepo/core-lib';
@@ -130,16 +130,16 @@ export class HnTempLiveTaskController {
   async getLatestPublishedAgentVersionForLabByAgentId(
     @Param('agentId', ParseUUIDPipe) agentId: string,
     @Param('jsonVersionNumber') jsonVersionNumber?: string
-  ): Promise<HnAgentVersionForLabDto> {
+  ): Promise<HnAgentVersionForLabDtoOldFormat> {
     let versionNumber = null;
     if (!jsonVersionNumber) {
       versionNumber = 1;
     } else {
       versionNumber = +jsonVersionNumber;
     }
-    return await this.agentAggregateService.findLatestPublishedAgentVersionForLabByAgentId(
+    return new HnAgentVersionForLabDtoOldFormat(await this.agentAggregateService.findLatestPublishedAgentVersionForLabByAgentId(
       agentId,
       versionNumber
-    );
+    ));
   }
 }

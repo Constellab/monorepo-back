@@ -183,3 +183,29 @@ export class HaCreateAgentVersionFromLabResponseDtoOldFormat{
     this.id = createAgentVersionResponse.id;
   }
 }
+
+export class HnAgentVersionForLabDtoOldFormat{
+  id: string;
+  version: number;
+  type: string;
+  environment: string;
+  params: string | string[];
+  code: string;
+  input_specs: Record<string, any>;
+  output_specs: Record<string, any>;
+  config_specs: Record<string, any>;
+  live_task: HnAgentForLabDto;
+
+  constructor(agentVersion: HnAgentVersionForLabDto) {
+    this.id = agentVersion.id;
+    this.version = agentVersion.version;
+    this.type = agentVersion.type;
+    this.environment = agentVersion.environment;
+    this.params = agentVersion.params;
+    this.code = agentVersion.code;
+    this.input_specs = agentVersion.input_specs;
+    this.output_specs = agentVersion.output_specs;
+    this.config_specs = agentVersion.config_specs;
+    this.live_task = agentVersion.agent;
+  }
+}
