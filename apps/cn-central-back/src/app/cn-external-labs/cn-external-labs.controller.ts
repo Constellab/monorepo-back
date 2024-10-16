@@ -105,6 +105,8 @@ export class CnExternalLabsController {
     const json = JSON.parse(body.body);
     json.scenario_ids = json.experiment_ids;
     delete json.experiment_ids;
+    json.note = json.report;
+    delete json.report;
     const createNoteDto: CnCreateNoteWithConfigDto
       = ClCoreJsonConvert.deserializeObject(json, CnCreateNoteWithConfigDto);
     return this.folderAggregateService.createLabNote(createNoteDto, parentFolderId, files);
