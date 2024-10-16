@@ -199,7 +199,7 @@ export class HnAgentVersionForLabDtoOldFormat{
   constructor(agentVersion: HnAgentVersionForLabDto) {
     this.id = agentVersion.id;
     this.version = agentVersion.version;
-    this.type = agentVersion.type;
+    this.type = agentVersion.type.replace('Agent', 'LiveTask');
     this.environment = agentVersion.environment;
     this.params = agentVersion.params;
     this.code = agentVersion.code;
