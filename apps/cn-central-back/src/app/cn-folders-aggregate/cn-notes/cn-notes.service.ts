@@ -82,7 +82,7 @@ export class CnNotesService extends BlAbstractService<CnNote> {
 
 
   async saveNote(createNoteDto: CnCreateNoteWithConfigDto, scenarios: CnScenario[],
-                   parentFolder: CnHierarchyObject, files: BlFile[]): Promise<CnSaveNoteResultDTO> {
+                 parentFolder: CnHierarchyObject, files: BlFile[]): Promise<CnSaveNoteResultDTO> {
 
     let noteDb: CnNote = await this.findById(createNoteDto.note.id, {
       document: true,
@@ -106,7 +106,7 @@ export class CnNotesService extends BlAbstractService<CnNote> {
     note.lastModifiedBy = noteDto.last_modified_by;
     note.title = noteDto.title;
 
-    note.scenarios = scenarios;
+
     note.labConfig = labConfig;
 
     // handle validated
@@ -128,13 +128,25 @@ export class CnNotesService extends BlAbstractService<CnNote> {
 
     let mode: 'create' | 'update';
     if (noteDb) {
+      // clean associated scenarios
+      note.scenarios = [];
       noteDb = await this.updateWithCompare(note, noteDb);
+      // save the associated scenarios
+      // we do it after the clean because if I save directly the new array, I have the error
+      // DUPLICATE KEY VALUE for table note_scenarios
+      if (scenarios.length > 0) {
+        noteDb.scenarios = scenarios;
+        noteDb = await this.repository.save(noteDb);
+      }
       mode = 'update';
     } else {
       note.lab = CnCurrentUserHelper.getAndCheckCurrentLab() as CnLabEntity;
+      note.scenarios = scenarios;
       noteDb = await this.create(note);
       mode = 'create';
     }
+
+
 
     // update the content of the note
     noteDb = await this.saveNoteContent(noteDb, parentFolder, createNoteDto, files);
@@ -148,7 +160,7 @@ export class CnNotesService extends BlAbstractService<CnNote> {
    * Method to store the note content in the object storage. Then manage the images and the views
    */
   private async saveNoteContent(note: CnNote, parentFolder: CnHierarchyObject,
-                                  createNoteDto: CnCreateNoteWithConfigDto, files: BlFile[]): Promise<CnNote> {
+                                createNoteDto: CnCreateNoteWithConfigDto, files: BlFile[]): Promise<CnNote> {
     const content = BlQuillMigrator.migrateOptional(createNoteDto.note.content);
     const richText = new CnNoteContent(content);
 
@@ -178,7 +190,7 @@ export class CnNotesService extends BlAbstractService<CnNote> {
    * Methode to store the images of the note in the object storage
    */
   private async uploadNoteFiles(files: BlFile[], noteId: string, parentDocument: CnDocument,
-                                  parentFolder: CnHierarchyObject): Promise<void> {
+                                parentFolder: CnHierarchyObject): Promise<void> {
     if (!files) return;
     for (const file of files) {
       await this.uploadNoteFile(file, noteId, parentDocument, parentFolder);
@@ -186,7 +198,7 @@ export class CnNotesService extends BlAbstractService<CnNote> {
   }
 
   private async uploadNoteFile(file: BlFile, noteId: string, parentDocument: CnDocument,
-                                 parentFolder: CnHierarchyObject): Promise<void> {
+                               parentFolder: CnHierarchyObject): Promise<void> {
     const filename = file.originalname;
     const document =
       await this.documentService.findDocumentBYTypeAndNameAndEntity(CnDocumentType.NOTE_CONTENT,
@@ -203,10 +215,10 @@ export class CnNotesService extends BlAbstractService<CnNote> {
    * Method to load the resource view of the note and store them in the object storage
    */
   private async uploadNoteViews(richText: CnNoteContent,
-                                  resourceViews: Record<string, any>,
-                                  noteId: string,
-                                  parentDocument: CnDocument,
-                                  parentFolder: CnHierarchyObject): Promise<void> {
+                                resourceViews: Record<string, any>,
+                                noteId: string,
+                                parentDocument: CnDocument,
+                                parentFolder: CnHierarchyObject): Promise<void> {
     if (!resourceViews) return;
 
     const views = [...richText.getResourceViewsBlocks(), ...richText.getFileViewsBlocks()];
