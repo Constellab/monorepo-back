@@ -117,7 +117,7 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
         return 'description';
       case CnDocumentType.NOTE:
       case CnDocumentType.NOTE_CONTENT:
-        return 'note_contents';
+        return 'report_contents';
       case CnDocumentType.MESSAGE_CONTENT:
         return 'comments';
     }
