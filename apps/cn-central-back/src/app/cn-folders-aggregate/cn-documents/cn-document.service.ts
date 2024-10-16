@@ -509,10 +509,11 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       document.hierarchyRepresentation.rootParentId = newParentFolder.getRootFolderId();
       await this.folderHierarchyService.update(document.hierarchyRepresentation, entityManager);
 
+      const tags = this.getTags(document.name, newParentFolder.id);
       // move the object in the storage is needed
       if (this.objectStorageService.areSameBuckets(oldBuckets, newBuckets)) {
         // update the folder tag
-        await this.objectStorageService.setObjectTags(newBuckets, document.filename, this.getTags(document.name, newParentFolder.id) as any);
+        await this.objectStorageService.setObjectTags(newBuckets, document.filename, tags as any);
       } else {
         await this.objectStorageService.moveObjectToAnotherBucket(oldBuckets, newBuckets, document.filename, document.filename);
       }
@@ -601,7 +602,8 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
                                     buckets: BlBucketConfig[]): Promise<CnDocument> {
     // move the object in the storage
     const oldFilePath = this.generateDocumentFilePath(oldParentFolder, document);
-    await this.objectStorageService.moveObjectToAnotherBucket(buckets, buckets, oldFilePath, document.filename);
+    const tags = this.getTags(document.name, oldParentFolder.id);
+    await this.objectStorageService.moveObjectToAnotherBucket(buckets, buckets, oldFilePath, document.filename, tags as any);
 
     document.migrated = true;
     return this.repo.save(document);

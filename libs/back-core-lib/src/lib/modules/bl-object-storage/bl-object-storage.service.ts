@@ -258,7 +258,8 @@ export class BlObjectStorageService {
   public async moveObjectToAnotherBucket(oldConfig: BlBucketConfig | BlBucketConfig[],
                                          newConfig: BlBucketConfig | BlBucketConfig[],
                                          oldObjectName: string,
-                                         newObjectName: string): Promise<string> {
+                                         newObjectName: string,
+                                         tags?: Record<string, string>): Promise<string> {
     const oldConfigs = ClHelpService.convertObjectOrArrayToArray(oldConfig);
 
     // get the object
@@ -266,7 +267,7 @@ export class BlObjectStorageService {
     const buffer = await this.streamToBuffer(object.file);
 
     // upload object to new bucket
-    const objectName = await this.uploadObjectToBuckets(newConfig, buffer, newObjectName, object.contentType);
+    const objectName = await this.uploadObjectToBuckets(newConfig, buffer, newObjectName, object.contentType, tags);
 
     // delete object from old bucket
     await this.deleteObjectIfExist(oldConfigs, oldObjectName);
