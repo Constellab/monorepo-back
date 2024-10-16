@@ -73,8 +73,18 @@ export class CnExternalLabsController {
   }
 
   // TODO remove project routes once all lab are on v0.10.0
-  @Put(['project/:parentFolderId/experiment', 'folder/:parentFolderId/scenario'])
-  createOrUpdateScenario(
+  @Put(['project/:parentFolderId/experiment'])
+  saveScenario(
+    @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
+    @Body(new BlParsePipe(CnCreateLabScenarioDto)) createLabScenarioDto: any): Promise<void> {
+    // migrate field
+    createLabScenarioDto.scenario = createLabScenarioDto.experiment;
+    delete createLabScenarioDto.experiment;
+    return this.folderAggregateService.createLabScenario(parentFolderId, createLabScenarioDto);
+  }
+
+  @Put(['folder/:parentFolderId/scenario'])
+  saveScenarioV2(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Body(new BlParsePipe(CnCreateLabScenarioDto)) createLabScenarioDto: CnCreateLabScenarioDto): Promise<void> {
     return this.folderAggregateService.createLabScenario(parentFolderId, createLabScenarioDto);
@@ -88,10 +98,23 @@ export class CnExternalLabsController {
   }
 
   @UseInterceptors(FilesInterceptor('files'))
-  @Put(['project/:parentFolderId/report/v2', 'folder/:parentFolderId/note/v2'])
-  saveNote2(@Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
-              @Body() body: { body: string },
-              @BlUploadedFiles() files: BlFile[] = []): Promise<void> {
+  @Put(['project/:parentFolderId/report/v2'])
+  saveNote(@Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
+           @Body() body: { body: string },
+           @BlUploadedFiles() files: BlFile[] = []): Promise<void> {
+    const json = JSON.parse(body.body);
+    json.scenario_ids = json.experiment_ids;
+    delete json.experiment_ids;
+    const createNoteDto: CnCreateNoteWithConfigDto
+      = ClCoreJsonConvert.deserializeObject(json, CnCreateNoteWithConfigDto);
+    return this.folderAggregateService.createLabNote(createNoteDto, parentFolderId, files);
+  }
+
+  @UseInterceptors(FilesInterceptor('files'))
+  @Put(['folder/:parentFolderId/note/v2'])
+  saveNoteV2(@Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
+           @Body() body: { body: string },
+           @BlUploadedFiles() files: BlFile[] = []): Promise<void> {
     const createNoteDto: CnCreateNoteWithConfigDto
       = ClCoreJsonConvert.deserializeObject(JSON.parse(body.body), CnCreateNoteWithConfigDto);
     return this.folderAggregateService.createLabNote(createNoteDto, parentFolderId, files);
@@ -116,6 +139,7 @@ export class CnExternalLabsController {
 
   /////////////////////////////// SYNCHRONIZATION ///////////////////////////////
   // those routes does not require user authentication because they are called by the lab server and are just get
+  // TODO remove project routes once all lab are on v0.10.0
   @CnLabRobotAuthentication()
   @Get(['project/all-trees', 'folder/all-trees'])
   async getAllFolderTrees(): Promise<CnLabFolderDTO[]> {
