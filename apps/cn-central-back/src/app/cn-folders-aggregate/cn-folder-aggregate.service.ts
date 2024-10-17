@@ -827,7 +827,7 @@ export class CnFolderAggregateService {
    */
   public async getDocumentByPreviewToken(token: string): Promise<BlFileResponse> {
     const document = await this.documentService.getAndCheckByPreviewToken(token);
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(document.id);
+    const folder = await this.hierarchyObjectService.findByIdAndCheck(document.id);
 
     return this.documentService.getDocumentContentByDocument(folder.getRootFolderId(), document);
   }
