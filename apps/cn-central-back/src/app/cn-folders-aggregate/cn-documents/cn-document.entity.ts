@@ -65,10 +65,6 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
   @Column({ nullable: false, default: false })
   inTrash: boolean;
 
-  // TODO TO REMOVE
-  @Column({ nullable: false, default: false })
-  migrated: boolean;
-
   @Column({
     type: 'enum', enum: BlBucketType, nullable: false
   })

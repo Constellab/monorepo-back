@@ -54,27 +54,6 @@ export class CnLabBackupHistoryEntity extends CnBaseEntity {
     detail => detail.history, { eager: true })
   details?: CnLabBackupHistoryDetail[];
 
-  // TODO TO DELETE ONCE MIGRATION IS DONE
-  // Data info
-  @Column({ nullable: false, type: 'enum', enum: CnLabBackupStatus })
-  dataStatus: CnLabBackupStatus;
-
-  @Column({ nullable: false, type: 'text' })
-  dataMessage: string;
-
-  @Column({ nullable: false, default: 0 })
-  dataSize: number;
-
-  // Db info
-  @Column({ nullable: false, type: 'enum', enum: CnLabBackupStatus })
-  dbStatus: CnLabBackupStatus;
-
-  @Column({ nullable: false, type: 'text' })
-  dbMessage: string;
-
-  @Column({ nullable: false, default: 0 })
-  dbSize: number;
-
   @Column({ nullable: false })
   s3Prefix: string;
 

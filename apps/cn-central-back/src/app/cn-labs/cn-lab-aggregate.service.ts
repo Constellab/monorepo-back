@@ -537,21 +537,6 @@ export class CnLabAggregateService {
     await this.labVolumeService.deleteLabVolume(id, volumeId);
   }
 
-  // TODO : remove after migration
-  public async migrateLabVolume(): Promise<void> {
-    if (!CnCurrentUserHelper.isAdmin()) throw new BlUnauthorizedException();
-    const labs = await this.labsService.getAllLabs();
-    for (const lab of labs) {
-      if (lab.isCloud() && lab.volumeSize && lab.volumeType) {
-        const currentVolume = await this.labVolumeService.getCurrentVolume(lab.id);
-        if (!currentVolume) {
-          await this.labVolumeService.createVolume(lab, lab.createdAt, lab.volumeSize, lab.volumeType,
-            this.dataSource.manager);
-        }
-      }
-    }
-  }
-
 
   /////////////////////////////////////// EXTERNAL LAB SERVICE //////////////////////////////////
 
@@ -1245,10 +1230,4 @@ export class CnLabAggregateService {
       throw new BlBadRequestException('Server is stopped, please start the server first');
     }
   }
-
-  // TODO TO REMOVE
-  public migrateBackup(): Promise<void> {
-    return this.backupService.migrate();
-  }
-
 }

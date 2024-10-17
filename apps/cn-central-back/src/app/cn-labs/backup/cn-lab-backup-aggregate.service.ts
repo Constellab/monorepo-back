@@ -8,7 +8,7 @@ import {
 } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnLabBackupOption } from './cn-lab-backup-option.entity';
 import { CnLabBackupHistory } from './cn-lab-backup-history.entity';
-import { BlBadRequestException, BlObjectStorageService, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlObjectStorageService } from '@monorepo/back-core-lib';
 import { ClPageI } from '@monorepo/core-lib';
 import { CnLabManagerService } from '../cn-lab-manager.service';
 import {
@@ -25,7 +25,6 @@ import {
   CnLabManagerRestoreBackupDTO
 } from '../../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLabMailService } from '../mail/cn-lab-mail.service';
-import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 
 
 @Injectable()
@@ -276,12 +275,6 @@ export class CnLabBackupAggregateService {
     };
 
     return this.labManagerService.restoreBackup(destinationLab, restoreDTO);
-  }
-
-  // TODO TO REMOVE
-  public migrate(): Promise<void> {
-    if (!CnCurrentUserHelper.isAdmin()) throw new BlUnauthorizedException();
-    return this.backupHistoryService.migrateBackups();
   }
 
 }

@@ -424,11 +424,11 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
   public async getSpaceCloudStorageSize(spaceId: string): Promise<number> {
     // calculate with sql sum query, join parentFolder table with document.folderId = folder.id
     const result = await this.repository.manager.query(`
-      SELECT SUM(size) as totalSize
-      FROM document
-             JOIN hierarchy_object ON document.id = hierarchy_object.id
-      WHERE hierarchy_object.spaceId = ?
-        and document.bucketType = ?
+        SELECT SUM(size) as totalSize
+        FROM document
+                 JOIN hierarchy_object ON document.id = hierarchy_object.id
+        WHERE hierarchy_object.spaceId = ?
+          and document.bucketType = ?
     `, [spaceId, BlBucketType.NORMAL]);
     return result[0].totalSize ?? 0;
   }
@@ -555,57 +555,5 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       name: documentName,
       folder: folderId
     };
-  }
-
-  // TODO TO REMOVE
-  public async migrateDocumentInBucket(): Promise<void> {
-    this.logger.log('[START MIGRATION] Migrate bucket objects');
-
-    const documents = await this.repo.find({
-      where: { migrated: false },
-      relations: { hierarchyRepresentation: { parent: true } }
-    });
-    let i = 0;
-    for (const doc of documents) {
-      try {
-        const buckets = await this.folderBucketService.getAndCheckFolderBucketConfig(doc.hierarchyRepresentation.getRootFolderId());
-        await this.migrateBucketObject(doc, doc.hierarchyRepresentation.parent, buckets);
-
-        i++;
-        this.logger.log(`Migrated document ${i}/${documents.length}`);
-      } catch (e) {
-        this.logger.error(`Error migrating document ${doc.id}. ${e}`);
-      }
-    }
-    this.logger.log('[END MIGRATION] Migrate bucket objects');
-  }
-
-  /**
-   * Generate the path of a document in the object storage
-   * Path : spaceId/rootParentId/projectId/documentType/entityId/filename
-   * @param parentFolder
-   * @param document
-   */
-  public generateDocumentFilePath(parentFolder: CnHierarchyObject, document: CnDocument): string {
-    let prefix = `${parentFolder.spaceId}/${parentFolder.getRootFolderId()}/${parentFolder.id}/${document.getTypePrefix()}`;
-
-    if (document.type === CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT ||
-      document.type === CnDocumentType.NOTE_CONTENT) {
-      prefix += `/${document.entityId}`;
-    }
-
-    return `${prefix}/${document.filename}`;
-  }
-
-  private async migrateBucketObject(document: CnDocument,
-                                    oldParentFolder: CnHierarchyObject,
-                                    buckets: BlBucketConfig[]): Promise<CnDocument> {
-    // move the object in the storage
-    const oldFilePath = this.generateDocumentFilePath(oldParentFolder, document);
-    const tags = this.getTags(document.name, oldParentFolder.id);
-    await this.objectStorageService.moveObjectToAnotherBucket(buckets, buckets, oldFilePath, document.filename, tags as any);
-
-    document.migrated = true;
-    return this.repo.save(document);
   }
 }

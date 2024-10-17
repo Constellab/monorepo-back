@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BlAbstractService } from '@monorepo/back-core-lib';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
@@ -21,10 +21,7 @@ import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 @Injectable()
 export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHistoryEntity> {
 
-  private readonly logger = new Logger(CnLabBackupHistoryService.name);
-
   constructor(@InjectRepository(CnLabBackupHistoryEntity) repository: Repository<CnLabBackupHistoryEntity>,
-              @InjectRepository(CnLabBackupHistoryDetail) private detailRepository: Repository<CnLabBackupHistoryDetail>,
               private bucketService: CnBucketsService,
               private datasource: DataSource) {
     super(repository, CnLabBackupHistoryEntity);
@@ -63,12 +60,6 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
     history.endedAt = historyDto.endUploadAt;
     history.status = historyDto.status;
     history.s3Prefix = historyDto.s3Prefix;
-    history.dataStatus = historyDto.data.status.status;
-    history.dataMessage = historyDto.data.status.message;
-    history.dataSize = historyDto.data.totalSize;
-    history.dbStatus = historyDto.db.status.status;
-    history.dbMessage = historyDto.db.status.message;
-    history.dbSize = historyDto.db.totalSize;
 
     await this.datasource.transaction(async entityManager => {
       history = await entityManager.save(history);
@@ -135,36 +126,5 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
       relations: CnLabBackupHistoryEntity.defaultRelation,
       order: { startedAt: 'ASC' }
     });
-  }
-
-  // TODO : remove once migrated
-  public async migrateBackups(): Promise<void> {
-    const backups = await this.repo.find();
-
-    for (const backup of backups) {
-      try {
-        if (!backup.dbDetails) {
-          const dbDetails = new CnLabBackupHistoryDetail();
-          dbDetails.type = CnLabBackupType.DB;
-          dbDetails.history = backup;
-          dbDetails.totalSize = backup.dbSize;
-          dbDetails.status = backup.dbStatus;
-          dbDetails.message = backup.dbMessage;
-          dbDetails.transferSize = backup.dbSize;
-          await this.detailRepository.save(dbDetails);
-        }
-        if (!backup.dataDetails) {
-          const dataDetails = new CnLabBackupHistoryDetail();
-          dataDetails.type = CnLabBackupType.DATA;
-          dataDetails.history = backup;
-          dataDetails.totalSize = backup.dataSize;
-          dataDetails.status = backup.dataStatus;
-          dataDetails.message = backup.dataMessage;
-          await this.detailRepository.save(dataDetails);
-        }
-      } catch (error) {
-        this.logger.error(`Error during backup migration ${backup.id} : ${error}`);
-      }
-    }
   }
 }

@@ -645,15 +645,4 @@ export class CnLabsController {
     const labs = await this.aggregateService.searchAll(searchParam, page, size);
     return BlDtoHelper.pageToDto(CnLabWithSpaceDto, labs);
   }
-
-  // TODO TO REMOVE
-  @Post('backup/migrate')
-  async migrateBackup(): Promise<void> {
-    await this.aggregateService.migrateBackup();
-  }
-
-  @Post('volume/migrate')
-  async migrateVolume(): Promise<void> {
-    await this.aggregateService.migrateLabVolume();
-  }
 }

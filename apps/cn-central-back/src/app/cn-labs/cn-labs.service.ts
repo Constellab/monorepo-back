@@ -373,8 +373,4 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
   private emitLabEvent(labEvent: CnLabEvent): void {
     this.eventEmitter.emit(cnLabEventName, labEvent);
   }
-
-  public getAllLabs(): Promise<CnLab[]> {
-    return this.repository.find();
-  }
 }

@@ -364,11 +364,6 @@ export class CnFoldersController {
     BlResponseHelper.setFileResponse(response, file);
   }
 
-  @Post('migrate-document')
-  public async migrateDocuments(): Promise<any> {
-    await this.folderAggregateService.migrateDocuments();
-  }
-
   ////////////////////////////////////////////// DOCUMENT PREVIEW  /////////////////////////////////////////////
 
   @Post('document/:documentId/preview-token')

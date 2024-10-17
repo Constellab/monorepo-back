@@ -832,11 +832,6 @@ export class CnFolderAggregateService {
     return this.documentService.getDocumentContentByDocument(folder.getRootFolderId(), document);
   }
 
-  public async migrateDocuments(): Promise<void> {
-    if (!CnCurrentUserHelper.isAdmin()) throw new UnauthorizedException();
-    await this.documentService.migrateDocumentInBucket();
-  }
-
   /////////////////////////////////////// FOLDER BUCKET //////////////////////////////////
 
   public async createFolderBucket(rootFolderId: string, folderStorageLocationDTO: CnFolderStorageLocationDTO)
