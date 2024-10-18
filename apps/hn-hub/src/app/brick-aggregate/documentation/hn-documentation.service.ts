@@ -257,24 +257,4 @@ export class HnDocumentationService {
       doc.modifications
     ).getModifications();
   }
-
-  async migrateDocumentationModificationsTimeFormat(): Promise<void> {
-    const documentations: HnDocumentation[] =
-      await this.documentationsRepository.find();
-    for (const documentation of documentations) {
-      documentation.modificationsBackup = documentation.modifications;
-      await this.documentationsRepository.save(documentation);
-      const json = JSON.parse(documentation.modifications);
-      if (!json) {
-        return;
-      }
-      json.modifications.map((modification: Record<string, any>) => {
-        modification.time = DateTime.fromMillis(modification.time);
-        console.log(modification.time);
-        console.log(DateTime.now());
-      });
-      documentation.modifications = JSON.stringify(json);
-      await this.documentationsRepository.save(documentation);
-    }
-  }
 }

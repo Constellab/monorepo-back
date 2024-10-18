@@ -91,9 +91,9 @@ export class HnAgentAggregateService {
     const user = HnCurrentUserHelper.getAndCheckLabInstanceCurrentUser();
     const agentVersion: HnAgentVersion = await this.create(createAgentDto, null, user);
     return {
-      id: agentVersion.id,
+      id: agentVersion.agent.id,
       title: ClStringHelper.getCleanUrlPath(agentVersion.agent.title),
-      agent_version: agentVersion.agent.id
+      agent_version: agentVersion.version.toString()
     };
   }
 
@@ -103,9 +103,9 @@ export class HnAgentAggregateService {
     if (parentAgentVersionId == null) throw new BlBadRequestException('The parent agent version id is required');
     const agentVersion: HnAgentVersion = await this.create(createAgentDto, parentAgentVersionId, user);
     return {
-      id: agentVersion.id,
+      id: agentVersion.agent.id,
       title: ClStringHelper.getCleanUrlPath(agentVersion.agent.title),
-      agent_version: agentVersion.agent.id
+      agent_version: agentVersion.version.toString()
     };
   }
 
@@ -124,9 +124,9 @@ export class HnAgentAggregateService {
       throw new BlBadRequestException('The agent already has a draft version');
     const newAgentVersion = await this.createNewDraftVersion(agentId, newAgentVersionFile, true);
     return {
-      id: newAgentVersion.id,
+      id: newAgentVersion.agent.id,
       title: ClStringHelper.getCleanUrlPath(newAgentVersion.agent.title),
-      agent_version: newAgentVersion.agent.id
+      agent_version: newAgentVersion.version.toString()
     };
   }
 

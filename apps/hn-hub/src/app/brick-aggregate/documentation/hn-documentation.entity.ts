@@ -24,6 +24,7 @@ export class HnDocumentation extends HnBaseEntity {
   @Column({type: 'longtext', nullable: true})
   modifications: string;
 
+  // TODO: TO REMOVE
   @Column({type: 'longtext', nullable: true, name: 'modifications_backup'})
   modificationsBackup: string;
 
