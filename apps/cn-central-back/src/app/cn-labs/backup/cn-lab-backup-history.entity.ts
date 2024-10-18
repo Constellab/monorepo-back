@@ -50,6 +50,7 @@ export class CnLabBackupHistoryEntity extends CnBaseEntity {
   @Column({ nullable: false, type: 'enum', enum: CnLabBackupStatus })
   status: CnLabBackupStatus;
 
+  @Exclude()
   @OneToMany(() => CnLabBackupHistoryDetail,
     detail => detail.history, { eager: true })
   details?: CnLabBackupHistoryDetail[];

@@ -28,19 +28,19 @@ export class CnLabBackupHistoryDetail extends BlEntityWithId {
   @Column({ nullable: false, type: 'text' })
   message: string;
 
-  @Column({ nullable: false, default: 0 })
+  @Column({ nullable: false, default: 0, type: 'bigint' })
   totalSize: number;
 
   /**
    * Transfer size in bytes
    */
-  @Column({ nullable: false, default: 0 })
+  @Column({ nullable: false, default: 0, type: 'bigint' })
   transferSize: number;
 
   @Column({ nullable: false, default: 0 })
   transferDuration: number;
 
-  @Column({ nullable: false, default: 0 })
+  @Column({ nullable: false, default: 0, type: 'bigint' })
   transferSpeed: number;
 
   @Column({ nullable: false, default: 0 })
@@ -59,11 +59,11 @@ export class CnLabBackupHistoryDetail extends BlEntityWithId {
   transferNbRenamed: number;
 
 
-  public updateInfo(backupInfo: CnLabBackupInfo): void{
+  public updateInfo(backupInfo: CnLabBackupInfo): void {
     this.totalSize = backupInfo.totalSize;
     this.status = backupInfo.status.status;
     this.message = backupInfo.status.message;
-    if(backupInfo.transfer){
+    if (backupInfo.transfer) {
       this.transferSize = backupInfo.transfer.sizeInBytes;
       this.transferDuration = backupInfo.transfer.durationInSeconds;
       this.transferSpeed = backupInfo.transfer.speedInBytesPerSecond;
