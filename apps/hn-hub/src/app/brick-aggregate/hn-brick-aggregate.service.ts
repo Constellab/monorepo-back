@@ -680,10 +680,6 @@ export class HnBrickAggregateService {
 
   //------------------------------------- DOCS -------------------------------------
 
-  async migrateDocumentationModificationsTimeFormat(): Promise<void>{
-    return this.documentationService.migrateDocumentationModificationsTimeFormat();
-  }
-
   async createDoc(createDocumentation: HnNodeDTO): Promise<HnDocumentation> {
     await this.checkIfUserHasRightsOnFolder(createDocumentation.folderId);
 

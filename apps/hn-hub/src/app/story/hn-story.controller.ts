@@ -47,11 +47,6 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
     super(fileStoryService);
   }
 
-  @IsAdmin()
-  @Get('migrate-modifications')
-  async migrateModifications(): Promise<void> {
-    return this.storyService.migrateStoryModificationsTimeFormat();
-  }
 
   @BlPublic()
   @Get('all-map')

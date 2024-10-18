@@ -46,11 +46,6 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
     super(fileDocumentationService);
   }
 
-  @IsAdmin()
-  @Get('migrate-modifications')
-  async migrateModifications(): Promise<void> {
-    return this.brickAggregateService.migrateDocumentationModificationsTimeFormat();
-  }
 
   @BlPublic()
   @Get()
