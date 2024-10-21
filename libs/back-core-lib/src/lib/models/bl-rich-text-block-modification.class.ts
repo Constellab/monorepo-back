@@ -129,8 +129,12 @@ export class BlRichTextModifications {
 
   // Create a BlRichTextModifications object from a json string
   public static fromJsonObjectString(jsonString: string): BlRichTextModifications {
-    const modifications = new BlRichTextModifications();
     const json = JSON.parse(jsonString);
+    return BlRichTextModifications.fromJsonObject(json);
+  }
+
+  public static fromJsonObject(json: Record<string, any>): BlRichTextModifications {
+    const modifications = new BlRichTextModifications();
     if (!json) {
       return modifications;
     }
@@ -306,7 +310,24 @@ export class BlRichTextModifications {
       throw new Error('Modification not found');
     }
     const modificationIndex = this.modifications.indexOf(modification);
-    return this.modifications.slice(modificationIndex);
+    const res: BlRichTextBlockModification[] = this.modifications.slice(modificationIndex);
+    if (!res || res.length == 0){
+      throw new Error('No modifications found');
+    }
+    if (
+      res.length == 1 &&
+      res[0].type != BlRichTextModificationType.DELETED &&
+      res[0].type != BlRichTextModificationType.MOVED
+    ) {
+      return [];
+    }
+    if (
+      res[0].type == BlRichTextModificationType.CREATED ||
+      res[0].type == BlRichTextModificationType.UPDATED
+    ) {
+      return res.slice(1);
+    }
+    return res ;
   }
 
   // Delete all modifications made after the modification with the modificationId

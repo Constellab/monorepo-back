@@ -22,11 +22,14 @@ import {
   BlFile,
   BlFileResponse,
   BlNewRichText,
+  BlRichTextBlockModificationDto,
   BlRichTextContent,
+  BlRichTextModifications,
   BlRichTextUploadedImageResponse,
   BlRichTextUploadFileResponse,
   BlSearchBuilder,
-  BlSearchParams
+  BlSearchParams,
+  BlUserDto
 } from '@monorepo/back-core-lib';
 import { DataSource, In } from 'typeorm';
 import { CnFolderBucketService } from './cn-folders/cn-folder-bucket.service';
@@ -57,6 +60,7 @@ import {
   CnHierarchyObjectWithChildren
 } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
+import { CnUserBasicDto } from '../cn-users/cn-user.dto';
 
 @Injectable()
 export class CnFolderAggregateService {
@@ -1004,5 +1008,38 @@ export class CnFolderAggregateService {
       userInfo: CnCurrentUserHelper.getAndCheckUserSpaceInfo()
     };
     this.eventEmitter.emit(cnFolderEventName, event);
+  }
+
+  ////////////////////////////// HISTORY ///////////////////////////////////////
+  public async getDocumentModifications(documentId: string): Promise<BlRichTextBlockModificationDto[]> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+
+    const document = await this.documentService.findByIdAndCheck(documentId);
+
+    const res: BlRichTextBlockModificationDto[] = [];
+    const modifications: BlRichTextModifications = await this.documentService.getDocumentModifications(folder.getRootFolderId(), document);
+    const userMap = new Map<string, BlUserDto>();
+    for (const modification of modifications.getModifications()) {
+      if (!userMap.has(modification.userId)) {
+        res.push(new BlRichTextBlockModificationDto(modification, new CnUserBasicDto(await this.userService.findOne(modification.userId))));
+      } else {
+        res.push(new BlRichTextBlockModificationDto(modification, userMap.get(modification.userId)));
+      }
+    }
+    return res;
+  }
+
+  public async getUndoContent(documentId: string, modificationId: string): Promise<BlRichTextContent> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+
+    const document = await this.documentService.findByIdAndCheck(documentId);
+    return await this.documentService.getUndoContent(folder.getRootFolderId(), document, modificationId);
+  }
+
+  public async rollbackContent(documentId: string, modificationId: string): Promise<CnDocument> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+
+    const document = await this.documentService.findByIdAndCheck(documentId);
+    return await this.documentService.rollbackContent(folder.getRootFolderId(), document, modificationId);
   }
 }

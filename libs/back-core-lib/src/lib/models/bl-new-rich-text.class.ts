@@ -26,6 +26,11 @@ export interface BlRichTextBlock<Data extends object = any> {
 
 }
 
+export interface BlRichTextContentWithModifications{
+  content: BlRichTextContent;
+  modifications: Record<string, any>;
+}
+
 export interface BlRichTextContent {
   /**
    * Editor's version
@@ -134,9 +139,15 @@ export class BlNewRichText {
   ////////////////////////////////////////// MODIFICATIONS ///////////////////////////////////////////
 
   // Get the rich text modification has a string of the BlRichTextModifications object
-  public getRichTextModification(newContent: BlRichTextContent,
-                                 userId: string,
-                                 modifications: BlRichTextModifications = new BlRichTextModifications()): string {
+  public getRichTextModificationAsString(newContent: BlRichTextContent,
+                                         userId: string,
+                                         modifications: BlRichTextModifications = new BlRichTextModifications()): string {
+    return JSON.stringify(this.getRichTextModificationsAsObject(newContent, userId, modifications));
+  }
+
+  public getRichTextModificationsAsObject(newContent: BlRichTextContent,
+                                          userId: string,
+                                          modifications: BlRichTextModifications = new BlRichTextModifications()): Record<string, any>{
     const differences: BlRichTextBlockModification[] = [];
     if (this.richText == null || this.richText.blocks == null) {
       return null;
@@ -201,12 +212,17 @@ export class BlNewRichText {
     });
 
     modifications.fusion(differences);
-    return JSON.stringify(modifications.toJsonObject());
+    return modifications.toJsonObject();
   }
 
   // Undo the modifications in the modificationsList
   public undoModifications(modificationsList: BlRichTextBlockModification[]): BlRichTextContent {
     const content = this.getContent();
+
+    if(!modificationsList || modificationsList.length == 0){
+      return content;
+    }
+
     const blocks = this.getBlocks();
     const reversedModifications = modificationsList.slice().reverse(); // Reverse to undo in the right order
     reversedModifications.forEach(modification => {
