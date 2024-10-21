@@ -217,8 +217,7 @@ export class CnLabCron {
 
     for (const lab of labsToDelete) {
       this.logger.log(`[Cron] Deleting free lab :${lab.lab.id}`);
-      await this.labServerService.deleteLabServerAndVolume(lab.lab);
-      await this.labAggregateService.refreshLabStatus(lab.lab.id);
+      await this.labAggregateService.deleteServerInstanceNotSecure(lab.lab);
     }
   }
 

@@ -465,9 +465,6 @@ export class CnLabAggregateService {
     }
 
     if (lab.isCloud()) {
-      if (!lab.serverVolumeId) {
-        await this.labVolumeService.markLabVolumeAs0(lab, ClDateHelper.getDate());
-      }
 
       if (!lab.serverInstanceId && !lab.serverTaskIsRunning()) {
         return await this.labsService.markInstanceAsNoServer(labId);
@@ -1050,9 +1047,14 @@ export class CnLabAggregateService {
     const lab = await this.getAndCheckServerStatusBeforeAction(labId, true);
 
     this.security.checkAuthorizationToDeleteServer(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
-    await this.labServerService.deleteLabServerAndVolume(lab);
+    await this.deleteServerInstanceNotSecure(lab);
+  }
 
-    await this.refreshLabStatus(labId);
+  public async deleteServerInstanceNotSecure(lab: CnLab): Promise<void> {
+    await this.labServerService.deleteLabServerAndVolume(lab);
+    await this.labVolumeService.markVolumeAsDeleted(lab, ClDateHelper.getDate());
+
+    await this.refreshLabStatus(lab.id);
   }
 
   async startInstance(id: string): Promise<CnLab> {

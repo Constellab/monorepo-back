@@ -45,8 +45,12 @@ export class CnLabVolumeService extends BlAbstractService<CnLabVolumeEntity> {
     });
   }
 
-  // TODO IMPROVE NAME
-  public async markLabVolumeAs0(lab: CnLab, startDate: DateTime): Promise<CnLabVolume> {
+  /**
+   * Set the lab volume to 0
+   * @param lab
+   * @param startDate
+   */
+  public async markVolumeAsDeleted(lab: CnLab, startDate: DateTime): Promise<CnLabVolume> {
     const currentVolume = await this.getCurrentVolume(lab.id);
     if(currentVolume.size === 0) return currentVolume;
     return this.updateLabVolume(lab, {
