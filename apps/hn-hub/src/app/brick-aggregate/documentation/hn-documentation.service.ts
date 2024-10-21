@@ -128,7 +128,7 @@ export class HnDocumentationService {
     if (doc) {
       doc.modifications = new BlNewRichText(
         doc.content as BlRichTextContent
-      ).getRichTextModification(
+      ).getRichTextModificationAsString(
         updateContentDoc,
         HnCurrentUserHelper.getAndCheckCurrentUser().id,
         BlRichTextModifications.fromJsonObjectString(doc.modifications)
@@ -206,24 +206,8 @@ export class HnDocumentationService {
     const modifications = BlRichTextModifications.fromJsonObjectString(
       doc.modifications
     );
-    let modificationsBlocks =
+    const modificationsBlocks =
       modifications.getModificationsFromModificationId(modificationId);
-    if (modificationsBlocks?.length == 0) {
-      throw new BlBadRequestException('No undo possible');
-    }
-    if (
-      modificationsBlocks.length == 1 &&
-      modificationsBlocks[0].type != BlRichTextModificationType.DELETED &&
-      modificationsBlocks[0].type != BlRichTextModificationType.MOVED
-    ) {
-      return doc.content;
-    }
-    if (
-      modificationsBlocks[0].type == BlRichTextModificationType.CREATED ||
-      modificationsBlocks[0].type == BlRichTextModificationType.UPDATED
-    ) {
-      modificationsBlocks = modificationsBlocks.slice(1);
-    }
     return richText.undoModifications(modificationsBlocks);
   }
 

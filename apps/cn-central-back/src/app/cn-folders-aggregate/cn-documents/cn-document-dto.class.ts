@@ -18,7 +18,7 @@ export enum CnDocumentStorageType {
   UPLOADED_DOCUMENT = 'UPLOADED_DOCUMENT',
   DESCRIPTION = 'DESCRIPTION',
   NOTE = 'NOTE',
-  MESSAGE = 'MESSAGE'
+  MESSAGE = 'MESSAGE',
 }
 
 export class CnStorageUsageDTO {
@@ -35,7 +35,6 @@ export class CnStorageUsageDTO {
  * Detail of the usage of a storage location
  */
 export class CnStorageLocationUsageDetailDTO {
-
   totalSize: number = 0;
   totalDocuments: number = 0;
 
@@ -43,8 +42,8 @@ export class CnStorageLocationUsageDetailDTO {
     UPLOADED_DOCUMENT: new CnStorageUsageDTO(0, 0),
     DESCRIPTION: new CnStorageUsageDTO(0, 0),
     NOTE: new CnStorageUsageDTO(0, 0),
-    MESSAGE: new CnStorageUsageDTO(0, 0)
-  }
+    MESSAGE: new CnStorageUsageDTO(0, 0),
+  };
 
   public addDocumentSize(type: CnDocumentStorageType, size: number): void {
     this.details[type].totalSize += size;
@@ -64,8 +63,15 @@ export class CnFolderStorageUsageDTO {
   cloudDetails?: CnStorageLocationUsageDetailDTO;
   dataHubDetails?: CnStorageLocationUsageDetailDTO;
 
-  public addDocumentSize(type: CnDocumentStorageType, size: number, bucketType: BlBucketType): void {
-    let details = bucketType === BlBucketType.NORMAL ? this.cloudDetails : this.dataHubDetails;
+  public addDocumentSize(
+    type: CnDocumentStorageType,
+    size: number,
+    bucketType: BlBucketType
+  ): void {
+    let details =
+      bucketType === BlBucketType.NORMAL
+        ? this.cloudDetails
+        : this.dataHubDetails;
 
     if (details == null) {
       details = new CnStorageLocationUsageDetailDTO();
@@ -81,7 +87,6 @@ export class CnFolderStorageUsageDTO {
     this.totalSize += size;
     this.totalDocuments++;
   }
-
 }
 
 export class CnDocumentPreviewDTO {

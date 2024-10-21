@@ -19,7 +19,7 @@ import {
   BlFile,
   BlParsePipe,
   BlPublic,
-  BlResponseHelper,
+  BlResponseHelper, BlRichTextBlockModificationDto,
   BlRichTextContent,
   BlRichTextUploadedImageResponse,
   BlRichTextUploadFileResponse,
@@ -44,6 +44,7 @@ import {
   CnFolderStorageUsageDTO
 } from './cn-documents/cn-document-dto.class';
 import { CnHierarchyObject, CnHierarchyObjectWithChildren } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { HnStory } from '../../../../hn-hub/src/app/story/hn-story.entity';
 
 
 @Controller('folders')
@@ -424,5 +425,30 @@ export class CnFoldersController {
                        @Query('page', ParseIntPipe) page: number,
                        @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnActivity>> {
     return await this.folderAggregateService.searchFolderActivity(folderId, searchParam, page, size);
+  }
+
+
+  /////////////////////////////// History ///////////////////////////////////////////
+  @Get('history/:documentId')
+  async getStoryModifications(
+    @Param('documentId', new ParseUUIDPipe()) documentId: string
+  ): Promise<BlRichTextBlockModificationDto[]> {
+    return this.folderAggregateService.getDocumentModifications(documentId);
+  }
+
+  @Get('history/undo-content/:documentId/:modificationId')
+  async undoContent(
+    @Param('documentId', new ParseUUIDPipe()) documentId: string,
+    @Param('modificationId', new ParseUUIDPipe()) modificationId: string
+  ): Promise<Record<string, any>> {
+    return this.folderAggregateService.getUndoContent(documentId, modificationId);
+  }
+
+  @Put('history/rollback/:documentId/:modificationId')
+  async rollbackContent(
+    @Param('documentId', new ParseUUIDPipe()) documentId: string,
+    @Param('modificationId', new ParseUUIDPipe()) modificationId: string
+  ): Promise<CnDocument> {
+    return this.folderAggregateService.rollbackContent(documentId, modificationId);
   }
 }

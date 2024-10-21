@@ -9,10 +9,10 @@ import {
   BlFileResponse,
   BlImageHelper,
   BlNewRichText,
-  BlObjectStorageService,
-  BlRichTextContent,
+  BlObjectStorageService, BlRichTextBlockModificationDto,
+  BlRichTextContent, BlRichTextContentWithModifications, BlRichTextModifications,
   BlRichTextUploadedImageResponse,
-  BlRichTextUploadFileResponse
+  BlRichTextUploadFileResponse, BlUserDto
 } from '@monorepo/back-core-lib';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, In, Repository } from 'typeorm';
@@ -334,16 +334,48 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
   public async createConstellabDocument(parentFolder: CnHierarchyObject, documentName: string): Promise<CnConstellabDocumentDTO> {
     const content = BlNewRichText.emptyContent();
+    const modifications: BlRichTextModifications = new BlRichTextModifications();
+    const docContent: BlRichTextContentWithModifications = {
+      modifications: modifications.toJsonObject(),
+      content: content
+    }
     const doc = await this.createJSONDocument(parentFolder, CnDocumentType.CONSTELLAB_DOCUMENT,
-      documentName, parentFolder.id, BlNewRichText.emptyContent());
+      documentName, parentFolder.id, docContent);
     return new CnConstellabDocumentDTO(doc, content);
   }
 
 
   async updateConstellabDocument(rootFolderId: string, document: CnDocument,
                                  content: BlRichTextContent): Promise<CnConstellabDocumentDTO> {
-    const newDoc = await this.updateJSONDocument(rootFolderId, document, content);
-    return new CnConstellabDocumentDTO(newDoc, content);
+
+    let newDocument: CnDocument;
+    if (document.type == CnDocumentType.CONSTELLAB_DOCUMENT) {
+      let oldModifications: BlRichTextModifications;
+      let oldContent: BlRichTextContent;
+
+      const oldDocumentContent: any = await this.getJSONDocumentContent(rootFolderId, document);
+
+      if (oldDocumentContent.modifications){
+        oldModifications = BlRichTextModifications.fromJsonObject(oldDocumentContent.modifications);
+        oldContent = oldDocumentContent.content;
+      } else {
+        oldContent = oldDocumentContent ?? BlNewRichText.emptyContent();
+      }
+      const modifications: Record<string, any> = new BlNewRichText(oldContent)
+        .getRichTextModificationsAsObject(content,
+          CnCurrentUserHelper.getAndCheckCurrentUser().id,
+          oldModifications
+        );
+      const newDocContent: BlRichTextContentWithModifications = {
+        modifications: modifications,
+        content: content
+      }
+
+      newDocument = await this.updateJSONDocument(rootFolderId, document, newDocContent);
+    } else {
+      newDocument = await this.updateJSONDocument(rootFolderId, document, content);
+    }
+    return new CnConstellabDocumentDTO(newDocument, content);
   }
 
 
@@ -351,8 +383,11 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     if (document.type !== CnDocumentType.CONSTELLAB_DOCUMENT) {
       throw new BlBadRequestException('The document is not a constellab document');
     }
-    const content = await this.getJSONDocumentContent(rootFolderId, document);
-    return new CnConstellabDocumentDTO(document, content);
+    let content: BlRichTextContent | BlRichTextContentWithModifications = await this.getJSONDocumentContent(rootFolderId, document);
+    if ((content as BlRichTextContentWithModifications).modifications){
+      content = (content as BlRichTextContentWithModifications).content;
+    }
+    return new CnConstellabDocumentDTO(document, content as BlRichTextContent);
   }
 
   async uploadImageToConstellabDocument(parentFolder: CnHierarchyObject, document: CnDocument,
@@ -477,6 +512,52 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     }
 
     return document;
+  }
+
+  /////////////////////////////////////////////// HISTORY /////////////////////////////////////////////
+  public async getDocumentModifications(rootFolderId: string, document: CnDocument): Promise<BlRichTextModifications>{
+    if (document.type !== CnDocumentType.CONSTELLAB_DOCUMENT) {
+      throw new BlBadRequestException('The document is not a constellab document');
+    }
+    const content: BlRichTextContent | BlRichTextContentWithModifications = await this.getJSONDocumentContent(rootFolderId, document);
+    if (!(content as BlRichTextContentWithModifications).modifications){
+      (content as BlRichTextContentWithModifications).modifications = new BlRichTextModifications().toJsonObject();
+    }
+    return BlRichTextModifications.fromJsonObject((content as BlRichTextContentWithModifications).modifications);
+  }
+
+  public async getUndoContent(rootFolderId: string, document: CnDocument, modificationId: string): Promise<BlRichTextContent>{
+    if (document.type !== CnDocumentType.CONSTELLAB_DOCUMENT) {
+      throw new BlBadRequestException('The document is not a constellab document');
+    }
+    const content: BlRichTextContent | BlRichTextContentWithModifications = await this.getJSONDocumentContent(rootFolderId, document);
+    if (!(content as BlRichTextContentWithModifications).modifications){
+      throw new BlBadRequestException('The document has no modifications');
+    }
+    const richText = new BlNewRichText((content as BlRichTextContentWithModifications).content);
+    const modifications = BlRichTextModifications.fromJsonObject((content as BlRichTextContentWithModifications).modifications);
+    const modificationsBlocks = modifications.getModificationsFromModificationId(modificationId);
+    return richText.undoModifications(modificationsBlocks);
+  }
+
+  public async rollbackContent(rootFolderId: string, document: CnDocument, modificationId: string): Promise<CnDocument>{
+    if (document.type !== CnDocumentType.CONSTELLAB_DOCUMENT) {
+      throw new BlBadRequestException('The document is not a constellab document');
+    }
+
+    const modifications = await this.getDocumentModifications(rootFolderId, document);
+    const newContent = await this.getUndoContent(rootFolderId, document, modificationId);
+    const removeNumber = modifications.removeModificationsFromModificationId(modificationId);
+    if (removeNumber == 0) {
+      return document;
+    }
+
+    const newDocContent: BlRichTextContentWithModifications = {
+      modifications: modifications.toJsonObject(),
+      content: newContent
+    }
+
+    return await this.updateJSONDocument(rootFolderId, document, newDocContent);
   }
 
   ////////////////////////////////////////////// OTHERS /////////////////////////////////////////////
