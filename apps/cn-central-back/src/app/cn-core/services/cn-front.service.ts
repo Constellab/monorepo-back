@@ -20,9 +20,8 @@ export class CnFrontService {
     return `${CnFrontService.appRoute}/folder/${folderId}`;
   }
 
-  // TODO UPDATE TO NEW CHAT ROUTE
   public static getChatMessageRoute(folderId: string): string {
-    return `${CnFrontService.getFolderRoute(folderId)}?type=comments`;
+    return `${CnFrontService.appRoute}/chat/folder/${folderId}`;
   }
 
   public static getNoteRoute(folderId: string): string {
