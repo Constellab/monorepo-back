@@ -40,9 +40,8 @@ interface CnDocumentS3Tags {
 
 @Injectable()
 export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
-  protected readonly logger = new Logger(CnDocumentService.name);
-
   public static readonly OFFICE_PREVIEW_URL = 'https://view.officeapps.live.com/op/embed.aspx?src=';
+  protected readonly logger = new Logger(CnDocumentService.name);
 
   constructor(@InjectRepository(CnDocumentEntity) private repository: Repository<CnDocumentEntity>,
               private objectStorageService: BlObjectStorageService,
@@ -238,13 +237,6 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     return this.findByIdAndCheck(documentId, { hierarchyRepresentation: true });
   }
 
-  private findChildrenDocuments(parentDocumentId: string): Promise<CnDocumentWithHierarchy[]> {
-    return this.repo.find({
-      where: { parentDocument: { id: parentDocumentId } },
-      relations: { hierarchyRepresentation: true }
-    });
-  }
-
   /**
    * List the Uploaded and Constellab documents of a parentFolder
    */
@@ -260,7 +252,6 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       }
     });
   }
-
 
   ////////////////////////////////////////////// JSON  DOCUMENTS //////////////////////////////////////////////
   public async createJSONDocument(parentFolder: CnHierarchyObject, type: CnDocumentType,
@@ -281,7 +272,8 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       document.parentDocument = parentDocument as CnDocumentEntity;
       document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(parentFolder, document.getHierarchyObjectInfo());
 
-      await this.objectStorageService.uploadJson(bucketConfig, content, { filename: document.filename });
+      await this.objectStorageService.uploadJson(bucketConfig, content,
+        { filename: document.filename, tags: this.getTags(document.name, parentFolder.id) } as any);
 
       const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig[0], document.filename);
       document.size = objectInfo.size;
@@ -330,8 +322,6 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     return await this.objectStorageService.getObjectAsJson(bucketConfig, document.filename);
   }
 
-  ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
-
   public async createConstellabDocument(parentFolder: CnHierarchyObject, documentName: string): Promise<CnConstellabDocumentDTO> {
     const content = BlNewRichText.emptyContent();
     const doc = await this.createJSONDocument(parentFolder, CnDocumentType.CONSTELLAB_DOCUMENT,
@@ -339,13 +329,13 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     return new CnConstellabDocumentDTO(doc, content);
   }
 
+  ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
 
   async updateConstellabDocument(rootFolderId: string, document: CnDocument,
                                  content: BlRichTextContent): Promise<CnConstellabDocumentDTO> {
     const newDoc = await this.updateJSONDocument(rootFolderId, document, content);
     return new CnConstellabDocumentDTO(newDoc, content);
   }
-
 
   async getConstellabDocument(rootFolderId: string, document: CnDocument): Promise<CnConstellabDocumentDTO> {
     if (document.type !== CnDocumentType.CONSTELLAB_DOCUMENT) {
@@ -387,48 +377,26 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     return await this.repo.save(document);
   }
 
-  ////////////////////////////////////////////// SIZE /////////////////////////////////////////////
-
   public async getStorageSizeDetailByFolders(folderIds: string[]): Promise<CnFolderStorageUsageDTO> {
     const documents = await this.repository.findBy({ hierarchyRepresentation: { parentId: In(folderIds) } });
     return this.documentsToAggregateDTO(documents);
   }
 
+  ////////////////////////////////////////////// SIZE /////////////////////////////////////////////
 
   public async getStorageSizeDetailBySpace(spaceId: string): Promise<CnFolderStorageUsageDTO> {
     const documents = await this.repository.findBy({ hierarchyRepresentation: { spaceId: spaceId } });
     return this.documentsToAggregateDTO(documents);
   }
 
-  private documentsToAggregateDTO(documents: CnDocument[]): CnFolderStorageUsageDTO {
-    const aggregationDTO: CnFolderStorageUsageDTO = new CnFolderStorageUsageDTO();
-
-    const mappings: Record<CnDocumentType, CnDocumentStorageType> = {
-      [CnDocumentType.UPLOADED_DOCUMENT]: CnDocumentStorageType.UPLOADED_DOCUMENT,
-      [CnDocumentType.DESCRIPTION_CONTENT]: CnDocumentStorageType.DESCRIPTION,
-      [CnDocumentType.CONSTELLAB_DOCUMENT]: CnDocumentStorageType.NOTE,
-      [CnDocumentType.NOTE]: CnDocumentStorageType.NOTE,
-      [CnDocumentType.NOTE_CONTENT]: CnDocumentStorageType.NOTE,
-      [CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT]: CnDocumentStorageType.NOTE,
-      [CnDocumentType.MESSAGE_CONTENT]: CnDocumentStorageType.MESSAGE
-    };
-
-    for (const doc of documents) {
-      const type = mappings[doc.type];
-      aggregationDTO.addDocumentSize(type, doc.size, doc.bucketType);
-    }
-
-    return aggregationDTO;
-  }
-
   public async getSpaceCloudStorageSize(spaceId: string): Promise<number> {
     // calculate with sql sum query, join parentFolder table with document.folderId = folder.id
     const result = await this.repository.manager.query(`
-        SELECT SUM(size) as totalSize
-        FROM document
-                 JOIN hierarchy_object ON document.id = hierarchy_object.id
-        WHERE hierarchy_object.spaceId = ?
-          and document.bucketType = ?
+      SELECT SUM(size) as totalSize
+      FROM document
+             JOIN hierarchy_object ON document.id = hierarchy_object.id
+      WHERE hierarchy_object.spaceId = ?
+        and document.bucketType = ?
     `, [spaceId, BlBucketType.NORMAL]);
     return result[0].totalSize ?? 0;
   }
@@ -446,8 +414,6 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       }
     }
   }
-
-  ////////////////////////////////////////////// PREVIEW  /////////////////////////////////////////////
 
   public async generatePreviewToken(document: CnDocument): Promise<CnDocumentPreviewDTO> {
     if (!document.canTokenPreview) {
@@ -479,7 +445,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     return document;
   }
 
-  ////////////////////////////////////////////// OTHERS /////////////////////////////////////////////
+  ////////////////////////////////////////////// PREVIEW  /////////////////////////////////////////////
 
   public async moveDocument(document: CnDocumentWithHierarchy,
                             oldParentFolder: CnHierarchyObject,
@@ -497,6 +463,36 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     }
 
     return newDocument;
+  }
+
+  private findChildrenDocuments(parentDocumentId: string): Promise<CnDocumentWithHierarchy[]> {
+    return this.repo.find({
+      where: { parentDocument: { id: parentDocumentId } },
+      relations: { hierarchyRepresentation: true }
+    });
+  }
+
+  ////////////////////////////////////////////// OTHERS /////////////////////////////////////////////
+
+  private documentsToAggregateDTO(documents: CnDocument[]): CnFolderStorageUsageDTO {
+    const aggregationDTO: CnFolderStorageUsageDTO = new CnFolderStorageUsageDTO();
+
+    const mappings: Record<CnDocumentType, CnDocumentStorageType> = {
+      [CnDocumentType.UPLOADED_DOCUMENT]: CnDocumentStorageType.UPLOADED_DOCUMENT,
+      [CnDocumentType.DESCRIPTION_CONTENT]: CnDocumentStorageType.DESCRIPTION,
+      [CnDocumentType.CONSTELLAB_DOCUMENT]: CnDocumentStorageType.NOTE,
+      [CnDocumentType.NOTE]: CnDocumentStorageType.NOTE,
+      [CnDocumentType.NOTE_CONTENT]: CnDocumentStorageType.NOTE,
+      [CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT]: CnDocumentStorageType.NOTE,
+      [CnDocumentType.MESSAGE_CONTENT]: CnDocumentStorageType.MESSAGE
+    };
+
+    for (const doc of documents) {
+      const type = mappings[doc.type];
+      aggregationDTO.addDocumentSize(type, doc.size, doc.bucketType);
+    }
+
+    return aggregationDTO;
   }
 
   private async moveDocumentFromBucket(document: CnDocumentWithHierarchy,

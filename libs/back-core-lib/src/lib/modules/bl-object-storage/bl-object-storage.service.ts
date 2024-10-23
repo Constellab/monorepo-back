@@ -267,7 +267,7 @@ export class BlObjectStorageService {
 
   private cleanTagString(tag: string): string {
     // Replace unwanted characters with a space
-    return tag.replace(/[^a-zA-Z0-9 +\-._:=\/]/g, ' ');
+    return tag.replace(/[^a-zA-Z0-9 +\-._:=/]/g, ' ');
   }
 
   /////////////////////////////////// OTHER ///////////////////////////////////

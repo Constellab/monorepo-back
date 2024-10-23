@@ -5,6 +5,7 @@ import { BlS3BucketService } from './bl-s3-bucket.service';
 import { BlLabS3ServerNotAvailableException } from './bl-object-storage.exception';
 import { BlExternalApiService } from '../bl-external-api/bl-external-api.service';
 import { BlObjectStorageInterface } from './bl-object-storage.interface';
+import { BlBadRequestException } from '../../exceptions/bl-bad-request.exception';
 
 
 /**
@@ -158,9 +159,17 @@ export class BlLabS3BucketService implements BlObjectStorageInterface {
       null, { logError: false, timeout: 2500 })).then(() => true).catch(() => false);
 
     if (!result) {
-      this.logger.error(`Error during S3 request to datahub. Error ${e}`);
+      this.logger.error(`Error during request to datahub. Error ${e}`);
       return new BlLabS3ServerNotAvailableException();
     }
-    return e;
+
+    if(e.name !== 'internal_error' && e.message){
+      this.logger.log(`Error during request to datahub. Error ${e.message}`);
+      throw new BlBadRequestException(`Error during request to datahub. ${e.message}`);
+    }else{
+      const message = e.message ? e.message : e;
+      this.logger.error(`Error during request to datahub. Error ${message}`);
+      throw new BlBadRequestException("Error during request to datahub");
+    }
   }
 }
