@@ -2,7 +2,7 @@ import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { DateTime } from 'luxon';
 import { Exclude, Type } from 'class-transformer';
-import { CnUser } from '../../cn-users/cn-user.entity';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { CnLabBillingMode, CnLabDomain, CnLabEntity } from '../cn-lab.entity';
 import { ClDateHelper } from '@monorepo/core-lib';
@@ -35,8 +35,8 @@ export class CnLabFree extends CnBaseEntity {
   // delete completely the lab 2 days after the expiration
   public static readonly DELETION_AFTER_DAYS = 2;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, { eager: true, nullable: false })
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   @BlNotUpdatable()
   @Exclude()
   user: CnUser;

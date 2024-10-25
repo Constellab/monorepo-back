@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpException, Param, ParseUUIDPipe, Post, Put, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { CnUser } from '../cn-user.entity';
+import { CnUser, CnUserEntity } from '../cn-user.entity';
 import { CnUserAccountsService } from './cn-user-accounts.service';
 import { CnFrontService } from '../../cn-core/services/cn-front.service';
 import { BlParsePipe, BlPublicSecure } from '@monorepo/back-core-lib';
@@ -18,7 +18,7 @@ export class CnUserAccountsController {
 
   @BlPublicSecure()
   @Post()
-  create(@Body(new BlParsePipe(CnUser)) entity: CnUser): Promise<CnUser> {
+  create(@Body(new BlParsePipe(CnUserEntity)) entity: CnUser): Promise<CnUser> {
     return this.userAccountsService.signup(entity);
   }
 
@@ -115,7 +115,7 @@ export class CnUserAccountsController {
   @BlPublicSecure()
   @Post('sign-up-in-space/:invitCode')
   public async createUserAndJoinSpace(@Param('invitCode') invitCode: string,
-                                      @Body(new BlParsePipe(CnUser)) entity: CnUser): Promise<CnUser> {
+                                      @Body(new BlParsePipe(CnUserEntity)) entity: CnUser): Promise<CnUser> {
     return this.userAccountsService.createUserAndJoinSpace(invitCode, entity);
   }
 

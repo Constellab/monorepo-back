@@ -5,7 +5,7 @@ import { CnScenario, CnScenarioProtocol } from './cn-scenario.entity';
 import { CnLabConfigDto } from '../../cn-lab-configs/cn-lab-config.dto';
 import { Type } from 'class-transformer';
 import { CnEntityDTO } from '../../cn-core/model/entities/cn.entity';
-import { CnUser } from '../../cn-users/cn-user.entity';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { BlRichTextContent, BlRichTextI } from '@monorepo/back-core-lib';
 
 
@@ -20,13 +20,13 @@ export class CnSaveScenarioDto {
 
   is_validated: boolean;
 
-  @Type(() => CnUser)
+  @Type(() => CnUserEntity)
   validated_by?: CnUser;
 
   @ClLuxonDateTimeTransform()
   validated_at?: DateTime;
 
-  @Type(() => CnUser)
+  @Type(() => CnUserEntity)
   last_sync_by?: CnUser;
 
   @ClLuxonDateTimeTransform()
@@ -35,13 +35,13 @@ export class CnSaveScenarioDto {
   @ClLuxonDateTimeTransform()
   created_at: DateTime;
 
-  @Type(() => CnUser)
+  @Type(() => CnUserEntity)
   created_by: CnUser;
 
   @ClLuxonDateTimeTransform()
   last_modified_at: DateTime;
 
-  @Type(() => CnUser)
+  @Type(() => CnUserEntity)
   last_modified_by: CnUser;
 }
 

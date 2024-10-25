@@ -1,7 +1,7 @@
 import { BeforeInsert, Column, Entity, ManyToOne, OneToMany, Relation, Tree, TreeChildren, TreeParent } from 'typeorm';
 import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { Exclude, Type } from 'class-transformer';
-import { CnUser } from '../../cn-users/cn-user.entity';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { DateTime } from 'luxon';
 import { CnSpace } from '../../cn-spaces/cn-space.entity';
 import { CnFolderUserEntity } from '../cn-folder-user/cn-folder-user.entity';
@@ -23,8 +23,8 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
   @Column({ nullable: false, length: 255 })
   name: string;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, { eager: true, nullable: false })
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   user: Relation<CnUser>;
 
   @BlLuxonDateTimeColumn()

@@ -1,11 +1,11 @@
-import {BeforeInsert, Column, Entity, ManyToOne} from 'typeorm';
-import {BlEntityWithId, BlLuxonDateTimeColumn, BlNotification} from '@monorepo/back-core-lib';
-import {Exclude, Type} from 'class-transformer';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnSpace} from '../cn-spaces/cn-space.entity';
-import {ClDateHelper} from '@monorepo/core-lib';
-import {DateTime} from 'luxon';
-import {CnActivityEntityType} from '../cn-activity/cn-activity.entity';
+import { BeforeInsert, Column, Entity, ManyToOne } from 'typeorm';
+import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotification } from '@monorepo/back-core-lib';
+import { Exclude, Type } from 'class-transformer';
+import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
+import { CnSpace } from '../cn-spaces/cn-space.entity';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { DateTime } from 'luxon';
+import { CnActivityEntityType } from '../cn-activity/cn-activity.entity';
 
 
 @Entity('notification')
@@ -14,8 +14,8 @@ export class CnNotification extends BlEntityWithId implements BlNotification {
   @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, {eager: true, nullable: false})
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, {eager: true, nullable: false})
   createdBy: CnUser;
 
   @Column()
@@ -44,8 +44,8 @@ export class CnNotification extends BlEntityWithId implements BlNotification {
   spaceId: string;
 
   @Exclude()
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, {eager: true, nullable: false})
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, {eager: true, nullable: false})
   user: CnUser;
 
   // list of object ids that are associated with the object id

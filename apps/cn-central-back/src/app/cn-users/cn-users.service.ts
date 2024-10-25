@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CnUser, CnUserEditDTO, CnUserTransportDto } from './cn-user.entity';
+import { CnUser, CnUserEditDTO, CnUserEntity, CnUserTransportDto } from './cn-user.entity';
 import { Repository } from 'typeorm';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
@@ -28,11 +28,11 @@ import { CnUserSearch } from './cn-user-search.class';
 export class CnUsersService extends BlAbstractService<CnUser> implements BlUserService, OnModuleInit {
 
   constructor(
-    @InjectRepository(CnUser) private repository: Repository<CnUser>,
+    @InjectRepository(CnUserEntity) private repository: Repository<CnUser>,
     private objectStorageService: BlObjectStorageService,
     private configService: CnCoreConfigService,
     private transportService: BlTransportService) {
-    super(repository, CnUser);
+    super(repository, CnUserEntity);
   }
 
   async onModuleInit(): Promise<void> {
@@ -65,7 +65,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     return this.repository.findOne({
       where: {
         email: email
-      }
+      },
     });
   }
 

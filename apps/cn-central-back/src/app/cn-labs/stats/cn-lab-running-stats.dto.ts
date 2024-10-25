@@ -1,7 +1,7 @@
 import { ClLuxonDateTimeTransform, ClLuxonDateTransform } from '@monorepo/core-lib';
 import { DateTime } from 'luxon';
 import { Type } from 'class-transformer';
-import { CnUser } from '../../cn-users/cn-user.entity';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 
 /*
 * Only for hourly billed labs, it contains the price for the running period
@@ -27,7 +27,7 @@ export class CnLabStatsRunningStatusDTO {
 
   duration: number;
 
-  @Type(() => CnUser)
+  @Type(() => CnUserEntity)
   user: CnUser;
 
   @Type(() => CnLabStatsRunningBillingDTO)

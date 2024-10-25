@@ -14,7 +14,7 @@ export enum CnUserLicense {
 }
 
 @Entity('user')
-export class CnUser extends BlEntityWithId implements BlUser {
+export class CnUserEntity extends BlEntityWithId implements BlUser {
 
   @Column({nullable: false, length: 50})
   firstname: string;
@@ -128,6 +128,8 @@ export class CnUser extends BlEntityWithId implements BlUser {
     return this.license === CnUserLicense.FREE;
   }
 }
+
+export type CnUser = Omit<CnUserEntity, 'groups' | 'ownGroup' | 'lastConnectedSpace'>;
 
 export class CnUserEditDTO {
   firstname: string;

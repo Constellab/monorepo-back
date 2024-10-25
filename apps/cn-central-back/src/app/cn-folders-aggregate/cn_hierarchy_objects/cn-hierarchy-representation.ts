@@ -1,7 +1,7 @@
 import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { DateTime } from 'luxon';
 import { Type } from 'class-transformer';
-import { CnUser } from '../../cn-users/cn-user.entity';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { JoinColumn, ManyToOne, OneToOne, Relation } from 'typeorm';
 import { CnHierarchyObjectEntity } from './cn-hierarchy-object.entity';
 import { CnHierarchyObjectInfo } from './cn-hierarchy-object.dto';
@@ -21,16 +21,16 @@ export abstract class CnHierarchyRepresentation extends BlEntityWithId {
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
   createdAt: DateTime;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, { eager: true, nullable: false })
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   @BlNotUpdatable()
   createdBy: Relation<CnUser>;
 
   @BlLuxonDateTimeColumn()
   lastModifiedAt: DateTime;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, { eager: true })
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, { eager: true })
   lastModifiedBy: Relation<CnUser>;
 
   abstract getHierarchyObjectInfo(): CnHierarchyObjectInfo;

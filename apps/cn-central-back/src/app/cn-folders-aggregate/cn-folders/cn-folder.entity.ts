@@ -2,7 +2,7 @@ import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, Relation } from 
 import { Exclude, Type } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { BlLuxonDateColumn, BlRichTextContent } from '@monorepo/back-core-lib';
-import { CnUser } from '../../cn-users/cn-user.entity';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-representation';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
@@ -31,8 +31,8 @@ export class CnFolderEntity extends CnHierarchyRepresentation {
   @BlLuxonDateColumn({ nullable: true })
   endingDate: DateTime;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, { eager: true, nullable: false })
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   leader: Relation<CnUser>;
 
   @Exclude()

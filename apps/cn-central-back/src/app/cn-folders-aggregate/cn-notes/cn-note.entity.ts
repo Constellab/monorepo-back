@@ -2,7 +2,7 @@ import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
 import { CnScenario } from '../cn-scenarios/cn-scenario.entity';
 import { Exclude, Type } from 'class-transformer';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
-import { CnUser } from '../../cn-users/cn-user.entity';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { BlLuxonDateTimeColumn, BlNotUpdatable, BlRichTextContent } from '@monorepo/back-core-lib';
 import { DateTime } from 'luxon';
 import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
@@ -37,15 +37,15 @@ export class CnNote extends CnHierarchyRepresentation {
   @Column({ nullable: false, default: false })
   isValidated: boolean;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, { eager: true, nullable: true })
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, { eager: true, nullable: true })
   validatedBy: CnUser;
 
   @BlLuxonDateTimeColumn({ nullable: true })
   validatedAt: DateTime;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, { eager: true, nullable: false })
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   lastSyncBy: CnUser;
 
   @BlLuxonDateTimeColumn({ nullable: false })

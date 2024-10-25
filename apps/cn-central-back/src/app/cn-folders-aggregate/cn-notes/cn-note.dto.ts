@@ -1,7 +1,7 @@
 import { CnLabConfigDto } from '../../cn-lab-configs/cn-lab-config.dto';
 import { Type } from 'class-transformer';
 import { DateTime } from 'luxon';
-import { CnUser } from '../../cn-users/cn-user.entity';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
 import { BlRichTextContent, BlRichTextI } from '@monorepo/back-core-lib';
 import { CnNote } from './cn-note.entity';
@@ -14,13 +14,13 @@ export class CnSaveNoteDto {
 
   is_validated: boolean;
 
-  @Type(() => CnUser)
+  @Type(() => CnUserEntity)
   validated_by?: CnUser;
 
   @ClLuxonDateTimeTransform()
   validated_at?: DateTime;
 
-  @Type(() => CnUser)
+  @Type(() => CnUserEntity)
   last_sync_by?: CnUser;
 
   @ClLuxonDateTimeTransform()
@@ -29,13 +29,13 @@ export class CnSaveNoteDto {
   @ClLuxonDateTimeTransform()
   created_at: DateTime;
 
-  @Type(() => CnUser)
+  @Type(() => CnUserEntity)
   created_by: CnUser;
 
   @ClLuxonDateTimeTransform()
   last_modified_at: DateTime;
 
-  @Type(() => CnUser)
+  @Type(() => CnUserEntity)
   last_modified_by: CnUser;
 }
 

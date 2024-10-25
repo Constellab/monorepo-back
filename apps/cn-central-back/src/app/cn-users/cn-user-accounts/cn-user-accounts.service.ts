@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CnUser, CnUserLicense } from '../cn-user.entity';
+import { CnUser, CnUserEntity, CnUserLicense } from '../cn-user.entity';
 import { CnMailTemplate } from '../../cn-core/model/config/cn-mail-template.class';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
@@ -40,7 +40,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
   private readonly userLockMailActivation: number = 86400 * 7;
 
-  constructor(@InjectRepository(CnUser) private repository: Repository<CnUser>,
+  constructor(@InjectRepository(CnUserEntity) private repository: Repository<CnUser>,
               private configService: CnCoreConfigService,
               private mailService: BlMailService,
               private usersService: CnUsersService,
@@ -50,7 +50,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
               private groupService: CnGroupsService,
               private notificationService: CnNotificationService,
               private captchaService: BlCaptchaService) {
-    super(repository, CnUser);
+    super(repository, CnUserEntity);
   }
 
   async signup(createUser: CnCreateUserDto): Promise<CnUser> {
@@ -62,11 +62,10 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     }
 
     return await this.datasource.transaction(async entityManager => {
-      const user = new CnUser();
+      const user = new CnUserEntity();
       user.firstname = createUser.firstname;
       user.lastname = createUser.lastname;
       user.email = createUser.email;
-      user.password = createUser.password;
       user.category = createUser.category;
       user.phone = createUser.phone;
       user.license = CnUserLicense.FREE;

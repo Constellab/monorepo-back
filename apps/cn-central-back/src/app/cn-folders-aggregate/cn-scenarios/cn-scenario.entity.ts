@@ -5,7 +5,7 @@ import { BlLuxonDateTimeColumn, BlNotUpdatable, BlRichTextContent } from '@monor
 import { CnNote } from '../cn-notes/cn-note.entity';
 import { CnScenarioStatus } from './cn-scenario-status.enum';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
-import { CnUser } from '../../cn-users/cn-user.entity';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { DateTime } from 'luxon';
 import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-representation';
 import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
@@ -54,15 +54,15 @@ export class CnScenario extends CnHierarchyRepresentation {
   @Column({ nullable: false, default: false })
   isValidated: boolean;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, { eager: true, nullable: true })
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, { eager: true, nullable: true })
   validatedBy: CnUser;
 
   @BlLuxonDateTimeColumn({ nullable: true })
   validatedAt: DateTime;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, { eager: true, nullable: false })
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   lastSyncBy: CnUser;
 
   @BlLuxonDateTimeColumn({ nullable: false })

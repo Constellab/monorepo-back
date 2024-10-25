@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { Type } from 'class-transformer';
 import { CnMessage, CnNewMessageDTO } from '../cn-core/model/entities/cn-message.entity';
-import { CnUser } from '../cn-users/cn-user.entity';
+import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity
@@ -12,7 +12,7 @@ import { BlNotUpdatable } from '@monorepo/back-core-lib';
  * special user for mentioning everyone
  */
 export function getFakeUserEveryoneMention(): CnUser {
-  const user = new CnUser();
+  const user = new CnUserEntity();
   user.id = 'everyone';
   user.firstname = 'Everyone';
   user.lastname = '';

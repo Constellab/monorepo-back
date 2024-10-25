@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
-import { CnUser } from '../../cn-users/cn-user.entity';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { Exclude } from 'class-transformer';
 import { CnHierarchyObjectEntity } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 
@@ -18,7 +18,7 @@ export class CnFolderUserEntity {
   userId: string;
 
   @Exclude()
-  @ManyToOne(() => CnUser, { onUpdate: 'CASCADE', onDelete: 'CASCADE', eager: true })
+  @ManyToOne(() => CnUserEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE', eager: true })
   user: CnUser;
 
   @PrimaryColumn({ type: 'varchar', length: 36 })

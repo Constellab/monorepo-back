@@ -2,7 +2,7 @@ import { BeforeInsert, Entity, JoinColumn, ManyToOne, PrimaryColumn, Relation } 
 import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { DateTime } from 'luxon';
 import { Type } from 'class-transformer';
-import { CnUser } from '../cn-users/cn-user.entity';
+import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
 import { CnLabEntity } from '../cn-labs/cn-lab.entity';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { ClDateHelper } from '@monorepo/core-lib';
@@ -33,8 +33,8 @@ export class CnLabFolderEntity {
   @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, {eager: true, nullable: false})
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, {eager: true, nullable: false})
   @BlNotUpdatable()
   createdBy: Relation<CnUser>;
 

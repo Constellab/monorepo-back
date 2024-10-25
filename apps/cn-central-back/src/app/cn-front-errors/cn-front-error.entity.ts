@@ -1,10 +1,10 @@
-import {BeforeInsert, Column, Entity, ManyToOne} from 'typeorm';
-import {Type} from 'class-transformer';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {DateTime} from 'luxon';
-import {ClDateHelper} from '@monorepo/core-lib';
-import {BlEntityWithId, BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
+import { BeforeInsert, Column, Entity, ManyToOne } from 'typeorm';
+import { Type } from 'class-transformer';
+import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
+import { DateTime } from 'luxon';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { BlEntityWithId, BlLuxonDateTimeColumn } from '@monorepo/back-core-lib';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 
 /**
  * Entity to store the front errors
@@ -24,8 +24,8 @@ export class CnFrontError extends BlEntityWithId {
   @Column({nullable: true, length: 200})
   route: string;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, {eager: true, nullable: true})
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, {eager: true, nullable: true})
   createdBy: CnUser;
 
   @BlLuxonDateTimeColumn({nullable: false, update: false})

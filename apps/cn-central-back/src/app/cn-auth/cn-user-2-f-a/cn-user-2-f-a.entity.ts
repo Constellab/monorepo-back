@@ -1,9 +1,9 @@
-import {Column, Entity, ManyToOne, Unique} from 'typeorm';
-import {BlEntityWithId, BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
-import {DateTime} from 'luxon';
-import {ClDateHelper} from '@monorepo/core-lib';
-import {Type} from 'class-transformer';
-import {CnUser} from '../../cn-users/cn-user.entity';
+import { Column, Entity, ManyToOne, Unique } from 'typeorm';
+import { BlEntityWithId, BlLuxonDateTimeColumn } from '@monorepo/back-core-lib';
+import { DateTime } from 'luxon';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { Type } from 'class-transformer';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 
 /**
  * Table to store the codes of the user 2 factor authentication
@@ -14,14 +14,12 @@ import {CnUser} from '../../cn-users/cn-user.entity';
 export class CnUser2FA extends BlEntityWithId {
 
   private static readonly VALIDITY_DURATION = ClDateHelper.ONE_MINUTE * 5;
-  public static readonly MIN_CODE = 0;
-  public static readonly MAX_CODE = 999999;
 
   @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, {nullable: false})
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, {nullable: false})
   user: CnUser;
 
   // code received by email

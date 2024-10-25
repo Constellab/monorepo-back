@@ -1,9 +1,9 @@
-import {ManyToOne, Relation} from 'typeorm';
-import {CnUser} from '../../../cn-users/cn-user.entity';
-import {Type} from 'class-transformer';
-import {DateTime} from 'luxon';
-import {BlEntityWithId, BlEntityWithIdDTO, BlLuxonDateTimeColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
-import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
+import { ManyToOne, Relation } from 'typeorm';
+import { CnUser, CnUserEntity } from '../../../cn-users/cn-user.entity';
+import { Type } from 'class-transformer';
+import { DateTime } from 'luxon';
+import { BlEntityWithId, BlEntityWithIdDTO, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
+import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
 
 /**
  * Basic entity with same info as CnBaseEntity
@@ -15,16 +15,16 @@ export abstract class CnEntity extends BlEntityWithId {
   @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, {eager: true, nullable: false})
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, {eager: true, nullable: false})
   @BlNotUpdatable()
   createdBy: Relation<CnUser>;
 
   @BlLuxonDateTimeColumn()
   lastModifiedAt: DateTime;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, {eager: true})
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, {eager: true})
   lastModifiedBy: Relation<CnUser>;
 }
 
@@ -32,13 +32,13 @@ export class CnEntityDTO extends BlEntityWithIdDTO {
   @ClLuxonDateTimeTransform()
   createdAt: DateTime;
 
-  @Type(() => CnUser)
+  @Type(() => CnUserEntity)
   createdBy: CnUser;
 
   @ClLuxonDateTimeTransform()
   lastModifiedAt: DateTime;
 
-  @Type(() => CnUser)
+  @Type(() => CnUserEntity)
   lastModifiedBy: CnUser;
 
   copyEntity(entity: CnEntity): this {

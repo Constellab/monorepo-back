@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, Relation } from 'typeorm';
 import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { Exclude, Expose, Type } from 'class-transformer';
-import { CnUser } from '../cn-users/cn-user.entity';
+import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
 import { DateTime } from 'luxon';
 import { CnSpace } from '../cn-spaces/cn-space.entity';
 
@@ -43,8 +43,8 @@ export class CnActivity extends BlEntityWithId {
   @Column({update: false})
   userId: string;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, {eager: true, nullable: false})
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, {eager: true, nullable: false})
   @BlNotUpdatable()
   user: Relation<CnUser>;
 

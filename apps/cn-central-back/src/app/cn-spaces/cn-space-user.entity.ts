@@ -1,10 +1,10 @@
-import {BeforeInsert, Column, Entity, ManyToOne, PrimaryColumn, Relation} from 'typeorm';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnSpace} from './cn-space.entity';
-import {Type} from 'class-transformer';
-import {BlLuxonDateTimeColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
-import {DateTime} from 'luxon';
-import {ClDateHelper} from '@monorepo/core-lib';
+import { BeforeInsert, Column, Entity, ManyToOne, PrimaryColumn, Relation } from 'typeorm';
+import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
+import { CnSpace } from './cn-space.entity';
+import { Type } from 'class-transformer';
+import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
+import { DateTime } from 'luxon';
+import { ClDateHelper } from '@monorepo/core-lib';
 
 export enum CnSpaceUserRole {
   ADMIN = 'ADMIN',
@@ -18,7 +18,7 @@ export class CnSpaceUser {
   @PrimaryColumn({type: 'varchar', length: 36})
   userId: string;
 
-  @ManyToOne(() => CnUser, {onUpdate: 'CASCADE', onDelete: 'CASCADE'})
+  @ManyToOne(() => CnUserEntity, {onUpdate: 'CASCADE', onDelete: 'CASCADE'})
   user: CnUser;
 
   @PrimaryColumn({type: 'varchar', length: 36})
@@ -40,8 +40,8 @@ export class CnSpaceUser {
   @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, {eager: true, nullable: false})
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, {eager: true, nullable: false})
   @BlNotUpdatable()
   addedBy: Relation<CnUser>;
 

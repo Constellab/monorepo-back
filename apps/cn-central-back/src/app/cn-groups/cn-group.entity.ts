@@ -8,18 +8,19 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
-  PrimaryColumn, Relation,
+  PrimaryColumn,
+  Relation,
   TableInheritance
 } from 'typeorm';
-import {CnBaseEntity} from '../cn-core/model/entities/cn-base.entity';
-import {CnGroupType} from './cn-group-type.enum';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {Exclude, Type} from 'class-transformer';
-import {BlLuxonDateTimeColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
-import {CnSpace} from '../cn-spaces/cn-space.entity';
-import {ClDateHelper} from '@monorepo/core-lib';
-import {DateTime} from 'luxon';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
+import { CnBaseEntity } from '../cn-core/model/entities/cn-base.entity';
+import { CnGroupType } from './cn-group-type.enum';
+import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
+import { Exclude, Type } from 'class-transformer';
+import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
+import { CnSpace } from '../cn-spaces/cn-space.entity';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { DateTime } from 'luxon';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 
 @TableInheritance({column: {type: 'enum', enum: CnGroupType, name: 'type'}})
 @Entity('group')
@@ -35,7 +36,7 @@ export class CnGroup extends CnBaseEntity {
 @ChildEntity(CnGroupType.SINGLE_USER)
 export class CnGroupSingleUser extends CnGroup {
 
-  @OneToOne(() => CnUser, (user: CnUser) => user.ownGroup, {eager: true})
+  @OneToOne(() => CnUserEntity, (user: CnUserEntity) => user.ownGroup, {eager: true})
   @JoinColumn()
   user: CnUser;
 
@@ -81,7 +82,7 @@ export class CnUserGroup {
   @PrimaryColumn({type: 'varchar', length: 36})
   userId: string;
 
-  @ManyToOne(() => CnUser, {onUpdate: 'CASCADE', onDelete: 'CASCADE'})
+  @ManyToOne(() => CnUserEntity, {onUpdate: 'CASCADE', onDelete: 'CASCADE'})
   user: CnUser;
 
   @PrimaryColumn({type: 'varchar', length: 36})
@@ -94,8 +95,8 @@ export class CnUserGroup {
   @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;
 
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, {eager: true, nullable: false})
+  @Type(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, {eager: true, nullable: false})
   @BlNotUpdatable()
   createdBy: Relation<CnUser>;
 
