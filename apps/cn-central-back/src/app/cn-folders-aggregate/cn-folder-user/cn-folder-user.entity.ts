@@ -35,13 +35,13 @@ export class CnFolderUserEntity {
   @Column({ nullable: false, type: 'enum', enum: CnFolderNotifOptions, default: CnFolderNotifOptions.NOTIF_ONLY })
   messageNotif: CnFolderNotifOptions;
 
-  @Column({ nullable: false, type: 'enum', enum: CnFolderNotifOptions, default: CnFolderNotifOptions.NOTIF_ONLY })
+  @Column({ nullable: false, type: 'enum', enum: CnFolderNotifOptions, default: CnFolderNotifOptions.NONE })
   scenarioNotif: CnFolderNotifOptions;
 
-  @Column({ nullable: false, type: 'enum', enum: CnFolderNotifOptions, default: CnFolderNotifOptions.NOTIF_ONLY })
+  @Column({ nullable: false, type: 'enum', enum: CnFolderNotifOptions, default: CnFolderNotifOptions.NONE })
   noteNotif: CnFolderNotifOptions;
 
-  @Column({ nullable: false, type: 'enum', enum: CnFolderNotifOptions, default: CnFolderNotifOptions.NOTIF_ONLY })
+  @Column({ nullable: false, type: 'enum', enum: CnFolderNotifOptions, default: CnFolderNotifOptions.NONE })
   documentNotif: CnFolderNotifOptions;
 
 }
