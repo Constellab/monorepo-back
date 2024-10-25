@@ -1,14 +1,14 @@
-import {Injectable} from '@nestjs/common';
-import {CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup} from './cn-group.entity';
-import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, FindOneOptions, In, Like, Repository} from 'typeorm';
-import {BlAbstractService, BlBadRequestException, BlSearchBuilder, BlSearchParams} from '@monorepo/back-core-lib';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {CnGroupType} from './cn-group-type.enum';
-import {ClHelpService, ClPageI} from '@monorepo/core-lib';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {FindOptionsWhere} from 'typeorm/find-options/FindOptionsWhere';
-import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
+import { Injectable } from '@nestjs/common';
+import { CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup } from './cn-group.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, FindOneOptions, In, Like, Repository } from 'typeorm';
+import { BlAbstractService, BlBadRequestException, BlSearchBuilder, BlSearchParams } from '@monorepo/back-core-lib';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnGroupType } from './cn-group-type.enum';
+import { ClHelpService, ClPageI } from '@monorepo/core-lib';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
+import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
 
 @Injectable()
 export class CnGroupsService extends BlAbstractService<CnGroup> {
@@ -207,6 +207,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
   public async getTeamsByUserAndSpace(userId: string, spaceId: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
     return this.findPaginated(page, size, this.getTeamsByUserAndSpaceOptions(userId, spaceId));
   }
+
 
   private getTeamsByUserAndSpaceOptions(userId: string, spaceId: string): FindOneOptions<CnGroup> {
     const options: FindOneOptions<CnGroupTeam> = {

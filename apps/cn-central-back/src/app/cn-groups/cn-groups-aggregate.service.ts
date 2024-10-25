@@ -1,16 +1,16 @@
-import {Injectable} from '@nestjs/common';
-import {CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup} from './cn-group.entity';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {DeleteResult} from 'typeorm';
-import {ClHelpService, ClPageI} from '@monorepo/core-lib';
-import {CnUserTeamService} from './cn-user-team.service';
-import {CnSpaceUserService} from '../cn-spaces/cn-space-user.service';
-import {CnGroupsSecurity} from './cn-groups.security';
-import {CnGroupsService} from './cn-groups.service';
-import {BlSearchParams, BlUnauthorizedException} from '@monorepo/back-core-lib';
-import {CnGroupType} from './cn-group-type.enum';
+import { Injectable } from '@nestjs/common';
+import { CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup } from './cn-group.entity';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { DeleteResult } from 'typeorm';
+import { ClHelpService, ClPageI } from '@monorepo/core-lib';
+import { CnUserTeamService } from './cn-user-team.service';
+import { CnSpaceUserService } from '../cn-spaces/cn-space-user.service';
+import { CnGroupsSecurity } from './cn-groups.security';
+import { CnGroupsService } from './cn-groups.service';
+import { BlSearchParams, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { CnGroupType } from './cn-group-type.enum';
 
 @Injectable()
 export class CnGroupsAggregateService {
@@ -128,6 +128,14 @@ export class CnGroupsAggregateService {
     await this.getAndCheckCurrentAuthorizationToUpdateTeam(groupId);
 
     await this.userGroupService.removeUserFromTeam(groupId, userId);
+  }
+
+  public async removeUserFromAllTeams(userId: string, spaceId: string): Promise<void> {
+    const teams = await this.groupsService.getAllTeamsByUserAndSpace(userId, spaceId);
+
+    for (const team of teams) {
+      await this.userGroupService.removeUserFromTeam(team.id, userId)
+    }
   }
 
   public async getUsersOfTeam(groupId: string, page: number, size: number): Promise<ClPageI<CnUserGroup>> {

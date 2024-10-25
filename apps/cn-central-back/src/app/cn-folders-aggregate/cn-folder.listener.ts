@@ -19,6 +19,8 @@ import { CnDocument } from './cn-documents/cn-document.entity';
 import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
 import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnHierarchyRepresentation } from './cn_hierarchy_objects/cn-hierarchy-representation';
+import { CnSpaceEvent, cnSpaceEventName } from '../cn-spaces/cn-space.event';
+import { CnFolderAggregateService } from './cn-folder-aggregate.service';
 
 export interface CnNotifInfo {
   link: string;
@@ -37,7 +39,8 @@ export class CnFolderListener {
               private notificationService: CnNotificationService,
               private activityService: CnActivityService,
               private mailService: BlMailService,
-              private frontService: CnFrontService) {
+              private frontService: CnFrontService,
+              private folderAggregateService: CnFolderAggregateService) {
   }
 
 
@@ -478,6 +481,17 @@ export class CnFolderListener {
 
     folderObjectDb.setObjectInfo(objectInfo);
     await this.folderHierarchyService.update(folderObjectDb);
+  }
+
+  @OnEvent(cnSpaceEventName)
+  async handleSpaceEvent(event: CnSpaceEvent): Promise<Error | null> {
+    if(event.type === 'REMOVE_USER_FROM_SPACE'){
+      return await this.folderAggregateService.unshareAllFolderForUser(event.userId, event.spaceId).catch(
+        (err) => err
+      );
+    }
+
+    return null;
   }
 
 }

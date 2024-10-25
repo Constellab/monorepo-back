@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CnLab, CnLabEntity, CnLabFull, CnLabWithSpace } from './cn-lab.entity';
-import { DataSource, DeleteResult, EntityManager, In, Not, Repository } from 'typeorm';
+import { DataSource, DeleteResult, EntityManager, FindOptionsWhere, In, Not, Repository } from 'typeorm';
 import { CnLabServerTaskStatus, CnLabStatus, cnLabTemporaryStatuses } from './status/cn-lab-status.enum';
 import { CnAbstractWithStatusService } from '../cn-core/class/cn-abstract-with-status.service';
 import { CnLabStatusHistory } from './status/cn-lab-status-history.entity';
@@ -170,33 +170,41 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     const userInfo: CnUserSpaceInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
 
     return this.findPaginated(page, size, {
-      where: {
-        sharedGroups: {
-          userId: userInfo.userId
-        },
-        spaceId: userInfo.spaceId
-      },
+      where: this.getLabByUserAndSpaceFindOptions(userInfo.userId, userInfo.spaceId),
+      order: { lastModifiedAt: 'DESC' as any }
+    });
+  }
+
+  public async getAllLabsByUserAndSpace(userId: string, spaceId: string): Promise<CnLab[]> {
+    return this.repository.find({
+      where: this.getLabByUserAndSpaceFindOptions(userId, spaceId),
       order: { lastModifiedAt: 'DESC' as any }
     });
   }
 
   public async getCurrentRunningLabs(): Promise<CnLab[]> {
     const userInfo: CnUserSpaceInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+    const findWhereOption = this.getLabByUserAndSpaceFindOptions(userInfo.userId, userInfo.spaceId);
+
+    findWhereOption.currentStatus = {
+      status: CnLabStatus.SERVER_RUNNING
+    };
 
     return this.repository.find({
-      where: {
-        sharedGroups: {
-          userId: userInfo.userId
-        },
-        currentStatus: {
-          status: CnLabStatus.SERVER_RUNNING
-        },
-        spaceId: userInfo.spaceId
-      },
+      where: findWhereOption,
       order: {
         lastModifiedAt: 'DESC' as any
       }
     });
+  }
+
+  private getLabByUserAndSpaceFindOptions(userId: string, spaceId: string): FindOptionsWhere<CnLabEntity> {
+    return {
+      sharedGroups: {
+        userId: userId
+      },
+      spaceId: spaceId
+    };
   }
 
   public async markInstanceAsServerRunning(id: string): Promise<CnLab> {

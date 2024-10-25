@@ -258,7 +258,8 @@ export class CnFolderAggregateService {
     return this.hierarchyObjectService.getDirectChildren(folder.id);
   }
 
-  public async getChildrenPaginated(folderId: string, searchParam: BlSearchParams, page: number, size: number): Promise<ClPage<CnHierarchyObject>> {
+  public async getChildrenPaginated(folderId: string, searchParam: BlSearchParams,
+                                    page: number, size: number): Promise<ClPage<CnHierarchyObject>> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
 
     return this.hierarchyObjectService.searchVisibleChildren(folder.id, searchParam, page, size);
@@ -515,17 +516,30 @@ export class CnFolderAggregateService {
   public async unshareFolder(folderId: string, userId: string): Promise<void> {
     const folderHierarchy = await this.getAndCheckAuthorizationForUpdate(folderId);
 
-    const folder = await this.foldersService.findByIdAndCheck(folderId);
+    await this.unshareFolderNotSecure(folderHierarchy, userId);
+
+    const user = await this.userService.findByIdAndCheck(userId);
+    this.emitFolderEvent('UNSHARE_FOLDER', folderHierarchy, user);
+  }
+
+  private async unshareFolderNotSecure(folderHierarchy: CnHierarchyObject, userId: string): Promise<void> {
+    const folder = await this.foldersService.findByIdAndCheck(folderHierarchy.id);
     // forbid to unshare the single user group of the leader
     // this is to unsure the leader will always have access to the folder
     if (userId === folder.leader.id) {
-      throw new BlBadRequestException(CnErrorText.CANT_UNSHARED_FOLDER_LEADER_GROUP);
+      throw new BlBadRequestException(CnErrorText.CANT_UNSHARED_FOLDER_LEADER_GROUP, { detailArgs: { folderName: folderHierarchy.name } });
     }
 
-    const user = await this.userService.findByIdAndCheck(userId);
     await this.folderUserService.unshareRootFolderFromUser(folderHierarchy.id, userId);
 
-    this.emitFolderEvent('UNSHARE_FOLDER', folderHierarchy, user);
+  }
+
+  public async unshareAllFolderForUser(userId: string, spaceId: string): Promise<void> {
+    const rootFolders = await this.hierarchyObjectService.getAllRootFoldersOfUser(userId, spaceId);
+
+    for (const rootFolder of rootFolders) {
+      await this.unshareFolderNotSecure(rootFolder, userId);
+    }
   }
 
   /**
@@ -750,7 +764,9 @@ export class CnFolderAggregateService {
 
     // if the document was modified by another user 1 minute ago, we refuse the update
     // this is temporary until collaborative editing is implemented
-    if (Math.abs(document.lastModifiedAt.diffNow().toMillis()) < 60000 && document.lastModifiedBy.id !== CnCurrentUserHelper.getCurrentUser().id) {
+    if (Math.abs(document.lastModifiedAt.diffNow().toMillis()) < 60000 &&
+      document.lastModifiedBy.id !== CnCurrentUserHelper.getCurrentUser().id) {
+      // eslint-disable-next-line max-len
       throw new BlBadRequestException(`This document is currently being modified by ${document.lastModifiedBy.alias}, please wait for the end of the modification`);
     }
 
@@ -769,7 +785,9 @@ export class CnFolderAggregateService {
 
     // if the document was modified by another user 1 minute ago, we refuse the update
     // this is temporary until collaborative editing is implemented
-    if (Math.abs(document.lastModifiedAt.diffNow().toMillis()) < 60000 && document.lastModifiedBy.id !== CnCurrentUserHelper.getCurrentUser().id) {
+    if (Math.abs(document.lastModifiedAt.diffNow().toMillis()) < 60000 &&
+      document.lastModifiedBy.id !== CnCurrentUserHelper.getCurrentUser().id) {
+      // eslint-disable-next-line max-len
       throw new BlBadRequestException(`This document is currently being modified by ${document.lastModifiedBy.alias}, please wait for the end of the modification`);
     }
   }

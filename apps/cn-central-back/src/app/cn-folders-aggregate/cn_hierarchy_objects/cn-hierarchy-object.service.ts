@@ -72,6 +72,19 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     });
   }
 
+  public async getAllRootFoldersOfUser(userId: string, spaceId: string): Promise<CnHierarchyObject[]> {
+    return await this.repository.find({
+      where: {
+        users: { userId: userId },
+        spaceId: spaceId,
+        parentId: IsNull()
+      },
+      order: {
+        lastModifiedAt: 'DESC' as any
+      }
+    });
+  }
+
   public async getDirectChildren(folderId: string): Promise<CnHierarchyObject[]> {
     return this.repository.find({
       where: {

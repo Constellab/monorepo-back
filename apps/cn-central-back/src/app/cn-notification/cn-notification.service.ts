@@ -115,7 +115,10 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
 
   public deleteNotificationByObject(objectType: CnActivityEntityType, objectId: string): Promise<DeleteResult> {
     return this.notificationRepository.delete({ objectType, objectId });
+  }
 
+  public deleteNotificationByUserAndSpace(userId: string, spaceId: string): Promise<DeleteResult> {
+    return this.notificationRepository.delete({ user: { id: userId }, space: { id: spaceId } });
   }
 
 }

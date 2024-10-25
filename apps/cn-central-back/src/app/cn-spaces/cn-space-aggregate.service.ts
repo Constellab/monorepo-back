@@ -28,6 +28,8 @@ import { CnBucket, CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/
 import { CnObjectStoragesAggregateService } from '../cn-object-storages/cn-object-storages-aggregate.service';
 import { CnDocumentService } from '../cn-folders-aggregate/cn-documents/cn-document.service';
 import { CnFolderStorageUsageDTO } from '../cn-folders-aggregate/cn-documents/cn-document-dto.class';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { CnSpaceEvent, cnSpaceEventName } from './cn-space.event';
 
 @Injectable()
 export class CnSpaceAggregateService {
@@ -40,7 +42,8 @@ export class CnSpaceAggregateService {
               private datasource: DataSource,
               private spacesMailService: CnSpacesMailService,
               private objectStorageAggregateService: CnObjectStoragesAggregateService,
-              private documentService: CnDocumentService) {
+              private documentService: CnDocumentService,
+              private eventEmitter: EventEmitter2) {
   }
 
   public async getCurrentInfo(): Promise<CnUserSpaceInfo> {
@@ -298,6 +301,9 @@ export class CnSpaceAggregateService {
     await this.checkSpaceAdmin(spaceId);
     const user = await this.userService.findByIdAndCheck(userId);
 
+    // trigger the event and check if the user can be removed
+    await this.emitSpaceEventAndCheckResult({ type: 'REMOVE_USER_FROM_SPACE', userId: user.id, spaceId: spaceId });
+
     await this.spaceUserService.removeUserFromSpace(spaceId, user.id);
   }
 
@@ -548,5 +554,17 @@ export class CnSpaceAggregateService {
   private getSpaceId(spaceId: string): string {
     if (spaceId === 'current') return CnCurrentUserHelper.getAndCheckCurrentSpace().id;
     return spaceId;
+  }
+
+  //////////////////////////////// EVENT ///////////////////////////////////////
+
+  private async emitSpaceEventAndCheckResult(event: CnSpaceEvent): Promise<void> {
+    const results: string[] = await this.eventEmitter.emitAsync(cnSpaceEventName, event);
+    // if a text is returned, it means an error occurred
+    for (const res of results) {
+      if (res) {
+        throw res;
+      }
+    }
   }
 }

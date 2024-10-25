@@ -6,6 +6,8 @@ import { CnLabManagerService } from './cn-lab-manager.service';
 import { CnLabsService } from './cn-labs.service';
 import { CnLabConfigsService } from '../cn-lab-configs/cn-lab-configs.service';
 import { CnLabMailService } from './mail/cn-lab-mail.service';
+import { CnSpaceEvent, cnSpaceEventName } from '../cn-spaces/cn-space.event';
+import { CnLabAggregateService } from './cn-lab-aggregate.service';
 
 
 @Injectable()
@@ -17,7 +19,8 @@ export class CnLabListener {
   constructor(private labManagerService: CnLabManagerService,
               private labsService: CnLabsService,
               private labConfigService: CnLabConfigsService,
-              private labMailService: CnLabMailService) {
+              private labMailService: CnLabMailService,
+              private labAggregateService: CnLabAggregateService) {
   }
 
   @OnEvent(cnLabEventName)
@@ -109,5 +112,16 @@ export class CnLabListener {
     this.logger.error(message);
     await this.labsService.updateServerTask(labId, message, CnLabServerTaskStatus.ERROR)
       .catch(err => this.logger.error(err));
+  }
+
+  @OnEvent(cnSpaceEventName)
+  async handleSpaceEvent(event: CnSpaceEvent): Promise<Error | null> {
+    if(event.type === 'REMOVE_USER_FROM_SPACE'){
+      return await this.labAggregateService.removeUserFromAllLabs(event.userId, event.spaceId).catch(
+        (err) => err
+      );
+    }
+
+    return null;
   }
 }

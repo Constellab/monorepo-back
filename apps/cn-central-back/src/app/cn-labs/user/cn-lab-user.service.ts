@@ -15,7 +15,7 @@ export class CnLabUserService {
   }
 
   public async createLabUser(lab: CnLab, user: CnUser,
-                                     role: CnLabUserRole, entityManager: EntityManager): Promise<CnLabUser> {
+                             role: CnLabUserRole, entityManager: EntityManager): Promise<CnLabUser> {
     const labGroupDb = await this.findByLabIdAndUserId(lab.id, user.id);
 
     if (labGroupDb != null) {
@@ -31,10 +31,10 @@ export class CnLabUserService {
     return entityManager.save(labGroup);
   }
 
-  public async updateLabUserRole(labId: string, userId: string,
-                                         role: CnLabUserRole): Promise<CnLabUser> {
+  public async updateLabUserRole(lab: CnLab, userId: string,
+                                 role: CnLabUserRole): Promise<CnLabUser> {
 
-    const labGroup = await this.findByLabIdAndUserId(labId, userId);
+    const labGroup = await this.findByLabIdAndUserId(lab.id, userId);
 
     if (labGroup == null) {
       throw new BlBadRequestException(CnErrorText.LAB_NOT_SHARED_WITH_USER);
@@ -42,15 +42,15 @@ export class CnLabUserService {
 
     // if the role was changed from admin to user, check that there is at least one admin
     if (labGroup.role === CnLabUserRole.OWNER && role === CnLabUserRole.USER) {
-      await this.checkLabAdminsCount(labId);
+      await this.checkLabAdminsCount(lab);
     }
 
     labGroup.role = role;
     return this.repository.save(labGroup);
   }
 
-  public async deleteLabUser(labId: string, userId: string, entityManager: EntityManager): Promise<void> {
-    const labGroup = await this.findByLabIdAndUserId(labId, userId);
+  public async deleteLabUser(lab: CnLab, userId: string, entityManager: EntityManager): Promise<void> {
+    const labGroup = await this.findByLabIdAndUserId(lab.id, userId);
 
     if (labGroup == null) {
       throw new BlBadRequestException(CnErrorText.LAB_NOT_SHARED_WITH_USER);
@@ -58,16 +58,16 @@ export class CnLabUserService {
 
     // check that there is at least one admin
     if (labGroup.role === CnLabUserRole.OWNER) {
-      await this.checkLabAdminsCount(labId);
+      await this.checkLabAdminsCount(lab);
     }
 
     await entityManager.remove(labGroup);
   }
 
-  private async checkLabAdminsCount(labId: string): Promise<void> {
-    const labAdminsCount = await this.countLabAdmins(labId);
+  private async checkLabAdminsCount(lab: CnLab): Promise<void> {
+    const labAdminsCount = await this.countLabAdmins(lab.id);
     if (labAdminsCount === 1) {
-      throw new BlBadRequestException(CnErrorText.LAB_CANNOT_REMOVE_LAST_ADMIN);
+      throw new BlBadRequestException(CnErrorText.LAB_CANNOT_REMOVE_LAST_ADMIN, {detailArgs: {labName: lab.name}});
     }
   }
 

@@ -657,16 +657,20 @@ export class CnLabAggregateService {
   }
 
   public async updateUserLabRole(labId: string, groupId: string, role: CnLabUserRole): Promise<CnLabUser> {
-    await this.getAndCheckAuthorizationToManageLab(labId, false);
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId, false);
 
-    return this.labUserService.updateLabUserRole(labId, groupId, role);
+    return this.labUserService.updateLabUserRole(lab, groupId, role);
   }
 
   public async removeUserFromLab(labId: string, userId: string): Promise<void> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId, false);
 
+    return this.removeUserFromLabNotSecure(lab, userId);
+  }
+
+  private async removeUserFromLabNotSecure(lab: CnLab, userId: string): Promise<void> {
     return await this.dataSource.transaction(async entityManager => {
-      await this.labUserService.deleteLabUser(labId, userId, entityManager);
+      await this.labUserService.deleteLabUser(lab, userId, entityManager);
 
       if (lab.isHttpAccessible()) {
         // add the user to the lab is the lab is running
@@ -678,6 +682,15 @@ export class CnLabAggregateService {
         }
       }
     });
+  }
+
+
+  public async removeUserFromAllLabs(userId: string, spaceId: string): Promise<void> {
+    const labs = await this.labsService.getAllLabsByUserAndSpace(userId, spaceId);
+
+    for (const lab of labs) {
+      await this.removeUserFromLabNotSecure(lab, userId);
+    }
   }
 
   /**
