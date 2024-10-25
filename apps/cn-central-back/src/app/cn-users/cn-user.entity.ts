@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, Entity, ManyToMany, OneToOne } from 'typeorm';
+import { BeforeInsert, Column, Entity, ManyToMany, ManyToOne, OneToOne } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import type { CnGroupSingleUser, CnGroupTeam } from '../cn-groups/cn-group.entity';
 import * as argon2 from 'argon2';
@@ -6,6 +6,7 @@ import { ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClThe
 import { DateTime } from 'luxon';
 import { BlEntityWithId, BlLuxonDateTimeColumn, BlUser, BlUserCategory, BlUserStatus } from '@monorepo/back-core-lib';
 import { CnSpaceUser } from '../cn-spaces/cn-space-user.entity';
+import { CnSpace } from '../cn-spaces/cn-space.entity';
 
 export enum CnUserLicense {
   FREE = 'FREE',
@@ -84,6 +85,14 @@ export class CnUser extends BlEntityWithId implements BlUser {
 
   @Column({nullable: false, type: 'enum', enum: CnUserLicense, default: CnUserLicense.FREE})
   license: CnUserLicense;
+
+  // last space the user was connected to
+  @Exclude()
+  @ManyToOne(() => CnSpace, {onDelete: 'SET NULL', nullable: true})
+  lastConnectedSpace?: CnSpace;
+
+  @Column({nullable: true})
+  lastConnectedSpaceId?: string;
 
 
   //////////////////// TRANSIENT METHODS //////////////////

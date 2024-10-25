@@ -105,10 +105,10 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
         throw new BlUnauthorizedException(CnErrorText.USER_NOT_IN_LAB);
       }
 
-      const spaceUser = await this.spaceUserService.findOneBySpaceIdAndUserId(lab.spaceId, user.id);
+      const spaceUser = await this.spaceUserService.getSpaceUserIfAccess(lab.spaceId, user.id);
       // if the user is not part of the space of his account is not active for this space
       // don't allow the user to access the route
-      if (spaceUser == null || !spaceUser.active) {
+      if (spaceUser == null) {
         throw new BlUnauthorizedException(CnErrorText.USER_NOT_IN_SPACE);
       }
 

@@ -36,7 +36,7 @@ export class CnUsersController {
 
   @Get('current')
   async current(): Promise<CnUser> {
-    return this.usersService.getCurrent();
+    return this.usersService.getAndCheckCurrentUser();
   }
 
   @Put('current/language/:lang')
@@ -83,7 +83,7 @@ export class CnUsersController {
 
   @Get('current/2-fa')
   public async get2FA(): Promise<{ enabled: boolean }> {
-    return { enabled: this.usersService.getCurrent().has2FA };
+    return { enabled: this.usersService.getAndCheckCurrentUser().has2FA };
   }
 
   @Put('current/2-fa')

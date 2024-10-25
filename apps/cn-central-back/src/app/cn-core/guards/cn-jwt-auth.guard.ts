@@ -1,13 +1,14 @@
-import {ExecutionContext, Injectable} from '@nestjs/common';
-import {AuthGuard} from '@nestjs/passport';
-import {Reflector} from '@nestjs/core';
-import {CnErrorText} from '../model/config/cn-error-text.class';
-import {cnIsDecoratedWithLabAuth} from '../decorators/cn-lab-guard.decorator';
-import {blIsDecoratedWithPublic, BlUnauthorizedException} from '@monorepo/back-core-lib';
-import {CnCurrentUserHelper} from '../utils/cn-current-user.helper';
-import {CnSpaceUserService} from '../../cn-spaces/cn-space-user.service';
-import {CnSpaceUserRole} from '../../cn-spaces/cn-space-user.entity';
-import {cnIsDecoratedWithLabManagerAuth} from '../decorators/cn-lab-manager-guard.decorator';
+import { ExecutionContext, Injectable, Logger } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Reflector } from '@nestjs/core';
+import { CnErrorText } from '../model/config/cn-error-text.class';
+import { cnIsDecoratedWithLabAuth } from '../decorators/cn-lab-guard.decorator';
+import { blIsDecoratedWithPublic, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { CnCurrentUserHelper } from '../utils/cn-current-user.helper';
+import { CnSpaceUserService } from '../../cn-spaces/cn-space-user.service';
+import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
+import { cnIsDecoratedWithLabManagerAuth } from '../decorators/cn-lab-manager-guard.decorator';
+import { CnUsersService } from '../../cn-users/cn-users.service';
 
 /**
  * Guard to check if the user has a authentication token
@@ -20,8 +21,12 @@ import {cnIsDecoratedWithLabManagerAuth} from '../decorators/cn-lab-manager-guar
  */
 @Injectable()
 export class CnJwtAuthGuard extends AuthGuard('jwt') {
+
+  private readonly logger = new Logger(CnJwtAuthGuard.name);
+
   constructor(private reflector: Reflector,
-              private spaceUserService: CnSpaceUserService) {
+              private spaceUserService: CnSpaceUserService,
+              private userService: CnUsersService) {
     super();
   }
 
@@ -55,15 +60,22 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
       if (user.isAdmin()) {
         CnCurrentUserHelper.setCurrentRoleInSpace(CnSpaceUserRole.ADMIN);
       } else {
-        const spaceUser = await this.spaceUserService.findOneBySpaceIdAndUserId(space.id, user.id);
+        const spaceUser = await this.spaceUserService.getSpaceUserIfAccess(space.id, user.id);
 
         // if the user is not part of the space of his account is not active for this space
         // don't allow the user to access the route
-        if (spaceUser == null || !spaceUser.active) {
+        if (spaceUser == null) {
           return false;
         }
 
         CnCurrentUserHelper.setCurrentRoleInSpace(spaceUser.role);
+      }
+
+      if(user.lastConnectedSpaceId !== space.id) {
+        this.userService.updateLastConnectedSpace(user.id, space.id).catch(
+          err => this.logger.error(`Error updating last connected space for user ${user.id} and space ${space.id}. Error '${err}'`)
+        );
+        user.lastConnectedSpaceId = space.id;
       }
 
     }

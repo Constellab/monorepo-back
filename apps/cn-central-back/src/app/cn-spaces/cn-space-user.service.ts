@@ -24,16 +24,29 @@ export enum CnSpaceUserAction {
 @Injectable()
 export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> {
 
-  constructor(
-    @InjectRepository(CnSpaceUser) private repository: Repository<CnSpaceUser>,
-    private transportService: BlTransportService
-  ) {
+  constructor(@InjectRepository(CnSpaceUser) private repository: Repository<CnSpaceUser>,
+              private transportService: BlTransportService) {
     super(repository, CnSpaceUser);
   }
 
 
   public async userIsSpaceMember(spaceId: string, userId: string): Promise<boolean> {
     return await this.findOneBySpaceIdAndUserId(spaceId, userId) != null;
+  }
+
+  /**
+   * Check if the user has access to the space and return the space user if he has access.
+   * If the user does not have access, return null.
+   * @param spaceId
+   * @param userId
+   */
+  public async getSpaceUserIfAccess(spaceId: string, userId: string): Promise<CnSpaceUser | null> {
+    const spaceUser = await this.findOneBySpaceIdAndUserId(spaceId, userId);
+    if (spaceUser != null && spaceUser.active) {
+      return spaceUser;
+    } else {
+      return null;
+    }
   }
 
 
