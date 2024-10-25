@@ -112,7 +112,7 @@ export class CnFolderAggregateService {
     const entity = this.createFolderFromDTO(folderDto);
     entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
 
-    const parentFolder = await this.getAndCheckAuthorizationForUpdate(parentFolderId);
+    const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
     const parentWithStorage = await this.foldersService.findByIfAndCheckWithStorage(parentFolder.id);
 
     if (entity.endingDate && parentWithStorage.endingDate && entity.endingDate > parentWithStorage.endingDate) {
