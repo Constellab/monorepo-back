@@ -14,6 +14,7 @@ import { CnLabManagerService } from '../cn-lab-manager.service';
 import {
   CnLabBackupFrequency,
   CnLabBackupsHistory,
+  CnLabBackupStatus,
   CnLabBackupStatusDTO,
   CnLabCheckBackupSizeDTO,
   CnSaveBackupHistoryDTO
@@ -93,12 +94,18 @@ export class CnLabBackupAggregateService {
     backupStatus.frequency = frequency;
     backupStatus.region = region;
 
-    const lastBackup = await this.backupHistoryService.findLastSuccessBackupByType(lab.id, frequency);
+    const lastBackup = await this.backupHistoryService.findLastCompleteBackupByType(lab.id, frequency);
     if (lastBackup) {
-      backupStatus.lastSuccessBackupSize = lastBackup.dataDetails.totalSize + lastBackup.dbDetails.totalSize;
+      backupStatus.lastSuccessBackupSize = 0;
+      if (lastBackup.dataDetails) {
+        backupStatus.lastSuccessBackupSize += lastBackup.dataDetails.totalSize;
+      }
+      if (lastBackup.dbDetails) {
+        backupStatus.lastSuccessBackupSize += lastBackup.dbDetails.totalSize;
+      }
       backupStatus.lastSuccessBackupAt = lastBackup.endedAt;
       backupStatus.lastSuccessBackupId = lastBackup.id;
-      backupStatus.status = 'SUCCESS';
+      backupStatus.status = lastBackup.status === CnLabBackupStatus.SUCCESS ? 'SUCCESS' : 'DELETED';
     } else {
       backupStatus.status = 'NONE';
     }

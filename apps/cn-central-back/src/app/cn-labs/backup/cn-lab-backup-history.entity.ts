@@ -55,7 +55,7 @@ export class CnLabBackupHistoryEntity extends CnBaseEntity {
     detail => detail.history, { eager: true })
   details?: CnLabBackupHistoryDetail[];
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   s3Prefix: string;
 
   // expose only the region, not the bucket

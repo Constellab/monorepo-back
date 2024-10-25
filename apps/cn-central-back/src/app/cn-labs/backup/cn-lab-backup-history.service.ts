@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BlAbstractService } from '@monorepo/back-core-lib';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { DataSource, EntityManager, In, Repository } from 'typeorm';
 import { CnLabBackupHistory, CnLabBackupHistoryEntity } from './cn-lab-backup-history.entity';
 import {
   CnLabBackupBucket,
@@ -112,13 +112,14 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
     });
   }
 
-  public findLastSuccessBackupByType(labId: string, frequency: CnLabBackupFrequency): Promise<CnLabBackupHistory | null> {
+  public findLastCompleteBackupByType(labId: string, frequency: CnLabBackupFrequency): Promise<CnLabBackupHistory | null> {
     return this.repo.findOne({
-      where: { lab: { id: labId }, frequency, status: CnLabBackupStatus.SUCCESS },
+      where: { lab: { id: labId }, frequency, status: In([CnLabBackupStatus.SUCCESS, CnLabBackupStatus.DELETED]) },
       relations: CnLabBackupHistoryEntity.defaultRelation,
       order: { startedAt: 'DESC' }
     });
   }
+
 
   public getAllBackupHistory(labId: string): Promise<CnLabBackupHistory[]> {
     return this.repo.find({

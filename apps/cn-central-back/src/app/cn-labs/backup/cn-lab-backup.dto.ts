@@ -138,7 +138,7 @@ export class CnLabBackupStatusDTO {
    * SUCCESS: the backup was successful
    * NONE: no backup was done
    */
-  status: 'SUCCESS' | 'NONE';
+  status: 'SUCCESS' | 'DELETED' | 'NONE';
 
   @ClLuxonDateTimeTransform()
   lastSuccessBackupAt?: DateTime;
