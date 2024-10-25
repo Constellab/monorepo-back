@@ -424,7 +424,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       document.previewToken = ClStringHelper.generateUUID();
       // set expiration in 1 hour
       document.previewTokenExpiration = ClDateHelper.getDate().plus({ hours: 1 });
-      document = await this.repo.save(document);
+      document = await this.repo.save(document, {listeners: false});
     }
 
     // Generate the preview URL that use office online viewer with public api route
