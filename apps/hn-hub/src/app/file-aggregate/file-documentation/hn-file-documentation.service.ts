@@ -17,6 +17,10 @@ export class HnFileDocumentationService extends HnAbstractFileService<HnDocument
     super(fileDocumentationRepository, objectStorageService);
   }
 
+  async findByDocumentation(documentation: HnDocumentation): Promise<HnFileDocumentation[]>{
+    return this.fileDocumentationRepository.findBy({entity: {id: documentation.id}});
+  }
+
   async getDocFiles(documentation: HnDocumentation): Promise<HnAbstractFileEntityDTO[]> {
     return this.fileDocumentationRepository.findBy({entity: {id: documentation.id}})
       .then(files => files.map(file => new HnAbstractFileEntityDTO(file)));
@@ -24,6 +28,22 @@ export class HnFileDocumentationService extends HnAbstractFileService<HnDocument
 
   constructEntityFile(): HnFileDocumentation {
     return new HnFileDocumentation();
+  }
+
+  async renameFileInBuckets(file: HnFileDocumentation, newName: string): Promise<void>{
+    file.fileName = await this.objectStorageService.moveObjectToAnotherBucket(
+      this.getBucketConfig(),
+      this.getBucketConfig(),
+      file.fileName,
+      newName
+    );
+    await this.objectStorageService.moveObjectToAnotherBucket(
+      this.getBackupBucketConfig(),
+      this.getBackupBucketConfig(),
+      file.fileName,
+      newName
+    );
+    await this.fileDocumentationRepository.save(file);
   }
 
   getBackupBucketConfig(): BlBucketConfig {
