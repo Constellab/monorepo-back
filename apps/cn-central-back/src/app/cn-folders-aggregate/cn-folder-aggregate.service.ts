@@ -751,6 +751,40 @@ export class CnFolderAggregateService {
     return this.documentService.moveDocument(document, oldFolder, newFolder);
   }
 
+  ////////////////////////////// HISTORY ///////////////////////////////////////
+  public async getDocumentModifications(documentId: string): Promise<BlRichTextBlockModificationDto[]> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+
+    const document = await this.documentService.findByIdAndCheck(documentId);
+
+    const res: BlRichTextBlockModificationDto[] = [];
+    const modifications: BlRichTextModifications = await this.documentService.getDocumentModifications(folder.getRootFolderId(), document);
+    const userMap = new Map<string, BlUserDto>();
+    for (const modification of modifications.getModifications()) {
+      if (!userMap.has(modification.userId)) {
+        const userDto = new CnUserBasicDto(await this.userService.findOne(modification.userId));
+        userMap.set(modification.userId, userDto);
+        res.push(new BlRichTextBlockModificationDto(modification, userDto));
+      } else {
+        res.push(new BlRichTextBlockModificationDto(modification, userMap.get(modification.userId)));
+      }
+    }
+    return res;
+  }
+
+  public async getUndoContent(documentId: string, modificationId: string): Promise<BlRichTextContent> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+
+    const document = await this.documentService.findByIdAndCheck(documentId);
+    return await this.documentService.getUndoContent(folder.getRootFolderId(), document, modificationId);
+  }
+
+  public async rollbackContent(documentId: string, modificationId: string): Promise<CnDocument> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+
+    const document = await this.documentService.findByIdAndCheck(documentId);
+    return await this.documentService.rollbackContent(folder.getRootFolderId(), document, modificationId);
+  }
 
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
   public async createConstellabDocument(parentFolderId: string, filename: string): Promise<CnConstellabDocumentDTO> {
@@ -1008,38 +1042,5 @@ export class CnFolderAggregateService {
       userInfo: CnCurrentUserHelper.getAndCheckUserSpaceInfo()
     };
     this.eventEmitter.emit(cnFolderEventName, event);
-  }
-
-  ////////////////////////////// HISTORY ///////////////////////////////////////
-  public async getDocumentModifications(documentId: string): Promise<BlRichTextBlockModificationDto[]> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
-
-    const document = await this.documentService.findByIdAndCheck(documentId);
-
-    const res: BlRichTextBlockModificationDto[] = [];
-    const modifications: BlRichTextModifications = await this.documentService.getDocumentModifications(folder.getRootFolderId(), document);
-    const userMap = new Map<string, BlUserDto>();
-    for (const modification of modifications.getModifications()) {
-      if (!userMap.has(modification.userId)) {
-        res.push(new BlRichTextBlockModificationDto(modification, new CnUserBasicDto(await this.userService.findOne(modification.userId))));
-      } else {
-        res.push(new BlRichTextBlockModificationDto(modification, userMap.get(modification.userId)));
-      }
-    }
-    return res;
-  }
-
-  public async getUndoContent(documentId: string, modificationId: string): Promise<BlRichTextContent> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
-
-    const document = await this.documentService.findByIdAndCheck(documentId);
-    return await this.documentService.getUndoContent(folder.getRootFolderId(), document, modificationId);
-  }
-
-  public async rollbackContent(documentId: string, modificationId: string): Promise<CnDocument> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
-
-    const document = await this.documentService.findByIdAndCheck(documentId);
-    return await this.documentService.rollbackContent(folder.getRootFolderId(), document, modificationId);
   }
 }

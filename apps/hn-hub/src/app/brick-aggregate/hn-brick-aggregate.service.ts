@@ -969,10 +969,12 @@ export class HnBrickAggregateService {
     const userMap = new Map<string, BlUserDto>();
     for (const modification of modifications) {
       if (!userMap.has(modification.userId)) {
+        const userDto = new HnUserDto(await this.userService.findOne(modification.userId));
+        userMap.set(modification.userId, userDto);
         res.push(
           new BlRichTextBlockModificationDto(
             modification,
-            new HnUserDto(await this.userService.findOne(modification.userId))
+            userDto
           )
         );
       } else {

@@ -26,9 +26,19 @@ export interface BlRichTextBlock<Data extends object = any> {
 
 }
 
-export interface BlRichTextContentWithModifications{
+export class BlRichTextContentWithModifications{
   content: BlRichTextContent;
   modifications: Record<string, any>;
+
+  constructor(data: BlRichTextContent | BlRichTextContentWithModifications) {
+    if(!(data as any)?.modifications) {
+      this.content = data as BlRichTextContent;
+      this.modifications = null;
+    } else {
+      this.content = (data as BlRichTextContentWithModifications)?.content;
+      this.modifications = (data as BlRichTextContentWithModifications)?.modifications;
+    }
+  }
 }
 
 export interface BlRichTextContent {
