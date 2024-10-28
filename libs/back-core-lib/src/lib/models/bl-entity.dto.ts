@@ -1,6 +1,6 @@
-import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
-import {DateTime} from 'luxon';
-import {BlUser} from '@monorepo/back-core-lib';
+import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
+import { DateTime } from 'luxon';
+import { BlUser } from './bl-user/bl-user.class';
 
 export class BlEntityWithIdDto {
   id: string = undefined;

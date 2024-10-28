@@ -1,6 +1,7 @@
 import { Type } from '@nestjs/common';
-import { BlEntityWithId, BlEntityWithIdDto } from '@monorepo/back-core-lib';
 import { ClPage, ClPageI } from '@monorepo/core-lib';
+import { BlEntityWithId } from '../models/bl-entity-with-id.entity';
+import { BlEntityWithIdDto } from '../models/bl-entity.dto';
 
 /**
  * Class to convert object to DTO

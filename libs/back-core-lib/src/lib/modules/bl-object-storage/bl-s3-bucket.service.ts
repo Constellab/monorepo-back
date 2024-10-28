@@ -16,9 +16,11 @@ import {
   S3Client
 } from '@aws-sdk/client-s3';
 import { BlFileResponse, BlObject, BlS3BucketConfig } from './bl-object-storage.class';
-import { BlBadRequestException, BlNotFoundException, BlObjectStorageInterface } from '@monorepo/back-core-lib';
 import { Stream } from 'stream';
 import { _Object } from '@aws-sdk/client-s3/dist-types/models/models_0';
+import { BlObjectStorageInterface } from './bl-object-storage.interface';
+import { BlBadRequestException } from '../../exceptions/bl-bad-request.exception';
+import { BlNotFoundException } from '../../exceptions/bl-not-found.exception';
 
 
 /**
@@ -27,6 +29,8 @@ import { _Object } from '@aws-sdk/client-s3/dist-types/models/models_0';
 export class BlS3BucketService implements BlObjectStorageInterface {
 
   private readonly logger = new Logger(BlS3BucketService.name);
+
+  private static MAX_DELETE_BATCH_SIZE = 1000;
 
   constructor(private config: BlS3BucketConfig) {
   }
@@ -152,24 +156,30 @@ export class BlS3BucketService implements BlObjectStorageInterface {
   public async deleteMultipleObjects(objectNames: string[]): Promise<void> {
     const s3Client = this.getClient();
 
-    await s3Client.send(new DeleteObjectsCommand({
-      Bucket: this.getBucketName(),
-      Delete: { Objects: objectNames.map((name) => ({ Key: name })) }
-    }));
+    // delete the object in batches of 1000
+    let start = 0;
+    while (start < objectNames.length) {
+      const end = Math.min(start + BlS3BucketService.MAX_DELETE_BATCH_SIZE, objectNames.length);
+      await s3Client.send(new DeleteObjectsCommand({
+        Bucket: this.getBucketName(),
+        Delete: { Objects: objectNames.slice(start, end).map(key => ({ Key: key })) }
+      }));
+      start += BlS3BucketService.MAX_DELETE_BATCH_SIZE;
+    }
 
   }
 
   public async deleteAllObjects(): Promise<void> {
     let count = 0;
     while (count < 100) {
-      const objects = await this.getObjectsByPrefixPaginated('', 1000);
+      const objects = await this.getObjectsByPrefixPaginated('', BlS3BucketService.MAX_DELETE_BATCH_SIZE);
       if (objects.length === 0) break;
 
       await this.deleteMultipleObjects(objects.map((obj) => obj.Key));
       count++;
     }
 
-    if (count >= 1000) {
+    if (count >= 100) {
       throw new Error('Too many objects to delete');
     }
   }

@@ -14,6 +14,8 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
 
   private readonly logger = new Logger(BlAzureBucketService.name);
 
+  private static MAX_DELETE_BATCH_SIZE = 256; // 5GB
+
   constructor(private config: BlAzureBlobContainerConfig) {
   }
 
@@ -33,7 +35,8 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
     });
 
     if (uploadBlobResponse.errorCode) {
-      this.logger.error(`Error while uploading object ${objectName} to bucket ${this.getBucketName()}. Error ${uploadBlobResponse.errorCode}`);
+      this.logger.error(`Error while uploading object ${objectName} to bucket ${this.getBucketName()}.` +
+        ` Error ${uploadBlobResponse.errorCode}`);
       throw new BlBadRequestException('Error while uploading object');
     }
 
@@ -50,7 +53,8 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
     const downloadResponse = await blobClient.download();
 
     if (downloadResponse.errorCode) {
-      this.logger.error(`Error while getting object ${objectName} from bucket ${this.getBucketName()}. Error ${downloadResponse.errorCode}`);
+      this.logger.error(`Error while getting object ${objectName} from bucket ${this.getBucketName()}.` +
+        ` Error ${downloadResponse.errorCode}`);
       throw new BlBadRequestException('Error while getting object');
     }
 
@@ -80,7 +84,7 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
   public async getObjectInfo(objectName: string): Promise<BlObject> {
     const blobClient = this.getBlobClient(objectName);
 
-    let properties = await blobClient.getProperties();
+    const properties = await blobClient.getProperties();
     return {
       name: objectName,
       size: properties.contentLength
@@ -119,11 +123,17 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
 
   public async deleteMultipleObjects(objectNames: string[]): Promise<void> {
     const containerClient = this.getContainerClient();
+    const blobBatchClient = containerClient.getBlobBatchClient();
 
-    for (const objectName of objectNames) {
-      const blobClient = containerClient.getBlobClient(objectName);
-      await blobClient.deleteIfExists();
+    // delete the object in batches of 256
+    let start = 0;
+    while (start < objectNames.length) {
+      const end = Math.min(start + BlAzureBucketService.MAX_DELETE_BATCH_SIZE, objectNames.length);
+      const clientToDelete = objectNames.slice(start, end).map(objectName => containerClient.getBlobClient(objectName));
+      await blobBatchClient.deleteBlobs(clientToDelete);
+      start += BlAzureBucketService.MAX_DELETE_BATCH_SIZE;
     }
+
   }
 
   ////////////////////////////////////////// BUCKET //////////////////////////////////////////
@@ -165,7 +175,6 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
   }
 
   ////////////////////////////////////////// TAGS //////////////////////////////////////////
-
 
 
   ////////////////////////////////////////// OTHER //////////////////////////////////////////
