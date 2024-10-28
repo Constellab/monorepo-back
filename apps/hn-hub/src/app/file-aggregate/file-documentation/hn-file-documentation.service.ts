@@ -7,6 +7,7 @@ import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-conf
 import { HnFileDocumentation } from './hn-file-documentation.entity';
 import { HnDocumentation } from '../../brick-aggregate/documentation/hn-documentation.entity';
 import {HnAbstractFileEntityDTO} from '../file-core/hn-abstract-file.dto';
+import { HnFileType } from '../file-core/hn-abstract-file.entity';
 
 @Injectable()
 export class HnFileDocumentationService extends HnAbstractFileService<HnDocumentation> {
@@ -22,7 +23,7 @@ export class HnFileDocumentationService extends HnAbstractFileService<HnDocument
   }
 
   async getDocFiles(documentation: HnDocumentation): Promise<HnAbstractFileEntityDTO[]> {
-    return this.fileDocumentationRepository.findBy({entity: {id: documentation.id}})
+    return this.fileDocumentationRepository.findBy({entity: {id: documentation.id}, type: HnFileType.FILE})
       .then(files => files.map(file => new HnAbstractFileEntityDTO(file)));
   }
 

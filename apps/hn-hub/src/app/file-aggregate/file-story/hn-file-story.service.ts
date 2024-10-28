@@ -1,12 +1,13 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
-import {HnAbstractFileService} from '../file-core/hn-abstract-file.service';
-import {HnStory} from '../../story/hn-story.entity';
-import {HnFileStory} from './hn-file-story.entity';
-import {BlBucketConfig, BlBucketType, BlObjectStorageService} from '@monorepo/back-core-lib';
-import {HnCoreConfigService} from '../../core/modules/core-config/hn-core-config.service';
-import {HnAbstractFileEntityDTO} from '../file-core/hn-abstract-file.dto';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { HnAbstractFileService } from '../file-core/hn-abstract-file.service';
+import { HnStory } from '../../story/hn-story.entity';
+import { HnFileStory } from './hn-file-story.entity';
+import { BlBucketConfig, BlBucketType, BlObjectStorageService } from '@monorepo/back-core-lib';
+import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
+import { HnAbstractFileEntityDTO } from '../file-core/hn-abstract-file.dto';
+import { HnFileType } from '../file-core/hn-abstract-file.entity';
 
 @Injectable()
 export class HnFileStoryService extends HnAbstractFileService<HnStory> {
@@ -22,7 +23,7 @@ export class HnFileStoryService extends HnAbstractFileService<HnStory> {
   }
 
   async getStoryFiles(story: HnStory): Promise<HnAbstractFileEntityDTO[]> {
-    return this.fileStoryRepository.findBy({entity: {id: story.id}})
+    return this.fileStoryRepository.findBy({entity: {id: story.id}, type: HnFileType.FILE})
       .then(files => files.map(file => new HnAbstractFileEntityDTO(file)));
   }
 
