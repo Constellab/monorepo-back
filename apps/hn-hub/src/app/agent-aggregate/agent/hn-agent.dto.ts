@@ -83,6 +83,7 @@ export class HnAgentForLabDto {
   created_by?: HnUserDto;
   description?: Record<string, any>;
   latest_publish_version: number;
+  latest_style?: HnTypingStyle;
 
   static fromAgentDto(agentDto: HnAgentDto): HnAgentForLabDto {
     const dto = new HnAgentForLabDto();
@@ -93,6 +94,7 @@ export class HnAgentForLabDto {
     dto.created_by = agentDto.createdBy;
     dto.description = agentDto.description;
     dto.latest_publish_version = agentDto.latestPublishVersion;
+    dto.latest_style = agentDto.latestStyle;
     if (agentDto.space == null) return dto;
     dto.space = {
       id: agentDto.space.id,
