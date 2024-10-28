@@ -1,9 +1,10 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, Repository} from 'typeorm';
+import { EntityManager, IsNull, Repository } from 'typeorm';
 import {HnAgentVersion, HnAgentVersionState} from './hn-agent-version.entity';
 import {HnAgent} from '../agent/hn-agent.entity';
 import {HnAgentVersionFileInput} from '../agent/hn-agent.dto';
+import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
 
 @Injectable()
 export class HnAgentVersionService {
@@ -136,6 +137,11 @@ export class HnAgentVersionService {
     return this.agentVersionRepository.save(agentVersion);
   }
 
+  public async updateStyle(agentVersion: HnAgentVersion, style: HnTypingStyle, entityManager: EntityManager): Promise<HnAgentVersion> {
+    agentVersion.style = style;
+    return entityManager.save(agentVersion);
+  }
+
   public async publish(id: string, entityManager: EntityManager): Promise<HnAgentVersion> {
     const agentVersion = await this.agentVersionRepository.findOneBy({id: id});
     if (agentVersion.versionState === HnAgentVersionState.PUBLISHED) {
@@ -161,5 +167,15 @@ export class HnAgentVersionService {
 
   public async deleteByAgentId(entityManager: EntityManager, agentId: string): Promise<void> {
     await entityManager.delete(HnAgentVersion, {agent: {id: agentId}});
+  }
+
+
+  //////////////////////////////////////////// MIGRATIONS ////////////////////////////////////////////
+  public async getAgentVersionWithoutStyle(): Promise<HnAgentVersion[]> {
+    return this.agentVersionRepository.find({
+      where: {
+        style: IsNull()
+      }
+    });
   }
 }

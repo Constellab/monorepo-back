@@ -9,17 +9,18 @@ import {
   Post,
   Put,
   Query,
-  UseInterceptors,
+  UseInterceptors
 } from '@nestjs/common';
 import { HnAgentAggregateService } from './hn-agent-aggregate.service';
 import { HnAgentVersion } from './agent-version/hn-agent-version.entity';
 import {
   HaCreateAgentVersionFromLabResponseDto,
   HnAgentDto,
+  HnAgentEditStyleData,
   HnAgentForLabDto,
   HnAgentVersionFileInput,
   HnAgentVersionForLabDto,
-  HnCreateAgentDto,
+  HnCreateAgentDto
 } from './agent/hn-agent.dto';
 import {
   BlFile,
@@ -27,7 +28,7 @@ import {
   BlPublic,
   BlRichTextUploadedImageResponse,
   BlRichTextUploadFileResponse,
-  BlUploadedFile,
+  BlUploadedFile
 } from '@monorepo/back-core-lib';
 import { HnAgent } from './agent/hn-agent.entity';
 import { ClPage } from '@monorepo/core-lib';
@@ -41,6 +42,7 @@ import { HnFileAgentService } from '../file-aggregate/file-agent/hn-file-agent.s
 import { FileInterceptor } from '@nestjs/platform-express';
 import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
 import { HnLabGuard } from '../core/decorators/hn-lab-auth-guard.decorator';
+import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 
 @Controller('agent')
 export class HnAgentController extends HnAbstractFileController<HnAgent> {
@@ -49,6 +51,14 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     private readonly agentFileService: HnFileAgentService
   ) {
     super(agentFileService);
+  }
+
+
+  // TODO: TO REMOVE
+  @IsAdmin()
+  @Get('migrate-style')
+  async migrateStyle(): Promise<void> {
+    return this.agentAggregateService.migrateStyle();
   }
 
   //////////////////////////////////////////// Agent ////////////////////////////////////////////
@@ -287,6 +297,14 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     return this.agentAggregateService.getBrickDependencies(id);
   }
 
+  @Put('style/:id')
+  updateStyle(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() data: HnAgentEditStyleData
+  ): Promise<HnAgentDto> {
+    return this.agentAggregateService.updateStyle(id, data);
+  }
+
   //////////////////////////////////////////// Agent Version ////////////////////////////////////////////
 
   /**
@@ -320,6 +338,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   /**
    * Get latest published agent version by agent id for lab
    * @param agentId
+   * @param jsonVersionNumber
    * @return a agent version code
    */
   @BlPublic()
@@ -435,8 +454,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   createNewDraftVersion(
     @Param('agentId', ParseUUIDPipe) agentId: string,
     // eslint-disable-next-line max-len
-    @Body(new BlParsePipe(HnAgentVersionFileInput))
-    newAgentVersionFile: HnAgentVersionFileInput
+    @Body(new BlParsePipe(HnAgentVersionFileInput)) newAgentVersionFile: HnAgentVersionFileInput
   ): Promise<HnAgentVersion> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
     newAgentVersionFile = migrator.migrateAgentVersionFile(
@@ -458,8 +476,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   replaceDraftVersion(
     @Param('agentId', ParseUUIDPipe) agentId: string,
     // eslint-disable-next-line max-len
-    @Body(new BlParsePipe(HnAgentVersionFileInput))
-    newAgentVersionFile: HnAgentVersionFileInput
+    @Body(new BlParsePipe(HnAgentVersionFileInput)) newAgentVersionFile: HnAgentVersionFileInput
   ): Promise<HnAgentVersion> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
     newAgentVersionFile = migrator.migrateAgentVersionFile(
@@ -508,6 +525,14 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     return this.agentAggregateService.deleteAgent(id);
   }
 
+  @Put('version/style/:versionId')
+  updateVersionStyle(
+    @Param('versionId', ParseUUIDPipe) versionId: string,
+    @Body() data: HnAgentEditStyleData
+  ): Promise<HnAgentVersionDto> {
+    return this.agentAggregateService.updateVersionStyle(versionId, data);
+  }
+
   ////////////////////////////////////////// CO AUTHORS //////////////////////////////////////////
   @Post(':id/invite-co-author')
   async inviteAgentCoAuthor(
@@ -541,8 +566,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   @Put(':id/remove-co-author/:agentAuthorUserId')
   async removeAgentCoAuthor(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('agentAuthorUserId', new ParseUUIDPipe())
-    agentAuthorUserId: string
+    @Param('agentAuthorUserId', new ParseUUIDPipe()) agentAuthorUserId: string
   ): Promise<void> {
     return this.agentAggregateService.removeAgentCoAuthor(
       id,
@@ -598,7 +622,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     @Param('agentId', new ParseUUIDPipe()) agentId: string
   ): Promise<any> {
     return {
-      filename: await this.agentAggregateService.saveView(file, agentId),
+      filename: await this.agentAggregateService.saveView(file, agentId)
     };
   }
 

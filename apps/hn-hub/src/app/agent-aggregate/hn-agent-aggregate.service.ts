@@ -3,12 +3,14 @@ import { HnAgentService } from './agent/hn-agent.service';
 import { HnAgentVersionService } from './agent-version/hn-agent-version.service';
 import { HnAgentVersion, HnAgentVersionState } from './agent-version/hn-agent-version.entity';
 import {
+  baseAgentStyle,
   HaCreateAgentVersionFromLabResponseDto,
-  HnCreateAgentDto,
   HnAgentDto,
+  HnAgentEditStyleData,
   HnAgentForLabDto,
   HnAgentVersionFileInput,
-  HnAgentVersionForLabDto
+  HnAgentVersionForLabDto,
+  HnCreateAgentDto
 } from './agent/hn-agent.dto';
 import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
 import { HnAgent } from './agent/hn-agent.entity';
@@ -48,6 +50,7 @@ import { HnUploadFileResponseDto } from '../file-aggregate/file-core/hn-abstract
 import { HnFileAgentService } from '../file-aggregate/file-agent/hn-file-agent.service';
 import { Request } from 'express';
 import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
+import { HnTypingStyle } from '../brick-aggregate/brick/hn-brick.dto';
 
 @Injectable()
 export class HnAgentAggregateService {
@@ -203,12 +206,12 @@ export class HnAgentAggregateService {
       myAgentsSelected, personalOnly, page, size, user, userSpacesIds, coAuthorAgentsIds);
   }
 
-  public async findUserAgents(userId: string, page: number, size: number): Promise<ClPage<HnAgentDto>>{
+  public async findUserAgents(userId: string, page: number, size: number): Promise<ClPage<HnAgentDto>> {
     const user = await this.userService.findOne(userId);
     if (!user) throw new BlNotFoundException('User not found');
     const currentUser = HnCurrentUserHelper.getCurrentUser();
     let commonSpacesIds: string[] = [];
-    if(currentUser){
+    if (currentUser) {
       commonSpacesIds = (await this.spaceAggregateService.getUserCommonSpace(userId)).map(space => space.id);
     }
     return await this.agentService.findUserAgents(user, commonSpacesIds, page, size);
@@ -222,7 +225,7 @@ export class HnAgentAggregateService {
       url: this.frontService.getAgentUrl(agent.id, ClStringHelper.getCleanUrlPath(agent.title)),
       priority: 0.8,
       changefreq: HnSiteMapEnumChangefreq.MONTHLY,
-      lastmod: agent.lastModifiedAt.toFormat('yyyy-MM-dd'),
+      lastmod: agent.lastModifiedAt.toFormat('yyyy-MM-dd')
     }));
   }
 
@@ -288,6 +291,39 @@ export class HnAgentAggregateService {
 
   }
 
+  public async updateStyle(id: string, data: HnAgentEditStyleData): Promise<HnAgentDto> {
+    const style: HnTypingStyle = {
+      background_color: data.background_color,
+      icon_color: data.icon_color,
+      icon_type: data.icon_type,
+      icon_technical_name: data.icon_technical_name
+    };
+
+
+    let agent = await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(id);
+    return this.dataSource.transaction(async entityManager => {
+      agent = await this.agentService.updateLatestStyleWithEntityManager(agent, style, entityManager);
+      // if not all versions checked, update the latest version
+      if (!data.allVersionsChecked || !agent.latestPublishVersion) {
+        const version = !agent.latestPublishVersion ? await this.agentVersionService.findLatestByAgent(agent) :
+          await this.agentVersionService.findLatestPublishedByAgent(agent);
+        version.agent = agent;
+        await this.agentVersionService.updateStyle(version, style, entityManager);
+        return new HnAgentDto(agent);
+      }
+
+      // update all versions
+      const agentVersions = await this.agentVersionService.findAllByAgentId(agent.id);
+      for (const agentVersion of agentVersions) {
+        if (agent.latestPublishVersion == agentVersion.version) {
+          agentVersion.agent = agent;
+        }
+        await this.agentVersionService.updateStyle(agentVersion, style, entityManager);
+      }
+      return new HnAgentDto(agent);
+    });
+  }
+
 
   //////////////////////////////////////////// Agent Version ////////////////////////////////////////////
   public async findAgentVersionById(id: string): Promise<HnAgentVersionDto> {
@@ -348,9 +384,10 @@ export class HnAgentAggregateService {
 
   public async publishAgentVersion(id: string): Promise<HnAgentVersion> {
     return await this.dataSource.transaction(async entityManager => {
-      await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent((await this.agentVersionService.findOne(id)).agent.id);
+      await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(
+        (await this.agentVersionService.findOne(id)).agent.id);
       const agentVersion: HnAgentVersion = await this.agentVersionService.publish(id, entityManager);
-      await this.agentService.updateAgentLatestPublishVersion(agentVersion.agent.id, agentVersion.version, entityManager);
+      agentVersion.agent = await this.agentService.updateAgentLatestPublishVersion(agentVersion.agent.id, agentVersion, entityManager);
       return agentVersion;
     });
   }
@@ -380,13 +417,17 @@ export class HnAgentAggregateService {
                                    fromLab: boolean = false): Promise<HnAgentVersion> {
     if (!fromLab)
       await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(agentId);
-    const agent = await this.agentService.findOne(agentId);
+    let agent = await this.agentService.findOne(agentId);
     const latestAgentVersion = await this.agentVersionService.findLatestByAgent(agent);
 
     if (latestAgentVersion?.versionState != 'DRAFT')
       throw new BlBadRequestException('The latest agent version could not be replaced');
 
     return await this.dataSource.transaction(async entityManager => {
+      if (latestAgentVersion.version == 1) {
+        agent = await this.agentService.updateLatestStyle(agent.id, newAgentVersionFile.style);
+      }
+
       await this.agentVersionService.deleteById(entityManager, latestAgentVersion.id);
 
       const newAgentVersion =
@@ -427,6 +468,26 @@ export class HnAgentAggregateService {
       await this.agentVersionBrickDependenciesService.getBrickVersionDependencies(agentVersionId);
     return agentVersionBrickDependencies.map(agentVersionBrickDependency =>
       new HnBrickVersionDto(agentVersionBrickDependency.brickVersion));
+  }
+
+  public async updateVersionStyle(versionId: string, data: HnAgentEditStyleData): Promise<HnAgentVersionDto>{
+    const style: HnTypingStyle = {
+      background_color: data.background_color,
+      icon_color: data.icon_color,
+      icon_type: data.icon_type,
+      icon_technical_name: data.icon_technical_name
+    };
+
+    const version = await this.agentVersionService.findOne(versionId);
+    const agent = await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(version.agent.id);
+
+    return this.dataSource.transaction(async entityManager => {
+      // if it's the latest version, update the agent latest style
+      if (!agent.latestPublishVersion || agent.latestPublishVersion == version.version) {
+        version.agent = await this.agentService.updateLatestStyleWithEntityManager(agent, style, entityManager);
+      }
+      return new HnAgentVersionDto(await this.agentVersionService.updateStyle(version, style, entityManager));
+    });
   }
 
   ////////////////////////////////////////// AGENT CO AUTHORS //////////////////////////////////////////
@@ -487,9 +548,9 @@ export class HnAgentAggregateService {
     await this.dataSource.transaction(async entityManager => {
       await this.agentVersionBrickDependenciesService.deleteByAgentVersionId(entityManager, id);
       await this.agentVersionService.deleteById(entityManager, id);
-      if(agent.latestPublishVersion == agentVersion.version){
+      if (agent.latestPublishVersion == agentVersion.version) {
         const latestVersion = await this.agentVersionService.findSecondLastByAgent(agent);
-        await this.agentService.updateAgentLatestPublishVersion(agent.id, latestVersion.version, entityManager);
+        await this.agentService.updateAgentLatestPublishVersion(agent.id, latestVersion, entityManager);
       }
     });
   }
@@ -497,24 +558,24 @@ export class HnAgentAggregateService {
   ////////////////////////////////////////// LIKES /////////////////////////////////
   public async addLike(agent: HnAgent, entityManager: EntityManager): Promise<HnAgent> {
     agent.likes++;
-    return entityManager.save(agent, {listeners: false});
+    return entityManager.save(agent, { listeners: false });
   }
 
   public async removeLike(agent: HnAgent, entityManager: EntityManager): Promise<HnAgent> {
     agent.likes--;
-    return entityManager.save(agent, {listeners: false});
+    return entityManager.save(agent, { listeners: false });
   }
 
 
   ///////////////////////////////////////// COMMENTS ///////////////////////////////
   public async addComment(agent: HnAgent, entityManager: EntityManager): Promise<HnAgent> {
     agent.comments++;
-    return entityManager.save(agent, {listeners: false});
+    return entityManager.save(agent, { listeners: false });
   }
 
   public async removeComment(agent: HnAgent, entityManager: EntityManager): Promise<HnAgent> {
     agent.comments--;
-    return entityManager.save(agent, {listeners: false});
+    return entityManager.save(agent, { listeners: false });
   }
 
 
@@ -529,8 +590,27 @@ export class HnAgentAggregateService {
     return await this.fileAgentService.saveImage(agent, file);
   }
 
-  public async saveView(file: BlFile, agentId: string): Promise<string>{
+  public async saveView(file: BlFile, agentId: string): Promise<string> {
     const agent = await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(agentId);
     return await this.fileAgentService.saveResourceView(agent, file);
+  }
+
+
+  /////////////////////////////////////// MIGRATIONS ////////////////////////////////
+  public async migrateStyle(): Promise<void>{
+    const agents = await this.agentService.getAgentsWithoutLatestStyle();
+    const agentVersions = await this.agentVersionService.getAgentVersionWithoutStyle();
+
+    await this.dataSource.transaction(async entityManager => {
+      for (const agent of agents) {
+        agent.latestStyle = baseAgentStyle;
+        await entityManager.save(agent);
+      }
+
+      for (const agentVersion of agentVersions) {
+        agentVersion.style = baseAgentStyle;
+        await entityManager.save(agentVersion);
+      }
+    });
   }
 }

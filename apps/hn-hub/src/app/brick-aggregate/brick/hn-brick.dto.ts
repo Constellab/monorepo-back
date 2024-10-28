@@ -115,11 +115,11 @@ export interface HnImportEntity {
   deprecated_message: string;
   object_sub_type: string;
   status: string;
-  style: HnImportEntityStyle;
+  style: HnTypingStyle;
 }
 
-export interface HnImportEntityStyle {
-  icon: string;
+export interface HnTypingStyle {
+  icon_technical_name: string;
   icon_type: string;
   background_color: string;
   icon_color: string;
