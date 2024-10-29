@@ -365,6 +365,29 @@ export class CnFoldersController {
     BlResponseHelper.setFileResponse(response, file);
   }
 
+  @Get('constellab-document/history/:documentId')
+  async getStoryModifications(
+    @Param('documentId', new ParseUUIDPipe()) documentId: string
+  ): Promise<BlRichTextBlockModificationDto[]> {
+    return this.folderAggregateService.getDocumentModifications(documentId);
+  }
+
+  @Get('constellab-document/history/undo-content/:documentId/:modificationId')
+  async undoContent(
+    @Param('documentId', new ParseUUIDPipe()) documentId: string,
+    @Param('modificationId', new ParseUUIDPipe()) modificationId: string
+  ): Promise<Record<string, any>> {
+    return this.folderAggregateService.getUndoContent(documentId, modificationId);
+  }
+
+  @Put('constellab-document/history/rollback/:documentId/:modificationId')
+  async rollbackContent(
+    @Param('documentId', new ParseUUIDPipe()) documentId: string,
+    @Param('modificationId', new ParseUUIDPipe()) modificationId: string
+  ): Promise<CnDocument> {
+    return this.folderAggregateService.rollbackContent(documentId, modificationId);
+  }
+
   ////////////////////////////////////////////// DOCUMENT PREVIEW  /////////////////////////////////////////////
 
   @Post('document/:documentId/preview-token')
@@ -428,27 +451,4 @@ export class CnFoldersController {
   }
 
 
-  /////////////////////////////// History ///////////////////////////////////////////
-  @Get('history/:documentId')
-  async getStoryModifications(
-    @Param('documentId', new ParseUUIDPipe()) documentId: string
-  ): Promise<BlRichTextBlockModificationDto[]> {
-    return this.folderAggregateService.getDocumentModifications(documentId);
-  }
-
-  @Get('history/undo-content/:documentId/:modificationId')
-  async undoContent(
-    @Param('documentId', new ParseUUIDPipe()) documentId: string,
-    @Param('modificationId', new ParseUUIDPipe()) modificationId: string
-  ): Promise<Record<string, any>> {
-    return this.folderAggregateService.getUndoContent(documentId, modificationId);
-  }
-
-  @Put('history/rollback/:documentId/:modificationId')
-  async rollbackContent(
-    @Param('documentId', new ParseUUIDPipe()) documentId: string,
-    @Param('modificationId', new ParseUUIDPipe()) modificationId: string
-  ): Promise<CnDocument> {
-    return this.folderAggregateService.rollbackContent(documentId, modificationId);
-  }
 }
