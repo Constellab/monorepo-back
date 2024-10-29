@@ -155,9 +155,9 @@ export class BlNewRichText {
     return JSON.stringify(this.getRichTextModificationsAsObject(newContent, userId, modifications));
   }
 
-  public getRichTextModificationsAsObject(newContent: BlRichTextContent,
-                                          userId: string,
-                                          modifications: BlRichTextModifications = new BlRichTextModifications()): Record<string, any>{
+  private getRichTextModifications(newContent: BlRichTextContent,
+                                  userId: string,
+                                  modifications: BlRichTextModifications = new BlRichTextModifications()): BlRichTextModifications {
     const differences: BlRichTextBlockModification[] = [];
     if (this.richText == null || this.richText.blocks == null) {
       return null;
@@ -222,7 +222,20 @@ export class BlNewRichText {
     });
 
     modifications.fusion(differences);
-    return modifications.toJsonObject();
+    return modifications;
+  }
+
+  public getRichTextModificationsAsPythonObject(
+    newContent: BlRichTextContent,
+    userId: string,
+    modifications: BlRichTextModifications = new BlRichTextModifications()): Record<string, any>{
+    return this.getRichTextModifications(newContent, userId, modifications).toPythonJsonObject();
+  }
+
+  public getRichTextModificationsAsObject(newContent: BlRichTextContent,
+                                          userId: string,
+                                          modifications: BlRichTextModifications = new BlRichTextModifications()): Record<string, any>{
+    return this.getRichTextModifications(newContent, userId, modifications).toJsonObject();
   }
 
   // Undo the modifications in the modificationsList

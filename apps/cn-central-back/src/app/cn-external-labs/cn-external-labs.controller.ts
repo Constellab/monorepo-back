@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, Req, UseInterceptors } from '@nestjs/common';
 import { CnLabGuard, CnLabRobotAuthentication } from '../cn-core/decorators/cn-lab-guard.decorator';
-import { BlCredentials, BlFile, BlParsePipe, BlUploadedFiles } from '@monorepo/back-core-lib';
+import { BlCredentials, BlFile, BlParsePipe, BlPublic, BlUploadedFiles } from '@monorepo/back-core-lib';
 import { CnCreateLabScenarioDto } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.dto';
 import { CnCreateNoteWithConfigDto } from '../cn-folders-aggregate/cn-notes/cn-note.dto';
 import { CnLabStartDTO } from '../cn-labs/cn-lab.dto';
@@ -19,6 +19,7 @@ import {
 import { CnHierarchyObjectEntity } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
 import { CnLabSendMailDto } from '../cn-labs/mail/cn-lab-mail.dto';
+import { CnModificationsBodyDTO, CnUndoContentBodyDTO } from './cn-external-labs.dto';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -115,8 +116,8 @@ export class CnExternalLabsController {
   @UseInterceptors(FilesInterceptor('files'))
   @Put(['folder/:parentFolderId/note/v2'])
   saveNoteV2(@Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
-           @Body() body: { body: string },
-           @BlUploadedFiles() files: BlFile[] = []): Promise<void> {
+             @Body() body: { body: string },
+             @BlUploadedFiles() files: BlFile[] = []): Promise<void> {
     const createNoteDto: CnCreateNoteWithConfigDto
       = ClCoreJsonConvert.deserializeObject(JSON.parse(body.body), CnCreateNoteWithConfigDto);
     return this.folderAggregateService.createLabNote(createNoteDto, parentFolderId, files);
@@ -160,5 +161,17 @@ export class CnExternalLabsController {
   @Get('user')
   getAllLabUsers(): Promise<CnExternalLabUser[]> {
     return this.labAggregator.getCurrentLabSharedUsers();
+  }
+
+  @BlPublic()
+  @Post('modifications')
+  async getModifications(@Body() body: CnModificationsBodyDTO): Promise<Record<string, any>> {
+    return await this.labFolderAggregateService.getModifications(body.oldContent, body.newContent, body.oldModifications, body.userId);
+  }
+
+  @BlPublic()
+  @Post('undo-content')
+  async getUndoContent(@Body() body: CnUndoContentBodyDTO): Promise<Record<string, any>> {
+    return await this.labFolderAggregateService.getUndoContent(body.content, body.modifications, body.modificationId);
   }
 }

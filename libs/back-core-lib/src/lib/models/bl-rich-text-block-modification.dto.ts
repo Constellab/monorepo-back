@@ -42,3 +42,5 @@ export class BlRichTextBlockModificationDto {
     this.oldIndex = blockModification.oldIndex;
   }
 }
+
+

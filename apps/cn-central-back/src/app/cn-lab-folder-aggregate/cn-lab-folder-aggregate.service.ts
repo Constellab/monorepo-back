@@ -3,7 +3,12 @@ import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggr
 import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 import { CnLabFolder, CnLabFolderWithLab, CnLabFolderWithRootFolder } from './cn-lab-folder.entity';
 import { CnLab } from '../cn-labs/cn-lab.entity';
-import { BlBadRequestException, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import {
+  BlBadRequestException, BlNewRichText,
+  BlRichTextContent,
+  BlRichTextModifications,
+  BlUnauthorizedException
+} from '@monorepo/back-core-lib';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnLabFolderService } from './cn-lab-folder.service';
 import { DataSource } from 'typeorm';
@@ -148,5 +153,23 @@ export class CnLabFolderAggregateService {
 
   public async getAndCheckAuthorizationToFindLabById(id: string, refuseDesktop: boolean = true): Promise<CnLab> {
     return this.labAggregateService.getAndCheckAuthorizationToManageLab(id, refuseDesktop);
+  }
+
+  public async getModifications(oldContent: BlRichTextContent,
+                                newContent: BlRichTextContent,
+                                oldModifications: Record<string, any>,
+                                userId: string): Promise<Record<string, any>>{
+    const modifications =
+      oldModifications == null ? new BlRichTextModifications() : BlRichTextModifications.fromPythonJsonObject(oldModifications);
+    return new BlNewRichText(oldContent).getRichTextModificationsAsPythonObject(newContent, userId, modifications);
+  }
+
+  public async getUndoContent(content: BlRichTextContent,
+                              modifications: Record<string, any>,
+                              modificationId: string): Promise<Record<string, any>>{
+    const richText = new BlNewRichText(content);
+    const modificationsObj = BlRichTextModifications.fromPythonJsonObject(modifications);
+    const modificationsBlocks = modificationsObj.getModificationsFromModificationId(modificationId)
+    return richText.undoModifications(modificationsBlocks);
   }
 }

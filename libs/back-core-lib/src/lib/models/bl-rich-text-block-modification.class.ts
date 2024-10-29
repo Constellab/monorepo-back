@@ -133,6 +133,25 @@ export class BlRichTextModifications {
     return BlRichTextModifications.fromJsonObject(json);
   }
 
+  public static fromPythonJsonObject(json: Record<string, any>): BlRichTextModifications {
+    const newJson = {
+      version: json.version,
+      modifications: json.modifications.map((modification: any) => ({
+        time: DateTime.fromISO(modification.time),
+        blockId: modification.block_id,
+        blockType: modification.block_type,
+        differences: modification.differences,
+        blockValue: modification.block_value,
+        type: modification.type,
+        index: modification.index,
+        userId: modification.user_id,
+        id: modification.id,
+        oldIndex: modification.old_index
+      }))
+    }
+    return BlRichTextModifications.fromJsonObject(newJson);
+  }
+
   public static fromJsonObject(json: Record<string, any>): BlRichTextModifications {
     const modifications = new BlRichTextModifications();
     if (!json) {
@@ -207,12 +226,20 @@ export class BlRichTextModifications {
     }
     modifications = modifications.filter((m) => JSON.stringify(m.blockValue) != '{"text":"/"}'
       && m.type !== BlRichTextModificationType.MOVED);
+
+    if (modifications.length == 2){
+      if (modifications[0].type == BlRichTextModificationType.CREATED &&
+        modifications[1].type == BlRichTextModificationType.DELETED){
+        return modifications.reverse();
+      }
+    }
+
     return modifications;
   }
 
   // fusion old and new modifications
   public fusion(modifications: BlRichTextBlockModification[]): void {
-
+    console.log('modifications', modifications);
     modifications = this.reduceModifications(modifications);
 
     if (this.isEmpty()) {
@@ -303,6 +330,24 @@ export class BlRichTextModifications {
     };
   }
 
+  public toPythonJsonObject(): Record<string, any>{
+    return {
+      version: this.version,
+      modifications: this.modifications.map(modification => ({
+        time: modification.time.toISO(),
+        block_id: modification.blockId,
+        block_type: modification.blockType,
+        differences: modification.differences,
+        block_value: modification.blockValue,
+        type: modification.type,
+        index: modification.index,
+        user_id: modification.userId,
+        id: modification.id,
+        old_index: modification.oldIndex
+      }))
+    };
+  }
+
   // Get the modification with the modificationId with all modifications made after
   public getModificationsFromModificationId(modificationId: string): BlRichTextBlockModification[] {
     const modification = this.modifications.find(modification => modification.id === modificationId);
@@ -327,7 +372,7 @@ export class BlRichTextModifications {
     ) {
       return res.slice(1);
     }
-    return res ;
+    return res;
   }
 
   // Delete all modifications made after the modification with the modificationId
