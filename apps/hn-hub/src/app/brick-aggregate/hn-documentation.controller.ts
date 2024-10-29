@@ -34,6 +34,7 @@ import {
   HnAbstractFileEntityDTO,
   HnUploadFileResponseDto,
 } from '../file-aggregate/file-core/hn-abstract-file.dto';
+import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 
 @Controller('documentation')
 @UseGuards(HnIsAdminGuard)
@@ -43,6 +44,12 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
     readonly fileDocumentationService: HnFileDocumentationService
   ) {
     super(fileDocumentationService);
+  }
+
+  @IsAdmin()
+  @Get('migrate-old-images')
+  async migrateOldImages(): Promise<void> {
+    return this.brickAggregateService.documentationImageMigration();
   }
 
   @BlPublic()

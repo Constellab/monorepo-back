@@ -75,6 +75,8 @@ import {
   HnUploadFileResponseDto,
 } from '../file-aggregate/file-core/hn-abstract-file.dto';
 import { HnUserDto } from '../users/hn-user.dto';
+import { HnFileDocumentation } from '../file-aggregate/file-documentation/hn-file-documentation.entity';
+import { HnFileType } from '../file-aggregate/file-core/hn-abstract-file.entity';
 
 @Injectable()
 export class HnBrickAggregateService {
@@ -1416,5 +1418,20 @@ export class HnBrickAggregateService {
   ): Promise<HnBrick> {
     brick.likes--;
     return entityManager.save(brick, { listeners: false });
+  }
+
+
+  ///////////////////////////////////////// MIGRATIONS /////////////////////////////////
+  public async documentationImageMigration(): Promise<void> {
+    const docs: HnDocumentation[] = await this.documentationService.findAll();
+    for (const doc of docs) {
+      const files: HnFileDocumentation[] = await this.fileDocumentationService.findByDocumentation(doc);
+      for (const file of files){
+        if (ClStringHelper.isUUID(file.name.split('.')[1]) && file.type == HnFileType.IMAGE){
+          await this.fileDocumentationService.renameFile(file.id, file.name.split('.')[0] + '.png');
+          await this.fileDocumentationService.renameFileInBuckets(file, file.fileName.split('.')[0] + '.png');
+        }
+      }
+    }
   }
 }

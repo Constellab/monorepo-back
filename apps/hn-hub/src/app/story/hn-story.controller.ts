@@ -47,6 +47,12 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
     super(fileStoryService);
   }
 
+  @IsAdmin()
+  @Get('migrate-old-images')
+  async migrateOldImages(): Promise<void> {
+    return this.storyService.storyImageMigration();
+  }
+
 
   @BlPublic()
   @Get('all-map')
