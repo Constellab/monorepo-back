@@ -1,12 +1,10 @@
-import {BlEntityWithId} from '@monorepo/back-core-lib';
-import {HnFolder} from './hn-folder.entity';
-import {HnBaseDto} from '../../core/model/entities/hn-base.dto';
-import {HnBrickMajorVersionDTO} from '../brick-major-version/hn-brick-major-version.dto';
-import {HnDocumentationDto} from '../documentation/hn-documentation.dto';
+import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { HnFolder } from './hn-folder.entity';
+import { HnBaseDto } from '../../core/model/entities/hn-base.dto';
+import { HnDocumentationDto } from '../documentation/hn-documentation.dto';
 
-export class HnFolderDto extends HnBaseDto{
+export class HnFolderDto extends HnBaseDto {
   title: string;
-  brickMajorVersion: HnBrickMajorVersionDTO;
   path: string;
   completePath: string;
   order: number;
@@ -17,7 +15,6 @@ export class HnFolderDto extends HnBaseDto{
   constructor(folder: HnFolder) {
     super(folder);
     this.title = folder.title;
-    this.brickMajorVersion = new HnBrickMajorVersionDTO(folder.brickMajorVersion);
     this.path = folder.path;
     this.completePath = folder.completePath;
     this.order = folder.order;
