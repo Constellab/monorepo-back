@@ -60,7 +60,6 @@ import {
   CnHierarchyObjectWithChildren
 } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
-import { CnUserBasicDto } from '../cn-users/cn-user.dto';
 
 @Injectable()
 export class CnFolderAggregateService {
@@ -759,10 +758,10 @@ export class CnFolderAggregateService {
 
     const res: BlRichTextBlockModificationDto[] = [];
     const modifications: BlRichTextModifications = await this.documentService.getDocumentModifications(folder.getRootFolderId(), document);
-    const userMap = new Map<string, BlUserDto>();
+    const userMap = new Map<string, CnUser>();
     for (const modification of modifications.getModifications()) {
       if (!userMap.has(modification.userId)) {
-        const userDto = new CnUserBasicDto(await this.userService.findOne(modification.userId));
+        const userDto = await this.userService.findOne(modification.userId);
         userMap.set(modification.userId, userDto);
         res.push(new BlRichTextBlockModificationDto(modification, userDto));
       } else {
