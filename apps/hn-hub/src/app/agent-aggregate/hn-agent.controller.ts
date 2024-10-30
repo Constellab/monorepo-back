@@ -70,7 +70,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   }
 
   /**
-   * Create a agent
+   * Create an agent
    * @body createAgentDto
    * @return the created agent version
    */
@@ -235,9 +235,9 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   }
 
   /**
-   * Get a agent by id
+   * Get an agent by id
    * @param id
-   * @return a agent
+   * @return an agent
    */
   @BlPublic()
   @Get(':id')
@@ -249,20 +249,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     );
   }
 
-  /**
-   * Get a agent title by id
-   * @param id
-   * @return the agent title
-   */
-  @BlPublic()
-  @Get(':id/title')
-  getAgentTitleById(
-    @Param('id', ParseUUIDPipe) id: string
-  ): Promise<string> {
-    return this.agentAggregateService.findAgentTitleById(id);
-  }
-
-  @Put(':id/title')
+  @Put('title/:id')
   updateTitle(
     @Param('id', ParseUUIDPipe) id: string,
     @Body('title') title: string
@@ -271,7 +258,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   }
 
   /**
-   * Update a agent description
+   * Update an agent description
    * @param id
    * @param description
    * @return the updated agent
@@ -284,19 +271,6 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     return this.agentAggregateService.updateDescription(id, description);
   }
 
-  /**
-   * Get agent brick dependencies (last agent version)
-   * @param id
-   * @return a list of brick versions
-   */
-  @BlPublic()
-  @Get(':id/brick-dependencies')
-  getBrickDependencies(
-    @Param('id', ParseUUIDPipe) id: string
-  ): Promise<HnBrickVersionDto[]> {
-    return this.agentAggregateService.getBrickDependencies(id);
-  }
-
   @Put('style/:id')
   updateStyle(
     @Param('id', ParseUUIDPipe) id: string,
@@ -305,12 +279,17 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     return this.agentAggregateService.updateStyle(id, data);
   }
 
+  @Delete(':id')
+  deleteAgent(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    return this.agentAggregateService.deleteAgent(id);
+  }
+
   //////////////////////////////////////////// Agent Version ////////////////////////////////////////////
 
   /**
-   * Get a agent version by id
+   * Get an agent version by id
    * @param id
-   * @return a agent version
+   * @return an agent version
    */
   @BlPublic()
   @Get('version/:id')
@@ -323,7 +302,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   /**
    * Get latest published agent version by agent id
    * @param agentId
-   * @return a agent version code
+   * @return an agent version code
    */
   @BlPublic()
   @Get(':agentId/version/latest')
@@ -339,7 +318,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    * Get latest published agent version by agent id for lab
    * @param agentId
    * @param jsonVersionNumber
-   * @return a agent version code
+   * @return an agent version code
    */
   @BlPublic()
   @HnLabGuard()
@@ -373,7 +352,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   }
 
   /**
-   * Update a agent version params
+   * Update an agent version params
    * @param id
    * @param params
    * @return the updated agent version
@@ -387,7 +366,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   }
 
   /**
-   * Update a agent version code
+   * Update an agent version code
    * @param id
    * @param code
    * @return the updated agent version
@@ -401,7 +380,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   }
 
   /**
-   * Update a agent version environment
+   * Update an agent version environment
    * @param id
    * @param environment
    * @return the updated agent version
@@ -418,7 +397,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   }
 
   /**
-   * Publish a agent version
+   * Publish an agent version
    * @param id
    * @return the published agent version
    */
@@ -445,7 +424,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   }
 
   /**
-   * Create a new draft version of a agent
+   * Create a new draft version of an agent
    * @param agentId
    * @param newAgentVersionFile
    * @return the created agent version
@@ -489,7 +468,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   }
 
   /**
-   * Update a agent version infos
+   * Update an agent version infos
    * @param versionId
    * @param infos
    * @return the updated agent version
@@ -520,10 +499,6 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     );
   }
 
-  @Delete(':id')
-  deleteAgent(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    return this.agentAggregateService.deleteAgent(id);
-  }
 
   @Put('version/style/:versionId')
   updateVersionStyle(
@@ -534,7 +509,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   }
 
   ////////////////////////////////////////// CO AUTHORS //////////////////////////////////////////
-  @Post(':id/invite-co-author')
+  @Post('co-authors/:id/invite')
   async inviteAgentCoAuthor(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body('coAuthorMail') coAuthorMail: string
@@ -546,14 +521,14 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   }
 
   @BlPublic()
-  @Get(':id/co-authors')
+  @Get('co-authors/:id')
   async getAgentCoAuthors(
     @Param('id', new ParseUUIDPipe()) id: string
   ): Promise<HnUserDto[]> {
     return this.agentAggregateService.getAgentCoAuthors(id);
   }
 
-  @Get(':id/co-authors-pending-invites')
+  @Get('co-authors/:id/pending-invites')
   async getAgentCoAuthorsPendingInvites(
     @Param('id', new ParseUUIDPipe()) id: string
   ): Promise<HnAgentCoAuthorInvite[]> {
@@ -563,7 +538,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   /***
    * Remove agent co-author
    */
-  @Put(':id/remove-co-author/:agentAuthorUserId')
+  @Put('co-authors/:id/remove/:agentAuthorUserId')
   async removeAgentCoAuthor(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('agentAuthorUserId', new ParseUUIDPipe()) agentAuthorUserId: string
@@ -577,7 +552,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   /***
    * Is invite valid
    */
-  @Get('invite/:token/is-valid')
+  @Get('co-authors/invite/:token/is-valid')
   isInviteValid(@Param('token') token: string): Promise<HnAgentCoAuthorInvite> {
     return this.agentAggregateService.isInviteValid(token);
   }
@@ -585,17 +560,19 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   /***
    * Accept invite
    */
-  @Put('invite/:token/accept')
+  @Put('co-authors/invite/:token/accept')
   acceptInvite(@Param('token') token: string): Promise<HnAgent> {
     return this.agentAggregateService.acceptInvite(token);
   }
 
-  @Delete('invite/:inviteId')
+  @Delete('co-authors/invite/:inviteId')
   async deleteCoAuthorInvite(
     @Param('inviteId', new ParseUUIDPipe()) inviteId: string
   ): Promise<boolean> {
     return this.agentAggregateService.deleteCoAuthorInvite(inviteId);
   }
+
+  //////////////////////////////////////////// FILE ////////////////////////////////////////////
 
   @UseInterceptors(FileInterceptor('file'))
   @Post('file/:agentId')

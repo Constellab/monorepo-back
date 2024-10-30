@@ -292,23 +292,16 @@ export class HnAgentAggregateService {
   }
 
   public async updateStyle(id: string, data: HnAgentEditStyleData): Promise<HnAgentDto> {
-    const style: HnTypingStyle = {
-      background_color: data.background_color,
-      icon_color: data.icon_color,
-      icon_type: data.icon_type,
-      icon_technical_name: data.icon_technical_name
-    };
-
 
     let agent = await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(id);
     return this.dataSource.transaction(async entityManager => {
-      agent = await this.agentService.updateLatestStyleWithEntityManager(agent, style, entityManager);
+      agent = await this.agentService.updateLatestStyleWithEntityManager(agent, data.style, entityManager);
       // if not all versions checked, update the latest version
       if (!data.allVersionsChecked || !agent.latestPublishVersion) {
         const version = !agent.latestPublishVersion ? await this.agentVersionService.findLatestByAgent(agent) :
           await this.agentVersionService.findLatestPublishedByAgent(agent);
         version.agent = agent;
-        await this.agentVersionService.updateStyle(version, style, entityManager);
+        await this.agentVersionService.updateStyle(version, data.style, entityManager);
         return new HnAgentDto(agent);
       }
 
@@ -318,7 +311,7 @@ export class HnAgentAggregateService {
         if (agent.latestPublishVersion == agentVersion.version) {
           agentVersion.agent = agent;
         }
-        await this.agentVersionService.updateStyle(agentVersion, style, entityManager);
+        await this.agentVersionService.updateStyle(agentVersion, data.style, entityManager);
       }
       return new HnAgentDto(agent);
     });
@@ -471,12 +464,6 @@ export class HnAgentAggregateService {
   }
 
   public async updateVersionStyle(versionId: string, data: HnAgentEditStyleData): Promise<HnAgentVersionDto>{
-    const style: HnTypingStyle = {
-      background_color: data.background_color,
-      icon_color: data.icon_color,
-      icon_type: data.icon_type,
-      icon_technical_name: data.icon_technical_name
-    };
 
     const version = await this.agentVersionService.findOne(versionId);
     const agent = await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(version.agent.id);
@@ -484,9 +471,9 @@ export class HnAgentAggregateService {
     return this.dataSource.transaction(async entityManager => {
       // if it's the latest version, update the agent latest style
       if (!agent.latestPublishVersion || agent.latestPublishVersion == version.version) {
-        version.agent = await this.agentService.updateLatestStyleWithEntityManager(agent, style, entityManager);
+        version.agent = await this.agentService.updateLatestStyleWithEntityManager(agent, data.style, entityManager);
       }
-      return new HnAgentVersionDto(await this.agentVersionService.updateStyle(version, style, entityManager));
+      return new HnAgentVersionDto(await this.agentVersionService.updateStyle(version, data.style, entityManager));
     });
   }
 

@@ -192,9 +192,10 @@ export class HaCreateAgentVersionFromLabResponseDtoOldFormat{
   }
 }
 
-export interface HnAgentEditStyleData extends HnTypingStyle{
+export interface HnAgentEditStyleData{
   isVersion: boolean;
   allVersionsChecked: boolean;
+  style: HnTypingStyle;
 }
 
 export class HnAgentVersionForLabDtoOldFormat{
