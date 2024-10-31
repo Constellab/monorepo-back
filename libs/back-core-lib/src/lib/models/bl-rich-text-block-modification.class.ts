@@ -132,11 +132,17 @@ export class BlRichTextModifications {
 
   // Create a BlRichTextModifications object from a json string
   public static fromJsonObjectString(jsonString: string): BlRichTextModifications {
+    if (!jsonString) {
+      return new BlRichTextModifications();
+    }
     const json = JSON.parse(jsonString);
     return BlRichTextModifications.fromJsonObject(json);
   }
 
   public static fromPythonJsonObject(json: Record<string, any>): BlRichTextModifications {
+    if (!json) {
+      return new BlRichTextModifications();
+    }
     const newJson = {
       version: json.version,
       modifications: json.modifications.map((modification: any) => ({

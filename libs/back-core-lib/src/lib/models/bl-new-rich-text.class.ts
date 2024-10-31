@@ -31,7 +31,7 @@ export class BlRichTextContentWithModifications{
   modifications: Record<string, any>;
 
   constructor(data: BlRichTextContent | BlRichTextContentWithModifications) {
-    if((data as any)?.modifications === undefined) {
+    if((data as any)?.modifications === undefined && (data as any)?.content === undefined){
       this.content = data as BlRichTextContent;
       this.modifications = null;
     } else {

@@ -71,9 +71,7 @@ export class CnNotesService extends BlAbstractService<CnNote> {
   }
 
   public async getNoteModifications(parentFolder: CnHierarchyObject, id: string): Promise<BlRichTextModifications> {
-    const data = new CnNoteRichText(await this.getNoteJsonData(parentFolder, id), true).getModifications();
-    const modifications = BlRichTextModifications.fromPythonJsonObject(data);
-    return modifications;
+    return BlRichTextModifications.fromPythonJsonObject(new CnNoteRichText(await this.getNoteJsonData(parentFolder, id), true).getModifications());;
   }
 
   public async getNoteUndoContent(parentFolder: CnHierarchyObject, id: string, modificationId: string): Promise<BlRichTextContent> {
