@@ -31,7 +31,7 @@ export class BlRichTextContentWithModifications{
   modifications: Record<string, any>;
 
   constructor(data: BlRichTextContent | BlRichTextContentWithModifications) {
-    if(!(data as any)?.modifications) {
+    if((data as any)?.modifications === undefined) {
       this.content = data as BlRichTextContent;
       this.modifications = null;
     } else {
@@ -267,8 +267,7 @@ export class BlNewRichText {
         case BlRichTextModificationType.UPDATED:
           // undo the differences in the block data and add anti-slashes to the double quotes
           const b = blocks.find(b => b.id === modification.blockId);
-          const diff = modification.undoDifferences(JSON.stringify(b.data))
-            .replace(/"/g, "\"");
+          const diff = modification.undoDifferences(JSON.stringify(b.data))?.replace(/"/g, "\"");
           if (diff?.length > 0) {
             blocks[blocks.indexOf(b)].data = JSON.parse(diff);
           }

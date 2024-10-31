@@ -3,14 +3,16 @@ import { Type } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
-import { BlRichTextContent, BlRichTextI } from '@monorepo/back-core-lib';
+import { BlRichTextContent, BlRichTextContentWithModifications, BlRichTextI } from '@monorepo/back-core-lib';
 import { CnNote } from './cn-note.entity';
 
 
 export class CnSaveNoteDto {
   id: string;
   title: string;
-  content: BlRichTextI | BlRichTextContent;
+  content: BlRichTextI | BlRichTextContent | BlRichTextContentWithModifications;
+
+  modifications?: Record<string, any>;
 
   is_validated: boolean;
 

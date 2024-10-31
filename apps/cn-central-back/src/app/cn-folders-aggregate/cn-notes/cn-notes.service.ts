@@ -9,7 +9,7 @@ import {
   BlFile,
   BlFileResponse,
   BlQuillMigrator,
-  BlRichTextContent
+  BlRichTextContent, BlRichTextContentWithModifications, BlRichTextModifications
 } from '@monorepo/back-core-lib';
 import { CnCreateNoteWithConfigDto, CnSaveNoteDto, CnSaveNoteResultDTO } from './cn-note.dto';
 import { CnNoteContent } from './cn-note-content.class';
@@ -19,6 +19,7 @@ import { CnDocumentService } from '../cn-documents/cn-document.service';
 import { CnDocument, CnDocumentEntity, CnDocumentType } from '../cn-documents/cn-document.entity';
 import { CnHierarchyObject, CnHierarchyObjectEntity } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
+import { CnNoteRichText } from '../../cn-core/model/config/cn-note-rich-text.class';
 
 @Injectable()
 export class CnNotesService extends BlAbstractService<CnNote> {
@@ -66,6 +67,20 @@ export class CnNotesService extends BlAbstractService<CnNote> {
   }
 
   public async getNoteContent(parentFolder: CnHierarchyObject, id: string): Promise<BlRichTextContent> {
+    return new CnNoteRichText(await this.getNoteJsonData(parentFolder, id), true).getRichTextContent();
+  }
+
+  public async getNoteModifications(parentFolder: CnHierarchyObject, id: string): Promise<BlRichTextModifications> {
+    const data = new CnNoteRichText(await this.getNoteJsonData(parentFolder, id), true).getModifications();
+    const modifications = BlRichTextModifications.fromPythonJsonObject(data);
+    return modifications;
+  }
+
+  public async getNoteUndoContent(parentFolder: CnHierarchyObject, id: string, modificationId: string): Promise<BlRichTextContent> {
+    return new CnNoteRichText(await this.getNoteJsonData(parentFolder, id), true).getUndoContent(modificationId);
+  }
+
+  private async getNoteJsonData(parentFolder: CnHierarchyObject, id: string): Promise<any> {
     const note = await this.findByIdAndCheck(id, { document: true });
     return this.documentService.getJSONDocumentContent(parentFolder.getRootFolderId(), note.document);
   }
@@ -161,18 +176,18 @@ export class CnNotesService extends BlAbstractService<CnNote> {
    */
   private async saveNoteContent(note: CnNote, parentFolder: CnHierarchyObject,
                                 createNoteDto: CnCreateNoteWithConfigDto, files: BlFile[]): Promise<CnNote> {
-    const content = BlQuillMigrator.migrateOptional(createNoteDto.note.content);
-    const richText = new CnNoteContent(content);
+    createNoteDto.note.content = BlQuillMigrator.migrateOptional(createNoteDto.note.content);
+    const content: CnNoteRichText = new CnNoteRichText(new BlRichTextContentWithModifications(createNoteDto.note as any), true);
 
     let noteDocument: CnDocument;
     // if the document already exists, we update it
     if (note.document) {
       noteDocument = await this.documentService.updateJSONDocument(parentFolder.getRootFolderId(), note.document,
-        richText.getContent());
+        content.getRichTextWithModifications());
     } else {
       // or use the id as doc Name
       noteDocument = await this.documentService.createJSONDocument(parentFolder,
-        CnDocumentType.NOTE, note.title, note.id, richText.getContent());
+        CnDocumentType.NOTE, note.title, note.id, content.getRichTextWithModifications());
     }
 
     // store document reference in the note
@@ -181,7 +196,7 @@ export class CnNotesService extends BlAbstractService<CnNote> {
     // manage the file and image of the note
     await this.uploadNoteFiles(files, note.id, noteDocument, parentFolder);
     // manage views of the note
-    await this.uploadNoteViews(richText, createNoteDto.resource_views, note.id, noteDocument, parentFolder);
+    await this.uploadNoteViews(content, createNoteDto.resource_views, note.id, noteDocument, parentFolder);
 
     return note;
   }
@@ -214,12 +229,14 @@ export class CnNotesService extends BlAbstractService<CnNote> {
   /**
    * Method to load the resource view of the note and store them in the object storage
    */
-  private async uploadNoteViews(richText: CnNoteContent,
+  private async uploadNoteViews(content: CnNoteRichText,
                                 resourceViews: Record<string, any>,
                                 noteId: string,
                                 parentDocument: CnDocument,
                                 parentFolder: CnHierarchyObject): Promise<void> {
     if (!resourceViews) return;
+
+    const richText = new CnNoteContent(content.getRichTextContent());
 
     const views = [...richText.getResourceViewsBlocks(), ...richText.getFileViewsBlocks()];
     for (const specialOp of views) {

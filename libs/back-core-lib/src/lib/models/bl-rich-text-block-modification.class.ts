@@ -83,6 +83,9 @@ export class BlRichTextBlockModification {
       return value;
     }
     let res = value;
+    if (!res || res.length === 0) {
+      return res;
+    }
     const reversedDifferences = this.differences.slice().reverse();
     if (reversedDifferences.length === 1 && reversedDifferences[0].value == '/') {
       return res;
@@ -239,7 +242,6 @@ export class BlRichTextModifications {
 
   // fusion old and new modifications
   public fusion(modifications: BlRichTextBlockModification[]): void {
-    console.log('modifications', modifications);
     modifications = this.reduceModifications(modifications);
 
     if (this.isEmpty()) {
