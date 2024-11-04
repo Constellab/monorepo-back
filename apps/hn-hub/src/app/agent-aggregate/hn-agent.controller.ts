@@ -249,7 +249,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     );
   }
 
-  @Put('title/:id')
+  @Put(':id/title')
   updateTitle(
     @Param('id', ParseUUIDPipe) id: string,
     @Body('title') title: string
@@ -263,7 +263,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    * @param description
    * @return the updated agent
    */
-  @Put('description/:id')
+  @Put(':id/description')
   updateDescription(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() description: Record<string, any>
@@ -271,7 +271,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     return this.agentAggregateService.updateDescription(id, description);
   }
 
-  @Put('style/:id')
+  @Put(':id/style')
   updateStyle(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() data: HnAgentEditStyleData
@@ -500,7 +500,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   }
 
 
-  @Put('version/style/:versionId')
+  @Put('version/:versionId/style')
   updateVersionStyle(
     @Param('versionId', ParseUUIDPipe) versionId: string,
     @Body() data: HnAgentEditStyleData
@@ -593,7 +593,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   }
 
   @UseInterceptors(FileInterceptor('file'))
-  @Post('view/:agentId')
+  @Post(':agentId/view')
   async saveResourceViewFile(
     @BlUploadedFile() file: BlFile,
     @Param('agentId', new ParseUUIDPipe()) agentId: string
