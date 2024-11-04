@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BlAbstractService } from '@monorepo/back-core-lib';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, In, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { CnLabBackupHistory, CnLabBackupHistoryEntity } from './cn-lab-backup-history.entity';
 import {
   CnLabBackupBucket,
@@ -89,8 +89,7 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
     };
   }
 
-  public markBackupAsDeleted(lab: CnLab, bucket: CnBucket, frequency: CnLabBackupFrequency,
-                             entityManager: EntityManager): Promise<CnLabBackupHistory> {
+  public markBackupAsDeleted(lab: CnLab, bucket: CnBucket, frequency: CnLabBackupFrequency): Promise<CnLabBackupHistory> {
     const history = new CnLabBackupHistoryEntity();
     history.id = ClStringHelper.generateUUID();
     history.lab = lab as CnLabEntity;
@@ -101,7 +100,7 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
     history.endedAt = ClDateHelper.getDate();
     history.status = CnLabBackupStatus.DELETED;
 
-    return this.save(history, entityManager);
+    return this.save(history);
   }
 
   public getBackupHistory(labId: string, page: number, size: number): Promise<ClPageI<CnLabBackupHistory>> {

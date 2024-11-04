@@ -244,17 +244,15 @@ export class CnLabBackupAggregateService {
   private async deleteLabBackupInBucket(bucket: CnBucket, prefix: string,
                                         lab: CnLab, frequency: CnLabBackupFrequency): Promise<void> {
     this.logger.log(`Deleting backup for lab ${lab.id}, bucket : ${bucket.id}`);
-    await this.datasource.transaction(async entityManager => {
-      await this.backupHistoryService.markBackupAsDeleted(lab, bucket, frequency, entityManager);
-      try {
-        await this.objectStorageService.deleteObjectsByPrefix(bucket.getBucketConfig(), prefix);
-      } catch (e) {
-        Logger.error(`Error while deleting the backup file in bucket ${bucket.id} for lab ${lab.id}. Error ${e}`);
-        // eslint-disable-next-line max-len
-        throw new BlBadRequestException(`Error while deleting the backup file for region ${bucket.region.name} and frequency ${frequency}.`);
-      }
-    });
+    try {
+      await this.objectStorageService.deleteObjectsByPrefix(bucket.getBucketConfig(), prefix);
+    } catch (e) {
+      Logger.error(`Error while deleting the backup file in bucket ${bucket.id} for lab ${lab.id}. Error ${e}`);
+      // eslint-disable-next-line max-len
+      throw new BlBadRequestException(`Error while deleting the backup file for region ${bucket.region.name} and frequency ${frequency}.`);
+    }
 
+    await this.backupHistoryService.markBackupAsDeleted(lab, bucket, frequency);
     this.logger.log(`Backup deleted for lab ${lab.id}, bucket : ${bucket.id}`);
   }
 
