@@ -20,6 +20,8 @@ import { ClPage } from '@monorepo/core-lib';
 import { HnUser } from '../../users/hn-user.entity';
 import { HnAgentCoAuthorService } from '../agent-co-author/hn-agent-co-author.service';
 import { HnSpaceDto } from '../../space-aggregate/space/hn-space.dto';
+import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
+import { HnAgentVersion } from '../agent-version/hn-agent-version.entity';
 
 @Injectable()
 export class HnAgentService {
@@ -29,9 +31,6 @@ export class HnAgentService {
     private agentCoAuthorService: HnAgentCoAuthorService
   ) {}
 
-  public async findAll(): Promise<HnAgent[]> {
-    return this.agentRepository.find();
-  }
 
   public async findPublic(): Promise<HnAgentDto[]> {
     return (
@@ -39,7 +38,7 @@ export class HnAgentService {
         where: {
           space: IsNull(),
           latestPublishVersion: Not(IsNull()),
-        },
+        }
       })
     ).map((agent) => new HnAgentDto(agent));
   }
@@ -427,11 +426,20 @@ export class HnAgentService {
 
   public async updateAgentLatestPublishVersion(
     id: string,
-    latestPublishVersion: number,
+    latestPublishVersion: HnAgentVersion,
     entityManager: EntityManager
   ): Promise<HnAgent> {
     const agent = await this.checkIfCreatorOrCoAuthorAndGetAgent(id);
-    agent.latestPublishVersion = latestPublishVersion;
+    agent.latestPublishVersion = latestPublishVersion.version;
+    agent.latestStyle = latestPublishVersion.style;
+    return entityManager.save(agent);
+  }
+
+  public async updateLatestStyleWithEntityManager(
+    agent: HnAgent,
+    style: HnTypingStyle,
+    entityManager: EntityManager): Promise<HnAgent> {
+    agent.latestStyle = style;
     return entityManager.save(agent);
   }
 
@@ -479,5 +487,21 @@ export class HnAgentService {
 
   public async delete(entityManager: EntityManager, id: string): Promise<void> {
     await entityManager.delete(HnAgent, { id: id });
+  }
+
+  public async updateLatestStyle(agentId: string, style: HnTypingStyle): Promise<HnAgent> {
+    const agent = await this.checkIfCreatorOrCoAuthorAndGetAgent(agentId);
+    agent.latestStyle = style;
+    return this.agentRepository.save(agent);
+  }
+
+
+  //////////////////////////////////////// MIGRATIONS ////////////////////////////////////////
+  public async getAgentsWithoutLatestStyle(): Promise<HnAgent[]> {
+    return this.agentRepository.find({
+      where: {
+        latestStyle: IsNull(),
+      },
+    });
   }
 }

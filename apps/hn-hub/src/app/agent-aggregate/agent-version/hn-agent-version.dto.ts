@@ -1,6 +1,7 @@
 import {BlEntityWithIdDTO} from '@monorepo/back-core-lib';
 import {HnAgentDto} from '../agent/hn-agent.dto';
 import {HnAgentVersion, HnAgentVersionState, HnAgentVersionType} from './hn-agent-version.entity';
+import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
 
 export class HnAgentVersionDto extends BlEntityWithIdDTO {
   version: number;
@@ -15,6 +16,7 @@ export class HnAgentVersionDto extends BlEntityWithIdDTO {
   inputSpecs?: Record<string, any>;
   outputSpecs?: Record<string, any>;
   configSpecs?: Record<string, any>;
+  style?: HnTypingStyle;
 
   constructor(agentVersion: HnAgentVersion) {
     super();
@@ -32,5 +34,6 @@ export class HnAgentVersionDto extends BlEntityWithIdDTO {
     this.inputSpecs = agentVersion?.inputSpecs;
     this.outputSpecs = agentVersion?.outputSpecs;
     this.configSpecs = agentVersion?.configSpecs;
+    this.style = agentVersion?.style;
   }
 }

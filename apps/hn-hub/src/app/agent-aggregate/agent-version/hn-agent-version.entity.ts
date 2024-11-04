@@ -4,6 +4,7 @@ import {HnAgent} from '../agent/hn-agent.entity';
 import {DateTime} from 'luxon';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {HnAgentVersionFileInput} from '../agent/hn-agent.dto';
+import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
 
 export enum HnAgentVersionState {
   PUBLISHED = 'PUBLISHED',
@@ -61,6 +62,9 @@ export class HnAgentVersion extends BlEntityWithId {
   @Column({name: 'configSpecs', type: 'simple-json', nullable: true})
   configSpecs?: Record<string, any>;
 
+  @Column({name: 'style', type: 'simple-json', nullable: true})
+  style?: HnTypingStyle;
+
   initVersion(agent: HnAgent, versionFile: HnAgentVersionFileInput): void {
     this.agent = agent;
     this.versionState = HnAgentVersionState.DRAFT;
@@ -83,6 +87,7 @@ export class HnAgentVersion extends BlEntityWithId {
     this.configSpecs = versionFile.config_specs;
     this.environment = versionFile.environment;
     this.type = versionFile.task_type;
+    this.style = versionFile.style;
   }
 
   @BeforeInsert()

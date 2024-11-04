@@ -6,6 +6,7 @@ import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
 import { HnAgentCoAuthorDto } from '../agent-co-author/hn-agent-co-author.dto';
 import { BlEntityWithIdDTO } from '@monorepo/back-core-lib';
 import { HnAgentVersionDto } from '../agent-version/hn-agent-version.dto';
+import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
 
 export class HnAgentDto extends BlEntityWithIdDTO {
   title: string;
@@ -20,6 +21,7 @@ export class HnAgentDto extends BlEntityWithIdDTO {
   likes?: number;
   comments?: number;
   agentCoAuthors?: HnAgentCoAuthorDto[];
+  latestStyle?: HnTypingStyle;
 
   constructor(agent: HnAgent) {
     super();
@@ -39,6 +41,7 @@ export class HnAgentDto extends BlEntityWithIdDTO {
     this.agentCoAuthors = agent.agentCoAuthors?.map(
       (agentCoAuthor) => new HnAgentCoAuthorDto(agentCoAuthor)
     );
+    this.latestStyle = agent.latestStyle;
   }
 }
 
@@ -63,6 +66,7 @@ export class HnAgentVersionFileInput {
   config_specs: Record<string, any>;
   bricks: HnAgentVersionFileInputBrick[];
   task_type: HnAgentVersionType;
+  style?: HnTypingStyle;
 }
 
 export interface HnAgentLabSpaceDto {
@@ -79,6 +83,7 @@ export class HnAgentForLabDto {
   created_by?: HnUserDto;
   description?: Record<string, any>;
   latest_publish_version: number;
+  latest_style?: HnTypingStyle;
 
   static fromAgentDto(agentDto: HnAgentDto): HnAgentForLabDto {
     const dto = new HnAgentForLabDto();
@@ -89,6 +94,7 @@ export class HnAgentForLabDto {
     dto.created_by = agentDto.createdBy;
     dto.description = agentDto.description;
     dto.latest_publish_version = agentDto.latestPublishVersion;
+    dto.latest_style = agentDto.latestStyle;
     if (agentDto.space == null) return dto;
     dto.space = {
       id: agentDto.space.id,
@@ -109,6 +115,7 @@ export class HnAgentVersionForLabDto {
   output_specs: Record<string, any>;
   config_specs: Record<string, any>;
   agent: HnAgentForLabDto;
+  style?: HnTypingStyle;
 
   static fromAgentVersionDto(
     agentVersion: HnAgentVersionDto
@@ -152,6 +159,7 @@ export class HnAgentVersionForLabDto {
       title: agentVersion.agent.title,
       latest_publish_version: agentVersion.agent.latestPublishVersion,
     };
+    dto.style = agentVersion.style;
     return dto;
   }
 }
@@ -184,6 +192,12 @@ export class HaCreateAgentVersionFromLabResponseDtoOldFormat{
   }
 }
 
+export interface HnAgentEditStyleData{
+  isVersion: boolean;
+  allVersionsChecked: boolean;
+  style: HnTypingStyle;
+}
+
 export class HnAgentVersionForLabDtoOldFormat{
   id: string;
   version: number;
@@ -195,6 +209,7 @@ export class HnAgentVersionForLabDtoOldFormat{
   output_specs: Record<string, any>;
   config_specs: Record<string, any>;
   live_task: HnAgentForLabDto;
+  style?: HnTypingStyle;
 
   constructor(agentVersion: HnAgentVersionForLabDto) {
     this.id = agentVersion.id;
@@ -207,5 +222,13 @@ export class HnAgentVersionForLabDtoOldFormat{
     this.output_specs = agentVersion.output_specs;
     this.config_specs = agentVersion.config_specs;
     this.live_task = agentVersion.agent;
+    this.style = agentVersion.style;
   }
 }
+
+export const baseAgentStyle = {
+  icon_technical_name: 'code',
+  icon_type: 'MATERIAL_ICON',
+  background_color: '#c7c8cc',
+  icon_color: '#000000'
+} as HnTypingStyle;
