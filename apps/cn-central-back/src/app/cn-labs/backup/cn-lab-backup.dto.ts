@@ -75,18 +75,13 @@ export class CnLabBackupsHistory {
   @Type(() => CnLabBackupBucket)
   backups: CnLabBackupBucket[];
 
-  public static fromV2Backups(backups: CnLabBackupBucket[]): CnLabBackupsHistory {
-    const history = new CnLabBackupsHistory();
-    history.version = 2;
-    history.backups = ClCoreJsonConvert.deserialize(backups, CnLabBackupBucket) as CnLabBackupBucket[];
-    return history;
-  }
-
   // TODO @lab-manager-v1.12.0 : remove once the lab manager is updated
   public static fromLabManagerResponse(backups: CnLabBackupsHistory | CnLabBackupBucket[]): CnLabBackupsHistory {
     let backupsHistory: CnLabBackupsHistory;
     if (Array.isArray(backups)) {
-      backupsHistory = CnLabBackupsHistory.fromV2Backups(backups);
+      backupsHistory = new CnLabBackupsHistory();
+      backupsHistory.version = 2;
+      backupsHistory.backups = ClCoreJsonConvert.deserialize(backups, CnLabBackupBucket) as CnLabBackupBucket[];
     } else {
       backupsHistory = ClCoreJsonConvert.deserialize(backups, CnLabBackupsHistory) as CnLabBackupsHistory;
     }

@@ -27,13 +27,14 @@ export class CnExternalLabsManagerController {
   @CnLabRobotAuthentication()
   @Post('lab/backup-history')
   async saveBackupHistory(@Body() backups: CnLabBackupBucket[]): Promise<CnLabBackupHistory[]> {
-    const history = CnLabBackupsHistory.fromV2Backups(backups);
+    const history = CnLabBackupsHistory.fromLabManagerResponse(backups);
     return this.labAggregator.saveCurrentLabBackupHistory(history);
   }
 
   @CnLabRobotAuthentication()
   @Post('lab/backup-history-v2')
-  async saveBackupHistoryV2(@Body(new BlParsePipe(CnLabBackupsHistory)) backupsHistory: CnLabBackupsHistory): Promise<CnLabBackupHistory[]> {
+  async saveBackupHistoryV2(@Body(new BlParsePipe(CnLabBackupsHistory)) backupsHistory: CnLabBackupsHistory)
+    : Promise<CnLabBackupHistory[]> {
     return this.labAggregator.saveCurrentLabBackupHistory(backupsHistory);
   }
 }
