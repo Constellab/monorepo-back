@@ -156,8 +156,8 @@ export class BlNewRichText {
   }
 
   private getRichTextModifications(newContent: BlRichTextContent,
-                                  userId: string,
-                                  modifications: BlRichTextModifications = new BlRichTextModifications()): BlRichTextModifications {
+                                   userId: string,
+                                   modifications: BlRichTextModifications = new BlRichTextModifications()): BlRichTextModifications {
     const differences: BlRichTextBlockModification[] = [];
     if (this.richText == null || this.richText.blocks == null) {
       return null;
@@ -223,13 +223,6 @@ export class BlNewRichText {
 
     modifications.fusion(differences);
     return modifications;
-  }
-
-  public getRichTextModificationsAsPythonObject(
-    newContent: BlRichTextContent,
-    userId: string,
-    modifications: BlRichTextModifications = new BlRichTextModifications()): Record<string, any>{
-    return this.getRichTextModifications(newContent, userId, modifications).toPythonJsonObject();
   }
 
   public getRichTextModificationsAsObject(newContent: BlRichTextContent,

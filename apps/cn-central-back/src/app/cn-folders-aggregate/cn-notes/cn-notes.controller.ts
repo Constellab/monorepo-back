@@ -55,14 +55,14 @@ export class CnNotesController {
   }
 
   /////////////////////////////////////////////// HISTORY ///////////////////////////////////////////////
-  @Get('history/:noteId')
+  @Get(':noteId/history')
   async getNoteModifications(
     @Param('noteId', new ParseUUIDPipe()) noteId: string
   ): Promise<BlRichTextBlockModificationDto[]> {
     return this.folderAggregateService.getNoteModifications(noteId);
   }
 
-  @Get('history/undo-content/:noteId/:modificationId')
+  @Get(':noteId/history/undo-content/:modificationId')
   async undoContent(
     @Param('noteId', new ParseUUIDPipe()) noteId: string,
     @Param('modificationId', new ParseUUIDPipe()) modificationId: string

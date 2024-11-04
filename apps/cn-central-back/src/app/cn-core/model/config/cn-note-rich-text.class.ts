@@ -7,11 +7,9 @@ import {
 
 export class CnNoteRichText{
   private richTextWithModifications: BlRichTextContentWithModifications;
-  private fromPython: boolean;
 
-  constructor(jsonData: any, fromPython: boolean = false) {
+  constructor(jsonData: any) {
     this.richTextWithModifications = new BlRichTextContentWithModifications(jsonData);
-    this.fromPython = fromPython;
   }
 
   public getRichTextWithModifications(): BlRichTextContentWithModifications {
@@ -26,14 +24,12 @@ export class CnNoteRichText{
     return this.richTextWithModifications.modifications;
   }
 
-  public getUndoContent(modificationId: string): BlRichTextContent{
+  public getNotePreviousVersion(modificationId: string): BlRichTextContent{
     if(!this.richTextWithModifications.modifications){
       throw new BlBadRequestException('The note has no modifications');
     }
     const richText = new BlNewRichText(this.richTextWithModifications.content);
-    const modifications = this.fromPython
-      ? BlRichTextModifications.fromPythonJsonObject(this.richTextWithModifications.modifications)
-      : BlRichTextModifications.fromJsonObject(this.richTextWithModifications.modifications);
+    const modifications = BlRichTextModifications.fromJsonObject(this.richTextWithModifications.modifications);
     const modificationsBlocks = modifications.getModificationsFromModificationId(modificationId);
     return richText.undoModifications(modificationsBlocks);
   }

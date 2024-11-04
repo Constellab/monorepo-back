@@ -139,28 +139,6 @@ export class BlRichTextModifications {
     return BlRichTextModifications.fromJsonObject(json);
   }
 
-  public static fromPythonJsonObject(json: Record<string, any>): BlRichTextModifications {
-    if (!json) {
-      return new BlRichTextModifications();
-    }
-    const newJson = {
-      version: json.version,
-      modifications: json.modifications.map((modification: any) => ({
-        time: DateTime.fromISO(modification.time),
-        blockId: modification.block_id,
-        blockType: modification.block_type,
-        differences: modification.differences,
-        blockValue: modification.block_value,
-        type: modification.type,
-        index: modification.index,
-        userId: modification.user_id,
-        id: modification.id,
-        oldIndex: modification.old_index
-      }))
-    }
-    return BlRichTextModifications.fromJsonObject(newJson);
-  }
-
   public static fromJsonObject(json: Record<string, any>): BlRichTextModifications {
     const modifications = new BlRichTextModifications();
     if (!json) {
@@ -324,7 +302,7 @@ export class BlRichTextModifications {
     return {
       version: this.version,
       modifications: this.modifications.map(modification => ({
-        time: modification.time,
+        time: modification.time.toISO(),
         blockId: modification.blockId,
         blockType: modification.blockType,
         differences: modification.differences,
@@ -334,24 +312,6 @@ export class BlRichTextModifications {
         userId: modification.userId,
         id: modification.id,
         oldIndex: modification.oldIndex
-      }))
-    };
-  }
-
-  public toPythonJsonObject(): Record<string, any>{
-    return {
-      version: this.version,
-      modifications: this.modifications.map(modification => ({
-        time: modification.time.toISO(),
-        block_id: modification.blockId,
-        block_type: modification.blockType,
-        differences: modification.differences,
-        block_value: modification.blockValue,
-        type: modification.type,
-        index: modification.index,
-        user_id: modification.userId,
-        id: modification.id,
-        old_index: modification.oldIndex
       }))
     };
   }

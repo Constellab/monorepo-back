@@ -428,14 +428,14 @@ export class CnFoldersController {
 
 
   /////////////////////////////// History ///////////////////////////////////////////
-  @Get('constellab-document/history/:documentId')
+  @Get('constellab-document/:documentId/history')
   async getDocumentModifications(
     @Param('documentId', new ParseUUIDPipe()) documentId: string
   ): Promise<BlRichTextBlockModificationDto[]> {
     return this.folderAggregateService.getConstellabDocumentModifications(documentId);
   }
 
-  @Get('constellab-document/history/undo-content/:documentId/:modificationId')
+  @Get('constellab-document/:documentId/history/undo-content/:modificationId')
   async undoContent(
     @Param('documentId', new ParseUUIDPipe()) documentId: string,
     @Param('modificationId', new ParseUUIDPipe()) modificationId: string
@@ -443,7 +443,7 @@ export class CnFoldersController {
     return this.folderAggregateService.getConstellabDocumentationUndoContent(documentId, modificationId);
   }
 
-  @Put('constellab-document/history/rollback/:documentId/:modificationId')
+  @Put('constellab-document/:documentId/history/rollback/:modificationId')
   async rollbackContent(
     @Param('documentId', new ParseUUIDPipe()) documentId: string,
     @Param('modificationId', new ParseUUIDPipe()) modificationId: string

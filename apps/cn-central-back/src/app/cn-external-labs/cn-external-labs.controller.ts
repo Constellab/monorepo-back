@@ -163,15 +163,18 @@ export class CnExternalLabsController {
     return this.labAggregator.getCurrentLabSharedUsers();
   }
 
+
+  // Public route that return the new list of modifications after a rich text content modification
   @BlPublic()
   @Post('modifications')
   async getModifications(@Body() body: CnModificationsBodyDTO): Promise<Record<string, any>> {
     return await this.labFolderAggregateService.getModifications(body.oldContent, body.newContent, body.oldModifications, body.userId);
   }
 
+  // Public route that return the new content after an undo operation based on modifications
   @BlPublic()
   @Post('undo-content')
-  async getUndoContent(@Body() body: CnUndoContentBodyDTO): Promise<Record<string, any>> {
-    return await this.labFolderAggregateService.getUndoContent(body.content, body.modifications, body.modificationId);
+  async getNotePreviousVersion(@Body() body: CnUndoContentBodyDTO): Promise<Record<string, any>> {
+    return await this.labFolderAggregateService.getNotePreviousVersion(body.content, body.modifications, body.modificationId);
   }
 }

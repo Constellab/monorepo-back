@@ -494,7 +494,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     }
     const contentWithModifications: CnNoteRichText =
       new CnNoteRichText(await this.getJSONDocumentContent(rootFolderId, document));
-    return contentWithModifications.getUndoContent(modificationId);
+    return contentWithModifications.getNotePreviousVersion(modificationId);
   }
 
   public async rollbackContent(rootFolderId: string, document: CnDocument, modificationId: string): Promise<CnDocument> {

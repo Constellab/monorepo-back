@@ -160,15 +160,15 @@ export class CnLabFolderAggregateService {
                                 oldModifications: Record<string, any>,
                                 userId: string): Promise<Record<string, any>>{
     const modifications =
-      oldModifications == null ? new BlRichTextModifications() : BlRichTextModifications.fromPythonJsonObject(oldModifications);
-    return new BlNewRichText(oldContent).getRichTextModificationsAsPythonObject(newContent, userId, modifications);
+      oldModifications == null ? new BlRichTextModifications() : BlRichTextModifications.fromJsonObject(oldModifications);
+    return new BlNewRichText(oldContent).getRichTextModificationsAsObject(newContent, userId, modifications);
   }
 
-  public async getUndoContent(content: BlRichTextContent,
-                              modifications: Record<string, any>,
-                              modificationId: string): Promise<Record<string, any>>{
+  public async getNotePreviousVersion(content: BlRichTextContent,
+                                      modifications: Record<string, any>,
+                                      modificationId: string): Promise<Record<string, any>>{
     const richText = new BlNewRichText(content);
-    const modificationsObj = BlRichTextModifications.fromPythonJsonObject(modifications);
+    const modificationsObj = BlRichTextModifications.fromJsonObject(modifications);
     const modificationsBlocks = modificationsObj.getModificationsFromModificationId(modificationId)
     return richText.undoModifications(modificationsBlocks);
   }

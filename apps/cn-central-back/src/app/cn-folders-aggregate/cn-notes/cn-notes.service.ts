@@ -67,15 +67,15 @@ export class CnNotesService extends BlAbstractService<CnNote> {
   }
 
   public async getNoteContent(parentFolder: CnHierarchyObject, id: string): Promise<BlRichTextContent> {
-    return new CnNoteRichText(await this.getNoteJsonData(parentFolder, id), true).getRichTextContent();
+    return new CnNoteRichText(await this.getNoteJsonData(parentFolder, id)).getRichTextContent();
   }
 
   public async getNoteModifications(parentFolder: CnHierarchyObject, id: string): Promise<BlRichTextModifications> {
-    return BlRichTextModifications.fromPythonJsonObject(new CnNoteRichText(await this.getNoteJsonData(parentFolder, id), true).getModifications());;
+    return BlRichTextModifications.fromJsonObject(new CnNoteRichText(await this.getNoteJsonData(parentFolder, id)).getModifications());
   }
 
   public async getNoteUndoContent(parentFolder: CnHierarchyObject, id: string, modificationId: string): Promise<BlRichTextContent> {
-    return new CnNoteRichText(await this.getNoteJsonData(parentFolder, id), true).getUndoContent(modificationId);
+    return new CnNoteRichText(await this.getNoteJsonData(parentFolder, id)).getNotePreviousVersion(modificationId);
   }
 
   private async getNoteJsonData(parentFolder: CnHierarchyObject, id: string): Promise<any> {
@@ -175,7 +175,7 @@ export class CnNotesService extends BlAbstractService<CnNote> {
   private async saveNoteContent(note: CnNote, parentFolder: CnHierarchyObject,
                                 createNoteDto: CnCreateNoteWithConfigDto, files: BlFile[]): Promise<CnNote> {
     createNoteDto.note.content = BlQuillMigrator.migrateOptional(createNoteDto.note.content);
-    const content: CnNoteRichText = new CnNoteRichText(new BlRichTextContentWithModifications(createNoteDto.note as any), true);
+    const content: CnNoteRichText = new CnNoteRichText(new BlRichTextContentWithModifications(createNoteDto.note as any));
 
     let noteDocument: CnDocument;
     // if the document already exists, we update it
