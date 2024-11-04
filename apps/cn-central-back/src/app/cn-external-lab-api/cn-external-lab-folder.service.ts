@@ -18,7 +18,7 @@ export class CnExternalLabFolderService {
 
   private readonly newRouteVersion: string = '0.10.0';
   private readonly oldRoute: string = 'project';
-  private readonly route: string = 'project';
+  private readonly route: string = 'folder';
 
   constructor(private externalLabApiService: CnExternalLabApiService) {
   }
@@ -29,7 +29,8 @@ export class CnExternalLabFolderService {
   }
 
   public async deleteFolderInLab(glabApiInfo: CnLabGlabApiInfo, folderId: string): Promise<void> {
-    return lastValueFrom(this.externalLabApiService.delete(glabApiInfo.apiInfo, `${this.getRoute(glabApiInfo.gwsCoreVersion)}/${folderId}`));
+    return lastValueFrom(this.externalLabApiService.delete(glabApiInfo.apiInfo,
+      `${this.getRoute(glabApiInfo.gwsCoreVersion)}/${folderId}`));
   }
 
   /**
