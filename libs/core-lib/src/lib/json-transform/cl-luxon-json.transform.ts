@@ -1,8 +1,7 @@
-import {DateTime} from 'luxon';
-import {ClDateHelper} from '../utils/cl-date.helper';
-import {Transform} from 'class-transformer';
-import {ClTransformFnParams} from './cl-json.converter';
-
+import { DateTime } from 'luxon';
+import { ClDateHelper } from '../utils/cl-date.helper';
+import { Transform } from 'class-transformer';
+import { ClTransformFnParams } from './cl-json.converter';
 
 /**
  * Transform decorator for luxon date
@@ -38,12 +37,14 @@ export function ClLuxonDateTransform(): PropertyDecorator {
   // convert date to time
   const transformToPlain = Transform(
     (params: ClTransformFnParams<DateTime>): string => ClDateHelper.serializeDate(params.value),
-    {toPlainOnly: true});
+    { toPlainOnly: true }
+  );
 
   // convert 'YYYY-MM-DD' to Date
   const transformToClass = Transform(
     (params: ClTransformFnParams<string>): DateTime => ClDateHelper.deserializeDate(params.value),
-    {toClassOnly: true});
+    { toClassOnly: true }
+  );
 
   return (target: any, key: string): void => {
     transformToPlain(target, key);
@@ -60,12 +61,14 @@ export function ClLuxonDateTimeTransform(): PropertyDecorator {
   // convert dateTime to ISI
   const transformToPlain = Transform(
     (params: ClTransformFnParams<DateTime>): string => ClDateHelper.serializeDateTime(params.value),
-    {toPlainOnly: true});
+    { toPlainOnly: true }
+  );
 
   // convert ISO to DateTime
   const transformToClass = Transform(
     (params: ClTransformFnParams<string>): DateTime => ClDateHelper.deserializeDateTime(params.value),
-    {toClassOnly: true});
+    { toClassOnly: true }
+  );
 
   return (target: any, key: string): void => {
     transformToPlain(target, key);

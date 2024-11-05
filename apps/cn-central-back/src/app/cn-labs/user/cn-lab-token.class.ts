@@ -5,7 +5,6 @@ import { Type } from 'class-transformer';
  * Lab instance object with single use token to logon lab
  */
 export class CnLabToken {
-
   @Type(() => CnLabEntity)
   lab: CnLab;
   token: string;

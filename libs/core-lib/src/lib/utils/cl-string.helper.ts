@@ -2,7 +2,6 @@
  * Helper class with only static methods to simplify String management
  */
 export class ClStringHelper {
-
   /**
    * Replace all the accent in a string with the corresponding letter
    *
@@ -16,7 +15,6 @@ export class ClStringHelper {
     const regex = new RegExp(/[\u0300-\u036f]/g);
     return str.normalize('NFD').replace(regex, '');
   }
-
 
   /**
    * Trim a string and replace duplicate spaces with one space
@@ -61,7 +59,8 @@ export class ClStringHelper {
    */
   public static generateUUID(): string {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      const r = (Math.random() * 16) | 0,
+        v = c == 'x' ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
   }
@@ -108,8 +107,7 @@ export class ClStringHelper {
    */
   public static getLowestDomainFromUrl(url: string): string {
     if (url == null) return null;
-    url = url.replace('https://', '')
-      .replace('http://', '');
+    url = url.replace('https://', '').replace('http://', '');
     const domains = url.split('.');
     if (domains.length < 2) return null;
     return domains[0];
@@ -133,33 +131,36 @@ export class ClStringHelper {
     if (str == null) return '';
 
     // replace all white spaces with dash
-    return ClStringHelper.trimAndRemoveDuplicateSpaces(str).toLowerCase()
-    // remove all special characters
-      .replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '')
-      // replace all spaces with dashes
-      .replace(/\s+/g, '-')
-      // remove all double or more dashes with one dash
-      .replace(/-+/g, '-')
-      // remove all dashes at the beginning and at the end
-      .replace(/^[- ]+|[- ]+$/g, '');
+    return (
+      ClStringHelper.trimAndRemoveDuplicateSpaces(str)
+        .toLowerCase()
+        // remove all special characters
+        .replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '')
+        // replace all spaces with dashes
+        .replace(/\s+/g, '-')
+        // remove all double or more dashes with one dash
+        .replace(/-+/g, '-')
+        // remove all dashes at the beginning and at the end
+        .replace(/^[- ]+|[- ]+$/g, '')
+    );
   }
 
   /**
    * Return the first letter of each word in uppercase
    * @param str
    */
-  public static toIdForUrl(str: string): string{
+  public static toIdForUrl(str: string): string {
     if (str == null) return null;
     if (typeof str !== 'string') {
       str = (str as any).toString();
     }
     str = str.replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '');
     str.replace('--', '-');
-    while(str[0] == '-'){
+    while (str[0] == '-') {
       str = str.slice();
     }
 
-    while (str[str.length-1] == '-'){
+    while (str[str.length - 1] == '-') {
       str = str.slice(0, -1);
     }
 

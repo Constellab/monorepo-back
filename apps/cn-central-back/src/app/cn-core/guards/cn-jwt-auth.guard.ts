@@ -21,12 +21,13 @@ import { CnUsersService } from '../../cn-users/cn-users.service';
  */
 @Injectable()
 export class CnJwtAuthGuard extends AuthGuard('jwt') {
-
   private readonly logger = new Logger(CnJwtAuthGuard.name);
 
-  constructor(private reflector: Reflector,
-              private spaceUserService: CnSpaceUserService,
-              private userService: CnUsersService) {
+  constructor(
+    private reflector: Reflector,
+    private spaceUserService: CnSpaceUserService,
+    private userService: CnUsersService
+  ) {
     super();
   }
 
@@ -71,13 +72,16 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
         CnCurrentUserHelper.setCurrentRoleInSpace(spaceUser.role);
       }
 
-      if(user.lastConnectedSpaceId !== space.id) {
-        this.userService.updateLastConnectedSpace(user.id, space.id).catch(
-          err => this.logger.error(`Error updating last connected space for user ${user.id} and space ${space.id}. Error '${err}'`)
-        );
+      if (user.lastConnectedSpaceId !== space.id) {
+        this.userService
+          .updateLastConnectedSpace(user.id, space.id)
+          .catch((err) =>
+            this.logger.error(
+              `Error updating last connected space for user ${user.id} and space ${space.id}. Error '${err}'`
+            )
+          );
         user.lastConnectedSpaceId = space.id;
       }
-
     }
     return true;
   }
@@ -95,8 +99,9 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
    */
   private contextIsLabAuth(context: ExecutionContext): boolean {
     // Check if the route is annotated with @LabAuth or @LabManagerAuth
-    return cnIsDecoratedWithLabAuth(this.reflector, context) ||
-      cnIsDecoratedWithLabManagerAuth(this.reflector, context);
+    return (
+      cnIsDecoratedWithLabAuth(this.reflector, context) ||
+      cnIsDecoratedWithLabManagerAuth(this.reflector, context)
+    );
   }
-
 }

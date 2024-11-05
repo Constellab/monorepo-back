@@ -10,10 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import {
-  HnDocumentation,
-  HnDocumentationDTO,
-} from './documentation/hn-documentation.entity';
+import { HnDocumentation, HnDocumentationDTO } from './documentation/hn-documentation.entity';
 import {
   BlFile,
   BlParsePipe,
@@ -69,11 +66,7 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
   @BlPublic()
   @Post('complete-path')
   findByCompletePath(@Body() body: any): Promise<HnDocumentationDto> {
-    return this.brickAggregateService.findCurrentDoc(
-      body.brickName,
-      body.version,
-      body.completePath
-    );
+    return this.brickAggregateService.findCurrentDoc(body.brickName, body.version, body.completePath);
   }
 
   @BlPublic()
@@ -88,9 +81,7 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
   }
 
   @Put()
-  update(
-    @Body(new BlParsePipe(HnNodeDTO)) updatedDoc: HnNodeDTO
-  ): Promise<HnDocumentation> {
+  update(@Body(new BlParsePipe(HnNodeDTO)) updatedDoc: HnNodeDTO): Promise<HnDocumentation> {
     return this.brickAggregateService.updateDoc(updatedDoc);
   }
 
@@ -136,10 +127,7 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
     @Param('docId', new ParseUUIDPipe()) docId: string
   ): Promise<any> {
     return {
-      filename: await this.brickAggregateService.saveDocResourceViewFile(
-        docId,
-        file
-      ),
+      filename: await this.brickAggregateService.saveDocResourceViewFile(docId, file),
     };
   }
 
@@ -147,9 +135,7 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
 
   @BlPublic()
   @Get('doc-files/:docId')
-  async getDocFiles(
-    @Param('docId', new ParseUUIDPipe()) docId: string
-  ): Promise<HnAbstractFileEntityDTO[]> {
+  async getDocFiles(@Param('docId', new ParseUUIDPipe()) docId: string): Promise<HnAbstractFileEntityDTO[]> {
     return this.brickAggregateService.getDocFiles(docId);
   }
 

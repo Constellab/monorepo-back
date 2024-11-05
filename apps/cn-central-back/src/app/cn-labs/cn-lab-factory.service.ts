@@ -2,7 +2,7 @@ import { CnLabBillingMode, CnLabEntity, CnLabType } from './cn-lab.entity';
 import { CnBrickGWS, CnBrickVersionDTO } from '../cn-bricks/cn-brick.dto';
 import {
   CnLabGreenOptionStopAfterInactivityValue,
-  CnLabGreenOptionType
+  CnLabGreenOptionType,
 } from './green-option/cn-lab-green-option.entity';
 import { CnBricksService } from '../cn-bricks/cn-bricks.service';
 import { CnLabConfigsService } from '../cn-lab-configs/cn-lab-configs.service';
@@ -37,7 +37,6 @@ export interface CnLabFactoryGreenOption {
   inactivityDuration: number;
 }
 
-
 export interface CnLabFactoryData {
   name?: string;
   user: CnUser;
@@ -50,7 +49,7 @@ export interface CnLabFactoryData {
     name: CnCloudProviderName;
     region: string;
     instanceType: string;
-  },
+  };
   bricks: CnLabFactoryBrick[];
   greenOption?: CnLabFactoryGreenOption;
   isFreeLab: boolean;
@@ -61,18 +60,17 @@ export interface CnLabFactoryData {
  */
 @Injectable()
 export class CnLabFactoryService {
-
-  constructor(private brickService: CnBricksService,
-              private labConfigService: CnLabConfigsService,
-              private cloudProviderAggregateService: CnCloudProviderAggregateService,
-              private serverCloudService: CnServerCloudService,
-              private greenOptions: CnLabGreenOptionService,
-              private labUserService: CnLabUserService,
-              private labAggregateService: CnLabAggregateService) {
-  }
+  constructor(
+    private brickService: CnBricksService,
+    private labConfigService: CnLabConfigsService,
+    private cloudProviderAggregateService: CnCloudProviderAggregateService,
+    private serverCloudService: CnServerCloudService,
+    private greenOptions: CnLabGreenOptionService,
+    private labUserService: CnLabUserService,
+    private labAggregateService: CnLabAggregateService
+  ) {}
 
   public async createLab(data: CnLabFactoryData, entityManager: EntityManager): Promise<CnLabEntity> {
-
     const lab: CnLabEntity = new CnLabEntity();
     lab.name = data.name ?? ClStringHelper.generateUUID();
     lab.virtualHost = `${ClStringHelper.generateUUID()}.${data.domain}`;
@@ -84,9 +82,14 @@ export class CnLabFactoryService {
     lab.billingMode = data.billingMode;
     lab.isFreeLab = data.isFreeLab;
 
-    const labDb = await this.labAggregateService.createLabNotSecure(lab,
-      data.volumeSize, data.volumeType,
-      null, null, entityManager);
+    const labDb = await this.labAggregateService.createLabNotSecure(
+      lab,
+      data.volumeSize,
+      data.volumeType,
+      null,
+      null,
+      entityManager
+    );
 
     await this.addUserToLab(labDb, data.user, entityManager);
 
@@ -97,23 +100,35 @@ export class CnLabFactoryService {
     return labDb;
   }
 
-  private async getRegion(cloudProvider: CnCloudProviderName, regionName: string): Promise<CnCloudProviderRegion> {
-    const region = await this.cloudProviderAggregateService.findServerRegionByCloudProviderNameAndTechnicalName(
-      cloudProvider, regionName);
+  private async getRegion(
+    cloudProvider: CnCloudProviderName,
+    regionName: string
+  ): Promise<CnCloudProviderRegion> {
+    const region =
+      await this.cloudProviderAggregateService.findServerRegionByCloudProviderNameAndTechnicalName(
+        cloudProvider,
+        regionName
+      );
     if (!region) {
-      throw new BlBadRequestException(`No region found for cloud provider ${cloudProvider} and region ${regionName}`);
+      throw new BlBadRequestException(
+        `No region found for cloud provider ${cloudProvider} and region ${regionName}`
+      );
     }
     return region;
   }
 
-  private async getServerCloud(cloudProvider: CnCloudProviderName, instanceType: string): Promise<CnServerCloud> {
+  private async getServerCloud(
+    cloudProvider: CnCloudProviderName,
+    instanceType: string
+  ): Promise<CnServerCloud> {
     const serverInfo = await this.serverCloudService.findByCloudProviderAndName(cloudProvider, instanceType);
     if (!serverInfo) {
-      throw new BlBadRequestException(`No server info found for cloud provider ${cloudProvider} and instance type ${instanceType}`);
+      throw new BlBadRequestException(
+        `No server info found for cloud provider ${cloudProvider} and instance type ${instanceType}`
+      );
     }
     return serverInfo;
   }
-
 
   /**
    * Return the lab config for the lab
@@ -122,7 +137,7 @@ export class CnLabFactoryService {
   private async getLabConfig(bricks: CnLabFactoryBrick[]): Promise<CnLabConfig> {
     const configDto: CnLabConfigDto = {
       version: 1,
-      brick_versions: []
+      brick_versions: [],
     };
 
     for (const brick of bricks) {
@@ -131,7 +146,7 @@ export class CnLabFactoryService {
       } else {
         configDto.brick_versions.push({
           name: brick.name,
-          version: brick.version
+          version: brick.version,
         });
       }
     }
@@ -146,7 +161,7 @@ export class CnLabFactoryService {
     }
     return {
       name: brickName,
-      version: gwsCoreVersion.version.toString()
+      version: gwsCoreVersion.version.toString(),
     };
   }
 
@@ -154,14 +169,17 @@ export class CnLabFactoryService {
     await this.labUserService.createLabUser(lab, user, CnLabUserRole.OWNER, entityManager);
   }
 
-  private async createGreenOptions(lab: CnLabEntity, greenOption: CnLabFactoryGreenOption,
-                                   entityManager: EntityManager): Promise<void> {
+  private async createGreenOptions(
+    lab: CnLabEntity,
+    greenOption: CnLabFactoryGreenOption,
+    entityManager: EntityManager
+  ): Promise<void> {
     const greenOptions: CnLabGreenOptionFormDto = {
       type: greenOption.type,
       value: {
-        inactivityDuration: greenOption.inactivityDuration
+        inactivityDuration: greenOption.inactivityDuration,
       } as CnLabGreenOptionStopAfterInactivityValue,
-      isPersistent: true
+      isPersistent: true,
     };
     await this.greenOptions.createFromDTO(greenOptions, lab, entityManager);
   }

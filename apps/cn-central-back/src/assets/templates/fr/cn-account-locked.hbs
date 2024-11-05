@@ -1,13 +1,15 @@
 <p>Bonjour {{user.firstname}} {{user.lastname}},</p>
 
 <p>
-  Nous avons enregistré {{failedLoginLocked}} tentative raté de connexion a votre compte.
-  Nous avons bloqué votre compte par mesure de sécurité.
+  Nous avons enregistré
+  {{failedLoginLocked}}
+  tentative raté de connexion a votre compte. Nous avons bloqué votre compte par mesure de sécurité.
 </p>
 
 <p>
   Pour débloquer votre compte, veuillez
-  <a href="{{unlockUrl}}">cliquer ici</a> (le lien est disponible pendant 7 jours)
+  <a href='{{unlockUrl}}'>cliquer ici</a>
+  (le lien est disponible pendant 7 jours)
 </p>
 
 <p>Voici le lien complete : {{unlockUrl}}</p>

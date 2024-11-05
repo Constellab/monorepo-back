@@ -9,12 +9,12 @@ import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 import { ClHelpService, ClPage } from '@monorepo/core-lib';
 import { CnFolderUserSearch } from './cn-folder-user-search.class';
 
-
 @Injectable()
 export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUserEntity> {
-
-  constructor(@InjectRepository(CnFolderUserEntity) private repository: Repository<CnFolderUserEntity>,
-              private groupService: CnGroupsService) {
+  constructor(
+    @InjectRepository(CnFolderUserEntity) private repository: Repository<CnFolderUserEntity>,
+    private groupService: CnGroupsService
+  ) {
     super(repository, CnFolderUserEntity);
   }
 
@@ -29,7 +29,11 @@ export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUser
     return users;
   }
 
-  public async shareRootFolderToUserIfNot(rootFolderId: string, userId: string, entityManager?: EntityManager): Promise<CnFolderUser> {
+  public async shareRootFolderToUserIfNot(
+    rootFolderId: string,
+    userId: string,
+    entityManager?: EntityManager
+  ): Promise<CnFolderUser> {
     const folderUser = await this.findByRootFolderIdAndUserId(rootFolderId, userId);
     if (folderUser) {
       return folderUser;
@@ -41,27 +45,26 @@ export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUser
     return await this.getEntityManager(entityManager).save(newFolderUser);
   }
 
-
   public async unshareRootFolderFromUser(rootFolderId: string, userId: string): Promise<DeleteResult> {
     const users = await this.findUsersByRootFolderId(rootFolderId);
     if (users.length === 1) {
       throw new BlBadRequestException(CnErrorText.FOLDER_MUST_HAVE_A_GROUP);
     }
 
-    return this.repository.delete({rootFolderId: rootFolderId, userId: userId});
+    return this.repository.delete({ rootFolderId: rootFolderId, userId: userId });
   }
 
   public async findUsersByRootFolderId(rootFolderId: string): Promise<CnUser[]> {
     const folderUsers = await this.findByRootFolderId(rootFolderId);
-    return folderUsers.map(folderUser => folderUser.user);
+    return folderUsers.map((folderUser) => folderUser.user);
   }
 
   public async findByRootFolderId(rootFolderId: string): Promise<CnFolderUser[]> {
-    return await this.repository.find({where: {rootFolderId: rootFolderId}});
+    return await this.repository.find({ where: { rootFolderId: rootFolderId } });
   }
 
   public findByRootFolderIdAndUserId(rootFolderId: string, userId: string): Promise<CnFolderUser> {
-    return this.repository.findOne({where: {rootFolderId: rootFolderId, userId: userId}});
+    return this.repository.findOne({ where: { rootFolderId: rootFolderId, userId: userId } });
   }
 
   public async userIsInRootFolder(rootFolderId: string, userId: string): Promise<boolean> {
@@ -73,15 +76,17 @@ export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUser
     return this.repository.save(folderUser);
   }
 
-
-  public async smartSearchByName(rootFolderId: string, name: string , page: number, size: number): Promise<ClPage<CnFolderUser>> {
-    if(ClHelpService.isNullOrEmpty(name)) {
-      return this.findPaginated(page, size, {where: {rootFolderId: rootFolderId}});
+  public async smartSearchByName(
+    rootFolderId: string,
+    name: string,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnFolderUser>> {
+    if (ClHelpService.isNullOrEmpty(name)) {
+      return this.findPaginated(page, size, { where: { rootFolderId: rootFolderId } });
     }
 
     const folderUserSearch = new CnFolderUserSearch(this, rootFolderId);
     return folderUserSearch.smartSearchByName(name, page, size);
   }
-
-
 }

@@ -11,10 +11,10 @@ import { CnUserUpdateLicenseDTO } from '../cn-user.dto';
  */
 @Controller('accounts')
 export class CnUserAccountsController {
-
-  constructor(private userAccountsService: CnUserAccountsService,
-              private frontService: CnFrontService) {
-  }
+  constructor(
+    private userAccountsService: CnUserAccountsService,
+    private frontService: CnFrontService
+  ) {}
 
   @BlPublicSecure()
   @Post()
@@ -80,8 +80,7 @@ export class CnUserAccountsController {
    */
   @BlPublicSecure()
   @Post('reset-password/:token')
-  async resetPassword(@Param('token') token: string,
-                      @Body() body: { password: string }): Promise<void> {
+  async resetPassword(@Param('token') token: string, @Body() body: { password: string }): Promise<void> {
     await this.userAccountsService.resetPassword(token, body.password);
   }
 
@@ -101,8 +100,10 @@ export class CnUserAccountsController {
   }
 
   @Put(':userId/license')
-  updateLicense(@Param('userId', new ParseUUIDPipe()) userId: string,
-                @Body() licenseDTO: CnUserUpdateLicenseDTO): Promise<CnUser> {
+  updateLicense(
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+    @Body() licenseDTO: CnUserUpdateLicenseDTO
+  ): Promise<CnUser> {
     return this.userAccountsService.updateUserLicense(userId, licenseDTO);
   }
 
@@ -114,10 +115,10 @@ export class CnUserAccountsController {
    */
   @BlPublicSecure()
   @Post('sign-up-in-space/:invitCode')
-  public async createUserAndJoinSpace(@Param('invitCode') invitCode: string,
-                                      @Body(new BlParsePipe(CnUserEntity)) entity: CnUser): Promise<CnUser> {
+  public async createUserAndJoinSpace(
+    @Param('invitCode') invitCode: string,
+    @Body(new BlParsePipe(CnUserEntity)) entity: CnUser
+  ): Promise<CnUser> {
     return this.userAccountsService.createUserAndJoinSpace(invitCode, entity);
   }
-
-
 }

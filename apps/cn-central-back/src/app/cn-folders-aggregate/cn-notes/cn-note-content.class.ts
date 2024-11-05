@@ -17,9 +17,7 @@ export interface CnNoteFileViewBlockData {
   caption: string;
 }
 
-
 export class CnNoteContent extends BlNewRichText {
-
   public getResourceViewsBlocks(): BlRichTextBlock<CnNoteViewBlockData>[] {
     return this.getBlocksByType(BlBlockType.RESOURCE_VIEW);
   }

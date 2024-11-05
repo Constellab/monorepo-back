@@ -18,7 +18,7 @@ import {
   CnSpaceInvitReadDto,
   CnSpaceSettingsDto,
   CnSpaceStorage,
-  CnSpaceUpdateStorageLocationDTO
+  CnSpaceUpdateStorageLocationDTO,
 } from './cn-space.dto';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { DataSource, EntityManager } from 'typeorm';
@@ -33,18 +33,18 @@ import { CnSpaceEvent, cnSpaceEventName } from './cn-space.event';
 
 @Injectable()
 export class CnSpaceAggregateService {
-
-  constructor(private spaceService: CnSpaceService,
-              private spaceUserService: CnSpaceUserService,
-              private spaceAggregateSecurity: CnSpaceAggregateSecurity,
-              private invitationService: CnSpaceInvitService,
-              private userService: CnUsersService,
-              private datasource: DataSource,
-              private spacesMailService: CnSpacesMailService,
-              private objectStorageAggregateService: CnObjectStoragesAggregateService,
-              private documentService: CnDocumentService,
-              private eventEmitter: EventEmitter2) {
-  }
+  constructor(
+    private spaceService: CnSpaceService,
+    private spaceUserService: CnSpaceUserService,
+    private spaceAggregateSecurity: CnSpaceAggregateSecurity,
+    private invitationService: CnSpaceInvitService,
+    private userService: CnUsersService,
+    private datasource: DataSource,
+    private spacesMailService: CnSpacesMailService,
+    private objectStorageAggregateService: CnObjectStoragesAggregateService,
+    private documentService: CnDocumentService,
+    private eventEmitter: EventEmitter2
+  ) {}
 
   public async getCurrentInfo(): Promise<CnUserSpaceInfo> {
     const user = this.userService.getAndCheckCurrentUser();
@@ -75,19 +75,30 @@ export class CnSpaceAggregateService {
   public async createEntrepriseSpace(entity: CnCreateSpaceDTO): Promise<CnSpaceSettingsDto> {
     // free licenced users can't create a space
     if (CnCurrentUserHelper.getAndCheckCurrentUser().isFreeLicence()) {
-      throw new BlBadRequestException('Free licenced users can\'t create an entreprise space');
+      throw new BlBadRequestException("Free licenced users can't create an entreprise space");
     }
 
     const bucketStorage = await this.checkSpaceStorage(
-      entity.defaultStorageLocations.defaultFolderStorageLocation, entity.defaultStorageLocations.defaultFolderBackupStorageLocation);
+      entity.defaultStorageLocations.defaultFolderStorageLocation,
+      entity.defaultStorageLocations.defaultFolderBackupStorageLocation
+    );
 
-    if (bucketStorage.defaultFolderBucket.isLabBucket() || bucketStorage.defaultFolderBackupBucket?.isLabBucket()) {
-      throw new BlBadRequestException('The default folder storage and backup storage can\'t be a lab bucket during creation');
+    if (
+      bucketStorage.defaultFolderBucket.isLabBucket() ||
+      bucketStorage.defaultFolderBackupBucket?.isLabBucket()
+    ) {
+      throw new BlBadRequestException(
+        "The default folder storage and backup storage can't be a lab bucket during creation"
+      );
     }
 
     const spaceDB = await this.datasource.transaction(async (entityManager: EntityManager) => {
-      const space = await this.spaceService.createEntrepriseSpace(entity.name, bucketStorage.defaultFolderBucket,
-        bucketStorage.defaultFolderBackupBucket, entityManager);
+      const space = await this.spaceService.createEntrepriseSpace(
+        entity.name,
+        bucketStorage.defaultFolderBucket,
+        bucketStorage.defaultFolderBackupBucket,
+        entityManager
+      );
 
       const user = CnCurrentUserHelper.getAndCheckCurrentUser();
       await this.spaceUserService.addUserToSpace(space, user, CnSpaceUserRole.ADMIN, user, entityManager);
@@ -110,13 +121,13 @@ export class CnSpaceAggregateService {
     const space = await this.spaceService.findByIdAndCheck(id);
 
     if (space.type === CnSpaceType.PERSONAL) {
-      throw new BlBadRequestException('Can\'t delete personal space');
+      throw new BlBadRequestException("Can't delete personal space");
     }
 
     const users = await this.getUsersOfSpace(id, 0, 1);
 
     if (users.totalElements > 1) {
-      throw new BlBadRequestException('Can\'t delete the space because there are users in the space');
+      throw new BlBadRequestException("Can't delete the space because there are users in the space");
     }
     await this.spaceService.deleteById(id);
   }
@@ -184,8 +195,12 @@ export class CnSpaceAggregateService {
 
     const space = await this.spaceService.findByIdAndCheck(spaceId, CnSpace.buckets);
 
-    return new CnSpaceStorage(space.cloudStorageLimit, space.cloudStorageUsage, space.defaultFolderBucket.getBucketLocation(),
-      space.defaultFolderBackupBucket?.getBucketLocation() ?? null);
+    return new CnSpaceStorage(
+      space.cloudStorageLimit,
+      space.cloudStorageUsage,
+      space.defaultFolderBucket.getBucketLocation(),
+      space.defaultFolderBackupBucket?.getBucketLocation() ?? null
+    );
   }
 
   public async refreshSpaceStorageUsage(spaceId: string): Promise<void> {
@@ -200,20 +215,27 @@ export class CnSpaceAggregateService {
     return await this.documentService.getStorageSizeDetailBySpace(space.id);
   }
 
-  public async updateCurrentSpaceStorageLocation(locationDTO: CnSpaceUpdateStorageLocationDTO): Promise<CnSpaceStorage> {
+  public async updateCurrentSpaceStorageLocation(
+    locationDTO: CnSpaceUpdateStorageLocationDTO
+  ): Promise<CnSpaceStorage> {
     const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
     await this.checkSpaceAdmin(space.id);
 
-    const buckets = await this.checkSpaceStorage(locationDTO.defaultFolderStorageLocation,
-      locationDTO.defaultFolderBackupStorageLocation);
+    const buckets = await this.checkSpaceStorage(
+      locationDTO.defaultFolderStorageLocation,
+      locationDTO.defaultFolderBackupStorageLocation
+    );
 
     // if this is created mode
     if (buckets.defaultFolderBucket.isLabBucket() && buckets.defaultFolderBucket.lab.spaceId !== space.id) {
       throw new BlBadRequestException('The default folder backup storage lab must be in the same space');
     }
 
-    if (buckets.defaultFolderBackupBucket && buckets.defaultFolderBackupBucket.isLabBucket()
-      && buckets.defaultFolderBackupBucket.lab.spaceId !== space.id) {
+    if (
+      buckets.defaultFolderBackupBucket &&
+      buckets.defaultFolderBackupBucket.isLabBucket() &&
+      buckets.defaultFolderBackupBucket.lab.spaceId !== space.id
+    ) {
       throw new BlBadRequestException('The default folder backup storage lab must be in the same space');
     }
 
@@ -241,7 +263,6 @@ export class CnSpaceAggregateService {
     return await this.spaceUserService.getSpacesOfUser(userId);
   }
 
-
   /////////////////////////////////////// USERS ///////////////////////////////////////
 
   public async getUsersOfSpace(id: string, page: number, size: number): Promise<ClPage<CnSpaceUser>> {
@@ -250,14 +271,24 @@ export class CnSpaceAggregateService {
     return this.spaceUserService.findBySpace(id, page, size);
   }
 
-  public async searchUserInSpace(id: string, searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnSpaceUser>> {
+  public async searchUserInSpace(
+    id: string,
+    searchParams: BlSearchParams,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnSpaceUser>> {
     id = this.getSpaceId(id);
     await this.checkSpaceMember(id);
 
     return this.spaceUserService.searchUser(id, searchParams, page, size);
   }
 
-  public async searchUserInSpaceByName(id: string, name: string, page: number, size: number): Promise<ClPage<CnUser>> {
+  public async searchUserInSpaceByName(
+    id: string,
+    name: string,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnUser>> {
     id = this.getSpaceId(id);
     await this.checkSpaceMember(id);
 
@@ -287,14 +318,21 @@ export class CnSpaceAggregateService {
     const user = await this.userService.findByIdAndCheck(userId);
     const space = await this.spaceService.findByIdAndCheck(spaceID);
 
-    return await this.spaceUserService.addUserToSpace(space, user, CnSpaceUserRole.USER, CnCurrentUserHelper.getAndCheckCurrentUser());
+    return await this.spaceUserService.addUserToSpace(
+      space,
+      user,
+      CnSpaceUserRole.USER,
+      CnCurrentUserHelper.getAndCheckCurrentUser()
+    );
   }
 
   public async removeUserFromSpace(spaceId: string, userId: string): Promise<void> {
     spaceId = this.getSpaceId(spaceId);
     // if a normal user tries to remove the last admin of the space, an error is thrown
-    if (await this.spaceUserService.isOnlyAdmin(spaceId, userId)
-      && !CnCurrentUserHelper.getCurrentUser().isAdmin()) {
+    if (
+      (await this.spaceUserService.isOnlyAdmin(spaceId, userId)) &&
+      !CnCurrentUserHelper.getCurrentUser().isAdmin()
+    ) {
       throw new Error(CnErrorText.CANNOT_REMOVE_LAST_ADMIN);
     }
 
@@ -302,7 +340,11 @@ export class CnSpaceAggregateService {
     const user = await this.userService.findByIdAndCheck(userId);
 
     // trigger the event and check if the user can be removed
-    await this.emitSpaceEventAndCheckResult({ type: 'REMOVE_USER_FROM_SPACE', userId: user.id, spaceId: spaceId });
+    await this.emitSpaceEventAndCheckResult({
+      type: 'REMOVE_USER_FROM_SPACE',
+      userId: user.id,
+      spaceId: spaceId,
+    });
 
     await this.spaceUserService.removeUserFromSpace(spaceId, user.id);
   }
@@ -319,8 +361,10 @@ export class CnSpaceAggregateService {
     await this.checkSpaceAdmin(spaceId);
 
     // if a normal user tries to deactivate the last admin of the space, an error is thrown
-    if (await this.spaceUserService.isOnlyAdmin(spaceId, userId)
-      && !CnCurrentUserHelper.getCurrentUser().isAdmin()) {
+    if (
+      (await this.spaceUserService.isOnlyAdmin(spaceId, userId)) &&
+      !CnCurrentUserHelper.getCurrentUser().isAdmin()
+    ) {
       throw new Error(CnErrorText.CANNOT_DEACTIVATE_LAST_ADMIN);
     }
 
@@ -329,9 +373,11 @@ export class CnSpaceAggregateService {
 
   public async updateUserRoleInSpace(spaceId: string, userId: string, role: CnSpaceUserRole): Promise<void> {
     spaceId = this.getSpaceId(spaceId);
-    if (role === CnSpaceUserRole.USER &&
-      await this.spaceUserService.isOnlyAdmin(spaceId, userId) &&
-      !CnCurrentUserHelper.getCurrentUser().isAdmin()) {
+    if (
+      role === CnSpaceUserRole.USER &&
+      (await this.spaceUserService.isOnlyAdmin(spaceId, userId)) &&
+      !CnCurrentUserHelper.getCurrentUser().isAdmin()
+    ) {
       throw new Error(CnErrorText.CANNOT_REMOVE_LAST_ADMIN);
     }
 
@@ -346,7 +392,7 @@ export class CnSpaceAggregateService {
     const user = await this.userService.findByEmail(invit.userMail);
     return {
       invitation: invit,
-      existingUser: user
+      existingUser: user,
     };
   }
 
@@ -356,8 +402,7 @@ export class CnSpaceAggregateService {
 
     const space = await this.spaceService.findByIdAndCheck(spaceId);
 
-    const member = await this.spaceUserService.findOneBySpaceIdAndUserEmail(
-      spaceId, invitDto.userMail);
+    const member = await this.spaceUserService.findOneBySpaceIdAndUserEmail(spaceId, invitDto.userMail);
 
     if (member) {
       throw new BlBadRequestException(CnErrorText.USER_ALREADY_IN_SPACE);
@@ -381,7 +426,6 @@ export class CnSpaceAggregateService {
 
     return this.invitationService.createInvitation(space, invitDto);
   }
-
 
   /////////////////////////////////////// INVITATION //////////////////////////////////
 
@@ -433,8 +477,11 @@ export class CnSpaceAggregateService {
     return await this.invitationService.findByCodeAndCheckValidity(code);
   }
 
-  public async acceptInvitation(invitation: CnSpaceInvit, user: CnUser,
-                                entityManager: EntityManager): Promise<CnUser> {
+  public async acceptInvitation(
+    invitation: CnSpaceInvit,
+    user: CnUser,
+    entityManager: EntityManager
+  ): Promise<CnUser> {
     if (invitation.userMail !== user.email) {
       throw new BlBadRequestException('The invitation email does not match the user email');
     }
@@ -443,16 +490,24 @@ export class CnSpaceAggregateService {
       throw new BlBadRequestException(CnErrorText.INVIT_ACCEPT_USER_FREE_LICENCE_ENTREPRISE_SPACE);
     }
 
-    await this.spaceUserService.addUserToSpace(invitation.space, user, invitation.role, invitation.createdBy,
-      entityManager);
+    await this.spaceUserService.addUserToSpace(
+      invitation.space,
+      user,
+      invitation.role,
+      invitation.createdBy,
+      entityManager
+    );
 
     await this.invitationService.deleteById(invitation.id, entityManager);
 
     return user;
   }
 
-  public async findInvitationsBySpaceId(spaceId: string, page: number,
-                                        pageSize: number): Promise<ClPage<CnSpaceInvit>> {
+  public async findInvitationsBySpaceId(
+    spaceId: string,
+    page: number,
+    pageSize: number
+  ): Promise<ClPage<CnSpaceInvit>> {
     spaceId = this.getSpaceId(spaceId);
     await this.checkSpaceAdmin(spaceId);
 
@@ -461,25 +516,36 @@ export class CnSpaceAggregateService {
 
   public async createPersonalSpace(user: CnUser, entityManager: EntityManager): Promise<CnSpace> {
     const defaultFolderBucket = await this.objectStorageAggregateService.getDefaultFolderBucketStorage1();
-    const defaultFolderBackupBucket = await this.objectStorageAggregateService.getDefaultFolderBucketStorage2();
-    const personalSpace = await this.spaceService.createPersonalSpace(user, defaultFolderBucket,
-      defaultFolderBackupBucket, entityManager);
+    const defaultFolderBackupBucket =
+      await this.objectStorageAggregateService.getDefaultFolderBucketStorage2();
+    const personalSpace = await this.spaceService.createPersonalSpace(
+      user,
+      defaultFolderBucket,
+      defaultFolderBackupBucket,
+      entityManager
+    );
 
-    await this.spaceUserService.addUserToSpace(personalSpace, user, CnSpaceUserRole.ADMIN,
-      user, entityManager);
+    await this.spaceUserService.addUserToSpace(
+      personalSpace,
+      user,
+      CnSpaceUserRole.ADMIN,
+      user,
+      entityManager
+    );
 
     return personalSpace;
   }
 
   public async getAndCheckUser(userId: string): Promise<CnUser> {
-    if (CnCurrentUserHelper.isAdmin() ||
-      await this.spaceUserService.usersHaveCommonSpace(userId, this.userService.getAndCheckCurrentUser().id)) {
+    if (
+      CnCurrentUserHelper.isAdmin() ||
+      (await this.spaceUserService.usersHaveCommonSpace(userId, this.userService.getAndCheckCurrentUser().id))
+    ) {
       return this.userService.findByIdAndCheck(userId);
     }
 
     throw new BlBadRequestException(CnErrorText.USER_NOT_IN_SPACE);
   }
-
 
   /////////////////////////////////////// OTHERS //////////////////////////////////
 
@@ -500,14 +566,17 @@ export class CnSpaceAggregateService {
 
   /////////////////////////////////////// SECURITY //////////////////////////////////
 
-  private async checkSpaceStorage(defaultFolderStorageLocation: CnBucketLocationDTO,
-                                  defaultFolderBackupStorageLocation?: CnBucketLocationDTO): Promise<{
-    defaultFolderBucket: CnBucket,
-    defaultFolderBackupBucket: CnBucket | null
+  private async checkSpaceStorage(
+    defaultFolderStorageLocation: CnBucketLocationDTO,
+    defaultFolderBackupStorageLocation?: CnBucketLocationDTO
+  ): Promise<{
+    defaultFolderBucket: CnBucket;
+    defaultFolderBackupBucket: CnBucket | null;
   }> {
-
     if (defaultFolderStorageLocation.bucketId === defaultFolderBackupStorageLocation?.bucketId) {
-      throw new BlBadRequestException('The default folder storage and backup storage can\'t in the same location');
+      throw new BlBadRequestException(
+        "The default folder storage and backup storage can't in the same location"
+      );
     }
 
     let defaultBucket: CnBucket;
@@ -517,14 +586,16 @@ export class CnSpaceAggregateService {
       throw new BlBadRequestException('The default folder storage is required for space');
     }
 
-
     if (defaultFolderStorageLocation) {
-      defaultBucket = await this.objectStorageAggregateService.getBucketByIdNotSecure(defaultFolderStorageLocation.bucketId);
+      defaultBucket = await this.objectStorageAggregateService.getBucketByIdNotSecure(
+        defaultFolderStorageLocation.bucketId
+      );
     }
 
     if (defaultFolderBackupStorageLocation) {
       defaultBackupBucket = await this.objectStorageAggregateService.getBucketByIdNotSecure(
-        defaultFolderBackupStorageLocation.bucketId);
+        defaultFolderBackupStorageLocation.bucketId
+      );
     } else {
       defaultBackupBucket = null;
     }

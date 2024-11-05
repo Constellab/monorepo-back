@@ -6,13 +6,13 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class CnDbBackupCron {
-
   private readonly logger = new Logger(CnDbBackupCron.name);
 
-  constructor(private backupService: BlDbBackupService,
-              private configService: CnCoreConfigService,
-              private datasource: DataSource) {
-  }
+  constructor(
+    private backupService: BlDbBackupService,
+    private configService: CnCoreConfigService,
+    private datasource: DataSource
+  ) {}
 
   // cron every day at 00:00 to backup the DB in the object storage
   @Cron('0 0 0 * * *')
@@ -25,13 +25,12 @@ export class CnDbBackupCron {
         bucketType: BlBucketType.NORMAL,
         endpoint: this.configService.getDbBackupEndpoint(),
         region: this.configService.getDbBackupRegion(),
-        credentials: this.configService.getDefaultObjectStorageCredentials()
-      }
+        credentials: this.configService.getDefaultObjectStorageCredentials(),
+      },
     };
 
     await this.backupService.backupDb(this.datasource.manager, bucketConfig, 'cn-space.json');
 
     this.logger.log('[Cron] End of backup db');
   }
-
 }

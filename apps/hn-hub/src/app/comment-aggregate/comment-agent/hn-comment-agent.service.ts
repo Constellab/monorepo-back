@@ -1,14 +1,14 @@
-import {Injectable} from '@nestjs/common';
-import {HnAbstractCommentService} from '../comment-core/hn-abstract-comment.service';
-import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, EntityManager, Repository} from 'typeorm';
-import {HnCommentAgent} from './hn-comment-agent.entity';
-import {HnAgentAggregateService} from '../../agent-aggregate/hn-agent-aggregate.service';
-import {HnAgent} from '../../agent-aggregate/agent/hn-agent.entity';
-import {HnAbstractCommentEntity} from '../comment-core/hn-abstract-comment.entity';
-import {ClPage} from '@monorepo/core-lib';
-import {BlAbstractPaginatedService, BlRichTextContent} from '@monorepo/back-core-lib';
-import {HnCommentAgentDto} from './hn-comment-agent.dto';
+import { Injectable } from '@nestjs/common';
+import { HnAbstractCommentService } from '../comment-core/hn-abstract-comment.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
+import { HnCommentAgent } from './hn-comment-agent.entity';
+import { HnAgentAggregateService } from '../../agent-aggregate/hn-agent-aggregate.service';
+import { HnAgent } from '../../agent-aggregate/agent/hn-agent.entity';
+import { HnAbstractCommentEntity } from '../comment-core/hn-abstract-comment.entity';
+import { ClPage } from '@monorepo/core-lib';
+import { BlAbstractPaginatedService, BlRichTextContent } from '@monorepo/back-core-lib';
+import { HnCommentAgentDto } from './hn-comment-agent.dto';
 
 @Injectable()
 export class HnCommentAgentService extends HnAbstractCommentService<HnAgent> {
@@ -39,22 +39,28 @@ export class HnCommentAgentService extends HnAbstractCommentService<HnAgent> {
     return this.agentAggregateService.removeComment(entity, entityManager);
   }
 
-  async saveComment(entityManager: EntityManager,
-                    comment: HnCommentAgent): Promise<HnCommentAgent> {
+  async saveComment(entityManager: EntityManager, comment: HnCommentAgent): Promise<HnCommentAgent> {
     return entityManager.save(comment);
   }
 
   async getComments(page: number, size: number, entityId: string): Promise<ClPage<HnCommentAgentDto>> {
-    return (await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
-      where: {
-        entity: {
-          id: entityId
-        }
-      },
-      order: {
-        createdAt: 'DESC' as any
-      }
-    }, this.repository.manager, HnCommentAgent)).map(commentAgent => new HnCommentAgentDto(commentAgent));
+    return (
+      await BlAbstractPaginatedService.findPaginatedStatic(
+        page,
+        size,
+        {
+          where: {
+            entity: {
+              id: entityId,
+            },
+          },
+          order: {
+            createdAt: 'DESC' as any,
+          },
+        },
+        this.repository.manager,
+        HnCommentAgent
+      )
+    ).map((commentAgent) => new HnCommentAgentDto(commentAgent));
   }
-
 }

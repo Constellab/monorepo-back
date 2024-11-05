@@ -1,8 +1,8 @@
-import {Module} from '@nestjs/common';
-import {HnProtocolService} from './hn-protocol.service';
-import {HnProtocolController} from './hn-protocol.controller';
-import {TypeOrmModule} from '@nestjs/typeorm';
-import {HnProtocol} from './hn-protocol.entity';
+import { Module } from '@nestjs/common';
+import { HnProtocolService } from './hn-protocol.service';
+import { HnProtocolController } from './hn-protocol.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { HnProtocol } from './hn-protocol.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([HnProtocol])],
@@ -10,5 +10,4 @@ import {HnProtocol} from './hn-protocol.entity';
   exports: [TypeOrmModule],
   providers: [HnProtocolService],
 })
-export class HnProtocolModule {
-}
+export class HnProtocolModule {}

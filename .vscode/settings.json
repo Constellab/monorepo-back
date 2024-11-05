@@ -1,14 +1,14 @@
 {
-    "typescript.preferences.importModuleSpecifier": "relative",
-    "javascript.preferences.quoteStyle": "single",
-    "typescript.preferences.quoteStyle": "single",
-    "javascript.preferences.importModuleSpecifier": "relative",
-    "editor.tabSize": 2,
-    "editor.detectIndentation": false,
-    "eslint.format.enable": true,
-    "[typescript]": {
-      "editor.codeActionsOnSave": {
-        "source.organizeImports": true
-      }
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "javascript.preferences.quoteStyle": "single",
+  "typescript.preferences.quoteStyle": "single",
+  "javascript.preferences.importModuleSpecifier": "relative",
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "eslint.format.enable": true,
+  "[typescript]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
     }
+  }
 }

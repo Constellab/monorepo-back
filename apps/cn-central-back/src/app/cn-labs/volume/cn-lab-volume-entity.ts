@@ -8,7 +8,7 @@ import { ClDateHelper } from '@monorepo/core-lib';
 
 export enum CnLabVolumeType {
   CLASSIC = 'CLASSIC',
-  HIGH_SPEED = 'HIGH_SPEED'
+  HIGH_SPEED = 'HIGH_SPEED',
 }
 
 /**
@@ -16,7 +16,6 @@ export enum CnLabVolumeType {
  */
 @Entity('lab_volume')
 export class CnLabVolumeEntity extends CnBaseEntity {
-
   @Exclude()
   @BlNotUpdatable()
   @Type(() => CnLabEntity)
@@ -33,14 +32,15 @@ export class CnLabVolumeEntity extends CnBaseEntity {
   size: number;
 
   @Column({
-    type: 'enum', enum: CnLabVolumeType, nullable: false
+    type: 'enum',
+    enum: CnLabVolumeType,
+    nullable: false,
   })
   type: CnLabVolumeType;
 
   getEndDateWithDefault(): DateTime {
-    return this.endDate ?? ClDateHelper.getDate("9999-12-31");
+    return this.endDate ?? ClDateHelper.getDate('9999-12-31');
   }
-
 }
 
 export type CnLabVolume = Omit<CnLabVolumeEntity, 'lab'>;

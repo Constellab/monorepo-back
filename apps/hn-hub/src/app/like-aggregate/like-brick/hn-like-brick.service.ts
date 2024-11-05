@@ -1,15 +1,14 @@
-import {Injectable} from '@nestjs/common';
-import {HnAbstractLikeService} from '../like-core/hn-abstract-like.service';
-import {HnLikeBrick} from './hn-like-brick.entity';
-import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, EntityManager, Repository} from 'typeorm';
-import {HnBrick} from '../../brick-aggregate/brick/hn-brick.entity';
-import {HnBrickAggregateService} from '../../brick-aggregate/hn-brick-aggregate.service';
-import {HnBrickDto} from '../../brick-aggregate/brick/hn-brick.dto';
+import { Injectable } from '@nestjs/common';
+import { HnAbstractLikeService } from '../like-core/hn-abstract-like.service';
+import { HnLikeBrick } from './hn-like-brick.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
+import { HnBrick } from '../../brick-aggregate/brick/hn-brick.entity';
+import { HnBrickAggregateService } from '../../brick-aggregate/hn-brick-aggregate.service';
+import { HnBrickDto } from '../../brick-aggregate/brick/hn-brick.dto';
 
 @Injectable()
 export class HnLikeBrickService extends HnAbstractLikeService<HnBrick> {
-
   constructor(
     private brickAggregateService: HnBrickAggregateService,
     @InjectRepository(HnLikeBrick) likeBrickRepository: Repository<HnLikeBrick>,

@@ -23,14 +23,10 @@ import { MulterModule } from '@nestjs/platform-express';
 
     // configure the multer module to accept files up to 100MB
     MulterModule.register({
-      limits: { fileSize: 100 * 1024 * 1024 }
-    })
+      limits: { fileSize: 100 * 1024 * 1024 },
+    }),
   ],
-  providers: [
-    HnFrontService,
-    HnDbBackupCron,
-    HnLabConstellabApiService
-  ],
+  providers: [HnFrontService, HnDbBackupCron, HnLabConstellabApiService],
   exports: [
     HnCoreConfigModule,
 
@@ -40,9 +36,7 @@ import { MulterModule } from '@nestjs/platform-express';
 
     // Providers
     HnFrontService,
-    HnLabConstellabApiService
-  ]
+    HnLabConstellabApiService,
+  ],
 })
-export class HnCoreModule {
-
-}
+export class HnCoreModule {}

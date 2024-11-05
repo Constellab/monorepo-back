@@ -7,20 +7,20 @@ import { HnIcon } from '../icon/hn-icon.entity';
 
 @Controller('public')
 export class HnPublicController {
-  constructor(private readonly iconService: HnIconService) {
-  }
+  constructor(private readonly iconService: HnIconService) {}
 
   @BlPublic()
   @Get('icon')
-  async getIcons(@Query('page', new ParseIntPipe()) page: number,
-                 @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnIcon>> {
+  async getIcons(
+    @Query('page', new ParseIntPipe()) page: number,
+    @Query('size', new ParseIntPipe()) size: number
+  ): Promise<ClPage<HnIcon>> {
     return await this.iconService.getIcons(page, size);
   }
 
   @BlPublic()
   @Get('icon/file/:technicalName')
-  async getIconUrl(@Req() request: Request,
-                   @Res() response: Response): Promise<any> {
+  async getIconUrl(@Req() request: Request, @Res() response: Response): Promise<any> {
     const technicalName = request.url.split('file/')[1];
     const file = await this.iconService.getIconFile(technicalName);
     BlResponseHelper.setFileResponseAndCache(response, file);

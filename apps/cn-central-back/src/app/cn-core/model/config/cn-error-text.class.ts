@@ -32,7 +32,7 @@ export enum CnErrorText {
   INVIT_FREE_USER_TO_ENTREPRISE_SPACE_ERROR = 'error.invit_free_user_to_entreprise_space',
   PERSONAL_SPACE_USER_LIMIT = 'error.personal_space_user_limit',
   REMOVE_GROUP_LAST_USER = 'error.remove_group_last_user',
-  FOLDER_MUST_HAVE_A_GROUP ='error.folder_must_have_a_group',
+  FOLDER_MUST_HAVE_A_GROUP = 'error.folder_must_have_a_group',
   CANT_UNSHARED_FOLDER_LEADER_GROUP = 'error.cant_unshared_folder_leader_group',
   CANNOT_DEACTIVATE_LAST_ADMIN = 'error.cannot_deactivate_last_admin',
   CANNOT_REMOVE_LAST_ADMIN = 'error.cannot_remove_last_admin',

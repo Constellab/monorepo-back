@@ -1,14 +1,13 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {HnBrickUser} from './hn-brick-user.entity';
-import {Repository} from 'typeorm';
-import {HnBrick} from '../brick/hn-brick.entity';
-import {HnUser} from '../../users/hn-user.entity';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { HnBrickUser } from './hn-brick-user.entity';
+import { Repository } from 'typeorm';
+import { HnBrick } from '../brick/hn-brick.entity';
+import { HnUser } from '../../users/hn-user.entity';
 
 @Injectable()
 export class HnBrickUserService {
-  constructor(@InjectRepository(HnBrickUser) private readonly brickUserRepository: Repository<HnBrickUser>) {
-  }
+  constructor(@InjectRepository(HnBrickUser) private readonly brickUserRepository: Repository<HnBrickUser>) {}
 
   createBrickUser(brick: HnBrick, user: HnUser): Promise<HnBrickUser> {
     const brickUser = new HnBrickUser();
@@ -17,12 +16,10 @@ export class HnBrickUserService {
   }
 
   async checkAndRemoveBrickUser(brickId: string, brickUserId: string): Promise<void> {
-    const brickUser: HnBrickUser = await this.brickUserRepository.findOneBy(
-      {
-        brick: {id: brickId},
-        user: {id: brickUserId}
-      }
-    );
+    const brickUser: HnBrickUser = await this.brickUserRepository.findOneBy({
+      brick: { id: brickId },
+      user: { id: brickUserId },
+    });
     if (brickUser) {
       await this.brickUserRepository.remove(brickUser);
     }
@@ -32,10 +29,10 @@ export class HnBrickUserService {
     return this.brickUserRepository.find({
       where: {
         user: {
-          id: user.id
-        }
+          id: user.id,
+        },
       },
-      relations: ['brick']
+      relations: ['brick'],
     });
   }
 
@@ -43,10 +40,10 @@ export class HnBrickUserService {
     return this.brickUserRepository.find({
       where: {
         brick: {
-          id: brick.id
-        }
+          id: brick.id,
+        },
       },
-      relations: ['user']
+      relations: ['user'],
     });
   }
 }

@@ -1,5 +1,5 @@
-import {BlUser} from '../../models/bl-user/bl-user.class';
-import {Request} from 'express';
+import { BlUser } from '../../models/bl-user/bl-user.class';
+import { Request } from 'express';
 
 export const BL_JWT_CONFIG_PROVIDER = Symbol();
 
@@ -18,4 +18,3 @@ export interface BlTokenUser {
 export abstract class BlUserService {
   public abstract findOne(id: string): Promise<BlUser>;
 }
-

@@ -8,7 +8,6 @@ import { HnCurrentUserHelper } from '../utils/hn-current-user.helper';
  */
 @Injectable()
 export class HnLogRequestMiddleware implements NestMiddleware<Request, Response> {
-
   private readonly logger = new Logger(HnLogRequestMiddleware.name);
 
   use(request: Request, response: Response, next: NextFunction): void {
@@ -17,12 +16,9 @@ export class HnLogRequestMiddleware implements NestMiddleware<Request, Response>
 
     response.on('close', () => {
       const { statusCode } = response;
-      if(['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) && statusCode >= 200 && statusCode < 300) {
-
+      if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) && statusCode >= 200 && statusCode < 300) {
         const userString = HnCurrentUserHelper.getCurrentUser()?.getUserInfo() ?? 'No user';
-        this.logger.log(
-          `${method} | ${url} | ${statusCode} | ${userString} | ${userAgent} | ${ip}`
-        );
+        this.logger.log(`${method} | ${url} | ${statusCode} | ${userString} | ${userAgent} | ${ip}`);
       }
     });
 

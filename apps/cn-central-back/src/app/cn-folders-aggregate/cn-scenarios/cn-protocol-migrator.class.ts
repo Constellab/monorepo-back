@@ -1,8 +1,6 @@
 import { CnScenarioProtocol } from './cn-scenario.entity';
 
-export class CnProtocolMigrator{
-
-
+export class CnProtocolMigrator {
   public migrateProtocol(protocol: CnScenarioProtocol): CnScenarioProtocol {
     if (protocol.version === 3) {
       return protocol;
@@ -24,7 +22,7 @@ export class CnProtocolMigrator{
     const newProtocolData = this.migrateProcessFromV1ToV2Recur(protocol.data);
     return {
       version: 2,
-      data: newProtocolData
+      data: newProtocolData,
     };
   }
 
@@ -35,15 +33,13 @@ export class CnProtocolMigrator{
 
     protocol.process_type = {
       human_name: protocol.human_name,
-      short_description: protocol.short_description
+      short_description: protocol.short_description,
     };
 
     delete protocol.human_name;
     delete protocol.short_description;
 
-
     if (protocol.graph) {
-
       for (const key in protocol.graph.nodes) {
         const process = protocol.graph.nodes[key];
         if (!process.name) {
@@ -52,7 +48,7 @@ export class CnProtocolMigrator{
 
         process.process_type = {
           human_name: process.human_name,
-          short_description: process.short_description
+          short_description: process.short_description,
         };
 
         delete process.human_name;
@@ -99,7 +95,7 @@ export class CnProtocolMigrator{
     const newProtocolData = this.migrateProcessFromV2ToV3Recur(protocol.data);
     return {
       version: 3,
-      data: newProtocolData
+      data: newProtocolData,
     };
   }
 
@@ -107,7 +103,6 @@ export class CnProtocolMigrator{
   // update version to brick_version_on_create and brick_version_on_run
   private migrateProcessFromV2ToV3Recur(protocol: any): any {
     if (protocol.graph) {
-
       for (const key in protocol.graph.nodes) {
         const process = protocol.graph.nodes[key];
 

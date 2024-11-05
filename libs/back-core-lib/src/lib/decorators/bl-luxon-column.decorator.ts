@@ -1,7 +1,7 @@
-import {Column, ColumnOptions} from 'typeorm';
-import {ValueTransformer} from 'typeorm/decorator/options/ValueTransformer';
-import {DateTime} from 'luxon';
-import {ClDateHelper, ClLuxonDateTimeTransform, ClLuxonDateTransform} from '@monorepo/core-lib';
+import { Column, ColumnOptions } from 'typeorm';
+import { ValueTransformer } from 'typeorm/decorator/options/ValueTransformer';
+import { DateTime } from 'luxon';
+import { ClDateHelper, ClLuxonDateTimeTransform, ClLuxonDateTransform } from '@monorepo/core-lib';
 
 /**
  * Config for the LuxonDateColumn and LuxonDateTimeColumn
@@ -19,20 +19,19 @@ export interface BlLuxonDateColumnConfig {
  * It also includes the transformation using YYYY-MM-DD format
  */
 export function BlLuxonDateColumn(config?: BlLuxonDateColumnConfig): PropertyDecorator {
-
   // construct TypeOrm transformer
   const transformer: ValueTransformer = {
     // from object to DB
     to: (value: DateTime): string => {
       if (!(value instanceof DateTime)) return value;
-      return ClDateHelper.serializeDate(value)
+      return ClDateHelper.serializeDate(value);
     },
     // from DB to object
-    from: (value: Date): DateTime => value == null ? null : ClDateHelper.getDate(value)
+    from: (value: Date): DateTime => (value == null ? null : ClDateHelper.getDate(value)),
   };
 
   // TypeOrm column config for Date using Luxon
-  const transformOptions: ColumnOptions = {transformer: transformer, type: 'date'};
+  const transformOptions: ColumnOptions = { transformer: transformer, type: 'date' };
 
   // complete the config with the option of LuxonDateColumn and get column decorator
   const column: PropertyDecorator = Column(Object.assign(transformOptions, config));
@@ -50,7 +49,6 @@ export function BlLuxonDateColumn(config?: BlLuxonDateColumnConfig): PropertyDec
  * It also includes the transformation using ISO string
  */
 export function BlLuxonDateTimeColumn(config?: BlLuxonDateColumnConfig): PropertyDecorator {
-
   // construct TypeOrm transformer
   const transformer: ValueTransformer = {
     // from object to DB
@@ -59,11 +57,11 @@ export function BlLuxonDateTimeColumn(config?: BlLuxonDateColumnConfig): Propert
       return ClDateHelper.serializeDateTime(value);
     },
     // from DB to object
-    from: (value: Date): DateTime => value == null ? null : ClDateHelper.getDate(value)
+    from: (value: Date): DateTime => (value == null ? null : ClDateHelper.getDate(value)),
   };
 
   // TypeOrm column config for DateTime using Luxon
-  const transformOptions: ColumnOptions = {transformer: transformer, type: 'datetime'};
+  const transformOptions: ColumnOptions = { transformer: transformer, type: 'datetime' };
 
   // complete the config with the option of LuxonDateColumn and get column decorator
   const column: PropertyDecorator = Column(Object.assign(transformOptions, config));

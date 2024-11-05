@@ -1,6 +1,6 @@
-import {Column, Entity, ManyToOne} from 'typeorm';
-import {HnFolder} from '../folder/hn-folder.entity';
-import {HnBaseEntity} from '../../core/model/entities/hn-base.entity';
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { HnFolder } from '../folder/hn-folder.entity';
+import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
 
 export interface HnDocumentationSearchDTO {
   id: string;
@@ -14,18 +14,17 @@ export interface HnDocumentationSearchDTO {
 
 @Entity('documentation')
 export class HnDocumentation extends HnBaseEntity {
-
   @Column()
   title: string;
 
-  @Column({name: 'content', type: 'simple-json', nullable: true})
+  @Column({ name: 'content', type: 'simple-json', nullable: true })
   content?: Record<string, any>;
 
-  @Column({type: 'longtext', nullable: true})
+  @Column({ type: 'longtext', nullable: true })
   modifications: string;
 
   // TODO: TO REMOVE
-  @Column({type: 'longtext', nullable: true, name: 'modifications_backup'})
+  @Column({ type: 'longtext', nullable: true, name: 'modifications_backup' })
   modificationsBackup: string;
 
   @Column()
@@ -37,7 +36,7 @@ export class HnDocumentation extends HnBaseEntity {
   @Column()
   order: number;
 
-  @ManyToOne(() => HnFolder, {eager: true, onDelete: 'CASCADE'})
+  @ManyToOne(() => HnFolder, { eager: true, onDelete: 'CASCADE' })
   folder: HnFolder;
 
   public setPath(path: string, folderCompletePath: string): void {
@@ -49,11 +48,9 @@ export class HnDocumentation extends HnBaseEntity {
       this.completePath = path + '/';
     }
   }
-
 }
 
 export class HnDocumentationDTO {
-
   title: string;
 
   path: string;
@@ -68,4 +65,3 @@ export class HnDocumentationDTO {
     this.order = documentation.order;
   }
 }
-

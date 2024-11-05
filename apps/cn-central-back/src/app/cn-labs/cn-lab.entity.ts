@@ -1,4 +1,13 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { Exclude, Expose, Type } from 'class-transformer';
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
 import { CnEntityWithStatus } from '../cn-core/model/entities/cn-entity-with-status.entity';
@@ -19,23 +28,23 @@ import { CnLabVolumeType } from './volume/cn-lab-volume-entity';
 export enum CnLabType {
   CLOUD = 'CLOUD',
   DESKTOP = 'DESKTOP',
-  ON_PREMISE = 'ON_PREMISE' // hosted and managed by the client
+  ON_PREMISE = 'ON_PREMISE', // hosted and managed by the client
 }
 
 export enum CnLabBillingMode {
   HOURLY = 'HOURLY',
-  MONTHLY = 'MONTHLY'
+  MONTHLY = 'MONTHLY',
 }
 
 export enum CnLabDesktopPlatform {
   LINUX = 'LINUX',
   WINDOWS = 'WINDOWS',
-  MAC = 'MAC'
+  MAC = 'MAC',
 }
 
 export enum CnLabDomain {
   CONSTELLAB_APP = 'constellab.app',
-  GENCOVERY_IO = 'gencovery.io'
+  GENCOVERY_IO = 'gencovery.io',
 }
 
 /**
@@ -43,8 +52,10 @@ export enum CnLabDomain {
  */
 @Entity('lab')
 export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
-
-  public static readonly SUPPORTED_MAIN_DOMAINS: string[] = [CnLabDomain.CONSTELLAB_APP, CnLabDomain.GENCOVERY_IO];
+  public static readonly SUPPORTED_MAIN_DOMAINS: string[] = [
+    CnLabDomain.CONSTELLAB_APP,
+    CnLabDomain.GENCOVERY_IO,
+  ];
   public static readonly SPACE_API_ROUTE = 'space-api';
   public static readonly S3_API_ROUTE = 's3-server/v1';
   public static readonly CORE_API_ROUTE = 'core-api';
@@ -52,12 +63,12 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   // relation options to load required information for the bucket
   public static relationFull: FindOptionsRelations<CnLabEntity> = {
     space: true,
-    serverCloud: true
+    serverCloud: true,
   };
 
   // relation options to load required information for the bucket
   public static relationSpace: FindOptionsRelations<CnLabEntity> = {
-    space: true
+    space: true,
   };
 
   @BlTrim()
@@ -70,7 +81,9 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   cloudName: string;
 
   @Column({
-    type: 'enum', enum: CnLabType, nullable: false
+    type: 'enum',
+    enum: CnLabType,
+    nullable: false,
   })
   type: CnLabType;
 
@@ -83,8 +96,10 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
 
   @Type(() => CnLabStatusHistory)
   @OneToOne(() => CnLabStatusHistory, {
-    nullable: true, eager: true,
-    onUpdate: 'RESTRICT', onDelete: 'RESTRICT'
+    nullable: true,
+    eager: true,
+    onUpdate: 'RESTRICT',
+    onDelete: 'RESTRICT',
   })
   @JoinColumn()
   currentStatus: CnLabStatusHistory;
@@ -125,18 +140,14 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   @Column({ nullable: false })
   spaceId?: string;
 
-  @OneToMany(() => CnLabUser,
-    (instanceGroup) => instanceGroup.lab,
-    { cascade: ['insert'] })
+  @OneToMany(() => CnLabUser, (instanceGroup) => instanceGroup.lab, { cascade: ['insert'] })
   sharedGroups: CnLabUser[];
 
   @Type(() => CnServerCloud)
-  @ManyToOne(() => CnServerCloud,
-    { nullable: true })
+  @ManyToOne(() => CnServerCloud, { nullable: true })
   serverCloud: CnServerCloud;
 
-  @ManyToOne(() => CnCloudProviderRegion,
-    { onDelete: 'RESTRICT', eager: true, nullable: true })
+  @ManyToOne(() => CnCloudProviderRegion, { onDelete: 'RESTRICT', eager: true, nullable: true })
   region: CnCloudProviderRegion;
 
   // id of the ovh, aws, instance
@@ -160,8 +171,10 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
 
   @Exclude()
   @Column({
-    type: 'enum', enum: CnLabServerTaskStatus, nullable: false,
-    default: CnLabServerTaskStatus.NONE
+    type: 'enum',
+    enum: CnLabServerTaskStatus,
+    nullable: false,
+    default: CnLabServerTaskStatus.NONE,
   })
   serverTaskStatus: CnLabServerTaskStatus;
 
@@ -170,7 +183,9 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   serverTaskDatetime: DateTime;
 
   @Column({
-    type: 'enum', enum: CnLabBillingMode, nullable: true
+    type: 'enum',
+    enum: CnLabBillingMode,
+    nullable: true,
   })
   billingMode: CnLabBillingMode;
 
@@ -178,12 +193,16 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   volumeSize: number;
 
   @Column({
-    type: 'enum', enum: CnLabVolumeType, nullable: true
+    type: 'enum',
+    enum: CnLabVolumeType,
+    nullable: true,
   })
   volumeType: CnLabVolumeType;
 
   @Column({
-    type: 'enum', enum: CnLabDesktopPlatform, nullable: true
+    type: 'enum',
+    enum: CnLabDesktopPlatform,
+    nullable: true,
   })
   desktopPlatform: CnLabDesktopPlatform;
 
@@ -213,7 +232,6 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   getCodelabUsername(): string {
     return 'codelab';
   }
-
 
   // generate the apiKey
   @BeforeInsert()
@@ -251,12 +269,12 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
     if (this.name == 'localhost') {
       return {
         apiKey: '123456',
-        apiUrl: 'http://localhost:3000/' + CnLabEntity.SPACE_API_ROUTE
+        apiUrl: 'http://localhost:3000/' + CnLabEntity.SPACE_API_ROUTE,
       };
     }
     return {
       apiKey: this.glabApiKey,
-      apiUrl: this.glabUrl + '/' + CnLabEntity.SPACE_API_ROUTE
+      apiUrl: this.glabUrl + '/' + CnLabEntity.SPACE_API_ROUTE,
     };
   }
 
@@ -265,13 +283,13 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
       // only for local dev
       return {
         apiKey: '123456',
-        apiUrl: 'http://localhost:3080'
+        apiUrl: 'http://localhost:3080',
       };
     }
 
     return {
       apiKey: this.labManagerApiKey,
-      apiUrl: this.labManagerUrl
+      apiUrl: this.labManagerUrl,
     };
   }
 
@@ -338,8 +356,10 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   }
 
   public serverIsBusy(): boolean {
-    return this.currentStatus.status === CnLabStatus.SERVER_STARTING ||
-      this.currentStatus.status === CnLabStatus.SERVER_STOPPING;
+    return (
+      this.currentStatus.status === CnLabStatus.SERVER_STARTING ||
+      this.currentStatus.status === CnLabStatus.SERVER_STOPPING
+    );
   }
 
   public serverTaskIsRunning(): boolean {
@@ -351,7 +371,6 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
     this.spaceId = space.id;
   }
 }
-
 
 export type CnLabFull = Omit<CnLabEntity, 'labConfig' | 'sharedGroups'>;
 export type CnLabWithSpace = Omit<CnLabFull, 'serverCloud'>;

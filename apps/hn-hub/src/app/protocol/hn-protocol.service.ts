@@ -1,25 +1,27 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
-import {HnProtocol} from './hn-protocol.entity';
-import {HnTechnicalFolder} from '../technical-folder/hn-technical-folder.entity';
-import {HnImportProtocolDTO} from '../brick-aggregate/brick/hn-brick.dto';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { HnProtocol } from './hn-protocol.entity';
+import { HnTechnicalFolder } from '../technical-folder/hn-technical-folder.entity';
+import { HnImportProtocolDTO } from '../brick-aggregate/brick/hn-brick.dto';
 
 @Injectable()
 export class HnProtocolService {
   constructor(
     @InjectRepository(HnProtocol)
     private readonly protocolsRepository: Repository<HnProtocol>
-  ) {
-  }
+  ) {}
 
-  async createTechnicalDocProtocols(technicalFolder: HnTechnicalFolder, protocols: HnImportProtocolDTO[]): Promise<boolean> {
+  async createTechnicalDocProtocols(
+    technicalFolder: HnTechnicalFolder,
+    protocols: HnImportProtocolDTO[]
+  ): Promise<boolean> {
     const oldProtocols: HnProtocol[] = await this.protocolsRepository.find({
       where: {
         technicalFolder: {
-          id: technicalFolder.id
-        }
-      }
+          id: technicalFolder.id,
+        },
+      },
     });
 
     for (const p of oldProtocols) {
@@ -52,7 +54,6 @@ export class HnProtocolService {
       proto.shortDescription = p.short_description;
       proto.objectSubType = p.object_sub_type;
 
-
       if (p.input_specs && Object.keys(p.input_specs).length > 0) {
         proto.inputSpecs = p.input_specs;
       }
@@ -79,28 +80,25 @@ export class HnProtocolService {
     return this.protocolsRepository.find({
       where: {
         technicalFolder: {
-          id: technicalFolderId
-        }
+          id: technicalFolderId,
+        },
       },
       order: {
-        humanName: 'ASC'
-      }
+        humanName: 'ASC',
+      },
     });
   }
 
   async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string): Promise<any> {
-
     const proto: HnProtocol = await this.protocolsRepository.findOneBy({
       technicalFolder: {
-        id: tecFolder.id
+        id: tecFolder.id,
       },
-      uniqueName: uniqueName
+      uniqueName: uniqueName,
     });
-    if(proto != null){
-      proto.objectType = 'PROTOCOL'
+    if (proto != null) {
+      proto.objectType = 'PROTOCOL';
     }
     return proto;
-
-
   }
 }

@@ -10,9 +10,7 @@ import { BlCurrentUserHelper } from '../bl-jwt/bl-current-user.helper';
  */
 @Injectable()
 export class BlTranslateService {
-
-  constructor(private i18nService: I18nService) {
-  }
+  constructor(private i18nService: I18nService) {}
 
   public translateIfExists(key: string, options: BlTranslateOptions = {}): Promise<string> {
     const lang: ClSupportedLanguage = BlCurrentUserHelper.getCurrentLang();
@@ -20,7 +18,7 @@ export class BlTranslateService {
     return this.i18nService.translate(key, {
       lang: lang,
       args: options.args,
-      defaultValue: key // use default value to return the key if the translation is not found
+      defaultValue: key, // use default value to return the key if the translation is not found
     });
   }
 

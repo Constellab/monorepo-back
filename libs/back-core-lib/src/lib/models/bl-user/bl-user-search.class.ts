@@ -1,16 +1,14 @@
-import {FindOptionsOrder, FindOptionsWhere, Like} from 'typeorm';
-import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
-import {ClPage} from '@monorepo/core-lib';
-import {BlAbstractPaginatedService} from '../../services/bl-abstract-paginated.service';
-import {BlUser} from './bl-user.class';
+import { FindOptionsOrder, FindOptionsWhere, Like } from 'typeorm';
+import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+import { ClPage } from '@monorepo/core-lib';
+import { BlAbstractPaginatedService } from '../../services/bl-abstract-paginated.service';
+import { BlUser } from './bl-user.class';
 
 /**
  * Abstract class to simplify smart search for user by name
  */
 export abstract class BlUserSearch<T> {
-
-  constructor(private service: BlAbstractPaginatedService<T>) {
-  }
+  constructor(private service: BlAbstractPaginatedService<T>) {}
 
   protected abstract wrapFindOption(option: FindOptionsWhere<BlUser>): FindOptionsWhere<T>;
 
@@ -19,11 +17,11 @@ export abstract class BlUserSearch<T> {
   protected abstract getRelation(): FindOptionsRelations<T>;
 
   protected wrapMultipleFindOptions(options: FindOptionsWhere<BlUser>[]): FindOptionsWhere<T>[] {
-    return options.map(option => this.wrapFindOption(option));
+    return options.map((option) => this.wrapFindOption(option));
   }
 
   private getOrder(): FindOptionsOrder<T> {
-    return this.wrapOrderOption({firstname: 'ASC', lastname: 'ASC'});
+    return this.wrapOrderOption({ firstname: 'ASC', lastname: 'ASC' });
   }
 
   // Search by name
@@ -46,32 +44,36 @@ export abstract class BlUserSearch<T> {
     return this.searchByLastnameOrFirstname(name, page, size);
   }
 
-  public searchByLastnameOrFirstname(name: string,
-                                     page: number, size: number): Promise<ClPage<T>> {
-
+  public searchByLastnameOrFirstname(name: string, page: number, size: number): Promise<ClPage<T>> {
     return this.service.findPaginated(page, size, {
       where: this.wrapMultipleFindOptions([
-        {lastname: Like(`%${name}%`)},
-        {firstname: Like(`%${name}%`)},
+        { lastname: Like(`%${name}%`) },
+        { firstname: Like(`%${name}%`) },
       ]),
       order: this.getOrder(),
-      relations: this.getRelation()
+      relations: this.getRelation(),
     });
   }
 
-  public async searchByLastnameAndFirstname(name1: string, name2: string,
-                                            page: number, size: number): Promise<ClPage<T>> {
-
+  public async searchByLastnameAndFirstname(
+    name1: string,
+    name2: string,
+    page: number,
+    size: number
+  ): Promise<ClPage<T>> {
     return this.service.findPaginated(page, size, {
-      where: this.wrapMultipleFindOptions([{
-        lastname: Like(`%${name1}%`),
-        firstname: Like(`%${name2}%`)
-      }, {
-        lastname: Like(`%${name2}%`),
-        firstname: Like(`%${name1}%`)
-      }]),
+      where: this.wrapMultipleFindOptions([
+        {
+          lastname: Like(`%${name1}%`),
+          firstname: Like(`%${name2}%`),
+        },
+        {
+          lastname: Like(`%${name2}%`),
+          firstname: Like(`%${name1}%`),
+        },
+      ]),
       order: this.getOrder(),
-      relations: this.getRelation()
+      relations: this.getRelation(),
     });
   }
 }

@@ -14,14 +14,16 @@ import { CnFrontService } from '../cn-core/services/cn-front.service';
  */
 @Injectable()
 export class CnSpacesMailService {
+  constructor(
+    private mailService: BlMailService,
+    private configService: CnCoreConfigService,
+    private frontService: CnFrontService
+  ) {}
 
-  constructor(private mailService: BlMailService,
-              private configService: CnCoreConfigService,
-              private frontService: CnFrontService) {
-  }
-
-
-  public async requestNewLicenses(request: CnRequestNewLicensesDto, userInfo: CnUserSpaceInfo): Promise<void> {
+  public async requestNewLicenses(
+    request: CnRequestNewLicensesDto,
+    userInfo: CnUserSpaceInfo
+  ): Promise<void> {
     const data = {
       user: userInfo.user,
       spaceName: userInfo.space.name,
@@ -30,12 +32,14 @@ export class CnSpacesMailService {
     };
 
     const receiver = this.configService.getCustomerSuccessMail();
-    await this.mailService.sendMail(CnMailTemplate.request_new_licenses, receiver,
-      userInfo.user.lang, data);
+    await this.mailService.sendMail(CnMailTemplate.request_new_licenses, receiver, userInfo.user.lang, data);
   }
 
-
-  public async sendInvitationMail(invit: CnSpaceInvit, user: CnUser, validityInDays: number): Promise<boolean> {
+  public async sendInvitationMail(
+    invit: CnSpaceInvit,
+    user: CnUser,
+    validityInDays: number
+  ): Promise<boolean> {
     let template: string;
     let lang: ClSupportedLanguage;
     const data = {

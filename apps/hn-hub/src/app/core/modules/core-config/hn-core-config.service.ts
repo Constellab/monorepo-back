@@ -15,21 +15,19 @@ import {
   HN_RABBITMQ_PORT_KEY,
   HN_RABBITMQ_URL_KEY,
   HN_RABBITMQ_USER_KEY,
-  HnEnvironmentProfile
+  HnEnvironmentProfile,
 } from '../../model/config/hn-config.class';
 import {
   BlMailConfig,
   BlObjectStorageCredentials,
   BlTransportModuleConfig,
-  blTransportQueueHub
+  blTransportQueueHub,
 } from '@monorepo/back-core-lib';
 import { HnDatabaseConfig } from '../../model/config/hn-database-config.class';
 
 @Injectable()
 export class HnCoreConfigService {
-
-  constructor(protected configService: ConfigService) {
-  }
+  constructor(protected configService: ConfigService) {}
 
   public getEnvironmentProfile(): HnEnvironmentProfile {
     return this.configService.get(HN_ENVIRONMENT_PROFILE_KEY);
@@ -63,7 +61,7 @@ export class HnCoreConfigService {
       port: this.configService.get('DATABASE_PORT'),
       username: this.configService.get('DATABASE_USER'),
       password: this.configService.get('DATABASE_PASSWORD'),
-      database: this.configService.get('DATABASE')
+      database: this.configService.get('DATABASE'),
     };
   }
 
@@ -181,7 +179,7 @@ export class HnCoreConfigService {
       secure: this.getConfigBoolean('MAIL_SECURE'),
       user: this.configService.get('MAIL_USER'),
       password: this.configService.get('MAIL_PASSWORD'),
-      sender: this.configService.get('MAIL_SENDER')
+      sender: this.configService.get('MAIL_SENDER'),
     };
   }
 
@@ -235,4 +233,3 @@ export class HnCoreConfigService {
     return this.configService.get('DOMAIN');
   }
 }
-

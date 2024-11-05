@@ -13,7 +13,7 @@ import {
   NoSuchKey,
   PutObjectCommand,
   PutObjectTaggingCommand,
-  S3Client
+  S3Client,
 } from '@aws-sdk/client-s3';
 import { BlFileResponse, BlObject, BlS3BucketConfig } from './bl-object-storage.class';
 import { Stream } from 'stream';
@@ -22,26 +22,32 @@ import { BlObjectStorageInterface } from './bl-object-storage.interface';
 import { BlBadRequestException } from '../../exceptions/bl-bad-request.exception';
 import { BlNotFoundException } from '../../exceptions/bl-not-found.exception';
 
-
 /**
  * Service to communicate with an object storage s3 to store files.
  */
 export class BlS3BucketService implements BlObjectStorageInterface {
-
   private readonly logger = new Logger(BlS3BucketService.name);
 
   private static MAX_DELETE_BATCH_SIZE = 1000;
 
-  constructor(private config: BlS3BucketConfig) {
-  }
+  constructor(private config: BlS3BucketConfig) {}
 
-  public async uploadObjectToBucket(obj: Buffer, filename: string,
-                                    contentType: string, tags?: Record<string, string>): Promise<string> {
+  public async uploadObjectToBucket(
+    obj: Buffer,
+    filename: string,
+    contentType: string,
+    tags?: Record<string, string>
+  ): Promise<string> {
     const s3Client = this.getClient();
-    await s3Client.send(new PutObjectCommand({
-      Bucket: this.getBucketName(), Key: filename, Body: obj, ContentType: contentType,
-      Tagging: this.tagsToQueryParams(tags)
-    }));
+    await s3Client.send(
+      new PutObjectCommand({
+        Bucket: this.getBucketName(),
+        Key: filename,
+        Body: obj,
+        ContentType: contentType,
+        Tagging: this.tagsToQueryParams(tags),
+      })
+    );
 
     return filename;
   }
@@ -52,19 +58,23 @@ export class BlS3BucketService implements BlObjectStorageInterface {
     const s3Client = this.getClient();
 
     try {
-      const result = await s3Client.send(new GetObjectCommand({ Bucket: this.getBucketName(), Key: objectName }));
+      const result = await s3Client.send(
+        new GetObjectCommand({ Bucket: this.getBucketName(), Key: objectName })
+      );
 
       return {
         name: objectName,
         file: result.Body as Stream,
         contentType: result.ContentType,
-        contentLength: result.ContentLength
+        contentLength: result.ContentLength,
       };
     } catch (e) {
       if (e instanceof NoSuchKey) {
         throw new BlNotFoundException('Object not found');
       }
-      this.logger.error(`Error while getting object ${objectName} from bucket ${this.getBucketName()}. Error ${e}`);
+      this.logger.error(
+        `Error while getting object ${objectName} from bucket ${this.getBucketName()}. Error ${e}`
+      );
       throw new BlBadRequestException('Error while getting object');
     }
   }
@@ -83,11 +93,13 @@ export class BlS3BucketService implements BlObjectStorageInterface {
   public async getObjectInfo(objectName: string): Promise<BlObject> {
     const s3Client = this.getClient();
 
-    const result = await s3Client.send(new HeadObjectCommand({ Bucket: this.getBucketName(), Key: objectName }));
+    const result = await s3Client.send(
+      new HeadObjectCommand({ Bucket: this.getBucketName(), Key: objectName })
+    );
 
     return {
       name: objectName,
-      size: result.ContentLength
+      size: result.ContentLength,
     };
   }
 
@@ -99,20 +111,25 @@ export class BlS3BucketService implements BlObjectStorageInterface {
     const objects: BlObject[] = [];
     let nextToken: string | undefined = undefined;
     while (pageCount < 1000) {
-      const result: ListObjectsCommandOutput = await s3Client.send(new ListObjectsCommand({
-        Bucket: this.getBucketName(), Prefix: prefix,
-        MaxKeys: pageSize,
-        Marker: nextToken
-      }));
+      const result: ListObjectsCommandOutput = await s3Client.send(
+        new ListObjectsCommand({
+          Bucket: this.getBucketName(),
+          Prefix: prefix,
+          MaxKeys: pageSize,
+          Marker: nextToken,
+        })
+      );
 
-      if(!result.Contents){
+      if (!result.Contents) {
         break;
       }
 
-      objects.push(...(result.Contents.map(object => ({
-        name: object.Key,
-        size: object.Size
-      })) ?? []));
+      objects.push(
+        ...(result.Contents.map((object) => ({
+          name: object.Key,
+          size: object.Size,
+        })) ?? [])
+      );
 
       // stop when the page is not full
       if (result.Contents.length < pageSize) {
@@ -126,15 +143,21 @@ export class BlS3BucketService implements BlObjectStorageInterface {
     return objects;
   }
 
-
-  public async getObjectsByPrefixPaginated(prefix: string = '',
-                                           pageSize: number = 1000, startFromKey: string = undefined): Promise<_Object[]> {
+  public async getObjectsByPrefixPaginated(
+    prefix: string = '',
+    pageSize: number = 1000,
+    startFromKey: string = undefined
+  ): Promise<_Object[]> {
     const s3Client = this.getClient();
 
-    const result = await s3Client.send(new ListObjectsCommand({
-      Bucket: this.getBucketName(), Prefix: prefix,
-      MaxKeys: pageSize, Marker: startFromKey
-    }));
+    const result = await s3Client.send(
+      new ListObjectsCommand({
+        Bucket: this.getBucketName(),
+        Prefix: prefix,
+        MaxKeys: pageSize,
+        Marker: startFromKey,
+      })
+    );
     return result.Contents ?? [];
   }
 
@@ -152,7 +175,6 @@ export class BlS3BucketService implements BlObjectStorageInterface {
     return true;
   }
 
-
   public async deleteMultipleObjects(objectNames: string[]): Promise<void> {
     const s3Client = this.getClient();
 
@@ -160,13 +182,14 @@ export class BlS3BucketService implements BlObjectStorageInterface {
     let start = 0;
     while (start < objectNames.length) {
       const end = Math.min(start + BlS3BucketService.MAX_DELETE_BATCH_SIZE, objectNames.length);
-      await s3Client.send(new DeleteObjectsCommand({
-        Bucket: this.getBucketName(),
-        Delete: { Objects: objectNames.slice(start, end).map(key => ({ Key: key })) }
-      }));
+      await s3Client.send(
+        new DeleteObjectsCommand({
+          Bucket: this.getBucketName(),
+          Delete: { Objects: objectNames.slice(start, end).map((key) => ({ Key: key })) },
+        })
+      );
       start += BlS3BucketService.MAX_DELETE_BATCH_SIZE;
     }
-
   }
 
   public async deleteAllObjects(): Promise<void> {
@@ -191,7 +214,6 @@ export class BlS3BucketService implements BlObjectStorageInterface {
 
     await s3Client.send(new CreateBucketCommand({ Bucket: this.getBucketName() }));
   }
-
 
   public async deleteBucket(): Promise<void> {
     if (!(await this.bucketIsEmpty())) {
@@ -218,18 +240,19 @@ export class BlS3BucketService implements BlObjectStorageInterface {
     return objects.length === 0;
   }
 
-
   /////////////////////////////////// TAGS ///////////////////////////////////
   public async getObjectTags(objectName: string): Promise<Record<string, string>> {
     const s3Client = this.getClient();
 
-    const result = await s3Client.send(new GetObjectTaggingCommand({
-      Bucket: this.getBucketName(),
-      Key: objectName
-    }));
+    const result = await s3Client.send(
+      new GetObjectTaggingCommand({
+        Bucket: this.getBucketName(),
+        Key: objectName,
+      })
+    );
 
     const tags: { [key: string]: string } = {};
-    result.TagSet?.forEach(tag => {
+    result.TagSet?.forEach((tag) => {
       if (tag.Key && tag.Value) {
         tags[tag.Key] = tag.Value;
       }
@@ -241,16 +264,20 @@ export class BlS3BucketService implements BlObjectStorageInterface {
   public async setObjectTags(objectName: string, tags: Record<string, string>): Promise<void> {
     const s3Client = this.getClient();
 
-    await s3Client.send(new PutObjectTaggingCommand({
-      Bucket: this.getBucketName(),
-      Key: objectName,
-      Tagging: {TagSet: Object.entries(tags).map(([key, value]) => ({Key: key, Value: value}))}
-    }));
+    await s3Client.send(
+      new PutObjectTaggingCommand({
+        Bucket: this.getBucketName(),
+        Key: objectName,
+        Tagging: { TagSet: Object.entries(tags).map(([key, value]) => ({ Key: key, Value: value })) },
+      })
+    );
   }
 
   private tagsToQueryParams(tags: Record<string, string>): string {
-    if(!tags) return '';
-    return Object.entries(tags).map(([key, value]) => `${key}=${value}`).join('&');
+    if (!tags) return '';
+    return Object.entries(tags)
+      .map(([key, value]) => `${key}=${value}`)
+      .join('&');
   }
   /////////////////////////////////// OTHER ///////////////////////////////////
 
@@ -259,14 +286,11 @@ export class BlS3BucketService implements BlObjectStorageInterface {
       endpoint: this.config.endpoint,
       region: this.config.region,
       credentials: this.config.credentials,
-      forcePathStyle: true // set the bucket name in the url (not in the domain)
+      forcePathStyle: true, // set the bucket name in the url (not in the domain)
     });
   }
-
 
   getBucketName(): string {
     return this.config.bucket;
   }
-
-
 }

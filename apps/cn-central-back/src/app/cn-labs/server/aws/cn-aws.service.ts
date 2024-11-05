@@ -3,14 +3,14 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class CnAwsService {
-
-  constructor(private region: string,
-              private accessKeyId: string,
-              private secretAccessKey: string) {
-  }
+  constructor(
+    private region: string,
+    private accessKeyId: string,
+    private secretAccessKey: string
+  ) {}
 
   async startInstance(instanceId: string): Promise<StartInstancesCommandOutput> {
-    const command = new StartInstancesCommand({InstanceIds: [instanceId]});
+    const command = new StartInstancesCommand({ InstanceIds: [instanceId] });
 
     try {
       return await this.getEc2Client().send(command);
@@ -21,7 +21,7 @@ export class CnAwsService {
   }
 
   async stopInstance(instanceId: string): Promise<StartInstancesCommandOutput> {
-    const command = new StartInstancesCommand({InstanceIds: [instanceId]});
+    const command = new StartInstancesCommand({ InstanceIds: [instanceId] });
 
     try {
       return await this.getEc2Client().send(command);
@@ -29,18 +29,16 @@ export class CnAwsService {
       console.error('Error stopping instance', error);
       throw error;
     }
-
   }
 
   private getEc2Client(): EC2Client {
-
     // Create an EC2 client with credentials
     return new EC2Client({
       region: this.region,
       credentials: {
         accessKeyId: this.accessKeyId,
-        secretAccessKey: this.secretAccessKey
-      }
+        secretAccessKey: this.secretAccessKey,
+      },
     });
   }
 }

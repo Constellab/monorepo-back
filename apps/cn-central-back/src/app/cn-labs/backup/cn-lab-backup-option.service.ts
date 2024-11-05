@@ -7,15 +7,14 @@ import { CnLab, CnLabEntity } from '../cn-lab.entity';
 import { CnObjectStoragesAggregateService } from '../../cn-object-storages/cn-object-storages-aggregate.service';
 import { CnBucket, CnBucketContentType } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 import { CnLabBackupFrequency } from './cn-lab-backup.dto';
-import {
-  CnCloudProviderRegion
-} from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import { CnCloudProviderRegion } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 
 @Injectable()
 export class CnLabBackupOptionService extends BlAbstractService<CnLabBackupOption> {
-
-  constructor(@InjectRepository(CnLabBackupOption) repository: Repository<CnLabBackupOption>,
-              private objectStorageAggregateService: CnObjectStoragesAggregateService) {
+  constructor(
+    @InjectRepository(CnLabBackupOption) repository: Repository<CnLabBackupOption>,
+    private objectStorageAggregateService: CnObjectStoragesAggregateService
+  ) {
     super(repository, CnLabBackupOption);
   }
 
@@ -26,9 +25,12 @@ export class CnLabBackupOptionService extends BlAbstractService<CnLabBackupOptio
   /**
    * Create 2 backup options for the lab to store backup in 2 different s3 regions
    */
-  public async createBackupOptions(lab: CnLab, dailyBackupRegion: CnCloudProviderRegion,
-                                   weeklyBackupRegion: CnCloudProviderRegion,
-                                   entityManager: EntityManager): Promise<CnLabBackupOption> {
+  public async createBackupOptions(
+    lab: CnLab,
+    dailyBackupRegion: CnCloudProviderRegion,
+    weeklyBackupRegion: CnCloudProviderRegion,
+    entityManager: EntityManager
+  ): Promise<CnLabBackupOption> {
     if (!lab.isCloud()) {
       throw new BlBadRequestException('Lab backup option only available for cloud labs');
     }
@@ -36,22 +38,25 @@ export class CnLabBackupOptionService extends BlAbstractService<CnLabBackupOptio
     option.lab = lab as CnLabEntity;
 
     // configure the daily backup
-    const bucket1 = await this.objectStorageAggregateService.getBucketByContentTypeAndRegionNotSecure(CnBucketContentType.LAB_BACKUP,
-      dailyBackupRegion.id);
+    const bucket1 = await this.objectStorageAggregateService.getBucketByContentTypeAndRegionNotSecure(
+      CnBucketContentType.LAB_BACKUP,
+      dailyBackupRegion.id
+    );
 
     if (bucket1.isLabBucket()) {
-      throw new BlBadRequestException('Can\'t use a lab bucket for backup');
+      throw new BlBadRequestException("Can't use a lab bucket for backup");
     }
     option.bucket1 = bucket1;
     option.frequency1 = CnLabBackupFrequency.DAILY;
 
-
     // configure the weekly backup
-    const bucket2 = await this.objectStorageAggregateService.getBucketByContentTypeAndRegionNotSecure(CnBucketContentType.LAB_BACKUP,
-      weeklyBackupRegion.id);
+    const bucket2 = await this.objectStorageAggregateService.getBucketByContentTypeAndRegionNotSecure(
+      CnBucketContentType.LAB_BACKUP,
+      weeklyBackupRegion.id
+    );
 
     if (bucket2.isLabBucket()) {
-      throw new BlBadRequestException('Can\'t use a lab bucket for backup');
+      throw new BlBadRequestException("Can't use a lab bucket for backup");
     }
 
     option.bucket2 = bucket2;
@@ -68,15 +73,13 @@ export class CnLabBackupOptionService extends BlAbstractService<CnLabBackupOptio
   }
 
   public async findByLabId(labId: string): Promise<CnLabBackupOption> {
-    return this.repo.findOne(
-      {
-        where: { lab: { id: labId } },
-        relations: {
-          bucket1: CnBucket.configRelation,
-          bucket2: CnBucket.configRelation,
-          lab: true
-        }
-      });
+    return this.repo.findOne({
+      where: { lab: { id: labId } },
+      relations: {
+        bucket1: CnBucket.configRelation,
+        bucket2: CnBucket.configRelation,
+        lab: true,
+      },
+    });
   }
-
 }

@@ -1,31 +1,32 @@
-import {Injectable} from '@nestjs/common';
-import {CnBrick, CnBrickVisibility} from './cn-brick.entity';
-import {InjectRepository} from '@nestjs/typeorm';
-import {FindOptionsWhere, IsNull, Repository} from 'typeorm';
-import {CnBrickVersion, CnVersionType} from './cn-brick-version.entity';
-import {CnBrickSaveDTO} from './cn-brick.dto';
-import {BlAbstractService, BlBadRequestException, BlVersion} from '@monorepo/back-core-lib';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
+import { Injectable } from '@nestjs/common';
+import { CnBrick, CnBrickVisibility } from './cn-brick.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FindOptionsWhere, IsNull, Repository } from 'typeorm';
+import { CnBrickVersion, CnVersionType } from './cn-brick-version.entity';
+import { CnBrickSaveDTO } from './cn-brick.dto';
+import { BlAbstractService, BlBadRequestException, BlVersion } from '@monorepo/back-core-lib';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 
 @Injectable()
 export class CnBricksService extends BlAbstractService<CnBrick> {
-
-  constructor(@InjectRepository(CnBrick) private brickRepo: Repository<CnBrick>,
-              @InjectRepository(CnBrickVersion) private brickVersionRepo: Repository<CnBrickVersion>) {
+  constructor(
+    @InjectRepository(CnBrick) private brickRepo: Repository<CnBrick>,
+    @InjectRepository(CnBrickVersion) private brickVersionRepo: Repository<CnBrickVersion>
+  ) {
     super(brickRepo, CnBrick);
   }
 
-
   public async saveBrick(brickSaveDTO: CnBrickSaveDTO): Promise<void> {
     // create or update the brick
-    let brick: CnBrick = (await this.brickRepo.findOneBy({id: brickSaveDTO.id})) ??
-      (await this.brickRepo.findOneBy({name: brickSaveDTO.name}));
-    if (brick == null){
+    let brick: CnBrick =
+      (await this.brickRepo.findOneBy({ id: brickSaveDTO.id })) ??
+      (await this.brickRepo.findOneBy({ name: brickSaveDTO.name }));
+    if (brick == null) {
       brick = new CnBrick();
       brick.id = brickSaveDTO.id;
     }
     if (brick.id != brickSaveDTO.id) {
-      await this.brickRepo.remove(brick)
+      await this.brickRepo.remove(brick);
       brick = new CnBrick();
       brick.id = brickSaveDTO.id;
     }
@@ -53,22 +54,21 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
   }
 
   public findByName(name: string): Promise<CnBrick> {
-    return this.brickRepo.findOne({where: {name: name}});
+    return this.brickRepo.findOne({ where: { name: name } });
   }
 
   public getBrickVersion(name: string, version: BlVersion): Promise<CnBrickVersion | null> {
-    return this.brickVersionRepo.findOne(
-      {
-        where: {
-          brick: {name: name},
-          major: version.major,
-          minor: version.minor,
-          patch: version.patch,
-          versionType: version.isBeta() ? CnVersionType.BETA : CnVersionType.NORMAL,
-          subPatch: version.isBeta() ? version.subPatch : IsNull()
-        },
-        relations: ['brick']
-      });
+    return this.brickVersionRepo.findOne({
+      where: {
+        brick: { name: name },
+        major: version.major,
+        minor: version.minor,
+        patch: version.patch,
+        versionType: version.isBeta() ? CnVersionType.BETA : CnVersionType.NORMAL,
+        subPatch: version.isBeta() ? version.subPatch : IsNull(),
+      },
+      relations: ['brick'],
+    });
   }
 
   public async getBrickVersionAndCheck(name: string, version: BlVersion): Promise<CnBrickVersion> {
@@ -76,7 +76,9 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
 
     if (brickVersion == null) {
       // eslint-disable-next-line max-len
-      throw new BlBadRequestException(`The version '${version.toString()}' does not exist on brick '${name}'. Please register the version on the hub.`);
+      throw new BlBadRequestException(
+        `The version '${version.toString()}' does not exist on brick '${name}'. Please register the version on the hub.`
+      );
     }
 
     return brickVersion;
@@ -91,21 +93,21 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
     return this.brickRepo.find({
       where: where,
       relations: ['versions'],
-      order: {name: 'ASC'}
+      order: { name: 'ASC' },
     });
   }
 
   public async getBrickVersions(brickName: string): Promise<CnBrickVersion[]> {
     const brickVersions = await this.brickVersionRepo.find({
       where: {
-        brick: {name: brickName},
+        brick: { name: brickName },
       },
       order: {
         major: 'DESC',
         minor: 'DESC',
-        patch: 'DESC'
+        patch: 'DESC',
       },
-      relations: ['brick']
+      relations: ['brick'],
     });
 
     // useful to sort with sub patch
@@ -113,28 +115,30 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
   }
 
   public async getByBrickVersionId(brickVersionId: string): Promise<CnBrick> {
-    return (await this.brickVersionRepo.findOne({
-      where: {id: brickVersionId},
-      relations: ['brick']
-    })).brick;
+    return (
+      await this.brickVersionRepo.findOne({
+        where: { id: brickVersionId },
+        relations: ['brick'],
+      })
+    ).brick;
   }
 
   public async getBrickLatestVersion(brickName: string): Promise<CnBrickVersion | null> {
     const brickVersion = await this.brickVersionRepo.findOne({
       where: {
-        brick: {name: brickName},
+        brick: { name: brickName },
         versionType: CnVersionType.NORMAL,
       },
       order: {
         major: 'DESC',
         minor: 'DESC',
-        patch: 'DESC'
+        patch: 'DESC',
       },
-      relations: ['brick']
+      relations: ['brick'],
     });
 
-    if(brickVersion) return brickVersion;
+    if (brickVersion) return brickVersion;
     // return the last version including beta
-    return this.getBrickVersions(brickName).then(brickVersions => brickVersions[0]);
+    return this.getBrickVersions(brickName).then((brickVersions) => brickVersions[0]);
   }
 }

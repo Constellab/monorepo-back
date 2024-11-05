@@ -1,19 +1,22 @@
-import {Injectable, Logger} from '@nestjs/common';
-import {Observable, throwError} from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
-import {BlExternalApiError, BlExternalApiHttpOption, BlExternalApiHttpOptionObserve} from './bl-external-api.class';
-import {ClCoreJsonConvert, ClDeserializationRef, ClPageI} from '@monorepo/core-lib';
-import {BlExternalApiErrorService} from './bl-external-api-error.service';
-import {AxiosError, AxiosResponse} from 'axios';
-import {HttpService} from '@nestjs/axios';
+import { Injectable, Logger } from '@nestjs/common';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import {
+  BlExternalApiError,
+  BlExternalApiHttpOption,
+  BlExternalApiHttpOptionObserve,
+} from './bl-external-api.class';
+import { ClCoreJsonConvert, ClDeserializationRef, ClPageI } from '@monorepo/core-lib';
+import { BlExternalApiErrorService } from './bl-external-api-error.service';
+import { AxiosError, AxiosResponse } from 'axios';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class BlExternalApiService {
-
-
-  constructor(private httpService: HttpService,
-              private errorService: BlExternalApiErrorService) {
-  }
+  constructor(
+    private httpService: HttpService,
+    private errorService: BlExternalApiErrorService
+  ) {}
 
   /**
    * HTTP POST. Call a post request.
@@ -22,11 +25,17 @@ export class BlExternalApiService {
    * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
-  public post(route: string, body: any, classReference?: ClDeserializationRef,
-              options: BlExternalApiHttpOption = {}): Observable<any> {
+  public post(
+    route: string,
+    body: any,
+    classReference?: ClDeserializationRef,
+    options: BlExternalApiHttpOption = {}
+  ): Observable<any> {
     return this.httpService.post(route, this.convertObjectToPlain(body), options as any).pipe(
-      map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)),
-      catchError(err => this.catchError(err, route, options.logError)),
+      map((result) =>
+        this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)
+      ),
+      catchError((err) => this.catchError(err, route, options.logError))
     );
   }
 
@@ -37,11 +46,17 @@ export class BlExternalApiService {
    * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
-  public put(route: string, body: any, classReference?: ClDeserializationRef,
-             options: BlExternalApiHttpOption = {}): Observable<any> {
+  public put(
+    route: string,
+    body: any,
+    classReference?: ClDeserializationRef,
+    options: BlExternalApiHttpOption = {}
+  ): Observable<any> {
     return this.httpService.put(route, this.convertObjectToPlain(body), options as any).pipe(
-      map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)),
-      catchError(err => this.catchError(err, route, options.logError)),
+      map((result) =>
+        this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)
+      ),
+      catchError((err) => this.catchError(err, route, options.logError))
     );
   }
 
@@ -51,11 +66,16 @@ export class BlExternalApiService {
    * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
-  public delete(route: string, classReference?: ClDeserializationRef,
-                options: BlExternalApiHttpOption = {}): Observable<any> {
+  public delete(
+    route: string,
+    classReference?: ClDeserializationRef,
+    options: BlExternalApiHttpOption = {}
+  ): Observable<any> {
     return this.httpService.delete(route, options as any).pipe(
-      map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)),
-      catchError(err => this.catchError(err, route, options.logError)),
+      map((result) =>
+        this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)
+      ),
+      catchError((err) => this.catchError(err, route, options.logError))
     );
   }
 
@@ -65,24 +85,33 @@ export class BlExternalApiService {
    * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
-  public get(route: string, classReference?: ClDeserializationRef,
-             options: BlExternalApiHttpOption = {}): Observable<any> {
+  public get(
+    route: string,
+    classReference?: ClDeserializationRef,
+    options: BlExternalApiHttpOption = {}
+  ): Observable<any> {
     return this.httpService.get(route, options as any).pipe(
-      map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)),
-      catchError(err => this.catchError(err, route, options.logError)),
+      map((result) =>
+        this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)
+      ),
+      catchError((err) => this.catchError(err, route, options.logError))
     );
   }
 
   /**
    * Make an http post with form data with the ip of the lab and the API key of the lab in header
    */
-  public postFormData(route: string, formData: any, classReference?: ClDeserializationRef,
-                      options: BlExternalApiHttpOption = {}): Observable<any> {
+  public postFormData(
+    route: string,
+    formData: any,
+    classReference?: ClDeserializationRef,
+    options: BlExternalApiHttpOption = {}
+  ): Observable<any> {
     // add the formData header
     options.headers = Object.assign({}, options.headers, formData.getHeaders());
 
     return this.post(route, formData.getBuffer(), classReference, options).pipe(
-      catchError(err => this.catchError(err, route, options.logError)),
+      catchError((err) => this.catchError(err, route, options.logError))
     );
   }
 
@@ -93,9 +122,12 @@ export class BlExternalApiService {
    * @param observe
    * @param isPaginated if true the result is considered as a {@link ClPageI}
    */
-  public deserialize(response: AxiosResponse, classReference: ClDeserializationRef,
-                     observe: BlExternalApiHttpOptionObserve = 'data', isPaginated: boolean = false): any {
-
+  public deserialize(
+    response: AxiosResponse,
+    classReference: ClDeserializationRef,
+    observe: BlExternalApiHttpOptionObserve = 'data',
+    isPaginated: boolean = false
+  ): any {
     if (observe === 'response') {
       return response;
     }
@@ -134,17 +166,21 @@ export class BlExternalApiService {
   }
 
   private catchError(error: AxiosError, route: string, logError?: boolean): Observable<never> {
-
     const apiError: BlExternalApiError = {
       status: error.response ? error.response.status : null,
       message: error.message ?? '',
-      error: error
+      error: error,
     };
 
     const errorData: any = error.response?.data ?? {};
     // If the error is formatted like : CmNestApiError
-    if (errorData && errorData.status != null && errorData.code != null
-      && errorData.detail != null && (errorData.instanceId != null || errorData.instance_id != null)) {
+    if (
+      errorData &&
+      errorData.status != null &&
+      errorData.code != null &&
+      errorData.detail != null &&
+      (errorData.instanceId != null || errorData.instance_id != null)
+    ) {
       apiError.knownError = {
         status: errorData.status,
         code: errorData.code,
@@ -163,7 +199,6 @@ export class BlExternalApiService {
       }
     }
     return throwError(apiError as any);
-
   }
 
   /**

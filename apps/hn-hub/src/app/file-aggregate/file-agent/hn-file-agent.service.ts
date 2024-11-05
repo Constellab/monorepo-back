@@ -9,9 +9,10 @@ import { HnAgent } from '../../agent-aggregate/agent/hn-agent.entity';
 
 @Injectable()
 export class HnFileAgentService extends HnAbstractFileService<HnAgent> {
-  constructor(@InjectRepository(HnFileAgent) fileDocumentationRepository: Repository<HnFileAgent>,
-              objectStorageService: BlObjectStorageService,
-              private configService: HnCoreConfigService
+  constructor(
+    @InjectRepository(HnFileAgent) fileDocumentationRepository: Repository<HnFileAgent>,
+    objectStorageService: BlObjectStorageService,
+    private configService: HnCoreConfigService
   ) {
     super(fileDocumentationRepository, objectStorageService);
   }
@@ -28,8 +29,8 @@ export class HnFileAgentService extends HnAbstractFileService<HnAgent> {
         region: this.configService.getBackupObjectStorageRegion(),
         bucket: this.configService.getAgentFilesObjectStorageBackupBucket(),
         credentials: this.configService.getDefaultObjectStorageCredentials(),
-        bucketType: BlBucketType.NORMAL
-      }
+        bucketType: BlBucketType.NORMAL,
+      },
     };
   }
 
@@ -41,13 +42,12 @@ export class HnFileAgentService extends HnAbstractFileService<HnAgent> {
         region: this.configService.getDefaultObjectStorageRegion(),
         bucket: this.configService.getAgentFilesObjectStorageBucket(),
         credentials: this.configService.getDefaultObjectStorageCredentials(),
-        bucketType: BlBucketType.NORMAL
-      }
+        bucketType: BlBucketType.NORMAL,
+      },
     };
   }
 
   async getAllBucketItemsName(): Promise<any[]> {
     return await this.objectStorageService.getAllObjectsByPrefix(this.getBucketConfig());
   }
-
 }

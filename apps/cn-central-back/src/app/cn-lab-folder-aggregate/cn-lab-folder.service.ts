@@ -1,25 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CnLabFolder, CnLabFolderEntity, CnLabFolderWithLab, CnLabFolderWithRootFolder } from './cn-lab-folder.entity';
+import {
+  CnLabFolder,
+  CnLabFolderEntity,
+  CnLabFolderWithLab,
+  CnLabFolderWithRootFolder,
+} from './cn-lab-folder.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { CnLab, CnLabEntity } from '../cn-labs/cn-lab.entity';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { BlBadRequestException } from '@monorepo/back-core-lib';
 import {
   CnHierarchyObject,
-  CnHierarchyObjectEntity
+  CnHierarchyObjectEntity,
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
-
 
 @Injectable()
 export class CnLabFolderService {
+  constructor(@InjectRepository(CnLabFolderEntity) private repository: Repository<CnLabFolderEntity>) {}
 
-  constructor(@InjectRepository(CnLabFolderEntity) private repository: Repository<CnLabFolderEntity>) {
-  }
-
-
-  public async createLabFolder(lab: CnLab, rootFolder: CnHierarchyObject,
-                                       entityManager: EntityManager): Promise<CnLabFolder> {
+  public async createLabFolder(
+    lab: CnLab,
+    rootFolder: CnHierarchyObject,
+    entityManager: EntityManager
+  ): Promise<CnLabFolder> {
     if (!rootFolder.isRootFolder()) {
       throw new BlBadRequestException('Only root folder can be shared with a lab');
     }
@@ -37,7 +41,11 @@ export class CnLabFolderService {
     return entityManager.save(labFolder);
   }
 
-  public async deleteLabFolder(labId: string, rootFolderId: string, entityManager: EntityManager): Promise<void> {
+  public async deleteLabFolder(
+    labId: string,
+    rootFolderId: string,
+    entityManager: EntityManager
+  ): Promise<void> {
     const labFolder = await this.findByLabIdAndRootFolderId(labId, rootFolderId);
 
     if (labFolder == null) {
@@ -47,7 +55,6 @@ export class CnLabFolderService {
     await entityManager.remove(labFolder);
   }
 
-
   public async findByLabIdAndRootFolderId(labId: string, rootFolderId: string): Promise<CnLabFolder> {
     return this.repository.findOneBy({ labId, rootFolderId: rootFolderId });
   }
@@ -55,30 +62,28 @@ export class CnLabFolderService {
   public async findByLabId(labId: string): Promise<CnLabFolderWithRootFolder[]> {
     return this.repository.find({
       where: {
-        labId: labId
+        labId: labId,
       },
       relations: {
-        rootFolder: true
-      }
+        rootFolder: true,
+      },
     });
   }
 
   public async findByRootFolderId(rootFolderId: string): Promise<CnLabFolderWithLab[]> {
     return this.repository.find({
       where: {
-        rootFolderId: rootFolderId
+        rootFolderId: rootFolderId,
       },
       relations: {
-        lab: true
-      }
+        lab: true,
+      },
     });
   }
 
   public async findByRootFolderIdAndLabId(rootFolderId: string, labId: string): Promise<CnLabFolder | null> {
-    return this.repository.findOne(
-      {
-        where: { rootFolderId, labId }
-      }
-    );
+    return this.repository.findOne({
+      where: { rootFolderId, labId },
+    });
   }
 }

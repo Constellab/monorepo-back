@@ -5,7 +5,7 @@ import { Logger } from '@nestjs/common';
 import { CnLabBillingMode } from '../../cn-lab.entity';
 
 export type CnAzureInstanceStatus =
-  'ProvisioningState/succeeded'
+  | 'ProvisioningState/succeeded'
   | 'ProvisioningState/creating'
   | 'ProvisioningState/deleting'
   | 'ProvisioningState/failed'
@@ -19,12 +19,9 @@ export type CnAzureInstanceStatus =
   | 'PowerState/stopping';
 
 export class CnAzureInstance {
-
   private readonly logger = new Logger(CnAzureInstance.name);
 
-
-  constructor(public instance: VirtualMachine) {
-  }
+  constructor(public instance: VirtualMachine) {}
 
   get name(): string {
     return this.instance.name;
@@ -62,14 +59,14 @@ export class CnAzureInstance {
     if (lastStatus.level === 'Error') {
       return {
         status: 'ERROR',
-        message: ((lastStatus.displayStatus ?? '') + ' ' + (lastStatus.message ?? '')).trim()
+        message: ((lastStatus.displayStatus ?? '') + ' ' + (lastStatus.message ?? '')).trim(),
       };
     }
 
     const status = this.azureInstanceStatusToCpStatus(lastStatus.code as CnAzureInstanceStatus);
     return {
       status,
-      message: lastStatus.displayStatus + ' ' + lastStatus.message
+      message: lastStatus.displayStatus + ' ' + lastStatus.message,
     };
   }
 
@@ -124,5 +121,4 @@ export class CnAzureInstance {
   }
 }
 
-export type CnAzureVolumeStatus = 'Unattached' | 'Attached' | 'Reserved' |
-  'Frozen' | 'Detached';
+export type CnAzureVolumeStatus = 'Unattached' | 'Attached' | 'Reserved' | 'Frozen' | 'Detached';

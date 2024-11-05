@@ -1,15 +1,12 @@
-import {Controller, Get, Put, UseInterceptors} from '@nestjs/common';
-import {CnSettingsService} from './cn-settings.service';
-import {CnServerDecisionTreeDTO} from './cn-settings.entity';
-import {FileInterceptor} from '@nestjs/platform-express';
-import {BlFile, BlUploadedFile} from '@monorepo/back-core-lib';
-
+import { Controller, Get, Put, UseInterceptors } from '@nestjs/common';
+import { CnSettingsService } from './cn-settings.service';
+import { CnServerDecisionTreeDTO } from './cn-settings.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { BlFile, BlUploadedFile } from '@monorepo/back-core-lib';
 
 @Controller('settings')
 export class CnSettingsController {
-
-  constructor(private settingsService: CnSettingsService) {
-  }
+  constructor(private settingsService: CnSettingsService) {}
 
   /////////////////////////////// SERVER DECISION TREE /////////////////////////////////
 
@@ -24,4 +21,3 @@ export class CnSettingsController {
     return this.settingsService.updateServerDecisionTree(file);
   }
 }
-

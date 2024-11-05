@@ -5,13 +5,13 @@ import { BlObjectStorageService } from '../bl-object-storage/bl-object-storage.s
 
 @Injectable()
 export class BlDbBackupService {
+  constructor(private objectStorageService: BlObjectStorageService) {}
 
-
-  constructor(private objectStorageService: BlObjectStorageService) {
-  }
-
-  public async backupDb(entityManager: EntityManager, bucketConfig: BlBucketConfig,
-                        filename: string): Promise<void> {
+  public async backupDb(
+    entityManager: EntityManager,
+    bucketConfig: BlBucketConfig,
+    filename: string
+  ): Promise<void> {
     const dbJson = await this.exportDbAsJson(entityManager);
 
     await this.objectStorageService.uploadJson(bucketConfig, dbJson, { filename: filename });

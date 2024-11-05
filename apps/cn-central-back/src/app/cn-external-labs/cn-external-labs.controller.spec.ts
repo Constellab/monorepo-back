@@ -1,5 +1,5 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {CnExternalLabsController} from './cn-external-labs.controller';
+import { Test, TestingModule } from '@nestjs/testing';
+import { CnExternalLabsController } from './cn-external-labs.controller';
 
 describe('ExternalLabsController', () => {
   let controller: CnExternalLabsController;

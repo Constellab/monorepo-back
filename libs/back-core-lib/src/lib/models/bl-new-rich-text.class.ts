@@ -4,7 +4,7 @@ import { Logger } from '@nestjs/common';
 import {
   BlRichTextBlockModification,
   BlRichTextModifications,
-  BlRichTextModificationType
+  BlRichTextModificationType,
 } from './bl-rich-text-block-modification.class';
 
 /**
@@ -23,15 +23,14 @@ export interface BlRichTextBlock<Data extends object = any> {
    * Saved Block data
    */
   data: Data;
-
 }
 
-export class BlRichTextContentWithModifications{
+export class BlRichTextContentWithModifications {
   content: BlRichTextContent;
   modifications: Record<string, any>;
 
   constructor(data: BlRichTextContent | BlRichTextContentWithModifications) {
-    if((data as any)?.modifications === undefined && (data as any)?.content === undefined){
+    if ((data as any)?.modifications === undefined && (data as any)?.content === undefined) {
       this.content = data as BlRichTextContent;
       this.modifications = null;
     } else {
@@ -62,11 +61,11 @@ export enum BlBlockType {
   PARAGRAPH = 'paragraph',
   FIGURE = 'figure',
   RESOURCE_VIEW = 'resourceView',
-  FILE_VIEW = 'fileView'
+  FILE_VIEW = 'fileView',
 }
 
 export enum BlInlineToolType {
-  MENTION = 'te-mention-inline'
+  MENTION = 'te-mention-inline',
 }
 
 export interface BlMentionUser {
@@ -100,15 +99,13 @@ export interface BlRichTextUploadFileResponse {
 }
 
 export class BlNewRichText {
-
   private readonly logger = new Logger(BlNewRichText.name);
-
 
   public static emptyContent(): BlRichTextContent {
     return {
       time: new Date().getTime(),
       blocks: [],
-      version: '2.28.2'
+      version: '2.28.2',
     };
   }
 
@@ -116,12 +113,15 @@ export class BlNewRichText {
     if (ClHelpService.isNullOrEmpty(content) || ClHelpService.isNullOrEmpty(content.blocks)) return true;
 
     // check if all block are paragraph and contain only spaces or empty string
-    const allParagraph = content.blocks.every(block => block.type === BlBlockType.PARAGRAPH);
+    const allParagraph = content.blocks.every((block) => block.type === BlBlockType.PARAGRAPH);
     if (!allParagraph) return false;
 
-    return content.blocks.every(block => {
-      return ClHelpService.isNullOrEmpty(block.data) || ClHelpService.isNullOrEmpty(block.data.text) ||
-        ClHelpService.isNullOrEmpty(block.data.text.trim());
+    return content.blocks.every((block) => {
+      return (
+        ClHelpService.isNullOrEmpty(block.data) ||
+        ClHelpService.isNullOrEmpty(block.data.text) ||
+        ClHelpService.isNullOrEmpty(block.data.text.trim())
+      );
     });
   }
 
@@ -130,44 +130,47 @@ export class BlNewRichText {
     return Math.random().toString(36).substring(2, 12);
   }
 
-  constructor(private richText: BlRichTextContent) {
-  }
+  constructor(private richText: BlRichTextContent) {}
 
   public getBlocks(): BlRichTextBlock[] {
     return this.richText.blocks;
   }
 
   public getBlocksByType(type: BlBlockType): BlRichTextBlock[] {
-    return this.richText?.blocks?.filter(block => block.type === type);
+    return this.richText?.blocks?.filter((block) => block.type === type);
   }
 
   public getContent(): BlRichTextContent {
     return this.richText;
   }
 
-
   ////////////////////////////////////////// MODIFICATIONS ///////////////////////////////////////////
 
   // Get the rich text modification has a string of the BlRichTextModifications object
-  public getRichTextModificationAsString(newContent: BlRichTextContent,
-                                         userId: string,
-                                         modifications: BlRichTextModifications = new BlRichTextModifications()): string {
+  public getRichTextModificationAsString(
+    newContent: BlRichTextContent,
+    userId: string,
+    modifications: BlRichTextModifications = new BlRichTextModifications()
+  ): string {
     return JSON.stringify(this.getRichTextModificationsAsObject(newContent, userId, modifications));
   }
 
-  private getRichTextModifications(newContent: BlRichTextContent,
-                                   userId: string,
-                                   modifications: BlRichTextModifications = new BlRichTextModifications()): BlRichTextModifications {
+  private getRichTextModifications(
+    newContent: BlRichTextContent,
+    userId: string,
+    modifications: BlRichTextModifications = new BlRichTextModifications()
+  ): BlRichTextModifications {
     const differences: BlRichTextBlockModification[] = [];
     if (this.richText == null || this.richText.blocks == null) {
       return null;
     }
     const oldBlocks = this.getBlocks();
-    const oldBlockMap = new Map(oldBlocks.map(block => [block.id, block]));
+    const oldBlockMap = new Map(oldBlocks.map((block) => [block.id, block]));
     newContent.blocks.forEach((block, index) => {
       const oldBlock = oldBlockMap.get(block.id);
       const oldBlockIndex = oldBlocks.indexOf(oldBlock);
-      if (oldBlock == null) { // block is new
+      if (oldBlock == null) {
+        // block is new
         const modif = new BlRichTextBlockModification(
           block.id,
           block.type,
@@ -177,7 +180,8 @@ export class BlNewRichText {
         );
         modif.blockValue = block.data;
         differences.push(modif);
-      } else if (JSON.stringify(oldBlock) !== JSON.stringify(block)) { // block is updated
+      } else if (JSON.stringify(oldBlock) !== JSON.stringify(block)) {
+        // block is updated
         const modif = new BlRichTextBlockModification(
           block.id,
           block.type,
@@ -191,7 +195,8 @@ export class BlNewRichText {
         modif.setDifferences(JSON.stringify(oldBlock.data));
         differences.push(modif);
         oldBlockMap.delete(block.id);
-      } else if (oldBlockIndex != index && oldBlockMap.has(block.id)) { // block is moved
+      } else if (oldBlockIndex != index && oldBlockMap.has(block.id)) {
+        // block is moved
         const modif = new BlRichTextBlockModification(
           block.id,
           block.type,
@@ -208,7 +213,8 @@ export class BlNewRichText {
       }
     });
     oldBlocks.forEach((oldBlock, index) => {
-      if (oldBlockMap.has(oldBlock.id)) { // block is deleted
+      if (oldBlockMap.has(oldBlock.id)) {
+        // block is deleted
         const modif = new BlRichTextBlockModification(
           oldBlock.id,
           oldBlock.type,
@@ -225,9 +231,11 @@ export class BlNewRichText {
     return modifications;
   }
 
-  public getRichTextModificationsAsObject(newContent: BlRichTextContent,
-                                          userId: string,
-                                          modifications: BlRichTextModifications = new BlRichTextModifications()): Record<string, any>{
+  public getRichTextModificationsAsObject(
+    newContent: BlRichTextContent,
+    userId: string,
+    modifications: BlRichTextModifications = new BlRichTextModifications()
+  ): Record<string, any> {
     return this.getRichTextModifications(newContent, userId, modifications).toJsonObject();
   }
 
@@ -235,19 +243,19 @@ export class BlNewRichText {
   public undoModifications(modificationsList: BlRichTextBlockModification[]): BlRichTextContent {
     const content = this.getContent();
 
-    if(!modificationsList || modificationsList.length == 0){
+    if (!modificationsList || modificationsList.length == 0) {
       return content;
     }
 
     const blocks = this.getBlocks();
     const reversedModifications = modificationsList.slice().reverse(); // Reverse to undo in the right order
-    reversedModifications.forEach(modification => {
+    reversedModifications.forEach((modification) => {
       switch (modification.type) {
         case BlRichTextModificationType.MOVED:
           const movedBlock: BlRichTextBlock = {
             id: modification.blockId,
             data: modification.blockValue,
-            type: modification.blockType as any
+            type: modification.blockType as any,
           };
           // remove the block from the old index and add it to the new index
           blocks.splice(modification.index, 1);
@@ -259,8 +267,8 @@ export class BlNewRichText {
           break;
         case BlRichTextModificationType.UPDATED:
           // undo the differences in the block data and add anti-slashes to the double quotes
-          const b = blocks.find(b => b.id === modification.blockId);
-          const diff = modification.undoDifferences(JSON.stringify(b.data))?.replace(/"/g, "\"");
+          const b = blocks.find((b) => b.id === modification.blockId);
+          const diff = modification.undoDifferences(JSON.stringify(b.data))?.replace(/"/g, '"');
           if (diff?.length > 0) {
             blocks[blocks.indexOf(b)].data = JSON.parse(diff);
           }
@@ -269,8 +277,8 @@ export class BlNewRichText {
           const block: BlRichTextBlock = {
             id: modification.blockId,
             data: modification.blockValue,
-            type: modification.blockType as any
-          }
+            type: modification.blockType as any,
+          };
           // add the block to the index
           blocks.splice(modification.index, 0, block);
           break;
@@ -280,18 +288,17 @@ export class BlNewRichText {
     return content;
   }
 
-
   // Redo the modifications in the modificationsList
   public redoModifications(modificationsList: BlRichTextBlockModification[]): BlRichTextContent {
     const content = this.getContent();
     const blocks = this.getBlocks();
-    modificationsList.forEach(modification => {
+    modificationsList.forEach((modification) => {
       switch (modification.type) {
         case BlRichTextModificationType.MOVED:
           const movedBlock: BlRichTextBlock = {
             id: modification.blockId,
             data: modification.blockValue,
-            type: modification.blockType as any
+            type: modification.blockType as any,
           };
           blocks.splice(modification.oldIndex, 1);
           blocks.splice(modification.index, 0, movedBlock);
@@ -300,13 +307,14 @@ export class BlNewRichText {
           const block: BlRichTextBlock = {
             id: modification.blockId,
             data: modification.blockValue,
-            type: modification.blockType as any
-          }
+            type: modification.blockType as any,
+          };
           blocks.splice(modification.index, 0, block);
           break;
         case BlRichTextModificationType.UPDATED:
-          const diff = modification.redoDifferences(JSON.stringify(blocks[modification.index].data))
-            .replace(/"/g, "\"");
+          const diff = modification
+            .redoDifferences(JSON.stringify(blocks[modification.index].data))
+            .replace(/"/g, '"');
           if (diff?.length > 0) {
             blocks[modification.index].data = JSON.parse(diff);
           }
@@ -328,10 +336,9 @@ export class BlNewRichText {
   public getFirstParagraphsText(): string {
     if (BlNewRichText.isEmpty(this.getContent())) return null;
     let result = '';
-    const paragraphBlocks = this.getContent().blocks.filter(block => block.type === BlBlockType.PARAGRAPH);
+    const paragraphBlocks = this.getContent().blocks.filter((block) => block.type === BlBlockType.PARAGRAPH);
     if (paragraphBlocks.length === 0) return null;
     for (const block of paragraphBlocks) {
-
       if (block.data && block.data.text && block.data.text.trim() !== '') {
         if (result.length + block.data.text.trim().length > 200) {
           result += block.data.text.trim().substring(0, 200 - result.length) + '...';
@@ -350,7 +357,7 @@ export class BlNewRichText {
   }
 
   public isUsedFigure(filename: string): boolean {
-    return this.getFiguresBlocks().some(op => op.data.filename === filename);
+    return this.getFiguresBlocks().some((op) => op.data.filename === filename);
   }
 
   public getFirstFigureLink(): string {
@@ -360,11 +367,10 @@ export class BlNewRichText {
   }
 
   public getFiguresBlock(filename: string): BlRichTextBlock | undefined {
-    return this.getFiguresBlocks().find(op => op.data.filename === filename) ?? null;
+    return this.getFiguresBlocks().find((op) => op.data.filename === filename) ?? null;
   }
 
   ///////////////////////////////////// MENTION ///////////////////////////////////////////////
-
 
   public getMentions(): BlMentionUser[] {
     const mentions: BlMentionUser[] = [];

@@ -1,5 +1,5 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {CnAuthService} from './cn-auth.service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { CnAuthService } from './cn-auth.service';
 
 describe('AuthService', () => {
   let service: CnAuthService;

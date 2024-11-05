@@ -8,7 +8,7 @@ import {
   CnLabManagerRestoreBackupDTO,
   CnLabManagerStatus,
   CnManagerLabComposeRestartOptions,
-  CnManagerLabPullBiotaOptions
+  CnManagerLabPullBiotaOptions,
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnExternalLabManagerApiService } from '../cn-external-lab-api/cn-external-lab-manager-api.service';
 import { CnLab } from './cn-lab.entity';
@@ -26,11 +26,11 @@ import { CnLabBackupsHistory } from './backup/cn-lab-backup.dto';
 export class CnLabManagerService {
   private readonly logger = new Logger(CnLabManagerService.name);
 
-
-  constructor(private labManagerApiService: CnExternalLabManagerApiService,
-              private configService: CnCoreConfigService,
-              private labConfigService: CnLabConfigsService) {
-  }
+  constructor(
+    private labManagerApiService: CnExternalLabManagerApiService,
+    private configService: CnCoreConfigService,
+    private labConfigService: CnLabConfigsService
+  ) {}
 
   public async healthCheck(labManagerUrl: string): Promise<boolean> {
     return this.labManagerApiService.healthCheck(labManagerUrl);
@@ -95,12 +95,12 @@ export class CnLabManagerService {
       space: {
         apiKey: lab.glabApiKey,
         apiUrl: this.configService.getApiUrl(),
-        frontUrl: `https://${spaceDomain}.${this.configService.getCentralFrontDomain()}`
+        frontUrl: `https://${spaceDomain}.${this.configService.getCentralFrontDomain()}`,
       },
       community: {
         frontUrl: this.configService.getCommunityFrontUrl(),
         apiUrl: this.configService.getCommunityApiUrl(),
-        apiKey: this.configService.getCommunityApiKey()
+        apiKey: this.configService.getCommunityApiKey(),
       },
       codelabToken: lab.codelabToken,
       communityFrontUrl: this.configService.getCommunityFrontUrl(),
@@ -112,14 +112,14 @@ export class CnLabManagerService {
       dockerRegistry: {
         url: this.configService.getDockerRegistryUrl(),
         username: this.configService.getDockerRegistryUsername(),
-        password: this.configService.getDockerRegistryPassword()
+        password: this.configService.getDockerRegistryPassword(),
       },
       // enable the captcha only on constellab standard domain
       captchaSiteKey: lab.isConstellabDomain() ? this.configService.getCaptchaSiteKey() : null,
       labConfig: {
-        enableBackup: lab.isCloud()
+        enableBackup: lab.isCloud(),
       },
-      openaiApiKey: this.configService.getOpenaiAPIKey()
+      openaiApiKey: this.configService.getOpenaiAPIKey(),
     };
   }
 
@@ -182,7 +182,6 @@ export class CnLabManagerService {
     // wait for server to reboot
     let count = 0;
     while (count < 15) {
-
       const result = await this.healthCheck(labManagerUrl);
       if (result) {
         return;
@@ -194,7 +193,7 @@ export class CnLabManagerService {
 
       this.logger.log(`Waiting for lab manager ${labManagerUrl} to be available. Attempt ${count + 1} of 15`);
       // wait 15 seconds
-      await new Promise(r => setTimeout(r, 15000));
+      await new Promise((r) => setTimeout(r, 15000));
       count++;
     }
 

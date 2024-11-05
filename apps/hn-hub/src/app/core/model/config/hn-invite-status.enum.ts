@@ -1,4 +1,4 @@
-export enum HnInviteStatus{
+export enum HnInviteStatus {
   ACCEPTED = 'ACCEPTED',
-  PENDING = 'PENDING'
+  PENDING = 'PENDING',
 }

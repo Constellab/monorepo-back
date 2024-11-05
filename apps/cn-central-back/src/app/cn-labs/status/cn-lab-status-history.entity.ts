@@ -7,9 +7,10 @@ import { BlNotUpdatable } from '@monorepo/back-core-lib';
 
 @Entity('lab_status_history')
 export class CnLabStatusHistory extends CnStatusHistory<CnLabStatus> {
-
   @Column({
-    type: 'enum', enum: CnLabStatus, nullable: false,
+    type: 'enum',
+    enum: CnLabStatus,
+    nullable: false,
     default: CnLabStatus.NO_SERVER,
   })
   status: CnLabStatus;
@@ -17,9 +18,6 @@ export class CnLabStatusHistory extends CnStatusHistory<CnLabStatus> {
   @Exclude()
   @BlNotUpdatable()
   @Type(() => CnLabEntity)
-  @ManyToOne(() => CnLabEntity, {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+  @ManyToOne(() => CnLabEntity, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   entity: CnLabEntity;
-
-
 }
-

@@ -9,7 +9,7 @@ import {
   Post,
   Put,
   Query,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 import { HnAgentAggregateService } from './hn-agent-aggregate.service';
 import { HnAgentVersion } from './agent-version/hn-agent-version.entity';
@@ -20,7 +20,7 @@ import {
   HnAgentForLabDto,
   HnAgentVersionFileInput,
   HnAgentVersionForLabDto,
-  HnCreateAgentDto
+  HnCreateAgentDto,
 } from './agent/hn-agent.dto';
 import {
   BlFile,
@@ -28,7 +28,7 @@ import {
   BlPublic,
   BlRichTextUploadedImageResponse,
   BlRichTextUploadFileResponse,
-  BlUploadedFile
+  BlUploadedFile,
 } from '@monorepo/back-core-lib';
 import { HnAgent } from './agent/hn-agent.entity';
 import { ClPage } from '@monorepo/core-lib';
@@ -53,7 +53,6 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     super(agentFileService);
   }
 
-
   // TODO: TO REMOVE
   @IsAdmin()
   @Get('migrate-style')
@@ -75,13 +74,9 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    * @return the created agent version
    */
   @Post()
-  create(
-    @Body(new BlParsePipe(HnCreateAgentDto)) createAgentDto: HnCreateAgentDto
-  ): Promise<HnAgentVersion> {
+  create(@Body(new BlParsePipe(HnCreateAgentDto)) createAgentDto: HnCreateAgentDto): Promise<HnAgentVersion> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
-    createAgentDto.versionFile = migrator.migrateAgentVersionFile(
-      createAgentDto.versionFile
-    );
+    createAgentDto.versionFile = migrator.migrateAgentVersionFile(createAgentDto.versionFile);
     return this.agentAggregateService.create(createAgentDto);
   }
 
@@ -92,9 +87,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     @Body(new BlParsePipe(HnCreateAgentDto)) createAgentDto: HnCreateAgentDto
   ): Promise<HaCreateAgentVersionFromLabResponseDto> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
-    createAgentDto.versionFile = migrator.migrateAgentVersionFile(
-      createAgentDto.versionFile
-    );
+    createAgentDto.versionFile = migrator.migrateAgentVersionFile(createAgentDto.versionFile);
     return this.agentAggregateService.createForLab(createAgentDto);
   }
 
@@ -106,13 +99,8 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     @Body(new BlParsePipe(HnCreateAgentDto)) createAgentDto: HnCreateAgentDto
   ): Promise<HaCreateAgentVersionFromLabResponseDto> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
-    createAgentDto.versionFile = migrator.migrateAgentVersionFile(
-      createAgentDto.versionFile
-    );
-    return this.agentAggregateService.forkForLab(
-      agentVersionId,
-      createAgentDto
-    );
+    createAgentDto.versionFile = migrator.migrateAgentVersionFile(createAgentDto.versionFile);
+    return this.agentAggregateService.forkForLab(agentVersionId, createAgentDto);
   }
 
   @BlPublic()
@@ -124,10 +112,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   ): Promise<HaCreateAgentVersionFromLabResponseDto> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
     versionFile = migrator.migrateAgentVersionFile(versionFile);
-    return this.agentAggregateService.createNewVersionForLab(
-      agentId,
-      versionFile
-    );
+    return this.agentAggregateService.createNewVersionForLab(agentId, versionFile);
   }
 
   @BlPublic()
@@ -155,13 +140,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnAgentForLabDto>> {
-    return this.agentAggregateService.getAgentsForLab(
-      spacesFilter,
-      titleFilter,
-      personalOnly,
-      page,
-      size
-    );
+    return this.agentAggregateService.getAgentsForLab(spacesFilter, titleFilter, personalOnly, page, size);
   }
 
   @BlPublic()
@@ -177,10 +156,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     } else {
       versionNumber = +jsonVersionNumber;
     }
-    return this.agentAggregateService.getAgentForLabByVersionId(
-      versionId,
-      versionNumber
-    );
+    return this.agentAggregateService.getAgentForLabByVersionId(versionId, versionNumber);
   }
 
   /**
@@ -209,12 +185,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnAgentDto>> {
-    return this.agentAggregateService.findAllWithFilters(
-      spacesFilter,
-      titleFilter,
-      page,
-      size
-    );
+    return this.agentAggregateService.findAllWithFilters(spacesFilter, titleFilter, page, size);
   }
 
   /**
@@ -241,19 +212,12 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    */
   @BlPublic()
   @Get(':id')
-  async getAgentById(
-    @Param('id', ParseUUIDPipe) id: string
-  ): Promise<HnAgentDto> {
-    return new HnAgentDto(
-      await this.agentAggregateService.findAgentById(id)
-    );
+  async getAgentById(@Param('id', ParseUUIDPipe) id: string): Promise<HnAgentDto> {
+    return new HnAgentDto(await this.agentAggregateService.findAgentById(id));
   }
 
   @Put(':id/title')
-  updateTitle(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body('title') title: string
-  ): Promise<HnAgent> {
+  updateTitle(@Param('id', ParseUUIDPipe) id: string, @Body('title') title: string): Promise<HnAgent> {
     return this.agentAggregateService.updateTitle(id, title);
   }
 
@@ -293,9 +257,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    */
   @BlPublic()
   @Get('version/:id')
-  getAgentVersionById(
-    @Param('id', ParseUUIDPipe) id: string
-  ): Promise<HnAgentVersionDto> {
+  getAgentVersionById(@Param('id', ParseUUIDPipe) id: string): Promise<HnAgentVersionDto> {
     return this.agentAggregateService.findAgentVersionById(id);
   }
 
@@ -309,9 +271,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   getLatestPublishedAgentVersionByAgentId(
     @Param('agentId', ParseUUIDPipe) agentId: string
   ): Promise<HnAgentVersionDto> {
-    return this.agentAggregateService.findLatestPublishedAgentVersionByAgentId(
-      agentId
-    );
+    return this.agentAggregateService.findLatestPublishedAgentVersionByAgentId(agentId);
   }
 
   /**
@@ -345,10 +305,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     @Param('agentId', ParseUUIDPipe) agentId: string,
     @Param('versionNumber') versionNumber: string
   ): Promise<HnAgentVersionDto> {
-    return this.agentAggregateService.findAgentVersionByAgentIdAndVersionNumber(
-      agentId,
-      +versionNumber
-    );
+    return this.agentAggregateService.findAgentVersionByAgentIdAndVersionNumber(agentId, +versionNumber);
   }
 
   /**
@@ -390,10 +347,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     @Param('id', ParseUUIDPipe) id: string,
     @Body('environment') environment: string
   ): Promise<HnAgentVersion> {
-    return this.agentAggregateService.updateAgentVersionEnvironment(
-      id,
-      environment
-    );
+    return this.agentAggregateService.updateAgentVersionEnvironment(id, environment);
   }
 
   /**
@@ -402,9 +356,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    * @return the published agent version
    */
   @Put('version/:id/publish')
-  publishAgentVersion(
-    @Param('id', ParseUUIDPipe) id: string
-  ): Promise<HnAgentVersion> {
+  publishAgentVersion(@Param('id', ParseUUIDPipe) id: string): Promise<HnAgentVersion> {
     return this.agentAggregateService.publishAgentVersion(id);
   }
 
@@ -415,12 +367,8 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    */
   @BlPublic()
   @Get(':agentId/versions/published')
-  getPublishedAgentVersions(
-    @Param('agentId', ParseUUIDPipe) agentId: string
-  ): Promise<HnAgentVersionDto[]> {
-    return this.agentAggregateService.getPublishedAgentVersions(
-      agentId
-    );
+  getPublishedAgentVersions(@Param('agentId', ParseUUIDPipe) agentId: string): Promise<HnAgentVersionDto[]> {
+    return this.agentAggregateService.getPublishedAgentVersions(agentId);
   }
 
   /**
@@ -436,13 +384,8 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     @Body(new BlParsePipe(HnAgentVersionFileInput)) newAgentVersionFile: HnAgentVersionFileInput
   ): Promise<HnAgentVersion> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
-    newAgentVersionFile = migrator.migrateAgentVersionFile(
-      newAgentVersionFile
-    );
-    return this.agentAggregateService.createNewDraftVersion(
-      agentId,
-      newAgentVersionFile
-    );
+    newAgentVersionFile = migrator.migrateAgentVersionFile(newAgentVersionFile);
+    return this.agentAggregateService.createNewDraftVersion(agentId, newAgentVersionFile);
   }
 
   /**
@@ -458,13 +401,8 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     @Body(new BlParsePipe(HnAgentVersionFileInput)) newAgentVersionFile: HnAgentVersionFileInput
   ): Promise<HnAgentVersion> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
-    newAgentVersionFile = migrator.migrateAgentVersionFile(
-      newAgentVersionFile
-    );
-    return this.agentAggregateService.replaceDraftVersion(
-      agentId,
-      newAgentVersionFile
-    );
+    newAgentVersionFile = migrator.migrateAgentVersionFile(newAgentVersionFile);
+    return this.agentAggregateService.replaceDraftVersion(agentId, newAgentVersionFile);
   }
 
   /**
@@ -478,10 +416,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     @Param('versionId', ParseUUIDPipe) versionId: string,
     @Body() infos: Record<string, any>
   ): Promise<HnAgentVersion> {
-    return this.agentAggregateService.updateAgentVersionInfos(
-      versionId,
-      infos
-    );
+    return this.agentAggregateService.updateAgentVersionInfos(versionId, infos);
   }
 
   /**
@@ -494,11 +429,8 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   getAgentVersionBrickDependencies(
     @Param('agentVersionId', ParseUUIDPipe) agentVersionId: string
   ): Promise<HnBrickVersionDto[]> {
-    return this.agentAggregateService.getAgentVersionBrickDependencies(
-      agentVersionId
-    );
+    return this.agentAggregateService.getAgentVersionBrickDependencies(agentVersionId);
   }
-
 
   @Put('version/:versionId/style')
   updateVersionStyle(
@@ -514,17 +446,12 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body('coAuthorMail') coAuthorMail: string
   ): Promise<boolean> {
-    return this.agentAggregateService.inviteAgentCoAuthor(
-      id,
-      coAuthorMail
-    );
+    return this.agentAggregateService.inviteAgentCoAuthor(id, coAuthorMail);
   }
 
   @BlPublic()
   @Get('co-authors/:id')
-  async getAgentCoAuthors(
-    @Param('id', new ParseUUIDPipe()) id: string
-  ): Promise<HnUserDto[]> {
+  async getAgentCoAuthors(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUserDto[]> {
     return this.agentAggregateService.getAgentCoAuthors(id);
   }
 
@@ -543,10 +470,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('agentAuthorUserId', new ParseUUIDPipe()) agentAuthorUserId: string
   ): Promise<void> {
-    return this.agentAggregateService.removeAgentCoAuthor(
-      id,
-      agentAuthorUserId
-    );
+    return this.agentAggregateService.removeAgentCoAuthor(id, agentAuthorUserId);
   }
 
   /***
@@ -566,9 +490,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   }
 
   @Delete('co-authors/invite/:inviteId')
-  async deleteCoAuthorInvite(
-    @Param('inviteId', new ParseUUIDPipe()) inviteId: string
-  ): Promise<boolean> {
+  async deleteCoAuthorInvite(@Param('inviteId', new ParseUUIDPipe()) inviteId: string): Promise<boolean> {
     return this.agentAggregateService.deleteCoAuthorInvite(inviteId);
   }
 
@@ -599,7 +521,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     @Param('agentId', new ParseUUIDPipe()) agentId: string
   ): Promise<any> {
     return {
-      filename: await this.agentAggregateService.saveView(file, agentId)
+      filename: await this.agentAggregateService.saveView(file, agentId),
     };
   }
 
@@ -607,8 +529,6 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   async deleteAgentVersion(
     @Param('agentVersionId', new ParseUUIDPipe()) agentVersionId: string
   ): Promise<void> {
-    return this.agentAggregateService.deleteAgentVersion(
-      agentVersionId
-    );
+    return this.agentAggregateService.deleteAgentVersion(agentVersionId);
   }
 }

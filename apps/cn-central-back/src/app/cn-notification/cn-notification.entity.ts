@@ -7,15 +7,13 @@ import { ClDateHelper } from '@monorepo/core-lib';
 import { DateTime } from 'luxon';
 import { CnActivityEntityType } from '../cn-activity/cn-activity.entity';
 
-
 @Entity('notification')
 export class CnNotification extends BlEntityWithId implements BlNotification {
-
-  @BlLuxonDateTimeColumn({nullable: false, update: false})
+  @BlLuxonDateTimeColumn({ nullable: false, update: false })
   createdAt: DateTime;
 
   @Type(() => CnUserEntity)
-  @ManyToOne(() => CnUserEntity, {eager: true, nullable: false})
+  @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   createdBy: CnUser;
 
   @Column()
@@ -27,7 +25,7 @@ export class CnNotification extends BlEntityWithId implements BlNotification {
   @Column()
   objectId: string;
 
-  @Column({type: 'enum', enum: CnActivityEntityType, update: false})
+  @Column({ type: 'enum', enum: CnActivityEntityType, update: false })
   objectType: CnActivityEntityType;
 
   @Column()
@@ -37,22 +35,21 @@ export class CnNotification extends BlEntityWithId implements BlNotification {
   text2: string;
 
   @Type(() => CnSpace)
-  @ManyToOne(() => CnSpace, {eager: true, nullable: true})
+  @ManyToOne(() => CnSpace, { eager: true, nullable: true })
   space: CnSpace;
 
-  @Column({nullable: true, update: false})
+  @Column({ nullable: true, update: false })
   spaceId: string;
 
   @Exclude()
   @Type(() => CnUserEntity)
-  @ManyToOne(() => CnUserEntity, {eager: true, nullable: false})
+  @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   user: CnUser;
 
   // list of object ids that are associated with the object id
   // use to associate this notification with multiple objects
-  @Column({nullable: true, update: false, type: 'simple-json'})
+  @Column({ nullable: true, update: false, type: 'simple-json' })
   associatedObjectIds: string[];
-
 
   @BeforeInsert()
   setCreatedInfo(): void {
@@ -68,7 +65,7 @@ export class CnNotification extends BlEntityWithId implements BlNotification {
     this.text = notificationData.text;
     this.text2 = notificationData.text2;
     this.createdBy = notificationData.createdBy;
-    this.associatedObjectIds = notificationData.associatedObjectIds ?? []
+    this.associatedObjectIds = notificationData.associatedObjectIds ?? [];
   }
 }
 

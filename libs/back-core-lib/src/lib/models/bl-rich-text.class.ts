@@ -6,5 +6,3 @@ export interface BlRichTextOp {
   insert: any;
   attributes?: any;
 }
-
-

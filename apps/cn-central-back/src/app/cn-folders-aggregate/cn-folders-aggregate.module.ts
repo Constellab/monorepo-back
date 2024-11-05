@@ -37,20 +37,8 @@ import { CnHierarchyObjectModule } from './cn_hierarchy_objects/cn-hierarchy-obj
 
     EventEmitterModule,
   ],
-  controllers: [
-    CnFoldersController,
-    CnScenariosController,
-    CnNotesController,
-  ],
-  providers: [
-    CnFoldersAggregateSecurity,
-    CnFolderAggregateService,
-    CnFolderListener,
-  ],
-  exports: [
-    CnFoldersAggregateSecurity,
-    CnFolderAggregateService
-  ]
+  controllers: [CnFoldersController, CnScenariosController, CnNotesController],
+  providers: [CnFoldersAggregateSecurity, CnFolderAggregateService, CnFolderListener],
+  exports: [CnFoldersAggregateSecurity, CnFolderAggregateService],
 })
-export class CnFoldersAggregateModule {
-}
+export class CnFoldersAggregateModule {}

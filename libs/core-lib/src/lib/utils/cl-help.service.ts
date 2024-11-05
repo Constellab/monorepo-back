@@ -2,9 +2,7 @@
  * Class with static method to simplify dev
  */
 export class ClHelpService {
-
-  constructor() {
-  }
+  constructor() {}
 
   /**
    * Deep clone an object (doesn't work with cyclic object)
@@ -59,10 +57,14 @@ export class ClHelpService {
    * @param value to check
    */
   public static isNullOrEmpty(value: any): boolean {
-    return value == null || ClHelpService.isEmptyArray(value) || ClHelpService.isEmptyString(value)
-      || ClHelpService.isEmptyObject(value) || value === 0;
+    return (
+      value == null ||
+      ClHelpService.isEmptyArray(value) ||
+      ClHelpService.isEmptyString(value) ||
+      ClHelpService.isEmptyObject(value) ||
+      value === 0
+    );
   }
-
 
   /**
    * Sort an array in the alphabetical order
@@ -70,8 +72,11 @@ export class ClHelpService {
    * @param getSortableAttribute method to access sortable attribute
    * @param nullMode mode for null values
    */
-  public static sortAlphabeticalOrder<T>(array: T[], getSortableAttribute?: (item: T) => string,
-                                         nullMode: 'nullLast' | 'nullFirst' = 'nullLast'): T[] {
+  public static sortAlphabeticalOrder<T>(
+    array: T[],
+    getSortableAttribute?: (item: T) => string,
+    nullMode: 'nullLast' | 'nullFirst' = 'nullLast'
+  ): T[] {
     if (array == null) {
       return null;
     }
@@ -95,8 +100,11 @@ export class ClHelpService {
    * @param b string to compare
    * @param nullMode mode for null values
    */
-  public static sortAlphabeticalFunction(a: string, b: string,
-                                         nullMode: 'nullLast' | 'nullFirst' = 'nullLast'): number {
+  public static sortAlphabeticalFunction(
+    a: string,
+    b: string,
+    nullMode: 'nullLast' | 'nullFirst' = 'nullLast'
+  ): number {
     const nullValue = nullMode === 'nullLast' ? -1 : 1;
 
     if (a == null && b == null) {
@@ -112,5 +120,4 @@ export class ClHelpService {
     }
     return 0;
   }
-
 }

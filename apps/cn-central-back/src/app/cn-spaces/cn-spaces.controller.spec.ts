@@ -1,5 +1,5 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {CnSpacesController} from './cn-spaces.controller';
+import { Test, TestingModule } from '@nestjs/testing';
+import { CnSpacesController } from './cn-spaces.controller';
 
 describe('SpaceController', () => {
   let controller: CnSpacesController;

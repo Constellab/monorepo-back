@@ -4,10 +4,11 @@ import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 import { CnLabFolder, CnLabFolderWithLab, CnLabFolderWithRootFolder } from './cn-lab-folder.entity';
 import { CnLab } from '../cn-labs/cn-lab.entity';
 import {
-  BlBadRequestException, BlNewRichText,
+  BlBadRequestException,
+  BlNewRichText,
   BlRichTextContent,
   BlRichTextModifications,
-  BlUnauthorizedException
+  BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnLabFolderService } from './cn-lab-folder.service';
@@ -17,20 +18,19 @@ import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import {
   CnHierarchyObject,
-  CnHierarchyObjectWithChildren
+  CnHierarchyObjectWithChildren,
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 
 @Injectable()
 export class CnLabFolderAggregateService {
-
-  constructor(private folderAggregateService: CnFolderAggregateService,
-              private labAggregateService: CnLabAggregateService,
-              private labFolderService: CnLabFolderService,
-              private dataSource: DataSource,
-              private externalLabFolderService: CnExternalLabFolderService,
-              private externalLabApiService: CnExternalLabApiService) {
-  }
-
+  constructor(
+    private folderAggregateService: CnFolderAggregateService,
+    private labAggregateService: CnLabAggregateService,
+    private labFolderService: CnLabFolderService,
+    private dataSource: DataSource,
+    private externalLabFolderService: CnExternalLabFolderService,
+    private externalLabApiService: CnExternalLabApiService
+  ) {}
 
   public async addFolderToLab(labId: string, rootFolderId: string): Promise<CnLabFolder> {
     // get and check if the user can manage the lab
@@ -43,7 +43,7 @@ export class CnLabFolderAggregateService {
     // get and check if the user can see the folder
     const folderTree = await this.folderAggregateService.getFolderTree(rootFolderId);
 
-    return await this.dataSource.transaction(async entityManager => {
+    return await this.dataSource.transaction(async (entityManager) => {
       const labFolder = await this.labFolderService.createLabFolder(lab, folderTree, entityManager);
       await this.syncFolderToLab(lab, folderTree);
 
@@ -81,21 +81,28 @@ export class CnLabFolderAggregateService {
     }
 
     // Before delete folder from lab, check if this folder as sync object from this lab
-    const syncScenarios = await this.folderAggregateService.getScenariosByRootFolderAndLabNotSecure(rootFolderId, labId);
+    const syncScenarios = await this.folderAggregateService.getScenariosByRootFolderAndLabNotSecure(
+      rootFolderId,
+      labId
+    );
     if (syncScenarios.length > 0) {
-      throw new BlBadRequestException(CnErrorText.REMOVE_FOLDER_SYNC_SCENARIO_ERROR, { detailArgs: { count: syncScenarios.length } });
+      throw new BlBadRequestException(CnErrorText.REMOVE_FOLDER_SYNC_SCENARIO_ERROR, {
+        detailArgs: { count: syncScenarios.length },
+      });
     }
 
     const syncNotes = await this.folderAggregateService.getNotesByRootFolderAndLab(rootFolderId, labId);
     if (syncNotes.length > 0) {
-      throw new BlBadRequestException(CnErrorText.REMOVE_FOLDER_SYNC_NOTE_ERROR, { detailArgs: { count: syncNotes.length } });
+      throw new BlBadRequestException(CnErrorText.REMOVE_FOLDER_SYNC_NOTE_ERROR, {
+        detailArgs: { count: syncNotes.length },
+      });
     }
 
     await this.removeFolderFromLab(lab, rootFolderId);
   }
 
   private async removeFolderFromLab(lab: CnLab, rootFolderId: string): Promise<void> {
-    return await this.dataSource.transaction(async entityManager => {
+    return await this.dataSource.transaction(async (entityManager) => {
       await this.labFolderService.deleteLabFolder(lab.id, rootFolderId, entityManager);
 
       // remove the folder from the lab, if it is available
@@ -119,15 +126,19 @@ export class CnLabFolderAggregateService {
   }
 
   public async getCurrentLabFolders(): Promise<CnHierarchyObject[]> {
-    const labFolders = await this.labFolderService.findByLabId(CnCurrentUserHelper.getAndCheckCurrentLab().id);
-    const folders = labFolders.map(labFolder => labFolder.rootFolder);
+    const labFolders = await this.labFolderService.findByLabId(
+      CnCurrentUserHelper.getAndCheckCurrentLab().id
+    );
+    const folders = labFolders.map((labFolder) => labFolder.rootFolder);
     return this.folderAggregateService.getFolderTrees(folders);
   }
 
   public async getCurrentLabRootFolderById(folderId: string): Promise<CnHierarchyObject> {
     const folder = await this.folderAggregateService.getFolderHierarchyNotSecure(folderId);
-    const labFolder = await this.labFolderService.findByRootFolderIdAndLabId(folder.getRootFolderId(),
-      CnCurrentUserHelper.getAndCheckCurrentLab().id);
+    const labFolder = await this.labFolderService.findByRootFolderIdAndLabId(
+      folder.getRootFolderId(),
+      CnCurrentUserHelper.getAndCheckCurrentLab().id
+    );
     if (labFolder == null) {
       throw new BlBadRequestException(CnErrorText.FOLDER_NOT_SHARED_WITH_LAB);
     }
@@ -139,7 +150,6 @@ export class CnLabFolderAggregateService {
     return this.labFolderService.findByRootFolderId(rootFolderId);
   }
 
-
   public async getLabFolders(labId: string): Promise<CnLabFolderWithRootFolder[]> {
     // get and check if the user can manage the lab
     await this.getAndCheckAuthorizationToFindLabById(labId);
@@ -147,29 +157,41 @@ export class CnLabFolderAggregateService {
     return this.labFolderService.findByLabId(labId);
   }
 
-  public async getAndCheckAuthorizationToManageLab(id: string, refuseDesktop: boolean = true): Promise<CnLab> {
+  public async getAndCheckAuthorizationToManageLab(
+    id: string,
+    refuseDesktop: boolean = true
+  ): Promise<CnLab> {
     return this.labAggregateService.getAndCheckAuthorizationToManageLab(id, refuseDesktop);
   }
 
-  public async getAndCheckAuthorizationToFindLabById(id: string, refuseDesktop: boolean = true): Promise<CnLab> {
+  public async getAndCheckAuthorizationToFindLabById(
+    id: string,
+    refuseDesktop: boolean = true
+  ): Promise<CnLab> {
     return this.labAggregateService.getAndCheckAuthorizationToManageLab(id, refuseDesktop);
   }
 
-  public async getModifications(oldContent: BlRichTextContent,
-                                newContent: BlRichTextContent,
-                                oldModifications: Record<string, any>,
-                                userId: string): Promise<Record<string, any>>{
+  public async getModifications(
+    oldContent: BlRichTextContent,
+    newContent: BlRichTextContent,
+    oldModifications: Record<string, any>,
+    userId: string
+  ): Promise<Record<string, any>> {
     const modifications =
-      oldModifications == null ? new BlRichTextModifications() : BlRichTextModifications.fromJsonObject(oldModifications);
+      oldModifications == null
+        ? new BlRichTextModifications()
+        : BlRichTextModifications.fromJsonObject(oldModifications);
     return new BlNewRichText(oldContent).getRichTextModificationsAsObject(newContent, userId, modifications);
   }
 
-  public async getNotePreviousVersion(content: BlRichTextContent,
-                                      modifications: Record<string, any>,
-                                      modificationId: string): Promise<Record<string, any>>{
+  public async getNotePreviousVersion(
+    content: BlRichTextContent,
+    modifications: Record<string, any>,
+    modificationId: string
+  ): Promise<Record<string, any>> {
     const richText = new BlNewRichText(content);
     const modificationsObj = BlRichTextModifications.fromJsonObject(modifications);
-    const modificationsBlocks = modificationsObj.getModificationsFromModificationId(modificationId)
+    const modificationsBlocks = modificationsObj.getModificationsFromModificationId(modificationId);
     return richText.undoModifications(modificationsBlocks);
   }
 }

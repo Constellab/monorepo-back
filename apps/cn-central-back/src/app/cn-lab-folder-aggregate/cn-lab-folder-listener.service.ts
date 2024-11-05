@@ -3,7 +3,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import {
   CnFolderEvent,
   cnFolderEventName,
-  cnRemoveFolderFromAllLabsEventName
+  cnRemoveFolderFromAllLabsEventName,
 } from '../cn-folders-aggregate/cn-folder.event';
 import { CnFolder, CnFolderWithStorage } from '../cn-folders-aggregate/cn-folders/cn-folder.entity';
 import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
@@ -12,15 +12,14 @@ import { CnFolderBucketService } from '../cn-folders-aggregate/cn-folders/cn-fol
 import { CnHierarchyObject } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.service';
 
-
 @Injectable()
 export class CnLabFolderListener {
-
-  constructor(private labFolderAggregateService: CnLabFolderAggregateService,
-              private folderAggregateService: CnFolderAggregateService,
-              private folderBucketService: CnFolderBucketService,
-              private hierarchyObjectService: CnHierarchyObjectService) {
-  }
+  constructor(
+    private labFolderAggregateService: CnLabFolderAggregateService,
+    private folderAggregateService: CnFolderAggregateService,
+    private folderBucketService: CnFolderBucketService,
+    private hierarchyObjectService: CnHierarchyObjectService
+  ) {}
 
   @OnEvent(cnFolderEventName)
   async handleCnFolderEvent(event: CnFolderEvent): Promise<void> {
@@ -52,7 +51,10 @@ export class CnLabFolderListener {
   private async handleCreateRootFolder(folder: CnFolderWithStorage): Promise<void> {
     const folderBuckets = await this.folderBucketService.getFolderBucket(folder.id);
     if (folderBuckets.mainStorage?.isLabBucket()) {
-      await this.labFolderAggregateService.addRootFolderToLabInsecure(folderBuckets.mainStorage.lab, folder.id);
+      await this.labFolderAggregateService.addRootFolderToLabInsecure(
+        folderBuckets.mainStorage.lab,
+        folder.id
+      );
     }
 
     if (folder.backupStorage?.isLabBucket()) {

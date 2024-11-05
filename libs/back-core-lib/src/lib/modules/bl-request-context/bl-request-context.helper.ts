@@ -1,12 +1,11 @@
-import {BlRequestContext} from './bl-request-context';
-import {Request} from 'express';
-import {BlCookieHelper} from '../../utils/bl-cookie.helper';
+import { BlRequestContext } from './bl-request-context';
+import { Request } from 'express';
+import { BlCookieHelper } from '../../utils/bl-cookie.helper';
 
 /**
  * Request Context helper to access the current request
  */
 export class BlRequestContextHelper {
-
   static getCurrentRequest(): Request {
     return this.getCurrentContext()?.req ?? null;
   }
@@ -23,8 +22,7 @@ export class BlRequestContextHelper {
   protected static setAdditionalData(key: string, value: any): void {
     const requestContext = this.getCurrentContext();
     if (requestContext == null) return;
-    requestContext.additionalData = Object.assign(requestContext.additionalData, {[key]: value});
-
+    requestContext.additionalData = Object.assign(requestContext.additionalData, { [key]: value });
   }
 
   protected static getHeaderFromContext(headerName: string): string {

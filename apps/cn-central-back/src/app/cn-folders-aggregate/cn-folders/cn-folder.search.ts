@@ -6,8 +6,6 @@ import { CnFolderEntity } from './cn-folder.entity';
  * Override the search builder to add to some logic
  */
 export class CnFolderSearch extends BlSearchBuilder<CnFolderEntity> {
-
-
   addSearchParams(searchParams: BlSearchParams): void {
     // clone because it will be modified
     searchParams = searchParams.clone();

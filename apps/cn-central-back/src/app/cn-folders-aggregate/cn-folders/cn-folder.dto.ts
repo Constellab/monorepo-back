@@ -4,7 +4,6 @@ import { Type } from 'class-transformer';
 import { CnBucket, CnBucketLocationDTO } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 import { BlRichTextContent, BlTrim } from '@monorepo/back-core-lib';
 
-
 export class CnSaveFolderDTO {
   @BlTrim()
   code: string;
@@ -20,7 +19,6 @@ export class CnSaveFolderDTO {
   mainStorage?: CnBucketLocationDTO;
 
   backupStorage?: CnBucketLocationDTO;
-
 }
 
 export interface CnFolderStorageLocationDTO {
@@ -37,7 +35,7 @@ export class CnFolderBucketsDTO {
   backupStorage: CnBucket;
 }
 
-export interface CnGetFolderDescriptionDTO{
+export interface CnGetFolderDescriptionDTO {
   description: BlRichTextContent;
   canEdit: boolean; // true if the current user can edit the description
 }

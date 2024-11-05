@@ -6,19 +6,15 @@ import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { CnLabBackupFrequency, CnLabBackupStatus, CnLabBackupTriggerMode } from './cn-lab-backup.dto';
 import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 import { DateTime } from 'luxon';
-import {
-  CnCloudProviderRegion
-} from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import { CnCloudProviderRegion } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnLabBackupHistoryDetail } from './cn-lab-backup-history-detail.entity';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
 
-
 @Entity('lab_backup_history')
 export class CnLabBackupHistoryEntity extends CnBaseEntity {
-
   // default relation to load the bucket
   public static defaultRelation: FindOptionsRelations<CnLabBackupHistoryEntity> = {
-    bucket: CnBucket.configRelation
+    bucket: CnBucket.configRelation,
   };
 
   @Type(() => CnLabEntity)
@@ -51,8 +47,7 @@ export class CnLabBackupHistoryEntity extends CnBaseEntity {
   status: CnLabBackupStatus;
 
   @Exclude()
-  @OneToMany(() => CnLabBackupHistoryDetail,
-    detail => detail.history, { eager: true })
+  @OneToMany(() => CnLabBackupHistoryDetail, (detail) => detail.history, { eager: true })
   details?: CnLabBackupHistoryDetail[];
 
   @Column({ nullable: true })
@@ -68,13 +63,13 @@ export class CnLabBackupHistoryEntity extends CnBaseEntity {
   @Expose()
   get dataDetails(): CnLabBackupHistoryDetail | null {
     if (!this.details) return null;
-    return this.details.find(detail => detail.type === 'DATA');
+    return this.details.find((detail) => detail.type === 'DATA');
   }
 
   @Expose()
   get dbDetails(): CnLabBackupHistoryDetail | null {
     if (!this.details) return null;
-    return this.details.find(detail => detail.type === 'DB');
+    return this.details.find((detail) => detail.type === 'DB');
   }
 
   /**

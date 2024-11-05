@@ -1,15 +1,14 @@
-import {Body, Controller, Get, Param, ParseUUIDPipe, Put} from '@nestjs/common';
-import {HnUserService} from './hn-user.service';
-import {HnUser, HnUserConstellabDTO} from './hn-user.entity';
-import {EventPattern} from '@nestjs/microservices';
-import {BlParseEnumPipe, BlPublic} from '@monorepo/back-core-lib';
-import {ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
-import {HnUserDetailDto, HnUserEditDetailDto} from './hn-user.dto';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Put } from '@nestjs/common';
+import { HnUserService } from './hn-user.service';
+import { HnUser, HnUserConstellabDTO } from './hn-user.entity';
+import { EventPattern } from '@nestjs/microservices';
+import { BlParseEnumPipe, BlPublic } from '@monorepo/back-core-lib';
+import { ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
+import { HnUserDetailDto, HnUserEditDetailDto } from './hn-user.dto';
 
 @Controller('user')
 export class HnUserController {
-  constructor(private readonly userService: HnUserService) {
-  }
+  constructor(private readonly userService: HnUserService) {}
 
   @Get()
   async getCurrent(): Promise<HnUser> {
@@ -39,7 +38,9 @@ export class HnUserController {
   }
 
   @Put('lang/:lang')
-  async changeLang(@Param('lang', new BlParseEnumPipe(ClSupportedLanguage)) lang: ClSupportedLanguage): Promise<void> {
+  async changeLang(
+    @Param('lang', new BlParseEnumPipe(ClSupportedLanguage)) lang: ClSupportedLanguage
+  ): Promise<void> {
     return this.userService.changeLang(lang);
   }
 

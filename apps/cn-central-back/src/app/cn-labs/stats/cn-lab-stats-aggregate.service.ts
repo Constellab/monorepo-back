@@ -12,29 +12,28 @@ import { CnLabStatsStorage } from './cn-lab-stats.storage';
 import { CnLabStatsRunningService } from './cn-lab-stats-running.service';
 import { CnLabStatusHistoryService } from '../status/cn-lab-status-history.service';
 
-
 @Injectable()
 export class CnLabStatsAggregateService {
+  constructor(
+    private labsService: CnLabsService,
+    private backupService: CnLabBackupAggregateService,
+    private serverPriceService: CnServerPriceService,
+    private storagePriceService: CnStoragePriceService,
+    private labVolumeService: CnLabVolumeService,
+    private labStatusHistoryService: CnLabStatusHistoryService
+  ) {}
 
-  constructor(private labsService: CnLabsService,
-              private backupService: CnLabBackupAggregateService,
-              private serverPriceService: CnServerPriceService,
-              private storagePriceService: CnStoragePriceService,
-              private labVolumeService: CnLabVolumeService,
-              private labStatusHistoryService: CnLabStatusHistoryService) {
-  }
-
-  public async getLabRunningStats(lab: CnLab, request: CnLabStatsRequestDTO):
-    Promise<CnLabStatsRunningResponseDTO> {
+  public async getLabRunningStats(
+    lab: CnLab,
+    request: CnLabStatsRequestDTO
+  ): Promise<CnLabStatsRunningResponseDTO> {
     if (lab.isCloud() && lab.billingMode === CnLabBillingMode.HOURLY) {
-
       const labServerStandard = await this.labsService.getLabServerStandard(lab.id);
       const serverPrices = await this.serverPriceService.getServerAllPrices(labServerStandard.id, 'ASC');
       const statusHistories = await this.labStatusHistoryService.getAllStatusHistory(lab.id);
 
       const labStatsRunningService = new CnLabStatsRunningService(request, statusHistories);
       return labStatsRunningService.getLabRunningKpisWithBilling(serverPrices);
-
     } else {
       return this.getLabRunningStatus(lab.id, request);
     }
@@ -45,14 +44,20 @@ export class CnLabStatsAggregateService {
     return stats.runningDuration;
   }
 
-  public async getLabRunningStatus(labId: string, request: CnLabStatsRequestDTO): Promise<CnLabStatsRunningResponseDTO> {
+  public async getLabRunningStatus(
+    labId: string,
+    request: CnLabStatsRequestDTO
+  ): Promise<CnLabStatsRunningResponseDTO> {
     const statusHistories = await this.labStatusHistoryService.getAllStatusHistory(labId);
     const labStatsRunningService = new CnLabStatsRunningService(request, statusHistories);
     return labStatsRunningService.getRunningStatus();
   }
 
-  public async getLabStorageStats(lab: CnLab, request: CnLabStatsRequestDTO): Promise<CnLabStatsStorageResponseDTO> {
-    if(!lab.isCloud()){
+  public async getLabStorageStats(
+    lab: CnLab,
+    request: CnLabStatsRequestDTO
+  ): Promise<CnLabStatsStorageResponseDTO> {
+    if (!lab.isCloud()) {
       throw new Error('Storage stats are only available for cloud labs');
     }
 
@@ -63,5 +68,4 @@ export class CnLabStatsAggregateService {
     const labStatsStorage = new CnLabStatsStorage(storagePrices, labVolumes, backupHistory, request);
     return labStatsStorage.getStorageStats();
   }
-
 }

@@ -1,15 +1,13 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
-import {
-  CnCloudProviderRegion
-} from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import { CnCloudProviderRegion } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnBucketCredentials } from '../cn-bucket-credential/cn-bucket-credential.entity';
 import {
   BlAzureBlobContainerConfig,
   BlBucketConfig,
   BlBucketType,
   BlS3BucketConfig,
-  BlTrim
+  BlTrim,
 } from '@monorepo/back-core-lib';
 import { Type } from 'class-transformer';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
@@ -39,12 +37,11 @@ export interface CnBucketLocationDTO {
  */
 @Entity('bucket')
 export class CnBucket extends CnBaseEntity {
-
   // relation options to load required information for the bucket
   public static configRelation: FindOptionsRelations<CnBucket> = {
     region: { city: { country: true } },
     lab: true,
-    credentials: true
+    credentials: true,
   };
   // default name for the lab bucket
   public static LAB_BUCKET_NAME = 'data-hub-storage';
@@ -69,8 +66,10 @@ export class CnBucket extends CnBaseEntity {
   contentType: CnBucketContentType;
 
   @Column({
-    type: 'enum', enum: BlBucketType, nullable: false,
-    default: BlBucketType.NORMAL
+    type: 'enum',
+    enum: BlBucketType,
+    nullable: false,
+    default: BlBucketType.NORMAL,
   })
   bucketType: BlBucketType;
 
@@ -79,17 +78,17 @@ export class CnBucket extends CnBaseEntity {
       case BlBucketType.NORMAL:
         return {
           type: 's3',
-          config: this.getS3BucketConfig()
+          config: this.getS3BucketConfig(),
         };
       case BlBucketType.LAB:
         return {
           type: 'lab',
-          config: this.getS3BucketConfig()
+          config: this.getS3BucketConfig(),
         };
       case BlBucketType.AZURE:
         return {
           type: 'azureBlob',
-          config: this.getAzureBlobConfig()
+          config: this.getAzureBlobConfig(),
         };
     }
   }
@@ -113,9 +112,9 @@ export class CnBucket extends CnBaseEntity {
         bucket: this.name,
         credentials: {
           accessKeyId: this.credentials.accessKeyId,
-          secretAccessKey: this.credentials.secretAccessKey
+          secretAccessKey: this.credentials.secretAccessKey,
         },
-        bucketType: this.bucketType
+        bucketType: this.bucketType,
       };
     } else {
       if (this.lab == null) {
@@ -127,9 +126,9 @@ export class CnBucket extends CnBaseEntity {
         bucket: this.name,
         credentials: {
           accessKeyId: this.credentials.accessKeyId,
-          secretAccessKey: this.credentials.secretAccessKey
+          secretAccessKey: this.credentials.secretAccessKey,
         },
-        bucketType: this.bucketType
+        bucketType: this.bucketType,
       };
     }
   }
@@ -148,7 +147,7 @@ export class CnBucket extends CnBaseEntity {
       accountName: this.credentials.accessKeyId,
       containerName: this.name, // container name = bucket name
       accountKey: this.credentials.secretAccessKey,
-      region: this.region.technicalName
+      region: this.region.technicalName,
     };
   }
 
@@ -160,13 +159,12 @@ export class CnBucket extends CnBaseEntity {
     }
   }
 
-
   getBucketLocation(): CnBucketLocationDTO {
     return {
       bucketId: this.id,
       locationName: this.getLocationName(),
       bucketType: this.bucketType,
-      cloudRegion: this.isCloudBucket() ? this.region : null
+      cloudRegion: this.isCloudBucket() ? this.region : null,
     };
   }
 

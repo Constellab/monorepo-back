@@ -1,7 +1,6 @@
-import {ModuleMetadata} from '@nestjs/common/interfaces';
+import { ModuleMetadata } from '@nestjs/common/interfaces';
 
 export const BL_CAPTCHA_CONFIG_PROVIDER = Symbol();
-
 
 export class BlCaptchaModuleConfig {
   secretKey: string;

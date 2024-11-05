@@ -1,42 +1,42 @@
-import {Injectable} from '@nestjs/common';
-import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-config.service';
-import {existsSync, readFileSync} from 'fs';
-import {CnLab, CnLabDesktopPlatform} from '../cn-lab.entity';
-import {CnFrontService} from '../../cn-core/services/cn-front.service';
-import {HttpService} from '@nestjs/axios';
-import {lastValueFrom} from 'rxjs';
-import {BlBadRequestException} from '@monorepo/back-core-lib';
-import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
-import {CnLabConfigFile} from '../../cn-lab-configs/cn-lab-config-file.class';
-import {CnLabConfigDTO, CnLabDesktopConfig} from '../cn-lab.dto';
+import { Injectable } from '@nestjs/common';
+import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
+import { existsSync, readFileSync } from 'fs';
+import { CnLab, CnLabDesktopPlatform } from '../cn-lab.entity';
+import { CnFrontService } from '../../cn-core/services/cn-front.service';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
+import { BlBadRequestException } from '@monorepo/back-core-lib';
+import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service';
+import { CnLabConfigFile } from '../../cn-lab-configs/cn-lab-config-file.class';
+import { CnLabConfigDTO, CnLabDesktopConfig } from '../cn-lab.dto';
 
 export interface CnLabDesktopZipConfig {
   dockerCompose: string;
   config: CnLabConfigFile;
-  exeFile: { name: string, buffer: Buffer };
+  exeFile: { name: string; buffer: Buffer };
 }
-
 
 @Injectable()
 export class CnLabDesktopService {
+  constructor(
+    private configService: CnCoreConfigService,
+    private frontService: CnFrontService,
+    private httpService: HttpService,
+    private labConfigService: CnLabConfigsService
+  ) {}
 
-  constructor(private configService: CnCoreConfigService,
-              private frontService: CnFrontService,
-              private httpService: HttpService,
-              private labConfigService: CnLabConfigsService) {
-  }
-
-  public async generateDesktopConfig(lab: CnLab,
-                                     desktopConfig: CnLabDesktopConfig): Promise<CnLabDesktopZipConfig> {
+  public async generateDesktopConfig(
+    lab: CnLab,
+    desktopConfig: CnLabDesktopConfig
+  ): Promise<CnLabDesktopZipConfig> {
     const config = await this.getConfig(lab, desktopConfig);
     const exe = await this.getExeFile(lab.desktopPlatform);
     return {
       dockerCompose: this.generateDockerCompose(lab, config),
       config: config,
-      exeFile: exe
+      exeFile: exe,
     };
   }
-
 
   private generateDockerCompose(lab: CnLab, config: CnLabConfigFile): string {
     let content = this.readDockerComposeTemplate();
@@ -65,7 +65,6 @@ export class CnLabDesktopService {
   }
 
   private async getConfig(lab: CnLab, desktopConfig: CnLabDesktopConfig): Promise<CnLabConfigFile> {
-
     if (lab.labConfigId == null) {
       throw new BlBadRequestException('Please configure the lab before generate the config file');
     }
@@ -74,13 +73,13 @@ export class CnLabDesktopService {
 
     const configDTO: CnLabConfigDTO = {
       glabTag: desktopConfig.glabTag,
-      brickVersions: []
+      brickVersions: [],
     };
 
     for (const brickVersion of config.brickVersions) {
       configDTO.brickVersions.push({
         name: brickVersion.brick.name,
-        version: brickVersion.version.toString()
+        version: brickVersion.version.toString(),
       });
     }
 
@@ -92,7 +91,7 @@ export class CnLabDesktopService {
    * @param platform
    * @private
    */
-  private async getExeFile(platform: CnLabDesktopPlatform): Promise<{ name: string, buffer: Buffer }> {
+  private async getExeFile(platform: CnLabDesktopPlatform): Promise<{ name: string; buffer: Buffer }> {
     let name: string = null;
     let url: string = null;
 
@@ -111,10 +110,10 @@ export class CnLabDesktopService {
     }
 
     // download the exe form url https://storage.sbg.cloud.ovh.net/v1/AUTH_a0286631d7b24afba3f3cdebed2992aa/public
-    const response = await lastValueFrom(this.httpService.get(url, {responseType: 'arraybuffer'}));
+    const response = await lastValueFrom(this.httpService.get(url, { responseType: 'arraybuffer' }));
     return {
       name: name,
-      buffer: Buffer.from(response.data, 'binary')
+      buffer: Buffer.from(response.data, 'binary'),
     };
   }
 

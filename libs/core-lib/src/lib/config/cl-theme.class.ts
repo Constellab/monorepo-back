@@ -3,7 +3,7 @@
  */
 export enum ClTheme {
   LIGHT_THEME = 'light-theme',
-  DARK_THEME = 'dark-theme'
+  DARK_THEME = 'dark-theme',
 }
 
 export const clDefaultTheme: ClTheme = ClTheme.LIGHT_THEME;

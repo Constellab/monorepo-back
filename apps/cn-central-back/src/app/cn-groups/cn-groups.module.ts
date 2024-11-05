@@ -10,16 +10,7 @@ import { CnGroupsAggregateService } from './cn-groups-aggregate.service';
 import { CnGroupListener } from './cn-group.listener';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      CnGroup,
-      CnGroupSingleUser,
-      CnGroupTeam,
-      CnUserGroup,
-    ]),
-
-    CnSpacesModule,
-  ],
+  imports: [TypeOrmModule.forFeature([CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup]), CnSpacesModule],
   providers: [
     CnGroupsService,
     CnUserTeamService,
@@ -28,11 +19,6 @@ import { CnGroupListener } from './cn-group.listener';
     CnGroupListener,
   ],
   controllers: [CnGroupsController],
-  exports: [
-    CnGroupsService,
-    CnGroupsAggregateService,
-
-  ]
+  exports: [CnGroupsService, CnGroupsAggregateService],
 })
-export class CnGroupsModule {
-}
+export class CnGroupsModule {}

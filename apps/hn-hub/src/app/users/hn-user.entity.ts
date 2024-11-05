@@ -1,7 +1,13 @@
 import { BlLuxonDateTimeColumn, BlUserCategory } from '@monorepo/back-core-lib';
 import { BeforeInsert, Column, Entity, OneToMany, PrimaryColumn, Unique } from 'typeorm';
 import { DateTime } from 'luxon';
-import { ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
+import {
+  ClDateHelper,
+  clDefaultLang,
+  clDefaultTheme,
+  ClSupportedLanguage,
+  ClTheme,
+} from '@monorepo/core-lib';
 import { HnStoryCoAuthor } from '../story-author/hn-story-author.entity';
 import { HnBrickUser } from '../brick-aggregate/brick-user/hn-brick-user.entity';
 import { HnAgentCoAuthor } from '../agent-aggregate/agent-co-author/hn-agent-co-author.entity';
@@ -9,7 +15,6 @@ import { HnAgentCoAuthor } from '../agent-aggregate/agent-co-author/hn-agent-co-
 @Unique(['userCode'])
 @Entity('user')
 export class HnUser {
-
   @PrimaryColumn('uuid')
   id: string;
 
@@ -55,16 +60,16 @@ export class HnUser {
   @Column({ nullable: false, type: 'enum', enum: ClTheme, default: clDefaultTheme })
   theme: ClTheme;
 
-  @OneToMany(() => HnStoryCoAuthor, storyAuthor => storyAuthor.user, { nullable: true })
+  @OneToMany(() => HnStoryCoAuthor, (storyAuthor) => storyAuthor.user, { nullable: true })
   storyAuthors: HnStoryCoAuthor[];
 
-  @OneToMany(() => HnAgentCoAuthor, agentCoAuthor => agentCoAuthor.user, {
+  @OneToMany(() => HnAgentCoAuthor, (agentCoAuthor) => agentCoAuthor.user, {
     nullable: true,
-    onDelete: 'CASCADE'
+    onDelete: 'CASCADE',
   })
   agentCoAuthors: HnAgentCoAuthor[];
 
-  @OneToMany(() => HnBrickUser, brickUser => brickUser.user, { nullable: true })
+  @OneToMany(() => HnBrickUser, (brickUser) => brickUser.user, { nullable: true })
   brickUsers: HnBrickUser[];
 
   @BeforeInsert()
@@ -78,9 +83,16 @@ export class HnUser {
 
   setData(userDto: HnUserConstellabDTO): void {
     this.id = userDto.id;
-    this.userCode = userDto.firstname[0].toUpperCase() + userDto.lastname[0].toUpperCase() + '-' + userDto.id.substring(0, 8);
-    this.alias = userDto.firstname[0].toUpperCase() + userDto.firstname.substring(1, userDto.firstname.length - 1)
-      + ' ' + userDto.lastname[0].toUpperCase();
+    this.userCode =
+      userDto.firstname[0].toUpperCase() +
+      userDto.lastname[0].toUpperCase() +
+      '-' +
+      userDto.id.substring(0, 8);
+    this.alias =
+      userDto.firstname[0].toUpperCase() +
+      userDto.firstname.substring(1, userDto.firstname.length - 1) +
+      ' ' +
+      userDto.lastname[0].toUpperCase();
     this.firstname = userDto.firstname;
     this.lastname = userDto.lastname;
     this.photo = userDto.photo;
@@ -91,9 +103,7 @@ export class HnUser {
   getUserInfo(): string {
     return `id : ${this.id} - mail : ${this.email}`;
   }
-
 }
-
 
 export class HnUserConstellabDTO {
   id: string;

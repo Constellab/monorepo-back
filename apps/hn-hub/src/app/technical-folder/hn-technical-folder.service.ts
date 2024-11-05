@@ -1,40 +1,44 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {HnTechnicalFolder} from './hn-technical-folder.entity';
-import {Repository} from 'typeorm';
-import {HnResourceService} from '../resource/hn-resource.service';
-import {HnBrickMajorVersion} from '../brick-aggregate/brick-major-version/hn-brick-major-version.entity';
-import {HnImportTechnicalDocDTO, HnTechnicalDocInputDTO} from '../brick-aggregate/brick/hn-brick.dto';
-import {HnNode} from '../brick-aggregate/folder/hn-folder.dto';
-import {HnResource} from '../resource/hn-resource.entity';
-import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc-typing.entity';
-import {HnTaskService} from '../task/hn-task.service';
-import {HnTask} from '../task/hn-task.entity';
-import {HnProtocol} from '../protocol/hn-protocol.entity';
-import {HnProtocolService} from '../protocol/hn-protocol.service';
-import {HnDocumentationSearchDTO} from '../brick-aggregate/documentation/hn-documentation.entity';
-import {ClDateHelper} from '@monorepo/core-lib';
-import {HnTechnicalDocOtherClassService} from '../technical-doc-other-class/hn-technical-doc-other-class.service';
-import {HnTechnicalDocOtherClass} from '../technical-doc-other-class/hn-technical-doc-other-class.entity';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { HnTechnicalFolder } from './hn-technical-folder.entity';
+import { Repository } from 'typeorm';
+import { HnResourceService } from '../resource/hn-resource.service';
+import { HnBrickMajorVersion } from '../brick-aggregate/brick-major-version/hn-brick-major-version.entity';
+import { HnImportTechnicalDocDTO, HnTechnicalDocInputDTO } from '../brick-aggregate/brick/hn-brick.dto';
+import { HnNode } from '../brick-aggregate/folder/hn-folder.dto';
+import { HnResource } from '../resource/hn-resource.entity';
+import { HnGeneratedDocEntity } from '../core/model/entities/hn-generated-doc-typing.entity';
+import { HnTaskService } from '../task/hn-task.service';
+import { HnTask } from '../task/hn-task.entity';
+import { HnProtocol } from '../protocol/hn-protocol.entity';
+import { HnProtocolService } from '../protocol/hn-protocol.service';
+import { HnDocumentationSearchDTO } from '../brick-aggregate/documentation/hn-documentation.entity';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { HnTechnicalDocOtherClassService } from '../technical-doc-other-class/hn-technical-doc-other-class.service';
+import { HnTechnicalDocOtherClass } from '../technical-doc-other-class/hn-technical-doc-other-class.entity';
 
 @Injectable()
 export class HnTechnicalFolderService {
-  constructor(@InjectRepository(HnTechnicalFolder)
-              private readonly technicalFolderRepository: Repository<HnTechnicalFolder>,
-              private resourceService: HnResourceService,
-              private taskService: HnTaskService,
-              private protocolService: HnProtocolService,
-              private techDocOtherClassService: HnTechnicalDocOtherClassService) {
-  }
+  constructor(
+    @InjectRepository(HnTechnicalFolder)
+    private readonly technicalFolderRepository: Repository<HnTechnicalFolder>,
+    private resourceService: HnResourceService,
+    private taskService: HnTaskService,
+    private protocolService: HnProtocolService,
+    private techDocOtherClassService: HnTechnicalDocOtherClassService
+  ) {}
 
-  async createTechnicalDoc(brickMajorVersion: HnBrickMajorVersion, importFile: HnImportTechnicalDocDTO): Promise<boolean> {
+  async createTechnicalDoc(
+    brickMajorVersion: HnBrickMajorVersion,
+    importFile: HnImportTechnicalDocDTO
+  ): Promise<boolean> {
     let technicalFolder: HnTechnicalFolder = await this.findTechnicalFolder(brickMajorVersion.id);
 
     if (technicalFolder == null) {
       technicalFolder = new HnTechnicalFolder();
       technicalFolder.brickMajorVersion = brickMajorVersion;
       technicalFolder = await this.technicalFolderRepository.save(technicalFolder);
-    }else{
+    } else {
       // update technical info
       technicalFolder.lastModifiedAt = ClDateHelper.getDate();
       technicalFolder = await this.technicalFolderRepository.save(technicalFolder);
@@ -47,13 +51,22 @@ export class HnTechnicalFolderService {
     //TODO: Faire pour les autres classes
 
     if (importFile.resources && importFile.resources.length > 0)
-      resourcesOk = await this.resourceService.createTechnicalDocResources(technicalFolder, importFile.resources);
+      resourcesOk = await this.resourceService.createTechnicalDocResources(
+        technicalFolder,
+        importFile.resources
+      );
     if (importFile.tasks && importFile.tasks.length > 0)
       tasksOk = await this.taskService.createTechnicalDocTasks(technicalFolder, importFile.tasks);
     if (importFile.protocols && importFile.protocols.length > 0)
-      protocolsOk = await this.protocolService.createTechnicalDocProtocols(technicalFolder, importFile.protocols);
+      protocolsOk = await this.protocolService.createTechnicalDocProtocols(
+        technicalFolder,
+        importFile.protocols
+      );
     if (importFile.other_classes && importFile.other_classes.length > 0)
-      otherClassesOk = await this.techDocOtherClassService.createTechnicalDocOtherClasses(technicalFolder, importFile.other_classes);
+      otherClassesOk = await this.techDocOtherClassService.createTechnicalDocOtherClasses(
+        technicalFolder,
+        importFile.other_classes
+      );
 
     return resourcesOk && tasksOk && protocolsOk && otherClassesOk;
   }
@@ -109,7 +122,8 @@ export class HnTechnicalFolderService {
       }
       //TODO: faire pour les autres classes
 
-      const otherClasses: HnTechnicalDocOtherClass[] = await this.techDocOtherClassService.findTechnicalDocOtherClasses(technicalFolder.id);
+      const otherClasses: HnTechnicalDocOtherClass[] =
+        await this.techDocOtherClassService.findTechnicalDocOtherClasses(technicalFolder.id);
       if (otherClasses && otherClasses.length > 0) {
         const otherClassesFolder: HnNode = new HnNode(
           'otherClassesFolder',
@@ -123,25 +137,45 @@ export class HnTechnicalFolderService {
         children.push(otherClassesFolder);
       }
 
-      return new HnNode(technicalFolder.id, 'Technical Documentation',
-        'technical-folder', 'technical-folder/',
-        0, null, children);
+      return new HnNode(
+        technicalFolder.id,
+        'Technical Documentation',
+        'technical-folder',
+        'technical-folder/',
+        0,
+        null,
+        children
+      );
     }
     return null;
   }
 
-  addTechDocToNodeFolder(docs: HnGeneratedDocEntity[], parentId: string, parentCompletePath: string): HnNode[] {
+  addTechDocToNodeFolder(
+    docs: HnGeneratedDocEntity[],
+    parentId: string,
+    parentCompletePath: string
+  ): HnNode[] {
     const nodes: HnNode[] = [];
     let i: number = 0;
     for (const d of docs) {
-      const n: HnNode = new HnNode(d.id, d.humanName, d.uniqueName, parentCompletePath + d.uniqueName + '/', i, parentId);
+      const n: HnNode = new HnNode(
+        d.id,
+        d.humanName,
+        d.uniqueName,
+        parentCompletePath + d.uniqueName + '/',
+        i,
+        parentId
+      );
       nodes.push(n);
       i++;
     }
     return nodes;
   }
 
-  async findCurrentTecDoc(brickMajorVersion: HnBrickMajorVersion, input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocEntity> {
+  async findCurrentTecDoc(
+    brickMajorVersion: HnBrickMajorVersion,
+    input: HnTechnicalDocInputDTO
+  ): Promise<HnGeneratedDocEntity> {
     const techFolder: HnTechnicalFolder = await this.findTechnicalFolder(brickMajorVersion.id);
     switch (input.techDocType) {
       case 'resource':
@@ -157,9 +191,11 @@ export class HnTechnicalFolderService {
     }
   }
 
-  async getTechDocsByBrickNameMajor(brickMajorVersionId: string,
-                                    majorVersion: string, brickName: string): Promise<HnDocumentationSearchDTO[]> {
-
+  async getTechDocsByBrickNameMajor(
+    brickMajorVersionId: string,
+    majorVersion: string,
+    brickName: string
+  ): Promise<HnDocumentationSearchDTO[]> {
     const parentNode: HnNode = await this.findTechnicalDoc(brickMajorVersionId);
 
     let res: HnDocumentationSearchDTO[] = [];
@@ -171,24 +207,27 @@ export class HnTechnicalFolderService {
     }
 
     return res;
-
   }
 
   private getTechDocsForSearch(folder: HnNode, major: string, brickName: string): HnDocumentationSearchDTO[] {
-    return folder.children.map(doc => {
+    return folder.children.map((doc) => {
       return {
         id: doc.id,
         isTechnical: true,
         major: major,
         brickName: brickName,
         completePath: doc.completePath,
-        name: doc.name
+        name: doc.name,
       };
     });
   }
 
-  async getTechDocByLink(brickMajorVersion: HnBrickMajorVersion, completePath: string, anchor: string): Promise<HnDocumentationSearchDTO> {
-    const techFolder: HnTechnicalFolder = await this.findTechnicalFolder(brickMajorVersion.id)
+  async getTechDocByLink(
+    brickMajorVersion: HnBrickMajorVersion,
+    completePath: string,
+    anchor: string
+  ): Promise<HnDocumentationSearchDTO> {
+    const techFolder: HnTechnicalFolder = await this.findTechnicalFolder(brickMajorVersion.id);
 
     const linkBroken: string[] = completePath.split('/');
     let techDoc: HnGeneratedDocEntity;
@@ -215,30 +254,30 @@ export class HnTechnicalFolderService {
       major: brickMajorVersion.major.toString(),
       completePath: completePath,
       anchor: anchor,
-      brickName: brickMajorVersion.brick.name
+      brickName: brickMajorVersion.brick.name,
     };
   }
 
-  async findTechDocsByBrickMajor(brickMajorVersionId: string): Promise<HnGeneratedDocEntity[]>{
+  async findTechDocsByBrickMajor(brickMajorVersionId: string): Promise<HnGeneratedDocEntity[]> {
     const techFolder: HnTechnicalFolder = await this.findTechnicalFolder(brickMajorVersionId);
-    if(techFolder == null) return [];
+    if (techFolder == null) return [];
 
     const resources: HnResource[] = await this.resourceService.findResources(techFolder.id);
     const tasks: HnTask[] = await this.taskService.findTasks(techFolder.id);
     const protocols: HnProtocol[] = await this.protocolService.findProtocols(techFolder.id);
-    const otherClasses: HnTechnicalDocOtherClass[] = await this.techDocOtherClassService.findTechnicalDocOtherClasses(techFolder.id);
+    const otherClasses: HnTechnicalDocOtherClass[] =
+      await this.techDocOtherClassService.findTechnicalDocOtherClasses(techFolder.id);
 
-    return [...resources, ...tasks, ...protocols, ...otherClasses]
+    return [...resources, ...tasks, ...protocols, ...otherClasses];
   }
 
   async findTechnicalFolder(brickMajorVersionId: string): Promise<HnTechnicalFolder> {
     return await this.technicalFolderRepository.findOne({
       where: {
         brickMajorVersion: {
-          id: brickMajorVersionId
-        }
-      }
+          id: brickMajorVersionId,
+        },
+      },
     });
   }
-
 }

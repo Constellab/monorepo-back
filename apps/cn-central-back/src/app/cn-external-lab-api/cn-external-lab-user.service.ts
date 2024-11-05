@@ -3,7 +3,7 @@ import { CnExternalLabApiService } from './cn-external-lab-api.service';
 import {
   CnExternalLabLoginResponse,
   CnExternalLabUser,
-  CnExternalLabUserRole
+  CnExternalLabUserRole,
 } from './model/cn-external-lab-api.class';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnExternalApiInfo } from '../cn-core/model/config/cn-config.class';
@@ -15,18 +15,19 @@ import { CnSpace } from '../cn-spaces/cn-space.entity';
  */
 @Injectable()
 export class CnExternalLabUserService {
-
   private readonly route: string = 'user';
 
-  constructor(private externalLabApiService: CnExternalLabApiService) {
-  }
+  constructor(private externalLabApiService: CnExternalLabApiService) {}
 
   /**
    * Log the user to the lab, it returns a one time token for the user
    * to open the lab. Then in the lab it will generate a JWT for the user
    */
-  public generateTempAccess(labInfo: CnExternalApiInfo, user: CnUser,
-                            labSpace: CnSpace): Promise<CnExternalLabLoginResponse> {
+  public generateTempAccess(
+    labInfo: CnExternalApiInfo,
+    user: CnUser,
+    labSpace: CnSpace
+  ): Promise<CnExternalLabLoginResponse> {
     const body: any = {
       user: {
         id: user.id,
@@ -35,17 +36,19 @@ export class CnExternalLabUserService {
         email: user.email,
         theme: user.theme,
         lang: user.lang,
-        photo: user.photo
+        photo: user.photo,
       },
       space: {
         id: labSpace.id,
         name: labSpace.name,
         domain: labSpace.domain,
-        photo: labSpace.photo
-      }
+        photo: labSpace.photo,
+      },
     };
 
-    return lastValueFrom(this.externalLabApiService.post(labInfo, `${this.route}/generate-temp-access`, body));
+    return lastValueFrom(
+      this.externalLabApiService.post(labInfo, `${this.route}/generate-temp-access`, body)
+    );
   }
 
   /**
@@ -59,8 +62,11 @@ export class CnExternalLabUserService {
    * Add a user in the lab
    * Throw an exception if the user already exists in the lab
    */
-  public async addUser(labInfo: CnExternalApiInfo, user: CnUser, role: CnExternalLabUserRole): Promise<CnExternalLabUser> {
-
+  public async addUser(
+    labInfo: CnExternalApiInfo,
+    user: CnUser,
+    role: CnExternalLabUserRole
+  ): Promise<CnExternalLabUser> {
     const newLabUser: CnExternalLabUser = {
       id: user.id,
       email: user.email,
@@ -70,7 +76,7 @@ export class CnExternalLabUserService {
       is_active: true,
       theme: user.theme,
       lang: user.lang,
-      photo: user.photo
+      photo: user.photo,
     };
 
     return lastValueFrom(this.externalLabApiService.post(labInfo, this.route, newLabUser));

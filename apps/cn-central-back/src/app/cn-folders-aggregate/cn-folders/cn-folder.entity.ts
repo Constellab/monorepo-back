@@ -10,10 +10,8 @@ import { ClDateHelper } from '@monorepo/core-lib';
 import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
 import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 
-
 @Entity('folder')
 export class CnFolderEntity extends CnHierarchyRepresentation {
-
   @Column({ nullable: false, length: 100 })
   name: string;
 
@@ -64,7 +62,7 @@ export class CnFolderEntity extends CnHierarchyRepresentation {
       objectType: CnHierarchyObjectType.FOLDER,
       name: this.name,
       user: this.leader,
-      lastModifiedAt: this.lastModifiedAt ?? ClDateHelper.getDate()
+      lastModifiedAt: this.lastModifiedAt ?? ClDateHelper.getDate(),
     };
   }
 }

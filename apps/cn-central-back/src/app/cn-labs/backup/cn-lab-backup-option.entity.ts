@@ -9,26 +9,24 @@ import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 @Entity('lab_backup_option')
 @Unique(['lab'])
 export class CnLabBackupOption extends CnBaseEntity {
-
   @Type(() => CnLabEntity)
-  @ManyToOne(() => CnLabEntity, {nullable: false})
+  @ManyToOne(() => CnLabEntity, { nullable: false })
   @BlNotUpdatable()
   lab: CnLabEntity;
 
-  @Column({nullable: false, type: 'enum', enum: CnLabBackupFrequency})
+  @Column({ nullable: false, type: 'enum', enum: CnLabBackupFrequency })
   frequency1: CnLabBackupFrequency;
 
   @Type(() => CnBucket)
-  @ManyToOne(() => CnBucket, {nullable: false})
+  @ManyToOne(() => CnBucket, { nullable: false })
   @BlNotUpdatable()
   bucket1: CnBucket;
 
-  @Column({nullable: false, type: 'enum', enum: CnLabBackupFrequency})
+  @Column({ nullable: false, type: 'enum', enum: CnLabBackupFrequency })
   frequency2: CnLabBackupFrequency;
 
   @Type(() => CnBucket)
-  @ManyToOne(() => CnBucket, {nullable: false})
+  @ManyToOne(() => CnBucket, { nullable: false })
   @BlNotUpdatable()
   bucket2: CnBucket;
-
 }

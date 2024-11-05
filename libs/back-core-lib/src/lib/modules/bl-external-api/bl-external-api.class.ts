@@ -1,5 +1,5 @@
-import {AxiosError, AxiosRequestConfig} from 'axios';
-import {BlApiError} from '../../models/bl-nest-api-error.class';
+import { AxiosError, AxiosRequestConfig } from 'axios';
+import { BlApiError } from '../../models/bl-nest-api-error.class';
 
 export type BlExternalApiHttpOptionObserve = 'data' | 'response';
 
@@ -10,7 +10,6 @@ export interface BlExternalApiHttpOption extends AxiosRequestConfig {
    * the Page.content will be converted to class reference array
    */
   resultIsPaginated?: boolean;
-
 
   /**
    * If response, the whole AxiosResponse is return and no conversion is made

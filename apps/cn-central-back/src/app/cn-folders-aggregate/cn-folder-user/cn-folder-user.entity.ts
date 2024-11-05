@@ -3,7 +3,6 @@ import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { Exclude } from 'class-transformer';
 import { CnHierarchyObjectEntity } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 
-
 export enum CnFolderNotifOptions {
   NOTIF_ONLY = 'NOTIF_ONLY',
   EMAIL_ONLY = 'EMAIL_ONLY',
@@ -13,7 +12,6 @@ export enum CnFolderNotifOptions {
 
 @Entity('folder_user')
 export class CnFolderUserEntity {
-
   @PrimaryColumn({ type: 'varchar', length: 36 })
   userId: string;
 
@@ -32,7 +30,12 @@ export class CnFolderUserEntity {
   @Column({ nullable: false, type: 'enum', enum: CnFolderNotifOptions, default: CnFolderNotifOptions.NONE })
   folderNotif: CnFolderNotifOptions;
 
-  @Column({ nullable: false, type: 'enum', enum: CnFolderNotifOptions, default: CnFolderNotifOptions.NOTIF_ONLY })
+  @Column({
+    nullable: false,
+    type: 'enum',
+    enum: CnFolderNotifOptions,
+    default: CnFolderNotifOptions.NOTIF_ONLY,
+  })
   messageNotif: CnFolderNotifOptions;
 
   @Column({ nullable: false, type: 'enum', enum: CnFolderNotifOptions, default: CnFolderNotifOptions.NONE })
@@ -43,7 +46,6 @@ export class CnFolderUserEntity {
 
   @Column({ nullable: false, type: 'enum', enum: CnFolderNotifOptions, default: CnFolderNotifOptions.NONE })
   documentNotif: CnFolderNotifOptions;
-
 }
 
 export type CnFolderUser = Omit<CnFolderUserEntity, 'rootFolder'>;

@@ -12,7 +12,6 @@ export enum CnLabBackupType {
 @Entity('lab_backup_history_detail')
 @Unique('lab_type', ['history', 'type'])
 export class CnLabBackupHistoryDetail extends BlEntityWithId {
-
   @Type(() => CnLabBackupHistoryEntity)
   @ManyToOne(() => CnLabBackupHistoryEntity, { onDelete: 'CASCADE', nullable: false })
   @BlNotUpdatable()
@@ -58,7 +57,6 @@ export class CnLabBackupHistoryDetail extends BlEntityWithId {
   @Column({ nullable: false, default: 0 })
   transferNbRenamed: number;
 
-
   public updateInfo(backupInfo: CnLabBackupInfo): void {
     this.totalSize = backupInfo.totalSize;
     this.status = backupInfo.status.status;
@@ -74,5 +72,4 @@ export class CnLabBackupHistoryDetail extends BlEntityWithId {
       this.transferNbRenamed = backupInfo.transfer.nbRenamed;
     }
   }
-
 }

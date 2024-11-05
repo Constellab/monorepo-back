@@ -1,13 +1,12 @@
-import {DynamicModule, Global, Module} from '@nestjs/common';
-import {HttpModule} from '@nestjs/axios';
-import {BlCaptchaService} from './bl-captcha.service';
-import {BL_CAPTCHA_CONFIG_PROVIDER, BlCaptchaModuleConfigAsyncConfig} from './bl-captcha.class';
-import {BlExternalApiModule} from '../bl-external-api/bl-external-api.module';
+import { DynamicModule, Global, Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
+import { BlCaptchaService } from './bl-captcha.service';
+import { BL_CAPTCHA_CONFIG_PROVIDER, BlCaptchaModuleConfigAsyncConfig } from './bl-captcha.class';
+import { BlExternalApiModule } from '../bl-external-api/bl-external-api.module';
 
 @Global()
 @Module({})
 export class BlCaptchaModule {
-
   public static forRootAsync(config: BlCaptchaModuleConfigAsyncConfig): DynamicModule {
     return {
       module: BlCaptchaModule,
@@ -16,11 +15,11 @@ export class BlCaptchaModule {
         {
           provide: BL_CAPTCHA_CONFIG_PROVIDER,
           useFactory: config.useFactory,
-          inject: config.inject
+          inject: config.inject,
         },
-        BlCaptchaService
+        BlCaptchaService,
       ],
-      exports: [BlCaptchaService]
+      exports: [BlCaptchaService],
     };
   }
 }

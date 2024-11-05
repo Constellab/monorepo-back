@@ -38,9 +38,7 @@ export class HnAgentDto extends BlEntityWithIdDTO {
     this.parentAgentVersionId = agent.parentAgentVersionId;
     this.likes = agent.likes;
     this.comments = agent.comments;
-    this.agentCoAuthors = agent.agentCoAuthors?.map(
-      (agentCoAuthor) => new HnAgentCoAuthorDto(agentCoAuthor)
-    );
+    this.agentCoAuthors = agent.agentCoAuthors?.map((agentCoAuthor) => new HnAgentCoAuthorDto(agentCoAuthor));
     this.latestStyle = agent.latestStyle;
   }
 }
@@ -117,9 +115,7 @@ export class HnAgentVersionForLabDto {
   agent: HnAgentForLabDto;
   style?: HnTypingStyle;
 
-  static fromAgentVersionDto(
-    agentVersion: HnAgentVersionDto
-  ): HnAgentVersionForLabDto {
+  static fromAgentVersionDto(agentVersion: HnAgentVersionDto): HnAgentVersionForLabDto {
     const dto = new HnAgentVersionForLabDto();
     dto.id = agentVersion.id;
     dto.version = agentVersion.version;
@@ -146,9 +142,7 @@ export class HnAgentVersionForLabDto {
         dto.type = HnAgentTyping.STREAMLIT;
         break;
     }
-    dto.environment = agentVersion.environment
-      ? agentVersion.environment
-      : null;
+    dto.environment = agentVersion.environment ? agentVersion.environment : null;
     dto.code = agentVersion.code;
     dto.params = agentVersion.params;
     dto.input_specs = agentVersion.inputSpecs;
@@ -171,7 +165,7 @@ export enum HnAgentTyping {
   MAMBA_PYTHON = 'TASK.gws_core.PyMambaAgent',
   PIP_PYTHON = 'TASK.gws_core.PyPipenvAgent',
   PYTHON = 'TASK.gws_core.PyAgent',
-  STREAMLIT = 'TASK.gws_core.StreamlitAgent'
+  STREAMLIT = 'TASK.gws_core.StreamlitAgent',
 }
 
 export class HaCreateAgentVersionFromLabResponseDto {
@@ -180,7 +174,7 @@ export class HaCreateAgentVersionFromLabResponseDto {
   id: string;
 }
 
-export class HaCreateAgentVersionFromLabResponseDtoOldFormat{
+export class HaCreateAgentVersionFromLabResponseDtoOldFormat {
   live_task_version: string;
   title: string;
   id: string;
@@ -192,13 +186,13 @@ export class HaCreateAgentVersionFromLabResponseDtoOldFormat{
   }
 }
 
-export interface HnAgentEditStyleData{
+export interface HnAgentEditStyleData {
   isVersion: boolean;
   allVersionsChecked: boolean;
   style: HnTypingStyle;
 }
 
-export class HnAgentVersionForLabDtoOldFormat{
+export class HnAgentVersionForLabDtoOldFormat {
   id: string;
   version: number;
   type: string;
@@ -230,5 +224,5 @@ export const baseAgentStyle = {
   icon_technical_name: 'code',
   icon_type: 'MATERIAL_ICON',
   background_color: '#c7c8cc',
-  icon_color: '#000000'
+  icon_color: '#000000',
 } as HnTypingStyle;

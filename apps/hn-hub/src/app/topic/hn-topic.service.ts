@@ -1,24 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {HnTopic} from './hn-topic.entity';
-import {Repository} from 'typeorm';
-import {HnTopicDto} from './hn-topic.dto';
-import {ClStringHelper} from '@monorepo/core-lib';
+import { InjectRepository } from '@nestjs/typeorm';
+import { HnTopic } from './hn-topic.entity';
+import { Repository } from 'typeorm';
+import { HnTopicDto } from './hn-topic.dto';
+import { ClStringHelper } from '@monorepo/core-lib';
 
 @Injectable()
 export class HnTopicService {
-  constructor(@InjectRepository(HnTopic)
-              private readonly topicRepository: Repository<HnTopic>) {
-  }
+  constructor(
+    @InjectRepository(HnTopic)
+    private readonly topicRepository: Repository<HnTopic>
+  ) {}
 
   async getOrCreateTopic(topic: HnTopicDto): Promise<HnTopic> {
-    if(topic.id){
-      const t: HnTopic = await this.topicRepository.findOneBy({id: topic.id})
+    if (topic.id) {
+      const t: HnTopic = await this.topicRepository.findOneBy({ id: topic.id });
       if (t) return t;
     }
-    topic.name = ClStringHelper.removeAccentFromString(ClStringHelper.trimAndRemoveDuplicateSpaces(topic.name));
+    topic.name = ClStringHelper.removeAccentFromString(
+      ClStringHelper.trimAndRemoveDuplicateSpaces(topic.name)
+    );
     topic.name = topic.name.charAt(0).toUpperCase() + topic.name.slice(1);
-    let t: HnTopic = await this.topicRepository.findOneBy({name: topic.name});
+    let t: HnTopic = await this.topicRepository.findOneBy({ name: topic.name });
     if (t) return t;
     t = new HnTopic();
     t.name = topic.name;
@@ -26,7 +29,7 @@ export class HnTopicService {
   }
 
   async getTopic(id: string): Promise<HnTopic> {
-    return this.topicRepository.findOneBy({id: id});
+    return this.topicRepository.findOneBy({ id: id });
   }
 
   /***
@@ -36,8 +39,8 @@ export class HnTopicService {
     return this.topicRepository.find({
       order: {
         popularityIndex: 'DESC',
-        name: 'ASC'
-      }
+        name: 'ASC',
+      },
     });
   }
 
@@ -53,8 +56,7 @@ export class HnTopicService {
       order: {
         popularityIndex: 'DESC',
       },
-      take: 6
+      take: 6,
     });
   }
-
 }

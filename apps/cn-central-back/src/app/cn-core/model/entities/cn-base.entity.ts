@@ -1,7 +1,7 @@
-import {BeforeInsert, BeforeUpdate} from 'typeorm';
-import {ClDateHelper} from '@monorepo/core-lib';
-import {CnCurrentUserHelper} from '../../utils/cn-current-user.helper';
-import {CnEntity} from './cn.entity';
+import { BeforeInsert, BeforeUpdate } from 'typeorm';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { CnCurrentUserHelper } from '../../utils/cn-current-user.helper';
+import { CnEntity } from './cn.entity';
 
 /**
  * Basic entity with same info as CnEntity,
@@ -9,7 +9,6 @@ import {CnEntity} from './cn.entity';
  * to set the creation and modification info automatically
  */
 export abstract class CnBaseEntity extends CnEntity {
-
   @BeforeInsert()
   setCreatedInfo(): void {
     this.createdBy = CnCurrentUserHelper.getAndCheckCurrentUser();

@@ -1,21 +1,19 @@
-import {Injectable} from '@nestjs/common';
-import {DataSource} from 'typeorm';
-
+import { Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 
 /**
  * Service for the test environment to reset and init the database
  */
 @Injectable()
 export class CnTestDbInitializerService {
-  constructor(private datasource: DataSource) {
-  }
+  constructor(private datasource: DataSource) {}
 
   async initDb(): Promise<void> {
-
     await this.datasource.dropDatabase();
     await this.datasource.synchronize();
 
-    await this.datasource.query(`INSERT INTO \`user\` (id, firstname, lastname, email, password, category, job,
+    await this.datasource
+      .query(`INSERT INTO \`user\` (id, firstname, lastname, email, password, category, job,
                                                        failedLoginCount, lastLoginAttempt, lang, status, createdAt)
                                  VALUES ('06866542-f089-46dc-b57f-a11e25a23aa5', 'User', 'Admin',
                                          'user.admin@gencovery.com',

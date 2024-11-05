@@ -7,23 +7,28 @@ import { BlExternalApiService } from '../bl-external-api/bl-external-api.service
 import { BlObjectStorageInterface } from './bl-object-storage.interface';
 import { BlBadRequestException } from '../../exceptions/bl-bad-request.exception';
 
-
 /**
  * Service to communicate with an S3 server of a lab (datahub).
  * It uses basic S3 commands to interact with the server.
  */
 export class BlLabS3BucketService implements BlObjectStorageInterface {
-
   private readonly logger = new Logger(BlLabS3BucketService.name);
 
   private s3Service: BlS3BucketService;
 
-  constructor(private config: BlS3BucketConfig, private apiService: BlExternalApiService) {
+  constructor(
+    private config: BlS3BucketConfig,
+    private apiService: BlExternalApiService
+  ) {
     this.s3Service = new BlS3BucketService(config);
   }
 
-  async uploadObjectToBucket(obj: Buffer, filename: string,
-                             contentType: string, tags?: Record<string, string>): Promise<string> {
+  async uploadObjectToBucket(
+    obj: Buffer,
+    filename: string,
+    contentType: string,
+    tags?: Record<string, string>
+  ): Promise<string> {
     try {
       return await this.s3Service.uploadObjectToBucket(obj, filename, contentType, tags);
     } catch (error) {
@@ -121,10 +126,9 @@ export class BlLabS3BucketService implements BlObjectStorageInterface {
     return this.s3Service.getBucketName();
   }
 
-
   //////////////////////////////////////////// TAGS /////////////////////////////////////////
   async getObjectTags(objectName: string): Promise<Record<string, string>> {
-    try{
+    try {
       return await this.s3Service.getObjectTags(objectName);
     } catch (error) {
       throw await this.handleError(error);
@@ -132,16 +136,14 @@ export class BlLabS3BucketService implements BlObjectStorageInterface {
   }
 
   async setObjectTags(objectName: string, tags: Record<string, string>): Promise<void> {
-    try{
+    try {
       return await this.s3Service.setObjectTags(objectName, tags);
     } catch (error) {
       throw await this.handleError(error);
     }
   }
 
-
   //////////////////////////////////////////// OTHERS /////////////////////////////////////////
-
 
   /**
    * Once an error occurred when check if this is because the lab is not available.
@@ -150,26 +152,26 @@ export class BlLabS3BucketService implements BlObjectStorageInterface {
    * @private
    */
   private async handleError(e: any): Promise<Error> {
-
     // endpoint = s3-server/v1, we need to remove the v1 to get the health check route
     const healthCheckEndpoint = this.config.endpoint.split('/').slice(0, -1).join('/');
     const route = healthCheckEndpoint + '/health-check';
 
-    const result = await lastValueFrom(this.apiService.get(route,
-      null, { logError: false, timeout: 2500 })).then(() => true).catch(() => false);
+    const result = await lastValueFrom(this.apiService.get(route, null, { logError: false, timeout: 2500 }))
+      .then(() => true)
+      .catch(() => false);
 
     if (!result) {
       this.logger.error(`Error during request to datahub. Error ${e}`);
       return new BlLabS3ServerNotAvailableException();
     }
 
-    if(e.name !== 'internal_error' && e.message){
+    if (e.name !== 'internal_error' && e.message) {
       this.logger.log(`Error during request to datahub. Error ${e.message}`);
       throw new BlBadRequestException(`Error during request to datahub. ${e.message}`);
-    }else{
+    } else {
       const message = e.message ? e.message : e;
       this.logger.error(`Error during request to datahub. Error ${message}`);
-      throw new BlBadRequestException("Error during request to datahub");
+      throw new BlBadRequestException('Error during request to datahub');
     }
   }
 }

@@ -1,18 +1,22 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {HnBrickMajorVersion, HnVersionState} from './hn-brick-major-version.entity';
-import {EntityManager, Repository} from 'typeorm';
-import {HnBrick} from '../brick/hn-brick.entity';
-import {HnCreateBrickDTO} from '../brick/hn-brick.dto';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { HnBrickMajorVersion, HnVersionState } from './hn-brick-major-version.entity';
+import { EntityManager, Repository } from 'typeorm';
+import { HnBrick } from '../brick/hn-brick.entity';
+import { HnCreateBrickDTO } from '../brick/hn-brick.dto';
 
 @Injectable()
 export class HnBrickMajorVersionService {
+  constructor(
+    @InjectRepository(HnBrickMajorVersion)
+    private brickMajorVersionsRepository: Repository<HnBrickMajorVersion>
+  ) {}
 
-  constructor(@InjectRepository(HnBrickMajorVersion)
-              private brickMajorVersionsRepository: Repository<HnBrickMajorVersion>) {
-  }
-
-  async create(brick: HnBrick, createdBrick: HnCreateBrickDTO, entityManager: EntityManager): Promise<HnBrickMajorVersion> {
+  async create(
+    brick: HnBrick,
+    createdBrick: HnCreateBrickDTO,
+    entityManager: EntityManager
+  ): Promise<HnBrickMajorVersion> {
     const brickMajorVersion: HnBrickMajorVersion = new HnBrickMajorVersion();
     brickMajorVersion.initialize(brick, createdBrick.version.major);
     return entityManager.save(brickMajorVersion);
@@ -22,28 +26,33 @@ export class HnBrickMajorVersionService {
     return this.brickMajorVersionsRepository.find({
       where: {
         brick: {
-          id: brick.id
-        }
-      }
+          id: brick.id,
+        },
+      },
     });
   }
 
-  async findBrickMajorVersionByBrickAndVersion(brick: HnBrick, version: string): Promise<HnBrickMajorVersion> {
+  async findBrickMajorVersionByBrickAndVersion(
+    brick: HnBrick,
+    version: string
+  ): Promise<HnBrickMajorVersion> {
     let major: number;
 
     if (version != 'latest') {
       version = version.slice(1);
-      major = +(version.split('.')[0]);
-      return await this.brickMajorVersionsRepository.findOne({where: {brick: {id: brick.id}, major: major}});
+      major = +version.split('.')[0];
+      return await this.brickMajorVersionsRepository.findOne({
+        where: { brick: { id: brick.id }, major: major },
+      });
     }
 
     return this.brickMajorVersionsRepository.findOne({
       where: {
         brick: {
-          id: brick?.id
+          id: brick?.id,
         },
-        versionState: HnVersionState.LATEST
-      }
+        versionState: HnVersionState.LATEST,
+      },
     });
   }
 
@@ -51,10 +60,11 @@ export class HnBrickMajorVersionService {
     return await this.brickMajorVersionsRepository.findOne({
       where: {
         brick: {
-          id: brickId
+          id: brickId,
         },
-        versionState: HnVersionState.LATEST
-      }, relations: ['brick']
+        versionState: HnVersionState.LATEST,
+      },
+      relations: ['brick'],
     });
   }
 
@@ -62,10 +72,10 @@ export class HnBrickMajorVersionService {
     return this.brickMajorVersionsRepository.findOne({
       where: {
         brick: {
-          id: brickId
+          id: brickId,
         },
-        major: major
-      }
+        major: major,
+      },
     });
   }
 
@@ -73,11 +83,11 @@ export class HnBrickMajorVersionService {
     return this.brickMajorVersionsRepository.findOne({
       where: {
         brick: {
-          id: brick.id
+          id: brick.id,
         },
-        major: major
+        major: major,
       },
-      relations: ['brick']
+      relations: ['brick'],
     });
   }
 }

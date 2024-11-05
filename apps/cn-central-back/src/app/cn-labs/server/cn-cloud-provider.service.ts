@@ -2,7 +2,7 @@ import {
   CnCpCreateInstanceRequest,
   CnCpCreateVolumeRequest,
   CnCpInstance,
-  CnCpVolume
+  CnCpVolume,
 } from './cn-cloud-provider.class';
 import { CnCloudProviderName } from '../../cn-cloud-providers/cn-cloud-provider.entity';
 import { CnLab } from '../cn-lab.entity';
@@ -14,10 +14,10 @@ import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-cor
  * Abstract class to communicate with different cloud provider
  */
 export abstract class CnCloudProviderService {
-
-  protected constructor(protected commandService: CnCommandService,
-                        protected configService: CnCoreConfigService) {
-  }
+  protected constructor(
+    protected commandService: CnCommandService,
+    protected configService: CnCoreConfigService
+  ) {}
 
   public abstract getName(): CnCloudProviderName;
 
@@ -39,9 +39,9 @@ export abstract class CnCloudProviderService {
 
   public abstract createVolume(volume: CnCpCreateVolumeRequest): Promise<CnCpVolume>;
 
-  public abstract attachVolumeToInstance(instanceId: string, volumeId: string): Promise<CnCpVolume> ;
+  public abstract attachVolumeToInstance(instanceId: string, volumeId: string): Promise<CnCpVolume>;
 
-  public abstract mountVolume(lab: CnLab): Promise<void> ;
+  public abstract mountVolume(lab: CnLab): Promise<void>;
 
   public abstract getVolume(volumeId: string): Promise<CnCpVolume>;
 
@@ -50,12 +50,13 @@ export abstract class CnCloudProviderService {
   public abstract volumeIsAttachedToInstance(instanceId: string, volumeId: string): Promise<boolean>;
 
   public instantiateLabSshService(lab: CnLab): CnLabSshService {
-    return new CnLabSshService(this.commandService,
+    return new CnLabSshService(
+      this.commandService,
       this.configService.isLocal(),
       this.getSshUserName(),
       lab.virtualHost,
       lab.id,
-      this.getSshKeyFileName());
+      this.getSshKeyFileName()
+    );
   }
-
 }

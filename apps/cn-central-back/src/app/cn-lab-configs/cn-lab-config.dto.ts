@@ -1,4 +1,4 @@
-import {CnBrickVersionDTO} from '../cn-bricks/cn-brick.dto';
+import { CnBrickVersionDTO } from '../cn-bricks/cn-brick.dto';
 
 export class CnLabConfigDto {
   version: number;

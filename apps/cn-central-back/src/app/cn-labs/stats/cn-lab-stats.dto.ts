@@ -2,7 +2,7 @@ import { ClDateHelper, ClLuxonDateTransform } from '@monorepo/core-lib';
 import { DateTime } from 'luxon';
 
 export type CnLabKpiPeriod =
-  'CURRENT_MONTH'
+  | 'CURRENT_MONTH'
   | 'CURRENT_YEAR'
   | 'LAST_7_DAYS'
   | 'LAST_30_DAYS'
@@ -43,8 +43,9 @@ export class CnLabStatsRequestDTO {
       case 'ALL':
         return ClDateHelper.getDate('1900-01-01').startOf('day');
       case 'CUSTOM':
-        return this.customStartDate ? this.customStartDate.startOf('day') :
-          ClDateHelper.getDate('1900-01-01').startOf('day');
+        return this.customStartDate
+          ? this.customStartDate.startOf('day')
+          : ClDateHelper.getDate('1900-01-01').startOf('day');
     }
   }
 

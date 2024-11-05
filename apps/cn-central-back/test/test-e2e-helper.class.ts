@@ -1,23 +1,20 @@
-import {CnAppModule} from '../src/cn-app.module';
-import {CnCoreConfigService} from '../src/app/cn-core/modules/cn-core-config/cn-core-config.service';
-import {TestConfigService} from './test-config.service';
-import {INestApplication} from '@nestjs/common';
+import { CnAppModule } from '../src/cn-app.module';
+import { CnCoreConfigService } from '../src/app/cn-core/modules/cn-core-config/cn-core-config.service';
+import { TestConfigService } from './test-config.service';
+import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import supertest, {SuperTest} from 'supertest';
-import {Test} from '@nestjs/testing';
-import {TestRequest} from './test-request.class';
-import {TestGetOptions, TestIdOptions} from './test-e2e-helper.config';
-import {CnTestDbInitializerService} from './cn-test.module';
+import supertest, { SuperTest } from 'supertest';
+import { Test } from '@nestjs/testing';
+import { TestRequest } from './test-request.class';
+import { TestGetOptions, TestIdOptions } from './test-e2e-helper.config';
+import { CnTestDbInitializerService } from './cn-test.module';
 
 export class TestE2EHelper {
-
   public app: INestApplication;
 
   private token?: string;
 
-  constructor(private routeBase: string) {
-  }
-
+  constructor(private routeBase: string) {}
 
   ///////////////////////////// INITIALIZATION /////////////////////////////
 
@@ -27,15 +24,12 @@ export class TestE2EHelper {
    */
   public async initAppModule(): Promise<INestApplication> {
     const moduleRef = await Test.createTestingModule({
-      imports: [
-        CnAppModule,
-      ],
-      providers: [
-        CnTestDbInitializerService
-      ]
+      imports: [CnAppModule],
+      providers: [CnTestDbInitializerService],
     })
       // override the config service to set the test database and test profile
-      .overrideProvider(CnCoreConfigService).useClass(TestConfigService)
+      .overrideProvider(CnCoreConfigService)
+      .useClass(TestConfigService)
       .compile();
     this.app = moduleRef.createNestApplication();
     await this.app.init();
@@ -55,8 +49,7 @@ export class TestE2EHelper {
    * @param body
    */
   public testPost(route: string, body: any): TestRequest {
-    return this.post(route, body)
-      .expect(200);
+    return this.post(route, body).expect(200);
   }
 
   /**
@@ -74,8 +67,7 @@ export class TestE2EHelper {
    * @param body
    */
   public testPut(route: string, body: any): TestRequest {
-    return this.put(route, body)
-      .expect(200);
+    return this.put(route, body).expect(200);
   }
 
   /**
@@ -93,8 +85,7 @@ export class TestE2EHelper {
    * @param options
    */
   public testDelete(route: string, options?: TestIdOptions): TestRequest {
-    return this.delete(route, options)
-      .expect(200);
+    return this.delete(route, options).expect(200);
   }
 
   /**
@@ -111,9 +102,8 @@ export class TestE2EHelper {
    * @param route route to call
    * @param options option for the get
    */
-  public testGet(route: string, options ?: TestGetOptions): TestRequest {
-    return this.get(route, options)
-      .expect(200);
+  public testGet(route: string, options?: TestGetOptions): TestRequest {
+    return this.get(route, options).expect(200);
   }
 
   /**
@@ -121,7 +111,7 @@ export class TestE2EHelper {
    * @param route route to call
    * @param options option for the get
    */
-  public get(route: string, options ?: TestGetOptions): TestRequest {
+  public get(route: string, options?: TestGetOptions): TestRequest {
     return this.buildTestRequest(this.getSuperTest().get(this.constructGetRoute(route, options)));
   }
 
@@ -139,12 +129,11 @@ export class TestE2EHelper {
 
   ///////////////////////////// INTERNAL /////////////////////////////
 
-
   /**
    * Construct the get routes with pagination
    * @private
    */
-  private constructGetRoute(route: string, options ?: TestGetOptions): string {
+  private constructGetRoute(route: string, options?: TestGetOptions): string {
     let fullRoute: string = this.constructRoute(route, options);
 
     // manage the pagination

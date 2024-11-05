@@ -2,7 +2,6 @@ import { CnHierarchyObjectType, CnHierarchyObjectWithChildren } from './cn-hiera
 import { CnUser } from '../../cn-users/cn-user.entity';
 import { DateTime } from 'luxon';
 
-
 export interface CnHierarchyObjectInfo {
   objectType: CnHierarchyObjectType;
   name: string;
@@ -25,19 +24,17 @@ export class CnLabFolderDTO {
 }
 
 export class CnFolderDtoHelper {
-
   public static convertToLabFolderDto(folder: CnHierarchyObjectWithChildren): CnLabFolderDTO {
     return {
       id: folder.id,
       code: folder.name,
       title: folder.name,
-      children: folder.children.map(child => CnFolderDtoHelper.convertToLabFolderDto(child)),
-      levelStatus: folder.children.length > 0 ? 'PARENT' : 'LEAF'
+      children: folder.children.map((child) => CnFolderDtoHelper.convertToLabFolderDto(child)),
+      levelStatus: folder.children.length > 0 ? 'PARENT' : 'LEAF',
     };
   }
 
   public static convertToFolderTreeDtoList(folders: CnHierarchyObjectWithChildren[]): CnLabFolderDTO[] {
-    return folders.map(folder => CnFolderDtoHelper.convertToLabFolderDto(folder));
+    return folders.map((folder) => CnFolderDtoHelper.convertToLabFolderDto(folder));
   }
-
 }

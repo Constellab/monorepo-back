@@ -18,15 +18,9 @@ import { CnCoreModule } from '../../cn-core/cn-core.module';
     CnNotificationModule,
     CnUsersModule,
     CnSpacesModule,
-    CnGroupsModule
+    CnGroupsModule,
   ],
-  providers: [
-    CnUserAccountsService,
-    CnUserAccountListener
-  ],
-  controllers: [
-    CnUserAccountsController
-  ]
+  providers: [CnUserAccountsService, CnUserAccountListener],
+  controllers: [CnUserAccountsController],
 })
-export class CnUserAccountModule {
-}
+export class CnUserAccountModule {}

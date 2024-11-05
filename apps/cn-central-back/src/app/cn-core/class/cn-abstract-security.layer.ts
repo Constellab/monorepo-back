@@ -1,12 +1,11 @@
-import {DeleteResult} from 'typeorm';
-import {BlAbstractService, BlEntityWithId, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import { DeleteResult } from 'typeorm';
+import { BlAbstractService, BlEntityWithId, BlUnauthorizedException } from '@monorepo/back-core-lib';
 
 /**
  * Security layer between the controller and the service to check if the user can CRUD the entity
  */
 export abstract class CnAbstractSecurityLayer<T extends BlEntityWithId> {
-  protected constructor(private abstractService: BlAbstractService<T>) {
-  }
+  protected constructor(private abstractService: BlAbstractService<T>) {}
 
   /**
    * Abstract Methods to check the CRUD authorization and return a boolean
@@ -17,7 +16,7 @@ export abstract class CnAbstractSecurityLayer<T extends BlEntityWithId> {
 
   public abstract isAuthorizedToDelete(dbEntity: T): Promise<boolean>;
 
-  public abstract isAuthorizedToFindOne(dbEntity: T): Promise<boolean> ;
+  public abstract isAuthorizedToFindOne(dbEntity: T): Promise<boolean>;
 
   // same method with the id (this does a find one before calling the method with the entity)
   public async isAuthorizedToUpdateById(id: string): Promise<boolean> {
@@ -37,7 +36,6 @@ export abstract class CnAbstractSecurityLayer<T extends BlEntityWithId> {
 
     return this.isAuthorizedToFindOne(dbEntity);
   }
-
 
   /**
    * Methods to check the CRUD authorization and call CnAbstractService crud operation
@@ -85,32 +83,30 @@ export abstract class CnAbstractSecurityLayer<T extends BlEntityWithId> {
     return await this.abstractService.findByIdAndCheck(id);
   }
 
-
   /**
    * Methods to check the CRUD authorization and throw a Unauthorized error
    * if the user is not authorized for the operation
    */
   public async checkAuthorizationToCreate(newEntity: T): Promise<void> {
-    if (!await this.isAuthorizedToCreate(newEntity)) {
+    if (!(await this.isAuthorizedToCreate(newEntity))) {
       throw new BlUnauthorizedException();
     }
   }
 
   public async checkAuthorizationToUpdate(dbEntity: T): Promise<void> {
-    if (!await this.isAuthorizedToUpdate(dbEntity)) {
+    if (!(await this.isAuthorizedToUpdate(dbEntity))) {
       throw new BlUnauthorizedException();
     }
   }
 
-
   public async checkAuthorizationToDelete(dbEntity: T): Promise<void> {
-    if (!await this.isAuthorizedToDelete(dbEntity)) {
+    if (!(await this.isAuthorizedToDelete(dbEntity))) {
       throw new BlUnauthorizedException();
     }
   }
 
   public async checkAuthorizationToFindOne(dbEntity: T): Promise<void> {
-    if (!await this.isAuthorizedToFindOne(dbEntity)) {
+    if (!(await this.isAuthorizedToFindOne(dbEntity))) {
       throw new BlUnauthorizedException();
     }
   }
@@ -122,18 +118,17 @@ export abstract class CnAbstractSecurityLayer<T extends BlEntityWithId> {
   public async getAndCheckAuthorizationToUpdateById(id: string): Promise<T> {
     const dbEntity: T = await this.getDbEntityForCheckUpdate(id);
 
-    if (!await this.isAuthorizedToUpdate(dbEntity)) {
+    if (!(await this.isAuthorizedToUpdate(dbEntity))) {
       throw new BlUnauthorizedException();
     }
 
     return dbEntity;
   }
 
-
   public async getAndCheckAuthorizationToDeleteById(id: string): Promise<T> {
     const dbEntity: T = await this.getDbEntityForCheckDelete(id);
 
-    if (!await this.isAuthorizedToDelete(dbEntity)) {
+    if (!(await this.isAuthorizedToDelete(dbEntity))) {
       throw new BlUnauthorizedException();
     }
     return dbEntity;
@@ -142,7 +137,7 @@ export abstract class CnAbstractSecurityLayer<T extends BlEntityWithId> {
   public async getAndCheckAuthorizationToFindById(id: string): Promise<T> {
     const dbEntity: T = await this.getDbEntityForCheckFindOne(id);
 
-    if (!await this.isAuthorizedToFindById(id)) {
+    if (!(await this.isAuthorizedToFindById(id))) {
       throw new BlUnauthorizedException();
     }
     return dbEntity;

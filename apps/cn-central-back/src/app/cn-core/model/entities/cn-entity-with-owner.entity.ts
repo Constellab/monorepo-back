@@ -1,4 +1,4 @@
-import {CnUser} from '../../../cn-users/cn-user.entity';
+import { CnUser } from '../../../cn-users/cn-user.entity';
 
 export interface CnEntityWithOwner {
   getOwner(): CnUser;

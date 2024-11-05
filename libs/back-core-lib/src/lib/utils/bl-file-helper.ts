@@ -1,15 +1,11 @@
-
-export class BlFileHelper{
+export class BlFileHelper {
   /**
    * @param file filename or full file path
    * @return return the filename name of a file without the extension
    */
   public static getFilenameWithoutExtension(file: string): string {
     if (!file) return null;
-    return BlFileHelper.extractFilenameFromFullPath(file)
-      .split('.')
-      .slice(0, -1)
-      .join('.');
+    return BlFileHelper.extractFilenameFromFullPath(file).split('.').slice(0, -1).join('.');
   }
 
   /**
@@ -18,10 +14,7 @@ export class BlFileHelper{
    */
   public static getFileExtension(file: string): string {
     if (!file) return null;
-    return BlFileHelper.extractFilenameFromFullPath(file)
-      .split('.')
-      .slice(-1)
-      .join('.');
+    return BlFileHelper.extractFilenameFromFullPath(file).split('.').slice(-1).join('.');
   }
 
   /**
@@ -33,7 +26,6 @@ export class BlFileHelper{
     const regex = new RegExp(/^.*[/]/);
     return fullPath.replace(regex, '');
   }
-
 
   public static isPDF(file: string): boolean {
     return BlFileHelper.extensionIsPDF(BlFileHelper.getFileExtension(file));
@@ -64,8 +56,14 @@ export class BlFileHelper{
   }
 
   public static extensionIsImage(extension: string): boolean {
-    return extension === 'png' || extension === 'jpg' || extension === 'jpeg' ||
-      extension === 'gif' || extension === 'webp' || extension === 'svg';
+    return (
+      extension === 'png' ||
+      extension === 'jpg' ||
+      extension === 'jpeg' ||
+      extension === 'gif' ||
+      extension === 'webp' ||
+      extension === 'svg'
+    );
   }
 
   public static addIndexToFileName(file: string, index: number): string {

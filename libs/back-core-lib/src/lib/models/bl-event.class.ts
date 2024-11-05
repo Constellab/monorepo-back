@@ -11,28 +11,24 @@ export interface BlEventResponseError {
 }
 
 export class BlEventResponses {
-
   constructor(public responses: BlEventResponse[]) {
     console.log('responses', responses);
   }
 
-
   public hasError(): boolean {
-    return this.responses.some(r => r.status === 'error');
+    return this.responses.some((r) => r.status === 'error');
   }
 
   public isSuccess(): boolean {
-    return this.responses.every(r => r.status === 'success');
+    return this.responses.every((r) => r.status === 'success');
   }
 
-  public getFirstError(): string{
-    for(const r of this.responses){
-      if(r.status === 'error'){
+  public getFirstError(): string {
+    for (const r of this.responses) {
+      if (r.status === 'error') {
         return r.error;
       }
     }
     return null;
   }
-
-
 }

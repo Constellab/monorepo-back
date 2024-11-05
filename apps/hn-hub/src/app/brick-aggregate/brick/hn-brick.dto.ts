@@ -1,11 +1,11 @@
-import {HnReferenceDTO, HnRepoType, HnVersionType} from '../brick-version/hn-brick-version.entity';
-import {HnVersionState} from '../brick-major-version/hn-brick-major-version.entity';
-import {HnBrick, HnBrickVisibility} from './hn-brick.entity';
-import {BlEntityWithIdDTO, BlVersion} from '@monorepo/back-core-lib';
-import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
-import {HnBrickUserDto} from '../brick-user/hn-brick-user.dto';
-import {HnUserDto} from '../../users/hn-user.dto';
-import {HnSpaceDto} from '../../space-aggregate/space/hn-space.dto';
+import { HnReferenceDTO, HnRepoType, HnVersionType } from '../brick-version/hn-brick-version.entity';
+import { HnVersionState } from '../brick-major-version/hn-brick-major-version.entity';
+import { HnBrick, HnBrickVisibility } from './hn-brick.entity';
+import { BlEntityWithIdDTO, BlVersion } from '@monorepo/back-core-lib';
+import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
+import { HnBrickUserDto } from '../brick-user/hn-brick-user.dto';
+import { HnUserDto } from '../../users/hn-user.dto';
+import { HnSpaceDto } from '../../space-aggregate/space/hn-space.dto';
 
 export class HnBrickDto extends BlEntityWithIdDTO {
   name: string;
@@ -41,7 +41,7 @@ export class HnBrickDto extends BlEntityWithIdDTO {
     this.imageLink = brick.imageLink;
     this.credentialUsername = brick.credentialUsername;
     this.credentialPassword = brick.credentialPassword;
-    this.brickUsers = brick.brickUsers?.map(brickUser => new HnBrickUserDto(brickUser));
+    this.brickUsers = brick.brickUsers?.map((brickUser) => new HnBrickUserDto(brickUser));
     this.createdAt = brick.createdAt.toISO();
     this.createdBy = new HnUserDto(brick.createdBy);
     this.lastModifiedAt = brick.lastModifiedAt.toISO();
@@ -125,7 +125,7 @@ export interface HnTypingStyle {
   icon_color: string;
 }
 
-export interface HnImportResourceDTO extends HnImportEntity{
+export interface HnImportResourceDTO extends HnImportEntity {
   methods: HnResourceMethodList;
   variables?: Record<string, any>;
 }
@@ -206,7 +206,7 @@ export interface HnTechDocFunction {
 
 export enum HnTechDocFunctionType {
   CLASSMETHOD = 'classmethod',
-  STATICMETHOD = 'staticmethod'
+  STATICMETHOD = 'staticmethod',
 }
 
 export interface HnTechDocFunctionArg {
@@ -215,7 +215,7 @@ export interface HnTechDocFunctionArg {
   arg_default_value?: string;
 }
 
-export interface HnResourceView{
+export interface HnResourceView {
   method_name: string;
   view_type: string;
   human_name: string;
@@ -225,7 +225,7 @@ export interface HnResourceView{
   config_specs: Record<string, any>;
 }
 
-export interface HnImportTechDocOtherClassesDTO{
+export interface HnImportTechDocOtherClassesDTO {
   name: string;
   doc?: string;
   methods: HnTechDocFunction[];

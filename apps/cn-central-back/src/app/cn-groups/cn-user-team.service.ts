@@ -1,17 +1,16 @@
-import {CnUserGroup} from './cn-group.entity';
-import {InjectRepository} from '@nestjs/typeorm';
-import {In, Repository} from 'typeorm';
-import {ClPageI} from '@monorepo/core-lib';
-import {Injectable} from '@nestjs/common';
-import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {BlAbstractPaginatedService, BlBadRequestException} from '@monorepo/back-core-lib';
+import { CnUserGroup } from './cn-group.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { In, Repository } from 'typeorm';
+import { ClPageI } from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { BlAbstractPaginatedService, BlBadRequestException } from '@monorepo/back-core-lib';
 
 /**
  * Service to manage user groups of teams
  */
 @Injectable()
 export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
-
   constructor(@InjectRepository(CnUserGroup) repository: Repository<CnUserGroup>) {
     super(repository, CnUserGroup);
   }
@@ -36,14 +35,14 @@ export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
     }
 
     // check that there is at least 2 users in the group
-    const count = await this.repo.count({where: {groupId: groupId}});
+    const count = await this.repo.count({ where: { groupId: groupId } });
     if (count === 1) {
       throw new BlBadRequestException(CnErrorText.REMOVE_GROUP_LAST_USER);
     }
 
     await this.repo.delete({
       groupId: groupId,
-      userId: userId
+      userId: userId,
     });
   }
 
@@ -51,8 +50,8 @@ export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
     const userGroup = await this.repo.findOne({
       where: {
         groupId: groupId,
-        userId: userId
-      }
+        userId: userId,
+      },
     });
 
     return userGroup != null;
@@ -62,18 +61,17 @@ export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
     const userGroup = await this.repo.findOne({
       where: {
         groupId: In(groupIds),
-        userId: userId
+        userId: userId,
       },
     });
 
     return userGroup != null;
   }
 
-
   public async getUsersOfTeam(groupId: string, page: number, size: number): Promise<ClPageI<CnUserGroup>> {
     return await this.findPaginated(page, size, {
       where: {
-        groupId: groupId
+        groupId: groupId,
       },
       relations: ['user'],
     });
@@ -82,7 +80,7 @@ export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
   public async getAllUsersOfTeam(groupId: string): Promise<CnUserGroup[]> {
     return await this.repo.find({
       where: {
-        groupId: groupId
+        groupId: groupId,
       },
       relations: ['user'],
     });
@@ -92,9 +90,9 @@ export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
     return this.repo.findOne({
       where: {
         groupId: groupId,
-        userId: userId
+        userId: userId,
       },
-      relations: {user: true}
+      relations: { user: true },
     });
   }
 }

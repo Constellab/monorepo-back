@@ -9,28 +9,26 @@ import { CnLabConfigDTO } from '../cn-labs/cn-lab.dto';
  */
 @Entity('lab_config')
 export class CnLabConfig extends BlEntityWithId {
-
-  @Column({nullable: false, length: 50})
+  @Column({ nullable: false, length: 50 })
   label: string;
 
   @ManyToMany(() => CnBrickVersion)
-  @JoinTable({name: 'lab_config_brick_version'})
+  @JoinTable({ name: 'lab_config_brick_version' })
   brickVersions: CnBrickVersion[];
 
-  @Column({nullable: false, unique: true})
+  @Column({ nullable: false, unique: true })
   brickVersionsHash: number;
 
   toLabConfigDTO(): CnLabConfigDTO {
-    if(this.brickVersions == null){
-      throw new Error("Brick versions were not loaded in the CnLabConfig");
+    if (this.brickVersions == null) {
+      throw new Error('Brick versions were not loaded in the CnLabConfig');
     }
     return {
       glabTag: null,
-      brickVersions: this.brickVersions.map(brickVersion => ({
+      brickVersions: this.brickVersions.map((brickVersion) => ({
         name: brickVersion.brick.name,
         version: brickVersion.version.toString(),
       })),
     };
   }
 }
-

@@ -1,26 +1,28 @@
-import {Injectable} from '@nestjs/common';
-import {CnUserTeamService} from './cn-user-team.service';
-import {CnGroupTeam} from './cn-group.entity';
-import {CnGroupsService} from './cn-groups.service';
-import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
-import {BlUnauthorizedException} from '@monorepo/back-core-lib';
+import { Injectable } from '@nestjs/common';
+import { CnUserTeamService } from './cn-user-team.service';
+import { CnGroupTeam } from './cn-group.entity';
+import { CnGroupsService } from './cn-groups.service';
+import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
+import { BlUnauthorizedException } from '@monorepo/back-core-lib';
 
 /**
  * Class to check the user authorization on groups
  */
 @Injectable()
 export class CnGroupsSecurity {
-
-  constructor(private userGroupService: CnUserTeamService,
-              private groupService: CnGroupsService) {
-  }
-
+  constructor(
+    private userGroupService: CnUserTeamService,
+    private groupService: CnGroupsService
+  ) {}
 
   /**
    * Get the group and check if the user can get it.
    * He can only if he is a member of the space
    */
-  public async getAndCheckAuthorizationToGetTeam(userInfo: CnUserSpaceInfo, teamId: string): Promise<CnGroupTeam> {
+  public async getAndCheckAuthorizationToGetTeam(
+    userInfo: CnUserSpaceInfo,
+    teamId: string
+  ): Promise<CnGroupTeam> {
     const team = await this.groupService.getAndCheckTeamById(teamId);
     this.checkAuthorizationToGetTeam(userInfo, team);
     return team;
@@ -34,7 +36,10 @@ export class CnGroupsSecurity {
   /**
    * Get the group and check if the user can update it. He can only if he is an admin or is in group
    */
-  public async getAndCheckAuthorizationToUpdateTeam(userInfo: CnUserSpaceInfo, teamId: string): Promise<CnGroupTeam> {
+  public async getAndCheckAuthorizationToUpdateTeam(
+    userInfo: CnUserSpaceInfo,
+    teamId: string
+  ): Promise<CnGroupTeam> {
     const team = await this.groupService.getAndCheckTeamById(teamId);
 
     // check the space context

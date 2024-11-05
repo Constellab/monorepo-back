@@ -7,7 +7,7 @@ import {
   CnCpInstance,
   CnCpInstanceStatus,
   CnCpVolume,
-  CnCpVolumeStatus
+  CnCpVolumeStatus,
 } from '../cn-cloud-provider.class';
 import { CnCloudProviderName } from '../../../cn-cloud-providers/cn-cloud-provider.entity';
 import { CnOutscaleService } from './cn-outscale.service';
@@ -17,10 +17,8 @@ import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-
 import { CnCommandService } from '../../../cn-core/services/cn-command.service';
 import { CnLabVolumeType } from '../../volume/cn-lab-volume-entity';
 
-
 @Injectable()
 export class CnCloudProviderOutscaleService extends CnCloudProviderService {
-
   // object to map the REGION to the subregion
   // we always use the same subregion for a REGION
   private static regionSubRegionMapping: Record<string, string> = {
@@ -35,9 +33,7 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
 
   private readonly logger = new Logger(CnCloudProviderOutscaleService.name);
 
-
-  constructor(configService: CnCoreConfigService,
-              commandService: CnCommandService) {
+  constructor(configService: CnCoreConfigService, commandService: CnCommandService) {
     super(commandService, configService);
   }
 
@@ -54,9 +50,11 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
   }
 
   private get outscaleService(): CnOutscaleService {
-    return new CnOutscaleService(CnCloudProviderOutscaleService.REGION,
+    return new CnOutscaleService(
+      CnCloudProviderOutscaleService.REGION,
       this.configService.getOutscaleAccessKey(),
-      this.configService.getOutscaleSecretKey());
+      this.configService.getOutscaleSecretKey()
+    );
   }
 
   /////////////////////// INSTANCE ///////////////////////
@@ -67,8 +65,13 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
     }
     const subRegion = this.getSubRegion(request.region);
 
-    const vm: Vm = await this.outscaleService.createInstance(CnCloudProviderOutscaleService.UBUNTU_IMAGE_ID,
-      subRegion, request.serverName, this.configService.getOutscaleSshKeyName(), this.configService.getOutscaleSecurityGroup());
+    const vm: Vm = await this.outscaleService.createInstance(
+      CnCloudProviderOutscaleService.UBUNTU_IMAGE_ID,
+      subRegion,
+      request.serverName,
+      this.configService.getOutscaleSshKeyName(),
+      this.configService.getOutscaleSecurityGroup()
+    );
 
     await this.outscaleService.updateObjectName(vm.vmId, request.name);
 
@@ -117,7 +120,7 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
       id: vm.vmId,
       status: {
         status: this.convertVmStatus(vm.state, vm.vmId),
-        message: vm.stateReason
+        message: vm.stateReason,
       },
       originalObject: vm,
       region: CnCloudProviderOutscaleService.REGION,
@@ -148,12 +151,10 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
 
   /////////////////////// VOLUME ///////////////////////
 
-
   async attachVolumeToInstance(instanceId: string, volumeId: string): Promise<CnCpVolume> {
     await this.outscaleService.attachVolumeToInstance(instanceId, volumeId);
     return this.getVolume(volumeId);
   }
-
 
   async createVolume(volume: CnCpCreateVolumeRequest): Promise<CnCpVolume> {
     const subRegion = this.getSubRegion(volume.region);
@@ -164,7 +165,6 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
 
     return this.convertVolume(newVolume);
   }
-
 
   deleteVolume(volumeId: string): Promise<void> {
     return this.outscaleService.deleteVolume(volumeId);
@@ -179,14 +179,15 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
     const labSshService = this.instantiateLabSshService(lab);
     const mountScript = labSshService.getMountFolder() + '/' + CnCloudProviderOutscaleService.MOUNT_FILE;
 
-    await labSshService.execSshCommand(
-      [`bash ${mountScript} ${CnCloudProviderOutscaleService.MOUNT_DISK_NAME}`]);
+    await labSshService.execSshCommand([
+      `bash ${mountScript} ${CnCloudProviderOutscaleService.MOUNT_DISK_NAME}`,
+    ]);
   }
 
   async volumeIsAttachedToInstance(instanceId: string, volumeId: string): Promise<boolean> {
     const volume = await this.outscaleService.getVolume(volumeId);
 
-    return volume.linkedVolumes.find(linkedVolume => linkedVolume.vmId === instanceId) != null;
+    return volume.linkedVolumes.find((linkedVolume) => linkedVolume.vmId === instanceId) != null;
   }
 
   private convertVolume(volume: Volume): CnCpVolume {
@@ -196,7 +197,7 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
       type: CnLabVolumeType.HIGH_SPEED,
       region: CnCloudProviderOutscaleService.REGION,
       originalObject: volume,
-      status: this.convertVolumeStatus(volume.state)
+      status: this.convertVolumeStatus(volume.state),
     };
   }
 
@@ -216,7 +217,6 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
         throw new Error(`Unknown status ${status} for outscale volume`);
     }
   }
-
 
   private getSubRegion(region: string): string {
     const subRegion = CnCloudProviderOutscaleService.regionSubRegionMapping[region];

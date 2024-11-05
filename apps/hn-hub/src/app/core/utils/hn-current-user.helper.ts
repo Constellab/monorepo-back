@@ -1,8 +1,7 @@
-import {BlCurrentUserHelper} from '@monorepo/back-core-lib';
-import {HnUser} from '../../users/hn-user.entity';
+import { BlCurrentUserHelper } from '@monorepo/back-core-lib';
+import { HnUser } from '../../users/hn-user.entity';
 
 export class HnCurrentUserHelper extends BlCurrentUserHelper {
-
   /**
    * returns the current authenticated user or null if not authenticated
    */

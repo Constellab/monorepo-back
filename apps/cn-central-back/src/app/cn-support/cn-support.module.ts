@@ -1,16 +1,11 @@
-import {Module} from '@nestjs/common';
-import {CnSupportService} from './cn-support.service';
-import {CnNotificationModule} from '../cn-notification/cn-notification.module';
-import {CnCoreModule} from '../cn-core/cn-core.module';
+import { Module } from '@nestjs/common';
+import { CnSupportService } from './cn-support.service';
+import { CnNotificationModule } from '../cn-notification/cn-notification.module';
+import { CnCoreModule } from '../cn-core/cn-core.module';
 
 @Module({
-  imports: [
-    CnCoreModule,
-
-    CnNotificationModule,
-  ],
+  imports: [CnCoreModule, CnNotificationModule],
   providers: [CnSupportService],
-  exports: [CnSupportService]
+  exports: [CnSupportService],
 })
-export class CnSupportModule {
-}
+export class CnSupportModule {}

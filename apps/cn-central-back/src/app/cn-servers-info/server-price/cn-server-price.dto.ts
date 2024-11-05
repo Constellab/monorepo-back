@@ -1,16 +1,12 @@
-import {CnServerPrice} from './cn-server-price.entity';
-import {DateTime} from 'luxon';
-import {ClLuxonDateTransform} from '@monorepo/core-lib';
+import { CnServerPrice } from './cn-server-price.entity';
+import { DateTime } from 'luxon';
+import { ClLuxonDateTransform } from '@monorepo/core-lib';
 
 export class CnServerPrices {
-
-  constructor(public prices: CnServerPrice[]) {
-  }
+  constructor(public prices: CnServerPrice[]) {}
 
   public getPriceAt(date: DateTime): number {
-    const price = this.prices.find(
-      p => p.startDate <= date && (p.endDate === null || p.endDate >= date)
-    );
+    const price = this.prices.find((p) => p.startDate <= date && (p.endDate === null || p.endDate >= date));
 
     if (!price) {
       return 0;
@@ -20,7 +16,6 @@ export class CnServerPrices {
     return price.price;
   }
 }
-
 
 export class CnCreateServerPriceDTO {
   price: number;

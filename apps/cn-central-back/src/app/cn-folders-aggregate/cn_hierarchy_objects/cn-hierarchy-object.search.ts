@@ -6,8 +6,6 @@ import { IsNull } from 'typeorm';
  * Override the search builder to add to some logic
  */
 export class CnHierarchyObjectSearch extends BlSearchBuilder<CnHierarchyObject> {
-
-
   addSearchParams(searchParams: BlSearchParams): void {
     // clone because it will be modified
     searchParams = searchParams.clone();
@@ -15,7 +13,7 @@ export class CnHierarchyObjectSearch extends BlSearchBuilder<CnHierarchyObject> 
     // if the includeSubFolders is True, we don't add the filter on folder level
     if (!searchParams.getFilterValue('includeSubFolders')) {
       // otherwise we only get root folder
-      this.mergeWhereOptions({parentId: IsNull()});
+      this.mergeWhereOptions({ parentId: IsNull() });
     }
     searchParams.removeFilter('includeSubFolders');
 

@@ -22,10 +22,10 @@ export class HnFolderDto extends HnBaseDto {
       this.folder = new HnFolderDto(folder.folder);
     }
     if (folder.folders) {
-      this.folders = folder.folders.map(f => new HnFolderDto(f));
+      this.folders = folder.folders.map((f) => new HnFolderDto(f));
     }
     if (folder.documentations) {
-      this.documentations = folder.documentations.map(d => new HnDocumentationDto(d));
+      this.documentations = folder.documentations.map((d) => new HnDocumentationDto(d));
     }
   }
 }
@@ -43,7 +43,15 @@ export class HnNode extends BlEntityWithId {
 
   children?: HnNode[];
 
-  constructor(id: string, name: string, path: string, completePath: string, o: number, parentId?: string, children?: HnNode[]) {
+  constructor(
+    id: string,
+    name: string,
+    path: string,
+    completePath: string,
+    o: number,
+    parentId?: string,
+    children?: HnNode[]
+  ) {
     super();
     this.id = id;
     this.name = name;

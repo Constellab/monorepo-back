@@ -1,6 +1,5 @@
-version: "3"
+version: '3'
 services:
-
   glab:
     image: constellab/glab:${GLAB_TAG}
     environment:
@@ -98,7 +97,6 @@ services:
       - 8081:8080
       - 3101:3000
 
-
   # Front
   front:
     image: constellab/lab-front:${FRONT_VERSION}
@@ -189,7 +187,6 @@ services:
       - 3409:3306
   #END_BIOTA_DB
 
-
 volumes:
   lab-desktop-${LAB_ID}-lab:
   lab-desktop-${LAB_ID}-logs:
@@ -202,7 +199,6 @@ volumes:
   lab-desktop-${LAB_ID}-gws-core-prod-db:
   lab-desktop-${LAB_ID}-gws-core-dev-db:
   lab-desktop-${LAB_ID}-test-gws-dev-db:
-
 
 networks:
   lab-desktop-network-${LAB_ID}:

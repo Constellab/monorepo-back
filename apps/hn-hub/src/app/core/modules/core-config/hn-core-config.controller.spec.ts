@@ -1,5 +1,5 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {HnCoreConfigController} from './hn-core-config.controller';
+import { Test, TestingModule } from '@nestjs/testing';
+import { HnCoreConfigController } from './hn-core-config.controller';
 
 describe('CnCoreConfigController', () => {
   let controller: HnCoreConfigController;

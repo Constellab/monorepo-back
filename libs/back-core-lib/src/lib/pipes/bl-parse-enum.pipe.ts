@@ -1,5 +1,5 @@
-import {Injectable, PipeTransform} from '@nestjs/common';
-import {BlBadRequestException} from '../exceptions/bl-bad-request.exception';
+import { Injectable, PipeTransform } from '@nestjs/common';
+import { BlBadRequestException } from '../exceptions/bl-bad-request.exception';
 
 /**
  * pipe to convert an input to a enum and throw an error
@@ -8,9 +8,7 @@ import {BlBadRequestException} from '../exceptions/bl-bad-request.exception';
  */
 @Injectable()
 export class BlParseEnumPipe implements PipeTransform {
-
-  constructor(private enumeration: any) {
-  }
+  constructor(private enumeration: any) {}
 
   transform(value: any): any {
     for (const property of Object.keys(this.enumeration)) {

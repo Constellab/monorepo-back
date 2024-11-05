@@ -53,7 +53,6 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
     return this.storyService.storyImageMigration();
   }
 
-
   @BlPublic()
   @Get('all-map')
   async getAllStoriesMap(): Promise<HnSitemapItemBase[]> {
@@ -118,24 +117,18 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
 
   @BlPublic()
   @Get('title/:id')
-  async getStoryTitle(
-    @Param('id', new ParseUUIDPipe()) id: string
-  ): Promise<string> {
+  async getStoryTitle(@Param('id', new ParseUUIDPipe()) id: string): Promise<string> {
     return this.storyService.getStoryTitle(id);
   }
 
   @BlPublic()
   @Get(':id')
-  async getStory(
-    @Param('id', new ParseUUIDPipe()) id: string
-  ): Promise<HnStoryDto> {
+  async getStory(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnStoryDto> {
     return new HnStoryDto(await this.storyService.getStory(id));
   }
 
   @Delete(':id')
-  async deleteStory(
-    @Param('id', new ParseUUIDPipe()) id: string
-  ): Promise<void> {
+  async deleteStory(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.storyService.deleteStory(id);
   }
 
@@ -180,9 +173,7 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
   }
 
   @Delete(':id/main-image')
-  async deleteStoryMainImage(
-    @Param('id', new ParseUUIDPipe()) id: string
-  ): Promise<HnStory> {
+  async deleteStoryMainImage(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnStory> {
     return this.storyService.deleteStoryMainImage(id);
   }
 
@@ -195,9 +186,7 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
   }
 
   @Put(':id/content')
-  async updateStoryContent(
-    @Param('id', new ParseUUIDPipe()) id: string
-  ): Promise<HnStory> {
+  async updateStoryContent(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnStory> {
     return this.storyService.updateStoryContent(id);
   }
 
@@ -231,9 +220,7 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
    * Publish the story
    */
   @Put(':id/publish')
-  async publishStory(
-    @Param('id', new ParseUUIDPipe()) id: string
-  ): Promise<HnStory> {
+  async publishStory(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnStory> {
     return this.storyService.publishStory(id);
   }
 
@@ -241,9 +228,7 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
    * Check if the current user is the owner of the story
    */
   @Get(':id/is-owner-or-co-author')
-  async isStoryOwnerOrCoAuthor(
-    @Param('id', new ParseUUIDPipe()) id: string
-  ): Promise<boolean> {
+  async isStoryOwnerOrCoAuthor(@Param('id', new ParseUUIDPipe()) id: string): Promise<boolean> {
     return await this.storyService.isStoryOwnerOrCoAuthor(id);
   }
 
@@ -257,9 +242,7 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
 
   @BlPublic()
   @Get(':id/co-authors')
-  async getStoryCoAuthors(
-    @Param('id', new ParseUUIDPipe()) id: string
-  ): Promise<HnUserDto[]> {
+  async getStoryCoAuthors(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUserDto[]> {
     return (await this.storyService.getStoryCoAuthors(id)).map(
       (storyAuthor) => new HnUserDto(storyAuthor.user)
     );
@@ -300,9 +283,7 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
   }
 
   @Delete('invite/:inviteId')
-  async deleteCoAuthorInvite(
-    @Param('inviteId', new ParseUUIDPipe()) inviteId: string
-  ): Promise<boolean> {
+  async deleteCoAuthorInvite(@Param('inviteId', new ParseUUIDPipe()) inviteId: string): Promise<boolean> {
     return this.storyService.deleteCoAuthorInvite(inviteId);
   }
 
@@ -345,10 +326,7 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
     @Param('storyId', new ParseUUIDPipe()) storyId: string
   ): Promise<any> {
     return {
-      filename: await this.storyService.uploadStoryResourceViewFile(
-        storyId,
-        file
-      ),
+      filename: await this.storyService.uploadStoryResourceViewFile(storyId, file),
     };
   }
 

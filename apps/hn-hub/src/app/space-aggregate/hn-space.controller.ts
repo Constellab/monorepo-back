@@ -9,14 +9,12 @@ import { Request } from 'express';
 export enum HnSpaceUserAction {
   CREATE = 'createSpaceUser',
   REMOVE = 'removeSpaceUser',
-  UPDATE = 'updateSpaceUser'
+  UPDATE = 'updateSpaceUser',
 }
 
 @Controller('space')
 export class HnSpaceController {
-
-  constructor(private readonly spaceAggregateService: HnSpaceAggregateService) {
-  }
+  constructor(private readonly spaceAggregateService: HnSpaceAggregateService) {}
 
   /////////////////////////////////// Space ///////////////////////////////////
 
@@ -51,7 +49,7 @@ export class HnSpaceController {
   }
 
   @Get('common-space/:userId')
-  async getUserCommonSpace(@Param('userId', new ParseUUIDPipe) userId: string): Promise<HnSpaceDto[]>{
+  async getUserCommonSpace(@Param('userId', new ParseUUIDPipe()) userId: string): Promise<HnSpaceDto[]> {
     return this.spaceAggregateService.getUserCommonSpace(userId);
   }
 

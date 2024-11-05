@@ -4,8 +4,8 @@ import { Type } from 'class-transformer';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 
 /*
-* Only for hourly billed labs, it contains the price for the running period
-*/
+ * Only for hourly billed labs, it contains the price for the running period
+ */
 export class CnLabStatsRunningBillingDTO {
   nbOfHours: number;
   pricePerHour: number;
@@ -17,7 +17,6 @@ export class CnLabStatsRunningBillingDTO {
     this.totalPrice = nbOfHours * pricePerHour;
   }
 }
-
 
 export class CnLabStatsRunningStatusDTO {
   @ClLuxonDateTimeTransform()
@@ -43,7 +42,6 @@ export class CnLabStatsRunningStatusDTO {
 }
 
 export class CnLabStatsRunningResponseDTO {
-
   @ClLuxonDateTransform()
   fromDate: DateTime;
   @ClLuxonDateTransform()
@@ -56,4 +54,3 @@ export class CnLabStatsRunningResponseDTO {
   @Type(() => CnLabStatsRunningStatusDTO)
   statuses: CnLabStatsRunningStatusDTO[];
 }
-

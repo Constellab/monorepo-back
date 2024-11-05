@@ -33,20 +33,18 @@ export interface CnActivityAndNotif {
 
 @Injectable()
 export class CnFolderListener {
-
-  constructor(private folderUserService: CnFolderUserService,
-              private folderHierarchyService: CnHierarchyObjectService,
-              private notificationService: CnNotificationService,
-              private activityService: CnActivityService,
-              private mailService: BlMailService,
-              private frontService: CnFrontService,
-              private folderAggregateService: CnFolderAggregateService) {
-  }
-
+  constructor(
+    private folderUserService: CnFolderUserService,
+    private folderHierarchyService: CnHierarchyObjectService,
+    private notificationService: CnNotificationService,
+    private activityService: CnActivityService,
+    private mailService: BlMailService,
+    private frontService: CnFrontService,
+    private folderAggregateService: CnFolderAggregateService
+  ) {}
 
   @OnEvent(cnFolderEventName)
   async handleFolderEvent(event: CnFolderEvent): Promise<void> {
-
     const activityAndNotif: CnActivityAndNotif = this.getActivityDTO(event);
     if (activityAndNotif == null) return;
 
@@ -74,7 +72,11 @@ export class CnFolderListener {
    * Get all user of folder and send notification to user that have notif mode for this entity type
    * @private
    */
-  private async createNotification(activity: CnActivity, notifInfo: CnNotifInfo, parentFolder: CnHierarchyObject): Promise<void> {
+  private async createNotification(
+    activity: CnActivity,
+    notifInfo: CnNotifInfo,
+    parentFolder: CnHierarchyObject
+  ): Promise<void> {
     if (!parentFolder) return;
 
     const folderUsers = await this.folderUserService.findByRootFolderId(parentFolder.getRootFolderId());
@@ -83,13 +85,21 @@ export class CnFolderListener {
     // for delete type, don't store the ancestors
     if (activity.actionType !== CnActivityType.DELETE) {
       const ancestors = await this.folderHierarchyService.getAncestorsByFolderId(parentFolder.id);
-      ancestorIds = ancestors.map(a => a.id);
+      ancestorIds = ancestors.map((a) => a.id);
     }
 
     for (const folderUser of folderUsers) {
-      await this.sendNotification(folderUser,
-        activity.user, activity.space.id, activity.entityType, activity.entityId,
-        activity.cleanTitle, notifInfo.link, parentFolder, ancestorIds);
+      await this.sendNotification(
+        folderUser,
+        activity.user,
+        activity.space.id,
+        activity.entityType,
+        activity.entityId,
+        activity.cleanTitle,
+        notifInfo.link,
+        parentFolder,
+        ancestorIds
+      );
     }
   }
 
@@ -97,14 +107,17 @@ export class CnFolderListener {
    * Send notification to the folder user if notification are activated or the mode
    * @private
    */
-  private async sendNotification(folderUser: CnFolderUser,
-                                 activityUser: CnUser,
-                                 spaceId: string,
-                                 entityType: CnActivityEntityType,
-                                 entityId: string,
-                                 text: string,
-                                 appRoute: string,
-                                 parentFolder: CnHierarchyObject, ancestorFolderIds: string[]): Promise<void> {
+  private async sendNotification(
+    folderUser: CnFolderUser,
+    activityUser: CnUser,
+    spaceId: string,
+    entityType: CnActivityEntityType,
+    entityId: string,
+    text: string,
+    appRoute: string,
+    parentFolder: CnHierarchyObject,
+    ancestorFolderIds: string[]
+  ): Promise<void> {
     if (folderUser.userId === activityUser.id) return;
 
     const notifMode = this.getNotifMode(folderUser, entityType);
@@ -121,20 +134,24 @@ export class CnFolderListener {
         text: text,
         text2: parentFolder.name,
         objectId: entityId,
-        associatedObjectIds: ancestorFolderIds
+        associatedObjectIds: ancestorFolderIds,
       });
     }
 
     // mail
     if (notifMode === CnFolderNotifOptions.NOTIF_AND_EMAIL || notifMode === CnFolderNotifOptions.EMAIL_ONLY) {
       const fullLink = this.frontService.getBaseWebsiteURL() + '/' + appRoute;
-      await this.mailService.sendMailToUser(CnMailTemplate.folder_notification, [folderUser.user],
+      await this.mailService.sendMailToUser(
+        CnMailTemplate.folder_notification,
+        [folderUser.user],
         {
           content: text,
           user: folderUser.user,
           title: parentFolder.name,
-          link: fullLink
-        }, text);
+          link: fullLink,
+        },
+        text
+      );
     }
   }
 
@@ -177,7 +194,6 @@ export class CnFolderListener {
     }
   }
 
-
   private subFolderCreated(folder: CnFolder, parentFolder: CnHierarchyObject): CnActivityAndNotif {
     return {
       activity: {
@@ -185,8 +201,9 @@ export class CnFolderListener {
         entity: folder,
         actionType: CnActivityType.CREATE,
         title: `{{user.name}} has created sub folder ${folder.name} under folder ${parentFolder.name}`,
-        entityName: folder.name
-      }, notif: { link: CnFrontService.getFolderRoute(folder.id) }
+        entityName: folder.name,
+      },
+      notif: { link: CnFrontService.getFolderRoute(folder.id) },
     };
   }
 
@@ -197,8 +214,9 @@ export class CnFolderListener {
         entity: folder,
         actionType: CnActivityType.UPDATE,
         title: `{{user.name}} has updated folder ${folder.name}`,
-        entityName: folder.name
-      }, notif: { link: CnFrontService.getFolderRoute(folder.id) }
+        entityName: folder.name,
+      },
+      notif: { link: CnFrontService.getFolderRoute(folder.id) },
     };
   }
 
@@ -209,8 +227,9 @@ export class CnFolderListener {
         entity: folder,
         actionType: CnActivityType.UPDATE,
         title: `{{user.name}} has changed leader of folder ${folder.name} to ${folder.leader.alias}`,
-        entityName: folder.name
-      }, notif: { link: CnFrontService.getFolderRoute(folder.id) }
+        entityName: folder.name,
+      },
+      notif: { link: CnFrontService.getFolderRoute(folder.id) },
     };
   }
 
@@ -222,8 +241,9 @@ export class CnFolderListener {
         entity: parentFolder,
         actionType: CnActivityType.UPDATE,
         title: `{{user.name}} added ${userText} to folder ${parentFolder.name}`,
-        entityName: parentFolder.name
-      }, notif: { link: CnFrontService.getFolderRoute(parentFolder.id) }
+        entityName: parentFolder.name,
+      },
+      notif: { link: CnFrontService.getFolderRoute(parentFolder.id) },
     };
   }
 
@@ -234,8 +254,9 @@ export class CnFolderListener {
         entity: parentFolder,
         actionType: CnActivityType.UPDATE,
         title: `{{user.name}} removed ${user.alias} from folder ${parentFolder.name}`,
-        entityName: parentFolder.name
-      }, notif: { link: CnFrontService.getFolderRoute(parentFolder.id) }
+        entityName: parentFolder.name,
+      },
+      notif: { link: CnFrontService.getFolderRoute(parentFolder.id) },
     };
   }
 
@@ -246,8 +267,9 @@ export class CnFolderListener {
         entity: scenario,
         actionType: CnActivityType.CREATE,
         title: `{{user.name}} has created scenario ${scenario.title} under folder ${parentFolder.name}`,
-        entityName: scenario.title
-      }, notif: { link: CnFrontService.getScenarioRoute(scenario.id) }
+        entityName: scenario.title,
+      },
+      notif: { link: CnFrontService.getScenarioRoute(scenario.id) },
     };
   }
 
@@ -258,8 +280,9 @@ export class CnFolderListener {
         entity: scenario,
         actionType: CnActivityType.UPDATE,
         title: `{{user.name}} has updated scenario ${scenario.title} under folder ${parentFolder.name}`,
-        entityName: scenario.title
-      }, notif: { link: CnFrontService.getScenarioRoute(scenario.id) }
+        entityName: scenario.title,
+      },
+      notif: { link: CnFrontService.getScenarioRoute(scenario.id) },
     };
   }
 
@@ -270,8 +293,9 @@ export class CnFolderListener {
         entity: scenario,
         actionType: CnActivityType.DELETE,
         title: `{{user.name}} has deleted scenario ${scenario.title} under folder ${parentFolder.name}`,
-        entityName: scenario.title
-      }, notif: { link: CnFrontService.getFolderRoute(parentFolder.id) }
+        entityName: scenario.title,
+      },
+      notif: { link: CnFrontService.getFolderRoute(parentFolder.id) },
     };
   }
 
@@ -282,8 +306,9 @@ export class CnFolderListener {
         entity: note,
         actionType: CnActivityType.CREATE,
         title: `{{user.name}} has created note ${note.title} under folder ${parentFolder.name}`,
-        entityName: note.title
-      }, notif: { link: CnFrontService.getNoteRoute(note.id) }
+        entityName: note.title,
+      },
+      notif: { link: CnFrontService.getNoteRoute(note.id) },
     };
   }
 
@@ -294,8 +319,9 @@ export class CnFolderListener {
         entity: note,
         actionType: CnActivityType.UPDATE,
         title: `{{user.name}} has updated note ${note.title} under folder ${parentFolder.name}`,
-        entityName: note.title
-      }, notif: { link: CnFrontService.getNoteRoute(note.id) }
+        entityName: note.title,
+      },
+      notif: { link: CnFrontService.getNoteRoute(note.id) },
     };
   }
 
@@ -306,8 +332,9 @@ export class CnFolderListener {
         entity: note,
         actionType: CnActivityType.DELETE,
         title: `{{user.name}} has deleted note ${note.title} under folder ${parentFolder.name}`,
-        entityName: note.title
-      }, notif: { link: CnFrontService.getFolderRoute(parentFolder.id) }
+        entityName: note.title,
+      },
+      notif: { link: CnFrontService.getFolderRoute(parentFolder.id) },
     };
   }
 
@@ -318,11 +345,11 @@ export class CnFolderListener {
         entity: document,
         actionType: CnActivityType.CREATE,
         title: `{{user.name}} has created constellab document ${document.name}`,
-        entityName: document.name
-      }, notif: { link: CnFrontService.getConstellabDocRoute(document.id) }
+        entityName: document.name,
+      },
+      notif: { link: CnFrontService.getConstellabDocRoute(document.id) },
     };
   }
-
 
   private documentCreated(document: CnDocument, parentFolder: CnHierarchyObject): CnActivityAndNotif {
     return {
@@ -331,8 +358,9 @@ export class CnFolderListener {
         entity: document,
         actionType: CnActivityType.CREATE,
         title: `{{user.name}} has uploaded document ${document.name}`,
-        entityName: document.name
-      }, notif: { link: CnFrontService.getFolderRoute(parentFolder.id) }
+        entityName: document.name,
+      },
+      notif: { link: CnFrontService.getFolderRoute(parentFolder.id) },
     };
   }
 
@@ -343,8 +371,9 @@ export class CnFolderListener {
         entity: document,
         actionType: CnActivityType.DELETE,
         title: `{{user.name}} has deleted document ${document.name}`,
-        entityName: document.name
-      }, notif: { link: CnFrontService.getFolderRoute(parentFolder.id) }
+        entityName: document.name,
+      },
+      notif: { link: CnFrontService.getFolderRoute(parentFolder.id) },
     };
   }
 
@@ -355,8 +384,8 @@ export class CnFolderListener {
         entity: message,
         actionType: CnActivityType.CREATE,
         title: `{{user.name}} has send a message on folder ${parentFolder.name}`,
-        entityName: parentFolder.name
-      }
+        entityName: parentFolder.name,
+      },
     };
   }
 
@@ -367,8 +396,8 @@ export class CnFolderListener {
         entity: message,
         actionType: CnActivityType.DELETE,
         title: `{{user.name}} has deleted a message on folder ${parentFolder.name}`,
-        entityName: parentFolder.name
-      }
+        entityName: parentFolder.name,
+      },
     };
   }
 
@@ -379,56 +408,76 @@ export class CnFolderListener {
    * @param parentFolder
    * @private
    */
-  private async handleMessageCreated(activity: CnActivity, message: CnChatMessage, parentFolder: CnHierarchyObject): Promise<void> {
+  private async handleMessageCreated(
+    activity: CnActivity,
+    message: CnChatMessage,
+    parentFolder: CnHierarchyObject
+  ): Promise<void> {
     const folderUsers = await this.folderUserService.findByRootFolderId(parentFolder.getRootFolderId());
 
     const link = CnFrontService.getChatMessageRoute(parentFolder.id);
 
     const ancestors = await this.folderHierarchyService.getAncestorsByFolderId(parentFolder.id);
-    const ancestorIds = ancestors.map(a => a.id);
+    const ancestorIds = ancestors.map((a) => a.id);
 
     const userMentions = this.getUserMentions(message.content, folderUsers);
 
     // send notification to mentioned users
     for (const userMention of userMentions) {
-
-      await this.sendNotification(userMention,
-        activity.user, activity.space.id, activity.entityType, activity.entityId,
+      await this.sendNotification(
+        userMention,
+        activity.user,
+        activity.space.id,
+        activity.entityType,
+        activity.entityId,
         `${message.createdBy.alias} mentioned you in a message on folder ${parentFolder.name}`,
-        link, parentFolder, ancestorIds);
+        link,
+        parentFolder,
+        ancestorIds
+      );
     }
 
     // send notification to folder users
     for (const folderUser of folderUsers) {
       // don't send notification to the user who created the message and to the mentioned users
-      if (folderUser.user.id === activity.user.id || userMentions.find(um => um.user.id == folderUser.user.id)) continue;
+      if (
+        folderUser.user.id === activity.user.id ||
+        userMentions.find((um) => um.user.id == folderUser.user.id)
+      )
+        continue;
 
-      await this.sendNotification(folderUser,
-        activity.user, activity.space.id, activity.entityType, activity.entityId, activity.cleanTitle,
-        link, parentFolder, ancestorIds);
+      await this.sendNotification(
+        folderUser,
+        activity.user,
+        activity.space.id,
+        activity.entityType,
+        activity.entityId,
+        activity.cleanTitle,
+        link,
+        parentFolder,
+        ancestorIds
+      );
     }
   }
 
   private getUserMentions(content: BlRichTextContent, folderUsers: CnFolderUser[]): CnFolderUser[] {
-
     const richText = new BlNewRichText(content);
     const mentions: BlMentionUser[] = richText.getMentions();
 
     // exclude current user
-    const otherUsers = folderUsers.filter(
-      pu => pu.user.id != CnCurrentUserHelper.getCurrentUser().id);
+    const otherUsers = folderUsers.filter((pu) => pu.user.id != CnCurrentUserHelper.getCurrentUser().id);
 
     // if the user selected the special 'Everyone' fake user
     const everyoneUser = getFakeUserEveryoneMention();
-    if (mentions.find(mention => mention.id == everyoneUser.id)) {
+    if (mentions.find((mention) => mention.id == everyoneUser.id)) {
       return otherUsers;
     }
 
     const userMentions: CnFolderUser[] = [];
     for (const mention of mentions) {
-      const folderUser = folderUsers.find(pu => pu.user.id == mention.id);
+      const folderUser = folderUsers.find((pu) => pu.user.id == mention.id);
       // avoid duplicate
-      if (!userMentions.find(um => um.user.id == folderUser.user.id)) {
+      if (!userMentions.find((um) => um.user.id == folderUser.user.id)) {
         userMentions.push(folderUser);
       }
     }
@@ -470,8 +519,16 @@ export class CnFolderListener {
    */
   @OnEvent(cnFolderEventName)
   async updateHierarchyObject(event: CnFolderEvent): Promise<void> {
-    const events: CnFolderEventType[] = ['UPDATE_FOLDER', 'UPDATE_FOLDER_LEADER', 'UPDATE_SCENARIO', 'UPDATE_NOTE',
-      'RENAME_DOCUMENT', 'UPDATE_CONSTELLAB_DOCUMENT', 'MOVE_FOLDER_DOCUMENT_TO_TRASH', 'RESTORE_FOLDER_DOCUMENT_FROM_TRASH'];
+    const events: CnFolderEventType[] = [
+      'UPDATE_FOLDER',
+      'UPDATE_FOLDER_LEADER',
+      'UPDATE_SCENARIO',
+      'UPDATE_NOTE',
+      'RENAME_DOCUMENT',
+      'UPDATE_CONSTELLAB_DOCUMENT',
+      'MOVE_FOLDER_DOCUMENT_TO_TRASH',
+      'RESTORE_FOLDER_DOCUMENT_FROM_TRASH',
+    ];
 
     if (!events.includes(event.type)) return;
     if (!(event.entity instanceof CnHierarchyRepresentation)) return;
@@ -485,13 +542,12 @@ export class CnFolderListener {
 
   @OnEvent(cnSpaceEventName)
   async handleSpaceEvent(event: CnSpaceEvent): Promise<Error | null> {
-    if(event.type === 'REMOVE_USER_FROM_SPACE'){
-      return await this.folderAggregateService.unshareAllFolderForUser(event.userId, event.spaceId).catch(
-        (err) => err
-      );
+    if (event.type === 'REMOVE_USER_FROM_SPACE') {
+      return await this.folderAggregateService
+        .unshareAllFolderForUser(event.userId, event.spaceId)
+        .catch((err) => err);
     }
 
     return null;
   }
-
 }

@@ -9,7 +9,9 @@ import {
   BlFile,
   BlFileResponse,
   BlQuillMigrator,
-  BlRichTextContent, BlRichTextContentWithModifications, BlRichTextModifications
+  BlRichTextContent,
+  BlRichTextContentWithModifications,
+  BlRichTextModifications,
 } from '@monorepo/back-core-lib';
 import { CnCreateNoteWithConfigDto, CnSaveNoteDto, CnSaveNoteResultDTO } from './cn-note.dto';
 import { CnNoteContent } from './cn-note-content.class';
@@ -17,7 +19,10 @@ import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnDocumentService } from '../cn-documents/cn-document.service';
 import { CnDocument, CnDocumentEntity, CnDocumentType } from '../cn-documents/cn-document.entity';
-import { CnHierarchyObject, CnHierarchyObjectEntity } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import {
+  CnHierarchyObject,
+  CnHierarchyObjectEntity,
+} from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
 import { CnNoteRichText } from '../../cn-core/model/config/cn-note-rich-text.class';
 
@@ -25,9 +30,11 @@ import { CnNoteRichText } from '../../cn-core/model/config/cn-note-rich-text.cla
 export class CnNotesService extends BlAbstractService<CnNote> {
   protected readonly logger = new Logger(CnNotesService.name);
 
-  constructor(@InjectRepository(CnNote) private repository: Repository<CnNote>,
-              private labConfigService: CnLabConfigsService,
-              private documentService: CnDocumentService) {
+  constructor(
+    @InjectRepository(CnNote) private repository: Repository<CnNote>,
+    private labConfigService: CnLabConfigsService,
+    private documentService: CnDocumentService
+  ) {
     super(repository, CnNote);
   }
 
@@ -35,9 +42,9 @@ export class CnNotesService extends BlAbstractService<CnNote> {
     return this.repository.find({
       where: {
         lab: {
-          id: labId
-        }
-      }
+          id: labId,
+        },
+      },
     });
   }
 
@@ -47,22 +54,22 @@ export class CnNotesService extends BlAbstractService<CnNote> {
         // find by folder parent root id (if note is link to leaf folder)
         {
           hierarchyRepresentation: {
-            rootParentId: rootFolderId
+            rootParentId: rootFolderId,
           },
           lab: {
-            id: labId
-          }
+            id: labId,
+          },
         },
         // find by folder (if note is linked to root folder)
         {
           hierarchyRepresentation: {
-            parentId: rootFolderId
+            parentId: rootFolderId,
           },
           lab: {
-            id: labId
-          }
-        }
-      ]
+            id: labId,
+          },
+        },
+      ],
     });
   }
 
@@ -70,12 +77,23 @@ export class CnNotesService extends BlAbstractService<CnNote> {
     return new CnNoteRichText(await this.getNoteJsonData(parentFolder, id)).getRichTextContent();
   }
 
-  public async getNoteModifications(parentFolder: CnHierarchyObject, id: string): Promise<BlRichTextModifications> {
-    return BlRichTextModifications.fromJsonObject(new CnNoteRichText(await this.getNoteJsonData(parentFolder, id)).getModifications());
+  public async getNoteModifications(
+    parentFolder: CnHierarchyObject,
+    id: string
+  ): Promise<BlRichTextModifications> {
+    return BlRichTextModifications.fromJsonObject(
+      new CnNoteRichText(await this.getNoteJsonData(parentFolder, id)).getModifications()
+    );
   }
 
-  public async getNoteUndoContent(parentFolder: CnHierarchyObject, id: string, modificationId: string): Promise<BlRichTextContent> {
-    return new CnNoteRichText(await this.getNoteJsonData(parentFolder, id)).getNotePreviousVersion(modificationId);
+  public async getNoteUndoContent(
+    parentFolder: CnHierarchyObject,
+    id: string,
+    modificationId: string
+  ): Promise<BlRichTextContent> {
+    return new CnNoteRichText(await this.getNoteJsonData(parentFolder, id)).getNotePreviousVersion(
+      modificationId
+    );
   }
 
   private async getNoteJsonData(parentFolder: CnHierarchyObject, id: string): Promise<any> {
@@ -84,25 +102,35 @@ export class CnNotesService extends BlAbstractService<CnNote> {
   }
 
   async getFile(filename: string, parentFolder: CnHierarchyObject, noteId: string): Promise<BlFileResponse> {
-    return await this.documentService.getDocumentContentByTypeAndName(parentFolder.getRootFolderId(),
-      CnDocumentType.NOTE_CONTENT, filename, noteId);
+    return await this.documentService.getDocumentContentByTypeAndName(
+      parentFolder.getRootFolderId(),
+      CnDocumentType.NOTE_CONTENT,
+      filename,
+      noteId
+    );
   }
 
   async getView(viewId: string, parentFolder: CnHierarchyObject, noteId: string): Promise<BlFileResponse> {
-    return await this.documentService.getDocumentContentByTypeAndName(parentFolder.getRootFolderId(),
-      CnDocumentType.NOTE_CONTENT, viewId + '.json', noteId);
+    return await this.documentService.getDocumentContentByTypeAndName(
+      parentFolder.getRootFolderId(),
+      CnDocumentType.NOTE_CONTENT,
+      viewId + '.json',
+      noteId
+    );
   }
 
-
-  async saveNote(createNoteDto: CnCreateNoteWithConfigDto, scenarios: CnScenario[],
-                 parentFolder: CnHierarchyObject, files: BlFile[]): Promise<CnSaveNoteResultDTO> {
-
+  async saveNote(
+    createNoteDto: CnCreateNoteWithConfigDto,
+    scenarios: CnScenario[],
+    parentFolder: CnHierarchyObject,
+    files: BlFile[]
+  ): Promise<CnSaveNoteResultDTO> {
     let noteDb: CnNote = await this.findById(createNoteDto.note.id, {
       document: true,
-      hierarchyRepresentation: true
+      hierarchyRepresentation: true,
     });
     if (noteDb && noteDb.hierarchyRepresentation.parentId !== parentFolder.id) {
-      throw new BlBadRequestException('Can\'t change the folder of a synced note');
+      throw new BlBadRequestException("Can't change the folder of a synced note");
     }
 
     // retrieve the lab config
@@ -119,7 +147,6 @@ export class CnNotesService extends BlAbstractService<CnNote> {
     note.lastModifiedBy = noteDto.last_modified_by;
     note.title = noteDto.title;
 
-
     note.labConfig = labConfig;
 
     // handle validated
@@ -133,8 +160,10 @@ export class CnNotesService extends BlAbstractService<CnNote> {
 
     // if this is a creation
     if (!noteDb) {
-      note.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(parentFolder,
-        note.getHierarchyObjectInfo());
+      note.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
+        parentFolder,
+        note.getHierarchyObjectInfo()
+      );
       // also set the id of the folder hierarchy because it should be the same as the note id
       note.hierarchyRepresentation.id = noteDto.id;
     }
@@ -159,33 +188,45 @@ export class CnNotesService extends BlAbstractService<CnNote> {
       mode = 'create';
     }
 
-
-
     // update the content of the note
     noteDb = await this.saveNoteContent(noteDb, parentFolder, createNoteDto, files);
     return {
       mode: mode,
-      note: noteDb
+      note: noteDb,
     };
   }
 
   /**
    * Method to store the note content in the object storage. Then manage the images and the views
    */
-  private async saveNoteContent(note: CnNote, parentFolder: CnHierarchyObject,
-                                createNoteDto: CnCreateNoteWithConfigDto, files: BlFile[]): Promise<CnNote> {
+  private async saveNoteContent(
+    note: CnNote,
+    parentFolder: CnHierarchyObject,
+    createNoteDto: CnCreateNoteWithConfigDto,
+    files: BlFile[]
+  ): Promise<CnNote> {
     createNoteDto.note.content = BlQuillMigrator.migrateOptional(createNoteDto.note.content);
-    const content: CnNoteRichText = new CnNoteRichText(new BlRichTextContentWithModifications(createNoteDto.note as any));
+    const content: CnNoteRichText = new CnNoteRichText(
+      new BlRichTextContentWithModifications(createNoteDto.note as any)
+    );
 
     let noteDocument: CnDocument;
     // if the document already exists, we update it
     if (note.document) {
-      noteDocument = await this.documentService.updateJSONDocument(parentFolder.getRootFolderId(), note.document,
-        content.getRichTextWithModifications());
+      noteDocument = await this.documentService.updateJSONDocument(
+        parentFolder.getRootFolderId(),
+        note.document,
+        content.getRichTextWithModifications()
+      );
     } else {
       // or use the id as doc Name
-      noteDocument = await this.documentService.createJSONDocument(parentFolder,
-        CnDocumentType.NOTE, note.title, note.id, content.getRichTextWithModifications());
+      noteDocument = await this.documentService.createJSONDocument(
+        parentFolder,
+        CnDocumentType.NOTE,
+        note.title,
+        note.id,
+        content.getRichTextWithModifications()
+      );
     }
 
     // store document reference in the note
@@ -202,36 +243,54 @@ export class CnNotesService extends BlAbstractService<CnNote> {
   /**
    * Methode to store the images of the note in the object storage
    */
-  private async uploadNoteFiles(files: BlFile[], noteId: string, parentDocument: CnDocument,
-                                parentFolder: CnHierarchyObject): Promise<void> {
+  private async uploadNoteFiles(
+    files: BlFile[],
+    noteId: string,
+    parentDocument: CnDocument,
+    parentFolder: CnHierarchyObject
+  ): Promise<void> {
     if (!files) return;
     for (const file of files) {
       await this.uploadNoteFile(file, noteId, parentDocument, parentFolder);
     }
   }
 
-  private async uploadNoteFile(file: BlFile, noteId: string, parentDocument: CnDocument,
-                               parentFolder: CnHierarchyObject): Promise<void> {
+  private async uploadNoteFile(
+    file: BlFile,
+    noteId: string,
+    parentDocument: CnDocument,
+    parentFolder: CnHierarchyObject
+  ): Promise<void> {
     const filename = file.originalname;
-    const document =
-      await this.documentService.findDocumentBYTypeAndNameAndEntity(CnDocumentType.NOTE_CONTENT,
-        filename, noteId);
+    const document = await this.documentService.findDocumentBYTypeAndNameAndEntity(
+      CnDocumentType.NOTE_CONTENT,
+      filename,
+      noteId
+    );
 
     // upload the image only if it does not exist
     if (!document) {
-      await this.documentService.uploadDocument(file, parentFolder, CnDocumentType.NOTE_CONTENT,
-        noteId, filename, parentDocument);
+      await this.documentService.uploadDocument(
+        file,
+        parentFolder,
+        CnDocumentType.NOTE_CONTENT,
+        noteId,
+        filename,
+        parentDocument
+      );
     }
   }
 
   /**
    * Method to load the resource view of the note and store them in the object storage
    */
-  private async uploadNoteViews(content: CnNoteRichText,
-                                resourceViews: Record<string, any>,
-                                noteId: string,
-                                parentDocument: CnDocument,
-                                parentFolder: CnHierarchyObject): Promise<void> {
+  private async uploadNoteViews(
+    content: CnNoteRichText,
+    resourceViews: Record<string, any>,
+    noteId: string,
+    parentDocument: CnDocument,
+    parentFolder: CnHierarchyObject
+  ): Promise<void> {
     if (!resourceViews) return;
 
     const richText = new CnNoteContent(content.getRichTextContent());
@@ -245,8 +304,14 @@ export class CnNotesService extends BlAbstractService<CnNote> {
       if (!viewData) continue;
 
       const docName = `${viewBlockData.id}.json`;
-      await this.documentService.createOrUpdateJSONDocument(parentFolder, CnDocumentType.NOTE_CONTENT,
-        docName, noteId, viewData, parentDocument);
+      await this.documentService.createOrUpdateJSONDocument(
+        parentFolder,
+        CnDocumentType.NOTE_CONTENT,
+        docName,
+        noteId,
+        viewData,
+        parentDocument
+      );
     }
   }
 
@@ -259,7 +324,7 @@ export class CnNotesService extends BlAbstractService<CnNote> {
     }
 
     if (note.isValidated) {
-      throw new BlBadRequestException('Can\'t delete a validated note');
+      throw new BlBadRequestException("Can't delete a validated note");
     }
 
     await this.deleteById(id, entityManager);
@@ -284,12 +349,12 @@ export class CnNotesService extends BlAbstractService<CnNote> {
     return this.repository.find({
       where: {
         createdBy: {
-          id: userInfo.userId
+          id: userInfo.userId,
         },
         hierarchyRepresentation: {
-          spaceId: userInfo.spaceId
-        }
-      }
+          spaceId: userInfo.spaceId,
+        },
+      },
     });
   }
 }

@@ -5,17 +5,8 @@ import { CnHierarchyObjectEntity } from './cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from './cn-hierarchy-object.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([CnHierarchyObjectEntity]),
-
-    CnCoreModule
-  ],
-  providers: [
-    CnHierarchyObjectService
-  ],
-  exports: [
-    CnHierarchyObjectService
-  ]
+  imports: [TypeOrmModule.forFeature([CnHierarchyObjectEntity]), CnCoreModule],
+  providers: [CnHierarchyObjectService],
+  exports: [CnHierarchyObjectService],
 })
-export class CnHierarchyObjectModule {
-}
+export class CnHierarchyObjectModule {}

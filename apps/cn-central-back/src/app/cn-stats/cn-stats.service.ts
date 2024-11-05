@@ -9,21 +9,29 @@ import { CnHierarchyObjectService } from '../cn-folders-aggregate/cn_hierarchy_o
 
 @Injectable()
 export class CnStatsService {
-  constructor(private folderService: CnHierarchyObjectService,
-              private labService: CnLabsService,
-              private groupService: CnGroupsService,
-              private scenarioService: CnScenariosService,
-              private noteService: CnNotesService) {
-  }
+  constructor(
+    private folderService: CnHierarchyObjectService,
+    private labService: CnLabsService,
+    private groupService: CnGroupsService,
+    private scenarioService: CnScenariosService,
+    private noteService: CnNotesService
+  ) {}
 
   public async getStats(): Promise<CnStats> {
     const stats: CnStats = new CnStats();
 
     const currentUserInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
 
-    const rootFolders = await this.folderService.getRootFoldersOfUser(currentUserInfo.userId, currentUserInfo.spaceId, 0, 1);
+    const rootFolders = await this.folderService.getRootFoldersOfUser(
+      currentUserInfo.userId,
+      currentUserInfo.spaceId,
+      0,
+      1
+    );
     stats.onGoingFolderNumber = rootFolders.totalElements;
-    stats.teamsNumber = (await this.groupService.getAllTeamsByUserAndSpace(currentUserInfo.userId, currentUserInfo.spaceId)).length;
+    stats.teamsNumber = (
+      await this.groupService.getAllTeamsByUserAndSpace(currentUserInfo.userId, currentUserInfo.spaceId)
+    ).length;
     stats.runningLabNumber = (await this.labService.getCurrentRunningLabs()).length;
     stats.validatedScenarioNumber = (await this.scenarioService.getCurrentUserCreatedScenario()).length;
     stats.validatedNoteNumber = (await this.noteService.getCurrentUserCreatedNote()).length;

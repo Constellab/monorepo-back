@@ -15,7 +15,6 @@ import { CnHierarchyObjectModule } from '../cn_hierarchy_objects/cn-hierarchy-ob
     CnHierarchyObjectModule,
   ],
   providers: [CnDocumentService],
-  exports: [CnDocumentService]
+  exports: [CnDocumentService],
 })
-export class CnDocumentModule {
-}
+export class CnDocumentModule {}

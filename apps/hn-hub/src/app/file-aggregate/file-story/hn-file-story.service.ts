@@ -11,20 +11,22 @@ import { HnFileType } from '../file-core/hn-abstract-file.entity';
 
 @Injectable()
 export class HnFileStoryService extends HnAbstractFileService<HnStory> {
-  constructor(@InjectRepository(HnFileStory) private fileStoryRepository: Repository<HnFileStory>,
-              objectStorageService: BlObjectStorageService,
-              private configService: HnCoreConfigService
+  constructor(
+    @InjectRepository(HnFileStory) private fileStoryRepository: Repository<HnFileStory>,
+    objectStorageService: BlObjectStorageService,
+    private configService: HnCoreConfigService
   ) {
     super(fileStoryRepository, objectStorageService);
   }
 
   async findByStory(story: HnStory): Promise<HnFileStory[]> {
-    return this.fileStoryRepository.find({where: {entity: {id: story.id}}});
+    return this.fileStoryRepository.find({ where: { entity: { id: story.id } } });
   }
 
   async getStoryFiles(story: HnStory): Promise<HnAbstractFileEntityDTO[]> {
-    return this.fileStoryRepository.findBy({entity: {id: story.id}, type: HnFileType.FILE})
-      .then(files => files.map(file => new HnAbstractFileEntityDTO(file)));
+    return this.fileStoryRepository
+      .findBy({ entity: { id: story.id }, type: HnFileType.FILE })
+      .then((files) => files.map((file) => new HnAbstractFileEntityDTO(file)));
   }
 
   constructEntityFile(): HnFileStory {
@@ -55,8 +57,8 @@ export class HnFileStoryService extends HnAbstractFileService<HnStory> {
         region: this.configService.getDefaultObjectStorageRegion(),
         bucket: this.configService.getStoryFilesObjectStorageBucket(),
         credentials: this.configService.getDefaultObjectStorageCredentials(),
-        bucketType: BlBucketType.NORMAL
-      }
+        bucketType: BlBucketType.NORMAL,
+      },
     };
   }
 
@@ -68,8 +70,8 @@ export class HnFileStoryService extends HnAbstractFileService<HnStory> {
         region: this.configService.getBackupObjectStorageRegion(),
         bucket: this.configService.getStoryFilesObjectStorageBackupBucket(),
         credentials: this.configService.getDefaultObjectStorageCredentials(),
-        bucketType: BlBucketType.NORMAL
-      }
+        bucketType: BlBucketType.NORMAL,
+      },
     };
   }
 }

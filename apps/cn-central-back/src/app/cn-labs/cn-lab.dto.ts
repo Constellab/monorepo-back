@@ -17,7 +17,6 @@ import { CnCloudProvider } from '../cn-cloud-providers/cn-cloud-provider.entity'
 import { CnExternalApiInfo } from '../cn-core/model/config/cn-config.class';
 import { CnLabVolumeType } from './volume/cn-lab-volume-entity';
 
-
 /**
  * DTO for the users that have access to a lab
  */
@@ -42,7 +41,6 @@ export class CnLabWithSpaceDto extends CnLabDto {
   space: CnSpace = undefined;
   serverCloud: CnServerCloud = undefined;
 }
-
 
 /**
  * DTO for the lab only for G admin
@@ -87,7 +85,6 @@ export interface CnLabConfigDTO {
   brickVersions: CnBrickVersionDTO[];
   glabTag: CnGlabTag | null;
 }
-
 
 export interface CnLabStartDTO {
   lab_config: CnLabConfigDto;
@@ -184,9 +181,7 @@ export interface CnRequestLab {
   additionalInfo?: string;
 }
 
-
 export class CnLabServerInfoDTO {
-
   name: string;
 
   @Type(() => CnCloudProvider)

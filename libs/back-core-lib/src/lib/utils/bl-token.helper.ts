@@ -4,8 +4,6 @@ import jwt = require('jsonwebtoken');
  * Class to encode/decode token manually
  */
 export class BlTokenHelper {
-
-
   /**
    * Encode a JWT token
    * @param secret jwt secret
@@ -13,7 +11,7 @@ export class BlTokenHelper {
    * @param expiresIn token validity in seconds
    */
   public static encodeToken(secret: string, payload: any, expiresIn: number): string {
-    return jwt.sign(payload, secret, {expiresIn: expiresIn});
+    return jwt.sign(payload, secret, { expiresIn: expiresIn });
   }
 
   /**
@@ -23,15 +21,12 @@ export class BlTokenHelper {
    */
   public static decodeToken(secret: string, token: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      jwt.verify(token, secret, (
-        (err, decoded) => {
-          if (err) {
-            reject(err);
-          }
-          resolve(decoded);
+      jwt.verify(token, secret, (err, decoded) => {
+        if (err) {
+          reject(err);
         }
-      ));
+        resolve(decoded);
+      });
     });
   }
-
 }

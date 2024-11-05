@@ -14,17 +14,15 @@ import * as nodemailer from 'nodemailer';
  */
 @Injectable()
 export class BlMailService {
-
   private readonly logger = new Logger(BlMailService.name);
-
 
   // base key for i18n subjects
   private readonly subjectI18nBase: string = 'mail-subject.';
 
-
-  constructor(@Inject(BL_MAIL_CONFIG_PROVIDER) private moduleConfig: BlMailModuleConfig,
-              private translateService: BlTranslateService) {
-  }
+  constructor(
+    @Inject(BL_MAIL_CONFIG_PROVIDER) private moduleConfig: BlMailModuleConfig,
+    private translateService: BlTranslateService
+  ) {}
 
   /**
    * Email one user
@@ -36,7 +34,12 @@ export class BlMailService {
    * @param subject if provided, override the subject from the template
    * @return true if the mail was sent, false otherwise
    */
-  async sendMailToUser(template: string, receiver: BlUser | BlUser[], data?: Record<string, any>, subject?: string): Promise<boolean> {
+  async sendMailToUser(
+    template: string,
+    receiver: BlUser | BlUser[],
+    data?: Record<string, any>,
+    subject?: string
+  ): Promise<boolean> {
     const receivers: BlUser[] = ClHelpService.convertObjectOrArrayToArray(receiver);
 
     let result: boolean = true;
@@ -49,8 +52,13 @@ export class BlMailService {
     return result;
   }
 
-  public async sendMail(template: string, recipients: string, lang: ClSupportedLanguage,
-                        data?: Record<string, any>, subject?: string): Promise<boolean> {
+  public async sendMail(
+    template: string,
+    recipients: string,
+    lang: ClSupportedLanguage,
+    data?: Record<string, any>,
+    subject?: string
+  ): Promise<boolean> {
     const transporter = nodemailer.createTransport(this.getTransportConfig());
 
     // use https://nicholaspretorius.github.io/til0025/ example for configuration
@@ -63,7 +71,7 @@ export class BlMailService {
     const mailOptions = {
       from: this.getMailSender(),
       to: recipients,
-      subject: subject ? subject : (await this.translateSubject(template)),
+      subject: subject ? subject : await this.translateSubject(template),
       template: this.getTemplatePath(template, lang),
       context: completeData,
     };
@@ -71,7 +79,9 @@ export class BlMailService {
     return new Promise((resolve) => {
       transporter.sendMail(mailOptions, (error: Error | null) => {
         if (error) {
-          this.logger.error(`Error during mail send using template ${template} to ${recipients} in lang ${lang}`);
+          this.logger.error(
+            `Error during mail send using template ${template} to ${recipients} in lang ${lang}`
+          );
           this.logger.error(error);
           resolve(false);
         }
@@ -98,8 +108,8 @@ export class BlMailService {
       secure: this.moduleConfig.mailConfig.secure,
       auth: {
         user: this.moduleConfig.mailConfig.user,
-        pass: this.moduleConfig.mailConfig.password
-      }
+        pass: this.moduleConfig.mailConfig.password,
+      },
     };
   }
 
@@ -118,7 +128,7 @@ export class BlMailService {
         partialsDir: this.moduleConfig.templateFolder, // location of your subtemplates aka. header, footer etc
       },
       viewPath: this.moduleConfig.templateFolder,
-      extName: '.hbs'
+      extName: '.hbs',
     };
   }
 }

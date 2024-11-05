@@ -1,4 +1,14 @@
-import { BeforeInsert, Column, Entity, ManyToOne, OneToMany, Relation, Tree, TreeChildren, TreeParent } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  Relation,
+  Tree,
+  TreeChildren,
+  TreeParent,
+} from 'typeorm';
 import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { Exclude, Type } from 'class-transformer';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
@@ -19,7 +29,6 @@ export enum CnHierarchyObjectType {
 @Entity('hierarchy_object')
 @Tree('materialized-path')
 export class CnHierarchyObjectEntity extends BlEntityWithId {
-
   @Column({ nullable: false, length: 255 })
   name: string;
 
@@ -32,7 +41,8 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
 
   @Column({
     nullable: false,
-    type: 'enum', enum: CnHierarchyObjectType
+    type: 'enum',
+    enum: CnHierarchyObjectType,
   })
   objectType: CnHierarchyObjectType;
 
@@ -65,7 +75,7 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
   spaceId: string;
 
   @Exclude()
-  @OneToMany(() => CnFolderUserEntity, folderUser => folderUser.rootFolder)
+  @OneToMany(() => CnFolderUserEntity, (folderUser) => folderUser.rootFolder)
   users: CnFolderUserEntity[];
 
   /**
@@ -113,7 +123,7 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
 
   public sortChildrenTree(): this {
     this.children.sort((a, b) => a.name.localeCompare(b.name));
-    this.children.forEach(child => child.sortChildrenTree());
+    this.children.forEach((child) => child.sortChildrenTree());
     return this;
   }
 
@@ -121,8 +131,8 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
    * Method to keep only children that are folders when children are loaded
    */
   public filterChildrenFolder(): this {
-    this.children = this.children.filter(child => child.objectType === CnHierarchyObjectType.FOLDER);
-    this.children.forEach(child => child.filterChildrenFolder());
+    this.children = this.children.filter((child) => child.objectType === CnHierarchyObjectType.FOLDER);
+    this.children.forEach((child) => child.filterChildrenFolder());
     return this;
   }
 
@@ -136,8 +146,10 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
     this.isVisible = objectInfo.isVisible;
   }
 
-  public static newRootFolderHierarchy(space: CnSpace,
-                                       objectInfo: CnHierarchyObjectInfo): CnHierarchyObjectEntity {
+  public static newRootFolderHierarchy(
+    space: CnSpace,
+    objectInfo: CnHierarchyObjectInfo
+  ): CnHierarchyObjectEntity {
     const folder = new CnHierarchyObjectEntity();
     folder.space = space;
     folder.spaceId = space.id;
@@ -148,8 +160,10 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
     return folder;
   }
 
-  public static newSubHierarchyObject(parentFolder: CnHierarchyObject,
-                                      objectInfo: CnHierarchyObjectInfo): CnHierarchyObjectEntity {
+  public static newSubHierarchyObject(
+    parentFolder: CnHierarchyObject,
+    objectInfo: CnHierarchyObjectInfo
+  ): CnHierarchyObjectEntity {
     if (parentFolder.objectType !== CnHierarchyObjectType.FOLDER) {
       throw new Error('Parent object must be a folder');
     }
@@ -165,8 +179,9 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
   }
 }
 
-export type CnHierarchyObject = Omit<CnHierarchyObjectEntity,
-  'children' | 'sortChildrenTree' | 'filterChildrenFolder' | 'parent' | 'rootParent' | 'space'>;
+export type CnHierarchyObject = Omit<
+  CnHierarchyObjectEntity,
+  'children' | 'sortChildrenTree' | 'filterChildrenFolder' | 'parent' | 'rootParent' | 'space'
+>;
 
-export type CnHierarchyObjectWithChildren = Omit<CnHierarchyObjectEntity,
-  'parent' | 'rootParent' | 'space'>;
+export type CnHierarchyObjectWithChildren = Omit<CnHierarchyObjectEntity, 'parent' | 'rootParent' | 'space'>;

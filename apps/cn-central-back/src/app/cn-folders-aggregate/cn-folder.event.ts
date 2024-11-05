@@ -7,7 +7,7 @@ export const cnFolderEventName = 'cn-folder-event';
 export const cnRemoveFolderFromAllLabsEventName = 'cn-remove-folder-from-all-labs-event';
 
 export type CnFolderEventType =
-  'CREATE_ROOT_FOLDER'
+  | 'CREATE_ROOT_FOLDER'
   | 'CREATE_SUB_FOLDER'
   | 'UPDATE_FOLDER'
   | 'DELETE_FOLDER'

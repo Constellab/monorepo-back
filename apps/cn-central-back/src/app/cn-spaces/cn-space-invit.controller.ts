@@ -9,24 +9,21 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-  Query
+  Query,
 } from '@nestjs/common';
-import {CnSpaceAggregateService} from './cn-space-aggregate.service';
-import {CnSpaceInvitCreateDto, CnSpaceInvitReadDto} from './cn-space.dto';
-import {CnSpaceInvit} from './cn-space-invit.entity';
-import {CnSpaceUserRole} from './cn-space-user.entity';
-import {BlPublicSecure} from '@monorepo/back-core-lib';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {ClPage} from '@monorepo/core-lib';
+import { CnSpaceAggregateService } from './cn-space-aggregate.service';
+import { CnSpaceInvitCreateDto, CnSpaceInvitReadDto } from './cn-space.dto';
+import { CnSpaceInvit } from './cn-space-invit.entity';
+import { CnSpaceUserRole } from './cn-space-user.entity';
+import { BlPublicSecure } from '@monorepo/back-core-lib';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { ClPage } from '@monorepo/core-lib';
 
 @Controller('space-invit')
 export class CnSpaceInvitController {
-
-  constructor(private spaceAggregateService: CnSpaceAggregateService) {
-  }
+  constructor(private spaceAggregateService: CnSpaceAggregateService) {}
 
   //////////////////////////////// INVITATION ROUTES ////////////////////////////////
-
 
   @BlPublicSecure()
   @Get('code/:code')
@@ -41,8 +38,10 @@ export class CnSpaceInvitController {
   }
 
   @Post(':spaceId')
-  public async createInvitation(@Param('spaceId') id: string,
-                                @Body() invitDto: CnSpaceInvitCreateDto): Promise<CnSpaceInvit> {
+  public async createInvitation(
+    @Param('spaceId') id: string,
+    @Body() invitDto: CnSpaceInvitCreateDto
+  ): Promise<CnSpaceInvit> {
     return this.spaceAggregateService.inviteUserToSpace(id, invitDto);
   }
 
@@ -52,14 +51,17 @@ export class CnSpaceInvitController {
   }
 
   @Put(':id/refresh-validity')
-  public async refreshInvitationValidity(@Param('id', new ParseUUIDPipe()) invitId: string): Promise<CnSpaceInvit> {
+  public async refreshInvitationValidity(
+    @Param('id', new ParseUUIDPipe()) invitId: string
+  ): Promise<CnSpaceInvit> {
     return this.spaceAggregateService.refreshInvitationValidUntil(invitId);
   }
 
   @Put(':id/role/:role')
-  public async updateInvitationRole(@Param('id', new ParseUUIDPipe()) invitId: string,
-                                    @Param('role', new ParseEnumPipe(CnSpaceUserRole)) role
-                                      : CnSpaceUserRole): Promise<CnSpaceInvit> {
+  public async updateInvitationRole(
+    @Param('id', new ParseUUIDPipe()) invitId: string,
+    @Param('role', new ParseEnumPipe(CnSpaceUserRole)) role: CnSpaceUserRole
+  ): Promise<CnSpaceInvit> {
     return this.spaceAggregateService.updateInvitationRole(invitId, role);
   }
 
@@ -69,10 +71,11 @@ export class CnSpaceInvitController {
   }
 
   @Get('space/:id')
-  public async getInvitationsBySpace(@Param('id') id: string,
-                                     @Query('page', new ParseIntPipe()) page: number,
-                                     @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<CnSpaceInvit>> {
+  public async getInvitationsBySpace(
+    @Param('id') id: string,
+    @Query('page', new ParseIntPipe()) page: number,
+    @Query('size', new ParseIntPipe()) size: number
+  ): Promise<ClPage<CnSpaceInvit>> {
     return this.spaceAggregateService.findInvitationsBySpaceId(id, page, size);
   }
-
 }

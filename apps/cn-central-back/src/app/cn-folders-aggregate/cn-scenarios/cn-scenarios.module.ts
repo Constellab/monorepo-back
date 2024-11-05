@@ -14,10 +14,9 @@ import { CnUsersModule } from '../../cn-users/cn-users.module';
 
     // Other modules
     CnLabConfigsModule,
-    CnUsersModule
+    CnUsersModule,
   ],
   providers: [CnScenariosService],
-  exports: [CnScenariosService]
+  exports: [CnScenariosService],
 })
-export class CnScenariosModule {
-}
+export class CnScenariosModule {}

@@ -21,7 +21,6 @@ export interface CnExternalLabUser {
   photo: string;
 }
 
-
 /**
  * Object that represent the current global activity of a lab
  */

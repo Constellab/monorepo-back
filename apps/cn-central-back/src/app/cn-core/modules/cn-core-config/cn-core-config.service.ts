@@ -8,26 +8,25 @@ import {
   CN_RABBITMQ_URL_KEY,
   CN_RABBITMQ_USER_KEY,
   CnDatabaseConfig,
-  CnEnvironmentProfile
+  CnEnvironmentProfile,
 } from '../../model/config/cn-config.class';
 import {
   BlMailConfig,
   BlObjectStorageCredentials,
   BlTransportModuleConfig,
-  blTransportQueueConstellabUser
+  blTransportQueueConstellabUser,
 } from '@monorepo/back-core-lib';
 import { CN_CORE_MODULE_CONFIG, CnCoreConfigModuleConfig } from './cn-core-module-config.class';
 import { join } from 'path';
 
-
 @Injectable()
 export class CnCoreConfigService {
-
   private readonly assets = 'assets';
 
-  constructor(protected configService: ConfigService,
-              @Inject(CN_CORE_MODULE_CONFIG) private config: CnCoreConfigModuleConfig) {
-  }
+  constructor(
+    protected configService: ConfigService,
+    @Inject(CN_CORE_MODULE_CONFIG) private config: CnCoreConfigModuleConfig
+  ) {}
 
   public getEnvironmentProfile(): CnEnvironmentProfile {
     return this.configService.get(CN_ENVIRONMENT_PROFILE_KEY);
@@ -89,7 +88,7 @@ export class CnCoreConfigService {
       port: this.getConfigNumber('DATABASE_PORT'),
       username: this.configService.get('DATABASE_USER'),
       password: this.configService.get('DATABASE_PASSWORD'),
-      database: this.configService.get('DATABASE')
+      database: this.configService.get('DATABASE'),
     };
   }
 
@@ -100,7 +99,7 @@ export class CnCoreConfigService {
       secure: this.getConfigBoolean('MAIL_SECURE'),
       user: this.configService.get('MAIL_USER'),
       password: this.configService.get('MAIL_PASSWORD'),
-      sender: this.configService.get('MAIL_SENDER')
+      sender: this.configService.get('MAIL_SENDER'),
     };
   }
 
@@ -111,7 +110,6 @@ export class CnCoreConfigService {
   public getDefaultObjectStorageRegion(): string {
     return this.configService.get('OBJECT_STORAGE_DEFAULT_REGION');
   }
-
 
   public getDefaultObjectStorageCredentials(): BlObjectStorageCredentials {
     return {
@@ -290,7 +288,6 @@ export class CnCoreConfigService {
     return this.configService.get('NEW_USER_NOTIF_RECEIVERS').split(',');
   }
 
-
   public getDistPath(...path: string[]): string {
     return join(this.config.distFolder, ...path);
   }
@@ -320,4 +317,3 @@ export class CnCoreConfigService {
     return this.configService.get('CAPTCHA_SITE_KEY');
   }
 }
-

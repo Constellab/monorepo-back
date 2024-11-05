@@ -1,5 +1,5 @@
-import {DateTime} from 'luxon';
-import {ClLuxonDateTransform} from '@monorepo/core-lib';
+import { DateTime } from 'luxon';
+import { ClLuxonDateTransform } from '@monorepo/core-lib';
 
 export class CnCreateStoragePriceDTO {
   volumeStoragePrice: number;

@@ -16,24 +16,23 @@ export enum CnCloudProviderRegionType {
 @Unique(['technicalName', 'cloudProvider', 'type'])
 @Entity('cloud_provider_region')
 export class CnCloudProviderRegion extends CnBaseEntity {
-
-  @ManyToOne(() => CnCloudProvider, {nullable: true, eager: true})
+  @ManyToOne(() => CnCloudProvider, { nullable: true, eager: true })
   cloudProvider: CnCloudProvider;
 
-  @ManyToOne(() => CnCity, {nullable: false, eager: true})
+  @ManyToOne(() => CnCity, { nullable: false, eager: true })
   city: CnCity;
 
-  @Column({nullable: false, type: 'enum', enum: CnCloudProviderRegionType})
+  @Column({ nullable: false, type: 'enum', enum: CnCloudProviderRegionType })
   type: CnCloudProviderRegionType;
 
   @BlTrim()
-  @Column({nullable: false, length: 20})
+  @Column({ nullable: false, length: 20 })
   technicalName: string;
 
-  @Column({nullable: false, length: 100})
+  @Column({ nullable: false, length: 100 })
   name: string;
 
-  @Column({nullable: true, length: 255})
+  @Column({ nullable: true, length: 255 })
   s3Endpoint: string;
 
   supportsServer(): boolean {

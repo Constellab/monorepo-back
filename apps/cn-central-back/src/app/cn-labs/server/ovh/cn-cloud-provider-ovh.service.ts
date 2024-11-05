@@ -6,7 +6,7 @@ import {
   CnCpInstance,
   CnCpInstanceStatus,
   CnCpVolume,
-  CnCpVolumeStatus
+  CnCpVolumeStatus,
 } from '../cn-cloud-provider.class';
 import { Injectable, Logger } from '@nestjs/common';
 import {
@@ -16,7 +16,7 @@ import {
   CnOvhDomainRecord,
   CnOvhInstance,
   CnOvhInstanceStatus,
-  CnOvhVolume
+  CnOvhVolume,
 } from './cn-ovh.class';
 import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnCloudProviderName } from '../../../cn-cloud-providers/cn-cloud-provider.entity';
@@ -35,10 +35,11 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
   private static MOUNT_DISK_NAME = 'sdb';
   private static SSH_KEY_FILE_NAME = 'id_rsa';
 
-
-  constructor(private ovhService: CnOvhService,
-              configService: CnCoreConfigService,
-              commandService: CnCommandService,) {
+  constructor(
+    private ovhService: CnOvhService,
+    configService: CnCoreConfigService,
+    commandService: CnCommandService
+  ) {
     super(commandService, configService);
   }
 
@@ -55,18 +56,21 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
   }
 
   public async createInstance(instance: CnCpCreateInstanceRequest): Promise<CnCpInstance> {
-
     // const flavorName = 'd2-2';
     const flavor = await this.ovhService.getServerInfoByRegionAndName(instance.region, instance.serverName);
     if (!flavor) {
-      throw new BlBadRequestException(`The server ${instance.serverName} is not available in region ${instance.region}`);
+      throw new BlBadRequestException(
+        `The server ${instance.serverName} is not available in region ${instance.region}`
+      );
     }
 
-    const image = await this.ovhService.getImageByRegionAndName(instance.region, CnCloudProviderOvhService.IMAGE_NAME);
+    const image = await this.ovhService.getImageByRegionAndName(
+      instance.region,
+      CnCloudProviderOvhService.IMAGE_NAME
+    );
     if (!image) {
       throw new BlBadRequestException(`The ubuntu image is not available in region ${instance.region}`);
     }
-
 
     const request: CnOvhCreateInstanceRequest = {
       name: instance.name,
@@ -87,20 +91,18 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     return this.convertOvhInstance(ovhInstance);
   }
 
-
   private convertOvhInstance(instance: CnOvhInstance): CnCpInstance {
     return {
       id: instance.id,
       status: {
         status: this.ovhStatusToCpStatus(instance.status, instance.id),
-        message: null
+        message: null,
       },
       originalObject: instance,
       region: instance.region,
       billing: instance.monthlyBilling ? CnLabBillingMode.MONTHLY : CnLabBillingMode.HOURLY,
     };
   }
-
 
   private ovhStatusToCpStatus(status: CnOvhInstanceStatus, id: string): CnCpInstanceStatus {
     switch (status) {
@@ -159,7 +161,6 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     return this.ovhService.stopInstance(id);
   }
 
-
   ///////////////////////////////////////// VOLUME //////////////////////////////////////////
   public async createVolume(volume: CnCpCreateVolumeRequest): Promise<CnCpVolume> {
     const request: CnOvhCreateVolumeRequest = {
@@ -167,7 +168,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
       size: volume.size,
       type: volume.type === 'CLASSIC' ? 'classic' : 'high-speed-gen2',
       name: volume.name,
-      description: volume.description
+      description: volume.description,
     };
 
     const ovhVolume = await this.ovhService.createVolume(request);
@@ -219,7 +220,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
       size: volume.size,
       status: volumeStatus,
       type: volumeType,
-      originalObject: volume
+      originalObject: volume,
     };
   }
 
@@ -264,9 +265,15 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     return this.ovhService.domainRecordExist(mainDomain, '*.' + subDomainName, 'A');
   }
 
-  public async getLabDomainRecord(mainDomain: string, subDomainName: string): Promise<CnOvhDomainRecord | null> {
+  public async getLabDomainRecord(
+    mainDomain: string,
+    subDomainName: string
+  ): Promise<CnOvhDomainRecord | null> {
     const recordIds: number[] = await this.ovhService.getDomainRecordIdBySubDomain(
-      mainDomain, '*.' + subDomainName, 'A');
+      mainDomain,
+      '*.' + subDomainName,
+      'A'
+    );
 
     if (recordIds.length === 0) {
       return null;
@@ -276,12 +283,14 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
   }
 
   public async deleteDomainRecord(mainDomain: string, subDomainName: string): Promise<void> {
-    const recordIds: number[] = await this.ovhService.getDomainRecordIdBySubDomain(mainDomain,
-      '*.' + subDomainName, 'A');
+    const recordIds: number[] = await this.ovhService.getDomainRecordIdBySubDomain(
+      mainDomain,
+      '*.' + subDomainName,
+      'A'
+    );
 
     for (const recordId of recordIds) {
       await this.ovhService.deleteDomainRecord(mainDomain, recordId);
     }
   }
-
 }

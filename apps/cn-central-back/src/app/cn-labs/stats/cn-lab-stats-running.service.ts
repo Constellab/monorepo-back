@@ -6,25 +6,28 @@ import { CnServerPrices } from '../../cn-servers-info/server-price/cn-server-pri
 import {
   CnLabStatsRunningBillingDTO,
   CnLabStatsRunningResponseDTO,
-  CnLabStatsRunningStatusDTO
+  CnLabStatsRunningStatusDTO,
 } from './cn-lab-running-stats.dto';
 
-
 export class CnLabStatsRunningService {
+  constructor(
+    private request: CnLabStatsRequestDTO,
+    private statusHistories: CnLabStatusHistory[]
+  ) {}
 
-  constructor(private request: CnLabStatsRequestDTO,
-              private statusHistories: CnLabStatusHistory[]) {
-  }
-
-  public async getLabRunningKpisWithBilling(serverPrices: CnServerPrices): Promise<CnLabStatsRunningResponseDTO> {
+  public async getLabRunningKpisWithBilling(
+    serverPrices: CnServerPrices
+  ): Promise<CnLabStatsRunningResponseDTO> {
     const runStatus = this.getRunningStatus();
 
     const totalBillInfo = new CnLabStatsRunningBillingDTO(0, 0);
 
     for (const status of runStatus.statuses) {
       // round status.duration to the next hour
-      const billInfo = new CnLabStatsRunningBillingDTO(Math.ceil(status.duration / 3600),
-        serverPrices.getPriceAt(status.fromDate));
+      const billInfo = new CnLabStatsRunningBillingDTO(
+        Math.ceil(status.duration / 3600),
+        serverPrices.getPriceAt(status.fromDate)
+      );
 
       status.billInfo = billInfo;
 

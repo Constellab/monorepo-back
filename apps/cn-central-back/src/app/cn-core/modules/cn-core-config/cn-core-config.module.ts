@@ -6,7 +6,6 @@ import { CN_CORE_MODULE_CONFIG, CnCoreConfigModuleConfig } from './cn-core-modul
 
 @Module({})
 export class CnCoreConfigModule {
-
   public static forRoot(config: CnCoreConfigModuleConfig): DynamicModule {
     return {
       global: true,
@@ -15,15 +14,12 @@ export class CnCoreConfigModule {
       providers: [
         {
           provide: CN_CORE_MODULE_CONFIG,
-          useValue: config
+          useValue: config,
         },
-        CnCoreConfigService
+        CnCoreConfigService,
       ],
-      exports: [
-        CnCoreConfigService
-      ],
-      controllers: [CnCoreConfigController]
+      exports: [CnCoreConfigService],
+      controllers: [CnCoreConfigController],
     };
   }
-
 }

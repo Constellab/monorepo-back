@@ -1,7 +1,6 @@
-import {BlBaseEntityDto} from '@monorepo/back-core-lib';
-import {CnCloudProvider} from '../cn-cloud-providers/cn-cloud-provider.entity';
-import {CnSpace} from '../cn-spaces/cn-space.entity';
-
+import { BlBaseEntityDto } from '@monorepo/back-core-lib';
+import { CnCloudProvider } from '../cn-cloud-providers/cn-cloud-provider.entity';
+import { CnSpace } from '../cn-spaces/cn-space.entity';
 
 export class CnBucketCredentialsFull extends BlBaseEntityDto {
   name: string = undefined;

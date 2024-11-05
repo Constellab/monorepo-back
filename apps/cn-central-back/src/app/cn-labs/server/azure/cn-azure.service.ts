@@ -6,7 +6,7 @@ import {
   ImageReference,
   SshPublicKey,
   SshPublicKeyResource,
-  VirtualMachine
+  VirtualMachine,
 } from '@azure/arm-compute';
 import { NetworkManagementClient, PublicIPAddress } from '@azure/arm-network';
 import { cnServerUbuntuUser } from '../cn-cloud-provider.class';
@@ -14,17 +14,19 @@ import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-
 
 @Injectable()
 export class CnAzureService {
-
-  constructor(private configService: CnCoreConfigService) {
-  }
+  constructor(private configService: CnCoreConfigService) {}
 
   ///////////////////////////// INSTANCE /////////////////////////////
 
-
   // Create an instance
-  async createInstance(name: string, region: string, vmSize: string,
-                       imageRef: ImageReference,
-                       sshPublicKey: SshPublicKey, subnetId: string): Promise<VirtualMachine> {
+  async createInstance(
+    name: string,
+    region: string,
+    vmSize: string,
+    imageRef: ImageReference,
+    sshPublicKey: SshPublicKey,
+    subnetId: string
+  ): Promise<VirtualMachine> {
     // await this.listImageReferences();
     const computeClient = this.getComputeClient();
 
@@ -36,9 +38,9 @@ export class CnAzureService {
         adminUsername: cnServerUbuntuUser,
         linuxConfiguration: {
           ssh: {
-            publicKeys: [sshPublicKey]
-          }
-        }
+            publicKeys: [sshPublicKey],
+          },
+        },
       },
       hardwareProfile: {
         vmSize: vmSize,
@@ -49,33 +51,38 @@ export class CnAzureService {
       },
       networkProfile: {
         networkApiVersion: '2021-08-01',
-        networkInterfaceConfigurations: [{
-          name: name,
-          ipConfigurations: [{
-            subnet: {
-              id: subnetId,
-            },
+        networkInterfaceConfigurations: [
+          {
             name: name,
-            publicIPAddressConfiguration: {
-              name: name,
-              publicIPAllocationMethod: 'Static',
-            }
-          }],
-        }],
-      }
+            ipConfigurations: [
+              {
+                subnet: {
+                  id: subnetId,
+                },
+                name: name,
+                publicIPAddressConfiguration: {
+                  name: name,
+                  publicIPAllocationMethod: 'Static',
+                },
+              },
+            ],
+          },
+        ],
+      },
     };
 
-    return await computeClient.virtualMachines.beginCreateOrUpdateAndWait(this.getResourceGroup(),
-      name, vmParameters);
+    return await computeClient.virtualMachines.beginCreateOrUpdateAndWait(
+      this.getResourceGroup(),
+      name,
+      vmParameters
+    );
   }
-
 
   public async getInstance(name: string): Promise<VirtualMachine> {
     const computeClient = this.getComputeClient();
 
     // instance.instanceView
-    return await computeClient.virtualMachines.get(this.getResourceGroup(), name,
-      {expand: 'instanceView'});
+    return await computeClient.virtualMachines.get(this.getResourceGroup(), name, { expand: 'instanceView' });
   }
 
   public getIpAddresses(id: string): Promise<PublicIPAddress> {
@@ -103,7 +110,6 @@ export class CnAzureService {
 
     await computeClient.virtualMachines.beginDeallocate(this.getResourceGroup(), name);
   }
-
 
   //////////////////////////// VOLUME ////////////////////////////
 
@@ -147,7 +153,11 @@ export class CnAzureService {
       },
     });
 
-    return computeClient.virtualMachines.beginCreateOrUpdateAndWait(this.getResourceGroup(), instanceName, instance);
+    return computeClient.virtualMachines.beginCreateOrUpdateAndWait(
+      this.getResourceGroup(),
+      instanceName,
+      instance
+    );
   }
 
   async deleteVolume(name: string): Promise<void> {
@@ -155,7 +165,6 @@ export class CnAzureService {
 
     return computeClient.disks.beginDeleteAndWait(this.getResourceGroup(), name);
   }
-
 
   //////////////////////////// OTHER ////////////////////////////
   public getSshKey(name: string): Promise<SshPublicKeyResource> {
@@ -184,5 +193,4 @@ export class CnAzureService {
   public getResourceGroupFullId(): string {
     return `/subscriptions/${this.getSubscriptionId()}/resourceGroups/${this.getResourceGroup()}`;
   }
-
 }

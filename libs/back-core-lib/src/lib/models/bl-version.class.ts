@@ -1,13 +1,16 @@
-import {ClTransformFnParams} from '@monorepo/core-lib';
-import {Transform} from 'class-transformer';
+import { ClTransformFnParams } from '@monorepo/core-lib';
+import { Transform } from 'class-transformer';
 
 /**
  * Object to support version like 2.1.1 or 2.2.0-beta.1
  */
 export class BlVersion {
-
-  constructor(public major: number, public minor: number, public patch: number, public subPatch?: number) {
-  }
+  constructor(
+    public major: number,
+    public minor: number,
+    public patch: number,
+    public subPatch?: number
+  ) {}
 
   public static fromString(version: string): BlVersion {
     if (version == null || version.length < 5) {
@@ -24,7 +27,7 @@ export class BlVersion {
 
     // if there is a sub-patch, extract it
     let subPatch: number = null;
-    if(version.includes('-beta.')){
+    if (version.includes('-beta.')) {
       let subPatchStr: string;
       [mainVersionsStr, subPatchStr] = version.split('-beta.');
 
@@ -33,7 +36,6 @@ export class BlVersion {
         throw new Error(`Sub-patch version of '${version}' is invalid`);
       }
     }
-
 
     // extract other versions
     const mainVersions = mainVersionsStr.split('.');
@@ -68,18 +70,24 @@ export class BlVersion {
    * @param other
    */
   public getDif(other: BlVersion): number {
-    if (this.major === other.major &&
+    if (
+      this.major === other.major &&
       this.minor === other.minor &&
       this.patch === other.patch &&
-      this.getSubPatchAsNumber() === other.getSubPatchAsNumber()) {
+      this.getSubPatchAsNumber() === other.getSubPatchAsNumber()
+    ) {
       return 0;
     }
 
-    if (this.major > other.major ||
+    if (
+      this.major > other.major ||
       (this.major === other.major && this.minor > other.minor) ||
       (this.major === other.major && this.minor === other.minor && this.patch > other.patch) ||
-      (this.major === other.major && this.minor === other.minor && this.patch === other.patch &&
-        this.getSubPatchAsNumber() > other.getSubPatchAsNumber())) {
+      (this.major === other.major &&
+        this.minor === other.minor &&
+        this.patch === other.patch &&
+        this.getSubPatchAsNumber() > other.getSubPatchAsNumber())
+    ) {
       return 1;
     } else {
       return -1;
@@ -98,7 +106,8 @@ export class BlVersion {
   }
 
   public toString(): string {
-    return this.isBeta() ? [this.major, this.minor, this.patch].join('.') + '-beta.' + this.subPatch
+    return this.isBeta()
+      ? [this.major, this.minor, this.patch].join('.') + '-beta.' + this.subPatch
       : [this.major, this.minor, this.patch].join('.');
   }
 }
@@ -107,12 +116,15 @@ export function BlVersionTransform(): PropertyDecorator {
   // convert Version to string
   const transformToPlain = Transform(
     (params: ClTransformFnParams<BlVersion>) => params.value?.toString() ?? null,
-    {toPlainOnly: true});
+    { toPlainOnly: true }
+  );
 
   // create string to Version
   const transformToClass = Transform(
-    (params: ClTransformFnParams<string | null>) => params.value == null ? null : BlVersion.fromString(params.value),
-    {toClassOnly: true});
+    (params: ClTransformFnParams<string | null>) =>
+      params.value == null ? null : BlVersion.fromString(params.value),
+    { toClassOnly: true }
+  );
 
   return (target: any, key: string): void => {
     transformToPlain(target, key);

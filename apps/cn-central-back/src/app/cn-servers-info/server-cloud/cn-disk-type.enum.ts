@@ -3,5 +3,5 @@
  */
 export enum CnDiskType {
   SSD = 'SSD',
-  HDD = 'HDD'
+  HDD = 'HDD',
 }

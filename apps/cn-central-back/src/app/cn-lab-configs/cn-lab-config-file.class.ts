@@ -18,7 +18,7 @@ export interface CnLabConfigFileEnv {
   variables: Record<string, string>;
 }
 
-export interface CnConfigFileBrick{
+export interface CnConfigFileBrick {
   name: string;
   version: string;
 }
@@ -32,4 +32,3 @@ export interface CnConfigFileEnvPackage {
   name: string;
   version: string; // version supported by pip, can be empty, ==2.0 or >=2.1
 }
-

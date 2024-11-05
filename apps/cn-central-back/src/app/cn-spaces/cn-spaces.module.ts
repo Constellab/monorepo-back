@@ -32,10 +32,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 
     EventEmitterModule,
   ],
-  controllers: [
-    CnSpacesController,
-    CnSpaceInvitController
-  ],
+  controllers: [CnSpacesController, CnSpaceInvitController],
   providers: [
     CnSpaceService,
     CnSpaceAggregateService,
@@ -45,11 +42,6 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     CnSpacesMailService,
     CnSpaceListener,
   ],
-  exports: [
-    CnSpaceAggregateService,
-    CnSpaceService,
-    CnSpaceUserService,
-  ]
+  exports: [CnSpaceAggregateService, CnSpaceService, CnSpaceUserService],
 })
-export class CnSpacesModule {
-}
+export class CnSpacesModule {}

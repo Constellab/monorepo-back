@@ -1,10 +1,10 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
-import {HnAgentCoAuthor} from './hn-agent-co-author.entity';
-import {HnAgentCoAuthorInvite} from '../agent-co-author-invite/hn-agent-co-author-invite.entity';
-import {HnAgentCoAuthorInviteService} from '../agent-co-author-invite/hn-agent-co-author-invite.service';
-import {HnAgent} from '../agent/hn-agent.entity';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { HnAgentCoAuthor } from './hn-agent-co-author.entity';
+import { HnAgentCoAuthorInvite } from '../agent-co-author-invite/hn-agent-co-author-invite.entity';
+import { HnAgentCoAuthorInviteService } from '../agent-co-author-invite/hn-agent-co-author-invite.service';
+import { HnAgent } from '../agent/hn-agent.entity';
 
 @Injectable()
 export class HnAgentCoAuthorService {
@@ -12,24 +12,21 @@ export class HnAgentCoAuthorService {
     @InjectRepository(HnAgentCoAuthor)
     private agentCoAuthorRepository: Repository<HnAgentCoAuthor>,
     private agentCoAuthorInviteService: HnAgentCoAuthorInviteService
-  ) {
-  }
+  ) {}
 
   async getAgentCoAuthorsByAgentId(agentId: string): Promise<HnAgentCoAuthor[]> {
-    return this.agentCoAuthorRepository.find({where: {agent: {id: agentId}}});
+    return this.agentCoAuthorRepository.find({ where: { agent: { id: agentId } } });
   }
 
   async getAgentCoAuthorsByUserId(userId: string): Promise<HnAgentCoAuthor[]> {
-    return this.agentCoAuthorRepository.find({where: {user: {id: userId}}, relations: ['agent']});
+    return this.agentCoAuthorRepository.find({ where: { user: { id: userId } }, relations: ['agent'] });
   }
 
   async removeAgentCoAuthor(agentId: string, agentCoAuthorUserId: string): Promise<void> {
-    const agentCoAuthor: HnAgentCoAuthor = await this.agentCoAuthorRepository.findOneBy(
-      {
-        agent: {id: agentId},
-        user: {id: agentCoAuthorUserId}
-      }
-    );
+    const agentCoAuthor: HnAgentCoAuthor = await this.agentCoAuthorRepository.findOneBy({
+      agent: { id: agentId },
+      user: { id: agentCoAuthorUserId },
+    });
     if (agentCoAuthor) {
       await this.agentCoAuthorRepository.remove(agentCoAuthor);
     }
@@ -39,9 +36,14 @@ export class HnAgentCoAuthorService {
     return this.agentCoAuthorInviteService.getAgentCoAuthorInviteByToken(token);
   }
 
-  async acceptInvite(agentCoAuthor: HnAgentCoAuthor, agentCoAuthorInvite: HnAgentCoAuthorInvite): Promise<boolean> {
-    return (await this.agentCoAuthorInviteService.acceptInvite(agentCoAuthorInvite)) != null
-      && (await this.agentCoAuthorRepository.save(agentCoAuthor)) != null;
+  async acceptInvite(
+    agentCoAuthor: HnAgentCoAuthor,
+    agentCoAuthorInvite: HnAgentCoAuthorInvite
+  ): Promise<boolean> {
+    return (
+      (await this.agentCoAuthorInviteService.acceptInvite(agentCoAuthorInvite)) != null &&
+      (await this.agentCoAuthorRepository.save(agentCoAuthor)) != null
+    );
   }
 
   async getAgentCoAuthorsInvites(agentId: string): Promise<HnAgentCoAuthorInvite[]> {

@@ -17,4 +17,3 @@ jobs:
     secrets:
       registry_username: ${{ github.actor }}
       registry_password: ${{ secrets.GITHUB_TOKEN }}
-

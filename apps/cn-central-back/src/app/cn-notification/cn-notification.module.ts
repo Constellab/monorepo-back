@@ -6,15 +6,9 @@ import { CnNotification } from './cn-notification.entity';
 import { CnNotificationListener } from './cn-notification.listener';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([CnNotification])
-  ],
+  imports: [TypeOrmModule.forFeature([CnNotification])],
   controllers: [CnNotificationController],
-  providers: [
-    CnNotificationService,
-    CnNotificationListener,
-  ],
-  exports: [CnNotificationService]
+  providers: [CnNotificationService, CnNotificationListener],
+  exports: [CnNotificationService],
 })
-export class CnNotificationModule {
-}
+export class CnNotificationModule {}

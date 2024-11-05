@@ -1,9 +1,8 @@
-import {Module} from '@nestjs/common';
-import {BlRequestContextMiddleware} from './bl-request-context-middleware.service';
+import { Module } from '@nestjs/common';
+import { BlRequestContextMiddleware } from './bl-request-context-middleware.service';
 
 @Module({
   providers: [BlRequestContextMiddleware],
   exports: [BlRequestContextMiddleware],
 })
-export class BlRequestContextModule {
-}
+export class BlRequestContextModule {}

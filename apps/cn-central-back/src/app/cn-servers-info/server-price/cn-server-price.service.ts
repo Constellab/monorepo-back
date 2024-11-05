@@ -7,25 +7,28 @@ import { ClDateHelper } from '@monorepo/core-lib';
 import { CnCreateServerPriceDTO, CnServerPrices } from './cn-server-price.dto';
 import { CnServerStandard } from '../server-standard/cn-server-standard.entity';
 
-
 @Injectable()
 export class CnServerPriceService extends BlAbstractService<CnServerPrice> {
-
-  constructor(@InjectRepository(CnServerPrice) private repository: Repository<CnServerPrice>,
-              private datasource: DataSource) {
+  constructor(
+    @InjectRepository(CnServerPrice) private repository: Repository<CnServerPrice>,
+    private datasource: DataSource
+  ) {
     super(repository, CnServerPrice);
   }
 
-  public async getServerAllPrices(serverStandardId: string, direction: 'ASC' | 'DESC'): Promise<CnServerPrices> {
+  public async getServerAllPrices(
+    serverStandardId: string,
+    direction: 'ASC' | 'DESC'
+  ): Promise<CnServerPrices> {
     const prices = await this.repository.find({
       where: {
         serverStandard: {
-          id: serverStandardId
-        }
+          id: serverStandardId,
+        },
       },
       order: {
-        startDate: direction as any
-      }
+        startDate: direction as any,
+      },
     });
 
     return new CnServerPrices(prices);
@@ -37,19 +40,19 @@ export class CnServerPriceService extends BlAbstractService<CnServerPrice> {
       where: [
         {
           serverStandard: {
-            id: serverStandardId
+            id: serverStandardId,
           },
           startDate: LessThanOrEqual(currentDate.toISO()),
-          endDate: IsNull()
+          endDate: IsNull(),
         },
         {
           serverStandard: {
-            id: serverStandardId
+            id: serverStandardId,
           },
           startDate: LessThanOrEqual(currentDate.toISO()),
-          endDate: MoreThan(currentDate.toISODate())
-        }
-      ]
+          endDate: MoreThan(currentDate.toISODate()),
+        },
+      ],
     });
   }
 
@@ -66,15 +69,18 @@ export class CnServerPriceService extends BlAbstractService<CnServerPrice> {
     return this.repository.findOne({
       where: {
         serverStandard: {
-          id: serverStandardId
+          id: serverStandardId,
         },
-        endDate: IsNull()
+        endDate: IsNull(),
       },
     });
   }
 
-  public async createFirstPrice(serverStandard: CnServerStandard, newPrice: number,
-                                entityManager: EntityManager): Promise<CnServerPrice> {
+  public async createFirstPrice(
+    serverStandard: CnServerStandard,
+    newPrice: number,
+    entityManager: EntityManager
+  ): Promise<CnServerPrice> {
     const newServerPrice = new CnServerPrice();
     newServerPrice.price = newPrice;
     newServerPrice.startDate = ClDateHelper.getDate();
@@ -86,7 +92,10 @@ export class CnServerPriceService extends BlAbstractService<CnServerPrice> {
   /**
    * Save a new price after the last one.
    */
-  public async createPrice(serverStandard: CnServerStandard, newPrice: CnCreateServerPriceDTO): Promise<CnServerPrice> {
+  public async createPrice(
+    serverStandard: CnServerStandard,
+    newPrice: CnCreateServerPriceDTO
+  ): Promise<CnServerPrice> {
     const lastPrice = await this.getLastPrice(serverStandard.id);
 
     if (!lastPrice) {
@@ -106,7 +115,7 @@ export class CnServerPriceService extends BlAbstractService<CnServerPrice> {
     newServerPrice.startDate = newPrice.startDate;
     newServerPrice.serverStandard = serverStandard;
 
-    return this.datasource.transaction(async entityManager => {
+    return this.datasource.transaction(async (entityManager) => {
       // end the current price
       lastPrice.endDate = newPrice.startDate;
       await this.update(lastPrice, entityManager);
@@ -117,7 +126,7 @@ export class CnServerPriceService extends BlAbstractService<CnServerPrice> {
   }
 
   public async deletePrice(serverStandardId: string, priceId: string): Promise<void> {
-    const price = await this.findByIdAndCheck(priceId, {serverStandard: true});
+    const price = await this.findByIdAndCheck(priceId, { serverStandard: true });
 
     if (price.serverStandard.id !== serverStandardId) {
       throw new BlBadRequestException('The price does not belong to the server.');
@@ -129,12 +138,12 @@ export class CnServerPriceService extends BlAbstractService<CnServerPrice> {
       throw new BlBadRequestException('Cannot delete the last price.');
     }
 
-    const priceIndex = serverPrices.prices.findIndex(p => p.id === priceId);
+    const priceIndex = serverPrices.prices.findIndex((p) => p.id === priceId);
 
     if (priceIndex === 0) {
       const nextPrice = serverPrices.prices[priceIndex + 1];
       nextPrice.startDate = price.startDate;
-      await this.datasource.transaction(async entityManager => {
+      await this.datasource.transaction(async (entityManager) => {
         await this.update(nextPrice, entityManager);
         await this.deleteById(priceId, entityManager);
       });
@@ -144,19 +153,17 @@ export class CnServerPriceService extends BlAbstractService<CnServerPrice> {
     const previousPrice = serverPrices.prices[priceIndex - 1];
     previousPrice.endDate = price.endDate;
 
-    await this.datasource.transaction(async entityManager => {
+    await this.datasource.transaction(async (entityManager) => {
       await this.update(previousPrice, entityManager);
       await this.deleteById(priceId, entityManager);
     });
   }
 
-
   public async deleteByServerStandard(serverStandardId: string, entityManager: EntityManager): Promise<void> {
     await entityManager.delete(CnServerPrice, {
       serverStandard: {
-        id: serverStandardId
-      }
+        id: serverStandardId,
+      },
     });
   }
-
 }

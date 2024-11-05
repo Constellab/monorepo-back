@@ -1,25 +1,24 @@
-import {Column, Entity, ManyToOne, Unique} from 'typeorm';
-import {HnBrick} from '../brick/hn-brick.entity';
-import {HnBaseEntity} from '../../core/model/entities/hn-base.entity';
-import {BlNotUpdatable} from '@monorepo/back-core-lib';
+import { Column, Entity, ManyToOne, Unique } from 'typeorm';
+import { HnBrick } from '../brick/hn-brick.entity';
+import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
+import { BlNotUpdatable } from '@monorepo/back-core-lib';
 
 export enum HnVersionState {
   STABLE = 'STABLE',
-  LATEST = 'LATEST'
+  LATEST = 'LATEST',
 }
 
 @Unique(['brick', 'major'])
 @Entity('brick_major_version')
 export class HnBrickMajorVersion extends HnBaseEntity {
-
   @BlNotUpdatable()
-  @ManyToOne(() => HnBrick, {eager: true, onDelete: "CASCADE"})
+  @ManyToOne(() => HnBrick, { eager: true, onDelete: 'CASCADE' })
   brick: HnBrick;
 
-  @Column({default: 1})
+  @Column({ default: 1 })
   major: number;
 
-  @Column({type: 'enum', enum: HnVersionState, nullable: false, default: HnVersionState.STABLE})
+  @Column({ type: 'enum', enum: HnVersionState, nullable: false, default: HnVersionState.STABLE })
   versionState: HnVersionState;
 
   initialize(brick: HnBrick, major: number): void {
@@ -38,7 +37,7 @@ export class HnBrickMajorVersion extends HnBaseEntity {
    * Else return 'v' + major
    */
   getStrVersion(): string {
-    if(this.isLatest) return 'latest';
+    if (this.isLatest) return 'latest';
     return `v${this.major}`;
   }
 }

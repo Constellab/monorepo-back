@@ -22,5 +22,5 @@ export enum CnMailTemplate {
   scenario_finished = 'cn-scenario-finished',
 
   // Other
-  generic = 'cn-generic'
+  generic = 'cn-generic',
 }

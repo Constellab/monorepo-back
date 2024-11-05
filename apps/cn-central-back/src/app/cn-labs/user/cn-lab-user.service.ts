@@ -9,19 +9,19 @@ import { BlBadRequestException } from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnLabUserService {
+  constructor(@InjectRepository(CnLabUser) private repository: Repository<CnLabUser>) {}
 
-
-  constructor(@InjectRepository(CnLabUser) private repository: Repository<CnLabUser>) {
-  }
-
-  public async createLabUser(lab: CnLab, user: CnUser,
-                             role: CnLabUserRole, entityManager: EntityManager): Promise<CnLabUser> {
+  public async createLabUser(
+    lab: CnLab,
+    user: CnUser,
+    role: CnLabUserRole,
+    entityManager: EntityManager
+  ): Promise<CnLabUser> {
     const labGroupDb = await this.findByLabIdAndUserId(lab.id, user.id);
 
     if (labGroupDb != null) {
       throw new BlBadRequestException(CnErrorText.LAB_ALREADY_SHARED_WITH_USER);
     }
-
 
     const labGroup = new CnLabUser();
     labGroup.lab = lab as CnLabEntity;
@@ -31,9 +31,7 @@ export class CnLabUserService {
     return entityManager.save(labGroup);
   }
 
-  public async updateLabUserRole(lab: CnLab, userId: string,
-                                 role: CnLabUserRole): Promise<CnLabUser> {
-
+  public async updateLabUserRole(lab: CnLab, userId: string, role: CnLabUserRole): Promise<CnLabUser> {
     const labGroup = await this.findByLabIdAndUserId(lab.id, userId);
 
     if (labGroup == null) {
@@ -67,31 +65,32 @@ export class CnLabUserService {
   private async checkLabAdminsCount(lab: CnLab): Promise<void> {
     const labAdminsCount = await this.countLabAdmins(lab.id);
     if (labAdminsCount === 1) {
-      throw new BlBadRequestException(CnErrorText.LAB_CANNOT_REMOVE_LAST_ADMIN, {detailArgs: {labName: lab.name}});
+      throw new BlBadRequestException(CnErrorText.LAB_CANNOT_REMOVE_LAST_ADMIN, {
+        detailArgs: { labName: lab.name },
+      });
     }
   }
 
   private countLabAdmins(labId: string): Promise<number> {
     return this.repository.countBy({
       labId: labId,
-      role: CnLabUserRole.OWNER
+      role: CnLabUserRole.OWNER,
     });
   }
-
 
   public findByLabId(labId: string): Promise<CnLabUser[]> {
     return this.repository.find({
       where: {
-        labId: labId
+        labId: labId,
       },
-      relations: { user: true }
+      relations: { user: true },
     });
   }
 
   public async findByLabIdAndUserId(labId: string, userId: string): Promise<CnLabUser | null> {
     return this.repository.findOneBy({
       labId: labId,
-      userId: userId
+      userId: userId,
     });
   }
 
@@ -99,9 +98,9 @@ export class CnLabUserService {
     return this.repository.find({
       where: {
         labId: labId,
-        role: CnLabUserRole.OWNER
+        role: CnLabUserRole.OWNER,
       },
-      relations: { user: true }
+      relations: { user: true },
     });
   }
 }

@@ -5,38 +5,40 @@ import {
   BlobServiceClient,
   BlockBlobClient,
   ContainerClient,
-  StorageSharedKeyCredential
+  StorageSharedKeyCredential,
 } from '@azure/storage-blob';
 import { BlObjectStorageInterface } from './bl-object-storage.interface';
 import { BlBadRequestException } from '../../exceptions/bl-bad-request.exception';
 
 export class BlAzureBucketService implements BlObjectStorageInterface {
-
   private readonly logger = new Logger(BlAzureBucketService.name);
 
   private static MAX_DELETE_BATCH_SIZE = 256; // 5GB
 
-  constructor(private config: BlAzureBlobContainerConfig) {
-  }
+  constructor(private config: BlAzureBlobContainerConfig) {}
 
-  public async uploadObjectToBucket(obj: Buffer,
-                                    objectName: string,
-                                    contentType: string,
-                                    tags?: Record<string, string>): Promise<string> {
+  public async uploadObjectToBucket(
+    obj: Buffer,
+    objectName: string,
+    contentType: string,
+    tags?: Record<string, string>
+  ): Promise<string> {
     // Get a block blob client
     const blockBlobClient = this.getBlockBlobClient(objectName);
 
     // Upload data to the blob
     const uploadBlobResponse = await blockBlobClient.uploadData(obj as any, {
       blobHTTPHeaders: {
-        blobContentType: contentType
+        blobContentType: contentType,
       },
-      tags: tags
+      tags: tags,
     });
 
     if (uploadBlobResponse.errorCode) {
-      this.logger.error(`Error while uploading object ${objectName} to bucket ${this.getBucketName()}.` +
-        ` Error ${uploadBlobResponse.errorCode}`);
+      this.logger.error(
+        `Error while uploading object ${objectName} to bucket ${this.getBucketName()}.` +
+          ` Error ${uploadBlobResponse.errorCode}`
+      );
       throw new BlBadRequestException('Error while uploading object');
     }
 
@@ -53,13 +55,17 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
     const downloadResponse = await blobClient.download();
 
     if (downloadResponse.errorCode) {
-      this.logger.error(`Error while getting object ${objectName} from bucket ${this.getBucketName()}.` +
-        ` Error ${downloadResponse.errorCode}`);
+      this.logger.error(
+        `Error while getting object ${objectName} from bucket ${this.getBucketName()}.` +
+          ` Error ${downloadResponse.errorCode}`
+      );
       throw new BlBadRequestException('Error while getting object');
     }
 
     if (!downloadResponse.readableStreamBody) {
-      this.logger.error(`Error while getting object ${objectName} from bucket ${this.getBucketName()}. No readable stream`);
+      this.logger.error(
+        `Error while getting object ${objectName} from bucket ${this.getBucketName()}. No readable stream`
+      );
       throw new BlBadRequestException('Error while getting object');
     }
 
@@ -67,10 +73,9 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
       name: objectName,
       file: downloadResponse.readableStreamBody,
       contentType: downloadResponse.contentType,
-      contentLength: downloadResponse.contentLength
+      contentLength: downloadResponse.contentLength,
     };
   }
-
 
   //////////////////////////////////////////// GET OBJECTS /////////////////////////////////////////
 
@@ -80,17 +85,15 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
     return await blobClient.exists();
   }
 
-
   public async getObjectInfo(objectName: string): Promise<BlObject> {
     const blobClient = this.getBlobClient(objectName);
 
     const properties = await blobClient.getProperties();
     return {
       name: objectName,
-      size: properties.contentLength
+      size: properties.contentLength,
     };
   }
-
 
   public async getAllObjectsByPrefix(prefix: string = ''): Promise<BlObject[]> {
     const containerClient = this.getContainerClient();
@@ -102,14 +105,13 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
       for (const blob of response.segment.blobItems) {
         objects.push({
           name: blob.name,
-          size: blob.properties.contentLength
+          size: blob.properties.contentLength,
         });
       }
     }
 
     return objects;
   }
-
 
   //////////////////////////////////////////// DELETE OBJECT /////////////////////////////////////////
   public async deleteObjectIfExists(objectName: string): Promise<boolean> {
@@ -120,7 +122,6 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
     return response.succeeded;
   }
 
-
   public async deleteMultipleObjects(objectNames: string[]): Promise<void> {
     const containerClient = this.getContainerClient();
     const blobBatchClient = containerClient.getBlobBatchClient();
@@ -129,11 +130,12 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
     let start = 0;
     while (start < objectNames.length) {
       const end = Math.min(start + BlAzureBucketService.MAX_DELETE_BATCH_SIZE, objectNames.length);
-      const clientToDelete = objectNames.slice(start, end).map(objectName => containerClient.getBlobClient(objectName));
+      const clientToDelete = objectNames
+        .slice(start, end)
+        .map((objectName) => containerClient.getBlobClient(objectName));
       await blobBatchClient.deleteBlobs(clientToDelete);
       start += BlAzureBucketService.MAX_DELETE_BATCH_SIZE;
     }
-
   }
 
   ////////////////////////////////////////// BUCKET //////////////////////////////////////////
@@ -176,9 +178,7 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
 
   ////////////////////////////////////////// TAGS //////////////////////////////////////////
 
-
   ////////////////////////////////////////// OTHER //////////////////////////////////////////
-
 
   private getBlockBlobClient(objectName: string): BlockBlobClient {
     const containerClient = this.getContainerClient();
@@ -193,7 +193,10 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
   }
 
   private getContainerClient(): ContainerClient {
-    const sharedKeyCredential = new StorageSharedKeyCredential(this.config.accountName, this.config.accountKey);
+    const sharedKeyCredential = new StorageSharedKeyCredential(
+      this.config.accountName,
+      this.config.accountKey
+    );
     const blobServiceClient = new BlobServiceClient(
       `https://${this.config.accountName}.blob.core.windows.net`,
       sharedKeyCredential

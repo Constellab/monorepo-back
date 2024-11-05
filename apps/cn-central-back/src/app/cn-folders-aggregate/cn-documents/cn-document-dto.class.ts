@@ -63,15 +63,8 @@ export class CnFolderStorageUsageDTO {
   cloudDetails?: CnStorageLocationUsageDetailDTO;
   dataHubDetails?: CnStorageLocationUsageDetailDTO;
 
-  public addDocumentSize(
-    type: CnDocumentStorageType,
-    size: number,
-    bucketType: BlBucketType
-  ): void {
-    let details =
-      bucketType === BlBucketType.NORMAL
-        ? this.cloudDetails
-        : this.dataHubDetails;
+  public addDocumentSize(type: CnDocumentStorageType, size: number, bucketType: BlBucketType): void {
+    let details = bucketType === BlBucketType.NORMAL ? this.cloudDetails : this.dataHubDetails;
 
     if (details == null) {
       details = new CnStorageLocationUsageDetailDTO();

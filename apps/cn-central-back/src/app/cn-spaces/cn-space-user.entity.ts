@@ -8,40 +8,39 @@ import { ClDateHelper } from '@monorepo/core-lib';
 
 export enum CnSpaceUserRole {
   ADMIN = 'ADMIN',
-  USER = 'USER'
+  USER = 'USER',
 }
-
 
 @Entity('space_user')
 export class CnSpaceUser {
-
-  @PrimaryColumn({type: 'varchar', length: 36})
+  @PrimaryColumn({ type: 'varchar', length: 36 })
   userId: string;
 
-  @ManyToOne(() => CnUserEntity, {onUpdate: 'CASCADE', onDelete: 'CASCADE'})
+  @ManyToOne(() => CnUserEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
   user: CnUser;
 
-  @PrimaryColumn({type: 'varchar', length: 36})
+  @PrimaryColumn({ type: 'varchar', length: 36 })
   spaceId: string;
 
-  @ManyToOne(() => CnSpace,
-    {onUpdate: 'CASCADE', onDelete: 'CASCADE'})
+  @ManyToOne(() => CnSpace, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
   space: CnSpace;
 
   @Column({
-    type: 'enum', enum: CnSpaceUserRole, nullable: false,
-    default: CnSpaceUserRole.USER
+    type: 'enum',
+    enum: CnSpaceUserRole,
+    nullable: false,
+    default: CnSpaceUserRole.USER,
   })
   role: CnSpaceUserRole;
 
-  @Column({default: true})
+  @Column({ default: true })
   active: boolean;
 
-  @BlLuxonDateTimeColumn({nullable: false, update: false})
+  @BlLuxonDateTimeColumn({ nullable: false, update: false })
   createdAt: DateTime;
 
   @Type(() => CnUserEntity)
-  @ManyToOne(() => CnUserEntity, {eager: true, nullable: false})
+  @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   @BlNotUpdatable()
   addedBy: Relation<CnUser>;
 

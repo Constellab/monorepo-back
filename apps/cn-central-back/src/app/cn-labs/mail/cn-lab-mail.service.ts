@@ -14,21 +14,20 @@ import { CnSpaceService } from '../../cn-spaces/cn-space.service';
 import { CnLabUserService } from '../user/cn-lab-user.service';
 import { CnSupportService } from '../../cn-support/cn-support.service';
 
-
 /**
  * Service to send mail from the lab
  */
 @Injectable()
 export class CnLabMailService {
-
-  constructor(private mailService: BlMailService,
-              private userService: CnUsersService,
-              private configService: CnCoreConfigService,
-              private frontService: CnFrontService,
-              private spaceService: CnSpaceService,
-              private labUserService: CnLabUserService,
-              private supportService: CnSupportService) {
-  }
+  constructor(
+    private mailService: BlMailService,
+    private userService: CnUsersService,
+    private configService: CnCoreConfigService,
+    private frontService: CnFrontService,
+    private spaceService: CnSpaceService,
+    private labUserService: CnLabUserService,
+    private supportService: CnSupportService
+  ) {}
 
   public async sendMailFromLab(lab: CnLab, sendMailDTO: CnLabSendMailDto): Promise<void> {
     const template = this.getLabTemplate(sendMailDTO.mail_template);
@@ -42,16 +41,20 @@ export class CnLabMailService {
   }
 
   public async sendRequestLabMail(request: CnRequestLab, user: CnUser, space: CnSpace): Promise<void> {
-    await this.mailService.sendMail(CnMailTemplate.request_lab, this.configService.getCustomerSuccessMail(),
-      ClSupportedLanguage.en, {
+    await this.mailService.sendMail(
+      CnMailTemplate.request_lab,
+      this.configService.getCustomerSuccessMail(),
+      ClSupportedLanguage.en,
+      {
         user: user,
         space: space,
         cloudProvider: request.cloudProvider,
         cpuCount: request.cpuCount,
         storageSize: request.storageSize,
         labNeed: request.labNeed,
-        additionalInfo: request.additionalInfo
-      });
+        additionalInfo: request.additionalInfo,
+      }
+    );
   }
 
   private getLabTemplate(type: CnLabMailTemplate): string {
@@ -74,12 +77,12 @@ export class CnLabMailService {
       await this.mailService.sendMailToUser(CnMailTemplate.lab_started, owner.user, {
         user: {
           firstname: owner.user.firstname,
-          lastname: owner.user.lastname
+          lastname: owner.user.lastname,
         },
         lab: {
-          name: lab.name
+          name: lab.name,
         },
-        labUrl: labUrl
+        labUrl: labUrl,
       });
     }
   }
@@ -90,13 +93,13 @@ export class CnLabMailService {
     await this.supportService.sendMailToSupport(CnMailTemplate.support_lab_start_error, {
       lab: {
         id: lab.id,
-        name: lab.name
+        name: lab.name,
       },
       space: {
         id: space.id,
-        name: space.name
+        name: space.name,
       },
-      labUrl: labUrl
+      labUrl: labUrl,
     });
   }
 
@@ -106,14 +109,13 @@ export class CnLabMailService {
     await this.supportService.sendMailToSupport(CnMailTemplate.support_lab_backup_error, {
       lab: {
         id: lab.id,
-        name: lab.name
+        name: lab.name,
       },
       space: {
         id: space.id,
-        name: space.name
+        name: space.name,
       },
-      labUrl: labUrl
+      labUrl: labUrl,
     });
   }
-
 }

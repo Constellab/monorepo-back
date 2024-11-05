@@ -18,7 +18,7 @@ import {
   BlSearchParams,
   BlTransportService,
   BlUnauthorizedException,
-  BlUserService
+  BlUserService,
 } from '@monorepo/back-core-lib';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
@@ -26,12 +26,12 @@ import { CnUserSearch } from './cn-user-search.class';
 
 @Injectable()
 export class CnUsersService extends BlAbstractService<CnUser> implements BlUserService, OnModuleInit {
-
   constructor(
     @InjectRepository(CnUserEntity) private repository: Repository<CnUser>,
     private objectStorageService: BlObjectStorageService,
     private configService: CnCoreConfigService,
-    private transportService: BlTransportService) {
+    private transportService: BlTransportService
+  ) {
     super(repository, CnUserEntity);
   }
 
@@ -40,7 +40,6 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     BlCurrentUserHelper.setRobotUser(robotUser);
   }
 
-
   findAllPaginated(page: number, size: number): Promise<ClPage<CnUser>> {
     const currentUser = CnCurrentUserHelper.getCurrentUser();
     if (!currentUser.isAdmin()) {
@@ -48,14 +47,13 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     }
 
     return this.findPaginated(page, size, {
-      order: { lastname: 'ASC', firstname: 'ASC' }
+      order: { lastname: 'ASC', firstname: 'ASC' },
     });
   }
 
   findAll(): Promise<CnUser[]> {
     return this.repository.find();
   }
-
 
   findOne(id: string): Promise<CnUser> {
     return this.repository.findOneBy({ id: id });
@@ -64,7 +62,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
   findByEmail(email: string): Promise<CnUser> {
     return this.repository.findOne({
       where: {
-        email: email
+        email: email,
       },
     });
   }
@@ -102,8 +100,9 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
       await this.objectStorageService.deleteObjectIfExist(this.getUserProfilePhotoBucketConfig(), user.photo);
     }
 
-    user.photo = await this.objectStorageService.uploadObject(
-      this.getUserProfilePhotoBucketConfig(), file, { generateRandomObjectName: true });
+    user.photo = await this.objectStorageService.uploadObject(this.getUserProfilePhotoBucketConfig(), file, {
+      generateRandomObjectName: true,
+    });
     const updatedUser = await this.repository.save(user);
     this.sendUserToTransport(updatedUser);
     return updatedUser;
@@ -133,8 +132,8 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
         region: this.configService.getDefaultObjectStorageRegion(),
         bucket: this.configService.getUserProfilePictureObjectStorageBucket(),
         credentials: this.configService.getDefaultObjectStorageCredentials(),
-        bucketType: BlBucketType.NORMAL
-      }
+        bucketType: BlBucketType.NORMAL,
+      },
     };
   }
 
@@ -181,9 +180,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     });
   }
 
-
   public sendUserToTransport(user: CnUser): void {
-
     const u: CnUserTransportDto = {
       id: user.id,
       firstname: user.firstname,
@@ -195,7 +192,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
       company: user.company,
       lang: user.lang,
       biography: user.biography,
-      photo: user.photo
+      photo: user.photo,
     };
     this.transportService.emit('user', u);
   }
@@ -224,13 +221,21 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     const users = await this.repository.find(builder.build());
 
     return BlCsvHelper.toCsv(users, [
-      'id', 'firstname', 'lastname', 'email', 'photo',
-      'company', 'category', 'status', 'lastLoginSuccess', 'lang', 'theme'
+      'id',
+      'firstname',
+      'lastname',
+      'email',
+      'photo',
+      'company',
+      'category',
+      'status',
+      'lastLoginSuccess',
+      'lang',
+      'theme',
     ]);
   }
 
   public async updateLastConnectedSpace(userId: string, spaceId: string): Promise<void> {
     await this.repository.update(userId, { lastConnectedSpaceId: spaceId });
   }
-
 }

@@ -7,7 +7,7 @@ import {
   CnLabGreenOption,
   CnLabGreenOptionStopAfterInactivityValue,
   CnLabGreenOptionStopAfterTimeValue,
-  CnLabGreenOptionType
+  CnLabGreenOptionType,
 } from './green-option/cn-lab-green-option.entity';
 import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
 import { ClDateHelper } from '@monorepo/core-lib';
@@ -25,17 +25,17 @@ import { CnLabManagerService } from './cn-lab-manager.service';
  */
 @Injectable()
 export class CnLabCron {
-
   private readonly logger = new Logger(CnLabCron.name);
 
-  constructor(private labServerService: CnLabServerService,
-              private labService: CnLabsService,
-              private labRuleService: CnLabGreenOptionService,
-              private labManagerService: CnLabManagerService,
-              private externalLabApiService: CnExternalLabApiService,
-              private labAggregateService: CnLabAggregateService,
-              private labFreeService: CnLabFreeService) {
-  }
+  constructor(
+    private labServerService: CnLabServerService,
+    private labService: CnLabsService,
+    private labRuleService: CnLabGreenOptionService,
+    private labManagerService: CnLabManagerService,
+    private externalLabApiService: CnExternalLabApiService,
+    private labAggregateService: CnLabAggregateService,
+    private labFreeService: CnLabFreeService
+  ) {}
 
   /**
    * Refresh temp the status of the labs every minute
@@ -68,14 +68,12 @@ export class CnLabCron {
     await this.checkFreeLabs();
     await this.checkFreeLabsToDelete();
     this.logger.debug('[Cron] End checking free labs');
-
   }
 
   private async refreshLabTempStatus(): Promise<void> {
     const labs = await this.labService.getLabsWithTempStatus();
 
     for (const lab of labs) {
-
       // for status SERVER_RUNNING and SERVER_CONFIGURED, that are considered as half temp, we stop checking after 30 minutes
       if ([CnLabStatus.SERVER_RUNNING, CnLabStatus.SERVER_CONFIGURED].includes(lab.currentStatus.status)) {
         if (lab.currentStatus.createdAt.diffNow('minutes').minutes > 30) {
@@ -83,9 +81,11 @@ export class CnLabCron {
         }
       }
 
-      await this.labAggregateService.refreshLabStatus(lab.id).catch(
-        (error: Error) => this.logger.error(`Error during lab ${lab.id} status refresh : ${error.message}`)
-      );
+      await this.labAggregateService
+        .refreshLabStatus(lab.id)
+        .catch((error: Error) =>
+          this.logger.error(`Error during lab ${lab.id} status refresh : ${error.message}`)
+        );
     }
   }
 
@@ -95,10 +95,12 @@ export class CnLabCron {
     for (const option of options) {
       const lab = await this.labService.findByIdAndCheck(option.labId);
       if (lab.isRunning()) {
-        const backup: CnLabBackupsHistory = await this.labManagerService.getLastBackupsStatus(lab).catch(() => null);
+        const backup: CnLabBackupsHistory = await this.labManagerService
+          .getLastBackupsStatus(lab)
+          .catch(() => null);
 
         // if a backup is in progress, we do nothing
-        if (backup == null || backup.backups.some(b => b.status === 'IN_PROGRESS')) {
+        if (backup == null || backup.backups.some((b) => b.status === 'IN_PROGRESS')) {
           continue;
         }
 
@@ -113,9 +115,15 @@ export class CnLabCron {
     for (const option of options) {
       const lab = await this.labService.findByIdAndCheck(option.labId);
       if (lab.isRunning()) {
-        const labGlobalActivity = await this.externalLabApiService.getLabGlobalActivity(lab.getGlabSpaceApiInfo()).catch(() => null);
+        const labGlobalActivity = await this.externalLabApiService
+          .getLabGlobalActivity(lab.getGlabSpaceApiInfo())
+          .catch(() => null);
 
-        if (labGlobalActivity == null || labGlobalActivity.running_scenarios > 0 || labGlobalActivity.queued_scenarios > 0) {
+        if (
+          labGlobalActivity == null ||
+          labGlobalActivity.running_scenarios > 0 ||
+          labGlobalActivity.queued_scenarios > 0
+        ) {
           continue;
         }
 
@@ -137,7 +145,10 @@ export class CnLabCron {
         // if (!value.days.includes(today.weekday)) continue;
 
         // Get the same day date with time from the option
-        const ruleDate = DateTime.local({ zone: value.timezone }).set({ hour: value.hours, minute: value.minutes });
+        const ruleDate = DateTime.local({ zone: value.timezone }).set({
+          hour: value.hours,
+          minute: value.minutes,
+        });
 
         // check if current time is after stop time
         if (today < ruleDate) continue;
@@ -148,21 +159,26 @@ export class CnLabCron {
   }
 
   private async checkStopAfterInactivity(): Promise<void> {
-    const options = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_INACTIVITY_TIME);
+    const options = await this.labRuleService.findRulesByType(
+      CnLabGreenOptionType.STOP_AFTER_INACTIVITY_TIME
+    );
 
     for (const option of options) {
       const lab = await this.labService.findByIdAndCheck(option.labId);
       if (lab.isRunning()) {
-        const value: CnLabGreenOptionStopAfterInactivityValue = option.value as CnLabGreenOptionStopAfterInactivityValue;
+        const value: CnLabGreenOptionStopAfterInactivityValue =
+          option.value as CnLabGreenOptionStopAfterInactivityValue;
 
-        const labGlobalActivity = await this.externalLabApiService.getLabGlobalActivity(lab.getGlabSpaceApiInfo()).catch(() => null);
+        const labGlobalActivity = await this.externalLabApiService
+          .getLabGlobalActivity(lab.getGlabSpaceApiInfo())
+          .catch(() => null);
         if (labGlobalActivity == null || labGlobalActivity.last_activity == null) continue;
 
         const lastActivityDate = ClDateHelper.getDate(labGlobalActivity.last_activity.created_at);
 
         // check if differences in minutes between last activity and now is greater than inactivity time
         // diffNow is negative if last activity is in the past
-        if ((Math.abs(lastActivityDate.diffNow('minutes').minutes)) < value.inactivityDuration) continue;
+        if (Math.abs(lastActivityDate.diffNow('minutes').minutes) < value.inactivityDuration) continue;
 
         await this.stopLab(lab, option, `${value.inactivityDuration} minutes`);
       }
@@ -171,19 +187,30 @@ export class CnLabCron {
 
   private async stopLab(lab: CnLab, option: CnLabGreenOption, ruleDetail?: string): Promise<void> {
     // check if there are running scenarios
-    const check = await this.labServerService.checkLabActivity(lab, true).then(() => true)
+    const check = await this.labServerService
+      .checkLabActivity(lab, true)
+      .then(() => true)
       .catch((error: Error) => {
-        this.logger.debug(`Not stopping lab : ${lab.id}, option : ${option.type}, because error: ${error.message}`);
+        this.logger.debug(
+          `Not stopping lab : ${lab.id}, option : ${option.type}, because error: ${error.message}`
+        );
         return false;
       });
     if (!check) return;
 
-    this.logger.log(`[Cron] Stopping lab :${lab.id}, option: ${option.type} ${ruleDetail ? `(${ruleDetail})` : ''}`);
-    await this.labServerService.stopLab(lab).then(async () => {
-      await this.cleanRuleAfterExecution(option);
-    }).catch(err => {
-      this.logger.error(`Error while stopping the lab : ${lab.id}, option : ${option.type}, error: ${err.message}`);
-    });
+    this.logger.log(
+      `[Cron] Stopping lab :${lab.id}, option: ${option.type} ${ruleDetail ? `(${ruleDetail})` : ''}`
+    );
+    await this.labServerService
+      .stopLab(lab)
+      .then(async () => {
+        await this.cleanRuleAfterExecution(option);
+      })
+      .catch((err) => {
+        this.logger.error(
+          `Error while stopping the lab : ${lab.id}, option : ${option.type}, error: ${err.message}`
+        );
+      });
   }
 
   private async cleanRuleAfterExecution(option: CnLabGreenOption): Promise<void> {
@@ -197,7 +224,9 @@ export class CnLabCron {
 
     for (const labFree of runningFreeLab) {
       // if the lab is starting or stopping, we do nothing, it will be checked later
-      if ([CnLabStatus.SERVER_STARTING, CnLabStatus.SERVER_STOPPING].includes(labFree.lab.currentStatus.status)) {
+      if (
+        [CnLabStatus.SERVER_STARTING, CnLabStatus.SERVER_STOPPING].includes(labFree.lab.currentStatus.status)
+      ) {
         continue;
       }
 
@@ -224,6 +253,6 @@ export class CnLabCron {
   private async getFreeLabsToDelete(): Promise<CnLabFree[]> {
     const expiredLabs = await this.labFreeService.getExpiredFreeLab();
 
-    return expiredLabs.filter(lab => lab.toDelete());
+    return expiredLabs.filter((lab) => lab.toDelete());
   }
 }

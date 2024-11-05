@@ -2,7 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup } from './cn-group.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, FindOneOptions, In, Like, Repository } from 'typeorm';
-import { BlAbstractService, BlBadRequestException, BlSearchBuilder, BlSearchParams } from '@monorepo/back-core-lib';
+import {
+  BlAbstractService,
+  BlBadRequestException,
+  BlSearchBuilder,
+  BlSearchParams,
+} from '@monorepo/back-core-lib';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnGroupType } from './cn-group-type.enum';
 import { ClHelpService, ClPageI } from '@monorepo/core-lib';
@@ -12,7 +17,6 @@ import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations'
 
 @Injectable()
 export class CnGroupsService extends BlAbstractService<CnGroup> {
-
   constructor(@InjectRepository(CnGroup) private repository: Repository<CnGroup>) {
     super(repository, CnGroup);
   }
@@ -38,9 +42,8 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
   }
 
   public async getAllGroupIdsOfUser(userId: string, spaceId: string): Promise<string[]> {
-    return (await this.getAllGroupsOfUser(userId, spaceId)).map(group => group.id);
+    return (await this.getAllGroupsOfUser(userId, spaceId)).map((group) => group.id);
   }
-
 
   /**
    * Get all groups of a user
@@ -56,7 +59,6 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     }
   }
 
-
   /**
    * return all the users as a list of groups
    * @param groupIds
@@ -64,20 +66,19 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
   public async getUsersOfGroups(groupIds: string[]): Promise<CnUser[]> {
     const groups: CnGroup[] = await this.repo.find({
       where: {
-        id: In(groupIds)
+        id: In(groupIds),
       },
       relations: {
         user: true,
         users: {
-          user: true
-        }
-      } as FindOptionsRelations<CnGroupTeam | CnGroupSingleUser>
+          user: true,
+        },
+      } as FindOptionsRelations<CnGroupTeam | CnGroupSingleUser>,
     });
 
     // return all the user of all groupes without duplicate
     const users: Record<string, CnUser> = {};
     for (const group of groups) {
-
       if (group instanceof CnGroupTeam) {
         // add user to the map and avoid duplicate
         for (const user of group.users) {
@@ -102,14 +103,19 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
    * Possibility to search by label.
    * It needs the complete list of user of the space to return the user groups
    */
-  public async searchGroupsByLabelInSpace(spaceId: string, userIds: string[], label: string,
-                                          page: number, size: number): Promise<ClPageI<CnGroup>> {
+  public async searchGroupsByLabelInSpace(
+    spaceId: string,
+    userIds: string[],
+    label: string,
+    page: number,
+    size: number
+  ): Promise<ClPageI<CnGroup>> {
     const teamWhere: FindOptionsWhere<CnGroupTeam> = {
       spaceId: spaceId,
     };
 
     let userWheres: FindOptionsWhere<CnGroupSingleUser>[] = [];
-    if(!ClHelpService.isNullOrEmpty(label)){
+    if (!ClHelpService.isNullOrEmpty(label)) {
       teamWhere.label = Like(`%${label}%`);
 
       // search user by name in the list of provided user
@@ -117,11 +123,11 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
       userWheres = userNameFilters.map((filter) => {
         return {
           userId: In(userIds),
-          user: filter
+          user: filter,
         };
       });
-    }else{
-      userWheres = [{userId: In(userIds)}];
+    } else {
+      userWheres = [{ userId: In(userIds) }];
     }
 
     return this.findPaginated(page, size, {
@@ -129,14 +135,14 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
       order: {
         type: 'DESC', // have TEAM before SINGLE_USER
         label: 'ASC',
-      }
+      },
     });
   }
 
   private getSmartSearchNameFilters(name: string): FindOptionsWhere<CnUser>[] {
     const findByFirstNameOrLastName: FindOptionsWhere<CnUser>[] = [
-      {lastname: Like(`%${name}%`)},
-      {firstname: Like(`%${name}%`)}
+      { lastname: Like(`%${name}%`) },
+      { firstname: Like(`%${name}%`) },
     ];
 
     if (!name.includes(' ')) {
@@ -147,13 +153,16 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     // if nothing is found, search by lastname or firstname
     const names = name.split(' ');
     if (names.length === 2) {
-      return [{
-        lastname: Like(`%${names[0]}%`),
-        firstname: Like(`%${names[1]}%`)
-      }, {
-        lastname: Like(`%${names[1]}%`),
-        firstname: Like(`%${names[0]}%`)
-      }];
+      return [
+        {
+          lastname: Like(`%${names[0]}%`),
+          firstname: Like(`%${names[1]}%`),
+        },
+        {
+          lastname: Like(`%${names[1]}%`),
+          firstname: Like(`%${names[0]}%`),
+        },
+      ];
     }
 
     return findByFirstNameOrLastName;
@@ -168,8 +177,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     group.space = CnCurrentUserHelper.getAndCheckCurrentSpace();
 
     const entityManager = this.getEntityManager();
-    group = await this.create(group, entityManager) as CnGroupTeam;
-
+    group = (await this.create(group, entityManager)) as CnGroupTeam;
 
     const userGroup = new CnUserGroup();
     userGroup.groupId = group.id;
@@ -204,10 +212,14 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
   /**
    * Get groups of user paginated
    */
-  public async getTeamsByUserAndSpace(userId: string, spaceId: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
+  public async getTeamsByUserAndSpace(
+    userId: string,
+    spaceId: string,
+    page: number,
+    size: number
+  ): Promise<ClPageI<CnGroup>> {
     return this.findPaginated(page, size, this.getTeamsByUserAndSpaceOptions(userId, spaceId));
   }
-
 
   private getTeamsByUserAndSpaceOptions(userId: string, spaceId: string): FindOneOptions<CnGroup> {
     const options: FindOneOptions<CnGroupTeam> = {
@@ -215,10 +227,10 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
         type: CnGroupType.TEAM,
         spaceId: spaceId,
         users: {
-          userId: userId
-        }
+          userId: userId,
+        },
       },
-      relations: {users: true}
+      relations: { users: true },
     };
     return options as any;
   }
@@ -233,30 +245,31 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     return this.findPaginated(page, size, options as any);
   }
 
-  public async searchTeamInSpace(spaceId: string, searchParam: BlSearchParams,
-                                 page: number, size: number): Promise<ClPageI<CnGroupTeam>> {
-    const searchBuilder = new BlSearchBuilder<CnGroupTeam>({label: 'ASC'});
+  public async searchTeamInSpace(
+    spaceId: string,
+    searchParam: BlSearchParams,
+    page: number,
+    size: number
+  ): Promise<ClPageI<CnGroupTeam>> {
+    const searchBuilder = new BlSearchBuilder<CnGroupTeam>({ label: 'ASC' });
     searchBuilder.addSearchParams(searchParam);
-    searchBuilder.mergeWhereOptions({spaceId: spaceId, type: CnGroupType.TEAM});
+    searchBuilder.mergeWhereOptions({ spaceId: spaceId, type: CnGroupType.TEAM });
 
-    return await this.findPaginated(page, size, searchBuilder.build() as any) as any;
+    return (await this.findPaginated(page, size, searchBuilder.build() as any)) as any;
   }
 
-
   ////////////////////////////////// SINGLE USER /////////////////////////
-
 
   public async getCurrentUserSingleGroup(): Promise<CnGroup> {
     return this.getUserSingleGroup(CnCurrentUserHelper.getAndCheckCurrentUser().id);
   }
 
-
   public async getUserSingleGroup(userId: string): Promise<CnGroupSingleUser> {
     const group = await this.repository.findOne({
       where: {
         userId: userId,
-        type: CnGroupType.SINGLE_USER
-      } as FindOptionsWhere<CnGroupSingleUser>
+        type: CnGroupType.SINGLE_USER,
+      } as FindOptionsWhere<CnGroupSingleUser>,
     });
 
     if (group == null) {
@@ -264,5 +277,4 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     }
     return group as CnGroupSingleUser;
   }
-
 }

@@ -1,9 +1,9 @@
 import {
   BlRichTextBlockModification,
   BlRichTextModificationDifference,
-  BlRichTextModificationType
+  BlRichTextModificationType,
 } from './bl-rich-text-block-modification.class';
-import {BlUserDto} from './bl-user/bl-user.class';
+import { BlUserDto } from './bl-user/bl-user.class';
 
 export class BlRichTextBlockModificationDto {
   id: string;
@@ -24,7 +24,7 @@ export class BlRichTextBlockModificationDto {
 
   differences?: BlRichTextModificationDifference[];
 
-  blockValue?: Record<string, any>
+  blockValue?: Record<string, any>;
 
   oldIndex?: number;
 
@@ -42,5 +42,3 @@ export class BlRichTextBlockModificationDto {
     this.oldIndex = blockModification.oldIndex;
   }
 }
-
-

@@ -1,7 +1,6 @@
-import {Controller} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 
 @Controller('protocol')
 export class HnProtocolController {
-  constructor() {
-  }
+  constructor() {}
 }

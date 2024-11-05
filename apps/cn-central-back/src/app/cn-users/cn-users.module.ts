@@ -6,15 +6,9 @@ import { CnUserEntity } from './cn-user.entity';
 import { CnCoreModule } from '../cn-core/cn-core.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([CnUserEntity]),
-
-    CnCoreModule
-  ],
+  imports: [TypeOrmModule.forFeature([CnUserEntity]), CnCoreModule],
   providers: [CnUsersService],
   controllers: [CnUsersController],
-  exports: [CnUsersService]
+  exports: [CnUsersService],
 })
-export class CnUsersModule {
-}
-
+export class CnUsersModule {}

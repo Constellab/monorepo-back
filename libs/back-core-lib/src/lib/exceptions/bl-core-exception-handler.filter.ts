@@ -7,25 +7,22 @@ import { BlApiError } from '../models/bl-nest-api-error.class';
 import { BlHttpException } from './bl-http.exception';
 import { BlTranslateOptions } from '../modules/bl-translate/bl-translate-options.class';
 
-
 export interface BlCoreExceptionHandlerFilterOptions {
   isProduction: boolean;
   errorColumnToLong: string;
   serverError: string;
-
 }
 
 /**
  * Class to catch all exception and translate it if possible
  */
 export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
-
   protected readonly logger = new Logger(BlCoreExceptionHandlerFilter.name);
 
   protected constructor(
     private readonly translateService: BlTranslateService,
-    private options: BlCoreExceptionHandlerFilterOptions) {
-  }
+    private options: BlCoreExceptionHandlerFilterOptions
+  ) {}
 
   protected abstract logUnknownError(error: Error, instanceId: string): void;
 
@@ -39,7 +36,9 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
       const instanceId: string = ClStringHelper.generateUUID();
       // use catch error if an error is raised in handleError method
       // because it would break the app
-      this.logger.error(`Unexpected error thrown in CustomExceptionHandlerFilter | InstanceId ${instanceId} | Error : ${e}`);
+      this.logger.error(
+        `Unexpected error thrown in CustomExceptionHandlerFilter | InstanceId ${instanceId} | Error : ${e}`
+      );
       if (e.stack) {
         this.logger.error(e.stack);
       }
@@ -47,12 +46,11 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
         status: HttpStatus.INTERNAL_SERVER_ERROR,
         detail: 'Server error',
         code: this.options.serverError,
-        instanceId: instanceId
+        instanceId: instanceId,
       };
       response.status(error.status).json(error);
     }
   }
-
 
   private async handleError(error: Error): Promise<BlApiError> {
     if (error instanceof BlHttpException) {
@@ -68,8 +66,12 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
 
   private handleKnownException(error: BlHttpException): Promise<BlApiError> {
     // translate the error message and throw the exception with error code and message
-    return this.convertToNestError(error.message, error.getStatus(),
-      {args: error.customOptions.detailArgs}, error.customOptions.instanceId);
+    return this.convertToNestError(
+      error.message,
+      error.getStatus(),
+      { args: error.customOptions.detailArgs },
+      error.customOptions.instanceId
+    );
   }
 
   private handleNestHttpException(error: HttpException): Promise<BlApiError> {
@@ -83,7 +85,6 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
     // log the error
     this.logUnknownError(error, instanceId);
 
-
     // in prod env, send a server error exception to hide detail for the user
     if (this.options.isProduction) {
       // translate the error message and throw the exception with error code and message
@@ -93,7 +94,7 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
         status: HttpStatus.BAD_REQUEST,
         code: this.options.serverError,
         detail: error.message,
-        instanceId: instanceId
+        instanceId: instanceId,
       };
     }
   }
@@ -104,32 +105,38 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
   private handleDataTooLongException(error: QueryFailedError): Promise<BlApiError> {
     // split message on ' character
     // example of message: ER_DATA_TOO_LONG: Data too long for column 'title' at row 1
-    const splitMessage: string[] = error.message.split('\'');
+    const splitMessage: string[] = error.message.split("'");
     let fieldName: string = '';
     if (splitMessage?.length > 1) {
       // get the text between '
       fieldName = splitMessage[1];
     }
 
-    return this.convertToNestError(this.options.errorColumnToLong,
-      HttpStatus.BAD_REQUEST, {args: {field: fieldName}});
+    return this.convertToNestError(this.options.errorColumnToLong, HttpStatus.BAD_REQUEST, {
+      args: { field: fieldName },
+    });
   }
 
   /**
    * Translate the message and return an error observable with status
    */
-  private async convertToNestError(errorCode: string, status: HttpStatus,
-                                   translateOptions: BlTranslateOptions = {},
-                                   instanceId?: string): Promise<BlApiError> {
+  private async convertToNestError(
+    errorCode: string,
+    status: HttpStatus,
+    translateOptions: BlTranslateOptions = {},
+    instanceId?: string
+  ): Promise<BlApiError> {
     // translate the error message and throw the exception with error code and message
-    const translatedMessage: string = await this.translateService.translateIfExists(errorCode, translateOptions);
+    const translatedMessage: string = await this.translateService.translateIfExists(
+      errorCode,
+      translateOptions
+    );
 
     return {
       status: status,
       code: errorCode,
       detail: translatedMessage,
-      instanceId: instanceId != null ? instanceId : ClStringHelper.generateUUID()
+      instanceId: instanceId != null ? instanceId : ClStringHelper.generateUUID(),
     };
   }
-
 }

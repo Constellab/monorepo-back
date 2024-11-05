@@ -1,5 +1,5 @@
-import {HnUserDto} from '../users/hn-user.dto';
-import {HnStoryCoAuthor} from './hn-story-author.entity';
+import { HnUserDto } from '../users/hn-user.dto';
+import { HnStoryCoAuthor } from './hn-story-author.entity';
 
 export class HnStoryCoAuthorDto {
   user: HnUserDto;

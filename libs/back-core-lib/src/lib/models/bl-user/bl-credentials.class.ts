@@ -1,4 +1,3 @@
-
 /**
  * Object to send to log in
  */

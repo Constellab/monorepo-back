@@ -1,13 +1,11 @@
-import {CallbackHandler, Response, Test} from 'supertest';
+import { CallbackHandler, Response, Test } from 'supertest';
 
 /**
  * Facade for the SuperTest Test
  * Contains methods to configure request and test result
  */
 export class TestRequest {
-
-  constructor(private readonly superTest: Test) {
-  }
+  constructor(private readonly superTest: Test) {}
 
   /**
    * Facade for the expect method of SuperTest
@@ -52,4 +50,3 @@ export class TestRequest {
     return (await this.superTest).body;
   }
 }
-

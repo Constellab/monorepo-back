@@ -8,7 +8,6 @@ import { ClDateHelper } from '@monorepo/core-lib';
 import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
 import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 
-
 export enum CnDocumentType {
   // Uploaded document
   UPLOADED_DOCUMENT = 'UPLOADED_DOCUMENT',
@@ -23,7 +22,7 @@ export enum CnDocumentType {
   // attached image and view to a note
   NOTE_CONTENT = 'NOTE_CONTENT',
   // attached images to a message
-  MESSAGE_CONTENT = 'MESSAGE_CONTENT'
+  MESSAGE_CONTENT = 'MESSAGE_CONTENT',
 }
 
 /**
@@ -31,7 +30,6 @@ export enum CnDocumentType {
  */
 @Entity('document')
 export class CnDocumentEntity extends CnHierarchyRepresentation {
-
   // name of the document show in the interface
   @Column({ nullable: false })
   name: string;
@@ -66,7 +64,9 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
   inTrash: boolean;
 
   @Column({
-    type: 'enum', enum: BlBucketType, nullable: false
+    type: 'enum',
+    enum: BlBucketType,
+    nullable: false,
   })
   bucketType: BlBucketType;
 
@@ -98,7 +98,9 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
       documentSize: this.size,
       // the object is visible in the hierarchy only if it's an uploaded document or a constellab document
       // and it is not in the trash
-      isVisible: [CnDocumentType.UPLOADED_DOCUMENT, CnDocumentType.CONSTELLAB_DOCUMENT].includes(this.type) && !this.inTrash
+      isVisible:
+        [CnDocumentType.UPLOADED_DOCUMENT, CnDocumentType.CONSTELLAB_DOCUMENT].includes(this.type) &&
+        !this.inTrash,
     };
   }
 
@@ -121,8 +123,7 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
 
   documentTypeSupportsTrash(): boolean {
     // the trash is only supported for uploaded documents and constellab documents
-    return this.type === CnDocumentType.UPLOADED_DOCUMENT
-      || this.type === CnDocumentType.CONSTELLAB_DOCUMENT;
+    return this.type === CnDocumentType.UPLOADED_DOCUMENT || this.type === CnDocumentType.CONSTELLAB_DOCUMENT;
   }
 
   /**
@@ -136,7 +137,7 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
       'application/vnd.openxmlformats-officedocument.presentationml.presentation', // pptx
       'application/msword', // doc
       'application/vnd.ms-excel', // xls
-      'application/vnd.ms-powerpoint' // ppt
+      'application/vnd.ms-powerpoint', // ppt
     ];
     return this.type === CnDocumentType.UPLOADED_DOCUMENT && officesMimeTypes.includes(this.mimeType);
   }

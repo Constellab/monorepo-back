@@ -1,4 +1,4 @@
-export class CnStats{
+export class CnStats {
   onGoingFolderNumber: number = 0;
 
   teamsNumber: number = 0;

@@ -3,7 +3,7 @@ import { CnFolderWithStorage } from './cn-folder.entity';
 import {
   CnBucket,
   CnBucketContentType,
-  CnBucketLocationDTO
+  CnBucketLocationDTO,
 } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 import { BlBadRequestException, BlBucketConfig } from '@monorepo/back-core-lib';
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
@@ -18,13 +18,12 @@ import { ClPage } from '@monorepo/core-lib';
  */
 @Injectable()
 export class CnFolderBucketService {
-
   protected readonly logger = new Logger(CnFolderBucketService.name);
 
-  constructor(private objectStorageAggregateService: CnObjectStoragesAggregateService,
-              private foldersService: CnFoldersService) {
-  }
-
+  constructor(
+    private objectStorageAggregateService: CnObjectStoragesAggregateService,
+    private foldersService: CnFoldersService
+  ) {}
 
   /////////////////////////////// METHODS ///////////////////////////////
 
@@ -36,7 +35,7 @@ export class CnFolderBucketService {
     const folder = await this.findFolderWithStorageById(rootFolderId);
     return {
       mainStorage: folder.mainStorage,
-      backupStorage: folder.backupStorage
+      backupStorage: folder.backupStorage,
     };
   }
 
@@ -58,7 +57,6 @@ export class CnFolderBucketService {
     return configs;
   }
 
-
   public async getAndCheckFolderMainBucketConfig(rootFolderId: string): Promise<BlBucketConfig> {
     const bucket = await this.getAndCheckFolderBucket(rootFolderId);
     return bucket.mainStorage.getBucketConfig();
@@ -67,23 +65,27 @@ export class CnFolderBucketService {
   public async findFolderWithStorageById(rootFolderId: string): Promise<CnFolderWithStorage> {
     return await this.foldersService.findById(rootFolderId, {
       mainStorage: CnBucket.configRelation,
-      backupStorage: CnBucket.configRelation
+      backupStorage: CnBucket.configRelation,
     });
   }
 
-  public async findAccessibleFolderBucketLocation(spaceId: string, page: number, size: number)
-    : Promise<ClPage<CnBucketLocationDTO>> {
+  public async findAccessibleFolderBucketLocation(
+    spaceId: string,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnBucketLocationDTO>> {
     const buckets = await this.objectStorageAggregateService.searchByContentTypeAndSpaceNotSecure(
-      CnBucketContentType.FOLDER, spaceId, page, size);
+      CnBucketContentType.FOLDER,
+      spaceId,
+      page,
+      size
+    );
 
     return buckets.map((bucket) => bucket.getBucketLocation());
   }
 
-
   public async folderUsesLabStorage(rootFolderId: string, labId: string): Promise<boolean> {
     const folder = await this.findFolderWithStorageById(rootFolderId);
-    return folder.mainStorage?.lab?.id === labId ||
-      folder.backupStorage?.lab?.id === labId;
+    return folder.mainStorage?.lab?.id === labId || folder.backupStorage?.lab?.id === labId;
   }
-
 }

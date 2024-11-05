@@ -1,5 +1,5 @@
-import {DateTime} from 'luxon';
-import {ClHelpService} from './cl-help.service';
+import { DateTime } from 'luxon';
+import { ClHelpService } from './cl-help.service';
 
 /**
  * Input for {@HelperService} function that support date input. It uses DateInput
@@ -11,14 +11,12 @@ import {ClHelpService} from './cl-help.service';
  */
 export type ClDateInput = string | number | Date | DateTime;
 
-
 /**
  * Help that regroup functions to works with Dates
  *
  * It works with Luxon
  */
 export class ClDateHelper {
-
   public static readonly ONE_MILLISECOND = 1;
   public static readonly ONE_SECOND = ClDateHelper.ONE_MILLISECOND * 1000;
   public static readonly ONE_MINUTE = ClDateHelper.ONE_SECOND * 60;
@@ -28,23 +26,19 @@ export class ClDateHelper {
   // considering one year is 365 days
   public static readonly ONE_YEAR = ClDateHelper.ONE_DAY * 365;
 
-
-  constructor() {
-  }
-
+  constructor() {}
 
   /**
    * Get dateTime from date
    * @param date date to convert to dateTime (if null return current dateTime)
    */
-  public static getDate(date ?: ClDateInput): DateTime {
+  public static getDate(date?: ClDateInput): DateTime {
     if (date == null) {
       return DateTime.local();
     }
 
     return ClDateHelper.convertDateInputToDate(date);
   }
-
 
   public static convertDateInputToDate(date: ClDateInput): DateTime {
     if (date === null) {

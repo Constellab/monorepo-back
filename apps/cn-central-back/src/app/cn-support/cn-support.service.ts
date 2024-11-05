@@ -5,11 +5,10 @@ import { ClSupportedLanguage } from '@monorepo/core-lib';
 
 @Injectable()
 export class CnSupportService {
-
-
-  constructor(private mailService: BlMailService,
-              private coreConfigService: CnCoreConfigService) {
-  }
+  constructor(
+    private mailService: BlMailService,
+    private coreConfigService: CnCoreConfigService
+  ) {}
 
   public sendMailToSupport(template: string, data?: Record<string, any>, subject?: string): Promise<boolean> {
     const email = this.coreConfigService.getSupportMail();
@@ -18,6 +17,4 @@ export class CnSupportService {
     }
     return this.mailService.sendMail(template, email, ClSupportedLanguage.en, data, subject);
   }
-
 }
-

@@ -24,15 +24,8 @@ import { CnFoldersModule } from '../cn-folders-aggregate/cn-folders/cn-folders.m
     CnHierarchyObjectModule,
     CnFoldersModule,
   ],
-  providers: [
-    CnLabFolderAggregateService,
-    CnLabFolderListener,
-    CnLabFolderService
-  ],
-  exports: [
-    CnLabFolderAggregateService
-  ],
-  controllers: [CnLabFolderController]
+  providers: [CnLabFolderAggregateService, CnLabFolderListener, CnLabFolderService],
+  exports: [CnLabFolderAggregateService],
+  controllers: [CnLabFolderController],
 })
-export class CnLabFolderAggregateModule {
-}
+export class CnLabFolderAggregateModule {}

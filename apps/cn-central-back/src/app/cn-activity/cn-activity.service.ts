@@ -10,7 +10,6 @@ import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { ClDateHelper, ClPage } from '@monorepo/core-lib';
 import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 
-
 export interface CnActivityCreateDTO {
   entityType: CnActivityEntityType;
   entity: BlEntityWithId;
@@ -33,9 +32,10 @@ export interface CnActivityEventDTO<T extends BlEntityWithId = BlEntityWithId> {
 
 @Injectable()
 export class CnActivityService extends BlAbstractPaginatedService<CnActivity> {
-
-  constructor(@InjectRepository(CnActivity) private repository: Repository<CnActivity>,
-              private eventEmitter: EventEmitter2) {
+  constructor(
+    @InjectRepository(CnActivity) private repository: Repository<CnActivity>,
+    private eventEmitter: EventEmitter2
+  ) {
     super(repository, CnActivity);
   }
 
@@ -62,13 +62,15 @@ export class CnActivityService extends BlAbstractPaginatedService<CnActivity> {
     return dbActivity;
   }
 
-  public async search(findOptions: FindOneOptions<CnActivity>,
-                      page: number, size: number): Promise<ClPage<CnActivity>> {
+  public async search(
+    findOptions: FindOneOptions<CnActivity>,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnActivity>> {
     findOptions.relations = {
       user: true,
       space: true,
     };
     return this.findPaginated(page, size, findOptions);
   }
-
 }

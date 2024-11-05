@@ -1,9 +1,9 @@
-import {HnStory, HnStoryCategory, HnStoryStatus} from "./hn-story.entity";
-import {HnStoryCoAuthorDto} from '../story-author/hn-story-author.dto';
-import {HnUserDto} from '../users/hn-user.dto';
-import {HnTopic} from '../topic/hn-topic.entity';
-import {BlEntityWithIdDTO} from '@monorepo/back-core-lib';
-import {HnFileStory} from '../file-aggregate/file-story/hn-file-story.entity';
+import { HnStory, HnStoryCategory, HnStoryStatus } from './hn-story.entity';
+import { HnStoryCoAuthorDto } from '../story-author/hn-story-author.dto';
+import { HnUserDto } from '../users/hn-user.dto';
+import { HnTopic } from '../topic/hn-topic.entity';
+import { BlEntityWithIdDTO } from '@monorepo/back-core-lib';
+import { HnFileStory } from '../file-aggregate/file-story/hn-file-story.entity';
 
 export class HnCreateStoryDto {
   title: string;
@@ -17,7 +17,7 @@ export class HnStoryFilter {
   title: string;
 }
 
-export class HnStoryDto extends BlEntityWithIdDTO{
+export class HnStoryDto extends BlEntityWithIdDTO {
   title: string;
   content: Record<string, any>;
   contentEdition?: Record<string, any>;
@@ -32,7 +32,7 @@ export class HnStoryDto extends BlEntityWithIdDTO{
   storyFiles: HnFileStory[];
   createdBy: HnUserDto;
   topics?: HnTopic[];
-  likes: number
+  likes: number;
   comments: number;
 
   constructor(story: HnStory) {
@@ -59,6 +59,5 @@ export class HnStoryDto extends BlEntityWithIdDTO{
         this.storyAuthors.push(new HnStoryCoAuthorDto(storyAuthor));
       }
     }
-
   }
 }

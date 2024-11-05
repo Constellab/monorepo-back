@@ -1,6 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { CnLabEvent, cnLabEventName, CnLabServerTaskStatusChangedEvent, CnLabStatusChangedEvent } from './cn-lab.event';
+import {
+  CnLabEvent,
+  cnLabEventName,
+  CnLabServerTaskStatusChangedEvent,
+  CnLabStatusChangedEvent,
+} from './cn-lab.event';
 import { CnLabServerTaskStatus, CnLabStatus } from './status/cn-lab-status.enum';
 import { CnLabManagerService } from './cn-lab-manager.service';
 import { CnLabsService } from './cn-labs.service';
@@ -9,19 +14,17 @@ import { CnLabMailService } from './mail/cn-lab-mail.service';
 import { CnSpaceEvent, cnSpaceEventName } from '../cn-spaces/cn-space.event';
 import { CnLabAggregateService } from './cn-lab-aggregate.service';
 
-
 @Injectable()
 export class CnLabListener {
-
   private readonly logger = new Logger(CnLabListener.name);
 
-
-  constructor(private labManagerService: CnLabManagerService,
-              private labsService: CnLabsService,
-              private labConfigService: CnLabConfigsService,
-              private labMailService: CnLabMailService,
-              private labAggregateService: CnLabAggregateService) {
-  }
+  constructor(
+    private labManagerService: CnLabManagerService,
+    private labsService: CnLabsService,
+    private labConfigService: CnLabConfigsService,
+    private labMailService: CnLabMailService,
+    private labAggregateService: CnLabAggregateService
+  ) {}
 
   @OnEvent(cnLabEventName)
   async handleLabEvent(event: CnLabEvent): Promise<void> {
@@ -34,9 +37,15 @@ export class CnLabListener {
 
   private async handleLabStatusChanged(event: CnLabStatusChangedEvent): Promise<void> {
     // if the lab server switched from a stopped state to a running state
-    if (event.newStatus === CnLabStatus.SERVER_CONFIGURED &&
-      [CnLabStatus.SERVER_STARTING, CnLabStatus.NO_SERVER,
-        CnLabStatus.SERVER_STOPPED, CnLabStatus.SERVER_RUNNING].includes(event.oldStatus)) {
+    if (
+      event.newStatus === CnLabStatus.SERVER_CONFIGURED &&
+      [
+        CnLabStatus.SERVER_STARTING,
+        CnLabStatus.NO_SERVER,
+        CnLabStatus.SERVER_STOPPED,
+        CnLabStatus.SERVER_RUNNING,
+      ].includes(event.oldStatus)
+    ) {
       await this.configureAndStartLabBricksAfterInit(event.labId).catch(
         // if an error occurred we just refresh the lab status
         (error: Error) => this.onError(event.labId, `Error during lab manager start : ${error.message}`)
@@ -45,8 +54,7 @@ export class CnLabListener {
 
     // email the user if this is the first time the lab is running
     if (event.newStatus === CnLabStatus.LAB_RUNNING) {
-      const runningStatuses =
-        await this.labsService.findByStatus(event.labId, CnLabStatus.LAB_RUNNING);
+      const runningStatuses = await this.labsService.findByStatus(event.labId, CnLabStatus.LAB_RUNNING);
 
       if (runningStatuses.length === 1) {
         const lab = await this.labsService.findByIdAndCheck(event.labId);
@@ -68,7 +76,6 @@ export class CnLabListener {
     }
   }
 
-
   /**
    * Method called after the lab server has started to start the lab if the lab is configured
    * If the lab manager is not configured but the lab has a configuration, it updates the lab manager config
@@ -77,7 +84,7 @@ export class CnLabListener {
    * @return {Promise<boolean>} true if the lab manager has been started
    */
   private async configureAndStartLabBricksAfterInit(id: string): Promise<boolean> {
-    const lab = await this.labsService.findByIdAndCheck(id, {space: true});
+    const lab = await this.labsService.findByIdAndCheck(id, { space: true });
 
     // wait for the lab manager to be ready
     await this.labManagerService.waitForHealthCheck(lab.getLabManagerApiInfo().apiUrl);
@@ -89,8 +96,11 @@ export class CnLabListener {
 
     // if the lab is already configured, we don't update its config
     const managerConfig = await this.labManagerService.getConfig(lab);
-    if (managerConfig == null || managerConfig.brickVersions == null || managerConfig.brickVersions.length === 0) {
-
+    if (
+      managerConfig == null ||
+      managerConfig.brickVersions == null ||
+      managerConfig.brickVersions.length === 0
+    ) {
       // if the lab doesn't have a lab config, do nothing
       if (lab.labConfigId == null) return false;
 
@@ -110,16 +120,17 @@ export class CnLabListener {
 
   private async onError(labId: string, message: string): Promise<void> {
     this.logger.error(message);
-    await this.labsService.updateServerTask(labId, message, CnLabServerTaskStatus.ERROR)
-      .catch(err => this.logger.error(err));
+    await this.labsService
+      .updateServerTask(labId, message, CnLabServerTaskStatus.ERROR)
+      .catch((err) => this.logger.error(err));
   }
 
   @OnEvent(cnSpaceEventName)
   async handleSpaceEvent(event: CnSpaceEvent): Promise<Error | null> {
-    if(event.type === 'REMOVE_USER_FROM_SPACE'){
-      return await this.labAggregateService.removeUserFromAllLabs(event.userId, event.spaceId).catch(
-        (err) => err
-      );
+    if (event.type === 'REMOVE_USER_FROM_SPACE') {
+      return await this.labAggregateService
+        .removeUserFromAllLabs(event.userId, event.spaceId)
+        .catch((err) => err);
     }
 
     return null;

@@ -1,13 +1,5 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
-import {
-  BlExternalApiService,
-  BlUnauthorizedException,
-} from '@monorepo/back-core-lib';
+import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
+import { BlExternalApiService, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { HnCoreConfigService } from '../modules/core-config/hn-core-config.service';
 import { lastValueFrom } from 'rxjs';
 import { HnUserService } from '../../users/hn-user.service';
@@ -29,10 +21,7 @@ export class HnLabAuthGuard implements CanActivate {
 
   private async labAuthentication(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    if (
-      request.header('user') == null ||
-      request.header('authorization') == null
-    ) {
+    if (request.header('user') == null || request.header('authorization') == null) {
       throw new BlUnauthorizedException();
     }
     const checkApiKeyUser: boolean = await lastValueFrom(

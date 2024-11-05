@@ -1,11 +1,12 @@
 import {
-  BlBadRequestException, BlNewRichText,
+  BlBadRequestException,
+  BlNewRichText,
   BlRichTextContent,
   BlRichTextContentWithModifications,
-  BlRichTextModifications
+  BlRichTextModifications,
 } from '@monorepo/back-core-lib';
 
-export class CnNoteRichText{
+export class CnNoteRichText {
   private richTextWithModifications: BlRichTextContentWithModifications;
 
   constructor(jsonData: any) {
@@ -24,12 +25,14 @@ export class CnNoteRichText{
     return this.richTextWithModifications.modifications;
   }
 
-  public getNotePreviousVersion(modificationId: string): BlRichTextContent{
-    if(!this.richTextWithModifications.modifications){
+  public getNotePreviousVersion(modificationId: string): BlRichTextContent {
+    if (!this.richTextWithModifications.modifications) {
       throw new BlBadRequestException('The note has no modifications');
     }
     const richText = new BlNewRichText(this.richTextWithModifications.content);
-    const modifications = BlRichTextModifications.fromJsonObject(this.richTextWithModifications.modifications);
+    const modifications = BlRichTextModifications.fromJsonObject(
+      this.richTextWithModifications.modifications
+    );
     const modificationsBlocks = modifications.getModificationsFromModificationId(modificationId);
     return richText.undoModifications(modificationsBlocks);
   }

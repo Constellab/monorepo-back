@@ -1,13 +1,13 @@
-import {DynamicModule, Global, Module} from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import {
   BL_CLIENT_PROXY_NAME,
   blGetRabbitMQUrl,
   BlTransportModuleAsyncOptions,
-  BlTransportModuleConfig
+  BlTransportModuleConfig,
 } from './bl-transport-config.class';
-import {ClientsModule, Transport} from '@nestjs/microservices';
-import {ClientProviderOptions} from '@nestjs/microservices/module/interfaces/clients-module.interface';
-import {BlTransportService} from './bl-transport.service';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ClientProviderOptions } from '@nestjs/microservices/module/interfaces/clients-module.interface';
+import { BlTransportService } from './bl-transport.service';
 
 function configClientsModule(config: BlTransportModuleConfig): ClientProviderOptions {
   return {
@@ -18,8 +18,8 @@ function configClientsModule(config: BlTransportModuleConfig): ClientProviderOpt
       queue: config.queue,
       queueOptions: {
         durable: true,
-        deliveryMode: 2 // enable persistent messaging
-      }
+        deliveryMode: 2, // enable persistent messaging
+      },
     },
   };
 }
@@ -30,7 +30,6 @@ function configClientsModule(config: BlTransportModuleConfig): ClientProviderOpt
 @Global()
 @Module({})
 export class BlTransportModule {
-
   public static forRootAsync(asyncOptions: BlTransportModuleAsyncOptions): DynamicModule {
     return {
       module: BlTransportModule,
@@ -42,11 +41,11 @@ export class BlTransportModule {
             name: BL_CLIENT_PROXY_NAME,
             inject: asyncOptions.inject,
             imports: asyncOptions.imports,
-          }]
-        ),
+          },
+        ]),
       ],
       providers: [BlTransportService],
-      exports: [BlTransportService]
+      exports: [BlTransportService],
     };
   }
 }

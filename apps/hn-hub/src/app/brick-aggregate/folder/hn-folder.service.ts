@@ -1,46 +1,56 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, IsNull, Repository, TreeRepository} from 'typeorm';
-import {HnFolder} from './hn-folder.entity';
-import {HnDocumentation, HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
-import {HnDocumentationService} from '../documentation/hn-documentation.service';
-import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
-import {HnNode, HnNodeDTO} from './hn-folder.dto';
-import {BlBadRequestException} from '@monorepo/back-core-lib';
-import {ClStringHelper} from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, IsNull, Repository, TreeRepository } from 'typeorm';
+import { HnFolder } from './hn-folder.entity';
+import { HnDocumentation, HnDocumentationSearchDTO } from '../documentation/hn-documentation.entity';
+import { HnDocumentationService } from '../documentation/hn-documentation.service';
+import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-version.entity';
+import { HnNode, HnNodeDTO } from './hn-folder.dto';
+import { BlBadRequestException } from '@monorepo/back-core-lib';
+import { ClStringHelper } from '@monorepo/core-lib';
 
 @Injectable()
 export class HnFolderService {
-  constructor(@InjectRepository(HnFolder)
-              private foldersRepository: Repository<HnFolder>,
-              @InjectRepository(HnFolder)
-              private foldersTreeRepository: TreeRepository<HnFolder>) {
-  }
+  constructor(
+    @InjectRepository(HnFolder)
+    private foldersRepository: Repository<HnFolder>,
+    @InjectRepository(HnFolder)
+    private foldersTreeRepository: TreeRepository<HnFolder>
+  ) {}
 
-
-  async create(createFolderRes: HnNodeDTO, entityManager?: EntityManager, brickMajorVersion?: HnBrickMajorVersion): Promise<HnFolder> {
-
+  async create(
+    createFolderRes: HnNodeDTO,
+    entityManager?: EntityManager,
+    brickMajorVersion?: HnBrickMajorVersion
+  ): Promise<HnFolder> {
     createFolderRes.path = ClStringHelper.generateUrlPathFromString(createFolderRes.title);
 
     let folder: HnFolder;
     if (createFolderRes.folderId) {
       folder = await this.foldersRepository.findOne({
-        where: {id: createFolderRes.folderId},
-        relations: {documentations: true, folders: true}
+        where: { id: createFolderRes.folderId },
+        relations: { documentations: true, folders: true },
       });
     }
     const createFolder: HnFolder = new HnFolder();
     createFolder.title = createFolderRes.title;
     createFolder.folder = folder ? folder : null;
     createFolder.path = createFolderRes.path;
-    createFolder.completePath = folder ? (folder.completePath ? folder.completePath : '') + createFolderRes.path + '/' : null;
+    createFolder.completePath = folder
+      ? (folder.completePath ? folder.completePath : '') + createFolderRes.path + '/'
+      : null;
     createFolder.brickMajorVersion = brickMajorVersion ? brickMajorVersion : folder.brickMajorVersion;
     createFolder.order = createFolderRes.order != null ? createFolderRes.order : folder.nextOrder();
 
-    return entityManager ? await entityManager.save(createFolder) : await this.foldersRepository.save(createFolder);
+    return entityManager
+      ? await entityManager.save(createFolder)
+      : await this.foldersRepository.save(createFolder);
   }
 
-  async createMainFolders(brickMajorVersion: HnBrickMajorVersion, entityManager: EntityManager): Promise<HnFolder> {
+  async createMainFolders(
+    brickMajorVersion: HnBrickMajorVersion,
+    entityManager: EntityManager
+  ): Promise<HnFolder> {
     const createMainFolder: HnNodeDTO = new HnNodeDTO();
     createMainFolder.isFolder = true;
     createMainFolder.path = null;
@@ -56,14 +66,15 @@ export class HnFolderService {
 
   async findFolderByBrickMajorVersion(brickMajorVersion: HnBrickMajorVersion): Promise<HnFolder> {
     return this.foldersRepository.findOne({
-      where: {brickMajorVersion: {id: brickMajorVersion.id}, completePath: IsNull()},
-      relations: {documentations: true}
+      where: { brickMajorVersion: { id: brickMajorVersion.id }, completePath: IsNull() },
+      relations: { documentations: true },
     });
   }
 
   async findBrickDocsTree(mainFolder: HnFolder): Promise<HnNode> {
-    const brickDocs: HnFolder =
-      await this.foldersTreeRepository.findDescendantsTree(mainFolder, {relations: ['documentations', 'folders', 'folder']});
+    const brickDocs: HnFolder = await this.foldersTreeRepository.findDescendantsTree(mainFolder, {
+      relations: ['documentations', 'folders', 'folder'],
+    });
     return this.createTree(brickDocs);
   }
 
@@ -88,20 +99,28 @@ export class HnFolderService {
   }
 
   private createTree(folder: HnFolder): HnNode {
-
     const currentChild: HnNode[] = [];
 
-    const currentParent: HnNode =
-      new HnNode(folder.id, folder.title, folder.path, folder.completePath, folder.order, folder.folder ? folder.folder.id : null, []);
+    const currentParent: HnNode = new HnNode(
+      folder.id,
+      folder.title,
+      folder.path,
+      folder.completePath,
+      folder.order,
+      folder.folder ? folder.folder.id : null,
+      []
+    );
 
     if (folder.documentations != null) {
-      folder.documentations.forEach(doc => {
-        currentChild.push(new HnNode(doc.id, doc.title, doc.path, doc.completePath, doc.order, folder ? folder.id : null));
+      folder.documentations.forEach((doc) => {
+        currentChild.push(
+          new HnNode(doc.id, doc.title, doc.path, doc.completePath, doc.order, folder ? folder.id : null)
+        );
       });
     }
 
     if (folder.folders != null) {
-      folder.folders.forEach(f => {
+      folder.folders.forEach((f) => {
         currentChild.push(this.createTree(f));
       });
     }
@@ -117,7 +136,7 @@ export class HnFolderService {
     let arrayChildFolder: HnFolder[] = [];
 
     folder.folders.sort((a, b) => a.order - b.order);
-    folder.folders.forEach(f => {
+    folder.folders.forEach((f) => {
       arrayChildFolder = arrayChildFolder.concat(this.TreeToArray(f));
     });
     array = array.concat(arrayChildFolder);
@@ -125,7 +144,7 @@ export class HnFolderService {
   }
 
   findById(id: string): Promise<HnFolder> {
-    return this.foldersRepository.findOne({where: {id: id}, relations: ['documentations', 'folders']});
+    return this.foldersRepository.findOne({ where: { id: id }, relations: ['documentations', 'folders'] });
   }
 
   async findFoldersByParentId(id: string): Promise<HnFolder[]> {
@@ -145,29 +164,36 @@ export class HnFolderService {
   }
 
   async findWithRelationById(id: string): Promise<HnFolder> {
-    return this.foldersRepository.findOne({where: {id: id}, relations: {folder: true, folders: true, documentations: true}});
+    return this.foldersRepository.findOne({
+      where: { id: id },
+      relations: { folder: true, folders: true, documentations: true },
+    });
   }
 
   async remove(id: string): Promise<void> {
     const folderToDelete: HnFolder = await this.foldersRepository.findOne({
-      where: {id: id}, relations: {
+      where: { id: id },
+      relations: {
         documentations: true,
-        folders: true
-      }
+        folders: true,
+      },
     });
     if (folderToDelete.documentations.length <= 0 && folderToDelete.folders.length <= 0) {
       await this.foldersRepository.delete(id);
     } else {
-      throw new BlBadRequestException('Folders with children can\'t be deleted.');
+      throw new BlBadRequestException("Folders with children can't be deleted.");
     }
   }
 
-  async getDocsByBrickNameMajor(brickMajorVersion: HnBrickMajorVersion, major: string, brickName: string):
-    Promise<HnDocumentationSearchDTO[]> {
-    const brickDocs: HnFolder =
-      await this.foldersTreeRepository.findDescendantsTree(
-        await this.findFolderByBrickMajorVersion(brickMajorVersion),
-        {relations: ['documentations', 'folders', 'folder']});
+  async getDocsByBrickNameMajor(
+    brickMajorVersion: HnBrickMajorVersion,
+    major: string,
+    brickName: string
+  ): Promise<HnDocumentationSearchDTO[]> {
+    const brickDocs: HnFolder = await this.foldersTreeRepository.findDescendantsTree(
+      await this.findFolderByBrickMajorVersion(brickMajorVersion),
+      { relations: ['documentations', 'folders', 'folder'] }
+    );
 
     return this.getDocsByFolder(brickDocs, major, brickName);
   }
@@ -182,13 +208,13 @@ export class HnFolderService {
         completePath: doc.completePath,
         major: major,
         brickName: brickName,
-        isTechnical: false
+        isTechnical: false,
       });
     }
 
     if (folder.folder) {
       for (const fol of folder.folders) {
-        this.getDocsByFolder(fol, major, brickName).forEach(d => {
+        this.getDocsByFolder(fol, major, brickName).forEach((d) => {
           documentations.push(d);
         });
       }

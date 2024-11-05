@@ -8,7 +8,6 @@ import { BlFileResponse } from '../modules/bl-object-storage/bl-object-storage.c
  * Class to simplify HTTP response management
  */
 export class BlResponseHelper {
-
   /**
    * Set an incoming message (like and image) in an HTTP response and cache it for a week
    */
@@ -21,7 +20,6 @@ export class BlResponseHelper {
     this.setCacheHeaderFor1Week(response);
     this.setFileResponse(response, file);
   }
-
 
   public static setFileResponse(response: Response, file: BlFileResponse): void {
     response.setHeader('Content-Type', file.contentType);

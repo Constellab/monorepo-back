@@ -11,26 +11,26 @@ import {
   CnLabStorageStatsPeriodBackupDTO,
   CnLabStorageStatsPeriodNumber,
   CnLabStorageStatsPeriods,
-  CnLabStorageStatsPeriodVolumeDTO
+  CnLabStorageStatsPeriodVolumeDTO,
 } from './cn-lab-storage-stats.dto';
 
-
 export class CnLabStatsStorage {
-
   private readonly stats: CnLabStatsStorageResponseDTO;
 
   private readonly labBackups: CnLabBackupHistory[];
 
-  constructor(private storagePrices: CnStoragePrice[],
-              private labVolumes: CnLabVolume[],
-              labBackups: CnLabBackupHistory[],
-              request: CnLabStatsRequestDTO) {
-
+  constructor(
+    private storagePrices: CnStoragePrice[],
+    private labVolumes: CnLabVolume[],
+    labBackups: CnLabBackupHistory[],
+    request: CnLabStatsRequestDTO
+  ) {
     // we have to filter the backups to keep only the success and deleted backups
-    this.labBackups = labBackups.filter(backup => backup.status === CnLabBackupStatus.SUCCESS || backup.status === CnLabBackupStatus.DELETED);
+    this.labBackups = labBackups.filter(
+      (backup) => backup.status === CnLabBackupStatus.SUCCESS || backup.status === CnLabBackupStatus.DELETED
+    );
     this.stats = new CnLabStatsStorageResponseDTO(request.getStartDate(), request.getEndDate());
   }
-
 
   public getStorageStats(): CnLabStatsStorageResponseDTO {
     // handle the volumes
@@ -44,15 +44,23 @@ export class CnLabStatsStorage {
   }
 
   private calculateVolumeStats(): void {
-
     const volumePeriods = this.getLabVolumeAsPeriods();
-    const pricePeriods = this.getStoragePriceAsPeriods((
-      storagePrice: CnStoragePrice) => storagePrice.volumePricePerHour
+    const pricePeriods = this.getStoragePriceAsPeriods(
+      (storagePrice: CnStoragePrice) => storagePrice.volumePricePerHour
     );
 
-    const volumePricePeriods = this.mergePeriodsWithPrice(volumePeriods, pricePeriods,
+    const volumePricePeriods = this.mergePeriodsWithPrice(
+      volumePeriods,
+      pricePeriods,
       (pricePeriod, otherPeriod) =>
-        new CnLabStorageStatsPeriodVolumeDTO(pricePeriod.fromDate, pricePeriod.toDate, otherPeriod.volumeSize, otherPeriod.volumeType, pricePeriod.data));
+        new CnLabStorageStatsPeriodVolumeDTO(
+          pricePeriod.fromDate,
+          pricePeriod.toDate,
+          otherPeriod.volumeSize,
+          otherPeriod.volumeType,
+          pricePeriod.data
+        )
+    );
 
     for (const volumePeriod of volumePricePeriods) {
       this.stats.addVolume(volumePeriod);
@@ -63,24 +71,37 @@ export class CnLabStatsStorage {
     const periodPrices = new CnLabStorageStatsPeriods<CnLabStorageStatsPeriodVolumeDTO>();
 
     for (const volume of this.labVolumes) {
-      periodPrices.addPeriod(new CnLabStorageStatsPeriodVolumeDTO(volume.startDate, volume.getEndDateWithDefault(), volume.size,
-        volume.type, 0));
+      periodPrices.addPeriod(
+        new CnLabStorageStatsPeriodVolumeDTO(
+          volume.startDate,
+          volume.getEndDateWithDefault(),
+          volume.size,
+          volume.type,
+          0
+        )
+      );
     }
 
     return periodPrices.periods;
   }
 
-
   private calculateBackupStorageStats(): void {
-
     const backupPeriods = this.getBackupsAsPeriods();
     const pricePeriods = this.getStoragePriceAsPeriods(
       (storagePrice: CnStoragePrice) => storagePrice.backupPricePerHour
     );
 
-    const backupPricePeriods = this.mergePeriodsWithPrice(backupPeriods, pricePeriods,
+    const backupPricePeriods = this.mergePeriodsWithPrice(
+      backupPeriods,
+      pricePeriods,
       (pricePeriod, otherPeriod) =>
-        new CnLabStorageStatsPeriodBackupDTO(pricePeriod.fromDate, pricePeriod.toDate, otherPeriod.data, pricePeriod.data));
+        new CnLabStorageStatsPeriodBackupDTO(
+          pricePeriod.fromDate,
+          pricePeriod.toDate,
+          otherPeriod.data,
+          pricePeriod.data
+        )
+    );
 
     for (const backupPeriod of backupPricePeriods) {
       this.stats.addBackup(backupPeriod);
@@ -88,15 +109,16 @@ export class CnLabStatsStorage {
   }
 
   private calculateBackupTransferStats(): void {
-
     // calculate the total transferred data
     for (const backup of this.labBackups) {
       if (!this.stats.dateIsBetween(backup.startedAt)) continue;
 
       //calculate the storage transfer price for the backup
-      const storagePrice = this.storagePrices.find(price => price.dateIsBetween(backup.endedAt));
+      const storagePrice = this.storagePrices.find((price) => price.dateIsBetween(backup.endedAt));
       if (!storagePrice) {
-        throw new BlBadRequestException('No storage price found for the backup dates, please contact the support');
+        throw new BlBadRequestException(
+          'No storage price found for the backup dates, please contact the support'
+        );
       }
       this.stats.addTransferredData(backup.getTransferSize(), storagePrice.backupTransfertPrice);
     }
@@ -112,10 +134,11 @@ export class CnLabStatsStorage {
    * @param periodFactory factory to create the new period with the price
    * @private
    */
-  private mergePeriodsWithPrice<T extends CnLabStorageStatsPeriod, H extends CnLabStorageStatsPeriod>(periods: H[],
-                                                                                                      storagePrices: CnLabStorageStatsPeriodNumber[],
-                                                                                                      periodFactory: (pricePeriod: CnLabStorageStatsPeriodNumber, otherPeriod: H) => T): T[] {
-
+  private mergePeriodsWithPrice<T extends CnLabStorageStatsPeriod, H extends CnLabStorageStatsPeriod>(
+    periods: H[],
+    storagePrices: CnLabStorageStatsPeriodNumber[],
+    periodFactory: (pricePeriod: CnLabStorageStatsPeriodNumber, otherPeriod: H) => T
+  ): T[] {
     const periodPrices: CnLabStorageStatsPeriods<T> = new CnLabStorageStatsPeriods();
 
     for (const period of periods) {
@@ -148,13 +171,21 @@ export class CnLabStatsStorage {
         continue;
       }
 
-      periodPrices.addPeriod(new CnLabStorageStatsPeriodNumber(previousBackup.startedAt, backup.startedAt, previousBackup.getTotalSize()));
+      periodPrices.addPeriod(
+        new CnLabStorageStatsPeriodNumber(
+          previousBackup.startedAt,
+          backup.startedAt,
+          previousBackup.getTotalSize()
+        )
+      );
       previousBackup = backup;
     }
 
     // add the last period
     if (previousBackup) {
-      periodPrices.addPeriod(new CnLabStorageStatsPeriodNumber(previousBackup.startedAt, null, previousBackup.getTotalSize()));
+      periodPrices.addPeriod(
+        new CnLabStorageStatsPeriodNumber(previousBackup.startedAt, null, previousBackup.getTotalSize())
+      );
     }
 
     return periodPrices.periods;
@@ -169,8 +200,13 @@ export class CnLabStatsStorage {
    * @param endDate
    * @private
    */
-  private getStoragePricePeriodsAt(storagePrices: CnLabStorageStatsPeriodNumber[], startDate: DateTime, endDate: DateTime): CnLabStorageStatsPeriodNumber[] {
-    const periodPrices: CnLabStorageStatsPeriods<CnLabStorageStatsPeriodNumber> = new CnLabStorageStatsPeriods();
+  private getStoragePricePeriodsAt(
+    storagePrices: CnLabStorageStatsPeriodNumber[],
+    startDate: DateTime,
+    endDate: DateTime
+  ): CnLabStorageStatsPeriodNumber[] {
+    const periodPrices: CnLabStorageStatsPeriods<CnLabStorageStatsPeriodNumber> =
+      new CnLabStorageStatsPeriods();
     for (const storagePrice of storagePrices) {
       // we have to skip the storage price if it ends before the start of the period
       if (storagePrice.getToDateWithDefault() < startDate) continue;
@@ -182,26 +218,39 @@ export class CnLabStatsStorage {
         break;
         // if a storage price starts before the period and finis                      h before the end
       } else if (storagePrice.fromDate <= startDate && storagePrice.getToDateWithDefault() < endDate) {
-        periodPrices.addPeriod(new CnLabStorageStatsPeriodNumber(startDate, storagePrice.toDate, storagePrice.data));
+        periodPrices.addPeriod(
+          new CnLabStorageStatsPeriodNumber(startDate, storagePrice.toDate, storagePrice.data)
+        );
         // if a storage price starts after the start and after the period
       } else if (storagePrice.fromDate >= startDate && storagePrice.getToDateWithDefault() > endDate) {
-        periodPrices.addPeriod(new CnLabStorageStatsPeriodNumber(storagePrice.fromDate, endDate, storagePrice.data));
+        periodPrices.addPeriod(
+          new CnLabStorageStatsPeriodNumber(storagePrice.fromDate, endDate, storagePrice.data)
+        );
         break;
         // if a storage price starts after the start and finish before the end (inside the period)
       } else if (storagePrice.fromDate > startDate && storagePrice.getToDateWithDefault() < endDate) {
-        periodPrices.addPeriod(new CnLabStorageStatsPeriodNumber(storagePrice.fromDate, storagePrice.toDate, storagePrice.data));
+        periodPrices.addPeriod(
+          new CnLabStorageStatsPeriodNumber(storagePrice.fromDate, storagePrice.toDate, storagePrice.data)
+        );
       }
     }
 
     return periodPrices.periods;
   }
 
-  private getStoragePriceAsPeriods(extractData: (storagePrice: CnStoragePrice) => number): CnLabStorageStatsPeriodNumber[] {
+  private getStoragePriceAsPeriods(
+    extractData: (storagePrice: CnStoragePrice) => number
+  ): CnLabStorageStatsPeriodNumber[] {
     const periodPrices = new CnLabStorageStatsPeriods<CnLabStorageStatsPeriodNumber>();
 
     for (const storagePrice of this.storagePrices) {
-      periodPrices.addPeriod(new CnLabStorageStatsPeriodNumber(storagePrice.startDate, storagePrice.endDate,
-        extractData(storagePrice)));
+      periodPrices.addPeriod(
+        new CnLabStorageStatsPeriodNumber(
+          storagePrice.startDate,
+          storagePrice.endDate,
+          extractData(storagePrice)
+        )
+      );
     }
 
     return periodPrices.periods;

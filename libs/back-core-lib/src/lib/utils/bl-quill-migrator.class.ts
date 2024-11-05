@@ -1,20 +1,17 @@
-import {Logger} from '@nestjs/common';
-import {BlRichTextI} from '../models/bl-rich-text.class';
-import {BlMentionUser, BlRichTextContent} from '../models/bl-new-rich-text.class';
-
+import { Logger } from '@nestjs/common';
+import { BlRichTextI } from '../models/bl-rich-text.class';
+import { BlMentionUser, BlRichTextContent } from '../models/bl-new-rich-text.class';
 
 export class BlQuillMigrator {
   private readonly logger = new Logger(BlQuillMigrator.name);
 
   private editorJsContent: any;
 
-
   constructor(private richText: BlRichTextI) {
-
     this.editorJsContent = {
       time: new Date().getTime(),
       blocks: [],
-      version: '2.28.2'
+      version: '2.28.2',
     };
   }
 
@@ -26,15 +23,11 @@ export class BlQuillMigrator {
   }
 
   public migrate(): any {
-
-
     for (let i = 0; i < this.richText.ops.length; i++) {
-
       try {
         const result = this.getBlockText(i);
         let currentText = result.text;
         i = result.index;
-
 
         const paragraphs = currentText.split('\n');
         if (paragraphs.length > 1) {
@@ -64,39 +57,38 @@ export class BlQuillMigrator {
           if (op.attributes?.header) {
             this.addBlock('header', {
               text: currentText,
-              level: op.attributes.header.level
+              level: op.attributes.header.level,
             });
           } else if (op.attributes?.blockquote) {
             this.addBlock('quote', {
               text: currentText,
               caption: '',
-              alignment: 'left'
+              alignment: 'left',
             });
           } else if (op.attributes?.hint) {
             this.addBlock('hint', {
               hintType: op.attributes.hint,
-              content: currentText
+              content: currentText,
             });
             // specific case for old hint warning
           } else if (op.attributes?.background === '#eec0d6') {
             this.addBlock('hint', {
               hintType: 'warnings',
-              content: currentText
+              content: currentText,
             });
           } else if (op.attributes && op.attributes['code-block']) {
             i = this.handleCodeBlock(i, currentText);
           } else if (op.attributes?.list) {
             i = this.handleList(i, currentText);
-          } else if(op.attributes?.mention){
-            const oldMention: {id: string, value: string } = op.attributes.mention;
+          } else if (op.attributes?.mention) {
+            const oldMention: { id: string; value: string } = op.attributes.mention;
             const user: BlMentionUser = {
               id: oldMention.id,
               firstname: oldMention.value.split(' ')[0],
-              lastname: oldMention.value.split(' ')[1]
-            }
+              lastname: oldMention.value.split(' ')[1],
+            };
             currentText += `<te-mention-inline data-jsondata="${JSON.stringify(user)}"></te-mention-inline>`;
-          }
-          else {
+          } else {
             this.addBlock('paragraph', {
               text: currentText,
             });
@@ -121,7 +113,7 @@ export class BlQuillMigrator {
     return this.editorJsContent;
   }
 
-  private getBlockText(index: number): { text: string, index: number } {
+  private getBlockText(index: number): { text: string; index: number } {
     let text = '';
     while (index < this.richText.ops.length) {
       const op = this.richText.ops[index];
@@ -157,12 +149,11 @@ export class BlQuillMigrator {
       }
       index++;
     }
-    return {text: text, index: index};
+    return { text: text, index: index };
   }
 
   private handleCodeBlock(index: number, currentText: string): number {
     while (index < this.richText.ops.length) {
-
       const op = this.richText.ops[index];
       if (op.attributes && op.attributes['code-block']) {
         currentText += '\n';
@@ -180,12 +171,11 @@ export class BlQuillMigrator {
         currentText += op.insert;
       }
       index++;
-
     }
 
     this.addBlock('code', {
       code: currentText,
-      language: 'python'
+      language: 'python',
     });
     return index - 1;
   }
@@ -195,16 +185,17 @@ export class BlQuillMigrator {
 
     const data: any = {
       style: listType === 'bullet' ? 'unordered' : 'ordered',
-      items: [{
-        content: currentText,
-        items: []
-      }]
+      items: [
+        {
+          content: currentText,
+          items: [],
+        },
+      ],
     };
 
     index++;
 
     while (index < this.richText.ops.length) {
-
       const result = this.getBlockText(index);
       const currentText = result.text;
 
@@ -225,7 +216,7 @@ export class BlQuillMigrator {
       }
       items.push({
         content: currentText,
-        items: []
+        items: [],
       });
 
       index++;
@@ -239,7 +230,7 @@ export class BlQuillMigrator {
     this.editorJsContent.blocks.push({
       id: this.editorJsContent.blocks.length.toString(),
       type: type,
-      data: data
+      data: data,
     });
   }
 }

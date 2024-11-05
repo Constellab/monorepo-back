@@ -13,9 +13,7 @@ import { CnLabBackupHistory } from '../cn-labs/backup/cn-lab-backup-history.enti
 @CnLabManagerGuard()
 @Controller('external-labs-manager')
 export class CnExternalLabsManagerController {
-
-  constructor(private labAggregator: CnLabAggregateService) {
-  }
+  constructor(private labAggregator: CnLabAggregateService) {}
 
   @CnLabRobotAuthentication()
   @Get('lab/backup-info')
@@ -33,8 +31,9 @@ export class CnExternalLabsManagerController {
 
   @CnLabRobotAuthentication()
   @Post('lab/backup-history-v2')
-  async saveBackupHistoryV2(@Body(new BlParsePipe(CnLabBackupsHistory)) backupsHistory: CnLabBackupsHistory)
-    : Promise<CnLabBackupHistory[]> {
+  async saveBackupHistoryV2(
+    @Body(new BlParsePipe(CnLabBackupsHistory)) backupsHistory: CnLabBackupsHistory
+  ): Promise<CnLabBackupHistory[]> {
     return this.labAggregator.saveCurrentLabBackupHistory(backupsHistory);
   }
 }

@@ -34,7 +34,6 @@ export class CnLabFreeCreateDto {
   space: CnSpace;
 }
 
-
 export class CnLabFreeUpdateDto {
   usageLimitInHours: number;
 

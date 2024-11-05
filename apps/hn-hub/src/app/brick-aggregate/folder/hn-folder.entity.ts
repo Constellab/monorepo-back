@@ -1,49 +1,48 @@
-import {Column, Entity, ManyToOne, OneToMany, Tree, TreeChildren, TreeParent} from 'typeorm';
-import {HnDocumentation} from '../documentation/hn-documentation.entity';
-import {HnBaseEntity} from '../../core/model/entities/hn-base.entity';
-import {BlNotUpdatable} from '@monorepo/back-core-lib';
-import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
+import { Column, Entity, ManyToOne, OneToMany, Tree, TreeChildren, TreeParent } from 'typeorm';
+import { HnDocumentation } from '../documentation/hn-documentation.entity';
+import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
+import { BlNotUpdatable } from '@monorepo/back-core-lib';
+import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-version.entity';
 
 @Entity('folder')
 @Tree('materialized-path')
 export class HnFolder extends HnBaseEntity {
-
-  @Column({nullable: true})
+  @Column({ nullable: true })
   title: string;
 
   @BlNotUpdatable()
-  @ManyToOne(() => HnBrickMajorVersion, {eager: true, onDelete: "CASCADE"})
+  @ManyToOne(() => HnBrickMajorVersion, { eager: true, onDelete: 'CASCADE' })
   brickMajorVersion: HnBrickMajorVersion;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   path: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   completePath: string;
 
   @Column()
   order: number;
 
-  @TreeParent({onDelete: "CASCADE"})
+  @TreeParent({ onDelete: 'CASCADE' })
   folder: HnFolder;
 
   @TreeChildren()
   folders: HnFolder[];
 
-  @OneToMany(() => HnDocumentation, doc => doc.folder)
+  @OneToMany(() => HnDocumentation, (doc) => doc.folder)
   documentations: HnDocumentation[];
 
   nextOrder(): number {
     let maxOrder: number = 0;
     if (this.folders != null) {
-      this.folders.map(f => {
+      this.folders.map((f) => {
         if (f.order >= maxOrder) {
           maxOrder = f.order + 1;
         }
       });
     }
     if (this.documentations != null) {
-      this.documentations.map(d => {
+      this.documentations.map((d) => {
         if (d.order >= maxOrder) {
           maxOrder = d.order + 1;
         }

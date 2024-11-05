@@ -1,26 +1,28 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
-import {HnTechnicalFolder} from '../technical-folder/hn-technical-folder.entity';
-import {HnImportTechDocOtherClassesDTO} from '../brick-aggregate/brick/hn-brick.dto';
-import {HnTechnicalDocOtherClass} from './hn-technical-doc-other-class.entity';
-import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc-typing.entity';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { HnTechnicalFolder } from '../technical-folder/hn-technical-folder.entity';
+import { HnImportTechDocOtherClassesDTO } from '../brick-aggregate/brick/hn-brick.dto';
+import { HnTechnicalDocOtherClass } from './hn-technical-doc-other-class.entity';
+import { HnGeneratedDocEntity } from '../core/model/entities/hn-generated-doc-typing.entity';
 
 @Injectable()
 export class HnTechnicalDocOtherClassService {
-  constructor(@InjectRepository(HnTechnicalDocOtherClass)
-              private readonly techDocOtherClassesRepository: Repository<HnTechnicalDocOtherClass>,) {
-  }
+  constructor(
+    @InjectRepository(HnTechnicalDocOtherClass)
+    private readonly techDocOtherClassesRepository: Repository<HnTechnicalDocOtherClass>
+  ) {}
 
-  async createTechnicalDocOtherClasses(technicalFolder: HnTechnicalFolder,
-                                       otherClasses: HnImportTechDocOtherClassesDTO[]): Promise<boolean> {
-
+  async createTechnicalDocOtherClasses(
+    technicalFolder: HnTechnicalFolder,
+    otherClasses: HnImportTechDocOtherClassesDTO[]
+  ): Promise<boolean> {
     const oldTechDocOtherClasses: HnTechnicalDocOtherClass[] = await this.techDocOtherClassesRepository.find({
       where: {
         technicalFolder: {
-          id: technicalFolder.id
-        }
-      }
+          id: technicalFolder.id,
+        },
+      },
     });
 
     for (const r of oldTechDocOtherClasses) {
@@ -44,27 +46,25 @@ export class HnTechnicalDocOtherClassService {
     return true;
   }
 
-
   async findTechnicalDocOtherClasses(technicalFolderId: string): Promise<HnTechnicalDocOtherClass[]> {
     return this.techDocOtherClassesRepository.find({
       where: {
         technicalFolder: {
-          id: technicalFolderId
-        }
+          id: technicalFolderId,
+        },
       },
       order: {
-        uniqueName: 'ASC'
-      }
+        uniqueName: 'ASC',
+      },
     });
   }
 
   async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string): Promise<HnGeneratedDocEntity> {
-
     const resource: HnTechnicalDocOtherClass = await this.techDocOtherClassesRepository.findOneBy({
       technicalFolder: {
-        id: tecFolder.id
+        id: tecFolder.id,
       },
-      uniqueName: uniqueName
+      uniqueName: uniqueName,
     });
     if (resource != null) {
       resource.objectType = 'OTHER_CLASS';

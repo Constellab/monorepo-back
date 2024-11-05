@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  ParseUUIDPipe,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Query } from '@nestjs/common';
 import { HnAgentAggregateService } from './hn-agent-aggregate.service';
 import { BlParsePipe, BlPublic } from '@monorepo/back-core-lib';
 import { HnLabGuard } from '../core/decorators/hn-lab-auth-guard.decorator';
@@ -15,17 +6,16 @@ import {
   HaCreateAgentVersionFromLabResponseDtoOldFormat,
   HnAgentForLabDto,
   HnAgentVersionFileInput,
-  HnAgentVersionForLabDto, HnAgentVersionForLabDtoOldFormat,
-  HnCreateAgentDto
+  HnAgentVersionForLabDto,
+  HnAgentVersionForLabDtoOldFormat,
+  HnCreateAgentDto,
 } from './agent/hn-agent.dto';
 import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
 import { ClPage } from '@monorepo/core-lib';
 
 @Controller('live-task')
 export class HnTempLiveTaskController {
-  constructor(
-    private readonly agentAggregateService: HnAgentAggregateService
-  ) {}
+  constructor(private readonly agentAggregateService: HnAgentAggregateService) {}
 
   @BlPublic()
   @HnLabGuard()
@@ -34,10 +24,10 @@ export class HnTempLiveTaskController {
     @Body(new BlParsePipe(HnCreateAgentDto)) createAgentDto: HnCreateAgentDto
   ): Promise<HaCreateAgentVersionFromLabResponseDtoOldFormat> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
-    createAgentDto.versionFile = migrator.migrateAgentVersionFile(
-      createAgentDto.versionFile
+    createAgentDto.versionFile = migrator.migrateAgentVersionFile(createAgentDto.versionFile);
+    return new HaCreateAgentVersionFromLabResponseDtoOldFormat(
+      await this.agentAggregateService.createForLab(createAgentDto)
     );
-    return new HaCreateAgentVersionFromLabResponseDtoOldFormat(await this.agentAggregateService.createForLab(createAgentDto));
   }
 
   @BlPublic()
@@ -48,13 +38,10 @@ export class HnTempLiveTaskController {
     @Body(new BlParsePipe(HnCreateAgentDto)) createAgentDto: HnCreateAgentDto
   ): Promise<HaCreateAgentVersionFromLabResponseDtoOldFormat> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
-    createAgentDto.versionFile = migrator.migrateAgentVersionFile(
-      createAgentDto.versionFile
+    createAgentDto.versionFile = migrator.migrateAgentVersionFile(createAgentDto.versionFile);
+    return new HaCreateAgentVersionFromLabResponseDtoOldFormat(
+      await this.agentAggregateService.forkForLab(agentVersionId, createAgentDto)
     );
-    return new HaCreateAgentVersionFromLabResponseDtoOldFormat(await this.agentAggregateService.forkForLab(
-      agentVersionId,
-      createAgentDto
-    ));
   }
 
   @BlPublic()
@@ -66,10 +53,9 @@ export class HnTempLiveTaskController {
   ): Promise<HaCreateAgentVersionFromLabResponseDtoOldFormat> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
     versionFile = migrator.migrateAgentVersionFile(versionFile);
-    return new HaCreateAgentVersionFromLabResponseDtoOldFormat(await this.agentAggregateService.createNewVersionForLab(
-      agentId,
-      versionFile
-    ));
+    return new HaCreateAgentVersionFromLabResponseDtoOldFormat(
+      await this.agentAggregateService.createNewVersionForLab(agentId, versionFile)
+    );
   }
 
   /**
@@ -91,13 +77,7 @@ export class HnTempLiveTaskController {
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnAgentForLabDto>> {
-    return this.agentAggregateService.getAgentsForLab(
-      spacesFilter,
-      titleFilter,
-      personalOnly,
-      page,
-      size
-    );
+    return this.agentAggregateService.getAgentsForLab(spacesFilter, titleFilter, personalOnly, page, size);
   }
 
   @BlPublic()
@@ -113,10 +93,7 @@ export class HnTempLiveTaskController {
     } else {
       versionNumber = +jsonVersionNumber;
     }
-    return this.agentAggregateService.getAgentForLabByVersionId(
-      versionId,
-      versionNumber
-    );
+    return this.agentAggregateService.getAgentForLabByVersionId(versionId, versionNumber);
   }
 
   /**
@@ -137,9 +114,8 @@ export class HnTempLiveTaskController {
     } else {
       versionNumber = +jsonVersionNumber;
     }
-    return new HnAgentVersionForLabDtoOldFormat(await this.agentAggregateService.findLatestPublishedAgentVersionForLabByAgentId(
-      agentId,
-      versionNumber
-    ));
+    return new HnAgentVersionForLabDtoOldFormat(
+      await this.agentAggregateService.findLatestPublishedAgentVersionForLabByAgentId(agentId, versionNumber)
+    );
   }
 }

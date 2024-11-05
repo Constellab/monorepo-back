@@ -6,18 +6,20 @@ import { CnFolderUserService } from './cn-folder-user/cn-folder-user.service';
 import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
 
-
 /**
  * Class to check the user authorization on folders
  */
 @Injectable()
 export class CnFoldersAggregateSecurity {
+  constructor(
+    private folderObjectService: CnHierarchyObjectService,
+    private folderUserService: CnFolderUserService
+  ) {}
 
-  constructor(private folderObjectService: CnHierarchyObjectService,
-              private folderUserService: CnFolderUserService) {
-  }
-
-  public async checkFindOneAndGetRootFolder(folder: CnHierarchyObject, userInfo: CnUserSpaceInfo): Promise<CnHierarchyObject> {
+  public async checkFindOneAndGetRootFolder(
+    folder: CnHierarchyObject,
+    userInfo: CnUserSpaceInfo
+  ): Promise<CnHierarchyObject> {
     // check the space context
     if (folder.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException('Wrong space');
 
@@ -30,13 +32,12 @@ export class CnFoldersAggregateSecurity {
     if (rootFolder.user.id === userInfo.userId) return rootFolder;
 
     // check if the user is a member of one of the groups that were shared with the folder
-    if (!await this.folderUserService.userIsInRootFolder(rootFolder.id, userInfo.userId)) {
+    if (!(await this.folderUserService.userIsInRootFolder(rootFolder.id, userInfo.userId))) {
       throw new BlUnauthorizedException(CnErrorText.NO_ACCESS_TO_FOLDER);
     }
 
     return rootFolder;
   }
-
 
   public async checkFindOne(folder: CnHierarchyObject, userInfo: CnUserSpaceInfo): Promise<void> {
     await this.checkFindOneAndGetRootFolder(folder, userInfo);
@@ -56,7 +57,10 @@ export class CnFoldersAggregateSecurity {
   /**
    * Only the leader or leader of a parent folder can update the leader of children folder
    */
-  public async checkUpdateFolderLeader(hierarchyObject: CnHierarchyObject, userInfo: CnUserSpaceInfo): Promise<void> {
+  public async checkUpdateFolderLeader(
+    hierarchyObject: CnHierarchyObject,
+    userInfo: CnUserSpaceInfo
+  ): Promise<void> {
     // check the space context
     if (hierarchyObject.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException('Wrong space');
 
@@ -81,7 +85,6 @@ export class CnFoldersAggregateSecurity {
     if (userInfo.isSpaceAdmin()) return true;
 
     return hierarchyObject.user.id === userInfo.userId;
-
   }
 
   public async checkFindAllBySpace(userInfo: CnUserSpaceInfo): Promise<void> {

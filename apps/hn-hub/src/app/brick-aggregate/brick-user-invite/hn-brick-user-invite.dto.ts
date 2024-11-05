@@ -1,9 +1,9 @@
-import {HnBaseDto} from '../../core/model/entities/hn-base.dto';
-import {HnInviteStatus} from '../../core/model/config/hn-invite-status.enum';
-import {HnBrickDto} from '../brick/hn-brick.dto';
-import {HnBrickUserInvite} from './hn-brick-user-invite.entity';
+import { HnBaseDto } from '../../core/model/entities/hn-base.dto';
+import { HnInviteStatus } from '../../core/model/config/hn-invite-status.enum';
+import { HnBrickDto } from '../brick/hn-brick.dto';
+import { HnBrickUserInvite } from './hn-brick-user-invite.entity';
 
-export class HnBrickUserInviteDto extends HnBaseDto{
+export class HnBrickUserInviteDto extends HnBaseDto {
   email: string;
   status: HnInviteStatus;
   brick: HnBrickDto;

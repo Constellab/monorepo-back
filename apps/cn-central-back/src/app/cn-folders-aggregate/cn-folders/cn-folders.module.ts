@@ -7,20 +7,8 @@ import { CnFolderBucketService } from './cn-folder-bucket.service';
 import { CnObjectStoragesModule } from '../../cn-object-storages/cn-object-storages.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([CnFolderEntity]),
-
-    CnCoreModule,
-    CnObjectStoragesModule
-  ],
-  providers: [
-    CnFoldersService,
-    CnFolderBucketService
-  ],
-  exports: [
-    CnFoldersService,
-    CnFolderBucketService
-  ]
+  imports: [TypeOrmModule.forFeature([CnFolderEntity]), CnCoreModule, CnObjectStoragesModule],
+  providers: [CnFoldersService, CnFolderBucketService],
+  exports: [CnFoldersService, CnFolderBucketService],
 })
-export class CnFoldersModule {
-}
+export class CnFoldersModule {}

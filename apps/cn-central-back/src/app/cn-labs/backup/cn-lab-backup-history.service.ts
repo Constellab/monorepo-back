@@ -9,7 +9,7 @@ import {
   CnLabBackupsHistory,
   CnLabBackupStatus,
   CnLabBackupTriggerMode,
-  CnSaveBackupHistoryDTO
+  CnSaveBackupHistoryDTO,
 } from './cn-lab-backup.dto';
 import { CnLab, CnLabEntity } from '../cn-lab.entity';
 import { CnBucketsService } from '../../cn-object-storages/cn-buckets/cn-buckets.service';
@@ -17,13 +17,13 @@ import { ClDateHelper, ClPageI, ClStringHelper } from '@monorepo/core-lib';
 import { CnLabBackupHistoryDetail, CnLabBackupType } from './cn-lab-backup-history-detail.entity';
 import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 
-
 @Injectable()
 export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHistoryEntity> {
-
-  constructor(@InjectRepository(CnLabBackupHistoryEntity) repository: Repository<CnLabBackupHistoryEntity>,
-              private bucketService: CnBucketsService,
-              private datasource: DataSource) {
+  constructor(
+    @InjectRepository(CnLabBackupHistoryEntity) repository: Repository<CnLabBackupHistoryEntity>,
+    private bucketService: CnBucketsService,
+    private datasource: DataSource
+  ) {
     super(repository, CnLabBackupHistoryEntity);
   }
 
@@ -38,7 +38,7 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
   public async saveHistory(historyDto: CnLabBackupBucket, lab: CnLab): Promise<CnSaveBackupHistoryDTO> {
     let history: CnLabBackupHistoryEntity = await this.repo.findOne({
       where: { backupId: historyDto.id },
-      relations: { lab: true }
+      relations: { lab: true },
     });
 
     const isHistoryNew = history == null;
@@ -52,7 +52,10 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
       }
     }
 
-    history.bucket = await this.bucketService.findByNameAndRegionAndCheck(historyDto.bucket, historyDto.region);
+    history.bucket = await this.bucketService.findByNameAndRegionAndCheck(
+      historyDto.bucket,
+      historyDto.region
+    );
 
     history.frequency = historyDto.frequency;
     history.triggerMode = historyDto.triggerMode;
@@ -61,7 +64,7 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
     history.status = historyDto.status;
     history.s3Prefix = historyDto.s3Prefix;
 
-    await this.datasource.transaction(async entityManager => {
+    await this.datasource.transaction(async (entityManager) => {
       history = await entityManager.save(history);
 
       let dataDetails: CnLabBackupHistoryDetail = history.dataDetails;
@@ -85,11 +88,15 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
 
     return {
       isNew: isHistoryNew,
-      history: await this.findByIdAndCheck(history.id, CnLabBackupHistoryEntity.defaultRelation)
+      history: await this.findByIdAndCheck(history.id, CnLabBackupHistoryEntity.defaultRelation),
     };
   }
 
-  public markBackupAsDeleted(lab: CnLab, bucket: CnBucket, frequency: CnLabBackupFrequency): Promise<CnLabBackupHistory> {
+  public markBackupAsDeleted(
+    lab: CnLab,
+    bucket: CnBucket,
+    frequency: CnLabBackupFrequency
+  ): Promise<CnLabBackupHistory> {
     const history = new CnLabBackupHistoryEntity();
     history.id = ClStringHelper.generateUUID();
     history.lab = lab as CnLabEntity;
@@ -107,24 +114,30 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
     return this.findPaginated(page, size, {
       where: { lab: { id: labId } },
       relations: CnLabBackupHistoryEntity.defaultRelation,
-      order: { startedAt: 'DESC' }
+      order: { startedAt: 'DESC' },
     });
   }
 
-  public findLastCompleteBackupByType(labId: string, frequency: CnLabBackupFrequency): Promise<CnLabBackupHistory | null> {
+  public findLastCompleteBackupByType(
+    labId: string,
+    frequency: CnLabBackupFrequency
+  ): Promise<CnLabBackupHistory | null> {
     return this.repo.findOne({
-      where: { lab: { id: labId }, frequency, status: In([CnLabBackupStatus.SUCCESS, CnLabBackupStatus.DELETED]) },
+      where: {
+        lab: { id: labId },
+        frequency,
+        status: In([CnLabBackupStatus.SUCCESS, CnLabBackupStatus.DELETED]),
+      },
       relations: CnLabBackupHistoryEntity.defaultRelation,
-      order: { startedAt: 'DESC' }
+      order: { startedAt: 'DESC' },
     });
   }
-
 
   public getAllBackupHistory(labId: string): Promise<CnLabBackupHistory[]> {
     return this.repo.find({
       where: { lab: { id: labId } },
       relations: CnLabBackupHistoryEntity.defaultRelation,
-      order: { startedAt: 'ASC' }
+      order: { startedAt: 'ASC' },
     });
   }
 }

@@ -1,6 +1,5 @@
-import {Global, Module} from '@nestjs/common';
-
+import { Global, Module } from '@nestjs/common';
 
 @Global()
 @Module({})
-export class BlNotificationModule{}
+export class BlNotificationModule {}

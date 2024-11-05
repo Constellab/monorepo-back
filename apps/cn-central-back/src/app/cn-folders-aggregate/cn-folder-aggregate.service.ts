@@ -12,7 +12,11 @@ import { CnCreateNoteWithConfigDto } from './cn-notes/cn-note.dto';
 import { CnNote } from './cn-notes/cn-note.entity';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
-import { CnFolderStorageLocationDTO, CnGetFolderDescriptionDTO, CnSaveFolderDTO } from './cn-folders/cn-folder.dto';
+import {
+  CnFolderStorageLocationDTO,
+  CnGetFolderDescriptionDTO,
+  CnSaveFolderDTO,
+} from './cn-folders/cn-folder.dto';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnChatMessage, getFakeUserEveryoneMention } from '../cn-chat-message/cn-chat-message.entity';
 import { CnChatMessageService } from '../cn-chat-message/cn-chat-message.service';
@@ -28,7 +32,7 @@ import {
   BlRichTextUploadedImageResponse,
   BlRichTextUploadFileResponse,
   BlSearchBuilder,
-  BlSearchParams
+  BlSearchParams,
 } from '@monorepo/back-core-lib';
 import { DataSource, In } from 'typeorm';
 import { CnFolderBucketService } from './cn-folders/cn-folder-bucket.service';
@@ -39,7 +43,7 @@ import {
   CnFolderEvent,
   cnFolderEventName,
   CnFolderEventType,
-  cnRemoveFolderFromAllLabsEventName
+  cnRemoveFolderFromAllLabsEventName,
 } from './cn-folder.event';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CnActivity, CnActivityEntityType } from '../cn-activity/cn-activity.entity';
@@ -50,45 +54,47 @@ import { CnDocument, CnDocumentType } from './cn-documents/cn-document.entity';
 import {
   CnConstellabDocumentDTO,
   CnDocumentPreviewDTO,
-  CnFolderStorageUsageDTO
+  CnFolderStorageUsageDTO,
 } from './cn-documents/cn-document-dto.class';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
   CnHierarchyObjectType,
-  CnHierarchyObjectWithChildren
+  CnHierarchyObjectWithChildren,
 } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
 
 @Injectable()
 export class CnFolderAggregateService {
-
   protected readonly logger = new Logger(CnFolderAggregateService.name);
 
-  constructor(private foldersService: CnFoldersService,
-              private hierarchyObjectService: CnHierarchyObjectService,
-              private foldersAggregateSecurity: CnFoldersAggregateSecurity,
-              private scenarioService: CnScenariosService,
-              private noteService: CnNotesService,
-              private chatMessageService: CnChatMessageService,
-              private datasource: DataSource,
-              private bucketService: CnFolderBucketService,
-              private documentService: CnDocumentService,
-              private folderUserService: CnFolderUserService,
-              private userService: CnUsersService,
-              private eventEmitter: EventEmitter2,
-              private activityService: CnActivityService) {
-  }
+  constructor(
+    private foldersService: CnFoldersService,
+    private hierarchyObjectService: CnHierarchyObjectService,
+    private foldersAggregateSecurity: CnFoldersAggregateSecurity,
+    private scenarioService: CnScenariosService,
+    private noteService: CnNotesService,
+    private chatMessageService: CnChatMessageService,
+    private datasource: DataSource,
+    private bucketService: CnFolderBucketService,
+    private documentService: CnDocumentService,
+    private folderUserService: CnFolderUserService,
+    private userService: CnUsersService,
+    private eventEmitter: EventEmitter2,
+    private activityService: CnActivityService
+  ) {}
 
   /////////////////////////////////////// FOLDER //////////////////////////////////
 
   async createRootFolder(folderDTO: CnSaveFolderDTO): Promise<CnFolderWithHierarchy> {
-    const newFolder = await this.datasource.transaction(async manager => {
+    const newFolder = await this.datasource.transaction(async (manager) => {
       const entity = this.createFolderFromDTO(folderDTO);
 
       entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
-      entity.hierarchyRepresentation = CnHierarchyObjectEntity.newRootFolderHierarchy(CnCurrentUserHelper.getAndCheckCurrentSpace(),
-        entity.getHierarchyObjectInfo());
+      entity.hierarchyRepresentation = CnHierarchyObjectEntity.newRootFolderHierarchy(
+        CnCurrentUserHelper.getAndCheckCurrentSpace(),
+        entity.getHierarchyObjectInfo()
+      );
       entity.mainStorage = await this.bucketService.getBucketById(folderDTO.mainStorage.bucketId);
 
       if (folderDTO.backupStorage) {
@@ -117,11 +123,18 @@ export class CnFolderAggregateService {
     const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
     const parentWithStorage = await this.foldersService.findByIfAndCheckWithStorage(parentFolder.id);
 
-    if (entity.endingDate && parentWithStorage.endingDate && entity.endingDate > parentWithStorage.endingDate) {
+    if (
+      entity.endingDate &&
+      parentWithStorage.endingDate &&
+      entity.endingDate > parentWithStorage.endingDate
+    ) {
       throw new BlBadRequestException(CnErrorText.CHILD_FOLDER_END_DATA_AFTER_PARENT);
     }
 
-    entity.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(parentFolder, entity.getHierarchyObjectInfo());
+    entity.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
+      parentFolder,
+      entity.getHierarchyObjectInfo()
+    );
 
     entity.mainStorage = parentWithStorage.mainStorage;
     entity.backupStorage = parentWithStorage.backupStorage;
@@ -167,15 +180,15 @@ export class CnFolderAggregateService {
 
     const children = await this.hierarchyObjectService.getDirectChildren(folderHierarchy.id);
 
-    if (children.find(child => child.objectType === CnHierarchyObjectType.FOLDER)) {
+    if (children.find((child) => child.objectType === CnHierarchyObjectType.FOLDER)) {
       throw new BlBadRequestException(CnErrorText.DELETE_FOLDER_WITH_CHILDREN);
     }
 
-    if (children.find(child => child.objectType === CnHierarchyObjectType.SCENARIO)) {
+    if (children.find((child) => child.objectType === CnHierarchyObjectType.SCENARIO)) {
       throw new BlBadRequestException(CnErrorText.DELETE_FOLDER_WITH_SCENARIOS);
     }
 
-    if (children.find(child => child.objectType === CnHierarchyObjectType.NOTE)) {
+    if (children.find((child) => child.objectType === CnHierarchyObjectType.NOTE)) {
       throw new BlBadRequestException(CnErrorText.DELETE_FOLDER_WITH_NOTES);
     }
 
@@ -193,7 +206,10 @@ export class CnFolderAggregateService {
     // remove folder from all lab using event to avoid circular dependencies.
     // If the user can delete the folder, we consider he can remove it from labs
     if (folderHierarchy.isRootFolder()) {
-      const results: string[] = await this.eventEmitter.emitAsync(cnRemoveFolderFromAllLabsEventName, folderHierarchy);
+      const results: string[] = await this.eventEmitter.emitAsync(
+        cnRemoveFolderFromAllLabsEventName,
+        folderHierarchy
+      );
       // if a text is returned, it means an error occurred
       for (const res of results) {
         if (res) {
@@ -203,7 +219,7 @@ export class CnFolderAggregateService {
     }
 
     const folder = await this.foldersService.findByIdAndCheck(id);
-    await this.datasource.transaction(async entityManager => {
+    await this.datasource.transaction(async (entityManager) => {
       await this.foldersService.deleteById(id, entityManager);
       await this.hierarchyObjectService.deleteById(id, entityManager);
     });
@@ -218,8 +234,12 @@ export class CnFolderAggregateService {
 
   public async getCurrentRootFolders(page: number, size: number): Promise<ClPageI<CnHierarchyObject>> {
     const currentUserInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-    return this.hierarchyObjectService.getRootFoldersOfUser(currentUserInfo.userId, currentUserInfo.spaceId,
-      page, size);
+    return this.hierarchyObjectService.getRootFoldersOfUser(
+      currentUserInfo.userId,
+      currentUserInfo.spaceId,
+      page,
+      size
+    );
   }
 
   public async getByCurrentSpace(page: number, size: number): Promise<ClPageI<CnHierarchyObject>> {
@@ -228,7 +248,11 @@ export class CnFolderAggregateService {
     return this.hierarchyObjectService.getRootFoldersBySpace(info.spaceId, page, size);
   }
 
-  public async searchInCurrentSpace(searchParams: BlSearchParams, page: number, size: number): Promise<ClPageI<CnFolder>> {
+  public async searchInCurrentSpace(
+    searchParams: BlSearchParams,
+    page: number,
+    size: number
+  ): Promise<ClPageI<CnFolder>> {
     const info = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     await this.foldersAggregateSecurity.checkFindAllBySpace(info);
     return this.foldersService.searchFolderInSpace(info.spaceId, searchParams, page, size);
@@ -250,7 +274,7 @@ export class CnFolderAggregateService {
    * @param rootFolders
    */
   public async getFolderTrees(rootFolders: CnHierarchyObject[]): Promise<CnHierarchyObject[]> {
-    const folderTrees = rootFolders.map(folder => this.hierarchyObjectService.getFolderTree(folder));
+    const folderTrees = rootFolders.map((folder) => this.hierarchyObjectService.getFolderTree(folder));
     return await Promise.all(folderTrees);
   }
 
@@ -260,8 +284,12 @@ export class CnFolderAggregateService {
     return this.hierarchyObjectService.getDirectChildren(folder.id);
   }
 
-  public async getChildrenPaginated(folderId: string, searchParam: BlSearchParams,
-                                    page: number, size: number): Promise<ClPage<CnHierarchyObject>> {
+  public async getChildrenPaginated(
+    folderId: string,
+    searchParam: BlSearchParams,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnHierarchyObject>> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
 
     return this.hierarchyObjectService.searchVisibleChildren(folder.id, searchParam, page, size);
@@ -273,19 +301,24 @@ export class CnFolderAggregateService {
     return await this.hierarchyObjectService.getAncestors(folder);
   }
 
-
   public async updateFolderLeader(folderId: string, userId: string): Promise<CnFolder> {
     const folderHierarchy = await this.hierarchyObjectService.findByIdAndCheck(folderId);
 
     // check if the current user has the authorization to update the leader
-    await this.foldersAggregateSecurity.checkUpdateFolderLeader(folderHierarchy, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    await this.foldersAggregateSecurity.checkUpdateFolderLeader(
+      folderHierarchy,
+      CnCurrentUserHelper.getAndCheckUserSpaceInfo()
+    );
 
     const newLeader = await this.userService.findByIdAndCheck(userId);
     await this.datasource.transaction(async (entityManager) => {
-
       // the group must be shared with the new leader single group
       // so if it is not shared, we add it
-      await this.folderUserService.shareRootFolderToUserIfNot(folderHierarchy.getRootFolderId(), userId, entityManager);
+      await this.folderUserService.shareRootFolderToUserIfNot(
+        folderHierarchy.getRootFolderId(),
+        userId,
+        entityManager
+      );
 
       await this.foldersService.updateLeader(folderHierarchy.id, newLeader, entityManager);
     });
@@ -309,7 +342,10 @@ export class CnFolderAggregateService {
 
     return {
       description: description,
-      canEdit: this.foldersAggregateSecurity.isFolderLeader(folder, CnCurrentUserHelper.getAndCheckUserSpaceInfo())
+      canEdit: this.foldersAggregateSecurity.isFolderLeader(
+        folder,
+        CnCurrentUserHelper.getAndCheckUserSpaceInfo()
+      ),
     };
   }
 
@@ -325,18 +361,29 @@ export class CnFolderAggregateService {
     this.emitFolderEvent('UPDATE_FOLDER_DESCRIPTION', null, description);
   }
 
-  public async saveDescriptionImage(folderId: string, file: BlFile): Promise<BlRichTextUploadedImageResponse> {
+  public async saveDescriptionImage(
+    folderId: string,
+    file: BlFile
+  ): Promise<BlRichTextUploadedImageResponse> {
     const folder = await this.getAndCheckAuthorizationForUpdate(folderId);
 
-    return this.documentService.uploadImageDocument(file, folder, CnDocumentType.DESCRIPTION_CONTENT,
-      folder.id);
+    return this.documentService.uploadImageDocument(
+      file,
+      folder,
+      CnDocumentType.DESCRIPTION_CONTENT,
+      folder.id
+    );
   }
 
   public async getDescriptionImage(folderId: string, filename: string): Promise<BlFileResponse> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
 
-    return this.documentService.getDocumentContentByTypeAndName(folder.getRootFolderId(), CnDocumentType.DESCRIPTION_CONTENT,
-      filename, folderId);
+    return this.documentService.getDocumentContentByTypeAndName(
+      folder.getRootFolderId(),
+      CnDocumentType.DESCRIPTION_CONTENT,
+      filename,
+      folderId
+    );
   }
 
   /////////////////////////////////////// SCENARIO //////////////////////////////////
@@ -360,7 +407,10 @@ export class CnFolderAggregateService {
     return (await this.noteService.findByIdAndCheckWithScenarios(noteId)).scenarios;
   }
 
-  async createLabScenario(parentFolderId: string, createLabScenarioDto: CnCreateLabScenarioDto): Promise<void> {
+  async createLabScenario(
+    parentFolderId: string,
+    createLabScenarioDto: CnCreateLabScenarioDto
+  ): Promise<void> {
     // check that the user can get the folder
     const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
@@ -380,12 +430,13 @@ export class CnFolderAggregateService {
     // check if the scenario has associated notes
     const expWithNotes = await this.scenarioService.findByIdAndCheckWithNotes(scenarioId);
     if (expWithNotes.notes.length > 0) {
-      throw new BlBadRequestException('The scenario has associated notes in the space, please delete the note first.');
+      throw new BlBadRequestException(
+        'The scenario has associated notes in the space, please delete the note first.'
+      );
     }
 
-
     let scenario: CnScenario;
-    await this.datasource.transaction(async entityManager => {
+    await this.datasource.transaction(async (entityManager) => {
       scenario = await this.scenarioService.deleteScenario(scenarioId, entityManager);
       await this.hierarchyObjectService.deleteById(scenarioId, entityManager);
     });
@@ -406,7 +457,10 @@ export class CnFolderAggregateService {
     return this.scenarioService.getScenarioLabConfig(scenarioId);
   }
 
-  public async getScenariosByRootFolderAndLabNotSecure(rootFolderId: string, labId: string): Promise<CnScenario[]> {
+  public async getScenariosByRootFolderAndLabNotSecure(
+    rootFolderId: string,
+    labId: string
+  ): Promise<CnScenario[]> {
     return this.scenarioService.getScenariosByRootFolderAndLab(rootFolderId, labId);
   }
 
@@ -423,27 +477,35 @@ export class CnFolderAggregateService {
     return await this.noteService.getNoteContent(parentFolder, id);
   }
 
-  async createLabNote(createNoteDto: CnCreateNoteWithConfigDto, parentFolderId: string,
-                      files: BlFile[]): Promise<void> {
+  async createLabNote(
+    createNoteDto: CnCreateNoteWithConfigDto,
+    parentFolderId: string,
+    files: BlFile[]
+  ): Promise<void> {
     const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
     // get and check all scenario
     const scenarios: CnScenario[] = [];
     for (const scenarioId of createNoteDto.scenario_ids) {
-      const scenario: CnScenario = await this.scenarioService.findById(scenarioId, { hierarchyRepresentation: true });
+      const scenario: CnScenario = await this.scenarioService.findById(scenarioId, {
+        hierarchyRepresentation: true,
+      });
 
       if (scenario == null) {
-        throw new BlBadRequestException('Can\'t create the note because one of the linked scenario could not be found');
+        throw new BlBadRequestException(
+          "Can't create the note because one of the linked scenario could not be found"
+        );
       }
 
       if (scenario.hierarchyRepresentation.parentId !== parentFolder.id) {
-        throw new BlBadRequestException('Can\'t create the note because it is linked to an scenario of another folder');
+        throw new BlBadRequestException(
+          "Can't create the note because it is linked to an scenario of another folder"
+        );
       }
       scenarios.push(scenario);
     }
 
-    const noteResult = await this.noteService.saveNote(createNoteDto, scenarios,
-      parentFolder, files);
+    const noteResult = await this.noteService.saveNote(createNoteDto, scenarios, parentFolder, files);
 
     if (noteResult.mode === 'create') {
       this.emitFolderEvent('CREATE_NOTE', parentFolder, noteResult.note);
@@ -457,7 +519,7 @@ export class CnFolderAggregateService {
     const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
     let note: CnNote;
-    await this.datasource.transaction(async entityManager => {
+    await this.datasource.transaction(async (entityManager) => {
       note = await this.noteService.deleteNote(noteId, entityManager);
       await this.hierarchyObjectService.deleteById(noteId, entityManager);
     });
@@ -529,11 +591,12 @@ export class CnFolderAggregateService {
     // forbid to unshare the single user group of the leader
     // this is to unsure the leader will always have access to the folder
     if (userId === folder.leader.id) {
-      throw new BlBadRequestException(CnErrorText.CANT_UNSHARED_FOLDER_LEADER_GROUP, { detailArgs: { folderName: folderHierarchy.name } });
+      throw new BlBadRequestException(CnErrorText.CANT_UNSHARED_FOLDER_LEADER_GROUP, {
+        detailArgs: { folderName: folderHierarchy.name },
+      });
     }
 
     await this.folderUserService.unshareRootFolderFromUser(folderHierarchy.id, userId);
-
   }
 
   public async unshareAllFolderForUser(userId: string, spaceId: string): Promise<void> {
@@ -554,11 +617,16 @@ export class CnFolderAggregateService {
     return this.folderUserService.findUsersByRootFolderId(rootFolder.id);
   }
 
-  public async searchFolderUsersByName(folderId: string, name: string, page: number, size: number): Promise<ClPage<CnUser>> {
+  public async searchFolderUsersByName(
+    folderId: string,
+    name: string,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnUser>> {
     const rootFolder = await this.checkFindOneAndGetRootFolder(folderId);
 
     const result = await this.folderUserService.smartSearchByName(rootFolder.id, name, page, size);
-    const users = result.map(user => user.user);
+    const users = result.map((user) => user.user);
 
     if (ClHelpService.isNullOrEmpty(name)) {
       users.objects.unshift(getFakeUserEveryoneMention());
@@ -567,13 +635,12 @@ export class CnFolderAggregateService {
     return users;
   }
 
-
   /////////////////////////////////////// FOLDER MESSAGE //////////////////////////////////
 
   async activateChat(folderId: string, enable: boolean): Promise<CnFolder> {
     await this.getAndCheckAuthorizationForUpdate(folderId);
 
-    await this.datasource.transaction(async entityManager => {
+    await this.datasource.transaction(async (entityManager) => {
       await this.foldersService.updatePartial(folderId, { chatEnabled: enable }, entityManager);
       await this.hierarchyObjectService.updatePartial(folderId, { chatEnabled: enable }, entityManager);
     });
@@ -606,7 +673,11 @@ export class CnFolderAggregateService {
     return message;
   }
 
-  public async updateChatMessage(folderId: string, messageId: string, content: BlRichTextContent): Promise<CnChatMessage> {
+  public async updateChatMessage(
+    folderId: string,
+    messageId: string,
+    content: BlRichTextContent
+  ): Promise<CnChatMessage> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
 
     const message = await this.chatMessageService.findByIdAndCheck(messageId);
@@ -629,10 +700,13 @@ export class CnFolderAggregateService {
 
     await this.chatMessageService.deleteMessage(message, folderId);
     this.emitFolderEvent('DELETE_FOLDER_MESSAGE', folder, message);
-
   }
 
-  public async getFolderMessages(folderId: string, page: number, size: number): Promise<ClPage<CnChatMessage>> {
+  public async getFolderMessages(
+    folderId: string,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnChatMessage>> {
     await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
     return this.chatMessageService.getFolderMessages(folderId, page, size);
   }
@@ -652,8 +726,13 @@ export class CnFolderAggregateService {
   public async uploadDocument(parentFolderId: string, file: BlFile): Promise<CnHierarchyObject> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
-    const doc = await this.documentService.uploadDocument(file, folder,
-      CnDocumentType.UPLOADED_DOCUMENT, folder.id, file.originalname);
+    const doc = await this.documentService.uploadDocument(
+      file,
+      folder,
+      CnDocumentType.UPLOADED_DOCUMENT,
+      folder.id,
+      file.originalname
+    );
 
     this.emitFolderEvent('UPLOAD_FOLDER_DOCUMENT', folder, doc);
 
@@ -672,13 +751,15 @@ export class CnFolderAggregateService {
 
     const document = await this.documentService.findByIdAndCheck(documentId);
 
-    await this.datasource.transaction(async entityManager => {
+    await this.datasource.transaction(async (entityManager) => {
       await this.documentService.deleteDocument(documentId, entityManager);
     });
 
-    this.emitFolderEvent('DELETE_FOLDER_DOCUMENT',
+    this.emitFolderEvent(
+      'DELETE_FOLDER_DOCUMENT',
       await this.hierarchyObjectService.findByIdAndCheck(folder.parentId),
-      document);
+      document
+    );
   }
 
   public async moveDocumentToTrash(documentId: string): Promise<CnDocument> {
@@ -688,9 +769,11 @@ export class CnFolderAggregateService {
 
     const doc = await this.documentService.moveToTrash(document);
 
-    this.emitFolderEvent('MOVE_FOLDER_DOCUMENT_TO_TRASH',
+    this.emitFolderEvent(
+      'MOVE_FOLDER_DOCUMENT_TO_TRASH',
       await this.hierarchyObjectService.findByIdAndCheck(folder.parentId),
-      document);
+      document
+    );
 
     return doc;
   }
@@ -702,9 +785,11 @@ export class CnFolderAggregateService {
 
     const doc = await this.documentService.restoreFromTrash(document);
 
-    this.emitFolderEvent('RESTORE_FOLDER_DOCUMENT_FROM_TRASH',
+    this.emitFolderEvent(
+      'RESTORE_FOLDER_DOCUMENT_FROM_TRASH',
       await this.hierarchyObjectService.findByIdAndCheck(folder.parentId),
-      document);
+      document
+    );
 
     return doc;
   }
@@ -715,7 +800,12 @@ export class CnFolderAggregateService {
     await this.documentService.emptyFolderTrash(folder.id);
   }
 
-  public async getDocumentsByFolder(parentFolderId: string, inTrash: boolean, page: number, size: number): Promise<ClPage<CnDocument>> {
+  public async getDocumentsByFolder(
+    parentFolderId: string,
+    inTrash: boolean,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnDocument>> {
     await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
     return this.documentService.getParentFolderDocuments(parentFolderId, inTrash, page, size);
@@ -724,13 +814,17 @@ export class CnFolderAggregateService {
   public async renameDocument(documentId: string, newName: string): Promise<CnDocument> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
-    const document = await this.documentService.findByIdAndCheck(documentId, { hierarchyRepresentation: true });
+    const document = await this.documentService.findByIdAndCheck(documentId, {
+      hierarchyRepresentation: true,
+    });
 
     const doc = this.documentService.renameDocument(folder.getRootFolderId(), document, newName);
 
-    this.emitFolderEvent('RENAME_DOCUMENT',
+    this.emitFolderEvent(
+      'RENAME_DOCUMENT',
       await this.hierarchyObjectService.findByIdAndCheck(document.hierarchyRepresentation.parentId),
-      document);
+      document
+    );
 
     return doc;
   }
@@ -743,7 +837,9 @@ export class CnFolderAggregateService {
     }
 
     // check if the user has the authorization to move the document on 2 folders
-    const oldFolder = await this.getAndCheckAuthorizationForFindOneByFolder(document.hierarchyRepresentation.parentId);
+    const oldFolder = await this.getAndCheckAuthorizationForFindOneByFolder(
+      document.hierarchyRepresentation.parentId
+    );
     const newFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
     return this.documentService.moveDocument(document, oldFolder, newFolder);
@@ -758,15 +854,21 @@ export class CnFolderAggregateService {
     return this.getModificationsBlocksList(await this.noteService.getNoteModifications(folder, noteId));
   }
 
-  public async getConstellabDocumentModifications(documentId: string): Promise<BlRichTextBlockModificationDto[]>{
+  public async getConstellabDocumentModifications(
+    documentId: string
+  ): Promise<BlRichTextBlockModificationDto[]> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
 
-    return this.getModificationsBlocksList(await this.documentService.getDocumentModifications(folder.getRootFolderId(), document));
+    return this.getModificationsBlocksList(
+      await this.documentService.getDocumentModifications(folder.getRootFolderId(), document)
+    );
   }
 
-  private async getModificationsBlocksList(modifications: BlRichTextModifications): Promise<BlRichTextBlockModificationDto[]>{
+  private async getModificationsBlocksList(
+    modifications: BlRichTextModifications
+  ): Promise<BlRichTextBlockModificationDto[]> {
     const res: BlRichTextBlockModificationDto[] = [];
     const userMap = new Map<string, CnUser>();
     for (const modification of modifications.getModifications()) {
@@ -781,7 +883,10 @@ export class CnFolderAggregateService {
     return res;
   }
 
-  public async getConstellabDocumentationUndoContent(documentId: string, modificationId: string): Promise<BlRichTextContent>{
+  public async getConstellabDocumentationUndoContent(
+    documentId: string,
+    modificationId: string
+  ): Promise<BlRichTextContent> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
     const document = await this.documentService.findByIdAndCheck(documentId);
     return await this.documentService.getUndoContent(folder.getRootFolderId(), document, modificationId);
@@ -790,7 +895,7 @@ export class CnFolderAggregateService {
   public async getNoteUndoContent(noteId: string, modificationId: string): Promise<BlRichTextContent> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(noteId);
     await this.noteService.findByIdAndCheck(noteId);
-    return await this.noteService.getNoteUndoContent(folder, noteId, modificationId)
+    return await this.noteService.getNoteUndoContent(folder, noteId, modificationId);
   }
 
   public async rollbackContent(documentId: string, modificationId: string): Promise<CnDocument> {
@@ -801,7 +906,10 @@ export class CnFolderAggregateService {
   }
 
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
-  public async createConstellabDocument(parentFolderId: string, filename: string): Promise<CnConstellabDocumentDTO> {
+  public async createConstellabDocument(
+    parentFolderId: string,
+    filename: string
+  ): Promise<CnConstellabDocumentDTO> {
     const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
 
     const doc = await this.documentService.createConstellabDocument(parentFolder, filename);
@@ -809,24 +917,37 @@ export class CnFolderAggregateService {
     return doc;
   }
 
-  public async updateConstellabDocument(documentId: string, content: BlRichTextContent): Promise<CnConstellabDocumentDTO> {
+  public async updateConstellabDocument(
+    documentId: string,
+    content: BlRichTextContent
+  ): Promise<CnConstellabDocumentDTO> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
 
     // if the document was modified by another user 1 minute ago, we refuse the update
     // this is temporary until collaborative editing is implemented
-    if (Math.abs(document.lastModifiedAt.diffNow().toMillis()) < 60000 &&
-      document.lastModifiedBy.id !== CnCurrentUserHelper.getCurrentUser().id) {
+    if (
+      Math.abs(document.lastModifiedAt.diffNow().toMillis()) < 60000 &&
+      document.lastModifiedBy.id !== CnCurrentUserHelper.getCurrentUser().id
+    ) {
       // eslint-disable-next-line max-len
-      throw new BlBadRequestException(`This document is currently being modified by ${document.lastModifiedBy.alias}, please wait for the end of the modification`);
+      throw new BlBadRequestException(
+        `This document is currently being modified by ${document.lastModifiedBy.alias}, please wait for the end of the modification`
+      );
     }
 
-    const newDoc = await this.documentService.updateConstellabDocument(folder.getRootFolderId(), document, content);
+    const newDoc = await this.documentService.updateConstellabDocument(
+      folder.getRootFolderId(),
+      document,
+      content
+    );
 
-    this.emitFolderEvent('UPDATE_CONSTELLAB_DOCUMENT',
+    this.emitFolderEvent(
+      'UPDATE_CONSTELLAB_DOCUMENT',
       await this.hierarchyObjectService.findByIdAndCheck(folder.parentId),
-      newDoc);
+      newDoc
+    );
     return newDoc;
   }
 
@@ -837,10 +958,14 @@ export class CnFolderAggregateService {
 
     // if the document was modified by another user 1 minute ago, we refuse the update
     // this is temporary until collaborative editing is implemented
-    if (Math.abs(document.lastModifiedAt.diffNow().toMillis()) < 60000 &&
-      document.lastModifiedBy.id !== CnCurrentUserHelper.getCurrentUser().id) {
+    if (
+      Math.abs(document.lastModifiedAt.diffNow().toMillis()) < 60000 &&
+      document.lastModifiedBy.id !== CnCurrentUserHelper.getCurrentUser().id
+    ) {
       // eslint-disable-next-line max-len
-      throw new BlBadRequestException(`This document is currently being modified by ${document.lastModifiedBy.alias}, please wait for the end of the modification`);
+      throw new BlBadRequestException(
+        `This document is currently being modified by ${document.lastModifiedBy.alias}, please wait for the end of the modification`
+      );
     }
   }
 
@@ -851,7 +976,10 @@ export class CnFolderAggregateService {
     return this.documentService.getConstellabDocument(folder.getRootFolderId(), document);
   }
 
-  public async uploadImageToConstellabDocument(documentId: string, file: BlFile): Promise<BlRichTextUploadedImageResponse> {
+  public async uploadImageToConstellabDocument(
+    documentId: string,
+    file: BlFile
+  ): Promise<BlRichTextUploadedImageResponse> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
@@ -860,7 +988,10 @@ export class CnFolderAggregateService {
     return this.documentService.uploadImageToConstellabDocument(parentFolder, document, file);
   }
 
-  public async uploadFileToConstellabDocument(documentId: string, file: BlFile): Promise<BlRichTextUploadFileResponse> {
+  public async uploadFileToConstellabDocument(
+    documentId: string,
+    file: BlFile
+  ): Promise<BlRichTextUploadFileResponse> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
@@ -874,11 +1005,18 @@ export class CnFolderAggregateService {
    * @param documentId
    * @param documentName
    */
-  public async getConstellabDocumentContentDocument(documentId: string, documentName: string): Promise<BlFileResponse> {
+  public async getConstellabDocumentContentDocument(
+    documentId: string,
+    documentName: string
+  ): Promise<BlFileResponse> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
-    return this.documentService.getDocumentContentByTypeAndName(folder.getRootFolderId(),
-      CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT, documentName, documentId);
+    return this.documentService.getDocumentContentByTypeAndName(
+      folder.getRootFolderId(),
+      CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT,
+      documentName,
+      documentId
+    );
   }
 
   ////////////////////////////////////////////// DOCUMENT PREVIEW  /////////////////////////////////////////////
@@ -904,8 +1042,10 @@ export class CnFolderAggregateService {
 
   /////////////////////////////////////// FOLDER BUCKET //////////////////////////////////
 
-  public async createFolderBucket(rootFolderId: string, folderStorageLocationDTO: CnFolderStorageLocationDTO)
-    : Promise<CnFolderStorageLocationDTO> {
+  public async createFolderBucket(
+    rootFolderId: string,
+    folderStorageLocationDTO: CnFolderStorageLocationDTO
+  ): Promise<CnFolderStorageLocationDTO> {
     const folder = await this.getAndCheckAuthorizationForUpdate(rootFolderId);
     if (!folder.isRootFolder()) {
       throw new BlBadRequestException('The folder is not a root folder');
@@ -918,18 +1058,22 @@ export class CnFolderAggregateService {
     }
 
     if (folderWithStorage.mainStorage == null && folderStorageLocationDTO.mainStorage) {
-      folderWithStorage.mainStorage = await this.bucketService.getBucketById(folderStorageLocationDTO.mainStorage.bucketId);
+      folderWithStorage.mainStorage = await this.bucketService.getBucketById(
+        folderStorageLocationDTO.mainStorage.bucketId
+      );
     }
 
     if (folderWithStorage.backupStorage == null && folderStorageLocationDTO.backupStorage) {
-      folderWithStorage.backupStorage = await this.bucketService.getBucketById(folderStorageLocationDTO.backupStorage.bucketId);
+      folderWithStorage.backupStorage = await this.bucketService.getBucketById(
+        folderStorageLocationDTO.backupStorage.bucketId
+      );
     }
 
     await this.foldersService.update(folderWithStorage as CnFolderEntity);
 
     return {
       mainStorage: folderWithStorage.mainStorage?.getBucketLocation() ?? null,
-      backupStorage: folderWithStorage.backupStorage?.getBucketLocation() ?? null
+      backupStorage: folderWithStorage.backupStorage?.getBucketLocation() ?? null,
     };
   }
 
@@ -943,11 +1087,14 @@ export class CnFolderAggregateService {
     // return only region to the user, he doesn't need the bucket name
     return {
       mainStorage: buckets.mainStorage?.getBucketLocation() ?? null,
-      backupStorage: buckets.backupStorage?.getBucketLocation() ?? null
+      backupStorage: buckets.backupStorage?.getBucketLocation() ?? null,
     };
   }
 
-  public async findAccessibleFolderBucketLocation(page: number, size: number): Promise<ClPage<CnBucketLocationDTO>> {
+  public async findAccessibleFolderBucketLocation(
+    page: number,
+    size: number
+  ): Promise<ClPage<CnBucketLocationDTO>> {
     const info = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     return this.bucketService.findAccessibleFolderBucketLocation(info.spaceId, page, size);
   }
@@ -957,7 +1104,10 @@ export class CnFolderAggregateService {
 
     const children = await this.getFolderDirectChildren(folderId);
 
-    return this.documentService.getStorageSizeDetailByFolders([folderId, ...children.map(folder => folder.id)]);
+    return this.documentService.getStorageSizeDetailByFolders([
+      folderId,
+      ...children.map((folder) => folder.id),
+    ]);
   }
 
   /**
@@ -973,10 +1123,16 @@ export class CnFolderAggregateService {
   public async getCurrentUserRootFolderConfig(rootFolderId: string): Promise<CnFolderUser> {
     await this.getAndCheckAuthorizationForFindOneByFolder(rootFolderId);
 
-    return this.folderUserService.findByRootFolderIdAndUserId(rootFolderId, CnCurrentUserHelper.getAndCheckCurrentUser().id);
+    return this.folderUserService.findByRootFolderIdAndUserId(
+      rootFolderId,
+      CnCurrentUserHelper.getAndCheckCurrentUser().id
+    );
   }
 
-  public async updateRootFolderCurrentUserConfig(rootFolderId: string, options: CnFolderUser): Promise<CnFolderUser> {
+  public async updateRootFolderCurrentUserConfig(
+    rootFolderId: string,
+    options: CnFolderUser
+  ): Promise<CnFolderUser> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(rootFolderId);
 
     if (!folder.isRootFolder()) {
@@ -991,8 +1147,12 @@ export class CnFolderAggregateService {
 
   /////////////////////////////////////// ACTIVITY //////////////////////////////////
 
-  public async searchFolderActivity(folderId: string, searchParam: BlSearchParams,
-                                    page: number, size: number): Promise<ClPage<CnActivity>> {
+  public async searchFolderActivity(
+    folderId: string,
+    searchParam: BlSearchParams,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnActivity>> {
     // check that the user can view the folder
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
 
@@ -1000,14 +1160,14 @@ export class CnFolderAggregateService {
 
     if (searchParam.hasFilter('includeSubFolders')) {
       const allFolders = await this.hierarchyObjectService.getFolderTreeAsList(folder);
-      const allFolderIds = allFolders.map(folder => folder.id);
+      const allFolderIds = allFolders.map((folder) => folder.id);
       searchBuilder.mergeWhereOptions({
-        parentEntityId: In(allFolderIds)
+        parentEntityId: In(allFolderIds),
       });
       searchParam.removeFilter('includeSubFolders');
     } else {
       searchBuilder.mergeWhereOptions({
-        parentEntityId: folderId
+        parentEntityId: folderId,
       });
     }
 
@@ -1016,11 +1176,15 @@ export class CnFolderAggregateService {
     // add filter on entity type if not already present
     if (!searchBuilder.hasWhereOptions('entityType')) {
       searchBuilder.mergeWhereOptions({
-        entityType: In([CnActivityEntityType.FOLDER, CnActivityEntityType.MESSAGE,
-          CnActivityEntityType.NOTE, CnActivityEntityType.SCENARIO, CnActivityEntityType.DOCUMENT])
+        entityType: In([
+          CnActivityEntityType.FOLDER,
+          CnActivityEntityType.MESSAGE,
+          CnActivityEntityType.NOTE,
+          CnActivityEntityType.SCENARIO,
+          CnActivityEntityType.DOCUMENT,
+        ]),
       });
     }
-
 
     return await this.activityService.search(searchBuilder.build(), page, size);
   }
@@ -1044,7 +1208,10 @@ export class CnFolderAggregateService {
   private async checkFindOneAndGetRootFolder(folderId: string): Promise<CnHierarchyObject> {
     const folder = await this.hierarchyObjectService.findByIdAndCheck(folderId);
 
-    return await this.foldersAggregateSecurity.checkFindOneAndGetRootFolder(folder, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    return await this.foldersAggregateSecurity.checkFindOneAndGetRootFolder(
+      folder,
+      CnCurrentUserHelper.getAndCheckUserSpaceInfo()
+    );
   }
 
   //////////////////////////////// EVENT ///////////////////////////////////////
@@ -1053,7 +1220,7 @@ export class CnFolderAggregateService {
       type: eventType,
       parentFolder: parentFolder,
       entity,
-      userInfo: CnCurrentUserHelper.getAndCheckUserSpaceInfo()
+      userInfo: CnCurrentUserHelper.getAndCheckUserSpaceInfo(),
     };
     this.eventEmitter.emit(cnFolderEventName, event);
   }

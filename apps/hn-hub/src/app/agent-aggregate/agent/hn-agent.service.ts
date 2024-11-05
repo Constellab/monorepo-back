@@ -1,20 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  EntityManager,
-  FindOptionsWhere,
-  In,
-  IsNull,
-  Like,
-  Not,
-  Repository,
-} from 'typeorm';
+import { EntityManager, FindOptionsWhere, In, IsNull, Like, Not, Repository } from 'typeorm';
 import { HnAgent } from './hn-agent.entity';
 import { HnAgentDto, HnCreateAgentDto } from './hn-agent.dto';
-import {
-  BlAbstractPaginatedService,
-  BlUnauthorizedException,
-} from '@monorepo/back-core-lib';
+import { BlAbstractPaginatedService, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { ClPage } from '@monorepo/core-lib';
 import { HnUser } from '../../users/hn-user.entity';
@@ -31,14 +20,13 @@ export class HnAgentService {
     private agentCoAuthorService: HnAgentCoAuthorService
   ) {}
 
-
   public async findPublic(): Promise<HnAgentDto[]> {
     return (
       await this.agentRepository.find({
         where: {
           space: IsNull(),
           latestPublishVersion: Not(IsNull()),
-        }
+        },
       })
     ).map((agent) => new HnAgentDto(agent));
   }
@@ -77,10 +65,7 @@ export class HnAgentService {
     ).map((agent: HnAgent) => new HnAgentDto(agent));
   }
 
-  public async findPublicAgent(
-    page: number,
-    size: number
-  ): Promise<ClPage<HnAgentDto>> {
+  public async findPublicAgent(page: number, size: number): Promise<ClPage<HnAgentDto>> {
     return (
       await BlAbstractPaginatedService.findPaginatedStatic(
         page,
@@ -100,10 +85,7 @@ export class HnAgentService {
     ).map((agent) => new HnAgentDto(agent));
   }
 
-  public async findAgentByIdWithUserSpaces(
-    id: string,
-    userSpacesId: string[]
-  ): Promise<HnAgent> {
+  public async findAgentByIdWithUserSpaces(id: string, userSpacesId: string[]): Promise<HnAgent> {
     return this.agentRepository.findOne({
       where: [
         {
@@ -337,9 +319,9 @@ export class HnAgentService {
   ): Promise<ClPage<HnAgentDto>> {
     const whereOpts: FindOptionsWhere<HnAgent>[] = [];
 
-    const coAuthorAgentsIds = (
-      await this.agentCoAuthorService.getAgentCoAuthorsByUserId(user.id)
-    ).map((coAuthor) => coAuthor.agent.id);
+    const coAuthorAgentsIds = (await this.agentCoAuthorService.getAgentCoAuthorsByUserId(user.id)).map(
+      (coAuthor) => coAuthor.agent.id
+    );
 
     // TODO: Add coauthor gestion
     if (commonSpacesIds?.length > 0) {
@@ -415,10 +397,7 @@ export class HnAgentService {
     return this.agentRepository.save(agent);
   }
 
-  public async updateDescription(
-    id: string,
-    description: Record<string, any>
-  ): Promise<HnAgent> {
+  public async updateDescription(id: string, description: Record<string, any>): Promise<HnAgent> {
     const agent = await this.checkIfCreatorOrCoAuthorAndGetAgent(id);
     agent.description = description;
     return this.agentRepository.save(agent);
@@ -438,26 +417,18 @@ export class HnAgentService {
   public async updateLatestStyleWithEntityManager(
     agent: HnAgent,
     style: HnTypingStyle,
-    entityManager: EntityManager): Promise<HnAgent> {
+    entityManager: EntityManager
+  ): Promise<HnAgent> {
     agent.latestStyle = style;
     return entityManager.save(agent);
   }
 
-  public async checkIfCreatorOrCoAuthorAndGetAgent(
-    agentId: string
-  ): Promise<HnAgent> {
+  public async checkIfCreatorOrCoAuthorAndGetAgent(agentId: string): Promise<HnAgent> {
     const agent = await this.agentRepository.findOneBy({ id: agentId });
-    if (
-      !agent ||
-      agent.createdBy.id != HnCurrentUserHelper.getAndCheckCurrentUser().id
-    ) {
-      const coAuthors =
-        await this.agentCoAuthorService.getAgentCoAuthorsByAgentId(agentId);
+    if (!agent || agent.createdBy.id != HnCurrentUserHelper.getAndCheckCurrentUser().id) {
+      const coAuthors = await this.agentCoAuthorService.getAgentCoAuthorsByAgentId(agentId);
       if (
-        !coAuthors.some(
-          (coAuthor) =>
-            coAuthor.user.id === HnCurrentUserHelper.getAndCheckCurrentUser().id
-        )
+        !coAuthors.some((coAuthor) => coAuthor.user.id === HnCurrentUserHelper.getAndCheckCurrentUser().id)
       ) {
         throw new BlUnauthorizedException(
           `User ${
@@ -471,14 +442,9 @@ export class HnAgentService {
 
   public async checkIfCreatorAndGetAgent(agentId: string): Promise<HnAgent> {
     const agent = await this.agentRepository.findOneBy({ id: agentId });
-    if (
-      !agent ||
-      agent.createdBy.id != HnCurrentUserHelper.getAndCheckCurrentUser().id
-    ) {
+    if (!agent || agent.createdBy.id != HnCurrentUserHelper.getAndCheckCurrentUser().id) {
       throw new BlUnauthorizedException(
-        `User ${
-          HnCurrentUserHelper.getAndCheckCurrentUser().id
-        } is not the creator of agent ${agent.id}`
+        `User ${HnCurrentUserHelper.getAndCheckCurrentUser().id} is not the creator of agent ${agent.id}`
       );
     }
 
@@ -494,7 +460,6 @@ export class HnAgentService {
     agent.latestStyle = style;
     return this.agentRepository.save(agent);
   }
-
 
   //////////////////////////////////////// MIGRATIONS ////////////////////////////////////////
   public async getAgentsWithoutLatestStyle(): Promise<HnAgent[]> {

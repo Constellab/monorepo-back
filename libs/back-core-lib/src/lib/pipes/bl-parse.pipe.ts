@@ -1,5 +1,5 @@
-import {Injectable, PipeTransform} from '@nestjs/common';
-import {plainToClass} from 'class-transformer';
+import { Injectable, PipeTransform } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
 
 /**
  * Pipe to create an instance of the object and pass it
@@ -8,9 +8,7 @@ import {plainToClass} from 'class-transformer';
  */
 @Injectable()
 export class BlParsePipe<T> implements PipeTransform {
-
-  constructor(private classReference: new() => T) {
-  }
+  constructor(private classReference: new () => T) {}
 
   transform(value: any): T {
     return plainToClass(this.classReference, value);

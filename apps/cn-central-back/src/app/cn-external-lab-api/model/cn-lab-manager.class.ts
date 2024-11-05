@@ -1,7 +1,6 @@
 import { BlBucketConfig } from '@monorepo/back-core-lib';
 import { CnLabBackupFrequency } from '../../cn-labs/backup/cn-lab-backup.dto';
 
-
 /**
  * File that contains all the DTO to communicate with the lab manager
  */
@@ -9,7 +8,6 @@ export interface CnLabManagerDockerPs {
   names: string;
   state: 'running' | 'exited';
 }
-
 
 export interface CnLabManagerDockerPsFull extends CnLabManagerDockerPs {
   command: string;
@@ -26,7 +24,6 @@ export interface CnLabManagerDockerPsFull extends CnLabManagerDockerPs {
   status: string;
 }
 
-
 export interface CnLabManagerComposeUpOptions {
   updateContainers?: boolean;
   pruneSystem?: string;
@@ -39,7 +36,6 @@ export interface CnManagerLabComposeRestartOptions extends CnLabManagerComposeUp
 export interface CnManagerLabPullBiotaOptions {
   forceUpdate?: boolean;
 }
-
 
 /**
  * Object to config the lab manager required on init
@@ -80,7 +76,6 @@ export interface CnLabManagerInitConfig {
   captchaSiteKey: string;
   openaiApiKey: string;
 }
-
 
 export interface CnLabManagerTaskStatusInfo {
   name: string;
@@ -138,4 +133,3 @@ export interface CnLabManagerRestoreBackupDTO {
     force: boolean;
   };
 }
-

@@ -1,29 +1,30 @@
-import {BlEntityWithId} from '@monorepo/back-core-lib';
-import {HnAbstractLikeEntity} from './hn-abstract-like.entity';
-import {DataSource, EntityManager, Repository} from 'typeorm';
-import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
+import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { HnAbstractLikeEntity } from './hn-abstract-like.entity';
+import { DataSource, EntityManager, Repository } from 'typeorm';
+import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 
 export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
-
   repository: Repository<HnAbstractLikeEntity<BlEntityWithId>>;
   dataSource: DataSource;
 
-  protected constructor(_repository: Repository<HnAbstractLikeEntity<BlEntityWithId>>,
-                        _dataSource: DataSource) {
+  protected constructor(
+    _repository: Repository<HnAbstractLikeEntity<BlEntityWithId>>,
+    _dataSource: DataSource
+  ) {
     this.repository = _repository;
     this.dataSource = _dataSource;
   }
 
   abstract getEntityById(entityId: string): Promise<T>;
 
-  abstract addLike(entityManager: EntityManager,
-                   entity: T): Promise<BlEntityWithId>;
+  abstract addLike(entityManager: EntityManager, entity: T): Promise<BlEntityWithId>;
 
-  abstract removeLike(entityManager: EntityManager,
-                      entity: T): Promise<BlEntityWithId>;
+  abstract removeLike(entityManager: EntityManager, entity: T): Promise<BlEntityWithId>;
 
-  abstract saveLike(entityManager: EntityManager,
-                    like: HnAbstractLikeEntity<T>): Promise<HnAbstractLikeEntity<T>>;
+  abstract saveLike(
+    entityManager: EntityManager,
+    like: HnAbstractLikeEntity<T>
+  ): Promise<HnAbstractLikeEntity<T>>;
 
   abstract createLike(entity: T): HnAbstractLikeEntity<T>;
 
@@ -31,12 +32,12 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
     return await this.repository.findOne({
       where: {
         entity: {
-          id: entityId
+          id: entityId,
         },
         likedBy: {
-          id: HnCurrentUserHelper.getCurrentUser().id
-        }
-      }
+          id: HnCurrentUserHelper.getCurrentUser().id,
+        },
+      },
     });
   }
 
@@ -47,7 +48,7 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
 
   async like(entityId: string): Promise<BlEntityWithId> {
     if (await this.checkIfLiked(entityId)) {
-      throw new Error('Entity already liked')
+      throw new Error('Entity already liked');
     }
 
     const entity: T = await this.getEntityById(entityId);
@@ -58,7 +59,7 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
 
     const like: any = this.createLike(entity);
 
-    return await this.dataSource.transaction(async entityManager => {
+    return await this.dataSource.transaction(async (entityManager) => {
       const newLike = await this.saveLike(entityManager, like);
 
       if (!newLike) {
@@ -69,13 +70,13 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
   }
 
   async unlike(entityId: string): Promise<BlEntityWithId> {
-    if (!await this.checkIfLiked(entityId)) {
+    if (!(await this.checkIfLiked(entityId))) {
       throw new Error('Entity not liked');
     }
 
     const like: HnAbstractLikeEntity<BlEntityWithId> = await this.getLike(entityId);
 
-    return await this.dataSource.transaction(async entityManager => {
+    return await this.dataSource.transaction(async (entityManager) => {
       const removedLike = await entityManager.remove(like);
       if (!removedLike) {
         return null;

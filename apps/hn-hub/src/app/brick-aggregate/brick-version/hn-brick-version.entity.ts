@@ -1,17 +1,17 @@
-import {Column, Entity, ManyToOne, Unique} from 'typeorm';
-import {HnBaseEntity} from '../../core/model/entities/hn-base.entity';
-import {BlNotUpdatable, BlVersion} from '@monorepo/back-core-lib';
-import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
-import {HnBrickVersionRefState} from '../../brick-version-reference/hn-brick-version-reference.entity';
+import { Column, Entity, ManyToOne, Unique } from 'typeorm';
+import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
+import { BlNotUpdatable, BlVersion } from '@monorepo/back-core-lib';
+import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-version.entity';
+import { HnBrickVersionRefState } from '../../brick-version-reference/hn-brick-version-reference.entity';
 
 export enum HnRepoType {
   PIP = 'PIP',
-  GIT = 'GIT'
+  GIT = 'GIT',
 }
 
 export enum HnVersionType {
   NORMAL = 'NORMAL',
-  BETA = 'BETA'
+  BETA = 'BETA',
 }
 
 export class HnNewVersionDTO {
@@ -35,30 +35,34 @@ export interface HnReferenceDTO {
 @Unique(['brickMajorVersion', 'minor', 'patch', 'subPatch'])
 @Entity('brick_version')
 export class HnBrickVersion extends HnBaseEntity {
-
-  @Column({default: 0})
+  @Column({ default: 0 })
   minor: number;
 
-  @Column({default: 0})
+  @Column({ default: 0 })
   patch: number;
 
-  @Column({default: null, nullable: true})
+  @Column({ default: null, nullable: true })
   subPatch: number;
 
-  @Column({type: 'enum', enum: HnVersionType, nullable: false})
+  @Column({ type: 'enum', enum: HnVersionType, nullable: false })
   versionType: HnVersionType;
 
-  @Column({type: 'enum', enum: HnRepoType, nullable: false})
+  @Column({ type: 'enum', enum: HnRepoType, nullable: false })
   repoType: HnRepoType;
 
   @BlNotUpdatable()
-  @ManyToOne(() => HnBrickMajorVersion, {eager: true, onDelete: 'CASCADE'})
+  @ManyToOne(() => HnBrickMajorVersion, { eager: true, onDelete: 'CASCADE' })
   brickMajorVersion: HnBrickMajorVersion;
 
-  @Column({name: 'technicalInfo', type: 'simple-json', nullable: true})
+  @Column({ name: 'technicalInfo', type: 'simple-json', nullable: true })
   technicalInfo?: Record<string, any>;
 
-  initialize(brickMajorVersion: HnBrickMajorVersion, version: BlVersion, repoType: HnRepoType, technicalInfo: Record<string, any>): void {
+  initialize(
+    brickMajorVersion: HnBrickMajorVersion,
+    version: BlVersion,
+    repoType: HnRepoType,
+    technicalInfo: Record<string, any>
+  ): void {
     this.brickMajorVersion = brickMajorVersion;
     this.version = version;
     this.repoType = repoType;
@@ -66,8 +70,12 @@ export class HnBrickVersion extends HnBaseEntity {
   }
 
   public get version(): BlVersion {
-    return new BlVersion(this.brickMajorVersion.major, this.minor, this.patch,
-      this.versionType === HnVersionType.BETA ? this.subPatch : null);
+    return new BlVersion(
+      this.brickMajorVersion.major,
+      this.minor,
+      this.patch,
+      this.versionType === HnVersionType.BETA ? this.subPatch : null
+    );
   }
 
   public set version(version: BlVersion) {
@@ -81,5 +89,4 @@ export class HnBrickVersion extends HnBaseEntity {
       this.versionType = HnVersionType.NORMAL;
     }
   }
-
 }

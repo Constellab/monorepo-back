@@ -1,4 +1,13 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, Relation } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+  Relation,
+} from 'typeorm';
 import { CnLabEntity } from '../cn-lab.entity';
 import { ClDateHelper } from '@monorepo/core-lib';
 import { DateTime } from 'luxon';
@@ -7,10 +16,9 @@ import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper'
 import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 
-
 export enum CnLabUserRole {
   OWNER = 'OWNER',
-  USER = 'USER'
+  USER = 'USER',
 }
 
 /**
@@ -18,33 +26,33 @@ export enum CnLabUserRole {
  */
 @Entity('lab_user')
 export class CnLabUser {
-
   @PrimaryColumn()
   labId: string;
 
-  @JoinColumn({name: 'labId'})
-  @ManyToOne(() => CnLabEntity,
-    lab => lab.sharedGroups, {onDelete: 'CASCADE'})
+  @JoinColumn({ name: 'labId' })
+  @ManyToOne(() => CnLabEntity, (lab) => lab.sharedGroups, { onDelete: 'CASCADE' })
   lab: CnLabEntity;
 
   @PrimaryColumn()
   userId: string;
 
-  @JoinColumn({name: 'userId'})
+  @JoinColumn({ name: 'userId' })
   @ManyToOne(() => CnUserEntity)
   user: CnUser;
 
   @Column({
-    type: 'enum', enum: CnLabUserRole, nullable: false,
-    default: CnLabUserRole.USER
+    type: 'enum',
+    enum: CnLabUserRole,
+    nullable: false,
+    default: CnLabUserRole.USER,
   })
   role: CnLabUserRole;
 
-  @BlLuxonDateTimeColumn({nullable: false, update: false})
+  @BlLuxonDateTimeColumn({ nullable: false, update: false })
   createdAt: DateTime;
 
   @Type(() => CnUserEntity)
-  @ManyToOne(() => CnUserEntity, {eager: true, nullable: false})
+  @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   @BlNotUpdatable()
   createdBy: Relation<CnUser>;
 
@@ -52,7 +60,7 @@ export class CnLabUser {
   lastModifiedAt: DateTime;
 
   @Type(() => CnUserEntity)
-  @ManyToOne(() => CnUserEntity, {eager: true})
+  @ManyToOne(() => CnUserEntity, { eager: true })
   lastModifiedBy: Relation<CnUser>;
 
   @BeforeInsert()

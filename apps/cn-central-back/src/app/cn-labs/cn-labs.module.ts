@@ -66,7 +66,7 @@ import { CnLabStatsAggregateService } from './stats/cn-lab-stats-aggregate.servi
       CnLabBackupOption,
       CnLabBackupHistoryEntity,
       CnLabBackupHistoryDetail,
-      CnLabVolumeEntity
+      CnLabVolumeEntity,
     ]),
 
     CnCoreModule,
@@ -90,7 +90,7 @@ import { CnLabStatsAggregateService } from './stats/cn-lab-stats-aggregate.servi
     CnServerCloudModule,
     CnSpacesModule,
 
-    HttpModule
+    HttpModule,
   ],
   providers: [
     CnLabsService,
@@ -121,13 +121,7 @@ import { CnLabStatsAggregateService } from './stats/cn-lab-stats-aggregate.servi
     CnLabStatusHistoryService,
     CnLabStatsAggregateService,
   ],
-  exports: [
-    CnLabsService,
-    CnLabAggregateService,
-    CnLabMailService,
-    CnLabUserService
-  ],
-  controllers: [CnLabsController]
+  exports: [CnLabsService, CnLabAggregateService, CnLabMailService, CnLabUserService],
+  controllers: [CnLabsController],
 })
-export class CnLabsModule {
-}
+export class CnLabsModule {}

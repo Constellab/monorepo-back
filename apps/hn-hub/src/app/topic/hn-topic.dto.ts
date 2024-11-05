@@ -1,4 +1,4 @@
-export class HnTopicDto{
+export class HnTopicDto {
   id?: string;
   name: string;
 }

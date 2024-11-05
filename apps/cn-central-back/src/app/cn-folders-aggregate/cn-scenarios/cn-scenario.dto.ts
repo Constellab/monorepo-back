@@ -8,7 +8,6 @@ import { CnEntityDTO } from '../../cn-core/model/entities/cn.entity';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { BlRichTextContent, BlRichTextI } from '@monorepo/back-core-lib';
 
-
 /**
  * Scenario object from the Lab
  */
@@ -46,13 +45,11 @@ export class CnSaveScenarioDto {
 }
 
 export class CnCreateLabScenarioDto {
-
   @Type(() => CnSaveScenarioDto)
   scenario: CnSaveScenarioDto;
   protocol: CnScenarioProtocol;
   lab_config: CnLabConfigDto;
 }
-
 
 // scenario object smaller
 export class CnScenarioDto extends CnEntityDTO {
@@ -66,7 +63,6 @@ export class CnScenarioDto extends CnEntityDTO {
 
   @ClLuxonDateTimeTransform()
   lastSyncAt?: DateTime;
-
 
   copyEntity(entity: CnScenario): this {
     super.copyEntity(entity);

@@ -15,18 +15,17 @@ import { BlBadRequestException } from '@monorepo/back-core-lib';
  */
 @Injectable()
 export class CnLabConfigurerService {
-
   private readonly logger = new Logger(CnLabConfigurerService.name);
 
-  constructor(private labService: CnLabsService,
-              private coreConfigService: CnCoreConfigService,
-              private labManagerService: CnLabManagerService,
-              private cloudProviderFactory: CnCloudProviderFactory) {
-  }
+  constructor(
+    private labService: CnLabsService,
+    private coreConfigService: CnCoreConfigService,
+    private labManagerService: CnLabManagerService,
+    private cloudProviderFactory: CnCloudProviderFactory
+  ) {}
 
   public async configureServer(lab: CnLab): Promise<CnLab> {
     try {
-
       const sshService = await this.cloudProviderFactory.getSshLabService(lab);
 
       // get lab configurer repository
@@ -48,10 +47,12 @@ export class CnLabConfigurerService {
 
       // wait for lab manager
       await this.labManagerService.waitForHealthCheck(lab.getLabManagerApiInfo().apiUrl);
-
     } catch (e) {
-      await this.labService.updateServerTask(lab.id, `Error during server configuration. Error : ${e}`,
-        CnLabServerTaskStatus.ERROR);
+      await this.labService.updateServerTask(
+        lab.id,
+        `Error during server configuration. Error : ${e}`,
+        CnLabServerTaskStatus.ERROR
+      );
       throw e;
     }
     return lab;
@@ -64,11 +65,18 @@ export class CnLabConfigurerService {
     try {
       await this.refreshLabConfigurerRepo(sshService, lab.id);
     } catch (e) {
-      await this.labService.updateServerTask(lab.id, `Error while updating lab-configurer repository. Error : ${e}`,
-        CnLabServerTaskStatus.ERROR);
+      await this.labService.updateServerTask(
+        lab.id,
+        `Error while updating lab-configurer repository. Error : ${e}`,
+        CnLabServerTaskStatus.ERROR
+      );
       throw new Error(`Error while updating lab-configurer repository. Error : ${e}`);
     }
-    await this.labService.updateServerTask(lab.id, `lab-configurer repository updated`, CnLabServerTaskStatus.SUCCESS);
+    await this.labService.updateServerTask(
+      lab.id,
+      `lab-configurer repository updated`,
+      CnLabServerTaskStatus.SUCCESS
+    );
   }
 
   /**
@@ -76,20 +84,32 @@ export class CnLabConfigurerService {
    * @private
    */
   private async refreshLabConfigurerRepo(labSshService: CnLabSshService, labId: string): Promise<void> {
-    const cdResult = await labSshService.execSshCommand([`cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`],
-      { errorMode: CnExecCommandMode.STDERR_AS_SUCCESS, ignoreError: true, timeout: 10000 });
+    const cdResult = await labSshService.execSshCommand([`cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`], {
+      errorMode: CnExecCommandMode.STDERR_AS_SUCCESS,
+      ignoreError: true,
+      timeout: 10000,
+    });
 
     // todo does not work if this is the first time the ssh connection is made
     // if the repo does exist, delete it to re-clone it
     if (cdResult === '') {
-      await this.labService.updateServerTask(labId, `Deleting lab-configurer repository`,
-        CnLabServerTaskStatus.RUNNING);
+      await this.labService.updateServerTask(
+        labId,
+        `Deleting lab-configurer repository`,
+        CnLabServerTaskStatus.RUNNING
+      );
       await labSshService.execSshCommand([`rm -rf ${CnLabSshService.LAB_CONFIGURER_FOLDER}`]);
     }
     // clone the repo
-    await this.labService.updateServerTask(labId, `Pulling lab-configurer repository`, CnLabServerTaskStatus.RUNNING);
+    await this.labService.updateServerTask(
+      labId,
+      `Pulling lab-configurer repository`,
+      CnLabServerTaskStatus.RUNNING
+    );
     // Git clone
-    await labSshService.execSshCommand([`git clone -b ${this.coreConfigService.getLabConfigurerRepoBranch()} ${this.coreConfigService.getLabConfigurerRepoUrl()}`]);
+    await labSshService.execSshCommand([
+      `git clone -b ${this.coreConfigService.getLabConfigurerRepoBranch()} ${this.coreConfigService.getLabConfigurerRepoUrl()}`,
+    ]);
   }
 
   private async mountVolume(lab: CnLab): Promise<void> {
@@ -104,10 +124,13 @@ export class CnLabConfigurerService {
   }
 
   private async callPrepareServer(labSshService: CnLabSshService, labId: string): Promise<void> {
-    await this.labService.updateServerTask(labId, `Prepare and configure server`, CnLabServerTaskStatus.RUNNING);
+    await this.labService.updateServerTask(
+      labId,
+      `Prepare and configure server`,
+      CnLabServerTaskStatus.RUNNING
+    );
     try {
-      await labSshService.execSshCommand([`cd ${labSshService.getUtilsFolder()}`,
-        `bash prepare_server.sh`]);
+      await labSshService.execSshCommand([`cd ${labSshService.getUtilsFolder()}`, `bash prepare_server.sh`]);
     } catch (e) {
       throw new Error(`Error while preparing server. Error : ${e}`);
     }
@@ -118,8 +141,10 @@ export class CnLabConfigurerService {
     await this.labService.updateServerTask(labId, `Rebooting server`, CnLabServerTaskStatus.RUNNING);
 
     try {
-      await labSshService.execSshCommand(['sudo reboot'],
-        { errorMode: CnExecCommandMode.STDERR_AS_SUCCESS, ignoreError: true });
+      await labSshService.execSshCommand(['sudo reboot'], {
+        errorMode: CnExecCommandMode.STDERR_AS_SUCCESS,
+        ignoreError: true,
+      });
 
       await labSshService.waitForSshConnection(3);
     } catch (e) {
@@ -127,26 +152,30 @@ export class CnLabConfigurerService {
     }
   }
 
-
   private async callInitScript(labSshService: CnLabSshService, lab: CnLab): Promise<void> {
-
     const variables = [
       `--virtual-host="${lab.virtualHost}"`,
       `--environment-profile="${this.coreConfigService.isProduction() ? 'prod' : 'pre-prod'}"`,
       `--lab-manager-api-key="${lab.labManagerApiKey}"`,
-      `--lab-manager-version="${this.coreConfigService.getLabManagerRecommendedVersion()}"`
+      `--lab-manager-version="${this.coreConfigService.getLabManagerRecommendedVersion()}"`,
     ];
 
     this.logger.log(`Run init.sh file for lab ${lab.id}`);
-    await labSshService.execSshCommand([`bash ${labSshService.getUtilsFolder()}/init.sh ${variables.join(' ')}`],
-      undefined, false);
+    await labSshService.execSshCommand(
+      [`bash ${labSshService.getUtilsFolder()}/init.sh ${variables.join(' ')}`],
+      undefined,
+      false
+    );
   }
 
   private async callDockerComposeUp(labSshService: CnLabSshService, labId: string): Promise<void> {
     // execute docker compose up
     await this.labService.updateServerTask(labId, `Starting lab manager`, CnLabServerTaskStatus.RUNNING);
     try {
-      await labSshService.execSshCommand([`cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`, 'docker-compose up -d']);
+      await labSshService.execSshCommand([
+        `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
+        'docker-compose up -d',
+      ]);
     } catch (e) {
       throw new Error(`Error while starting lab manager. Error : ${e}`);
     }
@@ -155,12 +184,17 @@ export class CnLabConfigurerService {
   public async updateLabManager(lab: CnLab, labManagerVersion: string): Promise<void> {
     const labSshService = await this.cloudProviderFactory.getSshLabService(lab);
 
-    await this.labService.updateServerTask(lab.id, `Updating lab manager to version ${labManagerVersion}`,
-      CnLabServerTaskStatus.RUNNING);
+    await this.labService.updateServerTask(
+      lab.id,
+      `Updating lab manager to version ${labManagerVersion}`,
+      CnLabServerTaskStatus.RUNNING
+    );
 
     try {
-      await labSshService.execSshCommand(
-        [`cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`, `. update_lab_manager.sh ${labManagerVersion}`]);
+      await labSshService.execSshCommand([
+        `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
+        `. update_lab_manager.sh ${labManagerVersion}`,
+      ]);
     } catch (e) {
       const error = `Error while updating lab manager. Error : ${e}`;
       await this.labService.updateServerTask(lab.id, error, CnLabServerTaskStatus.ERROR);
@@ -176,7 +210,10 @@ export class CnLabConfigurerService {
     await this.labService.updateServerTask(lab.id, `Destroying containers`, CnLabServerTaskStatus.RUNNING);
 
     try {
-      await labSshService.execSshCommand([`cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`, 'docker-compose down']);
+      await labSshService.execSshCommand([
+        `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
+        'docker-compose down',
+      ]);
     } catch (e) {
       const error = `Error while destroying containers. Error : ${e}`;
       await this.labService.updateServerTask(lab.id, error, CnLabServerTaskStatus.ERROR);
@@ -196,7 +233,6 @@ export class CnLabConfigurerService {
       await labSshService.execSshCommand([`cd dockerlab`, 'docker-compose down']);
 
       await labSshService.execSshCommand([`rm -rf dockerlab`]);
-
     } catch (e) {
       const error = `Error migrating to github. Error : ${e}`;
       await this.labService.updateServerTask(lab.id, error, CnLabServerTaskStatus.ERROR);
@@ -208,5 +244,4 @@ export class CnLabConfigurerService {
 
     await this.labService.updateServerTask(lab.id, `Migrate Success`, CnLabServerTaskStatus.SUCCESS);
   }
-
 }

@@ -1,14 +1,17 @@
-import {CorsOptions} from '@nestjs/common/interfaces/external/cors-options.interface';
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
-export function blGetCorsConfig(domains: string[], isLocal: boolean, additionalAllowedHeader: string[] = []): CorsOptions {
-
+export function blGetCorsConfig(
+  domains: string[],
+  isLocal: boolean,
+  additionalAllowedHeader: string[] = []
+): CorsOptions {
   let origin: (RegExp | string)[];
   if (isLocal) {
     origin = [/^(.*)/];
   } else {
     // convert the domains to regex
-    const originRegex = domains.map(domain => new RegExp(`https:\\/\\/.*\\.${domain.replace('.', '\\.')}`));
-    const exactOrigin = domains.map(domain => new RegExp(`https:\\/\\/${domain.replace('.', '\\.')}`));
+    const originRegex = domains.map((domain) => new RegExp(`https:\\/\\/.*\\.${domain.replace('.', '\\.')}`));
+    const exactOrigin = domains.map((domain) => new RegExp(`https:\\/\\/${domain.replace('.', '\\.')}`));
     origin = [...originRegex, ...exactOrigin, 'http://localhost:4200'];
   }
 
@@ -24,4 +27,3 @@ export function blGetCorsConfig(domains: string[], isLocal: boolean, additionalA
       (additionalAllowedHeader.length > 0 ? ',' + additionalAllowedHeader.join(',') : ''),
   };
 }
-

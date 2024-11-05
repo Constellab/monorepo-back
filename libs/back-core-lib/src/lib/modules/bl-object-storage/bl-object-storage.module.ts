@@ -4,15 +4,8 @@ import { BlExternalApiModule } from '../bl-external-api/bl-external-api.module';
 
 @Global()
 @Module({
-  imports: [
-    BlExternalApiModule
-  ],
-  providers: [
-    BlObjectStorageService
-  ],
-  exports: [
-    BlObjectStorageService
-  ]
+  imports: [BlExternalApiModule],
+  providers: [BlObjectStorageService],
+  exports: [BlObjectStorageService],
 })
-export class BlObjectStorageModule {
-}
+export class BlObjectStorageModule {}

@@ -2,57 +2,68 @@ import { BeforeInsert, Column, Entity, ManyToMany, ManyToOne, OneToOne } from 't
 import { Exclude } from 'class-transformer';
 import type { CnGroupSingleUser, CnGroupTeam } from '../cn-groups/cn-group.entity';
 import * as argon2 from 'argon2';
-import { ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
+import {
+  ClDateHelper,
+  clDefaultLang,
+  clDefaultTheme,
+  ClSupportedLanguage,
+  ClTheme,
+} from '@monorepo/core-lib';
 import { DateTime } from 'luxon';
-import { BlEntityWithId, BlLuxonDateTimeColumn, BlUser, BlUserCategory, BlUserStatus } from '@monorepo/back-core-lib';
+import {
+  BlEntityWithId,
+  BlLuxonDateTimeColumn,
+  BlUser,
+  BlUserCategory,
+  BlUserStatus,
+} from '@monorepo/back-core-lib';
 import { CnSpaceUser } from '../cn-spaces/cn-space-user.entity';
 import { CnSpace } from '../cn-spaces/cn-space.entity';
 
 export enum CnUserLicense {
   FREE = 'FREE',
-  ENTERPRISE = 'ENTERPRISE'
+  ENTERPRISE = 'ENTERPRISE',
 }
 
 @Entity('user')
 export class CnUserEntity extends BlEntityWithId implements BlUser {
-
-  @Column({nullable: false, length: 50})
+  @Column({ nullable: false, length: 50 })
   firstname: string;
 
-  @Column({nullable: false, length: 50})
+  @Column({ nullable: false, length: 50 })
   lastname: string;
 
-  @Column({unique: true, nullable: false, update: false})
+  @Column({ unique: true, nullable: false, update: false })
   email: string;
 
-  @Exclude({toPlainOnly: true})
-  @Column({nullable: false})
+  @Exclude({ toPlainOnly: true })
+  @Column({ nullable: false })
   password: string;
 
-  @Column({nullable: false, type: 'enum', enum: BlUserCategory})
+  @Column({ nullable: false, type: 'enum', enum: BlUserCategory })
   category: BlUserCategory;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   activity: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   biography: string;
 
   @Exclude()
-  @Column({nullable: false, default: 0})
+  @Column({ nullable: false, default: 0 })
   failedLoginCount: number;
 
   @Exclude()
-  @BlLuxonDateTimeColumn({nullable: true})
+  @BlLuxonDateTimeColumn({ nullable: true })
   lastLoginAttempt: DateTime;
 
-  @BlLuxonDateTimeColumn({nullable: true})
+  @BlLuxonDateTimeColumn({ nullable: true })
   lastLoginSuccess: DateTime;
 
-  @Column({nullable: false, type: 'enum', enum: ClSupportedLanguage, default: clDefaultLang})
+  @Column({ nullable: false, type: 'enum', enum: ClSupportedLanguage, default: clDefaultLang })
   lang: ClSupportedLanguage;
 
-  @Column({nullable: false, type: 'enum', enum: ClTheme, default: clDefaultTheme})
+  @Column({ nullable: false, type: 'enum', enum: ClTheme, default: clDefaultTheme })
   theme: ClTheme;
 
   // use the string name and import type to avoid circular dependency
@@ -60,40 +71,38 @@ export class CnUserEntity extends BlEntityWithId implements BlUser {
   groups: CnGroupTeam[];
 
   @Exclude()
-  @OneToOne('CnGroupSingleUser',
-    (group: CnGroupSingleUser) => group.user)
+  @OneToOne('CnGroupSingleUser', (group: CnGroupSingleUser) => group.user)
   ownGroup: CnGroupSingleUser;
 
-  @Column({nullable: false, type: 'enum', enum: BlUserStatus, default: BlUserStatus.WAITING_FOR_EMAIL})
+  @Column({ nullable: false, type: 'enum', enum: BlUserStatus, default: BlUserStatus.WAITING_FOR_EMAIL })
   status: BlUserStatus;
 
-  @BlLuxonDateTimeColumn({nullable: false, update: false})
+  @BlLuxonDateTimeColumn({ nullable: false, update: false })
   createdAt: DateTime;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   photo: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   company: string;
 
   @Exclude()
-  @Column({default: false})
+  @Column({ default: false })
   has2FA: boolean;
 
-  @Column({nullable: true, length: 50})
+  @Column({ nullable: true, length: 50 })
   phone: string;
 
-  @Column({nullable: false, type: 'enum', enum: CnUserLicense, default: CnUserLicense.FREE})
+  @Column({ nullable: false, type: 'enum', enum: CnUserLicense, default: CnUserLicense.FREE })
   license: CnUserLicense;
 
   // last space the user was connected to
   @Exclude()
-  @ManyToOne(() => CnSpace, {onDelete: 'SET NULL', nullable: true})
+  @ManyToOne(() => CnSpace, { onDelete: 'SET NULL', nullable: true })
   lastConnectedSpace?: CnSpace;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   lastConnectedSpaceId?: string;
-
 
   //////////////////// TRANSIENT METHODS //////////////////
 

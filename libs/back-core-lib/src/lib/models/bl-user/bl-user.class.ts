@@ -1,7 +1,6 @@
-import {ClSupportedLanguage} from '@monorepo/core-lib';
+import { ClSupportedLanguage } from '@monorepo/core-lib';
 
 export interface BlUser {
-
   id: string;
   email: string;
   firstname: string;
@@ -9,6 +8,6 @@ export interface BlUser {
   lang: ClSupportedLanguage;
 }
 
-export interface BlUserDto{
+export interface BlUserDto {
   id: string;
 }

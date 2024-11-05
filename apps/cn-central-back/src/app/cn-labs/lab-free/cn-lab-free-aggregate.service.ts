@@ -17,21 +17,22 @@ import { CnSpace } from '../../cn-spaces/cn-space.entity';
  */
 @Injectable()
 export class CnLabFreeAggregateService {
-
-
-  constructor(private labFreeService: CnLabFreeService,
-              private datasource: DataSource,
-              private labAggregateService: CnLabAggregateService,
-              private labFactoryService: CnLabFactoryService) {
-  }
+  constructor(
+    private labFreeService: CnLabFreeService,
+    private datasource: DataSource,
+    private labAggregateService: CnLabAggregateService,
+    private labFactoryService: CnLabFactoryService
+  ) {}
 
   public async createFreeLabCurrentUser(): Promise<CnLab> {
-    return await this.createFreeLabEntity(CnCurrentUserHelper.getAndCheckCurrentUser(),
-      CnCurrentUserHelper.getAndCheckCurrentSpace());
+    return await this.createFreeLabEntity(
+      CnCurrentUserHelper.getAndCheckCurrentUser(),
+      CnCurrentUserHelper.getAndCheckCurrentSpace()
+    );
   }
 
   public async createFreeLab(labFreeCreateDto: CnLabFreeCreateDto): Promise<CnLab> {
-    if(!CnCurrentUserHelper.isAdmin()){
+    if (!CnCurrentUserHelper.isAdmin()) {
       throw new BlUnauthorizedException();
     }
 
@@ -41,8 +42,7 @@ export class CnLabFreeAggregateService {
   private async createFreeLabEntity(user: CnUser, space: CnSpace): Promise<CnLab> {
     const labFree = await this.labFreeService.findFreeLabForUser(user.id);
     if (labFree != null) {
-      throw new BlBadRequestException(
-        'You already have a free lab, you can\'t create another free lab.');
+      throw new BlBadRequestException("You already have a free lab, you can't create another free lab.");
     }
 
     if (space.isEntrepriseSpace()) {
@@ -60,10 +60,10 @@ export class CnLabFreeAggregateService {
       cloudProvider: {
         name: CnLabFree.CLOUD_PROVIDER,
         region: CnLabFree.CLOUD_PROVIDER_REGION,
-        instanceType: CnLabFree.CLOUD_PROVIDER_INSTANCE_TYPE
+        instanceType: CnLabFree.CLOUD_PROVIDER_INSTANCE_TYPE,
       },
-      bricks: CnLabFree.BRICKS.map(brick => ({ name: brick })),
-      isFreeLab: true
+      bricks: CnLabFree.BRICKS.map((brick) => ({ name: brick })),
+      isFreeLab: true,
     };
 
     const labDb = await this.datasource.transaction(async (entityManager) => {

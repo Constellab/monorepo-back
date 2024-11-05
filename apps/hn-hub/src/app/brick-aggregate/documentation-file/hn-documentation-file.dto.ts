@@ -1,8 +1,8 @@
-import {BlEntityWithId} from '@monorepo/back-core-lib';
-import {HnDocumentationDto} from '../documentation/hn-documentation.dto';
-import {HnDocumentationFile} from './hn-documentation-file.entity';
+import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { HnDocumentationDto } from '../documentation/hn-documentation.dto';
+import { HnDocumentationFile } from './hn-documentation-file.entity';
 
-export class HnDocumentationFileDto extends BlEntityWithId{
+export class HnDocumentationFileDto extends BlEntityWithId {
   humanName: string;
   fileName: string;
   documentation: HnDocumentationDto;

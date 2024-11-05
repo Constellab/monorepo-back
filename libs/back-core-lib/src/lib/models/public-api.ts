@@ -17,4 +17,3 @@ export * from './bl-rich-text-block-modification.class';
 export * from './bl-rich-text-block-modification.dto';
 export * from './bl-rich-text.class';
 export * from './bl-version.class';
-

@@ -3,9 +3,7 @@ import { CnLabBackupHistoryService } from './cn-lab-backup-history.service';
 import { CnLabBackupOptionService } from './cn-lab-backup-option.service';
 import { DataSource, EntityManager } from 'typeorm';
 import { CnLab } from '../cn-lab.entity';
-import {
-  CnCloudProviderRegion
-} from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import { CnCloudProviderRegion } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnLabBackupOption } from './cn-lab-backup-option.entity';
 import { CnLabBackupHistory } from './cn-lab-backup-history.entity';
 import { BlBadRequestException, BlObjectStorageService } from '@monorepo/back-core-lib';
@@ -17,39 +15,46 @@ import {
   CnLabBackupStatus,
   CnLabBackupStatusDTO,
   CnLabCheckBackupSizeDTO,
-  CnSaveBackupHistoryDTO
+  CnSaveBackupHistoryDTO,
 } from './cn-lab-backup.dto';
 import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 import {
   CnLabManagerBackupInfoDTO,
   CnLabManagerRestoreBackupConfigDTO,
-  CnLabManagerRestoreBackupDTO
+  CnLabManagerRestoreBackupDTO,
 } from '../../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLabMailService } from '../mail/cn-lab-mail.service';
-
 
 @Injectable()
 export class CnLabBackupAggregateService {
   private readonly logger = new Logger(CnLabBackupAggregateService.name);
 
-  constructor(private backupHistoryService: CnLabBackupHistoryService,
-              private backupOptionService: CnLabBackupOptionService,
-              private labManagerService: CnLabManagerService,
-              private objectStorageService: BlObjectStorageService,
-              private datasource: DataSource,
-              private labMailService: CnLabMailService) {
-  }
+  constructor(
+    private backupHistoryService: CnLabBackupHistoryService,
+    private backupOptionService: CnLabBackupOptionService,
+    private labManagerService: CnLabManagerService,
+    private objectStorageService: BlObjectStorageService,
+    private datasource: DataSource,
+    private labMailService: CnLabMailService
+  ) {}
 
   //////////////////////////// BACKUP OPTIONS ////////////////////////////
 
   /**
    * Create 2 backup options for the lab to store backup in 2 different s3 regions
    */
-  public async createBackupOptions(lab: CnLab, dailyBackupRegion: CnCloudProviderRegion,
-                                   weeklyBackupRegion: CnCloudProviderRegion,
-                                   entityManager: EntityManager): Promise<CnLabBackupOption> {
-    return this.backupOptionService.createBackupOptions(lab, dailyBackupRegion,
-      weeklyBackupRegion, entityManager);
+  public async createBackupOptions(
+    lab: CnLab,
+    dailyBackupRegion: CnCloudProviderRegion,
+    weeklyBackupRegion: CnCloudProviderRegion,
+    entityManager: EntityManager
+  ): Promise<CnLabBackupOption> {
+    return this.backupOptionService.createBackupOptions(
+      lab,
+      dailyBackupRegion,
+      weeklyBackupRegion,
+      entityManager
+    );
   }
 
   /**
@@ -61,13 +66,17 @@ export class CnLabBackupAggregateService {
 
     for (const status of backupStatus) {
       if (status.status !== 'NONE') {
-        throw new BlBadRequestException('Cannot delete the backup options some backup are referenced ' +
-          'in the history. Please delete the lab backup first.');
+        throw new BlBadRequestException(
+          'Cannot delete the backup options some backup are referenced ' +
+            'in the history. Please delete the lab backup first.'
+        );
       }
 
       if (status.nbDocumentsInBucket > 0 || status.sizeInBucket > 0) {
-        throw new BlBadRequestException('Cannot delete the backup options because some backups ' +
-          'file still exists. Please delete the lab backup first.');
+        throw new BlBadRequestException(
+          'Cannot delete the backup options because some backups ' +
+            'file still exists. Please delete the lab backup first.'
+        );
       }
     }
 
@@ -88,8 +97,11 @@ export class CnLabBackupAggregateService {
     return [backupStatus1, backupStatus2];
   }
 
-  private async getBackupStatus(lab: CnLab, frequency: CnLabBackupFrequency,
-                                region: CnCloudProviderRegion): Promise<CnLabBackupStatusDTO> {
+  private async getBackupStatus(
+    lab: CnLab,
+    frequency: CnLabBackupFrequency,
+    region: CnCloudProviderRegion
+  ): Promise<CnLabBackupStatusDTO> {
     const backupStatus = new CnLabBackupStatusDTO();
     backupStatus.frequency = frequency;
     backupStatus.region = region;
@@ -121,8 +133,11 @@ export class CnLabBackupAggregateService {
     await this.checkErrorHistory(histories, lab);
   }
 
-
-  public async getBackupHistory(labId: string, page: number, size: number): Promise<ClPageI<CnLabBackupHistory>> {
+  public async getBackupHistory(
+    labId: string,
+    page: number,
+    size: number
+  ): Promise<ClPageI<CnLabBackupHistory>> {
     return this.backupHistoryService.getBackupHistory(labId, page, size);
   }
 
@@ -130,10 +145,13 @@ export class CnLabBackupAggregateService {
     return this.backupHistoryService.getAllBackupHistory(labId);
   }
 
-  public async saveBackupHistory(lab: CnLab, backupsHistory: CnLabBackupsHistory): Promise<CnLabBackupHistory[]> {
+  public async saveBackupHistory(
+    lab: CnLab,
+    backupsHistory: CnLabBackupsHistory
+  ): Promise<CnLabBackupHistory[]> {
     const histories = await this.backupHistoryService.saveHistories(backupsHistory, lab);
     await this.checkErrorHistory(histories, lab);
-    return histories.map(h => h.history);
+    return histories.map((h) => h.history);
   }
 
   /**
@@ -157,7 +175,7 @@ export class CnLabBackupAggregateService {
   public async stopCurrentBackup(lab: CnLab): Promise<CnLabBackupHistory[]> {
     const backup = await this.labManagerService.stopCurrentBackup(lab);
     const histories = await this.backupHistoryService.saveHistories(backup, lab);
-    return histories.map(h => h.history);
+    return histories.map((h) => h.history);
   }
 
   public async createProdBackup(lab: CnLab): Promise<CnLabBackupHistory[]> {
@@ -167,11 +185,10 @@ export class CnLabBackupAggregateService {
     const backups = await this.labManagerService.createProdBackup(lab, backupInfo);
 
     const histories = await this.backupHistoryService.saveHistories(backups, lab);
-    return histories.map(h => h.history);
+    return histories.map((h) => h.history);
   }
 
   public async getBackupInfo(lab: CnLab): Promise<CnLabManagerBackupInfoDTO> {
-
     // get or create the bucket associated with this lab
     const options = await this.backupOptionService.findByLabId(lab.id);
 
@@ -187,13 +204,13 @@ export class CnLabBackupAggregateService {
       backupBuckets: [
         {
           backupFrequency: options.frequency1,
-          bucketConfig: options.bucket1.getBucketConfig()
+          bucketConfig: options.bucket1.getBucketConfig(),
         },
         {
           backupFrequency: options.frequency2,
-          bucketConfig: options.bucket2.getBucketConfig()
-        }
-      ]
+          bucketConfig: options.bucket2.getBucketConfig(),
+        },
+      ],
     };
   }
 
@@ -212,14 +229,23 @@ export class CnLabBackupAggregateService {
     return backupSizes;
   }
 
-  private async checkBackupSize(lab: CnLab, frequency: CnLabBackupFrequency,
-                                bucket: CnBucket): Promise<CnLabCheckBackupSizeDTO> {
+  private async checkBackupSize(
+    lab: CnLab,
+    frequency: CnLabBackupFrequency,
+    bucket: CnBucket
+  ): Promise<CnLabCheckBackupSizeDTO> {
     const prefix = this.backupOptionService.getBackupS3Prefix(lab);
     const objectsInfo = await this.objectStorageService.getObjectsSizeByPrefix(
-      bucket.getBucketConfig(), prefix);
+      bucket.getBucketConfig(),
+      prefix
+    );
     const backup1Status = await this.getBackupStatus(lab, frequency, bucket.region);
 
-    return CnLabCheckBackupSizeDTO.fromBackupStatusDTO(backup1Status, objectsInfo.totalSize, objectsInfo.nbObjects);
+    return CnLabCheckBackupSizeDTO.fromBackupStatusDTO(
+      backup1Status,
+      objectsInfo.totalSize,
+      objectsInfo.nbObjects
+    );
   }
 
   /**
@@ -241,15 +267,23 @@ export class CnLabBackupAggregateService {
   /**
    * Delete a lab backup for a bucket
    */
-  private async deleteLabBackupInBucket(bucket: CnBucket, prefix: string,
-                                        lab: CnLab, frequency: CnLabBackupFrequency): Promise<void> {
+  private async deleteLabBackupInBucket(
+    bucket: CnBucket,
+    prefix: string,
+    lab: CnLab,
+    frequency: CnLabBackupFrequency
+  ): Promise<void> {
     this.logger.log(`Deleting backup for lab ${lab.id}, bucket : ${bucket.id}`);
     try {
       await this.objectStorageService.deleteObjectsByPrefix(bucket.getBucketConfig(), prefix);
     } catch (e) {
-      Logger.error(`Error while deleting the backup file in bucket ${bucket.id} for lab ${lab.id}. Error ${e}`);
+      Logger.error(
+        `Error while deleting the backup file in bucket ${bucket.id} for lab ${lab.id}. Error ${e}`
+      );
       // eslint-disable-next-line max-len
-      throw new BlBadRequestException(`Error while deleting the backup file for region ${bucket.region.name} and frequency ${frequency}.`);
+      throw new BlBadRequestException(
+        `Error while deleting the backup file for region ${bucket.region.name} and frequency ${frequency}.`
+      );
     }
 
     await this.backupHistoryService.markBackupAsDeleted(lab, bucket, frequency);
@@ -258,15 +292,16 @@ export class CnLabBackupAggregateService {
 
   /////////////////////////////// RESTORE BACKUP ///////////////////////////////
 
-  public async restoreBackup(sourceLab: CnLab,
-                             destinationLab: CnLab,
-                             backupHistoryId: string,
-                             options: CnLabManagerRestoreBackupConfigDTO): Promise<void> {
-
+  public async restoreBackup(
+    sourceLab: CnLab,
+    destinationLab: CnLab,
+    backupHistoryId: string,
+    options: CnLabManagerRestoreBackupConfigDTO
+  ): Promise<void> {
     // get or create the bucket associated with this lab
-    const backupHistory = await this.backupHistoryService.findByIdAndCheck(backupHistoryId,
-      { bucket: CnBucket.configRelation });
-
+    const backupHistory = await this.backupHistoryService.findByIdAndCheck(backupHistoryId, {
+      bucket: CnBucket.configRelation,
+    });
 
     const restoreDTO: CnLabManagerRestoreBackupDTO = {
       version: 1,
@@ -275,11 +310,10 @@ export class CnLabBackupAggregateService {
       options: {
         restoreDb: options.restoreDb,
         restoreData: options.restoreData,
-        force: options.force
-      }
+        force: options.force,
+      },
     };
 
     return this.labManagerService.restoreBackup(destinationLab, restoreDTO);
   }
-
 }

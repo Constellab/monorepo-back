@@ -8,15 +8,41 @@ export interface CnOvhCreateInstanceRequest {
   autobackup?: {
     cron: string;
     rotation: number; // number of backups to keep
-  },
+  };
 }
 
-export type CnOvhInstanceStatus = 'ACTIVE' |
-  'BUILD' | 'BUILDING' | 'DELETED' | 'DELETING' | 'ERROR' | 'HARD_REBOOT' | 'MIGRATING' |
-  'PASSWORD' | 'PAUSED' | 'REBOOT' | 'REBUILD' | 'RESCUE' | 'RESCUED' | 'RESCUING' | 'RESIZE' | 'RESIZED' |
-  'RESUMING' | 'REVERT_RESIZE' | 'SHELVED' | 'SHELVED_OFFLOADED' | 'SHELVING' | 'SHUTOFF' | 'SNAPSHOTTING' |
-  'SOFT_DELETED' | 'STOPPED' | 'SUSPENDED' | 'UNKNOWN' | 'UNRESCUING' | 'UNSHELVING' | 'VERIFY_RESIZE';
-
+export type CnOvhInstanceStatus =
+  | 'ACTIVE'
+  | 'BUILD'
+  | 'BUILDING'
+  | 'DELETED'
+  | 'DELETING'
+  | 'ERROR'
+  | 'HARD_REBOOT'
+  | 'MIGRATING'
+  | 'PASSWORD'
+  | 'PAUSED'
+  | 'REBOOT'
+  | 'REBUILD'
+  | 'RESCUE'
+  | 'RESCUED'
+  | 'RESCUING'
+  | 'RESIZE'
+  | 'RESIZED'
+  | 'RESUMING'
+  | 'REVERT_RESIZE'
+  | 'SHELVED'
+  | 'SHELVED_OFFLOADED'
+  | 'SHELVING'
+  | 'SHUTOFF'
+  | 'SNAPSHOTTING'
+  | 'SOFT_DELETED'
+  | 'STOPPED'
+  | 'SUSPENDED'
+  | 'UNKNOWN'
+  | 'UNRESCUING'
+  | 'UNSHELVING'
+  | 'VERIFY_RESIZE';
 
 export interface CnOvhInstance {
   id: string;
@@ -60,8 +86,21 @@ export interface CnOvhAttachVolumeRequest {
   instanceId: string;
 }
 
-export type CnDomainFieldType = 'A' | 'AAAA' | 'CAA' | 'CNAME' | 'DKIM' | 'LOC' | 'MX'
-  | 'NAPTR' | 'NS' | 'PTR' | 'SPF' | 'SRV' | 'SSHFP' | 'TXT';
+export type CnDomainFieldType =
+  | 'A'
+  | 'AAAA'
+  | 'CAA'
+  | 'CNAME'
+  | 'DKIM'
+  | 'LOC'
+  | 'MX'
+  | 'NAPTR'
+  | 'NS'
+  | 'PTR'
+  | 'SPF'
+  | 'SRV'
+  | 'SSHFP'
+  | 'TXT';
 
 export interface CnOvhCreateDomainRecordRequest {
   fieldType: CnDomainFieldType;

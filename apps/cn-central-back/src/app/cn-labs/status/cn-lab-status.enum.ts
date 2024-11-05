@@ -27,11 +27,7 @@ export const cnLabRunningStatuses = [
 ];
 
 // list of statuses that are considered as stopped
-export const cnLabStoppedStatuses = [
-  CnLabStatus.SERVER_STOPPED,
-  CnLabStatus.NO_SERVER,
-  CnLabStatus.ERROR,
-];
+export const cnLabStoppedStatuses = [CnLabStatus.SERVER_STOPPED, CnLabStatus.NO_SERVER, CnLabStatus.ERROR];
 
 export enum CnLabServerTaskStatus {
   RUNNING = 'RUNNING',

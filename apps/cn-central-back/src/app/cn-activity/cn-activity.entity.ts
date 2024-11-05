@@ -5,7 +5,6 @@ import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
 import { DateTime } from 'luxon';
 import { CnSpace } from '../cn-spaces/cn-space.entity';
 
-
 export enum CnActivityType {
   CREATE = 'CREATE',
   UPDATE = 'UPDATE',
@@ -23,50 +22,48 @@ export enum CnActivityEntityType {
 
 @Entity('activity')
 export class CnActivity extends BlEntityWithId {
-
-  @Column({type: 'enum', enum: CnActivityEntityType, update: false})
+  @Column({ type: 'enum', enum: CnActivityEntityType, update: false })
   entityType: CnActivityEntityType;
 
-  @Column({update: false})
+  @Column({ update: false })
   entityId: string;
 
-  @Column({update: false})
+  @Column({ update: false })
   entityName: string;
 
-  @Column({type: 'enum', enum: CnActivityType, update: false})
+  @Column({ type: 'enum', enum: CnActivityType, update: false })
   actionType: CnActivityType;
 
   @Exclude()
-  @Column({update: false})
+  @Column({ update: false })
   title: string;
 
-  @Column({update: false})
+  @Column({ update: false })
   userId: string;
 
   @Type(() => CnUserEntity)
-  @ManyToOne(() => CnUserEntity, {eager: true, nullable: false})
+  @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   @BlNotUpdatable()
   user: Relation<CnUser>;
 
-  @BlLuxonDateTimeColumn({nullable: false, update: false})
+  @BlLuxonDateTimeColumn({ nullable: false, update: false })
   createdAt: DateTime;
 
-  @Column({update: false, nullable: true})
+  @Column({ update: false, nullable: true })
   spaceId: string | null;
 
   @Type(() => CnSpace)
-  @ManyToOne(() => CnSpace, {nullable: true})
+  @ManyToOne(() => CnSpace, { nullable: true })
   @BlNotUpdatable()
   space: Relation<CnSpace> | null;
 
-  @Column({update: false, nullable: true})
+  @Column({ update: false, nullable: true })
   parentEntityId: string | null;
 
-  @Expose({name: 'title'})
+  @Expose({ name: 'title' })
   get cleanTitle(): string {
     // replace {{user.name}} with user.alias
     // replace {{entityName}} with entityName
-    return this.title.replace('{{user.name}}', this.user.alias)
-      .replace('{{entityName}}', this.entityName);
+    return this.title.replace('{{user.name}}', this.user.alias).replace('{{entityName}}', this.entityName);
   }
 }

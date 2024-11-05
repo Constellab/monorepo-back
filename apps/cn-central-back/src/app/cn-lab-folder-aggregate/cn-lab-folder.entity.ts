@@ -13,28 +13,26 @@ import { CnHierarchyObjectEntity } from '../cn-folders-aggregate/cn_hierarchy_ob
  */
 @Entity('lab_folder')
 export class CnLabFolderEntity {
-
   @PrimaryColumn({ type: 'varchar', length: 36 })
   labId: string;
 
-  @JoinColumn({name: 'labId'})
-  @ManyToOne(() => CnLabEntity,
-    lab => lab.sharedGroups, {onDelete: 'CASCADE'})
+  @JoinColumn({ name: 'labId' })
+  @ManyToOne(() => CnLabEntity, (lab) => lab.sharedGroups, { onDelete: 'CASCADE' })
   lab: CnLabEntity;
 
   @PrimaryColumn({ type: 'varchar', length: 36 })
   rootFolderId: string;
 
   @Type(() => CnHierarchyObjectEntity)
-  @JoinColumn({name: 'rootFolderId'})
+  @JoinColumn({ name: 'rootFolderId' })
   @ManyToOne(() => CnHierarchyObjectEntity)
   rootFolder: CnHierarchyObjectEntity;
 
-  @BlLuxonDateTimeColumn({nullable: false, update: false})
+  @BlLuxonDateTimeColumn({ nullable: false, update: false })
   createdAt: DateTime;
 
   @Type(() => CnUserEntity)
-  @ManyToOne(() => CnUserEntity, {eager: true, nullable: false})
+  @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   @BlNotUpdatable()
   createdBy: Relation<CnUser>;
 

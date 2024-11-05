@@ -6,9 +6,7 @@ import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.se
  */
 @Injectable()
 export class CnFrontService {
-
-  constructor(private configService: CnCoreConfigService) {
-  }
+  constructor(private configService: CnCoreConfigService) {}
 
   private static appRoute = 'app';
 
@@ -39,7 +37,6 @@ export class CnFrontService {
   public static getLabUrl(labId: string): string {
     return `${CnFrontService.appRoute}/labs/${labId}`;
   }
-
 
   public getLoginUrl(): string {
     return this.getBaseWebsiteURL() + '/login';
@@ -74,7 +71,6 @@ export class CnFrontService {
       return `https://${spaceDomain}.${this.configService.getCentralFrontDomain()}`;
     }
   }
-
 
   //////////////////////////// COMMUNITY ////////////////////////////
   public getCommunityUrl(): string {

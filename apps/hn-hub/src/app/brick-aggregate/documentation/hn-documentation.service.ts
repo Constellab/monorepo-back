@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
-import {
-  HnDocumentation,
-  HnDocumentationSearchDTO,
-} from './hn-documentation.entity';
+import { HnDocumentation, HnDocumentationSearchDTO } from './hn-documentation.entity';
 import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-version.entity';
 import {
   BlBadRequestException,
@@ -30,10 +27,7 @@ export class HnDocumentationService {
     private docFileService: HnDocumentationFileService
   ) {}
 
-  async createMainDoc(
-    mainFolder: HnFolder,
-    entityManager: EntityManager
-  ): Promise<void> {
+  async createMainDoc(mainFolder: HnFolder, entityManager: EntityManager): Promise<void> {
     const gettingStartedDoc: HnNodeDTO = new HnNodeDTO();
     gettingStartedDoc.folder = mainFolder;
     gettingStartedDoc.path = 'getting-started';
@@ -47,9 +41,7 @@ export class HnDocumentationService {
     folder: HnFolder,
     entityManager?: EntityManager
   ): Promise<HnDocumentation> {
-    const path = ClStringHelper.generateUrlPathFromString(
-      createDocumentation.title
-    );
+    const path = ClStringHelper.generateUrlPathFromString(createDocumentation.title);
 
     const documentation = new HnDocumentation();
 
@@ -98,9 +90,7 @@ export class HnDocumentationService {
     return this.documentationsRepository.save(doc);
   }
 
-  async updatePosition(
-    updatedDocumentation: HnDocumentation
-  ): Promise<HnDocumentation> {
+  async updatePosition(updatedDocumentation: HnDocumentation): Promise<HnDocumentation> {
     return await this.documentationsRepository.save(updatedDocumentation);
   }
 
@@ -108,27 +98,19 @@ export class HnDocumentationService {
     await this.documentationsRepository.delete(id);
   }
 
-  async findCurrentDoc(
-    brickMajorVersion: HnBrickMajorVersion,
-    path: string
-  ): Promise<HnDocumentation> {
+  async findCurrentDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<HnDocumentation> {
     return await this.documentationsRepository.findOneBy({
       completePath: path,
       folder: { brickMajorVersion: { id: brickMajorVersion.id } },
     });
   }
 
-  async updateContent(
-    id: string,
-    updateContentDoc: BlRichTextContent
-  ): Promise<HnDocumentation> {
+  async updateContent(id: string, updateContentDoc: BlRichTextContent): Promise<HnDocumentation> {
     const doc: HnDocumentation = await this.documentationsRepository.findOneBy({
       id: id,
     });
     if (doc) {
-      doc.modifications = new BlNewRichText(
-        doc.content as BlRichTextContent
-      ).getRichTextModificationAsString(
+      doc.modifications = new BlNewRichText(doc.content as BlRichTextContent).getRichTextModificationAsString(
         updateContentDoc,
         HnCurrentUserHelper.getAndCheckCurrentUser().id,
         BlRichTextModifications.fromJsonObjectString(doc.modifications)
@@ -138,13 +120,8 @@ export class HnDocumentationService {
     return this.documentationsRepository.save(doc);
   }
 
-  async updateCompletePath(
-    doc: HnDocumentation,
-    folder: HnFolder
-  ): Promise<void> {
-    doc.completePath = folder.completePath
-      ? folder.completePath + doc.path + '/'
-      : doc.path + '/';
+  async updateCompletePath(doc: HnDocumentation, folder: HnFolder): Promise<void> {
+    doc.completePath = folder.completePath ? folder.completePath + doc.path + '/' : doc.path + '/';
     await this.documentationsRepository.save(doc);
   }
 
@@ -153,34 +130,31 @@ export class HnDocumentationService {
     completePath: string,
     anchor?: string
   ): Promise<HnDocumentationSearchDTO> {
-    const documentation: HnDocumentation =
-      await this.documentationsRepository.findOne({
-        where: {
-          completePath: completePath,
-          folder: {
-            brickMajorVersion: {
-              id: brickMajorVersion.id,
-            },
+    const documentation: HnDocumentation = await this.documentationsRepository.findOne({
+      where: {
+        completePath: completePath,
+        folder: {
+          brickMajorVersion: {
+            id: brickMajorVersion.id,
           },
         },
-        relations: ['folder'],
-      });
+      },
+      relations: ['folder'],
+    });
 
     return documentation
       ? {
-        id: documentation.id,
-        name: documentation.title,
-        completePath: documentation.completePath,
-        anchor: anchor ? anchor : null,
-        major: brickMajorVersion.major.toString(),
-        brickName: brickMajorVersion.brick.name,
-      }
+          id: documentation.id,
+          name: documentation.title,
+          completePath: documentation.completePath,
+          anchor: anchor ? anchor : null,
+          major: brickMajorVersion.major.toString(),
+          brickName: brickMajorVersion.brick.name,
+        }
       : null;
   }
 
-  public getDocsByBrickVersion(
-    brickMajorVersionId: string
-  ): Promise<HnDocumentation[]> {
+  public getDocsByBrickVersion(brickMajorVersionId: string): Promise<HnDocumentation[]> {
     return this.documentationsRepository.find({
       where: {
         folder: {
@@ -198,30 +172,18 @@ export class HnDocumentationService {
 
   ///////////////////////////////////////// HISTORY /////////////////////////////////////////
 
-  async getUndoContent(
-    doc: HnDocumentation,
-    modificationId: string
-  ): Promise<Record<string, any>> {
+  async getUndoContent(doc: HnDocumentation, modificationId: string): Promise<Record<string, any>> {
     const richText = new BlNewRichText(doc.content as BlRichTextContent);
-    const modifications = BlRichTextModifications.fromJsonObjectString(
-      doc.modifications
-    );
-    const modificationsBlocks =
-      modifications.getModificationsFromModificationId(modificationId);
+    const modifications = BlRichTextModifications.fromJsonObjectString(doc.modifications);
+    const modificationsBlocks = modifications.getModificationsFromModificationId(modificationId);
     return richText.undoModifications(modificationsBlocks);
   }
 
-  async rollbackContent(
-    doc: HnDocumentation,
-    modificationId: string
-  ): Promise<HnDocumentation> {
+  async rollbackContent(doc: HnDocumentation, modificationId: string): Promise<HnDocumentation> {
     const newContent = await this.getUndoContent(doc, modificationId);
 
-    const modifications = BlRichTextModifications.fromJsonObjectString(
-      doc.modifications
-    );
-    const removeNumber =
-      modifications.removeModificationsFromModificationId(modificationId);
+    const modifications = BlRichTextModifications.fromJsonObjectString(doc.modifications);
+    const removeNumber = modifications.removeModificationsFromModificationId(modificationId);
 
     if (removeNumber == 0) {
       return doc;
@@ -233,12 +195,8 @@ export class HnDocumentationService {
     return this.documentationsRepository.save(doc);
   }
 
-  async getDocModifications(
-    doc: HnDocumentation
-  ): Promise<BlRichTextBlockModification[]> {
+  async getDocModifications(doc: HnDocumentation): Promise<BlRichTextBlockModification[]> {
     if (!doc.modifications) return [];
-    return BlRichTextModifications.fromJsonObjectString(
-      doc.modifications
-    ).getModifications();
+    return BlRichTextModifications.fromJsonObjectString(doc.modifications).getModifications();
   }
 }

@@ -48,13 +48,16 @@ export class HnAgent extends BlEntityWithId {
   @Column({ default: 0 })
   comments: number;
 
-  @OneToMany(() => HnAgentCoAuthor, agentCoAuthor => agentCoAuthor.user, { nullable: true, onDelete: 'CASCADE' })
+  @OneToMany(() => HnAgentCoAuthor, (agentCoAuthor) => agentCoAuthor.user, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   agentCoAuthors: HnAgentCoAuthor[];
 
-  @OneToMany(() => HnFileAgent, agentFile => agentFile.entity, { nullable: true })
+  @OneToMany(() => HnFileAgent, (agentFile) => agentFile.entity, { nullable: true })
   agentFiles: HnFileAgent[];
 
-  @Column({name: 'latest_style', type: 'simple-json', nullable: true})
+  @Column({ name: 'latest_style', type: 'simple-json', nullable: true })
   latestStyle?: HnTypingStyle;
 
   static init(agentDto: HnCreateAgentDto, parentAgentVersionId?: string, user?: HnUser): HnAgent {

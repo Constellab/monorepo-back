@@ -4,22 +4,23 @@ import { CnLabFolderAggregateService } from './cn-lab-folder-aggregate.service';
 
 @Controller('lab-folder')
 export class CnLabFolderController {
-
-  constructor(private folderAggregateService: CnLabFolderAggregateService) {
-  }
-
+  constructor(private folderAggregateService: CnLabFolderAggregateService) {}
 
   //////////////////////////// FOLDER ////////////////////////////////
 
   @Post(':id/folder/:folderId')
-  public addFolder(@Param('id', new ParseUUIDPipe()) id: string,
-                   @Param('folderId', new ParseUUIDPipe()) folderId: string): Promise<CnLabFolder> {
+  public addFolder(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('folderId', new ParseUUIDPipe()) folderId: string
+  ): Promise<CnLabFolder> {
     return this.folderAggregateService.addFolderToLab(id, folderId);
   }
 
   @Delete(':id/folder/:folderId')
-  public removeFolder(@Param('id', new ParseUUIDPipe()) id: string,
-                      @Param('folderId', new ParseUUIDPipe()) folderId: string): Promise<void> {
+  public removeFolder(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('folderId', new ParseUUIDPipe()) folderId: string
+  ): Promise<void> {
     return this.folderAggregateService.checkAndRemoveFolderFromLab(id, folderId);
   }
 
@@ -29,8 +30,10 @@ export class CnLabFolderController {
   }
 
   @Put(':id/folder/:rootFolderId/sync')
-  public forceSync(@Param('id', new ParseUUIDPipe()) id: string,
-                   @Param('rootFolderId', new ParseUUIDPipe()) rootFolderId: string): Promise<void> {
+  public forceSync(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('rootFolderId', new ParseUUIDPipe()) rootFolderId: string
+  ): Promise<void> {
     return this.folderAggregateService.forceFolderSyncToLab(id, rootFolderId);
   }
 }

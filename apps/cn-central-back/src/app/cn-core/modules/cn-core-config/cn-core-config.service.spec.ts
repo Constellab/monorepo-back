@@ -1,5 +1,5 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {CnCoreConfigService} from './cn-core-config.service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { CnCoreConfigService } from './cn-core-config.service';
 
 describe('CoreConfigService', () => {
   let service: CnCoreConfigService;

@@ -16,7 +16,7 @@ import {
   BlTokenHelper,
   BlUnauthorizedException,
   BlUserCategory,
-  BlUserStatus
+  BlUserStatus,
 } from '@monorepo/back-core-lib';
 import { CnUserTokenPayload } from '../../cn-core/model/config/cn-config.class';
 import { CnFrontService } from '../../cn-core/services/cn-front.service';
@@ -32,7 +32,6 @@ import { CnActivityEntityType } from '../../cn-activity/cn-activity.entity';
  */
 @Injectable()
 export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
-
   private readonly oneDay: number = 86400;
   private readonly controllerRoute: string = '/accounts';
 
@@ -40,28 +39,29 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
   private readonly userLockMailActivation: number = 86400 * 7;
 
-  constructor(@InjectRepository(CnUserEntity) private repository: Repository<CnUser>,
-              private configService: CnCoreConfigService,
-              private mailService: BlMailService,
-              private usersService: CnUsersService,
-              private datasource: DataSource,
-              private frontService: CnFrontService,
-              private spaceAggregateService: CnSpaceAggregateService,
-              private groupService: CnGroupsService,
-              private notificationService: CnNotificationService,
-              private captchaService: BlCaptchaService) {
+  constructor(
+    @InjectRepository(CnUserEntity) private repository: Repository<CnUser>,
+    private configService: CnCoreConfigService,
+    private mailService: BlMailService,
+    private usersService: CnUsersService,
+    private datasource: DataSource,
+    private frontService: CnFrontService,
+    private spaceAggregateService: CnSpaceAggregateService,
+    private groupService: CnGroupsService,
+    private notificationService: CnNotificationService,
+    private captchaService: BlCaptchaService
+  ) {
     super(repository, CnUserEntity);
   }
 
   async signup(createUser: CnCreateUserDto): Promise<CnUser> {
-
     const captchaValid = await this.captchaService.validateCaptcha(createUser.captcha);
 
     if (!captchaValid) {
       throw new BlBadRequestException(CnErrorText.INVALID_CAPTCHA);
     }
 
-    return await this.datasource.transaction(async entityManager => {
+    return await this.datasource.transaction(async (entityManager) => {
       const user = new CnUserEntity();
       user.firstname = createUser.firstname;
       user.lastname = createUser.lastname;
@@ -78,7 +78,11 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     });
   }
 
-  public async createAccount(user: CnUser, status: BlUserStatus, entityManager: EntityManager): Promise<CnUser> {
+  public async createAccount(
+    user: CnUser,
+    status: BlUserStatus,
+    entityManager: EntityManager
+  ): Promise<CnUser> {
     if (user.category === BlUserCategory.ADMIN) {
       throw new BlUnauthorizedException();
     }
@@ -100,19 +104,16 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     // create the user and his group
     const dbUser = await entityManager.save(user);
 
-
     // create the user own group
     await this.groupService.createOwnGroup(user, entityManager);
 
-
     // send notification to gencovery user to warn him that a new user has been created
-    this.sendCreateAccountNotification(dbUser).catch(
-      error => this.logger.error('Error while sending create account notification: ' + error)
+    this.sendCreateAccountNotification(dbUser).catch((error) =>
+      this.logger.error('Error while sending create account notification: ' + error)
     );
 
     // create the user personal space
     await this.spaceAggregateService.createPersonalSpace(dbUser, entityManager);
-
 
     this.usersService.sendUserToTransport(dbUser);
 
@@ -136,10 +137,13 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     const token: string = this.encodeUserToken(user.id, this.oneDay);
 
     // get activation API url with the token
-    const activationUrl: string = this.configService.getApiUrl() + this.controllerRoute + '/activation/' + token;
+    const activationUrl: string =
+      this.configService.getApiUrl() + this.controllerRoute + '/activation/' + token;
 
-    return this.mailService.sendMailToUser(CnMailTemplate.signup, user,
-      { user: user, activationUrl: activationUrl });
+    return this.mailService.sendMailToUser(CnMailTemplate.signup, user, {
+      user: user,
+      activationUrl: activationUrl,
+    });
   }
 
   async activateAccount(token: string): Promise<void> {
@@ -163,8 +167,8 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
    */
   private onAccountActivated(user: CnUser): void {
     // send mail asynchronously
-    this.sendAccountValidatedMail(user).catch(
-      error => this.logger.error('Error while sending account validated mail: ' + error)
+    this.sendAccountValidatedMail(user).catch((error) =>
+      this.logger.error('Error while sending account validated mail: ' + error)
     );
   }
 
@@ -178,7 +182,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
       user: user,
       documentationLink: this.frontService.getCommunityProductDocUrl(),
       communityLink: this.configService.getCommunityFrontUrl(),
-      contactMail: this.configService.getCustomerSuccessMail()
+      contactMail: this.configService.getCustomerSuccessMail(),
     });
   }
 
@@ -188,7 +192,6 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     user.failedLoginCount = 0;
     await this.usersService.update(user);
   }
-
 
   async passwordForgotten(email: string): Promise<void> {
     const user: CnUser = await this.usersService.findByEmail(email);
@@ -207,10 +210,13 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     const passwordForgottenLink: string = this.frontService.getBaseWebsiteURL() + '/reset-password/' + token;
 
     // send mail asynchronously
-    this.mailService.sendMailToUser(CnMailTemplate.password_forgotten, user,
-      { user: user, passwordForgottenLink: passwordForgottenLink }).then().catch(
-      error => this.logger.error('Error while sending password forgotten mail: ' + error)
-    );
+    this.mailService
+      .sendMailToUser(CnMailTemplate.password_forgotten, user, {
+        user: user,
+        passwordForgottenLink: passwordForgottenLink,
+      })
+      .then()
+      .catch((error) => this.logger.error('Error while sending password forgotten mail: ' + error));
   }
 
   async resetPassword(token: string, password: string): Promise<void> {
@@ -233,10 +239,14 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     const unlockUrl: string = this.configService.getApiUrl() + this.controllerRoute + '/unlock/' + token;
 
     // send mail asynchronously
-    this.mailService.sendMailToUser(CnMailTemplate.account_locked, user,
-      { user: user, failedLoginLocked: failedLoginLock, unlockUrl: unlockUrl }).then().catch(
-      error => this.logger.error('Error while sending account locked mail to : ' + error)
-    );
+    this.mailService
+      .sendMailToUser(CnMailTemplate.account_locked, user, {
+        user: user,
+        failedLoginLocked: failedLoginLock,
+        unlockUrl: unlockUrl,
+      })
+      .then()
+      .catch((error) => this.logger.error('Error while sending account locked mail to : ' + error));
   }
 
   /**
@@ -320,7 +330,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
         user: adminUser,
         text: `New user : ${user.firstname} ${user.lastname}`,
         text2: user.email,
-        link: CnFrontService.getAdminUsersRoute()
+        link: CnFrontService.getAdminUsersRoute(),
       });
     }
   }
@@ -362,5 +372,4 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
     return this.repository.save(user);
   }
-
 }

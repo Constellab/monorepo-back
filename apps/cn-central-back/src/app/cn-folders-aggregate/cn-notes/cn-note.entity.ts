@@ -13,7 +13,6 @@ import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-obje
 
 @Entity('note')
 export class CnNote extends CnHierarchyRepresentation {
-
   @Column()
   title: string;
 
@@ -21,7 +20,7 @@ export class CnNote extends CnHierarchyRepresentation {
   @Column({ type: 'simple-json', nullable: true })
   content: BlRichTextContent;
 
-  @ManyToMany(() => CnScenario, scenario => scenario.notes)
+  @ManyToMany(() => CnScenario, (scenario) => scenario.notes)
   @JoinTable({ name: 'note_scenario' })
   scenarios: CnScenario[];
 
@@ -64,6 +63,4 @@ export class CnNote extends CnHierarchyRepresentation {
       isValidated: this.isValidated,
     };
   }
-
-
 }

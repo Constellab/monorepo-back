@@ -1,8 +1,8 @@
-import {ExecutionContext, Injectable} from '@nestjs/common';
-import {AuthGuard} from '@nestjs/passport';
-import {Reflector} from '@nestjs/core';
-import {HnErrorText} from '../model/config/hn-error-text.class';
-import {blIsDecoratedWithPublic, BlUnauthorizedException} from '@monorepo/back-core-lib';
+import { ExecutionContext, Injectable } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Reflector } from '@nestjs/core';
+import { HnErrorText } from '../model/config/hn-error-text.class';
+import { blIsDecoratedWithPublic, BlUnauthorizedException } from '@monorepo/back-core-lib';
 
 /**
  * Guard to check if the user has a authentication token
@@ -18,14 +18,10 @@ export class HnJwtAuthGuard extends AuthGuard('jwt') {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-
-
-
-
     // jwt authentication
     try {
-      if(await (super.canActivate(context) as Promise<boolean>)){
-        return true
+      if (await (super.canActivate(context) as Promise<boolean>)) {
+        return true;
       } else {
         // Check if the route is annotated with @Public
         // if yes, authorize
@@ -48,6 +44,4 @@ export class HnJwtAuthGuard extends AuthGuard('jwt') {
     // Check if the route is annotated with @Public
     return blIsDecoratedWithPublic(this.reflector, context);
   }
-
-
 }

@@ -6,7 +6,6 @@ import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
 import { BlRichTextContent, BlRichTextContentWithModifications, BlRichTextI } from '@monorepo/back-core-lib';
 import { CnNote } from './cn-note.entity';
 
-
 export class CnSaveNoteDto {
   id: string;
   title: string;

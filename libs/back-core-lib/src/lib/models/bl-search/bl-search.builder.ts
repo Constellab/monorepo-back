@@ -1,5 +1,20 @@
-import { BlSearchFilterCriteria, BlSearchOperatorStr, BlSearchParams, BlSearchSortCriteria } from './bl-search.class';
-import { Between, In, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not } from 'typeorm';
+import {
+  BlSearchFilterCriteria,
+  BlSearchOperatorStr,
+  BlSearchParams,
+  BlSearchSortCriteria,
+} from './bl-search.class';
+import {
+  Between,
+  In,
+  IsNull,
+  LessThan,
+  LessThanOrEqual,
+  Like,
+  MoreThan,
+  MoreThanOrEqual,
+  Not,
+} from 'typeorm';
 import { FindOptionsOrder, FindOptionsOrderValue } from 'typeorm/find-options/FindOptionsOrder';
 import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
@@ -7,7 +22,6 @@ import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations'
 import { ClHelpService } from '@monorepo/core-lib';
 
 export class BlSearchBuilder<T> {
-
   public whereOptions: FindOptionsWhere<T> = {};
   private orderOptions: FindOptionsOrder<T> = {};
   private relations: FindOptionsRelations<T> = {};
@@ -17,7 +31,6 @@ export class BlSearchBuilder<T> {
   constructor(defaultOrder: FindOptionsOrder<T> = {}) {
     this.defaultOrder = defaultOrder;
   }
-
 
   public addSearchParams(searchParams: BlSearchParams): void {
     if (searchParams.filtersCriteria) {
@@ -32,7 +45,6 @@ export class BlSearchBuilder<T> {
       }
     }
   }
-
 
   public mergeWhereOptions(where: FindOptionsWhere<T>): void {
     this.whereOptions = this.deepMergeWhereOptions(this.whereOptions, where);
@@ -49,7 +61,7 @@ export class BlSearchBuilder<T> {
     }
 
     // specific case, if the property is a FindOperator (like IsNull()), we don't merge
-    if(source.hasOwnProperty('@instanceof')) return source;
+    if (source.hasOwnProperty('@instanceof')) return source;
 
     for (const key in source) {
       if (source.hasOwnProperty(key)) {
@@ -79,7 +91,7 @@ export class BlSearchBuilder<T> {
   public mergeOrderOptions(order: FindOptionsOrder<T>): void {
     this.orderOptions = {
       ...this.orderOptions,
-      ...order
+      ...order,
     };
   }
 
@@ -91,7 +103,7 @@ export class BlSearchBuilder<T> {
     return {
       where: this.whereOptions,
       order: !ClHelpService.isNullOrEmpty(this.orderOptions) ? this.orderOptions : this.defaultOrder,
-      relations: this.relations
+      relations: this.relations,
     };
   }
 
@@ -112,7 +124,6 @@ export class BlSearchBuilder<T> {
       currentCondition = currentCondition[keys[i]];
     }
   }
-
 
   private convertFilterValue(operator: BlSearchOperatorStr, value: any): any {
     switch (operator) {
@@ -165,6 +176,4 @@ export class BlSearchBuilder<T> {
       currentOrder = currentOrder[keys[i]];
     }
   }
-
-
 }

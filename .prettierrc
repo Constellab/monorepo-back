@@ -2,9 +2,11 @@
   "singleQuote": true,
   "tabWidth": 2,
   "useTabs": false,
-  "printWidth": 140,
+  "printWidth": 110,
   "bracketSameLine": true,
   "bracketSpacing": true,
   "singleAttributePerLine": false,
-  "semi": true
+  "semi": true,
+  "arrowParens": "always",
+  "trailingComma": "es5"
 }

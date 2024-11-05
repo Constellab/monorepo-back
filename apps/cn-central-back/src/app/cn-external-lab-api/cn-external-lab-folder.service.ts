@@ -4,33 +4,43 @@ import { lastValueFrom } from 'rxjs';
 import { CnHierarchyObjectWithChildren } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 import {
   CnFolderDtoHelper,
-  CnLabFolderDTO
+  CnLabFolderDTO,
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.dto';
 import { CnLabGlabApiInfo } from '../cn-labs/cn-lab.dto';
 import { BlVersion } from '@monorepo/back-core-lib';
-
 
 /**
  * Service to call route for lab in the lab
  */
 @Injectable()
 export class CnExternalLabFolderService {
-
   private readonly newRouteVersion: string = '0.10.0';
   private readonly oldRoute: string = 'project';
   private readonly route: string = 'folder';
 
-  constructor(private externalLabApiService: CnExternalLabApiService) {
-  }
+  constructor(private externalLabApiService: CnExternalLabApiService) {}
 
-  public async addFolderInLab(glabApiInfo: CnLabGlabApiInfo, folderTree: CnHierarchyObjectWithChildren): Promise<void> {
+  public async addFolderInLab(
+    glabApiInfo: CnLabGlabApiInfo,
+    folderTree: CnHierarchyObjectWithChildren
+  ): Promise<void> {
     const labInfoDto: CnLabFolderDTO = CnFolderDtoHelper.convertToLabFolderDto(folderTree);
-    return lastValueFrom(this.externalLabApiService.post(glabApiInfo.apiInfo, this.getRoute(glabApiInfo.gwsCoreVersion), labInfoDto));
+    return lastValueFrom(
+      this.externalLabApiService.post(
+        glabApiInfo.apiInfo,
+        this.getRoute(glabApiInfo.gwsCoreVersion),
+        labInfoDto
+      )
+    );
   }
 
   public async deleteFolderInLab(glabApiInfo: CnLabGlabApiInfo, folderId: string): Promise<void> {
-    return lastValueFrom(this.externalLabApiService.delete(glabApiInfo.apiInfo,
-      `${this.getRoute(glabApiInfo.gwsCoreVersion)}/${folderId}`));
+    return lastValueFrom(
+      this.externalLabApiService.delete(
+        glabApiInfo.apiInfo,
+        `${this.getRoute(glabApiInfo.gwsCoreVersion)}/${folderId}`
+      )
+    );
   }
 
   /**
@@ -46,4 +56,3 @@ export class CnExternalLabFolderService {
     return this.oldRoute;
   }
 }
-

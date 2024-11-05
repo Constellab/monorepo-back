@@ -1,38 +1,38 @@
-import {Injectable} from '@nestjs/common';
-import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
-import {CnSpaceInvit} from './cn-space-invit.entity';
-import {DataSource, Repository} from 'typeorm';
-import {InjectRepository} from '@nestjs/typeorm';
-import {CnSpace} from './cn-space.entity';
-import {CnSpaceUserRole} from './cn-space-user.entity';
-import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {CnSpaceInvitCreateDto} from './cn-space.dto';
-import {DateTime} from 'luxon';
-import {ClDateHelper, ClPage} from '@monorepo/core-lib';
-import {CnUsersService} from '../cn-users/cn-users.service';
-import {CnSpacesMailService} from './cn-spaces-mail.service';
-
+import { Injectable } from '@nestjs/common';
+import { BlAbstractService, BlBadRequestException } from '@monorepo/back-core-lib';
+import { CnSpaceInvit } from './cn-space-invit.entity';
+import { DataSource, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CnSpace } from './cn-space.entity';
+import { CnSpaceUserRole } from './cn-space-user.entity';
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { CnSpaceInvitCreateDto } from './cn-space.dto';
+import { DateTime } from 'luxon';
+import { ClDateHelper, ClPage } from '@monorepo/core-lib';
+import { CnUsersService } from '../cn-users/cn-users.service';
+import { CnSpacesMailService } from './cn-spaces-mail.service';
 
 @Injectable()
 export class CnSpaceInvitService extends BlAbstractService<CnSpaceInvit> {
-
   private readonly VALIDITY_DURATION_IN_DAYS = 30;
 
-  constructor(@InjectRepository(CnSpaceInvit) private repository: Repository<CnSpaceInvit>,
-              protected datasource: DataSource,
-              private spaceMailService: CnSpacesMailService,
-              private userService: CnUsersService) {
+  constructor(
+    @InjectRepository(CnSpaceInvit) private repository: Repository<CnSpaceInvit>,
+    protected datasource: DataSource,
+    private spaceMailService: CnSpacesMailService,
+    private userService: CnUsersService
+  ) {
     super(repository, CnSpaceInvit);
   }
 
   public async createInvitation(space: CnSpace, invitDto: CnSpaceInvitCreateDto): Promise<CnSpaceInvit> {
-    const invit = await this.repository.findOneBy({spaceId: space.id, userMail: invitDto.userMail});
+    const invit = await this.repository.findOneBy({ spaceId: space.id, userMail: invitDto.userMail });
 
     if (invit) {
       throw new BlBadRequestException(CnErrorText.SPACE_INVITATION_ALREADY_EXISTS);
     }
 
-    return await this.datasource.transaction(async entityManager => {
+    return await this.datasource.transaction(async (entityManager) => {
       // create invit
       const invit = new CnSpaceInvit();
       invit.space = space;
@@ -64,8 +64,7 @@ export class CnSpaceInvitService extends BlAbstractService<CnSpaceInvit> {
   }
 
   public async refreshValidUntil(invit: CnSpaceInvit): Promise<CnSpaceInvit> {
-    return await this.datasource.transaction(async entityManager => {
-
+    return await this.datasource.transaction(async (entityManager) => {
       invit.validUntil = this.getValidUntil();
       const invitDb = await this.update(invit, entityManager);
 
@@ -80,7 +79,7 @@ export class CnSpaceInvitService extends BlAbstractService<CnSpaceInvit> {
   }
 
   private getValidUntil(): DateTime {
-    return ClDateHelper.getDate().plus({days: this.VALIDITY_DURATION_IN_DAYS});
+    return ClDateHelper.getDate().plus({ days: this.VALIDITY_DURATION_IN_DAYS });
   }
 
   private async sendInvitationMail(invit: CnSpaceInvit): Promise<boolean> {
@@ -88,20 +87,22 @@ export class CnSpaceInvitService extends BlAbstractService<CnSpaceInvit> {
     return this.spaceMailService.sendInvitationMail(invit, user, this.VALIDITY_DURATION_IN_DAYS);
   }
 
-  public async findInvitationsBySpaceId(spaceId: string, page: number,
-                                        pageSize: number): Promise<ClPage<CnSpaceInvit>> {
+  public async findInvitationsBySpaceId(
+    spaceId: string,
+    page: number,
+    pageSize: number
+  ): Promise<ClPage<CnSpaceInvit>> {
     return this.findPaginated(page, pageSize, {
-      where: {spaceId: spaceId},
-      order: {createdAt: 'DESC' as any},
+      where: { spaceId: spaceId },
+      order: { createdAt: 'DESC' as any },
     });
   }
 
   public async findByCodeAndCheckValidity(code: string): Promise<CnSpaceInvit> {
-    const invit = await this.repository.findOne(
-      {
-        where: {code: code},
-        relations: {space: true}
-      });
+    const invit = await this.repository.findOne({
+      where: { code: code },
+      relations: { space: true },
+    });
     if (!invit) {
       throw new BlBadRequestException(CnErrorText.SPACE_INVITATION_INVALID);
     }
@@ -110,5 +111,4 @@ export class CnSpaceInvitService extends BlAbstractService<CnSpaceInvit> {
     }
     return invit;
   }
-
 }

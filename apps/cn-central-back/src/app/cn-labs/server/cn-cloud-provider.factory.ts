@@ -9,25 +9,22 @@ import { CnLab } from '../cn-lab.entity';
 import { CnCloudProviderOutscaleService } from './outscale/cn-cloud-provider-outscale.service';
 import { CnLabsService } from '../cn-labs.service';
 
-
 @Injectable()
 export class CnCloudProviderFactory {
-
   private readonly logger = new Logger(CnCloudProviderFactory.name);
 
-
-  constructor(private ovhCloudProviderService: CnCloudProviderOvhService,
-              private azureCloudProviderService: CnCloudProviderAzureService,
-              private outscaleCloudProviderService: CnCloudProviderOutscaleService,
-              private labsService: CnLabsService) {
-  }
+  constructor(
+    private ovhCloudProviderService: CnCloudProviderOvhService,
+    private azureCloudProviderService: CnCloudProviderAzureService,
+    private outscaleCloudProviderService: CnCloudProviderOutscaleService,
+    private labsService: CnLabsService
+  ) {}
 
   public async getSshLabService(lab: CnLab): Promise<CnLabSshService> {
     const cloudProviderService = await this.getCloudProviderServiceFromLab(lab.id);
 
     return cloudProviderService.instantiateLabSshService(lab);
   }
-
 
   public async getCloudProviderServiceFromLab(labId: string): Promise<CnCloudProviderService> {
     const server = await this.labsService.getLabServerCloud(labId);

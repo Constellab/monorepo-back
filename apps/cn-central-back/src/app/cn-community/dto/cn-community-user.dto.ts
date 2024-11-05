@@ -1,6 +1,6 @@
-import {BlEntityWithIdDTO} from '@monorepo/back-core-lib';
+import { BlEntityWithIdDTO } from '@monorepo/back-core-lib';
 
-export class CnCommunityUserDto extends BlEntityWithIdDTO{
+export class CnCommunityUserDto extends BlEntityWithIdDTO {
   firstname: string;
   lastname: string;
   photo: string;

@@ -1,25 +1,25 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {HnStoryCoAuthorInvite} from './hn-story-author-invite.entity';
-import {Repository} from 'typeorm';
-import {HnUserService} from '../users/hn-user.service';
-import {ClStringHelper, ClSupportedLanguage} from '@monorepo/core-lib';
-import {HnStory} from '../story/hn-story.entity';
-import {HnUser} from '../users/hn-user.entity';
-import {BlMailService} from '@monorepo/back-core-lib';
-import {HnMailTemplate} from '../core/model/config/hn-mail-template.class';
-import {HnInviteStatus} from '../core/model/config/hn-invite-status.enum';
-import {HnFrontService} from '../core/service/hn-front.service';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { HnStoryCoAuthorInvite } from './hn-story-author-invite.entity';
+import { Repository } from 'typeorm';
+import { HnUserService } from '../users/hn-user.service';
+import { ClStringHelper, ClSupportedLanguage } from '@monorepo/core-lib';
+import { HnStory } from '../story/hn-story.entity';
+import { HnUser } from '../users/hn-user.entity';
+import { BlMailService } from '@monorepo/back-core-lib';
+import { HnMailTemplate } from '../core/model/config/hn-mail-template.class';
+import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
+import { HnFrontService } from '../core/service/hn-front.service';
 
 @Injectable()
 export class HnStoryAuthorInviteService {
-
-  constructor(@InjectRepository(HnStoryCoAuthorInvite)
-              private readonly storyAuthorInviteRepository: Repository<HnStoryCoAuthorInvite>,
-              private readonly userService: HnUserService,
-              private readonly frontService: HnFrontService,
-              private readonly mailService: BlMailService) {
-  }
+  constructor(
+    @InjectRepository(HnStoryCoAuthorInvite)
+    private readonly storyAuthorInviteRepository: Repository<HnStoryCoAuthorInvite>,
+    private readonly userService: HnUserService,
+    private readonly frontService: HnFrontService,
+    private readonly mailService: BlMailService
+  ) {}
 
   async createStoryAuthorMail(story: HnStory, coAuthorMail: string): Promise<boolean> {
     const storyAuthorMail = new HnStoryCoAuthorInvite();
@@ -38,7 +38,7 @@ export class HnStoryAuthorInviteService {
       url: this.frontService.getStoryInviteUrl(storyAuthorMail.token),
       invitUser: inviteMail.createdBy,
       user: null as HnUser,
-      subscribeUrl: ''
+      subscribeUrl: '',
     };
 
     if (user) {
@@ -54,7 +54,7 @@ export class HnStoryAuthorInviteService {
   }
 
   async getStoryAuthorInviteByToken(token: string): Promise<HnStoryCoAuthorInvite> {
-    return this.storyAuthorInviteRepository.findOneBy({token: token});
+    return this.storyAuthorInviteRepository.findOneBy({ token: token });
   }
 
   async acceptInvite(storyAuthorInvite: HnStoryCoAuthorInvite): Promise<boolean> {
@@ -65,26 +65,25 @@ export class HnStoryAuthorInviteService {
   async getStoryCoAuthorsInvites(storyId: string): Promise<HnStoryCoAuthorInvite[]> {
     return this.storyAuthorInviteRepository.findBy({
       story: {
-        id: storyId
-      }
+        id: storyId,
+      },
     });
   }
 
-  async getStoryCoAuthorsPendingInvites(storyId: string): Promise<HnStoryCoAuthorInvite[]>{
+  async getStoryCoAuthorsPendingInvites(storyId: string): Promise<HnStoryCoAuthorInvite[]> {
     return this.storyAuthorInviteRepository.findBy({
       story: {
-        id: storyId
+        id: storyId,
       },
-      status: HnInviteStatus.PENDING
+      status: HnInviteStatus.PENDING,
     });
   }
 
-  async deleteCoAuthorInvite(inviteId: string): Promise<boolean>{
-    const invite = await this.storyAuthorInviteRepository.findOneBy({id: inviteId});
-    if(invite == null){
+  async deleteCoAuthorInvite(inviteId: string): Promise<boolean> {
+    const invite = await this.storyAuthorInviteRepository.findOneBy({ id: inviteId });
+    if (invite == null) {
       return false;
     }
-    return await this.storyAuthorInviteRepository.remove(invite) != null;
+    return (await this.storyAuthorInviteRepository.remove(invite)) != null;
   }
-
 }

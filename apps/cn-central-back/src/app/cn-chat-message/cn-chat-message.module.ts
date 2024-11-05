@@ -6,13 +6,8 @@ import { CnNotificationModule } from '../cn-notification/cn-notification.module'
 import { CnDocumentModule } from '../cn-folders-aggregate/cn-documents/cn-document.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([CnChatMessageEntity]),
-    CnNotificationModule,
-    CnDocumentModule
-  ],
+  imports: [TypeOrmModule.forFeature([CnChatMessageEntity]), CnNotificationModule, CnDocumentModule],
   providers: [CnChatMessageService],
-  exports: [CnChatMessageService]
+  exports: [CnChatMessageService],
 })
-export class CnChatMessageModule {
-}
+export class CnChatMessageModule {}

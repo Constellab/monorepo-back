@@ -3,16 +3,12 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/hn-hub/src",
   "projectType": "application",
-  "tags": [
-    "back"
-  ],
+  "tags": ["back"],
   "targets": {
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": [
-        "build"
-      ],
+      "dependsOn": ["build"],
       "options": {
         "buildTarget": "hn-hub:build",
         "runBuildTargetDependencies": false

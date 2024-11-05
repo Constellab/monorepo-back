@@ -22,7 +22,6 @@ export interface CnDatabaseConfig {
   database: string;
 }
 
-
 /**
  * Header for the ApiKey when communicating with a lab
  */
@@ -45,4 +44,3 @@ export interface CnExternalApiInfo {
   apiUrl: string;
   apiKey: string;
 }
-

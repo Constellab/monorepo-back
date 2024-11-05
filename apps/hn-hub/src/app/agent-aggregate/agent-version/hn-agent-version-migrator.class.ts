@@ -2,11 +2,8 @@ import { HnAgentVersionFileInput } from '../agent/hn-agent.dto';
 import { HnAgentVersionDto } from './hn-agent-version.dto';
 
 export class HnAgentVersionMigrator {
-
   // TODO: Not necessary if all labs have a version over 0.10.0
-  public migrateAgentVersionFile(
-    agentVersionFile: HnAgentVersionFileInput
-  ): HnAgentVersionFileInput {
+  public migrateAgentVersionFile(agentVersionFile: HnAgentVersionFileInput): HnAgentVersionFileInput {
     if (agentVersionFile.json_version === 2) {
       return agentVersionFile;
     }
@@ -26,12 +23,10 @@ export class HnAgentVersionMigrator {
     return agentVersionFileInput;
   }
 
-
   public migrateAgentVersionToSpecificVersion(
     agentVersionDto: HnAgentVersionDto,
     version: number
   ): HnAgentVersionDto {
-
     if (version === 1) {
       if (agentVersionDto.params instanceof Array) {
         return agentVersionDto;
@@ -50,6 +45,4 @@ export class HnAgentVersionMigrator {
 
     return agentVersionDto;
   }
-
-
 }

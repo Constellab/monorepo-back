@@ -1,12 +1,12 @@
-import {Injectable} from '@nestjs/common';
-import {HnAbstractLikeService} from '../like-core/hn-abstract-like.service';
-import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, EntityManager, Repository} from 'typeorm';
-import {HnLikeAgent} from './hn-like-agent.entity';
-import {HnAgent} from '../../agent-aggregate/agent/hn-agent.entity';
-import {HnAgentAggregateService} from '../../agent-aggregate/hn-agent-aggregate.service';
-import {BlEntityWithId} from '@monorepo/back-core-lib';
-import {HnAgentDto} from '../../agent-aggregate/agent/hn-agent.dto';
+import { Injectable } from '@nestjs/common';
+import { HnAbstractLikeService } from '../like-core/hn-abstract-like.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
+import { HnLikeAgent } from './hn-like-agent.entity';
+import { HnAgent } from '../../agent-aggregate/agent/hn-agent.entity';
+import { HnAgentAggregateService } from '../../agent-aggregate/hn-agent-aggregate.service';
+import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { HnAgentDto } from '../../agent-aggregate/agent/hn-agent.dto';
 
 @Injectable()
 export class HnLikeAgentService extends HnAbstractLikeService<HnAgent> {

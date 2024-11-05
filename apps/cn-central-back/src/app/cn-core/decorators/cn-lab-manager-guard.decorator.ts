@@ -1,7 +1,7 @@
-import {ExecutionContext, SetMetadata, UseGuards} from '@nestjs/common';
-import {Reflector} from '@nestjs/core';
-import {BlReflectorHelper} from '@monorepo/back-core-lib';
-import {CnLabManagerAuthGuard} from '../guards/cn-lab-auth.guard';
+import { ExecutionContext, SetMetadata, UseGuards } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { BlReflectorHelper } from '@monorepo/back-core-lib';
+import { CnLabManagerAuthGuard } from '../guards/cn-lab-auth.guard';
 
 const cnLabManagerAuthMetadata = 'labManagerAuth';
 
@@ -28,4 +28,3 @@ export function cnIsDecoratedWithLabManagerAuth(reflector: Reflector, context: E
   // Check if the route is annotated with @Public
   return BlReflectorHelper.getClassOrMethodMetadata(reflector, context, cnLabManagerAuthMetadata);
 }
-

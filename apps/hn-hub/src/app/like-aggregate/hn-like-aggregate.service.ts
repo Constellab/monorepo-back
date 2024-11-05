@@ -1,18 +1,19 @@
-import {Injectable} from '@nestjs/common';
-import {HnLikeStoryService} from './like-story/hn-like-story.service';
-import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
-import {HnLikeAgentService} from './like-agent/hn-like-agent.service';
-import {HnLikeBrickService} from './like-brick/hn-like-brick.service';
-import {BlEntityWithId} from '@monorepo/back-core-lib';
-import {HnAbstractLikeService} from './like-core/hn-abstract-like.service';
-import {HnEntityType} from '../core/model/entities/hn-entity-type.enum';
+import { Injectable } from '@nestjs/common';
+import { HnLikeStoryService } from './like-story/hn-like-story.service';
+import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
+import { HnLikeAgentService } from './like-agent/hn-like-agent.service';
+import { HnLikeBrickService } from './like-brick/hn-like-brick.service';
+import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { HnAbstractLikeService } from './like-core/hn-abstract-like.service';
+import { HnEntityType } from '../core/model/entities/hn-entity-type.enum';
 
 @Injectable()
 export class HnLikeAggregateService {
-  constructor(private readonly likeStoryService: HnLikeStoryService,
-              private readonly likeAgentService: HnLikeAgentService,
-              private readonly likeBrickService: HnLikeBrickService) {
-  }
+  constructor(
+    private readonly likeStoryService: HnLikeStoryService,
+    private readonly likeAgentService: HnLikeAgentService,
+    private readonly likeBrickService: HnLikeBrickService
+  ) {}
 
   async checkIfIsLiked(entityId: string, likeType: HnEntityType): Promise<boolean> {
     if (HnCurrentUserHelper.getCurrentUser() == null) {

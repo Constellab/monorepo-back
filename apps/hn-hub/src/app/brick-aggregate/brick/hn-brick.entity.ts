@@ -1,17 +1,17 @@
-import {BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, Unique} from 'typeorm';
-import {BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
-import {HnBrickUser} from '../brick-user/hn-brick-user.entity';
-import {DateTime} from 'luxon';
-import {Type} from 'class-transformer';
-import {HnUser} from '../../users/hn-user.entity';
-import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
-import {ClDateHelper} from '@monorepo/core-lib';
-import {HnSpace} from '../../space-aggregate/space/hn-space.entity';
-import {HnCreateBrickDTO} from './hn-brick.dto';
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, Unique } from 'typeorm';
+import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
+import { HnBrickUser } from '../brick-user/hn-brick-user.entity';
+import { DateTime } from 'luxon';
+import { Type } from 'class-transformer';
+import { HnUser } from '../../users/hn-user.entity';
+import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
+import { HnCreateBrickDTO } from './hn-brick.dto';
 
 export enum HnBrickVisibility {
   PRIVATE = 'private',
-  PUBLIC = 'public'
+  PUBLIC = 'public',
 }
 
 export class HnBrickFilter {
@@ -23,7 +23,6 @@ export class HnBrickFilter {
 @Unique(['name'])
 @Entity('brick')
 export class HnBrick extends BlEntityWithId {
-
   @BlNotUpdatable()
   @Column()
   name: string;
@@ -34,48 +33,48 @@ export class HnBrick extends BlEntityWithId {
   @Column()
   isCertified: boolean;
 
-  @Column({type: 'enum', enum: HnBrickVisibility, default: HnBrickVisibility.PUBLIC})
+  @Column({ type: 'enum', enum: HnBrickVisibility, default: HnBrickVisibility.PUBLIC })
   visibility: HnBrickVisibility;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   pipRepo: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   gitRepo: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   imageLink?: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   credentialUsername?: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   credentialPassword?: string;
 
-  @OneToMany(() => HnBrickUser, brickUser => brickUser.brick, {nullable: true, eager: true})
+  @OneToMany(() => HnBrickUser, (brickUser) => brickUser.brick, { nullable: true, eager: true })
   brickUsers: HnBrickUser[];
 
-  @BlLuxonDateTimeColumn({nullable: true, update: false})
+  @BlLuxonDateTimeColumn({ nullable: true, update: false })
   createdAt: DateTime;
 
   @Type(() => HnUser)
-  @ManyToOne(() => HnUser, {eager: true, nullable: true})
+  @ManyToOne(() => HnUser, { eager: true, nullable: true })
   createdBy?: HnUser;
 
-  @BlLuxonDateTimeColumn({nullable: true})
+  @BlLuxonDateTimeColumn({ nullable: true })
   lastModifiedAt: DateTime;
 
   @Type(() => HnUser)
-  @ManyToOne(() => HnUser, {eager: true, nullable: true})
+  @ManyToOne(() => HnUser, { eager: true, nullable: true })
   lastModifiedBy: HnUser;
 
-  @ManyToOne(() => HnSpace, {eager: true})
+  @ManyToOne(() => HnSpace, { eager: true })
   space?: HnSpace;
 
-  @Column({default: 0})
+  @Column({ default: 0 })
   likes: number;
 
-  @Column({default: 0})
+  @Column({ default: 0 })
   comments: number;
 
   @BeforeInsert()
@@ -103,7 +102,6 @@ export class HnBrick extends BlEntityWithId {
     this.space = createdBrick.visibility == HnBrickVisibility.PRIVATE ? createdBrick.space : null;
   }
 
-
   get repositoryUrl(): string {
     return this.gitRepo || this.pipRepo;
   }
@@ -119,5 +117,4 @@ export class HnBrick extends BlEntityWithId {
     }
     return url;
   }
-
 }

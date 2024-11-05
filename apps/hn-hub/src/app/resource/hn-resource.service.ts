@@ -1,25 +1,28 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {HnResource} from './hn-resource.entity';
-import {Repository} from 'typeorm';
-import {HnTechnicalFolder} from '../technical-folder/hn-technical-folder.entity';
-import {HnImportResourceDTO} from '../brick-aggregate/brick/hn-brick.dto';
-import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc-typing.entity';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { HnResource } from './hn-resource.entity';
+import { Repository } from 'typeorm';
+import { HnTechnicalFolder } from '../technical-folder/hn-technical-folder.entity';
+import { HnImportResourceDTO } from '../brick-aggregate/brick/hn-brick.dto';
+import { HnGeneratedDocEntity } from '../core/model/entities/hn-generated-doc-typing.entity';
 
 @Injectable()
 export class HnResourceService {
-  constructor(@InjectRepository(HnResource)
-              private readonly resourceRepository: Repository<HnResource>,) {
-  }
+  constructor(
+    @InjectRepository(HnResource)
+    private readonly resourceRepository: Repository<HnResource>
+  ) {}
 
-  async createTechnicalDocResources(technicalFolder: HnTechnicalFolder, resources: HnImportResourceDTO[]): Promise<boolean> {
-
+  async createTechnicalDocResources(
+    technicalFolder: HnTechnicalFolder,
+    resources: HnImportResourceDTO[]
+  ): Promise<boolean> {
     const oldResources: HnResource[] = await this.resourceRepository.find({
       where: {
         technicalFolder: {
-          id: technicalFolder.id
-        }
-      }
+          id: technicalFolder.id,
+        },
+      },
     });
 
     for (const r of oldResources) {
@@ -60,27 +63,25 @@ export class HnResourceService {
     return true;
   }
 
-
   async findResources(technicalFolderId: string): Promise<HnResource[]> {
     return this.resourceRepository.find({
       where: {
         technicalFolder: {
-          id: technicalFolderId
-        }
+          id: technicalFolderId,
+        },
       },
       order: {
-        humanName: 'ASC'
-      }
+        humanName: 'ASC',
+      },
     });
   }
 
   async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string): Promise<HnGeneratedDocEntity> {
-
     const resource: HnResource = await this.resourceRepository.findOneBy({
       technicalFolder: {
-        id: tecFolder.id
+        id: tecFolder.id,
       },
-      uniqueName: uniqueName
+      uniqueName: uniqueName,
     });
     if (resource != null) {
       resource.objectType = 'RESOURCE';

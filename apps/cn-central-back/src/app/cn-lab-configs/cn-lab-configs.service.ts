@@ -14,16 +14,17 @@ import { CnBrickVersion } from '../cn-bricks/cn-brick-version.entity';
 
 @Injectable()
 export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
-
-  constructor(@InjectRepository(CnLabConfig) private repository: Repository<CnLabConfig>,
-              private brickService: CnBricksService,
-              private datasource: DataSource) {
+  constructor(
+    @InjectRepository(CnLabConfig) private repository: Repository<CnLabConfig>,
+    private brickService: CnBricksService,
+    private datasource: DataSource
+  ) {
     super(repository, CnLabConfig);
   }
 
   public findAll(): Promise<CnLabConfig[]> {
     return this.repository.find({
-      order: { label: 'ASC' }
+      order: { label: 'ASC' },
     });
   }
 
@@ -44,10 +45,12 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     labConfig.brickVersionsHash = hash;
     labConfig.label = '';
     labConfig.brickVersions = [];
-    return await this.datasource.transaction(async entityManager => {
-
+    return await this.datasource.transaction(async (entityManager) => {
       for (const version of labConfigDto.brick_versions) {
-        const brickVersion = await this.brickService.getBrickVersionAndCheck(version.name, BlVersion.fromString(version.version));
+        const brickVersion = await this.brickService.getBrickVersionAndCheck(
+          version.name,
+          BlVersion.fromString(version.version)
+        );
         labConfig.brickVersions.push(brickVersion);
       }
 
@@ -58,34 +61,32 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
 
   private findByBrickVersionHash(brickVersionHash: number): Promise<CnLabConfig | null> {
     return this.repository.findOne({
-      where: { brickVersionsHash: brickVersionHash }
+      where: { brickVersionsHash: brickVersionHash },
     });
   }
 
   private async hashBrickVersion(brickVersions: CnBrickVersionDTO[]): Promise<number> {
     // create an object that is always formatted the same to create a hash
-    const sortedVersions = ClHelpService.sortAlphabeticalOrder(brickVersions, a => a.name).map(
-      version => ({
+    const sortedVersions = ClHelpService.sortAlphabeticalOrder(brickVersions, (a) => a.name).map(
+      (version) => ({
         name: version.name,
-        version: version.version
+        version: version.version,
       })
     );
 
     return this.hash(JSON.stringify(sortedVersions));
   }
 
-
   private hash(str: string): number {
     let h = 0;
-    for (let i = 0; i < str.length; i++)
-      h = Math.imul(31, h) + str.charCodeAt(i) | 0;
+    for (let i = 0; i < str.length; i++) h = (Math.imul(31, h) + str.charCodeAt(i)) | 0;
 
     return h;
   }
 
   public async getCompleteConfig(labConfigId: string): Promise<CnLabConfig> {
     return await this.findByIdAndCheck(labConfigId, {
-      brickVersions: { brick: true }
+      brickVersions: { brick: true },
     });
   }
 
@@ -93,11 +94,11 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     const labConfig = await this.repository.findOne({
       where: {
         id: labConfigId,
-        brickVersions: { brick: { name: brick_name } }
+        brickVersions: { brick: { name: brick_name } },
       },
-      relations: { brickVersions: { brick: true } }
+      relations: { brickVersions: { brick: true } },
     });
-    return labConfig.brickVersions.find(brickVersion => brickVersion.brick.name === brick_name);
+    return labConfig.brickVersions.find((brickVersion) => brickVersion.brick.name === brick_name);
   }
 
   ////////////////////////////////////////////// CONFIG FILE ////////////////////////////////////////////////////
@@ -108,7 +109,6 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
    * @param config
    */
   public async getLabConfigFile(lab: CnLab, config: CnLabConfigDTO): Promise<CnLabConfigFile> {
-
     // get gws_core version
     const gwsCoreBrickVersion = await this.getGwsCoreBrickVersion(config);
 
@@ -116,13 +116,17 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     const frontVersion = gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_FRONT_VERSION];
     if (frontVersion == null) {
       // eslint-disable-next-line max-len
-      throw new BlBadRequestException(`The front version does not exists for '${CnBrickGWS.GWS_CORE}' version '${gwsCoreBrickVersion.version}'`);
+      throw new BlBadRequestException(
+        `The front version does not exists for '${CnBrickGWS.GWS_CORE}' version '${gwsCoreBrickVersion.version}'`
+      );
     }
 
     // use the version set in the config, or by default version link to the gws_core brick version
     // or use the latest version
-    const glabVersion = config.glabTag ||
-      gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_GLAB_VERSION] || 'latest';
+    const glabVersion =
+      config.glabTag ||
+      gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_GLAB_VERSION] ||
+      'latest';
 
     const biotaMariaDbUrl = await this.getMariaDbUrl(config);
 
@@ -133,13 +137,15 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
       glab_tag: glabVersion,
       biota_maria_db_url: biotaMariaDbUrl,
       variables: {},
-      environment: await this.brickConfigToConfigEnv(config.brickVersions)
+      environment: await this.brickConfigToConfigEnv(config.brickVersions),
     };
   }
 
   private async getGwsCoreBrickVersion(config: CnLabConfigDTO): Promise<CnBrickVersion> {
     // check if the gws core is in the brick list
-    const gwsCore = config.brickVersions.find(brickVersion => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_CORE.toLowerCase());
+    const gwsCore = config.brickVersions.find(
+      (brickVersion) => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_CORE.toLowerCase()
+    );
 
     if (gwsCore == null) {
       throw new BlBadRequestException(`The brick '${CnBrickGWS.GWS_CORE}' must be set in the config`);
@@ -153,17 +159,24 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
 
   private async getMariaDbUrl(config: CnLabConfigDTO): Promise<string> {
     // get the maria db url
-    const gwsBiota = config.brickVersions.find(brickVersion => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_BIOTA.toLowerCase());
+    const gwsBiota = config.brickVersions.find(
+      (brickVersion) => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_BIOTA.toLowerCase()
+    );
     if (gwsBiota == null) {
       return null;
     }
     // get gws_core version
-    const gwsBiotaBrickVersion = await this.brickService.getBrickVersion(CnBrickGWS.GWS_BIOTA,
-      BlVersion.fromString(gwsBiota.version));
+    const gwsBiotaBrickVersion = await this.brickService.getBrickVersion(
+      CnBrickGWS.GWS_BIOTA,
+      BlVersion.fromString(gwsBiota.version)
+    );
 
-    const biotaMariaDbUrl = gwsBiotaBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_BIOTA_MARIA_DB_URL];
+    const biotaMariaDbUrl =
+      gwsBiotaBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_BIOTA_MARIA_DB_URL];
     if (biotaMariaDbUrl == null) {
-      throw new BlBadRequestException(`The maria db url does not exists for '${CnBrickGWS.GWS_BIOTA}' version '${gwsBiota.version}'`);
+      throw new BlBadRequestException(
+        `The maria db url does not exists for '${CnBrickGWS.GWS_BIOTA}' version '${gwsBiota.version}'`
+      );
     }
 
     return biotaMariaDbUrl;
@@ -172,13 +185,15 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
   private async brickConfigToConfigEnv(brickVersions: CnBrickVersionDTO[]): Promise<CnLabConfigFileEnv> {
     const labConfig: CnLabConfigFileEnv = { bricks: [], git: [], pip: [], variables: {} };
 
-
     for (const brick of brickVersions) {
-      const brickVersion = await this.brickService.getBrickVersionAndCheck(brick.name, BlVersion.fromString(brick.version));
+      const brickVersion = await this.brickService.getBrickVersionAndCheck(
+        brick.name,
+        BlVersion.fromString(brick.version)
+      );
 
       labConfig.bricks.push({
         name: brick.name,
-        version: brickVersion.version.toString()
+        version: brickVersion.version.toString(),
       });
     }
 
@@ -189,22 +204,21 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     if (configFile == null) {
       return {
         glabTag: 'latest',
-        brickVersions: []
+        brickVersions: [],
       };
     }
 
     const config: CnLabConfigDTO = {
       glabTag: configFile.glab_tag,
-      brickVersions: []
+      brickVersions: [],
     };
 
     for (const brick of configFile.environment?.bricks ?? []) {
       config.brickVersions.push({
         name: brick.name,
-        version: brick.version
+        version: brick.version,
       });
     }
     return config;
   }
-
 }

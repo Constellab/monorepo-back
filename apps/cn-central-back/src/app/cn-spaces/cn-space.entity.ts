@@ -12,19 +12,16 @@ export enum CnSpaceType {
   ENTREPRISE = 'ENTREPRISE',
 }
 
-
 @Entity('space')
 export class CnSpace extends CnBaseEntity {
-
   private static readonly DEFAULT_STORAGE_LIMIT = 1024 * 1024 * 1024; // 1GB
   public static readonly PERSONAL_SPACE_USER_LIMIT = 3;
 
   // relation options to load required information for the bucket
   public static buckets: FindOptionsRelations<CnSpace> = {
     defaultFolderBucket: CnBucket.configRelation,
-    defaultFolderBackupBucket: CnBucket.configRelation
+    defaultFolderBackupBucket: CnBucket.configRelation,
   };
-
 
   @Column({ nullable: false })
   name: string;

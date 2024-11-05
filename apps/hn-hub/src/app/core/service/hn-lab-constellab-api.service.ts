@@ -6,10 +6,10 @@ import { Request } from 'express';
 
 @Injectable()
 export class HnLabConstellabApiService {
-
-  constructor(private readonly blExternalApiService: BlExternalApiService,
-              private readonly coreConfigService: HnCoreConfigService) {
-  }
+  constructor(
+    private readonly blExternalApiService: BlExternalApiService,
+    private readonly coreConfigService: HnCoreConfigService
+  ) {}
 
   /**
    * Verify if the lab user is a good one by calling central
@@ -20,10 +20,14 @@ export class HnLabConstellabApiService {
     if (req.header('user') == null || req.header('authorization') == null) {
       throw new BlUnauthorizedException();
     }
-    const checkApiKeyUser: boolean = await lastValueFrom(this.blExternalApiService.get(
-      this.coreConfigService.getCentralApiUrl() + 'external-labs/check-test', null,
-      {headers: {user: req.header('user'), authorization: req.header('authorization')}}))
-    if(checkApiKeyUser != true){
+    const checkApiKeyUser: boolean = await lastValueFrom(
+      this.blExternalApiService.get(
+        this.coreConfigService.getCentralApiUrl() + 'external-labs/check-test',
+        null,
+        { headers: { user: req.header('user'), authorization: req.header('authorization') } }
+      )
+    );
+    if (checkApiKeyUser != true) {
       throw new BlUnauthorizedException();
     }
   }

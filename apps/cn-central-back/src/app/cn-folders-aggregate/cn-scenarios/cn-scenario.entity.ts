@@ -16,7 +16,6 @@ export interface CnScenarioProtocol {
   data: any;
 }
 
-
 /**
  * An scenario is executed in a lab to produce notes
  *
@@ -24,7 +23,6 @@ export interface CnScenarioProtocol {
  */
 @Entity('scenario')
 export class CnScenario extends CnHierarchyRepresentation {
-
   @Column({ nullable: false, length: 50 })
   title: string;
 
@@ -44,7 +42,7 @@ export class CnScenario extends CnHierarchyRepresentation {
   @ManyToOne(() => CnLabConfig, { nullable: false })
   labConfig: CnLabConfig;
 
-  @ManyToMany(() => CnNote, note => note.scenarios)
+  @ManyToMany(() => CnNote, (note) => note.scenarios)
   notes: CnNote[];
 
   @Exclude()

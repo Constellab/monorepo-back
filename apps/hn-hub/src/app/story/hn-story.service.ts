@@ -14,7 +14,7 @@ import {
   BlRichTextModifications,
   BlRichTextUploadedImageResponse,
   BlUnauthorizedException,
-  BlUserDto
+  BlUserDto,
 } from '@monorepo/back-core-lib';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnCreateStoryDto, HnStoryDto, HnStoryFilter } from './hn-story.dto';
@@ -28,7 +28,10 @@ import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
 import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 import { HnFrontService } from '../core/service/hn-front.service';
 import { HnFileStoryService } from '../file-aggregate/file-story/hn-file-story.service';
-import { HnAbstractFileEntityDTO, HnUploadFileResponseDto } from '../file-aggregate/file-core/hn-abstract-file.dto';
+import {
+  HnAbstractFileEntityDTO,
+  HnUploadFileResponseDto,
+} from '../file-aggregate/file-core/hn-abstract-file.dto';
 import { HnStoryFileService } from '../story-file/hn-story-file.service';
 import { HnUserService } from '../users/hn-user.service';
 import { HnUserDto } from '../users/hn-user.dto';
@@ -49,8 +52,7 @@ export class HnStoryService {
     private oldStoryFileService: HnStoryFileService,
     private userService: HnUserService,
     private dataSource: DataSource
-  ) {
-  }
+  ) {}
 
   async createStory(data: HnCreateStoryDto): Promise<HnStory> {
     const story = new HnStory();
@@ -72,9 +74,9 @@ export class HnStoryService {
   async getStory(id: string, strict = true): Promise<HnStory> {
     const story = await this.storyRepository.findOne({
       where: {
-        id: id
+        id: id,
       },
-      relations: ['topics', 'storyAuthors']
+      relations: ['topics', 'storyAuthors'],
     });
     if (story == null && strict) {
       throw new BlBadRequestException('Story not found');
@@ -84,57 +86,38 @@ export class HnStoryService {
 
   async deleteStory(id: string): Promise<void> {
     await this.checkAndValidateOwnerOrCoAuthor(id, true);
-    const deleteRes = await this.dataSource.transaction(
-      async (entityManager) => {
-        await this.storyFileService.deleteAllEntityFiles(id, entityManager);
-        await this.deleteAllStoryCoAuthorsInvites(id, entityManager);
-        await this.deleteAllStoryCoAuthors(id, entityManager);
-        const res = await entityManager.delete(HnStory, { id: id });
-        return res.affected > 0;
-      }
-    );
+    const deleteRes = await this.dataSource.transaction(async (entityManager) => {
+      await this.storyFileService.deleteAllEntityFiles(id, entityManager);
+      await this.deleteAllStoryCoAuthorsInvites(id, entityManager);
+      await this.deleteAllStoryCoAuthors(id, entityManager);
+      const res = await entityManager.delete(HnStory, { id: id });
+      return res.affected > 0;
+    });
     if (!deleteRes) {
-      throw new BlBadRequestException(
-        'Error during the deletion, the story is not deleted'
-      );
+      throw new BlBadRequestException('Error during the deletion, the story is not deleted');
     }
   }
 
-  async deleteAllStoryCoAuthorsInvites(
-    storyId: string,
-    entityManager: EntityManager
-  ): Promise<void> {
+  async deleteAllStoryCoAuthorsInvites(storyId: string, entityManager: EntityManager): Promise<void> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId, true);
-    const storyCoAuthorsInvites =
-      await this.storyAuthorService.getStoryCoAuthorsInvites(storyId);
+    const storyCoAuthorsInvites = await this.storyAuthorService.getStoryCoAuthorsInvites(storyId);
     for (const storyCoAuthorsInvite of storyCoAuthorsInvites) {
       try {
-        await entityManager.delete(
-          HnStoryCoAuthorInvite,
-          storyCoAuthorsInvite.id
-        );
+        await entityManager.delete(HnStoryCoAuthorInvite, storyCoAuthorsInvite.id);
       } catch (e) {
-        throw new BlBadRequestException(
-          'Error during the deletion of a story co-author invite'
-        );
+        throw new BlBadRequestException('Error during the deletion of a story co-author invite');
       }
     }
   }
 
-  async deleteAllStoryCoAuthors(
-    storyId: string,
-    entityManager: EntityManager
-  ): Promise<void> {
+  async deleteAllStoryCoAuthors(storyId: string, entityManager: EntityManager): Promise<void> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId, true);
-    const storyCoAuthors =
-      await this.storyAuthorService.getStoryCoAuthorsByStoryId(storyId);
+    const storyCoAuthors = await this.storyAuthorService.getStoryCoAuthorsByStoryId(storyId);
     for (const storyCoAuthor of storyCoAuthors) {
       try {
         await entityManager.delete(HnStoryCoAuthor, storyCoAuthor.id);
       } catch (e) {
-        throw new BlBadRequestException(
-          'Error during the deletion of a story co-author'
-        );
+        throw new BlBadRequestException('Error during the deletion of a story co-author');
       }
     }
   }
@@ -147,16 +130,16 @@ export class HnStoryService {
     const where: FindOptionsWhere<HnStory>[] = [
       {
         createdBy: {
-          id: HnCurrentUserHelper.getCurrentUser().id
-        }
+          id: HnCurrentUserHelper.getCurrentUser().id,
+        },
       },
       {
         storyAuthors: {
           user: {
-            id: HnCurrentUserHelper.getCurrentUser().id
-          }
-        }
-      }
+            id: HnCurrentUserHelper.getCurrentUser().id,
+          },
+        },
+      },
     ];
     const order: FindOptionsOrder<HnStory> = { createdAt: 'DESC' as any };
     if (filters.categories && filters.categories.length > 0) {
@@ -167,7 +150,7 @@ export class HnStoryService {
       where.map(
         (w) =>
           (w.topics = {
-            id: In(filters.topics)
+            id: In(filters.topics),
           })
       );
     }
@@ -183,7 +166,7 @@ export class HnStoryService {
         {
           where: where,
           relations: ['topics', 'storyAuthors'],
-          order: order
+          order: order,
         },
         this.storyRepository.manager,
         HnStory
@@ -193,11 +176,7 @@ export class HnStoryService {
     });
   }
 
-  async getUserStories(
-    userId: string,
-    page: number,
-    size: number
-  ): Promise<ClPage<HnStoryDto>> {
+  async getUserStories(userId: string, page: number, size: number): Promise<ClPage<HnStoryDto>> {
     return (
       await BlAbstractPaginatedService.findPaginatedStatic(
         page,
@@ -206,21 +185,21 @@ export class HnStoryService {
           where: [
             {
               createdBy: {
-                id: userId
+                id: userId,
               },
-              status: HnStoryStatus.PUBLISHED
+              status: HnStoryStatus.PUBLISHED,
             },
             {
               storyAuthors: {
                 user: {
-                  id: userId
-                }
+                  id: userId,
+                },
               },
-              status: HnStoryStatus.PUBLISHED
-            }
+              status: HnStoryStatus.PUBLISHED,
+            },
           ],
           relations: ['topics'],
-          order: { publishedAt: 'DESC' as any }
+          order: { publishedAt: 'DESC' as any },
         },
         this.storyRepository.manager,
         HnStory
@@ -237,21 +216,21 @@ export class HnStoryService {
           where: [
             {
               createdBy: {
-                id: HnCurrentUserHelper.getCurrentUser().id
-              }
+                id: HnCurrentUserHelper.getCurrentUser().id,
+              },
             },
             {
               storyAuthors: {
                 user: {
-                  id: HnCurrentUserHelper.getCurrentUser().id
-                }
-              }
-            }
+                  id: HnCurrentUserHelper.getCurrentUser().id,
+                },
+              },
+            },
           ],
           relations: ['topics'],
           order: {
-            createdAt: 'DESC' as any
-          }
+            createdAt: 'DESC' as any,
+          },
         },
         this.storyRepository.manager,
         HnStory
@@ -259,11 +238,7 @@ export class HnStoryService {
     ).map((story) => new HnStoryDto(story));
   }
 
-  async getStoriesByFilter(
-    filters: HnStoryFilter,
-    page: number,
-    size: number
-  ): Promise<ClPage<HnStoryDto>> {
+  async getStoriesByFilter(filters: HnStoryFilter, page: number, size: number): Promise<ClPage<HnStoryDto>> {
     const where: FindOptionsWhere<HnStory> = {};
     const order: FindOptionsOrder<HnStory> = { createdAt: 'DESC' as any };
     if (filters.categories && filters.categories.length > 0) {
@@ -271,7 +246,7 @@ export class HnStoryService {
     }
     if (filters.topics && filters.topics.length > 0) {
       where.topics = {
-        id: In(filters.topics)
+        id: In(filters.topics),
       };
     }
     if (filters.title && filters.title.length > 0) {
@@ -287,7 +262,7 @@ export class HnStoryService {
         {
           where: where,
           relations: ['topics'],
-          order: order
+          order: order,
         },
         this.storyRepository.manager,
         HnStory
@@ -295,11 +270,7 @@ export class HnStoryService {
     ).map((story) => new HnStoryDto(story));
   }
 
-  async getStoriesByTopicId(
-    topicId: string,
-    page: number,
-    size: number
-  ): Promise<ClPage<HnStoryDto>> {
+  async getStoriesByTopicId(topicId: string, page: number, size: number): Promise<ClPage<HnStoryDto>> {
     return (
       await BlAbstractPaginatedService.findPaginatedStatic(
         page,
@@ -308,13 +279,13 @@ export class HnStoryService {
           where: [
             {
               topics: {
-                id: topicId
+                id: topicId,
               },
-              status: HnStoryStatus.PUBLISHED
-            }
+              status: HnStoryStatus.PUBLISHED,
+            },
           ],
           relations: ['topics'],
-          order: { createdAt: 'DESC' as any }
+          order: { createdAt: 'DESC' as any },
         },
         this.storyRepository.manager,
         HnStory
@@ -322,15 +293,10 @@ export class HnStoryService {
     ).map((story) => new HnStoryDto(story));
   }
 
-  async checkAndValidateOwnerOrCoAuthor(
-    id: string,
-    onlyOwner = false
-  ): Promise<void> {
+  async checkAndValidateOwnerOrCoAuthor(id: string, onlyOwner = false): Promise<void> {
     const isAuthor: boolean = await this.isStoryOwnerOrCoAuthor(id, onlyOwner);
     if (!isAuthor) {
-      throw new BlUnauthorizedException(
-        'You are not authorized to update this story'
-      );
+      throw new BlUnauthorizedException('You are not authorized to update this story');
     }
   }
 
@@ -341,10 +307,7 @@ export class HnStoryService {
     return this.storyRepository.save(story);
   }
 
-  async updateStoryCategory(
-    id: string,
-    category: HnStoryCategory
-  ): Promise<HnStory> {
+  async updateStoryCategory(id: string, category: HnStoryCategory): Promise<HnStory> {
     await this.checkAndValidateOwnerOrCoAuthor(id);
     const story = await this.getStory(id);
     story.category = category;
@@ -376,26 +339,18 @@ export class HnStoryService {
   async updateStoryContent(id: string): Promise<HnStory> {
     await this.checkAndValidateOwnerOrCoAuthor(id);
     const story = await this.getStory(id);
-    const richText = new BlNewRichText(
-      story.contentEdition as BlRichTextContent
-    );
+    const richText = new BlNewRichText(story.contentEdition as BlRichTextContent);
     if (story.mainPicture == null) {
       const firstFigureLink = richText.getFirstFigureLink();
-      if (firstFigureLink == null)
-        throw new BlBadRequestException('Story must have a main picture');
+      if (firstFigureLink == null) throw new BlBadRequestException('Story must have a main picture');
       story.mainPicture = firstFigureLink;
     }
     story.content = story.contentEdition;
-    story.firstParagraph = ClStringHelper.replaceLineBreaksBySpace(
-      richText.getFirstParagraphsText()
-    );
+    story.firstParagraph = ClStringHelper.replaceLineBreaksBySpace(richText.getFirstParagraphsText());
     return this.storyRepository.save(story);
   }
 
-  async updateStoryContentEdition(
-    id: string,
-    contentEdition: BlRichTextContent
-  ): Promise<HnStory> {
+  async updateStoryContentEdition(id: string, contentEdition: BlRichTextContent): Promise<HnStory> {
     await this.checkAndValidateOwnerOrCoAuthor(id);
     const story = await this.getStory(id);
     story.modifications = new BlNewRichText(
@@ -406,9 +361,7 @@ export class HnStoryService {
       BlRichTextModifications.fromJsonObjectString(story.modifications)
     );
     story.contentEdition = contentEdition;
-    const richText = new BlNewRichText(
-      story.contentEdition as BlRichTextContent
-    );
+    const richText = new BlNewRichText(story.contentEdition as BlRichTextContent);
     const firstFigureLink = richText.getFirstFigureLink();
     if (story.mainPicture == null) {
       story.mainPicture = firstFigureLink;
@@ -422,10 +375,7 @@ export class HnStoryService {
     return this.storyRepository.save(story);
   }
 
-  async saveImage(
-    file: BlFile,
-    storyId: string
-  ): Promise<BlRichTextUploadedImageResponse> {
+  async saveImage(file: BlFile, storyId: string): Promise<BlRichTextUploadedImageResponse> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId);
     const story: HnStory = await this.getStory(storyId);
     return this.storyFileService.saveImage(story, file);
@@ -442,29 +392,21 @@ export class HnStoryService {
   async deleteStoryMainImage(storyId: string): Promise<HnStory> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId);
     const story: HnStory = await this.getStory(storyId);
-    const content = new BlNewRichText(
-      story.contentEdition as BlRichTextContent
-    );
+    const content = new BlNewRichText(story.contentEdition as BlRichTextContent);
     if (content.getFirstFigureLink() == null && story.publishedAt != null)
       throw new BlBadRequestException(
         'A published story must have a main picture. \n ' +
-        'Add a picture to the story content before deleting the main picture'
+          'Add a picture to the story content before deleting the main picture'
       );
 
-    if (story.mainPicture == null)
-      throw new BlBadRequestException('Main picture not found');
+    if (story.mainPicture == null) throw new BlBadRequestException('Main picture not found');
     await this.storyFileService.deleteFile(storyId, story.mainPicture);
 
-    story.mainPicture = new BlNewRichText(
-      story.contentEdition as BlRichTextContent
-    ).getFirstFigureLink();
+    story.mainPicture = new BlNewRichText(story.contentEdition as BlRichTextContent).getFirstFigureLink();
     return await this.storyRepository.save(story);
   }
 
-  async saveFile(
-    file: BlFile,
-    storyId: string
-  ): Promise<HnUploadFileResponseDto> {
+  async saveFile(file: BlFile, storyId: string): Promise<HnUploadFileResponseDto> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId);
     const story: HnStory = await this.getStory(storyId);
     return await this.storyFileService.saveFile(story, file);
@@ -481,10 +423,7 @@ export class HnStoryService {
     return this.storyRepository.save(story);
   }
 
-  async isStoryOwnerOrCoAuthor(
-    id: string,
-    onlyOwner: boolean = false
-  ): Promise<boolean> {
+  async isStoryOwnerOrCoAuthor(id: string, onlyOwner: boolean = false): Promise<boolean> {
     if (HnCurrentUserHelper.getCurrentUser() == null) return false;
 
     if (HnCurrentUserHelper.getCurrentUser().isAdmin()) return true;
@@ -502,8 +441,7 @@ export class HnStoryService {
     // True if coAuthor of the story otherwise false
     const storyAuthors = await this.getStoryCoAuthors(id);
     return storyAuthors?.some(
-      (storyAuthor: HnStoryCoAuthor) =>
-        storyAuthor.user.id === HnCurrentUserHelper.getCurrentUser().id
+      (storyAuthor: HnStoryCoAuthor) => storyAuthor.user.id === HnCurrentUserHelper.getCurrentUser().id
     );
   }
 
@@ -511,25 +449,17 @@ export class HnStoryService {
     return this.storyAuthorService.getStoryCoAuthorsByStoryId(storyId);
   }
 
-  async getStoryCoAuthorsPendingInvites(
-    id: string
-  ): Promise<HnStoryCoAuthorInvite[]> {
+  async getStoryCoAuthorsPendingInvites(id: string): Promise<HnStoryCoAuthorInvite[]> {
     await this.checkAndValidateOwnerOrCoAuthor(id, true);
     return this.storyAuthorService.getStoryCoAuthorsPendingInvites(id);
   }
 
-  async removeStoryCoAuthor(
-    id: string,
-    storyAuthorUserId: string
-  ): Promise<void> {
+  async removeStoryCoAuthor(id: string, storyAuthorUserId: string): Promise<void> {
     await this.checkAndValidateOwnerOrCoAuthor(id, true);
     return this.storyAuthorService.removeStoryCoAuthor(id, storyAuthorUserId);
   }
 
-  async inviteStoryCoAuthor(
-    storyId: string,
-    coAuthorMail: string
-  ): Promise<boolean> {
+  async inviteStoryCoAuthor(storyId: string, coAuthorMail: string): Promise<boolean> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId, true);
     const story: HnStory = await this.getStory(storyId);
     if (story == null) throw new BlBadRequestException('Story not found');
@@ -540,26 +470,23 @@ export class HnStoryService {
     const storyAuthorInvite: HnStoryCoAuthorInvite =
       await this.storyAuthorService.getStoryAuthorInviteByToken(token);
     return storyAuthorInvite &&
-    storyAuthorInvite.status === HnInviteStatus.PENDING &&
-    storyAuthorInvite.email === HnCurrentUserHelper.getCurrentUser().email
+      storyAuthorInvite.status === HnInviteStatus.PENDING &&
+      storyAuthorInvite.email === HnCurrentUserHelper.getCurrentUser().email
       ? storyAuthorInvite
       : null;
   }
 
   async acceptInvite(token: string): Promise<HnStory> {
-    const storyAuthorInvite: HnStoryCoAuthorInvite = await this.isInviteValid(
-      token
-    );
+    const storyAuthorInvite: HnStoryCoAuthorInvite = await this.isInviteValid(token);
     if (storyAuthorInvite) {
       const story: HnStory = await this.getStory(storyAuthorInvite.story.id);
       const storyAuthor: HnStoryCoAuthor = new HnStoryCoAuthor();
       storyAuthor.user = HnCurrentUserHelper.getCurrentUser();
       storyAuthor.story = story;
-      const acceptStoryInvite: boolean =
-        await this.storyAuthorService.acceptInvite(
-          storyAuthor,
-          storyAuthorInvite
-        );
+      const acceptStoryInvite: boolean = await this.storyAuthorService.acceptInvite(
+        storyAuthor,
+        storyAuthorInvite
+      );
       return acceptStoryInvite ? story : null;
     }
     throw new Error('Invalid invite');
@@ -567,13 +494,13 @@ export class HnStoryService {
 
   async getAllStoriesMap(): Promise<HnSitemapItemBase[]> {
     const stories: HnStory[] = await this.storyRepository.find({
-      where: { status: HnStoryStatus.PUBLISHED }
+      where: { status: HnStoryStatus.PUBLISHED },
     });
     return stories.map((story: HnStory) => ({
       url: this.frontService.getStoryUrl(story.id, story.titlePath),
       priority: 0.8,
       changefreq: HnSiteMapEnumChangefreq.MONTHLY,
-      lastmod: story.lastModifiedAt.toFormat('yyyy-MM-dd')
+      lastmod: story.lastModifiedAt.toFormat('yyyy-MM-dd'),
     }));
   }
 
@@ -582,10 +509,7 @@ export class HnStoryService {
   }
 
   /////////////////////////////////// RESOURCE VIEW ///////////////////////////////////
-  async uploadStoryResourceViewFile(
-    storyId: string,
-    file: BlFile
-  ): Promise<string> {
+  async uploadStoryResourceViewFile(storyId: string, file: BlFile): Promise<string> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId);
     const story: HnStory = await this.getStory(storyId);
     return this.storyFileService.saveResourceView(story, file);
@@ -593,7 +517,7 @@ export class HnStoryService {
 
   async setCreatedBy(): Promise<void> {
     const stories: HnStory[] = await this.storyRepository.find({
-      relations: ['storyAuthors']
+      relations: ['storyAuthors'],
     });
     for (const story of stories) {
       story.createdBy = HnCurrentUserHelper.getCurrentUser();
@@ -602,35 +526,23 @@ export class HnStoryService {
   }
 
   ////////////////////////////////////// LIKES ////////////////////////////////////////
-  async addLike(
-    story: HnStory,
-    entityManager: EntityManager
-  ): Promise<HnStory> {
+  async addLike(story: HnStory, entityManager: EntityManager): Promise<HnStory> {
     story.likes++;
     return await entityManager.save(HnStory, story, { listeners: false });
   }
 
-  async removeLike(
-    story: HnStory,
-    entityManager: EntityManager
-  ): Promise<HnStory> {
+  async removeLike(story: HnStory, entityManager: EntityManager): Promise<HnStory> {
     story.likes--;
     return await entityManager.save(HnStory, story, { listeners: false });
   }
 
   ////////////////////////////////////// COMMENTS ////////////////////////////////////////
-  async addComment(
-    story: HnStory,
-    entityManager: EntityManager
-  ): Promise<HnStory> {
+  async addComment(story: HnStory, entityManager: EntityManager): Promise<HnStory> {
     story.comments++;
     return await entityManager.save(HnStory, story, { listeners: false });
   }
 
-  async removeComment(
-    story: HnStory,
-    entityManager: EntityManager
-  ): Promise<HnStory> {
+  async removeComment(story: HnStory, entityManager: EntityManager): Promise<HnStory> {
     story.comments--;
     return await entityManager.save(HnStory, story, { listeners: false });
   }
@@ -643,35 +555,21 @@ export class HnStoryService {
 
   /////////////////////////////////// HISTORY //////////////////////////////////////////
 
-  async getUndoContent(
-    storyId: string,
-    modificationId: string
-  ): Promise<Record<string, any>> {
+  async getUndoContent(storyId: string, modificationId: string): Promise<Record<string, any>> {
     const story: HnStory = await this.getStory(storyId);
-    const richText = new BlNewRichText(
-      story.contentEdition as BlRichTextContent
-    );
-    const modifications = BlRichTextModifications.fromJsonObjectString(
-      story.modifications
-    );
-    const modificationsBlocks =
-      modifications.getModificationsFromModificationId(modificationId);
+    const richText = new BlNewRichText(story.contentEdition as BlRichTextContent);
+    const modifications = BlRichTextModifications.fromJsonObjectString(story.modifications);
+    const modificationsBlocks = modifications.getModificationsFromModificationId(modificationId);
     return richText.undoModifications(modificationsBlocks);
   }
 
-  async rollbackContent(
-    storyId: string,
-    modificationId: string
-  ): Promise<HnStory> {
+  async rollbackContent(storyId: string, modificationId: string): Promise<HnStory> {
     const story: HnStory = await this.getStory(storyId);
 
     const newContent = await this.getUndoContent(storyId, modificationId);
 
-    const modifications = BlRichTextModifications.fromJsonObjectString(
-      story.modifications
-    );
-    const removeNumber =
-      modifications.removeModificationsFromModificationId(modificationId);
+    const modifications = BlRichTextModifications.fromJsonObjectString(story.modifications);
+    const removeNumber = modifications.removeModificationsFromModificationId(modificationId);
 
     if (removeNumber == 0) {
       return story;
@@ -683,33 +581,19 @@ export class HnStoryService {
     return this.storyRepository.save(story);
   }
 
-  async getStoryModifications(
-    storyId: string
-  ): Promise<BlRichTextBlockModificationDto[]> {
+  async getStoryModifications(storyId: string): Promise<BlRichTextBlockModificationDto[]> {
     const story: HnStory = await this.getStory(storyId);
     if (!story.modifications) return [];
     const res: BlRichTextBlockModificationDto[] = [];
-    const modifications = BlRichTextModifications.fromJsonObjectString(
-      story.modifications
-    );
+    const modifications = BlRichTextModifications.fromJsonObjectString(story.modifications);
     const userMap = new Map<string, BlUserDto>();
     for (const modification of modifications.getModifications()) {
       if (!userMap.has(modification.userId)) {
         const userDto = new HnUserDto(await this.userService.findOne(modification.userId));
         userMap.set(modification.userId, userDto);
-        res.push(
-          new BlRichTextBlockModificationDto(
-            modification,
-            userDto
-          )
-        );
+        res.push(new BlRichTextBlockModificationDto(modification, userDto));
       } else {
-        res.push(
-          new BlRichTextBlockModificationDto(
-            modification,
-            userMap.get(modification.userId)
-          )
-        );
+        res.push(new BlRichTextBlockModificationDto(modification, userMap.get(modification.userId)));
       }
     }
     return res;
@@ -719,8 +603,8 @@ export class HnStoryService {
     const stories: HnStory[] = await this.storyRepository.find();
     for (const story of stories) {
       const files: HnFileStory[] = await this.storyFileService.findByStory(story);
-      for (const file of files){
-        if (ClStringHelper.isUUID(file.name.split('.')[1]) && file.type == HnFileType.IMAGE){
+      for (const file of files) {
+        if (ClStringHelper.isUUID(file.name.split('.')[1]) && file.type == HnFileType.IMAGE) {
           await this.storyFileService.renameFile(file.id, file.name.split('.')[0] + '.png');
           await this.storyFileService.renameFileInBuckets(file, file.fileName.split('.')[0] + '.png');
         }

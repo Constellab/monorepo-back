@@ -1,18 +1,20 @@
-import {Injectable} from '@nestjs/common';
-import {CnServerDecisionTreeDTO, CnServerDecisionTreeOptionDTO, CnSettings} from './cn-settings.entity';
-import {BlAbstractService, BlBadRequestException, BlFile, BlUnauthorizedException} from '@monorepo/back-core-lib';
-import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-
+import { Injectable } from '@nestjs/common';
+import { CnServerDecisionTreeDTO, CnServerDecisionTreeOptionDTO, CnSettings } from './cn-settings.entity';
+import {
+  BlAbstractService,
+  BlBadRequestException,
+  BlFile,
+  BlUnauthorizedException,
+} from '@monorepo/back-core-lib';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 
 @Injectable()
 export class CnSettingsService extends BlAbstractService<CnSettings> {
-
   constructor(@InjectRepository(CnSettings) private repository: Repository<CnSettings>) {
     super(repository, CnSettings);
   }
-
 
   ///////////////////////////////// SERVER DECISION TREE /////////////////////////////////
 
@@ -35,7 +37,7 @@ export class CnSettingsService extends BlAbstractService<CnSettings> {
     // check the tree
     this.checkServerDecisionTree(tree.tree);
 
-    await this.updateSettings({serverDecisionTree: tree});
+    await this.updateSettings({ serverDecisionTree: tree });
   }
 
   private checkServerDecisionTree(treeOptions: CnServerDecisionTreeOptionDTO[]): void {
@@ -43,7 +45,7 @@ export class CnSettingsService extends BlAbstractService<CnSettings> {
       throw new BlBadRequestException('Invalid decision tree, empty children');
     }
 
-    treeOptions.forEach(option => {
+    treeOptions.forEach((option) => {
       if (!option.title || !option.description) {
         throw new BlBadRequestException('Invalid decision tree, missing title or description');
       }
@@ -55,7 +57,6 @@ export class CnSettingsService extends BlAbstractService<CnSettings> {
       }
     });
   }
-
 
   ///////////////////////////////// GENERIC /////////////////////////////////
 
@@ -75,7 +76,6 @@ export class CnSettingsService extends BlAbstractService<CnSettings> {
 
     return settings[0];
   }
-
 
   private checkAuthorizationToUpdate(): void {
     if (!CnCurrentUserHelper.isAdmin()) {

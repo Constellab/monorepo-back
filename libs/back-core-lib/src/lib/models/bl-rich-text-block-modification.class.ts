@@ -1,12 +1,12 @@
-import {ClStringHelper} from '@monorepo/core-lib';
-import {diffChars} from 'diff';
+import { ClStringHelper } from '@monorepo/core-lib';
+import { diffChars } from 'diff';
 import { DateTime, Duration } from 'luxon';
 
 export enum BlRichTextModificationType {
-  CREATED = "CREATED",
-  UPDATED = "UPDATED",
-  DELETED = "DELETED",
-  MOVED = "MOVED"
+  CREATED = 'CREATED',
+  UPDATED = 'UPDATED',
+  DELETED = 'DELETED',
+  MOVED = 'MOVED',
 }
 
 export interface BlRichTextModificationDifference {
@@ -20,7 +20,6 @@ export interface BlRichTextModificationDifference {
 const MAX_TIME_DIFFERENCE = Duration.fromObject({ minutes: 3 });
 
 export class BlRichTextBlockModification {
-
   id: string;
 
   version: string;
@@ -33,7 +32,7 @@ export class BlRichTextBlockModification {
 
   differences?: BlRichTextModificationDifference[];
 
-  blockValue?: Record<string, any>
+  blockValue?: Record<string, any>;
 
   type: BlRichTextModificationType;
 
@@ -43,8 +42,15 @@ export class BlRichTextBlockModification {
 
   oldIndex?: number;
 
-  constructor(blockId: string, blockType: string, type: BlRichTextModificationType, index: number,
-              userId: string, id?: string, time?: string) {
+  constructor(
+    blockId: string,
+    blockType: string,
+    type: BlRichTextModificationType,
+    index: number,
+    userId: string,
+    id?: string,
+    time?: string
+  ) {
     this.id = id ?? ClStringHelper.generateUUID();
     this.time = time ? DateTime.fromISO(time) : DateTime.now();
     this.blockId = blockId;
@@ -56,7 +62,7 @@ export class BlRichTextBlockModification {
 
   // Set the differences between the old block data value and the new block data value, using the lib diff
   public setDifferences(oldValue: string): void {
-    const res: BlRichTextModificationDifference[] = []
+    const res: BlRichTextModificationDifference[] = [];
     const newValue = this.blockValue;
     const changes = diffChars(oldValue, JSON.stringify(newValue));
     let i = 0;
@@ -67,7 +73,7 @@ export class BlRichTextBlockModification {
           added: change.added,
           removed: change.removed,
           value: change.value,
-          count: change.count
+          count: change.count,
         });
       }
       if (!change.removed) {
@@ -145,26 +151,28 @@ export class BlRichTextModifications {
       return modifications;
     }
     modifications.setVersion(json.version);
-    modifications.setModifications(json.modifications.map((modification: Record<string, any>) => {
-      const modif = new BlRichTextBlockModification(
-        modification.blockId,
-        modification.blockType,
-        modification.type,
-        modification.index,
-        modification.userId,
-        modification.id,
-        modification.time
-      );
-      if (modif.type == BlRichTextModificationType.UPDATED) {
-        modif.differences = modification.differences;
-      } else {
-        modif.blockValue = modification.blockValue;
-      }
-      if (modification.oldIndex) {
-        modif.oldIndex = modification.oldIndex;
-      }
-      return modif;
-    }));
+    modifications.setModifications(
+      json.modifications.map((modification: Record<string, any>) => {
+        const modif = new BlRichTextBlockModification(
+          modification.blockId,
+          modification.blockType,
+          modification.type,
+          modification.index,
+          modification.userId,
+          modification.id,
+          modification.time
+        );
+        if (modif.type == BlRichTextModificationType.UPDATED) {
+          modif.differences = modification.differences;
+        } else {
+          modif.blockValue = modification.blockValue;
+        }
+        if (modification.oldIndex) {
+          modif.oldIndex = modification.oldIndex;
+        }
+        return modif;
+      })
+    );
     return modifications;
   }
 
@@ -189,34 +197,48 @@ export class BlRichTextModifications {
   }
 
   // Reduce the new modifications array to keep only the important ones
-  private reduceModifications(modifications: BlRichTextBlockModification[]) : BlRichTextBlockModification[]{
-    const areAllMoved = modifications.every(modification => modification.type === BlRichTextModificationType.MOVED);
-    const numMoved = modifications.filter(modification => modification.type === BlRichTextModificationType.MOVED).length;
-    if(numMoved == 1){
-      modifications = modifications.filter(modification => modification.type !== BlRichTextModificationType.MOVED);
+  private reduceModifications(modifications: BlRichTextBlockModification[]): BlRichTextBlockModification[] {
+    const areAllMoved = modifications.every(
+      (modification) => modification.type === BlRichTextModificationType.MOVED
+    );
+    const numMoved = modifications.filter(
+      (modification) => modification.type === BlRichTextModificationType.MOVED
+    ).length;
+    if (numMoved == 1) {
+      modifications = modifications.filter(
+        (modification) => modification.type !== BlRichTextModificationType.MOVED
+      );
     }
-    if(areAllMoved){
+    if (areAllMoved) {
       let moveModification: BlRichTextBlockModification = null;
-      modifications.forEach(modification => {
+      modifications.forEach((modification) => {
         const movement = Math.abs(modification.index - modification.oldIndex);
-        const currentMovement = moveModification ? Math.abs(moveModification.index - moveModification.oldIndex) : 0;
-        if(moveModification == null || movement > currentMovement ||
-          JSON.stringify(moveModification.blockValue).length < JSON.stringify(modification.blockValue).length){
+        const currentMovement = moveModification
+          ? Math.abs(moveModification.index - moveModification.oldIndex)
+          : 0;
+        if (
+          moveModification == null ||
+          movement > currentMovement ||
+          JSON.stringify(moveModification.blockValue).length < JSON.stringify(modification.blockValue).length
+        ) {
           moveModification = modification;
         }
       });
-      if (moveModification){
+      if (moveModification) {
         return [moveModification];
       } else {
         return [];
       }
     }
-    modifications = modifications.filter((m) => JSON.stringify(m.blockValue) != '{"text":"/"}'
-      && m.type !== BlRichTextModificationType.MOVED);
+    modifications = modifications.filter(
+      (m) => JSON.stringify(m.blockValue) != '{"text":"/"}' && m.type !== BlRichTextModificationType.MOVED
+    );
 
-    if (modifications.length == 2){
-      if (modifications[0].type == BlRichTextModificationType.CREATED &&
-        modifications[1].type == BlRichTextModificationType.DELETED){
+    if (modifications.length == 2) {
+      if (
+        modifications[0].type == BlRichTextModificationType.CREATED &&
+        modifications[1].type == BlRichTextModificationType.DELETED
+      ) {
         return modifications.reverse();
       }
     }
@@ -253,18 +275,27 @@ export class BlRichTextModifications {
 
     for (const modification of modifications) {
       // if the last modification is a move and the current one is a move on the same block, we keep the fusion of the two moves
-      if (lastModification?.type == BlRichTextModificationType.MOVED && modification.type == BlRichTextModificationType.MOVED
-        && lastModification?.blockId == modification.blockId) {
+      if (
+        lastModification?.type == BlRichTextModificationType.MOVED &&
+        modification.type == BlRichTextModificationType.MOVED &&
+        lastModification?.blockId == modification.blockId
+      ) {
         modification.oldIndex = lastModification.oldIndex;
         this.modifications.splice(this.modifications.length - 1, 1);
-        if (modification.oldIndex == modification.index){
+        if (modification.oldIndex == modification.index) {
           continue;
         }
       }
 
       // if the last modification is a move and the current one is a move on the same block, we keep the fusion of the two moves
-      if (modification.blockId == lastModification?.blockId && lastModification.time.plus(MAX_TIME_DIFFERENCE) > modification.time) {
-        if (modification.type == BlRichTextModificationType.UPDATED && modification.userId === lastModification.userId) {
+      if (
+        modification.blockId == lastModification?.blockId &&
+        lastModification.time.plus(MAX_TIME_DIFFERENCE) > modification.time
+      ) {
+        if (
+          modification.type == BlRichTextModificationType.UPDATED &&
+          modification.userId === lastModification.userId
+        ) {
           // if the last modification is a creation and the current one is an update on the same block,
           // otherwise we keep the fusion as a update
           // we keep the fusion of the two modifications has a creation
@@ -272,7 +303,9 @@ export class BlRichTextModifications {
             modification.type = BlRichTextModificationType.CREATED;
             modification.differences = null;
           } else if (lastModification.type === BlRichTextModificationType.UPDATED) {
-            modification.differences = lastModification.differences.concat(...modification.differences.slice().reverse());
+            modification.differences = lastModification.differences.concat(
+              ...modification.differences.slice().reverse()
+            );
             modification.blockValue = null;
           }
           this.modifications.splice(this.modifications.length - 1, 1, modification);
@@ -280,12 +313,15 @@ export class BlRichTextModifications {
         }
 
         if (modification.type == BlRichTextModificationType.DELETED) {
-          if(lastModification.type == BlRichTextModificationType.CREATED){
+          if (lastModification.type == BlRichTextModificationType.CREATED) {
             this.modifications.splice(this.modifications.length - 1, 1);
           }
-          if (lastModification.type == BlRichTextModificationType.CREATED ||
+          if (
+            lastModification.type == BlRichTextModificationType.CREATED ||
             (lastModification.blockType == 'paragraph' &&
-              lastModification.blockValue?.text && lastModification.blockValue?.text == '/')) {
+              lastModification.blockValue?.text &&
+              lastModification.blockValue?.text == '/')
+          ) {
             continue;
           }
         }
@@ -301,7 +337,7 @@ export class BlRichTextModifications {
   public toJsonObject(): Record<string, any> {
     return {
       version: this.version,
-      modifications: this.modifications.map(modification => ({
+      modifications: this.modifications.map((modification) => ({
         time: modification.time.toISO(),
         blockId: modification.blockId,
         blockType: modification.blockType,
@@ -311,20 +347,20 @@ export class BlRichTextModifications {
         index: modification.index,
         userId: modification.userId,
         id: modification.id,
-        oldIndex: modification.oldIndex
-      }))
+        oldIndex: modification.oldIndex,
+      })),
     };
   }
 
   // Get the modification with the modificationId with all modifications made after
   public getModificationsFromModificationId(modificationId: string): BlRichTextBlockModification[] {
-    const modification = this.modifications.find(modification => modification.id === modificationId);
+    const modification = this.modifications.find((modification) => modification.id === modificationId);
     if (!modification) {
       throw new Error('Modification not found');
     }
     const modificationIndex = this.modifications.indexOf(modification);
     const res: BlRichTextBlockModification[] = this.modifications.slice(modificationIndex);
-    if (!res || res.length == 0){
+    if (!res || res.length == 0) {
       throw new Error('No modifications found');
     }
     if (
@@ -346,12 +382,12 @@ export class BlRichTextModifications {
   // Delete all modifications made after the modification with the modificationId
   public removeModificationsFromModificationId(modificationId: string): number {
     const baseModificationsLength = this.modifications.length;
-    const modification = this.modifications.find(modification => modification.id === modificationId);
+    const modification = this.modifications.find((modification) => modification.id === modificationId);
     if (!modification) {
       throw new Error('Modification not found');
     }
     const modificationIndex = this.modifications.indexOf(modification);
-    this.modifications = this.modifications.slice(0, modificationIndex+1);
+    this.modifications = this.modifications.slice(0, modificationIndex + 1);
     return baseModificationsLength - this.modifications.length;
   }
 }

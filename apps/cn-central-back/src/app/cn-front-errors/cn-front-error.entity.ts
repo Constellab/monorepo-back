@@ -11,24 +11,23 @@ import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
  */
 @Entity('front_error')
 export class CnFrontError extends BlEntityWithId {
-
-  @Column({nullable: false, length: 100})
+  @Column({ nullable: false, length: 100 })
   name: string;
 
-  @Column({nullable: false, length: 1000})
+  @Column({ nullable: false, length: 1000 })
   message: string;
 
-  @Column({type: 'text', nullable: true})
+  @Column({ type: 'text', nullable: true })
   stackTrace: string;
 
-  @Column({nullable: true, length: 200})
+  @Column({ nullable: true, length: 200 })
   route: string;
 
   @Type(() => CnUserEntity)
-  @ManyToOne(() => CnUserEntity, {eager: true, nullable: true})
+  @ManyToOne(() => CnUserEntity, { eager: true, nullable: true })
   createdBy: CnUser;
 
-  @BlLuxonDateTimeColumn({nullable: false, update: false})
+  @BlLuxonDateTimeColumn({ nullable: false, update: false })
   createdAt: DateTime;
 
   @BeforeInsert()

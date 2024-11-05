@@ -10,7 +10,7 @@ import { CnErrorText } from '../model/config/cn-error-text.class';
 import {
   cnExternalLabApiKeyHeader,
   cnExternalLabApiKeySchema,
-  cnExternalLabUserHeader
+  cnExternalLabUserHeader,
 } from '../model/config/cn-config.class';
 import { CnCurrentUserHelper } from '../utils/cn-current-user.helper';
 import { CnSpaceUserService } from '../../cn-spaces/cn-space-user.service';
@@ -19,16 +19,16 @@ import { cnIsLabRobotAuth } from '../decorators/cn-lab-guard.decorator';
 import { BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { CnLabUserService } from '../../cn-labs/user/cn-lab-user.service';
 
-
 export abstract class CnLabAuthGuardBase implements CanActivate {
   private readonly logger = new Logger(CnLabAuthGuard.name);
 
-  protected constructor(private reflector: Reflector,
-                        private usersService: CnUsersService,
-                        private configService: CnCoreConfigService,
-                        private spaceUserService: CnSpaceUserService,
-                        private labUserService: CnLabUserService) {
-  }
+  protected constructor(
+    private reflector: Reflector,
+    private usersService: CnUsersService,
+    private configService: CnCoreConfigService,
+    private spaceUserService: CnSpaceUserService,
+    private labUserService: CnLabUserService
+  ) {}
 
   abstract getLabFromApiKey(apiKey: string): Promise<CnLabWithSpace>;
 
@@ -68,13 +68,15 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
    * Otherwise the user from the request is set in the request context
    * @private
    */
-  private async setUserInContext(request: Request, lab: CnLabWithSpace, context: ExecutionContext): Promise<void> {
-
+  private async setUserInContext(
+    request: Request,
+    lab: CnLabWithSpace,
+    context: ExecutionContext
+  ): Promise<void> {
     // if the route is annotated with ClLabRobotAuthentication, set the robot user in the context
     if (cnIsLabRobotAuth(this.reflector, context)) {
       await this.setRobotUserInContext(request);
     } else {
-
       const userId: string = this.getLabUserIdFromRequest(request);
 
       if (userId == null) {
@@ -83,7 +85,6 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
 
       await this.setRealUserInContext(request, lab, userId);
     }
-
   }
 
   private async setRealUserInContext(request: Request, lab: CnLabWithSpace, userId: string): Promise<void> {
@@ -114,7 +115,6 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
 
       CnCurrentUserHelper.setCurrentRoleInSpace(spaceUser.role);
     }
-
   }
 
   // set the robot user in request user
@@ -144,7 +144,6 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
   }
 }
 
-
 /**
  * Guard to authenticate route called by the lab servers.
  * Authentication is made with apiKey
@@ -153,13 +152,14 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
  */
 @Injectable()
 export class CnLabAuthGuard extends CnLabAuthGuardBase {
-
-  constructor(private labsService: CnLabsService,
-              reflector: Reflector,
-              usersService: CnUsersService,
-              configService: CnCoreConfigService,
-              spaceUserService: CnSpaceUserService,
-              labUserService: CnLabUserService) {
+  constructor(
+    private labsService: CnLabsService,
+    reflector: Reflector,
+    usersService: CnUsersService,
+    configService: CnCoreConfigService,
+    spaceUserService: CnSpaceUserService,
+    labUserService: CnLabUserService
+  ) {
     super(reflector, usersService, configService, spaceUserService, labUserService);
   }
 
@@ -176,13 +176,14 @@ export class CnLabAuthGuard extends CnLabAuthGuardBase {
  */
 @Injectable()
 export class CnLabManagerAuthGuard extends CnLabAuthGuardBase {
-
-  constructor(private labsService: CnLabsService,
-              reflector: Reflector,
-              usersService: CnUsersService,
-              configService: CnCoreConfigService,
-              spaceUserService: CnSpaceUserService,
-              labUserService: CnLabUserService) {
+  constructor(
+    private labsService: CnLabsService,
+    reflector: Reflector,
+    usersService: CnUsersService,
+    configService: CnCoreConfigService,
+    spaceUserService: CnSpaceUserService,
+    labUserService: CnLabUserService
+  ) {
     super(reflector, usersService, configService, spaceUserService, labUserService);
   }
 

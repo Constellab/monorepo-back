@@ -1,4 +1,4 @@
-import {ModuleMetadata} from '@nestjs/common/interfaces';
+import { ModuleMetadata } from '@nestjs/common/interfaces';
 
 export interface BlTransportModuleConfig {
   queue: string;
@@ -18,7 +18,12 @@ export const BL_CLIENT_PROXY_NAME = 'CLIENT_SERVICE';
 /**
  * Function to build the RabbitMQ url from information
  */
-export function blGetRabbitMQUrl(username: string, password: string, url: string, port: number | string): string {
+export function blGetRabbitMQUrl(
+  username: string,
+  password: string,
+  url: string,
+  port: number | string
+): string {
   return `amqp://${username}:${password}@${url}:${port}`;
 }
 

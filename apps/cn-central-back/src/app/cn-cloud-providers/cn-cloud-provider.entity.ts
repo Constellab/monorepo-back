@@ -1,5 +1,5 @@
-import {Column, Entity, Unique} from 'typeorm';
-import {CnBaseEntity} from '../cn-core/model/entities/cn-base.entity';
+import { Column, Entity, Unique } from 'typeorm';
+import { CnBaseEntity } from '../cn-core/model/entities/cn-base.entity';
 
 export type CnCloudProviderName = 'OVH' | 'AZURE' | 'OUTSCALE';
 
@@ -9,13 +9,12 @@ export type CnCloudProviderName = 'OVH' | 'AZURE' | 'OUTSCALE';
 @Unique(['name'])
 @Entity('cloud_provider')
 export class CnCloudProvider extends CnBaseEntity {
-
-  @Column({nullable: false, length: 50})
+  @Column({ nullable: false, length: 50 })
   name: CnCloudProviderName;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   description: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   logo: string;
 }

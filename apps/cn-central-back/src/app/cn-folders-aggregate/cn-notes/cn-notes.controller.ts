@@ -6,9 +6,7 @@ import { BlResponseHelper, BlRichTextBlockModificationDto, BlRichTextContent } f
 
 @Controller('notes')
 export class CnNotesController {
-
-  constructor(private folderAggregateService: CnFolderAggregateService) {
-  }
+  constructor(private folderAggregateService: CnFolderAggregateService) {}
 
   @Get(':id/content')
   async getNoteContent(@Param('id', new ParseUUIDPipe()) id: string): Promise<BlRichTextContent> {
@@ -20,7 +18,6 @@ export class CnNotesController {
     return await this.folderAggregateService.findNote(id);
   }
 
-
   @Get('scenario/:scenarioId')
   async getNotesByScenario(@Param('scenarioId', new ParseUUIDPipe()) scenarioId: string): Promise<CnNote[]> {
     return await this.folderAggregateService.getNoteAssociatedToScenario(scenarioId);
@@ -31,9 +28,11 @@ export class CnNotesController {
    * Use filename(*) to catch all the filename (including slashes)
    */
   @Get(':id/file/:filename(*)')
-  public async getImage(@Param('id', new ParseUUIDPipe()) id: string,
-                        @Param('filename') filename: string,
-                        @Res() response: Response): Promise<any> {
+  public async getImage(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('filename') filename: string,
+    @Res() response: Response
+  ): Promise<any> {
     const file = await this.folderAggregateService.getNoteFile(id, filename);
     BlResponseHelper.setFileResponseAndCache(response, file);
   }
@@ -42,9 +41,11 @@ export class CnNotesController {
    * Return a view of the note
    */
   @Get(':id/view/:viewId')
-  public async getView(@Param('id', new ParseUUIDPipe()) id: string,
-                       @Param('viewId') viewId: string,
-                       @Res() response: Response): Promise<any> {
+  public async getView(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('viewId') viewId: string,
+    @Res() response: Response
+  ): Promise<any> {
     const file = await this.folderAggregateService.getNoteView(id, viewId);
     BlResponseHelper.setFileResponseAndCache(response, file);
   }
@@ -69,5 +70,4 @@ export class CnNotesController {
   ): Promise<Record<string, any>> {
     return this.folderAggregateService.getNoteUndoContent(noteId, modificationId);
   }
-
 }

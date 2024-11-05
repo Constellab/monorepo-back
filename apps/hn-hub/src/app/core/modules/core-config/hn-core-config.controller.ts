@@ -1,16 +1,14 @@
-import {Controller, Get, Logger} from '@nestjs/common';
-import {HnEnvironmentProfile} from '../../model/config/hn-config.class';
-import {HnCoreConfigService} from './hn-core-config.service';
+import { Controller, Get, Logger } from '@nestjs/common';
+import { HnEnvironmentProfile } from '../../model/config/hn-config.class';
+import { HnCoreConfigService } from './hn-core-config.service';
 
 @Controller('core-config')
 export class HnCoreConfigController {
   private readonly logger = new Logger(HnCoreConfigController.name);
 
-
   constructor(private coreConfigService: HnCoreConfigService) {
     this.logger.log('Environment Profile : ' + this.getEnvironmentProfile());
   }
-
 
   @Get('environment-profile')
   getEnvironmentProfile(): HnEnvironmentProfile {

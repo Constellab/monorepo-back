@@ -16,22 +16,11 @@ import {
   HnDocumentationDTO,
   HnDocumentationSearchDTO,
 } from './documentation/hn-documentation.entity';
-import {
-  HnBrickVersion,
-  HnNewVersionDTO,
-  HnReferenceDTO,
-} from './brick-version/hn-brick-version.entity';
+import { HnBrickVersion, HnNewVersionDTO, HnReferenceDTO } from './brick-version/hn-brick-version.entity';
 import { HnBrickMajorVersionService } from './brick-major-version/hn-brick-major-version.service';
 import { HnBrickVersionService } from './brick-version/hn-brick-version.service';
 import { ClPage, ClStringHelper } from '@monorepo/core-lib';
-import {
-  DataSource,
-  EntityManager,
-  FindOptionsWhere,
-  In,
-  IsNull,
-  Like,
-} from 'typeorm';
+import { DataSource, EntityManager, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
 import { HnBrickMajorVersion } from './brick-major-version/hn-brick-major-version.entity';
 import { HnFolderService } from './folder/hn-folder.service';
 import { HnFolder } from './folder/hn-folder.entity';
@@ -53,10 +42,7 @@ import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnBrickUserInviteService } from './brick-user-invite/hn-brick-user-invite.service';
 import { HnBrickUserInvite } from './brick-user-invite/hn-brick-user-invite.entity';
 import { HnBrickUser } from './brick-user/hn-brick-user.entity';
-import {
-  HnSiteMapEnumChangefreq,
-  HnSitemapItemBase,
-} from '../core/model/config/hn-site-map.class';
+import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 import { HnUser } from '../users/hn-user.entity';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { HnTechnicalFolderService } from '../technical-folder/hn-technical-folder.service';
@@ -125,31 +111,17 @@ export class HnBrickAggregateService {
       else if (spaceId === 'my-bricks') myBricks = true;
       else {
         if (user != null) {
-          await this.spaceAggregateService.assertCheckSpaceUser(
-            spaceId,
-            user.id
-          );
+          await this.spaceAggregateService.assertCheckSpaceUser(spaceId, user.id);
         }
       }
     }
 
-    if (publicSelected)
-      spacesFilter = spacesFilter.filter((s) => s !== 'public');
+    if (publicSelected) spacesFilter = spacesFilter.filter((s) => s !== 'public');
     if (myBricks) spacesFilter = spacesFilter.filter((s) => s !== 'my-bricks');
 
-    const whereConditions:
-      | FindOptionsWhere<HnBrick>[]
-      | FindOptionsWhere<HnBrick> = myBricks
-        ? await this.getMyBricksWhereBrickConditions(
-          publicSelected,
-          spacesFilter,
-          user
-        )
-        : await this.getUserBasedWhereBrickConditions(
-          publicSelected,
-          spacesFilter,
-          user
-        );
+    const whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> = myBricks
+      ? await this.getMyBricksWhereBrickConditions(publicSelected, spacesFilter, user)
+      : await this.getUserBasedWhereBrickConditions(publicSelected, spacesFilter, user);
 
     // Add where conditions based on filters
     if (titleFilter) {
@@ -169,13 +141,11 @@ export class HnBrickAggregateService {
     page: number,
     size: number
   ): Promise<ClPage<HnBrickDto>> {
-    const whereConditions:
-      | FindOptionsWhere<HnBrick>[]
-      | FindOptionsWhere<HnBrick> = [];
+    const whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> = [];
 
-    const coAuthorBrickIds: string[] = (
-      await this.brickUserService.getBrickUsersByUser(user)
-    ).map((b) => b.brick.id);
+    const coAuthorBrickIds: string[] = (await this.brickUserService.getBrickUsersByUser(user)).map(
+      (b) => b.brick.id
+    );
     if (commonSpacesIds?.length > 0) {
       whereConditions.push({
         createdBy: {
@@ -211,36 +181,22 @@ export class HnBrickAggregateService {
     return this.brickService.findBrickList(whereConditions, page, size);
   }
 
-  async findUserBricks(
-    userId: string,
-    page: number,
-    size: number
-  ): Promise<ClPage<HnBrickDto>> {
+  async findUserBricks(userId: string, page: number, size: number): Promise<ClPage<HnBrickDto>> {
     const user = await this.userService.findOne(userId);
     if (!user) throw new BlNotFoundException('User not found');
     const currentUser = HnCurrentUserHelper.getCurrentUser();
     let commonSpacesIds: string[] = [];
     if (currentUser) {
-      commonSpacesIds = (
-        await this.spaceAggregateService.getUserCommonSpace(userId)
-      ).map((space) => space.id);
+      commonSpacesIds = (await this.spaceAggregateService.getUserCommonSpace(userId)).map(
+        (space) => space.id
+      );
     }
-    return this.findUserBricksWithCommonSpaces(
-      user,
-      commonSpacesIds,
-      page,
-      size
-    );
+    return this.findUserBricksWithCommonSpaces(user, commonSpacesIds, page, size);
   }
 
   async findBrickById(id: string, user: HnUser = null): Promise<HnBrick> {
-    const whereConditions:
-      | FindOptionsWhere<HnBrick>[]
-      | FindOptionsWhere<HnBrick> = await this.getUserBasedWhereBrickConditions(
-        null,
-        null,
-        user
-      );
+    const whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> =
+      await this.getUserBasedWhereBrickConditions(null, null, user);
     if (whereConditions instanceof Array) {
       whereConditions.map((wc) => (wc.id = id));
     } else {
@@ -250,14 +206,11 @@ export class HnBrickAggregateService {
   }
 
   async findBrickByName(name: string, userId: string = null): Promise<HnBrick> {
-    const whereConditions:
-      | FindOptionsWhere<HnBrick>[]
-      | FindOptionsWhere<HnBrick> = await this.getUserBasedWhereBrickConditions(
+    const whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> =
+      await this.getUserBasedWhereBrickConditions(
         null,
         null,
-        userId
-          ? await this.userService.findOne(userId)
-          : HnCurrentUserHelper.getCurrentUser()
+        userId ? await this.userService.findOne(userId) : HnCurrentUserHelper.getCurrentUser()
       );
     if (whereConditions instanceof Array) {
       whereConditions.map((wc) => (wc.name = name));
@@ -288,16 +241,13 @@ export class HnBrickAggregateService {
         const brickMap: HnSitemapItemBase[] = [];
 
         const brickMajorVersions: HnBrickMajorVersion[] =
-          await this.brickMajorVersionService.findBrickMajorVersionsByBrick(
-            brick
-          );
+          await this.brickMajorVersionService.findBrickMajorVersionsByBrick(brick);
 
         for (const brickMajorVersion of brickMajorVersions) {
           // add docs
-          const docs: HnDocumentation[] =
-            await this.documentationService.getDocsByBrickVersion(
-              brickMajorVersion.id
-            );
+          const docs: HnDocumentation[] = await this.documentationService.getDocsByBrickVersion(
+            brickMajorVersion.id
+          );
           for (const doc of docs) {
             brickMap.push({
               url: this.frontService.getBrickDocUrl(
@@ -314,14 +264,10 @@ export class HnBrickAggregateService {
           }
 
           // add technical docs
-          const technicalFolder =
-            await this.technicalFolderService.findTechnicalFolder(
-              brickMajorVersion.id
-            );
-          const technicalDocs =
-            await this.technicalFolderService.findTechDocsByBrickMajor(
-              brickMajorVersion.id
-            );
+          const technicalFolder = await this.technicalFolderService.findTechnicalFolder(brickMajorVersion.id);
+          const technicalDocs = await this.technicalFolderService.findTechDocsByBrickMajor(
+            brickMajorVersion.id
+          );
 
           for (const doc of technicalDocs) {
             brickMap.push({
@@ -345,79 +291,63 @@ export class HnBrickAggregateService {
 
   async createBrick(body: HnCreateBrickDTO): Promise<HnBrick> {
     let brick: HnBrick;
-    const brickVersion: HnBrickVersion = await this.dataSource.transaction(
-      async (entityManager) => {
-        // Create brick
-        brick = await this.brickService.create(body, entityManager);
+    const brickVersion: HnBrickVersion = await this.dataSource.transaction(async (entityManager) => {
+      // Create brick
+      brick = await this.brickService.create(body, entityManager);
 
-        // init subpatch version if beta
-        if (body.isBeta) body.version.subPatch = body.subPatch;
+      // init subpatch version if beta
+      if (body.isBeta) body.version.subPatch = body.subPatch;
 
-        // Create brick major version
-        const brickMajorVersion: HnBrickMajorVersion =
-          await this.brickMajorVersionService.create(
-            brick,
-            body,
-            entityManager
-          );
+      // Create brick major version
+      const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionService.create(
+        brick,
+        body,
+        entityManager
+      );
 
-        // Init the BlVersion to create the brick version
-        const version: BlVersion =
-          body.version.subPatch != null
-            ? new BlVersion(
+      // Init the BlVersion to create the brick version
+      const version: BlVersion =
+        body.version.subPatch != null
+          ? new BlVersion(
               +body.version.major,
               +body.version.minor,
               +body.version.patch,
               +body.version.subPatch
             )
-            : new BlVersion(
-              +body.version.major,
-              +body.version.minor,
-              +body.version.patch
-            );
+          : new BlVersion(+body.version.major, +body.version.minor, +body.version.patch);
 
-        // TODO: Improve brick version creation (simplify in the aggregate)
-        const bv: HnBrickVersion =
-          await this.brickVersionService.createNewBrickVersion(
-            brickMajorVersion,
-            {
-              version: version.toString(),
-              brickId: brickMajorVersion.brick.id,
-              references: body.references,
-              repoType: body.repoType,
-              technicalInfo: body.technicalInfo,
-            },
-            entityManager
-          );
+      // TODO: Improve brick version creation (simplify in the aggregate)
+      const bv: HnBrickVersion = await this.brickVersionService.createNewBrickVersion(
+        brickMajorVersion,
+        {
+          version: version.toString(),
+          brickId: brickMajorVersion.brick.id,
+          references: body.references,
+          repoType: body.repoType,
+          technicalInfo: body.technicalInfo,
+        },
+        entityManager
+      );
 
-        // Create main folders
-        const mainFolder: HnFolder = await this.folderService.createMainFolders(
-          brickMajorVersion,
-          entityManager
-        );
+      // Create main folders
+      const mainFolder: HnFolder = await this.folderService.createMainFolders(
+        brickMajorVersion,
+        entityManager
+      );
 
-        // Create main doc
-        await this.documentationService.createMainDoc(
-          mainFolder,
-          entityManager
-        );
+      // Create main doc
+      await this.documentationService.createMainDoc(mainFolder, entityManager);
 
-        return bv;
-      }
-    );
+      return bv;
+    });
 
     // Send brick version to transport
-    await this.brickVersionService.sendBrickVersionIdToTransport(
-      brickVersion.id
-    );
+    await this.brickVersionService.sendBrickVersionIdToTransport(brickVersion.id);
 
     return brick;
   }
 
-  async editBrickImage(
-    id: string,
-    file: BlFile
-  ): Promise<BlRichTextUploadedImageResponse> {
+  async editBrickImage(id: string, file: BlFile): Promise<BlRichTextUploadedImageResponse> {
     await this.assertUserCanEditBrick(id, true);
     return this.brickService.editBrickImage(id, file);
   }
@@ -433,27 +363,17 @@ export class HnBrickAggregateService {
   }
 
   async acceptBrickUserInvite(token: string): Promise<HnBrick> {
-    const brickUserInvite: HnBrickUserInvite =
-      await this.brickUserInviteService.getAndCheckInvite(token);
-    if (!brickUserInvite)
-      throw new BlUnauthorizedException('This invite is not valid');
-    const brick: HnBrick = await this.brickService.findBrickForInviteById(
-      brickUserInvite.brick.id
-    );
+    const brickUserInvite: HnBrickUserInvite = await this.brickUserInviteService.getAndCheckInvite(token);
+    if (!brickUserInvite) throw new BlUnauthorizedException('This invite is not valid');
+    const brick: HnBrick = await this.brickService.findBrickForInviteById(brickUserInvite.brick.id);
     await this.brickUserInviteService.acceptBrickUserInvite(brickUserInvite);
-    await this.brickUserService.createBrickUser(
-      brick,
-      HnCurrentUserHelper.getCurrentUser()
-    );
+    await this.brickUserService.createBrickUser(brick, HnCurrentUserHelper.getCurrentUser());
     return brick;
   }
 
   async isBrickUserInviteValid(token: string): Promise<HnBrickUserInviteDto> {
-    const brickUserInvite = await this.brickUserInviteService.getAndCheckInvite(
-      token
-    );
-    if (!brickUserInvite)
-      throw new BlUnauthorizedException('This invite is not valid');
+    const brickUserInvite = await this.brickUserInviteService.getAndCheckInvite(token);
+    if (!brickUserInvite) throw new BlUnauthorizedException('This invite is not valid');
     return new HnBrickUserInviteDto(brickUserInvite);
   }
 
@@ -464,15 +384,9 @@ export class HnBrickAggregateService {
 
     try {
       const lastBrickMajorVersion: HnBrickMajorVersion =
-        await this.brickMajorVersionService.getLatestBrickMajorVersion(
-          brick.id
-        );
-      const brickVersion = await this.brickVersionService.getLatestBrickVersion(
-        lastBrickMajorVersion.id
-      );
-      await this.brickVersionService.sendBrickVersionIdToTransport(
-        brickVersion.id
-      );
+        await this.brickMajorVersionService.getLatestBrickMajorVersion(brick.id);
+      const brickVersion = await this.brickVersionService.getLatestBrickVersion(lastBrickMajorVersion.id);
+      await this.brickVersionService.sendBrickVersionIdToTransport(brickVersion.id);
     } catch (e: any) {
       console.log(e);
     }
@@ -494,17 +408,16 @@ export class HnBrickAggregateService {
 
     // if the brick is private, it needs a valid centralApiKey
     if (brick.visibility === HnBrickVisibility.PRIVATE) {
-      if (
-        centralApiKey == null ||
-        this.configService.getCentralApiKey() !== centralApiKey
-      ) {
+      if (centralApiKey == null || this.configService.getCentralApiKey() !== centralApiKey) {
         throw new BlUnauthorizedException();
       }
     }
 
     // get the version
-    const brickVersion: HnBrickVersion =
-      await this.brickVersionService.getAndCheckBrickVersion(name, version);
+    const brickVersion: HnBrickVersion = await this.brickVersionService.getAndCheckBrickVersion(
+      name,
+      version
+    );
 
     return {
       brickName: brick.name,
@@ -515,16 +428,11 @@ export class HnBrickAggregateService {
     };
   }
 
-  async isActualBrickAndNewVersion(
-    body: HnIsActualBrickAndNewVersionDTO
-  ): Promise<[boolean, boolean]> {
+  async isActualBrickAndNewVersion(body: HnIsActualBrickAndNewVersionDTO): Promise<[boolean, boolean]> {
     const brick: HnBrick = await this.findBrickById(body.brickId);
     this.brickService.checkIfUserHasRightOnTheBrick(brick);
 
-    if (
-      !body.inputBrickName ||
-      (brick && brick.name.toUpperCase() != body.inputBrickName.toUpperCase())
-    ) {
+    if (!body.inputBrickName || (brick && brick.name.toUpperCase() != body.inputBrickName.toUpperCase())) {
       return [false, false];
     }
 
@@ -535,15 +443,10 @@ export class HnBrickAggregateService {
       );
 
     if (brickMajorVersion == null) {
-      throw new BlUnauthorizedException(
-        'Impossible to create a new major version'
-      );
+      throw new BlUnauthorizedException('Impossible to create a new major version');
     }
 
-    return this.brickVersionService.checkIfVersionExist(
-      brickMajorVersion,
-      body.inputBrickVersion
-    );
+    return this.brickVersionService.checkIfVersionExist(brickMajorVersion, body.inputBrickVersion);
   }
 
   async updateFolder(updatedFolder: HnNodeDTO): Promise<HnFolder> {
@@ -551,10 +454,7 @@ export class HnBrickAggregateService {
     return this.updateFolderRecusive(updatedFolder);
   }
 
-  async getAndCheckBrickVersion(
-    name: string,
-    version: string
-  ): Promise<HnBrickVersion> {
+  async getAndCheckBrickVersion(name: string, version: string): Promise<HnBrickVersion> {
     return this.brickVersionService.getAndCheckBrickVersion(name, version);
   }
 
@@ -573,9 +473,7 @@ export class HnBrickAggregateService {
   }
 
   async updateFolderRecusive(updatedFolder: HnNodeDTO): Promise<HnFolder> {
-    let folder: HnFolder = await this.folderService.findWithRelationById(
-      updatedFolder.id
-    );
+    let folder: HnFolder = await this.folderService.findWithRelationById(updatedFolder.id);
     folder.path = ClStringHelper.generateUrlPathFromString(updatedFolder.title);
     folder.title = updatedFolder.title;
     folder.completePath = folder.folder.completePath
@@ -616,9 +514,7 @@ export class HnBrickAggregateService {
     for (const node of updatedTree) {
       let isUpdated = false;
       if (node.children) {
-        const f: HnFolder = await this.folderService.findWithRelationById(
-          node.id
-        );
+        const f: HnFolder = await this.folderService.findWithRelationById(node.id);
         if (f.order != node.order || f.folder.id != node.parentId) {
           isUpdated = true;
           f.order = node.order;
@@ -629,9 +525,7 @@ export class HnBrickAggregateService {
         }
         await this.updateTreeFolder(node.children);
       } else {
-        const d: HnDocumentation = await this.documentationService.findById(
-          node.id
-        );
+        const d: HnDocumentation = await this.documentationService.findById(node.id);
         if (d.order != node.order || d.folder.id != node.parentId) {
           isUpdated = true;
           d.order = node.order;
@@ -652,12 +546,8 @@ export class HnBrickAggregateService {
     }
 
     const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
-        brick,
-        version
-      );
-    const mainFolder: HnFolder =
-      await this.folderService.findFolderByBrickMajorVersion(brickMajorVersion);
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
+    const mainFolder: HnFolder = await this.folderService.findFolderByBrickMajorVersion(brickMajorVersion);
     return await this.folderService.findBrickDocsTree(mainFolder);
   }
 
@@ -670,9 +560,7 @@ export class HnBrickAggregateService {
   }
 
   async findFoldersByParentId(id: string): Promise<HnFolderDto[]> {
-    return (await this.folderService.findFoldersByParentId(id))?.map(
-      (f) => new HnFolderDto(f)
-    );
+    return (await this.folderService.findFoldersByParentId(id))?.map((f) => new HnFolderDto(f));
   }
 
   async removeFolder(id: string): Promise<void> {
@@ -685,9 +573,7 @@ export class HnBrickAggregateService {
   async createDoc(createDocumentation: HnNodeDTO): Promise<HnDocumentation> {
     await this.checkIfUserHasRightsOnFolder(createDocumentation.folderId);
 
-    const folder = await this.folderService.findById(
-      createDocumentation.folderId
-    );
+    const folder = await this.folderService.findById(createDocumentation.folderId);
     return this.documentationService.create(createDocumentation, folder);
   }
 
@@ -722,20 +608,13 @@ export class HnBrickAggregateService {
     return this.documentationService.update(updatedDoc);
   }
 
-  async saveDocImage(
-    file: BlFile,
-    docId: string
-  ): Promise<BlRichTextUploadedImageResponse> {
+  async saveDocImage(file: BlFile, docId: string): Promise<BlRichTextUploadedImageResponse> {
     await this.checkIfUserHasRightsOnDoc(docId);
-    const documentation: HnDocumentation =
-      await this.documentationService.findById(docId);
+    const documentation: HnDocumentation = await this.documentationService.findById(docId);
     return this.fileDocumentationService.saveImage(documentation, file);
   }
 
-  async updateDocContent(
-    id: string,
-    updateContentDoc: BlRichTextContent
-  ): Promise<HnDocumentation> {
+  async updateDocContent(id: string, updateContentDoc: BlRichTextContent): Promise<HnDocumentation> {
     await this.checkIfUserHasRightsOnDoc(id);
     return this.documentationService.updateContent(id, updateContentDoc);
   }
@@ -749,28 +628,18 @@ export class HnBrickAggregateService {
   }
 
   async findDocsByParentId(id: string): Promise<HnDocumentationDto[]> {
-    return (await this.folderService.findDocsByParentId(id))?.map(
-      (d) => new HnDocumentationDto(d)
-    );
+    return (await this.folderService.findDocsByParentId(id))?.map((d) => new HnDocumentationDto(d));
   }
 
-  async findRootFolderId(
-    brickId: string,
-    version: string
-  ): Promise<{ id: string }> {
+  async findRootFolderId(brickId: string, version: string): Promise<{ id: string }> {
     const brick: HnBrick = await this.findBrickById(brickId);
     if (brick == null) {
       return { id: null };
     }
 
     const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
-        brick,
-        version
-      );
-    const mainFolder = await this.folderService.findFolderByBrickMajorVersion(
-      brickMajorVersion
-    );
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
+    const mainFolder = await this.folderService.findFolderByBrickMajorVersion(brickMajorVersion);
     return { id: mainFolder.id };
   }
 
@@ -782,19 +651,13 @@ export class HnBrickAggregateService {
     const brick: HnBrick = await this.findBrickByName(brickName);
 
     const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
-        brick,
-        version
-      );
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
 
     if (!completePath.endsWith('/')) {
       completePath += '/';
     }
 
-    const doc = await this.documentationService.findCurrentDoc(
-      brickMajorVersion,
-      completePath
-    );
+    const doc = await this.documentationService.findCurrentDoc(brickMajorVersion, completePath);
     if (doc == null) {
       throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, {
         detailArgs: { completePath: completePath },
@@ -804,32 +667,17 @@ export class HnBrickAggregateService {
     return new HnDocumentationDto(doc);
   }
 
-  async findFirstDoc(
-    brickName: string,
-    version: string
-  ): Promise<HnDocumentationDto> {
+  async findFirstDoc(brickName: string, version: string): Promise<HnDocumentationDto> {
     const brick: HnBrick = await this.findBrickByName(brickName);
     const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
-        brick,
-        version
-      );
-    const findFirstDocNode: HnNode = await this.folderService.findFirstDocNode(
-      brickMajorVersion
-    );
-    return new HnDocumentationDto(
-      await this.documentationService.findById(findFirstDocNode.id)
-    );
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
+    const findFirstDocNode: HnNode = await this.folderService.findFirstDocNode(brickMajorVersion);
+    return new HnDocumentationDto(await this.documentationService.findById(findFirstDocNode.id));
   }
 
-  async getDocsByBrickNameMajor(
-    brickName: string,
-    major: string
-  ): Promise<HnDocumentationSearchDTO[]> {
+  async getDocsByBrickNameMajor(brickName: string, major: string): Promise<HnDocumentationSearchDTO[]> {
     const majorNumber: number =
-      major === 'latest'
-        ? (await this.getLatestBrickVersion(brickName)).version.major
-        : +major.slice(1);
+      major === 'latest' ? (await this.getLatestBrickVersion(brickName)).version.major : +major.slice(1);
 
     const brick: HnBrick = await this.findBrickByName(brickName);
     if (brick == null) {
@@ -837,19 +685,12 @@ export class HnBrickAggregateService {
     }
 
     const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findOneByBrickIdAndMajor(
-        brick.id,
-        majorNumber
-      );
+      await this.brickMajorVersionService.findOneByBrickIdAndMajor(brick.id, majorNumber);
 
     let res: HnDocumentationSearchDTO[] = [];
     // Add all docs from the main folder to result
     res = res.concat(
-      await this.folderService.getDocsByBrickNameMajor(
-        brickMajorVersion,
-        major.toString(),
-        brick.name
-      )
+      await this.folderService.getDocsByBrickNameMajor(brickMajorVersion, major.toString(), brick.name)
     );
 
     // Add technical docs from the technical folder to result
@@ -871,9 +712,7 @@ export class HnBrickAggregateService {
 
   async getDocByLink(link: string): Promise<HnDocumentationSearchDTO> {
     // Split link parts
-    const linkArray: string[] = link
-      .substring(this.configService.getFrontBaseUrl().length)
-      .split('/');
+    const linkArray: string[] = link.substring(this.configService.getFrontBaseUrl().length).split('/');
 
     // Get the brick
     const brick: HnBrick = await this.findBrickByName(linkArray[1]);
@@ -884,10 +723,7 @@ export class HnBrickAggregateService {
         ? (await this.getLatestBrickVersion(brick.name)).version.major
         : +linkArray[2];
     const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndMajor(
-        brick,
-        brickVersionNumber
-      );
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndMajor(brick, brickVersionNumber);
 
     const isATechnicalDoc: boolean = linkArray[4] === 'technical';
 
@@ -901,25 +737,12 @@ export class HnBrickAggregateService {
 
     // Get doc or technical doc
     return isATechnicalDoc
-      ? this.technicalFolderService.getTechDocByLink(
-        brickMajorVersion,
-        completePath,
-        anchor
-      )
-      : this.documentationService.getDocByLink(
-        brickMajorVersion,
-        completePath,
-        anchor
-      );
+      ? this.technicalFolderService.getTechDocByLink(brickMajorVersion, completePath, anchor)
+      : this.documentationService.getDocByLink(brickMajorVersion, completePath, anchor);
   }
 
-  async createTechnicalDoc(
-    content: HnCreateTechnicalDocContent
-  ): Promise<boolean> {
-    if (
-      content.brickName.toUpperCase() !==
-      content.importFile.brick_name.toUpperCase()
-    ) {
+  async createTechnicalDoc(content: HnCreateTechnicalDocContent): Promise<boolean> {
+    if (content.brickName.toUpperCase() !== content.importFile.brick_name.toUpperCase()) {
       return false;
     }
 
@@ -932,82 +755,47 @@ export class HnBrickAggregateService {
     await this.assertUserCanEditBrick(brick.id, false);
 
     // Get brick major version
-    const importVersion: BlVersion = BlVersion.fromString(
-      content.importFile.brick_version
-    );
+    const importVersion: BlVersion = BlVersion.fromString(content.importFile.brick_version);
     const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findOneByBrickIdAndMajor(
-        brick.id,
-        importVersion.major
-      );
+      await this.brickMajorVersionService.findOneByBrickIdAndMajor(brick.id, importVersion.major);
     if (brickMajorVersion == null) {
       return false;
     }
 
     // TODO: improve here to avoid resource task and protocols services in technicalForlderService
-    return this.technicalFolderService.createTechnicalDoc(
-      brickMajorVersion,
-      content.importFile
-    );
+    return this.technicalFolderService.createTechnicalDoc(brickMajorVersion, content.importFile);
   }
 
   async getDocFiles(docId: string): Promise<HnAbstractFileEntityDTO[]> {
-    const documentation: HnDocumentation =
-      await this.documentationService.findById(docId);
+    const documentation: HnDocumentation = await this.documentationService.findById(docId);
     return this.fileDocumentationService.getDocFiles(documentation);
   }
 
   //------------------------------------- DOC HISTORY -------------------------------------
-  async getDocModifications(
-    docId: string
-  ): Promise<BlRichTextBlockModificationDto[]> {
-    const doc: HnDocumentation = await this.documentationService.findById(
-      docId
-    );
-    const modifications = await this.documentationService.getDocModifications(
-      doc
-    );
+  async getDocModifications(docId: string): Promise<BlRichTextBlockModificationDto[]> {
+    const doc: HnDocumentation = await this.documentationService.findById(docId);
+    const modifications = await this.documentationService.getDocModifications(doc);
     const res: BlRichTextBlockModificationDto[] = [];
     const userMap = new Map<string, BlUserDto>();
     for (const modification of modifications) {
       if (!userMap.has(modification.userId)) {
         const userDto = new HnUserDto(await this.userService.findOne(modification.userId));
         userMap.set(modification.userId, userDto);
-        res.push(
-          new BlRichTextBlockModificationDto(
-            modification,
-            userDto
-          )
-        );
+        res.push(new BlRichTextBlockModificationDto(modification, userDto));
       } else {
-        res.push(
-          new BlRichTextBlockModificationDto(
-            modification,
-            userMap.get(modification.userId)
-          )
-        );
+        res.push(new BlRichTextBlockModificationDto(modification, userMap.get(modification.userId)));
       }
     }
     return res;
   }
 
-  async getUndoContent(
-    docId: string,
-    modificationId: string
-  ): Promise<Record<string, any>> {
-    const doc: HnDocumentation = await this.documentationService.findById(
-      docId
-    );
+  async getUndoContent(docId: string, modificationId: string): Promise<Record<string, any>> {
+    const doc: HnDocumentation = await this.documentationService.findById(docId);
     return this.documentationService.getUndoContent(doc, modificationId);
   }
 
-  async rollbackContent(
-    docId: string,
-    modificationId: string
-  ): Promise<HnDocumentation> {
-    const doc: HnDocumentation = await this.documentationService.findById(
-      docId
-    );
+  async rollbackContent(docId: string, modificationId: string): Promise<HnDocumentation> {
+    const doc: HnDocumentation = await this.documentationService.findById(docId);
     return this.documentationService.rollbackContent(doc, modificationId);
   }
 
@@ -1016,35 +804,22 @@ export class HnBrickAggregateService {
   async findTechnicalDoc(brickId: string, version: string): Promise<HnNode> {
     const brick: HnBrick = await this.findBrickById(brickId);
     const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
-        brick,
-        version
-      );
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
     return this.technicalFolderService.findTechnicalDoc(brickMajorVersion.id);
   }
 
-  async findTechDocByPath(
-    input: HnTechnicalDocInputDTO
-  ): Promise<HnGeneratedDocDto> {
+  async findTechDocByPath(input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocDto> {
     const brick: HnBrick = await this.findBrickByName(input.brickName);
     if (brick == null) {
       return null;
     }
     const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
-        brick,
-        input.brickVersion
-      );
-    const techDoc = await this.technicalFolderService.findCurrentTecDoc(
-      brickMajorVersion,
-      input
-    )
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, input.brickVersion);
+    const techDoc = await this.technicalFolderService.findCurrentTecDoc(brickMajorVersion, input);
     return techDoc?.toDto();
   }
 
-  async createNewVersion(
-    newVersion: HnNewVersionDTO
-  ): Promise<HnNewVersionDTO> {
+  async createNewVersion(newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
     const brick: HnBrick = await this.findBrickById(newVersion.brickId);
     if (brick == null) {
       throw new BlBadRequestException('Brick not found');
@@ -1055,30 +830,19 @@ export class HnBrickAggregateService {
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.getLatestBrickMajorVersion(brick.id);
 
-    const brickVersion: HnBrickVersion =
-      await this.brickVersionService.getLatestBrickVersion(
-        brickMajorVersion.id
-      );
+    const brickVersion: HnBrickVersion = await this.brickVersionService.getLatestBrickVersion(
+      brickMajorVersion.id
+    );
 
     newVersion.repoType = brickVersion.repoType;
     const newMajor = parseInt(newVersion.version.split('.')[0]);
 
     // Verify if the new version match an existent major version
-    if (
-      (await this.brickMajorVersionService.findOneByBrickIdAndMajor(
-        brick.id,
-        newMajor
-      )) == null
-    ) {
-      throw new BlBadRequestException(
-        'Impossible to create a new major version'
-      );
+    if ((await this.brickMajorVersionService.findOneByBrickIdAndMajor(brick.id, newMajor)) == null) {
+      throw new BlBadRequestException('Impossible to create a new major version');
     }
 
-    await this.brickVersionService.createNewBrickVersion(
-      brickMajorVersion,
-      newVersion
-    );
+    await this.brickVersionService.createNewBrickVersion(brickMajorVersion, newVersion);
 
     return newVersion;
   }
@@ -1087,8 +851,7 @@ export class HnBrickAggregateService {
 
   async getLatestBrickVersion(brickName: string): Promise<HnBrickVersion> {
     const brick: HnBrick = await this.findBrickByName(brickName);
-    const brickMajorVersion =
-      await this.brickMajorVersionService.getLatestBrickMajorVersion(brick.id);
+    const brickMajorVersion = await this.brickMajorVersionService.getLatestBrickMajorVersion(brick.id);
     return this.brickVersionService.getLatestBrickVersion(brickMajorVersion.id);
   }
 
@@ -1106,15 +869,10 @@ export class HnBrickAggregateService {
     );
   }
 
-  async getVersionsList(
-    brickId: string,
-    userId: string = null
-  ): Promise<string[]> {
+  async getVersionsList(brickId: string, userId: string = null): Promise<string[]> {
     const brick = await this.findBrickById(
       brickId,
-      userId
-        ? await this.userService.findOne(userId)
-        : HnCurrentUserHelper.getCurrentUser()
+      userId ? await this.userService.findOne(userId) : HnCurrentUserHelper.getCurrentUser()
     );
     if (brick == null) {
       throw new BlNotFoundException(HnErrorText.BRICK_NOT_FOUND, {
@@ -1135,33 +893,24 @@ export class HnBrickAggregateService {
     return this.fileDocumentationService.saveResourceView(doc, file);
   }
 
-  async getAllBrickVersionReferences(
-    brickVersionId: string
-  ): Promise<HnReferenceDTO[]> {
+  async getAllBrickVersionReferences(brickVersionId: string): Promise<HnReferenceDTO[]> {
     return this.brickVersionService.getAllReferences(brickVersionId);
   }
 
-  async getBrickVersionDirectReferences(
-    brickVersionId: string
-  ): Promise<HnReferenceDTO[]> {
+  async getBrickVersionDirectReferences(brickVersionId: string): Promise<HnReferenceDTO[]> {
     return this.brickVersionService.getDirectReferences(brickVersionId);
   }
 
   //------------------------------------- BRICK CO AUTHOR -------------------------------------
-  async getBrickCoAuthorsPendingInvites(
-    brickId: string
-  ): Promise<HnBrickUserInviteDto[]> {
+  async getBrickCoAuthorsPendingInvites(brickId: string): Promise<HnBrickUserInviteDto[]> {
     await this.assertUserCanEditBrick(brickId);
-    return (
-      await this.brickUserInviteService.getBrickCoAuthorsPendingInvites(brickId)
-    )?.map((bu) => new HnBrickUserInviteDto(bu));
+    return (await this.brickUserInviteService.getBrickCoAuthorsPendingInvites(brickId))?.map(
+      (bu) => new HnBrickUserInviteDto(bu)
+    );
   }
 
   //------------------------------------- DOCUMENTATION FILE -------------------------------------
-  async saveFile(
-    file: BlFile,
-    docId: string
-  ): Promise<HnUploadFileResponseDto> {
+  async saveFile(file: BlFile, docId: string): Promise<HnUploadFileResponseDto> {
     await this.checkIfUserHasRightsOnDoc(docId);
     const doc = await this.documentationService.findById(docId);
     return await this.fileDocumentationService.saveFile(doc, file);
@@ -1176,15 +925,9 @@ export class HnBrickAggregateService {
     return brick;
   }
 
-  async removeBrickCoAuthor(
-    brickId: string,
-    brickAuthorUserId: string
-  ): Promise<void> {
+  async removeBrickCoAuthor(brickId: string, brickAuthorUserId: string): Promise<void> {
     await this.assertUserCanEditBrick(brickId);
-    await this.brickUserService.checkAndRemoveBrickUser(
-      brickId,
-      brickAuthorUserId
-    );
+    await this.brickUserService.checkAndRemoveBrickUser(brickId, brickAuthorUserId);
   }
 
   async deleteCoAuthorInvite(inviteId: string): Promise<boolean> {
@@ -1192,15 +935,10 @@ export class HnBrickAggregateService {
   }
 
   async getBrickCoAuthors(brickId: string): Promise<HnBrickUser[]> {
-    return this.brickUserService.getBrickUsers(
-      await this.findBrickById(brickId)
-    );
+    return this.brickUserService.getBrickUsers(await this.findBrickById(brickId));
   }
 
-  async checkIfUserCanEditBrick(
-    brickId: string,
-    fullRight = true
-  ): Promise<boolean> {
+  async checkIfUserCanEditBrick(brickId: string, fullRight = true): Promise<boolean> {
     if (HnCurrentUserHelper.getCurrentUser() == null) {
       return false;
     }
@@ -1215,46 +953,29 @@ export class HnBrickAggregateService {
       // if not fullRight, check if the user is a brickAuthor as well
       return (
         brick.createdBy.id === HnCurrentUserHelper.getCurrentUser()?.id ||
-        (!fullRight &&
-          brick.brickUsers.some(
-            (bu) => bu.user.id === HnCurrentUserHelper.getCurrentUser().id
-          ))
+        (!fullRight && brick.brickUsers.some((bu) => bu.user.id === HnCurrentUserHelper.getCurrentUser().id))
       );
 
-    if (
-      await this.spaceUserService.checkCurrentUserIsSpaceAdmin(brick.space.id)
-    ) {
+    if (await this.spaceUserService.checkCurrentUserIsSpaceAdmin(brick.space.id)) {
       return true;
     }
 
-    if (
-      await this.spaceUserService.checkCurrentUserIsSpaceUser(brick.space.id)
-    ) {
+    if (await this.spaceUserService.checkCurrentUserIsSpaceUser(brick.space.id)) {
       return (
         brick.createdBy.id === HnCurrentUserHelper.getCurrentUser()?.id ||
-        brick.brickUsers.some(
-          (bu) => bu.user.id === HnCurrentUserHelper.getCurrentUser().id
-        )
+        brick.brickUsers.some((bu) => bu.user.id === HnCurrentUserHelper.getCurrentUser().id)
       );
     }
 
     // if not fullRight, check if the user is a brickAuthor
     return (
-      !fullRight &&
-      brick.brickUsers.some(
-        (bu) => bu.user.id === HnCurrentUserHelper.getCurrentUser().id
-      )
+      !fullRight && brick.brickUsers.some((bu) => bu.user.id === HnCurrentUserHelper.getCurrentUser().id)
     );
   }
 
-  async assertUserCanEditBrick(
-    brickId: string,
-    fullRight = true
-  ): Promise<void> {
+  async assertUserCanEditBrick(brickId: string, fullRight = true): Promise<void> {
     if (!(await this.checkIfUserCanEditBrick(brickId, fullRight))) {
-      throw new BlUnauthorizedException(
-        'You are not authorized to perform this action'
-      );
+      throw new BlUnauthorizedException('You are not authorized to perform this action');
     }
   }
 
@@ -1264,9 +985,7 @@ export class HnBrickAggregateService {
     user: HnUser = null
   ): Promise<FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>> {
     const currentUser: HnUser = user ?? HnCurrentUserHelper.getCurrentUser();
-    let whereConditions:
-      | FindOptionsWhere<HnBrick>[]
-      | FindOptionsWhere<HnBrick>;
+    let whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>;
 
     if (currentUser == null) {
       whereConditions = [
@@ -1300,9 +1019,7 @@ export class HnBrickAggregateService {
       ];
     } else {
       const userSpacesIds: string[] = (
-        await this.spaceUserService.findActiveSpaceUsersByUserId(
-          currentUser?.id
-        )
+        await this.spaceUserService.findActiveSpaceUsersByUserId(currentUser?.id)
       ).map((su) => su.spaceId);
 
       whereConditions = [
@@ -1326,20 +1043,13 @@ export class HnBrickAggregateService {
     const currentUser: HnUser = user ?? HnCurrentUserHelper.getCurrentUser();
 
     if (currentUser == null) {
-      throw new BlUnauthorizedException(
-        'You are not authorized to perform this action'
-      );
+      throw new BlUnauthorizedException('You are not authorized to perform this action');
     }
 
-    let whereConditions:
-      | FindOptionsWhere<HnBrick>[]
-      | FindOptionsWhere<HnBrick>;
+    let whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>;
 
-    const brickCoAuthor: HnBrickUser[] =
-      await this.brickUserService.getBrickUsersByUser(currentUser);
-    const brickCoAuthorBricksId: string[] = brickCoAuthor.map(
-      (bu) => bu.brick.id
-    );
+    const brickCoAuthor: HnBrickUser[] = await this.brickUserService.getBrickUsersByUser(currentUser);
+    const brickCoAuthorBricksId: string[] = brickCoAuthor.map((bu) => bu.brick.id);
 
     if (publicSelected) {
       whereConditions = [
@@ -1406,30 +1116,23 @@ export class HnBrickAggregateService {
   }
 
   ////////////////////////////////////////// LIKES /////////////////////////////////
-  public async addLike(
-    brick: HnBrick,
-    entityManager: EntityManager
-  ): Promise<HnBrick> {
+  public async addLike(brick: HnBrick, entityManager: EntityManager): Promise<HnBrick> {
     brick.likes++;
     return entityManager.save(brick, { listeners: false });
   }
 
-  public async removeLike(
-    brick: HnBrick,
-    entityManager: EntityManager
-  ): Promise<HnBrick> {
+  public async removeLike(brick: HnBrick, entityManager: EntityManager): Promise<HnBrick> {
     brick.likes--;
     return entityManager.save(brick, { listeners: false });
   }
-
 
   ///////////////////////////////////////// MIGRATIONS /////////////////////////////////
   public async documentationImageMigration(): Promise<void> {
     const docs: HnDocumentation[] = await this.documentationService.findAll();
     for (const doc of docs) {
       const files: HnFileDocumentation[] = await this.fileDocumentationService.findByDocumentation(doc);
-      for (const file of files){
-        if (ClStringHelper.isUUID(file.name.split('.')[1]) && file.type == HnFileType.IMAGE){
+      for (const file of files) {
+        if (ClStringHelper.isUUID(file.name.split('.')[1]) && file.type == HnFileType.IMAGE) {
           await this.fileDocumentationService.renameFile(file.id, file.name.split('.')[0] + '.png');
           await this.fileDocumentationService.renameFileInBuckets(file, file.fileName.split('.')[0] + '.png');
         }

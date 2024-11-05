@@ -10,11 +10,9 @@ import { CnActivityEntityType } from '../cn-activity/cn-activity.entity';
 
 @Injectable()
 export class CnNotificationService extends BlAbstractService<CnNotification> {
-
   constructor(@InjectRepository(CnNotification) private notificationRepository: Repository<CnNotification>) {
     super(notificationRepository, CnNotification);
   }
-
 
   async createNotification(newNotification: CnNotificationCreateDTO): Promise<CnNotification> {
     const notif: CnNotification = new CnNotification();
@@ -22,19 +20,24 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
     return this.notificationRepository.save(notif);
   }
 
-
   async getUserNotifications(page: number, size: number): Promise<ClPage<CnNotification>> {
-    return (await this.findPaginated(page, size, {
-      where: {
-        user: {
-          id: CnCurrentUserHelper.getAndCheckCurrentUser().id
+    return (
+      await this.findPaginated(page, size, {
+        where: {
+          user: {
+            id: CnCurrentUserHelper.getAndCheckCurrentUser().id,
+          },
+          space: {
+            id: Raw((id) => `(${id} = :spaceId OR ${id} IS NULL)`, {
+              spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id,
+            }),
+          },
         },
-        space: { id: Raw((id) => `(${id} = :spaceId OR ${id} IS NULL)`, { spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id }) }
-      },
-      order: {
-        createdAt: 'DESC' as any
-      }
-    })).map((notif: CnNotification) => {
+        order: {
+          createdAt: 'DESC' as any,
+        },
+      })
+    ).map((notif: CnNotification) => {
       if (notif.text2.length > 36) {
         notif.text2 = notif.text2.substring(0, 35) + '...';
       }
@@ -43,24 +46,21 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
   }
 
   async readAllNotification(): Promise<void> {
-    const notifications: CnNotification[] = await this.notificationRepository.find(
-      {
-        where:
-          [
-            {
-              user: { id: CnCurrentUserHelper.getAndCheckCurrentUser().id },
-              space: { id: CnCurrentUserHelper.getAndCheckCurrentSpace().id },
-              isRead: false
-            },
-            // also include the notif that are not attached to a space
-            {
-              user: { id: CnCurrentUserHelper.getAndCheckCurrentUser().id },
-              space: IsNull(),
-              isRead: false
-            }
-          ]
-      }
-    );
+    const notifications: CnNotification[] = await this.notificationRepository.find({
+      where: [
+        {
+          user: { id: CnCurrentUserHelper.getAndCheckCurrentUser().id },
+          space: { id: CnCurrentUserHelper.getAndCheckCurrentSpace().id },
+          isRead: false,
+        },
+        // also include the notif that are not attached to a space
+        {
+          user: { id: CnCurrentUserHelper.getAndCheckCurrentUser().id },
+          space: IsNull(),
+          isRead: false,
+        },
+      ],
+    });
     for (const notif of notifications) {
       notif.isRead = true;
     }
@@ -81,28 +81,30 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
   }
 
   async readNotifications(notificationIds: string[]): Promise<void> {
-    await this.notificationRepository.update({
-      id: In(notificationIds),
-      user: { id: CnCurrentUserHelper.getAndCheckCurrentUser().id }
-    }, { isRead: true });
+    await this.notificationRepository.update(
+      {
+        id: In(notificationIds),
+        user: { id: CnCurrentUserHelper.getAndCheckCurrentUser().id },
+      },
+      { isRead: true }
+    );
   }
-
 
   async countNotReadBySpace(): Promise<CnNotificationCountBySpace[]> {
     const notRead = await this.notificationRepository.find({
       where: {
         user: {
-          id: CnCurrentUserHelper.getAndCheckCurrentUser().id
+          id: CnCurrentUserHelper.getAndCheckCurrentUser().id,
         },
         space: Not(IsNull()),
-        isRead: false
-      }
+        isRead: false,
+      },
     });
 
     // group by space
     const notReadBySpace: CnNotificationCountBySpace[] = [];
     for (const notif of notRead) {
-      const notifSpace = notReadBySpace.find(space => space.spaceId === notif.space.id);
+      const notifSpace = notReadBySpace.find((space) => space.spaceId === notif.space.id);
       if (notifSpace) {
         notifSpace.notReadCount++;
       } else {
@@ -113,12 +115,14 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
     return notReadBySpace;
   }
 
-  public deleteNotificationByObject(objectType: CnActivityEntityType, objectId: string): Promise<DeleteResult> {
+  public deleteNotificationByObject(
+    objectType: CnActivityEntityType,
+    objectId: string
+  ): Promise<DeleteResult> {
     return this.notificationRepository.delete({ objectType, objectId });
   }
 
   public deleteNotificationByUserAndSpace(userId: string, spaceId: string): Promise<DeleteResult> {
     return this.notificationRepository.delete({ user: { id: userId }, space: { id: spaceId } });
   }
-
 }

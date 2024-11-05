@@ -1,19 +1,16 @@
-import {Body, Controller, Delete, Get, Param, Post, Put, UseGuards} from '@nestjs/common';
-import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
-import {HnFolder} from './folder/hn-folder.entity';
-import {HnDocumentation} from './documentation/hn-documentation.entity';
-import {HnFolderDto, HnNode, HnNodeDTO} from './folder/hn-folder.dto';
-import {HnIsAdminGuard} from '../core/guards/hn-is-admin.guard';
-import {HnBrickAggregateService} from './hn-brick-aggregate.service';
-import {HnDocumentationDto} from './documentation/hn-documentation.dto';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { BlParsePipe, BlPublic } from '@monorepo/back-core-lib';
+import { HnFolder } from './folder/hn-folder.entity';
+import { HnDocumentation } from './documentation/hn-documentation.entity';
+import { HnFolderDto, HnNode, HnNodeDTO } from './folder/hn-folder.dto';
+import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
+import { HnBrickAggregateService } from './hn-brick-aggregate.service';
+import { HnDocumentationDto } from './documentation/hn-documentation.dto';
 
 @Controller('folder')
 @UseGuards(HnIsAdminGuard)
 export class HnFolderController {
-  constructor(
-    private readonly brickAggregateService: HnBrickAggregateService
-  ) {
-  }
+  constructor(private readonly brickAggregateService: HnBrickAggregateService) {}
 
   @Post()
   create(@Body(new BlParsePipe(HnNodeDTO)) createFolder: HnNodeDTO): Promise<HnFolder> {
@@ -31,7 +28,7 @@ export class HnFolderController {
   }
 
   @Put('tree')
-  updateTree(@Body() updatedTree: HnNode[]): Promise<HnNode[]>{
+  updateTree(@Body() updatedTree: HnNode[]): Promise<HnNode[]> {
     return this.brickAggregateService.updateTree(updatedTree);
   }
 

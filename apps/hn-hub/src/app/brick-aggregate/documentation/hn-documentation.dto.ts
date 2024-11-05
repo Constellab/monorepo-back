@@ -1,7 +1,7 @@
-import {HnBaseDto} from '../../core/model/entities/hn-base.dto';
-import {HnDocumentation} from './hn-documentation.entity';
+import { HnBaseDto } from '../../core/model/entities/hn-base.dto';
+import { HnDocumentation } from './hn-documentation.entity';
 
-export class HnDocumentationDto extends HnBaseDto{
+export class HnDocumentationDto extends HnBaseDto {
   title: string;
   content?: Record<string, any>;
   path: string;

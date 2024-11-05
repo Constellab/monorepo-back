@@ -8,7 +8,7 @@ import {
   BlFileResponse,
   BlObject,
   BlObjectStorageObjectsInfo,
-  BlS3BucketConfig
+  BlS3BucketConfig,
 } from './bl-object-storage.class';
 import { BlAzureBucketService } from './bl-azure-bucket.service';
 import { BlObjectStorageInterface } from './bl-object-storage.interface';
@@ -16,7 +16,6 @@ import { BlS3BucketService } from './bl-s3-bucket.service';
 import { BlExternalApiService } from '../bl-external-api/bl-external-api.service';
 import { BlLabS3BucketService } from './bl-lab-s3-bucket.service';
 import { Stream } from 'stream';
-
 
 export interface BlObjectStorageUploadOptions {
   // if true generate a random name for the object
@@ -34,42 +33,57 @@ export interface BlObjectStorageUploadOptions {
  */
 @Injectable()
 export class BlObjectStorageService {
-
-  constructor(private apiService: BlExternalApiService) {
-  }
+  constructor(private apiService: BlExternalApiService) {}
 
   //////////////////////////////////////////// UPLOAD OBJECT /////////////////////////////////////////
 
-  public async uploadObject(config: BlBucketConfig | BlBucketConfig[], obj: BlFile,
-                            options: BlObjectStorageUploadOptions = {}): Promise<string> {
-    const filename = this.getFilename(options, BlFileHelper.getFileExtension(obj.originalname), obj.originalname);
+  public async uploadObject(
+    config: BlBucketConfig | BlBucketConfig[],
+    obj: BlFile,
+    options: BlObjectStorageUploadOptions = {}
+  ): Promise<string> {
+    const filename = this.getFilename(
+      options,
+      BlFileHelper.getFileExtension(obj.originalname),
+      obj.originalname
+    );
 
     return this.uploadObjectToBuckets(config, obj.buffer, filename, obj.mimetype, options.tags);
   }
 
-
-  public async uploadJson(config: BlBucketConfig | BlBucketConfig[], json: any,
-                          options: BlObjectStorageUploadOptions = {}): Promise<string> {
+  public async uploadJson(
+    config: BlBucketConfig | BlBucketConfig[],
+    json: any,
+    options: BlObjectStorageUploadOptions = {}
+  ): Promise<string> {
     const filename = this.getFilename(options, 'json');
 
     const buffer = Buffer.from(JSON.stringify(json));
     return this.uploadObjectToBuckets(config, buffer, filename, 'application/json', options.tags);
   }
 
-  private async uploadObjectToBuckets(bucketConfigs: BlBucketConfig | BlBucketConfig[], obj: Buffer, filename: string,
-                                      contentType: string, tags?: Record<string, string>): Promise<string> {
+  private async uploadObjectToBuckets(
+    bucketConfigs: BlBucketConfig | BlBucketConfig[],
+    obj: Buffer,
+    filename: string,
+    contentType: string,
+    tags?: Record<string, string>
+  ): Promise<string> {
     const configs: BlBucketConfig[] = ClHelpService.convertObjectOrArrayToArray(bucketConfigs);
 
-    const promises = configs.map((conf) =>
-      this.uploadObjectToBucket(conf, obj, filename, contentType, tags));
+    const promises = configs.map((conf) => this.uploadObjectToBucket(conf, obj, filename, contentType, tags));
     await Promise.all(promises);
 
     return filename;
   }
 
-  private async uploadObjectToBucket(config: BlBucketConfig, obj: Buffer, filename: string,
-                                     contentType: string, tags?: Record<string, string>): Promise<string> {
-
+  private async uploadObjectToBucket(
+    config: BlBucketConfig,
+    obj: Buffer,
+    filename: string,
+    contentType: string,
+    tags?: Record<string, string>
+  ): Promise<string> {
     const service = this.getService(config);
 
     return service.uploadObjectToBucket(obj, filename, contentType, this.cleanTags(tags));
@@ -84,7 +98,6 @@ export class BlObjectStorageService {
   }
 
   //////////////////////////////////////////// GET OBJECT /////////////////////////////////////////
-
 
   public async getAllObjectsByPrefix(config: BlBucketConfig, prefix: string = ''): Promise<BlObject[]> {
     const service = this.getService(config);
@@ -130,7 +143,10 @@ export class BlObjectStorageService {
     });
   }
 
-  public async getObjectsSizeByPrefix(config: BlBucketConfig, prefix: string = ''): Promise<BlObjectStorageObjectsInfo> {
+  public async getObjectsSizeByPrefix(
+    config: BlBucketConfig,
+    prefix: string = ''
+  ): Promise<BlObjectStorageObjectsInfo> {
     const objects = await this.getAllObjectsByPrefix(config, prefix);
     const result: BlObjectStorageObjectsInfo = { totalSize: 0, nbObjects: objects.length };
 
@@ -149,7 +165,10 @@ export class BlObjectStorageService {
    * @param objectName
    * @returns true if object deleted, false if object not found
    */
-  public async deleteObjectIfExist(config: BlBucketConfig | BlBucketConfig[], objectName: string): Promise<boolean> {
+  public async deleteObjectIfExist(
+    config: BlBucketConfig | BlBucketConfig[],
+    objectName: string
+  ): Promise<boolean> {
     const bucketConfigs = ClHelpService.convertObjectOrArrayToArray(config);
 
     const promises: Promise<boolean>[] = [];
@@ -163,8 +182,10 @@ export class BlObjectStorageService {
     return results.some((res) => res);
   }
 
-
-  public async deleteObjectsByPrefix(config: BlBucketConfig | BlBucketConfig[], prefix: string): Promise<void> {
+  public async deleteObjectsByPrefix(
+    config: BlBucketConfig | BlBucketConfig[],
+    prefix: string
+  ): Promise<void> {
     const bucketConfigs = ClHelpService.convertObjectOrArrayToArray(config);
 
     const promises: Promise<void>[] = [];
@@ -178,8 +199,10 @@ export class BlObjectStorageService {
     await Promise.all(promises);
   }
 
-
-  public async deleteMultipleObjects(config: BlBucketConfig | BlBucketConfig[], objectNames: string[]): Promise<void> {
+  public async deleteMultipleObjects(
+    config: BlBucketConfig | BlBucketConfig[],
+    objectNames: string[]
+  ): Promise<void> {
     if (ClHelpService.isNullOrEmpty(objectNames)) return;
 
     const bucketConfigs = ClHelpService.convertObjectOrArrayToArray(config);
@@ -194,7 +217,6 @@ export class BlObjectStorageService {
     await Promise.all(promises);
   }
 
-
   ////////////////////////////////////////// BUCKET //////////////////////////////////////////
 
   public async createBucket(config: BlBucketConfig): Promise<void> {
@@ -208,11 +230,14 @@ export class BlObjectStorageService {
    * @param errorIfNotExist if true throw an error if the bucket does not exist
    * @param force if true delete the bucket even if it is not empty
    */
-  public async deleteBucket(config: BlBucketConfig, errorIfNotExist: boolean = true,
-                            force: boolean = false): Promise<void> {
+  public async deleteBucket(
+    config: BlBucketConfig,
+    errorIfNotExist: boolean = true,
+    force: boolean = false
+  ): Promise<void> {
     const service = this.getService(config);
 
-    if (!await service.bucketExists()) {
+    if (!(await service.bucketExists())) {
       if (errorIfNotExist) {
         throw new Error(`The bucket '${service.getBucketName()}' does not exist`);
       } else {
@@ -244,7 +269,11 @@ export class BlObjectStorageService {
     return service.getObjectTags(objectName);
   }
 
-  public async setObjectTags(config: BlBucketConfig | BlBucketConfig[], objectName: string, tags: Record<string, string>): Promise<void> {
+  public async setObjectTags(
+    config: BlBucketConfig | BlBucketConfig[],
+    objectName: string,
+    tags: Record<string, string>
+  ): Promise<void> {
     const bucketConfigs = ClHelpService.convertObjectOrArrayToArray(config);
 
     tags = this.cleanTags(tags);
@@ -272,11 +301,13 @@ export class BlObjectStorageService {
 
   /////////////////////////////////// OTHER ///////////////////////////////////
 
-  public async moveObjectToAnotherBucket(oldConfig: BlBucketConfig | BlBucketConfig[],
-                                         newConfig: BlBucketConfig | BlBucketConfig[],
-                                         oldObjectName: string,
-                                         newObjectName: string,
-                                         tags?: Record<string, string>): Promise<string> {
+  public async moveObjectToAnotherBucket(
+    oldConfig: BlBucketConfig | BlBucketConfig[],
+    newConfig: BlBucketConfig | BlBucketConfig[],
+    oldObjectName: string,
+    newObjectName: string,
+    tags?: Record<string, string>
+  ): Promise<string> {
     const oldConfigs = ClHelpService.convertObjectOrArrayToArray(oldConfig);
 
     // get the object
@@ -284,8 +315,13 @@ export class BlObjectStorageService {
     const buffer = await this.streamToBuffer(object.file);
 
     // upload object to new bucket
-    const objectName = await this.uploadObjectToBuckets(newConfig, buffer, newObjectName, object.contentType,
-      this.cleanTags(tags));
+    const objectName = await this.uploadObjectToBuckets(
+      newConfig,
+      buffer,
+      newObjectName,
+      object.contentType,
+      this.cleanTags(tags)
+    );
 
     // delete object from old bucket
     await this.deleteObjectIfExist(oldConfigs, oldObjectName);
@@ -325,7 +361,11 @@ export class BlObjectStorageService {
     return this.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(filename));
   }
 
-  private getFilename(options: BlObjectStorageUploadOptions, extension: string, defaultName?: string): string {
+  private getFilename(
+    options: BlObjectStorageUploadOptions,
+    extension: string,
+    defaultName?: string
+  ): string {
     let filename: string;
     if (options.filename) {
       filename = options.filename;
@@ -345,7 +385,10 @@ export class BlObjectStorageService {
     return filename;
   }
 
-  public areSameBuckets(config1: BlBucketConfig | BlBucketConfig[], config2: BlBucketConfig | BlBucketConfig[]): boolean {
+  public areSameBuckets(
+    config1: BlBucketConfig | BlBucketConfig[],
+    config2: BlBucketConfig | BlBucketConfig[]
+  ): boolean {
     const configs1 = ClHelpService.convertObjectOrArrayToArray(config1);
     const configs2 = ClHelpService.convertObjectOrArrayToArray(config2);
 
@@ -362,26 +405,32 @@ export class BlObjectStorageService {
   public areSameBucket(config1: BlBucketConfig, config2: BlBucketConfig): boolean {
     if (config1.type !== config2.type) return false;
     if (config1.type === 'azureBlob') {
-      return this.areSameAzureBlobBucket(config1.config as BlAzureBlobContainerConfig,
-        config2.config as BlAzureBlobContainerConfig);
+      return this.areSameAzureBlobBucket(
+        config1.config as BlAzureBlobContainerConfig,
+        config2.config as BlAzureBlobContainerConfig
+      );
     } else {
-      return this.areSameS3Bucket(config1.config as BlS3BucketConfig,
-        config2.config as BlS3BucketConfig);
+      return this.areSameS3Bucket(config1.config as BlS3BucketConfig, config2.config as BlS3BucketConfig);
     }
   }
 
-  private areSameAzureBlobBucket(config1: BlAzureBlobContainerConfig, config2: BlAzureBlobContainerConfig): boolean {
-    return config1.accountName === config2.accountName &&
+  private areSameAzureBlobBucket(
+    config1: BlAzureBlobContainerConfig,
+    config2: BlAzureBlobContainerConfig
+  ): boolean {
+    return (
+      config1.accountName === config2.accountName &&
       config1.containerName === config2.containerName &&
-      config1.region === config2.region;
+      config1.region === config2.region
+    );
   }
 
   private areSameS3Bucket(config1: BlS3BucketConfig, config2: BlS3BucketConfig): boolean {
-    return config1.region === config2.region &&
+    return (
+      config1.region === config2.region &&
       config1.endpoint === config2.endpoint &&
       config1.bucket === config2.bucket &&
-      config1.bucketType === config2.bucketType;
-
-
+      config1.bucketType === config2.bucketType
+    );
   }
 }

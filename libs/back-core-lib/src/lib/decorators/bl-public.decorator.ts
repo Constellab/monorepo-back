@@ -19,23 +19,20 @@ export const BlPublic = (): CustomDecorator => SetMetadata(publicMetadata, true)
  * It also adds a BlThrottlerBehindProxyGuard to prevent brute force attack
  * @constructor
  */
-export const BlPublicSecure = (options ?: { limit: number, ttl: number }): any => {
-  const decorators = [
-    SetMetadata(publicMetadata, true),
-    UseGuards(BlThrottlerBehindProxyGuard),
-  ];
+export const BlPublicSecure = (options?: { limit: number; ttl: number }): any => {
+  const decorators = [SetMetadata(publicMetadata, true), UseGuards(BlThrottlerBehindProxyGuard)];
   if (options) {
     // TODO TO CHECK KEY
-    decorators.push(Throttle({
-      test:{
-        limit: options.limit,
-        ttl: options.ttl,
-      }
-    }));
+    decorators.push(
+      Throttle({
+        test: {
+          limit: options.limit,
+          ttl: options.ttl,
+        },
+      })
+    );
   }
-  return applyDecorators(
-    ...decorators,
-  );
+  return applyDecorators(...decorators);
 };
 
 /**

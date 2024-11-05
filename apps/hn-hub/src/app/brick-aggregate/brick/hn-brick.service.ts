@@ -15,20 +15,19 @@ import {
   BlImageHelper,
   BlObjectStorageService,
   BlRichTextUploadedImageResponse,
-  BlUnauthorizedException
+  BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
 import { ClPage, ClStringHelper } from '@monorepo/core-lib';
 import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
 
 @Injectable()
 export class HnBrickService {
-
   constructor(
     @InjectRepository(HnBrick)
     private bricksRepository: Repository<HnBrick>,
     private configService: HnCoreConfigService,
-    private objectStorageService: BlObjectStorageService) {
-  }
+    private objectStorageService: BlObjectStorageService
+  ) {}
 
   async create(createdBrick: HnCreateBrickDTO, entityManager: EntityManager): Promise<HnBrick> {
     if (createdBrick.name.includes(' ')) {
@@ -50,11 +49,22 @@ export class HnBrickService {
     return this.bricksRepository.find();
   }
 
-  async findBrickList(whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>,
-                      page: number, size: number): Promise<ClPage<HnBrickDto>> {
-    return (await BlAbstractPaginatedService.findPaginatedStatic(page, size, {
-      where: whereConditions
-    }, this.bricksRepository.manager, HnBrick)).map(b => new HnBrickDto(b));
+  async findBrickList(
+    whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>,
+    page: number,
+    size: number
+  ): Promise<ClPage<HnBrickDto>> {
+    return (
+      await BlAbstractPaginatedService.findPaginatedStatic(
+        page,
+        size,
+        {
+          where: whereConditions,
+        },
+        this.bricksRepository.manager,
+        HnBrick
+      )
+    ).map((b) => new HnBrickDto(b));
   }
 
   async findOne(whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>): Promise<HnBrick> {
@@ -63,7 +73,7 @@ export class HnBrickService {
 
   async findByNameCentral(name: string): Promise<HnBrick> {
     return await this.bricksRepository.findOne({
-      where: { name: name }
+      where: { name: name },
     });
   }
 
@@ -77,18 +87,19 @@ export class HnBrickService {
     image.originalname = id + '/brick-image/' + ClStringHelper.generateUUID() + '.' + fileExt;
 
     const filename = await this.objectStorageService.uploadObject(
-      [this.getBucketConfig(), this.getBackupBucketConfig()], image);
+      [this.getBucketConfig(), this.getBackupBucketConfig()],
+      image
+    );
 
     const brick = await this.bricksRepository.findOneBy({ id: id });
     await this.deleteBrickImage(brick.imageLink);
     brick.imageLink = filename;
     await this.bricksRepository.save(brick);
 
-
     return {
       filename: filename,
       width: imSize.width,
-      height: imSize.height
+      height: imSize.height,
     };
   }
 
@@ -97,7 +108,10 @@ export class HnBrickService {
   }
 
   async deleteBrickImage(filename: string, brickId: string = null): Promise<void> {
-    await this.objectStorageService.deleteObjectIfExist([this.getBucketConfig(), this.getBackupBucketConfig()], filename);
+    await this.objectStorageService.deleteObjectIfExist(
+      [this.getBucketConfig(), this.getBackupBucketConfig()],
+      filename
+    );
     if (brickId) {
       const brick = await this.bricksRepository.findOneBy({ id: brickId });
       brick.imageLink = null;
@@ -123,15 +137,19 @@ export class HnBrickService {
 
   checkIfUserHasRightOnTheBrick(brick: HnBrick): void {
     const currentUser = HnCurrentUserHelper.getCurrentUser();
-    if (currentUser.id != brick.createdBy.id &&
-      !brick?.brickUsers.some(bu => bu.user.id === HnCurrentUserHelper.getCurrentUser()?.id)) {
+    if (
+      currentUser.id != brick.createdBy.id &&
+      !brick?.brickUsers.some((bu) => bu.user.id === HnCurrentUserHelper.getCurrentUser()?.id)
+    ) {
       throw new BlUnauthorizedException('You are not authorized to edit this brick');
     }
   }
 
   userHasRightOnBrick(brick: HnBrick): boolean {
-    return HnCurrentUserHelper.getCurrentUser()?.id === brick.createdBy?.id ||
-      brick?.brickUsers.some(bu => bu.user.id === HnCurrentUserHelper.getCurrentUser()?.id);
+    return (
+      HnCurrentUserHelper.getCurrentUser()?.id === brick.createdBy?.id ||
+      brick?.brickUsers.some((bu) => bu.user.id === HnCurrentUserHelper.getCurrentUser()?.id)
+    );
   }
 
   private getBucketConfig(): BlBucketConfig {
@@ -142,8 +160,8 @@ export class HnBrickService {
         region: this.configService.getDefaultObjectStorageRegion(),
         bucket: this.configService.getDocImageObjectStorageBucket(),
         credentials: this.configService.getDefaultObjectStorageCredentials(),
-        bucketType: BlBucketType.NORMAL
-      }
+        bucketType: BlBucketType.NORMAL,
+      },
     };
   }
 
@@ -155,9 +173,8 @@ export class HnBrickService {
         region: this.configService.getBackupObjectStorageRegion(),
         bucket: this.configService.getDocImageObjectStorageBackupBucket(),
         credentials: this.configService.getDefaultObjectStorageCredentials(),
-        bucketType: BlBucketType.NORMAL
-      }
+        bucketType: BlBucketType.NORMAL,
+      },
     };
   }
 }
-

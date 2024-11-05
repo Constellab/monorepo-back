@@ -1,34 +1,35 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
-import {HnTask} from './hn-task.entity';
-import {HnTechnicalFolder} from '../technical-folder/hn-technical-folder.entity';
-import {HnImportTaskDTO} from '../brick-aggregate/brick/hn-brick.dto';
-import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc-typing.entity';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { HnTask } from './hn-task.entity';
+import { HnTechnicalFolder } from '../technical-folder/hn-technical-folder.entity';
+import { HnImportTaskDTO } from '../brick-aggregate/brick/hn-brick.dto';
+import { HnGeneratedDocEntity } from '../core/model/entities/hn-generated-doc-typing.entity';
 import * as TASKS_OF_THE_DAY from '../../assets/data/tasks-of-the-day.json';
 
 @Injectable()
 export class HnTaskService {
-
   tasksOfTheDay: HnTask[];
 
   constructor(
     @InjectRepository(HnTask)
     private readonly tasksRepository: Repository<HnTask>
   ) {
-    this.tasksOfTheDay = TASKS_OF_THE_DAY
-      .map(value => ({ value, sort: Math.random() }))
+    this.tasksOfTheDay = TASKS_OF_THE_DAY.map((value) => ({ value, sort: Math.random() }))
       .sort((a, b) => a.sort - b.sort)
       .map(({ value }) => value as HnTask);
   }
 
-  async createTechnicalDocTasks(technicalFolder: HnTechnicalFolder, tasks: HnImportTaskDTO[]): Promise<boolean> {
+  async createTechnicalDocTasks(
+    technicalFolder: HnTechnicalFolder,
+    tasks: HnImportTaskDTO[]
+  ): Promise<boolean> {
     const oldTasks: HnTask[] = await this.tasksRepository.find({
       where: {
         technicalFolder: {
-          id: technicalFolder.id
-        }
-      }
+          id: technicalFolder.id,
+        },
+      },
     });
 
     for (const t of oldTasks) {
@@ -61,7 +62,6 @@ export class HnTaskService {
       task.shortDescription = t.short_description;
       task.objectSubType = t.object_sub_type;
 
-
       if (t.input_specs && Object.keys(t.input_specs).length > 0) {
         task.inputSpecs = t.input_specs;
       }
@@ -88,22 +88,21 @@ export class HnTaskService {
     return this.tasksRepository.find({
       where: {
         technicalFolder: {
-          id: technicalFolderId
-        }
+          id: technicalFolderId,
+        },
       },
       order: {
-        humanName: 'ASC'
-      }
+        humanName: 'ASC',
+      },
     });
   }
 
   async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string): Promise<HnGeneratedDocEntity> {
-
     const task: HnTask = await this.tasksRepository.findOneBy({
       technicalFolder: {
-        id: tecFolder.id
+        id: tecFolder.id,
       },
-      uniqueName: uniqueName
+      uniqueName: uniqueName,
     });
     if (task != null) {
       task.objectType = 'TASK';
@@ -112,26 +111,27 @@ export class HnTaskService {
     return task;
   }
 
-
   //Get a task in the array tasksOfTheDay according to the day number
-  async getTaskOfTheDay(): Promise<HnTask>{
+  async getTaskOfTheDay(): Promise<HnTask> {
     const dayNumber: number = Math.floor(new Date().getTime() / (24 * 60 * 60 * 1000));
     let i: number = dayNumber % this.tasksOfTheDay.length;
-    let task: HnTask = await this.findTaskOfTheDay(this.tasksOfTheDay[i].uniqueName, this.tasksOfTheDay[i].brickName);
-    while (task == null){
+    let task: HnTask = await this.findTaskOfTheDay(
+      this.tasksOfTheDay[i].uniqueName,
+      this.tasksOfTheDay[i].brickName
+    );
+    while (task == null) {
       i = i + 1;
       task = await this.findTaskOfTheDay(this.tasksOfTheDay[i].uniqueName, this.tasksOfTheDay[i].brickName);
     }
     return task;
   }
 
-  async findTaskOfTheDay(uniqueName: string, brickName: string): Promise<HnTask>{
+  async findTaskOfTheDay(uniqueName: string, brickName: string): Promise<HnTask> {
     return this.tasksRepository.findOne({
-      where:{
+      where: {
         uniqueName: uniqueName,
-        brickName: brickName
-      }
+        brickName: brickName,
+      },
     });
   }
-
 }

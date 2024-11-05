@@ -1,31 +1,38 @@
 import { Logger } from '@nestjs/common';
-import { CnCommandService, CnExecCommandMode, CnExecOptions } from '../../cn-core/services/cn-command.service';
+import {
+  CnCommandService,
+  CnExecCommandMode,
+  CnExecOptions,
+} from '../../cn-core/services/cn-command.service';
 import { BlBadRequestException } from '@monorepo/back-core-lib';
 
 /**
  * Service to execute ssh command to the lab server
  */
 export class CnLabSshService {
-
   public static readonly SSH_PRIVATE_KEY_LOCATION = '/root/.ssh';
   public static readonly LAB_CONFIGURER_FOLDER = 'lab-configurer';
-
 
   private readonly logger = new Logger(CnLabSshService.name);
 
   private readonly sshKeyFilePath: string;
 
-  constructor(private readonly commandService: CnCommandService,
-              private readonly isLocal: boolean,
-              private readonly sshUserName: string,
-              private readonly labVirtualHost: string,
-              private readonly labId: string,
-              sshKeyFileName: string) {
+  constructor(
+    private readonly commandService: CnCommandService,
+    private readonly isLocal: boolean,
+    private readonly sshUserName: string,
+    private readonly labVirtualHost: string,
+    private readonly labId: string,
+    sshKeyFileName: string
+  ) {
     this.sshKeyFilePath = CnLabSshService.SSH_PRIVATE_KEY_LOCATION + '/' + sshKeyFileName;
   }
 
-  public execSshCommand(commands: string[],
-                        options?: CnExecOptions, logCommand: boolean = true): Promise<string> {
+  public execSshCommand(
+    commands: string[],
+    options?: CnExecOptions,
+    logCommand: boolean = true
+  ): Promise<string> {
     const command = this.getSshCommand(commands);
     if (logCommand) {
       this.logger.log(`Executing command -- ${command} -- for lab ${this.labId}`);
@@ -44,7 +51,6 @@ export class CnLabSshService {
     return `ssh ${options.join(' ')} -o StrictHostKeyChecking=no ${this.sshUserName}@lab.${this.labVirtualHost} "${commands.join(';')}"`;
   }
 
-
   /**
    * Call ssh regularly to check if the server is up.
    * Raise an exception if the server is not up after 15 * 20 seconds
@@ -58,7 +64,6 @@ export class CnLabSshService {
     const countLimit = 30;
     const waitTime = 15000;
     while (count < countLimit) {
-
       const result = await this.checkSshConnection();
       if (result) {
         successCount++;
@@ -71,9 +76,11 @@ export class CnLabSshService {
       }
 
       // eslint-disable-next-line max-len
-      this.logger.log(`Waiting for server to be available for lab ${this.labId}. Attempt ${count + 1} of ${countLimit}. Success ${successCount} of ${consecutiveRequiredSuccess}`);
+      this.logger.log(
+        `Waiting for server to be available for lab ${this.labId}. Attempt ${count + 1} of ${countLimit}. Success ${successCount} of ${consecutiveRequiredSuccess}`
+      );
       // wait 15 seconds
-      await new Promise(r => setTimeout(r, waitTime));
+      await new Promise((r) => setTimeout(r, waitTime));
       count++;
     }
 
@@ -81,12 +88,14 @@ export class CnLabSshService {
   }
 
   public async checkSshConnection(): Promise<boolean> {
-
     // option to add host to fingerprint
     const command = this.getSshCommand(['exit'], ['-q', '-o ConnectTimeout=3']);
     this.logger.log(`Checking ssh connection for ${this.labVirtualHost} lab ${this.labId}`);
     try {
-      await this.commandService.execCommand(command, {errorMode: CnExecCommandMode.STDERR_AS_WARNING, timeout: 10000});
+      await this.commandService.execCommand(command, {
+        errorMode: CnExecCommandMode.STDERR_AS_WARNING,
+        timeout: 10000,
+      });
       return true;
     } catch (e) {
       this.logger.log(e.toString());
@@ -101,5 +110,4 @@ export class CnLabSshService {
   public getMountFolder(): string {
     return `${this.getUtilsFolder()}/mount`;
   }
-
 }

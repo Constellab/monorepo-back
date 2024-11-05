@@ -16,16 +16,19 @@ import { CnLabStatsAggregateService } from '../stats/cn-lab-stats-aggregate.serv
  */
 @Injectable()
 export class CnLabFreeService extends BlAbstractService<CnLabFree> {
-
-
-  constructor(@InjectRepository(CnLabFree) repo: Repository<CnLabFree>,
-              private labStatsAggregateService: CnLabStatsAggregateService) {
+  constructor(
+    @InjectRepository(CnLabFree) repo: Repository<CnLabFree>,
+    private labStatsAggregateService: CnLabStatsAggregateService
+  ) {
     super(repo, CnLabFree);
   }
 
-  public createFreeLab(user: CnUser, lab: CnLab,
-                       hourLimit: number,
-                       entityManager: EntityManager): Promise<CnLabFree> {
+  public createFreeLab(
+    user: CnUser,
+    lab: CnLab,
+    hourLimit: number,
+    entityManager: EntityManager
+  ): Promise<CnLabFree> {
     const freeLab: CnLabFree = new CnLabFree();
     freeLab.user = user;
     freeLab.lab = lab as CnLabEntity;
@@ -40,7 +43,6 @@ export class CnLabFreeService extends BlAbstractService<CnLabFree> {
     return this.buildUsageDto(labFree);
   }
 
-
   public async findFreeLabUsageForUser(userId: string): Promise<CnLabFreeGetDto> {
     const labFree = await this.findFreeLabForUser(userId);
     return this.buildUsageDto(labFree);
@@ -52,13 +54,12 @@ export class CnLabFreeService extends BlAbstractService<CnLabFree> {
   }
 
   private async buildUsageDto(labFree?: CnLabFree): Promise<CnLabFreeGetDto> {
-
     const freeGetDto: CnLabFreeGetDto = new CnLabFreeGetDto();
     freeGetDto.standardInfo = {
       usageLimitInHours: CnLabFree.HOUR_LIMIT,
       nbCpus: CnLabFree.NB_CPUS,
       ramSize: CnLabFree.RAM_SIZE,
-      diskSize: CnLabFree.VOLUME_SIZE
+      diskSize: CnLabFree.VOLUME_SIZE,
     };
     freeGetDto.freeLab = labFree;
 
@@ -74,7 +75,9 @@ export class CnLabFreeService extends BlAbstractService<CnLabFree> {
     // retrieve for how long the lab was running
     const request = new CnLabStatsRequestDTO('CURRENT_MONTH');
     const monthRunningDuration = await this.labStatsAggregateService.getLabRunningDuration(
-      labFree.lab.id, request);
+      labFree.lab.id,
+      request
+    );
 
     if (labFree.isExpired()) {
       if (labFree.lab.currentStatus.status === CnLabStatus.NO_SERVER) {
@@ -92,14 +95,13 @@ export class CnLabFreeService extends BlAbstractService<CnLabFree> {
     freeGetDto.deletionDate = labFree.getDeletionDate();
 
     return freeGetDto;
-
   }
 
   public async findFreeLabForUser(userId: string): Promise<CnLabFree> {
     return await this.repo.findOne({
       where: {
-        user: { id: userId }
-      }
+        user: { id: userId },
+      },
     });
   }
 
@@ -124,25 +126,24 @@ export class CnLabFreeService extends BlAbstractService<CnLabFree> {
     return this.repo.find({
       where: {
         expirationDate: LessThanOrEqual(ClDateHelper.getDate().toISODate()),
-        lab: { currentStatus: { status: Not(CnLabStatus.NO_SERVER) } }
-      }
+        lab: { currentStatus: { status: Not(CnLabStatus.NO_SERVER) } },
+      },
     });
   }
-
 
   public getRunningFreeTrias(): Promise<CnLabFree[]> {
     return this.repo.find({
       where: {
         lab: {
-          currentStatus: { status: In([cnLabRunningStatuses]) }
-        }
-      }
+          currentStatus: { status: In([cnLabRunningStatuses]) },
+        },
+      },
     });
   }
 
   private findByLabId(labId: string): Promise<CnLabFree | null> {
     return this.repo.findOne({
-      where: { labId: labId }
+      where: { labId: labId },
     });
   }
 }

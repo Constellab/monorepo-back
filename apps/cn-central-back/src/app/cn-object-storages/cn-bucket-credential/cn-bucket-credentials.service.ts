@@ -1,18 +1,15 @@
-import {Injectable} from '@nestjs/common';
-import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
-import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, Repository} from 'typeorm';
-import {CnBucketCredentials} from './cn-bucket-credential.entity';
-import {ClPage} from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+import { BlAbstractService, BlBadRequestException } from '@monorepo/back-core-lib';
+import { InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, Repository } from 'typeorm';
+import { CnBucketCredentials } from './cn-bucket-credential.entity';
+import { ClPage } from '@monorepo/core-lib';
 
 @Injectable()
 export class CnBucketCredentialsService extends BlAbstractService<CnBucketCredentials> {
-
-
   constructor(@InjectRepository(CnBucketCredentials) repository: Repository<CnBucketCredentials>) {
     super(repository, CnBucketCredentials);
   }
-
 
   async create(entity: CnBucketCredentials, entityManager?: EntityManager): Promise<CnBucketCredentials> {
     await this.checkBucketBeforeSave(entity);
@@ -32,7 +29,7 @@ export class CnBucketCredentialsService extends BlAbstractService<CnBucketCreden
 
   public findAll(page: number, size: number): Promise<ClPage<CnBucketCredentials>> {
     return this.findPaginated(page, size, {
-      relations: CnBucketCredentials.completeRelations
+      relations: CnBucketCredentials.completeRelations,
     });
   }
 
@@ -40,8 +37,8 @@ export class CnBucketCredentialsService extends BlAbstractService<CnBucketCreden
     return this.findPaginated(page, size, {
       relations: CnBucketCredentials.completeRelations,
       where: {
-        space: {id: spaceId}
-      }
+        space: { id: spaceId },
+      },
     });
   }
 

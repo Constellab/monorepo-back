@@ -14,7 +14,7 @@ import {
   BlRichTextContentWithModifications,
   BlRichTextModifications,
   BlRichTextUploadedImageResponse,
-  BlRichTextUploadFileResponse
+  BlRichTextUploadFileResponse,
 } from '@monorepo/back-core-lib';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, In, Repository } from 'typeorm';
@@ -26,13 +26,16 @@ import {
   CnConstellabDocumentDTO,
   CnDocumentPreviewDTO,
   CnDocumentStorageType,
-  CnFolderStorageUsageDTO
+  CnFolderStorageUsageDTO,
 } from './cn-document-dto.class';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CnDocumentEvent, cnDocumentEventName, CnDocumentEventType } from './cn-document.event';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
-import { CnHierarchyObject, CnHierarchyObjectEntity } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import {
+  CnHierarchyObject,
+  CnHierarchyObjectEntity,
+} from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from '../cn_hierarchy_objects/cn-hierarchy-object.service';
 import { CnNoteRichText } from '../../cn-core/model/config/cn-note-rich-text.class';
 
@@ -46,16 +49,17 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
   public static readonly OFFICE_PREVIEW_URL = 'https://view.officeapps.live.com/op/embed.aspx?src=';
   protected readonly logger = new Logger(CnDocumentService.name);
 
-  constructor(@InjectRepository(CnDocumentEntity) private repository: Repository<CnDocumentEntity>,
-              private objectStorageService: BlObjectStorageService,
-              private folderBucketService: CnFolderBucketService,
-              private datasource: DataSource,
-              private eventEmitter: EventEmitter2,
-              private configService: CnCoreConfigService,
-              private folderHierarchyService: CnHierarchyObjectService) {
+  constructor(
+    @InjectRepository(CnDocumentEntity) private repository: Repository<CnDocumentEntity>,
+    private objectStorageService: BlObjectStorageService,
+    private folderBucketService: CnFolderBucketService,
+    private datasource: DataSource,
+    private eventEmitter: EventEmitter2,
+    private configService: CnCoreConfigService,
+    private folderHierarchyService: CnHierarchyObjectService
+  ) {
     super(repository, CnDocumentEntity);
   }
-
 
   //////////////////////////////////// GENERIC DOCUMENT //////////////////////////////////////////
 
@@ -68,28 +72,37 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
    * @param documentName if not provided, a name is generated with the extension
    * @param parentDocument
    */
-  public async uploadDocument(file: BlFile, parentFolder: CnHierarchyObject,
-                              documentType: CnDocumentType,
-                              entityId: string,
-                              documentName?: string,
-                              parentDocument?: CnDocument): Promise<CnDocument> {
+  public async uploadDocument(
+    file: BlFile,
+    parentFolder: CnHierarchyObject,
+    documentType: CnDocumentType,
+    entityId: string,
+    documentName?: string,
+    parentDocument?: CnDocument
+  ): Promise<CnDocument> {
     // check if the space storage is not full, consider size of this document as 0
     this.checkIfStorageIsFull(file.size);
 
-    const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(parentFolder.getRootFolderId());
+    const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(
+      parentFolder.getRootFolderId()
+    );
 
     if (documentName) {
-
-      const existingDocument = await this.findDocumentBYTypeAndNameAndEntity(documentType, documentName, entityId);
+      const existingDocument = await this.findDocumentBYTypeAndNameAndEntity(
+        documentType,
+        documentName,
+        entityId
+      );
       if (existingDocument) {
         throw new BlBadRequestException(CnErrorText.DOCUMENT_ALREADY_EXIST);
       }
     } else {
-      documentName = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(file.originalname));
+      documentName = this.objectStorageService.generateRandomFileNameFromExtension(
+        BlFileHelper.getFileExtension(file.originalname)
+      );
     }
 
     const document = await this.datasource.transaction(async (entityManager) => {
-
       const document = new CnDocumentEntity();
       document.name = documentName;
 
@@ -99,14 +112,20 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       document.entityId = entityId;
       document.parentDocument = parentDocument as CnDocumentEntity;
       // otherwise this is a cloud bucket where every file is so we need to generate a random name
-      document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension(documentName));
-      document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(parentFolder, document.getHierarchyObjectInfo());
-
+      document.filename = this.objectStorageService.generateRandomFileNameFromExtension(
+        BlFileHelper.getFileExtension(documentName)
+      );
+      document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
+        parentFolder,
+        document.getHierarchyObjectInfo()
+      );
 
       const dbDocument = await entityManager.save(document);
 
-      await this.objectStorageService.uploadObject(bucketConfig, file,
-        { filename: document.filename, tags: this.getTags(document.name, parentFolder.id) } as any);
+      await this.objectStorageService.uploadObject(bucketConfig, file, {
+        filename: document.filename,
+        tags: this.getTags(document.name, parentFolder.id),
+      } as any);
       return dbDocument;
     });
 
@@ -114,29 +133,40 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     return document;
   }
 
-  public async uploadImageDocument(file: BlFile, parentFolder: CnHierarchyObject,
-                                   documentType: CnDocumentType,
-                                   entityId: string,
-                                   documentName?: string,
-                                   parentDocument?: CnDocument): Promise<BlRichTextUploadedImageResponse> {
+  public async uploadImageDocument(
+    file: BlFile,
+    parentFolder: CnHierarchyObject,
+    documentType: CnDocumentType,
+    entityId: string,
+    documentName?: string,
+    parentDocument?: CnDocument
+  ): Promise<BlRichTextUploadedImageResponse> {
     const imSize = BlImageHelper.getImageSize(file);
     if (!documentName) {
       documentName = this.objectStorageService.generateRandomFileNameFromExtension(imSize.type);
     }
-    const imageDoc = await this.uploadDocument(file, parentFolder,
-      documentType, entityId, documentName, parentDocument);
-
+    const imageDoc = await this.uploadDocument(
+      file,
+      parentFolder,
+      documentType,
+      entityId,
+      documentName,
+      parentDocument
+    );
 
     return {
       filename: imageDoc.name,
       height: imSize.height,
-      width: imSize.width
+      width: imSize.width,
     };
   }
 
-
-  async getDocumentContentByTypeAndName(rootFolderId: string, documentType: CnDocumentType,
-                                        documentName: string, entityId: string): Promise<BlFileResponse> {
+  async getDocumentContentByTypeAndName(
+    rootFolderId: string,
+    documentType: CnDocumentType,
+    documentName: string,
+    entityId: string
+  ): Promise<BlFileResponse> {
     const document = await this.findDocumentBYTypeAndNameAndEntity(documentType, documentName, entityId);
 
     if (document == null) {
@@ -146,18 +176,25 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     return this.getDocumentContentByDocument(rootFolderId, document);
   }
 
-
-  public async getDocumentContentByDocument(rootFolderId: string, document: CnDocument): Promise<BlFileResponse> {
+  public async getDocumentContentByDocument(
+    rootFolderId: string,
+    document: CnDocument
+  ): Promise<BlFileResponse> {
     const bucketConfig = await this.folderBucketService.getAndCheckFolderMainBucketConfig(rootFolderId);
     return this.objectStorageService.downloadObject(bucketConfig, document.filename);
   }
 
-
   public async deleteDocument(id: string, entityManager?: EntityManager): Promise<void> {
     entityManager = this.getEntityManager(entityManager);
-    const document = await this.findByIdAndCheck(id, { hierarchyRepresentation: { parent: true } }, entityManager);
+    const document = await this.findByIdAndCheck(
+      id,
+      { hierarchyRepresentation: { parent: true } },
+      entityManager
+    );
 
-    const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(document.hierarchyRepresentation.getRootFolderId());
+    const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(
+      document.hierarchyRepresentation.getRootFolderId()
+    );
     if (document.documentTypeSupportsTrash() && !document.inTrash) {
       throw new BlBadRequestException('Document is not in trash, please move it to trash first');
     }
@@ -167,14 +204,13 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     const children = await this.findChildrenDocuments(document.id);
     documentsToDelete.unshift(...children);
 
-
     for (const doc of documentsToDelete) {
       await entityManager.remove(doc);
       await entityManager.remove(doc.hierarchyRepresentation);
     }
 
     // delete all object in the store
-    const documentFilenames = documentsToDelete.map(d => d.filename);
+    const documentFilenames = documentsToDelete.map((d) => d.filename);
     await this.objectStorageService.deleteMultipleObjects(bucketConfig, documentFilenames);
 
     this.emitEvent('DELETE_DOCUMENT', document);
@@ -184,8 +220,8 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     const documentToDelete = await this.repo.find({
       where: {
         hierarchyRepresentation: { parentId: parentFolderId },
-        inTrash: true
-      }
+        inTrash: true,
+      },
     });
 
     for (const doc of documentToDelete) {
@@ -194,7 +230,6 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
   }
 
   async renameDocument(rootFolderId: string, document: CnDocument, newName: string): Promise<CnDocument> {
-
     return this.datasource.transaction(async (entityManager) => {
       document.name = newName;
       document = await entityManager.save(document);
@@ -205,8 +240,6 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
       return document;
     });
-
-
   }
 
   /**
@@ -217,20 +250,21 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
    * @param name
    * @param entityId
    */
-  async findDocumentBYTypeAndNameAndEntity(type: CnDocumentType,
-                                           name: string, entityId: string): Promise<CnDocument | null> {
+  async findDocumentBYTypeAndNameAndEntity(
+    type: CnDocumentType,
+    name: string,
+    entityId: string
+  ): Promise<CnDocument | null> {
     return this.repo.findOne({
       where: {
         type: type,
         name: name,
-        entityId: entityId
-      }
+        entityId: entityId,
+      },
     });
   }
 
-
   ////////////////////////////////////////////// FOLDER DOCUMENTS  //////////////////////////////////////////////
-
 
   public findDocumentsByParentFolder(parentFolderId: string): Promise<CnDocument[]> {
     return this.repo.find({ where: { hierarchyRepresentation: { parentId: parentFolderId } } });
@@ -243,40 +277,58 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
   /**
    * List the Uploaded and Constellab documents of a parentFolder
    */
-  public getParentFolderDocuments(parentFolderId: string, inTrash: boolean, page: number, size: number): Promise<ClPage<CnDocument>> {
+  public getParentFolderDocuments(
+    parentFolderId: string,
+    inTrash: boolean,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnDocument>> {
     return this.findPaginated(page, size, {
       where: {
         hierarchyRepresentation: { parentId: parentFolderId },
         inTrash: inTrash,
-        type: In([CnDocumentType.UPLOADED_DOCUMENT, CnDocumentType.CONSTELLAB_DOCUMENT])
+        type: In([CnDocumentType.UPLOADED_DOCUMENT, CnDocumentType.CONSTELLAB_DOCUMENT]),
       },
       order: {
-        createdAt: 'DESC' as any
-      }
+        createdAt: 'DESC' as any,
+      },
     });
   }
 
   ////////////////////////////////////////////// JSON  DOCUMENTS //////////////////////////////////////////////
-  public async createJSONDocument(parentFolder: CnHierarchyObject, type: CnDocumentType,
-                                  documentName: string, entityId: string, content: any,
-                                  parentDocument?: CnDocument): Promise<CnDocument> {
+  public async createJSONDocument(
+    parentFolder: CnHierarchyObject,
+    type: CnDocumentType,
+    documentName: string,
+    entityId: string,
+    content: any,
+    parentDocument?: CnDocument
+  ): Promise<CnDocument> {
     // check if the space storage is not full, consider size of this document as 0
     this.checkIfStorageIsFull(0);
 
-    const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(parentFolder.getRootFolderId());
+    const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(
+      parentFolder.getRootFolderId()
+    );
     const document = await this.datasource.transaction(async (entityManager) => {
-
       const document = new CnDocumentEntity();
       document.name = documentName;
       document.mimeType = 'application/json';
       document.type = type;
-      document.filename = this.objectStorageService.generateRandomFileNameFromExtension(BlFileHelper.getFileExtension('json'));
+      document.filename = this.objectStorageService.generateRandomFileNameFromExtension(
+        BlFileHelper.getFileExtension('json')
+      );
       document.entityId = entityId;
       document.parentDocument = parentDocument as CnDocumentEntity;
-      document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(parentFolder, document.getHierarchyObjectInfo());
+      document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
+        parentFolder,
+        document.getHierarchyObjectInfo()
+      );
 
-      await this.objectStorageService.uploadJson(bucketConfig, content,
-        { filename: document.filename, tags: this.getTags(document.name, parentFolder.id) } as any);
+      await this.objectStorageService.uploadJson(bucketConfig, content, {
+        filename: document.filename,
+        tags: this.getTags(document.name, parentFolder.id),
+      } as any);
 
       const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig[0], document.filename);
       document.size = objectInfo.size;
@@ -288,8 +340,11 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     return document;
   }
 
-  public async updateJSONDocument(rootFolderId: string, document: CnDocument,
-                                  content: any): Promise<CnDocument> {
+  public async updateJSONDocument(
+    rootFolderId: string,
+    document: CnDocument,
+    content: any
+  ): Promise<CnDocument> {
     // check if the space storage is not full, consider si of this document as 0
     this.checkIfStorageIsFull(0);
 
@@ -307,9 +362,14 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     return document;
   }
 
-  public async createOrUpdateJSONDocument(parentFolder: CnHierarchyObject, type: CnDocumentType,
-                                          documentName: string, entityId: string, content: any,
-                                          parentDocument?: CnDocument): Promise<CnDocument> {
+  public async createOrUpdateJSONDocument(
+    parentFolder: CnHierarchyObject,
+    type: CnDocumentType,
+    documentName: string,
+    entityId: string,
+    content: any,
+    parentDocument?: CnDocument
+  ): Promise<CnDocument> {
     const document = await this.findDocumentBYTypeAndNameAndEntity(type, documentName, entityId);
 
     if (document) {
@@ -321,27 +381,36 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
   public async getJSONDocumentContent(rootFolderId: string, document: CnDocument): Promise<any> {
     const bucketConfig = await this.folderBucketService.getAndCheckFolderMainBucketConfig(rootFolderId);
-    return  await this.objectStorageService.getObjectAsJson(bucketConfig, document.filename);
+    return await this.objectStorageService.getObjectAsJson(bucketConfig, document.filename);
   }
 
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
 
-  public async createConstellabDocument(parentFolder: CnHierarchyObject, documentName: string): Promise<CnConstellabDocumentDTO> {
+  public async createConstellabDocument(
+    parentFolder: CnHierarchyObject,
+    documentName: string
+  ): Promise<CnConstellabDocumentDTO> {
     const content = BlNewRichText.emptyContent();
     const modifications: BlRichTextModifications = new BlRichTextModifications();
     const docContent: BlRichTextContentWithModifications = {
       modifications: modifications.toJsonObject(),
-      content: content
+      content: content,
     };
-    const doc = await this.createJSONDocument(parentFolder, CnDocumentType.CONSTELLAB_DOCUMENT,
-      documentName, parentFolder.id, docContent);
+    const doc = await this.createJSONDocument(
+      parentFolder,
+      CnDocumentType.CONSTELLAB_DOCUMENT,
+      documentName,
+      parentFolder.id,
+      docContent
+    );
     return new CnConstellabDocumentDTO(doc, content);
   }
 
-
-  async updateConstellabDocument(rootFolderId: string, document: CnDocument,
-                                 content: BlRichTextContent): Promise<CnConstellabDocumentDTO> {
-
+  async updateConstellabDocument(
+    rootFolderId: string,
+    document: CnDocument,
+    content: BlRichTextContent
+  ): Promise<CnConstellabDocumentDTO> {
     let oldModifications: BlRichTextModifications;
     let oldContent: BlRichTextContent;
 
@@ -353,46 +422,70 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     } else {
       oldContent = oldDocumentContent ?? BlNewRichText.emptyContent();
     }
-    const modifications: Record<string, any> = new BlNewRichText(oldContent)
-      .getRichTextModificationsAsObject(content,
-        CnCurrentUserHelper.getAndCheckCurrentUser().id,
-        oldModifications
-      );
+    const modifications: Record<string, any> = new BlNewRichText(oldContent).getRichTextModificationsAsObject(
+      content,
+      CnCurrentUserHelper.getAndCheckCurrentUser().id,
+      oldModifications
+    );
     const newDocContent: BlRichTextContentWithModifications = {
       modifications: modifications,
-      content: content
+      content: content,
     };
 
-    return new CnConstellabDocumentDTO(await this.updateJSONDocument(rootFolderId, document, newDocContent), content);
+    return new CnConstellabDocumentDTO(
+      await this.updateJSONDocument(rootFolderId, document, newDocContent),
+      content
+    );
   }
 
   async getConstellabDocument(rootFolderId: string, document: CnDocument): Promise<CnConstellabDocumentDTO> {
     if (document.type !== CnDocumentType.CONSTELLAB_DOCUMENT) {
       throw new BlBadRequestException('The document is not a constellab document');
     }
-    const contentWithModifications: CnNoteRichText =
-      new CnNoteRichText(await this.getJSONDocumentContent(rootFolderId, document));
+    const contentWithModifications: CnNoteRichText = new CnNoteRichText(
+      await this.getJSONDocumentContent(rootFolderId, document)
+    );
     return new CnConstellabDocumentDTO(document, contentWithModifications.getRichTextContent());
   }
 
-  async uploadImageToConstellabDocument(parentFolder: CnHierarchyObject, document: CnDocument,
-                                        file: BlFile): Promise<BlRichTextUploadedImageResponse> {
-    return this.uploadImageDocument(file, parentFolder, CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT,
-      document.id, null, document);
+  async uploadImageToConstellabDocument(
+    parentFolder: CnHierarchyObject,
+    document: CnDocument,
+    file: BlFile
+  ): Promise<BlRichTextUploadedImageResponse> {
+    return this.uploadImageDocument(
+      file,
+      parentFolder,
+      CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT,
+      document.id,
+      null,
+      document
+    );
   }
 
-  async uploadFileToConstellabDocument(parentFolder: CnHierarchyObject, document: CnDocument,
-                                       file: BlFile): Promise<BlRichTextUploadFileResponse> {
-
-    const fileName = await this.checkNewDocumentName(CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT, file.originalname, document.id);
-
-    const newDocument = await this.uploadDocument(file, parentFolder,
+  async uploadFileToConstellabDocument(
+    parentFolder: CnHierarchyObject,
+    document: CnDocument,
+    file: BlFile
+  ): Promise<BlRichTextUploadFileResponse> {
+    const fileName = await this.checkNewDocumentName(
       CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT,
-      document.id, fileName, document);
+      file.originalname,
+      document.id
+    );
+
+    const newDocument = await this.uploadDocument(
+      file,
+      parentFolder,
+      CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT,
+      document.id,
+      fileName,
+      document
+    );
 
     return {
       name: newDocument.name,
-      size: newDocument.size
+      size: newDocument.size,
     };
   }
 
@@ -414,7 +507,6 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     return this.documentsToAggregateDTO(documents);
   }
 
-
   public async getStorageSizeDetailBySpace(spaceId: string): Promise<CnFolderStorageUsageDTO> {
     const documents = await this.repository.findBy({ hierarchyRepresentation: { spaceId: spaceId } });
     return this.documentsToAggregateDTO(documents);
@@ -422,13 +514,16 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
   public async getSpaceCloudStorageSize(spaceId: string): Promise<number> {
     // calculate with sql sum query, join parentFolder table with document.folderId = folder.id
-    const result = await this.repository.manager.query(`
+    const result = await this.repository.manager.query(
+      `
       SELECT SUM(size) as totalSize
       FROM document
              JOIN hierarchy_object ON document.id = hierarchy_object.id
       WHERE hierarchy_object.spaceId = ?
         and document.bucketType = ?
-    `, [spaceId, BlBucketType.NORMAL]);
+    `,
+      [spaceId, BlBucketType.NORMAL]
+    );
     return result[0].totalSize ?? 0;
   }
 
@@ -436,12 +531,16 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
     if (!space.hasEnoughStorageForNewFile(documentSize)) {
       if (documentSize === 0) {
-        throw new BlBadRequestException('Space storage is full, please contact your ' +
-          'space administrator to increase the storage limit, delete some documents or empty the trash.');
+        throw new BlBadRequestException(
+          'Space storage is full, please contact your ' +
+            'space administrator to increase the storage limit, delete some documents or empty the trash.'
+        );
       } else {
-        throw new BlBadRequestException('There is not enough remaining free storage in ' +
-          'your space to upload this document. Please contact your space administrator to increase the storage limit, ' +
-          'delete some documents or empty the trash.');
+        throw new BlBadRequestException(
+          'There is not enough remaining free storage in ' +
+            'your space to upload this document. Please contact your space administrator to increase the storage limit, ' +
+            'delete some documents or empty the trash.'
+        );
       }
     }
   }
@@ -479,25 +578,38 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
   }
 
   /////////////////////////////////////////////// HISTORY /////////////////////////////////////////////
-  public async getDocumentModifications(rootFolderId: string, document: CnDocument): Promise<BlRichTextModifications> {
+  public async getDocumentModifications(
+    rootFolderId: string,
+    document: CnDocument
+  ): Promise<BlRichTextModifications> {
     if (document.type !== CnDocumentType.CONSTELLAB_DOCUMENT) {
       throw new BlBadRequestException('The document is not a constellab document');
     }
-    const contentWithModifications: CnNoteRichText =
-      new CnNoteRichText(await this.getJSONDocumentContent(rootFolderId, document));
+    const contentWithModifications: CnNoteRichText = new CnNoteRichText(
+      await this.getJSONDocumentContent(rootFolderId, document)
+    );
     return BlRichTextModifications.fromJsonObject(contentWithModifications.getModifications());
   }
 
-  public async getUndoContent(rootFolderId: string, document: CnDocument, modificationId: string): Promise<BlRichTextContent> {
+  public async getUndoContent(
+    rootFolderId: string,
+    document: CnDocument,
+    modificationId: string
+  ): Promise<BlRichTextContent> {
     if (document.type !== CnDocumentType.CONSTELLAB_DOCUMENT) {
       throw new BlBadRequestException('The document is not a constellab document');
     }
-    const contentWithModifications: CnNoteRichText =
-      new CnNoteRichText(await this.getJSONDocumentContent(rootFolderId, document));
+    const contentWithModifications: CnNoteRichText = new CnNoteRichText(
+      await this.getJSONDocumentContent(rootFolderId, document)
+    );
     return contentWithModifications.getNotePreviousVersion(modificationId);
   }
 
-  public async rollbackContent(rootFolderId: string, document: CnDocument, modificationId: string): Promise<CnDocument> {
+  public async rollbackContent(
+    rootFolderId: string,
+    document: CnDocument,
+    modificationId: string
+  ): Promise<CnDocument> {
     if (document.type !== CnDocumentType.CONSTELLAB_DOCUMENT) {
       throw new BlBadRequestException('The document is not a constellab document');
     }
@@ -511,7 +623,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
     const newDocContent: BlRichTextContentWithModifications = {
       modifications: modifications.toJsonObject(),
-      content: newContent
+      content: newContent,
     };
 
     return await this.updateJSONDocument(rootFolderId, document, newDocContent);
@@ -519,11 +631,17 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
   ////////////////////////////////////////////// OTHERS /////////////////////////////////////////////
 
-  public async moveDocument(document: CnDocumentWithHierarchy,
-                            oldParentFolder: CnHierarchyObject,
-                            newParentFolder: CnHierarchyObject): Promise<CnDocumentWithHierarchy> {
-    const oldBuckets = await this.folderBucketService.getAndCheckFolderBucketConfig(oldParentFolder.getRootFolderId());
-    const newBuckets = await this.folderBucketService.getAndCheckFolderBucketConfig(newParentFolder.getRootFolderId());
+  public async moveDocument(
+    document: CnDocumentWithHierarchy,
+    oldParentFolder: CnHierarchyObject,
+    newParentFolder: CnHierarchyObject
+  ): Promise<CnDocumentWithHierarchy> {
+    const oldBuckets = await this.folderBucketService.getAndCheckFolderBucketConfig(
+      oldParentFolder.getRootFolderId()
+    );
+    const newBuckets = await this.folderBucketService.getAndCheckFolderBucketConfig(
+      newParentFolder.getRootFolderId()
+    );
 
     // move the children document as well
     const children = await this.findChildrenDocuments(document.id);
@@ -540,7 +658,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
   private findChildrenDocuments(parentDocumentId: string): Promise<CnDocumentWithHierarchy[]> {
     return this.repo.find({
       where: { parentDocument: { id: parentDocumentId } },
-      relations: { hierarchyRepresentation: true }
+      relations: { hierarchyRepresentation: true },
     });
   }
 
@@ -556,7 +674,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       [CnDocumentType.NOTE]: CnDocumentStorageType.NOTE,
       [CnDocumentType.NOTE_CONTENT]: CnDocumentStorageType.NOTE,
       [CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT]: CnDocumentStorageType.NOTE,
-      [CnDocumentType.MESSAGE_CONTENT]: CnDocumentStorageType.MESSAGE
+      [CnDocumentType.MESSAGE_CONTENT]: CnDocumentStorageType.MESSAGE,
     };
 
     for (const doc of documents) {
@@ -567,9 +685,12 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     return aggregationDTO;
   }
 
-  private async moveDocumentFromBucket(document: CnDocumentWithHierarchy,
-                                       newParentFolder: CnHierarchyObject,
-                                       oldBuckets: BlBucketConfig[], newBuckets: BlBucketConfig[]): Promise<CnDocumentWithHierarchy> {
+  private async moveDocumentFromBucket(
+    document: CnDocumentWithHierarchy,
+    newParentFolder: CnHierarchyObject,
+    oldBuckets: BlBucketConfig[],
+    newBuckets: BlBucketConfig[]
+  ): Promise<CnDocumentWithHierarchy> {
     return await this.datasource.transaction(async (entityManager) => {
       entityManager = this.getEntityManager(entityManager);
       document.hierarchyRepresentation.parentId = newParentFolder.id;
@@ -583,7 +704,12 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
         // update the folder tag
         await this.objectStorageService.setObjectTags(newBuckets, document.filename, tags as any);
       } else {
-        await this.objectStorageService.moveObjectToAnotherBucket(oldBuckets, newBuckets, document.filename, document.filename);
+        await this.objectStorageService.moveObjectToAnotherBucket(
+          oldBuckets,
+          newBuckets,
+          document.filename,
+          document.filename
+        );
       }
       return document;
     });
@@ -593,7 +719,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     const event: CnDocumentEvent = {
       type: eventType,
       entity: document,
-      spaceId: CnCurrentUserHelper.getCurrentSpace().id
+      spaceId: CnCurrentUserHelper.getCurrentSpace().id,
     };
     this.eventEmitter.emit(cnDocumentEventName, event);
   }
@@ -602,8 +728,11 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
    * Method to check if a document with same name exists and if so, add an index to the name
    * @private
    */
-  private async checkNewDocumentName(documentType: CnDocumentType, documentName: string,
-                                     entityId: string): Promise<string> {
+  private async checkNewDocumentName(
+    documentType: CnDocumentType,
+    documentName: string,
+    entityId: string
+  ): Promise<string> {
     let i = 0;
     while (i < 10) {
       const name = i === 0 ? documentName : BlFileHelper.addIndexToFileName(documentName, i);
@@ -621,7 +750,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
   private getTags(documentName: string, folderId: string): CnDocumentS3Tags {
     return {
       name: documentName,
-      folder: folderId
+      folder: folderId,
     };
   }
 }

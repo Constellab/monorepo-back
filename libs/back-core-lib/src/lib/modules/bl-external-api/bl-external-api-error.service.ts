@@ -1,9 +1,8 @@
-import {Injectable} from '@nestjs/common';
-import {ClDeserializationRef} from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+import { ClDeserializationRef } from '@monorepo/core-lib';
 
 @Injectable()
 export class BlExternalApiErrorService {
-
   /**
    * Handle an error during deserialization of the API response
    * @param error deserialization error
@@ -17,18 +16,15 @@ export class BlExternalApiErrorService {
     console.error(errorMessage);
     console.error(error);
 
-
     // throw the exception
     // noinspection UnnecessaryLocalVariableJS
     const returnError: any = {
       response: null,
       logDetail: {
         message: errorMessage,
-        timestamp: new Date()
-      }
+        timestamp: new Date(),
+      },
     };
     throw returnError;
   }
 }
-
-

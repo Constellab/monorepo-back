@@ -1,16 +1,12 @@
-import {Injectable} from '@nestjs/common';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnUserSpaceInfo} from '../cn-users/cn-user.dto';
-import {BlUnauthorizedException} from '@monorepo/back-core-lib';
-import {CnBucketCredentials} from './cn-bucket-credential/cn-bucket-credential.entity';
-
+import { Injectable } from '@nestjs/common';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
+import { BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { CnBucketCredentials } from './cn-bucket-credential/cn-bucket-credential.entity';
 
 @Injectable()
 export class CnObjectStoragesSecurity {
-
-
-  constructor() {
-  }
+  constructor() {}
 
   /**
    * Only a G admin can create, update or delete an object storage object

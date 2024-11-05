@@ -1,5 +1,5 @@
-import {Injectable, PipeTransform, UploadedFile, UploadedFiles} from '@nestjs/common';
-import {BlFile} from '../models/bl-file.class';
+import { Injectable, PipeTransform, UploadedFile, UploadedFiles } from '@nestjs/common';
+import { BlFile } from '../models/bl-file.class';
 
 /**
  * Pip to force the original name of an uploaded file to UTF-8
@@ -19,7 +19,7 @@ export class BlUploadedFileUtf8Pipe implements PipeTransform {
       }
     } else {
       if (file.originalname) {
-        file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8',);
+        file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8');
       }
     }
 

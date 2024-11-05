@@ -14,8 +14,6 @@ export interface CnRequestAuthInfo {
 }
 
 export class CnCurrentUserHelper extends BlCurrentUserHelper {
-
-
   /**
    * returns the current authenticated user or null if not authenticated
    */
@@ -115,11 +113,12 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
   }
 
   static getAndCheckUserSpaceInfo(): CnUserSpaceInfo {
-    return new CnUserSpaceInfo(this.getAndCheckCurrentUser(),
+    return new CnUserSpaceInfo(
+      this.getAndCheckCurrentUser(),
       this.getAndCheckCurrentSpace(),
-      this.getAndCheckCurrentRoleInSpace());
+      this.getAndCheckCurrentRoleInSpace()
+    );
   }
-
 
   static getAdditionalInfo(): CnRequestAuthInfo | null {
     return this.getCurrentAdditionalData();

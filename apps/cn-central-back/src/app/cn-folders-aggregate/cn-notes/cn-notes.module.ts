@@ -16,10 +16,9 @@ import { CnDocumentModule } from '../cn-documents/cn-document.module';
     CnExternalLabApiModule,
     CnLabConfigsModule,
     CnUsersModule,
-    CnDocumentModule
+    CnDocumentModule,
   ],
   providers: [CnNotesService],
-  exports: [CnNotesService]
+  exports: [CnNotesService],
 })
-export class CnNotesModule {
-}
+export class CnNotesModule {}

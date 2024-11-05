@@ -10,7 +10,6 @@ import { CnHierarchyObjectInfo } from './cn-hierarchy-object.dto';
  * Abstract class for object that can be represented in a hierarchy
  */
 export abstract class CnHierarchyRepresentation extends BlEntityWithId {
-
   /**
    * Representation of this object in the hierarchy structure
    */

@@ -5,29 +5,27 @@ import {
   BlBucketType,
   BlObjectStorageService,
   BlSearchBuilder,
-  BlSearchParams
+  BlSearchParams,
 } from '@monorepo/back-core-lib';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, In, Not, Repository } from 'typeorm';
 import { CnBucket, CnBucketContentType } from './cn-bucket.entity';
 import { ClPage } from '@monorepo/core-lib';
 
-
 @Injectable()
 export class CnBucketsService extends BlAbstractService<CnBucket> {
-
-
-  constructor(@InjectRepository(CnBucket) private repository: Repository<CnBucket>,
-              private objectStorageService: BlObjectStorageService,
-              private datasource: DataSource) {
+  constructor(
+    @InjectRepository(CnBucket) private repository: Repository<CnBucket>,
+    private objectStorageService: BlObjectStorageService,
+    private datasource: DataSource
+  ) {
     super(repository, CnBucket);
   }
-
 
   public async createBucket(bucket: CnBucket): Promise<CnBucket> {
     bucket = await this.checkBucketBeforeSave(bucket);
 
-    return this.datasource.transaction(async entityManager => {
+    return this.datasource.transaction(async (entityManager) => {
       // create the bucket in DB and then in the object storage
       const bucketDb = await super.create(bucket, entityManager);
 
@@ -84,10 +82,10 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       const existingBucket = await this.repository.findOne({
         where: {
           lab: {
-            id: bucket.lab.id
+            id: bucket.lab.id,
           },
-          id: bucket.id ? Not(bucket.id) : undefined
-        }
+          id: bucket.id ? Not(bucket.id) : undefined,
+        },
       });
 
       if (existingBucket != null) {
@@ -106,15 +104,20 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       bucket.lab = null;
 
       // there can be only one bucket of type by region
-      const existingBucket = await this.findByContentTypeAndRegion(bucket.contentType, bucket.region.technicalName);
+      const existingBucket = await this.findByContentTypeAndRegion(
+        bucket.contentType,
+        bucket.region.technicalName
+      );
 
       if (existingBucket != null && existingBucket.id !== bucket.id) {
-        throw new BlBadRequestException(`There is already a bucket of type ${bucket.contentType} in region ${bucket.region.technicalName}`);
+        throw new BlBadRequestException(
+          `There is already a bucket of type ${bucket.contentType} in region ${bucket.region.technicalName}`
+        );
       }
     }
 
-    if(bucket.bucketType === BlBucketType.NORMAL){
-      if(bucket.region.cloudProvider.name === 'AZURE'){
+    if (bucket.bucketType === BlBucketType.NORMAL) {
+      if (bucket.region.cloudProvider.name === 'AZURE') {
         throw new BlBadRequestException(`Normal bucket cannot be linked to an Azure region`);
       }
     }
@@ -131,28 +134,31 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
   public async findCompleteById(id: string): Promise<CnBucket> {
     return await this.repository.findOne({
       where: { id: id },
-      relations: CnBucket.configRelation
+      relations: CnBucket.configRelation,
     });
   }
 
   public async findByContentType(contentType: CnBucketContentType): Promise<CnBucket[]> {
     return await this.repository.find({
       where: {
-        contentType: contentType
+        contentType: contentType,
       },
-      relations: CnBucket.configRelation
+      relations: CnBucket.configRelation,
     });
   }
 
-  public async findByContentTypeAndRegion(contentType: CnBucketContentType, regionId: string): Promise<CnBucket> {
+  public async findByContentTypeAndRegion(
+    contentType: CnBucketContentType,
+    regionId: string
+  ): Promise<CnBucket> {
     return await this.repository.findOne({
       where: {
         contentType: contentType,
         region: {
-          id: regionId
-        }
+          id: regionId,
+        },
       },
-      relations: CnBucket.configRelation
+      relations: CnBucket.configRelation,
     });
   }
 
@@ -161,12 +167,12 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       where: {
         name: name,
         region: {
-          technicalName: regionName
-        }
+          technicalName: regionName,
+        },
       },
       relations: {
-        region: true
-      }
+        region: true,
+      },
     });
     if (bucket == null) {
       throw new BlBadRequestException(`Bucket ${name} in region ${regionName} not found`);
@@ -181,32 +187,35 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
    * @param page
    * @param size
    */
-  public async searchByContentTypeAndSpace(contentType: CnBucketContentType, spaceId: string,
-                                           page: number, size: number): Promise<ClPage<CnBucket>> {
+  public async searchByContentTypeAndSpace(
+    contentType: CnBucketContentType,
+    spaceId: string,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnBucket>> {
     return await this.findPaginated(page, size, {
       where: [
         {
           contentType: contentType,
-          bucketType: In([BlBucketType.NORMAL, BlBucketType.AZURE])
-        }, {
+          bucketType: In([BlBucketType.NORMAL, BlBucketType.AZURE]),
+        },
+        {
           contentType: contentType,
           bucketType: BlBucketType.LAB,
           lab: {
-            spaceId: spaceId
-          }
-        }],
-      relations: CnBucket.configRelation
+            spaceId: spaceId,
+          },
+        },
+      ],
+      relations: CnBucket.configRelation,
     });
   }
 
-
-  public search(searchParam: BlSearchParams,
-                page: number, size: number): Promise<ClPage<CnBucket>> {
+  public search(searchParam: BlSearchParams, page: number, size: number): Promise<ClPage<CnBucket>> {
     const searchBuilder = new BlSearchBuilder<CnBucket>({ name: 'ASC' });
     searchBuilder.addSearchParams(searchParam);
     searchBuilder.setRelations(CnBucket.configRelation);
 
     return this.findPaginated(page, size, searchBuilder.build());
   }
-
 }

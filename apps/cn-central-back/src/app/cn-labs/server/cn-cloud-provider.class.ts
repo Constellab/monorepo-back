@@ -14,7 +14,6 @@ export type CnCpInstanceStatus = 'CREATING' | 'RUNNING' | 'RESTARTING' | 'STOPPE
 export interface CnCpInstanceStatusObject {
   status: CnCpInstanceStatus;
   message?: string;
-
 }
 
 export interface CnCpInstance {

@@ -1,14 +1,15 @@
-import {Body, Delete, Get, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
-import {BlParsePipe} from '../pipes/bl-parse.pipe';
-import {BlAbstractService} from './bl-abstract.service';
-import {BlEntityWithId} from '../models/bl-entity-with-id.entity';
+import { Body, Delete, Get, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
+import { BlParsePipe } from '../pipes/bl-parse.pipe';
+import { BlAbstractService } from './bl-abstract.service';
+import { BlEntityWithId } from '../models/bl-entity-with-id.entity';
 
 export abstract class CnAbstractController<T extends BlEntityWithId> {
-
   private readonly parsePipe: BlParsePipe<T>;
 
-  protected constructor(private abstractService: BlAbstractService<T>,
-                        private classReference: new() => T) {
+  protected constructor(
+    private abstractService: BlAbstractService<T>,
+    private classReference: new () => T
+  ) {
     this.parsePipe = new BlParsePipe<T>(classReference);
   }
 
@@ -33,5 +34,4 @@ export abstract class CnAbstractController<T extends BlEntityWithId> {
   findOne(@Param('id', ParseUUIDPipe) id: string): Promise<T> {
     return this.abstractService.findByIdAndCheck(id);
   }
-
 }

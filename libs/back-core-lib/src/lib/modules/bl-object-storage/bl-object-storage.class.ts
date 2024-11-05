@@ -3,19 +3,21 @@ import { Stream } from 'stream';
 export enum BlBucketType {
   NORMAL = 'NORMAL',
   LAB = 'LAB', // bucket hosted on a lab
-  AZURE = 'AZURE' // azure blob storage
+  AZURE = 'AZURE', // azure blob storage
 }
 
 /**
  * Object that represent a S3 or Azure bucket config
  */
-export type BlBucketConfig = {
-  type: 's3' | 'lab';
-  config: BlS3BucketConfig;
-} | {
-  type: 'azureBlob';
-  config: BlAzureBlobContainerConfig;
-}
+export type BlBucketConfig =
+  | {
+      type: 's3' | 'lab';
+      config: BlS3BucketConfig;
+    }
+  | {
+      type: 'azureBlob';
+      config: BlAzureBlobContainerConfig;
+    };
 
 export interface BlS3BucketConfig {
   endpoint: string;
@@ -37,17 +39,17 @@ export interface BlAzureBlobContainerConfig {
   region: string;
 }
 
-export interface BlObjectStorageObjectsInfo{
+export interface BlObjectStorageObjectsInfo {
   totalSize: number;
   nbObjects: number;
 }
 
-export interface BlObject{
+export interface BlObject {
   name: string;
   size: number;
 }
 
-export interface BlFileResponse{
+export interface BlFileResponse {
   name: string;
   file: Stream;
   contentType: string;

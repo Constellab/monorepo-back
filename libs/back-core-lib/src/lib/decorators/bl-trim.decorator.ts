@@ -3,9 +3,7 @@ import { ClTransformFnParams } from '@monorepo/core-lib';
 
 export type BlTrimOptions = 'start' | 'end' | 'both';
 
-
 export function BlTrim(options: BlTrimOptions = 'both'): PropertyDecorator {
-
   // convert 'YYYY-MM-DD' to Date
   const transformToClass = Transform(
     (params: ClTransformFnParams<string>): string => {
@@ -22,7 +20,8 @@ export function BlTrim(options: BlTrimOptions = 'both'): PropertyDecorator {
           return params.value.trim();
       }
     },
-    { toClassOnly: true });
+    { toClassOnly: true }
+  );
 
   return (target: any, key: string): void => {
     transformToClass(target, key);

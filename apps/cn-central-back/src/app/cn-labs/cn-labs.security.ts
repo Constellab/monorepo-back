@@ -6,12 +6,9 @@ import { CnLabUserRole } from './user/cn-lab-user.entity';
 import { BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 
-
 @Injectable()
 export class CnLabsSecurity {
-
-  constructor(private labGroupService: CnLabUserService) {
-  }
+  constructor(private labGroupService: CnLabUserService) {}
 
   public checkAuthorizationToCreateAdmin(lab: CnLab, userInfo: CnUserSpaceInfo): void {
     if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
@@ -93,5 +90,4 @@ export class CnLabsSecurity {
   public checkAuthorizationToRestoreBackup(userInfo: CnUserSpaceInfo): void {
     if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
   }
-
 }

@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, Req, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Req,
+  UseInterceptors,
+} from '@nestjs/common';
 import { CnLabGuard, CnLabRobotAuthentication } from '../cn-core/decorators/cn-lab-guard.decorator';
 import { BlCredentials, BlFile, BlParsePipe, BlPublic, BlUploadedFiles } from '@monorepo/back-core-lib';
 import { CnCreateLabScenarioDto } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.dto';
@@ -14,7 +25,7 @@ import { CnExternalCheckCredentialResponse } from '../cn-auth/cn-auth.service';
 import { CnLabFolderAggregateService } from '../cn-lab-folder-aggregate/cn-lab-folder-aggregate.service';
 import {
   CnFolderDtoHelper,
-  CnLabFolderDTO
+  CnLabFolderDTO,
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.dto';
 import { CnHierarchyObjectEntity } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
@@ -27,12 +38,12 @@ import { CnModificationsBodyDTO, CnUndoContentBodyDTO } from './cn-external-labs
 @CnLabGuard()
 @Controller('external-labs')
 export class CnExternalLabsController {
-
-  constructor(private labAggregator: CnLabAggregateService,
-              private folderAggregateService: CnFolderAggregateService,
-              private labFolderAggregateService: CnLabFolderAggregateService,
-              private labMailService: CnLabMailService) {
-  }
+  constructor(
+    private labAggregator: CnLabAggregateService,
+    private folderAggregateService: CnFolderAggregateService,
+    private labFolderAggregateService: CnLabFolderAggregateService,
+    private labMailService: CnLabMailService
+  ) {}
 
   // route called on the lab start
   @CnLabRobotAuthentication()
@@ -69,7 +80,9 @@ export class CnExternalLabsController {
    */
   @CnLabRobotAuthentication()
   @Post('check-credentials-simple')
-  async checkUserCredentialsSimple(@Body() credentials: BlCredentials): Promise<CnExternalCheckCredentialResponse> {
+  async checkUserCredentialsSimple(
+    @Body() credentials: BlCredentials
+  ): Promise<CnExternalCheckCredentialResponse> {
     return this.labAggregator.checkUserCredentials(credentials, true, true);
   }
 
@@ -77,7 +90,8 @@ export class CnExternalLabsController {
   @Put(['project/:parentFolderId/experiment'])
   saveScenario(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
-    @Body(new BlParsePipe(CnCreateLabScenarioDto)) createLabScenarioDto: any): Promise<void> {
+    @Body(new BlParsePipe(CnCreateLabScenarioDto)) createLabScenarioDto: any
+  ): Promise<void> {
     // migrate field
     createLabScenarioDto.scenario = createLabScenarioDto.experiment;
     delete createLabScenarioDto.experiment;
@@ -87,46 +101,57 @@ export class CnExternalLabsController {
   @Put(['folder/:parentFolderId/scenario'])
   saveScenarioV2(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
-    @Body(new BlParsePipe(CnCreateLabScenarioDto)) createLabScenarioDto: CnCreateLabScenarioDto): Promise<void> {
+    @Body(new BlParsePipe(CnCreateLabScenarioDto)) createLabScenarioDto: CnCreateLabScenarioDto
+  ): Promise<void> {
     return this.folderAggregateService.createLabScenario(parentFolderId, createLabScenarioDto);
   }
 
   @Delete(['project/:parentFolderId/experiment/:scenarioId', 'folder/:parentFolderId/scenario/:scenarioId'])
   deleteScenario(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
-    @Param('scenarioId', new ParseUUIDPipe()) scenarioId: string): Promise<void> {
+    @Param('scenarioId', new ParseUUIDPipe()) scenarioId: string
+  ): Promise<void> {
     return this.folderAggregateService.deleteLabScenario(parentFolderId, scenarioId);
   }
 
   @UseInterceptors(FilesInterceptor('files'))
   @Put(['project/:parentFolderId/report/v2'])
-  saveNote(@Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
-           @Body() body: { body: string },
-           @BlUploadedFiles() files: BlFile[] = []): Promise<void> {
+  saveNote(
+    @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
+    @Body() body: { body: string },
+    @BlUploadedFiles() files: BlFile[] = []
+  ): Promise<void> {
     const json = JSON.parse(body.body);
     json.scenario_ids = json.experiment_ids;
     delete json.experiment_ids;
     json.note = json.report;
     delete json.report;
-    const createNoteDto: CnCreateNoteWithConfigDto
-      = ClCoreJsonConvert.deserializeObject(json, CnCreateNoteWithConfigDto);
+    const createNoteDto: CnCreateNoteWithConfigDto = ClCoreJsonConvert.deserializeObject(
+      json,
+      CnCreateNoteWithConfigDto
+    );
     return this.folderAggregateService.createLabNote(createNoteDto, parentFolderId, files);
   }
 
   @UseInterceptors(FilesInterceptor('files'))
   @Put(['folder/:parentFolderId/note/v2'])
-  saveNoteV2(@Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
-             @Body() body: { body: string },
-             @BlUploadedFiles() files: BlFile[] = []): Promise<void> {
-    const createNoteDto: CnCreateNoteWithConfigDto
-      = ClCoreJsonConvert.deserializeObject(JSON.parse(body.body), CnCreateNoteWithConfigDto);
+  saveNoteV2(
+    @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
+    @Body() body: { body: string },
+    @BlUploadedFiles() files: BlFile[] = []
+  ): Promise<void> {
+    const createNoteDto: CnCreateNoteWithConfigDto = ClCoreJsonConvert.deserializeObject(
+      JSON.parse(body.body),
+      CnCreateNoteWithConfigDto
+    );
     return this.folderAggregateService.createLabNote(createNoteDto, parentFolderId, files);
   }
 
   @Delete(['project/:parentFolderId/report/:noteId', 'folder/:parentFolderId/note/:noteId'])
   deleteNote(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
-    @Param('noteId', new ParseUUIDPipe()) noteId: string): Promise<void> {
+    @Param('noteId', new ParseUUIDPipe()) noteId: string
+  ): Promise<void> {
     return this.folderAggregateService.deleteNoteFromLab(parentFolderId, noteId);
   }
 
@@ -136,8 +161,7 @@ export class CnExternalLabsController {
    */
   @Post('send-mail')
   sendMail(@Body() body: CnLabSendMailDto): Promise<void> {
-    return this.labMailService.sendMailFromLab(CnCurrentUserHelper.getAndCheckCurrentLab(),
-      body);
+    return this.labMailService.sendMailFromLab(CnCurrentUserHelper.getAndCheckCurrentLab(), body);
   }
 
   /////////////////////////////// SYNCHRONIZATION ///////////////////////////////
@@ -163,18 +187,26 @@ export class CnExternalLabsController {
     return this.labAggregator.getCurrentLabSharedUsers();
   }
 
-
   // Public route that return the new list of modifications after a rich text content modification
   @BlPublic()
   @Post('modifications')
   async getModifications(@Body() body: CnModificationsBodyDTO): Promise<Record<string, any>> {
-    return await this.labFolderAggregateService.getModifications(body.oldContent, body.newContent, body.oldModifications, body.userId);
+    return await this.labFolderAggregateService.getModifications(
+      body.oldContent,
+      body.newContent,
+      body.oldModifications,
+      body.userId
+    );
   }
 
   // Public route that return the new content after an undo operation based on modifications
   @BlPublic()
   @Post('undo-content')
   async getNotePreviousVersion(@Body() body: CnUndoContentBodyDTO): Promise<Record<string, any>> {
-    return await this.labFolderAggregateService.getNotePreviousVersion(body.content, body.modifications, body.modificationId);
+    return await this.labFolderAggregateService.getNotePreviousVersion(
+      body.content,
+      body.modifications,
+      body.modificationId
+    );
   }
 }

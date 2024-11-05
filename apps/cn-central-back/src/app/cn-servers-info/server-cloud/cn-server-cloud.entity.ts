@@ -1,8 +1,8 @@
-import {Column, Entity, ManyToOne, Unique} from 'typeorm';
-import {CnDiskType} from './cn-disk-type.enum';
-import {CnCloudProvider} from '../../cn-cloud-providers/cn-cloud-provider.entity';
-import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
-import {CnServerStandard} from '../server-standard/cn-server-standard.entity';
+import { Column, Entity, ManyToOne, Unique } from 'typeorm';
+import { CnDiskType } from './cn-disk-type.enum';
+import { CnCloudProvider } from '../../cn-cloud-providers/cn-cloud-provider.entity';
+import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
+import { CnServerStandard } from '../server-standard/cn-server-standard.entity';
 
 /**
  * Contains the servers available for the cloud providers
@@ -10,42 +10,41 @@ import {CnServerStandard} from '../server-standard/cn-server-standard.entity';
 @Unique('UQ_NAME', ['technicalName', 'cloudProvider'])
 @Entity('server_cloud')
 export class CnServerCloud extends CnBaseEntity {
-
-  @ManyToOne(() => CnCloudProvider, {nullable: false, eager: true})
+  @ManyToOne(() => CnCloudProvider, { nullable: false, eager: true })
   cloudProvider: CnCloudProvider;
 
-  @ManyToOne(() => CnServerStandard, {nullable: false, eager: true})
+  @ManyToOne(() => CnServerStandard, { nullable: false, eager: true })
   serverStandard: CnServerStandard;
 
   // name of the server in the cloud provider
-  @Column({nullable: false, length: 50})
+  @Column({ nullable: false, length: 50 })
   technicalName: string;
 
   // the ram of the server in MB
-  @Column({nullable: false, type: 'int'})
+  @Column({ nullable: false, type: 'int' })
   ram: number;
 
   // Disk size of the server in GB
-  @Column({nullable: false, type: 'int'})
+  @Column({ nullable: false, type: 'int' })
   diskSpace: number;
 
   // type of disk, SSD or HDD
-  @Column({nullable: false, type: 'enum', enum: CnDiskType})
+  @Column({ nullable: false, type: 'enum', enum: CnDiskType })
   diskType: CnDiskType;
 
   // number of CPU
-  @Column({nullable: false, type: 'int'})
+  @Column({ nullable: false, type: 'int' })
   cpuCount: number;
 
   // info about the cpu
-  @Column({nullable: false, length: 30})
+  @Column({ nullable: false, length: 30 })
   cpuType: string;
 
   // number of GPU
-  @Column({nullable: true, type: 'int'})
+  @Column({ nullable: true, type: 'int' })
   gpuCount: number;
 
   // info about the GPU
-  @Column({nullable: true, length: 30})
+  @Column({ nullable: true, length: 30 })
   gpuType: string;
 }

@@ -8,7 +8,6 @@ import { CnCurrentUserHelper } from '../utils/cn-current-user.helper';
  */
 @Injectable()
 export class CnLogRequestMiddleware implements NestMiddleware<Request, Response> {
-
   private readonly logger = new Logger(CnLogRequestMiddleware.name);
 
   use(request: Request, response: Response, next: NextFunction): void {
@@ -17,8 +16,7 @@ export class CnLogRequestMiddleware implements NestMiddleware<Request, Response>
 
     response.on('close', () => {
       const { statusCode } = response;
-      if(['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) && statusCode >= 200 && statusCode < 300) {
-
+      if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) && statusCode >= 200 && statusCode < 300) {
         const userString = CnCurrentUserHelper.getCurrentUser()?.getUserInfo() ?? 'No user';
         const spaceString = CnCurrentUserHelper.getCurrentSpace()?.id ?? 'No space';
         this.logger.log(

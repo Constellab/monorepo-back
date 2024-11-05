@@ -1,5 +1,5 @@
-import {Request, Response} from 'express';
-import {AsyncLocalStorage} from 'async_hooks';
+import { Request, Response } from 'express';
+import { AsyncLocalStorage } from 'async_hooks';
 
 /**
  * Store the request context using asyncctx this class return the
@@ -16,8 +16,9 @@ export class BlRequestContext {
     this.cls.enterWith(requestContext);
   }
 
-
-  constructor(public readonly req: Request, public readonly res: Response,
-              public additionalData: Record<string, any> = {}) {
-  }
+  constructor(
+    public readonly req: Request,
+    public readonly res: Response,
+    public additionalData: Record<string, any> = {}
+  ) {}
 }

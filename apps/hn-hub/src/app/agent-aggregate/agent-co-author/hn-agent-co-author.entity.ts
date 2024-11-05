@@ -1,15 +1,14 @@
-import {Entity, ManyToOne} from 'typeorm';
-import {BlEntityWithId} from '@monorepo/back-core-lib';
-import {HnUser} from '../../users/hn-user.entity';
-import {HnAgent} from '../agent/hn-agent.entity';
+import { Entity, ManyToOne } from 'typeorm';
+import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { HnUser } from '../../users/hn-user.entity';
+import { HnAgent } from '../agent/hn-agent.entity';
 
 @Entity('agent_co_author')
 export class HnAgentCoAuthor extends BlEntityWithId {
-
-  @ManyToOne(() => HnAgent, agent => agent.agentCoAuthors)
+  @ManyToOne(() => HnAgent, (agent) => agent.agentCoAuthors)
   agent: HnAgent;
 
-  @ManyToOne(() => HnUser, user => user.agentCoAuthors, {eager: true})
+  @ManyToOne(() => HnUser, (user) => user.agentCoAuthors, { eager: true })
   user: HnUser;
 
   initCoAuthor(agent: HnAgent, user: HnUser): void {

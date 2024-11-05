@@ -9,36 +9,40 @@ import {
   BlAbstractService,
   BlBadRequestException,
   BlQuillMigrator,
-  BlUnauthorizedException
+  BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnProtocolMigrator } from './cn-protocol-migrator.class';
-import { CnHierarchyObject, CnHierarchyObjectEntity } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import {
+  CnHierarchyObject,
+  CnHierarchyObjectEntity,
+} from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
 
 @Injectable()
 export class CnScenariosService extends BlAbstractService<CnScenario> {
-
-  constructor(@InjectRepository(CnScenario) private repository: Repository<CnScenario>,
-              private labConfigService: CnLabConfigsService) {
+  constructor(
+    @InjectRepository(CnScenario) private repository: Repository<CnScenario>,
+    private labConfigService: CnLabConfigsService
+  ) {
     super(repository, CnScenario);
   }
 
   getScenariosByParentFolder(parentFolderId: string): Promise<CnScenario[]> {
     return this.repository.find({
       where: {
-        hierarchyRepresentation: { parentId: parentFolderId }
+        hierarchyRepresentation: { parentId: parentFolderId },
       },
-      order: { lastModifiedAt: 'DESC' as any }
+      order: { lastModifiedAt: 'DESC' as any },
     });
   }
 
   getScenariosByLab(labId: string): Promise<CnScenario[]> {
     return this.repository.find({
       where: {
-        lab: { id: labId }
+        lab: { id: labId },
       },
-      order: { lastModifiedAt: 'DESC' as any }
+      order: { lastModifiedAt: 'DESC' as any },
     });
   }
 
@@ -48,29 +52,34 @@ export class CnScenariosService extends BlAbstractService<CnScenario> {
         // find by folder parent root id (if scenario is link to leaf folder)
         {
           hierarchyRepresentation: {
-            rootParentId: rootFolderId
+            rootParentId: rootFolderId,
           },
           lab: {
-            id: labId
-          }
+            id: labId,
+          },
         },
         // find by folder (if scenario is linked to root folder)
         {
           hierarchyRepresentation: {
-            parentId: rootFolderId
+            parentId: rootFolderId,
           },
           lab: {
-            id: labId
-          }
-        }]
+            id: labId,
+          },
+        },
+      ],
     });
   }
 
-  public async saveLabScenario(parentFolder: CnHierarchyObject, createLabScenarioDto: CnCreateLabScenarioDto): Promise<CnSaveScenarioResultDTO> {
-
-    const scenarioDB: CnScenario = await this.findById(createLabScenarioDto.scenario.id, { hierarchyRepresentation: true });
+  public async saveLabScenario(
+    parentFolder: CnHierarchyObject,
+    createLabScenarioDto: CnCreateLabScenarioDto
+  ): Promise<CnSaveScenarioResultDTO> {
+    const scenarioDB: CnScenario = await this.findById(createLabScenarioDto.scenario.id, {
+      hierarchyRepresentation: true,
+    });
     if (scenarioDB && scenarioDB.hierarchyRepresentation.parentId !== parentFolder.id) {
-      throw new BlUnauthorizedException('Can\'t change the folder of a synced scenario');
+      throw new BlUnauthorizedException("Can't change the folder of a synced scenario");
     }
 
     const labConfig = await this.labConfigService.getOrCreateLabConfig(createLabScenarioDto.lab_config);
@@ -102,7 +111,9 @@ export class CnScenariosService extends BlAbstractService<CnScenario> {
 
     // if this is a creation
     if (!scenarioDB) {
-      scenario.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(parentFolder, scenario.getHierarchyObjectInfo()
+      scenario.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
+        parentFolder,
+        scenario.getHierarchyObjectInfo()
       );
       // also set the id of the folder hierarchy because it should be the same as the scenario id
       scenario.hierarchyRepresentation.id = labScenarioDto.id;
@@ -127,7 +138,7 @@ export class CnScenariosService extends BlAbstractService<CnScenario> {
     }
 
     if (scenario.isValidated) {
-      throw new BlBadRequestException('Can\'t delete a validated scenario');
+      throw new BlBadRequestException("Can't delete a validated scenario");
     }
     await this.deleteById(id, entityManager);
     return scenario;
@@ -137,21 +148,20 @@ export class CnScenariosService extends BlAbstractService<CnScenario> {
     return this.findByIdAndCheck(id, { notes: true });
   }
 
-
   public async getCurrentUserCreatedScenario(): Promise<CnScenario[]> {
     const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     return await this.repository.find({
       where: {
         createdBy: {
-          id: userInfo.userId
+          id: userInfo.userId,
         },
         hierarchyRepresentation: {
-          spaceId: userInfo.spaceId
-        }
+          spaceId: userInfo.spaceId,
+        },
       },
       order: {
-        lastModifiedAt: 'DESC' as any
-      }
+        lastModifiedAt: 'DESC' as any,
+      },
     });
   }
 
@@ -161,16 +171,16 @@ export class CnScenariosService extends BlAbstractService<CnScenario> {
   }
 
   public async getScenarioLabConfig(scenarioId: string): Promise<CnLabConfig> {
-    return (await this.repository.findOne({
-      where: { id: scenarioId },
-      relations: { labConfig: { brickVersions: { brick: true } } }
-    })).labConfig;
+    return (
+      await this.repository.findOne({
+        where: { id: scenarioId },
+        relations: { labConfig: { brickVersions: { brick: true } } },
+      })
+    ).labConfig;
   }
 
   public migrateProtocol(protocol: CnScenarioProtocol): CnScenarioProtocol {
     const protocolMigrator = new CnProtocolMigrator();
     return protocolMigrator.migrateProtocol(protocol);
   }
-
 }
-

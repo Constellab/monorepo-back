@@ -15,12 +15,9 @@ import { CnHierarchyObjectModule } from '../cn-folders-aggregate/cn_hierarchy_ob
     CnScenariosModule,
     CnNotesModule,
     CnGroupsModule,
-    CnLabsModule
+    CnLabsModule,
   ],
   controllers: [CnStatsController],
-  providers: [
-    CnStatsService
-  ]
+  providers: [CnStatsService],
 })
-export class CnStatsModule {
-}
+export class CnStatsModule {}

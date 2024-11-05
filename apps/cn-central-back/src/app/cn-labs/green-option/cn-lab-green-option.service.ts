@@ -6,17 +6,19 @@ import { BlAbstractService, BlBadRequestException } from '@monorepo/back-core-li
 import { CnLabGreenOptionFormDto } from './cn-lab-green-option.dto';
 import { CnLab, CnLabEntity } from '../cn-lab.entity';
 
-
 @Injectable()
 export class CnLabGreenOptionService extends BlAbstractService<CnLabGreenOption> {
-
   constructor(@InjectRepository(CnLabGreenOption) private repository: Repository<CnLabGreenOption>) {
     super(repository, CnLabGreenOption);
   }
 
-  async createFromDTO(dto: CnLabGreenOptionFormDto, lab: CnLab, entityManager?: EntityManager): Promise<CnLabGreenOption> {
-    if(lab.isDesktop()){
-      throw new BlBadRequestException('Desktop lab cannot have green computing options')
+  async createFromDTO(
+    dto: CnLabGreenOptionFormDto,
+    lab: CnLab,
+    entityManager?: EntityManager
+  ): Promise<CnLabGreenOption> {
+    if (lab.isDesktop()) {
+      throw new BlBadRequestException('Desktop lab cannot have green computing options');
     }
     const entity = this.checkBeforeSave(dto);
     entity.lab = lab as CnLabEntity;
@@ -34,8 +36,10 @@ export class CnLabGreenOptionService extends BlAbstractService<CnLabGreenOption>
     entity.type = dto.type;
     entity.value = dto.value;
     entity.isPersistent = dto.isPersistent;
-    if (entity.type === CnLabGreenOptionType.STOP_AFTER_SCENARIO ||
-      entity.type === CnLabGreenOptionType.STOP_AFTER_BACKUP) {
+    if (
+      entity.type === CnLabGreenOptionType.STOP_AFTER_SCENARIO ||
+      entity.type === CnLabGreenOptionType.STOP_AFTER_BACKUP
+    ) {
       entity.isPersistent = false;
     }
 
@@ -44,13 +48,13 @@ export class CnLabGreenOptionService extends BlAbstractService<CnLabGreenOption>
 
   public async findRulesByType(type: CnLabGreenOptionType): Promise<CnLabGreenOption[]> {
     return this.repository.find({
-      where: {type: type},
+      where: { type: type },
     });
   }
 
   public async findRulesByLabId(labId: string): Promise<CnLabGreenOption[]> {
     return this.repository.find({
-      where: {lab: {id: labId}},
+      where: { lab: { id: labId } },
     });
   }
 }

@@ -5,20 +5,16 @@ import { CnGroupsAggregateService } from './cn-groups-aggregate.service';
 
 @Injectable()
 export class CnGroupListener {
-
-  constructor(private groupAggregateService: CnGroupsAggregateService) {
-  }
+  constructor(private groupAggregateService: CnGroupsAggregateService) {}
 
   @OnEvent(cnSpaceEventName)
   async handleSpaceEvent(event: CnSpaceEvent): Promise<Error | null> {
-    if(event.type === 'REMOVE_USER_FROM_SPACE'){
-      return await this.groupAggregateService.removeUserFromAllTeams(event.userId, event.spaceId).catch(
-        (err) => err
-      );
+    if (event.type === 'REMOVE_USER_FROM_SPACE') {
+      return await this.groupAggregateService
+        .removeUserFromAllTeams(event.userId, event.spaceId)
+        .catch((err) => err);
     }
 
     return null;
   }
 }
-
-

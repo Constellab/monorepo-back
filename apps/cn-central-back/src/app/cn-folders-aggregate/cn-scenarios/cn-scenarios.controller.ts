@@ -6,10 +6,7 @@ import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 
 @Controller('scenarios')
 export class CnScenariosController {
-
-  constructor(private folderAggregateService: CnFolderAggregateService) {
-  }
-
+  constructor(private folderAggregateService: CnFolderAggregateService) {}
 
   @Get('current-last-scenarios')
   getCurrentUserLastScenarios(): Promise<CnScenario[]> {
@@ -21,27 +18,30 @@ export class CnScenariosController {
     return this.folderAggregateService.findScenario(id);
   }
 
-
   /**
    * Return the list of scenario of a folder
    */
   @Get('folder/:folderId')
-  public async getScenariosByFolder(@Param('folderId', ParseUUIDPipe) folderId: string): Promise<CnScenarioDto[]> {
+  public async getScenariosByFolder(
+    @Param('folderId', ParseUUIDPipe) folderId: string
+  ): Promise<CnScenarioDto[]> {
     const scenarios = await this.folderAggregateService.getScenariosByFolder(folderId);
-    return scenarios.map(scenario => new CnScenarioDto().copyEntity(scenario));
+    return scenarios.map((scenario) => new CnScenarioDto().copyEntity(scenario));
   }
 
   @Get('note/:noteId')
   async getScenariosByNote(@Param('noteId', new ParseUUIDPipe()) noteId: string): Promise<CnScenarioDto[]> {
     const scenarios = await this.folderAggregateService.getScenariosAssociatedToNotes(noteId);
-    return scenarios.map(scenario => new CnScenarioDto().copyEntity(scenario));
+    return scenarios.map((scenario) => new CnScenarioDto().copyEntity(scenario));
   }
 
   /**
    * Get scenario's notes
    */
   @Get(':scenarioId/technical-report')
-  async getScenarioTechnicalReport(@Param('scenarioId', new ParseUUIDPipe()) scenarioId: string): Promise<CnScenarioProtocol> {
+  async getScenarioTechnicalReport(
+    @Param('scenarioId', new ParseUUIDPipe()) scenarioId: string
+  ): Promise<CnScenarioProtocol> {
     return this.folderAggregateService.findScenarioTechnicalReport(scenarioId);
   }
 
@@ -49,8 +49,9 @@ export class CnScenariosController {
    * Get scenario's lab config
    */
   @Get(':scenarioId/lab-config')
-  async getScenarioLabConfig(@Param('scenarioId', new ParseUUIDPipe()) scenarioId: string): Promise<CnLabConfig> {
+  async getScenarioLabConfig(
+    @Param('scenarioId', new ParseUUIDPipe()) scenarioId: string
+  ): Promise<CnLabConfig> {
     return this.folderAggregateService.findScenarioLabConfig(scenarioId);
   }
-
 }

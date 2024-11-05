@@ -3,16 +3,12 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/cn-central-back/src",
   "projectType": "application",
-  "tags": [
-    "back"
-  ],
+  "tags": ["back"],
   "targets": {
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": [
-        "build"
-      ],
+      "dependsOn": ["build"],
       "options": {
         "buildTarget": "cn-central-back:build",
         "runBuildTargetDependencies": false

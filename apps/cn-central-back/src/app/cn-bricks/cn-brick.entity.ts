@@ -1,10 +1,10 @@
-import {Column, Entity, OneToMany} from 'typeorm';
-import {BlEntityWithId} from '@monorepo/back-core-lib';
-import {CnBrickVersion} from './cn-brick-version.entity';
+import { Column, Entity, OneToMany } from 'typeorm';
+import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { CnBrickVersion } from './cn-brick-version.entity';
 
 export enum CnBrickVisibility {
   PRIVATE = 'private',
-  PUBLIC = 'public'
+  PUBLIC = 'public',
 }
 
 /**
@@ -13,20 +13,18 @@ export enum CnBrickVisibility {
  */
 @Entity('brick')
 export class CnBrick extends BlEntityWithId {
-
-  @Column({nullable: false, unique: true})
+  @Column({ nullable: false, unique: true })
   name: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   pipRepo: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   gitRepo: string;
 
-  @OneToMany(() => CnBrickVersion,
-    (brickVersion: CnBrickVersion) => brickVersion.brick)
+  @OneToMany(() => CnBrickVersion, (brickVersion: CnBrickVersion) => brickVersion.brick)
   versions: CnBrickVersion[];
 
-  @Column({type: 'enum', enum: CnBrickVisibility, default: CnBrickVisibility.PUBLIC})
+  @Column({ type: 'enum', enum: CnBrickVisibility, default: CnBrickVisibility.PUBLIC })
   visibility: CnBrickVisibility;
 }

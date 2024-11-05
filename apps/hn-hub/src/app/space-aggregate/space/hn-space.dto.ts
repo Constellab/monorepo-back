@@ -1,6 +1,6 @@
-import {HnSpace} from './hn-space.entity';
+import { HnSpace } from './hn-space.entity';
 
-export class HnSpaceDto{
+export class HnSpaceDto {
   id: string;
   name: string;
   photo: string;

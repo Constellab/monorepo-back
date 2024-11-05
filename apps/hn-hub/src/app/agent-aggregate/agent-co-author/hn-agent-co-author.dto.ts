@@ -1,5 +1,5 @@
-import {HnUserDto} from '../../users/hn-user.dto';
-import {HnAgentCoAuthor} from './hn-agent-co-author.entity';
+import { HnUserDto } from '../../users/hn-user.dto';
+import { HnAgentCoAuthor } from './hn-agent-co-author.entity';
 
 export class HnAgentCoAuthorDto {
   id: string;

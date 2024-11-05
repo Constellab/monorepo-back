@@ -1,4 +1,4 @@
-import {HnIconType} from './hn-icon.entity';
+import { HnIconType } from './hn-icon.entity';
 
 export class HnIconCreateDto {
   id?: string;

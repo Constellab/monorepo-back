@@ -4,7 +4,6 @@ interface BlCookie {
 }
 
 export class BlCookieHelper {
-
   /**
    * Get the cookie value from a cookie header like
    * Auth_Expiration=86400000; Authorization=Bearer%20eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
@@ -40,7 +39,7 @@ export class BlCookieHelper {
     if (cookies?.length >= 2) {
       return {
         key: cookies[0],
-        value: cookies.slice(1).join('=')
+        value: cookies.slice(1).join('='),
       };
     }
 

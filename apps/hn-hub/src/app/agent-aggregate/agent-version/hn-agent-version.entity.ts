@@ -1,17 +1,17 @@
-import {BeforeInsert, Column, Entity, ManyToOne, Unique} from 'typeorm';
-import {BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
-import {HnAgent} from '../agent/hn-agent.entity';
-import {DateTime} from 'luxon';
-import {ClDateHelper} from '@monorepo/core-lib';
-import {HnAgentVersionFileInput} from '../agent/hn-agent.dto';
+import { BeforeInsert, Column, Entity, ManyToOne, Unique } from 'typeorm';
+import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
+import { HnAgent } from '../agent/hn-agent.entity';
+import { DateTime } from 'luxon';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { HnAgentVersionFileInput } from '../agent/hn-agent.dto';
 import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
 
 export enum HnAgentVersionState {
   PUBLISHED = 'PUBLISHED',
-  DRAFT = 'DRAFT'
+  DRAFT = 'DRAFT',
 }
 
-export enum HnAgentVersionType{
+export enum HnAgentVersionType {
   PYTHON = 'PYTHON',
   CONDA_PYTHON = 'CONDA_PYTHON',
   MAMBA_PYTHON = 'MAMBA_PYTHON',
@@ -24,45 +24,44 @@ export enum HnAgentVersionType{
 @Unique(['version', 'agent'])
 @Entity('agent_version')
 export class HnAgentVersion extends BlEntityWithId {
-
-  @Column({default: 1})
+  @Column({ default: 1 })
   version: number;
 
   @BlNotUpdatable()
-  @ManyToOne(() => HnAgent, {eager: true, onDelete: "CASCADE"})
+  @ManyToOne(() => HnAgent, { eager: true, onDelete: 'CASCADE' })
   agent: HnAgent;
 
-  @Column({type: 'enum', enum: HnAgentVersionState, nullable: false, default: HnAgentVersionState.DRAFT})
+  @Column({ type: 'enum', enum: HnAgentVersionState, nullable: false, default: HnAgentVersionState.DRAFT })
   versionState: HnAgentVersionState;
 
-  @Column({type: 'enum', enum: HnAgentVersionType, nullable: false, default: HnAgentVersionType.PYTHON})
+  @Column({ type: 'enum', enum: HnAgentVersionType, nullable: false, default: HnAgentVersionType.PYTHON })
   type: HnAgentVersionType;
 
-  @Column({name: 'versionInfos', type: 'simple-json', nullable: true})
+  @Column({ name: 'versionInfos', type: 'simple-json', nullable: true })
   versionInfos?: Record<string, any>;
 
-  @Column({type: 'text', nullable: true})
+  @Column({ type: 'text', nullable: true })
   params: string;
 
-  @Column({type: 'text', nullable: true})
+  @Column({ type: 'text', nullable: true })
   environment: string;
 
-  @Column({type: 'text', nullable: true})
+  @Column({ type: 'text', nullable: true })
   code: string;
 
-  @BlLuxonDateTimeColumn({nullable: true, update: false})
+  @BlLuxonDateTimeColumn({ nullable: true, update: false })
   createdAt: DateTime;
 
-  @Column({name: 'inputSpecs', type: 'simple-json', nullable: true})
+  @Column({ name: 'inputSpecs', type: 'simple-json', nullable: true })
   inputSpecs?: Record<string, any>;
 
-  @Column({name: 'outputSpecs', type: 'simple-json', nullable: true})
+  @Column({ name: 'outputSpecs', type: 'simple-json', nullable: true })
   outputSpecs?: Record<string, any>;
 
-  @Column({name: 'configSpecs', type: 'simple-json', nullable: true})
+  @Column({ name: 'configSpecs', type: 'simple-json', nullable: true })
   configSpecs?: Record<string, any>;
 
-  @Column({name: 'style', type: 'simple-json', nullable: true})
+  @Column({ name: 'style', type: 'simple-json', nullable: true })
   style?: HnTypingStyle;
 
   initVersion(agent: HnAgent, versionFile: HnAgentVersionFileInput): void {
@@ -72,7 +71,11 @@ export class HnAgentVersion extends BlEntityWithId {
     this.initVersionFile(versionFile);
   }
 
-  initNewDraftVersion(lastAgentVersion: HnAgentVersion, versionFile: HnAgentVersionFileInput, replace = false): void {
+  initNewDraftVersion(
+    lastAgentVersion: HnAgentVersion,
+    versionFile: HnAgentVersionFileInput,
+    replace = false
+  ): void {
     this.version = lastAgentVersion.version + (replace ? 0 : 1);
     this.agent = lastAgentVersion.agent;
     this.versionState = HnAgentVersionState.DRAFT;

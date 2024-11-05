@@ -1,8 +1,8 @@
-import {format, transports} from 'winston';
-import {WinstonModuleOptions} from 'nest-winston';
-import {TransformableInfo} from 'logform';
+import { format, transports } from 'winston';
+import { WinstonModuleOptions } from 'nest-winston';
+import { TransformableInfo } from 'logform';
 import 'winston-daily-rotate-file';
-import {LogLevel} from '@nestjs/common/services/logger.service';
+import { LogLevel } from '@nestjs/common/services/logger.service';
 
 export interface BlLoggerConfig {
   logLevel: LogLevel;
@@ -16,39 +16,42 @@ export interface BlLoggerConfig {
  * @param config
  */
 export function blConfigureLogger(config: BlLoggerConfig): WinstonModuleOptions {
-
   const transportsList: any[] = [];
 
-  const logFormat = (info: TransformableInfo): string => `${info.timestamp} - ${info.level} - ${info.message}`;
-
+  const logFormat = (info: TransformableInfo): string =>
+    `${info.timestamp} - ${info.level} - ${info.message}`;
 
   // Add the console transport to log into the console
-  transportsList.push(new transports.Console({
-    level: config.logLevel,
-    format: format.combine(
-      format.timestamp(), // default date to ISO
-      format.colorize(),
-      format.printf(logFormat)
-    )
-  }));
+  transportsList.push(
+    new transports.Console({
+      level: config.logLevel,
+      format: format.combine(
+        format.timestamp(), // default date to ISO
+        format.colorize(),
+        format.printf(logFormat)
+      ),
+    })
+  );
 
   // add the file transport to log into a file with rotation
   if (config.logFilePath) {
     // by default, it creates a new log file each day
-    transportsList.push(new transports.DailyRotateFile({
-      level: config.logLevel,
-      dirname: config.logFilePath,
-      filename: `%DATE%`, // filename is the current date YYYY-MM-DD
-      extension: '.log',
-      format: format.combine(
-        format.timestamp(), // default date to ISO
-        format.printf(logFormat)
-      ),
-    }));
+    transportsList.push(
+      new transports.DailyRotateFile({
+        level: config.logLevel,
+        dirname: config.logFilePath,
+        filename: `%DATE%`, // filename is the current date YYYY-MM-DD
+        extension: '.log',
+        format: format.combine(
+          format.timestamp(), // default date to ISO
+          format.printf(logFormat)
+        ),
+      })
+    );
   }
 
   return {
     level: config.logLevel,
-    transports: transportsList
+    transports: transportsList,
   };
 }

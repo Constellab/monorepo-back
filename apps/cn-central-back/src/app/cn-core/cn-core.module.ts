@@ -22,15 +22,10 @@ import { CnDbBackupCron } from './cron/cn-db-backup.cron';
     // to prevent error "Field value too long"
     // configure the multer module to accept files up to 100MB
     MulterModule.register({
-      limits: {fieldSize: 25 * 1024 * 1024, fileSize: 100 * 1024 * 1024}
+      limits: { fieldSize: 25 * 1024 * 1024, fileSize: 100 * 1024 * 1024 },
     }),
   ],
-  providers: [
-    CnFrontService,
-    CnConfigEntitySecurity,
-    CnCommandService,
-    CnDbBackupCron,
-  ],
+  providers: [CnFrontService, CnConfigEntitySecurity, CnCommandService, CnDbBackupCron],
   exports: [
     BlRequestContextModule,
     BlTranslateModule,
@@ -41,8 +36,6 @@ import { CnDbBackupCron } from './cron/cn-db-backup.cron';
     CnFrontService,
     CnConfigEntitySecurity,
     CnCommandService,
-  ]
+  ],
 })
-export class CnCoreModule {
-
-}
+export class CnCoreModule {}

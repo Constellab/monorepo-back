@@ -1,25 +1,24 @@
-import {BeforeInsert, BeforeUpdate, ManyToOne} from 'typeorm';
-import {Type} from 'class-transformer';
-import {ClDateHelper} from '@monorepo/core-lib';
-import {DateTime} from 'luxon';
-import {BlEntityWithId, BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
-import {HnCurrentUserHelper} from '../../utils/hn-current-user.helper';
-import {HnUser} from '../../../users/hn-user.entity';
+import { BeforeInsert, BeforeUpdate, ManyToOne } from 'typeorm';
+import { Type } from 'class-transformer';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { DateTime } from 'luxon';
+import { BlEntityWithId, BlLuxonDateTimeColumn } from '@monorepo/back-core-lib';
+import { HnCurrentUserHelper } from '../../utils/hn-current-user.helper';
+import { HnUser } from '../../../users/hn-user.entity';
 
 export abstract class HnBaseEntity extends BlEntityWithId {
-
-  @BlLuxonDateTimeColumn({nullable: true, update: false})
+  @BlLuxonDateTimeColumn({ nullable: true, update: false })
   createdAt: DateTime;
 
   @Type(() => HnUser)
-  @ManyToOne(() => HnUser, {eager: true, nullable: true})
+  @ManyToOne(() => HnUser, { eager: true, nullable: true })
   createdBy?: HnUser;
 
-  @BlLuxonDateTimeColumn({nullable: true})
+  @BlLuxonDateTimeColumn({ nullable: true })
   lastModifiedAt: DateTime;
 
   @Type(() => HnUser)
-  @ManyToOne(() => HnUser, {eager: true, nullable: true})
+  @ManyToOne(() => HnUser, { eager: true, nullable: true })
   lastModifiedBy: HnUser;
 
   @BeforeInsert()

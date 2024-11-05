@@ -1,4 +1,10 @@
-import { ClassSerializerInterceptor, MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { CnUsersModule } from './app/cn-users/cn-users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CnAuthModule } from './app/cn-auth/cn-auth.module';
@@ -38,7 +44,7 @@ import {
   BlObjectStorageModule,
   BlRequestContextMiddleware,
   BlTransportModule,
-  BlTransportModuleConfig
+  BlTransportModuleConfig,
 } from '@monorepo/back-core-lib';
 import { cnJwtConfig } from './app/cn-auth/cn-jwt.config';
 import { Request } from 'express';
@@ -79,14 +85,14 @@ function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions
     maxQueryExecutionTime: 1000, // log query longer than 1s,
     bigNumberStrings: false,
     charset: 'utf8mb4',
-    logging: false // use to enable query logging, the logger must be disabled
+    logging: false, // use to enable query logging, the logger must be disabled
   };
 }
 
 function configureLogger(configService: CnCoreConfigService): WinstonModuleOptions {
   const logConfig: BlLoggerConfig = {
     logLevel: configService.getLogLevel(),
-    logFilePath: configService.isLocal() ? null : configService.getLogPath()
+    logFilePath: configService.isLocal() ? null : configService.getLogPath(),
   };
   return blConfigureLogger(logConfig);
 }
@@ -95,12 +101,9 @@ function configureJwtModule(configService: CnCoreConfigService, userService: CnU
   return {
     jwtSecret: configService.getJwtSecret(),
     jwtFromRequest: (request: Request) =>
-      BlCookieHelper.getCookieFromHeader(
-        request.headers.cookie,
-        cnJwtConfig.authorizationCookie
-      ),
+      BlCookieHelper.getCookieFromHeader(request.headers.cookie, cnJwtConfig.authorizationCookie),
     usersService: userService,
-    tokenDurationInSeconds: cnJwtConfig.tokenDurationInSeconds
+    tokenDurationInSeconds: cnJwtConfig.tokenDurationInSeconds,
   };
 }
 
@@ -109,7 +112,7 @@ function configureMailModule(configService: CnCoreConfigService): BlMailModuleCo
     mailConfig: configService.getMailConfig(),
     templateFolder: join(__dirname, 'assets/templates/'),
     defaultLayout: 'main-',
-    defaultData: { contactMail: configService.getCustomerSuccessMail() }
+    defaultData: { contactMail: configService.getCustomerSuccessMail() },
   };
 }
 
@@ -120,7 +123,7 @@ function configureTransportModule(configService: CnCoreConfigService): BlTranspo
 function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaModuleConfig {
   return {
     secretKey: configService.getCaptchaSecretKey(),
-    localEnv: configService.isLocal()
+    localEnv: configService.isLocal(),
   };
 }
 
@@ -129,14 +132,14 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     // let the config module on top of the imports
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: join(__dirname, 'environments', 'dev.env')
+      envFilePath: join(__dirname, 'environments', 'dev.env'),
     }),
 
     CnCoreConfigModule.forRoot({ distFolder: join(__dirname) }),
 
     TypeOrmModule.forRootAsync({
       useFactory: typeOrmConfig,
-      inject: [CnCoreConfigService]
+      inject: [CnCoreConfigService],
     }),
 
     I18nModule.forRoot({
@@ -144,13 +147,13 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
       loader: I18nJsonLoader,
       loaderOptions: {
         path: join(__dirname, 'assets/i18n/'),
-        watch: true //    // enable live translation
+        watch: true, //    // enable live translation
       } as I18nAbstractLoaderOptions,
       resolvers: [
         // retrieve the language from the cookie (define to avoid error but not really used)
         { use: CookieResolver, options: 'lang' },
-        AcceptLanguageResolver
-      ]
+        AcceptLanguageResolver,
+      ],
     }),
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
@@ -164,38 +167,39 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     WinstonModule.forRootAsync({
       imports: [CnCoreModule],
       useFactory: configureLogger,
-      inject: [CnCoreConfigService]
+      inject: [CnCoreConfigService],
     }),
 
     BlJwtModule.forRootAsync({
       imports: [CnCoreModule, CnUsersModule],
       useFactory: configureJwtModule,
-      inject: [CnCoreConfigService, CnUsersService]
+      inject: [CnCoreConfigService, CnUsersService],
     }),
 
     BlMailModule.forRootAsync({
       imports: [CnCoreModule],
       useFactory: configureMailModule,
-      inject: [CnCoreConfigService]
+      inject: [CnCoreConfigService],
     }),
-
 
     BlTransportModule.forRootAsync({
       useFactory: configureTransportModule,
       imports: [CnCoreModule],
-      inject: [CnCoreConfigService]
+      inject: [CnCoreConfigService],
     }),
     ThrottlerModule.forRoot({
-      throttlers: [{
-        ttl: 60,
-        limit: 10
-      }]
+      throttlers: [
+        {
+          ttl: 60,
+          limit: 10,
+        },
+      ],
     }),
 
     BlCaptchaModule.forRootAsync({
       useFactory: configureCaptchaModule,
       imports: [CnCoreModule],
-      inject: [CnCoreConfigService]
+      inject: [CnCoreConfigService],
     }),
 
     // Entities module
@@ -221,7 +225,7 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     CnCloudProvidersModule,
     CnActivityModule,
     CnSettingsModule,
-    CnCommunityModule
+    CnCommunityModule,
   ],
   controllers: [],
   providers: [
@@ -229,27 +233,26 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     // set global interceptor
     {
       provide: APP_INTERCEPTOR,
-      useClass: ClassSerializerInterceptor
+      useClass: ClassSerializerInterceptor,
     },
     // set global exception handler
     {
       provide: APP_FILTER,
-      useClass: CnCoreExceptionHandlerFilter
+      useClass: CnCoreExceptionHandlerFilter,
     },
 
     // set global guards
     {
       provide: APP_GUARD,
-      useClass: CnJwtAuthGuard
+      useClass: CnJwtAuthGuard,
     },
     {
       provide: APP_GUARD,
-      useClass: CnUserCategoryGuard
-    }
-  ]
+      useClass: CnUserCategoryGuard,
+    },
+  ],
 })
 export class CnAppModule implements NestModule {
-
   configure(consumer: MiddlewareConsumer): any {
     consumer
       // register the RequestContextMiddleware to be able to access the request anywhere

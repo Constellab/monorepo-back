@@ -1,16 +1,16 @@
-import {Body, Controller, Post, Res} from '@nestjs/common';
-import {HnAuthResponse, HnAuthService} from './hn-auth.service';
-import {Response} from 'express';
-import {hnJwtConfig} from './hn-jwt.config';
-import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
-import {BlCredentials, BlCredentials2Fa, BlPublicSecure} from '@monorepo/back-core-lib';
+import { Body, Controller, Post, Res } from '@nestjs/common';
+import { HnAuthResponse, HnAuthService } from './hn-auth.service';
+import { Response } from 'express';
+import { hnJwtConfig } from './hn-jwt.config';
+import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
+import { BlCredentials, BlCredentials2Fa, BlPublicSecure } from '@monorepo/back-core-lib';
 
 @Controller('auth')
 export class HnAuthController {
-
-  constructor(private authService: HnAuthService,
-              private configService: HnCoreConfigService) {
-  }
+  constructor(
+    private authService: HnAuthService,
+    private configService: HnCoreConfigService
+  ) {}
 
   /**
    * Login with credentials
@@ -25,9 +25,9 @@ export class HnAuthController {
 
     if (result.status === 'LOGGED_IN') {
       this.setTokenInCookie(result.token, response);
-      response.send({status: 'LOGGED_IN', expiresIn: hnJwtConfig.tokenDurationInMilliseconds});
+      response.send({ status: 'LOGGED_IN', expiresIn: hnJwtConfig.tokenDurationInMilliseconds });
     } else {
-      response.send({status: '2FA_REQUIRED', twoFAUrlCode: result.twoFAUrlCode});
+      response.send({ status: '2FA_REQUIRED', twoFAUrlCode: result.twoFAUrlCode });
     }
   }
 
@@ -41,7 +41,7 @@ export class HnAuthController {
     const token = await this.authService.loginWith2FA(credentials);
 
     this.setTokenInCookie(token, response);
-    response.send({status: 'LOGGED_IN', expiresIn: hnJwtConfig.tokenDurationInMilliseconds});
+    response.send({ status: 'LOGGED_IN', expiresIn: hnJwtConfig.tokenDurationInMilliseconds });
   }
 
   @BlPublicSecure()
@@ -59,19 +59,30 @@ export class HnAuthController {
     this.configureTokenCookie('', 0, response);
   }
 
-
   /**
    * Set the token in the Authorization cookie with httpOnly option
    * to prevent js from accessing it
    */
   private configureTokenCookie(token: string, expiresInMilliseconds: number, response: Response): void {
-    response.cookie(hnJwtConfig.authorizationCookie, token,
-      this.configService.getDomain() ? {
-        path: '/', maxAge: expiresInMilliseconds, sameSite: 'strict', domain: this.configService.getDomain(),
-        httpOnly: true, secure: !this.configService.isLocal(),
-      } : {
-        path: '/', maxAge: expiresInMilliseconds, sameSite: 'strict',
-        httpOnly: true, secure: !this.configService.isLocal(),
-      });
+    response.cookie(
+      hnJwtConfig.authorizationCookie,
+      token,
+      this.configService.getDomain()
+        ? {
+            path: '/',
+            maxAge: expiresInMilliseconds,
+            sameSite: 'strict',
+            domain: this.configService.getDomain(),
+            httpOnly: true,
+            secure: !this.configService.isLocal(),
+          }
+        : {
+            path: '/',
+            maxAge: expiresInMilliseconds,
+            sameSite: 'strict',
+            httpOnly: true,
+            secure: !this.configService.isLocal(),
+          }
+    );
   }
 }

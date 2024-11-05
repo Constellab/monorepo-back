@@ -1,14 +1,12 @@
-import {BlRequestContextHelper} from '../bl-request-context/bl-request-context.helper';
-import {clDefaultLang, clLangCookie, clLangIsSupported, ClSupportedLanguage} from '@monorepo/core-lib';
-import {BlUser} from '../../models/bl-user/bl-user.class';
-import {BlUnauthorizedException} from '../../exceptions/bl-unauthorized.exception';
+import { BlRequestContextHelper } from '../bl-request-context/bl-request-context.helper';
+import { clDefaultLang, clLangCookie, clLangIsSupported, ClSupportedLanguage } from '@monorepo/core-lib';
+import { BlUser } from '../../models/bl-user/bl-user.class';
+import { BlUnauthorizedException } from '../../exceptions/bl-unauthorized.exception';
 
 /**
  * User context helper to get the current user or current request
  */
 export class BlCurrentUserHelper extends BlRequestContextHelper {
-
-
   private static robotUser: BlUser | null = null;
   /**
    * returns the current authenticated user or null if not authenticated
@@ -17,10 +15,10 @@ export class BlCurrentUserHelper extends BlRequestContextHelper {
     const request: Express.Request = this.getCurrentRequest();
     // if there is no request and a manual user is set, return it
     // this is used for cron jobs
-    if(request == null && this.robotUser != null) {
+    if (request == null && this.robotUser != null) {
       return this.robotUser;
     }
-    return (request && request.user as BlUser) || null;
+    return (request && (request.user as BlUser)) || null;
   }
 
   /**
@@ -31,7 +29,7 @@ export class BlCurrentUserHelper extends BlRequestContextHelper {
     const user: BlUser = this.getCurrentUser();
 
     if (user == null) {
-      throw new BlUnauthorizedException("No user in the context");
+      throw new BlUnauthorizedException('No user in the context');
     }
 
     return user;
@@ -44,8 +42,7 @@ export class BlCurrentUserHelper extends BlRequestContextHelper {
    * Otherwise it return the default lang
    */
   static getCurrentLang(): ClSupportedLanguage {
-    let lang = this.getCurrentUser()?.lang ||
-      this.getLangHeader() || clDefaultLang;
+    let lang = this.getCurrentUser()?.lang || this.getLangHeader() || clDefaultLang;
 
     // check that the lang exists
     if (!clLangIsSupported(lang)) {

@@ -1,22 +1,21 @@
-import {NestFactory} from '@nestjs/core';
-import {CnAppModule} from './cn-app.module';
-import {WINSTON_MODULE_NEST_PROVIDER} from 'nest-winston';
-import {blGetCorsConfig, blGetRabbitMQUrl, blTransportQueueHub} from '@monorepo/back-core-lib';
+import { NestFactory } from '@nestjs/core';
+import { CnAppModule } from './cn-app.module';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { blGetCorsConfig, blGetRabbitMQUrl, blTransportQueueHub } from '@monorepo/back-core-lib';
 import {
   CN_ENVIRONMENT_PROFILE_KEY,
   CN_RABBITMQ_PASSWORD_KEY,
   CN_RABBITMQ_PORT_KEY,
   CN_RABBITMQ_URL_KEY,
   CN_RABBITMQ_USER_KEY,
-  CnEnvironmentProfile
+  CnEnvironmentProfile,
 } from './app/cn-core/model/config/cn-config.class';
-import {Transport} from '@nestjs/microservices';
-import {CN_LOCAL_SPACE_COOKIE} from './app/cn-core/middleware/cn-space-middleware.service';
-import {NestExpressApplication} from '@nestjs/platform-express';
-import {json, urlencoded} from 'body-parser';
+import { Transport } from '@nestjs/microservices';
+import { CN_LOCAL_SPACE_COOKIE } from './app/cn-core/middleware/cn-space-middleware.service';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { json, urlencoded } from 'body-parser';
 
 async function bootstrap(): Promise<void> {
-
   const app = await NestFactory.create<NestExpressApplication>(CnAppModule);
 
   // enable cors
@@ -27,8 +26,8 @@ async function bootstrap(): Promise<void> {
   app.enableCors(blGetCorsConfig(['constellab.space', 'preconstellab.com'], isLocal, additionalHeader));
 
   // increase body limit to 10mb
-  app.use(json({limit: '10mb'}));
-  app.use(urlencoded({limit: '10mb', extended: true}));
+  app.use(json({ limit: '10mb' }));
+  app.use(urlencoded({ limit: '10mb', extended: true }));
 
   // enable proxy, tell express to trust the first proxy
   // https://docs.nestjs.com/security/rate-limiting#proxies
@@ -42,18 +41,27 @@ async function bootstrap(): Promise<void> {
     transport: Transport.RMQ,
     options: {
       // eslint-disable-next-line max-len
-      urls: [blGetRabbitMQUrl(process.env[CN_RABBITMQ_USER_KEY], process.env[CN_RABBITMQ_PASSWORD_KEY], process.env[CN_RABBITMQ_URL_KEY], process.env[CN_RABBITMQ_PORT_KEY])],
+      urls: [
+        blGetRabbitMQUrl(
+          process.env[CN_RABBITMQ_USER_KEY],
+          process.env[CN_RABBITMQ_PASSWORD_KEY],
+          process.env[CN_RABBITMQ_URL_KEY],
+          process.env[CN_RABBITMQ_PORT_KEY]
+        ),
+      ],
       queue: blTransportQueueHub,
       queueOptions: {
         durable: true,
-        deliveryMode: 2 // enable persistent messaging
+        deliveryMode: 2, // enable persistent messaging
       },
     },
   });
 
   // await app.startAllMicroservices();
-  app.startAllMicroservices().then(() => console.log('Successfully init microservice'))
-    .catch(err => `Error during microservice init. Error : ${err}`);
+  app
+    .startAllMicroservices()
+    .then(() => console.log('Successfully init microservice'))
+    .catch((err) => `Error during microservice init. Error : ${err}`);
 
   const port = 3001;
   await app.listen(port, () => {

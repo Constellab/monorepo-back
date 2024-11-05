@@ -24,5 +24,4 @@ import { CnLabFolderAggregateModule } from '../cn-lab-folder-aggregate/cn-lab-fo
     CnSpacesModule, // used by the lab auth guard
   ],
 })
-export class CnExternalLabsModule {
-}
+export class CnExternalLabsModule {}

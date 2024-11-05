@@ -4,7 +4,7 @@ import { CnMessage, CnNewMessageDTO } from '../cn-core/model/entities/cn-message
 import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
 import {
   CnHierarchyObject,
-  CnHierarchyObjectEntity
+  CnHierarchyObjectEntity,
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { BlNotUpdatable } from '@monorepo/back-core-lib';
 
@@ -21,13 +21,12 @@ export function getFakeUserEveryoneMention(): CnUser {
 
 @Entity('chat_message')
 export class CnChatMessageEntity extends CnMessage {
-
   @Type(() => CnHierarchyObjectEntity)
-  @ManyToOne(() => CnHierarchyObjectEntity, {nullable: false})
+  @ManyToOne(() => CnHierarchyObjectEntity, { nullable: false })
   @BlNotUpdatable()
   folderHierarchy: CnHierarchyObjectEntity;
 
-  @Column({nullable: false, update: false})
+  @Column({ nullable: false, update: false })
   folderHierarchyId: string;
 
   static create(newMessageDTO: CnNewMessageDTO, folderHierarchy: CnHierarchyObject): CnChatMessageEntity {

@@ -1,9 +1,7 @@
 import { DateTime } from 'luxon';
 import { ClCoreJsonConvert, ClLuxonDateTimeTransform } from '@monorepo/core-lib';
 import { Type } from 'class-transformer';
-import {
-  CnCloudProviderRegion
-} from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import { CnCloudProviderRegion } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnLabBackupHistory } from './cn-lab-backup-history.entity';
 
 export enum CnLabBackupFrequency {
@@ -45,7 +43,6 @@ export interface CnLabBackupInfo {
   transfer?: CnLabBackupTransferStats;
 }
 
-
 export class CnLabBackupBucket {
   id: string;
   region: string;
@@ -67,7 +64,6 @@ export class CnLabBackupBucket {
 }
 
 export class CnLabBackupsHistory {
-
   private static readonly CURRENT_VERSION = 3;
 
   version: number;
@@ -76,12 +72,17 @@ export class CnLabBackupsHistory {
   backups: CnLabBackupBucket[];
 
   // TODO @lab-manager-v1.12.0 : remove once the lab manager is updated
-  public static fromLabManagerResponse(backups: CnLabBackupsHistory | CnLabBackupBucket[]): CnLabBackupsHistory {
+  public static fromLabManagerResponse(
+    backups: CnLabBackupsHistory | CnLabBackupBucket[]
+  ): CnLabBackupsHistory {
     let backupsHistory: CnLabBackupsHistory;
     if (Array.isArray(backups)) {
       backupsHistory = new CnLabBackupsHistory();
       backupsHistory.version = 2;
-      backupsHistory.backups = ClCoreJsonConvert.deserialize(backups, CnLabBackupBucket) as CnLabBackupBucket[];
+      backupsHistory.backups = ClCoreJsonConvert.deserialize(
+        backups,
+        CnLabBackupBucket
+      ) as CnLabBackupBucket[];
     } else {
       backupsHistory = ClCoreJsonConvert.deserialize(backups, CnLabBackupsHistory) as CnLabBackupsHistory;
     }
@@ -96,7 +97,7 @@ export class CnLabBackupsHistory {
         backup.data = {
           totalSize: backup.dataSize,
           status: backup.dataStatus,
-          transfer: null
+          transfer: null,
         } as CnLabBackupInfo;
         delete backup.dataSize;
         delete backup.dataStatus;
@@ -105,18 +106,16 @@ export class CnLabBackupsHistory {
         backup.db = {
           totalSize: backup.dbSize,
           status: backup.dbStatus,
-          transfer: null
+          transfer: null,
         } as CnLabBackupInfo;
         delete backup.dbSize;
         delete backup.dbStatus;
       }
-
     }
     this.version = CnLabBackupsHistory.CURRENT_VERSION;
     return this;
   }
 }
-
 
 export class CnLabBackupStatusDTO {
   frequency: CnLabBackupFrequency;
@@ -143,18 +142,19 @@ export class CnLabBackupStatusDTO {
   lastSuccessBackupId: string;
 }
 
-
 /**
  * DTO to verify the size of the backup
  */
 export class CnLabCheckBackupSizeDTO extends CnLabBackupStatusDTO {
-
   sizeInBucket: number;
 
   nbDocumentsInBucket: number;
 
-  public static fromBackupStatusDTO(backupStatusDTO: CnLabBackupStatusDTO,
-                                    sizeInBucket: number, nbDocumentsInBucket: number): CnLabCheckBackupSizeDTO {
+  public static fromBackupStatusDTO(
+    backupStatusDTO: CnLabBackupStatusDTO,
+    sizeInBucket: number,
+    nbDocumentsInBucket: number
+  ): CnLabCheckBackupSizeDTO {
     const dto = new CnLabCheckBackupSizeDTO();
     dto.frequency = backupStatusDTO.frequency;
     dto.region = backupStatusDTO.region;

@@ -1,18 +1,17 @@
-import {Body, Controller, Post, Res} from '@nestjs/common';
-import {CnAuthResponse, CnAuthService, CnExternalCheckCredentialResponse} from './cn-auth.service';
-import {Response} from 'express';
-import {cnJwtConfig} from './cn-jwt.config';
-import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import {BlCredentials, BlCredentials2Fa, BlPublicSecure} from '@monorepo/back-core-lib';
-import {CnUser} from '../cn-users/cn-user.entity';
+import { Body, Controller, Post, Res } from '@nestjs/common';
+import { CnAuthResponse, CnAuthService, CnExternalCheckCredentialResponse } from './cn-auth.service';
+import { Response } from 'express';
+import { cnJwtConfig } from './cn-jwt.config';
+import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
+import { BlCredentials, BlCredentials2Fa, BlPublicSecure } from '@monorepo/back-core-lib';
+import { CnUser } from '../cn-users/cn-user.entity';
 
 @Controller('auth')
 export class CnAuthController {
-
-
-  constructor(private authService: CnAuthService,
-              private configService: CnCoreConfigService) {
-  }
+  constructor(
+    private authService: CnAuthService,
+    private configService: CnCoreConfigService
+  ) {}
 
   /**
    * Login with credentials
@@ -27,9 +26,9 @@ export class CnAuthController {
 
     if (result.status === 'LOGGED_IN') {
       this.setTokenInCookie(result.token, response);
-      response.send({status: 'LOGGED_IN', expiresIn: cnJwtConfig.tokenDurationInMilliseconds});
+      response.send({ status: 'LOGGED_IN', expiresIn: cnJwtConfig.tokenDurationInMilliseconds });
     } else {
-      response.send({status: '2FA_REQUIRED', twoFAUrlCode: result.twoFAUrlCode});
+      response.send({ status: '2FA_REQUIRED', twoFAUrlCode: result.twoFAUrlCode });
     }
   }
 
@@ -43,7 +42,7 @@ export class CnAuthController {
     const token = await this.authService.loginWith2FA(credentials);
 
     this.setTokenInCookie(token, response);
-    response.send({status: 'LOGGED_IN', expiresIn: cnJwtConfig.tokenDurationInMilliseconds});
+    response.send({ status: 'LOGGED_IN', expiresIn: cnJwtConfig.tokenDurationInMilliseconds });
   }
 
   @BlPublicSecure()
@@ -67,7 +66,6 @@ export class CnAuthController {
   @BlPublicSecure()
   @Post('logout')
   async logout(@Body() credentials: BlCredentials, @Res() response: Response): Promise<void> {
-
     this.clearTokenCookie(response);
     response.send();
   }
@@ -85,12 +83,13 @@ export class CnAuthController {
    * to prevent js from accessing it
    */
   private configureTokenCookie(token: string, expiresInMilliseconds: number, response: Response): void {
-    response.cookie(cnJwtConfig.authorizationCookie, token,
-      {
-        path: '/', maxAge: expiresInMilliseconds,
-        // use none in production because the api is not un the same domain as the front
-        sameSite: 'strict',
-        httpOnly: true, secure: !this.configService.isLocal(),
-      });
+    response.cookie(cnJwtConfig.authorizationCookie, token, {
+      path: '/',
+      maxAge: expiresInMilliseconds,
+      // use none in production because the api is not un the same domain as the front
+      sameSite: 'strict',
+      httpOnly: true,
+      secure: !this.configService.isLocal(),
+    });
   }
 }

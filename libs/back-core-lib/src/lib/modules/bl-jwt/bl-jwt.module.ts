@@ -1,11 +1,11 @@
-import {DynamicModule, Global, Module} from '@nestjs/common';
-import {BL_JWT_CONFIG_PROVIDER, BlJwtConfig} from './bl-jwt.class';
-import {BlJwtService} from './bl-jwt.service';
-import {BlJwtStrategy} from './bl-jwt.strategy';
-import {ModuleMetadata} from '@nestjs/common/interfaces';
-import {JwtModule} from '@nestjs/jwt';
-import {PassportModule} from '@nestjs/passport';
-import {JwtModuleOptions} from '@nestjs/jwt/dist/interfaces/jwt-module-options.interface';
+import { DynamicModule, Global, Module } from '@nestjs/common';
+import { BL_JWT_CONFIG_PROVIDER, BlJwtConfig } from './bl-jwt.class';
+import { BlJwtService } from './bl-jwt.service';
+import { BlJwtStrategy } from './bl-jwt.strategy';
+import { ModuleMetadata } from '@nestjs/common/interfaces';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModuleOptions } from '@nestjs/jwt/dist/interfaces/jwt-module-options.interface';
 
 export interface BlJwtModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
   useFactory?: (...args: any[]) => BlJwtConfig;
@@ -16,18 +16,15 @@ export interface BlJwtModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'>
 async function configureJwtModule(blJwtConfig: BlJwtConfig): Promise<JwtModuleOptions> {
   return {
     secret: blJwtConfig.jwtSecret,
-    signOptions: {expiresIn: blJwtConfig.tokenDurationInSeconds}
+    signOptions: { expiresIn: blJwtConfig.tokenDurationInSeconds },
   };
 }
 
-
 @Global()
 @Module({
-  imports: []
+  imports: [],
 })
 export class BlJwtModule {
-
-
   public static forRootAsync(asyncOptions: BlJwtModuleAsyncOptions): DynamicModule {
     return {
       module: BlJwtModule,
@@ -38,7 +35,7 @@ export class BlJwtModule {
         JwtModule.registerAsync({
           useFactory: (...args: any[]) => configureJwtModule(asyncOptions.useFactory(...args)),
           inject: asyncOptions.inject,
-          imports: asyncOptions.imports
+          imports: asyncOptions.imports,
         }),
         PassportModule,
       ],
@@ -46,16 +43,12 @@ export class BlJwtModule {
         {
           provide: BL_JWT_CONFIG_PROVIDER,
           useFactory: asyncOptions.useFactory,
-          inject: asyncOptions.inject
+          inject: asyncOptions.inject,
         },
-        BlJwtService,
-        BlJwtStrategy
-      ],
-      exports: [
         BlJwtService,
         BlJwtStrategy,
       ],
+      exports: [BlJwtService, BlJwtStrategy],
     };
   }
-
 }

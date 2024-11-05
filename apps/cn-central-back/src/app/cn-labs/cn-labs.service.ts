@@ -13,20 +13,26 @@ import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 import { CnNotesService } from '../cn-folders-aggregate/cn-notes/cn-notes.service';
 import { BlBadRequestException, BlSearchBuilder, BlSearchParams } from '@monorepo/back-core-lib';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { CnLabEvent, cnLabEventName, CnLabServerTaskStatusChangedEvent, CnLabStatusChangedEvent } from './cn-lab.event';
+import {
+  CnLabEvent,
+  cnLabEventName,
+  CnLabServerTaskStatusChangedEvent,
+  CnLabStatusChangedEvent,
+} from './cn-lab.event';
 import { CnServerStandard } from '../cn-servers-info/server-standard/cn-server-standard.entity';
 import { CnServerCloud } from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
 
 @Injectable()
 export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLabStatus> {
-
-  constructor(@InjectRepository(CnLabEntity) private repository: Repository<CnLabEntity>,
-              @InjectRepository(CnLabStatusHistory) private statusRepo: Repository<CnLabStatusHistory>,
-              private scenarioService: CnScenariosService,
-              private noteService: CnNotesService,
-              private eventEmitter: EventEmitter2,
-              datasource: DataSource) {
+  constructor(
+    @InjectRepository(CnLabEntity) private repository: Repository<CnLabEntity>,
+    @InjectRepository(CnLabStatusHistory) private statusRepo: Repository<CnLabStatusHistory>,
+    private scenarioService: CnScenariosService,
+    private noteService: CnNotesService,
+    private eventEmitter: EventEmitter2,
+    datasource: DataSource
+  ) {
     super(repository, CnLabEntity, statusRepo, CnLabStatusHistory, datasource);
   }
 
@@ -39,7 +45,6 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
   }
 
   async createLab(entity: CnLabEntity, entityManager: EntityManager): Promise<CnLabEntity> {
-
     await this.checkLabBeforeSave(entity);
 
     return super.createWithStatusTransaction(entity, CnLabStatus.NO_SERVER, entityManager);
@@ -57,9 +62,11 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
       // check virtual host
       entity.virtualHost = await this.checkLabVirtualHost(entity, true);
 
-      if (ClHelpService.isNullOrEmpty(entity.serverCloud) ||
+      if (
+        ClHelpService.isNullOrEmpty(entity.serverCloud) ||
         ClHelpService.isNullOrEmpty(entity.region) ||
-        ClHelpService.isNullOrEmpty(entity.billingMode)) {
+        ClHelpService.isNullOrEmpty(entity.billingMode)
+      ) {
         throw new BlBadRequestException('Missing parameters for cloud instance');
       }
 
@@ -76,7 +83,6 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
       // check virtual host
       entity.virtualHost = await this.checkLabVirtualHost(entity, false);
       entity.desktopPlatform = null;
-
     } else if (entity.isDesktop()) {
       if (ClHelpService.isNullOrEmpty(entity.desktopPlatform)) {
         throw new BlBadRequestException('Missing parameters platform for desktop instance');
@@ -100,7 +106,6 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
   }
 
   private async checkLabVirtualHost(entity: CnLab, checkSupportedDomains: boolean): Promise<string> {
-
     const virtualHost = entity.virtualHost;
     // check domain name
     if (ClHelpService.isNullOrEmpty(virtualHost)) {
@@ -111,8 +116,8 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     const lab = await this.repository.findOne({
       where: {
         virtualHost: virtualHost,
-        id: entity.id ? Not(entity.id) : undefined
-      }
+        id: entity.id ? Not(entity.id) : undefined,
+      },
     });
     if (lab) {
       throw new BlBadRequestException(`Virtual host already used by another lab : ${virtualHost}`);
@@ -121,7 +126,8 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     // check domain name
     if (checkSupportedDomains && !CnLabEntity.SUPPORTED_MAIN_DOMAINS.includes(entity.getMainDomain())) {
       throw new BlBadRequestException(
-        `Virtual host must be a valid domain name : ${CnLabEntity.SUPPORTED_MAIN_DOMAINS.join(', ')}`);
+        `Virtual host must be a valid domain name : ${CnLabEntity.SUPPORTED_MAIN_DOMAINS.join(', ')}`
+      );
     }
 
     // check that the domain is valid including possibility of subdomain and port, only 1 ':' is allowed followed by a port number
@@ -132,7 +138,7 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     const domainPart = entity.getSubDomainName();
     // check that the virtual host does not contain character other than a-z, 0-9 and -
     if (!/^[a-z0-9-]+$/.test(domainPart)) {
-      throw new BlBadRequestException('Virtual host can contain only alphanumeric characters and \'-\'');
+      throw new BlBadRequestException("Virtual host can contain only alphanumeric characters and '-'");
     }
 
     // force the virtual host to be lower case
@@ -150,17 +156,22 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
 
   async deleteById(id: string, entityManager: EntityManager): Promise<DeleteResult> {
     const lab = await this.findByIdAndCheck(id);
-    if (!ClHelpService.isNullOrEmpty(lab.serverInstanceId) || !ClHelpService.isNullOrEmpty(lab.serverVolumeId)) {
-      throw new BlBadRequestException('Can\'t delete the lab because the server or volume still exist. Please delete them first');
+    if (
+      !ClHelpService.isNullOrEmpty(lab.serverInstanceId) ||
+      !ClHelpService.isNullOrEmpty(lab.serverVolumeId)
+    ) {
+      throw new BlBadRequestException(
+        "Can't delete the lab because the server or volume still exist. Please delete them first"
+      );
     }
     const scenarios: CnScenario[] = await this.scenarioService.getScenariosByLab(id);
     if (scenarios?.length > 0) {
-      throw new BlBadRequestException('Can\'t delete the lab because some scenario are linked to it');
+      throw new BlBadRequestException("Can't delete the lab because some scenario are linked to it");
     }
 
     const notes = await this.noteService.getNotesByLab(id);
     if (notes?.length > 0) {
-      throw new BlBadRequestException('Can\'t delete the lab because some notes are linked to it');
+      throw new BlBadRequestException("Can't delete the lab because some notes are linked to it");
     }
 
     return super.deleteById(id, entityManager);
@@ -171,14 +182,14 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
 
     return this.findPaginated(page, size, {
       where: this.getLabByUserAndSpaceFindOptions(userInfo.userId, userInfo.spaceId),
-      order: { lastModifiedAt: 'DESC' as any }
+      order: { lastModifiedAt: 'DESC' as any },
     });
   }
 
   public async getAllLabsByUserAndSpace(userId: string, spaceId: string): Promise<CnLab[]> {
     return this.repository.find({
       where: this.getLabByUserAndSpaceFindOptions(userId, spaceId),
-      order: { lastModifiedAt: 'DESC' as any }
+      order: { lastModifiedAt: 'DESC' as any },
     });
   }
 
@@ -187,23 +198,23 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     const findWhereOption = this.getLabByUserAndSpaceFindOptions(userInfo.userId, userInfo.spaceId);
 
     findWhereOption.currentStatus = {
-      status: CnLabStatus.SERVER_RUNNING
+      status: CnLabStatus.SERVER_RUNNING,
     };
 
     return this.repository.find({
       where: findWhereOption,
       order: {
-        lastModifiedAt: 'DESC' as any
-      }
+        lastModifiedAt: 'DESC' as any,
+      },
     });
   }
 
   private getLabByUserAndSpaceFindOptions(userId: string, spaceId: string): FindOptionsWhere<CnLabEntity> {
     return {
       sharedGroups: {
-        userId: userId
+        userId: userId,
       },
-      spaceId: spaceId
+      spaceId: spaceId,
     };
   }
 
@@ -254,13 +265,16 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     return await this.statusRepo.find({
       where: {
         entity: { id: id },
-        status: status
-      }
+        status: status,
+      },
     });
   }
 
   // override the status change event to emit a lab event
-  async updateCurrentStatusIfChangedWithDbEntity(status: CnLabStatus, dbEntity: CnLabEntity): Promise<CnLabEntity> {
+  async updateCurrentStatusIfChangedWithDbEntity(
+    status: CnLabStatus,
+    dbEntity: CnLabEntity
+  ): Promise<CnLabEntity> {
     if (dbEntity.currentStatus.status === status) {
       return dbEntity;
     }
@@ -271,52 +285,57 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
       labId: newLab.id,
       newStatus: newLab.currentStatus.status,
       oldStatus: oldStatus,
-      type: 'LAB_STATUS_CHANGED'
+      type: 'LAB_STATUS_CHANGED',
     };
     this.emitLabEvent(event);
     return newLab;
   }
 
-
   public findLabByApiKey(apiKey: string): Promise<CnLabWithSpace> {
     return this.repository.findOne({
       where: {
-        glabApiKey: apiKey
+        glabApiKey: apiKey,
       },
-      relations: CnLabEntity.relationSpace
+      relations: CnLabEntity.relationSpace,
     });
   }
 
   public findLabByManagerApiKey(managerApiKey: string): Promise<CnLabWithSpace> {
     return this.repository.findOne({
       where: {
-        labManagerApiKey: managerApiKey
+        labManagerApiKey: managerApiKey,
       },
-      relations: CnLabEntity.relationSpace
+      relations: CnLabEntity.relationSpace,
     });
   }
-
 
   public async findBySpace(spaceId: string, page: number, size: number): Promise<ClPage<CnLab>> {
     return this.findPaginated(page, size, {
       where: {
-        spaceId: spaceId
-      }
+        spaceId: spaceId,
+      },
     });
   }
 
-  public async searchInSpace(spaceId: string, searchParams: BlSearchParams,
-                             page: number, size: number): Promise<ClPage<CnLabFull>> {
+  public async searchInSpace(
+    spaceId: string,
+    searchParams: BlSearchParams,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnLabFull>> {
     const searchBuilder = new BlSearchBuilder<CnLabEntity>();
     searchBuilder.addSearchParams(searchParams);
     searchBuilder.mergeWhereOptions({ spaceId: spaceId });
     searchBuilder.setRelations(CnLabEntity.relationFull);
 
     return this.findPaginated(page, size, searchBuilder.build());
-
   }
 
-  public async searchAll(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnLabFull>> {
+  public async searchAll(
+    searchParams: BlSearchParams,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnLabFull>> {
     const searchBuilder = new BlSearchBuilder<CnLabEntity>();
     searchBuilder.addSearchParams(searchParams);
     searchBuilder.setRelations(CnLabEntity.relationFull);
@@ -341,7 +360,7 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
       labId: labId,
       newStatus: status,
       oldStatus: lab.serverTaskStatus,
-      type: 'LAB_SERVER_TASK_STATUS_CHANGED'
+      type: 'LAB_SERVER_TASK_STATUS_CHANGED',
     };
 
     lab.serverTaskText = text;
@@ -362,9 +381,9 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     return this.repository.find({
       where: {
         currentStatus: {
-          status: In(cnLabTemporaryStatuses)
-        }
-      }
+          status: In(cnLabTemporaryStatuses),
+        },
+      },
     });
   }
 

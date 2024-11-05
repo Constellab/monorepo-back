@@ -5,7 +5,6 @@ import { CnSpace } from './cn-space.entity';
 import { Type } from 'class-transformer';
 import { CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 
-
 export class CnCreateSpaceDTO {
   name: string;
   defaultStorageLocations: CnSpaceUpdateStorageLocationDTO;
@@ -17,13 +16,11 @@ export interface CnSpaceInvitCreateDto {
 }
 
 export interface CnSpaceInvitReadDto {
-
   invitation: CnSpaceInvit;
 
   // provided if the email in the invitation corresponds to an existing user
   existingUser?: CnUser;
 }
-
 
 export class CnSpaceSettingsDto {
   @Type(() => CnSpace)
@@ -36,7 +33,8 @@ export class CnSpaceSettingsDto {
     const spaceSettings = new CnSpaceSettingsDto();
     spaceSettings.space = space;
     spaceSettings.defaultFolderStorageLocation = space.defaultFolderBucket.getBucketLocation();
-    spaceSettings.defaultFolderBackupStorageLocation = space.defaultFolderBackupBucket?.getBucketLocation() ?? null;
+    spaceSettings.defaultFolderBackupStorageLocation =
+      space.defaultFolderBackupBucket?.getBucketLocation() ?? null;
 
     return spaceSettings;
   }
@@ -59,11 +57,14 @@ export class CnSpaceStorage {
   cloudStorageUsage: number;
 
   defaultFolderStorageLocation: CnBucketLocationDTO;
-  defaultBackupFolderStorageLocation ?: CnBucketLocationDTO;
+  defaultBackupFolderStorageLocation?: CnBucketLocationDTO;
 
-  constructor(cloudStorageLimit: number, cloudStorageUsage: number,
-              defaultFolderStorageLocation: CnBucketLocationDTO,
-              defaultBackupFolderStorageLocation?: CnBucketLocationDTO) {
+  constructor(
+    cloudStorageLimit: number,
+    cloudStorageUsage: number,
+    defaultFolderStorageLocation: CnBucketLocationDTO,
+    defaultBackupFolderStorageLocation?: CnBucketLocationDTO
+  ) {
     this.cloudStorageLimit = cloudStorageLimit;
     this.cloudStorageUsage = cloudStorageUsage;
     this.defaultFolderStorageLocation = defaultFolderStorageLocation;

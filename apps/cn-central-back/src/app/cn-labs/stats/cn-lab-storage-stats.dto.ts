@@ -7,7 +7,6 @@ import { CnLabVolumeType } from '../volume/cn-lab-volume-entity';
  * Object representing a period, subclasses store additional data for the period
  */
 export abstract class CnLabStorageStatsPeriod {
-
   @ClLuxonDateTimeTransform()
   fromDate: DateTime;
   @ClLuxonDateTimeTransform()
@@ -52,7 +51,6 @@ export class CnLabStorageStatsPeriodNumber extends CnLabStorageStatsPeriod {
  * Object to manage multiple periods
  */
 export class CnLabStorageStatsPeriods<T extends CnLabStorageStatsPeriod = CnLabStorageStatsPeriod> {
-
   periods: T[] = [];
 
   public addPeriod(period: T): void {
@@ -84,9 +82,7 @@ export class CnLabStorageStatsPeriods<T extends CnLabStorageStatsPeriod = CnLabS
   }
 }
 
-
 export class CnLabStorageStatsPeriodVolumeDTO extends CnLabStorageStatsPeriod {
-
   // in GB
   volumeSize: number;
 
@@ -94,8 +90,13 @@ export class CnLabStorageStatsPeriodVolumeDTO extends CnLabStorageStatsPeriod {
 
   volumePricePerGBPerHour: number;
 
-  constructor(fromDate: DateTime, toDate: DateTime, volumeSize: number,
-              volumeType: CnLabVolumeType, volumePricePerGBPerHour: number) {
+  constructor(
+    fromDate: DateTime,
+    toDate: DateTime,
+    volumeSize: number,
+    volumeType: CnLabVolumeType,
+    volumePricePerGBPerHour: number
+  ) {
     super(fromDate, toDate);
     this.volumeSize = volumeSize;
     this.volumeType = volumeType;
@@ -103,9 +104,11 @@ export class CnLabStorageStatsPeriodVolumeDTO extends CnLabStorageStatsPeriod {
   }
 
   canBeMerged(periodPrice: CnLabStorageStatsPeriodVolumeDTO): boolean {
-    return this.volumeSize === periodPrice.volumeSize
-      && this.volumeType === periodPrice.volumeType
-      && this.volumePricePerGBPerHour === periodPrice.volumePricePerGBPerHour;
+    return (
+      this.volumeSize === periodPrice.volumeSize &&
+      this.volumeType === periodPrice.volumeType &&
+      this.volumePricePerGBPerHour === periodPrice.volumePricePerGBPerHour
+    );
   }
 
   @Expose()
@@ -115,33 +118,32 @@ export class CnLabStorageStatsPeriodVolumeDTO extends CnLabStorageStatsPeriod {
 }
 
 export class CnLabStorageStatsPeriodBackupDTO extends CnLabStorageStatsPeriod {
-
   // in bytes
   backupSize: number;
 
   // in GB/hour
   backupPricePerGBPerHour: number;
 
-  constructor(fromDate: DateTime, toDate: DateTime, backupSize: number,
-              backupPricePerGBPerHour: number) {
+  constructor(fromDate: DateTime, toDate: DateTime, backupSize: number, backupPricePerGBPerHour: number) {
     super(fromDate, toDate);
     this.backupSize = backupSize;
     this.backupPricePerGBPerHour = backupPricePerGBPerHour;
   }
 
   canBeMerged(periodPrice: CnLabStorageStatsPeriodBackupDTO): boolean {
-    return this.backupSize === periodPrice.backupSize
-      && this.backupPricePerGBPerHour === periodPrice.backupPricePerGBPerHour;
+    return (
+      this.backupSize === periodPrice.backupSize &&
+      this.backupPricePerGBPerHour === periodPrice.backupPricePerGBPerHour
+    );
   }
 
   @Expose()
   get backupPrice(): number {
-    return this.backupSize / 1024 / 1024 / 1024 * this.backupPricePerGBPerHour * this.durationInHour;
+    return (this.backupSize / 1024 / 1024 / 1024) * this.backupPricePerGBPerHour * this.durationInHour;
   }
 }
 
 export class CnLabStatsStorageResponseDTO {
-
   @ClLuxonDateTimeTransform()
   fromDate: DateTime;
   @ClLuxonDateTimeTransform()
@@ -180,7 +182,7 @@ export class CnLabStatsStorageResponseDTO {
   }
 
   public addTransferredData(dataInBytes: number, pricePerGB: number): void {
-    const transferredDataPrice = dataInBytes / 1024 / 1024 / 1024 * pricePerGB;
+    const transferredDataPrice = (dataInBytes / 1024 / 1024 / 1024) * pricePerGB;
     this.totalBackupTransferredData += dataInBytes;
     this.totalBackupTransferredDataPrice += transferredDataPrice;
   }
@@ -188,5 +190,4 @@ export class CnLabStatsStorageResponseDTO {
   public dateIsBetween(date: DateTime): boolean {
     return this.fromDate <= date && this.toDate > date;
   }
-
 }

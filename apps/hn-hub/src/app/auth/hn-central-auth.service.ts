@@ -1,8 +1,13 @@
-import {Injectable} from '@nestjs/common';
-import {BlCredentials, BlCredentials2Fa, BlExternalApiService, BlUnauthorizedException} from '@monorepo/back-core-lib';
-import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
-import {lastValueFrom} from 'rxjs';
-import {HnUser} from '../users/hn-user.entity';
+import { Injectable } from '@nestjs/common';
+import {
+  BlCredentials,
+  BlCredentials2Fa,
+  BlExternalApiService,
+  BlUnauthorizedException,
+} from '@monorepo/back-core-lib';
+import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
+import { lastValueFrom } from 'rxjs';
+import { HnUser } from '../users/hn-user.entity';
 
 export interface HnExternalCheckCredentialResponse {
   status: 'OK' | '2FA_REQUIRED';
@@ -15,33 +20,32 @@ export interface HnExternalCheckCredentialResponse {
  */
 @Injectable()
 export class HnCentralAuthService {
-
   constructor(
     private blExternalApiService: BlExternalApiService,
-    private coreConfigService: HnCoreConfigService) {
-  }
+    private coreConfigService: HnCoreConfigService
+  ) {}
 
   async checkUserCredential(credentials: BlCredentials): Promise<HnExternalCheckCredentialResponse> {
     try {
-      return await lastValueFrom(this.blExternalApiService
-        .post(this.buildRoute('external/check-credentials'), credentials));
-
+      return await lastValueFrom(
+        this.blExternalApiService.post(this.buildRoute('external/check-credentials'), credentials)
+      );
     } catch (e: any) {
       if (e.status >= 500 && e.status < 600) {
         throw new BlUnauthorizedException('Central disconnected');
       }
       return {
         status: '2FA_REQUIRED',
-        user: null
-      }
+        user: null,
+      };
     }
   }
 
   async check2FA(credentials: BlCredentials2Fa): Promise<HnUser> {
     try {
       return await lastValueFrom(
-        this.blExternalApiService.post(this.buildRoute('external/check-2fa'), credentials));
-
+        this.blExternalApiService.post(this.buildRoute('external/check-2fa'), credentials)
+      );
     } catch (e: any) {
       if (e.status >= 500 && e.status < 600) {
         throw new BlUnauthorizedException('Central disconnected');
@@ -53,6 +57,4 @@ export class HnCentralAuthService {
   private buildRoute(route: string): string {
     return this.coreConfigService.getCentralApiUrl() + 'auth/' + route;
   }
-
 }
-

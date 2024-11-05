@@ -1,9 +1,9 @@
-import {Injectable} from '@nestjs/common';
-import {HnUserService} from '../users/hn-user.service';
-import {BlCredentials, BlCredentials2Fa, BlJwtService} from '@monorepo/back-core-lib';
-import {HnUser, HnUserConstellabDTO} from '../users/hn-user.entity';
-import {HnCentralAuthService} from './hn-central-auth.service';
-import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
+import { Injectable } from '@nestjs/common';
+import { HnUserService } from '../users/hn-user.service';
+import { BlCredentials, BlCredentials2Fa, BlJwtService } from '@monorepo/back-core-lib';
+import { HnUser, HnUserConstellabDTO } from '../users/hn-user.entity';
+import { HnCentralAuthService } from './hn-central-auth.service';
+import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 
 export interface HnAuthResponse {
   status: 'LOGGED_IN' | '2FA_REQUIRED';
@@ -13,18 +13,17 @@ export interface HnAuthResponse {
 
 @Injectable()
 export class HnAuthService {
-
   constructor(
     private userService: HnUserService,
     private jwtService: BlJwtService,
     private centralAuthService: HnCentralAuthService,
-    private coreConfigService: HnCoreConfigService) {
-  }
+    private coreConfigService: HnCoreConfigService
+  ) {}
 
   async login(credentials: BlCredentials): Promise<HnAuthResponse> {
-    const checkCredential =
-      this.coreConfigService.isLocal() ? await this.userService.getUserCredentialsResponse(credentials)
-        : await this.centralAuthService.checkUserCredential(credentials);
+    const checkCredential = this.coreConfigService.isLocal()
+      ? await this.userService.getUserCredentialsResponse(credentials)
+      : await this.centralAuthService.checkUserCredential(credentials);
 
     // if there is no 2FA, the user can be logged in
     if (checkCredential.status === 'OK' && checkCredential.user) {
@@ -59,7 +58,6 @@ export class HnAuthService {
     return this.jwtService.generateToken(dbUser.id, dbUser.email);
   }
 
-
   async createOrUpdateUser(userFromCentral: HnUser): Promise<void> {
     const user: HnUserConstellabDTO = new HnUserConstellabDTO();
     user.id = userFromCentral.id;
@@ -71,4 +69,3 @@ export class HnAuthService {
     return await this.userService.createOrUpdate(user);
   }
 }
-

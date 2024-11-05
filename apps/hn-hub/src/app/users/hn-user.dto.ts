@@ -1,7 +1,7 @@
-import {HnUser} from './hn-user.entity';
-import {BlUserDto} from '@monorepo/back-core-lib';
+import { HnUser } from './hn-user.entity';
+import { BlUserDto } from '@monorepo/back-core-lib';
 
-export class HnUserDto implements BlUserDto{
+export class HnUserDto implements BlUserDto {
   id: string;
   alias: string;
   userCode: string;
@@ -15,7 +15,7 @@ export class HnUserDto implements BlUserDto{
   }
 }
 
-export class HnUserDetailDto{
+export class HnUserDetailDto {
   id: string;
   alias: string;
   userCode: string;
@@ -41,7 +41,7 @@ export class HnUserDetailDto{
   }
 }
 
-export class HnUserEditDetailDto{
+export class HnUserEditDetailDto {
   id: string;
   alias: string;
   githubLink: string;

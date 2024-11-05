@@ -15,7 +15,6 @@ import { CnLabVolumeType } from '../volume/cn-lab-volume-entity';
  */
 @Entity('lab_free')
 export class CnLabFree extends CnBaseEntity {
-
   // SERVER INFO
   public static readonly CLOUD_PROVIDER: CnCloudProviderName = 'AZURE';
   public static readonly CLOUD_PROVIDER_REGION = 'northeurope';
@@ -72,5 +71,4 @@ export class CnLabFree extends CnBaseEntity {
     if (!deletionDate) return false;
     return deletionDate < ClDateHelper.getDate();
   }
-
 }

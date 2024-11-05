@@ -1,20 +1,19 @@
-import {Injectable} from '@nestjs/common';
-import {BlAbstractService, BlBadRequestException} from '@monorepo/back-core-lib';
-import {InjectRepository} from '@nestjs/typeorm';
-import {DataSource, IsNull, LessThanOrEqual, MoreThan, Repository} from 'typeorm';
-import {ClDateHelper} from '@monorepo/core-lib';
-import {CnStoragePrice} from './cn-storage-price.entity';
-import {CnCreateStoragePriceDTO} from './cn-storage-price.dto';
-
+import { Injectable } from '@nestjs/common';
+import { BlAbstractService, BlBadRequestException } from '@monorepo/back-core-lib';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, IsNull, LessThanOrEqual, MoreThan, Repository } from 'typeorm';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { CnStoragePrice } from './cn-storage-price.entity';
+import { CnCreateStoragePriceDTO } from './cn-storage-price.dto';
 
 @Injectable()
 export class CnStoragePriceService extends BlAbstractService<CnStoragePrice> {
-
-  constructor(@InjectRepository(CnStoragePrice) private repository: Repository<CnStoragePrice>,
-              private datasource: DataSource) {
+  constructor(
+    @InjectRepository(CnStoragePrice) private repository: Repository<CnStoragePrice>,
+    private datasource: DataSource
+  ) {
     super(repository, CnStoragePrice);
   }
-
 
   public async getCurrentStoragePrice(): Promise<CnStoragePrice | null> {
     const currentDate = ClDateHelper.getDate();
@@ -22,13 +21,13 @@ export class CnStoragePriceService extends BlAbstractService<CnStoragePrice> {
       where: [
         {
           startDate: LessThanOrEqual(currentDate.toISO()),
-          endDate: IsNull()
+          endDate: IsNull(),
         },
         {
           startDate: LessThanOrEqual(currentDate.toISO()),
-          endDate: MoreThan(currentDate.toISODate())
-        }
-      ]
+          endDate: MoreThan(currentDate.toISODate()),
+        },
+      ],
     });
   }
 
@@ -44,7 +43,7 @@ export class CnStoragePriceService extends BlAbstractService<CnStoragePrice> {
   private async getLastPrice(): Promise<CnStoragePrice | null> {
     return this.repository.findOne({
       where: {
-        endDate: IsNull()
+        endDate: IsNull(),
       },
     });
   }
@@ -59,9 +58,11 @@ export class CnStoragePriceService extends BlAbstractService<CnStoragePrice> {
       throw new BlBadRequestException('No price found.');
     }
 
-    if (newPrice.volumeStoragePrice === lastPrice.volumeStoragePrice &&
-    newPrice.backupStoragePrice === lastPrice.backupStoragePrice &&
-    newPrice.backupTransfertPrice === lastPrice.backupTransfertPrice) {
+    if (
+      newPrice.volumeStoragePrice === lastPrice.volumeStoragePrice &&
+      newPrice.backupStoragePrice === lastPrice.backupStoragePrice &&
+      newPrice.backupTransfertPrice === lastPrice.backupTransfertPrice
+    ) {
       throw new BlBadRequestException('The prices are the same as last price.');
     }
 
@@ -75,7 +76,7 @@ export class CnStoragePriceService extends BlAbstractService<CnStoragePrice> {
     newStoragePrice.backupTransfertPrice = newPrice.backupTransfertPrice;
     newStoragePrice.startDate = newPrice.startDate;
 
-    return this.datasource.transaction(async entityManager => {
+    return this.datasource.transaction(async (entityManager) => {
       // end the current price
       lastPrice.endDate = newPrice.startDate;
       await this.update(lastPrice, entityManager);
@@ -93,13 +94,12 @@ export class CnStoragePriceService extends BlAbstractService<CnStoragePrice> {
       throw new BlBadRequestException('Cannot delete the last price.');
     }
 
-    const priceIndex = storagePrices.findIndex(p => p.id === priceId);
-
+    const priceIndex = storagePrices.findIndex((p) => p.id === priceId);
 
     if (priceIndex === 0) {
       const nextPrice = storagePrices[priceIndex + 1];
       nextPrice.startDate = price.startDate;
-      await this.datasource.transaction(async entityManager => {
+      await this.datasource.transaction(async (entityManager) => {
         await this.update(nextPrice, entityManager);
         await this.deleteById(priceId, entityManager);
       });
@@ -109,7 +109,7 @@ export class CnStoragePriceService extends BlAbstractService<CnStoragePrice> {
     const previousPrice = storagePrices[priceIndex - 1];
     previousPrice.endDate = price.endDate;
 
-    await this.datasource.transaction(async entityManager => {
+    await this.datasource.transaction(async (entityManager) => {
       await this.update(previousPrice, entityManager);
       await this.deleteById(priceId, entityManager);
     });
@@ -118,10 +118,8 @@ export class CnStoragePriceService extends BlAbstractService<CnStoragePrice> {
   public async findAll(order: 'ASC' | 'DESC'): Promise<CnStoragePrice[]> {
     return this.repository.find({
       order: {
-        startDate: order as any
-      }
+        startDate: order as any,
+      },
     });
   }
-
-
 }

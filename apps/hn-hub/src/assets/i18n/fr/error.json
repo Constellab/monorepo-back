@@ -6,5 +6,4 @@
   "brick_already_exist": "Une brique avec ce nom existe déjà",
   "brick_not_found": "La brique '{name}' n'a pas été trouvée. A-t-elle été déclarée dans Constellab Community ?",
   "brick_version_not_found": "La version '{version}' pour la brique '{name}' n'a pas été trouvée. A-t-elle été déclarée dans Constellab Community ?"
-
 }

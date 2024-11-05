@@ -9,8 +9,6 @@ import { CnFolderSearch } from './cn-folder.search';
 
 @Injectable()
 export class CnFoldersService extends BlAbstractService<CnFolderEntity> {
-
-
   constructor(@InjectRepository(CnFolderEntity) public repository: Repository<CnFolderEntity>) {
     super(repository, CnFolderEntity);
   }
@@ -27,9 +25,9 @@ export class CnFoldersService extends BlAbstractService<CnFolderEntity> {
     return await this.repository.findOne({
       select: {
         id: true,
-        description: true as any
+        description: true as any,
       },
-      where: { id: id }
+      where: { id: id },
     });
   }
 
@@ -46,8 +44,12 @@ export class CnFoldersService extends BlAbstractService<CnFolderEntity> {
     await this.updatePartial(id, { leader: leader }, entityManager);
   }
 
-  public async searchFolderInSpace(spaceId: string, searchParam: BlSearchParams,
-                                   page: number, size: number): Promise<ClPage<CnFolder>> {
+  public async searchFolderInSpace(
+    spaceId: string,
+    searchParam: BlSearchParams,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnFolder>> {
     const searchBuilder = new CnFolderSearch({ lastModifiedAt: 'DESC' as any });
     searchBuilder.addSearchParams(searchParam);
     searchBuilder.mergeWhereOptions({ hierarchyRepresentation: { spaceId: spaceId } });

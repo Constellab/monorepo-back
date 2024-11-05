@@ -10,7 +10,7 @@ import {
   Query,
   Req,
   Res,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 import { HnIconService } from './hn-icon.service';
 import { ClPage } from '@monorepo/core-lib';
@@ -22,20 +22,20 @@ import { HnIconCreateDto } from './hn-icon.dto';
 
 @Controller('icon')
 export class HnIconController {
-  constructor(private readonly iconService: HnIconService) {
-  }
+  constructor(private readonly iconService: HnIconService) {}
 
   @BlPublic()
   @Get()
-  async getIcons(@Query('page', new ParseIntPipe()) page: number,
-                 @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnIcon>> {
+  async getIcons(
+    @Query('page', new ParseIntPipe()) page: number,
+    @Query('size', new ParseIntPipe()) size: number
+  ): Promise<ClPage<HnIcon>> {
     return await this.iconService.getIcons(page, size);
   }
 
   @BlPublic()
   @Get('file/:technicalName')
-  async getIconUrl(@Req() request: Request,
-                   @Res() response: Response): Promise<any> {
+  async getIconUrl(@Req() request: Request, @Res() response: Response): Promise<any> {
     const technicalName = request.url.split('file/')[1];
     const file = await this.iconService.getIconFile(technicalName);
     BlResponseHelper.setFileResponseAndCache(response, file);
@@ -53,27 +53,26 @@ export class HnIconController {
     return await this.iconService.getIconById(id);
   }
 
-
   @UseInterceptors(FileInterceptor('file'))
   @Post()
-  async createIcon(@BlUploadedFile() file: BlFile,
-                   @Body('icon') iconStr: string): Promise<HnIcon> {
+  async createIcon(@BlUploadedFile() file: BlFile, @Body('icon') iconStr: string): Promise<HnIcon> {
     const icon: HnIconCreateDto = JSON.parse(iconStr);
     return await this.iconService.createIcon(icon, file);
   }
 
   @BlPublic()
   @Post('filter')
-  async filterIcons(@Body('subNameFilter') subNameFilter: string,
-                    @Query('page', new ParseIntPipe()) page: number,
-                    @Query('size', new ParseIntPipe()) size: number): Promise<ClPage<HnIcon>> {
+  async filterIcons(
+    @Body('subNameFilter') subNameFilter: string,
+    @Query('page', new ParseIntPipe()) page: number,
+    @Query('size', new ParseIntPipe()) size: number
+  ): Promise<ClPage<HnIcon>> {
     return await this.iconService.filterIcons(subNameFilter, page, size);
   }
 
   @UseInterceptors(FileInterceptor('file'))
   @Put()
-  async updateIcon(@BlUploadedFile() file: BlFile,
-                   @Body('icon') iconStr: string): Promise<HnIcon> {
+  async updateIcon(@BlUploadedFile() file: BlFile, @Body('icon') iconStr: string): Promise<HnIcon> {
     const icon: HnIconCreateDto = JSON.parse(iconStr);
     return await this.iconService.updateIcon(icon, file);
   }
@@ -82,5 +81,4 @@ export class HnIconController {
   async deleteIcon(@Param('id') id: string): Promise<boolean> {
     return await this.iconService.deleteIcon(id);
   }
-
 }

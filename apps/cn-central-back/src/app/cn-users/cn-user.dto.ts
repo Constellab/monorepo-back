@@ -18,9 +18,11 @@ export interface CnCreateUserDto {
  * If the objet exist, it means the user is member of the space
  */
 export class CnUserSpaceInfo {
-
-  constructor(public user: CnUser, public space: CnSpace, public roleInSpace: CnSpaceUserRole) {
-  }
+  constructor(
+    public user: CnUser,
+    public space: CnSpace,
+    public roleInSpace: CnSpaceUserRole
+  ) {}
 
   get userId(): string {
     return this.user.id;

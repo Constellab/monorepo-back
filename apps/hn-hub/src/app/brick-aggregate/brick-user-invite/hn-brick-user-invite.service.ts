@@ -1,24 +1,26 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {HnBrickUserInvite} from './hn-brick-user-invite.entity';
-import {Repository} from 'typeorm';
-import {HnBrick} from '../brick/hn-brick.entity';
-import {ClStringHelper, ClSupportedLanguage} from '@monorepo/core-lib';
-import {HnUser} from '../../users/hn-user.entity';
-import {HnUserService} from '../../users/hn-user.service';
-import {HnMailTemplate} from '../../core/model/config/hn-mail-template.class';
-import {BlMailService} from '@monorepo/back-core-lib';
-import {HnInviteStatus} from '../../core/model/config/hn-invite-status.enum';
-import {HnCurrentUserHelper} from '../../core/utils/hn-current-user.helper';
-import {HnFrontService} from '../../core/service/hn-front.service';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { HnBrickUserInvite } from './hn-brick-user-invite.entity';
+import { Repository } from 'typeorm';
+import { HnBrick } from '../brick/hn-brick.entity';
+import { ClStringHelper, ClSupportedLanguage } from '@monorepo/core-lib';
+import { HnUser } from '../../users/hn-user.entity';
+import { HnUserService } from '../../users/hn-user.service';
+import { HnMailTemplate } from '../../core/model/config/hn-mail-template.class';
+import { BlMailService } from '@monorepo/back-core-lib';
+import { HnInviteStatus } from '../../core/model/config/hn-invite-status.enum';
+import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
+import { HnFrontService } from '../../core/service/hn-front.service';
 
 @Injectable()
 export class HnBrickUserInviteService {
-  constructor(@InjectRepository(HnBrickUserInvite) private readonly brickUserInviteRepository: Repository<HnBrickUserInvite>,
-              private readonly userService: HnUserService,
-              private readonly frontService: HnFrontService,
-              private mailService: BlMailService) {
-  }
+  constructor(
+    @InjectRepository(HnBrickUserInvite)
+    private readonly brickUserInviteRepository: Repository<HnBrickUserInvite>,
+    private readonly userService: HnUserService,
+    private readonly frontService: HnFrontService,
+    private mailService: BlMailService
+  ) {}
 
   async createBrickUserMail(brick: HnBrick, userMail: string): Promise<boolean> {
     const brickUserMail = new HnBrickUserInvite();
@@ -37,7 +39,7 @@ export class HnBrickUserInviteService {
       url: this.frontService.getBrickInviteUrl(brickUserMail.token),
       invitUser: inviteMail.createdBy,
       user: null as HnUser,
-      subscribeUrl: ''
+      subscribeUrl: '',
     };
 
     if (user) {
@@ -54,12 +56,15 @@ export class HnBrickUserInviteService {
 
   async getAndCheckInvite(token: string): Promise<HnBrickUserInvite> {
     const brickUserInvite: HnBrickUserInvite = await this.getBrickUserInviteByToken(token);
-    return (brickUserInvite && brickUserInvite.status === HnInviteStatus.PENDING &&
-      brickUserInvite.email === HnCurrentUserHelper.getCurrentUser().email) ? brickUserInvite : null;
+    return brickUserInvite &&
+      brickUserInvite.status === HnInviteStatus.PENDING &&
+      brickUserInvite.email === HnCurrentUserHelper.getCurrentUser().email
+      ? brickUserInvite
+      : null;
   }
 
   async getBrickUserInviteByToken(token: string): Promise<HnBrickUserInvite> {
-    return this.brickUserInviteRepository.findOneBy({token: token});
+    return this.brickUserInviteRepository.findOneBy({ token: token });
   }
 
   async acceptBrickUserInvite(brickUserInvite: HnBrickUserInvite): Promise<boolean> {
@@ -68,14 +73,16 @@ export class HnBrickUserInviteService {
   }
 
   async getBrickCoAuthorsPendingInvites(brickId: string): Promise<HnBrickUserInvite[]> {
-    return this.brickUserInviteRepository.find({where: {brick: {id: brickId}, status: HnInviteStatus.PENDING}});
+    return this.brickUserInviteRepository.find({
+      where: { brick: { id: brickId }, status: HnInviteStatus.PENDING },
+    });
   }
 
   async deleteCoAuthorInvite(inviteId: string): Promise<boolean> {
-    const invite: HnBrickUserInvite = await this.brickUserInviteRepository.findOneBy({id: inviteId});
+    const invite: HnBrickUserInvite = await this.brickUserInviteRepository.findOneBy({ id: inviteId });
     if (invite == null) {
       return false;
     }
-    return await this.brickUserInviteRepository.remove(invite) != null;
+    return (await this.brickUserInviteRepository.remove(invite)) != null;
   }
 }

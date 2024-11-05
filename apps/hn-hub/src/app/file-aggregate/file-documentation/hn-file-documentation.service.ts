@@ -6,32 +6,35 @@ import { BlBucketConfig, BlBucketType, BlObjectStorageService } from '@monorepo/
 import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
 import { HnFileDocumentation } from './hn-file-documentation.entity';
 import { HnDocumentation } from '../../brick-aggregate/documentation/hn-documentation.entity';
-import {HnAbstractFileEntityDTO} from '../file-core/hn-abstract-file.dto';
+import { HnAbstractFileEntityDTO } from '../file-core/hn-abstract-file.dto';
 import { HnFileType } from '../file-core/hn-abstract-file.entity';
 
 @Injectable()
 export class HnFileDocumentationService extends HnAbstractFileService<HnDocumentation> {
-  constructor(@InjectRepository(HnFileDocumentation) private fileDocumentationRepository: Repository<HnFileDocumentation>,
-              objectStorageService: BlObjectStorageService,
-              private configService: HnCoreConfigService
+  constructor(
+    @InjectRepository(HnFileDocumentation)
+    private fileDocumentationRepository: Repository<HnFileDocumentation>,
+    objectStorageService: BlObjectStorageService,
+    private configService: HnCoreConfigService
   ) {
     super(fileDocumentationRepository, objectStorageService);
   }
 
-  async findByDocumentation(documentation: HnDocumentation): Promise<HnFileDocumentation[]>{
-    return this.fileDocumentationRepository.findBy({entity: {id: documentation.id}});
+  async findByDocumentation(documentation: HnDocumentation): Promise<HnFileDocumentation[]> {
+    return this.fileDocumentationRepository.findBy({ entity: { id: documentation.id } });
   }
 
   async getDocFiles(documentation: HnDocumentation): Promise<HnAbstractFileEntityDTO[]> {
-    return this.fileDocumentationRepository.findBy({entity: {id: documentation.id}, type: HnFileType.FILE})
-      .then(files => files.map(file => new HnAbstractFileEntityDTO(file)));
+    return this.fileDocumentationRepository
+      .findBy({ entity: { id: documentation.id }, type: HnFileType.FILE })
+      .then((files) => files.map((file) => new HnAbstractFileEntityDTO(file)));
   }
 
   constructEntityFile(): HnFileDocumentation {
     return new HnFileDocumentation();
   }
 
-  async renameFileInBuckets(file: HnFileDocumentation, newName: string): Promise<void>{
+  async renameFileInBuckets(file: HnFileDocumentation, newName: string): Promise<void> {
     file.fileName = await this.objectStorageService.moveObjectToAnotherBucket(
       this.getBucketConfig(),
       this.getBucketConfig(),
@@ -55,8 +58,8 @@ export class HnFileDocumentationService extends HnAbstractFileService<HnDocument
         region: this.configService.getBackupObjectStorageRegion(),
         bucket: this.configService.getDocImageObjectStorageBackupBucket(),
         credentials: this.configService.getDefaultObjectStorageCredentials(),
-        bucketType: BlBucketType.NORMAL
-      }
+        bucketType: BlBucketType.NORMAL,
+      },
     };
   }
 
@@ -68,11 +71,8 @@ export class HnFileDocumentationService extends HnAbstractFileService<HnDocument
         region: this.configService.getDefaultObjectStorageRegion(),
         bucket: this.configService.getDocImageObjectStorageBucket(),
         credentials: this.configService.getDefaultObjectStorageCredentials(),
-        bucketType: BlBucketType.NORMAL
-      }
-    }
-      ;
+        bucketType: BlBucketType.NORMAL,
+      },
+    };
   }
-
-
 }

@@ -7,7 +7,7 @@ import {
   CnCpInstance,
   CnCpVolume,
   CnCpVolumeStatus,
-  cnServerSshAuthorizedKeyPath
+  cnServerSshAuthorizedKeyPath,
 } from '../cn-cloud-provider.class';
 import { CnAzureService } from './cn-azure.service';
 import { CnLab } from '../../cn-lab.entity';
@@ -19,7 +19,6 @@ import { CnLabVolumeType } from '../../volume/cn-lab-volume-entity';
 
 @Injectable()
 export class CnCloudProviderAzureService extends CnCloudProviderService {
-
   private static MOUNT_FILE = 'mount_azure.sh';
   private static SSH_KEY_FILE_NAME = 'id_rsa';
 
@@ -28,12 +27,14 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
     publisher: 'Canonical',
     offer: '0001-com-ubuntu-server-focal',
     sku: '20_04-lts-gen2',
-    version: 'latest'
+    version: 'latest',
   };
 
-  constructor(private azureService: CnAzureService,
-              configService: CnCoreConfigService,
-              commandService: CnCommandService) {
+  constructor(
+    private azureService: CnAzureService,
+    configService: CnCoreConfigService,
+    commandService: CnCommandService
+  ) {
     super(commandService, configService);
   }
 
@@ -51,24 +52,28 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
 
   /////////////////////// INSTANCE ///////////////////////
   async createInstance(request: CnCpCreateInstanceRequest): Promise<CnCpInstance> {
-
     // retrieve the ssh key stored in azure
     const ssh = await this.azureService.getSshKey(this.configService.getAzureSshKey());
     const sshPublicKey: SshPublicKey = {
       path: cnServerSshAuthorizedKeyPath,
-      keyData: ssh.publicKey
+      keyData: ssh.publicKey,
     };
 
     // eslint-disable-next-line max-len
     const subnet = `${this.azureService.getResourceGroupFullId()}/providers/Microsoft.Network/virtualNetworks/${this.configService.getAzureNetwork()}/subnets/${this.configService.getAzureNetworkSubnet()}`;
 
-    const virtualMachine = await this.azureService.createInstance(request.name,
-      request.region, request.serverName, CnCloudProviderAzureService.IMAGE_REF, sshPublicKey, subnet);
+    const virtualMachine = await this.azureService.createInstance(
+      request.name,
+      request.region,
+      request.serverName,
+      CnCloudProviderAzureService.IMAGE_REF,
+      sshPublicKey,
+      subnet
+    );
 
     const instance = new CnAzureInstance(virtualMachine);
     return this.getInstance(instance.id);
   }
-
 
   async deleteInstance(id: string): Promise<void> {
     const instance = await this.getAzureInstance(id);
@@ -106,7 +111,6 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
     return (await this.azureService.getIpAddresses(instance.getNetworkId())).ipAddress;
   }
 
-
   /////////////////////// VOLUME ///////////////////////
 
   async attachVolumeToInstance(instanceId: string, volumeId: string): Promise<CnCpVolume> {
@@ -115,10 +119,8 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
     return this.getVolume(volumeId);
   }
 
-
   async createVolume(volume: CnCpCreateVolumeRequest): Promise<CnCpVolume> {
-    const disk = await this.azureService.createVolume(volume.name, volume.region,
-      volume.size);
+    const disk = await this.azureService.createVolume(volume.name, volume.region, volume.size);
 
     return this.convertAzureVolume(disk);
   }
@@ -154,7 +156,6 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
     await labSshService.execSshCommand([`bash ${mountScript} ${volume.lun}`]);
   }
 
-
   private convertAzureVolume(disk: Disk): CnCpVolume {
     return {
       region: disk.location,
@@ -162,10 +163,9 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
       type: CnLabVolumeType.HIGH_SPEED,
       size: disk.diskSizeGB,
       id: disk.name,
-      originalObject: disk
+      originalObject: disk,
     };
   }
-
 
   private azureVolumeStatusToCpStatus(status: CnAzureVolumeStatus, name: string): CnCpVolumeStatus {
     switch (status) {
@@ -180,6 +180,4 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
         throw new Error(`Unknown status ${status} for azure disk ${name}`);
     }
   }
-
-
 }

@@ -11,7 +11,7 @@ import {
   BlFileResponse,
   BlObjectStorageService,
   BlSearchBuilder,
-  BlSearchParams
+  BlSearchParams,
 } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
@@ -21,15 +21,20 @@ import { CnBucket } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 @Injectable()
 export class CnSpaceService extends BlAbstractService<CnSpace> {
-
-  constructor(@InjectRepository(CnSpace) private repository: Repository<CnSpace>,
-              private objectStorageService: BlObjectStorageService,
-              private configService: CnCoreConfigService) {
+  constructor(
+    @InjectRepository(CnSpace) private repository: Repository<CnSpace>,
+    private objectStorageService: BlObjectStorageService,
+    private configService: CnCoreConfigService
+  ) {
     super(repository, CnSpace);
   }
 
-  public async createEntrepriseSpace(name: string, defaultFolderBucket: CnBucket,
-                                     defaultFolderBackupBucket: CnBucket | null, entityManager: EntityManager): Promise<CnSpace> {
+  public async createEntrepriseSpace(
+    name: string,
+    defaultFolderBucket: CnBucket,
+    defaultFolderBackupBucket: CnBucket | null,
+    entityManager: EntityManager
+  ): Promise<CnSpace> {
     const space = new CnSpace();
 
     space.name = name;
@@ -41,9 +46,12 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     return this.create(space, entityManager);
   }
 
-  public async createPersonalSpace(user: CnUser, defaultFolderStorageBucket: CnBucket,
-                                   defaultBackupFolderStorageBucket: CnBucket,
-                                   entityManager: EntityManager): Promise<CnSpace> {
+  public async createPersonalSpace(
+    user: CnUser,
+    defaultFolderStorageBucket: CnBucket,
+    defaultBackupFolderStorageBucket: CnBucket,
+    entityManager: EntityManager
+  ): Promise<CnSpace> {
     const space = new CnSpace();
     space.name = user.alias;
     space.type = CnSpaceType.PERSONAL;
@@ -74,11 +82,11 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
   }
 
   public async uploadPhoto(space: CnSpace, file: BlFile): Promise<CnSpace> {
-
     await this.deletePhotoInObjectStorage(space);
 
-    space.photo = await this.objectStorageService.uploadObject(this.getBucketConfig(), file,
-      { generateRandomObjectName: true });
+    space.photo = await this.objectStorageService.uploadObject(this.getBucketConfig(), file, {
+      generateRandomObjectName: true,
+    });
     return this.update(space);
   }
 
@@ -99,7 +107,6 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     return await this.objectStorageService.downloadObject(this.getBucketConfig(), filename);
   }
 
-
   private getBucketConfig(): BlBucketConfig {
     return {
       type: 's3',
@@ -108,15 +115,14 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
         region: this.configService.getDefaultObjectStorageRegion(),
         bucket: this.configService.getSpaceImageBucket(),
         credentials: this.configService.getDefaultObjectStorageCredentials(),
-        bucketType: BlBucketType.NORMAL
-      }
+        bucketType: BlBucketType.NORMAL,
+      },
     };
   }
 
   public search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnSpace>> {
     const searchBuilder = new BlSearchBuilder<CnSpace>();
     searchBuilder.addSearchParams(searchParams);
-
 
     return this.findPaginated(page, size, searchBuilder.build());
   }

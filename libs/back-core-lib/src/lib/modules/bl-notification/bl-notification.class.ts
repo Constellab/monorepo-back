@@ -1,6 +1,6 @@
-import {DateTime} from 'luxon';
+import { DateTime } from 'luxon';
 
-export interface BlNotification{
+export interface BlNotification {
   id: string;
 
   user: any;

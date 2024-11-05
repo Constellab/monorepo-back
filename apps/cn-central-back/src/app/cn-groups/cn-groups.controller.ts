@@ -1,26 +1,38 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
-import {CnGroup, CnGroupTeam, CnUserGroup} from './cn-group.entity';
-import {ClPageI} from '@monorepo/core-lib';
-import {CnGroupsAggregateService} from './cn-groups-aggregate.service';
-import {BlParsePipe, BlSearchParams} from '@monorepo/back-core-lib';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
+import { CnGroup, CnGroupTeam, CnUserGroup } from './cn-group.entity';
+import { ClPageI } from '@monorepo/core-lib';
+import { CnGroupsAggregateService } from './cn-groups-aggregate.service';
+import { BlParsePipe, BlSearchParams } from '@monorepo/back-core-lib';
 
 @Controller('groups')
 export class CnGroupsController {
-
-  constructor(private aggregateService: CnGroupsAggregateService) {
-  }
-
+  constructor(private aggregateService: CnGroupsAggregateService) {}
 
   @Get('current')
-  public getAllCurrentGroups(@Query('page', ParseIntPipe) page: number,
-                             @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnGroup>> {
+  public getAllCurrentGroups(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number
+  ): Promise<ClPageI<CnGroup>> {
     return this.aggregateService.searchCurrentGroupByLabel(null, page, size);
   }
 
   @Get('current/search/label/:label')
-  public searchCurrentGroupByLabel(@Param('label') label: string,
-                                   @Query('page', ParseIntPipe) page: number,
-                                   @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnGroup>> {
+  public searchCurrentGroupByLabel(
+    @Param('label') label: string,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number
+  ): Promise<ClPageI<CnGroup>> {
     return this.aggregateService.searchCurrentGroupByLabel(label, page, size);
   }
 
@@ -32,14 +44,18 @@ export class CnGroupsController {
   ///////////////////////////// TEAMS ////////////////////////////////////
 
   @Get('teams/current')
-  public getCurrentTeams(@Query('page', ParseIntPipe) page: number,
-                         @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnGroup>> {
+  public getCurrentTeams(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number
+  ): Promise<ClPageI<CnGroup>> {
     return this.aggregateService.findTeamsByCurrentUserAndSpace(page, size);
   }
 
   @Get('teams/current-space')
-  public async getCurrentSpace(@Query('page', ParseIntPipe) page: number,
-                               @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnGroup>> {
+  public async getCurrentSpace(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number
+  ): Promise<ClPageI<CnGroup>> {
     return this.aggregateService.findTeamsByCurrentSpace(page, size);
   }
 
@@ -49,9 +65,11 @@ export class CnGroupsController {
   }
 
   @Get('teams/:id/users')
-  public getTeamUsers(@Param('id', ParseUUIDPipe) id: string,
-                      @Query('page', ParseIntPipe) page: number,
-                      @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnUserGroup>> {
+  public getTeamUsers(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number
+  ): Promise<ClPageI<CnUserGroup>> {
     return this.aggregateService.getUsersOfTeam(id, page, size);
   }
 
@@ -61,20 +79,26 @@ export class CnGroupsController {
   }
 
   @Put('teams/:id/label/:label')
-  public updateTeamLabel(@Param('id', new ParseUUIDPipe()) id: string,
-                         @Param('label') label: string): Promise<CnGroup> {
+  public updateTeamLabel(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('label') label: string
+  ): Promise<CnGroup> {
     return this.aggregateService.updateTeamLabel(id, label);
   }
 
   @Post('teams/:id/add-user/:userId')
-  public addUserToTeam(@Param('id', new ParseUUIDPipe()) id: string,
-                       @Param('userId', new ParseUUIDPipe()) userId: string): Promise<CnUserGroup> {
+  public addUserToTeam(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('userId', new ParseUUIDPipe()) userId: string
+  ): Promise<CnUserGroup> {
     return this.aggregateService.addUserToTeam(userId, id);
   }
 
   @Delete('teams/:id/remove-user/:userId')
-  public removeUserFromTeam(@Param('id', new ParseUUIDPipe()) id: string,
-                            @Param('userId', new ParseUUIDPipe()) userId: string): Promise<void> {
+  public removeUserFromTeam(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('userId', new ParseUUIDPipe()) userId: string
+  ): Promise<void> {
     return this.aggregateService.removeUserFromTeam(userId, id);
   }
 
@@ -84,10 +108,11 @@ export class CnGroupsController {
   }
 
   @Post('teams/current-space/search')
-  async searchTeamsInCurrentSpace(@Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
-                                  @Query('page', ParseIntPipe) page: number,
-                                  @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnGroupTeam>> {
+  async searchTeamsInCurrentSpace(
+    @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number
+  ): Promise<ClPageI<CnGroupTeam>> {
     return await this.aggregateService.searchTeamsInCurrentSpace(searchParam, page, size);
   }
-
 }

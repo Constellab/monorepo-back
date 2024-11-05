@@ -1,9 +1,4 @@
-import {
-  ClassSerializerInterceptor,
-  MiddlewareConsumer,
-  Module,
-  RequestMethod,
-} from '@nestjs/common';
+import { ClassSerializerInterceptor, MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
@@ -35,12 +30,7 @@ import { hnJwtConfig } from './app/auth/hn-jwt.config';
 import { HnJwtAuthGuard } from './app/core/guards/hn-jwt-auth.guard';
 import { HnFolderModule } from './app/brick-aggregate/folder/hn-folder.module';
 import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
-import {
-  AcceptLanguageResolver,
-  CookieResolver,
-  I18nJsonLoader,
-  I18nModule,
-} from 'nestjs-i18n';
+import { AcceptLanguageResolver, CookieResolver, I18nJsonLoader, I18nModule } from 'nestjs-i18n';
 import { clDefaultLang } from '@monorepo/core-lib';
 import { HnBrickModule } from './app/brick-aggregate/brick/hn-brick.module';
 import { HnBrickVersionModule } from './app/brick-aggregate/brick-version/hn-brick-version.module';
@@ -87,9 +77,7 @@ import { HnFileStoryModule } from './app/file-aggregate/file-story/hn-file-story
 import { HnFileDocumentationModule } from './app/file-aggregate/file-documentation/hn-file-documentation.module';
 import { HnLogRequestMiddleware } from './app/core/middleware/hn-log-request-middleware.service';
 
-function typeOrmConfig(
-  configService: HnCoreConfigService
-): TypeOrmModuleOptions {
+function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: HnDatabaseConfig = configService.getDatabaseConfig();
   return {
     type: 'mysql',
@@ -106,9 +94,7 @@ function typeOrmConfig(
   };
 }
 
-function configureLogger(
-  configService: HnCoreConfigService
-): WinstonModuleOptions {
+function configureLogger(configService: HnCoreConfigService): WinstonModuleOptions {
   const logConfig: BlLoggerConfig = {
     logLevel: configService.getLogLevel(),
     logFilePath: configService.isLocal() ? null : configService.getLogPath(),
@@ -116,19 +102,13 @@ function configureLogger(
   return blConfigureLogger(logConfig);
 }
 
-function configureJwtModule(
-  configService: HnCoreConfigService,
-  userService: HnUserService
-): BlJwtConfig {
+function configureJwtModule(configService: HnCoreConfigService, userService: HnUserService): BlJwtConfig {
   return {
     jwtSecret: configService.getJwtSecret(),
     jwtFromRequest: (request: Request) => {
       return (
         request.headers.authorization ??
-        BlCookieHelper.getCookieFromHeader(
-          request.headers.cookie,
-          hnJwtConfig.authorizationCookie
-        )
+        BlCookieHelper.getCookieFromHeader(request.headers.cookie, hnJwtConfig.authorizationCookie)
       );
     },
     usersService: userService,
@@ -136,15 +116,11 @@ function configureJwtModule(
   };
 }
 
-function configureTransportModule(
-  configService: HnCoreConfigService
-): BlTransportModuleConfig {
+function configureTransportModule(configService: HnCoreConfigService): BlTransportModuleConfig {
   return configService.getTransportModuleConfig();
 }
 
-function configureMailModule(
-  configService: HnCoreConfigService
-): BlMailModuleConfig {
+function configureMailModule(configService: HnCoreConfigService): BlMailModuleConfig {
   return {
     mailConfig: configService.getMailConfig(),
     templateFolder: join(__dirname, 'assets/templates/'),

@@ -1,15 +1,11 @@
-import {Module} from '@nestjs/common';
-import {TypeOrmModule} from '@nestjs/typeorm';
-import {HnAgentVersion} from './hn-agent-version.entity';
-import {HnAgentVersionService} from './hn-agent-version.service';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { HnAgentVersion } from './hn-agent-version.entity';
+import { HnAgentVersionService } from './hn-agent-version.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([HnAgentVersion])
-  ],
+  imports: [TypeOrmModule.forFeature([HnAgentVersion])],
   exports: [TypeOrmModule, HnAgentVersionService],
-  providers: [HnAgentVersionService]
+  providers: [HnAgentVersionService],
 })
-export class HnAgentVersionModule {
-
-}
+export class HnAgentVersionModule {}
