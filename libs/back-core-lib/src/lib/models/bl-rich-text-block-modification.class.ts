@@ -83,6 +83,9 @@ export class BlRichTextBlockModification {
       return value;
     }
     let res = value;
+    if (!res || res.length === 0) {
+      return res;
+    }
     const reversedDifferences = this.differences.slice().reverse();
     if (reversedDifferences.length === 1 && reversedDifferences[0].value == '/') {
       return res;
@@ -129,6 +132,9 @@ export class BlRichTextModifications {
 
   // Create a BlRichTextModifications object from a json string
   public static fromJsonObjectString(jsonString: string): BlRichTextModifications {
+    if (!jsonString) {
+      return new BlRichTextModifications();
+    }
     const json = JSON.parse(jsonString);
     return BlRichTextModifications.fromJsonObject(json);
   }
@@ -207,12 +213,19 @@ export class BlRichTextModifications {
     }
     modifications = modifications.filter((m) => JSON.stringify(m.blockValue) != '{"text":"/"}'
       && m.type !== BlRichTextModificationType.MOVED);
+
+    if (modifications.length == 2){
+      if (modifications[0].type == BlRichTextModificationType.CREATED &&
+        modifications[1].type == BlRichTextModificationType.DELETED){
+        return modifications.reverse();
+      }
+    }
+
     return modifications;
   }
 
   // fusion old and new modifications
   public fusion(modifications: BlRichTextBlockModification[]): void {
-
     modifications = this.reduceModifications(modifications);
 
     if (this.isEmpty()) {
@@ -289,7 +302,7 @@ export class BlRichTextModifications {
     return {
       version: this.version,
       modifications: this.modifications.map(modification => ({
-        time: modification.time,
+        time: modification.time.toISO(),
         blockId: modification.blockId,
         blockType: modification.blockType,
         differences: modification.differences,
@@ -327,7 +340,7 @@ export class BlRichTextModifications {
     ) {
       return res.slice(1);
     }
-    return res ;
+    return res;
   }
 
   // Delete all modifications made after the modification with the modificationId

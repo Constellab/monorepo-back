@@ -2,7 +2,7 @@ import { Controller, Delete, Get, Param, ParseUUIDPipe, Res } from '@nestjs/comm
 import { CnNote } from './cn-note.entity';
 import { Response } from 'express';
 import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
-import { BlResponseHelper, BlRichTextContent } from '@monorepo/back-core-lib';
+import { BlResponseHelper, BlRichTextBlockModificationDto, BlRichTextContent } from '@monorepo/back-core-lib';
 
 @Controller('notes')
 export class CnNotesController {
@@ -52,6 +52,22 @@ export class CnNotesController {
   @Delete(':id')
   public async deleteNote(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     await this.folderAggregateService.deleteNote(id);
+  }
+
+  /////////////////////////////////////////////// HISTORY ///////////////////////////////////////////////
+  @Get(':noteId/history')
+  async getNoteModifications(
+    @Param('noteId', new ParseUUIDPipe()) noteId: string
+  ): Promise<BlRichTextBlockModificationDto[]> {
+    return this.folderAggregateService.getNoteModifications(noteId);
+  }
+
+  @Get(':noteId/history/undo-content/:modificationId')
+  async undoContent(
+    @Param('noteId', new ParseUUIDPipe()) noteId: string,
+    @Param('modificationId', new ParseUUIDPipe()) modificationId: string
+  ): Promise<Record<string, any>> {
+    return this.folderAggregateService.getNoteUndoContent(noteId, modificationId);
   }
 
 }

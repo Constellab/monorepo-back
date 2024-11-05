@@ -34,6 +34,7 @@ import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper'
 import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnHierarchyObject, CnHierarchyObjectEntity } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from '../cn_hierarchy_objects/cn-hierarchy-object.service';
+import { CnNoteRichText } from '../../cn-core/model/config/cn-note-rich-text.class';
 
 interface CnDocumentS3Tags {
   name: string;
@@ -320,8 +321,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
   public async getJSONDocumentContent(rootFolderId: string, document: CnDocument): Promise<any> {
     const bucketConfig = await this.folderBucketService.getAndCheckFolderMainBucketConfig(rootFolderId);
-
-    return await this.objectStorageService.getObjectAsJson(bucketConfig, document.filename);
+    return  await this.objectStorageService.getObjectAsJson(bucketConfig, document.filename);
   }
 
   ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
@@ -370,9 +370,9 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     if (document.type !== CnDocumentType.CONSTELLAB_DOCUMENT) {
       throw new BlBadRequestException('The document is not a constellab document');
     }
-    const contentWithModifications: BlRichTextContentWithModifications =
-      new BlRichTextContentWithModifications(await this.getJSONDocumentContent(rootFolderId, document));
-    return new CnConstellabDocumentDTO(document, contentWithModifications.content);
+    const contentWithModifications: CnNoteRichText =
+      new CnNoteRichText(await this.getJSONDocumentContent(rootFolderId, document));
+    return new CnConstellabDocumentDTO(document, contentWithModifications.getRichTextContent());
   }
 
   async uploadImageToConstellabDocument(parentFolder: CnHierarchyObject, document: CnDocument,
@@ -483,24 +483,18 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     if (document.type !== CnDocumentType.CONSTELLAB_DOCUMENT) {
       throw new BlBadRequestException('The document is not a constellab document');
     }
-    const contentWithModifications: BlRichTextContentWithModifications =
-      new BlRichTextContentWithModifications(await this.getJSONDocumentContent(rootFolderId, document));
-    return BlRichTextModifications.fromJsonObject(contentWithModifications.modifications);
+    const contentWithModifications: CnNoteRichText =
+      new CnNoteRichText(await this.getJSONDocumentContent(rootFolderId, document));
+    return BlRichTextModifications.fromJsonObject(contentWithModifications.getModifications());
   }
 
   public async getUndoContent(rootFolderId: string, document: CnDocument, modificationId: string): Promise<BlRichTextContent> {
     if (document.type !== CnDocumentType.CONSTELLAB_DOCUMENT) {
       throw new BlBadRequestException('The document is not a constellab document');
     }
-    const contentWithModifications: BlRichTextContentWithModifications =
-      new BlRichTextContentWithModifications(await this.getJSONDocumentContent(rootFolderId, document));
-    if (!contentWithModifications.modifications) {
-      throw new BlBadRequestException('The document has no modifications');
-    }
-    const richText = new BlNewRichText(contentWithModifications.content);
-    const modifications = BlRichTextModifications.fromJsonObject(contentWithModifications.modifications);
-    const modificationsBlocks = modifications.getModificationsFromModificationId(modificationId);
-    return richText.undoModifications(modificationsBlocks);
+    const contentWithModifications: CnNoteRichText =
+      new CnNoteRichText(await this.getJSONDocumentContent(rootFolderId, document));
+    return contentWithModifications.getNotePreviousVersion(modificationId);
   }
 
   public async rollbackContent(rootFolderId: string, document: CnDocument, modificationId: string): Promise<CnDocument> {

@@ -44,7 +44,6 @@ import {
   CnFolderStorageUsageDTO
 } from './cn-documents/cn-document-dto.class';
 import { CnHierarchyObject, CnHierarchyObjectWithChildren } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
-import { HnStory } from '../../../../hn-hub/src/app/story/hn-story.entity';
 
 
 @Controller('folders')
@@ -365,29 +364,6 @@ export class CnFoldersController {
     BlResponseHelper.setFileResponse(response, file);
   }
 
-  @Get('constellab-document/history/:documentId')
-  async getStoryModifications(
-    @Param('documentId', new ParseUUIDPipe()) documentId: string
-  ): Promise<BlRichTextBlockModificationDto[]> {
-    return this.folderAggregateService.getDocumentModifications(documentId);
-  }
-
-  @Get('constellab-document/history/undo-content/:documentId/:modificationId')
-  async undoContent(
-    @Param('documentId', new ParseUUIDPipe()) documentId: string,
-    @Param('modificationId', new ParseUUIDPipe()) modificationId: string
-  ): Promise<Record<string, any>> {
-    return this.folderAggregateService.getUndoContent(documentId, modificationId);
-  }
-
-  @Put('constellab-document/history/rollback/:documentId/:modificationId')
-  async rollbackContent(
-    @Param('documentId', new ParseUUIDPipe()) documentId: string,
-    @Param('modificationId', new ParseUUIDPipe()) modificationId: string
-  ): Promise<CnDocument> {
-    return this.folderAggregateService.rollbackContent(documentId, modificationId);
-  }
-
   ////////////////////////////////////////////// DOCUMENT PREVIEW  /////////////////////////////////////////////
 
   @Post('document/:documentId/preview-token')
@@ -451,4 +427,27 @@ export class CnFoldersController {
   }
 
 
+  /////////////////////////////// History ///////////////////////////////////////////
+  @Get('constellab-document/:documentId/history')
+  async getDocumentModifications(
+    @Param('documentId', new ParseUUIDPipe()) documentId: string
+  ): Promise<BlRichTextBlockModificationDto[]> {
+    return this.folderAggregateService.getConstellabDocumentModifications(documentId);
+  }
+
+  @Get('constellab-document/:documentId/history/undo-content/:modificationId')
+  async undoContent(
+    @Param('documentId', new ParseUUIDPipe()) documentId: string,
+    @Param('modificationId', new ParseUUIDPipe()) modificationId: string
+  ): Promise<Record<string, any>> {
+    return this.folderAggregateService.getConstellabDocumentationUndoContent(documentId, modificationId);
+  }
+
+  @Put('constellab-document/:documentId/history/rollback/:modificationId')
+  async rollbackContent(
+    @Param('documentId', new ParseUUIDPipe()) documentId: string,
+    @Param('modificationId', new ParseUUIDPipe()) modificationId: string
+  ): Promise<CnDocument> {
+    return this.folderAggregateService.rollbackContent(documentId, modificationId);
+  }
 }

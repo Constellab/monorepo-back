@@ -28,8 +28,7 @@ import {
   BlRichTextUploadedImageResponse,
   BlRichTextUploadFileResponse,
   BlSearchBuilder,
-  BlSearchParams,
-  BlUserDto
+  BlSearchParams
 } from '@monorepo/back-core-lib';
 import { DataSource, In } from 'typeorm';
 import { CnFolderBucketService } from './cn-folders/cn-folder-bucket.service';
@@ -421,7 +420,7 @@ export class CnFolderAggregateService {
   public async findNoteContent(id: string): Promise<BlRichTextContent> {
     const noteFolder = await this.getAndCheckAuthorizationForFindOneByFolder(id);
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(noteFolder.parentId);
-    return this.noteService.getNoteContent(parentFolder, id);
+    return await this.noteService.getNoteContent(parentFolder, id);
   }
 
   async createLabNote(createNoteDto: CnCreateNoteWithConfigDto, parentFolderId: string,
@@ -751,13 +750,24 @@ export class CnFolderAggregateService {
   }
 
   ////////////////////////////// HISTORY ///////////////////////////////////////
-  public async getDocumentModifications(documentId: string): Promise<BlRichTextBlockModificationDto[]> {
+  public async getNoteModifications(noteId: string): Promise<BlRichTextBlockModificationDto[]> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(noteId);
+
+    await this.noteService.findByIdAndCheck(noteId);
+
+    return this.getModificationsBlocksList(await this.noteService.getNoteModifications(folder, noteId));
+  }
+
+  public async getConstellabDocumentModifications(documentId: string): Promise<BlRichTextBlockModificationDto[]>{
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
 
+    return this.getModificationsBlocksList(await this.documentService.getDocumentModifications(folder.getRootFolderId(), document));
+  }
+
+  private async getModificationsBlocksList(modifications: BlRichTextModifications): Promise<BlRichTextBlockModificationDto[]>{
     const res: BlRichTextBlockModificationDto[] = [];
-    const modifications: BlRichTextModifications = await this.documentService.getDocumentModifications(folder.getRootFolderId(), document);
     const userMap = new Map<string, CnUser>();
     for (const modification of modifications.getModifications()) {
       if (!userMap.has(modification.userId)) {
@@ -771,11 +781,16 @@ export class CnFolderAggregateService {
     return res;
   }
 
-  public async getUndoContent(documentId: string, modificationId: string): Promise<BlRichTextContent> {
+  public async getConstellabDocumentationUndoContent(documentId: string, modificationId: string): Promise<BlRichTextContent>{
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
-
     const document = await this.documentService.findByIdAndCheck(documentId);
     return await this.documentService.getUndoContent(folder.getRootFolderId(), document, modificationId);
+  }
+
+  public async getNoteUndoContent(noteId: string, modificationId: string): Promise<BlRichTextContent> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(noteId);
+    await this.noteService.findByIdAndCheck(noteId);
+    return await this.noteService.getNoteUndoContent(folder, noteId, modificationId)
   }
 
   public async rollbackContent(documentId: string, modificationId: string): Promise<CnDocument> {

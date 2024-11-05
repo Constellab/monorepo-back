@@ -31,7 +31,7 @@ export class BlRichTextContentWithModifications{
   modifications: Record<string, any>;
 
   constructor(data: BlRichTextContent | BlRichTextContentWithModifications) {
-    if(!(data as any)?.modifications) {
+    if((data as any)?.modifications === undefined && (data as any)?.content === undefined){
       this.content = data as BlRichTextContent;
       this.modifications = null;
     } else {
@@ -155,9 +155,9 @@ export class BlNewRichText {
     return JSON.stringify(this.getRichTextModificationsAsObject(newContent, userId, modifications));
   }
 
-  public getRichTextModificationsAsObject(newContent: BlRichTextContent,
-                                          userId: string,
-                                          modifications: BlRichTextModifications = new BlRichTextModifications()): Record<string, any>{
+  private getRichTextModifications(newContent: BlRichTextContent,
+                                   userId: string,
+                                   modifications: BlRichTextModifications = new BlRichTextModifications()): BlRichTextModifications {
     const differences: BlRichTextBlockModification[] = [];
     if (this.richText == null || this.richText.blocks == null) {
       return null;
@@ -222,7 +222,13 @@ export class BlNewRichText {
     });
 
     modifications.fusion(differences);
-    return modifications.toJsonObject();
+    return modifications;
+  }
+
+  public getRichTextModificationsAsObject(newContent: BlRichTextContent,
+                                          userId: string,
+                                          modifications: BlRichTextModifications = new BlRichTextModifications()): Record<string, any>{
+    return this.getRichTextModifications(newContent, userId, modifications).toJsonObject();
   }
 
   // Undo the modifications in the modificationsList
@@ -254,8 +260,7 @@ export class BlNewRichText {
         case BlRichTextModificationType.UPDATED:
           // undo the differences in the block data and add anti-slashes to the double quotes
           const b = blocks.find(b => b.id === modification.blockId);
-          const diff = modification.undoDifferences(JSON.stringify(b.data))
-            .replace(/"/g, "\"");
+          const diff = modification.undoDifferences(JSON.stringify(b.data))?.replace(/"/g, "\"");
           if (diff?.length > 0) {
             blocks[blocks.indexOf(b)].data = JSON.parse(diff);
           }
