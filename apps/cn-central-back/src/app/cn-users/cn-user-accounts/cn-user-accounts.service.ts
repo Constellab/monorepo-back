@@ -65,6 +65,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
       const user = new CnUserEntity();
       user.firstname = createUser.firstname;
       user.lastname = createUser.lastname;
+      user.password = createUser.password;
       user.email = createUser.email;
       user.category = createUser.category;
       user.phone = createUser.phone;
