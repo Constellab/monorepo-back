@@ -10,6 +10,7 @@ import {
 import {
   CnLabManagerBackupInfoDTO,
   CnLabManagerComposeUpOptions,
+  CnLabManagerContainerSize,
   CnLabManagerDockerPsFull,
   CnLabManagerInitConfig,
   CnLabManagerRestoreBackupDTO,
@@ -53,6 +54,13 @@ export class CnExternalLabManagerApiService {
     containerName: string
   ): Promise<CnLabManagerDockerPsFull> {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers/${containerName}`));
+  }
+
+  public async getContainerSize(
+    apiInfo: CnExternalApiInfo,
+    containerName: string
+  ): Promise<CnLabManagerContainerSize> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers/${containerName}/size`));
   }
 
   public async startComposeContainer(apiInfo: CnExternalApiInfo, serviceName: string): Promise<void> {

@@ -41,6 +41,7 @@ import {
 } from './cn-lab.dto';
 import {
   CnLabManagerComposeUpOptions,
+  CnLabManagerContainerSize,
   CnLabManagerDockerPs,
   CnLabManagerDockerPsFull,
   CnLabManagerRestoreBackupConfigDTO,
@@ -351,6 +352,14 @@ export class CnLabsController {
     @Param('containerName') containerName: string
   ): Promise<CnLabManagerDockerPsFull> {
     return await this.aggregateService.getContainerDetails(id, containerName);
+  }
+
+  @Get(':id/lab-manager/containers/:containerName/size')
+  async getContainerSize(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('containerName') containerName: string
+  ): Promise<CnLabManagerContainerSize> {
+    return await this.aggregateService.getContainerSize(id, containerName);
   }
 
   @Put(':id/lab-manager/containers/:serviceName/start')

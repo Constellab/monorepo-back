@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   CnLabManagerBackupInfoDTO,
   CnLabManagerComposeUpOptions,
+  CnLabManagerContainerSize,
   CnLabManagerDockerPs,
   CnLabManagerDockerPsFull,
   CnLabManagerInitConfig,
@@ -55,6 +56,10 @@ export class CnLabManagerService {
 
   public async getContainerDetails(lab: CnLab, containerName: string): Promise<CnLabManagerDockerPsFull> {
     return this.labManagerApiService.getContainerDetails(lab.getLabManagerApiInfo(), containerName);
+  }
+
+  public async getContainerSize(lab: CnLab, containerName: string): Promise<CnLabManagerContainerSize> {
+    return this.labManagerApiService.getContainerSize(lab.getLabManagerApiInfo(), containerName);
   }
 
   public async startComposeContainer(lab: CnLab, serviceName: string): Promise<void> {

@@ -20,6 +20,7 @@ import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import {
   CnLabManagerBackupInfoDTO,
   CnLabManagerComposeUpOptions,
+  CnLabManagerContainerSize,
   CnLabManagerDockerPs,
   CnLabManagerDockerPsFull,
   CnLabManagerRestoreBackupConfigDTO,
@@ -771,6 +772,11 @@ export class CnLabAggregateService {
   public async getContainerDetails(labId: string, containerName: string): Promise<CnLabManagerDockerPsFull> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.getContainerDetails(lab, containerName);
+  }
+
+  public async getContainerSize(labId: string, containerName: string): Promise<CnLabManagerContainerSize> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.getContainerSize(lab, containerName);
   }
 
   public async startComposeContainer(labId: string, serviceName: string): Promise<void> {

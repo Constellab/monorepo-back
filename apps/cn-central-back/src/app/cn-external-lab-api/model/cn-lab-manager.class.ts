@@ -19,9 +19,12 @@ export interface CnLabManagerDockerPsFull extends CnLabManagerDockerPs {
   networks: string;
   ports: string;
   runningFor: string;
-  size: string;
   state: 'running' | 'exited';
   status: string;
+}
+
+export interface CnLabManagerContainerSize {
+  size: string;
 }
 
 export interface CnLabManagerComposeUpOptions {
