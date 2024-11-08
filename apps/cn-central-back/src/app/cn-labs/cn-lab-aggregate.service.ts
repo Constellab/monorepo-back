@@ -48,7 +48,6 @@ import { CnLabsSecurity } from './cn-labs.security';
 import {
   BlBadRequestException,
   BlCredentials,
-  BlDtoHelper,
   BlExternalApiError,
   BlSearchParams,
   BlUnauthorizedException,
@@ -82,13 +81,11 @@ import {
 import { CnLabBackupHistory } from './backup/cn-lab-backup-history.entity';
 import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnCloudProviderFactory } from './server/cn-cloud-provider.factory';
-import { CnServerPriceService } from '../cn-servers-info/server-price/cn-server-price.service';
 import { CnLabConfigDto } from '../cn-lab-configs/cn-lab-config.dto';
 import { CnLabBackupAggregateService } from './backup/cn-lab-backup-aggregate.service';
 import { CnLabVolumeService } from './volume/cn-lab-volume.service';
 import { CnLabVolume, CnLabVolumeType } from './volume/cn-lab-volume-entity';
 import { CnLabUpdateVolumeDTO } from './volume/cn-lab-volume.dto';
-import { CnStoragePriceService } from '../cn-servers-info/storage-price/cn-storage-price.service';
 import { CnLabStatsStorageResponseDTO } from './stats/cn-lab-storage-stats.dto';
 import { CnLabStatsRunningResponseDTO } from './stats/cn-lab-running-stats.dto';
 import { CnLabStatusHistoryService } from './status/cn-lab-status-history.service';
@@ -117,8 +114,6 @@ export class CnLabAggregateService {
     private authService: CnAuthService,
     private labFreeService: CnLabFreeService,
     private backupService: CnLabBackupAggregateService,
-    private serverPriceService: CnServerPriceService,
-    private storagePriceService: CnStoragePriceService,
     private labVolumeService: CnLabVolumeService,
     private labStatusHistoryService: CnLabStatusHistoryService,
     private labStatsAggregateService: CnLabStatsAggregateService
@@ -128,7 +123,7 @@ export class CnLabAggregateService {
    * Create a lab with all information (only for admin)
    */
   async createAdmin(createLab: CnLabCreateAdminDTO): Promise<CnLabEntity> {
-    const lab = BlDtoHelper.fromDto(CnLabEntity, createLab);
+    const lab = this.labFromUpdateAdminDTO(createLab);
 
     const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     this.security.checkAuthorizationToCreateAdmin(lab, userInfo);
@@ -230,11 +225,31 @@ export class CnLabAggregateService {
   /**
    * Update a lab with all information (only for admin)
    */
-  async updateAdmin(updateLab: CnLabUpdateAdminDTO): Promise<CnLabWithSpace> {
+  async updateAdmin(updateLab: CnLabUpdateAdminDTO): Promise<CnLabFull> {
     await this.getAndCheckAuthorizationToUpdateAdmin(updateLab.id);
-    const lab = BlDtoHelper.fromDto(CnLabEntity, updateLab);
+    const lab = this.labFromUpdateAdminDTO(updateLab);
 
     return this.labsService.updateLab(lab);
+  }
+
+  private labFromUpdateAdminDTO(updateLab: CnLabUpdateAdminDTO): CnLabEntity {
+    const lab = new CnLabEntity();
+    lab.id = updateLab.id;
+    lab.name = updateLab.name;
+    lab.type = updateLab.type;
+    lab.virtualHost = updateLab.virtualHost;
+    lab.billingMode = updateLab.billingMode;
+    lab.serverCloud = updateLab.serverCloud;
+    lab.glabProdApiKey = updateLab.glabProdApiKey;
+    lab.glabDevApiKey = updateLab.glabDevApiKey;
+    lab.labManagerApiKey = updateLab.labManagerApiKey;
+    lab.codelabToken = updateLab.codelabToken;
+    lab.region = updateLab.region;
+    lab.space = updateLab.space;
+    lab.serverInstanceId = updateLab.serverInstanceId;
+    lab.serverVolumeId = updateLab.serverVolumeId;
+    lab.desktopPlatform = updateLab.desktopPlatform;
+    return lab;
   }
 
   /**
@@ -304,7 +319,7 @@ export class CnLabAggregateService {
       lab,
       CnCurrentUserHelper.getAndCheckUserSpaceInfo()
     );
-    return CnLabFindOneDto.create(lab, userRole);
+    return new CnLabFindOneDto(lab, userRole);
   }
 
   async findCodelabInfo(id: string): Promise<CnLabCodelabDTO> {
@@ -377,7 +392,8 @@ export class CnLabAggregateService {
   /**
    * Update the lab bricks config.
    * If the lab is desktop, the config is updated directly in the lab.
-   * If the lab is on cloud, it only updates the lab manager config (the config is then update when the lab is restarted)
+   * If the lab is on cloud, it only updates the lab manager config
+   * (the config is then update when the lab is restarted)
    * @param labId
    * @param config
    */
@@ -971,7 +987,8 @@ export class CnLabAggregateService {
     const lab = await this.getAndCheckAuthorizationToFindById(CnCurrentUserHelper.getAndCheckCurrentLab().id);
 
     // check the credentials, if the lab is cloud, it needs a valid captcha
-    // only check the captcha for constellab standard domain (because this is the only domain defined in google
+    // only check the captcha for constellab standard domain
+    // (because this is the only domain defined in google)
     return this.authService.externalCheckCredentials(
       credentials,
       lab.isConstellabDomain() && !ignoreCaptcha,
@@ -1317,5 +1334,13 @@ export class CnLabAggregateService {
     if (lab.serverIsStopped()) {
       throw new BlBadRequestException('Server is stopped, please start the server first');
     }
+  }
+
+  public async createGlabDevApiKey(): Promise<void> {
+    if (!CnCurrentUserHelper.isAdmin()) {
+      throw new BlUnauthorizedException();
+    }
+
+    return this.labsService.createGlabDevApiKey();
   }
 }

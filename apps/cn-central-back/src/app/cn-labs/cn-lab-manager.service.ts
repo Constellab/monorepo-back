@@ -89,11 +89,13 @@ export class CnLabManagerService {
 
   private getLabManagerInitConfig(lab: CnLab, spaceDomain: string): CnLabManagerInitConfig {
     return {
-      centralApiKey: lab.glabApiKey,
+      centralApiKey: lab.glabProdApiKey,
       centralApiUrl: this.configService.getApiUrl(),
       centralFrontUrl: `https://${spaceDomain}.${this.configService.getCentralFrontDomain()}`,
       space: {
-        apiKey: lab.glabApiKey,
+        apiKey: lab.glabProdApiKey,
+        prodApiKey: lab.glabProdApiKey,
+        devApiKey: lab.glabDevApiKey,
         apiUrl: this.configService.getApiUrl(),
         frontUrl: `https://${spaceDomain}.${this.configService.getCentralFrontDomain()}`,
       },

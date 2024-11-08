@@ -45,12 +45,13 @@ export class CnLabDesktopService {
     content = content
       .replace(/\${LAB_ID}/g, lab.id)
       .replace(/\${LAB_NAME}/g, lab.name)
-      .replace(/\${CENTRAL_API_KEY}/g, lab.glabApiKey)
-      .replace(/\${CENTRAL_API_URL}/g, this.configService.getApiUrl())
+      .replace(/\${SPACE_PROD_API_KEY}/g, lab.glabProdApiKey)
+      .replace(/\${SPACE_DEV_API_KEY}/g, lab.glabDevApiKey)
+      .replace(/\${SPACE_API_URL}/g, this.configService.getApiUrl())
       .replace(/\${GWS_CORE_PROD_DB_PASSWORD}/g, lab.gwsCoreProdDbPassword)
       .replace(/\${SECRET_KEY}/g, lab.id)
       .replace(/\${GWS_CORE_DEV_DB_PASSWORD}/g, lab.gwsCoreDevDbPassword)
-      .replace(/\${CENTRAL_FRONT_URL}/g, this.frontService.getBaseWebsiteURL())
+      .replace(/\${SPACE_FRONT_URL}/g, this.frontService.getBaseWebsiteURL())
       .replace(/\${COMMUNITY_FRONT_URL}/g, this.configService.getCommunityFrontUrl())
       .replace(/\${COMMUNITY_API_URL}/g, this.configService.getCommunityApiUrl())
       .replace(/\${FRONT_VERSION}/g, config.front_version)
@@ -109,7 +110,8 @@ export class CnLabDesktopService {
         throw new BlBadRequestException(`Platform '${platform}' is not supported`);
     }
 
-    // download the exe form url https://storage.sbg.cloud.ovh.net/v1/AUTH_a0286631d7b24afba3f3cdebed2992aa/public
+    // download the exe form url
+    // https://storage.sbg.cloud.ovh.net/v1/AUTH_a0286631d7b24afba3f3cdebed2992aa/public
     const response = await lastValueFrom(this.httpService.get(url, { responseType: 'arraybuffer' }));
     return {
       name: name,

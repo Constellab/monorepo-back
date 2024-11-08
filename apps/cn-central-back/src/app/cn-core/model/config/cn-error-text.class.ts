@@ -13,6 +13,7 @@ export enum CnErrorText {
   LINK_EXPIRED = 'error.link_expired',
   STATUS_NOT_CHANGED = 'error.status_not_changed',
   MISSING_API_KEY = 'error.missing_api_key',
+  LAB_ROUTE_NOT_ALLOWED_FOR_DEV = 'error.lab_route_not_allowed_for_dev',
   WRONG_API_KEY = 'error.wrong_api_key',
   WRONG_TOKEN = 'error.wrong_token',
   LAB_STOPPED = 'error.lab_stopped',

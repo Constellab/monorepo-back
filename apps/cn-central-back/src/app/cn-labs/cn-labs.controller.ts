@@ -12,7 +12,7 @@ import {
   Res,
   StreamableFile,
 } from '@nestjs/common';
-import { CnLab, CnLabEntity, CnLabFull } from './cn-lab.entity';
+import { CnLabEntity } from './cn-lab.entity';
 import { CnLabAggregateService } from './cn-lab-aggregate.service';
 import { CnLabStatusHistory } from './status/cn-lab-status-history.entity';
 import {
@@ -76,7 +76,7 @@ export class CnLabsController {
     @Body(new BlParsePipe(CnLabCloudCreateDTO)) createLab: CnLabCloudCreateDTO
   ): Promise<CnLabDto> {
     const lab = await this.aggregateService.createCloudLab(createLab);
-    return BlDtoHelper.toDto(CnLabDto, lab);
+    return new CnLabDto(lab);
   }
 
   @Put(':id/name/:name')
@@ -85,7 +85,7 @@ export class CnLabsController {
     @Param('name') name: string
   ): Promise<CnLabDto> {
     const lab = await this.aggregateService.updateLabName(id, name);
-    return BlDtoHelper.toDto(CnLabDto, lab);
+    return new CnLabDto(lab);
   }
 
   @Post('request-lab')
@@ -97,27 +97,30 @@ export class CnLabsController {
    * return the list of running lab shared with the current user
    */
   @Get('current')
-  public getCurrentLabs(
+  public async getCurrentLabs(
     @Query('page', ParseIntPipe) page: number,
     @Query('size', ParseIntPipe) size: number
-  ): Promise<ClPageI<CnLab>> {
-    return this.aggregateService.getCurrentLabs(page, size);
+  ): Promise<ClPageI<CnLabDto>> {
+    const labs = await this.aggregateService.getCurrentLabs(page, size);
+    return BlDtoHelper.pageToDto(CnLabDto, labs);
   }
 
   /**
    * return the list of running lab created by the current user
    */
   @Get('current-running')
-  public getCurrentRunningLabs(): Promise<CnLab[]> {
-    return this.aggregateService.getCurrentRunningLabs();
+  public async getCurrentRunningLabs(): Promise<CnLabDto[]> {
+    const labs = await this.aggregateService.getCurrentRunningLabs();
+    return BlDtoHelper.listToDto(CnLabDto, labs);
   }
 
   @Get('current-space')
   async getByCurrentSpace(
     @Query('page', ParseIntPipe) page: number,
     @Query('size', ParseIntPipe) size: number
-  ): Promise<ClPageI<CnLab>> {
-    return await this.aggregateService.getByCurrentSpace(page, size);
+  ): Promise<ClPageI<CnLabDto>> {
+    const labs = await this.aggregateService.getByCurrentSpace(page, size);
+    return BlDtoHelper.pageToDto(CnLabDto, labs);
   }
 
   @Post('current-space/search')
@@ -125,8 +128,9 @@ export class CnLabsController {
     @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
     @Query('page', ParseIntPipe) page: number,
     @Query('size', ParseIntPipe) size: number
-  ): Promise<ClPageI<CnLabFull>> {
-    return await this.aggregateService.searchInCurrentSpace(searchParam, page, size);
+  ): Promise<ClPageI<CnLabWithSpaceDto>> {
+    const labs = await this.aggregateService.searchInCurrentSpace(searchParam, page, size);
+    return BlDtoHelper.pageToDto(CnLabWithSpaceDto, labs);
   }
 
   /**
@@ -147,16 +151,18 @@ export class CnLabsController {
    * start a lab
    */
   @Put(':id/start')
-  public startInstance(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLab> {
-    return this.aggregateService.startInstance(id);
+  public async startInstance(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabDto> {
+    const lab = await this.aggregateService.startInstance(id);
+    return new CnLabDto(lab);
   }
 
   /**
    * stop a lab
    */
   @Put(':id/stop')
-  public stopInstance(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLab> {
-    return this.aggregateService.stopInstance(id);
+  public async stopInstance(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabDto> {
+    const lab = await this.aggregateService.stopInstance(id);
+    return new CnLabDto(lab);
   }
 
   /**
@@ -512,12 +518,13 @@ export class CnLabsController {
   }
 
   @Post(':id/backup-history/:backupHistoryId/restore')
-  public restoreBackup(
+  public async restoreBackup(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('backupHistoryId', new ParseUUIDPipe()) backupHistoryId: string,
     @Body() restoreBackupDTO: CnLabManagerRestoreBackupConfigDTO
-  ): Promise<CnLab> {
-    return this.aggregateService.restoreBackup(id, backupHistoryId, restoreBackupDTO);
+  ): Promise<CnLabDto> {
+    const lab = await this.aggregateService.restoreBackup(id, backupHistoryId, restoreBackupDTO);
+    return new CnLabDto(lab);
   }
 
   /////////////////////////// SERVER //////////////////////////////
@@ -582,16 +589,17 @@ export class CnLabsController {
   /////////////////////////// FREE LAB //////////////////////////////
 
   @Post('free-lab/current')
-  async createFreeLabForCurrentUser(): Promise<CnLab> {
-    return await this.labFreeAggregateService.createFreeLabCurrentUser();
+  async createFreeLabForCurrentUser(): Promise<CnLabDto> {
+    const lab = await this.labFreeAggregateService.createFreeLabCurrentUser();
+    return new CnLabDto(lab);
   }
 
   @Post('free-lab')
   async createFreeLab(
     @Body(new BlParsePipe(CnLabFreeCreateDto)) request: CnLabFreeCreateDto
-  ): Promise<CnLabAdminDto> {
+  ): Promise<CnLabDto> {
     const lab = await this.labFreeAggregateService.createFreeLab(request);
-    return BlDtoHelper.toDto(CnLabAdminDto, lab);
+    return new CnLabDto(lab);
   }
 
   @Get('free-lab/current')
@@ -646,7 +654,7 @@ export class CnLabsController {
     @Body(new BlParsePipe(CnLabCreateDesktopDTO)) createLab: CnLabCreateDesktopDTO
   ): Promise<CnLabDto> {
     const lab = await this.aggregateService.createDesktop(createLab);
-    return BlDtoHelper.toDto(CnLabDto, lab);
+    return new CnLabDto(lab);
   }
 
   @Post(':id/desktop/generate-config')
@@ -676,7 +684,7 @@ export class CnLabsController {
     @Body(new BlParsePipe(CnLabCreateDesktopDTO)) labDto: CnLabCreateDesktopDTO
   ): Promise<CnLabDto> {
     const lab = await this.aggregateService.updateDesktopLab(id, labDto);
-    return BlDtoHelper.toDto(CnLabDto, lab);
+    return new CnLabDto(lab);
   }
 
   /////////////////////////// ADMIN ROUTE //////////////////////////////²²²
@@ -685,7 +693,7 @@ export class CnLabsController {
     @Body(new BlParsePipe(CnLabCreateAdminDTO)) createLab: CnLabCreateAdminDTO
   ): Promise<CnLabWithSpaceDto> {
     const lab = await this.aggregateService.createAdmin(createLab);
-    return BlDtoHelper.toDto(CnLabWithSpaceDto, lab);
+    return new CnLabWithSpaceDto(lab);
   }
 
   // use the DTO to get the apiKey (which is excluded)
@@ -694,13 +702,13 @@ export class CnLabsController {
     @Body(new BlParsePipe(CnLabUpdateAdminDTO)) labDto: CnLabUpdateAdminDTO
   ): Promise<CnLabWithSpaceDto> {
     const lab = await this.aggregateService.updateAdmin(labDto);
-    return BlDtoHelper.toDto(CnLabWithSpaceDto, lab);
+    return new CnLabWithSpaceDto(lab);
   }
 
   @Get('admin/:id')
   async findByIdAdmin(@Param('id', ParseUUIDPipe) id: string): Promise<CnLabAdminDto> {
     const lab = await this.aggregateService.findByIdAdmin(id);
-    return BlDtoHelper.toDto(CnLabAdminDto, lab);
+    return new CnLabAdminDto(lab);
   }
 
   @Delete('admin/:id')
@@ -717,5 +725,10 @@ export class CnLabsController {
     // use a DTO to return all the field including the apiKey
     const labs = await this.aggregateService.searchAll(searchParam, page, size);
     return BlDtoHelper.pageToDto(CnLabWithSpaceDto, labs);
+  }
+
+  @Post('migrate-dev-api-key')
+  async migrateLab(): Promise<void> {
+    return this.aggregateService.createGlabDevApiKey();
   }
 }

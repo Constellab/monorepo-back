@@ -10,7 +10,11 @@ import {
   Req,
   UseInterceptors,
 } from '@nestjs/common';
-import { CnLabGuard, CnLabRobotAuthentication } from '../cn-core/decorators/cn-lab-guard.decorator';
+import {
+  CnLabAllowDev,
+  CnLabGuard,
+  CnLabRobotAuthentication,
+} from '../cn-core/decorators/cn-lab-guard.decorator';
 import { BlCredentials, BlFile, BlParsePipe, BlPublic, BlUploadedFiles } from '@monorepo/back-core-lib';
 import { CnCreateLabScenarioDto } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.dto';
 import { CnCreateNoteWithConfigDto } from '../cn-folders-aggregate/cn-notes/cn-note.dto';
@@ -27,7 +31,9 @@ import {
   CnFolderDtoHelper,
   CnLabFolderDTO,
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.dto';
-import { CnHierarchyObjectEntity } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+import {
+  CnHierarchyObjectEntity,
+} from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
 import { CnLabSendMailDto } from '../cn-labs/mail/cn-lab-mail.dto';
 import { CnModificationsBodyDTO, CnUndoContentBodyDTO } from './cn-external-labs.dto';
@@ -56,6 +62,7 @@ export class CnExternalLabsController {
    * Check user credentials for login
    * @param credentials
    */
+  @CnLabAllowDev()
   @CnLabRobotAuthentication()
   @Post('check-credentials')
   async checkUserCredentials(@Body() credentials: BlCredentials): Promise<CnExternalCheckCredentialResponse> {
@@ -78,6 +85,7 @@ export class CnExternalLabsController {
    * This route is not supposed to be used for login.
    * @param credentials
    */
+  @CnLabAllowDev()
   @CnLabRobotAuthentication()
   @Post('check-credentials-simple')
   async checkUserCredentialsSimple(
@@ -165,7 +173,8 @@ export class CnExternalLabsController {
   }
 
   /////////////////////////////// SYNCHRONIZATION ///////////////////////////////
-  // those routes does not require user authentication because they are called by the lab server and are just get
+  // those routes does not require user authentication
+  // because they are called by the lab server and are just get
   // TODO remove project routes once all lab are on v0.10.0
   @CnLabRobotAuthentication()
   @Get(['project/all-trees', 'folder/all-trees'])

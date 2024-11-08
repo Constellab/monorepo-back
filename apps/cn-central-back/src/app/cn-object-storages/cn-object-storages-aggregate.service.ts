@@ -9,7 +9,6 @@ import { CnBucket, CnBucketContentType } from './cn-buckets/cn-bucket.entity';
 import {
   BlBadRequestException,
   BlCredentials,
-  BlDtoHelper,
   BlSearchParams,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
@@ -168,7 +167,7 @@ export class CnObjectStoragesAggregateService {
       throw new BlUnauthorizedException(CnErrorText.WRONG_CREDENTIALS);
     }
 
-    return BlDtoHelper.toDto(CnBucketCredentialsFull, credentials);
+    return new CnBucketCredentialsFull(credentials);
   }
 
   public checkAuthorizationForCredentials(credentials: CnBucketCredentials): void {

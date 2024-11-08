@@ -9,11 +9,10 @@ services:
       - LAB_ENVIRONMENT=DESKTOP
       - LAB_PROD_API_URL=http://localhost:3100
       - LAB_DEV_API_URL=http://codelab:3000
-      - CENTRAL_API_KEY=${CENTRAL_API_KEY}
-      - CENTRAL_API_URL=${CENTRAL_API_URL}
+      - SPACE_API_KEY=${SPACE_PROD_API_KEY}
+      - SPACE_API_URL=${SPACE_API_URL}
       - FRONT_URL=http://localhost:80
       - FRONT_VERSION=${FRONT_VERSION}
-      - CONDA_VERSION=latest
       - GPU=
       - VIRTUAL_HOST=
       - BIOTA_BIODATA_DIR=/data/gws_biota/biodata/
@@ -59,9 +58,10 @@ services:
       - LAB_ENVIRONMENT=DESKTOP
       - LAB_PROD_API_URL=http://glab:3000
       - LAB_DEV_API_URL=http://localhost:3101
+      - SPACE_API_KEY=${SPACE_DEV_API_KEY}
+      - SPACE_API_URL=${SPACE_API_URL}
       - FRONT_URL=http://localhost:80
       - FRONT_VERSION=${FRONT_VERSION}
-      - CONDA_VERSION=latest
       - GPU=
       - VIRTUAL_HOST=
       - BIOTA_BIODATA_DIR=/data/gws_biota/biodata/
@@ -106,8 +106,11 @@ services:
       - LAB_DEV_API_URL=http://localhost:3101
       - CODELAB_URL=http://localhost:8081
       - VIRTUAL_HOST=
-      - CENTRAL_FRONT_URL=${CENTRAL_FRONT_URL}
-      - CENTRAL_API_URL=${CENTRAL_API_URL}
+      - SPACE_FRONT_URL=${SPACE_FRONT_URL}
+      - SPACE_API_URL=${SPACE_API_URL}
+      - # same dev and prod url
+      - PROD_FRONT_URLS=http://localhost:80
+      - DEV_FRONT_URLS=http://localhost:80
       - COMMUNITY_FRONT_URL=${COMMUNITY_FRONT_URL}
       - COMMUNITY_API_URL=${COMMUNITY_API_URL}
       - CAPTCHA_SITE_KEY= # set to empty to disable captcha

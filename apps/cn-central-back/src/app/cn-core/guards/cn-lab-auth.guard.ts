@@ -12,12 +12,17 @@ import {
   cnExternalLabApiKeySchema,
   cnExternalLabUserHeader,
 } from '../model/config/cn-config.class';
-import { CnCurrentUserHelper } from '../utils/cn-current-user.helper';
+import { CnCurrentLabEnvironment, CnCurrentUserHelper } from '../utils/cn-current-user.helper';
 import { CnSpaceUserService } from '../../cn-spaces/cn-space-user.service';
 import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
-import { cnIsLabRobotAuth } from '../decorators/cn-lab-guard.decorator';
-import { BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { cnIsAllowedDev, cnIsLabRobotAuth } from '../decorators/cn-lab-guard.decorator';
+import { blIsDecoratedWithPublic, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { CnLabUserService } from '../../cn-labs/user/cn-lab-user.service';
+
+class CnGetLab {
+  lab: CnLabWithSpace;
+  labEnvironment: CnCurrentLabEnvironment;
+}
 
 export abstract class CnLabAuthGuardBase implements CanActivate {
   private readonly logger = new Logger(CnLabAuthGuard.name);
@@ -30,13 +35,19 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
     private labUserService: CnLabUserService
   ) {}
 
-  abstract getLabFromApiKey(apiKey: string): Promise<CnLabWithSpace>;
+  abstract getLabFromApiKey(apiKey: string): Promise<CnGetLab>;
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     return this.labAuthentication(context);
   }
 
   private async labAuthentication(context: ExecutionContext): Promise<boolean> {
+    // Check if the route is annotated with @Public
+    // if yes, don't check the authorization
+    if (blIsDecoratedWithPublic(this.reflector, context)) {
+      return true;
+    }
+
     const request: Request = context.switchToHttp().getRequest();
     const labApiKey: string = this.getLabApiKeyFromRequest(request);
 
@@ -44,20 +55,28 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
       throw new BlUnauthorizedException(CnErrorText.MISSING_API_KEY);
     }
 
-    const lab = await this.getLabFromApiKey(labApiKey);
+    const labInfo = await this.getLabFromApiKey(labApiKey);
 
-    if (lab == null) {
+    if (labInfo == null) {
       throw new BlUnauthorizedException(CnErrorText.WRONG_API_KEY);
     }
 
+    // if the lab is in dev environment, check if the dev api key is allowed
+    // the route should be annotated with @LabAllowDev
+    if (labInfo.labEnvironment === CnCurrentLabEnvironment.DEV) {
+      if (!cnIsAllowedDev(this.reflector, context)) {
+        throw new BlUnauthorizedException(CnErrorText.LAB_ROUTE_NOT_ALLOWED_FOR_DEV);
+      }
+    }
+
     // store the lab in the current context
-    CnCurrentUserHelper.setCurrentLab(lab);
+    CnCurrentUserHelper.setCurrentLab(labInfo.lab, labInfo.labEnvironment);
 
     // store the lab space in the current context
-    CnCurrentUserHelper.setCurrentSpace(lab.space);
+    CnCurrentUserHelper.setCurrentSpace(labInfo.lab.space);
 
     // set the user in the context as the connected user
-    await this.setUserInContext(request, lab, context);
+    await this.setUserInContext(request, labInfo.lab, context);
 
     return true;
   }
@@ -163,8 +182,28 @@ export class CnLabAuthGuard extends CnLabAuthGuardBase {
     super(reflector, usersService, configService, spaceUserService, labUserService);
   }
 
-  getLabFromApiKey(apiKey: string): Promise<CnLabWithSpace> {
-    return this.labsService.findLabByApiKey(apiKey);
+  /**
+   * Try to get the lab from prod api key and then from dev api key
+   * @param apiKey
+   */
+  async getLabFromApiKey(apiKey: string): Promise<CnGetLab> {
+    const lab = await this.labsService.findLabByGlabProdApiKey(apiKey);
+    if (lab) {
+      return {
+        lab: lab,
+        labEnvironment: CnCurrentLabEnvironment.PROD,
+      };
+    }
+
+    const labDev = await this.labsService.findLabByGlabDevApiKey(apiKey);
+    if (labDev) {
+      return {
+        lab: labDev,
+        labEnvironment: CnCurrentLabEnvironment.DEV,
+      };
+    }
+
+    return null;
   }
 }
 
@@ -187,7 +226,16 @@ export class CnLabManagerAuthGuard extends CnLabAuthGuardBase {
     super(reflector, usersService, configService, spaceUserService, labUserService);
   }
 
-  getLabFromApiKey(apiKey: string): Promise<CnLabWithSpace> {
-    return this.labsService.findLabByManagerApiKey(apiKey);
+  async getLabFromApiKey(apiKey: string): Promise<CnGetLab> {
+    const lab = await this.labsService.findLabByManagerApiKey(apiKey);
+
+    if (lab) {
+      return {
+        lab: lab,
+        labEnvironment: CnCurrentLabEnvironment.LAB_MANAGER,
+      };
+    }
+
+    return null;
   }
 }

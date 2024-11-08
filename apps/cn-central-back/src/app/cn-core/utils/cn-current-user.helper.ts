@@ -8,9 +8,16 @@ import { cnExternalLabManagerVersionHeader } from '../model/config/cn-config.cla
 
 export interface CnRequestAuthInfo {
   lab?: CnLabWithSpace;
+  labEnvironment?: CnCurrentLabEnvironment;
   space?: CnSpace;
   // role for the current user in this space
   roleInSpace: CnSpaceUserRole;
+}
+
+export enum CnCurrentLabEnvironment {
+  DEV = 'DEV',
+  PROD = 'PROD',
+  LAB_MANAGER = 'LAB_MANAGER',
 }
 
 export class CnCurrentUserHelper extends BlCurrentUserHelper {
@@ -50,8 +57,19 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
     return this.getAdditionalInfo()?.lab ?? null;
   }
 
-  static setCurrentLab(lab: CnLabWithSpace): void {
+  static setCurrentLab(lab: CnLabWithSpace, environment: CnCurrentLabEnvironment): void {
     this.setAdditionalData('lab', lab);
+    this.setAdditionalData('labEnvironment', environment);
+  }
+
+  /**
+   * return the current lab environment or null if there is no lab in the context
+   * Prod if the request is made from the production environment (prod api)
+   * Dev if the request is made from the development environment (dev api from codelab)
+   * LabManager if the request is made from the lab manager
+   */
+  static getCurrentLabEnvironment(): CnCurrentLabEnvironment | null {
+    return this.getAdditionalInfo()?.labEnvironment ?? null;
   }
 
   /**

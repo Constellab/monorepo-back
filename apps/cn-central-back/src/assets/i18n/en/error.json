@@ -11,6 +11,7 @@
   "link_expired": "Link expired",
   "status_not_changed": "The status was not changed",
   "missing_api_key": "The api key is missing",
+  "lab_route_not_allowed_for_dev": "This action is not allowed in development mode",
   "wrong_api_key": "The api key is incorrect",
   "wrong_token": "The token is incorrect",
   "lab_stopped": "The lab in not running",

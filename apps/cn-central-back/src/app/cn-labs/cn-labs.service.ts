@@ -1,7 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CnLab, CnLabEntity, CnLabFull, CnLabWithSpace } from './cn-lab.entity';
-import { DataSource, DeleteResult, EntityManager, FindOptionsWhere, In, Not, Repository } from 'typeorm';
+import {
+  DataSource,
+  DeleteResult,
+  EntityManager,
+  FindOptionsWhere,
+  In,
+  IsNull,
+  Not,
+  Repository,
+} from 'typeorm';
 import { CnLabServerTaskStatus, CnLabStatus, cnLabTemporaryStatuses } from './status/cn-lab-status.enum';
 import { CnAbstractWithStatusService } from '../cn-core/class/cn-abstract-with-status.service';
 import { CnLabStatusHistory } from './status/cn-lab-status-history.entity';
@@ -22,9 +31,12 @@ import {
 import { CnServerStandard } from '../cn-servers-info/server-standard/cn-server-standard.entity';
 import { CnServerCloud } from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLabStatus> {
+  private static readonly logger = new Logger(CnLabsService.name);
+
   constructor(
     @InjectRepository(CnLabEntity) private repository: Repository<CnLabEntity>,
     @InjectRepository(CnLabStatusHistory) private statusRepo: Repository<CnLabStatusHistory>,
@@ -50,10 +62,10 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     return super.createWithStatusTransaction(entity, CnLabStatus.NO_SERVER, entityManager);
   }
 
-  async updateLab(entity: CnLabFull, entityManager?: EntityManager): Promise<CnLabWithSpace> {
+  async updateLab(entity: CnLabFull, entityManager?: EntityManager): Promise<CnLabFull> {
     await this.checkLabBeforeSave(entity);
     await super.update(entity as CnLabEntity, entityManager);
-    return this.findById(entity.id, CnLabEntity.relationSpace);
+    return this.findById(entity.id, CnLabEntity.relationFull);
   }
 
   private async checkLabBeforeSave(entity: CnLabFull): Promise<void> {
@@ -130,7 +142,8 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
       );
     }
 
-    // check that the domain is valid including possibility of subdomain and port, only 1 ':' is allowed followed by a port number
+    // check that the domain is valid including possibility of subdomain and port,
+    // only 1 ':' is allowed followed by a port number
     if (!/^(?:[a-z0-9-]+\.)*[a-z0-9-]+(?::\d+)?$/.test(virtualHost)) {
       throw new BlBadRequestException('Virtual host is not a valid domain name');
     }
@@ -291,10 +304,19 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     return newLab;
   }
 
-  public findLabByApiKey(apiKey: string): Promise<CnLabWithSpace> {
+  public findLabByGlabProdApiKey(apiKey: string): Promise<CnLabWithSpace> {
     return this.repository.findOne({
       where: {
-        glabApiKey: apiKey,
+        glabProdApiKey: apiKey,
+      },
+      relations: CnLabEntity.relationSpace,
+    });
+  }
+
+  public findLabByGlabDevApiKey(apiKey: string): Promise<CnLabWithSpace> {
+    return this.repository.findOne({
+      where: {
+        glabDevApiKey: apiKey,
       },
       relations: CnLabEntity.relationSpace,
     });
@@ -399,5 +421,23 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
 
   private emitLabEvent(labEvent: CnLabEvent): void {
     this.eventEmitter.emit(cnLabEventName, labEvent);
+  }
+
+  // TODO to remove
+  public async createGlabDevApiKey(): Promise<void> {
+    CnLabsService.logger.log('[MIGRATION] Start creating glab dev api key');
+
+    const labs = await this.repository.find({
+      where: {
+        glabDevApiKey: IsNull(),
+      },
+    });
+
+    for (const lab of labs) {
+      lab.glabDevApiKey = randomBytes(48).toString('base64').replace(/\W/g, '');
+      await this.repository.save(lab, { listeners: false });
+    }
+
+    CnLabsService.logger.log('[MIGRATION] End creating glab dev api key');
   }
 }

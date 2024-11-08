@@ -47,7 +47,10 @@ export interface CnLabManagerInitConfig {
   centralApiUrl: string;
   // end remove
   space: {
+    // TODO To remove on all lab manager are on v 1.13.0
     apiKey: string;
+    prodApiKey: string;
+    devApiKey: string;
     frontUrl: string;
     apiUrl: string;
   };

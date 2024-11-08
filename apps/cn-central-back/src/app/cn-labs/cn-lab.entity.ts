@@ -23,7 +23,6 @@ import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-r
 import { DateTime } from 'luxon';
 import { ClStringHelper } from '@monorepo/core-lib';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
-import { CnLabVolumeType } from './volume/cn-lab-volume-entity';
 
 export enum CnLabType {
   CLOUD = 'CLOUD',
@@ -104,10 +103,15 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   @JoinColumn()
   currentStatus: CnLabStatusHistory;
 
-  // api key shared with the glab API
+  // api key shared with the prod glab API
   @Exclude()
   @Column({ nullable: false, length: 255, unique: true })
-  glabApiKey: string;
+  glabProdApiKey: string;
+
+  // api key shared with the dev glab API
+  @Exclude()
+  @Column({ nullable: false, length: 255, unique: true })
+  glabDevApiKey: string;
 
   // api key shared with the lab manager APImi
   @Exclude()
@@ -189,16 +193,6 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   })
   billingMode: CnLabBillingMode;
 
-  @Column({ nullable: true, type: 'int' })
-  volumeSize: number;
-
-  @Column({
-    type: 'enum',
-    enum: CnLabVolumeType,
-    nullable: true,
-  })
-  volumeType: CnLabVolumeType;
-
   @Column({
     type: 'enum',
     enum: CnLabDesktopPlatform,
@@ -237,7 +231,8 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   @BeforeInsert()
   @BeforeUpdate()
   generateApiKey(): void {
-    if (!this.glabApiKey) this.glabApiKey = this.generateRandomPassword();
+    if (!this.glabProdApiKey) this.glabProdApiKey = this.generateRandomPassword();
+    if (!this.glabDevApiKey) this.glabDevApiKey = this.generateRandomPassword();
     if (!this.gwsCoreProdDbPassword) this.gwsCoreProdDbPassword = this.generateRandomPassword();
     if (!this.gwsCoreDevDbPassword) this.gwsCoreDevDbPassword = this.generateRandomPassword();
 
@@ -273,7 +268,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
       };
     }
     return {
-      apiKey: this.glabApiKey,
+      apiKey: this.glabProdApiKey,
       apiUrl: this.glabUrl + '/' + CnLabEntity.SPACE_API_ROUTE,
     };
   }

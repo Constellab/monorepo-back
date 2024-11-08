@@ -1,15 +1,15 @@
-import { CnUser } from '../cn-users/cn-user.entity';
-import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
 import { CnLabStatusHistory } from './status/cn-lab-status-history.entity';
 import { CnServerCloud } from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
-import { BlBaseEntityDto, BlDtoHelper, BlVersion } from '@monorepo/back-core-lib';
+import { BlBaseEntityDto, BlVersion } from '@monorepo/back-core-lib';
 import { CnBrickVersionDTO } from '../cn-bricks/cn-brick.dto';
 import { CnLabConfigDto } from '../cn-lab-configs/cn-lab-config.dto';
 import { CnSpace } from '../cn-spaces/cn-space.entity';
 import { Type } from 'class-transformer';
 import { CnLabUserRole } from './user/cn-lab-user.entity';
-import { CnLab, CnLabBillingMode, CnLabDesktopPlatform, CnLabType } from './cn-lab.entity';
-import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import { CnLab, CnLabBillingMode, CnLabDesktopPlatform, CnLabFull, CnLabType } from './cn-lab.entity';
+import {
+  CnCloudProviderRegion,
+} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnLabServerTaskStatus, CnLabStatus } from './status/cn-lab-status.enum';
 import { DateTime } from 'luxon';
 import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
@@ -21,55 +21,77 @@ import { CnLabVolumeType } from './volume/cn-lab-volume-entity';
  * DTO for the users that have access to a lab
  */
 export class CnLabDto extends BlBaseEntityDto {
-  name: string = undefined;
-  type: CnLabType = undefined;
-  lab: CnLabConfig = undefined;
-  owner: CnUser = undefined;
-  currentStatus: CnLabStatusHistory = undefined;
-  virtualHost: string = undefined;
-  apiUrl: string = undefined;
-  frontUrl: string = undefined;
-  region: CnCloudProviderRegion = undefined;
-  billingMode: CnLabBillingMode = undefined;
-  volumeType: CnLabVolumeType = undefined;
-  volumeSize: number = undefined;
-  desktopPlatform?: CnLabDesktopPlatform = undefined;
-  isFreeLab: boolean = undefined;
+  name: string;
+  type: CnLabType;
+  currentStatus: CnLabStatusHistory;
+  frontUrl: string;
+  virtualHost: string;
+  region: CnCloudProviderRegion;
+  billingMode: CnLabBillingMode;
+  desktopPlatform?: CnLabDesktopPlatform;
+  isFreeLab: boolean;
+
+  constructor(entity: CnLab) {
+    super(entity);
+    this.name = entity.name;
+    this.type = entity.type;
+    this.currentStatus = entity.currentStatus;
+    this.frontUrl = entity.frontUrl;
+    this.virtualHost = entity.virtualHost;
+    this.region = entity.region;
+    this.billingMode = entity.billingMode;
+    this.desktopPlatform = entity.desktopPlatform;
+    this.isFreeLab = entity.isFreeLab;
+  }
 }
 
 export class CnLabWithSpaceDto extends CnLabDto {
-  space: CnSpace = undefined;
-  serverCloud: CnServerCloud = undefined;
+  space: CnSpace;
+  serverCloud: CnServerCloud;
+
+  constructor(entity: CnLabFull) {
+    super(entity);
+    this.space = entity.space;
+    this.serverCloud = entity.serverCloud;
+  }
 }
 
 /**
  * DTO for the lab only for G admin
  */
 export class CnLabAdminDto extends CnLabWithSpaceDto {
-  cloudName: string = undefined;
-  glabApiKey: string = undefined;
-  labManagerApiKey: string = undefined;
-  serverInstanceId: string = undefined;
-  serverVolumeId: string = undefined;
-  gwsCoreProdDbPassword: string = undefined;
-  gwsCoreDevDbPassword: string = undefined;
-  codelabToken: string = undefined;
+  cloudName: string;
+  glabProdApiKey: string;
+  glabDevApiKey: string;
+  labManagerApiKey: string;
+  serverInstanceId: string;
+  serverVolumeId: string;
+  gwsCoreProdDbPassword: string;
+  gwsCoreDevDbPassword: string;
+  codelabToken: string;
+
+  constructor(entity: CnLabFull) {
+    super(entity);
+    this.cloudName = entity.cloudName;
+    this.glabProdApiKey = entity.glabProdApiKey;
+    this.glabDevApiKey = entity.glabDevApiKey;
+    this.labManagerApiKey = entity.labManagerApiKey;
+    this.serverInstanceId = entity.serverInstanceId;
+    this.serverVolumeId = entity.serverVolumeId;
+    this.gwsCoreProdDbPassword = entity.gwsCoreProdDbPassword;
+    this.gwsCoreDevDbPassword = entity.gwsCoreDevDbPassword;
+    this.codelabToken = entity.codelabToken;
+  }
 }
 
 export class CnLabFindOneDto {
-  @Type(() => CnLabDto)
-  lab: CnLabDto = undefined;
+  lab: CnLabDto;
 
   userRole: CnLabUserRole;
 
-  labManagerIsRunning: boolean;
-  labIsRunning: boolean;
-
-  static create(lab: CnLab, userRole: CnLabUserRole): CnLabFindOneDto {
-    const dto = new CnLabFindOneDto();
-    dto.lab = BlDtoHelper.toDto(CnLabDto, lab);
-    dto.userRole = userRole;
-    return dto;
+  constructor(lab: CnLab, userRole: CnLabUserRole) {
+    this.lab = new CnLabDto(lab);
+    this.userRole = userRole;
   }
 }
 
@@ -95,11 +117,13 @@ export class CnLabUpdateAdminDTO {
   name: string;
   type: CnLabType;
   virtualHost: string;
+  billingMode: CnLabBillingMode;
 
   @Type(() => CnServerCloud)
   serverCloud: CnServerCloud;
 
-  glabApiKey: string;
+  glabProdApiKey: string;
+  glabDevApiKey: string;
   labManagerApiKey: string;
   codelabToken: string;
 
@@ -109,15 +133,15 @@ export class CnLabUpdateAdminDTO {
   @Type(() => CnSpace)
   space: CnSpace;
 
-  volumeSize: number;
-  volumeType: CnLabVolumeType;
-
   serverInstanceId: string;
   serverVolumeId: string;
   desktopPlatform?: CnLabDesktopPlatform;
 }
 
 export class CnLabCreateAdminDTO extends CnLabUpdateAdminDTO {
+  volumeSize: number;
+  volumeType: CnLabVolumeType;
+
   @Type(() => CnCloudProviderRegion)
   dailyBackupRegion: CnCloudProviderRegion;
 

@@ -1,19 +1,32 @@
 import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
 import { DateTime } from 'luxon';
 import { BlUser } from './bl-user/bl-user.class';
+import { BlEntityWithId } from './bl-entity-with-id.entity';
 
 export class BlEntityWithIdDto {
-  id: string = undefined;
+  id: string;
+
+  constructor(entity: BlEntityWithId) {
+    this.id = entity.id;
+  }
 }
 
 export class BlBaseEntityDto extends BlEntityWithIdDto {
   @ClLuxonDateTimeTransform()
-  createdAt: DateTime = undefined;
+  createdAt: DateTime;
 
-  createdBy: BlUser = undefined;
+  createdBy: BlUser;
 
   @ClLuxonDateTimeTransform()
-  lastModifiedAt: DateTime = undefined;
+  lastModifiedAt: DateTime;
 
-  lastModifiedBy: BlUser = undefined;
+  lastModifiedBy: BlUser;
+
+  constructor(entity: any) {
+    super(entity);
+    this.createdAt = entity.createdAt;
+    this.createdBy = entity.createdBy;
+    this.lastModifiedAt = entity.lastModifiedAt;
+    this.lastModifiedBy = entity.lastModifiedBy;
+  }
 }
