@@ -211,7 +211,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
 
   @Expose()
   get frontUrl(): string {
-    return `https://front.${this.virtualHost}`;
+    return `https://lab.${this.virtualHost}`;
   }
 
   @Expose()
