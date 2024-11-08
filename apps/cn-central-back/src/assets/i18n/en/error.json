@@ -8,6 +8,7 @@
   "account_not_activated": "Your account is not activated, please check your email address to activate it",
   "invalid_link": "Invalid link",
   "account_already_activated": "Account already activated",
+  "account_creation_error": "An error occurred during account creation, please try again. If the problem persists, please retry later, we are working on it.",
   "link_expired": "Link expired",
   "status_not_changed": "The status was not changed",
   "missing_api_key": "The api key is missing",

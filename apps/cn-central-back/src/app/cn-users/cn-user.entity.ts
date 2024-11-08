@@ -40,7 +40,7 @@ export class CnUserEntity extends BlEntityWithId implements BlUser {
   @Column({ nullable: false })
   password: string;
 
-  @Column({ nullable: false, type: 'enum', enum: BlUserCategory })
+  @Column({ nullable: false, type: 'enum', enum: BlUserCategory, default: BlUserCategory.USER })
   category: BlUserCategory;
 
   @Column({ nullable: true })

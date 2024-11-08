@@ -106,6 +106,13 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
     }
   }
 
+  /**
+   * Set the real user in the request context and check if the user has access to the lab and space
+   * @param request
+   * @param lab
+   * @param userId
+   * @private
+   */
   private async setRealUserInContext(request: Request, lab: CnLabWithSpace, userId: string): Promise<void> {
     const user: CnUser = await this.usersService.findById(userId);
 

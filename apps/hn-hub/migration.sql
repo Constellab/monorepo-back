@@ -16,15 +16,7 @@
 --
 
 
-# 2.1.0
-ALTER TABLE lab
-  ADD COLUMN glabDevApiKey varchar(255) null;
-ALTER TABLE `lab`
-  CHANGE `glabApiKey` `glabProdApiKey` varchar(255) not null;
-ALTER TABLE `lab`
-  DROP COLUMN volumeSize;
-ALTER TABLE `lab`
-  DROP COLUMN volumeType;
+# 1.3.4
 ALTER TABLE `user`
   MODIFY category enum ('ADMIN', 'STUDENT', 'PUBLIC_RESEARCH', 'PRIVATE_INDUSTRY', 'USER') not null;
 update user
@@ -33,12 +25,4 @@ where category != 'ADMIN';
 ALTER TABLE `user`
   MODIFY category enum ('ADMIN', 'USER') not null default 'USER';
 
-# Call migration route POST /labs/migrate-dev-api-key
-ALTER TABLE lab
-  MODIFY COLUMN glabDevApiKey varchar(255) not null;
 
-# 2.0.11
-update scenario
-SET protocol = REPLACE(protocol, 'TASK.gws_core.Source', 'TASK.gws_core.InputTask');
-update scenario
-SET protocol = REPLACE(protocol, 'TASK.gws_core.Sink', 'TASK.gws_core.OutputTask');

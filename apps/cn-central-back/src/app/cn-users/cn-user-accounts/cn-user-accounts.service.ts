@@ -12,6 +12,7 @@ import {
   BlAbstractPaginatedService,
   BlBadRequestException,
   BlCaptchaService,
+  BlHttpException,
   BlMailService,
   BlTokenHelper,
   BlUnauthorizedException,
@@ -61,22 +62,28 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
       throw new BlBadRequestException(CnErrorText.INVALID_CAPTCHA);
     }
 
-    return await this.datasource.transaction(async (entityManager) => {
-      const user = new CnUserEntity();
-      user.firstname = createUser.firstname;
-      user.lastname = createUser.lastname;
-      user.password = createUser.password;
-      user.email = createUser.email;
-      user.category = createUser.category;
-      user.phone = createUser.phone;
-      user.license = CnUserLicense.FREE;
+    try {
+      return await this.datasource.transaction(async (entityManager) => {
+        const user = new CnUserEntity();
+        user.firstname = createUser.firstname;
+        user.lastname = createUser.lastname;
+        user.password = createUser.password;
+        user.email = createUser.email;
+        user.phone = createUser.phone;
+        user.license = CnUserLicense.FREE;
 
-      const newUser: CnUser = await this.createAccount(user, BlUserStatus.WAITING_FOR_EMAIL, entityManager);
+        const newUser: CnUser = await this.createAccount(user, BlUserStatus.WAITING_FOR_EMAIL, entityManager);
 
-      // await mail send to include it in transaction
-      await this.sendSignupEmail(newUser);
-      return newUser;
-    });
+        // await mail send to include it in transaction
+        await this.sendSignupEmail(newUser);
+        return newUser;
+      });
+    } catch (e) {
+      if (e instanceof BlHttpException) {
+        throw e;
+      }
+      throw new BlBadRequestException(CnErrorText.ACCOUNT_CREATION_ERROR);
+    }
   }
 
   public async createAccount(
@@ -84,9 +91,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     status: BlUserStatus,
     entityManager: EntityManager
   ): Promise<CnUser> {
-    if (user.category === BlUserCategory.ADMIN) {
-      throw new BlUnauthorizedException();
-    }
+    user.category = BlUserCategory.USER;
 
     const sameEmailUser: CnUser = await this.usersService.findByEmail(user.email);
     if (sameEmailUser != null) {

@@ -1,14 +1,12 @@
 import { CnSpace } from '../cn-spaces/cn-space.entity';
 import { CnUser, CnUserLicense } from './cn-user.entity';
 import { CnSpaceUserRole } from '../cn-spaces/cn-space-user.entity';
-import { BlUserCategory } from '@monorepo/back-core-lib';
 
 export interface CnCreateUserDto {
   firstname: string;
   lastname: string;
   email: string;
   password: string;
-  category: BlUserCategory;
   phone?: string;
   captcha?: string;
 }

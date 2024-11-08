@@ -9,6 +9,7 @@ export enum CnErrorText {
   EMAIL_ALREADY_EXIST = 'error.email_already_exist',
   ACCOUNT_NOT_ACTIVATED = 'error.account_not_activated',
   INVALID_LINK = 'error.invalid_link',
+  ACCOUNT_CREATION_ERROR = 'error.account_creation_error',
   ACCOUNT_ALREADY_ACTIVATED = 'error.account_already_activated',
   LINK_EXPIRED = 'error.link_expired',
   STATUS_NOT_CHANGED = 'error.status_not_changed',
