@@ -5,7 +5,7 @@ import { HnUser, HnUserConstellabDTO } from './hn-user.entity';
 import { BlCredentials, BlUnauthorizedException, BlUserService } from '@monorepo/back-core-lib';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnExternalCheckCredentialResponse } from '../auth/hn-central-auth.service';
-import { ClStringHelper, ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
+import { ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import { HnUserDetailDto, HnUserEditDetailDto } from './hn-user.dto';
 
 @Injectable()

@@ -33,9 +33,27 @@ where category != 'ADMIN';
 ALTER TABLE `user`
   MODIFY category enum ('ADMIN', 'USER') not null default 'USER';
 
+create table mail
+(
+  id             varchar(36)                                         not null
+    primary key,
+  recipients     varchar(255)                                        not null,
+  subject        varchar(255)                                        null,
+  mail           text                                                null,
+  status         enum ('PENDING', 'SENT', 'ERROR') default 'PENDING' not null,
+  error          text                                                null,
+  lastModifiedAt datetime                                            not null
+);
+
 # Call migration route POST /labs/migrate-dev-api-key
 ALTER TABLE lab
   MODIFY COLUMN glabDevApiKey varchar(255) not null;
+
+# Rename env variables:
+#   - QUEUE_SERVICE_PASSWORD -> TRANSPORT_PASSWORD
+#   - QUEUE_SERVICE_URL -> TRANSPORT_HOST
+#   - QUEUE_SERVICE_PORT -> TRANSPORT_PORT
+# Delete env variables QUEUE_SERVICE_USER
 
 # 2.0.11
 update scenario

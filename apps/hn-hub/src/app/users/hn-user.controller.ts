@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Put } from '@nestjs/common';
 import { HnUserService } from './hn-user.service';
-import { HnUser, HnUserConstellabDTO } from './hn-user.entity';
-import { EventPattern } from '@nestjs/microservices';
+import { HnUser } from './hn-user.entity';
 import { BlParseEnumPipe, BlPublic } from '@monorepo/back-core-lib';
 import { ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import { HnUserDetailDto, HnUserEditDetailDto } from './hn-user.dto';
@@ -25,11 +24,6 @@ export class HnUserController {
   @Get(':id')
   async getById(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUserDetailDto> {
     return await this.userService.getUserById(id);
-  }
-
-  @EventPattern('user')
-  handleUserCreated(userDto: HnUserConstellabDTO): Promise<void> {
-    return this.userService.createOrUpdate(userDto);
   }
 
   @Put('theme/:theme')

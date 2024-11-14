@@ -105,15 +105,12 @@ export class HnUser {
   }
 }
 
-export class HnUserConstellabDTO {
+export interface HnUserConstellabDTO {
   id: string;
   firstname: string;
   lastname: string;
   email: string;
   category: BlUserCategory;
-  activity?: string;
-  company?: string;
-  biography?: string;
   theme: ClTheme;
   photo: string;
   lang: ClSupportedLanguage;

@@ -16,6 +16,20 @@
 --
 
 
+# 1.3.5
+create table mail
+(
+  id             varchar(36)                                         not null
+    primary key,
+  recipients     varchar(255)                                        not null,
+  subject        varchar(255)                                        null,
+  mail           text                                                null,
+  status         enum ('PENDING', 'SENT', 'ERROR') default 'PENDING' not null,
+  error          text                                                null,
+  lastModifiedAt datetime                                            not null
+);
+
+
 # 1.3.4
 ALTER TABLE `user`
   MODIFY category enum ('ADMIN', 'STUDENT', 'PUBLIC_RESEARCH', 'PRIVATE_INDUSTRY', 'USER') not null;

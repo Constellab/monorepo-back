@@ -13,7 +13,7 @@ export class BlTranslateService {
   constructor(private i18nService: I18nService) {}
 
   public translateIfExists(key: string, options: BlTranslateOptions = {}): Promise<string> {
-    const lang: ClSupportedLanguage = BlCurrentUserHelper.getCurrentLang();
+    const lang: ClSupportedLanguage = options.lang ?? BlCurrentUserHelper.getCurrentLang();
 
     return this.i18nService.translate(key, {
       lang: lang,

@@ -16,13 +16,15 @@ import {
   BlObjectStorageService,
   BlSearchBuilder,
   BlSearchParams,
-  BlTransportService,
+  blTransportSpaceUserQueue,
   BlUnauthorizedException,
   BlUserService,
 } from '@monorepo/back-core-lib';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnUserSearch } from './cn-user-search.class';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class CnUsersService extends BlAbstractService<CnUser> implements BlUserService, OnModuleInit {
@@ -30,7 +32,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     @InjectRepository(CnUserEntity) private repository: Repository<CnUser>,
     private objectStorageService: BlObjectStorageService,
     private configService: CnCoreConfigService,
-    private transportService: BlTransportService
+    @InjectQueue(blTransportSpaceUserQueue) private queue: Queue
   ) {
     super(repository, CnUserEntity);
   }
@@ -181,7 +183,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
   }
 
   public sendUserToTransport(user: CnUser): void {
-    const u: CnUserTransportDto = {
+    const userDTO: CnUserTransportDto = {
       id: user.id,
       firstname: user.firstname,
       lastname: user.lastname,
@@ -194,7 +196,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
       biography: user.biography,
       photo: user.photo,
     };
-    this.transportService.emit('user', u);
+    this.queue.add(blTransportSpaceUserQueue, userDTO);
   }
 
   // Search by name

@@ -2,8 +2,6 @@ import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
 import { CnBricksService } from './cn-bricks.service';
 import { CnBrick } from './cn-brick.entity';
 import { CnBrickVersion } from './cn-brick-version.entity';
-import { EventPattern } from '@nestjs/microservices';
-import { CnBrickSaveDTO } from './cn-brick.dto';
 import { BlVersion } from '@monorepo/back-core-lib';
 
 @Controller('bricks')
@@ -31,10 +29,5 @@ export class CnBricksController {
     @Param('version') brickVersion: string
   ): Promise<CnBrickVersion> {
     return this.service.getBrickVersion(brickName, BlVersion.fromString(brickVersion));
-  }
-
-  @EventPattern('brick')
-  async handleBrickVersion(brickDto: CnBrickSaveDTO): Promise<void> {
-    return this.service.saveBrick(brickDto);
   }
 }

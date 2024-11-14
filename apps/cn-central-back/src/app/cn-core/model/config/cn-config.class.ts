@@ -6,10 +6,10 @@ export type CnEnvironmentProfile = 'dev' | 'docker' | 'preprod' | 'prod' | 'test
 export const CN_ENVIRONMENT_PROFILE_KEY = 'ENVIRONMENT_PROFILE';
 export const CN_ENVIRONMENT_PROFILE_PROD_VALUE = 'prod';
 
-export const CN_RABBITMQ_USER_KEY = 'RABBITMQ_USER';
-export const CN_RABBITMQ_PASSWORD_KEY = 'RABBITMQ_PASSWORD';
-export const CN_RABBITMQ_URL_KEY = 'RABBITMQ_URL';
-export const CN_RABBITMQ_PORT_KEY = 'RABBITMQ_PORT';
+export const CN_QUEUE_SERVICE_USER_KEY = 'QUEUE_SERVICE_USER';
+export const CN_QUEUE_SERVICE_PASSWORD_KEY = 'QUEUE_SERVICE_PASSWORD';
+export const CN_QUEUE_SERVICE_HOST_KEY = 'QUEUE_SERVICE_HOST';
+export const CN_QUEUE_SERVICE_PORT_KEY = 'QUEUE_SERVICE_PORT';
 
 /**
  * Object containing info for database connexion

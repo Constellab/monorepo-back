@@ -40,11 +40,10 @@ import {
   BlJwtModule,
   BlLoggerConfig,
   BlMailModule,
-  BlMailModuleConfig,
   BlObjectStorageModule,
   BlRequestContextMiddleware,
-  BlTransportModule,
   BlTransportModuleConfig,
+  blTransportRedisForRoot,
 } from '@monorepo/back-core-lib';
 import { cnJwtConfig } from './app/cn-auth/cn-jwt.config';
 import { Request } from 'express';
@@ -69,6 +68,8 @@ import { CnServerAggregateModule } from './app/cn-servers-info/cn-server-aggrega
 import { CnSettingsModule } from './app/cn-settings/cn-settings.module';
 import { CnCommunityModule } from './app/cn-community/cn-community.module';
 import { CnLogRequestMiddleware } from './app/cn-core/middleware/cn-log-request-middleware.service';
+import { BullModule } from '@nestjs/bullmq';
+import { CnMailConfig } from './app/cn-core/model/config/cn-mail.config';
 
 function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();
@@ -107,15 +108,6 @@ function configureJwtModule(configService: CnCoreConfigService, userService: CnU
   };
 }
 
-function configureMailModule(configService: CnCoreConfigService): BlMailModuleConfig {
-  return {
-    mailConfig: configService.getMailConfig(),
-    templateFolder: join(__dirname, 'assets/templates/'),
-    defaultLayout: 'main-',
-    defaultData: { contactMail: configService.getCustomerSuccessMail() },
-  };
-}
-
 function configureTransportModule(configService: CnCoreConfigService): BlTransportModuleConfig {
   return configService.getTransportModuleConfig();
 }
@@ -132,7 +124,7 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
     // let the config module on top of the imports
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: join(__dirname, 'environments', 'dev.env'),
+      envFilePath: join(__dirname, 'environments', 'cn-dev.env'),
     }),
 
     CnCoreConfigModule.forRoot({ distFolder: join(__dirname) }),
@@ -176,17 +168,22 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
       inject: [CnCoreConfigService, CnUsersService],
     }),
 
-    BlMailModule.forRootAsync({
-      imports: [CnCoreModule],
-      useFactory: configureMailModule,
-      inject: [CnCoreConfigService],
-    }),
+    BullModule.forRootAsync(
+      blTransportRedisForRoot({
+        useFactory: configureTransportModule,
+        imports: [CnCoreModule],
+        inject: [CnCoreConfigService],
+      })
+    ),
 
-    BlTransportModule.forRootAsync({
-      useFactory: configureTransportModule,
-      imports: [CnCoreModule],
-      inject: [CnCoreConfigService],
-    }),
+    BlMailModule.forRootAsync(
+      CnMailConfig.configureMailModule(),
+      CnMailConfig.queueName,
+      CnMailConfig.mailServiceType,
+      CnMailConfig.processorType,
+      CnMailConfig.currentUserIsAdmin
+    ),
+
     ThrottlerModule.forRoot({
       throttlers: [
         {

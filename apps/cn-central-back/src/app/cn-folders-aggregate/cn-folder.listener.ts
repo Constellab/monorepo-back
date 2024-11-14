@@ -146,7 +146,10 @@ export class CnFolderListener {
         [folderUser.user],
         {
           content: text,
-          user: folderUser.user,
+          user: {
+            firstname: folderUser.user.firstname,
+            lastname: folderUser.user.lastname,
+          },
           title: parentFolder.name,
           link: fullLink,
         },

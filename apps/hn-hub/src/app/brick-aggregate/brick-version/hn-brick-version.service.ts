@@ -6,13 +6,13 @@ import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-versi
 import {
   BlAbstractPaginatedService,
   BlAbstractService,
-  BlTransportService,
+  blTransportCommunityBrickQueue,
   BlUnauthorizedException,
   BlVersion,
 } from '@monorepo/back-core-lib';
 import { HnBrickTransportDto } from '../brick/hn-brick.dto';
 import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
-import { ClPage, ClPageI, ClStringHelper } from '@monorepo/core-lib';
+import { ClPage, ClStringHelper } from '@monorepo/core-lib';
 import { HnBrickVersionReferenceService } from '../../brick-version-reference/hn-brick-version-reference.service';
 import {
   HnBrickVersionReference,
@@ -20,14 +20,15 @@ import {
 } from '../../brick-version-reference/hn-brick-version-reference.entity';
 import { HnErrorText } from '../../core/model/config/hn-error-text.class';
 import { HnBrickVersionDto } from './hn-brick-version.dto';
-import { HnBrick } from '../brick/hn-brick.entity';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
   constructor(
     @InjectRepository(HnBrickVersion)
     private brickVersionsRepository: Repository<HnBrickVersion>,
-    private transportService: BlTransportService,
+    @InjectQueue(blTransportCommunityBrickQueue) private queue: Queue,
     private brickVersionReferenceService: HnBrickVersionReferenceService,
     private dataSource: DataSource
   ) {
@@ -317,7 +318,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
         },
       ],
     };
-    this.transportService.emit('brick', brick);
+    this.queue.add('brick', brick);
   }
 
   public async getAndCheckBrickVersion(brickName: string, versionStr: string): Promise<HnBrickVersion> {

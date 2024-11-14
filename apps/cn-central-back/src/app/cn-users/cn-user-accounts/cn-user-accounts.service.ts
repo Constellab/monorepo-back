@@ -138,7 +138,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     await this.sendSignupEmail(user);
   }
 
-  private sendSignupEmail(user: CnUser): Promise<boolean> {
+  private async sendSignupEmail(user: CnUser): Promise<void> {
     // generate the activation token
     const token: string = this.encodeUserToken(user.id, this.oneDay);
 
@@ -146,8 +146,11 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     const activationUrl: string =
       this.configService.getApiUrl() + this.controllerRoute + '/activation/' + token;
 
-    return this.mailService.sendMailToUser(CnMailTemplate.signup, user, {
-      user: user,
+    await this.mailService.sendMailToUser(CnMailTemplate.signup, user, {
+      user: {
+        firstname: user.firstname,
+        lastname: user.lastname,
+      },
       activationUrl: activationUrl,
     });
   }
@@ -183,9 +186,12 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
    * @param user
    * @private
    */
-  private async sendAccountValidatedMail(user: CnUser): Promise<boolean> {
-    return this.mailService.sendMailToUser(CnMailTemplate.signup_validated, user, {
-      user: user,
+  private async sendAccountValidatedMail(user: CnUser): Promise<void> {
+    await this.mailService.sendMailToUser(CnMailTemplate.signup_validated, user, {
+      user: {
+        firstname: user.firstname,
+        lastname: user.lastname,
+      },
       documentationLink: this.frontService.getCommunityProductDocUrl(),
       communityLink: this.configService.getCommunityFrontUrl(),
       contactMail: this.configService.getCustomerSuccessMail(),
@@ -204,11 +210,11 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
     if (user != null) {
       // send mail asynchronously
-      this.sendPasswordForgottenMail(user);
+      await this.sendPasswordForgottenMail(user);
     }
   }
 
-  private sendPasswordForgottenMail(user: CnUser): void {
+  private async sendPasswordForgottenMail(user: CnUser): Promise<void> {
     // generate the activation token
     const token: string = this.encodeUserToken(user.id, this.oneDay);
 
@@ -216,13 +222,13 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     const passwordForgottenLink: string = this.frontService.getBaseWebsiteURL() + '/reset-password/' + token;
 
     // send mail asynchronously
-    this.mailService
-      .sendMailToUser(CnMailTemplate.password_forgotten, user, {
-        user: user,
-        passwordForgottenLink: passwordForgottenLink,
-      })
-      .then()
-      .catch((error) => this.logger.error('Error while sending password forgotten mail: ' + error));
+    await this.mailService.sendMailToUser(CnMailTemplate.password_forgotten, user, {
+      user: {
+        firstname: user.firstname,
+        lastname: user.lastname,
+      },
+      passwordForgottenLink: passwordForgottenLink,
+    });
   }
 
   async resetPassword(token: string, password: string): Promise<void> {
@@ -247,7 +253,10 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     // send mail asynchronously
     this.mailService
       .sendMailToUser(CnMailTemplate.account_locked, user, {
-        user: user,
+        user: {
+          firstname: user.firstname,
+          lastname: user.lastname,
+        },
         failedLoginLocked: failedLoginLock,
         unlockUrl: unlockUrl,
       })

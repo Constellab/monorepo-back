@@ -11,21 +11,18 @@ import {
   BlBadRequestException,
   BlSearchBuilder,
   BlSearchParams,
-  BlTransportService,
+  blTransportSpaceSpaceUserQueue,
+  BlTransportSpaceUserPattern,
 } from '@monorepo/back-core-lib';
 import { CnSpaceUserSearch } from './cn-space-user-search.class';
-
-export enum CnSpaceUserAction {
-  CREATE = 'createSpaceUser',
-  REMOVE = 'removeSpaceUser',
-  UPDATE = 'updateSpaceUser',
-}
+import { Queue } from 'bullmq';
+import { InjectQueue } from '@nestjs/bullmq';
 
 @Injectable()
 export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> {
   constructor(
     @InjectRepository(CnSpaceUser) private repository: Repository<CnSpaceUser>,
-    private transportService: BlTransportService
+    @InjectQueue(blTransportSpaceSpaceUserQueue) private queue: Queue
   ) {
     super(repository, CnSpaceUser);
   }
@@ -102,7 +99,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
       spaceId: spaceId,
     };
 
-    this.sendActionOnSpaceUserToTransport(spaceUserDeleted, CnSpaceUserAction.REMOVE);
+    this.sendActionOnSpaceUserToTransport(spaceUserDeleted, BlTransportSpaceUserPattern.REMOVE);
   }
 
   public async activateUser(spaceId: string, userId: string): Promise<CnSpaceUser> {
@@ -113,7 +110,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     }
     spaceUser.active = true;
     const spaceUserSave = await this.repository.save(spaceUser);
-    this.sendActionOnSpaceUserToTransport(spaceUserSave, CnSpaceUserAction.UPDATE);
+    this.sendActionOnSpaceUserToTransport(spaceUserSave, BlTransportSpaceUserPattern.UPDATE);
     return spaceUserSave;
   }
 
@@ -125,7 +122,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     }
     spaceUser.active = false;
     const spaceUserSave = await this.repository.save(spaceUser);
-    this.sendActionOnSpaceUserToTransport(spaceUserSave, CnSpaceUserAction.UPDATE);
+    this.sendActionOnSpaceUserToTransport(spaceUserSave, BlTransportSpaceUserPattern.UPDATE);
     return spaceUserSave;
   }
 
@@ -138,7 +135,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
 
     spaceUser.role = role;
     const spaceUserSave = await this.repository.save(spaceUser);
-    this.sendActionOnSpaceUserToTransport(spaceUserSave, CnSpaceUserAction.UPDATE);
+    this.sendActionOnSpaceUserToTransport(spaceUserSave, BlTransportSpaceUserPattern.UPDATE);
     return spaceUserSave;
   }
 
@@ -280,13 +277,13 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
       addedBy: spaceUser.addedBy,
       createdAt: spaceUser.createdAt,
     };
-    this.transportService.emit(CnSpaceUserAction.CREATE, sU);
+    this.queue.add(BlTransportSpaceUserPattern.CREATE, sU);
   }
 
   public sendActionOnSpaceUserToTransport(
     spaceUser: Partial<CnSpaceUser>,
-    spaceUserAction: CnSpaceUserAction
+    spaceUserAction: BlTransportSpaceUserPattern
   ): void {
-    this.transportService.emit(spaceUserAction, spaceUser);
+    this.queue.add(spaceUserAction, spaceUser);
   }
 }

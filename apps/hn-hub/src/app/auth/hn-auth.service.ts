@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { HnUserService } from '../users/hn-user.service';
 import { BlCredentials, BlCredentials2Fa, BlJwtService } from '@monorepo/back-core-lib';
-import { HnUser, HnUserConstellabDTO } from '../users/hn-user.entity';
+import { HnUser } from '../users/hn-user.entity';
 import { HnCentralAuthService } from './hn-central-auth.service';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 
@@ -56,16 +56,5 @@ export class HnAuthService {
     }
 
     return this.jwtService.generateToken(dbUser.id, dbUser.email);
-  }
-
-  async createOrUpdateUser(userFromCentral: HnUser): Promise<void> {
-    const user: HnUserConstellabDTO = new HnUserConstellabDTO();
-    user.id = userFromCentral.id;
-    user.firstname = userFromCentral.firstname;
-    user.lastname = userFromCentral.lastname;
-    user.lang = userFromCentral.lang;
-    user.email = userFromCentral.email;
-
-    return await this.userService.createOrUpdate(user);
   }
 }

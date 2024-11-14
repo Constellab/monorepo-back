@@ -25,14 +25,23 @@ export class CnSpacesMailService {
     userInfo: CnUserSpaceInfo
   ): Promise<void> {
     const data = {
-      user: userInfo.user,
+      user: {
+        firstname: userInfo.user.firstname,
+        lastname: userInfo.user.lastname,
+        email: userInfo.user,
+      },
       spaceName: userInfo.space.name,
       nbLicenses: request.nbLicenses,
       text: request.text,
     };
 
     const receiver = this.configService.getCustomerSuccessMail();
-    await this.mailService.sendMail(CnMailTemplate.request_new_licenses, receiver, userInfo.user.lang, data);
+    await this.mailService.sendMailAndCheck({
+      templateName: CnMailTemplate.request_new_licenses,
+      recipients: receiver,
+      lang: userInfo.user.lang,
+      data: data,
+    });
   }
 
   public async sendInvitationMail(
@@ -43,10 +52,13 @@ export class CnSpacesMailService {
     let template: string;
     let lang: ClSupportedLanguage;
     const data = {
-      admin: invit.createdBy,
+      admin: {
+        firstname: invit.createdBy.firstname,
+        lastname: invit.createdBy.lastname,
+      },
       validityInDays: validityInDays,
       url: this.frontService.getSignupSpaceUrl(invit.space.domain, invit.code),
-      user: null as CnUser,
+      user: null as any,
       spaceName: invit.space.name,
     };
 
@@ -54,7 +66,10 @@ export class CnSpacesMailService {
     if (user) {
       template = CnMailTemplate.space_invit_existing_user;
       // add info about the user
-      data.user = user;
+      data.user = {
+        firstname: user.firstname,
+        lastname: user.lastname,
+      };
       // use lang of the destination user
       lang = user.lang;
     } else {
@@ -63,6 +78,11 @@ export class CnSpacesMailService {
       lang = invit.createdBy.lang;
     }
 
-    return this.mailService.sendMail(template, invit.userMail, lang, data);
+    return this.mailService.sendMail({
+      templateName: template,
+      recipients: invit.userMail,
+      lang,
+      data,
+    });
   }
 }

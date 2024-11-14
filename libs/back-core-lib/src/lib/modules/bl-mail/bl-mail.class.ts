@@ -2,6 +2,7 @@
 import { ModuleMetadata } from '@nestjs/common/interfaces';
 
 export const BL_MAIL_CONFIG_PROVIDER = Symbol();
+export const BL_MAIL_CAN_GET_MAIL_PROVIDER = Symbol();
 
 /**
  * Information to configure mail
@@ -29,3 +30,12 @@ export interface BlMailModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'
   useFactory?: (...args: any[]) => Promise<BlMailModuleConfig> | BlMailModuleConfig;
   inject?: any[];
 }
+
+export interface BlMailQueue {
+  id: string;
+}
+
+/**
+ * Function called on mail route to check if the current user is an admin
+ */
+export type BlCurrentUserIsAdmin = () => boolean;

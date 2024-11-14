@@ -1,28 +1,19 @@
 import { Injectable, LogLevel } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
+  HN_BUCKET_AGENTS_BACKUP_KEY,
+  HN_BUCKET_AGENTS_KEY,
   HN_BUCKET_DOCUMENTATION_BACKUP_KEY,
   HN_BUCKET_DOCUMENTATION_KEY,
   HN_BUCKET_ICON_BACKUP_KEY,
   HN_BUCKET_ICON_KEY,
-  HN_BUCKET_AGENTS_BACKUP_KEY,
-  HN_BUCKET_AGENTS_KEY,
   HN_BUCKET_STORIES_BACKUP_KEY,
   HN_BUCKET_STORIES_KEY,
   HN_ENVIRONMENT_PROFILE_KEY,
   HN_ENVIRONMENT_PROFILE_PROD_VALUE,
-  HN_RABBITMQ_PASSWORD_KEY,
-  HN_RABBITMQ_PORT_KEY,
-  HN_RABBITMQ_URL_KEY,
-  HN_RABBITMQ_USER_KEY,
   HnEnvironmentProfile,
 } from '../../model/config/hn-config.class';
-import {
-  BlMailConfig,
-  BlObjectStorageCredentials,
-  BlTransportModuleConfig,
-  blTransportQueueHub,
-} from '@monorepo/back-core-lib';
+import { BlMailConfig, BlObjectStorageCredentials, BlTransportModuleConfig } from '@monorepo/back-core-lib';
 import { HnDatabaseConfig } from '../../model/config/hn-database-config.class';
 
 @Injectable()
@@ -67,11 +58,9 @@ export class HnCoreConfigService {
 
   public getTransportModuleConfig(): BlTransportModuleConfig {
     return {
-      queue: blTransportQueueHub,
-      username: this.configService.get(HN_RABBITMQ_USER_KEY),
-      password: this.configService.get(HN_RABBITMQ_PASSWORD_KEY),
-      url: this.configService.get(HN_RABBITMQ_URL_KEY),
-      port: this.configService.get(HN_RABBITMQ_PORT_KEY),
+      password: this.configService.get('QUEUE_SERVICE_PASSWORD'),
+      host: this.configService.get('QUEUE_SERVICE_HOST'),
+      port: this.configService.get('QUEUE_SERVICE_PORT'),
     };
   }
 

@@ -35,26 +35,38 @@ export class CnLabMailService {
     for (const receiver of sendMailDTO.receiver_ids) {
       const user = await this.userService.findByIdAndCheck(receiver);
       // add the user info to data
-      const data = Object.assign({}, sendMailDTO.data, { user: user });
+      const data = Object.assign({}, sendMailDTO.data, {
+        user: {
+          firstname: user.firstname,
+          lastname: user.lastname,
+          mail: user.email,
+        },
+      });
       await this.mailService.sendMailToUser(template, user, data, sendMailDTO.subject);
     }
   }
 
   public async sendRequestLabMail(request: CnRequestLab, user: CnUser, space: CnSpace): Promise<void> {
-    await this.mailService.sendMail(
-      CnMailTemplate.request_lab,
-      this.configService.getCustomerSuccessMail(),
-      ClSupportedLanguage.en,
-      {
-        user: user,
-        space: space,
+    await this.mailService.sendMailAndCheck({
+      templateName: CnMailTemplate.request_lab,
+      recipients: this.configService.getCustomerSuccessMail(),
+      lang: ClSupportedLanguage.en,
+      data: {
+        user: {
+          firstname: user.firstname,
+          lastname: user.lastname,
+          mail: user.email,
+        },
+        space: {
+          name: space.name,
+        },
         cloudProvider: request.cloudProvider,
         cpuCount: request.cpuCount,
         storageSize: request.storageSize,
         labNeed: request.labNeed,
         additionalInfo: request.additionalInfo,
-      }
-    );
+      },
+    });
   }
 
   private getLabTemplate(type: CnLabMailTemplate): string {
@@ -92,11 +104,9 @@ export class CnLabMailService {
     const labUrl = this.frontService.getLabUrl(space.domain, lab.id);
     await this.supportService.sendMailToSupport(CnMailTemplate.support_lab_start_error, {
       lab: {
-        id: lab.id,
         name: lab.name,
       },
       space: {
-        id: space.id,
         name: space.name,
       },
       labUrl: labUrl,
@@ -108,11 +118,9 @@ export class CnLabMailService {
     const labUrl = this.frontService.getLabUrl(space.domain, lab.id);
     await this.supportService.sendMailToSupport(CnMailTemplate.support_lab_backup_error, {
       lab: {
-        id: lab.id,
         name: lab.name,
       },
       space: {
-        id: space.id,
         name: space.name,
       },
       labUrl: labUrl,

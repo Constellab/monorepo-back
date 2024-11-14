@@ -7,6 +7,8 @@ import { HnBrickVersionReferenceService } from '../../brick-version-reference/hn
 import { HnUserService } from '../../users/hn-user.service';
 import { HnUserModule } from '../../users/hn-user.module';
 import { HnCoreModule } from '../../core/hn-core.module';
+import { BullModule } from '@nestjs/bullmq';
+import { blTransportCommunityBrickQueue } from '@monorepo/back-core-lib';
 
 @Module({
   imports: [
@@ -15,6 +17,9 @@ import { HnCoreModule } from '../../core/hn-core.module';
     HnCoreModule,
     HnBrickVersionReferenceModule,
     HnUserModule,
+    BullModule.registerQueue({
+      name: blTransportCommunityBrickQueue,
+    }),
   ],
   exports: [TypeOrmModule, HnBrickVersionService],
   providers: [HnBrickVersionService, HnBrickVersionReferenceService, HnUserService],

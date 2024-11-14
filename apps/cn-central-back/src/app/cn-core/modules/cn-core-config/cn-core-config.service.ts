@@ -3,19 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import {
   CN_ENVIRONMENT_PROFILE_KEY,
   CN_ENVIRONMENT_PROFILE_PROD_VALUE,
-  CN_RABBITMQ_PASSWORD_KEY,
-  CN_RABBITMQ_PORT_KEY,
-  CN_RABBITMQ_URL_KEY,
-  CN_RABBITMQ_USER_KEY,
   CnDatabaseConfig,
   CnEnvironmentProfile,
 } from '../../model/config/cn-config.class';
-import {
-  BlMailConfig,
-  BlObjectStorageCredentials,
-  BlTransportModuleConfig,
-  blTransportQueueConstellabUser,
-} from '@monorepo/back-core-lib';
+import { BlMailConfig, BlObjectStorageCredentials, BlTransportModuleConfig } from '@monorepo/back-core-lib';
 import { CN_CORE_MODULE_CONFIG, CnCoreConfigModuleConfig } from './cn-core-module-config.class';
 import { join } from 'path';
 
@@ -120,11 +111,9 @@ export class CnCoreConfigService {
 
   public getTransportModuleConfig(): BlTransportModuleConfig {
     return {
-      queue: blTransportQueueConstellabUser,
-      username: this.configService.get(CN_RABBITMQ_USER_KEY),
-      password: this.configService.get(CN_RABBITMQ_PASSWORD_KEY),
-      url: this.configService.get(CN_RABBITMQ_URL_KEY),
-      port: this.configService.get(CN_RABBITMQ_PORT_KEY),
+      password: this.configService.get('QUEUE_SERVICE_PASSWORD'),
+      host: this.configService.get('QUEUE_SERVICE_HOST'),
+      port: this.getConfigNumber('QUEUE_SERVICE_PORT'),
     };
   }
 

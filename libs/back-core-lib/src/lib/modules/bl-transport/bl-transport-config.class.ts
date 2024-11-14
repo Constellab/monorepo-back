@@ -1,11 +1,11 @@
 import { ModuleMetadata } from '@nestjs/common/interfaces';
+import { SharedBullAsyncConfiguration } from '@nestjs/bullmq';
+import * as Bull from 'bullmq';
 
 export interface BlTransportModuleConfig {
-  queue: string;
-  username: string;
+  host: string;
   password: string;
-  url: string;
-  port: number | string;
+  port: number;
 }
 
 export interface BlTransportModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
@@ -13,20 +13,47 @@ export interface BlTransportModuleAsyncOptions extends Pick<ModuleMetadata, 'imp
   inject?: any[];
 }
 
-export const BL_CLIENT_PROXY_NAME = 'CLIENT_SERVICE';
-
-/**
- * Function to build the RabbitMQ url from information
- */
-export function blGetRabbitMQUrl(
-  username: string,
-  password: string,
-  url: string,
-  port: number | string
-): string {
-  return `amqp://${username}:${password}@${url}:${port}`;
+function blTransportRedisFactory(config: BlTransportModuleConfig): Bull.QueueOptions {
+  return {
+    connection: {
+      host: config.host,
+      password: config.password,
+      port: typeof config.port === 'number' ? config.port : parseInt(config.port),
+    },
+    defaultJobOptions: {
+      attempts: 5,
+      backoff: {
+        delay: 5000,
+        type: 'exponential',
+      },
+    },
+  };
 }
 
-export const blTransportQueueHub = 'hub_queue';
+export function blTransportRedisForRoot(
+  transportOptions: BlTransportModuleAsyncOptions
+): SharedBullAsyncConfiguration {
+  return {
+    useFactory: (...args: any[]) => blTransportRedisFactory(transportOptions.useFactory(...args)),
+    inject: transportOptions.inject,
+    imports: transportOptions.imports,
+  };
+}
 
-export const blTransportQueueConstellabUser = 'constellab_user';
+// queues filled from space
+export const blTransportSpaceUserQueue = 'user_queue';
+export const blTransportSpaceSpaceUserQueue = 'space_user_queue';
+
+//
+export enum BlTransportSpaceUserPattern {
+  CREATE = 'createSpaceUser',
+  REMOVE = 'removeSpaceUser',
+  UPDATE = 'updateSpaceUser',
+}
+
+//queues filled from community
+export const blTransportCommunityBrickQueue = 'brick_queue';
+
+// internal queues for the mail service
+export const blTransportSpaceMailQueue = 'space_mail_queue';
+export const blTransportCommunityMailQueue = 'community_mail_queue';

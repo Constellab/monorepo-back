@@ -1,28 +1,31 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import { join } from 'path';
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { ClHelpService, ClSupportedLanguage } from '@monorepo/core-lib';
-import { BL_MAIL_CONFIG_PROVIDER, BlMailModuleConfig } from './bl-mail.class';
-import { BlTranslateService } from '../bl-translate/bl-translate.service';
 import { BlUser } from '../../models/bl-user/bl-user.class';
-import * as hbs from 'nodemailer-express-handlebars';
-import * as nodemailer from 'nodemailer';
+import { Queue } from 'bullmq';
+import { Inject, Logger } from '@nestjs/common';
+import { BlMailSenderService } from './bl-mail-sender.service';
+import { BlMailQueue } from './bl-mail.class';
+import { BlMailEntityService } from './bl-mail-entity.service';
+import { BlMailEntity, BlMailStatus } from './bl-mail.entity';
+import { Exception } from 'handlebars';
+
+export interface BlSendMailDTO {
+  templateName: string;
+  recipients: string;
+  lang: ClSupportedLanguage;
+  data?: Record<string, any>;
+  subject?: string;
+}
 
 /**
- * Service to send mail using .hbs template in assets/template
- * it supports internationalisation
+ * this class must be extended to inject the correct queue
  */
-@Injectable()
 export class BlMailService {
+  @Inject(BlMailSenderService) private mailService: BlMailSenderService;
+  @Inject(BlMailEntityService) private mailEntityService: BlMailEntityService;
+
   private readonly logger = new Logger(BlMailService.name);
 
-  // base key for i18n subjects
-  private readonly subjectI18nBase: string = 'mail-subject.';
-
-  constructor(
-    @Inject(BL_MAIL_CONFIG_PROVIDER) private moduleConfig: BlMailModuleConfig,
-    private translateService: BlTranslateService
-  ) {}
+  constructor(private queue: Queue) {}
 
   /**
    * Email one user
@@ -44,7 +47,13 @@ export class BlMailService {
 
     let result: boolean = true;
     for (const rec of receivers) {
-      const res = await this.sendMail(template, rec.email, rec.lang, data, subject);
+      const res = await this.sendMail({
+        templateName: template,
+        recipients: rec.email,
+        lang: rec.lang,
+        data: data,
+        subject: subject,
+      });
 
       if (!res) result = false;
     }
@@ -52,83 +61,51 @@ export class BlMailService {
     return result;
   }
 
-  public async sendMail(
-    template: string,
-    recipients: string,
-    lang: ClSupportedLanguage,
-    data?: Record<string, any>,
-    subject?: string
-  ): Promise<boolean> {
-    const transporter = nodemailer.createTransport(this.getTransportConfig());
+  public async sendMail(mail: BlSendMailDTO): Promise<boolean> {
+    return this.sendMailAndCheck(mail)
+      .then(() => true)
+      .catch(() => false);
+  }
 
-    // use https://nicholaspretorius.github.io/til0025/ example for configuration
-    // configure the mail to use template .hbs files
-    transporter.use('compile', hbs(this.getTemplateOptions(lang)));
+  public async sendMailAndCheck(mail: BlSendMailDTO): Promise<void> {
+    const mailEntity = new BlMailEntity();
+    mailEntity.recipients = mail.recipients;
+    mailEntity.status = BlMailStatus.PENDING;
 
-    // add default data to the data passed in parameter
-    const completeData = Object.assign({}, this.moduleConfig.defaultData, data);
+    try {
+      mailEntity.mail = await this.mailService.generateMailHTML(mail.templateName, mail.lang, mail.data);
+    } catch (e) {
+      mailEntity.status = BlMailStatus.ERROR;
+      mailEntity.error = e.toString();
+      await this.mailEntityService.save(mailEntity);
+      throw e;
+    }
 
-    const mailOptions = {
-      from: this.getMailSender(),
-      to: recipients,
-      subject: subject ? subject : await this.translateSubject(template),
-      template: this.getTemplatePath(template, lang),
-      context: completeData,
+    try {
+      mailEntity.subject = await this.mailService.generateSubject(
+        mail.subject ?? mail.templateName,
+        mail.lang
+      );
+    } catch (e) {
+      mailEntity.status = BlMailStatus.ERROR;
+      mailEntity.error = e.toString();
+      await this.mailEntityService.save(mailEntity);
+      throw e;
+    }
+
+    // save the mail in the database
+    await this.mailEntityService.save(mailEntity);
+
+    const queueMail: BlMailQueue = {
+      id: mailEntity.id,
     };
-
-    return new Promise((resolve) => {
-      transporter.sendMail(mailOptions, (error: Error | null) => {
-        if (error) {
-          this.logger.error(
-            `Error during mail send using template ${template} to ${recipients} in lang ${lang}`
-          );
-          this.logger.error(error);
-          resolve(false);
-        }
-        resolve(true);
-      });
+    await this.queue.add('mail', queueMail).catch(async (error) => {
+      const strError = `Error during mail queueing: ${error}`;
+      this.logger.error(strError);
+      mailEntity.status = BlMailStatus.ERROR;
+      mailEntity.error = strError;
+      await this.mailEntityService.save(mailEntity);
+      throw new Exception(strError);
     });
-  }
-
-  // return the correct template path based on lang
-  private getTemplatePath(template: string, lang: ClSupportedLanguage): string {
-    return join(lang, template);
-  }
-
-  // get the translation for the subject form the template name
-  private translateSubject(template: string): Promise<string> {
-    return this.translateService.translateIfExists(this.subjectI18nBase + template);
-  }
-
-  // return the config mail for transport
-  private getTransportConfig(): SMTPTransport.Options {
-    return {
-      host: this.moduleConfig.mailConfig.host,
-      port: this.moduleConfig.mailConfig.port,
-      secure: this.moduleConfig.mailConfig.secure,
-      auth: {
-        user: this.moduleConfig.mailConfig.user,
-        pass: this.moduleConfig.mailConfig.password,
-      },
-    };
-  }
-
-  private getMailSender(): string {
-    return this.moduleConfig.mailConfig.sender;
-  }
-
-  private getTemplateOptions(lang: ClSupportedLanguage): any {
-    // configuration for the template with hbs
-    return {
-      viewEngine: {
-        extname: '.hbs', // handlebars extension
-        layoutsDir: this.moduleConfig.templateFolder, // location of handlebars templates
-        // name of main template, will wrap all other templates
-        defaultLayout: this.moduleConfig.defaultLayout ? this.moduleConfig.defaultLayout + lang : null,
-        partialsDir: this.moduleConfig.templateFolder, // location of your subtemplates aka. header, footer etc
-      },
-      viewPath: this.moduleConfig.templateFolder,
-      extName: '.hbs',
-    };
   }
 }

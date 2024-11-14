@@ -37,20 +37,28 @@ export class HnAgentCoAuthorInviteService {
       agentTitle: agent.title,
       url: this.frontService.getAgentInviteUrl(agentCoAuthorInvite.token),
       invitUser: inviteMail.createdBy,
-      user: null as HnUser,
+      user: null as any,
       subscribeUrl: '',
     };
 
     if (user) {
       template = HnMailTemplate.agent_invite_existing_user;
       lang = user.lang;
-      data.user = user;
+      data.user = {
+        firstname: user.firstname,
+        lastname: user.lastname,
+      };
     } else {
       template = HnMailTemplate.agent_invite_new_user;
       lang = inviteMail.createdBy.lang;
       data.subscribeUrl = this.frontService.getConstellabLoginUrl();
     }
-    return this.mailService.sendMail(template, coAuthorMail, lang, data);
+    return await this.mailService.sendMail({
+      templateName: template,
+      recipients: coAuthorMail,
+      lang: lang,
+      data: data,
+    });
   }
 
   async getAgentCoAuthorInviteByToken(token: string): Promise<HnAgentCoAuthorInvite> {

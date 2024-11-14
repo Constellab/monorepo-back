@@ -1,16 +1,8 @@
 import { Controller, Get, Param, ParseUUIDPipe, Req } from '@nestjs/common';
-import { EventPattern } from '@nestjs/microservices';
 import { HnSpaceAggregateService } from './hn-space-aggregate.service';
-import { HnSpaceUser } from './space-user/hn-space-user.entity';
 import { BlPublic } from '@monorepo/back-core-lib';
 import { HnSpaceDto } from './space/hn-space.dto';
 import { Request } from 'express';
-
-export enum HnSpaceUserAction {
-  CREATE = 'createSpaceUser',
-  REMOVE = 'removeSpaceUser',
-  UPDATE = 'updateSpaceUser',
-}
 
 @Controller('space')
 export class HnSpaceController {
@@ -51,25 +43,5 @@ export class HnSpaceController {
   @Get('common-space/:userId')
   async getUserCommonSpace(@Param('userId', new ParseUUIDPipe()) userId: string): Promise<HnSpaceDto[]> {
     return this.spaceAggregateService.getUserCommonSpace(userId);
-  }
-
-  /////////////////////////////////// Space User Queue ///////////////////////////////////
-
-  /**
-   * Handle space user created or updated
-   * @param spaceUserDto
-   */
-  @EventPattern(HnSpaceUserAction.CREATE || HnSpaceUserAction.UPDATE)
-  handleSpaceUserCreatedOrUpdated(spaceUserDto: HnSpaceUser): Promise<void> {
-    return this.spaceAggregateService.createOrUpdateSpaceUser(spaceUserDto);
-  }
-
-  /**
-   * Handle space user deleted
-   * @param spaceUserDto
-   */
-  @EventPattern(HnSpaceUserAction.REMOVE)
-  handleSpaceUserDeleted(spaceUserDto: HnSpaceUser): Promise<void> {
-    return this.spaceAggregateService.deleteSpaceUser(spaceUserDto);
   }
 }

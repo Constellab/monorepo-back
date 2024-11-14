@@ -38,20 +38,28 @@ export class HnBrickUserInviteService {
       brickTitle: brick.name,
       url: this.frontService.getBrickInviteUrl(brickUserMail.token),
       invitUser: inviteMail.createdBy,
-      user: null as HnUser,
+      user: null as any,
       subscribeUrl: '',
     };
 
     if (user) {
       template = HnMailTemplate.brick_invite_existing_user;
       lang = user.lang;
-      data.user = user;
+      data.user = {
+        firstname: user.firstname,
+        lastname: user.lastname,
+      };
     } else {
       template = HnMailTemplate.brick_invite_new_user;
       lang = inviteMail.createdBy.lang;
       data.subscribeUrl = this.frontService.getConstellabLoginUrl();
     }
-    return this.mailService.sendMail(template, userMail, lang, data);
+    return this.mailService.sendMail({
+      templateName: template,
+      recipients: userMail,
+      lang: lang,
+      data: data,
+    });
   }
 
   async getAndCheckInvite(token: string): Promise<HnBrickUserInvite> {

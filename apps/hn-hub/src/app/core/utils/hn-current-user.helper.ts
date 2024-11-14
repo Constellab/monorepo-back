@@ -28,4 +28,8 @@ export class HnCurrentUserHelper extends BlCurrentUserHelper {
     }
     return user;
   }
+
+  static isAdmin(): boolean {
+    return this.getAndCheckCurrentUser().isAdmin();
+  }
 }

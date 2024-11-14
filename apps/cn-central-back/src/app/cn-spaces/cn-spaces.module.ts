@@ -17,6 +17,8 @@ import { CnObjectStoragesModule } from '../cn-object-storages/cn-object-storages
 import { CnDocumentModule } from '../cn-folders-aggregate/cn-documents/cn-document.module';
 import { CnSpaceListener } from './cn-space.listener';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { BullModule } from '@nestjs/bullmq';
+import { blTransportSpaceSpaceUserQueue } from '@monorepo/back-core-lib';
 
 /**
  * Module to manage spaces
@@ -31,6 +33,9 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     CnDocumentModule,
 
     EventEmitterModule,
+    BullModule.registerQueue({
+      name: blTransportSpaceSpaceUserQueue,
+    }),
   ],
   controllers: [CnSpacesController, CnSpaceInvitController],
   providers: [

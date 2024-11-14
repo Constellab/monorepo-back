@@ -17,11 +17,10 @@ import {
   BlJwtModule,
   BlLoggerConfig,
   BlMailModule,
-  BlMailModuleConfig,
   BlObjectStorageModule,
   BlRequestContextMiddleware,
-  BlTransportModule,
   BlTransportModuleConfig,
+  blTransportRedisForRoot,
 } from '@monorepo/back-core-lib';
 import { HnCoreModule } from './app/core/hn-core.module';
 import { HnUserService } from './app/users/hn-user.service';
@@ -76,6 +75,8 @@ import { HnFileAggregateModule } from './app/file-aggregate/hn-file-aggregate.mo
 import { HnFileStoryModule } from './app/file-aggregate/file-story/hn-file-story.module';
 import { HnFileDocumentationModule } from './app/file-aggregate/file-documentation/hn-file-documentation.module';
 import { HnLogRequestMiddleware } from './app/core/middleware/hn-log-request-middleware.service';
+import { BullModule } from '@nestjs/bullmq';
+import { HnMailConfig } from './app/core/model/config/hn-mail.config';
 
 function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: HnDatabaseConfig = configService.getDatabaseConfig();
@@ -120,21 +121,12 @@ function configureTransportModule(configService: HnCoreConfigService): BlTranspo
   return configService.getTransportModuleConfig();
 }
 
-function configureMailModule(configService: HnCoreConfigService): BlMailModuleConfig {
-  return {
-    mailConfig: configService.getMailConfig(),
-    templateFolder: join(__dirname, 'assets/templates/'),
-    defaultLayout: 'main-',
-    defaultData: { contactMail: configService.getCustomerSuccessMail() },
-  };
-}
-
 @Module({
   imports: [
     // let the config module on top of the imports
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: join(__dirname, 'environments', 'dev.env'),
+      envFilePath: join(__dirname, 'environments', 'hn-dev.env'),
     }),
 
     TypeOrmModule.forRootAsync({
@@ -170,17 +162,22 @@ function configureMailModule(configService: HnCoreConfigService): BlMailModuleCo
       inject: [HnCoreConfigService, HnUserService],
     }),
 
-    BlTransportModule.forRootAsync({
-      useFactory: configureTransportModule,
-      imports: [HnCoreModule],
-      inject: [HnCoreConfigService],
-    }),
+    BullModule.forRootAsync(
+      blTransportRedisForRoot({
+        useFactory: configureTransportModule,
+        imports: [HnCoreModule],
+        inject: [HnCoreConfigService],
+      })
+    ),
 
-    BlMailModule.forRootAsync({
-      imports: [HnCoreModule],
-      useFactory: configureMailModule,
-      inject: [HnCoreConfigService],
-    }),
+    BlMailModule.forRootAsync(
+      HnMailConfig.configureMailModule(),
+      HnMailConfig.queueName,
+      HnMailConfig.mailServiceType,
+      HnMailConfig.processorType,
+      HnMailConfig.currentUserIsAdmin
+    ),
+
     ThrottlerModule.forRoot({
       throttlers: [
         {
