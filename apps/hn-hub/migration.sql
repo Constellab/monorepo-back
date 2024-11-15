@@ -17,6 +17,14 @@
 
 
 # 1.3.5
+ALTER TABLE `user`
+    MODIFY category enum ('ADMIN', 'STUDENT', 'PUBLIC_RESEARCH', 'PRIVATE_INDUSTRY', 'USER') not null;
+update user
+set category = 'USER'
+where category != 'ADMIN';
+ALTER TABLE `user`
+    MODIFY category enum ('ADMIN', 'USER') not null default 'USER';
+
 create table mail
 (
   id             varchar(36)                                         not null

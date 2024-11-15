@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { blTransportSpaceSpaceUserQueue, BlTransportSpaceUserPattern } from '@monorepo/back-core-lib';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
@@ -8,6 +8,8 @@ import { HnSpaceUser } from './space-user/hn-space-user.entity';
 @Processor(blTransportSpaceSpaceUserQueue)
 @Injectable()
 export class HnSpaceProcessor extends WorkerHost {
+  private readonly logger = new Logger(HnSpaceProcessor.name);
+
   constructor(private spaceAggregateService: HnSpaceAggregateService) {
     super();
   }
@@ -16,10 +18,16 @@ export class HnSpaceProcessor extends WorkerHost {
     switch (job.name) {
       case BlTransportSpaceUserPattern.CREATE:
       case BlTransportSpaceUserPattern.UPDATE:
-        await this.spaceAggregateService.createOrUpdateSpaceUser(job.data);
+        await this.spaceAggregateService.createOrUpdateSpaceUser(job.data).catch((e) => {
+          this.logger.error(`Error while processing job ${job.id} ${job.name} : ${e.message}`);
+          throw e;
+        });
         break;
       case BlTransportSpaceUserPattern.REMOVE:
-        await this.spaceAggregateService.deleteSpaceUser(job.data);
+        await this.spaceAggregateService.deleteSpaceUser(job.data).catch((e) => {
+          this.logger.error(`Error while processing job ${job.id} ${job.name} : ${e.message}`);
+          throw e;
+        });
         break;
     }
   }
