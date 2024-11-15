@@ -64,6 +64,10 @@ export class CnLabFreeAggregateService {
       },
       bricks: CnLabFree.BRICKS.map((brick) => ({ name: brick })),
       isFreeLab: true,
+      greenOption: {
+        type: CnLabFree.GREEN_OPTION,
+        inactivityDuration: CnLabFree.GREEN_OPTION_INACTIVITY_DURATION,
+      },
     };
 
     const labDb = await this.datasource.transaction(async (entityManager) => {

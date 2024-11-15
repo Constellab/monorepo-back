@@ -9,6 +9,7 @@ import { ClDateHelper } from '@monorepo/core-lib';
 import { CnCloudProviderName } from '../../cn-cloud-providers/cn-cloud-provider.entity';
 import { CnBrickGWS } from '../../cn-bricks/cn-brick.dto';
 import { CnLabVolumeType } from '../volume/cn-lab-volume-entity';
+import { CnLabGreenOptionType } from '../green-option/cn-lab-green-option.entity';
 
 /**
  * Entity to store the free lab info for a lab for a user
@@ -25,6 +26,8 @@ export class CnLabFree extends CnBaseEntity {
   public static readonly VOLUME_TYPE = CnLabVolumeType.HIGH_SPEED;
   public static readonly BILLING_MODE = CnLabBillingMode.HOURLY;
   public static readonly DOMAIN = CnLabDomain.CONSTELLAB_APP;
+  public static readonly GREEN_OPTION = CnLabGreenOptionType.STOP_AFTER_INACTIVITY_TIME;
+  public static readonly GREEN_OPTION_INACTIVITY_DURATION = 60; // 1 hour
 
   // CONFIG
   public static readonly BRICKS = [CnBrickGWS.GWS_CORE, CnBrickGWS.GWS_ACADEMY];
