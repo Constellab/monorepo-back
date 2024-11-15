@@ -29,6 +29,14 @@ create table mail
   lastModifiedAt datetime                                            not null
 );
 
+# Rename env variables:
+#   - RABBITMQ_PASSWORD -> QUEUE_SERVICE_PASSWORD
+#   - RABBITMQ_URL -> QUEUE_SERVICE_HOST
+#   - RABBITMQ_PORT -> QUEUE_SERVICE_PORT
+# Delete env variables QUEUE_SERVICE_USER
+
+# Replace RabbimtMQ docker container with redis
+
 
 # 1.3.4
 ALTER TABLE `user`

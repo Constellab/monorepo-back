@@ -50,10 +50,12 @@ ALTER TABLE lab
   MODIFY COLUMN glabDevApiKey varchar(255) not null;
 
 # Rename env variables:
-#   - QUEUE_SERVICE_PASSWORD -> TRANSPORT_PASSWORD
-#   - QUEUE_SERVICE_URL -> TRANSPORT_HOST
-#   - QUEUE_SERVICE_PORT -> TRANSPORT_PORT
+#   - RABBITMQ_PASSWORD -> QUEUE_SERVICE_PASSWORD
+#   - RABBITMQ_URL -> QUEUE_SERVICE_HOST
+#   - RABBITMQ_PORT -> QUEUE_SERVICE_PORT
 # Delete env variables QUEUE_SERVICE_USER
+
+# Replace RabbimtMQ docker container with redis
 
 # 2.0.11
 update scenario
