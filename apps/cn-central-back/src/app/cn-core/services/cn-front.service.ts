@@ -78,6 +78,8 @@ export class CnFrontService {
   }
 
   public getCommunityProductDocUrl(): string {
-    return this.getCommunityUrl() + '/product-doc';
+    return (
+      this.getCommunityUrl() + '/gws_academy/latest/doc/getting-started/b38e4929-2e4f-469c-b47b-f9921a3d4c74'
+    );
   }
 }
