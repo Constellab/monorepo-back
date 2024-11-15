@@ -122,7 +122,7 @@ export class CnUsersController {
     return this.usersService.smartSearchByName(name, page, size);
   }
 
-  @Put('send-all-to-queue')
+  @Post('send-all-to-queue')
   sendAllToQueue(): Promise<void> {
     return this.usersService.sendAllUsersToQueue();
   }
