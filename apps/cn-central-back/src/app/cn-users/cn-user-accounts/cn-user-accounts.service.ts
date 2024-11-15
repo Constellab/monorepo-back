@@ -27,6 +27,7 @@ import { CnNotificationService } from '../../cn-notification/cn-notification.ser
 import { CnCreateUserDto, CnUserUpdateLicenseDTO } from '../cn-user.dto';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnActivityEntityType } from '../../cn-activity/cn-activity.entity';
+import { CnSupportService } from '../../cn-support/cn-support.service';
 
 /**
  * Service to handle users' account (signup, mail validation, password forgotten, reset password...)
@@ -50,7 +51,8 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     private spaceAggregateService: CnSpaceAggregateService,
     private groupService: CnGroupsService,
     private notificationService: CnNotificationService,
-    private captchaService: BlCaptchaService
+    private captchaService: BlCaptchaService,
+    private supportService: CnSupportService
   ) {
     super(repository, CnUserEntity);
   }
@@ -76,12 +78,20 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
         // await mail send to include it in transaction
         await this.sendSignupEmail(newUser);
+
         return newUser;
       });
     } catch (e) {
       if (e instanceof BlHttpException) {
         throw e;
       }
+      const message =
+        `Error while creating account for user ${createUser.firstname} ${createUser.lastname} ` +
+        +`${createUser.email} : ${e}`;
+      this.supportService
+        .sendMailFromString(message, 'Error while creating account')
+        .catch((error) => this.logger.error('Error while sending error mail: ' + error));
+
       throw new BlBadRequestException(CnErrorText.ACCOUNT_CREATION_ERROR);
     }
   }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BlBadRequestException, BlMailService } from '@monorepo/back-core-lib';
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { ClSupportedLanguage } from '@monorepo/core-lib';
+import { CnMailTemplate } from '../cn-core/model/config/cn-mail-template.class';
 
 @Injectable()
 export class CnSupportService {
@@ -25,6 +26,20 @@ export class CnSupportService {
       lang: ClSupportedLanguage.en,
       data,
       subject,
+    });
+  }
+
+  public async sendMailFromString(content: string, subject: string): Promise<void> {
+    const email = this.coreConfigService.getSupportMail();
+    if (!email) {
+      throw new BlBadRequestException('No support email configured');
+    }
+    await this.mailService.sendMailAndCheck({
+      templateName: CnMailTemplate.generic,
+      recipients: email,
+      lang: ClSupportedLanguage.en,
+      data: { content: content },
+      subject: { text: subject, translate: false },
     });
   }
 }

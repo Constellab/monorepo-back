@@ -13,7 +13,7 @@ export interface BlSendMailDTO {
   recipients: string;
   lang: ClSupportedLanguage;
   data?: Record<string, any>;
-  subject?: string;
+  subject?: string | { text: string; translate: boolean };
 }
 
 /**
@@ -82,10 +82,17 @@ export class BlMailService {
     }
 
     try {
-      mailEntity.subject = await this.mailService.generateSubject(
-        mail.subject ?? mail.templateName,
-        mail.lang
-      );
+      // generate the subject
+      const subject = mail.subject ?? mail.templateName;
+      // if the subject is a string or object with translate, translate it:
+      if (typeof subject === 'object' && !subject.translate) {
+        mailEntity.subject = subject.text;
+      } else {
+        mailEntity.subject = await this.mailService.generateSubject(
+          typeof subject === 'string' ? subject : subject.text,
+          mail.lang
+        );
+      }
     } catch (e) {
       mailEntity.status = BlMailStatus.ERROR;
       mailEntity.error = e.toString();

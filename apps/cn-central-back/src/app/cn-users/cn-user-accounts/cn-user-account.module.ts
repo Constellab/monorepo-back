@@ -9,6 +9,7 @@ import { CnUserAccountListener } from './cn-user-account.listener';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CnUserEntity } from '../cn-user.entity';
 import { CnCoreModule } from '../../cn-core/cn-core.module';
+import { CnSupportModule } from '../../cn-support/cn-support.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CnCoreModule } from '../../cn-core/cn-core.module';
     CnUsersModule,
     CnSpacesModule,
     CnGroupsModule,
+    CnSupportModule,
   ],
   providers: [CnUserAccountsService, CnUserAccountListener],
   controllers: [CnUserAccountsController],
