@@ -22,7 +22,7 @@ export class CnLabFree extends CnBaseEntity {
   public static readonly CLOUD_PROVIDER_INSTANCE_TYPE = 'Standard_D2s_v5';
   public static readonly NB_CPUS = 2;
   public static readonly RAM_SIZE = 8;
-  public static readonly VOLUME_SIZE = 250;
+  public static readonly VOLUME_SIZE = 100;
   public static readonly VOLUME_TYPE = CnLabVolumeType.HIGH_SPEED;
   public static readonly BILLING_MODE = CnLabBillingMode.HOURLY;
   public static readonly DOMAIN = CnLabDomain.CONSTELLAB_APP;
