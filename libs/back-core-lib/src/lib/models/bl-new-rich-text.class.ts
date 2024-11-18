@@ -4,7 +4,7 @@ import { Logger } from '@nestjs/common';
 import {
   BlRichTextBlockModification,
   BlRichTextModifications,
-  BlRichTextModificationType,
+  BlRichTextModificationType
 } from './bl-rich-text-block-modification.class';
 
 /**
@@ -236,7 +236,7 @@ export class BlNewRichText {
     userId: string,
     modifications: BlRichTextModifications = new BlRichTextModifications()
   ): Record<string, any> {
-    return this.getRichTextModifications(newContent, userId, modifications).toJsonObject();
+    return this.getRichTextModifications(newContent, userId, modifications)?.toJsonObject();
   }
 
   // Undo the modifications in the modificationsList
