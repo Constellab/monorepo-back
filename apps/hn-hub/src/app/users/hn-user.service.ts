@@ -2,11 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { HnUser, HnUserConstellabDTO } from './hn-user.entity';
-import { BlCredentials, BlUnauthorizedException, BlUserService } from '@monorepo/back-core-lib';
+import {
+  BlBadRequestException,
+  BlCredentials,
+  BlUnauthorizedException,
+  BlUserService,
+} from '@monorepo/back-core-lib';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnExternalCheckCredentialResponse } from '../auth/hn-central-auth.service';
 import { ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import { HnUserDetailDto, HnUserEditDetailDto } from './hn-user.dto';
+import { TeUser } from '../../../../../libs/te-text-editor/src/lib/te-user.class';
 
 @Injectable()
 export class HnUserService implements BlUserService {
@@ -43,6 +49,26 @@ export class HnUserService implements BlUserService {
 
   async findOne(id: string): Promise<HnUser> {
     return await this.userRepository.findOneBy({ id: id });
+  }
+
+  async findByIdAndCheck(id: string): Promise<HnUser> {
+    const user = await this.userRepository.findOneBy({ id: id });
+    if (!user) {
+      throw new BlBadRequestException('User not found');
+    }
+    return user;
+  }
+
+  async findUserBasicDTO(id: string): Promise<TeUser> {
+    return await this.findByIdAndCheck(id).then((user) => {
+      return {
+        id: user.id,
+        alias: user.alias,
+        photo: user.photo,
+        firstname: user.firstname,
+        lastname: user.lastname,
+      };
+    });
   }
 
   async findOneByEmail(email: string): Promise<HnUser> {

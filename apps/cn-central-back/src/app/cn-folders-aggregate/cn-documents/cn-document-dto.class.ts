@@ -1,14 +1,15 @@
 import { Type } from 'class-transformer';
-import { BlBucketType, BlRichTextContent } from '@monorepo/back-core-lib';
+import { BlBucketType } from '@monorepo/back-core-lib';
 import { CnDocument, CnDocumentEntity } from './cn-document.entity';
+import { TeRichTextDTO } from '@monorepo/te-text-editor';
 
 export class CnConstellabDocumentDTO {
   @Type(() => CnDocumentEntity)
   document: CnDocument;
 
-  content: BlRichTextContent;
+  content: TeRichTextDTO;
 
-  constructor(document: CnDocument, content: BlRichTextContent) {
+  constructor(document: CnDocument, content: TeRichTextDTO) {
     this.document = document;
     this.content = content;
   }

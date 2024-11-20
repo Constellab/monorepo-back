@@ -25,6 +25,7 @@ import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-c
 import { CnUserSearch } from './cn-user-search.class';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
+import { TeUser } from '../../../../../libs/te-text-editor/src/lib/te-user.class';
 
 @Injectable()
 export class CnUsersService extends BlAbstractService<CnUser> implements BlUserService, OnModuleInit {
@@ -50,6 +51,18 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
     return this.findPaginated(page, size, {
       order: { lastname: 'ASC', firstname: 'ASC' },
+    });
+  }
+
+  async findUserBasicDTO(id: string): Promise<TeUser> {
+    return await this.findByIdAndCheck(id).then((user) => {
+      return {
+        id: user.id,
+        alias: user.alias,
+        photo: user.photo,
+        firstname: user.firstname,
+        lastname: user.lastname,
+      };
     });
   }
 

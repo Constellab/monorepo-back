@@ -5,12 +5,7 @@ import { EntityManager, Repository } from 'typeorm';
 import { CnCreateLabScenarioDto, CnSaveScenarioResultDTO } from './cn-scenario.dto';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service';
-import {
-  BlAbstractService,
-  BlBadRequestException,
-  BlQuillMigrator,
-  BlUnauthorizedException,
-} from '@monorepo/back-core-lib';
+import { BlAbstractService, BlBadRequestException, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnProtocolMigrator } from './cn-protocol-migrator.class';
 import {
@@ -18,6 +13,7 @@ import {
   CnHierarchyObjectEntity,
 } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
+import { TeRichText } from '@monorepo/te-text-editor';
 
 @Injectable()
 export class CnScenariosService extends BlAbstractService<CnScenario> {
@@ -89,7 +85,7 @@ export class CnScenariosService extends BlAbstractService<CnScenario> {
 
     scenario.id = labScenarioDto.id;
     scenario.title = labScenarioDto.title;
-    scenario.description = BlQuillMigrator.migrateOptional(labScenarioDto.description);
+    scenario.description = labScenarioDto.description?.toJson() ?? null;
     scenario.status = labScenarioDto.status;
     scenario.labConfig = labConfig;
     scenario.protocol = this.migrateProtocol(createLabScenarioDto.protocol);
@@ -182,5 +178,17 @@ export class CnScenariosService extends BlAbstractService<CnScenario> {
   public migrateProtocol(protocol: CnScenarioProtocol): CnScenarioProtocol {
     const protocolMigrator = new CnProtocolMigrator();
     return protocolMigrator.migrateProtocol(protocol);
+  }
+
+  public async migrateDescriptions(): Promise<void> {
+    const scenarios = await this.repository.find();
+
+    for (const scenario of scenarios) {
+      if (scenario.description) {
+        const richText = new TeRichText(scenario.description);
+        scenario.description = richText.toJson();
+        await this.repository.save(scenario, { listeners: false });
+      }
+    }
   }
 }

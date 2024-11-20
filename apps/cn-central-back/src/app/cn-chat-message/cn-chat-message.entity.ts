@@ -31,7 +31,7 @@ export class CnChatMessageEntity extends CnMessage {
 
   static create(newMessageDTO: CnNewMessageDTO, folderHierarchy: CnHierarchyObject): CnChatMessageEntity {
     const chatMessage: CnChatMessageEntity = new CnChatMessageEntity();
-    chatMessage.content = newMessageDTO.content;
+    chatMessage.content = newMessageDTO.content.toJson();
     chatMessage.folderHierarchy = folderHierarchy as CnHierarchyObjectEntity;
     chatMessage.folderHierarchyId = folderHierarchy.id;
     return chatMessage;

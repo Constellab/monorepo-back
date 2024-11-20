@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToMany, ManyToOne } from 'typeorm';
 import { Exclude, Type } from 'class-transformer';
 import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
-import { BlLuxonDateTimeColumn, BlNotUpdatable, BlRichTextContent } from '@monorepo/back-core-lib';
+import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { CnNote } from '../cn-notes/cn-note.entity';
 import { CnScenarioStatus } from './cn-scenario-status.enum';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
@@ -10,6 +10,7 @@ import { DateTime } from 'luxon';
 import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-representation';
 import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
 import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { TeRichTextInput } from '@monorepo/te-text-editor';
 
 export interface CnScenarioProtocol {
   version: number;
@@ -17,7 +18,7 @@ export interface CnScenarioProtocol {
 }
 
 /**
- * An scenario is executed in a lab to produce notes
+ * A scenario is executed in a lab to produce notes
  *
  * It is defined as a succession of jobs
  */
@@ -27,7 +28,7 @@ export class CnScenario extends CnHierarchyRepresentation {
   title: string;
 
   @Column({ type: 'simple-json', array: false, nullable: true })
-  description: BlRichTextContent;
+  description: TeRichTextInput;
 
   @Column({ type: 'enum', enum: CnScenarioStatus, nullable: false })
   status: CnScenarioStatus;

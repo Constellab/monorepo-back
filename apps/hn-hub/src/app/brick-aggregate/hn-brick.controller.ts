@@ -19,7 +19,6 @@ import {
   BlParsePipe,
   BlPublic,
   BlResponseHelper,
-  BlRichTextUploadedImageResponse,
   BlUnauthorizedException,
   BlUploadedFile,
 } from '@monorepo/back-core-lib';
@@ -48,6 +47,7 @@ import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
 import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.dto';
 import { HnUserDto } from '../users/hn-user.dto';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
+import { TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
 
 @Controller('brick')
 @UseGuards(HnIsAdminGuard)
@@ -230,7 +230,7 @@ export class HnBrickController {
   async editImage(
     @Param('brickId', new ParseUUIDPipe()) brickId: string,
     @BlUploadedFile() file: BlFile
-  ): Promise<BlRichTextUploadedImageResponse> {
+  ): Promise<TeBlockFigureUploadedResponse> {
     return this.brickAggregateService.editBrickImage(brickId, file);
   }
 
@@ -267,7 +267,7 @@ export class HnBrickController {
   @Post('is-actual-brick-and-new-version')
   async isActualBrickAndNewVersion(
     @Body(new BlParsePipe(HnIsActualBrickAndNewVersionDTO))
-    content: HnIsActualBrickAndNewVersionDTO
+      content: HnIsActualBrickAndNewVersionDTO
   ): Promise<[boolean, boolean]> {
     return this.brickAggregateService.isActualBrickAndNewVersion(content);
   }

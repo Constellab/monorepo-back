@@ -1,20 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CnChatMessage, CnChatMessageEntity } from './cn-chat-message.entity';
-import { DataSource, IsNull, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CnNewMessageDTO } from '../cn-core/model/entities/cn-message.entity';
 import { ClPage } from '@monorepo/core-lib';
 import {
   BlAbstractService,
   BlFile,
   BlFileResponse,
-  BlNewRichText,
-  BlRichTextContent,
-  BlRichTextUploadedImageResponse,
 } from '@monorepo/back-core-lib';
 import { CnDocumentService } from '../cn-folders-aggregate/cn-documents/cn-document.service';
 import { CnDocumentType } from '../cn-folders-aggregate/cn-documents/cn-document.entity';
 import { CnHierarchyObject } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { TeRichText, TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
 
 @Injectable()
 export class CnChatMessageService extends BlAbstractService<CnChatMessageEntity> {
@@ -33,7 +31,7 @@ export class CnChatMessageService extends BlAbstractService<CnChatMessageEntity>
       await this.deleteById(message.id, entityManager);
 
       // delete all the images of the message
-      const richText = new BlNewRichText(message.content);
+      const richText = message.getRichTextContent();
       for (const image of richText.getFiguresBlocks()) {
         const document = await this.documentService.findDocumentBYTypeAndNameAndEntity(
           CnDocumentType.MESSAGE_CONTENT,
@@ -78,12 +76,12 @@ export class CnChatMessageService extends BlAbstractService<CnChatMessageEntity>
     );
   }
 
-  async updateMessage(message: CnChatMessage, content: BlRichTextContent): Promise<CnChatMessage> {
-    message.content = content;
+  async updateMessage(message: CnChatMessage, richText: TeRichText): Promise<CnChatMessage> {
+    message.content = richText.toJson();
     return await this.update(message as CnChatMessageEntity);
   }
 
-  async saveMessageImage(file: BlFile, folder: CnHierarchyObject): Promise<BlRichTextUploadedImageResponse> {
+  async saveMessageImage(file: BlFile, folder: CnHierarchyObject): Promise<TeBlockFigureUploadedResponse> {
     return this.documentService.uploadImageDocument(file, folder, CnDocumentType.MESSAGE_CONTENT, folder.id);
   }
 }

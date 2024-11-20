@@ -7,8 +7,9 @@ import { HnAgentAggregateService } from '../../agent-aggregate/hn-agent-aggregat
 import { HnAgent } from '../../agent-aggregate/agent/hn-agent.entity';
 import { HnAbstractCommentEntity } from '../comment-core/hn-abstract-comment.entity';
 import { ClPage } from '@monorepo/core-lib';
-import { BlAbstractPaginatedService, BlRichTextContent } from '@monorepo/back-core-lib';
+import { BlAbstractPaginatedService } from '@monorepo/back-core-lib';
 import { HnCommentAgentDto } from './hn-comment-agent.dto';
+import { TeRichText } from '@monorepo/te-text-editor';
 
 @Injectable()
 export class HnCommentAgentService extends HnAbstractCommentService<HnAgent> {
@@ -24,10 +25,10 @@ export class HnCommentAgentService extends HnAbstractCommentService<HnAgent> {
     return this.agentAggregateService.addComment(entity, entityManager);
   }
 
-  createComment(entity: HnAgent, commentData: BlRichTextContent): HnAbstractCommentEntity<HnAgent> {
+  createComment(entity: HnAgent, commentData: TeRichText): HnAbstractCommentEntity<HnAgent> {
     const comment: HnCommentAgent = new HnCommentAgent();
     comment.entity = entity;
-    comment.content = commentData;
+    comment.setContentRichText(commentData);
     return comment;
   }
 

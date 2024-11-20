@@ -22,7 +22,6 @@ import {
   BlCurrentUserHelper,
   BlFile,
   BlNotFoundException,
-  BlRichTextUploadedImageResponse,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
 import { HnBrickAggregateService } from '../brick-aggregate/hn-brick-aggregate.service';
@@ -46,7 +45,7 @@ import { HnUploadFileResponseDto } from '../file-aggregate/file-core/hn-abstract
 import { HnFileAgentService } from '../file-aggregate/file-agent/hn-file-agent.service';
 import { Request } from 'express';
 import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
-import { HnTypingStyle } from '../brick-aggregate/brick/hn-brick.dto';
+import { TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
 
 @Injectable()
 export class HnAgentAggregateService {
@@ -677,7 +676,7 @@ export class HnAgentAggregateService {
     return await this.fileAgentService.saveFile(agent, file);
   }
 
-  public async saveImage(file: BlFile, agentId: string): Promise<BlRichTextUploadedImageResponse> {
+  public async saveImage(file: BlFile, agentId: string): Promise<TeBlockFigureUploadedResponse> {
     const agent = await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(agentId);
     return await this.fileAgentService.saveImage(agent, file);
   }

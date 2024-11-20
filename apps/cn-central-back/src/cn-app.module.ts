@@ -70,6 +70,7 @@ import { CnCommunityModule } from './app/cn-community/cn-community.module';
 import { CnLogRequestMiddleware } from './app/cn-core/middleware/cn-log-request-middleware.service';
 import { BullModule } from '@nestjs/bullmq';
 import { CnMailConfig } from './app/cn-core/model/config/cn-mail.config';
+import { TeRichTextModifications } from '@monorepo/te-text-editor';
 
 function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();
@@ -119,6 +120,8 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
   };
 }
 
+// configure the text editor
+TeRichTextModifications.setBackTimeDifference();
 @Module({
   imports: [
     // let the config module on top of the imports

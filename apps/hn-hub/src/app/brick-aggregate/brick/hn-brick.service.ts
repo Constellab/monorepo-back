@@ -14,11 +14,11 @@ import {
   BlFileResponse,
   BlImageHelper,
   BlObjectStorageService,
-  BlRichTextUploadedImageResponse,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
 import { ClPage, ClStringHelper } from '@monorepo/core-lib';
 import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
+import { TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
 
 @Injectable()
 export class HnBrickService {
@@ -81,7 +81,7 @@ export class HnBrickService {
     return this.bricksRepository.findOneBy({ id: id });
   }
 
-  async editBrickImage(id: string, image: BlFile): Promise<BlRichTextUploadedImageResponse> {
+  async editBrickImage(id: string, image: BlFile): Promise<TeBlockFigureUploadedResponse> {
     const imSize = BlImageHelper.getImageSize(image);
     const fileExt = image.originalname.split('.').pop();
     image.originalname = id + '/brick-image/' + ClStringHelper.generateUUID() + '.' + fileExt;

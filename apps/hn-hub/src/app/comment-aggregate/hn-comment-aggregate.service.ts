@@ -3,9 +3,10 @@ import { HnCommentStoryService } from './comment-story/hn-comment-story.service'
 import { ClPage } from '@monorepo/core-lib';
 import { HnCommentAgentService } from './comment-agent/hn-comment-agent.service';
 import { HnEntityType } from '../core/model/entities/hn-entity-type.enum';
-import { BlEntityWithId, BlRichTextContent } from '@monorepo/back-core-lib';
+import { BlEntityWithId } from '@monorepo/back-core-lib';
 import { HnAbstractCommentService } from './comment-core/hn-abstract-comment.service';
 import { HnAbstractCommentDto } from './comment-core/hn-abstract-comment.dto';
+import { TeRichText } from '@monorepo/te-text-editor';
 
 @Injectable()
 export class HnCommentAggregateService {
@@ -26,7 +27,7 @@ export class HnCommentAggregateService {
   async createComment(
     commentType: HnEntityType,
     entityId: string,
-    comment: BlRichTextContent
+    comment: TeRichText
   ): Promise<HnAbstractCommentDto<BlEntityWithId>> {
     return new HnAbstractCommentDto<BlEntityWithId>(
       await this.getService(commentType).comment(entityId, comment)

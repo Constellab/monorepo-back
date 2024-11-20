@@ -15,9 +15,6 @@ import {
   BlFile,
   BlParsePipe,
   BlPublic,
-  BlRichTextBlockModificationDto,
-  BlRichTextContent,
-  BlRichTextUploadedImageResponse,
   BlUploadedFile,
 } from '@monorepo/back-core-lib';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -32,6 +29,12 @@ import {
   HnUploadFileResponseDto,
 } from '../file-aggregate/file-core/hn-abstract-file.dto';
 import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
+import {
+  TeRichText,
+  TeRichTextBlockModificationWithUser,
+  TeRichTextPipe,
+  TeBlockFigureUploadedResponse,
+} from '@monorepo/te-text-editor';
 
 @Controller('documentation')
 @UseGuards(HnIsAdminGuard)
@@ -58,7 +61,7 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
   @Put('content/:id')
   updateContent(
     @Param('id') id: string,
-    @Body() updateContentDoc: BlRichTextContent
+    @Body(TeRichTextPipe) updateContentDoc: TeRichText
   ): Promise<HnDocumentation> {
     return this.brickAggregateService.updateDocContent(id, updateContentDoc);
   }
@@ -90,7 +93,7 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
   saveImage(
     @BlUploadedFile() file: BlFile,
     @Param('docId', new ParseUUIDPipe()) docId: string
-  ): Promise<BlRichTextUploadedImageResponse> {
+  ): Promise<TeBlockFigureUploadedResponse> {
     return this.brickAggregateService.saveDocImage(file, docId);
   }
 
@@ -99,7 +102,7 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
   @Get('history/:docId')
   async getDocModifications(
     @Param('docId', new ParseUUIDPipe()) docId: string
-  ): Promise<BlRichTextBlockModificationDto[]> {
+  ): Promise<TeRichTextBlockModificationWithUser[]> {
     return this.brickAggregateService.getDocModifications(docId);
   }
 

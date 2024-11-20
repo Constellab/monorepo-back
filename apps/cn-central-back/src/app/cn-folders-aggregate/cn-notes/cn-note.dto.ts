@@ -3,15 +3,13 @@ import { Type } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
-import { BlRichTextContent, BlRichTextContentWithModifications, BlRichTextI } from '@monorepo/back-core-lib';
 import { CnNote } from './cn-note.entity';
+import { TeRichTextAggregateJsonInput } from '@monorepo/te-text-editor';
 
 export class CnSaveNoteDto {
   id: string;
   title: string;
-  content: BlRichTextI | BlRichTextContent | BlRichTextContentWithModifications;
-
-  modifications?: Record<string, any>;
+  content: TeRichTextAggregateJsonInput;
 
   is_validated: boolean;
 

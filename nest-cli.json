@@ -1,0 +1,16 @@
+{
+  "projects": {
+    "te-text-editor": {
+      "type": "library",
+      "root": "libs/te-text-editor",
+      "entryFile": "index",
+      "sourceRoot": "libs/te-text-editor/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/te-text-editor/tsconfig.lib.json"
+      }
+    }
+  },
+  "compilerOptions": {
+    "webpack": true
+  }
+}

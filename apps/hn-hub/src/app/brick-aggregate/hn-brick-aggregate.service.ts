@@ -30,11 +30,7 @@ import {
   BlFile,
   BlFileResponse,
   BlNotFoundException,
-  BlRichTextBlockModificationDto,
-  BlRichTextContent,
-  BlRichTextUploadedImageResponse,
   BlUnauthorizedException,
-  BlUserDto,
   BlVersion,
 } from '@monorepo/back-core-lib';
 import { HnBrickUserService } from './brick-user/hn-brick-user.service';
@@ -60,9 +56,13 @@ import {
   HnAbstractFileEntityDTO,
   HnUploadFileResponseDto,
 } from '../file-aggregate/file-core/hn-abstract-file.dto';
-import { HnUserDto } from '../users/hn-user.dto';
 import { HnFileDocumentation } from '../file-aggregate/file-documentation/hn-file-documentation.entity';
 import { HnFileType } from '../file-aggregate/file-core/hn-abstract-file.entity';
+import {
+  TeRichText,
+  TeRichTextBlockModificationWithUser,
+  TeBlockFigureUploadedResponse,
+} from '@monorepo/te-text-editor';
 
 @Injectable()
 export class HnBrickAggregateService {
@@ -81,8 +81,7 @@ export class HnBrickAggregateService {
     private configService: HnCoreConfigService,
     private frontService: HnFrontService,
     private fileDocumentationService: HnFileDocumentationService,
-    private readonly spaceAggregateService: HnSpaceAggregateService,
-    private datasource: DataSource
+    private readonly spaceAggregateService: HnSpaceAggregateService
   ) {}
 
   //------------------------------------- BRICKS -------------------------------------
@@ -309,11 +308,11 @@ export class HnBrickAggregateService {
       const version: BlVersion =
         body.version.subPatch != null
           ? new BlVersion(
-              +body.version.major,
-              +body.version.minor,
-              +body.version.patch,
-              +body.version.subPatch
-            )
+            +body.version.major,
+            +body.version.minor,
+            +body.version.patch,
+            +body.version.subPatch
+          )
           : new BlVersion(+body.version.major, +body.version.minor, +body.version.patch);
 
       // TODO: Improve brick version creation (simplify in the aggregate)
@@ -347,7 +346,7 @@ export class HnBrickAggregateService {
     return brick;
   }
 
-  async editBrickImage(id: string, file: BlFile): Promise<BlRichTextUploadedImageResponse> {
+  async editBrickImage(id: string, file: BlFile): Promise<TeBlockFigureUploadedResponse> {
     await this.assertUserCanEditBrick(id, true);
     return this.brickService.editBrickImage(id, file);
   }
@@ -608,13 +607,13 @@ export class HnBrickAggregateService {
     return this.documentationService.update(updatedDoc);
   }
 
-  async saveDocImage(file: BlFile, docId: string): Promise<BlRichTextUploadedImageResponse> {
+  async saveDocImage(file: BlFile, docId: string): Promise<TeBlockFigureUploadedResponse> {
     await this.checkIfUserHasRightsOnDoc(docId);
     const documentation: HnDocumentation = await this.documentationService.findById(docId);
     return this.fileDocumentationService.saveImage(documentation, file);
   }
 
-  async updateDocContent(id: string, updateContentDoc: BlRichTextContent): Promise<HnDocumentation> {
+  async updateDocContent(id: string, updateContentDoc: TeRichText): Promise<HnDocumentation> {
     await this.checkIfUserHasRightsOnDoc(id);
     return this.documentationService.updateContent(id, updateContentDoc);
   }
@@ -772,21 +771,12 @@ export class HnBrickAggregateService {
   }
 
   //------------------------------------- DOC HISTORY -------------------------------------
-  async getDocModifications(docId: string): Promise<BlRichTextBlockModificationDto[]> {
+  async getDocModifications(docId: string): Promise<TeRichTextBlockModificationWithUser[]> {
     const doc: HnDocumentation = await this.documentationService.findById(docId);
-    const modifications = await this.documentationService.getDocModifications(doc);
-    const res: BlRichTextBlockModificationDto[] = [];
-    const userMap = new Map<string, BlUserDto>();
-    for (const modification of modifications) {
-      if (!userMap.has(modification.userId)) {
-        const userDto = new HnUserDto(await this.userService.findOne(modification.userId));
-        userMap.set(modification.userId, userDto);
-        res.push(new BlRichTextBlockModificationDto(modification, userDto));
-      } else {
-        res.push(new BlRichTextBlockModificationDto(modification, userMap.get(modification.userId)));
-      }
-    }
-    return res;
+
+    const richText = doc.getRichText();
+
+    return richText.getModificationsDTO(userId => this.userService.findUserBasicDTO(userId));
   }
 
   async getUndoContent(docId: string, modificationId: string): Promise<Record<string, any>> {

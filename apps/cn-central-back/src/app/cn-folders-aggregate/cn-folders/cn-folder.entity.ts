@@ -1,7 +1,7 @@
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, Relation } from 'typeorm';
 import { Exclude, Type } from 'class-transformer';
 import { DateTime } from 'luxon';
-import { BlLuxonDateColumn, BlRichTextContent } from '@monorepo/back-core-lib';
+import { BlLuxonDateColumn } from '@monorepo/back-core-lib';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-representation';
@@ -9,6 +9,7 @@ import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper'
 import { ClDateHelper } from '@monorepo/core-lib';
 import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
 import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { TeRichTextInput } from '@monorepo/te-text-editor';
 
 @Entity('folder')
 export class CnFolderEntity extends CnHierarchyRepresentation {
@@ -21,7 +22,7 @@ export class CnFolderEntity extends CnHierarchyRepresentation {
   // this column is not selected by default
   @Exclude()
   @Column({ type: 'simple-json', nullable: true, select: false })
-  description: BlRichTextContent;
+  description: TeRichTextInput;
 
   @BlLuxonDateColumn({ nullable: true })
   startingDate: DateTime;

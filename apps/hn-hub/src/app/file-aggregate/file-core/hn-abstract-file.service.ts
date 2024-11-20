@@ -7,13 +7,13 @@ import {
   BlImageHelper,
   BlObject,
   BlObjectStorageService,
-  BlRichTextUploadedImageResponse,
 } from '@monorepo/back-core-lib';
 import { HnAbstractFileEntity, HnFileType } from './hn-abstract-file.entity';
 import { EntityManager, FindOptionsWhere, Repository } from 'typeorm';
 import { ClStringHelper } from '@monorepo/core-lib';
 import { HnAbstractFileEntityDTO, HnUploadFileResponseDto } from './hn-abstract-file.dto';
 import { Logger } from '@nestjs/common';
+import { TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
 
 export abstract class HnAbstractFileService<T extends BlEntityWithId> {
   private logger = new Logger(HnAbstractFileService.name);
@@ -35,16 +35,16 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
     const whereCondition: FindOptionsWhere<HnAbstractFileEntity<T>> = (
       type == null
         ? {
-            entity: {
-              id: entityId,
-            },
-          }
+          entity: {
+            id: entityId,
+          },
+        }
         : {
-            entity: {
-              id: entityId,
-            },
-            type: type,
-          }
+          entity: {
+            id: entityId,
+          },
+          type: type,
+        }
     ) as any;
 
     return await this.repository.find({
@@ -174,7 +174,7 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
   }
 
   //-------------------------------------------- IMAGE FUNCTIONS --------------------------------------------
-  async saveImage(entity: T, file: BlFile): Promise<BlRichTextUploadedImageResponse> {
+  async saveImage(entity: T, file: BlFile): Promise<TeBlockFigureUploadedResponse> {
     const imSize = BlImageHelper.getImageSize(file);
     const fileExt = file.originalname.split('.').pop();
     const originalname = file.originalname;
@@ -199,7 +199,7 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
     };
   }
 
-  //-------------------------------------------- RESOURCE VIEW FUNCTIONS --------------------------------------------
+  //--------------------------------------- RESOURCE VIEW FUNCTIONS --------------------------------------------
   async saveResourceView(entity: T, file: BlFile): Promise<string> {
     file.originalname = entity.id + '/views/' + ClStringHelper.generateUUID() + '.json';
     const filename = await this.objectStorageService.uploadObject(

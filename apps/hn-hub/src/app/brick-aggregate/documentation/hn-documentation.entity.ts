@@ -1,6 +1,12 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { HnFolder } from '../folder/hn-folder.entity';
 import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
+import {
+  TeRichText,
+  TeRichTextAggregate,
+  TeRichTextInput,
+  TeRichTextModifications,
+} from '@monorepo/te-text-editor';
 
 export interface HnDocumentationSearchDTO {
   id: string;
@@ -18,7 +24,7 @@ export class HnDocumentation extends HnBaseEntity {
   title: string;
 
   @Column({ name: 'content', type: 'simple-json', nullable: true })
-  content?: Record<string, any>;
+  content?: TeRichTextInput;
 
   @Column({ type: 'longtext', nullable: true })
   modifications: string;
@@ -47,6 +53,18 @@ export class HnDocumentation extends HnBaseEntity {
     } else {
       this.completePath = path + '/';
     }
+  }
+
+  public getRichText(): TeRichTextAggregate {
+    const richText = new TeRichText(this.content);
+    const modifications = TeRichTextModifications.fromJsonObjectString(this.modifications);
+
+    return new TeRichTextAggregate(richText, modifications);
+  }
+
+  public setRichText(richText: TeRichTextAggregate): void {
+    this.content = richText.richText.toJson();
+    this.modifications = richText.getModificationsAsString();
   }
 }
 

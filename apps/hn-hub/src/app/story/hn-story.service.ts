@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HnStory, HnStoryCategory, HnStoryStatus } from './hn-story.entity';
 import { DataSource, EntityManager, FindOptionsOrder, FindOptionsWhere, In, Like, Repository } from 'typeorm';
@@ -8,13 +8,7 @@ import {
   BlAbstractPaginatedService,
   BlBadRequestException,
   BlFile,
-  BlNewRichText,
-  BlRichTextBlockModificationDto,
-  BlRichTextContent,
-  BlRichTextModifications,
-  BlRichTextUploadedImageResponse,
   BlUnauthorizedException,
-  BlUserDto,
 } from '@monorepo/back-core-lib';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnCreateStoryDto, HnStoryDto, HnStoryFilter } from './hn-story.dto';
@@ -32,16 +26,18 @@ import {
   HnAbstractFileEntityDTO,
   HnUploadFileResponseDto,
 } from '../file-aggregate/file-core/hn-abstract-file.dto';
-import { HnStoryFileService } from '../story-file/hn-story-file.service';
 import { HnUserService } from '../users/hn-user.service';
-import { HnUserDto } from '../users/hn-user.dto';
 import { HnFileStory } from '../file-aggregate/file-story/hn-file-story.entity';
 import { HnFileType } from '../file-aggregate/file-core/hn-abstract-file.entity';
+import {
+  TeRichText,
+  TeRichTextAggregate,
+  TeRichTextBlockModificationWithUser,
+  TeBlockFigureUploadedResponse,
+} from '@monorepo/te-text-editor';
 
 @Injectable()
 export class HnStoryService {
-  private logger = new Logger(HnStoryService.name);
-
   constructor(
     @InjectRepository(HnStory)
     private readonly storyRepository: Repository<HnStory>,
@@ -49,7 +45,6 @@ export class HnStoryService {
     private frontService: HnFrontService,
     private storyAuthorService: HnStoryAuthorService,
     private storyFileService: HnFileStoryService,
-    private oldStoryFileService: HnStoryFileService,
     private userService: HnUserService,
     private dataSource: DataSource
   ) {}
@@ -58,7 +53,7 @@ export class HnStoryService {
     const story = new HnStory();
     story.title = data.title;
     story.category = data.category;
-    story.content = BlNewRichText.emptyContent();
+    story.content = TeRichText.emptyJson();
     return await this.storyRepository.save(story);
   }
 
@@ -339,29 +334,27 @@ export class HnStoryService {
   async updateStoryContent(id: string): Promise<HnStory> {
     await this.checkAndValidateOwnerOrCoAuthor(id);
     const story = await this.getStory(id);
-    const richText = new BlNewRichText(story.contentEdition as BlRichTextContent);
+
+    const richText = new TeRichText(story.contentEdition);
     if (story.mainPicture == null) {
       const firstFigureLink = richText.getFirstFigureLink();
       if (firstFigureLink == null) throw new BlBadRequestException('Story must have a main picture');
       story.mainPicture = firstFigureLink;
     }
-    story.content = story.contentEdition;
+    story.content = richText.toJson();
     story.firstParagraph = ClStringHelper.replaceLineBreaksBySpace(richText.getFirstParagraphsText());
     return this.storyRepository.save(story);
   }
 
-  async updateStoryContentEdition(id: string, contentEdition: BlRichTextContent): Promise<HnStory> {
+  async updateStoryContentEdition(id: string, contentEdition: TeRichText): Promise<HnStory> {
     await this.checkAndValidateOwnerOrCoAuthor(id);
     const story = await this.getStory(id);
-    story.modifications = new BlNewRichText(
-      story.contentEdition as BlRichTextContent
-    ).getRichTextModificationAsString(
-      contentEdition,
-      HnCurrentUserHelper.getAndCheckCurrentUser().id,
-      BlRichTextModifications.fromJsonObjectString(story.modifications)
-    );
-    story.contentEdition = contentEdition;
-    const richText = new BlNewRichText(story.contentEdition as BlRichTextContent);
+    const richTextAggregate = story.getContentEditionRichText();
+
+    richTextAggregate.updateContent(contentEdition, HnCurrentUserHelper.getAndCheckCurrentUser().id);
+    story.setContentEditionRichText(richTextAggregate);
+
+    const richText = richTextAggregate.richText;
     const firstFigureLink = richText.getFirstFigureLink();
     if (story.mainPicture == null) {
       story.mainPicture = firstFigureLink;
@@ -375,7 +368,7 @@ export class HnStoryService {
     return this.storyRepository.save(story);
   }
 
-  async saveImage(file: BlFile, storyId: string): Promise<BlRichTextUploadedImageResponse> {
+  async saveImage(file: BlFile, storyId: string): Promise<TeBlockFigureUploadedResponse> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId);
     const story: HnStory = await this.getStory(storyId);
     return this.storyFileService.saveImage(story, file);
@@ -392,7 +385,7 @@ export class HnStoryService {
   async deleteStoryMainImage(storyId: string): Promise<HnStory> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId);
     const story: HnStory = await this.getStory(storyId);
-    const content = new BlNewRichText(story.contentEdition as BlRichTextContent);
+    const content = new TeRichText(story.contentEdition);
     if (content.getFirstFigureLink() == null && story.publishedAt != null)
       throw new BlBadRequestException(
         'A published story must have a main picture. \n ' +
@@ -402,7 +395,7 @@ export class HnStoryService {
     if (story.mainPicture == null) throw new BlBadRequestException('Main picture not found');
     await this.storyFileService.deleteFile(storyId, story.mainPicture);
 
-    story.mainPicture = new BlNewRichText(story.contentEdition as BlRichTextContent).getFirstFigureLink();
+    story.mainPicture = new TeRichText(story.contentEdition).getFirstFigureLink();
     return await this.storyRepository.save(story);
   }
 
@@ -555,48 +548,29 @@ export class HnStoryService {
 
   /////////////////////////////////// HISTORY //////////////////////////////////////////
 
-  async getUndoContent(storyId: string, modificationId: string): Promise<Record<string, any>> {
+  async getUndoContent(storyId: string, modificationId: string): Promise<TeRichTextAggregate> {
     const story: HnStory = await this.getStory(storyId);
-    const richText = new BlNewRichText(story.contentEdition as BlRichTextContent);
-    const modifications = BlRichTextModifications.fromJsonObjectString(story.modifications);
-    const modificationsBlocks = modifications.getModificationsFromModificationId(modificationId);
-    return richText.undoModifications(modificationsBlocks);
+    const richText = story.getContentEditionRichText();
+    richText.undoModifications(modificationId);
+    return richText;
   }
 
   async rollbackContent(storyId: string, modificationId: string): Promise<HnStory> {
     const story: HnStory = await this.getStory(storyId);
 
-    const newContent = await this.getUndoContent(storyId, modificationId);
-
-    const modifications = BlRichTextModifications.fromJsonObjectString(story.modifications);
-    const removeNumber = modifications.removeModificationsFromModificationId(modificationId);
-
-    if (removeNumber == 0) {
-      return story;
-    }
-
-    story.contentEdition = newContent;
-    story.modifications = JSON.stringify(modifications.toJsonObject());
+    const newRichText = await this.getUndoContent(storyId, modificationId);
+    story.setContentEditionRichText(newRichText);
 
     return this.storyRepository.save(story);
   }
 
-  async getStoryModifications(storyId: string): Promise<BlRichTextBlockModificationDto[]> {
+  async getStoryModifications(storyId: string): Promise<TeRichTextBlockModificationWithUser[]> {
     const story: HnStory = await this.getStory(storyId);
     if (!story.modifications) return [];
-    const res: BlRichTextBlockModificationDto[] = [];
-    const modifications = BlRichTextModifications.fromJsonObjectString(story.modifications);
-    const userMap = new Map<string, BlUserDto>();
-    for (const modification of modifications.getModifications()) {
-      if (!userMap.has(modification.userId)) {
-        const userDto = new HnUserDto(await this.userService.findOne(modification.userId));
-        userMap.set(modification.userId, userDto);
-        res.push(new BlRichTextBlockModificationDto(modification, userDto));
-      } else {
-        res.push(new BlRichTextBlockModificationDto(modification, userMap.get(modification.userId)));
-      }
-    }
-    return res;
+
+    const richText = story.getContentEditionRichText();
+
+    return richText.getModificationsDTO(userId => this.userService.findUserBasicDTO(userId));
   }
 
   async storyImageMigration(): Promise<void> {

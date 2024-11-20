@@ -7,7 +7,6 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-  Req,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -36,7 +35,8 @@ import {
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
 import { CnLabSendMailDto } from '../cn-labs/mail/cn-lab-mail.dto';
-import { CnModificationsBodyDTO, CnUndoContentBodyDTO } from './cn-external-labs.dto';
+import { CnRichTextCompareRequestDTO, CnRichTextUndoRequestDTO } from './cn-external-labs.dto';
+import { TeRichTextBlockModificationsDTO, TeRichTextDTO, TeRichTextHelper } from '@monorepo/te-text-editor';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -71,12 +71,11 @@ export class CnExternalLabsController {
 
   /**
    * Check if the guard pass
-   * @param req
    * return true if the guard pass
    */
   @CnLabGuard()
   @Get('check-test')
-  async checkTest(@Req() req: Request): Promise<boolean> {
+  async checkTest(): Promise<boolean> {
     return true;
   }
 
@@ -198,9 +197,11 @@ export class CnExternalLabsController {
 
   // Public route that return the new list of modifications after a rich text content modification
   @BlPublic()
-  @Post('modifications')
-  async getModifications(@Body() body: CnModificationsBodyDTO): Promise<Record<string, any>> {
-    return await this.labFolderAggregateService.getModifications(
+  @Post('rich-text/compare')
+  async compareRichTexts(
+    @Body() body: CnRichTextCompareRequestDTO
+  ): Promise<TeRichTextBlockModificationsDTO> {
+    return TeRichTextHelper.compareRichTexts(
       body.oldContent,
       body.newContent,
       body.oldModifications,
@@ -210,12 +211,8 @@ export class CnExternalLabsController {
 
   // Public route that return the new content after an undo operation based on modifications
   @BlPublic()
-  @Post('undo-content')
-  async getNotePreviousVersion(@Body() body: CnUndoContentBodyDTO): Promise<Record<string, any>> {
-    return await this.labFolderAggregateService.getNotePreviousVersion(
-      body.content,
-      body.modifications,
-      body.modificationId
-    );
+  @Post('rich-text/previous-version')
+  async getRichTextPreviousVersion(@Body() body: CnRichTextUndoRequestDTO): Promise<TeRichTextDTO> {
+    return TeRichTextHelper.getRichTextPreviousVersion(body.content, body.modifications, body.modificationId);
   }
 }

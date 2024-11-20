@@ -12,7 +12,7 @@ import { CnUser } from '../cn-users/cn-user.entity';
 import { CnScenario } from './cn-scenarios/cn-scenario.entity';
 import { CnNote } from './cn-notes/cn-note.entity';
 import { CnChatMessage, getFakeUserEveryoneMention } from '../cn-chat-message/cn-chat-message.entity';
-import { BlMailService, BlMentionUser, BlNewRichText, BlRichTextContent } from '@monorepo/back-core-lib';
+import { BlMailService } from '@monorepo/back-core-lib';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnMailTemplate } from '../cn-core/model/config/cn-mail-template.class';
 import { CnDocument } from './cn-documents/cn-document.entity';
@@ -21,6 +21,7 @@ import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.en
 import { CnHierarchyRepresentation } from './cn_hierarchy_objects/cn-hierarchy-representation';
 import { CnSpaceEvent, cnSpaceEventName } from '../cn-spaces/cn-space.event';
 import { CnFolderAggregateService } from './cn-folder-aggregate.service';
+import { TeMentionUser, TeRichText, TeRichTextMentionHelper } from '@monorepo/te-text-editor';
 
 export interface CnNotifInfo {
   link: string;
@@ -423,7 +424,7 @@ export class CnFolderListener {
     const ancestors = await this.folderHierarchyService.getAncestorsByFolderId(parentFolder.id);
     const ancestorIds = ancestors.map((a) => a.id);
 
-    const userMentions = this.getUserMentions(message.content, folderUsers);
+    const userMentions = this.getUserMentions(message.getRichTextContent(), folderUsers);
 
     // send notification to mentioned users
     for (const userMention of userMentions) {
@@ -463,9 +464,8 @@ export class CnFolderListener {
     }
   }
 
-  private getUserMentions(content: BlRichTextContent, folderUsers: CnFolderUser[]): CnFolderUser[] {
-    const richText = new BlNewRichText(content);
-    const mentions: BlMentionUser[] = richText.getMentions();
+  private getUserMentions(richText: TeRichText, folderUsers: CnFolderUser[]): CnFolderUser[] {
+    const mentions: TeMentionUser[] = TeRichTextMentionHelper.getMentions(richText);
 
     // exclude current user
     const otherUsers = folderUsers.filter((pu) => pu.user.id != CnCurrentUserHelper.getCurrentUser().id);

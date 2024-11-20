@@ -6,8 +6,5 @@ export interface BlUser {
   firstname: string;
   lastname: string;
   lang: ClSupportedLanguage;
-}
-
-export interface BlUserDto {
-  id: string;
+  photo: string;
 }

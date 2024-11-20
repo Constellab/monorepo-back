@@ -1,9 +1,10 @@
 import { HnAbstractCommentEntity } from './hn-abstract-comment.entity';
 import { DataSource, EntityManager, Repository } from 'typeorm';
-import { BlEntityWithId, BlRichTextContent } from '@monorepo/back-core-lib';
+import { BlEntityWithId } from '@monorepo/back-core-lib';
 import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { ClPage } from '@monorepo/core-lib';
 import { HnAbstractCommentDto } from './hn-abstract-comment.dto';
+import { TeRichText } from '@monorepo/te-text-editor';
 
 export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
   repository: Repository<HnAbstractCommentEntity<BlEntityWithId>>;
@@ -28,7 +29,7 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
     comment: HnAbstractCommentEntity<T>
   ): Promise<HnAbstractCommentEntity<T>>;
 
-  abstract createComment(entity: T, commentData: BlRichTextContent): HnAbstractCommentEntity<T>;
+  abstract createComment(entity: T, commentData: TeRichText): HnAbstractCommentEntity<T>;
 
   abstract getComments(
     page: number,
@@ -49,7 +50,7 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
     });
   }
 
-  async comment(entityId: string, commentData: BlRichTextContent): Promise<HnAbstractCommentEntity<T>> {
+  async comment(entityId: string, commentData: TeRichText): Promise<HnAbstractCommentEntity<T>> {
     const entity: T = await this.getEntityById(entityId);
 
     if (!entity) {

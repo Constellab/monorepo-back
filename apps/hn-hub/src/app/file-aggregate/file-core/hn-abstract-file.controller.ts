@@ -3,13 +3,12 @@ import {
   BlFile,
   BlPublic,
   BlResponseHelper,
-  BlRichTextUploadedImageResponse,
-  BlRichTextUploadFileResponse,
 } from '@monorepo/back-core-lib';
 import { HnAbstractFileService } from './hn-abstract-file.service';
 import { Body, Delete, Get, Param, ParseUUIDPipe, Put, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { HnAbstractFileEntityDTO } from './hn-abstract-file.dto';
+import { TeBlockFigureUploadedResponse, TeBlockFileUploadResponse } from '@monorepo/te-text-editor';
 
 export abstract class HnAbstractFileController<T extends BlEntityWithId> {
   fileService: HnAbstractFileService<T>;
@@ -67,10 +66,10 @@ export abstract class HnAbstractFileController<T extends BlEntityWithId> {
     return this.fileService.deleteFile(entityId, name);
   }
 
-  abstract saveFile(file: BlFile, entityId: string): Promise<BlRichTextUploadFileResponse>;
+  abstract saveFile(file: BlFile, entityId: string): Promise<TeBlockFileUploadResponse>;
 
   //-------------------------------------------- IMAGE --------------------------------------------
-  abstract saveImage(file: BlFile, entityId: string): Promise<BlRichTextUploadedImageResponse>;
+  abstract saveImage(file: BlFile, entityId: string): Promise<TeBlockFigureUploadedResponse>;
 
   //-------------------------------------------- RESOURCE VIEW --------------------------------------------
   abstract saveResourceViewFile(file: BlFile, entityId: string): Promise<any>;

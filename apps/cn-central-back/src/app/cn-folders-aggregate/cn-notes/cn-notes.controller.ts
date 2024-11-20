@@ -2,15 +2,17 @@ import { Controller, Delete, Get, Param, ParseUUIDPipe, Res } from '@nestjs/comm
 import { CnNote } from './cn-note.entity';
 import { Response } from 'express';
 import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
-import { BlResponseHelper, BlRichTextBlockModificationDto, BlRichTextContent } from '@monorepo/back-core-lib';
+import { BlResponseHelper } from '@monorepo/back-core-lib';
+import { TeRichTextBlockModificationWithUser, TeRichTextDTO } from '@monorepo/te-text-editor';
 
 @Controller('notes')
 export class CnNotesController {
   constructor(private folderAggregateService: CnFolderAggregateService) {}
 
   @Get(':id/content')
-  async getNoteContent(@Param('id', new ParseUUIDPipe()) id: string): Promise<BlRichTextContent> {
-    return await this.folderAggregateService.findNoteContent(id);
+  async getNoteContent(@Param('id', new ParseUUIDPipe()) id: string): Promise<TeRichTextDTO> {
+    const richText = await this.folderAggregateService.findNoteContent(id);
+    return richText.toJson();
   }
 
   @Get(':id')
@@ -59,7 +61,7 @@ export class CnNotesController {
   @Get(':noteId/history')
   async getNoteModifications(
     @Param('noteId', new ParseUUIDPipe()) noteId: string
-  ): Promise<BlRichTextBlockModificationDto[]> {
+  ): Promise<TeRichTextBlockModificationWithUser[]> {
     return this.folderAggregateService.getNoteModifications(noteId);
   }
 

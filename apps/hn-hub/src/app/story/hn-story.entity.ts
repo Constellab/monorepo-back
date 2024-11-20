@@ -9,13 +9,22 @@ import {
   OneToMany,
 } from 'typeorm';
 import { HnTopic } from '../topic/hn-topic.entity';
-import { BlEntityWithId, BlLuxonDateTimeColumn } from '@monorepo/back-core-lib';
+import {
+  BlEntityWithId,
+  BlLuxonDateTimeColumn,
+} from '@monorepo/back-core-lib';
 import { DateTime } from 'luxon';
 import { HnUser } from '../users/hn-user.entity';
 import { ClDateHelper, ClStringHelper } from '@monorepo/core-lib';
 import { HnStoryCoAuthor } from '../story-author/hn-story-author.entity';
 import { Expose, Type } from 'class-transformer';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
+import {
+  TeRichText,
+  TeRichTextAggregate,
+  TeRichTextInput,
+  TeRichTextModifications,
+} from '@monorepo/te-text-editor';
 
 export enum HnStoryStatus {
   DRAFT = 'DRAFT',
@@ -36,10 +45,10 @@ export class HnStory extends BlEntityWithId {
 
   // the database was modified to use a long text instead of a json
   @Column({ name: 'content', type: 'simple-json' })
-  content: Record<string, any>;
+  content: TeRichTextInput;
 
   @Column({ name: 'content_edition', type: 'simple-json', nullable: true })
-  contentEdition?: Record<string, any>;
+  contentEdition?: TeRichTextInput;
 
   @Column({ type: 'longtext', nullable: true })
   modifications: string;
@@ -104,5 +113,17 @@ export class HnStory extends BlEntityWithId {
   @Expose()
   get titlePath(): string {
     return ClStringHelper.getCleanUrlPath(this.title);
+  }
+
+  public getContentEditionRichText(): TeRichTextAggregate {
+    const richText = new TeRichText(this.contentEdition);
+    const modifications = TeRichTextModifications.fromJsonObjectString(this.modifications);
+
+    return new TeRichTextAggregate(richText, modifications);
+  }
+
+  public setContentEditionRichText(richText: TeRichTextAggregate): void {
+    this.contentEdition = richText.richText.toJson();
+    this.modifications = richText.getModificationsAsString();
   }
 }

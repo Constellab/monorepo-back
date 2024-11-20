@@ -3,21 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { HnDocumentation, HnDocumentationSearchDTO } from './hn-documentation.entity';
 import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-version.entity';
-import {
-  BlBadRequestException,
-  BlNewRichText,
-  BlRichTextBlockModification,
-  BlRichTextContent,
-  BlRichTextModifications,
-  BlRichTextModificationType,
-} from '@monorepo/back-core-lib';
+import { BlBadRequestException } from '@monorepo/back-core-lib';
+import { TeRichText, TeRichTextAggregate } from '@monorepo/te-text-editor';
 import { HnNodeDTO } from '../folder/hn-folder.dto';
 import { HnFolder } from '../folder/hn-folder.entity';
 import { ClStringHelper } from '@monorepo/core-lib';
 import { HnDocumentationFileService } from '../documentation-file/hn-documentation-file.service';
 import { HnDocumentationFile } from '../documentation-file/hn-documentation-file.entity';
 import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
-import { DateTime } from 'luxon';
 
 @Injectable()
 export class HnDocumentationService {
@@ -105,17 +98,14 @@ export class HnDocumentationService {
     });
   }
 
-  async updateContent(id: string, updateContentDoc: BlRichTextContent): Promise<HnDocumentation> {
+  async updateContent(id: string, updateContentDoc: TeRichText): Promise<HnDocumentation> {
     const doc: HnDocumentation = await this.documentationsRepository.findOneBy({
       id: id,
     });
     if (doc) {
-      doc.modifications = new BlNewRichText(doc.content as BlRichTextContent).getRichTextModificationAsString(
-        updateContentDoc,
-        HnCurrentUserHelper.getAndCheckCurrentUser().id,
-        BlRichTextModifications.fromJsonObjectString(doc.modifications)
-      );
-      doc.content = updateContentDoc;
+      const richTextAggregate = doc.getRichText();
+      richTextAggregate.updateContent(updateContentDoc, HnCurrentUserHelper.getAndCheckCurrentUser().id);
+      doc.setRichText(richTextAggregate);
     }
     return this.documentationsRepository.save(doc);
   }
@@ -142,16 +132,18 @@ export class HnDocumentationService {
       relations: ['folder'],
     });
 
-    return documentation
-      ? {
-          id: documentation.id,
-          name: documentation.title,
-          completePath: documentation.completePath,
-          anchor: anchor ? anchor : null,
-          major: brickMajorVersion.major.toString(),
-          brickName: brickMajorVersion.brick.name,
-        }
-      : null;
+    if (documentation) {
+      return {
+        id: documentation.id,
+        name: documentation.title,
+        completePath: documentation.completePath,
+        anchor: anchor ? anchor : null,
+        major: brickMajorVersion.major.toString(),
+        brickName: brickMajorVersion.brick.name,
+      };
+    } else {
+      return null;
+    }
   }
 
   public getDocsByBrickVersion(brickMajorVersionId: string): Promise<HnDocumentation[]> {
@@ -172,31 +164,17 @@ export class HnDocumentationService {
 
   ///////////////////////////////////////// HISTORY /////////////////////////////////////////
 
-  async getUndoContent(doc: HnDocumentation, modificationId: string): Promise<Record<string, any>> {
-    const richText = new BlNewRichText(doc.content as BlRichTextContent);
-    const modifications = BlRichTextModifications.fromJsonObjectString(doc.modifications);
-    const modificationsBlocks = modifications.getModificationsFromModificationId(modificationId);
-    return richText.undoModifications(modificationsBlocks);
+  async getUndoContent(doc: HnDocumentation, modificationId: string): Promise<TeRichTextAggregate> {
+    const richText = doc.getRichText();
+    richText.undoModifications(modificationId);
+    return richText;
   }
 
   async rollbackContent(doc: HnDocumentation, modificationId: string): Promise<HnDocumentation> {
     const newContent = await this.getUndoContent(doc, modificationId);
 
-    const modifications = BlRichTextModifications.fromJsonObjectString(doc.modifications);
-    const removeNumber = modifications.removeModificationsFromModificationId(modificationId);
-
-    if (removeNumber == 0) {
-      return doc;
-    }
-
-    doc.content = newContent;
-    doc.modifications = JSON.stringify(modifications.toJsonObject());
+    doc.setRichText(newContent);
 
     return this.documentationsRepository.save(doc);
-  }
-
-  async getDocModifications(doc: HnDocumentation): Promise<BlRichTextBlockModification[]> {
-    if (!doc.modifications) return [];
-    return BlRichTextModifications.fromJsonObjectString(doc.modifications).getModifications();
   }
 }

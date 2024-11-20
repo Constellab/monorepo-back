@@ -16,9 +16,6 @@ import {
   BlFile,
   BlParsePipe,
   BlPublic,
-  BlRichTextBlockModificationDto,
-  BlRichTextContent,
-  BlRichTextUploadedImageResponse,
   BlUploadedFile,
 } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
@@ -37,6 +34,12 @@ import {
   HnAbstractFileEntityDTO,
   HnUploadFileResponseDto,
 } from '../file-aggregate/file-core/hn-abstract-file.dto';
+import {
+  TeRichText,
+  TeRichTextBlockModificationWithUser,
+  TeRichTextPipe,
+  TeBlockFigureUploadedResponse,
+} from '@monorepo/te-text-editor';
 
 @Controller('story')
 export class HnStoryController extends HnAbstractFileController<HnStory> {
@@ -193,7 +196,7 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
   @Put(':id/content-edition')
   async updateStoryContentEdition(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Body('contentEdition') contentEdition: BlRichTextContent
+    @Body(TeRichTextPipe) contentEdition: TeRichText
   ): Promise<HnStory> {
     return this.storyService.updateStoryContentEdition(id, contentEdition);
   }
@@ -203,7 +206,7 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
   saveImage(
     @BlUploadedFile() file: BlFile,
     @Param('storyId', new ParseUUIDPipe()) storyId: string
-  ): Promise<BlRichTextUploadedImageResponse> {
+  ): Promise<TeBlockFigureUploadedResponse> {
     return this.storyService.saveImage(file, storyId);
   }
 
@@ -290,7 +293,7 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
   @Get('history/:storyId')
   async getStoryModifications(
     @Param('storyId', new ParseUUIDPipe()) storyId: string
-  ): Promise<BlRichTextBlockModificationDto[]> {
+  ): Promise<TeRichTextBlockModificationWithUser[]> {
     return this.storyService.getStoryModifications(storyId);
   }
 

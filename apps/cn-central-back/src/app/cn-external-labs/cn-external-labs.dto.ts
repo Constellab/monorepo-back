@@ -1,14 +1,16 @@
-import { BlRichTextContent } from '@monorepo/back-core-lib';
+import { TeRichTextBlockModificationsDTO, TeRichTextDTO } from '@monorepo/te-text-editor';
 
-export interface CnModificationsBodyDTO {
-  oldContent: BlRichTextContent;
-  newContent: BlRichTextContent;
+export interface CnRichTextCompareRequestDTO {
+  version: number;
+  oldContent: TeRichTextDTO;
+  newContent: TeRichTextDTO;
   userId: string;
-  oldModifications: Record<string, any>;
+  oldModifications: TeRichTextBlockModificationsDTO;
 }
 
-export interface CnUndoContentBodyDTO {
-  content: BlRichTextContent;
+export interface CnRichTextUndoRequestDTO {
+  version: number;
+  content: TeRichTextDTO;
   modificationId: string;
-  modifications: Record<string, any>;
+  modifications: TeRichTextBlockModificationsDTO;
 }

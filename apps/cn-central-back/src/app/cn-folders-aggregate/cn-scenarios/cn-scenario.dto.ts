@@ -6,7 +6,7 @@ import { CnLabConfigDto } from '../../cn-lab-configs/cn-lab-config.dto';
 import { Type } from 'class-transformer';
 import { CnEntityDTO } from '../../cn-core/model/entities/cn.entity';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
-import { BlRichTextContent, BlRichTextI } from '@monorepo/back-core-lib';
+import { TeRichText, TeRichTextTransform } from '@monorepo/te-text-editor';
 
 /**
  * Scenario object from the Lab
@@ -14,7 +14,10 @@ import { BlRichTextContent, BlRichTextI } from '@monorepo/back-core-lib';
 export class CnSaveScenarioDto {
   id: string;
   title: string;
-  description: BlRichTextContent | BlRichTextI;
+
+  @TeRichTextTransform()
+  description: TeRichText;
+
   status: CnScenarioStatus;
 
   is_validated: boolean;

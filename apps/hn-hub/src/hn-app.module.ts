@@ -77,6 +77,7 @@ import { HnFileDocumentationModule } from './app/file-aggregate/file-documentati
 import { HnLogRequestMiddleware } from './app/core/middleware/hn-log-request-middleware.service';
 import { BullModule } from '@nestjs/bullmq';
 import { HnMailConfig } from './app/core/model/config/hn-mail.config';
+import { TeRichTextModifications } from '@monorepo/te-text-editor';
 
 function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: HnDatabaseConfig = configService.getDatabaseConfig();
@@ -120,6 +121,9 @@ function configureJwtModule(configService: HnCoreConfigService, userService: HnU
 function configureTransportModule(configService: HnCoreConfigService): BlTransportModuleConfig {
   return configService.getTransportModuleConfig();
 }
+
+// configure the text editor
+TeRichTextModifications.setBackTimeDifference();
 
 @Module({
   imports: [

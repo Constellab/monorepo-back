@@ -16,17 +16,22 @@ import {
 } from '@nestjs/common';
 import { CnFolder, CnFolderWithHierarchy } from './cn-folders/cn-folder.entity';
 import {
+  BlDtoHelper,
   BlFile,
   BlParsePipe,
   BlPublic,
   BlResponseHelper,
-  BlRichTextBlockModificationDto,
-  BlRichTextContent,
-  BlRichTextUploadedImageResponse,
-  BlRichTextUploadFileResponse,
   BlSearchParams,
   BlUploadedFile,
 } from '@monorepo/back-core-lib';
+import {
+  TeRichText,
+  TeRichTextBlockModificationWithUser,
+  TeRichTextDTO,
+  TeRichTextPipe,
+  TeBlockFigureUploadedResponse,
+  TeBlockFileUploadResponse,
+} from '@monorepo/te-text-editor';
 import { ClPage, ClPageI } from '@monorepo/core-lib';
 import { CnFolderAggregateService } from './cn-folder-aggregate.service';
 import {
@@ -35,8 +40,7 @@ import {
   CnSaveFolderDTO,
 } from './cn-folders/cn-folder.dto';
 import { CnUser } from '../cn-users/cn-user.entity';
-import { CnChatMessage } from '../cn-chat-message/cn-chat-message.entity';
-import { CnMessage, CnNewMessageDTO } from '../cn-core/model/entities/cn-message.entity';
+import { CnNewMessageDTO } from '../cn-core/model/entities/cn-message.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { CnFolderUser, CnFolderUserEntity } from './cn-folder-user/cn-folder-user.entity';
@@ -52,6 +56,7 @@ import {
   CnHierarchyObject,
   CnHierarchyObjectWithChildren,
 } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnChatMessageDto } from '../cn-chat-message/cn-chat-message.dto';
 
 @Controller('folders')
 export class CnFoldersController {
@@ -190,7 +195,7 @@ export class CnFoldersController {
   @Put(':id/description')
   updateDescription(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() description: BlRichTextContent
+    @Body(TeRichTextPipe) description: TeRichText
   ): Promise<void> {
     return this.folderAggregateService.updateDescription(id, description);
   }
@@ -200,7 +205,7 @@ export class CnFoldersController {
   saveDescriptionImage(
     @Param('folderId', new ParseUUIDPipe()) folderId: string,
     @BlUploadedFile() file: BlFile
-  ): Promise<BlRichTextUploadedImageResponse> {
+  ): Promise<TeBlockFigureUploadedResponse> {
     return this.folderAggregateService.saveDescriptionImage(folderId, file);
   }
 
@@ -239,7 +244,7 @@ export class CnFoldersController {
   saveMessageImage(
     @Param('folderId', new ParseUUIDPipe()) folderId: string,
     @BlUploadedFile() file: BlFile
-  ): Promise<BlRichTextUploadedImageResponse> {
+  ): Promise<TeBlockFigureUploadedResponse> {
     return this.folderAggregateService.saveMessageImage(file, folderId);
   }
 
@@ -258,29 +263,32 @@ export class CnFoldersController {
   }
 
   @Post(':folderId/chat/message')
-  createFolderMessage(
+  async createFolderMessage(
     @Param('folderId', new ParseUUIDPipe()) folderId: string,
     @Body(new BlParsePipe(CnNewMessageDTO)) newMessageDTO: CnNewMessageDTO
-  ): Promise<CnChatMessage> {
-    return this.folderAggregateService.createChatMessage(newMessageDTO, folderId);
+  ): Promise<CnChatMessageDto> {
+    const message = await this.folderAggregateService.createChatMessage(newMessageDTO, folderId);
+    return new CnChatMessageDto(message);
   }
 
   @Put(':folderId/chat/message/:messageId')
-  updateFolderMessage(
+  async updateFolderMessage(
     @Param('folderId', new ParseUUIDPipe()) folderId: string,
     @Param('messageId', new ParseUUIDPipe()) messageId: string,
-    @Body() body: any
-  ): Promise<CnMessage> {
-    return this.folderAggregateService.updateChatMessage(folderId, messageId, body.content);
+    @Body(new BlParsePipe(CnNewMessageDTO)) newMessageDTO: CnNewMessageDTO
+  ): Promise<CnChatMessageDto> {
+    const message = await this.folderAggregateService.updateChatMessage(folderId, messageId, newMessageDTO);
+    return new CnChatMessageDto(message);
   }
 
   @Get(':folderId/chat/message')
-  getFolderMessages(
+  async getFolderMessages(
     @Param('folderId', new ParseUUIDPipe()) folderId: string,
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
-  ): Promise<ClPage<CnChatMessage>> {
-    return this.folderAggregateService.getFolderMessages(folderId, page, size);
+  ): Promise<ClPage<CnChatMessageDto>> {
+    const result = await this.folderAggregateService.getFolderMessages(folderId, page, size);
+    return BlDtoHelper.pageToDto(CnChatMessageDto, result);
   }
 
   @Delete(':folderId/chat/message/:messageId/delete')
@@ -370,7 +378,7 @@ export class CnFoldersController {
     return this.folderAggregateService.moveDocumentToFolder(documentId, folderId);
   }
 
-  ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
+  ///////////////////////// CONSTELLAB DOCUMENTS /////////////////////////////////////
   @Post(':folderId/constellab-document')
   public createConstellabDocument(
     @Param('folderId', new ParseUUIDPipe()) folderId: string,
@@ -382,9 +390,9 @@ export class CnFoldersController {
   @Put('constellab-document/:documentId')
   public updateConstellabDocument(
     @Param('documentId', new ParseUUIDPipe()) documentId: string,
-    @Body() body: BlRichTextContent
+    @Body(TeRichTextPipe) richText: TeRichText
   ): Promise<CnConstellabDocumentDTO> {
-    return this.folderAggregateService.updateConstellabDocument(documentId, body);
+    return this.folderAggregateService.updateConstellabDocument(documentId, richText);
   }
 
   // check if the user can edit (is no other user is editing the document)
@@ -407,7 +415,7 @@ export class CnFoldersController {
   async uploadImageToConstellabDocument(
     @Param('documentId', new ParseUUIDPipe()) documentId: string,
     @BlUploadedFile() file: BlFile
-  ): Promise<BlRichTextUploadedImageResponse> {
+  ): Promise<TeBlockFigureUploadedResponse> {
     return this.folderAggregateService.uploadImageToConstellabDocument(documentId, file);
   }
 
@@ -416,7 +424,7 @@ export class CnFoldersController {
   async uploadFileToConstellabDocument(
     @Param('documentId', new ParseUUIDPipe()) documentId: string,
     @BlUploadedFile() file: BlFile
-  ): Promise<BlRichTextUploadFileResponse> {
+  ): Promise<TeBlockFileUploadResponse> {
     return this.folderAggregateService.uploadFileToConstellabDocument(documentId, file);
   }
 
@@ -433,7 +441,7 @@ export class CnFoldersController {
     BlResponseHelper.setFileResponse(response, file);
   }
 
-  ////////////////////////////////////////////// DOCUMENT PREVIEW  /////////////////////////////////////////////
+  ////////////////////////// DOCUMENT PREVIEW  ///////////////////////////////////////
 
   @Post('document/:documentId/preview-token')
   public async generatePreviewToken(
@@ -511,7 +519,7 @@ export class CnFoldersController {
   @Get('constellab-document/:documentId/history')
   async getDocumentModifications(
     @Param('documentId', new ParseUUIDPipe()) documentId: string
-  ): Promise<BlRichTextBlockModificationDto[]> {
+  ): Promise<TeRichTextBlockModificationWithUser[]> {
     return this.folderAggregateService.getConstellabDocumentModifications(documentId);
   }
 
@@ -519,8 +527,12 @@ export class CnFoldersController {
   async undoContent(
     @Param('documentId', new ParseUUIDPipe()) documentId: string,
     @Param('modificationId', new ParseUUIDPipe()) modificationId: string
-  ): Promise<Record<string, any>> {
-    return this.folderAggregateService.getConstellabDocumentationUndoContent(documentId, modificationId);
+  ): Promise<TeRichTextDTO> {
+    const richText = await this.folderAggregateService.getConstellabDocumentationUndoContent(
+      documentId,
+      modificationId
+    );
+    return richText.toJson();
   }
 
   @Put('constellab-document/:documentId/history/rollback/:modificationId')

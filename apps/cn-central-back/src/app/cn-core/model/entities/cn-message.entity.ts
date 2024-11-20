@@ -1,12 +1,17 @@
 import { Column } from 'typeorm';
 import { CnBaseEntity } from './cn-base.entity';
-import { BlRichTextContent } from '@monorepo/back-core-lib';
+import { TeRichText, TeRichTextInput, TeRichTextTransform } from '@monorepo/te-text-editor';
 
 export class CnMessage extends CnBaseEntity {
   @Column({ type: 'simple-json', nullable: true })
-  content: BlRichTextContent;
+  content: TeRichTextInput;
+
+  getRichTextContent(): TeRichText {
+    return new TeRichText(this.content);
+  }
 }
 
 export class CnNewMessageDTO {
-  content: BlRichTextContent;
+  @TeRichTextTransform()
+  content: TeRichText;
 }

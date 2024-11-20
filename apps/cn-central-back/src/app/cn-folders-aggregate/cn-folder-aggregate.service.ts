@@ -25,12 +25,6 @@ import {
   BlBadRequestException,
   BlFile,
   BlFileResponse,
-  BlNewRichText,
-  BlRichTextBlockModificationDto,
-  BlRichTextContent,
-  BlRichTextModifications,
-  BlRichTextUploadedImageResponse,
-  BlRichTextUploadFileResponse,
   BlSearchBuilder,
   BlSearchParams,
 } from '@monorepo/back-core-lib';
@@ -63,6 +57,12 @@ import {
   CnHierarchyObjectWithChildren,
 } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
+import {
+  TeRichText,
+  TeRichTextBlockModificationWithUser,
+  TeBlockFigureUploadedResponse,
+  TeBlockFileUploadResponse,
+} from '@monorepo/te-text-editor';
 
 @Injectable()
 export class CnFolderAggregateService {
@@ -341,7 +341,7 @@ export class CnFolderAggregateService {
     const description = await this.foldersService.getDescription(folderId);
 
     return {
-      description: description,
+      description: description.toJson(),
       canEdit: this.foldersAggregateSecurity.isFolderLeader(
         folder,
         CnCurrentUserHelper.getAndCheckUserSpaceInfo()
@@ -349,12 +349,12 @@ export class CnFolderAggregateService {
     };
   }
 
-  public async updateDescription(folderId: string, description: BlRichTextContent): Promise<void> {
+  public async updateDescription(folderId: string, description: TeRichText): Promise<void> {
     const folder = await this.getAndCheckAuthorizationForUpdate(folderId);
     await this.foldersService.updateDescription(folderId, description);
 
     // update the folder object to set the hasDescription flag
-    folder.hasDescription = !BlNewRichText.isEmpty(description);
+    folder.hasDescription = !description.isEmpty();
     await this.hierarchyObjectService.update(folder as CnHierarchyObjectEntity);
 
     // for this event we send the description
@@ -364,7 +364,7 @@ export class CnFolderAggregateService {
   public async saveDescriptionImage(
     folderId: string,
     file: BlFile
-  ): Promise<BlRichTextUploadedImageResponse> {
+  ): Promise<TeBlockFigureUploadedResponse> {
     const folder = await this.getAndCheckAuthorizationForUpdate(folderId);
 
     return this.documentService.uploadImageDocument(
@@ -471,7 +471,7 @@ export class CnFolderAggregateService {
     return await this.noteService.findByIdAndCheck(id);
   }
 
-  public async findNoteContent(id: string): Promise<BlRichTextContent> {
+  public async findNoteContent(id: string): Promise<TeRichText> {
     const noteFolder = await this.getAndCheckAuthorizationForFindOneByFolder(id);
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(noteFolder.parentId);
     return await this.noteService.getNoteContent(parentFolder, id);
@@ -676,7 +676,7 @@ export class CnFolderAggregateService {
   public async updateChatMessage(
     folderId: string,
     messageId: string,
-    content: BlRichTextContent
+    messageDTO: CnNewMessageDTO
   ): Promise<CnChatMessage> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
 
@@ -685,7 +685,7 @@ export class CnFolderAggregateService {
       throw new UnauthorizedException();
     }
 
-    const newMessage = await this.chatMessageService.updateMessage(message, content);
+    const newMessage = await this.chatMessageService.updateMessage(message, messageDTO.content);
     this.emitFolderEvent('UPDATE_FOLDER_MESSAGE', folder, message);
     return newMessage;
   }
@@ -711,7 +711,7 @@ export class CnFolderAggregateService {
     return this.chatMessageService.getFolderMessages(folderId, page, size);
   }
 
-  public async saveMessageImage(file: BlFile, folderId: string): Promise<BlRichTextUploadedImageResponse> {
+  public async saveMessageImage(file: BlFile, folderId: string): Promise<TeBlockFigureUploadedResponse> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
     return this.chatMessageService.saveMessageImage(file, folder);
   }
@@ -846,66 +846,62 @@ export class CnFolderAggregateService {
   }
 
   ////////////////////////////// HISTORY ///////////////////////////////////////
-  public async getNoteModifications(noteId: string): Promise<BlRichTextBlockModificationDto[]> {
+  public async getNoteModifications(noteId: string): Promise<TeRichTextBlockModificationWithUser[]> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(noteId);
 
     await this.noteService.findByIdAndCheck(noteId);
 
-    return this.getModificationsBlocksList(await this.noteService.getNoteModifications(folder, noteId));
+    const richTextAggregate = await this.noteService.getNoteRichText(folder, noteId);
+    return richTextAggregate.getModificationsDTO(userId => this.userService.findUserBasicDTO(userId));
   }
 
   public async getConstellabDocumentModifications(
     documentId: string
-  ): Promise<BlRichTextBlockModificationDto[]> {
+  ): Promise<TeRichTextBlockModificationWithUser[]> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
 
-    return this.getModificationsBlocksList(
-      await this.documentService.getDocumentModifications(folder.getRootFolderId(), document)
+    const richTextAggregate = await this.documentService.getConstellabDocument(
+      folder.getRootFolderId(),
+      document
     );
-  }
 
-  private async getModificationsBlocksList(
-    modifications: BlRichTextModifications
-  ): Promise<BlRichTextBlockModificationDto[]> {
-    const res: BlRichTextBlockModificationDto[] = [];
-    const userMap = new Map<string, CnUser>();
-    for (const modification of modifications.getModifications()) {
-      if (!userMap.has(modification.userId)) {
-        const userDto = await this.userService.findOne(modification.userId);
-        userMap.set(modification.userId, userDto);
-        res.push(new BlRichTextBlockModificationDto(modification, userDto));
-      } else {
-        res.push(new BlRichTextBlockModificationDto(modification, userMap.get(modification.userId)));
-      }
-    }
-    return res;
+    return richTextAggregate.getModificationsDTO(userId => this.userService.findUserBasicDTO(userId));
   }
 
   public async getConstellabDocumentationUndoContent(
     documentId: string,
     modificationId: string
-  ): Promise<BlRichTextContent> {
+  ): Promise<TeRichText> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
     const document = await this.documentService.findByIdAndCheck(documentId);
-    return await this.documentService.getUndoContent(folder.getRootFolderId(), document, modificationId);
+    const richText = await this.documentService.getConstellabDocumentPreviousVersion(
+      folder.getRootFolderId(),
+      document,
+      modificationId
+    );
+    return richText.richText;
   }
 
-  public async getNoteUndoContent(noteId: string, modificationId: string): Promise<BlRichTextContent> {
+  public async getNoteUndoContent(noteId: string, modificationId: string): Promise<TeRichText> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(noteId);
     await this.noteService.findByIdAndCheck(noteId);
-    return await this.noteService.getNoteUndoContent(folder, noteId, modificationId);
+    return await this.noteService.getNotePreviousVersion(folder, noteId, modificationId);
   }
 
   public async rollbackContent(documentId: string, modificationId: string): Promise<CnDocument> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
-    return await this.documentService.rollbackContent(folder.getRootFolderId(), document, modificationId);
+    return await this.documentService.rollbackConstellabDocumentContent(
+      folder.getRootFolderId(),
+      document,
+      modificationId
+    );
   }
 
-  ////////////////////////////////////////////// CONSTELLAB DOCUMENTS //////////////////////////////////////////////
+  //////////////////////////////////// CONSTELLAB DOCUMENTS ////////////////////////////////////////
   public async createConstellabDocument(
     parentFolderId: string,
     filename: string
@@ -919,7 +915,7 @@ export class CnFolderAggregateService {
 
   public async updateConstellabDocument(
     documentId: string,
-    content: BlRichTextContent
+    richText: TeRichText
   ): Promise<CnConstellabDocumentDTO> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
@@ -933,14 +929,15 @@ export class CnFolderAggregateService {
     ) {
       // eslint-disable-next-line max-len
       throw new BlBadRequestException(
-        `This document is currently being modified by ${document.lastModifiedBy.alias}, please wait for the end of the modification`
+        `This document is currently being modified by ${document.lastModifiedBy.alias}` +
+          `, please wait for the end of the modification`
       );
     }
 
     const newDoc = await this.documentService.updateConstellabDocument(
       folder.getRootFolderId(),
       document,
-      content
+      richText
     );
 
     this.emitFolderEvent(
@@ -964,7 +961,8 @@ export class CnFolderAggregateService {
     ) {
       // eslint-disable-next-line max-len
       throw new BlBadRequestException(
-        `This document is currently being modified by ${document.lastModifiedBy.alias}, please wait for the end of the modification`
+        `This document is currently being modified by ${document.lastModifiedBy.alias}` +
+          `, please wait for the end of the modification`
       );
     }
   }
@@ -973,13 +971,17 @@ export class CnFolderAggregateService {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
-    return this.documentService.getConstellabDocument(folder.getRootFolderId(), document);
+    const richTextAggregate = await this.documentService.getConstellabDocument(
+      folder.getRootFolderId(),
+      document
+    );
+    return new CnConstellabDocumentDTO(document, richTextAggregate.getRichTextAsJson());
   }
 
   public async uploadImageToConstellabDocument(
     documentId: string,
     file: BlFile
-  ): Promise<BlRichTextUploadedImageResponse> {
+  ): Promise<TeBlockFigureUploadedResponse> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
@@ -991,7 +993,7 @@ export class CnFolderAggregateService {
   public async uploadFileToConstellabDocument(
     documentId: string,
     file: BlFile
-  ): Promise<BlRichTextUploadFileResponse> {
+  ): Promise<TeBlockFileUploadResponse> {
     const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
@@ -1019,7 +1021,7 @@ export class CnFolderAggregateService {
     );
   }
 
-  ////////////////////////////////////////////// DOCUMENT PREVIEW  /////////////////////////////////////////////
+  ////////////////////////////////////// DOCUMENT PREVIEW  /////////////////////////////////////////
 
   public async generatePreviewToken(documentId: string): Promise<CnDocumentPreviewDTO> {
     await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
@@ -1223,5 +1225,10 @@ export class CnFolderAggregateService {
       userInfo: CnCurrentUserHelper.getAndCheckUserSpaceInfo(),
     };
     this.eventEmitter.emit(cnFolderEventName, event);
+  }
+
+  // TODO TO REMOVE
+  public async migrateScenarioDescriptions(): Promise<void> {
+    return this.scenarioService.migrateDescriptions();
   }
 }

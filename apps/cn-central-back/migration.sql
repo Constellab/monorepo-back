@@ -16,6 +16,10 @@
 --
 
 
+# 2.1.1
+# Call migration route POST /scenarios/migrate-scenario-description
+
+
 # 2.1.0
 ALTER TABLE lab
   ADD COLUMN glabDevApiKey varchar(255) null;

@@ -7,8 +7,9 @@ import { DataSource, EntityManager, Repository } from 'typeorm';
 import { HnStory } from '../../story/hn-story.entity';
 import { HnAbstractCommentEntity } from '../comment-core/hn-abstract-comment.entity';
 import { ClPage } from '@monorepo/core-lib';
-import { BlAbstractPaginatedService, BlRichTextContent } from '@monorepo/back-core-lib';
+import { BlAbstractPaginatedService } from '@monorepo/back-core-lib';
 import { HnCommentStoryDto } from './hn-comment-story.dto';
+import { TeRichText } from '@monorepo/te-text-editor';
 
 @Injectable()
 export class HnCommentStoryService extends HnAbstractCommentService<HnStory> {
@@ -24,10 +25,10 @@ export class HnCommentStoryService extends HnAbstractCommentService<HnStory> {
     return this.storyService.addComment(entity, entityManager);
   }
 
-  createComment(entity: HnStory, commentData: BlRichTextContent): HnAbstractCommentEntity<HnStory> {
+  createComment(entity: HnStory, commentData: TeRichText): HnAbstractCommentEntity<HnStory> {
     const comment: HnCommentStory = new HnCommentStory();
     comment.entity = entity;
-    comment.content = commentData;
+    comment.setContentRichText(commentData);
     return comment;
   }
 

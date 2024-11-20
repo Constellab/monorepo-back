@@ -26,8 +26,6 @@ import {
   BlFile,
   BlParsePipe,
   BlPublic,
-  BlRichTextUploadedImageResponse,
-  BlRichTextUploadFileResponse,
   BlUploadedFile,
 } from '@monorepo/back-core-lib';
 import { HnAgent } from './agent/hn-agent.entity';
@@ -43,6 +41,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
 import { HnLabGuard } from '../core/decorators/hn-lab-auth-guard.decorator';
 import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
+import { TeBlockFigureUploadedResponse, TeBlockFileUploadResponse } from '@monorepo/te-text-editor';
 
 @Controller('agent')
 export class HnAgentController extends HnAbstractFileController<HnAgent> {
@@ -501,7 +500,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   async saveFile(
     @BlUploadedFile() file: BlFile,
     @Param('agentId', new ParseUUIDPipe()) agentId: string
-  ): Promise<BlRichTextUploadFileResponse> {
+  ): Promise<TeBlockFileUploadResponse> {
     return this.agentAggregateService.saveFile(file, agentId);
   }
 
@@ -510,7 +509,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   async saveImage(
     @BlUploadedFile() file: BlFile,
     @Param('agentId', new ParseUUIDPipe()) agentId: string
-  ): Promise<BlRichTextUploadedImageResponse> {
+  ): Promise<TeBlockFigureUploadedResponse> {
     return this.agentAggregateService.saveImage(file, agentId);
   }
 
