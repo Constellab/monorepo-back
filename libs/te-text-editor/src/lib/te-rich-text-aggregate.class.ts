@@ -1,11 +1,11 @@
-import { TeRichText, TeRichTextDTO, TeHTMLEditorJSON } from './te-rich-text.class';
+import { TeHTMLEditorJSON, TeRichText, TeRichTextDTO } from './te-rich-text.class';
 import {
   TeRichTextBlockModification,
   TeRichTextModificationType,
 } from './te-rich-text-block-modification.class';
 import {
-  TeRichTextBlockModificationWithUser,
   TeRichTextBlockModificationsDTO,
+  TeRichTextBlockModificationWithUser,
   TeRichTextGetUserFunction,
 } from './te-rich-text-block-modification.dto';
 import { TeBlock } from './te-block.class';
@@ -148,8 +148,8 @@ export class TeRichTextAggregate {
         modif.blockValue = block.data;
         differences.push(modif);
       } else if (
-        TeRichTextBlockModification.stringifyData(oldBlock) !==
-        TeRichTextBlockModification.stringifyData(block)
+        TeRichTextBlockModification.stringifyBlockData(oldBlock) !==
+        TeRichTextBlockModification.stringifyBlockData(block)
       ) {
         // block is updated
         const modif = new TeRichTextBlockModification(

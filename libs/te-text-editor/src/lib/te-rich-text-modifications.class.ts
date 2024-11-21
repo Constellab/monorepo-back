@@ -1,8 +1,8 @@
 import { TeRichTextMigrator } from './te-rich-text-migrator.class';
 import { TeBlockType } from './te-block.class';
 import {
-  TeRichTextBlockModificationWithUser,
   TeRichTextBlockModificationsDTO,
+  TeRichTextBlockModificationWithUser,
   TeRichTextGetUserFunction,
 } from './te-rich-text-block-modification.dto';
 import {
@@ -203,7 +203,7 @@ export class TeRichTextModifications {
         if (
           moveModification == null ||
           movement > currentMovement ||
-          JSON.stringify(moveModification.blockValue).length < JSON.stringify(modification.blockValue).length
+          moveModification.getBlockDataAsString().length < modification.getBlockDataAsString().length
         ) {
           moveModification = modification;
         }
@@ -304,7 +304,10 @@ export class TeRichTextModifications {
         userMap.set(modification.userId, userDto);
       }
       res.push(
-        TeRichTextBlockModificationWithUser.fromBlockModification(modification, userMap.get(modification.userId))
+        TeRichTextBlockModificationWithUser.fromBlockModification(
+          modification,
+          userMap.get(modification.userId)
+        )
       );
     }
     return res;

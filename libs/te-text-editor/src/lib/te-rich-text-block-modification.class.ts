@@ -1,7 +1,7 @@
 import { ClStringHelper } from '@monorepo/core-lib';
 import { diffChars } from 'diff';
 import { DateTime } from 'luxon';
-import { TeBlockType, TeBlockData } from './te-block.class';
+import { TeBlockData, TeBlockType } from './te-block.class';
 import { TeRichTextBlockModificationDTO } from './te-rich-text-block-modification.dto';
 
 export enum TeRichTextModificationType {
@@ -84,8 +84,8 @@ export class TeRichTextBlockModification {
   // Set the differences between the old block data value and the new block data value, using the lib diff
   public setDifferences(oldValue: TeBlockData): void {
     const res: TeRichTextModificationDifference[] = [];
-    const newValue = TeRichTextBlockModification.stringifyData(this.blockValue);
-    const oldValueString = TeRichTextBlockModification.stringifyData(oldValue);
+    const newValue = this.getBlockDataAsString();
+    const oldValueString = TeRichTextBlockModification.stringifyBlockData(oldValue);
     const changes = diffChars(oldValueString, newValue);
     let i = 0;
     for (const change of changes) {
@@ -110,7 +110,7 @@ export class TeRichTextBlockModification {
     if (!this.differences || this.differences.length === 0) {
       return value;
     }
-    let res = TeRichTextBlockModification.stringifyData(value);
+    let res = TeRichTextBlockModification.stringifyBlockData(value);
 
     const reversedDifferences = this.differences.slice().reverse();
 
@@ -125,12 +125,12 @@ export class TeRichTextBlockModification {
         res = before + after;
       }
     }
-    return TeRichTextBlockModification.parseData(res);
+    return TeRichTextBlockModification.parseBlockData(res);
   }
 
   // Redo the differences found with the lib diff
   public redoDifferences(value: TeBlockData): TeBlockData {
-    let res = TeRichTextBlockModification.stringifyData(value);
+    let res = TeRichTextBlockModification.stringifyBlockData(value);
     if (!this.differences || this.differences.length === 0) {
       return value;
     }
@@ -145,10 +145,14 @@ export class TeRichTextBlockModification {
         res = before + after;
       }
     }
-    return TeRichTextBlockModification.parseData(res);
+    return TeRichTextBlockModification.parseBlockData(res);
   }
 
-  public static stringifyData(data: TeBlockData): string {
+  public getBlockDataAsString(): string {
+    return TeRichTextBlockModification.stringifyBlockData(this.blockValue);
+  }
+
+  public static stringifyBlockData(data: TeBlockData): string {
     // replace &nbsp; with ' ' to avoid HTML parsing error
     // replace '\"'  with &quot; to avoid HTML parsing error
     // the removes of '"' helps the diff lib to work correctly
@@ -157,7 +161,7 @@ export class TeRichTextBlockModification {
       .replace(/\\"/g, '&quot;');
   }
 
-  public static parseData(data: string): TeBlockData {
+  public static parseBlockData(data: string): TeBlockData {
     // replace back &quot; with "
     const strData = data.replace(/&quot;/g, '\\"');
     return JSON.parse(strData);
