@@ -41,8 +41,11 @@ export class HnAgentVersion extends BlEntityWithId {
   @Column({ name: 'versionInfos', type: 'simple-json', nullable: true })
   versionInfos?: TeRichTextDTO;
 
-  @Column({ type: 'text', nullable: true })
-  params: string;
+  @Column({ type: 'simple-json', nullable: true })
+  params: Record<string, any>;
+
+  @Column({ name: 'old_params', type: 'text', nullable: true })
+  oldParams: string;
 
   @Column({ type: 'text', nullable: true })
   environment: string;
@@ -85,7 +88,7 @@ export class HnAgentVersion extends BlEntityWithId {
 
   private initVersionFile(versionFile: HnAgentVersionFileInput): void {
     this.code = versionFile.code;
-    this.params = versionFile.params as string;
+    this.params = versionFile.params as Record<string, any>;
     this.inputSpecs = versionFile.input_specs;
     this.outputSpecs = versionFile.output_specs;
     this.configSpecs = versionFile.config_specs;

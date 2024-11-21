@@ -22,7 +22,12 @@ import {
   HnAgentVersionForLabDto,
   HnCreateAgentDto,
 } from './agent/hn-agent.dto';
-import { BlFile, BlParsePipe, BlPublic, BlUploadedFile } from '@monorepo/back-core-lib';
+import {
+  BlFile,
+  BlParsePipe,
+  BlPublic,
+  BlUploadedFile,
+} from '@monorepo/back-core-lib';
 import { HnAgent } from './agent/hn-agent.entity';
 import { ClPage } from '@monorepo/core-lib';
 import { HnAgentCoAuthorInvite } from './agent-co-author-invite/hn-agent-co-author-invite.entity';
@@ -308,7 +313,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   @Put('version/:id/params')
   updateAgentVersionParams(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body('params') params: string
+    @Body('params') params: Record<string, any>
   ): Promise<HnAgentVersion> {
     return this.agentAggregateService.updateAgentVersionParams(id, params);
   }

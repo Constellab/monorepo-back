@@ -10,7 +10,7 @@ export class HnAgentVersionDto extends BlEntityWithIdDTO {
   versionState: HnAgentVersionState;
   type: HnAgentVersionType;
   versionInfos: TeRichTextDTO;
-  params: string | string[];
+  params: string | string[]| Record<string, any>;
   environment: string;
   code: string;
   createdAt: string;

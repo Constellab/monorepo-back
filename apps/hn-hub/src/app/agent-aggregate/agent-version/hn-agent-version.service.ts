@@ -97,6 +97,10 @@ export class HnAgentVersionService {
     });
   }
 
+  public async findAll(): Promise<HnAgentVersion[]> {
+    return this.agentVersionRepository.find();
+  }
+
   public async findAllByAgentId(agentId: string): Promise<HnAgentVersion[]> {
     return this.agentVersionRepository.find({
       where: {
@@ -124,7 +128,7 @@ export class HnAgentVersionService {
     });
   }
 
-  public async updateParams(id: string, params: string): Promise<HnAgentVersion> {
+  public async updateParams(id: string, params: Record<string, any>): Promise<HnAgentVersion> {
     const agentVersion = await this.agentVersionRepository.findOneBy({ id: id });
     agentVersion.params = params;
     return this.agentVersionRepository.save(agentVersion);
