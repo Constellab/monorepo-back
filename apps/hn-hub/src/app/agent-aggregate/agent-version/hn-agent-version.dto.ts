@@ -2,13 +2,14 @@ import { BlEntityWithIdDTO } from '@monorepo/back-core-lib';
 import { HnAgentDto } from '../agent/hn-agent.dto';
 import { HnAgentVersion, HnAgentVersionState, HnAgentVersionType } from './hn-agent-version.entity';
 import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
+import { TeRichTextDTO } from '@monorepo/te-text-editor';
 
 export class HnAgentVersionDto extends BlEntityWithIdDTO {
   version: number;
   agent: HnAgentDto;
   versionState: HnAgentVersionState;
   type: HnAgentVersionType;
-  versionInfos?: Record<string, any>;
+  versionInfos: TeRichTextDTO;
   params: string | string[];
   environment: string;
   code: string;
@@ -25,7 +26,7 @@ export class HnAgentVersionDto extends BlEntityWithIdDTO {
     if (agentVersion?.agent) this.agent = new HnAgentDto(agentVersion.agent);
     this.versionState = agentVersion?.versionState;
     this.type = agentVersion?.type;
-    this.versionInfos = agentVersion?.versionInfos;
+    this.versionInfos = agentVersion?.getVersionInfoRichText().toJson();
     this.params = agentVersion?.params;
     this.environment = agentVersion?.environment;
     this.code = agentVersion?.code;

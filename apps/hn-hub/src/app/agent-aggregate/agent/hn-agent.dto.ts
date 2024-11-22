@@ -7,10 +7,11 @@ import { HnAgentCoAuthorDto } from '../agent-co-author/hn-agent-co-author.dto';
 import { BlEntityWithIdDTO } from '@monorepo/back-core-lib';
 import { HnAgentVersionDto } from '../agent-version/hn-agent-version.dto';
 import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
+import { TeRichTextDTO } from '@monorepo/te-text-editor';
 
 export class HnAgentDto extends BlEntityWithIdDTO {
   title: string;
-  description?: Record<string, any>;
+  description: TeRichTextDTO;
   latestPublishVersion?: number;
   space?: HnSpaceDto;
   createdAt?: string;
@@ -28,7 +29,7 @@ export class HnAgentDto extends BlEntityWithIdDTO {
     if (!agent) return;
     this.id = agent.id;
     this.title = agent.title;
-    this.description = agent.description;
+    this.description = agent.getDescriptionRichText().toJson();
     this.latestPublishVersion = agent.latestPublishVersion;
     this.space = agent.space ? new HnSpaceDto(agent.space) : null;
     this.createdAt = agent.createdAt.toISO();
@@ -79,7 +80,7 @@ export class HnAgentForLabDto {
   created_at?: string;
   last_modified_at?: string;
   created_by?: HnUserDto;
-  description?: Record<string, any>;
+  description?: TeRichTextDTO;
   latest_publish_version: number;
   latest_style?: HnTypingStyle;
 

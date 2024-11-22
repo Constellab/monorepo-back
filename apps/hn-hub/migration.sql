@@ -19,6 +19,7 @@
 #  Call rich text migrations POST /story/migrate-rich-text
 #  Call rich text migrations POST /documentation/migrate-rich-text
 #  Call rich text migrations POST /comment/migrate-rich-text
+#  Call rich text migrations POST /agent/migrate-rich-text
 
 # 1.3.5
 ALTER TABLE `user`

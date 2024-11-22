@@ -4,7 +4,7 @@ import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
 import {
   TeRichText,
   TeRichTextAggregate,
-  TeRichTextInput,
+  TeRichTextDTO,
   TeRichTextModifications,
 } from '@monorepo/te-text-editor';
 
@@ -24,7 +24,7 @@ export class HnDocumentation extends HnBaseEntity {
   title: string;
 
   @Column({ name: 'content', type: 'simple-json', nullable: true })
-  content?: TeRichTextInput;
+  content?: TeRichTextDTO;
 
   @Column({ type: 'longtext', nullable: true })
   modifications: string;

@@ -11,6 +11,7 @@ import { HnAgentCoAuthorService } from '../agent-co-author/hn-agent-co-author.se
 import { HnSpaceDto } from '../../space-aggregate/space/hn-space.dto';
 import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
 import { HnAgentVersion } from '../agent-version/hn-agent-version.entity';
+import { TeRichText } from '@monorepo/te-text-editor';
 
 @Injectable()
 export class HnAgentService {
@@ -397,9 +398,9 @@ export class HnAgentService {
     return this.agentRepository.save(agent);
   }
 
-  public async updateDescription(id: string, description: Record<string, any>): Promise<HnAgent> {
+  public async updateDescription(id: string, description: TeRichText): Promise<HnAgent> {
     const agent = await this.checkIfCreatorOrCoAuthorAndGetAgent(id);
-    agent.description = description;
+    agent.setDescriptionRichText(description);
     return this.agentRepository.save(agent);
   }
 
@@ -462,11 +463,12 @@ export class HnAgentService {
   }
 
   //////////////////////////////////////// MIGRATIONS ////////////////////////////////////////
-  public async getAgentsWithoutLatestStyle(): Promise<HnAgent[]> {
-    return this.agentRepository.find({
-      where: {
-        latestStyle: IsNull(),
-      },
-    });
+  // TODO TO REMOVE
+  async migrateRichTexts(): Promise<void> {
+    const entities = await this.agentRepository.find();
+    for (const entity of entities) {
+      entity.setDescriptionRichText(entity.getDescriptionRichText());
+      await this.agentRepository.save(entity, { listeners: false });
+    }
   }
 }

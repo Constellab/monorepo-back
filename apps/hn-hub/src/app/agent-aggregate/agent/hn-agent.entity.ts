@@ -10,6 +10,7 @@ import { ClDateHelper } from '@monorepo/core-lib';
 import { HnAgentCoAuthor } from '../agent-co-author/hn-agent-co-author.entity';
 import { HnFileAgent } from '../../file-aggregate/file-agent/hn-file-agent.entity';
 import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
+import { TeRichText, TeRichTextDTO } from '@monorepo/te-text-editor';
 
 @Entity('agent')
 export class HnAgent extends BlEntityWithId {
@@ -17,7 +18,7 @@ export class HnAgent extends BlEntityWithId {
   title: string;
 
   @Column({ name: 'description', type: 'simple-json', nullable: true })
-  description?: Record<string, any>;
+  description?: TeRichTextDTO;
 
   @Column({ name: 'latest_publish_version', nullable: true })
   latestPublishVersion?: number;
@@ -85,5 +86,13 @@ export class HnAgent extends BlEntityWithId {
   setLastModifiedByUser(): void {
     this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser();
     this.lastModifiedAt = ClDateHelper.getDate();
+  }
+
+  getDescriptionRichText(): TeRichText {
+    return new TeRichText(this.description);
+  }
+
+  setDescriptionRichText(description: TeRichText): void {
+    this.description = description.toJson();
   }
 }

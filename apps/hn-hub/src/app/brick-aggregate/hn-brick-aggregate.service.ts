@@ -59,6 +59,7 @@ import {
 import {
   TeBlockFigureUploadedResponse,
   TeRichText,
+  TeRichTextAggregate,
   TeRichTextBlockModificationWithUser,
 } from '@monorepo/te-text-editor';
 
@@ -777,7 +778,7 @@ export class HnBrickAggregateService {
     return richText.getModificationsDTO((userId) => this.userService.findUserBasicDTO(userId));
   }
 
-  async getUndoContent(docId: string, modificationId: string): Promise<Record<string, any>> {
+  async getUndoContent(docId: string, modificationId: string): Promise<TeRichTextAggregate> {
     const doc: HnDocumentation = await this.documentationService.findById(docId);
     return this.documentationService.getUndoContent(doc, modificationId);
   }

@@ -3,7 +3,6 @@ import { HnAgentService } from './agent/hn-agent.service';
 import { HnAgentVersionService } from './agent-version/hn-agent-version.service';
 import { HnAgentVersion, HnAgentVersionState } from './agent-version/hn-agent-version.entity';
 import {
-  baseAgentStyle,
   HaCreateAgentVersionFromLabResponseDto,
   HnAgentDto,
   HnAgentEditStyleData,
@@ -45,7 +44,7 @@ import { HnUploadFileResponseDto } from '../file-aggregate/file-core/hn-abstract
 import { HnFileAgentService } from '../file-aggregate/file-agent/hn-file-agent.service';
 import { Request } from 'express';
 import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
-import { TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
+import { TeBlockFigureUploadedResponse, TeRichText } from '@monorepo/te-text-editor';
 
 @Injectable()
 export class HnAgentAggregateService {
@@ -149,7 +148,7 @@ export class HnAgentAggregateService {
     return this.agentService.updateTitle(id, title);
   }
 
-  public async updateDescription(id: string, description: Record<string, any>): Promise<HnAgent> {
+  public async updateDescription(id: string, description: TeRichText): Promise<HnAgent> {
     return this.agentService.updateDescription(id, description);
   }
 
@@ -534,7 +533,7 @@ export class HnAgentAggregateService {
 
   public async updateAgentVersionInfos(
     agentVersionId: string,
-    versionInfos: Record<string, any>
+    versionInfos: TeRichText
   ): Promise<HnAgentVersion> {
     await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(
       (await this.agentVersionService.findOne(agentVersionId)).agent.id
@@ -687,20 +686,8 @@ export class HnAgentAggregateService {
   }
 
   /////////////////////////////////////// MIGRATIONS ////////////////////////////////
-  public async migrateStyle(): Promise<void> {
-    const agents = await this.agentService.getAgentsWithoutLatestStyle();
-    const agentVersions = await this.agentVersionService.getAgentVersionWithoutStyle();
-
-    await this.dataSource.transaction(async (entityManager) => {
-      for (const agent of agents) {
-        agent.latestStyle = baseAgentStyle;
-        await entityManager.save(agent);
-      }
-
-      for (const agentVersion of agentVersions) {
-        agentVersion.style = baseAgentStyle;
-        await entityManager.save(agentVersion);
-      }
-    });
+  public async migrateRichText(): Promise<void> {
+    await this.agentService.migrateRichTexts();
+    await this.agentVersionService.migrateRichTexts();
   }
 }

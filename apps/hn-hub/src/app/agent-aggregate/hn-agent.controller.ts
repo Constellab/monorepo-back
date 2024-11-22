@@ -22,12 +22,7 @@ import {
   HnAgentVersionForLabDto,
   HnCreateAgentDto,
 } from './agent/hn-agent.dto';
-import {
-  BlFile,
-  BlParsePipe,
-  BlPublic,
-  BlUploadedFile,
-} from '@monorepo/back-core-lib';
+import { BlFile, BlParsePipe, BlPublic, BlUploadedFile } from '@monorepo/back-core-lib';
 import { HnAgent } from './agent/hn-agent.entity';
 import { ClPage } from '@monorepo/core-lib';
 import { HnAgentCoAuthorInvite } from './agent-co-author-invite/hn-agent-co-author-invite.entity';
@@ -41,22 +36,27 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
 import { HnLabGuard } from '../core/decorators/hn-lab-auth-guard.decorator';
 import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
-import { TeBlockFigureUploadedResponse, TeBlockFileUploadResponse } from '@monorepo/te-text-editor';
+import {
+  TeBlockFigureUploadedResponse,
+  TeBlockFileUploadResponse,
+  TeRichText,
+  TeRichTextPipe,
+} from '@monorepo/te-text-editor';
 
 @Controller('agent')
 export class HnAgentController extends HnAbstractFileController<HnAgent> {
   constructor(
     private readonly agentAggregateService: HnAgentAggregateService,
-    private readonly agentFileService: HnFileAgentService
+    readonly agentFileService: HnFileAgentService
   ) {
     super(agentFileService);
   }
 
   // TODO: TO REMOVE
   @IsAdmin()
-  @Get('migrate-style')
+  @Post('migrate-rich-text')
   async migrateStyle(): Promise<void> {
-    return this.agentAggregateService.migrateStyle();
+    return this.agentAggregateService.migrateRichText();
   }
 
   //////////////////////////////////////////// Agent ////////////////////////////////////////////
@@ -229,7 +229,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   @Put(':id/description')
   updateDescription(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() description: Record<string, any>
+    @Body(TeRichTextPipe) description: TeRichText
   ): Promise<HnAgent> {
     return this.agentAggregateService.updateDescription(id, description);
   }
@@ -413,7 +413,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   @Put('version/:versionId/infos')
   updateAgentVersionInfos(
     @Param('versionId', ParseUUIDPipe) versionId: string,
-    @Body() infos: Record<string, any>
+    @Body(TeRichTextPipe) infos: TeRichText
   ): Promise<HnAgentVersion> {
     return this.agentAggregateService.updateAgentVersionInfos(versionId, infos);
   }

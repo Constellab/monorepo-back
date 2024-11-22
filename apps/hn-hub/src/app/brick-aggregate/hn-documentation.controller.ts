@@ -28,6 +28,7 @@ import {
   TeBlockFigureUploadedResponse,
   TeRichText,
   TeRichTextBlockModificationWithUser,
+  TeRichTextDTO,
   TeRichTextPipe,
 } from '@monorepo/te-text-editor';
 
@@ -105,8 +106,9 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
   async testUndo(
     @Param('docId', new ParseUUIDPipe()) docId: string,
     @Param('modificationId', new ParseUUIDPipe()) modificationId: string
-  ): Promise<Record<string, any>> {
-    return this.brickAggregateService.getUndoContent(docId, modificationId);
+  ): Promise<TeRichTextDTO> {
+    const richText = await this.brickAggregateService.getUndoContent(docId, modificationId);
+    return richText.richText.toJson();
   }
 
   @Put('history/rollback/:docId/:modificationId')

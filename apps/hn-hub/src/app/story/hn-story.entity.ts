@@ -19,7 +19,7 @@ import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import {
   TeRichText,
   TeRichTextAggregate,
-  TeRichTextInput,
+  TeRichTextDTO,
   TeRichTextModifications,
 } from '@monorepo/te-text-editor';
 
@@ -42,10 +42,10 @@ export class HnStory extends BlEntityWithId {
 
   // the database was modified to use a long text instead of a json
   @Column({ name: 'content', type: 'simple-json' })
-  content: TeRichTextInput;
+  content: TeRichTextDTO;
 
   @Column({ name: 'content_edition', type: 'simple-json', nullable: true })
-  contentEdition?: TeRichTextInput;
+  contentEdition?: TeRichTextDTO;
 
   @Column({ type: 'longtext', nullable: true })
   modifications: string;

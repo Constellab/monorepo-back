@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 import { ClDateHelper } from '@monorepo/core-lib';
 import { HnAgentVersionFileInput } from '../agent/hn-agent.dto';
 import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
+import { TeRichText, TeRichTextDTO } from '@monorepo/te-text-editor';
 
 export enum HnAgentVersionState {
   PUBLISHED = 'PUBLISHED',
@@ -38,7 +39,7 @@ export class HnAgentVersion extends BlEntityWithId {
   type: HnAgentVersionType;
 
   @Column({ name: 'versionInfos', type: 'simple-json', nullable: true })
-  versionInfos?: Record<string, any>;
+  versionInfos?: TeRichTextDTO;
 
   @Column({ type: 'text', nullable: true })
   params: string;
@@ -96,5 +97,13 @@ export class HnAgentVersion extends BlEntityWithId {
   @BeforeInsert()
   setCreatedByUser(): void {
     this.createdAt = ClDateHelper.getDate();
+  }
+
+  getVersionInfoRichText(): TeRichText {
+    return new TeRichText(this.versionInfos);
+  }
+
+  setVersionInfoRichText(versionInfos: TeRichText): void {
+    this.versionInfos = versionInfos.toJson();
   }
 }

@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, IsNull, Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { HnAgentVersion, HnAgentVersionState } from './hn-agent-version.entity';
 import { HnAgent } from '../agent/hn-agent.entity';
 import { HnAgentVersionFileInput } from '../agent/hn-agent.dto';
 import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
+import { TeRichText } from '@monorepo/te-text-editor';
 
 @Injectable()
 export class HnAgentVersionService {
@@ -162,12 +163,9 @@ export class HnAgentVersionService {
     return entityManager.save(agentVersion);
   }
 
-  public async updateVersionInfos(
-    agentVersionId: string,
-    versionInfos: Record<string, any>
-  ): Promise<HnAgentVersion> {
+  public async updateVersionInfos(agentVersionId: string, versionInfos: TeRichText): Promise<HnAgentVersion> {
     const agentVersion = await this.agentVersionRepository.findOneBy({ id: agentVersionId });
-    agentVersion.versionInfos = versionInfos;
+    agentVersion.setVersionInfoRichText(versionInfos);
     return this.agentVersionRepository.save(agentVersion);
   }
 
@@ -180,11 +178,12 @@ export class HnAgentVersionService {
   }
 
   //////////////////////////////////////////// MIGRATIONS ////////////////////////////////////////////
-  public async getAgentVersionWithoutStyle(): Promise<HnAgentVersion[]> {
-    return this.agentVersionRepository.find({
-      where: {
-        style: IsNull(),
-      },
-    });
+  // TODO TO REMOVE
+  async migrateRichTexts(): Promise<void> {
+    const entities = await this.agentVersionRepository.find();
+    for (const entity of entities) {
+      entity.setVersionInfoRichText(entity.getVersionInfoRichText());
+      await this.agentVersionRepository.save(entity, { listeners: false });
+    }
   }
 }
