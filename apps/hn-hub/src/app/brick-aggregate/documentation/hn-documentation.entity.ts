@@ -55,14 +55,18 @@ export class HnDocumentation extends HnBaseEntity {
     }
   }
 
-  public getRichText(): TeRichTextAggregate {
-    const richText = new TeRichText(this.content);
+  public getRichText(): TeRichText {
+    return new TeRichText(this.content);
+  }
+
+  public getRichTextAggregate(): TeRichTextAggregate {
+    const richText = this.getRichText();
     const modifications = TeRichTextModifications.fromJsonObjectString(this.modifications);
 
     return new TeRichTextAggregate(richText, modifications);
   }
 
-  public setRichText(richText: TeRichTextAggregate): void {
+  public setRichTextAggregate(richText: TeRichTextAggregate): void {
     this.content = richText.richText.toJson();
     this.modifications = richText.getModificationsAsString();
   }

@@ -75,4 +75,13 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
       await this.removeComment(entityManager, comment.entity as T);
     });
   }
+
+  // TODO TO REMOVE
+  async migrateRichTexts(): Promise<void> {
+    const comments = await this.repository.find();
+    for (const comment of comments) {
+      comment.setContentRichText(comment.getContentRichText());
+      await this.repository.save(comment, { listeners: false });
+    }
+  }
 }

@@ -3,7 +3,7 @@ import { HnStoryCoAuthorDto } from '../story-author/hn-story-author.dto';
 import { HnUserDto } from '../users/hn-user.dto';
 import { HnTopic } from '../topic/hn-topic.entity';
 import { BlEntityWithIdDTO } from '@monorepo/back-core-lib';
-import { HnFileStory } from '../file-aggregate/file-story/hn-file-story.entity';
+import { TeRichTextDTO } from '@monorepo/te-text-editor';
 
 export class HnCreateStoryDto {
   title: string;
@@ -19,8 +19,8 @@ export class HnStoryFilter {
 
 export class HnStoryDto extends BlEntityWithIdDTO {
   title: string;
-  content: Record<string, any>;
-  contentEdition?: Record<string, any>;
+  content: TeRichTextDTO;
+  contentEdition: TeRichTextDTO;
   firstParagraph?: string;
   mainPicture?: string;
   status: HnStoryStatus;
@@ -29,7 +29,6 @@ export class HnStoryDto extends BlEntityWithIdDTO {
   storyAuthors: HnStoryCoAuthorDto[];
   createdAt: string;
   lastModifiedAt: string;
-  storyFiles: HnFileStory[];
   createdBy: HnUserDto;
   topics?: HnTopic[];
   likes: number;
@@ -39,8 +38,8 @@ export class HnStoryDto extends BlEntityWithIdDTO {
     super();
     this.id = story.id;
     this.title = story.title;
-    this.content = story.content;
-    this.contentEdition = story.contentEdition;
+    this.content = story.getContentRichText().toJson();
+    this.contentEdition = story.getContentEditionRichText().toJson();
     this.firstParagraph = story.firstParagraph;
     this.mainPicture = story.mainPicture;
     this.status = story.status;

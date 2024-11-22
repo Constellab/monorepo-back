@@ -12,12 +12,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { HnStoryService } from './hn-story.service';
-import {
-  BlFile,
-  BlParsePipe,
-  BlPublic,
-  BlUploadedFile,
-} from '@monorepo/back-core-lib';
+import { BlFile, BlParsePipe, BlPublic, BlUploadedFile } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { HnStory, HnStoryCategory } from './hn-story.entity';
 import { HnCreateStoryDto, HnStoryDto, HnStoryFilter } from './hn-story.dto';
@@ -35,25 +30,25 @@ import {
   HnUploadFileResponseDto,
 } from '../file-aggregate/file-core/hn-abstract-file.dto';
 import {
+  TeBlockFigureUploadedResponse,
   TeRichText,
   TeRichTextBlockModificationWithUser,
   TeRichTextPipe,
-  TeBlockFigureUploadedResponse,
 } from '@monorepo/te-text-editor';
 
 @Controller('story')
 export class HnStoryController extends HnAbstractFileController<HnStory> {
   constructor(
     private readonly storyService: HnStoryService,
-    private readonly fileStoryService: HnFileStoryService
+    fileStoryService: HnFileStoryService
   ) {
     super(fileStoryService);
   }
 
   @IsAdmin()
-  @Get('migrate-old-images')
+  @Post('migrate-rich-text')
   async migrateOldImages(): Promise<void> {
-    return this.storyService.storyImageMigration();
+    return this.storyService.migrateRichTexts();
   }
 
   @BlPublic()

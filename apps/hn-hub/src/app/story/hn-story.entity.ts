@@ -9,10 +9,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { HnTopic } from '../topic/hn-topic.entity';
-import {
-  BlEntityWithId,
-  BlLuxonDateTimeColumn,
-} from '@monorepo/back-core-lib';
+import { BlEntityWithId, BlLuxonDateTimeColumn } from '@monorepo/back-core-lib';
 import { DateTime } from 'luxon';
 import { HnUser } from '../users/hn-user.entity';
 import { ClDateHelper, ClStringHelper } from '@monorepo/core-lib';
@@ -115,14 +112,22 @@ export class HnStory extends BlEntityWithId {
     return ClStringHelper.getCleanUrlPath(this.title);
   }
 
-  public getContentEditionRichText(): TeRichTextAggregate {
-    const richText = new TeRichText(this.contentEdition);
+  public getContentRichText(): TeRichText {
+    return new TeRichText(this.content);
+  }
+
+  public getContentEditionRichText(): TeRichText {
+    return new TeRichText(this.contentEdition);
+  }
+
+  public getContentEditionRichTextAggregate(): TeRichTextAggregate {
+    const richText = this.getContentRichText();
     const modifications = TeRichTextModifications.fromJsonObjectString(this.modifications);
 
     return new TeRichTextAggregate(richText, modifications);
   }
 
-  public setContentEditionRichText(richText: TeRichTextAggregate): void {
+  public setContentEditionRichTextAggregate(richText: TeRichTextAggregate): void {
     this.contentEdition = richText.richText.toJson();
     this.modifications = richText.getModificationsAsString();
   }

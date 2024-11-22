@@ -15,6 +15,10 @@
 -- RENAME TABLE old_table_name TO new_table_name;
 --
 
+# 1.4.2
+#  Call rich text migrations POST /story/migrate-rich-text
+#  Call rich text migrations POST /documentation/migrate-rich-text
+#  Call rich text migrations POST /comment/migrate-rich-text
 
 # 1.3.5
 ALTER TABLE `user`

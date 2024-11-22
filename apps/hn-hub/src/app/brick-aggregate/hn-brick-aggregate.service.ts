@@ -56,12 +56,10 @@ import {
   HnAbstractFileEntityDTO,
   HnUploadFileResponseDto,
 } from '../file-aggregate/file-core/hn-abstract-file.dto';
-import { HnFileDocumentation } from '../file-aggregate/file-documentation/hn-file-documentation.entity';
-import { HnFileType } from '../file-aggregate/file-core/hn-abstract-file.entity';
 import {
+  TeBlockFigureUploadedResponse,
   TeRichText,
   TeRichTextBlockModificationWithUser,
-  TeBlockFigureUploadedResponse,
 } from '@monorepo/te-text-editor';
 
 @Injectable()
@@ -774,9 +772,9 @@ export class HnBrickAggregateService {
   async getDocModifications(docId: string): Promise<TeRichTextBlockModificationWithUser[]> {
     const doc: HnDocumentation = await this.documentationService.findById(docId);
 
-    const richText = doc.getRichText();
+    const richText = doc.getRichTextAggregate();
 
-    return richText.getModificationsDTO(userId => this.userService.findUserBasicDTO(userId));
+    return richText.getModificationsDTO((userId) => this.userService.findUserBasicDTO(userId));
   }
 
   async getUndoContent(docId: string, modificationId: string): Promise<Record<string, any>> {
@@ -1117,16 +1115,7 @@ export class HnBrickAggregateService {
   }
 
   ///////////////////////////////////////// MIGRATIONS /////////////////////////////////
-  public async documentationImageMigration(): Promise<void> {
-    const docs: HnDocumentation[] = await this.documentationService.findAll();
-    for (const doc of docs) {
-      const files: HnFileDocumentation[] = await this.fileDocumentationService.findByDocumentation(doc);
-      for (const file of files) {
-        if (ClStringHelper.isUUID(file.name.split('.')[1]) && file.type == HnFileType.IMAGE) {
-          await this.fileDocumentationService.renameFile(file.id, file.name.split('.')[0] + '.png');
-          await this.fileDocumentationService.renameFileInBuckets(file, file.fileName.split('.')[0] + '.png');
-        }
-      }
-    }
+  public async migrateRichTexts(): Promise<void> {
+    return this.documentationService.migrateRichTexts();
   }
 }

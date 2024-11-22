@@ -11,12 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { HnDocumentation, HnDocumentationDTO } from './documentation/hn-documentation.entity';
-import {
-  BlFile,
-  BlParsePipe,
-  BlPublic,
-  BlUploadedFile,
-} from '@monorepo/back-core-lib';
+import { BlFile, BlParsePipe, BlPublic, BlUploadedFile } from '@monorepo/back-core-lib';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { HnNodeDTO } from './folder/hn-folder.dto';
 import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
@@ -30,10 +25,10 @@ import {
 } from '../file-aggregate/file-core/hn-abstract-file.dto';
 import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 import {
+  TeBlockFigureUploadedResponse,
   TeRichText,
   TeRichTextBlockModificationWithUser,
   TeRichTextPipe,
-  TeBlockFigureUploadedResponse,
 } from '@monorepo/te-text-editor';
 
 @Controller('documentation')
@@ -47,9 +42,9 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
   }
 
   @IsAdmin()
-  @Get('migrate-old-images')
+  @Post('migrate-rich-text')
   async migrateOldImages(): Promise<void> {
-    return this.brickAggregateService.documentationImageMigration();
+    return this.brickAggregateService.migrateRichTexts();
   }
 
   @BlPublic()

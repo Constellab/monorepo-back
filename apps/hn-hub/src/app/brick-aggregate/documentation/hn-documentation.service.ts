@@ -103,9 +103,9 @@ export class HnDocumentationService {
       id: id,
     });
     if (doc) {
-      const richTextAggregate = doc.getRichText();
+      const richTextAggregate = doc.getRichTextAggregate();
       richTextAggregate.updateContent(updateContentDoc, HnCurrentUserHelper.getAndCheckCurrentUser().id);
-      doc.setRichText(richTextAggregate);
+      doc.setRichTextAggregate(richTextAggregate);
     }
     return this.documentationsRepository.save(doc);
   }
@@ -165,7 +165,7 @@ export class HnDocumentationService {
   ///////////////////////////////////////// HISTORY /////////////////////////////////////////
 
   async getUndoContent(doc: HnDocumentation, modificationId: string): Promise<TeRichTextAggregate> {
-    const richText = doc.getRichText();
+    const richText = doc.getRichTextAggregate();
     richText.undoModifications(modificationId);
     return richText;
   }
@@ -173,8 +173,17 @@ export class HnDocumentationService {
   async rollbackContent(doc: HnDocumentation, modificationId: string): Promise<HnDocumentation> {
     const newContent = await this.getUndoContent(doc, modificationId);
 
-    doc.setRichText(newContent);
+    doc.setRichTextAggregate(newContent);
 
     return this.documentationsRepository.save(doc);
+  }
+
+  // TODO TO REMOVE
+  async migrateRichTexts(): Promise<void> {
+    const documentations = await this.documentationsRepository.find();
+    for (const doc of documentations) {
+      doc.setRichTextAggregate(doc.getRichTextAggregate());
+      await this.documentationsRepository.save(doc, { listeners: false });
+    }
   }
 }

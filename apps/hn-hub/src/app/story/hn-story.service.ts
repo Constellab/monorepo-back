@@ -27,13 +27,11 @@ import {
   HnUploadFileResponseDto,
 } from '../file-aggregate/file-core/hn-abstract-file.dto';
 import { HnUserService } from '../users/hn-user.service';
-import { HnFileStory } from '../file-aggregate/file-story/hn-file-story.entity';
-import { HnFileType } from '../file-aggregate/file-core/hn-abstract-file.entity';
 import {
+  TeBlockFigureUploadedResponse,
   TeRichText,
   TeRichTextAggregate,
   TeRichTextBlockModificationWithUser,
-  TeBlockFigureUploadedResponse,
 } from '@monorepo/te-text-editor';
 
 @Injectable()
@@ -349,10 +347,10 @@ export class HnStoryService {
   async updateStoryContentEdition(id: string, contentEdition: TeRichText): Promise<HnStory> {
     await this.checkAndValidateOwnerOrCoAuthor(id);
     const story = await this.getStory(id);
-    const richTextAggregate = story.getContentEditionRichText();
+    const richTextAggregate = story.getContentEditionRichTextAggregate();
 
     richTextAggregate.updateContent(contentEdition, HnCurrentUserHelper.getAndCheckCurrentUser().id);
-    story.setContentEditionRichText(richTextAggregate);
+    story.setContentEditionRichTextAggregate(richTextAggregate);
 
     const richText = richTextAggregate.richText;
     const firstFigureLink = richText.getFirstFigureLink();
@@ -550,7 +548,7 @@ export class HnStoryService {
 
   async getUndoContent(storyId: string, modificationId: string): Promise<TeRichTextAggregate> {
     const story: HnStory = await this.getStory(storyId);
-    const richText = story.getContentEditionRichText();
+    const richText = story.getContentEditionRichTextAggregate();
     richText.undoModifications(modificationId);
     return richText;
   }
@@ -559,7 +557,7 @@ export class HnStoryService {
     const story: HnStory = await this.getStory(storyId);
 
     const newRichText = await this.getUndoContent(storyId, modificationId);
-    story.setContentEditionRichText(newRichText);
+    story.setContentEditionRichTextAggregate(newRichText);
 
     return this.storyRepository.save(story);
   }
@@ -568,21 +566,18 @@ export class HnStoryService {
     const story: HnStory = await this.getStory(storyId);
     if (!story.modifications) return [];
 
-    const richText = story.getContentEditionRichText();
+    const richText = story.getContentEditionRichTextAggregate();
 
-    return richText.getModificationsDTO(userId => this.userService.findUserBasicDTO(userId));
+    return richText.getModificationsDTO((userId) => this.userService.findUserBasicDTO(userId));
   }
 
-  async storyImageMigration(): Promise<void> {
+  // TODO TO REMOVE
+  async migrateRichTexts(): Promise<void> {
     const stories: HnStory[] = await this.storyRepository.find();
     for (const story of stories) {
-      const files: HnFileStory[] = await this.storyFileService.findByStory(story);
-      for (const file of files) {
-        if (ClStringHelper.isUUID(file.name.split('.')[1]) && file.type == HnFileType.IMAGE) {
-          await this.storyFileService.renameFile(file.id, file.name.split('.')[0] + '.png');
-          await this.storyFileService.renameFileInBuckets(file, file.fileName.split('.')[0] + '.png');
-        }
-      }
+      story.content = story.getContentRichText().toJson();
+      story.setContentEditionRichTextAggregate(story.getContentEditionRichTextAggregate());
+      await this.storyRepository.save(story, { listeners: false });
     }
   }
 }
