@@ -82,12 +82,12 @@ export class CnLabsController {
     return new CnLabDto(lab);
   }
 
-  @Put(':id/name/:name')
+  @Put(':id/name')
   async updateLabName(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('name') name: string
+    @Body() body: { name: string }
   ): Promise<CnLabDto> {
-    const lab = await this.aggregateService.updateLabName(id, name);
+    const lab = await this.aggregateService.updateLabName(id, body.name);
     return new CnLabDto(lab);
   }
 

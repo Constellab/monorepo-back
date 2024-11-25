@@ -12,7 +12,7 @@ import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnExternalCheckCredentialResponse } from '../auth/hn-central-auth.service';
 import { ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import { HnUserDetailDto, HnUserEditDetailDto } from './hn-user.dto';
-import { TeUser } from '../../../../../libs/te-text-editor/src/lib/te-user.class';
+import { TeUser } from '@monorepo/te-text-editor';
 
 @Injectable()
 export class HnUserService implements BlUserService {

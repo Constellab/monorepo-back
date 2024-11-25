@@ -7,3 +7,4 @@ export * from './te-rich-text-block-modification.dto';
 export * from './te-rich-text-modifications.class';
 export * from './te-block.class';
 export * from './te-rich-text-migrator.class';
+export * from './te-user.class';

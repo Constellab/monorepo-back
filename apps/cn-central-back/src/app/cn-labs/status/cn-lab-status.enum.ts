@@ -1,7 +1,8 @@
 export enum CnLabStatus {
   SERVER_STARTING = 'SERVER_STARTING', // server is starting in the cloud
   SERVER_STOPPING = 'SERVER_STOPPING', // server is stopping in the cloud
-  SERVER_RUNNING = 'SERVER_RUNNING', // server running but lab manager and lab are not started (server not configured)
+  // server running but lab manager and lab are not started (server not configured)
+  SERVER_RUNNING = 'SERVER_RUNNING',
   SERVER_STOPPED = 'SERVER_STOPPED', // server stopped in the cloud (billing stopped)
   SERVER_CONFIGURED = 'SERVER_CONFIGURED', // server is started and lab manager is running
   LAB_RUNNING = 'LAB_RUNNING', // server and lab running

@@ -25,12 +25,12 @@ import {
   BlUploadedFile,
 } from '@monorepo/back-core-lib';
 import {
+  TeBlockFigureUploadedResponse,
+  TeBlockFileUploadResponse,
   TeRichText,
   TeRichTextBlockModificationWithUser,
   TeRichTextDTO,
   TeRichTextPipe,
-  TeBlockFigureUploadedResponse,
-  TeBlockFileUploadResponse,
 } from '@monorepo/te-text-editor';
 import { ClPage, ClPageI } from '@monorepo/core-lib';
 import { CnFolderAggregateService } from './cn-folder-aggregate.service';
@@ -81,6 +81,14 @@ export class CnFoldersController {
     @Body(new BlParsePipe(CnSaveFolderDTO)) folder: CnSaveFolderDTO
   ): Promise<CnFolderWithHierarchy> {
     return this.folderAggregateService.updateFolder(id, folder);
+  }
+
+  @Put(':id/name')
+  renameFolder(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: { name: string }
+  ): Promise<CnFolderWithHierarchy> {
+    return this.folderAggregateService.renameFolder(id, body.name);
   }
 
   @Delete(':id')

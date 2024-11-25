@@ -175,6 +175,17 @@ export class CnFolderAggregateService {
     return this.foldersService.findByIdAndCheckWithFolder(newFolder.id);
   }
 
+  async renameFolder(id: string, name: string): Promise<CnFolderWithHierarchy> {
+    await this.getAndCheckAuthorizationForUpdate(id);
+    const dbFolder = await this.foldersService.findByIdAndCheck(id);
+
+    dbFolder.name = name;
+
+    const newFolder = await this.foldersService.update(dbFolder as CnFolderEntity);
+    this.emitFolderEvent('UPDATE_FOLDER', null, newFolder);
+    return this.foldersService.findByIdAndCheckWithFolder(newFolder.id);
+  }
+
   async deleteFolder(id: string): Promise<void> {
     const folderHierarchy = await this.getAndCheckAuthorizationForUpdate(id);
 

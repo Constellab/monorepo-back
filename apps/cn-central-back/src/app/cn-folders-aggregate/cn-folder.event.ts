@@ -3,7 +3,8 @@ import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.en
 
 export const cnFolderEventName = 'cn-folder-event';
 
-// special event call before a folder is deleted to remove it from labs that uses it, to avoid circular dependencies
+// special event call before a folder is deleted to remove it from labs
+// that uses it, to avoid circular dependencies
 export const cnRemoveFolderFromAllLabsEventName = 'cn-remove-folder-from-all-labs-event';
 
 export type CnFolderEventType =
