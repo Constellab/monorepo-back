@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CnUser, CnUserEditDTO, CnUserEntity, CnUserTransportDto } from './cn-user.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import {
@@ -252,5 +252,13 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
   public async updateLastConnectedSpace(userId: string, spaceId: string): Promise<void> {
     await this.repository.update(userId, { lastConnectedSpaceId: spaceId });
+  }
+
+  public findByIds(ids: string[], page: number, size: number): Promise<ClPage<CnUser>> {
+    return this.findPaginated(page, size, {
+      where: {
+        id: In(ids),
+      },
+    });
   }
 }

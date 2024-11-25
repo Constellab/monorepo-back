@@ -53,4 +53,15 @@ export class CnLabStatsRunningResponseDTO {
 
   @Type(() => CnLabStatsRunningStatusDTO)
   statuses: CnLabStatsRunningStatusDTO[];
+
+  constructor(fromDate: DateTime, toDate: DateTime, statuses: CnLabStatsRunningStatusDTO[]) {
+    this.fromDate = fromDate;
+    this.toDate = toDate;
+    this.setStatuses(statuses);
+  }
+
+  public setStatuses(statuses: CnLabStatsRunningStatusDTO[]): void {
+    this.statuses = statuses;
+    this.runningDuration = statuses.reduce((acc, status) => acc + status.duration, 0);
+  }
 }

@@ -65,6 +65,7 @@ import { CnLabUpdateVolumeDTO } from './volume/cn-lab-volume.dto';
 import { CnLabVolume } from './volume/cn-lab-volume-entity';
 import { CnLabStatsStorageResponseDTO } from './stats/cn-lab-storage-stats.dto';
 import { CnLabStatsRunningResponseDTO } from './stats/cn-lab-running-stats.dto';
+import { CnUser } from '../cn-users/cn-user.entity';
 
 @Controller('labs')
 export class CnLabsController {
@@ -252,6 +253,15 @@ export class CnLabsController {
     @Body(new BlParsePipe(BlSearchParams)) searchParams: BlSearchParams
   ): Promise<ClPageI<CnLabStatusHistory>> {
     return this.aggregateService.getLabStatusHistory(id, page, size, searchParams);
+  }
+
+  @Get(':id/status/users')
+  public getUsersOfStatusHistory(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number
+  ): Promise<ClPageI<CnUser>> {
+    return this.aggregateService.getUsersOfStatusHistory(id, page, size) as any;
   }
 
   /**

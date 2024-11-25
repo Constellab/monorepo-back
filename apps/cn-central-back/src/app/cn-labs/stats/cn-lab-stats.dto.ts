@@ -1,5 +1,7 @@
 import { ClDateHelper, ClLuxonDateTransform } from '@monorepo/core-lib';
+import { Type } from 'class-transformer';
 import { DateTime } from 'luxon';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 
 export type CnLabKpiPeriod =
   | 'CURRENT_MONTH'
@@ -22,10 +24,11 @@ export class CnLabStatsRequestDTO {
   @ClLuxonDateTransform()
   customEndDate?: DateTime;
 
-  constructor(period?: CnLabKpiPeriod, customStartDate?: DateTime, customEndDate?: DateTime) {
+  @Type(() => CnUserEntity)
+  users?: CnUser[];
+
+  constructor(period?: CnLabKpiPeriod) {
     this.period = period;
-    this.customStartDate = customStartDate;
-    this.customEndDate = customEndDate;
   }
 
   getStartDate(): DateTime {
@@ -56,5 +59,9 @@ export class CnLabStatsRequestDTO {
       return this.customEndDate.startOf('day');
     }
     return now;
+  }
+
+  hasUsersFilter(): boolean {
+    return this.users != null && this.users.length > 0;
   }
 }

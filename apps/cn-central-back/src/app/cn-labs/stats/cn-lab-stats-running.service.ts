@@ -1,6 +1,5 @@
 import { CnLabStatusHistory } from '../status/cn-lab-status-history.entity';
 import { cnLabRunningStatuses } from '../status/cn-lab-status.enum';
-import { DateTime } from 'luxon';
 import { CnLabStatsRequestDTO } from './cn-lab-stats.dto';
 import { CnServerPrices } from '../../cn-servers-info/server-price/cn-server-price.dto';
 import {
@@ -19,7 +18,6 @@ export class CnLabStatsRunningService {
     serverPrices: CnServerPrices
   ): Promise<CnLabStatsRunningResponseDTO> {
     const runStatus = this.getRunningStatus();
-
     const totalBillInfo = new CnLabStatsRunningBillingDTO(0, 0);
 
     for (const status of runStatus.statuses) {
@@ -48,11 +46,13 @@ export class CnLabStatsRunningService {
     const startDate = this.request.getStartDate();
     const endDate = this.request.getEndDate();
 
-    let cumulativeDuration = 0;
-    const runningStatuses: CnLabStatsRunningStatusDTO[] = [];
+    let runningStatuses: CnLabStatsRunningStatusDTO[] = [];
     let currentRunningStatus: CnLabStatsRunningStatusDTO = null;
 
     for (const status of this.statusHistories) {
+      // if the status ends before startDate, no need to check it, it is before the period
+      if (!status.endsAfter(startDate)) continue;
+
       // if this is a stop status
       if (!cnLabRunningStatuses.includes(status.status)) {
         // save the running status if exists
@@ -64,34 +64,17 @@ export class CnLabStatsRunningService {
         continue;
       }
 
-      let newRunningDate: DateTime;
-
-      // if the status has started before date and finish during dates
-      if (status.startedBefore(startDate) && status.endDate >= startDate && !status.endsAfter(endDate)) {
-        // add duration between startDate and end of status
-        cumulativeDuration += status.endDate.diff(startDate, 'seconds').seconds;
-        newRunningDate = startDate;
-        // if the status has started before date and finish after end date
-      } else if (status.startedBefore(startDate) && status.endsAfter(endDate)) {
-        // add duration between startDate and endDate
-        cumulativeDuration += endDate.diff(startDate, 'seconds').seconds;
-        newRunningDate = startDate;
-        // if the status has started during dates and finish during dates
-      } else if (status.startedBetween(startDate, endDate) && !status.endsAfter(endDate)) {
-        // add duration between status start and end
-        cumulativeDuration += status.getDurationInSeconds();
-        newRunningDate = status.createdAt;
-        // if the status has started during dates and finish after end date
-      } else if (status.startedBetween(startDate, endDate) && status.endsAfter(endDate)) {
-        // add duration between status start and endDate
-        cumulativeDuration += endDate.diff(status.createdAt, 'seconds').seconds;
-        newRunningDate = status.createdAt;
-      }
-
-      // if the status is running
-      if (!currentRunningStatus && newRunningDate) {
+      // if we reach here, the status is a running status
+      // if there is no current running status, we create one
+      if (!currentRunningStatus) {
         currentRunningStatus = new CnLabStatsRunningStatusDTO();
-        currentRunningStatus.fromDate = newRunningDate;
+        // if the status has started before date and finish during dates
+        if (status.startedBefore(startDate)) {
+          currentRunningStatus.fromDate = startDate;
+          // if the status has started during dates and finish during dates
+        } else {
+          currentRunningStatus.fromDate = status.createdAt;
+        }
         currentRunningStatus.user = status.createdBy;
       }
 
@@ -106,12 +89,13 @@ export class CnLabStatsRunningService {
       runningStatuses.push(currentRunningStatus);
     }
 
-    const response = new CnLabStatsRunningResponseDTO();
-    response.fromDate = startDate;
-    response.toDate = endDate;
-    response.runningDuration = cumulativeDuration;
-    response.statuses = runningStatuses.reverse();
+    // filter the statuses by users
+    if (this.request.hasUsersFilter()) {
+      runningStatuses = runningStatuses.filter((status) =>
+        this.request.users.find((requestUser) => requestUser.id === status.user.id)
+      );
+    }
 
-    return response;
+    return new CnLabStatsRunningResponseDTO(startDate, endDate, runningStatuses.reverse());
   }
 }

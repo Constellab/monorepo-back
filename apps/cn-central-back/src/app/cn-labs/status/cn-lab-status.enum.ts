@@ -17,7 +17,7 @@ export const cnLabTemporaryStatuses = [
   CnLabStatus.SERVER_CONFIGURED,
 ];
 
-// list of statuses that are considered as running (everything except STOPPED and NO_SERVER)
+// list of statuses that are considered as running (everything except STOPPED, NO_SERVER and ERROR)
 export const cnLabRunningStatuses = [
   CnLabStatus.SERVER_STARTING,
   CnLabStatus.SERVER_STOPPING,

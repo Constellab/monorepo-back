@@ -501,6 +501,13 @@ export class CnLabAggregateService {
     return this.labStatusHistoryService.getStatusHistoryPaginated(page, size, labId, searchParams);
   }
 
+  public async getUsersOfStatusHistory(labId: string, page: number, size: number): Promise<ClPageI<CnUser>> {
+    await this.getAndCheckAuthorizationToFindById(labId);
+    const usersIds = await this.labStatusHistoryService.getUsersOfStatusHistory(labId);
+
+    return this.usersService.findByIds(usersIds, page, size);
+  }
+
   /**
    * Refresh the lab status based on server status
    * @param id

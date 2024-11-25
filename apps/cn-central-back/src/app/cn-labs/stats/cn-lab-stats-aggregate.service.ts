@@ -44,7 +44,7 @@ export class CnLabStatsAggregateService {
     return stats.runningDuration;
   }
 
-  public async getLabRunningStatus(
+  private async getLabRunningStatus(
     labId: string,
     request: CnLabStatsRequestDTO
   ): Promise<CnLabStatsRunningResponseDTO> {
