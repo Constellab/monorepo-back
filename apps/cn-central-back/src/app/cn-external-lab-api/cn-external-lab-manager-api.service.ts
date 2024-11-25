@@ -231,7 +231,7 @@ export class CnExternalLabManagerApiService {
         classReference,
         this.getRequestOptions(apiInfo.apiKey, options)
       )
-      .pipe(catchError((error) => this.catchEr, ror(error)));
+      .pipe(catchError((error) => this.catchError(error)));
   }
 
   /**
@@ -249,7 +249,7 @@ export class CnExternalLabManagerApiService {
         classReference,
         this.getRequestOptions(apiInfo.apiKey, options)
       )
-      .pipe(catchError((error) => this.catch, Error(error)));
+      .pipe(catchError((error) => this.catchError(error)));
   }
 
   private constructRoute(labUrl: string, route: string): string {

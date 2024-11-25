@@ -200,7 +200,7 @@ export class CnLabServerService {
     );
     this.logger.log(
       `Creating server instance ${lab.cloudName} ${labServer.technicalName} for lab ` +
-      `${lab.id} in cloud provider ${service.getName(),}`
+      `${lab.id} in cloud provider ${service.getName()}`
     );
     const instanceRequest: CnCpCreateInstanceRequest = {
       name: lab.cloudName,
