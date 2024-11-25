@@ -35,7 +35,6 @@ import { HnFileAgentService } from '../file-aggregate/file-agent/hn-file-agent.s
 import { FileInterceptor } from '@nestjs/platform-express';
 import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
 import { HnLabGuard } from '../core/decorators/hn-lab-auth-guard.decorator';
-import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 import {
   TeBlockFigureUploadedResponse,
   TeBlockFileUploadResponse,
@@ -50,13 +49,6 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     readonly agentFileService: HnFileAgentService
   ) {
     super(agentFileService);
-  }
-
-  // TODO: TO REMOVE
-  @IsAdmin()
-  @Post('migrate-rich-text')
-  async migrateStyle(): Promise<void> {
-    return this.agentAggregateService.migrateRichText();
   }
 
   //////////////////////////////////////////// Agent ////////////////////////////////////////////

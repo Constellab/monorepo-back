@@ -1114,9 +1114,4 @@ export class HnBrickAggregateService {
     brick.likes--;
     return entityManager.save(brick, { listeners: false });
   }
-
-  ///////////////////////////////////////// MIGRATIONS /////////////////////////////////
-  public async migrateRichTexts(): Promise<void> {
-    return this.documentationService.migrateRichTexts();
-  }
 }

@@ -176,14 +176,4 @@ export class HnAgentVersionService {
   public async deleteByAgentId(entityManager: EntityManager, agentId: string): Promise<void> {
     await entityManager.delete(HnAgentVersion, { agent: { id: agentId } });
   }
-
-  //////////////////////////////////////////// MIGRATIONS ////////////////////////////////////////////
-  // TODO TO REMOVE
-  async migrateRichTexts(): Promise<void> {
-    const entities = await this.agentVersionRepository.find();
-    for (const entity of entities) {
-      entity.setVersionInfoRichText(entity.getVersionInfoRichText());
-      await this.agentVersionRepository.save(entity, { listeners: false });
-    }
-  }
 }

@@ -46,12 +46,6 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
     super(fileStoryService);
   }
 
-  @IsAdmin()
-  @Post('migrate-rich-text')
-  async migrateOldImages(): Promise<void> {
-    return this.storyService.migrateRichTexts();
-  }
-
   @BlPublic()
   @Get('all-map')
   async getAllStoriesMap(): Promise<HnSitemapItemBase[]> {

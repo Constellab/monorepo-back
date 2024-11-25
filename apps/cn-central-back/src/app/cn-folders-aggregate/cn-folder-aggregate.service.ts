@@ -58,10 +58,10 @@ import {
 } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
 import {
-  TeRichText,
-  TeRichTextBlockModificationWithUser,
   TeBlockFigureUploadedResponse,
   TeBlockFileUploadResponse,
+  TeRichText,
+  TeRichTextBlockModificationWithUser,
 } from '@monorepo/te-text-editor';
 
 @Injectable()
@@ -361,10 +361,7 @@ export class CnFolderAggregateService {
     this.emitFolderEvent('UPDATE_FOLDER_DESCRIPTION', null, description);
   }
 
-  public async saveDescriptionImage(
-    folderId: string,
-    file: BlFile
-  ): Promise<TeBlockFigureUploadedResponse> {
+  public async saveDescriptionImage(folderId: string, file: BlFile): Promise<TeBlockFigureUploadedResponse> {
     const folder = await this.getAndCheckAuthorizationForUpdate(folderId);
 
     return this.documentService.uploadImageDocument(
@@ -852,7 +849,7 @@ export class CnFolderAggregateService {
     await this.noteService.findByIdAndCheck(noteId);
 
     const richTextAggregate = await this.noteService.getNoteRichText(folder, noteId);
-    return richTextAggregate.getModificationsDTO(userId => this.userService.findUserBasicDTO(userId));
+    return richTextAggregate.getModificationsDTO((userId) => this.userService.findUserBasicDTO(userId));
   }
 
   public async getConstellabDocumentModifications(
@@ -867,7 +864,7 @@ export class CnFolderAggregateService {
       document
     );
 
-    return richTextAggregate.getModificationsDTO(userId => this.userService.findUserBasicDTO(userId));
+    return richTextAggregate.getModificationsDTO((userId) => this.userService.findUserBasicDTO(userId));
   }
 
   public async getConstellabDocumentationUndoContent(
@@ -1225,10 +1222,5 @@ export class CnFolderAggregateService {
       userInfo: CnCurrentUserHelper.getAndCheckUserSpaceInfo(),
     };
     this.eventEmitter.emit(cnFolderEventName, event);
-  }
-
-  // TODO TO REMOVE
-  public async migrateScenarioDescriptions(): Promise<void> {
-    return this.scenarioService.migrateDescriptions();
   }
 }

@@ -684,10 +684,4 @@ export class HnAgentAggregateService {
     const agent = await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(agentId);
     return await this.fileAgentService.saveResourceView(agent, file);
   }
-
-  /////////////////////////////////////// MIGRATIONS ////////////////////////////////
-  public async migrateRichText(): Promise<void> {
-    await this.agentService.migrateRichTexts();
-    await this.agentVersionService.migrateRichTexts();
-  }
 }

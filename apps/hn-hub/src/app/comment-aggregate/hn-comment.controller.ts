@@ -5,7 +5,6 @@ import { ClPage } from '@monorepo/core-lib';
 import { HnEntityType } from '../core/model/entities/hn-entity-type.enum';
 import { HnAbstractCommentDto } from './comment-core/hn-abstract-comment.dto';
 import { TeRichText, TeRichTextPipe } from '@monorepo/te-text-editor';
-import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 
 @Controller('comment')
 export class HnCommentController {
@@ -29,11 +28,5 @@ export class HnCommentController {
     @Body(TeRichTextPipe) comment: TeRichText
   ): Promise<HnAbstractCommentDto<BlEntityWithId>> {
     return this.commentAggregateService.createComment(commentType, entityId, comment);
-  }
-
-  @IsAdmin()
-  @Post('migrate-rich-text')
-  async migrateOldImages(): Promise<void> {
-    return this.commentAggregateService.migrateRichTexts();
   }
 }

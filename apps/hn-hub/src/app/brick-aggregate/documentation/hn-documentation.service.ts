@@ -177,13 +177,4 @@ export class HnDocumentationService {
 
     return this.documentationsRepository.save(doc);
   }
-
-  // TODO TO REMOVE
-  async migrateRichTexts(): Promise<void> {
-    const documentations = await this.documentationsRepository.find();
-    for (const doc of documentations) {
-      doc.setRichTextAggregate(doc.getRichTextAggregate());
-      await this.documentationsRepository.save(doc, { listeners: false });
-    }
-  }
 }

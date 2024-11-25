@@ -23,7 +23,6 @@ import {
   HnAbstractFileEntityDTO,
   HnUploadFileResponseDto,
 } from '../file-aggregate/file-core/hn-abstract-file.dto';
-import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 import {
   TeBlockFigureUploadedResponse,
   TeRichText,
@@ -40,12 +39,6 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
     readonly fileDocumentationService: HnFileDocumentationService
   ) {
     super(fileDocumentationService);
-  }
-
-  @IsAdmin()
-  @Post('migrate-rich-text')
-  async migrateOldImages(): Promise<void> {
-    return this.brickAggregateService.migrateRichTexts();
   }
 
   @BlPublic()

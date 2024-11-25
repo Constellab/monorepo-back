@@ -570,14 +570,4 @@ export class HnStoryService {
 
     return richText.getModificationsDTO((userId) => this.userService.findUserBasicDTO(userId));
   }
-
-  // TODO TO REMOVE
-  async migrateRichTexts(): Promise<void> {
-    const stories: HnStory[] = await this.storyRepository.find();
-    for (const story of stories) {
-      story.content = story.getContentRichText().toJson();
-      story.setContentEditionRichTextAggregate(story.getContentEditionRichTextAggregate());
-      await this.storyRepository.save(story, { listeners: false });
-    }
-  }
 }

@@ -13,7 +13,6 @@ import {
   CnHierarchyObjectEntity,
 } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
-import { TeRichText } from '@monorepo/te-text-editor';
 
 @Injectable()
 export class CnScenariosService extends BlAbstractService<CnScenario> {
@@ -178,17 +177,5 @@ export class CnScenariosService extends BlAbstractService<CnScenario> {
   public migrateProtocol(protocol: CnScenarioProtocol): CnScenarioProtocol {
     const protocolMigrator = new CnProtocolMigrator();
     return protocolMigrator.migrateProtocol(protocol);
-  }
-
-  public async migrateDescriptions(): Promise<void> {
-    const scenarios = await this.repository.find();
-
-    for (const scenario of scenarios) {
-      if (scenario.description) {
-        const richText = new TeRichText(scenario.description);
-        scenario.description = richText.toJson();
-        await this.repository.save(scenario, { listeners: false });
-      }
-    }
   }
 }

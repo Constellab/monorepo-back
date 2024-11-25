@@ -44,9 +44,4 @@ export class HnCommentAggregateService {
         throw new Error('Unknown comment type');
     }
   }
-
-  async migrateRichTexts(): Promise<void> {
-    await this.commentAgentService.migrateRichTexts();
-    await this.commentStoryService.migrateRichTexts();
-  }
 }

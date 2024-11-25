@@ -461,14 +461,4 @@ export class HnAgentService {
     agent.latestStyle = style;
     return this.agentRepository.save(agent);
   }
-
-  //////////////////////////////////////// MIGRATIONS ////////////////////////////////////////
-  // TODO TO REMOVE
-  async migrateRichTexts(): Promise<void> {
-    const entities = await this.agentRepository.find();
-    for (const entity of entities) {
-      entity.setDescriptionRichText(entity.getDescriptionRichText());
-      await this.agentRepository.save(entity, { listeners: false });
-    }
-  }
 }
