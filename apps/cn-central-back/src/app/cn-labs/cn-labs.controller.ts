@@ -38,6 +38,7 @@ import {
   CnLabUpdateAdminDTO,
   CnLabWithSpaceDto,
   CnRequestLab,
+  CnStopLabRequestDTO,
 } from './cn-lab.dto';
 import {
   CnLabManagerComposeUpOptions,
@@ -161,8 +162,11 @@ export class CnLabsController {
    * stop a lab
    */
   @Put(':id/stop')
-  public async stopInstance(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabDto> {
-    const lab = await this.aggregateService.stopInstance(id);
+  public async stopInstance(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() stopRequest: CnStopLabRequestDTO
+  ): Promise<CnLabDto> {
+    const lab = await this.aggregateService.stopInstance(id, stopRequest);
     return new CnLabDto(lab);
   }
 

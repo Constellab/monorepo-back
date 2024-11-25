@@ -25,6 +25,19 @@ export class CnLabGreenOptionService extends BlAbstractService<CnLabGreenOption>
     return this.create(entity, entityManager);
   }
 
+  public async createStopAfterBackup(lab: CnLab, entityManager?: EntityManager): Promise<CnLabGreenOption> {
+    const existingRule = await this.findByLabIdAndType(lab.id, CnLabGreenOptionType.STOP_AFTER_BACKUP);
+    if (existingRule) {
+      return existingRule;
+    }
+    const entity = new CnLabGreenOption();
+    entity.lab = lab as CnLabEntity;
+    entity.type = CnLabGreenOptionType.STOP_AFTER_BACKUP;
+    entity.isPersistent = false;
+    entity.value = {};
+    return this.create(entity, entityManager);
+  }
+
   async updateFromDTO(id: string, dto: CnLabGreenOptionFormDto): Promise<CnLabGreenOption> {
     const entity = this.checkBeforeSave(dto);
     entity.id = id;
@@ -55,6 +68,12 @@ export class CnLabGreenOptionService extends BlAbstractService<CnLabGreenOption>
   public async findRulesByLabId(labId: string): Promise<CnLabGreenOption[]> {
     return this.repository.find({
       where: { lab: { id: labId } },
+    });
+  }
+
+  public findByLabIdAndType(labId: string, type: CnLabGreenOptionType): Promise<CnLabGreenOption> {
+    return this.repository.findOne({
+      where: { labId, type },
     });
   }
 }

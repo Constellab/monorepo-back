@@ -227,3 +227,7 @@ export class CnLabGlabApiInfo {
   gwsCoreVersion?: BlVersion;
   apiInfo: CnExternalApiInfo;
 }
+
+export interface CnStopLabRequestDTO {
+  backupLabBefore: boolean;
+}

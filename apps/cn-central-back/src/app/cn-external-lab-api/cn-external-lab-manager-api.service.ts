@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { BlExternalApiHttpOption, BlExternalApiService } from '@monorepo/back-core-lib';
+import {
+  BlBadRequestException,
+  BlExternalApiError,
+  BlExternalApiHttpOption,
+  BlExternalApiService,
+} from '@monorepo/back-core-lib';
 import { ClDeserializationRef } from '@monorepo/core-lib';
-import { lastValueFrom, Observable } from 'rxjs';
+import { catchError, lastValueFrom, Observable, throwError } from 'rxjs';
 import {
   CnExternalApiInfo,
   cnExternalLabApiKeyHeader,
@@ -160,7 +165,10 @@ export class CnExternalLabManagerApiService {
   ): Promise<CnLabBackupsHistory> {
     const response = await lastValueFrom(
       this.post(apiInfo, `${this.baseBackupRoute}/prod/MANUAL`, createBackup)
-    );
+    ).catch((error) => {
+      console.error(error);
+      throw error;
+    });
 
     return CnLabBackupsHistory.fromLabManagerResponse(response);
   }
@@ -196,12 +204,14 @@ export class CnExternalLabManagerApiService {
     classReference?: ClDeserializationRef,
     options: BlExternalApiHttpOption = {}
   ): Observable<any> {
-    return this.apiService.post(
-      this.constructRoute(apiInfo.apiUrl, route),
-      body,
-      classReference,
-      this.getRequestOptions(apiInfo.apiKey, options)
-    );
+    return this.apiService
+      .post(
+        this.constructRoute(apiInfo.apiUrl, route),
+        body,
+        classReference,
+        this.getRequestOptions(apiInfo.apiKey, options)
+      )
+      .pipe(catchError((error) => this.catchError(error)));
   }
 
   /**
@@ -214,12 +224,14 @@ export class CnExternalLabManagerApiService {
     classReference?: ClDeserializationRef,
     options: BlExternalApiHttpOption = {}
   ): Observable<any> {
-    return this.apiService.put(
-      this.constructRoute(apiInfo.apiUrl, route),
-      body,
-      classReference,
-      this.getRequestOptions(apiInfo.apiKey, options)
-    );
+    return this.apiService
+      .put(
+        this.constructRoute(apiInfo.apiUrl, route),
+        body,
+        classReference,
+        this.getRequestOptions(apiInfo.apiKey, options)
+      )
+      .pipe(catchError((error) => this.catchEr, ror(error)));
   }
 
   /**
@@ -231,11 +243,13 @@ export class CnExternalLabManagerApiService {
     classReference?: ClDeserializationRef,
     options: BlExternalApiHttpOption = {}
   ): Observable<any> {
-    return this.apiService.get(
-      this.constructRoute(apiInfo.apiUrl, route),
-      classReference,
-      this.getRequestOptions(apiInfo.apiKey, options)
-    );
+    return this.apiService
+      .get(
+        this.constructRoute(apiInfo.apiUrl, route),
+        classReference,
+        this.getRequestOptions(apiInfo.apiKey, options)
+      )
+      .pipe(catchError((error) => this.catch, Error(error)));
   }
 
   private constructRoute(labUrl: string, route: string): string {
@@ -252,5 +266,13 @@ export class CnExternalLabManagerApiService {
     const header: any = {};
     header[cnExternalLabApiKeyHeader] = `${cnExternalLabApiKeySchema} ${apiKey}`;
     return header;
+  }
+
+  private catchError(error: BlExternalApiError): Observable<never> {
+    if (error?.error?.code === 'ECONNREFUSED') {
+      throw new BlBadRequestException('The lab manager is not running, cannot perform the operation');
+    }
+
+    return throwError(error as any);
   }
 }

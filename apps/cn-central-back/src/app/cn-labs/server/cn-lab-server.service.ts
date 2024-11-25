@@ -132,9 +132,9 @@ export class CnLabServerService {
         );
       }
       // wait 30 seconds
-      // eslint-disable-next-line max-len
       this.logger.log(
-        `Waiting for instance ${serverInstance.id} and volume ${serverVolume.id} to be ready for lab ${lab.id} in cloud provider ${cloudProviderName}. Count: ${count}`
+        `Waiting for instance ${serverInstance.id} and volume ${serverVolume.id} to be` +
+          ` ready for lab ${lab.id} in cloud provider ${cloudProviderName}. Count: ${count}`
       );
       await new Promise((r) => setTimeout(r, 30000));
 
@@ -153,12 +153,14 @@ export class CnLabServerService {
 
     if (serverInstance.status.status === 'CREATING') {
       throw new BlBadRequestException(
-        'Server instance not ready, please refresh the status if few minutes and then contact the support if the problem persists'
+        'Server instance not ready, please refresh the status if few minutes and then contact the' +
+          ' support if the problem persists,'
       );
     }
     if (serverVolume.status === 'CREATING') {
       throw new BlBadRequestException(
-        'Volume not ready, please refresh the status if few minutes and then contact the support if the problem persists'
+        'Volume not ready, please refresh the status if few minutes and then contact' +
+          ' the support if the problem persist,s'
       );
     }
 
@@ -168,7 +170,6 @@ export class CnLabServerService {
     } else {
       // check that the volume is attached to the instance
       if (!(await cloudProviderService.volumeIsAttachedToInstance(serverInstance.id, serverVolume.id))) {
-        // eslint-disable-next-line max-len
         throw new BlBadRequestException(
           `For lab ${lab.id}, volume ${serverVolume.id} is not attached to instance ${serverInstance.id}.'`
         );
@@ -197,9 +198,9 @@ export class CnLabServerService {
       `Creating server instance ${labServer.technicalName} in cloud provider ${service.getName()}`,
       CnLabServerTaskStatus.RUNNING
     );
-    // eslint-disable-next-line max-len
     this.logger.log(
-      `Creating server instance ${lab.cloudName} ${labServer.technicalName} for lab ${lab.id} in cloud provider ${service.getName()}`
+      `Creating server instance ${lab.cloudName} ${labServer.technicalName} for lab ` +
+      `${lab.id} in cloud provider ${service.getName(),}`
     );
     const instanceRequest: CnCpCreateInstanceRequest = {
       name: lab.cloudName,
@@ -254,7 +255,8 @@ export class CnLabServerService {
 
     if (!ipv4) {
       throw new BlBadRequestException(
-        'The ip adresse of the server is not available, please retry in few minutes and contact the support if the problem persists'
+        'The ip adresse of the server is not available, please retry in few minutes and' +
+        ' contact the support if the problem persists',
       );
     }
     await this.labService.updateServerTask(
@@ -283,14 +285,14 @@ export class CnLabServerService {
       'Attaching volume to server instance',
       CnLabServerTaskStatus.RUNNING
     );
-    // eslint-disable-next-line max-len
     this.logger.log(
-      `Attaching volume ${volumeId} to instance ${serverInstanceId} for lab ${labId} in cloud provider ${service.getName()}`
+      `Attaching volume ${volumeId} to instance ${serverInstanceId} for` +
+      ` lab ${labId} in cloud provider ${service.getName()}`,
     );
     const volume = await service.attachVolumeToInstance(serverInstanceId, volumeId);
-    // eslint-disable-next-line max-len
     this.logger.log(
-      `Volume ${volume.id} attached to instance ${serverInstanceId} for lab ${labId} in cloud provider ${service.getName()}`
+      `Volume ${volume.id} attached to instance ${serverInstanceId} for` +
+      ` lab ${labId} in cloud provider ${service.getName()}`,
     );
     return volume;
   }
@@ -361,6 +363,16 @@ export class CnLabServerService {
   }
 
   public async stopLab(lab: CnLab): Promise<CnLab> {
+    const cloudProviderService = await this.checkBeforeStopLab(lab);
+
+    // if the server is running
+    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
+    this.logger.log(`Stopping server instance ${lab.serverInstanceId} for lab ${lab.id} by ${user.email}`);
+    await cloudProviderService.stopInstance(lab.serverInstanceId);
+    return await this.labService.markInstanceAsServerStopping(lab.id);
+  }
+
+  public async checkBeforeStopLab(lab: CnLab): Promise<CnCloudProviderService> {
     if (!lab.serverInstanceId) {
       throw new BlBadRequestException(`Lab has no server instance was it correctly initialized?`);
     }
@@ -373,11 +385,7 @@ export class CnLabServerService {
       throw new BlBadRequestException(`Server is currently ${serverInstance.status.status}`);
     }
 
-    // if the server is running
-    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
-    this.logger.log(`Stopping server instance ${lab.serverInstanceId} for lab ${lab.id} by ${user.email}`);
-    await cloudProviderService.stopInstance(lab.serverInstanceId);
-    return await this.labService.markInstanceAsServerStopping(lab.id);
+    return cloudProviderService;
   }
 
   /**

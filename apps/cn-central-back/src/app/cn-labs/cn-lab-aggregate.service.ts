@@ -43,6 +43,7 @@ import {
   CnLabStatusDTO,
   CnLabUpdateAdminDTO,
   CnRequestLab,
+  CnStopLabRequestDTO,
 } from './cn-lab.dto';
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
 import { CnLabsSecurity } from './cn-labs.security';
@@ -1159,10 +1160,19 @@ export class CnLabAggregateService {
     return await this.labServerService.startLab(lab);
   }
 
-  async stopInstance(id: string): Promise<CnLab> {
+  async stopInstance(id: string, stopRequest: CnStopLabRequestDTO): Promise<CnLab> {
     const lab = await this.getAndCheckServerStatusBeforeAction(id, true);
 
-    return this.labServerService.stopLab(lab);
+    // if the user choose to back up the lab before stopping
+    // we create a backup and add a green option to stop it after backup
+    if (stopRequest.backupLabBefore) {
+      await this.labServerService.checkBeforeStopLab(lab);
+      await this.backupService.createProdBackup(lab);
+      await this.labGreenOptionService.createStopAfterBackup(lab);
+      return lab;
+    } else {
+      return this.labServerService.stopLab(lab);
+    }
   }
 
   async updateLabManager(labId: string, labManagerVersion: string): Promise<CnLabStatusDTO> {
