@@ -10,12 +10,12 @@ export class TeRichTextHelper {
   public static compareRichTexts(
     oldRichText: TeRichTextDTO,
     newRichText: TeRichTextDTO,
-    oldModifications: TeRichTextBlockModificationsDTO,
+    oldModifications: TeRichTextBlockModificationsDTO | null,
     userId: string
   ): TeRichTextBlockModificationsDTO {
-    // provide the destination version so that it does not migrate the content
+    // provide the target version so that it does not migrate the content
     const richText = new TeRichText(oldRichText, oldRichText.version);
-    const modifications = TeRichTextModifications.fromJsonObject(oldModifications, oldModifications.version);
+    const modifications = TeRichTextModifications.fromJsonObject(oldModifications, oldModifications?.version);
 
     const richTextAggregate = new TeRichTextAggregate(richText, modifications);
 
@@ -26,12 +26,12 @@ export class TeRichTextHelper {
 
   public static getRichTextPreviousVersion(
     richText: TeRichTextDTO,
-    modifications: TeRichTextBlockModificationsDTO,
+    modifications: TeRichTextBlockModificationsDTO | null,
     modificationId: string
   ): TeRichTextDTO {
-    // provide the destination version so that it does not migrate the content
+    // provide the target version so that it does not migrate the content
     const richTextObj = new TeRichText(richText, richText.version);
-    const modificationsObj = TeRichTextModifications.fromJsonObject(modifications, modifications.version);
+    const modificationsObj = TeRichTextModifications.fromJsonObject(modifications, modifications?.version);
 
     const richTextAggregate = new TeRichTextAggregate(richTextObj, modificationsObj);
 
