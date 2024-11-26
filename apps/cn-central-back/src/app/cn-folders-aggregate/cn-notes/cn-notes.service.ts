@@ -3,12 +3,7 @@ import { CnNote } from './cn-note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { CnScenario } from '../cn-scenarios/cn-scenario.entity';
-import {
-  BlAbstractService,
-  BlBadRequestException,
-  BlFile,
-  BlFileResponse,
-} from '@monorepo/back-core-lib';
+import { BlAbstractService, BlBadRequestException, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
 import { CnCreateNoteWithConfigDto, CnSaveNoteDto, CnSaveNoteResultDTO } from './cn-note.dto';
 import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
@@ -196,7 +191,10 @@ export class CnNotesService extends BlAbstractService<CnNote> {
     createNoteDto: CnCreateNoteWithConfigDto,
     files: BlFile[]
   ): Promise<CnNote> {
-    const richTextAggregate = TeRichTextAggregate.fromJson(createNoteDto.note.content);
+    const richText = new TeRichText(createNoteDto.note.content);
+    const modifications = TeRichTextModifications.fromJsonObject(createNoteDto.note.modifications);
+    const richTextAggregate = new TeRichTextAggregate(richText, modifications);
+    // const richTextAggregate = TeRichTextAggregate.fromJson(createNoteDto.note.content as any);
     let noteDocument: CnDocument;
     // if the document already exists, we update it
     if (note.document) {

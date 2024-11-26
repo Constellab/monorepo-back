@@ -4,12 +4,14 @@ import { DateTime } from 'luxon';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
 import { CnNote } from './cn-note.entity';
-import { TeRichTextAggregateJsonInput } from '@monorepo/te-text-editor';
+import { TeRichTextBlockModificationsDTO, TeRichTextInput } from '@monorepo/te-text-editor';
 
 export class CnSaveNoteDto {
   id: string;
   title: string;
-  content: TeRichTextAggregateJsonInput;
+  content: TeRichTextInput;
+
+  modifications?: TeRichTextBlockModificationsDTO;
 
   is_validated: boolean;
 
