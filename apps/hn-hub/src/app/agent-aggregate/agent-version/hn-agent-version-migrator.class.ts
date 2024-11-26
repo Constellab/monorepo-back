@@ -33,7 +33,9 @@ export class HnAgentVersionMigrator {
     };
     for (const param of (agentVersionFileInput.params as string).split('\n')) {
       const [key, value] = param.split('=');
-      params['values'][key] = value;
+      const v = this.parseValue(value);
+      params['specs'][key] = this.getBasicParamSpecs(v);
+      params['values'][key] = v;
     }
     agentVersionFileInput.params = params;
     return agentVersionFileInput;
@@ -113,6 +115,13 @@ export class HnAgentVersionMigrator {
   private parseValue(value: string): any {
     try {
       // Tenter de parser comme JSON
+      if (
+        (value as string).includes(',') &&
+        !(value as string).includes('[') &&
+        !(value as string).includes('{')
+      ) {
+        value = '[' + value + ']';
+      }
       return JSON.parse(value);
     } catch {
       // Si le parsing JSON échoue, vérifier si c'est un nombre
