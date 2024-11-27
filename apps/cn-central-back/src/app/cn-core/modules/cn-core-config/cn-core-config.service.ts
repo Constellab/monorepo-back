@@ -305,4 +305,13 @@ export class CnCoreConfigService {
   public getCaptchaSiteKey(): string {
     return this.configService.get('CAPTCHA_SITE_KEY');
   }
+
+  /////////////////////////// YOUTUBE ///////////////////////////
+  public getYoutubeApiKey(): string {
+    return this.configService.get('YOUTUBE_API_KEY');
+  }
+
+  public getYoutubeTutorialPlaylistId(): string {
+    return this.configService.get('YOUTUBE_TUTORIAL_PLAYLIST_ID');
+  }
 }

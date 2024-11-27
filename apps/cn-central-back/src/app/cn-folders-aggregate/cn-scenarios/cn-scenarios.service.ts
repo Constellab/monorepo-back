@@ -160,11 +160,6 @@ export class CnScenariosService extends BlAbstractService<CnScenario> {
     });
   }
 
-  //Get user last 3 scenarios
-  public async getCurrentUserLastScenarios(): Promise<CnScenario[]> {
-    return (await this.getCurrentUserCreatedScenario()).slice(0, 3);
-  }
-
   public async getScenarioLabConfig(scenarioId: string): Promise<CnLabConfig> {
     return (
       await this.repository.findOne({

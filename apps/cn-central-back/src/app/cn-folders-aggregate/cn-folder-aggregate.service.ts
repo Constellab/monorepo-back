@@ -453,10 +453,6 @@ export class CnFolderAggregateService {
     }
   }
 
-  async getCurrentUserLastScenarios(): Promise<CnScenario[]> {
-    return this.scenarioService.getCurrentUserLastScenarios();
-  }
-
   async findScenarioTechnicalReport(scenarioId: string): Promise<CnScenarioProtocol> {
     return (await this.findScenario(scenarioId)).protocol;
   }

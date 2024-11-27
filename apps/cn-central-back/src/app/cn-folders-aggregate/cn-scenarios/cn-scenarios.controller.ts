@@ -8,11 +8,6 @@ import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 export class CnScenariosController {
   constructor(private folderAggregateService: CnFolderAggregateService) {}
 
-  @Get('current-last-scenarios')
-  getCurrentUserLastScenarios(): Promise<CnScenario[]> {
-    return this.folderAggregateService.getCurrentUserLastScenarios();
-  }
-
   @Get(':id')
   findById(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnScenario> {
     return this.folderAggregateService.findScenario(id);
