@@ -561,7 +561,15 @@ export class CnSpaceAggregateService {
         return await this.spaceService.findByIdAndCheck(user.lastConnectedSpaceId);
       }
     }
-    return await this.spaceUserService.getUserDefaultSpaceAndCheck(user.id);
+    return await this.spaceUserService.getUserPersonalSpaceAndCheck(user.id);
+  }
+
+  public async getUserPersonalSpaceAndCheck(userId: string): Promise<CnSpace> {
+    return await this.spaceUserService.getUserPersonalSpaceAndCheck(userId);
+  }
+
+  public getSpaceUserIfAccess(spaceId: string, userId: string): Promise<CnSpaceUser | null> {
+    return this.spaceUserService.findOneBySpaceIdAndUserId(spaceId, userId);
   }
 
   /////////////////////////////////////// SECURITY //////////////////////////////////

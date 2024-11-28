@@ -1,3 +1,5 @@
+import { Stream } from 'stream';
+
 export class BlFileHelper {
   /**
    * @param file filename or full file path
@@ -70,5 +72,20 @@ export class BlFileHelper {
     const filename = BlFileHelper.getFilenameWithoutExtension(file);
     const extension = BlFileHelper.getFileExtension(file);
     return `${filename}_${index}.${extension}`;
+  }
+
+  public static convertFileStreamToBuffer(fileStream: Stream): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      const chunks: Uint8Array[] = [];
+      fileStream.on('data', (chunk: any) => {
+        chunks.push(chunk);
+      });
+      fileStream.on('end', () => {
+        resolve(Buffer.concat(chunks));
+      });
+      fileStream.on('error', (error: any) => {
+        reject(error);
+      });
+    });
   }
 }

@@ -253,7 +253,7 @@ export class CnNotesService extends BlAbstractService<CnNote> {
     parentFolder: CnHierarchyObject
   ): Promise<void> {
     const filename = file.originalname;
-    const document = await this.documentService.findDocumentBYTypeAndNameAndEntity(
+    const document = await this.documentService.findDocumentByTypeAndNameAndEntity(
       CnDocumentType.NOTE_CONTENT,
       filename,
       noteId

@@ -15,12 +15,14 @@
 -- RENAME TABLE old_table_name TO new_table_name;
 --
 
+######## 2.0.11 ########
+update scenario
+SET protocol = REPLACE(protocol, 'TASK.gws_core.Source', 'TASK.gws_core.InputTask');
+update scenario
+SET protocol = REPLACE(protocol, 'TASK.gws_core.Sink', 'TASK.gws_core.OutputTask');
 
-# 2.1.1
-# Call migration route POST /scenarios/migrate-scenario-description
 
-
-# 2.1.0
+######## 2.1.0 ########
 ALTER TABLE lab
   ADD COLUMN glabDevApiKey varchar(255) null;
 ALTER TABLE `lab`
@@ -61,8 +63,9 @@ ALTER TABLE lab
 
 # Replace RabbimtMQ docker container with redis
 
-# 2.0.11
-update scenario
-SET protocol = REPLACE(protocol, 'TASK.gws_core.Source', 'TASK.gws_core.InputTask');
-update scenario
-SET protocol = REPLACE(protocol, 'TASK.gws_core.Sink', 'TASK.gws_core.OutputTask');
+######## 2.1.1 ########
+# Call migration route POST /scenarios/migrate-scenario-description
+
+######## 2.1.2 ########
+# Add YOUTUBE_API_KEY, YOUTUBE_TUTORIAL_PLAYLIST_ID, FOLDER_ID_TO_COPY_ON_SIGNUP
+

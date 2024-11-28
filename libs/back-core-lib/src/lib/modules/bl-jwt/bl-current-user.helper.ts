@@ -18,6 +18,10 @@ export class BlCurrentUserHelper extends BlRequestContextHelper {
     if (request == null && this.robotUser != null) {
       return this.robotUser;
     }
+
+    if (this.getCurrentAdditionalData()?.userOverride) {
+      return this.getCurrentAdditionalData().userOverride;
+    }
     return (request && (request.user as BlUser)) || null;
   }
 
@@ -39,7 +43,7 @@ export class BlCurrentUserHelper extends BlRequestContextHelper {
    * Get the current user lang
    * If a user is connected it returns it's language
    * If not it get the lang from the 'lang' header
-   * Otherwise it return the default lang
+   * Otherwise it returns the default lang
    */
   static getCurrentLang(): ClSupportedLanguage {
     let lang = this.getCurrentUser()?.lang || this.getLangHeader() || clDefaultLang;
@@ -62,5 +66,18 @@ export class BlCurrentUserHelper extends BlRequestContextHelper {
    */
   public static setRobotUser(user: BlUser | null): void {
     BlCurrentUserHelper.robotUser = user;
+  }
+
+  /**
+   * Override the user stored in the context
+   * /!\ Always call clearUserOverride after using this method
+   * @param user
+   */
+  public static overrideUser(user: BlUser | null): void {
+    this.setAdditionalData('userOverride', user);
+  }
+
+  public static clearUserOverride(): void {
+    this.setAdditionalData('userOverride', null);
   }
 }

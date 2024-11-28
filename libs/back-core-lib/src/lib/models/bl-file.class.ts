@@ -3,9 +3,9 @@
  */
 export interface BlFile {
   originalname: string;
-  encoding: string;
+  // encoding: string;
   mimetype: string;
   buffer: Buffer;
   size: number;
-  name?: string;
+  // name?: string;
 }

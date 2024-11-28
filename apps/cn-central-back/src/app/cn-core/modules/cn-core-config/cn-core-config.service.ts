@@ -270,13 +270,6 @@ export class CnCoreConfigService {
     return this.configService.get('LAB_CONFIGURER_REPO_BRANCH');
   }
 
-  /**
-   * List of user email to notify when a new user is created
-   */
-  public newUserNotifReceiver(): string[] {
-    return this.configService.get('NEW_USER_NOTIF_RECEIVERS').split(',');
-  }
-
   public getDistPath(...path: string[]): string {
     return join(this.config.distFolder, ...path);
   }
@@ -313,5 +306,17 @@ export class CnCoreConfigService {
 
   public getYoutubeTutorialPlaylistId(): string {
     return this.configService.get('YOUTUBE_TUTORIAL_PLAYLIST_ID');
+  }
+
+  /////////////////////////// OTHER ///////////////////////////
+  /**
+   * List of user email to notify when a new user is created
+   */
+  public newUserNotifReceiver(): string[] {
+    return this.configService.get('NEW_USER_NOTIF_RECEIVERS').split(',');
+  }
+
+  public getFolderIdToCopyOnSignup(): string {
+    return this.configService.get('FOLDER_ID_TO_COPY_ON_SIGNUP');
   }
 }

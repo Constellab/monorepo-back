@@ -12,6 +12,10 @@ export interface CnRequestAuthInfo {
   space?: CnSpace;
   // role for the current user in this space
   roleInSpace: CnSpaceUserRole;
+
+  // overrides
+  spaceOverride?: CnSpace;
+  roleInSpaceOverride?: CnSpaceUserRole;
 }
 
 export enum CnCurrentLabEnvironment {
@@ -90,11 +94,26 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
    * return the current space or null if there is no space in the context
    */
   static getCurrentSpace(): CnSpace | null {
+    if (this.getAdditionalInfo()?.spaceOverride) {
+      return this.getAdditionalInfo().spaceOverride;
+    }
     return this.getAdditionalInfo()?.space ?? null;
   }
 
   static setCurrentSpace(space: CnSpace): void {
     this.setAdditionalData('space', space);
+  }
+
+  /**
+   * Override the space in the context
+   * /!\ Always call clearSpaceOverride after using this method
+   */
+  public static overrideSpace(space: CnSpace | null): void {
+    this.setAdditionalData('spaceOverride', space);
+  }
+
+  public static clearSpaceOverride(): void {
+    this.setAdditionalData('spaceOverride', null);
   }
 
   /**
@@ -115,7 +134,26 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
    * or null if there is no space in the context
    */
   static getCurrentRoleInSpace(): CnSpaceUserRole | null {
+    if (this.getAdditionalInfo()?.roleInSpaceOverride) {
+      return this.getAdditionalInfo().roleInSpaceOverride;
+    }
     return this.getAdditionalInfo()?.roleInSpace ?? null;
+  }
+
+  static setCurrentRoleInSpace(role: CnSpaceUserRole): void {
+    this.setAdditionalData('roleInSpace', role);
+  }
+
+  /**
+   * Override the user role in space in the context
+   * /!\ Always call clearRoleInSpaceOverride after using this method
+   */
+  public static overrideRoleInSpace(role: CnSpaceUserRole): void {
+    this.setAdditionalData('roleInSpaceOverride', role);
+  }
+
+  public static clearRoleInSpaceOverride(): void {
+    this.setAdditionalData('roleInSpaceOverride', null);
   }
 
   static isAdminOfCurrentSpace(): boolean {
@@ -124,10 +162,6 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
 
   static isAdmin(): boolean {
     return this.getAndCheckCurrentUser().isAdmin();
-  }
-
-  static setCurrentRoleInSpace(role: CnSpaceUserRole): void {
-    this.setAdditionalData('roleInSpace', role);
   }
 
   static getAndCheckUserSpaceInfo(): CnUserSpaceInfo {

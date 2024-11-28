@@ -207,8 +207,8 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     return spaceUsers.map((spaceUser) => spaceUser.space);
   }
 
-  public async getUserDefaultSpaceAndCheck(userId: string): Promise<CnSpace> {
-    const space = await this.getUserDefaultSpace(userId);
+  public async getUserPersonalSpaceAndCheck(userId: string): Promise<CnSpace> {
+    const space = await this.getUserPersonalSpace(userId);
     if (space == null) {
       throw new BlBadRequestException(CnErrorText.USER_WITHOUT_SPACE);
     }
@@ -216,7 +216,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     return space;
   }
 
-  public async getUserDefaultSpace(userId: string): Promise<CnSpace | null> {
+  public async getUserPersonalSpace(userId: string): Promise<CnSpace | null> {
     const spaceUser = await this.repository.findOne({
       where: {
         userId: userId,

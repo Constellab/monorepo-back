@@ -28,6 +28,8 @@ import { CnCreateUserDto, CnUserUpdateLicenseDTO } from '../cn-user.dto';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnActivityEntityType } from '../../cn-activity/cn-activity.entity';
 import { CnSupportService } from '../../cn-support/cn-support.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { CnUserEvent, cnUserEventName, CnUserEventType } from '../cn-user.event';
 
 /**
  * Service to handle users' account (signup, mail validation, password forgotten, reset password...)
@@ -52,7 +54,8 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     private groupService: CnGroupsService,
     private notificationService: CnNotificationService,
     private captchaService: BlCaptchaService,
-    private supportService: CnSupportService
+    private supportService: CnSupportService,
+    private eventEmitter: EventEmitter2
   ) {
     super(repository, CnUserEntity);
   }
@@ -78,6 +81,8 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
         // await mail send to include it in transaction
         await this.sendSignupEmail(newUser);
+
+        this.emitUserEvent('CREATE_USER', newUser);
 
         return newUser;
       });
@@ -396,5 +401,10 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     user.license = licenseDTO.license;
 
     return this.repository.save(user);
+  }
+
+  private emitUserEvent(event: CnUserEventType, user: CnUser): void {
+    const userEvent: CnUserEvent = { type: event, user };
+    this.eventEmitter.emit(cnUserEventName, userEvent);
   }
 }

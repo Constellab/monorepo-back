@@ -11,14 +11,14 @@ import {
   BlObjectStorageService,
 } from '@monorepo/back-core-lib';
 import {
+  TeBlockFigureUploadedResponse,
+  TeBlockFileUploadResponse,
   TeNewFullRichTextDTO,
   TeRichText,
   TeRichTextAggregate,
-  TeBlockFigureUploadedResponse,
-  TeBlockFileUploadResponse,
 } from '@monorepo/te-text-editor';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, In, Repository } from 'typeorm';
+import { DataSource, EntityManager, In, IsNull, Repository } from 'typeorm';
 import { ClDateHelper, ClPage, ClStringHelper } from '@monorepo/core-lib';
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 import { CnFolderBucketService } from '../cn-folders/cn-folder-bucket.service';
@@ -88,7 +88,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     );
 
     if (documentName) {
-      const existingDocument = await this.findDocumentBYTypeAndNameAndEntity(
+      const existingDocument = await this.findDocumentByTypeAndNameAndEntity(
         documentType,
         documentName,
         entityId
@@ -113,7 +113,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       document.parentDocument = parentDocument as CnDocumentEntity;
       // otherwise this is a cloud bucket where every file is so we need to generate a random name
       document.filename = this.objectStorageService.generateRandomFileNameFromExtension(
-        BlFileHelper.getFileExtension(documentName)
+        BlFileHelper.getFileExtension(file.originalname)
       );
       document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
         parentFolder,
@@ -167,7 +167,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     documentName: string,
     entityId: string
   ): Promise<BlFileResponse> {
-    const document = await this.findDocumentBYTypeAndNameAndEntity(documentType, documentName, entityId);
+    const document = await this.findDocumentByTypeAndNameAndEntity(documentType, documentName, entityId);
 
     if (document == null) {
       throw new BlBadRequestException('Document not found');
@@ -250,7 +250,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
    * @param name
    * @param entityId
    */
-  async findDocumentBYTypeAndNameAndEntity(
+  async findDocumentByTypeAndNameAndEntity(
     type: CnDocumentType,
     name: string,
     entityId: string
@@ -266,8 +266,13 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
   ////////////////////////////// FOLDER DOCUMENTS  //////////////////////////////////
 
-  public findDocumentsByParentFolder(parentFolderId: string): Promise<CnDocument[]> {
-    return this.repo.find({ where: { hierarchyRepresentation: { parentId: parentFolderId } } });
+  public findRootDocumentsByParentFolder(parentFolderId: string): Promise<CnDocument[]> {
+    return this.repo.find({
+      where: {
+        hierarchyRepresentation: { parentId: parentFolderId },
+        parentDocument: IsNull(),
+      },
+    });
   }
 
   public findWithHierarchyByIdAndCheck(documentId: string): Promise<CnDocumentWithHierarchy> {
@@ -315,9 +320,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       document.name = documentName;
       document.mimeType = 'application/json';
       document.type = type;
-      document.filename = this.objectStorageService.generateRandomFileNameFromExtension(
-        BlFileHelper.getFileExtension('json')
-      );
+      document.filename = this.objectStorageService.generateRandomFileNameFromExtension('json');
       document.entityId = entityId;
       document.parentDocument = parentDocument as CnDocumentEntity;
       document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
@@ -370,7 +373,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     content: any,
     parentDocument?: CnDocument
   ): Promise<CnDocument> {
-    const document = await this.findDocumentBYTypeAndNameAndEntity(type, documentName, entityId);
+    const document = await this.findDocumentByTypeAndNameAndEntity(type, documentName, entityId);
 
     if (document) {
       return this.updateJSONDocument(parentFolder.getRootFolderId(), document, content);
@@ -665,6 +668,65 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     });
   }
 
+  public async copyDocument(
+    sourceDocument: CnDocumentWithHierarchy,
+    targetParentFolder: CnHierarchyObject,
+    parentDocument?: CnDocument
+  ): Promise<CnDocument> {
+    if (sourceDocument.type === CnDocumentType.NOTE || sourceDocument.type === CnDocumentType.NOTE_CONTENT) {
+      throw new BlBadRequestException('Cannot copy a note');
+    }
+    const content = await this.getDocumentContentByDocument(
+      sourceDocument.hierarchyRepresentation.getRootFolderId(),
+      sourceDocument
+    );
+
+    const file: BlFile = {
+      originalname: sourceDocument.getNameWithExtension(),
+      buffer: await BlFileHelper.convertFileStreamToBuffer(content.file),
+      size: sourceDocument.size,
+      mimetype: sourceDocument.mimeType,
+    };
+
+    // retrieve the correct entityId based on the source document type
+    let entityId: string;
+    if ([CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT].includes(sourceDocument.type)) {
+      if (!parentDocument) {
+        throw new BlBadRequestException(
+          'Cannot copy a constellab content document without a parent document'
+        );
+      }
+      entityId = parentDocument.id;
+    } else if (
+      [
+        CnDocumentType.UPLOADED_DOCUMENT,
+        CnDocumentType.CONSTELLAB_DOCUMENT,
+        CnDocumentType.DESCRIPTION_CONTENT,
+        CnDocumentType.MESSAGE_CONTENT,
+      ].includes(sourceDocument.type)
+    ) {
+      entityId = targetParentFolder.id;
+    } else {
+      throw new BlBadRequestException('Cannot copy a document with this type');
+    }
+    const document = await this.uploadDocument(
+      file,
+      targetParentFolder,
+      sourceDocument.type,
+      entityId,
+      sourceDocument.name,
+      parentDocument
+    );
+
+    // copy the children document as well
+    const children = await this.findChildrenDocuments(sourceDocument.id);
+    for (const doc of children) {
+      await this.copyDocument(doc, targetParentFolder, document);
+    }
+
+    return document;
+  }
+
   private emitEvent(eventType: CnDocumentEventType, document: CnDocument): void {
     const event: CnDocumentEvent = {
       type: eventType,
@@ -687,7 +749,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     while (i < 10) {
       const name = i === 0 ? documentName : BlFileHelper.addIndexToFileName(documentName, i);
 
-      const existingDocument = await this.findDocumentBYTypeAndNameAndEntity(documentType, name, entityId);
+      const existingDocument = await this.findDocumentByTypeAndNameAndEntity(documentType, name, entityId);
       if (!existingDocument) {
         return name;
       }
@@ -702,5 +764,19 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       name: documentName,
       folder: folderId,
     };
+  }
+
+  public findVisibleChildrenDocumentByTypes(
+    folderId: string,
+    types: CnDocumentType[]
+  ): Promise<CnDocumentWithHierarchy[]> {
+    return this.repo.find({
+      where: {
+        hierarchyRepresentation: { parentId: folderId },
+        type: In(types),
+        inTrash: false,
+      },
+      relations: { hierarchyRepresentation: true },
+    });
   }
 }

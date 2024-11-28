@@ -209,7 +209,7 @@ export class CnFolderAggregateService {
     }
 
     // delete all the trashed documents, no transaction because we can't revert between 2 docs
-    const trashedDocuments = await this.documentService.findDocumentsByParentFolder(folderHierarchy.id);
+    const trashedDocuments = await this.documentService.findRootDocumentsByParentFolder(folderHierarchy.id);
     for (const document of trashedDocuments) {
       await this.documentService.deleteDocument(document.id);
     }

@@ -1,5 +1,5 @@
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne } from 'typeorm';
-import { BlBucketType, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
+import { BlBucketType, BlFileHelper, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { Exclude, Expose } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-representation';
@@ -48,7 +48,8 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
   type: CnDocumentType;
 
   // The id of the entity associated with this document
-  // IF type is UPLOADED_DOCUMENT,CONSTELLAB_DOCUMENT, DESCRIPTION_CONTENT or MESSAGE_CONTENT, entityId is the id of the folder
+  // IF type is UPLOADED_DOCUMENT,CONSTELLAB_DOCUMENT, DESCRIPTION_CONTENT
+  // or MESSAGE_CONTENT, entityId is the id of the folder
   // IF type is CONSTELLAB_DOCUMENT_CONTENT, entityId is the id of the constellab document
   // IF type is NOTE or NOTE_CONTENT, entityId is the id of the note
   @Column({ nullable: false, length: 36 })
@@ -104,23 +105,6 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
     };
   }
 
-  getTypePrefix(): string {
-    switch (this.type) {
-      case CnDocumentType.UPLOADED_DOCUMENT:
-      case CnDocumentType.CONSTELLAB_DOCUMENT:
-        return 'documents';
-      case CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT:
-        return 'constellab_doc_images';
-      case CnDocumentType.DESCRIPTION_CONTENT:
-        return 'description';
-      case CnDocumentType.NOTE:
-      case CnDocumentType.NOTE_CONTENT:
-        return 'report_contents';
-      case CnDocumentType.MESSAGE_CONTENT:
-        return 'comments';
-    }
-  }
-
   documentTypeSupportsTrash(): boolean {
     // the trash is only supported for uploaded documents and constellab documents
     return this.type === CnDocumentType.UPLOADED_DOCUMENT || this.type === CnDocumentType.CONSTELLAB_DOCUMENT;
@@ -153,6 +137,14 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
   setLastModifiedInfo(): void {
     this.lastModifiedBy = CnCurrentUserHelper.getAndCheckCurrentUser();
     this.lastModifiedAt = ClDateHelper.getDate();
+  }
+
+  getNameWithExtension(): string {
+    return BlFileHelper.getFilenameWithoutExtension(this.name) + '.' + this.getExtension();
+  }
+
+  getExtension(): string {
+    return BlFileHelper.getFileExtension(this.filename);
   }
 }
 

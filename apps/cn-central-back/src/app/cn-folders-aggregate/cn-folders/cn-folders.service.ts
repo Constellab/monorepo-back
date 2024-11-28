@@ -57,4 +57,10 @@ export class CnFoldersService extends BlAbstractService<CnFolderEntity> {
 
     return await this.findPaginated(page, size, searchBuilder.build());
   }
+
+  public async findChildrenFolders(parentId: string): Promise<CnFolder[]> {
+    return await this.repository.find({
+      where: { hierarchyRepresentation: { parentId: parentId } },
+    });
+  }
 }

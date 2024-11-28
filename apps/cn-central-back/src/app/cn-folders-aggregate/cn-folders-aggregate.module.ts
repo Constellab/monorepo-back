@@ -17,6 +17,8 @@ import { CnActivityModule } from '../cn-activity/cn-activity.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { CnDocumentModule } from './cn-documents/cn-document.module';
 import { CnHierarchyObjectModule } from './cn_hierarchy_objects/cn-hierarchy-object.module';
+import { CnFolderCopierService } from './cn-folder-copier.service';
+import { CnSpacesModule } from '../cn-spaces/cn-spaces.module';
 
 @Module({
   imports: [
@@ -30,6 +32,7 @@ import { CnHierarchyObjectModule } from './cn_hierarchy_objects/cn-hierarchy-obj
     CnScenariosModule,
     CnNotesModule,
     CnDocumentModule,
+    CnSpacesModule,
 
     CnUsersModule,
     CnNotificationModule,
@@ -38,7 +41,7 @@ import { CnHierarchyObjectModule } from './cn_hierarchy_objects/cn-hierarchy-obj
     EventEmitterModule,
   ],
   controllers: [CnFoldersController, CnScenariosController, CnNotesController],
-  providers: [CnFoldersAggregateSecurity, CnFolderAggregateService, CnFolderListener],
+  providers: [CnFoldersAggregateSecurity, CnFolderAggregateService, CnFolderListener, CnFolderCopierService],
   exports: [CnFoldersAggregateSecurity, CnFolderAggregateService],
 })
 export class CnFoldersAggregateModule {}
