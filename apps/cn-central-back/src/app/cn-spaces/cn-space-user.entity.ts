@@ -1,6 +1,6 @@
 import { BeforeInsert, Column, Entity, ManyToOne, PrimaryColumn, Relation } from 'typeorm';
 import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
-import { CnSpace } from './cn-space.entity';
+import { CnSpace, CnSpaceEntity } from './cn-space.entity';
 import { Type } from 'class-transformer';
 import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { DateTime } from 'luxon';
@@ -22,7 +22,7 @@ export class CnSpaceUser {
   @PrimaryColumn({ type: 'varchar', length: 36 })
   spaceId: string;
 
-  @ManyToOne(() => CnSpace, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => CnSpaceEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
   space: CnSpace;
 
   @Column({

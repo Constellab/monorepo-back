@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CnSpace, CnSpaceType } from './cn-space.entity';
+import { CnSpace, CnSpaceEntity, CnSpaceType } from './cn-space.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, EntityManager, Like, Repository } from 'typeorm';
 import {
@@ -20,13 +20,13 @@ import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnBucket } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 @Injectable()
-export class CnSpaceService extends BlAbstractService<CnSpace> {
+export class CnSpaceService extends BlAbstractService<CnSpaceEntity> {
   constructor(
-    @InjectRepository(CnSpace) private repository: Repository<CnSpace>,
+    @InjectRepository(CnSpaceEntity) private repository: Repository<CnSpaceEntity>,
     private objectStorageService: BlObjectStorageService,
     private configService: CnCoreConfigService
   ) {
-    super(repository, CnSpace);
+    super(repository, CnSpaceEntity);
   }
 
   public async createEntrepriseSpace(
@@ -35,7 +35,7 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     defaultFolderBackupBucket: CnBucket | null,
     entityManager: EntityManager
   ): Promise<CnSpace> {
-    const space = new CnSpace();
+    const space = new CnSpaceEntity();
 
     space.name = name;
     space.type = CnSpaceType.ENTREPRISE;
@@ -52,7 +52,7 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     defaultBackupFolderStorageBucket: CnBucket,
     entityManager: EntityManager
   ): Promise<CnSpace> {
-    const space = new CnSpace();
+    const space = new CnSpaceEntity();
     space.name = user.alias;
     space.type = CnSpaceType.PERSONAL;
     space.createdBy = user;
@@ -62,7 +62,7 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     return entityManager.save(space);
   }
 
-  public async update(entity: CnSpace, entityManager?: EntityManager): Promise<CnSpace> {
+  public async update(entity: CnSpaceEntity, entityManager?: EntityManager): Promise<CnSpaceEntity> {
     entity.lastModifiedBy = CnCurrentUserHelper.getAndCheckCurrentUser();
     return super.update(entity, entityManager);
   }
@@ -87,7 +87,7 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     space.photo = await this.objectStorageService.uploadObject(this.getBucketConfig(), file, {
       generateRandomObjectName: true,
     });
-    return this.update(space);
+    return this.update(space as CnSpaceEntity);
   }
 
   public async deletePhoto(space: CnSpace): Promise<CnSpace> {
@@ -137,6 +137,10 @@ export class CnSpaceService extends BlAbstractService<CnSpace> {
     }
 
     space.cloudStorageLimit = storageLimit;
-    return this.update(space);
+    return this.update(space as CnSpaceEntity);
+  }
+
+  public findByIdAndCheckWithBucket(id: string): Promise<CnSpaceEntity> {
+    return this.findByIdAndCheck(id, CnSpaceEntity.buckets);
   }
 }

@@ -13,7 +13,7 @@ import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo
 import { Exclude, Type } from 'class-transformer';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { DateTime } from 'luxon';
-import { CnSpace } from '../../cn-spaces/cn-space.entity';
+import { CnSpace, CnSpaceEntity } from '../../cn-spaces/cn-space.entity';
 import { CnFolderUserEntity } from '../cn-folder-user/cn-folder-user.entity';
 import { CnHierarchyObjectInfo } from './cn-hierarchy-object.dto';
 
@@ -68,7 +68,7 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
 
   @Exclude()
   @BlNotUpdatable()
-  @ManyToOne(() => CnSpace, { nullable: false })
+  @ManyToOne(() => CnSpaceEntity, { nullable: false })
   space: CnSpace;
 
   @Column({ nullable: false, update: false })

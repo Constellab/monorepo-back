@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CnSpaceUser, CnSpaceUserRole } from './cn-space-user.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { CnUser } from '../cn-users/cn-user.entity';
-import { CnSpace, CnSpaceType } from './cn-space.entity';
+import { CnSpace, CnSpaceEntity, CnSpaceType } from './cn-space.entity';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { ClHelpService, ClPage } from '@monorepo/core-lib';
 import {
@@ -81,9 +81,9 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
 
   public async checkPersonalSpaceUserLimit(spaceId: string): Promise<void> {
     const spaceUsers = await this.repository.find({ where: { spaceId: spaceId } });
-    if (spaceUsers.length >= CnSpace.PERSONAL_SPACE_USER_LIMIT) {
+    if (spaceUsers.length >= CnSpaceEntity.PERSONAL_SPACE_USER_LIMIT) {
       throw new BlBadRequestException(CnErrorText.PERSONAL_SPACE_USER_LIMIT, {
-        detailArgs: { limit: CnSpace.PERSONAL_SPACE_USER_LIMIT },
+        detailArgs: { limit: CnSpaceEntity.PERSONAL_SPACE_USER_LIMIT },
       });
     }
   }

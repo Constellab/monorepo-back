@@ -2,7 +2,7 @@ import { BeforeInsert, Column, Entity, ManyToOne } from 'typeorm';
 import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotification } from '@monorepo/back-core-lib';
 import { Exclude, Type } from 'class-transformer';
 import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
-import { CnSpace } from '../cn-spaces/cn-space.entity';
+import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
 import { ClDateHelper } from '@monorepo/core-lib';
 import { DateTime } from 'luxon';
 import { CnActivityEntityType } from '../cn-activity/cn-activity.entity';
@@ -34,8 +34,8 @@ export class CnNotification extends BlEntityWithId implements BlNotification {
   @Column()
   text2: string;
 
-  @Type(() => CnSpace)
-  @ManyToOne(() => CnSpace, { eager: true, nullable: true })
+  @Type(() => CnSpaceEntity)
+  @ManyToOne(() => CnSpaceEntity, { eager: true, nullable: true })
   space: CnSpace;
 
   @Column({ nullable: true, update: false })

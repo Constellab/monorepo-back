@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { CnSpacesController } from './cn-spaces.controller';
 import { CnSpaceService } from './cn-space.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CnSpace } from './cn-space.entity';
+import { CnSpaceEntity } from './cn-space.entity';
 import { CnUsersModule } from '../cn-users/cn-users.module';
 import { CnSpaceAggregateService } from './cn-space-aggregate.service';
 import { CnSpaceAggregateSecurity } from './cn-space-aggregate-security.service';
@@ -25,7 +25,7 @@ import { blTransportSpaceSpaceUserQueue } from '@monorepo/back-core-lib';
  */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([CnSpace, CnSpaceUser, CnSpaceInvit]),
+    TypeOrmModule.forFeature([CnSpaceEntity, CnSpaceUser, CnSpaceInvit]),
 
     CnUsersModule,
     CnCoreModule,

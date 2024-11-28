@@ -17,7 +17,7 @@ import { CnGroupType } from './cn-group-type.enum';
 import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
 import { Exclude, Type } from 'class-transformer';
 import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
-import { CnSpace } from '../cn-spaces/cn-space.entity';
+import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
 import { ClDateHelper } from '@monorepo/core-lib';
 import { DateTime } from 'luxon';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
@@ -66,7 +66,7 @@ export class CnGroupTeam extends CnGroup {
 
   @Exclude()
   @BlNotUpdatable()
-  @ManyToOne(() => CnSpace, { nullable: true })
+  @ManyToOne(() => CnSpaceEntity, { nullable: true })
   space?: CnSpace;
 
   @Column({ nullable: true, update: false })

@@ -1,7 +1,7 @@
 import { CnSpaceUserRole } from './cn-space-user.entity';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnSpaceInvit } from './cn-space-invit.entity';
-import { CnSpace } from './cn-space.entity';
+import { CnSpaceEntity } from './cn-space.entity';
 import { Type } from 'class-transformer';
 import { CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 
@@ -23,13 +23,13 @@ export interface CnSpaceInvitReadDto {
 }
 
 export class CnSpaceSettingsDto {
-  @Type(() => CnSpace)
-  space: CnSpace;
+  @Type(() => CnSpaceEntity)
+  space: CnSpaceEntity;
 
   defaultFolderStorageLocation: CnBucketLocationDTO;
   defaultFolderBackupStorageLocation?: CnBucketLocationDTO;
 
-  static fromSpace(space: CnSpace): CnSpaceSettingsDto {
+  static fromSpace(space: CnSpaceEntity): CnSpaceSettingsDto {
     const spaceSettings = new CnSpaceSettingsDto();
     spaceSettings.space = space;
     spaceSettings.defaultFolderStorageLocation = space.defaultFolderBucket.getBucketLocation();

@@ -3,7 +3,7 @@ import { CnServerCloud } from '../cn-servers-info/server-cloud/cn-server-cloud.e
 import { BlBaseEntityDto, BlVersion } from '@monorepo/back-core-lib';
 import { CnBrickVersionDTO } from '../cn-bricks/cn-brick.dto';
 import { CnLabConfigDto } from '../cn-lab-configs/cn-lab-config.dto';
-import { CnSpace } from '../cn-spaces/cn-space.entity';
+import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
 import { Type } from 'class-transformer';
 import { CnLabUserRole } from './user/cn-lab-user.entity';
 import { CnLab, CnLabBillingMode, CnLabDesktopPlatform, CnLabFull, CnLabType } from './cn-lab.entity';
@@ -130,7 +130,7 @@ export class CnLabUpdateAdminDTO {
   @Type(() => CnCloudProviderRegion)
   region: CnCloudProviderRegion;
 
-  @Type(() => CnSpace)
+  @Type(() => CnSpaceEntity)
   space: CnSpace;
 
   serverInstanceId: string;

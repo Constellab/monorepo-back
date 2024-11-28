@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 import { CnCloudProvider } from '../../cn-cloud-providers/cn-cloud-provider.entity';
-import { CnSpace } from '../../cn-spaces/cn-space.entity';
+import { CnSpace, CnSpaceEntity } from '../../cn-spaces/cn-space.entity';
 import { Exclude } from 'class-transformer';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
 import { BlTrim } from '@monorepo/back-core-lib';
@@ -31,7 +31,7 @@ export class CnBucketCredentials extends CnBaseEntity {
   secretAccessKey: string;
 
   // might be associated to a space
-  @ManyToOne(() => CnSpace, { nullable: true })
+  @ManyToOne(() => CnSpaceEntity, { nullable: true })
   space: CnSpace;
 
   @Column({ nullable: true })

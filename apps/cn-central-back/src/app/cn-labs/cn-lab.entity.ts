@@ -16,7 +16,7 @@ import { CnServerCloud } from '../cn-servers-info/server-cloud/cn-server-cloud.e
 import { CnLabServerTaskStatus, CnLabStatus, cnLabStoppedStatuses } from './status/cn-lab-status.enum';
 import { randomBytes } from 'crypto';
 import { CnExternalApiInfo } from '../cn-core/model/config/cn-config.class';
-import { CnSpace } from '../cn-spaces/cn-space.entity';
+import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
 import { CnLabUser } from './user/cn-lab-user.entity';
 import { BlLuxonDateTimeColumn, BlTrim } from '@monorepo/back-core-lib';
 import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
@@ -138,7 +138,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   @Column({ nullable: false, length: 255 })
   gwsCoreDevDbPassword: string;
 
-  @ManyToOne(() => CnSpace, { nullable: false })
+  @ManyToOne(() => CnSpaceEntity, { nullable: false })
   space: CnSpace;
 
   @Column({ nullable: false })

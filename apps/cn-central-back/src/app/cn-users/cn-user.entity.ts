@@ -18,7 +18,7 @@ import {
   BlUserStatus,
 } from '@monorepo/back-core-lib';
 import { CnSpaceUser } from '../cn-spaces/cn-space-user.entity';
-import { CnSpace } from '../cn-spaces/cn-space.entity';
+import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
 
 export enum CnUserLicense {
   FREE = 'FREE',
@@ -98,7 +98,7 @@ export class CnUserEntity extends BlEntityWithId implements BlUser {
 
   // last space the user was connected to
   @Exclude()
-  @ManyToOne(() => CnSpace, { onDelete: 'SET NULL', nullable: true })
+  @ManyToOne(() => CnSpaceEntity, { onDelete: 'SET NULL', nullable: true })
   lastConnectedSpace?: CnSpace;
 
   @Column({ nullable: true })

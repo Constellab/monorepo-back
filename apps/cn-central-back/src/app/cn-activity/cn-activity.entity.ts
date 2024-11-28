@@ -3,7 +3,7 @@ import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo
 import { Exclude, Expose, Type } from 'class-transformer';
 import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
 import { DateTime } from 'luxon';
-import { CnSpace } from '../cn-spaces/cn-space.entity';
+import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
 
 export enum CnActivityType {
   CREATE = 'CREATE',
@@ -52,8 +52,8 @@ export class CnActivity extends BlEntityWithId {
   @Column({ update: false, nullable: true })
   spaceId: string | null;
 
-  @Type(() => CnSpace)
-  @ManyToOne(() => CnSpace, { nullable: true })
+  @Type(() => CnSpaceEntity)
+  @ManyToOne(() => CnSpaceEntity, { nullable: true })
   @BlNotUpdatable()
   space: Relation<CnSpace> | null;
 

@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
 import { Type } from 'class-transformer';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
-import { CnSpace } from '../../cn-spaces/cn-space.entity';
+import { CnSpace, CnSpaceEntity } from '../../cn-spaces/cn-space.entity';
 
 export type CnLabFreeStatus = 'NOT_USED' | 'IN_PROGRESS' | 'EXPIRED' | 'EXPIRED_AND_DELETED';
 
@@ -30,7 +30,7 @@ export class CnLabFreeGetDto {
 export class CnLabFreeCreateDto {
   @Type(() => CnUserEntity)
   user: CnUser;
-  @Type(() => CnSpace)
+  @Type(() => CnSpaceEntity)
   space: CnSpace;
 }
 

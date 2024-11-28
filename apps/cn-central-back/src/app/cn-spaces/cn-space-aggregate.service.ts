@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CnSpaceService } from './cn-space.service';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnSpace, CnSpaceType } from './cn-space.entity';
+import { CnSpace, CnSpaceEntity, CnSpaceType } from './cn-space.entity';
 import { CnSpaceAggregateSecurity } from './cn-space-aggregate-security.service';
 import { ClPage } from '@monorepo/core-lib';
 import { CnUsersService } from '../cn-users/cn-users.service';
@@ -48,7 +48,7 @@ export class CnSpaceAggregateService {
 
   public async getCurrentInfo(): Promise<CnUserSpaceInfo> {
     const user = this.userService.getAndCheckCurrentUser();
-    let space: CnSpace = CnCurrentUserHelper.getCurrentSpace();
+    let space = CnCurrentUserHelper.getCurrentSpace();
     if (!space) {
       // use the default space for the user
       space = await this.getUserDefaultSpaceAndCheck(user);
@@ -68,7 +68,7 @@ export class CnSpaceAggregateService {
   }
 
   public async getSpaceSettings(spaceId: string): Promise<CnSpaceSettingsDto> {
-    const space = await this.spaceService.findByIdAndCheck(spaceId, CnSpace.buckets);
+    const space = await this.spaceService.findByIdAndCheckWithBucket(spaceId);
     return CnSpaceSettingsDto.fromSpace(space);
   }
 
@@ -112,7 +112,7 @@ export class CnSpaceAggregateService {
     const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
     await this.checkSpaceAdmin(space.id);
     space.name = name;
-    return await this.spaceService.update(space);
+    return await this.spaceService.update(space as CnSpaceEntity);
   }
 
   public async delete(id: string): Promise<void> {
@@ -193,7 +193,7 @@ export class CnSpaceAggregateService {
     const spaceId = CnCurrentUserHelper.getAndCheckCurrentSpace().id;
     await this.checkSpaceAdmin(spaceId);
 
-    const space = await this.spaceService.findByIdAndCheck(spaceId, CnSpace.buckets);
+    const space = await this.spaceService.findByIdAndCheckWithBucket(spaceId);
 
     return new CnSpaceStorage(
       space.cloudStorageLimit,
@@ -218,7 +218,7 @@ export class CnSpaceAggregateService {
   public async updateCurrentSpaceStorageLocation(
     locationDTO: CnSpaceUpdateStorageLocationDTO
   ): Promise<CnSpaceStorage> {
-    const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
+    const space: CnSpaceEntity = CnCurrentUserHelper.getAndCheckCurrentSpace() as CnSpaceEntity;
     await this.checkSpaceAdmin(space.id);
 
     const buckets = await this.checkSpaceStorage(

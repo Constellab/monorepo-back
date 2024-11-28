@@ -1,6 +1,6 @@
 import { CnBaseEntity } from '../cn-core/model/entities/cn-base.entity';
 import { BeforeInsert, Column, Entity, ManyToOne, Unique } from 'typeorm';
-import { CnSpace } from './cn-space.entity';
+import { CnSpace, CnSpaceEntity } from './cn-space.entity';
 import { CnSpaceUserRole } from './cn-space-user.entity';
 import { BlLuxonDateTimeColumn } from '@monorepo/back-core-lib';
 import { DateTime } from 'luxon';
@@ -13,7 +13,7 @@ export class CnSpaceInvit extends CnBaseEntity {
   @Column({ type: 'varchar', length: 36 })
   spaceId: string;
 
-  @ManyToOne(() => CnSpace, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => CnSpaceEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
   space: CnSpace;
 
   @Column({

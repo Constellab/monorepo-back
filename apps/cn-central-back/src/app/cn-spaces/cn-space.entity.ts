@@ -13,12 +13,12 @@ export enum CnSpaceType {
 }
 
 @Entity('space')
-export class CnSpace extends CnBaseEntity {
+export class CnSpaceEntity extends CnBaseEntity {
   private static readonly DEFAULT_STORAGE_LIMIT = 1024 * 1024 * 1024; // 1GB
   public static readonly PERSONAL_SPACE_USER_LIMIT = 3;
 
   // relation options to load required information for the bucket
-  public static buckets: FindOptionsRelations<CnSpace> = {
+  public static buckets: FindOptionsRelations<CnSpaceEntity> = {
     defaultFolderBucket: CnBucket.configRelation,
     defaultFolderBackupBucket: CnBucket.configRelation,
   };
@@ -64,7 +64,7 @@ export class CnSpace extends CnBaseEntity {
   setCreatedInfo(): void {
     this.createdAt = ClDateHelper.getDate();
     this.domain = ClStringHelper.generateUUID();
-    this.cloudStorageLimit = CnSpace.DEFAULT_STORAGE_LIMIT;
+    this.cloudStorageLimit = CnSpaceEntity.DEFAULT_STORAGE_LIMIT;
     this.cloudStorageUsage = 0;
   }
 
@@ -86,3 +86,5 @@ export class CnSpace extends CnBaseEntity {
     return this.type === CnSpaceType.PERSONAL;
   }
 }
+
+export type CnSpace = Omit<CnSpaceEntity, 'defaultFolderBucket' | 'defaultFolderBackupBucket'>;

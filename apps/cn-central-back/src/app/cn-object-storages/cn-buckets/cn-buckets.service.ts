@@ -170,9 +170,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
           technicalName: regionName,
         },
       },
-      relations: {
-        region: true,
-      },
+      relations: CnBucket.configRelation,
     });
     if (bucket == null) {
       throw new BlBadRequestException(`Bucket ${name} in region ${regionName} not found`);
