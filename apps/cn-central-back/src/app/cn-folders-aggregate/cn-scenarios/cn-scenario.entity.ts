@@ -2,7 +2,7 @@ import { Column, Entity, ManyToMany, ManyToOne } from 'typeorm';
 import { Exclude, Type } from 'class-transformer';
 import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
 import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
-import { CnNote } from '../cn-notes/cn-note.entity';
+import { CnNote, CnNoteEntity } from '../cn-notes/cn-note.entity';
 import { CnScenarioStatus } from './cn-scenario-status.enum';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
@@ -23,7 +23,7 @@ export interface CnScenarioProtocol {
  * It is defined as a succession of jobs
  */
 @Entity('scenario')
-export class CnScenario extends CnHierarchyRepresentation {
+export class CnScenarioEntity extends CnHierarchyRepresentation {
   @Column({ nullable: false, length: 50 })
   title: string;
 
@@ -43,7 +43,7 @@ export class CnScenario extends CnHierarchyRepresentation {
   @ManyToOne(() => CnLabConfig, { nullable: false })
   labConfig: CnLabConfig;
 
-  @ManyToMany(() => CnNote, (note) => note.scenarios)
+  @ManyToMany(() => CnNoteEntity, (note) => note.scenarios)
   notes: CnNote[];
 
   @Exclude()
@@ -77,3 +77,8 @@ export class CnScenario extends CnHierarchyRepresentation {
     };
   }
 }
+
+export type CnScenarioWithHierarchy = Omit<CnScenarioEntity, 'notes' | 'lab' | 'labConfig'>;
+export type CnScenario = Omit<CnScenarioWithHierarchy, 'hierarchyRepresentation'>;
+
+export type CnScenarioWithNotes = Omit<CnScenarioEntity, 'hierarchyRepresentation' | 'lab' | 'labConfig'>;

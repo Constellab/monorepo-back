@@ -6,7 +6,7 @@ import {
   CnHierarchyObjectEntity,
   CnHierarchyObjectWithChildren,
 } from './cn-hierarchy-object.entity';
-import { IsNull, TreeRepository } from 'typeorm';
+import { EntityManager, IsNull, TreeRepository } from 'typeorm';
 import { ClPage } from '@monorepo/core-lib';
 import { CnHierarchyObjectSearch } from './cn-hierarchy-object.search';
 
@@ -176,5 +176,21 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
 
     folder.children = children as CnHierarchyObjectEntity[];
     return folder;
+  }
+
+  public updateParent(
+    hierarchyObjectId: string,
+    newParent: CnHierarchyObject,
+    entityManager?: EntityManager
+  ): Promise<CnHierarchyObject> {
+    return this.updatePartial(
+      hierarchyObjectId,
+      {
+        parentId: newParent.id,
+        parent: newParent as CnHierarchyObjectEntity,
+        rootParentId: newParent.getRootFolderId(),
+      },
+      entityManager
+    );
   }
 }

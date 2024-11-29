@@ -56,7 +56,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     private datasource: DataSource,
     private eventEmitter: EventEmitter2,
     private configService: CnCoreConfigService,
-    private folderHierarchyService: CnHierarchyObjectService
+    private hierarchyObjectService: CnHierarchyObjectService
   ) {
     super(repository, CnDocumentEntity);
   }
@@ -102,6 +102,9 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       );
     }
 
+    // TODO : this might not be a good idea to upload the document inside the transaction
+    // because the transaction might be too long and the upload might fail,
+    // same problem for moving the document
     const document = await this.datasource.transaction(async (entityManager) => {
       const document = new CnDocumentEntity();
       document.name = documentName;
@@ -646,10 +649,11 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
   ): Promise<CnDocumentWithHierarchy> {
     return await this.datasource.transaction(async (entityManager) => {
       entityManager = this.getEntityManager(entityManager);
-      document.hierarchyRepresentation.parentId = newParentFolder.id;
-      document.hierarchyRepresentation.parent = newParentFolder as CnHierarchyObjectEntity;
-      document.hierarchyRepresentation.rootParentId = newParentFolder.getRootFolderId();
-      await this.folderHierarchyService.update(document.hierarchyRepresentation, entityManager);
+      await this.hierarchyObjectService.updateParent(
+        document.hierarchyRepresentation.id,
+        newParentFolder,
+        entityManager
+      );
 
       const tags = this.getTags(document.name, newParentFolder.id);
       // move the object in the storage is needed

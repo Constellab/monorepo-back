@@ -59,7 +59,7 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
   // In this case images of document has the document as parent
   @BlNotUpdatable()
   @ManyToOne(() => CnDocumentEntity, { nullable: true })
-  parentDocument?: CnDocumentEntity;
+  parentDocument?: CnDocument;
 
   @Column({ nullable: false, default: false })
   inTrash: boolean;

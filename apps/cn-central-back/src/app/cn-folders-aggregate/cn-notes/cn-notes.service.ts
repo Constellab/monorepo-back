@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CnNote } from './cn-note.entity';
+import { CnNote, CnNoteEntity, CnNoteWithDocument, CnNoteWithScenarios } from './cn-note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { CnScenario } from '../cn-scenarios/cn-scenario.entity';
@@ -15,17 +15,23 @@ import {
 } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
 import { TeRichText, TeRichTextAggregate, TeRichTextModifications } from '@monorepo/te-text-editor';
+import { CnHierarchyObjectService } from '../cn_hierarchy_objects/cn-hierarchy-object.service';
 
 @Injectable()
-export class CnNotesService extends BlAbstractService<CnNote> {
+export class CnNotesService extends BlAbstractService<CnNoteEntity> {
   protected readonly logger = new Logger(CnNotesService.name);
 
   constructor(
-    @InjectRepository(CnNote) private repository: Repository<CnNote>,
+    @InjectRepository(CnNoteEntity) private repository: Repository<CnNoteEntity>,
     private labConfigService: CnLabConfigsService,
-    private documentService: CnDocumentService
+    private documentService: CnDocumentService,
+    private hierarchiObjectService: CnHierarchyObjectService
   ) {
-    super(repository, CnNote);
+    super(repository, CnNoteEntity);
+  }
+
+  private findByIdAndCheckWithDocument(id: string): Promise<CnNoteWithDocument> {
+    return this.findByIdAndCheck(id, { document: true, hierarchyRepresentation: true });
   }
 
   getNotesByLab(labId: string): Promise<CnNote[]> {
@@ -111,7 +117,7 @@ export class CnNotesService extends BlAbstractService<CnNote> {
     parentFolder: CnHierarchyObject,
     files: BlFile[]
   ): Promise<CnSaveNoteResultDTO> {
-    let noteDb: CnNote = await this.findById(createNoteDto.note.id, {
+    let noteDb: CnNoteEntity = await this.findById(createNoteDto.note.id, {
       document: true,
       hierarchyRepresentation: true,
     });
@@ -124,7 +130,7 @@ export class CnNotesService extends BlAbstractService<CnNote> {
 
     // copy fields of the note DTO to note
     const noteDto: CnSaveNoteDto = createNoteDto.note;
-    const note = new CnNote();
+    const note = new CnNoteEntity();
 
     note.id = noteDto.id;
     note.createdAt = noteDto.created_at;
@@ -186,11 +192,11 @@ export class CnNotesService extends BlAbstractService<CnNote> {
    * Method to store the note content in the object storage. Then manage the images and the views
    */
   private async saveNoteContent(
-    note: CnNote,
+    note: CnNoteEntity,
     parentFolder: CnHierarchyObject,
     createNoteDto: CnCreateNoteWithConfigDto,
     files: BlFile[]
-  ): Promise<CnNote> {
+  ): Promise<CnNoteEntity> {
     const richText = new TeRichText(createNoteDto.note.content);
     const modifications = TeRichTextModifications.fromJsonObject(createNoteDto.note.modifications);
     const richTextAggregate = new TeRichTextAggregate(richText, modifications);
@@ -304,8 +310,34 @@ export class CnNotesService extends BlAbstractService<CnNote> {
     }
   }
 
+  public async updateNoteFolder(noteId: string, newParent: CnHierarchyObject): Promise<CnNote> {
+    const note: CnNoteWithDocument = await this.findByIdAndCheckWithDocument(noteId);
+
+    if (note.hierarchyRepresentation.parentId === newParent.id) {
+      return note;
+    }
+
+    if (note.hierarchyRepresentation.getRootFolderId() !== newParent.getRootFolderId()) {
+      throw new BlBadRequestException(
+        'Cannot move a note to a root folder, please un-synchronise it first,' +
+          ' then associated it in the desired folder'
+      );
+    }
+
+    const document = await this.documentService.findWithHierarchyByIdAndCheck(note.document.id);
+
+    // move the document
+    // no transaction because move document can be long
+    await this.documentService.moveDocument(document, note.hierarchyRepresentation, newParent);
+
+    // update the note parent folder
+    await this.hierarchiObjectService.updateParent(note.hierarchyRepresentation.id, newParent);
+
+    return this.findByIdAndCheck(noteId);
+  }
+
   public async deleteNote(id: string, entityManager: EntityManager): Promise<CnNote> {
-    const note = await this.findById(id, { document: true });
+    const note = await this.findByIdAndCheckWithDocument(id);
 
     // no error if note not found for more resilience
     if (!note) {
@@ -325,7 +357,7 @@ export class CnNotesService extends BlAbstractService<CnNote> {
     return note;
   }
 
-  findByIdAndCheckWithScenarios(id: string): Promise<CnNote> {
+  findByIdAndCheckWithScenarios(id: string): Promise<CnNoteWithScenarios> {
     return this.findByIdAndCheck(id, { scenarios: true });
   }
 

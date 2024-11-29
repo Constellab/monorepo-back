@@ -1,27 +1,22 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
-import { CnScenario } from '../cn-scenarios/cn-scenario.entity';
-import { Exclude, Type } from 'class-transformer';
+import { CnScenario, CnScenarioEntity } from '../cn-scenarios/cn-scenario.entity';
+import { Type } from 'class-transformer';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { DateTime } from 'luxon';
 import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
-import { CnDocumentEntity } from '../cn-documents/cn-document.entity';
+import { CnDocument, CnDocumentEntity } from '../cn-documents/cn-document.entity';
 import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-representation';
 import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
 import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
-import { TeRichTextInput } from '@monorepo/te-text-editor';
 
 @Entity('note')
-export class CnNote extends CnHierarchyRepresentation {
+export class CnNoteEntity extends CnHierarchyRepresentation {
   @Column()
   title: string;
 
-  @Exclude()
-  @Column({ type: 'simple-json', nullable: true })
-  content: TeRichTextInput;
-
-  @ManyToMany(() => CnScenario, (scenario) => scenario.notes)
+  @ManyToMany(() => CnScenarioEntity, (scenario) => scenario.notes)
   @JoinTable({ name: 'note_scenario' })
   scenarios: CnScenario[];
 
@@ -53,7 +48,7 @@ export class CnNote extends CnHierarchyRepresentation {
 
   @Type(() => CnDocumentEntity)
   @ManyToOne(() => CnDocumentEntity, { nullable: true })
-  document?: CnDocumentEntity;
+  document?: CnDocument;
 
   getHierarchyObjectInfo(): CnHierarchyObjectInfo {
     return {
@@ -65,3 +60,9 @@ export class CnNote extends CnHierarchyRepresentation {
     };
   }
 }
+
+export type CnNoteWithDocument = Omit<CnNoteEntity, 'scenarios'>;
+
+export type CnNote = Omit<CnNoteWithDocument, 'hierarchyRepresentation' | 'document'>;
+
+export type CnNoteWithScenarios = Omit<CnNoteEntity, 'hierarchyRepresentation' | 'document'>;

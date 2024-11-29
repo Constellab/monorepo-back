@@ -37,6 +37,8 @@ import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
 import { CnLabSendMailDto } from '../cn-labs/mail/cn-lab-mail.dto';
 import { CnRichTextCompareRequestDTO, CnRichTextUndoRequestDTO } from './cn-external-labs.dto';
 import { TeRichTextBlockModificationsDTO, TeRichTextDTO, TeRichTextHelper } from '@monorepo/te-text-editor';
+import { CnNote } from '../cn-folders-aggregate/cn-notes/cn-note.entity';
+import { CnScenario } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.entity';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -121,6 +123,15 @@ export class CnExternalLabsController {
     return this.folderAggregateService.deleteLabScenario(parentFolderId, scenarioId);
   }
 
+  @Put('folder/:parentFolderId/scenario/:scenarioId/folder/:newParentFolderId')
+  moveScenario(
+    @Param('parentFolderId', new ParseUUIDPipe()) _: string,
+    @Param('scenarioId', new ParseUUIDPipe()) scenarioId: string,
+    @Param('newParentFolderId', new ParseUUIDPipe()) newParentFolderId: string
+  ): Promise<CnScenario> {
+    return this.folderAggregateService.updateScenarioFolder(scenarioId, newParentFolderId);
+  }
+
   @UseInterceptors(FilesInterceptor('files'))
   @Put(['project/:parentFolderId/report/v2'])
   saveNote(
@@ -171,11 +182,19 @@ export class CnExternalLabsController {
     return this.labMailService.sendMailFromLab(CnCurrentUserHelper.getAndCheckCurrentLab(), body);
   }
 
+  @Put(['folder/:parentFolderId/note/:noteId/folder/:newParentFolderId'])
+  moveNote(
+    @Param('parentFolderId', new ParseUUIDPipe()) _: string,
+    @Param('noteId', new ParseUUIDPipe()) noteId: string,
+    @Param('newParentFolderId', new ParseUUIDPipe()) newParentFolderId: string
+  ): Promise<CnNote> {
+    return this.folderAggregateService.updateNoteFolder(noteId, newParentFolderId);
+  }
+
   /////////////////////////////// SYNCHRONIZATION ///////////////////////////////
   // those routes does not require user authentication
   // because they are called by the lab server and are just get
-  // TODO remove project routes once all lab are on v0.10.0
-  @CnLabRobotAuthentication()
+  // TODO remove project routes once all lab are on v0.10.0d
   @Get(['project/all-trees', 'folder/all-trees'])
   async getAllFolderTrees(): Promise<CnLabFolderDTO[]> {
     const folders = await this.labFolderAggregateService.getCurrentLabFolders();

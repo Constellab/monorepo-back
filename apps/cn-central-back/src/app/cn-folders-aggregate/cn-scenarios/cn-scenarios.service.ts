@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CnScenario, CnScenarioProtocol } from './cn-scenario.entity';
+import {
+  CnScenario,
+  CnScenarioEntity,
+  CnScenarioProtocol,
+  CnScenarioWithHierarchy,
+  CnScenarioWithNotes,
+} from './cn-scenario.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { CnCreateLabScenarioDto, CnSaveScenarioResultDTO } from './cn-scenario.dto';
@@ -13,14 +19,16 @@ import {
   CnHierarchyObjectEntity,
 } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
+import { CnHierarchyObjectService } from '../cn_hierarchy_objects/cn-hierarchy-object.service';
 
 @Injectable()
-export class CnScenariosService extends BlAbstractService<CnScenario> {
+export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
   constructor(
-    @InjectRepository(CnScenario) private repository: Repository<CnScenario>,
-    private labConfigService: CnLabConfigsService
+    @InjectRepository(CnScenarioEntity) private repository: Repository<CnScenarioEntity>,
+    private labConfigService: CnLabConfigsService,
+    private hierarchyObjectService: CnHierarchyObjectService
   ) {
-    super(repository, CnScenario);
+    super(repository, CnScenarioEntity);
   }
 
   getScenariosByParentFolder(parentFolderId: string): Promise<CnScenario[]> {
@@ -70,9 +78,7 @@ export class CnScenariosService extends BlAbstractService<CnScenario> {
     parentFolder: CnHierarchyObject,
     createLabScenarioDto: CnCreateLabScenarioDto
   ): Promise<CnSaveScenarioResultDTO> {
-    const scenarioDB: CnScenario = await this.findById(createLabScenarioDto.scenario.id, {
-      hierarchyRepresentation: true,
-    });
+    const scenarioDB = await this.findScenarioWithHierarchyById(createLabScenarioDto.scenario.id);
     if (scenarioDB && scenarioDB.hierarchyRepresentation.parentId !== parentFolder.id) {
       throw new BlUnauthorizedException("Can't change the folder of a synced scenario");
     }
@@ -80,7 +86,7 @@ export class CnScenariosService extends BlAbstractService<CnScenario> {
     const labConfig = await this.labConfigService.getOrCreateLabConfig(createLabScenarioDto.lab_config);
 
     const labScenarioDto = createLabScenarioDto.scenario;
-    const scenario = new CnScenario();
+    const scenario = new CnScenarioEntity();
 
     scenario.id = labScenarioDto.id;
     scenario.title = labScenarioDto.title;
@@ -115,13 +121,31 @@ export class CnScenariosService extends BlAbstractService<CnScenario> {
     }
 
     if (scenarioDB) {
-      const exp = await this.updateWithCompare(scenario, scenarioDB);
+      const exp = await this.updateWithCompare(scenario, scenarioDB as CnScenarioEntity);
       return { scenario: exp, mode: 'update' };
     } else {
       scenario.lab = CnCurrentUserHelper.getAndCheckCurrentLab() as CnLabEntity;
       const exp = await this.create(scenario);
       return { scenario: exp, mode: 'create' };
     }
+  }
+
+  public async updateScenarioFolder(
+    scenarioId: string,
+    newParentFolder: CnHierarchyObject
+  ): Promise<CnScenario> {
+    const scenario = await this.findScenarioWithHierarchyById(scenarioId);
+    if (!scenario) {
+      throw new BlBadRequestException('Scenario not found');
+    }
+
+    if (scenario.hierarchyRepresentation.parentId === newParentFolder.id) {
+      return scenario;
+    }
+
+    await this.hierarchyObjectService.updateParent(scenario.hierarchyRepresentation.id, newParentFolder);
+
+    return this.findByIdAndCheck(scenario.id);
   }
 
   public async deleteScenario(id: string, entityManager: EntityManager): Promise<CnScenario> {
@@ -139,7 +163,7 @@ export class CnScenariosService extends BlAbstractService<CnScenario> {
     return scenario;
   }
 
-  findByIdAndCheckWithNotes(id: string): Promise<CnScenario> {
+  findByIdAndCheckWithNotes(id: string): Promise<CnScenarioWithNotes> {
     return this.findByIdAndCheck(id, { notes: true });
   }
 
@@ -167,6 +191,10 @@ export class CnScenariosService extends BlAbstractService<CnScenario> {
         relations: { labConfig: { brickVersions: { brick: true } } },
       })
     ).labConfig;
+  }
+
+  public async findScenarioWithHierarchyById(id: string): Promise<CnScenarioWithHierarchy | null> {
+    return this.findById(id, { hierarchyRepresentation: true });
   }
 
   public migrateProtocol(protocol: CnScenarioProtocol): CnScenarioProtocol {

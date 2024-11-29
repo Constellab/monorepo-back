@@ -468,6 +468,13 @@ export class CnFolderAggregateService {
     return this.scenarioService.getScenariosByRootFolderAndLab(rootFolderId, labId);
   }
 
+  public async updateScenarioFolder(scenarioId: string, newParentFolderId: string): Promise<CnScenario> {
+    await this.getAndCheckAuthorizationForFindOneByFolder(scenarioId);
+    const newParentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(newParentFolderId);
+
+    return this.scenarioService.updateScenarioFolder(scenarioId, newParentFolder);
+  }
+
   /////////////////////////////////////// NOTE //////////////////////////////////
 
   public async findNote(id: string): Promise<CnNote> {
@@ -491,9 +498,7 @@ export class CnFolderAggregateService {
     // get and check all scenario
     const scenarios: CnScenario[] = [];
     for (const scenarioId of createNoteDto.scenario_ids) {
-      const scenario: CnScenario = await this.scenarioService.findById(scenarioId, {
-        hierarchyRepresentation: true,
-      });
+      const scenario = await this.scenarioService.findScenarioWithHierarchyById(scenarioId);
 
       if (scenario == null) {
         throw new BlBadRequestException(
@@ -501,9 +506,9 @@ export class CnFolderAggregateService {
         );
       }
 
-      if (scenario.hierarchyRepresentation.parentId !== parentFolder.id) {
+      if (scenario.hierarchyRepresentation.getRootFolderId() !== parentFolder.getRootFolderId()) {
         throw new BlBadRequestException(
-          "Can't create the note because it is linked to an scenario of another folder"
+          "Can't create the note because it is linked to an scenario of another root folder"
         );
       }
       scenarios.push(scenario);
@@ -563,6 +568,13 @@ export class CnFolderAggregateService {
 
   public getNotesByRootFolderAndLab(rootFolderId: string, labId: string): Promise<CnNote[]> {
     return this.noteService.getNotesByRootFolderAndLab(rootFolderId, labId);
+  }
+
+  public async updateNoteFolder(noteId: string, newParentFolderId: string): Promise<CnNote> {
+    await this.getAndCheckAuthorizationForFindOneByFolder(noteId);
+    const newParentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(newParentFolderId);
+
+    return this.noteService.updateNoteFolder(noteId, newParentFolder);
   }
 
   /////////////////////////////////////// GROUPS //////////////////////////////////
