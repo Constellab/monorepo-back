@@ -57,7 +57,7 @@ export class HnAgentVersionFileInputBrick {
 
 export class HnAgentVersionFileInput {
   json_version: number;
-  params: string | string[];
+  params: string | string[] | Record<string, any>;
   code: string;
   environment: string;
   input_specs: Record<string, any>;
@@ -108,7 +108,7 @@ export class HnAgentVersionForLabDto {
   version: number;
   type: string;
   environment: string;
-  params: string | string[];
+  params: string | string[] | Record<string, any>;
   code: string;
   input_specs: Record<string, any>;
   output_specs: Record<string, any>;
@@ -198,7 +198,7 @@ export class HnAgentVersionForLabDtoOldFormat {
   version: number;
   type: string;
   environment: string;
-  params: string | string[];
+  params: string | string[] | Record<string, any>;
   code: string;
   input_specs: Record<string, any>;
   output_specs: Record<string, any>;

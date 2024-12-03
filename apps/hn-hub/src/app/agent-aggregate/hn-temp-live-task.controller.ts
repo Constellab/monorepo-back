@@ -6,7 +6,6 @@ import {
   HaCreateAgentVersionFromLabResponseDtoOldFormat,
   HnAgentForLabDto,
   HnAgentVersionFileInput,
-  HnAgentVersionForLabDto,
   HnAgentVersionForLabDtoOldFormat,
   HnCreateAgentDto,
 } from './agent/hn-agent.dto';

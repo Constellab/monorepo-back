@@ -409,7 +409,7 @@ export class HnAgentAggregateService {
     return new HnAgentVersionDto(await this.agentVersionService.findLatestPublishedByAgent(agent));
   }
 
-  public async updateAgentVersionParams(id: string, params: string): Promise<HnAgentVersion> {
+  public async updateAgentVersionParams(id: string, params: Record<string, any>): Promise<HnAgentVersion> {
     await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(
       (await this.agentVersionService.findOne(id)).agent.id
     );
@@ -683,5 +683,20 @@ export class HnAgentAggregateService {
   public async saveView(file: BlFile, agentId: string): Promise<string> {
     const agent = await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(agentId);
     return await this.fileAgentService.saveResourceView(agent, file);
+  }
+
+  /////////////////////////////////////// MIGRATIONS ////////////////////////////////
+  public async migrateParams(): Promise<void> {
+    const agentVersions = await this.agentVersionService.findAll();
+    for (const agentVersion of agentVersions) {
+      agentVersion.params = agentVersion.oldParams as any;
+      const agentVersionDto = new HnAgentVersionDto(agentVersion);
+      const migrator = new HnAgentVersionMigrator();
+      const newAgentVersion = migrator.migrateAgentVersionToSpecificVersion(agentVersionDto, 3);
+      await this.agentVersionService.updateParams(
+        agentVersion.id,
+        newAgentVersion.params as Record<string, any>
+      );
+    }
   }
 }
