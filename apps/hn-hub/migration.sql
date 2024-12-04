@@ -15,6 +15,13 @@
 -- RENAME TABLE old_table_name TO new_table_name;
 --
 
+
+# 1.4.3
+alter table `agent_version`
+  add column old_params text null;
+# Then call agent params migrations POST /agent/migrate-params
+
+
 # 1.4.2
 #  Call rich text migrations POST /story/migrate-rich-text
 #  Call rich text migrations POST /documentation/migrate-rich-text

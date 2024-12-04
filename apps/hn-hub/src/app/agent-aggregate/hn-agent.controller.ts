@@ -22,12 +22,7 @@ import {
   HnAgentVersionForLabDto,
   HnCreateAgentDto,
 } from './agent/hn-agent.dto';
-import {
-  BlFile,
-  BlParsePipe,
-  BlPublic,
-  BlUploadedFile,
-} from '@monorepo/back-core-lib';
+import { BlFile, BlParsePipe, BlPublic, BlUploadedFile } from '@monorepo/back-core-lib';
 import { HnAgent } from './agent/hn-agent.entity';
 import { ClPage } from '@monorepo/core-lib';
 import { HnAgentCoAuthorInvite } from './agent-co-author-invite/hn-agent-co-author-invite.entity';
@@ -46,6 +41,7 @@ import {
   TeRichText,
   TeRichTextPipe,
 } from '@monorepo/te-text-editor';
+import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 
 @Controller('agent')
 export class HnAgentController extends HnAbstractFileController<HnAgent> {
@@ -57,6 +53,12 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   }
 
   //////////////////////////////////////////// Agent ////////////////////////////////////////////
+
+  @IsAdmin()
+  @Post('migrate-params')
+  async migrateParams(): Promise<void> {
+    return this.agentAggregateService.migrateParams();
+  }
 
   @BlPublic()
   @Get('all-map')
