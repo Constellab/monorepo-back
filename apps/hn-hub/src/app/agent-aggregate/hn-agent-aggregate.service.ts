@@ -689,6 +689,15 @@ export class HnAgentAggregateService {
   public async migrateParams(): Promise<void> {
     const agentVersions = await this.agentVersionService.findAll();
     for (const agentVersion of agentVersions) {
+      if (agentVersion.params != null) {
+        if (agentVersion.oldParams == null && agentVersion.params.specs == null) {
+          await this.agentVersionService.updateParams(agentVersion.id, null);
+        }
+        continue;
+      }
+      if (agentVersion.oldParams == null) {
+        continue;
+      }
       agentVersion.params = agentVersion.oldParams as any;
       const agentVersionDto = new HnAgentVersionDto(agentVersion);
       const migrator = new HnAgentVersionMigrator();

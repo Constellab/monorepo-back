@@ -55,7 +55,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   //////////////////////////////////////////// Agent ////////////////////////////////////////////
 
   @IsAdmin()
-  @Post('migrate-params')
+  @Get('migrate-params')
   async migrateParams(): Promise<void> {
     return this.agentAggregateService.migrateParams();
   }

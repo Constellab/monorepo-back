@@ -19,6 +19,13 @@
 # 1.4.3
 alter table `agent_version`
   add column old_params text null;
+update `agent_version`
+set old_params = params;
+update `agent_version`
+set old_params = NULL
+where old_params = '';
+update `agent_version`
+set params = NULL;
 # Then call agent params migrations POST /agent/migrate-params
 
 

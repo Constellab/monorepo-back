@@ -87,7 +87,7 @@ export class HnAgentVersionMigrator {
           values: {},
         };
         for (const param of agentVersionDto.params as string[]) {
-          const [key, value] = param.split('=');
+          const [key, value] = param.trim().split('=');
           const v = this.parseValue(value);
           params['specs'][key] = this.getBasicParamSpecs(v);
           params['values'][key] = v;
