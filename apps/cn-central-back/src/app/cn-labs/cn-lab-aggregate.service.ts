@@ -974,6 +974,9 @@ export class CnLabAggregateService {
     await this.updateLabConfig(lab, labConfig);
   }
 
+  /**
+   * return the list of lab users
+   */
   public async getCurrentLabSharedUsers(): Promise<CnExternalLabUser[]> {
     const labUsers = await this.labUserService.findByLabId(CnCurrentUserHelper.getAndCheckCurrentLab().id);
     return labUsers.map((labUsers) => {
@@ -990,6 +993,31 @@ export class CnLabAggregateService {
         photo: labUsers.user.photo,
       };
     });
+  }
+
+  /**
+   * Get any user info from the lab. This might return a user that is not in the lab user list.
+   * Useful for data hub where user may trigger an action without being in the lab user list)
+   * @param userId
+   */
+  public async getUserInfoFromLab(userId: string): Promise<CnExternalLabUser> {
+    const user = await this.usersService.findByIdAndCheck(userId);
+
+    const labUser = await this.labUserService.findByLabIdAndUserId(
+      CnCurrentUserHelper.getAndCheckCurrentLab().id,
+      userId
+    );
+    return {
+      id: user.id,
+      first_name: user.firstname,
+      last_name: user.lastname,
+      email: user.email,
+      group: 'USER',
+      is_active: labUser != null,
+      theme: user.theme,
+      lang: user.lang,
+      photo: user.photo,
+    };
   }
 
   public async checkUserCredentials(

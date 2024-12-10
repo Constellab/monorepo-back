@@ -214,6 +214,12 @@ export class CnExternalLabsController {
     return this.labAggregator.getCurrentLabSharedUsers();
   }
 
+  @CnLabRobotAuthentication()
+  @Get('user/:id')
+  getUser(@Param('id', new ParseUUIDPipe()) userId: string): Promise<CnExternalLabUser> {
+    return this.labAggregator.getUserInfoFromLab(userId);
+  }
+
   // Public route that return the new list of modifications after a rich text content modification
   @BlPublic()
   @Post('rich-text/compare')
