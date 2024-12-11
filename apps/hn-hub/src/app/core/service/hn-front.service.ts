@@ -83,6 +83,15 @@ export class HnFrontService {
     return `${this.getAgentsUrl()}/${agentId}/${agentTitlePath}`;
   }
 
+  public getAgentVersionUrl(agentId: string, agentTitlePath: string, version: number): string {
+    return `${this.getAgentsUrl()}/${agentId}/${agentTitlePath}/version/${version}`;
+  }
+
+  ///////////////////////////// USERS ///////////////////////////////////////////
+  public getUserProfileUrl(userId: string): string {
+    return `${this.getBaseWebsiteURL()}/profile/${userId}`;
+  }
+
   //////////////////////////////// CONSTELLAB URLS ///////////////////////////////////////
   public getConstellabBaseWebsiteUrl(): string {
     return this.configService.getConstellabFrontBaseUrl();

@@ -4,6 +4,7 @@ import { HnUser } from './hn-user.entity';
 import { BlParseEnumPipe, BlPublic } from '@monorepo/back-core-lib';
 import { ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import { HnUserDetailDto, HnUserEditDetailDto } from './hn-user.dto';
+import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 
 @Controller('user')
 export class HnUserController {
@@ -18,6 +19,12 @@ export class HnUserController {
   @Get('count')
   async getCount(): Promise<number> {
     return await this.userService.getCount();
+  }
+
+  @BlPublic()
+  @Get('all-map')
+  async getAllAgentsMap(): Promise<HnSitemapItemBase[]> {
+    return this.userService.getAllUsersMap();
   }
 
   @BlPublic()

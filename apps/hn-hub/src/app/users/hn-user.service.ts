@@ -13,12 +13,15 @@ import { HnExternalCheckCredentialResponse } from '../auth/hn-central-auth.servi
 import { ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import { HnUserDetailDto, HnUserEditDetailDto } from './hn-user.dto';
 import { TeUser } from '@monorepo/te-text-editor';
+import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
+import { HnFrontService } from '../core/service/hn-front.service';
 
 @Injectable()
 export class HnUserService implements BlUserService {
   constructor(
     @InjectRepository(HnUser)
-    private userRepository: Repository<HnUser>
+    private userRepository: Repository<HnUser>,
+    private frontService: HnFrontService
   ) {}
 
   async createOrUpdate(user: HnUserConstellabDTO): Promise<void> {
@@ -129,5 +132,14 @@ export class HnUserService implements BlUserService {
     user.interests = data.interests;
     await this.userRepository.save(user);
     return new HnUserDetailDto(user);
+  }
+
+  async getAllUsersMap(): Promise<HnSitemapItemBase[]> {
+    const users = await this.userRepository.find();
+    return users.map((user) => ({
+      url: this.frontService.getUserProfileUrl(user.id),
+      priority: 0.8,
+      changefreq: HnSiteMapEnumChangefreq.MONTHLY,
+    }));
   }
 }

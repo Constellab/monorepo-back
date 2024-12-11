@@ -261,12 +261,32 @@ export class HnAgentAggregateService {
 
   public async getAllAgentsMap(): Promise<HnSitemapItemBase[]> {
     const agents = await this.agentService.findAllWithFilters([], '', true, false, false);
-    return agents.map((agent: HnAgent) => ({
-      url: this.frontService.getAgentUrl(agent.id, ClStringHelper.getCleanUrlPath(agent.title)),
-      priority: 0.8,
-      changefreq: HnSiteMapEnumChangefreq.MONTHLY,
-      lastmod: agent.lastModifiedAt.toFormat('yyyy-MM-dd'),
-    }));
+    const agentVersions: HnAgentVersion[] = [];
+    const agentsMap: HnSitemapItemBase[] = [];
+    for (const agent of agents) {
+      agentsMap.push({
+        url: this.frontService.getAgentUrl(agent.id, ClStringHelper.getCleanUrlPath(agent.title)),
+        priority: 0.8,
+        changefreq: HnSiteMapEnumChangefreq.MONTHLY,
+        lastmod: agent.lastModifiedAt.toFormat('yyyy-MM-dd'),
+      });
+
+      agentVersions.push(...(await this.agentVersionService.findPublishedByAgentId(agent.id)));
+    }
+
+    for (const agentVersion of agentVersions) {
+      agentsMap.push({
+        url: this.frontService.getAgentVersionUrl(
+          agentVersion.agent.id,
+          ClStringHelper.getCleanUrlPath(agentVersion.agent.title),
+          agentVersion.version
+        ),
+        priority: 0.8,
+        changefreq: HnSiteMapEnumChangefreq.MONTHLY,
+      });
+    }
+
+    return agentsMap;
   }
 
   public async findAll(page: number, size: number): Promise<ClPage<HnAgentDto>> {
