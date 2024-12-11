@@ -2,12 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   BlAbstractService,
   BlBadRequestException,
-  BlBucketConfig,
   BlBucketType,
   BlFile,
   BlFileHelper,
   BlFileResponse,
   BlImageHelper,
+  BlMultipleBucketConfig,
   BlObjectStorageService,
 } from '@monorepo/back-core-lib';
 import {
@@ -18,7 +18,7 @@ import {
   TeRichTextAggregate,
 } from '@monorepo/te-text-editor';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, In, IsNull, Repository } from 'typeorm';
+import { EntityManager, In, IsNull, Repository } from 'typeorm';
 import { ClDateHelper, ClPage, ClStringHelper } from '@monorepo/core-lib';
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 import { CnFolderBucketService } from '../cn-folders/cn-folder-bucket.service';
@@ -50,7 +50,6 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     @InjectRepository(CnDocumentEntity) private repository: Repository<CnDocumentEntity>,
     private objectStorageService: BlObjectStorageService,
     private folderBucketService: CnFolderBucketService,
-    private datasource: DataSource,
     private eventEmitter: EventEmitter2,
     private configService: CnCoreConfigService,
     private hierarchyObjectService: CnHierarchyObjectService
@@ -77,12 +76,14 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     documentName?: string,
     parentDocument?: CnDocument
   ): Promise<CnDocument> {
-    // check if the space storage is not full, consider size of this document as 0
-    this.checkIfStorageIsFull(file.size);
-
-    const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(
+    const bucketsConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(
       parentFolder.getRootFolderId()
     );
+
+    if (bucketsConfig.containsCloudBuckets()) {
+      // check if the space storage is not full
+      this.checkIfStorageIsFull(file.size);
+    }
 
     if (documentName) {
       const existingDocument = await this.findDocumentByTypeAndNameAndEntity(
@@ -99,32 +100,33 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       );
     }
 
-    // TODO : this might not be a good idea to upload the document inside the transaction
-    // because the transaction might be too long and the upload might fail,
-    // same problem for moving the document
-    const document = await this.datasource.transaction(async (entityManager) => {
-      const document = CnDocumentEntity.newDocument(
-        documentName,
-        this.objectStorageService.generateRandomFileNameFromExtension(
-          BlFileHelper.getFileExtension(file.originalname)
-        ),
-        file.size,
-        file.mimetype,
-        documentType,
-        entityId,
-        bucketConfig[0].type,
-        parentFolder,
-        parentDocument
-      );
+    let document = CnDocumentEntity.newDocument(
+      documentName,
+      this.objectStorageService.generateRandomFileNameFromExtension(
+        BlFileHelper.getFileExtension(file.originalname)
+      ),
+      file.size,
+      file.mimetype,
+      documentType,
+      entityId,
+      // TODO TO IMPROVE
+      bucketsConfig.bucketConfigs[0].type,
+      parentFolder,
+      parentDocument
+    );
 
-      const dbDocument = await entityManager.save(document);
+    await this.objectStorageService.uploadObject(bucketsConfig.bucketConfigs, file, {
+      filename: document.filename,
+      tags: this.getTags(document.name, parentFolder.id),
+    } as any);
 
-      await this.objectStorageService.uploadObject(bucketConfig, file, {
-        filename: document.filename,
-        tags: this.getTags(document.name, parentFolder.id),
-      } as any);
-      return dbDocument;
-    });
+    try {
+      document = await this.save(document);
+    } catch (error) {
+      this.logger.error('Error while saving document', error);
+      await this.objectStorageService.deleteObjectIfExist(bucketsConfig.bucketConfigs, document.filename);
+      throw error;
+    }
 
     this.emitEvent('CREATE_DOCUMENT', document);
     return document;
@@ -208,7 +210,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
     // delete all object in the store
     const documentFilenames = documentsToDelete.map((d) => d.filename);
-    await this.objectStorageService.deleteMultipleObjects(bucketConfig, documentFilenames);
+    await this.objectStorageService.deleteMultipleObjects(bucketConfig.bucketConfigs, documentFilenames);
 
     this.emitEvent('DELETE_DOCUMENT', document);
   }
@@ -222,21 +224,17 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     });
 
     for (const doc of documentToDelete) {
-      await this.deleteDocument(doc.id, this.datasource.manager);
+      await this.deleteDocument(doc.id);
     }
   }
 
   async renameDocument(rootFolderId: string, document: CnDocument, newName: string): Promise<CnDocument> {
-    return this.datasource.transaction(async (entityManager) => {
-      document.name = newName;
-      document = await entityManager.save(document);
+    const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(rootFolderId);
+    const tags: Partial<CnDocumentS3Tags> = { name: newName };
+    await this.objectStorageService.setObjectTags(bucketConfig.bucketConfigs, document.filename, tags);
 
-      const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(rootFolderId);
-      const tags: Partial<CnDocumentS3Tags> = { name: newName };
-      await this.objectStorageService.setObjectTags(bucketConfig, document.filename, tags);
-
-      return document;
-    });
+    document.name = newName;
+    return await this.save(document as CnDocumentEntity);
   }
 
   /**
@@ -306,35 +304,45 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     content: any,
     parentDocument?: CnDocument
   ): Promise<CnDocument> {
-    // check if the space storage is not full, consider size of this document as 0
-    this.checkIfStorageIsFull(0);
-
-    const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(
+    const bucketsConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(
       parentFolder.getRootFolderId()
     );
-    const document = await this.datasource.transaction(async (entityManager) => {
-      const document = CnDocumentEntity.newDocument(
-        documentName,
-        this.objectStorageService.generateRandomFileNameFromExtension('json'),
-        0,
-        'application/json',
-        type,
-        entityId,
-        bucketConfig[0].type,
-        parentFolder,
-        parentDocument
+
+    if (bucketsConfig.containsCloudBuckets()) {
+      // check if the space storage is not full, consider size of this document as 0
+      this.checkIfStorageIsFull(0);
+    }
+
+    let document = CnDocumentEntity.newDocument(
+      documentName,
+      this.objectStorageService.generateRandomFileNameFromExtension('json'),
+      0,
+      'application/json',
+      type,
+      entityId,
+      bucketsConfig.bucketConfigs[0].type,
+      parentFolder,
+      parentDocument
+    );
+
+    await this.objectStorageService.uploadJson(bucketsConfig.bucketConfigs, content, {
+      filename: document.filename,
+      tags: this.getTags(document.name, parentFolder.id),
+    } as any);
+
+    try {
+      const objectInfo = await this.objectStorageService.getObjectInfo(
+        bucketsConfig.getFirstBucket(),
+        document.filename
       );
-
-      await this.objectStorageService.uploadJson(bucketConfig, content, {
-        filename: document.filename,
-        tags: this.getTags(document.name, parentFolder.id),
-      } as any);
-
-      const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig[0], document.filename);
       document.size = objectInfo.size;
 
-      return await entityManager.save(document);
-    });
+      document = await this.save(document);
+    } catch (error) {
+      this.logger.error('Error while saving json document', error);
+      await this.objectStorageService.deleteObjectIfExist(bucketsConfig.bucketConfigs, document.filename);
+      throw error;
+    }
 
     this.emitEvent('CREATE_DOCUMENT', document);
     return document;
@@ -345,14 +353,21 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     document: CnDocument,
     content: any
   ): Promise<CnDocument> {
-    // check if the space storage is not full, consider si of this document as 0
-    this.checkIfStorageIsFull(0);
+    const bucketsConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(rootFolderId);
 
-    const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(rootFolderId);
+    if (bucketsConfig.containsCloudBuckets()) {
+      // check if the space storage is not full, consider si of this document as 0
+      this.checkIfStorageIsFull(0);
+    }
 
-    await this.objectStorageService.uploadJson(bucketConfig, content, { filename: document.filename });
+    await this.objectStorageService.uploadJson(bucketsConfig.bucketConfigs, content, {
+      filename: document.filename,
+    });
 
-    const objectInfo = await this.objectStorageService.getObjectInfo(bucketConfig[0], document.filename);
+    const objectInfo = await this.objectStorageService.getObjectInfo(
+      bucketsConfig.getFirstBucket(),
+      document.filename
+    );
 
     // update the document size and last modification info
     document.size = objectInfo.size;
@@ -486,7 +501,6 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
   public async getStorageSizeDetailBySpace(spaceId: string): Promise<CnFolderStorageUsageDTO> {
     const documents = await this.repository.findBy({ hierarchyRepresentation: { spaceId: spaceId } });
-    console.log('Calculating storage size for space', spaceId, documents.length);
     return this.documentsToAggregateDTO(documents);
   }
 
@@ -639,32 +653,26 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
   private async moveDocumentFromBucket(
     document: CnDocumentWithHierarchy,
     newParentFolder: CnHierarchyObject,
-    oldBuckets: BlBucketConfig[],
-    newBuckets: BlBucketConfig[]
+    oldBuckets: BlMultipleBucketConfig,
+    newBuckets: BlMultipleBucketConfig
   ): Promise<CnDocumentWithHierarchy> {
-    return await this.datasource.transaction(async (entityManager) => {
-      entityManager = this.getEntityManager(entityManager);
-      await this.hierarchyObjectService.updateParent(
-        document.hierarchyRepresentation.id,
-        newParentFolder,
-        entityManager
+    const tags = this.getTags(document.name, newParentFolder.id);
+    // move the object in the storage is needed
+    if (oldBuckets.equals(newBuckets)) {
+      // update the folder tag
+      await this.objectStorageService.setObjectTags(newBuckets.bucketConfigs, document.filename, tags as any);
+    } else {
+      await this.objectStorageService.moveObjectToAnotherBucket(
+        oldBuckets.bucketConfigs,
+        newBuckets.bucketConfigs,
+        document.filename,
+        document.filename
       );
+    }
 
-      const tags = this.getTags(document.name, newParentFolder.id);
-      // move the object in the storage is needed
-      if (this.objectStorageService.areSameBuckets(oldBuckets, newBuckets)) {
-        // update the folder tag
-        await this.objectStorageService.setObjectTags(newBuckets, document.filename, tags as any);
-      } else {
-        await this.objectStorageService.moveObjectToAnotherBucket(
-          oldBuckets,
-          newBuckets,
-          document.filename,
-          document.filename
-        );
-      }
-      return document;
-    });
+    // TODO there is no rollback if the there is an error
+    await this.hierarchyObjectService.updateParent(document.hierarchyRepresentation.id, newParentFolder);
+    return document;
   }
 
   public async copyDocument(
@@ -780,10 +788,21 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
   }
 
   public async migrateDocuments(): Promise<void> {
-    const documents = await this.repo.find();
+    const documents = await this.repo.find({ relations: { hierarchyRepresentation: true } });
 
     for (const document of documents) {
       document.style = CnDocumentEntity.buildStyle(document.type, document.getExtension());
+
+      const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(
+        document.hierarchyRepresentation.rootParentId
+      );
+      if (bucketConfig.getFirstBucket().type === 'azureBlob') {
+        document.bucketType = BlBucketType.AZURE;
+      } else if (bucketConfig.getFirstBucket().type === 'lab') {
+        document.bucketType = BlBucketType.LAB;
+      } else {
+        document.bucketType = BlBucketType.NORMAL;
+      }
       await this.repo.save(document);
     }
   }

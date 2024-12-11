@@ -3,12 +3,10 @@ import { ClHelpService, ClStringHelper } from '@monorepo/core-lib';
 import { BlFileHelper } from '../../utils/bl-file-helper';
 import { BlFile } from '../../models/bl-file.class';
 import {
-  BlAzureBlobContainerConfig,
   BlBucketConfig,
   BlFileResponse,
   BlObject,
   BlObjectStorageObjectsInfo,
-  BlS3BucketConfig,
 } from './bl-object-storage.class';
 import { BlAzureBucketService } from './bl-azure-bucket.service';
 import { BlObjectStorageInterface } from './bl-object-storage.interface';
@@ -383,54 +381,5 @@ export class BlObjectStorageService {
       filename = options.prefix + '/' + filename;
     }
     return filename;
-  }
-
-  public areSameBuckets(
-    config1: BlBucketConfig | BlBucketConfig[],
-    config2: BlBucketConfig | BlBucketConfig[]
-  ): boolean {
-    const configs1 = ClHelpService.convertObjectOrArrayToArray(config1);
-    const configs2 = ClHelpService.convertObjectOrArrayToArray(config2);
-
-    if (configs1.length !== configs2.length) return false;
-
-    for (let i = 0; i < configs1.length; i++) {
-      const find = configs2.find((config) => this.areSameBucket(configs1[i], config));
-      if (!find) return false;
-    }
-
-    return true;
-  }
-
-  public areSameBucket(config1: BlBucketConfig, config2: BlBucketConfig): boolean {
-    if (config1.type !== config2.type) return false;
-    if (config1.type === 'azureBlob') {
-      return this.areSameAzureBlobBucket(
-        config1.config as BlAzureBlobContainerConfig,
-        config2.config as BlAzureBlobContainerConfig
-      );
-    } else {
-      return this.areSameS3Bucket(config1.config as BlS3BucketConfig, config2.config as BlS3BucketConfig);
-    }
-  }
-
-  private areSameAzureBlobBucket(
-    config1: BlAzureBlobContainerConfig,
-    config2: BlAzureBlobContainerConfig
-  ): boolean {
-    return (
-      config1.accountName === config2.accountName &&
-      config1.containerName === config2.containerName &&
-      config1.region === config2.region
-    );
-  }
-
-  private areSameS3Bucket(config1: BlS3BucketConfig, config2: BlS3BucketConfig): boolean {
-    return (
-      config1.region === config2.region &&
-      config1.endpoint === config2.endpoint &&
-      config1.bucket === config2.bucket &&
-      config1.bucketType === config2.bucketType
-    );
   }
 }

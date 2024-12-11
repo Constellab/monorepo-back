@@ -5,9 +5,11 @@ import {
   CnBucketContentType,
   CnBucketLocationDTO,
 } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
-import { BlBadRequestException, BlBucketConfig } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlBucketConfig, BlMultipleBucketConfig } from '@monorepo/back-core-lib';
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
-import { CnObjectStoragesAggregateService } from '../../cn-object-storages/cn-object-storages-aggregate.service';
+import {
+  CnObjectStoragesAggregateService,
+} from '../../cn-object-storages/cn-object-storages-aggregate.service';
 import { CnFolderBucketsDTO } from './cn-folder.dto';
 import { CnFoldersService } from './cn-folders.service';
 import { ClPage } from '@monorepo/core-lib';
@@ -48,13 +50,13 @@ export class CnFolderBucketService {
     return buckets;
   }
 
-  public async getAndCheckFolderBucketConfig(rootFolderId: string): Promise<BlBucketConfig[]> {
+  public async getAndCheckFolderBucketConfig(rootFolderId: string): Promise<BlMultipleBucketConfig> {
     const bucket = await this.getAndCheckFolderBucket(rootFolderId);
     const configs = [bucket.mainStorage.getBucketConfig()];
     if (bucket.backupStorage) {
       configs.push(bucket.backupStorage.getBucketConfig());
     }
-    return configs;
+    return new BlMultipleBucketConfig(configs);
   }
 
   public async getAndCheckFolderMainBucketConfig(rootFolderId: string): Promise<BlBucketConfig> {
