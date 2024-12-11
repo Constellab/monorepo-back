@@ -1320,7 +1320,7 @@ export class CnLabAggregateService {
   }
 
   //////////////////////////// AUTHORIZATION ////////////////////////////////
-  private async getAndCheckAuthorizationToFindById(id: string): Promise<CnLabWithSpace> {
+  public async getAndCheckAuthorizationToFindById(id: string): Promise<CnLabWithSpace> {
     const lab = await this.labsService.findByIdAndCheck(id, { space: true });
     await this.security.checkAuthorizationToFindById(lab, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return lab;

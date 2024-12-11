@@ -198,11 +198,8 @@ export class CnLabStatusDTO {
  * He provides free text
  */
 export interface CnRequestLab {
-  cloudProvider?: string;
-  cpuCount?: string;
-  storageSize?: string;
+  type: CnLabType;
   labNeed?: string;
-  additionalInfo?: string;
 }
 
 export class CnLabServerInfoDTO {

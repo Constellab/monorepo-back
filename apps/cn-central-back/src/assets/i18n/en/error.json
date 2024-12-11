@@ -56,7 +56,7 @@
   "delete_folder_with_documents": "You can't delete a folder with documents",
   "document_already_exist": "A document with the same name already exists",
   "folder_bucket_not_found": "Storage for folder not found. Please ask the folder manager to configure the storage for this folder (in the settings)",
-  "cant_manage_desktop_lab": "You can't manage desktop lab remotely",
+  "cant_manage_desktop_lab": "You can't perform this action on a desktop lab",
   "lab_config_not_found": "Lab config not found. For on cloud lab, the configuration is create on lab start. Was it started once ?",
   "invalid_captcha": "Invalid captcha",
   "no_access_to_folder": "You don't have access to this folder",

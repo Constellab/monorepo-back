@@ -49,7 +49,7 @@ export class CnLabFolderAggregateService {
     const labFolder = await this.labFolderService.findByRootFolderId(rootFolderId);
     if (labFolder == null) throw new BlUnauthorizedException();
 
-    const labManager = await this.getAndCheckAuthorizationToFindLabById(labId);
+    const labManager = await this.getAndCheckAuthorizationToManageLab(labId);
 
     const folderTree = await this.folderAggregateService.getFolderTree(rootFolderId);
     await this.syncFolderToLab(labManager, folderTree);
@@ -158,10 +158,7 @@ export class CnLabFolderAggregateService {
     return this.labAggregateService.getAndCheckAuthorizationToManageLab(id, refuseDesktop);
   }
 
-  public async getAndCheckAuthorizationToFindLabById(
-    id: string,
-    refuseDesktop: boolean = true
-  ): Promise<CnLab> {
-    return this.labAggregateService.getAndCheckAuthorizationToManageLab(id, refuseDesktop);
+  public async getAndCheckAuthorizationToFindLabById(id: string): Promise<CnLab> {
+    return this.labAggregateService.getAndCheckAuthorizationToFindById(id);
   }
 }

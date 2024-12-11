@@ -283,6 +283,7 @@ export class BlObjectStorageService {
   }
 
   private cleanTags(tags: Record<string, string>): Record<string, string> {
+    if (!tags) return undefined;
     const newTags: Record<string, string> = {};
     for (const key in tags) {
       if (tags[key] != null) {

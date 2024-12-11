@@ -274,7 +274,7 @@ export class BlS3BucketService implements BlObjectStorageInterface {
   }
 
   private tagsToQueryParams(tags: Record<string, string>): string {
-    if (!tags) return '';
+    if (!tags) return undefined;
     return Object.entries(tags)
       .map(([key, value]) => `${key}=${value}`)
       .join('&');

@@ -60,11 +60,8 @@ export class CnLabMailService {
         space: {
           name: space.name,
         },
-        cloudProvider: request.cloudProvider,
-        cpuCount: request.cpuCount,
-        storageSize: request.storageSize,
+        type: request.type,
         labNeed: request.labNeed,
-        additionalInfo: request.additionalInfo,
       },
     });
   }
