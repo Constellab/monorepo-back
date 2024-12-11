@@ -6,7 +6,12 @@ import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { ClDateHelper } from '@monorepo/core-lib';
 import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
-import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import {
+  CnHierarchyObject,
+  CnHierarchyObjectEntity,
+  CnHierarchyObjectType,
+} from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
 
 export enum CnDocumentType {
   // Uploaded document
@@ -64,6 +69,8 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
   @Column({ nullable: false, default: false })
   inTrash: boolean;
 
+  // Use to differentiate between the different types of bucket
+  // to calculate storage
   @Column({
     type: 'enum',
     enum: BlBucketType,
@@ -81,6 +88,9 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
   @Exclude()
   @BlLuxonDateTimeColumn({ nullable: true })
   previewTokenExpiration: DateTime;
+
+  @Column({ nullable: false, type: 'simple-json' })
+  style: CnTypeStyle;
 
   getHierarchyObjectInfo(): CnHierarchyObjectInfo {
     let objectType: CnHierarchyObjectType;
@@ -102,6 +112,7 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
       isVisible:
         [CnDocumentType.UPLOADED_DOCUMENT, CnDocumentType.CONSTELLAB_DOCUMENT].includes(this.type) &&
         !this.inTrash,
+      style: this.style,
     };
   }
 
@@ -145,6 +156,106 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
 
   getExtension(): string {
     return BlFileHelper.getFileExtension(this.filename);
+  }
+
+  public static newDocument(
+    name: string,
+    filename: string,
+    size: number,
+    mimeType: string,
+    type: CnDocumentType,
+    entityId: string,
+    bucketType: 's3' | 'azureBlob' | 'lab',
+    parentFolder: CnHierarchyObject,
+    parentDocument?: CnDocument
+  ): CnDocumentEntity {
+    const document = new CnDocumentEntity();
+    document.name = name;
+    document.filename = filename;
+    document.size = size;
+    document.mimeType = mimeType;
+    document.type = type;
+    document.entityId = entityId;
+    if (bucketType === 'lab') {
+      document.bucketType = BlBucketType.LAB;
+    } else if (bucketType === 'azureBlob') {
+      document.bucketType = BlBucketType.AZURE;
+    } else {
+      document.bucketType = BlBucketType.NORMAL;
+    }
+    document.style = this.buildStyle(type, document.getExtension());
+    document.parentDocument = parentDocument;
+    document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
+      parentFolder,
+      document.getHierarchyObjectInfo()
+    );
+    return document;
+  }
+
+  public static buildStyle(documentType: CnDocumentType, extension: string): CnTypeStyle {
+    if (documentType === CnDocumentType.UPLOADED_DOCUMENT) {
+      return {
+        icon_type: 'MATERIAL_ICON',
+        icon_technical_name: this.getFileIconFromExtension(extension),
+      };
+    } else if (documentType === CnDocumentType.CONSTELLAB_DOCUMENT) {
+      return {
+        icon_type: 'MATERIAL_ICON',
+        icon_technical_name: 'constellab_document',
+      };
+    } else {
+      return {
+        icon_type: 'MATERIAL_ICON',
+        icon_technical_name: 'insert_drive_file',
+      };
+    }
+  }
+
+  private static getFileIconFromExtension(extension: string): string {
+    if (!extension) return 'insert_drive_file';
+
+    extension = extension.replace('.', '').toLowerCase();
+
+    switch (extension.toLowerCase()) {
+      case 'csv':
+      case 'xls':
+      case 'xlsx':
+        return 'csv_file_icon';
+      case 'jpeg':
+      case 'jpg':
+      case 'png':
+      case 'gif':
+      case 'svg':
+        return 'image';
+      case 'mp3':
+      case 'wav':
+      case 'flac':
+      case 'aac':
+      case 'ogg':
+      case 'wma':
+      case 'm4a':
+      case 'aiff':
+      case 'alac':
+        return 'audiotrack';
+      case 'txt':
+        return 'txt_file_icon';
+      case 'pdf':
+        return 'pdf_file_icon';
+      case 'doc':
+      case 'docx':
+        return 'docx_file_icon';
+      case 'json':
+        return 'json_file_icon';
+      case 'ppt':
+      case 'pptx':
+        return 'pptx_file_icon';
+      case 'zip':
+        return 'zip_file_icon';
+      case 'py':
+        return 'py_file_icon';
+      default:
+        return 'insert_drive_file';
+    }
   }
 }
 

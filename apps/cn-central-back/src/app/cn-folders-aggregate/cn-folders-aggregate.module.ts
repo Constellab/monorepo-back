@@ -19,6 +19,9 @@ import { CnDocumentModule } from './cn-documents/cn-document.module';
 import { CnHierarchyObjectModule } from './cn_hierarchy_objects/cn-hierarchy-object.module';
 import { CnFolderCopierService } from './cn-folder-copier.service';
 import { CnSpacesModule } from '../cn-spaces/cn-spaces.module';
+import { CnResourcesModule } from './cn-resources/cn-resources.module';
+import { CnResourcesController } from './cn-resources/cn-resources.controller';
+import { CnExternalLabApiModule } from '../cn-external-lab-api/cn-external-lab-api.module';
 
 @Module({
   imports: [
@@ -33,14 +36,16 @@ import { CnSpacesModule } from '../cn-spaces/cn-spaces.module';
     CnNotesModule,
     CnDocumentModule,
     CnSpacesModule,
+    CnResourcesModule,
 
     CnUsersModule,
     CnNotificationModule,
     CnActivityModule,
+    CnExternalLabApiModule,
 
     EventEmitterModule,
   ],
-  controllers: [CnFoldersController, CnScenariosController, CnNotesController],
+  controllers: [CnFoldersController, CnScenariosController, CnNotesController, CnResourcesController],
   providers: [CnFoldersAggregateSecurity, CnFolderAggregateService, CnFolderListener, CnFolderCopierService],
   exports: [CnFoldersAggregateSecurity, CnFolderAggregateService],
 })

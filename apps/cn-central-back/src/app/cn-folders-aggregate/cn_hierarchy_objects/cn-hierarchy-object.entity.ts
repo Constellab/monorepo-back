@@ -16,6 +16,7 @@ import { DateTime } from 'luxon';
 import { CnSpace, CnSpaceEntity } from '../../cn-spaces/cn-space.entity';
 import { CnFolderUserEntity } from '../cn-folder-user/cn-folder-user.entity';
 import { CnHierarchyObjectInfo } from './cn-hierarchy-object.dto';
+import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
 
 export enum CnHierarchyObjectType {
   FOLDER = 'FOLDER',
@@ -24,6 +25,7 @@ export enum CnHierarchyObjectType {
   HIDDEN_DOCUMENT = 'HIDDEN_DOCUMENT',
   NOTE = 'NOTE',
   SCENARIO = 'SCENARIO',
+  RESOURCE = 'RESOURCE',
 }
 
 @Entity('hierarchy_object')
@@ -105,6 +107,9 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
   @Column({ nullable: true, type: 'bigint' })
   documentSize: number;
 
+  @Column({ nullable: false, type: 'simple-json' })
+  style: CnTypeStyle;
+
   @BeforeInsert()
   setObjectTypeOrder(): void {
     this.objectTypeOrder = this.objectType === CnHierarchyObjectType.FOLDER ? 1 : 2;
@@ -144,6 +149,7 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
     this.isValidated = objectInfo.isValidated;
     this.documentSize = objectInfo.documentSize;
     this.isVisible = objectInfo.isVisible;
+    this.style = objectInfo.style;
   }
 
   public static newRootFolderHierarchy(

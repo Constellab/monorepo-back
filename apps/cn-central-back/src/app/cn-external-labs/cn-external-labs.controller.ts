@@ -39,6 +39,7 @@ import { CnRichTextCompareRequestDTO, CnRichTextUndoRequestDTO } from './cn-exte
 import { TeRichTextBlockModificationsDTO, TeRichTextDTO, TeRichTextHelper } from '@monorepo/te-text-editor';
 import { CnNote } from '../cn-folders-aggregate/cn-notes/cn-note.entity';
 import { CnScenario } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.entity';
+import { CnShareResourceRequestDTO } from '../cn-folders-aggregate/cn-resources/cn-resource.dto';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -95,6 +96,8 @@ export class CnExternalLabsController {
     return this.labAggregator.checkUserCredentials(credentials, true, true);
   }
 
+  //////////////////////////// SCENARIO ////////////////////////////
+
   // TODO remove project routes once all lab are on v0.10.0
   @Put(['project/:parentFolderId/experiment'])
   saveScenario(
@@ -131,6 +134,8 @@ export class CnExternalLabsController {
   ): Promise<CnScenario> {
     return this.folderAggregateService.updateScenarioFolder(scenarioId, newParentFolderId);
   }
+
+  //////////////////////////// NOTE ////////////////////////////
 
   @UseInterceptors(FilesInterceptor('files'))
   @Put(['project/:parentFolderId/report/v2'])
@@ -173,15 +178,6 @@ export class CnExternalLabsController {
     return this.folderAggregateService.deleteNoteFromLab(parentFolderId, noteId);
   }
 
-  /**
-   * Route to send an email from the lab
-   * @param body
-   */
-  @Post('send-mail')
-  sendMail(@Body() body: CnLabSendMailDto): Promise<void> {
-    return this.labMailService.sendMailFromLab(CnCurrentUserHelper.getAndCheckCurrentLab(), body);
-  }
-
   @Put(['folder/:parentFolderId/note/:noteId/folder/:newParentFolderId'])
   moveNote(
     @Param('parentFolderId', new ParseUUIDPipe()) _: string,
@@ -189,6 +185,16 @@ export class CnExternalLabsController {
     @Param('newParentFolderId', new ParseUUIDPipe()) newParentFolderId: string
   ): Promise<CnNote> {
     return this.folderAggregateService.updateNoteFolder(noteId, newParentFolderId);
+  }
+
+  //////////////////////////// RESOURCE ////////////////////////////
+
+  @Put(['folder/:parentFolderId/resource'])
+  saveResource(
+    @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
+    @Body() body: CnShareResourceRequestDTO
+  ): Promise<void> {
+    return this.folderAggregateService.shareResourceToFolder(parentFolderId, body);
   }
 
   /////////////////////////////// SYNCHRONIZATION ///////////////////////////////
@@ -220,6 +226,8 @@ export class CnExternalLabsController {
     return this.labAggregator.getUserInfoFromLab(userId);
   }
 
+  //////////////////////////// OTHERS //////////////////////////
+
   // Public route that return the new list of modifications after a rich text content modification
   @BlPublic()
   @Post('rich-text/compare')
@@ -239,5 +247,14 @@ export class CnExternalLabsController {
   @Post('rich-text/previous-version')
   async getRichTextPreviousVersion(@Body() body: CnRichTextUndoRequestDTO): Promise<TeRichTextDTO> {
     return TeRichTextHelper.getRichTextPreviousVersion(body.content, body.modifications, body.modificationId);
+  }
+
+  /**
+   * Route to send an email from the lab
+   * @param body
+   */
+  @Post('send-mail')
+  sendMail(@Body() body: CnLabSendMailDto): Promise<void> {
+    return this.labMailService.sendMailFromLab(CnCurrentUserHelper.getAndCheckCurrentLab(), body);
   }
 }

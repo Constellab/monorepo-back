@@ -31,7 +31,8 @@ export type CnFolderEventType =
   | 'DELETE_FOLDER_DOCUMENT'
   | 'CREATE_FOLDER_MESSAGE'
   | 'UPDATE_FOLDER_MESSAGE'
-  | 'DELETE_FOLDER_MESSAGE';
+  | 'DELETE_FOLDER_MESSAGE'
+  | 'RENAME_RESOURCE';
 
 export interface CnFolderEvent {
   type: CnFolderEventType;

@@ -62,7 +62,7 @@ export class CnBucket extends CnBaseEntity {
   @Column({ nullable: false, length: 100, update: false })
   name: string;
 
-  @Column({ nullable: false, length: 50, enum: CnBucketContentType })
+  @Column({ type: 'enum', nullable: false, enum: CnBucketContentType })
   contentType: CnBucketContentType;
 
   @Column({

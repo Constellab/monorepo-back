@@ -71,3 +71,40 @@ ALTER TABLE lab
 
 ALTER TABLE note
   DROP COLUMN content;
+
+create table resource
+(
+  id               varchar(36)  not null
+    primary key,
+  createdAt        datetime     not null,
+  lastModifiedAt   datetime     not null,
+  createdById      varchar(36)  not null,
+  lastModifiedById varchar(36)  null,
+  resourceId       VARCHAR(36)  NOT NULL,
+  name             varchar(255) not null,
+  typingName       varchar(255) not null,
+  style            text         not null,
+  shareLink        varchar(255) not null,
+  validUntil       datetime     null,
+  labId            varchar(36)  not null,
+  constraint FK_resource_created_by foreign key (createdById) references user (id),
+  constraint FK_resource_last_modified_by foreign key (lastModifiedById) references user (id),
+  constraint FK_resource_lab foreign key (labId) references lab (id),
+  constraint FK_resource_hierarchy_object foreign key (id) references hierarchy_object (id)
+)
+  collate = utf8mb4_unicode_ci;
+
+
+alter table folder
+  drop column mpath;
+
+ALTER table hierarchy_object
+  ADD COLUMN style text null;
+ALTER table document
+  ADD COLUMN style text null;
+# Call route POST folders/migrate-style
+
+ALTER table hierarchy_object
+  MODIFY COLUMN style text not null;
+ALTER table document
+  MODIFY COLUMN style text not null;

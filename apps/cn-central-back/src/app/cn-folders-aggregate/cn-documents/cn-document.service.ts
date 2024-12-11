@@ -33,10 +33,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CnDocumentEvent, cnDocumentEventName, CnDocumentEventType } from './cn-document.event';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
-import {
-  CnHierarchyObject,
-  CnHierarchyObjectEntity,
-} from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnHierarchyObject } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from '../cn_hierarchy_objects/cn-hierarchy-object.service';
 
 interface CnDocumentS3Tags {
@@ -106,21 +103,18 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     // because the transaction might be too long and the upload might fail,
     // same problem for moving the document
     const document = await this.datasource.transaction(async (entityManager) => {
-      const document = new CnDocumentEntity();
-      document.name = documentName;
-
-      document.size = file.size;
-      document.mimeType = file.mimetype;
-      document.type = documentType;
-      document.entityId = entityId;
-      document.parentDocument = parentDocument as CnDocumentEntity;
-      // otherwise this is a cloud bucket where every file is so we need to generate a random name
-      document.filename = this.objectStorageService.generateRandomFileNameFromExtension(
-        BlFileHelper.getFileExtension(file.originalname)
-      );
-      document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
+      const document = CnDocumentEntity.newDocument(
+        documentName,
+        this.objectStorageService.generateRandomFileNameFromExtension(
+          BlFileHelper.getFileExtension(file.originalname)
+        ),
+        file.size,
+        file.mimetype,
+        documentType,
+        entityId,
+        bucketConfig[0].type,
         parentFolder,
-        document.getHierarchyObjectInfo()
+        parentDocument
       );
 
       const dbDocument = await entityManager.save(document);
@@ -319,16 +313,16 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       parentFolder.getRootFolderId()
     );
     const document = await this.datasource.transaction(async (entityManager) => {
-      const document = new CnDocumentEntity();
-      document.name = documentName;
-      document.mimeType = 'application/json';
-      document.type = type;
-      document.filename = this.objectStorageService.generateRandomFileNameFromExtension('json');
-      document.entityId = entityId;
-      document.parentDocument = parentDocument as CnDocumentEntity;
-      document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
+      const document = CnDocumentEntity.newDocument(
+        documentName,
+        this.objectStorageService.generateRandomFileNameFromExtension('json'),
+        0,
+        'application/json',
+        type,
+        entityId,
+        bucketConfig[0].type,
         parentFolder,
-        document.getHierarchyObjectInfo()
+        parentDocument
       );
 
       await this.objectStorageService.uploadJson(bucketConfig, content, {
@@ -492,6 +486,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
   public async getStorageSizeDetailBySpace(spaceId: string): Promise<CnFolderStorageUsageDTO> {
     const documents = await this.repository.findBy({ hierarchyRepresentation: { spaceId: spaceId } });
+    console.log('Calculating storage size for space', spaceId, documents.length);
     return this.documentsToAggregateDTO(documents);
   }
 
@@ -503,9 +498,9 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
         FROM document
                JOIN hierarchy_object ON document.id = hierarchy_object.id
         WHERE hierarchy_object.spaceId = ?
-          and document.bucketType = ?
+          and document.bucketType != ?
       `,
-      [spaceId, BlBucketType.NORMAL]
+      [spaceId, BlBucketType.LAB]
     );
     return result[0].totalSize ?? 0;
   }
@@ -782,5 +777,14 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       },
       relations: { hierarchyRepresentation: true },
     });
+  }
+
+  public async migrateDocuments(): Promise<void> {
+    const documents = await this.repo.find();
+
+    for (const document of documents) {
+      document.style = CnDocumentEntity.buildStyle(document.type, document.getExtension());
+      await this.repo.save(document);
+    }
   }
 }

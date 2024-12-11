@@ -204,6 +204,8 @@ export class CnSpaceAggregateService {
   }
 
   public async refreshSpaceStorageUsage(spaceId: string): Promise<void> {
+    // TODO the calculation does not count the backup storage
+    // it should not use the bucketType of documents but calculate it based on storage
     const storageUsage = await this.documentService.getSpaceCloudStorageSize(spaceId);
     await this.spaceService.updatePartial(spaceId, { cloudStorageUsage: storageUsage });
   }

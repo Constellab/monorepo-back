@@ -74,6 +74,12 @@ export class CnScenarioEntity extends CnHierarchyRepresentation {
       user: this.lastModifiedBy,
       lastModifiedAt: this.lastModifiedAt,
       isValidated: this.isValidated,
+      style: {
+        icon_type: 'MATERIAL_ICON',
+        icon_technical_name: 'scenario',
+        background_color: 'warn',
+        icon_color: 'warnContrast',
+      },
     };
   }
 }

@@ -6,10 +6,10 @@ import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
 import { CnScenariosService } from './cn-scenarios/cn-scenarios.service';
 import { CnNotesService } from './cn-notes/cn-notes.service';
-import { CnScenario, CnScenarioProtocol } from './cn-scenarios/cn-scenario.entity';
+import { CnScenario, CnScenarioEntity, CnScenarioProtocol } from './cn-scenarios/cn-scenario.entity';
 import { CnCreateLabScenarioDto } from './cn-scenarios/cn-scenario.dto';
 import { CnCreateNoteWithConfigDto } from './cn-notes/cn-note.dto';
-import { CnNote } from './cn-notes/cn-note.entity';
+import { CnNote, CnNoteEntity } from './cn-notes/cn-note.entity';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
 import {
@@ -44,7 +44,7 @@ import { CnActivity, CnActivityEntityType } from '../cn-activity/cn-activity.ent
 import { CnActivityService } from '../cn-activity/cn-activity.service';
 import { CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import { CnDocumentService } from './cn-documents/cn-document.service';
-import { CnDocument, CnDocumentType } from './cn-documents/cn-document.entity';
+import { CnDocument, CnDocumentEntity, CnDocumentType } from './cn-documents/cn-document.entity';
 import {
   CnConstellabDocumentDTO,
   CnDocumentPreviewDTO,
@@ -63,6 +63,11 @@ import {
   TeRichText,
   TeRichTextBlockModificationWithUser,
 } from '@monorepo/te-text-editor';
+import { CnShareResourceRequestDTO } from './cn-resources/cn-resource.dto';
+import { CnResourcesService } from './cn-resources/cn-resources.service';
+import { CnResource, CnResourceEntity } from './cn-resources/cn-resource.entity';
+import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
+import { CnHierarchyRepresentation } from './cn_hierarchy_objects/cn-hierarchy-representation';
 
 @Injectable()
 export class CnFolderAggregateService {
@@ -81,7 +86,9 @@ export class CnFolderAggregateService {
     private folderUserService: CnFolderUserService,
     private userService: CnUsersService,
     private eventEmitter: EventEmitter2,
-    private activityService: CnActivityService
+    private activityService: CnActivityService,
+    private resourceService: CnResourcesService,
+    private externalLabApiService: CnExternalLabApiService
   ) {}
 
   /////////////////////////////////////// FOLDER //////////////////////////////////
@@ -120,7 +127,7 @@ export class CnFolderAggregateService {
     const entity = this.createFolderFromDTO(folderDto);
     entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
 
-    const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
+    const parentFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
     const parentWithStorage = await this.foldersService.findByIfAndCheckWithStorage(parentFolder.id);
 
     if (
@@ -239,7 +246,7 @@ export class CnFolderAggregateService {
   }
 
   async findFolder(id: string): Promise<CnFolder> {
-    await this.getAndCheckAuthorizationForFindOneByFolder(id);
+    await this.getAndCheckAuthorizationForFindOneByHierarchyObject(id);
     return this.foldersService.findByIdAndCheck(id);
   }
 
@@ -290,7 +297,7 @@ export class CnFolderAggregateService {
   }
 
   public async getFolderDirectChildren(folderId: string): Promise<CnHierarchyObject[]> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
 
     return this.hierarchyObjectService.getDirectChildren(folder.id);
   }
@@ -301,14 +308,14 @@ export class CnFolderAggregateService {
     page: number,
     size: number
   ): Promise<ClPage<CnHierarchyObject>> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
 
     return this.hierarchyObjectService.searchVisibleChildren(folder.id, searchParam, page, size);
   }
 
   public async getFolderAncestors(folderId: string): Promise<CnHierarchyObject[]> {
     // retrieve the folder ancestors
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
     return await this.hierarchyObjectService.getAncestors(folder);
   }
 
@@ -348,7 +355,7 @@ export class CnFolderAggregateService {
   /////////////////////////////////////// FOLDER DESCRIPTION //////////////////////////////////
 
   public async getDescription(folderId: string): Promise<CnGetFolderDescriptionDTO> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
     const description = await this.foldersService.getDescription(folderId);
 
     return {
@@ -384,7 +391,7 @@ export class CnFolderAggregateService {
   }
 
   public async getDescriptionImage(folderId: string, filename: string): Promise<BlFileResponse> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
 
     return this.documentService.getDocumentContentByTypeAndName(
       folder.getRootFolderId(),
@@ -397,13 +404,13 @@ export class CnFolderAggregateService {
   /////////////////////////////////////// SCENARIO //////////////////////////////////
 
   public async findScenario(id: string): Promise<CnScenario> {
-    await this.getAndCheckAuthorizationForFindOneByFolder(id);
+    await this.getAndCheckAuthorizationForFindOneByHierarchyObject(id);
     return await this.scenarioService.findByIdAndCheck(id);
   }
 
   async getScenariosByFolder(folderId: string): Promise<CnScenario[]> {
     // check that the user can get the folder
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
 
     return this.scenarioService.getScenariosByParentFolder(folder.id);
   }
@@ -420,7 +427,7 @@ export class CnFolderAggregateService {
     createLabScenarioDto: CnCreateLabScenarioDto
   ): Promise<void> {
     // check that the user can get the folder
-    const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
+    const parentFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
 
     const result = await this.scenarioService.saveLabScenario(parentFolder, createLabScenarioDto);
 
@@ -433,7 +440,7 @@ export class CnFolderAggregateService {
 
   async deleteLabScenario(parentFolderId: string, scenarioId: string): Promise<void> {
     // check that the user can get the folder
-    const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
+    const parentFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
 
     // check if the scenario has associated notes
     const expWithNotes = await this.scenarioService.findByIdAndCheckWithNotes(scenarioId);
@@ -469,8 +476,8 @@ export class CnFolderAggregateService {
   }
 
   public async updateScenarioFolder(scenarioId: string, newParentFolderId: string): Promise<CnScenario> {
-    await this.getAndCheckAuthorizationForFindOneByFolder(scenarioId);
-    const newParentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(newParentFolderId);
+    await this.getAndCheckAuthorizationForFindOneByHierarchyObject(scenarioId);
+    const newParentFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(newParentFolderId);
 
     return this.scenarioService.updateScenarioFolder(scenarioId, newParentFolder);
   }
@@ -478,12 +485,12 @@ export class CnFolderAggregateService {
   /////////////////////////////////////// NOTE //////////////////////////////////
 
   public async findNote(id: string): Promise<CnNote> {
-    await this.getAndCheckAuthorizationForFindOneByFolder(id);
+    await this.getAndCheckAuthorizationForFindOneByHierarchyObject(id);
     return await this.noteService.findByIdAndCheck(id);
   }
 
   public async findNoteContent(id: string): Promise<TeRichText> {
-    const noteFolder = await this.getAndCheckAuthorizationForFindOneByFolder(id);
+    const noteFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(id);
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(noteFolder.parentId);
     return await this.noteService.getNoteContent(parentFolder, id);
   }
@@ -493,7 +500,7 @@ export class CnFolderAggregateService {
     parentFolderId: string,
     files: BlFile[]
   ): Promise<void> {
-    const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
+    const parentFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
 
     // get and check all scenario
     const scenarios: CnScenario[] = [];
@@ -525,7 +532,7 @@ export class CnFolderAggregateService {
 
   async deleteNoteFromLab(parentFolderId: string, noteId: string): Promise<void> {
     // check that the user can get the folder
-    const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
+    const parentFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
 
     let note: CnNote;
     await this.datasource.transaction(async (entityManager) => {
@@ -555,13 +562,13 @@ export class CnFolderAggregateService {
   }
 
   async getNoteFile(noteId: string, filename: string): Promise<BlFileResponse> {
-    const noteFolder = await this.getAndCheckAuthorizationForFindOneByFolder(noteId);
+    const noteFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(noteId);
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(noteFolder.parentId);
     return this.noteService.getFile(filename, parentFolder, noteId);
   }
 
   async getNoteView(noteId: string, viewId: string): Promise<BlFileResponse> {
-    const noteFolder = await this.getAndCheckAuthorizationForFindOneByFolder(noteId);
+    const noteFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(noteId);
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(noteFolder.parentId);
     return this.noteService.getView(viewId, parentFolder, noteId);
   }
@@ -571,10 +578,59 @@ export class CnFolderAggregateService {
   }
 
   public async updateNoteFolder(noteId: string, newParentFolderId: string): Promise<CnNote> {
-    await this.getAndCheckAuthorizationForFindOneByFolder(noteId);
-    const newParentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(newParentFolderId);
+    await this.getAndCheckAuthorizationForFindOneByHierarchyObject(noteId);
+    const newParentFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(newParentFolderId);
 
     return this.noteService.updateNoteFolder(noteId, newParentFolder);
+  }
+
+  /////////////////////////////////////// RESOURCE //////////////////////////////////
+
+  public async shareResourceToFolder(
+    parentFolderId: string,
+    requestDTO: CnShareResourceRequestDTO
+  ): Promise<void> {
+    const parentFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
+
+    await this.resourceService.saveResource(parentFolder, requestDTO);
+  }
+
+  public async deleteResource(resourceId: string): Promise<void> {
+    // check that the user can get the folder
+    await this.getAndCheckAuthorizationForFindOneByHierarchyObject(resourceId);
+
+    await this.datasource.transaction(async (entityManager) => {
+      await this.resourceService.deleteById(resourceId, entityManager);
+      await this.hierarchyObjectService.deleteById(resourceId, entityManager);
+    });
+  }
+
+  public async findResource(resourceId: string): Promise<CnResource> {
+    await this.getAndCheckAuthorizationForFindOneByHierarchyObject(resourceId);
+    const resource = await this.resourceService.findWithLabByIdAndCheck(resourceId);
+
+    const check = await this.externalLabApiService.healthCheck(resource.lab.getGlabSpaceApiInfo());
+
+    if (!check) {
+      throw new BlBadRequestException(
+        `The lab '${resource.lab.name}' is not running, please start it or transfer the ` +
+          `resource to a permanent lab.`
+      );
+    }
+    return resource;
+  }
+
+  public async renameResource(resourceId: string, name: string): Promise<CnResource> {
+    const hierarchyObject = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(resourceId);
+    const resource = await this.resourceService.renameResource(resourceId, name);
+
+    this.emitFolderEvent(
+      'RENAME_RESOURCE',
+      await this.hierarchyObjectService.findByIdAndCheck(hierarchyObject.parentId),
+      resource
+    );
+
+    return resource;
   }
 
   /////////////////////////////////////// GROUPS //////////////////////////////////
@@ -681,7 +737,7 @@ export class CnFolderAggregateService {
   }
 
   public async createChatMessage(newMessageDTO: CnNewMessageDTO, folderId: string): Promise<CnChatMessage> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
 
     const message = await this.chatMessageService.createMessage(newMessageDTO, folder);
 
@@ -694,7 +750,7 @@ export class CnFolderAggregateService {
     messageId: string,
     messageDTO: CnNewMessageDTO
   ): Promise<CnChatMessage> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
 
     const message = await this.chatMessageService.findByIdAndCheck(messageId);
     if (message.createdBy.id != CnCurrentUserHelper.getCurrentUser().id) {
@@ -707,7 +763,7 @@ export class CnFolderAggregateService {
   }
 
   public async deleteChatMessage(folderId: string, messageId: string): Promise<void> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
 
     const message = await this.chatMessageService.findByIdAndCheck(messageId);
     if (message.createdBy.id != CnCurrentUserHelper.getCurrentUser().id) {
@@ -723,24 +779,24 @@ export class CnFolderAggregateService {
     page: number,
     size: number
   ): Promise<ClPage<CnChatMessage>> {
-    await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
     return this.chatMessageService.getFolderMessages(folderId, page, size);
   }
 
   public async saveMessageImage(file: BlFile, folderId: string): Promise<TeBlockFigureUploadedResponse> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
     return this.chatMessageService.saveMessageImage(file, folder);
   }
 
   public async getMessageImage(filename: string, folderId: string): Promise<BlFileResponse> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
     return await this.chatMessageService.getMessageImage(folder, filename);
   }
 
   /////////////////////////////////////// DOCUMENT //////////////////////////////////
 
   public async uploadDocument(parentFolderId: string, file: BlFile): Promise<CnHierarchyObject> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
 
     const doc = await this.documentService.uploadDocument(
       file,
@@ -756,14 +812,14 @@ export class CnFolderAggregateService {
   }
 
   public async getUploadedDocument(documentId: string): Promise<BlFileResponse> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
     const document = await this.documentService.findByIdAndCheck(documentId);
 
     return await this.documentService.getDocumentContentByDocument(folder.getRootFolderId(), document);
   }
 
   public async deleteDocument(documentId: string): Promise<void> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
 
@@ -779,7 +835,7 @@ export class CnFolderAggregateService {
   }
 
   public async moveDocumentToTrash(documentId: string): Promise<CnDocument> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
 
@@ -795,7 +851,7 @@ export class CnFolderAggregateService {
   }
 
   public async restoreDocumentFromTrash(documentId: string): Promise<CnDocument> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
 
@@ -811,7 +867,7 @@ export class CnFolderAggregateService {
   }
 
   public async emptyTrash(folderId: string): Promise<void> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
 
     await this.documentService.emptyFolderTrash(folder.id);
   }
@@ -822,13 +878,13 @@ export class CnFolderAggregateService {
     page: number,
     size: number
   ): Promise<ClPage<CnDocument>> {
-    await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
+    await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
 
     return this.documentService.getParentFolderDocuments(parentFolderId, inTrash, page, size);
   }
 
   public async renameDocument(documentId: string, newName: string): Promise<CnDocument> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId, {
       hierarchyRepresentation: true,
@@ -853,17 +909,17 @@ export class CnFolderAggregateService {
     }
 
     // check if the user has the authorization to move the document on 2 folders
-    const oldFolder = await this.getAndCheckAuthorizationForFindOneByFolder(
+    const oldFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(
       document.hierarchyRepresentation.parentId
     );
-    const newFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
+    const newFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
 
     return this.documentService.moveDocument(document, oldFolder, newFolder);
   }
 
   ////////////////////////////// HISTORY ///////////////////////////////////////
   public async getNoteModifications(noteId: string): Promise<TeRichTextBlockModificationWithUser[]> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(noteId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(noteId);
 
     await this.noteService.findByIdAndCheck(noteId);
 
@@ -874,7 +930,7 @@ export class CnFolderAggregateService {
   public async getConstellabDocumentModifications(
     documentId: string
   ): Promise<TeRichTextBlockModificationWithUser[]> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
 
@@ -890,7 +946,7 @@ export class CnFolderAggregateService {
     documentId: string,
     modificationId: string
   ): Promise<TeRichText> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
     const document = await this.documentService.findByIdAndCheck(documentId);
     const richText = await this.documentService.getConstellabDocumentPreviousVersion(
       folder.getRootFolderId(),
@@ -901,13 +957,13 @@ export class CnFolderAggregateService {
   }
 
   public async getNoteUndoContent(noteId: string, modificationId: string): Promise<TeRichText> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(noteId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(noteId);
     await this.noteService.findByIdAndCheck(noteId);
     return await this.noteService.getNotePreviousVersion(folder, noteId, modificationId);
   }
 
   public async rollbackContent(documentId: string, modificationId: string): Promise<CnDocument> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
     return await this.documentService.rollbackConstellabDocumentContent(
@@ -922,7 +978,7 @@ export class CnFolderAggregateService {
     parentFolderId: string,
     filename: string
   ): Promise<CnConstellabDocumentDTO> {
-    const parentFolder = await this.getAndCheckAuthorizationForFindOneByFolder(parentFolderId);
+    const parentFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
 
     const doc = await this.documentService.createConstellabDocument(parentFolder, filename);
     this.emitFolderEvent('CREATE_CONSTELLAB_DOCUMENT', parentFolder, doc.document);
@@ -933,7 +989,7 @@ export class CnFolderAggregateService {
     documentId: string,
     richText: TeRichText
   ): Promise<CnConstellabDocumentDTO> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
 
@@ -965,7 +1021,7 @@ export class CnFolderAggregateService {
   }
 
   public async checkEditConstellabDocument(documentId: string): Promise<void> {
-    await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+    await this.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
 
@@ -984,7 +1040,7 @@ export class CnFolderAggregateService {
   }
 
   public async getConstellabDocument(documentId: string): Promise<CnConstellabDocumentDTO> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
     const richTextAggregate = await this.documentService.getConstellabDocument(
@@ -998,7 +1054,7 @@ export class CnFolderAggregateService {
     documentId: string,
     file: BlFile
   ): Promise<TeBlockFigureUploadedResponse> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(folder.parentId);
@@ -1010,7 +1066,7 @@ export class CnFolderAggregateService {
     documentId: string,
     file: BlFile
   ): Promise<TeBlockFileUploadResponse> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(folder.parentId);
@@ -1027,7 +1083,7 @@ export class CnFolderAggregateService {
     documentId: string,
     documentName: string
   ): Promise<BlFileResponse> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
 
     return this.documentService.getDocumentContentByTypeAndName(
       folder.getRootFolderId(),
@@ -1040,7 +1096,7 @@ export class CnFolderAggregateService {
   ////////////////////////////////////// DOCUMENT PREVIEW  /////////////////////////////////////////
 
   public async generatePreviewToken(documentId: string): Promise<CnDocumentPreviewDTO> {
-    await this.getAndCheckAuthorizationForFindOneByFolder(documentId);
+    await this.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
 
@@ -1118,7 +1174,7 @@ export class CnFolderAggregateService {
   }
 
   public async getStorageSizeByFolder(folderId: string): Promise<CnFolderStorageUsageDTO> {
-    await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
 
     const children = await this.getFolderDirectChildren(folderId);
 
@@ -1139,7 +1195,7 @@ export class CnFolderAggregateService {
 
   /////////////////////////////////////// FOLDER USER //////////////////////////////////
   public async getCurrentUserRootFolderConfig(rootFolderId: string): Promise<CnFolderUser> {
-    await this.getAndCheckAuthorizationForFindOneByFolder(rootFolderId);
+    await this.getAndCheckAuthorizationForFindOneByHierarchyObject(rootFolderId);
 
     return this.folderUserService.findByRootFolderIdAndUserId(
       rootFolderId,
@@ -1151,7 +1207,7 @@ export class CnFolderAggregateService {
     rootFolderId: string,
     options: CnFolderUser
   ): Promise<CnFolderUser> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(rootFolderId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(rootFolderId);
 
     if (!folder.isRootFolder()) {
       throw new BlBadRequestException('The folder is not a root folder');
@@ -1172,7 +1228,7 @@ export class CnFolderAggregateService {
     size: number
   ): Promise<ClPage<CnActivity>> {
     // check that the user can view the folder
-    const folder = await this.getAndCheckAuthorizationForFindOneByFolder(folderId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
 
     const searchBuilder = new BlSearchBuilder<CnActivity>({ createdAt: 'DESC' as any });
 
@@ -1209,8 +1265,10 @@ export class CnFolderAggregateService {
 
   /////////////////////////////////////// SECURITY //////////////////////////////////
 
-  private async getAndCheckAuthorizationForFindOneByFolder(folderId: string): Promise<CnHierarchyObject> {
-    const folder = await this.hierarchyObjectService.findByIdAndCheck(folderId);
+  private async getAndCheckAuthorizationForFindOneByHierarchyObject(
+    hierarchyObjectId: string
+  ): Promise<CnHierarchyObject> {
+    const folder = await this.hierarchyObjectService.findByIdAndCheck(hierarchyObjectId);
 
     await this.foldersAggregateSecurity.checkFindOne(folder, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
     return folder;
@@ -1241,5 +1299,28 @@ export class CnFolderAggregateService {
       userInfo: CnCurrentUserHelper.getAndCheckUserSpaceInfo(),
     };
     this.eventEmitter.emit(cnFolderEventName, event);
+  }
+
+  public async migrateStyle(): Promise<void> {
+    await this.documentService.migrateDocuments();
+    const hierarchyRepresentations: CnHierarchyRepresentation[] = [];
+    const types = [CnFolderEntity, CnScenarioEntity, CnNoteEntity, CnResourceEntity, CnDocumentEntity];
+
+    await this.datasource.transaction(async (entityManager) => {
+      for (const type of types) {
+        hierarchyRepresentations.push(
+          ...(await entityManager.find(type, { relations: { hierarchyRepresentation: true } }))
+        );
+      }
+    });
+
+    for (const hierarchyRepresentation of hierarchyRepresentations) {
+      if (hierarchyRepresentation.hierarchyRepresentation.style == null) {
+        hierarchyRepresentation.hierarchyRepresentation.setObjectInfo(
+          hierarchyRepresentation.getHierarchyObjectInfo()
+        );
+        await this.hierarchyObjectService.migrate(hierarchyRepresentation.hierarchyRepresentation);
+      }
+    }
   }
 }

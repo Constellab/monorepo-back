@@ -39,7 +39,7 @@ export class CnFolderEntity extends CnHierarchyRepresentation {
   mainStorage: CnBucket;
 
   @Exclude()
-  @ManyToOne(() => CnBucket, { nullable: false })
+  @ManyToOne(() => CnBucket, { nullable: true })
   backupStorage: CnBucket;
 
   @Column({ nullable: false, default: false })
@@ -64,6 +64,12 @@ export class CnFolderEntity extends CnHierarchyRepresentation {
       name: this.name,
       user: this.leader,
       lastModifiedAt: this.lastModifiedAt ?? ClDateHelper.getDate(),
+      style: {
+        icon_type: 'MATERIAL_ICON',
+        icon_technical_name: 'folder',
+        background_color: 'accent',
+        icon_color: 'accentContrast',
+      },
     };
   }
 }

@@ -193,4 +193,8 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
       entityManager
     );
   }
+
+  public migrate(hierarchyObject: CnHierarchyObject): Promise<CnHierarchyObject> {
+    return this.repository.save(hierarchyObject, { listeners: false });
+  }
 }

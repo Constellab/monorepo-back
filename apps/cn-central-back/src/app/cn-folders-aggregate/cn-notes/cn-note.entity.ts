@@ -57,6 +57,12 @@ export class CnNoteEntity extends CnHierarchyRepresentation {
       user: this.lastModifiedBy,
       lastModifiedAt: this.lastModifiedAt,
       isValidated: this.isValidated,
+      style: {
+        icon_type: 'MATERIAL_ICON',
+        icon_technical_name: 'note',
+        background_color: 'primary',
+        icon_color: 'primaryContrast',
+      },
     };
   }
 }
