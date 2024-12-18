@@ -307,11 +307,11 @@ export class HnBrickAggregateService {
       const version: BlVersion =
         body.version.subPatch != null
           ? new BlVersion(
-            +body.version.major,
-            +body.version.minor,
-            +body.version.patch,
-            +body.version.subPatch
-          )
+              +body.version.major,
+              +body.version.minor,
+              +body.version.patch,
+              +body.version.subPatch
+            )
           : new BlVersion(+body.version.major, +body.version.minor, +body.version.patch);
 
       // TODO: Improve brick version creation (simplify in the aggregate)
@@ -423,6 +423,7 @@ export class HnBrickAggregateService {
       repoType: brickVersion.repoType,
       repositoryUrl: brick.repositoryUrl,
       repositoryAccessUrl: brick.repositoryAccessUrl,
+      technicalInfo: brickVersion.technicalInfo,
     };
   }
 

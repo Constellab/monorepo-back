@@ -171,6 +171,7 @@ export class HnBrickVersionDownloadDTO {
   repoType: HnRepoType;
   repositoryUrl: string;
   repositoryAccessUrl: string;
+  technicalInfo?: Record<string, any>;
 }
 
 export class HnCreateBrickDTO {
