@@ -18,11 +18,13 @@ import {
 import { ClDateHelper, ClPage, ClPageI, ClStringHelper } from '@monorepo/core-lib';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import {
+  CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
   CnLabManagerDockerPs,
   CnLabManagerDockerPsFull,
+  CnLabManagerInitConfig,
   CnLabManagerRestoreBackupConfigDTO,
   CnManagerLabComposeRestartOptions,
   CnManagerLabPullBiotaOptions,
@@ -35,7 +37,6 @@ import {
   CnLabConfigDTO,
   CnLabCreateAdminDTO,
   CnLabCreateDesktopDTO,
-  CnLabDesktopConfig,
   CnLabFindOneDto,
   CnLabGlabApiInfo,
   CnLabServerInfoDTO,
@@ -65,7 +66,6 @@ import { CnLabServerService } from './server/cn-lab-server.service';
 import { CnLabConfigurerService } from './server/cn-lab-configurer.service';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnLabConfigsService } from '../cn-lab-configs/cn-lab-configs.service';
-import { CnLabDesktopService, CnLabDesktopZipConfig } from './desktop/cn-lab-desktop.service';
 import { CnBrickGWS } from '../cn-bricks/cn-brick.dto';
 import { CnLabMailService } from './mail/cn-lab-mail.service';
 import { CnLabGreenOption } from './green-option/cn-lab-green-option.entity';
@@ -92,6 +92,8 @@ import { CnLabStatsStorageResponseDTO } from './stats/cn-lab-storage-stats.dto';
 import { CnLabStatsRunningResponseDTO } from './stats/cn-lab-running-stats.dto';
 import { CnLabStatusHistoryService } from './status/cn-lab-status-history.service';
 import { CnLabStatsAggregateService } from './stats/cn-lab-stats-aggregate.service';
+import { CnLabDesktopService } from './desktop/cn-lab-desktop.service';
+import { CnLabDesktopGenerateConfig } from './desktop/cn-lab-desktop.class';
 
 @Injectable()
 export class CnLabAggregateService {
@@ -110,7 +112,6 @@ export class CnLabAggregateService {
     private labConfigurerService: CnLabConfigurerService,
     private cloudProviderFactory: CnCloudProviderFactory,
     private labConfigService: CnLabConfigsService,
-    private labDesktopService: CnLabDesktopService,
     private labMailService: CnLabMailService,
     private labGreenOptionService: CnLabGreenOptionService,
     private authService: CnAuthService,
@@ -118,7 +119,8 @@ export class CnLabAggregateService {
     private backupService: CnLabBackupAggregateService,
     private labVolumeService: CnLabVolumeService,
     private labStatusHistoryService: CnLabStatusHistoryService,
-    private labStatsAggregateService: CnLabStatsAggregateService
+    private labStatsAggregateService: CnLabStatsAggregateService,
+    private labDesktopService: CnLabDesktopService
   ) {}
 
   /**
@@ -252,47 +254,6 @@ export class CnLabAggregateService {
     lab.serverVolumeId = updateLab.serverVolumeId;
     lab.desktopPlatform = updateLab.desktopPlatform;
     return lab;
-  }
-
-  /**
-   * Accessible by any user to create his own desktop lab
-   * @param createLab
-   */
-  async createDesktop(createLab: CnLabCreateDesktopDTO): Promise<CnLab> {
-    const lab = new CnLabEntity();
-    lab.name = createLab.name;
-    lab.desktopPlatform = createLab.desktopPlatform;
-    lab.type = CnLabType.DESKTOP;
-
-    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-    lab.setSpace(userInfo.space);
-
-    this.security.checkAuthorizationCreateDesktopLab(lab);
-
-    return this.dataSource.transaction(async (entityManager) => {
-      const labDb = await this.labsService.createLab(lab, entityManager);
-
-      // add the user as OWNER of his lab
-      await this.labUserService.createLabUser(lab, userInfo.user, CnLabUserRole.OWNER, entityManager);
-      return labDb;
-    });
-  }
-
-  /**
-   * Update accessible for any owner of the lab, he can update only few parameters
-   */
-  async updateDesktopLab(id: string, updateLab: CnLabCreateDesktopDTO): Promise<CnLab> {
-    const labDb: CnLab = await this.labsService.findByIdAndCheck(id);
-
-    if (!labDb.isDesktop()) {
-      throw new BlUnauthorizedException();
-    }
-    await this.security.checkAuthorizationToManageLab(labDb, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
-
-    return this.labsService.updatePartial(id, {
-      name: updateLab.name,
-      desktopPlatform: updateLab.desktopPlatform,
-    });
   }
 
   async updateLabName(id: string, name: string): Promise<CnLab> {
@@ -894,6 +855,12 @@ export class CnLabAggregateService {
     return this.labManagerService.stopAdminer(lab);
   }
 
+  public async getAdminerInfo(labId: string): Promise<CnLabManagerAdminerInfo> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    this.checkServerIsRunning(lab);
+    return this.labManagerService.getAdminerInfo(lab);
+  }
+
   public getLabManagerRecommendedVersion(): string {
     return this.labManagerService.getLabManagerRecommendedVersion();
   }
@@ -1308,15 +1275,58 @@ export class CnLabAggregateService {
   ////////////////////////// DESKTOP //////////////////////////////
   public async generateDesktopConfig(
     labId: string,
-    desktopConfig: CnLabDesktopConfig
-  ): Promise<CnLabDesktopZipConfig> {
+    customConfig: CnLabDesktopGenerateConfig
+  ): Promise<CnLabManagerInitConfig> {
     const lab = await this.getAndCheckAuthorizationToFindById(labId);
 
-    if (!lab.isDesktop()) {
-      throw new BlBadRequestException('Lab is not desktop');
-    }
+    return this.labDesktopService.generateLabManagerConfig(lab, customConfig);
+  }
 
-    return this.labDesktopService.generateDesktopConfig(lab, desktopConfig);
+  public async getDesktopRunLabManagerCommand(labId: string): Promise<string> {
+    const lab = await this.getAndCheckAuthorizationToFindById(labId);
+
+    return this.labDesktopService.getRunLabManagerCommand(lab);
+  }
+
+  /**
+   * Update accessible for any owner of the lab, he can update only few parameters
+   */
+  async updateDesktopLab(id: string, updateLab: CnLabCreateDesktopDTO): Promise<CnLab> {
+    const labDb: CnLab = await this.labsService.findByIdAndCheck(id);
+
+    if (!labDb.isDesktop()) {
+      throw new BlUnauthorizedException();
+    }
+    await this.security.checkAuthorizationToManageLab(labDb, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+
+    return this.labsService.updatePartial(id, {
+      name: updateLab.name,
+      desktopPlatform: updateLab.desktopPlatform,
+    });
+  }
+
+  /**
+   * Accessible by any user to create his own desktop lab
+   * @param createLab
+   */
+  async createDesktop(createLab: CnLabCreateDesktopDTO): Promise<CnLab> {
+    const lab = new CnLabEntity();
+    lab.name = createLab.name;
+    lab.desktopPlatform = createLab.desktopPlatform;
+    lab.type = CnLabType.DESKTOP;
+
+    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+    lab.setSpace(userInfo.space);
+
+    this.security.checkAuthorizationCreateDesktopLab(lab);
+
+    return this.dataSource.transaction(async (entityManager) => {
+      const labDb = await this.labsService.createLab(lab, entityManager);
+
+      // add the user as OWNER of his lab
+      await this.labUserService.createLabUser(lab, userInfo.user, CnLabUserRole.OWNER, entityManager);
+      return labDb;
+    });
   }
 
   //////////////////////////// AUTHORIZATION ////////////////////////////////

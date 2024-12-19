@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 import { CnLabManagerGuard } from '../cn-core/decorators/cn-lab-manager-guard.decorator';
 import { CnLabRobotAuthentication } from '../cn-core/decorators/cn-lab-guard.decorator';
-import { BlParsePipe } from '@monorepo/back-core-lib';
+import { BlParsePipe, BlPublic } from '@monorepo/back-core-lib';
 import { CnLabManagerBackupInfoDTO } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLabBackupBucket, CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
 import { CnLabBackupHistory } from '../cn-labs/backup/cn-lab-backup-history.entity';
@@ -35,5 +35,11 @@ export class CnExternalLabsManagerController {
     @Body(new BlParsePipe(CnLabBackupsHistory)) backupsHistory: CnLabBackupsHistory
   ): Promise<CnLabBackupHistory[]> {
     return this.labAggregator.saveCurrentLabBackupHistory(backupsHistory);
+  }
+
+  @BlPublic()
+  @Get('recommended-version')
+  getLabManagerRecommendedVersion(): { labManagerRecommendedVersion: string } {
+    return { labManagerRecommendedVersion: this.labAggregator.getLabManagerRecommendedVersion() };
   }
 }

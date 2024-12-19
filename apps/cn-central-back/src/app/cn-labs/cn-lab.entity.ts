@@ -264,7 +264,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
     if (this.name == 'localhost') {
       return {
         apiKey: '123456',
-        apiUrl: 'http://localhost:3000/' + CnLabEntity.SPACE_API_ROUTE,
+        apiUrl: 'http://localhost:3100/' + CnLabEntity.SPACE_API_ROUTE,
       };
     }
     return {

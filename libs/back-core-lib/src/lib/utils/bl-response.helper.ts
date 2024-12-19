@@ -27,6 +27,17 @@ export class BlResponseHelper {
     file.file.pipe(response);
   }
 
+  public static setFileResponseFromStr(
+    response: Response,
+    content: string,
+    fileName: string,
+    contentType: string
+  ): void {
+    response.setHeader('Content-Type', contentType);
+    response.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    response.send(content);
+  }
+
   /**
    * Set an incoming message (like and image) in an HTTP response and cache it for a week
    */
@@ -55,7 +66,7 @@ export class BlResponseHelper {
   /**
    * Return a StreamableFile from a string, useful to be downloaded by the client
    */
-  public static fileResponseFromString(fileContent: string): StreamableFile {
+  public static streamableFileFromString(fileContent: string): StreamableFile {
     const readableStream = new Readable();
     readableStream.push(fileContent);
     readableStream.push(null); // indicates end of file

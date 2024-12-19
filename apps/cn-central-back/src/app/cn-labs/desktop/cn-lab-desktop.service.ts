@@ -1,138 +1,62 @@
 import { Injectable } from '@nestjs/common';
-import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
-import { existsSync, readFileSync } from 'fs';
-import { CnLab, CnLabDesktopPlatform } from '../cn-lab.entity';
-import { CnFrontService } from '../../cn-core/services/cn-front.service';
-import { HttpService } from '@nestjs/axios';
-import { lastValueFrom } from 'rxjs';
-import { BlBadRequestException } from '@monorepo/back-core-lib';
-import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service';
-import { CnLabConfigFile } from '../../cn-lab-configs/cn-lab-config-file.class';
-import { CnLabConfigDTO, CnLabDesktopConfig } from '../cn-lab.dto';
-
-export interface CnLabDesktopZipConfig {
-  dockerCompose: string;
-  config: CnLabConfigFile;
-  exeFile: { name: string; buffer: Buffer };
-}
+import { CnLab, CnLabWithSpace } from '../cn-lab.entity';
+import { CnLabManagerService } from '../cn-lab-manager.service';
+import { CnLabManagerInitConfig } from '../../cn-external-lab-api/model/cn-lab-manager.class';
+import { CnLabDesktopGenerateConfig } from './cn-lab-desktop.class';
 
 @Injectable()
 export class CnLabDesktopService {
-  constructor(
-    private configService: CnCoreConfigService,
-    private frontService: CnFrontService,
-    private httpService: HttpService,
-    private labConfigService: CnLabConfigsService
-  ) {}
+  constructor(private labManagerService: CnLabManagerService) {}
 
-  public async generateDesktopConfig(
-    lab: CnLab,
-    desktopConfig: CnLabDesktopConfig
-  ): Promise<CnLabDesktopZipConfig> {
-    const config = await this.getConfig(lab, desktopConfig);
-    const exe = await this.getExeFile(lab.desktopPlatform);
-    return {
-      dockerCompose: this.generateDockerCompose(lab, config),
-      config: config,
-      exeFile: exe,
-    };
-  }
+  // list of volume to create
+  private static readonly VOLUMES = {
+    'lab-manager-config': '/app/conf',
+    'lab-manager-biota': '/app/gws_db/gws_biota/mariadb',
+    'lab-manager-prod-db': '/app/gws_db/gws_core/prod/mariadb',
+    'lab-manager-dev-db': '/app/gws_db/gws_core/dev/mariadb',
+    'lab-manager-prod-lab': '/app/prod/lab',
+    'lab-manager-prod-data': '/app/prod/data',
+    'lab-manager-dev-lab': '/app/dev/lab',
+  };
 
-  private generateDockerCompose(lab: CnLab, config: CnLabConfigFile): string {
-    let content = this.readDockerComposeTemplate();
+  private static readonly CONTAINER_PORT = 3080;
 
-    // replace variables
-    content = content
-      .replace(/\${LAB_ID}/g, lab.id)
-      .replace(/\${LAB_NAME}/g, lab.name)
-      .replace(/\${SPACE_PROD_API_KEY}/g, lab.glabProdApiKey)
-      .replace(/\${SPACE_DEV_API_KEY}/g, lab.glabDevApiKey)
-      .replace(/\${SPACE_API_URL}/g, this.configService.getApiUrl())
-      .replace(/\${GWS_CORE_PROD_DB_PASSWORD}/g, lab.gwsCoreProdDbPassword)
-      .replace(/\${SECRET_KEY}/g, lab.id)
-      .replace(/\${GWS_CORE_DEV_DB_PASSWORD}/g, lab.gwsCoreDevDbPassword)
-      .replace(/\${SPACE_FRONT_URL}/g, this.frontService.getBaseWebsiteURL())
-      .replace(/\${COMMUNITY_FRONT_URL}/g, this.configService.getCommunityFrontUrl())
-      .replace(/\${COMMUNITY_API_URL}/g, this.configService.getCommunityApiUrl())
-      .replace(/\${FRONT_VERSION}/g, config.front_version)
-      .replace(/\${GLAB_TAG}/g, config.glab_tag);
-
-    if (!config.biota_maria_db_url) {
-      // remove all text between '#START_BIOTA_DB' and '#END_BIOTA_DB'
-      content = content.replace(/#START_BIOTA_DB[\s\S]*#END_BIOTA_DB/g, '');
-    }
-
-    return content;
-  }
-
-  private async getConfig(lab: CnLab, desktopConfig: CnLabDesktopConfig): Promise<CnLabConfigFile> {
-    if (lab.labConfigId == null) {
-      throw new BlBadRequestException('Please configure the lab before generate the config file');
-    }
-
-    const config = await this.labConfigService.getCompleteConfig(lab.labConfigId);
-
-    const configDTO: CnLabConfigDTO = {
-      glabTag: desktopConfig.glabTag,
-      brickVersions: [],
-    };
-
-    for (const brickVersion of config.brickVersions) {
-      configDTO.brickVersions.push({
-        name: brickVersion.brick.name,
-        version: brickVersion.version.toString(),
-      });
-    }
-
-    return this.labConfigService.getLabConfigFile(lab, configDTO);
+  public generateLabManagerConfig(
+    lab: CnLabWithSpace,
+    customConfig: CnLabDesktopGenerateConfig
+  ): CnLabManagerInitConfig {
+    const config = this.labManagerService.getLabManagerInitConfig(lab, lab.space.domain);
+    config.openaiApiKey = customConfig.openaiApiKey;
+    return config;
   }
 
   /**
-   * Get the exe file used to start the lab
-   * @param platform
-   * @private
+   * Get the command to start the lab manager container
    */
-  private async getExeFile(platform: CnLabDesktopPlatform): Promise<{ name: string; buffer: Buffer }> {
-    let name: string = null;
-    let url: string = null;
+  public getRunLabManagerCommand(lab: CnLab): string {
+    // command to create the volumes
+    const volumes = Object.keys(CnLabDesktopService.VOLUMES)
+      .map((volume) => `docker volume create ${volume}`)
+      .join('\n');
 
-    switch (platform) {
-      case CnLabDesktopPlatform.WINDOWS:
-        name = 'desktop-start.exe';
-        url = this.configService.getLabDesktopWindowsExeUrl();
-        break;
-      case CnLabDesktopPlatform.MAC:
-      case CnLabDesktopPlatform.LINUX:
-        name = 'desktop-start-mac';
-        url = this.configService.getLabDesktopMacExeUrl();
-        break;
-      default:
-        throw new BlBadRequestException(`Platform '${platform}' is not supported`);
-    }
+    // volume usage in the run command
+    const volumesUsage = Object.entries(CnLabDesktopService.VOLUMES)
+      .map(([volume, path]) => ` -v ${volume}:${path}`)
+      .join(' ');
 
-    // download the exe form url
-    // https://storage.sbg.cloud.ovh.net/v1/AUTH_a0286631d7b24afba3f3cdebed2992aa/public
-    const response = await lastValueFrom(this.httpService.get(url, { responseType: 'arraybuffer' }));
-    return {
-      name: name,
-      buffer: Buffer.from(response.data, 'binary'),
-    };
-  }
+    // command to start the container
+    const runCommand =
+      `docker run -d --name lab-manager` +
+      ` -e ENVIRONMENT_PROFILE=desktop` +
+      ` -e LAB_MANAGER_API_KEY=${lab.labManagerApiKey}` +
+      ` -e LAB_NAME=${lab.name}` +
+      ` -e LAB_ID=${lab.id}` +
+      volumesUsage +
+      // mount the docker socket to be able to run docker command in the container
+      ` -v /var/run/docker.sock:/var/run/docker.sock` +
+      ` -p ${CnLabDesktopService.CONTAINER_PORT}:${CnLabDesktopService.CONTAINER_PORT}` +
+      ` constellab/lab-manager:latest`;
 
-  private readDockerComposeTemplate(): string {
-    const path = this.configService.getAssetPath('cn-lab-desktop', 'docker-compose.yml');
-
-    return this.readFile(path).toString();
-  }
-
-  /**
-   * read a file with a path relative to dist folder
-   */
-  private readFile(path: string): Buffer {
-    if (!existsSync(path)) {
-      throw new Error(`The file '${path}' does not exist`);
-    }
-
-    return readFileSync(path);
+    return volumes + '\n' + runCommand;
   }
 }

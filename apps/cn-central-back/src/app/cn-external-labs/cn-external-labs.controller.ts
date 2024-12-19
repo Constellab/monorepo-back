@@ -201,6 +201,7 @@ export class CnExternalLabsController {
   // those routes does not require user authentication
   // because they are called by the lab server and are just get
   // TODO remove project routes once all lab are on v0.10.0d
+  @CnLabRobotAuthentication()
   @Get(['project/all-trees', 'folder/all-trees'])
   async getAllFolderTrees(): Promise<CnLabFolderDTO[]> {
     const folders = await this.labFolderAggregateService.getCurrentLabFolders();

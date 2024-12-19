@@ -44,11 +44,6 @@ export interface CnManagerLabPullBiotaOptions {
  * Object to config the lab manager required on init
  */
 export interface CnLabManagerInitConfig {
-  // TODO To remove once all lab manager are on v 1.9.0
-  centralApiKey: string;
-  centralFrontUrl: string;
-  centralApiUrl: string;
-  // end remove
   space: {
     // TODO To remove on all lab manager are on v 1.13.0
     apiKey: string;
@@ -63,19 +58,8 @@ export interface CnLabManagerInitConfig {
     apiKey: string;
   };
   codelabToken: string;
-  // TODO To remove once all lab manager are on v 1.9.0
-  communityFrontUrl: string;
-  communityApiUrl: string;
-  communityApiKey: string;
-  // end remove
   gwsCoreProdPassword: string;
   gwsCoreDevPassword: string;
-  // TODO TO remove once all lab manager are on v 1.10.0
-  dockerRegistry: {
-    url: string;
-    username: string;
-    password: string;
-  };
   labConfig: {
     enableBackup: boolean;
   };
@@ -138,4 +122,20 @@ export interface CnLabManagerRestoreBackupDTO {
     restoreData: boolean;
     force: boolean;
   };
+}
+
+///////////////////////////// ADMINER /////////////////////////////
+export interface CnLabManagerAdminerDbInfo {
+  host: string;
+  username: string;
+  password: string;
+  dbName: string;
+}
+
+export interface CnLabManagerAdminerInfo {
+  url: string;
+
+  gwsCoreProd: CnLabManagerAdminerDbInfo;
+  gwsCoreDev: CnLabManagerAdminerDbInfo;
+  gwsBiota: CnLabManagerAdminerDbInfo;
 }

@@ -108,9 +108,7 @@ export class CnUsersController {
   ): Promise<void> {
     const users = await this.usersService.exportSearch(searchParams);
 
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename=users.csv');
-    res.send(users);
+    BlResponseHelper.setFileResponseFromStr(res, users, 'users.csv', 'text/csv');
   }
 
   @Get('search/name/:name')

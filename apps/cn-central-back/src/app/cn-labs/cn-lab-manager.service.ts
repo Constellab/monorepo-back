@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
+  CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
@@ -92,11 +93,8 @@ export class CnLabManagerService {
     return this.labManagerApiService.configureLabManager(lab.getLabManagerApiInfo(), initConfig);
   }
 
-  private getLabManagerInitConfig(lab: CnLab, spaceDomain: string): CnLabManagerInitConfig {
+  public getLabManagerInitConfig(lab: CnLab, spaceDomain: string): CnLabManagerInitConfig {
     return {
-      centralApiKey: lab.glabProdApiKey,
-      centralApiUrl: this.configService.getApiUrl(),
-      centralFrontUrl: `https://${spaceDomain}.${this.configService.getCentralFrontDomain()}`,
       space: {
         apiKey: lab.glabProdApiKey,
         prodApiKey: lab.glabProdApiKey,
@@ -107,26 +105,19 @@ export class CnLabManagerService {
       community: {
         frontUrl: this.configService.getCommunityFrontUrl(),
         apiUrl: this.configService.getCommunityApiUrl(),
-        apiKey: this.configService.getCommunityApiKey(),
+        // don't provide the community api key on desktop
+        apiKey: lab.isDesktop() ? null : this.configService.getCommunityApiKey(),
       },
       codelabToken: lab.codelabToken,
-      communityFrontUrl: this.configService.getCommunityFrontUrl(),
-      communityApiUrl: this.configService.getCommunityApiUrl(),
-      communityApiKey: this.configService.getCommunityApiKey(),
       gwsCoreProdPassword: lab.gwsCoreProdDbPassword,
       gwsCoreDevPassword: lab.gwsCoreDevDbPassword,
-      // TODO TO REMOVE ONCE ALL LAB MANAGERS ARE MIGRATED TO 1.10.0
-      dockerRegistry: {
-        url: this.configService.getDockerRegistryUrl(),
-        username: this.configService.getDockerRegistryUsername(),
-        password: this.configService.getDockerRegistryPassword(),
-      },
       // enable the captcha only on constellab standard domain
       captchaSiteKey: lab.isConstellabDomain() ? this.configService.getCaptchaSiteKey() : null,
       labConfig: {
         enableBackup: lab.isCloud(),
       },
-      openaiApiKey: this.configService.getOpenaiAPIKey(),
+      // disable openai on desktop
+      openaiApiKey: lab.isDesktop() ? null : this.configService.getOpenaiAPIKey(),
     };
   }
 
@@ -168,6 +159,10 @@ export class CnLabManagerService {
 
   public async stopAdminer(lab: CnLab): Promise<boolean> {
     return this.labManagerApiService.stopAdminer(lab.getLabManagerApiInfo());
+  }
+
+  public async getAdminerInfo(lab: CnLab): Promise<CnLabManagerAdminerInfo> {
+    return this.labManagerApiService.getAdminerInfo(lab.getLabManagerApiInfo());
   }
 
   public async updateConfig(lab: CnLab, config: CnLabConfigDTO): Promise<void> {

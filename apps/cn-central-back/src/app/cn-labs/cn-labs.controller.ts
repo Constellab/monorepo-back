@@ -30,7 +30,6 @@ import {
   CnLabConfigDTO,
   CnLabCreateAdminDTO,
   CnLabCreateDesktopDTO,
-  CnLabDesktopConfig,
   CnLabDto,
   CnLabFindOneDto,
   CnLabServerInfoDTO,
@@ -41,6 +40,7 @@ import {
   CnStopLabRequestDTO,
 } from './cn-lab.dto';
 import {
+  CnLabManagerAdminerInfo,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
   CnLabManagerDockerPs,
@@ -52,8 +52,6 @@ import {
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
 import { CnLabUser, CnLabUserRole } from './user/cn-lab-user.entity';
 import { CnCpCompleteInfo } from './server/cn-cloud-provider.class';
-import { Response } from 'express';
-import * as AdmZip from 'adm-zip';
 import { CnLabGreenOption } from './green-option/cn-lab-green-option.entity';
 import { CnLabGreenOptionFormDto } from './green-option/cn-lab-green-option.dto';
 import { CnLabStatsRequestDTO } from './stats/cn-lab-stats.dto';
@@ -66,6 +64,8 @@ import { CnLabVolume } from './volume/cn-lab-volume-entity';
 import { CnLabStatsStorageResponseDTO } from './stats/cn-lab-storage-stats.dto';
 import { CnLabStatsRunningResponseDTO } from './stats/cn-lab-running-stats.dto';
 import { CnUser } from '../cn-users/cn-user.entity';
+import { Response } from 'express';
+import { CnLabDesktopGenerateConfig } from './desktop/cn-lab-desktop.class';
 
 @Controller('labs')
 export class CnLabsController {
@@ -414,7 +414,7 @@ export class CnLabsController {
     @Param('containerName') containerName: string
   ): Promise<StreamableFile> {
     const fileContent = await this.aggregateService.exportLogs(id, containerName);
-    return BlResponseHelper.fileResponseFromString(fileContent);
+    return BlResponseHelper.streamableFileFromString(fileContent);
   }
 
   @Post(':id/lab-manager/init-all')
@@ -489,6 +489,11 @@ export class CnLabsController {
   @Put(':id/lab-manager/adminer/stop')
   async stopAdminer(@Param('id', new ParseUUIDPipe()) id: string): Promise<boolean> {
     return await this.aggregateService.stopAdminer(id);
+  }
+
+  @Get(':id/lab-manager/adminer/info')
+  async getAdminerInfo(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabManagerAdminerInfo> {
+    return await this.aggregateService.getAdminerInfo(id);
   }
 
   @Get('lab-manager/recommended-version')
@@ -672,33 +677,35 @@ export class CnLabsController {
   }
 
   /////////////////////////// DESKTOP //////////////////////////////
+
+  @Post(':id/desktop/generate-config')
+  async generateDesktopConfig(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() config: CnLabDesktopGenerateConfig,
+    @Res() response: Response
+  ): Promise<any> {
+    const result = await this.aggregateService.generateDesktopConfig(id, config);
+    BlResponseHelper.setFileResponseFromStr(
+      response,
+      JSON.stringify(result, null, 4),
+      'lab-manager-config.json',
+      'application/json'
+    );
+  }
+
+  @Get(':id/desktop/run-lab-manager')
+  async getDesktopRunLabManagerCommand(@Param('id', new ParseUUIDPipe()) id: string): Promise<{
+    command: string;
+  }> {
+    return { command: await this.aggregateService.getDesktopRunLabManagerCommand(id) };
+  }
+
   @Post('desktop')
   async createDesktop(
     @Body(new BlParsePipe(CnLabCreateDesktopDTO)) createLab: CnLabCreateDesktopDTO
   ): Promise<CnLabDto> {
     const lab = await this.aggregateService.createDesktop(createLab);
     return new CnLabDto(lab);
-  }
-
-  @Post(':id/desktop/generate-config')
-  async generateDesktopConfig(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() desktopConfig: CnLabDesktopConfig,
-    @Res() response: Response
-  ): Promise<any> {
-    const result = await this.aggregateService.generateDesktopConfig(id, desktopConfig);
-
-    // create a zip file
-    const zip = new AdmZip();
-    zip.addFile('docker-compose.yml', Buffer.from(result.dockerCompose, 'utf8'));
-    zip.addFile('config.json', Buffer.from(JSON.stringify(result.config, null, 4), 'utf8'));
-    zip.addFile(result.exeFile.name, result.exeFile.buffer);
-    response.set({
-      'Content-Type': 'application/octet-stream',
-      'Content-Disposition': 'attachment; filename=constellab-desktop.zip',
-    });
-    const data = zip.toBuffer();
-    response.send(data);
   }
 
   @Put(':id/desktop')

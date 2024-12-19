@@ -2,6 +2,7 @@ import { BlEntityWithIdDTO } from '@monorepo/back-core-lib';
 import { CnBrickVisibility } from '../../cn-bricks/cn-brick.entity';
 import { CnCommunityUserDto } from './cn-community-user.dto';
 import { CnCommunitySpaceDto } from './cn-community-space.dto';
+import { Type } from 'class-transformer';
 
 export class CnCommunityBrickDto extends BlEntityWithIdDTO {
   name: string;
@@ -14,9 +15,15 @@ export class CnCommunityBrickDto extends BlEntityWithIdDTO {
   credentialUsername?: string;
   credentialPassword?: string;
   createdAt: string;
+
+  @Type(() => CnCommunityUserDto)
   createdBy: CnCommunityUserDto;
   lastModifiedAt: string;
+
+  @Type(() => CnCommunityUserDto)
   lastModifiedBy: CnCommunityUserDto;
+
+  @Type(() => CnCommunitySpaceDto)
   space?: CnCommunitySpaceDto;
   likes: number;
   comments: number;

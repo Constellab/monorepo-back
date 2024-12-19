@@ -61,7 +61,6 @@
     "@nestjs/schedule": "^4.1.0",
     "@nestjs/throttler": "^6.0.0",
     "@nestjs/typeorm": "^10.0.2",
-    "adm-zip": "^0.5.10",
     "argon2": "^0.40.3",
     "asyncctx": "^2.1.1",
     "axios": "1.7.7",

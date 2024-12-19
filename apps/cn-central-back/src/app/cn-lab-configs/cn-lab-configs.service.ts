@@ -101,7 +101,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     return labConfig.brickVersions.find((brickVersion) => brickVersion.brick.name === brick_name);
   }
 
-  ////////////////////////////////////////////// CONFIG FILE ////////////////////////////////////////////////////
+  //////////////////////////////////// CONFIG FILE ////////////////////////////////////////
 
   /**
    * Generate the json for the config file of a lab
@@ -115,9 +115,9 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     // get the front version from the technical info
     const frontVersion = gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_FRONT_VERSION];
     if (frontVersion == null) {
-      // eslint-disable-next-line max-len
       throw new BlBadRequestException(
-        `The front version does not exists for '${CnBrickGWS.GWS_CORE}' version '${gwsCoreBrickVersion.version}'`
+        `The front version does not exists for '${CnBrickGWS.GWS_CORE}'` +
+          ` version '${gwsCoreBrickVersion.version},'`
       );
     }
 

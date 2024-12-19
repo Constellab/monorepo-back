@@ -13,6 +13,7 @@ import {
   cnExternalLabApiKeySchema,
 } from '../cn-core/model/config/cn-config.class';
 import {
+  CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
@@ -155,6 +156,10 @@ export class CnExternalLabManagerApiService {
 
   public async stopAdminer(apiInfo: CnExternalApiInfo): Promise<boolean> {
     return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/adminer/stop`, null));
+  }
+
+  public async getAdminerInfo(apiInfo: CnExternalApiInfo): Promise<CnLabManagerAdminerInfo> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/adminer/info`));
   }
 
   ///////////////////////////////////// BACKUP /////////////////////////////////////
