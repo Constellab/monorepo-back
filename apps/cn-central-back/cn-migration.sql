@@ -66,7 +66,7 @@ ALTER TABLE lab
 ######## 2.1.1 ########
 # Call migration route POST /scenarios/migrate-scenario-description
 
-######## 2.1.2 ########
+######## 2.2.0 ########
 # Add YOUTUBE_API_KEY, YOUTUBE_TUTORIAL_PLAYLIST_ID, FOLDER_ID_TO_COPY_ON_SIGNUP
 
 ALTER TABLE note
@@ -102,6 +102,11 @@ ALTER table hierarchy_object
   ADD COLUMN style text null;
 ALTER table document
   ADD COLUMN style text null;
+
+alter table hierarchy_object
+  modify column objectType enum ('FOLDER', 'DOCUMENT', 'CONSTELLAB_DOCUMENT', 'HIDDEN_DOCUMENT', 'NOTE', 'SCENARIO', 'RESOURCE') not null;
+alter table document
+  modify column bucketType enum ('NORMAL', 'LAB', 'AZURE') not null;
 # Call route POST folders/migrate-style
 
 ALTER table hierarchy_object
