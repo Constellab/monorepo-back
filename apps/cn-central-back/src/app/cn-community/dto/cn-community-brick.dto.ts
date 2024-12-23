@@ -28,3 +28,13 @@ export class CnCommunityBrickDto extends BlEntityWithIdDTO {
   likes: number;
   comments: number;
 }
+
+export class CnCommunityBrickVersionDTO {
+  brickName: string;
+  brickVersion: string;
+  repoType: 'PIP' | 'GIT';
+  repositoryUrl: string;
+  // url to access the repository with the token
+  repositoryAccessUrl: string;
+  technicalInfo?: Record<string, any>;
+}

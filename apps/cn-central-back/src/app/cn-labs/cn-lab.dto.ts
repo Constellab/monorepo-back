@@ -7,7 +7,9 @@ import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
 import { Type } from 'class-transformer';
 import { CnLabUserRole } from './user/cn-lab-user.entity';
 import { CnLab, CnLabBillingMode, CnLabDesktopPlatform, CnLabFull, CnLabType } from './cn-lab.entity';
-import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import {
+  CnCloudProviderRegion,
+} from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnLabServerTaskStatus, CnLabStatus } from './status/cn-lab-status.enum';
 import { DateTime } from 'luxon';
 import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
@@ -99,11 +101,8 @@ export class CnLabCodelabDTO {
   url: string;
 }
 
-export type CnGlabTag = 'latest' | 'beta' | string;
-
 export interface CnLabConfigDTO {
   brickVersions: CnBrickVersionDTO[];
-  glabTag: CnGlabTag | null;
 }
 
 export interface CnLabStartDTO {

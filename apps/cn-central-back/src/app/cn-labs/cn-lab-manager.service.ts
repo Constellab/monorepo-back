@@ -4,8 +4,10 @@ import {
   CnLabManagerBackupInfoDTO,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
+  CnLabManagerDockerLogs,
   CnLabManagerDockerPs,
   CnLabManagerDockerPsFull,
+  CnLabManagerErrorLogs,
   CnLabManagerInitConfig,
   CnLabManagerRestoreBackupDTO,
   CnLabManagerStatus,
@@ -47,6 +49,10 @@ export class CnLabManagerService {
     return this.labManagerApiService.getStatus(lab.getLabManagerApiInfo());
   }
 
+  public async getStartingError(lab: CnLab): Promise<CnLabManagerErrorLogs> {
+    return this.labManagerApiService.getStartingError(lab.getLabManagerApiInfo());
+  }
+
   public getLabManagerRecommendedVersion(): string {
     return this.configService.getLabManagerRecommendedVersion();
   }
@@ -75,8 +81,12 @@ export class CnLabManagerService {
     return this.labManagerApiService.deleteContainer(lab.getLabManagerApiInfo(), containerName);
   }
 
-  public async getLogs(lab: CnLab, containerName: string): Promise<string> {
+  public async getLogs(lab: CnLab, containerName: string): Promise<CnLabManagerDockerLogs> {
     return this.labManagerApiService.getLogs(lab.getLabManagerApiInfo(), containerName);
+  }
+
+  public async getErrorLogs(lab: CnLab, containerName: string): Promise<CnLabManagerDockerLogs> {
+    return this.labManagerApiService.getErrorLogs(lab.getLabManagerApiInfo(), containerName);
   }
 
   public async exportLogs(lab: CnLab, containerName: string): Promise<string> {

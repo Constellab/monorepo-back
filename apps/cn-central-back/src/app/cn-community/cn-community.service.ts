@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CnCommunityBrickDto } from './dto/cn-community-brick.dto';
+import { CnCommunityBrickDto, CnCommunityBrickVersionDTO } from './dto/cn-community-brick.dto';
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { lastValueFrom } from 'rxjs';
 import { ClPage } from '@monorepo/core-lib';
@@ -13,7 +13,28 @@ export class CnCommunityService {
     private readonly configService: CnCoreConfigService
   ) {}
 
-  async getCommunityBrickByName(name: string): Promise<CnCommunityBrickDto> {
+  public async getBrickLatestVersion(brickName: string): Promise<CnCommunityBrickVersionDTO> {
+    // TODO TO IMPROVE WHEN ROUTE TO GET LATEST VERSION WILL BE IMPLEMENTED
+    const brick = await this.getBrickByName(brickName);
+    const brickVersions = await this.getBrickVersionsList(brick.id);
+    const latestVersion = brickVersions[0];
+    return this.getBrickVersion(brickName, latestVersion);
+  }
+
+  public async getBrickVersion(brickName: string, brickVersion: string): Promise<CnCommunityBrickVersionDTO> {
+    const url = `${this.configService.getCommunityApiUrl()}/brick/central/name/${brickName}/${brickVersion}`;
+    const brickVersionDTO: CnCommunityBrickVersionDTO = await lastValueFrom(
+      this.externalApiService.get(url, CnCommunityBrickVersionDTO, {
+        headers: this.getHeaders(),
+      })
+    );
+
+    // delete repositoryAccessUrl to avoid security issue
+    delete brickVersionDTO.repositoryAccessUrl;
+    return brickVersionDTO;
+  }
+
+  async getBrickByName(name: string): Promise<CnCommunityBrickDto> {
     const url = this.configService.getCommunityApiUrl() + '/brick/central-name/' + name;
     return await lastValueFrom(
       this.externalApiService.post(
@@ -27,7 +48,7 @@ export class CnCommunityService {
     );
   }
 
-  async getCommunityBricksByFilters(
+  async getBricksByFilters(
     spacesFilter: string[],
     titleFilter: string,
     page: number,
@@ -54,7 +75,7 @@ export class CnCommunityService {
     );
   }
 
-  async getCommunityBrickVersionsList(brickId: string): Promise<string[]> {
+  async getBrickVersionsList(brickId: string): Promise<string[]> {
     const url = this.configService.getCommunityApiUrl() + '/brick/central-versions-list/' + brickId;
     return await lastValueFrom(
       this.externalApiService.post(url, { userId: CnCurrentUserHelper.getAndCheckCurrentUser().id }, null, {

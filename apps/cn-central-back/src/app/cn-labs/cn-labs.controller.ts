@@ -43,8 +43,10 @@ import {
   CnLabManagerAdminerInfo,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
+  CnLabManagerDockerLogs,
   CnLabManagerDockerPs,
   CnLabManagerDockerPsFull,
+  CnLabManagerErrorLogs,
   CnLabManagerRestoreBackupConfigDTO,
   CnManagerLabComposeRestartOptions,
   CnManagerLabPullBiotaOptions,
@@ -355,6 +357,11 @@ export class CnLabsController {
     return this.aggregateService.getLabManagerStatus(id);
   }
 
+  @Get(':id/lab-manager/starting/error')
+  async getStartingError(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabManagerErrorLogs> {
+    return this.aggregateService.getStartingError(id);
+  }
+
   @Get(':id/lab-manager/containers')
   async listContainers(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabManagerDockerPs[]> {
     return await this.aggregateService.listContainers(id);
@@ -404,8 +411,16 @@ export class CnLabsController {
   async getLogs(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('containerName') containerName: string
-  ): Promise<string> {
+  ): Promise<CnLabManagerDockerLogs> {
     return await this.aggregateService.getLogs(id, containerName);
+  }
+
+  @Get(':id/lab-manager/containers/:containerName/logs/error')
+  async getErrorLogs(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('containerName') containerName: string
+  ): Promise<CnLabManagerDockerLogs> {
+    return await this.aggregateService.getErrorLogs(id, containerName);
   }
 
   @Get(':id/lab-manager/containers/:containerName/logs/export')

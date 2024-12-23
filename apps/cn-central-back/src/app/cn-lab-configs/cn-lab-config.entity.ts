@@ -24,7 +24,6 @@ export class CnLabConfig extends BlEntityWithId {
       throw new Error('Brick versions were not loaded in the CnLabConfig');
     }
     return {
-      glabTag: null,
       brickVersions: this.brickVersions.map((brickVersion) => ({
         name: brickVersion.brick.name,
         version: brickVersion.version.toString(),

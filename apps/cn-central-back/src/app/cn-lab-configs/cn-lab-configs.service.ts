@@ -121,12 +121,11 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
       );
     }
 
-    // use the version set in the config, or by default version link to the gws_core brick version
-    // or use the latest version
-    const glabVersion =
-      config.glabTag ||
-      gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_GLAB_VERSION] ||
-      'latest';
+    // use the version in the gws_core brick version
+    if (!gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_GLAB_VERSION]) {
+      throw new BlBadRequestException('Glab version is not set in the gws_core brick version');
+    }
+    const glabVersion = gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_GLAB_VERSION];
 
     const biotaMariaDbUrl = await this.getMariaDbUrl(config);
 
@@ -203,13 +202,11 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
   public configFileToLabConfig(configFile: CnLabConfigFile): CnLabConfigDTO {
     if (configFile == null) {
       return {
-        glabTag: 'latest',
         brickVersions: [],
       };
     }
 
     const config: CnLabConfigDTO = {
-      glabTag: configFile.glab_tag,
       brickVersions: [],
     };
 

@@ -42,4 +42,10 @@ export class CnExternalLabsManagerController {
   getLabManagerRecommendedVersion(): { labManagerRecommendedVersion: string } {
     return { labManagerRecommendedVersion: this.labAggregator.getLabManagerRecommendedVersion() };
   }
+
+  @CnLabRobotAuthentication()
+  @Get('desktop/update-lab-manager-command')
+  getUpdateLabManagerCommand(): { command: string } {
+    return { command: this.labAggregator.getDesktopUpdateLabManagerCommand() };
+  }
 }

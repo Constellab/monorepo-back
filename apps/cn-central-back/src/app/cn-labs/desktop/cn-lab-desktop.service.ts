@@ -6,8 +6,6 @@ import { CnLabDesktopGenerateConfig } from './cn-lab-desktop.class';
 
 @Injectable()
 export class CnLabDesktopService {
-  constructor(private labManagerService: CnLabManagerService) {}
-
   // list of volume to create
   private static readonly VOLUMES = {
     'lab-manager-config': '/app/conf',
@@ -20,6 +18,10 @@ export class CnLabDesktopService {
   };
 
   private static readonly CONTAINER_PORT = 3080;
+  private static readonly IMAGE = 'constellab/lab-manager:latest';
+  private static readonly CONTAINER_NAME = 'lab-manager';
+
+  constructor(private labManagerService: CnLabManagerService) {}
 
   public generateLabManagerConfig(
     lab: CnLabWithSpace,
@@ -33,20 +35,31 @@ export class CnLabDesktopService {
   /**
    * Get the command to start the lab manager container
    */
-  public getRunLabManagerCommand(lab: CnLab): string {
+  public getCreateAndRunLabManagerCommand(lab: CnLab): string {
     // command to create the volumes
     const volumes = Object.keys(CnLabDesktopService.VOLUMES)
       .map((volume) => `docker volume create ${volume}`)
       .join('\n');
 
+    return volumes + '\n' + this.getRunLabManagerCommand(lab);
+  }
+
+  public getUpdateAndRunLabManagerCommand(lab: CnLab): string {
+    const pullCommand = `docker pull ${CnLabDesktopService.IMAGE}`;
+    const deleteCommand = `docker rm -f ${CnLabDesktopService.CONTAINER_NAME}`;
+
+    return pullCommand + '\n' + deleteCommand + '\n' + this.getRunLabManagerCommand(lab);
+  }
+
+  private getRunLabManagerCommand(lab: CnLab): string {
     // volume usage in the run command
     const volumesUsage = Object.entries(CnLabDesktopService.VOLUMES)
       .map(([volume, path]) => ` -v ${volume}:${path}`)
       .join(' ');
 
     // command to start the container
-    const runCommand =
-      `docker run -d --name lab-manager` +
+    return (
+      `docker run -d --name ${CnLabDesktopService.CONTAINER_NAME}` +
       ` -e ENVIRONMENT_PROFILE=desktop` +
       ` -e LAB_MANAGER_API_KEY=${lab.labManagerApiKey}` +
       ` -e LAB_NAME=${lab.name}` +
@@ -55,8 +68,7 @@ export class CnLabDesktopService {
       // mount the docker socket to be able to run docker command in the container
       ` -v /var/run/docker.sock:/var/run/docker.sock` +
       ` -p ${CnLabDesktopService.CONTAINER_PORT}:${CnLabDesktopService.CONTAINER_PORT}` +
-      ` constellab/lab-manager:latest`;
-
-    return volumes + '\n' + runCommand;
+      ` constellab/lab-manager:latest`
+    );
   }
 }

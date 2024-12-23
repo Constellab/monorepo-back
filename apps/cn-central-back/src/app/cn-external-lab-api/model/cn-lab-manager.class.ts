@@ -92,7 +92,28 @@ export class CnLabManagerStatus {
   isInitialized: boolean;
   // version of the lab manager that has been used to init the lab
   lastInitVersion: string;
+  labFrontUrl: string;
+  labStatus: 'STOPPED' | 'RUNNING' | 'STARTING' | 'ERROR';
+  glabStatus: {
+    status: 'running' | 'stopped' | 'error' | 'none';
+    startProgress?: {
+      percent: number;
+      message: string;
+    };
+    hasStartError: boolean;
+  };
 }
+
+
+export interface CnLabManagerErrorLogs {
+  mainErrors: string[];
+  logs: string;
+}
+
+export interface CnLabManagerDockerLogs {
+  logs: string;
+}
+
 
 ////////////////////////// BACKUP //////////////////////////
 export interface CnLabManagerBackupInfoDTO {

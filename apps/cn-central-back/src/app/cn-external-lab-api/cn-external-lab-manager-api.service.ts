@@ -17,7 +17,9 @@ import {
   CnLabManagerBackupInfoDTO,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
+  CnLabManagerDockerLogs,
   CnLabManagerDockerPsFull,
+  CnLabManagerErrorLogs,
   CnLabManagerInitConfig,
   CnLabManagerRestoreBackupDTO,
   CnManagerLabComposeRestartOptions,
@@ -51,6 +53,10 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/status`));
   }
 
+  public async getStartingError(apiInfo: CnExternalApiInfo): Promise<CnLabManagerErrorLogs> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/starting/error`));
+  }
+
   public async listContainers(apiInfo: CnExternalApiInfo): Promise<CnLabManagerDockerPsFull[]> {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers`));
   }
@@ -81,8 +87,15 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/containers/${containerName}/delete`, null));
   }
 
-  public async getLogs(apiInfo: CnExternalApiInfo, containerName: string): Promise<string> {
+  public async getLogs(apiInfo: CnExternalApiInfo, containerName: string): Promise<CnLabManagerDockerLogs> {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers/${containerName}/logs`));
+  }
+
+  public async getErrorLogs(
+    apiInfo: CnExternalApiInfo,
+    containerName: string
+  ): Promise<CnLabManagerDockerLogs> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers/${containerName}/logs/error`));
   }
 
   public async exportLogs(apiInfo: CnExternalApiInfo, containerName: string): Promise<string> {

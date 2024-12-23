@@ -22,8 +22,10 @@ import {
   CnLabManagerBackupInfoDTO,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
+  CnLabManagerDockerLogs,
   CnLabManagerDockerPs,
   CnLabManagerDockerPsFull,
+  CnLabManagerErrorLogs,
   CnLabManagerInitConfig,
   CnLabManagerRestoreBackupConfigDTO,
   CnManagerLabComposeRestartOptions,
@@ -733,6 +735,11 @@ export class CnLabAggregateService {
     return this.labManagerService.getLabStatus(lab);
   }
 
+  public async getStartingError(labId: string): Promise<CnLabManagerErrorLogs> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.getStartingError(lab);
+  }
+
   public async listContainers(labId: string): Promise<CnLabManagerDockerPs[]> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.listContainers(lab);
@@ -763,9 +770,14 @@ export class CnLabAggregateService {
     return this.labManagerService.deleteContainer(lab, containerName);
   }
 
-  public async getLogs(labId: string, containerName: string): Promise<string> {
+  public async getLogs(labId: string, containerName: string): Promise<CnLabManagerDockerLogs> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.getLogs(lab, containerName);
+  }
+
+  public async getErrorLogs(labId: string, containerName: string): Promise<CnLabManagerDockerLogs> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.getErrorLogs(lab, containerName);
   }
 
   public async exportLogs(labId: string, containerName: string): Promise<string> {
@@ -1015,6 +1027,12 @@ export class CnLabAggregateService {
     backupHistory: CnLabBackupsHistory
   ): Promise<CnLabBackupHistory[]> {
     return this.backupService.saveBackupHistory(CnCurrentUserHelper.getAndCheckCurrentLab(), backupHistory);
+  }
+
+  public getDesktopUpdateLabManagerCommand(): string {
+    return this.labDesktopService.getUpdateAndRunLabManagerCommand(
+      CnCurrentUserHelper.getAndCheckCurrentLab()
+    );
   }
 
   /////////////////////////// SERVER //////////////////////////////
@@ -1285,7 +1303,7 @@ export class CnLabAggregateService {
   public async getDesktopRunLabManagerCommand(labId: string): Promise<string> {
     const lab = await this.getAndCheckAuthorizationToFindById(labId);
 
-    return this.labDesktopService.getRunLabManagerCommand(lab);
+    return this.labDesktopService.getCreateAndRunLabManagerCommand(lab);
   }
 
   /**
