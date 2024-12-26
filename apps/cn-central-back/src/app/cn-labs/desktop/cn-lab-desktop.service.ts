@@ -3,6 +3,7 @@ import { CnLab, CnLabWithSpace } from '../cn-lab.entity';
 import { CnLabManagerService } from '../cn-lab-manager.service';
 import { CnLabManagerInitConfig } from '../../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLabDesktopGenerateConfig } from './cn-lab-desktop.class';
+import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 
 @Injectable()
 export class CnLabDesktopService {
@@ -21,7 +22,10 @@ export class CnLabDesktopService {
   private static readonly IMAGE = 'constellab/lab-manager:latest';
   private static readonly CONTAINER_NAME = 'lab-manager';
 
-  constructor(private labManagerService: CnLabManagerService) {}
+  constructor(
+    private labManagerService: CnLabManagerService,
+    private coreConfigService: CnCoreConfigService
+  ) {}
 
   public generateLabManagerConfig(
     lab: CnLabWithSpace,
@@ -64,6 +68,8 @@ export class CnLabDesktopService {
       ` -e LAB_MANAGER_API_KEY=${lab.labManagerApiKey}` +
       ` -e LAB_NAME=${lab.name}` +
       ` -e LAB_ID=${lab.id}` +
+      ` -e DESKTOP_COMMUNITY_API_URL=${this.coreConfigService.getCommunityApiUrl()}` +
+      ` -e DESKTOP_COMMUNITY_FRONT_URL=${this.coreConfigService.getCommunityFrontUrl()}` +
       volumesUsage +
       // mount the docker socket to be able to run docker command in the container
       ` -v /var/run/docker.sock:/var/run/docker.sock` +

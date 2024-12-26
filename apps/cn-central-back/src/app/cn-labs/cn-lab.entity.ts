@@ -235,9 +235,9 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
     if (!this.glabDevApiKey) this.glabDevApiKey = this.generateRandomPassword();
     if (!this.gwsCoreProdDbPassword) this.gwsCoreProdDbPassword = this.generateRandomPassword();
     if (!this.gwsCoreDevDbPassword) this.gwsCoreDevDbPassword = this.generateRandomPassword();
+    if (!this.labManagerApiKey) this.labManagerApiKey = this.generateRandomPassword();
 
     if (this.isOnServer()) {
-      if (!this.labManagerApiKey) this.labManagerApiKey = this.generateRandomPassword();
       if (!this.codelabToken) this.codelabToken = this.generateRandomPassword();
     }
 
