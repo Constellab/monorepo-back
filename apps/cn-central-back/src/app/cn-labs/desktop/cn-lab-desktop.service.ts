@@ -70,6 +70,7 @@ export class CnLabDesktopService {
       ` -e LAB_ID=${lab.id}` +
       ` -e DESKTOP_COMMUNITY_API_URL=${this.coreConfigService.getCommunityApiUrl()}` +
       ` -e DESKTOP_COMMUNITY_FRONT_URL=${this.coreConfigService.getCommunityFrontUrl()}` +
+      ` -e VOLUME_PATH=/app/conf` +
       volumesUsage +
       // mount the docker socket to be able to run docker command in the container
       ` -v /var/run/docker.sock:/var/run/docker.sock` +
