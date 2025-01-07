@@ -1,4 +1,4 @@
-import { HnStory, HnStoryCategory, HnStoryStatus } from './hn-story.entity';
+import { HnStory, HnStoryStatus } from './hn-story.entity';
 import { HnStoryCoAuthorDto } from '../story-author/hn-story-author.dto';
 import { HnUserDto } from '../users/hn-user.dto';
 import { HnTopic } from '../topic/hn-topic.entity';
@@ -7,12 +7,9 @@ import { TeRichTextDTO } from '@monorepo/te-text-editor';
 
 export class HnCreateStoryDto {
   title: string;
-
-  category: HnStoryCategory;
 }
 
 export class HnStoryFilter {
-  categories: string[];
   topics: string[];
   title: string;
 }
@@ -24,7 +21,6 @@ export class HnStoryDto extends BlEntityWithIdDTO {
   firstParagraph?: string;
   mainPicture?: string;
   status: HnStoryStatus;
-  category: HnStoryCategory;
   publishedAt: string;
   storyAuthors: HnStoryCoAuthorDto[];
   createdAt: string;
@@ -43,7 +39,6 @@ export class HnStoryDto extends BlEntityWithIdDTO {
     this.firstParagraph = story.firstParagraph;
     this.mainPicture = story.mainPicture;
     this.status = story.status;
-    this.category = story.category;
     this.publishedAt = story.publishedAt?.toISO();
     this.createdAt = story.createdAt?.toISO();
     this.lastModifiedAt = story.lastModifiedAt?.toISO();

@@ -14,7 +14,7 @@ import {
 import { HnStoryService } from './hn-story.service';
 import { BlFile, BlParsePipe, BlPublic, BlUploadedFile } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
-import { HnStory, HnStoryCategory } from './hn-story.entity';
+import { HnStory } from './hn-story.entity';
 import { HnCreateStoryDto, HnStoryDto, HnStoryFilter } from './hn-story.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { HnTopicDto } from '../topic/hn-topic.dto';
@@ -138,14 +138,6 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
     @Body('title') title: string
   ): Promise<HnStory> {
     return this.storyService.updateStoryTitle(id, title);
-  }
-
-  @Put(':id/category')
-  async updateStoryCategory(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Body('category') category: HnStoryCategory
-  ): Promise<HnStory> {
-    return this.storyService.updateStoryCategory(id, category);
   }
 
   @Put(':id/add-topic')

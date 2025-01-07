@@ -63,9 +63,6 @@ export class HnStory extends BlEntityWithId {
   @Column({ type: 'enum', enum: HnStoryStatus, default: HnStoryStatus.DRAFT })
   status: HnStoryStatus;
 
-  @Column({ type: 'enum', enum: HnStoryCategory, default: HnStoryCategory.ARTICLE })
-  category: HnStoryCategory;
-
   @BlLuxonDateTimeColumn({ nullable: true })
   publishedAt: DateTime;
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HnStory, HnStoryCategory, HnStoryStatus } from './hn-story.entity';
+import { HnStory, HnStoryStatus } from './hn-story.entity';
 import { DataSource, EntityManager, FindOptionsOrder, FindOptionsWhere, In, Like, Repository } from 'typeorm';
 import { HnTopicService } from '../topic/hn-topic.service';
 import { ClPage, ClStringHelper } from '@monorepo/core-lib';
@@ -50,7 +50,6 @@ export class HnStoryService {
   async createStory(data: HnCreateStoryDto): Promise<HnStory> {
     const story = new HnStory();
     story.title = data.title;
-    story.category = data.category;
     story.content = TeRichText.emptyJson();
     return await this.storyRepository.save(story);
   }
@@ -135,9 +134,6 @@ export class HnStoryService {
       },
     ];
     const order: FindOptionsOrder<HnStory> = { createdAt: 'DESC' as any };
-    if (filters.categories && filters.categories.length > 0) {
-      where.map((w) => (w.category = In(filters.categories)));
-    }
 
     if (filters.topics && filters.topics.length > 0) {
       where.map(
@@ -234,9 +230,6 @@ export class HnStoryService {
   async getStoriesByFilter(filters: HnStoryFilter, page: number, size: number): Promise<ClPage<HnStoryDto>> {
     const where: FindOptionsWhere<HnStory> = {};
     const order: FindOptionsOrder<HnStory> = { createdAt: 'DESC' as any };
-    if (filters.categories && filters.categories.length > 0) {
-      where.category = In(filters.categories);
-    }
     if (filters.topics && filters.topics.length > 0) {
       where.topics = {
         id: In(filters.topics),
@@ -297,13 +290,6 @@ export class HnStoryService {
     await this.checkAndValidateOwnerOrCoAuthor(id);
     const story = await this.getStory(id);
     story.title = title;
-    return this.storyRepository.save(story);
-  }
-
-  async updateStoryCategory(id: string, category: HnStoryCategory): Promise<HnStory> {
-    await this.checkAndValidateOwnerOrCoAuthor(id);
-    const story = await this.getStory(id);
-    story.category = category;
     return this.storyRepository.save(story);
   }
 

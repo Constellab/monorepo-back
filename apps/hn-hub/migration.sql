@@ -15,9 +15,16 @@
 -- RENAME TABLE old_table_name TO new_table_name;
 --
 
+#1
+.
+4.7
+alter table `story`
+drop
+column if exists `category`;
 
-#
-1.4.6
+
+#1.
+4.6
 alter table `story`
 drop
 column if exists `modifications_backup`;
