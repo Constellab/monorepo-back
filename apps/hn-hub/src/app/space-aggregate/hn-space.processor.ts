@@ -29,6 +29,12 @@ export class HnSpaceProcessor extends WorkerHost {
           throw e;
         });
         break;
+      case BlTransportSpaceUserPattern.DELETE:
+        await this.spaceAggregateService.deleteSpace(job.data).catch((e) => {
+          this.logger.error(`Error while processing job ${job.id} ${job.name} : ${e.message}`);
+          throw e;
+        });
+        break;
     }
   }
 }

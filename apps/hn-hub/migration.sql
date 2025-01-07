@@ -16,6 +16,16 @@
 --
 
 
+#
+1.4.6
+alter table `story`
+drop
+column if exists `modifications_backup`;
+
+alter table `agent_version`
+drop
+column if exists `old_params`;
+
 # 1.4.3
 alter table `agent_version`
   add column old_params text null;

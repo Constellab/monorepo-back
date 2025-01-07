@@ -28,6 +28,10 @@ export class HnSpaceService {
     return this.spaceRepository.save(space);
   }
 
+  public async delete(id: string): Promise<void> {
+    await this.spaceRepository.delete(id);
+  }
+
   public async getGencoverySpace(): Promise<HnSpace> {
     return this.spaceRepository.findOneBy({ id: this.coreConfigService.getGencoverySpaceId() });
   }

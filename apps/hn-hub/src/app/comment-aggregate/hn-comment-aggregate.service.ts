@@ -20,7 +20,7 @@ export class HnCommentAggregateService {
     entityId: string,
     page: number,
     size: number
-  ): Promise<ClPage<HnAbstractCommentDto<BlEntityWithId>>> {
+  ): Promise<ClPage<HnAbstractCommentDto>> {
     return this.getService(commentType).getComments(page, size, entityId);
   }
 
@@ -28,10 +28,8 @@ export class HnCommentAggregateService {
     commentType: HnEntityType,
     entityId: string,
     comment: TeRichText
-  ): Promise<HnAbstractCommentDto<BlEntityWithId>> {
-    return new HnAbstractCommentDto<BlEntityWithId>(
-      await this.getService(commentType).comment(entityId, comment)
-    );
+  ): Promise<HnAbstractCommentDto> {
+    return new HnAbstractCommentDto(await this.getService(commentType).comment(entityId, comment));
   }
 
   private getService(likeType: HnEntityType): HnAbstractCommentService<BlEntityWithId> {

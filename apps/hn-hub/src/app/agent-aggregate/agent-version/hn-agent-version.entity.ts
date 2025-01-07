@@ -44,9 +44,6 @@ export class HnAgentVersion extends BlEntityWithId {
   @Column({ type: 'simple-json', nullable: true })
   params: Record<string, any>;
 
-  @Column({ name: 'old_params', type: 'text', nullable: true })
-  oldParams: string;
-
   @Column({ type: 'text', nullable: true })
   environment: string;
 

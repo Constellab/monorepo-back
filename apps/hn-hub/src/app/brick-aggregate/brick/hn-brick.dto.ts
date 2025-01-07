@@ -3,7 +3,6 @@ import { HnVersionState } from '../brick-major-version/hn-brick-major-version.en
 import { HnBrick, HnBrickVisibility } from './hn-brick.entity';
 import { BlEntityWithIdDTO, BlVersion } from '@monorepo/back-core-lib';
 import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
-import { HnBrickUserDto } from '../brick-user/hn-brick-user.dto';
 import { HnUserDto } from '../../users/hn-user.dto';
 import { HnSpaceDto } from '../../space-aggregate/space/hn-space.dto';
 
@@ -17,7 +16,6 @@ export class HnBrickDto extends BlEntityWithIdDTO {
   imageLink?: string;
   credentialUsername?: string;
   credentialPassword?: string;
-  brickUsers: HnBrickUserDto[];
   createdAt: string;
   createdBy: HnUserDto;
   lastModifiedAt: string;
@@ -41,7 +39,6 @@ export class HnBrickDto extends BlEntityWithIdDTO {
     this.imageLink = brick.imageLink;
     this.credentialUsername = brick.credentialUsername;
     this.credentialPassword = brick.credentialPassword;
-    this.brickUsers = brick.brickUsers?.map((brickUser) => new HnBrickUserDto(brickUser));
     this.createdAt = brick.createdAt.toISO();
     this.createdBy = new HnUserDto(brick.createdBy);
     this.lastModifiedAt = brick.lastModifiedAt.toISO();

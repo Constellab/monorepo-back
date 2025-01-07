@@ -1,0 +1,99 @@
+import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Query } from '@nestjs/common';
+import { BlParsePipe } from '@monorepo/back-core-lib';
+import { HnLabGuard } from '../core/decorators/hn-lab-auth-guard.decorator';
+import {
+  HaCreateAgentVersionFromLabResponseDto,
+  HnAgentForLabDto,
+  HnAgentVersionFileInput,
+  HnAgentVersionForLabDto,
+  HnCreateAgentDto,
+} from './agent/hn-agent.dto';
+import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
+import { HnAgentAggregateService } from './hn-agent-aggregate.service';
+import { ClPage } from '@monorepo/core-lib';
+
+@Controller('agent/for-lab')
+export class HnAgentForLabController {
+  constructor(private readonly agentAggregateService: HnAgentAggregateService) {}
+
+  @HnLabGuard()
+  @Post()
+  async createForLab(
+    @Body(new BlParsePipe(HnCreateAgentDto)) createAgentDto: HnCreateAgentDto
+  ): Promise<HaCreateAgentVersionFromLabResponseDto> {
+    const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
+    createAgentDto.versionFile = migrator.migrateAgentVersionFile(createAgentDto.versionFile);
+    return this.agentAggregateService.createForLab(createAgentDto);
+  }
+
+  @HnLabGuard()
+  @Post('version/:id')
+  async createNewVersionForLab(
+    @Param('id', ParseUUIDPipe) agentId: string,
+    @Body('versionFile') versionFile: HnAgentVersionFileInput
+  ): Promise<HaCreateAgentVersionFromLabResponseDto> {
+    const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
+    versionFile = migrator.migrateAgentVersionFile(versionFile);
+    return this.agentAggregateService.createNewVersionForLab(agentId, versionFile);
+  }
+
+  @HnLabGuard()
+  @Get('version/:id/:jsonVersionNumber?')
+  async getAgentVersionForLab(
+    @Param('id', ParseUUIDPipe) versionId: string,
+    @Param('jsonVersionNumber') jsonVersionNumber?: string
+  ): Promise<HnAgentForLabDto> {
+    let versionNumber = null;
+    if (!jsonVersionNumber) {
+      versionNumber = 1;
+    } else {
+      versionNumber = +jsonVersionNumber;
+    }
+    return this.agentAggregateService.getAgentForLabByVersionId(versionId, versionNumber);
+  }
+
+  /**
+   * Get latest published agent version by agent id for lab
+   * @param agentId
+   * @param jsonVersionNumber
+   * @return an agent version code
+   */
+  @HnLabGuard()
+  @Get(':agentId/version/latest/:jsonVersionNumber?')
+  async getLatestPublishedAgentVersionForLabByAgentId(
+    @Param('agentId', ParseUUIDPipe) agentId: string,
+    @Param('jsonVersionNumber') jsonVersionNumber?: string
+  ): Promise<HnAgentVersionForLabDto> {
+    let versionNumber = null;
+    if (!jsonVersionNumber) {
+      versionNumber = 1;
+    } else {
+      versionNumber = +jsonVersionNumber;
+    }
+    return await this.agentAggregateService.findLatestPublishedAgentVersionForLabByAgentId(
+      agentId,
+      versionNumber
+    );
+  }
+
+  /**
+   * Get agents for lab
+   * @param spacesFilter
+   * @param titleFilter
+   * @param personalOnly
+   * @param page
+   * @param size
+   * @return agents
+   */
+  @HnLabGuard()
+  @Post('available')
+  async getAgentsForLab(
+    @Body('spacesFilter') spacesFilter: string[],
+    @Body('titleFilter') titleFilter: string,
+    @Body('personalOnly') personalOnly: boolean,
+    @Query('page', new ParseIntPipe()) page: number,
+    @Query('size', new ParseIntPipe()) size: number
+  ): Promise<ClPage<HnAgentForLabDto>> {
+    return this.agentAggregateService.getAgentsForLab(spacesFilter, titleFilter, personalOnly, page, size);
+  }
+}

@@ -93,6 +93,12 @@ export class HnSpaceAggregateService {
     }
   }
 
+  public async deleteSpace(spaceDto: Partial<HnSpace>): Promise<void> {
+    await this.checkIfSpaceExists(spaceDto.id);
+
+    await this.spaceService.delete(spaceDto.id);
+  }
+
   public async deleteSpaceUser(spaceUserDto: Partial<HnSpaceUser>): Promise<void> {
     if (!(await this.checkIfUserExists(spaceUserDto.userId))) return;
 

@@ -238,6 +238,20 @@ export class HnBrickAggregateService {
       if (brick?.visibility === HnBrickVisibility.PUBLIC) {
         const brickMap: HnSitemapItemBase[] = [];
 
+        brickMap.push({
+          url: this.frontService.getBrickVersionUrl(brick.name, 'latest'),
+          lastmod: brick.lastModifiedAt.toFormat('yyyy-MM-dd'),
+          changefreq: HnSiteMapEnumChangefreq.MONTHLY,
+          priority: 1,
+        });
+
+        brickMap.push({
+          url: this.frontService.getBrickVersionListUrl(brick.name, 'latest'),
+          lastmod: brick.lastModifiedAt.toFormat('yyyy-MM-dd'),
+          changefreq: HnSiteMapEnumChangefreq.MONTHLY,
+          priority: 0.5,
+        });
+
         const brickMajorVersions: HnBrickMajorVersion[] =
           await this.brickMajorVersionService.findBrickMajorVersionsByBrick(brick);
 

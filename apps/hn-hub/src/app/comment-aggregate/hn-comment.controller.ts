@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
 import { HnCommentAggregateService } from './hn-comment-aggregate.service';
-import { BlEntityWithId, BlPublic } from '@monorepo/back-core-lib';
+import { BlPublic } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { HnEntityType } from '../core/model/entities/hn-entity-type.enum';
 import { HnAbstractCommentDto } from './comment-core/hn-abstract-comment.dto';
@@ -17,7 +17,7 @@ export class HnCommentController {
     @Query('size') size: number,
     @Param('commentType') commentType: HnEntityType,
     @Param('entityId', new ParseUUIDPipe()) entityId: string
-  ): Promise<ClPage<HnAbstractCommentDto<BlEntityWithId>>> {
+  ): Promise<ClPage<HnAbstractCommentDto>> {
     return this.commentAggregateService.getComments(commentType, entityId, page, size);
   }
 
@@ -26,7 +26,7 @@ export class HnCommentController {
     @Param('commentType') commentType: HnEntityType,
     @Param('entityId', new ParseUUIDPipe()) entityId: string,
     @Body(TeRichTextPipe) comment: TeRichText
-  ): Promise<HnAbstractCommentDto<BlEntityWithId>> {
+  ): Promise<HnAbstractCommentDto> {
     return this.commentAggregateService.createComment(commentType, entityId, comment);
   }
 }

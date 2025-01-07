@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HnBrickVersion, HnNewVersionDTO, HnReferenceDTO, HnVersionType } from './hn-brick-version.entity';
 import { DataSource, EntityManager, IsNull, Repository } from 'typeorm';
-import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-version.entity';
+import { HnBrickMajorVersion, HnVersionState } from '../brick-major-version/hn-brick-major-version.entity';
 import {
   BlAbstractPaginatedService,
   BlAbstractService,
@@ -322,6 +322,22 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
   }
 
   public async getAndCheckBrickVersion(brickName: string, versionStr: string): Promise<HnBrickVersion> {
+    if (versionStr == 'latest') {
+      return await this.brickVersionsRepository.findOne({
+        where: {
+          brickMajorVersion: {
+            brick: {
+              name: brickName,
+            },
+            versionState: HnVersionState.LATEST,
+          },
+        },
+        order: {
+          minor: 'DESC',
+          patch: 'DESC',
+        },
+      });
+    }
     const version = BlVersion.fromString(versionStr);
     const brickVersion = await this.brickVersionsRepository.findOne({
       where: {

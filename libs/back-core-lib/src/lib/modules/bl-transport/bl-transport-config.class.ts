@@ -49,6 +49,7 @@ export enum BlTransportSpaceUserPattern {
   CREATE = 'createSpaceUser',
   REMOVE = 'removeSpaceUser',
   UPDATE = 'updateSpaceUser',
+  DELETE = 'deleteSpace',
 }
 
 //queues filled from community

@@ -31,11 +31,7 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
 
   abstract createComment(entity: T, commentData: TeRichText): HnAbstractCommentEntity<T>;
 
-  abstract getComments(
-    page: number,
-    size: number,
-    entityId: string
-  ): Promise<ClPage<HnAbstractCommentDto<BlEntityWithId>>>;
+  abstract getComments(page: number, size: number, entityId: string): Promise<ClPage<HnAbstractCommentDto>>;
 
   async getComment(entityId: string): Promise<HnAbstractCommentEntity<BlEntityWithId>> {
     return await this.repository.findOne({

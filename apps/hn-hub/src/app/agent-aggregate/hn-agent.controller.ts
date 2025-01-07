@@ -9,17 +9,16 @@ import {
   Post,
   Put,
   Query,
+  Res,
   UseInterceptors,
 } from '@nestjs/common';
 import { HnAgentAggregateService } from './hn-agent-aggregate.service';
 import { HnAgentVersion } from './agent-version/hn-agent-version.entity';
 import {
-  HaCreateAgentVersionFromLabResponseDto,
   HnAgentDto,
   HnAgentEditStyleData,
   HnAgentForLabDto,
   HnAgentVersionFileInput,
-  HnAgentVersionForLabDto,
   HnCreateAgentDto,
 } from './agent/hn-agent.dto';
 import { BlFile, BlParsePipe, BlPublic, BlUploadedFile } from '@monorepo/back-core-lib';
@@ -41,24 +40,20 @@ import {
   TeRichText,
   TeRichTextPipe,
 } from '@monorepo/te-text-editor';
-import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
+import { Response } from 'express';
+import { HnAgentForLabController } from './hn-agent-for-lab.controller';
 
 @Controller('agent')
 export class HnAgentController extends HnAbstractFileController<HnAgent> {
   constructor(
     private readonly agentAggregateService: HnAgentAggregateService,
+    private readonly agentForLabController: HnAgentForLabController,
     readonly agentFileService: HnFileAgentService
   ) {
     super(agentFileService);
   }
 
   //////////////////////////////////////////// Agent ////////////////////////////////////////////
-
-  @IsAdmin()
-  @Get('migrate-params')
-  async migrateParams(): Promise<void> {
-    return this.agentAggregateService.migrateParams();
-  }
 
   @BlPublic()
   @Get('all-map')
@@ -79,46 +74,12 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   }
 
   @BlPublic()
-  @HnLabGuard()
-  @Post('/for-lab')
-  async createForLab(
-    @Body(new BlParsePipe(HnCreateAgentDto)) createAgentDto: HnCreateAgentDto
-  ): Promise<HaCreateAgentVersionFromLabResponseDto> {
-    const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
-    createAgentDto.versionFile = migrator.migrateAgentVersionFile(createAgentDto.versionFile);
-    return this.agentAggregateService.createForLab(createAgentDto);
-  }
-
-  @BlPublic()
-  @HnLabGuard()
-  @Post('/for-lab/fork/:id')
-  async forkForLab(
-    @Param('id') agentVersionId: string,
-    @Body(new BlParsePipe(HnCreateAgentDto)) createAgentDto: HnCreateAgentDto
-  ): Promise<HaCreateAgentVersionFromLabResponseDto> {
-    const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
-    createAgentDto.versionFile = migrator.migrateAgentVersionFile(createAgentDto.versionFile);
-    return this.agentAggregateService.forkForLab(agentVersionId, createAgentDto);
-  }
-
-  @BlPublic()
-  @HnLabGuard()
-  @Post('/for-lab/version/:id')
-  async createNewVersionForLab(
-    @Param('id', ParseUUIDPipe) agentId: string,
-    @Body('versionFile') versionFile: HnAgentVersionFileInput
-  ): Promise<HaCreateAgentVersionFromLabResponseDto> {
-    const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
-    versionFile = migrator.migrateAgentVersionFile(versionFile);
-    return this.agentAggregateService.createNewVersionForLab(agentId, versionFile);
-  }
-
-  @BlPublic()
   @Get('public')
   async getPublicAgents(): Promise<HnAgentDto[]> {
     return this.agentAggregateService.findPublic();
   }
 
+  // TODO: TO REMOVE
   /**
    * Get agents for lab
    * @param spacesFilter
@@ -128,7 +89,6 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    * @param size
    * @return agents
    */
-  @BlPublic()
   @HnLabGuard()
   @Post('available/for-lab')
   async getAgentsForLab(
@@ -138,23 +98,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnAgentForLabDto>> {
-    return this.agentAggregateService.getAgentsForLab(spacesFilter, titleFilter, personalOnly, page, size);
-  }
-
-  @BlPublic()
-  @HnLabGuard()
-  @Get('for-lab/version/:id/:jsonVersionNumber?')
-  async getAgentVersionForLab(
-    @Param('id', ParseUUIDPipe) versionId: string,
-    @Param('jsonVersionNumber') jsonVersionNumber?: string
-  ): Promise<HnAgentForLabDto> {
-    let versionNumber = null;
-    if (!jsonVersionNumber) {
-      versionNumber = 1;
-    } else {
-      versionNumber = +jsonVersionNumber;
-    }
-    return this.agentAggregateService.getAgentForLabByVersionId(versionId, versionNumber);
+    return this.agentForLabController.getAgentsForLab(spacesFilter, titleFilter, personalOnly, page, size);
   }
 
   /**
@@ -282,19 +226,11 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   @HnLabGuard()
   @Get(':agentId/version/latest/for-lab/:jsonVersionNumber?')
   async getLatestPublishedAgentVersionForLabByAgentId(
+    @Res() res: Response,
     @Param('agentId', ParseUUIDPipe) agentId: string,
     @Param('jsonVersionNumber') jsonVersionNumber?: string
-  ): Promise<HnAgentVersionForLabDto> {
-    let versionNumber = null;
-    if (!jsonVersionNumber) {
-      versionNumber = 1;
-    } else {
-      versionNumber = +jsonVersionNumber;
-    }
-    return await this.agentAggregateService.findLatestPublishedAgentVersionForLabByAgentId(
-      agentId,
-      versionNumber
-    );
+  ): Promise<void> {
+    return res.redirect(`/agent/for-lab/${agentId}/version/latest/${jsonVersionNumber}`);
   }
 
   @BlPublic()

@@ -12,19 +12,24 @@ import {
   BlObjectStorageService,
   BlSearchBuilder,
   BlSearchParams,
+  blTransportSpaceSpaceUserQueue,
+  BlTransportSpaceUserPattern,
 } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnBucket } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class CnSpaceService extends BlAbstractService<CnSpaceEntity> {
   constructor(
     @InjectRepository(CnSpaceEntity) private repository: Repository<CnSpaceEntity>,
     private objectStorageService: BlObjectStorageService,
-    private configService: CnCoreConfigService
+    private configService: CnCoreConfigService,
+    @InjectQueue(blTransportSpaceSpaceUserQueue) private queue: Queue
   ) {
     super(repository, CnSpaceEntity);
   }
@@ -78,6 +83,7 @@ export class CnSpaceService extends BlAbstractService<CnSpaceEntity> {
   async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
     const space = await this.findByIdAndCheck(id, null, entityManager);
     await this.deletePhotoInObjectStorage(space);
+    await this.queue.add(BlTransportSpaceUserPattern.DELETE, { id: space.id });
     return super.deleteById(id, entityManager);
   }
 

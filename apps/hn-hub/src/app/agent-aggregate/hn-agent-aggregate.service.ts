@@ -704,28 +704,4 @@ export class HnAgentAggregateService {
     const agent = await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(agentId);
     return await this.fileAgentService.saveResourceView(agent, file);
   }
-
-  /////////////////////////////////////// MIGRATIONS ////////////////////////////////
-  public async migrateParams(): Promise<void> {
-    const agentVersions = await this.agentVersionService.findAll();
-    for (const agentVersion of agentVersions) {
-      if (agentVersion.params != null) {
-        if (agentVersion.oldParams == null && agentVersion.params.specs == null) {
-          await this.agentVersionService.updateParams(agentVersion.id, null);
-        }
-        continue;
-      }
-      if (agentVersion.oldParams == null) {
-        continue;
-      }
-      agentVersion.params = agentVersion.oldParams as any;
-      const agentVersionDto = new HnAgentVersionDto(agentVersion);
-      const migrator = new HnAgentVersionMigrator();
-      const newAgentVersion = migrator.migrateAgentVersionToSpecificVersion(agentVersionDto, 3);
-      await this.agentVersionService.updateParams(
-        agentVersion.id,
-        newAgentVersion.params as Record<string, any>
-      );
-    }
-  }
 }
