@@ -76,14 +76,14 @@ export class CnLabBackupHistoryEntity extends CnBaseEntity {
    * Get the total transfer size of the backup in bytes
    */
   getTransferSize(): number {
-    return this.dataDetails?.transferSize ?? 0 + this.dbDetails?.transferSize ?? 0;
+    return (this.dataDetails?.transferSize ?? 0) + (this.dbDetails?.transferSize ?? 0);
   }
 
   /**
    * Get the total size of the backup in bytes
    */
   getTotalSize(): number {
-    return this.dataDetails?.totalSize ?? 0 + this.dbDetails?.totalSize ?? 0;
+    return (this.dataDetails?.totalSize ?? 0) + (this.dbDetails?.totalSize ?? 0);
   }
 }
 
