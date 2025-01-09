@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { CnCloudProvider, CnCloudProviderName } from './cn-cloud-provider.entity';
 import { ClPage } from '@monorepo/core-lib';
-import { BlParseEnumPipe, BlParsePipe } from '@monorepo/back-core-lib';
+import { BlParseEnumPipe, BlParsePipe, BlPublic } from '@monorepo/back-core-lib';
 import { CnCloudProviderAggregateService } from './cn-cloud-provider-aggregate.service';
 import {
   CnCloudProviderRegion,
@@ -80,6 +80,8 @@ export class CnCloudProvidersController {
     return this.service.getAllRegions(page, size);
   }
 
+  // public for data lab price simulator
+  @BlPublic()
   @Get('regions/type/:type')
   public async getAllS3Regions(
     @Param('type', new BlParseEnumPipe(CnCloudProviderRegionType)) type: CnCloudProviderRegionType,

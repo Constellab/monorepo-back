@@ -81,7 +81,6 @@ export class CnServerAggregateService {
   }
 
   public async findServerStandardByNames(names: string[]): Promise<CnServerStandard[]> {
-    await this.checkAuthorizationToReadEntities();
     return this.serverStandardService.findByNames(names);
   }
 
@@ -175,14 +174,7 @@ export class CnServerAggregateService {
     return this.storagePriceService.findAll('DESC');
   }
 
-  public async getStorageCurrentPrice(): Promise<number> {
-    await this.checkAuthorizationToReadEntities();
-    const price = await this.storagePriceService.getAndCheckCurrentStoragePrice();
-    return price.totalPrice;
-  }
-
   public async getStorageCurrentPriceDetail(): Promise<CnStoragePrice> {
-    await this.checkAuthorizationToModifyEntity();
     return await this.storagePriceService.getAndCheckCurrentStoragePrice();
   }
 

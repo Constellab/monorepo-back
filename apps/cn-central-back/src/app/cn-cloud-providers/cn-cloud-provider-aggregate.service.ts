@@ -82,7 +82,6 @@ export class CnCloudProviderAggregateService {
     page: number,
     size: number
   ): Promise<ClPage<CnCloudProviderRegion>> {
-    this.checkAuthorizationToGetEntity();
     return this.cloudProviderRegionService.findRegionsByType(type, page, size);
   }
 

@@ -2,7 +2,6 @@ import { Column, Entity } from 'typeorm';
 import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 import { BlLuxonDateTimeColumn } from '@monorepo/back-core-lib';
 import { DateTime } from 'luxon';
-import { Expose } from 'class-transformer';
 import { ClDateHelper } from '@monorepo/core-lib';
 
 @Entity('storage_price')
@@ -34,23 +33,6 @@ export class CnStoragePrice extends CnBaseEntity {
 
   @BlLuxonDateTimeColumn({ nullable: true })
   endDate?: DateTime;
-
-  /**
-   * Get the total price for the storage. this includes volume storage and 2 full backups.
-   * For transfert, we consider that, each GB is transfert 1 time per month for each backup.
-   */
-  @Expose()
-  get totalPrice(): number {
-    return this.volumeStoragePrice + this.backupStoragePrice * 2 + this.backupTransfertPrice * 2;
-  }
-
-  /**
-   * Explanation for the total price. Set here so it is not in the front bundle.
-   */
-  @Expose()
-  get totalPriceDescription(): string {
-    return 'This price includes volume storage and 2 full backups. For transfert, we consider that, each GB is transfert 1 time per month for each backup.';
-  }
 
   get volumePricePerHour(): number {
     return this.volumeStoragePrice / CnStoragePrice.HOURS_IN_MONTH;

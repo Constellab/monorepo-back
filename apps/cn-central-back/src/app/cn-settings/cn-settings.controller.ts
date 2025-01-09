@@ -2,7 +2,7 @@ import { Controller, Get, Put, UseInterceptors } from '@nestjs/common';
 import { CnSettingsService } from './cn-settings.service';
 import { CnServerDecisionTreeDTO } from './cn-settings.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { BlFile, BlUploadedFile } from '@monorepo/back-core-lib';
+import { BlFile, BlPublic, BlUploadedFile } from '@monorepo/back-core-lib';
 import { CnYoutubeService } from './cn-youtube.service';
 
 @Controller('settings')
@@ -14,6 +14,8 @@ export class CnSettingsController {
 
   /////////////////////////////// SERVER DECISION TREE /////////////////////////////////
 
+  // public for data lab price simulator
+  @BlPublic()
   @Get('server-decision-tree')
   public async getServerDecisionTree(): Promise<CnServerDecisionTreeDTO> {
     return this.settingsService.getServerDecisionTree();

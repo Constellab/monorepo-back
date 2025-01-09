@@ -11,7 +11,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CnServerCloud } from './server-cloud/cn-server-cloud.entity';
-import { BlParsePipe, BlSearchParams } from '@monorepo/back-core-lib';
+import { BlParsePipe, BlPublic, BlSearchParams } from '@monorepo/back-core-lib';
 import { ClPage, ClPageI } from '@monorepo/core-lib';
 import { CnServerAggregateService } from './cn-server-aggregate.service';
 import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
@@ -55,11 +55,15 @@ export class CnServerController {
     return this.aggregateService.findAllServerStandard(page, size);
   }
 
+  // public for data lab price simulator
+  @BlPublic()
   @Post('standard/names')
   findServerStandardByNames(@Body() names: string[]): Promise<CnServerStandard[]> {
     return this.aggregateService.findServerStandardByNames(names);
   }
 
+  // public for data lab price simulator
+  @BlPublic()
   @Get('standard/:id/clouds')
   findByServerStandardId(
     @Param('id', new ParseUUIDPipe()) serverStandardId: string
@@ -119,6 +123,8 @@ export class CnServerController {
     return this.aggregateService.searchServerCloudByName(name, page, size);
   }
 
+  // public for data lab price simulator
+  @BlPublic()
   @Get('cloud/:id/regions')
   findAvailableRegionsForServerCloud(
     @Param('id', new ParseUUIDPipe()) id: string
@@ -127,7 +133,8 @@ export class CnServerController {
   }
 
   ////////////////////////////// SERVER PRICE //////////////////////////////
-
+  // public for data lab price simulator
+  @BlPublic()
   @Get('standard/:id/current-price')
   getServerCurrentPrice(@Param('id', new ParseUUIDPipe()) id: string): Promise<number> {
     return this.aggregateService.getServerCurrentPrice(id);
@@ -156,11 +163,8 @@ export class CnServerController {
 
   /////////////////////////////// STORAGE PRICE ///////////////////////////////
 
-  @Get('storage/price/current')
-  getStorageCurrentPrice(): Promise<number> {
-    return this.aggregateService.getStorageCurrentPrice();
-  }
-
+  // public for data lab price simulator
+  @BlPublic()
   @Get('storage/price/current/detail')
   getStorageCurrentPriceDetail(): Promise<CnStoragePrice> {
     return this.aggregateService.getStorageCurrentPriceDetail();
