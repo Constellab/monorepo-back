@@ -15,16 +15,57 @@
 -- RENAME TABLE old_table_name TO new_table_name;
 --
 
-#1
-.
-4.7
+#
+1.4.8
+DROP TABLE IF EXISTS `run_stat`;
+CREATE TABLE `run_stat`
+(
+  `id`                   varchar(36)  NOT NULL,
+  `createdAt`            datetime     NOT NULL,
+  `lastModifiedAt`       datetime     NOT NULL,
+  `processTypingName`    varchar(255) NOT NULL,
+  `status`               varchar(255) NOT NULL,
+  `errorInfo`            text        DEFAULT NULL,
+  `startedAt`            datetime     NOT NULL,
+  `endedAt`              datetime     NOT NULL,
+  `elapsedTime`          float        NOT NULL,
+  `brickVersionOnRun`    varchar(255) NOT NULL,
+  `brickVersionOnCreate` varchar(255) NOT NULL,
+  `configValue`          text         NOT NULL,
+  `labId`                varchar(255) NOT NULL,
+  `labEnv`               varchar(255) NOT NULL,
+  `executedById`         varchar(36) DEFAULT NULL,
+  `agentVersionId`       varchar(36) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY                    `FK_601bc27cce37d42095569747998` (`executedById`),
+  KEY                    `FK_b1ad7b313ed95e0d07028789809` (`agentVersionId`),
+  CONSTRAINT `FK_601bc27cce37d42095569747998` FOREIGN KEY (`executedById`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_b1ad7b313ed95e0d07028789809` FOREIGN KEY (`agentVersionId`) REFERENCES `agent_version` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `run_stat_aggregate`;
+CREATE TABLE `run_stat_aggregate`
+(
+  `id`                varchar(36)  NOT NULL,
+  `objectId`          varchar(255) NOT NULL,
+  `objectType`        enum('AGENT','AGENT_VERSION','TASK','PROTOCOL','BRICK','USER') NOT NULL,
+  `executionCount`    int(11) NOT NULL,
+  `successRate`       float        NOT NULL,
+  `averageElapseTime` float        NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `IDX_c5a793b4b5f34e02b13fb42eb5` (`objectId`,`objectType`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+#
+1.4.7
 alter table `story`
 drop
 column if exists `category`;
 
 
-#1.
-4.6
+#
+1.4.6
 alter table `story`
 drop
 column if exists `modifications_backup`;

@@ -378,9 +378,33 @@ export class HnAgentAggregateService {
     });
   }
 
+  public async assertCheckAgentUser(agentId: string): Promise<void> {
+    const agent = await this.agentService.findOne(agentId);
+    if (agent.space != null) {
+      await this.spaceAggregateService.assertCheckSpaceUser(
+        agent.space.id,
+        HnCurrentUserHelper.getCurrentUser().id
+      );
+    }
+  }
+
   //////////////////////////////////////////// Agent Version ////////////////////////////////////////////
-  public async findAgentVersionById(id: string): Promise<HnAgentVersionDto> {
+  public async findAgentVersionDtoById(id: string): Promise<HnAgentVersionDto> {
     return new HnAgentVersionDto(await this.agentVersionService.findOne(id));
+  }
+
+  public async getAgentVersionById(id: string): Promise<HnAgentVersion> {
+    return await this.agentVersionService.findOne(id);
+  }
+
+  public async assertCheckAgentVersionUser(agentVersionId: string): Promise<void> {
+    const agentVersion = await this.agentVersionService.findOne(agentVersionId);
+    if (agentVersion.agent.space != null) {
+      await this.spaceAggregateService.assertCheckSpaceUser(
+        agentVersion.agent.space.id,
+        HnCurrentUserHelper.getCurrentUser().id
+      );
+    }
   }
 
   public async findAgentVersionByAgentIdAndVersionNumber(

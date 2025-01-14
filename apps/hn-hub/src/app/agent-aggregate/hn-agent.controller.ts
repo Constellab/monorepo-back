@@ -200,7 +200,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   @BlPublic()
   @Get('version/:id')
   getAgentVersionById(@Param('id', ParseUUIDPipe) id: string): Promise<HnAgentVersionDto> {
-    return this.agentAggregateService.findAgentVersionById(id);
+    return this.agentAggregateService.findAgentVersionDtoById(id);
   }
 
   /**

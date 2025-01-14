@@ -78,6 +78,9 @@ import { HnLogRequestMiddleware } from './app/core/middleware/hn-log-request-mid
 import { BullModule } from '@nestjs/bullmq';
 import { HnMailConfig } from './app/core/model/config/hn-mail.config';
 import { TeRichTextModifications } from '@monorepo/te-text-editor';
+import { HnRunStatModule } from './app/run-stat-aggregate/run-stat/hn-run-stat.module';
+import { HnRunStatAggregateModule } from './app/run-stat-aggregate/run-stat-aggregate/hn-run-stat-aggregate.module';
+import { HnRunStatAgModule } from './app/run-stat-aggregate/hn-run-stat-ag.module';
 
 function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: HnDatabaseConfig = configService.getDatabaseConfig();
@@ -245,6 +248,10 @@ TeRichTextModifications.setBackTimeDifference();
     HnFileAggregateModule,
     HnFileStoryModule,
     HnFileDocumentationModule,
+
+    HnRunStatAgModule,
+    HnRunStatModule,
+    HnRunStatAggregateModule,
 
     HnPublicModule,
   ],
