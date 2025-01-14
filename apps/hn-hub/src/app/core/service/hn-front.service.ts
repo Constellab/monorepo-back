@@ -31,7 +31,7 @@ export class HnFrontService {
 
   /////////////////////////////// BRICKS/ //////////////////////////////////////////
   public getBrickVersionListUrl(brickName: string, majorStrVersion: string): string {
-    return `${this.getBrickVersionUrl(brickName, majorStrVersion)}/versions`;
+    return `${this.getBrickVersionUrl(brickName, majorStrVersion)}/version`;
   }
 
   public getBrickDocUrl(
