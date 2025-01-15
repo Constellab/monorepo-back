@@ -52,7 +52,7 @@ export class HnRunStat extends BlEntityWithId {
   @ManyToOne(() => HnAgentVersion, { nullable: true, eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
   agentVersion: HnAgentVersion;
 
-  init(stat: HnRunStatFromLabDto, user: HnUser, agentVersion?: HnAgentVersion): void {
+  init(stat: HnRunStatFromLabDto, user: HnUser, labId: string, agentVersion?: HnAgentVersion): void {
     this.id = stat.id;
     this.createdAt = DateTime.fromISO(stat.created_at);
     this.lastModifiedAt = DateTime.fromISO(stat.last_modified_at);
@@ -65,7 +65,7 @@ export class HnRunStat extends BlEntityWithId {
     this.brickVersionOnRun = stat.brick_version_on_run;
     this.brickVersionOnCreate = stat.brick_version_on_create;
     this.configValue = stat.config_value;
-    this.labId = stat.lab_id;
+    this.labId = labId;
     this.labEnv = stat.lab_env;
     this.executedBy = user;
     this.agentVersion = agentVersion;

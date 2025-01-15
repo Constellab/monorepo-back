@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HnRunStatAggregate, HnRunStatAggregateObjectType } from './hn-run-stat-aggregate.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { HnRunStat } from '../run-stat/hn-run-stat.entity';
 import { HnBrick } from '../../brick-aggregate/brick/hn-brick.entity';
 
@@ -22,98 +22,141 @@ export class HnRunStatAggregateService {
     return this.runStatAggregateRepository.findOneBy({ objectId: objectId });
   }
 
-  async createAgentRunStatGroup(runStat: HnRunStat, agentId: string): Promise<HnRunStatAggregate> {
+  async createAgentRunStatGroup(
+    entityManager: EntityManager,
+    runStat: HnRunStat,
+    agentId: string
+  ): Promise<HnRunStatAggregate> {
     const runStatAggregate = new HnRunStatAggregate();
     runStatAggregate.init(runStat);
     runStatAggregate.objectId = agentId;
     runStatAggregate.objectType = HnRunStatAggregateObjectType.AGENT;
-    return this.runStatAggregateRepository.save(runStatAggregate);
+    return entityManager.save(runStatAggregate);
   }
 
-  async createAgentVersionRunStatGroup(runStat: HnRunStat): Promise<HnRunStatAggregate> {
+  async createAgentVersionRunStatGroup(
+    entityManager: EntityManager,
+    runStat: HnRunStat
+  ): Promise<HnRunStatAggregate> {
     const runStatAggregate = new HnRunStatAggregate();
     runStatAggregate.init(runStat);
     runStatAggregate.objectId = runStat.agentVersion.id;
     runStatAggregate.objectType = HnRunStatAggregateObjectType.AGENT_VERSION;
-    return this.runStatAggregateRepository.save(runStatAggregate);
+    return entityManager.save(runStatAggregate);
   }
 
-  async createProcessRunStatGroup(runStat: HnRunStat): Promise<HnRunStatAggregate> {
+  async createProcessRunStatGroup(
+    entityManager: EntityManager,
+    runStat: HnRunStat
+  ): Promise<HnRunStatAggregate> {
     if (runStat.processTypingName.startsWith('TASK')) {
-      return this.createTaskRunStatGroup(runStat);
+      return this.createTaskRunStatGroup(entityManager, runStat);
     } else if (runStat.processTypingName.startsWith('PROTOCOL')) {
-      return this.createProtocolRunStatGroup(runStat);
+      return this.createProtocolRunStatGroup(entityManager, runStat);
     } else {
       throw new Error('Unknown process type');
     }
   }
 
-  async createTaskRunStatGroup(runStat: HnRunStat): Promise<HnRunStatAggregate> {
+  async createTaskRunStatGroup(
+    entityManager: EntityManager,
+    runStat: HnRunStat
+  ): Promise<HnRunStatAggregate> {
     const runStatAggregate = new HnRunStatAggregate();
     runStatAggregate.init(runStat);
     runStatAggregate.objectId = runStat.processTypingName;
     runStatAggregate.objectType = HnRunStatAggregateObjectType.TASK;
-    return this.runStatAggregateRepository.save(runStatAggregate);
+    return entityManager.save(runStatAggregate);
   }
 
-  async createProtocolRunStatGroup(runStat: HnRunStat): Promise<HnRunStatAggregate> {
+  async createProtocolRunStatGroup(
+    entityManager: EntityManager,
+    runStat: HnRunStat
+  ): Promise<HnRunStatAggregate> {
     const runStatAggregate = new HnRunStatAggregate();
     runStatAggregate.init(runStat);
     runStatAggregate.objectId = runStat.processTypingName;
     runStatAggregate.objectType = HnRunStatAggregateObjectType.PROTOCOL;
-    return this.runStatAggregateRepository.save(runStatAggregate);
+    return entityManager.save(runStatAggregate);
   }
 
-  async createBrickRunStatGroup(runStat: HnRunStat, brick: HnBrick): Promise<HnRunStatAggregate> {
+  async createBrickRunStatGroup(
+    entityManager: EntityManager,
+    runStat: HnRunStat,
+    brick: HnBrick
+  ): Promise<HnRunStatAggregate> {
     const runStatAggregate = new HnRunStatAggregate();
     runStatAggregate.init(runStat);
     runStatAggregate.objectId = brick.id;
     runStatAggregate.objectType = HnRunStatAggregateObjectType.BRICK;
-    return this.runStatAggregateRepository.save(runStatAggregate);
+    return entityManager.save(runStatAggregate);
   }
 
-  async createUserRunStatGroup(runStat: HnRunStat, userId: string): Promise<HnRunStatAggregate> {
+  async createUserRunStatGroup(
+    entityManager: EntityManager,
+    runStat: HnRunStat,
+    userId: string
+  ): Promise<HnRunStatAggregate> {
     const runStatAggregate = new HnRunStatAggregate();
     runStatAggregate.init(runStat);
     runStatAggregate.objectId = userId;
     runStatAggregate.objectType = HnRunStatAggregateObjectType.USER;
-    return this.runStatAggregateRepository.save(runStatAggregate);
+    return entityManager.save(runStatAggregate);
   }
 
-  async updateProcessRunStatGroup(runStat: HnRunStat): Promise<HnRunStatAggregate> {
+  async updateProcessRunStatGroup(
+    entityManager: EntityManager,
+    runStat: HnRunStat
+  ): Promise<HnRunStatAggregate> {
     const runStatAggregate = await this.findByObjectId(runStat.processTypingName);
-    if (!runStatAggregate) return await this.createProcessRunStatGroup(runStat);
-    return this.updateRunStatGroup(runStatAggregate, runStat);
+    if (!runStatAggregate) return await this.createProcessRunStatGroup(entityManager, runStat);
+    return this.updateRunStatGroup(entityManager, runStatAggregate, runStat);
   }
 
-  async updateBrickRunStatGroup(brick: HnBrick, runStat: HnRunStat): Promise<HnRunStatAggregate> {
+  async updateBrickRunStatGroup(
+    entityManager: EntityManager,
+    brick: HnBrick,
+    runStat: HnRunStat
+  ): Promise<HnRunStatAggregate> {
     const runStatAggregate = await this.findObjectRunStatGroup(brick.id, HnRunStatAggregateObjectType.BRICK);
-    if (!runStatAggregate) return await this.createBrickRunStatGroup(runStat, brick);
-    return this.updateRunStatGroup(runStatAggregate, runStat);
+    if (!runStatAggregate) return await this.createBrickRunStatGroup(entityManager, runStat, brick);
+    return this.updateRunStatGroup(entityManager, runStatAggregate, runStat);
   }
 
-  async updateUserRunStatGroup(runStat: HnRunStat, userId: string): Promise<HnRunStatAggregate> {
+  async updateUserRunStatGroup(
+    entityManager: EntityManager,
+    runStat: HnRunStat,
+    userId: string
+  ): Promise<HnRunStatAggregate> {
     const runStatAggregate = await this.findObjectRunStatGroup(userId, HnRunStatAggregateObjectType.USER);
-    if (!runStatAggregate) return await this.createUserRunStatGroup(runStat, userId);
-    return this.updateRunStatGroup(runStatAggregate, runStat);
+    if (!runStatAggregate) return await this.createUserRunStatGroup(entityManager, runStat, userId);
+    return this.updateRunStatGroup(entityManager, runStatAggregate, runStat);
   }
 
-  async updateAgentRunStatGroup(agentId: string, runStat: HnRunStat): Promise<HnRunStatAggregate> {
+  async updateAgentRunStatGroup(
+    entityManager: EntityManager,
+    agentId: string,
+    runStat: HnRunStat
+  ): Promise<HnRunStatAggregate> {
     const runStatAggregate = await this.findObjectRunStatGroup(agentId, HnRunStatAggregateObjectType.AGENT);
-    if (!runStatAggregate) return await this.createAgentRunStatGroup(runStat, agentId);
-    return this.updateRunStatGroup(runStatAggregate, runStat);
+    if (!runStatAggregate) return await this.createAgentRunStatGroup(entityManager, runStat, agentId);
+    return this.updateRunStatGroup(entityManager, runStatAggregate, runStat);
   }
 
-  async updateAgentVersionRunStatGroup(runStat: HnRunStat): Promise<HnRunStatAggregate> {
+  async updateAgentVersionRunStatGroup(
+    entityManager: EntityManager,
+    runStat: HnRunStat
+  ): Promise<HnRunStatAggregate> {
     const runStatAggregate: HnRunStatAggregate = await this.findObjectRunStatGroup(
       runStat.agentVersion.id,
       HnRunStatAggregateObjectType.AGENT_VERSION
     );
-    if (!runStatAggregate) return await this.createAgentVersionRunStatGroup(runStat);
-    return this.updateRunStatGroup(runStatAggregate, runStat);
+    if (!runStatAggregate) return await this.createAgentVersionRunStatGroup(entityManager, runStat);
+    return this.updateRunStatGroup(entityManager, runStatAggregate, runStat);
   }
 
   private async updateRunStatGroup(
+    entityManager: EntityManager,
     runStatAggregate: HnRunStatAggregate,
     runStat: HnRunStat
   ): Promise<HnRunStatAggregate> {
@@ -125,6 +168,6 @@ export class HnRunStatAggregateService {
         (runStat.status == 'SUCCESS' ? 1 : 0)) /
       (runStatAggregate.executionCount + 1);
     runStatAggregate.executionCount++;
-    return this.runStatAggregateRepository.save(runStatAggregate);
+    return entityManager.save(runStatAggregate);
   }
 }

@@ -36,13 +36,10 @@ import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
 import { HnAgentCoAuthor } from './agent-co-author/hn-agent-co-author.entity';
 import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 import { HnFrontService } from '../core/service/hn-front.service';
-import { HnBrickVersionDto } from '../brick-aggregate/brick-version/hn-brick-version.dto';
 import { HnAgentVersionDto } from './agent-version/hn-agent-version.dto';
-import { HnUserDto } from '../users/hn-user.dto';
 import { HnSpaceDto } from '../space-aggregate/space/hn-space.dto';
 import { HnUploadFileResponseDto } from '../file-aggregate/file-core/hn-abstract-file.dto';
 import { HnFileAgentService } from '../file-aggregate/file-agent/hn-file-agent.service';
-import { Request } from 'express';
 import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
 import { TeBlockFigureUploadedResponse, TeRichText } from '@monorepo/te-text-editor';
 
@@ -152,7 +149,7 @@ export class HnAgentAggregateService {
     return this.agentService.updateDescription(id, description);
   }
 
-  public async findPublic(): Promise<HnAgentDto[]> {
+  public async findPublic(): Promise<HnAgent[]> {
     return this.agentService.findPublic();
   }
 
@@ -297,17 +294,6 @@ export class HnAgentAggregateService {
     return await this.agentService.findAllWithUserSpacesPaginated(userSpaces, page, size);
   }
 
-  /**
-   * Check if the user is a lab user and return the user
-   * @param req
-   */
-  private async checkIfLabUserAndReturnUser(req: Request): Promise<HnUser> {
-    await this.labConstellabApiService.checkApiKeyAndUserIdInCentral(req);
-    const currentUser = await this.userService.findOne(req.header('user'));
-    if (!currentUser) throw new BlUnauthorizedException();
-    return currentUser;
-  }
-
   public async findAgentById(id: string): Promise<HnAgent> {
     const currentUser = HnCurrentUserHelper.getCurrentUser();
 
@@ -321,20 +307,6 @@ export class HnAgentAggregateService {
       throw new BlNotFoundException('Agent not found');
     }
     return agent;
-  }
-
-  public async findAgentTitleById(id: string): Promise<string> {
-    return (await this.findAgentById(id))?.title;
-  }
-
-  public async getBrickDependencies(agentId: string): Promise<HnBrickVersionDto[]> {
-    const agent = await this.agentService.findOne(agentId);
-    const agentVersion = await this.agentVersionService.findLatestByAgent(agent);
-    const agentVersionBrickDependencies: HnAgentVersionBrickDependencies[] =
-      await this.agentVersionBrickDependenciesService.getBrickVersionDependencies(agentVersion.id);
-    return agentVersionBrickDependencies.map(
-      (agentVersionBrickDependency) => new HnBrickVersionDto(agentVersionBrickDependency.brickVersion)
-    );
   }
 
   public async deleteAgent(id: string): Promise<void> {
@@ -352,7 +324,7 @@ export class HnAgentAggregateService {
     });
   }
 
-  public async updateStyle(id: string, data: HnAgentEditStyleData): Promise<HnAgentDto> {
+  public async updateStyle(id: string, data: HnAgentEditStyleData): Promise<HnAgent> {
     let agent = await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(id);
     return this.dataSource.transaction(async (entityManager) => {
       agent = await this.agentService.updateLatestStyleWithEntityManager(agent, data.style, entityManager);
@@ -363,7 +335,7 @@ export class HnAgentAggregateService {
           : await this.agentVersionService.findLatestPublishedByAgent(agent);
         version.agent = agent;
         await this.agentVersionService.updateStyle(version, data.style, entityManager);
-        return new HnAgentDto(agent);
+        return agent;
       }
 
       // update all versions
@@ -374,7 +346,7 @@ export class HnAgentAggregateService {
         }
         await this.agentVersionService.updateStyle(agentVersion, data.style, entityManager);
       }
-      return new HnAgentDto(agent);
+      return agent;
     });
   }
 
@@ -389,11 +361,7 @@ export class HnAgentAggregateService {
   }
 
   //////////////////////////////////////////// Agent Version ////////////////////////////////////////////
-  public async findAgentVersionDtoById(id: string): Promise<HnAgentVersionDto> {
-    return new HnAgentVersionDto(await this.agentVersionService.findOne(id));
-  }
-
-  public async getAgentVersionById(id: string): Promise<HnAgentVersion> {
+  public async findAgentVersionById(id: string): Promise<HnAgentVersion> {
     return await this.agentVersionService.findOne(id);
   }
 
@@ -410,14 +378,14 @@ export class HnAgentAggregateService {
   public async findAgentVersionByAgentIdAndVersionNumber(
     agentId: string,
     versionNumber: number
-  ): Promise<HnAgentVersionDto> {
+  ): Promise<HnAgentVersion> {
     const version = await this.agentVersionService.findByAgentIdAndVersionNumber(agentId, versionNumber);
     if (version.versionState == HnAgentVersionState.PUBLISHED) {
-      return new HnAgentVersionDto(version);
+      return version;
     }
 
     await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(agentId);
-    return new HnAgentVersionDto(version);
+    return version;
   }
 
   /**
@@ -442,7 +410,7 @@ export class HnAgentAggregateService {
     );
   }
 
-  public async findLatestPublishedAgentVersionByAgentId(id: string): Promise<HnAgentVersionDto> {
+  public async findLatestPublishedAgentVersionByAgentId(id: string): Promise<HnAgentVersion> {
     const agent: HnAgent = await this.agentService.findOne(id);
     if (agent.space != null) {
       await this.spaceAggregateService.assertCheckSpaceUser(
@@ -450,7 +418,7 @@ export class HnAgentAggregateService {
         HnCurrentUserHelper.getCurrentUser().id
       );
     }
-    return new HnAgentVersionDto(await this.agentVersionService.findLatestPublishedByAgent(agent));
+    return this.agentVersionService.findLatestPublishedByAgent(agent);
   }
 
   public async updateAgentVersionParams(id: string, params: Record<string, any>): Promise<HnAgentVersion> {
@@ -556,23 +524,17 @@ export class HnAgentAggregateService {
     });
   }
 
-  public async getPublishedAgentVersions(agentId: string): Promise<HnAgentVersionDto[]> {
+  public async getPublishedAgentVersions(agentId: string): Promise<HnAgentVersion[]> {
     const agent: HnAgent = await this.agentService.findOne(agentId);
     if (BlCurrentUserHelper.getCurrentUser()?.id == agent?.createdBy.id) {
-      return (await this.agentVersionService.findAllByAgentId(agentId)).map(
-        (agentVersion) => new HnAgentVersionDto(agentVersion)
-      );
+      return this.agentVersionService.findAllByAgentId(agentId);
     }
 
     const coAuthors = await this.agentCoAuthorService.getAgentCoAuthorsByAgentId(agentId);
     if (coAuthors.some((coAuthor) => coAuthor.user.id == BlCurrentUserHelper.getCurrentUser()?.id))
-      return (await this.agentVersionService.findAllByAgentId(agentId)).map(
-        (agentVersion) => new HnAgentVersionDto(agentVersion)
-      );
+      return this.agentVersionService.findAllByAgentId(agentId);
 
-    return (await this.agentVersionService.findPublishedByAgentId(agentId)).map(
-      (agentVersion) => new HnAgentVersionDto(agentVersion)
-    );
+    return await this.agentVersionService.findPublishedByAgentId(agentId);
   }
 
   public async updateAgentVersionInfos(
@@ -585,15 +547,13 @@ export class HnAgentAggregateService {
     return this.agentVersionService.updateVersionInfos(agentVersionId, versionInfos);
   }
 
-  public async getAgentVersionBrickDependencies(agentVersionId: string): Promise<HnBrickVersionDto[]> {
-    const agentVersionBrickDependencies: HnAgentVersionBrickDependencies[] =
-      await this.agentVersionBrickDependenciesService.getBrickVersionDependencies(agentVersionId);
-    return agentVersionBrickDependencies.map(
-      (agentVersionBrickDependency) => new HnBrickVersionDto(agentVersionBrickDependency.brickVersion)
-    );
+  public async getAgentVersionBrickDependencies(
+    agentVersionId: string
+  ): Promise<HnAgentVersionBrickDependencies[]> {
+    return this.agentVersionBrickDependenciesService.getBrickVersionDependencies(agentVersionId);
   }
 
-  public async updateVersionStyle(versionId: string, data: HnAgentEditStyleData): Promise<HnAgentVersionDto> {
+  public async updateVersionStyle(versionId: string, data: HnAgentEditStyleData): Promise<HnAgentVersion> {
     const version = await this.agentVersionService.findOne(versionId);
     const agent = await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(version.agent.id);
 
@@ -606,9 +566,7 @@ export class HnAgentAggregateService {
           entityManager
         );
       }
-      return new HnAgentVersionDto(
-        await this.agentVersionService.updateStyle(version, data.style, entityManager)
-      );
+      return this.agentVersionService.updateStyle(version, data.style, entityManager);
     });
   }
 
@@ -618,10 +576,8 @@ export class HnAgentAggregateService {
     return this.agentCoAuthorService.inviteAgentCoAuthor(agent, coAuthorMail);
   }
 
-  public async getAgentCoAuthors(agentId: string): Promise<HnUserDto[]> {
-    return (await this.agentCoAuthorService.getAgentCoAuthorsByAgentId(agentId)).map(
-      (agentCoAuthor) => new HnUserDto(agentCoAuthor.user)
-    );
+  public async getAgentCoAuthors(agentId: string): Promise<HnAgentCoAuthor[]> {
+    return this.agentCoAuthorService.getAgentCoAuthorsByAgentId(agentId);
   }
 
   public async getAgentCoAuthorsPendingInvites(agentId: string): Promise<HnAgentCoAuthorInvite[]> {

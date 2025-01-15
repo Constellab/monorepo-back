@@ -21,15 +21,13 @@ export class HnAgentService {
     private agentCoAuthorService: HnAgentCoAuthorService
   ) {}
 
-  public async findPublic(): Promise<HnAgentDto[]> {
-    return (
-      await this.agentRepository.find({
-        where: {
-          space: IsNull(),
-          latestPublishVersion: Not(IsNull()),
-        },
-      })
-    ).map((agent) => new HnAgentDto(agent));
+  public async findPublic(): Promise<HnAgent[]> {
+    return this.agentRepository.find({
+      where: {
+        space: IsNull(),
+        latestPublishVersion: Not(IsNull()),
+      },
+    });
   }
 
   public async findOne(id: string): Promise<HnAgent> {

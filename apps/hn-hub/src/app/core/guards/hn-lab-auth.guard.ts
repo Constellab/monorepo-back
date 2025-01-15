@@ -7,6 +7,11 @@ import { HnCurrentUserHelper } from '../utils/hn-current-user.helper';
 import { hnIsLabAllowWithoutUserAuth } from '../decorators/hn-lab-auth-guard.decorator';
 import { Reflector } from '@nestjs/core';
 
+interface HnLabAuthGuardResult {
+  labId: string;
+  userId?: string;
+}
+
 @Injectable()
 export class HnLabAuthGuard implements CanActivate {
   private readonly logger = new Logger(HnLabAuthGuard.name);
@@ -44,14 +49,17 @@ export class HnLabAuthGuard implements CanActivate {
       url = this.coreConfigService.getCentralApiUrl() + 'external-community-labs/verify-rights';
     }
 
-    const checkApiKeyUser: boolean = await lastValueFrom(
+    const checkApiKeyUserResult: HnLabAuthGuardResult = await lastValueFrom(
       this.blExternalApiService.get(url, null, {
         headers: headers,
       })
     );
-    if (checkApiKeyUser != true) {
+
+    if (!checkApiKeyUserResult?.labId) {
       throw new BlUnauthorizedException();
     }
+
+    HnCurrentUserHelper.setLabInstanceCurrentLabId(checkApiKeyUserResult.labId);
 
     if (hnIsLabAllowWithoutUserAuth(this.reflector, context)) {
       return true;

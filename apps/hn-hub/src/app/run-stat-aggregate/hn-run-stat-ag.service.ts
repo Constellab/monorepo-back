@@ -12,6 +12,9 @@ import {
 import { HnBrickAggregateService } from '../brick-aggregate/hn-brick-aggregate.service';
 import { HnBrick } from '../brick-aggregate/brick/hn-brick.entity';
 import { HnRunStatAggregateService } from './run-stat-aggregate/hn-run-stat-aggregate.service';
+import { HnTypingName } from '../core/utils/hn-typing-name.class';
+import { DataSource, EntityManager } from 'typeorm';
+import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 
 @Injectable()
 export class HnRunStatAgService {
@@ -20,44 +23,79 @@ export class HnRunStatAgService {
     private readonly runStatAggregateService: HnRunStatAggregateService,
     private readonly userService: HnUserService,
     private readonly brickAggregateService: HnBrickAggregateService,
-    private readonly agentAggregateService: HnAgentAggregateService
+    private readonly agentAggregateService: HnAgentAggregateService,
+    private datasource: DataSource
   ) {}
 
   async createNewStatsFromLab(stats: HnRunStatFromLabDto[]): Promise<void> {
     for (const stat of stats) {
-      const user = await this.userService.findOne(stat.executed_by);
-      let agentVersion: HnAgentVersion;
-      if (stat.community_agent_version_id) {
-        agentVersion = await this.agentAggregateService.getAgentVersionById(stat.community_agent_version_id);
-      }
-      const runStat = await this.runStatService.initRunStat(stat, user, agentVersion);
+      await this.datasource.transaction(async (entityManager) => {
+        const user = await this.userService.findOne(stat.executed_by);
+        let agentVersion: HnAgentVersion;
+        if (stat.community_agent_version_id) {
+          agentVersion = await this.agentAggregateService.findAgentVersionById(
+            stat.community_agent_version_id
+          );
+        }
+        const runStat = await this.runStatService.initRunStat(
+          entityManager,
+          stat,
+          user,
+          HnCurrentUserHelper.getLabInstanceCurrentLabId(),
+          agentVersion
+        );
 
-      if (agentVersion) {
-        await this.onAgentRunStatGroup(runStat, agentVersion);
-      } else {
-        await this.onNewProcessRunState(runStat);
-      }
+        if (agentVersion) {
+          await this.onAgentRunStatGroup(entityManager, runStat, agentVersion);
+        } else {
+          await this.onNewProcessRunStat(entityManager, runStat);
+        }
+      });
     }
   }
 
-  async onAgentRunStatGroup(runStat: HnRunStat, agentVersion: HnAgentVersion): Promise<HnRunStatAggregate> {
-    const agentVersionRunStatGroup =
-      await this.runStatAggregateService.updateAgentVersionRunStatGroup(runStat);
-    await this.runStatAggregateService.updateAgentRunStatGroup(agentVersion.agent.id, runStat);
-    await this.runStatAggregateService.updateUserRunStatGroup(runStat, agentVersion.agent.createdBy.id);
+  /**
+   * Update the run stat group for the agent, the agent version and the user on new agent version run stat
+   * @param entityManager
+   * @param runStat
+   * @param agentVersion
+   */
+  async onAgentRunStatGroup(
+    entityManager: EntityManager,
+    runStat: HnRunStat,
+    agentVersion: HnAgentVersion
+  ): Promise<HnRunStatAggregate> {
+    const agentVersionRunStatGroup = await this.runStatAggregateService.updateAgentVersionRunStatGroup(
+      entityManager,
+      runStat
+    );
+    await this.runStatAggregateService.updateAgentRunStatGroup(entityManager, agentVersion.agent.id, runStat);
+    await this.runStatAggregateService.updateUserRunStatGroup(
+      entityManager,
+      runStat,
+      agentVersion.agent.createdBy.id
+    );
     return agentVersionRunStatGroup;
   }
 
-  async onNewProcessRunState(runStat: HnRunStat): Promise<HnRunStatAggregate> {
-    const updatedProcessRunStatGroup = await this.runStatAggregateService.updateProcessRunStatGroup(runStat);
+  /**
+   * Update the run stat group for the process, the brick and the user on new process run stat
+   * @param entityManager
+   * @param runStat
+   */
+  async onNewProcessRunStat(entityManager: EntityManager, runStat: HnRunStat): Promise<HnRunStatAggregate> {
+    const updatedProcessRunStatGroup = await this.runStatAggregateService.updateProcessRunStatGroup(
+      entityManager,
+      runStat
+    );
 
-    const brickName: string = runStat.processTypingName.split('.')[1];
+    const brickName: string = HnTypingName.getBrickName(runStat.processTypingName);
     const brick: HnBrick = await this.brickAggregateService.findBrickByName(brickName);
     if (brick) {
-      await this.runStatAggregateService.updateBrickRunStatGroup(brick, runStat);
+      await this.runStatAggregateService.updateBrickRunStatGroup(entityManager, brick, runStat);
     }
 
-    await this.runStatAggregateService.updateUserRunStatGroup(runStat, brick.createdBy.id);
+    await this.runStatAggregateService.updateUserRunStatGroup(entityManager, runStat, brick.createdBy.id);
 
     return updatedProcessRunStatGroup;
   }
@@ -83,7 +121,7 @@ export class HnRunStatAgService {
         await this.agentAggregateService.assertCheckAgentVersionUser(objectId);
         break;
       case HnRunStatAggregateObjectType.TASK || HnRunStatAggregateObjectType.PROTOCOL:
-        const brickName: string = objectId.split('.')[1];
+        const brickName: string = HnTypingName.getBrickName(objectId);
         await this.brickAggregateService.assertCheckBrickSpaceUserByName(brickName);
         break;
       case HnRunStatAggregateObjectType.BRICK:

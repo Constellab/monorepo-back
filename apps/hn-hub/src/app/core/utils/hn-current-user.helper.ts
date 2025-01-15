@@ -21,12 +21,24 @@ export class HnCurrentUserHelper extends BlCurrentUserHelper {
     this.setAdditionalData('labInstanceUser', user);
   }
 
+  static setLabInstanceCurrentLabId(labId: string): void {
+    this.setAdditionalData('labInstanceLabId', labId);
+  }
+
   static getAndCheckLabInstanceCurrentUser(): HnUser {
     const user = this.getCurrentAdditionalData()['labInstanceUser'] as HnUser;
     if (!user) {
       throw new Error('No lab instance user found');
     }
     return user;
+  }
+
+  static getLabInstanceCurrentLabId(): string {
+    const labId = this.getCurrentAdditionalData()['labInstanceLabId'] as string;
+    if (!labId) {
+      throw new Error('No lab instance lab id found');
+    }
+    return labId;
   }
 
   static isAdmin(): boolean {

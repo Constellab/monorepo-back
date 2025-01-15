@@ -7,12 +7,12 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   CnLabAllowDev,
   CnLabGuard,
-  CnLabRobotAuthentication
+  CnLabRobotAuthentication,
 } from '../cn-core/decorators/cn-lab-guard.decorator';
 import { BlCredentials, BlFile, BlParsePipe, BlPublic, BlUploadedFiles } from '@monorepo/back-core-lib';
 import { CnCreateLabScenarioDto } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.dto';
@@ -28,11 +28,9 @@ import { CnExternalCheckCredentialResponse } from '../cn-auth/cn-auth.service';
 import { CnLabFolderAggregateService } from '../cn-lab-folder-aggregate/cn-lab-folder-aggregate.service';
 import {
   CnFolderDtoHelper,
-  CnLabFolderDTO
+  CnLabFolderDTO,
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.dto';
-import {
-  CnHierarchyObjectEntity
-} from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnHierarchyObjectEntity } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
 import { CnLabSendMailDto } from '../cn-labs/mail/cn-lab-mail.dto';
 import { CnRichTextCompareRequestDTO, CnRichTextUndoRequestDTO } from './cn-external-labs.dto';
@@ -70,16 +68,6 @@ export class CnExternalLabsController {
   @Post('check-credentials')
   async checkUserCredentials(@Body() credentials: BlCredentials): Promise<CnExternalCheckCredentialResponse> {
     return this.labAggregator.checkUserCredentials(credentials, false, false);
-  }
-
-  /**
-   * Check if the guard pass
-   * return true if the guard pass
-   */
-  @CnLabAllowDev()
-  @Get('check-test')
-  async checkTest(): Promise<boolean> {
-    return true;
   }
 
   /**

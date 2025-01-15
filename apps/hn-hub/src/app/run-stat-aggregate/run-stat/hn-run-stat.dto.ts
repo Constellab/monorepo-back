@@ -14,7 +14,6 @@ export class HnRunStatFromLabDto {
   brick_version_on_run: string;
   brick_version_on_create: string;
   config_value: Record<string, any>;
-  lab_id: string;
   lab_env: 'DEV' | 'PROD';
   executed_by: string;
   community_agent_version_id?: string;

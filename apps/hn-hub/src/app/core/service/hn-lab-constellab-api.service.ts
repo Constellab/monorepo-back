@@ -22,7 +22,7 @@ export class HnLabConstellabApiService {
     }
     const checkApiKeyUser: boolean = await lastValueFrom(
       this.blExternalApiService.get(
-        this.coreConfigService.getCentralApiUrl() + 'external-labs/check-test',
+        this.coreConfigService.getCentralApiUrl() + 'external-community-labs/verify-rights',
         null,
         { headers: { user: req.header('user'), authorization: req.header('authorization') } }
       )
