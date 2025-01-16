@@ -147,7 +147,10 @@ export class HnSpaceAggregateService {
   }
 
   public async getUserCommonSpace(userId: string): Promise<HnSpaceDto[]> {
-    const currentUser = HnCurrentUserHelper.getAndCheckCurrentUser();
+    const currentUser = HnCurrentUserHelper.getCurrentUser();
+    if (!currentUser) {
+      return [];
+    }
     const currentUserSpaces = await this.findSpacesOfUser(currentUser.id);
     const userSpaces = await this.findSpacesOfUser(userId);
 

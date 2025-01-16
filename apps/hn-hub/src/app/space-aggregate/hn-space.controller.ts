@@ -40,6 +40,7 @@ export class HnSpaceController {
     return this.spaceAggregateService.checkCurrentUserIsInGencoverySpace();
   }
 
+  @BlPublic()
   @Get('common-space/:userId')
   async getUserCommonSpace(@Param('userId', new ParseUUIDPipe()) userId: string): Promise<HnSpaceDto[]> {
     return this.spaceAggregateService.getUserCommonSpace(userId);
