@@ -231,6 +231,26 @@ export class HnBrickAggregateService {
     return (await this.brickService.findOne({ name: name })) != null;
   }
 
+  async assertCheckBrickSpaceUserById(id: string): Promise<void> {
+    const brick: HnBrick = await this.findBrickById(id, HnCurrentUserHelper.getCurrentUser());
+    if (brick.space != null) {
+      await this.spaceAggregateService.assertCheckSpaceUser(
+        brick.space.id,
+        HnCurrentUserHelper.getCurrentUser()?.id
+      );
+    }
+  }
+
+  async assertCheckBrickSpaceUserByName(brickName: string): Promise<void> {
+    const brick: HnBrick = await this.findBrickByName(brickName);
+    if (brick.space != null) {
+      await this.spaceAggregateService.assertCheckSpaceUser(
+        brick.space.id,
+        HnCurrentUserHelper.getCurrentUser()?.id
+      );
+    }
+  }
+
   async findAllMap(): Promise<HnSitemapItemBase[]> {
     const bricks: HnBrick[] = await this.brickService.find();
     const map: HnSitemapItemBase[] = [];

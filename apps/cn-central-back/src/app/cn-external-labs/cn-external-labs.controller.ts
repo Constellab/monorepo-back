@@ -30,9 +30,7 @@ import {
   CnFolderDtoHelper,
   CnLabFolderDTO,
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.dto';
-import {
-  CnHierarchyObjectEntity,
-} from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnHierarchyObjectEntity } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
 import { CnLabSendMailDto } from '../cn-labs/mail/cn-lab-mail.dto';
 import { CnRichTextCompareRequestDTO, CnRichTextUndoRequestDTO } from './cn-external-labs.dto';
@@ -70,16 +68,6 @@ export class CnExternalLabsController {
   @Post('check-credentials')
   async checkUserCredentials(@Body() credentials: BlCredentials): Promise<CnExternalCheckCredentialResponse> {
     return this.labAggregator.checkUserCredentials(credentials, false, false);
-  }
-
-  /**
-   * Check if the guard pass
-   * return true if the guard pass
-   */
-  @CnLabGuard()
-  @Get('check-test')
-  async checkTest(): Promise<boolean> {
-    return true;
   }
 
   /**

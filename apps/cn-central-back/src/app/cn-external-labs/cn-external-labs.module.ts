@@ -7,12 +7,13 @@ import { CnFoldersAggregateModule } from '../cn-folders-aggregate/cn-folders-agg
 import { CnSpacesModule } from '../cn-spaces/cn-spaces.module';
 import { CnExternalLabsManagerController } from './cn-external-labs-manager.controller';
 import { CnLabFolderAggregateModule } from '../cn-lab-folder-aggregate/cn-lab-folder-aggregate.module';
+import { CnExternalCommunityLabsController } from './cn-external-community-labs.controller';
 
 /**
  * Module for incoming calls from the labs
  */
 @Module({
-  controllers: [CnExternalLabsController, CnExternalLabsManagerController],
+  controllers: [CnExternalLabsController, CnExternalLabsManagerController, CnExternalCommunityLabsController],
   imports: [
     CnCoreModule,
 
