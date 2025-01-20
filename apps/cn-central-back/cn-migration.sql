@@ -113,3 +113,6 @@ ALTER table hierarchy_object
   MODIFY COLUMN style text not null;
 ALTER table document
   MODIFY COLUMN style text not null;
+
+######## 2.2.4 ########
+# Set LAB_MANAGER_VERSION=0.15.0
