@@ -1,8 +1,8 @@
-import { Controller, Get, Param, ParseUUIDPipe, Req } from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
 import { HnSpaceAggregateService } from './hn-space-aggregate.service';
 import { BlPublic } from '@monorepo/back-core-lib';
 import { HnSpaceDto } from './space/hn-space.dto';
-import { Request } from 'express';
+import { HnLabGuard } from '../core/decorators/hn-lab-auth-guard.decorator';
 
 @Controller('space')
 export class HnSpaceController {
@@ -28,10 +28,10 @@ export class HnSpaceController {
     return this.spaceAggregateService.findSpacesOfCurrentUser();
   }
 
-  @BlPublic()
+  @HnLabGuard()
   @Get('available/for-lab')
-  async getSpacesForLab(@Req() req: Request): Promise<HnSpaceDto[]> {
-    return this.spaceAggregateService.getSpacesForLab(req);
+  async getSpacesForLab(): Promise<HnSpaceDto[]> {
+    return this.spaceAggregateService.getSpacesForLab();
   }
 
   @BlPublic()
