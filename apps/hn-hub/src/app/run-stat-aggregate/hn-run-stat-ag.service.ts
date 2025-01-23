@@ -37,13 +37,10 @@ export class HnRunStatAgService {
             stat.community_agent_version_id
           );
         }
-        const runStat = await this.runStatService.initRunStat(
-          entityManager,
-          stat,
-          user,
-          HnCurrentUserHelper.getLabInstanceCurrentLabId(),
-          agentVersion
-        );
+        const runStat = new HnRunStat();
+        runStat.init(stat, user, HnCurrentUserHelper.getLabInstanceCurrentLabId(), agentVersion);
+        runStat.creators = await this.getRunStatCreators(runStat);
+        await this.runStatService.save(entityManager, runStat);
 
         if (agentVersion) {
           await this.onAgentRunStatGroup(entityManager, runStat, agentVersion);
@@ -128,5 +125,37 @@ export class HnRunStatAgService {
         await this.brickAggregateService.assertCheckBrickSpaceUserById(objectId);
         break;
     }
+  }
+
+  async getRunStatCreators(runStat: HnRunStat): Promise<string[]> {
+    if (runStat.agentVersion) {
+      const agentVersion = await this.agentAggregateService.findAgentVersionById(runStat.agentVersion.id);
+      const creators: string[] = [agentVersion.agent.createdBy.id];
+      if (agentVersion.agent.agentCoAuthors?.length > 0) {
+        for (const agentCoAuthor of agentVersion.agent.agentCoAuthors) {
+          if (!creators.includes(agentCoAuthor.user.id)) creators.push(agentCoAuthor.user.id);
+        }
+      }
+      return creators;
+    }
+    const brickName: string = HnTypingName.getBrickName(runStat.processTypingName);
+    const brick: HnBrick = await this.brickAggregateService.findBrickByName(brickName);
+    const creators: string[] = [brick.createdBy.id];
+    if (brick.brickUsers?.length > 0) {
+      for (const brickUser of brick.brickUsers) {
+        if (!creators.includes(brickUser.user.id)) creators.push(brickUser.user.id);
+      }
+    }
+    return creators;
+  }
+
+  async migrateRunStats(): Promise<void> {
+    const runStats = await this.runStatService.findAll();
+    await this.datasource.transaction(async (entityManager) => {
+      for (const runStat of runStats) {
+        runStat.creators = await this.getRunStatCreators(runStat);
+        await this.runStatService.save(entityManager, runStat);
+      }
+    });
   }
 }

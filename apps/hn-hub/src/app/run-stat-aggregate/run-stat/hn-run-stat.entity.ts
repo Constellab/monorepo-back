@@ -46,6 +46,9 @@ export class HnRunStat extends BlEntityWithId {
   @Column()
   labEnv: 'DEV' | 'PROD';
 
+  @Column('simple-array')
+  creators: string[];
+
   @ManyToOne(() => HnUser, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
   executedBy: HnUser;
 

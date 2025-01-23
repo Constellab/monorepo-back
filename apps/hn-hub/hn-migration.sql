@@ -123,3 +123,11 @@ CREATE TABLE `run_stat_aggregate`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci;
+
+########
+1.4.10 ########
+ALTER TABLE `run_stat`
+  ADD COLUMN `creators` text NOT NULL;
+
+#
+Call migration route PUT /run-stat-aggregate/migrate-run-stats
