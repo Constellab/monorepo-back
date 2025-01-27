@@ -65,7 +65,7 @@ export class CnLabBackupAggregateService {
     const backupStatus = await this.checkBackupsSize(lab);
 
     for (const status of backupStatus) {
-      if (status.status !== 'NONE') {
+      if (status.status == 'SUCCESS') {
         throw new BlBadRequestException(
           'Cannot delete the backup options some backup are referenced ' +
             'in the history. Please delete the lab backup first.'

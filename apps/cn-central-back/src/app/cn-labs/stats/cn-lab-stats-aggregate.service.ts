@@ -27,7 +27,7 @@ export class CnLabStatsAggregateService {
     lab: CnLab,
     request: CnLabStatsRequestDTO
   ): Promise<CnLabStatsRunningResponseDTO> {
-    if (lab.isCloud() && lab.billingMode === CnLabBillingMode.HOURLY) {
+    if (lab.isCloud() && !lab.isFreeLab && lab.billingMode === CnLabBillingMode.HOURLY) {
       const labServerStandard = await this.labsService.getLabServerStandard(lab.id);
       const serverPrices = await this.serverPriceService.getServerAllPrices(labServerStandard.id, 'ASC');
       const statusHistories = await this.labStatusHistoryService.getAllStatusHistory(lab.id);
