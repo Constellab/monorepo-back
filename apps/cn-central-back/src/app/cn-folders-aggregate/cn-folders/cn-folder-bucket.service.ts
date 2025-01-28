@@ -33,7 +33,7 @@ export class CnFolderBucketService {
     return this.objectStorageAggregateService.getBucketByIdNotSecure(id);
   }
 
-  public async getFolderBucket(rootFolderId: string): Promise<CnFolderBucketsDTO> {
+  public async getRootFolderBucket(rootFolderId: string): Promise<CnFolderBucketsDTO> {
     const folder = await this.findFolderWithStorageById(rootFolderId);
     return {
       mainStorage: folder.mainStorage,
@@ -42,7 +42,7 @@ export class CnFolderBucketService {
   }
 
   public async getAndCheckFolderBucket(rootFolderId: string): Promise<CnFolderBucketsDTO> {
-    const buckets = await this.getFolderBucket(rootFolderId);
+    const buckets = await this.getRootFolderBucket(rootFolderId);
     if (buckets.mainStorage == null) {
       // For now the backup bucket is not mandatory
       throw new BlBadRequestException(CnErrorText.FOLDER_BUCKET_NOT_FOUND);

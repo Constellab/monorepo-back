@@ -5,7 +5,7 @@ import {
   cnFolderEventName,
   cnRemoveFolderFromAllLabsEventName,
 } from '../cn-folders-aggregate/cn-folder.event';
-import { CnFolder, CnFolderWithStorage } from '../cn-folders-aggregate/cn-folders/cn-folder.entity';
+import { CnFolder } from '../cn-folders-aggregate/cn-folders/cn-folder.entity';
 import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
 import { CnLabFolderAggregateService } from './cn-lab-folder-aggregate.service';
 import { CnFolderBucketService } from '../cn-folders-aggregate/cn-folders/cn-folder-bucket.service';
@@ -43,22 +43,25 @@ export class CnLabFolderListener {
   }
 
   /**
-   * When a root folder is created, we check if the storage of the folder is a lab bucket.
-   * If it is the case, we add the folder in the lab.
-   * @param folder
+   * When a root rootFolder is created, we check if the storage of the rootFolder is a lab bucket.
+   * If it is the case, we add the rootFolder in the lab.
+   * @param rootFolder
    * @private
    */
-  private async handleCreateRootFolder(folder: CnFolderWithStorage): Promise<void> {
-    const folderBuckets = await this.folderBucketService.getFolderBucket(folder.id);
+  private async handleCreateRootFolder(rootFolder: CnFolder): Promise<void> {
+    const folderBuckets = await this.folderBucketService.getRootFolderBucket(rootFolder.id);
     if (folderBuckets.mainStorage?.isLabBucket()) {
       await this.labFolderAggregateService.addRootFolderToLabInsecure(
         folderBuckets.mainStorage.lab,
-        folder.id
+        rootFolder.id
       );
     }
 
-    if (folder.backupStorage?.isLabBucket()) {
-      await this.labFolderAggregateService.addRootFolderToLabInsecure(folder.backupStorage.lab, folder.id);
+    if (folderBuckets.backupStorage?.isLabBucket()) {
+      await this.labFolderAggregateService.addRootFolderToLabInsecure(
+        folderBuckets.backupStorage.lab,
+        rootFolder.id
+      );
     }
   }
 

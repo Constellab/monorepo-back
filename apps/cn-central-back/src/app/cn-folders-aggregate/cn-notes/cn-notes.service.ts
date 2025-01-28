@@ -331,7 +331,7 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
     await this.documentService.moveDocument(document, note.hierarchyRepresentation, newParent);
 
     // update the note parent folder
-    await this.hierarchiObjectService.updateParent(note.hierarchyRepresentation.id, newParent);
+    await this.hierarchiObjectService.updateLeafParent(note.hierarchyRepresentation.id, newParent);
 
     return this.findByIdAndCheck(noteId);
   }

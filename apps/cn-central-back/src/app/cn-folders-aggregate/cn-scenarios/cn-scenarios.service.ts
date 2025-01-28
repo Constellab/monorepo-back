@@ -143,7 +143,7 @@ export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
       return scenario;
     }
 
-    await this.hierarchyObjectService.updateParent(scenario.hierarchyRepresentation.id, newParentFolder);
+    await this.hierarchyObjectService.updateLeafParent(scenario.hierarchyRepresentation.id, newParentFolder);
 
     return this.findByIdAndCheck(scenario.id);
   }

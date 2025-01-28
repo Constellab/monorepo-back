@@ -7,7 +7,7 @@ import {
   CnHierarchyObjectType,
   CnHierarchyObjectWithChildren,
 } from './cn-hierarchy-object.entity';
-import { EntityManager, IsNull, TreeRepository } from 'typeorm';
+import { EntityManager, In, IsNull, TreeRepository } from 'typeorm';
 import { ClPage } from '@monorepo/core-lib';
 import { CnHierarchyObjectSearch } from './cn-hierarchy-object.search';
 
@@ -179,7 +179,13 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     return folder;
   }
 
-  public updateParent(
+  /**
+   * Update the parent of a leaf object
+   * @param hierarchyObjectId
+   * @param newParent
+   * @param entityManager
+   */
+  public async updateLeafParent(
     hierarchyObjectId: string,
     newParent: CnHierarchyObject,
     entityManager?: EntityManager
@@ -193,6 +199,36 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
       },
       entityManager
     );
+  }
+
+  /**
+   * Update the parent of a folder and update all the children rootParentId
+   * @param hierarchyObject
+   * @param newParent
+   * @param entityManager
+   */
+  public async updateFolderParent(
+    hierarchyObject: CnHierarchyObject,
+    newParent: CnHierarchyObject,
+    entityManager: EntityManager
+  ): Promise<CnHierarchyObject> {
+    if (hierarchyObject.getRootFolderId() !== newParent.getRootFolderId()) {
+      // update the children rootParentId
+      const children = await this.getFolderTreeAsList(hierarchyObject as CnHierarchyObjectEntity);
+      // get the children ids, exclude current object
+      const childrenIds = children.map((child) => child.id).filter((id) => id !== hierarchyObject.id);
+      if (childrenIds.length > 0) {
+        await this.getEntityManager(entityManager).update(
+          CnHierarchyObjectEntity,
+          {
+            id: In(childrenIds),
+          },
+          { rootParentId: newParent.getRootFolderId() }
+        );
+      }
+    }
+
+    return this.updateLeafParent(hierarchyObject.id, newParent, entityManager);
   }
 
   public migrate(hierarchyObject: CnHierarchyObject): Promise<CnHierarchyObject> {

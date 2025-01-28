@@ -192,6 +192,14 @@ export class CnFoldersController {
     return this.folderAggregateService.updateFolderLeader(id, leaderId);
   }
 
+  @Put(':id/move/:parentId')
+  moveFolder(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('parentId', new ParseUUIDPipe()) parentId: string
+  ): Promise<CnHierarchyObject> {
+    return this.folderAggregateService.moveFolder(id, parentId);
+  }
+
   /////////////////////////////////// DESCRIPTION //////////////////////////////////////
 
   @Get(':id/description')

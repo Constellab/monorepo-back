@@ -671,7 +671,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     }
 
     // TODO there is no rollback if the there is an error
-    await this.hierarchyObjectService.updateParent(document.hierarchyRepresentation.id, newParentFolder);
+    await this.hierarchyObjectService.updateLeafParent(document.hierarchyRepresentation.id, newParentFolder);
     return document;
   }
 

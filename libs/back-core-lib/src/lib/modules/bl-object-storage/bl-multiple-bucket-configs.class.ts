@@ -38,7 +38,7 @@ export class BlMultipleBucketConfig {
     return true;
   }
 
-  public bucketsAreEquals(config1: BlBucketConfig, config2: BlBucketConfig): boolean {
+  private bucketsAreEquals(config1: BlBucketConfig, config2: BlBucketConfig): boolean {
     if (config1.type !== config2.type) return false;
     if (config1.type === 'azureBlob') {
       return this.azureBlobBucketAreEqual(

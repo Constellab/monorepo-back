@@ -81,7 +81,7 @@ export class CnFolderAggregateService {
     private noteService: CnNotesService,
     private chatMessageService: CnChatMessageService,
     private datasource: DataSource,
-    private bucketService: CnFolderBucketService,
+    private folderBucketService: CnFolderBucketService,
     private documentService: CnDocumentService,
     private folderUserService: CnFolderUserService,
     private userService: CnUsersService,
@@ -102,10 +102,10 @@ export class CnFolderAggregateService {
         CnCurrentUserHelper.getAndCheckCurrentSpace(),
         entity.getHierarchyObjectInfo()
       );
-      entity.mainStorage = await this.bucketService.getBucketById(folderDTO.mainStorage.bucketId);
+      entity.mainStorage = await this.folderBucketService.getBucketById(folderDTO.mainStorage.bucketId);
 
       if (folderDTO.backupStorage) {
-        entity.backupStorage = await this.bucketService.getBucketById(folderDTO.backupStorage.bucketId);
+        entity.backupStorage = await this.folderBucketService.getBucketById(folderDTO.backupStorage.bucketId);
 
         if (entity.mainStorage.bucketType !== entity.backupStorage.bucketType) {
           throw new BlBadRequestException('Main and backup storage must have the same type (cloud or lab)');
@@ -358,6 +358,55 @@ export class CnFolderAggregateService {
     const folder = await this.foldersService.findByIdAndCheck(folderId);
     this.emitFolderEvent('UPDATE_FOLDER_LEADER', folderHierarchy, folder);
     return folder;
+  }
+
+  public async moveFolder(folderId: string, newParentFolderId: string): Promise<CnHierarchyObject> {
+    if (folderId === newParentFolderId) {
+      throw new BlBadRequestException('The folder can not be moved to itself');
+    }
+
+    const hierarchyObject = await this.getAndCheckAuthorizationForUpdate(folderId);
+    const newParentHierarchyObject = await this.getAndCheckAuthorizationForUpdate(newParentFolderId);
+
+    if (hierarchyObject.parentId === newParentHierarchyObject.id) {
+      throw new BlBadRequestException('The folder already belong to this folder');
+    }
+
+    const children = await this.hierarchyObjectService.findChildrenByNameAndType(
+      newParentHierarchyObject.id,
+      hierarchyObject.name,
+      CnHierarchyObjectType.FOLDER
+    );
+    if (children.length > 0) {
+      throw new BlBadRequestException(
+        `A folder with the name '${hierarchyObject.name}' already exist in the destination folder` +
+          ` '${newParentHierarchyObject.name}'`
+      );
+    }
+
+    const folderToMoveBuckets = await this.folderBucketService.getAndCheckFolderBucketConfig(
+      hierarchyObject.getRootFolderId()
+    );
+    const newParentBuckets = await this.folderBucketService.getAndCheckFolderBucketConfig(
+      newParentHierarchyObject.getRootFolderId()
+    );
+
+    if (!folderToMoveBuckets.equals(newParentBuckets)) {
+      throw new BlBadRequestException(
+        `The folder '${hierarchyObject.name}' can not be moved to the folder ` +
+          `'${newParentHierarchyObject.name}' because they use different storage location.` +
+          ` Please move folder objects manually.`
+      );
+    }
+
+    await this.datasource.transaction(async (entityManager) => {
+      await this.hierarchyObjectService.updateFolderParent(
+        hierarchyObject,
+        newParentHierarchyObject,
+        entityManager
+      );
+    });
+    return this.hierarchyObjectService.findByIdAndCheck(hierarchyObject.id);
   }
 
   /////////////////////////////////////// FOLDER HIERARCHY //////////////////////////////////
@@ -1209,20 +1258,20 @@ export class CnFolderAggregateService {
       throw new BlBadRequestException('The folder is not a root folder');
     }
 
-    const folderWithStorage = await this.bucketService.findFolderWithStorageById(rootFolderId);
+    const folderWithStorage = await this.folderBucketService.findFolderWithStorageById(rootFolderId);
 
     if (folderWithStorage.mainStorage && folderWithStorage.backupStorage) {
       throw new BlBadRequestException('The folder storage regions are already defined');
     }
 
     if (folderWithStorage.mainStorage == null && folderStorageLocationDTO.mainStorage) {
-      folderWithStorage.mainStorage = await this.bucketService.getBucketById(
+      folderWithStorage.mainStorage = await this.folderBucketService.getBucketById(
         folderStorageLocationDTO.mainStorage.bucketId
       );
     }
 
     if (folderWithStorage.backupStorage == null && folderStorageLocationDTO.backupStorage) {
-      folderWithStorage.backupStorage = await this.bucketService.getBucketById(
+      folderWithStorage.backupStorage = await this.folderBucketService.getBucketById(
         folderStorageLocationDTO.backupStorage.bucketId
       );
     }
@@ -1240,7 +1289,7 @@ export class CnFolderAggregateService {
     if (!folder.isRootFolder()) {
       throw new BlBadRequestException('The folder is not a root folder');
     }
-    const buckets = await this.bucketService.getFolderBucket(rootFolderId);
+    const buckets = await this.folderBucketService.getRootFolderBucket(rootFolderId);
 
     // return only region to the user, he doesn't need the bucket name
     return {
@@ -1254,7 +1303,7 @@ export class CnFolderAggregateService {
     size: number
   ): Promise<ClPage<CnBucketLocationDTO>> {
     const info = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-    return this.bucketService.findAccessibleFolderBucketLocation(info.spaceId, page, size);
+    return this.folderBucketService.findAccessibleFolderBucketLocation(info.spaceId, page, size);
   }
 
   public async getStorageSizeByFolder(folderId: string): Promise<CnFolderStorageUsageDTO> {
@@ -1274,7 +1323,7 @@ export class CnFolderAggregateService {
    * @param labId
    */
   public async folderUsesLabStorage(rootFolderId: string, labId: string): Promise<boolean> {
-    return this.bucketService.folderUsesLabStorage(rootFolderId, labId);
+    return this.folderBucketService.folderUsesLabStorage(rootFolderId, labId);
   }
 
   /////////////////////////////////////// FOLDER USER //////////////////////////////////

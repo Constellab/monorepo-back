@@ -34,13 +34,14 @@ export class CnFolderEntity extends CnHierarchyRepresentation {
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   leader: Relation<CnUser>;
 
+  // the storage is only provided in root folder
   @Exclude()
-  @ManyToOne(() => CnBucket, { nullable: false })
-  mainStorage: CnBucket;
+  @ManyToOne(() => CnBucket, { nullable: true })
+  mainStorage?: CnBucket;
 
   @Exclude()
   @ManyToOne(() => CnBucket, { nullable: true })
-  backupStorage: CnBucket;
+  backupStorage?: CnBucket;
 
   @Column({ nullable: false, default: false })
   chatEnabled: boolean;

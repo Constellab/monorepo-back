@@ -116,3 +116,14 @@ ALTER table document
 
 ######## 2.2.4 ########
 # Set LAB_MANAGER_VERSION=0.15.0
+
+######## 2.2.5 ########
+ALTER TABLE folder
+  MODIFY mainStorageId varchar(36) NULL;
+update folder
+set mainStorageId = null
+where id = (Select id from hierarchy_object where id = folder.id and rootParentId is not null);
+
+update folder
+set backupStorageId = null
+where id = (Select id from hierarchy_object where id = folder.id and rootParentId is not null);

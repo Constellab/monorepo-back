@@ -18,8 +18,8 @@ export class CnFoldersService extends BlAbstractService<CnFolderEntity> {
     return super.findByIdAndCheck(id, { hierarchyRepresentation: true });
   }
 
-  public async findByIfAndCheckWithStorage(id: string): Promise<CnFolderWithStorage> {
-    return super.findByIdAndCheck(id, { mainStorage: true, backupStorage: true });
+  public async findByIfAndCheckWithStorage(rootFolderId: string): Promise<CnFolderWithStorage> {
+    return super.findByIdAndCheck(rootFolderId, { mainStorage: true, backupStorage: true });
   }
 
   private async findByIdAndCheckWithDescription(id: string): Promise<CnFolderEntity> {
