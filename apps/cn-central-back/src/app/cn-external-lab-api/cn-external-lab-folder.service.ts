@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { CnExternalLabApiService } from './cn-external-lab-api.service';
 import { lastValueFrom } from 'rxjs';
-import { CnHierarchyObjectWithChildren } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+import {
+  CnHierarchyObjectWithChildren,
+} from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 import {
   CnFolderDtoHelper,
   CnLabFolderDTO,
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.dto';
 import { CnLabGlabApiInfo } from '../cn-labs/cn-lab.dto';
-import { BlVersion } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlVersion } from '@monorepo/back-core-lib';
 
 /**
  * Service to call route for lab in the lab
@@ -15,6 +17,7 @@ import { BlVersion } from '@monorepo/back-core-lib';
 @Injectable()
 export class CnExternalLabFolderService {
   private readonly newRouteVersion: string = '0.10.0';
+  private readonly syncFolderRouteVersion: string = '0.12.2';
   private readonly oldRoute: string = 'project';
   private readonly route: string = 'folder';
 
@@ -22,9 +25,9 @@ export class CnExternalLabFolderService {
 
   public async addFolderInLab(
     glabApiInfo: CnLabGlabApiInfo,
-    folderTree: CnHierarchyObjectWithChildren
+    rootFolderTree: CnHierarchyObjectWithChildren
   ): Promise<void> {
-    const labInfoDto: CnLabFolderDTO = CnFolderDtoHelper.convertToLabFolderDto(folderTree);
+    const labInfoDto: CnLabFolderDTO = CnFolderDtoHelper.convertToLabFolderDto(rootFolderTree);
     return lastValueFrom(
       this.externalLabApiService.post(
         glabApiInfo.apiInfo,
@@ -40,6 +43,25 @@ export class CnExternalLabFolderService {
         glabApiInfo.apiInfo,
         `${this.getRoute(glabApiInfo.gwsCoreVersion)}/${folderId}`
       )
+    );
+  }
+
+  public async syncAllFoldersInLab(
+    glabApiInfo: CnLabGlabApiInfo,
+    rootFolders: CnHierarchyObjectWithChildren[]
+  ): Promise<void> {
+    const requiredVersion = BlVersion.fromString(this.syncFolderRouteVersion);
+
+    if (glabApiInfo.gwsCoreVersion.isLower(requiredVersion)) {
+      throw new BlBadRequestException(
+        `The lab version is too old to sync all folders. ` +
+          `Please update the lab to version ${requiredVersion} or more`
+      );
+    }
+
+    const labInfoDto: CnLabFolderDTO[] = rootFolders.map(CnFolderDtoHelper.convertToLabFolderDto);
+    return lastValueFrom(
+      this.externalLabApiService.post(glabApiInfo.apiInfo, `${this.route}/sync`, { folders: labInfoDto })
     );
   }
 

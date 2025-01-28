@@ -65,6 +65,21 @@ export class CnLabFolderAggregateService {
     }
   }
 
+  public async syncAllFolderInsecure(lab: CnLab): Promise<void> {
+    const labIsRunning = await this.externalLabApiService.healthCheck(lab.getGlabSpaceApiInfo());
+    if (!labIsRunning) {
+      return;
+    }
+
+    const labFolders = await this.labFolderService.findByLabId(lab.id);
+
+    const folders = labFolders.map((labFolder) => labFolder.rootFolder);
+    const rootFoldersWithChildren = await this.folderAggregateService.getFolderTrees(folders);
+    const glabConfig = await this.labAggregateService.getGlabConfig(lab);
+
+    await this.externalLabFolderService.syncAllFoldersInLab(glabConfig, rootFoldersWithChildren);
+  }
+
   public async checkAndRemoveFolderFromLab(labId: string, rootFolderId: string): Promise<void> {
     // get and check if the user can manage the lab
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
@@ -142,6 +157,10 @@ export class CnLabFolderAggregateService {
 
   public async findLabFolderByFolderId(rootFolderId: string): Promise<CnLabFolderWithLab[]> {
     return this.labFolderService.findByRootFolderId(rootFolderId);
+  }
+
+  public async findLabFolderByFolderIds(rootFolderIds: string[]): Promise<CnLabFolderWithLab[]> {
+    return this.labFolderService.findByRootFolderIds(rootFolderIds);
   }
 
   public async getLabFolders(labId: string): Promise<CnLabFolderWithRootFolder[]> {

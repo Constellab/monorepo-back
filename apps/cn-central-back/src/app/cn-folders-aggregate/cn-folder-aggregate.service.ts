@@ -35,6 +35,7 @@ import { CnUsersService } from '../cn-users/cn-users.service';
 import { CnFolderUser } from './cn-folder-user/cn-folder-user.entity';
 import {
   CnFolderEvent,
+  CnFolderEventMoveFolderData,
   cnFolderEventName,
   CnFolderEventType,
   cnRemoveFolderFromAllLabsEventName,
@@ -305,7 +306,7 @@ export class CnFolderAggregateService {
    * Method not secured to get a list of folder trees
    * @param rootFolders
    */
-  public async getFolderTrees(rootFolders: CnHierarchyObject[]): Promise<CnHierarchyObject[]> {
+  public async getFolderTrees(rootFolders: CnHierarchyObject[]): Promise<CnHierarchyObjectWithChildren[]> {
     const folderTrees = rootFolders.map((folder) => this.hierarchyObjectService.getFolderTree(folder));
     return await Promise.all(folderTrees);
   }
@@ -366,6 +367,7 @@ export class CnFolderAggregateService {
     }
 
     const hierarchyObject = await this.getAndCheckAuthorizationForUpdate(folderId);
+    const oldParentRootFolderId: string = hierarchyObject.getRootFolderId();
     const newParentHierarchyObject = await this.getAndCheckAuthorizationForUpdate(newParentFolderId);
 
     if (hierarchyObject.parentId === newParentHierarchyObject.id) {
@@ -384,6 +386,13 @@ export class CnFolderAggregateService {
       );
     }
 
+    // check if the new parent is not a current child of the folder
+    const ancestor = await this.hierarchyObjectService.getAncestors(newParentHierarchyObject);
+    if (ancestor.find((descendant) => descendant.id === hierarchyObject.id)) {
+      throw new BlBadRequestException('The destination folder cannot be a child of the moved folder');
+    }
+
+    // check that the source root folder and the destination root folder are using the same bucket configs
     const folderToMoveBuckets = await this.folderBucketService.getAndCheckFolderBucketConfig(
       hierarchyObject.getRootFolderId()
     );
@@ -406,6 +415,13 @@ export class CnFolderAggregateService {
         entityManager
       );
     });
+
+    const data: CnFolderEventMoveFolderData = {
+      hierarchyObject,
+      newParentFolder: newParentHierarchyObject,
+      oldParentRootFolderId: oldParentRootFolderId,
+    };
+    this.emitFolderEvent('MOVE_FOLDER', newParentHierarchyObject, data);
     return this.hierarchyObjectService.findByIdAndCheck(hierarchyObject.id);
   }
 

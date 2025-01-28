@@ -6,7 +6,7 @@ import {
   CnLabFolderWithLab,
   CnLabFolderWithRootFolder,
 } from './cn-lab-folder.entity';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
 import { CnLab, CnLabEntity } from '../cn-labs/cn-lab.entity';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { BlBadRequestException } from '@monorepo/back-core-lib';
@@ -74,6 +74,17 @@ export class CnLabFolderService {
     return this.repository.find({
       where: {
         rootFolderId: rootFolderId,
+      },
+      relations: {
+        lab: true,
+      },
+    });
+  }
+
+  public async findByRootFolderIds(rootFolderIds: string[]): Promise<CnLabFolderWithLab[]> {
+    return this.repository.find({
+      where: {
+        rootFolderId: In(rootFolderIds),
       },
       relations: {
         lab: true,

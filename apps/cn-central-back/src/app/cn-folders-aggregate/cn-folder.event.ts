@@ -16,6 +16,7 @@ export type CnFolderEventType =
   | 'UPDATE_FOLDER_DESCRIPTION'
   | 'SHARE_FOLDER'
   | 'UNSHARE_FOLDER'
+  | 'MOVE_FOLDER'
   | 'CREATE_SCENARIO'
   | 'UPDATE_SCENARIO'
   | 'DELETE_SCENARIO'
@@ -39,4 +40,10 @@ export interface CnFolderEvent {
   parentFolder?: CnHierarchyObject;
   entity: any;
   userInfo: CnUserSpaceInfo;
+}
+
+export interface CnFolderEventMoveFolderData {
+  hierarchyObject: CnHierarchyObject;
+  oldParentRootFolderId: string;
+  newParentFolder: CnHierarchyObject;
 }

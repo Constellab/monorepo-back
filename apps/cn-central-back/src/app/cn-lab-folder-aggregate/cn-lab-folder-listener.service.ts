@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import {
   CnFolderEvent,
+  CnFolderEventMoveFolderData,
   cnFolderEventName,
   cnRemoveFolderFromAllLabsEventName,
 } from '../cn-folders-aggregate/cn-folder.event';
@@ -38,6 +39,9 @@ export class CnLabFolderListener {
         if (!hierarchyObject.isRootFolder()) {
           await this.syncFolderWithLabs(hierarchyObject.getRootFolderId());
         }
+        break;
+      case 'MOVE_FOLDER':
+        await this.handledMovedFolder(event.entity);
         break;
     }
   }
@@ -82,6 +86,39 @@ export class CnLabFolderListener {
     for (const labFolder of labFolders) {
       if (labFolder.lab.isHttpAccessible()) {
         promises.push(this.labFolderAggregateService.syncFolderToLab(labFolder.lab, folderTree));
+      }
+    }
+
+    if (promises.length > 0) {
+      await Promise.all(promises);
+    }
+  }
+
+  /**
+   * When a folder is moved, we sync all the folder of the labs that uses the old or new root folder.
+   * @param data
+   * @private
+   */
+  private async handledMovedFolder(data: CnFolderEventMoveFolderData): Promise<void> {
+    const rootFolderIds = [data.newParentFolder.getRootFolderId()];
+    if (data.oldParentRootFolderId !== data.newParentFolder.getRootFolderId()) {
+      rootFolderIds.push(data.oldParentRootFolderId);
+    }
+
+    // get all the lab where the folder is shared
+    const labFolders = await this.labFolderAggregateService.findLabFolderByFolderIds(rootFolderIds);
+
+    // retrieve labs that uses
+    const syncedLab: string[] = [];
+    const promises: Promise<void>[] = [];
+
+    for (const labFolder of labFolders) {
+      // prevent to sync the same lab multiple times
+      if (!syncedLab.includes(labFolder.labId)) {
+        if (labFolder.lab.isHttpAccessible()) {
+          promises.push(this.labFolderAggregateService.syncAllFolderInsecure(labFolder.lab));
+        }
+        syncedLab.push(labFolder.labId);
       }
     }
 
