@@ -251,13 +251,12 @@ export class CnFolderAggregateService {
       }
     }
 
-    const folder = await this.foldersService.findByIdAndCheck(id);
     await this.datasource.transaction(async (entityManager) => {
       await this.foldersService.deleteById(id, entityManager);
       await this.hierarchyObjectService.deleteById(id, entityManager);
     });
 
-    this.emitFolderEvent('DELETE_FOLDER', null, folder);
+    this.emitFolderEvent('DELETE_FOLDER', null, folderHierarchy);
   }
 
   async findFolder(id: string): Promise<CnFolder> {
@@ -1003,7 +1002,7 @@ export class CnFolderAggregateService {
    * @param files
    */
   public async uploadFolder(parentFolderId: string, files: BlFile[]): Promise<void> {
-    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
+    const parentFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
 
     if (files.length === 0) {
       throw new BlBadRequestException('The uploaded folder is empty');
@@ -1013,17 +1012,18 @@ export class CnFolderAggregateService {
       throw new BlBadRequestException('The uploaded folder contains too many files. The limit is 100 files');
     }
 
+    // check if the folder already exists
     const uploadedFolderName = files[0].originalname.split('/')[0];
     const subFolder = await this.hierarchyObjectService.findChildrenByNameAndType(
       parentFolderId,
       uploadedFolderName,
       CnHierarchyObjectType.FOLDER
     );
-
-    if (subFolder) {
+    if (subFolder.length > 0) {
       throw new BlBadRequestException(`The sub folder '${uploadedFolderName}' already exists`);
     }
 
+    // upload the files and create the folder hierarchy
     for (const file of files) {
       const filePaths = file.originalname.split('/');
 
@@ -1031,20 +1031,22 @@ export class CnFolderAggregateService {
       const fileName = filePaths[filePaths.length - 1];
 
       // create or get the folder hierarchy
-      let parentFolder = folder;
+      let currentParent = parentFolder;
       for (const folderName of folders) {
-        parentFolder = await this.getOrCreateChildFolder(parentFolder, folderName);
+        currentParent = await this.getOrCreateChildFolder(currentParent, folderName);
       }
 
       // folder hierarchy created, we can upload the file
       await this.documentService.uploadDocument(
         file,
-        parentFolder,
+        currentParent,
         CnDocumentType.UPLOADED_DOCUMENT,
-        parentFolder.id,
+        currentParent.id,
         fileName
       );
     }
+
+    this.emitFolderEvent('UPLOAD_FOLDER', parentFolder, parentFolder);
   }
 
   private async getOrCreateChildFolder(

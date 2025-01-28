@@ -11,15 +11,13 @@ import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggr
 import { CnLabFolderAggregateService } from './cn-lab-folder-aggregate.service';
 import { CnFolderBucketService } from '../cn-folders-aggregate/cn-folders/cn-folder-bucket.service';
 import { CnHierarchyObject } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
-import { CnHierarchyObjectService } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.service';
 
 @Injectable()
 export class CnLabFolderListener {
   constructor(
     private labFolderAggregateService: CnLabFolderAggregateService,
     private folderAggregateService: CnFolderAggregateService,
-    private folderBucketService: CnFolderBucketService,
-    private hierarchyObjectService: CnHierarchyObjectService
+    private folderBucketService: CnFolderBucketService
   ) {}
 
   @OnEvent(cnFolderEventName)
@@ -32,9 +30,12 @@ export class CnLabFolderListener {
       case 'UPDATE_FOLDER':
         await this.syncFolderWithLabs(event.parentFolder.getRootFolderId());
         break;
+      case 'UPLOAD_FOLDER':
+        // on a folder upload, we sync the root folder
+        await this.syncFolderWithLabs(event.parentFolder.getRootFolderId());
+        break;
       case 'DELETE_FOLDER':
-        const folder: CnFolder = event.entity;
-        const hierarchyObject = await this.hierarchyObjectService.findByIdAndCheck(folder.id);
+        const hierarchyObject: CnHierarchyObject = event.entity;
         // if the root folder was deleted, do nothing
         if (!hierarchyObject.isRootFolder()) {
           await this.syncFolderWithLabs(hierarchyObject.getRootFolderId());

@@ -17,6 +17,7 @@ export type CnFolderEventType =
   | 'SHARE_FOLDER'
   | 'UNSHARE_FOLDER'
   | 'MOVE_FOLDER'
+  | 'UPLOAD_FOLDER'
   | 'CREATE_SCENARIO'
   | 'UPDATE_SCENARIO'
   | 'DELETE_SCENARIO'
