@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
+  CnHierarchyObjectType,
   CnHierarchyObjectWithChildren,
 } from './cn-hierarchy-object.entity';
 import { EntityManager, IsNull, TreeRepository } from 'typeorm';
@@ -196,5 +197,15 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
 
   public migrate(hierarchyObject: CnHierarchyObject): Promise<CnHierarchyObject> {
     return this.repository.save(hierarchyObject, { listeners: false });
+  }
+
+  public findChildrenByNameAndType(
+    parentId: string,
+    name: string,
+    type: CnHierarchyObjectType
+  ): Promise<CnHierarchyObject[]> {
+    return this.repository.find({
+      where: { parentId: parentId, name: name, objectType: type },
+    });
   }
 }

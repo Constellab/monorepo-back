@@ -110,7 +110,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       documentType,
       entityId,
       // TODO TO IMPROVE
-      bucketsConfig.bucketConfigs[0].type,
+      bucketsConfig.getFirstBucketType(),
       parentFolder,
       parentDocument
     );
@@ -796,9 +796,9 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(
         document.hierarchyRepresentation.rootParentId
       );
-      if (bucketConfig.getFirstBucket().type === 'azureBlob') {
+      if (bucketConfig.getFirstBucketType() === 'azureBlob') {
         document.bucketType = BlBucketType.AZURE;
-      } else if (bucketConfig.getFirstBucket().type === 'lab') {
+      } else if (bucketConfig.getFirstBucketType() === 'lab') {
         document.bucketType = BlBucketType.LAB;
       } else {
         document.bucketType = BlBucketType.NORMAL;

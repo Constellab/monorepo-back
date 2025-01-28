@@ -23,6 +23,10 @@ export class BlMultipleBucketConfig {
     return this.bucketConfigs[0];
   }
 
+  public getFirstBucketType(): 's3' | 'azureBlob' | 'lab' {
+    return this.bucketConfigs[0].type;
+  }
+
   public equals(other: BlMultipleBucketConfig): boolean {
     if (this.bucketConfigs.length !== other.bucketConfigs.length) return false;
 

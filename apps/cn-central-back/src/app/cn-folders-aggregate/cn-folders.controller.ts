@@ -23,6 +23,7 @@ import {
   BlResponseHelper,
   BlSearchParams,
   BlUploadedFile,
+  BlUploadedFiles,
 } from '@monorepo/back-core-lib';
 import {
   TeBlockFigureUploadedResponse,
@@ -41,7 +42,7 @@ import {
 } from './cn-folders/cn-folder.dto';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnNewMessageDTO } from '../cn-core/model/entities/cn-message.entity';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { CnFolderUser, CnFolderUserEntity } from './cn-folder-user/cn-folder-user.entity';
 import { CnActivity } from '../cn-activity/cn-activity.entity';
@@ -191,8 +192,6 @@ export class CnFoldersController {
     return this.folderAggregateService.updateFolderLeader(id, leaderId);
   }
 
-  /////////////////////////////////// FOLDER HIERARCHY //////////////////////////////////////
-
   /////////////////////////////////// DESCRIPTION //////////////////////////////////////
 
   @Get(':id/description')
@@ -315,6 +314,16 @@ export class CnFoldersController {
     @BlUploadedFile() file: BlFile
   ): Promise<CnHierarchyObject> {
     return this.folderAggregateService.uploadDocument(folderId, file);
+  }
+
+  // route to upload documents from a folder
+  @UseInterceptors(FilesInterceptor('files', 1000, { preservePath: true }))
+  @Post(':folderId/documents')
+  async uploadFolder(
+    @Param('folderId', new ParseUUIDPipe()) folderId: string,
+    @BlUploadedFiles() files: BlFile[]
+  ): Promise<void> {
+    return await this.folderAggregateService.uploadFolder(folderId, files);
   }
 
   /**

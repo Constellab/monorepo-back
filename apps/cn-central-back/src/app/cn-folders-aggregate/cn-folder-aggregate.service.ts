@@ -124,10 +124,26 @@ export class CnFolderAggregateService {
   }
 
   async createSubFolder(folderDto: CnSaveFolderDTO, parentFolderId: string): Promise<CnFolderWithHierarchy> {
+    const parentFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
+    const newFolder = await this.createSubFolderPrivate(folderDto, parentFolder);
+
+    this.emitFolderEvent('CREATE_SUB_FOLDER', parentFolder, newFolder);
+    return this.foldersService.findByIdAndCheckWithFolder(newFolder.id);
+  }
+
+  /**
+   * Create the sub folder but does not check the authorization or emit event
+   * @param folderDto
+   * @param parentFolder
+   * @private
+   */
+  private async createSubFolderPrivate(
+    folderDto: CnSaveFolderDTO,
+    parentFolder: CnHierarchyObject
+  ): Promise<CnFolderWithHierarchy> {
     const entity = this.createFolderFromDTO(folderDto);
     entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
 
-    const parentFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
     const parentWithStorage = await this.foldersService.findByIfAndCheckWithStorage(parentFolder.id);
 
     if (
@@ -146,9 +162,7 @@ export class CnFolderAggregateService {
     entity.mainStorage = parentWithStorage.mainStorage;
     entity.backupStorage = parentWithStorage.backupStorage;
 
-    const newFolder = await this.foldersService.create(entity);
-    this.emitFolderEvent('CREATE_SUB_FOLDER', parentFolder, newFolder);
-    return this.foldersService.findByIdAndCheckWithFolder(newFolder.id);
+    return await this.foldersService.create(entity);
   }
 
   private createFolderFromDTO(folderDto: CnSaveFolderDTO): CnFolderEntity {
@@ -915,6 +929,76 @@ export class CnFolderAggregateService {
     const newFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
 
     return this.documentService.moveDocument(document, oldFolder, newFolder);
+  }
+
+  ////////////////////////////// UPLOAD FOLDER //////////////////////////////////
+  /**
+   * Upload a folder with files. The folder hierarchy is created, then the file uploaded.
+   * @param parentFolderId
+   * @param files
+   */
+  public async uploadFolder(parentFolderId: string, files: BlFile[]): Promise<void> {
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
+
+    if (files.length === 0) {
+      throw new BlBadRequestException('The uploaded folder is empty');
+    }
+
+    if (files.length > 100) {
+      throw new BlBadRequestException('The uploaded folder contains too many files. The limit is 100 files');
+    }
+
+    const uploadedFolderName = files[0].originalname.split('/')[0];
+    const subFolder = await this.hierarchyObjectService.findChildrenByNameAndType(
+      parentFolderId,
+      uploadedFolderName,
+      CnHierarchyObjectType.FOLDER
+    );
+
+    if (subFolder) {
+      throw new BlBadRequestException(`The sub folder '${uploadedFolderName}' already exists`);
+    }
+
+    for (const file of files) {
+      const filePaths = file.originalname.split('/');
+
+      const folders = filePaths.slice(0, filePaths.length - 1);
+      const fileName = filePaths[filePaths.length - 1];
+
+      // create or get the folder hierarchy
+      let parentFolder = folder;
+      for (const folderName of folders) {
+        parentFolder = await this.getOrCreateChildFolder(parentFolder, folderName);
+      }
+
+      // folder hierarchy created, we can upload the file
+      await this.documentService.uploadDocument(
+        file,
+        parentFolder,
+        CnDocumentType.UPLOADED_DOCUMENT,
+        parentFolder.id,
+        fileName
+      );
+    }
+  }
+
+  private async getOrCreateChildFolder(
+    parentFolder: CnHierarchyObject,
+    folderName: string
+  ): Promise<CnHierarchyObject> {
+    const existingFolder = await this.hierarchyObjectService.findChildrenByNameAndType(
+      parentFolder.id,
+      folderName,
+      CnHierarchyObjectType.FOLDER
+    );
+    if (existingFolder.length > 0) {
+      return existingFolder[0];
+    }
+    // creating the folder
+    const folderDTO = new CnSaveFolderDTO();
+    folderDTO.name = folderName;
+    const folder = await this.createSubFolderPrivate(folderDTO, parentFolder);
+    return folder.hierarchyRepresentation;
   }
 
   ////////////////////////////// HISTORY ///////////////////////////////////////

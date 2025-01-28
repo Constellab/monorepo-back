@@ -7,15 +7,15 @@ import { TeRichTextDTO } from '@monorepo/te-text-editor';
 
 export class CnSaveFolderDTO {
   @BlTrim()
-  code: string;
-
-  @BlTrim()
   name: string;
 
+  @BlTrim()
+  code?: string;
+
   @ClLuxonDateTransform()
-  startingDate: DateTime;
+  startingDate?: DateTime;
   @ClLuxonDateTransform()
-  endingDate: DateTime;
+  endingDate?: DateTime;
 
   mainStorage?: CnBucketLocationDTO;
 
