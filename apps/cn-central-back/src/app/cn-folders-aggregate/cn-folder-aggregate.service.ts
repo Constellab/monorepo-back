@@ -6,7 +6,7 @@ import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
 import { CnScenariosService } from './cn-scenarios/cn-scenarios.service';
 import { CnNotesService } from './cn-notes/cn-notes.service';
-import { CnScenario, CnScenarioEntity, CnScenarioProtocol } from './cn-scenarios/cn-scenario.entity';
+import { CnScenario, CnScenarioEntity } from './cn-scenarios/cn-scenario.entity';
 import { CnCreateLabScenarioDto } from './cn-scenarios/cn-scenario.dto';
 import { CnCreateNoteWithConfigDto } from './cn-notes/cn-note.dto';
 import { CnNote, CnNoteEntity } from './cn-notes/cn-note.entity';
@@ -69,6 +69,7 @@ import { CnResourcesService } from './cn-resources/cn-resources.service';
 import { CnResource, CnResourceEntity } from './cn-resources/cn-resource.entity';
 import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
 import { CnHierarchyRepresentation } from './cn_hierarchy_objects/cn-hierarchy-representation';
+import { CnScenarioProtocol } from './cn-scenarios/cn-scenario-protocol.class';
 
 @Injectable()
 export class CnFolderAggregateService {
@@ -1473,5 +1474,9 @@ export class CnFolderAggregateService {
         await this.hierarchyObjectService.migrate(hierarchyRepresentation.hierarchyRepresentation);
       }
     }
+  }
+
+  public async fixProtocols(): Promise<void> {
+    await this.scenarioService.fixProtocols();
   }
 }

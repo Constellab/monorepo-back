@@ -1,8 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   CnScenario,
   CnScenarioEntity,
-  CnScenarioProtocol,
   CnScenarioWithHierarchy,
   CnScenarioWithNotes,
 } from './cn-scenario.entity';
@@ -20,9 +19,12 @@ import {
 } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
 import { CnHierarchyObjectService } from '../cn_hierarchy_objects/cn-hierarchy-object.service';
+import { CnScenarioProcess, CnScenarioProtocol } from './cn-scenario-protocol.class';
 
 @Injectable()
 export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
+  private logger = new Logger(CnScenariosService.name);
+
   constructor(
     @InjectRepository(CnScenarioEntity) private repository: Repository<CnScenarioEntity>,
     private labConfigService: CnLabConfigsService,
@@ -200,5 +202,40 @@ export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
   public migrateProtocol(protocol: CnScenarioProtocol): CnScenarioProtocol {
     const protocolMigrator = new CnProtocolMigrator();
     return protocolMigrator.migrateProtocol(protocol);
+  }
+
+  public async fixProtocols(): Promise<void> {
+    const scenarios = await this.repository.find();
+    for (const scenario of scenarios) {
+      try {
+        const protocol = scenario.protocol;
+        scenario.protocol.data = this.fixProtocol(protocol.data);
+
+        await this.repository.save(scenario, { listeners: false });
+      } catch (e) {
+        this.logger.error('Error while fixing protocol for scenario ' + scenario.id);
+        this.logger.error(e);
+      }
+    }
+  }
+
+  private fixProtocol(protocol: CnScenarioProcess): CnScenarioProcess {
+    for (const key in protocol.graph.nodes) {
+      const node = protocol.graph.nodes[key];
+
+      if (!node.inputs.ports && !node.inputs.type) {
+        node.inputs = { ports: node.inputs, type: 'normal', additional_info: {} };
+      }
+
+      if (!node.outputs.ports && !node.outputs.type) {
+        node.outputs = { ports: node.outputs, type: 'normal', additional_info: {} };
+      }
+
+      if (node.graph) {
+        this.fixProtocol(node);
+      }
+    }
+
+    return protocol;
   }
 }

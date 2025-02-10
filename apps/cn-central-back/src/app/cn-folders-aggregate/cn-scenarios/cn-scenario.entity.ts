@@ -11,11 +11,7 @@ import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-
 import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
 import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { TeRichTextInput } from '@monorepo/te-text-editor';
-
-export interface CnScenarioProtocol {
-  version: number;
-  data: any;
-}
+import { CnScenarioProtocol } from './cn-scenario-protocol.class';
 
 /**
  * A scenario is executed in a lab to produce notes

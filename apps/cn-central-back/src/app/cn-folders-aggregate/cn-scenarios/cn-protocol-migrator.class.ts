@@ -1,11 +1,7 @@
-import { CnScenarioProtocol } from './cn-scenario.entity';
+import { CnScenarioProtocol } from './cn-scenario-protocol.class';
 
 export class CnProtocolMigrator {
   public migrateProtocol(protocol: CnScenarioProtocol): CnScenarioProtocol {
-    if (protocol.version === 3) {
-      return protocol;
-    }
-
     if (protocol.version === 1) {
       protocol = this.migrateProtocolFromV1ToV2(protocol);
     }
@@ -14,6 +10,9 @@ export class CnProtocolMigrator {
       protocol = this.migrateProtocolFromV2ToV3(protocol);
     }
 
+    if (protocol.version === 3) {
+      return protocol;
+    }
     return protocol;
   }
 

@@ -1,8 +1,11 @@
-import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
-import { CnScenario, CnScenarioProtocol } from './cn-scenario.entity';
+import { Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { CnScenario } from './cn-scenario.entity';
 import { CnScenarioDto } from './cn-scenario.dto';
 import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
+import { CnScenarioProtocol } from './cn-scenario-protocol.class';
+import { BlUserCategory } from '@monorepo/back-core-lib';
+import { CnUserCategories } from '../../cn-core/decorators/cn-user-category.decorator';
 
 @Controller('scenarios')
 export class CnScenariosController {
@@ -48,5 +51,11 @@ export class CnScenariosController {
     @Param('scenarioId', new ParseUUIDPipe()) scenarioId: string
   ): Promise<CnLabConfig> {
     return this.folderAggregateService.findScenarioLabConfig(scenarioId);
+  }
+
+  @CnUserCategories(BlUserCategory.ADMIN)
+  @Post('fix-protocols')
+  async fixProtocols(): Promise<void> {
+    await this.folderAggregateService.fixProtocols();
   }
 }
