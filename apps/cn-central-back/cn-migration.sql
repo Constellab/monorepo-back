@@ -117,7 +117,7 @@ ALTER table document
 ######## 2.2.4 ########
 # Set LAB_MANAGER_VERSION=0.15.0
 
-######## 2.2.5 ########
+######## 2.3.0 ########
 ALTER TABLE folder
   MODIFY mainStorageId varchar(36) NULL;
 update folder
