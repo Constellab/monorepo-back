@@ -70,6 +70,9 @@ import { CnResource, CnResourceEntity } from './cn-resources/cn-resource.entity'
 import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
 import { CnHierarchyRepresentation } from './cn_hierarchy_objects/cn-hierarchy-representation';
 import { CnScenarioProtocol } from './cn-scenarios/cn-scenario-protocol.class';
+import { CnTag } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
+import { CnHierarchyObjectTagAggregateService } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag-aggregate.service';
+import { CnHierarchyObjectTag } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
 
 @Injectable()
 export class CnFolderAggregateService {
@@ -90,7 +93,8 @@ export class CnFolderAggregateService {
     private eventEmitter: EventEmitter2,
     private activityService: CnActivityService,
     private resourceService: CnResourcesService,
-    private externalLabApiService: CnExternalLabApiService
+    private externalLabApiService: CnExternalLabApiService,
+    private tagService: CnHierarchyObjectTagAggregateService
   ) {}
 
   /////////////////////////////////////// FOLDER //////////////////////////////////
@@ -1413,6 +1417,42 @@ export class CnFolderAggregateService {
     }
 
     return await this.activityService.search(searchBuilder.build(), page, size);
+  }
+
+  /////////////////////////////////////// TAG //////////////////////////////////
+  public async createHierarchyObjectTag(
+    hierarchyObjectId: string,
+    tag: CnTag
+  ): Promise<CnHierarchyObjectTag> {
+    const hierarchyObject = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    return this.tagService.createTag(tag, hierarchyObject);
+  }
+
+  public async createHierarchyObjectTags(
+    hierarchyObjectId: string,
+    tags: CnTag[]
+  ): Promise<CnHierarchyObjectTag[]> {
+    const hierarchyObject = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    return this.tagService.createTags(tags, hierarchyObject);
+  }
+
+  public async deleteHierarchyObjectTag(hierarchyObjectId: string, tag: CnTag): Promise<void> {
+    const hierarchyObject = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    await this.tagService.deleteTag(tag, hierarchyObject);
+  }
+
+  public async getHierarchyObjectTagsPaginated(
+    hierarchyObjectId: string,
+    page: number,
+    size: number
+  ): Promise<ClPageI<CnTag>> {
+    const hierarchyObject = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    return this.tagService.findByHierarchyObjectPaginated(hierarchyObject, page, size);
+  }
+
+  public async getAllHierarchyObjectTags(hierarchyObjectId: string): Promise<CnTag[]> {
+    const hierarchyObject = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    return this.tagService.findAllByHierarchyObject(hierarchyObject);
   }
 
   /////////////////////////////////////// SECURITY //////////////////////////////////

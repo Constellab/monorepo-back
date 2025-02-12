@@ -17,6 +17,7 @@ import { CnSpace, CnSpaceEntity } from '../../cn-spaces/cn-space.entity';
 import { CnFolderUserEntity } from '../cn-folder-user/cn-folder-user.entity';
 import { CnHierarchyObjectInfo } from './cn-hierarchy-object.dto';
 import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
+import { CnHierarchyObjectTagEntity } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
 
 export enum CnHierarchyObjectType {
   FOLDER = 'FOLDER',
@@ -110,6 +111,9 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
   @Column({ nullable: false, type: 'simple-json' })
   style: CnTypeStyle;
 
+  @OneToMany(() => CnHierarchyObjectTagEntity, (tag: CnHierarchyObjectTagEntity) => tag.hierarchyObject)
+  tags: CnHierarchyObjectTagEntity;
+
   @BeforeInsert()
   setObjectTypeOrder(): void {
     this.objectTypeOrder = this.objectType === CnHierarchyObjectType.FOLDER ? 1 : 2;
@@ -187,7 +191,7 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
 
 export type CnHierarchyObject = Omit<
   CnHierarchyObjectEntity,
-  'children' | 'sortChildrenTree' | 'filterChildrenFolder' | 'parent' | 'rootParent' | 'space'
+  'children' | 'sortChildrenTree' | 'filterChildrenFolder' | 'parent' | 'rootParent' | 'space' | 'tags'
 >;
 
 export type CnHierarchyObjectWithChildren = Omit<CnHierarchyObjectEntity, 'parent' | 'rootParent' | 'space'>;

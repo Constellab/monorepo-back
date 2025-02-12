@@ -1,11 +1,11 @@
 import { BlSearchBuilder, BlSearchParams } from '@monorepo/back-core-lib';
-import { CnHierarchyObject } from './cn-hierarchy-object.entity';
+import { CnHierarchyObjectEntity } from './cn-hierarchy-object.entity';
 import { IsNull } from 'typeorm';
 
 /**
  * Override the search builder to add to some logic
  */
-export class CnHierarchyObjectSearch extends BlSearchBuilder<CnHierarchyObject> {
+export class CnHierarchyObjectSearch extends BlSearchBuilder<CnHierarchyObjectEntity> {
   addSearchParams(searchParams: BlSearchParams): void {
     // clone because it will be modified
     searchParams = searchParams.clone();

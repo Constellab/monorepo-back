@@ -127,3 +127,36 @@ where id = (Select id from hierarchy_object where id = folder.id and rootParentI
 update folder
 set backupStorageId = null
 where id = (Select id from hierarchy_object where id = folder.id and rootParentId is not null);
+
+############ 2.4.0 ############
+CREATE TABLE hierarchy_object_tag
+(
+  id                VARCHAR(36) NOT NULL PRIMARY KEY,
+  tagKey            VARCHAR(50) NOT NULL,
+  tagValue          VARCHAR(50) NOT NULL,
+  hierarchyObjectId VARCHAR(36) NOT NULL,
+  createdAt         DATETIME    NOT NULL,
+  lastModifiedAt    DATETIME    NULL,
+  createdById       varchar(36) not null,
+  lastModifiedById  varchar(36) null,
+  UNIQUE KEY hierarchy_object_tag_key_value_lab (tagKey, tagValue, hierarchyObjectId),
+  CONSTRAINT FK_hierarchy_object_tag_hierarchy_object FOREIGN KEY (hierarchyObjectId) REFERENCES hierarchy_object (id) ON DELETE CASCADE,
+  CONSTRAINT FK_hierarchy_object_tag_created_by FOREIGN KEY (createdById) REFERENCES user (id),
+  CONSTRAINT FK_hierarchy_object_tag_last_modified_by FOREIGN KEY (lastModifiedById) REFERENCES user (id)
+);
+
+CREATE TABLE hierarchy_object_tag_history
+(
+  id                VARCHAR(36)                 NOT NULL PRIMARY KEY,
+  tagKey            VARCHAR(50)                 NOT NULL,
+  tagValue          VARCHAR(50)                 NOT NULL,
+  hierarchyObjectId VARCHAR(36)                 NOT NULL,
+  type              ENUM ('CREATED', 'DELETED') NOT NULL,
+  createdAt         DATETIME                    NOT NULL,
+  lastModifiedAt    DATETIME                    NULL,
+  createdById       varchar(36)                 not null,
+  lastModifiedById  varchar(36)                 null,
+  CONSTRAINT FK_hierarchy_object_tag_history_hierarchy_object FOREIGN KEY (hierarchyObjectId) REFERENCES hierarchy_object (id) ON DELETE CASCADE,
+  CONSTRAINT FK_hierarchy_object_tag_history_created_by FOREIGN KEY (createdById) REFERENCES user (id),
+  CONSTRAINT FK_hierarchy_object_tag_history_last_modified_by FOREIGN KEY (lastModifiedById) REFERENCES user (id)
+);
