@@ -1,8 +1,21 @@
-import { Module } from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import { BlTranslateService } from './bl-translate.service';
+import { BL_TRANSLATE_CONFIG_PROVIDER, BlTranslateConfig } from './bl-translate.class';
 
-@Module({
-  providers: [BlTranslateService],
-  exports: [BlTranslateService],
-})
-export class BlTranslateModule {}
+@Global()
+@Module({})
+export class BlTranslateModule {
+  public static forRoot(config: BlTranslateConfig): DynamicModule {
+    return {
+      module: BlTranslateModule,
+      providers: [
+        {
+          provide: BL_TRANSLATE_CONFIG_PROVIDER,
+          useValue: config,
+        },
+        BlTranslateService,
+      ],
+      exports: [BlTranslateService],
+    };
+  }
+}

@@ -5,7 +5,7 @@ import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { DateTime } from 'luxon';
-import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
+import { CnLab, CnLabEntity } from '../../cn-labs/cn-lab.entity';
 import { CnDocument, CnDocumentEntity } from '../cn-documents/cn-document.entity';
 import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-representation';
 import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
@@ -23,7 +23,7 @@ export class CnNoteEntity extends CnHierarchyRepresentation {
   @BlNotUpdatable()
   @Type(() => CnLabEntity)
   @ManyToOne(() => CnLabEntity, { nullable: false })
-  lab: CnLabEntity;
+  lab: CnLab;
 
   @Type(() => CnLabConfig)
   @ManyToOne(() => CnLabConfig, { nullable: false })

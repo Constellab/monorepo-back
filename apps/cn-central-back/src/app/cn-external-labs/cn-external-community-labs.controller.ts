@@ -11,19 +11,20 @@ export class CnExternalCommunityLabsController {
   @Get('verify-rights')
   async verifyRights(): Promise<any> {
     return {
-      labId: CnCurrentUserHelper.getCurrentLab().id,
-      userId: CnCurrentUserHelper.getCurrentUser().id,
+      labId: CnCurrentUserHelper.getAndCheckCurrentLab().id,
+      userId: CnCurrentUserHelper.getAndCheckCurrentUser().id,
     };
   }
 
   /**
-   * Verify rights of the lab requesting Community based on the Api token without user id, mostly non-user based requests
+   * Verify rights of the lab requesting Community based on the
+   * Api token without user id, mostly non-user based requests
    */
   @CnLabRobotAuthentication()
   @Get('verify-without-user-rights')
   async verifyWithoutUserRights(): Promise<any> {
     return {
-      labId: CnCurrentUserHelper.getCurrentLab().id,
+      labId: CnCurrentUserHelper.getAndCheckCurrentLab().id,
     };
   }
 }

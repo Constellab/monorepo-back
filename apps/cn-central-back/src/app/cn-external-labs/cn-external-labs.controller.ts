@@ -4,9 +4,11 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   UseInterceptors
 } from '@nestjs/common';
 import {
@@ -22,7 +24,7 @@ import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggr
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { ClCoreJsonConvert } from '@monorepo/core-lib';
+import { ClCoreJsonConvert, ClPageI } from '@monorepo/core-lib';
 import { CnExternalLabUser } from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import { CnExternalCheckCredentialResponse } from '../cn-auth/cn-auth.service';
 import { CnLabFolderAggregateService } from '../cn-lab-folder-aggregate/cn-lab-folder-aggregate.service';
@@ -31,7 +33,7 @@ import {
   CnLabFolderDTO
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.dto';
 import {
-  CnHierarchyObjectEntity
+  CnHierarchyObjectEntity,
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
 import { CnLabSendMailDto, CnLabSendMailToMailsDto } from '../cn-labs/mail/cn-lab-mail.dto';
@@ -40,6 +42,12 @@ import { TeRichTextBlockModificationsDTO, TeRichTextDTO, TeRichTextHelper } from
 import { CnNote } from '../cn-folders-aggregate/cn-notes/cn-note.entity';
 import { CnScenario } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.entity';
 import { CnShareResourceRequestDTO } from '../cn-folders-aggregate/cn-resources/cn-resource.dto';
+import { CnSaveFolderDTO } from '../cn-folders-aggregate/cn-folders/cn-folder.dto';
+import { CnFolderWithHierarchy } from '../cn-folders-aggregate/cn-folders/cn-folder.entity';
+import { CnTag } from '../cn-folders-aggregate/cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
+import {
+  CnHierarchyObjectTag,
+} from '../cn-folders-aggregate/cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -88,27 +96,15 @@ export class CnExternalLabsController {
 
   //////////////////////////// SCENARIO ////////////////////////////
 
-  // TODO remove project routes once all lab are on v0.10.0
-  @Put(['project/:parentFolderId/experiment'])
-  saveScenario(
-    @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
-    @Body(new BlParsePipe(CnCreateLabScenarioDto)) createLabScenarioDto: any
-  ): Promise<void> {
-    // migrate field
-    createLabScenarioDto.scenario = createLabScenarioDto.experiment;
-    delete createLabScenarioDto.experiment;
-    return this.folderAggregateService.createLabScenario(parentFolderId, createLabScenarioDto);
-  }
-
   @Put(['folder/:parentFolderId/scenario'])
-  saveScenarioV2(
+  saveScenario(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Body(new BlParsePipe(CnCreateLabScenarioDto)) createLabScenarioDto: CnCreateLabScenarioDto
   ): Promise<void> {
     return this.folderAggregateService.createLabScenario(parentFolderId, createLabScenarioDto);
   }
 
-  @Delete(['project/:parentFolderId/experiment/:scenarioId', 'folder/:parentFolderId/scenario/:scenarioId'])
+  @Delete(['folder/:parentFolderId/scenario/:scenarioId'])
   deleteScenario(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Param('scenarioId', new ParseUUIDPipe()) scenarioId: string
@@ -128,27 +124,8 @@ export class CnExternalLabsController {
   //////////////////////////// NOTE ////////////////////////////
 
   @UseInterceptors(FilesInterceptor('files'))
-  @Put(['project/:parentFolderId/report/v2'])
-  saveNote(
-    @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
-    @Body() body: { body: string },
-    @BlUploadedFiles() files: BlFile[] = []
-  ): Promise<void> {
-    const json = JSON.parse(body.body);
-    json.scenario_ids = json.experiment_ids;
-    delete json.experiment_ids;
-    json.note = json.report;
-    delete json.report;
-    const createNoteDto: CnCreateNoteWithConfigDto = ClCoreJsonConvert.deserializeObject(
-      json,
-      CnCreateNoteWithConfigDto
-    );
-    return this.folderAggregateService.createLabNote(createNoteDto, parentFolderId, files);
-  }
-
-  @UseInterceptors(FilesInterceptor('files'))
   @Put(['folder/:parentFolderId/note/v2'])
-  saveNoteV2(
+  saveNote(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Body() body: { body: string },
     @BlUploadedFiles() files: BlFile[] = []
@@ -160,7 +137,7 @@ export class CnExternalLabsController {
     return this.folderAggregateService.createLabNote(createNoteDto, parentFolderId, files);
   }
 
-  @Delete(['project/:parentFolderId/report/:noteId', 'folder/:parentFolderId/note/:noteId'])
+  @Delete(['folder/:parentFolderId/note/:noteId'])
   deleteNote(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Param('noteId', new ParseUUIDPipe()) noteId: string
@@ -190,16 +167,15 @@ export class CnExternalLabsController {
   /////////////////////////////// SYNCHRONIZATION ///////////////////////////////
   // those routes does not require user authentication
   // because they are called by the lab server and are just get
-  // TODO remove project routes once all lab are on v0.10.0d
   @CnLabRobotAuthentication()
-  @Get(['project/all-trees', 'folder/all-trees'])
+  @Get(['folder/all-trees'])
   async getAllFolderTrees(): Promise<CnLabFolderDTO[]> {
     const folders = await this.labFolderAggregateService.getCurrentLabFolders();
     return CnFolderDtoHelper.convertToFolderTreeDtoList(folders as CnHierarchyObjectEntity[]);
   }
 
   @CnLabRobotAuthentication()
-  @Get(['project/:id/root-tree', 'folder/:id/root-tree'])
+  @Get(['folder/:id/root-tree'])
   async getRootFolder(@Param('id', new ParseUUIDPipe()) folderId: string): Promise<CnLabFolderDTO> {
     const folder = await this.labFolderAggregateService.getCurrentLabRootFolderById(folderId);
     return CnFolderDtoHelper.convertToLabFolderDto(folder as CnHierarchyObjectEntity);
@@ -215,6 +191,57 @@ export class CnExternalLabsController {
   @Get('user/:id')
   getUser(@Param('id', new ParseUUIDPipe()) userId: string): Promise<CnExternalLabUser> {
     return this.labAggregator.getUserInfoFromLab(userId);
+  }
+
+  //////////////////////////// FOLDER //////////////////////////
+  @Get('folder/:id')
+  getFolder(@Param('id', new ParseUUIDPipe()) id: string): Promise<any> {
+    return this.folderAggregateService.getFolderAncestors(id);
+  }
+
+  @Post('folder')
+  create(@Body(new BlParsePipe(CnSaveFolderDTO)) folder: CnSaveFolderDTO): Promise<CnFolderWithHierarchy> {
+    return this.folderAggregateService.createRootFolder(folder);
+  }
+
+  @Post('folder/:id/sub-folder')
+  createSubFolder(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body(new BlParsePipe(CnSaveFolderDTO)) workPackage: CnSaveFolderDTO
+  ): Promise<CnFolderWithHierarchy> {
+    return this.folderAggregateService.createSubFolder(workPackage, id);
+  }
+
+  @Delete(':id')
+  delete(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return this.folderAggregateService.deleteFolder(id);
+  }
+
+  //////////////////////////// HIERARCHY OBJECT TAG //////////////////////////
+
+  @Post(':hierarchyObjectId/tags/multiple')
+  async createTags(
+    @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
+    @Body() tags: CnTag[]
+  ): Promise<CnHierarchyObjectTag[]> {
+    return this.folderAggregateService.createHierarchyObjectTags(hierarchyObjectId, tags);
+  }
+
+  @Post(':hierarchyObjectId/tags/delete')
+  async deleteTag(
+    @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
+    @Body() tag: CnTag
+  ): Promise<void> {
+    return this.folderAggregateService.deleteHierarchyObjectTag(hierarchyObjectId, tag);
+  }
+
+  @Get(':hierarchyObjectId/tags')
+  async getTags(
+    @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number
+  ): Promise<ClPageI<CnTag>> {
+    return this.folderAggregateService.getHierarchyObjectTagsPaginated(hierarchyObjectId, page, size);
   }
 
   //////////////////////////// OTHERS //////////////////////////

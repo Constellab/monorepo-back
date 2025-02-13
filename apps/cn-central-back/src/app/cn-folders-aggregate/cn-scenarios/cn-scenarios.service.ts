@@ -17,7 +17,6 @@ import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
 } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
-import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
 import { CnHierarchyObjectService } from '../cn_hierarchy_objects/cn-hierarchy-object.service';
 import { CnScenarioProcess, CnScenarioProtocol } from './cn-scenario-protocol.class';
 
@@ -126,7 +125,7 @@ export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
       const exp = await this.updateWithCompare(scenario, scenarioDB as CnScenarioEntity);
       return { scenario: exp, mode: 'update' };
     } else {
-      scenario.lab = CnCurrentUserHelper.getAndCheckCurrentLab() as CnLabEntity;
+      scenario.lab = CnCurrentUserHelper.getAndCheckCurrentLab();
       const exp = await this.create(scenario);
       return { scenario: exp, mode: 'create' };
     }

@@ -468,7 +468,9 @@ export class CnFolderListener {
     const mentions: TeMentionUser[] = TeRichTextMentionHelper.getMentions(richText);
 
     // exclude current user
-    const otherUsers = folderUsers.filter((pu) => pu.user.id != CnCurrentUserHelper.getCurrentUser().id);
+    const otherUsers = folderUsers.filter(
+      (pu) => pu.user.id != CnCurrentUserHelper.getAndCheckCurrentUser().id
+    );
 
     // if the user selected the special 'Everyone' fake user
     const everyoneUser = getFakeUserEveryoneMention();

@@ -47,16 +47,17 @@ export class CnFolderCopierService {
         }
 
         // set the user and space in the context to create the default folder, documents...
-        CnCurrentUserHelper.overrideUser(userEvent.user);
-        CnCurrentUserHelper.overrideSpace(space);
-        CnCurrentUserHelper.overrideRoleInSpace(spaceUser.role);
+        CnCurrentUserHelper.overrideAuth({
+          type: 'user',
+          user: userEvent.user,
+          space: space,
+          roleInSpace: spaceUser.role,
+        });
         await this.copyRootFolder(folderToCopy);
       } catch (error) {
         this.logger.error(`Error while creating default folder for user. ${error}`);
       } finally {
-        CnCurrentUserHelper.clearUserOverride();
-        CnCurrentUserHelper.clearSpaceOverride();
-        CnCurrentUserHelper.clearRoleInSpaceOverride();
+        CnCurrentUserHelper.clearAuthOverride();
       }
     }
   }

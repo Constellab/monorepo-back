@@ -18,7 +18,6 @@ import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { ClPage, ClStringHelper } from '@monorepo/core-lib';
 import {
   BlBadRequestException,
-  BlCurrentUserHelper,
   BlFile,
   BlNotFoundException,
   BlUnauthorizedException,
@@ -96,7 +95,7 @@ export class HnAgentAggregateService {
   public async createForLab(
     createAgentDto: HnCreateAgentDto
   ): Promise<HaCreateAgentVersionFromLabResponseDto> {
-    const user = HnCurrentUserHelper.getAndCheckLabInstanceCurrentUser();
+    const user = HnCurrentUserHelper.getAndCheckCurrentUser();
     const agentVersion: HnAgentVersion = await this.create(createAgentDto, null, user);
     return {
       id: agentVersion.agent.id,
@@ -109,7 +108,7 @@ export class HnAgentAggregateService {
     parentAgentVersionId: string,
     createAgentDto: HnCreateAgentDto
   ): Promise<HaCreateAgentVersionFromLabResponseDto> {
-    const user = HnCurrentUserHelper.getAndCheckLabInstanceCurrentUser();
+    const user = HnCurrentUserHelper.getAndCheckCurrentUser();
     if (parentAgentVersionId == null)
       throw new BlBadRequestException('The parent agent version id is required');
     const agentVersion: HnAgentVersion = await this.create(createAgentDto, parentAgentVersionId, user);
@@ -124,7 +123,7 @@ export class HnAgentAggregateService {
     agentId: string,
     newAgentVersionFile: HnAgentVersionFileInput
   ): Promise<HaCreateAgentVersionFromLabResponseDto> {
-    const user = HnCurrentUserHelper.getAndCheckLabInstanceCurrentUser();
+    const user = HnCurrentUserHelper.getAndCheckCurrentUser();
     const agent: HnAgent = await this.agentService.findOne(agentId);
 
     if (agent.createdBy.id != user.id) {
@@ -168,7 +167,7 @@ export class HnAgentAggregateService {
     page: number,
     size: number
   ): Promise<ClPage<HnAgentForLabDto>> {
-    const user = HnCurrentUserHelper.getAndCheckLabInstanceCurrentUser();
+    const user = HnCurrentUserHelper.getAndCheckCurrentUser();
     return (await this.findAllWithFilters(spacesFilter, titleFilter, page, size, user, personalOnly)).map(
       (agent) => HnAgentForLabDto.fromAgentDto(agent)
     );
@@ -178,7 +177,7 @@ export class HnAgentAggregateService {
     versionId: string,
     versionNumber: number
   ): Promise<HnAgentForLabDto> {
-    const user = HnCurrentUserHelper.getAndCheckLabInstanceCurrentUser();
+    const user = HnCurrentUserHelper.getAndCheckCurrentUser();
     const agentVersion: HnAgentVersion = await this.agentVersionService.findOne(versionId);
     const agent = agentVersion.agent;
     if (agent.space != null) {
@@ -397,7 +396,7 @@ export class HnAgentAggregateService {
     id: string,
     versionNumber: number
   ): Promise<HnAgentVersionForLabDto> {
-    const user: HnUser = HnCurrentUserHelper.getAndCheckLabInstanceCurrentUser();
+    const user: HnUser = HnCurrentUserHelper.getAndCheckCurrentUser();
     const agent: HnAgent = await this.agentService.findOne(id);
     if (agent.space != null) {
       await this.spaceAggregateService.assertCheckSpaceUser(agent.space.id, user.id);
@@ -526,12 +525,12 @@ export class HnAgentAggregateService {
 
   public async getPublishedAgentVersions(agentId: string): Promise<HnAgentVersion[]> {
     const agent: HnAgent = await this.agentService.findOne(agentId);
-    if (BlCurrentUserHelper.getCurrentUser()?.id == agent?.createdBy.id) {
+    if (HnCurrentUserHelper.getCurrentUser()?.id == agent?.createdBy.id) {
       return this.agentVersionService.findAllByAgentId(agentId);
     }
 
     const coAuthors = await this.agentCoAuthorService.getAgentCoAuthorsByAgentId(agentId);
-    if (coAuthors.some((coAuthor) => coAuthor.user.id == BlCurrentUserHelper.getCurrentUser()?.id))
+    if (coAuthors.some((coAuthor) => coAuthor.user.id == HnCurrentUserHelper.getCurrentUser()?.id))
       return this.agentVersionService.findAllByAgentId(agentId);
 
     return await this.agentVersionService.findPublishedByAgentId(agentId);

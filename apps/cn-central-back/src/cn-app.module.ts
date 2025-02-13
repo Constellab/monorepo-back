@@ -42,6 +42,7 @@ import {
   BlMailModule,
   BlObjectStorageModule,
   BlRequestContextMiddleware,
+  BlTranslateModule,
   BlTransportModuleConfig,
   blTransportRedisForRoot,
 } from '@monorepo/back-core-lib';
@@ -54,7 +55,6 @@ import { CnStatsModule } from './app/cn-stats/cn-stats.module';
 import { CnCountryModule } from './app/cn-country/cn-country.module';
 import { CnCityModule } from './app/cn-city/cn-city.module';
 import { AppService } from './app.service';
-import { CnSpaceMiddleware } from './app/cn-core/middleware/cn-space-middleware.service';
 import { CnNotificationModule } from './app/cn-notification/cn-notification.module';
 import { CnChatMessageModule } from './app/cn-chat-message/cn-chat-message.module';
 import { CnCloudProvidersModule } from './app/cn-cloud-providers/cn-cloud-providers.module';
@@ -71,6 +71,7 @@ import { CnLogRequestMiddleware } from './app/cn-core/middleware/cn-log-request-
 import { BullModule } from '@nestjs/bullmq';
 import { CnMailConfig } from './app/cn-core/model/config/cn-mail.config';
 import { TeRichTextModifications } from '@monorepo/te-text-editor';
+import { CnCurrentUserHelper } from './app/cn-core/utils/cn-current-user.helper';
 
 function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();
@@ -122,6 +123,7 @@ function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaMo
 
 // configure the text editor
 TeRichTextModifications.setBackTimeDifference();
+
 @Module({
   imports: [
     // let the config module on top of the imports
@@ -178,6 +180,10 @@ TeRichTextModifications.setBackTimeDifference();
         inject: [CnCoreConfigService],
       })
     ),
+
+    BlTranslateModule.forRoot({
+      getCurrentUserLang: () => CnCurrentUserHelper.getCurrentUser()?.lang ?? null,
+    }),
 
     BlMailModule.forRootAsync(
       CnMailConfig.configureMailModule(),
@@ -256,7 +262,7 @@ export class CnAppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
     consumer
       // register the RequestContextMiddleware to be able to access the request anywhere
-      .apply(BlRequestContextMiddleware, CnLogRequestMiddleware, CnSpaceMiddleware)
+      .apply(BlRequestContextMiddleware, CnLogRequestMiddleware)
       .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }

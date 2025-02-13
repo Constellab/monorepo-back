@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToMany, ManyToOne } from 'typeorm';
 import { Exclude, Type } from 'class-transformer';
-import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
+import { CnLab, CnLabEntity } from '../../cn-labs/cn-lab.entity';
 import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { CnNote, CnNoteEntity } from '../cn-notes/cn-note.entity';
 import { CnScenarioStatus } from './cn-scenario-status.enum';
@@ -32,7 +32,7 @@ export class CnScenarioEntity extends CnHierarchyRepresentation {
   @BlNotUpdatable()
   @Type(() => CnLabEntity)
   @ManyToOne(() => CnLabEntity, { nullable: false, eager: true })
-  lab: CnLabEntity;
+  lab: CnLab;
 
   @BlNotUpdatable()
   @Type(() => CnLabConfig)

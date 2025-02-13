@@ -19,6 +19,7 @@ import {
   BlMailModule,
   BlObjectStorageModule,
   BlRequestContextMiddleware,
+  BlTranslateModule,
   BlTransportModuleConfig,
   blTransportRedisForRoot,
 } from '@monorepo/back-core-lib';
@@ -81,6 +82,7 @@ import { TeRichTextModifications } from '@monorepo/te-text-editor';
 import { HnRunStatModule } from './app/run-stat-aggregate/run-stat/hn-run-stat.module';
 import { HnRunStatAggregateModule } from './app/run-stat-aggregate/run-stat-aggregate/hn-run-stat-aggregate.module';
 import { HnRunStatAgModule } from './app/run-stat-aggregate/hn-run-stat-ag.module';
+import { HnCurrentUserHelper } from './app/core/utils/hn-current-user.helper';
 
 function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: HnDatabaseConfig = configService.getDatabaseConfig();
@@ -176,6 +178,10 @@ TeRichTextModifications.setBackTimeDifference();
         inject: [HnCoreConfigService],
       })
     ),
+
+    BlTranslateModule.forRoot({
+      getCurrentUserLang: () => HnCurrentUserHelper.getCurrentUser()?.lang ?? null,
+    }),
 
     BlMailModule.forRootAsync(
       HnMailConfig.configureMailModule(),

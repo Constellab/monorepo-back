@@ -3,9 +3,9 @@ import { CnAppModule } from './cn-app.module';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { blGetCorsConfig } from '@monorepo/back-core-lib';
 import { CN_ENVIRONMENT_PROFILE_KEY, CnEnvironmentProfile } from './app/cn-core/model/config/cn-config.class';
-import { CN_LOCAL_SPACE_COOKIE } from './app/cn-core/middleware/cn-space-middleware.service';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { json, urlencoded } from 'body-parser';
+import { CN_LOCAL_SPACE_COOKIE } from './app/cn-core/guards/cn-jwt-auth.guard';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(CnAppModule);

@@ -1,12 +1,68 @@
-import { BlCurrentUserHelper } from '@monorepo/back-core-lib';
+import { BlRequestContextHelper, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { HnUser } from '../../users/hn-user.entity';
+import { Request } from 'express';
 
-export class HnCurrentUserHelper extends BlCurrentUserHelper {
+/**
+ * Main auth when the user make a request
+ */
+export interface HnAuthContextUser {
+  type: 'user';
+  user: HnUser;
+}
+
+/**
+ * Auth when a user triggers a request from the lab
+ */
+export interface HnAuthContextLab {
+  type: 'lab';
+  user: HnUser;
+  labId: string;
+}
+
+/**
+ * Auth for automatic request from the lab
+ */
+export interface HnAuthContextLabNoUser {
+  type: 'labNoUser';
+  labId: string;
+}
+
+/**
+ * Auth for cron jobs
+ */
+export interface HnAuthContextCron {
+  type: 'cron';
+  user: HnUser;
+}
+
+/**
+ * Type representing all type of auth context
+ */
+export type HnAuthContext = HnAuthContextUser | HnAuthContextLab | HnAuthContextLabNoUser | HnAuthContextCron;
+
+export type HnRequest = Request & {
+  user?: HnUser;
+};
+
+export class HnCurrentUserHelper extends BlRequestContextHelper {
+  public static setAuthContext(content: HnAuthContext): void {
+    super.setAuthContent(content);
+  }
+
+  protected static getAuthContext(): HnAuthContext {
+    return super.getAuthContent() as HnAuthContext;
+  }
+
   /**
    * returns the current authenticated user or null if not authenticated
    */
   static getCurrentUser(): HnUser | null {
-    return super.getCurrentUser() as HnUser;
+    const authContext = this.getAuthContext();
+
+    if (authContext && authContext.type !== 'labNoUser') {
+      return authContext.user;
+    }
+    return null;
   }
 
   /**
@@ -14,31 +70,22 @@ export class HnCurrentUserHelper extends BlCurrentUserHelper {
    * if the user is not authenticated
    */
   static getAndCheckCurrentUser(): HnUser {
-    return super.getAndCheckCurrentUser() as HnUser;
-  }
+    const user = this.getCurrentUser();
 
-  static setLabInstanceCurrentUser(user: HnUser): void {
-    this.setAdditionalData('labInstanceUser', user);
-  }
-
-  static setLabInstanceCurrentLabId(labId: string): void {
-    this.setAdditionalData('labInstanceLabId', labId);
-  }
-
-  static getAndCheckLabInstanceCurrentUser(): HnUser {
-    const user = this.getCurrentAdditionalData()['labInstanceUser'] as HnUser;
-    if (!user) {
-      throw new Error('No lab instance user found');
+    if (user == null) {
+      throw new BlUnauthorizedException('No user in the context');
     }
+
     return user;
   }
 
-  static getLabInstanceCurrentLabId(): string {
-    const labId = this.getCurrentAdditionalData()['labInstanceLabId'] as string;
-    if (!labId) {
-      throw new Error('No lab instance lab id found');
+  static getAndCheckLabInstanceCurrentLabId(): string {
+    const authContext = this.getAuthContext();
+
+    if (authContext != null && (authContext.type === 'lab' || authContext.type === 'labNoUser')) {
+      return authContext.labId;
     }
-    return labId;
+    return null;
   }
 
   static isAdmin(): boolean {

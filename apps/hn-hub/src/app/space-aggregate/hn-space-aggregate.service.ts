@@ -6,7 +6,6 @@ import { HnUserService } from '../users/hn-user.service';
 import { BlBadRequestException, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { HnSpace } from './space/hn-space.entity';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
-import { HnLabConstellabApiService } from '../core/service/hn-lab-constellab-api.service';
 import { HnSpaceDto } from './space/hn-space.dto';
 
 @Injectable()
@@ -14,8 +13,7 @@ export class HnSpaceAggregateService {
   constructor(
     private readonly spaceService: HnSpaceService,
     private readonly spaceUserService: HnSpaceUserService,
-    private readonly userService: HnUserService,
-    private readonly labConstellabApiService: HnLabConstellabApiService
+    private readonly userService: HnUserService
   ) {}
 
   ////////////////////////// SPACE ////////////////////////////
@@ -51,7 +49,7 @@ export class HnSpaceAggregateService {
   }
 
   public async getSpacesForLab(): Promise<HnSpaceDto[]> {
-    return (await this.findSpacesOfUser(HnCurrentUserHelper.getAndCheckLabInstanceCurrentUser().id)).map(
+    return (await this.findSpacesOfUser(HnCurrentUserHelper.getAndCheckCurrentUser().id)).map(
       (space) => new HnSpaceDto(space)
     );
   }

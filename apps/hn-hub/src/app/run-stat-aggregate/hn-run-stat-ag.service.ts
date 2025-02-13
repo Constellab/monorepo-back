@@ -38,7 +38,7 @@ export class HnRunStatAgService {
           );
         }
         const runStat = new HnRunStat();
-        runStat.init(stat, user, HnCurrentUserHelper.getLabInstanceCurrentLabId(), agentVersion);
+        runStat.init(stat, user, HnCurrentUserHelper.getAndCheckLabInstanceCurrentLabId(), agentVersion);
         runStat.creators = await this.getRunStatCreators(runStat);
         await this.runStatService.save(entityManager, runStat);
 

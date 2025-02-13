@@ -1,35 +1,122 @@
-import { BlCurrentUserHelper, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { BlRequestContextHelper, BlUnauthorizedException, BlUser } from '@monorepo/back-core-lib';
 import { CnUser } from '../../cn-users/cn-user.entity';
-import { CnLabWithSpace } from '../../cn-labs/cn-lab.entity';
+import { CnLab } from '../../cn-labs/cn-lab.entity';
 import { CnSpace } from '../../cn-spaces/cn-space.entity';
 import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
 import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
-import { cnExternalLabManagerVersionHeader } from '../model/config/cn-config.class';
+import { Request } from 'express';
 
-export interface CnRequestAuthInfo {
-  lab?: CnLabWithSpace;
-  labEnvironment?: CnCurrentLabEnvironment;
-  space?: CnSpace;
-  // role for the current user in this space
+/**
+ * Auth context when the user is authenticated but there is no space (it should not happen)
+ */
+export interface CnAuthContextUserNoSpace {
+  type: 'userNoSpace';
+  user: CnUser;
+}
+
+/**
+ * Main Auth context when the user is authenticated and is in a space
+ */
+export interface CnAuthContextUser {
+  type: 'user';
+  user: CnUser;
+  space: CnSpace;
+  roleInSpace: CnSpaceUserRole;
+}
+
+/**
+ * Auth for request comming from the lab.
+ * labProd if the request is made from the production environment (prod api)
+ * labDev if the request is made from the development environment (dev api from codelab)
+ *
+ * labApi if the request is made from the lab api // TODO TO IMPRVOVE
+ */
+export interface CnAuthContextLab {
+  type: 'labProd' | 'labDev' | 'labApi';
+  user: CnUser;
+  space: CnSpace;
   roleInSpace: CnSpaceUserRole;
 
-  // overrides
-  spaceOverride?: CnSpace;
-  roleInSpaceOverride?: CnSpaceUserRole;
+  lab: CnLab;
 }
 
-export enum CnCurrentLabEnvironment {
-  DEV = 'DEV',
-  PROD = 'PROD',
-  LAB_MANAGER = 'LAB_MANAGER',
+/**
+ * LabManager if the request is made from the lab manager
+ */
+export interface CnAuthContextLabManager {
+  type: 'labManager';
+  user: CnUser;
+  space: CnSpace;
+  roleInSpace: CnSpaceUserRole;
+
+  lab: CnLab;
+  labManagerVersion: string;
 }
 
-export class CnCurrentUserHelper extends BlCurrentUserHelper {
+/**
+ * Auth for cron jobs
+ */
+export interface CnAuthContextCron {
+  type: 'cron';
+  user: CnUser;
+}
+
+/**
+ * Object representing all the possible auth context
+ */
+export type CnAuthContext =
+  | CnAuthContextUser
+  | CnAuthContextUserNoSpace
+  | CnAuthContextLab
+  | CnAuthContextLabManager
+  | CnAuthContextCron;
+
+export type CnRequest = Request & {
+  user?: CnUser;
+};
+
+/**
+ * Additional info that can be added to the request
+ */
+export interface CnRequestAuthAdditionalData {
+  // when provided it will override the auth context
+  authOverride?: CnAuthContext;
+}
+
+export class CnCurrentUserHelper extends BlRequestContextHelper {
+  private static robotUser: BlUser | null = null;
+
+  public static setAuthContext(content: CnAuthContext): void {
+    super.setAuthContent(content);
+  }
+
+  protected static getAuthContext(): CnAuthContext {
+    const context = super.getCurrentContext();
+
+    // if there is no request and a manual user is set, return it
+    // this is used for cron jobs
+    if (context == null && this.robotUser != null) {
+      return { type: 'cron', user: this.robotUser } as CnAuthContextCron;
+    }
+
+    const authOverride = this.getAdditionalInfo()?.authOverride;
+    if (authOverride) {
+      return authOverride;
+    }
+
+    return super.getAuthContent() as CnAuthContext;
+  }
+
   /**
    * returns the current authenticated user or null if not authenticated
    */
   static getCurrentUser(): CnUser | null {
-    return super.getCurrentUser() as CnUser;
+    const authContext = this.getAuthContext();
+
+    if (authContext) {
+      return authContext.user;
+    }
+    return null;
   }
 
   /**
@@ -37,14 +124,20 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
    * if the user is not authenticated
    */
   static getAndCheckCurrentUser(): CnUser {
-    return super.getAndCheckCurrentUser() as CnUser;
+    const user = this.getCurrentUser();
+
+    if (user == null) {
+      throw new BlUnauthorizedException('No user in the context');
+    }
+
+    return user;
   }
 
   /**
    * returns the current authenticated lab for routes annotated with @LabAuth
    */
-  static getAndCheckCurrentLab(): CnLabWithSpace {
-    const lab: CnLabWithSpace = this.getCurrentLab();
+  static getAndCheckCurrentLab(): CnLab {
+    const lab = this.getCurrentLab();
 
     if (lab == null) {
       throw new BlUnauthorizedException('No lab in the context');
@@ -57,23 +150,21 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
    * returns the current authenticated lab for routes annotated with @LabAuth
    * or null if not authenticated
    */
-  static getCurrentLab(): CnLabWithSpace | null {
-    return this.getAdditionalInfo()?.lab ?? null;
-  }
+  static getCurrentLab(): CnLab | null {
+    const authContext = this.getAuthContext();
 
-  static setCurrentLab(lab: CnLabWithSpace, environment: CnCurrentLabEnvironment): void {
-    this.setAdditionalData('lab', lab);
-    this.setAdditionalData('labEnvironment', environment);
-  }
+    if (authContext == null) return null;
 
-  /**
-   * return the current lab environment or null if there is no lab in the context
-   * Prod if the request is made from the production environment (prod api)
-   * Dev if the request is made from the development environment (dev api from codelab)
-   * LabManager if the request is made from the lab manager
-   */
-  static getCurrentLabEnvironment(): CnCurrentLabEnvironment | null {
-    return this.getAdditionalInfo()?.labEnvironment ?? null;
+    if (
+      authContext.type === 'labProd' ||
+      authContext.type === 'labDev' ||
+      authContext.type === 'labManager' ||
+      authContext.type === 'labApi'
+    ) {
+      return authContext.lab;
+    }
+
+    return null;
   }
 
   /**
@@ -94,26 +185,33 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
    * return the current space or null if there is no space in the context
    */
   static getCurrentSpace(): CnSpace | null {
-    if (this.getAdditionalInfo()?.spaceOverride) {
-      return this.getAdditionalInfo().spaceOverride;
-    }
-    return this.getAdditionalInfo()?.space ?? null;
-  }
+    const authContext = this.getAuthContext();
 
-  static setCurrentSpace(space: CnSpace): void {
-    this.setAdditionalData('space', space);
+    if (authContext == null) return null;
+
+    if (
+      authContext.type === 'user' ||
+      authContext.type === 'labProd' ||
+      authContext.type === 'labDev' ||
+      authContext.type === 'labManager' ||
+      authContext.type === 'labApi'
+    ) {
+      return authContext.space;
+    }
+
+    return null;
   }
 
   /**
-   * Override the space in the context
-   * /!\ Always call clearSpaceOverride after using this method
+   * Override the auth in the context
+   * /!\ Always call clearAuthOverride after using this method
    */
-  public static overrideSpace(space: CnSpace | null): void {
-    this.setAdditionalData('spaceOverride', space);
+  public static overrideAuth(content: CnAuthContext): void {
+    this.setAdditionalData('authOverride', content);
   }
 
-  public static clearSpaceOverride(): void {
-    this.setAdditionalData('spaceOverride', null);
+  public static clearAuthOverride(): void {
+    this.setAdditionalData('authOverride', null);
   }
 
   /**
@@ -134,30 +232,10 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
    * or null if there is no space in the context
    */
   static getCurrentRoleInSpace(): CnSpaceUserRole | null {
-    if (this.getAdditionalInfo()?.roleInSpaceOverride) {
-      return this.getAdditionalInfo().roleInSpaceOverride;
-    }
-    return this.getAdditionalInfo()?.roleInSpace ?? null;
-  }
+    const authContext = this.getAuthContext();
 
-  static setCurrentRoleInSpace(role: CnSpaceUserRole): void {
-    this.setAdditionalData('roleInSpace', role);
-  }
-
-  /**
-   * Override the user role in space in the context
-   * /!\ Always call clearRoleInSpaceOverride after using this method
-   */
-  public static overrideRoleInSpace(role: CnSpaceUserRole): void {
-    this.setAdditionalData('roleInSpaceOverride', role);
-  }
-
-  public static clearRoleInSpaceOverride(): void {
-    this.setAdditionalData('roleInSpaceOverride', null);
-  }
-
-  static isAdminOfCurrentSpace(): boolean {
-    return this.getAndCheckCurrentRoleInSpace() === CnSpaceUserRole.ADMIN;
+    if (authContext == null || authContext.type === 'userNoSpace' || authContext.type === 'cron') return null;
+    return authContext.roleInSpace;
   }
 
   static isAdmin(): boolean {
@@ -172,15 +250,15 @@ export class CnCurrentUserHelper extends BlCurrentUserHelper {
     );
   }
 
-  static getAdditionalInfo(): CnRequestAuthInfo | null {
+  static getAdditionalInfo(): CnRequestAuthAdditionalData | null {
     return this.getCurrentAdditionalData();
   }
 
   /**
-   * Only for request coming from the lab manager
-   * Use to access the version of the lab manager that made the request
+   * Default user used when no request is in the context (cron jobs)
+   * @param user
    */
-  static getLabManagerVersion(): string {
-    return this.getHeaderFromContext(cnExternalLabManagerVersionHeader);
+  public static setRobotUser(user: BlUser | null): void {
+    CnCurrentUserHelper.robotUser = user;
   }
 }

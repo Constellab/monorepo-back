@@ -13,7 +13,6 @@ import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
 } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
-import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
 import { TeRichText, TeRichTextAggregate, TeRichTextModifications } from '@monorepo/te-text-editor';
 import { CnHierarchyObjectService } from '../cn_hierarchy_objects/cn-hierarchy-object.service';
 
@@ -174,7 +173,7 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
       }
       mode = 'update';
     } else {
-      note.lab = CnCurrentUserHelper.getAndCheckCurrentLab() as CnLabEntity;
+      note.lab = CnCurrentUserHelper.getAndCheckCurrentLab();
       note.scenarios = scenarios;
       noteDb = await this.create(note);
       mode = 'create';

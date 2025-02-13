@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/commo
 import { Reflector } from '@nestjs/core';
 import { CnLabsService } from '../../cn-labs/cn-labs.service';
 import { Request } from 'express';
-import { CnLabWithSpace } from '../../cn-labs/cn-lab.entity';
+import { CnLab, CnLabWithSpace } from '../../cn-labs/cn-lab.entity';
 import { CnUsersService } from '../../cn-users/cn-users.service';
 import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.service';
 import { CnUser } from '../../cn-users/cn-user.entity';
@@ -10,9 +10,10 @@ import { CnErrorText } from '../model/config/cn-error-text.class';
 import {
   cnExternalLabApiKeyHeader,
   cnExternalLabApiKeySchema,
+  cnExternalLabManagerVersionHeader,
   cnExternalLabUserHeader,
 } from '../model/config/cn-config.class';
-import { CnCurrentLabEnvironment, CnCurrentUserHelper } from '../utils/cn-current-user.helper';
+import { CnCurrentUserHelper } from '../utils/cn-current-user.helper';
 import { CnSpaceUserService } from '../../cn-spaces/cn-space-user.service';
 import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
 import { cnIsAllowedDev, cnIsLabRobotAuth } from '../decorators/cn-lab-guard.decorator';
@@ -21,7 +22,12 @@ import { CnLabUserService } from '../../cn-labs/user/cn-lab-user.service';
 
 class CnGetLab {
   lab: CnLabWithSpace;
-  labEnvironment: CnCurrentLabEnvironment;
+  labEnvironment: 'labDev' | 'labProd' | 'labManager';
+}
+
+class CnUserWithRole {
+  user: CnUser;
+  role: CnSpaceUserRole;
 }
 
 export abstract class CnLabAuthGuardBase implements CanActivate {
@@ -63,20 +69,36 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
 
     // if the lab is in dev environment, check if the dev api key is allowed
     // the route should be annotated with @LabAllowDev
-    if (labInfo.labEnvironment === CnCurrentLabEnvironment.DEV) {
+    if (labInfo.labEnvironment === 'labDev') {
       if (!cnIsAllowedDev(this.reflector, context)) {
         throw new BlUnauthorizedException(CnErrorText.LAB_ROUTE_NOT_ALLOWED_FOR_DEV);
       }
     }
 
-    // store the lab in the current context
-    CnCurrentUserHelper.setCurrentLab(labInfo.lab, labInfo.labEnvironment);
-
-    // store the lab space in the current context
-    CnCurrentUserHelper.setCurrentSpace(labInfo.lab.space);
-
     // set the user in the context as the connected user
-    await this.setUserInContext(request, labInfo.lab, context);
+    const userWithRole = await this.getUserInContext(request, labInfo.lab, context);
+
+    if (labInfo.labEnvironment === 'labManager') {
+      // retrieve the lab manager version from header
+      const labManagerVersion = request.header(cnExternalLabManagerVersionHeader);
+
+      CnCurrentUserHelper.setAuthContext({
+        type: 'labManager',
+        user: userWithRole.user,
+        lab: labInfo.lab,
+        space: labInfo.lab.space,
+        roleInSpace: userWithRole.role,
+        labManagerVersion: labManagerVersion,
+      });
+    } else {
+      CnCurrentUserHelper.setAuthContext({
+        type: labInfo.labEnvironment,
+        user: userWithRole.user,
+        lab: labInfo.lab,
+        space: labInfo.lab.space,
+        roleInSpace: userWithRole.role,
+      });
+    }
 
     return true;
   }
@@ -87,14 +109,14 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
    * Otherwise the user from the request is set in the request context
    * @private
    */
-  private async setUserInContext(
+  private async getUserInContext(
     request: Request,
-    lab: CnLabWithSpace,
+    lab: CnLab,
     context: ExecutionContext
-  ): Promise<void> {
+  ): Promise<CnUserWithRole> {
     // if the route is annotated with ClLabRobotAuthentication, set the robot user in the context
     if (cnIsLabRobotAuth(this.reflector, context)) {
-      await this.setRobotUserInContext(request);
+      return this.getRobotUserInContext();
     } else {
       const userId: string = this.getLabUserIdFromRequest(request);
 
@@ -102,18 +124,17 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
         throw new BlUnauthorizedException(CnErrorText.LAB_REQ_NO_USER_IN_CONTEXT);
       }
 
-      await this.setRealUserInContext(request, lab, userId);
+      return this.getUser(lab, userId);
     }
   }
 
   /**
    * Set the real user in the request context and check if the user has access to the lab and space
-   * @param request
    * @param lab
    * @param userId
    * @private
    */
-  private async setRealUserInContext(request: Request, lab: CnLabWithSpace, userId: string): Promise<void> {
+  private async getUser(lab: CnLab, userId: string): Promise<CnUserWithRole> {
     const user: CnUser = await this.usersService.findById(userId);
 
     if (user == null) {
@@ -121,10 +142,8 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
       throw new BlUnauthorizedException(`Can't find the user with id ${userId}`);
     }
 
-    request.user = user;
-
     if (user.isAdmin()) {
-      CnCurrentUserHelper.setCurrentRoleInSpace(CnSpaceUserRole.ADMIN);
+      return { user: user, role: CnSpaceUserRole.ADMIN };
     } else {
       // check if the user has access to the lab
       const labUser = await this.labUserService.findByLabIdAndUserId(lab.id, userId);
@@ -139,12 +158,12 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
         throw new BlUnauthorizedException(CnErrorText.USER_NOT_IN_SPACE);
       }
 
-      CnCurrentUserHelper.setCurrentRoleInSpace(spaceUser.role);
+      return { user: user, role: spaceUser.role };
     }
   }
 
-  // set the robot user in request user
-  private async setRobotUserInContext(request: Request): Promise<void> {
+  // get the robot user as Admin
+  private async getRobotUserInContext(): Promise<CnUserWithRole> {
     // get the robot user
     const robotMail: string = this.configService.getRobotUserMail();
     const user: CnUser = await this.usersService.findByEmail(robotMail);
@@ -154,9 +173,7 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
       throw new BlUnauthorizedException();
     }
 
-    request.user = user;
-    // consider the robot as an admin
-    CnCurrentUserHelper.setCurrentRoleInSpace(CnSpaceUserRole.ADMIN);
+    return { user: user, role: CnSpaceUserRole.ADMIN };
   }
 
   private getLabApiKeyFromRequest(request: Request): string {
@@ -198,7 +215,7 @@ export class CnLabAuthGuard extends CnLabAuthGuardBase {
     if (lab) {
       return {
         lab: lab,
-        labEnvironment: CnCurrentLabEnvironment.PROD,
+        labEnvironment: 'labProd',
       };
     }
 
@@ -206,7 +223,7 @@ export class CnLabAuthGuard extends CnLabAuthGuardBase {
     if (labDev) {
       return {
         lab: labDev,
-        labEnvironment: CnCurrentLabEnvironment.DEV,
+        labEnvironment: 'labDev',
       };
     }
 
@@ -239,7 +256,7 @@ export class CnLabManagerAuthGuard extends CnLabAuthGuardBase {
     if (lab) {
       return {
         lab: lab,
-        labEnvironment: CnCurrentLabEnvironment.LAB_MANAGER,
+        labEnvironment: 'labManager',
       };
     }
 

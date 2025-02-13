@@ -19,6 +19,7 @@ export class BlRequestContext {
   constructor(
     public readonly req: Request,
     public readonly res: Response,
+    public authContext: any,
     public additionalData: Record<string, any> = {}
   ) {}
 }

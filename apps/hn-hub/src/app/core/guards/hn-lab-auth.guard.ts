@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { BlExternalApiService, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { HnCoreConfigService } from '../modules/core-config/hn-core-config.service';
 import { lastValueFrom } from 'rxjs';
@@ -14,8 +14,6 @@ interface HnLabAuthGuardResult {
 
 @Injectable()
 export class HnLabAuthGuard implements CanActivate {
-  private readonly logger = new Logger(HnLabAuthGuard.name);
-
   constructor(
     private readonly blExternalApiService: BlExternalApiService,
     private readonly coreConfigService: HnCoreConfigService,
@@ -59,16 +57,22 @@ export class HnLabAuthGuard implements CanActivate {
       throw new BlUnauthorizedException();
     }
 
-    HnCurrentUserHelper.setLabInstanceCurrentLabId(checkApiKeyUserResult.labId);
-
     if (hnIsLabAllowWithoutUserAuth(this.reflector, context)) {
+      HnCurrentUserHelper.setAuthContext({
+        type: 'labNoUser',
+        labId: checkApiKeyUserResult.labId,
+      });
       return true;
     }
 
     const currentUser = await this.userService.findOne(request.header('user'));
     if (!currentUser) throw new BlUnauthorizedException();
 
-    HnCurrentUserHelper.setLabInstanceCurrentUser(currentUser);
+    HnCurrentUserHelper.setAuthContext({
+      type: 'lab',
+      user: currentUser,
+      labId: checkApiKeyUserResult.labId,
+    });
 
     return true;
   }

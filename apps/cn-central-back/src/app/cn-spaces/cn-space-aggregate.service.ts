@@ -257,7 +257,7 @@ export class CnSpaceAggregateService {
   }
 
   public async findCurrentUserSpaces(): Promise<CnSpace[]> {
-    return await this.spaceUserService.getSpacesOfUser(CnCurrentUserHelper.getCurrentUser().id);
+    return await this.spaceUserService.getSpacesOfUser(CnCurrentUserHelper.getAndCheckCurrentUser().id);
   }
 
   public async getSpacesOfUser(userId: string): Promise<CnSpace[]> {
@@ -333,7 +333,7 @@ export class CnSpaceAggregateService {
     // if a normal user tries to remove the last admin of the space, an error is thrown
     if (
       (await this.spaceUserService.isOnlyAdmin(spaceId, userId)) &&
-      !CnCurrentUserHelper.getCurrentUser().isAdmin()
+      !CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()
     ) {
       throw new Error(CnErrorText.CANNOT_REMOVE_LAST_ADMIN);
     }
@@ -365,7 +365,7 @@ export class CnSpaceAggregateService {
     // if a normal user tries to deactivate the last admin of the space, an error is thrown
     if (
       (await this.spaceUserService.isOnlyAdmin(spaceId, userId)) &&
-      !CnCurrentUserHelper.getCurrentUser().isAdmin()
+      !CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()
     ) {
       throw new Error(CnErrorText.CANNOT_DEACTIVATE_LAST_ADMIN);
     }
@@ -378,7 +378,7 @@ export class CnSpaceAggregateService {
     if (
       role === CnSpaceUserRole.USER &&
       (await this.spaceUserService.isOnlyAdmin(spaceId, userId)) &&
-      !CnCurrentUserHelper.getCurrentUser().isAdmin()
+      !CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()
     ) {
       throw new Error(CnErrorText.CANNOT_REMOVE_LAST_ADMIN);
     }
@@ -614,11 +614,14 @@ export class CnSpaceAggregateService {
   }
 
   private async checkSpaceMember(spaceId: string): Promise<void> {
-    await this.spaceAggregateSecurity.checkIsSpaceMember(spaceId, CnCurrentUserHelper.getCurrentUser());
+    await this.spaceAggregateSecurity.checkIsSpaceMember(
+      spaceId,
+      CnCurrentUserHelper.getAndCheckCurrentUser()
+    );
   }
 
   private async checkSpaceAdmin(spaceId: string): Promise<void> {
-    this.spaceAggregateSecurity.checkIsSpaceAdmin(spaceId, CnCurrentUserHelper.getCurrentUser());
+    this.spaceAggregateSecurity.checkIsSpaceAdmin(spaceId, CnCurrentUserHelper.getAndCheckCurrentUser());
   }
 
   private checkAdmin(): void {

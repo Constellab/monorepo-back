@@ -3,15 +3,26 @@ import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
 import { CnErrorText } from '../model/config/cn-error-text.class';
 import { cnIsDecoratedWithLabAuth } from '../decorators/cn-lab-guard.decorator';
-import { blIsDecoratedWithPublic, BlUnauthorizedException } from '@monorepo/back-core-lib';
-import { CnCurrentUserHelper } from '../utils/cn-current-user.helper';
+import {
+  BlCookieHelper,
+  blIsDecoratedWithPublic,
+  BlRequestContext,
+  BlUnauthorizedException,
+} from '@monorepo/back-core-lib';
+import { CnCurrentUserHelper, CnRequest } from '../utils/cn-current-user.helper';
 import { CnSpaceUserService } from '../../cn-spaces/cn-space-user.service';
 import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
 import { cnIsDecoratedWithLabManagerAuth } from '../decorators/cn-lab-manager-guard.decorator';
 import { CnUsersService } from '../../cn-users/cn-users.service';
+import { CnSpace } from '../../cn-spaces/cn-space.entity';
+import { ClStringHelper } from '@monorepo/core-lib';
+import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.service';
+import { CnSpaceService } from '../../cn-spaces/cn-space.service';
+
+export const CN_LOCAL_SPACE_COOKIE = 'local-space';
 
 /**
- * Guard to check if the user has a authentication token
+ * Guard to check if the user has an authentication token
  * Methods and classes annotated with @Public decorator
  * don't need to check if authentication token exists
  *
@@ -26,7 +37,9 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
   constructor(
     private reflector: Reflector,
     private spaceUserService: CnSpaceUserService,
-    private userService: CnUsersService
+    private userService: CnUsersService,
+    private configService: CnCoreConfigService,
+    private spaceService: CnSpaceService
   ) {
     super();
   }
@@ -46,20 +59,30 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
 
     // jwt authentication
     try {
+      // this set the user in the request (accessible by CnCurrentUserHelper)
       const result = await (super.canActivate(context) as Promise<boolean>);
       if (!result) return false;
     } catch (error) {
       throw new BlUnauthorizedException(CnErrorText.WRONG_TOKEN);
     }
 
-    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
-    const space = CnCurrentUserHelper.getCurrentSpace();
+    const request = BlRequestContext.currentContext.req as CnRequest;
+
+    // the user is available in the request from super.canActivate
+    const user = request.user;
+    if (user == null) {
+      return false;
+    }
+
+    // retrieve the space
+    const space = await this.getSpaceFromRequest(request);
 
     // if a space is in the context, check if the user is in the space
     if (space) {
+      let roleInSpace: CnSpaceUserRole = null;
       // consider a G admin as an admin of all spaces
       if (user.isAdmin()) {
-        CnCurrentUserHelper.setCurrentRoleInSpace(CnSpaceUserRole.ADMIN);
+        roleInSpace = CnSpaceUserRole.ADMIN;
       } else {
         const spaceUser = await this.spaceUserService.getSpaceUserIfAccess(space.id, user.id);
 
@@ -69,8 +92,16 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
           return false;
         }
 
-        CnCurrentUserHelper.setCurrentRoleInSpace(spaceUser.role);
+        roleInSpace = spaceUser.role;
       }
+
+      // set the auth context as user in the space
+      CnCurrentUserHelper.setAuthContext({
+        type: 'user',
+        user: user,
+        space: space,
+        roleInSpace: roleInSpace,
+      });
 
       if (user.lastConnectedSpaceId !== space.id) {
         this.userService
@@ -82,8 +113,28 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
           );
         user.lastConnectedSpaceId = space.id;
       }
+    } else {
+      // set the auth context as user without space
+      CnCurrentUserHelper.setAuthContext({
+        type: 'userNoSpace',
+        user: user,
+      });
     }
     return true;
+  }
+
+  private async getSpaceFromRequest(request: CnRequest): Promise<CnSpace | null> {
+    let spaceDomain: string;
+
+    if (this.configService.isLocal()) {
+      spaceDomain = BlCookieHelper.getCookieFromHeader(request.headers.cookie, CN_LOCAL_SPACE_COOKIE);
+    } else {
+      const origin = request.header('origin') ?? request.header('referer');
+      spaceDomain = ClStringHelper.getLowestDomainFromUrl(origin);
+    }
+
+    // retrieve the space and store it in the request if found
+    return this.spaceService.findByDomain(spaceDomain);
   }
 
   /**

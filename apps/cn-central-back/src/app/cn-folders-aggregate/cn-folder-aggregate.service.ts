@@ -342,10 +342,7 @@ export class CnFolderAggregateService {
     const folderHierarchy = await this.hierarchyObjectService.findByIdAndCheck(folderId);
 
     // check if the current user has the authorization to update the leader
-    await this.foldersAggregateSecurity.checkUpdateFolderLeader(
-      folderHierarchy,
-      CnCurrentUserHelper.getAndCheckUserSpaceInfo()
-    );
+    await this.foldersAggregateSecurity.checkUpdateFolderLeader(folderHierarchy);
 
     const newLeader = await this.userService.findByIdAndCheck(userId);
     await this.datasource.transaction(async (entityManager) => {
@@ -443,10 +440,7 @@ export class CnFolderAggregateService {
 
     return {
       description: description.toJson(),
-      canEdit: this.foldersAggregateSecurity.isFolderLeader(
-        folder,
-        CnCurrentUserHelper.getAndCheckUserSpaceInfo()
-      ),
+      canEdit: this.foldersAggregateSecurity.isFolderLeader(folder),
     };
   }
 
@@ -836,7 +830,7 @@ export class CnFolderAggregateService {
     const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
 
     const message = await this.chatMessageService.findByIdAndCheck(messageId);
-    if (message.createdBy.id != CnCurrentUserHelper.getCurrentUser().id) {
+    if (message.createdBy.id != CnCurrentUserHelper.getAndCheckCurrentUser().id) {
       throw new UnauthorizedException();
     }
 
@@ -849,7 +843,7 @@ export class CnFolderAggregateService {
     const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
 
     const message = await this.chatMessageService.findByIdAndCheck(messageId);
-    if (message.createdBy.id != CnCurrentUserHelper.getCurrentUser().id) {
+    if (message.createdBy.id != CnCurrentUserHelper.getAndCheckCurrentUser().id) {
       throw new UnauthorizedException();
     }
 
@@ -1153,7 +1147,7 @@ export class CnFolderAggregateService {
     // this is temporary until collaborative editing is implemented
     if (
       Math.abs(document.lastModifiedAt.diffNow().toMillis()) < 60000 &&
-      document.lastModifiedBy.id !== CnCurrentUserHelper.getCurrentUser().id
+      document.lastModifiedBy.id !== CnCurrentUserHelper.getAndCheckCurrentUser().id
     ) {
       // eslint-disable-next-line max-len
       throw new BlBadRequestException(
@@ -1185,7 +1179,7 @@ export class CnFolderAggregateService {
     // this is temporary until collaborative editing is implemented
     if (
       Math.abs(document.lastModifiedAt.diffNow().toMillis()) < 60000 &&
-      document.lastModifiedBy.id !== CnCurrentUserHelper.getCurrentUser().id
+      document.lastModifiedBy.id !== CnCurrentUserHelper.getAndCheckCurrentUser().id
     ) {
       // eslint-disable-next-line max-len
       throw new BlBadRequestException(
@@ -1462,24 +1456,21 @@ export class CnFolderAggregateService {
   ): Promise<CnHierarchyObject> {
     const folder = await this.hierarchyObjectService.findByIdAndCheck(hierarchyObjectId);
 
-    await this.foldersAggregateSecurity.checkFindOne(folder, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    await this.foldersAggregateSecurity.checkFindOne(folder);
     return folder;
   }
 
   private async getAndCheckAuthorizationForUpdate(folderId: string): Promise<CnHierarchyObject> {
     const folder = await this.hierarchyObjectService.findByIdAndCheck(folderId);
 
-    await this.foldersAggregateSecurity.checkUpdate(folder, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    await this.foldersAggregateSecurity.checkUpdate(folder);
     return folder;
   }
 
   private async checkFindOneAndGetRootFolder(folderId: string): Promise<CnHierarchyObject> {
     const folder = await this.hierarchyObjectService.findByIdAndCheck(folderId);
 
-    return await this.foldersAggregateSecurity.checkFindOneAndGetRootFolder(
-      folder,
-      CnCurrentUserHelper.getAndCheckUserSpaceInfo()
-    );
+    return await this.foldersAggregateSecurity.checkFindOneAndGetRootFolder(folder);
   }
 
   //////////////////////////////// EVENT ///////////////////////////////////////

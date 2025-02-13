@@ -10,7 +10,6 @@ import {
   BlBucketConfig,
   BlBucketType,
   BlCsvHelper,
-  BlCurrentUserHelper,
   BlFile,
   BlFileResponse,
   BlObjectStorageService,
@@ -40,11 +39,11 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
   async onModuleInit(): Promise<void> {
     const robotUser = await this.getRobotUser();
-    BlCurrentUserHelper.setRobotUser(robotUser);
+    CnCurrentUserHelper.setRobotUser(robotUser);
   }
 
   findAllPaginated(page: number, size: number): Promise<ClPage<CnUser>> {
-    const currentUser = CnCurrentUserHelper.getCurrentUser();
+    const currentUser = CnCurrentUserHelper.getAndCheckCurrentUser();
     if (!currentUser.isAdmin()) {
       throw new BlUnauthorizedException();
     }
