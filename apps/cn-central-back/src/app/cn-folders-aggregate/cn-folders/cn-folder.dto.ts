@@ -4,6 +4,7 @@ import { Type } from 'class-transformer';
 import { CnBucket, CnBucketLocationDTO } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 import { BlTrim } from '@monorepo/back-core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
+import { CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
 
 export class CnSaveFolderDTO {
   @BlTrim()
@@ -20,6 +21,8 @@ export class CnSaveFolderDTO {
   mainStorage?: CnBucketLocationDTO;
 
   backupStorage?: CnBucketLocationDTO;
+
+  tags?: CnTag[];
 }
 
 export interface CnFolderStorageLocationDTO {

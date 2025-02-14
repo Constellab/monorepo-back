@@ -73,6 +73,7 @@ import { CnScenarioProtocol } from './cn-scenarios/cn-scenario-protocol.class';
 import { CnTag } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
 import { CnHierarchyObjectTagAggregateService } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag-aggregate.service';
 import { CnHierarchyObjectTag } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
+import { CnSpaceAggregateService } from '../cn-spaces/cn-space-aggregate.service';
 
 @Injectable()
 export class CnFolderAggregateService {
@@ -94,7 +95,8 @@ export class CnFolderAggregateService {
     private activityService: CnActivityService,
     private resourceService: CnResourcesService,
     private externalLabApiService: CnExternalLabApiService,
-    private tagService: CnHierarchyObjectTagAggregateService
+    private tagService: CnHierarchyObjectTagAggregateService,
+    private spaceAggregateService: CnSpaceAggregateService
   ) {}
 
   /////////////////////////////////////// FOLDER //////////////////////////////////
@@ -108,19 +110,37 @@ export class CnFolderAggregateService {
         CnCurrentUserHelper.getAndCheckCurrentSpace(),
         entity.getHierarchyObjectInfo()
       );
-      entity.mainStorage = await this.folderBucketService.getBucketById(folderDTO.mainStorage.bucketId);
 
-      if (folderDTO.backupStorage) {
-        entity.backupStorage = await this.folderBucketService.getBucketById(folderDTO.backupStorage.bucketId);
+      if (folderDTO.mainStorage) {
+        entity.mainStorage = await this.folderBucketService.getBucketById(folderDTO.mainStorage.bucketId);
 
-        if (entity.mainStorage.bucketType !== entity.backupStorage.bucketType) {
-          throw new BlBadRequestException('Main and backup storage must have the same type (cloud or lab)');
+        if (folderDTO.backupStorage) {
+          entity.backupStorage = await this.folderBucketService.getBucketById(
+            folderDTO.backupStorage.bucketId
+          );
+
+          if (entity.mainStorage.bucketType !== entity.backupStorage.bucketType) {
+            throw new BlBadRequestException('Main and backup storage must have the same type (cloud or lab)');
+          }
         }
+      } else {
+        // if the main storage is not set, we use the default storage of the space
+        const space = await this.spaceAggregateService.getCurrentSpace();
+        entity.mainStorage = space.defaultFolderBucket;
+        entity.backupStorage = space.defaultFolderBackupBucket;
       }
       const dbFolder = await this.foldersService.create(entity, manager);
 
       // share the folder with the leader
       await this.folderUserService.shareRootFolderToUserIfNot(dbFolder.id, dbFolder.leader.id, manager);
+
+      if (folderDTO.tags?.length > 0) {
+        await this.tagService.createTagsTransaction(
+          folderDTO.tags,
+          dbFolder.hierarchyRepresentation,
+          manager
+        );
+      }
 
       return dbFolder;
     });
@@ -270,19 +290,18 @@ export class CnFolderAggregateService {
   }
 
   public async getCurrentRootFolders(page: number, size: number): Promise<ClPageI<CnHierarchyObject>> {
-    const currentUserInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     return this.hierarchyObjectService.getRootFoldersOfUser(
-      currentUserInfo.userId,
-      currentUserInfo.spaceId,
+      CnCurrentUserHelper.getAndCheckCurrentUser().id,
+      CnCurrentUserHelper.getAndCheckCurrentSpace().id,
       page,
       size
     );
   }
 
   public async getByCurrentSpace(page: number, size: number): Promise<ClPageI<CnHierarchyObject>> {
-    const info = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-    await this.foldersAggregateSecurity.checkFindAllBySpace(info);
-    return this.hierarchyObjectService.getRootFoldersBySpace(info.spaceId, page, size);
+    const spaceId = CnCurrentUserHelper.getAndCheckCurrentSpace().id;
+    await this.foldersAggregateSecurity.checkFindAllBySpace();
+    return this.hierarchyObjectService.getRootFoldersBySpace(spaceId, page, size);
   }
 
   public async searchInCurrentSpace(
@@ -290,9 +309,9 @@ export class CnFolderAggregateService {
     page: number,
     size: number
   ): Promise<ClPageI<CnFolder>> {
-    const info = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-    await this.foldersAggregateSecurity.checkFindAllBySpace(info);
-    return this.foldersService.searchFolderInSpace(info.spaceId, searchParams, page, size);
+    const spaceId = CnCurrentUserHelper.getAndCheckCurrentSpace().id;
+    await this.foldersAggregateSecurity.checkFindAllBySpace();
+    return this.foldersService.searchFolderInSpace(spaceId, searchParams, page, size);
   }
 
   public async getFolderObjectTree(folderId: string): Promise<CnHierarchyObject> {
@@ -1319,8 +1338,8 @@ export class CnFolderAggregateService {
     page: number,
     size: number
   ): Promise<ClPage<CnBucketLocationDTO>> {
-    const info = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-    return this.folderBucketService.findAccessibleFolderBucketLocation(info.spaceId, page, size);
+    const spaceId = CnCurrentUserHelper.getAndCheckCurrentSpace().id;
+    return this.folderBucketService.findAccessibleFolderBucketLocation(spaceId, page, size);
   }
 
   public async getStorageSizeByFolder(folderId: string): Promise<CnFolderStorageUsageDTO> {
@@ -1430,9 +1449,19 @@ export class CnFolderAggregateService {
     return this.tagService.createTags(tags, hierarchyObject);
   }
 
+  public async createOrReplace(hierarchyObjectId: string, tags: CnTag[]): Promise<CnHierarchyObjectTag[]> {
+    const hierarchyObject = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    return this.tagService.createOrReplaceTagsByKey(tags, hierarchyObject);
+  }
+
   public async deleteHierarchyObjectTag(hierarchyObjectId: string, tag: CnTag): Promise<void> {
     const hierarchyObject = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
     await this.tagService.deleteTag(tag, hierarchyObject);
+  }
+
+  public async deleteHierarchyObjectTags(hierarchyObjectId: string, tags: CnTag[]): Promise<void> {
+    const hierarchyObject = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    await this.tagService.deleteTags(tags, hierarchyObject);
   }
 
   public async getHierarchyObjectTagsPaginated(

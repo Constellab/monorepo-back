@@ -54,6 +54,17 @@ export class CnHierarchyObjectTagAggregateService {
     });
   }
 
+  public async deleteTags(tags: CnTag[], hierarchyObject: CnHierarchyObject): Promise<void> {
+    return this.datasource.transaction(async (entityManager) => {
+      for (const tag of tags) {
+        const entityTag = await this.tagService.findByTag(tag.key, tag.value, hierarchyObject.id);
+        if (entityTag) {
+          await this.deleteTagTransaction(entityTag, hierarchyObject, entityManager);
+        }
+      }
+    });
+  }
+
   private async deleteTagTransaction(
     entityTag: CnHierarchyObjectTag,
     hierarchyObject: CnHierarchyObject,
@@ -77,13 +88,24 @@ export class CnHierarchyObjectTagAggregateService {
     tags: CnTag[],
     hierarchyObject: CnHierarchyObject
   ): Promise<CnHierarchyObjectTag[]> {
-    return this.datasource.transaction(async (entityManager) => {
-      const entityTags: CnHierarchyObjectTag[] = [];
-      for (const tag of tags) {
-        entityTags.push(await this.createTagTransaction(tag, hierarchyObject, entityManager));
-      }
-      return entityTags;
-    });
+    return this.datasource.transaction(async (entityManager) =>
+      this.createTagsTransaction(tags, hierarchyObject, entityManager)
+    );
+  }
+
+  /**
+   * Create tags for a hierarchy object.
+   */
+  public async createTagsTransaction(
+    tags: CnTag[],
+    hierarchyObject: CnHierarchyObject,
+    entityManager: EntityManager
+  ): Promise<CnHierarchyObjectTag[]> {
+    const entityTags: CnHierarchyObjectTag[] = [];
+    for (const tag of tags) {
+      entityTags.push(await this.createTagTransaction(tag, hierarchyObject, entityManager));
+    }
+    return entityTags;
   }
 
   /**
@@ -92,7 +114,7 @@ export class CnHierarchyObjectTagAggregateService {
    * @param hierarchyObject
    * @private
    */
-  private async addOrReplaceTagsByKey(
+  public async createOrReplaceTagsByKey(
     tags: CnTag[],
     hierarchyObject: CnHierarchyObject
   ): Promise<CnHierarchyObjectTag[]> {

@@ -25,6 +25,8 @@ export const cnExternalLabApiKeyHeader: string = 'Authorization';
 export const cnExternalLabApiKeySchema: string = 'api-key';
 export const cnExternalLabUserHeader: string = 'User';
 export const cnExternalLabManagerVersionHeader: string = 'lab-manager-version';
+// header provided when the lab call the api using a token
+export const cnExternalLabApiTokenHeader: string = 'api-token';
 
 /**
  *  Content of the activation token

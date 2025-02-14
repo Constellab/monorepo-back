@@ -11,6 +11,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { CnUserEvent, cnUserEventName } from '../cn-users/cn-user.event';
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnSpaceAggregateService } from '../cn-spaces/cn-space-aggregate.service';
+import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 
 /**
  * Service to copy a folder and its content to another space folder
@@ -49,9 +50,7 @@ export class CnFolderCopierService {
         // set the user and space in the context to create the default folder, documents...
         CnCurrentUserHelper.overrideAuth({
           type: 'user',
-          user: userEvent.user,
-          space: space,
-          roleInSpace: spaceUser.role,
+          userInfo: new CnUserSpaceInfo(userEvent.user, space, spaceUser.role),
         });
         await this.copyRootFolder(folderToCopy);
       } catch (error) {

@@ -10,6 +10,7 @@ import { CnErrorText } from '../model/config/cn-error-text.class';
 import {
   cnExternalLabApiKeyHeader,
   cnExternalLabApiKeySchema,
+  cnExternalLabApiTokenHeader,
   cnExternalLabManagerVersionHeader,
   cnExternalLabUserHeader,
 } from '../model/config/cn-config.class';
@@ -19,10 +20,11 @@ import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
 import { cnIsAllowedDev, cnIsLabRobotAuth } from '../decorators/cn-lab-guard.decorator';
 import { blIsDecoratedWithPublic, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { CnLabUserService } from '../../cn-labs/user/cn-lab-user.service';
+import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
 
 class CnGetLab {
   lab: CnLabWithSpace;
-  labEnvironment: 'labDev' | 'labProd' | 'labManager';
+  labEnvironment: 'labDev' | 'labProd' | 'labManager' | 'labToken';
 }
 
 class CnUserWithRole {
@@ -41,7 +43,7 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
     private labUserService: CnLabUserService
   ) {}
 
-  abstract getLabFromApiKey(apiKey: string): Promise<CnGetLab>;
+  abstract getLabFromApiKey(apiKey: string, request: Request): Promise<CnGetLab>;
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     return this.labAuthentication(context);
@@ -61,7 +63,7 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
       throw new BlUnauthorizedException(CnErrorText.MISSING_API_KEY);
     }
 
-    const labInfo = await this.getLabFromApiKey(labApiKey);
+    const labInfo = await this.getLabFromApiKey(labApiKey, request);
 
     if (labInfo == null) {
       throw new BlUnauthorizedException(CnErrorText.WRONG_API_KEY);
@@ -78,25 +80,23 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
     // set the user in the context as the connected user
     const userWithRole = await this.getUserInContext(request, labInfo.lab, context);
 
+    const userInfo = new CnUserSpaceInfo(userWithRole.user, labInfo.lab.space, userWithRole.role);
+
     if (labInfo.labEnvironment === 'labManager') {
       // retrieve the lab manager version from header
       const labManagerVersion = request.header(cnExternalLabManagerVersionHeader);
 
       CnCurrentUserHelper.setAuthContext({
         type: 'labManager',
-        user: userWithRole.user,
+        userInfo: userInfo,
         lab: labInfo.lab,
-        space: labInfo.lab.space,
-        roleInSpace: userWithRole.role,
         labManagerVersion: labManagerVersion,
       });
     } else {
       CnCurrentUserHelper.setAuthContext({
         type: labInfo.labEnvironment,
-        user: userWithRole.user,
+        userInfo: userInfo,
         lab: labInfo.lab,
-        space: labInfo.lab.space,
-        roleInSpace: userWithRole.role,
       });
     }
 
@@ -208,14 +208,17 @@ export class CnLabAuthGuard extends CnLabAuthGuardBase {
 
   /**
    * Try to get the lab from prod api key and then from dev api key
-   * @param apiKey
    */
-  async getLabFromApiKey(apiKey: string): Promise<CnGetLab> {
+  async getLabFromApiKey(apiKey: string, request: Request): Promise<CnGetLab> {
+    // TODO improve
+    // if the header exist it means that the lab is using a token to authenticate
+    const labApiToken = request.header(cnExternalLabApiTokenHeader);
+
     const lab = await this.labsService.findLabByGlabProdApiKey(apiKey);
     if (lab) {
       return {
         lab: lab,
-        labEnvironment: 'labProd',
+        labEnvironment: labApiToken != null ? 'labToken' : 'labProd',
       };
     }
 

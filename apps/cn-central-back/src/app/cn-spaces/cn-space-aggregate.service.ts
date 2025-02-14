@@ -72,6 +72,10 @@ export class CnSpaceAggregateService {
     return CnSpaceSettingsDto.fromSpace(space);
   }
 
+  public async getCurrentSpace(): Promise<CnSpaceEntity> {
+    return this.spaceService.findByIdAndCheckWithBucket(CnCurrentUserHelper.getAndCheckCurrentSpace().id);
+  }
+
   public async createEntrepriseSpace(entity: CnCreateSpaceDTO): Promise<CnSpaceSettingsDto> {
     // free licenced users can't create a space
     if (CnCurrentUserHelper.getAndCheckCurrentUser().isFreeLicence()) {

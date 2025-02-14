@@ -19,23 +19,18 @@ export interface CnAuthContextUserNoSpace {
  */
 export interface CnAuthContextUser {
   type: 'user';
-  user: CnUser;
-  space: CnSpace;
-  roleInSpace: CnSpaceUserRole;
+  userInfo: CnUserSpaceInfo;
 }
 
 /**
- * Auth for request comming from the lab.
+ * Auth for request coming from the lab.
  * labProd if the request is made from the production environment (prod api)
  * labDev if the request is made from the development environment (dev api from codelab)
- *
- * labApi if the request is made from the lab api // TODO TO IMPRVOVE
+ * labToken if the request is made from the lab using a token
  */
 export interface CnAuthContextLab {
-  type: 'labProd' | 'labDev' | 'labApi';
-  user: CnUser;
-  space: CnSpace;
-  roleInSpace: CnSpaceUserRole;
+  type: 'labProd' | 'labDev' | 'labToken';
+  userInfo: CnUserSpaceInfo;
 
   lab: CnLab;
 }
@@ -45,9 +40,7 @@ export interface CnAuthContextLab {
  */
 export interface CnAuthContextLabManager {
   type: 'labManager';
-  user: CnUser;
-  space: CnSpace;
-  roleInSpace: CnSpaceUserRole;
+  userInfo: CnUserSpaceInfo;
 
   lab: CnLab;
   labManagerVersion: string;
@@ -90,7 +83,7 @@ export class CnCurrentUserHelper extends BlRequestContextHelper {
     super.setAuthContent(content);
   }
 
-  protected static getAuthContext(): CnAuthContext {
+  protected static getAuthContext(): CnAuthContext | null {
     const context = super.getCurrentContext();
 
     // if there is no request and a manual user is set, return it
@@ -107,15 +100,38 @@ export class CnCurrentUserHelper extends BlRequestContextHelper {
     return super.getAuthContent() as CnAuthContext;
   }
 
+  public static getAndCheckAuthContext(): CnAuthContext {
+    const context = this.getAuthContext();
+
+    if (context == null) {
+      throw new BlUnauthorizedException('No auth context in the request');
+    }
+
+    return context;
+  }
+
   /**
    * returns the current authenticated user or null if not authenticated
    */
   static getCurrentUser(): CnUser | null {
     const authContext = this.getAuthContext();
 
-    if (authContext) {
+    if (authContext == null) return null;
+
+    if (
+      authContext.type === 'user' ||
+      authContext.type === 'labDev' ||
+      authContext.type === 'labProd' ||
+      authContext.type === 'labToken' ||
+      authContext.type === 'labManager'
+    ) {
+      return authContext.userInfo.user;
+    }
+
+    if (authContext.type === 'userNoSpace' || authContext.type === 'cron') {
       return authContext.user;
     }
+
     return null;
   }
 
@@ -159,7 +175,7 @@ export class CnCurrentUserHelper extends BlRequestContextHelper {
       authContext.type === 'labProd' ||
       authContext.type === 'labDev' ||
       authContext.type === 'labManager' ||
-      authContext.type === 'labApi'
+      authContext.type === 'labToken'
     ) {
       return authContext.lab;
     }
@@ -193,10 +209,9 @@ export class CnCurrentUserHelper extends BlRequestContextHelper {
       authContext.type === 'user' ||
       authContext.type === 'labProd' ||
       authContext.type === 'labDev' ||
-      authContext.type === 'labManager' ||
-      authContext.type === 'labApi'
+      authContext.type === 'labManager'
     ) {
-      return authContext.space;
+      return authContext.userInfo.space;
     }
 
     return null;
@@ -234,8 +249,14 @@ export class CnCurrentUserHelper extends BlRequestContextHelper {
   static getCurrentRoleInSpace(): CnSpaceUserRole | null {
     const authContext = this.getAuthContext();
 
-    if (authContext == null || authContext.type === 'userNoSpace' || authContext.type === 'cron') return null;
-    return authContext.roleInSpace;
+    if (
+      authContext == null ||
+      authContext.type === 'userNoSpace' ||
+      authContext.type === 'cron' ||
+      authContext.type === 'labToken'
+    )
+      return null;
+    return authContext.userInfo.roleInSpace;
   }
 
   static isAdmin(): boolean {

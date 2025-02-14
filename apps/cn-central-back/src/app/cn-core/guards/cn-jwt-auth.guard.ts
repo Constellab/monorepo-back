@@ -18,6 +18,7 @@ import { CnSpace } from '../../cn-spaces/cn-space.entity';
 import { ClStringHelper } from '@monorepo/core-lib';
 import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.service';
 import { CnSpaceService } from '../../cn-spaces/cn-space.service';
+import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
 
 export const CN_LOCAL_SPACE_COOKIE = 'local-space';
 
@@ -98,9 +99,7 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
       // set the auth context as user in the space
       CnCurrentUserHelper.setAuthContext({
         type: 'user',
-        user: user,
-        space: space,
-        roleInSpace: roleInSpace,
+        userInfo: new CnUserSpaceInfo(user, space, roleInSpace),
       });
 
       if (user.lastConnectedSpaceId !== space.id) {

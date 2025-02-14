@@ -1,11 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 import { BlUnauthorizedException } from '@monorepo/back-core-lib';
-import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnFolderUserService } from './cn-folder-user/cn-folder-user.service';
 import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnFoldersAggregateSecurityToken } from './cn-folders-aggregate-security-lab-token';
+import { CnFoldersAggregateSecurityUser } from './cn-folders-aggregate-security-user';
+
+export interface CnFoldersAggregateSecurityI {
+  checkFindOneAndGetRootFolder(folder: CnHierarchyObject): Promise<CnHierarchyObject>;
+
+  checkUpdate(folder: CnHierarchyObject): Promise<void>;
+
+  checkUpdateFolderLeader(hierarchyObject: CnHierarchyObject): Promise<void>;
+
+  isFolderLeader(folder: CnHierarchyObject): boolean;
+
+  checkFindAllBySpace(): Promise<void>;
+}
 
 /**
  * Class to check the user authorization on folders
@@ -18,24 +30,8 @@ export class CnFoldersAggregateSecurity {
   ) {}
 
   public async checkFindOneAndGetRootFolder(folder: CnHierarchyObject): Promise<CnHierarchyObject> {
-    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-    // check the space context
-    if (folder.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException('Wrong space');
-
-    // the authorization are handle at the projet level
-    const rootFolder = await this.folderObjectService.getRootFolder(folder);
-
-    if (userInfo.isSpaceAdmin()) return rootFolder;
-
-    // enable always the leader to have access to the folder
-    if (rootFolder.user.id === userInfo.userId) return rootFolder;
-
-    // check if the user is a member of one of the groups that were shared with the folder
-    if (!(await this.folderUserService.userIsInRootFolder(rootFolder.id, userInfo.userId))) {
-      throw new BlUnauthorizedException(CnErrorText.NO_ACCESS_TO_FOLDER);
-    }
-
-    return rootFolder;
+    const securityService = this.getSecurityService();
+    return securityService.checkFindOneAndGetRootFolder(folder);
   }
 
   public async checkFindOne(folder: CnHierarchyObject): Promise<void> {
@@ -43,54 +39,48 @@ export class CnFoldersAggregateSecurity {
   }
 
   public async checkUpdate(folder: CnHierarchyObject): Promise<void> {
-    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-
-    // check the space context
-    if (folder.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException('Wrong space');
-
-    if (userInfo.isSpaceAdmin()) return;
-
-    if (folder.user.id !== userInfo.userId) {
-      throw new BlUnauthorizedException(CnErrorText.NO_FOLDER_LEADER);
-    }
+    const securityService = this.getSecurityService();
+    return securityService.checkUpdate(folder);
   }
 
   /**
    * Only the leader or leader of a parent folder can update the leader of children folder
    */
   public async checkUpdateFolderLeader(hierarchyObject: CnHierarchyObject): Promise<void> {
-    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-
-    // check the space context
-    if (hierarchyObject.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException('Wrong space');
-
-    if (userInfo.isSpaceAdmin()) return;
-
-    const ancestors = await this.folderObjectService.getAncestors(hierarchyObject);
-    for (const ancestor of ancestors) {
-      if (ancestor.user.id === userInfo.userId) {
-        return;
-      }
-    }
-    throw new BlUnauthorizedException();
+    const securityService = this.getSecurityService();
+    return securityService.checkUpdateFolderLeader(hierarchyObject);
   }
 
   /**
    * Only the leader or leader of a parent folder can update the leader of children folder
    */
   public isFolderLeader(hierarchyObject: CnHierarchyObject): boolean {
-    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-
-    // check the space context
-    if (hierarchyObject.spaceId !== userInfo.spaceId) throw new BlUnauthorizedException('Wrong space');
-
-    if (userInfo.isSpaceAdmin()) return true;
-
-    return hierarchyObject.user.id === userInfo.userId;
+    const securityService = this.getSecurityService();
+    return securityService.isFolderLeader(hierarchyObject);
   }
 
-  public async checkFindAllBySpace(userInfo: CnUserSpaceInfo): Promise<void> {
-    // check the space context
-    if (!userInfo.isSpaceAdmin()) throw new BlUnauthorizedException('Only space admin can list all folders');
+  public async checkFindAllBySpace(): Promise<void> {
+    const securityService = this.getSecurityService();
+    return securityService.checkFindAllBySpace();
+  }
+
+  private getSecurityService(): CnFoldersAggregateSecurityI {
+    const authContext = CnCurrentUserHelper.getAndCheckAuthContext();
+
+    if (authContext.type === 'labToken') {
+      return new CnFoldersAggregateSecurityToken(authContext, this.folderObjectService);
+    } else if (
+      authContext.type === 'user' ||
+      authContext.type === 'labProd' ||
+      authContext.type === 'labDev'
+    ) {
+      return new CnFoldersAggregateSecurityUser(
+        authContext.userInfo,
+        this.folderObjectService,
+        this.folderUserService
+      );
+    }
+
+    throw new BlUnauthorizedException();
   }
 }

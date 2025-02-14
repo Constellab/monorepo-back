@@ -36,8 +36,12 @@ import {
   CnHierarchyObjectEntity,
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
+import {
+  CnExternalLabTagsDTO,
+  CnRichTextCompareRequestDTO,
+  CnRichTextUndoRequestDTO,
+} from './cn-external-labs.dto';
 import { CnLabSendMailDto, CnLabSendMailToMailsDto } from '../cn-labs/mail/cn-lab-mail.dto';
-import { CnRichTextCompareRequestDTO, CnRichTextUndoRequestDTO } from './cn-external-labs.dto';
 import { TeRichTextBlockModificationsDTO, TeRichTextDTO, TeRichTextHelper } from '@monorepo/te-text-editor';
 import { CnNote } from '../cn-folders-aggregate/cn-notes/cn-note.entity';
 import { CnScenario } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.entity';
@@ -219,23 +223,31 @@ export class CnExternalLabsController {
 
   //////////////////////////// HIERARCHY OBJECT TAG //////////////////////////
 
-  @Post(':hierarchyObjectId/tags/multiple')
+  @Post('hierarchyObject/:hierarchyObjectId/tags/multiple')
   async createTags(
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
-    @Body() tags: CnTag[]
+    @Body() tags: CnExternalLabTagsDTO
   ): Promise<CnHierarchyObjectTag[]> {
-    return this.folderAggregateService.createHierarchyObjectTags(hierarchyObjectId, tags);
+    return this.folderAggregateService.createHierarchyObjectTags(hierarchyObjectId, tags.tags);
   }
 
-  @Post(':hierarchyObjectId/tags/delete')
-  async deleteTag(
+  @Post('hierarchyObject/:hierarchyObjectId/tags/createOrReplace')
+  async createOrReplaceTags(
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
-    @Body() tag: CnTag
-  ): Promise<void> {
-    return this.folderAggregateService.deleteHierarchyObjectTag(hierarchyObjectId, tag);
+    @Body() tags: CnExternalLabTagsDTO
+  ): Promise<CnHierarchyObjectTag[]> {
+    return this.folderAggregateService.createOrReplace(hierarchyObjectId, tags.tags);
   }
 
-  @Get(':hierarchyObjectId/tags')
+  @Post('hierarchyObject/:hierarchyObjectId/tags/delete')
+  async deleteTags(
+    @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
+    @Body() tags: CnExternalLabTagsDTO
+  ): Promise<void> {
+    return this.folderAggregateService.deleteHierarchyObjectTags(hierarchyObjectId, tags.tags);
+  }
+
+  @Get('hierarchyObject/:hierarchyObjectId/tags')
   async getTags(
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
     @Query('page', ParseIntPipe) page: number,
