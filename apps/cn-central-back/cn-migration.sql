@@ -160,3 +160,6 @@ CREATE TABLE hierarchy_object_tag_history
   CONSTRAINT FK_hierarchy_object_tag_history_created_by FOREIGN KEY (createdById) REFERENCES user (id),
   CONSTRAINT FK_hierarchy_object_tag_history_last_modified_by FOREIGN KEY (lastModifiedById) REFERENCES user (id)
 );
+
+ALTER TABLE hierarchy_object
+  ADD COLUMN lastTagsStr varchar(255) NULL;

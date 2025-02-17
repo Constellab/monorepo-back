@@ -24,6 +24,7 @@ import { CnResourcesController } from './cn-resources/cn-resources.controller';
 import { CnExternalLabApiModule } from '../cn-external-lab-api/cn-external-lab-api.module';
 import { CnHierarchyObjectTagModule } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag.module';
 import { CnHierarchyObjectController } from './cn_hierarchy_objects/cn-hierarchy-object.controller';
+import { CnHierarchyObjectListener } from './cn-hierarchy-object.listener';
 
 @Module({
   imports: [
@@ -55,7 +56,13 @@ import { CnHierarchyObjectController } from './cn_hierarchy_objects/cn-hierarchy
     CnResourcesController,
     CnHierarchyObjectController,
   ],
-  providers: [CnFoldersSecurityService, CnFolderAggregateService, CnFolderListener, CnFolderCopierService],
+  providers: [
+    CnFoldersSecurityService,
+    CnFolderAggregateService,
+    CnFolderListener,
+    CnFolderCopierService,
+    CnHierarchyObjectListener,
+  ],
   exports: [CnFoldersSecurityService, CnFolderAggregateService],
 })
 export class CnFoldersAggregateModule {}

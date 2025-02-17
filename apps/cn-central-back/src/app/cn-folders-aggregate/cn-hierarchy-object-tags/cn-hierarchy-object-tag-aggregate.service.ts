@@ -8,19 +8,26 @@ import { CnHierarchyObjectTagHistoryType } from './cn-hierarchy-object-tag-histo
 import { CnTag, CnTagList } from './cn-hierarchy-object-tag.dto';
 import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { CnHierarchyObjectEvent, cnHierarchyObjectEventName } from '../cn-hierarchy-object.event';
 
 @Injectable()
 export class CnHierarchyObjectTagAggregateService {
   constructor(
     private tagService: CnHierarchyObjectTagService,
     private historyService: CnHierarchyObjectTagHistoryService,
-    private datasource: DataSource
+    private datasource: DataSource,
+    private eventEmitter: EventEmitter2
   ) {}
 
   public async createTag(tag: CnTag, hierarchyObject: CnHierarchyObject): Promise<CnHierarchyObjectTag> {
-    return this.datasource.transaction(async (entityManager) =>
+    const newTag = await this.datasource.transaction(async (entityManager) =>
       this.createTagTransaction(tag, hierarchyObject, entityManager)
     );
+
+    this.emitTagModifiedEvent(hierarchyObject);
+
+    return newTag;
   }
 
   private async createTagTransaction(
@@ -49,13 +56,15 @@ export class CnHierarchyObjectTagAggregateService {
       return;
     }
 
-    return this.datasource.transaction(async (entityManager) => {
+    await this.datasource.transaction(async (entityManager) => {
       await this.deleteTagTransaction(entityTag, hierarchyObject, entityManager);
     });
+
+    this.emitTagModifiedEvent(hierarchyObject);
   }
 
   public async deleteTags(tags: CnTag[], hierarchyObject: CnHierarchyObject): Promise<void> {
-    return this.datasource.transaction(async (entityManager) => {
+    await this.datasource.transaction(async (entityManager) => {
       for (const tag of tags) {
         const entityTag = await this.tagService.findByTag(tag.key, tag.value, hierarchyObject.id);
         if (entityTag) {
@@ -63,6 +72,8 @@ export class CnHierarchyObjectTagAggregateService {
         }
       }
     });
+
+    this.emitTagModifiedEvent(hierarchyObject);
   }
 
   private async deleteTagTransaction(
@@ -88,9 +99,12 @@ export class CnHierarchyObjectTagAggregateService {
     tags: CnTag[],
     hierarchyObject: CnHierarchyObject
   ): Promise<CnHierarchyObjectTag[]> {
-    return this.datasource.transaction(async (entityManager) =>
+    const result = await this.datasource.transaction(async (entityManager) =>
       this.createTagsTransaction(tags, hierarchyObject, entityManager)
     );
+    this.emitTagModifiedEvent(hierarchyObject);
+
+    return result;
   }
 
   /**
@@ -105,6 +119,7 @@ export class CnHierarchyObjectTagAggregateService {
     for (const tag of tags) {
       entityTags.push(await this.createTagTransaction(tag, hierarchyObject, entityManager));
     }
+
     return entityTags;
   }
 
@@ -127,13 +142,16 @@ export class CnHierarchyObjectTagAggregateService {
       tagsMap.set(tag.key, tag);
     }
 
-    return this.datasource.transaction(async (entityManager) => {
+    const result = await this.datasource.transaction(async (entityManager) => {
       const entityTags: CnHierarchyObjectTag[] = [];
       for (const tag of tags) {
         entityTags.push(await this.addOrReplaceTagByKey(tag, hierarchyObject, entityManager));
       }
       return entityTags;
     });
+
+    this.emitTagModifiedEvent(hierarchyObject);
+    return result;
   }
 
   private async addOrReplaceTagByKey(
@@ -159,7 +177,7 @@ export class CnHierarchyObjectTagAggregateService {
   public async setTags(tags: CnTag[], hierarchyObject: CnHierarchyObject): Promise<CnHierarchyObjectTag[]> {
     const existingTags = await this.tagService.findByHierarchyObject(hierarchyObject.id);
 
-    return this.datasource.transaction(async (entityManager) => {
+    const result = await this.datasource.transaction(async (entityManager) => {
       // first delete the tags
       const newTags = new CnTagList(tags);
       for (const tag of existingTags) {
@@ -180,6 +198,16 @@ export class CnHierarchyObjectTagAggregateService {
       }
       return entityTags;
     });
+
+    this.emitTagModifiedEvent(hierarchyObject);
+    return result;
+  }
+
+  private emitTagModifiedEvent(hierarchyObject: CnHierarchyObject): void {
+    this.eventEmitter.emit(cnHierarchyObjectEventName, {
+      type: 'TAG_MODIFIED',
+      hierarchyObject,
+    } as CnHierarchyObjectEvent);
   }
 
   /////////////////////////////////////////// FIND ///////////////////////////////////////////

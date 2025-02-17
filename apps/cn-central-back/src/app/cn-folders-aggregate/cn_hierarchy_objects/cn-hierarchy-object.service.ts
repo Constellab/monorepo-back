@@ -10,6 +10,7 @@ import {
 import { EntityManager, In, IsNull, TreeRepository } from 'typeorm';
 import { ClPage } from '@monorepo/core-lib';
 import { CnHierarchyObjectSearch } from './cn-hierarchy-object.search';
+import { CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
 
 @Injectable()
 export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjectEntity> {
@@ -243,5 +244,11 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     return this.repository.find({
       where: { parentId: parentId, name: name, objectType: type },
     });
+  }
+
+  public async updateLastTags(hierarchyObject: CnHierarchyObject, tags: CnTag[]): Promise<CnHierarchyObject> {
+    hierarchyObject.setLastTags(tags);
+    await this.repository.update(hierarchyObject.id, { lastTagsStr: hierarchyObject.lastTagsStr });
+    return hierarchyObject;
   }
 }

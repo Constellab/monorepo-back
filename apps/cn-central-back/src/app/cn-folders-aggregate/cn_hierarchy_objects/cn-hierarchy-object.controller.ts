@@ -26,6 +26,14 @@ export class CnHierarchyObjectController {
     return this.folderAggregateService.createHierarchyObjectTags(hierarchyObjectId, tags);
   }
 
+  @Post(':hierarchyObjectId/tags/delete')
+  async deleteTag(
+    @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
+    @Body() tag: CnTag
+  ): Promise<void> {
+    return this.folderAggregateService.deleteHierarchyObjectTag(hierarchyObjectId, tag);
+  }
+
   @Get(':hierarchyObjectId/tags')
   async getTags(
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,

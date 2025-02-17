@@ -10,7 +10,7 @@ import {
   TreeParent,
 } from 'typeorm';
 import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
-import { Exclude, Type } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { DateTime } from 'luxon';
 import { CnSpace, CnSpaceEntity } from '../../cn-spaces/cn-space.entity';
@@ -18,6 +18,7 @@ import { CnFolderUserEntity } from '../cn-folder-user/cn-folder-user.entity';
 import { CnHierarchyObjectInfo } from './cn-hierarchy-object.dto';
 import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
 import { CnHierarchyObjectTagEntity } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
+import { CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
 
 export enum CnHierarchyObjectType {
   FOLDER = 'FOLDER',
@@ -111,6 +112,13 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
   @Column({ nullable: false, type: 'simple-json' })
   style: CnTypeStyle;
 
+  // column to store the last tags of the object
+  // to avoid to make a request to load the tags
+  // when we need to display the object list
+  @Exclude()
+  @Column({ nullable: true })
+  lastTagsStr: string;
+
   @OneToMany(() => CnHierarchyObjectTagEntity, (tag: CnHierarchyObjectTagEntity) => tag.hierarchyObject)
   tags: CnHierarchyObjectTagEntity;
 
@@ -158,7 +166,8 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
 
   public static newRootFolderHierarchy(
     space: CnSpace,
-    objectInfo: CnHierarchyObjectInfo
+    objectInfo: CnHierarchyObjectInfo,
+    tags?: CnTag[]
   ): CnHierarchyObjectEntity {
     const folder = new CnHierarchyObjectEntity();
     folder.space = space;
@@ -167,12 +176,17 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
     folder.hasDescription = false;
     folder.setObjectInfo(objectInfo);
 
+    if (tags) {
+      folder.setLastTags(tags);
+    }
+
     return folder;
   }
 
   public static newSubHierarchyObject(
     parentFolder: CnHierarchyObject,
-    objectInfo: CnHierarchyObjectInfo
+    objectInfo: CnHierarchyObjectInfo,
+    tags?: CnTag[]
   ): CnHierarchyObjectEntity {
     if (parentFolder.objectType !== CnHierarchyObjectType.FOLDER) {
       throw new Error('Parent object must be a folder');
@@ -185,7 +199,38 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
     folder.hasDescription = false;
     folder.setObjectInfo(objectInfo);
 
+    if (tags) {
+      folder.setLastTags(tags);
+    }
+
     return folder;
+  }
+
+  public setLastTags(tags: CnTag[]): void {
+    let lastTags = '';
+    for (const tag of tags) {
+      let strTag = `${tag.key}:${tag.value}`;
+      if (lastTags.length > 0) {
+        strTag = ',' + strTag;
+      }
+      if (lastTags.length + strTag.length > 255) {
+        break;
+      }
+      lastTags += strTag;
+    }
+
+    this.lastTagsStr = lastTags;
+  }
+
+  @Expose()
+  public get lastTags(): CnTag[] {
+    if (!this.lastTagsStr) {
+      return [];
+    }
+    return this.lastTagsStr.split(',').map((tag) => {
+      const [key, value] = tag.split(':');
+      return { key, value };
+    });
   }
 }
 

@@ -108,7 +108,8 @@ export class CnFolderAggregateService {
       entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
       entity.hierarchyRepresentation = CnHierarchyObjectEntity.newRootFolderHierarchy(
         CnCurrentUserHelper.getAndCheckCurrentSpace(),
-        entity.getHierarchyObjectInfo()
+        entity.getHierarchyObjectInfo(),
+        folderDTO.tags
       );
 
       if (folderDTO.mainStorage) {
@@ -159,15 +160,15 @@ export class CnFolderAggregateService {
 
   /**
    * Create the sub folder but does not check the authorization or emit event
-   * @param folderDto
+   * @param folderDTO
    * @param parentFolder
    * @private
    */
   private async createSubFolderPrivate(
-    folderDto: CnSaveFolderDTO,
+    folderDTO: CnSaveFolderDTO,
     parentFolder: CnHierarchyObject
   ): Promise<CnFolderWithHierarchy> {
-    const entity = this.createFolderFromDTO(folderDto);
+    const entity = this.createFolderFromDTO(folderDTO);
     entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
 
     const parentWithStorage = await this.foldersService.findByIfAndCheckWithStorage(parentFolder.id);
@@ -182,13 +183,26 @@ export class CnFolderAggregateService {
 
     entity.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
       parentFolder,
-      entity.getHierarchyObjectInfo()
+      entity.getHierarchyObjectInfo(),
+      folderDTO.tags
     );
 
     entity.mainStorage = parentWithStorage.mainStorage;
     entity.backupStorage = parentWithStorage.backupStorage;
 
-    return await this.foldersService.create(entity);
+    return this.datasource.transaction(async (manager) => {
+      const dbFolder = await this.foldersService.create(entity, manager);
+
+      if (folderDTO.tags?.length > 0) {
+        await this.tagService.createTagsTransaction(
+          folderDTO.tags,
+          dbFolder.hierarchyRepresentation,
+          manager
+        );
+      }
+
+      return dbFolder;
+    });
   }
 
   private createFolderFromDTO(folderDto: CnSaveFolderDTO): CnFolderEntity {
