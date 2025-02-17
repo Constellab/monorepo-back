@@ -20,6 +20,11 @@ export class CnHierarchyObjectListener {
     }
   }
 
+  /**
+   * Store the last 4 tags of the hierarchy object in the hierarchy object directly
+   * @param hierarchyObject
+   * @private
+   */
   private async refreshHierarchyObjectLastTags(hierarchyObject: CnHierarchyObject): Promise<void> {
     const tags = await this.hierarchyObjectTagService.findByHierarchyObjectPaginated(hierarchyObject, 0, 4);
     await this.hierarchyObjectService.updateLastTags(hierarchyObject, tags.objects);

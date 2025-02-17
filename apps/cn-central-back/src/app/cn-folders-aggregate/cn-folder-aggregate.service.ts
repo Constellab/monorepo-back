@@ -1008,7 +1008,7 @@ export class CnFolderAggregateService {
       hierarchyRepresentation: true,
     });
 
-    const doc = this.documentService.renameDocument(folder.getRootFolderId(), document, newName);
+    const doc = await this.documentService.renameDocument(folder.getRootFolderId(), document, newName);
 
     this.emitFolderEvent(
       'RENAME_DOCUMENT',
