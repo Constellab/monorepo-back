@@ -1,4 +1,4 @@
-import { CnFoldersAggregateSecurityI } from './cn-folders-aggregate-security.service';
+import { CnFoldersAggregateSecurityI } from './cn-folders-security.service';
 import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
@@ -9,7 +9,7 @@ import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 /**
  * Security for the folders aggregate service when call is made from a user
  */
-export class CnFoldersAggregateSecurityUser implements CnFoldersAggregateSecurityI {
+export class CnFoldersSecurityUser implements CnFoldersAggregateSecurityI {
   constructor(
     private userInfo: CnUserSpaceInfo,
     private folderObjectService: CnHierarchyObjectService,

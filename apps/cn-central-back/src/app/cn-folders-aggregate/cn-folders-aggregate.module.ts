@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { CnCoreModule } from '../cn-core/cn-core.module';
 import { CnFoldersController } from './cn-folders.controller';
 import { CnFolderAggregateService } from './cn-folder-aggregate.service';
-import { CnFoldersAggregateSecurity } from './cn-folders-aggregate-security.service';
+import { CnFoldersSecurityService } from './cn-folders-security.service';
 import { CnScenariosModule } from './cn-scenarios/cn-scenarios.module';
 import { CnNotesModule } from './cn-notes/cn-notes.module';
 import { CnScenariosController } from './cn-scenarios/cn-scenarios.controller';
@@ -55,7 +55,7 @@ import { CnHierarchyObjectController } from './cn_hierarchy_objects/cn-hierarchy
     CnResourcesController,
     CnHierarchyObjectController,
   ],
-  providers: [CnFoldersAggregateSecurity, CnFolderAggregateService, CnFolderListener, CnFolderCopierService],
-  exports: [CnFoldersAggregateSecurity, CnFolderAggregateService],
+  providers: [CnFoldersSecurityService, CnFolderAggregateService, CnFolderListener, CnFolderCopierService],
+  exports: [CnFoldersSecurityService, CnFolderAggregateService],
 })
 export class CnFoldersAggregateModule {}

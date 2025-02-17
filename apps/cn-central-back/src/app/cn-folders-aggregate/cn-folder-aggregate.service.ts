@@ -1,6 +1,6 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { CnFoldersService } from './cn-folders/cn-folders.service';
-import { CnFoldersAggregateSecurity } from './cn-folders-aggregate-security.service';
+import { CnFoldersSecurityService } from './cn-folders-security.service';
 import { CnFolder, CnFolderEntity, CnFolderWithHierarchy } from './cn-folders/cn-folder.entity';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
@@ -82,7 +82,7 @@ export class CnFolderAggregateService {
   constructor(
     private foldersService: CnFoldersService,
     private hierarchyObjectService: CnHierarchyObjectService,
-    private foldersAggregateSecurity: CnFoldersAggregateSecurity,
+    private foldersAggregateSecurity: CnFoldersSecurityService,
     private scenarioService: CnScenariosService,
     private noteService: CnNotesService,
     private chatMessageService: CnChatMessageService,

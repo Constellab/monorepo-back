@@ -1,14 +1,16 @@
-import { CnFoldersAggregateSecurityI } from './cn-folders-aggregate-security.service';
+import { CnFoldersAggregateSecurityI } from './cn-folders-security.service';
 import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnAuthContextLab } from '../cn-core/utils/cn-current-user.helper';
 import { BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
 
 /**
- * Security for the folders aggregate service when call is made from
- * an api call using a token from a lab
+ * Security for the folders aggregate service when call is made
+ * from the lab using an access token.
+ * For now, we only check the space, and we consider the access
+ * token has the right to do everything in the space.
  */
-export class CnFoldersAggregateSecurityToken implements CnFoldersAggregateSecurityI {
+export class CnFoldersSecurityLabAccessToken implements CnFoldersAggregateSecurityI {
   constructor(
     private labAuthContext: CnAuthContextLab,
     private folderObjectService: CnHierarchyObjectService
