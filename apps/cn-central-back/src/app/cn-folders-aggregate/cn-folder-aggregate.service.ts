@@ -250,15 +250,16 @@ export class CnFolderAggregateService {
       throw new BlBadRequestException(CnErrorText.DELETE_FOLDER_WITH_NOTES);
     }
 
-    const documents = await this.documentService.getParentFolderDocuments(folderHierarchy.id, false, 0, 1);
-    if (documents.totalElements > 0) {
+    if (
+      children.find(
+        (child) =>
+          child.isVisible &&
+          [CnHierarchyObjectType.DOCUMENT, CnHierarchyObjectType.CONSTELLAB_DOCUMENT].includes(
+            child.objectType
+          )
+      )
+    ) {
       throw new BlBadRequestException(CnErrorText.DELETE_FOLDER_WITH_DOCUMENTS);
-    }
-
-    // delete all the trashed documents, no transaction because we can't revert between 2 docs
-    const trashedDocuments = await this.documentService.findRootDocumentsByParentFolder(folderHierarchy.id);
-    for (const document of trashedDocuments) {
-      await this.documentService.deleteDocument(document.id);
     }
 
     // remove folder from all lab using event to avoid circular dependencies.
@@ -276,7 +277,14 @@ export class CnFolderAggregateService {
       }
     }
 
+    // delete all the trashed and hidden documents, no transaction because we can't revert between 2 docs
+    const trashedDocuments = await this.documentService.findRootDocumentsByParentFolder(folderHierarchy.id);
+    for (const document of trashedDocuments) {
+      await this.documentService.deleteDocument(document.id);
+    }
+
     await this.datasource.transaction(async (entityManager) => {
+      await this.chatMessageService.deleteByFolderId(id, entityManager);
       await this.foldersService.deleteById(id, entityManager);
       await this.hierarchyObjectService.deleteById(id, entityManager);
     });

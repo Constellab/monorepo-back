@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CnChatMessage, CnChatMessageEntity } from './cn-chat-message.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { CnNewMessageDTO } from '../cn-core/model/entities/cn-message.entity';
 import { ClPage } from '@monorepo/core-lib';
 import { BlAbstractService, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
@@ -79,5 +79,9 @@ export class CnChatMessageService extends BlAbstractService<CnChatMessageEntity>
 
   async saveMessageImage(file: BlFile, folder: CnHierarchyObject): Promise<TeBlockFigureUploadedResponse> {
     return this.documentService.uploadImageDocument(file, folder, CnDocumentType.MESSAGE_CONTENT, folder.id);
+  }
+
+  async deleteByFolderId(folderId: string, entityManager: EntityManager): Promise<void> {
+    await entityManager.delete(CnChatMessageEntity, { folderHierarchyId: folderId });
   }
 }

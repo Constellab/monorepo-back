@@ -24,7 +24,7 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
     @InjectRepository(CnNoteEntity) private repository: Repository<CnNoteEntity>,
     private labConfigService: CnLabConfigsService,
     private documentService: CnDocumentService,
-    private hierarchiObjectService: CnHierarchyObjectService
+    private hierarchyObjectService: CnHierarchyObjectService
   ) {
     super(repository, CnNoteEntity);
   }
@@ -330,7 +330,7 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
     await this.documentService.moveDocument(document, note.hierarchyRepresentation, newParent);
 
     // update the note parent folder
-    await this.hierarchiObjectService.updateLeafParent(note.hierarchyRepresentation.id, newParent);
+    await this.hierarchyObjectService.updateLeafParent(note.hierarchyRepresentation.id, newParent);
 
     return this.findByIdAndCheck(noteId);
   }
