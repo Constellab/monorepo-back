@@ -1,9 +1,4 @@
-import {
-  BlEntityWithId,
-  BlFile,
-  BlPublic,
-  BlResponseHelper,
-} from '@monorepo/back-core-lib';
+import { BlEntityWithId, BlFile, BlPublic, BlResponseHelper } from '@monorepo/back-core-lib';
 import { HnAbstractFileService } from './hn-abstract-file.service';
 import { Body, Delete, Get, Param, ParseUUIDPipe, Put, Res } from '@nestjs/common';
 import { Response } from 'express';
@@ -25,7 +20,7 @@ export abstract class HnAbstractFileController<T extends BlEntityWithId> {
    * @return file
    */
   @BlPublic()
-  @Get([':entityId/file/:fileName', ':entityId/image/:fileName', ':entityId/view/:fileName'])
+  @Get([':entityId/file/:fileName', ':entityId/view/:fileName'])
   public async getFile(
     @Param('entityId', ParseUUIDPipe) entityId: string,
     @Param('fileName') fileName: string,
@@ -36,6 +31,24 @@ export abstract class HnAbstractFileController<T extends BlEntityWithId> {
       'Content-Disposition': `attachment; filename="${fileName}"`,
     });
     BlResponseHelper.setFileResponse(res, file);
+  }
+
+  /**
+   * Get file by fileId
+   * @param entityId
+   * @param fileName
+   * @param res
+   * @return file
+   */
+  @BlPublic()
+  @Get(':entityId/image/:fileName')
+  public async getFileImage(
+    @Param('entityId', ParseUUIDPipe) entityId: string,
+    @Param('fileName') fileName: string,
+    @Res() res: Response
+  ): Promise<any> {
+    const file = await this.fileService.getFile(entityId, fileName);
+    BlResponseHelper.setFileResponseAndCache(res, file);
   }
 
   //-------------------------------------------- FILE --------------------------------------------
