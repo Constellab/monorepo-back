@@ -106,6 +106,7 @@ export class CnFolderAggregateService {
       const entity = this.createFolderFromDTO(folderDTO);
 
       entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
+      entity.style = CnFolderEntity.ROOT_FOLDER_STYLE;
       entity.hierarchyRepresentation = CnHierarchyObjectEntity.newRootFolderHierarchy(
         CnCurrentUserHelper.getAndCheckCurrentSpace(),
         entity.getHierarchyObjectInfo(),
@@ -170,6 +171,7 @@ export class CnFolderAggregateService {
   ): Promise<CnFolderWithHierarchy> {
     const entity = this.createFolderFromDTO(folderDTO);
     entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
+    entity.style = CnFolderEntity.CHILD_FOLDER_STYLE;
 
     const parentWithStorage = await this.foldersService.findByIfAndCheckWithStorage(parentFolder.id);
 
@@ -186,9 +188,6 @@ export class CnFolderAggregateService {
       entity.getHierarchyObjectInfo(),
       folderDTO.tags
     );
-
-    entity.mainStorage = parentWithStorage.mainStorage;
-    entity.backupStorage = parentWithStorage.backupStorage;
 
     return this.datasource.transaction(async (manager) => {
       const dbFolder = await this.foldersService.create(entity, manager);

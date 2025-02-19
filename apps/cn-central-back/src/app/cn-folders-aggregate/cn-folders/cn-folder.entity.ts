@@ -10,9 +10,23 @@ import { ClDateHelper } from '@monorepo/core-lib';
 import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
 import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { TeRichTextInput } from '@monorepo/te-text-editor';
+import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
 
 @Entity('folder')
 export class CnFolderEntity extends CnHierarchyRepresentation {
+  public static ROOT_FOLDER_STYLE: CnTypeStyle = {
+    icon_type: 'MATERIAL_ICON',
+    icon_technical_name: 'folder_shared',
+    background_color: 'accent',
+    icon_color: 'accentContrast',
+  };
+
+  public static CHILD_FOLDER_STYLE: CnTypeStyle = {
+    icon_type: 'MATERIAL_ICON',
+    icon_technical_name: 'folder',
+    background_color: 'accent',
+    icon_color: 'accentContrast',
+  };
   @Column({ nullable: false, length: 100 })
   name: string;
 
@@ -46,6 +60,9 @@ export class CnFolderEntity extends CnHierarchyRepresentation {
   @Column({ nullable: false, default: false })
   chatEnabled: boolean;
 
+  @Column({ nullable: false, type: 'simple-json' })
+  style: CnTypeStyle;
+
   @BeforeInsert()
   setCreatedInfo(): void {
     this.createdBy = CnCurrentUserHelper.getAndCheckCurrentUser();
@@ -65,12 +82,7 @@ export class CnFolderEntity extends CnHierarchyRepresentation {
       name: this.name,
       user: this.leader,
       lastModifiedAt: this.lastModifiedAt ?? ClDateHelper.getDate(),
-      style: {
-        icon_type: 'MATERIAL_ICON',
-        icon_technical_name: 'folder',
-        background_color: 'accent',
-        icon_color: 'accentContrast',
-      },
+      style: this.style,
     };
   }
 }

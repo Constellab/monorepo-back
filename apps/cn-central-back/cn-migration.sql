@@ -167,3 +167,17 @@ ALTER TABLE hierarchy_object
 update hierarchy_object
 set style = '{"icon_type":"MATERIAL_ICON","icon_technical_name":"folder_shared","background_color":"accent","icon_color":"accentContrast"}'
 where parentId is null;
+
+alter table folder
+  add column style text null;
+update folder
+set style = (select style from hierarchy_object where id = folder.id);
+alter table folder
+  modify column style text null;
+
+
+ALTER TABLE folder
+  MODIFY mainStorageId varchar(36) NULL;
+update folder
+set mainStorageId = null
+where id = (Select id from hierarchy_object where id = folder.id and rootParentId is not null);
