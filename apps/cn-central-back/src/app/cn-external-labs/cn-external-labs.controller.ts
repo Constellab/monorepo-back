@@ -7,12 +7,12 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-  UseInterceptors,
+  UseInterceptors
 } from '@nestjs/common';
 import {
   CnLabAllowDev,
   CnLabGuard,
-  CnLabRobotAuthentication,
+  CnLabRobotAuthentication
 } from '../cn-core/decorators/cn-lab-guard.decorator';
 import { BlCredentials, BlFile, BlParsePipe, BlPublic, BlUploadedFiles } from '@monorepo/back-core-lib';
 import { CnCreateLabScenarioDto } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.dto';
@@ -28,11 +28,13 @@ import { CnExternalCheckCredentialResponse } from '../cn-auth/cn-auth.service';
 import { CnLabFolderAggregateService } from '../cn-lab-folder-aggregate/cn-lab-folder-aggregate.service';
 import {
   CnFolderDtoHelper,
-  CnLabFolderDTO,
+  CnLabFolderDTO
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.dto';
-import { CnHierarchyObjectEntity } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+import {
+  CnHierarchyObjectEntity
+} from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
-import { CnLabSendMailDto } from '../cn-labs/mail/cn-lab-mail.dto';
+import { CnLabSendMailDto, CnLabSendMailToMailsDto } from '../cn-labs/mail/cn-lab-mail.dto';
 import { CnRichTextCompareRequestDTO, CnRichTextUndoRequestDTO } from './cn-external-labs.dto';
 import { TeRichTextBlockModificationsDTO, TeRichTextDTO, TeRichTextHelper } from '@monorepo/te-text-editor';
 import { CnNote } from '../cn-folders-aggregate/cn-notes/cn-note.entity';
@@ -245,5 +247,10 @@ export class CnExternalLabsController {
   @Post('send-mail')
   sendMail(@Body() body: CnLabSendMailDto): Promise<void> {
     return this.labMailService.sendMailFromLab(CnCurrentUserHelper.getAndCheckCurrentLab(), body);
+  }
+
+  @Post('send-mail-to-mails')
+  sendMailToMails(@Body() body: CnLabSendMailToMailsDto): Promise<void> {
+    return this.labMailService.sendMailToMailsFromLab(CnCurrentUserHelper.getAndCheckCurrentLab(), body);
   }
 }

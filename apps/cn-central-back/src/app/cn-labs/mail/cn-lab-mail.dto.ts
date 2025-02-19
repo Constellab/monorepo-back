@@ -7,3 +7,10 @@ export class CnLabSendMailDto {
   data?: Record<string, any>;
   subject?: string;
 }
+
+export class CnLabSendMailToMailsDto {
+  receiver_mails: string[];
+  mail_template: CnLabMailTemplate;
+  data?: Record<string, any>;
+  subject?: string;
+}

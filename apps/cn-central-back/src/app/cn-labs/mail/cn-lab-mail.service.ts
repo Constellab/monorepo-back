@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CnLab } from '../cn-lab.entity';
-import { CnLabMailTemplate, CnLabSendMailDto } from './cn-lab-mail.dto';
-import { BlMailService } from '@monorepo/back-core-lib';
+import { CnLabMailTemplate, CnLabSendMailDto, CnLabSendMailToMailsDto } from './cn-lab-mail.dto';
+import { BlMailService, BlSendMailDTO } from '@monorepo/back-core-lib';
 import { CnMailTemplate } from '../../cn-core/model/config/cn-mail-template.class';
 import { CnUsersService } from '../../cn-users/cn-users.service';
 import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
@@ -43,6 +43,24 @@ export class CnLabMailService {
         },
       });
       await this.mailService.sendMailToUser(template, user, data, sendMailDTO.subject);
+    }
+  }
+
+  public async sendMailToMailsFromLab(
+    lab: CnLab,
+    sendMailToMailsDTO: CnLabSendMailToMailsDto
+  ): Promise<void> {
+    const template = this.getLabTemplate(sendMailToMailsDTO.mail_template);
+    for (const email of sendMailToMailsDTO.receiver_mails) {
+      const mail: BlSendMailDTO = {
+        templateName: template,
+        recipients: email,
+        lang: ClSupportedLanguage.en,
+        data: sendMailToMailsDTO.data,
+        subject: sendMailToMailsDTO.subject,
+      };
+
+      await this.mailService.sendMailAndCheck(mail);
     }
   }
 
