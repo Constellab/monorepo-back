@@ -57,7 +57,10 @@ export class CnLabMailService {
         recipients: email,
         lang: ClSupportedLanguage.en,
         data: sendMailToMailsDTO.data,
-        subject: sendMailToMailsDTO.subject,
+        subject: {
+          translate: false,
+          text: sendMailToMailsDTO.subject,
+        },
       };
 
       await this.mailService.sendMailAndCheck(mail);
