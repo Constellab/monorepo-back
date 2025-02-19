@@ -5,7 +5,7 @@ import { CnHierarchyObjectTag } from './cn-hierarchy-object-tag.entity';
 import { CnHierarchyObject } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { DataSource, EntityManager } from 'typeorm';
 import { CnHierarchyObjectTagHistoryType } from './cn-hierarchy-object-tag-history.entity';
-import { CnTag, CnTagList } from './cn-hierarchy-object-tag.dto';
+import { CnAvailableTags, CnTag, CnTagList } from './cn-hierarchy-object-tag.dto';
 import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -224,5 +224,9 @@ export class CnHierarchyObjectTagAggregateService {
   ): Promise<ClPage<CnTag>> {
     const result = await this.tagService.findByHierarchyObjectPaginated(hierarchyObject.id, page, size);
     return result.map((tag) => ({ key: tag.key, value: tag.value }));
+  }
+
+  public async getAvailableTagsInChildren(hierarchyObjectId: string): Promise<CnAvailableTags> {
+    return this.tagService.getAvailableTagsInChildren(hierarchyObjectId);
   }
 }

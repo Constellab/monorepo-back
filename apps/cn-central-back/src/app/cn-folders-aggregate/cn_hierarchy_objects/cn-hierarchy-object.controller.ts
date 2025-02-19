@@ -1,14 +1,22 @@
 import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Query } from '@nestjs/common';
 import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
-import { CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
+import { CnAvailableTags, CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
 import { CnHierarchyObjectTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
 import { ClPageI } from '@monorepo/core-lib';
+import { CnHierarchyObject } from './cn-hierarchy-object.entity';
 
 @Controller('hierarchy-objects')
 export class CnHierarchyObjectController {
   constructor(private folderAggregateService: CnFolderAggregateService) {}
 
   ////////////////////////////////////////////// TAGS ///////////////////////////////////////////
+
+  @Get(':hierarchyObjectId')
+  async getHierarchyObject(
+    @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string
+  ): Promise<CnHierarchyObject> {
+    return this.folderAggregateService.getHierarchyObject(hierarchyObjectId);
+  }
 
   @Post(':hierarchyObjectId/tags')
   async createTag(
@@ -48,5 +56,19 @@ export class CnHierarchyObjectController {
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string
   ): Promise<CnTag[]> {
     return this.folderAggregateService.getAllHierarchyObjectTags(hierarchyObjectId);
+  }
+
+  @Get(':hierarchyObjectId/tags/available-children')
+  async getAvailableTagsInChildren(
+    @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string
+  ): Promise<CnAvailableTags> {
+    return this.folderAggregateService.getAvailableTagsInChildren(hierarchyObjectId);
+  }
+
+  @Get(':hierarchyObjectId/tags/available')
+  async getAvailableTags(
+    @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string
+  ): Promise<CnAvailableTags> {
+    return this.folderAggregateService.getAvailableTags(hierarchyObjectId);
   }
 }

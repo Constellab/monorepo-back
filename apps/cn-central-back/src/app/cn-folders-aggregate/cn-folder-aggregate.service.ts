@@ -70,7 +70,7 @@ import { CnResource, CnResourceEntity } from './cn-resources/cn-resource.entity'
 import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
 import { CnHierarchyRepresentation } from './cn_hierarchy_objects/cn-hierarchy-representation';
 import { CnScenarioProtocol } from './cn-scenarios/cn-scenario-protocol.class';
-import { CnTag } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
+import { CnAvailableTags, CnTag } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
 import { CnHierarchyObjectTagAggregateService } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag-aggregate.service';
 import { CnHierarchyObjectTag } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
 import { CnSpaceAggregateService } from '../cn-spaces/cn-space-aggregate.service';
@@ -320,6 +320,13 @@ export class CnFolderAggregateService {
     );
   }
 
+  public async getAllCurrentRootFolders(): Promise<CnHierarchyObject[]> {
+    return this.hierarchyObjectService.getAllRootFoldersOfUser(
+      CnCurrentUserHelper.getAndCheckCurrentUser().id,
+      CnCurrentUserHelper.getAndCheckCurrentSpace().id
+    );
+  }
+
   public async getByCurrentSpace(page: number, size: number): Promise<ClPageI<CnHierarchyObject>> {
     const spaceId = CnCurrentUserHelper.getAndCheckCurrentSpace().id;
     await this.foldersAggregateSecurity.checkFindAllBySpace();
@@ -336,10 +343,10 @@ export class CnFolderAggregateService {
     return this.foldersService.searchFolderInSpace(spaceId, searchParams, page, size);
   }
 
-  public async getFolderObjectTree(folderId: string): Promise<CnHierarchyObject> {
-    const rootFolder = await this.checkFindOneAndGetRootFolder(folderId);
+  public async getChildrenFolders(folderId: string): Promise<CnHierarchyObject[]> {
+    await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
 
-    return await this.hierarchyObjectService.getFolderTree(rootFolder);
+    return await this.hierarchyObjectService.getChildrenFolder(folderId);
   }
 
   public async getFolderTree(rootFolderId: string): Promise<CnHierarchyObjectWithChildren> {
@@ -377,6 +384,10 @@ export class CnFolderAggregateService {
     // retrieve the folder ancestors
     const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
     return await this.hierarchyObjectService.getAncestors(folder);
+  }
+
+  public async getHierarchyObject(hierarchyObjectId: string): Promise<CnHierarchyObject> {
+    return this.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
   }
 
   public async updateFolderLeader(folderId: string, userId: string): Promise<CnFolder> {
@@ -1498,6 +1509,18 @@ export class CnFolderAggregateService {
   public async getAllHierarchyObjectTags(hierarchyObjectId: string): Promise<CnTag[]> {
     const hierarchyObject = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
     return this.tagService.findAllByHierarchyObject(hierarchyObject);
+  }
+
+  public async getAvailableTagsInChildren(hierarchyObjectId: string): Promise<CnAvailableTags> {
+    const hierarchyObject = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    return this.tagService.getAvailableTagsInChildren(hierarchyObject.id);
+  }
+
+  public async getAvailableTags(hierarchyObjectId: string): Promise<CnAvailableTags> {
+    const hierarchyObject = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+
+    // get the available tag of parent, use current for root
+    return this.tagService.getAvailableTagsInChildren(hierarchyObject.parentId ?? hierarchyObject.id);
   }
 
   /////////////////////////////////////// SECURITY //////////////////////////////////

@@ -36,7 +36,9 @@ import {
 import { ClPage, ClPageI } from '@monorepo/core-lib';
 import { CnFolderAggregateService } from './cn-folder-aggregate.service';
 import {
+  CnFolderSimpleDTO,
   CnFolderStorageLocationDTO,
+  CnFolderWithChildrenDTO,
   CnGetFolderDescriptionDTO,
   CnSaveFolderDTO,
 } from './cn-folders/cn-folder.dto';
@@ -53,10 +55,7 @@ import {
   CnDocumentPreviewDTO,
   CnFolderStorageUsageDTO,
 } from './cn-documents/cn-document-dto.class';
-import {
-  CnHierarchyObject,
-  CnHierarchyObjectWithChildren,
-} from './cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnChatMessageDto } from '../cn-chat-message/cn-chat-message.dto';
 
 @Controller('folders')
@@ -98,14 +97,20 @@ export class CnFoldersController {
   }
 
   /**
-   * return the list of folder created by the current user with pagination
+   * return the list of root folder accessible by the user
    */
-  @Get('current')
+  @Get('/root/current')
   public getCurrentFolders(
     @Query('page', ParseIntPipe) page: number,
     @Query('size', ParseIntPipe) size: number
   ): Promise<ClPageI<CnHierarchyObject>> {
     return this.folderAggregateService.getCurrentRootFolders(page, size);
+  }
+
+  @Get('/root/all')
+  public async getAllCurrentFolders(): Promise<CnFolderSimpleDTO[]> {
+    const folders = await this.folderAggregateService.getAllCurrentRootFolders();
+    return folders.map((folder) => new CnFolderSimpleDTO(folder));
   }
 
   @Get('current-space')
@@ -141,12 +146,10 @@ export class CnFoldersController {
     return this.folderAggregateService.unshareFolder(id, userId);
   }
 
-  /**
-   * Return a simplified folder tree for an object (folder, scenario, note)
-   */
-  @Get('tree/:id')
-  async getFolderTree(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnHierarchyObject> {
-    return await this.folderAggregateService.getFolderObjectTree(id);
+  @Get(':id/children/folders')
+  async getFolderTree(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnFolderSimpleDTO[]> {
+    const result = await this.folderAggregateService.getChildrenFolders(id);
+    return result.map((folder) => new CnFolderSimpleDTO(folder));
   }
 
   @Post(':id/children/paginated')
@@ -160,7 +163,7 @@ export class CnFoldersController {
   }
 
   @Get(':id/ancestors')
-  getFolderWithAncestors(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnHierarchyObject[]> {
+  getFolderWithAncestors(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnFolderSimpleDTO[]> {
     return this.folderAggregateService.getFolderAncestors(id);
   }
 
@@ -240,8 +243,9 @@ export class CnFoldersController {
 
   /////////////////////////////// CHAT ///////////////////////////////////////////
   @Get('chat/folder-tree')
-  getChatFolders(): Promise<CnHierarchyObjectWithChildren[]> {
-    return this.folderAggregateService.getChatFolders();
+  async getChatFolders(): Promise<CnFolderWithChildrenDTO[]> {
+    const folders = await this.folderAggregateService.getChatFolders();
+    return folders.map((folder) => new CnFolderWithChildrenDTO(folder));
   }
 
   /////////////////////////////// MESSAGES ///////////////////////////////////////////

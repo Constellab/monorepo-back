@@ -163,3 +163,7 @@ CREATE TABLE hierarchy_object_tag_history
 
 ALTER TABLE hierarchy_object
   ADD COLUMN lastTagsStr varchar(255) NULL;
+
+update hierarchy_object
+set style = '{"icon_type":"MATERIAL_ICON","icon_technical_name":"folder_shared","background_color":"accent","icon_color":"accentContrast"}'
+where parentId is null;

@@ -5,6 +5,12 @@ import { CnBucket, CnBucketLocationDTO } from '../../cn-object-storages/cn-bucke
 import { BlTrim } from '@monorepo/back-core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import { CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
+import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
+import {
+  CnHierarchyObject,
+  CnHierarchyObjectType,
+  CnHierarchyObjectWithChildren,
+} from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 
 export class CnSaveFolderDTO {
   @BlTrim()
@@ -42,4 +48,29 @@ export class CnFolderBucketsDTO {
 export interface CnGetFolderDescriptionDTO {
   description: TeRichTextDTO;
   canEdit: boolean; // true if the current user can edit the description
+}
+
+export class CnFolderSimpleDTO {
+  id: string;
+  name: string;
+  style: CnTypeStyle;
+  parentId: string;
+  objectType: CnHierarchyObjectType;
+
+  constructor(folder: CnHierarchyObject) {
+    this.id = folder.id;
+    this.name = folder.name;
+    this.style = folder.style;
+    this.parentId = folder.parentId;
+    this.objectType = folder.objectType;
+  }
+}
+
+export class CnFolderWithChildrenDTO extends CnFolderSimpleDTO {
+  children: CnFolderWithChildrenDTO[];
+
+  constructor(folder: CnHierarchyObjectWithChildren) {
+    super(folder);
+    this.children = folder.children.map((c) => new CnFolderWithChildrenDTO(c));
+  }
 }

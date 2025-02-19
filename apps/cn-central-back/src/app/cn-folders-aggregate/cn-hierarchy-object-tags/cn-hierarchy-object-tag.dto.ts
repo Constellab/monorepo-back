@@ -10,3 +10,12 @@ export class CnTagList {
     return this.tags.some((t) => t.key === tag.key && t.value === tag.value);
   }
 }
+
+export interface CnTagKey {
+  key: string;
+  values: string[];
+}
+
+export interface CnAvailableTags {
+  tags: CnTagKey[];
+}

@@ -60,6 +60,19 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     return folderTree.filterChildrenFolder().sortChildrenTree();
   }
 
+  public async getChildrenFolder(parentFolderId: string): Promise<CnHierarchyObject[]> {
+    return this.repository.find({
+      where: {
+        parentId: parentFolderId,
+        isVisible: true,
+        objectType: CnHierarchyObjectType.FOLDER,
+      },
+      order: {
+        name: 'ASC',
+      },
+    });
+  }
+
   /**
    * Get folder by groups of user
    */
