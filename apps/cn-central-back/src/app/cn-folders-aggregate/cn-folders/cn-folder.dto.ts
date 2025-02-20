@@ -66,11 +66,22 @@ export class CnFolderSimpleDTO {
   }
 }
 
-export class CnFolderWithChildrenDTO extends CnFolderSimpleDTO {
-  children: CnFolderWithChildrenDTO[];
+export class CnChatFolderDTO extends CnFolderSimpleDTO {
+  children: CnChatFolderDTO[];
+  chatEnabled: boolean;
 
   constructor(folder: CnHierarchyObjectWithChildren) {
     super(folder);
-    this.children = folder.children.map((c) => new CnFolderWithChildrenDTO(c));
+    this.children = folder.children.map((c) => new CnChatFolderDTO(c));
+    this.chatEnabled = folder.chatEnabled;
+    // override the style if chat is enabled
+    if (this.chatEnabled) {
+      this.style = {
+        icon_type: 'MATERIAL_ICON',
+        icon_technical_name: 'message',
+        background_color: 'accent',
+        icon_color: 'accentContrast',
+      };
+    }
   }
 }

@@ -867,6 +867,10 @@ export class CnFolderAggregateService {
   public async createChatMessage(newMessageDTO: CnNewMessageDTO, folderId: string): Promise<CnChatMessage> {
     const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
 
+    if (!folder.chatEnabled) {
+      throw new BlBadRequestException('The chat is not enabled for this folder');
+    }
+
     const message = await this.chatMessageService.createMessage(newMessageDTO, folder);
 
     this.emitFolderEvent('CREATE_FOLDER_MESSAGE', folder, message);
@@ -907,17 +911,28 @@ export class CnFolderAggregateService {
     page: number,
     size: number
   ): Promise<ClPage<CnChatMessage>> {
-    await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
+    const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
+
+    if (!folder.chatEnabled) {
+      throw new BlBadRequestException('The chat is not enabled for this folder');
+    }
+
     return this.chatMessageService.getFolderMessages(folderId, page, size);
   }
 
   public async saveMessageImage(file: BlFile, folderId: string): Promise<TeBlockFigureUploadedResponse> {
     const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
+    if (!folder.chatEnabled) {
+      throw new BlBadRequestException('The chat is not enabled for this folder');
+    }
     return this.chatMessageService.saveMessageImage(file, folder);
   }
 
   public async getMessageImage(filename: string, folderId: string): Promise<BlFileResponse> {
     const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
+    if (!folder.chatEnabled) {
+      throw new BlBadRequestException('The chat is not enabled for this folder');
+    }
     return await this.chatMessageService.getMessageImage(folder, filename);
   }
 

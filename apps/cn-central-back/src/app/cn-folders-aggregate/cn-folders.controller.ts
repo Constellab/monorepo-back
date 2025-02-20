@@ -36,9 +36,9 @@ import {
 import { ClPage, ClPageI } from '@monorepo/core-lib';
 import { CnFolderAggregateService } from './cn-folder-aggregate.service';
 import {
+  CnChatFolderDTO,
   CnFolderSimpleDTO,
   CnFolderStorageLocationDTO,
-  CnFolderWithChildrenDTO,
   CnGetFolderDescriptionDTO,
   CnSaveFolderDTO,
 } from './cn-folders/cn-folder.dto';
@@ -243,9 +243,9 @@ export class CnFoldersController {
 
   /////////////////////////////// CHAT ///////////////////////////////////////////
   @Get('chat/folder-tree')
-  async getChatFolders(): Promise<CnFolderWithChildrenDTO[]> {
+  async getChatFolders(): Promise<CnChatFolderDTO[]> {
     const folders = await this.folderAggregateService.getChatFolders();
-    return folders.map((folder) => new CnFolderWithChildrenDTO(folder));
+    return folders.map((folder) => new CnChatFolderDTO(folder));
   }
 
   /////////////////////////////// MESSAGES ///////////////////////////////////////////

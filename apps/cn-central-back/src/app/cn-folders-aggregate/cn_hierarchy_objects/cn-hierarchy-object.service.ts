@@ -160,7 +160,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
   ): Promise<CnHierarchyObjectWithChildren | null> {
     const folderTree = await this.getFolderTree(folder);
 
-    const newFolderTree = this.filterFolderTreeForChat(folderTree, []);
+    const newFolderTree = this.filterFolderTreeForChat(folderTree);
 
     // if there is no chat enabled in the hierarchy, we return null
     if (!newFolderTree.chatEnabled && newFolderTree.children.length === 0) {
@@ -170,26 +170,22 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
   }
 
   /**
-   * Method to filter the folder tree to keep only the folders that have the chat enabled
-   * If a folder does not have the chat enabled, its children are attached to the parent
+   * Method to filter the folder tree to keep only the nodes and their parents where chat is enabled
+   * If a branch does not have chat enabled, it is removed
    * @param folder
-   * @param children
    * @private
    */
-  private filterFolderTreeForChat(
-    folder: CnHierarchyObjectWithChildren,
-    children: CnHierarchyObjectWithChildren[]
-  ): CnHierarchyObjectWithChildren {
+  private filterFolderTreeForChat(folder: CnHierarchyObjectWithChildren): CnHierarchyObjectWithChildren {
+    const filteredChildren: CnHierarchyObjectWithChildren[] = [];
+
     for (const child of folder.children) {
-      if (child.chatEnabled) {
-        children.push(child);
-        this.filterFolderTreeForChat(child, []);
-      } else {
-        this.filterFolderTreeForChat(child, children);
+      const filteredChild = this.filterFolderTreeForChat(child);
+      if (filteredChild.chatEnabled || filteredChild.children.length > 0) {
+        filteredChildren.push(filteredChild);
       }
     }
 
-    folder.children = children as CnHierarchyObjectEntity[];
+    folder.children = filteredChildren as CnHierarchyObjectEntity[];
     return folder;
   }
 
