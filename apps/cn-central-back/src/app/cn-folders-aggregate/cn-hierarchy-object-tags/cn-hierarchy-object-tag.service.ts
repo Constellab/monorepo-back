@@ -102,6 +102,32 @@ export class CnHierarchyObjectTagService extends BlAbstractService<CnHierarchyOb
       .addOrderBy('tag.value', 'ASC')
       .getMany();
 
+    return this.buildAvailableTags(tags);
+  }
+
+  /**
+   * List the all the tag key and values used by the root folders accessible by a user
+   * @param spaceId
+   * @param userId
+   */
+  public async getAvailableTagForRootFolders(spaceId: string, userId: string): Promise<CnAvailableTags> {
+    const tags = await this.repository
+      .createQueryBuilder('tag')
+      .distinct(true)
+      .select(['tag.key', 'tag.value'])
+      .leftJoin('tag.hierarchyObject', 'hierarchyObject')
+      .leftJoin('hierarchyObject.users', 'user')
+      .where('hierarchyObject.spaceId = :spaceId', { spaceId })
+      .andWhere('user.userId = :userId', { userId })
+      .andWhere('hierarchyObject.parentId IS NULL')
+      .orderBy('tag.key', 'ASC')
+      .addOrderBy('tag.value', 'ASC')
+      .getMany();
+
+    return this.buildAvailableTags(tags);
+  }
+
+  private buildAvailableTags(tags: CnHierarchyObjectTag[]): CnAvailableTags {
     const availableTags: Record<string, string[]> = {};
     for (const tag of tags) {
       if (!availableTags[tag.key]) {

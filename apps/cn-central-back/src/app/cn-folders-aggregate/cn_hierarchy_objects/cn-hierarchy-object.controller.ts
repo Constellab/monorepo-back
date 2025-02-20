@@ -11,6 +11,11 @@ export class CnHierarchyObjectController {
 
   ////////////////////////////////////////////// TAGS ///////////////////////////////////////////
 
+  @Get('roots/tags/available')
+  async getAvailableTagForRootFolders(): Promise<CnAvailableTags> {
+    return this.folderAggregateService.getAvailableTagForRootFolders();
+  }
+
   @Get(':hierarchyObjectId')
   async getHierarchyObject(
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string

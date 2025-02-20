@@ -319,6 +319,21 @@ export class CnFolderAggregateService {
     );
   }
 
+  public async searchRootFolders(
+    searchParams: BlSearchParams,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnHierarchyObject>> {
+    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+    return this.hierarchyObjectService.searchRootFolders(
+      userInfo.userId,
+      userInfo.spaceId,
+      searchParams,
+      page,
+      size
+    );
+  }
+
   public async getAllCurrentRootFolders(): Promise<CnHierarchyObject[]> {
     return this.hierarchyObjectService.getAllRootFoldersOfUser(
       CnCurrentUserHelper.getAndCheckCurrentUser().id,
@@ -1534,7 +1549,16 @@ export class CnFolderAggregateService {
     const hierarchyObject = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
 
     // get the available tag of parent, use current for root
-    return this.tagService.getAvailableTagsInChildren(hierarchyObject.parentId ?? hierarchyObject.id);
+    if (hierarchyObject.isRootFolder()) {
+      return this.getAvailableTagForRootFolders();
+    } else {
+      return this.tagService.getAvailableTagsInChildren(hierarchyObject.parentId ?? hierarchyObject.id);
+    }
+  }
+
+  public async getAvailableTagForRootFolders(): Promise<CnAvailableTags> {
+    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+    return this.tagService.getAvailableTagForRootFolders(userInfo.spaceId, userInfo.userId);
   }
 
   /////////////////////////////////////// SECURITY //////////////////////////////////

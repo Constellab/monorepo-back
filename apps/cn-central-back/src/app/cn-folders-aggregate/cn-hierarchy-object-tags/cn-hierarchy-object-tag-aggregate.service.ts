@@ -229,4 +229,8 @@ export class CnHierarchyObjectTagAggregateService {
   public async getAvailableTagsInChildren(hierarchyObjectId: string): Promise<CnAvailableTags> {
     return this.tagService.getAvailableTagsInChildren(hierarchyObjectId);
   }
+
+  public async getAvailableTagForRootFolders(spaceId: string, userId: string): Promise<CnAvailableTags> {
+    return this.tagService.getAvailableTagForRootFolders(spaceId, userId);
+  }
 }

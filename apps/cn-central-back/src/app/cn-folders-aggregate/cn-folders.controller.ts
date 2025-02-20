@@ -62,6 +62,49 @@ import { CnChatMessageDto } from '../cn-chat-message/cn-chat-message.dto';
 export class CnFoldersController {
   constructor(private folderAggregateService: CnFolderAggregateService) {}
 
+  /**
+   * return the list of root folder accessible by the user
+   */
+  @Get('/root/current')
+  public getCurrentFolders(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number
+  ): Promise<ClPageI<CnHierarchyObject>> {
+    return this.folderAggregateService.getCurrentRootFolders(page, size);
+  }
+
+  @Post('/root/search')
+  searchRootFolders(
+    @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
+    @Query('page', new ParseIntPipe()) page: number,
+    @Query('size', new ParseIntPipe()) size: number
+  ): Promise<ClPage<CnHierarchyObject>> {
+    return this.folderAggregateService.searchRootFolders(searchParam, page, size);
+  }
+
+  @Get('/root/all')
+  public async getAllCurrentFolders(): Promise<CnFolderSimpleDTO[]> {
+    const folders = await this.folderAggregateService.getAllCurrentRootFolders();
+    return folders.map((folder) => new CnFolderSimpleDTO(folder));
+  }
+
+  @Get('current-space')
+  async getByCurrentSpace(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number
+  ): Promise<ClPageI<CnHierarchyObject>> {
+    return await this.folderAggregateService.getByCurrentSpace(page, size);
+  }
+
+  @Post('current-space/search')
+  async searchInCurrentSpace(
+    @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number
+  ): Promise<ClPageI<CnFolder>> {
+    return await this.folderAggregateService.searchInCurrentSpace(searchParam, page, size);
+  }
+
   @Post()
   create(@Body(new BlParsePipe(CnSaveFolderDTO)) folder: CnSaveFolderDTO): Promise<CnFolderWithHierarchy> {
     return this.folderAggregateService.createRootFolder(folder);
@@ -94,40 +137,6 @@ export class CnFoldersController {
   @Delete(':id')
   delete(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.folderAggregateService.deleteFolder(id);
-  }
-
-  /**
-   * return the list of root folder accessible by the user
-   */
-  @Get('/root/current')
-  public getCurrentFolders(
-    @Query('page', ParseIntPipe) page: number,
-    @Query('size', ParseIntPipe) size: number
-  ): Promise<ClPageI<CnHierarchyObject>> {
-    return this.folderAggregateService.getCurrentRootFolders(page, size);
-  }
-
-  @Get('/root/all')
-  public async getAllCurrentFolders(): Promise<CnFolderSimpleDTO[]> {
-    const folders = await this.folderAggregateService.getAllCurrentRootFolders();
-    return folders.map((folder) => new CnFolderSimpleDTO(folder));
-  }
-
-  @Get('current-space')
-  async getByCurrentSpace(
-    @Query('page', ParseIntPipe) page: number,
-    @Query('size', ParseIntPipe) size: number
-  ): Promise<ClPageI<CnHierarchyObject>> {
-    return await this.folderAggregateService.getByCurrentSpace(page, size);
-  }
-
-  @Post('current-space/search')
-  async searchInCurrentSpace(
-    @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
-    @Query('page', ParseIntPipe) page: number,
-    @Query('size', ParseIntPipe) size: number
-  ): Promise<ClPageI<CnFolder>> {
-    return await this.folderAggregateService.searchInCurrentSpace(searchParam, page, size);
   }
 
   @Put(':id/share/:groupId')

@@ -119,6 +119,27 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     });
   }
 
+  public async searchRootFolders(
+    userId: string,
+    spaceId: string,
+    searchParam: BlSearchParams,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnHierarchyObject>> {
+    const searchBuilder = new CnHierarchyObjectSearch();
+    // force the sort by objectType first
+    searchBuilder.mergeOrderOptions({ objectTypeOrder: 'ASC' });
+    searchBuilder.addSearchParams(searchParam);
+    searchBuilder.mergeWhereOptions({
+      spaceId: spaceId,
+      isVisible: true,
+      users: { userId: userId },
+      parentId: IsNull(),
+    });
+
+    return await this.findPaginated(page, size, searchBuilder.build());
+  }
+
   public async searchVisibleChildren(
     folderId: string,
     searchParam: BlSearchParams,
@@ -129,10 +150,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     // force the sort by objectType first
     searchBuilder.mergeOrderOptions({ objectTypeOrder: 'ASC' });
     searchBuilder.addSearchParams(searchParam);
-    searchBuilder.mergeWhereOptions({ parentId: folderId });
-
-    // If there is no filter on objectType, we exclude hidden documents
-    searchBuilder.mergeWhereOptions({ isVisible: true });
+    searchBuilder.mergeWhereOptions({ parentId: folderId, isVisible: true });
 
     return await this.findPaginated(page, size, searchBuilder.build());
   }
