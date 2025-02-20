@@ -132,6 +132,8 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
       spaceDomain = ClStringHelper.getLowestDomainFromUrl(origin);
     }
 
+    if (spaceDomain == null) return null;
+
     // retrieve the space and store it in the request if found
     return this.spaceService.findByDomain(spaceDomain);
   }
