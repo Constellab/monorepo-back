@@ -20,7 +20,8 @@ export interface CnHierarchyObjectInfo {
 export class CnLabFolderDTO {
   id: string;
   code: string;
-  title: string;
+  title: string; // TODO remove once all lab are on v 0.13.0 or higher
+  name: string;
   children: CnLabFolderDTO[];
   levelStatus: 'LEAF' | 'PARENT';
 }
@@ -31,6 +32,7 @@ export class CnFolderDtoHelper {
       id: folder.id,
       code: folder.name,
       title: folder.name,
+      name: folder.name,
       children: folder.children.map((child) => CnFolderDtoHelper.convertToLabFolderDto(child)),
       levelStatus: folder.children.length > 0 ? 'PARENT' : 'LEAF',
     };

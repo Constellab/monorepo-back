@@ -175,9 +175,6 @@ set style = (select style from hierarchy_object where id = folder.id);
 alter table folder
   modify column style text null;
 
-
-ALTER TABLE folder
-  MODIFY mainStorageId varchar(36) NULL;
 update folder
 set mainStorageId = null
 where id = (Select id from hierarchy_object where id = folder.id and rootParentId is not null);
