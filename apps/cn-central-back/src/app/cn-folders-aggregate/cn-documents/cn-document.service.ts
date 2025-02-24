@@ -738,7 +738,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     const event: CnDocumentEvent = {
       type: eventType,
       entity: document,
-      spaceId: CnCurrentUserHelper.getCurrentSpace().id,
+      spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id,
     };
     this.eventEmitter.emit(cnDocumentEventName, event);
   }

@@ -324,10 +324,9 @@ export class CnFolderAggregateService {
     page: number,
     size: number
   ): Promise<ClPage<CnHierarchyObject>> {
-    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     return this.hierarchyObjectService.searchRootFolders(
-      userInfo.userId,
-      userInfo.spaceId,
+      CnCurrentUserHelper.getAndCheckCurrentUser().id,
+      CnCurrentUserHelper.getAndCheckCurrentSpace().id,
       searchParams,
       page,
       size
@@ -1557,8 +1556,10 @@ export class CnFolderAggregateService {
   }
 
   public async getAvailableTagForRootFolders(): Promise<CnAvailableTags> {
-    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-    return this.tagService.getAvailableTagForRootFolders(userInfo.spaceId, userInfo.userId);
+    return this.tagService.getAvailableTagForRootFolders(
+      CnCurrentUserHelper.getAndCheckCurrentSpace().id,
+      CnCurrentUserHelper.getAndCheckCurrentUser().id
+    );
   }
 
   /////////////////////////////////////// SECURITY //////////////////////////////////
@@ -1591,7 +1592,8 @@ export class CnFolderAggregateService {
       type: eventType,
       parentFolder: parentFolder,
       entity,
-      userInfo: CnCurrentUserHelper.getAndCheckUserSpaceInfo(),
+      user: CnCurrentUserHelper.getAndCheckCurrentUser(),
+      space: CnCurrentUserHelper.getAndCheckCurrentSpace(),
     };
     this.eventEmitter.emit(cnFolderEventName, event);
   }

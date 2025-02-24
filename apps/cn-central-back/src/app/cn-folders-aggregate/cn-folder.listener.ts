@@ -62,8 +62,8 @@ export class CnFolderListener {
   }
 
   private async createActivity(activityDTO: CnActivityCreateDTO, event: CnFolderEvent): Promise<CnActivity> {
-    activityDTO.user = event.userInfo.user;
-    activityDTO.space = event.userInfo.space;
+    activityDTO.user = event.user;
+    activityDTO.space = event.space;
     activityDTO.parentEntityId = event.parentFolder.id;
 
     return await this.activityService.create(activityDTO);

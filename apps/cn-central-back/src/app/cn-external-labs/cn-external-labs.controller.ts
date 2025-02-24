@@ -9,12 +9,12 @@ import {
   Post,
   Put,
   Query,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   CnLabAllowDev,
   CnLabGuard,
-  CnLabRobotAuthentication
+  CnLabRobotAuthentication,
 } from '../cn-core/decorators/cn-lab-guard.decorator';
 import { BlCredentials, BlFile, BlParsePipe, BlPublic, BlUploadedFiles } from '@monorepo/back-core-lib';
 import { CnCreateLabScenarioDto } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.dto';
@@ -30,7 +30,7 @@ import { CnExternalCheckCredentialResponse } from '../cn-auth/cn-auth.service';
 import { CnLabFolderAggregateService } from '../cn-lab-folder-aggregate/cn-lab-folder-aggregate.service';
 import {
   CnFolderDtoHelper,
-  CnLabFolderDTO
+  CnLabFolderDTO,
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.dto';
 import {
   CnHierarchyObjectEntity,
@@ -171,6 +171,7 @@ export class CnExternalLabsController {
   /////////////////////////////// SYNCHRONIZATION ///////////////////////////////
   // those routes does not require user authentication
   // because they are called by the lab server and are just get
+  @CnLabAllowDev()
   @CnLabRobotAuthentication()
   @Get(['folder/all-trees'])
   async getAllFolderTrees(): Promise<CnLabFolderDTO[]> {
@@ -178,6 +179,7 @@ export class CnExternalLabsController {
     return CnFolderDtoHelper.convertToFolderTreeDtoList(folders as CnHierarchyObjectEntity[]);
   }
 
+  @CnLabAllowDev()
   @CnLabRobotAuthentication()
   @Get(['folder/:id/root-tree'])
   async getRootFolder(@Param('id', new ParseUUIDPipe()) folderId: string): Promise<CnLabFolderDTO> {
@@ -185,12 +187,14 @@ export class CnExternalLabsController {
     return CnFolderDtoHelper.convertToLabFolderDto(folder as CnHierarchyObjectEntity);
   }
 
+  @CnLabAllowDev()
   @CnLabRobotAuthentication()
   @Get('user')
   getAllLabUsers(): Promise<CnExternalLabUser[]> {
     return this.labAggregator.getCurrentLabSharedUsers();
   }
 
+  @CnLabAllowDev()
   @CnLabRobotAuthentication()
   @Get('user/:id')
   getUser(@Param('id', new ParseUUIDPipe()) userId: string): Promise<CnExternalLabUser> {
@@ -198,16 +202,19 @@ export class CnExternalLabsController {
   }
 
   //////////////////////////// FOLDER //////////////////////////
+  @CnLabAllowDev()
   @Get('folder/:id')
   getFolder(@Param('id', new ParseUUIDPipe()) id: string): Promise<any> {
     return this.folderAggregateService.getFolderAncestors(id);
   }
 
+  @CnLabAllowDev()
   @Post('folder')
   create(@Body(new BlParsePipe(CnSaveFolderDTO)) folder: CnSaveFolderDTO): Promise<CnFolderWithHierarchy> {
     return this.folderAggregateService.createRootFolder(folder);
   }
 
+  @CnLabAllowDev()
   @Post('folder/:id/sub-folder')
   createSubFolder(
     @Param('id', ParseUUIDPipe) id: string,
@@ -216,13 +223,33 @@ export class CnExternalLabsController {
     return this.folderAggregateService.createSubFolder(workPackage, id);
   }
 
-  @Delete(':id')
-  delete(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+  @CnLabAllowDev()
+  @Delete('folder/:id')
+  deleteFolder(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.folderAggregateService.deleteFolder(id);
+  }
+
+  @CnLabAllowDev()
+  @Put('folder/:id')
+  updateFolder(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body(new BlParsePipe(CnSaveFolderDTO)) folder: CnSaveFolderDTO
+  ): Promise<CnFolderWithHierarchy> {
+    return this.folderAggregateService.updateFolder(id, folder);
+  }
+
+  @CnLabAllowDev()
+  @Put('folder/:id/share/:groupId')
+  async shareFolder(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('groupId', new ParseUUIDPipe()) groupId: string
+  ): Promise<void> {
+    await this.folderAggregateService.shareFolder(id, groupId);
   }
 
   //////////////////////////// HIERARCHY OBJECT TAG //////////////////////////
 
+  @CnLabAllowDev()
   @Post('hierarchyObject/:hierarchyObjectId/tags/multiple')
   async createTags(
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
@@ -231,6 +258,7 @@ export class CnExternalLabsController {
     return this.folderAggregateService.createHierarchyObjectTags(hierarchyObjectId, tags.tags);
   }
 
+  @CnLabAllowDev()
   @Post('hierarchyObject/:hierarchyObjectId/tags/createOrReplace')
   async createOrReplaceTags(
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
@@ -239,6 +267,7 @@ export class CnExternalLabsController {
     return this.folderAggregateService.createOrReplace(hierarchyObjectId, tags.tags);
   }
 
+  @CnLabAllowDev()
   @Post('hierarchyObject/:hierarchyObjectId/tags/delete')
   async deleteTags(
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
@@ -247,6 +276,7 @@ export class CnExternalLabsController {
     return this.folderAggregateService.deleteHierarchyObjectTags(hierarchyObjectId, tags.tags);
   }
 
+  @CnLabAllowDev()
   @Get('hierarchyObject/:hierarchyObjectId/tags')
   async getTags(
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,

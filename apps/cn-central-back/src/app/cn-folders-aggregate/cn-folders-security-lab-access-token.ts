@@ -1,8 +1,8 @@
 import { CnFoldersAggregateSecurityI } from './cn-folders-security.service';
 import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
-import { CnAuthContextLab } from '../cn-core/utils/cn-current-user.helper';
 import { BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
+import { CnAuthContextLabToken } from '../cn-core/utils/cn-auth-context.class';
 
 /**
  * Security for the folders aggregate service when call is made
@@ -12,7 +12,7 @@ import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-ob
  */
 export class CnFoldersSecurityLabAccessToken implements CnFoldersAggregateSecurityI {
   constructor(
-    private labAuthContext: CnAuthContextLab,
+    private labAuthContext: CnAuthContextLabToken,
     private folderObjectService: CnHierarchyObjectService
   ) {}
 
@@ -21,19 +21,17 @@ export class CnFoldersSecurityLabAccessToken implements CnFoldersAggregateSecuri
   }
 
   checkFindOneAndGetRootFolder(folder: CnHierarchyObject): Promise<CnHierarchyObject> {
-    if (folder.spaceId !== this.labAuthContext.userInfo.spaceId)
-      throw new BlUnauthorizedException('Wrong space');
+    if (folder.spaceId !== this.labAuthContext.space.id) throw new BlUnauthorizedException('Wrong space');
 
     return this.folderObjectService.getRootFolder(folder);
   }
 
   async checkUpdate(folder: CnHierarchyObject): Promise<void> {
-    if (folder.spaceId !== this.labAuthContext.userInfo.spaceId)
-      throw new BlUnauthorizedException('Wrong space');
+    if (folder.spaceId !== this.labAuthContext.space.id) throw new BlUnauthorizedException('Wrong space');
   }
 
   async checkUpdateFolderLeader(hierarchyObject: CnHierarchyObject): Promise<void> {
-    if (hierarchyObject.spaceId !== this.labAuthContext.userInfo.spaceId)
+    if (hierarchyObject.spaceId !== this.labAuthContext.space.id)
       throw new BlUnauthorizedException('Wrong space');
   }
 

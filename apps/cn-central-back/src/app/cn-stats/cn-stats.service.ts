@@ -32,9 +32,15 @@ export class CnStatsService {
     stats.teamsNumber = (
       await this.groupService.getAllTeamsByUserAndSpace(currentUserInfo.userId, currentUserInfo.spaceId)
     ).length;
-    stats.runningLabNumber = (await this.labService.getCurrentRunningLabs()).length;
-    stats.validatedScenarioNumber = (await this.scenarioService.getCurrentUserCreatedScenario()).length;
-    stats.validatedNoteNumber = (await this.noteService.getCurrentUserCreatedNote()).length;
+    stats.runningLabNumber = (
+      await this.labService.getUserRunningLabs(currentUserInfo.userId, currentUserInfo.spaceId)
+    ).length;
+    stats.validatedScenarioNumber = (
+      await this.scenarioService.getUserAllCreatedScenario(currentUserInfo.userId, currentUserInfo.spaceId)
+    ).length;
+    stats.validatedNoteNumber = (
+      await this.noteService.getUserAllCreatedNotes(currentUserInfo.userId, currentUserInfo.spaceId)
+    ).length;
 
     return stats;
   }

@@ -15,10 +15,8 @@ import { CnLabServerTaskStatus, CnLabStatus, cnLabTemporaryStatuses } from './st
 import { CnAbstractWithStatusService } from '../cn-core/class/cn-abstract-with-status.service';
 import { CnLabStatusHistory } from './status/cn-lab-status-history.entity';
 import { ClDateHelper, ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
-import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnScenario } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.entity';
 import { CnScenariosService } from '../cn-folders-aggregate/cn-scenarios/cn-scenarios.service';
-import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 import { CnNotesService } from '../cn-folders-aggregate/cn-notes/cn-notes.service';
 import { BlBadRequestException, BlSearchBuilder, BlSearchParams } from '@monorepo/back-core-lib';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -190,11 +188,14 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     return super.deleteById(id, entityManager);
   }
 
-  public async getCurrentLabs(page: number, size: number): Promise<ClPageI<CnLab>> {
-    const userInfo: CnUserSpaceInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-
+  public async getUserLabs(
+    userId: string,
+    spaceId: string,
+    page: number,
+    size: number
+  ): Promise<ClPageI<CnLab>> {
     return this.findPaginated(page, size, {
-      where: this.getLabByUserAndSpaceFindOptions(userInfo.userId, userInfo.spaceId),
+      where: this.getLabByUserAndSpaceFindOptions(userId, spaceId),
       order: { lastModifiedAt: 'DESC' as any },
     });
   }
@@ -206,9 +207,8 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     });
   }
 
-  public async getCurrentRunningLabs(): Promise<CnLab[]> {
-    const userInfo: CnUserSpaceInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-    const findWhereOption = this.getLabByUserAndSpaceFindOptions(userInfo.userId, userInfo.spaceId);
+  public async getUserRunningLabs(userId: string, spaceId: string): Promise<CnLab[]> {
+    const findWhereOption = this.getLabByUserAndSpaceFindOptions(userId, spaceId);
 
     findWhereOption.currentStatus = {
       status: CnLabStatus.SERVER_RUNNING,

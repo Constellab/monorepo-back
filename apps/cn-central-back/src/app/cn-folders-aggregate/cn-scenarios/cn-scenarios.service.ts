@@ -168,15 +168,14 @@ export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
     return this.findByIdAndCheck(id, { notes: true });
   }
 
-  public async getCurrentUserCreatedScenario(): Promise<CnScenario[]> {
-    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+  public async getUserAllCreatedScenario(userId: string, spaceId: string): Promise<CnScenario[]> {
     return await this.repository.find({
       where: {
         createdBy: {
-          id: userInfo.userId,
+          id: userId,
         },
         hierarchyRepresentation: {
-          spaceId: userInfo.spaceId,
+          spaceId: spaceId,
         },
       },
       order: {

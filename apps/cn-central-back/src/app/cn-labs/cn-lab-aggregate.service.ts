@@ -299,17 +299,25 @@ export class CnLabAggregateService {
 
   async getByCurrentSpace(page: number, size: number): Promise<ClPageI<CnLab>> {
     this.security.checkAuthorizationToFindAllBySpace(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
-    return this.labsService.findBySpace(CnCurrentUserHelper.getCurrentSpace().id, page, size);
+    return this.labsService.findBySpace(CnCurrentUserHelper.getAndCheckCurrentSpace().id, page, size);
   }
 
   getCurrentLabs(page: number, size: number): Promise<ClPageI<CnLab>> {
     // no security check because the get is filtered with user id
-    return this.labsService.getCurrentLabs(page, size);
+    return this.labsService.getUserLabs(
+      CnCurrentUserHelper.getAndCheckCurrentUser().id,
+      CnCurrentUserHelper.getAndCheckCurrentSpace().id,
+      page,
+      size
+    );
   }
 
   getCurrentRunningLabs(): Promise<CnLab[]> {
     // no security check because the get is filtered with user id
-    return this.labsService.getCurrentRunningLabs();
+    return this.labsService.getUserRunningLabs(
+      CnCurrentUserHelper.getAndCheckCurrentUser().id,
+      CnCurrentUserHelper.getAndCheckCurrentSpace().id
+    );
   }
 
   async searchAll(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<CnLabFull>> {

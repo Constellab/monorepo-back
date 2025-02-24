@@ -14,13 +14,19 @@ import {
   cnExternalLabManagerVersionHeader,
   cnExternalLabUserHeader,
 } from '../model/config/cn-config.class';
-import { CnCurrentUserHelper } from '../utils/cn-current-user.helper';
 import { CnSpaceUserService } from '../../cn-spaces/cn-space-user.service';
 import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
 import { cnIsAllowedDev, cnIsLabRobotAuth } from '../decorators/cn-lab-guard.decorator';
 import { blIsDecoratedWithPublic, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { CnLabUserService } from '../../cn-labs/user/cn-lab-user.service';
 import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
+import {
+  CnAuthContext,
+  CnAuthContextLab,
+  CnAuthContextLabManager,
+  CnAuthContextLabToken,
+} from '../utils/cn-auth-context.class';
+import { CnCurrentUserHelper } from '../utils/cn-current-user.helper';
 
 class CnGetLab {
   lab: CnLabWithSpace;
@@ -82,23 +88,21 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
 
     const userInfo = new CnUserSpaceInfo(userWithRole.user, labInfo.lab.space, userWithRole.role);
 
+    let authContext: CnAuthContext;
     if (labInfo.labEnvironment === 'labManager') {
       // retrieve the lab manager version from header
       const labManagerVersion = request.header(cnExternalLabManagerVersionHeader);
 
-      CnCurrentUserHelper.setAuthContext({
-        type: 'labManager',
-        userInfo: userInfo,
-        lab: labInfo.lab,
-        labManagerVersion: labManagerVersion,
-      });
+      authContext = new CnAuthContextLabManager(userInfo, labInfo.lab, labManagerVersion);
+    } else if (labInfo.labEnvironment === 'labToken') {
+      // for lab token, we don't store user role in space in the context
+      authContext = new CnAuthContextLabToken(userInfo.user, userInfo.space, labInfo.lab);
     } else {
-      CnCurrentUserHelper.setAuthContext({
-        type: labInfo.labEnvironment,
-        userInfo: userInfo,
-        lab: labInfo.lab,
-      });
+      authContext = new CnAuthContextLab(labInfo.labEnvironment, userInfo, labInfo.lab);
     }
+
+    // set the context in the request
+    CnCurrentUserHelper.setAuthContext(authContext);
 
     return true;
   }

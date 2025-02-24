@@ -363,16 +363,14 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
   /**
    * Get all the notes created by the current user
    */
-  public async getCurrentUserCreatedNote(): Promise<CnNote[]> {
-    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
-
+  public async getUserAllCreatedNotes(userId: string, spaceId: string): Promise<CnNote[]> {
     return this.repository.find({
       where: {
         createdBy: {
-          id: userInfo.userId,
+          id: userId,
         },
         hierarchyRepresentation: {
-          spaceId: userInfo.spaceId,
+          spaceId: spaceId,
         },
       },
     });

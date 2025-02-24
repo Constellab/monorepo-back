@@ -19,6 +19,7 @@ import { ClStringHelper } from '@monorepo/core-lib';
 import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.service';
 import { CnSpaceService } from '../../cn-spaces/cn-space.service';
 import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
+import { CnAuthContextUser, CnAuthContextUserNoSpace } from '../utils/cn-auth-context.class';
 
 export const CN_LOCAL_SPACE_COOKIE = 'local-space';
 
@@ -97,10 +98,8 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
       }
 
       // set the auth context as user in the space
-      CnCurrentUserHelper.setAuthContext({
-        type: 'user',
-        userInfo: new CnUserSpaceInfo(user, space, roleInSpace),
-      });
+      const userInfo = new CnUserSpaceInfo(user, space, roleInSpace);
+      CnCurrentUserHelper.setAuthContext(new CnAuthContextUser(userInfo));
 
       if (user.lastConnectedSpaceId !== space.id) {
         this.userService
@@ -114,10 +113,7 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
       }
     } else {
       // set the auth context as user without space
-      CnCurrentUserHelper.setAuthContext({
-        type: 'userNoSpace',
-        user: user,
-      });
+      CnCurrentUserHelper.setAuthContext(new CnAuthContextUserNoSpace(user));
     }
     return true;
   }

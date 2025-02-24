@@ -1,5 +1,6 @@
-import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnSpace } from '../cn-spaces/cn-space.entity';
+import { CnUser } from '../cn-users/cn-user.entity';
 
 export const cnFolderEventName = 'cn-folder-event';
 
@@ -40,7 +41,8 @@ export interface CnFolderEvent {
   type: CnFolderEventType;
   parentFolder?: CnHierarchyObject;
   entity: any;
-  userInfo: CnUserSpaceInfo;
+  space: CnSpace;
+  user: CnUser;
 }
 
 export interface CnFolderEventMoveFolderData {

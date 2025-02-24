@@ -88,7 +88,7 @@ export class CnGroupsAggregateService {
   public async findTeamsByCurrentUserAndSpace(page: number, size: number): Promise<ClPageI<CnGroup>> {
     return this.groupsService.getTeamsByUserAndSpace(
       CnCurrentUserHelper.getAndCheckCurrentUser().id,
-      CnCurrentUserHelper.getCurrentSpace().id,
+      CnCurrentUserHelper.getAndCheckCurrentSpace().id,
       page,
       size
     );
