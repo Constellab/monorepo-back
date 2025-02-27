@@ -215,7 +215,7 @@ export class CnExternalLabsController {
   }
 
   @CnLabAllowDev()
-  @Post('folder/:id/sub-folder')
+  @Post('folder/:id')
   createSubFolder(
     @Param('id', ParseUUIDPipe) id: string,
     @Body(new BlParsePipe(CnSaveFolderDTO)) workPackage: CnSaveFolderDTO
