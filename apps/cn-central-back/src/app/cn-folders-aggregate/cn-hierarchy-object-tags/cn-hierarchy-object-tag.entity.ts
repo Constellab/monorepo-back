@@ -5,6 +5,7 @@ import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
 } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { Exclude } from 'class-transformer';
 
 @Unique('hierarchy_object_tag_key_value_lab', ['key', 'value', 'hierarchyObject'])
 @Entity('hierarchy_object_tag')
@@ -15,6 +16,7 @@ export class CnHierarchyObjectTagEntity extends CnBaseEntity {
   @Column({ nullable: false, length: 50, update: false, name: 'tagValue' })
   value: string;
 
+  @Exclude()
   @BlNotUpdatable()
   @ManyToOne(() => CnHierarchyObjectEntity, { nullable: false, onDelete: 'CASCADE' })
   hierarchyObject: CnHierarchyObject;

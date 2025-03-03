@@ -161,8 +161,18 @@ export class CnHierarchyObjectTagAggregateService {
   ): Promise<CnHierarchyObjectTag> {
     const tagsWithSameKey = await this.tagService.findByKeyAndHierarchyObject(tag.key, hierarchyObject.id);
 
+    const sameValueTag = tagsWithSameKey.find((t) => t.value === tag.value);
     for (const tagWithSameKey of tagsWithSameKey) {
+      // don't delete tag if it has the same value, but delete others tags
+      if (tagWithSameKey.value === tag.value) {
+        continue;
+      }
       await this.deleteTagTransaction(tagWithSameKey, hierarchyObject, entityManager);
+    }
+
+    // if tag with same value exists, return it
+    if (sameValueTag) {
+      return sameValueTag;
     }
 
     return await this.createTagTransaction(tag, hierarchyObject, entityManager);
