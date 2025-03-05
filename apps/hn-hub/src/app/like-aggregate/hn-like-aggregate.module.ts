@@ -5,9 +5,10 @@ import { HnLikeAggregateService } from './hn-like-aggregate.service';
 import { HnLikeStoryModule } from './like-story/hn-like-story.module';
 import { HnLikeAgentModule } from './like-agent/hn-like-agent.module';
 import { HnLikeBrickModule } from './like-brick/hn-like-brick.module';
+import { HnLikeAppModule } from './like-app/hn-like-app.module';
 
 @Module({
-  imports: [HnCoreModule, HnLikeStoryModule, HnLikeAgentModule, HnLikeBrickModule],
+  imports: [HnCoreModule, HnLikeStoryModule, HnLikeAgentModule, HnLikeBrickModule, HnLikeAppModule],
   controllers: [HnLikeController],
   providers: [HnLikeAggregateService],
   exports: [HnLikeAggregateService],
