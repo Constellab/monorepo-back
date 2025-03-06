@@ -3,7 +3,6 @@ import { DataSource, EntityManager, Repository } from 'typeorm';
 import { BlEntityWithId } from '@monorepo/back-core-lib';
 import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { ClPage } from '@monorepo/core-lib';
-import { HnAbstractCommentDto } from './hn-abstract-comment.dto';
 import { TeRichText } from '@monorepo/te-text-editor';
 
 export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
@@ -31,7 +30,11 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
 
   abstract createComment(entity: T, commentData: TeRichText): HnAbstractCommentEntity<T>;
 
-  abstract getComments(page: number, size: number, entityId: string): Promise<ClPage<HnAbstractCommentDto>>;
+  abstract getComments(
+    page: number,
+    size: number,
+    entityId: string
+  ): Promise<ClPage<HnAbstractCommentEntity<T>>>;
 
   async getComment(entityId: string): Promise<HnAbstractCommentEntity<BlEntityWithId>> {
     return await this.repository.findOne({

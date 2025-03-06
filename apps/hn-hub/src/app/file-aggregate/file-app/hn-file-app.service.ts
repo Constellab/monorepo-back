@@ -5,7 +5,7 @@ import { HnAbstractFileService } from '../file-core/hn-abstract-file.service';
 import { BlBucketConfig, BlBucketType, BlObjectStorageService } from '@monorepo/back-core-lib';
 import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
 import { HnFileApp } from './hn-file-app.entity';
-import { HnCommunityApp } from '../../community-app-aggregate/hn-community-app/hn-community-app.entity';
+import { HnCommunityApp } from '../../community-app-aggregate/community-app/hn-community-app.entity';
 
 @Injectable()
 export class HnFileAppService extends HnAbstractFileService<HnCommunityApp> {

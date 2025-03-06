@@ -16,9 +16,9 @@ import { HnCommunityAppAggregateService } from './hn-community-app-aggregate.ser
 import { BlFile, BlParsePipe, BlPublic, BlResponseHelper, BlUploadedFile } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { Response } from 'express';
-import { HnCommunityAppDto, HnCommunityAppEditDto } from './hn-community-app/hn-community-app.dto';
+import { HnCommunityAppDto, HnCommunityAppEditDto } from './community-app/hn-community-app.dto';
 import { HnAbstractFileController } from '../file-aggregate/file-core/hn-abstract-file.controller';
-import { HnCommunityApp } from './hn-community-app/hn-community-app.entity';
+import { HnCommunityApp } from './community-app/hn-community-app.entity';
 import { HnFileAppService } from '../file-aggregate/file-app/hn-file-app.service';
 import {
   TeBlockFigureUploadedResponse,
@@ -50,12 +50,14 @@ export class HnCommunityAppController extends HnAbstractFileController<HnCommuni
   }
 
   @BlPublic()
-  @Get()
+  @Post('filters')
   async getAll(
+    @Body('spacesFilter') spacesFilter: string[],
+    @Body('titleFilter') titleFilter: string,
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnCommunityAppDto>> {
-    const result = await this.communityAppAggregateService.findAll(page, size);
+    const result = await this.communityAppAggregateService.findAll(spacesFilter, titleFilter, page, size);
     return result.map((communityApp) => new HnCommunityAppDto(communityApp));
   }
 

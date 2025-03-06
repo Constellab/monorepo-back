@@ -5,10 +5,8 @@ import { DataSource, EntityManager, Repository } from 'typeorm';
 import { HnCommentAgent } from './hn-comment-agent.entity';
 import { HnAgentAggregateService } from '../../agent-aggregate/hn-agent-aggregate.service';
 import { HnAgent } from '../../agent-aggregate/agent/hn-agent.entity';
-import { HnAbstractCommentEntity } from '../comment-core/hn-abstract-comment.entity';
 import { ClPage } from '@monorepo/core-lib';
 import { BlAbstractPaginatedService } from '@monorepo/back-core-lib';
-import { HnCommentAgentDto } from './hn-comment-agent.dto';
 import { TeRichText } from '@monorepo/te-text-editor';
 
 @Injectable()
@@ -25,7 +23,7 @@ export class HnCommentAgentService extends HnAbstractCommentService<HnAgent> {
     return this.agentAggregateService.addComment(entity, entityManager);
   }
 
-  createComment(entity: HnAgent, commentData: TeRichText): HnAbstractCommentEntity<HnAgent> {
+  createComment(entity: HnAgent, commentData: TeRichText): HnCommentAgent {
     const comment: HnCommentAgent = new HnCommentAgent();
     comment.entity = entity;
     comment.setContentRichText(commentData);
@@ -44,24 +42,22 @@ export class HnCommentAgentService extends HnAbstractCommentService<HnAgent> {
     return entityManager.save(comment);
   }
 
-  async getComments(page: number, size: number, entityId: string): Promise<ClPage<HnCommentAgentDto>> {
-    return (
-      await BlAbstractPaginatedService.findPaginatedStatic(
-        page,
-        size,
-        {
-          where: {
-            entity: {
-              id: entityId,
-            },
-          },
-          order: {
-            createdAt: 'DESC' as any,
+  async getComments(page: number, size: number, entityId: string): Promise<ClPage<HnCommentAgent>> {
+    return await BlAbstractPaginatedService.findPaginatedStatic(
+      page,
+      size,
+      {
+        where: {
+          entity: {
+            id: entityId,
           },
         },
-        this.repository.manager,
-        HnCommentAgent
-      )
-    ).map((commentAgent) => new HnCommentAgentDto(commentAgent));
+        order: {
+          createdAt: 'DESC' as any,
+        },
+      },
+      this.repository.manager,
+      HnCommentAgent
+    );
   }
 }

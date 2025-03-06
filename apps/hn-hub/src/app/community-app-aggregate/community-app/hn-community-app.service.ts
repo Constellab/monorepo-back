@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HnCommunityApp } from './hn-community-app.entity';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, FindOptionsWhere, Repository } from 'typeorm';
 import { ClPage } from '@monorepo/core-lib';
 import { BlAbstractPaginatedService } from '@monorepo/back-core-lib';
 import { HnCommunityAppEditDto } from './hn-community-app.dto';
@@ -18,12 +18,17 @@ export class HnCommunityAppService {
     return this.communityAppRepository.findOneBy({ id: id });
   }
 
-  async findAll(page: number, size: number): Promise<ClPage<HnCommunityApp>> {
+  async findAll(
+    whereConditions: FindOptionsWhere<HnCommunityApp>[] | FindOptionsWhere<HnCommunityApp>,
+    page: number,
+    size: number
+  ): Promise<ClPage<HnCommunityApp>> {
     return await BlAbstractPaginatedService.findPaginatedStatic(
       page,
       size,
       {
-        order: { createdAt: 'DESC' as any },
+        where: whereConditions,
+        order: { lastModifiedAt: 'DESC' as any },
       },
       this.communityAppRepository.manager,
       HnCommunityApp

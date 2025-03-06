@@ -5,6 +5,7 @@ import { ClStringHelper } from '@monorepo/core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import { HnCommunityAppEditDto } from './hn-community-app.dto';
 import { HnFileApp } from '../../file-aggregate/file-app/hn-file-app.entity';
+import { HnCommunityAppUser } from '../community-app-user/hn-community-app-user.entity';
 
 @Entity('app')
 export class HnCommunityApp extends HnBaseEntity {
@@ -35,6 +36,9 @@ export class HnCommunityApp extends HnBaseEntity {
 
   @OneToMany(() => HnFileApp, (appFile) => appFile.entity, { nullable: true })
   appFiles: HnFileApp[];
+
+  @OneToMany(() => HnCommunityAppUser, (appUser) => appUser.app, { nullable: true, eager: true })
+  appUsers: HnCommunityAppUser[];
 
   static isValidAppUrl(appUrl: string): boolean {
     if (!ClStringHelper.isHttpLink(appUrl)) return false;

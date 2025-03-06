@@ -4,9 +4,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { HnLikeApp } from './hn-like-app.entity';
 import { BlEntityWithId } from '@monorepo/back-core-lib';
-import { HnCommunityApp } from '../../community-app-aggregate/hn-community-app/hn-community-app.entity';
+import { HnCommunityApp } from '../../community-app-aggregate/community-app/hn-community-app.entity';
 import { HnCommunityAppAggregateService } from '../../community-app-aggregate/hn-community-app-aggregate.service';
-import { HnCommunityAppDto } from '../../community-app-aggregate/hn-community-app/hn-community-app.dto';
+import { HnCommunityAppDto } from '../../community-app-aggregate/community-app/hn-community-app.dto';
 
 @Injectable()
 export class HnLikeAppService extends HnAbstractLikeService<HnCommunityApp> {

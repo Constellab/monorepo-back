@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { HnCommunityAppService } from './hn-community-app/hn-community-app.service';
-import { HnCommunityAppStatService } from './hn-community-app-stat/hn-community-app-stat.service';
-import { HnCommunityAppStatLabDto } from './hn-community-app-stat/hn-community-app-stat.dto';
-import { DataSource, EntityManager } from 'typeorm';
+import { HnCommunityAppService } from './community-app/hn-community-app.service';
+import { HnCommunityAppStatService } from './community-app-stat/hn-community-app-stat.service';
+import { HnCommunityAppStatLabDto } from './community-app-stat/hn-community-app-stat.dto';
+import { DataSource, EntityManager, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
 import { HnUser } from '../users/hn-user.entity';
-import { HnCommunityAppEditDto } from './hn-community-app/hn-community-app.dto';
-import { HnCommunityApp } from './hn-community-app/hn-community-app.entity';
-import { ClPage, ClStringHelper } from '@monorepo/core-lib';
+import { HnCommunityAppEditDto } from './community-app/hn-community-app.dto';
+import { HnCommunityApp } from './community-app/hn-community-app.entity';
+import { ClPage } from '@monorepo/core-lib';
 import { HnSpace } from '../space-aggregate/space/hn-space.entity';
-import { HnSpaceService } from '../space-aggregate/space/hn-space.service';
 import {
   BlBadRequestException,
   BlFile,
   BlFileResponse,
   BlObjectStorageService,
+  BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
 import { HnFileAppService } from '../file-aggregate/file-app/hn-file-app.service';
 import {
@@ -21,25 +21,72 @@ import {
   TeBlockFileUploadResponse,
   TeRichTextDTO,
 } from '@monorepo/te-text-editor';
+import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
+import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
+import { HnCommunityAppUserService } from './community-app-user/hn-community-app-user.service';
+import { HnCommunityAppUser } from './community-app-user/hn-community-app-user.entity';
 
 @Injectable()
 export class HnCommunityAppAggregateService {
   constructor(
     private readonly communityAppService: HnCommunityAppService,
     private readonly communityAppStatService: HnCommunityAppStatService,
-    private readonly spaceService: HnSpaceService,
+    private readonly spaceAggregateService: HnSpaceAggregateService,
     private readonly fileAppService: HnFileAppService,
     private readonly objectStorageService: BlObjectStorageService,
+    private readonly communityAppUserService: HnCommunityAppUserService,
     private dataSource: DataSource
   ) {}
 
   ////////////////////////////////////// APP ////////////////////////////////////////
   async findOneById(id: string): Promise<HnCommunityApp> {
-    return await this.communityAppService.findOneById(id);
+    const communityApp = await this.communityAppService.findOneById(id);
+    if (communityApp.space) {
+      const currentUser = HnCurrentUserHelper.getCurrentUser();
+      if (!currentUser) return null;
+      if (!(await this.spaceAggregateService.checkSpaceUser(communityApp.space.id, currentUser.id)))
+        return null;
+    }
+    return communityApp;
   }
 
-  async findAll(page: number, size: number): Promise<ClPage<HnCommunityApp>> {
-    return this.communityAppService.findAll(page, size);
+  async findAll(
+    spacesFilter: string[],
+    titleFilter: string,
+    page: number,
+    size: number
+  ): Promise<ClPage<HnCommunityApp>> {
+    let publicSelected = false;
+    let myApps = false;
+    const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
+
+    for (const spaceId of spacesFilter) {
+      if (spaceId === 'public') publicSelected = true;
+      // Verify user right on spaces
+      else if (spaceId === 'my-apps') myApps = true;
+      else {
+        if (currentUser != null) {
+          await this.spaceAggregateService.assertCheckSpaceUser(spaceId, currentUser.id);
+        }
+      }
+    }
+
+    if (publicSelected) spacesFilter = spacesFilter.filter((s) => s !== 'public');
+    if (myApps) spacesFilter = spacesFilter.filter((s) => s !== 'my-apps');
+
+    const whereConditions: FindOptionsWhere<HnCommunityApp>[] | FindOptionsWhere<HnCommunityApp> = myApps
+      ? await this.getMyAppsWhereAppConditions(publicSelected, spacesFilter, currentUser)
+      : await this.getUserBasedWhereAppConditions(publicSelected, spacesFilter, currentUser);
+
+    if (titleFilter) {
+      if (whereConditions instanceof Array) {
+        whereConditions.map((wc) => (wc.title = Like(`%${titleFilter}%`)));
+      } else {
+        whereConditions.title = Like(`%${titleFilter}%`);
+      }
+    }
+
+    return this.communityAppService.findAll(whereConditions, page, size);
   }
 
   async create(dto: HnCommunityAppEditDto): Promise<HnCommunityApp> {
@@ -47,7 +94,8 @@ export class HnCommunityAppAggregateService {
 
     let space: HnSpace = null;
     if (dto.spaceId) {
-      space = await this.spaceService.findOne(dto.spaceId);
+      await this.spaceAggregateService.checkIfSpaceExists(dto.spaceId);
+      space = await this.spaceAggregateService.findSpaceById(dto.spaceId);
     }
     return this.communityAppService.create(dto, space);
   }
@@ -57,7 +105,8 @@ export class HnCommunityAppAggregateService {
     if (!HnCommunityApp.isValidAppUrl(dto.appUrl)) throw new BlBadRequestException('Invalid app url');
     let space: HnSpace = null;
     if (dto.spaceId) {
-      space = await this.spaceService.findOne(dto.spaceId);
+      await this.spaceAggregateService.checkIfSpaceExists(dto.spaceId);
+      space = await this.spaceAggregateService.findSpaceById(dto.spaceId);
     }
     return this.communityAppService.update(dto.id, dto, space);
   }
@@ -95,12 +144,10 @@ export class HnCommunityAppAggregateService {
   }
 
   public async saveAppPicture(file: BlFile): Promise<string> {
-    const fileExt = file.originalname.split('.').pop();
-    file.originalname = ClStringHelper.generateUUID() + '.' + fileExt;
     return await this.objectStorageService.uploadObject(
       [this.fileAppService.getBucketConfig(), this.fileAppService.getBackupBucketConfig()],
       file,
-      { generateRandomObjectName: false }
+      { generateRandomObjectName: true }
     );
   }
 
@@ -133,6 +180,142 @@ export class HnCommunityAppAggregateService {
       throw new BlBadRequestException('App not found');
     }
     return this.fileAppService.saveResourceView(app, file);
+  }
+
+  private async getUserBasedWhereAppConditions(
+    publicSelected: boolean = null,
+    spacesFilter: string[] = null,
+    user: HnUser = null
+  ): Promise<FindOptionsWhere<HnCommunityApp>[] | FindOptionsWhere<HnCommunityApp>> {
+    const currentUser: HnUser = user ?? HnCurrentUserHelper.getCurrentUser();
+    let whereConditions: FindOptionsWhere<HnCommunityApp>[] | FindOptionsWhere<HnCommunityApp>;
+
+    if (currentUser == null) {
+      whereConditions = [
+        {
+          space: {
+            id: IsNull(),
+          },
+        },
+      ];
+    } else if (publicSelected) {
+      whereConditions = [
+        {
+          space: {
+            id: In(spacesFilter),
+          },
+        },
+        {
+          space: {
+            id: IsNull(),
+          },
+        },
+      ];
+    } else if (spacesFilter && spacesFilter.length > 0) {
+      whereConditions = [
+        {
+          space: {
+            id: In(spacesFilter),
+          },
+        },
+      ];
+    } else {
+      const userSpacesIds: string[] = (
+        await this.spaceAggregateService.findSpacesOfUser(currentUser?.id)
+      ).map((space) => space.id);
+
+      whereConditions = [
+        {
+          space: IsNull(),
+        },
+        {
+          space: In(userSpacesIds),
+        },
+      ];
+    }
+
+    return whereConditions;
+  }
+
+  private async getMyAppsWhereAppConditions(
+    publicSelected: boolean,
+    spacesFilter: string[],
+    user: HnUser = null
+  ): Promise<FindOptionsWhere<HnCommunityApp>[] | FindOptionsWhere<HnCommunityApp>> {
+    const currentUser: HnUser = user ?? HnCurrentUserHelper.getCurrentUser();
+
+    if (currentUser == null) {
+      throw new BlUnauthorizedException('You are not authorized to perform this action');
+    }
+
+    let whereConditions: FindOptionsWhere<HnCommunityApp>[] | FindOptionsWhere<HnCommunityApp>;
+
+    const communityAppUsers: HnCommunityAppUser[] =
+      await this.communityAppUserService.getAppUsersByUser(currentUser);
+    const coAuthorAppsId: string[] = communityAppUsers.map((appUser) => appUser.app.id);
+
+    if (publicSelected) {
+      whereConditions = [
+        {
+          space: {
+            id: In(spacesFilter),
+          },
+          createdBy: {
+            id: currentUser.id,
+          },
+        },
+        {
+          space: {
+            id: IsNull(),
+          },
+          createdBy: {
+            id: currentUser.id,
+          },
+        },
+        {
+          space: {
+            id: In(spacesFilter),
+          },
+          id: In(coAuthorAppsId),
+        },
+        {
+          space: {
+            id: IsNull(),
+          },
+          id: In(coAuthorAppsId),
+        },
+      ];
+    } else if (spacesFilter && spacesFilter.length > 0) {
+      whereConditions = [
+        {
+          space: {
+            id: In(spacesFilter),
+          },
+          createdBy: {
+            id: currentUser.id,
+          },
+        },
+        {
+          space: {
+            id: In(spacesFilter),
+          },
+          id: In(coAuthorAppsId),
+        },
+      ];
+    } else {
+      whereConditions = [
+        {
+          createdBy: {
+            id: currentUser.id,
+          },
+        },
+        {
+          id: In(coAuthorAppsId),
+        },
+      ];
+    }
+
+    return whereConditions;
   }
 
   ////////////////////////////////////// LAB ////////////////////////////////////////

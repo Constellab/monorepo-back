@@ -3,13 +3,11 @@ import { HnAbstractCommentService } from '../comment-core/hn-abstract-comment.se
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { HnCommentApp } from './hn-comment-app.entity';
-import { HnAbstractCommentEntity } from '../comment-core/hn-abstract-comment.entity';
 import { ClPage } from '@monorepo/core-lib';
 import { BlAbstractPaginatedService } from '@monorepo/back-core-lib';
-import { HnCommentAppDto } from './hn-comment-app.dto';
 import { TeRichText } from '@monorepo/te-text-editor';
 import { HnCommunityAppAggregateService } from '../../community-app-aggregate/hn-community-app-aggregate.service';
-import { HnCommunityApp } from '../../community-app-aggregate/hn-community-app/hn-community-app.entity';
+import { HnCommunityApp } from '../../community-app-aggregate/community-app/hn-community-app.entity';
 
 @Injectable()
 export class HnCommentAppService extends HnAbstractCommentService<HnCommunityApp> {
@@ -25,7 +23,7 @@ export class HnCommentAppService extends HnAbstractCommentService<HnCommunityApp
     return this.communityAppAggregateService.addComment(entity, entityManager);
   }
 
-  createComment(entity: HnCommunityApp, commentData: TeRichText): HnAbstractCommentEntity<HnCommunityApp> {
+  createComment(entity: HnCommunityApp, commentData: TeRichText): HnCommentApp {
     const comment: HnCommentApp = new HnCommentApp();
     comment.entity = entity;
     comment.setContentRichText(commentData);
@@ -44,24 +42,22 @@ export class HnCommentAppService extends HnAbstractCommentService<HnCommunityApp
     return entityManager.save(comment);
   }
 
-  async getComments(page: number, size: number, entityId: string): Promise<ClPage<HnCommentAppDto>> {
-    return (
-      await BlAbstractPaginatedService.findPaginatedStatic(
-        page,
-        size,
-        {
-          where: {
-            entity: {
-              id: entityId,
-            },
-          },
-          order: {
-            createdAt: 'DESC' as any,
+  async getComments(page: number, size: number, entityId: string): Promise<ClPage<HnCommentApp>> {
+    return await BlAbstractPaginatedService.findPaginatedStatic(
+      page,
+      size,
+      {
+        where: {
+          entity: {
+            id: entityId,
           },
         },
-        this.repository.manager,
-        HnCommentApp
-      )
-    ).map((commentApp) => new HnCommentAppDto(commentApp));
+        order: {
+          createdAt: 'DESC' as any,
+        },
+      },
+      this.repository.manager,
+      HnCommentApp
+    );
   }
 }

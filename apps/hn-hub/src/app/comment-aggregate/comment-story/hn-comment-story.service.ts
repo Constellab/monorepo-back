@@ -5,10 +5,8 @@ import { HnStoryService } from '../../story/hn-story.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { HnStory } from '../../story/hn-story.entity';
-import { HnAbstractCommentEntity } from '../comment-core/hn-abstract-comment.entity';
 import { ClPage } from '@monorepo/core-lib';
 import { BlAbstractPaginatedService } from '@monorepo/back-core-lib';
-import { HnCommentStoryDto } from './hn-comment-story.dto';
 import { TeRichText } from '@monorepo/te-text-editor';
 
 @Injectable()
@@ -25,7 +23,7 @@ export class HnCommentStoryService extends HnAbstractCommentService<HnStory> {
     return this.storyService.addComment(entity, entityManager);
   }
 
-  createComment(entity: HnStory, commentData: TeRichText): HnAbstractCommentEntity<HnStory> {
+  createComment(entity: HnStory, commentData: TeRichText): HnCommentStory {
     const comment: HnCommentStory = new HnCommentStory();
     comment.entity = entity;
     comment.setContentRichText(commentData);
@@ -44,24 +42,22 @@ export class HnCommentStoryService extends HnAbstractCommentService<HnStory> {
     return entityManager.save(comment);
   }
 
-  async getComments(page: number, size: number, entityId: string): Promise<ClPage<HnCommentStoryDto>> {
-    return (
-      await BlAbstractPaginatedService.findPaginatedStatic(
-        page,
-        size,
-        {
-          where: {
-            entity: {
-              id: entityId,
-            },
-          },
-          order: {
-            createdAt: 'DESC' as any,
+  async getComments(page: number, size: number, entityId: string): Promise<ClPage<HnCommentStory>> {
+    return await BlAbstractPaginatedService.findPaginatedStatic(
+      page,
+      size,
+      {
+        where: {
+          entity: {
+            id: entityId,
           },
         },
-        this.repository.manager,
-        HnCommentStory
-      )
-    ).map((commentStory) => new HnCommentStoryDto(commentStory));
+        order: {
+          createdAt: 'DESC' as any,
+        },
+      },
+      this.repository.manager,
+      HnCommentStory
+    );
   }
 }

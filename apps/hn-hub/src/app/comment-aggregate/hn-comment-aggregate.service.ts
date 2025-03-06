@@ -8,6 +8,7 @@ import { HnAbstractCommentService } from './comment-core/hn-abstract-comment.ser
 import { HnAbstractCommentDto } from './comment-core/hn-abstract-comment.dto';
 import { TeRichText } from '@monorepo/te-text-editor';
 import { HnCommentAppService } from './comment-app/hn-comment-app.service';
+import { HnAbstractCommentEntity } from './comment-core/hn-abstract-comment.entity';
 
 @Injectable()
 export class HnCommentAggregateService {
@@ -22,7 +23,7 @@ export class HnCommentAggregateService {
     entityId: string,
     page: number,
     size: number
-  ): Promise<ClPage<HnAbstractCommentDto>> {
+  ): Promise<ClPage<HnAbstractCommentEntity<any>>> {
     return this.getService(commentType).getComments(page, size, entityId);
   }
 

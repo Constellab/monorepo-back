@@ -84,12 +84,13 @@ import { HnRunStatAggregateModule } from './app/run-stat-aggregate/run-stat-aggr
 import { HnRunStatAgModule } from './app/run-stat-aggregate/hn-run-stat-ag.module';
 import { HnCurrentUserHelper } from './app/core/utils/hn-current-user.helper';
 import { HnCommunityAppAggregateModule } from './app/community-app-aggregate/hn-community-app-aggregate.module';
-import { HnCommunityAppModule } from './app/community-app-aggregate/hn-community-app/hn-community-app.module';
-import { HnCommunityAppStatModule } from './app/community-app-aggregate/hn-community-app-stat/hn-community-app-stat.module';
+import { HnCommunityAppModule } from './app/community-app-aggregate/community-app/hn-community-app.module';
+import { HnCommunityAppStatModule } from './app/community-app-aggregate/community-app-stat/hn-community-app-stat.module';
 import { HnCommentAppModule } from './app/comment-aggregate/comment-app/hn-comment-app.module';
 import { HnLikeAppModule } from './app/like-aggregate/like-app/hn-like-app.module';
 import { HnFileAgentModule } from './app/file-aggregate/file-agent/hn-file-agent.module';
 import { HnFileAppModule } from './app/file-aggregate/file-app/hn-file-app.module';
+import { HnCommunityAppUserModule } from './app/community-app-aggregate/community-app-user/hn-community-app-user.module';
 
 function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: HnDatabaseConfig = configService.getDatabaseConfig();
@@ -273,6 +274,7 @@ TeRichTextModifications.setBackTimeDifference();
     HnCommunityAppModule,
     HnCommunityAppStatModule,
     HnCommunityAppAggregateModule,
+    HnCommunityAppUserModule,
 
     HnPublicModule,
   ],
