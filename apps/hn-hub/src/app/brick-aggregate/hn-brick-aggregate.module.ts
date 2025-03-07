@@ -18,6 +18,7 @@ import { HnCoreModule } from '../core/hn-core.module';
 import { HnSpaceAggregateModule } from '../space-aggregate/hn-space-aggregate.module';
 import { HnUserModule } from '../users/hn-user.module';
 import { HnFileDocumentationModule } from '../file-aggregate/file-documentation/hn-file-documentation.module';
+import { HnBrickListener } from './hn-brick.listener';
 
 @Module({
   imports: [
@@ -37,7 +38,7 @@ import { HnFileDocumentationModule } from '../file-aggregate/file-documentation/
     HnFileDocumentationModule,
   ],
   controllers: [HnBrickController, HnBrickVersionController, HnFolderController, HnDocumentationController],
-  providers: [HnBrickAggregateService],
+  providers: [HnBrickAggregateService, HnBrickListener],
   exports: [HnBrickAggregateService],
 })
 export class HnBrickAggregateModule {}

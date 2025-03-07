@@ -29,6 +29,7 @@ import { HnFileAgentModule } from '../file-aggregate/file-agent/hn-file-agent.mo
 import { HnTempLiveTaskController } from './hn-temp-live-task.controller';
 import { HnAgentForLabController } from './hn-agent-for-lab.controller';
 import { HnFileAppModule } from '../file-aggregate/file-app/hn-file-app.module';
+import { HnAgentListener } from './hn-agent.listener';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { HnFileAppModule } from '../file-aggregate/file-app/hn-file-app.module';
     HnSpaceAggregateService,
     HnBrickAggregateService,
     HnAgentForLabController,
+    HnAgentListener,
   ],
   exports: [HnAgentAggregateService],
 })

@@ -24,12 +24,16 @@ export class HnLikeAggregateService {
     return this.getService(likeType).checkIfLiked(entityId);
   }
 
-  async like(entityId: string, likeType: HnEntityType): Promise<BlEntityWithId> {
-    return this.getService(likeType).like(entityId);
+  async getLikeCount(entityId: string, likeType: HnEntityType): Promise<number> {
+    return this.getService(likeType).getNumberOfLikes(entityId);
   }
 
-  async unlike(entityId: string, likeType: HnEntityType): Promise<BlEntityWithId> {
-    return this.getService(likeType).unlike(entityId);
+  async like(entityId: string, likeType: HnEntityType): Promise<number> {
+    return this.getService(likeType).like(likeType, entityId);
+  }
+
+  async unlike(entityId: string, likeType: HnEntityType): Promise<number> {
+    return this.getService(likeType).unlike(likeType, entityId);
   }
 
   private getService(likeType: HnEntityType): HnAbstractLikeService<BlEntityWithId> {

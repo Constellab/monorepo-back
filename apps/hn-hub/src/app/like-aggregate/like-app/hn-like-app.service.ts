@@ -1,44 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { HnAbstractLikeService } from '../like-core/hn-abstract-like.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { HnLikeApp } from './hn-like-app.entity';
-import { BlEntityWithId } from '@monorepo/back-core-lib';
-import { HnCommunityApp } from '../../community-app-aggregate/community-app/hn-community-app.entity';
+import { HnCommunityAppEntity } from '../../community-app-aggregate/community-app/hn-community-app.entity';
 import { HnCommunityAppAggregateService } from '../../community-app-aggregate/hn-community-app-aggregate.service';
-import { HnCommunityAppDto } from '../../community-app-aggregate/community-app/hn-community-app.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
-export class HnLikeAppService extends HnAbstractLikeService<HnCommunityApp> {
+export class HnLikeAppService extends HnAbstractLikeService<HnCommunityAppEntity> {
   constructor(
     private communityAppAggregateService: HnCommunityAppAggregateService,
-    @InjectRepository(HnLikeApp) likeAgentRepository: Repository<HnLikeApp>,
-    dataSource: DataSource
+    @InjectRepository(HnLikeApp) likeAppRepository: Repository<HnLikeApp>,
+    dataSource: DataSource,
+    eventEmitter: EventEmitter2
   ) {
-    super(likeAgentRepository, dataSource);
+    super(likeAppRepository, dataSource, eventEmitter);
   }
 
-  async addLike(entityManager: EntityManager, entity: BlEntityWithId): Promise<HnCommunityAppDto> {
-    return new HnCommunityAppDto(
-      await this.communityAppAggregateService.addLike(entity as HnCommunityApp, entityManager)
-    );
-  }
-
-  getEntityById(entityId: string): Promise<HnCommunityApp> {
+  getEntityAndCheckRightsById(entityId: string): Promise<HnCommunityAppEntity> {
     return this.communityAppAggregateService.findOneById(entityId);
   }
 
-  async removeLike(entityManager: EntityManager, entity: BlEntityWithId): Promise<HnCommunityAppDto> {
-    return new HnCommunityAppDto(
-      await this.communityAppAggregateService.removeLike(entity as HnCommunityApp, entityManager)
-    );
-  }
-
-  async saveLike(entityManager: EntityManager, like: HnLikeApp): Promise<HnLikeApp> {
-    return entityManager.save(like);
-  }
-
-  createLike(entity: HnCommunityApp): HnLikeApp {
+  createLike(entity: HnCommunityAppEntity): HnLikeApp {
     const like: HnLikeApp = new HnLikeApp();
     like.entity = entity;
     return like;

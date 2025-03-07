@@ -503,25 +503,18 @@ export class HnStoryService {
   }
 
   ////////////////////////////////////// LIKES ////////////////////////////////////////
-  async addLike(story: HnStory, entityManager: EntityManager): Promise<HnStory> {
-    story.likes++;
-    return await entityManager.save(HnStory, story, { listeners: false });
-  }
-
-  async removeLike(story: HnStory, entityManager: EntityManager): Promise<HnStory> {
-    story.likes--;
-    return await entityManager.save(HnStory, story, { listeners: false });
+  async updateLikes(storyId: string, numberOfLikes: number): Promise<void> {
+    const story: HnStory = await this.getStory(storyId);
+    story.likes = numberOfLikes;
+    await this.storyRepository.save(story);
   }
 
   ////////////////////////////////////// COMMENTS ////////////////////////////////////////
-  async addComment(story: HnStory, entityManager: EntityManager): Promise<HnStory> {
-    story.comments++;
-    return await entityManager.save(HnStory, story, { listeners: false });
-  }
 
-  async removeComment(story: HnStory, entityManager: EntityManager): Promise<HnStory> {
-    story.comments--;
-    return await entityManager.save(HnStory, story, { listeners: false });
+  async updateComments(storyId: string, numberOfComments: number): Promise<void> {
+    const story: HnStory = await this.getStory(storyId);
+    story.comments = numberOfComments;
+    await this.storyRepository.save(story);
   }
 
   //////////////////////////////////// STORY FILES /////////////////////////////////////

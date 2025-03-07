@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { HnCommunityAppUser } from './hn-community-app-user.entity';
 import { Repository } from 'typeorm';
 import { HnUser } from '../../users/hn-user.entity';
-import { HnCommunityApp } from '../community-app/hn-community-app.entity';
+import { HnCommunityAppEntity } from '../community-app/hn-community-app.entity';
 
 @Injectable()
 export class HnCommunityAppUserService {
@@ -11,7 +11,7 @@ export class HnCommunityAppUserService {
     @InjectRepository(HnCommunityAppUser) private readonly appUserRepository: Repository<HnCommunityAppUser>
   ) {}
 
-  createAppUser(app: HnCommunityApp, user: HnUser): Promise<HnCommunityAppUser> {
+  createAppUser(app: HnCommunityAppEntity, user: HnUser): Promise<HnCommunityAppUser> {
     const appUser = new HnCommunityAppUser();
     appUser.initAppUser(app, user);
     return this.appUserRepository.save(appUser);
@@ -38,7 +38,7 @@ export class HnCommunityAppUserService {
     });
   }
 
-  async getAppUsers(app: HnCommunityApp): Promise<HnCommunityAppUser[]> {
+  async getAppUsers(app: HnCommunityAppEntity): Promise<HnCommunityAppUser[]> {
     return this.appUserRepository.find({
       where: {
         app: {

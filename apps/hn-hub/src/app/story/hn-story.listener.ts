@@ -1,0 +1,19 @@
+import { Injectable } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
+import { HnCommentEventData, HnEventType, HnLikeEventData } from '../core/utils/hn-events.enum';
+import { HnStoryService } from './hn-story.service';
+
+@Injectable()
+export class HnCommunityAppListener {
+  constructor(private storyService: HnStoryService) {}
+
+  @OnEvent(HnEventType.STORY_COMMENT)
+  async handleAppCommentCreatedEvent(event: HnCommentEventData): Promise<void> {
+    await this.storyService.updateComments(event.entityId, event.numberOfComments);
+  }
+
+  @OnEvent(HnEventType.STORY_LIKE)
+  async handleAppLikeCreatedEvent(event: HnLikeEventData): Promise<void> {
+    await this.storyService.updateLikes(event.entityId, event.numberOfLikes);
+  }
+}

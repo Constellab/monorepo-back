@@ -8,7 +8,7 @@ import { HnFileApp } from '../../file-aggregate/file-app/hn-file-app.entity';
 import { HnCommunityAppUser } from '../community-app-user/hn-community-app-user.entity';
 
 @Entity('app')
-export class HnCommunityApp extends HnBaseEntity {
+export class HnCommunityAppEntity extends HnBaseEntity {
   @Column({ nullable: false })
   title: string;
 
@@ -56,3 +56,5 @@ export class HnCommunityApp extends HnBaseEntity {
     this.space = space;
   }
 }
+
+export type HnCommunityApp = Omit<HnCommunityAppEntity, 'appFiles'>;

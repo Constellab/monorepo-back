@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { HnCommunityAppService } from './community-app/hn-community-app.service';
 import { HnCommunityAppStatService } from './community-app-stat/hn-community-app-stat.service';
 import { HnCommunityAppStatLabDto } from './community-app-stat/hn-community-app-stat.dto';
-import { DataSource, EntityManager, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
+import { DataSource, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
 import { HnUser } from '../users/hn-user.entity';
 import { HnCommunityAppEditDto } from './community-app/hn-community-app.dto';
-import { HnCommunityApp } from './community-app/hn-community-app.entity';
+import { HnCommunityApp, HnCommunityAppEntity } from './community-app/hn-community-app.entity';
 import { ClPage } from '@monorepo/core-lib';
 import { HnSpace } from '../space-aggregate/space/hn-space.entity';
 import {
@@ -25,6 +25,8 @@ import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
 import { HnCommunityAppUserService } from './community-app-user/hn-community-app-user.service';
 import { HnCommunityAppUser } from './community-app-user/hn-community-app-user.entity';
+import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
+import { HnFrontService } from '../core/service/hn-front.service';
 
 @Injectable()
 export class HnCommunityAppAggregateService {
@@ -35,11 +37,35 @@ export class HnCommunityAppAggregateService {
     private readonly fileAppService: HnFileAppService,
     private readonly objectStorageService: BlObjectStorageService,
     private readonly communityAppUserService: HnCommunityAppUserService,
+    private readonly frontService: HnFrontService,
     private dataSource: DataSource
   ) {}
 
+  async getAllAppsMap(): Promise<HnSitemapItemBase[]> {
+    const apps = await this.communityAppService.findAll(await this.getUserBasedWhereAppConditions());
+
+    const appsMap: HnSitemapItemBase[] = [];
+    for (const app of apps) {
+      appsMap.push({
+        url: this.frontService.getAppUrl(app.id, app.title),
+        priority: 0.8,
+        changefreq: HnSiteMapEnumChangefreq.MONTHLY,
+        lastmod: app.lastModifiedAt.toFormat('yyyy-MM-dd'),
+      });
+
+      appsMap.push({
+        url: this.frontService.getAppDetailUrl(app.id, app.title),
+        priority: 0.8,
+        changefreq: HnSiteMapEnumChangefreq.MONTHLY,
+        lastmod: app.lastModifiedAt.toFormat('yyyy-MM-dd'),
+      });
+    }
+
+    return appsMap;
+  }
+
   ////////////////////////////////////// APP ////////////////////////////////////////
-  async findOneById(id: string): Promise<HnCommunityApp> {
+  async findOneById(id: string): Promise<HnCommunityAppEntity> {
     const communityApp = await this.communityAppService.findOneById(id);
     if (communityApp.space) {
       const currentUser = HnCurrentUserHelper.getCurrentUser();
@@ -86,11 +112,11 @@ export class HnCommunityAppAggregateService {
       }
     }
 
-    return this.communityAppService.findAll(whereConditions, page, size);
+    return this.communityAppService.findAllPaginated(whereConditions, page, size);
   }
 
   async create(dto: HnCommunityAppEditDto): Promise<HnCommunityApp> {
-    if (!HnCommunityApp.isValidAppUrl(dto.appUrl)) throw new BlBadRequestException('Invalid app url');
+    if (!HnCommunityAppEntity.isValidAppUrl(dto.appUrl)) throw new BlBadRequestException('Invalid app url');
 
     let space: HnSpace = null;
     if (dto.spaceId) {
@@ -102,7 +128,7 @@ export class HnCommunityAppAggregateService {
 
   async update(dto: HnCommunityAppEditDto): Promise<HnCommunityApp> {
     if (dto.id == null) throw new BlBadRequestException('Id is required');
-    if (!HnCommunityApp.isValidAppUrl(dto.appUrl)) throw new BlBadRequestException('Invalid app url');
+    if (!HnCommunityAppEntity.isValidAppUrl(dto.appUrl)) throw new BlBadRequestException('Invalid app url');
     let space: HnSpace = null;
     if (dto.spaceId) {
       await this.spaceAggregateService.checkIfSpaceExists(dto.spaceId);
@@ -117,26 +143,6 @@ export class HnCommunityAppAggregateService {
       throw new BlBadRequestException('App not found');
     }
     return this.communityAppService.updateDescription(app, newDescription);
-  }
-
-  public async addComment(app: HnCommunityApp, entityManager: EntityManager): Promise<HnCommunityApp> {
-    app.comments++;
-    return entityManager.save(app);
-  }
-
-  public async removeComment(app: HnCommunityApp, entityManager: EntityManager): Promise<HnCommunityApp> {
-    app.comments--;
-    return entityManager.save(app);
-  }
-
-  public async addLike(app: HnCommunityApp, entityManager: EntityManager): Promise<HnCommunityApp> {
-    app.likes++;
-    return entityManager.save(app);
-  }
-
-  public async removeLike(app: HnCommunityApp, entityManager: EntityManager): Promise<HnCommunityApp> {
-    app.likes--;
-    return entityManager.save(app);
   }
 
   public async getAppPicture(filename: string): Promise<BlFileResponse> {

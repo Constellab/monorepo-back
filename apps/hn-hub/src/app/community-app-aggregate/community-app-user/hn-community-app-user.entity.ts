@@ -1,17 +1,17 @@
 import { Entity, ManyToOne } from 'typeorm';
 import { HnUser } from '../../users/hn-user.entity';
 import { BlEntityWithId } from '@monorepo/back-core-lib';
-import { HnCommunityApp } from '../community-app/hn-community-app.entity';
+import { HnCommunityAppEntity } from '../community-app/hn-community-app.entity';
 
 @Entity('app_user')
 export class HnCommunityAppUser extends BlEntityWithId {
-  @ManyToOne(() => HnCommunityApp, (app) => app.appUsers)
-  app: HnCommunityApp;
+  @ManyToOne(() => HnCommunityAppEntity, (app) => app.appUsers)
+  app: HnCommunityAppEntity;
 
   @ManyToOne(() => HnUser, (user) => user.brickUsers, { eager: true })
   user: HnUser;
 
-  initAppUser(brick: HnCommunityApp, user: HnUser): void {
+  initAppUser(brick: HnCommunityAppEntity, user: HnUser): void {
     this.app = brick;
     this.user = user;
   }

@@ -3,61 +3,39 @@ import { HnAbstractCommentService } from '../comment-core/hn-abstract-comment.se
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { HnCommentApp } from './hn-comment-app.entity';
-import { ClPage } from '@monorepo/core-lib';
-import { BlAbstractPaginatedService } from '@monorepo/back-core-lib';
-import { TeRichText } from '@monorepo/te-text-editor';
 import { HnCommunityAppAggregateService } from '../../community-app-aggregate/hn-community-app-aggregate.service';
-import { HnCommunityApp } from '../../community-app-aggregate/community-app/hn-community-app.entity';
+import { HnCommunityAppEntity } from '../../community-app-aggregate/community-app/hn-community-app.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { TeRichText } from '@monorepo/te-text-editor';
 
 @Injectable()
-export class HnCommentAppService extends HnAbstractCommentService<HnCommunityApp> {
+export class HnCommentAppService extends HnAbstractCommentService<HnCommunityAppEntity> {
   constructor(
     private communityAppAggregateService: HnCommunityAppAggregateService,
     @InjectRepository(HnCommentApp) commentAppRepository: Repository<HnCommentApp>,
-    dataSource: DataSource
+    dataSource: DataSource,
+    eventEmitter: EventEmitter2
   ) {
-    super(commentAppRepository, dataSource);
+    super(commentAppRepository, dataSource, eventEmitter);
   }
 
-  async addComment(entityManager: EntityManager, entity: HnCommunityApp): Promise<HnCommunityApp> {
-    return this.communityAppAggregateService.addComment(entity, entityManager);
+  async getEntityAndCheckRightsById(entityId: string): Promise<HnCommunityAppEntity> {
+    return this.communityAppAggregateService.findOneById(entityId);
   }
 
-  createComment(entity: HnCommunityApp, commentData: TeRichText): HnCommentApp {
+  getEntityClass(): typeof HnCommentApp {
+    return HnCommentApp;
+  }
+
+  createComment(entity: HnCommunityAppEntity, commentData: TeRichText): HnCommentApp {
     const comment: HnCommentApp = new HnCommentApp();
+    comment.entityId = entity.id;
     comment.entity = entity;
     comment.setContentRichText(commentData);
     return comment;
   }
 
-  async getEntityById(entityId: string): Promise<HnCommunityApp> {
-    return this.communityAppAggregateService.findOneById(entityId);
-  }
-
-  async removeComment(entityManager: EntityManager, entity: HnCommunityApp): Promise<HnCommunityApp> {
-    return this.communityAppAggregateService.removeComment(entity, entityManager);
-  }
-
   async saveComment(entityManager: EntityManager, comment: HnCommentApp): Promise<HnCommentApp> {
-    return entityManager.save(comment);
-  }
-
-  async getComments(page: number, size: number, entityId: string): Promise<ClPage<HnCommentApp>> {
-    return await BlAbstractPaginatedService.findPaginatedStatic(
-      page,
-      size,
-      {
-        where: {
-          entity: {
-            id: entityId,
-          },
-        },
-        order: {
-          createdAt: 'DESC' as any,
-        },
-      },
-      this.repository.manager,
-      HnCommentApp
-    );
+    return await entityManager.save(comment as HnCommentApp);
   }
 }

@@ -9,6 +9,7 @@ import { HnUserModule } from '../users/hn-user.module';
 import { HnFileAppModule } from '../file-aggregate/file-app/hn-file-app.module';
 import { HnSpaceAggregateModule } from '../space-aggregate/hn-space-aggregate.module';
 import { HnCommunityAppUserModule } from './community-app-user/hn-community-app-user.module';
+import { HnCommunityAppListener } from './hn-community-app.listener';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { HnCommunityAppUserModule } from './community-app-user/hn-community-app-
     HnCommunityAppUserModule,
   ],
   controllers: [HnCommunityAppController, HnCommunityAppForLabController],
-  providers: [HnCommunityAppAggregateService],
+  providers: [HnCommunityAppAggregateService, HnCommunityAppListener],
   exports: [HnCommunityAppAggregateService],
 })
 export class HnCommunityAppAggregateModule {}

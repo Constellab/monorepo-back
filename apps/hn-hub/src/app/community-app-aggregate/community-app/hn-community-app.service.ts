@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HnCommunityApp } from './hn-community-app.entity';
+import { HnCommunityApp, HnCommunityAppEntity } from './hn-community-app.entity';
 import { EntityManager, FindOptionsWhere, Repository } from 'typeorm';
 import { ClPage } from '@monorepo/core-lib';
 import { BlAbstractPaginatedService } from '@monorepo/back-core-lib';
@@ -11,14 +11,24 @@ import { TeRichTextDTO } from '@monorepo/te-text-editor';
 @Injectable()
 export class HnCommunityAppService {
   constructor(
-    @InjectRepository(HnCommunityApp) private readonly communityAppRepository: Repository<HnCommunityApp>
+    @InjectRepository(HnCommunityAppEntity)
+    private readonly communityAppRepository: Repository<HnCommunityAppEntity>
   ) {}
 
-  async findOneById(id: string): Promise<HnCommunityApp> {
+  async findOneById(id: string): Promise<HnCommunityAppEntity> {
     return this.communityAppRepository.findOneBy({ id: id });
   }
 
   async findAll(
+    whereConditions: FindOptionsWhere<HnCommunityApp>[] | FindOptionsWhere<HnCommunityApp>
+  ): Promise<HnCommunityApp[]> {
+    return this.communityAppRepository.find({
+      where: whereConditions,
+      order: { lastModifiedAt: 'DESC' as any },
+    });
+  }
+
+  async findAllPaginated(
     whereConditions: FindOptionsWhere<HnCommunityApp>[] | FindOptionsWhere<HnCommunityApp>,
     page: number,
     size: number
@@ -31,7 +41,7 @@ export class HnCommunityAppService {
         order: { lastModifiedAt: 'DESC' as any },
       },
       this.communityAppRepository.manager,
-      HnCommunityApp
+      HnCommunityAppEntity
     );
   }
 
@@ -40,7 +50,7 @@ export class HnCommunityAppService {
   }
 
   async create(dto: HnCommunityAppEditDto, space: HnSpace = null): Promise<HnCommunityApp> {
-    const app = new HnCommunityApp();
+    const app = new HnCommunityAppEntity();
     app.updateFromDto(dto, space);
     return this.communityAppRepository.save(app);
   }
@@ -62,5 +72,17 @@ export class HnCommunityAppService {
   async incrementExecutions(app: HnCommunityApp, entityManager: EntityManager): Promise<void> {
     app.executions++;
     await entityManager.save(app);
+  }
+
+  async updateComments(appId: string, numberOfComments: number): Promise<void> {
+    const app = await this.findOneById(appId);
+    app.comments = numberOfComments;
+    await this.communityAppRepository.save(app);
+  }
+
+  async updateLikes(appId: string, numberOfLikes: number): Promise<void> {
+    const app = await this.findOneById(appId);
+    app.likes = numberOfLikes;
+    await this.communityAppRepository.save(app);
   }
 }

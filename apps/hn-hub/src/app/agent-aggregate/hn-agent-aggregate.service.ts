@@ -13,7 +13,7 @@ import {
 } from './agent/hn-agent.dto';
 import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
 import { HnAgent } from './agent/hn-agent.entity';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { ClPage, ClStringHelper } from '@monorepo/core-lib';
 import {
@@ -644,28 +644,6 @@ export class HnAgentAggregateService {
         await this.agentService.updateAgentLatestPublishVersion(agent.id, latestVersion, entityManager);
       }
     });
-  }
-
-  ////////////////////////////////////////// LIKES /////////////////////////////////
-  public async addLike(agent: HnAgent, entityManager: EntityManager): Promise<HnAgent> {
-    agent.likes++;
-    return entityManager.save(agent, { listeners: false });
-  }
-
-  public async removeLike(agent: HnAgent, entityManager: EntityManager): Promise<HnAgent> {
-    agent.likes--;
-    return entityManager.save(agent, { listeners: false });
-  }
-
-  ///////////////////////////////////////// COMMENTS ///////////////////////////////
-  public async addComment(agent: HnAgent, entityManager: EntityManager): Promise<HnAgent> {
-    agent.comments++;
-    return entityManager.save(agent, { listeners: false });
-  }
-
-  public async removeComment(agent: HnAgent, entityManager: EntityManager): Promise<HnAgent> {
-    agent.comments--;
-    return entityManager.save(agent, { listeners: false });
   }
 
   /////////////////////////////////////// FILES  ////////////////////////////////////

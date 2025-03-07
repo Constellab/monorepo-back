@@ -20,7 +20,7 @@ import { HnBrickVersion, HnNewVersionDTO, HnReferenceDTO } from './brick-version
 import { HnBrickMajorVersionService } from './brick-major-version/hn-brick-major-version.service';
 import { HnBrickVersionService } from './brick-version/hn-brick-version.service';
 import { ClPage, ClStringHelper } from '@monorepo/core-lib';
-import { DataSource, EntityManager, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
+import { DataSource, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
 import { HnBrickMajorVersion } from './brick-major-version/hn-brick-major-version.entity';
 import { HnFolderService } from './folder/hn-folder.service';
 import { HnFolder } from './folder/hn-folder.entity';
@@ -1137,16 +1137,5 @@ export class HnBrickAggregateService {
     }
 
     return whereConditions;
-  }
-
-  ////////////////////////////////////////// LIKES /////////////////////////////////
-  public async addLike(brick: HnBrick, entityManager: EntityManager): Promise<HnBrick> {
-    brick.likes++;
-    return entityManager.save(brick, { listeners: false });
-  }
-
-  public async removeLike(brick: HnBrick, entityManager: EntityManager): Promise<HnBrick> {
-    brick.likes--;
-    return entityManager.save(brick, { listeners: false });
   }
 }

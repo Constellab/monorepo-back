@@ -18,7 +18,7 @@ import { ClPage } from '@monorepo/core-lib';
 import { Response } from 'express';
 import { HnCommunityAppDto, HnCommunityAppEditDto } from './community-app/hn-community-app.dto';
 import { HnAbstractFileController } from '../file-aggregate/file-core/hn-abstract-file.controller';
-import { HnCommunityApp } from './community-app/hn-community-app.entity';
+import { HnCommunityAppEntity } from './community-app/hn-community-app.entity';
 import { HnFileAppService } from '../file-aggregate/file-app/hn-file-app.service';
 import {
   TeBlockFigureUploadedResponse,
@@ -26,14 +26,21 @@ import {
   TeRichTextDTO,
 } from '@monorepo/te-text-editor';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 
 @Controller('app')
-export class HnCommunityAppController extends HnAbstractFileController<HnCommunityApp> {
+export class HnCommunityAppController extends HnAbstractFileController<HnCommunityAppEntity> {
   constructor(
     private readonly communityAppAggregateService: HnCommunityAppAggregateService,
     fileAppService: HnFileAppService
   ) {
     super(fileAppService);
+  }
+
+  @BlPublic()
+  @Get('all-map')
+  async getAllAppsMap(): Promise<HnSitemapItemBase[]> {
+    return this.communityAppAggregateService.getAllAppsMap();
   }
 
   @BlPublic()
