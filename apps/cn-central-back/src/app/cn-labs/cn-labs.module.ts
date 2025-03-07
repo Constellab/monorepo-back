@@ -14,7 +14,7 @@ import { CnBricksModule } from '../cn-bricks/cn-bricks.module';
 import { CnLabConfigsModule } from '../cn-lab-configs/cn-lab-configs.module';
 import { CnLabMailService } from './mail/cn-lab-mail.service';
 import { CnLabsSecurity } from './cn-labs.security';
-import { CnLabUser } from './user/cn-lab-user.entity';
+import { CnLabUserEntity } from './user/cn-lab-user.entity';
 import { CnGroupsModule } from '../cn-groups/cn-groups.module';
 import { CnLabUserService } from './user/cn-lab-user.service';
 import { CnNotesModule } from '../cn-folders-aggregate/cn-notes/cn-notes.module';
@@ -60,7 +60,7 @@ import { CnLabStatsAggregateService } from './stats/cn-lab-stats-aggregate.servi
     TypeOrmModule.forFeature([
       CnLabEntity,
       CnLabStatusHistory,
-      CnLabUser,
+      CnLabUserEntity,
       CnLabGreenOption,
       CnLabFree,
       CnLabBackupOption,

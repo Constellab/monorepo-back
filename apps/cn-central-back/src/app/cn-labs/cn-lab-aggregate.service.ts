@@ -57,7 +57,7 @@ import {
   BlSearchParams,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
-import { CnLabUser, CnLabUserRole } from './user/cn-lab-user.entity';
+import { CnLabUserRole, CnLabUserWithUser } from './user/cn-lab-user.entity';
 import { CnExternalLabUserService } from '../cn-external-lab-api/cn-external-lab-user.service';
 import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
 import { CnLabUserService } from './user/cn-lab-user.service';
@@ -669,7 +669,7 @@ export class CnLabAggregateService {
 
   /////////////////////////////////////// GROUPS //////////////////////////////////
 
-  public async addUserToLab(labId: string, userId: string, role: CnLabUserRole): Promise<CnLabUser> {
+  public async addUserToLab(labId: string, userId: string, role: CnLabUserRole): Promise<CnLabUserWithUser> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId, false);
     const user = await this.usersService.findByIdAndCheck(userId);
 
@@ -691,7 +691,11 @@ export class CnLabAggregateService {
     });
   }
 
-  public async updateUserLabRole(labId: string, groupId: string, role: CnLabUserRole): Promise<CnLabUser> {
+  public async updateUserLabRole(
+    labId: string,
+    groupId: string,
+    role: CnLabUserRole
+  ): Promise<CnLabUserWithUser> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId, false);
 
     return this.labUserService.updateLabUserRole(lab, groupId, role);
@@ -730,7 +734,7 @@ export class CnLabAggregateService {
   /**
    * Return the list of shared group for tha root folder
    */
-  public async getLabSharedUsers(labId: string): Promise<CnLabUser[]> {
+  public async getLabSharedUsers(labId: string): Promise<CnLabUserWithUser[]> {
     const lab = await this.getAndCheckAuthorizationToFindById(labId);
 
     return this.labUserService.findByLabId(lab.id);

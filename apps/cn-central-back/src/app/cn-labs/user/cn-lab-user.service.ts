@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CnLabUser, CnLabUserRole } from './cn-lab-user.entity';
+import { CnLabUser, CnLabUserEntity, CnLabUserRole, CnLabUserWithUser } from './cn-lab-user.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 import { CnLab, CnLabEntity } from '../cn-lab.entity';
@@ -9,57 +9,56 @@ import { BlBadRequestException } from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnLabUserService {
-  constructor(@InjectRepository(CnLabUser) private repository: Repository<CnLabUser>) {}
+  constructor(@InjectRepository(CnLabUserEntity) private repository: Repository<CnLabUserEntity>) {}
 
   public async createLabUser(
     lab: CnLab,
     user: CnUser,
     role: CnLabUserRole,
     entityManager: EntityManager
-  ): Promise<CnLabUser> {
-    const labGroupDb = await this.findByLabIdAndUserId(lab.id, user.id);
+  ): Promise<CnLabUserEntity> {
+    const labUserDb = await this.findByLabIdAndUserId(lab.id, user.id);
 
-    if (labGroupDb != null) {
+    if (labUserDb != null) {
       throw new BlBadRequestException(CnErrorText.LAB_ALREADY_SHARED_WITH_USER);
     }
 
-    const labGroup = new CnLabUser();
-    labGroup.lab = lab as CnLabEntity;
-    labGroup.user = user;
-    labGroup.role = role;
+    const labUser = new CnLabUserEntity();
+    labUser.lab = lab as CnLabEntity;
+    labUser.user = user;
+    labUser.role = role;
 
-    return entityManager.save(labGroup);
+    return entityManager.save(labUser);
   }
 
-  public async updateLabUserRole(lab: CnLab, userId: string, role: CnLabUserRole): Promise<CnLabUser> {
-    const labGroup = await this.findByLabIdAndUserId(lab.id, userId);
+  public async updateLabUserRole(lab: CnLab, userId: string, role: CnLabUserRole): Promise<CnLabUserEntity> {
+    const labUser = await this.findByLabIdAndUserId(lab.id, userId);
 
-    if (labGroup == null) {
+    if (labUser == null) {
       throw new BlBadRequestException(CnErrorText.LAB_NOT_SHARED_WITH_USER);
     }
 
     // if the role was changed from admin to user, check that there is at least one admin
-    if (labGroup.role === CnLabUserRole.OWNER && role === CnLabUserRole.USER) {
+    if (labUser.role === CnLabUserRole.OWNER && role === CnLabUserRole.USER) {
       await this.checkLabAdminsCount(lab);
     }
 
-    labGroup.role = role;
-    return this.repository.save(labGroup);
+    labUser.role = role;
+    return this.repository.save(labUser);
   }
 
   public async deleteLabUser(lab: CnLab, userId: string, entityManager: EntityManager): Promise<void> {
-    const labGroup = await this.findByLabIdAndUserId(lab.id, userId);
-
-    if (labGroup == null) {
+    const labUser = await this.findByLabIdAndUserId(lab.id, userId);
+    if (labUser == null) {
       throw new BlBadRequestException(CnErrorText.LAB_NOT_SHARED_WITH_USER);
     }
 
     // check that there is at least one admin
-    if (labGroup.role === CnLabUserRole.OWNER) {
+    if (labUser.role === CnLabUserRole.OWNER) {
       await this.checkLabAdminsCount(lab);
     }
 
-    await entityManager.remove(labGroup);
+    await entityManager.remove(labUser);
   }
 
   private async checkLabAdminsCount(lab: CnLab): Promise<void> {
@@ -78,7 +77,7 @@ export class CnLabUserService {
     });
   }
 
-  public findByLabId(labId: string): Promise<CnLabUser[]> {
+  public findByLabId(labId: string): Promise<CnLabUserWithUser[]> {
     return this.repository.find({
       where: {
         labId: labId,
@@ -94,7 +93,7 @@ export class CnLabUserService {
     });
   }
 
-  public async findLabOwner(labId: string): Promise<CnLabUser[]> {
+  public async findLabOwner(labId: string): Promise<CnLabUserWithUser[]> {
     return this.repository.find({
       where: {
         labId: labId,

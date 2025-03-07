@@ -25,7 +25,7 @@ export enum CnLabUserRole {
  * Entity for N to N relation between lab and group
  */
 @Entity('lab_user')
-export class CnLabUser {
+export class CnLabUserEntity {
   @PrimaryColumn()
   labId: string;
 
@@ -76,3 +76,7 @@ export class CnLabUser {
     this.lastModifiedAt = ClDateHelper.getDate();
   }
 }
+
+export type CnLabUser = Omit<CnLabUserEntity, 'lab' | 'user'>;
+
+export type CnLabUserWithUser = Omit<CnLabUserEntity, 'lab'>;

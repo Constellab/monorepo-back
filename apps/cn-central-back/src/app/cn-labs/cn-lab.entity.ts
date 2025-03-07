@@ -17,7 +17,7 @@ import { CnLabServerTaskStatus, CnLabStatus, cnLabStoppedStatuses } from './stat
 import { randomBytes } from 'crypto';
 import { CnExternalApiInfo } from '../cn-core/model/config/cn-config.class';
 import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
-import { CnLabUser } from './user/cn-lab-user.entity';
+import { CnLabUser, CnLabUserEntity } from './user/cn-lab-user.entity';
 import { BlLuxonDateTimeColumn, BlTrim } from '@monorepo/back-core-lib';
 import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { DateTime } from 'luxon';
@@ -144,7 +144,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   @Column({ nullable: false })
   spaceId?: string;
 
-  @OneToMany(() => CnLabUser, (instanceGroup) => instanceGroup.lab, { cascade: ['insert'] })
+  @OneToMany(() => CnLabUserEntity, (instanceGroup) => instanceGroup.lab, { cascade: ['insert'] })
   sharedGroups: CnLabUser[];
 
   @Type(() => CnServerCloud)

@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/commo
 import { Reflector } from '@nestjs/core';
 import { CnLabsService } from '../../cn-labs/cn-labs.service';
 import { Request } from 'express';
-import { CnLab, CnLabWithSpace } from '../../cn-labs/cn-lab.entity';
+import { CnLabWithSpace } from '../../cn-labs/cn-lab.entity';
 import { CnUsersService } from '../../cn-users/cn-users.service';
 import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.service';
 import { CnUser } from '../../cn-users/cn-user.entity';
@@ -84,7 +84,7 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
     }
 
     // set the user in the context as the connected user
-    const userWithRole = await this.getUserInContext(request, labInfo.lab, context);
+    const userWithRole = await this.getUserInContext(request, labInfo, context);
 
     const userInfo = new CnUserSpaceInfo(userWithRole.user, labInfo.lab.space, userWithRole.role);
 
@@ -115,7 +115,7 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
    */
   private async getUserInContext(
     request: Request,
-    lab: CnLab,
+    labInfo: CnGetLab,
     context: ExecutionContext
   ): Promise<CnUserWithRole> {
     // if the route is annotated with ClLabRobotAuthentication, set the robot user in the context
@@ -128,17 +128,17 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
         throw new BlUnauthorizedException(CnErrorText.LAB_REQ_NO_USER_IN_CONTEXT);
       }
 
-      return this.getUser(lab, userId);
+      return this.getAndCheckUser(labInfo, userId);
     }
   }
 
   /**
-   * Set the real user in the request context and check if the user has access to the lab and space
-   * @param lab
+   * Retrieve the user and check if the user has access to the lab and space
+   * @param labInfo
    * @param userId
    * @private
    */
-  private async getUser(lab: CnLab, userId: string): Promise<CnUserWithRole> {
+  private async getAndCheckUser(labInfo: CnGetLab, userId: string): Promise<CnUserWithRole> {
     const user: CnUser = await this.usersService.findById(userId);
 
     if (user == null) {
@@ -149,13 +149,17 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
     if (user.isAdmin()) {
       return { user: user, role: CnSpaceUserRole.ADMIN };
     } else {
-      // check if the user has access to the lab
-      const labUser = await this.labUserService.findByLabIdAndUserId(lab.id, userId);
-      if (labUser == null) {
-        throw new BlUnauthorizedException(CnErrorText.USER_NOT_IN_LAB);
+      // for lab token auth, we don't check the user in the lab
+      // TODO improve for lab token
+      if (labInfo.labEnvironment !== 'labToken') {
+        // check if the user has access to the lab
+        const labUser = await this.labUserService.findByLabIdAndUserId(labInfo.lab.id, userId);
+        if (labUser == null) {
+          throw new BlUnauthorizedException(CnErrorText.USER_NOT_IN_LAB);
+        }
       }
 
-      const spaceUser = await this.spaceUserService.getSpaceUserIfAccess(lab.spaceId, user.id);
+      const spaceUser = await this.spaceUserService.getSpaceUserIfAccess(labInfo.lab.spaceId, user.id);
       // if the user is not part of the space of his account is not active for this space
       // don't allow the user to access the route
       if (spaceUser == null) {
@@ -214,7 +218,7 @@ export class CnLabAuthGuard extends CnLabAuthGuardBase {
    * Try to get the lab from prod api key and then from dev api key
    */
   async getLabFromApiKey(apiKey: string, request: Request): Promise<CnGetLab> {
-    // TODO improve
+    // TODO improve for lab token
     // if the header exist it means that the lab is using a token to authenticate
     const labApiToken = request.header(cnExternalLabApiTokenHeader);
 

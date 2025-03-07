@@ -52,7 +52,7 @@ import {
   CnManagerLabPullBiotaOptions,
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
-import { CnLabUser, CnLabUserRole } from './user/cn-lab-user.entity';
+import { CnLabUserRole, CnLabUserWithUser } from './user/cn-lab-user.entity';
 import { CnCpCompleteInfo } from './server/cn-cloud-provider.class';
 import { CnLabGreenOption } from './green-option/cn-lab-green-option.entity';
 import { CnLabGreenOptionFormDto } from './green-option/cn-lab-green-option.dto';
@@ -313,7 +313,7 @@ export class CnLabsController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('userId', new ParseUUIDPipe()) userId: string,
     @Param('role', new BlParseEnumPipe(CnLabUserRole)) role: CnLabUserRole
-  ): Promise<CnLabUser> {
+  ): Promise<CnLabUserWithUser> {
     return this.aggregateService.addUserToLab(id, userId, role);
   }
 
@@ -322,7 +322,7 @@ export class CnLabsController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('userId', new ParseUUIDPipe()) userId: string,
     @Param('role', new BlParseEnumPipe(CnLabUserRole)) role: CnLabUserRole
-  ): Promise<CnLabUser> {
+  ): Promise<CnLabUserWithUser> {
     return this.aggregateService.updateUserLabRole(id, userId, role);
   }
 
@@ -335,7 +335,7 @@ export class CnLabsController {
   }
 
   @Get(':id/user')
-  public getLabSharedUsers(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabUser[]> {
+  public getLabSharedUsers(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabUserWithUser[]> {
     return this.aggregateService.getLabSharedUsers(id);
   }
 
