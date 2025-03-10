@@ -223,3 +223,18 @@ CREATE TABLE `like_app`
   CONSTRAINT `FK_0f5bbe3221a91cd7dc1b4812ae2` FOREIGN KEY (`entityId`) REFERENCES `app` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `FK_8473acdde59e5bbb8700e509dc9` FOREIGN KEY (`likedById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `app_user`;
+CREATE TABLE `app_user` (
+                          `id` varchar(36) NOT NULL,
+                          `appId` varchar(36) DEFAULT NULL,
+                          `userId` varchar(36) DEFAULT NULL,
+                          PRIMARY KEY (`id`),
+                          KEY `FK_ab2b6c1ca6939c84cedf0c83b8c` (`appId`),
+                          KEY `FK_6ea20ce66257c9bfb9f6690d8d1` (`userId`),
+                          CONSTRAINT `FK_6ea20ce66257c9bfb9f6690d8d1` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+                          CONSTRAINT `FK_ab2b6c1ca6939c84cedf0c83b8c` FOREIGN KEY (`appId`) REFERENCES `app` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+# DECLARE env var BUCKET_APPS
+# DECLARE env var BUCKET_APPS_BACKUP
