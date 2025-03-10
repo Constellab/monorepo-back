@@ -4,12 +4,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { HnCommentApp } from './hn-comment-app.entity';
 import { HnCommunityAppAggregateService } from '../../community-app-aggregate/hn-community-app-aggregate.service';
-import { HnCommunityAppEntity } from '../../community-app-aggregate/community-app/hn-community-app.entity';
+import { HnCommunityApp } from '../../community-app-aggregate/community-app/hn-community-app.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { TeRichText } from '@monorepo/te-text-editor';
 
 @Injectable()
-export class HnCommentAppService extends HnAbstractCommentService<HnCommunityAppEntity> {
+export class HnCommentAppService extends HnAbstractCommentService<HnCommunityApp> {
   constructor(
     private communityAppAggregateService: HnCommunityAppAggregateService,
     @InjectRepository(HnCommentApp) commentAppRepository: Repository<HnCommentApp>,
@@ -19,7 +19,7 @@ export class HnCommentAppService extends HnAbstractCommentService<HnCommunityApp
     super(commentAppRepository, dataSource, eventEmitter);
   }
 
-  async getEntityAndCheckRightsById(entityId: string): Promise<HnCommunityAppEntity> {
+  async getEntityAndCheckRightsById(entityId: string): Promise<HnCommunityApp> {
     return this.communityAppAggregateService.findOneById(entityId);
   }
 
@@ -27,7 +27,7 @@ export class HnCommentAppService extends HnAbstractCommentService<HnCommunityApp
     return HnCommentApp;
   }
 
-  createComment(entity: HnCommunityAppEntity, commentData: TeRichText): HnCommentApp {
+  createComment(entity: HnCommunityApp, commentData: TeRichText): HnCommentApp {
     const comment: HnCommentApp = new HnCommentApp();
     comment.entityId = entity.id;
     comment.entity = entity;

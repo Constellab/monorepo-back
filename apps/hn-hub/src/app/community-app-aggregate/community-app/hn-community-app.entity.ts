@@ -3,7 +3,6 @@ import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
 import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
 import { ClStringHelper } from '@monorepo/core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
-import { HnCommunityAppEditDto } from './hn-community-app.dto';
 import { HnFileApp } from '../../file-aggregate/file-app/hn-file-app.entity';
 import { HnCommunityAppUser } from '../community-app-user/hn-community-app-user.entity';
 
@@ -47,14 +46,6 @@ export class HnCommunityAppEntity extends HnBaseEntity {
     const urlFragment: string[] = urlWithoutHttp.split('/');
     return urlFragment.length > 0 && urlFragment[0].endsWith('.constellab.app');
   }
-
-  updateFromDto(dto: HnCommunityAppEditDto, space: HnSpace): void {
-    this.title = dto.title;
-    this.appUrl = dto.appUrl;
-    this.picture = dto.picture;
-    this.description = dto.description;
-    this.space = space;
-  }
 }
 
-export type HnCommunityApp = Omit<HnCommunityAppEntity, 'appFiles'>;
+export type HnCommunityApp = Omit<HnCommunityAppEntity, 'appFiles' | 'appUsers'>;

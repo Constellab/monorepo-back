@@ -6,6 +6,6 @@ import { HnAgent } from '../../agent-aggregate/agent/hn-agent.entity';
 @Entity('comment_agent')
 export class HnCommentAgent extends HnCommentEntity<HnAgent> {
   @Type(() => HnAgent)
-  @ManyToOne(() => HnAgent, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => HnAgent, { onDelete: 'CASCADE' })
   entity: HnAgent;
 }

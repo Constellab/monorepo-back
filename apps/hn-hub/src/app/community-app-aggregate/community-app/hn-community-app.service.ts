@@ -15,7 +15,7 @@ export class HnCommunityAppService {
     private readonly communityAppRepository: Repository<HnCommunityAppEntity>
   ) {}
 
-  async findOneById(id: string): Promise<HnCommunityAppEntity> {
+  async findOneById(id: string): Promise<HnCommunityApp> {
     return this.communityAppRepository.findOneBy({ id: id });
   }
 
@@ -51,8 +51,8 @@ export class HnCommunityAppService {
 
   async create(dto: HnCommunityAppEditDto, space: HnSpace = null): Promise<HnCommunityApp> {
     const app = new HnCommunityAppEntity();
-    app.updateFromDto(dto, space);
-    return this.communityAppRepository.save(app);
+    const updatedApp = this.updateFromDto(app, dto, space);
+    return this.communityAppRepository.save(updatedApp);
   }
 
   async update(id: string, dto: HnCommunityAppEditDto, space: HnSpace = null): Promise<HnCommunityApp> {
@@ -60,8 +60,17 @@ export class HnCommunityAppService {
     if (app == null) {
       throw new Error('App not found');
     }
-    app.updateFromDto(dto, space);
-    return this.communityAppRepository.save(app);
+    const updatedApp = this.updateFromDto(app, dto, space);
+    return this.communityAppRepository.save(updatedApp);
+  }
+
+  updateFromDto(app: HnCommunityApp, dto: HnCommunityAppEditDto, space: HnSpace = null): HnCommunityApp {
+    app.title = dto.title;
+    app.appUrl = dto.appUrl;
+    app.picture = dto.picture;
+    app.description = dto.description;
+    app.space = space;
+    return app;
   }
 
   async updateDescription(app: HnCommunityApp, newDescription: TeRichTextDTO): Promise<HnCommunityApp> {

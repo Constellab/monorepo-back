@@ -6,6 +6,6 @@ import { HnStory } from '../../story/hn-story.entity';
 @Entity('comment_story')
 export class HnCommentStory extends HnCommentEntity<HnStory> {
   @Type(() => HnStory)
-  @ManyToOne(() => HnStory, { eager: true })
+  @ManyToOne(() => HnStory, { onDelete: 'CASCADE' })
   entity: HnStory;
 }

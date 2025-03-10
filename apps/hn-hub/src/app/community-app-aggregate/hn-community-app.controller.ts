@@ -18,7 +18,7 @@ import { ClPage } from '@monorepo/core-lib';
 import { Response } from 'express';
 import { HnCommunityAppDto, HnCommunityAppEditDto } from './community-app/hn-community-app.dto';
 import { HnAbstractFileController } from '../file-aggregate/file-core/hn-abstract-file.controller';
-import { HnCommunityAppEntity } from './community-app/hn-community-app.entity';
+import { HnCommunityApp } from './community-app/hn-community-app.entity';
 import { HnFileAppService } from '../file-aggregate/file-app/hn-file-app.service';
 import {
   TeBlockFigureUploadedResponse,
@@ -29,7 +29,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 
 @Controller('app')
-export class HnCommunityAppController extends HnAbstractFileController<HnCommunityAppEntity> {
+export class HnCommunityAppController extends HnAbstractFileController<HnCommunityApp> {
   constructor(
     private readonly communityAppAggregateService: HnCommunityAppAggregateService,
     fileAppService: HnFileAppService

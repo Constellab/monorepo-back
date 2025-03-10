@@ -65,7 +65,7 @@ export class HnCommunityAppAggregateService {
   }
 
   ////////////////////////////////////// APP ////////////////////////////////////////
-  async findOneById(id: string): Promise<HnCommunityAppEntity> {
+  async findOneById(id: string): Promise<HnCommunityApp> {
     const communityApp = await this.communityAppService.findOneById(id);
     if (communityApp.space) {
       const currentUser = HnCurrentUserHelper.getCurrentUser();
