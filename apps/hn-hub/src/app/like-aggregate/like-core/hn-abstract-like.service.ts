@@ -1,6 +1,6 @@
 import { BlEntityWithId } from '@monorepo/back-core-lib';
 import { HnAbstractLikeEntity } from './hn-abstract-like.entity';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { HnEntityType } from '../../core/model/entities/hn-entity-type.enum';
@@ -8,16 +8,13 @@ import { HnEventType, HnLikeEventData } from '../../core/utils/hn-events.enum';
 
 export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
   repository: Repository<HnAbstractLikeEntity<BlEntityWithId>>;
-  dataSource: DataSource;
   eventEmitter: EventEmitter2;
 
   protected constructor(
     _repository: Repository<HnAbstractLikeEntity<BlEntityWithId>>,
-    _dataSource: DataSource,
     _eventEmitter: EventEmitter2
   ) {
     this.repository = _repository;
-    this.dataSource = _dataSource;
     this.eventEmitter = _eventEmitter;
   }
 
@@ -56,18 +53,13 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
 
     const like: any = this.createLike(entity);
     const numberOfLikes = (await this.getNumberOfLikes(entityId)) + 1;
+    const newLike: HnAbstractLikeEntity<T> = await this.repository.save(like);
+    if (!newLike) {
+      return null;
+    }
+    await this.emitLikeEvent(entityType, newLike.entity.id, numberOfLikes);
 
-    return await this.dataSource.transaction(async (entityManager) => {
-      const newLike: HnAbstractLikeEntity<T> = await entityManager.save(like);
-
-      if (!newLike) {
-        return null;
-      }
-
-      await this.emitLikeEvent(entityType, newLike.entity.id, numberOfLikes + 1);
-
-      return numberOfLikes;
-    });
+    return numberOfLikes;
   }
 
   async unlike(entityType: HnEntityType, entityId: string): Promise<number> {
@@ -77,17 +69,14 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
 
     const like: HnAbstractLikeEntity<BlEntityWithId> = await this.getLike(entityId);
     const numberOfLikes = (await this.getNumberOfLikes(entityId)) - 1;
+    const removedLike = await this.repository.remove(like);
+    if (!removedLike) {
+      return null;
+    }
 
-    return await this.dataSource.transaction(async (entityManager) => {
-      const removedLike = await entityManager.remove(like);
-      if (!removedLike) {
-        return null;
-      }
+    await this.emitLikeEvent(entityType, removedLike.entity.id, numberOfLikes);
 
-      await this.emitLikeEvent(entityType, removedLike.entity.id, numberOfLikes);
-
-      return numberOfLikes;
-    });
+    return numberOfLikes;
   }
 
   public async getNumberOfLikes(entityId: string): Promise<number> {

@@ -1,5 +1,5 @@
 import { HnCommentEntity } from './hn-comment.entity';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { BlAbstractPaginatedService, BlEntityWithId } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { TeRichText } from '@monorepo/te-text-editor';
@@ -9,16 +9,10 @@ import { HnCommentEventData, HnEventType } from '../../core/utils/hn-events.enum
 
 export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
   repository: Repository<HnCommentEntity<BlEntityWithId>>;
-  dataSource: DataSource;
   eventEmitter: EventEmitter2;
 
-  protected constructor(
-    _repository: Repository<HnCommentEntity<T>>,
-    _dataSource: DataSource,
-    _eventEmitter: EventEmitter2
-  ) {
+  protected constructor(_repository: Repository<HnCommentEntity<T>>, _eventEmitter: EventEmitter2) {
     this.repository = _repository;
-    this.dataSource = _dataSource;
     this.eventEmitter = _eventEmitter;
   }
 
@@ -53,36 +47,27 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
     commentData: TeRichText
   ): Promise<HnCommentEntity<T>> {
     const entity: T = await this.getEntityAndCheckRightsById(entityId);
-
     if (!entity) {
       throw new Error('Entity not found');
     }
-
     const comment: HnCommentEntity<T> = this.createComment(entity, commentData);
-    return await this.dataSource.transaction(async (entityManager) => {
-      const newComment = await entityManager.save(comment);
-      if (!newComment) {
-        throw new Error('Error while creating the comment');
-      }
-      await this.emitCommentEvent(
-        commentType,
-        comment.entityId,
-        await this.getNumberOfComments(comment.entityId)
-      );
-      return newComment;
-    });
+    const newComment = await this.repository.save(comment);
+    await this.emitCommentEvent(
+      commentType,
+      newComment.entityId,
+      await this.getNumberOfComments(newComment.entityId)
+    );
+    return newComment;
   }
 
   async deleteComment(commentType: HnEntityType, commentId: string): Promise<void> {
     const comment = await this.repository.findOneBy({ id: commentId });
-    await this.dataSource.transaction(async (entityManager) => {
-      await entityManager.remove(comment);
-      await this.emitCommentEvent(
-        commentType,
-        comment.entityId,
-        await this.getNumberOfComments(comment.entityId)
-      );
-    });
+    await this.repository.remove(comment);
+    await this.emitCommentEvent(
+      commentType,
+      comment.entityId,
+      await this.getNumberOfComments(comment.entityId)
+    );
   }
 
   private async emitCommentEvent(

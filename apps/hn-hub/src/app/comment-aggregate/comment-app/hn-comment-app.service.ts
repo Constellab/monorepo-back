@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { HnAbstractCommentService } from '../comment-core/hn-abstract-comment.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { HnCommentApp } from './hn-comment-app.entity';
 import { HnCommunityAppAggregateService } from '../../community-app-aggregate/hn-community-app-aggregate.service';
 import { HnCommunityApp } from '../../community-app-aggregate/community-app/hn-community-app.entity';
@@ -13,10 +13,9 @@ export class HnCommentAppService extends HnAbstractCommentService<HnCommunityApp
   constructor(
     private communityAppAggregateService: HnCommunityAppAggregateService,
     @InjectRepository(HnCommentApp) commentAppRepository: Repository<HnCommentApp>,
-    dataSource: DataSource,
     eventEmitter: EventEmitter2
   ) {
-    super(commentAppRepository, dataSource, eventEmitter);
+    super(commentAppRepository, eventEmitter);
   }
 
   async getEntityAndCheckRightsById(entityId: string): Promise<HnCommunityApp> {
@@ -33,9 +32,5 @@ export class HnCommentAppService extends HnAbstractCommentService<HnCommunityApp
     comment.entity = entity;
     comment.setContentRichText(commentData);
     return comment;
-  }
-
-  async saveComment(entityManager: EntityManager, comment: HnCommentApp): Promise<HnCommentApp> {
-    return await entityManager.save(comment as HnCommentApp);
   }
 }

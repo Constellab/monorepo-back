@@ -3,7 +3,7 @@ import { HnAbstractLikeService } from '../like-core/hn-abstract-like.service';
 import { HnLikeStory } from './hn-like-story.entity';
 import { HnStoryService } from '../../story/hn-story.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { HnStory } from '../../story/hn-story.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
@@ -12,10 +12,9 @@ export class HnLikeStoryService extends HnAbstractLikeService<HnStory> {
   constructor(
     private storyService: HnStoryService,
     @InjectRepository(HnLikeStory) likeStoryRepository: Repository<HnLikeStory>,
-    dataSource: DataSource,
     eventEmitter: EventEmitter2
   ) {
-    super(likeStoryRepository, dataSource, eventEmitter);
+    super(likeStoryRepository, eventEmitter);
   }
 
   async getEntityAndCheckRightsById(entityId: string): Promise<HnStory> {

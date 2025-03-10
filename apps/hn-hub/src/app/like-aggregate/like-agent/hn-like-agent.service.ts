@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { HnAbstractLikeService } from '../like-core/hn-abstract-like.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { HnLikeAgent } from './hn-like-agent.entity';
 import { HnAgent } from '../../agent-aggregate/agent/hn-agent.entity';
 import { HnAgentAggregateService } from '../../agent-aggregate/hn-agent-aggregate.service';
@@ -12,10 +12,9 @@ export class HnLikeAgentService extends HnAbstractLikeService<HnAgent> {
   constructor(
     private agentAggregateService: HnAgentAggregateService,
     @InjectRepository(HnLikeAgent) likeAgentRepository: Repository<HnLikeAgent>,
-    dataSource: DataSource,
     eventEmitter: EventEmitter2
   ) {
-    super(likeAgentRepository, dataSource, eventEmitter);
+    super(likeAgentRepository, eventEmitter);
   }
 
   async getEntityAndCheckRightsById(entityId: string): Promise<HnAgent> {
