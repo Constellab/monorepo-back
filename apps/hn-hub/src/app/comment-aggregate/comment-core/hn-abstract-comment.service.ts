@@ -39,7 +39,7 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
           } as any,
         },
         order: {
-          createdAt: 'DESC' as y,
+          createdAt: 'DESC' as any,
         },
       },
       this.repository.manager,
