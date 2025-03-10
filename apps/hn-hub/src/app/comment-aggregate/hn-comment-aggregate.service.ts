@@ -7,12 +7,15 @@ import { BlEntityWithId } from '@monorepo/back-core-lib';
 import { HnAbstractCommentService } from './comment-core/hn-abstract-comment.service';
 import { HnAbstractCommentDto } from './comment-core/hn-abstract-comment.dto';
 import { TeRichText } from '@monorepo/te-text-editor';
+import { HnCommentAppService } from './comment-app/hn-comment-app.service';
+import { HnCommentEntity } from './comment-core/hn-comment.entity';
 
 @Injectable()
 export class HnCommentAggregateService {
   constructor(
     private readonly commentStoryService: HnCommentStoryService,
-    private readonly commentAgentService: HnCommentAgentService
+    private readonly commentAgentService: HnCommentAgentService,
+    private readonly commentAppService: HnCommentAppService
   ) {}
 
   async getComments(
@@ -20,7 +23,7 @@ export class HnCommentAggregateService {
     entityId: string,
     page: number,
     size: number
-  ): Promise<ClPage<HnAbstractCommentDto>> {
+  ): Promise<ClPage<HnCommentEntity<any>>> {
     return this.getService(commentType).getComments(page, size, entityId);
   }
 
@@ -29,15 +32,19 @@ export class HnCommentAggregateService {
     entityId: string,
     comment: TeRichText
   ): Promise<HnAbstractCommentDto> {
-    return new HnAbstractCommentDto(await this.getService(commentType).comment(entityId, comment));
+    return new HnAbstractCommentDto(
+      await this.getService(commentType).comment(commentType, entityId, comment)
+    );
   }
 
   private getService(likeType: HnEntityType): HnAbstractCommentService<BlEntityWithId> {
     switch (likeType) {
-      case HnEntityType.STORY_LIKE:
+      case HnEntityType.STORY:
         return this.commentStoryService;
-      case HnEntityType.AGENT_LIKE:
+      case HnEntityType.AGENT:
         return this.commentAgentService;
+      case HnEntityType.APP:
+        return this.commentAppService;
       default:
         throw new Error('Unknown comment type');
     }

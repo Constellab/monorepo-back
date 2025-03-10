@@ -119,6 +119,12 @@ export class HnBrickService {
     }
   }
 
+  async updateLikes(brickId: string, numberOfLikes: number): Promise<void> {
+    const brick = await this.bricksRepository.findOneBy({ id: brickId });
+    brick.likes = numberOfLikes;
+    await this.bricksRepository.save(brick);
+  }
+
   async editBrick(brick: HnBrick, editedBrick: HnEditBrickDTO): Promise<HnBrick> {
     brick.description = editedBrick.description;
     brick.gitRepo = editedBrick.gitRepo;

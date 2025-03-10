@@ -21,6 +21,10 @@ export class HnSpaceAggregateService {
     return (await this.spaceService.find()).map((space) => new HnSpaceDto(space));
   }
 
+  public async findSpaceById(spaceId: string): Promise<HnSpace> {
+    return this.spaceService.findOne(spaceId);
+  }
+
   public async findSpacesOfUser(userId: string): Promise<HnSpace[]> {
     const spaceUsers = await this.spaceUserService.findActiveSpaceUsersByUserId(userId);
     return spaceUsers.map((spaceUser) => spaceUser.space);

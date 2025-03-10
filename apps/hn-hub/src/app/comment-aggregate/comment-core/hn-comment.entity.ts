@@ -3,9 +3,11 @@ import { Column } from 'typeorm';
 import { BlEntityWithId } from '@monorepo/back-core-lib';
 import { TeRichText, TeRichTextInput } from '@monorepo/te-text-editor';
 
-export abstract class HnAbstractCommentEntity<T extends BlEntityWithId> extends HnBaseEntity {
+export class HnCommentEntity<T extends BlEntityWithId> extends HnBaseEntity {
   @Column({ name: 'content', type: 'simple-json' })
   content: TeRichTextInput;
+
+  entityId: string;
 
   public getContentRichText(): TeRichText {
     return new TeRichText(this.content);
@@ -15,5 +17,5 @@ export abstract class HnAbstractCommentEntity<T extends BlEntityWithId> extends 
     this.content = content.toJson();
   }
 
-  abstract entity: T;
+  entity: T;
 }

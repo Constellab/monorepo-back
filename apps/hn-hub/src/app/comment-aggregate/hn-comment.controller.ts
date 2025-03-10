@@ -18,7 +18,9 @@ export class HnCommentController {
     @Param('commentType') commentType: HnEntityType,
     @Param('entityId', new ParseUUIDPipe()) entityId: string
   ): Promise<ClPage<HnAbstractCommentDto>> {
-    return this.commentAggregateService.getComments(commentType, entityId, page, size);
+    return (await this.commentAggregateService.getComments(commentType, entityId, page, size)).map(
+      (comment) => new HnAbstractCommentDto(comment)
+    );
   }
 
   @Post(':commentType/:entityId')

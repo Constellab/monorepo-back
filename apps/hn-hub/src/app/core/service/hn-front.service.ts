@@ -91,6 +91,19 @@ export class HnFrontService {
     return `${this.getAgentsUrl()}/${agentId}/${agentTitlePath}/version/${version}`;
   }
 
+  ///////////////////////////// APPS ///////////////////////////////////////////
+  public getAppsUrl(): string {
+    return `${this.getBaseWebsiteURL()}/apps`;
+  }
+
+  public getAppUrl(appId: string, appTitlePath: string): string {
+    return `${this.getAppsUrl()}/${appId}/${appTitlePath}`;
+  }
+
+  public getAppDetailUrl(appId: string, appTitlePath: string): string {
+    return `${this.getAppUrl(appId, appTitlePath)}/detail`;
+  }
+
   ///////////////////////////// USERS ///////////////////////////////////////////
   public getUserProfileUrl(userId: string): string {
     return `${this.getBaseWebsiteURL()}/profile/${userId}`;

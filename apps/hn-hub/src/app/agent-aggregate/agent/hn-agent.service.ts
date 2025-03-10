@@ -459,4 +459,16 @@ export class HnAgentService {
     agent.latestStyle = style;
     return this.agentRepository.save(agent);
   }
+
+  public async updateComments(agentId: string, numberOfComments: number): Promise<void> {
+    const agent = await this.findOne(agentId);
+    agent.comments = numberOfComments;
+    await this.agentRepository.save(agent);
+  }
+
+  public async updateLikes(agentId: string, numberOfLikes: number): Promise<void> {
+    const agent = await this.findOne(agentId);
+    agent.likes = numberOfLikes;
+    await this.agentRepository.save(agent);
+  }
 }

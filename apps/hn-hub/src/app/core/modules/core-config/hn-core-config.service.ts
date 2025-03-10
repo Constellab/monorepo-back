@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import {
   HN_BUCKET_AGENTS_BACKUP_KEY,
   HN_BUCKET_AGENTS_KEY,
+  HN_BUCKET_APPS_BACKUP_KEY,
+  HN_BUCKET_APPS_KEY,
   HN_BUCKET_DOCUMENTATION_BACKUP_KEY,
   HN_BUCKET_DOCUMENTATION_KEY,
   HN_BUCKET_ICON_BACKUP_KEY,
@@ -117,6 +119,14 @@ export class HnCoreConfigService {
 
   public getAgentFilesObjectStorageBackupBucket(): string {
     return this.configService.get(HN_BUCKET_AGENTS_BACKUP_KEY);
+  }
+
+  public getAppFilesObjectStorageBucket(): string {
+    return this.configService.get(HN_BUCKET_APPS_KEY);
+  }
+
+  public getAppFilesObjectStorageBackupBucket(): string {
+    return this.configService.get(HN_BUCKET_APPS_BACKUP_KEY);
   }
 
   public getGencoverySpaceId(): string {

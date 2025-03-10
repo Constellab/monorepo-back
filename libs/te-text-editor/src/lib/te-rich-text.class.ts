@@ -6,7 +6,7 @@ import {
   TeBlockHeaderData,
   TeBlockHeaderLevel,
   TeBlockType,
-  TeBlockViewData
+  TeBlockViewData,
 } from './te-block.class';
 import { TeRichTextMigrator } from './te-rich-text-migrator.class';
 
@@ -164,7 +164,12 @@ export class TeRichText {
     );
 
     return titleBlocks.map((block) => {
-      block.data.text = block.data.text.trim().replace('&nbsp;', '');
+      block.data.text = block.data.text
+        .trim()
+        .replace('&nbsp;', '')
+        .replace('&amp;', '&')
+        .replace('&lt;', '<')
+        .replace('&gt;', '>');
       return block.data;
     });
   }
