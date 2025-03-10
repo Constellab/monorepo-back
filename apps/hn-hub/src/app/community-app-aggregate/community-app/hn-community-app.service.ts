@@ -80,7 +80,7 @@ export class HnCommunityAppService {
 
   async incrementExecutions(app: HnCommunityApp, entityManager: EntityManager): Promise<void> {
     app.executions++;
-    await entityManager.save(app);
+    await entityManager.save(app, { listeners: false });
   }
 
   async updateComments(appId: string, numberOfComments: number): Promise<void> {
