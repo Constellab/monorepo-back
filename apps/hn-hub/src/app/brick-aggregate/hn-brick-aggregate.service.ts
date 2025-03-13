@@ -30,6 +30,7 @@ import {
   BlFile,
   BlFileResponse,
   BlNotFoundException,
+  BlSearchParams,
   BlUnauthorizedException,
   BlVersion,
 } from '@monorepo/back-core-lib';
@@ -62,6 +63,8 @@ import {
   TeRichTextAggregate,
   TeRichTextBlockModificationWithUser,
 } from '@monorepo/te-text-editor';
+import * as JSZip from 'jszip';
+import { Readable } from 'stream';
 
 @Injectable()
 export class HnBrickAggregateService {
@@ -84,6 +87,13 @@ export class HnBrickAggregateService {
   ) {}
 
   //------------------------------------- BRICKS -------------------------------------
+
+  public async search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<HnBrick>> {
+    if (!HnCurrentUserHelper.isAdmin()) {
+      throw new BlUnauthorizedException();
+    }
+    return this.brickService.search(searchParams, page, size);
+  }
 
   async findBricksWithFilter(
     spacesFilter: string[],
@@ -324,8 +334,20 @@ export class HnBrickAggregateService {
   async createBrick(body: HnCreateBrickDTO): Promise<HnBrick> {
     let brick: HnBrick;
     const brickVersion: HnBrickVersion = await this.dataSource.transaction(async (entityManager) => {
+      if (body.name.includes(' ')) {
+        throw new BlBadRequestException(HnErrorText.BRICK_NAME_INVALID);
+      }
+
+      const brickExist = await this.brickService.findOne({ name: body.name });
+      if (brickExist != null) {
+        throw new BlBadRequestException(HnErrorText.BRICK_ALREADY_EXIST);
+      }
+
+      const newBrick = new HnBrick();
+      newBrick.initialize(body);
+
       // Create brick
-      brick = await this.brickService.create(body, entityManager);
+      brick = await this.brickService.create(newBrick, entityManager);
 
       // init subpatch version if beta
       if (body.isBeta) body.version.subPatch = body.subPatch;
@@ -1137,5 +1159,45 @@ export class HnBrickAggregateService {
     }
 
     return whereConditions;
+  }
+
+  public async downloadDocsZip(brickId: string): Promise<BlFileResponse> {
+    const brickMajorVersion = await this.brickMajorVersionService.getLatestBrickMajorVersion(brickId);
+    const docs = await this.documentationService.getDocsByBrickVersion(brickMajorVersion.id);
+
+    const docsMarkDowns = [];
+    for (const doc of docs) {
+      const docUrl = this.frontService.getBrickDocUrl(
+        brickMajorVersion.brick.name,
+        brickMajorVersion.getStrVersion(),
+        doc.id,
+        doc.completePath
+      );
+
+      let docContentMarkdown = `# ${doc.title}\n\n`;
+      docContentMarkdown += doc
+        .getRichText()
+        .toMarkdown(`${this.configService.getApiUrl()}documentation/${doc.id}/image`, docUrl);
+      docsMarkDowns.push({
+        title: ClStringHelper.getCleanUrlPath(doc.title),
+        markdown: docContentMarkdown,
+      });
+    }
+
+    const zip = new JSZip();
+
+    docsMarkDowns.forEach((docContent, index) => {
+      zip.file(`${ClStringHelper.getCleanUrlPath(docContent.title)}.md`, docContent.markdown);
+    });
+
+    const zipContent = await zip.generateAsync({ type: 'nodebuffer' });
+    const stream = Readable.from(zipContent);
+
+    return {
+      name: 'docs.zip',
+      file: stream,
+      contentType: 'application/zip',
+      contentLength: zipContent.length,
+    } as BlFileResponse;
   }
 }

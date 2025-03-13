@@ -1,19 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { HnBrick } from './hn-brick.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, FindOptionsWhere, Repository } from 'typeorm';
-import { HnErrorText } from '../../core/model/config/hn-error-text.class';
-import { HnBrickDto, HnCreateBrickDTO, HnEditBrickDTO } from './hn-brick.dto';
+import { FindOptionsWhere, Repository } from 'typeorm';
+import { HnBrickDto, HnEditBrickDTO } from './hn-brick.dto';
 import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import {
   BlAbstractPaginatedService,
-  BlBadRequestException,
+  BlAbstractService,
   BlBucketConfig,
   BlBucketType,
   BlFile,
   BlFileResponse,
   BlImageHelper,
   BlObjectStorageService,
+  BlSearchBuilder,
+  BlSearchParams,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
 import { ClPage, ClStringHelper } from '@monorepo/core-lib';
@@ -21,28 +22,21 @@ import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-conf
 import { TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
 
 @Injectable()
-export class HnBrickService {
+export class HnBrickService extends BlAbstractService<HnBrick> {
   constructor(
     @InjectRepository(HnBrick)
     private bricksRepository: Repository<HnBrick>,
     private configService: HnCoreConfigService,
     private objectStorageService: BlObjectStorageService
-  ) {}
+  ) {
+    super(bricksRepository, HnBrick);
+  }
 
-  async create(createdBrick: HnCreateBrickDTO, entityManager: EntityManager): Promise<HnBrick> {
-    if (createdBrick.name.includes(' ')) {
-      throw new BlBadRequestException(HnErrorText.BRICK_NAME_INVALID);
-    }
+  public async search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<HnBrick>> {
+    const searchBuilder = new BlSearchBuilder<HnBrick>();
+    searchBuilder.addSearchParams(searchParams);
 
-    const brickExist: HnBrick = await this.bricksRepository.findOne({ where: { name: createdBrick.name } });
-
-    if (brickExist != null) {
-      throw new BlBadRequestException(HnErrorText.BRICK_ALREADY_EXIST);
-    }
-    const brick: HnBrick = new HnBrick();
-    brick.initialize(createdBrick);
-
-    return entityManager.save(brick);
+    return this.findPaginated(page, size, searchBuilder.build());
   }
 
   find(): Promise<HnBrick[]> {

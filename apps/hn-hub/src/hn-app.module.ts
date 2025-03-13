@@ -91,6 +91,7 @@ import { HnLikeAppModule } from './app/like-aggregate/like-app/hn-like-app.modul
 import { HnFileAgentModule } from './app/file-aggregate/file-agent/hn-file-agent.module';
 import { HnFileAppModule } from './app/file-aggregate/file-app/hn-file-app.module';
 import { HnCommunityAppUserModule } from './app/community-app-aggregate/community-app-user/hn-community-app-user.module';
+import { HnDifyModule } from './app/dify/hn-dify.module';
 
 function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: HnDatabaseConfig = configService.getDatabaseConfig();
@@ -277,6 +278,8 @@ TeRichTextModifications.setBackTimeDifference();
     HnCommunityAppUserModule,
 
     HnPublicModule,
+
+    HnDifyModule,
   ],
   controllers: [],
   providers: [

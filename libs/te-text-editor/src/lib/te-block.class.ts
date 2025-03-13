@@ -5,6 +5,8 @@ export enum TeBlockType {
   FILE_VIEW = 'fileView',
   LIST = 'list',
   HEADER = 'header',
+  CODE = 'code',
+  HINT = 'hint'
 }
 
 export enum TeInlineToolType {

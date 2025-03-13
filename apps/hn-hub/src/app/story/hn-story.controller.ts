@@ -9,10 +9,19 @@ import {
   Post,
   Put,
   Query,
+  Res,
   UseInterceptors,
 } from '@nestjs/common';
 import { HnStoryService } from './hn-story.service';
-import { BlFile, BlParsePipe, BlPublic, BlUploadedFile } from '@monorepo/back-core-lib';
+import {
+  BlFile,
+  BlFileResponse,
+  BlParsePipe,
+  BlPublic,
+  BlResponseHelper,
+  BlSearchParams,
+  BlUploadedFile,
+} from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { HnStory } from './hn-story.entity';
 import { HnCreateStoryDto, HnStoryDto, HnStoryFilter } from './hn-story.dto';
@@ -36,6 +45,7 @@ import {
   TeRichTextDTO,
   TeRichTextPipe,
 } from '@monorepo/te-text-editor';
+import { Response } from 'express';
 
 @Controller('story')
 export class HnStoryController extends HnAbstractFileController<HnStory> {
@@ -44,6 +54,27 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
     fileStoryService: HnFileStoryService
   ) {
     super(fileStoryService);
+  }
+
+  @IsAdmin()
+  @Post('search')
+  async search(
+    @Body(new BlParsePipe(BlSearchParams)) searchParams: BlSearchParams,
+    @Query('page', new ParseIntPipe()) page: number,
+    @Query('size', new ParseIntPipe()) size: number
+  ): Promise<ClPage<HnStoryDto>> {
+    const stories = await this.storyService.search(searchParams, page, size);
+    return stories.map((story) => new HnStoryDto(story));
+  }
+
+  @IsAdmin()
+  @Get('download-stories-zip')
+  async downloadStoriesZip(@Res() res: Response): Promise<any> {
+    const zip: BlFileResponse = await this.storyService.downloadStoriesZip();
+    res.set({
+      'Content-Disposition': `attachment; filename="${zip.name}"`,
+    });
+    BlResponseHelper.setFileResponse(res, zip);
   }
 
   @BlPublic()

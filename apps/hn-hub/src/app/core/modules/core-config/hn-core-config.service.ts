@@ -11,6 +11,7 @@ import {
   HN_BUCKET_ICON_KEY,
   HN_BUCKET_STORIES_BACKUP_KEY,
   HN_BUCKET_STORIES_KEY,
+  HN_DIFY_API_KEY,
   HN_ENVIRONMENT_PROFILE_KEY,
   HN_ENVIRONMENT_PROFILE_PROD_VALUE,
   HnEnvironmentProfile,
@@ -28,6 +29,10 @@ export class HnCoreConfigService {
 
   public isProduction(): boolean {
     return this.getEnvironmentProfile() === HN_ENVIRONMENT_PROFILE_PROD_VALUE;
+  }
+
+  public getApiUrl(): string {
+    return this.configService.get('API_URL');
   }
 
   public getJwtSecret(): string {
@@ -230,5 +235,9 @@ export class HnCoreConfigService {
 
   public getDomain(): string {
     return this.configService.get('DOMAIN');
+  }
+
+  public getDifyApiKey(): string {
+    return this.configService.get(HN_DIFY_API_KEY);
   }
 }

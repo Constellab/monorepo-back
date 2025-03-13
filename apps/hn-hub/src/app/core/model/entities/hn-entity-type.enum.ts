@@ -3,4 +3,5 @@ export enum HnEntityType {
   AGENT = 'agent',
   STORY = 'story',
   APP = 'app',
+  DOC = 'doc'
 }

@@ -14,6 +14,7 @@ import { HnCoreModule } from '../core/hn-core.module';
 import { HnFileStoryService } from '../file-aggregate/file-story/hn-file-story.service';
 import { HnFileStoryModule } from '../file-aggregate/file-story/hn-file-story.module';
 import { HnStoryFileModule } from '../story-file/hn-story-file.module';
+import { HnCoreConfigModule } from '../core/modules/core-config/hn-core-config.module';
 import { HnCommunityStoryListener } from './hn-story.listener';
 
 @Module({
@@ -27,6 +28,7 @@ import { HnCommunityStoryListener } from './hn-story.listener';
     HnStoryAuthorInviteModule,
     HnFileStoryModule,
     HnStoryFileModule,
+    HnCoreConfigModule,
   ],
   exports: [TypeOrmModule, HnStoryService],
   controllers: [HnStoryController],
