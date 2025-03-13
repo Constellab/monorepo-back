@@ -4,7 +4,7 @@ import { HnCommentEventData, HnEventType, HnLikeEventData } from '../core/utils/
 import { HnStoryService } from './hn-story.service';
 
 @Injectable()
-export class HnCommunityAppListener {
+export class HnCommunityStoryListener {
   constructor(private storyService: HnStoryService) {}
 
   @OnEvent(HnEventType.STORY_COMMENT)

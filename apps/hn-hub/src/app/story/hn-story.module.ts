@@ -14,6 +14,7 @@ import { HnCoreModule } from '../core/hn-core.module';
 import { HnFileStoryService } from '../file-aggregate/file-story/hn-file-story.service';
 import { HnFileStoryModule } from '../file-aggregate/file-story/hn-file-story.module';
 import { HnStoryFileModule } from '../story-file/hn-story-file.module';
+import { HnCommunityStoryListener } from './hn-story.listener';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { HnStoryFileModule } from '../story-file/hn-story-file.module';
     HnStoryAuthorService,
     HnStoryAuthorInviteService,
     HnFileStoryService,
+    HnCommunityStoryListener,
   ],
 })
 export class HnStoryModule {}
