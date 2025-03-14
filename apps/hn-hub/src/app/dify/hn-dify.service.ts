@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { HnDocumentationService } from '../brick-aggregate/documentation/hn-documentation.service';
-import { HnDifyCreateDocumentDto, HnDifyDocument } from './hn-dify.dto';
+import { HnDifyCreateDocumentDto, HnDifyCreateDocumentOptionsDto, HnDifyDocument } from './hn-dify.dto';
 import { HnAgentService } from '../agent-aggregate/agent/hn-agent.service';
 import { HnStoryService } from '../story/hn-story.service';
 import { HnEntityType } from '../core/model/entities/hn-entity-type.enum';
@@ -44,27 +44,37 @@ export class HnDifyService {
   async createDocuments(
     knowledgeBaseId: string,
     entityType: HnEntityType,
-    entityId: string = null
+    entityId: string = null,
+    options: HnDifyCreateDocumentOptionsDto = null
   ): Promise<boolean> {
     if (entityType === HnEntityType.BRICK && entityId)
-      return await this.createBricksDocDocuments(knowledgeBaseId, entityId);
-    else if (entityType == HnEntityType.STORY) return await this.createStoriesDocuments(knowledgeBaseId);
+      return await this.createBricksDocDocuments(knowledgeBaseId, entityId, options);
+    else if (entityType == HnEntityType.STORY)
+      return await this.createStoriesDocuments(knowledgeBaseId, options);
     return false;
   }
 
-  async createStoriesDocuments(knowledgeBaseId: string): Promise<boolean> {
+  async createStoriesDocuments(
+    knowledgeBaseId: string,
+    options: HnDifyCreateDocumentOptionsDto = null
+  ): Promise<boolean> {
     const stories = await this.storyService.findAllPublished();
     for (const story of stories) {
       await this.createDocument({
         entityType: HnEntityType.STORY,
         entityId: story.id,
         knowledgeBaseId: knowledgeBaseId,
+        options: options,
       });
     }
     return true;
   }
 
-  async createBricksDocDocuments(knowledgeBaseId: string, brickId: string): Promise<boolean> {
+  async createBricksDocDocuments(
+    knowledgeBaseId: string,
+    brickId: string,
+    options: HnDifyCreateDocumentOptionsDto = null
+  ): Promise<boolean> {
     const brickMajorVersion = await this.brickMajorService.getLatestBrickMajorVersion(brickId);
     const docs = await this.documentationService.getDocsByBrickVersion(brickMajorVersion.id);
     for (const doc of docs) {
@@ -72,6 +82,7 @@ export class HnDifyService {
         entityType: HnEntityType.DOC,
         entityId: doc.id,
         knowledgeBaseId: knowledgeBaseId,
+        options: options,
       });
     }
     return true;
@@ -121,7 +132,7 @@ export class HnDifyService {
       documentation.completePath
     );
     const text = this.getDocumentationDocumentText(documentation, docUrl);
-    return this.createDifyDocument(title, docUrl, text);
+    return this.createDifyDocument(title, docUrl, text, dto.options);
   }
 
   async createStoryDocument(dto: HnDifyCreateDocumentDto): Promise<HnDifyDocument> {
@@ -135,7 +146,7 @@ export class HnDifyService {
     text += story
       .getContentRichText()
       .toMarkdown(`${this.coreConfigService.getApiUrl()}story/${story.id}/image`, storyUrl);
-    return this.createDifyDocument(title, storyUrl, text);
+    return this.createDifyDocument(title, storyUrl, text, dto.options);
   }
 
   private getDocumentationDocumentText(documentation: HnDocumentation, docUrl: string): string {
@@ -146,7 +157,12 @@ export class HnDifyService {
     return `# ${documentation.title}\n\n${text}`;
   }
 
-  private createDifyDocument(title: string, url: string, content: string): HnDifyDocument {
+  private createDifyDocument(
+    title: string,
+    url: string,
+    content: string,
+    options: HnDifyCreateDocumentOptionsDto
+  ): HnDifyDocument {
     return {
       data: {
         indexing_technique: 'economy',
@@ -166,8 +182,8 @@ export class HnDifyService {
               { id: 'remove_urls_emails', enabled: false },
             ],
             segmentation: {
-              separator: '\n\n',
-              max_tokens: 500,
+              separator: options?.separator ?? '\n\n',
+              max_tokens: options?.maxTokens ?? 500,
             },
           },
         },

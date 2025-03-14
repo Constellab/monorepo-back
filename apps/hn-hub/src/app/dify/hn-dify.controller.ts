@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { HnDifyService } from './hn-dify.service';
-import { HnDifyCreateDocumentDto } from './hn-dify.dto';
+import { HnDifyCreateDocumentDto, HnDifyCreateDocumentOptionsDto } from './hn-dify.dto';
 import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 import { HnEntityType } from '../core/model/entities/hn-entity-type.enum';
 
@@ -18,9 +18,10 @@ export class HnDifyController {
   async createBrickDocsDocuments(
     @Param('knowledgeBaseId') knowledgeBaseId: string,
     @Param('entityType') entityType: HnEntityType,
-    @Param('entityId') entityId: string = null
+    @Param('entityId') entityId: string = null,
+    @Body() options: HnDifyCreateDocumentOptionsDto
   ): Promise<boolean> {
-    return await this.difyService.createDocuments(knowledgeBaseId, entityType, entityId);
+    return await this.difyService.createDocuments(knowledgeBaseId, entityType, entityId, options);
   }
 
   @Post()

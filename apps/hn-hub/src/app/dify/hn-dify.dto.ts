@@ -4,6 +4,12 @@ export class HnDifyCreateDocumentDto {
   entityType: HnEntityType;
   entityId: string;
   knowledgeBaseId: string;
+  options: HnDifyCreateDocumentOptionsDto;
+}
+
+export interface HnDifyCreateDocumentOptionsDto {
+  separator: string;
+  maxTokens: number;
 }
 
 export interface HnDifyDocument {
