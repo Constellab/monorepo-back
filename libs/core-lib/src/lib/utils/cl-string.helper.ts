@@ -154,7 +154,7 @@ export class ClStringHelper {
     if (typeof str !== 'string') {
       str = (str as any).toString();
     }
-    str = str.replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '');
+    str = str.replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,#*^¨}{@°`]/g), '');
     str.replace('--', '-');
     while (str[0] == '-') {
       str = str.slice();
