@@ -1,3 +1,5 @@
+import { TeBlockWithMetadata } from './te-metadata-block-config.class';
+
 export enum TeBlockType {
   PARAGRAPH = 'paragraph',
   FIGURE = 'figure',
@@ -6,7 +8,7 @@ export enum TeBlockType {
   LIST = 'list',
   HEADER = 'header',
   CODE = 'code',
-  HINT = 'hint'
+  HINT = 'hint',
 }
 
 export enum TeInlineToolType {
@@ -69,7 +71,7 @@ export enum TeBlockHeaderLevel {
   HEADER_3 = 4,
 }
 
-export interface TeBlockHeaderData {
+export interface TeBlockHeaderData extends TeBlockWithMetadata {
   text: string;
   level: number;
 }

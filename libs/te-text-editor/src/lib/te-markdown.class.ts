@@ -19,8 +19,18 @@ export class TeMarkdown {
     textEditorUrlPage: string = null
   ): string {
     let res = `${'#'.repeat(headerBlockData.level)} ${headerBlockData.text}`;
-    if (textEditorUrlPage) {
-      res += `\n<!-- \nsource_url: "${textEditorUrlPage}#${ClStringHelper.getCleanUrlPath(headerBlockData.text)}"\n-->`;
+    if (headerBlockData.metadata || textEditorUrlPage) {
+      res += '\n<!-- \n';
+      if (textEditorUrlPage) {
+        res += `source_url: "${textEditorUrlPage}#${ClStringHelper.getCleanUrlPath(headerBlockData.text)}"\n`;
+      }
+      if (headerBlockData.metadata?.appRoute) {
+        res += `app_route: "${headerBlockData.metadata.appRoute}"\n`;
+      }
+      if (headerBlockData.metadata?.permission) {
+        res += `permission: "${headerBlockData.metadata.permission}"\n`;
+      }
+      res += '-->';
     }
     return res;
   }

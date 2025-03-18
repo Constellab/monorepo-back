@@ -9,3 +9,4 @@ export * from './te-block.class';
 export * from './te-rich-text-migrator.class';
 export * from './te-user.class';
 export * from './te-markdown.class';
+export * from './te-metadata-block-config.class';
