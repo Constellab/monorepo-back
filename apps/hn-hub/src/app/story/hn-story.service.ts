@@ -6,8 +6,12 @@ import { HnTopicService } from '../topic/hn-topic.service';
 import { ClPage, ClStringHelper } from '@monorepo/core-lib';
 import {
   BlAbstractPaginatedService,
+  BlAbstractService,
   BlBadRequestException,
   BlFile,
+  BlFileResponse,
+  BlSearchBuilder,
+  BlSearchParams,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
@@ -33,9 +37,11 @@ import {
   TeRichTextAggregate,
   TeRichTextBlockModificationWithUser,
 } from '@monorepo/te-text-editor';
+import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
+import { HnMarkdownFile, HnZipHelper } from '../core/utils/hn-zip.helper';
 
 @Injectable()
-export class HnStoryService {
+export class HnStoryService extends BlAbstractService<HnStory> {
   constructor(
     @InjectRepository(HnStory)
     private readonly storyRepository: Repository<HnStory>,
@@ -44,8 +50,56 @@ export class HnStoryService {
     private storyAuthorService: HnStoryAuthorService,
     private storyFileService: HnFileStoryService,
     private userService: HnUserService,
-    private dataSource: DataSource
-  ) {}
+    private dataSource: DataSource,
+    private coreConfigService: HnCoreConfigService
+  ) {
+    super(storyRepository, HnStory);
+  }
+
+  public async search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<HnStory>> {
+    if (!HnCurrentUserHelper.isAdmin()) {
+      throw new BlUnauthorizedException();
+    }
+
+    const searchBuilder = new BlSearchBuilder<HnStory>();
+    searchBuilder.addSearchParams(searchParams);
+
+    return this.findPaginated(page, size, searchBuilder.build());
+  }
+
+  public async downloadStoriesZip(): Promise<BlFileResponse> {
+    if (!HnCurrentUserHelper.isAdmin()) {
+      throw new BlUnauthorizedException();
+    }
+    const stories: HnStory[] = await this.findAllPublished();
+    const storiesMarkDowns: HnMarkdownFile[] = [];
+    for (const story of stories) {
+      const storyUrl = this.frontService.getStoryUrl(story.id, ClStringHelper.getCleanUrlPath(story.title));
+      const storyMarkDown = this.getStoryMarkdown(story, storyUrl);
+      storiesMarkDowns.push({
+        name: ClStringHelper.getCleanUrlPath(story.title),
+        content: storyMarkDown,
+      });
+    }
+
+    return HnZipHelper.markdownsToZipFile(storiesMarkDowns, 'stories');
+  }
+
+  public getStoryMarkdown(story: HnStory, storyUrl: string): string {
+    let storyMarkDown = `# ${story.title}\n\n`;
+    storyMarkDown += story
+      .getContentRichText()
+      .toMarkdown(`${this.coreConfigService.getApiUrl()}story/${story.id}/image`, storyUrl);
+    return storyMarkDown;
+  }
+
+  async findAll(): Promise<HnStory[]> {
+    return this.storyRepository.find();
+  }
+
+  async findAllPublished(): Promise<HnStory[]> {
+    return this.storyRepository.findBy({ status: HnStoryStatus.PUBLISHED });
+  }
 
   async createStory(data: HnCreateStoryDto): Promise<HnStory> {
     const story = new HnStory();

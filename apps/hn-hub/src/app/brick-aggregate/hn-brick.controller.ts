@@ -16,9 +16,11 @@ import {
 } from '@nestjs/common';
 import {
   BlFile,
+  BlFileResponse,
   BlParsePipe,
   BlPublic,
   BlResponseHelper,
+  BlSearchParams,
   BlUnauthorizedException,
   BlUploadedFile,
 } from '@monorepo/back-core-lib';
@@ -48,6 +50,7 @@ import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.d
 import { HnUserDto } from '../users/hn-user.dto';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
+import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 
 @Controller('brick')
 @UseGuards(HnIsAdminGuard)
@@ -56,6 +59,30 @@ export class HnBrickController {
     private readonly brickAggregateService: HnBrickAggregateService,
     private readonly configService: HnCoreConfigService
   ) {}
+
+  @IsAdmin()
+  @Post('search')
+  async search(
+    @Body(new BlParsePipe(BlSearchParams)) searchParams: BlSearchParams,
+    @Query('page', new ParseIntPipe()) page: number,
+    @Query('size', new ParseIntPipe()) size: number
+  ): Promise<ClPage<HnBrickDto>> {
+    const bricks = await this.brickAggregateService.search(searchParams, page, size);
+    return bricks.map((brick) => new HnBrickDto(brick));
+  }
+
+  @IsAdmin()
+  @Get('download-docs-zip/:brickId')
+  async downloadDocsZip(
+    @Param('brickId', new ParseUUIDPipe()) brickId: string,
+    @Res() res: Response
+  ): Promise<any> {
+    const zip: BlFileResponse = await this.brickAggregateService.downloadDocsZip(brickId);
+    res.set({
+      'Content-Disposition': `attachment; filename="${zip.name}"`,
+    });
+    BlResponseHelper.setFileResponse(res, zip);
+  }
 
   @BlPublic()
   @Get('all-map')
@@ -267,7 +294,7 @@ export class HnBrickController {
   @Post('is-actual-brick-and-new-version')
   async isActualBrickAndNewVersion(
     @Body(new BlParsePipe(HnIsActualBrickAndNewVersionDTO))
-      content: HnIsActualBrickAndNewVersionDTO
+    content: HnIsActualBrickAndNewVersionDTO
   ): Promise<[boolean, boolean]> {
     return this.brickAggregateService.isActualBrickAndNewVersion(content);
   }

@@ -10,7 +10,7 @@ import {
   HnTechnicalDocInputDTO,
 } from './brick/hn-brick.dto';
 import { HnBrick, HnBrickVisibility } from './brick/hn-brick.entity';
-import { HnFolderDto, HnNode, HnNodeDTO } from './folder/hn-folder.dto';
+import { HnFolderDto, HnNode, HnNodeDTO, HnNodeType } from './folder/hn-folder.dto';
 import {
   HnDocumentation,
   HnDocumentationDTO,
@@ -30,6 +30,7 @@ import {
   BlFile,
   BlFileResponse,
   BlNotFoundException,
+  BlSearchParams,
   BlUnauthorizedException,
   BlVersion,
 } from '@monorepo/back-core-lib';
@@ -62,6 +63,7 @@ import {
   TeRichTextAggregate,
   TeRichTextBlockModificationWithUser,
 } from '@monorepo/te-text-editor';
+import { HnMarkdownFile, HnZipHelper } from '../core/utils/hn-zip.helper';
 
 @Injectable()
 export class HnBrickAggregateService {
@@ -84,6 +86,13 @@ export class HnBrickAggregateService {
   ) {}
 
   //------------------------------------- BRICKS -------------------------------------
+
+  public async search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<HnBrick>> {
+    if (!HnCurrentUserHelper.isAdmin()) {
+      throw new BlUnauthorizedException();
+    }
+    return this.brickService.search(searchParams, page, size);
+  }
 
   async findBricksWithFilter(
     spacesFilter: string[],
@@ -324,8 +333,20 @@ export class HnBrickAggregateService {
   async createBrick(body: HnCreateBrickDTO): Promise<HnBrick> {
     let brick: HnBrick;
     const brickVersion: HnBrickVersion = await this.dataSource.transaction(async (entityManager) => {
+      if (body.name.includes(' ')) {
+        throw new BlBadRequestException(HnErrorText.BRICK_NAME_INVALID);
+      }
+
+      const brickExist = await this.brickService.findOne({ name: body.name });
+      if (brickExist != null) {
+        throw new BlBadRequestException(HnErrorText.BRICK_ALREADY_EXIST);
+      }
+
+      const newBrick = new HnBrick();
+      newBrick.initialize(body);
+
       // Create brick
-      brick = await this.brickService.create(body, entityManager);
+      brick = await this.brickService.create(newBrick, entityManager);
 
       // init subpatch version if beta
       if (body.isBeta) body.version.subPatch = body.subPatch;
@@ -538,9 +559,94 @@ export class HnBrickAggregateService {
     }
   }
 
-  async updateTree(updatedTree: HnNode[]): Promise<HnNode[]> {
-    await this.checkIfUserHasRightsOnFolder(updatedTree[0].parentId);
-    return this.updateTreeFolder(updatedTree);
+  async updateNodeLocation(
+    nodeId: string,
+    nodeType: HnNodeType,
+    oldOrder: number,
+    newOrder: number,
+    olderParentId: string,
+    newParentId: string,
+    mainFolderId: string
+  ): Promise<HnNode> {
+    await this.checkIfUserHasRightsOnFolder(mainFolderId);
+    const olderParent: HnFolder = await this.folderService.findById(olderParentId);
+    const newParent: HnFolder = await this.folderService.findById(newParentId);
+
+    if (olderParentId != newParentId) {
+      for (const childFolder of olderParent.folders) {
+        if (childFolder.order > oldOrder) {
+          childFolder.order--;
+          await this.folderService.save(childFolder);
+        }
+      }
+
+      for (const childDoc of olderParent.documentations) {
+        if (childDoc.order > oldOrder) {
+          childDoc.order--;
+          await this.documentationService.updatePosition(childDoc);
+        }
+      }
+
+      for (const childFolder of newParent.folders) {
+        if (childFolder.order >= newOrder) {
+          childFolder.order++;
+          await this.folderService.save(childFolder);
+        }
+      }
+
+      for (const childDoc of newParent.documentations) {
+        if (childDoc.order >= newOrder) {
+          childDoc.order++;
+          await this.documentationService.updatePosition(childDoc);
+        }
+      }
+    } else {
+      if (oldOrder < newOrder) {
+        for (const childFolder of newParent.folders) {
+          if (childFolder.order > oldOrder && childFolder.order <= newOrder) {
+            childFolder.order--;
+            await this.folderService.save(childFolder);
+          }
+        }
+
+        for (const childDoc of newParent.documentations) {
+          if (childDoc.order > oldOrder && childDoc.order <= newOrder) {
+            childDoc.order--;
+            await this.documentationService.updatePosition(childDoc);
+          }
+        }
+      } else {
+        for (const childFolder of newParent.folders) {
+          if (childFolder.order >= newOrder && childFolder.order < oldOrder) {
+            childFolder.order++;
+            await this.folderService.save(childFolder);
+          }
+        }
+
+        for (const childDoc of newParent.documentations) {
+          if (childDoc.order >= newOrder && childDoc.order < oldOrder) {
+            childDoc.order++;
+            await this.documentationService.updatePosition(childDoc);
+          }
+        }
+      }
+    }
+
+    if (nodeType == HnNodeType.DOCUMENTATION) {
+      const doc = await this.documentationService.findById(nodeId);
+      doc.folder = newParent;
+      doc.order = newOrder;
+      doc.completePath = (newParent.completePath ?? '') + doc.path + '/';
+      await this.documentationService.save(doc);
+    } else {
+      const folder = await this.folderService.findById(nodeId);
+      folder.folder = newParent;
+      folder.order = newOrder;
+      folder.completePath = (newParent.completePath ?? '') + folder.path + '/';
+      await this.folderService.save(folder);
+    }
+
+    return await this.folderService.findBrickDocsTree(await this.folderService.findById(mainFolderId));
   }
 
   async updateTreeFolder(updatedTree: HnNode[]): Promise<HnNode[]> {
@@ -1137,5 +1243,31 @@ export class HnBrickAggregateService {
     }
 
     return whereConditions;
+  }
+
+  public async downloadDocsZip(brickId: string): Promise<BlFileResponse> {
+    const brickMajorVersion = await this.brickMajorVersionService.getLatestBrickMajorVersion(brickId);
+    const docs = await this.documentationService.getDocsByBrickVersion(brickMajorVersion.id);
+
+    const docsMarkDowns: HnMarkdownFile[] = [];
+    for (const doc of docs) {
+      const docUrl = this.frontService.getBrickDocUrl(
+        brickMajorVersion.brick.name,
+        brickMajorVersion.getStrVersion(),
+        doc.id,
+        doc.completePath
+      );
+
+      let docContentMarkdown = `# ${doc.title}\n\n`;
+      docContentMarkdown += doc
+        .getRichText()
+        .toMarkdown(`${this.configService.getApiUrl()}documentation/${doc.id}/image`, docUrl);
+      docsMarkDowns.push({
+        name: ClStringHelper.getCleanUrlPath(doc.title),
+        content: docContentMarkdown,
+      } as HnMarkdownFile);
+    }
+
+    return HnZipHelper.markdownsToZipFile(docsMarkDowns, 'docs');
   }
 }
