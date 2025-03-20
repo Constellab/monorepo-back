@@ -115,6 +115,10 @@ export class HnDocumentationService {
     await this.documentationsRepository.save(doc);
   }
 
+  async save(documentation: HnDocumentation): Promise<HnDocumentation> {
+    return await this.documentationsRepository.save(documentation);
+  }
+
   async getDocByLink(
     brickMajorVersion: HnBrickMajorVersion,
     completePath: string,

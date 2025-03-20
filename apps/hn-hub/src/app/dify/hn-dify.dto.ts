@@ -10,6 +10,7 @@ export class HnDifyCreateDocumentDto {
 export interface HnDifyCreateDocumentOptionsDto {
   separator: string;
   maxTokens: number;
+  indexingTechnique: 'high_quality' | 'economy';
 }
 
 export interface HnDifyDocument {

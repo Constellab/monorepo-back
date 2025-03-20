@@ -18,6 +18,8 @@ import { ClStringHelper } from '@monorepo/core-lib';
 
 @Injectable()
 export class HnDifyService {
+  difyApiUrl = 'https://api.dify.ai/v1/datasets';
+
   constructor(
     private readonly documentationService: HnDocumentationService,
     private readonly brickMajorService: HnBrickMajorVersionService,
@@ -31,10 +33,8 @@ export class HnDifyService {
 
   async getKnowledgeBaseList(): Promise<any> {
     return await lastValueFrom(
-      this.externalApiService.get('https://api.dify.ai/v1/datasets', null, {
-        headers: {
-          Authorization: `Bearer ${this.coreConfigService.getDifyApiKey()}`,
-        },
+      this.externalApiService.get(this.difyApiUrl, null, {
+        headers: this.getDifyHeaders(),
       })
     ).catch((error) => {
       throw new BlBadRequestException('Error while getting knowledge base list');
@@ -60,12 +60,13 @@ export class HnDifyService {
   ): Promise<boolean> {
     const stories = await this.storyService.findAllPublished();
     for (const story of stories) {
-      await this.createDocument({
+      const document = await this.createStoryDocument({
         entityType: HnEntityType.STORY,
         entityId: story.id,
         knowledgeBaseId: knowledgeBaseId,
         options: options,
       });
+      await this.sendDocumentToDify(document, knowledgeBaseId);
     }
     return true;
   }
@@ -78,12 +79,13 @@ export class HnDifyService {
     const brickMajorVersion = await this.brickMajorService.getLatestBrickMajorVersion(brickId);
     const docs = await this.documentationService.getDocsByBrickVersion(brickMajorVersion.id);
     for (const doc of docs) {
-      await this.createDocument({
+      const document = await this.createDocumentationDocument({
         entityType: HnEntityType.DOC,
         entityId: doc.id,
         knowledgeBaseId: knowledgeBaseId,
         options: options,
       });
+      await this.sendDocumentToDify(document, knowledgeBaseId);
     }
     return true;
   }
@@ -142,11 +144,8 @@ export class HnDifyService {
     }
     const title = `${story.title}`;
     const storyUrl = this.frontService.getStoryUrl(story.id, ClStringHelper.getCleanUrlPath(story.title));
-    let text = `# ${story.title}\n\n`;
-    text += story
-      .getContentRichText()
-      .toMarkdown(`${this.coreConfigService.getApiUrl()}story/${story.id}/image`, storyUrl);
-    return this.createDifyDocument(title, storyUrl, text, dto.options);
+    const markdown = this.storyService.getStoryMarkdown(story, storyUrl);
+    return this.createDifyDocument(title, storyUrl, markdown, dto.options);
   }
 
   private getDocumentationDocumentText(documentation: HnDocumentation, docUrl: string): string {
@@ -165,7 +164,7 @@ export class HnDifyService {
   ): HnDifyDocument {
     return {
       data: {
-        indexing_technique: 'economy',
+        indexing_technique: options?.indexingTechnique ?? 'high_quality',
         doc_form: 'text_model',
         doc_type: 'web_page',
         doc_metadata: {
@@ -203,16 +202,20 @@ export class HnDifyService {
     });
     formData.append('data', JSON.stringify(document.data));
     const response = await this.httpService.axiosRef.post(
-      `https://api.dify.ai/v1/datasets/${datasetId}/document/create-by-file`,
+      `${this.difyApiUrl}/${datasetId}/document/create-by-file`,
       formData,
       {
-        headers: {
-          ...formData.getHeaders(), // Ajoute les bons headers multipart
-          Authorization: `Bearer ${this.coreConfigService.getDifyApiKey()}`,
-        },
+        headers: this.getDifyHeaders(formData.getHeaders()),
       }
     );
 
     return response.data;
+  }
+
+  private getDifyHeaders(headers: FormData.Headers = null): any {
+    return {
+      ...headers,
+      Authorization: `Bearer ${this.coreConfigService.getDifyApiKey()}`,
+    };
   }
 }

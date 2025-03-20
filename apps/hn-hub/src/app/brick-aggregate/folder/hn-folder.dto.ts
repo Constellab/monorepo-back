@@ -30,6 +30,11 @@ export class HnFolderDto extends HnBaseDto {
   }
 }
 
+export enum HnNodeType {
+  DOCUMENTATION = 'DOCUMENTATION',
+  FOLDER = 'FOLDER',
+}
+
 export class HnNode extends BlEntityWithId {
   name: string;
 

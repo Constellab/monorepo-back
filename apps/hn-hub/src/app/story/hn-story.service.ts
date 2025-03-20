@@ -38,8 +38,7 @@ import {
   TeRichTextBlockModificationWithUser,
 } from '@monorepo/te-text-editor';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
-import * as JSZip from 'jszip';
-import { Readable } from 'stream';
+import { HnMarkdownFile, HnZipHelper } from '../core/utils/hn-zip.helper';
 
 @Injectable()
 export class HnStoryService extends BlAbstractService<HnStory> {
@@ -73,34 +72,25 @@ export class HnStoryService extends BlAbstractService<HnStory> {
       throw new BlUnauthorizedException();
     }
     const stories: HnStory[] = await this.findAllPublished();
-    const storiesMarkDowns = [];
+    const storiesMarkDowns: HnMarkdownFile[] = [];
     for (const story of stories) {
       const storyUrl = this.frontService.getStoryUrl(story.id, ClStringHelper.getCleanUrlPath(story.title));
-      let storyMarkDown = `# ${story.title}\n\n`;
-      storyMarkDown += story
-        .getContentRichText()
-        .toMarkdown(`${this.coreConfigService.getApiUrl()}story/${story.id}/image`, storyUrl);
+      const storyMarkDown = this.getStoryMarkdown(story, storyUrl);
       storiesMarkDowns.push({
-        title: ClStringHelper.getCleanUrlPath(story.title),
-        markdown: storyMarkDown,
+        name: ClStringHelper.getCleanUrlPath(story.title),
+        content: storyMarkDown,
       });
     }
 
-    const zip = new JSZip();
+    return HnZipHelper.markdownsToZipFile(storiesMarkDowns, 'stories');
+  }
 
-    storiesMarkDowns.forEach((storyContent, index) => {
-      zip.file(`${ClStringHelper.getCleanUrlPath(storyContent.title)}.md`, storyContent.markdown);
-    });
-
-    const zipContent = await zip.generateAsync({ type: 'nodebuffer' });
-    const stream = Readable.from(zipContent);
-
-    return {
-      name: 'stories.zip',
-      file: stream,
-      contentType: 'application/zip',
-      contentLength: zipContent.length,
-    } as BlFileResponse;
+  public getStoryMarkdown(story: HnStory, storyUrl: string): string {
+    let storyMarkDown = `# ${story.title}\n\n`;
+    storyMarkDown += story
+      .getContentRichText()
+      .toMarkdown(`${this.coreConfigService.getApiUrl()}story/${story.id}/image`, storyUrl);
+    return storyMarkDown;
   }
 
   async findAll(): Promise<HnStory[]> {

@@ -6,7 +6,7 @@ import {
   TeBlockHeaderData,
   TeBlockHeaderLevel,
   TeBlockType,
-  TeBlockViewData
+  TeBlockViewData,
 } from './te-block.class';
 import { TeRichTextMigrator } from './te-rich-text-migrator.class';
 import { TeMarkdown } from './te-markdown.class';
@@ -252,7 +252,7 @@ export class TeRichText {
           result += TeMarkdown.getCodeBlockMarkdown(block.data) + '\n\n';
           break;
         case TeBlockType.HINT:
-          result += `> ${TeMarkdown.getParagraphBlockMarkdown(block.data.content)}\n\n`;
+          result += TeMarkdown.getHintBlockMarkdown(block.data) + '\n\n';
           break;
         default:
           break;
