@@ -11,15 +11,6 @@ export class HnSpaceController {
   /////////////////////////////////// Space ///////////////////////////////////
 
   /**
-   * Get all spaces
-   * @return a list of spaces
-   */
-  @Get()
-  find(): Promise<HnSpaceDto[]> {
-    return this.spaceAggregateService.findSpaces();
-  }
-
-  /**
    * Get spaces by user id
    * @return a list of spaces
    */
