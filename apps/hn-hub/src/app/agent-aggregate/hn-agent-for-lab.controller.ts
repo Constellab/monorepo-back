@@ -12,11 +12,11 @@ import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrato
 import { HnAgentAggregateService } from './hn-agent-aggregate.service';
 import { ClPage } from '@monorepo/core-lib';
 
+@HnLabGuard()
 @Controller('agent/for-lab')
 export class HnAgentForLabController {
   constructor(private readonly agentAggregateService: HnAgentAggregateService) {}
 
-  @HnLabGuard()
   @Post()
   async createForLab(
     @Body(new BlParsePipe(HnCreateAgentDto)) createAgentDto: HnCreateAgentDto
@@ -26,7 +26,16 @@ export class HnAgentForLabController {
     return this.agentAggregateService.createForLab(createAgentDto);
   }
 
-  @HnLabGuard()
+  @Post('fork/:id')
+  async forkForLab(
+    @Param('id', ParseUUIDPipe) agentId: string,
+    @Body(new BlParsePipe(HnCreateAgentDto)) createAgentDto: HnCreateAgentDto
+  ): Promise<HaCreateAgentVersionFromLabResponseDto> {
+    const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
+    createAgentDto.versionFile = migrator.migrateAgentVersionFile(createAgentDto.versionFile);
+    return this.agentAggregateService.forkForLab(agentId, createAgentDto);
+  }
+
   @Post('version/:id')
   async createNewVersionForLab(
     @Param('id', ParseUUIDPipe) agentId: string,
@@ -37,7 +46,6 @@ export class HnAgentForLabController {
     return this.agentAggregateService.createNewVersionForLab(agentId, versionFile);
   }
 
-  @HnLabGuard()
   @Get('version/:id/:jsonVersionNumber?')
   async getAgentVersionForLab(
     @Param('id', ParseUUIDPipe) versionId: string,
@@ -58,7 +66,6 @@ export class HnAgentForLabController {
    * @param jsonVersionNumber
    * @return an agent version code
    */
-  @HnLabGuard()
   @Get(':agentId/version/latest/:jsonVersionNumber?')
   async getLatestPublishedAgentVersionForLabByAgentId(
     @Param('agentId', ParseUUIDPipe) agentId: string,
@@ -85,7 +92,6 @@ export class HnAgentForLabController {
    * @param size
    * @return agents
    */
-  @HnLabGuard()
   @Post('available')
   async getAgentsForLab(
     @Body('spacesFilter') spacesFilter: string[],

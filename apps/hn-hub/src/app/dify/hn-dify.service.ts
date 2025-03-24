@@ -15,6 +15,7 @@ import { HttpService } from '@nestjs/axios';
 
 import { HnBrickMajorVersionService } from '../brick-aggregate/brick-major-version/hn-brick-major-version.service';
 import { ClStringHelper } from '@monorepo/core-lib';
+import { AxiosError } from 'axios';
 
 @Injectable()
 export class HnDifyService {
@@ -174,7 +175,7 @@ export class HnDifyService {
         },
         doc_language: 'English',
         process_rule: {
-          mode: 'custom',
+          mode: 'automatic',
           rules: {
             pre_processing_rules: [
               { id: 'remove_extra_spaces', enabled: false },
@@ -201,15 +202,19 @@ export class HnDifyService {
       contentType: 'text/md',
     });
     formData.append('data', JSON.stringify(document.data));
-    const response = await this.httpService.axiosRef.post(
-      `${this.difyApiUrl}/${datasetId}/document/create-by-file`,
-      formData,
-      {
-        headers: this.getDifyHeaders(formData.getHeaders()),
-      }
-    );
-
-    return response.data;
+    try {
+      const response = await this.httpService.axiosRef.post(
+        `${this.difyApiUrl}/${datasetId}/document/create-by-file`,
+        formData,
+        {
+          headers: this.getDifyHeaders(formData.getHeaders()),
+        }
+      );
+      return response.data;
+    } catch (e: AxiosError | any) {
+      const error: string = ((e as AxiosError).response?.data as any)?.message ?? e.message;
+      throw new Error(`Error while sending document '${document.data.doc_metadata.title}' to Dify: ${error}`);
+    }
   }
 
   private getDifyHeaders(headers: FormData.Headers = null): any {
