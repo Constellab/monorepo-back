@@ -128,14 +128,12 @@ export class HnAgentAggregateService {
       const coAuthors = await this.agentCoAuthorService.getAgentCoAuthorsByAgentId(agentId);
       if (!coAuthors.some((coAuthor) => coAuthor.user.id == user.id)) throw new BlUnauthorizedException();
     }
-    return await this.dataSource.transaction(async (entityManager) => {
-      const newAgentVersion = await this.createNewDraftVersion(agentId, newAgentVersionFile, true, true);
-      return {
-        id: newAgentVersion.agent.id,
-        title: ClStringHelper.getCleanUrlPath(newAgentVersion.agent.title),
-        agent_version: newAgentVersion.version.toString(),
-      };
-    });
+    const newAgentVersion = await this.createNewDraftVersion(agentId, newAgentVersionFile, true, true);
+    return {
+      id: newAgentVersion.agent.id,
+      title: ClStringHelper.getCleanUrlPath(newAgentVersion.agent.title),
+      agent_version: newAgentVersion.version.toString(),
+    };
   }
 
   public async updateTitle(id: string, title: string): Promise<HnAgent> {
@@ -490,11 +488,12 @@ export class HnAgentAggregateService {
     const agent = await this.agentService.findOne(agentId);
 
     return await this.dataSource.transaction(async (entityManager) => {
-      const latestAgentVersion = await this.agentVersionService.findLatestByAgent(agent);
+      let latestAgentVersion = await this.agentVersionService.findLatestByAgent(agent);
 
       if (latestAgentVersion.versionState == 'DRAFT') {
         if (replaceDraft) {
           await this.agentVersionService.deleteById(entityManager, latestAgentVersion.id);
+          latestAgentVersion = await this.agentVersionService.findSecondLastByAgent(agent);
         } else {
           throw new BlBadRequestException('The agent has already a draft version');
         }
