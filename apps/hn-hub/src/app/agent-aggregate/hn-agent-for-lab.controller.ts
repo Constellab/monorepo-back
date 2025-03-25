@@ -46,18 +46,26 @@ export class HnAgentForLabController {
     return this.agentAggregateService.createNewVersionForLab(agentId, versionFile);
   }
 
+  @Get('check-rights/version/:id/:jsonVersionNumber?')
+  async getAgentForLabAndCheckRights(
+    @Param('id', ParseUUIDPipe) agentId: string,
+    @Param('jsonVersionNumber') jsonVersionNumber?: string
+  ): Promise<HnAgentForLabDto> {
+    return this.agentAggregateService.getAgentForLabAndCheckRights(
+      agentId,
+      this.getVersionNumber(jsonVersionNumber)
+    );
+  }
+
   @Get('version/:id/:jsonVersionNumber?')
-  async getAgentVersionForLab(
+  async getAgentForLab(
     @Param('id', ParseUUIDPipe) versionId: string,
     @Param('jsonVersionNumber') jsonVersionNumber?: string
   ): Promise<HnAgentForLabDto> {
-    let versionNumber = null;
-    if (!jsonVersionNumber) {
-      versionNumber = 1;
-    } else {
-      versionNumber = +jsonVersionNumber;
-    }
-    return this.agentAggregateService.getAgentForLabByVersionId(versionId, versionNumber);
+    return this.agentAggregateService.getAgentForLabByVersionId(
+      versionId,
+      this.getVersionNumber(jsonVersionNumber)
+    );
   }
 
   /**
@@ -71,15 +79,9 @@ export class HnAgentForLabController {
     @Param('agentId', ParseUUIDPipe) agentId: string,
     @Param('jsonVersionNumber') jsonVersionNumber?: string
   ): Promise<HnAgentVersionForLabDto> {
-    let versionNumber = null;
-    if (!jsonVersionNumber) {
-      versionNumber = 1;
-    } else {
-      versionNumber = +jsonVersionNumber;
-    }
     return await this.agentAggregateService.findLatestPublishedAgentVersionForLabByAgentId(
       agentId,
-      versionNumber
+      this.getVersionNumber(jsonVersionNumber)
     );
   }
 
@@ -101,5 +103,15 @@ export class HnAgentForLabController {
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnAgentForLabDto>> {
     return this.agentAggregateService.getAgentsForLab(spacesFilter, titleFilter, personalOnly, page, size);
+  }
+
+  private getVersionNumber(jsonVersionNumber: string): number {
+    let versionNumber = null;
+    if (!jsonVersionNumber) {
+      versionNumber = 1;
+    } else {
+      versionNumber = +jsonVersionNumber;
+    }
+    return versionNumber;
   }
 }

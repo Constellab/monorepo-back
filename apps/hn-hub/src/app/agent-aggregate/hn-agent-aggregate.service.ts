@@ -28,7 +28,6 @@ import { HnAgentVersionBrickDependenciesService } from './agent-version-brick-de
 import { HnAgentVersionBrickDependencies } from './agent-version-brick-dependencies/hn-agent-version-brick-dependencies.entity';
 import { HnUser } from '../users/hn-user.entity';
 import { HnUserService } from '../users/hn-user.service';
-import { HnLabConstellabApiService } from '../core/service/hn-lab-constellab-api.service';
 import { HnAgentCoAuthorService } from './agent-co-author/hn-agent-co-author.service';
 import { HnAgentCoAuthorInvite } from './agent-co-author-invite/hn-agent-co-author-invite.entity';
 import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
@@ -50,7 +49,6 @@ export class HnAgentAggregateService {
     private readonly agentVersionBrickDependenciesService: HnAgentVersionBrickDependenciesService,
     private readonly spaceAggregateService: HnSpaceAggregateService,
     private readonly brickAggregateService: HnBrickAggregateService,
-    private readonly labConstellabApiService: HnLabConstellabApiService,
     private readonly userService: HnUserService,
     private readonly agentCoAuthorService: HnAgentCoAuthorService,
     private readonly frontService: HnFrontService,
@@ -128,16 +126,16 @@ export class HnAgentAggregateService {
 
     if (agent.createdBy.id != user.id) {
       const coAuthors = await this.agentCoAuthorService.getAgentCoAuthorsByAgentId(agentId);
-      if (!coAuthors.some((coAuthor) => coAuthor.id == user.id)) throw new BlUnauthorizedException();
+      if (!coAuthors.some((coAuthor) => coAuthor.user.id == user.id)) throw new BlUnauthorizedException();
     }
-    if ((await this.agentVersionService.findLatestByAgent(agent)).versionState == 'DRAFT')
-      throw new BlBadRequestException('The agent already has a draft version');
-    const newAgentVersion = await this.createNewDraftVersion(agentId, newAgentVersionFile, true);
-    return {
-      id: newAgentVersion.agent.id,
-      title: ClStringHelper.getCleanUrlPath(newAgentVersion.agent.title),
-      agent_version: newAgentVersion.version.toString(),
-    };
+    return await this.dataSource.transaction(async (entityManager) => {
+      const newAgentVersion = await this.createNewDraftVersion(agentId, newAgentVersionFile, true, true);
+      return {
+        id: newAgentVersion.agent.id,
+        title: ClStringHelper.getCleanUrlPath(newAgentVersion.agent.title),
+        agent_version: newAgentVersion.version.toString(),
+      };
+    });
   }
 
   public async updateTitle(id: string, title: string): Promise<HnAgent> {
@@ -179,18 +177,44 @@ export class HnAgentAggregateService {
   ): Promise<HnAgentForLabDto> {
     const user = HnCurrentUserHelper.getAndCheckCurrentUser();
     const agentVersion: HnAgentVersion = await this.agentVersionService.findOne(versionId);
-    const agent = agentVersion.agent;
-    if (agent.space != null) {
-      await this.spaceAggregateService.assertCheckSpaceUser(agent.space.id, user.id);
-    }
-    if (agentVersion?.agent == null) {
+    if (agentVersion == null || agentVersion.agent == null) {
       throw new BlNotFoundException('Agent not found');
+    }
+    if (agentVersion.agent.space != null) {
+      await this.spaceAggregateService.assertCheckSpaceUser(agentVersion.agent.space.id, user.id);
     }
     const agentVersionDto = new HnAgentVersionDto(agentVersion);
     const migrator = new HnAgentVersionMigrator();
     return HnAgentForLabDto.fromAgentDto(
       migrator.migrateAgentVersionToSpecificVersion(agentVersionDto, versionNumber).agent
     );
+  }
+
+  public async getAgentForLabAndCheckRights(
+    versionId: string,
+    versionNumber: number
+  ): Promise<HnAgentForLabDto> {
+    const user = HnCurrentUserHelper.getAndCheckCurrentUser();
+    const agentVersion: HnAgentVersion = await this.agentVersionService.findOne(versionId);
+    const agent = await this.agentService.findOne(agentVersion?.agent.id);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
+    if (agent.space != null) {
+      await this.spaceAggregateService.assertCheckSpaceUser(agent.space.id, user.id);
+    }
+    const coAuthors = await this.getAgentCoAuthors(agent.id);
+    if (user.id == agent.createdBy.id || coAuthors.some((coAuthor) => coAuthor.user.id == user.id)) {
+      const migrator = new HnAgentVersionMigrator();
+      const agentDto = migrator.migrateAgentVersionToSpecificVersion(
+        new HnAgentVersionDto(agentVersion),
+        versionNumber
+      ).agent;
+      agentDto.agentCoAuthors = agent.agentCoAuthors;
+      return HnAgentForLabDto.fromAgentDto(agentDto);
+    }
+
+    throw new BlUnauthorizedException('You are not allowed to access this agent');
   }
 
   public async findAllWithFilters(
@@ -459,16 +483,23 @@ export class HnAgentAggregateService {
   public async createNewDraftVersion(
     agentId: string,
     newAgentVersionFile: HnAgentVersionFileInput,
-    fromLab: boolean = false
+    fromLab: boolean = false,
+    replaceDraft: boolean = false
   ): Promise<HnAgentVersion> {
     if (!fromLab) await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(agentId);
     const agent = await this.agentService.findOne(agentId);
-    const latestAgentVersion = await this.agentVersionService.findLatestByAgent(agent);
-
-    if (latestAgentVersion.versionState == 'DRAFT')
-      throw new BlBadRequestException('The agent has already a draft version');
 
     return await this.dataSource.transaction(async (entityManager) => {
+      const latestAgentVersion = await this.agentVersionService.findLatestByAgent(agent);
+
+      if (latestAgentVersion.versionState == 'DRAFT') {
+        if (replaceDraft) {
+          await this.agentVersionService.deleteById(entityManager, latestAgentVersion.id);
+        } else {
+          throw new BlBadRequestException('The agent has already a draft version');
+        }
+      }
+
       const newAgentVersion = await this.agentVersionService.createNewDraftVersion(
         latestAgentVersion,
         newAgentVersionFile,

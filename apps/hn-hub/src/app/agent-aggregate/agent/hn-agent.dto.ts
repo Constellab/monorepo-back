@@ -83,6 +83,9 @@ export class HnAgentForLabDto {
   description?: TeRichTextDTO;
   latest_publish_version: number;
   latest_style?: HnTypingStyle;
+  agent_co_authors?: HnUserDto[];
+  likes?: number;
+  comments?: number;
 
   static fromAgentDto(agentDto: HnAgentDto): HnAgentForLabDto {
     const dto = new HnAgentForLabDto();
@@ -94,11 +97,14 @@ export class HnAgentForLabDto {
     dto.description = agentDto.description;
     dto.latest_publish_version = agentDto.latestPublishVersion;
     dto.latest_style = agentDto.latestStyle;
+    dto.likes = agentDto.likes;
+    dto.comments = agentDto.comments;
     if (agentDto.space == null) return dto;
     dto.space = {
       id: agentDto.space.id,
       name: agentDto.space.name,
     };
+    dto.agent_co_authors = agentDto.agentCoAuthors?.map((agentCoAuthor) => agentCoAuthor.user);
     return dto;
   }
 }
